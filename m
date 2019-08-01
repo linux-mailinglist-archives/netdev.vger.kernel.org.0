@@ -2,58 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D7537D79E
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 10:29:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EABCD7D82D
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 11:04:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729140AbfHAI3f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 04:29:35 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42717 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727506AbfHAI3f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 04:29:35 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q10so33606067pff.9
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 01:29:35 -0700 (PDT)
+        id S1730887AbfHAJED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 05:04:03 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34847 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730567AbfHAJED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 05:04:03 -0400
+Received: by mail-pg1-f194.google.com with SMTP id s1so27500189pgr.2
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 02:04:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jOjfA74AUeA8KTWH+Deq++K0nrzDD6cUg7RiKRcAgeQ=;
-        b=OenH9eI0I3TWqX5f2AYWDVPL1pKTT7RAEggxtMHYdkl8k/mRA0APtISZb2rEkBVpWn
-         k2dFgDbtEWeGBL70n9WRSwwZph63yAglKjPbXA+D268ziVr8AEVM1KqWhRaXDZ/kVx8X
-         /2RyvNaIWVp9Rbs7YStZOtvXzLJ2QIQT9g1cpWDsYOh9m4mKsZjIo+u5j6dQMQ5qiJVf
-         HHOGp1vomSb/eqptnQDKgb3oKiklLrcqQBe0kcYzItFdAiwc5OVaDzvSpqrvnlrjBFu9
-         M39r2bgdHox/femOFj+H0Fw1eFtbc94oJa+BA/Xz2zVyyUGtyQleuzc87xPyhCGXZnCM
-         M2Rw==
+        bh=HlVpE3JrUPgt5bwXt1zctS/JyyAdQ6iVTMPgL+U1A68=;
+        b=rj9gdite46Ds2xIDExQzcVm5w3jgDsTXHAowLfVHxE+rUN+Wy0n+14OrFwivxUKvj+
+         HN+0FuUv99H+zDCdZ/NzaHKFBLwaN3iwxzjse2b1yLO0J62CNL8aEtWXBcxeaUc9qwsh
+         NQn2KvIvDzYp8yIRCSygmEmBHuFwpK1Zm54lg384Elu7CKAHSZ1cbtNW2v97EGPLZqNQ
+         GSpBBuFGFtKmb5AWPgaqPd0Ce8PplPnP5M2HLM6QPfaA0Y9Vcsf0ljzQpigdRezUx/nx
+         RxfNliKM2bblNNBee6qkJ9GVuEFLfWb++l8ngfTZ4AExALR2ubFUNrVqVjv/FtqXerc/
+         875A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=jOjfA74AUeA8KTWH+Deq++K0nrzDD6cUg7RiKRcAgeQ=;
-        b=gq/KowVY0OoipM6jcdIoTNRYpA9Sqqz5UffBQ6ZhESqtl4D8zuzN6PEqhsp4rkxMy9
-         IXc0Zkoo2R7QXkTq/jaPYMENbrrd9ZbJRuE4eo1solKxpQdw4hCbWqKMi1UqPVB9I3kf
-         C3DrLpB8UJvP5dPzOVLqN6auAwX6l6oXMKOiSdcE62DbCt/Z4066UQvOyjjBmyS73pse
-         AAaIKZJ8KxXpCPvHRKLqL9nIHvzuLOE0eBgCQ6kE7iA4bw/WoUm/sibUbP/k+clcjMb8
-         CnoOqhYNQi37DcVyhU/13OhKbb3cF8FTMExU88LHTeGAPtcTs1ndLRZW+mod/Gier4zV
-         G7oQ==
-X-Gm-Message-State: APjAAAVcQI7P977Sz/BnFlvH+OoVTeo+CH7UVAfm1IROUBIguyBGUWzi
-        c2c1eeI4mNaY11CJmhnY7FVpZ4HH7xqwFg==
-X-Google-Smtp-Source: APXvYqwKuF9sQXeXLuXmWv7fHApr7FscmLx6pweQRcJXXR84EQyqr48jizXBJbq4pdtRQicmo+2XRA==
-X-Received: by 2002:a63:a66:: with SMTP id z38mr22643094pgk.247.1564648174517;
-        Thu, 01 Aug 2019 01:29:34 -0700 (PDT)
+        bh=HlVpE3JrUPgt5bwXt1zctS/JyyAdQ6iVTMPgL+U1A68=;
+        b=QALEuHPyMZhZPE7aIRHPnj+xt+u6ro7asu19641rSegMjM1TspN2bS5xkZhIVYKhzH
+         j/TzSoyGVGuWMYRBktwiKsES2gJ2k9snwq7MdaT7jVj6fFsSRzeH6+nuOkr/4wQpr9AA
+         LORQtpt7YP5wmw9pA4yOJEoSmmYpVLLJnks/lXqMofHAjWCdKAKwsh4cCfmI7hLHiKft
+         HMUcZtlCqZW+iXmalm7DgbN9Gjl1TjmDbaHdF2Kzthi+ISjdHEo0OTIHb2mBS+r2U7A3
+         bMvJdm1lSPjM98/QOaJ1cHGMDHIAI5PPikkfcqE+kq9zycVNSEpmzKOUJQfRMWO+xFLz
+         dIBQ==
+X-Gm-Message-State: APjAAAVvAZH5DTZoN1VshId/SkAtgZQC6eUSnZ+m53FCqemOb9x+ZEuk
+        t4A+91A79LTeCMZ7Sx3JXzJfW5nTTV/8kw==
+X-Google-Smtp-Source: APXvYqwkMNjzjbpYJh5IknyStm2IN3nFzBqSrV5pcZI2Cn4Je75TseUPlWSv8WukDPtpehO5317Kcg==
+X-Received: by 2002:a17:90a:3ac2:: with SMTP id b60mr7533869pjc.74.1564650242313;
+        Thu, 01 Aug 2019 02:04:02 -0700 (PDT)
 Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id f20sm83833522pgg.56.2019.08.01.01.29.31
+        by smtp.gmail.com with ESMTPSA id j128sm74951333pfg.28.2019.08.01.02.04.00
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 01:29:33 -0700 (PDT)
+        Thu, 01 Aug 2019 02:04:01 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     Stefano Brivio <sbrivio@redhat.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
+Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>,
         "David S . Miller" <davem@davemloft.net>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] ipv4/route: do not check saddr dev if iif is LOOPBACK_IFINDEX
-Date:   Thu,  1 Aug 2019 16:29:00 +0800
-Message-Id: <20190801082900.27216-1-liuhangbin@gmail.com>
+Subject: [PATCH net] ibmveth: use net_err_ratelimited when set_multicast_list
+Date:   Thu,  1 Aug 2019 17:03:47 +0800
+Message-Id: <20190801090347.8258-1-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.19.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -62,40 +60,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jianlin reported a bug that for IPv4, ip route get from src_addr would fail
-if src_addr is not an address on local system.
+When setting lots of multicast list on ibmveth, e.g. add 3000 membership on a
+multicast group, the following error message flushes our log file
 
-\# ip route get 1.1.1.1 from 2.2.2.2
-RTNETLINK answers: Invalid argument
+8507    [  901.478251] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
+...
+1718386 [ 5636.808658] ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
 
-While IPv6 would get the default route
+We got 1.5 million lines of messages in 1.3h. Let's replace netdev_err() by
+net_err_ratelimited() to avoid this issue. I don't use netdev_err_once() in
+case h_multicast_ctrl() return different lpar_rc types.
 
-\# ip -6 route get 1111::1 from 2222::2
-1111::1 from 2222::2 via fe80:52:0:4982::1fe dev eth0 proto ra src \
-	2620::2cf:e2ff:fe40:37 metric 1024 hoplimit 64 pref medium
-
-Fix it by disabling the __ip_dev_find() check if iif is LOOPBACK_IFINDEX.
-
-Reported-by: Jianlin Shi <jishi@redhat.com>
 Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
 ---
- net/ipv4/route.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/ibm/ibmveth.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index 517300d587a7..1be78e8f9e3c 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -2512,7 +2512,8 @@ struct rtable *ip_route_output_key_hash_rcu(struct net *net, struct flowi4 *fl4,
- 			goto make_route;
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index d654c234aaf7..3b9406a4ca92 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1446,9 +1446,11 @@ static void ibmveth_set_multicast_list(struct net_device *netdev)
+ 						   IbmVethMcastAddFilter,
+ 						   mcast_addr);
+ 			if (lpar_rc != H_SUCCESS) {
+-				netdev_err(netdev, "h_multicast_ctrl rc=%ld "
+-					   "when adding an entry to the filter "
+-					   "table\n", lpar_rc);
++				net_err_ratelimited("%s %s%s: h_multicast_ctrl rc=%ld when adding an entry to the filter table\n",
++						    ibmveth_driver_name,
++						    netdev_name(netdev),
++						    netdev_reg_state(netdev),
++						    lpar_rc);
+ 			}
  		}
  
--		if (!(fl4->flowi4_flags & FLOWI_FLAG_ANYSRC)) {
-+		if (!(fl4->flowi4_flags & FLOWI_FLAG_ANYSRC) &&
-+		    fl4->flowi4_iif != LOOPBACK_IFINDEX) {
- 			/* It is equivalent to inet_addr_type(saddr) == RTN_LOCAL */
- 			if (!__ip_dev_find(net, fl4->saddr, false))
- 				goto out;
 -- 
 2.19.2
 
