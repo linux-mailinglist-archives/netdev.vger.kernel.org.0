@@ -2,79 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B59A7E38F
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 21:51:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 795A27E395
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 21:56:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388817AbfHATv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 15:51:29 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:38958 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388633AbfHATv3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 15:51:29 -0400
-Received: by mail-pg1-f193.google.com with SMTP id u17so34776368pgi.6
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 12:51:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Vt28EcxxBo2EnWu4rBDgHlsTPZ+2ZNh4vId1YX1INoU=;
-        b=W5jF4sqskJuwd7g/oDi1Uvwfk6b/AJQHZ8zFTtpYQtt6QO8XtzIEJDC7u854ksyn2X
-         bJPuRo9xuPzsAdfgVPIcJU33fhdbfQuB4M/SG9gc0Rl0Cq9Tbud4dkMDiI5GZ6Kx4AUA
-         KtGJLNG5fupQGO0wh0+MI618WtFCRoPb28e6beks4/lmjMjBKT2cFyhz7ISpts94kEfU
-         UfUaTBTUUVLnWq11ItCoAlM8GgT8CFWTTG2TFR3fPYJWC9Rxu523IiWNxoYeDjQsik67
-         8JEPU2Ss+mcBTleI/tvnno8NL11k3IEt3VbnMdZ3Tm8jrceUYRJM+NN4Fi8VHS33g9fQ
-         peIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Vt28EcxxBo2EnWu4rBDgHlsTPZ+2ZNh4vId1YX1INoU=;
-        b=LNP4rEk+ASZhD/Fljjmxm/nORLq4G87AVJ/LBR0F/ia98MaLi9I8Oqolo8qP0kmoN9
-         bSC240+eTBtzPPX7Xn1GJxtDyYIuQn7Ci2IdGSZb2jXd4P88e758wau+Lrwl3h6Reu9u
-         BlOAhVP9qjPbYfra5R0nISMMUDSE0VwFxfP+NcDvvMy6IPyUGbLoCSBPXdDaMGoY1AHy
-         EjskadBih5GEon7F5dbqft1fdNGstJJA9KeXdZUHkQMyRIhVSb/PdBa04TBZv8z8wxSm
-         xWgHjn0/3suqlxO1yORXOXsAjHwGXM1gsiu6GGyQIU2lT3HUSavHawSwsEAIZK0hpBDu
-         bLVw==
-X-Gm-Message-State: APjAAAWavaHfBXW7VTFLwNYzGysm3Slc2JocOAMRRG+QPO5CadhjZAlH
-        N+h4wu50QG2KrVqJMrbBPOw=
-X-Google-Smtp-Source: APXvYqwUa+1xMhBFHgI0Rgl6vDR4C/iEsC7uI8T+JHL/sXk0HYNG9yZIXLwJ/LfUjGtpkn63V2m/gg==
-X-Received: by 2002:a63:f456:: with SMTP id p22mr45391934pgk.45.1564689088659;
-        Thu, 01 Aug 2019 12:51:28 -0700 (PDT)
-Received: from [172.27.227.186] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id l4sm73969909pff.50.2019.08.01.12.51.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 01 Aug 2019 12:51:27 -0700 (PDT)
-Subject: Re: [PATCH net] ipv4/route: do not check saddr dev if iif is
- LOOPBACK_IFINDEX
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Stefano Brivio <sbrivio@redhat.com>,
-        Marcelo Ricardo Leitner <mleitner@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20190801082900.27216-1-liuhangbin@gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <f44d9f26-046d-38a2-13aa-d25b92419d11@gmail.com>
-Date:   Thu, 1 Aug 2019 13:51:25 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S2388820AbfHATxr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 15:53:47 -0400
+Received: from fieldses.org ([173.255.197.46]:44350 "EHLO fieldses.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388679AbfHATxr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 1 Aug 2019 15:53:47 -0400
+Received: by fieldses.org (Postfix, from userid 2815)
+        id E4FA21C95; Thu,  1 Aug 2019 15:53:46 -0400 (EDT)
+Date:   Thu, 1 Aug 2019 15:53:46 -0400
+From:   "J. Bruce Fields" <bfields@fieldses.org>
+To:     Wenbin Zeng <wenbin.zeng@gmail.com>
+Cc:     davem@davemloft.net, viro@zeniv.linux.org.uk, jlayton@kernel.org,
+        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
+        wenbinzeng@tencent.com, dsahern@gmail.com,
+        nicolas.dichtel@6wind.com, willy@infradead.org,
+        edumazet@google.com, jakub.kicinski@netronome.com,
+        tyhicks@canonical.com, chuck.lever@oracle.com, neilb@suse.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-nfs@vger.kernel.org
+Subject: Re: [PATCH v3 0/3] auth_gss: netns refcount leaks when
+ use-gss-proxy==1
+Message-ID: <20190801195346.GA21527@fieldses.org>
+References: <1556692945-3996-1-git-send-email-wenbinzeng@tencent.com>
+ <1560341370-24197-1-git-send-email-wenbinzeng@tencent.com>
 MIME-Version: 1.0
-In-Reply-To: <20190801082900.27216-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1560341370-24197-1-git-send-email-wenbinzeng@tencent.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/1/19 2:29 AM, Hangbin Liu wrote:
-> Jianlin reported a bug that for IPv4, ip route get from src_addr would fail
-> if src_addr is not an address on local system.
-> 
-> \# ip route get 1.1.1.1 from 2.2.2.2
-> RTNETLINK answers: Invalid argument
+I lost track, what happened to these patches?
 
-so this is a forwarding lookup in which case iif should be set. Based on
-the above 'route get' inet_rtm_getroute is doing a lookup as if it is
-locally generated traffic.
+--b.
+
+On Wed, Jun 12, 2019 at 08:09:27PM +0800, Wenbin Zeng wrote:
+> This patch series fixes an auth_gss bug that results in netns refcount
+> leaks when use-gss-proxy is set to 1.
+> 
+> The problem was found in privileged docker containers with gssproxy service
+> enabled and /proc/net/rpc/use-gss-proxy set to 1, the corresponding
+> struct net->count ends up at 2 after container gets killed, the consequence
+> is that the struct net cannot be freed.
+> 
+> It turns out that write_gssp() called gssp_rpc_create() to create a rpc
+> client, this increases net->count by 2; rpcsec_gss_exit_net() is supposed
+> to decrease net->count but it never gets called because its call-path is:
+>         net->count==0 -> cleanup_net -> ops_exit_list -> rpcsec_gss_exit_net
+> Before rpcsec_gss_exit_net() gets called, net->count cannot reach 0, this
+> is a deadlock situation.
+> 
+> To fix the problem, we must break the deadlock, rpcsec_gss_exit_net()
+> should move out of the put() path and find another chance to get called,
+> I think nsfs_evict() is a good place to go, when netns inode gets evicted
+> we call rpcsec_gss_exit_net() to free the rpc client, this requires a new
+> callback i.e. evict to be added in struct proc_ns_operations, and add
+> netns_evict() as one of netns_operations as well.
+> 
+> v1->v2:
+>  * in nsfs_evict(), move ->evict() in front of ->put()
+> v2->v3:
+>  * rpcsec_gss_evict_net() directly call gss_svc_shutdown_net() regardless
+>    if gssp_clnt is null, this is exactly same to what rpcsec_gss_exit_net()
+>    previously did
+> 
+> Wenbin Zeng (3):
+>   nsfs: add evict callback into struct proc_ns_operations
+>   netns: add netns_evict into netns_operations
+>   auth_gss: fix deadlock that blocks rpcsec_gss_exit_net when
+>     use-gss-proxy==1
+> 
+>  fs/nsfs.c                      |  2 ++
+>  include/linux/proc_ns.h        |  1 +
+>  include/net/net_namespace.h    |  1 +
+>  net/core/net_namespace.c       | 12 ++++++++++++
+>  net/sunrpc/auth_gss/auth_gss.c |  4 ++--
+>  5 files changed, 18 insertions(+), 2 deletions(-)
+> 
+> -- 
+> 1.8.3.1
