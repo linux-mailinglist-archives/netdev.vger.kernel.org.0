@@ -2,103 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B72F7E15D
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 19:49:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E80C47E179
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 19:54:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387799AbfHARt3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 13:49:29 -0400
-Received: from merlin.infradead.org ([205.233.59.134]:53746 "EHLO
-        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727899AbfHARt3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 13:49:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/wQ1T27awT3hqgJbloxgvOfdBCqajpO4xm94w+4G9Do=; b=w0gH11WScMc6U6c0/193f4lVGY
-        pJ5Va3+tj/TSEWluBZbB3EsZdE+5fi40Hd7sR4n8NRx+T69RBSZmHZ/UoJHMHoQqhP0bN7L7xwpnd
-        PnyuEOEWkSHWMDK4bwLVQOrsAZuYdJkbpUohRpAB/vTiDgEeNENBjcpfppf159WsUPFbRzRBYdiS2
-        B4yBu2ZX/XwmYyMam1kq+dPc+qgHtzng5hOraEFbZeQWxzCZ5ytD4CBej0CrS8EFW10k3lit3r5ul
-        1VLKt68FO3Nz279TNa/NMYzQtnkvCu2SBByGuhcqnupvhyqUPFTBrEug8bQuR/lE/4Arfluds3QCk
-        VKAOrv0w==;
-Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=[192.168.1.17])
-        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
-        id 1htFCR-0000Yn-NH; Thu, 01 Aug 2019 17:49:11 +0000
-Subject: Re: [PATCH bpf-next v10 10/10] landlock: Add user and kernel
- documentation for Landlock
-To:     =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mickael.salaun@ssi.gouv.fr>,
-        =?UTF-8?Q?Micka=c3=abl_Sala=c3=bcn?= <mic@digikod.net>,
-        linux-kernel@vger.kernel.org
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Drysdale <drysdale@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Eric W . Biederman" <ebiederm@xmission.com>,
-        James Morris <jmorris@namei.org>, Jann Horn <jann@thejh.net>,
-        John Johansen <john.johansen@canonical.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Kees Cook <keescook@chromium.org>,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        Paul Moore <paul@paul-moore.com>,
-        Sargun Dhillon <sargun@sargun.me>,
-        "Serge E . Hallyn" <serge@hallyn.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Stephen Smalley <sds@tycho.nsa.gov>, Tejun Heo <tj@kernel.org>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Thomas Graf <tgraf@suug.ch>, Tycho Andersen <tycho@tycho.ws>,
-        Will Drewry <wad@chromium.org>,
-        kernel-hardening@lists.openwall.com, linux-api@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org,
-        linux-security-module@vger.kernel.org, netdev@vger.kernel.org
-References: <20190721213116.23476-1-mic@digikod.net>
- <20190721213116.23476-11-mic@digikod.net>
- <88e90c22-1b78-c2f2-8823-fa776265361c@infradead.org>
- <2ced8fc8-79a6-b0fb-70fe-6716fae92aa7@ssi.gouv.fr>
-From:   Randy Dunlap <rdunlap@infradead.org>
-Message-ID: <08c94f99-68e0-4866-3eba-28fa71347fca@infradead.org>
-Date:   Thu, 1 Aug 2019 10:49:05 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2387908AbfHARyG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 13:54:06 -0400
+Received: from smtprelay0092.hostedemail.com ([216.40.44.92]:41420 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727508AbfHARyF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 13:54:05 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id B534C1802912A;
+        Thu,  1 Aug 2019 17:54:04 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::,RULES_HIT:41:355:379:599:960:973:982:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1543:1593:1594:1711:1730:1747:1777:1792:2110:2393:2553:2559:2562:2828:2915:3138:3139:3140:3141:3142:3355:3622:3865:3867:3868:3871:3873:3874:4321:4605:5007:10004:10400:10848:11026:11232:11233:11473:11658:11914:12043:12291:12297:12438:12555:12683:12740:12760:12895:12986:13439:14093:14097:14659:14721:21080:21427:21451:21627:30012:30054:30056:30069:30070:30075:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:27,LUA_SUMMARY:none
+X-HE-Tag: cake25_65f8dfe37058
+X-Filterd-Recvd-Size: 4514
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf09.hostedemail.com (Postfix) with ESMTPA;
+        Thu,  1 Aug 2019 17:54:03 +0000 (UTC)
+Message-ID: <26b07ca8aeb4b7996a86a55eb68390739d4f482b.camel@perches.com>
+Subject: Re: [PATCH net] ibmveth: use net_err_ratelimited when
+ set_multicast_list
+From:   Joe Perches <joe@perches.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     netdev@vger.kernel.org, Thomas Falcon <tlfalcon@linux.ibm.com>,
+        "David S . Miller" <davem@davemloft.net>
+Date:   Thu, 01 Aug 2019 10:54:02 -0700
+In-Reply-To: <20190801141006.GS18865@dhcp-12-139.nay.redhat.com>
+References: <20190801090347.8258-1-liuhangbin@gmail.com>
+         <209f7fe62e2a79cd8c02b104b8e3babdd16bff30.camel@perches.com>
+         <20190801141006.GS18865@dhcp-12-139.nay.redhat.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-In-Reply-To: <2ced8fc8-79a6-b0fb-70fe-6716fae92aa7@ssi.gouv.fr>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/1/19 10:03 AM, Mickaël Salaün wrote:
->>> +Ptrace restrictions
->>> +-------------------
->>> +
->>> +A landlocked process has less privileges than a non-landlocked process and must
->>> +then be subject to additional restrictions when manipulating another process.
->>> +To be allowed to use :manpage:`ptrace(2)` and related syscalls on a target
->>> +process, a landlocked process must have a subset of the target process programs.
->>             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> Maybe that last statement is correct, but it seems to me that it is missing something.
-> What about this:
+On Thu, 2019-08-01 at 22:10 +0800, Hangbin Liu wrote:
+> On Thu, Aug 01, 2019 at 03:28:43AM -0700, Joe Perches wrote:
+> > Perhaps add the netdev_<level>_ratelimited variants and use that instead
+> > 
+> > Somthing like:
 > 
-> To be allowed to trace a process (using :manpage:`ptrace(2)`), a
-> landlocked tracer process must only be constrained by a subset (possibly
-> empty) of the Landlock programs which are also applied to the tracee.
-> This ensure that the tracer has less or the same constraints than the
+> Yes, that looks better. Do you mind if I take your code and add your
+> Signed-off-by info?
 
-       ensures
+Well, if you test and verify all the paths,
+(I did not and just wrote that without testing),
+you could add something like "Suggested-by:".
 
-> tracee, hence protecting against privilege escalation.
+cheers, Joe
 
-Yes, better.  Thanks.
+> Thanks
+> Hangbin
+> > ---
+> >  include/linux/netdevice.h | 54 +++++++++++++++++++++++++++++++++++++++++++++++
+> >  1 file changed, 54 insertions(+)
+> > 
+> > diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> > index 88292953aa6f..37116019e14f 100644
+> > --- a/include/linux/netdevice.h
+> > +++ b/include/linux/netdevice.h
+> > @@ -4737,6 +4737,60 @@ do {								\
+> >  #define netdev_info_once(dev, fmt, ...) \
+> >  	netdev_level_once(KERN_INFO, dev, fmt, ##__VA_ARGS__)
+> >  
+> > +#define netdev_level_ratelimited(netdev_level, dev, fmt, ...)		\
+> > +do {									\
+> > +	static DEFINE_RATELIMIT_STATE(_rs,				\
+> > +				      DEFAULT_RATELIMIT_INTERVAL,	\
+> > +				      DEFAULT_RATELIMIT_BURST);		\
+> > +	if (__ratelimit(&_rs))						\
+> > +		netdev_level(dev, fmt, ##__VA_ARGS__);			\
+> > +} while (0)
+> > +
+> > +#define netdev_emerg_ratelimited(dev, fmt, ...)				\
+> > +	netdev_level_ratelimited(netdev_emerg, dev, fmt, ##__VA_ARGS__)
+> > +#define netdev_alert_ratelimited(dev, fmt, ...)				\
+> > +	netdev_level_ratelimited(netdev_alert, dev, fmt, ##__VA_ARGS__)
+> > +#define netdev_crit_ratelimited(dev, fmt, ...)				\
+> > +	netdev_level_ratelimited(netdev_crit, dev, fmt, ##__VA_ARGS__)
+> > +#define netdev_err_ratelimited(dev, fmt, ...)				\
+> > +	netdev_level_ratelimited(netdev_err, dev, fmt, ##__VA_ARGS__)
+> > +#define netdev_warn_ratelimited(dev, fmt, ...)				\
+> > +	netdev_level_ratelimited(netdev_warn, dev, fmt, ##__VA_ARGS__)
+> > +#define netdev_notice_ratelimited(dev, fmt, ...)			\
+> > +	netdev_level_ratelimited(netdev_notice, dev, fmt, ##__VA_ARGS__)
+> > +#define netdev_info_ratelimited(dev, fmt, ...)				\
+> > +	netdev_level_ratelimited(netdev_info, dev, fmt, ##__VA_ARGS__)
+> > +
+> > +#if defined(CONFIG_DYNAMIC_DEBUG)
+> > +/* descriptor check is first to prevent flooding with "callbacks suppressed" */
+> > +#define netdev_dbg_ratelimited(dev, fmt, ...)				\
+> > +do {									\
+> > +	static DEFINE_RATELIMIT_STATE(_rs,				\
+> > +				      DEFAULT_RATELIMIT_INTERVAL,	\
+> > +				      DEFAULT_RATELIMIT_BURST);		\
+> > +	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);			\
+> > +	if (DYNAMIC_DEBUG_BRANCH(descriptor) &&				\
+> > +	    __ratelimit(&_rs))						\
+> > +		__dynamic_netdev_dbg(&descriptor, dev, fmt,		\
+> > +				     ##__VA_ARGS__);			\
+> > +} while (0)
+> > +#elif defined(DEBUG)
+> > +#define netdev_dbg_ratelimited(dev, fmt, ...)				\
+> > +do {									\
+> > +	static DEFINE_RATELIMIT_STATE(_rs,				\
+> > +				      DEFAULT_RATELIMIT_INTERVAL,	\
+> > +				      DEFAULT_RATELIMIT_BURST);		\
+> > +	if (__ratelimit(&_rs))						\
+> > +		netdev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
+> > +} while (0)
+> > +#else
+> > +#define netdev_dbg_ratelimited(dev, fmt, ...)				\
+> > +do {									\
+> > +	if (0)								\
+> > +		netdev_printk(KERN_DEBUG, dev, fmt, ##__VA_ARGS__);	\
+> > +} while (0)
+> > +#endif
+> > +
+> >  #define MODULE_ALIAS_NETDEV(device) \
+> >  	MODULE_ALIAS("netdev-" device)
+> >  
+> > 
+> > 
 
-
--- 
-~Randy
