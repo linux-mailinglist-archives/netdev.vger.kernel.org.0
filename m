@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C1417D42A
-	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:58:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 744DD7D42D
+	for <lists+netdev@lfdr.de>; Thu,  1 Aug 2019 05:58:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729899AbfHAD6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 31 Jul 2019 23:58:00 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3689 "EHLO huawei.com"
+        id S1730296AbfHAD62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 31 Jul 2019 23:58:28 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:3687 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729784AbfHAD56 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 31 Jul 2019 23:57:58 -0400
+        id S1729818AbfHAD57 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 31 Jul 2019 23:57:59 -0400
 Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 88576F82D78B676EA873;
+        by Forcepoint Email with ESMTP id 7E517C27B436A05023F9;
         Thu,  1 Aug 2019 11:57:56 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 1 Aug 2019 11:57:45 +0800
+ 14.3.439.0; Thu, 1 Aug 2019 11:57:46 +0800
 From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Weihang Li <liweihang@hisilicon.com>,
+        <linuxarm@huawei.com>, Guojia Liao <liaoguojia@huawei.com>,
+        Guangbin Huang <huangguangbin2@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 08/12] net: hns3: simplify hclge_cmd_query_error()
-Date:   Thu, 1 Aug 2019 11:55:41 +0800
-Message-ID: <1564631745-36733-9-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 09/12] net: hns3: rename a member in struct hclge_mac_ethertype_idx_rd_cmd
+Date:   Thu, 1 Aug 2019 11:55:42 +0800
+Message-ID: <1564631745-36733-10-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
 References: <1564631745-36733-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,87 +39,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Weihang Li <liweihang@hisilicon.com>
+From: Guojia Liao <liaoguojia@huawei.com>
 
-The 4th and 5th parameter of hclge_cmd_query_error is useless, so this
-patch removes them.
+The member 'mac_add' defined in hclge_mac_ethertype_idx_rd_cmd
+means MAC address, so 'mac_addr' is a better name for it.
 
-Signed-off-by: Weihang Li <liweihang@hisilicon.com>
-Reviewed-by: Peng Li <lipeng321@huawei.com>
+Signed-off-by: Guojia Liao <liaoguojia@huawei.com>
+Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c    | 19 +++++--------------
- 1 file changed, 5 insertions(+), 14 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h     | 2 +-
+ drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c | 6 +++---
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-index 0a72438..05a4cdb 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_err.c
-@@ -652,16 +652,11 @@ static void hclge_log_error(struct device *dev, char *reg,
-  * @desc: descriptor for describing the command
-  * @cmd:  command opcode
-  * @flag: flag for extended command structure
-- * @w_num: offset for setting the read interrupt type.
-- * @int_type: select which type of the interrupt for which the error
-- * info will be read(RAS-CE/RAS-NFE/RAS-FE etc).
-  *
-  * This function query the error info from hw register/s using command
-  */
- static int hclge_cmd_query_error(struct hclge_dev *hdev,
--				 struct hclge_desc *desc, u32 cmd,
--				 u16 flag, u8 w_num,
--				 enum hclge_err_int_type int_type)
-+				 struct hclge_desc *desc, u32 cmd, u16 flag)
- {
- 	struct device *dev = &hdev->pdev->dev;
- 	int desc_num = 1;
-@@ -673,8 +668,6 @@ static int hclge_cmd_query_error(struct hclge_dev *hdev,
- 		hclge_cmd_setup_basic_desc(&desc[1], cmd, true);
- 		desc_num = 2;
- 	}
--	if (w_num)
--		desc[0].data[w_num] = cpu_to_le32(int_type);
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+index 070b9dd..cfa77dd 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_cmd.h
+@@ -828,7 +828,7 @@ struct hclge_mac_ethertype_idx_rd_cmd {
+ 	u8	flags;
+ 	u8	resp_code;
+ 	__le16  vlan_tag;
+-	u8      mac_add[6];
++	u8      mac_addr[6];
+ 	__le16  index;
+ 	__le16	ethter_type;
+ 	__le16  egress_port;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+index e987d18..f16bfc6 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
+@@ -847,9 +847,9 @@ static void hclge_dbg_dump_mng_table(struct hclge_dev *hdev)
+ 		memset(printf_buf, 0, HCLGE_DBG_BUF_LEN);
+ 		snprintf(printf_buf, HCLGE_DBG_BUF_LEN,
+ 			 "%02u   |%02x:%02x:%02x:%02x:%02x:%02x|",
+-			 req0->index, req0->mac_add[0], req0->mac_add[1],
+-			 req0->mac_add[2], req0->mac_add[3], req0->mac_add[4],
+-			 req0->mac_add[5]);
++			 req0->index, req0->mac_addr[0], req0->mac_addr[1],
++			 req0->mac_addr[2], req0->mac_addr[3],
++			 req0->mac_addr[4], req0->mac_addr[5]);
  
- 	ret = hclge_cmd_send(&hdev->hw, &desc[0], desc_num);
- 	if (ret)
-@@ -872,8 +865,7 @@ static int hclge_config_tm_hw_err_int(struct hclge_dev *hdev, bool en)
- 	}
- 
- 	/* configure TM QCN hw errors */
--	ret = hclge_cmd_query_error(hdev, &desc, HCLGE_TM_QCN_MEM_INT_CFG,
--				    0, 0, 0);
-+	ret = hclge_cmd_query_error(hdev, &desc, HCLGE_TM_QCN_MEM_INT_CFG, 0);
- 	if (ret) {
- 		dev_err(dev, "fail(%d) to read TM QCN CFG status\n", ret);
- 		return ret;
-@@ -1410,7 +1402,7 @@ static int hclge_log_rocee_ecc_error(struct hclge_dev *hdev)
- 
- 	ret = hclge_cmd_query_error(hdev, &desc[0],
- 				    HCLGE_QUERY_ROCEE_ECC_RAS_INFO_CMD,
--				    HCLGE_CMD_FLAG_NEXT, 0, 0);
-+				    HCLGE_CMD_FLAG_NEXT);
- 	if (ret) {
- 		dev_err(dev, "failed(%d) to query ROCEE ECC error sts\n", ret);
- 		return ret;
-@@ -1434,7 +1426,7 @@ static int hclge_log_rocee_ovf_error(struct hclge_dev *hdev)
- 
- 	/* read overflow error status */
- 	ret = hclge_cmd_query_error(hdev, &desc[0], HCLGE_ROCEE_PF_RAS_INT_CMD,
--				    0, 0, 0);
-+				    0);
- 	if (ret) {
- 		dev_err(dev, "failed(%d) to query ROCEE OVF error sts\n", ret);
- 		return ret;
-@@ -1483,8 +1475,7 @@ hclge_log_and_clear_rocee_ras_error(struct hclge_dev *hdev)
- 
- 	/* read RAS error interrupt status */
- 	ret = hclge_cmd_query_error(hdev, &desc[0],
--				    HCLGE_QUERY_CLEAR_ROCEE_RAS_INT,
--				    0, 0, 0);
-+				    HCLGE_QUERY_CLEAR_ROCEE_RAS_INT, 0);
- 	if (ret) {
- 		dev_err(dev, "failed(%d) to query ROCEE RAS INT SRC\n", ret);
- 		/* reset everything for now */
+ 		snprintf(printf_buf + strlen(printf_buf),
+ 			 HCLGE_DBG_BUF_LEN - strlen(printf_buf),
 -- 
 2.7.4
 
