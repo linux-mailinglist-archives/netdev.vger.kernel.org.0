@@ -2,101 +2,311 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 512C980042
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 20:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A7E380046
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 20:39:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406803AbfHBSiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 14:38:16 -0400
-Received: from mail-eopbgr40071.outbound.protection.outlook.com ([40.107.4.71]:8834
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2406031AbfHBSiQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Aug 2019 14:38:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mTIH055eiU2C7FZIj0m7SsgCbVlQupE0ul8vmQKVCiXJztQEJtq0ZYk/5jwv7vzzKj5qs3AD/Ua/hfDd4labyPH3jTrz6NMO3ZrbnTRRLpaU5kvnm2SyOr2EmR8BUaLu8I5akqNswsWNHUAXXOcS3cd5dhWRZKsSgHIAVgRoaGu6QgMVByg4uZcsLUEkElugNgJofLzc9T1+XlFFV+Xm6vs7T/+Hd4w2HndL1HoiAOPuwglOigyafYnsPlNzYLrj3SXwHnC/jrD2AN1kreIo6HarzEpff6jfQZmGIQIodY2FFMFbv1YA8nQTDPp3MrSuLtLS/6QwG2wddb1G7ZOdJA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ay4ogoaFsUTMsLjNg9Ch0n/oxQIV0FIoDzD3AkToIFw=;
- b=MUov6SqK1Mu5u3miDmULXPeyL7kfId6BTBIReXRh6GQtipM/TdB0lFfvwQRBfs0KYIi/ULOeOmO9KgQIFgTV5L5vu8LIAp4Jr4SC6dYB/ALoVy+gInIS4FgPyoVs+mnSRNxOtQ2YY7IVqb4GvO4j4k8KaWByInQlVaWiarVIf1hFYwtKHX9Wb39RsJZkc/ZxlV0mwvb9YAHrcKgIn11/Y9LsjYtnonBVzaZT675blkDjTgvxYq5BMXEnnCU/cgg19sX8yJqCvL49psTC7MlYgFrL/dhKvEF/2NCxct0ULnisPzh7+cjtWPPuIsdDmxpOQG3gzw7muZs4z5VXDVmY2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Ay4ogoaFsUTMsLjNg9Ch0n/oxQIV0FIoDzD3AkToIFw=;
- b=pVaBTL+ptviGYzugTZi5ZykKr/0udyzy1bC/CKulJfpV94N056U7cZgSZJzvz7hbszQXejGQjUrwV892PMsJSy1KgVAsOMNvMuMSUmSh0upli0+s53gQ40TkXGEHmfTyQRNdq+8TEfRT9LrL3wVvUmqyDQt4icRuq/sXVW4Dn0I=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2357.eurprd05.prod.outlook.com (10.168.56.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2136.13; Fri, 2 Aug 2019 18:38:12 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2136.010; Fri, 2 Aug 2019
- 18:38:12 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "hslester96@gmail.com" <hslester96@gmail.com>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net/mlx4_core: Use refcount_t for refcount
-Thread-Topic: [PATCH] net/mlx4_core: Use refcount_t for refcount
-Thread-Index: AQHVSStMLiVN2iFTN0GUnSwRdh0TSaboB10AgAApK4A=
-Date:   Fri, 2 Aug 2019 18:38:12 +0000
-Message-ID: <47bb83d0111f1132bbf532c16be483c5efbe839f.camel@mellanox.com>
-References: <20190802121020.1181-1-hslester96@gmail.com>
-         <CANhBUQ1chO0Q6wHJwbKMvp6LkD7qLBRw57xwf1QkBAKaewHs5w@mail.gmail.com>
-In-Reply-To: <CANhBUQ1chO0Q6wHJwbKMvp6LkD7qLBRw57xwf1QkBAKaewHs5w@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5528a7e7-8373-4247-f0fd-08d71778932f
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2357;
-x-ms-traffictypediagnostic: DB6PR0501MB2357:
-x-microsoft-antispam-prvs: <DB6PR0501MB2357699A8453B14BBF577565BED90@DB6PR0501MB2357.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 011787B9DD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(39860400002)(376002)(346002)(136003)(199004)(189003)(2351001)(1361003)(68736007)(7736002)(478600001)(4744005)(66066001)(26005)(66946007)(99286004)(3846002)(66556008)(91956017)(6116002)(102836004)(76116006)(5660300002)(81156014)(305945005)(6436002)(6512007)(53936002)(118296001)(6506007)(71190400001)(64756008)(5640700003)(229853002)(2616005)(476003)(486006)(11346002)(66446008)(76176011)(81166006)(446003)(2906002)(256004)(186003)(36756003)(6486002)(6916009)(4326008)(71200400001)(2501003)(66476007)(25786009)(8676002)(1411001)(86362001)(58126008)(316002)(54906003)(14454004)(6246003)(8936002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2357;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: fSm71Wz9d+kzHxepVq3nJcWNmYsjIwMGKPb+w5EKNMc3L/GHsyD4GQNYuiRSE8f6K5iBfEVQV7txma/ZJIkXCplCH2+SbUNza7VFcsS6KqdOzJ/PnGJ8Ol0PaZqs9mdoZ6lN/W+GwSJcRVOiddT5ZavdR2kbpNzLQ2VbGQ2vISUbfJMQ+40dLP7G+fpnOxsoJQfOaolSHTPgaM3TpK/HEGRHFPlyudRswWaVcT4ZQ1E7BTj0fEbNLof3UP104VXQxjEZHuqIlr0UMTbX2MmZh5Pnj5wQeVJEiUGmM4YPJ/V3geTvH6J4fLmfKru3nPn1Fjd9jmCHbLbnl1iCudHHbCOakitjHJIcy/8DHwaekSqu+M8/yJhQkdNzdTgRUsBXBOSiuxB2FPRBKXfAvTWEBaqaHR6kRs1zXnOftXOto5U=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1D8B334C94E5324196A324D59583A0A7@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2406829AbfHBSjz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 14:39:55 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43238 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405505AbfHBSjz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 14:39:55 -0400
+Received: by mail-qt1-f195.google.com with SMTP id w17so30593232qto.10
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 11:39:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=tVWQy+nDA7BgpOlTITwN5hmtSLFhbI4YY9JeFdJrHmg=;
+        b=nX7Wlz26eb2VKdzDm8ODw+faXt0CPkB+7oQt+/Fewg8G4PYOPJQKSq4qEPtrqM54qx
+         Cep1rq24Y4DL5VeB1DgKtkifQ9g09+7sBnjgo88ef0L/OA9NlX6aPPHyhUxfog8lkMp9
+         wyojguNmY/Q/zFeoCo/2zD3s0YYaGPKEX6MBbKzsUjPDK+nwLluCl+CVDVs0qYCutjLk
+         kOpz/RwHp+OZhJaXntkH78ya2sf1x5KXQPi0QyR5QOmXzfzk/JsYR8U78fvFfXAYhrFC
+         T96HlmLrUyoLXk3R3J+VeSQJYO24srhWMEbYTD0Yv/pr/sEWYQE3CTgsucllK5iXYG/m
+         uLOA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=tVWQy+nDA7BgpOlTITwN5hmtSLFhbI4YY9JeFdJrHmg=;
+        b=Jp/AnnU8vIU1blHg2JQQF/o7R+DffTMC5k4uNN70vER249CpYPHbsW/EzHco+HOsLh
+         QIKA77AsyrOJvztCvm7WQrJN6IIq7Vli8xLBdSaqaJayqaYAzIJPjus2R9rl0ssmROwA
+         bE7hC0RDe9dMNAfTOpta/qhX1JXjkBVEkQGyaFt/5uu0SVi4M6H7AIlAw8FRSmIhnz0i
+         TSrGsNxSgHjeZ3u0NI/XUtEhIIKc/TU7Lby8y7/NcWo64LnJNEYrJRxUGxHDmqjF++ve
+         UyPS70eFB8zUr/44ruzp36CULL2RtwBzsZeV6Gv2hBp9Kd+cRQXCQg7iPA064FrX/EGx
+         0TpA==
+X-Gm-Message-State: APjAAAWmFP4qK9LpA+ufXeF6+O+PHav5m387F3vq/HFMvc0+9DVbTxDs
+        2I5G5hBGuJXx/8Fwbunm4DxKsw==
+X-Google-Smtp-Source: APXvYqwzcWaqw070rXe6ICerTPSD9I9FRYEa+tcARvMWCu3C56MIT3kWi5zy8N4dVGA6jrJpWR7k+A==
+X-Received: by 2002:ac8:384c:: with SMTP id r12mr96359910qtb.153.1564771193831;
+        Fri, 02 Aug 2019 11:39:53 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id w80sm35472080qka.74.2019.08.02.11.39.52
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 11:39:53 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 11:39:35 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [v2,1/2] tools: bpftool: add net attach command to attach XDP
+ on interface
+Message-ID: <20190802113935.63be803a@cakuba.netronome.com>
+In-Reply-To: <CAEKGpzhsjMuf+DtN3pDVYMxJa5o2e=-3AeWbHFiFoMoXCkgsNg@mail.gmail.com>
+References: <20190801081133.13200-1-danieltimlee@gmail.com>
+        <20190801081133.13200-2-danieltimlee@gmail.com>
+        <20190801163638.71700f6d@cakuba.netronome.com>
+        <CAEKGpzhsjMuf+DtN3pDVYMxJa5o2e=-3AeWbHFiFoMoXCkgsNg@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5528a7e7-8373-4247-f0fd-08d71778932f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2019 18:38:12.7692
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2357
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDE5LTA4LTAzIGF0IDAwOjEwICswODAwLCBDaHVob25nIFl1YW4gd3JvdGU6DQo+
-IENodWhvbmcgWXVhbiA8aHNsZXN0ZXI5NkBnbWFpbC5jb20+IOS6jjIwMTnlubQ45pyIMuaXpeWR
-qOS6lCDkuIvljYg4OjEw5YaZ6YGT77yaDQo+ID4gcmVmY291bnRfdCBpcyBiZXR0ZXIgZm9yIHJl
-ZmVyZW5jZSBjb3VudGVycyBzaW5jZSBpdHMNCj4gPiBpbXBsZW1lbnRhdGlvbiBjYW4gcHJldmVu
-dCBvdmVyZmxvd3MuDQo+ID4gU28gY29udmVydCBhdG9taWNfdCByZWYgY291bnRlcnMgdG8gcmVm
-Y291bnRfdC4NCj4gPiANCj4gPiBBbHNvIGNvbnZlcnQgcmVmY291bnQgZnJvbSAwLWJhc2VkIHRv
-IDEtYmFzZWQuDQo+ID4gDQo+IA0KPiBJdCBzZWVtcyB0aGF0IGRpcmVjdGx5IGNvbnZlcnRpbmcg
-cmVmY291bnQgZnJvbSAwLWJhc2VkDQo+IHRvIDEtYmFzZWQgaXMgaW5mZWFzaWJsZS4NCj4gSSBh
-bSBzb3JyeSBmb3IgdGhpcyBtaXN0YWtlLg0KDQpKdXN0IGN1cmlvdXMsIHdoeSBub3Qga2VlcCBp
-dCAwIGJhc2VkIGFuZCB1c2UgcmVmY291dF90ID8NCg0KcmVmY291bnQgQVBJIHNob3VsZCBoYXZl
-IHRoZSBzYW1lIHNlbWFudGljcyBhcyBhdG9taWNfdCBBUEkgLi4gbm8gPw0K
+On Fri, 2 Aug 2019 14:02:29 +0900, Daniel T. Lee wrote:
+> On Fri, Aug 2, 2019 at 8:36 AM Jakub Kicinski  wrote:
+> > On Thu,  1 Aug 2019 17:11:32 +0900, Daniel T. Lee wrote: =20
+> > > By this commit, using `bpftool net attach`, user can attach XDP prog =
+on
+> > > interface. New type of enum 'net_attach_type' has been made, as state=
+d at
+> > > cover-letter, the meaning of 'attach' is, prog will be attached on in=
+terface.
+> > >
+> > > BPF prog will be attached through libbpf 'bpf_set_link_xdp_fd'.
+> > >
+> > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > > ---
+> > > Changes in v2:
+> > >   - command 'load' changed to 'attach' for the consistency
+> > >   - 'NET_ATTACH_TYPE_XDP_DRIVE' changed to 'NET_ATTACH_TYPE_XDP_DRIVE=
+R'
+> > >
+> > >  tools/bpf/bpftool/net.c | 107 ++++++++++++++++++++++++++++++++++++++=
++-
+> > >  1 file changed, 106 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+> > > index 67e99c56bc88..f3b57660b303 100644
+> > > --- a/tools/bpf/bpftool/net.c
+> > > +++ b/tools/bpf/bpftool/net.c
+> > > @@ -55,6 +55,35 @@ struct bpf_attach_info {
+> > >       __u32 flow_dissector_id;
+> > >  };
+> > >
+> > > +enum net_attach_type {
+> > > +     NET_ATTACH_TYPE_XDP,
+> > > +     NET_ATTACH_TYPE_XDP_GENERIC,
+> > > +     NET_ATTACH_TYPE_XDP_DRIVER,
+> > > +     NET_ATTACH_TYPE_XDP_OFFLOAD,
+> > > +     __MAX_NET_ATTACH_TYPE
+> > > +};
+> > > +
+> > > +static const char * const attach_type_strings[] =3D {
+> > > +     [NET_ATTACH_TYPE_XDP] =3D "xdp",
+> > > +     [NET_ATTACH_TYPE_XDP_GENERIC] =3D "xdpgeneric",
+> > > +     [NET_ATTACH_TYPE_XDP_DRIVER] =3D "xdpdrv",
+> > > +     [NET_ATTACH_TYPE_XDP_OFFLOAD] =3D "xdpoffload",
+> > > +     [__MAX_NET_ATTACH_TYPE] =3D NULL, =20
+> >
+> > Not sure if the terminator is necessary,
+> > ARRAY_SIZE(attach_type_strings) should suffice? =20
+>=20
+> Yes, ARRAY_SIZE is fine though. But I was just trying to make below
+> 'parse_attach_type' consistent with 'parse_attach_type' from the 'prog.c'.
+> At 'prog.c', It has same terminator at 'attach_type_strings'.
+>=20
+> Should I change it or keep it?
+
+Oh well, I guess there is some precedent for that :S
+
+Quick grep for const char * const reveals we have around 7 non-NULL
+terminated arrays, and 2 NULL terminated. Plus the NULL-terminated
+don't align the '=3D' sign, while most do.
+
+it's not a big deal, my preference is for not NULL terminating here,
+and aligning '=3D'.
+
+> > > +     NEXT_ARG();
+> > > +     if (!REQ_ARGS(1))
+> > > +             return -EINVAL; =20
+> >
+> > Error message needed here.
+> > =20
+>=20
+> Actually it provides error message like:
+> Error: 'xdp' needs at least 1 arguments, 0 found
+>=20
+> are you suggesting that any additional error message is necessary?
+
+Ah, sorry, I missed REQ_ARGS() there!
+
+> > > +             return -EINVAL;
+> > > +     } =20
+> >
+> > Please require the dev keyword before the interface name.
+> > That'll make it feel closer to prog load syntax. =20
+>=20
+> If adding the dev keyword before interface name, will it be too long to t=
+ype in?
+
+I think it's probably muscle memory for most. Plus we have excellent
+bash completions.
+
+> and also `bpftool prog` use extra keyword (such as dev) when it is
+> optional keyword.
+>=20
+>        bpftool prog dump jited  PROG [{ file FILE | opcodes | linum }]
+>        bpftool prog pin   PROG FILE
+>        bpftool prog { load | loadall } OBJ  PATH \
+>=20
+> as you can see here, FILE uses optional keyword 'file' when the
+> argument is optional.
+
+Not sure I follow =F0=9F=A4=94
+
+>        bpftool prog { load | loadall } OBJ  PATH \
+>                          [type TYPE] [dev NAME] \
+>                          [map { idx IDX | name NAME } MAP]\
+>                          [pinmaps MAP_DIR]
+>=20
+> Yes, bpftool prog load has dev keyword with it,
+>=20
+> but first, like previous, the argument is optional so i think it is
+> unnecessary to use optional keyword 'dev'.
+
+The keyword should not be optional if device name is specified.
+Maybe lack of coffee on my side..
+
+> and secondly, 'bpftool net attach' isn't really related to 'bpftool prog =
+load'.
+>
+> At previous version patch, I was using word 'load' instead of
+> 'attach', since XDP program is not
+> considered as 'BPF_PROG_ATTACH', so it might give a confusion. However
+> by the last patch discussion,
+> word 'load' has been replaced to 'attach'.
+>=20
+> Keeping the consistency is very important, but I was just wandering
+> about making command
+> similar to 'bpftool prog load' syntax.
+
+In case of TC the device argument is optional. You may specify it, or
+you can refer to TC blocks instead. So for that reason alone I think
+it'll be much cleaner to require dev before the interface name.
+
+> > > +     return 0;
+> > > +}
+> > > +
+> > > +static int do_attach_detach_xdp(int *progfd, enum net_attach_type *a=
+ttach_type,
+> > > +                             int *ifindex)
+> > > +{
+> > > +     __u32 flags;
+> > > +     int err;
+> > > +
+> > > +     flags =3D XDP_FLAGS_UPDATE_IF_NOEXIST; =20
+> >
+> > Please add this as an option so that user can decide whether overwrite
+> > is allowed or not. =20
+>=20
+> Adding force flag to bpftool seems necessary.
+> I will add an optional argument for this.
+
+Right, I was wondering if we want to call it force, though? force is
+sort of a reuse of iproute2 concept. But it's kind of hard to come up
+with names.
+
+Just to be sure - I mean something like:
+
+bpftool net attach xdp id xyz dev ethN noreplace
+
+Rather than:
+
+bpftool -f net attach xdp id xyz dev ethN
+
+> > > +     if (*attach_type =3D=3D NET_ATTACH_TYPE_XDP_GENERIC)
+> > > +             flags |=3D XDP_FLAGS_SKB_MODE;
+> > > +     if (*attach_type =3D=3D NET_ATTACH_TYPE_XDP_DRIVER)
+> > > +             flags |=3D XDP_FLAGS_DRV_MODE;
+> > > +     if (*attach_type =3D=3D NET_ATTACH_TYPE_XDP_OFFLOAD)
+> > > +             flags |=3D XDP_FLAGS_HW_MODE;
+> > > +
+> > > +     err =3D bpf_set_link_xdp_fd(*ifindex, *progfd, flags);
+> > > +
+> > > +     return err; =20
+> >
+> > no need for the err variable here. =20
+>=20
+> My apologies, but I'm not sure why err variable isn't needed at here.
+> AFAIK, 'bpf_set_link_xdp_fd' from libbpf returns the netlink_recv result,
+> and in order to propagate error, err variable is necessary, I guess?
+
+	return bpf_set_link_xdp_fd(*ifindex, *progfd, flags);
+
+Is what I meant.
+
+> > > +}
+> > > +
+> > > +static int do_attach(int argc, char **argv)
+> > > +{
+> > > +     enum net_attach_type attach_type;
+> > > +     int err, progfd, ifindex;
+> > > +
+> > > +     err =3D parse_attach_args(argc, argv, &progfd, &attach_type, &i=
+findex);
+> > > +     if (err)
+> > > +             return err; =20
+> >
+> > Probably not the best idea to move this out into a helper. =20
+>=20
+> Again, just trying to make consistent with 'prog.c'.
+>=20
+> But clearly it has differences with do_attach/detach from 'prog.c'.
+> From it, it uses the same parse logic 'parse_attach_detach_args' since
+> the two command 'bpftool prog attach/detach' uses the same argument forma=
+t.
+>=20
+> However, in here, 'bpftool net' attach and detach requires different numb=
+er of
+> argument, so function for parse argument has been defined separately.
+> The situation is little bit different, but keeping argument parse logic a=
+s an
+> helper, I think it's better in terms of consistency.
+
+Well they won't share the same arguments if you add the keyword for
+controlling IF_NOEXIST :(
+
+> About the moving parse logic to a helper, I was trying to keep command
+> entry (do_attach)
+> as simple as possible. Parse all the argument in command entry will
+> make function longer
+> and might make harder to understand what it does.
+>=20
+> And I'm not pretty sure that argument parse logic will stays the same
+> after other attachment
+> type comes in. What I mean is, the argument count or type might be
+> added and to fulfill
+> all that specific cases, the code might grow larger.
+>=20
+> So for the consistency, simplicity and extensibility, I prefer to keep
+> it as a helper.
+>=20
+> > > +     if (is_prefix("xdp", attach_type_strings[attach_type]))
+> > > +             err =3D do_attach_detach_xdp(&progfd, &attach_type, &if=
+index); =20
+> >
+> > Hm. We either need an error to be reported if it's not xdp or since we
+> > only accept XDP now perhaps the if() is superfluous? =20
+>=20
+> Well, if the attach_type isn't xdp, the error will be occurred from
+> the argument parse,
+> Will it be necessary to reinforce with error logic to make it more secure?
+
+Hm. it should already be fine, no? For non-xdp parse_attach_type() will
+return __MAX_NET_ATTACH_TYPE, then parsing returns EINVAL and we exit.
+Not sure I follow.
