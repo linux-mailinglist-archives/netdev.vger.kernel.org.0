@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A32A97E9E5
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:26:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04DE57E9C0
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389781AbfHBC0S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 22:26:18 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33800 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389229AbfHBCU2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:28 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n9so29013492pgc.1;
-        Thu, 01 Aug 2019 19:20:27 -0700 (PDT)
+        id S2389827AbfHBCZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 22:25:53 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37925 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390756AbfHBCUa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:30 -0400
+Received: by mail-pg1-f195.google.com with SMTP id f5so26416078pgu.5;
+        Thu, 01 Aug 2019 19:20:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Qd17+I20JNTl38JpPt9ENs79+ajS7TX5o2e3ywFXns4=;
-        b=gkgYcjKv8mviCpscfvidKdy0yp2exmwhbdFHg1VYLE3YGnNwT45rP9cYRgwxWvdSGD
-         XzCmVpBd7+RlIjI+MEb+wWJpyo2f4ZmUYQSjUgDqWwLqeKRJRBA6AZnXsK08IyCyXhiy
-         4dNgArxki6iOU/cWoHR8rdD6eQRfJHzRIm1i/ZNo3u5RbTwbDPqtUA6ksm0/Lv2IxLjK
-         q70kCAhSPRAGOQENe2IrIBNCWn54pipkVfZgN+QCwPKsZgDTTDuP78ZHv5mKxve9ym1t
-         pLsjPHA1rQycUPxkIzWtiiwiI/XQHl1n8MJ/ZwIZ8xTcRU1Mrrugy/JGwgBrkRXuy135
-         NXOg==
+        bh=34zW6BJN89MycamN6XZc+aPi3iIpUXsyW4mngm2d11Q=;
+        b=t5NAqE3Vka8KgkTsGoLz9ngltlH4Rvcpb6lwK1UP3GX3tIbQ8zi6/BtK7Yp4TzERha
+         wSeLot/t6ZWJImnvKBZhoEDQI6w3o5UiMaJgEpqqKVxcZT34GhcoUwN2IZVyDwqCPKlC
+         a7Buv+1Wht5mLnbtK6+0hFPG1gydiYPwhnLgxc7zgGLfQhg2ssESYfy+n2RPvUdztRim
+         jUlI8gdPL0+PZqp56ewu9yAP9JBceuh2IC1TKvQK+F/6hCHCM/byLJfkcX1hvyboPVI9
+         xbVnybXy2ozmgwqFr15PYWmG4HhsZR295UWof1NeRQ0AKr4kLzhdz4MTCgaGRcNk5CYS
+         eE0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Qd17+I20JNTl38JpPt9ENs79+ajS7TX5o2e3ywFXns4=;
-        b=ae6J6QgR+J2HQKyt1dy+xWPPA5S8+5jKHGXipFlKxsHOw24UaKrJWnkIS8GXRPauva
-         X9AF/XhhDxNGSRG/UpUVOJSyp/hL/vhKLgUVT/oSY8c2cbHATQEc5mJURS6ZKPkjv/ha
-         5Mb3+R7Ouaz6jhHHeyAhvHfNzSmL5wBBTIM7kK+zRUOBCnY4gjqngVjtHVCQFMMaoAGU
-         kr47kodZxDYD8hU+tWlyVG4uVmI019JoZcL5h3JLh6P8HMbZEkr+eOyWQ/+4XTxxQJIU
-         39Tor+p8fXXWUh7ZkpL23jz3tQFAlEUJUNXrzWQo8azk+4OAmlKxky5Ai90ucKrAnEnx
-         ERDA==
-X-Gm-Message-State: APjAAAU7RG2RWCSHuVr/+EbCCUiPtYvcpzHc572uetSsNJsPjvytVGq4
-        boL4xiuVaXuTRG+KNS48czc=
-X-Google-Smtp-Source: APXvYqzcfAPxLmmHN9CIJXSofnjYAmirbplKZ2y79i+8ei53QCOaijMzmdrNExYuUwo7YKHbzyVulQ==
-X-Received: by 2002:a63:4e60:: with SMTP id o32mr124066909pgl.68.1564712427200;
-        Thu, 01 Aug 2019 19:20:27 -0700 (PDT)
+        bh=34zW6BJN89MycamN6XZc+aPi3iIpUXsyW4mngm2d11Q=;
+        b=H1DfNlvPxfwHWeznFt6aqkjUY6SBN9oImbANW99Fi7Y2hqIFINTsx71zEsxV2QCyJ6
+         tg3txAEqMpMlEyiJtPOtKo8BUdvISwlk6SOWp9mrJjt1BLlaN3HHlR8+/nMh47FfwA9K
+         c1cAGU0d1f4ugflIBjChNEJHmWepTl7SJu1QwEbSdWJ/hfUVQrwiOOVcFvg+8G7+8Xq4
+         pUEA81p6RdoYK1QJUWz2mVOJG/A1trCum/j13rMkx10zpGKztXFGT6QARvNpVMOda/uB
+         Ji07jCS4+2bWCkHvJlyWqEQRNj5h61/yZp/oXdCkmq3D4oemz1QNGWZeNhYOxOvTC3iD
+         cfCA==
+X-Gm-Message-State: APjAAAVW7XulXQkRBuXOE0e+8MWD3ZnZ5+oDnuO0Mx0ucRyAbISs/cdg
+        rprpW6Ma9sHgaAJfGzRlbEw=
+X-Google-Smtp-Source: APXvYqzeCy+7cVID+Rr3XWOFQDSekWzD7T6/ZvL7pRVEGXoHJuKXgEeLRZGzPIVKoEslJMD2nH6qbg==
+X-Received: by 2002:a65:6454:: with SMTP id s20mr122064853pgv.15.1564712429240;
+        Thu, 01 Aug 2019 19:20:29 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.25
+        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.27
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 19:20:26 -0700 (PDT)
+        Thu, 01 Aug 2019 19:20:28 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,13 +67,14 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Frank Haverkamp <haver@linux.vnet.ibm.com>,
-        "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: [PATCH 10/34] genwqe: convert put_page() to put_user_page*()
-Date:   Thu,  1 Aug 2019 19:19:41 -0700
-Message-Id: <20190802022005.5117-11-jhubbard@nvidia.com>
+        Sudeep Dutt <sudeep.dutt@intel.com>,
+        Ashutosh Dixit <ashutosh.dixit@intel.com>,
+        Arnd Bergmann <arnd@arndb.de>, Joerg Roedel <jroedel@suse.de>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Zhen Lei <thunder.leizhen@huawei.com>
+Subject: [PATCH 11/34] scif: convert put_page() to put_user_page*()
+Date:   Thu,  1 Aug 2019 19:19:42 -0700
+Message-Id: <20190802022005.5117-12-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190802022005.5117-1-jhubbard@nvidia.com>
 References: <20190802022005.5117-1-jhubbard@nvidia.com>
@@ -94,52 +95,55 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-This changes the release code slightly, because each page slot in the
-page_list[] array is no longer checked for NULL. However, that check
-was wrong anyway, because the get_user_pages() pattern of usage here
-never allowed for NULL entries within a range of pinned pages.
-
-Cc: Frank Haverkamp <haver@linux.vnet.ibm.com>
-Cc: "Guilherme G. Piccoli" <gpiccoli@linux.vnet.ibm.com>
+Cc: Sudeep Dutt <sudeep.dutt@intel.com>
+Cc: Ashutosh Dixit <ashutosh.dixit@intel.com>
 Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Zhen Lei <thunder.leizhen@huawei.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/misc/genwqe/card_utils.c | 17 +++--------------
- 1 file changed, 3 insertions(+), 14 deletions(-)
+ drivers/misc/mic/scif/scif_rma.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/misc/genwqe/card_utils.c b/drivers/misc/genwqe/card_utils.c
-index 2e1c4d2905e8..2a888f31d2c5 100644
---- a/drivers/misc/genwqe/card_utils.c
-+++ b/drivers/misc/genwqe/card_utils.c
-@@ -517,24 +517,13 @@ int genwqe_free_sync_sgl(struct genwqe_dev *cd, struct genwqe_sgl *sgl)
- /**
-  * genwqe_free_user_pages() - Give pinned pages back
-  *
-- * Documentation of get_user_pages is in mm/gup.c:
-- *
-- * If the page is written to, set_page_dirty (or set_page_dirty_lock,
-- * as appropriate) must be called after the page is finished with, and
-- * before put_page is called.
-+ * The pages may have been written to, so we call put_user_pages_dirty_lock(),
-+ * rather than put_user_pages().
-  */
- static int genwqe_free_user_pages(struct page **page_list,
- 			unsigned int nr_pages, int dirty)
- {
--	unsigned int i;
--
--	for (i = 0; i < nr_pages; i++) {
--		if (page_list[i] != NULL) {
--			if (dirty)
--				set_page_dirty_lock(page_list[i]);
--			put_page(page_list[i]);
--		}
--	}
-+	put_user_pages_dirty_lock(page_list, nr_pages, dirty);
- 	return 0;
- }
+diff --git a/drivers/misc/mic/scif/scif_rma.c b/drivers/misc/mic/scif/scif_rma.c
+index 01e27682ea30..d84ed9466920 100644
+--- a/drivers/misc/mic/scif/scif_rma.c
++++ b/drivers/misc/mic/scif/scif_rma.c
+@@ -113,13 +113,14 @@ static int scif_destroy_pinned_pages(struct scif_pinned_pages *pin)
+ 	int writeable = pin->prot & SCIF_PROT_WRITE;
+ 	int kernel = SCIF_MAP_KERNEL & pin->map_flags;
  
+-	for (j = 0; j < pin->nr_pages; j++) {
+-		if (pin->pages[j] && !kernel) {
++	if (kernel) {
++		for (j = 0; j < pin->nr_pages; j++) {
+ 			if (writeable)
+-				SetPageDirty(pin->pages[j]);
++				set_page_dirty_lock(pin->pages[j]);
+ 			put_page(pin->pages[j]);
+ 		}
+-	}
++	} else
++		put_user_pages_dirty_lock(pin->pages, pin->nr_pages, writeable);
+ 
+ 	scif_free(pin->pages,
+ 		  pin->nr_pages * sizeof(*pin->pages));
+@@ -1385,11 +1386,9 @@ int __scif_pin_pages(void *addr, size_t len, int *out_prot,
+ 				if (ulimit)
+ 					__scif_dec_pinned_vm_lock(mm, nr_pages);
+ 				/* Roll back any pinned pages */
+-				for (i = 0; i < pinned_pages->nr_pages; i++) {
+-					if (pinned_pages->pages[i])
+-						put_page(
+-						pinned_pages->pages[i]);
+-				}
++				put_user_pages(pinned_pages->pages,
++					       pinned_pages->nr_pages);
++
+ 				prot &= ~SCIF_PROT_WRITE;
+ 				try_upgrade = false;
+ 				goto retry;
 -- 
 2.22.0
 
