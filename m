@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E8727F7A0
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 14:58:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 672B37F7A2
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 14:58:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390697AbfHBM5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 08:57:20 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:42336 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729507AbfHBM5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 08:57:20 -0400
-Received: by mail-pf1-f196.google.com with SMTP id q10so35999725pff.9;
-        Fri, 02 Aug 2019 05:57:20 -0700 (PDT)
+        id S2392863AbfHBM50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 08:57:26 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:44024 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728921AbfHBM50 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 08:57:26 -0400
+Received: by mail-pg1-f193.google.com with SMTP id r26so85986pgl.10;
+        Fri, 02 Aug 2019 05:57:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LoAtgdh28RgsnIrIHcdfMXphwAqA4AaDMnurCisSK6U=;
-        b=IQhAZ6Mniq30SEmLYLZBzc5g2RlDWm/ysbnhx6XLlNt4XriLjwcttXz0juAkSQxIrt
-         NOexkQVCuRTzcpQ9XPS3wxiYl9B1co23j02WmpVOhDS1YQoD5bPcoo+pmISS2v1RRqZH
-         n79hrX3tL2nDp5MvAoNrno13iE+v4F77pJeZUReTNYm+BxjbM1fCJOaIcd2NvHSXh6gv
-         I9+ZRmHR4NGVBFDR/GjT76Fpx/WORTxShwt/Olo1xl22D/XB3KcL1WzjUuT1+aWi3DQu
-         Vo869HnIozxzBbud7oKunCsYQnXlGDLaHCnAtKePHFTFDdrtT5HWNrlT/dxzHvtBF6gL
-         QR+w==
+        bh=B9SvP2xLI0r/IFLODY4SREeRnuK66x7eKEYY7oOsxjs=;
+        b=rd7F+uGpcYw7H+IxAjRfwqV33K6RSiW8chDUdhFPRCYZ1HcZETAkYIhhNnPCh0/pCe
+         SMgjY1aYw8nxW6xeZKVp5hlA+R+a0JHCQ1YPqhYYEZ+mlpDOAhOfg0GW4LOT1ziQTlWi
+         FWjYFbIVVp9mbhPSNWSwoT40nS1qAEjbYOKbW41zBvRCL0YfenvKrzmMNfKpQyBmpHO9
+         iLS10QRzZq2G5Q5T1xxwcijkJXcYJCAu+07oWnhp4gXj/AR1Od2AUV8PIXtj9kRpvxhX
+         RV50VUEykdzxW47VlzY7TGLmNegzlvEHu5q8Uq1/oRKsDKk3/HhKcMy+1BfBJvEooF6b
+         K5jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=LoAtgdh28RgsnIrIHcdfMXphwAqA4AaDMnurCisSK6U=;
-        b=aopdyLFAvzsGByuRVbcXDQBdqSt6gqTJYU9eE+U+ubE9Swomd5HEylg1WQNmekOxgM
-         jZHgoEeCSl83pyNpZ+tuzK+2hbskDPunCdVI2rZkMvX2bFYCPEeTk7UjxorIA44Z6G0R
-         R+w0wgtgSmIamSf6WYzgrQGfTjHFck9OuJFB8UvWISmX5I/zEfo5f2Gff3AYVeLmXt3w
-         VNyeLAZLn2YW+/ALpNH04llV5A6FVM4qFtr9i4Vaok+10kkcBuEXL6wzKlxxbU42CU3I
-         /1b36+DlDl0m2q8UrTMgzkr2K4qYaLd3W0YQcxock6pgQPyg8xoF8N6EmK1CyYUZNdEZ
-         WXwQ==
-X-Gm-Message-State: APjAAAV8NneCFf/Xstx7T82Yp2daU0JdxzpusRtFTzAVX8iD92GQsSa7
-        lcFcd0dFDfHRGmToR3PA7As=
-X-Google-Smtp-Source: APXvYqwC+xBVwrbnvwY/onebEyoZ/bnVlukBkRdWNXMitH24mNcG5N+1XdaCyIawjXpXhLqxmxcEFw==
-X-Received: by 2002:a62:2aca:: with SMTP id q193mr60883175pfq.209.1564750639787;
-        Fri, 02 Aug 2019 05:57:19 -0700 (PDT)
+        bh=B9SvP2xLI0r/IFLODY4SREeRnuK66x7eKEYY7oOsxjs=;
+        b=ObF0ALx14vkgNNDIO+NQQZJfq+WvsofhO5l3A9TjN3p5DFWzaxKz3LdnVoB4hja3l9
+         JiBJ0n4WAPEN9G5fFR165aDl7m0etD0eCRQsImfHyduTfIP5/05ekYtXz/ppNDTBYNO7
+         PqFzo+3PhtjEdgj0G3E66707DHNCOGXvdEvkrvvsP5lww5/Ix3ETi8lIVhgispj0WcEI
+         Pe6A/v+DbsT6nPfK60ueUgVX/MxvFlCD7U3qkoTJY2fNEE0ut0t/lAOqiu+4Fmc3G7r6
+         2KDf5jsErHMf6pNNOPIQhqj1/Mx9tKPTG7UPFIuj+zRAuBWVbqMKkOHDTbzxPtHVwxjx
+         uv8Q==
+X-Gm-Message-State: APjAAAV0AkeDmjJzI19MU1jUrseq4QugLdTBiW68Xp/T5Cc3yzNiK3sb
+        JyUcAtpz7VFnhz7wIlKydtY=
+X-Google-Smtp-Source: APXvYqzj/MAydJ+rNzPuaYOJycVzFseInedpIG+tVK3BblJVpk57r0jADfjq4CnueXStrkjOzjs0cA==
+X-Received: by 2002:a17:90a:109:: with SMTP id b9mr4043952pjb.112.1564750645351;
+        Fri, 02 Aug 2019 05:57:25 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id q21sm4296785pgm.39.2019.08.02.05.57.17
+        by smtp.gmail.com with ESMTPSA id l25sm94389446pff.143.2019.08.02.05.57.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 05:57:19 -0700 (PDT)
+        Fri, 02 Aug 2019 05:57:24 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
 Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] mkiss: Use refcount_t for refcount
-Date:   Fri,  2 Aug 2019 20:57:14 +0800
-Message-Id: <20190802125714.22309-1-hslester96@gmail.com>
+Subject: [PATCH] niu: Use refcount_t for refcount
+Date:   Fri,  2 Aug 2019 20:57:20 +0800
+Message-Id: <20190802125720.22363-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,60 +63,58 @@ refcount_t is better for reference counters since its
 implementation can prevent overflows.
 So convert atomic_t ref counters to refcount_t.
 
+Also convert refcount from 0-based to 1-based.
+
 Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- drivers/net/hamradio/mkiss.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/sun/niu.c | 6 +++---
+ drivers/net/ethernet/sun/niu.h | 2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/hamradio/mkiss.c b/drivers/net/hamradio/mkiss.c
-index 442018ccd65e..b0afd7d13553 100644
---- a/drivers/net/hamradio/mkiss.c
-+++ b/drivers/net/hamradio/mkiss.c
-@@ -70,7 +70,7 @@ struct mkiss {
- #define CRC_MODE_FLEX_TEST	3
- #define CRC_MODE_SMACK_TEST	4
+diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
+index 0bc5863bffeb..5bf096e51db7 100644
+--- a/drivers/net/ethernet/sun/niu.c
++++ b/drivers/net/ethernet/sun/niu.c
+@@ -9464,7 +9464,7 @@ static struct niu_parent *niu_new_parent(struct niu *np,
+ 	memcpy(&p->id, id, sizeof(*id));
+ 	p->plat_type = ptype;
+ 	INIT_LIST_HEAD(&p->list);
+-	atomic_set(&p->refcnt, 0);
++	refcount_set(&p->refcnt, 1);
+ 	list_add(&p->list, &niu_parent_list);
+ 	spin_lock_init(&p->lock);
+ 
+@@ -9524,7 +9524,7 @@ static struct niu_parent *niu_get_parent(struct niu *np,
+ 					port_name);
+ 		if (!err) {
+ 			p->ports[port] = np;
+-			atomic_inc(&p->refcnt);
++			refcount_inc(&p->refcnt);
+ 		}
+ 	}
+ 	mutex_unlock(&niu_parent_lock);
+@@ -9552,7 +9552,7 @@ static void niu_put_parent(struct niu *np)
+ 	p->ports[port] = NULL;
+ 	np->parent = NULL;
+ 
+-	if (atomic_dec_and_test(&p->refcnt)) {
++	if (refcount_dec_and_test(&p->refcnt)) {
+ 		list_del(&p->list);
+ 		platform_device_unregister(p->plat_dev);
+ 	}
+diff --git a/drivers/net/ethernet/sun/niu.h b/drivers/net/ethernet/sun/niu.h
+index 04c215f91fc0..755e6dd4c903 100644
+--- a/drivers/net/ethernet/sun/niu.h
++++ b/drivers/net/ethernet/sun/niu.h
+@@ -3071,7 +3071,7 @@ struct niu_parent {
+ 
+ 	struct niu		*ports[NIU_MAX_PORTS];
  
 -	atomic_t		refcnt;
 +	refcount_t		refcnt;
- 	struct completion	dead;
- };
+ 	struct list_head	list;
  
-@@ -668,7 +668,7 @@ static struct mkiss *mkiss_get(struct tty_struct *tty)
- 	read_lock(&disc_data_lock);
- 	ax = tty->disc_data;
- 	if (ax)
--		atomic_inc(&ax->refcnt);
-+		refcount_inc(&ax->refcnt);
- 	read_unlock(&disc_data_lock);
- 
- 	return ax;
-@@ -676,7 +676,7 @@ static struct mkiss *mkiss_get(struct tty_struct *tty)
- 
- static void mkiss_put(struct mkiss *ax)
- {
--	if (atomic_dec_and_test(&ax->refcnt))
-+	if (refcount_dec_and_test(&ax->refcnt))
- 		complete(&ax->dead);
- }
- 
-@@ -704,7 +704,7 @@ static int mkiss_open(struct tty_struct *tty)
- 	ax->dev = dev;
- 
- 	spin_lock_init(&ax->buflock);
--	atomic_set(&ax->refcnt, 1);
-+	refcount_set(&ax->refcnt, 1);
- 	init_completion(&ax->dead);
- 
- 	ax->tty = tty;
-@@ -784,7 +784,7 @@ static void mkiss_close(struct tty_struct *tty)
- 	 * We have now ensured that nobody can start using ap from now on, but
- 	 * we have to wait for all existing users to finish.
- 	 */
--	if (!atomic_dec_and_test(&ax->refcnt))
-+	if (!refcount_dec_and_test(&ax->refcnt))
- 		wait_for_completion(&ax->dead);
- 	/*
- 	 * Halt the transmit queue so that a new transmit cannot scribble
+ 	spinlock_t		lock;
 -- 
 2.20.1
 
