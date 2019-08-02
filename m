@@ -2,96 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAC4A7FBAF
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79C747FBBD
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731503AbfHBOD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 10:03:59 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:46229 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730204AbfHBOD6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:03:58 -0400
-Received: by mail-qt1-f194.google.com with SMTP id h21so73921175qtn.13
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 07:03:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=WV2Ae/gfauZPjPhFYOLLqagCyB4HyL2HjQauKn3bqsM=;
-        b=MrprVpZ8/zlG6418pVbTyNjU4gD9gqCoagS4tUNuHucvbirS8Mt+gBjZ/DoiKArngp
-         DQZ4b94KH5L70tOjZmm56Eq4+gSB1MwlJmI7z/S9leC88qPgmxekKtH/r7yZZ3t1MFVz
-         6IbIEvn1Zyyb9sR3LJOkUEQqOO9z8Orb4/eAGY32+cbped2R44D+PIsDyT0IvL0sR4/S
-         UHVWI3vA/xdEd1HG9+ReK+UldSQWnc1svs/nav1lARgx45IQZ3XX1hRDwUUzCCOZ4BTV
-         o66Uw3+lKiCJBBJCMZ1V4LxURANdZg2vc2+iyU2rJnYDT3uSGlVDtpvesDQbXfWXaY9D
-         gV9g==
-X-Gm-Message-State: APjAAAUUPPvH68B2n3AwGLPHhl82v3riujMBkl15T+o99KzYWp+xmd0Q
-        cbHE8GLQE/0g51ph1osWYwiimA==
-X-Google-Smtp-Source: APXvYqxqWV5TMaysY1q7/YjNkaoGeUmT+T8Aja0Ppx3ngtfg+CGh7SDzsuYF2FJmZ32u93WwxfAAKw==
-X-Received: by 2002:ac8:2b49:: with SMTP id 9mr99459163qtv.343.1564754637929;
-        Fri, 02 Aug 2019 07:03:57 -0700 (PDT)
-Received: from redhat.com ([147.234.38.1])
-        by smtp.gmail.com with ESMTPSA id v4sm30651268qtq.15.2019.08.02.07.03.52
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 07:03:56 -0700 (PDT)
-Date:   Fri, 2 Aug 2019 10:03:49 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-Message-ID: <20190802094331-mutt-send-email-mst@kernel.org>
-References: <20190731084655.7024-1-jasowang@redhat.com>
- <20190731084655.7024-8-jasowang@redhat.com>
- <20190731123935.GC3946@ziepe.ca>
- <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
- <20190731193057.GG3946@ziepe.ca>
- <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
- <20190801141512.GB23899@ziepe.ca>
- <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
+        id S2436594AbfHBOHs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 10:07:48 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:42448 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727024AbfHBOHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:07:47 -0400
+Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa1.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa1.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: x1LHmedL7ls3R/h6Jw6tQnIb/1X0uBsvLs/st1loJMk/Q/zF0/kX1BBaMGC+RZd1k9di5v+WA9
+ hvHVHZRw/NH1Q2fdbbgmwJ0DmMT/hJn4YCekO78br0LPZ1lni1nRA3QxwN9cIvRdVgOmIBD5FI
+ x5nQIJLRF3oapC76Br8bUFqI3CJWz78cqrG9+GWC0hmYBauxvKjnGto2sFngGPvQP99CONxHzm
+ 68H/lr7+vB5mzBkoOd15On5ZiMI/05eGdOoxHIBv2uOjrHZ7ZnWNqc26Hos9rjGltd87bBBeMt
+ nLM=
+X-IronPort-AV: E=Sophos;i="5.64,338,1559545200"; 
+   d="scan'208";a="45136519"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 02 Aug 2019 07:07:46 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 2 Aug 2019 07:07:46 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Fri, 2 Aug 2019 07:07:44 -0700
+Date:   Fri, 2 Aug 2019 16:07:45 +0200
+From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        <idosch@mellanox.com>, <andrew@lunn.ch>, <davem@davemloft.net>,
+        <roopa@cumulusnetworks.com>, <petrm@mellanox.com>,
+        <tglx@linutronix.de>, <fw@strlen.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [net-next,rfc] net: bridge: mdb: Extend with multicast LLADDR
+Message-ID: <20190802140655.ngbok2ubprhivlhy@lx-anielsen.microsemi.net>
+References: <1564663840-27721-1-git-send-email-horatiu.vultur@microchip.com>
+ <f758fdbf-4e0a-57b3-f13d-23e893ba7458@cumulusnetworks.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
+In-Reply-To: <f758fdbf-4e0a-57b3-f13d-23e893ba7458@cumulusnetworks.com>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
-> Btw, I come up another idea, that is to disable preemption when vhost thread
-> need to access the memory. Then register preempt notifier and if vhost
-> thread is preempted, we're sure no one will access the memory and can do the
-> cleanup.
+The 08/01/2019 17:07, Nikolay Aleksandrov wrote:
+> > To create a group for two of the front ports the following entries can
+> > be added:
+> > bridge mdb add dev br0 port eth0 grp 01:00:00:00:00:04 permanent vid 1
+> > bridge mdb add dev br0 port eth1 grp 01:00:00:00:00:04 permanent vid 1
+> > 
+> > Now the entries will be display as following:
+> > dev br0 port eth0 grp 01:00:00:00:00:04 permanent offload vid 1
+> > dev br0 port eth1 grp 01:00:00:00:00:04 permanent offload vid 1
+> > 
+> > This requires changes to iproute2 as well, see the follogin patch for that.
+> > 
+> > Now if frame with dmac '01:00:00:00:00:04' will arrive at one of the front
+> > ports. If we have HW offload support, then the frame will be forwarded by
+> > the switch, and need not to go to the CPU. In a pure SW world, the frame is
+> > forwarded by the SW bridge, which will flooded it only the ports which are
+> > part of the group.
+> > 
+> > So far so good. This is an important part of the problem we wanted to solve.
+> > 
+> > But, there is one drawback of this approach. If you want to add two of the
+> > front ports and br0 to receive the frame then I can't see a way of doing it
+> > with the bridge mdb command. To do that it requireds many more changes to
+> > the existing code.
+> > 
+> > Example:
+> > bridge mdb add dev br0 port eth0 grp 01:00:00:00:00:04 permanent vid 1
+> > bridge mdb add dev br0 port eth1 grp 01:00:00:00:00:04 permanent vid 1
+> > bridge mdb add dev br0 port br0 grp 01:00:00:00:00:04 permanent vid 1 // This looks wrong.
+> > 
+> > We believe we come a long way by re-using the facilities in MDB (thanks for
+> > convincing us in doing this), but we are still not completely happy with
+> > the result.
+> Just add self argument for the bridge mdb command, no need to specify it twice.
+Like this:
+bridge mdb add dev br0 port eth1 grp 01:00:00:00:00:04 permanent vid self
 
-Great, more notifiers :(
+Then if I want to remove br0 rom the group, should I then have a no-self, and
+then it becomes even more strange what to write in the port.
 
-Maybe can live with
-1- disable preemption while using the cached pointer
-2- teach vhost to recover from memory access failures,
-   by switching to regular from/to user path
+bridge mdb add dev br0 port ?? grp 01:00:00:00:00:04 permanent vid no-self
+                            ^^
+And, what if it is a group with only br0 (the traffic should go to br0 and
+not any of the slave interfaces)?
 
-So if you want to try that, fine since it's a step in
-the right direction.
+Also, the 'self' keyword has different meanings in the 'bridge vlan' and the
+'bridge fdb' commands where it refres to if the offload rule should be install
+in HW - or only in the SW bridge.
 
-But I think fundamentally it's not what we want to do long term.
+The proposed does not look pretty bad, but at least it will be possible to
+configured the different scenarios:
 
-It's always been a fundamental problem with this patch series that only
-metadata is accessed through a direct pointer.
+bridge mdb add dev br0 port br0 grp 01:00:00:00:00:04 permanent vid 1
+bridge mdb del dev br0 port br0 grp 01:00:00:00:00:04 permanent vid 1
 
-The difference in ways you handle metadata and data is what is
-now coming and messing everything up.
+The more I look at the "bridge mdb { add | del } dev DEV port PORT" command, the
+less I understand why do we have both 'dev' and 'port'? The implementation will
+only allow this if 'port' has become enslaved to the switch represented by
+'dev'. Anyway, what is done is done, and we need to stay backwards compatible,
+but we could make it optional, and then it looks a bit less strange to allow the
+port to specify a br0.
 
-So if continuing the direct map approach,
-what is needed is a cache of mapped VM memory, then on a cache miss
-we'd queue work along the lines of 1-2 above.
+Like this:
 
-That's one direction to take. Another one is to give up on that and
-write our own version of uaccess macros.  Add a "high security" flag to
-the vhost module and if not active use these for userspace memory
-access.
+bridge mdb { add | del } [dev DEV] port PORT grp GROUP [ permanent | temp ] [ vid VID ]
+
+bridge mdb add port eth0 grp 01:00:00:00:00:04 permanent vid 1
+bridge mdb add port eth1 grp 01:00:00:00:00:04 permanent vid 1
+bridge mdb add port br0  grp 01:00:00:00:00:04 permanent vid 1 // Add br0 to the gruop
+bridge mdb del port br0  grp 01:00:00:00:00:04 permanent vid 1 // Delete it again
+
+Alternative we could also make the port optional:
+
+bridge mdb { add | del } dev DEV [port PORT] grp GROUP [ permanent | temp ] [ vid VID ]
+
+bridge mdb add dev br0 port eth0 grp 01:00:00:00:00:04 permanent vid 1
+bridge mdb add dev br0 port eth1 grp 01:00:00:00:00:04 permanent vid 1
+bridge mdb add dev br0           grp 01:00:00:00:00:04 permanent vid 1 // Add br0 to the gruop
+bridge mdb del dev br0           grp 01:00:00:00:00:04 permanent vid 1 // Delete it again
+
+Any preferences?
+
+/Allan
 
 
--- 
-MST
