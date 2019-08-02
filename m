@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC4B28015B
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 21:50:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63A0C8015E
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 21:51:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404962AbfHBTuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 15:50:23 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:33368 "EHLO
+        id S2391971AbfHBTvQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 15:51:16 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:44350 "EHLO
         mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732050AbfHBTuX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 15:50:23 -0400
-Received: by mail-qk1-f196.google.com with SMTP id r6so55768214qkc.0;
-        Fri, 02 Aug 2019 12:50:22 -0700 (PDT)
+        with ESMTP id S1732050AbfHBTvQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 15:51:16 -0400
+Received: by mail-qk1-f196.google.com with SMTP id d79so55678489qke.11;
+        Fri, 02 Aug 2019 12:51:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
+        h=from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=66NG3t8KGp5O2jbLHUXg4aRXKowYCNhtlwtdc5s4n4c=;
-        b=LRwiku12x71QjV/t58PIvVEND2ubsG3jRpxjli3jlUl3CUlhSHh1f1qrg1aa3eZHPf
-         Nt3qCFhv6QPhk8YQfiiZdUzpyXpBrVlRiCoZ6cnvcA8kQ4Lj3Tqtvt6tjoVSZLqhI4Kt
-         2TIS4TAyorT5vY7knUniwqySKTRUUrOGdloyaplF0dVfmwia2Ojf+4OIsCr/95hGgwBZ
-         9nicj3MxmURFL/qCqkqQ94+PnPSqDzyeiG6kh6tQCZ2bNfCRoOrIKFAavcI23ZA2jDWp
-         c80pxd3g7OGFnCuXHRbFrQifV+eqwPIo087rJ7/2lS2iVnEAHKOuMbG5PuJ7gIWya2ON
-         YGHA==
+        bh=IhPFcfbz2/V11YFI7RTPpFSB5IsnZB+cpH43bf3h0Yc=;
+        b=L06fNxwVoOB1WiC7Sej31HGPAKBjVBKjCxkZe4nIAtVSSwT7ouAvEW3BLLzlzBS+ee
+         cxqwI6YzWOB8KDKVmopPQMh4cIwX4wRQJF2afhkmBma6l4/hbLahDcBG+afoKehhhGI8
+         jmaLMU29VR+oOHupOCO1nIDpPqwiEHd18T87VRMxWEDpC6VsKmhMPY2OnxrrblUYp0Da
+         wfZrQvgwMZiRU56bgo/xAc36IQLpWB4jwuW41ZLcwUxZEW575lCGUZs2A1Zp2I5UOD2P
+         oSC6ypbuxfbTJ1N1lmyaAySqyZI2X7WbNOHZNWJCNgNO5k0T3dxKZpWQGpmlSF6/twCe
+         ZsyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=66NG3t8KGp5O2jbLHUXg4aRXKowYCNhtlwtdc5s4n4c=;
-        b=o24ksEavr44PZkx1m1+1Lfefqm0hEHShb7F3IPFNe++WTnq0wxXuq40gT70D7v6t2Y
-         1pP5YfH+9g+uTIJaZRNvyY3KIZXkvyFSWa9u+jyhAiMNWUbGdWqQ1C45j0IXczW6q+nG
-         nLgphH4GxOBUxsrJopdEkMKfQ4SGOre1g8UdiAHPumCdUrwi95ERicCW4NoDBfvkzTCu
-         Sf+ynp9mvfFcoU67MKsSJPfalU2DlWWKxkabaPio76vsAqocjJXvEiQaRF8b5VNzG9gx
-         zW5WptQ2wTRPB19jZXPi8u+uRF5Cmyi1J/wAxarnz7qZi+sSPSN0OkPK3StiRDp3mRlc
-         lN/g==
-X-Gm-Message-State: APjAAAV1DDGttYogMT9veJNtyaBDfkxe5GZP2rSKReS4y5fUHbPWp08R
-        PzbOuB7KYApAfJp8s2uOD0Q=
-X-Google-Smtp-Source: APXvYqxxi5StJ+CoZWd0WeQcyAYwg9+dgEw7II4ipdcZIhI84QNbArtqVVvfOR6XvEMEKXGytFxZ7g==
-X-Received: by 2002:a05:620a:1034:: with SMTP id a20mr93591604qkk.165.1564775422005;
-        Fri, 02 Aug 2019 12:50:22 -0700 (PDT)
-Received: from 1e0f21a0da20.ime.usp.br ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id h18sm31198996qkk.93.2019.08.02.12.50.19
+        bh=IhPFcfbz2/V11YFI7RTPpFSB5IsnZB+cpH43bf3h0Yc=;
+        b=UwFsRvIGdB3pMHOyUvefLvPYWx7jAihgvlKevCV1zBccTLD3HyC68ts8qIzfW9rvcs
+         D9REY1tf3gmFvHNgLhrOwLuW8+jzsIrq9cAnjoF2ngm0tdozHwyZy7rTj0yE5eM6jAUq
+         NY4NaV2WSnw4GQqCNOVh+rqiY6JB0KYBYFPFZDiL/oFgy+SGeqzn2ui/fEoSzyGCETcG
+         dOnBoXTMxxogy2x4Lo7GdAtbaOYKtynZ+cDzl9ePWe7d8Cyp1LK18Lxa/Id5sOhTrvAb
+         y3cnkGvQY620GG7o+4AqC4v15Uz0uOZKKtxrMw5iWn7hn7ezBZsqRoH7aU24FfmW9jyu
+         wuSg==
+X-Gm-Message-State: APjAAAX1+RwOQZbzbbAhLIJsykz1DOT7p8pnRsVY1r6l2qG70qp41rBW
+        87i2Khpyepx9ybOyfOp4xBc=
+X-Google-Smtp-Source: APXvYqw1Ox/GWHRh4qsgVB9Q+1JluAxvxs9jKO4UwOzgZlzth/9Kgbcz0COCRdgZRqFn4maQEsS/tA==
+X-Received: by 2002:ae9:f702:: with SMTP id s2mr66915898qkg.28.1564775475426;
+        Fri, 02 Aug 2019 12:51:15 -0700 (PDT)
+Received: from localhost.localdomain ([138.204.26.247])
+        by smtp.gmail.com with ESMTPSA id b4sm30262545qtp.77.2019.08.02.12.51.13
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 12:50:21 -0700 (PDT)
-From:   Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com>
-To:     isdn@linux-pingi.de
-Cc:     gregkh@linuxfoundation.org, netdev@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        lkcamp@lists.libreplanetbr.org
-Subject: [PATCH] isdn: hysdn: fix code style error from checkpatch
-Date:   Fri,  2 Aug 2019 19:50:17 +0000
-Message-Id: <20190802195017.27845-1-ricardo6142@gmail.com>
+        Fri, 02 Aug 2019 12:51:14 -0700 (PDT)
+From:   Fernando Eckhardt Valle <phervalle@gmail.com>
+To:     isdn@linux-pingi.de, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers:staging:isdn:hysdn brace same line if
+Date:   Fri,  2 Aug 2019 19:51:05 +0000
+Message-Id: <20190802195105.27788-1-phervalle@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -60,40 +59,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix error bellow from checkpatch.
+Fix checkpatch error "ERROR: that open brace { should be on the previous
+line" in drivers/staging/isdn/hysdn/hycapi.c:51.
 
-WARNING: Block comments use * on subsequent lines
-+/***********************************************************
-+
-
-Signed-off-by: Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com>
+Signed-off-by: Fernando Eckhardt Valle <phervalle@gmail.com>
 ---
- Hi! This is my first patch, I am learning how to contribute to Linux
-kernel. Let me know if you have any suggestions.
-
-Thanks, 
-Ricardo Bruno
-
- drivers/staging/isdn/hysdn/hycapi.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/staging/isdn/hysdn/hycapi.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
 diff --git a/drivers/staging/isdn/hysdn/hycapi.c b/drivers/staging/isdn/hysdn/hycapi.c
-index a2c15cd7b..b7ba28d40 100644
+index a2c15cd7b..e5dc707d5 100644
 --- a/drivers/staging/isdn/hysdn/hycapi.c
 +++ b/drivers/staging/isdn/hysdn/hycapi.c
-@@ -107,11 +107,8 @@ hycapi_remove_ctr(struct capi_ctr *ctrl)
- 	card->hyctrlinfo = NULL;
- }
- 
--/***********************************************************
--
--Queue a CAPI-message to the controller.
-+/* Queue a CAPI-message to the controller. */
- 
--***********************************************************/
- 
- static void
- hycapi_sendmsg_internal(struct capi_ctr *ctrl, struct sk_buff *skb)
+@@ -49,8 +49,7 @@ static u16 hycapi_send_message(struct capi_ctr *ctrl, struct sk_buff *skb);
+ static inline int _hycapi_appCheck(int app_id, int ctrl_no)
+ {
+ 	if ((ctrl_no <= 0) || (ctrl_no > CAPI_MAXCONTR) || (app_id <= 0) ||
+-	   (app_id > CAPI_MAXAPPL))
+-	{
++	   (app_id > CAPI_MAXAPPL)) {
+ 		printk(KERN_ERR "HYCAPI: Invalid request app_id %d for controller %d", app_id, ctrl_no);
+ 		return -1;
+ 	}
 -- 
 2.20.1
 
