@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F04A7E8FE
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:23:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 663417E8F8
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:23:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389396AbfHBCW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 22:22:57 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:40858 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403892AbfHBCUz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:55 -0400
-Received: by mail-pf1-f194.google.com with SMTP id p184so35148726pfp.7;
-        Thu, 01 Aug 2019 19:20:54 -0700 (PDT)
+        id S2390955AbfHBCWg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 22:22:36 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:37953 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389278AbfHBCU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:56 -0400
+Received: by mail-pl1-f195.google.com with SMTP id az7so32986210plb.5;
+        Thu, 01 Aug 2019 19:20:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GAYBkmVoEF3i3+udFKn42Z4HyLG0jAAiACtL32v96bk=;
-        b=bmiw3CX7eWARhNE7AvtkZmQS4x25Aeig4lpzknXcIaYlaD2lFjd7SScDpJpgYkkx7H
-         M9zB+YKzWGQiUxpLMFNGr5C65PRt2twJ1gMudyUxXC2keVru4Xjo/FbRHcQrMN3Y+TrZ
-         eo41sq59jY3La9DLko+7E0ikMqlCsHblNQuS0OdL1WxPMxgnPsNhJmLosVpKu/cSt2yk
-         /jFkZ5J0l+DrkETHxtxwR7Cu6qeEDmLrh7LIOTNKe2v9mBpFbaPnHS0W/dcoeyOSz4Iu
-         4HCVwyMi41Z2O7etDQGq6Zv3vzS7McPz5uoywJBAMCcGAE7RrRQ8O1qBbeYiWwc/8w4w
-         LKxQ==
+        bh=Puv5caB6Xd1AJbwd7nGzyFKNouoVWAfL+vJwz/b+4QQ=;
+        b=QRyVr5yg7UVnGFe/94tarV2cx/oce/jeAuEbGS+hXnWMVkUY07iSzJ+XdsjD5nlJBq
+         rtaqXFFIyJDVZMz/IPqdxV28iUWO51kec9aYcvEuc1NKK19hn11UPjRAndaZuD321pFs
+         RKnDddIFoWzyAYe9j0yIZ0ilD198KHwio3GcyDW9wHOLHbZQnh4EWC6hi4aeKuKjN/3A
+         ASJiUynmLC6iZL/fZBtp3/NtpLCOGP1VvcXTdQwMcpbWEECy63Zknc8xjKmFGFNfVmU2
+         0O+/0uGt4SKVMx7bM2tpg32Bk0v9UkWkkUlVmxU39ntVy853hr2Hw2jr21+6/jgrAg21
+         vCDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GAYBkmVoEF3i3+udFKn42Z4HyLG0jAAiACtL32v96bk=;
-        b=qOLO6J80FhkdBgX5m5hhWj+vpqYs6RhDlvEqJxN9r+hS+YpQLUYfTBj1f3/JiTjyh9
-         Bov7Sy8qubt4t0LUtGCx+7zFtXlrDi/chbXMUfu/sJqOf46vNxrpTGAkFo+ukh9KzzIu
-         h8ks/fhoUuBzf36u9WB7kcMKoLonp1/5GfbKvUtpQxAOHBdDrq9c063/pRCo9Zzb9Ugq
-         gBXvySc6iT+6WB4yU2boQtmMA1MWB3sHPTrn/fztDotU03zb2SdBATLCEFpjgfAKVYUF
-         KzMcTrT89lPkKxGySnKhmKU4O2wDNST3vt1/HabJMjnNYTi5HrbgBxC5jSfELV1aLHyN
-         WFbA==
-X-Gm-Message-State: APjAAAV4n/IUKhAGwx7/zr7AJHckBxmjK3MvQKcubgv71ihWkc4ww5jB
-        y8+PRMBQvNeInT5Qb0+7bLQ=
-X-Google-Smtp-Source: APXvYqxC0ya0xWU0ncqxEWJISgZVi9PxJ3dzG7YEhtGnuj+4PZQMAaeHdCEV26ObbLm8aGFRS+hMhQ==
-X-Received: by 2002:aa7:9481:: with SMTP id z1mr57240070pfk.92.1564712454191;
-        Thu, 01 Aug 2019 19:20:54 -0700 (PDT)
+        bh=Puv5caB6Xd1AJbwd7nGzyFKNouoVWAfL+vJwz/b+4QQ=;
+        b=aOL2Xxj9YINtAYQbCoktmer/VxQzfPbDs55jC77VLID5DePMFNddj1plYeKBdaz/RT
+         se8roswDSnPOrtA/bCCBZKxmnJkzJKaLE96f2+sifvB58ul7D7XIWgmj8xq0ZOf76lvw
+         uyVXiPfMbBUqgTE5UBB/vJFuWLjpL0LZFh4M4Pr5Pb8CwjPsYJdjVFfGOKdxhQaW0fuL
+         aa81EpePWFajgDEW/uqbHETRSlegMnzvQXZhERFFVYw6nFRTaDl5IbIvdhHn3u2gaAHa
+         rmBM3TO/WAv5oR/yf3UtAw3E/kgelPqB9fxl/i1bO7mLcMlThviwoY1nz6N7Olt1Ygfx
+         yI2g==
+X-Gm-Message-State: APjAAAXsg/zGbJ3ZoIXj2BNNgqA0KCCbxB2OARPU5bH21xL6Wd+eShSq
+        fDHjZP4qt1eJWa1k7Ionwb8=
+X-Google-Smtp-Source: APXvYqyaZ4okZt4HMDulUfOascyI9kF+Bm8CH1styyIgJXB6Yp2GZVtQjz5NJsvyCn9V25oNb5Ohjg==
+X-Received: by 2002:a17:902:100a:: with SMTP id b10mr87552918pla.338.1564712455774;
+        Thu, 01 Aug 2019 19:20:55 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.52
+        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.54
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 19:20:53 -0700 (PDT)
+        Thu, 01 Aug 2019 19:20:55 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,17 +67,12 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        "Aneesh Kumar K . V" <aneesh.kumar@linux.ibm.com>,
-        Huang Ying <ying.huang@intel.com>,
+        Daniel Black <daniel@linux.ibm.com>,
         Matthew Wilcox <willy@infradead.org>,
-        Michal Hocko <mhocko@suse.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rik van Riel <riel@surriel.com>,
-        Souptick Joarder <jrdr.linux@gmail.com>,
-        Will Deacon <will.deacon@arm.com>
-Subject: [PATCH 27/34] mm/memory.c: convert put_page() to put_user_page*()
-Date:   Thu,  1 Aug 2019 19:19:58 -0700
-Message-Id: <20190802022005.5117-28-jhubbard@nvidia.com>
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: [PATCH 28/34] mm/madvise.c: convert put_page() to put_user_page*()
+Date:   Thu,  1 Aug 2019 19:19:59 -0700
+Message-Id: <20190802022005.5117-29-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190802022005.5117-1-jhubbard@nvidia.com>
 References: <20190802022005.5117-1-jhubbard@nvidia.com>
@@ -99,33 +94,30 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Cc: Aneesh Kumar K.V <aneesh.kumar@linux.ibm.com>
-Cc: Huang Ying <ying.huang@intel.com>
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Daniel Black <daniel@linux.ibm.com>
+Cc: Jan Kara <jack@suse.cz>
 Cc: Jérôme Glisse <jglisse@redhat.com>
 Cc: Matthew Wilcox <willy@infradead.org>
-Cc: Michal Hocko <mhocko@suse.com>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Rik van Riel <riel@surriel.com>
-Cc: Souptick Joarder <jrdr.linux@gmail.com>
-Cc: Will Deacon <will.deacon@arm.com>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- mm/memory.c | 2 +-
+ mm/madvise.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/mm/memory.c b/mm/memory.c
-index e2bb51b6242e..8870968496ea 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4337,7 +4337,7 @@ int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
- 						    buf, maddr + offset, bytes);
- 			}
- 			kunmap(page);
--			put_page(page);
-+			put_user_page(page);
- 		}
- 		len -= bytes;
- 		buf += bytes;
+diff --git a/mm/madvise.c b/mm/madvise.c
+index 968df3aa069f..1c6881a761a5 100644
+--- a/mm/madvise.c
++++ b/mm/madvise.c
+@@ -672,7 +672,7 @@ static int madvise_inject_error(int behavior,
+ 		 * routine is responsible for pinning the page to prevent it
+ 		 * from being released back to the page allocator.
+ 		 */
+-		put_page(page);
++		put_user_page(page);
+ 		ret = memory_failure(pfn, 0);
+ 		if (ret)
+ 			return ret;
 -- 
 2.22.0
 
