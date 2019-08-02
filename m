@@ -2,121 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1DB67F727
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 14:46:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E8727F7A0
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 14:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389692AbfHBMqP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 08:46:15 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:42750 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730003AbfHBMqP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 08:46:15 -0400
-Received: by mail-qk1-f194.google.com with SMTP id 201so54610141qkm.9
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 05:46:14 -0700 (PDT)
+        id S2390697AbfHBM5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 08:57:20 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42336 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729507AbfHBM5U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 08:57:20 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so35999725pff.9;
+        Fri, 02 Aug 2019 05:57:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6ql0O82ncHZU71SnaUyYlbcaPGtvlWm+BrLQDkFEDbY=;
-        b=MRMA2whmjpLNxlhbDl5mBbGm/wxr+mnLnwdUEiOzNBsQbTy974xui1zcbJXuaVeMgi
-         +e6pAPXNKqJ5FLrB5btG3fWEwJOZCNVqx7WhXgNhnlz2EhhnCC/jrtDsn55I0rQrPbEs
-         kTXxKo2YuV2bT1/e1Z1A6Wf8qvRURa8Gr3WBc9QO7dijfCQypZgeANqmpaiWdSJoUCtu
-         VXKmwcx2rj/qqL+7cWXldCjZ59ch1b87c5iVVd4Ql5AT2hWXZoJ7MKekKjw5eD86xgli
-         DTGd7yg7MsSW0a1wLwfpAvBC9sgR49+QmZEGlFoYAgcWlKpxKOv19D6RuAJw4q09e1/M
-         Xu1Q==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LoAtgdh28RgsnIrIHcdfMXphwAqA4AaDMnurCisSK6U=;
+        b=IQhAZ6Mniq30SEmLYLZBzc5g2RlDWm/ysbnhx6XLlNt4XriLjwcttXz0juAkSQxIrt
+         NOexkQVCuRTzcpQ9XPS3wxiYl9B1co23j02WmpVOhDS1YQoD5bPcoo+pmISS2v1RRqZH
+         n79hrX3tL2nDp5MvAoNrno13iE+v4F77pJeZUReTNYm+BxjbM1fCJOaIcd2NvHSXh6gv
+         I9+ZRmHR4NGVBFDR/GjT76Fpx/WORTxShwt/Olo1xl22D/XB3KcL1WzjUuT1+aWi3DQu
+         Vo869HnIozxzBbud7oKunCsYQnXlGDLaHCnAtKePHFTFDdrtT5HWNrlT/dxzHvtBF6gL
+         QR+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6ql0O82ncHZU71SnaUyYlbcaPGtvlWm+BrLQDkFEDbY=;
-        b=S1D5yMmnOreYdoALLSm6JsVx/DCMm85b4Nz80NXafZbdyyqkpn/ggwFBGv3o/RiC/Y
-         wD1ICjgcpIzH5WHX03vXNY5KdaSw1xEOefUXttlR+1E3Io/Rnrska4176wxsu0PSo+p1
-         cTBrMNBFkD1xuuTNzNPPhYyl65rXbkMQhIncbV9DuOMiMbS3xP4yjnzX8GB9RMNrfPZY
-         BQtQl0/XePSJ2tB4okfYNUpBCYlFYcJwv2RnbBIRTCbxISX20bY9ruAWIe4VE6UPbAmm
-         aGPImLhJCBnBsdjw79f5ugTIapSPaZVUxM/l+hJ/LTwUeAqwYG1ZlkpnyKdnHZWJw01d
-         CMrQ==
-X-Gm-Message-State: APjAAAUB2Y7ozf4reUXGOA6P9xgnLOqKiSjueiHd3qr5gL61DEYWYz6p
-        uPzcbp/QTYFowfAciCpHSlaT+A==
-X-Google-Smtp-Source: APXvYqxtz2vM6y/fN8WSSWPve6vWs8cD8+KUQAMGJTQIxCltGAZYGzTtsZ3uymeGSjZYIgEaLwJYTg==
-X-Received: by 2002:a37:bc03:: with SMTP id m3mr89369627qkf.199.1564749974287;
-        Fri, 02 Aug 2019 05:46:14 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
-        by smtp.gmail.com with ESMTPSA id l19sm41561137qtb.6.2019.08.02.05.46.13
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 02 Aug 2019 05:46:13 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1htWwn-0003D2-5A; Fri, 02 Aug 2019 09:46:13 -0300
-Date:   Fri, 2 Aug 2019 09:46:13 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-Message-ID: <20190802124613.GA11245@ziepe.ca>
-References: <20190731084655.7024-1-jasowang@redhat.com>
- <20190731084655.7024-8-jasowang@redhat.com>
- <20190731123935.GC3946@ziepe.ca>
- <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
- <20190731193057.GG3946@ziepe.ca>
- <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
- <20190801141512.GB23899@ziepe.ca>
- <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LoAtgdh28RgsnIrIHcdfMXphwAqA4AaDMnurCisSK6U=;
+        b=aopdyLFAvzsGByuRVbcXDQBdqSt6gqTJYU9eE+U+ubE9Swomd5HEylg1WQNmekOxgM
+         jZHgoEeCSl83pyNpZ+tuzK+2hbskDPunCdVI2rZkMvX2bFYCPEeTk7UjxorIA44Z6G0R
+         R+w0wgtgSmIamSf6WYzgrQGfTjHFck9OuJFB8UvWISmX5I/zEfo5f2Gff3AYVeLmXt3w
+         VNyeLAZLn2YW+/ALpNH04llV5A6FVM4qFtr9i4Vaok+10kkcBuEXL6wzKlxxbU42CU3I
+         /1b36+DlDl0m2q8UrTMgzkr2K4qYaLd3W0YQcxock6pgQPyg8xoF8N6EmK1CyYUZNdEZ
+         WXwQ==
+X-Gm-Message-State: APjAAAV8NneCFf/Xstx7T82Yp2daU0JdxzpusRtFTzAVX8iD92GQsSa7
+        lcFcd0dFDfHRGmToR3PA7As=
+X-Google-Smtp-Source: APXvYqwC+xBVwrbnvwY/onebEyoZ/bnVlukBkRdWNXMitH24mNcG5N+1XdaCyIawjXpXhLqxmxcEFw==
+X-Received: by 2002:a62:2aca:: with SMTP id q193mr60883175pfq.209.1564750639787;
+        Fri, 02 Aug 2019 05:57:19 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id q21sm4296785pgm.39.2019.08.02.05.57.17
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 05:57:19 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH] mkiss: Use refcount_t for refcount
+Date:   Fri,  2 Aug 2019 20:57:14 +0800
+Message-Id: <20190802125714.22309-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
-> > This must be a proper barrier, like a spinlock, mutex, or
-> > synchronize_rcu.
-> 
-> 
-> I start with synchronize_rcu() but both you and Michael raise some
-> concern.
+refcount_t is better for reference counters since its
+implementation can prevent overflows.
+So convert atomic_t ref counters to refcount_t.
 
-I've also idly wondered if calling synchronize_rcu() under the various
-mm locks is a deadlock situation.
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+---
+ drivers/net/hamradio/mkiss.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-> Then I try spinlock and mutex:
-> 
-> 1) spinlock: add lots of overhead on datapath, this leads 0 performance
-> improvement.
-
-I think the topic here is correctness not performance improvement
-
-> 2) SRCU: full memory barrier requires on srcu_read_lock(), which still leads
-> little performance improvement
+diff --git a/drivers/net/hamradio/mkiss.c b/drivers/net/hamradio/mkiss.c
+index 442018ccd65e..b0afd7d13553 100644
+--- a/drivers/net/hamradio/mkiss.c
++++ b/drivers/net/hamradio/mkiss.c
+@@ -70,7 +70,7 @@ struct mkiss {
+ #define CRC_MODE_FLEX_TEST	3
+ #define CRC_MODE_SMACK_TEST	4
  
-> 3) mutex: a possible issue is need to wait for the page to be swapped in (is
-> this unacceptable ?), another issue is that we need hold vq lock during
-> range overlap check.
+-	atomic_t		refcnt;
++	refcount_t		refcnt;
+ 	struct completion	dead;
+ };
+ 
+@@ -668,7 +668,7 @@ static struct mkiss *mkiss_get(struct tty_struct *tty)
+ 	read_lock(&disc_data_lock);
+ 	ax = tty->disc_data;
+ 	if (ax)
+-		atomic_inc(&ax->refcnt);
++		refcount_inc(&ax->refcnt);
+ 	read_unlock(&disc_data_lock);
+ 
+ 	return ax;
+@@ -676,7 +676,7 @@ static struct mkiss *mkiss_get(struct tty_struct *tty)
+ 
+ static void mkiss_put(struct mkiss *ax)
+ {
+-	if (atomic_dec_and_test(&ax->refcnt))
++	if (refcount_dec_and_test(&ax->refcnt))
+ 		complete(&ax->dead);
+ }
+ 
+@@ -704,7 +704,7 @@ static int mkiss_open(struct tty_struct *tty)
+ 	ax->dev = dev;
+ 
+ 	spin_lock_init(&ax->buflock);
+-	atomic_set(&ax->refcnt, 1);
++	refcount_set(&ax->refcnt, 1);
+ 	init_completion(&ax->dead);
+ 
+ 	ax->tty = tty;
+@@ -784,7 +784,7 @@ static void mkiss_close(struct tty_struct *tty)
+ 	 * We have now ensured that nobody can start using ap from now on, but
+ 	 * we have to wait for all existing users to finish.
+ 	 */
+-	if (!atomic_dec_and_test(&ax->refcnt))
++	if (!refcount_dec_and_test(&ax->refcnt))
+ 		wait_for_completion(&ax->dead);
+ 	/*
+ 	 * Halt the transmit queue so that a new transmit cannot scribble
+-- 
+2.20.1
 
-I have a feeling that mmu notififers cannot safely become dependent on
-progress of swap without causing deadlock. You probably should avoid
-this.
-
-> > And, again, you can't re-invent a spinlock with open coding and get
-> > something better.
-> 
-> So the question is if waiting for swap is considered to be unsuitable for
-> MMU notifiers. If not, it would simplify codes. If not, we still need to
-> figure out a possible solution.
-> 
-> Btw, I come up another idea, that is to disable preemption when vhost thread
-> need to access the memory. Then register preempt notifier and if vhost
-> thread is preempted, we're sure no one will access the memory and can do the
-> cleanup.
-
-I think you should use the spinlock so at least the code is obviously
-functionally correct and worry about designing some properly justified
-performance change after.
-
-Jason
