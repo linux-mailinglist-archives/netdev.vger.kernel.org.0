@@ -2,70 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36752801F4
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 22:48:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA6E8021A
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 23:11:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437056AbfHBUsf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 16:48:35 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45182 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727848AbfHBUsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 16:48:35 -0400
-Received: by mail-qk1-f193.google.com with SMTP id s22so55914474qkj.12
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 13:48:34 -0700 (PDT)
+        id S1731121AbfHBVLM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 17:11:12 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:53762 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726177AbfHBVLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 17:11:12 -0400
+Received: by mail-pf1-f202.google.com with SMTP id 191so49029099pfy.20
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 14:11:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=3C1N+8al+z8dckErSeTZDQFc+/4xHZvV9/+jO4kOCfo=;
-        b=JPEpRufvssNWF/1v71nFs+nw36s4b9uY7mUZ/LP6aS2+JTo5zker4G64kMupkuFseK
-         9xBItysnnMzDNPq10elghZCv69jFFf2c23E9rqm2fTBwMVyBrtvzw1OXxLBp887Yu7W0
-         44DiNeCYJRieM48RUpletoBlwI3AjHLaM0VWD4nmm7d2QpmIhhTe1pLIPXowExWi7EvT
-         4QbOdcfCAfH4KFaiuqs7LUPumSqNU6J4Bwi70bAlLW/7REUls0SjfFH9Z7m5efS5B+Il
-         DGYKy54IbzQTAQKp0vSdfhHdo7bfGnlVRbM3NZRCNPkDoNHp2kjjsbgvS9zHuCotQFNK
-         Ufog==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=3dxbmYEhw+rCqvWay2j/TQjWw8okzeOVx0ueDyRuULg=;
+        b=DlMTuoinxcf6KR/pUJT8KazzJhslqNfKEynU9O45xbs1K0yojtRwXbMzEts/u+ifJJ
+         UbGAel/s7cK8TmxYxbE46egVs2AXs7LD/Vy8Zz/ah8ABFuqeg3+xnv5tkYv/0dyXrqs/
+         wsnj1faq9+fXKezYgDT7Iw17m2PDL3G0D2vyHQYCOgwjGAn1hOlWenu6cSmAyQKOClzt
+         lx0cz5irsgHhBXXGjsq7nF+W/k/Xd9Y05wlu86Bh7VH5evAfxMn/K1ajdjpv0+48nKgb
+         iQaAUiHBvYQh6gHt/rLwXGhs9agYf+5/ncL09aH+RzblkjbiJcP4uG4rpJgUGwZaxpka
+         DQtw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=3C1N+8al+z8dckErSeTZDQFc+/4xHZvV9/+jO4kOCfo=;
-        b=PfqMuAUoeIPFVyn0C9me1/VynbehSdZiDgaLNwnM8rLFnHlsa65np4CSddxcqeUEZ0
-         ZQT9JidMOQZcXSZ0LDcVSCrQzqamyaaUWW6ymSNcJcidmaO+wSKNw8ls5Yz19Lg9y9Bz
-         RFKcU0jVd7FnSZYHZZ/rOXYBr3Cb/tFTuw5nxynoxwterb3CPJab3BGw1BLLdxDRYSlX
-         tNU+gLKwJV8uZYQVOOaDu5LRIGDRBtDoksQ7rEGafp6No6sa+rC9G1+ORurnts1XJIEc
-         /mqf3o+rsinmWDJbmhWxrtgrnB366PIix0gmFgqJvkbNGNHXtEMZHXDy6wiiQCVwkttk
-         +0Sw==
-X-Gm-Message-State: APjAAAWW+mGgnb3mf71DyYrPeg00YfAP0ZfZKDUgdz8CCR/eQjs/jOop
-        ZsKOWPLkupa/LiZVQ0kXwHy3IhrO5zA=
-X-Google-Smtp-Source: APXvYqzGwSNqjTCo+ua02rFB8itAsSzhYGKzDBv0Ients45tjeJ2c4CZCeqGolM7S6kNr6rktyJM8w==
-X-Received: by 2002:a05:620a:705:: with SMTP id 5mr32923371qkc.330.1564778914410;
-        Fri, 02 Aug 2019 13:48:34 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j19sm29957359qtq.94.2019.08.02.13.48.33
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 13:48:34 -0700 (PDT)
-Date:   Fri, 2 Aug 2019 13:48:16 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, jiri@resnulli.us,
-        marcelo.leitner@gmail.com, saeedm@mellanox.com, wenxu@ucloud.cn,
-        gerlitz.or@gmail.com, paulb@mellanox.com
-Subject: Re: [PATCH net-next 0/3,v2] flow_offload hardware priority fixes
-Message-ID: <20190802134816.05ccbac6@cakuba.netronome.com>
-In-Reply-To: <20190802132846.3067-1-pablo@netfilter.org>
-References: <20190802132846.3067-1-pablo@netfilter.org>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=3dxbmYEhw+rCqvWay2j/TQjWw8okzeOVx0ueDyRuULg=;
+        b=kBEQZ6a5IpC4+d21/sxGuxSu5QCYTSLeHMfaH+BaOVD8Hi0XDIjXpgbVtXd7Xa/ZEl
+         QLII/XsasYnOEA+lFzT9K1r3RLLvsEVBo8Q0wwQF3peAVaf9t4PS3WhOrk0zTHyIrRJK
+         i30UG0usRLrL749GVEC5/7LLFcu5WmcLBR6drUVwMayUPPxnGIRH8WfCyLG9bgRBHv4w
+         j9WkJpc/mNanCAJeFlu0XlBuiWEVH1pLHMcrH2f4h3qY2EVMGhdX14Bl7S5Vmme9Xgsu
+         FMWsKFuUf59RGGMyOR3UT3MRbGZ/PgbvTg+U1izu/A8883qFJTGL+0K4NIijnkB/sGc1
+         YYkw==
+X-Gm-Message-State: APjAAAXzujZzD8QusunhZdrO6w5qSaHsjHIc/fbXYFyw9P4B5LIdtHdb
+        Gb/2AjNFvmgMVyIOnEhdoRJV5iZ0QtRgBq+XTgeNnKEfv2UvglC5fzyTRW/hgcFs8q48L2pkTaT
+        /wAyFI9YyuCs6uCXPN+34foDqfMZfcIE+/AmfsA7prVs+2Otq/ncL1Q==
+X-Google-Smtp-Source: APXvYqxAWopCpPz0eVit3/wNRDfqL+5YCKxF8IAaNmhn2xw+CGiBnZ89nrcFse8WxRhYEmW6e2o5Acc=
+X-Received: by 2002:a65:620a:: with SMTP id d10mr79714806pgv.8.1564780271226;
+ Fri, 02 Aug 2019 14:11:11 -0700 (PDT)
+Date:   Fri,  2 Aug 2019 14:11:05 -0700
+Message-Id: <20190802211108.90739-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.770.g0f2c4a37fd-goog
+Subject: [PATCH bpf-next v2 0/3] selftests/bpf: switch test_progs back to stdio
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  2 Aug 2019 15:28:43 +0200, Pablo Neira Ayuso wrote:
-> v2: address Jakub comments to not use the netfilter basechain
->     priority for this mapping.
+I was looking into converting test_sockops* to test_progs framework
+and that requires using cgroup_helpers.c which rely on stdio/stderr.
+Let's use open_memstream to override stdout into buffer during
+subtests instead of custom test_{v,}printf wrappers. That lets
+us continue to use stdio in the subtests and dump it on failure
+if required.
 
-Hardly.
+That would also fix bpf_find_map which currently uses printf to
+signal failure (missed during test_printf conversion).
+
+Cc: Andrii Nakryiko <andriin@fb.com>
+
+Stanislav Fomichev (3):
+  selftests/bpf: test_progs: switch to open_memstream
+  selftests/bpf: test_progs: test__printf -> printf
+  selftests/bpf: test_progs: drop extra trailing tab
+
+ .../bpf/prog_tests/bpf_verif_scale.c          |   4 +-
+ .../selftests/bpf/prog_tests/l4lb_all.c       |   2 +-
+ .../selftests/bpf/prog_tests/map_lock.c       |  10 +-
+ .../selftests/bpf/prog_tests/send_signal.c    |   4 +-
+ .../selftests/bpf/prog_tests/spinlock.c       |   2 +-
+ .../bpf/prog_tests/stacktrace_build_id.c      |   4 +-
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |   4 +-
+ .../selftests/bpf/prog_tests/xdp_noinline.c   |   4 +-
+ tools/testing/selftests/bpf/test_progs.c      | 140 +++++++++---------
+ tools/testing/selftests/bpf/test_progs.h      |  14 +-
+ 10 files changed, 90 insertions(+), 98 deletions(-)
+
+-- 
+2.22.0.770.g0f2c4a37fd-goog
