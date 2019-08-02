@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ADA9800CF
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 21:16:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 983FC800D1
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 21:17:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392199AbfHBTQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 15:16:57 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:35694 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391984AbfHBTQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 15:16:56 -0400
-Received: by mail-io1-f65.google.com with SMTP id m24so154528624ioo.2
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 12:16:56 -0700 (PDT)
+        id S2392214AbfHBTRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 15:17:00 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:36304 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392202AbfHBTQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 15:16:59 -0400
+Received: by mail-io1-f66.google.com with SMTP id o9so50889032iom.3
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 12:16:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=h7nhEm78V7WmFGfIhMkfh2EorlV6SVL+Qv2JXWnayVs=;
-        b=aips4NfXUlPP1ToR3kyenU37WDZw2YisLqA4wULW7ugRiqwE59uHF4YUQ0tnjutOe/
-         g5eaSTmXxLewa3BbNdb+FcFxKUL5YztmRg/8t15ARqP61VrNzB9zZbVd3FG9Pe93yRF8
-         JUlMdcyhr1hhgC4Gc59TBcrySli1w8A4L9apclu/kHiHwl+M4MX17e98dKKvGAxKXhmT
-         +mR/05DMtCa9+5Mjpa5TpzMQf3ohOWsMI3My696FzDFrhZmjW+1sPd9ujSWRnTmDfxPn
-         kfylH/0duTjUToIfaogFfKgbhbaEsTDjeTvrLJsbHroukugXVYDJS3OGf3MQPmTkTNag
-         a6Hw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=Dnnz5VWCpf+4lPEi9I99vaZCEO1eO1JT5LR0jDai47s=;
+        b=PdDcG3fne6XMtcbdg0xuCbj5wCwSZYlTH6l6ku41+TrycbZazxuo7BoVE6zyDou729
+         mnE/tFP6Coou3ZKSTchBA7uZLvFW2MVmzhyfnfFXww4JClADMWVIBSsX174UvEZt3/5+
+         kRwONtYnuyV998KvQN2i0hBwowL7P6kzVd/0dAYqwRI9V06sT0CilG5TcYQFP6g185xu
+         WR/2zJwBFUCZOa91/i4P9ZZBs2zYd6lI+dNnMjpwvm40DF7aw6OlBlSoTO8JxhcBTZX/
+         qUGfRK6CyV2wcvz26f/3OR4yDvLuvVG56z6ME2BE5dirZcMehmdd5UW0zAB5lJZFDoBq
+         WEOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=h7nhEm78V7WmFGfIhMkfh2EorlV6SVL+Qv2JXWnayVs=;
-        b=npULktAVV0yApJDNiLVwzMlBiWgLmVail6jdyDPCTBpEye91LtQCkti1Ddk5u8hqxZ
-         rWCdKdm4mTXEgMj+89GpFNhfBTD415fWGtmGGBO4bOMFtbbjeHfMyQketcymo+Ba2fZ9
-         38yL1vN58mfVvIL1v4GoK5VdZ93xxkCNVuEgOsNU4VuJsOLsqwIxE9N1GhqEyf4GoUdG
-         v50hFPJkuXhoCHmCbyF+X2rm1Fny2x4To+pC6iQeoUTBkdYX8/Sivz9VkMsyXbUbKFrx
-         XpF7oxeZ6MmUGqbbfw77pI9eLVKZ8Ik0ERxECYiwuj2ZQJTy5drVaTI7c0CMyD3AL6DW
-         oJOQ==
-X-Gm-Message-State: APjAAAVP6NJfrgmRcjRs0Pq/7g1D8F/1gPBQuSxECoNIG+84/DXPtHxd
-        vpSxPgfskADSc4X+8X9xFP/KrlZQ
-X-Google-Smtp-Source: APXvYqzhLTGq0NCLt8vMDJmq4mRn9GJO7K+IP3ve3tBPjxPzmh0g6nYtPUH2qyTIncEW8PT+xw6QlQ==
-X-Received: by 2002:a5d:8c87:: with SMTP id g7mr28360543ion.85.1564773416061;
-        Fri, 02 Aug 2019 12:16:56 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=Dnnz5VWCpf+4lPEi9I99vaZCEO1eO1JT5LR0jDai47s=;
+        b=cK4nkzu0jOW6OhzmXnzKdDuImRNqV07NFbj8sAAUeXX4Kvb+Y8EDyu+aSuaWhFHFuP
+         7giUAAXDnFK/SNivxvZyiFEaFUf4tRiRwKIEXIyj9O+zxdh01O6zUB0XwrO4u8yoaygl
+         JUTurUPE7NtprM+rPKAmh2IUgl+QvtXCiANM3V8uyniuxOTSwPuITO3vQ4OjcUjzNfSe
+         7cQ7HHbcLP9uVz0m99FIvaSjriWEXSvbY8e0Q1/l7pV9BdXXsW9aL18CCTAw1iTpC6k9
+         FRWKviwGk/vYb5ZWbyAIJMI1loqNofwfzMjY04DcwqRl0nprXI7ORflWE6FiYjI5ax7G
+         vY2Q==
+X-Gm-Message-State: APjAAAU7VWJZwJD540TIVjlsZo0jked04w9Qhwu4iTkG+jo2OI5gwxBZ
+        aMOtg51P7VnjGVVCUaGBAEY=
+X-Google-Smtp-Source: APXvYqxEdP4BBA4Bm+S2PidDLlB4hdWnLIpy6d3vP3vAKLXr5DsWm8XK4rjkVHBE2FU5tlz6iPDhnA==
+X-Received: by 2002:a6b:b756:: with SMTP id h83mr22843268iof.147.1564773418766;
+        Fri, 02 Aug 2019 12:16:58 -0700 (PDT)
 Received: from mojatatu.com ([64.26.149.125])
-        by smtp.gmail.com with ESMTPSA id n22sm117987934iob.37.2019.08.02.12.16.55
+        by smtp.gmail.com with ESMTPSA id n22sm117987934iob.37.2019.08.02.12.16.57
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 02 Aug 2019 12:16:55 -0700 (PDT)
+        Fri, 02 Aug 2019 12:16:58 -0700 (PDT)
 From:   Roman Mashak <mrv@mojatatu.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, jiri@resnulli.us,
         Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net 0/2] Fix batched event generation for vlan action
-Date:   Fri,  2 Aug 2019 15:16:45 -0400
-Message-Id: <1564773407-26209-1-git-send-email-mrv@mojatatu.com>
+Subject: [PATCH net 1/2] net sched: update vlan action for batched events operations
+Date:   Fri,  2 Aug 2019 15:16:46 -0400
+Message-Id: <1564773407-26209-2-git-send-email-mrv@mojatatu.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1564773407-26209-1-git-send-email-mrv@mojatatu.com>
+References: <1564773407-26209-1-git-send-email-mrv@mojatatu.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When adding or deleting a batch of entries, the kernel sends up to
-TCA_ACT_MAX_PRIO (defined to 32 in kernel) entries in an event to user
-space. However it does not consider that the action sizes may vary and
-require different skb sizes.
+Add get_fill_size() routine used to calculate the action size
+when building a batch of events.
 
-For example, consider the following script adding 32 entries with all
-supported vlan parameters (in order to maximize netlink messages size):
+Fixes: c7e2b9689 ("sched: introduce vlan action")
+Signed-off-by: Roman Mashak <mrv@mojatatu.com>
+---
+ net/sched/act_vlan.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-% cat tc-batch.sh
-TC="sudo /mnt/iproute2.git/tc/tc"
-
-$TC actions flush action vlan
-for i in `seq 1 $1`;
-do
-   cmd="action vlan push protocol 802.1q id 4094 priority 7 pipe \
-               index $i cookie aabbccddeeff112233445566778800a1 "
-   args=$args$cmd
-done
-$TC actions add $args
-%
-% ./tc-batch.sh 32
-Error: Failed to fill netlink attributes while adding TC action.
-We have an error talking to the kernel
-%
-
-patch 1 adds callback in tc_action_ops of vlan action, which calculates
-the action size, and passes size to tcf_add_notify()/tcf_del_notify().
-
-patch 2 updates the TDC test suite with relevant vlan test cases.
-
-Roman Mashak (2):
-  net sched: update vlan action for batched events operations
-  tc-testing: updated vlan action tests with batch create/delete
-
- net/sched/act_vlan.c                               |  9 +++
- .../tc-testing/tc-tests/actions/vlan.json          | 94 ++++++++++++++++++++++
- 2 files changed, 103 insertions(+)
-
+diff --git a/net/sched/act_vlan.c b/net/sched/act_vlan.c
+index 9269d350fb8a..e0c97267bccb 100644
+--- a/net/sched/act_vlan.c
++++ b/net/sched/act_vlan.c
+@@ -306,6 +306,14 @@ static int tcf_vlan_search(struct net *net, struct tc_action **a, u32 index)
+ 	return tcf_idr_search(tn, a, index);
+ }
+ 
++static size_t tcf_vlan_get_fill_size(const struct tc_action *act)
++{
++	return nla_total_size(sizeof(struct tc_vlan))
++		+ nla_total_size(sizeof(u16)) /* TCA_VLAN_PUSH_VLAN_ID */
++		+ nla_total_size(sizeof(u16)) /* TCA_VLAN_PUSH_VLAN_PROTOCOL */
++		+ nla_total_size(sizeof(u8)); /* TCA_VLAN_PUSH_VLAN_PRIORITY */
++}
++
+ static struct tc_action_ops act_vlan_ops = {
+ 	.kind		=	"vlan",
+ 	.id		=	TCA_ID_VLAN,
+@@ -315,6 +323,7 @@ static struct tc_action_ops act_vlan_ops = {
+ 	.init		=	tcf_vlan_init,
+ 	.cleanup	=	tcf_vlan_cleanup,
+ 	.walk		=	tcf_vlan_walker,
++	.get_fill_size	=	tcf_vlan_get_fill_size,
+ 	.lookup		=	tcf_vlan_search,
+ 	.size		=	sizeof(struct tcf_vlan),
+ };
 -- 
 2.7.4
 
