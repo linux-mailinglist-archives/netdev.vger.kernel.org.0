@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B69AD7FA81
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:34:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35DE17FA9B
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:34:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393930AbfHBNXP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 09:23:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33750 "EHLO mail.kernel.org"
+        id S2391684AbfHBNdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 09:33:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34184 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387657AbfHBNXK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Aug 2019 09:23:10 -0400
+        id S2388875AbfHBNXj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 09:23:39 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D12D221850;
-        Fri,  2 Aug 2019 13:23:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0F79D20644;
+        Fri,  2 Aug 2019 13:23:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564752189;
-        bh=tlJvdogyy518dLLLeZtVXiQXd+oZKbGj4D+2v5SsuC4=;
+        s=default; t=1564752218;
+        bh=ajceEfQ3nTMUXf+1ofcZsI0qRG3vNYfFwmJrC3HXbpw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mwCrmhy3XIqUqOjo3WAPN72cDXuaLjJY4AJd/+qOYxVvLXDdlH8qw1k2EZnws6DgO
-         zMitRT+N3ab7Ih3yrOGWuFyrDXzHTaw+LFqP9cu0Yb/RHafjf20dWnvRDEaPFGReOe
-         8FExksfUM+nRQ75Ne/rYBs0EdqZ45s3ZU6WubJa4=
+        b=Yo9c3kDzyTHUUqfzXKACX3jnPGKA+JJjvTN5vn5Em3TYWgHDWbXV6jxk2tMh0kYem
+         44kC7DcKFToF+PcBEyu5gBSNzeKFihmHoZAwKXRYnhwHkFHEgJPn70zVi9tV/Eti6T
+         hVyEN1ffZtqRT8Jt1U+8ZEwEc5RCwOAZL6cjo1X8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Laura Garcia Liebana <nevola@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 05/42] netfilter: nft_hash: fix symhash with modulus one
-Date:   Fri,  2 Aug 2019 09:22:25 -0400
-Message-Id: <20190802132302.13537-5-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 14/42] mac80211: don't warn about CW params when not using them
+Date:   Fri,  2 Aug 2019 09:22:34 -0400
+Message-Id: <20190802132302.13537-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190802132302.13537-1-sashal@kernel.org>
 References: <20190802132302.13537-1-sashal@kernel.org>
@@ -45,39 +44,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Laura Garcia Liebana <nevola@gmail.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 28b1d6ef53e3303b90ca8924bb78f31fa527cafb ]
+[ Upstream commit d2b3fe42bc629c2d4002f652b3abdfb2e72991c7 ]
 
-The rule below doesn't work as the kernel raises -ERANGE.
+ieee80211_set_wmm_default() normally sets up the initial CW min/max for
+each queue, except that it skips doing this if the driver doesn't
+support ->conf_tx. We still end up calling drv_conf_tx() in some cases
+(e.g., ieee80211_reconfig()), which also still won't do anything
+useful...except it complains here about the invalid CW parameters.
 
-nft add rule netdev nftlb lb01 ip daddr set \
-	symhash mod 1 map { 0 : 192.168.0.10 } fwd to "eth0"
+Let's just skip the WARN if we weren't going to do anything useful with
+the parameters.
 
-This patch allows to use the symhash modulus with one
-element, in the same way that the other types of hashes and
-algorithms that uses the modulus parameter.
-
-Signed-off-by: Laura Garcia Liebana <nevola@gmail.com>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Link: https://lore.kernel.org/r/20190718015712.197499-1-briannorris@chromium.org
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_hash.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/driver-ops.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nft_hash.c b/net/netfilter/nft_hash.c
-index c2d237144f747..b8f23f75aea6c 100644
---- a/net/netfilter/nft_hash.c
-+++ b/net/netfilter/nft_hash.c
-@@ -196,7 +196,7 @@ static int nft_symhash_init(const struct nft_ctx *ctx,
- 	priv->dreg = nft_parse_register(tb[NFTA_HASH_DREG]);
+diff --git a/net/mac80211/driver-ops.c b/net/mac80211/driver-ops.c
+index bb886e7db47f1..f783d1377d9a8 100644
+--- a/net/mac80211/driver-ops.c
++++ b/net/mac80211/driver-ops.c
+@@ -169,11 +169,16 @@ int drv_conf_tx(struct ieee80211_local *local,
+ 	if (!check_sdata_in_driver(sdata))
+ 		return -EIO;
  
- 	priv->modulus = ntohl(nla_get_be32(tb[NFTA_HASH_MODULUS]));
--	if (priv->modulus <= 1)
-+	if (priv->modulus < 1)
- 		return -ERANGE;
+-	if (WARN_ONCE(params->cw_min == 0 ||
+-		      params->cw_min > params->cw_max,
+-		      "%s: invalid CW_min/CW_max: %d/%d\n",
+-		      sdata->name, params->cw_min, params->cw_max))
++	if (params->cw_min == 0 || params->cw_min > params->cw_max) {
++		/*
++		 * If we can't configure hardware anyway, don't warn. We may
++		 * never have initialized the CW parameters.
++		 */
++		WARN_ONCE(local->ops->conf_tx,
++			  "%s: invalid CW_min/CW_max: %d/%d\n",
++			  sdata->name, params->cw_min, params->cw_max);
+ 		return -EINVAL;
++	}
  
- 	if (priv->offset + priv->modulus - 1 < priv->offset)
+ 	trace_drv_conf_tx(local, sdata, ac, params);
+ 	if (local->ops->conf_tx)
 -- 
 2.20.1
 
