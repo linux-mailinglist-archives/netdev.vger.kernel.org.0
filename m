@@ -2,154 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D48080183
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 22:00:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 042928019A
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 22:15:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406912AbfHBUAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 16:00:52 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:55618 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2406906AbfHBUAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 16:00:52 -0400
-Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
-        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x72JuhWD026049;
-        Fri, 2 Aug 2019 13:00:30 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=ZYqvXFmSvT7fqdc8TT0/r8LU0LoJHAQ474KLzncWBKY=;
- b=q/b07CmricWO3tzE/plO8K5kmJfVUkPjBUzNXrRVTcGePodJMzaUdgtEpUermST+ALkm
- 3C5E1aocO5GjY8hx/YWlbaMRSrbTjve1PAKYALOlI5C6KxlyzZCVWIacAI1nskPtkap5
- S/kLa9pvMLidKyclyjDJjn8OVOGE4NFaNdY= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0b-00082601.pphosted.com with ESMTP id 2u4s4q0kxy-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 02 Aug 2019 13:00:29 -0700
-Received: from prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) by
- prn-hub05.TheFacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 2 Aug 2019 13:00:27 -0700
-Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
- prn-mbx03.TheFacebook.com (2620:10d:c081:6::17) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 2 Aug 2019 13:00:25 -0700
-Received: from NAM04-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 2 Aug 2019 13:00:25 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WnWG2hF3ePAa0OHXtLhSvwv9U9METRwFuwjnU0bccBi++k9ZxrDoX2bU/opU9F18j7aQlBOliZf7EHbe2K4Z2mkUCF8JLKxXD0nsVykk9ZaS6yEl7YD++GZEJFJ1wBH7GIz9dsmmD7cgWOHo52SOiwl0blKqVdBURKncO3TEv49QosgDYImQYjAZUTwrpp234Oy/V94gcgyGHYgYA8meLBb2d07nmnq4yGnTDss/DOcAHESFg8BvwOv4JyTUrwqRj1S/I7QfSFNSDQ8l0wSXqKeT7wP1nIrAWeLwB4SnX6cRT3r5oGkcEBdfd76u9wuIvOoCe7OEC6SwYil967yZew==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZYqvXFmSvT7fqdc8TT0/r8LU0LoJHAQ474KLzncWBKY=;
- b=cP7MUZ2athQcYa64c/X9KT+E75legA/kl+4npN1NfWRS4s3e1tubxj+eSXMhgMX59Ln0LOv3zfAzV7ghNBN0qNM5U2DsrTWwajlSeiM0zG/oSu9YgTMQ6Nw02j7dT5IzerCtIgwx49RllzwowftVOGxkRn03N5Yu+07RJamgaAEbKwhoVJB31OkKwisnVJyqBR70LEvArCQ1ixO5sAvrUA0AQpp401bvHK7bWzOLB165jr/GLJUNV7rbVeUsOl/vAnPnAsYSQy+9D+93sOClFLm+sgbTjicOrrQx7LaaMxsLzrfSS5NJYBau1JLuPwON+4pK6sEpylnnVpsT1uvtgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=fb.com;dmarc=pass action=none header.from=fb.com;dkim=pass
- header.d=fb.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZYqvXFmSvT7fqdc8TT0/r8LU0LoJHAQ474KLzncWBKY=;
- b=QaQ6LaXmXdCCQnnTY0zNETOgyGR6cYZkGwAGSNsC6oREV2VBdzaWKO+KO9NjiubRzb3vpnxwWW+Fzo4p55IHlzQEPCLbGNxPvEkRxiMaDSKovlph9Zj7AiSod99J6MbitbSLGNFr3mRrZE/gSIz9MVGaS5Zjw/Uv1bBzgFNFoxY=
-Received: from CY4PR15MB1479.namprd15.prod.outlook.com (10.172.162.17) by
- CY4PR15MB1864.namprd15.prod.outlook.com (10.174.52.7) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2136.14; Fri, 2 Aug 2019 20:00:24 +0000
-Received: from CY4PR15MB1479.namprd15.prod.outlook.com
- ([fe80::79a3:6a7a:1014:a5e4]) by CY4PR15MB1479.namprd15.prod.outlook.com
- ([fe80::79a3:6a7a:1014:a5e4%8]) with mapi id 15.20.2115.005; Fri, 2 Aug 2019
- 20:00:24 +0000
-From:   Andrii Nakryiko <andriin@fb.com>
-To:     Stanislav Fomichev <sdf@google.com>,
+        id S2436916AbfHBUO7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 16:14:59 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:38808 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728855AbfHBUO7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 16:14:59 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y15so36576215pfn.5
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 13:14:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8asC5SEAKaO4rqGsDPXwB1SzVOEpBMaA/Axf+YRqxZs=;
+        b=Kcg0EqL9oNB89edaEMgtAVxTEpxwwUt+wKl13BqOm9X2hZR3UIPvrWv2KvP73RmTdQ
+         vWib6e17fnx9/FTKVlDBqRsMcX/JfP+cxV/5i3eoowah9ELNOO0rNmIr4VVuB/o8DMCQ
+         mAcTa0sHIlEVzB6ONAiOSTDLamRCYaqiuSO/GojbW0GgmBlbAQb3XzjTUfJTaz5OsXep
+         R5PDHTHc3t/BCqh5xUdwqw1rO9L7ah/TBo362JC4F6I8v9wjuPVuh4Jd/H/64kPF6U98
+         7MdQm59H6pCO1BXzVxMogdLKBVxBMjDBsYe1gojCfEnJOb0F6CyM8o1jqw2Cx63FvYzt
+         muFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8asC5SEAKaO4rqGsDPXwB1SzVOEpBMaA/Axf+YRqxZs=;
+        b=G6Fgvf1EVUXE0FzCGt7TKwMnFaQHPDTiz0mRtZmqFJZjBACa6ouh4KVzJiMnNDEe8t
+         mwCbE2/MvzUpY0eHhX3luXlHxN6UakKeScpuNO8dGEHYeqQUSyNmqLLHWmdaaIRl8xTI
+         c8EaMwmk5TvkKt5APldkScTkTpyq8woiF/05al+l5YYQZNIbPMqNUF0acBO6ECM7ttJ2
+         IZsq2RcdaWKaL/131RH4ZuzRT3TD1fakf9k2lr9zwtBHnCGayfabmb8Cegq7SRnLIaGU
+         fXT/d8I149m97i0/lnlZSTWk36e6Wcw4pfcedMrg/7Qox6xTNgyPpM/kuGun/CnNCXow
+         JvyQ==
+X-Gm-Message-State: APjAAAVUt1QY86ZEsQ4c066palLok9MCw0tCSsLeWLpB6g+cu5tw3edx
+        6vNc+M6XbtoM7DTfOemT6gwzTQ==
+X-Google-Smtp-Source: APXvYqwy6T7WqXPK0Q9ZQ0ISg/BdlTJa2K+yQq3yyES7sqFBS0jcV7hce/ZxUJFZv4YLOVH0jKkqVg==
+X-Received: by 2002:a17:90a:d814:: with SMTP id a20mr5979318pjv.48.1564776898223;
+        Fri, 02 Aug 2019 13:14:58 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id c8sm3659473pjq.2.2019.08.02.13.14.57
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 13:14:57 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 13:14:56 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
         "ast@kernel.org" <ast@kernel.org>,
         "daniel@iogearbox.net" <daniel@iogearbox.net>,
         "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>
-Subject: Re: [PATCH bpf-next 0/3] selftests/bpf: switch test_progs back to
- stdio
-Thread-Topic: [PATCH bpf-next 0/3] selftests/bpf: switch test_progs back to
- stdio
-Thread-Index: AQHVSVYqECHuQeWTKE66u6+ERAQl4KboRyeA
-Date:   Fri, 2 Aug 2019 20:00:24 +0000
-Message-ID: <c79d3a8c-4986-a321-7b68-5273be7c2be7@fb.com>
+Subject: Re: [PATCH bpf-next 1/3] selftests/bpf: test_progs: switch to
+ open_memstream
+Message-ID: <20190802201456.GB4544@mini-arch>
 References: <20190802171710.11456-1-sdf@google.com>
-In-Reply-To: <20190802171710.11456-1-sdf@google.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR08CA0047.namprd08.prod.outlook.com
- (2603:10b6:300:c0::21) To CY4PR15MB1479.namprd15.prod.outlook.com
- (2603:10b6:903:100::17)
-user-agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::e445]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 0550fac3-379d-4e5d-2a4a-08d717840e7f
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:CY4PR15MB1864;
-x-ms-traffictypediagnostic: CY4PR15MB1864:
-x-microsoft-antispam-prvs: <CY4PR15MB186424DAC59317EADF678C3EC6D90@CY4PR15MB1864.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 011787B9DD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(366004)(396003)(346002)(39860400002)(189003)(199004)(54094003)(65956001)(6486002)(64126003)(64756008)(6246003)(65806001)(46003)(229853002)(110136005)(58126008)(6436002)(54906003)(316002)(8676002)(71190400001)(71200400001)(186003)(31686004)(81156014)(8936002)(53936002)(486006)(81166006)(7736002)(305945005)(99286004)(256004)(102836004)(5660300002)(86362001)(4326008)(476003)(2616005)(14444005)(6116002)(11346002)(6512007)(52116002)(446003)(14454004)(2906002)(76176011)(2501003)(478600001)(53546011)(36756003)(386003)(6506007)(25786009)(2201001)(66476007)(31696002)(66946007)(68736007)(65826007)(66446008)(66556008);DIR:OUT;SFP:1102;SCL:1;SRVR:CY4PR15MB1864;H:CY4PR15MB1479.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: MCgqgYQDACOgzMI713nuDS7RDrschgCBIQF/QWUo75GUJ8JK25TCOi2pTQIBKB3ZGfWqxBELedYItmb5lPvHLQF+SudmG2g5l3j8tbgZrok0vt1K4SZY13yYAFmCWvNZPKbY5UdbZr9f06lWXAYfeTBXq/IMw5gyf0772P3J8ZDAb/U6rqHDrJoV+jGIuMypDTs4VRRlJ28ZZI7x+sBMyp0UTWuvoCFmGzhzwXIldvOsVWi7+iCw3IUaHmcZw/INLGMVKftAsdxyqyvnMqQjVsO2gi4Hqkeq2dqcycRioN9R/5ZKrFF3p7YbVxETHETQi18x5th0boxd/bdXIiVGMF7O+g023BJL7wWzaUi1Fk0alurDPYLRawJQeatiJZQ4G/2u0Su+gLwSya02GcEQCjJsh2ZHJ5xovOzhz4jz2ZQ=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <15F333B81E5FFA4F806EA6F59D0596BB@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ <20190802171710.11456-2-sdf@google.com>
+ <80957794-de90-b09b-89ef-6094d6357d9e@fb.com>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0550fac3-379d-4e5d-2a4a-08d717840e7f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2019 20:00:24.3870
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: andriin@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR15MB1864
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-02_08:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908020211
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <80957794-de90-b09b-89ef-6094d6357d9e@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiA4LzIvMTkgMTA6MTcgQU0sIFN0YW5pc2xhdiBGb21pY2hldiB3cm90ZToNCj4gSSB3YXMg
-bG9va2luZyBpbnRvIGNvbnZlcnRpbmcgdGVzdF9zb2Nrb3BzKiB0byB0ZXN0X3Byb2dzIGZyYW1l
-d29yaw0KPiBhbmQgdGhhdCByZXF1aXJlcyB1c2luZyBjZ3JvdXBfaGVscGVycy5jIHdoaWNoIHJl
-bHkgb24gc3RkaW8vc3RkZXJyLg0KPiBMZXQncyB1c2Ugb3Blbl9tZW1zdHJlYW0gdG8gb3ZlcnJp
-ZGUgc3Rkb3V0IGludG8gYnVmZmVyIGR1cmluZw0KPiBzdWJ0ZXN0cyBpbnN0ZWFkIG9mIGN1c3Rv
-bSB0ZXN0X3t2LH1wcmludGYgd3JhcHBlcnMuIFRoYXQgbGV0cw0KPiB1cyBjb250aW51ZSB0byB1
-c2Ugc3RkaW8gaW4gdGhlIHN1YnRlc3RzIGFuZCBkdW1wIGl0IG9uIGZhaWx1cmUNCj4gaWYgcmVx
-dWlyZWQuDQo+DQo+IFRoYXQgd291bGQgYWxzbyBmaXggYnBmX2ZpbmRfbWFwIHdoaWNoIGN1cnJl
-bnRseSB1c2VzIHByaW50ZiB0bw0KPiBzaWduYWwgZmFpbHVyZSAobWlzc2VkIGR1cmluZyB0ZXN0
-X3ByaW50ZiBjb252ZXJzaW9uKS4NCkkgd29uZGVyIGlmIHdlIHNob3VsZCBoaWphY2sgc3RkZXJy
-IGFzIHdlbGw/DQo+DQo+IENjOiBBbmRyaWkgTmFrcnlpa28gPGFuZHJpaW5AZmIuY29tPg0KPg0K
-PiBTdGFuaXNsYXYgRm9taWNoZXYgKDMpOg0KPiAgIHNlbGZ0ZXN0cy9icGY6IHRlc3RfcHJvZ3M6
-IHN3aXRjaCB0byBvcGVuX21lbXN0cmVhbQ0KPiAgIHNlbGZ0ZXN0cy9icGY6IHRlc3RfcHJvZ3M6
-IHRlc3RfX3ByaW50ZiAtPiBwcmludGYNCj4gICBzZWxmdGVzdHMvYnBmOiB0ZXN0X3Byb2dzOiBk
-cm9wIGV4dHJhIHRyYWlsaW5nIHRhYg0KPg0KPiAgLi4uL2JwZi9wcm9nX3Rlc3RzL2JwZl92ZXJp
-Zl9zY2FsZS5jICAgICAgICAgIHwgICA0ICstDQo+ICAuLi4vc2VsZnRlc3RzL2JwZi9wcm9nX3Rl
-c3RzL2w0bGJfYWxsLmMgICAgICAgfCAgIDIgKy0NCj4gIC4uLi9zZWxmdGVzdHMvYnBmL3Byb2df
-dGVzdHMvbWFwX2xvY2suYyAgICAgICB8ICAxMCArLQ0KPiAgLi4uL3NlbGZ0ZXN0cy9icGYvcHJv
-Z190ZXN0cy9zZW5kX3NpZ25hbC5jICAgIHwgICA0ICstDQo+ICAuLi4vc2VsZnRlc3RzL2JwZi9w
-cm9nX3Rlc3RzL3NwaW5sb2NrLmMgICAgICAgfCAgIDIgKy0NCj4gIC4uLi9icGYvcHJvZ190ZXN0
-cy9zdGFja3RyYWNlX2J1aWxkX2lkLmMgICAgICB8ICAgNCArLQ0KPiAgLi4uL2JwZi9wcm9nX3Rl
-c3RzL3N0YWNrdHJhY2VfYnVpbGRfaWRfbm1pLmMgIHwgICA0ICstDQo+ICAuLi4vc2VsZnRlc3Rz
-L2JwZi9wcm9nX3Rlc3RzL3hkcF9ub2lubGluZS5jICAgfCAgIDQgKy0NCj4gIHRvb2xzL3Rlc3Rp
-bmcvc2VsZnRlc3RzL2JwZi90ZXN0X3Byb2dzLmMgICAgICB8IDExNiArKysrKysrLS0tLS0tLS0t
-LS0NCj4gIHRvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi90ZXN0X3Byb2dzLmggICAgICB8ICAx
-MiArLQ0KPiAgMTAgZmlsZXMgY2hhbmdlZCwgNjggaW5zZXJ0aW9ucygrKSwgOTQgZGVsZXRpb25z
-KC0pDQo+DQo=
+On 08/02, Andrii Nakryiko wrote:
+> On 8/2/19 10:17 AM, Stanislav Fomichev wrote:
+> > Use open_memstream to override stdout during test execution.
+> > The copy of the original stdout is held in env.stdout and used
+> > to print subtest info and dump failed log.
+> 
+> I really like the idea. I didn't know about open_memstream, it's awesome. Thanks!
+One possible downside of using open_memstream is that it's glibc
+specific. I probably need to wrap it in #ifdef __GLIBC__ to make
+it work with other libcs and just print everything as it was before :-(.
+I'm not sure we care though.
+
+> > test_{v,}printf are now simple wrappers around stdout and will be
+> > removed in the next patch.
+> >
+> > Cc: Andrii Nakryiko <andriin@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  tools/testing/selftests/bpf/test_progs.c | 100 ++++++++++-------------
+> >  tools/testing/selftests/bpf/test_progs.h |   2 +-
+> >  2 files changed, 46 insertions(+), 56 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> > index db00196c8315..00d1565d01a3 100644
+> > --- a/tools/testing/selftests/bpf/test_progs.c
+> > +++ b/tools/testing/selftests/bpf/test_progs.c
+> > @@ -40,14 +40,22 @@ static bool should_run(struct test_selector *sel, int num, const char *name)
+> >  
+> >  static void dump_test_log(const struct prog_test_def *test, bool failed)
+> >  {
+> > -	if (env.verbose || test->force_log || failed) {
+> > -		if (env.log_cnt) {
+> > -			fprintf(stdout, "%s", env.log_buf);
+> > -			if (env.log_buf[env.log_cnt - 1] != '\n')
+> > -				fprintf(stdout, "\n");
+> > +	if (stdout == env.stdout)
+> > +		return;
+> > +
+> > +	fflush(stdout); /* exports env.log_buf & env.log_cap */
+> > +
+> > +	if (env.log_cap && (env.verbose || test->force_log || failed)) {
+> > +		int len = strlen(env.log_buf);
+> 
+> env.log_cap is not really a capacity, it's actual number of bytes (without terminating zero), so there is no need to do strlen and it's probably better to rename env.log_cap into env.log_cnt.
+I'll rename it to log_size to match open_memstream args.
+We probably still need to do strlen because open_memstream can allocate
+bigger buffer to hold the data.
+
+> > +
+> > +		if (len) {
+> > +			fprintf(env.stdout, "%s", env.log_buf);
+> > +			if (env.log_buf[len - 1] != '\n')
+> > +				fprintf(env.stdout, "\n");
+> > +
+> > +			fseeko(stdout, 0, SEEK_SET);
+> Same bug as I already fixed with env.log_cnt = 0 being inside this if. You want to do seek always, not just when you print output log.
+SG, will move to where we currently clear log_cnt, thanks!
+
+> >  /* rewind */
+> >  		}
+> >  	}
+> > -	env.log_cnt = 0;
+> >  }
+> >  
+> >  void test__end_subtest()
+> > @@ -62,7 +70,7 @@ void test__end_subtest()
+> >  
+> >  	dump_test_log(test, sub_error_cnt);
+> >  
+> > -	printf("#%d/%d %s:%s\n",
+> > +	fprintf(env.stdout, "#%d/%d %s:%s\n",
+> >  	       test->test_num, test->subtest_num,
+> >  	       test->subtest_name, sub_error_cnt ? "FAIL" : "OK");
+> >  }
+> > @@ -100,53 +108,7 @@ void test__force_log() {
+> >  
+> >  void test__vprintf(const char *fmt, va_list args)
+> >  {
+> > -	size_t rem_sz;
+> > -	int ret = 0;
+> > -
+> > -	if (env.verbose || (env.test && env.test->force_log)) {
+> > -		vfprintf(stderr, fmt, args);
+> > -		return;
+> > -	}
+> > -
+> > -try_again:
+> > -	rem_sz = env.log_cap - env.log_cnt;
+> > -	if (rem_sz) {
+> > -		va_list ap;
+> > -
+> > -		va_copy(ap, args);
+> > -		/* we reserved extra byte for \0 at the end */
+> > -		ret = vsnprintf(env.log_buf + env.log_cnt, rem_sz + 1, fmt, ap);
+> > -		va_end(ap);
+> > -
+> > -		if (ret < 0) {
+> > -			env.log_buf[env.log_cnt] = '\0';
+> > -			fprintf(stderr, "failed to log w/ fmt '%s'\n", fmt);
+> > -			return;
+> > -		}
+> > -	}
+> > -
+> > -	if (!rem_sz || ret > rem_sz) {
+> > -		size_t new_sz = env.log_cap * 3 / 2;
+> > -		char *new_buf;
+> > -
+> > -		if (new_sz < 4096)
+> > -			new_sz = 4096;
+> > -		if (new_sz < ret + env.log_cnt)
+> > -			new_sz = ret + env.log_cnt;
+> > -
+> > -		/* +1 for guaranteed space for terminating \0 */
+> > -		new_buf = realloc(env.log_buf, new_sz + 1);
+> > -		if (!new_buf) {
+> > -			fprintf(stderr, "failed to realloc log buffer: %d\n",
+> > -				errno);
+> > -			return;
+> > -		}
+> > -		env.log_buf = new_buf;
+> > -		env.log_cap = new_sz;
+> > -		goto try_again;
+> > -	}
+> > -
+> > -	env.log_cnt += ret;
+> > +	vprintf(fmt, args);
+> >  }
+> >  
+> >  void test__printf(const char *fmt, ...)
+> > @@ -477,6 +439,32 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+> >  	return 0;
+> >  }
+> >  
+> > +static void stdout_hijack(void)
+> > +{
+> > +	if (env.verbose || (env.test && env.test->force_log)) {
+> > +		/* nothing to do, output to stdout by default */
+> > +		return;
+> > +	}
+> > +
+> > +	/* stdout -> buffer */
+> > +	fflush(stdout);
+> > +	stdout = open_memstream(&env.log_buf, &env.log_cap);
+> Check errors and restore original stdout if something went wrong? (And emit some warning to stderr).
+Good point, will do.
+
+> > +}
+> > +
+> > +static void stdout_restore(void)
+> > +{
+> > +	if (stdout == env.stdout)
+> > +		return;
+> > +
+> > +	fclose(stdout);
+> > +	free(env.log_buf);
+> > +
+> > +	env.log_buf = NULL;
+> > +	env.log_cap = 0;
+> > +
+> > +	stdout = env.stdout;
+> > +}
+> > +
+> >  int main(int argc, char **argv)
+> >  {
+> >  	static const struct argp argp = {
+> > @@ -495,6 +483,7 @@ int main(int argc, char **argv)
+> >  	srand(time(NULL));
+> >  
+> >  	env.jit_enabled = is_jit_enabled();
+> > +	env.stdout = stdout;
+> >  
+> >  	for (i = 0; i < prog_test_cnt; i++) {
+> >  		struct prog_test_def *test = &prog_test_defs[i];
+> > @@ -508,6 +497,7 @@ int main(int argc, char **argv)
+> >  				test->test_num, test->test_name))
+> >  			continue;
+> >  
+> > +		stdout_hijack();
+> Why do you do this for every test? Just do once before all the tests and restore after?
+We can do that, my thinking was to limit the area of hijacking :-)
+But that would work as well, less allocations per test, I guess. Will
+do.
+
+> >  		test->run_test();
+> >  		/* ensure last sub-test is finalized properly */
+> >  		if (test->subtest_name)
+> > @@ -522,6 +512,7 @@ int main(int argc, char **argv)
+> >  			env.succ_cnt++;
+> >  
+> >  		dump_test_log(test, test->error_cnt);
+> > +		stdout_restore();
+> >  
+> >  		printf("#%d %s:%s\n", test->test_num, test->test_name,
+> >  		       test->error_cnt ? "FAIL" : "OK");
+> > @@ -529,7 +520,6 @@ int main(int argc, char **argv)
+> >  	printf("Summary: %d/%d PASSED, %d FAILED\n",
+> >  	       env.succ_cnt, env.sub_succ_cnt, env.fail_cnt);
+> >  
+> > -	free(env.log_buf);
+> >  	free(env.test_selector.num_set);
+> >  	free(env.subtest_selector.num_set);
+> >  
+> > diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
+> > index afd14962456f..9fd89078494f 100644
+> > --- a/tools/testing/selftests/bpf/test_progs.h
+> > +++ b/tools/testing/selftests/bpf/test_progs.h
+> > @@ -56,8 +56,8 @@ struct test_env {
+> >  	bool jit_enabled;
+> >  
+> >  	struct prog_test_def *test;
+> > +	FILE *stdout;
+> >  	char *log_buf;
+> > -	size_t log_cnt;
+> >  	size_t log_cap;
+> So it's actually log_cnt that's assigned on fflush for memstream, according to man page, so probably keep log_cnt, delete log_cap.
+Ack. See above, will rename to log_size, let me know if you disagree.
+
+> >  	int succ_cnt; /* successful tests */
