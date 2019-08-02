@@ -2,112 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 244057FF44
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 19:07:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19C1A7FF48
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 19:09:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404288AbfHBRH0 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 2 Aug 2019 13:07:26 -0400
-Received: from mga07.intel.com ([134.134.136.100]:47035 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2403807AbfHBRH0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Aug 2019 13:07:26 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 02 Aug 2019 10:07:25 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,338,1559545200"; 
-   d="scan'208";a="201720256"
-Received: from orsmsx108.amr.corp.intel.com ([10.22.240.6])
-  by fmsmga002.fm.intel.com with ESMTP; 02 Aug 2019 10:07:25 -0700
-Received: from orsmsx126.amr.corp.intel.com (10.22.240.126) by
- ORSMSX108.amr.corp.intel.com (10.22.240.6) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 2 Aug 2019 10:07:25 -0700
-Received: from orsmsx122.amr.corp.intel.com ([169.254.11.68]) by
- ORSMSX126.amr.corp.intel.com ([169.254.4.77]) with mapi id 14.03.0439.000;
- Fri, 2 Aug 2019 10:07:24 -0700
-From:   "Allan, Bruce W" <bruce.w.allan@intel.com>
-To:     Colin King <colin.king@canonical.com>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [Intel-wired-lan] [PATCH][net-next] ice: fix potential infinite
- loop
-Thread-Topic: [Intel-wired-lan] [PATCH][net-next] ice: fix potential
- infinite loop
-Thread-Index: AQHVSUpMQyMMSydwckqiAxGJUhtvkKboBjCA
-Date:   Fri, 2 Aug 2019 17:07:24 +0000
-Message-ID: <804857E1F29AAC47BF68C404FC60A18401096DB0DF@ORSMSX122.amr.corp.intel.com>
-References: <20190802155217.16996-1-colin.king@canonical.com>
-In-Reply-To: <20190802155217.16996-1-colin.king@canonical.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiODEwYjE0OTYtMjlkZS00MDlmLTk2YTMtMWU0Y2QxOTc5ZDhhIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiM1lmQzhFaHFodmkwbXoxUWhFRk95ZE5EV1NBd3pkRlZDV1RuYVZoMzZnNFFvZ0RxMjFnTmNwTDdcLysrOHZRcVUifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.2.0.6
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.140]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S2404060AbfHBRJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 13:09:11 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:41057 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732476AbfHBRJL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 13:09:11 -0400
+Received: by mail-qk1-f195.google.com with SMTP id t187so2655540qke.8
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 10:09:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=oS3nEVoGihvyyr8f8rFtFSJ7zKhMaXgQLLAhY5gWvVw=;
+        b=oJFfDCoP8yCha1YrlfhCcisDdbS9C1J2UWBMamdQZcF06BgVezQM18Tr0b2sfrhWT4
+         8Q0u8uqRs8kxb+iq7KZSfkHxXDjBFUeBRuJN1mqD4oEhMjF8WxIA1cVBnin8O3V5PHfM
+         OrwWgUjp3JD+Lfb0TJVEZ/h1xjLyWPdPeEwlKznlchAgCbzdzjudH1xpqgAUIrdnSyC5
+         lC8aYwDLY0UKHDLeggwcq64s4SKJ6/imXvvb3NhHBipPzXokccxMm8zNWKu4VjYRF2Ed
+         arhXZ77yC8g5gVLfKM+N+JOxQkoVInzb9SFhVmSel02pqrgsAwBeT/bpCSQCGFZq+yRT
+         TVBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=oS3nEVoGihvyyr8f8rFtFSJ7zKhMaXgQLLAhY5gWvVw=;
+        b=RYEVc/TV7pGlq7z3DE1hn4W7YmlaAzTN2fd1t0RhPsXM+D0HU1jjKiq2FX4vDXbOk4
+         ys3d4rzwfMIOBkIub9Z7A7/pZoFqJ5Byqj1C2lpBO7TWtdULTwirL35nAZPX9Ig/zDMD
+         02OCwIeKQ2gpbZ8Zv7h6tiYZeuA4zv84OkpP8QDPKZTWmvKYHsNGFwOlEVJyrOnXE4B2
+         fen8m9bte4V9GlNqo9Ihxavqhb70NBBJChBWWHNHNxYbzNz9GYm2NwxzriEdHUTyg3/a
+         jYI4V8zex3zPFFX4W2u1/h5wkmHiUmoJyBiukdGVB4G5kP6MHJl8IER75+hZh/ST+x8Q
+         dctg==
+X-Gm-Message-State: APjAAAU7yXGfID8nubKkIdlzmzDDgZG4p+RcwOn2rwHdjVemdyh1124w
+        fI5lPvnVzQ4UkXlxytYbYDfctw==
+X-Google-Smtp-Source: APXvYqx7BuW3qQp7HAMkWBCHi4FN0r+FDfhPHSa3kfbiKqT+FqEI3D+85aVB31w9yxwaynZOVLbDcQ==
+X-Received: by 2002:a05:620a:15d7:: with SMTP id o23mr90666304qkm.125.1564765750425;
+        Fri, 02 Aug 2019 10:09:10 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o33sm36073771qtd.72.2019.08.02.10.09.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 10:09:10 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 10:08:51 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        xdp-newbies@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        brandon.cazander@multapplied.net,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Subject: Re: [net v1 PATCH 4/4] net: fix bpf_xdp_adjust_head regression for
+ generic-XDP
+Message-ID: <20190802100851.62d67139@cakuba.netronome.com>
+In-Reply-To: <20190802095350.7242399b@carbon>
+References: <156468229108.27559.2443904494495785131.stgit@firesoul>
+        <156468243184.27559.7002090473019021952.stgit@firesoul>
+        <20190801174406.0b554bb9@cakuba.netronome.com>
+        <20190802095350.7242399b@carbon>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On Behalf
-> Of Colin King
-> Sent: Friday, August 02, 2019 8:52 AM
-> To: Kirsher, Jeffrey T <jeffrey.t.kirsher@intel.com>; David S . Miller
-> <davem@davemloft.net>; intel-wired-lan@lists.osuosl.org;
-> netdev@vger.kernel.org
-> Cc: kernel-janitors@vger.kernel.org; linux-kernel@vger.kernel.org
-> Subject: [Intel-wired-lan] [PATCH][net-next] ice: fix potential infinite loop
+On Fri, 2 Aug 2019 09:53:54 +0200, Jesper Dangaard Brouer wrote:
+> On Thu, 1 Aug 2019 17:44:06 -0700
+> Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 > 
-> From: Colin Ian King <colin.king@canonical.com>
+> > On Thu, 01 Aug 2019 20:00:31 +0200, Jesper Dangaard Brouer wrote:  
+> > > When generic-XDP was moved to a later processing step by commit
+> > > 458bf2f224f0 ("net: core: support XDP generic on stacked devices.")
+> > > a regression was introduced when using bpf_xdp_adjust_head.
+> > > 
+> > > The issue is that after this commit the skb->network_header is now
+> > > changed prior to calling generic XDP and not after. Thus, if the header
+> > > is changed by XDP (via bpf_xdp_adjust_head), then skb->network_header
+> > > also need to be updated again.  Fix by calling skb_reset_network_header().
+> > > 
+> > > Fixes: 458bf2f224f0 ("net: core: support XDP generic on stacked devices.")
+> > > Reported-by: Brandon Cazander <brandon.cazander@multapplied.net>
+> > > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>    
+> > 
+> > Out of curiosity what was your conclusion regarding resetting the
+> > transport header as well?  
 > 
-> The loop counter of a for-loop is a u8 however this is being compared
-> to an int upper bound and this can lead to an infinite loop if the
-> upper bound is greater than 255 since the loop counter will wrap back
-> to zero. Fix this potential issue by making the loop counter an int.
+> Well, I don't know... I need some review, from e.g. Stephen that
+> changed this... I've added code snippets below signature to helper
+> reviewers (also helps understand below paragraph).
 > 
-> Addresses-Coverity: ("Infinite loop")
+> I think, we perhaps should call skb_reset_transport_header(), as we
+> change skb->data (via either __skb_pull() or __skb_push()), *BUT* I'm
+> not sure it is needed/required, as someone/something afterwards still
+> need to call skb_set_transport_header(), which also calls
+> skb_reset_transport_header() anyway.
 
-Actually, num_alloc_vfs should probably be a u16 instead of an int since num_alloc_vfs cannot exceed 256.
+Perhaps you've seen this, but just in case - this is the last commit
+that touched the transport header setting in __netif_receive_skb(), 
+and it sounds like it matters mostly for qdisc accounting?
 
-Which Coverity scan reported this and what options are used in the analysis?
+commit fda55eca5a33f33ffcd4192c6b2d75179714a52c
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Mon Jan 7 09:28:21 2013 +0000
 
-> Fixes: c7aeb4d1b9bf ("ice: Disable VFs until reset is completed")
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  drivers/net/ethernet/intel/ice/ice_main.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ice/ice_main.c
-> b/drivers/net/ethernet/intel/ice/ice_main.c
-> index c26e6a102dac..088543d50095 100644
-> --- a/drivers/net/ethernet/intel/ice/ice_main.c
-> +++ b/drivers/net/ethernet/intel/ice/ice_main.c
-> @@ -488,7 +488,7 @@ static void
->  ice_prepare_for_reset(struct ice_pf *pf)
->  {
->  	struct ice_hw *hw = &pf->hw;
-> -	u8 i;
-> +	int i;
-> 
->  	/* already prepared for reset */
->  	if (test_bit(__ICE_PREPARED_FOR_RESET, pf->state))
-> --
-> 2.20.1
-> 
-> _______________________________________________
-> Intel-wired-lan mailing list
-> Intel-wired-lan@osuosl.org
-> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
+    net: introduce skb_transport_header_was_set()
+    
+    We have skb_mac_header_was_set() helper to tell if mac_header
+    was set on a skb. We would like the same for transport_header.
+    
+    __netif_receive_skb() doesn't reset the transport header if already
+    set by GRO layer.
+    
+    Note that network stacks usually reset the transport header anyway,
+    after pulling the network header, so this change only allows
+    a followup patch to have more precise qdisc pkt_len computation
+    for GSO packets at ingress side.
+    
+    Signed-off-by: Eric Dumazet <edumazet@google.com>
+    Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
