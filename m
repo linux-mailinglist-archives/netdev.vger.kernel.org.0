@@ -2,55 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58EC47EE48
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 10:05:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C28447EE49
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 10:05:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403808AbfHBIFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 04:05:39 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:44163 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728272AbfHBIFj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 04:05:39 -0400
-Received: by mail-pf1-f195.google.com with SMTP id t16so35590991pfe.11;
-        Fri, 02 Aug 2019 01:05:38 -0700 (PDT)
+        id S2403835AbfHBIFq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 04:05:46 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:37408 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403825AbfHBIFp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 04:05:45 -0400
+Received: by mail-pg1-f196.google.com with SMTP id d1so2856325pgp.4;
+        Fri, 02 Aug 2019 01:05:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=U/7XoqSbD9Dh68AovFvHr1hJrd/DYYI+CgMoNNTSf9w=;
-        b=E4HDzTBYcVRY+uhx0pJGuE5aYV4TLgaLTxLql7D5D9pYtLSQBW+894bZEXO3kenuDd
-         RA4H8ot7DsojEfJIjWqe0kgoiDsd0kVhFj0/pcs0ppwzHabW4AN+x4ieL4kcgAktVThi
-         KQRalNusev7QfVMH0lkvzVWUkEmT1sddu4D+DMUl5ew5rgx1wWuQ5sRnWwST2ZPzYi8/
-         V3OD7u9IuqJ+D/cGKxX2dnIBhhLzKh5/Q+UnccdHWvEKqgjmUZDTIUPefuqfBV2J2ROW
-         VOWVBTwLzwX/eSBxrwuaQe1xGmV7svRYUrQ42V5lI1CzFc85nNShL6Tswk3io7/mE+xz
-         bAxQ==
+        bh=HPa+ZG+Ucx3JNtlF4cB30guHK57ItTJmrqfJq8VvLG0=;
+        b=m+qk+DeVFuYlLnI3EvDzEHtbtpugcKJkgnVgGVsmn/kUmQUQq37uTno78epH130f8a
+         LFGuCLdWYXNtqOl9sQ2iDXkexf5qBuV0LoPD37y3GNFw75t0OD7LReEaZdKuv9zYcDGL
+         Nmngo7XnD5YZKTldX9QYuZ/rGdRMjTE57Z9RJUFLjrDWuLtujEhLsX05cHpZC0vO0Yc7
+         WyTrDMjrvXoR7L/7M0VcAWZ7qVA5SUSL+LlyWX7dG91f3xzbyvGgrNpSB+7jmynRvKlu
+         lik3r49C9FFFNe0880NXOYnUN+WzIM1feLyBE1cvo7pT7blwGeFcWKtvfWcuYPRRD6Vg
+         JIIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=U/7XoqSbD9Dh68AovFvHr1hJrd/DYYI+CgMoNNTSf9w=;
-        b=tIDwRZaHBxZbywP/kpVIiN2OVO2Lcc0orao1jbJKAMmrgfdoFgVu1W23pHzDDy0EGp
-         CdzDZnDY2OGK2SYLjrKhWe2gjmjN3EunhhBwQ7EoYOIaLUjD4C1qejlgR5MIUvjW2Q0g
-         x80heLvVrRvY/FKLv9lTsocxBawaMaQoYql4Z6GD7x/VxrkyYKWbWyb5pHgq0YxufkJ4
-         FGZlVxnprktTPZkhdnXBANzyv+uZF2sc+cmLC1ZIg6wShlf8GKSP2s9VrxjQ4JkElLCB
-         ubezGvlh+sfTStfwi59CN+HVE0EN9lMiq2gN9vVed2dVS/k1vXpry+lhixXT7deLgXux
-         RyJQ==
-X-Gm-Message-State: APjAAAU9dR2VfnBYf/T+kOf9/msdurcQtEHGxzLJbfccpm3Upzq3Apes
-        R+f8iQzOg21K6hCbO3tJa5A=
-X-Google-Smtp-Source: APXvYqxbIaCCRdoCWFGtSRh5dk57uTj494w6QLCHTlcVOSHX1DgbUZZGszohaHCfaR0bHuNA2FI0WQ==
-X-Received: by 2002:a65:5584:: with SMTP id j4mr92405426pgs.258.1564733138457;
-        Fri, 02 Aug 2019 01:05:38 -0700 (PDT)
+        bh=HPa+ZG+Ucx3JNtlF4cB30guHK57ItTJmrqfJq8VvLG0=;
+        b=lmp9WJ3bDENtprkb/h6OWsyLPuVzrql62F1HFFLFe7QWrecbG2XnWmvavO3e2SRvXQ
+         X9C1BQfrke+W+aIH6Y1G4WjwqN3EhJ7Vt5oeUUTKlC4G7JoW6cHE88vyHsUHmn1HMNrC
+         4BAec31zkfATzrX7M3kSeXhd5M2ZMda8QTPjMdRW7UTgWnEWyvX0xTnQZSDBEWxdW/VR
+         wAFReBQh3hVB4GXObGJS84aMuYZOsu2tjI9EQjov0CB1nYAVyifcj8R3z/E3LATY1Z8P
+         APH9Ge8jg2J8Gvub3IsRfLkgq3ZncN4TBbhFea0oKUWWsl0T2DGZYZSk8rfLZJrBBr+s
+         UVzw==
+X-Gm-Message-State: APjAAAWZ5QITOaff4MjMI6kUrPZODZtMiDC4pw1LC66QW4miRzOecnbn
+        F8wBTNF/7I6KaDTATh4ekd3Au0SNtoFM+A==
+X-Google-Smtp-Source: APXvYqzoR24ostudhlNUMKWMa0thkbk8KPzLfnK7ACvdL/RfeTLR6q1bLKh1IwvgywloGzuvC9w9xg==
+X-Received: by 2002:a63:5a0a:: with SMTP id o10mr50695395pgb.282.1564733144142;
+        Fri, 02 Aug 2019 01:05:44 -0700 (PDT)
 Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id 3sm77759066pfg.186.2019.08.02.01.05.35
+        by smtp.gmail.com with ESMTPSA id r2sm92536562pfl.67.2019.08.02.01.05.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 01:05:37 -0700 (PDT)
+        Fri, 02 Aug 2019 01:05:43 -0700 (PDT)
 From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH v2 1/2] bnxt_en: Use refcount_t for refcount
-Date:   Fri,  2 Aug 2019 16:05:29 +0800
-Message-Id: <20190802080529.11168-1-hslester96@gmail.com>
+Subject: [PATCH v2 2/2] cnic: Use refcount_t for refcount
+Date:   Fri,  2 Aug 2019 16:05:39 +0800
+Message-Id: <20190802080539.11222-1-hslester96@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -64,65 +63,169 @@ refcount_t is better for reference counters since its
 implementation can prevent overflows.
 So convert atomic_t ref counters to refcount_t.
 
+This patch depends on the patch:
+"cnic: Explicitly initialize all reference counts to 0."
+
 Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
 Changes in v2:
   - Convert refcount from 0-base to 1-base.
 
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c | 8 ++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/broadcom/cnic.c    | 30 ++++++++++++-------------
+ drivers/net/ethernet/broadcom/cnic_if.h |  6 ++---
+ 2 files changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-index fc77caf0a076..742a8ed200cb 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c
-@@ -49,7 +49,7 @@ static int bnxt_register_dev(struct bnxt_en_dev *edev, int ulp_id,
- 			return -ENOMEM;
+diff --git a/drivers/net/ethernet/broadcom/cnic.c b/drivers/net/ethernet/broadcom/cnic.c
+index 155599dcee76..1f59f9606b85 100644
+--- a/drivers/net/ethernet/broadcom/cnic.c
++++ b/drivers/net/ethernet/broadcom/cnic.c
+@@ -141,22 +141,22 @@ static int cnic_uio_close(struct uio_info *uinfo, struct inode *inode)
+ 
+ static inline void cnic_hold(struct cnic_dev *dev)
+ {
+-	atomic_inc(&dev->ref_count);
++	refcount_inc(&dev->ref_count);
+ }
+ 
+ static inline void cnic_put(struct cnic_dev *dev)
+ {
+-	atomic_dec(&dev->ref_count);
++	refcount_dec(&dev->ref_count);
+ }
+ 
+ static inline void csk_hold(struct cnic_sock *csk)
+ {
+-	atomic_inc(&csk->ref_count);
++	refcount_inc(&csk->ref_count);
+ }
+ 
+ static inline void csk_put(struct cnic_sock *csk)
+ {
+-	atomic_dec(&csk->ref_count);
++	refcount_dec(&csk->ref_count);
+ }
+ 
+ static struct cnic_dev *cnic_from_netdev(struct net_device *netdev)
+@@ -177,12 +177,12 @@ static struct cnic_dev *cnic_from_netdev(struct net_device *netdev)
+ 
+ static inline void ulp_get(struct cnic_ulp_ops *ulp_ops)
+ {
+-	atomic_inc(&ulp_ops->ref_count);
++	refcount_inc(&ulp_ops->ref_count);
+ }
+ 
+ static inline void ulp_put(struct cnic_ulp_ops *ulp_ops)
+ {
+-	atomic_dec(&ulp_ops->ref_count);
++	refcount_dec(&ulp_ops->ref_count);
+ }
+ 
+ static void cnic_ctx_wr(struct cnic_dev *dev, u32 cid_addr, u32 off, u32 val)
+@@ -494,7 +494,7 @@ int cnic_register_driver(int ulp_type, struct cnic_ulp_ops *ulp_ops)
  	}
+ 	read_unlock(&cnic_dev_lock);
  
--	atomic_set(&ulp->ref_count, 0);
-+	refcount_set(&ulp->ref_count, 1);
- 	ulp->handle = handle;
- 	rcu_assign_pointer(ulp->ulp_ops, ulp_ops);
+-	atomic_set(&ulp_ops->ref_count, 0);
++	refcount_set(&ulp_ops->ref_count, 1);
+ 	rcu_assign_pointer(cnic_ulp_tbl[ulp_type], ulp_ops);
+ 	mutex_unlock(&cnic_lock);
  
-@@ -87,7 +87,7 @@ static int bnxt_unregister_dev(struct bnxt_en_dev *edev, int ulp_id)
+@@ -545,12 +545,12 @@ int cnic_unregister_driver(int ulp_type)
+ 
+ 	mutex_unlock(&cnic_lock);
  	synchronize_rcu();
- 	ulp->max_async_event_id = 0;
- 	ulp->async_events_bmap = NULL;
--	while (atomic_read(&ulp->ref_count) != 0 && i < 10) {
-+	while (refcount_read(&ulp->ref_count) != 1 && i < 10) {
+-	while ((atomic_read(&ulp_ops->ref_count) != 0) && (i < 20)) {
++	while ((refcount_read(&ulp_ops->ref_count) != 1) && (i < 20)) {
  		msleep(100);
  		i++;
  	}
-@@ -246,12 +246,12 @@ static int bnxt_send_msg(struct bnxt_en_dev *edev, int ulp_id,
  
- static void bnxt_ulp_get(struct bnxt_ulp *ulp)
+-	if (atomic_read(&ulp_ops->ref_count) != 0)
++	if (refcount_read(&ulp_ops->ref_count) != 1)
+ 		pr_warn("%s: Failed waiting for ref count to go to zero\n",
+ 			__func__);
+ 	return 0;
+@@ -3596,7 +3596,7 @@ static int cnic_cm_create(struct cnic_dev *dev, int ulp_type, u32 cid,
+ 	}
+ 
+ 	csk1 = &cp->csk_tbl[l5_cid];
+-	if (atomic_read(&csk1->ref_count))
++	if (refcount_read(&csk1->ref_count) != 1)
+ 		return -EAGAIN;
+ 
+ 	if (test_and_set_bit(SK_F_INUSE, &csk1->flags))
+@@ -3651,7 +3651,7 @@ static int cnic_cm_destroy(struct cnic_sock *csk)
+ 	csk_hold(csk);
+ 	clear_bit(SK_F_INUSE, &csk->flags);
+ 	smp_mb__after_atomic();
+-	while (atomic_read(&csk->ref_count) != 1)
++	while (refcount_read(&csk->ref_count) != 2)
+ 		msleep(1);
+ 	cnic_cm_cleanup(csk);
+ 
+@@ -4104,7 +4104,7 @@ static int cnic_cm_alloc_mem(struct cnic_dev *dev)
+ 		return -ENOMEM;
+ 
+ 	for (i = 0; i < MAX_CM_SK_TBL_SZ; i++)
+-		atomic_set(&cp->csk_tbl[i].ref_count, 0);
++		refcount_set(&cp->csk_tbl[i].ref_count, 1);
+ 
+ 	port_id = prandom_u32();
+ 	port_id %= CNIC_LOCAL_PORT_RANGE;
+@@ -5436,11 +5436,11 @@ static void cnic_free_dev(struct cnic_dev *dev)
  {
--	atomic_inc(&ulp->ref_count);
-+	refcount_inc(&ulp->ref_count);
- }
+ 	int i = 0;
  
- static void bnxt_ulp_put(struct bnxt_ulp *ulp)
- {
--	atomic_dec(&ulp->ref_count);
-+	refcount_dec(&ulp->ref_count);
- }
+-	while ((atomic_read(&dev->ref_count) != 0) && i < 10) {
++	while ((refcount_read(&dev->ref_count) != 1) && i < 10) {
+ 		msleep(100);
+ 		i++;
+ 	}
+-	if (atomic_read(&dev->ref_count) != 0)
++	if (refcount_read(&dev->ref_count) != 1)
+ 		netdev_err(dev->netdev, "Failed waiting for ref count to go to zero\n");
  
- void bnxt_ulp_stop(struct bnxt *bp)
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-index cd78453d0bf0..fc4aa582d190 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.h
-@@ -52,7 +52,7 @@ struct bnxt_ulp {
- 	u16		max_async_event_id;
- 	u16		msix_requested;
- 	u16		msix_base;
+ 	netdev_info(dev->netdev, "Removed CNIC device\n");
+@@ -5484,7 +5484,7 @@ static struct cnic_dev *cnic_alloc_dev(struct net_device *dev,
+ 	cdev->unregister_device = cnic_unregister_device;
+ 	cdev->iscsi_nl_msg_recv = cnic_iscsi_nl_msg_recv;
+ 	cdev->get_fc_npiv_tbl = cnic_get_fc_npiv_tbl;
+-	atomic_set(&cdev->ref_count, 0);
++	refcount_set(&cdev->ref_count, 1);
+ 
+ 	cp = cdev->cnic_priv;
+ 	cp->dev = cdev;
+diff --git a/drivers/net/ethernet/broadcom/cnic_if.h b/drivers/net/ethernet/broadcom/cnic_if.h
+index 789e5c7e9311..5232a05ac7ba 100644
+--- a/drivers/net/ethernet/broadcom/cnic_if.h
++++ b/drivers/net/ethernet/broadcom/cnic_if.h
+@@ -300,7 +300,7 @@ struct cnic_sock {
+ #define SK_F_CLOSING		7
+ #define SK_F_HW_ERR		8
+ 
+-	atomic_t ref_count;
++	refcount_t ref_count;
+ 	u32 state;
+ 	struct kwqe kwqe1;
+ 	struct kwqe kwqe2;
+@@ -335,7 +335,7 @@ struct cnic_dev {
+ #define CNIC_F_CNIC_UP		1
+ #define CNIC_F_BNX2_CLASS	3
+ #define CNIC_F_BNX2X_CLASS	4
 -	atomic_t	ref_count;
 +	refcount_t	ref_count;
+ 	u8		mac_addr[ETH_ALEN];
+ 
+ 	int		max_iscsi_conn;
+@@ -378,7 +378,7 @@ struct cnic_ulp_ops {
+ 				  char *data, u16 data_size);
+ 	int (*cnic_get_stats)(void *ulp_ctx);
+ 	struct module *owner;
+-	atomic_t ref_count;
++	refcount_t ref_count;
  };
  
- struct bnxt_en_dev {
+ int cnic_register_driver(int ulp_type, struct cnic_ulp_ops *ulp_ops);
 -- 
 2.20.1
 
