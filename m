@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E36C47E807
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0914B7EA0C
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:27:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390718AbfHBCUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 22:20:24 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:43841 "EHLO
+        id S2389868AbfHBC0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 22:26:33 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44701 "EHLO
         mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389247AbfHBCUU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:20 -0400
-Received: by mail-pl1-f194.google.com with SMTP id 4so26013389pld.10;
-        Thu, 01 Aug 2019 19:20:19 -0700 (PDT)
+        with ESMTP id S2389155AbfHBCUW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:22 -0400
+Received: by mail-pl1-f194.google.com with SMTP id t14so32989913plr.11;
+        Thu, 01 Aug 2019 19:20:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=pwlX9Z4uen7Ts0pUwmBLgDhtihaB/D0UZN8JDoMe4ZA=;
-        b=cXVKp+Dgxhj784uTGfvPyG1yYJG0TluF022pFhUyHpRdik351Pihe9of7XZeuP0Vwt
-         h/i6WlGcIKVNKfHSeDSEUHKJX3j3X/NshFFci/lhMH4/SgEjIokRiJ+YouFN6I+GBm4y
-         zUjQOfq6557LaDfB1SW3dyyvMia7x+7GSnkQpaKA5dSoAhqdxSb/NVVqK5YIHjTvA0IX
-         6H4EsdOomJX2kg/hRhJVVxm3sX/zmn87r9Fum/tKlkDFYTmAnDUVoJ7rlCgUuzHH8DwS
-         QuPnhojZwqXr2XSW6HhlWm7VIgfEjZi50Ea1bZ4R+3m+Y3fnnezSFaVuWGen2JpYqC8g
-         nI5w==
+        bh=fEUR/G5OnJcefSlX4AYJWWcgqHhC+JXxEofDOG22P/4=;
+        b=ZjBIvPI6FGYYuQaoM3wYb6xPjNep6A1qdBgLoxOD+angQDRZC9mN7qZBiGsA4x1Mmk
+         DVp0b1Fq3km/l8LFUFJZZReS797zF2kYF9KrMWUllVa8HFfcUrM1hAE1P/qQjXzrMnOX
+         JxD/xFl+WZHXSEuAGF9iElPEIqC+TRo873joNlnRMAHY9AMqSmLW3nsU27bTpXhcFKV6
+         4LeM2yIf45e6IoMit2yX6aFzmLhkspb/EkG8Tlqf3bZNN4WeHI7tMYFctQdF6liMtwoJ
+         IvfT9HS49sxx2bYOPNOBswTMjccuTwXWnzyhwEMT1ktty7/Al6mbgY/88Wt++RCGQUor
+         cVVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=pwlX9Z4uen7Ts0pUwmBLgDhtihaB/D0UZN8JDoMe4ZA=;
-        b=PnxGCf+asXpDzasTTibrLFvEkF4HP3FjzuPgfY0xLPC3tSQVfCZwT3pIeaQBI44LZw
-         f3eMpbKqYnp4eJnRXXeACnMQcJsGLd2k0v2oC6FPvd3uwasAxgvmEotq0sveK9v7mR6P
-         cvyoJqBSP/tQFCRcL0Ec0qxu7L9UtqytYlFx7D14KB7uz5GUf6aZUGSyuAVTl9P/Oe7t
-         9eyz4J4T9K7nN98vSgrDid9CY3kRkje9l1jf2oKxhxB8SO5wXtuA/XvsGhKyIvjnLF9o
-         jsJeqq6EJy02hanYuE9LXOX7mpJUYuKlIbwu+Rhpf+4elHZWhEE1nTiBcV8qt7Odn01x
-         c3HA==
-X-Gm-Message-State: APjAAAVEwCbHU5M6a5niyZDwCHI4f1ZDHiGYKm7Ip0KlDBsoyAv3WS/9
-        MwXnJsXHvJRgU9iczw5OFIY=
-X-Google-Smtp-Source: APXvYqzjw3eL+xmFFeLCY8pAtt0uU+dboybjV0Tj2XnMiuSE8KPva7u+GlTOi6iXLJ1oNBX2ZlUCDA==
-X-Received: by 2002:a17:902:a413:: with SMTP id p19mr129958448plq.134.1564712419691;
-        Thu, 01 Aug 2019 19:20:19 -0700 (PDT)
+        bh=fEUR/G5OnJcefSlX4AYJWWcgqHhC+JXxEofDOG22P/4=;
+        b=qJzMtOS01K6ueHV/44EeVtQPdGkbZLE2O2uO+47uZD/U0bwhygx6cqTGwjV5cxAdAj
+         RlyFwzZeweTvTqwM2fhIZ23mf7Y1OyUV121E/gSx+Oe38oH5rxHAZW1xsXy9yCRCtkmc
+         9/MRH5gdEhoyd0799QxgUS/c/sOPmoRIF+6COVz8MMn/KFQo9wHGxdIFs26KV60dxFSS
+         XDAb9zz1ubHtl5aypj1xbr35OxdWGhiRZPuAggBnD7mHXZ3zqMOcGu0YJAfG+M0Dl6dP
+         qnQgGhS+NzHjWABW+Pvfn4Hdwjtn6ZpG1OZkMxildRUoq6AO0AufUu7LjDJUVZM1OhYf
+         lCvw==
+X-Gm-Message-State: APjAAAX9SubK8EaeleW2X1NDvPlTJUOSqLrDWWvv8QP1XjckOXJehhUt
+        BLrGTWY3gfyyAqajHFkZ2vY=
+X-Google-Smtp-Source: APXvYqx7CDlh0PC+iGQbvpFabXIK4hA95kcB6ECyCRgjU7tdLEhAXCZnA9jGvinS59yHHVq1pirulQ==
+X-Received: by 2002:a17:902:a409:: with SMTP id p9mr130268364plq.218.1564712421229;
+        Thu, 01 Aug 2019 19:20:21 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.18
+        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.19
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 19:20:19 -0700 (PDT)
+        Thu, 01 Aug 2019 19:20:20 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,20 +67,17 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>
-Subject: [PATCH 05/34] drm/etnaviv: convert release_pages() to put_user_pages()
-Date:   Thu,  1 Aug 2019 19:19:36 -0700
-Message-Id: <20190802022005.5117-6-jhubbard@nvidia.com>
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>
+Subject: [PATCH 06/34] drm/i915: convert put_page() to put_user_page*()
+Date:   Thu,  1 Aug 2019 19:19:37 -0700
+Message-Id: <20190802022005.5117-7-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190802022005.5117-1-jhubbard@nvidia.com>
 References: <20190802022005.5117-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-NVConfidentiality: public
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -97,42 +94,62 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Cc: Joerg Roedel <joro@8bytes.org>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: "Radim Krčmář" <rkrcmar@redhat.com>
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: x86@kernel.org
-Cc: kvm@vger.kernel.org
+Note that this effectively changes the code's behavior in
+i915_gem_userptr_put_pages(): it now calls set_page_dirty_lock(),
+instead of set_page_dirty(). This is probably more accurate.
+
+As Christophe Hellwig put it, "set_page_dirty() is only safe if we are
+dealing with a file backed page where we have reference on the inode it
+hangs off." [1]
+
+[1] https://lore.kernel.org/r/20190723153640.GB720@lst.de
+
+Cc: Jani Nikula <jani.nikula@linux.intel.com>
+Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+Cc: David Airlie <airlied@linux.ie>
+Cc: intel-gfx@lists.freedesktop.org
+Cc: dri-devel@lists.freedesktop.org
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_gem.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/i915/gem/i915_gem_userptr.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gem.c b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-index e8778ebb72e6..a0144a5ee325 100644
---- a/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_gem.c
-@@ -686,7 +686,7 @@ static int etnaviv_gem_userptr_get_pages(struct etnaviv_gem_object *etnaviv_obj)
- 		ret = get_user_pages_fast(ptr, num_pages,
- 					  !userptr->ro ? FOLL_WRITE : 0, pages);
- 		if (ret < 0) {
--			release_pages(pvec, pinned);
-+			put_user_pages(pvec, pinned);
- 			kvfree(pvec);
- 			return ret;
- 		}
-@@ -710,7 +710,7 @@ static void etnaviv_gem_userptr_release(struct etnaviv_gem_object *etnaviv_obj)
- 	if (etnaviv_obj->pages) {
- 		int npages = etnaviv_obj->base.size >> PAGE_SHIFT;
- 
--		release_pages(etnaviv_obj->pages, npages);
-+		put_user_pages(etnaviv_obj->pages, npages);
- 		kvfree(etnaviv_obj->pages);
+diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+index 528b61678334..c18008d3cc2a 100644
+--- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
++++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+@@ -527,7 +527,7 @@ __i915_gem_userptr_get_pages_worker(struct work_struct *_work)
  	}
- }
+ 	mutex_unlock(&obj->mm.lock);
+ 
+-	release_pages(pvec, pinned);
++	put_user_pages(pvec, pinned);
+ 	kvfree(pvec);
+ 
+ 	i915_gem_object_put(obj);
+@@ -640,7 +640,7 @@ static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
+ 		__i915_gem_userptr_set_active(obj, true);
+ 
+ 	if (IS_ERR(pages))
+-		release_pages(pvec, pinned);
++		put_user_pages(pvec, pinned);
+ 	kvfree(pvec);
+ 
+ 	return PTR_ERR_OR_ZERO(pages);
+@@ -663,11 +663,8 @@ i915_gem_userptr_put_pages(struct drm_i915_gem_object *obj,
+ 	i915_gem_gtt_finish_pages(obj, pages);
+ 
+ 	for_each_sgt_page(page, sgt_iter, pages) {
+-		if (obj->mm.dirty)
+-			set_page_dirty(page);
+-
+ 		mark_page_accessed(page);
+-		put_page(page);
++		put_user_pages_dirty_lock(&page, 1, obj->mm.dirty);
+ 	}
+ 	obj->mm.dirty = false;
+ 
 -- 
 2.22.0
 
