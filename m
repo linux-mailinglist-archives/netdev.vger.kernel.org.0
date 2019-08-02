@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47F3C7FC1D
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:24:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84AB67FC30
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:27:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404005AbfHBOYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 10:24:50 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:52950 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731067AbfHBOYt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:24:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=jvuzp+6FCROkRR+waxcd/xSBD2jk0LdlEwwlmE/QRVo=; b=G2sxycFAx+YSXemaZWFj5rBoO
-        L5W+suRd87Fzi03i9UbUkz+K/l4OLA7u4vdCzpFKd8kbKkpNT5POJKTjl3Y9NgF+IfuEQiw+Ya9sZ
-        Uz98GhfWAglGYt98RBvfBnca/15T9G/n1hhy4hthNjlrIrfsKUlfX1Lr9suoRAYQ/pICfFJo13kmR
-        L+hbvfVY5BZygvFEilaamnzYAdT/2P4dTNkPPWEPWi3WZyJpk4mE3pZYxvO4hCe5QB9xougEB5c3g
-        IV0U5HMFOk+fqAqk6ui4QqQV5LiDqQxBtFq8kG3bamWa6AZ5dtGBvDFf6uxZiiuQmelcNvOe6qNsg
-        wQg03COuw==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1htYU7-0007La-VU; Fri, 02 Aug 2019 14:24:43 +0000
-Date:   Fri, 2 Aug 2019 07:24:43 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jan Kara <jack@suse.cz>
-Cc:     Michal Hocko <mhocko@kernel.org>, john.hubbard@gmail.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
-        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
-        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH 00/34] put_user_pages(): miscellaneous call sites
-Message-ID: <20190802142443.GB5597@bombadil.infradead.org>
-References: <20190802022005.5117-1-jhubbard@nvidia.com>
- <20190802091244.GD6461@dhcp22.suse.cz>
- <20190802124146.GL25064@quack2.suse.cz>
+        id S2394908AbfHBO1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 10:27:31 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:32931 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394890AbfHBO1a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:27:30 -0400
+Received: by mail-qt1-f196.google.com with SMTP id r6so69814347qtt.0
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 07:27:30 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=P2Hb3FZglhIdbXiYdjxjKY7R3yX7bFoilggrVili8pk=;
+        b=EiqCEwDQDAJ32ASKF0jMo90upqnaEDmS/tzI9b/IFOtzpf/8Cs4iBKJv87wwTsJNBx
+         7JN98d2G5tFLR8xVOLw14Tq4+VpPMqgsyKC0F4KDKh3j4gOqisxVDFRI1GemD5fWBa9Y
+         dWskr3MrLKaS9YNkE9Aj+6IB9NnCMfp5OF5E0MEDRQObmE23jECkJha44Mh8vuMx7qxK
+         2ILmciol0Kr+xfmMni/WgkM4kyZ8I9GLmvWHpqaCjuLrIPLdYKD3Z0AQc02HOAXQ7vd2
+         3rgdz3HS5Sn4FOvsa6SJSIEZcfwio4ZV1svttW3gFv66tpb5q1UYP8W7c+am2PiPfe06
+         BlZg==
+X-Gm-Message-State: APjAAAX4JAd1NAMbT2i6KfHNJr/2adygkLYyDXNhwUbzBEzt6AOCxWB5
+        mJRb/1U4ZJU5w1di17WT3kIEeA==
+X-Google-Smtp-Source: APXvYqw3KBnCa3P7200Yn0foGxB3Mb3u607NCRK+HftBdUxylQNUOizF39tGc/1MfSlJjVQ6mmiQyA==
+X-Received: by 2002:aed:3944:: with SMTP id l62mr96389184qte.34.1564756049676;
+        Fri, 02 Aug 2019 07:27:29 -0700 (PDT)
+Received: from redhat.com ([147.234.38.1])
+        by smtp.gmail.com with ESMTPSA id d20sm30304231qto.59.2019.08.02.07.27.25
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 07:27:28 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 10:27:21 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+Message-ID: <20190802100414-mutt-send-email-mst@kernel.org>
+References: <20190731084655.7024-1-jasowang@redhat.com>
+ <20190731084655.7024-8-jasowang@redhat.com>
+ <20190731123935.GC3946@ziepe.ca>
+ <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
+ <20190731193057.GG3946@ziepe.ca>
+ <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
+ <20190801141512.GB23899@ziepe.ca>
+ <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
+ <20190802124613.GA11245@ziepe.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190802124146.GL25064@quack2.suse.cz>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <20190802124613.GA11245@ziepe.ca>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 02:41:46PM +0200, Jan Kara wrote:
-> On Fri 02-08-19 11:12:44, Michal Hocko wrote:
-> > On Thu 01-08-19 19:19:31, john.hubbard@gmail.com wrote:
-> > [...]
-> > > 2) Convert all of the call sites for get_user_pages*(), to
-> > > invoke put_user_page*(), instead of put_page(). This involves dozens of
-> > > call sites, and will take some time.
+On Fri, Aug 02, 2019 at 09:46:13AM -0300, Jason Gunthorpe wrote:
+> On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
+> > > This must be a proper barrier, like a spinlock, mutex, or
+> > > synchronize_rcu.
 > > 
-> > How do we make sure this is the case and it will remain the case in the
-> > future? There must be some automagic to enforce/check that. It is simply
-> > not manageable to do it every now and then because then 3) will simply
-> > be never safe.
 > > 
-> > Have you considered coccinele or some other scripted way to do the
-> > transition? I have no idea how to deal with future changes that would
-> > break the balance though.
+> > I start with synchronize_rcu() but both you and Michael raise some
+> > concern.
 > 
-> Yeah, that's why I've been suggesting at LSF/MM that we may need to create
-> a gup wrapper - say vaddr_pin_pages() - and track which sites dropping
-> references got converted by using this wrapper instead of gup. The
-> counterpart would then be more logically named as unpin_page() or whatever
-> instead of put_user_page().  Sure this is not completely foolproof (you can
-> create new callsite using vaddr_pin_pages() and then just drop refs using
-> put_page()) but I suppose it would be a high enough barrier for missed
-> conversions... Thoughts?
+> I've also idly wondered if calling synchronize_rcu() under the various
+> mm locks is a deadlock situation.
+> 
+> > Then I try spinlock and mutex:
+> > 
+> > 1) spinlock: add lots of overhead on datapath, this leads 0 performance
+> > improvement.
+> 
+> I think the topic here is correctness not performance improvement
 
-I think the API we really need is get_user_bvec() / put_user_bvec(),
-and I know Christoph has been putting some work into that.  That avoids
-doing refcount operations on hundreds of pages if the page in question is
-a huge page.  Once people are switched over to that, they won't be tempted
-to manually call put_page() on the individual constituent pages of a bvec.
+The topic is whether we should revert
+commit 7f466032dc9 ("vhost: access vq metadata through kernel virtual address")
+
+or keep it in. The only reason to keep it is performance.
+
+Now as long as all this code is disabled anyway, we can experiment a
+bit.
+
+I personally feel we would be best served by having two code paths:
+
+- Access to VM memory directly mapped into kernel
+- Access to userspace
+
+
+Having it all cleanly split will allow a bunch of optimizations, for
+example for years now we planned to be able to process an incoming short
+packet directly on softirq path, or an outgoing on directly within
+eventfd.
+
+
+-- 
+MST
