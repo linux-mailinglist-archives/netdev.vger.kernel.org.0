@@ -2,146 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDD2B801F2
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 22:48:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DFBDB801F6
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 22:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729659AbfHBUr6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 16:47:58 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:46694 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726999AbfHBUr6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 16:47:58 -0400
-Received: by mail-qk1-f196.google.com with SMTP id r4so55771893qkm.13
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 13:47:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=l2xTmeRtEZTPMASSyFs2258/OlcrW4XV8UWTXw6h5+k=;
-        b=0cZkj17p28vciM09SU3936/Q8DZdrQt6nHUUyhVZEvE5mPkdVaT3Bxk0GgtLCHVqUq
-         J2zV2mcLdpHFem6LH415jDwmnqzUaPdUUfP1aSNzw1LsMvChYxCJ59CsKbw5eQkFfPr0
-         pjsyrJYLIwhMGknijfLBcroM9GFWGqdBaPhL+qpPNt9mbShDS92VjCMfNGjW32B8bYi5
-         NYtyRME50oGbbNNv5oqoTQtDkySWVMlyDcU81B491kQ5JY2nYV3lR90CV9MC0X1dUPF4
-         WblnCHJPAtrr1rY1btjs6xomaxQ+Hfx3a1IOa0LLS6Hd7A7IL/BXXS9Ax66n3YNQuH4T
-         kVKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=l2xTmeRtEZTPMASSyFs2258/OlcrW4XV8UWTXw6h5+k=;
-        b=s0FEMc+KOkP4eCXeiWkpFTsP1r2JbC4Hf7hI4Gic8cjTdj3AihVibJWtMa79/tdDtB
-         RldDHxBGpcSslI6/GCUB1Va7F6PfMV0pviYM12TEd1msqZ/HQiSfiiHzCtfIX/QdI/2N
-         YFv6si/GQTaJVcgfcwAMlVIXcOCmO2uEdQyo9fkmrssdRorifVuPC9F/mvJJEWYFCLYf
-         1Mfz3h5c5K/vIjQcnc7Sl37cdkAK2Z01f8S4vchJtV1iChPHWaEyTn1+DEVxLvl5OGvK
-         QG5Vmgo+jbIa38ehh8xnhUTIWc0fArOpDRkJ9I4TyV4CVmx83Kt4brxHCa6qI+NgjPdX
-         mHZA==
-X-Gm-Message-State: APjAAAVix6eQE7/4C2QNSW7ygUEQzC8Ql3m2H0w8a0gENT/1thf0LDmt
-        jDXUfPD2VCyPma5I3zTi4x/U4w==
-X-Google-Smtp-Source: APXvYqyGPVP4pYNHM6j3aUEwLbB+3r04zY+QW4Rhajmc+Oriuf8YEYDgH6W+BTNlLSFJ3Q+vhcav0g==
-X-Received: by 2002:a37:7cc5:: with SMTP id x188mr90076102qkc.456.1564778877066;
-        Fri, 02 Aug 2019 13:47:57 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g2sm32862012qkf.32.2019.08.02.13.47.55
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 13:47:56 -0700 (PDT)
-Date:   Fri, 2 Aug 2019 13:47:38 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, marcelo.leitner@gmail.com,
-        jiri@resnulli.us, wenxu@ucloud.cn, saeedm@mellanox.com,
-        paulb@mellanox.com, gerlitz.or@gmail.com
-Subject: Re: [PATCH net 0/2] flow_offload hardware priority fixes
-Message-ID: <20190802134738.328691b4@cakuba.netronome.com>
-In-Reply-To: <20190802110023.udfcxowe3vmihduq@salvia>
-References: <20190801112817.24976-1-pablo@netfilter.org>
-        <20190801172014.314a9d01@cakuba.netronome.com>
-        <20190802110023.udfcxowe3vmihduq@salvia>
-Organization: Netronome Systems, Ltd.
+        id S2437061AbfHBUsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 16:48:50 -0400
+Received: from mail-eopbgr60069.outbound.protection.outlook.com ([40.107.6.69]:27065
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726999AbfHBUsu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 16:48:50 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=eKKPKt6lZm2L+XuIhal+2QOz+HXxE6EOBTg+6AsukAKKJ+Tx21l6Li58HbVq8osfS558dkGOfAwhSJFzudbKDLGzpTyMus85+hSn+pXXaBaERGFEpmpQpFHXKOu9XeJs1Dc8NRhs5UeJAWNj5OcDzFOMmtHkD43qnbUYvEBf1pzP5gTnf8KtE6m5Ute8UwMw9xalvhkUbkayNvHINxgnIItmDIlr68WCfkAO5tsms6sxFY2xk1E6/eiKNwt2b51WJjRPvL8ptiEtRe6iTwTKo++GZwpqin5b4SxwKgW0qLsYeN8dUO7Wdg/1Fmqa5e6uXItpca4/qNxbiOnso0VLgQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e0IePG6k+DcCH7EDwSjCRwvfZ6SoIz7K30rSZVnViME=;
+ b=SNCJG6L2WwfI1Q8elMPKNAsgqrGWSP1211YJf+F5nZa40XBNvCtdIgHig3/YqZePvC7SkXEteY9bruCn1EIC+D5USaw2mjmMwFXBHQlTt4cvdzPNpSPKpBz0FPbbfqPGgvZ1w4l7ybW8+h8wBXHRxnV1EyyT7nd6+wQ0ZmMUyml+sGRTDaMdRCXWdasLvhdAfawB/9AFqSFowBaTCXeGjJHi+tThSCveDtm1J8kv2fh9wZcsG61zSnTp4yB7XaYgQAitxEmCgEN92fze6IbwQiVOEHnM0s5zjNpd12/aqc5hnsvQAulk0npEL9ZxUHt4BtofFW18oPxQ5O/i0DYxyQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e0IePG6k+DcCH7EDwSjCRwvfZ6SoIz7K30rSZVnViME=;
+ b=fFSL2KrKn0fOVjnTneGs5Zk0i7K9PYGfYUaQNNR1KFl9PEu0dQH7pMDfVH5LSc7lQLuhQbSL/Tv85bfZlLUc3atFDhYfpNIQ5GOmvD0AwIaSUOQtCTLyrZi/umdGFoTfQCMDIxXp/9MsvF9u0zQr/9lHgYQNKnEU5CcpVlsPyMg=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2645.eurprd05.prod.outlook.com (10.172.230.150) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2115.15; Fri, 2 Aug 2019 20:48:07 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2136.010; Fri, 2 Aug 2019
+ 20:48:07 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "alexei.starovoitov@gmail.com" <alexei.starovoitov@gmail.com>
+CC:     Eli Cohen <eli@mellanox.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@mellanox.com>
+Subject: Re: [net-next 01/12] net/mlx5: E-Switch, add ingress rate support
+Thread-Topic: [net-next 01/12] net/mlx5: E-Switch, add ingress rate support
+Thread-Index: AQHVSKNDPnW5aHKn80u4pfZRmdQ1/KboII2AgAAdYICAAAY0gIAAEcKA
+Date:   Fri, 2 Aug 2019 20:48:06 +0000
+Message-ID: <56b51e1c9f960498ee698e412bfab278a7e79c47.camel@mellanox.com>
+References: <20190801195620.26180-1-saeedm@mellanox.com>
+         <20190801195620.26180-2-saeedm@mellanox.com>
+         <CAADnVQ+VOSYxbF9RiMJx4kY9bxJCS+Tsf97nsOnRLvi2r6RCog@mail.gmail.com>
+         <b2c77010e96b5fdb6693e5cf0a46a2017f389b44.camel@mellanox.com>
+         <20190802194429.m34bpvf5hzgkop4g@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190802194429.m34bpvf5hzgkop4g@ast-mbp.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-originating-ip: [209.116.155.178]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 7895880b-59ec-4202-8567-08d7178ab8d9
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2645;
+x-ms-traffictypediagnostic: DB6PR0501MB2645:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <DB6PR0501MB2645532FAC26B69B3E0F1C4ABED90@DB6PR0501MB2645.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 011787B9DD
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(376002)(136003)(366004)(39860400002)(189003)(199004)(966005)(26005)(7736002)(478600001)(2501003)(2351001)(71190400001)(71200400001)(6116002)(3846002)(66066001)(2906002)(81156014)(53546011)(6506007)(14454004)(8676002)(102836004)(8936002)(6246003)(486006)(81166006)(1361003)(66476007)(76116006)(91956017)(66946007)(186003)(53936002)(6436002)(5640700003)(6512007)(6306002)(76176011)(36756003)(305945005)(476003)(2616005)(66446008)(446003)(5660300002)(64756008)(6916009)(14444005)(256004)(11346002)(68736007)(118296001)(58126008)(66556008)(86362001)(99286004)(316002)(25786009)(4326008)(107886003)(229853002)(54906003)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2645;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: SaDoAwQwopkDXel8Ugjo0BgQyAKTykm8paaKinxsb+ndYkJRYo4W/ZGwpklcx1dDiUjq0zEz2rrJveadlmud5udDQLR3/Pa1+TbPuvM+nhMoT2JTei9CkBI+Uq9RMYPfgwqXMo79qj3Y0nBzmIVBAKDv4eQ9BckXHCGoRsKqT5KG3P8SYOnPmCn9wV3jjEttu93j4fvBn9wKN+6sklgwLIa2sAOq6AJjHcmSgZzlRX/pPjemq2O+pC+X8RQept0qPvGH9V59xBnrFV1VwerscqgXAQfThUaD5X4zxt6Lp2QKWQnLHKyMp4He7KSpS+Dm1rL9eipxkEEDSZ/IE4zWncrddovWDUT5P0A74ICQsPlDmuZdHyNUvrPrdOg5Sy1y0ImK0JCcBowyciyRvZ9vnkEQQrWf2Yd+7QvqIso/Qxc=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <03E457BC966FBB4185E910C5C93F16B4@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7895880b-59ec-4202-8567-08d7178ab8d9
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2019 20:48:06.9463
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2645
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2 Aug 2019 13:00:23 +0200, Pablo Neira Ayuso wrote:
-> Hi Jakub,
->=20
-> If the user specifies 'pref' in the new rule, then tc checks if there
-> is a tcf_proto object that matches this priority. If the tcf_proto
-> object does not exist, tc creates a tcf_proto object and it adds the
-> new rule to this tcf_proto.
->=20
-> In cls_flower, each tcf_proto only stores one single rule, so if the
-> user tries to add another rule with the same 'pref', cls_flower
-> returns EEXIST.
-
-=F0=9F=98=B3=20
-
-So you're saying this doesn't work?
-
-ip link add type dummy
-tc qdisc add dev dummy0 clsact
-tc filter add dev dummy0 ingress protocol ipv6 prio 123 flower src_ip 1111:=
-:1 action drop
-tc filter add dev dummy0 ingress protocol ipv6 prio 123 flower src_ip 1111:=
-:2 action drop
-tc filter add dev dummy0 ingress protocol ipv6 prio 123 flower src_ip 1111:=
-:3 action drop
-tc filter add dev dummy0 ingress protocol ipv6 prio 123 flower src_ip 1111:=
-:4 action drop
-tc filter add dev dummy0 ingress protocol ipv6 prio 123 flower src_ip 1111:=
-:5 action drop
-
-tc filter show dev dummy0 ingress
-
-filter protocol ipv6 pref 123 flower chain 0=20
-filter protocol ipv6 pref 123 flower chain 0 handle 0x1=20
-  eth_type ipv6
-  src_ip 1111::1
-  not_in_hw
-	action order 1: gact action drop
-	 random type none pass val 0
-	 index 1 ref 1 bind 1
-
-filter protocol ipv6 pref 123 flower chain 0 handle 0x2=20
-  eth_type ipv6
-  src_ip 1111::2
-  not_in_hw
-	action order 1: gact action drop
-	 random type none pass val 0
-	 index 2 ref 1 bind 1
-
-filter protocol ipv6 pref 123 flower chain 0 handle 0x3=20
-  eth_type ipv6
-  src_ip 1111::3
-  not_in_hw
-	action order 1: gact action drop
-	 random type none pass val 0
-	 index 3 ref 1 bind 1
-
-filter protocol ipv6 pref 123 flower chain 0 handle 0x4=20
-  eth_type ipv6
-  src_ip 1111::4
-  not_in_hw
-	action order 1: gact action drop
-	 random type none pass val 0
-	 index 4 ref 1 bind 1
-
-filter protocol ipv6 pref 123 flower chain 0 handle 0x5=20
-  eth_type ipv6
-  src_ip 1111::5
-  not_in_hw
-	action order 1: gact action drop
-	 random type none pass val 0
-	 index 5 ref 1 bind 1
-
-
-> I'll prepare a new patchset not to map the priority to the netfilter
-> basechain priority, instead the rule priority will be internally
-> allocated for each new rule.
-
-In which you're adding fake priorities to rules, AFAICT,=20
-and continue to baffle me.
+T24gRnJpLCAyMDE5LTA4LTAyIGF0IDEyOjQ0IC0wNzAwLCBBbGV4ZWkgU3Rhcm92b2l0b3Ygd3Jv
+dGU6DQo+IE9uIEZyaSwgQXVnIDAyLCAyMDE5IGF0IDA3OjIyOjIxUE0gKzAwMDAsIFNhZWVkIE1h
+aGFtZWVkIHdyb3RlOg0KPiA+IE9uIEZyaSwgMjAxOS0wOC0wMiBhdCAxMDozNyAtMDcwMCwgQWxl
+eGVpIFN0YXJvdm9pdG92IHdyb3RlOg0KPiA+ID4gT24gVGh1LCBBdWcgMSwgMjAxOSBhdCA2OjMw
+IFBNIFNhZWVkIE1haGFtZWVkIDwNCj4gPiA+IHNhZWVkbUBtZWxsYW5veC5jb20+DQo+ID4gPiB3
+cm90ZToNCj4gPiA+ID4gRnJvbTogRWxpIENvaGVuIDxlbGlAbWVsbGFub3guY29tPg0KPiA+ID4g
+PiANCj4gPiA+ID4gVXNlIHRoZSBzY2hlZHVsaW5nIGVsZW1lbnRzIHRvIGltcGxlbWVudCBpbmdy
+ZXNzIHJhdGUgbGltaXRlcg0KPiA+ID4gPiBvbiBhbg0KPiA+ID4gPiBlc3dpdGNoIHBvcnRzIGlu
+Z3Jlc3MgdHJhZmZpYy4gU2luY2UgdGhlIGluZ3Jlc3Mgb2YgZXN3aXRjaA0KPiA+ID4gPiBwb3J0
+IGlzDQo+ID4gPiA+IHRoZQ0KPiA+ID4gPiBlZ3Jlc3Mgb2YgVkYgcG9ydCwgd2UgY29udHJvbCBl
+c3dpdGNoIGluZ3Jlc3MgYnkgY29udHJvbGxpbmcgVkYNCj4gPiA+ID4gZWdyZXNzLg0KPiA+ID4g
+DQo+ID4gPiBMb29rcyBsaWtlIHRoZSBwYXRjaCBpcyBvbmx5IHBhc3NpbmcgYXJncyB0byBmaXJt
+d2FyZSB3aGljaCBpcw0KPiA+ID4gZG9pbmcNCj4gPiA+IHRoZSBtYWdpYy4NCj4gPiA+IENhbiB5
+b3UgcGxlYXNlIGRlc2NyaWJlIHdoYXQgaXMgdGhlIGFsZ29yaXRobSB0aGVyZT8NCj4gPiA+IElz
+IGl0IGNvbmZpZ3VyYWJsZT8NCj4gPiANCj4gPiBIaSBBbGV4ZWksIA0KPiA+IA0KPiA+IEkgYW0g
+bm90IHN1cmUgaG93IG11Y2ggZGV0YWlscyB5b3UgYXJlIGxvb2tpbmcgZm9yLCBidXQgbGV0IG1l
+DQo+ID4gc2hhcmUNCj4gPiBzb21lIG9mIHdoYXQgaSBrbm93Og0KPiA+IA0KPiA+IEZyb20gYSBw
+cmV2aW91cyBzdWJtaXNzaW9uIGZvciBsZWdhY3kgbW9kZSBzcmlvdiB2ZiBidyBsaW1pdCwgd2hl
+cmUNCj4gPiB3ZSANCj4gPiBpbnRyb2R1Y2VkIHRoZSBGVyBjb25maWd1cmF0aW9uIEFQSSBhbmQg
+dGhlIGxlZ2FjeSBzcmlvdiB1c2UgY2FzZTogDQo+ID4gaHR0cHM6Ly9wYXRjaHdvcmsua2VybmVs
+Lm9yZy9wYXRjaC85NDA0NjU1Lw0KPiA+IA0KPiA+IFNvIGJhc2ljYWxseSB0aGUgYWxnb3JpdGht
+IGlzIERlZmljaXQgV2VpZ2h0ZWQgUm91bmQgUm9iaW4gKERXUlIpDQo+ID4gYmV0d2VlbiB0aGUg
+YWdlbnRzLCB3ZSBjYW4gY29udHJvbCBCVyBhbGxvY2F0aW9uL3dlaWdodCBvZiBlYWNoDQo+ID4g
+YWdlbnQNCj4gPiAodmYgdnBvcnQpLg0KPiANCj4gY29tbWl0IGxvZyBvZiB0aGlzIHBhdGNoIHNh
+eXMgbm90aGluZyBhYm91dCBEV1JSLg0KDQppdCBzYXlzIGl0IHVzZXMgdGhlICJzY2hlZHVsaW5n
+IGVsZW1lbnRzIGluZ3Jlc3MgcmF0ZSBsaW1pdGVyIiB3aGljaA0KYXV0b21hdGljYWxseSB0cmFu
+c2xhdGVzIHRvIERXUlIsIHRoaXMgaXMgYmFzaWMga25vd2xlZGdlIGZvciBtbHg1DQpkZXZlbG9w
+ZXJzLCBhbmQgaXQgaXMgY2xlYXIgaW4gdGhlIGNvbW1pdCBtZXNzYWdlIHdoZW4gdGhlIEZXIEFQ
+SSB3YXMNCmludHJvZHVjZWQuDQoNCj4gSXQgaXMgYWxzbyBub3QgdXNpbmcgYW55IG9mIHRoZSBh
+cGkgdGhhdCB3ZXJlIHByb3ZpZGVkIGJ5IHRoYXQNCj4gZWFybGllciBwYXRjaC4NCg0KSXQgaXMg
+dXNpbmcgdGhlIGFwaTogDQptbHg1ZV90Y19jb25maWd1cmVfbWF0Y2hhbGwgPT4gYXBwbHlfcG9s
+aWNlX3BhcmFtcyA9Pg0KbWx4NV9lc3dfbW9kaWZ5X3Zwb3J0X3JhdGUgPT4gbWx4NV9tb2RpZnlf
+c2NoZWR1bGluZ19lbGVtZW50X2NtZCgpLi4NCg0KPiB3aGF0IGlzIGdvaW5nIG9uPw0KPiANCg0K
+Y2FuIHlvdSBwbGVhc2UgY2xhcmlmeSB3aGF0IGlzIGJvdGhlcmluZyB5b3UgPyB3ZSBjYW4gZml4
+IGl0IGlmDQpuZWNlc3NhcnkuDQoNClRoYW5rcywNClNhZWVkLg0KDQoNCg==
