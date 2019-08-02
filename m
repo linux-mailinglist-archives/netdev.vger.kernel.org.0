@@ -2,119 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 672B37F7A2
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 14:58:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E207F7DC
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392863AbfHBM50 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 08:57:26 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44024 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728921AbfHBM50 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 08:57:26 -0400
-Received: by mail-pg1-f193.google.com with SMTP id r26so85986pgl.10;
-        Fri, 02 Aug 2019 05:57:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B9SvP2xLI0r/IFLODY4SREeRnuK66x7eKEYY7oOsxjs=;
-        b=rd7F+uGpcYw7H+IxAjRfwqV33K6RSiW8chDUdhFPRCYZ1HcZETAkYIhhNnPCh0/pCe
-         SMgjY1aYw8nxW6xeZKVp5hlA+R+a0JHCQ1YPqhYYEZ+mlpDOAhOfg0GW4LOT1ziQTlWi
-         FWjYFbIVVp9mbhPSNWSwoT40nS1qAEjbYOKbW41zBvRCL0YfenvKrzmMNfKpQyBmpHO9
-         iLS10QRzZq2G5Q5T1xxwcijkJXcYJCAu+07oWnhp4gXj/AR1Od2AUV8PIXtj9kRpvxhX
-         RV50VUEykdzxW47VlzY7TGLmNegzlvEHu5q8Uq1/oRKsDKk3/HhKcMy+1BfBJvEooF6b
-         K5jg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=B9SvP2xLI0r/IFLODY4SREeRnuK66x7eKEYY7oOsxjs=;
-        b=ObF0ALx14vkgNNDIO+NQQZJfq+WvsofhO5l3A9TjN3p5DFWzaxKz3LdnVoB4hja3l9
-         JiBJ0n4WAPEN9G5fFR165aDl7m0etD0eCRQsImfHyduTfIP5/05ekYtXz/ppNDTBYNO7
-         PqFzo+3PhtjEdgj0G3E66707DHNCOGXvdEvkrvvsP5lww5/Ix3ETi8lIVhgispj0WcEI
-         Pe6A/v+DbsT6nPfK60ueUgVX/MxvFlCD7U3qkoTJY2fNEE0ut0t/lAOqiu+4Fmc3G7r6
-         2KDf5jsErHMf6pNNOPIQhqj1/Mx9tKPTG7UPFIuj+zRAuBWVbqMKkOHDTbzxPtHVwxjx
-         uv8Q==
-X-Gm-Message-State: APjAAAV0AkeDmjJzI19MU1jUrseq4QugLdTBiW68Xp/T5Cc3yzNiK3sb
-        JyUcAtpz7VFnhz7wIlKydtY=
-X-Google-Smtp-Source: APXvYqzj/MAydJ+rNzPuaYOJycVzFseInedpIG+tVK3BblJVpk57r0jADfjq4CnueXStrkjOzjs0cA==
-X-Received: by 2002:a17:90a:109:: with SMTP id b9mr4043952pjb.112.1564750645351;
-        Fri, 02 Aug 2019 05:57:25 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id l25sm94389446pff.143.2019.08.02.05.57.23
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 05:57:24 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] niu: Use refcount_t for refcount
-Date:   Fri,  2 Aug 2019 20:57:20 +0800
-Message-Id: <20190802125720.22363-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S2391809AbfHBNJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 09:09:23 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:53729 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389781AbfHBNJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 09:09:23 -0400
+Received: from [192.168.1.3] (unknown [180.157.106.98])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id B10A64116C;
+        Fri,  2 Aug 2019 21:09:18 +0800 (CST)
+Subject: Re: [PATCH net-next v5 5/6] flow_offload: support get flow_block
+ immediately
+From:   wenxu <wenxu@ucloud.cn>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     jiri@resnulli.us, pablo@netfilter.org, fw@strlen.de,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        John Hurley <john.hurley@netronome.com>
+References: <1564628627-10021-1-git-send-email-wenxu@ucloud.cn>
+ <1564628627-10021-6-git-send-email-wenxu@ucloud.cn>
+ <20190801161129.25fee619@cakuba.netronome.com>
+ <bac5c6a5-8a1b-ee74-988b-6c2a71885761@ucloud.cn>
+Message-ID: <55850b13-991f-97bd-b452-efacd0f39aa4@ucloud.cn>
+Date:   Fri, 2 Aug 2019 21:09:03 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <bac5c6a5-8a1b-ee74-988b-6c2a71885761@ucloud.cn>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVSkhJS0tLSUtMQktKWVdZKFlBSU
+        I3V1ktWUFJV1kJDhceCFlBWTU0KTY6NyQpLjc#WQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nyo6CTo5LDg#Ik84DUJNIVEZ
+        LDkaCxxVSlVKTk1PTE5KSE5CS01KVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
+        TkxVSktNVUJDWVdZCAFZQU5PSko3Bg++
+X-HM-Tid: 0a6c5272ebe92086kuqyb10a64116c
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-refcount_t is better for reference counters since its
-implementation can prevent overflows.
-So convert atomic_t ref counters to refcount_t.
 
-Also convert refcount from 0-based to 1-based.
+在 2019/8/2 18:45, wenxu 写道:
+> On 8/2/2019 7:11 AM, Jakub Kicinski wrote:
+>> On Thu,  1 Aug 2019 11:03:46 +0800, wenxu@ucloud.cn wrote:
+>>> From: wenxu <wenxu@ucloud.cn>
+>>>
+>>> The new flow-indr-block can't get the tcf_block
+>>> directly. It provide a callback list to find the flow_block immediately
+>>> when the device register and contain a ingress block.
+>>>
+>>> Signed-off-by: wenxu <wenxu@ucloud.cn>
+>> First of all thanks for splitting the series up into more patches, 
+>> it is easier to follow the logic now!
+>>
+>>> @@ -328,6 +348,7 @@ struct flow_indr_block_dev {
+>>>  
+>>>  	INIT_LIST_HEAD(&indr_dev->cb_list);
+>>>  	indr_dev->dev = dev;
+>>> +	flow_get_default_block(indr_dev);
+>>>  	if (rhashtable_insert_fast(&indr_setup_block_ht, &indr_dev->ht_node,
+>>>  				   flow_indr_setup_block_ht_params)) {
+>>>  		kfree(indr_dev);
+>> I wonder if it's still practical to keep the block information in the
+>> indr_dev structure at all. The way this used to work was:
+>>
+>>
+>> [hash table of devices]     --------------
+>>                  |         |    netdev    |
+>>                  |         |    refcnt    |
+>>   indir_dev[tun0]|  ------ | cached block | ---- [ TC block ]
+>>                  |         |   callbacks  | .
+>>                  |          --------------   \__ [cb, cb_priv, cb_ident]
+>>                  |                               [cb, cb_priv, cb_ident]
+>>                  |          --------------
+>>                  |         |    netdev    |
+>>                  |         |    refcnt    |
+>>   indir_dev[tun1]|  ------ | cached block | ---- [ TC block ]
+>>                  |         |   callbacks  |.
+>> -----------------           --------------   \__ [cb, cb_priv, cb_ident]
+>>                                                  [cb, cb_priv, cb_ident]
+>>
+>>
+>> In the example above we have two tunnels tun0 and tun1, each one has a
+>> indr_dev structure allocated, and for each one of them two drivers
+>> registered for callbacks (hence the callbacks list has two entries).
+>>
+>> We used to cache the TC block in the indr_dev structure, but now that
+>> there are multiple subsytems using the indr_dev we either have to have
+>> a list of cached blocks (with entries for each subsystem) or just always
+>> iterate over the subsystems :(
+>>
+>> After all the same device may have both a TC block and a NFT block.
+>>
+>> I think always iterating would be easier:
+>>
+>> The indr_dev struct would no longer have the block pointer, instead
+>> when new driver registers for the callback instead of:
+>>
+>> 	if (indr_dev->ing_cmd_cb)
+>> 		indr_dev->ing_cmd_cb(indr_dev->dev, indr_dev->flow_block,
+>> 				     indr_block_cb->cb, indr_block_cb->cb_priv,
+>> 				     FLOW_BLOCK_BIND);
+>>
+>> We'd have something like the loop in flow_get_default_block():
+>>
+>> 	for each (subsystem)
+>> 		subsystem->handle_new_indir_cb(indr_dev, cb);
+>>
+>> And then per-subsystem logic would actually call the cb. Or:
+>>
+>> 	for each (subsystem)
+>> 		block = get_default_block(indir_dev)
+>> 		indr_dev->ing_cmd_cb(...)
+>             nft dev chian is also based on register_netdevice_notifier, So for unregister case,
+>
+> the basechian(block) of nft maybe delete before the __tc_indr_block_cb_unregister. is right?
+>
+> So maybe we can cache the block as a list of all the subsystem in  indr_dev ?
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/ethernet/sun/niu.c | 6 +++---
- drivers/net/ethernet/sun/niu.h | 2 +-
- 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/sun/niu.c b/drivers/net/ethernet/sun/niu.c
-index 0bc5863bffeb..5bf096e51db7 100644
---- a/drivers/net/ethernet/sun/niu.c
-+++ b/drivers/net/ethernet/sun/niu.c
-@@ -9464,7 +9464,7 @@ static struct niu_parent *niu_new_parent(struct niu *np,
- 	memcpy(&p->id, id, sizeof(*id));
- 	p->plat_type = ptype;
- 	INIT_LIST_HEAD(&p->list);
--	atomic_set(&p->refcnt, 0);
-+	refcount_set(&p->refcnt, 1);
- 	list_add(&p->list, &niu_parent_list);
- 	spin_lock_init(&p->lock);
- 
-@@ -9524,7 +9524,7 @@ static struct niu_parent *niu_get_parent(struct niu *np,
- 					port_name);
- 		if (!err) {
- 			p->ports[port] = np;
--			atomic_inc(&p->refcnt);
-+			refcount_inc(&p->refcnt);
- 		}
- 	}
- 	mutex_unlock(&niu_parent_lock);
-@@ -9552,7 +9552,7 @@ static void niu_put_parent(struct niu *np)
- 	p->ports[port] = NULL;
- 	np->parent = NULL;
- 
--	if (atomic_dec_and_test(&p->refcnt)) {
-+	if (refcount_dec_and_test(&p->refcnt)) {
- 		list_del(&p->list);
- 		platform_device_unregister(p->plat_dev);
- 	}
-diff --git a/drivers/net/ethernet/sun/niu.h b/drivers/net/ethernet/sun/niu.h
-index 04c215f91fc0..755e6dd4c903 100644
---- a/drivers/net/ethernet/sun/niu.h
-+++ b/drivers/net/ethernet/sun/niu.h
-@@ -3071,7 +3071,7 @@ struct niu_parent {
- 
- 	struct niu		*ports[NIU_MAX_PORTS];
- 
--	atomic_t		refcnt;
-+	refcount_t		refcnt;
- 	struct list_head	list;
- 
- 	spinlock_t		lock;
--- 
-2.20.1
+when the device is unregister the nft netdev chain related to this device will also be delete through netdevice_notifier
 
+. So for unregister case,the basechian(block) of nft maybe delete before the __tc_indr_block_cb_unregister.
+
+cache for the block is not work because the chain already be delete and free. Maybe it improve the prio of
+
+rep_netdev_event can help this?
+
+>
+>
