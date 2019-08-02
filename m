@@ -2,102 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A20E57FB73
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:47:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAC4A7FBAF
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:04:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436542AbfHBNq5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 09:46:57 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:43411 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731110AbfHBNq4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 09:46:56 -0400
-Received: by mail-yb1-f195.google.com with SMTP id y123so23849474yby.10
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 06:46:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=87nWth1qwkhZ1eXAHRwTJ+WjegXhw+N8PNzvPKErqiI=;
-        b=mCk6lApFIOYFCE3bZlJdfRIULk2LdKeUPxWmUybHzo0Yaxeyj+CpyB+J/wuFoVrWSF
-         gzGYdcnNrMDeTW8ONpOP30VbBDbMbNXAPePMk1DVPPjNrHDPGHEfKSpba6h/3gFnh7gm
-         B3C390NPInuszW/nW11OokHsjQwZRedE4pDrAUS7uJbLdEHqwn4S7jYgeuUrH0l7SV5K
-         elRfwudymEVNzdFUD6Kh6NUXNbC37Hs1QM67ptqkbvATaEUz4MHpZ+pE7GCu+MoJgFrU
-         qGQVBNSIaEi1LCi+GpoQ5uIrukfNuDGhy0bILWVeYFDvnUXTGr5Ar4u0xt9avya5677U
-         qaXA==
+        id S1731503AbfHBOD7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 10:03:59 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:46229 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730204AbfHBOD6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:03:58 -0400
+Received: by mail-qt1-f194.google.com with SMTP id h21so73921175qtn.13
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 07:03:58 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=87nWth1qwkhZ1eXAHRwTJ+WjegXhw+N8PNzvPKErqiI=;
-        b=PVP710cK+S/WYlL3UzGB0DuFh1fpx2ZXxwU44BP4S/00DlViJQTqV+onu6ehK19pCt
-         QfpGm3lQdKbJG+C8pdfTYKY//peLa6OkiJJ1AjOJ6i9CZ8EIkoO4Dnry6PvvDhO8CVXz
-         IduWrri6hUzUmPaDzkqKMdUBn+bwv0ldinGn0/H2oUBhffeB2x6B5GoJ94hzwMoenuvs
-         Q8jTDubWkMszPI6Rv3EROWXaHJa8hU4cdZgAutCoiHfWDpY6aYk4M2Xko0KZCwe2T5j3
-         uYJcTHaM5d1cSw7ZwKnwWcigTRgpH4NSukAEVq6BndxAMdTExYS//a8hsUB66UkuW1kD
-         lxqQ==
-X-Gm-Message-State: APjAAAWKXR1ZksxKrvOgd4JrvI1SC9YU9GIS/VovYG5175PflnM0k+uC
-        xQBeAv+KNq87KUg2KiNodfMeA3ID
-X-Google-Smtp-Source: APXvYqwmy5Y5cOoW4VSEIutelQitIsxZBd7dEZQvHbq/BW99Mi8OTGSt0vVDdgTow5ty5sY12TQJ7A==
-X-Received: by 2002:a25:6541:: with SMTP id z62mr85435754ybb.304.1564753614595;
-        Fri, 02 Aug 2019 06:46:54 -0700 (PDT)
-Received: from mail-yw1-f46.google.com (mail-yw1-f46.google.com. [209.85.161.46])
-        by smtp.gmail.com with ESMTPSA id x195sm17798712ywx.57.2019.08.02.06.46.53
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Fri, 02 Aug 2019 06:46:53 -0700 (PDT)
-Received: by mail-yw1-f46.google.com with SMTP id g19so26633344ywe.2
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 06:46:53 -0700 (PDT)
-X-Received: by 2002:a81:4d86:: with SMTP id a128mr79663944ywb.291.1564753613185;
- Fri, 02 Aug 2019 06:46:53 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WV2Ae/gfauZPjPhFYOLLqagCyB4HyL2HjQauKn3bqsM=;
+        b=MrprVpZ8/zlG6418pVbTyNjU4gD9gqCoagS4tUNuHucvbirS8Mt+gBjZ/DoiKArngp
+         DQZ4b94KH5L70tOjZmm56Eq4+gSB1MwlJmI7z/S9leC88qPgmxekKtH/r7yZZ3t1MFVz
+         6IbIEvn1Zyyb9sR3LJOkUEQqOO9z8Orb4/eAGY32+cbped2R44D+PIsDyT0IvL0sR4/S
+         UHVWI3vA/xdEd1HG9+ReK+UldSQWnc1svs/nav1lARgx45IQZ3XX1hRDwUUzCCOZ4BTV
+         o66Uw3+lKiCJBBJCMZ1V4LxURANdZg2vc2+iyU2rJnYDT3uSGlVDtpvesDQbXfWXaY9D
+         gV9g==
+X-Gm-Message-State: APjAAAUUPPvH68B2n3AwGLPHhl82v3riujMBkl15T+o99KzYWp+xmd0Q
+        cbHE8GLQE/0g51ph1osWYwiimA==
+X-Google-Smtp-Source: APXvYqxqWV5TMaysY1q7/YjNkaoGeUmT+T8Aja0Ppx3ngtfg+CGh7SDzsuYF2FJmZ32u93WwxfAAKw==
+X-Received: by 2002:ac8:2b49:: with SMTP id 9mr99459163qtv.343.1564754637929;
+        Fri, 02 Aug 2019 07:03:57 -0700 (PDT)
+Received: from redhat.com ([147.234.38.1])
+        by smtp.gmail.com with ESMTPSA id v4sm30651268qtq.15.2019.08.02.07.03.52
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 07:03:56 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 10:03:49 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     Jason Gunthorpe <jgg@ziepe.ca>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+Message-ID: <20190802094331-mutt-send-email-mst@kernel.org>
+References: <20190731084655.7024-1-jasowang@redhat.com>
+ <20190731084655.7024-8-jasowang@redhat.com>
+ <20190731123935.GC3946@ziepe.ca>
+ <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
+ <20190731193057.GG3946@ziepe.ca>
+ <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
+ <20190801141512.GB23899@ziepe.ca>
+ <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
 MIME-Version: 1.0
-References: <20190802105507.16650-1-hslester96@gmail.com>
-In-Reply-To: <20190802105507.16650-1-hslester96@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Fri, 2 Aug 2019 09:46:17 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScLs-qJApj5Yw9OOjVk4++HSjn__Vdy+xX2V1rpWU8uLg@mail.gmail.com>
-Message-ID: <CA+FuTScLs-qJApj5Yw9OOjVk4++HSjn__Vdy+xX2V1rpWU8uLg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] ixgbe: Use refcount_t for refcount
-To:     Chuhong Yuan <hslester96@gmail.com>
-Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 2, 2019 at 6:55 AM Chuhong Yuan <hslester96@gmail.com> wrote:
->
-> refcount_t is better for reference counters since its
-> implementation can prevent overflows.
-> So convert atomic_t ref counters to refcount_t.
->
-> Also convert refcount from 0-based to 1-based.
->
-> This patch depends on PATCH 1/2.
->
-> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c | 6 +++---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.h | 2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c
-> index 00710f43cfd2..d313d00065cd 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c
-> @@ -773,7 +773,7 @@ int ixgbe_setup_fcoe_ddp_resources(struct ixgbe_adapter *adapter)
->
->         fcoe->extra_ddp_buffer = buffer;
->         fcoe->extra_ddp_buffer_dma = dma;
-> -       atomic_set(&fcoe->refcnt, 0);
-> +       refcount_set(&fcoe->refcnt, 1);
+On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
+> Btw, I come up another idea, that is to disable preemption when vhost thread
+> need to access the memory. Then register preempt notifier and if vhost
+> thread is preempted, we're sure no one will access the memory and can do the
+> cleanup.
 
-Same point as in the cxgb4 driver patch: how can you just change the
-initial value without modifying the condition for release?
+Great, more notifiers :(
 
-This is not a suggestion to resubmit all these changes again with a
-change to the release condition.
+Maybe can live with
+1- disable preemption while using the cached pointer
+2- teach vhost to recover from memory access failures,
+   by switching to regular from/to user path
+
+So if you want to try that, fine since it's a step in
+the right direction.
+
+But I think fundamentally it's not what we want to do long term.
+
+It's always been a fundamental problem with this patch series that only
+metadata is accessed through a direct pointer.
+
+The difference in ways you handle metadata and data is what is
+now coming and messing everything up.
+
+So if continuing the direct map approach,
+what is needed is a cache of mapped VM memory, then on a cache miss
+we'd queue work along the lines of 1-2 above.
+
+That's one direction to take. Another one is to give up on that and
+write our own version of uaccess macros.  Add a "high security" flag to
+the vhost module and if not active use these for userspace memory
+access.
+
+
+-- 
+MST
