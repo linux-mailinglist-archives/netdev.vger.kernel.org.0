@@ -2,30 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1669580064
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 20:49:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351CB80076
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 20:52:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729136AbfHBSts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 14:49:48 -0400
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:15257 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728100AbfHBStr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 14:49:47 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d4485cb0000>; Fri, 02 Aug 2019 11:49:47 -0700
+        id S1730090AbfHBSw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 14:52:56 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:5322 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726044AbfHBSwz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 14:52:55 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d44868e0000>; Fri, 02 Aug 2019 11:53:02 -0700
 Received: from hqmail.nvidia.com ([172.20.161.6])
   by hqpgpgate101.nvidia.com (PGP Universal service);
-  Fri, 02 Aug 2019 11:49:46 -0700
+  Fri, 02 Aug 2019 11:52:53 -0700
 X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Fri, 02 Aug 2019 11:49:46 -0700
+        by hqpgpgate101.nvidia.com on Fri, 02 Aug 2019 11:52:53 -0700
 Received: from [10.2.171.217] (10.124.1.5) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 2 Aug
- 2019 18:49:45 +0000
-Subject: Re: [PATCH 06/34] drm/i915: convert put_page() to put_user_page*()
-To:     Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
+ 2019 18:52:52 +0000
+Subject: Re: [PATCH 16/34] drivers/tee: convert put_page() to put_user_page*()
+To:     Jens Wiklander <jens.wiklander@linaro.org>,
         <john.hubbard@gmail.com>
-CC:     Christoph Hellwig <hch@infradead.org>,
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
         Dan Williams <dan.j.williams@intel.com>,
         Dave Chinner <david@fromorbit.com>,
         Dave Hansen <dave.hansen@linux.intel.com>,
@@ -37,29 +37,28 @@ CC:     Christoph Hellwig <hch@infradead.org>,
         <devel@driverdev.osuosl.org>, <devel@lists.orangefs.org>,
         <dri-devel@lists.freedesktop.org>,
         <intel-gfx@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-block@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <linux-fbdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-nfs@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        <linux-block@vger.kernel.org>,
+        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
+        <linux-crypto@vger.kernel.org>, <linux-fbdev@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-media@vger.kernel.org>,
+        <linux-mm@kvack.org>, <linux-nfs@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>,
         <linux-rpi-kernel@lists.infradead.org>,
         <linux-xfs@vger.kernel.org>, <netdev@vger.kernel.org>,
         <rds-devel@oss.oracle.com>, <sparclinux@vger.kernel.org>,
-        <x86@kernel.org>, <xen-devel@lists.xenproject.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        David Airlie <airlied@linux.ie>
+        <x86@kernel.org>, <xen-devel@lists.xenproject.org>
 References: <20190802022005.5117-1-jhubbard@nvidia.com>
- <20190802022005.5117-7-jhubbard@nvidia.com>
- <156473756254.19842.12384378926183716632@jlahtine-desk.ger.corp.intel.com>
+ <20190802022005.5117-17-jhubbard@nvidia.com>
+ <CAHUa44G++iiwU62jj7QH=V3sr4z26sf007xrwWLPw6AAeMLAEw@mail.gmail.com>
 X-Nvconfidentiality: public
 From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <7d9a9c57-4322-270b-b636-7214019f87e9@nvidia.com>
-Date:   Fri, 2 Aug 2019 11:48:08 -0700
+Message-ID: <23cc9ac3-4b03-9187-aae6-d64ba8cfca00@nvidia.com>
+Date:   Fri, 2 Aug 2019 11:51:14 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <156473756254.19842.12384378926183716632@jlahtine-desk.ger.corp.intel.com>
+In-Reply-To: <CAHUa44G++iiwU62jj7QH=V3sr4z26sf007xrwWLPw6AAeMLAEw@mail.gmail.com>
 X-Originating-IP: [10.124.1.5]
 X-ClientProxiedBy: HQMAIL104.nvidia.com (172.18.146.11) To
  HQMAIL107.nvidia.com (172.20.187.13)
@@ -67,24 +66,25 @@ Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1564771787; bh=S6tEtRzvj2UDxwZj4cj8eQvbGOkT9/8mALKEDpv4kUk=;
+        t=1564771982; bh=CFAZPyZ9nyhPuztKsk/cdMMUIvZ+gPTM3kJiO5Miqjw=;
         h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
          Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
          X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
          Content-Transfer-Encoding;
-        b=Y3fHk+98nOh18vMhIm6oxYzfGEP8O2OFNum6iQoB2YYU2gm7Ou5mcASXhMaNa0kba
-         BTSi3qY+ef5NxNUgS+af9aZz1Xc0xlcalUQEIFNZpatz8EG3c4tRcTzbThhIfTheTe
-         KUIJTej9BZ3lpHo5Yb8ku9IclBxYdC+NGE9oZ9fgbh7w5eghYXLn/xfb7XAp0GzwuH
-         IJ6d9B7kXtD+UvM1BqXw9xtNu+yigVn+igq6/71hO2kl6CxZVC/aFF46g+y63m13bY
-         ASWUBsfN5BXUM2Pu5Zj4LSXQjLICQo96hEH38MKObK2sbDPzzqMyeBnMmqRYo7/r9E
-         eYoSABVJVs3oQ==
+        b=ot3YKf5tvKuqvfXnHFOaqaBQdxJLPGhqZRpe5CvAqHZLCjzw07N/807rN30ol1bdm
+         nSwbs6gHuJ0OhztqkvSHwPR2slPtTDH8B6O0PTm5jeGujoQh8m+xI16KJQgg3RcoMR
+         UmCB87Ti9N/9lxRub68goKft4A4cSSIx2dfCYEbKRo3lQGuFQW16SKp/EWIKLGs/zO
+         EK17YqQ1lGvgW/45aW7/Z5pzy0Gf5VysXOYCi076on7MtH51Ov9Uy2W59ssEl2aP4N
+         G3YJtwUCv04lDB6y7cBERLsZUR9V90J5rUhO14bUw0xWFxWN4jqCBXztLnN9RVkDQG
+         l2CwayAFuEHwg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/2/19 2:19 AM, Joonas Lahtinen wrote:
-> Quoting john.hubbard@gmail.com (2019-08-02 05:19:37)
+On 8/1/19 11:29 PM, Jens Wiklander wrote:
+> On Fri, Aug 2, 2019 at 4:20 AM <john.hubbard@gmail.com> wrote:
+>>
 >> From: John Hubbard <jhubbard@nvidia.com>
 >>
 >> For pages that were retained via get_user_pages*(), release those pages
@@ -94,59 +94,23 @@ On 8/2/19 2:19 AM, Joonas Lahtinen wrote:
 >> This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 >> ("mm: introduce put_user_page*(), placeholder versions").
 >>
->> Note that this effectively changes the code's behavior in
->> i915_gem_userptr_put_pages(): it now calls set_page_dirty_lock(),
->> instead of set_page_dirty(). This is probably more accurate.
+>> Cc: Jens Wiklander <jens.wiklander@linaro.org>
+>> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+>> ---
+>>   drivers/tee/tee_shm.c | 10 ++--------
+>>   1 file changed, 2 insertions(+), 8 deletions(-)
 > 
-> We've already fixed this in drm-tip where the current code uses
-> set_page_dirty_lock().
+> Acked-by: Jens Wiklander <jens.wiklander@linaro.org>
 > 
-> This would conflict with our tree. Rodrigo is handling
-> drm-intel-next for 5.4, so you guys want to coordinate how
-> to merge.
+> I suppose you're taking this via your own tree or such.
 > 
 
-Hi Joonas, Rodrigo,
+Hi Jens,
 
-First of all, I apologize for the API breakage: put_user_pages_dirty_lock()
-has an additional "dirty" parameter.
-
-In order to deal with the merge problem, I'll drop this patch from my series,
-and I'd recommend that the drm-intel-next take the following approach:
-
-1) For now, s/put_page/put_user_page/ in i915_gem_userptr_put_pages(),
-and fix up the set_page_dirty() --> set_page_dirty_lock() issue, like this
-(based against linux.git):
-
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c 
-b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-index 528b61678334..94721cc0093b 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-@@ -664,10 +664,10 @@ i915_gem_userptr_put_pages(struct drm_i915_gem_object *obj,
-
-         for_each_sgt_page(page, sgt_iter, pages) {
-                 if (obj->mm.dirty)
--                       set_page_dirty(page);
-+                       set_page_dirty_lock(page);
-
-                 mark_page_accessed(page);
--               put_page(page);
-+               put_user_page(page);
-         }
-         obj->mm.dirty = false;
-
-
-That will leave you with your original set_page_dirty_lock() calls
-and everything works properly.
-
-2) Next cycle, move to the new put_user_pages_dirty_lock().
+Thanks for the ACK! I'm expecting that Andrew will take this through his
+-mm tree, unless he pops up and says otherwise.
 
 thanks,
 -- 
 John Hubbard
 NVIDIA
-
-
-> Regards, Joonas
-> 
