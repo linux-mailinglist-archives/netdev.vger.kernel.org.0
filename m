@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2E9480283
-	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 00:05:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 417C9802AE
+	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 00:26:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392325AbfHBWFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 18:05:09 -0400
-Received: from smtprelay0102.hostedemail.com ([216.40.44.102]:48139 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729311AbfHBWFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 18:05:09 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 669D7100E806B;
-        Fri,  2 Aug 2019 22:05:07 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1263:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2553:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3867:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4384:4605:4659:5007:7514:9025:9388:9389:10004:10049:10400:10848:10967:11232:11658:11914:12043:12296:12297:12555:12740:12760:12895:12986:13069:13095:13311:13357:13439:14096:14097:14181:14659:14721:14764:21080:21433:21451:21611:21627:21691:30009:30054:30070:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:26,LUA_SUMMARY:none
-X-HE-Tag: swing93_49a7a4bebce5e
-X-Filterd-Recvd-Size: 2071
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Fri,  2 Aug 2019 22:05:06 +0000 (UTC)
-Message-ID: <2ecfbf8dda354fe47912446bf5c3fe30ca905aa0.camel@perches.com>
-Subject: Re: [PATCH] isdn: hysdn: Fix error spaces around '*'
-From:   Joe Perches <joe@perches.com>
-To:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
-Cc:     isdn@linux-pingi.de, gregkh@linuxfoundation.org,
-        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 02 Aug 2019 15:05:05 -0700
-In-Reply-To: <20190802145506.168b576b@hermes.lan>
-References: <20190802195602.28414-1-joseespiriki@gmail.com>
-         <20190802145506.168b576b@hermes.lan>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1730202AbfHBW0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 18:26:10 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34718 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729919AbfHBW0J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 18:26:09 -0400
+Received: by mail-qt1-f194.google.com with SMTP id k10so6384190qtq.1
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 15:26:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=WW2IGqIhICVQU16C1ct624+3lC3vhr3vbeWHd8gpPwo=;
+        b=TlJ5L8kG065qlx3kok9uMspcKyr0xVQUygOHQuH8rQaTNp1OjCFmzprkFjI2Y82nbS
+         7Av+Tuag3qQc/jXyPlW7nNa8BvMottA2QniPnzHCBGPD1XFL375u5uFwdeP8oLGfbjCn
+         aPCpUboXRcvBgkbyolxwm8JsEdUF9CseyrJRVzV/BBcxGga11bQYuZhJ1HHdKogi5hhg
+         mIw/O9YHoGDhSoAJkF3CI2i1BRWRoVMmhEznZ0LjfE5lHpXosSAT1pKNJGkRFDsv0v9o
+         G0+Y1b+LFUkNyOcNB9TKr5M6oBGiESTGUPK9IPHebl+HivQ5x7V14TBdWFnJ+JigbWjM
+         Emyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=WW2IGqIhICVQU16C1ct624+3lC3vhr3vbeWHd8gpPwo=;
+        b=Y/LXUj7z3Spc5mFarfXLWNGYWu9XRMeAmngkYFg3p3I73OxpAScA7NcLID1sVjiUeB
+         P+e+gBaj959vcnjyPKbmg1YVRBRlTSfVTdXnMVFWj1o402pKMYRTW8U8WoMYuU5woerF
+         5UjUt3xXLIFL6cisnFU/huPe5ou9oLFZuAmq4xb/VCRCiKwwD3kJtXw8kLusThOHuzXA
+         wET7hDDKMto1c8z2ib3VqpsfvcDU8Os3LVuvzSjh35KpuF8PNO/lVG3+f1yBca0c/x6F
+         QJ7s1v/WGoLhcxQehCcU5b6rsC4DJqsuvlfM51mRDfOnV1nS41qEoqE2oPbkvmbZCoik
+         Jkzw==
+X-Gm-Message-State: APjAAAXToMBfgER/F0IV++hCiXK6gxL0gRWVYR1HhJolATqIyXIW0gDq
+        9FQz4wZMqMzG4O6IPU+zuOuyRQ==
+X-Google-Smtp-Source: APXvYqzJrOLKmEQBq0mvlisQE+9X+CJX0jHdvp6TwIgEbRDBzIj/TdUNhU9kSQuwHTc9motfP82T2A==
+X-Received: by 2002:ac8:23c5:: with SMTP id r5mr99897585qtr.319.1564784768703;
+        Fri, 02 Aug 2019 15:26:08 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y194sm34417836qkb.111.2019.08.02.15.26.07
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 15:26:08 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 15:25:49 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, marcelo.leitner@gmail.com,
+        jiri@resnulli.us, wenxu@ucloud.cn, saeedm@mellanox.com,
+        paulb@mellanox.com, gerlitz.or@gmail.com
+Subject: Re: [PATCH net 0/2] flow_offload hardware priority fixes
+Message-ID: <20190802152549.357784a7@cakuba.netronome.com>
+In-Reply-To: <20190802220409.klwdkcvjgegz6hj2@salvia>
+References: <20190801112817.24976-1-pablo@netfilter.org>
+        <20190801172014.314a9d01@cakuba.netronome.com>
+        <20190802110023.udfcxowe3vmihduq@salvia>
+        <20190802134738.328691b4@cakuba.netronome.com>
+        <20190802220409.klwdkcvjgegz6hj2@salvia>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-08-02 at 14:55 -0700, Stephen Hemminger wrote:
-> On Fri,  2 Aug 2019 19:56:02 +0000
-> Jose Carlos Cazarin Filho <joseespiriki@gmail.com> wrote:
-> 
-> > Fix checkpath error:
-> > CHECK: spaces preferred around that '*' (ctx:WxV)
-> > +extern hysdn_card *card_root;        /* pointer to first card */
-> > 
-> > Signed-off-by: Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
-> 
-> Read the TODO, these drivers are scheduled for removal, so changes
-> are not helpful at this time.
+On Sat, 3 Aug 2019 00:04:09 +0200, Pablo Neira Ayuso wrote:
+> That patch removed the reference to tcf_auto_prio() already, please
+> let me know if you have any more specific update you would like to see
+> on that patch.
 
-Maybe better to mark the MAINTAINERS entry obsolete so
-checkpatch bleats a message about unnecessary changes.
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 30bf852e6d6b..b5df91032574 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8628,7 +8628,7 @@ M:	Karsten Keil <isdn@linux-pingi.de>
- L:	isdn4linux@listserv.isdn4linux.de (subscribers-only)
- L:	netdev@vger.kernel.org
- W:	http://www.isdn4linux.de
--S:	Odd Fixes
-+S:	Obsolete
- F:	Documentation/isdn/
- F:	drivers/isdn/capi/
- F:	drivers/staging/isdn/
-
+Please explain why the artificial priorities are needed at all.
+Hardware should order tables based on table type - ethtool, TC, nft.
+As I mentioned in the first email, and unless you can make a strong 
+case against that.
+Within those tables we should follow the same ordering rules as we 
+do in software (modulo ethtool but ordering is pretty clear there).
