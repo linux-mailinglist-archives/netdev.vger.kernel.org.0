@@ -2,114 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B67A7FFE8
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 19:52:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A22D87FFF1
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 19:59:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436672AbfHBRwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 13:52:00 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41748 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405555AbfHBRv7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 13:51:59 -0400
-Received: by mail-pg1-f193.google.com with SMTP id x15so26076546pgg.8
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 10:51:59 -0700 (PDT)
+        id S2436794AbfHBR7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 13:59:23 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:39852 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406482AbfHBR7X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 13:59:23 -0400
+Received: by mail-pl1-f196.google.com with SMTP id b7so33969566pls.6
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 10:59:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=2NF118ohkpMSq+LddurSp4t7mX6YWZVIC7WvM4KdDTs=;
-        b=jIl9vJlgWgd+Q1n/izxSZ0zsUHcnvrrGLqoOxCSr8AHnBMBxhXYH0gS6yWnGhkCQb3
-         FQ/ajBMeSDRaiEkS5IxrWVrWm6r1e6OydVPW+GTpb0jRa5ygYX9m8C7DWL3iusXjxNof
-         t9w3c3sMtup1s4Mv1uR+TvsZHKXHXdh8ngPmJMMRb5OpjM+a51BzvCriiaOMReDiGUYk
-         /Ok+l6T2CZft94MU+el/UKUTN/JLf4x8Fyh6Fh/qTaWESoLhSL2uA1c8wb7x6u0CyFwE
-         DspHhRYH28bYKDrETtnuvoZiXE21uc/Ma5QdAcoShjfv+AM7eFTzYbt8tswvluGaC04o
-         QcsA==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=OVqucGi6mCgtuzFb+mM0I54hdxnF7iQT16DRkPLbzfw=;
+        b=CjA6pbUuaMPDMwcOs1NU1RiCZ3DR8v3r3TDpISfRp+sa+efn/P6rt3PH/uZnyP2ZnZ
+         qriwMeECuq/cObFfAIzcDKwqO9kg5UXXdlagupGgYXVp1Nzi/TI2S8IS8UT/sY/wP4ct
+         HjvPLaDl0To+ZtkRiw10XQrLFbXCLXCiBEIdU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=2NF118ohkpMSq+LddurSp4t7mX6YWZVIC7WvM4KdDTs=;
-        b=SpoyEa6KwDm+J2/mmQ8v5Anloc/MHZi2vLw8EsIXYu7bDMhmR0SUJqjs2YGwtZX+Fq
-         6FZwZY8UhvoQSY8VmGke5B+RQcN15Xkg3LPPqQ3Gm5v4kTC18IaD1s+EUiMFIgU5mRAL
-         IEJl1dVAy2m+Y8XjSWO9SDJV4LLDaitJzj58lf75hfGNI7x7GadPGuPfuF5ybDmZAYBj
-         J4QDfi7zF4FCkvkU8whiOvS/nQ0+rnwnvPwVITcb9B4Vi+DcBBNpc+I5ipeepcD2R27d
-         nxD9r9LMfTAC+nxJR0yvi/UybRBFKe1EXbat1BRDprQeKNIBKLvbcZuQLVHeQB7mYZ1E
-         IFEg==
-X-Gm-Message-State: APjAAAXI3s3iNCfiskBPOq1nvGjJ6vcjzuq3IlVl+Xt1JgVJfYxj4S/d
-        byX9xp6Gr15979qCBF7xGJ8=
-X-Google-Smtp-Source: APXvYqzCeBr2eMTzekEXSN1HLSOl0sJDG9pP2mbCfvZb4jB9g6HWlU1z27pb+1ZqO9HtwzKB0xz7Ow==
-X-Received: by 2002:a63:1046:: with SMTP id 6mr128575817pgq.111.1564768318998;
-        Fri, 02 Aug 2019 10:51:58 -0700 (PDT)
-Received: from [192.168.0.16] ([97.115.142.179])
-        by smtp.gmail.com with ESMTPSA id t7sm7129336pjq.15.2019.08.02.10.51.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=OVqucGi6mCgtuzFb+mM0I54hdxnF7iQT16DRkPLbzfw=;
+        b=joj1C8jy5G6iHdnq0Ys4O3F2T8fFDwc5xTjGZPyEl+Vff/GEWcqTknedFqXB9uUirf
+         5VZh+OR/PUYwsZTluOZ4iwvgJg7p9iEuJDacTnPjx30AmM8o16oBRwnPysNwYDV1wZNy
+         +SGGZ/wUS103H2PqsHsqUsHFad/iB0LkLcYOLJs408xJBsq6G9myRoZ+36aKy9RbVGsl
+         ALV4WBVQI8GYj15nHif7NOmJl32StsTicKdIgddLxFIM+sCzE7VvwHIjKHJB5m9i2NOK
+         APdqB3FVsU1Crz6XthmSHyW8zvOVn4d21L/4HpSs68UkQ4V6dSCls4UVM8h8CY6gCH3v
+         6nQA==
+X-Gm-Message-State: APjAAAX9PfvpoVUeu7mN5VlmzmIj0VnmTqKKZWzGZi8V4mhzX/yoR9uZ
+        E2fpf1IMPkZKprapKki55qASBQ==
+X-Google-Smtp-Source: APXvYqwEB0rTsAhxiTa/i+1acy/zxoYQ//dir91uDgoORP0CSaaYnGoNXT6j/HgT+qMctyliELEGGg==
+X-Received: by 2002:a17:902:204:: with SMTP id 4mr45618964plc.178.1564768762354;
+        Fri, 02 Aug 2019 10:59:22 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id v184sm75225172pfb.82.2019.08.02.10.59.19
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 02 Aug 2019 10:51:58 -0700 (PDT)
-Subject: Re: [PATCH net-next] openvswitch: Print error when
- ovs_execute_actions() fails
-To:     Yifeng Sun <pkusunyifeng@gmail.com>, netdev@vger.kernel.org,
-        pshelar@ovn.org
-References: <1564694047-4859-1-git-send-email-pkusunyifeng@gmail.com>
-From:   Gregory Rose <gvrose8192@gmail.com>
-Message-ID: <91335f0c-95dc-bbb6-f815-8e90d6f18874@gmail.com>
-Date:   Fri, 2 Aug 2019 10:51:56 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Fri, 02 Aug 2019 10:59:20 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 10:59:18 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v4 2/4] net: phy: Add function to retrieve LED
+ configuration from the DT
+Message-ID: <20190802175918.GK250418@google.com>
+References: <20190801190759.28201-1-mka@chromium.org>
+ <20190801190759.28201-3-mka@chromium.org>
+ <20190802163810.GL2099@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <1564694047-4859-1-git-send-email-pkusunyifeng@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190802163810.GL2099@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/1/2019 2:14 PM, Yifeng Sun wrote:
-> Currently in function ovs_dp_process_packet(), return values of
-> ovs_execute_actions() are silently discarded. This patch prints out
-> an error message when error happens so as to provide helpful hints
-> for debugging.
->
-> Signed-off-by: Yifeng Sun <pkusunyifeng@gmail.com>
-> ---
->   net/openvswitch/datapath.c | 7 +++++--
->   1 file changed, 5 insertions(+), 2 deletions(-)
->
-> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-> index 892287d..603c533 100644
-> --- a/net/openvswitch/datapath.c
-> +++ b/net/openvswitch/datapath.c
-> @@ -222,6 +222,7 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
->   	struct dp_stats_percpu *stats;
->   	u64 *stats_counter;
->   	u32 n_mask_hit;
-> +	int error;
->   
->   	stats = this_cpu_ptr(dp->stats_percpu);
->   
-> @@ -229,7 +230,6 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
->   	flow = ovs_flow_tbl_lookup_stats(&dp->table, key, &n_mask_hit);
->   	if (unlikely(!flow)) {
->   		struct dp_upcall_info upcall;
-> -		int error;
->   
->   		memset(&upcall, 0, sizeof(upcall));
->   		upcall.cmd = OVS_PACKET_CMD_MISS;
-> @@ -246,7 +246,10 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
->   
->   	ovs_flow_stats_update(flow, key->tp.flags, skb);
->   	sf_acts = rcu_dereference(flow->sf_acts);
-> -	ovs_execute_actions(dp, skb, sf_acts, key);
-> +	error = ovs_execute_actions(dp, skb, sf_acts, key);
-> +	if (unlikely(error))
-> +		net_err_ratelimited("ovs: action execution error on datapath %s: %d\n",
-> +							ovs_dp_name(dp), error);
->   
->   	stats_counter = &stats->n_hit;
->   
+On Fri, Aug 02, 2019 at 06:38:10PM +0200, Andrew Lunn wrote:
+> On Thu, Aug 01, 2019 at 12:07:57PM -0700, Matthias Kaehlcke wrote:
+> > Add a phylib function for retrieving PHY LED configuration that
+> > is specified in the device tree using the generic binding. LEDs
+> > can be configured to be 'on' for a certain link speed or to blink
+> > when there is TX/RX activity.
+> > 
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > ---
+> > Changes in v4:
+> > - patch added to the series
+> > ---
+> >  drivers/net/phy/phy_device.c | 50 ++++++++++++++++++++++++++++++++++++
+> >  include/linux/phy.h          | 15 +++++++++++
+> >  2 files changed, 65 insertions(+)
+> > 
+> > diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
+> > index 6b5cb87f3866..b4b48de45712 100644
+> > --- a/drivers/net/phy/phy_device.c
+> > +++ b/drivers/net/phy/phy_device.c
+> > @@ -2188,6 +2188,56 @@ static bool phy_drv_supports_irq(struct phy_driver *phydrv)
+> >  	return phydrv->config_intr && phydrv->ack_interrupt;
+> >  }
+> >  
+> > +int of_get_phy_led_cfg(struct phy_device *phydev, int led,
+> > +		       struct phy_led_config *cfg)
+> > +{
+> > +	struct device_node *np, *child;
+> > +	const char *trigger;
+> > +	int ret;
+> > +
+> > +	if (!IS_ENABLED(CONFIG_OF_MDIO))
+> > +		return -ENOENT;
+> > +
+> > +	np = of_find_node_by_name(phydev->mdio.dev.of_node, "leds");
+> > +	if (!np)
+> > +		return -ENOENT;
+> > +
+> > +	for_each_child_of_node(np, child) {
+> > +		u32 val;
+> > +
+> > +		if (!of_property_read_u32(child, "reg", &val)) {
+> > +			if (val == (u32)led)
+> > +				break;
+> > +		}
+> > +	}
+> 
+> Hi Matthias
+> 
+> This is leaking references to np and child. In the past we have not
+> cared about this too much, but we are now getting patches adding the
+> missing releases. So it would be good to fix this.
 
-Thanks Yifeng.
+Good point, I'll fix it in the next revision.
 
-Reviewed-by: Greg Rose <gvrose8192@gmail.com>
+Thanks
 
+Matthias
