@@ -2,441 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B150E7E6F3
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 01:52:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 732D97E716
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 02:11:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390500AbfHAXwr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 19:52:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38756 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731376AbfHAXwr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 1 Aug 2019 19:52:47 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8A070206B8;
-        Thu,  1 Aug 2019 23:52:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564703565;
-        bh=DFl30OH+MA1bej2chXCi9YuPFDsmKkWXl61N7HADA0A=;
-        h=From:To:Cc:Subject:Date:From;
-        b=1X2tbmSD8rANjfNz8HuwzYKDHOrjII3tKg5n+X7rnCedx8ZPAwdIBK4JP9e3g+02e
-         GM6iLEcbUW9ToCGlKifhYpv51P9XQrgZ9vs8uKZuIyNSLRRtCqAFns2o1uUyX/blyB
-         69IJ5ehxLCec5X0HiqKExhDl/eJ/KTwweNOq1l2I=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next] selftests: Add l2tp tests
-Date:   Thu,  1 Aug 2019 16:54:21 -0700
-Message-Id: <20190801235421.8344-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1730969AbfHBALK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 20:11:10 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:34151 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730943AbfHBALJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 20:11:09 -0400
+Received: by mail-pg1-f194.google.com with SMTP id n9so28858826pgc.1
+        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 17:11:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=XjsD1/icALZg3awep5hLe4sw3wS4Y5d5jH+ihun/pAQ=;
+        b=nBBY7aoAwKlPvM8gf3peMdE8TFgvwNrsv8fMJ9J4MeQCm3xHqXV/5pL5j9DHzddOFU
+         kIG5AAr7ze/NtnyFzW+h89gg7DtaVzOeoeYqjxtEi4UCh3pTUJ70yoIFu8XJxCkP/8SJ
+         h+pd8Isx3WFXWEvtHM7hyHxxxJy47YJssSouEXFzQC3g25ovQ8sAvmlkWKQzrhdH/WdR
+         GS5vrN0C8u3+up3UEHmZ2uPqhvrUXG2OkQv52lv2MK4HN49i4LnTpLJZ0m//Iejad05w
+         nJJwvaQ20pdACijy1y4vY1yj3Ttvmb+NmKLz2hgZXlFkSpmiSu5tkYzMF04dA4GRQUIa
+         o5TA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=XjsD1/icALZg3awep5hLe4sw3wS4Y5d5jH+ihun/pAQ=;
+        b=sco35ENCQ8NWZbkVmTUWBLofKkxGawKmTG8xuN4JX1j+eu7Flx+t6NwjzDL7SAhPi+
+         j9PAaKEyw45X5c6mEN4P9Z26d6wonD8hhNLy8wb1+bXhps8bZeYCBJxbXDkGkx7amFZa
+         EvEbH3bLXH487LyXK7FBzo2qiyoNze1Iy/gixBxlASVl/LDNKRRJFtOerFF3oxDNr9tq
+         wyLPZzE4m/oB/ngipqY7yyE9d3lRFui2yHbevBFY9yFBynDvYxoQ0oZHchJgtNdbNF0v
+         wYWUqfTUyenQ+BrviXTA/gO3ZR4TdwLVeWUGFfek3vi9r7jSX6QzJ2/zzwgaFIwuDI7Y
+         g/Xg==
+X-Gm-Message-State: APjAAAUkJgof28Tg+KTfWVtb2TuH+CxFV6Jryf6N6KHHwcdeTUE96E/R
+        hoo2cnkYU8uQtNY4ez65uhO1OQ==
+X-Google-Smtp-Source: APXvYqyLOlywT7pP4+g9JJr0yvPmUI8NeLroMiyiXeQIQK1qTu169Sp1K8rfs6XklvHmzBc0erOQqQ==
+X-Received: by 2002:a65:4189:: with SMTP id a9mr27221456pgq.399.1564704668993;
+        Thu, 01 Aug 2019 17:11:08 -0700 (PDT)
+Received: from Shannons-MBP.pensando.io ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id z6sm43027684pgk.18.2019.08.01.17.11.07
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 01 Aug 2019 17:11:08 -0700 (PDT)
+Subject: Re: [net-next 2/9] i40e: make visible changed vf mac on host
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, davem@davemloft.net
+Cc:     Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
+        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+        Andrew Bowers <andrewx.bowers@intel.com>
+References: <20190801205149.4114-1-jeffrey.t.kirsher@intel.com>
+ <20190801205149.4114-3-jeffrey.t.kirsher@intel.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <9a3a4675-b031-7666-f259-978d18b6db19@pensando.io>
+Date:   Thu, 1 Aug 2019 17:11:06 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190801205149.4114-3-jeffrey.t.kirsher@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On 8/1/19 1:51 PM, Jeff Kirsher wrote:
+> From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+>
+> This patch makes changed VM mac address visible on host via
+> ip link show command. This problem is fixed by copying last
+> unicast mac filter to vf->default_lan_addr.addr. Without
+> this patch if VF MAC was not set from host side and
+> if you run ip link show $pf, on host side you'd always
+> see a zero MAC, not the real VF MAC that VF assigned to
+> itself.
+>
+> Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+> ---
+>   drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+> index 02b09a8ad54c..21f7ac514d1f 100644
+> --- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+> +++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
+> @@ -2629,6 +2629,9 @@ static int i40e_vc_add_mac_addr_msg(struct i40e_vf *vf, u8 *msg)
+>   			} else {
+>   				vf->num_mac++;
+>   			}
+> +			if (is_valid_ether_addr(al->list[i].addr))
+> +				ether_addr_copy(vf->default_lan_addr.addr,
+> +						al->list[i].addr);
+>   		}
+>   	}
+>   	spin_unlock_bh(&vsi->mac_filter_hash_lock);
 
-Add IPv4 and IPv6 l2tp tests. Current set is over IP and with
-IPsec.
+Since this copy is done inside the for-loop, it looks like you are 
+copying every address in the list, not just the last one.  This seems 
+wasteful and unnecessary.
 
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
-The ipsec tests expose a netdev refcount leak that I have not had
-time to track down, but the tests themselves are good.
+Since it is possible, altho' unlikely, that the filter sync that happens 
+a little later could fail, might it be better to do the copy after you 
+know that the sync has succeeded?
 
- tools/testing/selftests/net/l2tp.sh | 382 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 382 insertions(+)
- create mode 100644 tools/testing/selftests/net/l2tp.sh
+Why is the last mac chosen for display rather than the first?  Is there 
+anything special about the last mac as opposed to the first mac?
 
-diff --git a/tools/testing/selftests/net/l2tp.sh b/tools/testing/selftests/net/l2tp.sh
-new file mode 100644
-index 000000000000..5782433886fc
---- /dev/null
-+++ b/tools/testing/selftests/net/l2tp.sh
-@@ -0,0 +1,382 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# L2TPv3 tunnel between 2 hosts
-+#
-+#            host-1          |   router   |     host-2
-+#                            |            |
-+#      lo          l2tp      |            |      l2tp           lo
-+# 172.16.101.1  172.16.1.1   |            | 172.16.1.2    172.16.101.2
-+#  fc00:101::1   fc00:1::1   |            |   fc00:1::2    fc00:101::2
-+#                            |            |
-+#                  eth0      |            |     eth0
-+#                10.1.1.1    |            |   10.1.2.1
-+#              2001:db8:1::1 |            | 2001:db8:2::1
-+
-+VERBOSE=0
-+PAUSE_ON_FAIL=no
-+
-+which ping6 > /dev/null 2>&1 && ping6=$(which ping6) || ping6=$(which ping)
-+
-+################################################################################
-+#
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+}
-+
-+run_cmd()
-+{
-+	local ns
-+	local cmd
-+	local out
-+	local rc
-+
-+	ns="$1"
-+	shift
-+	cmd="$*"
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "    COMMAND: $cmd\n"
-+	fi
-+
-+	out=$(eval ip netns exec ${ns} ${cmd} 2>&1)
-+	rc=$?
-+	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
-+		echo "    $out"
-+	fi
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+
-+	return $rc
-+}
-+
-+################################################################################
-+# create namespaces and interconnects
-+
-+create_ns()
-+{
-+	local ns=$1
-+	local addr=$2
-+	local addr6=$3
-+
-+	[ -z "${addr}" ] && addr="-"
-+	[ -z "${addr6}" ] && addr6="-"
-+
-+	ip netns add ${ns}
-+
-+	ip -netns ${ns} link set lo up
-+	if [ "${addr}" != "-" ]; then
-+		ip -netns ${ns} addr add dev lo ${addr}
-+	fi
-+	if [ "${addr6}" != "-" ]; then
-+		ip -netns ${ns} -6 addr add dev lo ${addr6}
-+	fi
-+
-+	ip -netns ${ns} ro add unreachable default metric 8192
-+	ip -netns ${ns} -6 ro add unreachable default metric 8192
-+
-+	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.accept_dad=0
-+}
-+
-+# create veth pair to connect namespaces and apply addresses.
-+connect_ns()
-+{
-+	local ns1=$1
-+	local ns1_dev=$2
-+	local ns1_addr=$3
-+	local ns1_addr6=$4
-+	local ns2=$5
-+	local ns2_dev=$6
-+	local ns2_addr=$7
-+	local ns2_addr6=$8
-+
-+	ip -netns ${ns1} li add ${ns1_dev} type veth peer name tmp
-+	ip -netns ${ns1} li set ${ns1_dev} up
-+	ip -netns ${ns1} li set tmp netns ${ns2} name ${ns2_dev}
-+	ip -netns ${ns2} li set ${ns2_dev} up
-+
-+	if [ "${ns1_addr}" != "-" ]; then
-+		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr}
-+		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr}
-+	fi
-+
-+	if [ "${ns1_addr6}" != "-" ]; then
-+		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr6}
-+		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr6}
-+	fi
-+}
-+
-+################################################################################
-+# test setup
-+
-+cleanup()
-+{
-+	local ns
-+
-+	for ns in host-1 host-2 router
-+	do
-+		ip netns del ${ns} 2>/dev/null
-+	done
-+}
-+
-+setup_l2tp_ipv4()
-+{
-+	#
-+	# configure l2tpv3 tunnel on host-1
-+	#
-+	ip -netns host-1 l2tp add tunnel tunnel_id 1041 peer_tunnel_id 1042 \
-+			 encap ip local 10.1.1.1 remote 10.1.2.1
-+	ip -netns host-1 l2tp add session name l2tp4 tunnel_id 1041 \
-+			 session_id 1041 peer_session_id 1042
-+	ip -netns host-1 link set dev l2tp4 up
-+	ip -netns host-1 addr add dev l2tp4 172.16.1.1 peer 172.16.1.2
-+
-+	#
-+	# configure l2tpv3 tunnel on host-2
-+	#
-+	ip -netns host-2 l2tp add tunnel tunnel_id 1042 peer_tunnel_id 1041 \
-+			 encap ip local 10.1.2.1 remote 10.1.1.1
-+	ip -netns host-2 l2tp add session name l2tp4 tunnel_id 1042 \
-+			 session_id 1042 peer_session_id 1041
-+	ip -netns host-2 link set dev l2tp4 up
-+	ip -netns host-2 addr add dev l2tp4 172.16.1.2 peer 172.16.1.1
-+
-+	#
-+	# add routes to loopback addresses
-+	#
-+	ip -netns host-1 ro add 172.16.101.2/32 via 172.16.1.2
-+	ip -netns host-2 ro add 172.16.101.1/32 via 172.16.1.1
-+}
-+
-+setup_l2tp_ipv6()
-+{
-+	#
-+	# configure l2tpv3 tunnel on host-1
-+	#
-+	ip -netns host-1 l2tp add tunnel tunnel_id 1061 peer_tunnel_id 1062 \
-+			 encap ip local 2001:db8:1::1 remote 2001:db8:2::1
-+	ip -netns host-1 l2tp add session name l2tp6 tunnel_id 1061 \
-+			 session_id 1061 peer_session_id 1062
-+	ip -netns host-1 link set dev l2tp6 up
-+	ip -netns host-1 addr add dev l2tp6 fc00:1::1 peer fc00:1::2
-+
-+	#
-+	# configure l2tpv3 tunnel on host-2
-+	#
-+	ip -netns host-2 l2tp add tunnel tunnel_id 1062 peer_tunnel_id 1061 \
-+			 encap ip local 2001:db8:2::1 remote 2001:db8:1::1
-+	ip -netns host-2 l2tp add session name l2tp6 tunnel_id 1062 \
-+			 session_id 1062 peer_session_id 1061
-+	ip -netns host-2 link set dev l2tp6 up
-+	ip -netns host-2 addr add dev l2tp6 fc00:1::2 peer fc00:1::1
-+
-+	#
-+	# add routes to loopback addresses
-+	#
-+	ip -netns host-1 -6 ro add fc00:101::2/128 via fc00:1::2
-+	ip -netns host-2 -6 ro add fc00:101::1/128 via fc00:1::1
-+}
-+
-+setup()
-+{
-+	# start clean
-+	cleanup
-+
-+	set -e
-+	create_ns host-1 172.16.101.1/32 fc00:101::1/128
-+	create_ns host-2 172.16.101.2/32 fc00:101::2/128
-+	create_ns router
-+
-+	connect_ns host-1 eth0 10.1.1.1/24 2001:db8:1::1/64 \
-+	           router eth1 10.1.1.2/24 2001:db8:1::2/64
-+
-+	connect_ns host-2 eth0 10.1.2.1/24 2001:db8:2::1/64 \
-+	           router eth2 10.1.2.2/24 2001:db8:2::2/64
-+
-+	ip -netns host-1 ro add 10.1.2.0/24 via 10.1.1.2
-+	ip -netns host-1 -6 ro add 2001:db8:2::/64 via 2001:db8:1::2
-+
-+	ip -netns host-2 ro add 10.1.1.0/24 via 10.1.2.2
-+	ip -netns host-2 -6 ro add 2001:db8:1::/64 via 2001:db8:2::2
-+
-+	setup_l2tp_ipv4
-+	setup_l2tp_ipv6
-+	set +e
-+}
-+
-+setup_ipsec()
-+{
-+	#
-+	# IPv4
-+	#
-+	run_cmd host-1 ip xfrm policy add \
-+		src 10.1.1.1 dst 10.1.2.1 dir out \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-1 ip xfrm policy add \
-+		src 10.1.2.1 dst 10.1.1.1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip xfrm policy add \
-+		src 10.1.1.1 dst 10.1.2.1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip xfrm policy add \
-+		src 10.1.2.1 dst 10.1.1.1 dir out \
-+		tmpl proto esp mode transport
-+
-+	ip -netns host-1 xfrm state add \
-+		src 10.1.1.1 dst 10.1.2.1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-1 xfrm state add \
-+		src 10.1.2.1 dst 10.1.1.1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 xfrm state add \
-+		src 10.1.1.1 dst 10.1.2.1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 xfrm state add \
-+		src 10.1.2.1 dst 10.1.1.1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	#
-+	# IPV6
-+	#
-+	run_cmd host-1 ip -6 xfrm policy add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 dir out \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-1 ip -6 xfrm policy add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip -6 xfrm policy add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip -6 xfrm policy add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 dir out \
-+		tmpl proto esp mode transport
-+
-+	ip -netns host-1 -6 xfrm state add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-1 -6 xfrm state add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 -6 xfrm state add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 -6 xfrm state add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+}
-+
-+teardown_ipsec()
-+{
-+	run_cmd host-1 ip xfrm state flush
-+	run_cmd host-1 ip xfrm policy flush
-+	run_cmd host-2 ip xfrm state flush
-+	run_cmd host-2 ip xfrm policy flush
-+}
-+
-+################################################################################
-+# generate traffic through tunnel for various cases
-+
-+run_ping()
-+{
-+	local desc="$1"
-+
-+	run_cmd host-1 ping -c1 -w1 172.16.1.2
-+	log_test $? 0 "IPv4 basic L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ping -c1 -w1 -I 172.16.101.1 172.16.101.2
-+	log_test $? 0 "IPv4 route through L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 fc00:1::2
-+	log_test $? 0 "IPv6 basic L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 -I fc00:101::1 fc00:101::2
-+	log_test $? 0 "IPv6 route through L2TP tunnel ${desc}"
-+}
-+
-+run_tests()
-+{
-+	local desc
-+
-+	setup
-+	run_ping
-+
-+	setup_ipsec
-+	run_ping "- with IPsec"
-+	run_cmd host-1 ping -c1 -w1 172.16.1.2
-+	log_test $? 0 "IPv4 basic L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ping -c1 -w1 -I 172.16.101.1 172.16.101.2
-+	log_test $? 0 "IPv4 route through L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 fc00:1::2
-+	log_test $? 0 "IPv6 basic L2TP tunnel - with IPsec"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 -I fc00:101::1 fc00:101::2
-+	log_test $? 0 "IPv6 route through L2TP tunnel - with IPsec"
-+
-+	teardown_ipsec
-+	run_ping "- after IPsec teardown"
-+}
-+
-+################################################################################
-+# main
-+
-+declare -i nfail=0
-+declare -i nsuccess=0
-+
-+while getopts :pv o
-+do
-+	case $o in
-+		p) PAUSE_ON_FAIL=yes;;
-+		v) VERBOSE=$(($VERBOSE + 1));;
-+		*) exit 1;;
-+	esac
-+done
-+
-+run_tests
-+cleanup
-+
-+printf "\nTests passed: %3d\n" ${nsuccess}
-+printf "Tests failed: %3d\n"   ${nfail}
--- 
-2.11.0
+sln
 
