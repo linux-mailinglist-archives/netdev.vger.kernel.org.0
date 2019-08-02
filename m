@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E17E80255
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 23:55:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 28BB880258
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 23:55:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732711AbfHBVy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 17:54:56 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42345 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726052AbfHBVyz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 17:54:55 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q10so36651481pff.9
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 14:54:55 -0700 (PDT)
+        id S2395199AbfHBVzJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 17:55:09 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:43829 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2395195AbfHBVzI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 17:55:08 -0400
+Received: by mail-pl1-f193.google.com with SMTP id 4so27120203pld.10
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 14:55:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wyeLKPzC0XuP8gjAGSTKzaHtBOr+XkQRHretmBzwq5w=;
-        b=GaMOsF13xxb3cD8xzf2OmnaaSbtiMzON8fo3xA3vPmsrWVsWsYdLUNrKFxJcx2GOJ0
-         Hf+j9m5qaI0cA9ItiutImpnjd17gBDapDOyNUknduvJ0s3uZKttckWEwh6/TaqPb1NuK
-         MC+xNZlOytC+TjDD36ADL1bINhIbgY2uLhUPpElNVWEw+YsHmuamej7D0mP74+Srk496
-         60N4HTArbE3YzdC5S6kdKMKfqpZBgOD9OPX17vjm7e6Iini9LdUGlPOSWf1LmHLdO+RB
-         9xM1m8xJw4J33uPtbtqirl5MhIHcmyCjTqI0OjmGrLbDCPflVJ9EY6JisOEy/teLwzpB
-         5siQ==
+        bh=3v959y3cG5ZVzOws7Yf1+skokBCt8eVG73f/LVI45bE=;
+        b=V3Hpl9HrCUyugLTACvQdLDIAxuPF+z+eQixtnPJTDCaVCGqGU3IOij7fUVmLgwP7DC
+         kQsEQblIgYdkFfFqFq4v2ktFDIaHIH/kCq1OBFMuF8o7rptFY8SBTg8EoRTkXEjlTurv
+         KIZm3oKsVAnb4XyKjVGi+Hn+e5zG1vs7oLSePanBwPr0YzLP4aaBpuGQn8/fdTV7+6oe
+         xKS1Pv+c4Ete30omsGWcP5Z3WeeZsfWBVvUefvXezmibpeBQsoFH5/4YukI8C6jrhkef
+         Y+jacXlaIVVCM7PKXLNKr3dnRQPPNji4bTwvii5cKhoD05JsyLdacylOm5WB2LGGTOgI
+         k4OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wyeLKPzC0XuP8gjAGSTKzaHtBOr+XkQRHretmBzwq5w=;
-        b=FNEfGTFU5aeE1tYEMTzdJ3Dbylre5t8ACJHgL227kQ9N1SH27NYO2JofXw0dFw/BZC
-         P5nU5aSm6WjK9H8g6UgYZZwYrY0yng5QA0uXeFn/GDrCaidD05Ox2cG8NYRITdGGn12D
-         edGQB3gN9iW7zPeQl5T9qsyyRuJxdg/3MILFpnYk8uauJD4QeUjy++caalEAIqQGm/PO
-         2pcNFkEoZenbpr19iJILBYus1hG4eX+QZJ7uVr9tbnKgVnEvWtUiSewUgvbavjT7zpod
-         dr34UFeC1YXvSceOPVbj8rgkk+OSGpke84yNATcLlSrlBF5fozFB9jYVGrOMAFXJXQqJ
-         Eb5w==
-X-Gm-Message-State: APjAAAUMYeX9L/IJvlMMJUAG/U3glrXBBlJ4s9F9guvSSH6hseRC/WPu
-        Dq4dwcd+ZoCNpDAvnrN+QTY=
-X-Google-Smtp-Source: APXvYqwbHMg3jNoCFZHog7Hxf1IYqhk4HkeR6DqQNTGvD37LG2dD5fYELrYf9ed2PrIB1VZBXPindw==
-X-Received: by 2002:a63:3147:: with SMTP id x68mr63386647pgx.212.1564782895104;
-        Fri, 02 Aug 2019 14:54:55 -0700 (PDT)
+        bh=3v959y3cG5ZVzOws7Yf1+skokBCt8eVG73f/LVI45bE=;
+        b=ns8IBrqEmpp9KPKpeAk61ondqB4gEB4rIZOLBuCl/3ZI2gRTUGOZGhO0379KpKjoPW
+         OGfnimVJvEFJebZgFxFf27fsb9xe/XjGim5kfAvxHIMfzsDDJi2ppZLVI95n6htW5sk2
+         MRzdl/1uunjpE+lAK3LjBXIiFGPL/8DRVSCHBHaR0t82DtLYsrTf1pA58fXqYWv8E3Ft
+         j4kdwwupFVVBvKg1KoNrphAWiJie/3ck/OlVHs3cUVCnE/5zq6h1LMKVH37BX5VsnAmk
+         JTkQSN7IwxyPaHiTCfd0c3y6xslYNKkLmSYupjW3CXLbw8+Kn0+BDXcIevGjidK6jP9Z
+         0O+w==
+X-Gm-Message-State: APjAAAVtswPFs6eH+fqYLEkVojANYnUKzQFJgeQ9LKqLKU5WpNkcslJP
+        SL0EiCO0gUULYTm5FY4HLJE=
+X-Google-Smtp-Source: APXvYqyQ65NF5GXQddSgKFl5futnv5t9QQ5mjPDSRTrAoLaT4aq/GyBekbHTh1tXi+6AxlMyrJ+RmQ==
+X-Received: by 2002:a17:902:100a:: with SMTP id b10mr91768385pla.338.1564782908080;
+        Fri, 02 Aug 2019 14:55:08 -0700 (PDT)
 Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id m16sm75782068pfd.127.2019.08.02.14.54.54
+        by smtp.gmail.com with ESMTPSA id r188sm121634800pfr.16.2019.08.02.14.55.07
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 14:54:54 -0700 (PDT)
-Date:   Fri, 2 Aug 2019 14:54:48 -0700
+        Fri, 02 Aug 2019 14:55:08 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 14:55:06 -0700
 From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com>
+To:     Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
 Cc:     isdn@linux-pingi.de, gregkh@linuxfoundation.org,
-        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, lkcamp@lists.libreplanetbr.org
-Subject: Re: [PATCH] isdn: hysdn: fix code style error from checkpatch
-Message-ID: <20190802145448.0bcd5374@hermes.lan>
-In-Reply-To: <20190802195017.27845-1-ricardo6142@gmail.com>
-References: <20190802195017.27845-1-ricardo6142@gmail.com>
+        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] isdn: hysdn: Fix error spaces around '*'
+Message-ID: <20190802145506.168b576b@hermes.lan>
+In-Reply-To: <20190802195602.28414-1-joseespiriki@gmail.com>
+References: <20190802195602.28414-1-joseespiriki@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -62,16 +62,15 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  2 Aug 2019 19:50:17 +0000
-Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com> wrote:
+On Fri,  2 Aug 2019 19:56:02 +0000
+Jose Carlos Cazarin Filho <joseespiriki@gmail.com> wrote:
 
-> Fix error bellow from checkpatch.
+> Fix checkpath error:
+> CHECK: spaces preferred around that '*' (ctx:WxV)
+> +extern hysdn_card *card_root;        /* pointer to first card */
 > 
-> WARNING: Block comments use * on subsequent lines
-> +/***********************************************************
-> +
-> 
-> Signed-off-by: Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com>
+> Signed-off-by: Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
+
 
 Read the TODO, these drivers are scheduled for removal, so changes
 are not helpful at this time.
