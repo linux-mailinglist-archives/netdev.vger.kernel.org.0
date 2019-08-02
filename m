@@ -2,31 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C6D867FD6B
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 17:22:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E7AF37FDA7
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 17:35:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732033AbfHBPWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 11:22:19 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:60521 "EHLO
-        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731684AbfHBPWT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 11:22:19 -0400
-X-Originating-IP: 86.250.200.211
-Received: from bootlin.com (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
-        (Authenticated sender: maxime.chevallier@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 41557FF806;
-        Fri,  2 Aug 2019 15:22:16 +0000 (UTC)
-Date:   Fri, 2 Aug 2019 17:22:26 +0200
-From:   Maxime Chevallier <maxime.chevallier@bootlin.com>
-To:     Matt Pelland <mpelland@starry.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        antoine.tenart@bootlin.com
-Subject: Re: [PATCH 2/2] net: mvpp2: support multiple comphy lanes
-Message-ID: <20190802172226.307fd56b@bootlin.com>
-In-Reply-To: <20190801204523.26454-3-mpelland@starry.com>
-References: <20190801204523.26454-1-mpelland@starry.com>
-        <20190801204523.26454-3-mpelland@starry.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2388149AbfHBPf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 11:35:27 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39475 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726044AbfHBPf1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 11:35:27 -0400
+Received: by mail-pg1-f193.google.com with SMTP id u17so36255016pgi.6
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 08:35:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ApEPfYLDkaftPbdGrgkwltjAOkRc+C1sr4uIvLIlPbI=;
+        b=UkhvvGLmTZwuM/XOr2DMVT4r9W5ST4fy5Wc35J5kLQZCt99xKKYdPxJl5qj+0WVgmo
+         wVvh03/l9DAPJ3C/g/Y78Ak+Z40x4j8vKMX2PzqkQa8LeBWIsu22QumMD+0GviObNLAn
+         HAZa5GiU5ZW5FPzmGLGcRPtdP1n89RhDROE7KFnqSpX2UpqgtiWC0eiQKBeJ3BMYBFcn
+         0NNcpB7KMNboscR4u8R25mMz3Cj1vhJf5eYXLhoQc2iANId6dwu8Q5xHH+3bCb7FYXKC
+         qX/eKLZbDUkrlppDup7I7AZGHTEIYHHVCbrBng2rUIECZcMx/fbhe0H7EHr7073CfJ8K
+         HVsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ApEPfYLDkaftPbdGrgkwltjAOkRc+C1sr4uIvLIlPbI=;
+        b=hic8idah7MUdpSXMYSFkEZUwU8dI4NY1oc5ssHwW0q/sIgq+GDSG9LzN+eyRuUroGI
+         1qirBYzwOQVbwavSkRqkRGJzyPY6NbDwlgx/LIqKBrZWYwn5akmywdDQwo8rU2g0R1oq
+         obZmTJOQq/pxlpqCS/WGqS7OeW/EL1e4t9/liNfgTvg6SeBFnSUTMmbNR6rHCuuKLkkc
+         nskxplzqInf9eCmgslZLbtt6TJ9HPwkdTDIdwZqbaQeoNAm2ua2YpXjdY6pAWfzPid8E
+         0wjsGyo+1hbes5SVh49OlfV9kJjvjWhVAmrD6nkoAWaCclJXjhvtRU1VYAYKcBtbKcM3
+         C2JA==
+X-Gm-Message-State: APjAAAWimDbGcnSO8zS79duzBwkOi+i1dN8lYjQWNhdAwFQA7NQ0xdWg
+        qNdXRB2NaCZSncdjwp7zyks=
+X-Google-Smtp-Source: APXvYqyLMr94yFdu2mZ8K2EOcJa1Uh7dEJp8bg+yQqwpDn14AA1TTigDkZ4fC43I3+UyfqWw0cssYA==
+X-Received: by 2002:a62:ae01:: with SMTP id q1mr58894229pff.219.1564760126671;
+        Fri, 02 Aug 2019 08:35:26 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id m101sm6818193pjb.7.2019.08.02.08.35.26
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 08:35:26 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 08:35:19 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        davem@davemloft.net, bridge@lists.linux-foundation.org,
+        michael-dev <michael-dev@fami-braun.de>
+Subject: Re: [PATCH net v4] net: bridge: move default pvid init/deinit to
+ NETDEV_REGISTER/UNREGISTER
+Message-ID: <20190802083519.71cb4fa2@hermes.lan>
+In-Reply-To: <20190802105736.26767-1-nikolay@cumulusnetworks.com>
+References: <0a015a21-c1ae-e275-e675-431f08bece86@cumulusnetworks.com>
+        <20190802105736.26767-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -35,191 +64,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Matt,
+On Fri,  2 Aug 2019 13:57:36 +0300
+Nikolay Aleksandrov <nikolay@cumulusnetworks.com> wrote:
 
-On Thu,  1 Aug 2019 16:45:23 -0400
-Matt Pelland <mpelland@starry.com> wrote:
+> +int br_vlan_bridge_event(struct net_device *dev, unsigned long event, void *ptr)
+>  {
+>  	struct netdev_notifier_changeupper_info *info;
+> -	struct net_bridge *br;
+> +	struct net_bridge *br = netdev_priv(dev);
+> +	bool changed;
+> +	int ret = 0;
+>  
+>  	switch (event) {
+> +	case NETDEV_REGISTER:
+> +		ret = br_vlan_add(br, br->default_pvid,
+> +				  BRIDGE_VLAN_INFO_PVID |
+> +				  BRIDGE_VLAN_INFO_UNTAGGED |
+> +				  BRIDGE_VLAN_INFO_BRENTRY, &changed, NULL);
+> +		break;
 
->mvpp 2.2 supports RXAUI which requires a pair of serdes lanes instead of
->the usual single lane required by other interface modes. This patch
->expands the number of lanes that can be associated to a port so that
->both lanes are correctly configured at the appropriate times when RXAUI
->is in use.
+Looks good.
 
-Thanks for the patch, it's nice to see RXAUI support moving forward.
-
-I'll give your patches a test on my setup, although I never really got
-something stable, it might simply be due to the particular hardware I
-have access to.
-
-I do have some comments below :
-
->Signed-off-by: Matt Pelland <mpelland@starry.com>
->---
-> drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  7 +-
-> .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 66 +++++++++++++------
-> 2 files changed, 53 insertions(+), 20 deletions(-)
->
->diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
->index 256e7c796631..9ae2b3d9d0c7 100644
->--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
->+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
->@@ -655,6 +655,11 @@
-> #define MVPP2_F_LOOPBACK		BIT(0)
-> #define MVPP2_F_DT_COMPAT		BIT(1)
-> 
->+/* MVPP22 supports RXAUI which requires two comphy lanes, all other modes
->+ * require one.
->+ */
->+#define MVPP22_MAX_COMPHYS		2
-
-This driver is "supposed" to support XAUI too, at least it appears in
-the list of modes we handle. XAUI uses 4 lanes, maybe we could bump the
-max number of lanes to 4.
-
-> /* Marvell tag types */
-> enum mvpp2_tag_type {
-> 	MVPP2_TAG_TYPE_NONE = 0,
->@@ -935,7 +940,7 @@ struct mvpp2_port {
-> 	phy_interface_t phy_interface;
-> 	struct phylink *phylink;
-> 	struct phylink_config phylink_config;
->-	struct phy *comphy;
->+	struct phy *comphys[MVPP22_MAX_COMPHYS];
-> 
-> 	struct mvpp2_bm_pool *pool_long;
-> 	struct mvpp2_bm_pool *pool_short;
->diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->index 8b633af4a684..97dfe2e71b03 100644
->--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
->@@ -1186,17 +1186,40 @@ static void mvpp22_gop_setup_irq(struct mvpp2_port *port)
->  */
-> static int mvpp22_comphy_init(struct mvpp2_port *port)
-> {
->-	int ret;
->+	int i, ret;
-> 
->-	if (!port->comphy)
->-		return 0;
->+	for (i = 0; i < ARRAY_SIZE(port->comphys); i++) {
->+		if (!port->comphys[i])
->+			return 0;
-> 
->-	ret = phy_set_mode_ext(port->comphy, PHY_MODE_ETHERNET,
->-			       port->phy_interface);
->-	if (ret)
->-		return ret;
->+		ret = phy_set_mode_ext(port->comphys[i],
->+				       PHY_MODE_ETHERNET,
->+				       port->phy_interface);
->+		if (ret)
->+			return ret;
-> 
->-	return phy_power_on(port->comphy);
->+		ret = phy_power_on(port->comphys[i]);
->+		if (ret)
->+			return ret;
->+	}
->+
->+	return 0;
->+}
-
-It could be good to add some sanity check, to make sure we do have 2
-comphy lanes available when configuring RXAUI mode (and 4 for XAUI).
-
->+static int mvpp22_comphy_deinit(struct mvpp2_port *port)
->+{
->+	int i, ret;
->+
->+	for (i = 0; i < ARRAY_SIZE(port->comphys); i++) {
->+		if (!port->comphys[i])
->+			return 0;
->+
->+		ret = phy_power_off(port->comphys[i]);
->+		if (ret)
->+			return ret;
->+	}
->+
->+	return 0;
-> }
-> 
-> static void mvpp2_port_enable(struct mvpp2_port *port)
->@@ -3375,7 +3398,9 @@ static void mvpp2_stop_dev(struct mvpp2_port *port)
-> 
-> 	if (port->phylink)
-> 		phylink_stop(port->phylink);
->-	phy_power_off(port->comphy);
->+
->+	if (port->priv->hw_version == MVPP22)
->+		mvpp22_comphy_deinit(port);
-> }
-> 
-> static int mvpp2_check_ringparam_valid(struct net_device *dev,
->@@ -4947,7 +4972,7 @@ static void mvpp2_mac_config(struct phylink_config *config, unsigned int mode,
-> 		port->phy_interface = state->interface;
-> 
-> 		/* Reconfigure the serdes lanes */
->-		phy_power_off(port->comphy);
->+		mvpp22_comphy_deinit(port);
-> 		mvpp22_mode_reconfigure(port);
-> 	}
-> 
->@@ -5038,7 +5063,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
-> 			    struct fwnode_handle *port_fwnode,
-> 			    struct mvpp2 *priv)
-> {
->-	struct phy *comphy = NULL;
-> 	struct mvpp2_port *port;
-> 	struct mvpp2_port_pcpu *port_pcpu;
-> 	struct device_node *port_node = to_of_node(port_fwnode);
->@@ -5085,14 +5109,20 @@ static int mvpp2_port_probe(struct platform_device *pdev,
-> 		goto err_free_netdev;
-> 	}
-> 
->+	port = netdev_priv(dev);
->+
-> 	if (port_node) {
->-		comphy = devm_of_phy_get(&pdev->dev, port_node, NULL);
->-		if (IS_ERR(comphy)) {
->-			if (PTR_ERR(comphy) == -EPROBE_DEFER) {
->-				err = -EPROBE_DEFER;
->-				goto err_free_netdev;
->+		for (i = 0; i < ARRAY_SIZE(port->comphys); i++) {
->+			port->comphys[i] = devm_of_phy_get_by_index(&pdev->dev,
->+								    port_node,
->+								    i);
->+			if (IS_ERR(port->comphys[i])) {
->+				err = PTR_ERR(port->comphys[i]);
->+				port->comphys[i] = NULL;
->+				if (err == -EPROBE_DEFER)
->+					goto err_free_netdev;
->+				err = 0;
-> 			}
->-			comphy = NULL;
-> 		}
-> 	}
-> 
->@@ -5107,7 +5137,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
-> 	dev->netdev_ops = &mvpp2_netdev_ops;
-> 	dev->ethtool_ops = &mvpp2_eth_tool_ops;
-> 
->-	port = netdev_priv(dev);
-> 	port->dev = dev;
-> 	port->fwnode = port_fwnode;
-> 	port->has_phy = !!of_find_property(port_node, "phy", NULL);
->@@ -5144,7 +5173,6 @@ static int mvpp2_port_probe(struct platform_device *pdev,
-> 
-> 	port->of_node = port_node;
-> 	port->phy_interface = phy_mode;
->-	port->comphy = comphy;
-> 
-> 	if (priv->hw_version == MVPP21) {
-> 		port->base = devm_platform_ioremap_resource(pdev, 2 + id);
+As minor optimization br_vlan_add could ignore changed pointer if NULL.
+This would save places where you don't care.
 
 
+Something like:
+diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+index 021cc9f66804..bacd3543b215 100644
+--- a/net/bridge/br_vlan.c
++++ b/net/bridge/br_vlan.c
+@@ -626,10 +626,11 @@ static int br_vlan_add_existing(struct net_bridge *br,
+ 		refcount_inc(&vlan->refcnt);
+ 		vlan->flags |= BRIDGE_VLAN_INFO_BRENTRY;
+ 		vg->num_vlans++;
+-		*changed = true;
++		if (changed)
++			*changed = true;
+ 	}
+ 
+-	if (__vlan_add_flags(vlan, flags))
++	if (__vlan_add_flags(vlan, flags) && changed)
+ 		*changed = true;
+ 
+ 	return 0;
+@@ -653,7 +654,8 @@ int br_vlan_add(struct net_bridge *br, u16 vid, u16 flags, bool *changed,
+ 
+ 	ASSERT_RTNL();
+ 
+-	*changed = false;
++	if (changed)
++		*changed = false;
+ 	vg = br_vlan_group(br);
+ 	vlan = br_vlan_find(vg, vid);
+ 	if (vlan)
+@@ -679,7 +681,7 @@ int br_vlan_add(struct net_bridge *br, u16 vid, u16 flags, bool *changed,
+ 	if (ret) {
+ 		free_percpu(vlan->stats);
+ 		kfree(vlan);
+-	} else {
++	} else if (changed) {
+ 		*changed = true;
+ 	}
+ 
 
--- 
-Maxime Chevallier, Bootlin
-Embedded Linux and kernel engineering
-https://bootlin.com
