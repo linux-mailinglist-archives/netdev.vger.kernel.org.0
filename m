@@ -2,134 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF047EF6B
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 10:35:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E72F7EF7C
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 10:39:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404306AbfHBIfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 04:35:53 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41416 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730316AbfHBIfx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 04:35:53 -0400
-Received: by mail-pf1-f194.google.com with SMTP id m30so35673276pff.8;
-        Fri, 02 Aug 2019 01:35:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JAVzy6uxJGD5NKAU23oaWBpBeprdEwqZQPaxMvijZAw=;
-        b=VpmcWgho0hLUVRQPXjtitgsz69EpeXpq+ZNaEQ3clnds9anR1Imz9FwVmdj09m4SJs
-         mbLGsTRJwKkICD4GD+AOysTN9CK5X0AbCqm+U+Iehl0BNpRkx4F1obUTz0U5QiejmXbL
-         LIrUpQnSLL5bT6NGuVNVLhAoI5XiF1+UwvCcyFNyLq233Smqjbb5feikYMfiWzMEZA6o
-         ZLlpkapsg+yp9Yb0KH3pOs8xSJZxtVwYMD7kgPulWxa96BVbVlKGCJkJn4V5/jNDQSWy
-         FgMej3+OkJEAMrqx4lanhAObEUxOzA/Mp97OpKluAzcGPs9Hy4ItBYkUYOAwo7unhNTA
-         fmlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=JAVzy6uxJGD5NKAU23oaWBpBeprdEwqZQPaxMvijZAw=;
-        b=jWoynM+mSwPGH4ocZTOVf11adZmE3sV99qRRbSPGk2sL3g3Oe+KQM80gG41e0b7Dmh
-         lTRe67C6Mfe+Dors3IJRXR6dqptT+LjDd2+GQwOaffJYKodkX1/EqdNt4UENJDvb6TxD
-         CyjDcvFtsFuuL2BbgLTUja3CD2ZTmcNm5trDI6/Sf/QFFFQj1a3N6Q8gBfNUSMtakwr0
-         gjOkfSjiNSpCuISYJ+iE1FD1SDmDTfLeeB0kraKidM7QEaotIZN+QjR69RVWbetnQHbU
-         HIEuHhaPok2RwdAfiA69gEc98LTAIvKe5yYmBm2MZUZ/VPCe5gxbW02jpj8HjyytE1Me
-         JrSQ==
-X-Gm-Message-State: APjAAAWPJ9DexCk1czCmN1HOahCFcrRp9l/WP2u/R57wW1Gi29rJmtSW
-        qyy2lbWJxyXRobiea3pn30M=
-X-Google-Smtp-Source: APXvYqyOIOSmtv4+2oKCqoUt46lNtHZP38aP18g+c8nGP2pVhgj4kt6G+4fnd6qzwGlp+ZcvtLYEBw==
-X-Received: by 2002:a63:5a4d:: with SMTP id k13mr119736342pgm.174.1564734952316;
-        Fri, 02 Aug 2019 01:35:52 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id r27sm80843268pgn.25.2019.08.02.01.35.50
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 01:35:51 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH v2 2/2] cxgb4: smt: Use refcount_t for refcount
-Date:   Fri,  2 Aug 2019 16:35:47 +0800
-Message-Id: <20190802083547.12657-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S2404351AbfHBIjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 04:39:45 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:51256 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730941AbfHBIjp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 04:39:45 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 87B9E8EEDC29BFAD1BF8;
+        Fri,  2 Aug 2019 16:39:43 +0800 (CST)
+Received: from [127.0.0.1] (10.177.96.96) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Fri, 2 Aug 2019
+ 16:39:42 +0800
+Subject: Re: [PATCH net-next] net: can: Fix compiling warning
+To:     Oliver Hartkopp <socketcan@hartkopp.net>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+References: <20190802033643.84243-1-maowenan@huawei.com>
+ <0050efdb-af9f-49b9-8d83-f574b3d46a2e@hartkopp.net>
+CC:     <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+From:   maowenan <maowenan@huawei.com>
+Message-ID: <78f7288e-08bc-41cd-d5b3-668d10903528@huawei.com>
+Date:   Fri, 2 Aug 2019 16:39:37 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+In-Reply-To: <0050efdb-af9f-49b9-8d83-f574b3d46a2e@hartkopp.net>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.177.96.96]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-refcount_t is better for reference counters since its
-implementation can prevent overflows.
-So convert atomic_t ref counters to refcount_t.
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
-Changes in v2:
-  - Convert refcount from 0-base to 1-base.
 
- drivers/net/ethernet/chelsio/cxgb4/smt.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+On 2019/8/2 16:10, Oliver Hartkopp wrote:
+> On 02/08/2019 05.36, Mao Wenan wrote:
+>> There are two warings in net/can, fix them by setting bcm_sock_no_ioctlcmd
+>> and raw_sock_no_ioctlcmd as static.
+>>
+>> net/can/bcm.c:1683:5: warning: symbol 'bcm_sock_no_ioctlcmd' was not declared. Should it be static?
+>> net/can/raw.c:840:5: warning: symbol 'raw_sock_no_ioctlcmd' was not declared. Should it be static?
+>>
+>> Fixes: 473d924d7d46 ("can: fix ioctl function removal")
+>>
+>> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> 
+> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+> 
+> Thanks Mao!
+> 
+> Btw. what kind of compiler/make switches are you using so that I can see these warnings myself the next time?
+> 
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/smt.c b/drivers/net/ethernet/chelsio/cxgb4/smt.c
-index eaf1fb74689c..343887fa52aa 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/smt.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/smt.c
-@@ -57,7 +57,7 @@ struct smt_data *t4_init_smt(void)
- 		s->smtab[i].state = SMT_STATE_UNUSED;
- 		memset(&s->smtab[i].src_mac, 0, ETH_ALEN);
- 		spin_lock_init(&s->smtab[i].lock);
--		atomic_set(&s->smtab[i].refcnt, 0);
-+		refcount_set(&s->smtab[i].refcnt, 1);
- 	}
- 	return s;
- }
-@@ -68,7 +68,7 @@ static struct smt_entry *find_or_alloc_smte(struct smt_data *s, u8 *smac)
- 	struct smt_entry *e, *end;
- 
- 	for (e = &s->smtab[0], end = &s->smtab[s->smt_size]; e != end; ++e) {
--		if (atomic_read(&e->refcnt) == 0) {
-+		if (refcount_read(&e->refcnt) == 1) {
- 			if (!first_free)
- 				first_free = e;
- 		} else {
-@@ -98,7 +98,7 @@ static struct smt_entry *find_or_alloc_smte(struct smt_data *s, u8 *smac)
- static void t4_smte_free(struct smt_entry *e)
- {
- 	spin_lock_bh(&e->lock);
--	if (atomic_read(&e->refcnt) == 0) {  /* hasn't been recycled */
-+	if (refcount_read(&e->refcnt) == 1) {  /* hasn't been recycled */
- 		e->state = SMT_STATE_UNUSED;
- 	}
- 	spin_unlock_bh(&e->lock);
-@@ -111,7 +111,7 @@ static void t4_smte_free(struct smt_entry *e)
-  */
- void cxgb4_smt_release(struct smt_entry *e)
- {
--	if (atomic_dec_and_test(&e->refcnt))
-+	if (refcount_dec_and_test(&e->refcnt))
- 		t4_smte_free(e);
- }
- EXPORT_SYMBOL(cxgb4_smt_release);
-@@ -215,14 +215,14 @@ static struct smt_entry *t4_smt_alloc_switching(struct adapter *adap, u16 pfvf,
- 	e = find_or_alloc_smte(s, smac);
- 	if (e) {
- 		spin_lock(&e->lock);
--		if (!atomic_read(&e->refcnt)) {
--			atomic_set(&e->refcnt, 1);
-+		if (refcount_read(&e->refcnt) == 1) {
-+			refcount_set(&e->refcnt, 2);
- 			e->state = SMT_STATE_SWITCHING;
- 			e->pfvf = pfvf;
- 			memcpy(e->src_mac, smac, ETH_ALEN);
- 			write_smt_entry(adap, e);
- 		} else {
--			atomic_inc(&e->refcnt);
-+			refcount_inc(&e->refcnt);
- 		}
- 		spin_unlock(&e->lock);
- 	}
--- 
-2.20.1
+I use ARCH=mips CROSS_COMPILE=mips-linux-gnu- .
+
+> Best regards,
+> Oliver
+> 
+>> ---
+>>   net/can/bcm.c | 2 +-
+>>   net/can/raw.c | 2 +-
+>>   2 files changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/net/can/bcm.c b/net/can/bcm.c
+>> index bf1d0bbecec8..b8a32b4ac368 100644
+>> --- a/net/can/bcm.c
+>> +++ b/net/can/bcm.c
+>> @@ -1680,7 +1680,7 @@ static int bcm_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>       return size;
+>>   }
+>>   -int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
+>> +static int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
+>>                unsigned long arg)
+>>   {
+>>       /* no ioctls for socket layer -> hand it down to NIC layer */
+>> diff --git a/net/can/raw.c b/net/can/raw.c
+>> index da386f1fa815..a01848ff9b12 100644
+>> --- a/net/can/raw.c
+>> +++ b/net/can/raw.c
+>> @@ -837,7 +837,7 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>       return size;
+>>   }
+>>   -int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
+>> +static int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
+>>                unsigned long arg)
+>>   {
+>>       /* no ioctls for socket layer -> hand it down to NIC layer */
+>>
+> 
+> .
+> 
 
