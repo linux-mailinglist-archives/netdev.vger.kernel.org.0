@@ -2,37 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B46EF7FAA5
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:34:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC2427FAA3
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405562AbfHBNdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 09:33:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33678 "EHLO mail.kernel.org"
+        id S2405503AbfHBNdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 09:33:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33712 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393902AbfHBNXH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Aug 2019 09:23:07 -0400
+        id S1732368AbfHBNXJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 09:23:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2F3D621841;
-        Fri,  2 Aug 2019 13:23:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 683F1217D4;
+        Fri,  2 Aug 2019 13:23:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564752187;
-        bh=7WIf34cST46uvpdgsEeIiMoiWhc4fBAvjeuIenOGkxg=;
+        s=default; t=1564752188;
+        bh=luGPwrsMzBhqsBsjmDOagWeS2+zn0+WUsPIMCrUf+ek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MAYaRKE6EQ9CTjSxiDSzXyXWgc8RAZANqERWEifuOOj41LPQ5O6/RtQOEUkeQ8pVr
-         yW52jpNUT0qFXCRaDzYsM1p8eK4NpQCVO0GzRnEuL3j6S3E4/id3pvBIVpqOxoTvnU
-         Dan95/5rW9QFjjBm8v+s5I/WPICQk9F36xXnvDfc=
+        b=IcDq8NHDwgNXWO2A4JXS5/mZGzyrBAZN0eOy4G87/fPxPKF8oxoVvZnXsFd+/tfk7
+         3r1bY59tU23JiLeZkKsSLGgg7NRTMEPb9PYCB220EQ5LwlQrnHRhJeqY3W3ExZzPx1
+         +weWoBhG8fe65bmLzIcclTnSXP74wbgNTrIM3bBk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miaohe Lin <linmiaohe@huawei.com>,
+Cc:     Florian Westphal <fw@strlen.de>,
+        Jakub Jankowski <shasta@toxcorp.com>,
+        Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>,
         Pablo Neira Ayuso <pablo@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 03/42] netfilter: Fix rpfilter dropping vrf packets by mistake
-Date:   Fri,  2 Aug 2019 09:22:23 -0400
-Message-Id: <20190802132302.13537-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 04/42] netfilter: conntrack: always store window size un-scaled
+Date:   Fri,  2 Aug 2019 09:22:24 -0400
+Message-Id: <20190802132302.13537-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190802132302.13537-1-sashal@kernel.org>
 References: <20190802132302.13537-1-sashal@kernel.org>
@@ -45,64 +47,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Miaohe Lin <linmiaohe@huawei.com>
+From: Florian Westphal <fw@strlen.de>
 
-[ Upstream commit b575b24b8eee37f10484e951b62ce2a31c579775 ]
+[ Upstream commit 959b69ef57db00cb33e9c4777400ae7183ebddd3 ]
 
-When firewalld is enabled with ipv4/ipv6 rpfilter, vrf
-ipv4/ipv6 packets will be dropped. Vrf device will pass
-through netfilter hook twice. One with enslaved device
-and another one with l3 master device. So in device may
-dismatch witch out device because out device is always
-enslaved device.So failed with the check of the rpfilter
-and drop the packets by mistake.
+Jakub Jankowski reported following oddity:
 
-Signed-off-by: Miaohe Lin <linmiaohe@huawei.com>
+After 3 way handshake completes, timeout of new connection is set to
+max_retrans (300s) instead of established (5 days).
+
+shortened excerpt from pcap provided:
+25.070622 IP (flags [DF], proto TCP (6), length 52)
+10.8.5.4.1025 > 10.8.1.2.80: Flags [S], seq 11, win 64240, [wscale 8]
+26.070462 IP (flags [DF], proto TCP (6), length 48)
+10.8.1.2.80 > 10.8.5.4.1025: Flags [S.], seq 82, ack 12, win 65535, [wscale 3]
+27.070449 IP (flags [DF], proto TCP (6), length 40)
+10.8.5.4.1025 > 10.8.1.2.80: Flags [.], ack 83, win 512, length 0
+
+Turns out the last_win is of u16 type, but we store the scaled value:
+512 << 8 (== 0x20000) becomes 0 window.
+
+The Fixes tag is not correct, as the bug has existed forever, but
+without that change all that this causes might cause is to mistake a
+window update (to-nonzero-from-zero) for a retransmit.
+
+Fixes: fbcd253d2448b8 ("netfilter: conntrack: lower timeout to RETRANS seconds if window is 0")
+Reported-by: Jakub Jankowski <shasta@toxcorp.com>
+Tested-by: Jakub Jankowski <shasta@toxcorp.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Acked-by: Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv4/netfilter/ipt_rpfilter.c  | 1 +
- net/ipv6/netfilter/ip6t_rpfilter.c | 8 ++++++--
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ net/netfilter/nf_conntrack_proto_tcp.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
-index 12843c9ef1421..74b19a5c572e9 100644
---- a/net/ipv4/netfilter/ipt_rpfilter.c
-+++ b/net/ipv4/netfilter/ipt_rpfilter.c
-@@ -96,6 +96,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
- 	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
- 	flow.flowi4_tos = RT_TOS(iph->tos);
- 	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
-+	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
+diff --git a/net/netfilter/nf_conntrack_proto_tcp.c b/net/netfilter/nf_conntrack_proto_tcp.c
+index 842f3f86fb2e7..7011ab27c4371 100644
+--- a/net/netfilter/nf_conntrack_proto_tcp.c
++++ b/net/netfilter/nf_conntrack_proto_tcp.c
+@@ -480,6 +480,7 @@ static bool tcp_in_window(const struct nf_conn *ct,
+ 	struct ip_ct_tcp_state *receiver = &state->seen[!dir];
+ 	const struct nf_conntrack_tuple *tuple = &ct->tuplehash[dir].tuple;
+ 	__u32 seq, ack, sack, end, win, swin;
++	u16 win_raw;
+ 	s32 receiver_offset;
+ 	bool res, in_recv_win;
  
- 	return rpfilter_lookup_reverse(xt_net(par), &flow, xt_in(par), info->flags) ^ invert;
- }
-diff --git a/net/ipv6/netfilter/ip6t_rpfilter.c b/net/ipv6/netfilter/ip6t_rpfilter.c
-index c3c6b09acdc4f..0f3407f2851ed 100644
---- a/net/ipv6/netfilter/ip6t_rpfilter.c
-+++ b/net/ipv6/netfilter/ip6t_rpfilter.c
-@@ -58,7 +58,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
- 	if (rpfilter_addr_linklocal(&iph->saddr)) {
- 		lookup_flags |= RT6_LOOKUP_F_IFACE;
- 		fl6.flowi6_oif = dev->ifindex;
--	} else if ((flags & XT_RPFILTER_LOOSE) == 0)
-+	/* Set flowi6_oif for vrf devices to lookup route in l3mdev domain. */
-+	} else if (netif_is_l3_master(dev) || netif_is_l3_slave(dev) ||
-+		  (flags & XT_RPFILTER_LOOSE) == 0)
- 		fl6.flowi6_oif = dev->ifindex;
+@@ -488,7 +489,8 @@ static bool tcp_in_window(const struct nf_conn *ct,
+ 	 */
+ 	seq = ntohl(tcph->seq);
+ 	ack = sack = ntohl(tcph->ack_seq);
+-	win = ntohs(tcph->window);
++	win_raw = ntohs(tcph->window);
++	win = win_raw;
+ 	end = segment_seq_plus_len(seq, skb->len, dataoff, tcph);
  
- 	rt = (void *)ip6_route_lookup(net, &fl6, skb, lookup_flags);
-@@ -73,7 +75,9 @@ static bool rpfilter_lookup_reverse6(struct net *net, const struct sk_buff *skb,
- 		goto out;
- 	}
- 
--	if (rt->rt6i_idev->dev == dev || (flags & XT_RPFILTER_LOOSE))
-+	if (rt->rt6i_idev->dev == dev ||
-+	    l3mdev_master_ifindex_rcu(rt->rt6i_idev->dev) == dev->ifindex ||
-+	    (flags & XT_RPFILTER_LOOSE))
- 		ret = true;
-  out:
- 	ip6_rt_put(rt);
+ 	if (receiver->flags & IP_CT_TCP_FLAG_SACK_PERM)
+@@ -663,14 +665,14 @@ static bool tcp_in_window(const struct nf_conn *ct,
+ 			    && state->last_seq == seq
+ 			    && state->last_ack == ack
+ 			    && state->last_end == end
+-			    && state->last_win == win)
++			    && state->last_win == win_raw)
+ 				state->retrans++;
+ 			else {
+ 				state->last_dir = dir;
+ 				state->last_seq = seq;
+ 				state->last_ack = ack;
+ 				state->last_end = end;
+-				state->last_win = win;
++				state->last_win = win_raw;
+ 				state->retrans = 0;
+ 			}
+ 		}
 -- 
 2.20.1
 
