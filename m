@@ -2,89 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BADD47F4B6
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 12:10:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B7C47F4F2
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 12:22:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390070AbfHBKIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 06:08:12 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:40252 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728855AbfHBKIL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 06:08:11 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id EFA426079C; Fri,  2 Aug 2019 10:08:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1564740491;
-        bh=xz9w0+aLOrKW8e4WbfqeN6YPcjyXc3C+PdLcAJ/KxeA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=EsT4dukRw4sikWspz/rvp2DfOqglRWlAQ63oc5eEzT9LuD6B+MWy7PTeRf1uFcHDm
-         9AENIQzscv83SHdZGN7mR7bU1MQRpLNHJ2fHgFLwzPZin4qEE1zufrqFIpLhlpEsoi
-         pSFfJe/uCmgUOyny7xRXle6dMJsAJNv6KpHka/mo=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 835F46055D;
-        Fri,  2 Aug 2019 10:08:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1564740489;
-        bh=xz9w0+aLOrKW8e4WbfqeN6YPcjyXc3C+PdLcAJ/KxeA=;
-        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
-        b=la29ZdGcyC0KI0VVTOIu6v6lVSBzfZ27VvHODNQVelTnj1pzwuS/BPMPjvW9setie
-         tmjHW8n6dTJMm3ViQcZrvXKFQqKTFB2Q1XBbF5a1CCUWtvW5MFg77wPeR9VCc1tKvd
-         JUee3GiaBJcfz0XiX5aL+8yJya2ofGisYIzzfhYc=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 835F46055D
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Thomas Gleixner <tglx@linutronix.de>
-Cc:     netdev@vger.kernel.org, b43-dev@lists.infradead.org,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        linux-wireless@vger.kernel.org
-Subject: Re: [PATCH] b43legacy: Remove pointless cond_resched() wrapper
-References: <alpine.DEB.2.21.1907262157500.1791@nanos.tec.linutronix.de>
-Date:   Fri, 02 Aug 2019 13:08:05 +0300
-In-Reply-To: <alpine.DEB.2.21.1907262157500.1791@nanos.tec.linutronix.de>
-        (Thomas Gleixner's message of "Fri, 26 Jul 2019 22:00:23 +0200
-        (CEST)")
-Message-ID: <877e7vkhh6.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S2391349AbfHBKW3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 06:22:29 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:49648 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731757AbfHBKW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 06:22:28 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1htUhc-0001k3-1s; Fri, 02 Aug 2019 10:22:24 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][net-next] net/mlx5: remove self-assignment on esw->dev
+Date:   Fri,  2 Aug 2019 11:22:23 +0100
+Message-Id: <20190802102223.26198-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ linux-wireless
+From: Colin Ian King <colin.king@canonical.com>
 
-Thomas Gleixner <tglx@linutronix.de> writes:
+There is a self assignment of esw->dev to itself, clean this up by
+removing it.
 
-> cond_resched() can be used unconditionally. If CONFIG_PREEMPT is set, it
-> becomes a NOP scheduler wise.
->
-> Also the B43_BUG_ON() in that wrapper is a homebrewn variant of
-> __might_sleep() which is part of cond_resched() already.
->
-> Remove the wrapper and invoke cond_resched() directly.
->
-> Found while looking for CONFIG_PREEMPT dependent code treewide.
->
-> Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-> Cc: netdev@vger.kernel.org
-> Cc: b43-dev@lists.infradead.org
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: Larry Finger <Larry.Finger@lwfinger.net>
+Addresses-Coverity: ("Self assignment")
+Fixes: 6cedde451399 ("net/mlx5: E-Switch, Verify support QoS element type")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I use patchwork and this doesn't show there as our patchwork follows
-only linux-wireless linux. Can you resend and Cc also
-linux-wireless@vger.kernel.org, please?
-
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index f4ace5f8e884..de0894b695e3 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1413,7 +1413,7 @@ static int esw_vport_egress_config(struct mlx5_eswitch *esw,
+ 
+ static bool element_type_supported(struct mlx5_eswitch *esw, int type)
+ {
+-	struct mlx5_core_dev *dev = esw->dev = esw->dev;
++	struct mlx5_core_dev *dev = esw->dev;
+ 
+ 	switch (type) {
+ 	case SCHEDULING_CONTEXT_ELEMENT_TYPE_TSAR:
 -- 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+2.20.1
+
