@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 147A37F85E
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:20:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E148C7F87F
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393263AbfHBNUB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 09:20:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58268 "EHLO mail.kernel.org"
+        id S2393422AbfHBNUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 09:20:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2393219AbfHBNUA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Aug 2019 09:20:00 -0400
+        id S2393409AbfHBNUh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 09:20:37 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 933EC2173E;
-        Fri,  2 Aug 2019 13:19:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AD94121841;
+        Fri,  2 Aug 2019 13:20:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564751999;
-        bh=9TxTll9Z0mfDh39XszPEil6aDryKKS/LmBELjU1miPg=;
+        s=default; t=1564752036;
+        bh=APQlIZNNtq6raPbDv8u/kL/aZQAC1kTYsHljTaTbghA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d6IAOIxmXdl9bsz9n6pgaUDmAdOtB+4q5oEGkla1XpAPlY6nI5yA9gpcAf1OYVj+x
-         mySlvLvMkWzyPvP6+St0/5wunIM0gH8nvi1hziZgAjPI4rxJFqtFDJYUTpNRq6s2L+
-         Aso6LT/hRG1VH5ByYRTLWdYJ+o3fuUVpVXztYwis=
+        b=xbZbKS+IyShnBeJOE7oK8Ot+IYpPBpR1UdpjDqBcOmwQSSBuAVST+OVAJthDLm6F/
+         BMBVEHnOZ5TTrJQ6ZpRj/8d4U9HsJlV+yjsS/jqQCeA2VuekYuqRMqpbCPYI4DghRS
+         CdW8YyEzfEPBL6n0SfaIBHoDoyaTbZRngN2ApgxE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christian Hesse <mail@eworm.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Johannes Berg <johannes.berg@intel.com>,
         Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 06/76] netfilter: nf_tables: fix module autoload for redir
-Date:   Fri,  2 Aug 2019 09:18:40 -0400
-Message-Id: <20190802131951.11600-6-sashal@kernel.org>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 29/76] mac80211: don't warn about CW params when not using them
+Date:   Fri,  2 Aug 2019 09:19:03 -0400
+Message-Id: <20190802131951.11600-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190802131951.11600-1-sashal@kernel.org>
 References: <20190802131951.11600-1-sashal@kernel.org>
@@ -45,30 +44,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christian Hesse <mail@eworm.de>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit f41828ee10b36644bb2b2bfa9dd1d02f55aa0516 ]
+[ Upstream commit d2b3fe42bc629c2d4002f652b3abdfb2e72991c7 ]
 
-Fix expression for autoloading.
+ieee80211_set_wmm_default() normally sets up the initial CW min/max for
+each queue, except that it skips doing this if the driver doesn't
+support ->conf_tx. We still end up calling drv_conf_tx() in some cases
+(e.g., ieee80211_reconfig()), which also still won't do anything
+useful...except it complains here about the invalid CW parameters.
 
-Fixes: 5142967ab524 ("netfilter: nf_tables: fix module autoload with inet family")
-Signed-off-by: Christian Hesse <mail@eworm.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Let's just skip the WARN if we weren't going to do anything useful with
+the parameters.
+
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Link: https://lore.kernel.org/r/20190718015712.197499-1-briannorris@chromium.org
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/nft_redir.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/mac80211/driver-ops.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/net/netfilter/nft_redir.c b/net/netfilter/nft_redir.c
-index 8487eeff5c0ec..43eeb1f609f13 100644
---- a/net/netfilter/nft_redir.c
-+++ b/net/netfilter/nft_redir.c
-@@ -291,4 +291,4 @@ module_exit(nft_redir_module_exit);
+diff --git a/net/mac80211/driver-ops.c b/net/mac80211/driver-ops.c
+index acd4afb4944b8..c9a8a2433e8ac 100644
+--- a/net/mac80211/driver-ops.c
++++ b/net/mac80211/driver-ops.c
+@@ -187,11 +187,16 @@ int drv_conf_tx(struct ieee80211_local *local,
+ 	if (!check_sdata_in_driver(sdata))
+ 		return -EIO;
  
- MODULE_LICENSE("GPL");
- MODULE_AUTHOR("Arturo Borrero Gonzalez <arturo@debian.org>");
--MODULE_ALIAS_NFT_EXPR("nat");
-+MODULE_ALIAS_NFT_EXPR("redir");
+-	if (WARN_ONCE(params->cw_min == 0 ||
+-		      params->cw_min > params->cw_max,
+-		      "%s: invalid CW_min/CW_max: %d/%d\n",
+-		      sdata->name, params->cw_min, params->cw_max))
++	if (params->cw_min == 0 || params->cw_min > params->cw_max) {
++		/*
++		 * If we can't configure hardware anyway, don't warn. We may
++		 * never have initialized the CW parameters.
++		 */
++		WARN_ONCE(local->ops->conf_tx,
++			  "%s: invalid CW_min/CW_max: %d/%d\n",
++			  sdata->name, params->cw_min, params->cw_max);
+ 		return -EINVAL;
++	}
+ 
+ 	trace_drv_conf_tx(local, sdata, ac, params);
+ 	if (local->ops->conf_tx)
 -- 
 2.20.1
 
