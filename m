@@ -2,112 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD20E7FFE1
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 19:51:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B67A7FFE8
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 19:52:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405555AbfHBRvF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 13:51:05 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:40228 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388634AbfHBRvF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 13:51:05 -0400
-Received: from cpe-2606-a000-111b-6140-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:6140::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1htbhe-0003l5-MV; Fri, 02 Aug 2019 13:50:59 -0400
-Date:   Fri, 2 Aug 2019 13:50:22 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: sctp: Rename fallthrough label to unhandled
-Message-ID: <20190802175022.GB6957@hmswarspite.think-freely.org>
-References: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
+        id S2436672AbfHBRwA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 13:52:00 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:41748 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405555AbfHBRv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 13:51:59 -0400
+Received: by mail-pg1-f193.google.com with SMTP id x15so26076546pgg.8
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 10:51:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-transfer-encoding:content-language;
+        bh=2NF118ohkpMSq+LddurSp4t7mX6YWZVIC7WvM4KdDTs=;
+        b=jIl9vJlgWgd+Q1n/izxSZ0zsUHcnvrrGLqoOxCSr8AHnBMBxhXYH0gS6yWnGhkCQb3
+         FQ/ajBMeSDRaiEkS5IxrWVrWm6r1e6OydVPW+GTpb0jRa5ygYX9m8C7DWL3iusXjxNof
+         t9w3c3sMtup1s4Mv1uR+TvsZHKXHXdh8ngPmJMMRb5OpjM+a51BzvCriiaOMReDiGUYk
+         /Ok+l6T2CZft94MU+el/UKUTN/JLf4x8Fyh6Fh/qTaWESoLhSL2uA1c8wb7x6u0CyFwE
+         DspHhRYH28bYKDrETtnuvoZiXE21uc/Ma5QdAcoShjfv+AM7eFTzYbt8tswvluGaC04o
+         QcsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=2NF118ohkpMSq+LddurSp4t7mX6YWZVIC7WvM4KdDTs=;
+        b=SpoyEa6KwDm+J2/mmQ8v5Anloc/MHZi2vLw8EsIXYu7bDMhmR0SUJqjs2YGwtZX+Fq
+         6FZwZY8UhvoQSY8VmGke5B+RQcN15Xkg3LPPqQ3Gm5v4kTC18IaD1s+EUiMFIgU5mRAL
+         IEJl1dVAy2m+Y8XjSWO9SDJV4LLDaitJzj58lf75hfGNI7x7GadPGuPfuF5ybDmZAYBj
+         J4QDfi7zF4FCkvkU8whiOvS/nQ0+rnwnvPwVITcb9B4Vi+DcBBNpc+I5ipeepcD2R27d
+         nxD9r9LMfTAC+nxJR0yvi/UybRBFKe1EXbat1BRDprQeKNIBKLvbcZuQLVHeQB7mYZ1E
+         IFEg==
+X-Gm-Message-State: APjAAAXI3s3iNCfiskBPOq1nvGjJ6vcjzuq3IlVl+Xt1JgVJfYxj4S/d
+        byX9xp6Gr15979qCBF7xGJ8=
+X-Google-Smtp-Source: APXvYqzCeBr2eMTzekEXSN1HLSOl0sJDG9pP2mbCfvZb4jB9g6HWlU1z27pb+1ZqO9HtwzKB0xz7Ow==
+X-Received: by 2002:a63:1046:: with SMTP id 6mr128575817pgq.111.1564768318998;
+        Fri, 02 Aug 2019 10:51:58 -0700 (PDT)
+Received: from [192.168.0.16] ([97.115.142.179])
+        by smtp.gmail.com with ESMTPSA id t7sm7129336pjq.15.2019.08.02.10.51.57
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 02 Aug 2019 10:51:58 -0700 (PDT)
+Subject: Re: [PATCH net-next] openvswitch: Print error when
+ ovs_execute_actions() fails
+To:     Yifeng Sun <pkusunyifeng@gmail.com>, netdev@vger.kernel.org,
+        pshelar@ovn.org
+References: <1564694047-4859-1-git-send-email-pkusunyifeng@gmail.com>
+From:   Gregory Rose <gvrose8192@gmail.com>
+Message-ID: <91335f0c-95dc-bbb6-f815-8e90d6f18874@gmail.com>
+Date:   Fri, 2 Aug 2019 10:51:56 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+In-Reply-To: <1564694047-4859-1-git-send-email-pkusunyifeng@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jul 30, 2019 at 10:04:37PM -0700, Joe Perches wrote:
-> fallthrough may become a pseudo reserved keyword so this only use of
-> fallthrough is better renamed to allow it.
-> 
-> Signed-off-by: Joe Perches <joe@perches.com>
+On 8/1/2019 2:14 PM, Yifeng Sun wrote:
+> Currently in function ovs_dp_process_packet(), return values of
+> ovs_execute_actions() are silently discarded. This patch prints out
+> an error message when error happens so as to provide helpful hints
+> for debugging.
+>
+> Signed-off-by: Yifeng Sun <pkusunyifeng@gmail.com>
 > ---
->  net/sctp/sm_make_chunk.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-> index 36bd8a6e82df..3fdcaa2fbf12 100644
-> --- a/net/sctp/sm_make_chunk.c
-> +++ b/net/sctp/sm_make_chunk.c
-> @@ -2152,7 +2152,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
->  	case SCTP_PARAM_SET_PRIMARY:
->  		if (net->sctp.addip_enable)
->  			break;
-> -		goto fallthrough;
-> +		goto unhandled;
->  
->  	case SCTP_PARAM_HOST_NAME_ADDRESS:
->  		/* Tell the peer, we won't support this param.  */
-> @@ -2163,11 +2163,11 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
->  	case SCTP_PARAM_FWD_TSN_SUPPORT:
->  		if (ep->prsctp_enable)
->  			break;
-> -		goto fallthrough;
-> +		goto unhandled;
->  
->  	case SCTP_PARAM_RANDOM:
->  		if (!ep->auth_enable)
-> -			goto fallthrough;
-> +			goto unhandled;
->  
->  		/* SCTP-AUTH: Secion 6.1
->  		 * If the random number is not 32 byte long the association
-> @@ -2184,7 +2184,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
->  
->  	case SCTP_PARAM_CHUNKS:
->  		if (!ep->auth_enable)
-> -			goto fallthrough;
-> +			goto unhandled;
->  
->  		/* SCTP-AUTH: Section 3.2
->  		 * The CHUNKS parameter MUST be included once in the INIT or
-> @@ -2200,7 +2200,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
->  
->  	case SCTP_PARAM_HMAC_ALGO:
->  		if (!ep->auth_enable)
-> -			goto fallthrough;
-> +			goto unhandled;
->  
->  		hmacs = (struct sctp_hmac_algo_param *)param.p;
->  		n_elt = (ntohs(param.p->length) -
-> @@ -2223,7 +2223,7 @@ static enum sctp_ierror sctp_verify_param(struct net *net,
->  			retval = SCTP_IERROR_ABORT;
->  		}
->  		break;
-> -fallthrough:
-> +unhandled:
->  	default:
->  		pr_debug("%s: unrecognized param:%d for chunk:%d\n",
->  			 __func__, ntohs(param.p->type), cid);
-> -- 
-> 2.15.0
-> 
-> 
-Yeah, it seems reasonable to me, though I'm still not comfortable with defining
-fallthrough as a macrotized keyword, but thats a debate for another thread
+>   net/openvswitch/datapath.c | 7 +++++--
+>   1 file changed, 5 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> index 892287d..603c533 100644
+> --- a/net/openvswitch/datapath.c
+> +++ b/net/openvswitch/datapath.c
+> @@ -222,6 +222,7 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+>   	struct dp_stats_percpu *stats;
+>   	u64 *stats_counter;
+>   	u32 n_mask_hit;
+> +	int error;
+>   
+>   	stats = this_cpu_ptr(dp->stats_percpu);
+>   
+> @@ -229,7 +230,6 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+>   	flow = ovs_flow_tbl_lookup_stats(&dp->table, key, &n_mask_hit);
+>   	if (unlikely(!flow)) {
+>   		struct dp_upcall_info upcall;
+> -		int error;
+>   
+>   		memset(&upcall, 0, sizeof(upcall));
+>   		upcall.cmd = OVS_PACKET_CMD_MISS;
+> @@ -246,7 +246,10 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+>   
+>   	ovs_flow_stats_update(flow, key->tp.flags, skb);
+>   	sf_acts = rcu_dereference(flow->sf_acts);
+> -	ovs_execute_actions(dp, skb, sf_acts, key);
+> +	error = ovs_execute_actions(dp, skb, sf_acts, key);
+> +	if (unlikely(error))
+> +		net_err_ratelimited("ovs: action execution error on datapath %s: %d\n",
+> +							ovs_dp_name(dp), error);
+>   
+>   	stats_counter = &stats->n_hit;
+>   
 
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
+Thanks Yifeng.
+
+Reviewed-by: Greg Rose <gvrose8192@gmail.com>
 
