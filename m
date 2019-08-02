@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 605F37E81D
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:20:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 439DC7E957
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:24:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390913AbfHBCUp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 22:20:45 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:36745 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390798AbfHBCUl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:41 -0400
-Received: by mail-pl1-f196.google.com with SMTP id k8so33033470plt.3;
-        Thu, 01 Aug 2019 19:20:40 -0700 (PDT)
+        id S2389584AbfHBCYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 22:24:32 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40256 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390887AbfHBCUn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:20:43 -0400
+Received: by mail-pl1-f195.google.com with SMTP id a93so32956633pla.7;
+        Thu, 01 Aug 2019 19:20:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Zk7mJfsjIPJK9Qgsn0u5osZJajJrXebF0c1tZrgdgoI=;
-        b=nL5gA8HkBp1qUXL8uSk44yRPDpQM1GzztnKY+vjFkpLO4+ej8Ho3KCm6C4y+E5m8LE
-         h9Iaftsjh1UsJUr+Pb21bHX0tSSHXapiGzhmehbpJMXTX/8OVSokepo7ZYp/sAOufRJM
-         Dn+Q/LNbJL1I2nNGcQbJ8ZQUaKHbOXUsbWTmj876BCAWOoZWZ6NdZCYaUx//X8gLE1Fe
-         Ao4iR+EL7uUQrdQvqWcLAimsvB7jPrqJUl8VTCYTJSYJDpeTKlwz9tVoL0Kex6hlm0oH
-         POKBdW3YOuZavjeRiRdEl20H0UanKpKGw2d45prgvnfRqnKjFtcxDl+Dci+NMwFW+1GP
-         a0XA==
+        bh=py067aGaFWqYQnWW3CrL2Yk9VWIyNl4WEpwUsrZ7LgI=;
+        b=lOZaOBHnHG96U7CUpGeMR/TMYtjEa4y/ygakLmz0BtnL+pIOpa3C2toztsy8fW4gwW
+         tSTtviLJ7HOi9DtUi5KI4XY0WPu2eSdUBZVMSVezuKPLNyCDQwUs6J0/BBBZ+6xhu24Z
+         FFakCBm8lWNZ+G5ej5b+50tyKMtD+b21oulPMq7HB8nLNBdaEf18LO4IyZXO6FYAkAZH
+         Gf/avj3rVBNxZL42D+4KJvp1yOXbbtpENzFq10jG7FxODtHOFfbvskOX/bZ+DtIk1XsS
+         LtXAfdLjn1YTVqg0w1Z1LAlYkVjy6XQT7mshmHFnFkvQYLq3O8bZzk73cr7CrbSrM5zf
+         ODTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Zk7mJfsjIPJK9Qgsn0u5osZJajJrXebF0c1tZrgdgoI=;
-        b=TqWGNxAa9xTzZ6eTxQtVeXu0BqbtE5RovYv1uXo2HtK9iBvecz6PZX/FBw9eAVpLMH
-         9B1tbz2k3ycmBKA/CZ2+tZlMZEEDUq+ytS9rJ2dS/PhAMA3vvK/fsKJ08lA6ZBbgb06x
-         RwhQ3NeSe8rnbQ2WQD2spuerX6VX5mY2XnOdNhy7AE3hozcafrXW4aJZ7nM0oNR5DsxJ
-         A5ZWo526LXllNbwpxrAH4SWvjOglFfBlI0y2j1DO28u5qTisAP1nnyp7T+TYsGHIQkxC
-         8Lp8UjWv2nxhxntPyAJuWT3438v6k6FEyCqqavjrjWPGJp7vDIw9UQlccp0eqgkl/o1S
-         6rSQ==
-X-Gm-Message-State: APjAAAWLCv6BlwngHn5AckS0e+Js3dH7M6wJNrx/ZbSwSK9PlvIJe9j5
-        SHKlpOKqUW4KkyhMoD6hm70=
-X-Google-Smtp-Source: APXvYqztsbUVpJnR1pWJXE324fW+SugJBxHHKLNQRZirN/VnD1v0OsiDr/qT4pG5Y0OOV3QlfOZRKQ==
-X-Received: by 2002:a17:902:830c:: with SMTP id bd12mr131600821plb.237.1564712440479;
-        Thu, 01 Aug 2019 19:20:40 -0700 (PDT)
+        bh=py067aGaFWqYQnWW3CrL2Yk9VWIyNl4WEpwUsrZ7LgI=;
+        b=SL/bais7NVPH29Z/8a4FEePoGBBgQ1pTySc/RHcHorDatt1/g7FdafoTokYC1v3O/F
+         ESYEpKpzH0s+NHjHI7tLp9B3S3XZAL0WX0tHDjmmUfgIxbpcWpO/7MTI3h/Z7qyUuFwk
+         MetwbhV37c4cM1ERZgDI/0K8gl+ecGcrCosc8O0mhilbKepA6k/a+9OWmqET2Lk95Em8
+         Y42LhYNyN1K/NC1cewhPkIr6aSogjbLPeCAx5iX+OBpCb3uqrO4YEPxJjoOBdVq49Xyh
+         tlWNB7h2iFtpSeb9XmhBczTqDPmwsk4o4Kb+nghSMBenoqPSMLp76AOSgoYFC0MBNBkc
+         paQg==
+X-Gm-Message-State: APjAAAWQ1Q6mbjSJeVV6uItnNly9RyMSWQNM0ILwR1+gDCNUcFaLF50R
+        l+MpYUJIxNeitVKSXOg+izE=
+X-Google-Smtp-Source: APXvYqxy0BkUtbl8ULTboF2upH0nHFnxM+Cu1b4hTcaSsJxULdUpLCIdwe/mZoVo5hGjgo4EZJg93Q==
+X-Received: by 2002:a17:902:f46:: with SMTP id 64mr130019975ply.235.1564712441986;
+        Thu, 01 Aug 2019 19:20:41 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.39
+        by smtp.gmail.com with ESMTPSA id u9sm38179744pgc.5.2019.08.01.19.20.40
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 01 Aug 2019 19:20:40 -0700 (PDT)
+        Thu, 01 Aug 2019 19:20:41 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,14 +67,12 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Kees Cook <keescook@chromium.org>,
         Al Viro <viro@zeniv.linux.org.uk>,
-        Bhumika Goyal <bhumirks@gmail.com>,
-        Arvind Yadav <arvind.yadav.cs@gmail.com>
-Subject: [PATCH 18/34] fbdev/pvr2fb: convert put_page() to put_user_page*()
-Date:   Thu,  1 Aug 2019 19:19:49 -0700
-Message-Id: <20190802022005.5117-19-jhubbard@nvidia.com>
+        Kees Cook <keescook@chromium.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 19/34] fsl_hypervisor: convert put_page() to put_user_page*()
+Date:   Thu,  1 Aug 2019 19:19:50 -0700
+Message-Id: <20190802022005.5117-20-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190802022005.5117-1-jhubbard@nvidia.com>
 References: <20190802022005.5117-1-jhubbard@nvidia.com>
@@ -95,32 +93,37 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
-Cc: Kees Cook <keescook@chromium.org>
+This changes the release code slightly, because each page slot in the
+page_list[] array is no longer checked for NULL. However, that check
+was wrong anyway, because the get_user_pages() pattern of usage here
+never allowed for NULL entries within a range of pinned pages.
+
 Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Bhumika Goyal <bhumirks@gmail.com>
-Cc: Arvind Yadav <arvind.yadav.cs@gmail.com>
-Cc: dri-devel@lists.freedesktop.org
-Cc: linux-fbdev@vger.kernel.org
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Rob Herring <robh@kernel.org>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/video/fbdev/pvr2fb.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/virt/fsl_hypervisor.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/video/fbdev/pvr2fb.c b/drivers/video/fbdev/pvr2fb.c
-index 7ff4b6b84282..0e4f9aa6444d 100644
---- a/drivers/video/fbdev/pvr2fb.c
-+++ b/drivers/video/fbdev/pvr2fb.c
-@@ -700,8 +700,7 @@ static ssize_t pvr2fb_write(struct fb_info *info, const char *buf,
- 	ret = count;
+diff --git a/drivers/virt/fsl_hypervisor.c b/drivers/virt/fsl_hypervisor.c
+index 93d5bebf9572..a8f78d572c45 100644
+--- a/drivers/virt/fsl_hypervisor.c
++++ b/drivers/virt/fsl_hypervisor.c
+@@ -292,11 +292,8 @@ static long ioctl_memcpy(struct fsl_hv_ioctl_memcpy __user *p)
+ 		virt_to_phys(sg_list), num_pages);
  
- out_unmap:
--	for (i = 0; i < nr_pages; i++)
--		put_page(pages[i]);
-+	put_user_pages(pages, nr_pages);
+ exit:
+-	if (pages) {
+-		for (i = 0; i < num_pages; i++)
+-			if (pages[i])
+-				put_page(pages[i]);
+-	}
++	if (pages)
++		put_user_pages(pages, num_pages);
  
+ 	kfree(sg_list_unaligned);
  	kfree(pages);
- 
 -- 
 2.22.0
 
