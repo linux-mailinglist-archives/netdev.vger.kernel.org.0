@@ -2,104 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05D597EA5E
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:38:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E86E97EA6F
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:40:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727502AbfHBCiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 22:38:07 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:55020 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726340AbfHBCiH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:38:07 -0400
-Received: by mail-io1-f72.google.com with SMTP id n8so81399531ioo.21
-        for <netdev@vger.kernel.org>; Thu, 01 Aug 2019 19:38:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=rO6MbK94gQtYTmOiAsJqIF2aYQbASQz+L1wIGnaGIBI=;
-        b=WM0f2tKyqqrBgHfifKrLr+PovqsTQqboLh5gHwrxGDsNzjxLp3l90/OW1EzBk8Dgql
-         bj7UwlM0co0EFI5tDvLlFQqiAqpbQA1MsNu3+kdNeD0hZB+HqpMp804AphqkloXn0nPC
-         5ps/vAVV2c5iwrDo8GMyDxcrm5EBcrTkGPtqe9f3k8RWA2H9NIFRxLNTm0DiSgWuBXkF
-         8YgXYKcgoeUs8ND+dYRSP/jNpv7J8VPAcvmZLSTUjHJYSDAyU32AZeTO+FiCHucq/eH1
-         K1RjXXl2WgAKzo5QXwTHYny4mauwJ68gSCJKe5hh2gTZ1AMZvA8q3xbwzu624OB5eUGS
-         36Hg==
-X-Gm-Message-State: APjAAAXW8NpCIf6My5E9FZG2Tb0B3sC7ufRQu9Wos23Yki4YLQeZJa4n
-        sMA/ozANR/hOBekJTtK9Atw3o8scObvvW1HsOyUPx+dYbU9p
-X-Google-Smtp-Source: APXvYqw4UbVp0XBzF5ccVCATxBEoJFs5z/rYI+i8vKJqCyFB1j877TyGerAHkt09pKyyg4l9Smm9pOYOzYsjdAIS8Rnb/bOX+RAc
+        id S1728951AbfHBCjF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 22:39:05 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:11756 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726654AbfHBCjE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:39:04 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d43a24e0000>; Thu, 01 Aug 2019 19:39:10 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Thu, 01 Aug 2019 19:39:01 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Thu, 01 Aug 2019 19:39:01 -0700
+Received: from [10.110.48.28] (172.20.13.39) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 2 Aug
+ 2019 02:39:00 +0000
+Subject: Re: [PATCH 00/34] put_user_pages(): miscellaneous call sites
+To:     <john.hubbard@gmail.com>, Andrew Morton <akpm@linux-foundation.org>
+CC:     Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        <amd-gfx@lists.freedesktop.org>, <ceph-devel@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <devel@lists.orangefs.org>,
+        <dri-devel@lists.freedesktop.org>,
+        <intel-gfx@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-block@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-fbdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-nfs@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linux-rpi-kernel@lists.infradead.org>,
+        <linux-xfs@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <rds-devel@oss.oracle.com>, <sparclinux@vger.kernel.org>,
+        <x86@kernel.org>, <xen-devel@lists.xenproject.org>
+References: <20190802021653.4882-1-jhubbard@nvidia.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <ec87b662-0fc2-0951-1337-a91b4888201b@nvidia.com>
+Date:   Thu, 1 Aug 2019 19:39:00 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Received: by 2002:a6b:3102:: with SMTP id j2mr8770688ioa.5.1564713486354;
- Thu, 01 Aug 2019 19:38:06 -0700 (PDT)
-Date:   Thu, 01 Aug 2019 19:38:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000879057058f193fb5@google.com>
-Subject: memory leak in tipc_group_create_member
-From:   syzbot <syzbot+f95d90c454864b3b5bc9@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, jon.maloy@ericsson.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com,
-        tipc-discussion@lists.sourceforge.net, ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+In-Reply-To: <20190802021653.4882-1-jhubbard@nvidia.com>
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1564713550; bh=uB7qKWJf2vIk7MCI51NrKGKnU0tjP3n9YQM4FSsQ99A=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=aftmkmmNomCdfG4/nsU7QFjmse0kzSiVn7k6qdyITGQKtpIb7fXB3ira93x2ikjhP
+         hh9fWh6OxSH7I4ITUxx9rk4nMXoUcCl6xE7j7d8OaKs0QzK3tWjGXYe1PPsA5+CMkF
+         sKiN+5/hdBTh4TsmJWAPetkvcksKG1W7KX4K24lGpfHw6t/QQ4fbKf5zlriq/zHiCI
+         WN7lLvY4tFrWOLTfdOFRIa/sFBuq00RVcHrLnsHi/Dnbw2dVeWXrugMTAYnP04jnRA
+         tXP1GLNpYcsDC/T0sb/csl6pvYXC87xnKjlVca8dQdSp/cuFTGUobSHcHyKfqM9q/X
+         eCw5n+JFkzHyg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 8/1/19 7:16 PM, john.hubbard@gmail.com wrote:
+> From: John Hubbard <jhubbard@nvidia.com>
+> 
+> Hi,
+> 
+> These are best characterized as miscellaneous conversions: many (not all)
+> call sites that don't involve biovec or iov_iter, nor mm/. It also leaves
+> out a few call sites that require some more work. These are mostly pretty
+> simple ones.
+> 
+> It's probably best to send all of these via Andrew's -mm tree, assuming
+> that there are no significant merge conflicts with ongoing work in other
+> trees (which I doubt, given that these are small changes).
+> 
 
-syzbot found the following crash on:
+In case anyone is wondering, this truncated series is due to a script failure:
+git-send-email chokes when it hits email addresses whose names have a
+comma in them, as happened here with patch 0003.  
 
-HEAD commit:    a9815a4f Merge branch 'x86-urgent-for-linus' of git://git...
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12a6dbf0600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=37c48fb52e3789e6
-dashboard link: https://syzkaller.appspot.com/bug?extid=f95d90c454864b3b5bc9
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13be3ecc600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11c992b4600000
+Please disregard this set and reply to the other thread.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+f95d90c454864b3b5bc9@syzkaller.appspotmail.com
-
-executing program
-BUG: memory leak
-unreferenced object 0xffff888122bca200 (size 128):
-   comm "syz-executor232", pid 7065, jiffies 4294943817 (age 8.880s)
-   hex dump (first 32 bytes):
-     00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-     00 00 00 00 00 00 00 00 18 a2 bc 22 81 88 ff ff  ..........."....
-   backtrace:
-     [<000000005bada299>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000005bada299>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000005bada299>] slab_alloc mm/slab.c:3319 [inline]
-     [<000000005bada299>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-     [<00000000e7bcdc9f>] kmalloc include/linux/slab.h:552 [inline]
-     [<00000000e7bcdc9f>] kzalloc include/linux/slab.h:748 [inline]
-     [<00000000e7bcdc9f>] tipc_group_create_member+0x3c/0x190  
-net/tipc/group.c:306
-     [<0000000005f56f40>] tipc_group_add_member+0x34/0x40  
-net/tipc/group.c:327
-     [<0000000044406683>] tipc_nametbl_build_group+0x9b/0xf0  
-net/tipc/name_table.c:600
-     [<000000009f71e803>] tipc_sk_join net/tipc/socket.c:2901 [inline]
-     [<000000009f71e803>] tipc_setsockopt+0x170/0x490 net/tipc/socket.c:3006
-     [<000000007f61cbc2>] __sys_setsockopt+0x10f/0x220 net/socket.c:2084
-     [<00000000cc630372>] __do_sys_setsockopt net/socket.c:2100 [inline]
-     [<00000000cc630372>] __se_sys_setsockopt net/socket.c:2097 [inline]
-     [<00000000cc630372>] __x64_sys_setsockopt+0x26/0x30 net/socket.c:2097
-     [<00000000ec30be33>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<00000000271be3e6>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+thanks,
+-- 
+John Hubbard
+NVIDIA
