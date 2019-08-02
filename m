@@ -2,102 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 84AB67FC30
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 46FD77FC37
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:28:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394908AbfHBO1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 10:27:31 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:32931 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394890AbfHBO1a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:27:30 -0400
-Received: by mail-qt1-f196.google.com with SMTP id r6so69814347qtt.0
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 07:27:30 -0700 (PDT)
+        id S2394931AbfHBO1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 10:27:55 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:40506 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730999AbfHBO1y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:27:54 -0400
+Received: by mail-ed1-f67.google.com with SMTP id k8so72525233eds.7;
+        Fri, 02 Aug 2019 07:27:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=C9LPjwmpCbhIG9fa404OYjDh216Z1i9HjOGON92MWYk=;
+        b=Iqz2OamAaYolMP2nQ42QOA+OqHFEvmp+/aHWq5wTA0vcNcHZzeEc0ykVqbJfNgQYbQ
+         wHFuVsEDpuuPoeNMnJJcaAaYj2y43eyKCNk3NkxakxTXkwzNzp1hKPTDZX1JjICdNQPd
+         GS9QwXTdV92L8zl/BcOHze2ejPClmNiknhHIqDYNQZGQzKF+e5TxQoWvQNirqTIZW+wH
+         P20M2Tvxuc5JCJ+H5KsXYIhJZ7icjDGLzc16jOeYzOu3RWJBAWqY506d5i3gxsGh3GfZ
+         /zUowVXzWV4SiT894PKjJovd8YteDxA9COu/P10KC7n4J2efS94S27kvA82fhxX0tGYU
+         /CRQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=P2Hb3FZglhIdbXiYdjxjKY7R3yX7bFoilggrVili8pk=;
-        b=EiqCEwDQDAJ32ASKF0jMo90upqnaEDmS/tzI9b/IFOtzpf/8Cs4iBKJv87wwTsJNBx
-         7JN98d2G5tFLR8xVOLw14Tq4+VpPMqgsyKC0F4KDKh3j4gOqisxVDFRI1GemD5fWBa9Y
-         dWskr3MrLKaS9YNkE9Aj+6IB9NnCMfp5OF5E0MEDRQObmE23jECkJha44Mh8vuMx7qxK
-         2ILmciol0Kr+xfmMni/WgkM4kyZ8I9GLmvWHpqaCjuLrIPLdYKD3Z0AQc02HOAXQ7vd2
-         3rgdz3HS5Sn4FOvsa6SJSIEZcfwio4ZV1svttW3gFv66tpb5q1UYP8W7c+am2PiPfe06
-         BlZg==
-X-Gm-Message-State: APjAAAX4JAd1NAMbT2i6KfHNJr/2adygkLYyDXNhwUbzBEzt6AOCxWB5
-        mJRb/1U4ZJU5w1di17WT3kIEeA==
-X-Google-Smtp-Source: APXvYqw3KBnCa3P7200Yn0foGxB3Mb3u607NCRK+HftBdUxylQNUOizF39tGc/1MfSlJjVQ6mmiQyA==
-X-Received: by 2002:aed:3944:: with SMTP id l62mr96389184qte.34.1564756049676;
-        Fri, 02 Aug 2019 07:27:29 -0700 (PDT)
-Received: from redhat.com ([147.234.38.1])
-        by smtp.gmail.com with ESMTPSA id d20sm30304231qto.59.2019.08.02.07.27.25
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 07:27:28 -0700 (PDT)
-Date:   Fri, 2 Aug 2019 10:27:21 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-Message-ID: <20190802100414-mutt-send-email-mst@kernel.org>
-References: <20190731084655.7024-1-jasowang@redhat.com>
- <20190731084655.7024-8-jasowang@redhat.com>
- <20190731123935.GC3946@ziepe.ca>
- <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
- <20190731193057.GG3946@ziepe.ca>
- <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
- <20190801141512.GB23899@ziepe.ca>
- <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
- <20190802124613.GA11245@ziepe.ca>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=C9LPjwmpCbhIG9fa404OYjDh216Z1i9HjOGON92MWYk=;
+        b=Yshgt4rROfcAH8OvwuCqR3mqY0/FEJDhUnnY0JHd4Jlhjh5LEDavqeAkf+Mj2+tj0I
+         UMFjN5tD58BpvcKqIw1SH7rUpTldH+ugAnpjaOILj6YMRyPDmd3k2/LeOc96lWqQ1PGe
+         k07VAg3fHILZKIUcF8GVEtc1gPlJcF/Zs52Nu0wDI/XZiDR2rOZqFnGWn+RQl1wQmqQA
+         v69XeyKGZhn5OY5bjNhLzMnUNXdiF3wFj3vW2P6q9FgMD8gD2+ZvKzza+Ig2zfNpdJAy
+         Mcuty2vdZ3S63Vfrxlob51roQY1kuX3tN9y8O1A6U064XbfOE2ySuHl5/MVpwXavgUTN
+         sCVw==
+X-Gm-Message-State: APjAAAXLc0toG00WnYFi/Rc8OAqxuE2SB5AvEpLYTdQnmBd7pSC+0sNz
+        DOl4fzQbnKNvOXribGBC3hEnqH1tOYo6wAvudgE=
+X-Google-Smtp-Source: APXvYqx+n4u9oJJMuDA0ns2aDhTyoGkwwKiA4D4tHIfuVxnjL9ix5kO3F+lS+1evpIh5xhMhcwgVnx9sHpvKvTblzcM=
+X-Received: by 2002:a05:6402:896:: with SMTP id e22mr115658449edy.202.1564756073161;
+ Fri, 02 Aug 2019 07:27:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190802124613.GA11245@ziepe.ca>
+References: <20190802083541.12602-1-hslester96@gmail.com> <CA+FuTSc8WBx2PCUhn-sLtYHQR-OROXm2pUN9SDj7P-Bd8432UQ@mail.gmail.com>
+In-Reply-To: <CA+FuTSc8WBx2PCUhn-sLtYHQR-OROXm2pUN9SDj7P-Bd8432UQ@mail.gmail.com>
+From:   Chuhong Yuan <hslester96@gmail.com>
+Date:   Fri, 2 Aug 2019 22:27:42 +0800
+Message-ID: <CANhBUQ2TRr4RuSmjaRYPXHZpVw_-2awXvWNjjdvV_z1yoGdkXA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] cxgb4: sched: Use refcount_t for refcount
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 09:46:13AM -0300, Jason Gunthorpe wrote:
-> On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
-> > > This must be a proper barrier, like a spinlock, mutex, or
-> > > synchronize_rcu.
-> > 
-> > 
-> > I start with synchronize_rcu() but both you and Michael raise some
-> > concern.
-> 
-> I've also idly wondered if calling synchronize_rcu() under the various
-> mm locks is a deadlock situation.
-> 
-> > Then I try spinlock and mutex:
-> > 
-> > 1) spinlock: add lots of overhead on datapath, this leads 0 performance
-> > improvement.
-> 
-> I think the topic here is correctness not performance improvement
+Willem de Bruijn <willemdebruijn.kernel@gmail.com> =E4=BA=8E2019=E5=B9=B48=
+=E6=9C=882=E6=97=A5=E5=91=A8=E4=BA=94 =E4=B8=8B=E5=8D=889:40=E5=86=99=E9=81=
+=93=EF=BC=9A
+>
+> On Fri, Aug 2, 2019 at 4:36 AM Chuhong Yuan <hslester96@gmail.com> wrote:
+> >
+> > refcount_t is better for reference counters since its
+> > implementation can prevent overflows.
+> > So convert atomic_t ref counters to refcount_t.
+> >
+> > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> > ---
+> > Changes in v2:
+> >   - Convert refcount from 0-base to 1-base.
+>
+> This changes the initial value from 0 to 1, but does not change the
+> release condition. So this introduces an accounting bug?
 
-The topic is whether we should revert
-commit 7f466032dc9 ("vhost: access vq metadata through kernel virtual address")
-
-or keep it in. The only reason to keep it is performance.
-
-Now as long as all this code is disabled anyway, we can experiment a
-bit.
-
-I personally feel we would be best served by having two code paths:
-
-- Access to VM memory directly mapped into kernel
-- Access to userspace
-
-
-Having it all cleanly split will allow a bunch of optimizations, for
-example for years now we planned to be able to process an incoming short
-packet directly on softirq path, or an outgoing on directly within
-eventfd.
-
-
--- 
-MST
+I have noticed this problem and have checked other files which use refcount=
+_t.
+I find although the refcounts are 1-based, they still use
+refcount_dec_and_test()
+to check whether the resource should be released.
+One example is drivers/char/mspec.c.
+Therefore I think this is okay and do not change the release condition.
