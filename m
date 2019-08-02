@@ -2,317 +2,493 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 951427ED2D
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 09:10:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 352B07ED44
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 09:17:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389377AbfHBHKh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 03:10:37 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:40901 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389361AbfHBHKf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 03:10:35 -0400
-Received: by mail-ot1-f66.google.com with SMTP id l15so19879425oth.7
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 00:10:34 -0700 (PDT)
+        id S2389414AbfHBHRF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 03:17:05 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:34287 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389407AbfHBHRE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 03:17:04 -0400
+Received: by mail-qk1-f193.google.com with SMTP id t8so54046269qkt.1;
+        Fri, 02 Aug 2019 00:17:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=aNOLjBPNnUmcQmvMToyFYssE9sARnDQ/c4luMj7emy0=;
-        b=ZByTvhWD45O5rbMJPm0e9wEVpnT9SZtPM8zMbVnlxfFzaGij7Mj9bLuhtDht6DumSV
-         X5+C/GbAojg2ZBuUa5sh+8yA7FU1/KNRmsztInjo9N3dLnWybMcoWDKeEPiB/ebLeZpq
-         91Vk7RjNwrJr3eX6fiW47RfyqivZcb8JLML4cHZmY3c+1BeBv+eXMAQCcWw/gg9bjuBU
-         vrss9yRxsUc1EFDB7ltk7uXcIFO5XrA7a28dWbscRQ7BYTq4viqVO6KIP4MaiEk1LZv+
-         c2Zjlzg2tQB2PTRRKAU228AWlqLZlrisj3ViQ0NKdyQApwjMNgsi0fcbZSR27jzLqADe
-         W3lA==
+         :cc;
+        bh=HoYOpjf7aN9J4SM7pddt+Ssubjbjd8JRdqe5lsYX+b4=;
+        b=tzmEVgyp1OPbYSR101lwBBfIkGOujcV6NGSm684kuX0BI9aVOjqcMY7GfJShExgKh1
+         JyNUabU711kwoublyRMrOR5y+Qb79hxrCFYPQSDessyVaJlrlSkdp538dTLnufTtCuR0
+         WEa8PJ9NLVtPUMHdawWF0mmq1YWoQfbd2VYtF2RJWgMSzT9GqEwtqj9bX55/lHj5z+EK
+         btqeGFoPVvm+U/8Rv+NF7ZDOSPp8gvrYP5cT0hB16FpZvF8FhvrGBTF6jQea0oULhWcb
+         irmF6sD280hcQFBMh9sEyhZPjJeBJ8GuT34r0n7FJxFebOeHou2jDeldm8N3xgtf5bbO
+         6cgQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=aNOLjBPNnUmcQmvMToyFYssE9sARnDQ/c4luMj7emy0=;
-        b=Q3Oj2o/kLsC0lPIgP+UL4wOHoUrn6oxrDx8PtLqxFcQ/aoYSLVoWoueKZNuVPQbqvS
-         uTqXIx8t6vvqqgaL4bpLv/Tz+WCmJbGmyZlXaGSxZkxq6hjkfd3DlKITF4SCliy77OCw
-         7RkXtRVkWIUFlYQcgG6je1PZ3OxCzCyapA5B6vL5HJ7Of8AI8MnZvcuRDbTSqWyeIBKF
-         duN7031wgYFHaV22zIRAk5NYGxlOCiIiyI7M7s9f/isvNtafqJqCXsr91CIpgZ7gq+1P
-         PCDDV4HukNrtDPTCA9g3D1KsanxcMAouxBLU9RSqNDKqi1msIHokoOFsigRhaEr9gDBY
-         KiZQ==
-X-Gm-Message-State: APjAAAW03Vu4XSCYtDZhxoNyPWPCLP5DjWTE1ZZjkWYIJ7Cz1Zb5r/6z
-        67E2ssIc3igVqrw1Un8q8zJ88mulWQMGwuur2yrphg==
-X-Google-Smtp-Source: APXvYqy4/Lk5jHB+v/1ocPg4upl5VRCkigymsxVJ4zA98u/jV3IYeAA2bS1N1TLTswamOCy90HSvHyGFfqUcSTl0o9w=
-X-Received: by 2002:a9d:7352:: with SMTP id l18mr37662907otk.292.1564729833627;
- Fri, 02 Aug 2019 00:10:33 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=HoYOpjf7aN9J4SM7pddt+Ssubjbjd8JRdqe5lsYX+b4=;
+        b=JJnKby3trFZplUU6ZRf3lar4yWHait73gaGPbHoj8G8ZeiFYvxmyxIo/qT1gty3CZ9
+         lnQ+bAIyg7gP83vDQsz5hW+FoZok4bdUJDpyw+6+SL71V214qr8Q0saP3lxPM45Dp+0z
+         G4Fj1/HWgcVsEtTefPQvfaJh3iKSrYUXhhT5bVZD2MjJDqG1RceBr00GWbRMrIjdO8KJ
+         FvQv9pbp+GODfjof9KYW0qC0gEfrBt21P3VCh+uF+DTVLKfFGxAPjt7iQ5V0XoectBH1
+         XCfPPj/BkLNNLpkQTwzDSP+jZKojJCEscmaGYXlJ7ujyJNSFHuX7yPfEZJgnF2bMJxei
+         zg7Q==
+X-Gm-Message-State: APjAAAUj0I76cyadeyxHHKcV6i3F7TqTFri6xDeInqaM4ememfSSEPeo
+        qPieEs0o1VszQfDIkpqhGK9X0YjBv53t/msbmXs=
+X-Google-Smtp-Source: APXvYqxkuiu/I2kUX84wlnufBEDehVwLHQta/1JXQPlePVQePAi4hFZMAw+cjW0UnfEcMb7Njt/OMjtWecl/X5nmEok=
+X-Received: by 2002:a37:bf42:: with SMTP id p63mr37088584qkf.437.1564730223294;
+ Fri, 02 Aug 2019 00:17:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-6-arnd@arndb.de>
-In-Reply-To: <20190731195713.3150463-6-arnd@arndb.de>
-From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Date:   Fri, 2 Aug 2019 09:10:22 +0200
-Message-ID: <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com>
-Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     soc@kernel.org, arm-soc <linux-arm-kernel@lists.infradead.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-gpio <linux-gpio@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20190801064803.2519675-1-andriin@fb.com> <20190801064803.2519675-3-andriin@fb.com>
+ <20190801235030.bzssmwzuvzdy7h7t@ast-mbp.dhcp.thefacebook.com>
+In-Reply-To: <20190801235030.bzssmwzuvzdy7h7t@ast-mbp.dhcp.thefacebook.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 2 Aug 2019 00:16:52 -0700
+Message-ID: <CAEf4BzarjODxo5c-UKtCL_dGGNb1m-3QPAGGR0eq_0tcZVMt8g@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 02/12] libbpf: implement BPF CO-RE offset
+ relocation algorithm
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>, Song Liu <songliubraving@fb.com>,
+        Kernel Team <kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=C5=9Br., 31 lip 2019 o 22:06 Arnd Bergmann <arnd@arndb.de> napisa=C5=82(a)=
-:
+On Thu, Aug 1, 2019 at 4:50 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> The driver uses hardwire MMIO addresses instead of the data
-> that is passed in device tree. Change it over to only
-> hardcode the register offset values and allow compile-testing.
+> On Wed, Jul 31, 2019 at 11:47:53PM -0700, Andrii Nakryiko wrote:
+> > This patch implements the core logic for BPF CO-RE offsets relocations.
+> > Every instruction that needs to be relocated has corresponding
+> > bpf_offset_reloc as part of BTF.ext. Relocations are performed by trying
+> > to match recorded "local" relocation spec against potentially many
+> > compatible "target" types, creating corresponding spec. Details of the
+> > algorithm are noted in corresponding comments in the code.
+> >
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > Acked-by: Song Liu <songliubraving@fb.com>
+> ...
+> > +             if (btf_is_composite(t)) {
+> > +                     const struct btf_member *m = (void *)(t + 1);
+> > +                     __u32 offset;
+> > +
+> > +                     if (access_idx >= BTF_INFO_VLEN(t->info))
+> > +                             return -EINVAL;
+> > +
+> > +                     m = &m[access_idx];
+> > +
+> > +                     if (BTF_INFO_KFLAG(t->info)) {
+> > +                             if (BTF_MEMBER_BITFIELD_SIZE(m->offset))
+> > +                                     return -EINVAL;
+> > +                             offset = BTF_MEMBER_BIT_OFFSET(m->offset);
+> > +                     } else {
+> > +                             offset = m->offset;
+> > +                     }
 >
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> very similar logic exists in btf_dump.c
+> probably makes sense to make a common helper at some point.
 
-Hi Arnd,
-
-thanks for working on this.
-
-> ---
->  drivers/gpio/Kconfig        |  8 +++++
->  drivers/gpio/Makefile       |  2 +-
->  drivers/gpio/gpio-lpc32xx.c | 63 ++++++++++++++++++++++++-------------
->  3 files changed, 50 insertions(+), 23 deletions(-)
->
-> diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-> index bb13c266c329..ae86ee963eae 100644
-> --- a/drivers/gpio/Kconfig
-> +++ b/drivers/gpio/Kconfig
-> @@ -311,6 +311,14 @@ config GPIO_LPC18XX
->           Select this option to enable GPIO driver for
->           NXP LPC18XX/43XX devices.
->
-> +config GPIO_LPC32XX
-> +       tristate "NXP LPC32XX GPIO support"
-> +       default ARCH_LPC32XX
-> +       depends on OF_GPIO && (ARCH_LPC32XX || COMPILE_TEST)
-> +       help
-> +         Select this option to enable GPIO driver for
-> +         NXP LPC32XX devices.
-> +
->  config GPIO_LYNXPOINT
->         tristate "Intel Lynxpoint GPIO support"
->         depends on ACPI && X86
-> diff --git a/drivers/gpio/Makefile b/drivers/gpio/Makefile
-> index a4e91175c708..87d659ae95eb 100644
-> --- a/drivers/gpio/Makefile
-> +++ b/drivers/gpio/Makefile
-> @@ -74,7 +74,7 @@ obj-$(CONFIG_GPIO_LP3943)             +=3D gpio-lp3943.=
-o
->  obj-$(CONFIG_GPIO_LP873X)              +=3D gpio-lp873x.o
->  obj-$(CONFIG_GPIO_LP87565)             +=3D gpio-lp87565.o
->  obj-$(CONFIG_GPIO_LPC18XX)             +=3D gpio-lpc18xx.o
-> -obj-$(CONFIG_ARCH_LPC32XX)             +=3D gpio-lpc32xx.o
-> +obj-$(CONFIG_GPIO_LPC32XX)             +=3D gpio-lpc32xx.o
->  obj-$(CONFIG_GPIO_LYNXPOINT)           +=3D gpio-lynxpoint.o
->  obj-$(CONFIG_GPIO_MADERA)              +=3D gpio-madera.o
->  obj-$(CONFIG_GPIO_MAX3191X)            +=3D gpio-max3191x.o
-> diff --git a/drivers/gpio/gpio-lpc32xx.c b/drivers/gpio/gpio-lpc32xx.c
-> index 24885b3db3d5..548f7cb69386 100644
-> --- a/drivers/gpio/gpio-lpc32xx.c
-> +++ b/drivers/gpio/gpio-lpc32xx.c
-> @@ -16,8 +16,7 @@
->  #include <linux/platform_device.h>
->  #include <linux/module.h>
->
-> -#include <mach/hardware.h>
-> -#include <mach/platform.h>
-> +#define _GPREG(x)                              (x)
-
-What purpose does this macro serve?
+Will add btf_member_bit_offset(type, member) and
+btf_member_bit_size(type, member).
 
 >
->  #define LPC32XX_GPIO_P3_INP_STATE              _GPREG(0x000)
->  #define LPC32XX_GPIO_P3_OUTP_SET               _GPREG(0x004)
-> @@ -72,12 +71,12 @@
->  #define LPC32XX_GPO_P3_GRP     (LPC32XX_GPI_P3_GRP + LPC32XX_GPI_P3_MAX)
+> > +static size_t bpf_core_essential_name_len(const char *name)
+> > +{
+> > +     size_t n = strlen(name);
+> > +     int i = n - 3;
+> > +
+> > +     while (i > 0) {
+> > +             if (name[i] == '_' && name[i + 1] == '_' && name[i + 2] == '_')
+> > +                     return i;
+> > +             i--;
+> > +     }
+> > +     return n;
+> > +}
 >
->  struct gpio_regs {
-> -       void __iomem *inp_state;
-> -       void __iomem *outp_state;
-> -       void __iomem *outp_set;
-> -       void __iomem *outp_clr;
-> -       void __iomem *dir_set;
-> -       void __iomem *dir_clr;
-> +       unsigned long inp_state;
-> +       unsigned long outp_state;
-> +       unsigned long outp_set;
-> +       unsigned long outp_clr;
-> +       unsigned long dir_set;
-> +       unsigned long dir_clr;
->  };
+> that's a bit of an eye irritant. How about?
+>         size_t n = strlen(name);
+>         int i, cnt = 0;
 >
->  /*
-> @@ -167,14 +166,26 @@ struct lpc32xx_gpio_chip {
->         struct gpio_regs        *gpio_grp;
->  };
->
-> +void __iomem *gpio_reg_base;
+>         for (i = n - 1; i >= 0; i--) {
+>                 if (name[i] == '_') {
+>                     cnt++;
+>                 } else {
+>                    if (cnt == 3)
+>                       return i + 1;
+>                    cnt = 0;
+>                 }
+>         }
+>         return n;
 
-Any reason why this can't be made part of struct lpc32xx_gpio_chip?
+I find this one much harder to read and understand. What's
+eye-irritating about that loop?
 
-> +
-> +static inline u32 gpreg_read(unsigned long offset)
+Your loop will also handle `a____b` differently. My version will
+return "a_" as essential name, yours "a____b". Was this intentional on
+your part?
 
-Here and elsewhere: could you please keep the lpc32xx_gpio prefix for
-all symbols?
+I'd rather use this instead, if you hate the first one:
 
-> +{
-> +       return __raw_readl(gpio_reg_base + offset);
-> +}
-> +
-> +static inline void gpreg_write(u32 val, unsigned long offset)
-> +{
-> +       __raw_writel(val, gpio_reg_base + offset);
-> +}
-> +
->  static void __set_gpio_dir_p012(struct lpc32xx_gpio_chip *group,
->         unsigned pin, int input)
->  {
->         if (input)
-> -               __raw_writel(GPIO012_PIN_TO_BIT(pin),
-> +               gpreg_write(GPIO012_PIN_TO_BIT(pin),
->                         group->gpio_grp->dir_clr);
->         else
-> -               __raw_writel(GPIO012_PIN_TO_BIT(pin),
-> +               gpreg_write(GPIO012_PIN_TO_BIT(pin),
->                         group->gpio_grp->dir_set);
->  }
->
-> @@ -184,19 +195,19 @@ static void __set_gpio_dir_p3(struct lpc32xx_gpio_c=
-hip *group,
->         u32 u =3D GPIO3_PIN_TO_BIT(pin);
->
->         if (input)
-> -               __raw_writel(u, group->gpio_grp->dir_clr);
-> +               gpreg_write(u, group->gpio_grp->dir_clr);
->         else
-> -               __raw_writel(u, group->gpio_grp->dir_set);
-> +               gpreg_write(u, group->gpio_grp->dir_set);
->  }
->
->  static void __set_gpio_level_p012(struct lpc32xx_gpio_chip *group,
->         unsigned pin, int high)
->  {
->         if (high)
-> -               __raw_writel(GPIO012_PIN_TO_BIT(pin),
-> +               gpreg_write(GPIO012_PIN_TO_BIT(pin),
->                         group->gpio_grp->outp_set);
->         else
-> -               __raw_writel(GPIO012_PIN_TO_BIT(pin),
-> +               gpreg_write(GPIO012_PIN_TO_BIT(pin),
->                         group->gpio_grp->outp_clr);
->  }
->
-> @@ -206,31 +217,31 @@ static void __set_gpio_level_p3(struct lpc32xx_gpio=
-_chip *group,
->         u32 u =3D GPIO3_PIN_TO_BIT(pin);
->
->         if (high)
-> -               __raw_writel(u, group->gpio_grp->outp_set);
-> +               gpreg_write(u, group->gpio_grp->outp_set);
->         else
-> -               __raw_writel(u, group->gpio_grp->outp_clr);
-> +               gpreg_write(u, group->gpio_grp->outp_clr);
->  }
->
->  static void __set_gpo_level_p3(struct lpc32xx_gpio_chip *group,
->         unsigned pin, int high)
->  {
->         if (high)
-> -               __raw_writel(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_=
-set);
-> +               gpreg_write(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_s=
-et);
->         else
-> -               __raw_writel(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_=
-clr);
-> +               gpreg_write(GPO3_PIN_TO_BIT(pin), group->gpio_grp->outp_c=
-lr);
->  }
->
->  static int __get_gpio_state_p012(struct lpc32xx_gpio_chip *group,
->         unsigned pin)
->  {
-> -       return GPIO012_PIN_IN_SEL(__raw_readl(group->gpio_grp->inp_state)=
-,
-> +       return GPIO012_PIN_IN_SEL(gpreg_read(group->gpio_grp->inp_state),
->                 pin);
->  }
->
->  static int __get_gpio_state_p3(struct lpc32xx_gpio_chip *group,
->         unsigned pin)
->  {
-> -       int state =3D __raw_readl(group->gpio_grp->inp_state);
-> +       int state =3D gpreg_read(group->gpio_grp->inp_state);
->
->         /*
->          * P3 GPIO pin input mapping is not contiguous, GPIOP3-0..4 is ma=
-pped
-> @@ -242,13 +253,13 @@ static int __get_gpio_state_p3(struct lpc32xx_gpio_=
-chip *group,
->  static int __get_gpi_state_p3(struct lpc32xx_gpio_chip *group,
->         unsigned pin)
->  {
-> -       return GPI3_PIN_IN_SEL(__raw_readl(group->gpio_grp->inp_state), p=
-in);
-> +       return GPI3_PIN_IN_SEL(gpreg_read(group->gpio_grp->inp_state), pi=
-n);
->  }
->
->  static int __get_gpo_state_p3(struct lpc32xx_gpio_chip *group,
->         unsigned pin)
->  {
-> -       return GPO3_PIN_IN_SEL(__raw_readl(group->gpio_grp->outp_state), =
-pin);
-> +       return GPO3_PIN_IN_SEL(gpreg_read(group->gpio_grp->outp_state), p=
-in);
->  }
->
->  /*
-> @@ -498,6 +509,10 @@ static int lpc32xx_gpio_probe(struct platform_device=
- *pdev)
->  {
->         int i;
->
-> +       gpio_reg_base =3D devm_platform_ioremap_resource(pdev, 0);
-> +       if (gpio_reg_base)
-> +               return -ENXIO;
-> +
->         for (i =3D 0; i < ARRAY_SIZE(lpc32xx_gpiochip); i++) {
->                 if (pdev->dev.of_node) {
->                         lpc32xx_gpiochip[i].chip.of_xlate =3D lpc32xx_of_=
-xlate;
-> @@ -527,3 +542,7 @@ static struct platform_driver lpc32xx_gpio_driver =3D=
- {
->  };
->
->  module_platform_driver(lpc32xx_gpio_driver);
-> +
-> +MODULE_AUTHOR("Kevin Wells <kevin.wells@nxp.com>");
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("GPIO driver for LPC32xx SoC");
-> --
-> 2.20.0
->
+size_t n = strlen(name);
+int i;
 
-Bart
+for (i = n - 3; i > 0; i--) {
+    if (strncmp(name + i, "___", 3) == 0)
+        return i;
+}
+
+Is this better?
+
+>
+> > +     case BTF_KIND_ARRAY: {
+> > +             const struct btf_array *loc_a, *targ_a;
+> > +
+> > +             loc_a = (void *)(local_type + 1);
+> > +             targ_a = (void *)(targ_type + 1);
+> > +             local_id = loc_a->type;
+> > +             targ_id = targ_a->type;
+>
+> can we add a helper like:
+
+Yes, we can. I was thinking about that, but decided to not expand
+patch set. But we do need to extract all those small, but nice
+helpers. I'll put them in libbpf_internal.h for now, but I think it
+might be good idea to expose them as part of btf.h. Thoughts?
+
+> const struct btf_array *btf_array(cosnt struct btf_type *t)
+> {
+>         return (const struct btf_array *)(t + 1);
+> }
+>
+> then above will be:
+>         case BTF_KIND_ARRAY: {
+>                 local_id = btf_array(local_type)->type;
+>                 targ_id = btf_array(targ_type)->type;
+>
+> and a bunch of code in btf.c and btf_dump.c would be cleaner as well?
+
+Yep, some of those are already scattered around btf.c and btf_dump.c,
+will clean up and add patch to this patch set.
+
+>
+> > +             goto recur;
+> > +     }
+> > +     default:
+> > +             pr_warning("unexpected kind %d relocated, local [%d], target [%d]\n",
+> > +                        kind, local_id, targ_id);
+> > +             return 0;
+> > +     }
+> > +}
+> > +
+> > +/*
+> > + * Given single high-level named field accessor in local type, find
+> > + * corresponding high-level accessor for a target type. Along the way,
+> > + * maintain low-level spec for target as well. Also keep updating target
+> > + * offset.
+> > + *
+> > + * Searching is performed through recursive exhaustive enumeration of all
+> > + * fields of a struct/union. If there are any anonymous (embedded)
+> > + * structs/unions, they are recursively searched as well. If field with
+> > + * desired name is found, check compatibility between local and target types,
+> > + * before returning result.
+> > + *
+> > + * 1 is returned, if field is found.
+> > + * 0 is returned if no compatible field is found.
+> > + * <0 is returned on error.
+> > + */
+> > +static int bpf_core_match_member(const struct btf *local_btf,
+> > +                              const struct bpf_core_accessor *local_acc,
+> > +                              const struct btf *targ_btf,
+> > +                              __u32 targ_id,
+> > +                              struct bpf_core_spec *spec,
+> > +                              __u32 *next_targ_id)
+> > +{
+> > +     const struct btf_type *local_type, *targ_type;
+> > +     const struct btf_member *local_member, *m;
+> > +     const char *local_name, *targ_name;
+> > +     __u32 local_id;
+> > +     int i, n, found;
+> > +
+> > +     targ_type = skip_mods_and_typedefs(targ_btf, targ_id, &targ_id);
+> > +     if (!targ_type)
+> > +             return -EINVAL;
+> > +     if (!btf_is_composite(targ_type))
+> > +             return 0;
+> > +
+> > +     local_id = local_acc->type_id;
+> > +     local_type = btf__type_by_id(local_btf, local_id);
+> > +     local_member = (void *)(local_type + 1);
+> > +     local_member += local_acc->idx;
+> > +     local_name = btf__name_by_offset(local_btf, local_member->name_off);
+> > +
+> > +     n = BTF_INFO_VLEN(targ_type->info);
+> > +     m = (void *)(targ_type + 1);
+>
+> new btf_member() helper?
+>
+> > +     for (i = 0; i < n; i++, m++) {
+> > +             __u32 offset;
+> > +
+> > +             /* bitfield relocations not supported */
+> > +             if (BTF_INFO_KFLAG(targ_type->info)) {
+> > +                     if (BTF_MEMBER_BITFIELD_SIZE(m->offset))
+> > +                             continue;
+> > +                     offset = BTF_MEMBER_BIT_OFFSET(m->offset);
+> > +             } else {
+> > +                     offset = m->offset;
+> > +             }
+> > +             if (offset % 8)
+> > +                     continue;
+>
+> same bit of code again?
+> definitely could use a helper.
+
+Different handling (continue here, return error above), but can use
+those helpers I mentioned above.
+
+>
+> > +     for (i = 0; i < local_spec->len; i++, local_acc++, targ_acc++) {
+> > +             targ_type = skip_mods_and_typedefs(targ_spec->btf, targ_id,
+> > +                                                &targ_id);
+> > +             if (!targ_type)
+> > +                     return -EINVAL;
+> > +
+> > +             if (local_acc->name) {
+> > +                     matched = bpf_core_match_member(local_spec->btf,
+> > +                                                     local_acc,
+> > +                                                     targ_btf, targ_id,
+> > +                                                     targ_spec, &targ_id);
+> > +                     if (matched <= 0)
+> > +                             return matched;
+> > +             } else {
+> > +                     /* for i=0, targ_id is already treated as array element
+> > +                      * type (because it's the original struct), for others
+> > +                      * we should find array element type first
+> > +                      */
+> > +                     if (i > 0) {
+> > +                             const struct btf_array *a;
+> > +
+> > +                             if (!btf_is_array(targ_type))
+> > +                                     return 0;
+> > +
+> > +                             a = (void *)(targ_type + 1);
+> > +                             if (local_acc->idx >= a->nelems)
+> > +                                     return 0;
+>
+> am I reading it correctly that the local spec requested out-of-bounds
+> index in the target array type?
+> Why this is 'ignore' instead of -EINVAL?
+
+Similar to any other mismatch (e.g., int in local type vs int64 in
+target type). It just makes candidate not matching. Why would that be
+error that will stop the whole relocation and subsequently object
+loading process?
+
+>
+> > +/*
+> > + * Probe few well-known locations for vmlinux kernel image and try to load BTF
+> > + * data out of it to use for target BTF.
+> > + */
+> > +static struct btf *bpf_core_find_kernel_btf(void)
+> > +{
+> > +     const char *locations[] = {
+> > +             "/lib/modules/%1$s/vmlinux-%1$s",
+> > +             "/usr/lib/modules/%1$s/kernel/vmlinux",
+> > +     };
+> > +     char path[PATH_MAX + 1];
+> > +     struct utsname buf;
+> > +     struct btf *btf;
+> > +     int i, err;
+> > +
+> > +     err = uname(&buf);
+> > +     if (err) {
+> > +             pr_warning("failed to uname(): %d\n", err);
+>
+> defensive programming ?
+> I think uname() can fail only if &buf points to non-existing page like null.
+
+I haven't checked source for this syscall, but man page specified that
+it might return -1 on error.
+
+>
+> > +             return ERR_PTR(err);
+> > +     }
+> > +
+> > +     for (i = 0; i < ARRAY_SIZE(locations); i++) {
+> > +             snprintf(path, PATH_MAX, locations[i], buf.release);
+> > +             pr_debug("attempting to load kernel BTF from '%s'\n", path);
+>
+> I think this debug message would have been more useful after access().
+
+Sure, will move.
+
+>
+> > +
+> > +             if (access(path, R_OK))
+> > +                     continue;
+> > +
+> > +             btf = btf__parse_elf(path, NULL);
+> > +             if (IS_ERR(btf))
+> > +                     continue;
+> > +
+> > +             pr_debug("successfully loaded kernel BTF from '%s'\n", path);
+> > +             return btf;
+> > +     }
+> > +
+> > +     pr_warning("failed to find valid kernel BTF\n");
+> > +     return ERR_PTR(-ESRCH);
+> > +}
+> > +
+> > +/* Output spec definition in the format:
+> > + * [<type-id>] (<type-name>) + <raw-spec> => <offset>@<spec>,
+> > + * where <spec> is a C-syntax view of recorded field access, e.g.: x.a[3].b
+> > + */
+> > +static void bpf_core_dump_spec(int level, const struct bpf_core_spec *spec)
+> > +{
+> > +     const struct btf_type *t;
+> > +     const char *s;
+> > +     __u32 type_id;
+> > +     int i;
+> > +
+> > +     type_id = spec->spec[0].type_id;
+> > +     t = btf__type_by_id(spec->btf, type_id);
+> > +     s = btf__name_by_offset(spec->btf, t->name_off);
+> > +     libbpf_print(level, "[%u] (%s) + ", type_id, s);
+>
+> imo extra []() don't improve readability of the dump.
+
+[<num>] is the general convention I've been using throughout libbpf to
+specify type ID, so I'd rather keep it for consistency. I can drop
+parens, though, no problem.
+
+>
+> > +
+> > +     for (i = 0; i < spec->raw_len; i++)
+> > +             libbpf_print(level, "%d%s", spec->raw_spec[i],
+> > +                          i == spec->raw_len - 1 ? " => " : ":");
+> > +
+> > +     libbpf_print(level, "%u @ &x", spec->offset);
+> > +
+> > +     for (i = 0; i < spec->len; i++) {
+> > +             if (spec->spec[i].name)
+> > +                     libbpf_print(level, ".%s", spec->spec[i].name);
+> > +             else
+> > +                     libbpf_print(level, "[%u]", spec->spec[i].idx);
+> > +     }
+> > +
+> > +}
+> > +
+> > +static size_t bpf_core_hash_fn(const void *key, void *ctx)
+> > +{
+> > +     return (size_t)key;
+> > +}
+> > +
+> > +static bool bpf_core_equal_fn(const void *k1, const void *k2, void *ctx)
+> > +{
+> > +     return k1 == k2;
+> > +}
+> > +
+> > +static void *u32_to_ptr(__u32 x)
+> > +{
+> > +     return (void *)(uintptr_t)x;
+> > +}
+>
+> u32 to pointer on 64-bit arch?!
+> That surely needs a comment.
+
+I should probably call it u32_to_hash_key() to make it obvious it's
+conversion to hashmap's generic `void *` key type.
+
+>
+> > +
+> > +/*
+> > + * CO-RE relocate single instruction.
+> > + *
+> > + * The outline and important points of the algorithm:
+> > + * 1. For given local type, find corresponding candidate target types.
+> > + *    Candidate type is a type with the same "essential" name, ignoring
+> > + *    everything after last triple underscore (___). E.g., `sample`,
+> > + *    `sample___flavor_one`, `sample___flavor_another_one`, are all candidates
+> > + *    for each other. Names with triple underscore are referred to as
+> > + *    "flavors" and are useful, among other things, to allow to
+> > + *    specify/support incompatible variations of the same kernel struct, which
+> > + *    might differ between different kernel versions and/or build
+> > + *    configurations.
+> > + *
+> > + *    N.B. Struct "flavors" could be generated by bpftool's BTF-to-C
+> > + *    converter, when deduplicated BTF of a kernel still contains more than
+> > + *    one different types with the same name. In that case, ___2, ___3, etc
+> > + *    are appended starting from second name conflict. But start flavors are
+> > + *    also useful to be defined "locally", in BPF program, to extract same
+> > + *    data from incompatible changes between different kernel
+> > + *    versions/configurations. For instance, to handle field renames between
+> > + *    kernel versions, one can use two flavors of the struct name with the
+> > + *    same common name and use conditional relocations to extract that field,
+> > + *    depending on target kernel version.
+>
+> there are actual kernel types that have ___ in the name.
+> Ex: struct lmc___media
+> We probably need to revisit this 'flavor' convention.
+
+There are only these:
+- lmc___softc
+- lmc___media
+- lmc___ctl (all three in drivers/net/wan/lmc/lmc_var.h)
+- ____ftrace_##name set of structs
+
+I couldn't come up with anything cleaner-looking. I think we can still
+keep ___ convention, but:
+
+1. Match only exactly 3 underscores, delimited by non-underscore from
+both sides (so similar to your proposed loop above);
+2. We can also try matching candidates assuming full name without
+___xxx part removed, in addition to current logic. This seems like an
+overkill at this point and unlikely to be useful in practice, so I'd
+postpone implementing this until we really need it.
+
+What do you think? Which other convention did you have in mind?
+
+>
+> > +     for (i = 0, j = 0; i < cand_ids->len; i++) {
+> > +             cand_id = cand_ids->data[i];
+> > +             cand_type = btf__type_by_id(targ_btf, cand_id);
+> > +             cand_name = btf__name_by_offset(targ_btf, cand_type->name_off);
+> > +
+> > +             err = bpf_core_spec_match(&local_spec, targ_btf,
+> > +                                       cand_id, &cand_spec);
+> > +             if (err < 0) {
+> > +                     pr_warning("prog '%s': relo #%d: failed to match spec ",
+> > +                                prog_name, relo_idx);
+> > +                     bpf_core_dump_spec(LIBBPF_WARN, &local_spec);
+> > +                     libbpf_print(LIBBPF_WARN,
+> > +                                  " to candidate #%d [%d] (%s): %d\n",
+> > +                                  i, cand_id, cand_name, err);
+> > +                     return err;
+> > +             }
+> > +             if (err == 0) {
+> > +                     pr_debug("prog '%s': relo #%d: candidate #%d [%d] (%s) doesn't match spec ",
+> > +                              prog_name, relo_idx, i, cand_id, cand_name);
+> > +                     bpf_core_dump_spec(LIBBPF_DEBUG, &local_spec);
+> > +                     libbpf_print(LIBBPF_DEBUG, "\n");
+> > +                     continue;
+> > +             }
+> > +
+> > +             pr_debug("prog '%s': relo #%d: candidate #%d matched as spec ",
+> > +                      prog_name, relo_idx, i);
+>
+> did you mention that you're going to make a helper for this debug dumps?
+
+yeah, I added bpf_core_dump_spec(), but I don't know how to shorten
+this further... This output is extremely useful to understand what's
+happening and will be invaluable when users will inevitably report
+confusing behavior in some cases, so I still want to keep it.
+
+>
