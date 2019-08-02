@@ -2,116 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45E987EF99
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 10:48:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D67B7EF81
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 10:41:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404458AbfHBIsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 04:48:25 -0400
-Received: from lechat.rtp-net.org ([51.15.165.164]:42678 "EHLO
-        lechat.rtp-net.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404364AbfHBIsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 04:48:25 -0400
-X-Greylist: delayed 492 seconds by postgrey-1.27 at vger.kernel.org; Fri, 02 Aug 2019 04:48:24 EDT
-Received: by lechat.rtp-net.org (Postfix, from userid 115)
-        id 1BD571808B6; Fri,  2 Aug 2019 10:40:05 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on lechat.rtp-net.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=5.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,URIBL_BLOCKED
-        autolearn=unavailable autolearn_force=no version=3.4.2
-Received: from lapoire.rtp-net.org (lapoire.rtp-net.org [IPv6:2a01:e0a:7:98c0:14:7ff:fec3:5d0])
-        by lechat.rtp-net.org (Postfix) with ESMTPSA id B813218003C;
-        Fri,  2 Aug 2019 10:39:59 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=rtp-net.org; s=email;
-        t=1564735199; bh=pXXHhVxgL2bLhvlqT76d+ABFCLiqzHn5jvnPPzAbBE8=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Db60miHaQmgCVXlMw+HX22FWc93vZB/do3WhUEIpFON0APJmp2nadT0bmCDpCeyaN
-         abzTmioFbRFjHXnKnweAq+WIP6COF5m9S5f6IcltAVxQsidGDYpevD4nLHrSmANYWg
-         mGecMCEQzMn8GzZkT3MHB8PKB3jCD2tVaiVvnylO5Qp62u6wDCOY7HYPKkXzeTElwF
-         r1i3+NrtUQxuDAzVnfNoRDdS1qRaDP4UQCgX4rONf92MHlJhkpVt7spNhfnEr15RbP
-         Z9A0McavtNZoJrAz+rTcuvrnM4UHy7oE0oTq8c/Y6bbbG7LckxIFy7V5mExCD85/We
-         Pgmsq7+cXf9wX/n1pLYJoLiRH48YfqOzD+laqGNxpX/tFt6qdB9vm82TkEMrSd8eQq
-         ylBO4g1Co58N2pcJR/iJSllwpuoGnME6yILcNPUaGNZAclougxdtchbkrSRUoYynT0
-         IhATY7wDoCF1csRr7w5Yx0ZZkUaghHCbYzugQ0og1OBNn2NkUecjaVWT0cHZ4YhP7b
-         Sfrt82YRlqN7dPvdOcb9zBj7X17I8zUJtUytrf6neB4qCAylCciXDfNRaMqUv4pd9K
-         RyS1s/LMwFuEMiDsZ3dBjLYARnKFgXyZBCHZOxilZKO1i3RljqQTu/h2aeXuIBCJwQ
-         Q4JoeOFrCd2dzW2eFpQ3AtfU=
-Received: from jules.rtp-net.org (jules.rtp-net.org [192.168.2.4])
-        by lapoire.rtp-net.org (Postfix) with ESMTP id 621B740229;
-        Fri,  2 Aug 2019 08:39:59 +0000 (UTC)
-Received: by jules.rtp-net.org (Postfix, from userid 10001)
-        id CB7FE6FF; Fri,  2 Aug 2019 10:39:58 +0200 (CEST)
-Message-ID: <20190802083310.772136040@rtp-net.org>
-User-Agent: quilt/0.66
-Date:   Fri, 02 Aug 2019 10:32:40 +0200
-From:   Arnaud Patard (Rtp) <arnaud.patard@rtp-net.org>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Arnaud Patard <arnaud.patard@rtp-net.org>
-Subject: [patch 1/1] drivers/net/ethernet/marvell/mvmdio.c: Fix non OF case
+        id S2404363AbfHBIlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 04:41:14 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:41672 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729530AbfHBIlO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 04:41:14 -0400
+Received: by mail-pl1-f193.google.com with SMTP id m9so33252471pls.8;
+        Fri, 02 Aug 2019 01:41:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZAc60zmmWfJUPJOxztGC1Zo0QcSwvZnWidwh1YadQW4=;
+        b=BeiakVZ/69l0C40HpLypKpjGyqlbjMzm3PySNszVR6EOhpT+j+PH0BIMvvQ0zkGlHX
+         XQUQVOiygfbQ8ydDOxejN7p02EyZXsb3q0gOkdztKAR7Dk/HUtjFg3/RtrnSWI2yVIAb
+         vJEJ43TRr17U0CfYB5o5ZfJQr53fqKZc4AOCYc8kFRIfsueek7PpKPr98juBm7CLFL0y
+         gfR9xAHxL7qkohnOof48JG6GrmP1SbEPVBZ2NiMRzYpaFk1+SJj3ZPsQSdCUEhRpXar6
+         /m0ZGUsruQNrXq9oPdRJibQZokvrdGLYI+oOUiPIWZ925shzg/8WT3lGM6DDAtCcv9Ln
+         nA8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZAc60zmmWfJUPJOxztGC1Zo0QcSwvZnWidwh1YadQW4=;
+        b=CVS9OYHyDh0EvyISAYxDoG6Yo2uisP/oPBzKrLETkeiCBGhjOQ7OtZvlNH4URxaOSA
+         L7czBIO8EnrnlHPvnisxnLXeG6lw+8Mt8BXsHCI3cvalIiCprjtZUXhogwG4nFAODQN4
+         DvV07HtArvF+iA6iX+pEJQr3P7icrEK6F09xAqv4LmlTMYWbMRC4AALavvPLAjqMOv43
+         ZWyIuUZUR0P0nZjnOn2aZgbXcEUaCKN+X1uVsIY883mvSk7rvm76C+XcItKlq6iaPx94
+         2C0Sf7lxTuiQBWQ9HjwCDx2YIva8i4ALVBgAGdnjYu8eGAtJzkMNzwVrYrK81BamFT5L
+         HyPQ==
+X-Gm-Message-State: APjAAAVXoBjF2Z9GZ5gF8HIyuAwa8/bKGpWvyOpE3iBlc/CkscNLJsDI
+        0nncFt8/60VhzGmfh2iL+6A=
+X-Google-Smtp-Source: APXvYqzNE1bewwsx9D1UZc8lGoqthGwl6qcode52EkBnUpn1dSdl6cReLdopztd1bcNFRzL18bEziA==
+X-Received: by 2002:a17:902:7687:: with SMTP id m7mr76984090pll.310.1564735273710;
+        Fri, 02 Aug 2019 01:41:13 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id q7sm81671983pff.2.2019.08.02.01.41.11
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 01:41:13 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH v2 1/2] cxgb4: sched: Use refcount_t for refcount
+Date:   Fri,  2 Aug 2019 16:41:08 +0800
+Message-Id: <20190802084108.13005-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Orion5.x systems are still using machine files and not device-tree.
-Commit 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be
-specified for orion-mdio") has replaced devm_clk_get() with of_clk_get(),
-leading to a oops at boot and not working network, as reported in 
-https://lists.debian.org/debian-arm/2019/07/msg00088.html and possibly in
-https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=908712.
+refcount_t is better for reference counters since its
+implementation can prevent overflows.
+So convert atomic_t ref counters to refcount_t.
 
-Link: https://lists.debian.org/debian-arm/2019/07/msg00088.html
-Fixes: 96cb4342382290c9 ("net: mvmdio: allow up to three clocks to be specified for orion-mdio")
-Signed-off-by: Arnaud Patard <arnaud.patard@rtp-net.org>
-Index: linux-next/drivers/net/ethernet/marvell/mvmdio.c
-===================================================================
---- linux-next.orig/drivers/net/ethernet/marvell/mvmdio.c
-+++ linux-next/drivers/net/ethernet/marvell/mvmdio.c
-@@ -319,20 +319,33 @@ static int orion_mdio_probe(struct platf
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+---
+Changes in v2:
+  - Convert refcount from 0-base to 1-base.
+
+ drivers/net/ethernet/chelsio/cxgb4/sched.c | 8 ++++----
+ drivers/net/ethernet/chelsio/cxgb4/sched.h | 2 +-
+ 2 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sched.c b/drivers/net/ethernet/chelsio/cxgb4/sched.c
+index 60218dc676a8..0d902d125be4 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sched.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/sched.c
+@@ -173,7 +173,7 @@ static int t4_sched_queue_unbind(struct port_info *pi, struct ch_sched_queue *p)
  
- 	init_waitqueue_head(&dev->smi_busy_wait);
- 
--	for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
--		dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
--		if (PTR_ERR(dev->clk[i]) == -EPROBE_DEFER) {
-+	if (pdev->dev.of_node) {
-+		for (i = 0; i < ARRAY_SIZE(dev->clk); i++) {
-+			dev->clk[i] = of_clk_get(pdev->dev.of_node, i);
-+			if (PTR_ERR(dev->clk[i]) == -EPROBE_DEFER) {
-+				ret = -EPROBE_DEFER;
-+				goto out_clk;
-+			}
-+			if (IS_ERR(dev->clk[i]))
-+				break;
-+			clk_prepare_enable(dev->clk[i]);
-+		}
-+
-+		if (!IS_ERR(of_clk_get(pdev->dev.of_node,
-+				       ARRAY_SIZE(dev->clk))))
-+			dev_warn(&pdev->dev,
-+				 "unsupported number of clocks, limiting to the first "
-+				 __stringify(ARRAY_SIZE(dev->clk)) "\n");
-+	} else {
-+		dev->clk[0] = clk_get(&pdev->dev, NULL);
-+		if (PTR_ERR(dev->clk[0]) == -EPROBE_DEFER) {
- 			ret = -EPROBE_DEFER;
- 			goto out_clk;
+ 		list_del(&qe->list);
+ 		kvfree(qe);
+-		if (atomic_dec_and_test(&e->refcnt)) {
++		if (refcount_dec_and_test(&e->refcnt)) {
+ 			e->state = SCHED_STATE_UNUSED;
+ 			memset(&e->info, 0, sizeof(e->info));
  		}
--		if (IS_ERR(dev->clk[i]))
--			break;
--		clk_prepare_enable(dev->clk[i]);
-+		if (!IS_ERR(dev->clk[0]))
-+			clk_prepare_enable(dev->clk[0]);
+@@ -216,7 +216,7 @@ static int t4_sched_queue_bind(struct port_info *pi, struct ch_sched_queue *p)
+ 		goto out_err;
+ 
+ 	list_add_tail(&qe->list, &e->queue_list);
+-	atomic_inc(&e->refcnt);
++	refcount_inc(&e->refcnt);
+ 	return err;
+ 
+ out_err:
+@@ -434,7 +434,7 @@ static struct sched_class *t4_sched_class_alloc(struct port_info *pi,
+ 		if (err)
+ 			return NULL;
+ 		memcpy(&e->info, &np, sizeof(e->info));
+-		atomic_set(&e->refcnt, 0);
++		refcount_set(&e->refcnt, 1);
+ 		e->state = SCHED_STATE_ACTIVE;
  	}
  
--	if (!IS_ERR(of_clk_get(pdev->dev.of_node, ARRAY_SIZE(dev->clk))))
--		dev_warn(&pdev->dev, "unsupported number of clocks, limiting to the first "
--			 __stringify(ARRAY_SIZE(dev->clk)) "\n");
+@@ -488,7 +488,7 @@ struct sched_table *t4_init_sched(unsigned int sched_size)
+ 		s->tab[i].idx = i;
+ 		s->tab[i].state = SCHED_STATE_UNUSED;
+ 		INIT_LIST_HEAD(&s->tab[i].queue_list);
+-		atomic_set(&s->tab[i].refcnt, 0);
++		refcount_set(&s->tab[i].refcnt, 1);
+ 	}
+ 	return s;
+ }
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/sched.h b/drivers/net/ethernet/chelsio/cxgb4/sched.h
+index 168fb4ce3759..23a6ca1e6d3e 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/sched.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/sched.h
+@@ -69,7 +69,7 @@ struct sched_class {
+ 	u8 idx;
+ 	struct ch_sched_params info;
+ 	struct list_head queue_list;
+-	atomic_t refcnt;
++	refcount_t refcnt;
+ };
  
- 	dev->err_interrupt = platform_get_irq(pdev, 0);
- 	if (dev->err_interrupt > 0 &&
-
+ struct sched_table {      /* per port scheduling table */
+-- 
+2.20.1
 
