@@ -2,82 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 322707EE18
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 09:55:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93ADD7EE3C
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 10:02:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390495AbfHBHzN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 03:55:13 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36861 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731067AbfHBHzN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 03:55:13 -0400
-Received: by mail-wr1-f66.google.com with SMTP id n4so76234335wrs.3
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 00:55:11 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=iQeecZfwLuP7CODOolIpmoLPGZENj4z5U1obZlPPBsE=;
-        b=XGvfS2DYXGr85CCUdgFDJRCzg8t9CfTsRdK6XQGadkT/SeDeqYDR1JUIONRuWWMR7U
-         BOixBsovb4StvMzKLEo7PvGDoI+YWmiXmEEKVrIv3ajIk8nC+thY8Rof86WQgzuUljlw
-         S0y4gaWJaly5Y/hS97gd0SOuRDM8oE5wqs2Ex+hIrQzvf/lG9G7DaB4ngMGSJlJfZMNL
-         rby/j64KrsKNgPOAVLkGNQb4Zbv6GHfxsrifsb/f+Oux81X7VLCsnq6o4xF9bpiqNdY2
-         3q4SYPPLaw3qCaSNm9L0z2N+lnmRdO8Mke07a0Oc9a0eXXigEHapvAecUCfTolnbe+Z5
-         Of8A==
-X-Gm-Message-State: APjAAAUh/XQAfKLDkxiARjugRwDzlhzCiu6EV7HW5WkGQNCmj3pC3z4y
-        mAJxvTVc5nGgOIanDmmuWcfuGQ==
-X-Google-Smtp-Source: APXvYqxJYMba81q1+ZjYpm8CUmRIMpGHEf3SB8tgLMove58CtJewiAKhbgEp6Gf/LDnWAQBR7N5n+w==
-X-Received: by 2002:a05:6000:42:: with SMTP id k2mr23783548wrx.80.1564732511147;
-        Fri, 02 Aug 2019 00:55:11 -0700 (PDT)
-Received: from steredhat (host122-201-dynamic.13-79-r.retail.telecomitalia.it. [79.13.201.122])
-        by smtp.gmail.com with ESMTPSA id j9sm83739926wrn.81.2019.08.02.00.55.09
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 00:55:10 -0700 (PDT)
-Date:   Fri, 2 Aug 2019 09:55:08 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 00/11] VSOCK: add vsock_test test suite
-Message-ID: <20190802075508.tumpam2vfmynuhd5@steredhat>
-References: <20190801152541.245833-1-sgarzare@redhat.com>
- <PU1P153MB0169B265ECA51CB0AE1212DEBFDE0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
+        id S2403767AbfHBICH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 04:02:07 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:45366 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728268AbfHBICH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 04:02:07 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 43EAF308A9E2;
+        Fri,  2 Aug 2019 08:02:06 +0000 (UTC)
+Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 309CD5D9D3;
+        Fri,  2 Aug 2019 08:01:59 +0000 (UTC)
+Date:   Fri, 2 Aug 2019 09:53:54 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        xdp-newbies@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        brandon.cazander@multapplied.net,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        brouer@redhat.com
+Subject: Re: [net v1 PATCH 4/4] net: fix bpf_xdp_adjust_head regression for
+ generic-XDP
+Message-ID: <20190802095350.7242399b@carbon>
+In-Reply-To: <20190801174406.0b554bb9@cakuba.netronome.com>
+References: <156468229108.27559.2443904494495785131.stgit@firesoul>
+        <156468243184.27559.7002090473019021952.stgit@firesoul>
+        <20190801174406.0b554bb9@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <PU1P153MB0169B265ECA51CB0AE1212DEBFDE0@PU1P153MB0169.APCP153.PROD.OUTLOOK.COM>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 02 Aug 2019 08:02:06 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 01, 2019 at 04:16:37PM +0000, Dexuan Cui wrote:
-> > From: Stefano Garzarella <sgarzare@redhat.com>
-> > Sent: Thursday, August 1, 2019 8:26 AM
+On Thu, 1 Aug 2019 17:44:06 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+
+> On Thu, 01 Aug 2019 20:00:31 +0200, Jesper Dangaard Brouer wrote:
+> > When generic-XDP was moved to a later processing step by commit
+> > 458bf2f224f0 ("net: core: support XDP generic on stacked devices.")
+> > a regression was introduced when using bpf_xdp_adjust_head.
 > > 
-> > The vsock_diag.ko module already has a test suite but the core AF_VSOCK
-> > functionality has no tests.  This patch series adds several test cases that
-> > exercise AF_VSOCK SOCK_STREAM socket semantics (send/recv,
-> > connect/accept,
-> > half-closed connections, simultaneous connections).
+> > The issue is that after this commit the skb->network_header is now
+> > changed prior to calling generic XDP and not after. Thus, if the header
+> > is changed by XDP (via bpf_xdp_adjust_head), then skb->network_header
+> > also need to be updated again.  Fix by calling skb_reset_network_header().
 > > 
-> > Dexuan: Do you think can be useful to test HyperV?
+> > Fixes: 458bf2f224f0 ("net: core: support XDP generic on stacked devices.")
+> > Reported-by: Brandon Cazander <brandon.cazander@multapplied.net>
+> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>  
 > 
-> Hi Stefano,
-> Thanks! This should be useful, though I have to write the Windows host side
-> code to use the test program(s). :-)
-> 
+> Out of curiosity what was your conclusion regarding resetting the
+> transport header as well?
 
-Oh, yeah, I thought so :-)
+Well, I don't know... I need some review, from e.g. Stephen that
+changed this... I've added code snippets below signature to helper
+reviewers (also helps understand below paragraph).
 
-Let me know when you'll try to find out if there's a problem.
+I think, we perhaps should call skb_reset_transport_header(), as we
+change skb->data (via either __skb_pull() or __skb_push()), *BUT* I'm
+not sure it is needed/required, as someone/something afterwards still
+need to call skb_set_transport_header(), which also calls
+skb_reset_transport_header() anyway.
 
-Thanks,
-Stefano
+I also want to ask reviewers, if we should move the call to
+skb_reset_mac_len() (which Stephen added) in __netif_receive_skb_core()
+into netif_receive_generic_xdp() (after the call to
+skb_reset_network_header()), (it would be more natural to keep them
+together)?
+
+- - 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
+Code snippet
+	/* check if bpf_xdp_adjust_head was used */
+	off = xdp->data - orig_data;
+	if (off) {
+		if (off > 0)
+			__skb_pull(skb, off);
+		else if (off < 0)
+			__skb_push(skb, -off);
+
+		skb->mac_header += off;
+		skb_reset_network_header(skb);
+	}
+
+
+static inline bool skb_transport_header_was_set(const struct sk_buff *skb)
+{
+	return skb->transport_header != (typeof(skb->transport_header))~0U;
+}
+
+static inline unsigned char *skb_transport_header(const struct sk_buff *skb)
+{
+	return skb->head + skb->transport_header;
+}
+
+static inline void skb_reset_transport_header(struct sk_buff *skb)
+{
+	skb->transport_header = skb->data - skb->head;
+}
+
+static inline void skb_set_transport_header(struct sk_buff *skb,
+					    const int offset)
+{
+	skb_reset_transport_header(skb);
+	skb->transport_header += offset;
+}
+
