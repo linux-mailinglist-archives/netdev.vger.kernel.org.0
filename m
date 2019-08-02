@@ -2,97 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EE14800BB
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 21:14:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ADA9800CF
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 21:16:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391984AbfHBTO5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 15:14:57 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:38051 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbfHBTO5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 15:14:57 -0400
-Received: by mail-ot1-f65.google.com with SMTP id d17so79263503oth.5
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 12:14:56 -0700 (PDT)
+        id S2392199AbfHBTQ5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 15:16:57 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:35694 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391984AbfHBTQ4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 15:16:56 -0400
+Received: by mail-io1-f65.google.com with SMTP id m24so154528624ioo.2
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 12:16:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=snjsQoK9qQrtuVFdIq7bwQHzffOHdQm1tW8UX0mjAlg=;
-        b=syxuhksqtUNnfC7lc7G2YJcnEKtTMjV240l4HscIomm0oyH0fedD+oMBPyP9zC7ASA
-         +yNzQ65opeQSArkEyUm5nzVKe3+KIlelVzdoEINn05L5dnXn+riQ62AUuPaLZOfFCdx8
-         8zNfKNIuxKpnlynAPA3mwDke5b3eb6D/LmLt41WH6zzM7Pz7iRSrkBPKDdyg+ZwYcsEz
-         jkd6MCWlnGVUaC4Qz7f8Mf9sd2ftTY0EyE/PQBFGoK3WsCKcQqk6UZIeW8oqppGDQx6h
-         I2CKFBuUJ6gHeveB8WYmkztRg2kDqXT59he9aX3bHbZdGqsiwBuIEhsnLGl51FbH+lGe
-         uEcg==
+        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=h7nhEm78V7WmFGfIhMkfh2EorlV6SVL+Qv2JXWnayVs=;
+        b=aips4NfXUlPP1ToR3kyenU37WDZw2YisLqA4wULW7ugRiqwE59uHF4YUQ0tnjutOe/
+         g5eaSTmXxLewa3BbNdb+FcFxKUL5YztmRg/8t15ARqP61VrNzB9zZbVd3FG9Pe93yRF8
+         JUlMdcyhr1hhgC4Gc59TBcrySli1w8A4L9apclu/kHiHwl+M4MX17e98dKKvGAxKXhmT
+         +mR/05DMtCa9+5Mjpa5TpzMQf3ohOWsMI3My696FzDFrhZmjW+1sPd9ujSWRnTmDfxPn
+         kfylH/0duTjUToIfaogFfKgbhbaEsTDjeTvrLJsbHroukugXVYDJS3OGf3MQPmTkTNag
+         a6Hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=snjsQoK9qQrtuVFdIq7bwQHzffOHdQm1tW8UX0mjAlg=;
-        b=A92+yoMHUK4qMc8f+mfOp4ig0lDiuXtYsWCo9g60jKgfZ1agfp1KPV7+I4pN2cp9GE
-         lj3+jQoy+gGlqdfu3v4KaecjTKmsy6S2lhpDz9dPuqDcdcKJeC79Oj2KwT4y7QtyL2mU
-         qsdZY3ig83VevNpotGq9k2mjYgg1MrYGZE6dvwAaaRk7rgnhoxZxLn0fTipsHpdhgWaH
-         HGHZfPRCuEj0IFluc04fueZZO3VYkOM0AWgAZ3h2i63K54Z6hYf4PUaC5I+kUYTfuGi4
-         rw8urZfB+t023t3CcNDdFt+TrJj7NUpHTHJTV795UjjrE0pfR0mejd3bg2bH7K9SGISu
-         +u+A==
-X-Gm-Message-State: APjAAAWITx7BxwTTpSBpZAkvNwi6fWE8QNwkJS912Xa85qsttitYQNET
-        1qPLt1jqtQ3DufE+QxeKRg5UHV/+oImrZ0SnknRoSg==
-X-Google-Smtp-Source: APXvYqxEhvLJuoH//ZrGeva5RMXgEDIVtUagAJBqB+LkMXw8o+9uwzL1HtitCwRklqUc5RZXj9wPxg3iE8Q/vPIeNAs=
-X-Received: by 2002:a9d:5cc1:: with SMTP id r1mr16268740oti.341.1564773295759;
- Fri, 02 Aug 2019 12:14:55 -0700 (PDT)
-MIME-Version: 1.0
-References: <CABOR3+yUiu1BzCojFQFADUKc5BT2-Ew_j7KFNpjP8WoMYZ+SMA@mail.gmail.com>
-In-Reply-To: <CABOR3+yUiu1BzCojFQFADUKc5BT2-Ew_j7KFNpjP8WoMYZ+SMA@mail.gmail.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Fri, 2 Aug 2019 15:14:38 -0400
-Message-ID: <CADVnQy=dvmksVaDu61+w-qtv2g_iNbWPFgbSJDtx9QaasmHonw@mail.gmail.com>
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory limits
-To:     Bernd <ecki@zusammenkunft.net>
-Cc:     netdev <netdev@vger.kernel.org>, Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=h7nhEm78V7WmFGfIhMkfh2EorlV6SVL+Qv2JXWnayVs=;
+        b=npULktAVV0yApJDNiLVwzMlBiWgLmVail6jdyDPCTBpEye91LtQCkti1Ddk5u8hqxZ
+         rWCdKdm4mTXEgMj+89GpFNhfBTD415fWGtmGGBO4bOMFtbbjeHfMyQketcymo+Ba2fZ9
+         38yL1vN58mfVvIL1v4GoK5VdZ93xxkCNVuEgOsNU4VuJsOLsqwIxE9N1GhqEyf4GoUdG
+         v50hFPJkuXhoCHmCbyF+X2rm1Fny2x4To+pC6iQeoUTBkdYX8/Sivz9VkMsyXbUbKFrx
+         XpF7oxeZ6MmUGqbbfw77pI9eLVKZ8Ik0ERxECYiwuj2ZQJTy5drVaTI7c0CMyD3AL6DW
+         oJOQ==
+X-Gm-Message-State: APjAAAVP6NJfrgmRcjRs0Pq/7g1D8F/1gPBQuSxECoNIG+84/DXPtHxd
+        vpSxPgfskADSc4X+8X9xFP/KrlZQ
+X-Google-Smtp-Source: APXvYqzhLTGq0NCLt8vMDJmq4mRn9GJO7K+IP3ve3tBPjxPzmh0g6nYtPUH2qyTIncEW8PT+xw6QlQ==
+X-Received: by 2002:a5d:8c87:: with SMTP id g7mr28360543ion.85.1564773416061;
+        Fri, 02 Aug 2019 12:16:56 -0700 (PDT)
+Received: from mojatatu.com ([64.26.149.125])
+        by smtp.gmail.com with ESMTPSA id n22sm117987934iob.37.2019.08.02.12.16.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 02 Aug 2019 12:16:55 -0700 (PDT)
+From:   Roman Mashak <mrv@mojatatu.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        Roman Mashak <mrv@mojatatu.com>
+Subject: [PATCH net 0/2] Fix batched event generation for vlan action
+Date:   Fri,  2 Aug 2019 15:16:45 -0400
+Message-Id: <1564773407-26209-1-git-send-email-mrv@mojatatu.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 2, 2019 at 3:03 PM Bernd <ecki@zusammenkunft.net> wrote:
->
-> Hello,
->
-> While analyzing a aborted upload packet capture I came across a odd
-> trace where a sender was not responding to a duplicate SACK but
-> sending further segments until it stalled.
->
-> Took me some time until I remembered this fix, and actually the
-> problems started since the security fix was applied.
->
-> I see a high counter for TCPWqueueTooBig - and I don=E2=80=99t think that=
-=E2=80=99s an
-> actual attack.
->
-> Is there a probability for triggering the limit with connections with
-> big windows and large send buffers and dropped segments? If so what
-> would be the plan? It does not look like it is configurable. The trace
-> seem to have 100 (filled) inflight segments.
->
-> Gruss
-> Bernd
-> --
-> http://bernd.eckenfels.net
+When adding or deleting a batch of entries, the kernel sends up to
+TCA_ACT_MAX_PRIO (defined to 32 in kernel) entries in an event to user
+space. However it does not consider that the action sizes may vary and
+require different skb sizes.
 
-What's the exact kernel version you are using?
+For example, consider the following script adding 32 entries with all
+supported vlan parameters (in order to maximize netlink messages size):
 
-Eric submitted a patch recently that may address your issue:
-   tcp: be more careful in tcp_fragment()
-  https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=
-=3Db617158dc096709d8600c53b6052144d12b89fab
+% cat tc-batch.sh
+TC="sudo /mnt/iproute2.git/tc/tc"
 
-Would you be able to test your workload with that commit
-cherry-picked, and see if the issue still occurs?
+$TC actions flush action vlan
+for i in `seq 1 $1`;
+do
+   cmd="action vlan push protocol 802.1q id 4094 priority 7 pipe \
+               index $i cookie aabbccddeeff112233445566778800a1 "
+   args=$args$cmd
+done
+$TC actions add $args
+%
+% ./tc-batch.sh 32
+Error: Failed to fill netlink attributes while adding TC action.
+We have an error talking to the kernel
+%
 
-That commit was targeted to many stable releases, so you may be able
-to pick up that fix from a stable branch.
+patch 1 adds callback in tc_action_ops of vlan action, which calculates
+the action size, and passes size to tcf_add_notify()/tcf_del_notify().
 
-cheers,
-neal
+patch 2 updates the TDC test suite with relevant vlan test cases.
+
+Roman Mashak (2):
+  net sched: update vlan action for batched events operations
+  tc-testing: updated vlan action tests with batch create/delete
+
+ net/sched/act_vlan.c                               |  9 +++
+ .../tc-testing/tc-tests/actions/vlan.json          | 94 ++++++++++++++++++++++
+ 2 files changed, 103 insertions(+)
+
+-- 
+2.7.4
+
