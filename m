@@ -2,95 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E38D380280
-	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 00:04:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2E9480283
+	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 00:05:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732115AbfHBWER (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 18:04:17 -0400
-Received: from correo.us.es ([193.147.175.20]:50366 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729311AbfHBWER (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Aug 2019 18:04:17 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id CF303127C83
-        for <netdev@vger.kernel.org>; Sat,  3 Aug 2019 00:04:14 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C0A621150B9
-        for <netdev@vger.kernel.org>; Sat,  3 Aug 2019 00:04:14 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id A03C718539; Sat,  3 Aug 2019 00:04:14 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id F0374DA730;
-        Sat,  3 Aug 2019 00:04:11 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Sat, 03 Aug 2019 00:04:11 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [31.4.211.36])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id A58284265A2F;
-        Sat,  3 Aug 2019 00:04:11 +0200 (CEST)
-Date:   Sat, 3 Aug 2019 00:04:09 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, marcelo.leitner@gmail.com,
-        jiri@resnulli.us, wenxu@ucloud.cn, saeedm@mellanox.com,
-        paulb@mellanox.com, gerlitz.or@gmail.com
-Subject: Re: [PATCH net 0/2] flow_offload hardware priority fixes
-Message-ID: <20190802220409.klwdkcvjgegz6hj2@salvia>
-References: <20190801112817.24976-1-pablo@netfilter.org>
- <20190801172014.314a9d01@cakuba.netronome.com>
- <20190802110023.udfcxowe3vmihduq@salvia>
- <20190802134738.328691b4@cakuba.netronome.com>
+        id S2392325AbfHBWFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 18:05:09 -0400
+Received: from smtprelay0102.hostedemail.com ([216.40.44.102]:48139 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729311AbfHBWFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 18:05:09 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 669D7100E806B;
+        Fri,  2 Aug 2019 22:05:07 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 50,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1263:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2525:2553:2560:2563:2682:2685:2828:2859:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3352:3622:3865:3867:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4384:4605:4659:5007:7514:9025:9388:9389:10004:10049:10400:10848:10967:11232:11658:11914:12043:12296:12297:12555:12740:12760:12895:12986:13069:13095:13311:13357:13439:14096:14097:14181:14659:14721:14764:21080:21433:21451:21611:21627:21691:30009:30054:30070:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:26,LUA_SUMMARY:none
+X-HE-Tag: swing93_49a7a4bebce5e
+X-Filterd-Recvd-Size: 2071
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Fri,  2 Aug 2019 22:05:06 +0000 (UTC)
+Message-ID: <2ecfbf8dda354fe47912446bf5c3fe30ca905aa0.camel@perches.com>
+Subject: Re: [PATCH] isdn: hysdn: Fix error spaces around '*'
+From:   Joe Perches <joe@perches.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>,
+        Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
+Cc:     isdn@linux-pingi.de, gregkh@linuxfoundation.org,
+        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Fri, 02 Aug 2019 15:05:05 -0700
+In-Reply-To: <20190802145506.168b576b@hermes.lan>
+References: <20190802195602.28414-1-joseespiriki@gmail.com>
+         <20190802145506.168b576b@hermes.lan>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190802134738.328691b4@cakuba.netronome.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jakub,
-
-On Fri, Aug 02, 2019 at 01:47:38PM -0700, Jakub Kicinski wrote:
-> On Fri, 2 Aug 2019 13:00:23 +0200, Pablo Neira Ayuso wrote:
-> > Hi Jakub,
-> > 
-> > If the user specifies 'pref' in the new rule, then tc checks if there
-> > is a tcf_proto object that matches this priority. If the tcf_proto
-> > object does not exist, tc creates a tcf_proto object and it adds the
-> > new rule to this tcf_proto.
-> > 
-> > In cls_flower, each tcf_proto only stores one single rule, so if the
-> > user tries to add another rule with the same 'pref', cls_flower
-> > returns EEXIST.
+On Fri, 2019-08-02 at 14:55 -0700, Stephen Hemminger wrote:
+> On Fri,  2 Aug 2019 19:56:02 +0000
+> Jose Carlos Cazarin Filho <joseespiriki@gmail.com> wrote:
 > 
-> So you're saying this doesn't work?
+> > Fix checkpath error:
+> > CHECK: spaces preferred around that '*' (ctx:WxV)
+> > +extern hysdn_card *card_root;        /* pointer to first card */
+> > 
+> > Signed-off-by: Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
 > 
-> ip link add type dummy
-> tc qdisc add dev dummy0 clsact
-> tc filter add dev dummy0 ingress protocol ipv6 prio 123 flower src_ip 1111::1 action drop
-> tc filter add dev dummy0 ingress protocol ipv6 prio 123 flower src_ip 1111::2 action drop
+> Read the TODO, these drivers are scheduled for removal, so changes
+> are not helpful at this time.
 
-This works indeed as you describe.
+Maybe better to mark the MAINTAINERS entry obsolete so
+checkpatch bleats a message about unnecessary changes.
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'll go back to the original netfilter basechain priority patch then:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 30bf852e6d6b..b5df91032574 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8628,7 +8628,7 @@ M:	Karsten Keil <isdn@linux-pingi.de>
+ L:	isdn4linux@listserv.isdn4linux.de (subscribers-only)
+ L:	netdev@vger.kernel.org
+ W:	http://www.isdn4linux.de
+-S:	Odd Fixes
++S:	Obsolete
+ F:	Documentation/isdn/
+ F:	drivers/isdn/capi/
+ F:	drivers/staging/isdn/
 
-https://patchwork.ozlabs.org/patch/1140412/
-
-That patch removed the reference to tcf_auto_prio() already, please
-let me know if you have any more specific update you would like to see
-on that patch.
-
-Thanks.
