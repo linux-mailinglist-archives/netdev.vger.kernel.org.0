@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A9CB180010
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 20:09:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1D178001A
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 20:18:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406544AbfHBSJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 14:09:33 -0400
-Received: from smtprelay0155.hostedemail.com ([216.40.44.155]:46166 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2406250AbfHBSJd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 14:09:33 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 7C446100E86C4;
-        Fri,  2 Aug 2019 18:09:31 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::,RULES_HIT:41:355:379:599:800:960:968:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3867:3872:4321:5007:10004:10400:10848:11232:11658:11914:12043:12297:12740:12760:12895:13069:13311:13357:13439:14181:14659:14721:21080:21451:21627:30054:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:30,LUA_SUMMARY:none
-X-HE-Tag: print78_35d552e2a8f3a
-X-Filterd-Recvd-Size: 1809
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf19.hostedemail.com (Postfix) with ESMTPA;
-        Fri,  2 Aug 2019 18:09:29 +0000 (UTC)
-Message-ID: <f2b2559865e8bd59202e14b837a522a801d498e2.camel@perches.com>
-Subject: Re: [PATCH V2] mlx5: Fix formats with line continuation whitespace
-From:   Joe Perches <joe@perches.com>
-To:     Doug Ledford <dledford@redhat.com>,
-        Leon Romanovsky <leon@kernel.org>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Fri, 02 Aug 2019 11:09:28 -0700
-In-Reply-To: <ac8361beee5dd80ad6546328dd7457bb6ee1ca5a.camel@redhat.com>
-References: <f14db3287b23ed8af9bdbf8001e2e2fe7ae9e43a.camel@perches.com>
-         <20181101073412.GQ3974@mtr-leonro.mtl.com>
-         <ac8361beee5dd80ad6546328dd7457bb6ee1ca5a.camel@redhat.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S2406657AbfHBSSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 14:18:48 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57634 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405976AbfHBSSs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 14:18:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=JCYZVC/M3FiIjiwcLsQNRgrwzjn8oD0+t2wbx/4yCkY=; b=POWpG2umKb7U6UMpO9yXJOhHmd
+        HQxcSzbnaPrg+WkF1dGL7YSS3DpZtl7+04FZEubHBMvQDhQwtDmbToGqQW3FIRgW3m6/iCAPt9DMw
+        B9a+GxlZnoTUV4WEua+5Vuibii9KHivZ2+VjQGx7jcV6z6Bj3TOlWvu6mPItX/MFObM8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1htc8W-0002qb-9p; Fri, 02 Aug 2019 20:18:40 +0200
+Date:   Fri, 2 Aug 2019 20:18:40 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v4 4/4] net: phy: realtek: configure RTL8211E LEDs
+Message-ID: <20190802181840.GP2099@lunn.ch>
+References: <20190801190759.28201-1-mka@chromium.org>
+ <20190801190759.28201-5-mka@chromium.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190801190759.28201-5-mka@chromium.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2018-11-06 at 16:34 -0500, Doug Ledford wrote:
-> On Thu, 2018-11-01 at 09:34 +0200, Leon Romanovsky wrote:
-> > On Thu, Nov 01, 2018 at 12:24:08AM -0700, Joe Perches wrote:
-> > > The line continuations unintentionally add whitespace so
-> > > instead use coalesced formats to remove the whitespace.
-> > > 
-> > > Signed-off-by: Joe Perches <joe@perches.com>
-> > > ---
-> > > 
-> > > v2: Remove excess space after %u
-> > > 
-> > >  drivers/net/ethernet/mellanox/mlx5/core/rl.c | 6 ++----
-> > >  1 file changed, 2 insertions(+), 4 deletions(-)
-> > > 
-> > 
-> > Thanks,
-> > Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
+On Thu, Aug 01, 2019 at 12:07:59PM -0700, Matthias Kaehlcke wrote:
+> Configure the RTL8211E LEDs behavior when the device tree property
+> 'realtek,led-modes' is specified.
 > 
-> Applied, thanks.
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 
-Still not upstream.  How long does it take?
+Hi Matthias
 
+I was more thinking of adding a new driver call to the PHY driver API,
+to configure an LED. Something like
+
+rtl8211e_config_leds(phydev, int led, struct phy_led_config cfg);
+
+It would be called by the phylib core after config_init(). But also,
+thinking ahead to generic linux LED support, it could be called later
+to reconfigure the LEDs to use a different trigger. The standard LED
+sysfs interface would be used.
+
+      Andrew
