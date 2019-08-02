@@ -2,85 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 46FD77FC37
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:28:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38AFF7FC41
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 16:30:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394931AbfHBO1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 10:27:55 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:40506 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730999AbfHBO1y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:27:54 -0400
-Received: by mail-ed1-f67.google.com with SMTP id k8so72525233eds.7;
-        Fri, 02 Aug 2019 07:27:53 -0700 (PDT)
+        id S2394908AbfHBO37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 10:29:59 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:35911 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726505AbfHBO37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 10:29:59 -0400
+Received: by mail-ed1-f66.google.com with SMTP id k21so72580634edq.3
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 07:29:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cumulusnetworks.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=C9LPjwmpCbhIG9fa404OYjDh216Z1i9HjOGON92MWYk=;
-        b=Iqz2OamAaYolMP2nQ42QOA+OqHFEvmp+/aHWq5wTA0vcNcHZzeEc0ykVqbJfNgQYbQ
-         wHFuVsEDpuuPoeNMnJJcaAaYj2y43eyKCNk3NkxakxTXkwzNzp1hKPTDZX1JjICdNQPd
-         GS9QwXTdV92L8zl/BcOHze2ejPClmNiknhHIqDYNQZGQzKF+e5TxQoWvQNirqTIZW+wH
-         P20M2Tvxuc5JCJ+H5KsXYIhJZ7icjDGLzc16jOeYzOu3RWJBAWqY506d5i3gxsGh3GfZ
-         /zUowVXzWV4SiT894PKjJovd8YteDxA9COu/P10KC7n4J2efS94S27kvA82fhxX0tGYU
-         /CRQ==
+         :cc;
+        bh=6/YUk+s06hAVlFScFvuqBWrCMc7SbUqY5yZ8thAohgc=;
+        b=YEeAa1MO/ZT/XDp6v5ZilE/cHNC23cJUFVL42exnPJkE17cDls7LUzePvMmvcojzKr
+         PYJ5hl1WwwA6Izfc3TqctfJtebTD1PmD/XnePRCAkYj2Qhh/l2FLHCh/E3dFFqBR09bT
+         mxHs/b4qleIWhCdQg+CPgcq2gX+RNczY/v5Js=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=C9LPjwmpCbhIG9fa404OYjDh216Z1i9HjOGON92MWYk=;
-        b=Yshgt4rROfcAH8OvwuCqR3mqY0/FEJDhUnnY0JHd4Jlhjh5LEDavqeAkf+Mj2+tj0I
-         UMFjN5tD58BpvcKqIw1SH7rUpTldH+ugAnpjaOILj6YMRyPDmd3k2/LeOc96lWqQ1PGe
-         k07VAg3fHILZKIUcF8GVEtc1gPlJcF/Zs52Nu0wDI/XZiDR2rOZqFnGWn+RQl1wQmqQA
-         v69XeyKGZhn5OY5bjNhLzMnUNXdiF3wFj3vW2P6q9FgMD8gD2+ZvKzza+Ig2zfNpdJAy
-         Mcuty2vdZ3S63Vfrxlob51roQY1kuX3tN9y8O1A6U064XbfOE2ySuHl5/MVpwXavgUTN
-         sCVw==
-X-Gm-Message-State: APjAAAXLc0toG00WnYFi/Rc8OAqxuE2SB5AvEpLYTdQnmBd7pSC+0sNz
-        DOl4fzQbnKNvOXribGBC3hEnqH1tOYo6wAvudgE=
-X-Google-Smtp-Source: APXvYqx+n4u9oJJMuDA0ns2aDhTyoGkwwKiA4D4tHIfuVxnjL9ix5kO3F+lS+1evpIh5xhMhcwgVnx9sHpvKvTblzcM=
-X-Received: by 2002:a05:6402:896:: with SMTP id e22mr115658449edy.202.1564756073161;
- Fri, 02 Aug 2019 07:27:53 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=6/YUk+s06hAVlFScFvuqBWrCMc7SbUqY5yZ8thAohgc=;
+        b=PVaHWxsQ/OtyzfpRfs7jQixRw0RnJDlE3out8OzctOBYB/YzR/yYOf8PW8RTC1stqT
+         AhNMSDS8xRJNOxOMlHwO2a7XvwHkrLuqaMOarZLbE+bHWxDWlNUK9uIoKOCJiEDcv0U7
+         m5CClXFiYEjY9AlqLqwGWjmChNq0h7iOLIQD1L7wmRXtLzvcwjm6goPaZvGDCeqKFuqT
+         cBo3JZXf3I74tDUm/YpWe3kbh+3J8yxJyRZeWe3/mVeGMgymemj5pNpGrjTzfuD5NBFZ
+         bDKqQRYa/y1pvHEOV5/tN/3iCj8MlerzgEYswB0z71m5O4ABRySPCAffH7qGY5y7wz8T
+         hpGA==
+X-Gm-Message-State: APjAAAVVZzViY5h2aW+kZRVcZB2FuHENGfe72JRJKB4U5tT1lOK+Ah0P
+        T/i6xzNSDkWNt8TUJMxvn0qvVmcakvsRvhBKSA3SPw==
+X-Google-Smtp-Source: APXvYqyUY9i0euJay/JliAcigHmKXHooCGBtq7aFqiFICEuaXx/CHRZG9wxmZ352bNLjpAuf1HlXOMlrgUO09DSQiIg=
+X-Received: by 2002:a17:906:5399:: with SMTP id g25mr104653993ejo.247.1564756197376;
+ Fri, 02 Aug 2019 07:29:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190802083541.12602-1-hslester96@gmail.com> <CA+FuTSc8WBx2PCUhn-sLtYHQR-OROXm2pUN9SDj7P-Bd8432UQ@mail.gmail.com>
-In-Reply-To: <CA+FuTSc8WBx2PCUhn-sLtYHQR-OROXm2pUN9SDj7P-Bd8432UQ@mail.gmail.com>
-From:   Chuhong Yuan <hslester96@gmail.com>
-Date:   Fri, 2 Aug 2019 22:27:42 +0800
-Message-ID: <CANhBUQ2TRr4RuSmjaRYPXHZpVw_-2awXvWNjjdvV_z1yoGdkXA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] cxgb4: sched: Use refcount_t for refcount
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
+References: <0a015a21-c1ae-e275-e675-431f08bece86@cumulusnetworks.com> <20190802105736.26767-1-nikolay@cumulusnetworks.com>
+In-Reply-To: <20190802105736.26767-1-nikolay@cumulusnetworks.com>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Fri, 2 Aug 2019 07:29:46 -0700
+Message-ID: <CAJieiUiPFYDoi=AuFURNEuxNmkcVq5jcEVyDq5Ei1=i5tZ4nSA@mail.gmail.com>
+Subject: Re: [PATCH net v4] net: bridge: move default pvid init/deinit to NETDEV_REGISTER/UNREGISTER
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        bridge@lists.linux-foundation.org,
+        michael-dev <michael-dev@fami-braun.de>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Willem de Bruijn <willemdebruijn.kernel@gmail.com> =E4=BA=8E2019=E5=B9=B48=
-=E6=9C=882=E6=97=A5=E5=91=A8=E4=BA=94 =E4=B8=8B=E5=8D=889:40=E5=86=99=E9=81=
-=93=EF=BC=9A
+On Fri, Aug 2, 2019 at 3:57 AM Nikolay Aleksandrov
+<nikolay@cumulusnetworks.com> wrote:
 >
-> On Fri, Aug 2, 2019 at 4:36 AM Chuhong Yuan <hslester96@gmail.com> wrote:
-> >
-> > refcount_t is better for reference counters since its
-> > implementation can prevent overflows.
-> > So convert atomic_t ref counters to refcount_t.
-> >
-> > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> > ---
-> > Changes in v2:
-> >   - Convert refcount from 0-base to 1-base.
+> Most of the bridge device's vlan init bugs come from the fact that its
+> default pvid is created at the wrong time, way too early in ndo_init()
+> before the device is even assigned an ifindex. It introduces a bug when the
+> bridge's dev_addr is added as fdb during the initial default pvid creation
+> the notification has ifindex/NDA_MASTER both equal to 0 (see example below)
+> which really makes no sense for user-space[0] and is wrong.
+> Usually user-space software would ignore such entries, but they are
+> actually valid and will eventually have all necessary attributes.
+> It makes much more sense to send a notification *after* the device has
+> registered and has a proper ifindex allocated rather than before when
+> there's a chance that the registration might still fail or to receive
+> it with ifindex/NDA_MASTER == 0. Note that we can remove the fdb flush
+> from br_vlan_flush() since that case can no longer happen. At
+> NETDEV_REGISTER br->default_pvid is always == 1 as it's initialized by
+> br_vlan_init() before that and at NETDEV_UNREGISTER it can be anything
+> depending why it was called (if called due to NETDEV_REGISTER error
+> it'll still be == 1, otherwise it could be any value changed during the
+> device life time).
 >
-> This changes the initial value from 0 to 1, but does not change the
-> release condition. So this introduces an accounting bug?
+> For the demonstration below a small change to iproute2 for printing all fdb
+> notifications is added, because it contained a workaround not to show
+> entries with ifindex == 0.
+> Command executed while monitoring: $ ip l add br0 type bridge
+> Before (both ifindex and master == 0):
+> $ bridge monitor fdb
+> 36:7e:8a:b3:56:ba dev * vlan 1 master * permanent
+>
+> After (proper br0 ifindex):
+> $ bridge monitor fdb
+> e6:2a:ae:7a:b7:48 dev br0 vlan 1 master br0 permanent
+>
+> v4: move only the default pvid init/deinit to NETDEV_REGISTER/UNREGISTER
+> v3: send the correct v2 patch with all changes (stub should return 0)
+> v2: on error in br_vlan_init set br->vlgrp to NULL and return 0 in
+>     the br_vlan_bridge_event stub when bridge vlans are disabled
+>
+> [0] https://bugzilla.kernel.org/show_bug.cgi?id=204389
+>
+> Reported-by: michael-dev <michael-dev@fami-braun.de>
+> Fixes: 5be5a2df40f0 ("bridge: Add filtering support for default_pvid")
+> Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 
-I have noticed this problem and have checked other files which use refcount=
-_t.
-I find although the refcounts are 1-based, they still use
-refcount_dec_and_test()
-to check whether the resource should be released.
-One example is drivers/char/mspec.c.
-Therefore I think this is okay and do not change the release condition.
+Acked-by: Roopa Prabhu <roopa@cumulusnetworks.com>
