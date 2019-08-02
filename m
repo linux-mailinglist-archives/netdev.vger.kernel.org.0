@@ -2,97 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0333B8024F
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 23:50:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E17E80255
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 23:55:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395176AbfHBVsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 17:48:50 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34700 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726052AbfHBVsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 17:48:50 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n9so30469539pgc.1
-        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 14:48:50 -0700 (PDT)
+        id S1732711AbfHBVy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 17:54:56 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:42345 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726052AbfHBVyz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 17:54:55 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q10so36651481pff.9
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 14:54:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pensando.io; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-transfer-encoding:content-language;
-        bh=Gp85C8AWFsWiaefKV6EcteDHqO0OeHpa8uVlgLlZ268=;
-        b=jLuZMJVMukJ/B3YPkq/1wBHLUiVAQyPeDy0OC7navIW32yAUCiar5G/+aUFuXUrdoh
-         gzyp88wxoe9zLciFzYj5nPEwHYHKTHSOiOmX7lfl/yTV92QkIJBRs6zOQF8E8t++sE3K
-         nb6CEC7HJb68DUQMLviZTFXNadJnHtjkJku3BoxrVwmlKF8wpILq9QKfZlwmBs3ujmYU
-         tfWh6qGjQVTk+KR4o+JA1TqQKkMJydUWSz+2BH3yPf9v/QdZUDOKUk/OFujeChyUh0BW
-         gvTPXW1HcB3YA3bX9z/7sKZBXRPM+8mv5hydv8hWAeopwUtM1idjmZXyE6qKmv4PG8aQ
-         0zNw==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wyeLKPzC0XuP8gjAGSTKzaHtBOr+XkQRHretmBzwq5w=;
+        b=GaMOsF13xxb3cD8xzf2OmnaaSbtiMzON8fo3xA3vPmsrWVsWsYdLUNrKFxJcx2GOJ0
+         Hf+j9m5qaI0cA9ItiutImpnjd17gBDapDOyNUknduvJ0s3uZKttckWEwh6/TaqPb1NuK
+         MC+xNZlOytC+TjDD36ADL1bINhIbgY2uLhUPpElNVWEw+YsHmuamej7D0mP74+Srk496
+         60N4HTArbE3YzdC5S6kdKMKfqpZBgOD9OPX17vjm7e6Iini9LdUGlPOSWf1LmHLdO+RB
+         9xM1m8xJw4J33uPtbtqirl5MhIHcmyCjTqI0OjmGrLbDCPflVJ9EY6JisOEy/teLwzpB
+         5siQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Gp85C8AWFsWiaefKV6EcteDHqO0OeHpa8uVlgLlZ268=;
-        b=n/rFJmDP7tFHmw1cLRmlhN+XwGTVOVISHzSLls6hYXdNrwPzqV6dbAZ+ehSp5oAEiL
-         0uPe4sKOOMBIqLJK9tNO/cTSPtxqJlU9u1wiWRilG3On4gf4Zisqns5FaUYHkkd/W1Wc
-         taHPynxjYOo+yi9HWjmyeoUVx0b/tJ6bx3Ra4rzIOHpJzV+zBdsWBRBQfxPy2QvC+BwQ
-         oHFYimr9n8Y7Xfpxwvhbcf+WAKzWd/tG84zN2M8er5c0+IMPbc8vf6R1T3ghcyrGQUMz
-         UN6NkgMvpd2Bozp6QPar/1DaKnWi2ST6tb0thcwUVvEdvMoWVXnTU1nYuVBIjAVvDPPw
-         /Tuw==
-X-Gm-Message-State: APjAAAXK6XqDkKlyN4sl5bI4P3tlPE9+Yc0zB+wnvoXJ1mHkzYyxPNdH
-        S9cSVi+X/CyW0k0h0zSUg4/o9A==
-X-Google-Smtp-Source: APXvYqwharujiEH6SpfpH2YkIiub6QhD3+V/boxvPCgI9cDJY6MtlV3ECa0Uze0L94Y2lvYPfH+XJQ==
-X-Received: by 2002:a63:de07:: with SMTP id f7mr24012728pgg.213.1564782529730;
-        Fri, 02 Aug 2019 14:48:49 -0700 (PDT)
-Received: from Shannons-MBP.pensando.io ([12.1.37.26])
-        by smtp.gmail.com with ESMTPSA id o14sm8578660pjp.29.2019.08.02.14.48.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 02 Aug 2019 14:48:48 -0700 (PDT)
-Subject: Re: [PATCH v4 net-next 18/19] ionic: Add coalesce and other features
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>
-References: <20190722214023.9513-1-snelson@pensando.io>
- <20190722214023.9513-19-snelson@pensando.io>
- <84f9a5438585a2274df162f6554504138e276d71.camel@mellanox.com>
-From:   Shannon Nelson <snelson@pensando.io>
-Message-ID: <ee9e32ca-14ce-9893-8257-0e7eac0c42d3@pensando.io>
-Date:   Fri, 2 Aug 2019 14:48:47 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wyeLKPzC0XuP8gjAGSTKzaHtBOr+XkQRHretmBzwq5w=;
+        b=FNEfGTFU5aeE1tYEMTzdJ3Dbylre5t8ACJHgL227kQ9N1SH27NYO2JofXw0dFw/BZC
+         P5nU5aSm6WjK9H8g6UgYZZwYrY0yng5QA0uXeFn/GDrCaidD05Ox2cG8NYRITdGGn12D
+         edGQB3gN9iW7zPeQl5T9qsyyRuJxdg/3MILFpnYk8uauJD4QeUjy++caalEAIqQGm/PO
+         2pcNFkEoZenbpr19iJILBYus1hG4eX+QZJ7uVr9tbnKgVnEvWtUiSewUgvbavjT7zpod
+         dr34UFeC1YXvSceOPVbj8rgkk+OSGpke84yNATcLlSrlBF5fozFB9jYVGrOMAFXJXQqJ
+         Eb5w==
+X-Gm-Message-State: APjAAAUMYeX9L/IJvlMMJUAG/U3glrXBBlJ4s9F9guvSSH6hseRC/WPu
+        Dq4dwcd+ZoCNpDAvnrN+QTY=
+X-Google-Smtp-Source: APXvYqwbHMg3jNoCFZHog7Hxf1IYqhk4HkeR6DqQNTGvD37LG2dD5fYELrYf9ed2PrIB1VZBXPindw==
+X-Received: by 2002:a63:3147:: with SMTP id x68mr63386647pgx.212.1564782895104;
+        Fri, 02 Aug 2019 14:54:55 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id m16sm75782068pfd.127.2019.08.02.14.54.54
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 14:54:54 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 14:54:48 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com>
+Cc:     isdn@linux-pingi.de, gregkh@linuxfoundation.org,
+        netdev@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, lkcamp@lists.libreplanetbr.org
+Subject: Re: [PATCH] isdn: hysdn: fix code style error from checkpatch
+Message-ID: <20190802145448.0bcd5374@hermes.lan>
+In-Reply-To: <20190802195017.27845-1-ricardo6142@gmail.com>
+References: <20190802195017.27845-1-ricardo6142@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <84f9a5438585a2274df162f6554504138e276d71.camel@mellanox.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/25/19 5:13 PM, Saeed Mahameed wrote:
-> On Mon, 2019-07-22 at 14:40 -0700, Shannon Nelson wrote:
+On Fri,  2 Aug 2019 19:50:17 +0000
+Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com> wrote:
 
->> +static void ionic_tx_timeout_work(struct work_struct *ws)
->> +{
->> +	struct lif *lif = container_of(ws, struct lif,
->> tx_timeout_work);
->> +
->> +	netdev_info(lif->netdev, "Tx Timeout recovery\n");
->> +	ionic_reset_queues(lif);
-> missing rtnl_lock ?
->
->> +}
->> +
->>   static void ionic_tx_timeout(struct net_device *netdev)
->>   {
->> -	netdev_info(netdev, "%s: stubbed\n", __func__);
->> +	struct lif *lif = netdev_priv(netdev);
->> +
->> +	schedule_work(&lif->tx_timeout_work);
->>   }
-> missing cancel work ? be careful when combined with the rtnl_lockthough ..
->
->
+> Fix error bellow from checkpatch.
+> 
+> WARNING: Block comments use * on subsequent lines
+> +/***********************************************************
+> +
+> 
+> Signed-off-by: Ricardo Bruno Lopes da Silva <ricardo6142@gmail.com>
 
-Yep, good catch on both.  I'll take care of those.
-
-sln
-
+Read the TODO, these drivers are scheduled for removal, so changes
+are not helpful at this time.
