@@ -2,194 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E712E7F9CB
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:30:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AC88B7FB49
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391787AbfHBN3m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 09:29:42 -0400
-Received: from correo.us.es ([193.147.175.20]:41562 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391012AbfHBN3k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 2 Aug 2019 09:29:40 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 0200DFB44E
-        for <netdev@vger.kernel.org>; Fri,  2 Aug 2019 15:29:39 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E68A31150DD
-        for <netdev@vger.kernel.org>; Fri,  2 Aug 2019 15:29:38 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id CDFA67E4C8; Fri,  2 Aug 2019 15:29:38 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B11B2DA730;
-        Fri,  2 Aug 2019 15:29:36 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Fri, 02 Aug 2019 15:29:36 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [31.4.181.192])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 0D4124265A31;
-        Fri,  2 Aug 2019 15:29:34 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org,
-        jakub.kicinski@netronome.com, jiri@resnulli.us,
-        marcelo.leitner@gmail.com, saeedm@mellanox.com, wenxu@ucloud.cn,
-        gerlitz.or@gmail.com, paulb@mellanox.com
-Subject: [PATCH net-next 3/3] filter: nf_tables_offload: set priority field for rules
-Date:   Fri,  2 Aug 2019 15:28:46 +0200
-Message-Id: <20190802132846.3067-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190802132846.3067-1-pablo@netfilter.org>
-References: <20190802132846.3067-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S2406513AbfHBNkc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 09:40:32 -0400
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:45496 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405099AbfHBNkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 09:40:31 -0400
+Received: by mail-yw1-f65.google.com with SMTP id m16so27260435ywh.12
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 06:40:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JnFIxOkpNcZYRay8DKQqQvnlT+t5tL3INkAqh/eYj7U=;
+        b=LwXMEarFcR4Bs/zcWuQ8IJ1fnw5GW8qi7QewqVHSgPtxEMZwFnr70Ww/mfO4fsGMsU
+         vst2cS60sOBdSWQ+ahzOfd/EX0Huk7RSVXUTyR8jJOCema3fcTbIDC91OAE6uQ60jKCN
+         saJRbOOu7t1+twXuZQZ8kdVtoPj5THrS0dZJxlToQ8jPfXwRW5zvJ4gZ1AAfLuvZjwCL
+         5Qe6KtgL2vlpQArknto3oiIGXhIDYndqcmwZyWnEs0tAcA3ggoyZDmj/qd41TDwHBY23
+         fI0R+qIRrWZjaTFDaECoRlkYW3rHOyH68XzDzTagRens4oc9AUXKOAaMZt09TJ2yfIx0
+         ofWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JnFIxOkpNcZYRay8DKQqQvnlT+t5tL3INkAqh/eYj7U=;
+        b=NyeddtPZgxHM8Lag8MaVIzc/puLRCDK9cTOTQhduFZC21SQwQite5HqyG/At58/tnj
+         fy4Tf6+Lwq5ytXYxDx4IEX1A6dtRITKu0GirZlFiEYfWevmjhmg6KB7YRGDYxjktuAzX
+         CiAXVT3dpcNAHS0iCwHLFGR9LUmZWs0gh+SHnQMDJ2m4my0DUGpsPRZVlHtKcn4M+lq3
+         Po85wJQqWZJJdLm1f/oYKk/yNeNKAd2XjogsDXU3w3Gxmh3zMjoCvuteIplJsMLBh5Ax
+         NnwhVaD3Zk8M/VLpuUjRUrLWhTd++I9eFTbvCwsgUJ1ltP09IuNyEK9aRsm/Bx6vhRbt
+         ICww==
+X-Gm-Message-State: APjAAAVQS/t3h+wtnCO1z0nAgC6A18JKf2pgvVqJqWgXGTAaWOXugV5o
+        wKquKV4y7Ug43AXsSc/AbFIFojAX
+X-Google-Smtp-Source: APXvYqzWBQ3tuYusAJrXdOlNZAeN+nlcBOj8nM2Ltcludw5RfeTAEKEkL/js9TDJ4ZagxkOaOZzyHw==
+X-Received: by 2002:a81:2f0c:: with SMTP id v12mr79802192ywv.383.1564753230272;
+        Fri, 02 Aug 2019 06:40:30 -0700 (PDT)
+Received: from mail-yb1-f179.google.com (mail-yb1-f179.google.com. [209.85.219.179])
+        by smtp.gmail.com with ESMTPSA id v203sm16827921ywa.99.2019.08.02.06.40.28
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Fri, 02 Aug 2019 06:40:28 -0700 (PDT)
+Received: by mail-yb1-f179.google.com with SMTP id j6so4701007ybm.7
+        for <netdev@vger.kernel.org>; Fri, 02 Aug 2019 06:40:28 -0700 (PDT)
+X-Received: by 2002:a25:5e44:: with SMTP id s65mr77950006ybb.235.1564753227994;
+ Fri, 02 Aug 2019 06:40:27 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190802083541.12602-1-hslester96@gmail.com>
+In-Reply-To: <20190802083541.12602-1-hslester96@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 2 Aug 2019 09:39:51 -0400
+X-Gmail-Original-Message-ID: <CA+FuTSc8WBx2PCUhn-sLtYHQR-OROXm2pUN9SDj7P-Bd8432UQ@mail.gmail.com>
+Message-ID: <CA+FuTSc8WBx2PCUhn-sLtYHQR-OROXm2pUN9SDj7P-Bd8432UQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] cxgb4: sched: Use refcount_t for refcount
+To:     Chuhong Yuan <hslester96@gmail.com>
+Cc:     Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch allocates the priority per rule starting from priority 1
-since some drivers assume priority 0 never happens.
+On Fri, Aug 2, 2019 at 4:36 AM Chuhong Yuan <hslester96@gmail.com> wrote:
+>
+> refcount_t is better for reference counters since its
+> implementation can prevent overflows.
+> So convert atomic_t ref counters to refcount_t.
+>
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> ---
+> Changes in v2:
+>   - Convert refcount from 0-base to 1-base.
 
-This patch is restricting the rule priority range to 8-bit integer since
-the nft_rule object has 7-bit spare bits plus one that is scratched from
-the handle. It should be possible to extend this later on by placing the
-priority after the userdata area to turn this into 32-bits priority
-field, to put this data away from the packet path cachelines.
-
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
-v1: formerly "netfilter: nf_tables: map basechain priority to hardware priority"
-    address mapping to hardware based on comments from Jakub.
-
- include/net/netfilter/nf_tables.h         |  8 ++++++--
- include/net/netfilter/nf_tables_offload.h |  1 +
- net/netfilter/nf_tables_offload.c         | 27 ++++++++++++++++++++++-----
- 3 files changed, 29 insertions(+), 7 deletions(-)
-
-diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
-index 87dbe62c0f27..a6308fcf5bf0 100644
---- a/include/net/netfilter/nf_tables.h
-+++ b/include/net/netfilter/nf_tables.h
-@@ -9,6 +9,7 @@
- #include <linux/netfilter/nf_tables.h>
- #include <linux/u64_stats_sync.h>
- #include <linux/rhashtable.h>
-+#include <linux/idr.h>
- #include <net/netfilter/nf_flow_table.h>
- #include <net/netlink.h>
- #include <net/flow_offload.h>
-@@ -824,14 +825,16 @@ int nft_expr_dump(struct sk_buff *skb, unsigned int attr,
-  *	@genmask: generation mask
-  *	@dlen: length of expression data
-  *	@udata: user data is appended to the rule
-+ *	@prio: priority (for hardware offload)
-  *	@data: expression data
-  */
- struct nft_rule {
- 	struct list_head		list;
--	u64				handle:42,
-+	u64				handle:41,
- 					genmask:2,
- 					dlen:12,
--					udata:1;
-+					udata:1,
-+					prio:8;
- 	unsigned char			data[]
- 		__attribute__((aligned(__alignof__(struct nft_expr))));
- };
-@@ -964,6 +967,7 @@ struct nft_base_chain {
- 	char 				dev_name[IFNAMSIZ];
- 	struct {
- 		struct flow_block	flow_block;
-+		struct idr		prio_idr;
- 	} offload;
- };
- 
-diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
-index fb3db391ade8..70f226568fe7 100644
---- a/include/net/netfilter/nf_tables_offload.h
-+++ b/include/net/netfilter/nf_tables_offload.h
-@@ -76,6 +76,7 @@ int nft_flow_rule_offload_commit(struct net *net);
- static inline void nft_basechain_offload_init(struct nft_base_chain *basechain)
- {
- 	flow_block_init(&basechain->offload.flow_block);
-+	idr_init(&basechain->offload.prio_idr);
- }
- 
- #endif
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 84615381b06f..21144938482a 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -103,10 +103,11 @@ void nft_offload_update_dependency(struct nft_offload_ctx *ctx,
- }
- 
- static void nft_flow_offload_common_init(struct flow_cls_common_offload *common,
--					 __be16 proto,
--					struct netlink_ext_ack *extack)
-+					 __be16 proto, u32 priority,
-+					 struct netlink_ext_ack *extack)
- {
- 	common->protocol = proto;
-+	common->prio = priority;
- 	common->extack = extack;
- }
- 
-@@ -125,6 +126,8 @@ static int nft_setup_cb_call(struct nft_base_chain *basechain,
- 	return 0;
- }
- 
-+#define NFT_OFFLOAD_PRIO_MAX	U8_MAX
-+
- static int nft_flow_offload_rule(struct nft_trans *trans,
- 				 enum flow_cls_command command)
- {
-@@ -134,22 +137,36 @@ static int nft_flow_offload_rule(struct nft_trans *trans,
- 	struct nft_base_chain *basechain;
- 	struct netlink_ext_ack extack;
- 	__be16 proto = ETH_P_ALL;
-+	u32 prio = 1;
-+	int err;
- 
- 	if (!nft_is_base_chain(trans->ctx.chain))
- 		return -EOPNOTSUPP;
- 
- 	basechain = nft_base_chain(trans->ctx.chain);
- 
--	if (flow)
-+	if (flow) {
-+		if (idr_alloc_u32(&basechain->offload.prio_idr, NULL, &prio,
-+				  NFT_OFFLOAD_PRIO_MAX, GFP_KERNEL) < 0)
-+			return -E2BIG;
-+
-+		rule->prio = prio;
- 		proto = flow->proto;
-+	}
- 
--	nft_flow_offload_common_init(&cls_flow.common, proto, &extack);
-+	nft_flow_offload_common_init(&cls_flow.common, proto, rule->prio,
-+				     &extack);
- 	cls_flow.command = command;
- 	cls_flow.cookie = (unsigned long) rule;
- 	if (flow)
- 		cls_flow.rule = flow->rule;
- 
--	return nft_setup_cb_call(basechain, TC_SETUP_CLSFLOWER, &cls_flow);
-+	err = nft_setup_cb_call(basechain, TC_SETUP_CLSFLOWER, &cls_flow);
-+	if ((err < 0 && command == FLOW_CLS_REPLACE) ||
-+	    (err == 0 && command == FLOW_CLS_DESTROY))
-+		idr_remove(&basechain->offload.prio_idr, rule->prio);
-+
-+	return err;
- }
- 
- static int nft_flow_offload_bind(struct flow_block_offload *bo,
--- 
-2.11.0
-
+This changes the initial value from 0 to 1, but does not change the
+release condition. So this introduces an accounting bug?
