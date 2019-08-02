@@ -2,192 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 132F17E77F
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 03:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 606377E7C6
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 04:17:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731008AbfHBBaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 1 Aug 2019 21:30:10 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15948 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730890AbfHBBaK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 21:30:10 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x721Sqev021610;
-        Thu, 1 Aug 2019 18:29:54 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=tGK/yCEXP7msXsiOMI52ZDRay48YmPY59K14taUs6ig=;
- b=TTwAH5/CTiTI3emEUbdA3NBRTXHJg79kAoMU3Hhnv9PNU+PcVxWKDFzNzk0eg72t+Ip/
- LHEPPwc3U8JNvro6wKkruBRasnwDPNVoyMt0nmuF+1wSVq8oVchQvZaQXwJSmwjzkrr7
- NqIg/F/qNshnRHuF7yxvH7RppZzuNZ9miqk= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u44e2sgkm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 01 Aug 2019 18:29:53 -0700
-Received: from prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 1 Aug 2019 18:29:52 -0700
-Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
- prn-mbx06.TheFacebook.com (2620:10d:c081:6::20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 1 Aug 2019 18:29:52 -0700
-Received: from NAM01-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 1 Aug 2019 18:29:52 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=F1x+2lxq25LTtZBEtSB0apypZRGbKV4sBWj7g4SudgYq3KywuvQBqQV9qcQLPDhndcMy/SrvUsS/aBHhcsSBF+z8t3kd92lMSVsnnrI55NOdNw8uSdAxi+OLMP+0BEC9Y74hRCowwrCR3zvdX4+JrxM6G5gSoCJIB0uaMOaN2FKWoqPOwurlwHtHXZYEE19MeY3VD1MGtQIh4tU12BTVWZlUOaENuW2sMJo2dKpt+ZgXMQ687/e9LYhFMdBmxYzHGdBfccCvdJtdvnO/gG98Yh/Ob/KbzvDOz2kigu3jx7tDJSsn8bFq5yLO6ZUZmfRw3+F8no4vyK5j2iszlInWjQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tGK/yCEXP7msXsiOMI52ZDRay48YmPY59K14taUs6ig=;
- b=Q1blh/qdY8O0ZsCd7aS4xNFPY+gbFIxDmGGehmSvebLnZD6i83ZkpocVvCbb/pvFLcH92bppicagQaDPJsft3tOQaQQAd+1GbECzOaBnU6c0YsmT18YtHsuMsNbVfLe1EJasdL9ciRH+0U/yZyWhGybFqqchBED42ip8G56S3IbMc6eAZsESqAQgFMJTj5YJyDqhV8mjh17EiEpU9VpKKZF0GyAYhpK3lDKkR5VeFcOmOxwDI2oh1FRShOsBLYJ2/V8vRa/6DvRtV1zzfNd1K8Uw5CS60MnLfb/1qYMp4vQ+qJAKhUWNigEYB6JeE9aJw+olfYoCITMFUEhXaHPIbw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=fb.com;dmarc=pass action=none header.from=fb.com;dkim=pass
- header.d=fb.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tGK/yCEXP7msXsiOMI52ZDRay48YmPY59K14taUs6ig=;
- b=B6sfe1iwPnbCJFCpV5XFp/DlGmI2YchN+j1GMasa5qaPKyDOXR+y/MZy7WgUVJ0wf9bt4KX1XSNj9EWVNj1VeEcaCPy90fxNgnsIV1N5bavEBZdYldTCohXt3JfkSnaEcVHgH8q5DbbUld8BkEh7eStHUCI1ywRew207+LSpL4s=
-Received: from MWHPR15MB1216.namprd15.prod.outlook.com (10.175.2.17) by
- MWHPR15MB1792.namprd15.prod.outlook.com (10.174.100.139) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2136.16; Fri, 2 Aug 2019 01:29:36 +0000
-Received: from MWHPR15MB1216.namprd15.prod.outlook.com
- ([fe80::c66:6d60:f6e5:773c]) by MWHPR15MB1216.namprd15.prod.outlook.com
- ([fe80::c66:6d60:f6e5:773c%8]) with mapi id 15.20.2136.010; Fri, 2 Aug 2019
- 01:29:36 +0000
-From:   Tao Ren <taoren@fb.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-CC:     Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
-Subject: Re: [PATCH net-next 1/2] net: phy: broadcom: set features explicitly
- for BCM54616S
-Thread-Topic: [PATCH net-next 1/2] net: phy: broadcom: set features explicitly
- for BCM54616S
-Thread-Index: AQHVRm4tZSvvLl002ECU4Omi5U5C86bigvAA//+jr4CAAISsAIABMSsAgABfTQD//4x8gIABh1KAgAHHDQA=
-Date:   Fri, 2 Aug 2019 01:29:36 +0000
-Message-ID: <85331173-da14-5fcd-8c80-5bd2883061ec@fb.com>
-References: <20190730002532.85509-1-taoren@fb.com>
- <20190730033558.GB20628@lunn.ch>
- <aff2728d-5db1-50fd-767c-29b355890323@fb.com>
- <bdfe07d3-66b4-061a-a149-aa2aef94b9b7@gmail.com>
- <f59c2ae9-ef44-1e1b-4ae2-216eb911e92e@fb.com>
- <41c1f898-aee8-d73a-386d-c3ce280c5a1b@gmail.com>
- <fd179662-b9f9-4813-b9b5-91dbd796596e@fb.com>
- <88f4d709-d9bb-943c-37a9-aeebe8ca0ebc@fb.com>
-In-Reply-To: <88f4d709-d9bb-943c-37a9-aeebe8ca0ebc@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR1301CA0001.namprd13.prod.outlook.com
- (2603:10b6:301:29::14) To MWHPR15MB1216.namprd15.prod.outlook.com
- (2603:10b6:320:22::17)
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::1:9fbd]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c756234c-ba63-4aed-1a91-08d716e8e130
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1792;
-x-ms-traffictypediagnostic: MWHPR15MB1792:
-x-microsoft-antispam-prvs: <MWHPR15MB17920E3CE99974AB9E3E9550B2D90@MWHPR15MB1792.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 011787B9DD
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(39860400002)(366004)(136003)(396003)(376002)(40764003)(199004)(189003)(6512007)(46003)(8936002)(256004)(6116002)(2906002)(36756003)(64126003)(65956001)(65806001)(476003)(446003)(14444005)(31686004)(186003)(478600001)(486006)(2616005)(25786009)(5660300002)(14454004)(86362001)(31696002)(7736002)(71190400001)(11346002)(4326008)(71200400001)(305945005)(53936002)(229853002)(66946007)(66446008)(7416002)(6436002)(6486002)(64756008)(53546011)(52116002)(66556008)(76176011)(102836004)(110136005)(65826007)(6246003)(316002)(8676002)(68736007)(58126008)(81166006)(54906003)(6506007)(386003)(66476007)(99286004)(81156014);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1792;H:MWHPR15MB1216.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: tSAs3DQmKkYTJpmI+O7A1D4OAHaFXhTa/R72mfux0FA9uUtlc1EM2TMDWkn3rjXYtZPrc79KpfIJ6QGwxuLAyYTqNeTEU1cBTe8lOXM+V88wTNQI7Sfuc8CeYGwzeAnXR0PO9pz1aRrsNgWcK72Egj8B9Nt94Kx7R9J2OD6sfGGwmOMwkxTFL4RIzdB+a/mwL6tWP1BzLumfZqT/MEDmTpk2ImOh7e/9bUD2AeM1ojk6iD4D6gp5sdTtFK3eYxOvdFzTqKfhBqzCsqwunNlprrp3BHGLNx4S82zxCkl/buveMVeB+b9nsRjxIEsJlIYcG/hbbcNZR3DLJ8rPy8pwiM3pzwlXnZuIUPXIxbe2a3dQColRnGFcOeVLR2qVWl36yNzwIMa5LNWDvcqiNN0d0YuhydvXQFAvwi/HA4ySnew=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <FC94B0869F30584885E259B36B68B773@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2389078AbfHBCRA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 1 Aug 2019 22:17:00 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37847 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728255AbfHBCQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 1 Aug 2019 22:16:59 -0400
+Received: by mail-pg1-f194.google.com with SMTP id d1so2414548pgp.4;
+        Thu, 01 Aug 2019 19:16:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3GzlMAdD/Fj4tpT1z/PK8Fr3raamoGX6ZwkHP2yb6K8=;
+        b=pAxzsc9vmHAK9ZK89AacBmqXQvuHXeShpu27WlEkAV6xBcEz/H1GAWLFbWBo+u7caH
+         KIqDnTL+IS2r069Sqit6niTwIVD3yHwM2oL4UXxooa0ZG6T9kc1SZGdEzbmbTAJoZkzv
+         Zbj81BMMiMsLujqrLP+vNRoPoAfxuyhBIJfz/EZgUl0FsiQZK3MgWkswQuDuhoaZBO9G
+         KrSO58P9Rr9KxqN5N1BphpFtggyeHWY4ZqA08b5SYu2LL+896Hx8WIi0vBM/z3/TtXKP
+         sQF/9gkVaL/sxZPp1Zgqo9a2gtCNNW4Q0F26WcstDN/wMJyWuPSmF5s5FUO43iGXa+xl
+         t4bA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3GzlMAdD/Fj4tpT1z/PK8Fr3raamoGX6ZwkHP2yb6K8=;
+        b=pxUI9uQSiPkrdaYjjCg63ri9x81eIH4tA4uNKQeuSqnlbqNn68GBhlo1oliYAZkNd+
+         f/ff4lrJJ5FSq+dMmai39K50JTR6skZNK1/SYJ6xIrqIpgkFnWhXD5JpEcImySXufeEc
+         5lpHw1QNCji0YtLFogyj9Q0GQwgqHEzmaCLzfQ916IcJeLVOXBHgnucF9EVAt2P87WgL
+         IFSg8UxticbZBM5vxmmfLzemLMpqv52ujuBqI+d1A9G1kG0XP6vAnBxZ5HOVasgRB9yz
+         +PY/9Fn4sTf2CDLEHuzFlDv+TctiwF4Ed2SZXRoCLsimOeNz1TMScSe8+f5sIAOswLTV
+         Mrbw==
+X-Gm-Message-State: APjAAAU77NZ/WZfIFO8YjVlx1yPL3pTLoRIOlIhqJbQom5/1tFn6nADk
+        sGNLf+j83301UXEmh6cqCSM=
+X-Google-Smtp-Source: APXvYqzWsTlsiBNw6waYjgVc0NeqKYlyVqx46uMvNCwkUysDnG1IH1bMSSj1oKU/Y8CdBrk8llU2wQ==
+X-Received: by 2002:a63:dd16:: with SMTP id t22mr90672497pgg.140.1564712218248;
+        Thu, 01 Aug 2019 19:16:58 -0700 (PDT)
+Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id p187sm118200292pfg.89.2019.08.01.19.16.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 01 Aug 2019 19:16:57 -0700 (PDT)
+From:   john.hubbard@gmail.com
+X-Google-Original-From: jhubbard@nvidia.com
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
+        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
+        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
+        sparclinux@vger.kernel.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH 00/34] put_user_pages(): miscellaneous call sites
+Date:   Thu,  1 Aug 2019 19:16:19 -0700
+Message-Id: <20190802021653.4882-1-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: c756234c-ba63-4aed-1a91-08d716e8e130
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Aug 2019 01:29:36.5026
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: taoren@fb.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1792
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-02_01:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908020012
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+X-NVConfidentiality: public
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gNy8zMS8xOSAxMDoyMCBQTSwgVGFvIFJlbiB3cm90ZToNCj4gT24gNy8zMC8xOSAxMTowMCBQ
-TSwgVGFvIFJlbiB3cm90ZToNCj4+IE9uIDcvMzAvMTkgMTA6NTMgUE0sIEhlaW5lciBLYWxsd2Vp
-dCB3cm90ZToNCj4+PiBPbiAzMS4wNy4yMDE5IDAyOjEyLCBUYW8gUmVuIHdyb3RlOg0KPj4+PiBP
-biA3LzI5LzE5IDExOjAwIFBNLCBIZWluZXIgS2FsbHdlaXQgd3JvdGU6DQo+Pj4+PiBPbiAzMC4w
-Ny4yMDE5IDA3OjA1LCBUYW8gUmVuIHdyb3RlOg0KPj4+Pj4+IE9uIDcvMjkvMTkgODozNSBQTSwg
-QW5kcmV3IEx1bm4gd3JvdGU6DQo+Pj4+Pj4+IE9uIE1vbiwgSnVsIDI5LCAyMDE5IGF0IDA1OjI1
-OjMyUE0gLTA3MDAsIFRhbyBSZW4gd3JvdGU6DQo+Pj4+Pj4+PiBCQ001NDYxNlMgZmVhdHVyZSAi
-UEhZX0dCSVRfRkVBVFVSRVMiIHdhcyByZW1vdmVkIGJ5IGNvbW1pdCBkY2RlY2RjZmUxZmMNCj4+
-Pj4+Pj4+ICgibmV0OiBwaHk6IHN3aXRjaCBkcml2ZXJzIHRvIHVzZSBkeW5hbWljIGZlYXR1cmUg
-ZGV0ZWN0aW9uIikuIEFzIGR5bmFtaWMNCj4+Pj4+Pj4+IGZlYXR1cmUgZGV0ZWN0aW9uIGRvZXNu
-J3Qgd29yayB3aGVuIEJDTTU0NjE2UyBpcyB3b3JraW5nIGluIFJHTUlJLUZpYmVyDQo+Pj4+Pj4+
-PiBtb2RlIChkaWZmZXJlbnQgc2V0cyBvZiBNSUkgQ29udHJvbC9TdGF0dXMgcmVnaXN0ZXJzIGJl
-aW5nIHVzZWQpLCBsZXQncw0KPj4+Pj4+Pj4gc2V0ICJQSFlfR0JJVF9GRUFUVVJFUyIgZm9yIEJD
-TTU0NjE2UyBleHBsaWNpdGx5Lg0KPj4+Pj4+Pg0KPj4+Pj4+PiBIaSBUYW8NCj4+Pj4+Pj4NCj4+
-Pj4+Pj4gV2hhdCBleGFjdGx5IGRvZXMgaXQgZ2V0IHdyb25nPw0KPj4+Pj4+Pg0KPj4+Pj4+PiAg
-ICAgIFRoYW5rcw0KPj4+Pj4+PiAJQW5kcmV3DQo+Pj4+Pj4NCj4+Pj4+PiBIaSBBbmRyZXcsDQo+
-Pj4+Pj4NCj4+Pj4+PiBCQ001NDYxNlMgaXMgc2V0IHRvIFJHTUlJLUZpYmVyICgxMDAwQmFzZS1Y
-KSBtb2RlIG9uIG15IHBsYXRmb3JtLCBhbmQgbm9uZSBvZiB0aGUgZmVhdHVyZXMgKDEwMDBCYXNl
-VC8xMDBCYXNlVC8xMEJhc2VUKSBjYW4gYmUgZGV0ZWN0ZWQgYnkgZ2VucGh5X3JlYWRfYWJpbGl0
-aWVzKCksIGJlY2F1c2UgdGhlIFBIWSBvbmx5IHJlcG9ydHMgMTAwMEJhc2VYX0Z1bGx8SGFsZiBh
-YmlsaXR5IGluIHRoaXMgbW9kZS4NCj4+Pj4+Pg0KPj4+Pj4gQXJlIHlvdSBnb2luZyB0byB1c2Ug
-dGhlIFBIWSBpbiBjb3BwZXIgb3IgZmlicmUgbW9kZT8NCj4+Pj4+IEluIGNhc2UgeW91IHVzZSBm
-aWJyZSBtb2RlLCB3aHkgZG8geW91IG5lZWQgdGhlIGNvcHBlciBtb2RlcyBzZXQgYXMgc3VwcG9y
-dGVkPw0KPj4+Pj4gT3IgZG9lcyB0aGUgUEhZIGp1c3Qgc3RhcnQgaW4gZmlicmUgbW9kZSBhbmQg
-eW91IHdhbnQgdG8gc3dpdGNoIGl0IHRvIGNvcHBlciBtb2RlPw0KPj4+Pg0KPj4+PiBIaSBIZWlu
-ZXIsDQo+Pj4+DQo+Pj4+IFRoZSBwaHkgc3RhcnRzIGluIGZpYmVyIG1vZGUgYW5kIHRoYXQncyB0
-aGUgbW9kZSBJIHdhbnQuDQo+Pj4+IE15IG9ic2VydmF0aW9uIGlzOiBwaHlkZXYtPmxpbmsgaXMg
-YWx3YXlzIDAgKExpbmsgc3RhdHVzIGJpdCBpcyBuZXZlciBzZXQgaW4gTUlJX0JNU1IpIGJ5IHVz
-aW5nIGR5bmFtaWMgYWJpbGl0eSBkZXRlY3Rpb24gb24gbXkgbWFjaGluZS4gSSBjaGVja2VkIHBo
-eWRldi0+c3VwcG9ydGVkIGFuZCBpdCdzIHNldCB0byAiQXV0b05lZyB8IFRQIHwgTUlJIHwgUGF1
-c2UgfCBBc3ltX1BhdXNlIiBieSBkeW5hbWljIGFiaWxpdHkgZGV0ZWN0aW9uLiBJcyBpdCBub3Jt
-YWwvZXhwZWN0ZWQ/IE9yIG1heWJlIHRoZSBmaXggc2hvdWxkIGdvIHRvIGRpZmZlcmVudCBwbGFj
-ZXM/IFRoYW5rIHlvdSBmb3IgeW91ciBoZWxwLg0KPj4+Pg0KPj4+DQo+Pj4gTm90IHN1cmUgd2hl
-dGhlciB5b3Ugc3RhdGVkIGFscmVhZHkgd2hpY2gga2VybmVsIHZlcnNpb24geW91J3JlIHVzaW5n
-Lg0KPj4+IFRoZXJlJ3MgYSBicmFuZC1uZXcgZXh0ZW5zaW9uIHRvIGF1dG8tZGV0ZWN0IDEwMDBC
-YXNlWDoNCj4+PiBmMzBlMzNiY2RhYjkgKCJuZXQ6IHBoeTogQWRkIG1vcmUgMTAwMEJhc2VYIHN1
-cHBvcnQgZGV0ZWN0aW9uIikNCj4+PiBJdCdzIGluY2x1ZGVkIGluIHRoZSA1LjMtcmMgc2VyaWVz
-Lg0KPj4NCj4+IEknbSBydW5uaW5nIGtlcm5lbCA1LjIuMC4gVGhhbmsgeW91IGZvciB0aGUgc2hh
-cmluZyBhbmQgSSBkaWRuJ3Qga25vdyB0aGUgcGF0Y2guIExldCBtZSBjaGVjayBpdCBvdXQuDQo+
-IA0KPiBJIGFwcGxpZWQgYWJvdmUgcGF0Y2ggYW5kIGNhNzJlZmI2YmRjNyAoIm5ldDogcGh5OiBB
-ZGQgZGV0ZWN0aW9uIG9mIDEwMDBCYXNlWCBsaW5rIG1vZGUgc3VwcG9ydCIpIHRvIG15IDUuMi4w
-IHRyZWUgYnV0IGdvdCBmb2xsb3dpbmcgd2FybmluZyB3aGVuIGJvb3RpbmcgdXAgbXkgbWFjaGlu
-ZToNCj4gDQo+ICJQSFkgYWR2ZXJ0aXNpbmcgKDAsMDAwMDAyMDAsMDAwMDYyYzApIG1vcmUgbW9k
-ZXMgdGhhbiBnZW5waHkgc3VwcG9ydHMsIHNvbWUgbW9kZXMgbm90IGFkdmVydGlzZWQiLg0KPiAN
-Cj4gVGhlIEJDTTU0NjE2UyBQSFkgb24gbXkgbWFjaGluZSBvbmx5IHJlcG9ydHMgMTAwMC1YIGZl
-YXR1cmVzIGluIFJHTUlJLT4xMDAwQmFzZS1LWCBtb2RlLiBJcyBpdCBhIGtub3duIHByb2JsZW0/
-DQo+IA0KPiBBbnl3YXlzIGxldCBtZSBzZWUgaWYgSSBtaXNzZWQgc29tZSBkZXBlbmRlbmN5L2Zv
-bGxvdy11cCBwYXRjaGVzLi4NCg0KTGV0J3MgaWdub3JlIHRoZSBwYXRjaCAoIm5ldDogcGh5OiBi
-cm9hZGNvbTogc2V0IGZlYXR1cmVzIGV4cGxpY2l0bHkgZm9yIEJDTTU0NjE2UyIpOiBhcyBIZWlu
-ZXIgcG9pbnRlZCBvdXQsIGl0IGRvZXNuJ3QgbWFrZSBzZW5zZSB0byB0dXJuIG9uIGNvcHBlciBm
-ZWF0dXJlcyBmb3IgZmliZXIgbW9kZSAoZXZlbiB0aG91Z2ggaXQgIndvcmtzIiBpbiBteSBlbnZp
-cm9ubWVudCkuIEkgd2lsbCB3b3JrIG91dCBuZXcgcGF0Y2ggaWYgMTAwMGJ4LWF1dG8tZGV0ZWN0
-aW9uIHBhdGNoZXMgY2Fubm90IHNvbHZlIG15IHByb2JsZW0uDQoNClRoYW5rIHlvdSBhbGwgZm9y
-IHNwZW5kaW5nIHRpbWUgb24gdGhpcy4NCg0KDQpDaGVlcnMsDQoNClRhbw0K
+From: John Hubbard <jhubbard@nvidia.com>
+
+Hi,
+
+These are best characterized as miscellaneous conversions: many (not all)
+call sites that don't involve biovec or iov_iter, nor mm/. It also leaves
+out a few call sites that require some more work. These are mostly pretty
+simple ones.
+
+It's probably best to send all of these via Andrew's -mm tree, assuming
+that there are no significant merge conflicts with ongoing work in other
+trees (which I doubt, given that these are small changes).
+
+These patches apply to the latest linux.git. Patch #1 is also already in
+Andrew's tree, but given the broad non-linux-mm Cc list, I thought it
+would be more convenient to just include that patch here, so that people
+can use linux.git as the base--even though these are probably destined
+for linux-mm.
+
+This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+("mm: introduce put_user_page*(), placeholder versions"). That commit
+has an extensive description of the problem and the planned steps to
+solve it, but the highlites are:
+
+1) Provide put_user_page*() routines, intended to be used
+for releasing pages that were pinned via get_user_pages*().
+
+2) Convert all of the call sites for get_user_pages*(), to
+invoke put_user_page*(), instead of put_page(). This involves dozens of
+call sites, and will take some time.
+
+3) After (2) is complete, use get_user_pages*() and put_user_page*() to
+implement tracking of these pages. This tracking will be separate from
+the existing struct page refcounting.
+
+4) Use the tracking and identification of these pages, to implement
+special handling (especially in writeback paths) when the pages are
+backed by a filesystem.
+
+And a few references, also from that commit:
+
+[1] https://lwn.net/Articles/774411/ : "DMA and get_user_pages()"
+[2] https://lwn.net/Articles/753027/ : "The Trouble with get_user_pages()"
+
+
+Ira Weiny (1):
+  fs/binfmt_elf: convert put_page() to put_user_page*()
+
+John Hubbard (33):
+  mm/gup: add make_dirty arg to put_user_pages_dirty_lock()
+  net/rds: convert put_page() to put_user_page*()
+  net/ceph: convert put_page() to put_user_page*()
+  x86/kvm: convert put_page() to put_user_page*()
+  drm/etnaviv: convert release_pages() to put_user_pages()
+  drm/i915: convert put_page() to put_user_page*()
+  drm/radeon: convert put_page() to put_user_page*()
+  media/ivtv: convert put_page() to put_user_page*()
+  media/v4l2-core/mm: convert put_page() to put_user_page*()
+  genwqe: convert put_page() to put_user_page*()
+  scif: convert put_page() to put_user_page*()
+  vmci: convert put_page() to put_user_page*()
+  rapidio: convert put_page() to put_user_page*()
+  oradax: convert put_page() to put_user_page*()
+  staging/vc04_services: convert put_page() to put_user_page*()
+  drivers/tee: convert put_page() to put_user_page*()
+  vfio: convert put_page() to put_user_page*()
+  fbdev/pvr2fb: convert put_page() to put_user_page*()
+  fsl_hypervisor: convert put_page() to put_user_page*()
+  xen: convert put_page() to put_user_page*()
+  fs/exec.c: convert put_page() to put_user_page*()
+  orangefs: convert put_page() to put_user_page*()
+  uprobes: convert put_page() to put_user_page*()
+  futex: convert put_page() to put_user_page*()
+  mm/frame_vector.c: convert put_page() to put_user_page*()
+  mm/gup_benchmark.c: convert put_page() to put_user_page*()
+  mm/memory.c: convert put_page() to put_user_page*()
+  mm/madvise.c: convert put_page() to put_user_page*()
+  mm/process_vm_access.c: convert put_page() to put_user_page*()
+  crypt: convert put_page() to put_user_page*()
+  nfs: convert put_page() to put_user_page*()
+  goldfish_pipe: convert put_page() to put_user_page*()
+  kernel/events/core.c: convert put_page() to put_user_page*()
+
+ arch/x86/kvm/svm.c                            |   4 +-
+ crypto/af_alg.c                               |   7 +-
+ drivers/gpu/drm/etnaviv/etnaviv_gem.c         |   4 +-
+ drivers/gpu/drm/i915/gem/i915_gem_userptr.c   |   9 +-
+ drivers/gpu/drm/radeon/radeon_ttm.c           |   2 +-
+ drivers/infiniband/core/umem.c                |   5 +-
+ drivers/infiniband/hw/hfi1/user_pages.c       |   5 +-
+ drivers/infiniband/hw/qib/qib_user_pages.c    |   5 +-
+ drivers/infiniband/hw/usnic/usnic_uiom.c      |   5 +-
+ drivers/infiniband/sw/siw/siw_mem.c           |  10 +-
+ drivers/media/pci/ivtv/ivtv-udma.c            |  14 +--
+ drivers/media/pci/ivtv/ivtv-yuv.c             |  10 +-
+ drivers/media/v4l2-core/videobuf-dma-sg.c     |   3 +-
+ drivers/misc/genwqe/card_utils.c              |  17 +--
+ drivers/misc/mic/scif/scif_rma.c              |  17 ++-
+ drivers/misc/vmw_vmci/vmci_context.c          |   2 +-
+ drivers/misc/vmw_vmci/vmci_queue_pair.c       |  11 +-
+ drivers/platform/goldfish/goldfish_pipe.c     |   9 +-
+ drivers/rapidio/devices/rio_mport_cdev.c      |   9 +-
+ drivers/sbus/char/oradax.c                    |   2 +-
+ .../interface/vchiq_arm/vchiq_2835_arm.c      |  10 +-
+ drivers/tee/tee_shm.c                         |  10 +-
+ drivers/vfio/vfio_iommu_type1.c               |   8 +-
+ drivers/video/fbdev/pvr2fb.c                  |   3 +-
+ drivers/virt/fsl_hypervisor.c                 |   7 +-
+ drivers/xen/gntdev.c                          |   5 +-
+ drivers/xen/privcmd.c                         |   7 +-
+ fs/binfmt_elf.c                               |   2 +-
+ fs/binfmt_elf_fdpic.c                         |   2 +-
+ fs/exec.c                                     |   2 +-
+ fs/nfs/direct.c                               |   4 +-
+ fs/orangefs/orangefs-bufmap.c                 |   7 +-
+ include/linux/mm.h                            |   5 +-
+ kernel/events/core.c                          |   2 +-
+ kernel/events/uprobes.c                       |   6 +-
+ kernel/futex.c                                |  10 +-
+ mm/frame_vector.c                             |   4 +-
+ mm/gup.c                                      | 115 ++++++++----------
+ mm/gup_benchmark.c                            |   2 +-
+ mm/madvise.c                                  |   2 +-
+ mm/memory.c                                   |   2 +-
+ mm/process_vm_access.c                        |  18 +--
+ net/ceph/pagevec.c                            |   8 +-
+ net/rds/info.c                                |   5 +-
+ net/rds/message.c                             |   2 +-
+ net/rds/rdma.c                                |  15 ++-
+ virt/kvm/kvm_main.c                           |   4 +-
+ 47 files changed, 151 insertions(+), 266 deletions(-)
+
+-- 
+2.22.0
+
