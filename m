@@ -2,135 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62E207F7DC
-	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C01ED7F85B
+	for <lists+netdev@lfdr.de>; Fri,  2 Aug 2019 15:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391809AbfHBNJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 09:09:23 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:53729 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389781AbfHBNJX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 09:09:23 -0400
-Received: from [192.168.1.3] (unknown [180.157.106.98])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id B10A64116C;
-        Fri,  2 Aug 2019 21:09:18 +0800 (CST)
-Subject: Re: [PATCH net-next v5 5/6] flow_offload: support get flow_block
- immediately
-From:   wenxu <wenxu@ucloud.cn>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     jiri@resnulli.us, pablo@netfilter.org, fw@strlen.de,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
-        John Hurley <john.hurley@netronome.com>
-References: <1564628627-10021-1-git-send-email-wenxu@ucloud.cn>
- <1564628627-10021-6-git-send-email-wenxu@ucloud.cn>
- <20190801161129.25fee619@cakuba.netronome.com>
- <bac5c6a5-8a1b-ee74-988b-6c2a71885761@ucloud.cn>
-Message-ID: <55850b13-991f-97bd-b452-efacd0f39aa4@ucloud.cn>
-Date:   Fri, 2 Aug 2019 21:09:03 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2393228AbfHBNT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 09:19:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58188 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393219AbfHBNTz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 2 Aug 2019 09:19:55 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A8D6D2173E;
+        Fri,  2 Aug 2019 13:19:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564751994;
+        bh=nUdfbhfIQrSghXscbJC5+DYXbBibO3UhUhJIbYLvPp0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Dr6P3OuRq961fC8OsY45tXvhfBE8NiYpURE9AsA8rg1xDQG+dkbKpPZ0yNZ+neQFP
+         vNqBKpMDSbKPpn5PiAPdwwI/iJW2wBYiWjn4hddWke5G+8fsPdrycWw3ucc9vc3zGY
+         IhyRsOXWJcrHiOU82c7Fd9aEhqAPx/Rz8EbdGsNc=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Florian Westphal <fw@strlen.de>,
+        Thomas Jarosch <thomas.jarosch@intra2net.com>,
+        Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 02/76] netfilter: nfnetlink: avoid deadlock due to synchronous request_module
+Date:   Fri,  2 Aug 2019 09:18:36 -0400
+Message-Id: <20190802131951.11600-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190802131951.11600-1-sashal@kernel.org>
+References: <20190802131951.11600-1-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <bac5c6a5-8a1b-ee74-988b-6c2a71885761@ucloud.cn>
-Content-Type: text/plain; charset=utf-8
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVklVSkhJS0tLSUtMQktKWVdZKFlBSU
-        I3V1ktWUFJV1kJDhceCFlBWTU0KTY6NyQpLjc#WQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nyo6CTo5LDg#Ik84DUJNIVEZ
-        LDkaCxxVSlVKTk1PTE5KSE5CS01KVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpDS1VK
-        TkxVSktNVUJDWVdZCAFZQU5PSko3Bg++
-X-HM-Tid: 0a6c5272ebe92086kuqyb10a64116c
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Florian Westphal <fw@strlen.de>
 
-在 2019/8/2 18:45, wenxu 写道:
-> On 8/2/2019 7:11 AM, Jakub Kicinski wrote:
->> On Thu,  1 Aug 2019 11:03:46 +0800, wenxu@ucloud.cn wrote:
->>> From: wenxu <wenxu@ucloud.cn>
->>>
->>> The new flow-indr-block can't get the tcf_block
->>> directly. It provide a callback list to find the flow_block immediately
->>> when the device register and contain a ingress block.
->>>
->>> Signed-off-by: wenxu <wenxu@ucloud.cn>
->> First of all thanks for splitting the series up into more patches, 
->> it is easier to follow the logic now!
->>
->>> @@ -328,6 +348,7 @@ struct flow_indr_block_dev {
->>>  
->>>  	INIT_LIST_HEAD(&indr_dev->cb_list);
->>>  	indr_dev->dev = dev;
->>> +	flow_get_default_block(indr_dev);
->>>  	if (rhashtable_insert_fast(&indr_setup_block_ht, &indr_dev->ht_node,
->>>  				   flow_indr_setup_block_ht_params)) {
->>>  		kfree(indr_dev);
->> I wonder if it's still practical to keep the block information in the
->> indr_dev structure at all. The way this used to work was:
->>
->>
->> [hash table of devices]     --------------
->>                  |         |    netdev    |
->>                  |         |    refcnt    |
->>   indir_dev[tun0]|  ------ | cached block | ---- [ TC block ]
->>                  |         |   callbacks  | .
->>                  |          --------------   \__ [cb, cb_priv, cb_ident]
->>                  |                               [cb, cb_priv, cb_ident]
->>                  |          --------------
->>                  |         |    netdev    |
->>                  |         |    refcnt    |
->>   indir_dev[tun1]|  ------ | cached block | ---- [ TC block ]
->>                  |         |   callbacks  |.
->> -----------------           --------------   \__ [cb, cb_priv, cb_ident]
->>                                                  [cb, cb_priv, cb_ident]
->>
->>
->> In the example above we have two tunnels tun0 and tun1, each one has a
->> indr_dev structure allocated, and for each one of them two drivers
->> registered for callbacks (hence the callbacks list has two entries).
->>
->> We used to cache the TC block in the indr_dev structure, but now that
->> there are multiple subsytems using the indr_dev we either have to have
->> a list of cached blocks (with entries for each subsystem) or just always
->> iterate over the subsystems :(
->>
->> After all the same device may have both a TC block and a NFT block.
->>
->> I think always iterating would be easier:
->>
->> The indr_dev struct would no longer have the block pointer, instead
->> when new driver registers for the callback instead of:
->>
->> 	if (indr_dev->ing_cmd_cb)
->> 		indr_dev->ing_cmd_cb(indr_dev->dev, indr_dev->flow_block,
->> 				     indr_block_cb->cb, indr_block_cb->cb_priv,
->> 				     FLOW_BLOCK_BIND);
->>
->> We'd have something like the loop in flow_get_default_block():
->>
->> 	for each (subsystem)
->> 		subsystem->handle_new_indir_cb(indr_dev, cb);
->>
->> And then per-subsystem logic would actually call the cb. Or:
->>
->> 	for each (subsystem)
->> 		block = get_default_block(indir_dev)
->> 		indr_dev->ing_cmd_cb(...)
->             nft dev chian is also based on register_netdevice_notifier, So for unregister case,
->
-> the basechian(block) of nft maybe delete before the __tc_indr_block_cb_unregister. is right?
->
-> So maybe we can cache the block as a list of all the subsystem in  indr_dev ?
+[ Upstream commit 1b0890cd60829bd51455dc5ad689ed58c4408227 ]
 
+Thomas and Juliana report a deadlock when running:
 
-when the device is unregister the nft netdev chain related to this device will also be delete through netdevice_notifier
+(rmmod nf_conntrack_netlink/xfrm_user)
 
-. So for unregister case,the basechian(block) of nft maybe delete before the __tc_indr_block_cb_unregister.
+  conntrack -e NEW -E &
+  modprobe -v xfrm_user
 
-cache for the block is not work because the chain already be delete and free. Maybe it improve the prio of
+They provided following analysis:
 
-rep_netdev_event can help this?
+conntrack -e NEW -E
+    netlink_bind()
+        netlink_lock_table() -> increases "nl_table_users"
+            nfnetlink_bind()
+            # does not unlock the table as it's locked by netlink_bind()
+                __request_module()
+                    call_usermodehelper_exec()
 
->
->
+This triggers "modprobe nf_conntrack_netlink" from kernel, netlink_bind()
+won't return until modprobe process is done.
+
+"modprobe xfrm_user":
+    xfrm_user_init()
+        register_pernet_subsys()
+            -> grab pernet_ops_rwsem
+                ..
+                netlink_table_grab()
+                    calls schedule() as "nl_table_users" is non-zero
+
+so modprobe is blocked because netlink_bind() increased
+nl_table_users while also holding pernet_ops_rwsem.
+
+"modprobe nf_conntrack_netlink" runs and inits nf_conntrack_netlink:
+    ctnetlink_init()
+        register_pernet_subsys()
+            -> blocks on "pernet_ops_rwsem" thanks to xfrm_user module
+
+both modprobe processes wait on one another -- neither can make
+progress.
+
+Switch netlink_bind() to "nowait" modprobe -- this releases the netlink
+table lock, which then allows both modprobe instances to complete.
+
+Reported-by: Thomas Jarosch <thomas.jarosch@intra2net.com>
+Reported-by: Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+Signed-off-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/netfilter/nfnetlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/netfilter/nfnetlink.c b/net/netfilter/nfnetlink.c
+index 92077d4591090..4abbb452cf6c6 100644
+--- a/net/netfilter/nfnetlink.c
++++ b/net/netfilter/nfnetlink.c
+@@ -578,7 +578,7 @@ static int nfnetlink_bind(struct net *net, int group)
+ 	ss = nfnetlink_get_subsys(type << 8);
+ 	rcu_read_unlock();
+ 	if (!ss)
+-		request_module("nfnetlink-subsys-%d", type);
++		request_module_nowait("nfnetlink-subsys-%d", type);
+ 	return 0;
+ }
+ #endif
+-- 
+2.20.1
+
