@@ -2,149 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC9B080492
-	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 08:04:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00D7B80494
+	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 08:05:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbfHCGET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Aug 2019 02:04:19 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:51488 "EHLO
+        id S1726640AbfHCGFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Aug 2019 02:05:33 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:52865 "EHLO
         mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726550AbfHCGES (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 02:04:18 -0400
-Received: by mail-wm1-f66.google.com with SMTP id 207so69912251wma.1;
-        Fri, 02 Aug 2019 23:04:16 -0700 (PDT)
+        with ESMTP id S1726621AbfHCGFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 02:05:33 -0400
+Received: by mail-wm1-f66.google.com with SMTP id s3so69877489wms.2;
+        Fri, 02 Aug 2019 23:05:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TuPsU+wIk9sIcrLOl4LJnc1V+9lHBDgGcDwEKtWWqcc=;
-        b=HT8uNMOe3xQ+8v+NGlpiBqKUVlnXu+y+8pTuy/KqlOjTymceYZgX4CYrrsGfPckcQL
-         v9X6pY6LtLFAY3nYKefMVPRv6kYv8WCHdOqgTaw57zNyVPZIMfFhxeOc0bmThKDJlxSl
-         AXPO1owM6GP+6Q6K15mYojVWDrGlWzt/NlOJwXlQ7+zA9wuDprcfmqKwbp1XhC6c9pdF
-         4ktox4g9KXM6+6OqH5uKoXnFL5Qm3CJ0/1pzxBympl+E7Z74Wd17Ntp0vtt54wn94wJR
-         mOS/3C3AcSBGT8OTnMAP9dA6iMQZXd2laLo2EK/Yw76XyHC+/e3Miq9eZgoK3VvJ/kTV
-         9hfw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rNjsuP0ZjDp9jnRQNucz2c5yrrLQk2HCJuqAw6zZVeM=;
+        b=LVh4eCRnc+8XPVEiLWCyMApcVszjz2OaYV8RYm0L7XWc3HjY9IwIwOyJEVNiDLIVtM
+         MIl9CYrEs3SxyB3KwyjiPhYG2BfGpQKw4BvOODGx2egaLIAawt8MKY/WKTtyo2m0M7U0
+         iq3aFs8wi/HbWP6rfo4Vqsq2V+y4bGiW++1SbHvXLb0P/7GAQoMCMIVjXMOi0c6HZKR0
+         TdVGbN1fu6rDGl7J3REDkP5glgHsQIg2J/5Q2EMGeZKu/TPKOn5kT1dhZdv/Y/Z2mzgn
+         gv1jhd504dTix0h/CwyzkgZmmoKebRS1vMJfNUv3rfkYs44Yry2s3o4KT9jU96OBdLIv
+         PDaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TuPsU+wIk9sIcrLOl4LJnc1V+9lHBDgGcDwEKtWWqcc=;
-        b=lQ7QJRiGo2fAMhB0rE+hBPwoq1qk52a/u3EtXHAfPhDw1iIKAEtBKDuDH6sPQOdW4x
-         dxGiSc4wRis8E10h3KdGOi2aDp5YdyqlnYJVU62qH0VBBFEUmbqwK37xhc5wcfKPvhOH
-         D8F5G7z2yhObHIVzvFCzpdU5JYyHyfE8mCiVNJPBXp8rSU+so45ye2faU0S4eR1YgpNh
-         h0p9Iu3XRIPGlGnl2AeA3/Yhee7JS5RcUuD4qVlZPzHUkKEEP994WOMWm79SQAUT0yiG
-         0bpOTgYMBIwwqGbbaqPem9sOXzhp/s1gBHkdrS2U4HhSZwcZyl+KAdKDEmuVCiMHFMv/
-         YS0Q==
-X-Gm-Message-State: APjAAAWQ6G2a2j5UD6MEuCKTOV1tjIVibS+miMLTNFnDvA/XD1Rgjwym
-        onxMOh0rSiKfB+rK52G4qVY=
-X-Google-Smtp-Source: APXvYqwHgOP+QwT4wtjARAN/ZGIjpCOSDlFdPyx71PGItur4Jad51ToiXyPCxCj6XswP9TeBjy3/vA==
-X-Received: by 2002:a7b:cf3a:: with SMTP id m26mr7950518wmg.6.1564812255722;
-        Fri, 02 Aug 2019 23:04:15 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:4f8:222:2f1b::2])
-        by smtp.gmail.com with ESMTPSA id t13sm93817734wrr.0.2019.08.02.23.04.14
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rNjsuP0ZjDp9jnRQNucz2c5yrrLQk2HCJuqAw6zZVeM=;
+        b=Exw8X/T8HFnvD9nM17zlXZv4ksN2vVsOtPAaHtgz+Ka1B/bBrPS5S5GkgOzbsUYvFM
+         Gab8W+nTMBly1RVjI4TuUk3cSTmxhiTp/jgzb95rHjxReRVX+TyZCU8te1LeJ2fRTcpG
+         +kTGLhs10gf2B/7ZKuRFoaME58Vox/yUoQfEwrwowY/9GCkhDNSBG6bnQOK7MHjC0ofW
+         EaCuFIUPoFOgz0rgN6Mh7SU2CtSUA8kgRJocbBRKVQRckAynTuxDK8l2bmD66tM2wLKs
+         /Yx7HuLnNTipVhdO8VhqimnrmTK1929jb0zSvpgRryZK8sVTcq2jDm5k9VRAAer7dUN/
+         mXRQ==
+X-Gm-Message-State: APjAAAUfJL3nULbmRkVe47qh5YUEUkX4F7Se4MxDv9QwxBPIixAiikeX
+        U6BVC0n+ekTcmIUY51VXWZ4=
+X-Google-Smtp-Source: APXvYqz36zGRvW+EA5Q16NvmRTURlwWo6t5ErfVh/qGFKq4wC1cYjfYdUWL01hQeI+UTjypAPLkC/A==
+X-Received: by 2002:a1c:d10c:: with SMTP id i12mr7689994wmg.152.1564812330438;
+        Fri, 02 Aug 2019 23:05:30 -0700 (PDT)
+Received: from archlinux-threadripper ([2a01:4f8:222:2f1b::2])
+        by smtp.gmail.com with ESMTPSA id r123sm73514728wme.7.2019.08.02.23.05.29
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 02 Aug 2019 23:04:15 -0700 (PDT)
+        Fri, 02 Aug 2019 23:05:29 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 23:05:28 -0700
 From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     natechancellor@gmail.com
-Cc:     andrew@lunn.ch, broonie@kernel.org, davem@davemloft.net,
-        devel@driverdev.osuosl.org, f.fainelli@gmail.com,
-        gregkh@linuxfoundation.org, hkallweit1@gmail.com,
-        kernel-build-reports@lists.linaro.org,
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     David Miller <davem@davemloft.net>, andrew@lunn.ch,
+        broonie@kernel.org, devel@driverdev.osuosl.org,
+        f.fainelli@gmail.com, gregkh@linuxfoundation.org,
+        hkallweit1@gmail.com, kernel-build-reports@lists.linaro.org,
         linux-arm-kernel@lists.infradead.org, linux-next@vger.kernel.org,
-        lkp@intel.com, netdev@vger.kernel.org, rdunlap@infradead.org,
-        willy@infradead.org
-Subject: [PATCH v2] net: mdio-octeon: Fix Kconfig warnings and build errors
-Date:   Fri,  2 Aug 2019 23:01:56 -0700
-Message-Id: <20190803060155.89548-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.23.0.rc1
-In-Reply-To: <20190731185023.20954-1-natechancellor@gmail.com>
-References: <20190731185023.20954-1-natechancellor@gmail.com>
+        netdev@vger.kernel.org, lkp@intel.com, rdunlap@infradead.org
+Subject: Re: [PATCH] net: mdio-octeon: Fix build error and Kconfig warning
+Message-ID: <20190803060528.GA89737@archlinux-threadripper>
+References: <20190731.094150.851749535529247096.davem@davemloft.net>
+ <20190731185023.20954-1-natechancellor@gmail.com>
+ <20190802.181132.1425585873361511856.davem@davemloft.net>
+ <20190803013031.GA76252@archlinux-threadripper>
+ <20190803013952.GF5597@bombadil.infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Patchwork-Bot: notify
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190803013952.GF5597@bombadil.infradead.org>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 171a9bae68c7 ("staging/octeon: Allow test build on
-!MIPS"), the following combination of configs cause a few Kconfig
-warnings and build errors (distilled from arm allyesconfig and Randy's
-randconfig builds):
+On Fri, Aug 02, 2019 at 06:39:52PM -0700, Matthew Wilcox wrote:
+> On Fri, Aug 02, 2019 at 06:30:31PM -0700, Nathan Chancellor wrote:
+> > On Fri, Aug 02, 2019 at 06:11:32PM -0700, David Miller wrote:
+> > > The proper way to fix this is to include either
+> > > 
+> > > 	linux/io-64-nonatomic-hi-lo.h
+> > > 
+> > > or
+> > > 
+> > > 	linux/io-64-nonatomic-lo-hi.h
+> > > 
+> > > whichever is appropriate.
+> > 
+> > Hmmmm, is that not what I did?
+> > 
+> > Although I did not know about io-64-nonatomic-hi-lo.h. What is the
+> > difference and which one is needed here?
+> 
+> Whether you write the high or low 32 bits first.  For this, it doesn't
+> matter, since the compiled driver will never be run on real hardware.
 
-    CONFIG_NETDEVICES=y
-    CONFIG_STAGING=y
-    CONFIG_COMPILE_TEST=y
+That's what I figured. I have only seen lo-hi used personally, which is
+what I went with here. Thanks for the confirmation!
 
-and CONFIG_OCTEON_ETHERNET as either a module or built-in.
-
-WARNING: unmet direct dependencies detected for MDIO_OCTEON
-  Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=y] && MDIO_BUS [=y]
-&& 64BIT [=n] && HAS_IOMEM [=y] && OF_MDIO [=n]
-  Selected by [y]:
-  - OCTEON_ETHERNET [=y] && STAGING [=y] && (CAVIUM_OCTEON_SOC ||
-COMPILE_TEST [=y]) && NETDEVICES [=y]
-
-In file included from ../drivers/net/phy/mdio-octeon.c:14:
-../drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of
-function ‘writeq’; did you mean ‘writel’?
-[-Werror=implicit-function-declaration]
-  111 | #define oct_mdio_writeq(val, addr) writeq(val, (void *)addr)
-      |                                    ^~~~~~
-
-CONFIG_64BIT is not strictly necessary if the proper readq/writeq
-definitions are included from io-64-nonatomic-lo-hi.h.
-
-CONFIG_OF_MDIO is not needed when CONFIG_COMPILE_TEST is enabled because
-of commit f9dc9ac51610 ("of/mdio: Add dummy functions in of_mdio.h.").
-
-Fixes: 171a9bae68c7 ("staging/octeon: Allow test build on !MIPS")
-Reported-by: kbuild test robot <lkp@intel.com>
-Reported-by: Mark Brown <broonie@kernel.org>
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
-
-v1 -> v2:
-
-* Address Randy's reported failure here: https://lore.kernel.org/netdev/b3444283-7a77-ece8-7ac6-41756aa7dc60@infradead.org/
-  by not requiring CONFIG_OF_MDIO when CONFIG_COMPILE_TEST is set.
-
-* Improve commit message
-
- drivers/net/phy/Kconfig       | 4 ++--
- drivers/net/phy/mdio-cavium.h | 2 ++
- 2 files changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/Kconfig b/drivers/net/phy/Kconfig
-index 20f14c5fbb7e..0e3d9e3d3533 100644
---- a/drivers/net/phy/Kconfig
-+++ b/drivers/net/phy/Kconfig
-@@ -159,8 +159,8 @@ config MDIO_MSCC_MIIM
- 
- config MDIO_OCTEON
- 	tristate "Octeon and some ThunderX SOCs MDIO buses"
--	depends on 64BIT
--	depends on HAS_IOMEM && OF_MDIO
-+	depends on (64BIT && OF_MDIO) || COMPILE_TEST
-+	depends on HAS_IOMEM
- 	select MDIO_CAVIUM
- 	help
- 	  This module provides a driver for the Octeon and ThunderX MDIO
-diff --git a/drivers/net/phy/mdio-cavium.h b/drivers/net/phy/mdio-cavium.h
-index ed5f9bb5448d..b7f89ad27465 100644
---- a/drivers/net/phy/mdio-cavium.h
-+++ b/drivers/net/phy/mdio-cavium.h
-@@ -108,6 +108,8 @@ static inline u64 oct_mdio_readq(u64 addr)
- 	return cvmx_read_csr(addr);
- }
- #else
-+#include <linux/io-64-nonatomic-lo-hi.h>
-+
- #define oct_mdio_writeq(val, addr)	writeq(val, (void *)addr)
- #define oct_mdio_readq(addr)		readq((void *)addr)
- #endif
--- 
-2.23.0.rc1
-
+> 
+> > There is apparently another failure when OF_MDIO is not set, I guess I
+> > can try to look into that as well and respin into a series if
+> > necessary.
+> 
+> Thanks for taking care of that!
