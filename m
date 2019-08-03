@@ -2,29 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF05F80656
+	by mail.lfdr.de (Postfix) with ESMTP id 7579380655
 	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 15:37:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390961AbfHCNgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Aug 2019 09:36:44 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35703 "EHLO
+        id S2390937AbfHCNgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Aug 2019 09:36:43 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35701 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2388206AbfHCNgn (ORCPT
+        with ESMTP id S2390911AbfHCNgn (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 09:36:43 -0400
 Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 3 Aug 2019 16:36:41 +0300
 Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x73DafNd027404;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x73DafNe027404;
         Sat, 3 Aug 2019 16:36:41 +0300
 From:   Vlad Buslov <vladbu@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     pieter.jansenvanvuuren@netronome.com, jhs@mojatatu.com,
         xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
         Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net 0/2] action fixes for flow_offload infra compatibility
-Date:   Sat,  3 Aug 2019 16:36:17 +0300
-Message-Id: <20190803133619.10574-1-vladbu@mellanox.com>
+Subject: [PATCH net 1/2] net: sched: police: allow accessing police->params with rtnl
+Date:   Sat,  3 Aug 2019 16:36:18 +0300
+Message-Id: <20190803133619.10574-2-vladbu@mellanox.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190803133619.10574-1-vladbu@mellanox.com>
+References: <20190803133619.10574-1-vladbu@mellanox.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -32,17 +34,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix rcu warnings due to usage of action helpers that expect rcu read lock
-protection from rtnl-protected context of flow_offload infra.
+Recently implemented support for police action in flow_offload infra leads
+to following rcu usage warning:
 
-Vlad Buslov (2):
-  net: sched: police: allow accessing police->params with rtnl
-  net: sched: sample: allow accessing psample_group with rtnl
+[ 1925.881092] =============================
+[ 1925.881094] WARNING: suspicious RCU usage
+[ 1925.881098] 5.3.0-rc1+ #574 Not tainted
+[ 1925.881100] -----------------------------
+[ 1925.881104] include/net/tc_act/tc_police.h:57 suspicious rcu_dereference_check() usage!
+[ 1925.881106]
+               other info that might help us debug this:
 
+[ 1925.881109]
+               rcu_scheduler_active = 2, debug_locks = 1
+[ 1925.881112] 1 lock held by tc/18591:
+[ 1925.881115]  #0: 00000000b03cb918 (rtnl_mutex){+.+.}, at: tc_new_tfilter+0x47c/0x970
+[ 1925.881124]
+               stack backtrace:
+[ 1925.881127] CPU: 2 PID: 18591 Comm: tc Not tainted 5.3.0-rc1+ #574
+[ 1925.881130] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+[ 1925.881132] Call Trace:
+[ 1925.881138]  dump_stack+0x85/0xc0
+[ 1925.881145]  tc_setup_flow_action+0x1771/0x2040
+[ 1925.881155]  fl_hw_replace_filter+0x11f/0x2e0 [cls_flower]
+[ 1925.881175]  fl_change+0xd24/0x1b30 [cls_flower]
+[ 1925.881200]  tc_new_tfilter+0x3e0/0x970
+[ 1925.881231]  ? tc_del_tfilter+0x720/0x720
+[ 1925.881243]  rtnetlink_rcv_msg+0x389/0x4b0
+[ 1925.881250]  ? netlink_deliver_tap+0x95/0x400
+[ 1925.881257]  ? rtnl_dellink+0x2d0/0x2d0
+[ 1925.881264]  netlink_rcv_skb+0x49/0x110
+[ 1925.881275]  netlink_unicast+0x171/0x200
+[ 1925.881284]  netlink_sendmsg+0x224/0x3f0
+[ 1925.881299]  sock_sendmsg+0x5e/0x60
+[ 1925.881305]  ___sys_sendmsg+0x2ae/0x330
+[ 1925.881309]  ? task_work_add+0x43/0x50
+[ 1925.881314]  ? fput_many+0x45/0x80
+[ 1925.881329]  ? __lock_acquire+0x248/0x1930
+[ 1925.881342]  ? find_held_lock+0x2b/0x80
+[ 1925.881347]  ? task_work_run+0x7b/0xd0
+[ 1925.881359]  __sys_sendmsg+0x59/0xa0
+[ 1925.881375]  do_syscall_64+0x5c/0xb0
+[ 1925.881381]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[ 1925.881384] RIP: 0033:0x7feb245047b8
+[ 1925.881388] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83
+ ec 28 89 54
+[ 1925.881391] RSP: 002b:00007ffc2d2a5788 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+[ 1925.881395] RAX: ffffffffffffffda RBX: 000000005d4497ed RCX: 00007feb245047b8
+[ 1925.881398] RDX: 0000000000000000 RSI: 00007ffc2d2a57f0 RDI: 0000000000000003
+[ 1925.881400] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
+[ 1925.881403] R10: 0000000000404ec2 R11: 0000000000000246 R12: 0000000000000001
+[ 1925.881406] R13: 0000000000480640 R14: 0000000000000012 R15: 0000000000000001
+
+Change tcf_police_rate_bytes_ps() and tcf_police_tcfp_burst() helpers to
+allow using them from both rtnl and rcu protected contexts.
+
+Fixes: 8c8cfc6ed274 ("net/sched: add police action to the hardware intermediate representation")
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+---
  include/net/tc_act/tc_police.h | 4 ++--
- include/net/tc_act/tc_sample.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/include/net/tc_act/tc_police.h b/include/net/tc_act/tc_police.h
+index 8b9ef3664262..cfdc7cb82cad 100644
+--- a/include/net/tc_act/tc_police.h
++++ b/include/net/tc_act/tc_police.h
+@@ -54,7 +54,7 @@ static inline u64 tcf_police_rate_bytes_ps(const struct tc_action *act)
+ 	struct tcf_police *police = to_police(act);
+ 	struct tcf_police_params *params;
+ 
+-	params = rcu_dereference_bh(police->params);
++	params = rcu_dereference_bh_rtnl(police->params);
+ 	return params->rate.rate_bytes_ps;
+ }
+ 
+@@ -63,7 +63,7 @@ static inline s64 tcf_police_tcfp_burst(const struct tc_action *act)
+ 	struct tcf_police *police = to_police(act);
+ 	struct tcf_police_params *params;
+ 
+-	params = rcu_dereference_bh(police->params);
++	params = rcu_dereference_bh_rtnl(police->params);
+ 	return params->tcfp_burst;
+ }
+ 
 -- 
 2.21.0
 
