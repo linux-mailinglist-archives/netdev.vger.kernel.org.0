@@ -2,57 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17514803AB
-	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 03:15:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70FDC803AD
+	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 03:17:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388906AbfHCBPj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 21:15:39 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:53096 "EHLO
+        id S2389479AbfHCBRY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 21:17:24 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:53108 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387606AbfHCBPj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 21:15:39 -0400
+        with ESMTP id S2388638AbfHCBRX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 21:17:23 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 02B6E12B88C0D;
-        Fri,  2 Aug 2019 18:15:38 -0700 (PDT)
-Date:   Fri, 02 Aug 2019 18:15:38 -0700 (PDT)
-Message-Id: <20190802.181538.1597809800435251162.davem@davemloft.net>
-To:     yuehaibing@huawei.com
-Cc:     claudiu.manoil@nxp.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] enetc: Select PHYLIB while CONFIG_FSL_ENETC_VF is set
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 855D812B88C3F;
+        Fri,  2 Aug 2019 18:17:23 -0700 (PDT)
+Date:   Fri, 02 Aug 2019 18:17:22 -0700 (PDT)
+Message-Id: <20190802.181722.115856569002980058.davem@davemloft.net>
+To:     kevlo@kevlo.org
+Cc:     hayeswang@realtek.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net] r8152: fix typo in register name
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190801012419.9728-1-yuehaibing@huawei.com>
-References: <20190801012419.9728-1-yuehaibing@huawei.com>
+In-Reply-To: <20190801032938.GA22256@ns.kevlo.org>
+References: <20190801032938.GA22256@ns.kevlo.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 02 Aug 2019 18:15:39 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 02 Aug 2019 18:17:23 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
-Date: Thu, 1 Aug 2019 09:24:19 +0800
+From: Kevin Lo <kevlo@kevlo.org>
+Date: Thu, 1 Aug 2019 11:29:38 +0800
 
-> Like FSL_ENETC, when CONFIG_FSL_ENETC_VF is set,
-> we should select PHYLIB, otherwise building still fails:
+> It is likely that PAL_BDC_CR should be PLA_BDC_CR.
 > 
-> drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_open':
-> enetc.c:(.text+0x2744): undefined reference to `phy_start'
-> enetc.c:(.text+0x282c): undefined reference to `phy_disconnect'
-> drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_close':
-> enetc.c:(.text+0x28f8): undefined reference to `phy_stop'
-> enetc.c:(.text+0x2904): undefined reference to `phy_disconnect'
-> drivers/net/ethernet/freescale/enetc/enetc_ethtool.o:(.rodata+0x3f8): undefined reference to `phy_ethtool_get_link_ksettings'
-> drivers/net/ethernet/freescale/enetc/enetc_ethtool.o:(.rodata+0x400): undefined reference to `phy_ethtool_set_link_ksettings'
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet drivers")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> Signed-off-by: Kevin Lo <kevlo@kevlo.org>
 
 Applied.
