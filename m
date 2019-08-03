@@ -2,111 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5456B80657
-	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 15:37:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D094380659
+	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 15:42:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390944AbfHCNgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Aug 2019 09:36:44 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35702 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2388321AbfHCNgn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 09:36:43 -0400
-Received: from Internal Mail-Server by MTLPINE2 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 3 Aug 2019 16:36:41 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x73DafNf027404;
-        Sat, 3 Aug 2019 16:36:41 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     pieter.jansenvanvuuren@netronome.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, davem@davemloft.net,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net 2/2] net: sched: sample: allow accessing psample_group with rtnl
-Date:   Sat,  3 Aug 2019 16:36:19 +0300
-Message-Id: <20190803133619.10574-3-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190803133619.10574-1-vladbu@mellanox.com>
-References: <20190803133619.10574-1-vladbu@mellanox.com>
+        id S1727553AbfHCNm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Aug 2019 09:42:28 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:14178 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727529AbfHCNm2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 09:42:28 -0400
+Received: from [192.168.1.4] (unknown [222.68.27.146])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id 57A30415DE;
+        Sat,  3 Aug 2019 21:42:21 +0800 (CST)
+Subject: Re: [PATCH net-next v5 5/6] flow_offload: support get flow_block
+ immediately
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     jiri@resnulli.us, pablo@netfilter.org, fw@strlen.de,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org,
+        John Hurley <john.hurley@netronome.com>
+References: <1564628627-10021-1-git-send-email-wenxu@ucloud.cn>
+ <1564628627-10021-6-git-send-email-wenxu@ucloud.cn>
+ <20190801161129.25fee619@cakuba.netronome.com>
+ <bac5c6a5-8a1b-ee74-988b-6c2a71885761@ucloud.cn>
+ <55850b13-991f-97bd-b452-efacd0f39aa4@ucloud.cn>
+ <20190802110216.5e1fd938@cakuba.netronome.com>
+ <45660f1e-b6a8-1bcb-0d57-7c1790d3fbaf@ucloud.cn>
+ <20190802172155.7a36713d@cakuba.netronome.com>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <57c751f3-4b8e-7eb9-2ae0-1d72ca2c35e2@ucloud.cn>
+Date:   Sat, 3 Aug 2019 21:42:06 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190802172155.7a36713d@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVQ01NS0tLSUJPTUNOSE1ZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6MUk6LDo6LDg8Lk4BEhw9EAs1
+        HgIaCi5VSlVKTk1PQ0hCTE9KTU1DVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUlJSVVN
+        Q1VJTFVKT01ZV1kIAVlBSU1JQjcG
+X-HM-Tid: 0a6c57b788ac2086kuqy57a30415de
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Recently implemented support for sample action in flow_offload infra leads
-to following rcu usage warning:
 
-[ 1938.234856] =============================
-[ 1938.234858] WARNING: suspicious RCU usage
-[ 1938.234863] 5.3.0-rc1+ #574 Not tainted
-[ 1938.234866] -----------------------------
-[ 1938.234869] include/net/tc_act/tc_sample.h:47 suspicious rcu_dereference_check() usage!
-[ 1938.234872]
-               other info that might help us debug this:
-
-[ 1938.234875]
-               rcu_scheduler_active = 2, debug_locks = 1
-[ 1938.234879] 1 lock held by tc/19540:
-[ 1938.234881]  #0: 00000000b03cb918 (rtnl_mutex){+.+.}, at: tc_new_tfilter+0x47c/0x970
-[ 1938.234900]
-               stack backtrace:
-[ 1938.234905] CPU: 2 PID: 19540 Comm: tc Not tainted 5.3.0-rc1+ #574
-[ 1938.234908] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[ 1938.234911] Call Trace:
-[ 1938.234922]  dump_stack+0x85/0xc0
-[ 1938.234930]  tc_setup_flow_action+0xed5/0x2040
-[ 1938.234944]  fl_hw_replace_filter+0x11f/0x2e0 [cls_flower]
-[ 1938.234965]  fl_change+0xd24/0x1b30 [cls_flower]
-[ 1938.234990]  tc_new_tfilter+0x3e0/0x970
-[ 1938.235021]  ? tc_del_tfilter+0x720/0x720
-[ 1938.235028]  rtnetlink_rcv_msg+0x389/0x4b0
-[ 1938.235038]  ? netlink_deliver_tap+0x95/0x400
-[ 1938.235044]  ? rtnl_dellink+0x2d0/0x2d0
-[ 1938.235053]  netlink_rcv_skb+0x49/0x110
-[ 1938.235063]  netlink_unicast+0x171/0x200
-[ 1938.235073]  netlink_sendmsg+0x224/0x3f0
-[ 1938.235091]  sock_sendmsg+0x5e/0x60
-[ 1938.235097]  ___sys_sendmsg+0x2ae/0x330
-[ 1938.235111]  ? __handle_mm_fault+0x12cd/0x19e0
-[ 1938.235125]  ? __handle_mm_fault+0x12cd/0x19e0
-[ 1938.235138]  ? find_held_lock+0x2b/0x80
-[ 1938.235147]  ? do_user_addr_fault+0x22d/0x490
-[ 1938.235160]  __sys_sendmsg+0x59/0xa0
-[ 1938.235178]  do_syscall_64+0x5c/0xb0
-[ 1938.235187]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[ 1938.235192] RIP: 0033:0x7ff9a4d597b8
-[ 1938.235197] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83
- ec 28 89 54
-[ 1938.235200] RSP: 002b:00007ffcfe381c48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-[ 1938.235205] RAX: ffffffffffffffda RBX: 000000005d4497f9 RCX: 00007ff9a4d597b8
-[ 1938.235208] RDX: 0000000000000000 RSI: 00007ffcfe381cb0 RDI: 0000000000000003
-[ 1938.235211] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
-[ 1938.235214] R10: 0000000000404ec2 R11: 0000000000000246 R12: 0000000000000001
-[ 1938.235217] R13: 0000000000480640 R14: 0000000000000012 R15: 0000000000000001
-
-Change tcf_sample_psample_group() helper to allow using it from both rtnl
-and rcu protected contexts.
-
-Fixes: a7a7be6087b0 ("net/sched: add sample action to the hardware intermediate representation")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- include/net/tc_act/tc_sample.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/net/tc_act/tc_sample.h b/include/net/tc_act/tc_sample.h
-index 0a559d4b6f0f..b4fce0fae645 100644
---- a/include/net/tc_act/tc_sample.h
-+++ b/include/net/tc_act/tc_sample.h
-@@ -44,7 +44,7 @@ static inline int tcf_sample_trunc_size(const struct tc_action *a)
- static inline struct psample_group *
- tcf_sample_psample_group(const struct tc_action *a)
- {
--	return rcu_dereference(to_sample(a)->psample_group);
-+	return rcu_dereference_rtnl(to_sample(a)->psample_group);
- }
- 
- #endif /* __NET_TC_SAMPLE_H */
--- 
-2.21.0
-
+在 2019/8/3 8:21, Jakub Kicinski 写道:
+> On Sat, 3 Aug 2019 07:19:31 +0800, wenxu wrote:
+>>> Or:
+>>>
+>>> device unregister:
+>>>   - nft block destroy
+>>>     - UNBIND cb
+>>>       - free driver's block state
+>>>   - driver notifier callback
+>>>     - free driver's state
+>>>
+>>> No?  
+>> For the second case maybe can't unbind cb? because the nft block is
+>> destroied. There is no way to find the block(chain) in nft.
+> But before the block is destroyed doesn't nft send an UNBIND event to
+> the drivers, always?
+you are correct, it will be send an UBIND event when the block is destroyed
