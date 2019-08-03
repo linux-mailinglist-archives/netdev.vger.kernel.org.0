@@ -2,139 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EF43803BF
-	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 03:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0FA3803B7
+	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 03:30:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391321AbfHCBdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 2 Aug 2019 21:33:40 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:60096 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390493AbfHCBdj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 21:33:39 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x731TjiM041024;
-        Sat, 3 Aug 2019 01:30:14 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=cc : subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2018-07-02;
- bh=PzG5W+xMCPCqX5V/WwOxL0iZTAvQCXHlqgOKkoOg1MQ=;
- b=2UsMaGPWcwZDgPtPG4vvO4o2+XprVDs5YewZlGJ99NG/oeu5neHqgRolXDdQUDZF8YMI
- IxYI2JZfBcSTSH5fID80qQTk2RWiC2i2+JKhPWGaFknkpOXtRCnVCla7UCXQjDJ07TcC
- Y8zIof10PGpETzEquU4Ep6o2lM98f1fWi0d++c5eyIcbTbo8lM/F3e4I2lqnL2U/DsCA
- 8mUjAebH6kYb0xf2V8EwArlSIvwpZUBAi4UxsNctBmeyR2rpJRijKuOrdEc0RMfPWfzX
- anPCkdDrm0pEBpPwYOnfJAsFmVDpXvcG9fkUEJAY/0LPZMTheZ3JVp0D915Q7k5fKIRC kQ== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 2u0f8rn4cg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 03 Aug 2019 01:30:13 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x731SCbQ177888;
-        Sat, 3 Aug 2019 01:28:12 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 2u50aa8apf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 03 Aug 2019 01:28:12 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x731SC7W177834;
-        Sat, 3 Aug 2019 01:28:12 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by aserp3030.oracle.com with ESMTP id 2u50aa8ap0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 03 Aug 2019 01:28:12 +0000
-Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x731S6LT032689;
-        Sat, 3 Aug 2019 01:28:06 GMT
-Received: from mbp2018.cdmnet.org (/82.27.120.181)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 02 Aug 2019 18:28:05 -0700
-Cc:     calum.mackay@oracle.com, Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
-        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
-        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>
-Subject: Re: [PATCH 31/34] nfs: convert put_page() to put_user_page*()
-To:     john.hubbard@gmail.com, Andrew Morton <akpm@linux-foundation.org>
-References: <20190802022005.5117-1-jhubbard@nvidia.com>
- <20190802022005.5117-32-jhubbard@nvidia.com>
-From:   Calum Mackay <calum.mackay@oracle.com>
-Organization: Oracle
-Message-ID: <1738cb1e-15d8-0bbe-5362-341664f6efc8@oracle.com>
-Date:   Sat, 3 Aug 2019 02:27:55 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:70.0)
- Gecko/20100101 Thunderbird/70.0a1
+        id S2390442AbfHCBag (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 2 Aug 2019 21:30:36 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:52411 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388638AbfHCBag (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 2 Aug 2019 21:30:36 -0400
+Received: by mail-wm1-f68.google.com with SMTP id s3so69540284wms.2;
+        Fri, 02 Aug 2019 18:30:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Ogf+QVoHZtK9iZfwgzb4P/UWGbW9VrBZvDIl55S3hPY=;
+        b=KGkroKFjol78GrJj8Z3aHbKWLMrcSiwfex8ESVqf5pCyjcNBYG+ZPXlzN5iCRO4k4S
+         j+kWSLfRx1gW9uTsbVilRV/mKw5vnJRnyRovCESrqPj485QPsEXeHmM1ohRfevsYjhl+
+         bVqgoWYlnrNbPYUfDRYgNeFptq0zUwF8iaVEaW6Y91hTzIKVEhttusPL7xNJjagJgfPx
+         Qmm+hhLcyFpZUGNoAb7uaqmLy2yvIu/dqrpx4BAoA8q5ZPCHBLZqpQBELIiFi0jGG2Yl
+         HbTxR+5W2mtoj7+ef493cG+HiMMsq/Ot47bUXyCg3DdLbc7lKcrFA4E477Jh3bin1LxM
+         lI3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Ogf+QVoHZtK9iZfwgzb4P/UWGbW9VrBZvDIl55S3hPY=;
+        b=O1LHYWS6RJDdRWCjHBlN665JF4xGb1dkQ9/isMHGDMB2qeoNeHhIgr2MOvkqYbN++6
+         3Bq61WNDsUgm42Om7WF4akN6DUDe6fwltUTffibie9vhYkOTfgMRI0hXu6ANz/bAcyhi
+         HczY8sRl7k8UpW0kXOXKuMAvCZaknGAboKaie6crVQB5j4A4ZR7YIQhH6556Fn8oatx0
+         WlJz67Plm0a5h8mry5wr3c9O6X4Pr++Nde9Dp/zfkXvGIXXo1NW0dcGLnoRNzXaB3pHd
+         g/xQr93Z1PT5xID5VzeSPcG546TgjpwW1wt5ihw9H0y50F2cHw0PnIO56VOM1PCCX9Pp
+         gYYA==
+X-Gm-Message-State: APjAAAWTGH2d5Q+h6+KJN5MDSH3dqF85MU+YOgyV2mPs0VuolgbNaUSz
+        bMkAqaCbkuLAxrS3AWomqtQ=
+X-Google-Smtp-Source: APXvYqxqjFQJ9s+K2nHgDoEAg28+wlCsmvPhcNE3ueZNH5NsBPgHWuzjZM3lffnaX7s2DnS6f/1HMQ==
+X-Received: by 2002:a1c:e108:: with SMTP id y8mr6269283wmg.65.1564795833805;
+        Fri, 02 Aug 2019 18:30:33 -0700 (PDT)
+Received: from archlinux-threadripper ([2a01:4f8:222:2f1b::2])
+        by smtp.gmail.com with ESMTPSA id c4sm62233010wrt.86.2019.08.02.18.30.32
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 02 Aug 2019 18:30:33 -0700 (PDT)
+Date:   Fri, 2 Aug 2019 18:30:31 -0700
+From:   Nathan Chancellor <natechancellor@gmail.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     andrew@lunn.ch, broonie@kernel.org, devel@driverdev.osuosl.org,
+        f.fainelli@gmail.com, gregkh@linuxfoundation.org,
+        hkallweit1@gmail.com, kernel-build-reports@lists.linaro.org,
+        linux-arm-kernel@lists.infradead.org, linux-next@vger.kernel.org,
+        netdev@vger.kernel.org, willy@infradead.org, lkp@intel.com,
+        rdunlap@infradead.org
+Subject: Re: [PATCH] net: mdio-octeon: Fix build error and Kconfig warning
+Message-ID: <20190803013031.GA76252@archlinux-threadripper>
+References: <20190731.094150.851749535529247096.davem@davemloft.net>
+ <20190731185023.20954-1-natechancellor@gmail.com>
+ <20190802.181132.1425585873361511856.davem@davemloft.net>
 MIME-Version: 1.0
-In-Reply-To: <20190802022005.5117-32-jhubbard@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9337 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908030013
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190802.181132.1425585873361511856.davem@davemloft.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 02/08/2019 3:20 am, john.hubbard@gmail.com wrote:
-> From: John Hubbard <jhubbard@nvidia.com>
+On Fri, Aug 02, 2019 at 06:11:32PM -0700, David Miller wrote:
+> From: Nathan Chancellor <natechancellor@gmail.com>
+> Date: Wed, 31 Jul 2019 11:50:24 -0700
 > 
-> For pages that were retained via get_user_pages*(), release those pages
-> via the new put_user_page*() routines, instead of via put_page() or
-> release_pages().
+> > arm allyesconfig warns:
+> > 
+> > WARNING: unmet direct dependencies detected for MDIO_OCTEON
+> >   Depends on [n]: NETDEVICES [=y] && MDIO_DEVICE [=y] && MDIO_BUS [=y]
+> > && 64BIT && HAS_IOMEM [=y] && OF_MDIO [=y]
+> >   Selected by [y]:
+> >   - OCTEON_ETHERNET [=y] && STAGING [=y] && (CAVIUM_OCTEON_SOC &&
+> > NETDEVICES [=y] || COMPILE_TEST [=y])
+> > 
+> > and errors:
+> > 
+> > In file included from ../drivers/net/phy/mdio-octeon.c:14:
+> > ../drivers/net/phy/mdio-octeon.c: In function 'octeon_mdiobus_probe':
+> > ../drivers/net/phy/mdio-cavium.h:111:36: error: implicit declaration of
+> > function 'writeq'; did you mean 'writeb'?
 > 
-> This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
-> ("mm: introduce put_user_page*(), placeholder versions").
+> The proper way to fix this is to include either
 > 
-> Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
-> Cc: Anna Schumaker <anna.schumaker@netapp.com>
-> Cc: linux-nfs@vger.kernel.org
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
-> ---
->   fs/nfs/direct.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
+> 	linux/io-64-nonatomic-hi-lo.h
 > 
-> diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
-> index 0cb442406168..b00b89dda3c5 100644
-> --- a/fs/nfs/direct.c
-> +++ b/fs/nfs/direct.c
-> @@ -278,9 +278,7 @@ ssize_t nfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
->   
->   static void nfs_direct_release_pages(struct page **pages, unsigned int npages)
->   {
-> -	unsigned int i;
-> -	for (i = 0; i < npages; i++)
-> -		put_page(pages[i]);
-> +	put_user_pages(pages, npages);
->   }
+> or
+> 
+> 	linux/io-64-nonatomic-lo-hi.h
+> 
+> whichever is appropriate.
 
-Since it's static, and only called twice, might it be better to change 
-its two callers [nfs_direct_{read,write}_schedule_iovec()] to call 
-put_user_pages() directly, and remove nfs_direct_release_pages() entirely?
+Hmmmm, is that not what I did?
 
-thanks,
-calum.
+Although I did not know about io-64-nonatomic-hi-lo.h. What is the
+difference and which one is needed here?
 
+There is apparently another failure when OF_MDIO is not set, I guess I
+can try to look into that as well and respin into a series if
+necessary.
 
->   
->   void nfs_init_cinfo_from_dreq(struct nfs_commit_info *cinfo,
-> 
+Cheers,
+Nathan
