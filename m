@@ -2,74 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0BF4804AF
-	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 08:32:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 136ED804B2
+	for <lists+netdev@lfdr.de>; Sat,  3 Aug 2019 08:35:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbfHCGcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Aug 2019 02:32:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58642 "EHLO mail.kernel.org"
+        id S1726842AbfHCGfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Aug 2019 02:35:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726797AbfHCGct (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 3 Aug 2019 02:32:49 -0400
+        id S1726806AbfHCGfc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 3 Aug 2019 02:35:32 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 664302087C;
-        Sat,  3 Aug 2019 06:32:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B03732087C;
+        Sat,  3 Aug 2019 06:35:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564813968;
-        bh=5uFzZfIoEwQBrWrcs4j9f2dtR+4Xisp4P+uNFPPnC6Q=;
+        s=default; t=1564814131;
+        bh=ddEY9ZKdQQxW0ag1cV6aQ593D5nTUSXJmEET1SOsoA0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=lh1FEk9/Jhz2/FN/OK8/GklDYDO8dc7O27K+G/TM8SPQnlKeRzAsGlwtG6uVw+qtN
-         3tICWpwn5LR5OKXCOUHPFxPOnmUYdg0imvF3gHaOrzXYryouxEkoLrhMfwau/m7b2p
-         x7AmU1cHO6IqPw1+USVh/Dzh7aeHb5sEG5N9pInk=
-Date:   Sat, 3 Aug 2019 08:32:46 +0200
+        b=pNJwB+sesJxLY3pD/SHmcazF+dgZR4OvcTAH7/JIF2fz1F0V8UPi/l6vc/SqaqRqc
+         LjW72JgoDXmE6XxM+6KTiBEHbd276x2t/6Z34Rm3HHjiTZSI5r3nz4LzigAJ+QW/9W
+         vPbhjLTvNiK3jGcbJzfqQgQKcOKRnH4dBr0EJlgs=
+Date:   Sat, 3 Aug 2019 08:35:28 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
-Cc:     isdn@linux-pingi.de, devel@driverdev.osuosl.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] isdn: hysdn: Fix error spaces around '*'
-Message-ID: <20190803063246.GA10186@kroah.com>
-References: <20190802195602.28414-1-joseespiriki@gmail.com>
+To:     Fernando Eckhardt Valle <phervalle@gmail.com>
+Cc:     isdn@linux-pingi.de, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers:staging:isdn:hysdn brace same line if
+Message-ID: <20190803063528.GC10186@kroah.com>
+References: <20190802195105.27788-1-phervalle@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190802195602.28414-1-joseespiriki@gmail.com>
+In-Reply-To: <20190802195105.27788-1-phervalle@gmail.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 07:56:02PM +0000, Jose Carlos Cazarin Filho wrote:
-> Fix checkpath error:
-> CHECK: spaces preferred around that '*' (ctx:WxV)
-> +extern hysdn_card *card_root;        /* pointer to first card */
+On Fri, Aug 02, 2019 at 07:51:05PM +0000, Fernando Eckhardt Valle wrote:
+> Fix checkpatch error "ERROR: that open brace { should be on the previous
+> line" in drivers/staging/isdn/hysdn/hycapi.c:51.
 > 
-> Signed-off-by: Jose Carlos Cazarin Filho <joseespiriki@gmail.com>
+> Signed-off-by: Fernando Eckhardt Valle <phervalle@gmail.com>
 > ---
->  Hello all!
->  This is my first commit to the Linux Kernel, I'm doing this to learn and be able
->  to contribute more in the future
->  Peace all! 
-> 
->  drivers/staging/isdn/hysdn/hysdn_defs.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/isdn/hysdn/hysdn_defs.h b/drivers/staging/isdn/hysdn/hysdn_defs.h
-> index cdac46a21..f20150d62 100644
-> --- a/drivers/staging/isdn/hysdn/hysdn_defs.h
-> +++ b/drivers/staging/isdn/hysdn/hysdn_defs.h
-> @@ -220,7 +220,7 @@ typedef struct hycapictrl_info hycapictrl_info;
->  /*****************/
->  /* exported vars */
->  /*****************/
-> -extern hysdn_card *card_root;	/* pointer to first card */
-> +extern hysdn_card * card_root;	/* pointer to first card */
+>  drivers/staging/isdn/hysdn/hycapi.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 
-The original code here is correct, checkpatch must be reporting this
-incorrectly.
+Your subject line does not make sense :(
 
-thanks,
-
-greg k-h
