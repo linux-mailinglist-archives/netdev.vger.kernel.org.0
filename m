@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9144E80B5D
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 17:10:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8408D80B5E
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 17:10:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726518AbfHDPK1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 11:10:27 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:37979 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbfHDPK1 (ORCPT
+        id S1726528AbfHDPKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 11:10:30 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:35529 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726474AbfHDPK1 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 11:10:27 -0400
-Received: by mail-wm1-f68.google.com with SMTP id s15so49384270wmj.3
-        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 08:10:25 -0700 (PDT)
+Received: by mail-wm1-f65.google.com with SMTP id l2so70694175wmg.0
+        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 08:10:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=3SGrb+RQF9ki5vYBnH9UJLtaJKTkIWuOgwt/Nyd92Z4=;
-        b=kPUfZU9ErkmJfal6Q7iC9f8qz/8DOjdpNTTQD7R/o52+9R+GX102SJDh+m2mh0oSyj
-         4w/IUU87gW2PcZaiOsDlqOvU+uIlNzVQzpnoVsxccoQ9ZEdFRExB0Hma3EzSeCkLgXLs
-         ayH3CRtAHwpc7EeYgKkyPLfVdeOD88Ecs8woACgjnEJOFqje0czyFmNwqoqJa7jBSK6N
-         fedUMFoK5zdv5Fr0omRIj5K2Vlagl4wnmNd9XNsEaKKZXg5bTHiMNNO45fFCMUqytLrl
-         wooEIU6PaiWqNB+aIBivp8bKDukU9uCJGFO97kX0HaGtPa8TEbi3/f39b96ud8IL/OiQ
-         iY/Q==
+        bh=GIK3vLRJwz2VMoF4+r1s0h38UAW4YbVeLg7YVAMmYKw=;
+        b=K667K8pJtqNghyF+Tj40CxvuTIMaiUqUqe8GNzgc9gCLDP3O9UEL2UQP1tA5WQNsz2
+         s4xo1opK4dfx2ptLUpwYykRpAXfOXseWLwOaB4QkMPP2dIeenrAReJbxGaBlL6plEpNC
+         1Wa+FHC81XhiNB3VUXZ44Od+GXsw3PTplRT7tLbtmODpFnBvF8d1KtpQEoGtN7ZO0XDs
+         x5Ygb0K8GUVP6H4hbmYNLq6uxpg6oYbEYmOy4wuWWq7nV4xONxsSnU3HG/IFmvzZqnZk
+         e3Dz1n5LUjTbUWflvdwt17YrEeAK/5ZjtVl/iOL7d82cSjxWsc4iKRHziuPQXvLT9S+7
+         HC0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=3SGrb+RQF9ki5vYBnH9UJLtaJKTkIWuOgwt/Nyd92Z4=;
-        b=qSmlpfSK/40APYKzm1+cq8l3onxqGRH31GspgRYJtU7IFLSHhuNgwYGhDxL3Df6muV
-         /A+I3eTPPqUGcWJ5PvGUr9nAWLoYEk5GRyRLfotQcJ4Ar7eYhNPZCSn+IKUSmhbuFQoV
-         UH0e2VR/Hr9WR0D3X5nHS/TYV6aq1pAEu++jEztAzPoPDMuFcExB8nhdyJURTiYhtHCV
-         sQ/bJoGVd96RXtG7P7P1q2Dut1Xq/Ym63KC2APszAJXyNo9eopELmIjIpsr8jf1oHi5k
-         RBNUjRH7K67xQK6k+5QnVIMTLU3TepGmDrlDf4M1UMgsMEkDAl4I4RsGfJUEBnJVeep9
-         AVgA==
-X-Gm-Message-State: APjAAAXIp0euEeTtQBgAWl+7Ds5pGAgdcOjuF8NsgCnovoAvvD00RAvn
-        t23CyhcTIG2zUcZSTYHa/m0/fMuB6JE=
-X-Google-Smtp-Source: APXvYqxtyFwjOY5I01pBJZAv+B9mZHK4d2ylpN6Zi2l7xDBssF1MraLy9/tG+x5NvERAmxS8NEJ2Sg==
-X-Received: by 2002:a1c:a6d3:: with SMTP id p202mr14558665wme.26.1564931424930;
-        Sun, 04 Aug 2019 08:10:24 -0700 (PDT)
+        bh=GIK3vLRJwz2VMoF4+r1s0h38UAW4YbVeLg7YVAMmYKw=;
+        b=h2fZjlFrgsgAbtXcldmP33KUX62eSrwlT+DD8sFucUbPy/2r+HVuN7Bn5kQiLmq/1G
+         7Saex5dYBQgafbqJmiXBBMiFSjZqPHkYUd5KstvcfOfmEb+dlZda3VIWh4wm9/FQp+gL
+         DAtWKTtxoVesYH8jibo87R+zwuaymTrLjiyzN9zffPPPQV4VFDL4xmuCSePtp6r1pWU+
+         mNDbqtSekaLr3D+pX3DLCXt745n5tp93Cyic08f06u8UZ/H1n7cYRrrVqRQESl1NkAO1
+         Bt/eZOjNoMeERZ40eqmafIsa37bXPQ+n9sjN/pklwYNq6dr9ODSLMZwdmxq5gmREYVXB
+         bUGw==
+X-Gm-Message-State: APjAAAUy22duSp4rxc3Us83jLVJ0NnDHngtFDomWJFTkIxpvG9mwxvwJ
+        u4U5kvND6BF/jEjwpxu/+sGFzL339SQ=
+X-Google-Smtp-Source: APXvYqw6M4lDEFIDDE/Ggl3X7tuYrCcw2WcSx/3czxN9CxpNT8ZFQTrZ8/f0YfcYHIa5YkbsMHIHWw==
+X-Received: by 2002:a1c:2c41:: with SMTP id s62mr14237536wms.8.1564931425845;
+        Sun, 04 Aug 2019 08:10:25 -0700 (PDT)
 Received: from jhurley-Precision-Tower-3420.netronome.com ([80.76.204.157])
         by smtp.gmail.com with ESMTPSA id l9sm63769441wmh.36.2019.08.04.08.10.24
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 04 Aug 2019 08:10:24 -0700 (PDT)
+        Sun, 04 Aug 2019 08:10:25 -0700 (PDT)
 From:   John Hurley <john.hurley@netronome.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, simon.horman@netronome.com,
         jakub.kicinski@netronome.com, oss-drivers@netronome.com,
         John Hurley <john.hurley@netronome.com>
-Subject: [PATCH net-next 01/10] net: tc_act: add skbedit_ptype helper functions
-Date:   Sun,  4 Aug 2019 16:09:03 +0100
-Message-Id: <1564931351-1036-2-git-send-email-john.hurley@netronome.com>
+Subject: [PATCH net-next 02/10] net: sched: add skbedit of ptype action to hardware IR
+Date:   Sun,  4 Aug 2019 16:09:04 +0100
+Message-Id: <1564931351-1036-3-git-send-email-john.hurley@netronome.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1564931351-1036-1-git-send-email-john.hurley@netronome.com>
 References: <1564931351-1036-1-git-send-email-john.hurley@netronome.com>
@@ -59,56 +59,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The tc_act header file contains an inline function that checks if an
-action is changing the skb mark of a packet and a further function to
-extract the mark.
+TC rules can impliment skbedit actions. Currently actions that modify the
+skb mark are passed to offloading drivers via the hardware intermediate
+representation in the flow_offload API.
 
-Add similar functions to check for and get skbedit actions that modify
-the packet type of the skb.
+Extend this to include skbedit actions that modify the packet type of the
+skb. Such actions may be used to set the ptype to HOST when redirecting a
+packet to ingress.
 
 Signed-off-by: John Hurley <john.hurley@netronome.com>
 Reviewed-by: Simon Horman <simon.horman@netronome.com>
 Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- include/net/tc_act/tc_skbedit.h | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ include/net/flow_offload.h | 2 ++
+ net/sched/cls_api.c        | 3 +++
+ 2 files changed, 5 insertions(+)
 
-diff --git a/include/net/tc_act/tc_skbedit.h b/include/net/tc_act/tc_skbedit.h
-index 4c04e29..b22a1f6 100644
---- a/include/net/tc_act/tc_skbedit.h
-+++ b/include/net/tc_act/tc_skbedit.h
-@@ -54,4 +54,31 @@ static inline u32 tcf_skbedit_mark(const struct tc_action *a)
- 	return mark;
- }
- 
-+/* Return true iff action is ptype */
-+static inline bool is_tcf_skbedit_ptype(const struct tc_action *a)
-+{
-+#ifdef CONFIG_NET_CLS_ACT
-+	u32 flags;
-+
-+	if (a->ops && a->ops->id == TCA_ID_SKBEDIT) {
-+		rcu_read_lock();
-+		flags = rcu_dereference(to_skbedit(a)->params)->flags;
-+		rcu_read_unlock();
-+		return flags == SKBEDIT_F_PTYPE;
-+	}
-+#endif
-+	return false;
-+}
-+
-+static inline u32 tcf_skbedit_ptype(const struct tc_action *a)
-+{
-+	u16 ptype;
-+
-+	rcu_read_lock();
-+	ptype = rcu_dereference(to_skbedit(a)->params)->ptype;
-+	rcu_read_unlock();
-+
-+	return ptype;
-+}
-+
- #endif /* __NET_TC_SKBEDIT_H */
+diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
+index 00b9aab..04c29f5 100644
+--- a/include/net/flow_offload.h
++++ b/include/net/flow_offload.h
+@@ -126,6 +126,7 @@ enum flow_action_id {
+ 	FLOW_ACTION_ADD,
+ 	FLOW_ACTION_CSUM,
+ 	FLOW_ACTION_MARK,
++	FLOW_ACTION_PTYPE,
+ 	FLOW_ACTION_WAKE,
+ 	FLOW_ACTION_QUEUE,
+ 	FLOW_ACTION_SAMPLE,
+@@ -168,6 +169,7 @@ struct flow_action_entry {
+ 		const struct ip_tunnel_info *tunnel;	/* FLOW_ACTION_TUNNEL_ENCAP */
+ 		u32			csum_flags;	/* FLOW_ACTION_CSUM */
+ 		u32			mark;		/* FLOW_ACTION_MARK */
++		u16                     ptype;          /* FLOW_ACTION_PTYPE */
+ 		struct {				/* FLOW_ACTION_QUEUE */
+ 			u32		ctx;
+ 			u32		index;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 3565d9a..ae73d37 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -3294,6 +3294,9 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			default:
+ 				goto err_out;
+ 			}
++		} else if (is_tcf_skbedit_ptype(act)) {
++			entry->id = FLOW_ACTION_PTYPE;
++			entry->ptype = tcf_skbedit_ptype(act);
+ 		} else {
+ 			goto err_out;
+ 		}
 -- 
 2.7.4
 
