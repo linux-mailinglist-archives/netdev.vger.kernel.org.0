@@ -2,208 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DBA4809E0
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 09:53:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62FB7809EB
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 10:07:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726078AbfHDHw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 03:52:57 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35176 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725993AbfHDHw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 03:52:56 -0400
-Received: by mail-wr1-f68.google.com with SMTP id y4so81301533wrm.2
-        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 00:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=avuAd1qOGTy07VWIQqsi7hs0vhQJEIQJotFFEGUhpTk=;
-        b=HlAzsrs9uBGdbDIAueDTfT+Y5Uu6IDY6ZV3YCxt9cpDqyHnWnUrzGbaVcc/BxRP25w
-         VwqbnzJeodwal4MWSfoeudiFvMM0drpzSOHk/vHfTWyIXaGefEqeb4JfY1Xsnt2H69Lw
-         GbhiVzS5h7d342t+jxPcMVBYF59O7/AT7QrOlLQa5wPLnToAjEnANSWHVU6ZCJs27jVg
-         TEdlxtd2j/90Hmmiz5VGJqJx9KeeJgKiKnjeh79jQt3E+tptDykuLMBDfK/bI5WeEQWA
-         0+JkvW+gFg3iwuQgU7zg06zSORIRTT7978nutxM0sYB408csGQU4L7O7KUdL6DJpyNNO
-         8fiA==
+        id S1726085AbfHDIHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 04:07:23 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42578 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbfHDIHX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 04:07:23 -0400
+Received: by mail-wr1-f65.google.com with SMTP id x1so31406320wrr.9
+        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 01:07:22 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=avuAd1qOGTy07VWIQqsi7hs0vhQJEIQJotFFEGUhpTk=;
-        b=MiUTwxyqcAVysS/CTWzgTkLF6hXGHqlsW0rLdODGRZjf8WqB7yK1iUeIiDxZTBdCjE
-         tBkVLYzwHg3gtSoHRQL2U162B0vMdttC0Jx1sRaa4CUJ8IJkYDp/7cBYQ+IVja5SazW3
-         wFaR+5lR+p8xFFtkLD9DvM0twZiIwC1IGojBcmDQZ+2HLaor9aUGstsLYN1tkj0DFwWV
-         0VTN7ZutjmSmpUHaweL5/kOhk0plF+i7G7wbUQ07y9OWoAPKRRcHh/d4ZM1iA+ecGz1W
-         hqfwcqJhf5IECAVJbT9QxfGod78L2lNwrp9bzUXcyaH908TT3qN8M4kRwiL6YLKVYZxH
-         VEDQ==
-X-Gm-Message-State: APjAAAW4fwOflyEvVeAQ2RPmFXIFUpEdXRviBpnZ3mPOkOMq8bEmnEJs
-        59n5rT3E37K48EM8OhGxYlMJPYnBKrI=
-X-Google-Smtp-Source: APXvYqz+Pgznpf9Sup08Sl7acgY8woCSHxOL+w75wjJmfqhTwLacUU6yI9Dd072eZBjQA+e9QFCjmg==
-X-Received: by 2002:adf:ec49:: with SMTP id w9mr145356660wrn.303.1564905173317;
-        Sun, 04 Aug 2019 00:52:53 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f28:9900:d80f:58c5:990d:c59b? (p200300EA8F289900D80F58C5990DC59B.dip0.t-ipconnect.de. [2003:ea:8f28:9900:d80f:58c5:990d:c59b])
-        by smtp.googlemail.com with ESMTPSA id r11sm124251041wre.14.2019.08.04.00.52.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 04 Aug 2019 00:52:52 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: sync PCIe PHY init with vendor driver
- 8.047.01
-Message-ID: <52b6804e-b2d4-0724-9b71-45ec46f4b1b4@gmail.com>
-Date:   Sun, 4 Aug 2019 09:52:33 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=9iGihd0uQZm0OhWtfPGT4IVKLzhJ/X1+ULeDAnIt+iM=;
+        b=dy5yHhxphCtjLeIek4NAOAp/+T0cZ04kRw64mN8Vy8yX4KnGxGD+XrBA70zNoJ4li1
+         X4T8VBnOaPjWNwebTyQuwKwshyXFbq0OpRlIU8fpDwfVHb6PkbXMdKYYwb+b5/n5Na7v
+         TBDw/6XmNNlGaPFpqwEU3g/V6b3CpT+/d9UelH7OSRzO0t/xiznVg8wcV+hSHOJcdemn
+         wxRtSUt21PnQRaUElQb9UYiahO1zMe7wSLPRFEdqFTUDzADd++PL22SoOHs52DohEgqu
+         MXoVJrWrbk9vUB5h/CTM1xkcEdejyw4fybRXj9/TSEFijcml2mJyqEs+TAHFpSi283FU
+         7tiw==
+X-Gm-Message-State: APjAAAUeA88YrI/bduj/O9a5QM3q1zN34W1nKFPv59wcbD7m+4I5f/Oe
+        4Jjeji9hKrJ9pEc5QRpjlS6dtA==
+X-Google-Smtp-Source: APXvYqwI+gaRAvVddfB9OVUlNyUeUxov9xoEZgkuKZzlqBcvGCZoK4Z/LJM3l40Bq9U3eA5YbA17zQ==
+X-Received: by 2002:adf:e2c1:: with SMTP id d1mr163081358wrj.283.1564906041363;
+        Sun, 04 Aug 2019 01:07:21 -0700 (PDT)
+Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
+        by smtp.gmail.com with ESMTPSA id r11sm124352644wre.14.2019.08.04.01.07.19
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 04 Aug 2019 01:07:20 -0700 (PDT)
+Date:   Sun, 4 Aug 2019 04:07:17 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+Message-ID: <20190804040034-mutt-send-email-mst@kernel.org>
+References: <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
+ <20190731193057.GG3946@ziepe.ca>
+ <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
+ <20190801141512.GB23899@ziepe.ca>
+ <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
+ <20190802124613.GA11245@ziepe.ca>
+ <20190802100414-mutt-send-email-mst@kernel.org>
+ <20190802172418.GB11245@ziepe.ca>
+ <20190803172944-mutt-send-email-mst@kernel.org>
+ <20190804001400.GA25543@ziepe.ca>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190804001400.GA25543@ziepe.ca>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Synchronize PCIe PHY initialization with vendor driver version 8.047.01.
+On Sat, Aug 03, 2019 at 09:14:00PM -0300, Jason Gunthorpe wrote:
+> On Sat, Aug 03, 2019 at 05:36:13PM -0400, Michael S. Tsirkin wrote:
+> > On Fri, Aug 02, 2019 at 02:24:18PM -0300, Jason Gunthorpe wrote:
+> > > On Fri, Aug 02, 2019 at 10:27:21AM -0400, Michael S. Tsirkin wrote:
+> > > > On Fri, Aug 02, 2019 at 09:46:13AM -0300, Jason Gunthorpe wrote:
+> > > > > On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
+> > > > > > > This must be a proper barrier, like a spinlock, mutex, or
+> > > > > > > synchronize_rcu.
+> > > > > > 
+> > > > > > 
+> > > > > > I start with synchronize_rcu() but both you and Michael raise some
+> > > > > > concern.
+> > > > > 
+> > > > > I've also idly wondered if calling synchronize_rcu() under the various
+> > > > > mm locks is a deadlock situation.
+> > > > > 
+> > > > > > Then I try spinlock and mutex:
+> > > > > > 
+> > > > > > 1) spinlock: add lots of overhead on datapath, this leads 0 performance
+> > > > > > improvement.
+> > > > > 
+> > > > > I think the topic here is correctness not performance improvement
+> > > > 
+> > > > The topic is whether we should revert
+> > > > commit 7f466032dc9 ("vhost: access vq metadata through kernel virtual address")
+> > > > 
+> > > > or keep it in. The only reason to keep it is performance.
+> > > 
+> > > Yikes, I'm not sure you can ever win against copy_from_user using
+> > > mmu_notifiers?
+> > 
+> > Ever since copy_from_user started playing with flags (for SMAP) and
+> > added speculation barriers there's a chance we can win by accessing
+> > memory through the kernel address.
+> 
+> You think copy_to_user will be more expensive than the minimum two
+> atomics required to synchronize with another thread?
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 60 ++++++++++++++---------
- 1 file changed, 38 insertions(+), 22 deletions(-)
+I frankly don't know. With SMAP you flip flags twice, and with spectre
+you flush the pipeline. Is that cheaper or more expensive than an atomic
+operation? Testing is the only way to tell.
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 039a967c7..3c7af6669 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4415,7 +4415,7 @@ static void rtl_hw_start_8168c_2(struct rtl8169_private *tp)
- {
- 	static const struct ephy_info e_info_8168c_2[] = {
- 		{ 0x01, 0,	0x0001 },
--		{ 0x03, 0x0400,	0x0220 }
-+		{ 0x03, 0x0400,	0x0020 }
- 	};
- 
- 	rtl_set_def_aspm_entry_latency(tp);
-@@ -4462,7 +4462,8 @@ static void rtl_hw_start_8168d_4(struct rtl8169_private *tp)
- 	static const struct ephy_info e_info_8168d_4[] = {
- 		{ 0x0b, 0x0000,	0x0048 },
- 		{ 0x19, 0x0020,	0x0050 },
--		{ 0x0c, 0x0100,	0x0020 }
-+		{ 0x0c, 0x0100,	0x0020 },
-+		{ 0x10, 0x0004,	0x0000 },
- 	};
- 
- 	rtl_set_def_aspm_entry_latency(tp);
-@@ -4512,7 +4513,9 @@ static void rtl_hw_start_8168e_2(struct rtl8169_private *tp)
- {
- 	static const struct ephy_info e_info_8168e_2[] = {
- 		{ 0x09, 0x0000,	0x0080 },
--		{ 0x19, 0x0000,	0x0224 }
-+		{ 0x19, 0x0000,	0x0224 },
-+		{ 0x00, 0x0000,	0x0004 },
-+		{ 0x0c, 0x3df0,	0x0200 },
- 	};
- 
- 	rtl_set_def_aspm_entry_latency(tp);
-@@ -4574,7 +4577,9 @@ static void rtl_hw_start_8168f_1(struct rtl8169_private *tp)
- 		{ 0x06, 0x00c0,	0x0020 },
- 		{ 0x08, 0x0001,	0x0002 },
- 		{ 0x09, 0x0000,	0x0080 },
--		{ 0x19, 0x0000,	0x0224 }
-+		{ 0x19, 0x0000,	0x0224 },
-+		{ 0x00, 0x0000,	0x0004 },
-+		{ 0x0c, 0x3df0,	0x0200 },
- 	};
- 
- 	rtl_hw_start_8168f(tp);
-@@ -4589,8 +4594,9 @@ static void rtl_hw_start_8411(struct rtl8169_private *tp)
- 	static const struct ephy_info e_info_8168f_1[] = {
- 		{ 0x06, 0x00c0,	0x0020 },
- 		{ 0x0f, 0xffff,	0x5200 },
--		{ 0x1e, 0x0000,	0x4000 },
--		{ 0x19, 0x0000,	0x0224 }
-+		{ 0x19, 0x0000,	0x0224 },
-+		{ 0x00, 0x0000,	0x0004 },
-+		{ 0x0c, 0x3df0,	0x0200 },
- 	};
- 
- 	rtl_hw_start_8168f(tp);
-@@ -4629,8 +4635,8 @@ static void rtl_hw_start_8168g(struct rtl8169_private *tp)
- static void rtl_hw_start_8168g_1(struct rtl8169_private *tp)
- {
- 	static const struct ephy_info e_info_8168g_1[] = {
--		{ 0x00, 0x0000,	0x0008 },
--		{ 0x0c, 0x37d0,	0x0820 },
-+		{ 0x00, 0x0008,	0x0000 },
-+		{ 0x0c, 0x3ff0,	0x0820 },
- 		{ 0x1e, 0x0000,	0x0001 },
- 		{ 0x19, 0x8000,	0x0000 }
- 	};
-@@ -4646,10 +4652,15 @@ static void rtl_hw_start_8168g_1(struct rtl8169_private *tp)
- static void rtl_hw_start_8168g_2(struct rtl8169_private *tp)
- {
- 	static const struct ephy_info e_info_8168g_2[] = {
--		{ 0x00, 0x0000,	0x0008 },
--		{ 0x0c, 0x3df0,	0x0200 },
--		{ 0x19, 0xffff,	0xfc00 },
--		{ 0x1e, 0xffff,	0x20eb }
-+		{ 0x00, 0x0008,	0x0000 },
-+		{ 0x0c, 0x3ff0,	0x0820 },
-+		{ 0x19, 0xffff,	0x7c00 },
-+		{ 0x1e, 0xffff,	0x20eb },
-+		{ 0x0d, 0xffff,	0x1666 },
-+		{ 0x00, 0xffff,	0x10a3 },
-+		{ 0x06, 0xffff,	0xf050 },
-+		{ 0x04, 0x0000,	0x0010 },
-+		{ 0x1d, 0x4000,	0x0000 },
- 	};
- 
- 	rtl_hw_start_8168g(tp);
-@@ -4663,11 +4674,16 @@ static void rtl_hw_start_8168g_2(struct rtl8169_private *tp)
- static void rtl_hw_start_8411_2(struct rtl8169_private *tp)
- {
- 	static const struct ephy_info e_info_8411_2[] = {
--		{ 0x00, 0x0000,	0x0008 },
--		{ 0x0c, 0x3df0,	0x0200 },
--		{ 0x0f, 0xffff,	0x5200 },
--		{ 0x19, 0x0020,	0x0000 },
--		{ 0x1e, 0x0000,	0x2000 }
-+		{ 0x00, 0x0008,	0x0000 },
-+		{ 0x0c, 0x37d0,	0x0820 },
-+		{ 0x1e, 0x0000,	0x0001 },
-+		{ 0x19, 0x8021,	0x0000 },
-+		{ 0x1e, 0x0000,	0x2000 },
-+		{ 0x0d, 0x0100,	0x0200 },
-+		{ 0x00, 0x0000,	0x0080 },
-+		{ 0x06, 0x0000,	0x0010 },
-+		{ 0x04, 0x0000,	0x0010 },
-+		{ 0x1d, 0x0000,	0x4000 },
- 	};
- 
- 	rtl_hw_start_8168g(tp);
-@@ -4822,7 +4838,7 @@ static void rtl_hw_start_8168h_1(struct rtl8169_private *tp)
- 		{ 0x1d, 0x0000,	0x0800 },
- 		{ 0x05, 0xffff,	0x2089 },
- 		{ 0x06, 0xffff,	0x5881 },
--		{ 0x04, 0xffff,	0x154a },
-+		{ 0x04, 0xffff,	0x854a },
- 		{ 0x01, 0xffff,	0x068b }
- 	};
- 	int rg_saw_cnt;
-@@ -4959,10 +4975,10 @@ static void rtl_hw_start_8168ep_2(struct rtl8169_private *tp)
- static void rtl_hw_start_8168ep_3(struct rtl8169_private *tp)
- {
- 	static const struct ephy_info e_info_8168ep_3[] = {
--		{ 0x00, 0xffff,	0x10a3 },
--		{ 0x19, 0xffff,	0x7c00 },
--		{ 0x1e, 0xffff,	0x20eb },
--		{ 0x0d, 0xffff,	0x1666 }
-+		{ 0x00, 0x0000,	0x0080 },
-+		{ 0x0d, 0x0100,	0x0200 },
-+		{ 0x19, 0x8021,	0x0000 },
-+		{ 0x1e, 0x0000,	0x2000 },
- 	};
- 
- 	/* disable aspm and clock request before access ephy */
+> > > Also, why can't this just permanently GUP the pages? In fact, where
+> > > does it put_page them anyhow? Worrying that 7f466 adds a get_user page
+> > > but does not add a put_page??
+> 
+> You didn't answer this.. Why not just use GUP?
+> 
+> Jason
+
+Sorry I misunderstood the question. Permanent GUP breaks lots of
+functionality we need such as THP and numa balancing.
+
+release_pages is used instead of put_page.
+
+
+
+
 -- 
-2.22.0
-
+MST
