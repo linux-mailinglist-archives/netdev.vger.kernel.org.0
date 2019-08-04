@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5679E80F05
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 00:56:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9038080F17
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 00:56:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727100AbfHDWt1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 18:49:27 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37103 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726982AbfHDWtY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 18:49:24 -0400
-Received: by mail-pf1-f195.google.com with SMTP id 19so38589442pfa.4;
-        Sun, 04 Aug 2019 15:49:23 -0700 (PDT)
+        id S1727298AbfHDW4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 18:56:36 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42510 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726808AbfHDWt0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 18:49:26 -0400
+Received: by mail-pf1-f196.google.com with SMTP id q10so38581558pff.9;
+        Sun, 04 Aug 2019 15:49:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=WGaquJbd5n3vWHVjzVcVo6+uSZsjc3dg9cLGAnxVc2E=;
-        b=S3jwFjBv5vti4GSNOLl7usS2vDqH0Q9mdQIeQBRHCABbXZXQSp9OsVY/w2xyL7nTP8
-         ZYecNdZYrgO7L+BkQcVPzicUza9nsgbAymJTn56ppaJJ1MbzTKSlKgcZSuVPBHENjv96
-         hkgFAzqYxwazXKgNX9N/DjLopqfptr24zOfeivm8zYWH/Y75M1kPiFzhZPYTKsRYejq8
-         i/m0sGMLE0jqJ3DENlV+rsSfWOzYUSK0mHJPDAK/WyMC/O+T7ek80SstkS2+jwGF+2aN
-         2FgMJxAUKbEXaB1QNjEZ05NRrBMlTBOCQS3Bubk6f7+zHMTxlbMDQcuH/aK8PZQ95vOe
-         ii3g==
+        bh=o0zfkIFt+6JH2qCeaVwPptBUW8DYTI9b55PprZaXkM8=;
+        b=H+TbmcIgrwACxFo9hl2l5Xjf1f4GsBt3cThAJffGoVTGjng2zDR+vuW1ELmO9cwqUz
+         zWIfVJ0ECGbvkQCKwqluHnqhDjnVY4M3JR5j9zUjgsJ4KIo9Jdd0V01x7wYmYDPTzYc0
+         2jx8SovBWIpXNDy6R5BQslstKFd50o4jcCzDRtzpOpp5UZEbCq0wLfyRsWQbHo85Apl6
+         6aso8ZPOFALMDQpmQJWkBkmOSbB25/wfG2bt9gcemYDwOVD8vq08Rd+SZJr2wXg0pz6k
+         SDHNDSjbHSOs0ynQ5oDFI2egfnr7bliii2ZaEObWVPQlOvI2whQIUmO0CHVVfGDuWZsi
+         brew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=WGaquJbd5n3vWHVjzVcVo6+uSZsjc3dg9cLGAnxVc2E=;
-        b=RpjqlaaaX4pat4OSpcXE1tzArAswqgkVuvdAraU/qccYChwBMBo1vMZOy1A4qqbpCm
-         YtvN2s4VtDRGmZFnhNAU6d6fKiczTv6jVRugcDcC9mRcHFgZr5JdGMCHelPyhhR4m+q/
-         E1kxAve7nDuGR7g3Nwnpcr+5VmJxQKE2Cz/owk5t4nxZcrVTaRiWeSSOxd3w0+4LvU4A
-         fi5u0PHEBGHsqhwqvh03+LYSI23BoWM/ny+MiL3TWafuY7KDcx85HxHyLoCXT3nX0mBB
-         2tBqFzZwBwLiHqFRQqd6HcAAg427MPBes7xjcgXy5bIB47iHKVRd/IywC6U7hrQZFEzj
-         B0KQ==
-X-Gm-Message-State: APjAAAX4glajkWwaQXd0viZPlIHow/gAtBsFCi+GzV0nTCO/uww6YjWz
-        se+1ab207NKcs6JHKLuumgs=
-X-Google-Smtp-Source: APXvYqzMm6zKD1x+1cfVe8U+T090I2azs0Ee52Xlzl7grLFlv9DOqy91TsDRd0lMc4ZI9h+s7gPOKQ==
-X-Received: by 2002:a65:41c6:: with SMTP id b6mr76655023pgq.269.1564958963508;
-        Sun, 04 Aug 2019 15:49:23 -0700 (PDT)
+        bh=o0zfkIFt+6JH2qCeaVwPptBUW8DYTI9b55PprZaXkM8=;
+        b=TEyjqOviv1pvHAis6anGY0mYuuOqnXCDDW8iwVlHXsqz4P8jlmVtYca543P4NJhMSx
+         Ywt+sQvQdBrPXWTPx5FneWxiReqlRB524NdFP07ciiR18QPEzlgzjzkxijeMimWWAc+C
+         7rgFtmOottEyBwZcFkGFaGFrLtkfcF6HZVbvsifNexTbrWUE5RzVajvJhaue8ru4D39X
+         tqhbh4sSkAj35EIkT/lsUXM3gJ3fTCK/WZOiOa6tSX3OtWQqAwoqWxzjfQNjmmOm1DDD
+         DclK5T555vzdxRsmqI5Zy9CGCLgDWRkyNUQMQ5U6AuvoBFN5M2qnoCQbvc88lijxfAG9
+         AWcQ==
+X-Gm-Message-State: APjAAAX7TJkDTDj6msLfhuHBhGftqtrRXQ3gDrLUvhbNzyylKyfGCx5I
+        lxk/0aG3Pc1WALa5vFNyXIA=
+X-Google-Smtp-Source: APXvYqwRJ1sJ/rrgIE94buNkF2wqaHOY76PrdCWNDeiwr3VYQjX9Duq5YnDYkLulcSwytNSAtlk/zQ==
+X-Received: by 2002:a63:6bc5:: with SMTP id g188mr104077235pgc.225.1564958965247;
+        Sun, 04 Aug 2019 15:49:25 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id r6sm35946836pjb.22.2019.08.04.15.49.22
+        by smtp.gmail.com with ESMTPSA id r6sm35946836pjb.22.2019.08.04.15.49.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 04 Aug 2019 15:49:23 -0700 (PDT)
+        Sun, 04 Aug 2019 15:49:24 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,16 +67,20 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        Ilya Dryomov <idryomov@gmail.com>, Sage Weil <sage@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: [PATCH v2 03/34] net/ceph: convert put_page() to put_user_page*()
-Date:   Sun,  4 Aug 2019 15:48:44 -0700
-Message-Id: <20190804224915.28669-4-jhubbard@nvidia.com>
+        Joerg Roedel <joro@8bytes.org>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        =?UTF-8?q?Radim=20Kr=C4=8Dm=C3=A1=C5=99?= <rkrcmar@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        "H . Peter Anvin" <hpa@zytor.com>
+Subject: [PATCH v2 04/34] x86/kvm: convert put_page() to put_user_page*()
+Date:   Sun,  4 Aug 2019 15:48:45 -0700
+Message-Id: <20190804224915.28669-5-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190804224915.28669-1-jhubbard@nvidia.com>
 References: <20190804224915.28669-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-NVConfidentiality: public
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -87,43 +91,69 @@ X-Mailing-List: netdev@vger.kernel.org
 From: John Hubbard <jhubbard@nvidia.com>
 
 For pages that were retained via get_user_pages*(), release those pages
-via the new put_user_page*() routines, instead of via put_page() or
-release_pages().
+via the new put_user_page*() routines, instead of via put_page().
 
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Acked-by: Jeff Layton <jlayton@kernel.org>
-
-Cc: Ilya Dryomov <idryomov@gmail.com>
-Cc: Sage Weil <sage@redhat.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: ceph-devel@vger.kernel.org
-Cc: netdev@vger.kernel.org
+Cc: Joerg Roedel <joro@8bytes.org>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: Radim Krčmář <rkrcmar@redhat.com>
+Cc: Thomas Gleixner <tglx@linutronix.de>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: H. Peter Anvin <hpa@zytor.com>
+Cc: x86@kernel.org
+Cc: kvm@vger.kernel.org
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- net/ceph/pagevec.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+ arch/x86/kvm/svm.c  | 4 ++--
+ virt/kvm/kvm_main.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/net/ceph/pagevec.c b/net/ceph/pagevec.c
-index 64305e7056a1..c88fff2ab9bd 100644
---- a/net/ceph/pagevec.c
-+++ b/net/ceph/pagevec.c
-@@ -12,13 +12,7 @@
+diff --git a/arch/x86/kvm/svm.c b/arch/x86/kvm/svm.c
+index 7eafc6907861..ff93c923ed36 100644
+--- a/arch/x86/kvm/svm.c
++++ b/arch/x86/kvm/svm.c
+@@ -1827,7 +1827,7 @@ static struct page **sev_pin_memory(struct kvm *kvm, unsigned long uaddr,
  
- void ceph_put_page_vector(struct page **pages, int num_pages, bool dirty)
- {
--	int i;
--
--	for (i = 0; i < num_pages; i++) {
--		if (dirty)
--			set_page_dirty_lock(pages[i]);
--		put_page(pages[i]);
--	}
-+	put_user_pages_dirty_lock(pages, num_pages, dirty);
+ err:
+ 	if (npinned > 0)
+-		release_pages(pages, npinned);
++		put_user_pages(pages, npinned);
+ 
  	kvfree(pages);
+ 	return NULL;
+@@ -1838,7 +1838,7 @@ static void sev_unpin_memory(struct kvm *kvm, struct page **pages,
+ {
+ 	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+ 
+-	release_pages(pages, npages);
++	put_user_pages(pages, npages);
+ 	kvfree(pages);
+ 	sev->pages_locked -= npages;
  }
- EXPORT_SYMBOL(ceph_put_page_vector);
+diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+index 887f3b0c2b60..4b6a596ea8e9 100644
+--- a/virt/kvm/kvm_main.c
++++ b/virt/kvm/kvm_main.c
+@@ -1499,7 +1499,7 @@ static int hva_to_pfn_slow(unsigned long addr, bool *async, bool write_fault,
+ 
+ 		if (__get_user_pages_fast(addr, 1, 1, &wpage) == 1) {
+ 			*writable = true;
+-			put_page(page);
++			put_user_page(page);
+ 			page = wpage;
+ 		}
+ 	}
+@@ -1831,7 +1831,7 @@ EXPORT_SYMBOL_GPL(kvm_release_page_clean);
+ void kvm_release_pfn_clean(kvm_pfn_t pfn)
+ {
+ 	if (!is_error_noslot_pfn(pfn) && !kvm_is_reserved_pfn(pfn))
+-		put_page(pfn_to_page(pfn));
++		put_user_page(pfn_to_page(pfn));
+ }
+ EXPORT_SYMBOL_GPL(kvm_release_pfn_clean);
+ 
 -- 
 2.22.0
 
