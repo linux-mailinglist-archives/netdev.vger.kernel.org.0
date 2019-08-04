@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B67780CF2
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 00:39:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D96F080CF5
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 00:39:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726835AbfHDWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 18:39:28 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40902 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726809AbfHDWj1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 18:39:27 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v19so71238759wmj.5
-        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 15:39:26 -0700 (PDT)
+        id S1726856AbfHDWjc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 18:39:32 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:50269 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726766AbfHDWj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 18:39:28 -0400
+Received: by mail-wm1-f65.google.com with SMTP id v15so72950085wml.0
+        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 15:39:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HYctCa8SUj6l7GZOSLwg22lbI0n9LrmHjKaO2FK2+QQ=;
-        b=fuTTfDy1Ce0j+8VTHcpace5G8e2nalW+F5dtbWPbiMfyWH2WqL+/j8KbPkwvtC7SLA
-         dPGmEG95zzkDMohg7EtHw9QLiT1YWbJ1YxzHZcC3Cr7A+Qxh0yAAtpD3/2Vt2u0VHJXt
-         c2YWegpqrjr2tezAfGUf8kEiaenpF3af1DK/4sr6HkNzfLcVYCZbuzpz/LzU/Yw7QcQN
-         +29BHpgxr4V3Dx6F6lsRRDReEf66hArwRaLkrKHZoaP3ZuPi4GvVaVSf2DFxlXhTtN8v
-         bf+16riOBqnzbV8fm+aWaCYJ/oskDtLq6yGvEOZEO/RhhMnuEVXk3bIIz09gx/ifRatv
-         UObw==
+        bh=wBAe/3BkJFIDgMhBVA/evqzIO8LKpkC8MOgn2O4VUJg=;
+        b=sFh5iZtucFZm3ndmAN65kLbv2pe+aw0XtZiomI+veI52LMP+NBDOvIzlCvvcgg2SZ6
+         qGHCFgDAsbM66KP1Gl752oGEK/+O+muzr3tXBbhk10z9hNW79jXDxa2233UBnnnrK9eU
+         tDQ0ityTIiHgnzgTM5MIwmtDeQ8UqES9FeUTwVqj+WUYTvsVIDFQOu0wJ4PQA5qnSNGc
+         JQMIJvLwnHAorSXK0lPw80XgM4+cRGZIL6EOnmjlh60qoSA16nK8UvspNzoRhTeRGEbn
+         lBLHhHaKdiAviT7CbYq/dG2Hb07eAQQbG5bPpldzWxjoEMeZhrOlsncB0zn0wHQJO7tD
+         SkXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=HYctCa8SUj6l7GZOSLwg22lbI0n9LrmHjKaO2FK2+QQ=;
-        b=Hsw+MRn1Fl0YZW06BFNWd8q+KvbEzIEdFa/SxvQYgk6cGYIxEl92uxFJGFUK6cYfci
-         AtWVLdUN4aEIOQiHCa3z3gKPL0A5XHilSAmRusqlMA3eRjUminLdZrwd5LPcQvuDCRMo
-         lcyX/SYJpha45L816KxtYcUouErYG7Uq0ovtZFL41Aj+S4Wn1c6RWYpFyzH2u1KpK9oN
-         Fu+f+jFH1w9Styy/xbt5fs+vTUeQpc89fVjdzvdVNRlLusPIg99OxvN1gBun8Ai9oxxm
-         tGK0w5vbeLfe+MBzMkU3cQKO+/Pg57fdp2cEgidFz1Z+rSKBDE6D4B1MNoinowJJav1b
-         3IIQ==
-X-Gm-Message-State: APjAAAVZDTcmz4GXk5KMyiPdYgFbMw0Gy6KGB69Yl/h5iB18lW6/GnZ8
-        2+XbB+lPYE1fhJK1NpJY7Zz84SOShf8=
-X-Google-Smtp-Source: APXvYqyiJQ6MvJiZ2VLEUQsEed3uAeNa5Mtu07/MTbwJpEuTqN7X/puspx3DeTxKSpGESa8kwnesbw==
-X-Received: by 2002:a1c:7e85:: with SMTP id z127mr15257226wmc.95.1564958365712;
-        Sun, 04 Aug 2019 15:39:25 -0700 (PDT)
+        bh=wBAe/3BkJFIDgMhBVA/evqzIO8LKpkC8MOgn2O4VUJg=;
+        b=T2ZcQXEG38WhWtjMIHVSnIYXNaN8H9PnP6/HmK63Kf03FjyiuhZYQW5zMkW4tclSai
+         /bZieFDAAvrz9nWPthAtKAlfQU6AyVpoZnC/aESDV16PotmGH267zfcV1k7EO41wp17t
+         /TamZLntFapB2V+4yEKNYhsSE7kYf6eLGg2P5XmR/wwT9qnOczezC4H8s/CsO+cfGnoR
+         1AmtY0/xfIcebWJ1ottydZ7ugn06OBmbJqpfqeSK/nEO7GN2lhNV0IaPKLwivjRulzCj
+         A78qm45ld2NAzJhho2KZqHLdAmO9PjY0Zhupzjk2wS4dDAhVZGOkosNM3BuFKd9BYoi4
+         9FXg==
+X-Gm-Message-State: APjAAAVmfLMgF69a+Qt8TFqHhFokxvynLIs/fmQsEPp2v+shGSAsv6nK
+        l/AaBvMyt9hGRflX0CTQyH7x9x6Hjtg=
+X-Google-Smtp-Source: APXvYqxjaY/qGk3b82FIx0Qc6ICGGfFIYcR4qWBvovZCwsSeLj1OLl4B4hCf56hrGmr7FqNIICSAIA==
+X-Received: by 2002:a1c:e710:: with SMTP id e16mr15289803wmh.38.1564958366620;
+        Sun, 04 Aug 2019 15:39:26 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.91.80])
-        by smtp.gmail.com with ESMTPSA id j33sm187795615wre.42.2019.08.04.15.39.24
+        by smtp.gmail.com with ESMTPSA id j33sm187795615wre.42.2019.08.04.15.39.25
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 04 Aug 2019 15:39:25 -0700 (PDT)
+        Sun, 04 Aug 2019 15:39:26 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net 4/5] net: dsa: sja1105: Fix memory leak on meta state machine normal path
-Date:   Mon,  5 Aug 2019 01:38:47 +0300
-Message-Id: <20190804223848.31676-5-olteanv@gmail.com>
+Subject: [PATCH net 5/5] net: dsa: sja1105: Fix memory leak on meta state machine error path
+Date:   Mon,  5 Aug 2019 01:38:48 +0300
+Message-Id: <20190804223848.31676-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190804223848.31676-1-olteanv@gmail.com>
 References: <20190804223848.31676-1-olteanv@gmail.com>
@@ -58,52 +58,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After a meta frame is received, it is associated with the cached
-sp->data->stampable_skb from the DSA tagger private structure.
+When RX timestamping is enabled and two link-local (non-meta) frames are
+received in a row, this constitutes an error.
 
-Cached means its refcount is incremented with skb_get() in order for
-dsa_switch_rcv() to not free it when the tagger .rcv returns NULL.
+The tagger is always caching the last link-local frame, in an attempt to
+merge it with the meta follow-up frame when that arrives. To recover
+from the above error condition, the initial cached link-local frame is
+dropped and the second frame in a row is cached (in expectance of the
+second meta frame).
 
-The mistake is that skb_unref() is not the correct function to use. It
-will correctly decrement the refcount (which will go back to zero) but
-the skb memory will not be freed.  That is the job of kfree_skb(), which
-also calls skb_unref().
-
-But it turns out that freeing the cached stampable_skb is in fact not
-necessary.  It is still a perfectly valid skb, and now it is even
-annotated with the partial RX timestamp.  So remove the skb_copy()
-altogether and simply pass the stampable_skb with a refcount of 1
-(incremented by us, decremented by dsa_switch_rcv) up the stack.
+However, when dropping the initial link-local frame, its backing memory
+was being leaked.
 
 Fixes: f3097be21bf1 ("net: dsa: sja1105: Add a state machine for RX timestamping")
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- net/dsa/tag_sja1105.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ net/dsa/tag_sja1105.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/net/dsa/tag_sja1105.c b/net/dsa/tag_sja1105.c
-index 26363d72d25b..8fa8dda8a15b 100644
+index 8fa8dda8a15b..47ee88163a9d 100644
 --- a/net/dsa/tag_sja1105.c
 +++ b/net/dsa/tag_sja1105.c
-@@ -211,17 +211,8 @@ static struct sk_buff
- 		 * for further processing up the network stack.
- 		 */
- 		kfree_skb(skb);
--
--		skb = skb_copy(stampable_skb, GFP_ATOMIC);
--		if (!skb) {
--			dev_err_ratelimited(dp->ds->dev,
--					    "Failed to copy stampable skb\n");
--			spin_unlock(&sp->data->meta_lock);
--			return NULL;
--		}
-+		skb = stampable_skb;
- 		sja1105_transfer_meta(skb, meta);
--		/* The cached copy will be freed now */
--		skb_unref(stampable_skb);
+@@ -165,6 +165,7 @@ static struct sk_buff
+ 					    "Expected meta frame, is %12llx "
+ 					    "in the DSA master multicast filter?\n",
+ 					    SJA1105_META_DMAC);
++			kfree_skb(sp->data->stampable_skb);
+ 		}
  
- 		spin_unlock(&sp->data->meta_lock);
- 	}
+ 		/* Hold a reference to avoid dsa_switch_rcv
 -- 
 2.17.1
 
