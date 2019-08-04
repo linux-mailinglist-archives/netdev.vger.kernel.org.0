@@ -2,78 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1C8A80A17
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 11:39:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C4DC80A30
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 11:54:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726030AbfHDJjR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 05:39:17 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:33704 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725941AbfHDJjR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 05:39:17 -0400
-Received: by mail-ot1-f66.google.com with SMTP id q20so82363512otl.0
-        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 02:39:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=neemtree-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=LIYWSVNBGpLw86fEBNo+fD1NzgAc4PcVm8JgJoAGe/0=;
-        b=Q1i39rgExab+Q7htBRSe2vbbulu/zztKloRMgygIJO9JAKWMYzne6msPHGbfCVhj+P
-         RnwlzMbtYuhBc36j2l7A3+W/Pi/lBQ6cfqE3RzLL/lTKJG9cfuKLNW9v+5MQeL5T1qD0
-         OYRQNsoH0GQKqO4ZsbLluJZE9SI/ycy1xs4Hsyp8e3zZc7K7qVn8hnWTVUDaGZpjKRGL
-         ZCQ47KASqDI5NJjxhAjPNYAt9OJQ48QvMkaLlQ1LtxBi76aL1D/vf85sGilIsJIsEN0d
-         7T32bGADD93MuGwij/Ti32DzT+om6BkyzVG/igbEx6uV5OKUFCjtKwSxSmrG5DJOTJ4Y
-         UIYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=LIYWSVNBGpLw86fEBNo+fD1NzgAc4PcVm8JgJoAGe/0=;
-        b=HCiXfG5XRBczOtbNjpgweVS/BsF0W86agKq0lDTRrYzfXED5U8QleFCcZLqZAU+agZ
-         Qax/VonRcgDleirAKLp+toWhimxdw8OyfiithCKKSampgHhkcjN9nJrJCeK0vs/maPRe
-         9VEXnFgdWExaO8y9cfd2l9P49LZlAPW0CyYpgkJ+21/j917/WosWoAe0srxpUulbU/C8
-         8OBeCpuAFyCRbeN/Q3fc6p8ug8BOptIXuCUJMYh7CZdknyQkFbkQ8BUHU4x/Vz/uFn7L
-         TrRiWeXFGgaF7ukWMOz5TkMLUkueg03LFdnjsE7p/4eqpjxNZlulKQEHVEeuP1I6PFB6
-         nU3Q==
-X-Gm-Message-State: APjAAAWmeerdFwqyzQ0LhBeIAM9WFvbILxO15Pg7AMsnAy7KSpt+FreT
-        sEzAfA8g7PqddtWUYtiRyV3zW+euBwMlwyJndeZs8IZE
-X-Google-Smtp-Source: APXvYqx3+fpefwLD2MZOI/HGgJPv+YddJM61I3FGpFPiua0Cfg4TbR7oNKDocNhaJJdWDYCPl9fEY4hEUpSvNORS1RQ=
-X-Received: by 2002:a9d:61c7:: with SMTP id h7mr35895350otk.357.1564911555804;
- Sun, 04 Aug 2019 02:39:15 -0700 (PDT)
+        id S1726034AbfHDJw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 05:52:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725941AbfHDJw1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Aug 2019 05:52:27 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 75E29206C1;
+        Sun,  4 Aug 2019 09:52:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564912346;
+        bh=BxBijH8n5mUH+ZRRIv0nd57JTDKUhJf50pEF3ndd1+U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dVmU0SaeYSku3oKCMqGAs3c2AohdGh1nBUBoDYSaFNEgNNVp48gqjMbza+CDEHNnv
+         ga0ON7qSA5hd4aVuigHyRq7pBAnkKjJgwce+up5tFcWOkgyr/1StgHO7S80pWmnj0L
+         B9SPNfZhd9gpo4BA/k4WdwmnVcld13iXCzHoXPFY=
+Date:   Sun, 4 Aug 2019 12:52:22 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Gal Pressman <galpress@amazon.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH iproute2-next] rdma: Add driver QP type string
+Message-ID: <20190804095222.GG4832@mtr-leonro.mtl.com>
+References: <20190804080756.58364-1-galpress@amazon.com>
 MIME-Version: 1.0
-References: <CADJe1ZsN8+1brBNdN2VNMp4PRdeYjCC=qaMZALQxOTvPmgJQhA@mail.gmail.com>
-In-Reply-To: <CADJe1ZsN8+1brBNdN2VNMp4PRdeYjCC=qaMZALQxOTvPmgJQhA@mail.gmail.com>
-From:   Shridhar Venkatraman <shridhar@neemtree.com>
-Date:   Sun, 4 Aug 2019 15:09:02 +0530
-Message-ID: <CADJe1ZsZcWrtdJGgXeoEnG4FFUGxT-BmJvJW2xwDUF+uCUp-kA@mail.gmail.com>
-Subject: Re: BPF: ETLS: RECV FLOW
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190804080756.58364-1-galpress@amazon.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Sun, Aug 04, 2019 at 11:07:56AM +0300, Gal Pressman wrote:
+> RDMA resource tracker now tracks driver QPs as well, add driver QP type
+> string to qp_types_to_str function.
+>
+> Signed-off-by: Gal Pressman <galpress@amazon.com>
+> ---
+>  rdma/res.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+>
 
-The eTLS work has BPF integration which is great.
-However there is one spot where access to the clear text is not available.
-
-From kernel 4.20 - receiver BPF support added for KTLS.
-
-a. receiver BPF is applied on encrypted message
-b. after applying BPF, message is decrypted
-c. BPF run logic on the decrypted plain message   - can we add this support ?
-d. then copy the decrypted message back to userspace.
-
-code flow reference: tls receive message call flow:
---------------------------------------------------------------
-
-tls_sw_recvmsg
-  __tcp_bpf_recvmsg [ bpf exec function called on encrypted message ]
-  decrypt_skb_update
-  decrypt_internal
-  BPF_PROG_RUN on decrypted plain message - can we add this support ?
-  skb_copy_datagram_msg [ decrypted message copied back to userspace ]
-
-Thanks
-ps: I sent this to the bpf list as I don't know which one it should go to
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@mellanox.com>
