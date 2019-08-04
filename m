@@ -2,104 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06B4780B81
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 17:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74F6180B8F
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 18:00:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbfHDPrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 11:47:49 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:35797 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726333AbfHDPrs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 11:47:48 -0400
-Received: by mail-wm1-f67.google.com with SMTP id l2so70735556wmg.0;
-        Sun, 04 Aug 2019 08:47:47 -0700 (PDT)
+        id S1726369AbfHDP75 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 11:59:57 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:46140 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726181AbfHDP75 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 11:59:57 -0400
+Received: by mail-ed1-f67.google.com with SMTP id d4so76566503edr.13;
+        Sun, 04 Aug 2019 08:59:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=XpKZwopndEr+MAU5NPtSJHYcO6Ev0MiXZLBr1uT/g74=;
-        b=XU5QG53d3+2crKQsbTdHoGONPn6CyVrAJXUf8YhuW3jwt3jQNVcwL0fkkD4qsI6q24
-         iRlsjJFNqFjAk34GEB5i5ZsPAoK7cqv8xr3ardQdu3a9vwP92MMf/ROCAQO3yfSl5CYQ
-         2JZfTKPbcmQd8/HUDYjUjfhlvLH34tg8FBgB81GOx2nkc13oLYz+ypMoIwMGKVfakLvi
-         hg2+QMbP/eowocijrEJiHCjdm1p7XCaHVkavK3FcGPuESQCxl0tZAgiPZIxMoHYipia2
-         YENHHfbhrj4DPU/oZHFHHLxreYtH61LP0TQSKY1rfJV2C5dhj1tnKZmqKZiT7vZcq1Sn
-         u5ug==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LKEPVn9o+LbP/zEqacWA6Cm2RJzPdDZCIdvvzhFGTHI=;
+        b=XDlk/958/bFLgKwtLuUmlqrc2kYHa79lwZh5zp/TvNdQbm9qZyuZxhyyTtJXKQROpt
+         1RQACh8Xpa91K8TBhY0VOmaVR2TUi/L5DXKUSQXjMQcibulz7uzushV/zWym2AcqFj6u
+         b5a50kYjAVcIyrLKoSRyedDF7FDlcj31bUHWNZ7unS/WgP+daql5V/Fj2bJPKUjni4Sp
+         u5kZCLoYtzn7MSmD3I5AQfJkK9mw3eVvxJ+aDgD4+QynRAUMyt/la/NDev8Y9maqAN3U
+         Zi9i4ieF+GxzX2uIwZkN7XacqV5hQZuRBVuqu6SK4Bd2gTfwPOwA+RvLA/36N57/nU2j
+         eggw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=XpKZwopndEr+MAU5NPtSJHYcO6Ev0MiXZLBr1uT/g74=;
-        b=K9w+4lqS6MUJa74oyxJmoLIXgJ7/pn7LPDlx93jxN29u8K+yGVQyRBBlkpD3MPhhkx
-         BHJGOj9cf/BqaqLREQxh7IrfMYBV1EnWZ0rwyE4gQbLWCSo37LihuOeV6HKvi7fpAqTJ
-         z+hwvXHFqt6bS71qZvRoKUtg5fEHrjLq60vNUAdj7sZbrcMYC05zX6TGQ6BS0CBwuNMj
-         /8FiRPjotFy77396AX2f1ZsfTJT7T2ewMIOYMBRdB17j4xP+dR54txFjpAKV1NEk8q/4
-         PaEa0nitpRTeUXeSf3qRYUK2FNh4O+26PCE1z6Pg+aoAGkvnhslzETsFXAwKhVkAIyqE
-         AWqg==
-X-Gm-Message-State: APjAAAXUI63yiDAgzAJ61wSMkEPWpKC3A1BXvFRi0gilHRpiEmmEspsl
-        MstbSRsbAmODy3R/tB/2aaU=
-X-Google-Smtp-Source: APXvYqzJFuGB25ozI+29umWEdsL9Hgl2qPQJteoUcZ6uWqBwZ6hn5nsD/8MzEZeeH8OkXj4yd8zWVg==
-X-Received: by 2002:a1c:f918:: with SMTP id x24mr13576652wmh.132.1564933666469;
-        Sun, 04 Aug 2019 08:47:46 -0700 (PDT)
-Received: from localhost ([197.211.57.129])
-        by smtp.gmail.com with ESMTPSA id o20sm217192312wrh.8.2019.08.04.08.47.40
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 04 Aug 2019 08:47:45 -0700 (PDT)
-Date:   Sun, 4 Aug 2019 16:46:35 +0100
-From:   Sheriff Esseson <sheriffesseson@gmail.com>
-To:     skhan@linuxfoundation.org
-Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
-        Jonathan Corbet <corbet@lwn.net>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <netdev@vger.kernel.org>,
-        "open list:BPF (Safe dynamic programs and tools)" 
-        <bpf@vger.kernel.org>
-Subject: [PATCH] Documentation: virt: Fix broken reference to virt tree's
- index
-Message-ID: <20190804154635.GA18475@localhost>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LKEPVn9o+LbP/zEqacWA6Cm2RJzPdDZCIdvvzhFGTHI=;
+        b=AGKaVJQ1ZCfwfrNeb4Hyys7QNf85qMMn5Igv9/979WJQFYX78a/PJynpuU6euH7Txf
+         79nLMk/6yP2THZjqAHMBRsoncxT3tHZ1seBr1kUjWCycAGnMf7kyw3co8FhtYY3O+zaF
+         kUou3ykL4SVSvajO/4kE1pvJz9CEo446fRJP6CQH715ntOvRWyJp3YwvAIYxDeAY9cDo
+         A9kkmc9o34/irdisuUamCdw32wkLfQf1nYIplxt5cl0y7sZlLSV31WmvZbWgVGZq18yN
+         E4OR7hTweKTkPY+NgvLk6TsRodO67Ky4lEBuaJ87D9EEt4eEyLMPAkhDes335SDO1Wtp
+         Z+AA==
+X-Gm-Message-State: APjAAAWjRM4MtoFD770+NuZNlLp8Qq5Rc9cUDNyr03NMtLVLmmZ4fgJ5
+        M676KopjFwTODoRNcR2ZstjdJUFmAbvGMPy4Xlw=
+X-Google-Smtp-Source: APXvYqwreSvMloqehil39KDrhBN9AS+72g3Fz7y8sj6sX+5ARUrwWyOmiRFQReqPP4rDwtFjwHcDG5plDPzyti8rAKs=
+X-Received: by 2002:a05:6402:1285:: with SMTP id w5mr130982149edv.36.1564934395692;
+ Sun, 04 Aug 2019 08:59:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190802215419.313512-1-taoren@fb.com> <CA+h21hrOEape89MTqCUyGFt=f6ba7Q-2KcOsN_Vw2Qv8iq86jw@mail.gmail.com>
+ <53e18a01-3d08-3023-374f-2c712c4ee9ea@fb.com> <20190804145152.GA6800@lunn.ch>
+In-Reply-To: <20190804145152.GA6800@lunn.ch>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sun, 4 Aug 2019 18:59:44 +0300
+Message-ID: <CA+h21hrUDaSxKpsy9TuWqwgaxKYaoXHyhgS=xSoAcPwxXzvrHg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3] net: phy: broadcom: add 1000Base-X support
+ for BCM54616S
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Tao Ren <taoren@fb.com>, Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Arun Parameswaran <arun.parameswaran@broadcom.com>,
+        Justin Chen <justinpopo6@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix broken reference to virt/index.rst.
+On Sun, 4 Aug 2019 at 17:52, Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> > > The patchset looks better now. But is it ok, I wonder, to keep
+> > > PHY_BCM_FLAGS_MODE_1000BX in phydev->dev_flags, considering that
+> > > phy_attach_direct is overwriting it?
+> >
+>
+> > I checked ftgmac100 driver (used on my machine) and it calls
+> > phy_connect_direct which passes phydev->dev_flags when calling
+> > phy_attach_direct: that explains why the flag is not cleared in my
+> > case.
+>
+> Yes, that is the way it is intended to be used. The MAC driver can
+> pass flags to the PHY. It is a fragile API, since the MAC needs to
+> know what PHY is being used, since the flags are driver specific.
+>
+> One option would be to modify the assignment in phy_attach_direct() to
+> OR in the flags passed to it with flags which are already in
+> phydev->dev_flags.
+>
+>         Andrew
 
-Sequel to: 2f5947dfcaec ("Documentation: move Documentation/virtual to
-Documentation/virt")
+Even if that were the case (patching phy_attach_direct to apply a
+logical-or to dev_flags), it sounds fishy to me that the genphy code
+is unable to determine that this PHY is running in 1000Base-X mode.
 
-Reported-by: Sphinx
+In my opinion it all boils down to this warning:
 
-Signed-off-by: Sheriff Esseson <sheriffesseson@gmail.com>
----
- Documentation/index.rst | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+"PHY advertising (0,00000200,000062c0) more modes than genphy
+supports, some modes not advertised".
 
-diff --git a/Documentation/index.rst b/Documentation/index.rst
-index 2df5a3da563c..5205430305d5 100644
---- a/Documentation/index.rst
-+++ b/Documentation/index.rst
-@@ -115,7 +115,7 @@ needed).
-    target/index
-    timers/index
-    watchdog/index
--   virtual/index
-+   virt/index
-    input/index
-    hwmon/index
-    gpu/index
--- 
-2.17.1
+You see, the 0x200 in the above advertising mask corresponds exactly
+to this definition from ethtool.h:
+    ETHTOOL_LINK_MODE_1000baseX_Full_BIT    = 41,
 
+But it gets truncated and hence lost.
+
+Regards,
+-Vladimir
