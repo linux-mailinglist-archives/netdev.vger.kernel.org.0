@@ -2,148 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13E9E80C34
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 21:37:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 960D380CA3
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 22:43:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbfHDThV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 15:37:21 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:33631 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726392AbfHDThV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 15:37:21 -0400
-Received: by mail-ed1-f65.google.com with SMTP id i11so13279270edq.0;
-        Sun, 04 Aug 2019 12:37:20 -0700 (PDT)
+        id S1726686AbfHDUnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 16:43:50 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38216 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726561AbfHDUnu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 16:43:50 -0400
+Received: by mail-pf1-f196.google.com with SMTP id y15so38521971pfn.5;
+        Sun, 04 Aug 2019 13:43:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uu9ggnEL8pscFuPcI8b5MtS4sG4ftBvqhUKxW+eJ/v8=;
-        b=CyGi5mVOYhNseg8wVhyBX7z1WKM4QRvNO7eVbej4F59kZn6RS3e7bXCRkChJn97+Oq
-         +CLYtXCR7jrJ8fkRgEsKu80VmcJ9EG37RTTJKqBzZ93kJMgY0AMi/JlWG3EpypyOVwsl
-         DAA5KoQc4jw4BOehb+HFTdj0mUN4R5/8nMGtBPqr314d/a65Oss/3AdTJ+dGa5wYOITz
-         r4L0H5lztKUGK6e+xXN7cJIhrV0DZ1Bnsm7JvbJ2HJ8Mpr5SJZtg4obU/hW77MZSSV2t
-         iYpyy/eiyYK6aRdR83P0IAtVBWXEZ+q/kSvZRTkyf4w9oymtRQ4gl+JRe54acnVaBNU7
-         m32Q==
+        bh=QXemZGNKKSXaemQaQ7I2h0ppDpm757mVpb0u6Ipg/zY=;
+        b=Ci8DEuemiGJTvmtxDYZntIO4I3dCHvdICgkJ9JPV/JZNfhqjjxW0/RkOZ2IIgm2OzJ
+         hZfguJ7UcHTb+MWxe/on+Vaj4r5CVrO1Q76QDEUUQaCzPtyAkR9BKDjMPwg/TooahkPV
+         mRN2Vv8rUgyZeoj3Zx1DqzN1gR08fLQ3jwJqGhvyDOLF1GbJ/1Bunq8duzqhQfkNQJl7
+         /uatMz8xPqEqJdvCWu0ChHgyxJezs+wzKDrZBnGVfvrOptnzVaRp4zDX20vSrxV/Tqzv
+         JbswhyMM+LNYxYDDpA8XktF71PbhRslzvma2xHv1W54y6tLhcXWWLAYzMpu5RrMfioS0
+         TxLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uu9ggnEL8pscFuPcI8b5MtS4sG4ftBvqhUKxW+eJ/v8=;
-        b=GkYdw8wZCUNygFMHbA7ZlbMLcPkRhqM8h0ur/f4Kvl3mBr8qDYmGdozkGAVaelTkua
-         XZOXV8Bk3K8XqCWWfKB3Hm/VGuH22wnUpfxwhF/j9enGQEEfD0FicHs4JOMLWRLb5yaU
-         nYLthKEdz8Tr0KMXAXQT8MoVSw5wHVRfaL5Oos3zPI+XXK2gImHMg1dImzx1jtY0hhAa
-         /PR1WKiR5VkKrbRDZZ/CQR8pA/rloJqtUPt8oofvi1Zol2IBxOeBNOrZZA+04YYojhIS
-         8KLcOnuKYYTmeHC1ELGBVIjUq55Ywn3DJizRYrLQwOE+iZvG73F3OZFdmMfUkeDHFj9o
-         ITKg==
-X-Gm-Message-State: APjAAAUCuHgdbxpmLkLOBcs817QWD7cjXyyyLjnkmq4h+SnqP/rBHt22
-        OiWq9J6O40ASnbL24/qAQSLkz1lvHFvfMxzrX5Y=
-X-Google-Smtp-Source: APXvYqw2sv5K1GmCBhppj8uRXdoWOaN4uGMlMGxEiMQHOMCpDYIXUZNis+bWd16dS4x1XChpiD6flKKBh822UFNXvOc=
-X-Received: by 2002:a50:ba19:: with SMTP id g25mr129729243edc.123.1564947439502;
- Sun, 04 Aug 2019 12:37:19 -0700 (PDT)
+        bh=QXemZGNKKSXaemQaQ7I2h0ppDpm757mVpb0u6Ipg/zY=;
+        b=daI48xfqUlqavF51mWGJj7V1mbr9GF1hKk54qlSJ0pT0FmAQ4u5BJZNhYnjBjQsPYm
+         YgmT2QNedsoP8qseoCqL++tx7slT2UU5hvDocoUxxh2iW8MB/b7JuY5QMoLDJCA57NiE
+         8PsnqHgm+EPmr71bZg6zuVqRRJBgjfFbBg8iYZSRJVHAB7m3cVUNQz7I3D97Zq9F3jKm
+         BRQTa9vj97WQYIjr57fRXvw0rUIkcIu1XqZLfOkn4N0wWkIArbUXE6hHi7nQA01ShEBP
+         lKxFT0xf1nkzsg7hdzQJYFmVWu3N/Ld5q8Itj+58DP6/0vN7W3aMU8LnC7aZ0SmxhYqU
+         EPRA==
+X-Gm-Message-State: APjAAAUsDVgOhGHV2lIvOkhIN2qCxMLPD+nr0sUgIb2AalNpfWNQ0rWi
+        1e6SxiC40VJ+xlRJUF76Rrns9GAg9UWt6FO5IDk=
+X-Google-Smtp-Source: APXvYqweie4tsXgeXS4l7m40fPNiOzWI4ifFbqNi/NEF/3xuuypXNwYcjlPs7IYlTK9L8/DTw73l/0gHU2Opf+lx6uw=
+X-Received: by 2002:a62:1bca:: with SMTP id b193mr68260873pfb.57.1564951428540;
+ Sun, 04 Aug 2019 13:43:48 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190731154239.19270-1-h.feurstein@gmail.com>
-In-Reply-To: <20190731154239.19270-1-h.feurstein@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Sun, 4 Aug 2019 22:37:08 +0300
-Message-ID: <CA+h21hqqP0kMpt47GhStCPq2Yt1d_7JuFaoqVyWbFZrh4Am4hw@mail.gmail.com>
-Subject: Re: [PATCH net] net: dsa: mv88e6xxx: drop adjust_link to enabled phylink
-To:     Hubert Feurstein <h.feurstein@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>
+References: <20190803044320.5530-1-farid.m.zakaria@gmail.com>
+ <20190803044320.5530-2-farid.m.zakaria@gmail.com> <CAH3MdRXTEN-Ra+61QA37hM2mkHx99K5NM7f+H6d8Em-bxvaenw@mail.gmail.com>
+ <CACCo2jmcYAfY8zHJiT7NCb-Ct7Wguk9XHRc8QmZa7V3eJy0WTg@mail.gmail.com>
+In-Reply-To: <CACCo2jmcYAfY8zHJiT7NCb-Ct7Wguk9XHRc8QmZa7V3eJy0WTg@mail.gmail.com>
+From:   Farid Zakaria <farid.m.zakaria@gmail.com>
+Date:   Sun, 4 Aug 2019 13:43:37 -0700
+Message-ID: <CACCo2j=RAua1E0d6E+tVoOG=q1sSLuZpLqx32dY4mmhYNtDzvg@mail.gmail.com>
+Subject: Re: [PATCH 1/1] bpf: introduce new helper udp_flow_src_port
+To:     Y Song <ys114321@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 31 Jul 2019 at 18:43, Hubert Feurstein <h.feurstein@gmail.com> wrote:
->
-> We have to drop the adjust_link callback in order to finally migrate to
-> phylink.
->
-> Otherwise we get the following warning during startup:
->   "mv88e6xxx 2188000.ethernet-1:10: Using legacy PHYLIB callbacks. Please
->    migrate to PHYLINK!"
->
-> The warning is generated in the function dsa_port_link_register_of in
-> dsa/port.c:
->
->   int dsa_port_link_register_of(struct dsa_port *dp)
->   {
->         struct dsa_switch *ds = dp->ds;
->
->         if (!ds->ops->adjust_link)
->                 return dsa_port_phylink_register(dp);
->
->         dev_warn(ds->dev,
->                  "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
->         [...]
->   }
->
-> Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
-> ---
+* re-sending as I've sent previously as HTML ... sorry *
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+First off, thank you for taking the time to review this patch.
 
->  drivers/net/dsa/mv88e6xxx/chip.c | 26 --------------------------
->  1 file changed, 26 deletions(-)
+It's not clear to me the backport you'd like for libbpf, I have been following
+the documentation outlined in
+https://www.kernel.org/doc/html/latest/bpf/index.html
+I will hold off on changes to this patch as you've asked for it going forward.
+
+This patch is inspired by a MPLSoUDP (https://tools.ietf.org/html/rfc7510)]
+kernel module that was ported to eBPF -- our implementation is slightly
+modified for our custom use case.
+
+The Linux kernel provides a single abstraction for the src port for
+UDP tunneling
+via udp_flow_src_port. If it's improved eBPF filters would benefit if
+the call is the same.
+
+Exposing this function to eBPF programs would maintain feature parity
+with other kernel
+tunneling implementations.
+
+Farid Zakaria
+
+Farid Zakaria
+
+
+
+On Sun, Aug 4, 2019 at 1:41 PM Farid Zakaria <farid.m.zakaria@gmail.com> wrote:
 >
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 366f70bfe055..37e8babd035f 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -27,7 +27,6 @@
->  #include <linux/platform_data/mv88e6xxx.h>
->  #include <linux/netdevice.h>
->  #include <linux/gpio/consumer.h>
-> -#include <linux/phy.h>
->  #include <linux/phylink.h>
->  #include <net/dsa.h>
+> First off, thank you for taking the time to review this patch.
 >
-> @@ -482,30 +481,6 @@ static int mv88e6xxx_phy_is_internal(struct dsa_switch *ds, int port)
->         return port < chip->info->num_internal_phys;
->  }
+> It's not clear to me the backport you'd like for libbpf, I have been following
+> the documentation outlined in https://www.kernel.org/doc/html/latest/bpf/index.html
+> I will hold off on changes to this patch as you've asked for it going forward.
 >
-> -/* We expect the switch to perform auto negotiation if there is a real
-> - * phy. However, in the case of a fixed link phy, we force the port
-> - * settings from the fixed link settings.
-> - */
-> -static void mv88e6xxx_adjust_link(struct dsa_switch *ds, int port,
-> -                                 struct phy_device *phydev)
-> -{
-> -       struct mv88e6xxx_chip *chip = ds->priv;
-> -       int err;
-> -
-> -       if (!phy_is_pseudo_fixed_link(phydev) &&
-> -           mv88e6xxx_phy_is_internal(ds, port))
-> -               return;
-> -
-> -       mv88e6xxx_reg_lock(chip);
-> -       err = mv88e6xxx_port_setup_mac(chip, port, phydev->link, phydev->speed,
-> -                                      phydev->duplex, phydev->pause,
-> -                                      phydev->interface);
-> -       mv88e6xxx_reg_unlock(chip);
-> -
-> -       if (err && err != -EOPNOTSUPP)
-> -               dev_err(ds->dev, "p%d: failed to configure MAC\n", port);
-> -}
-> -
->  static void mv88e6065_phylink_validate(struct mv88e6xxx_chip *chip, int port,
->                                        unsigned long *mask,
->                                        struct phylink_link_state *state)
-> @@ -4755,7 +4730,6 @@ static int mv88e6xxx_port_egress_floods(struct dsa_switch *ds, int port,
->  static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
->         .get_tag_protocol       = mv88e6xxx_get_tag_protocol,
->         .setup                  = mv88e6xxx_setup,
-> -       .adjust_link            = mv88e6xxx_adjust_link,
->         .phylink_validate       = mv88e6xxx_validate,
->         .phylink_mac_link_state = mv88e6xxx_link_state,
->         .phylink_mac_config     = mv88e6xxx_mac_config,
-> --
-> 2.22.0
+> This patch is inspired by a MPLSoUDP (https://tools.ietf.org/html/rfc7510)]
+> kernel module that was ported to eBPF -- our implementation is slightly
+> modified for our custom use case.
 >
+> The Linux kernel provides a single abstraction for the src port for UDP tunneling
+> via udp_flow_src_port. If it's improved eBPF filters would benefit if the call is the same.
+>
+> Exposing this function to eBPF programs would maintain feature parity with other kernel
+> tunneling implementations.
+>
+> Cheers,
+> Farid Zakaria
+>
+>
+>
+> On Sat, Aug 3, 2019 at 11:52 PM Y Song <ys114321@gmail.com> wrote:
+>>
+>> On Sat, Aug 3, 2019 at 8:29 PM Farid Zakaria <farid.m.zakaria@gmail.com> wrote:
+>> >
+>> > Foo over UDP uses UDP encapsulation to add additional entropy
+>> > into the packets so that they get beter distribution across EMCP
+>> > routes.
+>> >
+>> > Expose udp_flow_src_port as a bpf helper so that tunnel filters
+>> > can benefit from the helper.
+>> >
+>> > Signed-off-by: Farid Zakaria <farid.m.zakaria@gmail.com>
+>> > ---
+>> >  include/uapi/linux/bpf.h                      | 21 +++++++--
+>> >  net/core/filter.c                             | 20 ++++++++
+>> >  tools/include/uapi/linux/bpf.h                | 21 +++++++--
+>> >  tools/testing/selftests/bpf/bpf_helpers.h     |  2 +
+>> >  .../bpf/prog_tests/udp_flow_src_port.c        | 28 +++++++++++
+>> >  .../bpf/progs/test_udp_flow_src_port_kern.c   | 47 +++++++++++++++++++
+>> >  6 files changed, 131 insertions(+), 8 deletions(-)
+>> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/udp_flow_src_port.c
+>> >  create mode 100644 tools/testing/selftests/bpf/progs/test_udp_flow_src_port_kern.c
+>>
+>> First, for each review, backport and sync with libbpf repo, in the future,
+>> could you break the patch to two patches?
+>>    1. kernel changes (net/core/filter.c, include/uapi/linux/bpf.h)
+>>    2. tools/include/uapi/linux/bpf.h
+>>    3. tools/testing/ changes
+>>
+>> Second, could you explain why existing __sk_buff->hash not enough?
+>> there are corner cases where if __sk_buff->hash is 0 and the kernel did some
+>> additional hashing, but maybe you can approximate in bpf program?
+>> For case, min >= max, I suppose you can get min/max port values
+>> from the user space for a particular net device and then calculate
+>> the hash in the bpf program?
+>> What I want to know if how much accuracy you will lose if you just
+>> use __sk_buff->hash and do approximation in bpf program.
+>>
+>> >
+>> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>> > index 4393bd4b2419..90e814153dec 100644
+>> > --- a/include/uapi/linux/bpf.h
+>> > +++ b/include/uapi/linux/bpf.h
+>> > @@ -2545,9 +2545,21 @@ union bpf_attr {
+>> >   *             *th* points to the start of the TCP header, while *th_len*
+>> >   *             contains **sizeof**\ (**struct tcphdr**).
+>> >   *
+>> > - *     Return
+>> > - *             0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
+>> > - *             error otherwise.
+>> > + *  Return
+>> > + *      0 if *iph* and *th* are a valid SYN cookie ACK, or a negative
+>> > + *      error otherwise.
+>> > + *
+>> > + * int bpf_udp_flow_src_port(struct sk_buff *skb, int min, int max, int use_eth)
+>> > + *  Description
+>> > + *      It's common to implement tunnelling inside a UDP protocol to provide
+>> > + *      additional randomness to the packet. The destination port of the UDP
+>> > + *      header indicates the inner packet type whereas the source port is used
+>> > + *      for additional entropy.
+>> > + *
+>> > + *  Return
+>> > + *      An obfuscated hash of the packet that falls within the
+>> > + *      min & max port range.
+>> > + *      If min >= max, the default port range is used
+>> >   *
+>> >   * int bpf_sysctl_get_name(struct bpf_sysctl *ctx, char *buf, size_t buf_len, u64 flags)
+>> >   *     Description
+>> > @@ -2853,7 +2865,8 @@ union bpf_attr {
+>> >         FN(sk_storage_get),             \
+>> >         FN(sk_storage_delete),          \
+>> >         FN(send_signal),                \
+>> > -       FN(tcp_gen_syncookie),
+>> > +       FN(tcp_gen_syncookie),  \
+>> > +       FN(udp_flow_src_port),
+>> >
+>> >  /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+>> >   * function eBPF program intends to call
+>> > diff --git a/net/core/filter.c b/net/core/filter.c
+>> > index 5a2707918629..fdf0ebb8c2c8 100644
+>> > --- a/net/core/filter.c
+>> > +++ b/net/core/filter.c
+>> > @@ -2341,6 +2341,24 @@ static const struct bpf_func_proto bpf_msg_pull_data_proto = {
+>> >         .arg4_type      = ARG_ANYTHING,
+>> >  };
+>> >
+>> > +BPF_CALL_4(bpf_udp_flow_src_port, struct sk_buff *, skb, int, min,
+>> > +          int, max, int, use_eth)
+>> > +{
+>> > +       struct net *net = dev_net(skb->dev);
+>> > +
+>> > +       return udp_flow_src_port(net, skb, min, max, use_eth);
+>> > +}
+>> > +
+>> [...]
