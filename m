@@ -2,90 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAEA280B4F
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 16:58:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CEE180B57
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 17:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726428AbfHDO6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 10:58:33 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:37181 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726181AbfHDO6c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 10:58:32 -0400
-Received: by mail-ed1-f67.google.com with SMTP id w13so76515821eds.4;
-        Sun, 04 Aug 2019 07:58:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vxyYB1Aq9u4CCTpYWtWmXj3GAEknEiHUBIBc1JvXqZs=;
-        b=daW/hpWPxtNOzuktRo0A4gQ2yUzkZfbJxd9czvuxIjrNDZ3kewOTxxDAPEBAFgsVPV
-         /QWn6AF2V/LZL81XZvo4dNgUw9gdpW2Ac8OJiWkOvGs+n7myp1OAd10W65/fj57g6t+k
-         iGyBhtmahI2Hm/8TfMWlZwMgLp+KyirFR8CMK3TNkKR/8BOoH94yyZgpNElZXf9Cr3Sm
-         IxqCh9oVzjdSWAq5/CxJ1In77rw3DMBUgXyysW8PuzjyRqRi4JMDqs6vnqfMU5a7lH9u
-         bWn/jbBjMkWUpowsf4M2oIlItzynJ5N1mcyGCgZqQ7QqAkaSh8mEk5JxzJaJUB1nyRWM
-         YSTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vxyYB1Aq9u4CCTpYWtWmXj3GAEknEiHUBIBc1JvXqZs=;
-        b=q9O6KDNeWTe+AwQM0PNmgM3VmtBDjgZwh63nNd5jBdi4gYg/bgQZCbkhmQ9kNrANfH
-         Dq8+cxUahw8QXbuVgQMJHvOdEADIVn1qZl0RINSSx6oom2SDcJQuCopBGOmUJuBOdWFp
-         jiRbZHt6R1oyUr+kPHkK6FXUdTXhgY+IQbMcddiY/u7+q36GbPh6Bkgsm3UCXvQezaid
-         TmNOn/IGEh+n0sxBBZHhmuk4U0TUkcfGRu1wIlFnI5Z8EwScxt3EvxC40plK4yPJFgiV
-         YvvDd+NNzDB2LP1cY8cwNNb5AfB4Cd4UEFhhItXXEn4XLptxzVcW6fxHYi1E3F5Pd3pJ
-         mLDQ==
-X-Gm-Message-State: APjAAAVMDF3SrxptUTkUnNI9+QOGl3nC1HCZ0BPsa0G9gXZCGut0cbIV
-        3f+JT0QWrbk2CNPq7QEsCn5Mt2qtwTA50m030fs=
-X-Google-Smtp-Source: APXvYqywB49X4tnVMViZN6HXtXvVriSKwTTDhggBaGXZNsT0us14HOf/K3OieJyZOvNn5qL0On4jmdoXasobBLWngAo=
-X-Received: by 2002:a17:906:32c2:: with SMTP id k2mr21513931ejk.147.1564930710909;
- Sun, 04 Aug 2019 07:58:30 -0700 (PDT)
+        id S1726318AbfHDPER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 11:04:17 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59802 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726181AbfHDPER (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Aug 2019 11:04:17 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=9YmikpTEpr5D1kpfN5dBORPimRY5G5XZGxcVzG0I71E=; b=sspKmymJGZKyjEHU4QnsfXYY76
+        Q2i1TaxOrrITR9iSoME1XCUXeqEjE4k83TV2x0Q9W/xoaFALuH5E+lwtSQRed+T7gFn6UY1kbbEuW
+        gMxQPRzHSsppP3vmlVagR1MvTM0Ir/xR7ST7MwOY87thZjkW0XlRnSfBJDPY4+ej98TA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1huI3S-000248-Lh; Sun, 04 Aug 2019 17:04:14 +0200
+Date:   Sun, 4 Aug 2019 17:04:14 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hubert Feurstein <h.feurstein@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: drop adjust_link to enabled
+ phylink
+Message-ID: <20190804150414.GC6800@lunn.ch>
+References: <20190731154239.19270-1-h.feurstein@gmail.com>
 MIME-Version: 1.0
-References: <20190802121035.1315-1-hslester96@gmail.com> <20190804124820.GH4832@mtr-leonro.mtl.com>
-In-Reply-To: <20190804124820.GH4832@mtr-leonro.mtl.com>
-From:   Chuhong Yuan <hslester96@gmail.com>
-Date:   Sun, 4 Aug 2019 22:58:19 +0800
-Message-ID: <CANhBUQ0rMKHmh4ibktwRmVN6NU=HAjs-Q7PrF9yX5x5yOyOB2A@mail.gmail.com>
-Subject: Re: [PATCH 0/3] Use refcount_t for refcount
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Doug Ledford <dledford@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190731154239.19270-1-h.feurstein@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 4, 2019 at 8:48 PM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Fri, Aug 02, 2019 at 08:10:35PM +0800, Chuhong Yuan wrote:
-> > Reference counters are preferred to use refcount_t instead of
-> > atomic_t.
-> > This is because the implementation of refcount_t can prevent
-> > overflows and detect possible use-after-free.
-> >
-> > First convert the refcount field to refcount_t in mlx5/driver.h.
-> > Then convert the uses to refcount_() APIs.
->
-> You can't do it, because you need to ensure that driver compiles and
-> works between patches. By converting driver.h alone to refcount_t, you
-> simply broke mlx5 driver.
->
+On Wed, Jul 31, 2019 at 05:42:39PM +0200, Hubert Feurstein wrote:
+> We have to drop the adjust_link callback in order to finally migrate to
+> phylink.
+> 
+> Otherwise we get the following warning during startup:
+>   "mv88e6xxx 2188000.ethernet-1:10: Using legacy PHYLIB callbacks. Please
+>    migrate to PHYLINK!"
+> 
+> The warning is generated in the function dsa_port_link_register_of in
+> dsa/port.c:
+> 
+>   int dsa_port_link_register_of(struct dsa_port *dp)
+>   {
+>   	struct dsa_switch *ds = dp->ds;
+> 
+>   	if (!ds->ops->adjust_link)
+>   		return dsa_port_phylink_register(dp);
+> 
+>   	dev_warn(ds->dev,
+>   		 "Using legacy PHYLIB callbacks. Please migrate to PHYLINK!\n");
+>   	[...]
+>   }
+> 
+> Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 
-It is my fault... I am not clear how to send patches which cross
-several subsystems, so I sent them in series.
-Maybe I should merge these patches together?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-
-> NAK, to be clear.
->
-> And please don't sent series of patches as standalone patches.
->
-
-Due to the reason mentioned above, I sent them seperately.
-
-> Thanks,
+    Andrew
