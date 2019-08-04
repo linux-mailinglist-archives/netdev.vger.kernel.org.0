@@ -2,125 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DAA6B8089C
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 01:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83E1A808AA
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 02:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729265AbfHCXhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Aug 2019 19:37:34 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42641 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729247AbfHCXhe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 19:37:34 -0400
-Received: by mail-pg1-f193.google.com with SMTP id t132so37836037pgb.9
-        for <netdev@vger.kernel.org>; Sat, 03 Aug 2019 16:37:33 -0700 (PDT)
+        id S1729286AbfHDAOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Aug 2019 20:14:04 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:33449 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbfHDAOD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 20:14:03 -0400
+Received: by mail-qt1-f196.google.com with SMTP id r6so73434790qtt.0
+        for <netdev@vger.kernel.org>; Sat, 03 Aug 2019 17:14:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=EctiR7lEKo/nn9xQDfsz0ktTW/AfHWrsgkAcoWtiUfE=;
-        b=C5b1wQaV+0GOXEV6gLlwBqgWI6cpw+HJIcSO68wxbS6sXrOajfXLjVL4tjq8q1xk5e
-         UWUnMpjzP3qViRvewVt1xT5j7F1FrpnsAceMpeyMh556n/pVB8zjblf6xyG2LX7ZdBCW
-         lVB+nWbHJXvVTylCq50HUdTavSweyOfojo0Sc+02QqOokdedDzU87s47LpljKoiYpPyF
-         WFyHiwXM1JY2DI9vcRDQvFKPtaPGKa1m0VvLhAvQS+zxCWxcD8pHWpkn5mFSAyfiC1PX
-         BVOCMv1JTit2ZUfhOyCL3iaY3sY936IR/oFp2ttq+R13TR9/Ub8T8tYpL/OdOiWsw3v8
-         543Q==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=WqP5IEn9c1KXpbjHniLk8HqGR3ikHJzys8MEePZlMFc=;
+        b=lAi4L6Z1XyIiSM5lL1y3xq2yW7AhMhA5cc/2JWhK4Uq58oYTXRY+SEfOyGjKf6kkCb
+         EPC9/wo5tKQKNgcCq7J5u94OLKKBkYAT9e7xtRKka5BNmKvZWgWXct5IFZiXhtUBed8m
+         rk3hbmVvbY+x2rSZElIcRMSuJak9sbEMLouEsX5kctrioFW3dP5ZTCHUO7a88gwJF86c
+         Kw4vjibh/yQ70e+pFUaKMHvh1MOZwG0UveYwUOrZxaDK9+spjQNaOE305bhzgGLhXZaG
+         1qCnoPNDxKWD7uKl46B5GsKjuaJdx75qFBHdD8Xa8h8Svul5AL5C3uyvDl1nKlcQKCkP
+         pPcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=EctiR7lEKo/nn9xQDfsz0ktTW/AfHWrsgkAcoWtiUfE=;
-        b=Y4RC1IuPGc8zbbOaPJgW8ZIf5s4neGhF/xrb8sVN//R4OohSw+E32GkuemzCaBawlA
-         k+LMTbxtrjYNLL0eor422geij/2iMqIO/2pIjSBrjxgTDfmb3d8Ld1p0ATfe/qflJ8/d
-         e0plqb73tCUKVPlCZo0/ZdeuQUAPtoNh1UJvowCx49YE3yro++8uqraZiZmUn5g85Plh
-         XXE5ezFviC7YPcjUsnJpLWMuk5+0o37b04WzD6DV8hm3yAYwGjp5RFq+6AKQ8dFHbzBl
-         8QxQZpTBQmrR/X+NCtEY/MFOJUnvwtZACl0aLJQMSYuUZIPfVeJ8+EaZaxTjjCtDqLIO
-         fHog==
-X-Gm-Message-State: APjAAAVF/dzdrBymECvd6AVpwtglfkF9JfZwmHa06jqT0e8Sbl2e59kU
-        zLi0VG1jeFKwfi3H34q1v5THZ0gC84c=
-X-Google-Smtp-Source: APXvYqzC4NEJTFZlSRHx5fdtcshUYtJajLsnVOhrJEpPCQdEbeDWsd9MOtTtuWak6ky6+S4wjWnPiw==
-X-Received: by 2002:a17:90a:360c:: with SMTP id s12mr11435009pjb.30.1564875453209;
-        Sat, 03 Aug 2019 16:37:33 -0700 (PDT)
-Received: from dancer.lab.teklibre.com ([2603:3024:1536:86f0:eea8:6bff:fefe:9a2])
-        by smtp.gmail.com with ESMTPSA id x24sm76076336pgl.84.2019.08.03.16.37.32
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 03 Aug 2019 16:37:32 -0700 (PDT)
-From:   Dave Taht <dave.taht@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Dave Taht <dave.taht@gmail.com>
-Subject: [PATCH net-next 2/2] fq_codel: Kill useless per-flow dropped statistic
-Date:   Sat,  3 Aug 2019 16:37:29 -0700
-Message-Id: <1564875449-12122-3-git-send-email-dave.taht@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1564875449-12122-1-git-send-email-dave.taht@gmail.com>
-References: <1564875449-12122-1-git-send-email-dave.taht@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=WqP5IEn9c1KXpbjHniLk8HqGR3ikHJzys8MEePZlMFc=;
+        b=TE+6v2YIuU0UQ6aCmu5V5aKKzAs5LCQPDqICpnYZZQRtTfSUVgM+M0WfWKzWwW9yzl
+         E35P1RStay9IsSsJ2HZu0acTa6sMf9Uuh4LYsZDFVC4OqhXvUhyC6TNgUzDFy3bdigy7
+         un2LDdU2bxwusJRDCWZDbQXKSLDPbhqyHegUUQeNpKT9kqUEymIfc1VDazec0YagecNu
+         KkEsfuIJCBw+/+1OVW1H2dkJqVzGjNFUTibn6J26lg3kB3zg0NDZF0EFVlAKisxjOBnK
+         OSbksHEKn2XyezD9Nm5fOb1mgBP4u50WJHRTksm6iyb2KdZRWBSmEmGSqXdkLU1dUlkm
+         A8og==
+X-Gm-Message-State: APjAAAWLxwYsyYBeXQOmkaT8Sy58RSk11JVqIAjw51ptK+Q5mhV5jo9f
+        TcBP9lRdKN+Qw0lSf034FO6oAMGGSsI=
+X-Google-Smtp-Source: APXvYqzsyyLWq0jXkEok0bUf3FHiInYAhbn8RrkmZKAfLQFhGrLDITCXgW1cHLxjIP+uPvSHKyq3TA==
+X-Received: by 2002:a05:6214:1312:: with SMTP id a18mr103640128qvv.241.1564877642991;
+        Sat, 03 Aug 2019 17:14:02 -0700 (PDT)
+Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
+        by smtp.gmail.com with ESMTPSA id g35sm42675590qtg.92.2019.08.03.17.14.01
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 03 Aug 2019 17:14:01 -0700 (PDT)
+Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1hu49w-0006gS-Bm; Sat, 03 Aug 2019 21:14:00 -0300
+Date:   Sat, 3 Aug 2019 21:14:00 -0300
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+Message-ID: <20190804001400.GA25543@ziepe.ca>
+References: <20190731123935.GC3946@ziepe.ca>
+ <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
+ <20190731193057.GG3946@ziepe.ca>
+ <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
+ <20190801141512.GB23899@ziepe.ca>
+ <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
+ <20190802124613.GA11245@ziepe.ca>
+ <20190802100414-mutt-send-email-mst@kernel.org>
+ <20190802172418.GB11245@ziepe.ca>
+ <20190803172944-mutt-send-email-mst@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190803172944-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is almost impossible to get anything other than a 0 out of
-flow->dropped statistic with a tc class dump, as it resets to 0
-on every round.
+On Sat, Aug 03, 2019 at 05:36:13PM -0400, Michael S. Tsirkin wrote:
+> On Fri, Aug 02, 2019 at 02:24:18PM -0300, Jason Gunthorpe wrote:
+> > On Fri, Aug 02, 2019 at 10:27:21AM -0400, Michael S. Tsirkin wrote:
+> > > On Fri, Aug 02, 2019 at 09:46:13AM -0300, Jason Gunthorpe wrote:
+> > > > On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
+> > > > > > This must be a proper barrier, like a spinlock, mutex, or
+> > > > > > synchronize_rcu.
+> > > > > 
+> > > > > 
+> > > > > I start with synchronize_rcu() but both you and Michael raise some
+> > > > > concern.
+> > > > 
+> > > > I've also idly wondered if calling synchronize_rcu() under the various
+> > > > mm locks is a deadlock situation.
+> > > > 
+> > > > > Then I try spinlock and mutex:
+> > > > > 
+> > > > > 1) spinlock: add lots of overhead on datapath, this leads 0 performance
+> > > > > improvement.
+> > > > 
+> > > > I think the topic here is correctness not performance improvement
+> > > 
+> > > The topic is whether we should revert
+> > > commit 7f466032dc9 ("vhost: access vq metadata through kernel virtual address")
+> > > 
+> > > or keep it in. The only reason to keep it is performance.
+> > 
+> > Yikes, I'm not sure you can ever win against copy_from_user using
+> > mmu_notifiers?
+> 
+> Ever since copy_from_user started playing with flags (for SMAP) and
+> added speculation barriers there's a chance we can win by accessing
+> memory through the kernel address.
 
-It also conflates ecn marks with drops.
+You think copy_to_user will be more expensive than the minimum two
+atomics required to synchronize with another thread?
 
-It would have been useful had it kept a cumulative drop count, but
-it doesn't. This patch doesn't change the API, it just stops
-tracking a stat and state that is impossible to measure and nobody
-uses.
+> > Also, why can't this just permanently GUP the pages? In fact, where
+> > does it put_page them anyhow? Worrying that 7f466 adds a get_user page
+> > but does not add a put_page??
 
-Signed-off-by: Dave Taht <dave.taht@gmail.com>
+You didn't answer this.. Why not just use GUP?
 
----
- net/sched/sch_fq_codel.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
-
-diff --git a/net/sched/sch_fq_codel.c b/net/sched/sch_fq_codel.c
-index d67b2c40e6e6..9edd0f495001 100644
---- a/net/sched/sch_fq_codel.c
-+++ b/net/sched/sch_fq_codel.c
-@@ -45,7 +45,6 @@ struct fq_codel_flow {
- 	struct sk_buff	  *tail;
- 	struct list_head  flowchain;
- 	int		  deficit;
--	u32		  dropped; /* number of drops (or ECN marks) on this flow */
- 	struct codel_vars cvars;
- }; /* please try to keep this structure <= 64 bytes */
- 
-@@ -175,7 +174,6 @@ static unsigned int fq_codel_drop(struct Qdisc *sch, unsigned int max_packets,
- 
- 	/* Tell codel to increase its signal strength also */
- 	flow->cvars.count += i;
--	flow->dropped += i;
- 	q->backlogs[idx] -= len;
- 	q->memory_usage -= mem;
- 	sch->qstats.drops += i;
-@@ -213,7 +211,6 @@ static int fq_codel_enqueue(struct sk_buff *skb, struct Qdisc *sch,
- 		list_add_tail(&flow->flowchain, &q->new_flows);
- 		q->new_flow_count++;
- 		flow->deficit = q->quantum;
--		flow->dropped = 0;
- 	}
- 	get_codel_cb(skb)->mem_usage = skb->truesize;
- 	q->memory_usage += get_codel_cb(skb)->mem_usage;
-@@ -312,9 +309,6 @@ static struct sk_buff *fq_codel_dequeue(struct Qdisc *sch)
- 			    &flow->cvars, &q->cstats, qdisc_pkt_len,
- 			    codel_get_enqueue_time, drop_func, dequeue_func);
- 
--	flow->dropped += q->cstats.drop_count - prev_drop_count;
--	flow->dropped += q->cstats.ecn_mark - prev_ecn_mark;
--
- 	if (!skb) {
- 		/* force a pass through old_flows to prevent starvation */
- 		if ((head == &q->new_flows) && !list_empty(&q->old_flows))
-@@ -660,7 +654,7 @@ static int fq_codel_dump_class_stats(struct Qdisc *sch, unsigned long cl,
- 			sch_tree_unlock(sch);
- 		}
- 		qs.backlog = q->backlogs[idx];
--		qs.drops = flow->dropped;
-+		qs.drops = 0;
- 	}
- 	if (gnet_stats_copy_queue(d, NULL, &qs, qs.qlen) < 0)
- 		return -1;
--- 
-2.17.1
-
+Jason
