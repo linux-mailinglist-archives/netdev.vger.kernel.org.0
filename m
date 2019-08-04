@@ -2,79 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6327D80AC1
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 13:59:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7004280B02
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 14:49:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbfHDL7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 07:59:30 -0400
-Received: from mga05.intel.com ([192.55.52.43]:50580 "EHLO mga05.intel.com"
+        id S1726181AbfHDMsZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 08:48:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39926 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726225AbfHDL7a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 4 Aug 2019 07:59:30 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 04 Aug 2019 04:59:28 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,345,1559545200"; 
-   d="scan'208";a="178602040"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga006.jf.intel.com with ESMTP; 04 Aug 2019 04:59:28 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Jacob Keller <jacob.e.keller@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next 8/8] fm10k: fix fm10k_get_fault_pf to read correct address
-Date:   Sun,  4 Aug 2019 04:59:26 -0700
-Message-Id: <20190804115926.31944-9-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190804115926.31944-1-jeffrey.t.kirsher@intel.com>
-References: <20190804115926.31944-1-jeffrey.t.kirsher@intel.com>
+        id S1726039AbfHDMsZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 4 Aug 2019 08:48:25 -0400
+Received: from localhost (unknown [193.47.165.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 29D262070D;
+        Sun,  4 Aug 2019 12:48:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564922903;
+        bh=yj87rjALkZsmUet+qLbuZVt6WubONCVEKfTPdchgLhE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=NFs8EhQd7fZZqMybyc5Pl8gMTlCvdXe+005j54lsecueU3CN88bIy16/ibaZpxiZJ
+         BK5KPJtVBJ6evdaHN3J2zf/ZPTFkGNTf3SUbVBvM3393pYKZhbiF5M0803FUzFgD1E
+         0anLtYtkw58/wPznPh52dqiVppTA55zTZEWH1eUQ=
+Date:   Sun, 4 Aug 2019 15:48:20 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Chuhong Yuan <hslester96@gmail.com>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/3] Use refcount_t for refcount
+Message-ID: <20190804124820.GH4832@mtr-leonro.mtl.com>
+References: <20190802121035.1315-1-hslester96@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190802121035.1315-1-hslester96@gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jacob Keller <jacob.e.keller@intel.com>
+On Fri, Aug 02, 2019 at 08:10:35PM +0800, Chuhong Yuan wrote:
+> Reference counters are preferred to use refcount_t instead of
+> atomic_t.
+> This is because the implementation of refcount_t can prevent
+> overflows and detect possible use-after-free.
+>
+> First convert the refcount field to refcount_t in mlx5/driver.h.
+> Then convert the uses to refcount_() APIs.
 
-Fix assignment of the FM10K_FAULT_ADDR_LO register into fault->address
-by using a bit-wise |= operation. Without this, the low address is
-completely overwriting the high potion of the address. This caused the
-fault to incorrectly return only the lower 32 bits of the fault address.
+You can't do it, because you need to ensure that driver compiles and
+works between patches. By converting driver.h alone to refcount_t, you
+simply broke mlx5 driver.
 
-This issue was detected by cppcheck and resolves the following warnings
-produced by that tool:
+NAK, to be clear.
 
-[fm10k_pf.c:1668] -> [fm10k_pf.c:1670]: (style) Variable
-'fault->address' is reassigned a value before the old one has been used.
+And please don't sent series of patches as standalone patches.
 
-[fm10k_pf.c:1669] -> [fm10k_pf.c:1670]: (style) Variable
-'fault->address' is reassigned a value before the old one has been used.
-
-Signed-off-by: Jacob Keller <jacob.e.keller@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/fm10k/fm10k_pf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_pf.c b/drivers/net/ethernet/intel/fm10k/fm10k_pf.c
-index 095c5b0e4096..be07bfdb0bb4 100644
---- a/drivers/net/ethernet/intel/fm10k/fm10k_pf.c
-+++ b/drivers/net/ethernet/intel/fm10k/fm10k_pf.c
-@@ -1565,7 +1565,7 @@ static s32 fm10k_get_fault_pf(struct fm10k_hw *hw, int type,
- 	/* read remaining fields */
- 	fault->address = fm10k_read_reg(hw, type + FM10K_FAULT_ADDR_HI);
- 	fault->address <<= 32;
--	fault->address = fm10k_read_reg(hw, type + FM10K_FAULT_ADDR_LO);
-+	fault->address |= fm10k_read_reg(hw, type + FM10K_FAULT_ADDR_LO);
- 	fault->specinfo = fm10k_read_reg(hw, type + FM10K_FAULT_SPECINFO);
- 
- 	/* clear valid bit to allow for next error */
--- 
-2.21.0
-
+Thanks,
