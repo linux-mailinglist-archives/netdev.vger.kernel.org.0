@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B36D480E08
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 00:52:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B10A680DC0
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 00:51:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728252AbfHDWwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 18:52:36 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:37348 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727614AbfHDWt4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 18:49:56 -0400
-Received: by mail-pl1-f195.google.com with SMTP id b3so35710478plr.4;
-        Sun, 04 Aug 2019 15:49:55 -0700 (PDT)
+        id S1727744AbfHDWuF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 18:50:05 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39851 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727659AbfHDWt6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 18:49:58 -0400
+Received: by mail-pg1-f193.google.com with SMTP id u17so38667310pgi.6;
+        Sun, 04 Aug 2019 15:49:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lKIFYbXGeRFczJ7GPuSawhtMV9YIx2+MYUTps7oOTAE=;
-        b=TDggbkgRiGIAFGZg+jjgHpzcEiYccMBQ6jptVLtuAINCBCAa7tBLSYJdtzRqQAkVQq
-         tQ08R+kd1zAphQz9pkaaBX/hg9RvlkTaePPnO2E1bu2f/76JhzKynqi5fDXQgm3u+sje
-         C80KY3nOvFeOz/PfxhVfGvol35idNxGJp30wpqdrZCtYSNKWJHD3OZzPkmpz9TZ2iydK
-         zGtAdXJa7uyuK2GhTVtmCk46eJaIXB31IST9V3s1VEcpQHy9Y1uuVubQ/wNf6EoCYZeE
-         iY7ztWwDS8B1eHyY4QnXS4dvWcICmGOtU1XZ3uVoXugfKVLMqqSM2fvbIrY7TrJ6h/xd
-         OTrg==
+        bh=rRiJNzkH0bRoPJKYXoQcsROADD9YH4USeXVLEsmAa1E=;
+        b=AV7uFQE9YUuDd+D7n/raE3+Vd4+M3WfHMpSGBy7Po/eVbcIBoj8uNAj9DUgT5bKiPy
+         NOFpz/m3dZOdwDIxZQeVlxsCTnZ92dZxKMNJ/rR2X1bMUek0j8TGq+u0eAdIPX6nv7Xg
+         3xla0EEXNbB0lWncn+d/ABroqlg3T2U7E2b5B9Xg8cDDZKP8nXSMimiXqXtFe+tBDXhV
+         ARezJERjiP3GeR4zOW6+cUq9Pz5Hkpr43jELcaC0lfmmiiWVj3OueADfK4ODHerMWl3x
+         WKZ0WyFn5raZ50oDfnPOKa2jV6SJBQSgxKSa9LR9P0FGYWA2KC5auYEx1XvMz/0dUJhq
+         D/Mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lKIFYbXGeRFczJ7GPuSawhtMV9YIx2+MYUTps7oOTAE=;
-        b=tABZWdKdYpIgrcVWeiAxnoafL7HXkKXhgvjv1l75FXJCdYPdOXkP0ic/CNTd6u6+/k
-         oL07x0avDlDWn9Px1GhAtqI1hY3puO2YSJMxVDbx51AuhIuhtyvGgGOaLc+/NhRF48XA
-         kszuf+lfdRSbqIIRN2oW3Sm+7DvbbDw9sPSt2L3Klc7BLDxxZs8V2b3dEvoH4Rjk5NVN
-         uYhD4xHs8yi7T+wNauEsZb9UnyuGZ/VCLiPyn3G2nE5mEZgZ+KZke07M6k8EOjdV6HaF
-         E9Dxm/+0B7A+9el8Ceo71fduZMdTWA2+kvQNRqwlJu8Cqrnt7vh5E57YEfSM1BcHP3f7
-         Do0A==
-X-Gm-Message-State: APjAAAUILQhO4ipbigFHkYTmMqbzHXkSyxEXZ7/HoO+6S1CiDeTmQdfW
-        m7hXUpjTV+IYO02Bwal4xwk=
-X-Google-Smtp-Source: APXvYqxpyFBswVwCpmbWWUYW5zokWhx2pCk/sdTQw8977867DfmKTOqoiHBx6Glc/HUCem3kZHec6Q==
-X-Received: by 2002:a17:902:8689:: with SMTP id g9mr131877551plo.252.1564958995585;
-        Sun, 04 Aug 2019 15:49:55 -0700 (PDT)
+        bh=rRiJNzkH0bRoPJKYXoQcsROADD9YH4USeXVLEsmAa1E=;
+        b=tlFCr6MMhwQz69uYx7FcMx9XjInPjpkFBqaLqTz/vig6cDyxWbs7ZLKlwvsd7/t89L
+         hAw5RlIbOQUoxfOSR+Uxf9wjXynbCoTH+7SAGsRYewQhddrVyDWe6/c2224Lcj1nrbu6
+         DASNp2yUKDvTaK//vBm6q+tLmy49dR9to/zxwsOljT0YZOfdS8Az9qt3iMUJwvuU3v2X
+         lIFD+SybfukIkp44Nd7FTv6SJUJDaKsXeCaSns8FvCsmwhM/0qXgjTUBPMjYkylOd1oY
+         mSDNa7jinQrkuLTjxpDjKeJU3GjL0wYsjQtzqi7U2YE72mf3N0tZ3Dz8vB2twLNkBVpy
+         us1g==
+X-Gm-Message-State: APjAAAV+/MBuObVtwDvrojh9XyyVDcjA42r6YD1rRD915qDivqanLJ8K
+        J1/9ZLg2tvYFPKywPXkF86s=
+X-Google-Smtp-Source: APXvYqxM1jqqH644LscYZh1fOmR6SQroZ5U0oF421RZK6m1nNZ1H1tDwWIOHK+9da6OAru/hIya3FA==
+X-Received: by 2002:a63:61cf:: with SMTP id v198mr17505607pgb.217.1564958997274;
+        Sun, 04 Aug 2019 15:49:57 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id r6sm35946836pjb.22.2019.08.04.15.49.53
+        by smtp.gmail.com with ESMTPSA id r6sm35946836pjb.22.2019.08.04.15.49.55
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 04 Aug 2019 15:49:55 -0700 (PDT)
+        Sun, 04 Aug 2019 15:49:56 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,15 +67,13 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Peter Zijlstra <peterz@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
         Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: [PATCH v2 23/34] uprobes: convert put_page() to put_user_page*()
-Date:   Sun,  4 Aug 2019 15:49:04 -0700
-Message-Id: <20190804224915.28669-24-jhubbard@nvidia.com>
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>
+Subject: [PATCH v2 24/34] futex: convert put_page() to put_user_page*()
+Date:   Sun,  4 Aug 2019 15:49:05 -0700
+Message-Id: <20190804224915.28669-25-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190804224915.28669-1-jhubbard@nvidia.com>
 References: <20190804224915.28669-1-jhubbard@nvidia.com>
@@ -96,48 +94,64 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Thomas Gleixner <tglx@linutronix.de>
 Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Darren Hart <dvhart@infradead.org>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- kernel/events/uprobes.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ kernel/futex.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
-index 84fa00497c49..4a575de8cec8 100644
---- a/kernel/events/uprobes.c
-+++ b/kernel/events/uprobes.c
-@@ -397,7 +397,7 @@ __update_ref_ctr(struct mm_struct *mm, unsigned long vaddr, short d)
- 	ret = 0;
+diff --git a/kernel/futex.c b/kernel/futex.c
+index 6d50728ef2e7..4b4cae58ec57 100644
+--- a/kernel/futex.c
++++ b/kernel/futex.c
+@@ -623,7 +623,7 @@ get_futex_key(u32 __user *uaddr, int fshared, union futex_key *key, enum futex_a
+ 		lock_page(page);
+ 		shmem_swizzled = PageSwapCache(page) || page->mapping;
+ 		unlock_page(page);
+-		put_page(page);
++		put_user_page(page);
+ 
+ 		if (shmem_swizzled)
+ 			goto again;
+@@ -675,7 +675,7 @@ get_futex_key(u32 __user *uaddr, int fshared, union futex_key *key, enum futex_a
+ 
+ 		if (READ_ONCE(page->mapping) != mapping) {
+ 			rcu_read_unlock();
+-			put_page(page);
++			put_user_page(page);
+ 
+ 			goto again;
+ 		}
+@@ -683,7 +683,7 @@ get_futex_key(u32 __user *uaddr, int fshared, union futex_key *key, enum futex_a
+ 		inode = READ_ONCE(mapping->host);
+ 		if (!inode) {
+ 			rcu_read_unlock();
+-			put_page(page);
++			put_user_page(page);
+ 
+ 			goto again;
+ 		}
+@@ -702,7 +702,7 @@ get_futex_key(u32 __user *uaddr, int fshared, union futex_key *key, enum futex_a
+ 		 */
+ 		if (!atomic_inc_not_zero(&inode->i_count)) {
+ 			rcu_read_unlock();
+-			put_page(page);
++			put_user_page(page);
+ 
+ 			goto again;
+ 		}
+@@ -723,7 +723,7 @@ get_futex_key(u32 __user *uaddr, int fshared, union futex_key *key, enum futex_a
+ 	}
+ 
  out:
- 	kunmap_atomic(kaddr);
 -	put_page(page);
 +	put_user_page(page);
- 	return ret;
+ 	return err;
  }
  
-@@ -504,7 +504,7 @@ int uprobe_write_opcode(struct arch_uprobe *auprobe, struct mm_struct *mm,
- 	ret = __replace_page(vma, vaddr, old_page, new_page);
- 	put_page(new_page);
- put_old:
--	put_page(old_page);
-+	put_user_page(old_page);
- 
- 	if (unlikely(ret == -EAGAIN))
- 		goto retry;
-@@ -1981,7 +1981,7 @@ static int is_trap_at_addr(struct mm_struct *mm, unsigned long vaddr)
- 		return result;
- 
- 	copy_from_page(page, vaddr, &opcode, UPROBE_SWBP_INSN_SIZE);
--	put_page(page);
-+	put_user_page(page);
-  out:
- 	/* This needs to return true for any variant of the trap insn */
- 	return is_trap_insn(&opcode);
 -- 
 2.22.0
 
