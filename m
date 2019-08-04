@@ -2,57 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1147680B4C
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 16:56:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AAEA280B4F
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 16:58:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726333AbfHDO4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 10:56:44 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59790 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726181AbfHDO4n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 4 Aug 2019 10:56:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=d+LVZkgH3Dav+T8rDXfYDLpuIoUZWpjKyJMv58cmkPE=; b=Is4vaZOK+vPYo0ifs+N46054DQ
-        2d4ZsHo/WAClb/RX5eCYCyNENurJRhDBidkKfXsMjRpVp4E3Y55Q5UGEUXc0X0mH0yw16x6wPLOBh
-        N0xRxgihvNA6+Zrc9Yct/8+1uTZY80TYg/UxsebP7QnJQygsJK2grZBFCZlfltrzRKLE=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1huHw1-0001xt-Qr; Sun, 04 Aug 2019 16:56:33 +0200
-Date:   Sun, 4 Aug 2019 16:56:33 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Harini Katakam <harini.katakam@xilinx.com>
-Cc:     nicolas.ferre@microchip.com, davem@davemloft.net,
-        claudiu.beznea@microchip.com, robh+dt@kernel.org,
-        mark.rutland@arm.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, michal.simek@xilinx.com,
-        harinikatakamlinux@gmail.com, devicetree@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] dt-bindings: net: macb: Add new property for PS
- SGMII only
-Message-ID: <20190804145633.GB6800@lunn.ch>
-References: <1564566033-676-1-git-send-email-harini.katakam@xilinx.com>
- <1564566033-676-2-git-send-email-harini.katakam@xilinx.com>
+        id S1726428AbfHDO6d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 10:58:33 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:37181 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726181AbfHDO6c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 10:58:32 -0400
+Received: by mail-ed1-f67.google.com with SMTP id w13so76515821eds.4;
+        Sun, 04 Aug 2019 07:58:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vxyYB1Aq9u4CCTpYWtWmXj3GAEknEiHUBIBc1JvXqZs=;
+        b=daW/hpWPxtNOzuktRo0A4gQ2yUzkZfbJxd9czvuxIjrNDZ3kewOTxxDAPEBAFgsVPV
+         /QWn6AF2V/LZL81XZvo4dNgUw9gdpW2Ac8OJiWkOvGs+n7myp1OAd10W65/fj57g6t+k
+         iGyBhtmahI2Hm/8TfMWlZwMgLp+KyirFR8CMK3TNkKR/8BOoH94yyZgpNElZXf9Cr3Sm
+         IxqCh9oVzjdSWAq5/CxJ1In77rw3DMBUgXyysW8PuzjyRqRi4JMDqs6vnqfMU5a7lH9u
+         bWn/jbBjMkWUpowsf4M2oIlItzynJ5N1mcyGCgZqQ7QqAkaSh8mEk5JxzJaJUB1nyRWM
+         YSTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vxyYB1Aq9u4CCTpYWtWmXj3GAEknEiHUBIBc1JvXqZs=;
+        b=q9O6KDNeWTe+AwQM0PNmgM3VmtBDjgZwh63nNd5jBdi4gYg/bgQZCbkhmQ9kNrANfH
+         Dq8+cxUahw8QXbuVgQMJHvOdEADIVn1qZl0RINSSx6oom2SDcJQuCopBGOmUJuBOdWFp
+         jiRbZHt6R1oyUr+kPHkK6FXUdTXhgY+IQbMcddiY/u7+q36GbPh6Bkgsm3UCXvQezaid
+         TmNOn/IGEh+n0sxBBZHhmuk4U0TUkcfGRu1wIlFnI5Z8EwScxt3EvxC40plK4yPJFgiV
+         YvvDd+NNzDB2LP1cY8cwNNb5AfB4Cd4UEFhhItXXEn4XLptxzVcW6fxHYi1E3F5Pd3pJ
+         mLDQ==
+X-Gm-Message-State: APjAAAVMDF3SrxptUTkUnNI9+QOGl3nC1HCZ0BPsa0G9gXZCGut0cbIV
+        3f+JT0QWrbk2CNPq7QEsCn5Mt2qtwTA50m030fs=
+X-Google-Smtp-Source: APXvYqywB49X4tnVMViZN6HXtXvVriSKwTTDhggBaGXZNsT0us14HOf/K3OieJyZOvNn5qL0On4jmdoXasobBLWngAo=
+X-Received: by 2002:a17:906:32c2:: with SMTP id k2mr21513931ejk.147.1564930710909;
+ Sun, 04 Aug 2019 07:58:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1564566033-676-2-git-send-email-harini.katakam@xilinx.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190802121035.1315-1-hslester96@gmail.com> <20190804124820.GH4832@mtr-leonro.mtl.com>
+In-Reply-To: <20190804124820.GH4832@mtr-leonro.mtl.com>
+From:   Chuhong Yuan <hslester96@gmail.com>
+Date:   Sun, 4 Aug 2019 22:58:19 +0800
+Message-ID: <CANhBUQ0rMKHmh4ibktwRmVN6NU=HAjs-Q7PrF9yX5x5yOyOB2A@mail.gmail.com>
+Subject: Re: [PATCH 0/3] Use refcount_t for refcount
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 03:10:32PM +0530, Harini Katakam wrote:
-> Add a new property to indicate when PS SGMII is used with NO
-> external PHY on board.
+On Sun, Aug 4, 2019 at 8:48 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Fri, Aug 02, 2019 at 08:10:35PM +0800, Chuhong Yuan wrote:
+> > Reference counters are preferred to use refcount_t instead of
+> > atomic_t.
+> > This is because the implementation of refcount_t can prevent
+> > overflows and detect possible use-after-free.
+> >
+> > First convert the refcount field to refcount_t in mlx5/driver.h.
+> > Then convert the uses to refcount_() APIs.
+>
+> You can't do it, because you need to ensure that driver compiles and
+> works between patches. By converting driver.h alone to refcount_t, you
+> simply broke mlx5 driver.
+>
 
-Hi Harini
+It is my fault... I am not clear how to send patches which cross
+several subsystems, so I sent them in series.
+Maybe I should merge these patches together?
 
-What exactly is you use case? Are you connecting to a Ethernet switch?
-To an SFP cage with a copper module?
 
-   Andrew
+> NAK, to be clear.
+>
+> And please don't sent series of patches as standalone patches.
+>
+
+Due to the reason mentioned above, I sent them seperately.
+
+> Thanks,
