@@ -2,126 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56A34808B8
-	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 02:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4078A808D8
+	for <lists+netdev@lfdr.de>; Sun,  4 Aug 2019 03:58:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729389AbfHDAbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 3 Aug 2019 20:31:09 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:39783 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728032AbfHDAbI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 20:31:08 -0400
-Received: by mail-io1-f68.google.com with SMTP id f4so160277572ioh.6;
-        Sat, 03 Aug 2019 17:31:08 -0700 (PDT)
+        id S1729457AbfHDB6l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 3 Aug 2019 21:58:41 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:34132 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725866AbfHDB6l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 3 Aug 2019 21:58:41 -0400
+Received: by mail-pg1-f193.google.com with SMTP id n9so31699414pgc.1
+        for <netdev@vger.kernel.org>; Sat, 03 Aug 2019 18:58:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mRZqAf00TpYOcC6bW+lbGU9YVHInZQbHpXUrVaIGSGA=;
-        b=mE/gEiH7NhTRmWW7ly2DdFH/VIcQpG/K8k4kGRAuVrjdjWq9QYBkrhThwHk9C5luCt
-         WFt0wfieUiwXrr7IBreIXNgZGMZ2OBhfKJDdglZFvEMDLGNoLhQJo8fCbxK1aKSw0L9i
-         TcxEQHKXNvL+sLHTjG9QhHEs78lu34r11on9cKitCI+dQ7jh+eIOxghkFiuUf3XqmUDd
-         nPti0umEif0fDgK5FxhmYC2TApQOk33FWzW4mBGcKheaXsLFti78/ayb1MCr40pl73j0
-         k5xfmRE7/4X8ltd7AjDv1Y1iFyw0SCzMCzTfiRh/z9rnA37uFxSn1KhFKulSBli3KHku
-         yrhQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=XseFOdxuGU418KZPE3WRhO05R0PXJPpb27YbinC92EA=;
+        b=ONsYKIsZd9R81XYlXqkrM1leMaNefPuWmEV0yIkemzjsDzVo1BwNZEmJyT+GXEvlq2
+         CkRjpbeSNXVjfvNqGSI3CNg0kjH37EyHBh4hPPL/BAFkFq2nS0LAo9ygg8rRGLf6Rsgc
+         Hs/i9VkX+eNDCWS25fjWY/7sLJ5CM6IDIsBmyiKdJFtm3TVJJWwm9U+l43oUST9EmXxM
+         LCRWnbCE+WekDtbq8gIXOv7+pzroK5SVKMl/v5Vt7vRrCLrwc2iujh0GAlLhka7jDZHl
+         fTUHS9sNrsSI/5TgHbtWciNm9XR32PnNY36YdUWbyq6sITzY3nnl3GmcIIfjiNFwRWQB
+         4Plg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mRZqAf00TpYOcC6bW+lbGU9YVHInZQbHpXUrVaIGSGA=;
-        b=fTO9PSNEQAH8KTptXLO/o5LLC5PJ/7JbyQAE/YXMAQhb0FJrU/p9g7lvF2hdV4zLst
-         7rJ+uhLOQr5rb44R2+OeWVVVS6wbN6LG21R1RxWUxjw7zk+Fm3Vfpe9chikg6njp485I
-         XMboK8k7TWsXSkgRe0BW2hZknZbZGDwYwZOLmhJzWqi0Rx4dc0clPQN1ko5rQsdzUqGT
-         qxl8uMzLP0aVQKE3Fq0gDsnzSuj8fCMlaBvG084sJqSuUnKuOfIHvrzu+oxSun0+LOlq
-         UFTJxhISMBvP4D3u9wM9FP5bB/3u3VxKS7OOM0ttIjIXyX8V1NGVxJUwxgunGaqzhPoE
-         zWsQ==
-X-Gm-Message-State: APjAAAXb/E7BxwWLRG6+DU0aHJWgMCwduh7QsRCCBk7en0egcS4E0H6z
-        bcYL+HTF8X6v8ycE8NNaeUs=
-X-Google-Smtp-Source: APXvYqyIUI7fSNQp8L6VocRfRHB4oSQN81MaPNSESXmH+6nxzWBATVq9Gk86g1g8CJNtBZIb6Xsg/g==
-X-Received: by 2002:a02:22c6:: with SMTP id o189mr54760745jao.35.1564878667834;
-        Sat, 03 Aug 2019 17:31:07 -0700 (PDT)
-Received: from peng.science.purdue.edu (cos-128-210-107-27.science.purdue.edu. [128.210.107.27])
-        by smtp.googlemail.com with ESMTPSA id s10sm171146661iod.46.2019.08.03.17.31.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=XseFOdxuGU418KZPE3WRhO05R0PXJPpb27YbinC92EA=;
+        b=WYCSPz0NZdiP3NZCpxicu+hKOv3PbfiU8vtPCELfJcr4pIIWYvEEQKfqCYTkgclLPd
+         pLqVbKPZJneKonuuDacyQU45FthxjXJm+w/iNxdY492fSPUqPWUuNjTjisjCOyPDUGip
+         nhrGYMbt7VHnx0fUqV8wV5mwZLyU9g4mwzQLQAW0+aRf2Y0pZToQnsLO8Jti0J/0/1A3
+         KM4GgRaymWQ78E1UUTnVXM3n/X73KZzmdzxP6b8/9lwsT8S3tZcAeBN5C33o0Gmppoge
+         npsezgdsBDTznL/6hSxJqYei8CQnfh7SsK2rVkXblp8IdXmY6Knpt24QKN2HBaVPF3zC
+         GUFA==
+X-Gm-Message-State: APjAAAWQr8eCC7wMKuQUF6DWipB9K9vTeSKna/xg+3uj+7iMWH2kbMKP
+        Rd3bkGvwIaqDLIdnY0KiR1hubA==
+X-Google-Smtp-Source: APXvYqzA2RHCJOlXy2g9CxbfktX1OESzi0EVdTchdFtqBiqxNCodmspmE2sjhwarGzQhNVFPDaVm+Q==
+X-Received: by 2002:aa7:8383:: with SMTP id u3mr67045320pfm.175.1564883920693;
+        Sat, 03 Aug 2019 18:58:40 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id m31sm18746359pjb.6.2019.08.03.18.58.39
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 03 Aug 2019 17:31:07 -0700 (PDT)
-From:   Hui Peng <benquike@gmail.com>
-To:     kvalo@codeaurora.org, davem@davemloft.net
-Cc:     Hui Peng <benquike@gmail.com>,
-        Mathias Payer <mathias.payer@nebelwelt.net>,
-        ath10k@lists.infradead.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] Fix a NULL-ptr-deref bug in ath10k_usb_alloc_urb_from_pipe
-Date:   Sat,  3 Aug 2019 20:31:01 -0400
-Message-Id: <20190804003101.11541-1-benquike@gmail.com>
-X-Mailer: git-send-email 2.22.0
+        Sat, 03 Aug 2019 18:58:40 -0700 (PDT)
+Date:   Sat, 3 Aug 2019 18:58:20 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        edumazet@google.com, borisp@mellanox.com, aviadye@mellanox.com,
+        davejwatson@fb.com, john.fastabend@gmail.com, daniel@iogearbox.net,
+        willemb@google.com, xiyou.wangcong@gmail.com, fw@strlen.de,
+        alexei.starovoitov@gmail.com
+Subject: Re: [PATCH net-next] net/tls: prevent skb_orphan() from leaking TLS
+ plain text with offload
+Message-ID: <20190803185820.3beb3d2c@cakuba.netronome.com>
+In-Reply-To: <20190802.172453.1075167824005057182.davem@davemloft.net>
+References: <20190730211258.13748-1-jakub.kicinski@netronome.com>
+        <20190802.172453.1075167824005057182.davem@davemloft.net>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The `ar_usb` field of `ath10k_usb_pipe_usb_pipe` objects
-are initialized to point to the containing `ath10k_usb` object
-according to endpoint descriptors read from the device side, as shown
-below in `ath10k_usb_setup_pipe_resources`:
+On Fri, 02 Aug 2019 17:24:53 -0700 (PDT), David Miller wrote:
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Date: Tue, 30 Jul 2019 14:12:58 -0700
+> 
+> > I'm sending this for net-next because of lack of confidence
+> > in my own abilities. It should apply cleanly to net... :)  
+> 
+> It looks like there will be changes to this.
 
-for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
-        endpoint = &iface_desc->endpoint[i].desc;
-
-        // get the address from endpoint descriptor
-        pipe_num = ath10k_usb_get_logical_pipe_num(ar_usb,
-                                                endpoint->bEndpointAddress,
-                                                &urbcount);
-        ......
-        // select the pipe object
-        pipe = &ar_usb->pipes[pipe_num];
-
-        // initialize the ar_usb field
-        pipe->ar_usb = ar_usb;
-}
-
-The driver assumes that the addresses reported in endpoint
-descriptors from device side  to be complete. If a device is
-malicious and does not report complete addresses, it may trigger
-NULL-ptr-deref `ath10k_usb_alloc_urb_from_pipe` and
-`ath10k_usb_free_urb_to_pipe`.
-
-This patch fixes the bug by preventing potential NULL-ptr-deref.
-
-Signed-off-by: Hui Peng <benquike@gmail.com>
-Reported-by: Hui Peng <benquike@gmail.com>
-Reported-by: Mathias Payer <mathias.payer@nebelwelt.net>
----
- drivers/net/wireless/ath/ath10k/usb.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ath10k/usb.c b/drivers/net/wireless/ath/ath10k/usb.c
-index e1420f67f776..14d86627b47f 100644
---- a/drivers/net/wireless/ath/ath10k/usb.c
-+++ b/drivers/net/wireless/ath/ath10k/usb.c
-@@ -38,6 +38,10 @@ ath10k_usb_alloc_urb_from_pipe(struct ath10k_usb_pipe *pipe)
- 	struct ath10k_urb_context *urb_context = NULL;
- 	unsigned long flags;
- 
-+	/* bail if this pipe is not initialized */
-+	if (!pipe->ar_usb)
-+		return NULL;
-+
- 	spin_lock_irqsave(&pipe->ar_usb->cs_lock, flags);
- 	if (!list_empty(&pipe->urb_list_head)) {
- 		urb_context = list_first_entry(&pipe->urb_list_head,
-@@ -55,6 +59,10 @@ static void ath10k_usb_free_urb_to_pipe(struct ath10k_usb_pipe *pipe,
- {
- 	unsigned long flags;
- 
-+	/* bail if this pipe is not initialized */
-+	if (!pipe->ar_usb)
-+		return NULL;
-+
- 	spin_lock_irqsave(&pipe->ar_usb->cs_lock, flags);
- 
- 	pipe->urb_cnt++;
--- 
-2.22.0
-
+Yes, sorry for going silent, I reworked this to follow Boris'es
+suggestion of using flags, and wanted a little bit of extra QA.
+Unfortunately 5.3-rc has broken Intel IOMMU and QA lab machines
+don't boot.. :(
