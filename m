@@ -2,74 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 625AB824C2
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 20:18:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE8E0824C6
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 20:19:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730065AbfHESSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 14:18:17 -0400
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:34766 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729566AbfHESSR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 14:18:17 -0400
-Received: by mail-lj1-f196.google.com with SMTP id p17so80099144ljg.1
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 11:18:16 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5iD60MN3ezKI1+xt5FlPDcJaTEoPJLW96DLDKH2MmR0=;
-        b=iE+FUtbyhQBReXMFs/AskWLcvgd/yodYoWtSWjYVtfM97u9sBuci9qk0yCIzukFC8d
-         wUBE9LYy0tnIdS/lsXHZ1oeGWKYBVTO3iE25fZGdyQraWv8mukTqdR30cur2nhoKMi+Z
-         Tk7UdVlEzDzNFVJkAGktvGRDy6xJg/ofMPtTa9DJI9hVTx7vP7DU+PsOoV4c0QtQnPlO
-         E/3X0OKflMisCILEvRf746yJxw4TBP5+/p0JLM81DkyTjjZKDV4XYAqRRB6kExgbrQ6Q
-         7QXZUlNrYLaNUj5J8yjjddR3bywcVwktBU4L+ET5a3f0UgRLj7WjP2HeCIsCpOj4NzVV
-         /M9w==
-X-Gm-Message-State: APjAAAVg6m0h+lzGH5kquN/qje1yRM8mDp6VX/epKKfRVt4cC5P8KJ1D
-        HB1TeZM/Ej08PtoJFSHA51SyJ3xdvokXGfStm/CsRjafRws=
-X-Google-Smtp-Source: APXvYqzBELw4G2jCqYxgIDkXE9OFhaWwBRVhy7Ub8mvdIqBjWO2i1v3mF9Q01T8rDZyiz+sIt0VO0YHuvz2HFjdenWM=
-X-Received: by 2002:a2e:9643:: with SMTP id z3mr80490301ljh.43.1565029095550;
- Mon, 05 Aug 2019 11:18:15 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190731183116.4791-1-mcroce@redhat.com> <20190805.105800.1380680189003158228.davem@davemloft.net>
-In-Reply-To: <20190805.105800.1380680189003158228.davem@davemloft.net>
-From:   Matteo Croce <mcroce@redhat.com>
-Date:   Mon, 5 Aug 2019 20:17:39 +0200
-Message-ID: <CAGnkfhxRV=2G6Sxf_nZQekeXLsf64QkKqfN-9pN_Mi6Y+=nXRA@mail.gmail.com>
-Subject: Re: [PATCH net] mvpp2: fix panic on module removal
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@free-electrons.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1730207AbfHESTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 14:19:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:60310 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728701AbfHESTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 14:19:07 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D3A211540E30F;
+        Mon,  5 Aug 2019 11:19:06 -0700 (PDT)
+Date:   Mon, 05 Aug 2019 11:19:06 -0700 (PDT)
+Message-Id: <20190805.111906.1380210569649795922.davem@davemloft.net>
+To:     brouer@redhat.com
+Cc:     netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        borkmann@iogearbox.net, brandon.cazander@multapplied.net,
+        alexei.starovoitov@gmail.com
+Subject: Re: [net v1 PATCH 0/4] net: fix regressions for generic-XDP
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <156468229108.27559.2443904494495785131.stgit@firesoul>
+References: <20190731211211.GA87084@multapplied.net>
+        <156468229108.27559.2443904494495785131.stgit@firesoul>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 05 Aug 2019 11:19:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 5, 2019 at 7:58 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Matteo Croce <mcroce@redhat.com>
-> Date: Wed, 31 Jul 2019 20:31:16 +0200
->
-> > mvpp2 uses a delayed workqueue to gather traffic statistics.
-> > On module removal the workqueue can be destroyed before calling
-> > cancel_delayed_work_sync() on its works.
-> > Fix it by moving the destroy_workqueue() call after mvpp2_port_remove().
->
-> Please post a new version with the flush_workqueue() removed.
+From: Jesper Dangaard Brouer <brouer@redhat.com>
+Date: Thu, 01 Aug 2019 20:00:11 +0200
 
-Hi,
+> Thanks to Brandon Cazander, who wrote a very detailed bug report that
+> even used perf probe's on xdp-newbies mailing list, we discovered that
+> generic-XDP contains some regressions when using bpf_xdp_adjust_head().
+> 
+> First issue were that my selftests script, that use bpf_xdp_adjust_head(),
+> by mistake didn't use generic-XDP any-longer. That selftest should have
+> caught the real regression introduced in commit 458bf2f224f0 ("net: core:
+> support XDP generic on stacked devices.").
+> 
+> To verify this patchset fix the regressions, you can invoked manually via:
+> 
+>   cd tools/testing/selftests/bpf/
+>   sudo ./test_xdp_vlan_mode_generic.sh
+>   sudo ./test_xdp_vlan_mode_native.sh
+> 
+> Link: https://www.spinics.net/lists/xdp-newbies/msg01231.html
+> Fixes: 458bf2f224f0 ("net: core: support XDP generic on stacked devices.")
+> Reported by: Brandon Cazander <brandon.cazander@multapplied.net>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-I thought that it was already merged:
-
-https://lore.kernel.org/netdev/20190801121330.30823-1-mcroce@redhat.com/
-
-Let me know if it's ok already.
-
-Regards,
--- 
-Matteo Croce
-per aspera ad upstream
+Series applied and queued up for -stable, thanks.
