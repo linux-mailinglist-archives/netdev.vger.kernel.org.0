@@ -2,63 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 18C0E824B6
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 20:14:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 625AB824C2
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 20:18:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730054AbfHESOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 14:14:09 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:60212 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728686AbfHESOJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 14:14:09 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 8F6DE1540C725;
-        Mon,  5 Aug 2019 11:14:06 -0700 (PDT)
-Date:   Mon, 05 Aug 2019 11:14:05 -0700 (PDT)
-Message-Id: <20190805.111405.1284530866900143643.davem@davemloft.net>
-To:     cai@lca.pw
-Cc:     saeedm@mellanox.com, tariqt@mellanox.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] net/mlx5e: always initialize frag->last_in_page
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1564667574-31542-1-git-send-email-cai@lca.pw>
-References: <1564667574-31542-1-git-send-email-cai@lca.pw>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 05 Aug 2019 11:14:09 -0700 (PDT)
+        id S1730065AbfHESSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 14:18:17 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:34766 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729566AbfHESSR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 14:18:17 -0400
+Received: by mail-lj1-f196.google.com with SMTP id p17so80099144ljg.1
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 11:18:16 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5iD60MN3ezKI1+xt5FlPDcJaTEoPJLW96DLDKH2MmR0=;
+        b=iE+FUtbyhQBReXMFs/AskWLcvgd/yodYoWtSWjYVtfM97u9sBuci9qk0yCIzukFC8d
+         wUBE9LYy0tnIdS/lsXHZ1oeGWKYBVTO3iE25fZGdyQraWv8mukTqdR30cur2nhoKMi+Z
+         Tk7UdVlEzDzNFVJkAGktvGRDy6xJg/ofMPtTa9DJI9hVTx7vP7DU+PsOoV4c0QtQnPlO
+         E/3X0OKflMisCILEvRf746yJxw4TBP5+/p0JLM81DkyTjjZKDV4XYAqRRB6kExgbrQ6Q
+         7QXZUlNrYLaNUj5J8yjjddR3bywcVwktBU4L+ET5a3f0UgRLj7WjP2HeCIsCpOj4NzVV
+         /M9w==
+X-Gm-Message-State: APjAAAVg6m0h+lzGH5kquN/qje1yRM8mDp6VX/epKKfRVt4cC5P8KJ1D
+        HB1TeZM/Ej08PtoJFSHA51SyJ3xdvokXGfStm/CsRjafRws=
+X-Google-Smtp-Source: APXvYqzBELw4G2jCqYxgIDkXE9OFhaWwBRVhy7Ub8mvdIqBjWO2i1v3mF9Q01T8rDZyiz+sIt0VO0YHuvz2HFjdenWM=
+X-Received: by 2002:a2e:9643:: with SMTP id z3mr80490301ljh.43.1565029095550;
+ Mon, 05 Aug 2019 11:18:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190731183116.4791-1-mcroce@redhat.com> <20190805.105800.1380680189003158228.davem@davemloft.net>
+In-Reply-To: <20190805.105800.1380680189003158228.davem@davemloft.net>
+From:   Matteo Croce <mcroce@redhat.com>
+Date:   Mon, 5 Aug 2019 20:17:39 +0200
+Message-ID: <CAGnkfhxRV=2G6Sxf_nZQekeXLsf64QkKqfN-9pN_Mi6Y+=nXRA@mail.gmail.com>
+Subject: Re: [PATCH net] mvpp2: fix panic on module removal
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@free-electrons.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Antoine Tenart <antoine.tenart@bootlin.com>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Qian Cai <cai@lca.pw>
-Date: Thu,  1 Aug 2019 09:52:54 -0400
+On Mon, Aug 5, 2019 at 7:58 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Matteo Croce <mcroce@redhat.com>
+> Date: Wed, 31 Jul 2019 20:31:16 +0200
+>
+> > mvpp2 uses a delayed workqueue to gather traffic statistics.
+> > On module removal the workqueue can be destroyed before calling
+> > cancel_delayed_work_sync() on its works.
+> > Fix it by moving the destroy_workqueue() call after mvpp2_port_remove().
+>
+> Please post a new version with the flush_workqueue() removed.
 
-> The commit 069d11465a80 ("net/mlx5e: RX, Enhance legacy Receive Queue
-> memory scheme") introduced an undefined behaviour below due to
-> "frag->last_in_page" is only initialized in mlx5e_init_frags_partition()
-> when,
-> 
-> if (next_frag.offset + frag_info[f].frag_stride > PAGE_SIZE)
-> 
-> or after bailed out the loop,
-> 
-> for (i = 0; i < mlx5_wq_cyc_get_size(&rq->wqe.wq); i++)
-> 
-> As the result, there could be some "frag" have uninitialized
-> value of "last_in_page".
-> 
-> Later, get_frag() obtains those "frag" and check "frag->last_in_page" in
-> mlx5e_put_rx_frag() and triggers the error during boot. Fix it by always
-> initializing "frag->last_in_page" to "false" in
-> mlx5e_init_frags_partition().
-...
-> Fixes: 069d11465a80 ("net/mlx5e: RX, Enhance legacy Receive Queue memory scheme")
-> Signed-off-by: Qian Cai <cai@lca.pw>
+Hi,
 
-Applied and queued up for -stable.
+I thought that it was already merged:
+
+https://lore.kernel.org/netdev/20190801121330.30823-1-mcroce@redhat.com/
+
+Let me know if it's ok already.
+
+Regards,
+-- 
+Matteo Croce
+per aspera ad upstream
