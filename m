@@ -2,83 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 30CAC82715
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 23:43:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B93D482717
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 23:43:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730698AbfHEVnH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Aug 2019 17:43:07 -0400
-Received: from mga12.intel.com ([192.55.52.136]:64268 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728717AbfHEVnH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 17:43:07 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Aug 2019 14:43:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,350,1559545200"; 
-   d="scan'208";a="198107284"
-Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
-  by fmsmga004.fm.intel.com with ESMTP; 05 Aug 2019 14:43:07 -0700
-Received: from orsmsx154.amr.corp.intel.com (10.22.226.12) by
- ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Mon, 5 Aug 2019 14:43:06 -0700
-Received: from orsmsx104.amr.corp.intel.com ([169.254.4.30]) by
- ORSMSX154.amr.corp.intel.com ([169.254.11.96]) with mapi id 14.03.0439.000;
- Mon, 5 Aug 2019 14:43:06 -0700
-From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-Subject: RE: [Intel-wired-lan] [PATCH 2/2] ixgbe: Use refcount_t for refcount
-Thread-Topic: [Intel-wired-lan] [PATCH 2/2] ixgbe: Use refcount_t for
- refcount
-Thread-Index: AQHVSSDGlTwuGHWtMECrsXmtZFTBhabtGzOA
-Date:   Mon, 5 Aug 2019 21:43:06 +0000
-Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D40F174@ORSMSX104.amr.corp.intel.com>
-References: <20190802105507.16650-1-hslester96@gmail.com>
-In-Reply-To: <20190802105507.16650-1-hslester96@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiYWVjMjMwYWUtMmNmZC00NDE5LTk4ZWItNDc1YmUyMGIwNTA3IiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiOUNxUUI3a0V4RmYyVWtSaUIzMkFpMlBreWJ0UVROQ1RaNjFyQkZBZUkyOEdNRU5cL3JVZ0kwZnFRVkZWWmJkMWkifQ==
-x-ctpclassification: CTP_NT
-dlp-product: dlpe-windows
-dlp-version: 11.0.400.15
-dlp-reaction: no-action
-x-originating-ip: [10.22.254.138]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1730807AbfHEVnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 17:43:53 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:36042 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728483AbfHEVnw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 17:43:52 -0400
+Received: by mail-oi1-f193.google.com with SMTP id c15so8125180oic.3
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 14:43:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=InFS1LZhgpWRqGoT9SfCUzkxmt4HhaK5gvLdBysn3vk=;
+        b=YRjRo7gteZ8Vt6761ftj7RsCo/3dj2vrfh/BpAjgWfrUxOd2bWAPtni8xWK9QXPCvP
+         7Ovkub4cdWmxiyikzqhOHxa1N00vHtirHzu0PdDX9vC35Vpv8leZ97kn4oNbENLa5R/y
+         YBI6QohRqu/0kZZvVmlcoeJjqFj5PpTfXSyOtY19826B7oA/I12tnrhNT7IepGOYmsnj
+         OuLXHfMPJHbDshsd410fuIjpFLix2moNMeL0h/A/rqFHIF2d+VcVYmIAaLsHSVlrTObM
+         IVPm450djSTfdQmZKn40h9WMxliY6oPIoJh7zJY9FLxLPaMF/D3NByWcZyw4EQ2PRafI
+         bvOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=InFS1LZhgpWRqGoT9SfCUzkxmt4HhaK5gvLdBysn3vk=;
+        b=PYCOMJm3JPrwymz/TYtTWtC5SZK1F9VEon3L+a1SIN74m+4KdKLJn/gSkFmSeOluOQ
+         Y51NfLa4nHAagXsS+XMpVXGFia7lfKhE5Bky6fdlRCZuP/tegirfs+3FGWC6dUccqSAZ
+         a9wij/j8IJAvfhK+FjZ0yaI2oBRKs/VRA9jHFxaeqFrp8OoYuLqJTv8kP/njobOPO2+U
+         2Wfv8Epid2vmBPBat0EEEuwMZo31XG+HgOW00KkLcIpd851Y0ydM+axk4TRUTeZWW/XP
+         JOQvytFDSFofOhtuBkFBADlJo4cBxqGIsRxyN0gG1HzNFVqV5xtI6G3EUhiz2UC/IAi+
+         woOw==
+X-Gm-Message-State: APjAAAUGdcXaRjEngt3Xahv4uhYwgPjS7CwZstuqz/6WuWlOJ1MUOaBh
+        f16i+aQ4u1SGTbgiBxuakO214bCIIJdqMeRdvBw=
+X-Google-Smtp-Source: APXvYqybtISjQmsDe5rp2/KiYDhkGgL7R0e6IKLsy3r13v1cOvGCuzm8k+4wcBcwlzZN7MEloyDZSi/NvUk8UlI7AVU=
+X-Received: by 2002:aca:f552:: with SMTP id t79mr288320oih.145.1565041431826;
+ Mon, 05 Aug 2019 14:43:51 -0700 (PDT)
 MIME-Version: 1.0
+References: <1564973771-22542-1-git-send-email-pkusunyifeng@gmail.com> <CAOrHB_C758HjLJxb3jzAn0Wy1a_m4G2o4gsqMDdhJ9PRdT4GUg@mail.gmail.com>
+In-Reply-To: <CAOrHB_C758HjLJxb3jzAn0Wy1a_m4G2o4gsqMDdhJ9PRdT4GUg@mail.gmail.com>
+From:   Yifeng Sun <pkusunyifeng@gmail.com>
+Date:   Mon, 5 Aug 2019 14:43:41 -0700
+Message-ID: <CAEYOeXNViMh7kZes73n7eFbRYAgU_Oxp_qb=tW9-Zsp2vF5yPw@mail.gmail.com>
+Subject: Re: [PATCH net-next v2] openvswitch: Print error when
+ ovs_execute_actions() fails
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Greg Rose <gvrose8192@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> Behalf Of Chuhong Yuan
-> Sent: Friday, August 2, 2019 3:55 AM
-> Cc: netdev@vger.kernel.org; Chuhong Yuan <hslester96@gmail.com>; linux-
-> kernel@vger.kernel.org; intel-wired-lan@lists.osuosl.org; David S . Miller
-> <davem@davemloft.net>
-> Subject: [Intel-wired-lan] [PATCH 2/2] ixgbe: Use refcount_t for refcount
-> 
-> refcount_t is better for reference counters since its implementation can
-> prevent overflows.
-> So convert atomic_t ref counters to refcount_t.
-> 
-> Also convert refcount from 0-based to 1-based.
-> 
-> This patch depends on PATCH 1/2.
-> 
-> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c | 6 +++---
-> drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.h | 2 +-
->  2 files changed, 4 insertions(+), 4 deletions(-)
+Thanks Pravin!
 
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+Best,
+Yifeng
 
-
+On Mon, Aug 5, 2019 at 1:49 PM Pravin Shelar <pshelar@ovn.org> wrote:
+>
+> On Sun, Aug 4, 2019 at 7:56 PM Yifeng Sun <pkusunyifeng@gmail.com> wrote:
+> >
+> > Currently in function ovs_dp_process_packet(), return values of
+> > ovs_execute_actions() are silently discarded. This patch prints out
+> > an debug message when error happens so as to provide helpful hints
+> > for debugging.
+> > ---
+> > v1->v2: Fixed according to Pravin's review.
+> >
+>
+> Looks good.
+> Acked-by: Pravin B Shelar <pshelar@ovn.org>
+>
+> Thanks,
+> Pravin.
