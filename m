@@ -2,130 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1E808184C
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 13:39:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 473B68185F
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 13:47:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728518AbfHELjI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 07:39:08 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:39729 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727259AbfHELjI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 07:39:08 -0400
-Received: by mail-wr1-f65.google.com with SMTP id x4so30899211wrt.6
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 04:39:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hoO5cgyD2kabqLeuUsjL4GXw4AU/Rdye4N3KRUL+53s=;
-        b=1BjGKXF5mBelUzQr2wGXOnFoMYd1D0U/w7J4UA37G+e4CIyK6nkr87gWlO3wqi02Ry
-         DRWGPxTdEfhrqz63eiixZzPDJmL9KmSsfYNY0p4M5Y3N9NCW02wR18w/lyFFDnHLBEA+
-         IZIjoQzGpSOTPqKIqZHnVmUbUJucnZ5zagNYDlsKKPDLcBQi9CMr5vt1zPW0BhJ2Ya4m
-         ImDuBW/WKW9PVNHOn0hYyI/8bNiGsManDM42WKuMPAk+9x9IATQbTtbO16kW1IizOIty
-         wNHC+oVgFJ8IGansCwSrImArtYhcfJgtbenOeX0OMZ1l+qjxXlk83LSdhiwT+nZjo1aL
-         17EQ==
+        id S1728518AbfHELrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 07:47:16 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:45944 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727259AbfHELrQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 07:47:16 -0400
+Received: by mail-lf1-f66.google.com with SMTP id u10so18935029lfm.12;
+        Mon, 05 Aug 2019 04:47:14 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=hoO5cgyD2kabqLeuUsjL4GXw4AU/Rdye4N3KRUL+53s=;
-        b=eCFk+4BfjXw25x3DI58T+UmYqxH1DibkHiT6EtG7PD0KuwCFHk0hBm6Gx9pjnA1Xx6
-         bQVcQnKokSbDVo2QJjhtJHaW+W0xv1v+Pk3nEJG93jlOMSTwn+Cq/TU5jaNPnrox4eOM
-         ChLbl62QYIUgGDMhzYSZoWgxhUISCEYTsQsOsNN2c9BtGnWEF8AayZkd74dIkYRRHHZc
-         UbpZ/Z5o5CLjA9y9oqUL0o95PDfaxVe5zJCGnQm9DwEpmB59mwa+sYURj6GOCX57mYeJ
-         1gPUDLT0iwKCnwBxBoQ55f9qQkT9JvKAFhO2tbnSur5LqY9I4JKJ+aNC5T6RiLj0Bxmv
-         JQVA==
-X-Gm-Message-State: APjAAAX+XLsFcCG/jDix59tH5SDlZNbFeqj8dt6qGpm6W+PQ1imRN2HZ
-        ZTDKDXjzJOnbVhwfiG6R7P/bNQ==
-X-Google-Smtp-Source: APXvYqylWQUUo3y0VEafJM4Zb3WlkrGhWgvJz/dD8hf9NJKd4tUQUo6j6EcRGc4Tp8jg5+jDpa5Ang==
-X-Received: by 2002:adf:ff84:: with SMTP id j4mr56726350wrr.71.1565005146166;
-        Mon, 05 Aug 2019 04:39:06 -0700 (PDT)
-Received: from ?IPv6:2a00:23a8:4c11:1300:c13:7d44:ebfe:c7a2? ([2a00:23a8:4c11:1300:c13:7d44:ebfe:c7a2])
-        by smtp.googlemail.com with ESMTPSA id x24sm79866193wmh.5.2019.08.05.04.39.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XqfbHS+kotk8JoRbfLuGqMSPe/L9zMN6nAynv8vWNNE=;
+        b=O+OAZdfs0epR4mar8rurpUaubeHEoz9RUhXnXCuUIg6fivHNXgeGlhOIz3MhMXy3jt
+         MEu7lumoLYRKU4Bf4XZ2+iLAIXDFudMGWug7EKm3kDy9lk+nKf/A016vXX58tflFzf+x
+         9FXuMkisWjyiAmR4iBYZsg23rY9w4e86gH21TdkZFyGIPD8fsYUdvL2cRolPFGGBlMg7
+         Bi7POE68YNYEYdBUd5IchMIhnZ4F0HV9bVw3/r5bENRwLQ/9xHXsx0AxwFIOs2AF6wm4
+         fd4HPt0NxWIio9LTlgp6YzbP9p5I4oPeSAfe9foFd4cYabD1aDlwgIr2DjCwTRFfaeVM
+         6rwA==
+X-Gm-Message-State: APjAAAXh+FjAQdSS8+xVCiKwg9SCmivlvwadI1R58wdgHLuBflabJfMF
+        IgzaHSChCyVskxvc0lkoMNtclfqY2GM=
+X-Google-Smtp-Source: APXvYqwCQQpWwF/H86pq5gU6luyGEhhHPzYgbnkV99GOKcMkH1wANYUuU+ymSzgAiP1aj/rOjAxasw==
+X-Received: by 2002:a19:a419:: with SMTP id q25mr5603054lfc.136.1565005633919;
+        Mon, 05 Aug 2019 04:47:13 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id p21sm14866073lfc.41.2019.08.05.04.47.12
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Aug 2019 04:39:05 -0700 (PDT)
-Subject: Re: [PATCH net 2/2] net: sched: sample: allow accessing psample_group
- with rtnl
-To:     Vlad Buslov <vladbu@mellanox.com>, netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net
-References: <20190803133619.10574-1-vladbu@mellanox.com>
- <20190803133619.10574-3-vladbu@mellanox.com>
-From:   Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
-Organization: Netronome
-Message-ID: <2f112b31-a1f5-6e4f-9c48-ebc5c4dac0a9@netronome.com>
-Date:   Mon, 5 Aug 2019 12:39:04 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Mon, 05 Aug 2019 04:47:13 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92)
+        (envelope-from <johan@kernel.org>)
+        id 1hubSJ-0006DC-U0; Mon, 05 Aug 2019 13:47:11 +0200
+Date:   Mon, 5 Aug 2019 13:47:11 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     "Angus Ainslie (Purism)" <angus@akkea.ca>
+Cc:     kernel@puri.sm, =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Bob Ham <bob.ham@puri.sm>
+Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
+Message-ID: <20190805114711.GF3574@localhost>
+References: <20190724145227.27169-1-angus@akkea.ca>
+ <20190724145227.27169-2-angus@akkea.ca>
 MIME-Version: 1.0
-In-Reply-To: <20190803133619.10574-3-vladbu@mellanox.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190724145227.27169-2-angus@akkea.ca>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019/08/03 14:36, Vlad Buslov wrote:
-> Recently implemented support for sample action in flow_offload infra leads
-> to following rcu usage warning:
+On Wed, Jul 24, 2019 at 07:52:26AM -0700, Angus Ainslie (Purism) wrote:
+> From: Bob Ham <bob.ham@puri.sm>
 > 
-> [ 1938.234856] =============================
-> [ 1938.234858] WARNING: suspicious RCU usage
-> [ 1938.234863] 5.3.0-rc1+ #574 Not tainted
-> [ 1938.234866] -----------------------------
-> [ 1938.234869] include/net/tc_act/tc_sample.h:47 suspicious rcu_dereference_check() usage!
-> [ 1938.234872]
->                other info that might help us debug this:
-> 
-> [ 1938.234875]
->                rcu_scheduler_active = 2, debug_locks = 1
-> [ 1938.234879] 1 lock held by tc/19540:
-> [ 1938.234881]  #0: 00000000b03cb918 (rtnl_mutex){+.+.}, at: tc_new_tfilter+0x47c/0x970
-> [ 1938.234900]
->                stack backtrace:
-> [ 1938.234905] CPU: 2 PID: 19540 Comm: tc Not tainted 5.3.0-rc1+ #574
-> [ 1938.234908] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-> [ 1938.234911] Call Trace:
-> [ 1938.234922]  dump_stack+0x85/0xc0
-> [ 1938.234930]  tc_setup_flow_action+0xed5/0x2040
-> [ 1938.234944]  fl_hw_replace_filter+0x11f/0x2e0 [cls_flower]
-> [ 1938.234965]  fl_change+0xd24/0x1b30 [cls_flower]
-> [ 1938.234990]  tc_new_tfilter+0x3e0/0x970
-> [ 1938.235021]  ? tc_del_tfilter+0x720/0x720
-> [ 1938.235028]  rtnetlink_rcv_msg+0x389/0x4b0
-> [ 1938.235038]  ? netlink_deliver_tap+0x95/0x400
-> [ 1938.235044]  ? rtnl_dellink+0x2d0/0x2d0
-> [ 1938.235053]  netlink_rcv_skb+0x49/0x110
-> [ 1938.235063]  netlink_unicast+0x171/0x200
-> [ 1938.235073]  netlink_sendmsg+0x224/0x3f0
-> [ 1938.235091]  sock_sendmsg+0x5e/0x60
-> [ 1938.235097]  ___sys_sendmsg+0x2ae/0x330
-> [ 1938.235111]  ? __handle_mm_fault+0x12cd/0x19e0
-> [ 1938.235125]  ? __handle_mm_fault+0x12cd/0x19e0
-> [ 1938.235138]  ? find_held_lock+0x2b/0x80
-> [ 1938.235147]  ? do_user_addr_fault+0x22d/0x490
-> [ 1938.235160]  __sys_sendmsg+0x59/0xa0
-> [ 1938.235178]  do_syscall_64+0x5c/0xb0
-> [ 1938.235187]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> [ 1938.235192] RIP: 0033:0x7ff9a4d597b8
-> [ 1938.235197] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83
->  ec 28 89 54
-> [ 1938.235200] RSP: 002b:00007ffcfe381c48 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
-> [ 1938.235205] RAX: ffffffffffffffda RBX: 000000005d4497f9 RCX: 00007ff9a4d597b8
-> [ 1938.235208] RDX: 0000000000000000 RSI: 00007ffcfe381cb0 RDI: 0000000000000003
-> [ 1938.235211] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
-> [ 1938.235214] R10: 0000000000404ec2 R11: 0000000000000246 R12: 0000000000000001
-> [ 1938.235217] R13: 0000000000480640 R14: 0000000000000012 R15: 0000000000000001
-> 
-> Change tcf_sample_psample_group() helper to allow using it from both rtnl
-> and rcu protected contexts.
-> 
-> Fixes: a7a7be6087b0 ("net/sched: add sample action to the hardware intermediate representation")
-> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> Add a VID:PID for the BroadModi BM818 M.2 card
 
-Thanks
-Reviewed-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
+Would you mind posting the output of usb-devices (or lsusb -v) for this
+device?
+
+> Signed-off-by: Bob Ham <bob.ham@puri.sm>
+> Signed-off-by: Angus Ainslie (Purism) <angus@akkea.ca>
+> ---
+>  drivers/usb/serial/option.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
+> index c1582fbd1150..674a68ee9564 100644
+> --- a/drivers/usb/serial/option.c
+> +++ b/drivers/usb/serial/option.c
+> @@ -1975,6 +1975,8 @@ static const struct usb_device_id option_ids[] = {
+>  	  .driver_info = RSVD(4) | RSVD(5) },
+>  	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
+>  	  .driver_info = RSVD(6) },
+> +	{ USB_DEVICE(0x2020, 0x2060),						/* BroadMobi  */
+
+Looks like you forgot to include the model in the comment here.
+
+And please move this one after the other 0x2020 (PID 0x2031) entry.
+
+Should you also be using USB_DEVICE_INTERFACE_CLASS() (e.g. to avoid
+matching a mass-storage interface)?
+
+> +	  .driver_info = RSVD(4) },
+>  	{ } /* Terminating entry */
+>  };
+>  MODULE_DEVICE_TABLE(usb, option_ids);
+
+Johan
