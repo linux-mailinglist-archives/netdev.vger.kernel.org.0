@@ -2,243 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E6C82031
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 17:29:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 424718203E
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 17:31:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729076AbfHEP3j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 11:29:39 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:41920 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728801AbfHEP3i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 11:29:38 -0400
-Received: by mail-pl1-f196.google.com with SMTP id m9so36481830pls.8
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 08:29:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=w1v2+Tykb2sZKhqwgNej+e7eXEs7GUgVvY9aKMCM/TY=;
-        b=gYwXF/mOw8ixbb+hBJk46YVPwCQUSBjs6g1XDQ3IbrzfhFcOg1SGHOQcAqESudH4GX
-         3iA5dJS5aKyTkyda3K/ph5SYb00ZqQ404u3e6K1aN9F9FYYNjw5hYqEQ0qFRfnQvVXeZ
-         /EjhaCqh7dZw8vvwWOycebnqWUVUXuP37diTXMVHITKqJZXN1aTpatydwabTsWsRK7CQ
-         iQF4F59lio/bbIdGG4oEYGBMtWjTjiErZpEaNylLs2+q/20fB9kuC+gAjvD3tDa99jf+
-         E6Q8uy+eJkUyPcPJFj0GHsUvZhqUka5E4pj2orLqJhGvS9W2zxcpRf0HF9I2B7P/o2wk
-         Bbpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=w1v2+Tykb2sZKhqwgNej+e7eXEs7GUgVvY9aKMCM/TY=;
-        b=rLY0FB6LzAUl9u9xGmSQuQgk5xZoRM3gLk3UyL3cXvnHPcumihcc5Agn48t1Q7+XT9
-         Y+V6EHsjkQDPJRTBrAR02uHkeyaP3qyg9H5qbye/fGRzDEujvg1J/SOLnEIE7z3koJ86
-         jLJIsoQYD8Yi1qbx/CE5gChjqbbXnGByi7L7/lsy8U37rYGlfO+yrcP1Wc54uybee9um
-         qWHc4Xg6Mb+WPfJym/me7GZMiX0bG4R5blnNJP6QACRVbEMW86o5LSsHLgFS0QT+99CV
-         sQIah5seRzJJLBXxL4hrajyP2fGQLfBxMPkpt1IxkFAylahgaJ/Rhw0BfZFTqT+Rc47L
-         BMkg==
-X-Gm-Message-State: APjAAAVxeqjJ7wEs6YpqUp9NqgXYsPM8PUnWIQsDlBTYscR5353G0ohh
-        +x5PfbAv+D7KyQLR54oa8xE=
-X-Google-Smtp-Source: APXvYqx2S9bZ5W44FH/TpA4djTFPZ4LfQgNah84TNlulCa1ntTmKHxoxJ35c49xC0DbZoBTVc44MJg==
-X-Received: by 2002:a17:902:324:: with SMTP id 33mr140630517pld.340.1565018977909;
-        Mon, 05 Aug 2019 08:29:37 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id 22sm8217582pgl.0.2019.08.05.08.29.37
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 08:29:37 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 08:29:36 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Peter Wu <peter@lekensteyn.nl>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: Re: [PATCH] tools: bpftool: fix reading from /proc/config.gz
-Message-ID: <20190805152936.GE4544@mini-arch>
-References: <20190805001541.8096-1-peter@lekensteyn.nl>
+        id S1729644AbfHEPbC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 11:31:02 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34466 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728939AbfHEPbC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 11:31:02 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=gl1e0DAfh8g9b9ah5STjd2Zeh92eqoUeJ7vLy3eAWZo=; b=uXIsqssj3khLZ27sybWP7psCpR
+        O4ohKMstle//0j1xFo4zCF1BMCMNXODoC4qNcfv1eoQ8TrGQmS7zG+dgxot0zS4X1s98/VTJ9KJTE
+        qyANtw6BIwJWOewiw2WW8xQKk2bsgk4UJ8x4YxTO3PMeEM/X+L8Wb7zPwIXvh1CCvISc=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1huews-0007xd-DM; Mon, 05 Aug 2019 17:30:58 +0200
+Date:   Mon, 5 Aug 2019 17:30:58 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, davem@davemloft.net,
+        robh+dt@kernel.org, mark.rutland@arm.com, f.fainelli@gmail.com,
+        hkallweit1@gmail.com
+Subject: Re: [PATCH 15/16] net: phy: adin: add ethtool get_stats support
+Message-ID: <20190805153058.GU24275@lunn.ch>
+References: <20190805165453.3989-1-alexandru.ardelean@analog.com>
+ <20190805165453.3989-16-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190805001541.8096-1-peter@lekensteyn.nl>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190805165453.3989-16-alexandru.ardelean@analog.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/05, Peter Wu wrote:
-> /proc/config has never existed as far as I can see, but /proc/config.gz
-> is present on Arch Linux. Execute an external gunzip program to avoid
-> linking to zlib and rework the option scanning code since a pipe is not
-> seekable. This also fixes a file handle leak on some error paths.
-Thanks for doing that! One question: why not link against -lz instead?
-With fork/execing gunzip you're just hiding this dependency.
+On Mon, Aug 05, 2019 at 07:54:52PM +0300, Alexandru Ardelean wrote:
+> This change implements retrieving all the error counters from the PHY.
+> The PHY supports several error counters/stats. The `Mean Square Errors`
+> status values are only valie when a link is established, and shouldn't be
+> incremented. These values characterize the quality of a signal.
 
-You can add something like this to the Makefile:
-ifeq ($(feature-zlib),1)
-CLFAGS += -DHAVE_ZLIB
-endif
-
-And then conditionally add support for config.gz. Thoughts?
+I think you mean accumulated, not incremented?
 
 > 
-> Fixes: 4567b983f78c ("tools: bpftool: add probes for kernel configuration options")
-> Cc: Quentin Monnet <quentin.monnet@netronome.com>
-> Signed-off-by: Peter Wu <peter@lekensteyn.nl>
+> The rest of the error counters are self-clearing on read.
+> Most of them are reports from the Frame Checker engine that the PHY has.
+> 
+> Not retrieving the `LPI Wake Error Count Register` here, since that is used
+> by the PHY framework to check for any EEE errors. And that register is
+> self-clearing when read (as per IEEE spec).
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 > ---
->  tools/bpf/bpftool/feature.c | 92 +++++++++++++++++++++----------------
->  1 file changed, 52 insertions(+), 40 deletions(-)
+>  drivers/net/phy/adin.c | 108 +++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 108 insertions(+)
 > 
-> diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-> index d672d9086fff..e9e10f582047 100644
-> --- a/tools/bpf/bpftool/feature.c
-> +++ b/tools/bpf/bpftool/feature.c
-> @@ -284,34 +284,34 @@ static void probe_jit_limit(void)
->  	}
->  }
+> diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
+> index a1f3456a8504..04896547dac8 100644
+> --- a/drivers/net/phy/adin.c
+> +++ b/drivers/net/phy/adin.c
+> @@ -103,6 +103,32 @@ static struct clause22_mmd_map clause22_mmd_map[] = {
+>  	{ MDIO_MMD_PCS, MDIO_PCS_EEE_WK_ERR,	ADIN1300_LPI_WAKE_ERR_CNT_REG },
+>  };
 >  
-> -static char *get_kernel_config_option(FILE *fd, const char *option)
-> +static bool get_kernel_config_option(FILE *fd, char **buf_p, size_t *n_p,
-> +				     char **value)
->  {
-> -	size_t line_n = 0, optlen = strlen(option);
-> -	char *res, *strval, *line = NULL;
-> -	ssize_t n;
-> +	char *sep;
-> +	ssize_t linelen;
->  
-> -	rewind(fd);
-> -	while ((n = getline(&line, &line_n, fd)) > 0) {
-> -		if (strncmp(line, option, optlen))
-> +	while ((linelen = getline(buf_p, n_p, fd)) > 0) {
-> +		char *line = *buf_p;
-> +		if (strncmp(line, "CONFIG_", 7))
->  			continue;
-> -		/* Check we have at least '=', value, and '\n' */
-> -		if (strlen(line) < optlen + 3)
-> -			continue;
-> -		if (*(line + optlen) != '=')
-> +
-> +		sep = memchr(line, '=', linelen);
-> +		if (!sep)
->  			continue;
->  
->  		/* Trim ending '\n' */
-> -		line[strlen(line) - 1] = '\0';
-> +		line[linelen - 1] = '\0';
-> +
-> +		/* Split on '=' and ensure that a value is present. */
-> +		*sep = '\0';
-> +		if (!sep[1])
-> +			continue;
->  
-> -		/* Copy and return config option value */
-> -		strval = line + optlen + 1;
-> -		res = strdup(strval);
-> -		free(line);
-> -		return res;
-> +		*value = sep + 1;
-> +		return true;
->  	}
-> -	free(line);
->  
-> -	return NULL;
-> +	return false;
->  }
->  
->  static void probe_kernel_image_config(void)
-> @@ -386,31 +386,34 @@ static void probe_kernel_image_config(void)
->  		/* test_bpf module for BPF tests */
->  		"CONFIG_TEST_BPF",
->  	};
-> +	char *values[ARRAY_SIZE(options)] = { };
->  	char *value, *buf = NULL;
->  	struct utsname utsn;
->  	char path[PATH_MAX];
->  	size_t i, n;
->  	ssize_t ret;
-> -	FILE *fd;
-> +	FILE *fd = NULL;
-> +	bool is_pipe = false;
->  
->  	if (uname(&utsn))
-> -		goto no_config;
-> +		goto end_parse;
->  
->  	snprintf(path, sizeof(path), "/boot/config-%s", utsn.release);
->  
->  	fd = fopen(path, "r");
->  	if (!fd && errno == ENOENT) {
-> -		/* Some distributions put the config file at /proc/config, give
-> -		 * it a try.
-> -		 * Sometimes it is also at /proc/config.gz but we do not try
-> -		 * this one for now, it would require linking against libz.
-> +		/* Some distributions build with CONFIG_IKCONFIG=y and put the
-> +		 * config file at /proc/config.gz. We try to invoke an external
-> +		 * gzip program to avoid linking to libz.
-> +		 * Hide stderr to avoid interference with the JSON output.
->  		 */
-> -		fd = fopen("/proc/config", "r");
-> +		fd = popen("gunzip -c /proc/config.gz 2>/dev/null", "r");
-> +		is_pipe = true;
->  	}
->  	if (!fd) {
->  		p_info("skipping kernel config, can't open file: %s",
->  		       strerror(errno));
-> -		goto no_config;
-> +		goto end_parse;
->  	}
->  	/* Sanity checks */
->  	ret = getline(&buf, &n, fd);
-> @@ -418,27 +421,36 @@ static void probe_kernel_image_config(void)
->  	if (!buf || !ret) {
->  		p_info("skipping kernel config, can't read from file: %s",
->  		       strerror(errno));
-> -		free(buf);
-> -		goto no_config;
-> +		goto end_parse;
->  	}
->  	if (strcmp(buf, "# Automatically generated file; DO NOT EDIT.\n")) {
->  		p_info("skipping kernel config, can't find correct file");
-> -		free(buf);
-> -		goto no_config;
-> +		goto end_parse;
-> +	}
-> +
-> +	while (get_kernel_config_option(fd, &buf, &n, &value)) {
-> +		for (i = 0; i < ARRAY_SIZE(options); i++) {
-> +			if (values[i] || strcmp(buf, options[i]))
-> +				continue;
-> +
-> +			values[i] = strdup(value);
-> +		}
-> +	}
-> +
-> +end_parse:
-> +	if (fd) {
-> +		if (is_pipe) {
-> +			if (pclose(fd))
-> +				p_info("failed to read /proc/config.gz");
-> +		} else
-> +			fclose(fd);
->  	}
->  	free(buf);
->  
->  	for (i = 0; i < ARRAY_SIZE(options); i++) {
-> -		value = get_kernel_config_option(fd, options[i]);
-> -		print_kernel_option(options[i], value);
-> -		free(value);
-> +		print_kernel_option(options[i], values[i]);
-> +		free(values[i]);
->  	}
-> -	fclose(fd);
-> -	return;
-> -
-> -no_config:
-> -	for (i = 0; i < ARRAY_SIZE(options); i++)
-> -		print_kernel_option(options[i], NULL);
->  }
->  
->  static bool probe_bpf_syscall(const char *define_prefix)
-> -- 
-> 2.22.0
-> 
+> +struct adin_hw_stat {
+> +	const char *string;
+> +	u16 reg1;
+> +	u16 reg2;
+> +	bool do_not_inc;
+
+do_not_accumulate? or reverse its meaning, clear_on_read?
+
+   Andrew
