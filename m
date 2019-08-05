@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 73A7A82304
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:48:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9829C822EF
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:47:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729716AbfHEQsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 12:48:02 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:39876 "EHLO
+        id S1730348AbfHEQrH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 12:47:07 -0400
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:39888 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728798AbfHEQp3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 12:45:29 -0400
+        by vger.kernel.org with ESMTP id S1728830AbfHEQpa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 12:45:30 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id D0EA6C01B0;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id DBDC5C01B4;
         Mon,  5 Aug 2019 16:45:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1565023529; bh=aFQyYC49aEuzT6mdwS7IuCxzUctBZfDEyfsSdsFi+i8=;
+        t=1565023529; bh=c6/+CjaQdhRXDAwCh48aWgxLqmnHSIYaE8l/rR8DCHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=ilxIZvNqaGcz6zE2ahw9U6mjV7RGEQDyqihagNpFTInG2Vt4oMGl/L51z4CX2JVX8
-         YYaxlt+EUWuQvCidrt/ANZ3mXYFpm8XlCULib2HAvv+1t+ZQt5h5qfEwFnOpOVNJ08
-         AaqBTI2x4d/hUzv4QCzWQ/CoApo4Eooih7OsWEGp6wnOkcDAhqwzjou+agfY1PGCrH
-         9fejANJsM6nJ8jFCkTQUwgcw5yqks2VGYQK/7nB4FnSi4vdAgRMdyCoyZXXSDW1vQF
-         xI0atG5AMFh3oLNOEVIFJec6yi5hDOB8D42yL7ZttyD9NhskIHuj86032nMtRBUChC
-         hHUatp0RCK/mw==
+        b=dfiu+oRdkkvenMrelDzCOWplbe7tb4zt8QSw3zEsndk0CP+TVrv0rVJ67Y6QOLcrO
+         W4Ad7Yrqj+IDlLeLuGbdOjffo6zOOHpgJgdDwXdh/6hZP4HvoGtuX2hNa8uwoB7y5c
+         950JpMcBjBZbXPUA4J3MQ3atK57dely8Wf4so/XSbmwdSRatzHaIXPEFFkHsyIyc5f
+         Cwa8V96zEtApg5y1IbAyW5NqH5hZoVuZXvRXwCUi7BrFVJR9U3bzXlF4Dlz5NJ+701
+         UcpcsrZ9bNBZggiADqWnv4dv6ssRdTgSJ1bcI3MFn5RAey0hjhFnqVuV9nOjTDGdyu
+         N1DrLk1bNhoSw==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 867ABA007A;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 9C53FA007D;
         Mon,  5 Aug 2019 16:45:27 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 09/26] net: stmmac: selftests: Add test for VLAN and Double VLAN Filtering
-Date:   Mon,  5 Aug 2019 18:44:36 +0200
-Message-Id: <1fa42ae457a3817554e53fba7145df4a86f335a9.1565022597.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 10/26] net: stmmac: Implement Safety Features in XGMAC core
+Date:   Mon,  5 Aug 2019 18:44:37 +0200
+Message-Id: <94334d8fe76f2c457e3baf84a1d0b938664b5828.1565022597.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1565022597.git.joabreu@synopsys.com>
 References: <cover.1565022597.git.joabreu@synopsys.com>
@@ -52,7 +52,8 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a selftest for VLAN and Double VLAN Filtering in stmmac.
+XGMAC also supports Safety Features. This patch implements the
+configuration and handling of this feature in XGMAC core.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 ---
@@ -66,232 +67,376 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 205 +++++++++++++++++++++
- 1 file changed, 205 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  26 ++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 281 +++++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |   4 +
+ 3 files changed, 311 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 83b775a8cedc..6b08bb15af15 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -715,6 +715,203 @@ static int stmmac_test_rss(struct stmmac_priv *priv)
- 	return __stmmac_test_loopback(priv, &attr);
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
+index 29bbe8218600..3d8782f99f64 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
+@@ -110,6 +110,12 @@
+ #define XGMAC_HWFEAT_RXCHCNT		GENMASK(15, 12)
+ #define XGMAC_HWFEAT_TXQCNT		GENMASK(9, 6)
+ #define XGMAC_HWFEAT_RXQCNT		GENMASK(3, 0)
++#define XGMAC_HW_FEATURE3		0x00000128
++#define XGMAC_HWFEAT_ASP		GENMASK(15, 14)
++#define XGMAC_MAC_DPP_FSM_INT_STATUS	0x00000150
++#define XGMAC_MAC_FSM_CONTROL		0x00000158
++#define XGMAC_PRTYEN			BIT(1)
++#define XGMAC_TMOUTEN			BIT(0)
+ #define XGMAC_MDIO_ADDR			0x00000200
+ #define XGMAC_MDIO_DATA			0x00000204
+ #define XGMAC_MDIO_C22P			0x00000220
+@@ -154,6 +160,16 @@
+ #define XGMAC_TC_PRTY_MAP1		0x00001044
+ #define XGMAC_PSTC(x)			GENMASK((x) * 8 + 7, (x) * 8)
+ #define XGMAC_PSTC_SHIFT(x)		((x) * 8)
++#define XGMAC_MTL_ECC_CONTROL		0x000010c0
++#define XGMAC_MTL_SAFETY_INT_STATUS	0x000010c4
++#define XGMAC_MEUIS			BIT(1)
++#define XGMAC_MECIS			BIT(0)
++#define XGMAC_MTL_ECC_INT_ENABLE	0x000010c8
++#define XGMAC_RPCEIE			BIT(12)
++#define XGMAC_ECEIE			BIT(8)
++#define XGMAC_RXCEIE			BIT(4)
++#define XGMAC_TXCEIE			BIT(0)
++#define XGMAC_MTL_ECC_INT_STATUS	0x000010cc
+ #define XGMAC_MTL_TXQ_OPMODE(x)		(0x00001100 + (0x80 * (x)))
+ #define XGMAC_TQS			GENMASK(25, 16)
+ #define XGMAC_TQS_SHIFT			16
+@@ -218,6 +234,16 @@
+ #define XGMAC_TDPS			GENMASK(29, 0)
+ #define XGMAC_RX_EDMA_CTRL		0x00003044
+ #define XGMAC_RDPS			GENMASK(29, 0)
++#define XGMAC_DMA_SAFETY_INT_STATUS	0x00003064
++#define XGMAC_MCSIS			BIT(31)
++#define XGMAC_MSUIS			BIT(29)
++#define XGMAC_MSCIS			BIT(28)
++#define XGMAC_DEUIS			BIT(1)
++#define XGMAC_DECIS			BIT(0)
++#define XGMAC_DMA_ECC_INT_ENABLE	0x00003068
++#define XGMAC_DCEIE			BIT(1)
++#define XGMAC_TCEIE			BIT(0)
++#define XGMAC_DMA_ECC_INT_STATUS	0x0000306c
+ #define XGMAC_DMA_CH_CONTROL(x)		(0x00003100 + (0x80 * (x)))
+ #define XGMAC_PBLx8			BIT(16)
+ #define XGMAC_DMA_CH_TX_CONTROL(x)	(0x00003104 + (0x80 * (x)))
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+index e2dbebeb59e9..19dfb72cab11 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+@@ -530,6 +530,284 @@ static void dwxgmac2_update_vlan_hash(struct mac_device_info *hw, u32 hash,
+ 	}
  }
  
-+static int stmmac_test_vlan_validate(struct sk_buff *skb,
-+				     struct net_device *ndev,
-+				     struct packet_type *pt,
-+				     struct net_device *orig_ndev)
++struct dwxgmac3_error_desc {
++	bool valid;
++	const char *desc;
++	const char *detailed_desc;
++};
++
++#define STAT_OFF(field)		offsetof(struct stmmac_safety_stats, field)
++
++static void dwxgmac3_log_error(struct net_device *ndev, u32 value, bool corr,
++			       const char *module_name,
++			       const struct dwxgmac3_error_desc *desc,
++			       unsigned long field_offset,
++			       struct stmmac_safety_stats *stats)
 +{
-+	struct stmmac_test_priv *tpriv = pt->af_packet_priv;
-+	struct stmmachdr *shdr;
-+	struct ethhdr *ehdr;
-+	struct udphdr *uhdr;
-+	struct iphdr *ihdr;
++	unsigned long loc, mask;
++	u8 *bptr = (u8 *)stats;
++	unsigned long *ptr;
 +
-+	skb = skb_unshare(skb, GFP_ATOMIC);
-+	if (!skb)
-+		goto out;
++	ptr = (unsigned long *)(bptr + field_offset);
 +
-+	if (skb_linearize(skb))
-+		goto out;
-+	if (skb_headlen(skb) < (STMMAC_TEST_PKT_SIZE - ETH_HLEN))
-+		goto out;
++	mask = value;
++	for_each_set_bit(loc, &mask, 32) {
++		netdev_err(ndev, "Found %s error in %s: '%s: %s'\n", corr ?
++				"correctable" : "uncorrectable", module_name,
++				desc[loc].desc, desc[loc].detailed_desc);
 +
-+	ehdr = (struct ethhdr *)skb_mac_header(skb);
-+	if (!ether_addr_equal(ehdr->h_dest, tpriv->packet->dst))
-+		goto out;
++		/* Update counters */
++		ptr[loc]++;
++	}
++}
 +
-+	ihdr = ip_hdr(skb);
-+	if (tpriv->double_vlan)
-+		ihdr = (struct iphdr *)(skb_network_header(skb) + 4);
-+	if (ihdr->protocol != IPPROTO_UDP)
-+		goto out;
++static const struct dwxgmac3_error_desc dwxgmac3_mac_errors[32]= {
++	{ true, "ATPES", "Application Transmit Interface Parity Check Error" },
++	{ true, "DPES", "Descriptor Cache Data Path Parity Check Error" },
++	{ true, "TPES", "TSO Data Path Parity Check Error" },
++	{ true, "TSOPES", "TSO Header Data Path Parity Check Error" },
++	{ true, "MTPES", "MTL Data Path Parity Check Error" },
++	{ true, "MTSPES", "MTL TX Status Data Path Parity Check Error" },
++	{ true, "MTBUPES", "MAC TBU Data Path Parity Check Error" },
++	{ true, "MTFCPES", "MAC TFC Data Path Parity Check Error" },
++	{ true, "ARPES", "Application Receive Interface Data Path Parity Check Error" },
++	{ true, "MRWCPES", "MTL RWC Data Path Parity Check Error" },
++	{ true, "MRRCPES", "MTL RCC Data Path Parity Check Error" },
++	{ true, "CWPES", "CSR Write Data Path Parity Check Error" },
++	{ true, "ASRPES", "AXI Slave Read Data Path Parity Check Error" },
++	{ true, "TTES", "TX FSM Timeout Error" },
++	{ true, "RTES", "RX FSM Timeout Error" },
++	{ true, "CTES", "CSR FSM Timeout Error" },
++	{ true, "ATES", "APP FSM Timeout Error" },
++	{ true, "PTES", "PTP FSM Timeout Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
++	{ true, "MSTTES", "Master Read/Write Timeout Error" },
++	{ true, "SLVTES", "Slave Read/Write Timeout Error" },
++	{ true, "ATITES", "Application Timeout on ATI Interface Error" },
++	{ true, "ARITES", "Application Timeout on ARI Interface Error" },
++	{ true, "FSMPES", "FSM State Parity Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
++	{ true, "CPI", "Control Register Parity Check Error" },
++};
 +
-+	uhdr = (struct udphdr *)((u8 *)ihdr + 4 * ihdr->ihl);
-+	if (uhdr->dest != htons(tpriv->packet->dport))
-+		goto out;
++static void dwxgmac3_handle_mac_err(struct net_device *ndev,
++				    void __iomem *ioaddr, bool correctable,
++				    struct stmmac_safety_stats *stats)
++{
++	u32 value;
 +
-+	shdr = (struct stmmachdr *)((u8 *)uhdr + sizeof(*uhdr));
-+	if (shdr->magic != cpu_to_be64(STMMAC_TEST_PKT_MAGIC))
-+		goto out;
++	value = readl(ioaddr + XGMAC_MAC_DPP_FSM_INT_STATUS);
++	writel(value, ioaddr + XGMAC_MAC_DPP_FSM_INT_STATUS);
 +
-+	tpriv->ok = true;
-+	complete(&tpriv->comp);
++	dwxgmac3_log_error(ndev, value, correctable, "MAC",
++			   dwxgmac3_mac_errors, STAT_OFF(mac_errors), stats);
++}
 +
-+out:
-+	kfree_skb(skb);
++static const struct dwxgmac3_error_desc dwxgmac3_mtl_errors[32]= {
++	{ true, "TXCES", "MTL TX Memory Error" },
++	{ true, "TXAMS", "MTL TX Memory Address Mismatch Error" },
++	{ true, "TXUES", "MTL TX Memory Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 3 */
++	{ true, "RXCES", "MTL RX Memory Error" },
++	{ true, "RXAMS", "MTL RX Memory Address Mismatch Error" },
++	{ true, "RXUES", "MTL RX Memory Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 7 */
++	{ true, "ECES", "MTL EST Memory Error" },
++	{ true, "EAMS", "MTL EST Memory Address Mismatch Error" },
++	{ true, "EUES", "MTL EST Memory Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 11 */
++	{ true, "RPCES", "MTL RX Parser Memory Error" },
++	{ true, "RPAMS", "MTL RX Parser Memory Address Mismatch Error" },
++	{ true, "RPUES", "MTL RX Parser Memory Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 15 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 16 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 17 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 21 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 22 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 23 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 24 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 25 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 31 */
++};
++
++static void dwxgmac3_handle_mtl_err(struct net_device *ndev,
++				    void __iomem *ioaddr, bool correctable,
++				    struct stmmac_safety_stats *stats)
++{
++	u32 value;
++
++	value = readl(ioaddr + XGMAC_MTL_ECC_INT_STATUS);
++	writel(value, ioaddr + XGMAC_MTL_ECC_INT_STATUS);
++
++	dwxgmac3_log_error(ndev, value, correctable, "MTL",
++			   dwxgmac3_mtl_errors, STAT_OFF(mtl_errors), stats);
++}
++
++static const struct dwxgmac3_error_desc dwxgmac3_dma_errors[32]= {
++	{ true, "TCES", "DMA TSO Memory Error" },
++	{ true, "TAMS", "DMA TSO Memory Address Mismatch Error" },
++	{ true, "TUES", "DMA TSO Memory Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 3 */
++	{ true, "DCES", "DMA DCACHE Memory Error" },
++	{ true, "DAMS", "DMA DCACHE Address Mismatch Error" },
++	{ true, "DUES", "DMA DCACHE Memory Error" },
++	{ false, "UNKNOWN", "Unknown Error" }, /* 7 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 8 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 9 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 10 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 11 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 12 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 13 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 14 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 15 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 16 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 17 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 18 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 19 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 20 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 21 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 22 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 23 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 24 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 25 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 26 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 27 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 28 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 29 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 30 */
++	{ false, "UNKNOWN", "Unknown Error" }, /* 31 */
++};
++
++static void dwxgmac3_handle_dma_err(struct net_device *ndev,
++				    void __iomem *ioaddr, bool correctable,
++				    struct stmmac_safety_stats *stats)
++{
++	u32 value;
++
++	value = readl(ioaddr + XGMAC_DMA_ECC_INT_STATUS);
++	writel(value, ioaddr + XGMAC_DMA_ECC_INT_STATUS);
++
++	dwxgmac3_log_error(ndev, value, correctable, "DMA",
++			   dwxgmac3_dma_errors, STAT_OFF(dma_errors), stats);
++}
++
++static int dwxgmac3_safety_feat_config(void __iomem *ioaddr, unsigned int asp)
++{
++	u32 value;
++
++	if (!asp)
++		return -EINVAL;
++
++	/* 1. Enable Safety Features */
++	writel(0x0, ioaddr + XGMAC_MTL_ECC_CONTROL);
++
++	/* 2. Enable MTL Safety Interrupts */
++	value = readl(ioaddr + XGMAC_MTL_ECC_INT_ENABLE);
++	value |= XGMAC_RPCEIE; /* RX Parser Memory Correctable Error */
++	value |= XGMAC_ECEIE; /* EST Memory Correctable Error */
++	value |= XGMAC_RXCEIE; /* RX Memory Correctable Error */
++	value |= XGMAC_TXCEIE; /* TX Memory Correctable Error */
++	writel(value, ioaddr + XGMAC_MTL_ECC_INT_ENABLE);
++
++	/* 3. Enable DMA Safety Interrupts */
++	value = readl(ioaddr + XGMAC_DMA_ECC_INT_ENABLE);
++	value |= XGMAC_DCEIE; /* Descriptor Cache Memory Correctable Error */
++	value |= XGMAC_TCEIE; /* TSO Memory Correctable Error */
++	writel(value, ioaddr + XGMAC_DMA_ECC_INT_ENABLE);
++
++	/* Only ECC Protection for External Memory feature is selected */
++	if (asp <= 0x1)
++		return 0;
++
++	/* 4. Enable Parity and Timeout for FSM */
++	value = readl(ioaddr + XGMAC_MAC_FSM_CONTROL);
++	value |= XGMAC_PRTYEN; /* FSM Parity Feature */
++	value |= XGMAC_TMOUTEN; /* FSM Timeout Feature */
++	writel(value, ioaddr + XGMAC_MAC_FSM_CONTROL);
++
 +	return 0;
 +}
 +
-+static int stmmac_test_vlanfilt(struct stmmac_priv *priv)
++static int dwxgmac3_safety_feat_irq_status(struct net_device *ndev,
++					   void __iomem *ioaddr,
++					   unsigned int asp,
++					   struct stmmac_safety_stats *stats)
 +{
-+	struct stmmac_packet_attrs attr = { };
-+	struct stmmac_test_priv *tpriv;
-+	struct sk_buff *skb = NULL;
-+	int ret = 0, i;
++	bool err, corr;
++	u32 mtl, dma;
++	int ret = 0;
 +
-+	if (!priv->dma_cap.vlhash)
-+		return -EOPNOTSUPP;
++	if (!asp)
++		return -EINVAL;
 +
-+	tpriv = kzalloc(sizeof(*tpriv), GFP_KERNEL);
-+	if (!tpriv)
-+		return -ENOMEM;
++	mtl = readl(ioaddr + XGMAC_MTL_SAFETY_INT_STATUS);
++	dma = readl(ioaddr + XGMAC_DMA_SAFETY_INT_STATUS);
 +
-+	tpriv->ok = false;
-+	init_completion(&tpriv->comp);
-+
-+	tpriv->pt.type = htons(ETH_P_IP);
-+	tpriv->pt.func = stmmac_test_vlan_validate;
-+	tpriv->pt.dev = priv->dev;
-+	tpriv->pt.af_packet_priv = tpriv;
-+	tpriv->packet = &attr;
-+
-+	/*
-+	 * As we use HASH filtering, false positives may appear. This is a
-+	 * specially chosen ID so that adjacent IDs (+4) have different
-+	 * HASH values.
-+	 */
-+	tpriv->vlan_id = 0x123;
-+	dev_add_pack(&tpriv->pt);
-+
-+	ret = vlan_vid_add(priv->dev, htons(ETH_P_8021Q), tpriv->vlan_id);
-+	if (ret)
-+		goto cleanup;
-+
-+	for (i = 0; i < 4; i++) {
-+		attr.vlan = 1;
-+		attr.vlan_id_out = tpriv->vlan_id + i;
-+		attr.dst = priv->dev->dev_addr;
-+		attr.sport = 9;
-+		attr.dport = 9;
-+
-+		skb = stmmac_test_get_udp_skb(priv, &attr);
-+		if (!skb) {
-+			ret = -ENOMEM;
-+			goto vlan_del;
-+		}
-+
-+		skb_set_queue_mapping(skb, 0);
-+		ret = dev_queue_xmit(skb);
-+		if (ret)
-+			goto vlan_del;
-+
-+		wait_for_completion_timeout(&tpriv->comp, STMMAC_LB_TIMEOUT);
-+		ret = !tpriv->ok;
-+		if (ret && !i) {
-+			goto vlan_del;
-+		} else if (!ret && i) {
-+			ret = -1;
-+			goto vlan_del;
-+		} else {
-+			ret = 0;
-+		}
-+
-+		tpriv->ok = false;
++	err = (mtl & XGMAC_MCSIS) || (dma & XGMAC_MCSIS);
++	corr = false;
++	if (err) {
++		dwxgmac3_handle_mac_err(ndev, ioaddr, corr, stats);
++		ret |= !corr;
 +	}
 +
-+vlan_del:
-+	vlan_vid_del(priv->dev, htons(ETH_P_8021Q), tpriv->vlan_id);
-+cleanup:
-+	dev_remove_pack(&tpriv->pt);
-+	kfree(tpriv);
++	err = (mtl & (XGMAC_MEUIS | XGMAC_MECIS)) ||
++	      (dma & (XGMAC_MSUIS | XGMAC_MSCIS));
++	corr = (mtl & XGMAC_MECIS) || (dma & XGMAC_MSCIS);
++	if (err) {
++		dwxgmac3_handle_mtl_err(ndev, ioaddr, corr, stats);
++		ret |= !corr;
++	}
++
++	err = dma & (XGMAC_DEUIS | XGMAC_DECIS);
++	corr = dma & XGMAC_DECIS;
++	if (err) {
++		dwxgmac3_handle_dma_err(ndev, ioaddr, corr, stats);
++		ret |= !corr;
++	}
++
 +	return ret;
 +}
 +
-+static int stmmac_test_dvlanfilt(struct stmmac_priv *priv)
++static const struct dwxgmac3_error {
++	const struct dwxgmac3_error_desc *desc;
++} dwxgmac3_all_errors[] = {
++	{ dwxgmac3_mac_errors },
++	{ dwxgmac3_mtl_errors },
++	{ dwxgmac3_dma_errors },
++};
++
++static int dwxgmac3_safety_feat_dump(struct stmmac_safety_stats *stats,
++				     int index, unsigned long *count,
++				     const char **desc)
 +{
-+	struct stmmac_packet_attrs attr = { };
-+	struct stmmac_test_priv *tpriv;
-+	struct sk_buff *skb = NULL;
-+	int ret = 0, i;
++	int module = index / 32, offset = index % 32;
++	unsigned long *ptr = (unsigned long *)stats;
 +
-+	if (!priv->dma_cap.vlhash)
-+		return -EOPNOTSUPP;
-+
-+	tpriv = kzalloc(sizeof(*tpriv), GFP_KERNEL);
-+	if (!tpriv)
-+		return -ENOMEM;
-+
-+	tpriv->ok = false;
-+	tpriv->double_vlan = true;
-+	init_completion(&tpriv->comp);
-+
-+	tpriv->pt.type = htons(ETH_P_8021Q);
-+	tpriv->pt.func = stmmac_test_vlan_validate;
-+	tpriv->pt.dev = priv->dev;
-+	tpriv->pt.af_packet_priv = tpriv;
-+	tpriv->packet = &attr;
-+
-+	/*
-+	 * As we use HASH filtering, false positives may appear. This is a
-+	 * specially chosen ID so that adjacent IDs (+4) have different
-+	 * HASH values.
-+	 */
-+	tpriv->vlan_id = 0x123;
-+	dev_add_pack(&tpriv->pt);
-+
-+	ret = vlan_vid_add(priv->dev, htons(ETH_P_8021AD), tpriv->vlan_id);
-+	if (ret)
-+		goto cleanup;
-+
-+	for (i = 0; i < 4; i++) {
-+		attr.vlan = 2;
-+		attr.vlan_id_out = tpriv->vlan_id + i;
-+		attr.dst = priv->dev->dev_addr;
-+		attr.sport = 9;
-+		attr.dport = 9;
-+
-+		skb = stmmac_test_get_udp_skb(priv, &attr);
-+		if (!skb) {
-+			ret = -ENOMEM;
-+			goto vlan_del;
-+		}
-+
-+		skb_set_queue_mapping(skb, 0);
-+		ret = dev_queue_xmit(skb);
-+		if (ret)
-+			goto vlan_del;
-+
-+		wait_for_completion_timeout(&tpriv->comp, STMMAC_LB_TIMEOUT);
-+		ret = !tpriv->ok;
-+		if (ret && !i) {
-+			goto vlan_del;
-+		} else if (!ret && i) {
-+			ret = -1;
-+			goto vlan_del;
-+		} else {
-+			ret = 0;
-+		}
-+
-+		tpriv->ok = false;
-+	}
-+
-+vlan_del:
-+	vlan_vid_del(priv->dev, htons(ETH_P_8021AD), tpriv->vlan_id);
-+cleanup:
-+	dev_remove_pack(&tpriv->pt);
-+	kfree(tpriv);
-+	return ret;
++	if (module >= ARRAY_SIZE(dwxgmac3_all_errors))
++		return -EINVAL;
++	if (!dwxgmac3_all_errors[module].desc[offset].valid)
++		return -EINVAL;
++	if (count)
++		*count = *(ptr + index);
++	if (desc)
++		*desc = dwxgmac3_all_errors[module].desc[offset].desc;
++	return 0;
 +}
 +
- #define STMMAC_LOOPBACK_NONE	0
- #define STMMAC_LOOPBACK_MAC	1
- #define STMMAC_LOOPBACK_PHY	2
-@@ -764,6 +961,14 @@ static const struct stmmac_test {
- 		.name = "RSS                  ",
- 		.lb = STMMAC_LOOPBACK_PHY,
- 		.fn = stmmac_test_rss,
-+	}, {
-+		.name = "VLAN Filtering       ",
-+		.lb = STMMAC_LOOPBACK_PHY,
-+		.fn = stmmac_test_vlanfilt,
-+	}, {
-+		.name = "Double VLAN Filtering",
-+		.lb = STMMAC_LOOPBACK_PHY,
-+		.fn = stmmac_test_dvlanfilt,
- 	},
- };
+ const struct stmmac_ops dwxgmac210_ops = {
+ 	.core_init = dwxgmac2_core_init,
+ 	.set_mac = dwxgmac2_set_mac,
+@@ -559,6 +837,9 @@ const struct stmmac_ops dwxgmac210_ops = {
+ 	.pcs_get_adv_lp = NULL,
+ 	.debug = NULL,
+ 	.set_filter = dwxgmac2_set_filter,
++	.safety_feat_config = dwxgmac3_safety_feat_config,
++	.safety_feat_irq_status = dwxgmac3_safety_feat_irq_status,
++	.safety_feat_dump = dwxgmac3_safety_feat_dump,
+ 	.set_mac_loopback = dwxgmac2_set_mac_loopback,
+ 	.rss_configure = dwxgmac2_rss_configure,
+ 	.update_vlan_hash = dwxgmac2_update_vlan_hash,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+index b50e275e76c2..e4a1c877f2e1 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+@@ -399,6 +399,10 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
+ 		((hw_cap & XGMAC_HWFEAT_TXQCNT) >> 6) + 1;
+ 	dma_cap->number_rx_queues =
+ 		((hw_cap & XGMAC_HWFEAT_RXQCNT) >> 0) + 1;
++
++	/* MAC HW feature 3 */
++	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE3);
++	dma_cap->asp = (hw_cap & XGMAC_HWFEAT_ASP) >> 14;
+ }
  
+ static void dwxgmac2_rx_watchdog(void __iomem *ioaddr, u32 riwt, u32 nchan)
 -- 
 2.7.4
 
