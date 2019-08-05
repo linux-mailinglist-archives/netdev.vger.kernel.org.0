@@ -2,76 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D8F08121E
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 08:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8B7E81238
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 08:26:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727301AbfHEGPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 02:15:18 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:41678 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbfHEGPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 02:15:17 -0400
-Received: by mail-yb1-f195.google.com with SMTP id x188so6683204yba.8;
-        Sun, 04 Aug 2019 23:15:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=d2DU9kBb4leQ/jOn2DVY+dV3e2iyLt3yKa1OyuxJhhA=;
-        b=niX/7BE0qnoG0ZC0Uk3XxzdIW0aioGSBYPc+lg9U/X/SSOAB33ZNx7XlS1YGMFzHH9
-         URtQRuorc/d4vnDD+n9f2HRDuOPR8VpbOUgWUsUJRSqFkIv1nY5K/PJ6FWYGpAuPMoOH
-         frjg1PzM2144xST0SsVQ62fZBgGs052KUDdvcDfXdbSQwV/zTXpSxMc00s/Hp5lpnVA/
-         PGwBk66bbPNKmL/mYgDLgFimTRJIxufQb/xCohkuYBWaRsdpFha/jeb8GguuABQ1O3Zy
-         TXVQDmBtRvWMkOhr9k7Odl7ojZgbjC72oq0mSl+oMLlwlUKlXpI3a6fC0BzC8M8culPH
-         TYng==
-X-Gm-Message-State: APjAAAUAZ8Sw67g/gGP4uSre4N8v6Osuoxo3fHdtZ3VT+BDMg7lI4Bu0
-        MJNhHuLNMcsS6FX5L9RqJ4G7gnWTZ2zI+9T9H0Q=
-X-Google-Smtp-Source: APXvYqxIHFOCA1aPmW3BGgaIKCs7UKtDpmPvJAnMddZGIS9z2sgUDL6Nk7QxPFU7DVCcM3g9BQaZl43vOUxJJYUfDp8=
-X-Received: by 2002:a25:5f4b:: with SMTP id h11mr5510243ybm.420.1564985716710;
- Sun, 04 Aug 2019 23:15:16 -0700 (PDT)
+        id S1727330AbfHEG0i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 02:26:38 -0400
+Received: from m9784.mail.qiye.163.com ([220.181.97.84]:59137 "EHLO
+        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727256AbfHEG0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 02:26:38 -0400
+Received: from [192.168.188.14] (unknown [120.132.1.226])
+        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id DD6A6419F1;
+        Mon,  5 Aug 2019 14:26:33 +0800 (CST)
+Subject: Re: [PATCH net-next 3/6] cls_api: add flow_indr_block_call function
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     pablo@netfilter.org, fw@strlen.de, jakub.kicinski@netronome.com,
+        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
+References: <1564628627-10021-1-git-send-email-wenxu@ucloud.cn>
+ <1564628627-10021-4-git-send-email-wenxu@ucloud.cn>
+ <20190805060238.GB2349@nanopsycho.orion>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <28de8cda-6264-0440-ad96-dcc1f607fce2@ucloud.cn>
+Date:   Mon, 5 Aug 2019 14:26:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <1564566033-676-1-git-send-email-harini.katakam@xilinx.com>
- <1564566033-676-2-git-send-email-harini.katakam@xilinx.com> <20190804145633.GB6800@lunn.ch>
-In-Reply-To: <20190804145633.GB6800@lunn.ch>
-From:   Harini Katakam <harinik@xilinx.com>
-Date:   Mon, 5 Aug 2019 11:45:05 +0530
-Message-ID: <CAFcVECL6cvCjeo+fn1NDyMDZyZXDrWyhD9djvcVXiLVLiLgGeA@mail.gmail.com>
-Subject: Re: [RFC PATCH 1/2] dt-bindings: net: macb: Add new property for PS
- SGMII only
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190805060238.GB2349@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSUhIS0tLSk5CSU1ITUpZV1koWU
+        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6OT46Myo5CDg0Kk4MFBEPTDEQ
+        EwgaCRlVSlVKTk1PQkNNSEJPSUNDVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJS1VK
+        SElVSlVJSU1ZV1kIAVlBSkxCSTcG
+X-HM-Tid: 0a6c6075466b2086kuqydd6a6419f1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+v5 contain this patch but with non-version tag,
 
-On Sun, Aug 4, 2019 at 8:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> On Wed, Jul 31, 2019 at 03:10:32PM +0530, Harini Katakam wrote:
-> > Add a new property to indicate when PS SGMII is used with NO
-> > external PHY on board.
->
-> Hi Harini
->
-> What exactly is you use case? Are you connecting to a Ethernet switch?
-> To an SFP cage with a copper module?
+I used --subject-prefix in git-format-patch. I am sorry to  make a mistake when modify the
 
-Yes, an SFP cage is the common HW target for this patch. Essentially, there
-is no external PHY driver that the macb can "connect" to; if there was an
-external PHY on board, its link status would also indicate when the GEM(PCS)
-to external PHY link was down. But in the absence of an external PHY on
-HW, PCS link status needs to be monitored and reported to users.
+commit log. So should I repost the v6?
 
-Regards,
-Harini
+
+On 8/5/2019 2:02 PM, Jiri Pirko wrote:
+> Re subject. You don't have "v5" in this patch. I don't understand how
+> that happened. Do you use --subject-prefix in git-format-patch?
+>
