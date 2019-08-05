@@ -2,122 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B99782179
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:16:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1706822CF
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728854AbfHEQQa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 12:16:30 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:34465 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726691AbfHEQQa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 12:16:30 -0400
-Received: by mail-pl1-f193.google.com with SMTP id i2so36688078plt.1;
-        Mon, 05 Aug 2019 09:16:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=SqxSoJKpGWV14gIS52JocyeN9cK02AV2ZaIsHvNwU4k=;
-        b=A6CtVSZFXsjek7YhQkIhi2zY1y08hCeaSYy6D40JpwJOHjNwPCHojwloXZQJPJ/xxE
-         1n93tmzQxL7ylt2LkBB5jm3TblRMn00YaG3PwcSt3TxPeOSDU5eAy8gE5pXvVK/Pv9nd
-         hYwYbZRTP4ZwfxBTQovX3yD207GuhZW3QYIDCZe3+qWu2653wAFIwPpw2lu0a1DiiSbA
-         XyjfY3U0xgJ5YqBemVCoEor8rzfdGcEF/MlhrBvSf+m3i8FojcTbidrtm5MekJ8gaB9R
-         gNNa5/B2KJeHZsn+BbmVzsuCLRmXDEHk6CQsaw6KEidtw3jVUbFIrCqjdkt2DO/xE3rX
-         Ey2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=SqxSoJKpGWV14gIS52JocyeN9cK02AV2ZaIsHvNwU4k=;
-        b=RFv1I+LJ8xZjsw7Dfr7Gf0XtNU8i8AqVPdMK4eZx03KkS4FVbLaFzHY0xMK3/nRj4x
-         u/Lh9et3ralttMPY+YD2zHI0Ju8fDju+7e+LFmOi08zyY+luA4o3deHVyBv2X2ncNn2i
-         acm2gntk3WjtNSchmMowxGh25s0p5MUh1Vggc4O+cfiGfdpuLs5F+v0CvWTtLFRMlxPO
-         BVtZaWW55aJHxleatxxdiqY5oaqLfZK4VizZZrUGtYEC9KmQAeQeOSbvH8QQE9oMf5vV
-         Etg2vovH8JnRWGEEGAawOvfZYG/iBN4yKPpuIvziyTxUHigbcpgdK9Wre00hH9L3aLyB
-         ZJ8w==
-X-Gm-Message-State: APjAAAWojsFA3KhJt9Gfy4Xm25XzA09WbIquXnXWjnLpXgChg5dDUz8q
-        4PuGrtVXl4IuShh+2SpaZu72J5sT
-X-Google-Smtp-Source: APXvYqx4YGzrYlS6KlirTyBW8YVqiN7pvEKMnekXeG/Ao2ta3RPKEwfoo1atqFICCpYLlMsaWt64kg==
-X-Received: by 2002:a17:902:7d86:: with SMTP id a6mr144965925plm.199.1565021789174;
-        Mon, 05 Aug 2019 09:16:29 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::1:8a30])
-        by smtp.gmail.com with ESMTPSA id o95sm15825117pjb.4.2019.08.05.09.16.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Aug 2019 09:16:28 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 09:16:27 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        Kernel Team <Kernel-team@fb.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: add loop test 5
-Message-ID: <20190805161626.dil4xkmrdlqhqhzd@ast-mbp>
-References: <20190802233344.863418-1-ast@kernel.org>
- <20190802233344.863418-3-ast@kernel.org>
- <3f8c913c-3644-6821-70a0-cf129d2a080d@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3f8c913c-3644-6821-70a0-cf129d2a080d@fb.com>
-User-Agent: NeoMutt/20180223
+        id S1729990AbfHEQp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 12:45:57 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:40092 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729302AbfHEQpb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 12:45:31 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 67A76C015B;
+        Mon,  5 Aug 2019 16:45:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1565023530; bh=0LbPrLAJZPL+E0+EEkTDfdECwXLyTc0PWcn5jnubUI8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fwhulZuLa3ryglwiiwLjF4/2ithvclLv+FstYbrMDuZUUzbasLHK6bKffdBkzXJbw
+         Bze7ohv14AR+/LgKzBrDhlrZ922jio5ql9f+PUa5FEcwYYyeAXs+QkqwOQr3/UQUBb
+         hywH00ci3zmVycCrIu0L1pOeotaSjKBgV9l864aNVk2LgVEOzpRcrwGKi1EhLmzoUP
+         qure26YhNg7npw16CSBy72d8V4vyNnmbY9G/beRv3rnFEipdd05UGN+VH2rafPGzT+
+         WT9LOXYfKY/xU+TzcfDjPLJmNSAVOu/7dGib4K7dwl+sJoZTIaBIj94VkSxpryQzzU
+         TG0wIbOb+vBpA==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id CD08FA005D;
+        Mon,  5 Aug 2019 16:45:25 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next 00/26] net: stmmac: Misc improvements for XGMAC
+Date:   Mon,  5 Aug 2019 18:44:27 +0200
+Message-Id: <cover.1565022597.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 04, 2019 at 05:45:23AM +0000, Yonghong Song wrote:
-> 
-> 
-> On 8/2/19 4:33 PM, Alexei Starovoitov wrote:
-> > Add a test with multiple exit conditions.
-> > It's not an infinite loop only when the verifier can properly track
-> > all math on variable 'i' through all possible ways of executing this loop.
-> 
-> Agreed with motivation of this test.
-> 
-> > 
-> > barrier()s are needed to disable llvm optimization that combines multiple
-> > branches into fewer branches.
-> > 
-> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-> > ---
-> >   .../bpf/prog_tests/bpf_verif_scale.c          |  1 +
-> >   tools/testing/selftests/bpf/progs/loop5.c     | 37 +++++++++++++++++++
-> >   2 files changed, 38 insertions(+)
-> >   create mode 100644 tools/testing/selftests/bpf/progs/loop5.c
-> > 
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-> > index 757e39540eda..29615a4a9362 100644
-> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-> > @@ -72,6 +72,7 @@ void test_bpf_verif_scale(void)
-> >   		{ "loop1.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
-> >   		{ "loop2.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
-> >   		{ "loop4.o", BPF_PROG_TYPE_RAW_TRACEPOINT }, > +		{ "loop5.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
-> 
-> More like a BPF_PROG_TYPE_SCHED_CLS type although probably it does not 
-> matter as we did not attach it to anywhere?
+[ This series depend on 3caa61c20875 ("net: stmmac: Sync RX Buffer upon allocation")
+which is already in -net but not -next ]
 
-right. will fix.
+Misc improvements for -next which adds new features in XGMAC cores.
 
-> >   
-> >   		/* partial unroll. 19k insn in a loop.
-> >   		 * Total program size 20.8k insn.
-> > diff --git a/tools/testing/selftests/bpf/progs/loop5.c b/tools/testing/selftests/bpf/progs/loop5.c
-> > new file mode 100644
-> > index 000000000000..9d9817efe208
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/loop5.c
-> > @@ -0,0 +1,37 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +// Copyright (c) 2019 Facebook
-> > +#include <linux/sched.h>
-> > +#include <linux/ptrace.h>
-> 
-> The above headers probably not needed.
+More info in commit logs.
 
-will fix
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
+
+Jose Abreu (26):
+  net: stmmac: xgmac: Fix XGMAC selftests
+  net: stmmac: xgmac: Implement MMC counters
+  net: stmmac: Fix issues when number of Queues >= 4
+  net: stmmac: xgmac: Implement set_mtl_tx_queue_weight()
+  net: stmmac: xgmac: Implement tx_queue_prio()
+  net: stmmac: Implement RSS and enable it in XGMAC core
+  net: stmmac: selftests: Add RSS test
+  net: stmmac: Implement VLAN Hash Filtering in XGMAC
+  net: stmmac: selftests: Add test for VLAN and Double VLAN Filtering
+  net: stmmac: Implement Safety Features in XGMAC core
+  net: stmmac: Add Flexible RX Parser support in XGMAC
+  net: stmmac: tc: Do not return a fragment entry
+  net: stmmac: selftests: Add a selftest for Flexible RX Parser
+  net: stmmac: Get correct timestamp values from XGMAC
+  net: stmmac: Prepare to add Split Header support
+  net: stmmac: xgmac: Correctly return that RX descriptor is not last
+    one
+  net: stmmac: Add Split Header support and enable it in XGMAC cores
+  net: stmmac: dwxgmac: Add Flexible PPS support
+  net: stmmac: Add ethtool register dump for XGMAC cores
+  net: stmmac: Add a counter for Split Header packets
+  net: stmmac: Add support for SA Insertion/Replacement in XGMAC cores
+  net: stmmac: selftests: Add tests for SA Insertion/Replacement
+  net: stmmac: xgmac: Add EEE support
+  net: stmmac: Add support for VLAN Insertion Offload
+  net: stmmac: selftests: Add selftest for VLAN TX Offload
+  net: stmmac: selftests: Return proper error code to userspace
+
+ drivers/net/ethernet/stmicro/stmmac/common.h       |  16 +
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |   4 +
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     | 135 +++-
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 880 ++++++++++++++++++++-
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_descs.c   | 118 ++-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  41 +-
+ drivers/net/ethernet/stmicro/stmmac/hwif.c         |   4 +-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  47 ++
+ drivers/net/ethernet/stmicro/stmmac/mmc.h          |   9 +
+ drivers/net/ethernet/stmicro/stmmac/mmc_core.c     | 192 +++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |  21 +
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   | 106 ++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 380 +++++++--
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 513 +++++++++++-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    |   2 +-
+ include/linux/stmmac.h                             |   1 +
+ 16 files changed, 2361 insertions(+), 108 deletions(-)
+
+-- 
+2.7.4
 
