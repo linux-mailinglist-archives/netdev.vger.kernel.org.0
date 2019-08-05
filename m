@@ -2,88 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF3081F84
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 16:51:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AEBD481F86
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 16:52:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729623AbfHEOvZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 10:51:25 -0400
-Received: from mail-io1-f45.google.com ([209.85.166.45]:39390 "EHLO
-        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728952AbfHEOvZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 10:51:25 -0400
-Received: by mail-io1-f45.google.com with SMTP id f4so167938760ioh.6
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 07:51:25 -0700 (PDT)
+        id S1729166AbfHEOwU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 10:52:20 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:38375 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728824AbfHEOwT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 10:52:19 -0400
+Received: by mail-qk1-f196.google.com with SMTP id a27so60326424qkk.5
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 07:52:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=S/QwC8ze48ic4gWZYTgHfpsCodN3M2v1NuMgkbqX7P4=;
-        b=Drgbke3ixrpZ1j6Er40tMOHd454gqVZZFlbbVouPvXMCwaW0RLDqqmGj4oanyPzwYt
-         VnJ0LExvsAGPk9xz/jDWLGwZ6NsfpSjb97gINKLnX6jKTv3xdC2hNIrt74ZPah6MjcE8
-         OvIzSKZnx0OXkjkmIkTanWrpVsouaP281/9wJ5g/oimGygkXZ9UUvfyNnjlwQv8QOYPt
-         +gSzP1ZUEFQ7SbqJJqKlywPs7kPvOAJUZN9fTdMBzIyZuKHDGF1VXtPu25BK33NVobB5
-         B4D+DIo993EYqxUW2mfU0/ciQfgV+gN1qFxgiSd2PY/BFe9xE2s8ObPxSNmH0VuVoOPy
-         qPBw==
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=rff+yVhXxGwa08eMX8TEGpfmgYlGV/LZ/QSpZEqGz9U=;
+        b=L+btvgkOwomTVF0CGuYAo8E5Lkvgt9gMiZCwdjsUsT6QnbZWd5pnvhbESjFOPn2HU3
+         V0wmSsH9vZJgK3+5Qf6GEF2EJqdd4QQK7CoaSHaH8dXLwxd0mbBdMiUM75yPCuEM+6li
+         Frd06DWrluH5udhwQZz5/ZfH1O3+9KwwF7Ywt3b0JoM8TayyIbejVpXp5fybh3td+zW+
+         zBRMQUKSKKC1Oq9k53eQ1MiKqYCqThHDctMqqrlR5ge89AsnzViR2tS7Jfyrs+vljkOP
+         CM874qVIWHyC2+JAKWljXtlB2URtNhmT7GNDC96/G3AdZtrQ1XzuxNc9wltkyLkk5okS
+         4DQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
          :content-transfer-encoding;
-        bh=S/QwC8ze48ic4gWZYTgHfpsCodN3M2v1NuMgkbqX7P4=;
-        b=muZ5lZfv9V/Y8amkZStC1VACtnSEsXkbk1nm9w86JvMGItkiSsDXubPTesqJwNd7vD
-         TaKZni58uRXsSAZNJiYEQnMwwHXSaYJTZ30Wvoini+UfUhOURW6EVEMtdpNyKi1sQftz
-         AhlDmV8kt4ZrP1X3Z2tdU6sBWCab/6BWdufDjSDQzwIoVS6D0f4ez2sGCuXvQinv33mk
-         49lXRHJ4IpBJ70NjwYfcwlbp98i6WllXhm7VAA6f1rwxuQ5dXdPcJv4xvDoIjmcOSBkJ
-         OZPS9TaCGP/sTvuzzgxqp6tQlIH1mrVZsBM/WszYLx72ZTEXTMnqJT4+Zwn/KOobmGTQ
-         UW1A==
-X-Gm-Message-State: APjAAAWvvIb3yosKGdXFBes7M0xZ9+jrBhOaig8T61CmR9SwfLq6zM5y
-        utnaTfZvQ+a84bGaYrOie20=
-X-Google-Smtp-Source: APXvYqyAWizleb/n/o9PdGQ/M0uRYQpkUop/uM035UdRth95ZMd1n8C/ff21BLKHdmCxEzP9ya8YyQ==
-X-Received: by 2002:a5d:8e16:: with SMTP id e22mr13753485iod.171.1565016684952;
-        Mon, 05 Aug 2019 07:51:24 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:ca5:ef3d:7276:749b? ([2601:282:800:fd80:ca5:ef3d:7276:749b])
-        by smtp.googlemail.com with ESMTPSA id j25sm112784872ioj.67.2019.08.05.07.51.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Aug 2019 07:51:24 -0700 (PDT)
-Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-References: <20190730153952.73de7f00@cakuba.netronome.com>
- <20190731192627.GB2324@nanopsycho>
- <c4f83be2-adee-1595-f241-de4c26ea55ca@gmail.com>
- <20190731194502.GC2324@nanopsycho>
- <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
- <89dc6908-68b8-5b0d-0ef7-1eaf1e4e886b@gmail.com>
- <20190802074838.GC2203@nanopsycho>
- <6f05d200-49d4-4eb1-cd69-bd88cf8b0167@gmail.com>
- <20190805055422.GA2349@nanopsycho.orion>
- <796ba97c-9915-9a44-e933-4a7e22aaef2e@gmail.com>
- <20190805144927.GD2349@nanopsycho.orion>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <566cdf6c-dafc-fb3e-bd94-b75eba3488b5@gmail.com>
-Date:   Mon, 5 Aug 2019 08:51:22 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        bh=rff+yVhXxGwa08eMX8TEGpfmgYlGV/LZ/QSpZEqGz9U=;
+        b=cfhk5DxWayHOR5RRRvWukw1Nc+ojLURz4pVLiARrLKEsdZjkCQQkKkEZMoNar06F1q
+         TLNtRY50Mm6M9J8u65socF6BxkaaZPutcqkOqzHFgMrUlH5h8oL18D/Wt/k8Qo4q+O1a
+         EpnLDvWNa4oRBacqiwNSb3iePwuJmLIb2uOQLDY6gwtWMuJCQA/4FkERpHo17SKeb6tm
+         uLE+vA5tD4O4k80pEqD/CK6FLJQvjyIY6xia4oNNjbBTzVdjepeRhtsGnayTfO9W2VA3
+         ngd/9BPp9Ty/AIKDARQBuEPLmtGFppU5mbgnMitJFF5W8GLxAWf6SLlhBiS2eSbjdA/F
+         fUkA==
+X-Gm-Message-State: APjAAAXgglgomeYW+5DXegr2oNcNm/PG8NC5Cr9hWwm/0O/I91LROHmk
+        TfNksdKZUk+JoXcf3pGYLoQ=
+X-Google-Smtp-Source: APXvYqxRb9F8jmnAMUqLwhcbnLGdfUtOzSHK1iAPRqZUGTu7Uhjbn5cdzodYwccClCyY3vnNOaiR/Q==
+X-Received: by 2002:a37:66c2:: with SMTP id a185mr104681133qkc.38.1565016738537;
+        Mon, 05 Aug 2019 07:52:18 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id j6sm20704814qtl.85.2019.08.05.07.52.17
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 05 Aug 2019 07:52:17 -0700 (PDT)
+Date:   Mon, 5 Aug 2019 10:52:16 -0400
+Message-ID: <20190805105216.GB31482@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net, linville@redhat.com, cphealy@gmail.com
+Subject: Re: [PATCH ethtool] ethtool: dump nested registers
+In-Reply-To: <20190805080448.GA31971@unicorn.suse.cz>
+References: <20190802193455.17126-1-vivien.didelot@gmail.com>
+ <20190805080448.GA31971@unicorn.suse.cz>
 MIME-Version: 1.0
-In-Reply-To: <20190805144927.GD2349@nanopsycho.orion>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/5/19 8:49 AM, Jiri Pirko wrote:
->> Your commit 5fc494225c1eb81309cc4c91f183cd30e4edb674 changed that from a
->> per-namepace accounting to all namespaces managed by a single devlink
->> instance in init_net - which is completely wrong.
-> No. Not "all namespaces". Only the one where the devlink is. And that is
-> always init_net, until this patchset.
-> 
-> 
+Hi Michal!
 
-Jiri: your change to fib.c does not take into account namespace when
-doing rules and routes accounting. you broke it. fix it.
+On Mon, 5 Aug 2019 10:04:48 +0200, Michal Kubecek <mkubecek@suse.cz> wrote:
+> On Fri, Aug 02, 2019 at 03:34:54PM -0400, Vivien Didelot wrote:
+> > Usually kernel drivers set the regs->len value to the same length as
+> > info->regdump_len, which was used for the allocation. In case where
+> > regs->len is smaller than the allocated info->regdump_len length,
+> > we may assume that the dump contains a nested set of registers.
+> > 
+> > This becomes handy for kernel drivers to expose registers of an
+> > underlying network conduit unfortunately not exposed to userspace,
+> > as found in network switching equipment for example.
+> > 
+> > This patch adds support for recursing into the dump operation if there
+> > is enough room for a nested ethtool_drvinfo structure containing a
+> > valid driver name, followed by a ethtool_regs structure like this:
+> > 
+> >     0      regs->len                        info->regdump_len
+> >     v              v                                        v
+> >     +--------------+-----------------+--------------+-- - --+
+> >     | ethtool_regs | ethtool_drvinfo | ethtool_regs |       |
+> >     +--------------+-----------------+--------------+-- - --+
+> > 
+> > Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> > ---
+> 
+> I'm not sure about this approach. If these additional objects with their
+> own registers are represented by a network device, we can query their
+> registers directly. If they are not (which, IIUC, is the case in your
+> use case), we should use an appropriate interface. AFAIK the CPU ports
+> are already represented in devlink, shouldn't devlink be also used to
+> query their registers?
+
+Yet another interface wasn't that much appropriate for DSA, making the stack
+unnecessarily complex. In fact we are already glueing the statistics of the CPU
+port into the master's ethtool ops (both physical ports are wired together).
+Adding support for nested registers dump in ethtool makes it simple to
+(pretty) dump CPU port's registers without too much userspace addition.
+
+> 
+> >  ethtool.c | 13 +++++++++++--
+> >  1 file changed, 11 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/ethtool.c b/ethtool.c
+> > index 05fe05a08..c0e2903c5 100644
+> > --- a/ethtool.c
+> > +++ b/ethtool.c
+> > @@ -1245,7 +1245,7 @@ static int dump_regs(int gregs_dump_raw, int gregs_dump_hex,
+> >  
+> >  	if (gregs_dump_raw) {
+> >  		fwrite(regs->data, regs->len, 1, stdout);
+> > -		return 0;
+> > +		goto nested;
+> >  	}
+
+You're right regarding your comment about raw output. I can keep the return
+0 here.
+
+> >  
+> >  	if (!gregs_dump_hex)
+> > @@ -1253,7 +1253,7 @@ static int dump_regs(int gregs_dump_raw, int gregs_dump_hex,
+> >  			if (!strncmp(driver_list[i].name, info->driver,
+> >  				     ETHTOOL_BUSINFO_LEN)) {
+> >  				if (driver_list[i].func(info, regs) == 0)
+> > -					return 0;
+> > +					goto nested;
+> >  				/* This version (or some other
+> >  				 * variation in the dump format) is
+> >  				 * not handled; fall back to hex
+> > @@ -1263,6 +1263,15 @@ static int dump_regs(int gregs_dump_raw, int gregs_dump_hex,
+> >  
+> >  	dump_hex(stdout, regs->data, regs->len, 0);
+> >  
+> > +nested:
+> > +	/* Recurse dump if some drvinfo and regs structures are nested */
+> > +	if (info->regdump_len > regs->len + sizeof(*info) + sizeof(*regs)) {
+> > +		info = (struct ethtool_drvinfo *)(&regs->data[0] + regs->len);
+> > +		regs = (struct ethtool_regs *)(&regs->data[0] + regs->len + sizeof(*info));
+> > +
+> > +		return dump_regs(gregs_dump_raw, gregs_dump_hex, info, regs);
+> > +	}
+> > +
+> >  	return 0;
+> >  }
+> >  
+> 
+> For raw and hex dumps, this will dump only the payloads without any
+> metadata allowing to identify what are the additional blocks for the
+> other related objects, i.e. where they start, how long they are and what
+> they belong to. That doesn't seem very useful.
+
+
+Thanks,
+
+	Vivien
