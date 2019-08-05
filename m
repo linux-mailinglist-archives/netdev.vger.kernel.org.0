@@ -2,120 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 53D48817A6
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 12:56:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9DCD8184A
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 13:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728058AbfHEK4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 06:56:34 -0400
-Received: from mout.web.de ([212.227.17.12]:43833 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727158AbfHEK4d (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 06:56:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
-        s=dbaedf251592; t=1565002579;
-        bh=ibIhC5TdU9NvBIHLlKUg8dkM6XZ2mlZ/1npQ9zYfPv4=;
-        h=X-UI-Sender-Class:To:Cc:References:Subject:From:Date:In-Reply-To;
-        b=kfheZN/PgJgKag8xNoTv614JXs4TGVMz+oTI06qdbcPtyJAn9ExfU6T/lTLVAqIDo
-         upi5KpaayRJ5wdBJg5NhOSz6cVttlfzoiX/AtW/aP9qdku2mcRcU5n/KdD+e3H5aJx
-         Pw/8geOpZglbPWrDwVyy88UNNo2UeH1j+l3dUjr4=
-X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
-Received: from [192.168.1.2] ([93.132.163.134]) by smtp.web.de (mrweb102
- [213.165.67.124]) with ESMTPSA (Nemesis) id 0M8Qpi-1iHMP32hLW-00vt1r; Mon, 05
- Aug 2019 12:56:19 +0200
-To:     Mao Wenan <maowenan@huawei.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190805012637.62314-1-maowenan@huawei.com>
-Subject: Re: [v2] net: can: Fix compiling warning
-From:   Markus Elfring <Markus.Elfring@web.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
- 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 FEE=
-Message-ID: <6fd68e9b-a8ae-4e5e-9b23-c099b5ca9aa4@web.de>
-Date:   Mon, 5 Aug 2019 12:56:15 +0200
+        id S1728571AbfHELie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 07:38:34 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:46635 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728518AbfHELie (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 07:38:34 -0400
+Received: by mail-wr1-f68.google.com with SMTP id z1so84065012wru.13
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 04:38:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=3VwSrqTG74vw/OBfhq+zHVhpsEd7efURCTG1Bz2D1O0=;
+        b=RkzaPEz5gxVH6Pcz1fy1UCrVzUIHfSYRmYu/K6TUf10VfMtvqtRNAco9Dn7Nn4H5H7
+         M20h1tX+mwT6VTKUSIjRllVaO3XoVz2FJV79wUkR+toVYDkauQrVFe5aLAi8xs0CBNTz
+         HSqlXs+J2W+xcn0UbLA2LIMBTMFqo6xZ+6zBDadz37+lN4rpmY0oW5diA77P2G6zJepF
+         Xeqwj+iD/cGT6qQGw6cuY0BmbWBfaB/K+w5SDa/kd15EJ4XYF2hQLnIns878KHR7rcjc
+         EKXNNd0MwfurVpf2vp1eGwL4Mi2TFZy+TjVxKZA5iWBBbEvCof5Pd6DfUiHYhiYhEntj
+         EuWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=3VwSrqTG74vw/OBfhq+zHVhpsEd7efURCTG1Bz2D1O0=;
+        b=oLGQwvTJofwSsdF0UNVkjt3MmB3uhMxL4aLsB0ne/+/BY9u7rtfRjWFFZYtQWsklLD
+         S/SUf8F0ouLFBM7S76YlmEJYCRwYetcLfht+WaEP0IfqKuyxojdUKmnb21iiQkhOtRYB
+         BbJbjI8PWGur8f8AVx1zdTz2qAz1WVEEEhYbNz8xfii5nMfok73Qo1AGeKNCvIkvr4WH
+         n2rBOV3KRLtEhF2Pcftn6fuwBkOwCdFB9n4lE2mnjGdBCHPck2oEH3r2doHb82CroIly
+         ygoHz4gqrl+D6TN4CGGrUsVfhugQyY84OJBRihSDEAtzGaYbW+IEjGnFhDInrBiNqxRL
+         xbJg==
+X-Gm-Message-State: APjAAAX4+v5mXg8vQ6F4bZnTyQBhNYHBAa0xC8YX+VX0PNOoDZL2sqq7
+        hPPAXGl7JHWpjT2y4G3RqoMraQ7JS0A=
+X-Google-Smtp-Source: APXvYqz5/1ST10VxUkbXnsjXW7vm7t0pwzwPZN3TVvay/DPfa2qjlK4bBXP2apcB1Ot3DT+axErB1Q==
+X-Received: by 2002:a05:6000:1186:: with SMTP id g6mr13958482wrx.17.1565005112159;
+        Mon, 05 Aug 2019 04:38:32 -0700 (PDT)
+Received: from ?IPv6:2a00:23a8:4c11:1300:c13:7d44:ebfe:c7a2? ([2a00:23a8:4c11:1300:c13:7d44:ebfe:c7a2])
+        by smtp.googlemail.com with ESMTPSA id p13sm3686411wrw.90.2019.08.05.04.38.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Aug 2019 04:38:31 -0700 (PDT)
+Subject: Re: [PATCH net 1/2] net: sched: police: allow accessing
+ police->params with rtnl
+To:     Vlad Buslov <vladbu@mellanox.com>, netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net
+References: <20190803133619.10574-1-vladbu@mellanox.com>
+ <20190803133619.10574-2-vladbu@mellanox.com>
+From:   Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
+Organization: Netronome
+Message-ID: <216113f4-71b4-f149-248c-3d890f3290cf@netronome.com>
+Date:   Mon, 5 Aug 2019 12:38:26 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190805012637.62314-1-maowenan@huawei.com>
+In-Reply-To: <20190803133619.10574-2-vladbu@mellanox.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:2TFWNZSwQt0Tq4ZoU3im11KlrQg8sj6g8hCK0p83YyWKEreAjti
- 8WgmE5wSJHVyn+5l3aAsTJiqTIVeK13/Gu9Ykk9azoUr4NoyXFIRbyqcPcV3QZ8Zfguuuy4
- NjR1S2GfM6c0BSkLYGgf9ccRo1K9xRXR4o6VaAsrDXXe91gGtxNWuXP6kU5uTEmqyz3Lwq6
- qJGCCpBSIZp/uHPjkjU/A==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3Q5UT4ok0sY=:IziTGb3BEwEeVDU+quy0gw
- QJ3Dcb6T1N6ZQK427iyNY2CWfMPCCmFKVt58GglDx4jr6QODnDDq+v28ryQ1kReqvrNub6Nof
- zYdqJuh60z13V0GL/Hs3mFhQ0ihrzhij8CgwpTGGcSzsNUzguCRNHWrv4DimosSA67oUSudyD
- YzGdqjwW/CGbUNPu+cGmqAAEm13ekLBhC9e+4RTrtENIhE1ny1k9ycyZ2Utz62Hn0c9DlWKTA
- 1RNWmZeJ0nDQ4fZM52mPf4vTUQfuqmJSvaFtUtYqCzm2xIVwbOeLU6SBqRqexZ/+VwoGec/my
- pXQw+mudAbVZz/WKcs3n0FvG+f2+ZBt7KJwPXrhDscvuECYeXiPeZGOGatSboMC2ydCuRDvXZ
- tCPlJHD8vsrXYU53qOrG985l/LoUuYPlN49Ze/RUWa2qydvlrBSTSY+xc5UktEPBAUX3YEfyd
- A6u5r+iNSP3yV5Y0r8tlU7z5m9ONOft3JEfdVb3hH0aFOeSS90czMuf84Q3cqDY+NnDGb/MZ9
- Zg6IleJ6X24SOlPFDuLs4T1e/Yz1MSKGbr0NbIFdkvdyluQcWWI5+o1MMA6FSiGh0Uikwbiwr
- Z0C0fG58O9xueHpJxKBAhiPA7BegdiCCnl/dBqjobLkn/27NAotuUY0VDw8JgUvpBVXNL0Dt5
- IvHO0cfNSFsvsRzivRecQ/2QZbZK5iXYSRc15UwxmcOrNCz7Xu4RQ5UlnR0hrWxZblCu75lF5
- ixeuCU9uBfiGwy6MoR6IxYk47r9sb8Moit4ZFL1ERuD5aYVqtVPhxuD9OmgR4FKDPS4b7duoO
- unoq6ZGt80f5TMszoFVTwUHYYX/X1yirhWuj25Vrmbk3rZpucELWSsSb/EG7bm3o/EZzKpUF0
- i86aH5kxh0DFHmJCT4FNmgOGg9bAZHDHqSzL8K5gY7g5EiN+Au7DNmlEyONFV6Z0Aq05tXM1S
- SFJL2F4J0Wt9stuYCs/CahAS8h0PIrwG05l30YdH5G7eVhueJDe2/w/9P2juTr/SjJcz8EzFv
- i8G2sS2FQ+nKud4UaYdFFdcQgXTwWLyCw67m8KpmHFgRRioymNEAOLSfUyVf3dr4nXsCG6sId
- ryAv9VXmsUJ05o/yHL6S7dp0KCnqVUX4OHy9pRV+o4TnhsKuPiQBgyVjnDldmfuIcaRl6W8z1
- hjp7k=
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
->  v1->v2: change patch description typo error, =E2=80=A6
+On 2019/08/03 14:36, Vlad Buslov wrote:
+> Recently implemented support for police action in flow_offload infra leads
+> to following rcu usage warning:
+> 
+> [ 1925.881092] =============================
+> [ 1925.881094] WARNING: suspicious RCU usage
+> [ 1925.881098] 5.3.0-rc1+ #574 Not tainted
+> [ 1925.881100] -----------------------------
+> [ 1925.881104] include/net/tc_act/tc_police.h:57 suspicious rcu_dereference_check() usage!
+> [ 1925.881106]
+>                other info that might help us debug this:
+> 
+> [ 1925.881109]
+>                rcu_scheduler_active = 2, debug_locks = 1
+> [ 1925.881112] 1 lock held by tc/18591:
+> [ 1925.881115]  #0: 00000000b03cb918 (rtnl_mutex){+.+.}, at: tc_new_tfilter+0x47c/0x970
+> [ 1925.881124]
+>                stack backtrace:
+> [ 1925.881127] CPU: 2 PID: 18591 Comm: tc Not tainted 5.3.0-rc1+ #574
+> [ 1925.881130] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
+> [ 1925.881132] Call Trace:
+> [ 1925.881138]  dump_stack+0x85/0xc0
+> [ 1925.881145]  tc_setup_flow_action+0x1771/0x2040
+> [ 1925.881155]  fl_hw_replace_filter+0x11f/0x2e0 [cls_flower]
+> [ 1925.881175]  fl_change+0xd24/0x1b30 [cls_flower]
+> [ 1925.881200]  tc_new_tfilter+0x3e0/0x970
+> [ 1925.881231]  ? tc_del_tfilter+0x720/0x720
+> [ 1925.881243]  rtnetlink_rcv_msg+0x389/0x4b0
+> [ 1925.881250]  ? netlink_deliver_tap+0x95/0x400
+> [ 1925.881257]  ? rtnl_dellink+0x2d0/0x2d0
+> [ 1925.881264]  netlink_rcv_skb+0x49/0x110
+> [ 1925.881275]  netlink_unicast+0x171/0x200
+> [ 1925.881284]  netlink_sendmsg+0x224/0x3f0
+> [ 1925.881299]  sock_sendmsg+0x5e/0x60
+> [ 1925.881305]  ___sys_sendmsg+0x2ae/0x330
+> [ 1925.881309]  ? task_work_add+0x43/0x50
+> [ 1925.881314]  ? fput_many+0x45/0x80
+> [ 1925.881329]  ? __lock_acquire+0x248/0x1930
+> [ 1925.881342]  ? find_held_lock+0x2b/0x80
+> [ 1925.881347]  ? task_work_run+0x7b/0xd0
+> [ 1925.881359]  __sys_sendmsg+0x59/0xa0
+> [ 1925.881375]  do_syscall_64+0x5c/0xb0
+> [ 1925.881381]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [ 1925.881384] RIP: 0033:0x7feb245047b8
+> [ 1925.881388] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 65 8f 0c 00 8b 00 85 c0 75 17 b8 2e 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 58 c3 0f 1f 80 00 00 00 00 48 83
+>  ec 28 89 54
+> [ 1925.881391] RSP: 002b:00007ffc2d2a5788 EFLAGS: 00000246 ORIG_RAX: 000000000000002e
+> [ 1925.881395] RAX: ffffffffffffffda RBX: 000000005d4497ed RCX: 00007feb245047b8
+> [ 1925.881398] RDX: 0000000000000000 RSI: 00007ffc2d2a57f0 RDI: 0000000000000003
+> [ 1925.881400] RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000000000006
+> [ 1925.881403] R10: 0000000000404ec2 R11: 0000000000000246 R12: 0000000000000001
+> [ 1925.881406] R13: 0000000000480640 R14: 0000000000000012 R15: 0000000000000001
+> 
+> Change tcf_police_rate_bytes_ps() and tcf_police_tcfp_burst() helpers to
+> allow using them from both rtnl and rcu protected contexts.
+> 
+> Fixes: 8c8cfc6ed274 ("net/sched: add police action to the hardware intermediate representation")
+> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
 
-Will an other commit subject like =E2=80=9C[PATCH v3] net: can: Fix compil=
-ation warnings
-for two functions=E2=80=9D be more appropriate here?
-
-Regards,
-Markus
+Thank you Vlad.
+Reviewed-by: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
