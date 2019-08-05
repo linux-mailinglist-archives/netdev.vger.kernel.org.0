@@ -2,75 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8DC82514
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 20:54:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C257E8251E
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 20:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730034AbfHESyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 14:54:12 -0400
-Received: from mail-pg1-f169.google.com ([209.85.215.169]:44129 "EHLO
-        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727802AbfHESyL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 14:54:11 -0400
-Received: by mail-pg1-f169.google.com with SMTP id i18so40194566pgl.11
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 11:54:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Xsr3eyAijmgqKw4XStMyNnrn0TjS1JLfgI2THqPyWDQ=;
-        b=oOMEEd6AHVRp9W0aiPsARBrLJr+yi+YCDMlE7ywq7kdQ0csUXvpI7SeDgf8HZLV7fh
-         Kjs0Plgbu9zUpMMWMrOIpPQz0E9uESSpX45KCvvFBi6g74E3VNWI38M2Y4toOqJvr/WD
-         3xmDX0e8C1m9jTOcfLuxN6ffNCXGYx8HhMJV6ry8UvtyEeJOh00nds/XWnRl3HRKhT3R
-         LM9hWQFO8C655cDIHRjKwCxDorpGVxwwR9MbwketCm1a2H1pbEELPu/x5NsCngi5khm2
-         kq/4MSSVFCEkiEiJNgfM9GuBk2s1M0gI8LlGFDfWXres4g7PP7OUvuqPaqo6vn8M10tW
-         wY6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Xsr3eyAijmgqKw4XStMyNnrn0TjS1JLfgI2THqPyWDQ=;
-        b=LS1zEROpcZRMkXKVHYzuG69RKbmcpMNjV/QLUXyikNrPU5ihkiV61HQwgUOrKoEcgg
-         19mfxET3o49sM6JPS0QmUhYTRnveGrFes6ZeBMnpeA0qN1fzVrm83uy4rTkvpATj75Pc
-         Srwuy94JayLZZsoXJgwYr8x1qW9lJVTfJNukykC7QZEgoIs5Odi4IzZhf3hFt+Xt8XWD
-         lrMEq5Wydpe4pTQZ7+fGb0albkxS3Pjnk7LmlInAnESu7KHn/EubFATcOTkNKmALe6Xw
-         hCPkN6YlP1V+Te9H1XiP27ZNvqMp/epDKnQG3tYm943DlV6Pf607Do4AUPmHIB3HasXV
-         jqkw==
-X-Gm-Message-State: APjAAAW85touqIWtA1TQWrN4Uf9fycpITXCwljZ8Hr79T4eoMjtnZyRx
-        MHJfJDIn3jXRSpbAwA6B9uE=
-X-Google-Smtp-Source: APXvYqxRT9eJxj1ZqgxQ2F2dOYIqeqz9xI1AM+4NFKw8ZWD9DViPdam5JITCIhIdJyzCbInnZYIgVA==
-X-Received: by 2002:a65:60d2:: with SMTP id r18mr29869579pgv.71.1565031250802;
-        Mon, 05 Aug 2019 11:54:10 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id q4sm16537879pjq.27.2019.08.05.11.54.10
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 11:54:10 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 11:54:03 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, dsahern@gmail.com, slyfox@gentoo.org,
-        ayal@mellanox.com, mlxsw@mellanox.com
-Subject: Re: [patch iproute2] devlink: finish queue.h to list.h transition
-Message-ID: <20190805115403.7770a86c@hermes.lan>
-In-Reply-To: <20190805095658.19841-1-jiri@resnulli.us>
-References: <20190805095658.19841-1-jiri@resnulli.us>
+        id S1730412AbfHESzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 14:55:15 -0400
+Received: from mga06.intel.com ([134.134.136.31]:43661 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728870AbfHESzC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 14:55:02 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Aug 2019 11:55:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,350,1559545200"; 
+   d="scan'208";a="373801218"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by fmsmga006.fm.intel.com with ESMTP; 05 Aug 2019 11:55:01 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next v2 0/8][pull request] 40GbE Intel Wired LAN Driver Updates 2019-08-05
+Date:   Mon,  5 Aug 2019 11:54:51 -0700
+Message-Id: <20190805185459.12846-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon,  5 Aug 2019 11:56:56 +0200
-Jiri Pirko <jiri@resnulli.us> wrote:
+This series contains updates to i40e driver only.
 
-> From: Jiri Pirko <jiri@mellanox.com>
-> 
-> Loose the "q" from the names and name the structure fields in the same
-> way rest of the code does. Also, fix list_add arg order which leads
-> to segfault.
-> 
-> Fixes: 33267017faf1 ("iproute2: devlink: port from sys/queue.h to list.h")
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Dmitrii adds missing statistic counters for VEB and VEB TC's.
 
-Applied, thanks.
+Slawomir adds support for logging the "Disable Firmware LLDP" flag
+option and its current status.
+
+Jake fixes an issue where VF's being notified of their link status
+before their queues are enabled which was causing issues.  So always
+report link status down when the VF queues are not enabled.  Also adds
+future proofing when statistics are added or removed by adding checks to
+ensure the data pointer for the strings lines up with the expected
+statistics count.
+
+Czeslaw fixes the advertised mode reported in ethtool for FEC, where the
+"None BaseR RS" was always being displayed no matter what the mode it
+was in.  Also added logging information when the PF is entering or
+leaving "allmulti" (or promiscuous) mode.  Fixed up the logging logic
+for VF's when leaving multicast mode to not include unicast as well.
+
+v2: drop Aleksandr's patch (previously patch #2 in the series) to
+    display the VF MAC address that is set by the VF while community
+    feedback is addressed.
+
+The following are changes since commit a9e21bea1f815c2ec917ecc0efe0a7049c825d5b:
+  ][next] selftests: nettest: fix spelling mistake: "potocol" -> "protocol"
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 40GbE
+
+Czeslaw Zagorski (3):
+  i40e: Update visual effect for advertised FEC mode.
+  i40e: Log info when PF is entering and leaving Allmulti mode.
+  i40e: Remove unicast log when VF is leaving multicast mode.
+
+Dmitrii Golovanov (1):
+  i40e: fix incorrect ethtool statistics veb and veb.tc_
+
+Jacob Keller (2):
+  i40e: don't report link up for a VF who hasn't enabled queues
+  i40e: verify string count matches even on early return
+
+Jeff Kirsher (1):
+  i40e: fix code comments
+
+Slawomir Laba (1):
+  i40e: Log disable-fw-lldp flag change by ethtool
+
+ drivers/net/ethernet/intel/i40e/i40e.h        |  1 +
+ .../net/ethernet/intel/i40e/i40e_ethtool.c    | 74 +++++++++++--------
+ drivers/net/ethernet/intel/i40e/i40e_main.c   | 11 ++-
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 54 +++++++++-----
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.h    |  1 +
+ 5 files changed, 90 insertions(+), 51 deletions(-)
+
+-- 
+2.21.0
+
