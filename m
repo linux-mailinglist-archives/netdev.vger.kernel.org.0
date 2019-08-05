@@ -2,124 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E531481121
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 06:42:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD1C81125
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 06:42:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726880AbfHEElw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 00:41:52 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:41568 "EHLO mx1.redhat.com"
+        id S1727195AbfHEEm2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 00:42:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725782AbfHEElv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 00:41:51 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725782AbfHEEm2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 00:42:28 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 9510FC0AD2BB;
-        Mon,  5 Aug 2019 04:41:51 +0000 (UTC)
-Received: from [10.72.12.115] (ovpn-12-115.pek2.redhat.com [10.72.12.115])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id EE54619C59;
-        Mon,  5 Aug 2019 04:41:46 +0000 (UTC)
-Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-From:   Jason Wang <jasowang@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>
-Cc:     linux-mm@kvack.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org
-References: <20190731084655.7024-1-jasowang@redhat.com>
- <20190731084655.7024-8-jasowang@redhat.com> <20190731123935.GC3946@ziepe.ca>
- <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
- <20190731193057.GG3946@ziepe.ca>
- <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
- <20190801141512.GB23899@ziepe.ca>
- <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
- <20190802124613.GA11245@ziepe.ca>
- <20190802100414-mutt-send-email-mst@kernel.org>
- <e8ecb811-6653-cff4-bc11-81f4ccb0dbbf@redhat.com>
-Message-ID: <494ac30d-b750-52c8-b927-16cd4b9414c4@redhat.com>
-Date:   Mon, 5 Aug 2019 12:41:45 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 91A902086D;
+        Mon,  5 Aug 2019 04:42:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1564980148;
+        bh=l8heV+yBr7W4zVRj4lEIIIi2/Clbco4UH053jKdIlVk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=MCa8+hFDCbW4J2P0sJ8WcHTEUECZxCS8PKeFRiqpvHeV7uGNdtpbM4iTJ9u7keYXl
+         PhdICaSagJBt9sqR6rjXAfc2Lg8A91fW1/IuHRlmuIEIDC6qzTOHNvD08wIeSANvyc
+         YLYnzQE0IoeN85gLXr48k6y6NIvsuMg2ddH8MW14=
+Date:   Mon, 5 Aug 2019 06:42:25 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Fernando Valle <phervalle@gmail.com>
+Cc:     isdn@linux-pingi.de, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] drivers:staging:isdn:hysdn brace same line if
+Message-ID: <20190805044225.GA14087@kroah.com>
+References: <20190802195105.27788-1-phervalle@gmail.com>
+ <20190803063528.GC10186@kroah.com>
+ <CACRBQB+wx3=3vQrvnxjcoiZaZjP7EOF+f0NYa4p-XKTHW79RiA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <e8ecb811-6653-cff4-bc11-81f4ccb0dbbf@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Mon, 05 Aug 2019 04:41:51 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CACRBQB+wx3=3vQrvnxjcoiZaZjP7EOF+f0NYa4p-XKTHW79RiA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/8/5 下午12:36, Jason Wang wrote:
->
-> On 2019/8/2 下午10:27, Michael S. Tsirkin wrote:
->> On Fri, Aug 02, 2019 at 09:46:13AM -0300, Jason Gunthorpe wrote:
->>> On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
->>>>> This must be a proper barrier, like a spinlock, mutex, or
->>>>> synchronize_rcu.
->>>>
->>>> I start with synchronize_rcu() but both you and Michael raise some
->>>> concern.
->>> I've also idly wondered if calling synchronize_rcu() under the various
->>> mm locks is a deadlock situation.
->>>
->>>> Then I try spinlock and mutex:
->>>>
->>>> 1) spinlock: add lots of overhead on datapath, this leads 0 
->>>> performance
->>>> improvement.
->>> I think the topic here is correctness not performance improvement
->> The topic is whether we should revert
->> commit 7f466032dc9 ("vhost: access vq metadata through kernel virtual 
->> address")
->>
->> or keep it in. The only reason to keep it is performance.
->
->
-> Maybe it's time to introduce the config option?
+A: Because it messes up the order in which people normally read text.
+Q: Why is top-posting such a bad thing?
+A: Top-posting.
+Q: What is the most annoying thing in e-mail?
 
+A: No.
+Q: Should I include quotations after my reply?
 
-Or does it make sense if I post a V3 with:
+http://daringfireball.net/2007/07/on_top
 
-- introduce config option and disable the optimization by default
+On Sun, Aug 04, 2019 at 10:04:40PM -0300, Fernando Valle wrote:
+> Sorry Greg, it was my first submission.
+> I followed the kernel newbies tutorial and some other found on the internet.
 
-- switch from synchronize_rcu() to vhost_flush_work(), but the rest are 
-the same
+The best description of how to pick a subject line is in the section
+entitled "The canonical patch format" in the kernel file,
+Documentation/SubmittingPatches.  Please read that whole file as it
+contains everything you need to know about writing good changelog texts
+and everything else.
 
-This can give us some breath to decide which way should go for next release?
+> So, the correct form of the subject would be -> "staging:isdn:hysdn open
+> braces in correct location" !?
 
-Thanks
+That's better than what you currently have, but I know you can do much
+better than that :)
 
+good luck!
 
->
->
->>
->> Now as long as all this code is disabled anyway, we can experiment a
->> bit.
->>
->> I personally feel we would be best served by having two code paths:
->>
->> - Access to VM memory directly mapped into kernel
->> - Access to userspace
->>
->>
->> Having it all cleanly split will allow a bunch of optimizations, for
->> example for years now we planned to be able to process an incoming short
->> packet directly on softirq path, or an outgoing on directly within
->> eventfd.
->
->
-> It's not hard consider we've already had our own accssors. But the 
-> question is (as asked in another thread), do you want permanent GUP or 
-> still use MMU notifiers.
->
-> Thanks
->
-> _______________________________________________
-> Virtualization mailing list
-> Virtualization@lists.linux-foundation.org
-> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+greg k-h
