@@ -2,101 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1168109B
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 05:44:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 090DF810BC
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 06:15:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbfHEDn7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 23:43:59 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:41875 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726767AbfHEDn7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 23:43:59 -0400
-Received: by mail-io1-f66.google.com with SMTP id j5so160263127ioj.8
-        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 20:43:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:message-id:in-reply-to:references:subject:mime-version
-         :content-transfer-encoding;
-        bh=M20F16zKuaKLu3Epb7RvxkL0Qz7PqmQ+BSIgoRfDXjU=;
-        b=PysZHlC1B5bd0Ak0YSt9ouHT1RbZQxk6QXKzXvpusJs2DZ9MfQFVG0V5gng0t8acXI
-         Wu2jbgYnkUASzrFeosHuokF6wlH/GWnzGV15NkfTU5Q6Ivj/5uEytFwcFVj9Z2gCBOfG
-         LfC3Dl660/SypsrQPXGssflL8RJ+XW2wVloQLQSk1Fvd7F55SbQ9IJtdEYv2dO9Kd26V
-         zR7fqZGbtVHHec+EkxCenyR/5xeIM/XhbRpMOmwKR9YHpjDOIvolbbXQpiPSI3ULyblR
-         KpdFrMNpXZOZVi3VL3lOdQ4Al9Sg8/0hs0lxWLzhfGw1hhUvVSMrg02XG3Z7APXkV2kU
-         xIRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:message-id:in-reply-to:references
-         :subject:mime-version:content-transfer-encoding;
-        bh=M20F16zKuaKLu3Epb7RvxkL0Qz7PqmQ+BSIgoRfDXjU=;
-        b=FjACXd/9zJgRCBNsX/WeH4xeJEWobS2wU9KqiTZ/H5CEG+2BjxfqIyxuzPZQH544j4
-         nnTAoUiWd5NoY3Gul/oGLVG6yY6MWDIx9LDlkKkRIt5ZotsEpYo/6IcAqkJtBFIInWD2
-         HaVy+4jBRGAodlcmLQ2T/bf0ryKxWQc463uG91Q286ZCHxWGQdmhszwKpbZLftOPeAv/
-         PdZwl4byp5EdaEs7CMuFx8/5P2D+ih13m957ukxFHnPjrbtLl2iAjV0JFskbmq/wJPV2
-         VlNij0uacOHpXBMfcw6qNV9ScNISYSZ9j4NffZ55jL9puHvCEfSumi6hsyHCfn35fMK0
-         GA8A==
-X-Gm-Message-State: APjAAAWoLXASEcom78viuj+eHMl9XegFKz4uCNPHvvJxN5YFhHhNFcts
-        tL6hbVY0eg9KTfXqweJGxyq3WsDD8LQ=
-X-Google-Smtp-Source: APXvYqwq4heDoG0W0V/JFSWr4yXqNT/t+oEcbsuFbvcIUvTwdUfaCpZKFKdwrn27Q6IwJgHY42g2pg==
-X-Received: by 2002:a02:aa0d:: with SMTP id r13mr47968633jam.129.1564976638545;
-        Sun, 04 Aug 2019 20:43:58 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id t19sm74448360iog.41.2019.08.04.20.43.56
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 04 Aug 2019 20:43:58 -0700 (PDT)
-Date:   Sun, 04 Aug 2019 20:43:49 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Shridhar Venkatraman <shridhar@neemtree.com>,
-        netdev@vger.kernel.org
-Message-ID: <5d47a5f5d2889_f622aea32f005b826@john-XPS-13-9370.notmuch>
-In-Reply-To: <CADJe1ZsZcWrtdJGgXeoEnG4FFUGxT-BmJvJW2xwDUF+uCUp-kA@mail.gmail.com>
-References: <CADJe1ZsN8+1brBNdN2VNMp4PRdeYjCC=qaMZALQxOTvPmgJQhA@mail.gmail.com>
- <CADJe1ZsZcWrtdJGgXeoEnG4FFUGxT-BmJvJW2xwDUF+uCUp-kA@mail.gmail.com>
-Subject: Re: BPF: ETLS: RECV FLOW
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        id S1727217AbfHEEPd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 00:15:33 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41512 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726454AbfHEEPc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 00:15:32 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 56732ACC1;
+        Mon,  5 Aug 2019 04:15:29 +0000 (UTC)
+Subject: Re: [PATCH v2 20/34] xen: convert put_page() to put_user_page*()
+To:     john.hubbard@gmail.com, Andrew Morton <akpm@linux-foundation.org>
+Cc:     devel@driverdev.osuosl.org, Dave Chinner <david@fromorbit.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, x86@kernel.org,
+        linux-mm@kvack.org, Dave Hansen <dave.hansen@linux.intel.com>,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        intel-gfx@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-rpi-kernel@lists.infradead.org, devel@lists.orangefs.org,
+        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        rds-devel@oss.oracle.com,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Jan Kara <jack@suse.cz>, ceph-devel@vger.kernel.org,
+        kvm@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-media@vger.kernel.org, linux-nfs@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-xfs@vger.kernel.org,
+        netdev@vger.kernel.org, sparclinux@vger.kernel.org,
+        Jason Gunthorpe <jgg@ziepe.ca>
+References: <20190804224915.28669-1-jhubbard@nvidia.com>
+ <20190804224915.28669-21-jhubbard@nvidia.com>
+From:   Juergen Gross <jgross@suse.com>
+Message-ID: <82afb221-52a2-b399-46f5-0ee1f21c3417@suse.com>
+Date:   Mon, 5 Aug 2019 06:15:27 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190804224915.28669-21-jhubbard@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: de-DE
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Shridhar Venkatraman wrote:
-> Hi,
+On 05.08.19 00:49, john.hubbard@gmail.com wrote:
+> From: John Hubbard <jhubbard@nvidia.com>
 > 
-> The eTLS work has BPF integration which is great.
-> However there is one spot where access to the clear text is not available.
-
-Guessing eTLS is a typo for KTLS.
-
+> For pages that were retained via get_user_pages*(), release those pages
+> via the new put_user_page*() routines, instead of via put_page() or
+> release_pages().
 > 
-> From kernel 4.20 - receiver BPF support added for KTLS.
+> This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+> ("mm: introduce put_user_page*(), placeholder versions").
 > 
-> a. receiver BPF is applied on encrypted message
-> b. after applying BPF, message is decrypted
-> c. BPF run logic on the decrypted plain message   - can we add this support ?
-> d. then copy the decrypted message back to userspace.
+> This also handles pages[i] == NULL cases, thanks to an approach
+> that is actually written by Juergen Gross.
 > 
-> code flow reference: tls receive message call flow:
-> --------------------------------------------------------------
+> Signed-off-by: Juergen Gross <jgross@suse.com>
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 > 
-> tls_sw_recvmsg
->   __tcp_bpf_recvmsg [ bpf exec function called on encrypted message ]
->   decrypt_skb_update
->   decrypt_internal
->   BPF_PROG_RUN on decrypted plain message - can we add this support ?
->   skb_copy_datagram_msg [ decrypted message copied back to userspace ]
-
-Yes I'm aware of this I'll push patches this release cycle. At least that
-is the plan. I have some internal patches I've been running for some time
-but need to clean up an edge case. Hopefully should get to it this week
-after fixing up a couple bugs first.
-
+> Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+> Cc: xen-devel@lists.xenproject.org
+> ---
 > 
-> Thanks
-> ps: I sent this to the bpf list as I don't know which one it should go to
+> Hi Juergen,
+> 
+> Say, this is *exactly* what you proposed in your gup.patch, so
+> I've speculatively added your Signed-off-by above, but need your
+> approval before that's final. Let me know please...
 
-sending to bpf list and CC netdev would work or just BPF list.
+Yes, that's fine with me.
 
-.John
+
+Juergen
