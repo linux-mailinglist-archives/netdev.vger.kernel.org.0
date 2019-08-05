@@ -2,133 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C67888141E
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 10:24:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD9EB81425
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 10:27:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727767AbfHEIYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 04:24:34 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55268 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726518AbfHEIYe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 04:24:34 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5938630923D0;
-        Mon,  5 Aug 2019 08:24:33 +0000 (UTC)
-Received: from [10.72.12.115] (ovpn-12-115.pek2.redhat.com [10.72.12.115])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9AC761000323;
-        Mon,  5 Aug 2019 08:24:28 +0000 (UTC)
-Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-References: <20190731123935.GC3946@ziepe.ca>
- <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
- <20190731193057.GG3946@ziepe.ca>
- <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
- <20190801141512.GB23899@ziepe.ca>
- <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
- <20190802124613.GA11245@ziepe.ca>
- <20190802100414-mutt-send-email-mst@kernel.org>
- <e8ecb811-6653-cff4-bc11-81f4ccb0dbbf@redhat.com>
- <494ac30d-b750-52c8-b927-16cd4b9414c4@redhat.com>
- <20190805023106-mutt-send-email-mst@kernel.org>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <86444f93-e507-cfd9-598b-51466bb02354@redhat.com>
-Date:   Mon, 5 Aug 2019 16:24:27 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727739AbfHEI1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 04:27:12 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:39668 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726518AbfHEI1M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 04:27:12 -0400
+Received: by mail-wr1-f66.google.com with SMTP id x4so30283864wrt.6;
+        Mon, 05 Aug 2019 01:27:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rictj+Qm0LQXHqbH3hWSwYOizIiK+569WyJPDSyU/rM=;
+        b=TEzxLHotZ82D7MoMvuzxjcA7V/ypQNIEGXEpcjDgnhivRGAZWKNeU/ZSSg5e+FVpjF
+         //f86yV6Q8sV795KeRHK0ntbgbuq0TNP1Ln2bEt1E71EuGXu+8+8EKEWZzPVBwrVPzeg
+         3MTcijUcrpgueLJd21mwEfYDRMiy+3mq8Z+lzBD3lQJPA/OHWhq+X/OPwJE2Kc3SCe5O
+         cBlOjDCI2v3VD32QFFaptomk4CxQFG9Jt/IBuXvA4l1wMmRIjolYZYztI2pnxD2CgWBC
+         /4XeOik586yrwDztDzma+84oR0uPqCD6QSkxxlv/pf3M7VDW20owOZ/HJEoXlbn0DySQ
+         r/6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Rictj+Qm0LQXHqbH3hWSwYOizIiK+569WyJPDSyU/rM=;
+        b=rZy7ovCymIr6uYUyS1A6o5phO5HLUdUX5AaxBDXgppiAYzNFJgbhgX0PtwUfICY0QE
+         zA/xWQhRo5mi1AQ+2zIaXdHrcQ4nFvv3fYvRZuAHRoeDAExbyLrvZ7C5EeOzh5nBgDQV
+         Sx0Ch7ypDx5mG0tqN4xpTtyvA7YmpUeQyAkc2eeo2ODGAVkwujLsd7pyhbUtHpErAeNc
+         5YYhFS0qwWB8ieoYWxeQQvWvhTeLypw72JdnrBF7tP6py8+1jeCj5jwIOFkNZ7s+vEK/
+         CRXQBjfN9YtBeENYqtJllaV4jvjJLEldMpmqqz+X3PMuiHQaqhaTV99l5YbIBMG69o6M
+         CP+A==
+X-Gm-Message-State: APjAAAXdJ6+ZnGpHCeGRM39Ptfzt5VYQK6JB78sphi/xQKkgolCFrBVx
+        6q/tnMNxdqbD+hsW+CaqhxTsVvSP
+X-Google-Smtp-Source: APXvYqyDBattDjWc9UlHZrsEouI7PMUtB7vqKfXzRoEKLK2QuJpNk9k6BaZpThCCD+FSuRkGJpE04g==
+X-Received: by 2002:adf:e343:: with SMTP id n3mr122890130wrj.103.1564993629831;
+        Mon, 05 Aug 2019 01:27:09 -0700 (PDT)
+Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
+        by smtp.gmail.com with ESMTPSA id w23sm90645706wmi.45.2019.08.05.01.27.08
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 05 Aug 2019 01:27:09 -0700 (PDT)
+From:   Hubert Feurstein <h.feurstein@gmail.com>
+X-Google-Original-From: Hubert Feurstein <hubert.feurstein@vahle.at>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net-next v2] net: dsa: mv88e6xxx: extend PTP gettime function to read system clock
+Date:   Mon,  5 Aug 2019 10:26:42 +0200
+Message-Id: <20190805082642.12873-1-hubert.feurstein@vahle.at>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-In-Reply-To: <20190805023106-mutt-send-email-mst@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Mon, 05 Aug 2019 08:24:33 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Hubert Feurstein <h.feurstein@gmail.com>
 
-On 2019/8/5 下午2:40, Michael S. Tsirkin wrote:
-> On Mon, Aug 05, 2019 at 12:41:45PM +0800, Jason Wang wrote:
->> On 2019/8/5 下午12:36, Jason Wang wrote:
->>> On 2019/8/2 下午10:27, Michael S. Tsirkin wrote:
->>>> On Fri, Aug 02, 2019 at 09:46:13AM -0300, Jason Gunthorpe wrote:
->>>>> On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
->>>>>>> This must be a proper barrier, like a spinlock, mutex, or
->>>>>>> synchronize_rcu.
->>>>>> I start with synchronize_rcu() but both you and Michael raise some
->>>>>> concern.
->>>>> I've also idly wondered if calling synchronize_rcu() under the various
->>>>> mm locks is a deadlock situation.
->>>>>
->>>>>> Then I try spinlock and mutex:
->>>>>>
->>>>>> 1) spinlock: add lots of overhead on datapath, this leads 0
->>>>>> performance
->>>>>> improvement.
->>>>> I think the topic here is correctness not performance improvement
->>>> The topic is whether we should revert
->>>> commit 7f466032dc9 ("vhost: access vq metadata through kernel
->>>> virtual address")
->>>>
->>>> or keep it in. The only reason to keep it is performance.
->>>
->>> Maybe it's time to introduce the config option?
->>
->> Or does it make sense if I post a V3 with:
->>
->> - introduce config option and disable the optimization by default
->>
->> - switch from synchronize_rcu() to vhost_flush_work(), but the rest are the
->> same
->>
->> This can give us some breath to decide which way should go for next release?
->>
->> Thanks
-> As is, with preempt enabled?  Nope I don't think blocking an invalidator
-> on swap IO is ok, so I don't believe this stuff is going into this
-> release at this point.
->
-> So it's more a question of whether it's better to revert and apply a clean
-> patch on top, or just keep the code around but disabled with an ifdef as is.
-> I'm open to both options, and would like your opinion on this.
+This adds support for the PTP_SYS_OFFSET_EXTENDED ioctl.
 
+Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
+---
+ drivers/net/dsa/mv88e6xxx/ptp.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-Then I prefer to leave current code (VHOST_ARCH_CAN_ACCEL to 0) as is. 
-This can also save efforts on rebasing packed virtqueues.
+diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
+index 073cbd0bb91b..2ebc7db0fd4a 100644
+--- a/drivers/net/dsa/mv88e6xxx/ptp.c
++++ b/drivers/net/dsa/mv88e6xxx/ptp.c
+@@ -235,14 +235,17 @@ static int mv88e6xxx_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	return 0;
+ }
+ 
+-static int mv88e6xxx_ptp_gettime(struct ptp_clock_info *ptp,
+-				 struct timespec64 *ts)
++static int mv88e6xxx_ptp_gettimex(struct ptp_clock_info *ptp,
++				  struct timespec64 *ts,
++				  struct ptp_system_timestamp *sts)
+ {
+ 	struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
+ 	u64 ns;
+ 
+ 	mv88e6xxx_reg_lock(chip);
++	ptp_read_system_prets(sts);
+ 	ns = timecounter_read(&chip->tstamp_tc);
++	ptp_read_system_postts(sts);
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+ 	*ts = ns_to_timespec64(ns);
+@@ -426,7 +429,7 @@ static void mv88e6xxx_ptp_overflow_check(struct work_struct *work)
+ 	struct mv88e6xxx_chip *chip = dw_overflow_to_chip(dw);
+ 	struct timespec64 ts;
+ 
+-	mv88e6xxx_ptp_gettime(&chip->ptp_clock_info, &ts);
++	mv88e6xxx_ptp_gettimex(&chip->ptp_clock_info, &ts, NULL);
+ 
+ 	schedule_delayed_work(&chip->overflow_work,
+ 			      MV88E6XXX_TAI_OVERFLOW_PERIOD);
+@@ -472,7 +475,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
+ 	chip->ptp_clock_info.max_adj    = MV88E6XXX_MAX_ADJ_PPB;
+ 	chip->ptp_clock_info.adjfine	= mv88e6xxx_ptp_adjfine;
+ 	chip->ptp_clock_info.adjtime	= mv88e6xxx_ptp_adjtime;
+-	chip->ptp_clock_info.gettime64	= mv88e6xxx_ptp_gettime;
++	chip->ptp_clock_info.gettimex64	= mv88e6xxx_ptp_gettimex;
+ 	chip->ptp_clock_info.settime64	= mv88e6xxx_ptp_settime;
+ 	chip->ptp_clock_info.enable	= ptp_ops->ptp_enable;
+ 	chip->ptp_clock_info.verify	= ptp_ops->ptp_verify;
+-- 
+2.22.0
 
-Thanks
-
-
->
->>>
->>>> Now as long as all this code is disabled anyway, we can experiment a
->>>> bit.
->>>>
->>>> I personally feel we would be best served by having two code paths:
->>>>
->>>> - Access to VM memory directly mapped into kernel
->>>> - Access to userspace
->>>>
->>>>
->>>> Having it all cleanly split will allow a bunch of optimizations, for
->>>> example for years now we planned to be able to process an incoming short
->>>> packet directly on softirq path, or an outgoing on directly within
->>>> eventfd.
->>>
->>> It's not hard consider we've already had our own accssors. But the
->>> question is (as asked in another thread), do you want permanent GUP or
->>> still use MMU notifiers.
->>>
->>> Thanks
->>>
->>> _______________________________________________
->>> Virtualization mailing list
->>> Virtualization@lists.linux-foundation.org
->>> https://lists.linuxfoundation.org/mailman/listinfo/virtualization
