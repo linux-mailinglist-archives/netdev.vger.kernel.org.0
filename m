@@ -2,84 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C9B68254C
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 21:07:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8619A8254F
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 21:08:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728885AbfHETHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 15:07:14 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:34907 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727802AbfHETHO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 15:07:14 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d23so82088687qto.2
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 12:07:13 -0700 (PDT)
+        id S1730326AbfHETIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 15:08:05 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45615 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727802AbfHETIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 15:08:05 -0400
+Received: by mail-pg1-f193.google.com with SMTP id o13so40193246pgp.12;
+        Mon, 05 Aug 2019 12:08:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=7cjTnczGibTn5rawmn2M5/3asBx2IS8dQHs17OVk1sA=;
-        b=nbeDjZAShpBCPI2LlGcw9MTzZkQY2ZZGBKnLu+AGbiQI+Gs1Kaz5u/KQBShQpTxIwh
-         jEZxP6qrQUG701KX25F+bRs80Yh70EZL1gTbTY55rXHNUdwuhMtly/N6xnDUqvcEIRS9
-         jPmQmkWCJoyJazZ/b13waoIuULfoiJsxwXbk3M9iffLp8pFSAfgq4J9WySPCdIEaHPbc
-         Yh3krCIqR7oIipvxZKHzdO+F3TRWmvzXnaF3Q9R08aXyV60mScr3hBRuo6/P/CstrHql
-         bEelg+9QXnmHzKdcYZcnMGoJoEmEtOh3cwEhMvsfXdI1VDe3Q/McC7RW+p1FWa0wYuMH
-         z0Kw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=idFG2mTEpSbw73WHSjePYJvH/E+3K7M4GqzEgN2zlLY=;
+        b=ZayV7+qrst7eyG8CshixkEtbJEa0x/8jVG45IgTW3ZXhLUvOl4ptoJHoQAy1b6zOK3
+         WRmrrB8k4j08mO0fqBF+llGfj8N05RBvJTbVq16Z2I0uBVrW4H9y12yHxE0EvLAe0B3t
+         T8O7qgQvAmw2WWULTwaM/xa7nUGqWr7GoxbiVtH8n8y4CX6Q2EYM2c4QzWrA3TY+hcJs
+         6n9BqjG7ZaAwGHK6qEXsitI172QtFXfl8RLE0Md+Ld87Jx+5WaY5TSQqfboyN4ctn+z8
+         Bo8iI+7oYvnW9k3XvMdrY71NXZf7aVD8ExNcxRg3XfOVggPLoUvTFuXqTJINDGG0fTL3
+         OJTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=7cjTnczGibTn5rawmn2M5/3asBx2IS8dQHs17OVk1sA=;
-        b=KDaD3yNuM+NPL2mCmn0pzwA2XInuIJou7415racv3Fry/n1K0s54Sx0a4nCwxlUprY
-         QOtTH9QDhRHr4v117J8WEr8K5f0E9GAm29o79qf9DLOECXlwKVs5jtx5zve0TX8EGDFU
-         itTyy9/i/g8rGCfg0mxteMn9JVd5j2FAsyJkL11GgB4EcnVlMJs3sEFd80aBXYj/Nn8s
-         JVkgfgWKwavG3rUrnD4iqf61n7PWDHILlATXRKqPkiwwDMJ0nrNGm4/rghHWnI+seoQf
-         VKEmRWZWdEbUQUJIHHTAoRj+kNfn5wrEP4Eok70gplIlPsUyh4sqGVsDa+3gFWv69Hx/
-         IfdQ==
-X-Gm-Message-State: APjAAAVgIJFeMh4rFKRALm02qhC2suXL0PhJl4IEnHmAz0FRa6a+Kvja
-        f2e2E3T0h/a3GUqgLNkZuOymhA==
-X-Google-Smtp-Source: APXvYqz5esywJ6Txu9kqdNG1tEVUBpHa4d5a3kw3izRb/woN6WLyN3veThRQEuiOzkceGBNgX+GgRw==
-X-Received: by 2002:a0c:89b2:: with SMTP id 47mr110360311qvr.203.1565032033308;
-        Mon, 05 Aug 2019 12:07:13 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c5sm38695126qkb.41.2019.08.05.12.07.12
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 12:07:13 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 12:06:49 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Peter Wu <peter@lekensteyn.nl>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        Stanislav Fomichev <sdf@google.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: Re: [PATCH] tools: bpftool: fix reading from /proc/config.gz
-Message-ID: <20190805120649.421211da@cakuba.netronome.com>
-In-Reply-To: <20190805152936.GE4544@mini-arch>
-References: <20190805001541.8096-1-peter@lekensteyn.nl>
-        <20190805152936.GE4544@mini-arch>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=idFG2mTEpSbw73WHSjePYJvH/E+3K7M4GqzEgN2zlLY=;
+        b=OG4buZ5hEKuGB2X23XVWvwa7utrgZr6SGYdgr4t1/gwuvt+i6gTYoS3latdrWk1xEk
+         D5OsKw54XExkXkWK6NeyQ+VvggIY4WXFMwpHfyvNaPGlj4q2oajKmNWdx96fIeVptr1n
+         UVjoxuDbN5O9/I5jSL0vgeCigrDThLuFPS1nMOsDX9jj6tjyHYfN9aqcnbtZ2u4zygNO
+         tqNn2pzBVhXGJLJRLFJA57882NwwE8z1KX3Pf1fnesVzk2gYlIGwdPz1WwvMXUXexakp
+         6YucycgHhw+myFY9c7hyYIcqPJ+9Evls9irsJcgTigu2/8o6qcsakzxeJWtc2c5DUTKW
+         0PKQ==
+X-Gm-Message-State: APjAAAUCufqhCGRY0KmFarTg7D5w923AuM11stAFeO2xyUJxPzuuq1Jp
+        2qRpRhjxU6fqM+k8zK/SYe/DFxx+RsQ=
+X-Google-Smtp-Source: APXvYqyc7o+C/Qk7w77byYcljAodqdjEYcOgFI6vqLs/YZEsnATcqCv1Ru0jxpEpj1fWOqE03zFqZQ==
+X-Received: by 2002:a65:4304:: with SMTP id j4mr141221056pgq.419.1565032084722;
+        Mon, 05 Aug 2019 12:08:04 -0700 (PDT)
+Received: from [172.27.227.246] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id z63sm59188703pfb.98.2019.08.05.12.08.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Aug 2019 12:08:03 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] rdma: Add driver QP type string
+To:     Gal Pressman <galpress@amazon.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Leon Romanovsky <leon@kernel.org>
+References: <20190804080756.58364-1-galpress@amazon.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <fd623a4e-d076-3eea-2d1e-7702812b0dfc@gmail.com>
+Date:   Mon, 5 Aug 2019 13:08:02 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190804080756.58364-1-galpress@amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 5 Aug 2019 08:29:36 -0700, Stanislav Fomichev wrote:
-> On 08/05, Peter Wu wrote:
-> > /proc/config has never existed as far as I can see, but /proc/config.gz
-> > is present on Arch Linux. Execute an external gunzip program to avoid
-> > linking to zlib and rework the option scanning code since a pipe is not
-> > seekable. This also fixes a file handle leak on some error paths.  
-> Thanks for doing that! One question: why not link against -lz instead?
-> With fork/execing gunzip you're just hiding this dependency.
-> 
-> You can add something like this to the Makefile:
-> ifeq ($(feature-zlib),1)
-> CLFAGS += -DHAVE_ZLIB
-> endif
-> 
-> And then conditionally add support for config.gz. Thoughts?
+On 8/4/19 2:07 AM, Gal Pressman wrote:
+> RDMA resource tracker now tracks driver QPs as well, add driver QP type
+> string to qp_types_to_str function.
 
-+1
+"now" means which kernel release? Leon: should this be in master or -next?
+
+> 
+> Signed-off-by: Gal Pressman <galpress@amazon.com>
+> ---
+>  rdma/res.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/rdma/res.c b/rdma/res.c
+> index ef863f142eca..97a7b9640185 100644
+> --- a/rdma/res.c
+> +++ b/rdma/res.c
+> @@ -148,9 +148,11 @@ const char *qp_types_to_str(uint8_t idx)
+>  						     "UC", "UD", "RAW_IPV6",
+>  						     "RAW_ETHERTYPE",
+>  						     "UNKNOWN", "RAW_PACKET",
+> -						     "XRC_INI", "XRC_TGT" };
+> +						     "XRC_INI", "XRC_TGT",
+> +						     [0xFF] = "DRIVER",
+> +	};
+>  
+> -	if (idx < ARRAY_SIZE(qp_types_str))
+> +	if (idx < ARRAY_SIZE(qp_types_str) && qp_types_str[idx])
+>  		return qp_types_str[idx];
+>  	return "UNKNOWN";
+>  }
+> 
+
