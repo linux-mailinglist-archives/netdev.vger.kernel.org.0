@@ -2,114 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CA5481057
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 04:48:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C50C281069
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 04:56:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbfHECs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 22:48:28 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:45886 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726666AbfHECs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 22:48:28 -0400
-Received: by mail-ot1-f68.google.com with SMTP id x21so18292921otq.12
-        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 19:48:27 -0700 (PDT)
+        id S1726805AbfHEC4T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 22:56:19 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34642 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726757AbfHEC4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 22:56:18 -0400
+Received: by mail-pl1-f195.google.com with SMTP id i2so35885540plt.1
+        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 19:56:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lKp78wWvU0kANLx8YD9r7it4hHU91ljdayzeBmIo0bg=;
-        b=hlCm380IUNDfiDQDbBtnFQmcHNXjGPEEhK2UDeg9Y9lbmysXHCw0ISKtm08VhxZYrD
-         U5Nk6sI/Lr14FSYCG1TvssqzybtHnwoHGeiclmZyQW4qc2/LckszFT3KM8ZEMpI7PfWp
-         ELxzW1PB+A5QEXeo/ZcyMvQSAsh74egVNybtgaNCfHg301mMbTQxH3CuIgmd1OL3Zu1b
-         UAox4io0hWWETfbVQDu+oyxRLqa72YSCrvtYnXcXq3Ajcplm/xiErzDzdCDOk9PLHDz+
-         9hYxAuGvzRBCf2RLqzgpEMrU2x055L1hnJXp7x/+uFnX24Gu4Wnrta7n3U4ZaSbZNPb3
-         b96A==
+        h=from:to:cc:subject:date:message-id;
+        bh=AvdsAxisVTOVBShJEUJGZbAvdFOrcvBJAg0W5ePnH4I=;
+        b=UywIu7knNU6xFqY9vGfN8JgG/ZxsK5mU7MSwhB+CFBj7Sk1wH5AQGy3Jsjk/KVL+a6
+         FgT/o4MOlv9ZzU4RmcxrEjgTY4swtdpG+JDmtXmUXo/ttVC4zzYCB8FlOBIY23vVfFxR
+         6rDMKvKtLHQweQldJHLVivI6Yk0wMUsoAXIxrEw4dL+6ah0HCfIoDulSq7YKdLNMTveb
+         0AZ7+qDWPsrq+wDl9LOqWi/l6KItjrv9J6sd5m0PvSI9UriSKSJ9mhqhl1vCaztDDwhz
+         oaW2y/lRFqK6DfKHVJ0JrI4UmpVxQxKkSKHdVN1byCf3j9FTWYI+E89nE5GmdWm3yYr+
+         hVxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lKp78wWvU0kANLx8YD9r7it4hHU91ljdayzeBmIo0bg=;
-        b=X7UfxsFT22XGpHFTg5jRGkMum/62K+0P4Hq/XBQ5LKvAh5u+z7Q37AAvf57osoQGu5
-         Qkzvl/b3MD2jSah0HJRZH7YFTUGmKQOBjuInO8ysal6xdgfdSa7V+LCA0bx4kWGXTqtl
-         GZl3SJtm5VVt7M1pMOj3sQGaRw7lDgZVTrRjPvU3HUk5cRAyL2USG7i3CB2MdEUMKGqb
-         dm81wpj6E4TDN0xFPVyM1fxmcRO2vAUIdoxNLkY2e7FN8fD6LM1CqxPsFU3bZON8HRMM
-         vk31oMB9vZsTK1Dnb2hOkjJn+kZC+p6puRiyvZKAP7dFknyP/t22aFn9+ukMPhTUNRu5
-         1VKw==
-X-Gm-Message-State: APjAAAWgfsBWNrj2ZEbUt2rVBbx6YxUWOo06hsDXv2L0JlnmO+sxaQP8
-        z+bDSFn7j/SG1xByxEz3WNuIhpup29OV1J3XOMAL50YXgqk=
-X-Google-Smtp-Source: APXvYqz1235c8CxnMpil1iYta7skcACaJ0OXXWChydB+LVPO/75KTcpqZ87T9ywk6DPLFnhZfwfvpwyJK2IcU6xxrbg=
-X-Received: by 2002:a05:6830:2116:: with SMTP id i22mr68301233otc.318.1564973307479;
- Sun, 04 Aug 2019 19:48:27 -0700 (PDT)
-MIME-Version: 1.0
-References: <1564694047-4859-1-git-send-email-pkusunyifeng@gmail.com> <CAOrHB_CExkSymgCU5yGKg66XywJgNxihn8VQJNr8hw6cff0rOA@mail.gmail.com>
-In-Reply-To: <CAOrHB_CExkSymgCU5yGKg66XywJgNxihn8VQJNr8hw6cff0rOA@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=AvdsAxisVTOVBShJEUJGZbAvdFOrcvBJAg0W5ePnH4I=;
+        b=o21QYGPKpIi9BQgMk0mtQKzD80RCJnDIykI3R0uARAHFN74PeMMWTXW/cqO/AQLcVC
+         OLQQUq30CBSlma6hsLYWtMeKof3jbXH3MtF5fxWZGYI3qlqsO4ZwW7qoHz56SymIEy6y
+         L7BLDZO7umc1gMls0acZnzIFxLKYt2SdNYp/ATG3YsHz8QuigQHe0t1qxY9q0yjXJkFu
+         sGWKyzvQfQXmWYTK4zU16RrVZbuEglulytuQ2rp0Tu7OqyVPcnf9oVTe8urOedBiqkKa
+         OsKLxwogQuAeq1eYVVjIav35P5uTXgJZp14GQXFi3V9FZAPHnq+3apJHHIMk4Dwp6e0s
+         0Zxw==
+X-Gm-Message-State: APjAAAXZKK4SmdaHWT0Af6xHLqyAl25EXLlBCRm6dfDEF1a38AmUemgZ
+        LH555kQILKcUNBYVG6HD7f+8mXzUgPk=
+X-Google-Smtp-Source: APXvYqwYzFAUyJf8U6Inuvuab2xWtBhjR1KvYgk4nt6lYTDIr49KmHo+pblp5PdkuCyaoo6VAAYy/g==
+X-Received: by 2002:a17:902:e58b:: with SMTP id cl11mr138588695plb.24.1564973777787;
+        Sun, 04 Aug 2019 19:56:17 -0700 (PDT)
+Received: from kern417.eng.vmware.com ([66.170.99.1])
+        by smtp.gmail.com with ESMTPSA id u97sm15782421pjb.26.2019.08.04.19.56.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 04 Aug 2019 19:56:17 -0700 (PDT)
 From:   Yifeng Sun <pkusunyifeng@gmail.com>
-Date:   Sun, 4 Aug 2019 19:48:16 -0700
-Message-ID: <CAEYOeXN0QCahV_kAMZ8T2zwJiP_1gSnATBnCG7hA7XrGUT8cMA@mail.gmail.com>
-Subject: Re: [PATCH net-next] openvswitch: Print error when
- ovs_execute_actions() fails
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     netdev@vger.kernel.org, pshelar@ovn.org, gvrose8192@gmail.com
+Cc:     Yifeng Sun <pkusunyifeng@gmail.com>
+Subject: [PATCH net-next v2] openvswitch: Print error when ovs_execute_actions() fails
+Date:   Sun,  4 Aug 2019 19:56:11 -0700
+Message-Id: <1564973771-22542-1-git-send-email-pkusunyifeng@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Yes, this fix is mainly for debugging purposes. If packets are
-blackholed because
-of errors from ovs_execute_actions(), we can got more helpful
-information. Thanks
-Pravin for the review, I will come up with a new version.
-Yifeng
+Currently in function ovs_dp_process_packet(), return values of
+ovs_execute_actions() are silently discarded. This patch prints out
+an debug message when error happens so as to provide helpful hints
+for debugging.
+---
+v1->v2: Fixed according to Pravin's review.
 
-On Sat, Aug 3, 2019 at 4:00 PM Pravin Shelar <pshelar@ovn.org> wrote:
->
-> On Thu, Aug 1, 2019 at 2:14 PM Yifeng Sun <pkusunyifeng@gmail.com> wrote:
-> >
-> > Currently in function ovs_dp_process_packet(), return values of
-> > ovs_execute_actions() are silently discarded. This patch prints out
-> > an error message when error happens so as to provide helpful hints
-> > for debugging.
-> >
-> > Signed-off-by: Yifeng Sun <pkusunyifeng@gmail.com>
-> > ---
-> >  net/openvswitch/datapath.c | 7 +++++--
-> >  1 file changed, 5 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
-> > index 892287d..603c533 100644
-> > --- a/net/openvswitch/datapath.c
-> > +++ b/net/openvswitch/datapath.c
-> > @@ -222,6 +222,7 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
-> >         struct dp_stats_percpu *stats;
-> >         u64 *stats_counter;
-> >         u32 n_mask_hit;
-> > +       int error;
-> >
-> >         stats = this_cpu_ptr(dp->stats_percpu);
-> >
-> > @@ -229,7 +230,6 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
-> >         flow = ovs_flow_tbl_lookup_stats(&dp->table, key, &n_mask_hit);
-> >         if (unlikely(!flow)) {
-> >                 struct dp_upcall_info upcall;
-> > -               int error;
-> >
-> >                 memset(&upcall, 0, sizeof(upcall));
-> >                 upcall.cmd = OVS_PACKET_CMD_MISS;
-> > @@ -246,7 +246,10 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
-> >
-> >         ovs_flow_stats_update(flow, key->tp.flags, skb);
-> >         sf_acts = rcu_dereference(flow->sf_acts);
-> > -       ovs_execute_actions(dp, skb, sf_acts, key);
-> > +       error = ovs_execute_actions(dp, skb, sf_acts, key);
-> > +       if (unlikely(error))
-> > +               net_err_ratelimited("ovs: action execution error on datapath %s: %d\n",
-> > +                                                       ovs_dp_name(dp), error);
-> >
->
-> I would rather add error counter for better visibility.
-> If you want to use current approach, can you use net_dbg_ratelimited()
-> since you want to use this for debugging purpose?
->
-> Thanks.
+ net/openvswitch/datapath.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+index 892287d..12d9850 100644
+--- a/net/openvswitch/datapath.c
++++ b/net/openvswitch/datapath.c
+@@ -222,6 +222,7 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+ 	struct dp_stats_percpu *stats;
+ 	u64 *stats_counter;
+ 	u32 n_mask_hit;
++	int error;
+ 
+ 	stats = this_cpu_ptr(dp->stats_percpu);
+ 
+@@ -229,7 +230,6 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+ 	flow = ovs_flow_tbl_lookup_stats(&dp->table, key, &n_mask_hit);
+ 	if (unlikely(!flow)) {
+ 		struct dp_upcall_info upcall;
+-		int error;
+ 
+ 		memset(&upcall, 0, sizeof(upcall));
+ 		upcall.cmd = OVS_PACKET_CMD_MISS;
+@@ -246,7 +246,10 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+ 
+ 	ovs_flow_stats_update(flow, key->tp.flags, skb);
+ 	sf_acts = rcu_dereference(flow->sf_acts);
+-	ovs_execute_actions(dp, skb, sf_acts, key);
++	error = ovs_execute_actions(dp, skb, sf_acts, key);
++	if (unlikely(error))
++		net_dbg_ratelimited("ovs: action execution error on datapath %s: %d\n",
++							ovs_dp_name(dp), error);
+ 
+ 	stats_counter = &stats->n_hit;
+ 
+-- 
+2.7.4
+
