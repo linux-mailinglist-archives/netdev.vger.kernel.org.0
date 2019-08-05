@@ -2,83 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA65F81000
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 03:22:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CA5481057
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 04:48:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726935AbfHEBWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 4 Aug 2019 21:22:09 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:46824 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726709AbfHEBWJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 4 Aug 2019 21:22:09 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 29C038F3348D204690A2;
-        Mon,  5 Aug 2019 09:22:07 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS405-HUB.china.huawei.com (10.3.19.205) with Microsoft SMTP Server id
- 14.3.439.0; Mon, 5 Aug 2019 09:21:56 +0800
-From:   Mao Wenan <maowenan@huawei.com>
-To:     <socketcan@hartkopp.net>, <davem@davemloft.net>,
-        <netdev@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        "Mao Wenan" <maowenan@huawei.com>
-Subject: [PATCH net-next v2] net: can: Fix compiling warning
-Date:   Mon, 5 Aug 2019 09:26:37 +0800
-Message-ID: <20190805012637.62314-1-maowenan@huawei.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <1d9e329a-eafc-6c32-ee2a-df3b15231a2a@huawei.com>
-References: <1d9e329a-eafc-6c32-ee2a-df3b15231a2a@huawei.com>
+        id S1726825AbfHECs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 4 Aug 2019 22:48:28 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:45886 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726666AbfHECs2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 4 Aug 2019 22:48:28 -0400
+Received: by mail-ot1-f68.google.com with SMTP id x21so18292921otq.12
+        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 19:48:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lKp78wWvU0kANLx8YD9r7it4hHU91ljdayzeBmIo0bg=;
+        b=hlCm380IUNDfiDQDbBtnFQmcHNXjGPEEhK2UDeg9Y9lbmysXHCw0ISKtm08VhxZYrD
+         U5Nk6sI/Lr14FSYCG1TvssqzybtHnwoHGeiclmZyQW4qc2/LckszFT3KM8ZEMpI7PfWp
+         ELxzW1PB+A5QEXeo/ZcyMvQSAsh74egVNybtgaNCfHg301mMbTQxH3CuIgmd1OL3Zu1b
+         UAox4io0hWWETfbVQDu+oyxRLqa72YSCrvtYnXcXq3Ajcplm/xiErzDzdCDOk9PLHDz+
+         9hYxAuGvzRBCf2RLqzgpEMrU2x055L1hnJXp7x/+uFnX24Gu4Wnrta7n3U4ZaSbZNPb3
+         b96A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lKp78wWvU0kANLx8YD9r7it4hHU91ljdayzeBmIo0bg=;
+        b=X7UfxsFT22XGpHFTg5jRGkMum/62K+0P4Hq/XBQ5LKvAh5u+z7Q37AAvf57osoQGu5
+         Qkzvl/b3MD2jSah0HJRZH7YFTUGmKQOBjuInO8ysal6xdgfdSa7V+LCA0bx4kWGXTqtl
+         GZl3SJtm5VVt7M1pMOj3sQGaRw7lDgZVTrRjPvU3HUk5cRAyL2USG7i3CB2MdEUMKGqb
+         dm81wpj6E4TDN0xFPVyM1fxmcRO2vAUIdoxNLkY2e7FN8fD6LM1CqxPsFU3bZON8HRMM
+         vk31oMB9vZsTK1Dnb2hOkjJn+kZC+p6puRiyvZKAP7dFknyP/t22aFn9+ukMPhTUNRu5
+         1VKw==
+X-Gm-Message-State: APjAAAWgfsBWNrj2ZEbUt2rVBbx6YxUWOo06hsDXv2L0JlnmO+sxaQP8
+        z+bDSFn7j/SG1xByxEz3WNuIhpup29OV1J3XOMAL50YXgqk=
+X-Google-Smtp-Source: APXvYqz1235c8CxnMpil1iYta7skcACaJ0OXXWChydB+LVPO/75KTcpqZ87T9ywk6DPLFnhZfwfvpwyJK2IcU6xxrbg=
+X-Received: by 2002:a05:6830:2116:: with SMTP id i22mr68301233otc.318.1564973307479;
+ Sun, 04 Aug 2019 19:48:27 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+References: <1564694047-4859-1-git-send-email-pkusunyifeng@gmail.com> <CAOrHB_CExkSymgCU5yGKg66XywJgNxihn8VQJNr8hw6cff0rOA@mail.gmail.com>
+In-Reply-To: <CAOrHB_CExkSymgCU5yGKg66XywJgNxihn8VQJNr8hw6cff0rOA@mail.gmail.com>
+From:   Yifeng Sun <pkusunyifeng@gmail.com>
+Date:   Sun, 4 Aug 2019 19:48:16 -0700
+Message-ID: <CAEYOeXN0QCahV_kAMZ8T2zwJiP_1gSnATBnCG7hA7XrGUT8cMA@mail.gmail.com>
+Subject: Re: [PATCH net-next] openvswitch: Print error when
+ ovs_execute_actions() fails
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two warnings in net/can, fix them by setting bcm_sock_no_ioctlcmd
-and raw_sock_no_ioctlcmd as static.
+Yes, this fix is mainly for debugging purposes. If packets are
+blackholed because
+of errors from ovs_execute_actions(), we can got more helpful
+information. Thanks
+Pravin for the review, I will come up with a new version.
+Yifeng
 
-net/can/bcm.c:1683:5: warning: symbol 'bcm_sock_no_ioctlcmd' was not declared. Should it be static?
-net/can/raw.c:840:5: warning: symbol 'raw_sock_no_ioctlcmd' was not declared. Should it be static?
-
-Fixes: 473d924d7d46 ("can: fix ioctl function removal")
-Signed-off-by: Mao Wenan <maowenan@huawei.com>
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
----
- v1->v2: change patch description typo error, 'warings' to 'warnings'.
- net/can/bcm.c | 2 +-
- net/can/raw.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/can/bcm.c b/net/can/bcm.c
-index bf1d0bbecec8..b8a32b4ac368 100644
---- a/net/can/bcm.c
-+++ b/net/can/bcm.c
-@@ -1680,7 +1680,7 @@ static int bcm_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	return size;
- }
- 
--int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
-+static int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
- 			 unsigned long arg)
- {
- 	/* no ioctls for socket layer -> hand it down to NIC layer */
-diff --git a/net/can/raw.c b/net/can/raw.c
-index da386f1fa815..a01848ff9b12 100644
---- a/net/can/raw.c
-+++ b/net/can/raw.c
-@@ -837,7 +837,7 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
- 	return size;
- }
- 
--int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
-+static int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
- 			 unsigned long arg)
- {
- 	/* no ioctls for socket layer -> hand it down to NIC layer */
--- 
-2.20.1
-
+On Sat, Aug 3, 2019 at 4:00 PM Pravin Shelar <pshelar@ovn.org> wrote:
+>
+> On Thu, Aug 1, 2019 at 2:14 PM Yifeng Sun <pkusunyifeng@gmail.com> wrote:
+> >
+> > Currently in function ovs_dp_process_packet(), return values of
+> > ovs_execute_actions() are silently discarded. This patch prints out
+> > an error message when error happens so as to provide helpful hints
+> > for debugging.
+> >
+> > Signed-off-by: Yifeng Sun <pkusunyifeng@gmail.com>
+> > ---
+> >  net/openvswitch/datapath.c | 7 +++++--
+> >  1 file changed, 5 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/openvswitch/datapath.c b/net/openvswitch/datapath.c
+> > index 892287d..603c533 100644
+> > --- a/net/openvswitch/datapath.c
+> > +++ b/net/openvswitch/datapath.c
+> > @@ -222,6 +222,7 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+> >         struct dp_stats_percpu *stats;
+> >         u64 *stats_counter;
+> >         u32 n_mask_hit;
+> > +       int error;
+> >
+> >         stats = this_cpu_ptr(dp->stats_percpu);
+> >
+> > @@ -229,7 +230,6 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+> >         flow = ovs_flow_tbl_lookup_stats(&dp->table, key, &n_mask_hit);
+> >         if (unlikely(!flow)) {
+> >                 struct dp_upcall_info upcall;
+> > -               int error;
+> >
+> >                 memset(&upcall, 0, sizeof(upcall));
+> >                 upcall.cmd = OVS_PACKET_CMD_MISS;
+> > @@ -246,7 +246,10 @@ void ovs_dp_process_packet(struct sk_buff *skb, struct sw_flow_key *key)
+> >
+> >         ovs_flow_stats_update(flow, key->tp.flags, skb);
+> >         sf_acts = rcu_dereference(flow->sf_acts);
+> > -       ovs_execute_actions(dp, skb, sf_acts, key);
+> > +       error = ovs_execute_actions(dp, skb, sf_acts, key);
+> > +       if (unlikely(error))
+> > +               net_err_ratelimited("ovs: action execution error on datapath %s: %d\n",
+> > +                                                       ovs_dp_name(dp), error);
+> >
+>
+> I would rather add error counter for better visibility.
+> If you want to use current approach, can you use net_dbg_ratelimited()
+> since you want to use this for debugging purpose?
+>
+> Thanks.
