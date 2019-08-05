@@ -2,84 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2675082747
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 00:04:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6889C82755
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 00:10:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730804AbfHEWEJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 18:04:09 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:33774 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728483AbfHEWEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 18:04:09 -0400
-Received: by mail-oi1-f194.google.com with SMTP id u15so63626504oiv.0;
-        Mon, 05 Aug 2019 15:04:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hQkPqzCl0EgO8ejsOWFwcjYDROGmuy2jsvyxtVP20aM=;
-        b=FCJwaACzgf1lMLExxkJ0zmSYaGN+RjeBxMMU7Lk33oCV3CEo868GUeLDDxRP8mE1cO
-         1+wU+wOa9k11DarcGLU9OVtJ2zAkqSj1yefQviDdYqkf7C9wGG0fb+b0g7bvyVTR1OEY
-         VrbnQZMl/kXiahEqmsY3qHI56gsaEJJ02c38h7UtUzchv41TArVnLCeThcrLLMr6eAYk
-         Ox4H1/llesBgvumKRwVMvQI87/EbuXwbiPWy2YRdMb2f+Sbtsde13IXtqzgZjhJj86mA
-         4b2/CYpjuJX+HfG9w4X9VG/rCkSp5laJerKuNBQTsDY89wMo7+hNSjcRHyWdjIzA1ArD
-         uazg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hQkPqzCl0EgO8ejsOWFwcjYDROGmuy2jsvyxtVP20aM=;
-        b=D0F6sWSMaupHC0eMKNG8hdNjMXQW/AojAaSM1fu7SGB/aUP7qA6IVFfWBAML23d9CA
-         HYdsBU1gj/7VZ2ybmd8hIkrYHh94y4rVcWTBoAgigV2/o50tMIiEqEnVXEfublHpSYcd
-         qc2wdtivg37wTdUJE8ky9ewDThK2fKcGKVXQdUBNCtXjzdMsnd9ngR1yBRSb7tteaAUF
-         dEhW9nIbZlr1g4Cg1PjxOK2gSHV0lOgvDu2vtIGxaJI4wIJKewPUAmkG1Uhbk0X4ZB/Y
-         YEsDzAqkrvGRiRZUDo0zvIdzbyt58GGQRe8IDzC0ZzqkWPqglsxoQRSlOLgK2Qdc/EG/
-         Exvw==
-X-Gm-Message-State: APjAAAWz7+a3U5/b4G8h+yLCeACyvt3vHJpE0He8QshbrE6qOpUYo19r
-        tiX4xRPnI+kpCgUN6txVVu8Q5+8QLjWh9qQm7OY=
-X-Google-Smtp-Source: APXvYqxP7fkzI8bznQi3qLDYrrbEn4kQESZSUqqCHb6GuB5YrW2/rhkANG1qEjqgWRtj1C/ifmeIShJ1bzdlQVNpSss=
-X-Received: by 2002:a02:b914:: with SMTP id v20mr567705jan.83.1565042648210;
- Mon, 05 Aug 2019 15:04:08 -0700 (PDT)
+        id S1730804AbfHEWJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 18:09:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56178 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728483AbfHEWJ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 18:09:56 -0400
+Received: from mail-qt1-f171.google.com (mail-qt1-f171.google.com [209.85.160.171])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id ABAF7216B7;
+        Mon,  5 Aug 2019 22:09:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565042995;
+        bh=NAJ16jvh/qchypdVowjtbzNr9+9foVnE+vd1uUZQC7g=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=UdlsxMT9wxnPg84czTc53XMAznVmd7n8JRcYPxB0Fu7FGgY6Vf9s/Dqc+UR+3IfO7
+         LPXWB3QDqCrtcNwuUxU7BaE/2hGz/E0e0XBJLo7Q5km8dkVP/ybkS82B3bEJoI21rs
+         XBRKjIh4YtimZeQp5Or12nvID6o1ifjlu7V5KIpU=
+Received: by mail-qt1-f171.google.com with SMTP id d23so82619847qto.2;
+        Mon, 05 Aug 2019 15:09:55 -0700 (PDT)
+X-Gm-Message-State: APjAAAWqtpm+nZDV1X2usZAWszPpM5jNCK8vVpVFS+yAzUgDQEYw9RYl
+        F6gFcCeQV7+EArf6caBFN7RBLQCEdkWMKIzgpg==
+X-Google-Smtp-Source: APXvYqzN7Oaow/mdIokjxZIROhfoq29oWOHhIQUUHynApmz52dA7L6a16lTZR93u1Os4RUyoD7Omw1XiDFtlZBNZ4Fw=
+X-Received: by 2002:a0c:acef:: with SMTP id n44mr215262qvc.39.1565042994893;
+ Mon, 05 Aug 2019 15:09:54 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190802105457.16596-1-hslester96@gmail.com> <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D40F162@ORSMSX104.amr.corp.intel.com>
-In-Reply-To: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D40F162@ORSMSX104.amr.corp.intel.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 5 Aug 2019 15:03:57 -0700
-Message-ID: <CAKgT0UcDz_NDnft5YsZY3c_0vJABXzmZUDk0W4XKx82dJtSh9A@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH 1/2] ixgbe: Explicitly initialize
- reference count to 0
-To:     "Bowers, AndrewX" <andrewx.bowers@intel.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+References: <20190805122558.5130-1-narmstrong@baylibre.com>
+In-Reply-To: <20190805122558.5130-1-narmstrong@baylibre.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 5 Aug 2019 16:09:43 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+efvvb1UK-Nas0G5XefLWwN7ebnqoevi+W=jj4r3E2dg@mail.gmail.com>
+Message-ID: <CAL_Jsq+efvvb1UK-Nas0G5XefLWwN7ebnqoevi+W=jj4r3E2dg@mail.gmail.com>
+Subject: Re: [PATCH] dt-bindings: net: meson-dwmac: convert to yaml
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        devicetree@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        linux-amlogic@lists.infradead.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 5, 2019 at 2:42 PM Bowers, AndrewX <andrewx.bowers@intel.com> wrote:
+On Mon, Aug 5, 2019 at 6:26 AM Neil Armstrong <narmstrong@baylibre.com> wrote:
 >
-> > -----Original Message-----
-> > From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
-> > Behalf Of Chuhong Yuan
-> > Sent: Friday, August 2, 2019 3:55 AM
-> > Cc: netdev@vger.kernel.org; Chuhong Yuan <hslester96@gmail.com>; linux-
-> > kernel@vger.kernel.org; intel-wired-lan@lists.osuosl.org; David S . Miller
-> > <davem@davemloft.net>
-> > Subject: [Intel-wired-lan] [PATCH 1/2] ixgbe: Explicitly initialize reference
-> > count to 0
-> >
-> > The driver does not explicitly call atomic_set to initialize refcount to 0.
-> > Add the call so that it will be more straight forward to convert refcount from
-> > atomic_t to refcount_t.
-> >
-> > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> > ---
-> >  drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c | 1 +
-> >  1 file changed, 1 insertion(+)
+> Now that we have the DT validation in place, let's convert the device tree
+> bindings for the Synopsys DWMAC Glue for Amlogic SoCs over to a YAML schemas.
 >
-> Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+> ---
+> Rob,
+>
+> I keep getting :
+> .../devicetree/bindings/net/amlogic,meson-dwmac.example.dt.yaml: ethernet@c9410000: reg: [[3376480256, 65536], [3364046144, 8]] is too long
 
-NAK. This patch is badly broken. We should not be resetting the fcoe
-refcnt in ixgbe_setup_fcoe_ddp_resources.
+Because snps,dwmac.yaml has:
+
+  reg:
+    maxItems: 1
+
+The schemas are applied separately and all have to be valid. You'll
+need to change snps,dwmac.yaml to:
+
+reg:
+  minItems: 1
+  maxItems: 2
+
+
+The schema error messages leave something to be desired. I wish the
+error messages said which schema is throwing the error.
+
+> for the example DT
+>
+> and for the board DT :
+> ../amlogic/meson-gxl-s905x-libretech-cc.dt.yaml: ethernet@c9410000: reg: [[0, 3376480256, 0, 65536, 0, 3364046144, 0, 4]] is too short
+> ../amlogic/meson-gxl-s905x-nexbox-a95x.dt.yaml: soc: ethernet@c9410000:reg:0: [0, 3376480256, 0, 65536, 0, 3364046144, 0, 4] is too long
+>
+> and I don't know how to get rid of it.
+
+The first issue is the same as the above. The 2nd issue is the use of
+<> in dts files becomes stricter with the schema. Each entry in an
+array needs to be bracketed:
+
+reg = <0x0 0xc9410000 0x0 0x10000>,
+          <0x0 0xc8834540 0x0 0x4>;
+
+Rob
