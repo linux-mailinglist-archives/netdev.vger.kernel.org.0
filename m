@@ -2,86 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BD1382083
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 17:41:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 22FD482174
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:15:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728929AbfHEPlG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 11:41:06 -0400
-Received: from mail-pg1-f201.google.com ([209.85.215.201]:56823 "EHLO
-        mail-pg1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728868AbfHEPlF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 11:41:05 -0400
-Received: by mail-pg1-f201.google.com with SMTP id h5so52956841pgq.23
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 08:41:05 -0700 (PDT)
+        id S1728843AbfHEQPg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 12:15:36 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:44174 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726691AbfHEQPg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 12:15:36 -0400
+Received: by mail-pl1-f196.google.com with SMTP id t14so36638117plr.11;
+        Mon, 05 Aug 2019 09:15:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=e4SLScTqtI1V1lopKxDYlItZzmDFwVySiqM/qjPmZNY=;
-        b=SxLJfvbs4L+HKM63MBHG5w/Ri9hEbDoelJ8iElKiOrsryNufROyMX650rch1zANw1s
-         nC3Vnt78wURwxS8IZqjehsBm9Of09Oo6SNrMtxOk28xAElB5GtMva1xotAS09k7GRyBY
-         cwSTehadb7cNrdRVRg3vT/JojAdg+BWsceTA7G53d8CBxLU4E2VFjroT0NGlKcAtlp/a
-         U4MddeERhVO8sreEytXeCSl6cjtlxByY6avUe+rpr9VXwdi5VVFzrKKOwO4+R5XFNGFG
-         D6fnOOX7PWCaFMBe8+ycaItiXBpdsGLVTjtFNLggAGNHilz8fSEFAJNhyDlx2ucVb1j3
-         uMNg==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=v6WgJ0lzBNgL6kZdwswGg76XfBJnMJw2yV33npEYWYM=;
+        b=fyF7OG5i5sjU1Ygl24fsM+DhUis/2WZTrKuSfuDiXKHhDI2jBBZc+AY/ob+D/RIAob
+         DpC1ukRAtAMDJH01apAF350iFFXSJpsKgyr3neyHqGFu6/+Co4jHwq5mCjEQoEnnPR/m
+         5xdtJ/ITlQSUCOEuuJ1XLSJMjjcisP0qThFSrWImHsaxZ5xzNj087UAMmJ2EX4IKS9vk
+         GG5MdoxfB5qYNZNl6ykXdqtHE3H+9dJjtlf/3NQQZLprvrwinORBJI5wbeS6reqVKnNG
+         NMVH+C6nDdFgDzWaMcU5nLV5ovkvtnRotbENYGnWjcXCY1gsVd5kFbV/J/zDesaQqoiQ
+         OPTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=e4SLScTqtI1V1lopKxDYlItZzmDFwVySiqM/qjPmZNY=;
-        b=Z6GvjK6fjhlz1iBp4T2wda7XkLe63tBynFo+aJAhMGDL/VxfKclC3YyLvMGE9cutkC
-         ZRWAfTHqfLCasLFYpFcKQ3UqI2F5erqkCXdYrUbLAx6ydQlMKAUS9zIWG0HlVVJ5Vdc1
-         ydyBxQ6tzXm3iGFmGSpxlOHXbANobo15HPp7Wqgp5ka6Mt0LfZSg9+1waH3xVmicYVdD
-         W+Ouqz6FYAX9PcabMeh//ONoCYhuHkJLO5SnsroUqdT83VQ1utbmIZCyet4oWh4lmY9N
-         HysDC+AVQEpjSpYcZfOWQwvSVGX44ca6seAmIJO6JaxA96DO3432qhEtz0PsN9D+i0P4
-         egjw==
-X-Gm-Message-State: APjAAAXW+o3hTWO9tet/ANc9LB+ZYwPxg7d/sRP/vQOoVCfvHAx87Qia
-        ciJg1AdzIFD7Mymd1CwKXlSU4uoYZs6Q2JqnXBzb7W15+JPsJM0RSecKnd5ra/hfkIwql1oHijA
-        2axQuJFVkwFyNMwZj70deEiWWMcyai1IM1O+7RulpsOO+kUSQaBIXCw==
-X-Google-Smtp-Source: APXvYqxQ76N7noym5vCpLSQ2og69/R8Rtj4mE8uAIU5ZvqUzJgcMxQavUTHeJ3qX2810py8AWhnTVRQ=
-X-Received: by 2002:a63:3006:: with SMTP id w6mr15211808pgw.440.1565019664556;
- Mon, 05 Aug 2019 08:41:04 -0700 (PDT)
-Date:   Mon,  5 Aug 2019 08:40:55 -0700
-In-Reply-To: <20190805154055.197664-1-sdf@google.com>
-Message-Id: <20190805154055.197664-4-sdf@google.com>
-Mime-Version: 1.0
-References: <20190805154055.197664-1-sdf@google.com>
-X-Mailer: git-send-email 2.22.0.770.g0f2c4a37fd-goog
-Subject: [PATCH bpf-next v3 3/3] selftests/bpf: test_progs: drop extra
- trailing tab
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=v6WgJ0lzBNgL6kZdwswGg76XfBJnMJw2yV33npEYWYM=;
+        b=G7LdMy3pOPy0neeMjy27Dbh1VzYRdgewL/dxSxXslmEuLi3h+aSFaMQURDgxZSWbT2
+         p6k43i4SpHgh3KnjUFuuhx85QZmWAcFpqFVMsS+gaKLnYYR11xFI6l4ez23DsWvfGsxj
+         xSuwf5eekFn4LhfgArvf2Lc57eOFwPwwb9/CVzDdZ8dIUd8feCutQkuLr4VyCkXt1EpE
+         d/MmqtdHLe8lslr94Ogjk/ccITVk8a4TAJilyOrNVWcyz+Nrn1T3qBsI5xgd4k9YYRV6
+         /ZckrttnA8P8ym2yD/e+K6mPOky9bollfHf1NZ0ZdA/7yIkPre7vtJk2uCX7HPaOwxdy
+         450A==
+X-Gm-Message-State: APjAAAVvMt6Xoc72pQzrqJli1z6kIffoeOt9l3L27x9O0QpFuY3Svw+K
+        XOcQmJ4wPlXkRn2a+I8MPAtKjJOc
+X-Google-Smtp-Source: APXvYqxOuUY6MUvEkSLZcanihOqFOOB9ZQIT90oPEtCsL8yXAdUfRYmLuL2/tgtBXz3Vid+EkooREQ==
+X-Received: by 2002:a17:902:8a87:: with SMTP id p7mr144436930plo.124.1565021735244;
+        Mon, 05 Aug 2019 09:15:35 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::1:8a30])
+        by smtp.gmail.com with ESMTPSA id x25sm114962131pfa.90.2019.08.05.09.15.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Aug 2019 09:15:34 -0700 (PDT)
+Date:   Mon, 5 Aug 2019 09:15:33 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
+Subject: Re: [PATCH bpf-next 1/2] selftests/bpf: add loop test 4
+Message-ID: <20190805161531.lr5pby7mlwxhh3uq@ast-mbp>
+References: <20190802233344.863418-1-ast@kernel.org>
+ <20190802233344.863418-2-ast@kernel.org>
+ <63f123d2-b35f-a775-e414-004c90b4f4b7@fb.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <63f123d2-b35f-a775-e414-004c90b4f4b7@fb.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Small (un)related cleanup.
+On Sun, Aug 04, 2019 at 05:29:42AM +0000, Yonghong Song wrote:
+> 
+> 
+> On 8/2/19 4:33 PM, Alexei Starovoitov wrote:
+> > Add a test that returns a 'random' number between [0, 2^20)
+> > If state pruning is not working correctly for loop body the number of
+> > processed insns will be 2^20 * num_of_insns_in_loop_body and the program
+> > will be rejected.
+> 
+> The maximum processed insns will be 2^20 or 2^20 * 
+> num_of_insns_in_loop_body? 
 
-Cc: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- tools/testing/selftests/bpf/test_progs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+the later.
 
-diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-index 963912008042..beed74043933 100644
---- a/tools/testing/selftests/bpf/test_progs.c
-+++ b/tools/testing/selftests/bpf/test_progs.c
-@@ -278,7 +278,7 @@ enum ARG_KEYS {
- 	ARG_VERIFIER_STATS = 's',
- 	ARG_VERBOSE = 'v',
- };
--	
-+
- static const struct argp_option opts[] = {
- 	{ "num", ARG_TEST_NUM, "NUM", 0,
- 	  "Run test number NUM only " },
--- 
-2.22.0.770.g0f2c4a37fd-goog
+> I thought the verifier will
+> stop processing once processed insns reach 1M?
 
+right.
+
+> Could you elaborate which potential issues in verifier
+> you try to cover with this test case? Extra tests are
+> always welcome. We already have scale/loop tests and some
+> (e.g., strobemeta tests) are more complex than this one.
+> Maybe you have something in mind for this particular
+> test? Putting in the commit message may help people understand
+> the concerns.
+
+it's not testing any new functionality.
+It's more targeted test that pruning happens in loop body due to precision tracking.
+When precision tracking is off the pruning won't be happening and 1m will be hit.
+Since it's a small test comparing to others it's easier to analyze.
+
+2^20 is to make sure 1m will be hit even if loop body is 1 insn.
+For the given llmv the loop body is 16 insn, but it may vary.
+
+> > 
+> > Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> > ---
+> >   .../bpf/prog_tests/bpf_verif_scale.c          |  1 +
+> >   tools/testing/selftests/bpf/progs/loop4.c     | 23 +++++++++++++++++++
+> >   2 files changed, 24 insertions(+)
+> >   create mode 100644 tools/testing/selftests/bpf/progs/loop4.c
+> > 
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
+> > index b4be96162ff4..757e39540eda 100644
+> > --- a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
+> > +++ b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
+> > @@ -71,6 +71,7 @@ void test_bpf_verif_scale(void)
+> >   
+> >   		{ "loop1.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
+> >   		{ "loop2.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
+> > +		{ "loop4.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
+> 
+> The program is more like a BPF_PROG_TYPE_SCHED_CLS type than
+> a BPF_PROG_TYPE_RAW_TRACEPOINT?
+
+right. that's more accurate.
+
+> >   
+> >   		/* partial unroll. 19k insn in a loop.
+> >   		 * Total program size 20.8k insn.
+> > diff --git a/tools/testing/selftests/bpf/progs/loop4.c b/tools/testing/selftests/bpf/progs/loop4.c
+> > new file mode 100644
+> > index 000000000000..3e7ee14fddbd
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/loop4.c
+> > @@ -0,0 +1,23 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +// Copyright (c) 2019 Facebook
+> > +#include <linux/sched.h>
+> > +#include <linux/ptrace.h>
+> 
+> Since the program is a networking type,
+> the above two headers are probably unneeded.
+
+yeah. just a copy paste. will remove
+
+> > +#include <stdint.h>
+> > +#include <stddef.h>
+> > +#include <stdbool.h>
+> > +#include <linux/bpf.h>
+> > +#include "bpf_helpers.h"
+> > +
+> > +char _license[] SEC("license") = "GPL";
+> > +
+> > +SEC("socket")
+> > +int combinations(volatile struct __sk_buff* skb)
+> > +{
+> > +	int ret = 0, i;
+> > +
+> > +#pragma nounroll
+> > +	for (i = 0; i < 20; i++)
+> > +		if (skb->len)
+> > +			ret |= 1 << i;
+> > +	return ret;
+> > +}
+> > 
