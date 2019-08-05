@@ -2,167 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17C248268B
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 23:03:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4354A826C2
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 23:23:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730735AbfHEVDJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 17:03:09 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37531 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730099AbfHEVDJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 17:03:09 -0400
-Received: by mail-wr1-f68.google.com with SMTP id n9so60664610wrr.4;
-        Mon, 05 Aug 2019 14:03:07 -0700 (PDT)
+        id S1730515AbfHEVXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 17:23:06 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:38783 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729383AbfHEVXG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 17:23:06 -0400
+Received: by mail-oi1-f193.google.com with SMTP id v186so63432857oie.5
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 14:23:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wD9pRuLXxIn2k87gFSwjMexyP/R3+2bHVXEqdFsqtg0=;
-        b=qc/u1ZJI/gLWI5msj09zALj0xWOCirj/CMHgRj9yjtLkdpmxv/APbxHIKFD1Maorwx
-         qJLd3IvV2cOFBcUJQsvjWn1y0za5UTPBRod3tGMI2QTOSQb29IEX8GtuY1EihWiIduib
-         8CvsrZMl0ONE+5JKTjnQq6dWwadFMnMZnzhSIpvKC8VhCjDx+FRP9cx0BkS40Ym7OGpS
-         XbLSBgrNrBjFjWU0A+M3GvSq+IHi8++L+uKu/QP5EsJRDPPXPivp4a6kcDzuMiyUJ2m2
-         ujR2nqSgKq3aCei8ukc464h8gVE61dsxwtzHYTX8dho5OID/q9Q7RdUjXj2LIqW8voCG
-         3/aQ==
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=jQHkpLF4nIn7p+6PQvZ1L0bXi0ScynIQq40ZyjudfPI=;
+        b=YYfbmMYlCORFZ4wo/oXYWNgV8McAxCEivUK1bb2ovOHtGdkUICuvSvhOMt8rANCvzp
+         oX/MwlojMxhdNwbMFlIH47tZ/D21M21hccn4vAfALbelOqXl5QUK68z/yLvGbz0E/0cO
+         S8unIp1W92nGFLVrcBdp3avH7mw2En3Rn/iRc7Aci6Q2oeQZ2jKS2fDgWjS1jgwhjG1G
+         ocWhCXtDbCfg2+k+cgh8Of8SVJ3QANM5tvWBaK1c3hfwYrJZeSH+dfJVPgBIHI/h3L3Z
+         tqiKaVrdJuGjAuOvjVn94JlHpB1EZnwkQ9AleSA3uw+0UrVaSiDUQ92N1jrQnvazGL50
+         h02w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wD9pRuLXxIn2k87gFSwjMexyP/R3+2bHVXEqdFsqtg0=;
-        b=tNWBJcjDJqqKsXUv2N4pwlxNqu81ftqIgAuQxlZ+JbmdbKwHL5yGnHoFkPzOHIGUOv
-         7HwfaTAXl4hfqUPn1ViURL6y9J9ITujzIJqoI1a1ImjTWJAfmQhdCniEAbadQyfa57o0
-         T3W0Rp25OWRlU8NX5DY7Q0miyNDjZdbKp8NRs8pgJ+aKiDCud15GrqUdE6s+eWv6EkCB
-         BlM3hq0pyjARPudZySw2pi4uVqvC4hH+lNIci3MiGf+094RmUbcf7AkBqmjL8iNvVbMC
-         28QD9KBpLgh0Xt3S3I+CcbkVAFUTIhcVPoC++jPVzo3KKuIMiTIfuT2VYaV97hssKsES
-         Zdjw==
-X-Gm-Message-State: APjAAAUYHskgnGmOp9S0FruRHONHj/OyIEC1kg2sIM+5ckg3Im2U1D/w
-        Gid2fkKkl+J81Y5vLa03LW0=
-X-Google-Smtp-Source: APXvYqxgU7vbAbvUbr3mc2vHRvtfI01ZiTZbvl85ATELi73bOeOQQnx4udm+hLOdzrNCYrHzveXe2w==
-X-Received: by 2002:adf:dcc6:: with SMTP id x6mr45584wrm.322.1565038986135;
-        Mon, 05 Aug 2019 14:03:06 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f05:8600:d16c:62d1:98de:d1e5? (p200300EA8F058600D16C62D198DED1E5.dip0.t-ipconnect.de. [2003:ea:8f05:8600:d16c:62d1:98de:d1e5])
-        by smtp.googlemail.com with ESMTPSA id a84sm111051583wmf.29.2019.08.05.14.03.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Aug 2019 14:03:05 -0700 (PDT)
-Subject: Re: [PATCH 03/16] net: phy: adin: add support for interrupts
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        f.fainelli@gmail.com, andrew@lunn.ch
-References: <20190805165453.3989-1-alexandru.ardelean@analog.com>
- <20190805165453.3989-4-alexandru.ardelean@analog.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <4f539572-4c59-0450-fcd4-0bbc3eece9c8@gmail.com>
-Date:   Mon, 5 Aug 2019 23:02:59 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190805165453.3989-4-alexandru.ardelean@analog.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=jQHkpLF4nIn7p+6PQvZ1L0bXi0ScynIQq40ZyjudfPI=;
+        b=hmD5QuLkell1CiW8jHccHH93K1tEHcgUUgYb5ePnYYCtrLq5OstoQGG/PeIpKU+AWf
+         AeZAE8X40PzAdbK82jzQIq794jfXsF9AyutBH0kIpCLZ3u8TLF1yZBMWOYXl5jKSk9Pk
+         Jny5gvEz09cMvo9OBKVXqHrQ723jWxRJSOFvvm3OTOYSsEkmC/nDEtLIuW47Kjpxmk2/
+         iu3tCNxN8N2Zjjdvh6DM5Q+ycwVOdogtGiHH+Pf8ryM+iQs9KUlISiFCYsEgiNrdhh2W
+         SfQspsb5ZPRG3jC6iq8rJ+osxTcA3A6KD37+gA92BB7eMNPlor/3cZldN1xFAryTroJR
+         HSQQ==
+X-Gm-Message-State: APjAAAUIgNva05MAX3qFDODabh3upf2kgC88uhNTlryZr1XM+Nu9tW+C
+        WS1AiBuRSnGPYj5s7lXGZpo=
+X-Google-Smtp-Source: APXvYqwLSBfCVd9oG/z90Rtsvv2PO5T3lg/KiSYAJN2Oz0M2SMdVSG3HPDfOVPniYsOFnhrJbJfeMA==
+X-Received: by 2002:a02:1607:: with SMTP id a7mr379529jaa.123.1565040185521;
+        Mon, 05 Aug 2019 14:23:05 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id q22sm67544759ioj.56.2019.08.05.14.23.02
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 05 Aug 2019 14:23:04 -0700 (PDT)
+Date:   Mon, 05 Aug 2019 14:22:56 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     David Miller <davem@davemloft.net>, jakub.kicinski@netronome.com
+Cc:     netdev@vger.kernel.org, oss-drivers@netronome.com,
+        edumazet@google.com, davejwatson@fb.com, borisp@mellanox.com,
+        aviadye@mellanox.com, john.fastabend@gmail.com,
+        daniel@iogearbox.net
+Message-ID: <5d489e309917d_2482b0eabedc5bc3@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190805.131552.1289253403274923799.davem@davemloft.net>
+References: <20190801213602.19634-1-jakub.kicinski@netronome.com>
+ <20190805.131552.1289253403274923799.davem@davemloft.net>
+Subject: Re: [PATCH net 1/2] net/tls: partially revert fix transition through
+ disconnect with close
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 05.08.2019 18:54, Alexandru Ardelean wrote:
-> This change adds support for enabling PHY interrupts that can be used by
-> the PHY framework to get signal for link/speed/auto-negotiation changes.
+David Miller wrote:
+> From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Date: Thu,  1 Aug 2019 14:36:01 -0700
 > 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> ---
->  drivers/net/phy/adin.c | 44 ++++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 44 insertions(+)
+> > Looks like we were slightly overzealous with the shutdown()
+> > cleanup. Even though the sock->sk_state can reach CLOSED again,
+> > socket->state will not got back to SS_UNCONNECTED once
+> > connections is ESTABLISHED. Meaning we will see EISCONN if
+> > we try to reconnect, and EINVAL if we try to listen.
+> > 
+> > Only listen sockets can be shutdown() and reused, but since
+> > ESTABLISHED sockets can never be re-connected() or used for
+> > listen() we don't need to try to clean up the ULP state early.
+> > 
+> > Fixes: 32857cf57f92 ("net/tls: fix transition through disconnect with close")
+> > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 > 
-> diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-> index c100a0dd95cd..b75c723bda79 100644
-> --- a/drivers/net/phy/adin.c
-> +++ b/drivers/net/phy/adin.c
-> @@ -14,6 +14,22 @@
->  #define PHY_ID_ADIN1200				0x0283bc20
->  #define PHY_ID_ADIN1300				0x0283bc30
->  
-> +#define ADIN1300_INT_MASK_REG			0x0018
-> +#define   ADIN1300_INT_MDIO_SYNC_EN		BIT(9)
-> +#define   ADIN1300_INT_ANEG_STAT_CHNG_EN	BIT(8)
-> +#define   ADIN1300_INT_ANEG_PAGE_RX_EN		BIT(6)
-> +#define   ADIN1300_INT_IDLE_ERR_CNT_EN		BIT(5)
-> +#define   ADIN1300_INT_MAC_FIFO_OU_EN		BIT(4)
-> +#define   ADIN1300_INT_RX_STAT_CHNG_EN		BIT(3)
-> +#define   ADIN1300_INT_LINK_STAT_CHNG_EN	BIT(2)
-> +#define   ADIN1300_INT_SPEED_CHNG_EN		BIT(1)
-> +#define   ADIN1300_INT_HW_IRQ_EN		BIT(0)
-> +#define ADIN1300_INT_MASK_EN	\
-> +	(ADIN1300_INT_ANEG_STAT_CHNG_EN | ADIN1300_INT_ANEG_PAGE_RX_EN | \
-> +	 ADIN1300_INT_LINK_STAT_CHNG_EN | ADIN1300_INT_SPEED_CHNG_EN | \
-> +	 ADIN1300_INT_HW_IRQ_EN)
-> +#define ADIN1300_INT_STATUS_REG			0x0019
-> +
->  static int adin_config_init(struct phy_device *phydev)
->  {
->  	int rc;
-> @@ -25,15 +41,40 @@ static int adin_config_init(struct phy_device *phydev)
->  	return 0;
->  }
->  
-> +static int adin_phy_ack_intr(struct phy_device *phydev)
-> +{
-> +	int ret;
-> +
-> +	/* Clear pending interrupts.  */
-> +	ret = phy_read(phydev, ADIN1300_INT_STATUS_REG);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +static int adin_phy_config_intr(struct phy_device *phydev)
-> +{
-> +	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-> +		return phy_set_bits(phydev, ADIN1300_INT_MASK_REG,
-> +				    ADIN1300_INT_MASK_EN);
-> +
-> +	return phy_clear_bits(phydev, ADIN1300_INT_MASK_REG,
-> +			      ADIN1300_INT_MASK_EN);
-> +}
-> +
->  static struct phy_driver adin_driver[] = {
->  	{
->  		.phy_id		= PHY_ID_ADIN1200,
->  		.name		= "ADIN1200",
->  		.phy_id_mask	= 0xfffffff0,
->  		.features	= PHY_BASIC_FEATURES,
-> +		.flags		= PHY_HAS_INTERRUPT,
+> Applied and queued up for -stable.
 
-This flag doesn't exist any longer. This indicates that you
-develop against an older kernel version. Please develop
-against net-next. Check up-to-date drivers like the one
-for Realtek PHY's for hints.
+Bit late but, I went back and ran some of the syzbot tests that
+were failing before original series and most of my ktls+bpf tests
+and everything seems in good shape now. There is still one issue
+with crypto stack that I'll look at fixing now. Thanks.
 
->  		.config_init	= adin_config_init,
->  		.config_aneg	= genphy_config_aneg,
->  		.read_status	= genphy_read_status,
-> +		.ack_interrupt	= adin_phy_ack_intr,
-> +		.config_intr	= adin_phy_config_intr,
->  		.resume		= genphy_resume,
->  		.suspend	= genphy_suspend,
->  	},
-> @@ -42,9 +83,12 @@ static struct phy_driver adin_driver[] = {
->  		.name		= "ADIN1300",
->  		.phy_id_mask	= 0xfffffff0,
->  		.features	= PHY_GBIT_FEATURES,
-> +		.flags		= PHY_HAS_INTERRUPT,
->  		.config_init	= adin_config_init,
->  		.config_aneg	= genphy_config_aneg,
->  		.read_status	= genphy_read_status,
-> +		.ack_interrupt	= adin_phy_ack_intr,
-> +		.config_intr	= adin_phy_config_intr,
->  		.resume		= genphy_resume,
->  		.suspend	= genphy_suspend,
->  	},
-> 
-
+Acked-by: John Fastabend <john.fastabend@gmail.com>
+Tested-by: John Fastabend <john.fastabend@gmail.com>
