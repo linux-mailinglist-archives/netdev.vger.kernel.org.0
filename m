@@ -2,155 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71CEE8121A
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 08:13:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D8F08121E
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 08:15:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727225AbfHEGN0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 02:13:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725976AbfHEGN0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 02:13:26 -0400
-Received: from localhost (unknown [77.137.115.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 11EEB206C1;
-        Mon,  5 Aug 2019 06:13:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564985604;
-        bh=DEza7LipQz/yKwMh3a7hoO43mdHVY4vPsu+c7eOpmmc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=2TbYzjm38SOUrCNApTPuG9DfijA4/lcG5skmEv6yuQ6p5TbrxWoHMyk9AxcdpV9Pr
-         2WNAdl3jPIYDLzg//Qs492WC4fmMd8P8DlMV7nkUFZn8G0kKuc1QLC5nM5WQqKXOIB
-         uz+gUCFUNXjkFp0BZ6Oo52sRGUdFl1yZvavpuXz4=
-Date:   Mon, 5 Aug 2019 09:13:20 +0300
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Chuhong Yuan <hslester96@gmail.com>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net/mlx5e: Use refcount_t for refcount
-Message-ID: <20190805061320.GN4832@mtr-leonro.mtl.com>
-References: <20190802164828.20243-1-hslester96@gmail.com>
- <20190804125858.GJ4832@mtr-leonro.mtl.com>
- <CANhBUQ2H5MU0m2xM0AkJGPf7+MJBZ3Eq5rR0kgeOoKRi4q1j6Q@mail.gmail.com>
+        id S1727301AbfHEGPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 02:15:18 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:41678 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726375AbfHEGPR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 02:15:17 -0400
+Received: by mail-yb1-f195.google.com with SMTP id x188so6683204yba.8;
+        Sun, 04 Aug 2019 23:15:17 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=d2DU9kBb4leQ/jOn2DVY+dV3e2iyLt3yKa1OyuxJhhA=;
+        b=niX/7BE0qnoG0ZC0Uk3XxzdIW0aioGSBYPc+lg9U/X/SSOAB33ZNx7XlS1YGMFzHH9
+         URtQRuorc/d4vnDD+n9f2HRDuOPR8VpbOUgWUsUJRSqFkIv1nY5K/PJ6FWYGpAuPMoOH
+         frjg1PzM2144xST0SsVQ62fZBgGs052KUDdvcDfXdbSQwV/zTXpSxMc00s/Hp5lpnVA/
+         PGwBk66bbPNKmL/mYgDLgFimTRJIxufQb/xCohkuYBWaRsdpFha/jeb8GguuABQ1O3Zy
+         TXVQDmBtRvWMkOhr9k7Odl7ojZgbjC72oq0mSl+oMLlwlUKlXpI3a6fC0BzC8M8culPH
+         TYng==
+X-Gm-Message-State: APjAAAUAZ8Sw67g/gGP4uSre4N8v6Osuoxo3fHdtZ3VT+BDMg7lI4Bu0
+        MJNhHuLNMcsS6FX5L9RqJ4G7gnWTZ2zI+9T9H0Q=
+X-Google-Smtp-Source: APXvYqxIHFOCA1aPmW3BGgaIKCs7UKtDpmPvJAnMddZGIS9z2sgUDL6Nk7QxPFU7DVCcM3g9BQaZl43vOUxJJYUfDp8=
+X-Received: by 2002:a25:5f4b:: with SMTP id h11mr5510243ybm.420.1564985716710;
+ Sun, 04 Aug 2019 23:15:16 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANhBUQ2H5MU0m2xM0AkJGPf7+MJBZ3Eq5rR0kgeOoKRi4q1j6Q@mail.gmail.com>
-User-Agent: Mutt/1.12.0 (2019-05-25)
+References: <1564566033-676-1-git-send-email-harini.katakam@xilinx.com>
+ <1564566033-676-2-git-send-email-harini.katakam@xilinx.com> <20190804145633.GB6800@lunn.ch>
+In-Reply-To: <20190804145633.GB6800@lunn.ch>
+From:   Harini Katakam <harinik@xilinx.com>
+Date:   Mon, 5 Aug 2019 11:45:05 +0530
+Message-ID: <CAFcVECL6cvCjeo+fn1NDyMDZyZXDrWyhD9djvcVXiLVLiLgGeA@mail.gmail.com>
+Subject: Re: [RFC PATCH 1/2] dt-bindings: net: macb: Add new property for PS
+ SGMII only
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        David Miller <davem@davemloft.net>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Michal Simek <michal.simek@xilinx.com>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 04, 2019 at 10:44:47PM +0800, Chuhong Yuan wrote:
-> On Sun, Aug 4, 2019 at 8:59 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Sat, Aug 03, 2019 at 12:48:28AM +0800, Chuhong Yuan wrote:
-> > > refcount_t is better for reference counters since its
-> > > implementation can prevent overflows.
-> > > So convert atomic_t ref counters to refcount_t.
-> >
-> > I'm not thrilled to see those automatic conversion patches, especially
-> > for flows which can't overflow. There is nothing wrong in using atomic_t
-> > type of variable, do you have in mind flow which will cause to overflow?
-> >
-> > Thanks
+Hi Andrew,
+
+On Sun, Aug 4, 2019 at 8:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
 >
-> I have to say that these patches are not done automatically...
-> Only the detection of problems is done by a script.
-> All conversions are done manually.
-
-Even worse, you need to audit usage of atomic_t and replace there
-it can overflow.
-
+> On Wed, Jul 31, 2019 at 03:10:32PM +0530, Harini Katakam wrote:
+> > Add a new property to indicate when PS SGMII is used with NO
+> > external PHY on board.
 >
-> I am not sure whether the flow can cause an overflow.
-
-It can't.
-
-> But I think it is hard to ensure that a data path is impossible
-> to have problems in any cases including being attacked.
-
-It is not data path, and I doubt that such conversion will be allowed
-in data paths without proving that no performance regression is introduced.
-
+> Hi Harini
 >
-> So I think it is better to do this minor revision to prevent
-> potential risk, just like we have done in mlx5/core/cq.c.
+> What exactly is you use case? Are you connecting to a Ethernet switch?
+> To an SFP cage with a copper module?
 
-mlx5/core/cq.c is a different beast, refcount there means actual users
-of CQ which are limited in SW, so in theory, they have potential
-to be overflown.
+Yes, an SFP cage is the common HW target for this patch. Essentially, there
+is no external PHY driver that the macb can "connect" to; if there was an
+external PHY on board, its link status would also indicate when the GEM(PCS)
+to external PHY link was down. But in the absence of an external PHY on
+HW, PCS link status needs to be monitored and reported to users.
 
-It is not the case here, there your are adding new port.
-There is nothing wrong with atomic_t.
-
-Thanks
-
->
-> Regards,
-> Chuhong
->
-> > >
-> > > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-> > > ---
-> > > Changes in v2:
-> > >   - Add #include.
-> > >
-> > >  drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c | 9 +++++----
-> > >  1 file changed, 5 insertions(+), 4 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
-> > > index b9d4f4e19ff9..148b55c3db7a 100644
-> > > --- a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
-> > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
-> > > @@ -32,6 +32,7 @@
-> > >
-> > >  #include <linux/kernel.h>
-> > >  #include <linux/module.h>
-> > > +#include <linux/refcount.h>
-> > >  #include <linux/mlx5/driver.h>
-> > >  #include <net/vxlan.h>
-> > >  #include "mlx5_core.h"
-> > > @@ -48,7 +49,7 @@ struct mlx5_vxlan {
-> > >
-> > >  struct mlx5_vxlan_port {
-> > >       struct hlist_node hlist;
-> > > -     atomic_t refcount;
-> > > +     refcount_t refcount;
-> > >       u16 udp_port;
-> > >  };
-> > >
-> > > @@ -113,7 +114,7 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 port)
-> > >
-> > >       vxlanp = mlx5_vxlan_lookup_port(vxlan, port);
-> > >       if (vxlanp) {
-> > > -             atomic_inc(&vxlanp->refcount);
-> > > +             refcount_inc(&vxlanp->refcount);
-> > >               return 0;
-> > >       }
-> > >
-> > > @@ -137,7 +138,7 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 port)
-> > >       }
-> > >
-> > >       vxlanp->udp_port = port;
-> > > -     atomic_set(&vxlanp->refcount, 1);
-> > > +     refcount_set(&vxlanp->refcount, 1);
-> > >
-> > >       spin_lock_bh(&vxlan->lock);
-> > >       hash_add(vxlan->htable, &vxlanp->hlist, port);
-> > > @@ -170,7 +171,7 @@ int mlx5_vxlan_del_port(struct mlx5_vxlan *vxlan, u16 port)
-> > >               goto out_unlock;
-> > >       }
-> > >
-> > > -     if (atomic_dec_and_test(&vxlanp->refcount)) {
-> > > +     if (refcount_dec_and_test(&vxlanp->refcount)) {
-> > >               hash_del(&vxlanp->hlist);
-> > >               remove = true;
-> > >       }
-> > > --
-> > > 2.20.1
-> > >
+Regards,
+Harini
