@@ -2,455 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B77D6827A7
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 00:39:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 31F81827BD
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 00:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730037AbfHEWjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 18:39:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35684 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727928AbfHEWjx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 18:39:53 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DD78B216B7;
-        Mon,  5 Aug 2019 22:39:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565044792;
-        bh=+90GwxaY1WXR/jFLVeBEoRk7rtCz/XPBlWqfd0syzyg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=a2yBO2AcVMfap0/E34cfSRBiUDKLg9xlM/pMSD/In2sojv4Zf7MCaHFQy7KB79a/8
-         L4wfFBOHnH3z7s+ar/9H3zu+b8PkkutR0kfVeCPTqjoDclOtWmGj9Nl+AqLknQVUAq
-         a/4rE13j5Vf5c8paVgGYTNRdqJk4LB9rf++z5hto=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH v2 net-next] selftests: Add l2tp tests
-Date:   Mon,  5 Aug 2019 15:41:37 -0700
-Message-Id: <20190805224137.15236-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1730996AbfHEWyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 18:54:38 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:17712 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728483AbfHEWyi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 18:54:38 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d48b3b50000>; Mon, 05 Aug 2019 15:54:45 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Mon, 05 Aug 2019 15:54:36 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Mon, 05 Aug 2019 15:54:36 -0700
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 5 Aug
+ 2019 22:54:35 +0000
+Subject: Re: [PATCH 00/12] block/bio, fs: convert put_page() to
+ put_user_page*()
+To:     Christoph Hellwig <hch@infradead.org>, <john.hubbard@gmail.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Eric Van Hensbergen <ericvh@gmail.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Matthew Wilcox <willy@infradead.org>, <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        <ceph-devel@vger.kernel.org>, <kvm@vger.kernel.org>,
+        <linux-block@vger.kernel.org>, <linux-cifs@vger.kernel.org>,
+        <linux-fsdevel@vger.kernel.org>, <linux-nfs@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <samba-technical@lists.samba.org>,
+        <v9fs-developer@lists.sourceforge.net>,
+        <virtualization@lists.linux-foundation.org>
+References: <20190724042518.14363-1-jhubbard@nvidia.com>
+ <20190724061750.GA19397@infradead.org>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <c35aa2bf-c830-9e57-78ca-9ce6fb6cb53b@nvidia.com>
+Date:   Mon, 5 Aug 2019 15:54:35 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190724061750.GA19397@infradead.org>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL104.nvidia.com (172.18.146.11) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1565045686; bh=su7Un7Lsr0IB37YVHfSyk5WWru26t8lLPZpTgkOrxAY=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=MABsVuv2G9BzGpy+DkzIhxi90zmgNTMYOagd/ashPLcDOi2sWU6YznkbyPDv/xcq/
+         O5RFeXAwmCAh/JO0LO+ze2NEhPe2n+psweVYXa8pjERXCCCfGYTxQ9SDkc4s4KNR59
+         NLyb52q+/1fN+RE5h7a69JZCsNpaL7gcHJobrCC7E9UqWrmG9ACN7VwIX7DKaTA/Rb
+         eRaFep1AoazjTxyXxT6Tx1JQhDVjP38m4xzwGlHYvs4ZQCYA68yceeG7xda5nxeUcP
+         Q7wlfmFbcUA/T+jBVHNbqmQyCuHaQMhgKiqtQK78vKYLrwPUcmbghr4B0X7IdrZjfb
+         e4QZrUIdtNMcg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+On 7/23/19 11:17 PM, Christoph Hellwig wrote:
+> On Tue, Jul 23, 2019 at 09:25:06PM -0700, john.hubbard@gmail.com wrote:
+>> * Store, in the iov_iter, a "came from gup (get_user_pages)" parameter.
+>>   Then, use the new iov_iter_get_pages_use_gup() to retrieve it when
+>>   it is time to release the pages. That allows choosing between put_page=
+()
+>>   and put_user_page*().
+>>
+>> * Pass in one more piece of information to bio_release_pages: a "from_gu=
+p"
+>>   parameter. Similar use as above.
+>>
+>> * Change the block layer, and several file systems, to use
+>>   put_user_page*().
+>=20
+> I think we can do this in a simple and better way.  We have 5 ITER_*
+> types.  Of those ITER_DISCARD as the name suggests never uses pages, so
+> we can skip handling it.  ITER_PIPE is rejected =D1=96n the direct I/O pa=
+th,
+> which leaves us with three.
+>=20
 
-Add IPv4 and IPv6 l2tp tests. Current set is over IP and with
-IPsec.
+Hi Christoph,
 
-v2
-- add l2tp.sh to TEST_PROGS in Makefile
+Are you working on anything like this? Or on the put_user_bvec() idea?
+Please let me know, otherwise I'll go in and implement something here.
 
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- tools/testing/selftests/net/Makefile |   2 +-
- tools/testing/selftests/net/l2tp.sh  | 382 +++++++++++++++++++++++++++++++++++
- 2 files changed, 383 insertions(+), 1 deletion(-)
- create mode 100644 tools/testing/selftests/net/l2tp.sh
 
-diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
-index 70f2d6656170..0bd6b23c97ef 100644
---- a/tools/testing/selftests/net/Makefile
-+++ b/tools/testing/selftests/net/Makefile
-@@ -10,7 +10,7 @@ TEST_PROGS += fib_tests.sh fib-onlink-tests.sh pmtu.sh udpgso.sh ip_defrag.sh
- TEST_PROGS += udpgso_bench.sh fib_rule_tests.sh msg_zerocopy.sh psock_snd.sh
- TEST_PROGS += udpgro_bench.sh udpgro.sh test_vxlan_under_vrf.sh reuseport_addr_any.sh
- TEST_PROGS += test_vxlan_fdb_changelink.sh so_txtime.sh ipv6_flowlabel.sh
--TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh
-+TEST_PROGS += tcp_fastopen_backup_key.sh fcnal-test.sh l2tp.sh
- TEST_PROGS_EXTENDED := in_netns.sh
- TEST_GEN_FILES =  socket nettest
- TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
-diff --git a/tools/testing/selftests/net/l2tp.sh b/tools/testing/selftests/net/l2tp.sh
-new file mode 100644
-index 000000000000..5782433886fc
---- /dev/null
-+++ b/tools/testing/selftests/net/l2tp.sh
-@@ -0,0 +1,382 @@
-+#!/bin/bash
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# L2TPv3 tunnel between 2 hosts
-+#
-+#            host-1          |   router   |     host-2
-+#                            |            |
-+#      lo          l2tp      |            |      l2tp           lo
-+# 172.16.101.1  172.16.1.1   |            | 172.16.1.2    172.16.101.2
-+#  fc00:101::1   fc00:1::1   |            |   fc00:1::2    fc00:101::2
-+#                            |            |
-+#                  eth0      |            |     eth0
-+#                10.1.1.1    |            |   10.1.2.1
-+#              2001:db8:1::1 |            | 2001:db8:2::1
-+
-+VERBOSE=0
-+PAUSE_ON_FAIL=no
-+
-+which ping6 > /dev/null 2>&1 && ping6=$(which ping6) || ping6=$(which ping)
-+
-+################################################################################
-+#
-+log_test()
-+{
-+	local rc=$1
-+	local expected=$2
-+	local msg="$3"
-+
-+	if [ ${rc} -eq ${expected} ]; then
-+		printf "TEST: %-60s  [ OK ]\n" "${msg}"
-+		nsuccess=$((nsuccess+1))
-+	else
-+		ret=1
-+		nfail=$((nfail+1))
-+		printf "TEST: %-60s  [FAIL]\n" "${msg}"
-+		if [ "${PAUSE_ON_FAIL}" = "yes" ]; then
-+			echo
-+			echo "hit enter to continue, 'q' to quit"
-+			read a
-+			[ "$a" = "q" ] && exit 1
-+		fi
-+	fi
-+}
-+
-+run_cmd()
-+{
-+	local ns
-+	local cmd
-+	local out
-+	local rc
-+
-+	ns="$1"
-+	shift
-+	cmd="$*"
-+
-+	if [ "$VERBOSE" = "1" ]; then
-+		printf "    COMMAND: $cmd\n"
-+	fi
-+
-+	out=$(eval ip netns exec ${ns} ${cmd} 2>&1)
-+	rc=$?
-+	if [ "$VERBOSE" = "1" -a -n "$out" ]; then
-+		echo "    $out"
-+	fi
-+
-+	[ "$VERBOSE" = "1" ] && echo
-+
-+	return $rc
-+}
-+
-+################################################################################
-+# create namespaces and interconnects
-+
-+create_ns()
-+{
-+	local ns=$1
-+	local addr=$2
-+	local addr6=$3
-+
-+	[ -z "${addr}" ] && addr="-"
-+	[ -z "${addr6}" ] && addr6="-"
-+
-+	ip netns add ${ns}
-+
-+	ip -netns ${ns} link set lo up
-+	if [ "${addr}" != "-" ]; then
-+		ip -netns ${ns} addr add dev lo ${addr}
-+	fi
-+	if [ "${addr6}" != "-" ]; then
-+		ip -netns ${ns} -6 addr add dev lo ${addr6}
-+	fi
-+
-+	ip -netns ${ns} ro add unreachable default metric 8192
-+	ip -netns ${ns} -6 ro add unreachable default metric 8192
-+
-+	ip netns exec ${ns} sysctl -qw net.ipv4.ip_forward=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.keep_addr_on_down=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.all.forwarding=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.forwarding=1
-+	ip netns exec ${ns} sysctl -qw net.ipv6.conf.default.accept_dad=0
-+}
-+
-+# create veth pair to connect namespaces and apply addresses.
-+connect_ns()
-+{
-+	local ns1=$1
-+	local ns1_dev=$2
-+	local ns1_addr=$3
-+	local ns1_addr6=$4
-+	local ns2=$5
-+	local ns2_dev=$6
-+	local ns2_addr=$7
-+	local ns2_addr6=$8
-+
-+	ip -netns ${ns1} li add ${ns1_dev} type veth peer name tmp
-+	ip -netns ${ns1} li set ${ns1_dev} up
-+	ip -netns ${ns1} li set tmp netns ${ns2} name ${ns2_dev}
-+	ip -netns ${ns2} li set ${ns2_dev} up
-+
-+	if [ "${ns1_addr}" != "-" ]; then
-+		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr}
-+		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr}
-+	fi
-+
-+	if [ "${ns1_addr6}" != "-" ]; then
-+		ip -netns ${ns1} addr add dev ${ns1_dev} ${ns1_addr6}
-+		ip -netns ${ns2} addr add dev ${ns2_dev} ${ns2_addr6}
-+	fi
-+}
-+
-+################################################################################
-+# test setup
-+
-+cleanup()
-+{
-+	local ns
-+
-+	for ns in host-1 host-2 router
-+	do
-+		ip netns del ${ns} 2>/dev/null
-+	done
-+}
-+
-+setup_l2tp_ipv4()
-+{
-+	#
-+	# configure l2tpv3 tunnel on host-1
-+	#
-+	ip -netns host-1 l2tp add tunnel tunnel_id 1041 peer_tunnel_id 1042 \
-+			 encap ip local 10.1.1.1 remote 10.1.2.1
-+	ip -netns host-1 l2tp add session name l2tp4 tunnel_id 1041 \
-+			 session_id 1041 peer_session_id 1042
-+	ip -netns host-1 link set dev l2tp4 up
-+	ip -netns host-1 addr add dev l2tp4 172.16.1.1 peer 172.16.1.2
-+
-+	#
-+	# configure l2tpv3 tunnel on host-2
-+	#
-+	ip -netns host-2 l2tp add tunnel tunnel_id 1042 peer_tunnel_id 1041 \
-+			 encap ip local 10.1.2.1 remote 10.1.1.1
-+	ip -netns host-2 l2tp add session name l2tp4 tunnel_id 1042 \
-+			 session_id 1042 peer_session_id 1041
-+	ip -netns host-2 link set dev l2tp4 up
-+	ip -netns host-2 addr add dev l2tp4 172.16.1.2 peer 172.16.1.1
-+
-+	#
-+	# add routes to loopback addresses
-+	#
-+	ip -netns host-1 ro add 172.16.101.2/32 via 172.16.1.2
-+	ip -netns host-2 ro add 172.16.101.1/32 via 172.16.1.1
-+}
-+
-+setup_l2tp_ipv6()
-+{
-+	#
-+	# configure l2tpv3 tunnel on host-1
-+	#
-+	ip -netns host-1 l2tp add tunnel tunnel_id 1061 peer_tunnel_id 1062 \
-+			 encap ip local 2001:db8:1::1 remote 2001:db8:2::1
-+	ip -netns host-1 l2tp add session name l2tp6 tunnel_id 1061 \
-+			 session_id 1061 peer_session_id 1062
-+	ip -netns host-1 link set dev l2tp6 up
-+	ip -netns host-1 addr add dev l2tp6 fc00:1::1 peer fc00:1::2
-+
-+	#
-+	# configure l2tpv3 tunnel on host-2
-+	#
-+	ip -netns host-2 l2tp add tunnel tunnel_id 1062 peer_tunnel_id 1061 \
-+			 encap ip local 2001:db8:2::1 remote 2001:db8:1::1
-+	ip -netns host-2 l2tp add session name l2tp6 tunnel_id 1062 \
-+			 session_id 1062 peer_session_id 1061
-+	ip -netns host-2 link set dev l2tp6 up
-+	ip -netns host-2 addr add dev l2tp6 fc00:1::2 peer fc00:1::1
-+
-+	#
-+	# add routes to loopback addresses
-+	#
-+	ip -netns host-1 -6 ro add fc00:101::2/128 via fc00:1::2
-+	ip -netns host-2 -6 ro add fc00:101::1/128 via fc00:1::1
-+}
-+
-+setup()
-+{
-+	# start clean
-+	cleanup
-+
-+	set -e
-+	create_ns host-1 172.16.101.1/32 fc00:101::1/128
-+	create_ns host-2 172.16.101.2/32 fc00:101::2/128
-+	create_ns router
-+
-+	connect_ns host-1 eth0 10.1.1.1/24 2001:db8:1::1/64 \
-+	           router eth1 10.1.1.2/24 2001:db8:1::2/64
-+
-+	connect_ns host-2 eth0 10.1.2.1/24 2001:db8:2::1/64 \
-+	           router eth2 10.1.2.2/24 2001:db8:2::2/64
-+
-+	ip -netns host-1 ro add 10.1.2.0/24 via 10.1.1.2
-+	ip -netns host-1 -6 ro add 2001:db8:2::/64 via 2001:db8:1::2
-+
-+	ip -netns host-2 ro add 10.1.1.0/24 via 10.1.2.2
-+	ip -netns host-2 -6 ro add 2001:db8:1::/64 via 2001:db8:2::2
-+
-+	setup_l2tp_ipv4
-+	setup_l2tp_ipv6
-+	set +e
-+}
-+
-+setup_ipsec()
-+{
-+	#
-+	# IPv4
-+	#
-+	run_cmd host-1 ip xfrm policy add \
-+		src 10.1.1.1 dst 10.1.2.1 dir out \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-1 ip xfrm policy add \
-+		src 10.1.2.1 dst 10.1.1.1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip xfrm policy add \
-+		src 10.1.1.1 dst 10.1.2.1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip xfrm policy add \
-+		src 10.1.2.1 dst 10.1.1.1 dir out \
-+		tmpl proto esp mode transport
-+
-+	ip -netns host-1 xfrm state add \
-+		src 10.1.1.1 dst 10.1.2.1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-1 xfrm state add \
-+		src 10.1.2.1 dst 10.1.1.1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 xfrm state add \
-+		src 10.1.1.1 dst 10.1.2.1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 xfrm state add \
-+		src 10.1.2.1 dst 10.1.1.1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	#
-+	# IPV6
-+	#
-+	run_cmd host-1 ip -6 xfrm policy add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 dir out \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-1 ip -6 xfrm policy add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip -6 xfrm policy add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 dir in \
-+		tmpl proto esp mode transport
-+
-+	run_cmd host-2 ip -6 xfrm policy add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 dir out \
-+		tmpl proto esp mode transport
-+
-+	ip -netns host-1 -6 xfrm state add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-1 -6 xfrm state add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 -6 xfrm state add \
-+		src 2001:db8:1::1 dst 2001:db8:2::1 \
-+		spi 0x1000 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+
-+	ip -netns host-2 -6 xfrm state add \
-+		src 2001:db8:2::1 dst 2001:db8:1::1 \
-+		spi 0x1001 proto esp aead 'rfc4106(gcm(aes))' \
-+		0x0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f0f 128 mode transport
-+}
-+
-+teardown_ipsec()
-+{
-+	run_cmd host-1 ip xfrm state flush
-+	run_cmd host-1 ip xfrm policy flush
-+	run_cmd host-2 ip xfrm state flush
-+	run_cmd host-2 ip xfrm policy flush
-+}
-+
-+################################################################################
-+# generate traffic through tunnel for various cases
-+
-+run_ping()
-+{
-+	local desc="$1"
-+
-+	run_cmd host-1 ping -c1 -w1 172.16.1.2
-+	log_test $? 0 "IPv4 basic L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ping -c1 -w1 -I 172.16.101.1 172.16.101.2
-+	log_test $? 0 "IPv4 route through L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 fc00:1::2
-+	log_test $? 0 "IPv6 basic L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 -I fc00:101::1 fc00:101::2
-+	log_test $? 0 "IPv6 route through L2TP tunnel ${desc}"
-+}
-+
-+run_tests()
-+{
-+	local desc
-+
-+	setup
-+	run_ping
-+
-+	setup_ipsec
-+	run_ping "- with IPsec"
-+	run_cmd host-1 ping -c1 -w1 172.16.1.2
-+	log_test $? 0 "IPv4 basic L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ping -c1 -w1 -I 172.16.101.1 172.16.101.2
-+	log_test $? 0 "IPv4 route through L2TP tunnel ${desc}"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 fc00:1::2
-+	log_test $? 0 "IPv6 basic L2TP tunnel - with IPsec"
-+
-+	run_cmd host-1 ${ping6} -c1 -w1 -I fc00:101::1 fc00:101::2
-+	log_test $? 0 "IPv6 route through L2TP tunnel - with IPsec"
-+
-+	teardown_ipsec
-+	run_ping "- after IPsec teardown"
-+}
-+
-+################################################################################
-+# main
-+
-+declare -i nfail=0
-+declare -i nsuccess=0
-+
-+while getopts :pv o
-+do
-+	case $o in
-+		p) PAUSE_ON_FAIL=yes;;
-+		v) VERBOSE=$(($VERBOSE + 1));;
-+		*) exit 1;;
-+	esac
-+done
-+
-+run_tests
-+cleanup
-+
-+printf "\nTests passed: %3d\n" ${nsuccess}
-+printf "Tests failed: %3d\n"   ${nfail}
--- 
-2.11.0
+thanks,
+--=20
+John Hubbard
+NVIDIA
 
+> Out of those ITER_BVEC needs a user page reference, so we want to call
+> put_user_page* on it.  ITER_BVEC always already has page reference,
+> which means in the block direct I/O path path we alread don't take
+> a page reference.  We should extent that handling to all other calls
+> of iov_iter_get_pages / iov_iter_get_pages_alloc.  I think we should
+> just reject ITER_KVEC for direct I/O as well as we have no users and
+> it is rather pointless.  Alternatively if we see a use for it the
+> callers should always have a life page reference anyway (or might
+> be on kmalloc memory), so we really should not take a reference either.
+>=20
+> In other words:  the only time we should ever have to put a page in
+> this patch is when they are user pages.  We'll need to clean up
+> various bits of code for that, but that can be done gradually before
+> even getting to the actual put_user_pages conversion.
+>=20
