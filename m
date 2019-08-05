@@ -2,56 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DECE78160B
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 11:57:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 183638163F
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 12:02:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728116AbfHEJ5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 05:57:01 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:35735 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727158AbfHEJ5B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 05:57:01 -0400
-Received: by mail-wr1-f65.google.com with SMTP id y4so83760603wrm.2
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 02:57:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BWoMC/gG3WA9hZdmhlG34TCNLOez/oXxZk5JKz6gCMs=;
-        b=y/IWPPHnnKDLS8XpYCZcOYD+mM+7WvW45nLDKmmPh1g+WfMVmlwnFtO8goTMz4BYTt
-         4cwUwGbEd0xuEuwvZYPRBUGRWJ9yC2O5jrzJsJWf1l39AMlT+G89pm8PlVup2q0mJsm9
-         XWfPJhRNVGF76Y+ijnkJZpZW5+7EN4DQOIaSk70ToUDwLmHc1lOOi8Fhp7b6ktcu0H1N
-         1pjpRf8CNxzJht0pX5ItVioepIoHAfDWCI4OAlc8Ly1QkY7gmtD+Vr8DafxB5eF7uvFk
-         YYz8bbgdNcIEUDURoXNTxXpNmhXQq3KQ+56eyHjnC9jHxm75SX2X971h86HLrXgXBA3a
-         B/nQ==
+        id S1728128AbfHEKCI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 06:02:08 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:37429 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726454AbfHEKCI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 06:02:08 -0400
+Received: by mail-lf1-f66.google.com with SMTP id c9so57389589lfh.4;
+        Mon, 05 Aug 2019 03:02:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=BWoMC/gG3WA9hZdmhlG34TCNLOez/oXxZk5JKz6gCMs=;
-        b=OIcgKVgTtE6jeGKARphvApQGKQGkveP9jmnnrERGDbzY5GWqAB3Z1C0b+uLfHyztyC
-         u1hZuFVLwpxnO6Kf5Qwh5xl0zIWzda30V7M2iR19dJn6B3SPwRg9qkuU/iIrKtJwuPAm
-         XMYcqE8SUIw7W7Moc6slHNpQLf19wmmkFNnV6G300gGp5SkZBqdU1QzlzCCigZ6umiWJ
-         0EfiYbzFiYoUPhgd4srCPxgqhe1F8gbhSdcemg38gPl/3qFd2awmOHhLVBArOPUMpSg2
-         +s87H5HPl8YaznSRPZdHKrrYzsxZ2ckArDs5Be9b/9V0QJetM6NfdoaZQZ5GiLYnMBv7
-         parg==
-X-Gm-Message-State: APjAAAWmFb7jt/ZrlfEWFb2Ld3BryTLhZzKdGmM9WzkQORQA6FDskxXZ
-        75UrIzYFVRFiB/v5Ex1KPEZ19sK+
-X-Google-Smtp-Source: APXvYqzZy3LNpI8qSSRw+tAa0GOHEH8N4POO6fR9652hhF+bdGUINFvxbZhwTUbkmO+gBvKDop0KrQ==
-X-Received: by 2002:a05:6000:112:: with SMTP id o18mr83219301wrx.153.1564999019563;
-        Mon, 05 Aug 2019 02:56:59 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id c65sm85761512wma.44.2019.08.05.02.56.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 02:56:59 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
+        bh=li7rAXwzGIseE3k6zJ4TEp7sKBdJ70w/9wU60C+koC0=;
+        b=LfRfNqEeTfHw0NHOa3++OwT+jaktCDOWXpGsuKcL0eXwedve86mzTxi1+PqVOF24v5
+         omN+7m0tSud+MaaWRS+6WXJ+okxNjwBz3/Wyx/zd+q33YU+vG9jxF9cWQkaMhWdgipsc
+         /eUDj7KjGIqmBzbENrkwyiO2DE57wAC/VCeU9RVmxkCwKkqp5uidt1PdklXZPBbFH2RN
+         2A7oAWHBVhIB+/GWU+QMYn9mSfACxVKCZXPd+WExq+TbTslY8I/ICifETuWrND34ovI6
+         Yu0CQyogerfrfc6WF8Fxqqbc9AHbN4sUM/GI+sJwr+XqYVZ9uuWgcvFab38DI8PrXclC
+         7E7g==
+X-Gm-Message-State: APjAAAUpdLTmuhl6J7ADDLjHpPX5dKjcUAwNhJGpcZ0YKjo+/F9hmI3q
+        lML+BUUwcRkNt76n1RGt4XP2Ian3TzI=
+X-Google-Smtp-Source: APXvYqyZ2HhoG5S0/h1MUvxqxPEHIwE0R6bU/2rM+TH4csl1FppMShqCGDVL3IVgpPzpDs7MAvkO/g==
+X-Received: by 2002:a19:6557:: with SMTP id c23mr28622087lfj.12.1564999325428;
+        Mon, 05 Aug 2019 03:02:05 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id j30sm1254982lfk.48.2019.08.05.03.02.04
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 05 Aug 2019 03:02:04 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92)
+        (envelope-from <johan@xi.terra>)
+        id 1huZoZ-0002il-Ca; Mon, 05 Aug 2019 12:02:03 +0200
+From:   Johan Hovold <johan@kernel.org>
 To:     netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org, dsahern@gmail.com, slyfox@gentoo.org,
-        ayal@mellanox.com, mlxsw@mellanox.com
-Subject: [patch iproute2] devlink: finish queue.h to list.h transition
-Date:   Mon,  5 Aug 2019 11:56:56 +0200
-Message-Id: <20190805095658.19841-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Vincent Cuissard <cuissard@marvell.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Dmitry Vyukov <dvyukov@google.com>, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        stable <stable@vger.kernel.org>,
+        syzbot+cf35b76f35e068a1107f@syzkaller.appspotmail.com
+Subject: [PATCH] NFC: nfcmrvl: fix gpio-handling regression
+Date:   Mon,  5 Aug 2019 12:00:55 +0200
+Message-Id: <20190805100055.10398-1-johan@kernel.org>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,77 +56,80 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Fix two reset-gpio sanity checks which were never converted to use
+gpio_is_valid(), and make sure to use -EINVAL to indicate a missing
+reset line also for the UART-driver module parameter and for the USB
+driver.
 
-Loose the "q" from the names and name the structure fields in the same
-way rest of the code does. Also, fix list_add arg order which leads
-to segfault.
+This specifically prevents the UART and USB drivers from incidentally
+trying to request and use gpio 0, and also avoids triggering a WARN() in
+gpio_to_desc() during probe when no valid reset line has been specified.
 
-Fixes: 33267017faf1 ("iproute2: devlink: port from sys/queue.h to list.h")
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Fixes: e33a3f84f88f ("NFC: nfcmrvl: allow gpio 0 for reset signalling")
+Cc: stable <stable@vger.kernel.org>	# 4.13
+Reported-by: syzbot+cf35b76f35e068a1107f@syzkaller.appspotmail.com
+Tested-by: syzbot+cf35b76f35e068a1107f@syzkaller.appspotmail.com
+Signed-off-by: Johan Hovold <johan@kernel.org>
 ---
- devlink/devlink.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/nfc/nfcmrvl/main.c | 4 ++--
+ drivers/nfc/nfcmrvl/uart.c | 4 ++--
+ drivers/nfc/nfcmrvl/usb.c  | 1 +
+ 3 files changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index 0ea401ae432a..91c85dc1de73 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -5978,35 +5978,36 @@ static int fmsg_value_show(struct dl *dl, int type, struct nlattr *nl_data)
- 	return MNL_CB_OK;
- }
+diff --git a/drivers/nfc/nfcmrvl/main.c b/drivers/nfc/nfcmrvl/main.c
+index e65d027b91fa..529be35ac178 100644
+--- a/drivers/nfc/nfcmrvl/main.c
++++ b/drivers/nfc/nfcmrvl/main.c
+@@ -244,7 +244,7 @@ void nfcmrvl_chip_reset(struct nfcmrvl_private *priv)
+ 	/* Reset possible fault of previous session */
+ 	clear_bit(NFCMRVL_PHY_ERROR, &priv->flags);
  
--struct nest_qentry {
-+struct nest_entry {
- 	int attr_type;
--	struct list_head nest_entries;
-+	struct list_head list;
- };
+-	if (priv->config.reset_n_io) {
++	if (gpio_is_valid(priv->config.reset_n_io)) {
+ 		nfc_info(priv->dev, "reset the chip\n");
+ 		gpio_set_value(priv->config.reset_n_io, 0);
+ 		usleep_range(5000, 10000);
+@@ -255,7 +255,7 @@ void nfcmrvl_chip_reset(struct nfcmrvl_private *priv)
  
- struct fmsg_cb_data {
- 	struct dl *dl;
- 	uint8_t value_type;
--	struct list_head qhead;
-+	struct list_head entry_list;
- };
- 
- static int cmd_fmsg_nest_queue(struct fmsg_cb_data *fmsg_data,
- 			       uint8_t *attr_value, bool insert)
+ void nfcmrvl_chip_halt(struct nfcmrvl_private *priv)
  {
--	struct nest_qentry *entry = NULL;
-+	struct nest_entry *entry;
- 
- 	if (insert) {
--		entry = malloc(sizeof(struct nest_qentry));
-+		entry = malloc(sizeof(struct nest_entry));
- 		if (!entry)
- 			return -ENOMEM;
- 
- 		entry->attr_type = *attr_value;
--		list_add(&fmsg_data->qhead, &entry->nest_entries);
-+		list_add(&entry->list, &fmsg_data->entry_list);
- 	} else {
--		if (list_empty(&fmsg_data->qhead))
-+		if (list_empty(&fmsg_data->entry_list))
- 			return MNL_CB_ERROR;
--		entry = list_first_entry(&fmsg_data->qhead, struct nest_qentry, nest_entries);
-+		entry = list_first_entry(&fmsg_data->entry_list,
-+					 struct nest_entry, list);
- 		*attr_value = entry->attr_type;
--		list_del(&entry->nest_entries);
-+		list_del(&entry->list);
- 		free(entry);
- 	}
- 	return MNL_CB_OK;
-@@ -6115,7 +6116,7 @@ static int cmd_health_object_common(struct dl *dl, uint8_t cmd, uint16_t flags)
- 		return err;
- 
- 	data.dl = dl;
--	INIT_LIST_HEAD(&data.qhead);
-+	INIT_LIST_HEAD(&data.entry_list);
- 	err = _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_fmsg_object_cb, &data);
- 	return err;
+-	if (priv->config.reset_n_io)
++	if (gpio_is_valid(priv->config.reset_n_io))
+ 		gpio_set_value(priv->config.reset_n_io, 0);
  }
+ 
+diff --git a/drivers/nfc/nfcmrvl/uart.c b/drivers/nfc/nfcmrvl/uart.c
+index 9a22056e8d9e..e5a622ce4b95 100644
+--- a/drivers/nfc/nfcmrvl/uart.c
++++ b/drivers/nfc/nfcmrvl/uart.c
+@@ -26,7 +26,7 @@
+ static unsigned int hci_muxed;
+ static unsigned int flow_control;
+ static unsigned int break_control;
+-static unsigned int reset_n_io;
++static int reset_n_io = -EINVAL;
+ 
+ /*
+ ** NFCMRVL NCI OPS
+@@ -231,5 +231,5 @@ MODULE_PARM_DESC(break_control, "Tell if UART driver must drive break signal.");
+ module_param(hci_muxed, uint, 0);
+ MODULE_PARM_DESC(hci_muxed, "Tell if transport is muxed in HCI one.");
+ 
+-module_param(reset_n_io, uint, 0);
++module_param(reset_n_io, int, 0);
+ MODULE_PARM_DESC(reset_n_io, "GPIO that is wired to RESET_N signal.");
+diff --git a/drivers/nfc/nfcmrvl/usb.c b/drivers/nfc/nfcmrvl/usb.c
+index 945cc903d8f1..888e298f610b 100644
+--- a/drivers/nfc/nfcmrvl/usb.c
++++ b/drivers/nfc/nfcmrvl/usb.c
+@@ -305,6 +305,7 @@ static int nfcmrvl_probe(struct usb_interface *intf,
+ 
+ 	/* No configuration for USB */
+ 	memset(&config, 0, sizeof(config));
++	config.reset_n_io = -EINVAL;
+ 
+ 	nfc_info(&udev->dev, "intf %p id %p\n", intf, id);
+ 
 -- 
-2.21.0
+2.22.0
 
