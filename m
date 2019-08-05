@@ -2,169 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12853822C6
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:45:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03DEA8231C
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:53:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729765AbfHEQpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 12:45:33 -0400
-Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:40070 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729287AbfHEQpb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 12:45:31 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
-        (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C6296C01D4;
-        Mon,  5 Aug 2019 16:45:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1565023530; bh=0qzfDib/TkS1Pnuz9bteOYFmisi1Lcw2FF4Y8DcAjZ4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=eGqmVbSVDPu8ckUX66NOA/imFFRXZXoJigFiVbXz/MrszQONEBxo0MeUC/gRixpnO
-         /I904RsggX/COfA8K0jazy2QwyGYdFsAVNbLU5zpiiDbrVDxx9jRxWTpvWDDOe9s/0
-         X3dt9eI/kbpzu92yODMdped6BXQAejKgy2jGNPEAE1Q/poFrx84I9EVL0rrstvd9p0
-         pPNd6D1ozP65mDouL+Wo+9QtVYT0GpGnPhzMjMYJ+IkyYphpi1lSK7ylU9GJEf/Rxt
-         HlKvazufyE/jmMBv4XzCv+aU6Stq8lLGckeDd6P3lYycBCUI/pQIron4BKxcrWya8Z
-         rK7l07GN5EgPQ==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 90193A00AC;
-        Mon,  5 Aug 2019 16:45:28 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 26/26] net: stmmac: selftests: Return proper error code to userspace
-Date:   Mon,  5 Aug 2019 18:44:53 +0200
-Message-Id: <5b217c7b110eb32183fd81c81b516d42228ac406.1565022597.git.joabreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1565022597.git.joabreu@synopsys.com>
-References: <cover.1565022597.git.joabreu@synopsys.com>
-In-Reply-To: <cover.1565022597.git.joabreu@synopsys.com>
-References: <cover.1565022597.git.joabreu@synopsys.com>
+        id S1729704AbfHEQxO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 12:53:14 -0400
+Received: from mga12.intel.com ([192.55.52.136]:43074 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728760AbfHEQxN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 12:53:13 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Aug 2019 09:53:12 -0700
+X-IronPort-AV: E=Sophos;i="5.64,350,1559545200"; 
+   d="scan'208";a="168030649"
+Received: from rdvivi-losangeles.jf.intel.com (HELO intel.com) ([10.7.196.65])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Aug 2019 09:53:12 -0700
+Date:   Mon, 5 Aug 2019 09:53:46 -0700
+From:   Rodrigo Vivi <rodrigo.vivi@intel.com>
+To:     john.hubbard@gmail.com
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        linux-fbdev@vger.kernel.org, Jan Kara <jack@suse.cz>,
+        kvm@vger.kernel.org, David Airlie <airlied@linux.ie>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+        sparclinux@vger.kernel.org, Ira Weiny <ira.weiny@intel.com>,
+        ceph-devel@vger.kernel.org, devel@driverdev.osuosl.org,
+        rds-devel@oss.oracle.com, linux-rdma@vger.kernel.org,
+        x86@kernel.org, amd-gfx@lists.freedesktop.org,
+        Christoph Hellwig <hch@infradead.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>, xen-devel@lists.xenproject.org,
+        devel@lists.orangefs.org, linux-media@vger.kernel.org,
+        John Hubbard <jhubbard@nvidia.com>,
+        intel-gfx@lists.freedesktop.org, linux-block@vger.kernel.org,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        linux-rpi-kernel@lists.infradead.org,
+        Dan Williams <dan.j.williams@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-nfs@vger.kernel.org,
+        netdev@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        linux-xfs@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH v2 06/34] drm/i915: convert put_page() to put_user_page*()
+Message-ID: <20190805165346.GB25953@intel.com>
+References: <20190804224915.28669-1-jhubbard@nvidia.com>
+ <20190804224915.28669-7-jhubbard@nvidia.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190804224915.28669-7-jhubbard@nvidia.com>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We can do better than just return 1 to userspace. Lets return a proper
-Linux error code.
+On Sun, Aug 04, 2019 at 03:48:47PM -0700, john.hubbard@gmail.com wrote:
+> From: John Hubbard <jhubbard@nvidia.com>
+> 
+> For pages that were retained via get_user_pages*(), release those pages
+> via the new put_user_page*() routines, instead of via put_page() or
+> release_pages().
+> 
+> This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+> ("mm: introduce put_user_page*(), placeholder versions").
+> 
+> This is a merge-able version of the fix, because it restricts
+> itself to put_user_page() and put_user_pages(), both of which
+> have not changed their APIs. Later, i915_gem_userptr_put_pages()
+> can be simplified to use put_user_pages_dirty_lock().
 
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
----
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+Thanks for that.
+with this version we won't have any conflict.
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index a0da35b2b4c2..d40f6a109633 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -316,7 +316,7 @@ static int __stmmac_test_loopback(struct stmmac_priv *priv,
- 		attr->timeout = STMMAC_LB_TIMEOUT;
- 
- 	wait_for_completion_timeout(&tpriv->comp, attr->timeout);
--	ret = !tpriv->ok;
-+	ret = tpriv->ok ? 0 : -ETIMEDOUT;
- 
- cleanup:
- 	dev_remove_pack(&tpriv->pt);
-@@ -477,7 +477,7 @@ static int stmmac_test_hfilt(struct stmmac_priv *priv)
- 
- 	/* Shall NOT receive packet */
- 	ret = __stmmac_test_loopback(priv, &attr);
--	ret = !ret;
-+	ret = ret ? 0 : -EINVAL;
- 
- cleanup:
- 	dev_mc_del(priv->dev, gd_addr);
-@@ -509,7 +509,7 @@ static int stmmac_test_pfilt(struct stmmac_priv *priv)
- 
- 	/* Shall NOT receive packet */
- 	ret = __stmmac_test_loopback(priv, &attr);
--	ret = !ret;
-+	ret = ret ? 0 : -EINVAL;
- 
- cleanup:
- 	dev_uc_del(priv->dev, gd_addr);
-@@ -559,7 +559,7 @@ static int stmmac_test_mcfilt(struct stmmac_priv *priv)
- 
- 	/* Shall NOT receive packet */
- 	ret = __stmmac_test_loopback(priv, &attr);
--	ret = !ret;
-+	ret = ret ? 0 : -EINVAL;
- 
- cleanup:
- 	dev_uc_del(priv->dev, uc_addr);
-@@ -597,7 +597,7 @@ static int stmmac_test_ucfilt(struct stmmac_priv *priv)
- 
- 	/* Shall NOT receive packet */
- 	ret = __stmmac_test_loopback(priv, &attr);
--	ret = !ret;
-+	ret = ret ? 0 : -EINVAL;
- 
- cleanup:
- 	dev_mc_del(priv->dev, mc_addr);
-@@ -696,7 +696,7 @@ static int stmmac_test_flowctrl(struct stmmac_priv *priv)
- 	}
- 
- 	wait_for_completion_timeout(&tpriv->comp, STMMAC_LB_TIMEOUT);
--	ret = !tpriv->ok;
-+	ret = tpriv->ok ? 0 : -ETIMEDOUT;
- 
- cleanup:
- 	dev_mc_del(priv->dev, paddr);
-@@ -830,11 +830,11 @@ static int stmmac_test_vlanfilt(struct stmmac_priv *priv)
- 			goto vlan_del;
- 
- 		wait_for_completion_timeout(&tpriv->comp, STMMAC_LB_TIMEOUT);
--		ret = !tpriv->ok;
-+		ret = tpriv->ok ? 0 : -ETIMEDOUT;
- 		if (ret && !i) {
- 			goto vlan_del;
- 		} else if (!ret && i) {
--			ret = -1;
-+			ret = -EINVAL;
- 			goto vlan_del;
- 		} else {
- 			ret = 0;
-@@ -906,11 +906,11 @@ static int stmmac_test_dvlanfilt(struct stmmac_priv *priv)
- 			goto vlan_del;
- 
- 		wait_for_completion_timeout(&tpriv->comp, STMMAC_LB_TIMEOUT);
--		ret = !tpriv->ok;
-+		ret = tpriv->ok ? 0 : -ETIMEDOUT;
- 		if (ret && !i) {
- 			goto vlan_del;
- 		} else if (!ret && i) {
--			ret = -1;
-+			ret = -EINVAL;
- 			goto vlan_del;
- 		} else {
- 			ret = 0;
-@@ -995,7 +995,7 @@ static int stmmac_test_rxp(struct stmmac_priv *priv)
- 	attr.src = addr;
- 
- 	ret = __stmmac_test_loopback(priv, &attr);
--	ret = !ret; /* Shall NOT receive packet */
-+	ret = ret ? 0 : -EINVAL; /* Shall NOT receive packet */
- 
- 	cls_u32.command = TC_CLSU32_DELETE_KNODE;
- 	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
--- 
-2.7.4
+Ack for going through mm tree.
 
+> 
+> Cc: Jani Nikula <jani.nikula@linux.intel.com>
+> Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+> Cc: Rodrigo Vivi <rodrigo.vivi@intel.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: intel-gfx@lists.freedesktop.org
+> Cc: dri-devel@lists.freedesktop.org
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> ---
+>  drivers/gpu/drm/i915/gem/i915_gem_userptr.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+> index 2caa594322bc..76dda2923cf1 100644
+> --- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+> +++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
+> @@ -527,7 +527,7 @@ __i915_gem_userptr_get_pages_worker(struct work_struct *_work)
+>  	}
+>  	mutex_unlock(&obj->mm.lock);
+>  
+> -	release_pages(pvec, pinned);
+> +	put_user_pages(pvec, pinned);
+>  	kvfree(pvec);
+>  
+>  	i915_gem_object_put(obj);
+> @@ -640,7 +640,7 @@ static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
+>  		__i915_gem_userptr_set_active(obj, true);
+>  
+>  	if (IS_ERR(pages))
+> -		release_pages(pvec, pinned);
+> +		put_user_pages(pvec, pinned);
+>  	kvfree(pvec);
+>  
+>  	return PTR_ERR_OR_ZERO(pages);
+> @@ -675,7 +675,7 @@ i915_gem_userptr_put_pages(struct drm_i915_gem_object *obj,
+>  			set_page_dirty_lock(page);
+>  
+>  		mark_page_accessed(page);
+> -		put_page(page);
+> +		put_user_page(page);
+>  	}
+>  	obj->mm.dirty = false;
+>  
+> -- 
+> 2.22.0
+> 
+> _______________________________________________
+> dri-devel mailing list
+> dri-devel@lists.freedesktop.org
+> https://lists.freedesktop.org/mailman/listinfo/dri-devel
