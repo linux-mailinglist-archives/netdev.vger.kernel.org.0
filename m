@@ -2,77 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E53AA82708
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 23:38:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74C3B82713
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 23:42:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730036AbfHEVih (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 17:38:37 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:44075 "EHLO ozlabs.org"
+        id S1729999AbfHEVmh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Aug 2019 17:42:37 -0400
+Received: from mga17.intel.com ([192.55.52.151]:58605 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727328AbfHEVih (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 17:38:37 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 462WNV4wqwz9sN4;
-        Tue,  6 Aug 2019 07:38:33 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1565041114;
-        bh=E7WNoqdcZNgPLfPqVYfekY7Hgga7szM/usccC7EGb0s=;
-        h=Date:From:To:Cc:Subject:From;
-        b=JWWxH6CDEFiXRawn4//9VhHBOHEsBdpRXdfyiDMjrTUdlsl50MjR9vImj6TPJ/1uL
-         4OD8AWy2+gJ+CqdxoVFyxCcWLH75v4erdzyVWpkHxwqsSj1M5+JQuZTneg+LpKl1K7
-         UXBudyZCOnIqA9aD9hvJ5lXxrNgslNAXxmFOK/pTIyZ6wLa5hL1xe85xGUgOp+sibN
-         2LstoCJ+lEGAna3V62CUQbfJJsd/tsTK/+PFfFxBCdoZFvP4W9rU6ll4/Kv26C+dhG
-         T3V7hKKdPxrt3iEoFq8ks7F3fslSJkCU+hh1L8Tb65DOK0M+t/xH5nKYHVTWUkehHZ
-         dhkhA3knGhl5g==
-Date:   Tue, 6 Aug 2019 07:38:25 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: linux-next: Signed-off-by missing for commit in the net tree
-Message-ID: <20190806073825.6e6ba393@canb.auug.org.au>
+        id S1728798AbfHEVmh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 17:42:37 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 05 Aug 2019 14:42:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,350,1559545200"; 
+   d="scan'208";a="257838415"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by orsmga001.jf.intel.com with ESMTP; 05 Aug 2019 14:42:36 -0700
+Received: from orsmsx155.amr.corp.intel.com (10.22.240.21) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Mon, 5 Aug 2019 14:42:36 -0700
+Received: from orsmsx104.amr.corp.intel.com ([169.254.4.30]) by
+ ORSMSX155.amr.corp.intel.com ([169.254.7.34]) with mapi id 14.03.0439.000;
+ Mon, 5 Aug 2019 14:42:36 -0700
+From:   "Bowers, AndrewX" <andrewx.bowers@intel.com>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
+Subject: RE: [Intel-wired-lan] [PATCH 1/2] ixgbe: Explicitly initialize
+ reference count to 0
+Thread-Topic: [Intel-wired-lan] [PATCH 1/2] ixgbe: Explicitly initialize
+ reference count to 0
+Thread-Index: AQHVSSDDoE9fR5KaZUKecUISPt1qS6btGweA
+Date:   Mon, 5 Aug 2019 21:42:36 +0000
+Message-ID: <26D9FDECA4FBDD4AADA65D8E2FC68A4A1D40F162@ORSMSX104.amr.corp.intel.com>
+References: <20190802105457.16596-1-hslester96@gmail.com>
+In-Reply-To: <20190802105457.16596-1-hslester96@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiZjU1NjUwYzYtNmNhNy00OTc4LThlMjMtNzQyMzlhYTI4NmUxIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiMElwSmlCWldlK290OTlrRVRtNGlTTkhSc1pjMGIxSzlLSDBZUGlVRnhleXdtRitXaTR1azRKVXpXaXEzWk05UiJ9
+x-ctpclassification: CTP_NT
+dlp-product: dlpe-windows
+dlp-version: 11.0.400.15
+dlp-reaction: no-action
+x-originating-ip: [10.22.254.138]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/nQVt.pCwO5eDK2yu8K/gXn5";
- protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/nQVt.pCwO5eDK2yu8K/gXn5
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+> -----Original Message-----
+> From: Intel-wired-lan [mailto:intel-wired-lan-bounces@osuosl.org] On
+> Behalf Of Chuhong Yuan
+> Sent: Friday, August 2, 2019 3:55 AM
+> Cc: netdev@vger.kernel.org; Chuhong Yuan <hslester96@gmail.com>; linux-
+> kernel@vger.kernel.org; intel-wired-lan@lists.osuosl.org; David S . Miller
+> <davem@davemloft.net>
+> Subject: [Intel-wired-lan] [PATCH 1/2] ixgbe: Explicitly initialize reference
+> count to 0
+> 
+> The driver does not explicitly call atomic_set to initialize refcount to 0.
+> Add the call so that it will be more straight forward to convert refcount from
+> atomic_t to refcount_t.
+> 
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> ---
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_fcoe.c | 1 +
+>  1 file changed, 1 insertion(+)
 
-Hi all,
+Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 
-Commit
 
-  c3953a3c2d31 ("NFC: nfcmrvl: fix gpio-handling regression")
-
-is missing a Signed-off-by from its committer.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/nQVt.pCwO5eDK2yu8K/gXn5
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1IodEACgkQAVBC80lX
-0GzeUgf/bMTMu5IpZMz+Q/F6sha46kx5+/PP6kwY4FmahgyP9neX64X6wI9rBKxp
-qEde3blmwvk/pkIA2V7O0BdB5C8ZP7eK+7K8t9l9e6K0XWTyB/KRQ+gIY1KY7jD/
-PhvRUGS4LWoEEhBklBlG3xamPL0VYRFLLsI4W4b2tR38mevWWy4E3ewOcKwIb2xQ
-r8bk78LG8X56LqAzcxOAw4rkVB/87WZA7JV2pg7zUpyYXknH0rWvK7+8If5BnYPe
-7qH1yEXKQjG1s2mUTMYiNJLsCG2mCpPHa/4dr0+cgorLIzyRBFzD72DppdTf7uQ/
-ZtLF6XrXkiaqcSVxpiDOdQu4+rdKew==
-=t/KB
------END PGP SIGNATURE-----
-
---Sig_/nQVt.pCwO5eDK2yu8K/gXn5--
