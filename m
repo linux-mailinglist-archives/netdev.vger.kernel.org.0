@@ -2,137 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E113A81F70
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 16:49:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBB5981F94
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 16:54:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728952AbfHEOtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 10:49:32 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:44553 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726508AbfHEOtb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 10:49:31 -0400
-Received: by mail-wr1-f66.google.com with SMTP id p17so84701004wrf.11
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 07:49:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=aDbuV//htd09OYdzyjVmTWFbg/OHBxHEf11PV3rYjQA=;
-        b=tOpWcj3g/g+U8iGD2e6H+3G/RHHYcVn2BuEIp4F9LJUnhXAIJMCbu45H5pWMc9NnaZ
-         VI/MJlPrpxC9rSD9DzrHErKYwKMKyNZt3uhJWpYN6d5Ko4MNHyrc2s+lMTkd+AEdap1k
-         Sjb/XNDUaBS+xfXLnxcxengqT58xtYLtjok1xvfOnk7sAzZTIadSxUb5v/yggbhhZuAb
-         wZhq962PSLoiONICs3T5Pw8RUXc6ygrOfo5WHC4zupo3A1+YiANAcNEQHAEnyx3B4kr0
-         XMVJTiOEkPkDjoOCr0Gav7bI/FwSHAVQ1fVHQJkWDEL0ykEOL89LVx4hvIR2gGwQa7UW
-         4gzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=aDbuV//htd09OYdzyjVmTWFbg/OHBxHEf11PV3rYjQA=;
-        b=SXIKLr7yEy7NdO5qsJhZgWUcAZSgTyh2PcV1F6hQ224xI/pzXbI5ChBZEfms1lJBSq
-         K71PmxMQJS4/FI2z0CQgUHEbSAlg/omxLRaQkXQQ2hEZFVIeY5y/ka4B+9ssnRluekXI
-         d2ellefjpjlXxZze51tA6c5HNP9BvYaxgfNEqbLjplT2RvBF4YheZt2Gdz72jJxGe/qO
-         CcvDGCFKF/QSj8ixN3c2qo3ddl7ppZGvMIdCPlOvT3Sr4g6hMh5y0xMdeQFhbGB/449P
-         NmaDw3RSZCvRh3nwpTClMmLjA1RJSsPuAvOpe7noojM8tRgUwICqoQy0PRZjr5ZbevlR
-         IHkA==
-X-Gm-Message-State: APjAAAUZN+nlLUjottufC6sVtmFKunoMZfG5mG6tp2J98vWOnNgbLOV3
-        3fAPvZtlrIM3ZtIX5TNE5phNmrbr
-X-Google-Smtp-Source: APXvYqzPLwxnGQJanP4tXR9MeXGqsCIdAmW2kUwdoQ+0yR6lRLNRH8cLRcTBuDCexVlSsJtMwK+Pgg==
-X-Received: by 2002:a5d:5308:: with SMTP id e8mr20775249wrv.219.1565016569263;
-        Mon, 05 Aug 2019 07:49:29 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id v5sm125439509wre.50.2019.08.05.07.49.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 07:49:28 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 16:49:27 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
-Message-ID: <20190805144927.GD2349@nanopsycho.orion>
-References: <20190730153952.73de7f00@cakuba.netronome.com>
- <20190731192627.GB2324@nanopsycho>
- <c4f83be2-adee-1595-f241-de4c26ea55ca@gmail.com>
- <20190731194502.GC2324@nanopsycho>
- <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
- <89dc6908-68b8-5b0d-0ef7-1eaf1e4e886b@gmail.com>
- <20190802074838.GC2203@nanopsycho>
- <6f05d200-49d4-4eb1-cd69-bd88cf8b0167@gmail.com>
- <20190805055422.GA2349@nanopsycho.orion>
- <796ba97c-9915-9a44-e933-4a7e22aaef2e@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <796ba97c-9915-9a44-e933-4a7e22aaef2e@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        id S1729334AbfHEOyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 10:54:49 -0400
+Received: from comms.puri.sm ([159.203.221.185]:41494 "EHLO comms.puri.sm"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728043AbfHEOyt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 10:54:49 -0400
+X-Greylist: delayed 600 seconds by postgrey-1.27 at vger.kernel.org; Mon, 05 Aug 2019 10:54:48 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id D2931DF2AE;
+        Mon,  5 Aug 2019 07:44:47 -0700 (PDT)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id wV_usbgEvWOB; Mon,  5 Aug 2019 07:44:47 -0700 (PDT)
+Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
+To:     Johan Hovold <johan@kernel.org>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>
+Cc:     kernel@puri.sm, =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20190724145227.27169-1-angus@akkea.ca>
+ <20190724145227.27169-2-angus@akkea.ca> <20190805114711.GF3574@localhost>
+From:   Bob Ham <bob.ham@puri.sm>
+Openpgp: preference=signencrypt
+Autocrypt: addr=bob.ham@puri.sm; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <5fb96703-b174-eef1-5ad1-693e2bbce32f@puri.sm>
+Date:   Mon, 5 Aug 2019 15:44:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+In-Reply-To: <20190805114711.GF3574@localhost>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Aug 05, 2019 at 04:10:39PM CEST, dsahern@gmail.com wrote:
->On 8/4/19 11:54 PM, Jiri Pirko wrote:
->> There was implicit devlink instance creation per-namespace. No relation
->> any actual device. It was wrong and misuse of devlink.
->> 
->> Now you have 1 devlink instance per 1 device as it should be. Also, you
->> have fib resource control for this device, also as it is done for real
->> devices, like mlxsw.
->> 
->> Could you please describe your usecase? Perhaps we can handle
->> it differently.
->
->I have described this before, multiple times.
->
->It is documented in the commit log for the initial fib.c in netdevsim
->(37923ed6b8cea94d7d76038e2f72c57a0b45daab) and
->https://lore.kernel.org/netdev/20180328012200.15175-7-dsa@cumulusnetworks.com/
->
->And this comment in the discussion thread:
->
->https://lore.kernel.org/netdev/e9c59b0c-328e-d343-6e8d-d19f643d2e9d@cumulusnetworks.com/:
->"The intention is to treat the kernel's tables *per namespace* as a
->standalone entity that can be managed very similar to ASIC resources."
->
->
->So, to state this again, the fib.c in the RFC version
->https://lore.kernel.org/netdev/20180322225757.10377-8-dsa@cumulusnetworks.com/
->
->targeted this:
->
->   namespace 1 |  namespace 2  | ... | namespace N
->               |               |     |
->               |               |     |
->   devlink 1   |    devlink 2  | ... |  devlink N
->
->and each devlink instance has resource limits for the number of fib
->rules and fib entries *for that namespace* only.
->
->You objected to how the devlink instances per namespace was implemented,
->so the non-RFC version limited the devlink instance and resource
->controller to init_net only. Fine. I accepted that limitation until
->someone had time to work on devlink instances per network namespace
->which you are doing now. So, the above goal will be achievable but first
->you need to fix the breakage you put into v5.2 and forward.
->
->Your commit 5fc494225c1eb81309cc4c91f183cd30e4edb674 changed that from a
->per-namepace accounting to all namespaces managed by a single devlink
->instance in init_net - which is completely wrong.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0
+Content-Type: multipart/mixed; boundary="ePV71vOs0eSjkvx3iXjEuaaJV4NUkQxra";
+ protected-headers="v1"
+From: Bob Ham <bob.ham@puri.sm>
+To: Johan Hovold <johan@kernel.org>, "Angus Ainslie (Purism)" <angus@akkea.ca>
+Cc: kernel@puri.sm, =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
+ "David S. Miller" <davem@davemloft.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev@vger.kernel.org,
+ linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-ID: <5fb96703-b174-eef1-5ad1-693e2bbce32f@puri.sm>
+Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
+References: <20190724145227.27169-1-angus@akkea.ca>
+ <20190724145227.27169-2-angus@akkea.ca> <20190805114711.GF3574@localhost>
+In-Reply-To: <20190805114711.GF3574@localhost>
 
-No. Not "all namespaces". Only the one where the devlink is. And that is
-always init_net, until this patchset.
+--ePV71vOs0eSjkvx3iXjEuaaJV4NUkQxra
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+
+On 05/08/2019 12:47, Johan Hovold wrote:
+> On Wed, Jul 24, 2019 at 07:52:26AM -0700, Angus Ainslie (Purism) wrote:=
+
+>> From: Bob Ham <bob.ham@puri.sm>
+>>
+>> Add a VID:PID for the BroadModi BM818 M.2 card
+>=20
+> Would you mind posting the output of usb-devices (or lsusb -v) for this=
+
+> device?
+
+T:  Bus=3D01 Lev=3D03 Prnt=3D40 Port=3D03 Cnt=3D01 Dev#=3D 44 Spd=3D480 M=
+xCh=3D 0
+D:  Ver=3D 2.00 Cls=3D00(>ifc ) Sub=3D00 Prot=3D00 MxPS=3D64 #Cfgs=3D  1
+P:  Vendor=3D2020 ProdID=3D2060 Rev=3D00.00
+S:  Manufacturer=3DQualcomm, Incorporated
+S:  Product=3DQualcomm CDMA Technologies MSM
+C:  #Ifs=3D 5 Cfg#=3D 1 Atr=3De0 MxPwr=3D500mA
+I:  If#=3D0x0 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+I:  If#=3D0x1 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+I:  If#=3D0x3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dfe Prot=3Dff Drive=
+r=3D(none)
+I:  If#=3D0x4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
 
 
->
->Move the fib accounting back to per namespace as the original code
->intended. If you now want the devlink instance to be namespace based
->then it should be trivial for you to fix it and will work going forward.
+--ePV71vOs0eSjkvx3iXjEuaaJV4NUkQxra--
 
-With this patchset, you can create netdevsim instance in a namespace,
-set the resources limits on the devlink instance for this netdevsim
-and you have what you need and what you had before. You just need to
-create one netdevsim instance per network namespace.
-Or multiple netdevsim instances in one namespace with different
-limitations. Up to you.
+--aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE745irA8zXATsZwYpUxfwLpX1YkEFAl1IQNoACgkQUxfwLpX1
+YkGLrw/8DdFrRqq2wSac4phcOPiDz/8DzQFDAn5BzUs9TfKiecHDJdycv0bFCjwY
+aIRF/z+i8ltLnCdO3KMSqwTgqit8npZC+DLWNrY4wBAVc2EsfSi/aQeFgUjr5kMB
+Z3y9IpfAn2dU16xg6+9XLBlHBj4qmpxtn7hnlPJOCJixcRaDoxrQ929kyfeDn2sr
+ntltidTZ/jF7/tkrZ1IPDFOz2ahscYh7kMos9x1NPizRlWWWiOLGRihyQDANbfpt
+VzScmlv/FjXuFDOjIhKlocimDccUYMAniPYfcQ9mL78GAfJKmAo0/MKsBWxNWih/
+Sef1FKCihiBsHbcVGcUMoSkDoVh3J9PYo2hL3y8SQouQoJtZ5FI+0OlUgsF78nTs
+8gJn6rvGIrb4l9FYX4fC3aP4QenyWj5TF4KNLEjxn0tHa6QPGds8Mbyl0RDB553l
+kdC5fAeuJszZFm+mAcijb+bR+fQ6eVu25tcuOjk97EueQabveLpDbSf/fMD8xzSo
+ejdFDydKqxZfeWbYRgKEAgnBufI/GfQLeI+NZN3An0C2pITt515he7o6ekUfaFeu
+6jLKaGWsH97zWmRs6n36TGsZrLrA/6eloib2J7Y+r+3aBZnY9eCJs0/DXTJ6J+PC
+6TylwPkZh3N7fINfKgtVt261Ga0vN8r2Q5T+8PNBamJCT2aDBrw=
+=oTTh
+-----END PGP SIGNATURE-----
+
+--aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0--
