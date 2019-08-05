@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E9ED822EE
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:47:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF94822E9
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 18:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729856AbfHEQrG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 12:47:06 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:39938 "EHLO
+        id S1729818AbfHEQq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 12:46:59 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:39962 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728898AbfHEQpa (ORCPT
+        by vger.kernel.org with ESMTP id S1728935AbfHEQpa (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 12:45:30 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 08B10C01BB;
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 16784C01BC;
         Mon,  5 Aug 2019 16:45:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1565023529; bh=u63Z0/pRBaOAtLls8zZfo4LINiqJPhG3firAaLDQl6I=;
+        t=1565023529; bh=VkqN262XmdUSN5ZbpYTdyhZyhdUlozbCeu+BysVhG1E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=NqMVqUGrKvpfDqyZWKIj0+luqUKKeXh5P2v+1Wo8oodbiaX5NQxAl4bYkZbR30CDm
-         IyJGYCtud84xBGQloCjxd17qipHhUBBppWqIN8xz263DxQlOHCqyjUNoft7YjP1+ge
-         uN8O0zdkms/St+8zfTB2e1kdboYHzYvw1hdr46KT7PXL33ECHfY98AKMb4yqM4nF5q
-         U2EchIliNHTeufrJ3fC5AZD15b834P2dkzGAh2msUNeDQxw2JKceUtoGLC6WrEUgjm
-         q3TvCwOOtxUXXAd9hQnnKgsJraiE1nvKKAwbOQmLMtMRXISOBEDDlocYDeSrn/ouSF
-         tPywgnV+mnxZg==
+        b=NTWwrZ5Dowy1tFJRottsZjV9DpIorQIxDh48vAmZjEluPhmZXMxfdaMhSuZpCoGHw
+         VxYht5R5ka6K8MpxPhcgaAeUwKVmXiaAT15VCw4Zp/8Hthf0IHICabGXxwDrs339L/
+         pjZxopZgzBer1123VKqzxjYEOsreOKI80s41xXkLs8Qayxz7W9mKisObSkp8HXxOj0
+         71/IsDHU6TyPvdQfjkrhn2WSJVmo/Cu8jOCmxe7GrE30kaK5NjR44okVHsIkaPsIic
+         tvcP6mP6UjddpQXIjPSJPQP8AowFC6GYwjRLT/wCyrjQgZTEQ0XSBqn9sNLa1PeQlK
+         lGy2yZNJA/Yeg==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id C5002A0086;
+        by mailhost.synopsys.com (Postfix) with ESMTP id CDBC2A0087;
         Mon,  5 Aug 2019 16:45:27 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 13/26] net: stmmac: selftests: Add a selftest for Flexible RX Parser
-Date:   Mon,  5 Aug 2019 18:44:40 +0200
-Message-Id: <1bd693a85a15c5b57a759cc4b798dd958e5bf525.1565022597.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 14/26] net: stmmac: Get correct timestamp values from XGMAC
+Date:   Mon,  5 Aug 2019 18:44:41 +0200
+Message-Id: <22d9f89ce1c95cf59bf771431a21bfb228b9ccc7.1565022597.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1565022597.git.joabreu@synopsys.com>
 References: <cover.1565022597.git.joabreu@synopsys.com>
@@ -52,7 +52,11 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a selftest for the Flexible RX Parser feature.
+TX Timestamp in XGMAC comes from MAC instead of descriptors. Implement
+this in a new callback.
+
+Also, RX Timestamp in XGMAC must be cheked against corruption and we need
+a barrier to make sure that descriptor fields are read correctly.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 ---
@@ -66,141 +70,151 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 98 +++++++++++++++++++++-
- 1 file changed, 97 insertions(+), 1 deletion(-)
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 22 ++++++++++++++++++++++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_descs.c   | 18 +++++++++++-------
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  4 ++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |  9 ++++++---
+ 4 files changed, 43 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 6b08bb15af15..abab84f2ef8b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -11,8 +11,10 @@
- #include <linux/ip.h>
- #include <linux/phy.h>
- #include <linux/udp.h>
-+#include <net/pkt_cls.h>
- #include <net/tcp.h>
- #include <net/udp.h>
-+#include <net/tc_act/tc_gact.h>
- #include "stmmac.h"
- 
- struct stmmachdr {
-@@ -229,7 +231,7 @@ static int stmmac_test_loopback_validate(struct sk_buff *skb,
- 			goto out;
- 	}
- 	if (tpriv->packet->src) {
--		if (!ether_addr_equal(ehdr->h_source, orig_ndev->dev_addr))
-+		if (!ether_addr_equal(ehdr->h_source, tpriv->packet->src))
- 			goto out;
- 	}
- 
-@@ -912,6 +914,96 @@ static int stmmac_test_dvlanfilt(struct stmmac_priv *priv)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+index 767f3fe5efaa..1161287d3a62 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+@@ -997,6 +997,27 @@ static int dwxgmac3_rxp_config(void __iomem *ioaddr,
  	return ret;
  }
  
-+#ifdef CONFIG_NET_CLS_ACT
-+static int stmmac_test_rxp(struct stmmac_priv *priv)
++static int dwxgmac2_get_mac_tx_timestamp(struct mac_device_info *hw, u64 *ts)
 +{
-+	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
-+	struct tc_cls_u32_offload cls_u32 = { };
-+	struct stmmac_packet_attrs attr = { };
-+	struct tc_action **actions, *act;
-+	struct tc_u32_sel *sel;
-+	struct tcf_exts *exts;
-+	int ret, i, nk = 1;
++	void __iomem *ioaddr = hw->pcsr;
++	int count = 0;
++	u32 value;
 +
-+	if (!tc_can_offload(priv->dev))
-+		return -EOPNOTSUPP;
-+	if (!priv->dma_cap.frpsel)
-+		return -EOPNOTSUPP;
++	do {
++		if (readl_poll_timeout_atomic(ioaddr + XGMAC_TIMESTAMP_STATUS,
++					      value, value & XGMAC_TXTSC,
++					      100, 10000))
++			break;
 +
-+	sel = kzalloc(sizeof(*sel) + nk * sizeof(struct tc_u32_key), GFP_KERNEL);
-+	if (!sel)
-+		return -ENOMEM;
++		*ts = readl(ioaddr + XGMAC_TXTIMESTAMP_NSEC) & XGMAC_TXTSSTSLO;
++		*ts += readl(ioaddr + XGMAC_TXTIMESTAMP_SEC) * 1000000000ULL;
++	} while (count++);
 +
-+	exts = kzalloc(sizeof(*exts), GFP_KERNEL);
-+	if (!exts) {
-+		ret = -ENOMEM;
-+		goto cleanup_sel;
-+	}
-+
-+	actions = kzalloc(nk * sizeof(*actions), GFP_KERNEL);
-+	if (!actions) {
-+		ret = -ENOMEM;
-+		goto cleanup_exts;
-+	}
-+
-+	act = kzalloc(nk * sizeof(*act), GFP_KERNEL);
-+	if (!act) {
-+		ret = -ENOMEM;
-+		goto cleanup_actions;
-+	}
-+
-+	cls_u32.command = TC_CLSU32_NEW_KNODE;
-+	cls_u32.common.chain_index = 0;
-+	cls_u32.common.protocol = htons(ETH_P_ALL);
-+	cls_u32.knode.exts = exts;
-+	cls_u32.knode.sel = sel;
-+	cls_u32.knode.handle = 0x123;
-+
-+	exts->nr_actions = nk;
-+	exts->actions = actions;
-+	for (i = 0; i < nk; i++) {
-+		struct tcf_gact *gact = to_gact(&act[i]);
-+
-+		actions[i] = &act[i];
-+		gact->tcf_action = TC_ACT_SHOT;
-+	}
-+
-+	sel->nkeys = nk;
-+	sel->offshift = 0;
-+	sel->keys[0].off = 6;
-+	sel->keys[0].val = htonl(0xdeadbeef);
-+	sel->keys[0].mask = ~0x0;
-+
-+	ret = stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
-+	if (ret)
-+		goto cleanup_act;
-+
-+	attr.dst = priv->dev->dev_addr;
-+	attr.src = addr;
-+
-+	ret = __stmmac_test_loopback(priv, &attr);
-+	ret = !ret; /* Shall NOT receive packet */
-+
-+	cls_u32.command = TC_CLSU32_DELETE_KNODE;
-+	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
-+
-+cleanup_act:
-+	kfree(act);
-+cleanup_actions:
-+	kfree(actions);
-+cleanup_exts:
-+	kfree(exts);
-+cleanup_sel:
-+	kfree(sel);
-+	return ret;
++	if (count)
++		return 0;
++	return -EBUSY;
 +}
-+#else
-+static int stmmac_test_rxp(struct stmmac_priv *priv)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
 +
- #define STMMAC_LOOPBACK_NONE	0
- #define STMMAC_LOOPBACK_MAC	1
- #define STMMAC_LOOPBACK_PHY	2
-@@ -969,6 +1061,10 @@ static const struct stmmac_test {
- 		.name = "Double VLAN Filtering",
- 		.lb = STMMAC_LOOPBACK_PHY,
- 		.fn = stmmac_test_dvlanfilt,
-+	}, {
-+		.name = "Flexible RX Parser   ",
-+		.lb = STMMAC_LOOPBACK_PHY,
-+		.fn = stmmac_test_rxp,
- 	},
+ const struct stmmac_ops dwxgmac210_ops = {
+ 	.core_init = dwxgmac2_core_init,
+ 	.set_mac = dwxgmac2_set_mac,
+@@ -1033,6 +1054,7 @@ const struct stmmac_ops dwxgmac210_ops = {
+ 	.rss_configure = dwxgmac2_rss_configure,
+ 	.update_vlan_hash = dwxgmac2_update_vlan_hash,
+ 	.rxp_config = dwxgmac3_rxp_config,
++	.get_mac_tx_timestamp = dwxgmac2_get_mac_tx_timestamp,
  };
  
+ int dwxgmac2_setup(struct stmmac_priv *priv)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
+index 9ff9d9ac1a50..d70a90c12dbc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
+@@ -98,11 +98,17 @@ static int dwxgmac2_rx_check_timestamp(void *desc)
+ 	unsigned int rdes3 = le32_to_cpu(p->des3);
+ 	bool desc_valid, ts_valid;
+ 
++	dma_rmb();
++
+ 	desc_valid = !(rdes3 & XGMAC_RDES3_OWN) && (rdes3 & XGMAC_RDES3_CTXT);
+ 	ts_valid = !(rdes3 & XGMAC_RDES3_TSD) && (rdes3 & XGMAC_RDES3_TSA);
+ 
+-	if (likely(desc_valid && ts_valid))
++	if (likely(desc_valid && ts_valid)) {
++		if ((p->des0 == 0xffffffff) && (p->des1 == 0xffffffff))
++			return -EINVAL;
+ 		return 0;
++	}
++
+ 	return -EINVAL;
+ }
+ 
+@@ -113,13 +119,11 @@ static int dwxgmac2_get_rx_timestamp_status(void *desc, void *next_desc,
+ 	unsigned int rdes3 = le32_to_cpu(p->des3);
+ 	int ret = -EBUSY;
+ 
+-	if (likely(rdes3 & XGMAC_RDES3_CDA)) {
++	if (likely(rdes3 & XGMAC_RDES3_CDA))
+ 		ret = dwxgmac2_rx_check_timestamp(next_desc);
+-		if (ret)
+-			return ret;
+-	}
+-
+-	return ret;
++	if (!ret)
++		return 1;
++	return 0;
+ }
+ 
+ static void dwxgmac2_init_rx_desc(struct dma_desc *p, int disable_rx_ic,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index 52fc2344b066..7e1523c6f456 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -339,6 +339,8 @@ struct stmmac_ops {
+ 	/* VLAN */
+ 	void (*update_vlan_hash)(struct mac_device_info *hw, u32 hash,
+ 				 bool is_double);
++	/* TX Timestamp */
++	int (*get_mac_tx_timestamp)(struct mac_device_info *hw, u64 *ts);
+ };
+ 
+ #define stmmac_core_init(__priv, __args...) \
+@@ -413,6 +415,8 @@ struct stmmac_ops {
+ 	stmmac_do_callback(__priv, mac, rss_configure, __args)
+ #define stmmac_update_vlan_hash(__priv, __args...) \
+ 	stmmac_do_void_callback(__priv, mac, update_vlan_hash, __args)
++#define stmmac_get_mac_tx_timestamp(__priv, __args...) \
++	stmmac_do_callback(__priv, mac, get_mac_tx_timestamp, __args)
+ 
+ /* PTP and HW Timer helpers */
+ struct stmmac_hwtimestamp {
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 5ac86d6a8e40..075de483ce7b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -432,6 +432,7 @@ static void stmmac_get_tx_hwtstamp(struct stmmac_priv *priv,
+ 				   struct dma_desc *p, struct sk_buff *skb)
+ {
+ 	struct skb_shared_hwtstamps shhwtstamp;
++	bool found = false;
+ 	u64 ns = 0;
+ 
+ 	if (!priv->hwts_tx_en)
+@@ -443,9 +444,13 @@ static void stmmac_get_tx_hwtstamp(struct stmmac_priv *priv,
+ 
+ 	/* check tx tstamp status */
+ 	if (stmmac_get_tx_timestamp_status(priv, p)) {
+-		/* get the valid tstamp */
+ 		stmmac_get_timestamp(priv, p, priv->adv_ts, &ns);
++		found = true;
++	} else if (!stmmac_get_mac_tx_timestamp(priv, priv->hw, &ns)) {
++		found = true;
++	}
+ 
++	if (found) {
+ 		memset(&shhwtstamp, 0, sizeof(struct skb_shared_hwtstamps));
+ 		shhwtstamp.hwtstamp = ns_to_ktime(ns);
+ 
+@@ -453,8 +458,6 @@ static void stmmac_get_tx_hwtstamp(struct stmmac_priv *priv,
+ 		/* pass tstamp to stack */
+ 		skb_tstamp_tx(skb, &shhwtstamp);
+ 	}
+-
+-	return;
+ }
+ 
+ /* stmmac_get_rx_hwtstamp - get HW RX timestamps
 -- 
 2.7.4
 
