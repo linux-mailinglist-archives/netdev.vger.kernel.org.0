@@ -2,77 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC55F81D2D
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 15:30:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C836381E07
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 15:51:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730395AbfHENU5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 09:20:57 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34002 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730367AbfHENU5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 09:20:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=6daK9OLtTHHmYFQn2clC+oFUHMXZEy7xd2EJnCzCpfk=; b=2Xqlu4JNgn9D9OND3DH1g0VDsc
-        2etmgO2ZFmrD7NXQqgtZ+pvFTXnEkT9iEwpvoIM6wdK7+AvMv5nhwfS78Ik5uWYTjN7YgzeosGDnk
-        GYwzWro6J8XCQMOt1FR1Ebq6bJIDeOqhzONyX0uDirp4RGjcDK7JH8cEhgiGjcLe48OY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hucur-0006ZZ-Um; Mon, 05 Aug 2019 15:20:45 +0200
-Date:   Mon, 5 Aug 2019 15:20:45 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Harini Katakam <harinik@xilinx.com>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>,
-        devicetree@vger.kernel.org
-Subject: Re: [RFC PATCH 1/2] dt-bindings: net: macb: Add new property for PS
- SGMII only
-Message-ID: <20190805132045.GC24275@lunn.ch>
-References: <1564566033-676-1-git-send-email-harini.katakam@xilinx.com>
- <1564566033-676-2-git-send-email-harini.katakam@xilinx.com>
- <20190804145633.GB6800@lunn.ch>
- <CAFcVECL6cvCjeo+fn1NDyMDZyZXDrWyhD9djvcVXiLVLiLgGeA@mail.gmail.com>
+        id S1730707AbfHENvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 09:51:18 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4176 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729625AbfHENvR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 09:51:17 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 46D274C0241425031124;
+        Mon,  5 Aug 2019 21:51:14 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Mon, 5 Aug 2019
+ 21:51:07 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
+        <davem@davemloft.net>, <jiri@resnulli.us>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] bonding: Add vlan tx offload to hw_enc_features
+Date:   Mon, 5 Aug 2019 21:49:53 +0800
+Message-ID: <20190805134953.63596-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFcVECL6cvCjeo+fn1NDyMDZyZXDrWyhD9djvcVXiLVLiLgGeA@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 05, 2019 at 11:45:05AM +0530, Harini Katakam wrote:
-> Hi Andrew,
-> 
-> On Sun, Aug 4, 2019 at 8:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> >
-> > On Wed, Jul 31, 2019 at 03:10:32PM +0530, Harini Katakam wrote:
-> > > Add a new property to indicate when PS SGMII is used with NO
-> > > external PHY on board.
-> >
-> > Hi Harini
-> >
-> > What exactly is you use case? Are you connecting to a Ethernet switch?
-> > To an SFP cage with a copper module?
-> 
-> Yes, an SFP cage is the common HW target for this patch.
+As commit 30d8177e8ac7 ("bonding: Always enable vlan tx offload")
+said, we should always enable bonding's vlan tx offload, pass the
+vlan packets to the slave devices with vlan tci, let them to handle
+vlan implementation.
 
-Hi Harini
+Now if encapsulation protocols like VXLAN is used, skb->encapsulation
+may be set, then the packet is passed to vlan devicec which based on
+bonding device. However in netif_skb_features(), the check of
+hw_enc_features:
 
-So you have a copper PHY in the SFP cage. It will talk SGMII
-signalling to your PS SGMII. When that signalling is complete i would
-expect the MAC to raise an interrupt, just as if the SGMII PHY was
-soldered on the board. So i don't see why you need this polling?
+	 if (skb->encapsulation)
+                 features &= dev->hw_enc_features;
 
-       Andrew
+clears NETIF_F_HW_VLAN_CTAG_TX/NETIF_F_HW_VLAN_STAG_TX. This results
+in same issue in commit 30d8177e8ac7 like this:
+
+vlan_dev_hard_start_xmit
+  -->dev_queue_xmit
+    -->validate_xmit_skb
+      -->netif_skb_features //NETIF_F_HW_VLAN_CTAG_TX is cleared
+      -->validate_xmit_vlan
+        -->__vlan_hwaccel_push_inside //skb->tci is cleared
+...
+ --> bond_start_xmit
+   --> bond_xmit_hash //BOND_XMIT_POLICY_ENCAP34
+     --> __skb_flow_dissect // nhoff point to IP header
+        -->  case htons(ETH_P_8021Q)
+             // skb_vlan_tag_present is false, so
+             vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan),
+             //vlan point to ip header wrongly
+
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/bonding/bond_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 02fd782..931d9d9 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1126,6 +1126,8 @@ static void bond_compute_features(struct bonding *bond)
+ done:
+ 	bond_dev->vlan_features = vlan_features;
+ 	bond_dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
++				    NETIF_F_HW_VLAN_CTAG_TX |
++				    NETIF_F_HW_VLAN_STAG_TX |
+ 				    NETIF_F_GSO_UDP_L4;
+ 	bond_dev->mpls_features = mpls_features;
+ 	bond_dev->gso_max_segs = gso_max_segs;
+-- 
+2.7.4
+
+
