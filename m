@@ -2,70 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E869823D1
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 19:17:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 173A6823D3
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 19:17:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729609AbfHERQw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 13:16:52 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34982 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726559AbfHERQw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 13:16:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=P468JIvKTHpxW0j9GxTuaBtEZ/w1z4jhlMC0MApa2iE=; b=2gu2xkzybISE/BT8TBNeC/2uU9
-        pap2ksw1BgLyapATDF3GhRrx2FHCYVhREn9x25IJqHkrYhZaQecITJNlJ8yGcCfnpWgO5ntJS/tsY
-        mdPzhu/X4D+/v/KtV0e/ZM1i4ndZxGMHGZPp8EqSZdyvQfZ9bAHXpO+6ry/Z961muptY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hugb9-0000BE-FF; Mon, 05 Aug 2019 19:16:39 +0200
-Date:   Mon, 5 Aug 2019 19:16:39 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Harini Katakam <harinik@xilinx.com>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        David Miller <davem@davemloft.net>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [RFC PATCH 1/2] dt-bindings: net: macb: Add new property for PS
- SGMII only
-Message-ID: <20190805171639.GV24275@lunn.ch>
-References: <1564566033-676-1-git-send-email-harini.katakam@xilinx.com>
- <1564566033-676-2-git-send-email-harini.katakam@xilinx.com>
- <20190804145633.GB6800@lunn.ch>
- <CAFcVECL6cvCjeo+fn1NDyMDZyZXDrWyhD9djvcVXiLVLiLgGeA@mail.gmail.com>
- <20190805132045.GC24275@lunn.ch>
- <CAFcVECLUNYRC-iZbKvvq2_XMLfXg7E10yAU5J_8GaEB3ExWRxg@mail.gmail.com>
- <CAFcVECLVHY5X=wctxVqRqDTDyG7Zavkt5ui4RtFBLP8g8MW1SA@mail.gmail.com>
+        id S1729990AbfHERRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 13:17:07 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42659 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728800AbfHERRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 13:17:06 -0400
+Received: by mail-pg1-f195.google.com with SMTP id t132so40070020pgb.9;
+        Mon, 05 Aug 2019 10:17:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=4NC2zi5IdzFcXT8R+nruR6XNWC2GpDooQHfTzo9KoSA=;
+        b=iiW81S07d4eMhALtP7MW1KgdQ7nbI/gKmy8K3xOqOMfp0+223L32TMn5HUdDvbTU9s
+         6Cij4xclx6Z07oTFrAz04zrxFVB0wN9j4Ic/aNPNWunygqFlGvNrNRMTqyjkcdVNtIlR
+         b0ts+PI6TrqlGzQx/t4ZaoA7HNIouo7tX0qdEMRowXdnBaoqJVBeMl0dGYtpJCIWkLGu
+         lNI6ga+NljhxzOdC2gSzVK4ydC2WMUnDg4OCt8oRhiept6g1ZLgEqBN4QBbX6KmWndtV
+         PINHL39SQ2LYtAAFEU8RCEmbA7cXg5har7938FwsaKw/QpOFVxduoFqID6L8NAwaPGd4
+         yyHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4NC2zi5IdzFcXT8R+nruR6XNWC2GpDooQHfTzo9KoSA=;
+        b=prOea4pRc20+TM7MYAyfEaglZOAG49CVxFEyGUaCJaa0iPUvq3WTDhVd+PVeFeYKVO
+         BWzqdrEjTuS39tj0J0FhJDH2g3OZoQwlfW9FvFjqbk9C3PInbiTZSliMnRNXZStdZbY3
+         64cFIBimWoCADxHihZtZM39vUeCc/a+jz5skrIJNDYp3rTN2/y5fFUSeiFBDZj7GCsEQ
+         xwTeMS4eJ3tjeiTvTvLKc4mDmpZFbYsg5jtXa3kUIP7zyF4iznXmVwOqnEX37jbk1NcX
+         +jTBxUhPDqYcSrhdEsBwAeDtiUunW544nEWH1HE1nIey1+D3eTT41+jxYhJTC94xQ4pe
+         dwSg==
+X-Gm-Message-State: APjAAAVYJJY2H5ndS2kwVT69lISrzbM4zbeyCTNLfBZHChoVYwazz6G/
+        4roVfLzrzrixpOENuMEDi9Q=
+X-Google-Smtp-Source: APXvYqwPEDszDM0jyKUO8QgFrdnjL04bjKfl638yOaagVV40YvbMLuMju59szRlv3RJCcOM6VGSk2g==
+X-Received: by 2002:a65:4341:: with SMTP id k1mr2736382pgq.153.1565025425997;
+        Mon, 05 Aug 2019 10:17:05 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id v10sm83322212pfe.163.2019.08.05.10.17.04
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 05 Aug 2019 10:17:05 -0700 (PDT)
+Date:   Mon, 5 Aug 2019 10:17:03 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Hubert Feurstein <h.feurstein@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [RFC] net: dsa: mv88e6xxx: ptp: improve phc2sys precision for
+ mv88e6xxx  switch in combination with imx6-fec
+Message-ID: <20190805171702.GA1552@localhost>
+References: <20190802163248.11152-1-h.feurstein@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAFcVECLVHY5X=wctxVqRqDTDyG7Zavkt5ui4RtFBLP8g8MW1SA@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190802163248.11152-1-h.feurstein@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Even with the use of this interrupt, the link status actions (link print and
-> netif ops) will still be required. And also the need for macb_open to
-> proceed without phydev. Could you please let me know if that is acceptable
-> to patch or if there's a cleaner way to
-> report this link status?
+On Fri, Aug 02, 2019 at 06:32:48PM +0200, Hubert Feurstein wrote:
 
-It sounds like you need to convert to phylink, so you get full sfp
-support. phylib does not handle hotplug of PHYs.
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index 2f6057e7335d..20f589dc5b8b 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -1814,11 +1814,25 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+>  
+>  	reinit_completion(&fep->mdio_done);
+>  
+> -	/* start a write op */
+> -	writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
+> -		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
+> -		FEC_MMFR_TA | FEC_MMFR_DATA(value),
+> -		fep->hwp + FEC_MII_DATA);
+> +	if (bus->ptp_sts) {
+> +		unsigned long flags = 0;
+> +		local_irq_save(flags);
+> +		__iowmb();
+> +		/* >Take the timestamp *after* the memory barrier */
+> +		ptp_read_system_prets(bus->ptp_sts);
+> +		writel_relaxed(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
+> +			FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
+> +			FEC_MMFR_TA | FEC_MMFR_DATA(value),
+> +			fep->hwp + FEC_MII_DATA);
+> +		ptp_read_system_postts(bus->ptp_sts);
 
-Please look at the comments Russell gave the last time this was
-attempted.
+Regarding generic support of this, see if you can't place the
+ptp_read_system_prets/postts() calls at the mii_bus layer.  This could
+mean, for example, offering a two-part write API, to split this write
+operation from...
 
-    Andrew
+> +		local_irq_restore(flags);
+> +	} else {
+> +		/* start a write op */
+> +		writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
+> +			FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
+> +			FEC_MMFR_TA | FEC_MMFR_DATA(value),
+> +			fep->hwp + FEC_MII_DATA);
+> +	}
+>
+>  	/* wait for end of transfer */
+>  	time_left = wait_for_completion_timeout(&fep->mdio_done,
+
+...this kind of thing ^^^
+
+Thanks,
+Richard
