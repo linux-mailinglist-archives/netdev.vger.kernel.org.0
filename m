@@ -2,97 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 473B68185F
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 13:47:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1544781865
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 13:49:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728518AbfHELrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 07:47:16 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:45944 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727259AbfHELrQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 07:47:16 -0400
-Received: by mail-lf1-f66.google.com with SMTP id u10so18935029lfm.12;
-        Mon, 05 Aug 2019 04:47:14 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XqfbHS+kotk8JoRbfLuGqMSPe/L9zMN6nAynv8vWNNE=;
-        b=O+OAZdfs0epR4mar8rurpUaubeHEoz9RUhXnXCuUIg6fivHNXgeGlhOIz3MhMXy3jt
-         MEu7lumoLYRKU4Bf4XZ2+iLAIXDFudMGWug7EKm3kDy9lk+nKf/A016vXX58tflFzf+x
-         9FXuMkisWjyiAmR4iBYZsg23rY9w4e86gH21TdkZFyGIPD8fsYUdvL2cRolPFGGBlMg7
-         Bi7POE68YNYEYdBUd5IchMIhnZ4F0HV9bVw3/r5bENRwLQ/9xHXsx0AxwFIOs2AF6wm4
-         fd4HPt0NxWIio9LTlgp6YzbP9p5I4oPeSAfe9foFd4cYabD1aDlwgIr2DjCwTRFfaeVM
-         6rwA==
-X-Gm-Message-State: APjAAAXh+FjAQdSS8+xVCiKwg9SCmivlvwadI1R58wdgHLuBflabJfMF
-        IgzaHSChCyVskxvc0lkoMNtclfqY2GM=
-X-Google-Smtp-Source: APXvYqwCQQpWwF/H86pq5gU6luyGEhhHPzYgbnkV99GOKcMkH1wANYUuU+ymSzgAiP1aj/rOjAxasw==
-X-Received: by 2002:a19:a419:: with SMTP id q25mr5603054lfc.136.1565005633919;
-        Mon, 05 Aug 2019 04:47:13 -0700 (PDT)
-Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
-        by smtp.gmail.com with ESMTPSA id p21sm14866073lfc.41.2019.08.05.04.47.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Aug 2019 04:47:13 -0700 (PDT)
-Received: from johan by xi.terra with local (Exim 4.92)
-        (envelope-from <johan@kernel.org>)
-        id 1hubSJ-0006DC-U0; Mon, 05 Aug 2019 13:47:11 +0200
-Date:   Mon, 5 Aug 2019 13:47:11 +0200
-From:   Johan Hovold <johan@kernel.org>
-To:     "Angus Ainslie (Purism)" <angus@akkea.ca>
-Cc:     kernel@puri.sm, =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        id S1728513AbfHELtR convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Aug 2019 07:49:17 -0400
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:24266 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727357AbfHELtQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 07:49:16 -0400
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-160-NQwNEFbuMJmxd-wtY4RQAg-1; Mon, 05 Aug 2019 12:49:13 +0100
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
+ (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon,
+ 5 Aug 2019 12:49:12 +0100
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Mon, 5 Aug 2019 12:49:12 +0100
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Joe Perches' <joe@perches.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+CC:     Vlad Yasevich <vyasevich@gmail.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Johan Hovold <johan@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Bob Ham <bob.ham@puri.sm>
-Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
-Message-ID: <20190805114711.GF3574@localhost>
-References: <20190724145227.27169-1-angus@akkea.ca>
- <20190724145227.27169-2-angus@akkea.ca>
+        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] net: sctp: Rename fallthrough label to unhandled
+Thread-Topic: [PATCH] net: sctp: Rename fallthrough label to unhandled
+Thread-Index: AQHVSJCHKC4hvRwdKE+hlvEjJaGqZabsda0g
+Date:   Mon, 5 Aug 2019 11:49:12 +0000
+Message-ID: <40493bf4256c4b62b211e2e60fa7f8b8@AcuMS.aculab.com>
+References: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
+         <20190731111932.GA9823@hmswarspite.think-freely.org>
+         <eac3fe457d553a2b366e1c1898d47ae8c048087c.camel@perches.com>
+         <20190731121646.GD9823@hmswarspite.think-freely.org>
+         <b93bbb17b407e27bb1dc196af84e4f289d9dfd93.camel@perches.com>
+         <20190731205804.GE9823@hmswarspite.think-freely.org>
+         <d68403ce9f7e8a68fff09d6b17e5d1327eb1e12d.camel@perches.com>
+         <20190801105051.GA11487@hmswarspite.think-freely.org>
+ <a9d003ddd0d59fb144db3ecda3453b3d9c0cb139.camel@perches.com>
+In-Reply-To: <a9d003ddd0d59fb144db3ecda3453b3d9c0cb139.camel@perches.com>
+Accept-Language: en-GB, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190724145227.27169-2-angus@akkea.ca>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MC-Unique: NQwNEFbuMJmxd-wtY4RQAg-1
+X-Mimecast-Spam-Score: 0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 24, 2019 at 07:52:26AM -0700, Angus Ainslie (Purism) wrote:
-> From: Bob Ham <bob.ham@puri.sm>
+From: Joe Perches
+> Sent: 01 August 2019 18:43
+> On Thu, 2019-08-01 at 06:50 -0400, Neil Horman wrote:
+> > On Wed, Jul 31, 2019 at 03:23:46PM -0700, Joe Perches wrote:
+> []
+> > You can say that if you want, but you made the point that your think the macro
+> > as you have written is more readable.  You example illustrates though that /*
+> > fallthrough */ is a pretty common comment, and not prefixing it makes it look
+> > like someone didn't add a comment that they meant to.  The __ prefix is standard
+> > practice for defining macros to attributes (212 instances of it by my count).  I
+> > don't mind rewriting the goto labels at all, but I think consistency is
+> > valuable.
 > 
-> Add a VID:PID for the BroadModi BM818 M.2 card
-
-Would you mind posting the output of usb-devices (or lsusb -v) for this
-device?
-
-> Signed-off-by: Bob Ham <bob.ham@puri.sm>
-> Signed-off-by: Angus Ainslie (Purism) <angus@akkea.ca>
-> ---
->  drivers/usb/serial/option.c | 2 ++
->  1 file changed, 2 insertions(+)
+> Hey Neil.
 > 
-> diff --git a/drivers/usb/serial/option.c b/drivers/usb/serial/option.c
-> index c1582fbd1150..674a68ee9564 100644
-> --- a/drivers/usb/serial/option.c
-> +++ b/drivers/usb/serial/option.c
-> @@ -1975,6 +1975,8 @@ static const struct usb_device_id option_ids[] = {
->  	  .driver_info = RSVD(4) | RSVD(5) },
->  	{ USB_DEVICE_INTERFACE_CLASS(0x2cb7, 0x0105, 0xff),			/* Fibocom NL678 series */
->  	  .driver_info = RSVD(6) },
-> +	{ USB_DEVICE(0x2020, 0x2060),						/* BroadMobi  */
+> Perhaps you want to make this argument on the RFC patch thread
+> that introduces the fallthrough pseudo-keyword.
+> 
+> https://lore.kernel.org/patchwork/patch/1108577/
 
-Looks like you forgot to include the model in the comment here.
+ISTM that the only place where you need something other than the
+traditional comment is inside a #define where (almost certainly)
+the comments have to get stripped too early.
 
-And please move this one after the other 0x2020 (PID 0x2031) entry.
+Adding a 'fallthough' as unknown C keyword sucks...
 
-Should you also be using USB_DEVICE_INTERFACE_CLASS() (e.g. to avoid
-matching a mass-storage interface)?
 
-> +	  .driver_info = RSVD(4) },
->  	{ } /* Terminating entry */
->  };
->  MODULE_DEVICE_TABLE(usb, option_ids);
+	David
 
-Johan
+ 
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
