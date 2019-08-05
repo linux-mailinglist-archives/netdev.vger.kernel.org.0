@@ -2,96 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1544781865
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 13:49:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC9A28188D
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 13:56:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728513AbfHELtR convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Aug 2019 07:49:17 -0400
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:24266 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727357AbfHELtQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 07:49:16 -0400
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-160-NQwNEFbuMJmxd-wtY4RQAg-1; Mon, 05 Aug 2019 12:49:13 +0100
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b::d117) by AcuMS.aculab.com
- (fd9f:af1c:a25b::d117) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon,
- 5 Aug 2019 12:49:12 +0100
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Mon, 5 Aug 2019 12:49:12 +0100
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Joe Perches' <joe@perches.com>,
-        Neil Horman <nhorman@tuxdriver.com>
-CC:     Vlad Yasevich <vyasevich@gmail.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-sctp@vger.kernel.org" <linux-sctp@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] net: sctp: Rename fallthrough label to unhandled
-Thread-Topic: [PATCH] net: sctp: Rename fallthrough label to unhandled
-Thread-Index: AQHVSJCHKC4hvRwdKE+hlvEjJaGqZabsda0g
-Date:   Mon, 5 Aug 2019 11:49:12 +0000
-Message-ID: <40493bf4256c4b62b211e2e60fa7f8b8@AcuMS.aculab.com>
-References: <e0dd3af448e38e342c1ac6e7c0c802696eb77fd6.1564549413.git.joe@perches.com>
-         <20190731111932.GA9823@hmswarspite.think-freely.org>
-         <eac3fe457d553a2b366e1c1898d47ae8c048087c.camel@perches.com>
-         <20190731121646.GD9823@hmswarspite.think-freely.org>
-         <b93bbb17b407e27bb1dc196af84e4f289d9dfd93.camel@perches.com>
-         <20190731205804.GE9823@hmswarspite.think-freely.org>
-         <d68403ce9f7e8a68fff09d6b17e5d1327eb1e12d.camel@perches.com>
-         <20190801105051.GA11487@hmswarspite.think-freely.org>
- <a9d003ddd0d59fb144db3ecda3453b3d9c0cb139.camel@perches.com>
-In-Reply-To: <a9d003ddd0d59fb144db3ecda3453b3d9c0cb139.camel@perches.com>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728697AbfHEL4y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 07:56:54 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:56501 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728566AbfHEL4x (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 07:56:53 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 954FC13CA;
+        Mon,  5 Aug 2019 07:56:52 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 05 Aug 2019 07:56:52 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=Al9xXN
+        nQBhrH5WK3FSDmxm3LAWNimy6tAVR41EbOoQQ=; b=A9uvrlAXJc+I50J4yYv0Ir
+        njhMui+pMKievJoqvhsR7qCAX8IHESw0PE3P0dvm3lN4W/3hPGoLPWQFA8kBpSXB
+        Cqnnitwp7jbAd71wbGvO1Ue1ZA/cxWisycY6JTBJFxnLhXSr8V0+chMy65baedAI
+        NKjdrgKRkWT4gwnS/GNmvNoERCLfKzCk6mA8J4iLTlj/PFwthIrE24JL7gOyaBRa
+        UDVMJotprLMK6XceCLz0b7dKn/SvY/uCRPEqXvh4t/hrEqGwLs+wX6XlLCbf2Saw
+        1nW2YQkZsEsT1DHJH9F+w6eWNuS8PK5xQ/D8DGPF2bEEr/02oGp8DIcgY8WCpoog
+        ==
+X-ME-Sender: <xms:ghlIXS2FWKSLzdVcUUMU8mJiD-J3ILoKFZkgZrImKjY-cjo5YY8Xmg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddtjedggeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujggfsehttd
+    ertddtredvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
+    ohhstghhrdhorhhgqeenucffohhmrghinheplhhkmhhlrdhorhhgpdhgihhthhhusgdrtg
+    homhenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhr
+    ohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:gxlIXa7-9dB8ga5g2ofHOavewV36avvC5Oqb2jzFVFr3snXlTc1TWA>
+    <xmx:gxlIXf_WCqpNqPfCPaYxriZR-C79wDv7W4kfOYSKa5vGpFnadmmEkw>
+    <xmx:gxlIXS2rd6YZ5is82cawzZhQkCzHFy1ZqAyezTOg3wQavvvy2f2zVg>
+    <xmx:hBlIXT7651ilOKumXnbyviJ96-nZlQOZwz48Csm1vekuIGd_RptDNw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 887A980062;
+        Mon,  5 Aug 2019 07:56:50 -0400 (EDT)
+Date:   Mon, 5 Aug 2019 14:56:48 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     kernel test robot <rong.a.chen@intel.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
+        dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
+        toke@redhat.com, andy@greyhouse.net, f.fainelli@gmail.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>, lkp@01.org
+Subject: Re: [drop_monitor]  98ffbd6cd2:  will-it-scale.per_thread_ops -17.5%
+ regression
+Message-ID: <20190805115648.GA19906@splinter>
+References: <20190722183134.14516-11-idosch@idosch.org>
+ <20190729095213.GQ22106@shao2-debian>
 MIME-Version: 1.0
-X-MC-Unique: NQwNEFbuMJmxd-wtY4RQAg-1
-X-Mimecast-Spam-Score: 0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190729095213.GQ22106@shao2-debian>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Joe Perches
-> Sent: 01 August 2019 18:43
-> On Thu, 2019-08-01 at 06:50 -0400, Neil Horman wrote:
-> > On Wed, Jul 31, 2019 at 03:23:46PM -0700, Joe Perches wrote:
-> []
-> > You can say that if you want, but you made the point that your think the macro
-> > as you have written is more readable.  You example illustrates though that /*
-> > fallthrough */ is a pretty common comment, and not prefixing it makes it look
-> > like someone didn't add a comment that they meant to.  The __ prefix is standard
-> > practice for defining macros to attributes (212 instances of it by my count).  I
-> > don't mind rewriting the goto labels at all, but I think consistency is
-> > valuable.
+On Mon, Jul 29, 2019 at 05:52:13PM +0800, kernel test robot wrote:
+> Greeting,
 > 
-> Hey Neil.
+> FYI, we noticed a -17.5% regression of will-it-scale.per_thread_ops due to commit:
 > 
-> Perhaps you want to make this argument on the RFC patch thread
-> that introduces the fallthrough pseudo-keyword.
 > 
-> https://lore.kernel.org/patchwork/patch/1108577/
+> commit: 98ffbd6cd2b25fc6cbb0695e03b4fd43b5e116e6 ("[RFC PATCH net-next 10/12] drop_monitor: Add packet alert mode")
+> url: https://github.com/0day-ci/linux/commits/Ido-Schimmel/drop_monitor-Capture-dropped-packets-and-metadata/20190723-135834
+> 
+> 
+> in testcase: will-it-scale
+> on test machine: 288 threads Intel(R) Xeon Phi(TM) CPU 7295 @ 1.50GHz with 80G memory
+> with following parameters:
+> 
+> 	nr_task: 100%
+> 	mode: thread
+> 	test: lock1
+> 	cpufreq_governor: performance
 
-ISTM that the only place where you need something other than the
-traditional comment is inside a #define where (almost certainly)
-the comments have to get stripped too early.
+Hi,
 
-Adding a 'fallthough' as unknown C keyword sucks...
+Thanks for the report. The test ('lock1') has nothing to do with the
+networking subsystem and the commit that you cite is not doing anything
+unless you're actually running drop monitor in this newly introduced
+mode. I assume you're not running drop monitor at all? Therefore, these
+results seem very strange to me.
 
+The only thing I could think of to explain this is that somehow the
+addition of 'struct sk_buff_head' to the per-CPU variable might have
+affected alignment elsewhere.
 
-	David
+I used your kernel config on my system and tried to run the test like
+you did [1][2]. Did not get conclusive results [3]. Took measurements on
+vanilla net-next and with my entire patchset applied (with some changes
+since RFC).
 
- 
+If you look at the operations per seconds in the 'threads' column when
+there are 4 tasks you can see that the average before my patchset is
+2325577, while the average after is 2340328.
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+Do you see anything obviously wrong in how I ran the test? If not, in
+your experience, how reliable are your results? I found a similar report
+[4] that did not make a lot of sense as well.
 
+Thanks
+
+[1]
+#!/bin/bash
+
+for cpu_dir in /sys/devices/system/cpu/cpu[0-9]*
+do
+        online_file="$cpu_dir"/online
+        [ -f "$online_file" ] && [ "$(cat "$online_file")" -eq 0 ] && continue
+
+        file="$cpu_dir"/cpufreq/scaling_governor
+        [ -f "$file" ] && echo "performance" > "$file"
+done
+
+[2]
+# ./runtest.py lock1
+
+[3]
+before1.csv
+
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,610132,74.98,594558,74.40,610132
+2,1230153,49.95,1184090,49.95,1220264
+3,1844832,24.92,1758502,25.07,1830396
+4,2454858,0.20,2311086,0.18,2440528
+
+before2.csv
+
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,607417,74.92,584035,75.03,607417
+2,1227674,50.02,1170271,50.05,1214834
+3,1846440,24.91,1761115,25.03,1822251
+4,2482559,0.23,2343761,0.20,2429668
+
+before3.csv
+
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,609516,74.96,594691,74.85,609516
+2,1231126,49.82,1176170,50.07,1219032
+3,1858004,24.93,1761192,25.06,1828548
+4,2460096,0.29,2321886,0.20,2438064
+
+after1.csv 
+
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,623846,75.01,598565,75.01,623846
+2,1237010,50.01,1163000,50.06,1247692
+3,1858541,24.99,1752192,24.98,1871538
+4,2477562,0.20,2338462,0.20,2495384
+
+after2.csv
+
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,624175,74.98,593229,60.28,624175
+2,1237561,45.43,1168572,50.01,1248350
+3,1850211,25.03,1744378,24.90,1872525
+4,2481224,0.20,2335768,0.20,2496700
+
+after3.csv
+
+tasks,processes,processes_idle,threads,threads_idle,linear
+0,0,100,0,100,0
+1,617805,74.99,590419,75.02,617805
+2,1230908,50.01,1158534,50.06,1235610
+3,1851623,25.06,1728419,24.94,1853415
+4,2470115,0.20,2346754,0.20,2471220
+
+[4] https://lkml.org/lkml/2019/2/19/351
