@@ -2,128 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31F81827BD
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 00:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA17B8284A
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 01:55:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730996AbfHEWyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 18:54:38 -0400
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:17712 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728483AbfHEWyi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 18:54:38 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d48b3b50000>; Mon, 05 Aug 2019 15:54:45 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Mon, 05 Aug 2019 15:54:36 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Mon, 05 Aug 2019 15:54:36 -0700
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 5 Aug
- 2019 22:54:35 +0000
-Subject: Re: [PATCH 00/12] block/bio, fs: convert put_page() to
- put_user_page*()
-To:     Christoph Hellwig <hch@infradead.org>, <john.hubbard@gmail.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Eric Van Hensbergen <ericvh@gmail.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Jason Wang <jasowang@redhat.com>, Jens Axboe <axboe@kernel.dk>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>, <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        <ceph-devel@vger.kernel.org>, <kvm@vger.kernel.org>,
-        <linux-block@vger.kernel.org>, <linux-cifs@vger.kernel.org>,
-        <linux-fsdevel@vger.kernel.org>, <linux-nfs@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <samba-technical@lists.samba.org>,
-        <v9fs-developer@lists.sourceforge.net>,
-        <virtualization@lists.linux-foundation.org>
-References: <20190724042518.14363-1-jhubbard@nvidia.com>
- <20190724061750.GA19397@infradead.org>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <c35aa2bf-c830-9e57-78ca-9ce6fb6cb53b@nvidia.com>
-Date:   Mon, 5 Aug 2019 15:54:35 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1730875AbfHEXy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 19:54:58 -0400
+Received: from lekensteyn.nl ([178.21.112.251]:58893 "EHLO lekensteyn.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728483AbfHEXy6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 19:54:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lekensteyn.nl; s=s2048-2015-q1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=hqh6eFUaA4weWKC8x1OU7+rNmMqJNoDKJJbnv4Jccb8=;
+        b=yJDY5Q3g/QOp3rhiz+n9ycEcDvsptOY7VrvarP1BvMPbpS5hUQrEqqt1pHQIiherL0dQvp20Gst5QuiATOiDKXeWDGSQrbzbkYlz4byccepkdSrDqzRRn07Sozw2VRpOJVx+P1oLkmRERD5+OC47h2/+hoHLLHmg2XpUZA1vHKe3S6fcej7Z2+n5IY9RQuZkbKg03PED7ONrwffYwRU2rMFVX6s4nB/zydzc+3UWrDNBwj9o+YZ0XPTsNKdI0Qz6dSq76QsfyQkxj/MHY7YnhhUNbUQpg9Eq6hhQxo+X2SB1QkG/ANEw+EKBQ4X+HRx+1vxafQyOjPTdoPw+FJrJiQ==;
+Received: by lekensteyn.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.84_2)
+        (envelope-from <peter@lekensteyn.nl>)
+        id 1humoW-0007fQ-2t; Tue, 06 Aug 2019 01:54:52 +0200
+Date:   Tue, 6 Aug 2019 00:54:49 +0100
+From:   Peter Wu <peter@lekensteyn.nl>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [PATCH] tools: bpftool: fix reading from /proc/config.gz
+Message-ID: <20190805235449.GA8088@al>
+References: <20190805001541.8096-1-peter@lekensteyn.nl>
+ <20190805152936.GE4544@mini-arch>
+ <20190805120649.421211da@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <20190724061750.GA19397@infradead.org>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL104.nvidia.com (172.18.146.11) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1565045686; bh=su7Un7Lsr0IB37YVHfSyk5WWru26t8lLPZpTgkOrxAY=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=MABsVuv2G9BzGpy+DkzIhxi90zmgNTMYOagd/ashPLcDOi2sWU6YznkbyPDv/xcq/
-         O5RFeXAwmCAh/JO0LO+ze2NEhPe2n+psweVYXa8pjERXCCCfGYTxQ9SDkc4s4KNR59
-         NLyb52q+/1fN+RE5h7a69JZCsNpaL7gcHJobrCC7E9UqWrmG9ACN7VwIX7DKaTA/Rb
-         eRaFep1AoazjTxyXxT6Tx1JQhDVjP38m4xzwGlHYvs4ZQCYA68yceeG7xda5nxeUcP
-         Q7wlfmFbcUA/T+jBVHNbqmQyCuHaQMhgKiqtQK78vKYLrwPUcmbghr4B0X7IdrZjfb
-         e4QZrUIdtNMcg==
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190805120649.421211da@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Spam-Score: -0.0 (/)
+X-Spam-Status: No, hits=-0.0 required=5.0 tests=NO_RELAYS=-0.001 autolearn=unavailable autolearn_force=no
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 7/23/19 11:17 PM, Christoph Hellwig wrote:
-> On Tue, Jul 23, 2019 at 09:25:06PM -0700, john.hubbard@gmail.com wrote:
->> * Store, in the iov_iter, a "came from gup (get_user_pages)" parameter.
->>   Then, use the new iov_iter_get_pages_use_gup() to retrieve it when
->>   it is time to release the pages. That allows choosing between put_page=
-()
->>   and put_user_page*().
->>
->> * Pass in one more piece of information to bio_release_pages: a "from_gu=
-p"
->>   parameter. Similar use as above.
->>
->> * Change the block layer, and several file systems, to use
->>   put_user_page*().
->=20
-> I think we can do this in a simple and better way.  We have 5 ITER_*
-> types.  Of those ITER_DISCARD as the name suggests never uses pages, so
-> we can skip handling it.  ITER_PIPE is rejected =D1=96n the direct I/O pa=
-th,
-> which leaves us with three.
->=20
+Hi all,
 
-Hi Christoph,
+Thank you for your quick feedback, I will address them in the next
+revision.
 
-Are you working on anything like this? Or on the put_user_bvec() idea?
-Please let me know, otherwise I'll go in and implement something here.
+On Mon, Aug 05, 2019 at 11:41:09AM +0100, Quentin Monnet wrote:
+
+> As far as I understood (from examining Cilium [0]), /proc/config _is_
+> used by some distributions, such as CoreOS. This is why we look at that
+> location in bpftool.
+> 
+> [0] https://github.com/cilium/cilium/blob/master/bpf/run_probes.sh#L42
+
+This comment[1] says "CoreOS uses /proc/config", but I think that is a
+typo and is supposed to say "/proc/config.gz". The original feature
+request[2] uses "/boot/config" as example.
+
+ [1]: https://github.com/cilium/cilium/pull/1065
+ [2]: https://github.com/cilium/cilium/issues/891
+
+Given that "/proc/config.gz" is the standard since at least v2.6.12-rc2,
+and the official kernel has no mention of "/proc/config", I would like
+to skip the latter. If someone has a need for this and it is not covered
+by either /boot/config-$(uname -r) or /proc/config.gz, they could submit
+a patch for it with links to documentation. How about that?
+
+> > -static char *get_kernel_config_option(FILE *fd, const char *option)
+> > +static bool get_kernel_config_option(FILE *fd, char **buf_p, size_t *n_p,
+> > +				     char **value)
+> 
+> Maybe we could rename this function, and have "next" appear in it
+> somewhere? After your changes, it does not return the value for a
+> specific option anymore.
+
+I have changed it to "read_next_kernel_config_option", let me know if
+you prefer an alternative.
+
+> >  {
+> > -	size_t line_n = 0, optlen = strlen(option);
+> > -	char *res, *strval, *line = NULL;
+> > -	ssize_t n;
+> > +	char *sep;
+> > +	ssize_t linelen;
+> 
+> Please order the declarations in reverse-Christmas tree style.
+
+Does this refer to the type, name, or full line length? I did not find
+this in CodingStyle, the closest I could get is:
+https://lore.kernel.org/patchwork/patch/732076/
+
+I will assume the line length for now.
+
+> >  static void probe_kernel_image_config(void)
+> > @@ -386,31 +386,34 @@ static void probe_kernel_image_config(void)
+> >  		/* test_bpf module for BPF tests */
+> >  		"CONFIG_TEST_BPF",
+> >  	};
+> > +	char *values[ARRAY_SIZE(options)] = { };
+> >  	char *value, *buf = NULL;
+> >  	struct utsname utsn;
+> >  	char path[PATH_MAX];
+> >  	size_t i, n;
+> >  	ssize_t ret;
+> > -	FILE *fd;
+> > +	FILE *fd = NULL;
+> > +	bool is_pipe = false;
+> 
+> Reverse-Christmas-tree style please.
+
+Even if that means moving lines? Something like this?
+
+        char path[PATH_MAX];
+   +    bool is_pipe = false;
+   +    FILE *fd = NULL;
+        size_t i, n;
+        ssize_t ret;
+   -    FILE *fd;
+
+> >  	if (uname(&utsn))
+> > -		goto no_config;
+> > +		goto end_parse;
+> 
+> Just thinking, maybe if uname() fails we can skip /boot/config-$(uname
+> -r) but still attempt to parse /proc/config{,.gz} instead of printing
+> only NULL options?
+
+Good idea, I'll try a bit harder if uname falls for whatever reason.
+
+> Because some distributions do use /proc/config, we should keep this. You
+> can probably add /proc/config.gz as another attempt below (or even
+> above) the current case?
+
+I doubt it is actually in use, it looks like a typo in the original PR.
+This post only lists /proc/config.gz, /boot/config and
+/boot/config-$(uname -r): https://superuser.com/questions/287371
+
+> > +	while (get_kernel_config_option(fd, &buf, &n, &value))> +		for (i = 0; i < ARRAY_SIZE(options); i++) {
+> > +			if (values[i] || strcmp(buf, options[i]))
+> 
+> Can we have an option set multiple times in the config file? If so,
+> maybe have a p_info() if values are different to warn users that
+> conflicting values were found?
+
+scripts/kconfig/merge_config.sh seems to apply a merge strategy,
+overwriting earlier values and warning about it. However this should be
+rare given that it ended up at /proc/config.gz. For now I will favor
+simplicity over complexity and keep the old situation. Let me know if
+you prefer otherwise.
 
 
-thanks,
---=20
-John Hubbard
-NVIDIA
+On Mon, Aug 05, 2019 at 12:06:49PM -0700, Jakub Kicinski wrote:
+> On Mon, 5 Aug 2019 08:29:36 -0700, Stanislav Fomichev wrote:
+> > On 08/05, Peter Wu wrote:
+> > > /proc/config has never existed as far as I can see, but /proc/config.gz
+> > > is present on Arch Linux. Execute an external gunzip program to avoid
+> > > linking to zlib and rework the option scanning code since a pipe is not
+> > > seekable. This also fixes a file handle leak on some error paths.  
+> > Thanks for doing that! One question: why not link against -lz instead?
+> > With fork/execing gunzip you're just hiding this dependency.
+> > 
+> > You can add something like this to the Makefile:
+> > ifeq ($(feature-zlib),1)
+> > CLFAGS += -DHAVE_ZLIB
+> > endif
+> > 
+> > And then conditionally add support for config.gz. Thoughts?
+> 
+> +1
 
-> Out of those ITER_BVEC needs a user page reference, so we want to call
-> put_user_page* on it.  ITER_BVEC always already has page reference,
-> which means in the block direct I/O path path we alread don't take
-> a page reference.  We should extent that handling to all other calls
-> of iov_iter_get_pages / iov_iter_get_pages_alloc.  I think we should
-> just reject ITER_KVEC for direct I/O as well as we have no users and
-> it is rather pointless.  Alternatively if we see a use for it the
-> callers should always have a life page reference anyway (or might
-> be on kmalloc memory), so we really should not take a reference either.
->=20
-> In other words:  the only time we should ever have to put a page in
-> this patch is when they are user pages.  We'll need to clean up
-> various bits of code for that, but that can be done gradually before
-> even getting to the actual put_user_pages conversion.
->=20
+Given that the old code did not have this library dependency I did not
+add it (the program would otherwise fail to run). Executing an external
+process is similar to what tar does. I will look into linking directly
+to zlib, thanks!
+-- 
+Kind regards,
+Peter Wu
+https://lekensteyn.nl
