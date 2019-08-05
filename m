@@ -2,143 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 674B38127A
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 08:40:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B01381298
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 08:55:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727467AbfHEGkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 02:40:31 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39379 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727324AbfHEGkb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 02:40:31 -0400
-Received: by mail-qt1-f195.google.com with SMTP id l9so79865540qtu.6
-        for <netdev@vger.kernel.org>; Sun, 04 Aug 2019 23:40:30 -0700 (PDT)
+        id S1727473AbfHEGzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 02:55:48 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:40929 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726587AbfHEGzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 02:55:48 -0400
+Received: by mail-ed1-f67.google.com with SMTP id k8so77600679eds.7;
+        Sun, 04 Aug 2019 23:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2vcIiINY4WBP+S4p7ZvCljxe/AGpBFsXIl5B5dC7+jY=;
+        b=IGZvj4IgmpHw+kKQTtY8eeb5E9cDO3t0ezYt8tkNMicugTeGnGIQ7+XxTUdxszd8qU
+         tm0/jRpIWihYTtvPPiWRHkiXFnslsPz1U67otEH+hSX2gDtw38tvjxjKw5jXUVcAjbji
+         Sef3EjUl9wORFtI68cJqtqXCtFhbVd/9o40ndI8II/QaM2ZbHB/ovA1T/1GaxbBLovhZ
+         mZYpjg3DTgTBOsTyoboXlxBwe8Bw4f5hzg6Mk4zpTsbzrBMD9vkv3wGQDNLoNVRmZQA2
+         1YnwyBDVkjAJADw/cf4V3UdeDkSn/7+P2BCV9sPKO8aKKZVwfYO616s2KRVRpi9zCh2a
+         6hjw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=TJherR/Px/4Fbrw9YV+u4NRMIhgPOAQEPfJAeZ4Vfls=;
-        b=jpjilv++ZmpFMJKx7xAq9/L3mW862cm9ITQNv82QJiV955g7HElyBWob/Q4q6TjRKA
-         zv1ukdV2og0SZTuQV2qJnlnvukTNpq2QyDGlxoaK8NqdFGfFM/PNPmowmB2/GXZWrz6g
-         VjthZSkmGrPU9SYUwBZ1ueH074MwHNXaLah9TMTJU6frYu+fkTNqiEuMcfoIodcl1BDA
-         dxXg6VEqsbvU+vsByHmASik7BIqy2rkOebnynYk7bEr17U7fe1Xt3E952UYm6pKX/twH
-         HnakI/JToQPF528DPJYorZWTte8bqXW0cTafyckIpEl9Eb4eZfO9ttZk5o/URd6sqdkw
-         wPkg==
-X-Gm-Message-State: APjAAAW5yPdpDsZwHLXQ48s6DtFTtaouwL4I3W2zJ9xjKhmoBnnLqXYl
-        cEgLGneoS6RS79GuNrDqP2CdLQ==
-X-Google-Smtp-Source: APXvYqySQxd6FG3GHb6mKg/OD+gospqbuIs1GOIQkfQIZWqsFx5h/wKXKUUrJ/WUSB3S9we9808RDA==
-X-Received: by 2002:aed:2dc7:: with SMTP id i65mr87212492qtd.365.1564987230384;
-        Sun, 04 Aug 2019 23:40:30 -0700 (PDT)
-Received: from redhat.com (bzq-79-181-91-42.red.bezeqint.net. [79.181.91.42])
-        by smtp.gmail.com with ESMTPSA id 6sm38704287qkp.82.2019.08.04.23.40.27
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sun, 04 Aug 2019 23:40:29 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 02:40:24 -0400
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     Jason Gunthorpe <jgg@ziepe.ca>, linux-mm@kvack.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org
-Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-Message-ID: <20190805023106-mutt-send-email-mst@kernel.org>
-References: <20190731123935.GC3946@ziepe.ca>
- <7555c949-ae6f-f105-6e1d-df21ddae9e4e@redhat.com>
- <20190731193057.GG3946@ziepe.ca>
- <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
- <20190801141512.GB23899@ziepe.ca>
- <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
- <20190802124613.GA11245@ziepe.ca>
- <20190802100414-mutt-send-email-mst@kernel.org>
- <e8ecb811-6653-cff4-bc11-81f4ccb0dbbf@redhat.com>
- <494ac30d-b750-52c8-b927-16cd4b9414c4@redhat.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2vcIiINY4WBP+S4p7ZvCljxe/AGpBFsXIl5B5dC7+jY=;
+        b=cbnsYt/4M/WVyV/1eKUhBXBDqXrDo0Vh2mS3eevPaQOEfoaNgb1pEqc2vYrCyzM5lU
+         KBSK73B4sSrP4o8Yuwy69+kzXxwaHPqPGKg53U/ZTO+ERa/HL8UXLCdd7woDEAyaQzcA
+         +vqyeNedM0r5a2X5cqFHk9r3uGlcTlBh6P3NpsUSH+0+iM3NGNfrjTshJjqHJFB8E8z7
+         9LmvblKMNb2kjbk4SIGo++vbq+SltIbVPq01UOJ28YcU6dF2kFtI5m2YQbdVVuNoGMJa
+         JmLqfkaGW3/oiL9J895mzR7SkV8GuKQm0b661OxGi7ofZ89QELtBBP0rL8XqKpIXSyJa
+         NGBg==
+X-Gm-Message-State: APjAAAV5BZbLVlG5RVdErLWZ3RMr1JKu72aR3YYoBRNuGhiAblo0ZzSA
+        /i3c4/iq0IN+nOt1KHvTumwo9gAnJJDeHe6nHqfAb+MIvRs=
+X-Google-Smtp-Source: APXvYqzXx3p2Pz7Q7wMxZKubkTIW6zu3x3Sr+7578oy+fMgP1ypqnD0LxU8UEDkWZatK5ntlXt5G6vS3t/3Q9WQXIx8=
+X-Received: by 2002:aa7:cf8e:: with SMTP id z14mr131881877edx.40.1564988145755;
+ Sun, 04 Aug 2019 23:55:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <494ac30d-b750-52c8-b927-16cd4b9414c4@redhat.com>
+References: <20190802164828.20243-1-hslester96@gmail.com> <20190804125858.GJ4832@mtr-leonro.mtl.com>
+ <CANhBUQ2H5MU0m2xM0AkJGPf7+MJBZ3Eq5rR0kgeOoKRi4q1j6Q@mail.gmail.com> <20190805061320.GN4832@mtr-leonro.mtl.com>
+In-Reply-To: <20190805061320.GN4832@mtr-leonro.mtl.com>
+From:   Chuhong Yuan <hslester96@gmail.com>
+Date:   Mon, 5 Aug 2019 14:55:34 +0800
+Message-ID: <CANhBUQ0tUTXQKq__zvhNCUxXTFfDyr2xKF+Cwupod9xmvSrw2A@mail.gmail.com>
+Subject: Re: [PATCH v2] net/mlx5e: Use refcount_t for refcount
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 05, 2019 at 12:41:45PM +0800, Jason Wang wrote:
-> 
-> On 2019/8/5 下午12:36, Jason Wang wrote:
-> > 
-> > On 2019/8/2 下午10:27, Michael S. Tsirkin wrote:
-> > > On Fri, Aug 02, 2019 at 09:46:13AM -0300, Jason Gunthorpe wrote:
-> > > > On Fri, Aug 02, 2019 at 05:40:07PM +0800, Jason Wang wrote:
-> > > > > > This must be a proper barrier, like a spinlock, mutex, or
-> > > > > > synchronize_rcu.
-> > > > > 
-> > > > > I start with synchronize_rcu() but both you and Michael raise some
-> > > > > concern.
-> > > > I've also idly wondered if calling synchronize_rcu() under the various
-> > > > mm locks is a deadlock situation.
-> > > > 
-> > > > > Then I try spinlock and mutex:
-> > > > > 
-> > > > > 1) spinlock: add lots of overhead on datapath, this leads 0
-> > > > > performance
-> > > > > improvement.
-> > > > I think the topic here is correctness not performance improvement
-> > > The topic is whether we should revert
-> > > commit 7f466032dc9 ("vhost: access vq metadata through kernel
-> > > virtual address")
-> > > 
-> > > or keep it in. The only reason to keep it is performance.
-> > 
-> > 
-> > Maybe it's time to introduce the config option?
-> 
-> 
-> Or does it make sense if I post a V3 with:
-> 
-> - introduce config option and disable the optimization by default
-> 
-> - switch from synchronize_rcu() to vhost_flush_work(), but the rest are the
-> same
-> 
-> This can give us some breath to decide which way should go for next release?
-> 
+On Mon, Aug 5, 2019 at 2:13 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Sun, Aug 04, 2019 at 10:44:47PM +0800, Chuhong Yuan wrote:
+> > On Sun, Aug 4, 2019 at 8:59 PM Leon Romanovsky <leon@kernel.org> wrote:
+> > >
+> > > On Sat, Aug 03, 2019 at 12:48:28AM +0800, Chuhong Yuan wrote:
+> > > > refcount_t is better for reference counters since its
+> > > > implementation can prevent overflows.
+> > > > So convert atomic_t ref counters to refcount_t.
+> > >
+> > > I'm not thrilled to see those automatic conversion patches, especially
+> > > for flows which can't overflow. There is nothing wrong in using atomic_t
+> > > type of variable, do you have in mind flow which will cause to overflow?
+> > >
+> > > Thanks
+> >
+> > I have to say that these patches are not done automatically...
+> > Only the detection of problems is done by a script.
+> > All conversions are done manually.
+>
+> Even worse, you need to audit usage of atomic_t and replace there
+> it can overflow.
+>
+> >
+> > I am not sure whether the flow can cause an overflow.
+>
+> It can't.
+>
+> > But I think it is hard to ensure that a data path is impossible
+> > to have problems in any cases including being attacked.
+>
+> It is not data path, and I doubt that such conversion will be allowed
+> in data paths without proving that no performance regression is introduced.
+>>
+>
+> > So I think it is better to do this minor revision to prevent
+> > potential risk, just like we have done in mlx5/core/cq.c.
+>
+> mlx5/core/cq.c is a different beast, refcount there means actual users
+> of CQ which are limited in SW, so in theory, they have potential
+> to be overflown.
+>
+> It is not the case here, there your are adding new port.
+> There is nothing wrong with atomic_t.
+>
+
+Thanks for your explanation!
+I will pay attention to this point in similar cases.
+But it seems that the semantic of refcount is not always as clear as here...
+
+Regards,
+Chuhong
+
+
 > Thanks
-
-As is, with preempt enabled?  Nope I don't think blocking an invalidator
-on swap IO is ok, so I don't believe this stuff is going into this
-release at this point.
-
-So it's more a question of whether it's better to revert and apply a clean
-patch on top, or just keep the code around but disabled with an ifdef as is.
-I'm open to both options, and would like your opinion on this.
-
-> 
-> > 
-> > 
-> > > 
-> > > Now as long as all this code is disabled anyway, we can experiment a
-> > > bit.
-> > > 
-> > > I personally feel we would be best served by having two code paths:
-> > > 
-> > > - Access to VM memory directly mapped into kernel
-> > > - Access to userspace
-> > > 
-> > > 
-> > > Having it all cleanly split will allow a bunch of optimizations, for
-> > > example for years now we planned to be able to process an incoming short
-> > > packet directly on softirq path, or an outgoing on directly within
-> > > eventfd.
-> > 
-> > 
-> > It's not hard consider we've already had our own accssors. But the
-> > question is (as asked in another thread), do you want permanent GUP or
-> > still use MMU notifiers.
-> > 
-> > Thanks
-> > 
-> > _______________________________________________
-> > Virtualization mailing list
-> > Virtualization@lists.linux-foundation.org
-> > https://lists.linuxfoundation.org/mailman/listinfo/virtualization
+>
+> >
+> > Regards,
+> > Chuhong
+> >
+> > > >
+> > > > Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> > > > ---
+> > > > Changes in v2:
+> > > >   - Add #include.
+> > > >
+> > > >  drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c | 9 +++++----
+> > > >  1 file changed, 5 insertions(+), 4 deletions(-)
+> > > >
+> > > > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
+> > > > index b9d4f4e19ff9..148b55c3db7a 100644
+> > > > --- a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
+> > > > +++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
+> > > > @@ -32,6 +32,7 @@
+> > > >
+> > > >  #include <linux/kernel.h>
+> > > >  #include <linux/module.h>
+> > > > +#include <linux/refcount.h>
+> > > >  #include <linux/mlx5/driver.h>
+> > > >  #include <net/vxlan.h>
+> > > >  #include "mlx5_core.h"
+> > > > @@ -48,7 +49,7 @@ struct mlx5_vxlan {
+> > > >
+> > > >  struct mlx5_vxlan_port {
+> > > >       struct hlist_node hlist;
+> > > > -     atomic_t refcount;
+> > > > +     refcount_t refcount;
+> > > >       u16 udp_port;
+> > > >  };
+> > > >
+> > > > @@ -113,7 +114,7 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 port)
+> > > >
+> > > >       vxlanp = mlx5_vxlan_lookup_port(vxlan, port);
+> > > >       if (vxlanp) {
+> > > > -             atomic_inc(&vxlanp->refcount);
+> > > > +             refcount_inc(&vxlanp->refcount);
+> > > >               return 0;
+> > > >       }
+> > > >
+> > > > @@ -137,7 +138,7 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 port)
+> > > >       }
+> > > >
+> > > >       vxlanp->udp_port = port;
+> > > > -     atomic_set(&vxlanp->refcount, 1);
+> > > > +     refcount_set(&vxlanp->refcount, 1);
+> > > >
+> > > >       spin_lock_bh(&vxlan->lock);
+> > > >       hash_add(vxlan->htable, &vxlanp->hlist, port);
+> > > > @@ -170,7 +171,7 @@ int mlx5_vxlan_del_port(struct mlx5_vxlan *vxlan, u16 port)
+> > > >               goto out_unlock;
+> > > >       }
+> > > >
+> > > > -     if (atomic_dec_and_test(&vxlanp->refcount)) {
+> > > > +     if (refcount_dec_and_test(&vxlanp->refcount)) {
+> > > >               hash_del(&vxlanp->hlist);
+> > > >               remove = true;
+> > > >       }
+> > > > --
+> > > > 2.20.1
+> > > >
