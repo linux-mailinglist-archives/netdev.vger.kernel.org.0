@@ -2,163 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBB5981F94
-	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 16:54:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E1D281F78
+	for <lists+netdev@lfdr.de>; Mon,  5 Aug 2019 16:50:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729334AbfHEOyt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 10:54:49 -0400
-Received: from comms.puri.sm ([159.203.221.185]:41494 "EHLO comms.puri.sm"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728043AbfHEOyt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 10:54:49 -0400
-X-Greylist: delayed 600 seconds by postgrey-1.27 at vger.kernel.org; Mon, 05 Aug 2019 10:54:48 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id D2931DF2AE;
-        Mon,  5 Aug 2019 07:44:47 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id wV_usbgEvWOB; Mon,  5 Aug 2019 07:44:47 -0700 (PDT)
-Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
-To:     Johan Hovold <johan@kernel.org>,
-        "Angus Ainslie (Purism)" <angus@akkea.ca>
-Cc:     kernel@puri.sm, =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190724145227.27169-1-angus@akkea.ca>
- <20190724145227.27169-2-angus@akkea.ca> <20190805114711.GF3574@localhost>
-From:   Bob Ham <bob.ham@puri.sm>
-Openpgp: preference=signencrypt
-Autocrypt: addr=bob.ham@puri.sm; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <5fb96703-b174-eef1-5ad1-693e2bbce32f@puri.sm>
-Date:   Mon, 5 Aug 2019 15:44:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-In-Reply-To: <20190805114711.GF3574@localhost>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0"
+        id S1729270AbfHEOu1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 10:50:27 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:43311 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728815AbfHEOu1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 10:50:27 -0400
+Received: by mail-lf1-f68.google.com with SMTP id c19so58216409lfm.10;
+        Mon, 05 Aug 2019 07:50:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=F862krckXOX344fCimCqRO8x8WuPKfh9vUzQq4I4yF4=;
+        b=MyQVXRRksG0El5/VFPisuOZ/4de/ARUzE1OhaPAnPYDtkZlChwkEMTR5rE+nVqvdtR
+         TVk0tmsIiVO9x9CIBS6knv37UoPJ7dN3aqLeWdetN87vKNO1Pzi2ZjNVJQcozOS11Vop
+         QANFoIxfvDg8TRjr5HAeUu8xW7rCVsNIyOBYPLXp2BgiYA/mCRhF+ecOj/9Efyzdhnyg
+         pVEcwiOCja7qL8AU1QH7VGyJmPSp7c8X8iWORkA69fyljoLbXWB0ApLWxTYfkE7WDazQ
+         gsdnbD3NNRleCzhhwzkJVPcIpUy3gPuAQm41xzoPf2rEFcInXX3VLNxLKvz4QnUUZGT9
+         FVWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=F862krckXOX344fCimCqRO8x8WuPKfh9vUzQq4I4yF4=;
+        b=szaB18GKLHbHUV4OGygMuyuYAo2idRE/yF5ayt1VY2rMTLeoKJvAVgNFZX5KcIWHLG
+         xewOGxaiDlnykGjRkcXalEJbuNJUNQAYOoeunI1np1sLecy8pJanXcGZTPtyvh7fGd6h
+         d2ptyjO7Rhqb7ZThysuDikvSYi6Lb9DHumsDdGDCk0+eUPg+RTy2XNJtqEq/U+fHxO3d
+         z3yWSeIgJh+ajFe0eLZvKcxHeLQh4nsEPOjS9fF3Pa8/813xI9YeLUdG2PTC/3y/C6IL
+         l6uGykx05w4lcxW1u48SYP3FXOP9D8W8ibPofu3rQ1RK9SevoKItufmGMinj9++YjPcW
+         2NvQ==
+X-Gm-Message-State: APjAAAUxAxaUAq51lsm5mmZpMtV6lZsSneqDEq/2Uju0+ZqYljMdlVPq
+        KoXd3UVB0tvd5TSOUyVlorIoiWqmYfEoKOPQ2fE=
+X-Google-Smtp-Source: APXvYqxF5vYMfF3gM9OzkbRzmI2xcdjsC7DvfhpBD/fUlQ52XHpAr5n6UjjOejUTKa+U7w4mEdF3YuMYpZZy9jWUnKI=
+X-Received: by 2002:ac2:59dd:: with SMTP id x29mr3721990lfn.140.1565016624236;
+ Mon, 05 Aug 2019 07:50:24 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190802163248.11152-1-h.feurstein@gmail.com> <CA+h21hr835sdvtgVOA2M9SWeCXDOrDG1S3FnNgJd_9NP2X_TaQ@mail.gmail.com>
+In-Reply-To: <CA+h21hr835sdvtgVOA2M9SWeCXDOrDG1S3FnNgJd_9NP2X_TaQ@mail.gmail.com>
+From:   Hubert Feurstein <h.feurstein@gmail.com>
+Date:   Mon, 5 Aug 2019 16:50:12 +0200
+Message-ID: <CAFfN3gVTVwsqvLEYEczDsxdXQ6Ru2gWpECA2P+thh5buGmNHSw@mail.gmail.com>
+Subject: Re: [RFC] net: dsa: mv88e6xxx: ptp: improve phc2sys precision for
+ mv88e6xxx switch in combination with imx6-fec
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     mlichvar@redhat.com, Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0
-Content-Type: multipart/mixed; boundary="ePV71vOs0eSjkvx3iXjEuaaJV4NUkQxra";
- protected-headers="v1"
-From: Bob Ham <bob.ham@puri.sm>
-To: Johan Hovold <johan@kernel.org>, "Angus Ainslie (Purism)" <angus@akkea.ca>
-Cc: kernel@puri.sm, =?UTF-8?Q?Bj=c3=b8rn_Mork?= <bjorn@mork.no>,
- "David S. Miller" <davem@davemloft.net>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, netdev@vger.kernel.org,
- linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Message-ID: <5fb96703-b174-eef1-5ad1-693e2bbce32f@puri.sm>
-Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
-References: <20190724145227.27169-1-angus@akkea.ca>
- <20190724145227.27169-2-angus@akkea.ca> <20190805114711.GF3574@localhost>
-In-Reply-To: <20190805114711.GF3574@localhost>
+Hi Vladimir,
 
---ePV71vOs0eSjkvx3iXjEuaaJV4NUkQxra
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+Am Mo., 5. Aug. 2019 um 11:55 Uhr schrieb Vladimir Oltean <olteanv@gmail.com>:
+[...]
+> You guessed correctly (since you copied me) that I'm battling much of
+> the same issues with the sja1105 and its spi-fsl-dspi controller
+> driver.
+I've copied you, because of this discussion on github:
+https://github.com/openil/linuxptp/issues/5
+There you said: "In fact any MDIO access will make the latency
+unpredictable and hence
+ throw off the time."
+I thought you might be interested in how to make MDIO latency predictable.
 
-On 05/08/2019 12:47, Johan Hovold wrote:
-> On Wed, Jul 24, 2019 at 07:52:26AM -0700, Angus Ainslie (Purism) wrote:=
+[...]
+> - You said you patched linuxptp master. Could you share the patch? Is
+> there anything else that's needed except compiling against the board's
+> real kernel headers (aka point KBUILD_OUTPUT to the extracted location
+> of /sys/kernel/kheaders.tar.xz)? I've done that and I do see phc2sys
+> probing and using the new ioctl, but I don't see a big improvement in
+> my case (that's probably because my SPI interface has real jitter
+> caused by peripheral clock instability, but I really need to put a
+> scope on it to be sure, so that's a discussion for another time).
 
->> From: Bob Ham <bob.ham@puri.sm>
->>
->> Add a VID:PID for the BroadModi BM818 M.2 card
->=20
-> Would you mind posting the output of usb-devices (or lsusb -v) for this=
+My compiler used kernel headers where the ioctl was not yet defined.
+So I simply defined it in the linuxptp source directly:
 
-> device?
+diff --git a/sysoff.c b/sysoff.c
+index b993ee9..b23ad2f 100644
+--- a/sysoff.c
++++ b/sysoff.c
+@@ -27,6 +27,20 @@
 
-T:  Bus=3D01 Lev=3D03 Prnt=3D40 Port=3D03 Cnt=3D01 Dev#=3D 44 Spd=3D480 M=
-xCh=3D 0
-D:  Ver=3D 2.00 Cls=3D00(>ifc ) Sub=3D00 Prot=3D00 MxPS=3D64 #Cfgs=3D  1
-P:  Vendor=3D2020 ProdID=3D2060 Rev=3D00.00
-S:  Manufacturer=3DQualcomm, Incorporated
-S:  Product=3DQualcomm CDMA Technologies MSM
-C:  #Ifs=3D 5 Cfg#=3D 1 Atr=3De0 MxPwr=3D500mA
-I:  If#=3D0x0 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3D(none)
-I:  If#=3D0x1 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3D(none)
-I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3D(none)
-I:  If#=3D0x3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dfe Prot=3Dff Drive=
-r=3D(none)
-I:  If#=3D0x4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
-r=3D(none)
+#define NS_PER_SEC 1000000000LL
 
++#ifndef PTP_SYS_OFFSET_EXTENDED
++struct ptp_sys_offset_extended {
++    unsigned int n_samples; /* Desired number of measurements. */
++    unsigned int rsv[3];    /* Reserved for future use. */
++    /*
++     * Array of [system, phc, system] time stamps. The kernel will provide
++     * 3*n_samples time stamps.
++     */
++    struct ptp_clock_time ts[PTP_MAX_SAMPLES][3];
++};
++#define PTP_SYS_OFFSET_EXTENDED \
++    _IOWR(PTP_CLK_MAGIC, 9, struct ptp_sys_offset_extended)
++#endif
++
+#ifdef PTP_SYS_OFFSET
 
---ePV71vOs0eSjkvx3iXjEuaaJV4NUkQxra--
+static int64_t pctns(struct ptp_clock_time *t)
 
---aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+> - I really wonder what your jitter is caused by. Maybe it is just
+> contention on the mii_bus->mdio_lock? If that's the case, maybe you
+> don't need to go all the way down to the driver level, and taking the
+> ptp_sts at the subsystem (MDIO, SPI, I2C, etc) level is "good enough".
 
------BEGIN PGP SIGNATURE-----
+I would say there are many places, where we introduce unpredictable jitter:
+- The busy-flag polling
+- The locking of the chip- and mdio-bus-mutex
+- The mdio_done completion in the imx_fec
+- Scheduling latencies
 
-iQIzBAEBCgAdFiEE745irA8zXATsZwYpUxfwLpX1YkEFAl1IQNoACgkQUxfwLpX1
-YkGLrw/8DdFrRqq2wSac4phcOPiDz/8DzQFDAn5BzUs9TfKiecHDJdycv0bFCjwY
-aIRF/z+i8ltLnCdO3KMSqwTgqit8npZC+DLWNrY4wBAVc2EsfSi/aQeFgUjr5kMB
-Z3y9IpfAn2dU16xg6+9XLBlHBj4qmpxtn7hnlPJOCJixcRaDoxrQ929kyfeDn2sr
-ntltidTZ/jF7/tkrZ1IPDFOz2ahscYh7kMos9x1NPizRlWWWiOLGRihyQDANbfpt
-VzScmlv/FjXuFDOjIhKlocimDccUYMAniPYfcQ9mL78GAfJKmAo0/MKsBWxNWih/
-Sef1FKCihiBsHbcVGcUMoSkDoVh3J9PYo2hL3y8SQouQoJtZ5FI+0OlUgsF78nTs
-8gJn6rvGIrb4l9FYX4fC3aP4QenyWj5TF4KNLEjxn0tHa6QPGds8Mbyl0RDB553l
-kdC5fAeuJszZFm+mAcijb+bR+fQ6eVu25tcuOjk97EueQabveLpDbSf/fMD8xzSo
-ejdFDydKqxZfeWbYRgKEAgnBufI/GfQLeI+NZN3An0C2pITt515he7o6ekUfaFeu
-6jLKaGWsH97zWmRs6n36TGsZrLrA/6eloib2J7Y+r+3aBZnY9eCJs0/DXTJ6J+PC
-6TylwPkZh3N7fINfKgtVt261Ga0vN8r2Q5T+8PNBamJCT2aDBrw=
-=oTTh
------END PGP SIGNATURE-----
+> - Along the lines of the above, I wonder how badly would the
+> maintainers shout at the proposal of adding a struct
+> ptp_system_timestamp pointer and its associated lock in struct device.
+> That way at least you don't have to change the API, like you did with
+> mdiobus_write_nested_ptp. Relatively speaking, this is the least
+> amount of intrusion (although, again, far from beautiful).
 
---aav2uDAIncbcoCkDxgmyhfPjctRCwvqu0--
+It is important to make sure to hook up the right mdio_write access, that is
+why the ptp_sts pointer is passed under the mdio_lock. Of course It would
+be nicer, to pass through the pointer as an argument, instead of bypassing it to
+the mii_bus struct. In the case of SPI it could be added to the spi_transfer
+struct.
+
+> - The software timestamps help you in the particular case of phc2sys,
+> but are they enough to cover all your needs?
+For now it's all I need.
+
+> I haven't spent even 1
+> second looking at Marvell switch datasheets, but is its free-running
+> timer only used for PTP timestamping? At least the sja1105 does also
+> support time-based egress scheduling and ingress policing, so for that
+> scenario, the timecounter/cyclecounter implementation will no longer
+> cut it (you do need to synchronize the hardware clock). If your
+> hardware supports these PTP-based features as well, I can only assume
+> the reason why mv88e6xxx went for a timecounter is the same as the
+> reason why I did: the MDIO/SPI jitter while accessing the frequency
+> and offset correction registers is bad enough that the servo loop goes
+> haywire. And implementing gettimex64 will not solve that.
+>
+[...]
+
+Hubert
