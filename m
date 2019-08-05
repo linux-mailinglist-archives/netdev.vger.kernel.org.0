@@ -2,95 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA72E82788
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 00:21:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7A27827A4
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 00:30:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730037AbfHEWVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 18:21:12 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34429 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728851AbfHEWVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 18:21:12 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n9so34216765pgc.1
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 15:21:12 -0700 (PDT)
+        id S1730920AbfHEWaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 18:30:12 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:45824 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728922AbfHEWaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 18:30:11 -0400
+Received: by mail-pf1-f193.google.com with SMTP id r1so40337774pfq.12
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 15:30:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=DgO0e9JRzibIoNYSWRSXWyzZahaXJGjw7Iz1fsfdaDE=;
-        b=toZ/NbEoCsXgyHKpgcgPPucnQ3QZ4DxPGIibnYTVX1gUyX+AR9JQr1RXjtWj/K+QNG
-         7+CslOMA7Y54u5/RLjGxFEQqjn4BLtYI8XOKispxxbR6zmdsccuex9ZPbYQpppyALE6G
-         dJtxX4XbtugsAmYjsFRZ2vh9rwiut105mVGPtVPXr+1if9L9WLG+D9ikusj/Gd5FGa/J
-         ZIZxwWmzmnjGdQ+fQg5GOQWkFwLzQp2CxW3w5eTcb9Qi36lXYRt8kKhI/0iRAmkpjVYp
-         DpTKwfECH0URtJgwWgbJb+NBLh1DiA5pQLn6dmX95Qr4YwA39YzbPrQMwaW4RFYpRuA6
-         mt8A==
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZCTMX6LuNQ2GOh37kxx78RuHorm4xdwVfnJeDhgl2/0=;
+        b=Bp6s7ZpGfaLquyKNoL2b+53SrAv7rIMUENVcWftvN1w4ISWX/jsFC1hVxP81GfDXsu
+         8UaBFWF6i2sG3/4O0GdsEV+34BM5SFgjtQRrbhTeFLpH7QwLQSuEQTrzPPzJlDOLoJfd
+         e1Mydrs+lDvtzepJRGD9S1Mu1mL16j9QgsKDNf5TjbLuGfGUVEzDOgLP6GeOD+v8rneB
+         Nf7WH0nVEXhIJx/+HbXjvZ3v3g3ioyaR32dOx0X5ZyI8qcIt880ADDvj5UmEXx5WnU2L
+         QviBnAZyNx3TP0a3j3DSf/PAmoYJbAGuFbhl2OKoSbuAwkXBrOcM+byotFXANoW+2Rlv
+         0ykw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=DgO0e9JRzibIoNYSWRSXWyzZahaXJGjw7Iz1fsfdaDE=;
-        b=B509yT5OD1gfMHBUDP7Ig9OEsZRDGgVjeG0WPRbFDU5/jt35RxApelT/fI9trmLfJl
-         DX/nQCoqVJLgszBpzl5R/bF5fkKu03v7rN33fQu2LU4vwr4m/zscxLJSTTezmUnBJhIl
-         vw6RbdFxDmMi54l10nuLJar+Jz35+1wiRhmYC7QjkL5jshCVUN33rzwHwu05JdOUiCCg
-         A9hAOW+YsFX3NwyJ/ysO+L2KFORxNIVdIOHXySRlyFErbJeHNo/YGiZ8QjMjGq0wSldM
-         t2dXOG5bv8zjA+QbcbixIS3A4qeTObNyINBdVWgZ2eeRL5R3J0WetKq0TJ1VM8nEcJA1
-         IhYA==
-X-Gm-Message-State: APjAAAUAMs27e/WRjR1FF6+PvyUvmfZaEUq3RbgVS1Z6pAGVwiEWymAY
-        sXUUz0LK1SpuE6J+IuYCzNh0mA==
-X-Google-Smtp-Source: APXvYqzbmMrdZBju6JbMmh55mWuN9xDZYf+p8zFgCd55Wgap+s9h3KTBZpDAFFfCOKp6xTbJKa9lLw==
-X-Received: by 2002:a63:d555:: with SMTP id v21mr103300pgi.179.1565043671712;
-        Mon, 05 Aug 2019 15:21:11 -0700 (PDT)
-Received: from ?IPv6:2600:1010:b00d:2934:dc05:ecca:6e98:38d? ([2600:1010:b00d:2934:dc05:ecca:6e98:38d])
-        by smtp.gmail.com with ESMTPSA id k64sm64173738pge.65.2019.08.05.15.21.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 05 Aug 2019 15:21:10 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-From:   Andy Lutomirski <luto@amacapital.net>
-X-Mailer: iPhone Mail (16G77)
-In-Reply-To: <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
-Date:   Mon, 5 Aug 2019 15:21:09 -0700
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <FEA301AD-01E9-4B1D-A7F8-AA1DBF4FDE66@amacapital.net>
-References: <369476A8-4CE1-43DA-9239-06437C0384C7@fb.com> <CALCETrUpVMrk7aaf0trfg9AfZ4fy279uJgZH7V+gZzjFw=hUxA@mail.gmail.com> <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com> <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com> <5A2FCD7E-7F54-41E5-BFAE-BB9494E74F2D@fb.com> <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com> <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com> <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com> <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com> <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com> <20190805192122.laxcaz75k4vxdspn@ast-mbp> <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
-To:     Andy Lutomirski <luto@kernel.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ZCTMX6LuNQ2GOh37kxx78RuHorm4xdwVfnJeDhgl2/0=;
+        b=gVS2HJ4aTcUmSQbXnBhqF3aiZOihmGfM3qnZpsYwxq/lK1CNc7qhfULLPt9JcH57tY
+         Wd3KT9J4wH/PGYO7VXHVVVTZgZdr7eN9YBvQxnz1j8n9a2HvEKKtEA+Kl+nxYDr3qEKA
+         ss7mIkChsu1/YJzAA0TcqUa62FNU7Vc50Mrb78FQIyutut8Dp1yxNfzIkAzUfrIUrYEo
+         Bglyz5AsaUrrZ35P0lSAj+Pkn19mGunJU32/KqjEc4HfJTtwD8veWJufYgIfJziNlCUL
+         jXU4z+XhnR8rHv6JjQIDczpW0PsFqXKMeXNfbnJCTbxGwTyTX8Nb+j6Lq6wHqA1/6ST0
+         ayOA==
+X-Gm-Message-State: APjAAAV9PSZhW7iZq/wKUJ1ciqhj+BTTE2SqlaJhdSYp4M0zr2DFlD4z
+        gl0Oe0gOmEps4y7CRdkYu3fhXtPW6DQ=
+X-Google-Smtp-Source: APXvYqxBD/kTrg2qVokubfFuxaoYdAZUxdwjF2egxraa72SGKxhh95BHGmx4KoY3xRBJlunNH+YlSg==
+X-Received: by 2002:aa7:92d2:: with SMTP id k18mr273208pfa.153.1565044210957;
+        Mon, 05 Aug 2019 15:30:10 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id x9sm60024281pgp.75.2019.08.05.15.30.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 05 Aug 2019 15:30:10 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     davem@davemloft.net, corbet@lwn.net
+Cc:     linux-dog@vger.kernel.org, netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH net 1/2] docs: admin-guide: remove references to IPX and token-ring
+Date:   Mon,  5 Aug 2019 15:30:02 -0700
+Message-Id: <20190805223003.13444-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Both IPX and TR have not been supported for a while now.
+Remove them from the /proc/sys/net documentation.
 
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ Documentation/admin-guide/sysctl/net.rst | 29 +-----------------------
+ 1 file changed, 1 insertion(+), 28 deletions(-)
 
-> On Aug 5, 2019, at 2:25 PM, Andy Lutomirski <luto@kernel.org> wrote:
->=20
-> On Mon, Aug 5, 2019 at 12:21 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
+diff --git a/Documentation/admin-guide/sysctl/net.rst b/Documentation/admin-guide/sysctl/net.rst
+index a7d44e71019d..287b98708a40 100644
+--- a/Documentation/admin-guide/sysctl/net.rst
++++ b/Documentation/admin-guide/sysctl/net.rst
+@@ -39,7 +39,6 @@ Table : Subdirectories in /proc/sys/net
+  802       E802 protocol         ax25       AX25
+  ethernet  Ethernet protocol     rose       X.25 PLP layer
+  ipv4      IP version 4          x25        X.25 protocol
+- ipx       IPX                   token-ring IBM token ring
+  bridge    Bridging              decnet     DEC net
+  ipv6      IP version 6          tipc       TIPC
+  ========= =================== = ========== ==================
+@@ -401,33 +400,7 @@ interface.
+ (network) that the route leads to, the router (may be directly connected), the
+ route flags, and the device the route is using.
+ 
+-
+-5. IPX
+-------
+-
+-The IPX protocol has no tunable values in proc/sys/net.
+-
+-The IPX  protocol  does,  however,  provide  proc/net/ipx. This lists each IPX
+-socket giving  the  local  and  remote  addresses  in  Novell  format (that is
+-network:node:port). In  accordance  with  the  strange  Novell  tradition,
+-everything but the port is in hex. Not_Connected is displayed for sockets that
+-are not  tied to a specific remote address. The Tx and Rx queue sizes indicate
+-the number  of  bytes  pending  for  transmission  and  reception.  The  state
+-indicates the  state  the  socket  is  in and the uid is the owning uid of the
+-socket.
+-
+-The /proc/net/ipx_interface  file lists all IPX interfaces. For each interface
+-it gives  the network number, the node number, and indicates if the network is
+-the primary  network.  It  also  indicates  which  device  it  is bound to (or
+-Internal for  internal  networks)  and  the  Frame  Type if appropriate. Linux
+-supports 802.3,  802.2,  802.2  SNAP  and DIX (Blue Book) ethernet framing for
+-IPX.
+-
+-The /proc/net/ipx_route  table  holds  a list of IPX routes. For each route it
+-gives the  destination  network, the router node (or Directly) and the network
+-address of the router (or Connected) for internal networks.
+-
+-6. TIPC
++5. TIPC
+ -------
+ 
+ tipc_rmem
+-- 
+2.20.1
 
-
->=20
->> What we need is to drop privileges sooner in daemons like systemd.
->=20
-> This is doable right now: systemd could fork off a subprocess and
-> delegate its cgroup operations to it.  It would be maybe a couple
-> hundred lines of code.  As an added benefit, that subprocess could
-> verify that the bpf operations in question are reasonable.
-> Alternatively, if there was a CAP_BPF_ADMIN, systemd could retain that
-> capability and flip it on and off as needed.
-
-I tried to look at the code and I couldn=E2=80=99t find it. Does systemd dro=
-p privileges at all?  Can you point me at the code you=E2=80=99re thinking o=
-f
