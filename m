@@ -2,120 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D8AF82C2F
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 09:01:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2806E82C34
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 09:02:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731977AbfHFHAD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 03:00:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33218 "EHLO mail.kernel.org"
+        id S1731884AbfHFHC2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 03:02:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34616 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731735AbfHFHAD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 03:00:03 -0400
+        id S1731557AbfHFHC2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 03:02:28 -0400
 Received: from localhost (unknown [193.47.165.251])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5CA4D20B1F;
-        Tue,  6 Aug 2019 07:00:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6097E20880;
+        Tue,  6 Aug 2019 07:02:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565074802;
-        bh=NHXSXNOhcukgOBIw2+t1RdqqbL8a+wF17UGBnsCwGWw=;
+        s=default; t=1565074947;
+        bh=mXyXoPCvPht8EDRuwRdDh++mwnf1UvHf+4AK7SCVCUA=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uEDO/vfE69v6yPrGRGjKu0hop5bMB1qrJSxijrDd6TYv552kGPvGsYu2myE/4d05Y
-         99L1C/Htis4Bvv+AtLMz/0+vSJflB3nyYp5hLzutbBA8jP9x1n6U2UfBSOWKvbWd+O
-         TdTpUO//vyfvLUrRDF1gL44fMSAi6dsKQpNZ+KeQ=
-Date:   Tue, 6 Aug 2019 09:59:58 +0300
+        b=F7yot5v+/UiW1YxPfYJ8tgj/AO/+N6Hp6eAzSfapfonZ6AeKRWv7ei3RTxqiKjWmS
+         8/FzJ6wj2xpDopOCs3vZZfO1jH6rRh5ShaD09SyYdhHtUN/0eUhRdOVmI+zFOaA5e9
+         Je55KNIDhjQtYEehycet2CNR+4Nm93zEp2YFJN6k=
+Date:   Tue, 6 Aug 2019 10:02:23 +0300
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "hslester96@gmail.com" <hslester96@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
+Cc:     Jason Gunthorpe <jgg@mellanox.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        Moni Shoua <monis@mellanox.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net/mlx5e: Use refcount_t for refcount
-Message-ID: <20190806065958.GQ4832@mtr-leonro.mtl.com>
-References: <20190802164828.20243-1-hslester96@gmail.com>
- <20190804125858.GJ4832@mtr-leonro.mtl.com>
- <CANhBUQ2H5MU0m2xM0AkJGPf7+MJBZ3Eq5rR0kgeOoKRi4q1j6Q@mail.gmail.com>
- <20190805061320.GN4832@mtr-leonro.mtl.com>
- <CANhBUQ0tUTXQKq__zvhNCUxXTFfDyr2xKF+Cwupod9xmvSrw2A@mail.gmail.com>
- <b19b7cd49d373cc51d3e745a6444b27166b88304.camel@mellanox.com>
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH mlx5-next v1 1/3] IB/mlx5: Query ODP capabilities for DC
+Message-ID: <20190806070223.GR4832@mtr-leonro.mtl.com>
+References: <20190804100048.32671-1-leon@kernel.org>
+ <20190804100048.32671-2-leon@kernel.org>
+ <d3b21502d398fc3bf2cf38231ca84c1bb0386b17.camel@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <b19b7cd49d373cc51d3e745a6444b27166b88304.camel@mellanox.com>
+In-Reply-To: <d3b21502d398fc3bf2cf38231ca84c1bb0386b17.camel@mellanox.com>
 User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 05, 2019 at 08:06:36PM +0000, Saeed Mahameed wrote:
-> On Mon, 2019-08-05 at 14:55 +0800, Chuhong Yuan wrote:
-> > On Mon, Aug 5, 2019 at 2:13 PM Leon Romanovsky <leon@kernel.org>
-> > wrote:
-> > > On Sun, Aug 04, 2019 at 10:44:47PM +0800, Chuhong Yuan wrote:
-> > > > On Sun, Aug 4, 2019 at 8:59 PM Leon Romanovsky <leon@kernel.org>
-> > > > wrote:
-> > > > > On Sat, Aug 03, 2019 at 12:48:28AM +0800, Chuhong Yuan wrote:
-> > > > > > refcount_t is better for reference counters since its
-> > > > > > implementation can prevent overflows.
-> > > > > > So convert atomic_t ref counters to refcount_t.
-> > > > >
-> > > > > I'm not thrilled to see those automatic conversion patches,
-> > > > > especially
-> > > > > for flows which can't overflow. There is nothing wrong in using
-> > > > > atomic_t
-> > > > > type of variable, do you have in mind flow which will cause to
-> > > > > overflow?
-> > > > >
-> > > > > Thanks
-> > > >
-> > > > I have to say that these patches are not done automatically...
-> > > > Only the detection of problems is done by a script.
-> > > > All conversions are done manually.
-> > >
-> > > Even worse, you need to audit usage of atomic_t and replace there
-> > > it can overflow.
-> > >
-> > > > I am not sure whether the flow can cause an overflow.
-> > >
-> > > It can't.
-> > >
-> > > > But I think it is hard to ensure that a data path is impossible
-> > > > to have problems in any cases including being attacked.
-> > >
-> > > It is not data path, and I doubt that such conversion will be
-> > > allowed
-> > > in data paths without proving that no performance regression is
-> > > introduced.
-> > > > So I think it is better to do this minor revision to prevent
-> > > > potential risk, just like we have done in mlx5/core/cq.c.
-> > >
-> > > mlx5/core/cq.c is a different beast, refcount there means actual
-> > > users
-> > > of CQ which are limited in SW, so in theory, they have potential
-> > > to be overflown.
-> > >
-> > > It is not the case here, there your are adding new port.
-> > > There is nothing wrong with atomic_t.
-> > >
+On Mon, Aug 05, 2019 at 06:23:04PM +0000, Saeed Mahameed wrote:
+> On Sun, 2019-08-04 at 13:00 +0300, Leon Romanovsky wrote:
+> > From: Michael Guralnik <michaelgur@mellanox.com>
 > >
-> > Thanks for your explanation!
-> > I will pay attention to this point in similar cases.
-> > But it seems that the semantic of refcount is not always as clear as
-> > here...
+> > Set current capabilities of ODP for DC to max capabilities and cache
+> > them in mlx5_ib.
 > >
+> > Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
+> > Reviewed-by: Moni Shoua <monis@mellanox.com>
+> > Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+> > ---
+> >  drivers/infiniband/hw/mlx5/mlx5_ib.h           |  1 +
+> >  drivers/infiniband/hw/mlx5/odp.c               | 18
+> > ++++++++++++++++++
+> >  drivers/net/ethernet/mellanox/mlx5/core/main.c |  6 ++++++
+> >  include/linux/mlx5/mlx5_ifc.h                  |  4 +++-
 >
-> Semantically speaking, there is nothing wrong with moving to refcount_t
-> in the case of vxlan ports.. it also seems more accurate and will
-> provide the type protection, even if it is not necessary. Please let me
-> know what is the verdict here, i can apply this patch to net-next-mlx5.
+> Please avoid cross tree changes when you can..
+> Here you do can avoid it, so please separate to two stage patches,
+> mlx5_ifc and core, then mlx5_ib.
+>
+>
+> >  4 files changed, 28 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/infiniband/hw/mlx5/mlx5_ib.h
+> > b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+> > index cb41a7e6255a..f99c71b3c876 100644
+> > --- a/drivers/infiniband/hw/mlx5/mlx5_ib.h
+> > +++ b/drivers/infiniband/hw/mlx5/mlx5_ib.h
+> > @@ -967,6 +967,7 @@ struct mlx5_ib_dev {
+> >  	struct mutex			slow_path_mutex;
+> >  	int				fill_delay;
+> >  	struct ib_odp_caps	odp_caps;
+> > +	uint32_t		dc_odp_caps;
+> >  	u64			odp_max_size;
+> >  	struct mlx5_ib_pf_eq	odp_pf_eq;
+> >
+> > diff --git a/drivers/infiniband/hw/mlx5/odp.c
+> > b/drivers/infiniband/hw/mlx5/odp.c
+> > index b0c5de39d186..5e87a5e25574 100644
+> > --- a/drivers/infiniband/hw/mlx5/odp.c
+> > +++ b/drivers/infiniband/hw/mlx5/odp.c
+> > @@ -353,6 +353,24 @@ void mlx5_ib_internal_fill_odp_caps(struct
+> > mlx5_ib_dev *dev)
+> >  	if (MLX5_CAP_ODP(dev->mdev, xrc_odp_caps.srq_receive))
+> >  		caps->per_transport_caps.xrc_odp_caps |=
+> > IB_ODP_SUPPORT_SRQ_RECV;
+> >
+> > +	if (MLX5_CAP_ODP(dev->mdev, dc_odp_caps.send))
+> > +		dev->dc_odp_caps |= IB_ODP_SUPPORT_SEND;
+> > +
+> > +	if (MLX5_CAP_ODP(dev->mdev, dc_odp_caps.receive))
+> > +		dev->dc_odp_caps |= IB_ODP_SUPPORT_RECV;
+> > +
+> > +	if (MLX5_CAP_ODP(dev->mdev, dc_odp_caps.write))
+> > +		dev->dc_odp_caps |= IB_ODP_SUPPORT_WRITE;
+> > +
+> > +	if (MLX5_CAP_ODP(dev->mdev, dc_odp_caps.read))
+> > +		dev->dc_odp_caps |= IB_ODP_SUPPORT_READ;
+> > +
+> > +	if (MLX5_CAP_ODP(dev->mdev, dc_odp_caps.atomic))
+> > +		dev->dc_odp_caps |= IB_ODP_SUPPORT_ATOMIC;
+> > +
+> > +	if (MLX5_CAP_ODP(dev->mdev, dc_odp_caps.srq_receive))
+> > +		dev->dc_odp_caps |= IB_ODP_SUPPORT_SRQ_RECV;
+> > +
+> >  	if (MLX5_CAP_GEN(dev->mdev, fixed_buffer_size) &&
+> >  	    MLX5_CAP_GEN(dev->mdev, null_mkey) &&
+> >  	    MLX5_CAP_GEN(dev->mdev, umr_extended_translation_offset))
+> > diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > index b15b27a497fc..3995fc6d4d34 100644
+> > --- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > +++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+> > @@ -495,6 +495,12 @@ static int handle_hca_cap_odp(struct
+> > mlx5_core_dev *dev)
+> >  	ODP_CAP_SET_MAX(dev, xrc_odp_caps.write);
+> >  	ODP_CAP_SET_MAX(dev, xrc_odp_caps.read);
+> >  	ODP_CAP_SET_MAX(dev, xrc_odp_caps.atomic);
+> > +	ODP_CAP_SET_MAX(dev, dc_odp_caps.srq_receive);
+> > +	ODP_CAP_SET_MAX(dev, dc_odp_caps.send);
+> > +	ODP_CAP_SET_MAX(dev, dc_odp_caps.receive);
+> > +	ODP_CAP_SET_MAX(dev, dc_odp_caps.write);
+> > +	ODP_CAP_SET_MAX(dev, dc_odp_caps.read);
+> > +	ODP_CAP_SET_MAX(dev, dc_odp_caps.atomic);
+> >
+> >  	if (do_set)
+> >  		err = set_caps(dev, set_ctx, set_sz,
+> > diff --git a/include/linux/mlx5/mlx5_ifc.h
+> > b/include/linux/mlx5/mlx5_ifc.h
+> > index ec571fd7fcf8..5eae8d734435 100644
+> > --- a/include/linux/mlx5/mlx5_ifc.h
+> > +++ b/include/linux/mlx5/mlx5_ifc.h
+> > @@ -944,7 +944,9 @@ struct mlx5_ifc_odp_cap_bits {
+> >
+> >  	struct mlx5_ifc_odp_per_transport_service_cap_bits
+> > xrc_odp_caps;
+> >
+> > -	u8         reserved_at_100[0x700];
+> > +	struct mlx5_ifc_odp_per_transport_service_cap_bits dc_odp_caps;
+> > +
+> > +	u8         reserved_at_100[0x6E0];
+>
+> reserved_at_100 should move 20 bit forward. i.e reserved_at_120
 
-There is no verdict here, it is up to you., if you like code churn, go
-for it.
-
-Thanks
+Thanks for pointing it, I'm sending new version now.
 
 >
-> Thanks,
-> Saeed.
+>
