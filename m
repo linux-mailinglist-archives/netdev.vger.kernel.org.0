@@ -2,293 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 17CF48375C
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 18:55:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A28CA83769
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 18:57:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733174AbfHFQzG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 12:55:06 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:43586 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732117AbfHFQzF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 12:55:05 -0400
-Received: by mail-qt1-f195.google.com with SMTP id w17so4617284qto.10;
-        Tue, 06 Aug 2019 09:55:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Df+LCEv+T4b6Z6pfKKCOSvHh3va9XEDcttnpJg7RZRE=;
-        b=SKA3DTVoMvfB/VQQfZZdFXoYKREoJipx1zYEirYw7RTuUHHLkdX38xN3zvzMK6bmdP
-         AU7tT9n1NeWduxX4amIEjYkLLqcaeN2d5/cg3UytSKWX5saF4PmeA3vGWguyKLnXgZJG
-         f1j6tu/7BbdHk9SXJrdfCc8wJoS02kHK3QHg6Q+JPrNpURALiIFCM1P3aA5tGFrixWse
-         cmtmQ9HxpvQ4BHXFI0WsAn/WKh+z5B6hqe+dsrtePo0txG9Y3UE/o0aZBpoHvDrSx1nK
-         gv6/ACIjsDYaVY+crDFCEukPqhe+muFTchnFuDjkjdqVsu9xLg6bXseWx7JZCpWml90z
-         AHIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Df+LCEv+T4b6Z6pfKKCOSvHh3va9XEDcttnpJg7RZRE=;
-        b=C2y7ENfZas5QHWmVjk9MhQFtg5OjaOhGnfc7iPnfj/211dcBF0ua5UNx0AUtekoHfe
-         B3qWtsebszTfETOSpPb8OuvmO0w0V2q+vGE7qk0zqn8n8oIsuREVHY+La5Vx7Ndc4feP
-         aXJZmF5Ei1yiU0yfVFiEZncY/yop2/9n+kK1uInVXe0VsTBEzHrBPrP7fVk1Z8fneLts
-         QXCLIaDIXFcrqbAM8Xn48q3q0XmB8QzUlqkta4XnGvckC7MwyEsE93MzUeewR9SUZpRt
-         ZRjIzItCq29jSQN3nwzPgEp52PjEZiRwEE39qiAQ6jDETRkzDl3uK+egxJ0ZoTBNiAsF
-         +ucA==
-X-Gm-Message-State: APjAAAXrklGAhIpkq8H6MaXPabhpA9JlnVZrATYpceB1mlb2T+LqjtQ7
-        5JpH8QIJg4RiTi7EGFlhCIGY3kQFUJONDuOFtD0=
-X-Google-Smtp-Source: APXvYqzhBIYUu6BvwTk+uqJsACasncn44f1p+JK5OpiLU7fHDo/YNVIMSRLZjYONZ53stRAEugDWcmHB29eGcnHHGjk=
-X-Received: by 2002:ac8:2d56:: with SMTP id o22mr3891178qta.171.1565110504261;
- Tue, 06 Aug 2019 09:55:04 -0700 (PDT)
+        id S1730505AbfHFQ54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 12:57:56 -0400
+Received: from mail-eopbgr130051.outbound.protection.outlook.com ([40.107.13.51]:24736
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732048AbfHFQ5z (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 12:57:55 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jpJWiqbGsgA3VdC+B8nm/JcL6uL0zjAVPDg41c/KAvVI8Ie982AQj8z9YwAG+CyvD02cB7R3cvewFNTqNvK5kvoyyay5Pls/30hpzUJu8JqmZ0rU8hWdMxgZ5J7h5tPszbHal2riQqgYw/ePSRwJujPk6PYltQrXGWTSoNY+iREvdg1cYtjqmUKLdRYy+g+/hCNUXUKmZ5VF3cct5MZPmea2Xcs7Zl5zhW0CV9fLxRW8D/74R33FY35+HWpAnbpj1F3lqDpI8jda5nMx7dZ64/xvOpeTqpHFzoKv16/XIzwLdMhik9ktg+iLkX1OnveuSpv8/WdgcufWO32zVrTd/g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CLqfcmvJobaavkqTmv9oEcUNZomO3M53ymvne+tCvuk=;
+ b=iG+sfAiZ9grx3herGbuOGWD32agFkIKm5vc4HQq2e9GDjJ9ob9lEtgzpVtDpDfFZ8ZMwswS19FPuOGIH8AsSyJeU2Qp7H0nDoxKOH/ECIiQ/g9hom8pvZVFB9xx/g3Cb62AJsQ5BfAgWOtZfkiDwC/uc1aXobboMPbULWi5eIzePD7TU4pZh7U+D8WcrqHuS8LLhpLVK6hcb9XquTiRLqFGKtJkE2p1jrQOUwKssNV4b11v4IMgv/vqqTrcSJ74mTh+ps+uHg3n7wNCkZdvI7PiCi8dJJOJ/qUTKzB6ZaUvXx8HLWoOSw14w0B5xQW1vfPOX7KSOfb8BUAunx4OvdA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=CLqfcmvJobaavkqTmv9oEcUNZomO3M53ymvne+tCvuk=;
+ b=LU+cBafV6VP0W4jUj3MgzoTyTKsNSo3cgEGWEIEOaFSnZlWoLmxkO8/c+rIwdzhXNzigKiGM653fIywrbkH0eSHAGCC98Zxmjqkc4kaKxZGPbfdGJ49pJCe4OUV7Vhb9HJiZ3oMI7IAaAV9ctL+HFnCCj5xnMABm1/HkFtbQr8g=
+Received: from VI1PR05MB3152.eurprd05.prod.outlook.com (10.170.237.145) by
+ VI1PR05MB4318.eurprd05.prod.outlook.com (52.133.12.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2136.17; Tue, 6 Aug 2019 16:57:51 +0000
+Received: from VI1PR05MB3152.eurprd05.prod.outlook.com
+ ([fe80::c407:16fe:412b:9809]) by VI1PR05MB3152.eurprd05.prod.outlook.com
+ ([fe80::c407:16fe:412b:9809%5]) with mapi id 15.20.2136.018; Tue, 6 Aug 2019
+ 16:57:51 +0000
+From:   Leon Romanovsky <leonro@mellanox.com>
+To:     Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@mellanox.com>
+CC:     RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Michael Guralnik <michaelgur@mellanox.com>,
+        Moni Shoua <monis@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next v2 0/4] ODP support for mlx5 DC QPs
+Thread-Topic: [PATCH rdma-next v2 0/4] ODP support for mlx5 DC QPs
+Thread-Index: AQHVTCtOqQKjL+5WjEGHmx9JTdNfD6buV86A
+Date:   Tue, 6 Aug 2019 16:57:50 +0000
+Message-ID: <20190806165747.GA4832@mtr-leonro.mtl.com>
+References: <20190806074807.9111-1-leon@kernel.org>
+In-Reply-To: <20190806074807.9111-1-leon@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR0P264CA0158.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:100:1b::26) To VI1PR05MB3152.eurprd05.prod.outlook.com
+ (2603:10a6:802:1b::17)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=leonro@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [77.137.115.125]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 545b2ed5-2b9b-4b9a-2f81-08d71a8f373a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4318;
+x-ms-traffictypediagnostic: VI1PR05MB4318:
+x-ms-exchange-purlcount: 2
+x-microsoft-antispam-prvs: <VI1PR05MB4318F8DA260B52DBBD9D6337B0D50@VI1PR05MB4318.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 0121F24F22
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(366004)(376002)(346002)(39860400002)(54534003)(189003)(199004)(2906002)(966005)(81156014)(14454004)(81166006)(71200400001)(68736007)(66446008)(66556008)(66946007)(99286004)(6436002)(8676002)(9686003)(110136005)(54906003)(71190400001)(1076003)(64756008)(25786009)(33656002)(6512007)(3846002)(6116002)(229853002)(86362001)(186003)(316002)(8936002)(6306002)(66476007)(6506007)(6636002)(7736002)(478600001)(53936002)(305945005)(102836004)(26005)(6246003)(486006)(52116002)(256004)(446003)(4326008)(5660300002)(476003)(66066001)(11346002)(76176011)(6486002)(386003);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4318;H:VI1PR05MB3152.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: vJbV+E1LpCb1MZnF/IMlIqExEegxV1TWtRZi0ZesgxWkXl7FES46yZmMU6a906yV2iQ1eH4JCkmfoOJ2eQNUMLswr/M4BWwNs6ijOQ3ytZ70lR2IzNaF5Mc7w1dDMXaSorezBzT32lfRKM0CrfTcotgLeeIOpXoJ4FQNgNjnU5/FNJWRitIlvyjf3nxB7vRvVPgVrzinTuVPvAdf+Zbes7JnundEWGEK1c0jFzZAwEVakhfqG75Ex2sGu3rasaRhVU97DM1oe1on1ZuCJjsuUr++KVjdi8c96eyzzAWEez0+zbWTu9/eD6nqbyhPIP9DkFKJj0On+rc3k7lAaA0HsWpMwjuXq4zvnxmu8aGhVuEq02kl2S0pSE130ndC5gESkmWdA7GE0IwuTSuuul9PE6mvbNRGmrN5CZK72JgfsqI=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <00AFFEB43C92D94E8A899FC77763A6A5@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190805154055.197664-1-sdf@google.com> <20190805154055.197664-2-sdf@google.com>
-In-Reply-To: <20190805154055.197664-2-sdf@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 6 Aug 2019 09:54:53 -0700
-Message-ID: <CAEf4BzYmhLU1E4gFg8cGcx0_JOF_qW21zoFAYOTq0v1_TnkJEA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 1/3] selftests/bpf: test_progs: switch to open_memstream
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 545b2ed5-2b9b-4b9a-2f81-08d71a8f373a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Aug 2019 16:57:50.6569
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: leonro@mellanox.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4318
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 5, 2019 at 8:41 AM Stanislav Fomichev <sdf@google.com> wrote:
+On Tue, Aug 06, 2019 at 10:48:03AM +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
 >
-> Use open_memstream to override stdout during test execution.
-> The copy of the original stdout is held in env.stdout and used
-> to print subtest info and dump failed log.
+> Changelog
+>  v2:
+>  * Fixed reserved_* field wrong name (Saeed M.)
+>  * Split first patch to two patches, one for mlx5-next and one for rdma-n=
+ext. (Saeed M.)
+>  v1:
+>  * Fixed alignment to u64 in mlx5-abi.h (Gal P.)
+>  * https://lore.kernel.org/linux-rdma/20190804100048.32671-1-leon@kernel.=
+org
+>  v0:
+>  * https://lore.kernel.org/linux-rdma/20190801122139.25224-1-leon@kernel.=
+org
 >
-> test_{v,}printf are now simple wrappers around stdout and will be
-> removed in the next patch.
+> -------------------------------------------------------------------------=
+--------
+> From Michael,
 >
-> v3:
-> * don't do strlen over log_buf, log_cnt has it already (Andrii Nakryiko)
+> The series adds support for on-demand paging for DC transport.
+> Adding handling of DC WQE parsing upon page faults and exposing
+> capabilities.
 >
-> v2:
-> * add ifdef __GLIBC__ around open_memstream (maybe pointless since
->   we already depend on glibc for argp_parse)
-> * hijack stderr as well (Andrii Nakryiko)
-> * don't hijack for every test, do it once (Andrii Nakryiko)
-> * log_cap -> log_size (Andrii Nakryiko)
-> * do fseeko in a proper place (Andrii Nakryiko)
-> * check open_memstream returned value (Andrii Nakryiko)
+> As DC is mlx-only transport, the capabilities are exposed to the user
+> using the direct-verbs mechanism. Namely through the
+> mlx5dv_query_device.
 >
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> ---
+> Thanks
 
-Thanks a lot, this looks very good. Just please let's do one field per
-line in structs (see below).
+Please drop this series, we will reevaluate it.
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+Thanks
 
-
->  tools/testing/selftests/bpf/test_progs.c | 115 ++++++++++++-----------
->  tools/testing/selftests/bpf/test_progs.h |   2 +-
->  2 files changed, 61 insertions(+), 56 deletions(-)
 >
-> diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-> index db00196c8315..9556439c607c 100644
-> --- a/tools/testing/selftests/bpf/test_progs.c
-> +++ b/tools/testing/selftests/bpf/test_progs.c
-> @@ -40,14 +40,20 @@ static bool should_run(struct test_selector *sel, int num, const char *name)
+> Michael Guralnik (4):
+>   net/mlx5: Set ODP capabilities for DC transport
+>   IB/mlx5: Query ODP capabilities for DC
+>   IB/mlx5: Expose ODP for DC capabilities to user
+>   IB/mlx5: Add page fault handler for DC initiator WQE
 >
->  static void dump_test_log(const struct prog_test_def *test, bool failed)
->  {
-> +       if (stdout == env.stdout)
-> +               return;
-> +
-> +       fflush(stdout); /* exports env.log_buf & env.log_cnt */
-> +
->         if (env.verbose || test->force_log || failed) {
->                 if (env.log_cnt) {
-> -                       fprintf(stdout, "%s", env.log_buf);
-> +                       fprintf(env.stdout, "%s", env.log_buf);
->                         if (env.log_buf[env.log_cnt - 1] != '\n')
-> -                               fprintf(stdout, "\n");
-> +                               fprintf(env.stdout, "\n");
->                 }
->         }
-> -       env.log_cnt = 0;
-> +
-> +       fseeko(stdout, 0, SEEK_SET); /* rewind */
->  }
+>  drivers/infiniband/hw/mlx5/main.c             |  6 +++++
+>  drivers/infiniband/hw/mlx5/mlx5_ib.h          |  1 +
+>  drivers/infiniband/hw/mlx5/odp.c              | 27 ++++++++++++++++++-
+>  .../net/ethernet/mellanox/mlx5/core/main.c    |  6 +++++
+>  include/linux/mlx5/mlx5_ifc.h                 |  4 ++-
+>  include/uapi/rdma/mlx5-abi.h                  |  3 +++
+>  6 files changed, 45 insertions(+), 2 deletions(-)
 >
->  void test__end_subtest()
-> @@ -62,7 +68,7 @@ void test__end_subtest()
->
->         dump_test_log(test, sub_error_cnt);
->
-> -       printf("#%d/%d %s:%s\n",
-> +       fprintf(env.stdout, "#%d/%d %s:%s\n",
->                test->test_num, test->subtest_num,
->                test->subtest_name, sub_error_cnt ? "FAIL" : "OK");
->  }
-> @@ -79,7 +85,8 @@ bool test__start_subtest(const char *name)
->         test->subtest_num++;
->
->         if (!name || !name[0]) {
-> -               fprintf(stderr, "Subtest #%d didn't provide sub-test name!\n",
-> +               fprintf(env.stderr,
-> +                       "Subtest #%d didn't provide sub-test name!\n",
->                         test->subtest_num);
->                 return false;
->         }
-> @@ -100,53 +107,7 @@ void test__force_log() {
->
->  void test__vprintf(const char *fmt, va_list args)
->  {
-> -       size_t rem_sz;
-> -       int ret = 0;
-> -
-> -       if (env.verbose || (env.test && env.test->force_log)) {
-> -               vfprintf(stderr, fmt, args);
-> -               return;
-> -       }
-> -
-> -try_again:
-> -       rem_sz = env.log_cap - env.log_cnt;
-> -       if (rem_sz) {
-> -               va_list ap;
-> -
-> -               va_copy(ap, args);
-> -               /* we reserved extra byte for \0 at the end */
-> -               ret = vsnprintf(env.log_buf + env.log_cnt, rem_sz + 1, fmt, ap);
-> -               va_end(ap);
-> -
-> -               if (ret < 0) {
-> -                       env.log_buf[env.log_cnt] = '\0';
-> -                       fprintf(stderr, "failed to log w/ fmt '%s'\n", fmt);
-> -                       return;
-> -               }
-> -       }
-> -
-> -       if (!rem_sz || ret > rem_sz) {
-> -               size_t new_sz = env.log_cap * 3 / 2;
-> -               char *new_buf;
-> -
-> -               if (new_sz < 4096)
-> -                       new_sz = 4096;
-> -               if (new_sz < ret + env.log_cnt)
-> -                       new_sz = ret + env.log_cnt;
-> -
-> -               /* +1 for guaranteed space for terminating \0 */
-> -               new_buf = realloc(env.log_buf, new_sz + 1);
-> -               if (!new_buf) {
-> -                       fprintf(stderr, "failed to realloc log buffer: %d\n",
-> -                               errno);
-> -                       return;
-> -               }
-> -               env.log_buf = new_buf;
-> -               env.log_cap = new_sz;
-> -               goto try_again;
-> -       }
-> -
-> -       env.log_cnt += ret;
-> +       vprintf(fmt, args);
->  }
->
->  void test__printf(const char *fmt, ...)
-> @@ -477,6 +438,48 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
->         return 0;
->  }
->
-> +static void stdio_hijack(void)
-> +{
-> +#ifdef __GLIBC__
-> +       if (env.verbose || (env.test && env.test->force_log)) {
-> +               /* nothing to do, output to stdout by default */
-> +               return;
-> +       }
-> +
-> +       /* stdout and stderr -> buffer */
-> +       fflush(stdout);
-> +
-> +       env.stdout = stdout;
-> +       env.stderr = stderr;
-> +
-> +       stdout = open_memstream(&env.log_buf, &env.log_cnt);
-> +       if (!stdout) {
-> +               stdout = env.stdout;
-> +               perror("open_memstream");
-> +               return;
-> +       }
-> +
-> +       stderr = stdout;
-> +#endif
-> +}
-> +
-> +static void stdio_restore(void)
-> +{
-> +#ifdef __GLIBC__
-> +       if (stdout == env.stdout)
-> +               return;
-> +
-> +       fclose(stdout);
-> +       free(env.log_buf);
-> +
-> +       env.log_buf = NULL;
-> +       env.log_cnt = 0;
-> +
-> +       stdout = env.stdout;
-> +       stderr = env.stderr;
-> +#endif
-> +}
-> +
->  int main(int argc, char **argv)
->  {
->         static const struct argp argp = {
-> @@ -496,6 +499,7 @@ int main(int argc, char **argv)
->
->         env.jit_enabled = is_jit_enabled();
->
-> +       stdio_hijack();
->         for (i = 0; i < prog_test_cnt; i++) {
->                 struct prog_test_def *test = &prog_test_defs[i];
->                 int old_pass_cnt = pass_cnt;
-> @@ -523,13 +527,14 @@ int main(int argc, char **argv)
->
->                 dump_test_log(test, test->error_cnt);
->
-> -               printf("#%d %s:%s\n", test->test_num, test->test_name,
-> -                      test->error_cnt ? "FAIL" : "OK");
-> +               fprintf(env.stdout, "#%d %s:%s\n",
-> +                       test->test_num, test->test_name,
-> +                       test->error_cnt ? "FAIL" : "OK");
->         }
-> +       stdio_restore();
->         printf("Summary: %d/%d PASSED, %d FAILED\n",
->                env.succ_cnt, env.sub_succ_cnt, env.fail_cnt);
->
-> -       free(env.log_buf);
->         free(env.test_selector.num_set);
->         free(env.subtest_selector.num_set);
->
-> diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
-> index afd14962456f..4c00fc79ac5f 100644
-> --- a/tools/testing/selftests/bpf/test_progs.h
-> +++ b/tools/testing/selftests/bpf/test_progs.h
-> @@ -56,9 +56,9 @@ struct test_env {
->         bool jit_enabled;
->
->         struct prog_test_def *test;
-> +       FILE *stdout, *stderr;
-
-Please, let's not do this in structs: one field per line.
-
->         char *log_buf;
->         size_t log_cnt;
-> -       size_t log_cap;
->
->         int succ_cnt; /* successful tests */
->         int sub_succ_cnt; /* successful sub-tests */
 > --
-> 2.22.0.770.g0f2c4a37fd-goog
+> 2.20.1
 >
