@@ -2,159 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C5C82C26
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 08:58:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EB9AD82C2C
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 09:01:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731872AbfHFG6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 02:58:05 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:16876 "EHLO
-        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731557AbfHFG6F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 02:58:05 -0400
-Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x766m6uK011870;
-        Tue, 6 Aug 2019 02:57:34 -0400
-Received: from nam04-co1-obe.outbound.protection.outlook.com (mail-co1nam04lp2056.outbound.protection.outlook.com [104.47.45.56])
-        by mx0b-00128a01.pphosted.com with ESMTP id 2u6kb22yf9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 06 Aug 2019 02:57:28 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=P+RyVnmQrCJddaZBOPk+5lpwVdRt+KmhPpt+uxBTz79FqWh3e5pTqASmIMbzgJl313k/PR/8t3cHsWg1QnCUMI23l6TwbMnx486s7rb6gjvDVCKumx+T/nFY5wkZKLVFzm5ZTMxVxCdo/bSojutKAEnGIsRp9cN9ub6gqtkYUz+PQxtmkeMq9eqWUXmFxiWVsf+NWwHTKTWUCmqMEMYW2d4NbXNoaqkaZG+14idyG2mGyQsH4Vx5ZLD3Q6ncATBpOv4QdUuawWxdxSB2f4anzR4NjQqC6LVFR0fdW23R6T6QIrGA/CtlaPBmXHtnHUwriAdaBcswq0JHPPotFJwhOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SdcyYnMbJ6NgD5Pe/iuNwdXLSKFvaQ8ed/h8wz9W//M=;
- b=JSAcEGEn30VtJRQQm/ixRGZiR32uVjhafdOObs9wjSyeARGjeKcgSQY3tuodNu8MJMw1kxmQyAREYiVD1clVw12mSbAwOtuTYNl7fS7uwq5Lxa6OCgSJAB/NpHZGkbLQWuwAM+4xHkdZjWz9X0sYORKlfeRqpA/azNURxmbpmqXkHkaJ+VuUt/RIi7rLwc+Fxf6GVJwtagKbycunfAYlcsfcsfQn2sUC+rlTdUQlAvSGrfrLfWtM2Yl5F7yQT1fU/tqak7UUvbxdJsLCvkafj5aL0r7ju2xIrDK7Lf3gNpWpJemOVjEq4FgQEVv4/yZTZKYrqkp11C3dsU/iJKYkMw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass (sender ip is
- 137.71.25.55) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=analog.com;dmarc=bestguesspass action=none
- header.from=analog.com;dkim=none (message not signed);arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SdcyYnMbJ6NgD5Pe/iuNwdXLSKFvaQ8ed/h8wz9W//M=;
- b=SNIMOXSOXEDmo4NLhJNg/GP0bELlZX8CkvS2Gel4EtFV8vhKXwz8E2Qazy7CqNJ4x3MPLif+uEEcc/bm8PkmjZJPgfjBRNi8CumIogSSC9BiKAC93MGdJ+n/VK3+6zYHyRVm6hPy+Or/qpF06Boiyl2gjK49M/31R8HB3FMdNFo=
-Received: from MWHPR03CA0048.namprd03.prod.outlook.com (2603:10b6:301:3b::37)
- by BYAPR03MB3654.namprd03.prod.outlook.com (2603:10b6:a02:ab::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2136.17; Tue, 6 Aug
- 2019 06:57:22 +0000
-Received: from CY1NAM02FT008.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::200) by MWHPR03CA0048.outlook.office365.com
- (2603:10b6:301:3b::37) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2136.16 via Frontend
- Transport; Tue, 6 Aug 2019 06:57:22 +0000
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- CY1NAM02FT008.mail.protection.outlook.com (10.152.75.59) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2136.14
- via Frontend Transport; Tue, 6 Aug 2019 06:57:21 +0000
-Received: from NWD2HUBCAS9.ad.analog.com (nwd2hubcas9.ad.analog.com [10.64.69.109])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x766vISF016201
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 5 Aug 2019 23:57:18 -0700
-Received: from NWD2MBX7.ad.analog.com ([fe80::190e:f9c1:9a22:9663]) by
- NWD2HUBCAS9.ad.analog.com ([fe80::44a2:871b:49ab:ea47%12]) with mapi id
- 14.03.0415.000; Tue, 6 Aug 2019 02:57:20 -0400
-From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To:     "andrew@lunn.ch" <andrew@lunn.ch>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-Subject: Re: [PATCH 16/16] dt-bindings: net: add bindings for ADIN PHY driver
-Thread-Topic: [PATCH 16/16] dt-bindings: net: add bindings for ADIN PHY
- driver
-Thread-Index: AQHVS5V2ZSE3cdVgKEeipKzrb+Dq2Kbs39MAgAFGuYA=
-Date:   Tue, 6 Aug 2019 06:57:19 +0000
-Message-ID: <0ad30bdc3afcab962e011af1bd56529a150f08f6.camel@analog.com>
-References: <20190805165453.3989-1-alexandru.ardelean@analog.com>
-         <20190805165453.3989-17-alexandru.ardelean@analog.com>
-         <20190805142754.GL24275@lunn.ch>
-In-Reply-To: <20190805142754.GL24275@lunn.ch>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.48.65.112]
-x-adiroutedonprem: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A95A09C0E777DE4C953218E3D6B97AB2@analog.com>
-Content-Transfer-Encoding: base64
+        id S1731867AbfHFG74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 02:59:56 -0400
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:22502 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731735AbfHFG7z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 02:59:55 -0400
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x766jkIK027701;
+        Mon, 5 Aug 2019 23:59:54 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0818;
+ bh=eNQSYxylLcmTd9J3CCEC/LYQVaj7fekN8m1QLuFfJ0Q=;
+ b=kggiCRrr9LZ9bIYRgvHMkUodGQa2R38X6PUhvjQym4EbQwbG6WLsCb0g+f0KZUtEBkkq
+ 9xXOiKx8OwBPfmJi2VLRWkQi2WGbSCX3hYGuaMb6P0+8F9RtGFFCX+tIU1VDXWklEpWg
+ Go8ZulxUfBAmj242QVrv8V/Kkym9k+Gw6F9IQyOo31IwKKY+TSfT0kdKJWaM4mYRNhFa
+ uROh1fJDMaj1JPJcjQ8Ltl7cB8PWMoMwzWqvla6snhoh0wOXbA6fanYQ9Qh5D1dWIi+r
+ +akH5ubXRKuLmnbbrihWGP+Pvev3SY8hJ0u4xhKX6sqmTFBfsrGuDiEtx4l7XEoW+hwX Jg== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 2u57mr23x5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 05 Aug 2019 23:59:54 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Mon, 5 Aug
+ 2019 23:59:53 -0700
+Received: from maili.marvell.com (10.93.176.43) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server id 15.0.1367.3 via Frontend
+ Transport; Mon, 5 Aug 2019 23:59:53 -0700
+Received: from dut1171.mv.qlogic.com (unknown [10.112.88.18])
+        by maili.marvell.com (Postfix) with ESMTP id 1C0AD3F7040;
+        Mon,  5 Aug 2019 23:59:53 -0700 (PDT)
+Received: from dut1171.mv.qlogic.com (localhost [127.0.0.1])
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7) with ESMTP id x766xqSr019110;
+        Mon, 5 Aug 2019 23:59:52 -0700
+Received: (from root@localhost)
+        by dut1171.mv.qlogic.com (8.14.7/8.14.7/Submit) id x766xqUD019109;
+        Mon, 5 Aug 2019 23:59:52 -0700
+From:   Rahul Verma <rahulv@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <mkalderon@marvell.com>
+Subject: [PATCH net-next v2 1/1] qed: Add new ethtool supported port types based on media.
+Date:   Mon, 5 Aug 2019 23:59:50 -0700
+Message-ID: <20190806065950.19073-1-rahulv@marvell.com>
+X-Mailer: git-send-email 2.12.0
 MIME-Version: 1.0
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(396003)(346002)(39860400002)(376002)(2980300002)(199004)(189003)(3846002)(70586007)(70206006)(2351001)(5660300002)(356004)(86362001)(478600001)(2501003)(126002)(36756003)(476003)(6916009)(426003)(8936002)(2616005)(446003)(6246003)(11346002)(50466002)(336012)(436003)(53376002)(486006)(1730700003)(8676002)(7736002)(102836004)(7636002)(7696005)(47776003)(246002)(229853002)(106002)(54906003)(2906002)(4326008)(186003)(6306002)(316002)(6116002)(5640700003)(966005)(118296001)(26005)(14444005)(14454004)(305945005)(76176011)(23676004)(2486003);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR03MB3654;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1125fe0d-0f62-4bc2-b78d-08d71a3b54c3
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328)(7193020);SRVR:BYAPR03MB3654;
-X-MS-TrafficTypeDiagnostic: BYAPR03MB3654:
-X-MS-Exchange-PUrlCount: 2
-X-Microsoft-Antispam-PRVS: <BYAPR03MB3654C74A835399DDCCF5DE55F9D50@BYAPR03MB3654.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-Forefront-PRVS: 0121F24F22
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: /ZCDpnH1CwHZjmKuNneBZl8+lyFlFJr1cSyQcv5ZqzdhdcotF0wq8iT43vHW0kkbxfwrvaV24qBEOYdFyuQSAFwxApvG8GpQUfSnYY/gDFJMp+0XlyT12nOYZ3yr1UQnRQ4JWNHmlw00AMZhmrAlyoGZX/anrlI43FX6LZ1XBF+83Iy6V5Yn1HNQEcudbvNb3tPbazqyEUZGnCodbHHH5pG3nD4J8SNqiDuhLWLMixU8MbhhwOpYs/oV+nU/8a791cpf/bSwytOM/jYb/0Yu0Way7n1aFJt3HHHz0bvnDjWb0aPJPwWhNUGARW4OPmgXWTsNv7ZG7lZGfokb33fBGBRGRIqjLqTPTJu4BDAueJI8mT1bjYDqjlGERNQa5r7OHZEtmTK5lTTUfFiAHvW6I7Hotmut8s7yftjcOdDdLME=
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 06 Aug 2019 06:57:21.8475
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1125fe0d-0f62-4bc2-b78d-08d71a3b54c3
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB3654
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-06_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908060077
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-08-06_03:2019-07-31,2019-08-06 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDE5LTA4LTA1IGF0IDE2OjI3ICswMjAwLCBBbmRyZXcgTHVubiB3cm90ZToNCj4g
-W0V4dGVybmFsXQ0KPiANCj4gT24gTW9uLCBBdWcgMDUsIDIwMTkgYXQgMDc6NTQ6NTNQTSArMDMw
-MCwgQWxleGFuZHJ1IEFyZGVsZWFuIHdyb3RlOg0KPiA+IFRoaXMgY2hhbmdlIGFkZHMgYmluZGlu
-Z3MgZm9yIHRoZSBBbmFsb2cgRGV2aWNlcyBBRElOIFBIWSBkcml2ZXIsIGRldGFpbGluZw0KPiA+
-IGFsbCB0aGUgcHJvcGVydGllcyBpbXBsZW1lbnRlZCBieSB0aGUgZHJpdmVyLg0KPiA+IA0KPiA+
-IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRydSBBcmRlbGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFu
-YWxvZy5jb20+DQo+ID4gLS0tDQo+ID4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9hZGks
-YWRpbi55YW1sICAgICB8IDkzICsrKysrKysrKysrKysrKysrKysNCj4gPiAgTUFJTlRBSU5FUlMg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIHwgIDIgKw0KPiA+ICBpbmNsdWRlL2R0
-LWJpbmRpbmdzL25ldC9hZGluLmggICAgICAgICAgICAgICAgfCAyNiArKysrKysNCj4gPiAgMyBm
-aWxlcyBjaGFuZ2VkLCAxMjEgaW5zZXJ0aW9ucygrKQ0KPiA+ICBjcmVhdGUgbW9kZSAxMDA2NDQg
-RG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9hZGksYWRpbi55YW1sDQo+ID4g
-IGNyZWF0ZSBtb2RlIDEwMDY0NCBpbmNsdWRlL2R0LWJpbmRpbmdzL25ldC9hZGluLmgNCj4gPiAN
-Cj4gPiBkaWZmIC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL25ldC9h
-ZGksYWRpbi55YW1sDQo+ID4gYi9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvbmV0
-L2FkaSxhZGluLnlhbWwNCj4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0KPiA+IGluZGV4IDAwMDAw
-MDAwMDAwMC4uZmNmODg0YmI4NmY3DQo+ID4gLS0tIC9kZXYvbnVsbA0KPiA+ICsrKyBiL0RvY3Vt
-ZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9uZXQvYWRpLGFkaW4ueWFtbA0KPiA+IEBAIC0w
-LDAgKzEsOTMgQEANCj4gPiArIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMCsNCj4g
-PiArJVlBTUwgMS4yDQo+ID4gKy0tLQ0KPiA+ICskaWQ6IGh0dHA6Ly9kZXZpY2V0cmVlLm9yZy9z
-Y2hlbWFzL25ldC9hZGksYWRpbi55YW1sIw0KPiA+ICskc2NoZW1hOiBodHRwOi8vZGV2aWNldHJl
-ZS5vcmcvbWV0YS1zY2hlbWFzL2NvcmUueWFtbCMNCj4gPiArDQo+ID4gK3RpdGxlOiBBbmFsb2cg
-RGV2aWNlcyBBRElOMTIwMC9BRElOMTMwMCBQSFkNCj4gPiArDQo+ID4gK21haW50YWluZXJzOg0K
-PiA+ICsgIC0gQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNv
-bT4NCj4gPiArDQo+ID4gK2Rlc2NyaXB0aW9uOiB8DQo+ID4gKyAgQmluZGluZ3MgZm9yIEFuYWxv
-ZyBEZXZpY2VzIEluZHVzdHJpYWwgRXRoZXJuZXQgUEhZc3BoeQ0KPiA+ICsNCj4gPiArcHJvcGVy
-dGllczoNCj4gPiArICBjb21wYXRpYmxlOg0KPiA+ICsgICAgZGVzY3JpcHRpb246IHwNCj4gPiAr
-ICAgICAgQ29tcGF0aWJsZSBsaXN0LCBtYXkgY29udGFpbiAiZXRoZXJuZXQtcGh5LWllZWU4MDIu
-My1jNDUiIGluIHdoaWNoIGNhc2UNCj4gPiArICAgICAgQ2xhdXNlIDQ1IHdpbGwgYmUgdXNlZCB0
-byBhY2Nlc3MgZGV2aWNlIG1hbmFnZW1lbnQgcmVnaXN0ZXJzLiBJZg0KPiA+ICsgICAgICB1bnNw
-ZWNpZmllZCwgQ2xhdXNlIDIyIHdpbGwgYmUgdXNlZC4gVXNlIHRoaXMgb25seSB3aGVuIE1ESU8g
-c3VwcG9ydHMNCj4gPiArICAgICAgQ2xhdXNlIDQ1IGFjY2VzcywgYnV0IHRoZXJlIGlzIG5vIG90
-aGVyIHdheSB0byBkZXRlcm1pbmUgdGhpcy4NCj4gPiArICAgIGVudW06DQo+ID4gKyAgICAgIC0g
-ZXRoZXJuZXQtcGh5LWllZWU4MDIuMy1jNDUNCj4gDQo+IEl0IGlzIHZhbGlkIHRvIGxpc3QgZXRo
-ZXJuZXQtcGh5LWllZWU4MDIuMy1jMjIsIGl0IGlzIGp1c3Qgbm90DQo+IHJlcXVpcmVkLiBTbyBt
-YXliZSB5b3Ugc2hvdWxkIGxpc3QgaXQgaGVyZSB0byBrZWVwIHRoZSBEVCB2YWxpZGF0ZXIgaGFw
-cHk/DQoNCmFjaw0KDQo+IA0KPiAJICBBbmRyZXcNCg==
+Supported ports in ethtool <eth1> are displayed based on media type.
+For media type fibre and twinaxial, port type is "FIBRE". Media type
+Base-T is "TP" and media KR is "Backplane".
+
+V1->V2:
+Corrected the subject.
+
+Signed-off-by: Rahul Verma <rahulv@marvell.com>
+Signed-off-by: Michal Kalderon <michal.kalderon@marvell.com>
+---
+ drivers/net/ethernet/qlogic/qed/qed_main.c      | 6 +++++-
+ drivers/net/ethernet/qlogic/qede/qede_ethtool.c | 3 ++-
+ include/linux/qed/qed_if.h                      | 2 +-
+ 3 files changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c b/drivers/net/ethernet/qlogic/qed/qed_main.c
+index 829dd60..e5ac8bd 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_main.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+@@ -1688,6 +1688,7 @@ static void qed_fill_link_capability(struct qed_hwfn *hwfn,
+ 
+ 	switch (media_type) {
+ 	case MEDIA_DA_TWINAX:
++		*if_capability |= QED_LM_FIBRE_BIT;
+ 		if (capability & NVM_CFG1_PORT_DRV_SPEED_CAPABILITY_MASK_20G)
+ 			*if_capability |= QED_LM_20000baseKR2_Full_BIT;
+ 		/* For DAC media multiple speed capabilities are supported*/
+@@ -1707,6 +1708,7 @@ static void qed_fill_link_capability(struct qed_hwfn *hwfn,
+ 			*if_capability |= QED_LM_100000baseCR4_Full_BIT;
+ 		break;
+ 	case MEDIA_BASE_T:
++		*if_capability |= QED_LM_TP_BIT;
+ 		if (board_cfg & NVM_CFG1_PORT_PORT_TYPE_EXT_PHY) {
+ 			if (capability &
+ 			    NVM_CFG1_PORT_DRV_SPEED_CAPABILITY_MASK_1G) {
+@@ -1718,6 +1720,7 @@ static void qed_fill_link_capability(struct qed_hwfn *hwfn,
+ 			}
+ 		}
+ 		if (board_cfg & NVM_CFG1_PORT_PORT_TYPE_MODULE) {
++			*if_capability |= QED_LM_FIBRE_BIT;
+ 			if (tcvr_type == ETH_TRANSCEIVER_TYPE_1000BASET)
+ 				*if_capability |= QED_LM_1000baseT_Full_BIT;
+ 			if (tcvr_type == ETH_TRANSCEIVER_TYPE_10G_BASET)
+@@ -1728,6 +1731,7 @@ static void qed_fill_link_capability(struct qed_hwfn *hwfn,
+ 	case MEDIA_SFPP_10G_FIBER:
+ 	case MEDIA_XFP_FIBER:
+ 	case MEDIA_MODULE_FIBER:
++		*if_capability |= QED_LM_FIBRE_BIT;
+ 		if (capability &
+ 		    NVM_CFG1_PORT_DRV_SPEED_CAPABILITY_MASK_1G) {
+ 			if ((tcvr_type == ETH_TRANSCEIVER_TYPE_1G_LX) ||
+@@ -1770,6 +1774,7 @@ static void qed_fill_link_capability(struct qed_hwfn *hwfn,
+ 
+ 		break;
+ 	case MEDIA_KR:
++		*if_capability |= QED_LM_Backplane_BIT;
+ 		if (capability & NVM_CFG1_PORT_DRV_SPEED_CAPABILITY_MASK_20G)
+ 			*if_capability |= QED_LM_20000baseKR2_Full_BIT;
+ 		if (capability &
+@@ -1821,7 +1826,6 @@ static void qed_fill_link(struct qed_hwfn *hwfn,
+ 		if_link->link_up = true;
+ 
+ 	/* TODO - at the moment assume supported and advertised speed equal */
+-	if_link->supported_caps = QED_LM_FIBRE_BIT;
+ 	if (link_caps.default_speed_autoneg)
+ 		if_link->supported_caps |= QED_LM_Autoneg_BIT;
+ 	if (params.pause.autoneg ||
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+index e85f9fe..abcee47 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_ethtool.c
+@@ -424,12 +424,13 @@ struct qede_link_mode_mapping {
+ };
+ 
+ static const struct qede_link_mode_mapping qed_lm_map[] = {
++	{QED_LM_FIBRE_BIT, ETHTOOL_LINK_MODE_FIBRE_BIT},
+ 	{QED_LM_Autoneg_BIT, ETHTOOL_LINK_MODE_Autoneg_BIT},
+ 	{QED_LM_Asym_Pause_BIT, ETHTOOL_LINK_MODE_Asym_Pause_BIT},
+ 	{QED_LM_Pause_BIT, ETHTOOL_LINK_MODE_Pause_BIT},
+ 	{QED_LM_1000baseT_Full_BIT, ETHTOOL_LINK_MODE_1000baseT_Full_BIT},
+ 	{QED_LM_10000baseT_Full_BIT, ETHTOOL_LINK_MODE_10000baseT_Full_BIT},
+-	{QED_LM_2500baseX_Full_BIT, ETHTOOL_LINK_MODE_2500baseX_Full_BIT},
++	{QED_LM_TP_BIT, ETHTOOL_LINK_MODE_TP_BIT},
+ 	{QED_LM_Backplane_BIT, ETHTOOL_LINK_MODE_Backplane_BIT},
+ 	{QED_LM_1000baseKX_Full_BIT, ETHTOOL_LINK_MODE_1000baseKX_Full_BIT},
+ 	{QED_LM_10000baseKX4_Full_BIT, ETHTOOL_LINK_MODE_10000baseKX4_Full_BIT},
+diff --git a/include/linux/qed/qed_if.h b/include/linux/qed/qed_if.h
+index eef02e6..2302136 100644
+--- a/include/linux/qed/qed_if.h
++++ b/include/linux/qed/qed_if.h
+@@ -689,7 +689,7 @@ enum qed_link_mode_bits {
+ 	QED_LM_40000baseLR4_Full_BIT = BIT(9),
+ 	QED_LM_50000baseKR2_Full_BIT = BIT(10),
+ 	QED_LM_100000baseKR4_Full_BIT = BIT(11),
+-	QED_LM_2500baseX_Full_BIT = BIT(12),
++	QED_LM_TP_BIT = BIT(12),
+ 	QED_LM_Backplane_BIT = BIT(13),
+ 	QED_LM_1000baseKX_Full_BIT = BIT(14),
+ 	QED_LM_10000baseKX4_Full_BIT = BIT(15),
+-- 
+1.8.3.1
+
