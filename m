@@ -2,96 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 522FD83240
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0A888327D
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:16:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731401AbfHFNGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 09:06:41 -0400
-Received: from mail-out.m-online.net ([212.18.0.9]:45879 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731379AbfHFNGk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:06:40 -0400
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 462vzM5dqfz1rGj1;
-        Tue,  6 Aug 2019 15:06:39 +0200 (CEST)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 462vzM51Kbz1qqkQ;
-        Tue,  6 Aug 2019 15:06:39 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id bY4eb-2xtq5v; Tue,  6 Aug 2019 15:06:37 +0200 (CEST)
-X-Auth-Info: 2e5uW+IuQ5ExyXazSA69ZiRuDji5vPlVnoPI1IjA8jY=
-Received: from localhost.localdomain (cst-prg-69-96.cust.vodafone.cz [46.135.69.96])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1729993AbfHFNQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 09:16:26 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:58054 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726373AbfHFNQZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:16:25 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Tue,  6 Aug 2019 15:06:37 +0200 (CEST)
-From:   Marek Vasut <marex@denx.de>
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 0CC85C21B9;
+        Tue,  6 Aug 2019 13:16:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1565097385; bh=Ab5jp3GsMXQWmVrZFrMXWKrOoJ32+iutiBB3NdSCy7U=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PV/WBimuik8cDyALtkSnshvQukdpJgHBFPGuylY9CPMMZYPNIPKYj/PrY6y3KdbIn
+         7+zJqksQXOsuQCb7qd30AAFIjyPTOK8A2wFol/Qb0prJBfKAeSfuaJ6agtDlyP7Qaf
+         4H4k4GCqDRJf+Bw56ms3NoSOZ5TG/s8zTSwFxrEy9GBfeKJxXFk8z5U0nNa5SR+S7d
+         jy8Rq/Ceum+0OgckWOgGJySMNMQ6CV1YcgE7gMdcS92NuHsg+JGzB3Jsejny0LyDYc
+         /q8Zg4poIBGoFrKAzfLZxEP/nj87pFzhQ0wkzQLTIiJQVaBIjm9GTunXvv17P0l6d6
+         b875KXfyAsAFQ==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id DE4CBA0057;
+        Tue,  6 Aug 2019 13:16:22 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
-Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        "David S . Miller" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Tristram Ha <Tristram.Ha@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>
-Subject: [PATCH 3/3] net: dsa: ksz: Drop NET_DSA_TAG_KSZ9477
-Date:   Tue,  6 Aug 2019 15:06:09 +0200
-Message-Id: <20190806130609.29686-3-marex@denx.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190806130609.29686-1-marex@denx.de>
-References: <20190806130609.29686-1-marex@denx.de>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net 0/3] net: stmmac: Fixes for -net
+Date:   Tue,  6 Aug 2019 15:16:15 +0200
+Message-Id: <cover.1565097294.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This Kconfig option is unused, drop it.
+Couple of fixes for -net. More info in commit log.
 
-Signed-off-by: Marek Vasut <marex@denx.de>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Tristram Ha <Tristram.Ha@microchip.com>
-Cc: Vivien Didelot <vivien.didelot@gmail.com>
-Cc: Woojung Huh <woojung.huh@microchip.com>
 ---
- drivers/net/dsa/microchip/Kconfig | 1 -
- net/dsa/Kconfig                   | 7 -------
- 2 files changed, 8 deletions(-)
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-diff --git a/drivers/net/dsa/microchip/Kconfig b/drivers/net/dsa/microchip/Kconfig
-index 5e4f74286ea3..e1c23d1e91e6 100644
---- a/drivers/net/dsa/microchip/Kconfig
-+++ b/drivers/net/dsa/microchip/Kconfig
-@@ -5,7 +5,6 @@ config NET_DSA_MICROCHIP_KSZ_COMMON
- menuconfig NET_DSA_MICROCHIP_KSZ9477
- 	tristate "Microchip KSZ9477 series switch support"
- 	depends on NET_DSA
--	select NET_DSA_TAG_KSZ9477
- 	select NET_DSA_MICROCHIP_KSZ_COMMON
- 	help
- 	  This driver adds support for Microchip KSZ9477 switch chips.
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 6e942dda1bcd..2f69d4b53d46 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -84,13 +84,6 @@ config NET_DSA_TAG_KSZ
- 	  Say Y if you want to enable support for tagging frames for the
- 	  Microchip 9893 family of switches.
- 
--config NET_DSA_TAG_KSZ9477
--	tristate "Tag driver for Microchip 9477 family of switches"
--	select NET_DSA_TAG_KSZ_COMMON
--	help
--	  Say Y if you want to enable support for tagging frames for the
--	  Microchip 9477 family of switches.
--
- config NET_DSA_TAG_QCA
- 	tristate "Tag driver for Qualcomm Atheros QCA8K switches"
- 	help
+Jose Abreu (3):
+  net: stmmac: xgmac: Fix XGMAC selftests
+  net: stmmac: Fix issues when number of Queues >= 4
+  net: stmmac: tc: Do not return a fragment entry
+
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c  |  4 +
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  7 +-
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 87 +++++++++++++++++++---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    |  2 +-
+ 4 files changed, 88 insertions(+), 12 deletions(-)
+
 -- 
-2.20.1
+2.7.4
 
