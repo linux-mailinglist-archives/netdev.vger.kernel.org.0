@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8692483A10
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:11:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02B3F83A16
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:13:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726118AbfHFULw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 16:11:52 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:35751 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbfHFULw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:11:52 -0400
-Received: by mail-oi1-f196.google.com with SMTP id a127so68428730oii.2;
-        Tue, 06 Aug 2019 13:11:50 -0700 (PDT)
+        id S1726497AbfHFUNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 16:13:07 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:35765 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725881AbfHFUNH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:13:07 -0400
+Received: by mail-ot1-f65.google.com with SMTP id j19so19047399otq.2;
+        Tue, 06 Aug 2019 13:13:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=L9+cVJ1tHnXHLgWnIFc8trRPYs0ZvKQBrpOrQ/JACNw=;
-        b=sIXKlKnGMf3/x5UdpiL2krma7wQpwGLW+fNiBVYGuAg+enmNapJrdHJOK3Oz6VrG4S
-         uyrECxK7aeBd7o3/uEp8bWKsib3jCFom0hef5aSfRgnTGDHYO+nZABn6EpZoOfS//Di8
-         K3J2QiIPIqO43WOsFkM/9MS+hFVl0vY7nLlRLOOOT38bOre68X6M4+VE7+iryhYTkoWH
-         +iIcdRhzuCzCJXfZ2RI2EC7lMHdMYNFg0AFO6lRZgQWTJRQOF+px3mavO28/a1fqiwMl
-         zIzP3jFzckC9iAiQ+eeHYXmFqjmRtbWUw99s2dPsWL3ujUbHxrOx7r/gJGbY7a2vzl0c
-         vmCA==
+        bh=lMxZ0x37GnyZR6snyKLwN4Z+9SDuCLa+7zGM3bgCPsE=;
+        b=uNhHnqHWxcUMjj/DObO9qobJZuWy3455TBAFqXuRBPRMYC5UOcehqvZgzujVQQ4tO7
+         iDYaYUxpX3n0Mk6A0VuEi2MFvBpyGPkiicuFcaiBnkyAPwdFiIPP6T38CwGYN0rNYukJ
+         fBODZFn5Oz2nqDIu++qJzEiRM6bpn5EyKgEsSS5lD09B271GHk3KNUYGKOyjtqAOWD1E
+         p5Z/YfvgTNzyKHA7stW8/f5WGpf4d8iMSt4BlUyR9C5ezdn55uVRgKPYsPQdPzFgM4VT
+         cRlCvxxZWCluzM8Embbcxk15JKo7CMf3oSK45KhhnTFQqDEsfnNjRAwlkx136AVhMz2g
+         oGvQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=L9+cVJ1tHnXHLgWnIFc8trRPYs0ZvKQBrpOrQ/JACNw=;
-        b=csWeasVMoCS7SXc4EKv854JGcrPKsKac/IlS3oSQQa87YP3HCdVRG1SPJwlUbXInuo
-         zhVHI4l65PLNKF4UrDJHdpgotD/ixnRf5J1PW1GN4AJhcKwq3/ntYeIVGJd3DK5tOSfG
-         2XlNEyskSEzLABHCqJ4i88oJV0T+Lv7Y5FjP1bm/2Mv/P80Jl69tv7g46fv3uTBEz7ry
-         3WYUzw1MnvCzWYHYqWEqLN2t8+Nkly86kXGjCKnXFOl/TAQiWEShYNgAQCaoBQK6tOev
-         Z5HBGE9R8yl94BHII6ZL67PDQ+PipWTuJGvimADPbJ+3QOFIFXvoNeljJXOWnfRq0hWW
-         PRAw==
-X-Gm-Message-State: APjAAAWhV8d3ZVSZDozyfK2n5PHUgeM7DFK0J/jbB5ohQDsZ3NANhb1i
-        3cJZnBO2FXb569Vxa1LkOkicqPQxmR2EdaCScMQ=
-X-Google-Smtp-Source: APXvYqzgWKoM+BMJTliT2FhYuhnnw0Sff1jkVm8UFW2f3OncWRNYvDy3QFieh0lskdwjWmdDcfZrqUQTJBiO+gLmuHM=
-X-Received: by 2002:a05:6638:c8:: with SMTP id w8mr6365741jao.52.1565122310484;
- Tue, 06 Aug 2019 13:11:50 -0700 (PDT)
+        bh=lMxZ0x37GnyZR6snyKLwN4Z+9SDuCLa+7zGM3bgCPsE=;
+        b=MT0XTplbvRDBM9TS8MYZluUQ1U2a3vjNA165zqKog8vfky65QRKAAZ9koWfxxGMghj
+         WMK+dkZ3R/PRLd7zQkp6Bh4jBgKwMX80ih4FuXabsJ6vEkuLp3807dIqj4JQCkGC1e2j
+         G5SgSwxgrz0TwO5VNrOp3oI4PKiryDXpWTZOFG5ERq50OFmLBaX/6wGHWEljO4jdK7bk
+         CuTZdB8Z4dwMLR4uF8rygpQSyzkBBjd0xTWMTAYK2FgTDKxrT6xS5CY6DKbNo5dtLczD
+         dXiIi+4n1pq4/xfoFvnDj5TbEqnyeFuYMVjpJjYamtWCBMvw44PSeSTD5UFmdLaybUlJ
+         dppw==
+X-Gm-Message-State: APjAAAWedk7jm86Zlqf1rK1vIkshoeQB7XQio/KGuKNa4V8Tb8k2Nr35
+        DziRdPwA8yUvr62khxRP0tKCPvqRlHZ9cttYSo0=
+X-Google-Smtp-Source: APXvYqxE7llsKhmMY5eBOo9Bp8SGwlO4IBzoSrd0PaMEtEgmygcJVEfPo61PKt0g7SmEEd0kK6W2y78Ewt3nTwN8ZyI=
+X-Received: by 2002:a05:6602:144:: with SMTP id v4mr5426163iot.202.1565122385732;
+ Tue, 06 Aug 2019 13:13:05 -0700 (PDT)
 MIME-Version: 1.0
 References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-8-arnd@arndb.de>
 In-Reply-To: <20190731195713.3150463-8-arnd@arndb.de>
 From:   Sylvain Lemieux <slemieux.tyco@gmail.com>
-Date:   Tue, 6 Aug 2019 16:11:38 -0400
-Message-ID: <CA+rxa6pcw7une0YUyMd1ZxUpcAqRRqZHcEUXxTYuscmpDUsCuQ@mail.gmail.com>
+Date:   Tue, 6 Aug 2019 16:12:54 -0400
+Message-ID: <CA+rxa6pZ7RLAOR1AQqdcNWxvk8dyoMR586n0d2e_b8SHU-jyWA@mail.gmail.com>
 Subject: Re: [PATCH 07/14] net: lpc-enet: move phy setup into platform code
 To:     Arnd Bergmann <arnd@arndb.de>
 Cc:     soc@kernel.org,
@@ -71,6 +71,8 @@ Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
+
+Acked-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
 
 On Wed, Jul 31, 2019 at 4:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
 >
