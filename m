@@ -2,82 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07667828D0
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 02:46:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB27382904
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 03:07:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731066AbfHFAqq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 20:46:46 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:42734 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729383AbfHFAqq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 20:46:46 -0400
-Received: by mail-qt1-f194.google.com with SMTP id h18so82919528qtm.9
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 17:46:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=p8EkPLfMAiHYzvY7/WHeWoOy2NzVK3krQJDIDAIgywc=;
-        b=gMySazlZHEbNfuWW9hFvliEeRFIs1GtAopLb0fk3gG60CpC614Xv/q8S6YcfcqWjpf
-         6Dzr1OaT64dNc/z1rrf2vhD+JWUJKMfcXVcmTb475FjvWQs6mxQ7r2rLkj6JOLf89wt1
-         RR0C2hofkZdiF1+1DEjDtvIG5c+Go+itIaZlYRQhbOH3YJYp7I1Tgt7AKKa3aI0NreYU
-         T3LW0h9AwK2X2DwlJIcIQFkGUOuVYhItomSF9JKz1ApVGb+HCilkp9gOctBmu0+BWyuC
-         eYBr+0fxSNeb+bxzg1nPFPxr9vBcerY/0FqjCsZZ4mLab7gbI4BjX5Yyh0oRTRC5XXRi
-         vJPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=p8EkPLfMAiHYzvY7/WHeWoOy2NzVK3krQJDIDAIgywc=;
-        b=oNQArjQB2M/m65PE+FQk1N7ei1ojD7Er//NkW2LKc365NvwRJElAUU6VHIvgPhY8sE
-         K9b5B1L1l2NjGTUgUVro0R7/WVcVe3vVvFVyJ2/z55161TcyRCjzsGDrq9KzEoepI4Ez
-         WM/iaYaM3eNAmnTNpObZI79HNJdnRgcTutBj9soFF+Cu/aoYShKulXx5Ms9gWMU0H8ah
-         BVzRlq4EmfLyE/xhTcRsttzTFiQsTzMOVOpwjkGP9Ed54mvmMtMSzTKiKuwFT7Mta4zr
-         Nb6rSdUAWEpLL7nivmIRVEjnURDcFqgrb3vGc+883PhHyyMVnKRGjT/eGzWKtI587Tmb
-         XIeQ==
-X-Gm-Message-State: APjAAAWTccRUrn72OJrqkDnCs+DJzye6lxrvNlFRM11vqTpTd9pPkzwf
-        DcnElC3biUhVUE0GWkioVZktVikftcU=
-X-Google-Smtp-Source: APXvYqyoKp7/WAVVsNNKyyEnGmtOchartOCs7vbZynHSvtZkvaxBgn5DxezlrO7b2Jfh5Zjk7y63XQ==
-X-Received: by 2002:ac8:43c5:: with SMTP id w5mr778262qtn.280.1565052405730;
-        Mon, 05 Aug 2019 17:46:45 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id m5sm35642248qke.25.2019.08.05.17.46.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 17:46:45 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 17:46:18 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-Cc:     <davem@davemloft.net>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <leeyou.li@huawei.com>,
-        <xiaowei774@huawei.com>, <nixiaoming@huawei.com>
-Subject: Re: [PATCH v1 1/3] net: hisilicon: make hip04_tx_reclaim
- non-reentrant
-Message-ID: <20190805174618.2b3b551a@cakuba.netronome.com>
-In-Reply-To: <1564835501-90257-2-git-send-email-xiaojiangfeng@huawei.com>
-References: <1564835501-90257-1-git-send-email-xiaojiangfeng@huawei.com>
-        <1564835501-90257-2-git-send-email-xiaojiangfeng@huawei.com>
-Organization: Netronome Systems, Ltd.
+        id S1731063AbfHFBHJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 21:07:09 -0400
+Received: from lekensteyn.nl ([178.21.112.251]:52921 "EHLO lekensteyn.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728851AbfHFBHJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 5 Aug 2019 21:07:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lekensteyn.nl; s=s2048-2015-q1;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=Eco6wgfKsARQ+Y0b0QLjUMg+d0by1sbRz7Q/ZW7O1wU=;
+        b=Dz6CfvtNDFcL6PDKPrLk0YHrq6POVjcizSihnlPui15gfSTsVXt9I8EWY0RzdX4tAW1wxw/2Kl9E9WjDeTTB/hBDEIzm1f8WeQqQM+PsRk98zTTU1cansrWF3+vvoFHo/e0B1MRkCoIYxX/U25/25t0apjySNAYK6wITDdGkMX9uANTiY2p6Z/Idl9y9zGcH2h4vHd13uyKH13+YukB3SbuRVC2A55S2mvAnEUkUtzpCdm1IlHSYzm/6NiwuHojpmc51eXgXFeB1NfNGfWdMYc+71Y3RH+FjrWVnla5kzQIFVTbiSi4z7X29NDuIg1xaVdWK9utpxZSsLJ5lQR6gzA==;
+Received: by lekensteyn.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.84_2)
+        (envelope-from <peter@lekensteyn.nl>)
+        id 1hunwN-00084H-GD; Tue, 06 Aug 2019 03:07:03 +0200
+From:   Peter Wu <peter@lekensteyn.nl>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: [PATCH v2] tools: bpftool: fix reading from /proc/config.gz
+Date:   Tue,  6 Aug 2019 02:07:02 +0100
+Message-Id: <20190806010702.3303-1-peter@lekensteyn.nl>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -0.0 (/)
+X-Spam-Status: No, hits=-0.0 required=5.0 tests=NO_RELAYS=-0.001 autolearn=unavailable autolearn_force=no
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 3 Aug 2019 20:31:39 +0800, Jiangfeng Xiao wrote:
-> If hip04_tx_reclaim is interrupted while it is running
-> and then __napi_schedule continues to execute
-> hip04_rx_poll->hip04_tx_reclaim, reentrancy occurs
-> and oops is generated. So you need to mask the interrupt
-> during the hip04_tx_reclaim run.
+/proc/config has never existed as far as I can see, but /proc/config.gz
+is present on Arch Linux. Execute an external gunzip program to avoid
+linking to zlib and rework the option scanning code since a pipe is not
+seekable. This also fixes a file handle leak on some error paths.
 
-Napi poll method for the same napi instance can't be run concurrently.
-Could you explain a little more what happens here?
+Fixes: 4567b983f78c ("tools: bpftool: add probes for kernel configuration options")
+Cc: Quentin Monnet <quentin.monnet@netronome.com>
+Signed-off-by: Peter Wu <peter@lekensteyn.nl>
+---
+ v2: fix style (reorder vars as reverse xmas tree, rename function,
+     braces), fallback to /proc/config.gz if uname() fails.
 
-Also looking at hip04_rx_poll() I don't think the interrupt re-enabling
-logic guarantees the interrupt is not armed when NAPI is scheduled.
-Please note that NAPI is no longer scheduled if napi_complete_done()
-returned false.
+Hi,
+
+Although Stanislav and Jakub suggested to use zlib in v1, I have not
+implemented that yet since the current patch is quite minimal.
+
+Using zlib instead of executing an external gzip program would like add
+another 100-150 lines. It likely requires a bigger rewrite to avoid
+getline() assuming that no temporary file is used for the uncompressed
+config. If zlib is desired, I would suggest doing it in another patch.
+
+Thoughts?
+
+Kind regards,
+Peter
+---
+ tools/bpf/bpftool/feature.c | 104 +++++++++++++++++++++---------------
+ 1 file changed, 60 insertions(+), 44 deletions(-)
+
+diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
+index d672d9086fff..b9ade5a8bc3c 100644
+--- a/tools/bpf/bpftool/feature.c
++++ b/tools/bpf/bpftool/feature.c
+@@ -284,34 +284,35 @@ static void probe_jit_limit(void)
+ 	}
+ }
+ 
+-static char *get_kernel_config_option(FILE *fd, const char *option)
++static bool read_next_kernel_config_option(FILE *fd, char **buf_p, size_t *n_p,
++					   char **value)
+ {
+-	size_t line_n = 0, optlen = strlen(option);
+-	char *res, *strval, *line = NULL;
+-	ssize_t n;
++	ssize_t linelen;
++	char *sep;
+ 
+-	rewind(fd);
+-	while ((n = getline(&line, &line_n, fd)) > 0) {
+-		if (strncmp(line, option, optlen))
+-			continue;
+-		/* Check we have at least '=', value, and '\n' */
+-		if (strlen(line) < optlen + 3)
++	while ((linelen = getline(buf_p, n_p, fd)) > 0) {
++		char *line = *buf_p;
++
++		if (strncmp(line, "CONFIG_", 7))
+ 			continue;
+-		if (*(line + optlen) != '=')
++
++		sep = memchr(line, '=', linelen);
++		if (!sep)
+ 			continue;
+ 
+ 		/* Trim ending '\n' */
+-		line[strlen(line) - 1] = '\0';
++		line[linelen - 1] = '\0';
++
++		/* Split on '=' and ensure that a value is present. */
++		*sep = '\0';
++		if (!sep[1])
++			continue;
+ 
+-		/* Copy and return config option value */
+-		strval = line + optlen + 1;
+-		res = strdup(strval);
+-		free(line);
+-		return res;
++		*value = sep + 1;
++		return true;
+ 	}
+-	free(line);
+ 
+-	return NULL;
++	return false;
+ }
+ 
+ static void probe_kernel_image_config(void)
+@@ -386,31 +387,36 @@ static void probe_kernel_image_config(void)
+ 		/* test_bpf module for BPF tests */
+ 		"CONFIG_TEST_BPF",
+ 	};
++	char *values[ARRAY_SIZE(options)] = { };
+ 	char *value, *buf = NULL;
+ 	struct utsname utsn;
+ 	char path[PATH_MAX];
++	bool is_pipe = false;
++	FILE *fd = NULL;
+ 	size_t i, n;
+ 	ssize_t ret;
+-	FILE *fd;
+ 
+-	if (uname(&utsn))
+-		goto no_config;
++	if (!uname(&utsn)) {
++		snprintf(path, sizeof(path), "/boot/config-%s", utsn.release);
+ 
+-	snprintf(path, sizeof(path), "/boot/config-%s", utsn.release);
++		fd = fopen(path, "r");
++		if (!fd && errno != ENOENT)
++			p_info("Cannot open %s: %s", path, strerror(errno));
++	}
+ 
+-	fd = fopen(path, "r");
+-	if (!fd && errno == ENOENT) {
+-		/* Some distributions put the config file at /proc/config, give
+-		 * it a try.
+-		 * Sometimes it is also at /proc/config.gz but we do not try
+-		 * this one for now, it would require linking against libz.
++	if (!fd) {
++		/* Some distributions build with CONFIG_IKCONFIG=y and put the
++		 * config file at /proc/config.gz. We try to invoke an external
++		 * gzip program to avoid linking to libz.
++		 * Hide stderr to avoid interference with the JSON output.
+ 		 */
+-		fd = fopen("/proc/config", "r");
++		fd = popen("gunzip -c /proc/config.gz 2>/dev/null", "r");
++		is_pipe = true;
+ 	}
+ 	if (!fd) {
+ 		p_info("skipping kernel config, can't open file: %s",
+ 		       strerror(errno));
+-		goto no_config;
++		goto end_parse;
+ 	}
+ 	/* Sanity checks */
+ 	ret = getline(&buf, &n, fd);
+@@ -418,27 +424,37 @@ static void probe_kernel_image_config(void)
+ 	if (!buf || !ret) {
+ 		p_info("skipping kernel config, can't read from file: %s",
+ 		       strerror(errno));
+-		free(buf);
+-		goto no_config;
++		goto end_parse;
+ 	}
+ 	if (strcmp(buf, "# Automatically generated file; DO NOT EDIT.\n")) {
+ 		p_info("skipping kernel config, can't find correct file");
+-		free(buf);
+-		goto no_config;
++		goto end_parse;
++	}
++
++	while (read_next_kernel_config_option(fd, &buf, &n, &value)) {
++		for (i = 0; i < ARRAY_SIZE(options); i++) {
++			if (values[i] || strcmp(buf, options[i]))
++				continue;
++
++			values[i] = strdup(value);
++		}
++	}
++
++end_parse:
++	if (fd) {
++		if (is_pipe) {
++			if (pclose(fd))
++				p_info("failed to read /proc/config.gz");
++		} else {
++			fclose(fd);
++		}
+ 	}
+ 	free(buf);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(options); i++) {
+-		value = get_kernel_config_option(fd, options[i]);
+-		print_kernel_option(options[i], value);
+-		free(value);
++		print_kernel_option(options[i], values[i]);
++		free(values[i]);
+ 	}
+-	fclose(fd);
+-	return;
+-
+-no_config:
+-	for (i = 0; i < ARRAY_SIZE(options); i++)
+-		print_kernel_option(options[i], NULL);
+ }
+ 
+ static bool probe_bpf_syscall(const char *define_prefix)
+-- 
+2.22.0
 
