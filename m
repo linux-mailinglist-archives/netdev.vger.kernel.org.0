@@ -2,391 +2,312 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 501278381F
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:44:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 827DD83815
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:40:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387565AbfHFRod (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 13:44:33 -0400
-Received: from mga02.intel.com ([134.134.136.20]:21522 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727549AbfHFRoc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 13:44:32 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Aug 2019 10:40:18 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,353,1559545200"; 
-   d="scan'208";a="168363539"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by orsmga008.jf.intel.com with ESMTP; 06 Aug 2019 10:40:17 -0700
-Date:   Tue, 6 Aug 2019 10:40:17 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     john.hubbard@gmail.com
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Boaz Harrosh <boaz@plexistor.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        Johannes Thumshirn <jthumshirn@suse.de>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Matthew Wilcox <willy@infradead.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        Yan Zheng <zyan@redhat.com>, netdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        John Hubbard <jhubbard@nvidia.com>
-Subject: Re: [PATCH v6 1/3] mm/gup: add make_dirty arg to
- put_user_pages_dirty_lock()
-Message-ID: <20190806174017.GB4748@iweiny-DESK2.sc.intel.com>
-References: <20190804214042.4564-1-jhubbard@nvidia.com>
- <20190804214042.4564-2-jhubbard@nvidia.com>
+        id S2387851AbfHFRkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 13:40:31 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:44174 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387841AbfHFRkb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:40:31 -0400
+Received: by mail-pl1-f193.google.com with SMTP id t14so38127511plr.11
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:40:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TK0wYamS2JXS88Z21zoenyvzAjfhaTnLP7+GE6cMP2A=;
+        b=Qka49AaclSf9VS34zXoQQrT+4NEDWVUBG3yHP+E2di/ouu00OJHJsMkRo8cwj4E5Bs
+         lAPQ2iDfY+TtgacIC56SVaYGWM9zon4xiCcRu1OICe4TVnpvXI+ez1uPl/AvFTV+2ipX
+         Ws9cOZeuT1wCH1hMgSu5kY8Mv82zaXSPQEoap3xxzhkmCasoYTjmAj7BMmxYASbRAiJ7
+         ajG027b+jzwSO8v1jdUl3IQPEKZLbWJ2mJ05HkMkjW5nqtJ4Dws51Pmw8AE/4se/sTsg
+         vtnBG0mU2bP8rhyRniqPoT7758n/iHnBttFM9MqnwgkD671RCtg15A8PzTwB4syDIr1c
+         Y3cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TK0wYamS2JXS88Z21zoenyvzAjfhaTnLP7+GE6cMP2A=;
+        b=px12yaU2a6JzDzdD/OljR6zt9t7OWqr5rPki9EcyJJ127LlwtSqkFWumB6KOrxy/4p
+         l0VJV2OvGLDnOA/mzMNqNugZIIWxyWlx+EOVCStEysYmI10gXoUXU8Z69HR+aEnt6Di2
+         PeGfMTzKo3zxSPX743EAMT3nub+Za9vHsf3ljH5U+JGSUOdPK9XnR0kA9YPdhXMEl/SD
+         3obLorQuPJJQL9k3FSNKiPdGPyI6N+2tQNmRQ31fntBH4THlnhX2n3ggh7lNsWstHn+p
+         vhKO438S7dKb67vUFkvinyyI8fIWX0PdBBQleuPJbHSp75iWehSBB2Y2nFlBaTFsonGX
+         lgOw==
+X-Gm-Message-State: APjAAAXYtmNSCmO681JLqM+4AA3c3YCypcwAjguKdkgqrBqoAvkOrJZz
+        uyxDNWI1tD/RUgZkV4Qg+GfVKuw3mqw=
+X-Google-Smtp-Source: APXvYqw7HuUzAWWJdoWDtzfIxafMzF+HPf4uHNN2obGC2Oxp9nxwgiCQbrgNWIkZUc7oHCJAHSf7EQ==
+X-Received: by 2002:a17:902:d892:: with SMTP id b18mr3981657plz.165.1565113230076;
+        Tue, 06 Aug 2019 10:40:30 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id r1sm81905684pgv.70.2019.08.06.10.40.29
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 10:40:29 -0700 (PDT)
+Date:   Tue, 6 Aug 2019 10:40:28 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v4 1/3] selftests/bpf: test_progs: switch to
+ open_memstream
+Message-ID: <20190806174028.GB23939@mini-arch>
+References: <20190806170901.142264-1-sdf@google.com>
+ <20190806170901.142264-2-sdf@google.com>
+ <CAEf4BzYU6xfcPrHzz0p6dWL3_VM2mD9pKy3T-NfnuDUrd4RMDQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190804214042.4564-2-jhubbard@nvidia.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+In-Reply-To: <CAEf4BzYU6xfcPrHzz0p6dWL3_VM2mD9pKy3T-NfnuDUrd4RMDQ@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 04, 2019 at 02:40:40PM -0700, john.hubbard@gmail.com wrote:
-> From: John Hubbard <jhubbard@nvidia.com>
+On 08/06, Andrii Nakryiko wrote:
+> On Tue, Aug 6, 2019 at 10:19 AM Stanislav Fomichev <sdf@google.com> wrote:
+> >
+> > Use open_memstream to override stdout during test execution.
+> > The copy of the original stdout is held in env.stdout and used
+> > to print subtest info and dump failed log.
+> >
+> > test_{v,}printf are now simple wrappers around stdout and will be
+> > removed in the next patch.
+> >
+> > v4:
+> > * one field per line for stdout/stderr (Andrii Nakryiko)
+> >
+> > v3:
+> > * don't do strlen over log_buf, log_cnt has it already (Andrii Nakryiko)
+> >
+> > v2:
+> > * add ifdef __GLIBC__ around open_memstream (maybe pointless since
+> >   we already depend on glibc for argp_parse)
+> > * hijack stderr as well (Andrii Nakryiko)
+> > * don't hijack for every test, do it once (Andrii Nakryiko)
+> > * log_cap -> log_size (Andrii Nakryiko)
+> > * do fseeko in a proper place (Andrii Nakryiko)
+> > * check open_memstream returned value (Andrii Nakryiko)
+> >
+> > Cc: Andrii Nakryiko <andriin@fb.com>
+> > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  tools/testing/selftests/bpf/test_progs.c | 115 ++++++++++++-----------
+> >  tools/testing/selftests/bpf/test_progs.h |   3 +-
+> >  2 files changed, 62 insertions(+), 56 deletions(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> > index db00196c8315..9556439c607c 100644
+> > --- a/tools/testing/selftests/bpf/test_progs.c
+> > +++ b/tools/testing/selftests/bpf/test_progs.c
+> > @@ -40,14 +40,20 @@ static bool should_run(struct test_selector *sel, int num, const char *name)
+> >
+> >  static void dump_test_log(const struct prog_test_def *test, bool failed)
+> >  {
+> > +       if (stdout == env.stdout)
+> > +               return;
+> > +
+> > +       fflush(stdout); /* exports env.log_buf & env.log_cnt */
+> > +
+> >         if (env.verbose || test->force_log || failed) {
+> >                 if (env.log_cnt) {
+> > -                       fprintf(stdout, "%s", env.log_buf);
+> > +                       fprintf(env.stdout, "%s", env.log_buf);
+> >                         if (env.log_buf[env.log_cnt - 1] != '\n')
+> > -                               fprintf(stdout, "\n");
+> > +                               fprintf(env.stdout, "\n");
+> >                 }
+> >         }
+> > -       env.log_cnt = 0;
+> > +
+> > +       fseeko(stdout, 0, SEEK_SET); /* rewind */
+> >  }
+> >
+> >  void test__end_subtest()
+> > @@ -62,7 +68,7 @@ void test__end_subtest()
+> >
+> >         dump_test_log(test, sub_error_cnt);
+> >
+> > -       printf("#%d/%d %s:%s\n",
+> > +       fprintf(env.stdout, "#%d/%d %s:%s\n",
+> >                test->test_num, test->subtest_num,
+> >                test->subtest_name, sub_error_cnt ? "FAIL" : "OK");
+> >  }
+> > @@ -79,7 +85,8 @@ bool test__start_subtest(const char *name)
+> >         test->subtest_num++;
+> >
+> >         if (!name || !name[0]) {
+> > -               fprintf(stderr, "Subtest #%d didn't provide sub-test name!\n",
+> > +               fprintf(env.stderr,
+> > +                       "Subtest #%d didn't provide sub-test name!\n",
+> >                         test->subtest_num);
+> >                 return false;
+> >         }
+> > @@ -100,53 +107,7 @@ void test__force_log() {
+> >
+> >  void test__vprintf(const char *fmt, va_list args)
+> >  {
+> > -       size_t rem_sz;
+> > -       int ret = 0;
+> > -
+> > -       if (env.verbose || (env.test && env.test->force_log)) {
+> > -               vfprintf(stderr, fmt, args);
+> > -               return;
+> > -       }
+> > -
+> > -try_again:
+> > -       rem_sz = env.log_cap - env.log_cnt;
+> > -       if (rem_sz) {
+> > -               va_list ap;
+> > -
+> > -               va_copy(ap, args);
+> > -               /* we reserved extra byte for \0 at the end */
+> > -               ret = vsnprintf(env.log_buf + env.log_cnt, rem_sz + 1, fmt, ap);
+> > -               va_end(ap);
+> > -
+> > -               if (ret < 0) {
+> > -                       env.log_buf[env.log_cnt] = '\0';
+> > -                       fprintf(stderr, "failed to log w/ fmt '%s'\n", fmt);
+> > -                       return;
+> > -               }
+> > -       }
+> > -
+> > -       if (!rem_sz || ret > rem_sz) {
+> > -               size_t new_sz = env.log_cap * 3 / 2;
+> > -               char *new_buf;
+> > -
+> > -               if (new_sz < 4096)
+> > -                       new_sz = 4096;
+> > -               if (new_sz < ret + env.log_cnt)
+> > -                       new_sz = ret + env.log_cnt;
+> > -
+> > -               /* +1 for guaranteed space for terminating \0 */
+> > -               new_buf = realloc(env.log_buf, new_sz + 1);
+> > -               if (!new_buf) {
+> > -                       fprintf(stderr, "failed to realloc log buffer: %d\n",
+> > -                               errno);
+> > -                       return;
+> > -               }
+> > -               env.log_buf = new_buf;
+> > -               env.log_cap = new_sz;
+> > -               goto try_again;
+> > -       }
+> > -
+> > -       env.log_cnt += ret;
+> > +       vprintf(fmt, args);
+> >  }
+> >
+> >  void test__printf(const char *fmt, ...)
+> > @@ -477,6 +438,48 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+> >         return 0;
+> >  }
+> >
+> > +static void stdio_hijack(void)
+> > +{
+> > +#ifdef __GLIBC__
+> > +       if (env.verbose || (env.test && env.test->force_log)) {
 > 
-> Provide a more capable variation of put_user_pages_dirty_lock(),
-> and delete put_user_pages_dirty(). This is based on the
-> following:
-> 
-> 1. Lots of call sites become simpler if a bool is passed
-> into put_user_page*(), instead of making the call site
-> choose which put_user_page*() variant to call.
-> 
-> 2. Christoph Hellwig's observation that set_page_dirty_lock()
-> is usually correct, and set_page_dirty() is usually a
-> bug, or at least questionable, within a put_user_page*()
-> calling chain.
-> 
-> This leads to the following API choices:
-> 
->     * put_user_pages_dirty_lock(page, npages, make_dirty)
-> 
->     * There is no put_user_pages_dirty(). You have to
->       hand code that, in the rare case that it's
->       required.
-> 
-> Reviewed-by: Christoph Hellwig <hch@lst.de>
-> Cc: Matthew Wilcox <willy@infradead.org>
-> Cc: Jan Kara <jack@suse.cz>
-> Cc: Ira Weiny <ira.weiny@intel.com>
-> Cc: Jason Gunthorpe <jgg@ziepe.ca>
-> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> I just also realized that you don't need `(env.test &&
+> env.test->force_log)` test. We hijack stdout/stderr before env.test is
+> even set, so this does nothing anyways. Plus, force_log can be set in
+> the middle of test/sub-test, yet we hijack stdout just once (or even
+> if per-test), so it's still going to be "racy". Let's buffer output
+> (unless it's env.verbose, which is important to not buffer because
+> some tests will have huge output, when failing, so this allows to
+> bypass using tons of memory for those, when debugging) and dump at the
+> end.
+Makes sense, will drop this test and resubmit along with a fix for '-v'
+that Alexei discovered. Thanks!
 
-I assume this is superseded by the patch in the large series?
-
-Ira
-
-> ---
->  drivers/infiniband/core/umem.c             |   5 +-
->  drivers/infiniband/hw/hfi1/user_pages.c    |   5 +-
->  drivers/infiniband/hw/qib/qib_user_pages.c |  13 +--
->  drivers/infiniband/hw/usnic/usnic_uiom.c   |   5 +-
->  drivers/infiniband/sw/siw/siw_mem.c        |  19 +---
->  include/linux/mm.h                         |   5 +-
->  mm/gup.c                                   | 115 +++++++++------------
->  7 files changed, 61 insertions(+), 106 deletions(-)
-> 
-> diff --git a/drivers/infiniband/core/umem.c b/drivers/infiniband/core/umem.c
-> index 08da840ed7ee..965cf9dea71a 100644
-> --- a/drivers/infiniband/core/umem.c
-> +++ b/drivers/infiniband/core/umem.c
-> @@ -54,10 +54,7 @@ static void __ib_umem_release(struct ib_device *dev, struct ib_umem *umem, int d
->  
->  	for_each_sg_page(umem->sg_head.sgl, &sg_iter, umem->sg_nents, 0) {
->  		page = sg_page_iter_page(&sg_iter);
-> -		if (umem->writable && dirty)
-> -			put_user_pages_dirty_lock(&page, 1);
-> -		else
-> -			put_user_page(page);
-> +		put_user_pages_dirty_lock(&page, 1, umem->writable && dirty);
->  	}
->  
->  	sg_free_table(&umem->sg_head);
-> diff --git a/drivers/infiniband/hw/hfi1/user_pages.c b/drivers/infiniband/hw/hfi1/user_pages.c
-> index b89a9b9aef7a..469acb961fbd 100644
-> --- a/drivers/infiniband/hw/hfi1/user_pages.c
-> +++ b/drivers/infiniband/hw/hfi1/user_pages.c
-> @@ -118,10 +118,7 @@ int hfi1_acquire_user_pages(struct mm_struct *mm, unsigned long vaddr, size_t np
->  void hfi1_release_user_pages(struct mm_struct *mm, struct page **p,
->  			     size_t npages, bool dirty)
->  {
-> -	if (dirty)
-> -		put_user_pages_dirty_lock(p, npages);
-> -	else
-> -		put_user_pages(p, npages);
-> +	put_user_pages_dirty_lock(p, npages, dirty);
->  
->  	if (mm) { /* during close after signal, mm can be NULL */
->  		atomic64_sub(npages, &mm->pinned_vm);
-> diff --git a/drivers/infiniband/hw/qib/qib_user_pages.c b/drivers/infiniband/hw/qib/qib_user_pages.c
-> index bfbfbb7e0ff4..26c1fb8d45cc 100644
-> --- a/drivers/infiniband/hw/qib/qib_user_pages.c
-> +++ b/drivers/infiniband/hw/qib/qib_user_pages.c
-> @@ -37,15 +37,6 @@
->  
->  #include "qib.h"
->  
-> -static void __qib_release_user_pages(struct page **p, size_t num_pages,
-> -				     int dirty)
-> -{
-> -	if (dirty)
-> -		put_user_pages_dirty_lock(p, num_pages);
-> -	else
-> -		put_user_pages(p, num_pages);
-> -}
-> -
->  /**
->   * qib_map_page - a safety wrapper around pci_map_page()
->   *
-> @@ -124,7 +115,7 @@ int qib_get_user_pages(unsigned long start_page, size_t num_pages,
->  
->  	return 0;
->  bail_release:
-> -	__qib_release_user_pages(p, got, 0);
-> +	put_user_pages_dirty_lock(p, got, false);
->  bail:
->  	atomic64_sub(num_pages, &current->mm->pinned_vm);
->  	return ret;
-> @@ -132,7 +123,7 @@ int qib_get_user_pages(unsigned long start_page, size_t num_pages,
->  
->  void qib_release_user_pages(struct page **p, size_t num_pages)
->  {
-> -	__qib_release_user_pages(p, num_pages, 1);
-> +	put_user_pages_dirty_lock(p, num_pages, true);
->  
->  	/* during close after signal, mm can be NULL */
->  	if (current->mm)
-> diff --git a/drivers/infiniband/hw/usnic/usnic_uiom.c b/drivers/infiniband/hw/usnic/usnic_uiom.c
-> index 0b0237d41613..62e6ffa9ad78 100644
-> --- a/drivers/infiniband/hw/usnic/usnic_uiom.c
-> +++ b/drivers/infiniband/hw/usnic/usnic_uiom.c
-> @@ -75,10 +75,7 @@ static void usnic_uiom_put_pages(struct list_head *chunk_list, int dirty)
->  		for_each_sg(chunk->page_list, sg, chunk->nents, i) {
->  			page = sg_page(sg);
->  			pa = sg_phys(sg);
-> -			if (dirty)
-> -				put_user_pages_dirty_lock(&page, 1);
-> -			else
-> -				put_user_page(page);
-> +			put_user_pages_dirty_lock(&page, 1, dirty);
->  			usnic_dbg("pa: %pa\n", &pa);
->  		}
->  		kfree(chunk);
-> diff --git a/drivers/infiniband/sw/siw/siw_mem.c b/drivers/infiniband/sw/siw/siw_mem.c
-> index 67171c82b0c4..1e197753bf2f 100644
-> --- a/drivers/infiniband/sw/siw/siw_mem.c
-> +++ b/drivers/infiniband/sw/siw/siw_mem.c
-> @@ -60,20 +60,6 @@ struct siw_mem *siw_mem_id2obj(struct siw_device *sdev, int stag_index)
->  	return NULL;
->  }
->  
-> -static void siw_free_plist(struct siw_page_chunk *chunk, int num_pages,
-> -			   bool dirty)
-> -{
-> -	struct page **p = chunk->plist;
-> -
-> -	while (num_pages--) {
-> -		if (!PageDirty(*p) && dirty)
-> -			put_user_pages_dirty_lock(p, 1);
-> -		else
-> -			put_user_page(*p);
-> -		p++;
-> -	}
-> -}
-> -
->  void siw_umem_release(struct siw_umem *umem, bool dirty)
->  {
->  	struct mm_struct *mm_s = umem->owning_mm;
-> @@ -82,8 +68,9 @@ void siw_umem_release(struct siw_umem *umem, bool dirty)
->  	for (i = 0; num_pages; i++) {
->  		int to_free = min_t(int, PAGES_PER_CHUNK, num_pages);
->  
-> -		siw_free_plist(&umem->page_chunk[i], to_free,
-> -			       umem->writable && dirty);
-> +		put_user_pages_dirty_lock(umem->page_chunk[i].plist,
-> +					  to_free,
-> +					  umem->writable && dirty);
->  		kfree(umem->page_chunk[i].plist);
->  		num_pages -= to_free;
->  	}
-> diff --git a/include/linux/mm.h b/include/linux/mm.h
-> index 0334ca97c584..9759b6a24420 100644
-> --- a/include/linux/mm.h
-> +++ b/include/linux/mm.h
-> @@ -1057,8 +1057,9 @@ static inline void put_user_page(struct page *page)
->  	put_page(page);
->  }
->  
-> -void put_user_pages_dirty(struct page **pages, unsigned long npages);
-> -void put_user_pages_dirty_lock(struct page **pages, unsigned long npages);
-> +void put_user_pages_dirty_lock(struct page **pages, unsigned long npages,
-> +			       bool make_dirty);
-> +
->  void put_user_pages(struct page **pages, unsigned long npages);
->  
->  #if defined(CONFIG_SPARSEMEM) && !defined(CONFIG_SPARSEMEM_VMEMMAP)
-> diff --git a/mm/gup.c b/mm/gup.c
-> index 98f13ab37bac..7fefd7ab02c4 100644
-> --- a/mm/gup.c
-> +++ b/mm/gup.c
-> @@ -29,85 +29,70 @@ struct follow_page_context {
->  	unsigned int page_mask;
->  };
->  
-> -typedef int (*set_dirty_func_t)(struct page *page);
-> -
-> -static void __put_user_pages_dirty(struct page **pages,
-> -				   unsigned long npages,
-> -				   set_dirty_func_t sdf)
-> -{
-> -	unsigned long index;
-> -
-> -	for (index = 0; index < npages; index++) {
-> -		struct page *page = compound_head(pages[index]);
-> -
-> -		/*
-> -		 * Checking PageDirty at this point may race with
-> -		 * clear_page_dirty_for_io(), but that's OK. Two key cases:
-> -		 *
-> -		 * 1) This code sees the page as already dirty, so it skips
-> -		 * the call to sdf(). That could happen because
-> -		 * clear_page_dirty_for_io() called page_mkclean(),
-> -		 * followed by set_page_dirty(). However, now the page is
-> -		 * going to get written back, which meets the original
-> -		 * intention of setting it dirty, so all is well:
-> -		 * clear_page_dirty_for_io() goes on to call
-> -		 * TestClearPageDirty(), and write the page back.
-> -		 *
-> -		 * 2) This code sees the page as clean, so it calls sdf().
-> -		 * The page stays dirty, despite being written back, so it
-> -		 * gets written back again in the next writeback cycle.
-> -		 * This is harmless.
-> -		 */
-> -		if (!PageDirty(page))
-> -			sdf(page);
-> -
-> -		put_user_page(page);
-> -	}
-> -}
-> -
->  /**
-> - * put_user_pages_dirty() - release and dirty an array of gup-pinned pages
-> - * @pages:  array of pages to be marked dirty and released.
-> + * put_user_pages_dirty_lock() - release and optionally dirty gup-pinned pages
-> + * @pages:  array of pages to be maybe marked dirty, and definitely released.
->   * @npages: number of pages in the @pages array.
-> + * @make_dirty: whether to mark the pages dirty
->   *
->   * "gup-pinned page" refers to a page that has had one of the get_user_pages()
->   * variants called on that page.
->   *
->   * For each page in the @pages array, make that page (or its head page, if a
-> - * compound page) dirty, if it was previously listed as clean. Then, release
-> - * the page using put_user_page().
-> + * compound page) dirty, if @make_dirty is true, and if the page was previously
-> + * listed as clean. In any case, releases all pages using put_user_page(),
-> + * possibly via put_user_pages(), for the non-dirty case.
->   *
->   * Please see the put_user_page() documentation for details.
->   *
-> - * set_page_dirty(), which does not lock the page, is used here.
-> - * Therefore, it is the caller's responsibility to ensure that this is
-> - * safe. If not, then put_user_pages_dirty_lock() should be called instead.
-> + * set_page_dirty_lock() is used internally. If instead, set_page_dirty() is
-> + * required, then the caller should a) verify that this is really correct,
-> + * because _lock() is usually required, and b) hand code it:
-> + * set_page_dirty_lock(), put_user_page().
->   *
->   */
-> -void put_user_pages_dirty(struct page **pages, unsigned long npages)
-> +void put_user_pages_dirty_lock(struct page **pages, unsigned long npages,
-> +			       bool make_dirty)
->  {
-> -	__put_user_pages_dirty(pages, npages, set_page_dirty);
-> -}
-> -EXPORT_SYMBOL(put_user_pages_dirty);
-> +	unsigned long index;
->  
-> -/**
-> - * put_user_pages_dirty_lock() - release and dirty an array of gup-pinned pages
-> - * @pages:  array of pages to be marked dirty and released.
-> - * @npages: number of pages in the @pages array.
-> - *
-> - * For each page in the @pages array, make that page (or its head page, if a
-> - * compound page) dirty, if it was previously listed as clean. Then, release
-> - * the page using put_user_page().
-> - *
-> - * Please see the put_user_page() documentation for details.
-> - *
-> - * This is just like put_user_pages_dirty(), except that it invokes
-> - * set_page_dirty_lock(), instead of set_page_dirty().
-> - *
-> - */
-> -void put_user_pages_dirty_lock(struct page **pages, unsigned long npages)
-> -{
-> -	__put_user_pages_dirty(pages, npages, set_page_dirty_lock);
-> +	/*
-> +	 * TODO: this can be optimized for huge pages: if a series of pages is
-> +	 * physically contiguous and part of the same compound page, then a
-> +	 * single operation to the head page should suffice.
-> +	 */
-> +
-> +	if (!make_dirty) {
-> +		put_user_pages(pages, npages);
-> +		return;
-> +	}
-> +
-> +	for (index = 0; index < npages; index++) {
-> +		struct page *page = compound_head(pages[index]);
-> +		/*
-> +		 * Checking PageDirty at this point may race with
-> +		 * clear_page_dirty_for_io(), but that's OK. Two key
-> +		 * cases:
-> +		 *
-> +		 * 1) This code sees the page as already dirty, so it
-> +		 * skips the call to set_page_dirty(). That could happen
-> +		 * because clear_page_dirty_for_io() called
-> +		 * page_mkclean(), followed by set_page_dirty().
-> +		 * However, now the page is going to get written back,
-> +		 * which meets the original intention of setting it
-> +		 * dirty, so all is well: clear_page_dirty_for_io() goes
-> +		 * on to call TestClearPageDirty(), and write the page
-> +		 * back.
-> +		 *
-> +		 * 2) This code sees the page as clean, so it calls
-> +		 * set_page_dirty(). The page stays dirty, despite being
-> +		 * written back, so it gets written back again in the
-> +		 * next writeback cycle. This is harmless.
-> +		 */
-> +		if (!PageDirty(page))
-> +			set_page_dirty_lock(page);
-> +		put_user_page(page);
-> +	}
->  }
->  EXPORT_SYMBOL(put_user_pages_dirty_lock);
->  
-> -- 
-> 2.22.0
-> 
+> > +               /* nothing to do, output to stdout by default */
+> > +               return;
+> > +       }
+> > +
+> > +       /* stdout and stderr -> buffer */
+> > +       fflush(stdout);
+> > +
+> > +       env.stdout = stdout;
+> > +       env.stderr = stderr;
+> > +
+> > +       stdout = open_memstream(&env.log_buf, &env.log_cnt);
+> > +       if (!stdout) {
+> > +               stdout = env.stdout;
+> > +               perror("open_memstream");
+> > +               return;
+> > +       }
+> > +
+> > +       stderr = stdout;
+> > +#endif
+> > +}
+> > +
+> > +static void stdio_restore(void)
+> > +{
+> > +#ifdef __GLIBC__
+> > +       if (stdout == env.stdout)
+> > +               return;
+> > +
+> > +       fclose(stdout);
+> > +       free(env.log_buf);
+> > +
+> > +       env.log_buf = NULL;
+> > +       env.log_cnt = 0;
+> > +
+> > +       stdout = env.stdout;
+> > +       stderr = env.stderr;
+> > +#endif
+> > +}
+> > +
+> >  int main(int argc, char **argv)
+> >  {
+> >         static const struct argp argp = {
+> > @@ -496,6 +499,7 @@ int main(int argc, char **argv)
+> >
+> >         env.jit_enabled = is_jit_enabled();
+> >
+> > +       stdio_hijack();
+> >         for (i = 0; i < prog_test_cnt; i++) {
+> >                 struct prog_test_def *test = &prog_test_defs[i];
+> >                 int old_pass_cnt = pass_cnt;
+> > @@ -523,13 +527,14 @@ int main(int argc, char **argv)
+> >
+> >                 dump_test_log(test, test->error_cnt);
+> >
+> > -               printf("#%d %s:%s\n", test->test_num, test->test_name,
+> > -                      test->error_cnt ? "FAIL" : "OK");
+> > +               fprintf(env.stdout, "#%d %s:%s\n",
+> > +                       test->test_num, test->test_name,
+> > +                       test->error_cnt ? "FAIL" : "OK");
+> >         }
+> > +       stdio_restore();
+> >         printf("Summary: %d/%d PASSED, %d FAILED\n",
+> >                env.succ_cnt, env.sub_succ_cnt, env.fail_cnt);
+> >
+> > -       free(env.log_buf);
+> >         free(env.test_selector.num_set);
+> >         free(env.subtest_selector.num_set);
+> >
+> > diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
+> > index afd14962456f..541f9eab5eed 100644
+> > --- a/tools/testing/selftests/bpf/test_progs.h
+> > +++ b/tools/testing/selftests/bpf/test_progs.h
+> > @@ -56,9 +56,10 @@ struct test_env {
+> >         bool jit_enabled;
+> >
+> >         struct prog_test_def *test;
+> > +       FILE *stdout;
+> > +       FILE *stderr;
+> >         char *log_buf;
+> >         size_t log_cnt;
+> > -       size_t log_cap;
+> >
+> >         int succ_cnt; /* successful tests */
+> >         int sub_succ_cnt; /* successful sub-tests */
+> > --
+> > 2.22.0.770.g0f2c4a37fd-goog
+> >
