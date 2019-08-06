@@ -2,128 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2288C839F4
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:01:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20294839FA
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:02:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726044AbfHFUA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 16:00:58 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:34186 "EHLO
+        id S1726301AbfHFUCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 16:02:40 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:40000 "EHLO
         mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbfHFUA6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:00:58 -0400
-Received: by mail-ot1-f68.google.com with SMTP id n5so95691125otk.1;
-        Tue, 06 Aug 2019 13:00:57 -0700 (PDT)
+        with ESMTP id S1725906AbfHFUCk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:02:40 -0400
+Received: by mail-ot1-f68.google.com with SMTP id l15so38386698oth.7;
+        Tue, 06 Aug 2019 13:02:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=VaOMR+SUZElYH0Eetic8a/+Hs8jgmt9NIHaGtBcxFPM=;
-        b=TngasMsK4VNmxfirXQoozUrNZixTJrh5h2kC3Fa/ZBpmNydnUMizu+QaNDXrbPORqA
-         LUcxKGR2kGLPUVCAG+ujMbZlMdv+IqWR9ra+m7iTJ+AfMC++Y8R1xruk5J8HBma3OVeD
-         271cMVDklGhu0DXNyPhReNS4Glv9BEMFIaN627Isa45aEM8M/7FYQLApxbPd9oAnUBsi
-         +jSt8X2b5XtoADey3XpzbHQ8I/uqgwx1UQszsKkhViGmHE+noAbMvXvgz0Hlxq3sflXD
-         a5q/tYKeEbtB+ocWno6jFcyYfWsM3YCcfNsKZjEyssRSg0lno7aji39ysG0kykKk8pNV
-         foHw==
+        bh=gqjViCXObN2WgC0+IhrtTb7Ll35AmMVzauFcMWGTI3Y=;
+        b=g6geZrRSw1Dk72HeV3MeqgqDiCymOKGzorDS9kcJv2KYasDx9IRJzWdUCQ5iz/Ck/a
+         sMOqtrYcPYFkeOtOkh3EZ6BQOFZFtjfX4FeNaR7psKg3xzJZZT2HZI2UO45VHTO99KCa
+         5DJfIPEVo7ChrD9UA9ksvW4WKmWAYqfMY6fVOBsARhj6ITM/Y954KCB64DT/86RovKv+
+         v3izTjlAuvKv3KGD3bthq9dyPH36SX8i7m0+F89SRk5FQznew6pgkuE+/KIjfgWA0K30
+         KRvE8YQ5YyG26Sgb8bPl/FmaHp9h4HQXgX6WZJSlRti8akUyiqMHCDslkE+F9DWvSgMq
+         +SWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=VaOMR+SUZElYH0Eetic8a/+Hs8jgmt9NIHaGtBcxFPM=;
-        b=d6x9tKU8H+85I5DoxKfkK/VswvlFTmxDLOnleMKDLvOQV+bUZHKX/i0F2KOG7ae5dt
-         vkaNWkXBlB0sAjAU+8ksiiFFF6sWeXuDg4rdXCVch3DFUEjYQq4RFQoh7L6Dx3UKg6lr
-         m44U8eAy51xqXbFvp5idVB+fbawZF8nEXrckKwjsHZU1pcoHKbZKNZVeC0W0/HU+Fc51
-         Zlk2KJpE2fk8YJdayFGpP3lMlonkbSzWjL4uAfOsazkX7og/MQLgi9fmZO8hEWoAuuBa
-         z8/y1M+WJ0x4SlN0CV/fFe50eihRFWwaWxJC612efekceBGFjbs0cG8L2CphApNENjz1
-         kpWw==
-X-Gm-Message-State: APjAAAVcONRrLNEHmIhVUPCi98B7ddfhwzwdjkeiYclWQIXhGWV1tgdX
-        rRw0zMpUpzc6rLCLJVVS7H1vCNszKXHLhhsJYPy7xadcGhw=
-X-Google-Smtp-Source: APXvYqx+MC/6Cl1pEL3O2XLiSNXCdL35U9JI3kpbwQNG/AkZ6DUYfCMIFGJfMWultA7dg8cGYp72TdjyMGK15LDUL3o=
-X-Received: by 2002:a6b:dd18:: with SMTP id f24mr5102882ioc.97.1565121656651;
- Tue, 06 Aug 2019 13:00:56 -0700 (PDT)
+        bh=gqjViCXObN2WgC0+IhrtTb7Ll35AmMVzauFcMWGTI3Y=;
+        b=DAVKmvYCat5Dj/ruLiTDzFFuhZq4kak1ETB6I0A26uw55TdS6uBJmEri64wRgyHQVs
+         GN0Hy5n4PPvA4kEaPHcBmPMzYLhiipyLt5cVtdtxMbMaA5/o5SReiskWf1eMKNW0iPH1
+         e4DwW70VB23KpGrgxdaSpWb29r9f194r6Ro7GM7esYhQ0u0xEquCc8jXCfeKeAqWU8rL
+         QHTybgeHsj6D1htR0yXbCfmlDtKElfBibDqXLIv4CfekibAMhtjmTZ3r04tBCHWvTopq
+         yXqopfEBABpB5N5VkeK5JNRcYTvhc2ynumq8hJR0CH5cmo0QtomaTzLcDwfnVnVl0N6f
+         1IVw==
+X-Gm-Message-State: APjAAAUv/enkbaZmdiOEMTkClH/qX+lO8nl3kZrRCiqzEPZP78AwDiNv
+        C4f3UQG58s/Izj9E+KwZXS+RfZRthcf/rEJWTYc=
+X-Google-Smtp-Source: APXvYqxUZRrA60vyMd0kzSQ4htAnblGQWHtpdj5jgj0q6G1y1gZxQTbe74lzuUCM09PKJHet7o8XCRwQJqJO6Q95G/0=
+X-Received: by 2002:a5d:9942:: with SMTP id v2mr5555846ios.177.1565121759065;
+ Tue, 06 Aug 2019 13:02:39 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190806092919.13211-1-firo.yang@suse.com>
-In-Reply-To: <20190806092919.13211-1-firo.yang@suse.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Tue, 6 Aug 2019 13:00:45 -0700
-Message-ID: <CAKgT0UdFky-tnyhn_oXGefex=9FN5ckAJ0YYd2Z7STZg1V48Hg@mail.gmail.com>
-Subject: Re: [PATCH 1/1] ixgbe: sync the first fragment unconditionally
-To:     Firo Yang <firo.yang@suse.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-6-arnd@arndb.de>
+In-Reply-To: <20190731195713.3150463-6-arnd@arndb.de>
+From:   Sylvain Lemieux <slemieux.tyco@gmail.com>
+Date:   Tue, 6 Aug 2019 16:02:27 -0400
+Message-ID: <CA+rxa6p4gD7+6-aRyd4-V4TvkyMiUh9ueMLc6ggBaDC=LG7fQg@mail.gmail.com>
+Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     soc@kernel.org,
+        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 6, 2019 at 2:38 AM Firo Yang <firo.yang@suse.com> wrote:
+Hi Arnd,
+
+On Wed, Jul 31, 2019 at 4:00 PM Arnd Bergmann <arnd@arndb.de> wrote:
 >
-> In Xen environment, if Xen-swiotlb is enabled, ixgbe driver
-> could possibly allocate a page, DMA memory buffer, for the first
-> fragment which is not suitable for Xen-swiotlb to do DMA operations.
-> Xen-swiotlb will internally allocate another page for doing DMA
-> operations. It requires syncing between those two pages. Otherwise,
-> we may get an incomplete skb. To fix this problem, sync the first
-> fragment no matter the first fargment is makred as "page_released"
-> or not.
+> The driver uses hardwire MMIO addresses instead of the data
+> that is passed in device tree. Change it over to only
+> hardcode the register offset values and allow compile-testing.
 >
-> Signed-off-by: Firo Yang <firo.yang@suse.com>
-
-From what I can tell the code below is fine. However the patch
-description isn't very clear about the issue.
-
-Specifically since we are mapping the frame with
-DMA_ATTR_SKIP_CPU_SYNC we have to unmap with that as well. As a result
-a sync is not performed on an unmap and must be done manually as we
-skipped it for the first frag. As such we need to always sync before
-possibly performing a page unmap operation.
-
-Also you can probably add the following to your patch description"
-Fixes: f3213d932173 ("ixgbe: Update driver to make use of DMA
-attributes in Rx path")
-Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
+>  drivers/gpio/Kconfig        |  8 +++++
+>  drivers/gpio/Makefile       |  2 +-
+>  drivers/gpio/gpio-lpc32xx.c | 63 ++++++++++++++++++++++++-------------
+>  3 files changed, 50 insertions(+), 23 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> index cbaf712d6529..200de9838096 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-> @@ -1825,13 +1825,7 @@ static void ixgbe_pull_tail(struct ixgbe_ring *rx_ring,
->  static void ixgbe_dma_sync_frag(struct ixgbe_ring *rx_ring,
->                                 struct sk_buff *skb)
+[...]
+
+> diff --git a/drivers/gpio/gpio-lpc32xx.c b/drivers/gpio/gpio-lpc32xx.c
+> index 24885b3db3d5..548f7cb69386 100644
+> --- a/drivers/gpio/gpio-lpc32xx.c
+> +++ b/drivers/gpio/gpio-lpc32xx.c
+
+[...]
+
+> @@ -498,6 +509,10 @@ static int lpc32xx_gpio_probe(struct platform_device *pdev)
 >  {
-> -       /* if the page was released unmap it, else just sync our portion */
-> -       if (unlikely(IXGBE_CB(skb)->page_released)) {
-> -               dma_unmap_page_attrs(rx_ring->dev, IXGBE_CB(skb)->dma,
-> -                                    ixgbe_rx_pg_size(rx_ring),
-> -                                    DMA_FROM_DEVICE,
-> -                                    IXGBE_RX_DMA_ATTR);
-> -       } else if (ring_uses_build_skb(rx_ring)) {
-> +       if (ring_uses_build_skb(rx_ring)) {
->                 unsigned long offset = (unsigned long)(skb->data) & ~PAGE_MASK;
+>         int i;
 >
->                 dma_sync_single_range_for_cpu(rx_ring->dev,
-> @@ -1848,6 +1842,14 @@ static void ixgbe_dma_sync_frag(struct ixgbe_ring *rx_ring,
->                                               skb_frag_size(frag),
->                                               DMA_FROM_DEVICE);
->         }
+> +       gpio_reg_base = devm_platform_ioremap_resource(pdev, 0);
+> +       if (gpio_reg_base)
+> +               return -ENXIO;
+
+The probe function will always return an error.
+Please replace the previous 2 lines with:
+    if (IS_ERR(gpio_reg_base))
+        return PTR_ERR(gpio_reg_base);
+
+You can add my acked-by and tested-by in the v2 patch.
+Acked-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Tested-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
+
 > +
-> +       /* If the page was released, just unmap it. */
-> +       if (unlikely(IXGBE_CB(skb)->page_released)) {
-> +               dma_unmap_page_attrs(rx_ring->dev, IXGBE_CB(skb)->dma,
-> +                                    ixgbe_rx_pg_size(rx_ring),
-> +                                    DMA_FROM_DEVICE,
-> +                                    IXGBE_RX_DMA_ATTR);
-> +       }
->  }
+>         for (i = 0; i < ARRAY_SIZE(lpc32xx_gpiochip); i++) {
+>                 if (pdev->dev.of_node) {
+>                         lpc32xx_gpiochip[i].chip.of_xlate = lpc32xx_of_xlate;
+> @@ -527,3 +542,7 @@ static struct platform_driver lpc32xx_gpio_driver = {
+>  };
 >
->  /**
+>  module_platform_driver(lpc32xx_gpio_driver);
+> +
+> +MODULE_AUTHOR("Kevin Wells <kevin.wells@nxp.com>");
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("GPIO driver for LPC32xx SoC");
 > --
-> 2.16.4
+> 2.20.0
 >
+Sylvain
