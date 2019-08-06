@@ -2,145 +2,299 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B27837D1
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:24:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE150837E4
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:29:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732949AbfHFRYm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 13:24:42 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45510 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729161AbfHFRYl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:24:41 -0400
-Received: by mail-qt1-f193.google.com with SMTP id x22so11943013qtp.12
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:24:41 -0700 (PDT)
+        id S1733175AbfHFR3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 13:29:12 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:40820 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729898AbfHFR3M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:29:12 -0400
+Received: by mail-qt1-f194.google.com with SMTP id a15so85323898qtn.7;
+        Tue, 06 Aug 2019 10:29:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=Gp7qhd0Lwx9zgPg8B7djBkz1jo5UqTOVdjIgUJsZDyg=;
-        b=MmIJ9OFbHfoENJu7DT5rm/VgxfuQn5Ley65j/5/fKWZzmDDe5j8jn50kuMkyej7Jj1
-         dBNcQZzYmSzuX4KIAnwJ0psf1z8CnFMqXFVZR6AA+LIQQ9njePvcgw+xuuWgNY6TYTHM
-         uL7UEvR835OU1Xa/MZ7yAff2LHqpbwsVo/QvV/HcKIcyWwbcmHCMaHYQZCFDpURg+9jA
-         s+hC+9yvT7pra3HJ429iRICmJlTF3+o5sbVI/4vzWxhiY1xrY+A0Ct57ErwG3aY7/7z6
-         jpnIbNdI3u/yLl455EAA0GWsDUjp4XAGkdoJjBnrwugEktDP/g4/lXtHfeMbGUxjvYFO
-         7aeQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zSlFpbTfADXnmp18wSkMezblJm4v25W9iEY35ivt4+8=;
+        b=su8Y1Q0V9bNQSsWKvh/E1iGOu31UD3LaU4IaM4bDmVudN/lui4ysUZ7ziBR/XslQ9Q
+         C9FW2+i0xtQHKwAQu/k1XHudHwNeF/ONtl2YPJMulGgkC2rbDzDTfLyy9hpB3vVYaXLN
+         DRWdTd8gntSyaJktErpF7rgTSoh8+lfBeaF2bNZxppks9LjkNFVPSrnSr+U11aFpF9V5
+         GqfR2d1C2x013vlW+NcAscUl1MO6HsYmkavhzj3Ew2b0kS0IvjO1NbOs+6o9bKurRxxi
+         fDyWxVXZK/EAf2WrITtOlncepxwDkeZzdsMgQK/WLS9ywj9VPAk8jlXmDWbLdUinBZPv
+         WyfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=Gp7qhd0Lwx9zgPg8B7djBkz1jo5UqTOVdjIgUJsZDyg=;
-        b=De6kdaVGxaM4Wq93kv6Q22OdPQGrBQLRCN10pwFFh/vCrerCAXPEihH94HJzOEtJFS
-         Xhsb/wGM4dB/WUxKoCrPTCG440jGieev9s9LWIoARgyUdsQI/1ju40SJsyEDltVgLBTd
-         H9DZlFXe1AAby/Hx6Kedh0qpK0ih6i5QeSg6rG239Q2J8fDA400VQr8jt7PtWEQq8CfL
-         +i4JRJc53RbII9Ot3gtc3XdV4x961lO5lJCCX7qnXVfhu1OTk0it4tHQkXcCqmceD3j6
-         EXc4BRAR8JvU4WpeKwAxGmKicMhTYDj7hCNQMM9guXy8vd8/EHK5W/kK81YYSgMd7MWh
-         TUdQ==
-X-Gm-Message-State: APjAAAW2pIP/qCbF3EsDiLSgaw2wkXoJTz9l8IE1V9+gmQrV9wEUKUbQ
-        5wmgHO3C9+fJU20sb6NtiTg=
-X-Google-Smtp-Source: APXvYqx/xb+q+Nr6Bk5w5UlvTp06SrAbenIUU2rOEHWRzulJQMVR+kfJtswAtTUFils4FPFTDOthZQ==
-X-Received: by 2002:a0c:c382:: with SMTP id o2mr4087572qvi.75.1565112280535;
-        Tue, 06 Aug 2019 10:24:40 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id d71sm718103qkg.70.2019.08.06.10.24.39
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 10:24:39 -0700 (PDT)
-Date:   Tue, 6 Aug 2019 13:24:38 -0400
-Message-ID: <20190806132438.GD2822@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net, linville@redhat.com, cphealy@gmail.com
-Subject: Re: [PATCH ethtool] ethtool: dump nested registers
-In-Reply-To: <20190806052002.GD31971@unicorn.suse.cz>
-References: <20190802193455.17126-1-vivien.didelot@gmail.com>
- <20190805080448.GA31971@unicorn.suse.cz>
- <20190805105216.GB31482@t480s.localdomain>
- <20190806052002.GD31971@unicorn.suse.cz>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zSlFpbTfADXnmp18wSkMezblJm4v25W9iEY35ivt4+8=;
+        b=bxjMfoAKad6sNTTZf4b8Af6D+Ouu6KqoDcMcHTG57bbIyT1g8ioKqq99fXl/St+rc3
+         WauyN0K0csJH1vCt5VDprVRgijiSLJiCaj2rn69X+XvmdRVOX1G1vOpdexNVX5YOnPSV
+         PJIOnOyBGq73w8MewjwOxgAlx9r9+VTv1oE5X7lRDOYrC6hGej7BXtuj2U1iXAXOGQ9b
+         5opCAErQhxG9OokoZeyC3WfkzJlPTV/WoXLuq7GcS3EBBwGd6hyV4wZTACcOZaimZ3UX
+         IzRD+jmNppMCIdPHFjQZYmHUnRBQVp7+xz+ba4bue4BvQovZhXMtKfvNz676X85+6p6a
+         DkVQ==
+X-Gm-Message-State: APjAAAWEzVTBtGFpW44OUHgTL2Qtc77TQFgzCYcCdDTOHLytFD2rP/IX
+        72GkPinrAl1iPWyjyw9w2ANvATBpOtvrZr2W3boE9WNgdfcGEQ==
+X-Google-Smtp-Source: APXvYqyVrfBzEvkFVHSEVs+ZSSva5A0SE/7YjCZpeZJuT81jWkhWydeP1ORSlH8xfBJkJX/knz86JV9aevtxxsvHcWg=
+X-Received: by 2002:ac8:290c:: with SMTP id y12mr4054550qty.141.1565112551166;
+ Tue, 06 Aug 2019 10:29:11 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190806170901.142264-1-sdf@google.com> <20190806170901.142264-2-sdf@google.com>
+In-Reply-To: <20190806170901.142264-2-sdf@google.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 6 Aug 2019 10:29:00 -0700
+Message-ID: <CAEf4BzYU6xfcPrHzz0p6dWL3_VM2mD9pKy3T-NfnuDUrd4RMDQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/3] selftests/bpf: test_progs: switch to open_memstream
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Michal,
+On Tue, Aug 6, 2019 at 10:19 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> Use open_memstream to override stdout during test execution.
+> The copy of the original stdout is held in env.stdout and used
+> to print subtest info and dump failed log.
+>
+> test_{v,}printf are now simple wrappers around stdout and will be
+> removed in the next patch.
+>
+> v4:
+> * one field per line for stdout/stderr (Andrii Nakryiko)
+>
+> v3:
+> * don't do strlen over log_buf, log_cnt has it already (Andrii Nakryiko)
+>
+> v2:
+> * add ifdef __GLIBC__ around open_memstream (maybe pointless since
+>   we already depend on glibc for argp_parse)
+> * hijack stderr as well (Andrii Nakryiko)
+> * don't hijack for every test, do it once (Andrii Nakryiko)
+> * log_cap -> log_size (Andrii Nakryiko)
+> * do fseeko in a proper place (Andrii Nakryiko)
+> * check open_memstream returned value (Andrii Nakryiko)
+>
+> Cc: Andrii Nakryiko <andriin@fb.com>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  tools/testing/selftests/bpf/test_progs.c | 115 ++++++++++++-----------
+>  tools/testing/selftests/bpf/test_progs.h |   3 +-
+>  2 files changed, 62 insertions(+), 56 deletions(-)
+>
+> diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> index db00196c8315..9556439c607c 100644
+> --- a/tools/testing/selftests/bpf/test_progs.c
+> +++ b/tools/testing/selftests/bpf/test_progs.c
+> @@ -40,14 +40,20 @@ static bool should_run(struct test_selector *sel, int num, const char *name)
+>
+>  static void dump_test_log(const struct prog_test_def *test, bool failed)
+>  {
+> +       if (stdout == env.stdout)
+> +               return;
+> +
+> +       fflush(stdout); /* exports env.log_buf & env.log_cnt */
+> +
+>         if (env.verbose || test->force_log || failed) {
+>                 if (env.log_cnt) {
+> -                       fprintf(stdout, "%s", env.log_buf);
+> +                       fprintf(env.stdout, "%s", env.log_buf);
+>                         if (env.log_buf[env.log_cnt - 1] != '\n')
+> -                               fprintf(stdout, "\n");
+> +                               fprintf(env.stdout, "\n");
+>                 }
+>         }
+> -       env.log_cnt = 0;
+> +
+> +       fseeko(stdout, 0, SEEK_SET); /* rewind */
+>  }
+>
+>  void test__end_subtest()
+> @@ -62,7 +68,7 @@ void test__end_subtest()
+>
+>         dump_test_log(test, sub_error_cnt);
+>
+> -       printf("#%d/%d %s:%s\n",
+> +       fprintf(env.stdout, "#%d/%d %s:%s\n",
+>                test->test_num, test->subtest_num,
+>                test->subtest_name, sub_error_cnt ? "FAIL" : "OK");
+>  }
+> @@ -79,7 +85,8 @@ bool test__start_subtest(const char *name)
+>         test->subtest_num++;
+>
+>         if (!name || !name[0]) {
+> -               fprintf(stderr, "Subtest #%d didn't provide sub-test name!\n",
+> +               fprintf(env.stderr,
+> +                       "Subtest #%d didn't provide sub-test name!\n",
+>                         test->subtest_num);
+>                 return false;
+>         }
+> @@ -100,53 +107,7 @@ void test__force_log() {
+>
+>  void test__vprintf(const char *fmt, va_list args)
+>  {
+> -       size_t rem_sz;
+> -       int ret = 0;
+> -
+> -       if (env.verbose || (env.test && env.test->force_log)) {
+> -               vfprintf(stderr, fmt, args);
+> -               return;
+> -       }
+> -
+> -try_again:
+> -       rem_sz = env.log_cap - env.log_cnt;
+> -       if (rem_sz) {
+> -               va_list ap;
+> -
+> -               va_copy(ap, args);
+> -               /* we reserved extra byte for \0 at the end */
+> -               ret = vsnprintf(env.log_buf + env.log_cnt, rem_sz + 1, fmt, ap);
+> -               va_end(ap);
+> -
+> -               if (ret < 0) {
+> -                       env.log_buf[env.log_cnt] = '\0';
+> -                       fprintf(stderr, "failed to log w/ fmt '%s'\n", fmt);
+> -                       return;
+> -               }
+> -       }
+> -
+> -       if (!rem_sz || ret > rem_sz) {
+> -               size_t new_sz = env.log_cap * 3 / 2;
+> -               char *new_buf;
+> -
+> -               if (new_sz < 4096)
+> -                       new_sz = 4096;
+> -               if (new_sz < ret + env.log_cnt)
+> -                       new_sz = ret + env.log_cnt;
+> -
+> -               /* +1 for guaranteed space for terminating \0 */
+> -               new_buf = realloc(env.log_buf, new_sz + 1);
+> -               if (!new_buf) {
+> -                       fprintf(stderr, "failed to realloc log buffer: %d\n",
+> -                               errno);
+> -                       return;
+> -               }
+> -               env.log_buf = new_buf;
+> -               env.log_cap = new_sz;
+> -               goto try_again;
+> -       }
+> -
+> -       env.log_cnt += ret;
+> +       vprintf(fmt, args);
+>  }
+>
+>  void test__printf(const char *fmt, ...)
+> @@ -477,6 +438,48 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+>         return 0;
+>  }
+>
+> +static void stdio_hijack(void)
+> +{
+> +#ifdef __GLIBC__
+> +       if (env.verbose || (env.test && env.test->force_log)) {
 
-On Tue, 6 Aug 2019 07:20:02 +0200, Michal Kubecek <mkubecek@suse.cz> wrote:
-> On Mon, Aug 05, 2019 at 10:52:16AM -0400, Vivien Didelot wrote:
-> > Hi Michal!
-> > 
-> > On Mon, 5 Aug 2019 10:04:48 +0200, Michal Kubecek <mkubecek@suse.cz> wrote:
-> > > On Fri, Aug 02, 2019 at 03:34:54PM -0400, Vivien Didelot wrote:
-> > > > Usually kernel drivers set the regs->len value to the same length as
-> > > > info->regdump_len, which was used for the allocation. In case where
-> > > > regs->len is smaller than the allocated info->regdump_len length,
-> > > > we may assume that the dump contains a nested set of registers.
-> > > > 
-> > > > This becomes handy for kernel drivers to expose registers of an
-> > > > underlying network conduit unfortunately not exposed to userspace,
-> > > > as found in network switching equipment for example.
-> > > > 
-> > > > This patch adds support for recursing into the dump operation if there
-> > > > is enough room for a nested ethtool_drvinfo structure containing a
-> > > > valid driver name, followed by a ethtool_regs structure like this:
-> > > > 
-> > > >     0      regs->len                        info->regdump_len
-> > > >     v              v                                        v
-> > > >     +--------------+-----------------+--------------+-- - --+
-> > > >     | ethtool_regs | ethtool_drvinfo | ethtool_regs |       |
-> > > >     +--------------+-----------------+--------------+-- - --+
-> > > > 
-> > > > Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> > > > ---
-> > > 
-> > > I'm not sure about this approach. If these additional objects with their
-> > > own registers are represented by a network device, we can query their
-> > > registers directly. If they are not (which, IIUC, is the case in your
-> > > use case), we should use an appropriate interface. AFAIK the CPU ports
-> > > are already represented in devlink, shouldn't devlink be also used to
-> > > query their registers?
-> > 
-> > Yet another interface wasn't that much appropriate for DSA, making the
-> > stack unnecessarily complex.
-> 
-> AFAICS, there is already devlink support in dsa and CPU ports are
-> presented as devlink ports. So it wouldn't be a completely new
-> interface.
-> 
-> > In fact we are already glueing the statistics of the CPU port into the
-> > master's ethtool ops (both physical ports are wired together).
-> 
-> The ethtool statistics (in general) are one big mess, I don't think it's
-> an example worth following; rather one showing us what to avoid.
-> 
-> > Adding support for nested registers dump in ethtool makes it simple to
-> > (pretty) dump CPU port's registers without too much userspace
-> > addition.
-> 
-> It is indeed convenient for pretty print - but very hard to use for any
-> automated processing. My point is that CPU port is not represented by
-> a network device but it is already represented by a devlink port so that
-> it makes much more sense to tie its register dump to that object than to
-> add add it to register dump of port's master.
+I just also realized that you don't need `(env.test &&
+env.test->force_log)` test. We hijack stdout/stderr before env.test is
+even set, so this does nothing anyways. Plus, force_log can be set in
+the middle of test/sub-test, yet we hijack stdout just once (or even
+if per-test), so it's still going to be "racy". Let's buffer output
+(unless it's env.verbose, which is important to not buffer because
+some tests will have huge output, when failing, so this allows to
+bypass using tons of memory for those, when debugging) and dump at the
+end.
 
-How would that be presented to userspace? The pretty printing for some
-DSA switch ports (e.g. mv88e6xxx) are already added in ethtool. Is there
-a devlink-ethtool glue of some kind, or should the pretty printing be
-duplicated in yet another tool? I'd prefer to avoid the latter...
-
-> In the future, I would like to transform the ethtool register dump from
-> current opaque block of data to an actual dump of registers. It is
-> unfortunate that drivers are already mixing information specific to
-> a network device with information common for the whole physical device.
-> Adding more data which is actually related to a different object would
-> only make things worse.
-
-I totally understand and I'm interested to follow this work.
-
-
-Thanks,
-
-	Vivien
+> +               /* nothing to do, output to stdout by default */
+> +               return;
+> +       }
+> +
+> +       /* stdout and stderr -> buffer */
+> +       fflush(stdout);
+> +
+> +       env.stdout = stdout;
+> +       env.stderr = stderr;
+> +
+> +       stdout = open_memstream(&env.log_buf, &env.log_cnt);
+> +       if (!stdout) {
+> +               stdout = env.stdout;
+> +               perror("open_memstream");
+> +               return;
+> +       }
+> +
+> +       stderr = stdout;
+> +#endif
+> +}
+> +
+> +static void stdio_restore(void)
+> +{
+> +#ifdef __GLIBC__
+> +       if (stdout == env.stdout)
+> +               return;
+> +
+> +       fclose(stdout);
+> +       free(env.log_buf);
+> +
+> +       env.log_buf = NULL;
+> +       env.log_cnt = 0;
+> +
+> +       stdout = env.stdout;
+> +       stderr = env.stderr;
+> +#endif
+> +}
+> +
+>  int main(int argc, char **argv)
+>  {
+>         static const struct argp argp = {
+> @@ -496,6 +499,7 @@ int main(int argc, char **argv)
+>
+>         env.jit_enabled = is_jit_enabled();
+>
+> +       stdio_hijack();
+>         for (i = 0; i < prog_test_cnt; i++) {
+>                 struct prog_test_def *test = &prog_test_defs[i];
+>                 int old_pass_cnt = pass_cnt;
+> @@ -523,13 +527,14 @@ int main(int argc, char **argv)
+>
+>                 dump_test_log(test, test->error_cnt);
+>
+> -               printf("#%d %s:%s\n", test->test_num, test->test_name,
+> -                      test->error_cnt ? "FAIL" : "OK");
+> +               fprintf(env.stdout, "#%d %s:%s\n",
+> +                       test->test_num, test->test_name,
+> +                       test->error_cnt ? "FAIL" : "OK");
+>         }
+> +       stdio_restore();
+>         printf("Summary: %d/%d PASSED, %d FAILED\n",
+>                env.succ_cnt, env.sub_succ_cnt, env.fail_cnt);
+>
+> -       free(env.log_buf);
+>         free(env.test_selector.num_set);
+>         free(env.subtest_selector.num_set);
+>
+> diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
+> index afd14962456f..541f9eab5eed 100644
+> --- a/tools/testing/selftests/bpf/test_progs.h
+> +++ b/tools/testing/selftests/bpf/test_progs.h
+> @@ -56,9 +56,10 @@ struct test_env {
+>         bool jit_enabled;
+>
+>         struct prog_test_def *test;
+> +       FILE *stdout;
+> +       FILE *stderr;
+>         char *log_buf;
+>         size_t log_cnt;
+> -       size_t log_cap;
+>
+>         int succ_cnt; /* successful tests */
+>         int sub_succ_cnt; /* successful sub-tests */
+> --
+> 2.22.0.770.g0f2c4a37fd-goog
+>
