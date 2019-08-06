@@ -2,86 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6AF1283383
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 16:04:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19891833C2
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 16:17:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732827AbfHFOEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 10:04:36 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:38631 "EHLO
-        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730188AbfHFOEg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 10:04:36 -0400
-X-Originating-IP: 86.250.200.211
-Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id A31A71BF20B;
-        Tue,  6 Aug 2019 14:04:33 +0000 (UTC)
-Date:   Tue, 6 Aug 2019 16:04:33 +0200
-From:   "antoine.tenart@bootlin.com" <antoine.tenart@bootlin.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>
-Cc:     "antoine.tenart@bootlin.com" <antoine.tenart@bootlin.com>,
-        "richardcochran@gmail.com" <richardcochran@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>
-Subject: Re: [PATCH net-next v4 6/6] net: mscc: PTP Hardware Clock (PHC)
- support
-Message-ID: <20190806140433.GB3249@kwain>
-References: <20190725142707.9313-1-antoine.tenart@bootlin.com>
- <20190725142707.9313-7-antoine.tenart@bootlin.com>
- <2b70e0fbebf1875c51272f3005271a9aec68f00f.camel@mellanox.com>
- <20190731074609.GA3579@kwain>
+        id S1732951AbfHFORf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 10:17:35 -0400
+Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:60488 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732881AbfHFORf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 10:17:35 -0400
+Received: from localhost.localdomain ([90.33.211.207])
+        by mwinf5d41 with ME
+        id lqHT2000N4V2DRm03qHTd8; Tue, 06 Aug 2019 16:17:32 +0200
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 06 Aug 2019 16:17:32 +0200
+X-ME-IP: 90.33.211.207
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     tglx@linutronix.de, gregkh@linuxfoundation.org,
+        colin.king@canonical.com, davem@davemloft.net, allison@lohutok.net
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] nfc: st-nci: Fix an incorrect skb_buff size in 'st_nci_i2c_read()'
+Date:   Tue,  6 Aug 2019 16:16:40 +0200
+Message-Id: <20190806141640.13197-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190731074609.GA3579@kwain>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jul 31, 2019 at 09:46:09AM +0200, antoine.tenart@bootlin.com wrote:
-> On Fri, Jul 26, 2019 at 08:52:10PM +0000, Saeed Mahameed wrote:
-> > On Thu, 2019-07-25 at 16:27 +0200, Antoine Tenart wrote:
-> > > @@ -145,6 +151,22 @@ static irqreturn_t ocelot_xtr_irq_handler(int
-> > > irq, void *arg)
-> > >  			break;
-> > >  		}
-> > >  
-> > > +		if (ocelot->ptp) {
-> > > +			ocelot_ptp_gettime64(&ocelot->ptp_info, &ts);
-> > > +
-> > > +			tod_in_ns = ktime_set(ts.tv_sec, ts.tv_nsec);
-> > > +			if ((tod_in_ns & 0xffffffff) < info.timestamp)
-> > > +				full_ts_in_ns = (((tod_in_ns >> 32) -
-> > > 1) << 32) |
-> > > +						info.timestamp;
-> > > +			else
-> > > +				full_ts_in_ns = (tod_in_ns &
-> > > GENMASK_ULL(63, 32)) |
-> > > +						info.timestamp;
-> > > +
-> > > +			shhwtstamps = skb_hwtstamps(skb);
-> > > +			memset(shhwtstamps, 0, sizeof(struct
-> > > skb_shared_hwtstamps));
-> > > +			shhwtstamps->hwtstamp = full_ts_in_ns;
-> > 
-> > the right way to set the timestamp is by calling: 
-> > skb_tstamp_tx(skb, &tstamp);
-> 
-> I'll fix this.
+In 'st_nci_i2c_read()', we allocate a sk_buff with a size of
+ST_NCI_I2C_MIN_SIZE + len.
 
-This is in the Rx path, so we do not have to call this.
+However, later on, we first 'skb_reserve()' ST_NCI_I2C_MIN_SIZE bytes, then
+we 'skb_put()' ST_NCI_I2C_MIN_SIZE bytes.
+Finally, if 'len' is not 0, we 'skb_put()' 'len' bytes.
 
-Thanks,
-Antoine
+So we use ST_NCI_I2C_MIN_SIZE*2 + len bytes.
 
+This is incorrect and should already panic. I guess that it does not occur
+because of extra memory allocated because of some rounding.
+
+Fix it and allocate enough room for the 'skb_reserve()' and the 'skb_put()'
+calls.
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+This patch is LIKELY INCORRECT. So think twice to what is the correct
+solution before applying it.
+Maybe the skb_reserve should be axed or some other sizes are incorrect.
+There seems to be an issue, that's all I can say.
+---
+ drivers/nfc/st-nci/i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/nfc/st-nci/i2c.c b/drivers/nfc/st-nci/i2c.c
+index 55d600cd3861..12e0425131c8 100644
+--- a/drivers/nfc/st-nci/i2c.c
++++ b/drivers/nfc/st-nci/i2c.c
+@@ -126,7 +126,7 @@ static int st_nci_i2c_read(struct st_nci_i2c_phy *phy,
+ 		return -EBADMSG;
+ 	}
+ 
+-	*skb = alloc_skb(ST_NCI_I2C_MIN_SIZE + len, GFP_KERNEL);
++	*skb = alloc_skb(ST_NCI_I2C_MIN_SIZE * 2 + len, GFP_KERNEL);
+ 	if (*skb == NULL)
+ 		return -ENOMEM;
+ 
 -- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+2.20.1
+
