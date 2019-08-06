@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 56C3F82D14
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 09:48:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A979782D16
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 09:48:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730222AbfHFHsO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 03:48:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44232 "EHLO mail.kernel.org"
+        id S1731867AbfHFHsS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 03:48:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44256 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728886AbfHFHsO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 03:48:14 -0400
+        id S1728886AbfHFHsR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 03:48:17 -0400
 Received: from localhost (unknown [193.47.165.251])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 41A27206A2;
-        Tue,  6 Aug 2019 07:48:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 75CCD206A2;
+        Tue,  6 Aug 2019 07:48:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565077693;
-        bh=BQofsN7T/K8cPkQj8bxWwJM/R099CB0ohnHUtjyTeAo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kmp0+fjA+4DmjCqfLgRVU0uZJgBbAiOuaDx33bL74nh7kuWpHnIBdqJOdtlFVtPcL
-         +qEDTnz2P4lheEA+jdn5sQMy5txwpbn0nmAIR3uA26ZslKC2mOj1HGMHgtcyjARahY
-         +atvFxzF6dPsP6nwsu1A4MnX+YgX7k+imIGhHe6I=
+        s=default; t=1565077697;
+        bh=13CP357uqJDYp2yGgrBzeBL4lf24AxhuZ0UF4+J5Oew=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=WvJIqCmBI8McAtvN9M/zBIloMYeAmM7+kCdqZvc4unXllEYZg3DTJdC8oVUz6XtTz
+         VCj9G6kY4Suh6eK7N5ZxItbn460WyRd6Ju6Pm30KUjcJz8UT3NVbKEXIcxr6zo0s/e
+         XiN5QzL29cldTZUr94H7xO9VExI1hCY3ocyHzKVM=
 From:   Leon Romanovsky <leon@kernel.org>
 To:     Doug Ledford <dledford@redhat.com>,
         Jason Gunthorpe <jgg@mellanox.com>
@@ -32,10 +32,12 @@ Cc:     Leon Romanovsky <leonro@mellanox.com>,
         Moni Shoua <monis@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>,
         linux-netdev <netdev@vger.kernel.org>
-Subject: [PATCH rdma-next v2 0/4] ODP support for mlx5 DC QPs
-Date:   Tue,  6 Aug 2019 10:48:03 +0300
-Message-Id: <20190806074807.9111-1-leon@kernel.org>
+Subject: [PATCH mlx5-next v2 1/4] net/mlx5: Set ODP capabilities for DC transport
+Date:   Tue,  6 Aug 2019 10:48:04 +0300
+Message-Id: <20190806074807.9111-2-leon@kernel.org>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190806074807.9111-1-leon@kernel.org>
+References: <20190806074807.9111-1-leon@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -43,45 +45,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Leon Romanovsky <leonro@mellanox.com>
+From: Michael Guralnik <michaelgur@mellanox.com>
 
-Changelog
- v2:
- * Fixed reserved_* field wrong name (Saeed M.)
- * Split first patch to two patches, one for mlx5-next and one for rdma-next. (Saeed M.)
- v1:
- * Fixed alignment to u64 in mlx5-abi.h (Gal P.)
- * https://lore.kernel.org/linux-rdma/20190804100048.32671-1-leon@kernel.org
- v0:
- * https://lore.kernel.org/linux-rdma/20190801122139.25224-1-leon@kernel.org
+Query ODP capabilities for DC transport from FW.
 
----------------------------------------------------------------------------------
-From Michael,
+Signed-off-by: Michael Guralnik <michaelgur@mellanox.com>
+Signed-off-by: Leon Romanovsky <leonro@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/main.c | 6 ++++++
+ include/linux/mlx5/mlx5_ifc.h                  | 4 +++-
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-The series adds support for on-demand paging for DC transport.
-Adding handling of DC WQE parsing upon page faults and exposing
-capabilities.
-
-As DC is mlx-only transport, the capabilities are exposed to the user
-using the direct-verbs mechanism. Namely through the
-mlx5dv_query_device.
-
-Thanks
-
-Michael Guralnik (4):
-  net/mlx5: Set ODP capabilities for DC transport
-  IB/mlx5: Query ODP capabilities for DC
-  IB/mlx5: Expose ODP for DC capabilities to user
-  IB/mlx5: Add page fault handler for DC initiator WQE
-
- drivers/infiniband/hw/mlx5/main.c             |  6 +++++
- drivers/infiniband/hw/mlx5/mlx5_ib.h          |  1 +
- drivers/infiniband/hw/mlx5/odp.c              | 27 ++++++++++++++++++-
- .../net/ethernet/mellanox/mlx5/core/main.c    |  6 +++++
- include/linux/mlx5/mlx5_ifc.h                 |  4 ++-
- include/uapi/rdma/mlx5-abi.h                  |  3 +++
- 6 files changed, 45 insertions(+), 2 deletions(-)
-
---
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+index b15b27a497fc..3995fc6d4d34 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
+@@ -495,6 +495,12 @@ static int handle_hca_cap_odp(struct mlx5_core_dev *dev)
+ 	ODP_CAP_SET_MAX(dev, xrc_odp_caps.write);
+ 	ODP_CAP_SET_MAX(dev, xrc_odp_caps.read);
+ 	ODP_CAP_SET_MAX(dev, xrc_odp_caps.atomic);
++	ODP_CAP_SET_MAX(dev, dc_odp_caps.srq_receive);
++	ODP_CAP_SET_MAX(dev, dc_odp_caps.send);
++	ODP_CAP_SET_MAX(dev, dc_odp_caps.receive);
++	ODP_CAP_SET_MAX(dev, dc_odp_caps.write);
++	ODP_CAP_SET_MAX(dev, dc_odp_caps.read);
++	ODP_CAP_SET_MAX(dev, dc_odp_caps.atomic);
+ 
+ 	if (do_set)
+ 		err = set_caps(dev, set_ctx, set_sz,
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index ec571fd7fcf8..b96d5c37f70f 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -944,7 +944,9 @@ struct mlx5_ifc_odp_cap_bits {
+ 
+ 	struct mlx5_ifc_odp_per_transport_service_cap_bits xrc_odp_caps;
+ 
+-	u8         reserved_at_100[0x700];
++	struct mlx5_ifc_odp_per_transport_service_cap_bits dc_odp_caps;
++
++	u8         reserved_at_120[0x6E0];
+ };
+ 
+ struct mlx5_ifc_calc_op {
+-- 
 2.20.1
 
