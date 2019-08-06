@@ -2,221 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAADD83836
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:49:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C89F83840
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:51:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730268AbfHFRty (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 13:49:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53126 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726373AbfHFRty (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 13:49:54 -0400
-Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 15566216B7;
-        Tue,  6 Aug 2019 17:49:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565113792;
-        bh=EB2xHzbHC8DvJRGfzGQBwXjulJJs5SyEyPTgkutFCZU=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=PWstlZ3yCwI1WeKAxdf5VOQTYsyOOf6qemlHqUddkvN3a46bmDgjWezmodD/25qbF
-         ccgNzZW/vFu2x1IyNVL00j5r6jHTl7tr4HAyAcdt37mEw0j4iJ1IZxnOs0Cmp6tMTf
-         X0/bj0OPV6R/4D4Mre5Suc9+n5N+CyvsQHnVIykA=
-Received: by mail-wm1-f44.google.com with SMTP id u25so66981418wmc.4;
-        Tue, 06 Aug 2019 10:49:52 -0700 (PDT)
-X-Gm-Message-State: APjAAAXm3/04mlQsxsKx4nZo3UcUYwApPdpeps6sfRe6D1mUk1STQwF9
-        PKenl995d+0YGPtgDk+NO+9fvyJ+r3qyQYlSnFE=
-X-Google-Smtp-Source: APXvYqygneGSa1oGW4XIffQ6qgc/otJBJACrZShsTQB+Hl5HeSeWxgJuga0k8g9BhMZRUFhSilB9hVif8LPYwNt+NBc=
-X-Received: by 2002:a7b:c051:: with SMTP id u17mr5728814wmc.25.1565113790479;
- Tue, 06 Aug 2019 10:49:50 -0700 (PDT)
+        id S1731603AbfHFRvy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 13:51:54 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:34314 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726783AbfHFRvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:51:54 -0400
+Received: by mail-pl1-f195.google.com with SMTP id i2so38187619plt.1
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:51:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=0dCYKxO0i5wM8chJrpv9Lr66yY1cuUfg/GxcnS+h9ko=;
+        b=bOz77KMMCkgVMN/+CTj9r5zDUBGUCp3SjhSe5q2qTNUFuL9MijVh6NPo0SgRCuPkWt
+         QA1MZW7/BoeUwtsii9AznBp+I+NawMy57neDiKGYTIMXZzGpXA08lvpMY72av3v+5mx6
+         nwByr70PiSHvAQnI0pAcYWPzdjBKALJ0r8VVujxiZHClyFU5OJY3VaQgFuH2rbwFCTKE
+         8Hfy03MitGfCqmaNfA6HFF54HVdqDHQPsOs08VxkP9fothqLBoQ5amdp+NWqSwOZijr5
+         82g4hzjyPYXa1OHaXTomNDMXWY9G6fnenMrIopL+SZad1nZnV+JxWpUcyZ7xYJMr8lPJ
+         E5pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=0dCYKxO0i5wM8chJrpv9Lr66yY1cuUfg/GxcnS+h9ko=;
+        b=BzBmdbvyIzsphkiWpKu9yYRpTlFanEKPrt1N0vH/jQWwo56cfaIxULXgwqnoUugmM7
+         aDCHUOCwkOC+DrNGQkk+6ngL8uv+O0aU8j3H4d5L1GPCvshr2A7D1/vxDl87NTzzLMC8
+         fq1jdipVur/Ri7/qh8HXi/iOatIiEpRrJrCqos0ZPAWARfeCxR5VbmwvnImGEEWd2/ZH
+         zSkBzICJbfndFQSbp4ED3B+gJQVUNL23v3vKSQR0a8L3XHpTWWiXFewnM9KCThBNyweq
+         EtCD/rYy1r03E6CPBSRxscR++Z4ajgufRP0o0gCiDJLafvMKM4vssHsDF/YVfmvsAeFe
+         +aew==
+X-Gm-Message-State: APjAAAWoG1YBkpW/0v7IQEecRxvsIqQF3zy2+U8htNYCAALNSxNrL47X
+        xoJJuHlaLaMOTGMVUxBfF14jCi4=
+X-Google-Smtp-Source: APXvYqyvDig9V/mNvnyK3MZtIAwf7igZJQ6KTFa195kGIjnB7cllNOT/RErTxrkpcif+VSY/kk68tg==
+X-Received: by 2002:a17:902:ba96:: with SMTP id k22mr4457852pls.44.1565113913204;
+        Tue, 06 Aug 2019 10:51:53 -0700 (PDT)
+Received: from ubuntu ([12.38.14.9])
+        by smtp.gmail.com with ESMTPSA id q23sm18205893pgb.68.2019.08.06.10.51.50
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 06 Aug 2019 10:51:52 -0700 (PDT)
+Date:   Tue, 6 Aug 2019 13:51:41 -0400
+From:   Stephen Suryaputra <ssuryaextr@gmail.com>
+To:     netdev@vger.kernel.org
+Subject: [sashal@kernel.org: Re: Back-porting request]
+Message-ID: <20190806175141.GA17852@ubuntu>
 MIME-Version: 1.0
-References: <20190806075325.9011-1-wens@kernel.org> <20190806131513.GB2822@t480s.localdomain>
-In-Reply-To: <20190806131513.GB2822@t480s.localdomain>
-From:   Chen-Yu Tsai <wens@kernel.org>
-Date:   Wed, 7 Aug 2019 01:49:37 +0800
-X-Gmail-Original-Message-ID: <CAGb2v67cZb_JKDHSb-9Tm1KnTxw5FOG3faZoQSGef_FzkdSszA@mail.gmail.com>
-Message-ID: <CAGb2v67cZb_JKDHSb-9Tm1KnTxw5FOG3faZoQSGef_FzkdSszA@mail.gmail.com>
-Subject: Re: [PATCH net v2] net: dsa: Check existence of .port_mdb_add
- callback before calling it
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Chen-Yu Tsai <wens@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 7, 2019 at 1:15 AM Vivien Didelot <vivien.didelot@gmail.com> wrote:
->
-> Hi Chen-Yu,
->
-> On Tue,  6 Aug 2019 15:53:25 +0800, Chen-Yu Tsai <wens@kernel.org> wrote:
-> > From: Chen-Yu Tsai <wens@csie.org>
-> >
-> > With the recent addition of commit 75dad2520fc3 ("net: dsa: b53: Disable
-> > all ports on setup"), users of b53 (BCM53125 on Lamobo R1 in my case)
-> > are forced to use the dsa subsystem to enable the switch, instead of
-> > having it in the default transparent "forward-to-all" mode.
-> >
-> > The b53 driver does not support mdb bitmap functions. However the dsa
-> > layer does not check for the existence of the .port_mdb_add callback
-> > before actually using it. This results in a NULL pointer dereference,
-> > as shown in the kernel oops below.
-> >
-> > The other functions seem to be properly guarded. Do the same for
-> > .port_mdb_add in dsa_switch_mdb_add_bitmap() as well.
-> >
-> > b53 is not the only driver that doesn't support mdb bitmap functions.
-> > Others include bcm_sf2, dsa_loop, lantiq_gswip, mt7530, mv88e6060,
-> > qca8k, realtek-smi, and vitesse-vsc73xx.
->
-> I don't know what you mean by that, there's no "mdb bitmap function"
-> support for drivers, only the port_mdb_{prepare,add,del} callbacks...
+Hi,
 
-The term was coined from commit e6db98db8a95 ("net: dsa: add switch mdb
-bitmap functions"). But yeah, .port_mdb_* ops/callbacks would be more
-appropriate.
+How do I request back-porting of commit 5b18f1289808 ("ipv4: reset
+rt_iif for recirculated mcast/bcast out pkts") quoted below? I think for
+4.19, the following diff is needed in addition to the commit:
 
-> >     8<--- cut here ---
-> >     Unable to handle kernel NULL pointer dereference at virtual address 00000000
-> >     pgd = (ptrval)
-> >     [00000000] *pgd=00000000
-> >     Internal error: Oops: 80000005 [#1] SMP ARM
-> >     Modules linked in: rtl8xxxu rtl8192cu rtl_usb rtl8192c_common rtlwifi mac80211 cfg80211
-> >     CPU: 1 PID: 134 Comm: kworker/1:2 Not tainted 5.3.0-rc1-00247-gd3519030752a #1
-> >     Hardware name: Allwinner sun7i (A20) Family
-> >     Workqueue: events switchdev_deferred_process_work
-> >     PC is at 0x0
-> >     LR is at dsa_switch_event+0x570/0x620
-> >     pc : [<00000000>]    lr : [<c08533ec>]    psr: 80070013
-> >     sp : ee871db8  ip : 00000000  fp : ee98d0a4
-> >     r10: 0000000c  r9 : 00000008  r8 : ee89f710
-> >     r7 : ee98d040  r6 : ee98d088  r5 : c0f04c48  r4 : ee98d04c
-> >     r3 : 00000000  r2 : ee89f710  r1 : 00000008  r0 : ee98d040
-> >     Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-> >     Control: 10c5387d  Table: 6deb406a  DAC: 00000051
-> >     Process kworker/1:2 (pid: 134, stack limit = 0x(ptrval))
-> >     Stack: (0xee871db8 to 0xee872000)
-> >     1da0:                                                       ee871e14 103ace2d
-> >     1dc0: 00000000 ffffffff 00000000 ee871e14 00000005 00000000 c08524a0 00000000
-> >     1de0: ffffe000 c014bdfc c0f04c48 ee871e98 c0f04c48 ee9e5000 c0851120 c014bef0
-> >     1e00: 00000000 b643aea2 ee9b4068 c08509a8 ee2bf940 ee89f710 ee871ecb 00000000
-> >     1e20: 00000008 103ace2d 00000000 c087e248 ee29c868 103ace2d 00000001 ffffffff
-> >     1e40: 00000000 ee871e98 00000006 00000000 c0fb2a50 c087e2d0 ffffffff c08523c4
-> >     1e60: ffffffff c014bdfc 00000006 c0fad2d0 ee871e98 ee89f710 00000000 c014c500
-> >     1e80: 00000000 ee89f3c0 c0f04c48 00000000 ee9e5000 c087dfb4 ee9e5000 00000000
-> >     1ea0: ee89f710 ee871ecb 00000001 103ace2d 00000000 c0f04c48 00000000 c087e0a8
-> >     1ec0: 00000000 efd9a3e0 0089f3c0 103ace2d ee89f700 ee89f710 ee9e5000 00000122
-> >     1ee0: 00000100 c087e130 ee89f700 c0fad2c8 c1003ef0 c087de4c 2e928000 c0fad2ec
-> >     1f00: c0fad2ec ee839580 ef7a62c0 ef7a9400 00000000 c087def8 c0fad2ec c01447dc
-> >     1f20: ef315640 ef7a62c0 00000008 ee839580 ee839594 ef7a62c0 00000008 c0f03d00
-> >     1f40: ef7a62d8 ef7a62c0 ffffe000 c0145b84 ffffe000 c0fb2420 c0bfaa8c 00000000
-> >     1f60: ffffe000 ee84b600 ee84b5c0 00000000 ee870000 ee839580 c0145b40 ef0e5ea4
-> >     1f80: ee84b61c c014a6f8 00000001 ee84b5c0 c014a5b0 00000000 00000000 00000000
-> >     1fa0: 00000000 00000000 00000000 c01010e8 00000000 00000000 00000000 00000000
-> >     1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> >     1fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
-> >     [<c08533ec>] (dsa_switch_event) from [<c014bdfc>] (notifier_call_chain+0x48/0x84)
-> >     [<c014bdfc>] (notifier_call_chain) from [<c014bef0>] (raw_notifier_call_chain+0x18/0x20)
-> >     [<c014bef0>] (raw_notifier_call_chain) from [<c08509a8>] (dsa_port_mdb_add+0x48/0x74)
-> >     [<c08509a8>] (dsa_port_mdb_add) from [<c087e248>] (__switchdev_handle_port_obj_add+0x54/0xd4)
-> >     [<c087e248>] (__switchdev_handle_port_obj_add) from [<c087e2d0>] (switchdev_handle_port_obj_add+0x8/0x14)
-> >     [<c087e2d0>] (switchdev_handle_port_obj_add) from [<c08523c4>] (dsa_slave_switchdev_blocking_event+0x94/0xa4)
-> >     [<c08523c4>] (dsa_slave_switchdev_blocking_event) from [<c014bdfc>] (notifier_call_chain+0x48/0x84)
-> >     [<c014bdfc>] (notifier_call_chain) from [<c014c500>] (blocking_notifier_call_chain+0x50/0x68)
-> >     [<c014c500>] (blocking_notifier_call_chain) from [<c087dfb4>] (switchdev_port_obj_notify+0x44/0xa8)
-> >     [<c087dfb4>] (switchdev_port_obj_notify) from [<c087e0a8>] (switchdev_port_obj_add_now+0x90/0x104)
-> >     [<c087e0a8>] (switchdev_port_obj_add_now) from [<c087e130>] (switchdev_port_obj_add_deferred+0x14/0x5c)
-> >     [<c087e130>] (switchdev_port_obj_add_deferred) from [<c087de4c>] (switchdev_deferred_process+0x64/0x104)
-> >     [<c087de4c>] (switchdev_deferred_process) from [<c087def8>] (switchdev_deferred_process_work+0xc/0x14)
-> >     [<c087def8>] (switchdev_deferred_process_work) from [<c01447dc>] (process_one_work+0x218/0x50c)
-> >     [<c01447dc>] (process_one_work) from [<c0145b84>] (worker_thread+0x44/0x5bc)
-> >     [<c0145b84>] (worker_thread) from [<c014a6f8>] (kthread+0x148/0x150)
-> >     [<c014a6f8>] (kthread) from [<c01010e8>] (ret_from_fork+0x14/0x2c)
-> >     Exception stack(0xee871fb0 to 0xee871ff8)
-> >     1fa0:                                     00000000 00000000 00000000 00000000
-> >     1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> >     1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> >     Code: bad PC value
-> >     ---[ end trace 1292c61abd17b130 ]---
-> >
-> >     [<c08533ec>] (dsa_switch_event) from [<c014bdfc>] (notifier_call_chain+0x48/0x84)
-> >     corresponds to
-> >
-> >       $ arm-linux-gnueabihf-addr2line -C -i -e vmlinux c08533ec
-> >
-> >       linux/net/dsa/switch.c:156
-> >       linux/net/dsa/switch.c:178
-> >       linux/net/dsa/switch.c:328
-> >
-> > Fixes: e6db98db8a95 ("net: dsa: add switch mdb bitmap functions")
-> > Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+diff --git a/net/ipv4/route.c b/net/ipv4/route.c
+index cd84f7f68032..120ef1f284fa 100644
+--- a/net/ipv4/route.c
++++ b/net/ipv4/route.c
+@@ -1652,11 +1652,7 @@ struct rtable *rt_dst_clone(struct net_device *dev, struct rtable *rt)
+ 		new_rt->rt_iif = rt->rt_iif;
+ 		new_rt->rt_pmtu = rt->rt_pmtu;
+ 		new_rt->rt_mtu_locked = rt->rt_mtu_locked;
+-		new_rt->rt_gw_family = rt->rt_gw_family;
+-		if (rt->rt_gw_family == AF_INET)
+-			new_rt->rt_gw4 = rt->rt_gw4;
+-		else if (rt->rt_gw_family == AF_INET6)
+-			new_rt->rt_gw6 = rt->rt_gw6;
++		new_rt->rt_gateway = rt->rt_gateway;
+ 		INIT_LIST_HEAD(&new_rt->rt_uncached);
+ 
+ 		new_rt->dst.flags |= DST_HOST;
+
+Thanks.
+
+----- Forwarded message from Sasha Levin <sashal@kernel.org> -----
+
+On Mon, Jul 29, 2019 at 05:56:27PM +0200, Greg KH wrote:
+> On Mon, Jul 29, 2019 at 11:42:34AM -0400, Stephen Suryaputra wrote:
+> > Hello,
+> > 
+> > I'm requesting this commit to be back-ported to v4.14:
 > > ---
-> > Changes since v1:
-> >
-> >   - Moved the check to the beginning of dsa_switch_mdb_add()
-> >
-> > Looks like we could also move the ops check out of
-> > dsa_switch_mdb_prepare_bitmap(), though I suppose keeping the code the
-> > way it is now is clearer.
-> >
+> > commit 5b18f1289808fee5d04a7e6ecf200189f41a4db6
+> > Author: Stephen Suryaputra <ssuryaextr@gmail.com>
+> > Date:   Wed Jun 26 02:21:16 2019 -0400
+> > 
+> >     ipv4: reset rt_iif for recirculated mcast/bcast out pkts
+> > 
+> >     Multicast or broadcast egress packets have rt_iif set to the oif. These
+> >     packets might be recirculated back as input and lookup to the raw
+> >     sockets may fail because they are bound to the incoming interface
+> >     (skb_iif). If rt_iif is not zero, during the lookup, inet_iif() function
+> >     returns rt_iif instead of skb_iif. Hence, the lookup fails.
+> > 
+> >     v2: Make it non vrf specific (David Ahern). Reword the changelog to
+> >         reflect it.
+> >     Signed-off-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+> >     Reviewed-by: David Ahern <dsahern@gmail.com>
+> >     Signed-off-by: David S. Miller <davem@davemloft.net>
 > > ---
-> >  net/dsa/switch.c | 3 +++
-> >  1 file changed, 3 insertions(+)
-> >
-> > diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-> > index 4ec5b7f85d51..231af5268656 100644
-> > --- a/net/dsa/switch.c
-> > +++ b/net/dsa/switch.c
-> > @@ -164,6 +164,9 @@ static int dsa_switch_mdb_add(struct dsa_switch *ds,
-> >       struct switchdev_trans *trans = info->trans;
-> >       int port;
-> >
-> > +     if (!ds->ops->port_mdb_add)
-> > +             return -EOPNOTSUPP;
-> > +
-> >       /* Build a mask of Multicast group members */
-> >       bitmap_zero(ds->bitmap, ds->num_ports);
-> >       if (ds->index == info->sw_index)
-> > --
-> > 2.20.1
-> >
->
-> I don't understand the crash here, nor the fix. dsa_switch_mdb_add()
-> is supposed to be called through switchdev with a prepare phase,
-> which checks for ds->ops->port_mdb_add. Do you mean that a switchdev
-> MDB object is added somewhere without a prepare phase? If that's
-> the case, this is what the commit message must say. Then the
+> > 
 
-I had pretty much zero understanding of how switchdev and dsa work.
-The symptom is a NULL pointer reference, resulting from an unsupported
-callback that was not checked before being called, as described above.
-And that is what I mean. A NULL pointer reference happened when it
-should not have.
+[deleted]
+> 
+> For networking patches to be applied to the stable kernel tree(s),
+> please read:
+>    https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
+> for how to do this properly.
+> 
+> There is a section for how to do this for networking patches as they are
+> accepted a bit differently from other patches.
 
-Based on what you just mentioned, yes it does look like an object was
-added without a prepare phase. Randomly looking through the net/dsa
-code, it seems only dsa_port_vid_add() does a prepare phase, judging
-by .ph_prepare being set. dsa_port_{vlan,mbd,fdb}_add directly call
-the add phase, without the prepare phase. So I'm guessing "supposed
-to be called with a prepare phase" is not quite accurate. This also
-exceeds the scope of the simple fix I had in mind.
+To clarify a bit more here: technically you're asking for a patch to be
+included in 4.14, which isn't one of the "last two stable releases", so
+that document will tell you to send that patch directly to us.
 
-> ds->ops->port_mdb_add check must go where it is used, that is to say
-> at the beginning of dsa_switch_mdb_add_bitmap() (similarly to what
-> dsa_switch_mdb_prepare_bitmap() does), not in dsa_switch_mdb_add.
+However, this patch isn't in 4.19 either, which is still Dave's domain,
+and we can't take it in 4.14 if it's not in 4.19 (we don't want to
+introduce regressions for people who are upgrading their kernels), so
+this will still need to go through Dave.
 
-Andrew asked me to move it to where it is now. Please take a look at
-v1 [2] if it's what you would like.
+--
+Thanks,
+Sasha
 
-I'm ok either way.
-
-ChenYu
-
-[1] https://lkml.org/lkml/2019/7/25/706
-[2] https://lkml.org/lkml/2019/7/23/1129
+----- End forwarded message -----
