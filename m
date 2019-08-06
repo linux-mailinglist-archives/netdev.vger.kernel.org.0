@@ -2,108 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2CBF83889
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 20:27:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 77A488388A
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 20:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731555AbfHFS1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 14:27:47 -0400
-Received: from mail-qk1-f169.google.com ([209.85.222.169]:39476 "EHLO
-        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728041AbfHFS1r (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 14:27:47 -0400
-Received: by mail-qk1-f169.google.com with SMTP id w190so63674258qkc.6
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 11:27:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=2V537cr8FcxerQ9+wLyoBz4JeKNxIMYeKCZ+EBZjgTs=;
-        b=D3rhxqsuCWr/cU7mWOC/UgGYqKjrhNbcje7vhdiEr+mZhO2OG+VpIJ7sRFBe51tISI
-         2nsFh/q/vNbEBXTZrFLRt/MVpR/Y9ZjvWUVsBy8UnWL5pjiZoPsSga1/XBeonLRcwDCH
-         M5/Td8gndVLuIGB/5mMeJdOtLxth5wHWBPH7q7EEGp12aQLiotBSXF1SAbftHL1JLDq5
-         y8Tya2gtnX3gY0zRUz5hXI74lc0t/1pkUiffP2UiKfExCdVMWrkpEAybJBIeEJmnUUUW
-         ZgzZftcCZZYj/ZDMcYgQ+Z9xU9MhsuEvOVpk9Vba9hQsKYxtj3EQOopMFgCt08EvOSSB
-         CfMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=2V537cr8FcxerQ9+wLyoBz4JeKNxIMYeKCZ+EBZjgTs=;
-        b=MUVzFItSrA3i6SuIjYPxoN8fZpm7TMQ5RyUIpSstxVK0ZTwCuMoS6yg+e5W4lWND5e
-         joCX9sFFD66xsUHLvndZsFTPLC2hQHbnuDhli9Dapq0MnwOe8yFWfeC9Zx6jNMraPiai
-         nAwYc1wF7B1TQJpSUv7/NEh+bfoFGA7bFQBxQaH3quBETa3fg4Jnrx7XGUs2oPal+GXu
-         cAgZxY/J5VfDU/6+3/K6Axmx7FdMcM/b2vKOPArMRT77NTFyp9hUi2Ink68LpMJ8Gq2f
-         0JT9njEGzDV0qjWyMTcchqL3nsHqC2YLA2rBRMq3BlybW148xFdISIiT51O3cTod87Zx
-         5qow==
-X-Gm-Message-State: APjAAAV7/Gr5YaH4NiWNGMX41kiWlA/WOClFtW0oCCQT6MeIU9P77/wy
-        pmmEz8FOM7gPr3viwleGTuy92Q==
-X-Google-Smtp-Source: APXvYqwhU3ybV15J/FgtN6dNjbRadgt626VMvWu5Q4w6bN+Nu9HWBkttaxSS4GlTP+lirpNL17T3bA==
-X-Received: by 2002:a05:620a:247:: with SMTP id q7mr4816660qkn.265.1565116066240;
-        Tue, 06 Aug 2019 11:27:46 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id i16sm35970449qkk.1.2019.08.06.11.27.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 11:27:46 -0700 (PDT)
-Date:   Tue, 6 Aug 2019 11:27:17 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>, dsahern@gmail.com
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        mkubecek@suse.cz, stephen@networkplumber.org, daniel@iogearbox.net,
-        brouer@redhat.com, eric.dumazet@gmail.com
-Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
- resource limitations
-Message-ID: <20190806112717.3b070d07@cakuba.netronome.com>
-In-Reply-To: <20190806164036.GA2332@nanopsycho.orion>
-References: <20190806164036.GA2332@nanopsycho.orion>
-Organization: Netronome Systems, Ltd.
+        id S1731692AbfHFS2V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 14:28:21 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46232 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728041AbfHFS2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 14:28:21 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x76I8kmZ015609
+        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 11:28:20 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2u72sajq5f-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 11:28:20 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 6 Aug 2019 11:28:20 -0700
+Received: by devvm34215.prn1.facebook.com (Postfix, from userid 172786)
+        id 3C21325BBCB35; Tue,  6 Aug 2019 11:28:19 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm34215.prn1.facebook.com
+To:     <saeedm@mellanox.com>
+CC:     <kernel-team@fb.com>, <netdev@vger.kernel.org>
+Smtp-Origin-Cluster: prn1c35
+Subject: [PATCH net-next] mlx5: use correct counter
+Date:   Tue, 6 Aug 2019 11:28:19 -0700
+Message-ID: <20190806182819.788750-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-06_10:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=804 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908060163
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Aug 2019 18:40:36 +0200, Jiri Pirko wrote:
-> Hi all.
-> 
-> I just discussed this with DavidA and I would like to bring this to
-> broader audience. David wants to limit kernel resources in network
-> namespaces, for example fibs, fib rules, etc.
-> 
-> He claims that devlink api is rich enough to program this limitations
-> as it already does for mlxsw hw resources for example. 
+mlx5e_grp_q_update_stats seems to be using the wrong counter
+for if_down_packets.
 
-TBH I don't see how you changed anything to do with FIB notifications,
-so the fact that the accounting is off now is a bit confusing. I don't
-understand how devlink, FIB and namespaces mix :(
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ drivers/net/ethernet/mellanox/mlx5/core/en_stats.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> If we have this api for hardware, why don't to reuse it for the
-> kernel and it's resources too?
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+index 6eee3c7d4b06..1d16e03a987d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_stats.c
+@@ -363,7 +363,7 @@ static void mlx5e_grp_q_update_stats(struct mlx5e_priv *priv)
+ 	    !mlx5_core_query_q_counter(priv->mdev, priv->drop_rq_q_counter, 0,
+ 				       out, sizeof(out)))
+ 		qcnt->rx_if_down_packets = MLX5_GET(query_q_counter_out, out,
+-						    out_of_buffer);
++						    rx_if_down_packets);
+ }
+ 
+ #define VNIC_ENV_OFF(c) MLX5_BYTE_OFF(query_vnic_env_out, c)
+-- 
+2.17.1
 
-IMHO the netdevsim use of this API is a slight abuse, to prove the
-device can fail the FIB changes, nothing more..
-
-> So the proposal is to have some new device, say "kernelnet", that
-> would implicitly create per-namespace devlink instance. This devlink
-> instance would be used to setup resource limits. Like:
-> 
-> devlink resource set kernelnet path /IPv4/fib size 96
-> devlink -N ns1name resource set kernelnet path /IPv6/fib size 100
-> devlink -N ns2name resource set kernelnet path /IPv4/fib-rules size 8
-> 
-> To me it sounds a bit odd for kernel namespace to act as a device, but
-> thinking about it more, it makes sense. Probably better than to define
-> a new api. User would use the same tool to work with kernel and hw.
-> 
-> Also we can implement other devlink functionality, like dpipe.
-> User would then have visibility of network pipeline, tables,
-> utilization, etc. It is related to the resources too.
-> 
-> What do you think?
-
-I'm no expert here but seems counter intuitive that device tables would
-be aware of namespaces in the first place. Are we not reinventing
-cgroup controllers based on a device API? IMHO from a perspective of
-someone unfamiliar with routing offload this seems backwards :)
