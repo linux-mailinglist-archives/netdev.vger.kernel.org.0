@@ -2,83 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 237DC83865
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 20:07:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A2CBF83889
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 20:27:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732509AbfHFSHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 14:07:13 -0400
-Received: from mail-wr1-f41.google.com ([209.85.221.41]:36157 "EHLO
-        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728558AbfHFSHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 14:07:13 -0400
-Received: by mail-wr1-f41.google.com with SMTP id n4so88873109wrs.3
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 11:07:12 -0700 (PDT)
+        id S1731555AbfHFS1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 14:27:47 -0400
+Received: from mail-qk1-f169.google.com ([209.85.222.169]:39476 "EHLO
+        mail-qk1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728041AbfHFS1r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 14:27:47 -0400
+Received: by mail-qk1-f169.google.com with SMTP id w190so63674258qkc.6
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 11:27:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=b9ae5Pq/eGFQDXtzdPaS69LITV8GPZXSD6YjxONaXgU=;
-        b=YTqrJUTLnpqHFZmcYA2169UvfgKEfIzGHLdZnEA4NuzU7bxD7FmRxr0Ayzvu5b7BJe
-         bF/coJbcdInp8mE3266/nS/qBGpakiB+zSONng+AaTZoyz1xN/6LglI1Bl+PW+1QVcbA
-         iZ8AS2XrUWP82TtVIv6g3JktWMu7IiGoG6Dv0LCZvZY/Y1QKv+vZcNg9v1MZBum1zDWP
-         tDsjw47rjBiVx1cVwp/vXTJMAP8FmjVPL/Vi6CDkB+prj1EkryeRleyfvGTTt0MW8rXg
-         kP47oT4uw8Z+Fob4Ih0xP8RL8eO0hBdUyTWHlydE3+X+3gVBbH8eEqyQdbKfYZgK1SFq
-         7BdA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=2V537cr8FcxerQ9+wLyoBz4JeKNxIMYeKCZ+EBZjgTs=;
+        b=D3rhxqsuCWr/cU7mWOC/UgGYqKjrhNbcje7vhdiEr+mZhO2OG+VpIJ7sRFBe51tISI
+         2nsFh/q/vNbEBXTZrFLRt/MVpR/Y9ZjvWUVsBy8UnWL5pjiZoPsSga1/XBeonLRcwDCH
+         M5/Td8gndVLuIGB/5mMeJdOtLxth5wHWBPH7q7EEGp12aQLiotBSXF1SAbftHL1JLDq5
+         y8Tya2gtnX3gY0zRUz5hXI74lc0t/1pkUiffP2UiKfExCdVMWrkpEAybJBIeEJmnUUUW
+         ZgzZftcCZZYj/ZDMcYgQ+Z9xU9MhsuEvOVpk9Vba9hQsKYxtj3EQOopMFgCt08EvOSSB
+         CfMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=b9ae5Pq/eGFQDXtzdPaS69LITV8GPZXSD6YjxONaXgU=;
-        b=sHmpjpmZ9M5nuYvPmURwdkfSdwbLVLkqEaVTMZ0SueHO6B2743ZJx9LgksobypMoqz
-         LnCsd3O1SLNA5SjWrj/tVweHszMKzxlbEzk8LMhBPzP+mFkxTAqTq9zk7KOIHeIOPNEf
-         E7BMvdxlOOUJP9L8V7VE/jAItNEBNF/CZ15BHJT06NXcWUsETZbMwSc7E0Ay0jJLPIpl
-         /88+yHmxqrcWS/6NHbpaNou0sWjffRtgwvMyU8lOw3jJoLzezCc6rpUJmzgXdwxWZxc1
-         hkyhTOGsYYs3jfpNf0kgisERe4oHZ4BmQ5LkosN6DuTVt1asEWP2TLu1+x985bi/5yVa
-         fSvQ==
-X-Gm-Message-State: APjAAAUhsgxpEvFyuUY5n6dJGQj827J4mIt0NhYsTpZm4pAfEvEXwxHq
-        trk5i3BCXPPbE2GfIz71JOq9nA==
-X-Google-Smtp-Source: APXvYqzp+TUzafzE20WvQNBKaOkaUAnaitBoR89XXkVymelhqQOLdZDRimgUqM8MHciMM9K282Q/QA==
-X-Received: by 2002:adf:e708:: with SMTP id c8mr6031549wrm.25.1565114829387;
-        Tue, 06 Aug 2019 11:07:09 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id 5sm76017473wmg.42.2019.08.06.11.07.08
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=2V537cr8FcxerQ9+wLyoBz4JeKNxIMYeKCZ+EBZjgTs=;
+        b=MUVzFItSrA3i6SuIjYPxoN8fZpm7TMQ5RyUIpSstxVK0ZTwCuMoS6yg+e5W4lWND5e
+         joCX9sFFD66xsUHLvndZsFTPLC2hQHbnuDhli9Dapq0MnwOe8yFWfeC9Zx6jNMraPiai
+         nAwYc1wF7B1TQJpSUv7/NEh+bfoFGA7bFQBxQaH3quBETa3fg4Jnrx7XGUs2oPal+GXu
+         cAgZxY/J5VfDU/6+3/K6Axmx7FdMcM/b2vKOPArMRT77NTFyp9hUi2Ink68LpMJ8Gq2f
+         0JT9njEGzDV0qjWyMTcchqL3nsHqC2YLA2rBRMq3BlybW148xFdISIiT51O3cTod87Zx
+         5qow==
+X-Gm-Message-State: APjAAAV7/Gr5YaH4NiWNGMX41kiWlA/WOClFtW0oCCQT6MeIU9P77/wy
+        pmmEz8FOM7gPr3viwleGTuy92Q==
+X-Google-Smtp-Source: APXvYqwhU3ybV15J/FgtN6dNjbRadgt626VMvWu5Q4w6bN+Nu9HWBkttaxSS4GlTP+lirpNL17T3bA==
+X-Received: by 2002:a05:620a:247:: with SMTP id q7mr4816660qkn.265.1565116066240;
+        Tue, 06 Aug 2019 11:27:46 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id i16sm35970449qkk.1.2019.08.06.11.27.44
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 11:07:08 -0700 (PDT)
-Date:   Tue, 6 Aug 2019 20:07:07 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
-Message-ID: <20190806180707.GC2332@nanopsycho.orion>
-References: <20190802074838.GC2203@nanopsycho>
- <6f05d200-49d4-4eb1-cd69-bd88cf8b0167@gmail.com>
- <20190805055422.GA2349@nanopsycho.orion>
- <796ba97c-9915-9a44-e933-4a7e22aaef2e@gmail.com>
- <20190805144927.GD2349@nanopsycho.orion>
- <566cdf6c-dafc-fb3e-bd94-b75eba3488b5@gmail.com>
- <20190805152019.GE2349@nanopsycho.orion>
- <7200bdbb-2a02-92c6-0251-1c59b159dde7@gmail.com>
- <20190806175323.GB2332@nanopsycho.orion>
- <fc6a7342-246c-2fe1-a7d1-c7be5bd0a3a3@gmail.com>
+        Tue, 06 Aug 2019 11:27:46 -0700 (PDT)
+Date:   Tue, 6 Aug 2019 11:27:17 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiri Pirko <jiri@resnulli.us>, dsahern@gmail.com
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        mkubecek@suse.cz, stephen@networkplumber.org, daniel@iogearbox.net,
+        brouer@redhat.com, eric.dumazet@gmail.com
+Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
+ resource limitations
+Message-ID: <20190806112717.3b070d07@cakuba.netronome.com>
+In-Reply-To: <20190806164036.GA2332@nanopsycho.orion>
+References: <20190806164036.GA2332@nanopsycho.orion>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <fc6a7342-246c-2fe1-a7d1-c7be5bd0a3a3@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 06, 2019 at 07:55:30PM CEST, dsahern@gmail.com wrote:
->On 8/6/19 11:53 AM, Jiri Pirko wrote:
->> Let's figure out the devlink-controlling-kernel-resources thread first.
->> What you describe here is exactly that.
->
->as I mentioned on the phone, any outcome of that thread will be in 5.4
->at best. Meanwhile this breakage in 5.2 and 5.3 needs to be fixed.
+On Tue, 6 Aug 2019 18:40:36 +0200, Jiri Pirko wrote:
+> Hi all.
+> 
+> I just discussed this with DavidA and I would like to bring this to
+> broader audience. David wants to limit kernel resources in network
+> namespaces, for example fibs, fib rules, etc.
+> 
+> He claims that devlink api is rich enough to program this limitations
+> as it already does for mlxsw hw resources for example. 
 
-Why? netdevsim is a dummy device, the purpose of existence is to test
-kernel api. No real harm breaking it.
+TBH I don't see how you changed anything to do with FIB notifications,
+so the fact that the accounting is off now is a bit confusing. I don't
+understand how devlink, FIB and namespaces mix :(
+
+> If we have this api for hardware, why don't to reuse it for the
+> kernel and it's resources too?
+
+IMHO the netdevsim use of this API is a slight abuse, to prove the
+device can fail the FIB changes, nothing more..
+
+> So the proposal is to have some new device, say "kernelnet", that
+> would implicitly create per-namespace devlink instance. This devlink
+> instance would be used to setup resource limits. Like:
+> 
+> devlink resource set kernelnet path /IPv4/fib size 96
+> devlink -N ns1name resource set kernelnet path /IPv6/fib size 100
+> devlink -N ns2name resource set kernelnet path /IPv4/fib-rules size 8
+> 
+> To me it sounds a bit odd for kernel namespace to act as a device, but
+> thinking about it more, it makes sense. Probably better than to define
+> a new api. User would use the same tool to work with kernel and hw.
+> 
+> Also we can implement other devlink functionality, like dpipe.
+> User would then have visibility of network pipeline, tables,
+> utilization, etc. It is related to the resources too.
+> 
+> What do you think?
+
+I'm no expert here but seems counter intuitive that device tables would
+be aware of namespaces in the first place. Are we not reinventing
+cgroup controllers based on a device API? IMHO from a perspective of
+someone unfamiliar with routing offload this seems backwards :)
