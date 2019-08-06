@@ -2,81 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4ABB382EE8
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 11:42:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 480B182F2C
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 12:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732312AbfHFJmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 05:42:32 -0400
-Received: from correo.us.es ([193.147.175.20]:42522 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732079AbfHFJmc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 05:42:32 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id BAB91F26F8
-        for <netdev@vger.kernel.org>; Tue,  6 Aug 2019 11:42:28 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id AD604A58B
-        for <netdev@vger.kernel.org>; Tue,  6 Aug 2019 11:42:28 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 8DBEF1150DD; Tue,  6 Aug 2019 11:42:28 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 6C684DA704;
-        Tue,  6 Aug 2019 11:42:26 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 06 Aug 2019 11:42:26 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (149.103.108.93.rev.vodafone.pt [93.108.103.149])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id D63E84265A31;
-        Tue,  6 Aug 2019 11:42:25 +0200 (CEST)
-Date:   Tue, 6 Aug 2019 11:42:19 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, marcelo.leitner@gmail.com,
-        jiri@resnulli.us, wenxu@ucloud.cn, saeedm@mellanox.com,
-        paulb@mellanox.com, gerlitz.or@gmail.com
-Subject: Re: [PATCH net 0/2] flow_offload hardware priority fixes
-Message-ID: <20190806094219.uwpjjsqkpf5rdi6d@salvia>
-References: <20190801112817.24976-1-pablo@netfilter.org>
- <20190801172014.314a9d01@cakuba.netronome.com>
- <20190802110023.udfcxowe3vmihduq@salvia>
- <20190802134738.328691b4@cakuba.netronome.com>
- <20190802220409.klwdkcvjgegz6hj2@salvia>
- <20190802152549.357784a7@cakuba.netronome.com>
- <20190803070854.zb3nvwj4ubx2mzy6@salvia>
- <20190805120439.40d70cee@cakuba.netronome.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190805120439.40d70cee@cakuba.netronome.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1732443AbfHFKAy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 06:00:54 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:40137 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732262AbfHFKAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 06:00:54 -0400
+Received: by mail-yb1-f194.google.com with SMTP id j6so212196ybm.7
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 03:00:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=ss7tfuNN9gph1p4XOsDIlLKrMAe3sezcu2lcCyG5PrA=;
+        b=llzpCKvfTJg9zx4WGbK3W8ELlbZszVisTWmKs2WgL7/QVGUzVblcBslqpxo6sHvB/2
+         XTxuH6yt7Pqho2/Dk3XQRm5ssQG4b0J5+VL1WLv3DvEuC4iWmLQBmcnIeEYbnhvQAS3d
+         OaDIu3c8mjZ3MaC87uEx1ICI53UwFJn//mcEAXmhA1PI1HBLTuGVvr28BI74d7+vKFK8
+         g8I+2D4tta/rMVSZZQJJDzvZToRr0JlJ0xd4r32m0Z7Y3QGdloZvUkRz4PwUMa4SBbTJ
+         ReTDwAvbKrd4coRI8s0r8TqxVgUjPfsoTdlSM5oAL4w7ndmTwVVuizbrsn36eLs160LV
+         Gc3A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=ss7tfuNN9gph1p4XOsDIlLKrMAe3sezcu2lcCyG5PrA=;
+        b=biTvN5Ae1SNxhGaShg1gam5ucoti4QQn8/GpZ4BVx3GJBirvppdT2RWdj4RY55Mrkn
+         26t7lT4Yc/UWcbD1j94N1AsEL3gWFJ9RKKL02XPEQGL3kTgV+B0/z4SmI745Afo/URi3
+         unfc7xUEJIVUT5+GXHDu9xmumf5+wKNPWb8BDez5BalsZ7s5fWDSeXLHIhWbNHOxjtSk
+         xLWic9tDgMEykFNSPJqUqF0W7XOa/2QR7Bz1RRlCf9DuatoMrEgZyUxnMu3sSlrViS+H
+         LSCB/8bMJ3SZ1gFd4YiPWeEiduNSwAhlbDl0l9Swmtdb8qs20M7CrPzacjzeTTuoiHOV
+         Vg0w==
+X-Gm-Message-State: APjAAAWAkj7Kk9EkSQC4zuEGp2h+x+fDhYI4/cff4lm/LmpFfR81hsLP
+        NHcoUjoKjQeRBePfC6lZfUqY7g==
+X-Google-Smtp-Source: APXvYqzW3wsw6yhTMacboTuQrkHBN1nGm4i1ke3WRJqGdu22UVLlanKhTbvJJsUeyrKaTw/x/WIwAA==
+X-Received: by 2002:a25:2005:: with SMTP id g5mr1786698ybg.410.1565085653130;
+        Tue, 06 Aug 2019 03:00:53 -0700 (PDT)
+Received: from localhost.localdomain (li1322-146.members.linode.com. [45.79.223.146])
+        by smtp.gmail.com with ESMTPSA id h12sm18316685ywm.91.2019.08.06.03.00.42
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 03:00:51 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Russell King <linux@armlinux.org.uk>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH v2 0/3] arm/arm64: Add support for function error injection
+Date:   Tue,  6 Aug 2019 18:00:12 +0800
+Message-Id: <20190806100015.11256-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 05, 2019 at 12:04:39PM -0700, Jakub Kicinski wrote:
-> On Sat, 3 Aug 2019 09:08:54 +0200, Pablo Neira Ayuso wrote:
-> > The idea is that every subsystem (ethtool, tc, nf) sets up/binds its
-> > own flow_block object. And each flow_block object has its own priority
-> > range space. So whatever priority the user specifies only applies to
-> > the specific subsystem.
-> 
-> Right, okay so that part is pretty obvious but thanks for spelling it
-> out. 
-> 
-> Are you also agreeing that priorities of blocks, not rules within 
-> a block are dictated by the order of processing within the kernel?
-> IOW TC blocks are _always_ before nft blocks?
+This small patch set is to add support for function error injection;
+this can be used to eanble more advanced debugging feature, e.g.
+CONFIG_BPF_KPROBE_OVERRIDE.
 
-yes.
+The patch 01/03 is to consolidate the function definition which can be
+suared cross architectures, patches 02,03/03 are used for enabling
+function error injection on arm64 and arm architecture respectively.
+
+I tested on arm64 platform Juno-r2 and one of my laptop with x86
+architecture with below steps; I don't test for Arm architecture so
+only pass compilation.
+
+- Enable kernel configuration:
+  CONFIG_BPF_KPROBE_OVERRIDE
+  CONFIG_BTRFS_FS
+  CONFIG_BPF_EVENTS=y
+  CONFIG_KPROBES=y
+  CONFIG_KPROBE_EVENTS=y
+  CONFIG_BPF_KPROBE_OVERRIDE=y
+
+- Build samples/bpf on with Debian rootFS:
+  # cd $kernel
+  # make headers_install
+  # make samples/bpf/ LLC=llc-7 CLANG=clang-7
+
+- Run the sample tracex7:
+  # dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1
+  # DEVICE=$(losetup --show -f testfile.img)
+  # mkfs.btrfs -f $DEVICE
+  # ./tracex7 testfile.img
+  [ 1975.211781] BTRFS error (device (efault)): open_ctree failed
+  mount: /mnt/linux-kernel/linux-cs-dev/samples/bpf/tmpmnt: mount(2) system call failed: Cannot allocate memory.
+
+Changes from v1:
+* Consolidated the function definition into asm-generic header (Will);
+* Used APIs to access pt_regs elements (Will);
+* Fixed typos in the comments (Will).
+
+
+Leo Yan (3):
+  error-injection: Consolidate override function definition
+  arm64: Add support for function error injection
+  arm: Add support for function error injection
+
+ arch/arm/Kconfig                           |  1 +
+ arch/arm/include/asm/ptrace.h              |  5 +++++
+ arch/arm/lib/Makefile                      |  2 ++
+ arch/arm/lib/error-inject.c                | 19 +++++++++++++++++++
+ arch/arm64/Kconfig                         |  1 +
+ arch/arm64/include/asm/ptrace.h            |  5 +++++
+ arch/arm64/lib/Makefile                    |  2 ++
+ arch/arm64/lib/error-inject.c              | 18 ++++++++++++++++++
+ arch/powerpc/include/asm/error-injection.h | 13 -------------
+ arch/x86/include/asm/error-injection.h     | 13 -------------
+ include/asm-generic/error-injection.h      |  6 ++++++
+ include/linux/error-injection.h            |  6 +++---
+ 12 files changed, 62 insertions(+), 29 deletions(-)
+ create mode 100644 arch/arm/lib/error-inject.c
+ create mode 100644 arch/arm64/lib/error-inject.c
+ delete mode 100644 arch/powerpc/include/asm/error-injection.h
+ delete mode 100644 arch/x86/include/asm/error-injection.h
+
+-- 
+2.17.1
+
