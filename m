@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 20294839FA
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:02:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8692483A10
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:11:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726301AbfHFUCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 16:02:40 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:40000 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbfHFUCk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:02:40 -0400
-Received: by mail-ot1-f68.google.com with SMTP id l15so38386698oth.7;
-        Tue, 06 Aug 2019 13:02:39 -0700 (PDT)
+        id S1726118AbfHFULw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 16:11:52 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:35751 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725881AbfHFULw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:11:52 -0400
+Received: by mail-oi1-f196.google.com with SMTP id a127so68428730oii.2;
+        Tue, 06 Aug 2019 13:11:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gqjViCXObN2WgC0+IhrtTb7Ll35AmMVzauFcMWGTI3Y=;
-        b=g6geZrRSw1Dk72HeV3MeqgqDiCymOKGzorDS9kcJv2KYasDx9IRJzWdUCQ5iz/Ck/a
-         sMOqtrYcPYFkeOtOkh3EZ6BQOFZFtjfX4FeNaR7psKg3xzJZZT2HZI2UO45VHTO99KCa
-         5DJfIPEVo7ChrD9UA9ksvW4WKmWAYqfMY6fVOBsARhj6ITM/Y954KCB64DT/86RovKv+
-         v3izTjlAuvKv3KGD3bthq9dyPH36SX8i7m0+F89SRk5FQznew6pgkuE+/KIjfgWA0K30
-         KRvE8YQ5YyG26Sgb8bPl/FmaHp9h4HQXgX6WZJSlRti8akUyiqMHCDslkE+F9DWvSgMq
-         +SWA==
+        bh=L9+cVJ1tHnXHLgWnIFc8trRPYs0ZvKQBrpOrQ/JACNw=;
+        b=sIXKlKnGMf3/x5UdpiL2krma7wQpwGLW+fNiBVYGuAg+enmNapJrdHJOK3Oz6VrG4S
+         uyrECxK7aeBd7o3/uEp8bWKsib3jCFom0hef5aSfRgnTGDHYO+nZABn6EpZoOfS//Di8
+         K3J2QiIPIqO43WOsFkM/9MS+hFVl0vY7nLlRLOOOT38bOre68X6M4+VE7+iryhYTkoWH
+         +iIcdRhzuCzCJXfZ2RI2EC7lMHdMYNFg0AFO6lRZgQWTJRQOF+px3mavO28/a1fqiwMl
+         zIzP3jFzckC9iAiQ+eeHYXmFqjmRtbWUw99s2dPsWL3ujUbHxrOx7r/gJGbY7a2vzl0c
+         vmCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gqjViCXObN2WgC0+IhrtTb7Ll35AmMVzauFcMWGTI3Y=;
-        b=DAVKmvYCat5Dj/ruLiTDzFFuhZq4kak1ETB6I0A26uw55TdS6uBJmEri64wRgyHQVs
-         GN0Hy5n4PPvA4kEaPHcBmPMzYLhiipyLt5cVtdtxMbMaA5/o5SReiskWf1eMKNW0iPH1
-         e4DwW70VB23KpGrgxdaSpWb29r9f194r6Ro7GM7esYhQ0u0xEquCc8jXCfeKeAqWU8rL
-         QHTybgeHsj6D1htR0yXbCfmlDtKElfBibDqXLIv4CfekibAMhtjmTZ3r04tBCHWvTopq
-         yXqopfEBABpB5N5VkeK5JNRcYTvhc2ynumq8hJR0CH5cmo0QtomaTzLcDwfnVnVl0N6f
-         1IVw==
-X-Gm-Message-State: APjAAAUv/enkbaZmdiOEMTkClH/qX+lO8nl3kZrRCiqzEPZP78AwDiNv
-        C4f3UQG58s/Izj9E+KwZXS+RfZRthcf/rEJWTYc=
-X-Google-Smtp-Source: APXvYqxUZRrA60vyMd0kzSQ4htAnblGQWHtpdj5jgj0q6G1y1gZxQTbe74lzuUCM09PKJHet7o8XCRwQJqJO6Q95G/0=
-X-Received: by 2002:a5d:9942:: with SMTP id v2mr5555846ios.177.1565121759065;
- Tue, 06 Aug 2019 13:02:39 -0700 (PDT)
+        bh=L9+cVJ1tHnXHLgWnIFc8trRPYs0ZvKQBrpOrQ/JACNw=;
+        b=csWeasVMoCS7SXc4EKv854JGcrPKsKac/IlS3oSQQa87YP3HCdVRG1SPJwlUbXInuo
+         zhVHI4l65PLNKF4UrDJHdpgotD/ixnRf5J1PW1GN4AJhcKwq3/ntYeIVGJd3DK5tOSfG
+         2XlNEyskSEzLABHCqJ4i88oJV0T+Lv7Y5FjP1bm/2Mv/P80Jl69tv7g46fv3uTBEz7ry
+         3WYUzw1MnvCzWYHYqWEqLN2t8+Nkly86kXGjCKnXFOl/TAQiWEShYNgAQCaoBQK6tOev
+         Z5HBGE9R8yl94BHII6ZL67PDQ+PipWTuJGvimADPbJ+3QOFIFXvoNeljJXOWnfRq0hWW
+         PRAw==
+X-Gm-Message-State: APjAAAWhV8d3ZVSZDozyfK2n5PHUgeM7DFK0J/jbB5ohQDsZ3NANhb1i
+        3cJZnBO2FXb569Vxa1LkOkicqPQxmR2EdaCScMQ=
+X-Google-Smtp-Source: APXvYqzgWKoM+BMJTliT2FhYuhnnw0Sff1jkVm8UFW2f3OncWRNYvDy3QFieh0lskdwjWmdDcfZrqUQTJBiO+gLmuHM=
+X-Received: by 2002:a05:6638:c8:: with SMTP id w8mr6365741jao.52.1565122310484;
+ Tue, 06 Aug 2019 13:11:50 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-6-arnd@arndb.de>
-In-Reply-To: <20190731195713.3150463-6-arnd@arndb.de>
+References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-8-arnd@arndb.de>
+In-Reply-To: <20190731195713.3150463-8-arnd@arndb.de>
 From:   Sylvain Lemieux <slemieux.tyco@gmail.com>
-Date:   Tue, 6 Aug 2019 16:02:27 -0400
-Message-ID: <CA+rxa6p4gD7+6-aRyd4-V4TvkyMiUh9ueMLc6ggBaDC=LG7fQg@mail.gmail.com>
-Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
+Date:   Tue, 6 Aug 2019 16:11:38 -0400
+Message-ID: <CA+rxa6pcw7une0YUyMd1ZxUpcAqRRqZHcEUXxTYuscmpDUsCuQ@mail.gmail.com>
+Subject: Re: [PATCH 07/14] net: lpc-enet: move phy setup into platform code
 To:     Arnd Bergmann <arnd@arndb.de>
 Cc:     soc@kernel.org,
         "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
@@ -54,7 +54,6 @@ Cc:     soc@kernel.org,
         Russell King <linux@armlinux.org.uk>,
         Gregory Clement <gregory.clement@bootlin.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Jason Cooper <jason@lakedaemon.net>,
         Andrew Lunn <andrew@lunn.ch>,
         Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
@@ -66,7 +65,6 @@ Cc:     soc@kernel.org,
         Networking <netdev@vger.kernel.org>,
         linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
         LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
@@ -74,60 +72,103 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
-
-On Wed, Jul 31, 2019 at 4:00 PM Arnd Bergmann <arnd@arndb.de> wrote:
+On Wed, Jul 31, 2019 at 4:01 PM Arnd Bergmann <arnd@arndb.de> wrote:
 >
-> The driver uses hardwire MMIO addresses instead of the data
-> that is passed in device tree. Change it over to only
-> hardcode the register offset values and allow compile-testing.
+> Setting the phy mode requires touching a platform specific
+> register, which prevents us from building the driver without
+> its header files.
+>
+> Move it into a separate function in arch/arm/mach/lpc32xx
+> to hide the core registers from the network driver.
 >
 > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 > ---
->  drivers/gpio/Kconfig        |  8 +++++
->  drivers/gpio/Makefile       |  2 +-
->  drivers/gpio/gpio-lpc32xx.c | 63 ++++++++++++++++++++++++-------------
->  3 files changed, 50 insertions(+), 23 deletions(-)
+>  arch/arm/mach-lpc32xx/common.c       | 12 ++++++++++++
+>  drivers/net/ethernet/nxp/lpc_eth.c   | 12 +-----------
+>  include/linux/soc/nxp/lpc32xx-misc.h |  5 +++++
+>  3 files changed, 18 insertions(+), 11 deletions(-)
 >
-[...]
-
-> diff --git a/drivers/gpio/gpio-lpc32xx.c b/drivers/gpio/gpio-lpc32xx.c
-> index 24885b3db3d5..548f7cb69386 100644
-> --- a/drivers/gpio/gpio-lpc32xx.c
-> +++ b/drivers/gpio/gpio-lpc32xx.c
-
-[...]
-
-> @@ -498,6 +509,10 @@ static int lpc32xx_gpio_probe(struct platform_device *pdev)
+> diff --git a/arch/arm/mach-lpc32xx/common.c b/arch/arm/mach-lpc32xx/common.c
+> index f648324d5fb4..a475339333c1 100644
+> --- a/arch/arm/mach-lpc32xx/common.c
+> +++ b/arch/arm/mach-lpc32xx/common.c
+> @@ -63,6 +63,18 @@ u32 lpc32xx_return_iram(void __iomem **mapbase, dma_addr_t *dmaaddr)
+>  }
+>  EXPORT_SYMBOL_GPL(lpc32xx_return_iram);
+>
+> +void lpc32xx_set_phy_interface_mode(phy_interface_t mode)
+> +{
+> +       u32 tmp = __raw_readl(LPC32XX_CLKPWR_MACCLK_CTRL);
+> +       tmp &= ~LPC32XX_CLKPWR_MACCTRL_PINS_MSK;
+> +       if (mode == PHY_INTERFACE_MODE_MII)
+> +               tmp |= LPC32XX_CLKPWR_MACCTRL_USE_MII_PINS;
+> +       else
+> +               tmp |= LPC32XX_CLKPWR_MACCTRL_USE_RMII_PINS;
+> +       __raw_writel(tmp, LPC32XX_CLKPWR_MACCLK_CTRL);
+> +}
+> +EXPORT_SYMBOL_GPL(lpc32xx_set_phy_interface_mode);
+> +
+>  static struct map_desc lpc32xx_io_desc[] __initdata = {
+>         {
+>                 .virtual        = (unsigned long)IO_ADDRESS(LPC32XX_AHB0_START),
+> diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
+> index bcdd0adcfb0c..0893b77c385d 100644
+> --- a/drivers/net/ethernet/nxp/lpc_eth.c
+> +++ b/drivers/net/ethernet/nxp/lpc_eth.c
+> @@ -20,9 +20,6 @@
+>  #include <linux/spinlock.h>
+>  #include <linux/soc/nxp/lpc32xx-misc.h>
+>
+> -#include <mach/hardware.h>
+> -#include <mach/platform.h>
+> -
+>  #define MODNAME "lpc-eth"
+>  #define DRV_VERSION "1.00"
+>
+> @@ -1237,16 +1234,9 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
+>         dma_addr_t dma_handle;
+>         struct resource *res;
+>         int irq, ret;
+> -       u32 tmp;
+>
+>         /* Setup network interface for RMII or MII mode */
+> -       tmp = __raw_readl(LPC32XX_CLKPWR_MACCLK_CTRL);
+> -       tmp &= ~LPC32XX_CLKPWR_MACCTRL_PINS_MSK;
+> -       if (lpc_phy_interface_mode(dev) == PHY_INTERFACE_MODE_MII)
+> -               tmp |= LPC32XX_CLKPWR_MACCTRL_USE_MII_PINS;
+> -       else
+> -               tmp |= LPC32XX_CLKPWR_MACCTRL_USE_RMII_PINS;
+> -       __raw_writel(tmp, LPC32XX_CLKPWR_MACCLK_CTRL);
+> +       lpc32xx_set_phy_interface_mode(lpc_phy_interface_mode(dev));
+>
+>         /* Get platform resources */
+>         res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> diff --git a/include/linux/soc/nxp/lpc32xx-misc.h b/include/linux/soc/nxp/lpc32xx-misc.h
+> index f232e1a1bcdc..af4f82f6cf3b 100644
+> --- a/include/linux/soc/nxp/lpc32xx-misc.h
+> +++ b/include/linux/soc/nxp/lpc32xx-misc.h
+> @@ -9,9 +9,11 @@
+>  #define __SOC_LPC32XX_MISC_H
+>
+>  #include <linux/types.h>
+> +#include <linux/phy.h>
+>
+>  #ifdef CONFIG_ARCH_LPC32XX
+>  extern u32 lpc32xx_return_iram(void __iomem **mapbase, dma_addr_t *dmaaddr);
+> +extern void lpc32xx_set_phy_interface_mode(phy_interface_t mode);
+>  #else
+>  static inline u32 lpc32xx_return_iram(void __iomem **mapbase, dma_addr_t *dmaaddr)
 >  {
->         int i;
+> @@ -19,6 +21,9 @@ static inline u32 lpc32xx_return_iram(void __iomem **mapbase, dma_addr_t *dmaadd
+>         *dmaaddr = 0;
+>         return 0;
+>  }
+> +static inline void lpc32xx_set_phy_interface_mode(phy_interface_t mode)
+> +{
+> +}
+>  #endif
 >
-> +       gpio_reg_base = devm_platform_ioremap_resource(pdev, 0);
-> +       if (gpio_reg_base)
-> +               return -ENXIO;
-
-The probe function will always return an error.
-Please replace the previous 2 lines with:
-    if (IS_ERR(gpio_reg_base))
-        return PTR_ERR(gpio_reg_base);
-
-You can add my acked-by and tested-by in the v2 patch.
-Acked-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
-Tested-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
-
-> +
->         for (i = 0; i < ARRAY_SIZE(lpc32xx_gpiochip); i++) {
->                 if (pdev->dev.of_node) {
->                         lpc32xx_gpiochip[i].chip.of_xlate = lpc32xx_of_xlate;
-> @@ -527,3 +542,7 @@ static struct platform_driver lpc32xx_gpio_driver = {
->  };
->
->  module_platform_driver(lpc32xx_gpio_driver);
-> +
-> +MODULE_AUTHOR("Kevin Wells <kevin.wells@nxp.com>");
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("GPIO driver for LPC32xx SoC");
+>  #endif  /* __SOC_LPC32XX_MISC_H */
 > --
 > 2.20.0
 >
-Sylvain
