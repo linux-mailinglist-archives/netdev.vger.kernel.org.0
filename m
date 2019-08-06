@@ -2,61 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41B4783AD7
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 23:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E1083AE7
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 23:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726812AbfHFVMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 17:12:03 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38648 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726016AbfHFVMD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 17:12:03 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Fc00WBtovQWbwYWrsv1JjCYQajV6WgZsSgkyMDMnwmQ=; b=nTAloYe1jHjKOUvI8oG2rVCIuf
-        8l0QzmynOpMgso4HVgULgT1ngDM6pxm2PaZwe6/I4rGXxRJtv/BuI6QaEqL0nx8AZF4hjOca8WKp3
-        zt9197AHBXJBBbLXaCcBbTTxv9g2WL915ObwC6YRRnDzeHLbT4ufKAOgXc0vW+H/P79c=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hv6kO-0008KH-GQ; Tue, 06 Aug 2019 23:11:56 +0200
-Date:   Tue, 6 Aug 2019 23:11:56 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tao Ren <taoren@fb.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
-Subject: Re: [PATCH net-next] net: phy: modify assignment to OR for dev_flags
- in phy_attach_direct
-Message-ID: <20190806211156.GD29142@lunn.ch>
-References: <20190805185551.3140564-1-taoren@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190805185551.3140564-1-taoren@fb.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726686AbfHFVPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 17:15:08 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49932 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfHFVPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 17:15:08 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 6206812B02594;
+        Tue,  6 Aug 2019 14:15:07 -0700 (PDT)
+Date:   Tue, 06 Aug 2019 14:15:06 -0700 (PDT)
+Message-Id: <20190806.141506.1823070920831784903.davem@davemloft.net>
+To:     xiaojiangfeng@huawei.com
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        leeyou.li@huawei.com, xiaowei774@huawei.com, nixiaoming@huawei.com
+Subject: Re: [PATCH v1 0/3] net: hisilicon: Fix a few problems with
+ hip04_eth
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1564835501-90257-1-git-send-email-xiaojiangfeng@huawei.com>
+References: <1564835501-90257-1-git-send-email-xiaojiangfeng@huawei.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 06 Aug 2019 14:15:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 05, 2019 at 11:55:51AM -0700, Tao Ren wrote:
-> Modify the assignment to OR when dealing with phydev->dev_flags in
-> phy_attach_direct function, and this is to make sure dev_flags set in
-> driver's probe callback won't be lost.
-> 
-> Suggested-by: Andrew Lunn <andrew@lunn.ch>
-> CC: Heiner Kallweit <hkallweit1@gmail.com>
-> CC: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: Tao Ren <taoren@fb.com>
+From: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+Date: Sat, 3 Aug 2019 20:31:38 +0800
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> During the use of the hip04_eth driver,
+> several problems were found,
+> which solved the hip04_tx_reclaim reentry problem,
+> fixed the problem that hip04_mac_start_xmit never
+> returns NETDEV_TX_BUSY
+> and the dma_map_single failed on the arm64 platform.
 
-    Andrew
+Series applied.
