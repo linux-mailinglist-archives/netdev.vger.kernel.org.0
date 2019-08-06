@@ -2,130 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 587148329F
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:21:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFE26832D0
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:37:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732515AbfHFNUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 09:20:55 -0400
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:34621 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726713AbfHFNUx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:20:53 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 81F8C22053;
-        Tue,  6 Aug 2019 09:20:52 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 06 Aug 2019 09:20:52 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=0u0RvWU/+7jTEu054RW35SK2EQxavoI04ceavZ1WbBw=; b=MmpRcgnZ
-        OOknHkmhdN8nLLkNox4QEyC/toJ5cxE18SpmpyrwS2cF6DlsYd5vLrMDAfPJ0dux
-        TRYJ1V/C6SMGZaHFnhRmmrzRUP3ISCmYwS/jqjVhd1c8e7p0W1gS4DKLArJLe/H5
-        406Q9kfC/DB/in35VW4++usN9OJ+9JjjMsYm218Z8DAhjlWavyGsqQOqDq/0qgyW
-        8ZqZAYRp7xFYPl91JMGuvkkfLVvm7+mB0dI5BSD4xBprPSiqGLWvwVF8d3VcHP4G
-        izLPeQ+EMPp9k5D4CwlV2XnbmC9uxpQDtgXF8WxXYqkDiRdSZRjTJXtSPINExnBx
-        TZ8eyo6yf+PMtw==
-X-ME-Sender: <xms:tH5JXdIEKm8Zb8-rPv67oBzynNhUz1aNZ3WgzrXjEn-IT3pAOmfPsA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddutddgiedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpedt
-X-ME-Proxy: <xmx:tH5JXeqvL0ve6uSgNNPHAryKQi3HGBQKn-gkgJfI6JYGp34iYSRFRQ>
-    <xmx:tH5JXYaMlA1FrNjNxaJsVSUQ3MZAFKd-81mGsfFw130ipPtQDWK-Ow>
-    <xmx:tH5JXby4Nv7J5ndaxJZM4lBGXJjPg2TWxWzwtrc4xdI7kJgm_FH2ZQ>
-    <xmx:tH5JXZfLgwfjInWvMW4edyEBKy_yO7Ir87RKV2H4omeCmGagx_q1-A>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A25C880063;
-        Tue,  6 Aug 2019 09:20:50 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nhorman@tuxdriver.com, toke@redhat.com,
-        jiri@mellanox.com, dsahern@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 6/6] drop_monitor: Use pre_doit / post_doit hooks
-Date:   Tue,  6 Aug 2019 16:19:56 +0300
-Message-Id: <20190806131956.26168-7-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190806131956.26168-1-idosch@idosch.org>
-References: <20190806131956.26168-1-idosch@idosch.org>
+        id S1731482AbfHFNhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 09:37:07 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:46801 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729993AbfHFNhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:37:07 -0400
+Received: by mail-qk1-f194.google.com with SMTP id r4so62758582qkm.13
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 06:37:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+EmwYezlru/6l1RGke6OfmjMerhgmwmHntHPbq6+2AE=;
+        b=Ga6Bk2fCtPBmDGllBOHtkR7x/VhBjSoC/2H3s5WQ0MYVuOjcjzYKXTLr5x+OrfQaXt
+         H8r9rk8fk0hyPwWN5eM7JYaLwbdWep9e5XH/71aquail3aDnqGA8TGQMgV8KLxsFnd2f
+         bkKJ25Gs5H9Oer3kPdmu0JKWdAExp0bey4dJyAnPeaGYTPNY+8qdNQOVjDlUB3cesoCf
+         nlUSwgxGB4tyy2n8Wfi7LO81dTzFvtMDzLnC5e7eqGlvvbYe1lnHj3d0ZjyaVtDNE/up
+         9yui0GN68I5pU4rBnCJJK8tNRp/1YaprJSxsXei0BHM/2ojgDaEuWygG4ZNglyXX6Bzc
+         Y48w==
+X-Gm-Message-State: APjAAAUnGl4DaRzAgz7lujOKS9iHnP8mBubyDtF1VVGo6B2e1PSmQhTg
+        zPNNWFilXGJ3tsrMJmmwFk5TRw==
+X-Google-Smtp-Source: APXvYqwQogResfBtEcBuAcFTuCtTWGzeNFF/0eeIOxkxJPkA8JpnI8WBDTcUIzFbb3AvBDILVnFfYQ==
+X-Received: by 2002:ae9:efc6:: with SMTP id d189mr2946499qkg.323.1565098625407;
+        Tue, 06 Aug 2019 06:37:05 -0700 (PDT)
+Received: from redhat.com ([147.234.38.1])
+        by smtp.gmail.com with ESMTPSA id q73sm24068906qke.90.2019.08.06.06.37.01
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 06:37:04 -0700 (PDT)
+Date:   Tue, 6 Aug 2019 09:36:58 -0400
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+Message-ID: <20190806093633-mutt-send-email-mst@kernel.org>
+References: <a3bde826-6329-68e4-2826-8a9de4c5bd1e@redhat.com>
+ <20190801141512.GB23899@ziepe.ca>
+ <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
+ <20190802124613.GA11245@ziepe.ca>
+ <20190802100414-mutt-send-email-mst@kernel.org>
+ <20190802172418.GB11245@ziepe.ca>
+ <20190803172944-mutt-send-email-mst@kernel.org>
+ <20190804001400.GA25543@ziepe.ca>
+ <20190804040034-mutt-send-email-mst@kernel.org>
+ <20190806115317.GA11627@ziepe.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190806115317.GA11627@ziepe.ca>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Tue, Aug 06, 2019 at 08:53:17AM -0300, Jason Gunthorpe wrote:
+> On Sun, Aug 04, 2019 at 04:07:17AM -0400, Michael S. Tsirkin wrote:
+> > > > > Also, why can't this just permanently GUP the pages? In fact, where
+> > > > > does it put_page them anyhow? Worrying that 7f466 adds a get_user page
+> > > > > but does not add a put_page??
+> > > 
+> > > You didn't answer this.. Why not just use GUP?
+> > > 
+> > > Jason
+> > 
+> > Sorry I misunderstood the question. Permanent GUP breaks lots of
+> > functionality we need such as THP and numa balancing.
+> 
+> Really? It doesn't look like that many pages are involved..
+> 
+> Jason
 
-Each operation from user space should be protected by the global drop
-monitor mutex. Use the pre_doit / post_doit hooks to take / release the
-lock instead of doing it explicitly in each function.
+Yea. But they just might happen to be heavily accessed ones....
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
----
- net/core/drop_monitor.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
-
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 1d463c0d4bc5..4deb86f990f1 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -247,12 +247,9 @@ static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
- 	struct dm_hw_stat_delta *new_stat = NULL;
- 	struct dm_hw_stat_delta *temp;
- 
--	mutex_lock(&net_dm_mutex);
--
- 	if (state == trace_state) {
- 		NL_SET_ERR_MSG_MOD(extack, "Trace state already set to requested state");
--		rc = -EAGAIN;
--		goto out_unlock;
-+		return -EAGAIN;
- 	}
- 
- 	switch (state) {
-@@ -296,9 +293,6 @@ static int set_all_monitor_traces(int state, struct netlink_ext_ack *extack)
- 	else
- 		rc = -EINPROGRESS;
- 
--out_unlock:
--	mutex_unlock(&net_dm_mutex);
--
- 	return rc;
- }
- 
-@@ -380,10 +374,26 @@ static const struct genl_ops dropmon_ops[] = {
- 	},
- };
- 
-+static int net_dm_nl_pre_doit(const struct genl_ops *ops,
-+			      struct sk_buff *skb, struct genl_info *info)
-+{
-+	mutex_lock(&net_dm_mutex);
-+
-+	return 0;
-+}
-+
-+static void net_dm_nl_post_doit(const struct genl_ops *ops,
-+				struct sk_buff *skb, struct genl_info *info)
-+{
-+	mutex_unlock(&net_dm_mutex);
-+}
-+
- static struct genl_family net_drop_monitor_family __ro_after_init = {
- 	.hdrsize        = 0,
- 	.name           = "NET_DM",
- 	.version        = 2,
-+	.pre_doit	= net_dm_nl_pre_doit,
-+	.post_doit	= net_dm_nl_post_doit,
- 	.module		= THIS_MODULE,
- 	.ops		= dropmon_ops,
- 	.n_ops		= ARRAY_SIZE(dropmon_ops),
 -- 
-2.21.0
-
+MST
