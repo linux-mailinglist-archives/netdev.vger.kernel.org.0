@@ -2,122 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BE9F8298D
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 04:17:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7588C829D0
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 04:59:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731430AbfHFCRw convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Aug 2019 22:17:52 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:25988 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731387AbfHFCRv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 22:17:51 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x762GZlq026250
-        for <netdev@vger.kernel.org>; Mon, 5 Aug 2019 19:17:50 -0700
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 2u6tc8984h-3
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 19:17:50 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 5 Aug 2019 19:17:49 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 9CA027601A6; Mon,  5 Aug 2019 19:17:48 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH v2 bpf-next 2/2] selftests/bpf: add loop test 5
-Date:   Mon, 5 Aug 2019 19:17:44 -0700
-Message-ID: <20190806021744.2953168-3-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20190806021744.2953168-1-ast@kernel.org>
-References: <20190806021744.2953168-1-ast@kernel.org>
+        id S1730578AbfHFC6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 22:58:54 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39203 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728870AbfHFC6y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 22:58:54 -0400
+Received: by mail-pg1-f196.google.com with SMTP id u17so40745349pgi.6;
+        Mon, 05 Aug 2019 19:58:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OP571MLOJXrBJR5+BZYEU+h3Wt/jQutz4ivmeaED6uU=;
+        b=qICSlFRQ4V3wq9jdxCbZc9He72e7ayplvCa0x3Qgsg4rWjCPPCTlOTZQBePitd7HKk
+         3OY5ZNCE3BHjCNLMCCp259Q7U2p3mvPntDS0vhRFvIHCey5c83N9UQdHbdsr9teTdTU6
+         cLmHfnih1BurvoKbR3aABa0gCMxJYhBC1jKWAy0VuAUQlDKpo39Aeew0zTQ40tOag4Fj
+         t4agHKSU1JHsMLDZYa+7C9nFelJ4xa+elcqcRjkQgq10HdpsyAbzI2Q/qQh7C5AbZ+Y4
+         w+jclA6sI6RD2C7DGlRzWPv9LatsaJk1rX/dzD217QidV/MQ48w8e3djzBinxWPA5PRH
+         K6iA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=OP571MLOJXrBJR5+BZYEU+h3Wt/jQutz4ivmeaED6uU=;
+        b=MVTHEtRYBSqmPEKnet5DpbpMVy0IvZceCfQn4Esf/g7fYgZsX8APkalELpweDUJI4N
+         xAH80wALt1auMx+eJeR3vNXe7OTF2iC6N4vp196NmT/Sf5QiIJQSi9zpikYnsB+oD/GU
+         HnFcjY6CJvuBWh62Rti9oRcR1Ivn/b+1AAaJ0VMgvoykqPU1FtNy3w+/eUplysVOR6/1
+         fl/PSGuYZfh3K6cQucpc9tXM46HpuiHeAmZqCCpFhH9qMhS/9vPxNT4WxMCKjgYIK7SI
+         a8xGTPF9QMF3jKBh10z9qNwVVFEprlBtTD+JlAWqCcpQjph0BruOLBsr3BeaOeV8PVku
+         Dz8g==
+X-Gm-Message-State: APjAAAVKYi/BVCqWXTj8x3D3RQoKXCNpn4AEXMViXuf3Pt/OOdSx+Tv2
+        zeHeiBRwsQN/CnJnWl/X4OA=
+X-Google-Smtp-Source: APXvYqwTUZe/ZFTZ2G+sdXEIrMnrxz0hjuaD0gqIXtkA99FaP8q77GBvalRJuyGgC103S0ptsfzOcA==
+X-Received: by 2002:a17:90a:1b4c:: with SMTP id q70mr790739pjq.69.1565060333242;
+        Mon, 05 Aug 2019 19:58:53 -0700 (PDT)
+Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
+        by smtp.gmail.com with ESMTPSA id d2sm17349019pjs.21.2019.08.05.19.58.50
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 05 Aug 2019 19:58:52 -0700 (PDT)
+From:   Chuhong Yuan <hslester96@gmail.com>
+Cc:     Vishal Kulkarni <vishal@chelsio.com>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
+Subject: [PATCH 1/2] cxgb4: smt: Add lock for atomic_dec_and_test
+Date:   Tue,  6 Aug 2019 10:58:46 +0800
+Message-Id: <20190806025846.17022-1-hslester96@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-06_02:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=941 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908060026
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a test with multiple exit conditions.
-It's not an infinite loop only when the verifier can properly track
-all math on variable 'i' through all possible ways of executing this loop.
+The atomic_dec_and_test() is not safe because it is
+outside of locks.
+Move the locks of t4_smte_free() to its caller,
+cxgb4_smt_release() to protect the atomic decrement.
 
-barrier()s are needed to disable llvm optimization that combines multiple
-branches into fewer branches.
-
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Fixes: 3bdb376e6944 ("cxgb4: introduce SMT ops to prepare for SMAC rewrite support")
+Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
 ---
- .../bpf/prog_tests/bpf_verif_scale.c          |  1 +
- tools/testing/selftests/bpf/progs/loop5.c     | 32 +++++++++++++++++++
- 2 files changed, 33 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/loop5.c
+ drivers/net/ethernet/chelsio/cxgb4/smt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-index e9e72d8d7aae..0caf8eafa9eb 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_verif_scale.c
-@@ -72,6 +72,7 @@ void test_bpf_verif_scale(void)
- 		{ "loop1.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
- 		{ "loop2.o", BPF_PROG_TYPE_RAW_TRACEPOINT },
- 		{ "loop4.o", BPF_PROG_TYPE_SCHED_CLS },
-+		{ "loop5.o", BPF_PROG_TYPE_SCHED_CLS },
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/smt.c b/drivers/net/ethernet/chelsio/cxgb4/smt.c
+index eaf1fb74689c..d6e84c8b5554 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/smt.c
++++ b/drivers/net/ethernet/chelsio/cxgb4/smt.c
+@@ -97,11 +97,9 @@ static struct smt_entry *find_or_alloc_smte(struct smt_data *s, u8 *smac)
  
- 		/* partial unroll. 19k insn in a loop.
- 		 * Total program size 20.8k insn.
-diff --git a/tools/testing/selftests/bpf/progs/loop5.c b/tools/testing/selftests/bpf/progs/loop5.c
-new file mode 100644
-index 000000000000..28d1d668f07c
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/loop5.c
-@@ -0,0 +1,32 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+#include <linux/bpf.h>
-+#include "bpf_helpers.h"
-+#define barrier() __asm__ __volatile__("": : :"memory")
-+
-+char _license[] SEC("license") = "GPL";
-+
-+SEC("socket")
-+int while_true(volatile struct __sk_buff* skb)
-+{
-+	int i = 0;
-+
-+	while (1) {
-+		if (skb->len)
-+			i += 3;
-+		else
-+			i += 7;
-+		if (i == 9)
-+			break;
-+		barrier();
-+		if (i == 10)
-+			break;
-+		barrier();
-+		if (i == 13)
-+			break;
-+		barrier();
-+		if (i == 14)
-+			break;
-+	}
-+	return i;
-+}
+ static void t4_smte_free(struct smt_entry *e)
+ {
+-	spin_lock_bh(&e->lock);
+ 	if (atomic_read(&e->refcnt) == 0) {  /* hasn't been recycled */
+ 		e->state = SMT_STATE_UNUSED;
+ 	}
+-	spin_unlock_bh(&e->lock);
+ }
+ 
+ /**
+@@ -111,8 +109,10 @@ static void t4_smte_free(struct smt_entry *e)
+  */
+ void cxgb4_smt_release(struct smt_entry *e)
+ {
++	spin_lock_bh(&e->lock);
+ 	if (atomic_dec_and_test(&e->refcnt))
+ 		t4_smte_free(e);
++	spin_unlock_bh(&e->lock);
+ }
+ EXPORT_SYMBOL(cxgb4_smt_release);
+ 
 -- 
-2.20.0
+2.20.1
 
