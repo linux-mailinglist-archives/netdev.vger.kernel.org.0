@@ -2,83 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDFE583845
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:55:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8F9283847
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730268AbfHFRze (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 13:55:34 -0400
-Received: from mail-pf1-f182.google.com ([209.85.210.182]:45500 "EHLO
-        mail-pf1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726713AbfHFRze (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:55:34 -0400
-Received: by mail-pf1-f182.google.com with SMTP id r1so41903834pfq.12
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:55:33 -0700 (PDT)
+        id S1731595AbfHFRzo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 13:55:44 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:44896 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726713AbfHFRzo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:55:44 -0400
+Received: by mail-qt1-f195.google.com with SMTP id 44so54400790qtg.11;
+        Tue, 06 Aug 2019 10:55:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DC/eATgO+yTMJ9TQdGtekHMLvkJCk3IHb9ZpH6I6iro=;
-        b=Wswq5sOp3zV/MSlVxDcZ3rWQZ8rVAFDu/Y/8d5x7otRxZ0be9LDkPvNMQpsrvowhCZ
-         VQdAwCth1MvrA0Gvq+4WphXrV6jop0Cf2mWb69lcv7xBGdVMR983Sq63dTXVDuh26NaL
-         yCFxd0ivh++B7AJ6EghlDENgzauake5lkGDCO2469DS/NzxcbXFnf8vhdIZsSb2opDgP
-         t7QjTBjp6rlMb4tXrezIhAuzT8Y5cxsOLbQ7FFEwUC0o2Ety1TPpbIBnK6dh+xjWAiWo
-         I5OGPMLoqXNewNPshKXfknb7KDXNCeO+DcVR5+Hb/GZzMctNA4u6uSyG/5OgFXBTxoq4
-         8MWw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5KkDLPDl9G1MJIr46DPmnf/JfgY8sITbPUFHsx3P0GI=;
+        b=DsVjxLtiGkD4iTyfRqzjx0WDZWEgSjNDkQSPEXEhGm+H1TzZvhiw1jut67yM28ugK7
+         Ymr26pm4RXIVUMTARz9kIqtJrYvSwvN7WMSo1EL1QdnOIU9vI3OeeR+3w1lEOZpstSGw
+         Ut3sElwWxkIrR2B833zja+9RCYuf+95ZMBNKAMIcufGtDZFQIuIblSfL4QtaZjC0PRPA
+         YPMhaA5kr3Kh9oOUCEhWb3BE4WxskryEgvo1ezoAbvR13WnjhvtRJMJQKO/liyD4FNTM
+         TKenwzcJAyOFqN32MsWIFcgqjps4zhsaay2+9bGghbnnOcIQyDpU/j+dS7rBjtYdnQWR
+         zQoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DC/eATgO+yTMJ9TQdGtekHMLvkJCk3IHb9ZpH6I6iro=;
-        b=XFOktR9YSAVvaOQg6DRsCXg4Jhfis7nkwzy6tsxnPI4FSC8tjaaBFqblVj8232EYEV
-         HLRprvvYfePS4KFqtPmi5IbbVYVkbh4m3nAs9Lt1oFY6UxmjGSYotus+MSQLTRVP6Hyr
-         VvlZVarcCwy/pfMqMsAUeSQG1LPa1xH3HFjBldBlMyGbhd9jRpW7WLJHqPX5XBL8W8Rq
-         ruIgcwJbjIqwnWNYCrzNGgkMwUIq4gIJx5uFu9rkn3cRo8wK4E8LFDyfhjh8thf4Qove
-         IOw8cpDFYPsf3HxSbvN88yzXrabR0w+4diexJ3eFlUgcAXhHNLWOztDVV0OCOBkzp/NT
-         zjrQ==
-X-Gm-Message-State: APjAAAW3kIhUMPV4sucC4SSi3q1VAlaipKZ20VhoU72L5n6t4aUeACGG
-        QhCqCZyUZUVfxKKbY7qA76E=
-X-Google-Smtp-Source: APXvYqyWfYRHpbqadRWWVCYhPTASJE8KPIlRJnNSRBhwzPLsZTinEStR1FxQLPBKaNYLJ6KNE1Acpw==
-X-Received: by 2002:a65:6096:: with SMTP id t22mr2863521pgu.204.1565114133363;
-        Tue, 06 Aug 2019 10:55:33 -0700 (PDT)
-Received: from [172.27.227.131] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id i14sm136558353pfk.0.2019.08.06.10.55.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 06 Aug 2019 10:55:32 -0700 (PDT)
-Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-References: <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
- <89dc6908-68b8-5b0d-0ef7-1eaf1e4e886b@gmail.com>
- <20190802074838.GC2203@nanopsycho>
- <6f05d200-49d4-4eb1-cd69-bd88cf8b0167@gmail.com>
- <20190805055422.GA2349@nanopsycho.orion>
- <796ba97c-9915-9a44-e933-4a7e22aaef2e@gmail.com>
- <20190805144927.GD2349@nanopsycho.orion>
- <566cdf6c-dafc-fb3e-bd94-b75eba3488b5@gmail.com>
- <20190805152019.GE2349@nanopsycho.orion>
- <7200bdbb-2a02-92c6-0251-1c59b159dde7@gmail.com>
- <20190806175323.GB2332@nanopsycho.orion>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <fc6a7342-246c-2fe1-a7d1-c7be5bd0a3a3@gmail.com>
-Date:   Tue, 6 Aug 2019 11:55:30 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5KkDLPDl9G1MJIr46DPmnf/JfgY8sITbPUFHsx3P0GI=;
+        b=sF78tnliMa5Sj1KNdd0tYs3o7Uhp3sUty6/gW2t4sC8k/TDFHHu8SpHdBql8KmXnNm
+         qG5ix0PVFEptfojTLUHCa2BfjBbL8SyZxVzdAzBwJaXOUa4glSRmuSBMErOyCQ3XUKAs
+         GFP3+UYIY5w6rPF5k2LKnCLLy8YdRpE+lDk5kCXVJd5KXwXg/qnWaKoSGcloownMawtR
+         8l/6xbgZQ0HTauqk+CJTElYCLNazyWfYi014HtNvmKoivMBcEiaL3gM2AHf9BsOe62e2
+         K4VVKpW4qSpBN8jTY0tZJTmUuLobbaQGqKpxKA5PAFJf+AQPHlfbBXV90ubSXbXQcUJ+
+         WiIQ==
+X-Gm-Message-State: APjAAAWI1MvhajYhWoUraUU3oWn1vSAgf4Mlf4ZWcJCK2vzn9QDIyXPR
+        8mLgXJa78ToI7Cr6ORDdQ3VtS2OJsemO76Twbcw=
+X-Google-Smtp-Source: APXvYqzu67EzDnXrT9SUOyF7eUpzrlcpxmG5KShObXGLLfyxrvZd1bV5zoSTAdJEaNQsXnUOi2fEDnn2byYVMhkXzOA=
+X-Received: by 2002:a0c:c107:: with SMTP id f7mr4206676qvh.150.1565114143064;
+ Tue, 06 Aug 2019 10:55:43 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190806175323.GB2332@nanopsycho.orion>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190806170901.142264-1-sdf@google.com> <20190806170901.142264-2-sdf@google.com>
+ <CAEf4BzYU6xfcPrHzz0p6dWL3_VM2mD9pKy3T-NfnuDUrd4RMDQ@mail.gmail.com>
+ <20190806174028.GB23939@mini-arch> <CAEf4Bzbt_6Y3bEpsPiHi59KnWoHsk9gQa3XpfRo+gG7-rKqN4w@mail.gmail.com>
+ <20190806175411.GC23939@mini-arch>
+In-Reply-To: <20190806175411.GC23939@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 6 Aug 2019 10:55:32 -0700
+Message-ID: <CAEf4BzYq1Fja-bvT0TTLgGhfBCfi+N1j85bE690ziqD=05RH8w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/3] selftests/bpf: test_progs: switch to open_memstream
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/6/19 11:53 AM, Jiri Pirko wrote:
-> Let's figure out the devlink-controlling-kernel-resources thread first.
-> What you describe here is exactly that.
+On Tue, Aug 6, 2019 at 10:54 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 08/06, Andrii Nakryiko wrote:
+> > On Tue, Aug 6, 2019 at 10:40 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> > >
+> > > On 08/06, Andrii Nakryiko wrote:
+> > > > On Tue, Aug 6, 2019 at 10:19 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > > > >
+> > > > > Use open_memstream to override stdout during test execution.
+> > > > > The copy of the original stdout is held in env.stdout and used
+> > > > > to print subtest info and dump failed log.
+> > > > >
+> > > > > test_{v,}printf are now simple wrappers around stdout and will be
+> > > > > removed in the next patch.
+> > > > >
+> > > > > v4:
+> > > > > * one field per line for stdout/stderr (Andrii Nakryiko)
+> > > > >
+> > > > > v3:
+> > > > > * don't do strlen over log_buf, log_cnt has it already (Andrii Nakryiko)
+> > > > >
+> > > > > v2:
+> > > > > * add ifdef __GLIBC__ around open_memstream (maybe pointless since
+> > > > >   we already depend on glibc for argp_parse)
+> > > > > * hijack stderr as well (Andrii Nakryiko)
+> > > > > * don't hijack for every test, do it once (Andrii Nakryiko)
+> > > > > * log_cap -> log_size (Andrii Nakryiko)
+> > > > > * do fseeko in a proper place (Andrii Nakryiko)
+> > > > > * check open_memstream returned value (Andrii Nakryiko)
+> > > > >
+> > > > > Cc: Andrii Nakryiko <andriin@fb.com>
+> > > > > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > > ---
+> > > > >  tools/testing/selftests/bpf/test_progs.c | 115 ++++++++++++-----------
+> > > > >  tools/testing/selftests/bpf/test_progs.h |   3 +-
+> > > > >  2 files changed, 62 insertions(+), 56 deletions(-)
+> > > > >
+> >
+> > [...]
+> >
+> > > > >  void test__printf(const char *fmt, ...)
+> > > > > @@ -477,6 +438,48 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+> > > > >         return 0;
+> > > > >  }
+> > > > >
+> > > > > +static void stdio_hijack(void)
+> > > > > +{
+> > > > > +#ifdef __GLIBC__
+> > > > > +       if (env.verbose || (env.test && env.test->force_log)) {
+> > > >
+> > > > I just also realized that you don't need `(env.test &&
+> > > > env.test->force_log)` test. We hijack stdout/stderr before env.test is
+> > > > even set, so this does nothing anyways. Plus, force_log can be set in
+> > > > the middle of test/sub-test, yet we hijack stdout just once (or even
+> > > > if per-test), so it's still going to be "racy". Let's buffer output
+> > > > (unless it's env.verbose, which is important to not buffer because
+> > > > some tests will have huge output, when failing, so this allows to
+> > > > bypass using tons of memory for those, when debugging) and dump at the
+> > > > end.
+> > > Makes sense, will drop this test and resubmit along with a fix for '-v'
+> > > that Alexei discovered. Thanks!
+> >
+> > Oh, is it because env.stdout and env.stderr is not set in verbose
+> > mode? I'd always set env.stdout/env.stderr at the beginning, next to
+> > env.jit_enabled, to never care about "logging modes".
+> Yeah, I moved it to the beginning of stdio_hijack() to mirror the 'undo'
+> in stdio_restore(). Let me know if you feel strongly about it and want
+> it to be near env.jit_enabled instead.
 
-as I mentioned on the phone, any outcome of that thread will be in 5.4
-at best. Meanwhile this breakage in 5.2 and 5.3 needs to be fixed.
+I'm fine with it, no big deal, I wrote email before I saw your v5.
+
+>
+> > > > > +               /* nothing to do, output to stdout by default */
+> > > > > +               return;
+> > > > > +       }
+> > > > > +
+> >
+> > [...]
