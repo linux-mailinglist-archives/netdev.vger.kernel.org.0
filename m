@@ -2,59 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 801DA83D3D
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 00:10:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BF4F83D41
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 00:15:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727356AbfHFWKe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 18:10:34 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33545 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727022AbfHFWKe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 18:10:34 -0400
-Received: by mail-qt1-f195.google.com with SMTP id r6so82050187qtt.0
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 15:10:33 -0700 (PDT)
+        id S1726964AbfHFWPv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 18:15:51 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:36221 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726785AbfHFWPv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 18:15:51 -0400
+Received: by mail-qt1-f193.google.com with SMTP id z4so86359594qtc.3
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 15:15:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=k5MlzirpZYamcdWz7AWbdCMy4iWhcebC9AZ/B4iX4vQ=;
-        b=DiNlS0lMBqKQ8N8XEC9ggrn/qkh+UA2hvtCs3VnCp/1FDuRFh8AWh0IrPMQTSI1seh
-         ILTlQ69cQuC8/r1/C++1zZs61I17M+qy5aejqcX8ujbltSmqJ1JxPV4twEW8bb/XA75B
-         R2wDG0iLFvBwzqcChOWMGDsxHqs5u1o207qqjuEv/znX7OKV48xSF6SE1i9X2jzYisqS
-         zSyAFrx2evZTUZNrvCIVwVGYMifT8jRUHFC7oRXrAH6Hf/lj4EaJLSciLzD6e6GSoyc6
-         KQpvphQctVTQIdodoQQq/kfH+9K0S98Umqp8zkpdkLtRZmbCCklHtYljPnaonLTZ5sEK
-         Okug==
+        bh=yVcWYkkzAVBWRmZ0DK7bYffmU6FU9N6ado8O6IIQho4=;
+        b=vO84MS8CKoIJfWDX4UFm0l40mw14mmDz/6H+85o1Fb9uOSVphDCCbHc13po45EP0Z4
+         wXdB/QXwJH3g4duppJOSUbE6odymRu/NgH+pr2P+cDLfcXNLuU/uz/Cf2jOvT8vA4c0A
+         a9FFcVsZvn+4w5/ujsXsHHsd88fsGa3/cC4dJygHmgsoNqwC1QRTnAFU7Vl7yQeqj/gf
+         Z1cHXhkuTYHPmSYBAugMg3Sy43duFm4tWRKDPYsZ41i0N17fYsvd0SVQG+olHNqn9RD4
+         wSWSUJNiBbchVH3TlF0hfxCcNymjRPBwN8GOeq0Cmj+0/t7it3MH/FvdWavfIpEYFzwU
+         dKVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=k5MlzirpZYamcdWz7AWbdCMy4iWhcebC9AZ/B4iX4vQ=;
-        b=eV9Yb1t1ImnWZ3rWTnutDWJ7buylZvsw4uRlRE2ihA8D++zdYFGpqZylLLIuanonrG
-         cR93iJAocJav5PmMYJzqoxXFp3GLqW+r5lEFfo6hZMFp5E9hF+LtIAHjOW+oqpxpdcff
-         sDgDTb0xvS2UiHiNEbsYoW7LxGfntZtxcSxrg5Gj8O0XR9QbalPeKRp8UrCT/G8rcnRW
-         tCV4fembVYyMvLttt09W6GRHjRShP3kbHrLlmLQk1TjoyqfzPE3uOdOLVISZwN27kqyF
-         bZlwmrn3eFVl4ye5Nwoill3V7945gm8i6Bzpyp6Bz5D3XCROkSOkPJKkA5N09HgFIARE
-         9Nrw==
-X-Gm-Message-State: APjAAAUwbCdGZsuL0XrGp735tq3Y4gQOGhnZ6+wUDFT3O7gCfl/hCLiN
-        K5s8k/SMLkV0D1fPqDtn+coS1Q==
-X-Google-Smtp-Source: APXvYqxJVIiFVF2MvxFJ5nvgTIbxn2d6z4r2/R64xlzNBTDE0v1VaGLNq/YntAbOLyQiOadkdwKc7w==
-X-Received: by 2002:aed:3987:: with SMTP id m7mr5096695qte.56.1565129433194;
-        Tue, 06 Aug 2019 15:10:33 -0700 (PDT)
+        bh=yVcWYkkzAVBWRmZ0DK7bYffmU6FU9N6ado8O6IIQho4=;
+        b=BmnkDLHJRn3fs9iWhLWuxjz0v2IX1wDUOieySCBgQScRmZymeikfWrqX+Aao74+ntx
+         mvt00moVHAa9A32zBjTECNUjCukHBVNazRWQ5T5F/bL9dpet7vgUTFg0FfrPMurGQX+i
+         Fqp8TFGBVnw4O681FRGp0WPuJl7hUol2oGTdEoO1LCCZZ+RGLgH+Pf00OLdjsu3fyhgu
+         ZaPuPUBRsV/iIo5cb/Qq+/2ODOBj84iU6ZF7NG3fDPeD9Ht0tGJj+w+J56m30J+Ckbsp
+         qFR0L9MU5oYr50c6gCxZD/CQEA0gaUQmWkTguVLYoePMQWlXgwZhyrQPLc1IHbFxf4hd
+         Cxlw==
+X-Gm-Message-State: APjAAAUP7V3exFJpgjh6ASZN47uthCW9S8cI7f0LN0m6EdUjh0031vLV
+        i70WPBTTcKdVYhFiZycenL6vc+sRyfc=
+X-Google-Smtp-Source: APXvYqzLPLtbPIF/9YqtOwJARgaNU8oLbCzg3y8+Sy9wYHWfic5HgglnBpWrrhOG0EUzqY/ZH5PauA==
+X-Received: by 2002:ac8:5547:: with SMTP id o7mr5292130qtr.297.1565129750072;
+        Tue, 06 Aug 2019 15:15:50 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t26sm47547788qtc.95.2019.08.06.15.10.32
+        by smtp.gmail.com with ESMTPSA id y67sm40298563qkd.40.2019.08.06.15.15.49
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 15:10:33 -0700 (PDT)
-Date:   Tue, 6 Aug 2019 15:10:07 -0700
+        Tue, 06 Aug 2019 15:15:49 -0700 (PDT)
+Date:   Tue, 6 Aug 2019 15:15:24 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Hayes Wang <hayeswang@realtek.com>
-Cc:     <netdev@vger.kernel.org>, <nic_swsd@realtek.com>,
-        <linux-kernel@vger.kernel.org>, <linux-usb@vger.kernel.org>
-Subject: Re: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and
- rx_max_agg_num dynamically
-Message-ID: <20190806151007.75a8dd2c@cakuba.netronome.com>
-In-Reply-To: <1394712342-15778-294-albertk@realtek.com>
-References: <1394712342-15778-289-albertk@realtek.com>
-        <1394712342-15778-294-albertk@realtek.com>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>
+Cc:     mpe@ellerman.id.au, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH net-next v2] ibmveth: Allow users to update reported
+ speed and duplex
+Message-ID: <20190806151524.69d75f8d@cakuba.netronome.com>
+In-Reply-To: <1565108588-17331-1-git-send-email-tlfalcon@linux.ibm.com>
+References: <1565108588-17331-1-git-send-email-tlfalcon@linux.ibm.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,11 +63,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Aug 2019 19:18:04 +0800, Hayes Wang wrote:
-> Let rx_frag_head_sz and rx_max_agg_num could be modified dynamically
-> through the sysfs.
+On Tue,  6 Aug 2019 11:23:08 -0500, Thomas Falcon wrote:
+> Reported ethtool link settings for the ibmveth driver are currently
+> hardcoded and no longer reflect the actual capabilities of supported
+> hardware. There is no interface designed for retrieving this information
+> from device firmware nor is there any way to update current settings
+> to reflect observed or expected link speeds.
 > 
-> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+> To avoid breaking existing configurations, retain current values as
+> default settings but let users update them to match the expected
+> capabilities of underlying hardware if needed. This update would
+> allow the use of configurations that rely on certain link speed
+> settings, such as LACP. This patch is based on the implementation
+> in virtio_net.
+> 
+> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
 
-Please don't expose those via sysfs. Ethtool's copybreak and descriptor
-count should be applicable here, I think.
+Looks like this is the third copy of the same code virtio and
+netvsc have :(  Is there a chance we could factor this out into
+helpers in the core?
