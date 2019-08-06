@@ -2,66 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A29BB83803
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 501278381F
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:44:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387703AbfHFRjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 13:39:54 -0400
-Received: from mga12.intel.com ([192.55.52.136]:3801 "EHLO mga12.intel.com"
+        id S2387565AbfHFRod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 13:44:33 -0400
+Received: from mga02.intel.com ([134.134.136.20]:21522 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387490AbfHFRjx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 13:39:53 -0400
+        id S1727549AbfHFRoc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 13:44:32 -0400
 X-Amp-Result: UNKNOWN
 X-Amp-Original-Verdict: FILE UNKNOWN
 X-Amp-File-Uploaded: False
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Aug 2019 10:39:46 -0700
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 06 Aug 2019 10:40:18 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,353,1559545200"; 
-   d="scan'208";a="174242846"
+   d="scan'208";a="168363539"
 Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by fmsmga008.fm.intel.com with ESMTP; 06 Aug 2019 10:39:46 -0700
-Date:   Tue, 6 Aug 2019 10:39:46 -0700
+  by orsmga008.jf.intel.com with ESMTP; 06 Aug 2019 10:40:17 -0700
+Date:   Tue, 6 Aug 2019 10:40:17 -0700
 From:   Ira Weiny <ira.weiny@intel.com>
 To:     john.hubbard@gmail.com
 Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
         Dan Williams <dan.j.williams@intel.com>,
         Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jan Kara <jack@suse.cz>, Jason Gunthorpe <jgg@ziepe.ca>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
         =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, netdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-mm@kvack.org,
+        linux-rdma@vger.kernel.org, bpf@vger.kernel.org,
         LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
-        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
-        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>
-Subject: Re: [PATCH v2 01/34] mm/gup: add make_dirty arg to
+        John Hubbard <jhubbard@nvidia.com>
+Subject: Re: [PATCH v6 1/3] mm/gup: add make_dirty arg to
  put_user_pages_dirty_lock()
-Message-ID: <20190806173945.GA4748@iweiny-DESK2.sc.intel.com>
-References: <20190804224915.28669-1-jhubbard@nvidia.com>
- <20190804224915.28669-2-jhubbard@nvidia.com>
+Message-ID: <20190806174017.GB4748@iweiny-DESK2.sc.intel.com>
+References: <20190804214042.4564-1-jhubbard@nvidia.com>
+ <20190804214042.4564-2-jhubbard@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190804224915.28669-2-jhubbard@nvidia.com>
+In-Reply-To: <20190804214042.4564-2-jhubbard@nvidia.com>
 User-Agent: Mutt/1.11.1 (2018-12-01)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 04, 2019 at 03:48:42PM -0700, john.hubbard@gmail.com wrote:
+On Sun, Aug 04, 2019 at 02:40:40PM -0700, john.hubbard@gmail.com wrote:
 > From: John Hubbard <jhubbard@nvidia.com>
 > 
 > Provide a more capable variation of put_user_pages_dirty_lock(),
@@ -91,6 +93,11 @@ On Sun, Aug 04, 2019 at 03:48:42PM -0700, john.hubbard@gmail.com wrote:
 > Cc: Ira Weiny <ira.weiny@intel.com>
 > Cc: Jason Gunthorpe <jgg@ziepe.ca>
 > Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+
+I assume this is superseded by the patch in the large series?
+
+Ira
+
 > ---
 >  drivers/infiniband/core/umem.c             |   5 +-
 >  drivers/infiniband/hw/hfi1/user_pages.c    |   5 +-
@@ -289,11 +296,6 @@ On Sun, Aug 04, 2019 at 03:48:42PM -0700, john.hubbard@gmail.com wrote:
 > - * @pages:  array of pages to be marked dirty and released.
 > + * put_user_pages_dirty_lock() - release and optionally dirty gup-pinned pages
 > + * @pages:  array of pages to be maybe marked dirty, and definitely released.
-
-Better would be.
-
-@pages:  array of pages to be put
-
 >   * @npages: number of pages in the @pages array.
 > + * @make_dirty: whether to mark the pages dirty
 >   *
@@ -306,14 +308,6 @@ Better would be.
 > + * compound page) dirty, if @make_dirty is true, and if the page was previously
 > + * listed as clean. In any case, releases all pages using put_user_page(),
 > + * possibly via put_user_pages(), for the non-dirty case.
-
-I don't think users of this interface need this level of detail.  I think
-something like.
-
- * For each page in the @pages array, release the page.  If @make_dirty is
- * true, mark the page dirty prior to release.
-
-
 >   *
 >   * Please see the put_user_page() documentation for details.
 >   *
@@ -358,17 +352,6 @@ something like.
 > +	 * physically contiguous and part of the same compound page, then a
 > +	 * single operation to the head page should suffice.
 > +	 */
-
-I think this comment belongs to the for loop below...  or just something about
-how to make this and put_user_pages() more efficient.  It is odd, that this is
-the same comment as in put_user_pages()...
-
-The code is good.  So... Other than the comments.
-
-Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-
-Ira
-
 > +
 > +	if (!make_dirty) {
 > +		put_user_pages(pages, npages);
