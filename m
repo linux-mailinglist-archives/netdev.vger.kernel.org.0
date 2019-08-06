@@ -2,31 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D37EF8308B
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 13:19:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A23C483080
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 13:19:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732871AbfHFLTV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 07:19:21 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:57488 "EHLO
+        id S1732827AbfHFLTE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 07:19:04 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:57490 "EHLO
         rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731281AbfHFLTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 07:19:02 -0400
+        with ESMTP id S1732800AbfHFLTE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 07:19:04 -0400
 Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x76BJ0Yj023727, This message is accepted by code: ctloc85258
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x76BJ2iW023734, This message is accepted by code: ctloc85258
 Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x76BJ0Yj023727
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x76BJ2iW023734
         (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Tue, 6 Aug 2019 19:19:00 +0800
+        Tue, 6 Aug 2019 19:19:02 +0800
 Received: from fc30.localdomain (172.21.177.138) by RTITCASV01.realtek.com.tw
  (172.21.6.18) with Microsoft SMTP Server id 14.3.439.0; Tue, 6 Aug 2019
- 19:18:58 +0800
+ 19:19:00 +0800
 From:   Hayes Wang <hayeswang@realtek.com>
 To:     <netdev@vger.kernel.org>
 CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
         <linux-usb@vger.kernel.org>, Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next 4/5] r8152: support skb_add_rx_frag
-Date:   Tue, 6 Aug 2019 19:18:03 +0800
-Message-ID: <1394712342-15778-293-albertk@realtek.com>
+Subject: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and rx_max_agg_num dynamically
+Date:   Tue, 6 Aug 2019 19:18:04 +0800
+Message-ID: <1394712342-15778-294-albertk@realtek.com>
 X-Mailer: Microsoft Office Outlook 11
 In-Reply-To: <1394712342-15778-289-albertk@realtek.com>
 References: <1394712342-15778-289-albertk@realtek.com>
@@ -39,259 +39,197 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use skb_add_rx_frag() to reduce the memory copy for rx data.
-
-Use a new list of rx_used to store the rx buffer which couldn't be
-reused yet.
-
-Besides, the total number of rx buffer may be increased or decreased
-dynamically. And it is limited by RTL8152_MAX_RX_AGG.
+Let rx_frag_head_sz and rx_max_agg_num could be modified dynamically
+through the sysfs.
 
 Signed-off-by: Hayes Wang <hayeswang@realtek.com>
 ---
- drivers/net/usb/r8152.c | 122 +++++++++++++++++++++++++++++++++++-----
- 1 file changed, 108 insertions(+), 14 deletions(-)
+ drivers/net/usb/r8152.c | 119 ++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 115 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 401e56112365..1615900c8592 100644
+index 1615900c8592..0b4d439f603a 100644
 --- a/drivers/net/usb/r8152.c
 +++ b/drivers/net/usb/r8152.c
-@@ -584,6 +584,9 @@ enum rtl_register_content {
- #define TX_ALIGN		4
- #define RX_ALIGN		8
+@@ -26,7 +26,7 @@
+ #include <linux/acpi.h>
  
-+#define RTL8152_MAX_RX_AGG	(10 * RTL8152_MAX_RX)
-+#define RTL8152_RXFG_HEADSZ	256
-+
- #define INTR_LINK		0x0004
+ /* Information for net-next */
+-#define NETNEXT_VERSION		"09"
++#define NETNEXT_VERSION		"10"
  
- #define RTL8152_REQT_READ	0xc0
-@@ -720,7 +723,7 @@ struct r8152 {
- 	struct net_device *netdev;
- 	struct urb *intr_urb;
- 	struct tx_agg tx_info[RTL8152_MAX_TX];
--	struct list_head rx_info;
-+	struct list_head rx_info, rx_used;
- 	struct list_head rx_done, tx_free;
- 	struct sk_buff_head tx_queue, rx_queue;
- 	spinlock_t rx_lock, tx_lock;
-@@ -1476,7 +1479,7 @@ static void free_rx_agg(struct r8152 *tp, struct rx_agg *agg)
- 	list_del(&agg->info_list);
+ /* Information for net */
+ #define NET_VERSION		"10"
+@@ -756,6 +756,9 @@ struct r8152 {
+ 	u32 tx_qlen;
+ 	u32 coalesce;
+ 	u32 rx_buf_sz;
++	u32 rx_frag_head_sz;
++	u32 rx_max_agg_num;
++
+ 	u16 ocp_base;
+ 	u16 speed;
+ 	u8 *intr_buff;
+@@ -1992,7 +1995,7 @@ static struct rx_agg *rtl_get_free_rx(struct r8152 *tp, gfp_t mflags)
  
- 	usb_free_urb(agg->urb);
--	__free_pages(agg->page, get_order(tp->rx_buf_sz));
-+	put_page(agg->page);
- 	kfree(agg);
+ 	spin_unlock_irqrestore(&tp->rx_lock, flags);
  
- 	atomic_dec(&tp->rx_count);
-@@ -1493,7 +1496,7 @@ static struct rx_agg *alloc_rx_agg(struct r8152 *tp, gfp_t mflags)
- 	if (rx_agg) {
- 		unsigned long flags;
+-	if (!agg_free && atomic_read(&tp->rx_count) < RTL8152_MAX_RX_AGG)
++	if (!agg_free && atomic_read(&tp->rx_count) < tp->rx_max_agg_num)
+ 		agg_free = alloc_rx_agg(tp, mflags);
  
--		rx_agg->page = alloc_pages(mflags, order);
-+		rx_agg->page = alloc_pages(mflags | __GFP_COMP, order);
- 		if (!rx_agg->page)
- 			goto free_rx;
- 
-@@ -1951,6 +1954,50 @@ static u8 r8152_rx_csum(struct r8152 *tp, struct rx_desc *rx_desc)
- 	return checksum;
- }
- 
-+static inline bool rx_count_exceed(struct r8152 *tp)
-+{
-+	return atomic_read(&tp->rx_count) > RTL8152_MAX_RX;
-+}
-+
-+static inline int agg_offset(struct rx_agg *agg, void *addr)
-+{
-+	return (int)(addr - agg->buffer);
-+}
-+
-+static struct rx_agg *rtl_get_free_rx(struct r8152 *tp, gfp_t mflags)
-+{
-+	struct list_head *cursor, *next;
-+	struct rx_agg *agg_free = NULL;
-+	unsigned long flags;
-+
-+	spin_lock_irqsave(&tp->rx_lock, flags);
-+
-+	list_for_each_safe(cursor, next, &tp->rx_used) {
-+		struct rx_agg *agg;
-+
-+		agg = list_entry(cursor, struct rx_agg, list);
-+
-+		if (page_count(agg->page) == 1) {
-+			if (!agg_free) {
-+				list_del_init(cursor);
-+				agg_free = agg;
-+				continue;
-+			} else if (rx_count_exceed(tp)) {
-+				list_del_init(cursor);
-+				free_rx_agg(tp, agg);
-+			}
-+			break;
-+		}
-+	}
-+
-+	spin_unlock_irqrestore(&tp->rx_lock, flags);
-+
-+	if (!agg_free && atomic_read(&tp->rx_count) < RTL8152_MAX_RX_AGG)
-+		agg_free = alloc_rx_agg(tp, mflags);
-+
-+	return agg_free;
-+}
-+
- static int rx_bottom(struct r8152 *tp, int budget)
- {
- 	unsigned long flags;
-@@ -1986,7 +2033,7 @@ static int rx_bottom(struct r8152 *tp, int budget)
- 
- 	list_for_each_safe(cursor, next, &rx_queue) {
- 		struct rx_desc *rx_desc;
--		struct rx_agg *agg;
-+		struct rx_agg *agg, *agg_next;
- 		int len_used = 0;
- 		struct urb *urb;
- 		u8 *rx_data;
-@@ -1998,6 +2045,8 @@ static int rx_bottom(struct r8152 *tp, int budget)
- 		if (urb->actual_length < ETH_ZLEN)
- 			goto submit;
- 
-+		agg_next = rtl_get_free_rx(tp, GFP_ATOMIC);
-+
- 		rx_desc = agg->buffer;
- 		rx_data = agg->buffer;
- 		len_used += sizeof(struct rx_desc);
-@@ -2005,7 +2054,7 @@ static int rx_bottom(struct r8152 *tp, int budget)
- 		while (urb->actual_length > len_used) {
- 			struct net_device *netdev = tp->netdev;
- 			struct net_device_stats *stats = &netdev->stats;
--			unsigned int pkt_len;
-+			unsigned int pkt_len, rx_frag_head_sz;
- 			struct sk_buff *skb;
- 
- 			/* limite the skb numbers for rx_queue */
-@@ -2023,22 +2072,37 @@ static int rx_bottom(struct r8152 *tp, int budget)
+ 	return agg_free;
+@@ -2072,10 +2075,10 @@ static int rx_bottom(struct r8152 *tp, int budget)
  			pkt_len -= ETH_FCS_LEN;
  			rx_data += sizeof(struct rx_desc);
  
--			skb = napi_alloc_skb(napi, pkt_len);
-+			if (!agg_next || RTL8152_RXFG_HEADSZ > pkt_len)
-+				rx_frag_head_sz = pkt_len;
-+			else
-+				rx_frag_head_sz = RTL8152_RXFG_HEADSZ;
-+
-+			skb = napi_alloc_skb(napi, rx_frag_head_sz);
+-			if (!agg_next || RTL8152_RXFG_HEADSZ > pkt_len)
++			if (!agg_next || tp->rx_frag_head_sz > pkt_len)
+ 				rx_frag_head_sz = pkt_len;
+ 			else
+-				rx_frag_head_sz = RTL8152_RXFG_HEADSZ;
++				rx_frag_head_sz = tp->rx_frag_head_sz;
+ 
+ 			skb = napi_alloc_skb(napi, rx_frag_head_sz);
  			if (!skb) {
- 				stats->rx_dropped++;
- 				goto find_next_rx;
- 			}
+@@ -5383,6 +5386,101 @@ static u8 rtl_get_version(struct usb_interface *intf)
+ 	return version;
+ }
  
- 			skb->ip_summed = r8152_rx_csum(tp, rx_desc);
--			memcpy(skb->data, rx_data, pkt_len);
--			skb_put(skb, pkt_len);
-+			memcpy(skb->data, rx_data, rx_frag_head_sz);
-+			skb_put(skb, rx_frag_head_sz);
-+			pkt_len -= rx_frag_head_sz;
-+			rx_data += rx_frag_head_sz;
-+			if (pkt_len) {
-+				skb_add_rx_frag(skb, 0, agg->page,
-+						agg_offset(agg, rx_data),
-+						pkt_len,
-+						SKB_DATA_ALIGN(pkt_len));
-+				get_page(agg->page);
-+			}
++static ssize_t rx_frag_head_sz_show(struct device *dev,
++				    struct device_attribute *attr, char *buf)
++{
++	struct usb_interface *intf = to_usb_interface(dev);
++	struct r8152 *tp = usb_get_intfdata(intf);
 +
- 			skb->protocol = eth_type_trans(skb, netdev);
- 			rtl_rx_vlan_tag(rx_desc, skb);
- 			if (work_done < budget) {
- 				napi_gro_receive(napi, skb);
- 				work_done++;
- 				stats->rx_packets++;
--				stats->rx_bytes += pkt_len;
-+				stats->rx_bytes += skb->len;
- 			} else {
- 				__skb_queue_tail(&tp->rx_queue, skb);
- 			}
-@@ -2046,10 +2110,24 @@ static int rx_bottom(struct r8152 *tp, int budget)
- find_next_rx:
- 			rx_data = rx_agg_align(rx_data + pkt_len + ETH_FCS_LEN);
- 			rx_desc = (struct rx_desc *)rx_data;
--			len_used = (int)(rx_data - (u8 *)agg->buffer);
-+			len_used = agg_offset(agg, rx_data);
- 			len_used += sizeof(struct rx_desc);
- 		}
- 
-+		WARN_ON(!agg_next && page_count(agg->page) > 1);
++	sprintf(buf, "%u\n", tp->rx_frag_head_sz);
 +
-+		if (agg_next) {
-+			spin_lock_irqsave(&tp->rx_lock, flags);
-+			if (page_count(agg->page) == 1) {
-+				list_add(&agg_next->list, &tp->rx_used);
-+			} else {
-+				list_add_tail(&agg->list, &tp->rx_used);
-+				agg = agg_next;
-+				urb = agg->urb;
-+			}
-+			spin_unlock_irqrestore(&tp->rx_lock, flags);
-+		}
++	return strlen(buf);
++}
 +
- submit:
- 		if (!ret) {
- 			ret = r8152_submit_rx(tp, agg, GFP_ATOMIC);
-@@ -2376,13 +2454,14 @@ static int rtl_start_rx(struct r8152 *tp)
++static ssize_t rx_frag_head_sz_store(struct device *dev,
++				     struct device_attribute *attr,
++				     const char *buf, size_t count)
++{
++	struct usb_interface *intf;
++	u32 rx_frag_head_sz;
++	struct r8152 *tp;
++
++	intf = to_usb_interface(dev);
++	tp = usb_get_intfdata(intf);
++
++	if (sscanf(buf, "%u\n", &rx_frag_head_sz) != 1)
++		return -EINVAL;
++
++	if (rx_frag_head_sz < ETH_ZLEN)
++		return -EINVAL;
++
++	if (test_bit(RTL8152_UNPLUG, &tp->flags))
++		return -ENODEV;
++
++	if (tp->rx_frag_head_sz != rx_frag_head_sz) {
++		napi_disable(&tp->napi);
++		tp->rx_frag_head_sz = rx_frag_head_sz;
++		napi_enable(&tp->napi);
++	}
++
++	return count;
++}
++
++static DEVICE_ATTR_RW(rx_frag_head_sz);
++
++static ssize_t rx_max_agg_num_show(struct device *dev,
++				   struct device_attribute *attr, char *buf)
++{
++	struct usb_interface *intf = to_usb_interface(dev);
++	struct r8152 *tp = usb_get_intfdata(intf);
++
++	sprintf(buf, "%u\n", tp->rx_max_agg_num);
++
++	return strlen(buf);
++}
++
++static ssize_t rx_max_agg_num_store(struct device *dev,
++				    struct device_attribute *attr,
++				    const char *buf, size_t count)
++{
++	struct usb_interface *intf;
++	u32 rx_max_agg_num;
++	struct r8152 *tp;
++
++	intf = to_usb_interface(dev);
++	tp = usb_get_intfdata(intf);
++
++	if (sscanf(buf, "%u\n", &rx_max_agg_num) != 1)
++		return -EINVAL;
++
++	if (rx_max_agg_num < (RTL8152_MAX_RX * 2))
++		return -EINVAL;
++
++	if (test_bit(RTL8152_UNPLUG, &tp->flags))
++		return -ENODEV;
++
++	if (tp->rx_max_agg_num != rx_max_agg_num) {
++		napi_disable(&tp->napi);
++		tp->rx_max_agg_num = rx_max_agg_num;
++		napi_enable(&tp->napi);
++	}
++
++	return count;
++}
++
++static DEVICE_ATTR_RW(rx_max_agg_num);
++
++static struct attribute *rtk_adv_attrs[] = {
++	&dev_attr_rx_frag_head_sz.attr,
++	&dev_attr_rx_max_agg_num.attr,
++	NULL
++};
++
++static struct attribute_group rtk_adv_grp = {
++	.name = "rtl_adv",
++	.attrs = rtk_adv_attrs,
++};
++
+ static int rtl8152_probe(struct usb_interface *intf,
+ 			 const struct usb_device_id *id)
  {
- 	struct list_head *cursor, *next, tmp_list;
- 	unsigned long flags;
--	int ret = 0;
-+	int ret = 0, i = 0;
+@@ -5487,6 +5585,9 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 	tp->speed = tp->mii.supports_gmii ? SPEED_1000 : SPEED_100;
+ 	tp->duplex = DUPLEX_FULL;
  
- 	INIT_LIST_HEAD(&tmp_list);
- 
- 	spin_lock_irqsave(&tp->rx_lock, flags);
- 
- 	INIT_LIST_HEAD(&tp->rx_done);
-+	INIT_LIST_HEAD(&tp->rx_used);
- 
- 	list_splice_init(&tp->rx_info, &tmp_list);
- 
-@@ -2394,10 +2473,18 @@ static int rtl_start_rx(struct r8152 *tp)
- 		agg = list_entry(cursor, struct rx_agg, info_list);
- 		INIT_LIST_HEAD(&agg->list);
- 
--		if (ret < 0)
-+		/* Only RTL8152_MAX_RX rx_agg need to be submitted. */
-+		if (++i > RTL8152_MAX_RX) {
-+			spin_lock_irqsave(&tp->rx_lock, flags);
-+			list_add_tail(&agg->list, &tp->rx_used);
-+			spin_unlock_irqrestore(&tp->rx_lock, flags);
-+		} else if (unlikely(ret < 0)) {
-+			spin_lock_irqsave(&tp->rx_lock, flags);
- 			list_add_tail(&agg->list, &tp->rx_done);
--		else
-+			spin_unlock_irqrestore(&tp->rx_lock, flags);
-+		} else {
- 			ret = r8152_submit_rx(tp, agg, GFP_KERNEL);
-+		}
- 	}
- 
- 	spin_lock_irqsave(&tp->rx_lock, flags);
-@@ -2429,7 +2516,14 @@ static int rtl_stop_rx(struct r8152 *tp)
- 		struct rx_agg *agg;
- 
- 		agg = list_entry(cursor, struct rx_agg, info_list);
--		usb_kill_urb(agg->urb);
++	tp->rx_frag_head_sz = RTL8152_RXFG_HEADSZ;
++	tp->rx_max_agg_num = RTL8152_MAX_RX_AGG;
 +
-+		/* At least RTL8152_MAX_RX rx_agg have the page_count being
-+		 * equal to 1, so the other ones could be freed safely.
-+		 */
-+		if (page_count(agg->page) > 1)
-+			free_rx_agg(tp, agg);
-+		else
-+			usb_kill_urb(agg->urb);
- 	}
+ 	intf->needs_remote_wakeup = 1;
  
- 	/* Move back the list of temp to the rx_info */
+ 	tp->rtl_ops.init(tp);
+@@ -5513,8 +5614,16 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 
+ 	netif_info(tp, probe, netdev, "%s\n", DRIVER_VERSION);
+ 
++	ret = sysfs_create_group(&intf->dev.kobj, &rtk_adv_grp);
++	if (ret < 0) {
++		netif_err(tp, probe, netdev, "creat rtk_adv_grp fail\n");
++		goto out2;
++	}
++
+ 	return 0;
+ 
++out2:
++	unregister_netdev(netdev);
+ out1:
+ 	netif_napi_del(&tp->napi);
+ 	usb_set_intfdata(intf, NULL);
+@@ -5527,6 +5636,8 @@ static void rtl8152_disconnect(struct usb_interface *intf)
+ {
+ 	struct r8152 *tp = usb_get_intfdata(intf);
+ 
++	sysfs_remove_group(&intf->dev.kobj, &rtk_adv_grp);
++
+ 	usb_set_intfdata(intf, NULL);
+ 	if (tp) {
+ 		rtl_set_unplug(tp);
 -- 
 2.21.0
 
