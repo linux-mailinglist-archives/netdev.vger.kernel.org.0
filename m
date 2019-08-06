@@ -2,166 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CBCA683659
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 18:10:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5524E83665
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 18:11:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732598AbfHFQKM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 12:10:12 -0400
-Received: from correo.us.es ([193.147.175.20]:46316 "EHLO mail.us.es"
+        id S2387729AbfHFQLi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 12:11:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49864 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729638AbfHFQKM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 12:10:12 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 736D8DA73F
-        for <netdev@vger.kernel.org>; Tue,  6 Aug 2019 18:10:10 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 645A21150DD
-        for <netdev@vger.kernel.org>; Tue,  6 Aug 2019 18:10:10 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 5A3041150CC; Tue,  6 Aug 2019 18:10:10 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 4CBE51150B9;
-        Tue,  6 Aug 2019 18:10:08 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 06 Aug 2019 18:10:08 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (149.103.108.93.rev.vodafone.pt [93.108.103.149])
+        id S2387634AbfHFQLh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 12:11:37 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id A87444265A31;
-        Tue,  6 Aug 2019 18:10:07 +0200 (CEST)
-Date:   Tue, 6 Aug 2019 18:10:00 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     wenxu@ucloud.cn
-Cc:     jakub.kicinski@netronome.com, jiri@resnulli.us,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v6 5/6] flow_offload: support get
- multi-subsystem block
-Message-ID: <20190806161000.3csoy3jlpq6cletq@salvia>
-References: <1564925041-23530-1-git-send-email-wenxu@ucloud.cn>
- <1564925041-23530-6-git-send-email-wenxu@ucloud.cn>
+        by mail.kernel.org (Postfix) with ESMTPSA id E25B120679;
+        Tue,  6 Aug 2019 16:11:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565107896;
+        bh=p2nVIG3E/3bXN/7Joe3Zs+lBEuvu5FF2jMiydSrSjsY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=1H5YZnYBa3bp4bHOlhfyVyFq7JZqFqgQhOtjHl/AeG8OQ/wuR3Ir47RygQ0SSrI+V
+         fmvYGZ4+43hrPTiySjeofca63CBk4Md4vHlIJWbkHBB8ldctq4/Sh6j5VXrWgH1dYl
+         0RlQ8aokCgn4U5m5LPchUAFfuoKaZmcjOmSi8dHk=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     netdev@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH 00/17] Networking driver debugfs cleanups
+Date:   Tue,  6 Aug 2019 18:11:11 +0200
+Message-Id: <20190806161128.31232-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1564925041-23530-6-git-send-email-wenxu@ucloud.cn>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 04, 2019 at 09:24:00PM +0800, wenxu@ucloud.cn wrote:
-> diff --git a/include/net/flow_offload.h b/include/net/flow_offload.h
-> index 8f1a7b8..6022dd0 100644
-> --- a/include/net/flow_offload.h
-> +++ b/include/net/flow_offload.h
-[...]
-> @@ -282,6 +282,8 @@ int flow_block_cb_setup_simple(struct flow_block_offload *f,
->  }
->  EXPORT_SYMBOL(flow_block_cb_setup_simple);
->  
-> +static LIST_HEAD(block_ing_cb_list);
-> +
->  static struct rhashtable indr_setup_block_ht;
->  
->  struct flow_indr_block_cb {
-> @@ -295,7 +297,6 @@ struct flow_indr_block_dev {
->  	struct rhash_head ht_node;
->  	struct net_device *dev;
->  	unsigned int refcnt;
-> -	flow_indr_block_ing_cmd_t  *block_ing_cmd_cb;
->  	struct list_head cb_list;
->  };
->  
-> @@ -389,6 +390,22 @@ static void flow_indr_block_cb_del(struct flow_indr_block_cb *indr_block_cb)
->  	kfree(indr_block_cb);
->  }
->  
-> +static void flow_block_ing_cmd(struct net_device *dev,
-> +			       flow_indr_block_bind_cb_t *cb,
-> +			       void *cb_priv,
-> +			       enum flow_block_command command)
-> +{
-> +	struct flow_indr_block_ing_entry *entry;
-> +
-> +	rcu_read_lock();
-> +
+There is no need to test the result of any debugfs call anymore.  The
+debugfs core warns the user if something fails, and the return value of
+a debugfs call can always be fed back into another debugfs call with no
+problems.
 
-unnecessary empty line.
+Also, debugfs is for debugging, so if there are problems with debugfs
+(i.e. the system is out of memory) the rest of the kernel should not
+change behavior, so testing for debugfs calls is pointless and not the
+goal of debugfs at all.
 
-> +	list_for_each_entry_rcu(entry, &block_ing_cb_list, list) {
-> +		entry->cb(dev, cb, cb_priv, command);
-> +	}
-> +
-> +	rcu_read_unlock();
+This series cleans up a lot of networking drivers and some wimax code
+that was calling debugfs and trying to do something with the return
+value that it didn't need to.  Removing this logic makes the code
+smaller, easier to understand, and use less run-time memory in some
+cases, all good things.
 
-OK, there's rcu_read_lock here...
+The series is against net-next, and have no dependancies between any of
+them if they want to go through any random tree/order.  Or, if wanted,
+I can take them through my driver-core tree where other debugfs cleanups
+are being slowly fed during major merge windows.
 
-> +}
-> +
->  int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
->  				  flow_indr_block_bind_cb_t *cb,
->  				  void *cb_ident)
-> @@ -406,10 +423,8 @@ int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
->  	if (err)
->  		goto err_dev_put;
->  
-> -	if (indr_dev->block_ing_cmd_cb)
-> -		indr_dev->block_ing_cmd_cb(dev, indr_block_cb->cb,
-> -					   indr_block_cb->cb_priv,
-> -					   FLOW_BLOCK_BIND);
-> +	flow_block_ing_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
-> +			   FLOW_BLOCK_BIND);
->  
->  	return 0;
->  
-> @@ -448,10 +463,8 @@ void __flow_indr_block_cb_unregister(struct net_device *dev,
->  	if (!indr_block_cb)
->  		return;
->  
-> -	if (indr_dev->block_ing_cmd_cb)
-> -		indr_dev->block_ing_cmd_cb(dev, indr_block_cb->cb,
-> -					   indr_block_cb->cb_priv,
-> -					   FLOW_BLOCK_UNBIND);
-> +	flow_block_ing_cmd(dev, indr_block_cb->cb, indr_block_cb->cb_priv,
-> +			   FLOW_BLOCK_UNBIND);
->  
->  	flow_indr_block_cb_del(indr_block_cb);
->  	flow_indr_block_dev_put(indr_dev);
-> @@ -469,7 +482,6 @@ void flow_indr_block_cb_unregister(struct net_device *dev,
->  EXPORT_SYMBOL_GPL(flow_indr_block_cb_unregister);
->  
->  void flow_indr_block_call(struct net_device *dev,
-> -			  flow_indr_block_ing_cmd_t cb,
->  			  struct flow_block_offload *bo,
->  			  enum flow_block_command command)
->  {
-> @@ -480,15 +492,24 @@ void flow_indr_block_call(struct net_device *dev,
->  	if (!indr_dev)
->  		return;
->  
-> -	indr_dev->block_ing_cmd_cb = command == FLOW_BLOCK_BIND
-> -				     ? cb : NULL;
-> -
->  	list_for_each_entry(indr_block_cb, &indr_dev->cb_list, list)
->  		indr_block_cb->cb(dev, indr_block_cb->cb_priv, TC_SETUP_BLOCK,
->  				  bo);
->  }
->  EXPORT_SYMBOL_GPL(flow_indr_block_call);
->  
-> +void flow_indr_add_block_ing_cb(struct flow_indr_block_ing_entry *entry)
-> +{
+thanks,
 
-... but registration does not protect the list with a mutex.
+greg k-h
 
-> +	list_add_tail_rcu(&entry->list, &block_ing_cb_list);
-> +}
-> +EXPORT_SYMBOL_GPL(flow_indr_add_block_ing_cb);
+Greg Kroah-Hartman (17):
+  wimax: no need to check return value of debugfs_create functions
+  bonding: no need to print a message if debugfs_create_dir() fails
+  mlx5: no need to check return value of debugfs_create functions
+  xgbe: no need to check return value of debugfs_create functions
+  bnxt: no need to check return value of debugfs_create functions
+  cxgb4: no need to check return value of debugfs_create functions
+  hns3: no need to check return value of debugfs_create functions
+  nfp: no need to check return value of debugfs_create functions
+  stmmac: no need to check return value of debugfs_create functions
+  dpaa2: no need to check return value of debugfs_create functions
+  qca: no need to check return value of debugfs_create functions
+  skge: no need to check return value of debugfs_create functions
+  mvpp2: no need to check return value of debugfs_create functions
+  fm10k: no need to check return value of debugfs_create functions
+  i40e: no need to check return value of debugfs_create functions
+  ixgbe: no need to check return value of debugfs_create functions
+  ieee802154: no need to check return value of debugfs_create functions
+
+ drivers/net/bonding/bond_debugfs.c            |   5 -
+ drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c  | 107 ++++---------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
+ .../net/ethernet/broadcom/bnxt/bnxt_debugfs.c |  39 ++---
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |   5 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |   3 -
+ .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   |  21 +--
+ .../freescale/dpaa2/dpaa2-eth-debugfs.c       |  54 +------
+ .../freescale/dpaa2/dpaa2-eth-debugfs.h       |   3 -
+ .../ethernet/hisilicon/hns3/hns3_debugfs.c    |  17 +-
+ .../net/ethernet/intel/fm10k/fm10k_debugfs.c  |   2 -
+ .../net/ethernet/intel/i40e/i40e_debugfs.c    |  21 +--
+ .../net/ethernet/intel/ixgbe/ixgbe_debugfs.c  |  22 +--
+ .../ethernet/marvell/mvpp2/mvpp2_debugfs.c    |  19 +--
+ drivers/net/ethernet/marvell/skge.c           |  39 ++---
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c |  51 +-----
+ .../net/ethernet/mellanox/mlx5/core/debugfs.c | 102 ++----------
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  11 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/eq.h  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   7 +-
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +-
+ .../ethernet/netronome/nfp/nfp_net_debugfs.c  |  17 +-
+ drivers/net/ethernet/qualcomm/qca_debug.c     |  13 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   2 -
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  52 +-----
+ drivers/net/ieee802154/adf7242.c              |  12 +-
+ drivers/net/ieee802154/at86rf230.c            |  20 +--
+ drivers/net/ieee802154/ca8210.c               |   9 +-
+ drivers/net/wimax/i2400m/debugfs.c            | 149 +++---------------
+ drivers/net/wimax/i2400m/driver.c             |   7 +-
+ drivers/net/wimax/i2400m/i2400m.h             |   7 +-
+ drivers/net/wimax/i2400m/usb.c                |  61 ++-----
+ include/linux/mlx5/driver.h                   |  12 +-
+ include/linux/wimax/debug.h                   |  20 +--
+ net/wimax/debugfs.c                           |  42 +----
+ net/wimax/stack.c                             |  11 +-
+ net/wimax/wimax-internal.h                    |   7 +-
+ 37 files changed, 175 insertions(+), 799 deletions(-)
+
+-- 
+2.22.0
+
