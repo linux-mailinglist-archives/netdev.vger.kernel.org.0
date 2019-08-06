@@ -2,112 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0DA8297B
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 04:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D17E58298A
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 04:17:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731384AbfHFCBA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 22:01:00 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:55610 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731359AbfHFCBA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 5 Aug 2019 22:01:00 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id AD00BD92B20D5C7FB7AE;
-        Tue,  6 Aug 2019 10:00:58 +0800 (CST)
-Received: from [127.0.0.1] (10.65.87.206) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Tue, 6 Aug 2019
- 10:00:52 +0800
-Subject: Re: [PATCH v1 1/3] net: hisilicon: make hip04_tx_reclaim
- non-reentrant
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-References: <1564835501-90257-1-git-send-email-xiaojiangfeng@huawei.com>
- <1564835501-90257-2-git-send-email-xiaojiangfeng@huawei.com>
- <20190805174618.2b3b551a@cakuba.netronome.com>
-CC:     <davem@davemloft.net>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <leeyou.li@huawei.com>,
-        <xiaowei774@huawei.com>, <nixiaoming@huawei.com>
-From:   Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-Message-ID: <c150d41b-6f0e-ad49-e8c2-00896fc9cbe4@huawei.com>
-Date:   Tue, 6 Aug 2019 10:00:52 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.7.1
+        id S1731266AbfHFCRs convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 5 Aug 2019 22:17:48 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40408 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731148AbfHFCRr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 22:17:47 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x762EeMM027684
+        for <netdev@vger.kernel.org>; Mon, 5 Aug 2019 19:17:47 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2u6xqg8a1q-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 19:17:47 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::6) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 5 Aug 2019 19:17:45 -0700
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 5D49F7601A6; Mon,  5 Aug 2019 19:17:44 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH v2 bpf-next 0/2] selftests/bpf: more loop tests
+Date:   Mon, 5 Aug 2019 19:17:42 -0700
+Message-ID: <20190806021744.2953168-1-ast@kernel.org>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-In-Reply-To: <20190805174618.2b3b551a@cakuba.netronome.com>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.65.87.206]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-06_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=591 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908060025
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add two bounded loop tests.
 
-On 2019/8/6 8:46, Jakub Kicinski wrote:
-> On Sat, 3 Aug 2019 20:31:39 +0800, Jiangfeng Xiao wrote:
->> If hip04_tx_reclaim is interrupted while it is running
->> and then __napi_schedule continues to execute
->> hip04_rx_poll->hip04_tx_reclaim, reentrancy occurs
->> and oops is generated. So you need to mask the interrupt
->> during the hip04_tx_reclaim run.
-> 
-> Napi poll method for the same napi instance can't be run concurrently.
-> Could you explain a little more what happens here?
-> 
-Because netif_napi_add(ndev, &priv->napi, hip04_rx_poll, NAPI_POLL_WEIGHT);
-So hip04_rx_poll is a napi instance.
-I did not say that hip04_rx_poll has reentered.
-I am talking about the reentrant of hip04_tx_reclaim.
+v1-v2: addressed feedback from Yonghong.
 
+Alexei Starovoitov (2):
+  selftests/bpf: add loop test 4
+  selftests/bpf: add loop test 5
 
-Pre-modification code:
-static int hip04_rx_poll(struct napi_struct *napi, int budget)
-{
-	[...]
-	/* enable rx interrupt */
-	writel_relaxed(priv->reg_inten, priv->base + PPE_INTEN);
+ .../bpf/prog_tests/bpf_verif_scale.c          |  2 ++
+ tools/testing/selftests/bpf/progs/loop4.c     | 18 +++++++++++
+ tools/testing/selftests/bpf/progs/loop5.c     | 32 +++++++++++++++++++
+ 3 files changed, 52 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/loop4.c
+ create mode 100644 tools/testing/selftests/bpf/progs/loop5.c
 
-	napi_complete_done(napi, rx);
-done:
-	/* clean up tx descriptors and start a new timer if necessary */
-	tx_remaining = hip04_tx_reclaim(ndev, false);
-	[...]
-}
-hip04_tx_reclaim is executed after "enable rx interrupt" and napi_complete_done.
-
-If hip04_tx_reclaim is interrupted while it is running, and then
-__irq_svc->gic_handle_irq->hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
-
-
-Also looking at hip04_tx_reclaim
-
-static int hip04_tx_reclaim(struct net_device *ndev, bool force)
-{
-[1]     struct hip04_priv *priv = netdev_priv(ndev);
-[2]     unsigned tx_tail = priv->tx_tail;
-[3]	[...]
-[4]	bytes_compl += priv->tx_skb[tx_tail]->len;
-[5]	dev_kfree_skb(priv->tx_skb[tx_tail]);
-[6]	priv->tx_skb[tx_tail] = NULL;
-[7]	tx_tail = TX_NEXT(tx_tail);
-[8]	[...]
-[9]	priv->tx_tail = tx_tail;
-}
-
-An interrupt occurs if hip04_tx_reclaim just executes to the line 6,
-priv->tx_skb[tx_tail] is NULL, and then
-__irq_svc->gic_handle_irq->hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
-
-Then hip04_tx_reclaim will handle kernel NULL pointer dereference on line 4.
-A reentrant occurs in hip04_tx_reclaim and oops is generated.
-
-
-
-
-
-My commit is to execute hip04_tx_reclaim before "enable rx interrupt" and napi_complete_done.
-Then hip04_tx_reclaim can also be protected by the napi poll method so that no reentry occurs.
-
-thanks.
+-- 
+2.20.0
 
