@@ -2,73 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BBA3834E1
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 17:16:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A38D283515
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 17:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732279AbfHFPP6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 11:15:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58554 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726713AbfHFPP6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 11:15:58 -0400
-Received: from mail-qk1-f170.google.com (mail-qk1-f170.google.com [209.85.222.170])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A620D2173C;
-        Tue,  6 Aug 2019 15:15:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565104557;
-        bh=la0HnOemoXK5fpvWjp+yCiuvCkWWSLx12p8REZ1hLrc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cScU+ROGIiEoPjPJtTRdXG1cbQsMMpzEBSty6kfgERiB6umRY2L+C2ht5GwKKeCdJ
-         nf0igOibxERc7xRV173c1Dp8A004bt+yeTKLrOFqRSGcUO70GxzHw5vhMW517vqGh3
-         exHqFJOsZ4QKxPe/HxRcIXgWmdcw20oZH+8I7bEQ=
-Received: by mail-qk1-f170.google.com with SMTP id g18so63145536qkl.3;
-        Tue, 06 Aug 2019 08:15:57 -0700 (PDT)
-X-Gm-Message-State: APjAAAVppu63WgttGv36475I5TjltgHt8Lu1MVjC/pPlv0rwbE2KmE0N
-        X7DGuaZJwiNMorb5l6naVpbdLkMt7lPorqZrkQ==
-X-Google-Smtp-Source: APXvYqwLPJFWVImQ45weKYeyNJR2eA5NTRfK2u/H55qjIL0tD0cxfdGp8MnhGn/VAZvOKrsEobtM9NSgRSK3rhzUNug=
-X-Received: by 2002:a37:a010:: with SMTP id j16mr3781144qke.152.1565104556857;
- Tue, 06 Aug 2019 08:15:56 -0700 (PDT)
+        id S1732976AbfHFPVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 11:21:37 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:38747 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726713AbfHFPVg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 11:21:36 -0400
+Received: by mail-lj1-f196.google.com with SMTP id r9so82565485ljg.5;
+        Tue, 06 Aug 2019 08:21:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1sJ7ixGeE7RZS3VbxKxevNtiuxonkBN1nlH+bBwiJAo=;
+        b=ZEgo/vnDUJXPZxSAXfu1SMTOyq16tKCuCkk6y9PNBp/2cnI6xZ0gNsugQfhRxfK0AD
+         9AyAKzHnoMKl/ePD2AoWO9j6kIZSIXmWDmhu5lBGSlc3wDCskTXb8qTktdWlDRtWJOxp
+         PKOX1wjw0sdmtijyNW8NaaGolXxIq2oTQQY3gGEq16pl9Hpp46hDhxsUHTNZ5hqp4BZu
+         ZMl7Gl8ui9GnucOy5EyZwAvHgIsToICw6IOScBVLLx5fN8IEI/n5KuhasGsgI3F6Ct7R
+         xbgxLJPoaYSN+SD6h/JpkFoF3mGGNwZAJ1okIXUA5K4nzkhMu5gCizTraVgF+yF+PMZM
+         +nmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1sJ7ixGeE7RZS3VbxKxevNtiuxonkBN1nlH+bBwiJAo=;
+        b=fQXy0d0rQh9OVeLsEAv4e6uVPG3pY1jf9s1SsaA9KWMwKXcnvaKp8TUsJQwSdKSEID
+         8kGTZcAQCuY2k3n6q3mP/Uw0qthwh9BSyHYNqIK/w9JYcCNCr13CjJjy4P36W2MypB8k
+         ayp1DkgLzw3n0LP1yVcFd5p/4nGn5kcGeUysoZnO0HQFXsEvHigI8C3dWCaDD63dMJhT
+         rM6wwmNgD8ISkWSb6yqdlrinTOfkrvj1QAiGzInT0sBXusTbt9wnDW/QRhUZjctXLd0q
+         bRU9Zl22zbFMIHUOBQ0oQPNPhHurXKas4aGDDHgaCGjw8UuzZG2s+aAUV/iiJHZHrjgW
+         yp3A==
+X-Gm-Message-State: APjAAAXXlrqI5D1fskfewNFE9YxbGfNkD+NTLQraLzOu7GtCaRXrdSwk
+        jNlB0LccDqmlqyeGEUZ6XGWvS87JSOkGHen5F9I=
+X-Google-Smtp-Source: APXvYqwqHpXakbGJfmufnUhVkhx5lb5yh7ESZIq3VNa8wGUESnKDAk8YovWiYUqVoK23hCjYnu5mVf0TRy0H0TgTPp4=
+X-Received: by 2002:a2e:9dca:: with SMTP id x10mr2024634ljj.17.1565104894711;
+ Tue, 06 Aug 2019 08:21:34 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190806125041.16105-1-narmstrong@baylibre.com> <20190806125041.16105-3-narmstrong@baylibre.com>
-In-Reply-To: <20190806125041.16105-3-narmstrong@baylibre.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 6 Aug 2019 09:15:45 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKnzNMittFbvmz+ELu9UVMkmPmFoVT8ydWOYtCST+MwVA@mail.gmail.com>
-Message-ID: <CAL_JsqKnzNMittFbvmz+ELu9UVMkmPmFoVT8ydWOYtCST+MwVA@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] dt-bindings: net: meson-dwmac: convert to yaml
-To:     Neil Armstrong <narmstrong@baylibre.com>
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        devicetree@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        linux-amlogic@lists.infradead.org,
-        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190806021744.2953168-1-ast@kernel.org> <ff86b565-097e-8f1a-c411-7138f429ed79@fb.com>
+In-Reply-To: <ff86b565-097e-8f1a-c411-7138f429ed79@fb.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 6 Aug 2019 08:21:22 -0700
+Message-ID: <CAADnVQKj1o_OBtM2urdMQe-0x7Qu78-TW5Vj8y_3Q7K2naF25g@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 0/2] selftests/bpf: more loop tests
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        Kernel Team <Kernel-team@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 6, 2019 at 6:50 AM Neil Armstrong <narmstrong@baylibre.com> wrote:
+On Mon, Aug 5, 2019 at 9:19 PM Yonghong Song <yhs@fb.com> wrote:
 >
-> Now that we have the DT validation in place, let's convert the device tree
-> bindings for the Synopsys DWMAC Glue for Amlogic SoCs over to a YAML schemas.
 >
-> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-> ---
->  .../bindings/net/amlogic,meson-dwmac.yaml     | 113 ++++++++++++++++++
->  .../devicetree/bindings/net/meson-dwmac.txt   |  71 -----------
->  .../devicetree/bindings/net/snps,dwmac.yaml   |   5 +
->  3 files changed, 118 insertions(+), 71 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
->  delete mode 100644 Documentation/devicetree/bindings/net/meson-dwmac.txt
+>
+> On 8/5/19 7:17 PM, Alexei Starovoitov wrote:
+> > Add two bounded loop tests.
+> >
+> > v1-v2: addressed feedback from Yonghong.
+> >
+> > Alexei Starovoitov (2):
+> >    selftests/bpf: add loop test 4
+> >    selftests/bpf: add loop test 5
+>
+> Looks good to me. Ack for the whole series.
+> Acked-by: Yonghong Song <yhs@fb.com>
 
-I don't love the compatible schema with 'additionalItems: true' and
-contains, but I guess it is what it is. I'm hopeful schemas help limit
-how many variations we end up with.
-
-Reviewed-by: Rob Herring <robh@kernel.org>
-
-Rob
+Applied. Thanks
