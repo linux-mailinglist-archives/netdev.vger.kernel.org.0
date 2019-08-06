@@ -2,96 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F4AF83355
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 056F983356
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:53:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730478AbfHFNw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 09:52:59 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:45816 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726373AbfHFNw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:52:59 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x76DXxiQ085313;
-        Tue, 6 Aug 2019 13:52:40 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=sLQXqKTfAC+DgapIOljC6Hu1hP2ySZexluDwG30necU=;
- b=Y3/5lTgAcSA0tHehdiqZfTT/zElI6h13BR1el/tcfM3XvSzIdBxTUfuYzsKQdv5cR10w
- HPN9S/En9zGsUfiK5q6K3joBnoZqF+agISIJ9PJtKn6DIzvIbegohGn49/Wvxsb9LTEn
- kDCFZkr9HirBEOLGrVgUrBbZj3IBSgn49GxjSyquXuhEUtRhwmL3e8Gke9UgFb2+qhXB
- M//7k5//R6mAdXr75wYmh+GJJ+Q/LvU7znw8NbBcIL7abZ5WrNVFyviM45eoZFegixMC
- SP2MLi8QVEGyu35JbqhQUNHnmn/s8NNRmBoOZC9ASSGL9jgHd8UyQ6kMyefdqth5opVd Xw== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 2u51ptxcjy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 06 Aug 2019 13:52:40 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x76DXGId106595;
-        Tue, 6 Aug 2019 13:52:39 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 2u75bvh3w9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 06 Aug 2019 13:52:39 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x76DqcuC017738;
-        Tue, 6 Aug 2019 13:52:38 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 06 Aug 2019 06:52:37 -0700
-Date:   Tue, 6 Aug 2019 16:52:31 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Oliver Hartkopp <socketcan@hartkopp.net>
-Cc:     Mao Wenan <maowenan@huawei.com>, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH net-next] net: can: Fix compiling warning
-Message-ID: <20190806135231.GJ1974@kadam>
-References: <20190802033643.84243-1-maowenan@huawei.com>
- <0050efdb-af9f-49b9-8d83-f574b3d46a2e@hartkopp.net>
+        id S1730006AbfHFNx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 09:53:26 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:54138 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726373AbfHFNx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:53:26 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 733E3980078;
+        Tue,  6 Aug 2019 13:53:25 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 6 Aug
+ 2019 06:53:21 -0700
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v3 net-next 1/3] sfc: don't score irq moderation points for
+ GRO
+To:     David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        <linux-net-drivers@solarflare.com>
+References: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
+Message-ID: <1ccc3c46-b240-413c-39ba-cf9275b588f6@solarflare.com>
+Date:   Tue, 6 Aug 2019 14:53:20 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0050efdb-af9f-49b9-8d83-f574b3d46a2e@hartkopp.net>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9340 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=843
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1906280000 definitions=main-1908060138
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9340 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=891 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908060138
+In-Reply-To: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24824.005
+X-TM-AS-Result: No-0.451400-4.000000-10
+X-TMASE-MatchedRID: 17aM+gFDWwdYwMQSR3qB3Uf49ONH0RaSlS5IbQ8u3TqzU0R+5DbDbBMb
+        ntr5LgIG0+nrETiJLgkFuUksuzAWGsiLtyO0mH+oUharQ9sKnjF6i696PjRPiB3RY4pGTCyHeWg
+        68DhoEkmt2gtuWr1LmnVYxiwxDQDxObOMSve0pv9ZlN4HS2qim/QHHbrnZANTmyiLZetSf8nJ4y
+        0wP1A6AEl4W8WVUOR/joczmuoPCq2dvJgmn5fVUdKaVPlUqiIZaleqs57bJjeNWvs5LJ62cFgzi
+        14CVdzJpmK0osIbJT02NFP4plovglTglCfJSwnfMmHNkM/TtxEXxY6mau8LG3IJh4dBcU42f4hp
+        TpoBF9JqxGCSzFD9MrDMWvXXz1lrlExlQIQeRG0=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--0.451400-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24824.005
+X-MDID: 1565099606-Ft1VMiBnLD20
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 10:10:20AM +0200, Oliver Hartkopp wrote:
-> On 02/08/2019 05.36, Mao Wenan wrote:
-> > There are two warings in net/can, fix them by setting bcm_sock_no_ioctlcmd
-> > and raw_sock_no_ioctlcmd as static.
-> > 
-> > net/can/bcm.c:1683:5: warning: symbol 'bcm_sock_no_ioctlcmd' was not declared. Should it be static?
-> > net/can/raw.c:840:5: warning: symbol 'raw_sock_no_ioctlcmd' was not declared. Should it be static?
-> > 
-> > Fixes: 473d924d7d46 ("can: fix ioctl function removal")
-> > 
-> > Signed-off-by: Mao Wenan <maowenan@huawei.com>
-> 
-> Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-> 
-> Thanks Mao!
-> 
-> Btw. what kind of compiler/make switches are you using so that I can see
-> these warnings myself the next time?
+We already scored points when handling the RX event, no-one else does this,
+ and looking at the history it appears this was originally meant to only
+ score on merges, not on GRO_NORMAL.  Moreover, it gets in the way of
+ changing GRO to not immediately pass GRO_NORMAL skbs to the stack.
+Performance testing with four TCP streams received on a single CPU (where
+ throughput was line rate of 9.4Gbps in all tests) showed a 13.7% reduction
+ in RX CPU usage (n=6, p=0.03).
 
-These are Sparse warnings, not from GCC.
+Signed-off-by: Edward Cree <ecree@solarflare.com>
+---
+ drivers/net/ethernet/sfc/rx.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-regards,
-dan carpenter
+diff --git a/drivers/net/ethernet/sfc/rx.c b/drivers/net/ethernet/sfc/rx.c
+index d5db045535d3..85ec07f5a674 100644
+--- a/drivers/net/ethernet/sfc/rx.c
++++ b/drivers/net/ethernet/sfc/rx.c
+@@ -412,7 +412,6 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
+ 		  unsigned int n_frags, u8 *eh)
+ {
+ 	struct napi_struct *napi = &channel->napi_str;
+-	gro_result_t gro_result;
+ 	struct efx_nic *efx = channel->efx;
+ 	struct sk_buff *skb;
+ 
+@@ -449,9 +448,7 @@ efx_rx_packet_gro(struct efx_channel *channel, struct efx_rx_buffer *rx_buf,
+ 
+ 	skb_record_rx_queue(skb, channel->rx_queue.core_index);
+ 
+-	gro_result = napi_gro_frags(napi);
+-	if (gro_result != GRO_DROP)
+-		channel->irq_mod_score += 2;
++	napi_gro_frags(napi);
+ }
+ 
+ /* Allocate and construct an SKB around page fragments */
 
