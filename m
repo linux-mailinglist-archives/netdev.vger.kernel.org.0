@@ -2,81 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4968F833FD
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 16:32:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6801083412
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 16:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732972AbfHFOby (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 10:31:54 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:45243 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728756AbfHFOby (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 10:31:54 -0400
-Received: by mail-oi1-f194.google.com with SMTP id m206so66880322oib.12;
-        Tue, 06 Aug 2019 07:31:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=mRsJuqvbI6SyoD25uf83ShcXx0a/DNaI7q9ymEAEVyc=;
-        b=eU6JjZPN1qTreBUTPlh7utNRgqNJcNAfmsqAMjcaVswhhVuAN6s/UGkd+x5kwUoD9h
-         UlbiZXKMyloARs+IKU5gcXgSiICSh2w3SB3LALeyOWlha27iqcqvxxyujOhkOTsqJa83
-         DBj1be/Qd/EP4lj51ZqZ+OC/lAfT1URgVGIsNXGsntOyd1kbVQ9AyRR9jiXWHKIn7DYv
-         UaIqX/MuXROM+O1qRCcVgMh+ULM2Ffx+rGUNBL5kNcucBOTu8XORiOHd/A+k+YosfAQ0
-         vtBoGn81r2iB34cYZ6MpF34C9Ul+JlXqYmSsqzqq6QUHCR1qEf5UpRtI52225CVpq7N8
-         OjiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=mRsJuqvbI6SyoD25uf83ShcXx0a/DNaI7q9ymEAEVyc=;
-        b=H3X/F79nnMfB7PY+Mg/m2oUzmq+/+H9GkjLpDyoBWS5S4FRYpzM8nWaEZAvNtkqlhe
-         SPDaMqqQMnP+Z7jxtb+ISLYlJxb0wbX5pozk6H2zhrO8JGg+FYXhb3JNA7GH3ATZM441
-         7agOSVy/WZ4uZuITgvkeJM/voGKjYUQCiz32aSP/hnl4cXTiNc4mLB+EiKY36hgwQhfq
-         JdyWSUeDMMGhNz8ra3no/gQHjAWs5AEJjfj8c3W4EKjKPQD57Kit6XtbHiE6bm6xmrFR
-         SO/UY0hkasgqdZcjgE2rDVwoDfZcvE9ftRlVxvlWj/15LWHp9K4vfvs0oUo0ECdFvKi0
-         AbXQ==
-X-Gm-Message-State: APjAAAWltDbi7VTjj09A9Tvt7pMQGRMxhPiqC8eccjwD7l4+I0QZnN9a
-        1ODZXLEXq726/rc5rq9G/JTOPJGPuYxANdVqBxJJ9t4=
-X-Google-Smtp-Source: APXvYqzfN5wxo8W3llD9Sh1nlweb/1gOpvvOG7t5gCQ4mAbIK8hvP+7dFRao/uXZoKHdgajaZrhWCLZhA99OmSMBg40=
-X-Received: by 2002:aca:dd04:: with SMTP id u4mr1154017oig.152.1565101912904;
- Tue, 06 Aug 2019 07:31:52 -0700 (PDT)
+        id S1733041AbfHFOgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 10:36:24 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:39340 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731783AbfHFOgY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 10:36:24 -0400
+Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id DA590CFB332690251CE8;
+        Tue,  6 Aug 2019 22:36:17 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
+ 14.3.439.0; Tue, 6 Aug 2019 22:36:07 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <socketcan@hartkopp.net>, <davem@davemloft.net>,
+        <netdev@vger.kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        "Mao Wenan" <maowenan@huawei.com>
+Subject: [PATCH net-next v5] net: can: Fix sparse warnings for two functions
+Date:   Tue, 6 Aug 2019 22:40:43 +0800
+Message-ID: <20190806144043.187422-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <d928a635-accd-2a8f-1829-5d7da551a8e8@web.de>
+References: <d928a635-accd-2a8f-1829-5d7da551a8e8@web.de>
 MIME-Version: 1.0
-From:   =?UTF-8?B?6rOg7KSA?= <gojun077@gmail.com>
-Date:   Tue, 6 Aug 2019 23:31:41 +0900
-Message-ID: <CAH040W7fdd-ND4-QG3DwGpFAPTMGB4zzuXYohMdfoSejV6XE_Q@mail.gmail.com>
-Subject: Realtek r8822be wireless card fails to work with new rtw88 kernel module
-To:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+There are two warnings in net/can, fix them by setting
+bcm_sock_no_ioctlcmd and raw_sock_no_ioctlcmd as static.
 
-I recently reported a bug to Ubuntu regarding a regression in wireless
-driver support for the Realtek r8822be wireless chipset. The issue
-link on launchpad is:
+net/can/bcm.c:1683:5: warning: symbol 'bcm_sock_no_ioctlcmd' was not declared. Should it be static?
+net/can/raw.c:840:5: warning: symbol 'raw_sock_no_ioctlcmd' was not declared. Should it be static?
 
-https://bugs.launchpad.net/bugs/1838133
+Fixes: 473d924d7d46 ("can: fix ioctl function removal")
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
+Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
+---
+ v2: change patch description typo error, 'warings' to 'warnings'.
+ v3: change subject of patch.
+ v4: change the alignment of two functions. 
+ v5: change subject of patch.
+ net/can/bcm.c | 4 ++--
+ net/can/raw.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-After Canonical developers triaged the bug they determined that the
-problem lies upstream, and instructed me to send mails to the relevant
-kernel module maintainers at Realtek and to the general kernel.org
-mailing list.
+diff --git a/net/can/bcm.c b/net/can/bcm.c
+index bf1d0bbecec8..eb1d28b8c46a 100644
+--- a/net/can/bcm.c
++++ b/net/can/bcm.c
+@@ -1680,8 +1680,8 @@ static int bcm_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	return size;
+ }
+ 
+-int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
+-			 unsigned long arg)
++static int bcm_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
++				unsigned long arg)
+ {
+ 	/* no ioctls for socket layer -> hand it down to NIC layer */
+ 	return -ENOIOCTLCMD;
+diff --git a/net/can/raw.c b/net/can/raw.c
+index da386f1fa815..a30aaecd9327 100644
+--- a/net/can/raw.c
++++ b/net/can/raw.c
+@@ -837,8 +837,8 @@ static int raw_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+ 	return size;
+ }
+ 
+-int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
+-			 unsigned long arg)
++static int raw_sock_no_ioctlcmd(struct socket *sock, unsigned int cmd,
++				unsigned long arg)
+ {
+ 	/* no ioctls for socket layer -> hand it down to NIC layer */
+ 	return -ENOIOCTLCMD;
+-- 
+2.20.1
 
-I built kernel 5.3.0-rc1+ with the latest realtek drivers from
-wireless-drivers-next but my Realtek r8822be doesn't work with
-rtw88/rtwpci kernel modules.
-
-Please let me know if there is any additional information I can
-provide that would help in debugging this issue.
-
-Best regards,
-Jun
-
-
-Link to GPG Public Key:
-https://keybase.io/gojun077#show-public
-
-Backup link:
-https://keys.openpgp.org/vks/v1/by-fingerprint/79F173A93EB3623D32F86309A56930CF7235138D
