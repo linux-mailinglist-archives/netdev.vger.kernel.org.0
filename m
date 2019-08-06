@@ -2,146 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BE77829D2
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 04:59:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0A0A829E3
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 05:06:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731400AbfHFC7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 22:59:01 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:40526 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728870AbfHFC7B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 22:59:01 -0400
-Received: by mail-pl1-f193.google.com with SMTP id a93so37164499pla.7;
-        Mon, 05 Aug 2019 19:59:00 -0700 (PDT)
+        id S1731386AbfHFDGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 23:06:21 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:35013 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730974AbfHFDGV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 23:06:21 -0400
+Received: by mail-pg1-f195.google.com with SMTP id n4so5481078pgv.2
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 20:06:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a4Ub+sv1k1e8nsgh66la+6tG6yPygg10HKO3z6Kulf8=;
-        b=WHN5rfgBqk16eNjZkhFHQ7ySxBkrv4oo0C1U4UR12Z3MJG3WVsRY856VOKl72aygO8
-         Hu4ZjRWlzceL40MjxAYvPFswixkpGlWILzBT6HTOxAewfYVYsGNNInhK0nWGjs2NdzQH
-         SC8xAdlm8qNTkGSsobxV5PzkxEH5GHOBMYHI9Cit3nbiEKrCaPStlT4pOXD6ahUTWs06
-         Wr0vIFd27Q6lQdTGRdS7ko5y8Au5L+HRX6WyQoZVHVZgIadFJ9gD2hVIL++8E3AAZN9n
-         hK7O8RgnTM1pAHb95pomOr8lGCySOCCmXdWIxUKmPlbZy6wVZlRqitsCIWF7M3ZZPvXP
-         9QJg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=FlvubqIedgeUlDz/PPiAaJ/H2Njn7iS17Qlm1S+ibcs=;
+        b=ynfiagkhgmGZERUei2yzw6PnvDoOnOGKaEU+BMUJIRoWffXtOXvM7JmpSEltHxNXMA
+         oYyljM/tmGwXdC30QlWHHWbcRrYE9qBwLWv7umSLx8+B/ECw6vRLRLIHMOgbn3pi46mt
+         4A3L0A+DOhRb2pQbdkqq3jFUo0M2J6N8Rn5GpoEo7cWttiHS18T3tj0og3hmA6lPjzMr
+         1H5xB2mVcdaFWSbiEBswqQ5jiRkhy1nkaEyR5ccR3jTCnjHxI4JKgfSa15Gn6ncXadnj
+         trmN9tyDkV9ItvX2nZJGnL59ViA4Sqj8UWgo6MZ7JXNTK5w2kx2RIoBKs7hBnfU4I30G
+         /Vfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=a4Ub+sv1k1e8nsgh66la+6tG6yPygg10HKO3z6Kulf8=;
-        b=O1TbSGEEmv6wCnWWc1mks4vFXRH5y2UV0Wh2EqOGZo+B/fHEHavWkTnQwxeUMzaDzq
-         0Jiegjbgpigsad2cGYRY6eUPZzbQFBA+pFtKLYJaulDVFjEet4J4GF9/fMFq2eRdfLkc
-         1zmjaMAYUilnoEGWAq4k63VIlxWdmP+MBsq0UuYnXtJHUY5BJLuOXlkvybtptbqQz7Qp
-         G0G1g2jUnZEcBcBDKpkLfLtPzmLNUNT4E5PuKQJo2vnYsOE+OmDA/DWsE5Vx0XY7gXa5
-         izYprAMp0GJ1OxaJe8QV8c7rHLVjcKdRhYur6CKEELMoi3HUtWsyIVf3FsPqZtAUlNKT
-         wjdw==
-X-Gm-Message-State: APjAAAUfmaReDwsTsZ48oiXLaz0IwGMh8l0XAIcHpKzJ4ohw5j8P2kuv
-        kUbzCBhIPR3x++8+vV2Lu5E=
-X-Google-Smtp-Source: APXvYqzZf8fM+1aEIUQxGGaPBdMFTxp6ZvswfiPWM17x6tGZzrhVFt+qMfFX9pAqis1lkaWrRiaxPw==
-X-Received: by 2002:a17:902:1e9:: with SMTP id b96mr843699plb.277.1565060340386;
-        Mon, 05 Aug 2019 19:59:00 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id l189sm103166522pfl.7.2019.08.05.19.58.57
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=FlvubqIedgeUlDz/PPiAaJ/H2Njn7iS17Qlm1S+ibcs=;
+        b=Z3Gf+7QjX04LAhOXvDYkcOXUc15yvFmeWNdm/J7Zbm1F2cKE+VUFmtN8imeC5C9e4Y
+         qTP6kkTa/vjfwSs5iaYbSX7DEOWjkEJWJrEZsVwjQSPtf/scR4ejB4YWhTTWFxmjHJBr
+         IgsGLwzpsACH+jFKrMAsdTT7/IZkw0szijD08zBMwh3aaBZrypSk8q21Iyf986z0IG8Q
+         3gNMC7t9JH6HL2nnCOOlntdzcgO2DELDlv1Nwl/Toq6PJIhYUM+QRNq+cGUSOrkUCTt7
+         y0mW/2SC+gruOQgaphEysBsMbsIRfMp5H2+0c0+cx7QgJs/bNPc6moKrvESUyez/oLWL
+         m44A==
+X-Gm-Message-State: APjAAAV1I5WNUqzY0x7hG8VCkaGgGNFb55YnObrIU0isFP90vPzLP2AB
+        +fMFJWHbLYiso/9vUSKL8h2FxQ==
+X-Google-Smtp-Source: APXvYqyC0NiG+dH81MgzylsXKTEOMaOlrWGlwxH0Q+mcPaNttiuDNofMxMSQSM8JshjuU5dIMYQZPA==
+X-Received: by 2002:a17:90a:b312:: with SMTP id d18mr822646pjr.35.1565060780443;
+        Mon, 05 Aug 2019 20:06:20 -0700 (PDT)
+Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
+        by smtp.gmail.com with ESMTPSA id v14sm91912574pfm.164.2019.08.05.20.06.19
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 19:58:59 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Vishal Kulkarni <vishal@chelsio.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH 2/2] cxgb4: smt: Use normal int for refcount
-Date:   Tue,  6 Aug 2019 10:58:54 +0800
-Message-Id: <20190806025854.17076-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        Mon, 05 Aug 2019 20:06:20 -0700 (PDT)
+Date:   Mon, 5 Aug 2019 20:05:55 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+Cc:     <davem@davemloft.net>, <yisen.zhuang@huawei.com>,
+        <salil.mehta@huawei.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <leeyou.li@huawei.com>,
+        <xiaowei774@huawei.com>, <nixiaoming@huawei.com>
+Subject: Re: [PATCH v1 1/3] net: hisilicon: make hip04_tx_reclaim
+ non-reentrant
+Message-ID: <20190805200555.5a171567@cakuba.netronome.com>
+In-Reply-To: <c150d41b-6f0e-ad49-e8c2-00896fc9cbe4@huawei.com>
+References: <1564835501-90257-1-git-send-email-xiaojiangfeng@huawei.com>
+        <1564835501-90257-2-git-send-email-xiaojiangfeng@huawei.com>
+        <20190805174618.2b3b551a@cakuba.netronome.com>
+        <c150d41b-6f0e-ad49-e8c2-00896fc9cbe4@huawei.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-All refcount operations are protected by spinlocks now.
-Then the atomic counter can be replaced by a normal int.
+On Tue, 6 Aug 2019 10:00:52 +0800, Jiangfeng Xiao wrote:
+> If hip04_tx_reclaim is interrupted while it is running, and then
+> __irq_svc->gic_handle_irq->hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
 
-This patch depends on PATCH 1/2.
+Ah right, obviously you can't do stuff after napi_complete_done(), 
+that makes sense.
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
----
- drivers/net/ethernet/chelsio/cxgb4/smt.c | 14 +++++++-------
- drivers/net/ethernet/chelsio/cxgb4/smt.h |  2 +-
- 2 files changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/smt.c b/drivers/net/ethernet/chelsio/cxgb4/smt.c
-index d6e84c8b5554..01c65d13fc0e 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/smt.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/smt.c
-@@ -57,7 +57,7 @@ struct smt_data *t4_init_smt(void)
- 		s->smtab[i].state = SMT_STATE_UNUSED;
- 		memset(&s->smtab[i].src_mac, 0, ETH_ALEN);
- 		spin_lock_init(&s->smtab[i].lock);
--		atomic_set(&s->smtab[i].refcnt, 0);
-+		s->smtab[i].refcnt = 0;
- 	}
- 	return s;
- }
-@@ -68,7 +68,7 @@ static struct smt_entry *find_or_alloc_smte(struct smt_data *s, u8 *smac)
- 	struct smt_entry *e, *end;
- 
- 	for (e = &s->smtab[0], end = &s->smtab[s->smt_size]; e != end; ++e) {
--		if (atomic_read(&e->refcnt) == 0) {
-+		if (e->refcnt == 0) {
- 			if (!first_free)
- 				first_free = e;
- 		} else {
-@@ -97,7 +97,7 @@ static struct smt_entry *find_or_alloc_smte(struct smt_data *s, u8 *smac)
- 
- static void t4_smte_free(struct smt_entry *e)
- {
--	if (atomic_read(&e->refcnt) == 0) {  /* hasn't been recycled */
-+	if (e->refcnt == 0) {  /* hasn't been recycled */
- 		e->state = SMT_STATE_UNUSED;
- 	}
- }
-@@ -110,7 +110,7 @@ static void t4_smte_free(struct smt_entry *e)
- void cxgb4_smt_release(struct smt_entry *e)
- {
- 	spin_lock_bh(&e->lock);
--	if (atomic_dec_and_test(&e->refcnt))
-+	if ((--e->refcnt) == 0)
- 		t4_smte_free(e);
- 	spin_unlock_bh(&e->lock);
- }
-@@ -215,14 +215,14 @@ static struct smt_entry *t4_smt_alloc_switching(struct adapter *adap, u16 pfvf,
- 	e = find_or_alloc_smte(s, smac);
- 	if (e) {
- 		spin_lock(&e->lock);
--		if (!atomic_read(&e->refcnt)) {
--			atomic_set(&e->refcnt, 1);
-+		if (!e->refcnt) {
-+			e->refcnt = 1;
- 			e->state = SMT_STATE_SWITCHING;
- 			e->pfvf = pfvf;
- 			memcpy(e->src_mac, smac, ETH_ALEN);
- 			write_smt_entry(adap, e);
- 		} else {
--			atomic_inc(&e->refcnt);
-+			++e->refcnt;
- 		}
- 		spin_unlock(&e->lock);
- 	}
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/smt.h b/drivers/net/ethernet/chelsio/cxgb4/smt.h
-index d6c2cc271398..1268d6e93a47 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/smt.h
-+++ b/drivers/net/ethernet/chelsio/cxgb4/smt.h
-@@ -59,7 +59,7 @@ struct smt_entry {
- 	u16 idx;
- 	u16 pfvf;
- 	u8 src_mac[ETH_ALEN];
--	atomic_t refcnt;
-+	int refcnt;
- 	spinlock_t lock;	/* protect smt entry add,removal */
- };
- 
--- 
-2.20.1
-
+Series looks reasonable.
