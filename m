@@ -2,89 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AECFB83536
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 17:27:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A40E83574
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 17:39:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733014AbfHFP1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 11:27:38 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:34485 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730177AbfHFP1i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 11:27:38 -0400
-Received: by mail-lf1-f67.google.com with SMTP id b29so54259054lfq.1
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 08:27:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yr6wTIW9AZHT4v1yCkb9IVo1Y7SBeHK4zcIIvimdZtI=;
-        b=G2hwEOkCh5El/euSGyWfI68jU8DiAxG0l2VpMDHFEOerPTtqOYDVienMYX1PFwl7XP
-         jdWtrDorW83oWnUj4KD8nWaf+/fvWuyaRSMMsC0KweUWWnH1sU53WEDMUST95ZcT9ffI
-         QNoApZTD5R+Gg3Wy7G5LV7JtCMTJaYAFp1+LblBz+r2iXFFiF2EU6ZZY64BsKSILNxZQ
-         H8iujVCBYeKO7Kn6z55cjIcibFoXzro9SLimYh9vRtt5WxnSWN0FtYZNDAEiYbUsDujO
-         AUf9r9KzbvZPyYo/lTRLqqKWFqzUxyYRB97qKYrjoatUb/CCGfgBq+LdrJuWIR90I3hR
-         7zcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yr6wTIW9AZHT4v1yCkb9IVo1Y7SBeHK4zcIIvimdZtI=;
-        b=D8YSOtHeH4cFcqiw4sxLfNP1hLQ7SLIz8Ii9M0DEQuJD/FKRaPxgWEkqN1h87pstCU
-         3yDlbxMJxRdfGrX4lfRjYCGTMDq2J7dfYwsh2CUHezY0wmsoPJvLXJ1oCtD+jufclf6Z
-         9uOvj5F4qZc1wxILUCEVnGaFxY+xibJModFpamB6UYFZ3tYc7j66Dss45gatGxRttpoa
-         AnNrQmEDaqPbAsHVnADyHHN03t6GxkzqL7AKdFPlu/PQdU7DfvU5GtxzTApxjirYt8wJ
-         xUtXCxws88YztPIVo64uANPdjcD6XuBxvBeIBsXNpiCgaTFPxXs6f4Yn+G2dpUU1+632
-         MJUw==
-X-Gm-Message-State: APjAAAU84Eo5P2gTaRBXuJHpqamvdkbChbEalaDZFL/2p7CFfx3mJxBg
-        H49WZctDO0r0pFEZkUTI4P0ndmg+4pzAeUH8MPI=
-X-Google-Smtp-Source: APXvYqxF6yh4Eakz2aJALhEBKrXOVLAGDdKV8aHOfcgRWOLKyDKd4TSfMeHg5rfzFSV9+grmyhfCqAN4mb1sOPk0RU0=
-X-Received: by 2002:a19:ca4b:: with SMTP id h11mr2724800lfj.162.1565105256011;
- Tue, 06 Aug 2019 08:27:36 -0700 (PDT)
+        id S1732261AbfHFPjV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 11:39:21 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:37574 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728156AbfHFPjU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 11:39:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=/dQaZQMhVFrWkGgcjKYtqkC8hkpv/jcBX7O5fB1A2Gs=; b=554UWq0phj8ND95AlfMvrXrRV8
+        FvfBalqc2Cn2fc/uOEXhojHHPT3ibrrKrXhJFciKKTSH5nBlZjdC8y4QfW0/cav/IkUrl/yA+MF/N
+        T8nqRvwYQZT/0Lj56dBKtn3mMHCnvmw47vmttwXSeDZ7vExd1XrElJcexqnFDvp66kkY=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hv1YM-0005SY-HM; Tue, 06 Aug 2019 17:39:10 +0200
+Date:   Tue, 6 Aug 2019 17:39:10 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>
+Subject: Re: [PATCH 06/16] net: phy: adin: support PHY mode converters
+Message-ID: <20190806153910.GB20422@lunn.ch>
+References: <20190805165453.3989-1-alexandru.ardelean@analog.com>
+ <20190805165453.3989-7-alexandru.ardelean@analog.com>
+ <20190805145105.GN24275@lunn.ch>
+ <15cf5732415c313a7bfe610e7039e7c97b987073.camel@analog.com>
 MIME-Version: 1.0
-References: <20190805001541.8096-1-peter@lekensteyn.nl> <20190805152936.GE4544@mini-arch>
- <20190805120649.421211da@cakuba.netronome.com> <20190805235449.GA8088@al> <f0e5683b-ea6c-4966-6785-f154697f76f1@netronome.com>
-In-Reply-To: <f0e5683b-ea6c-4966-6785-f154697f76f1@netronome.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 6 Aug 2019 08:27:24 -0700
-Message-ID: <CAADnVQL=qhaM9DC7=Bic7ASb0djy9AGtq9L28yM89PpNo0twHw@mail.gmail.com>
-Subject: Re: [PATCH] tools: bpftool: fix reading from /proc/config.gz
-To:     Quentin Monnet <quentin.monnet@netronome.com>
-Cc:     Peter Wu <peter@lekensteyn.nl>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Stanislav Fomichev <sdf@fomichev.me>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Stanislav Fomichev <sdf@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <15cf5732415c313a7bfe610e7039e7c97b987073.camel@analog.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 6, 2019 at 2:36 AM Quentin Monnet
-<quentin.monnet@netronome.com> wrote:
->
-> >>>  {
-> >>> -   size_t line_n = 0, optlen = strlen(option);
-> >>> -   char *res, *strval, *line = NULL;
-> >>> -   ssize_t n;
-> >>> +   char *sep;
-> >>> +   ssize_t linelen;
-> >>
-> >> Please order the declarations in reverse-Christmas tree style.
-> >
-> > Does this refer to the type, name, or full line length? I did not find
-> > this in CodingStyle, the closest I could get is:
-> > https://lore.kernel.org/patchwork/patch/732076/
-> >
-> > I will assume the line length for now.
->
-> I am unsure this is in the CodingStyle, but fairly certain that this is
-> a convention for at least network-related code. And yes, as I understand
-> it refers to the length of the line.
+On Tue, Aug 06, 2019 at 06:47:08AM +0000, Ardelean, Alexandru wrote:
+> On Mon, 2019-08-05 at 16:51 +0200, Andrew Lunn wrote:
+> > [External]
+> > 
+> > On Mon, Aug 05, 2019 at 07:54:43PM +0300, Alexandru Ardelean wrote:
+> > > Sometimes, the connection between a MAC and PHY is done via a
+> > > mode/interface converter. An example is a GMII-to-RGMII converter, which
+> > > would mean that the MAC operates in GMII mode while the PHY operates in
+> > > RGMII. In this case there is a discrepancy between what the MAC expects &
+> > > what the PHY expects and both need to be configured in their respective
+> > > modes.
+> > > 
+> > > Sometimes, this converter is specified via a board/system configuration (in
+> > > the device-tree for example). But, other times it can be left unspecified.
+> > > The use of these converters is common in boards that have FPGA on them.
+> > > 
+> > > This patch also adds support for a `adi,phy-mode-internal` property that
+> > > can be used in these (implicit convert) cases. The internal PHY mode will
+> > > be used to specify the correct register settings for the PHY.
+> > > 
+> > > `fwnode_handle` is used, since this property may be specified via ACPI as
+> > > well in other setups, but testing has been done in DT context.
+> > 
+> > Looking at the patch, you seems to assume phy-mode is what the MAC is
+> > using? That seems rather odd, given the name. It seems like a better
+> > solution would be to add a mac-mode, which the MAC uses to configure
+> > its side of the link. The MAC driver would then implement this
+> > property.
+> > 
+> 
+> actually, that's a pretty good idea;
+> i guess i was narrow-minded when writing the driver, and got stuck on phy specifics, and forgot about the MAC-side;
+> [ i also catch these design elements when reviewing, but i also seem to miss them when writing stuff sometimes ]
+> 
 
-Let's not over focus on this.
-It's a preference, but not a strong requirement.
-There are plenty of cases where it shouldn't be followed.
-Like logical grouping of variables take precedence of xmas tree.
+Hi Ardelean
+
+We should also consider the media converter itself. It is passive, or
+does it need a driver. You seems to be considering GMII-to-RGMII. But
+what about RGMII to SGMII? or RGMII to 1000Base-KX etc? Ideally we
+want a generic solution and we need to think about all the parts in
+the system.
+
+     Andrew
