@@ -2,101 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B11E832F4
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:40:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09768832F9
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:41:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730177AbfHFNke (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 09:40:34 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:33389 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728259AbfHFNkd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:40:33 -0400
-Received: by mail-qk1-f193.google.com with SMTP id r6so62908591qkc.0
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 06:40:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=dNzsOgLAi4DpECpGRrewtthquhRyGxeGVQXq8haedDU=;
-        b=nc3ULfAxivmoeOVWtx4pEkcKqWu7gMWhZ1T9c67WVWKwR/tqg4tjz06IHSiy7/T1mM
-         1Q9OgN3SKGqoN0fTofviJhtk+Y8Fnu6Rb9wlYk2j8XzfT49iKaQgZskM/1nQuoKXVyrg
-         x7tKm90nh5lvD0if38GgDipFfBZn9HvMJg3lzYCC5JZp61ytJWsdqe/KqqgbJCT1alsH
-         YRrG5mFigDCgWFVNUPK0RWvRiPVQp4r15i+HE+vsy+0UofzeByMFI318I8OMNMaejIys
-         JaRCTgreBgdiEAQrQGSv5kop0m94iD49e5Xbjmt0OHKcuev72yVdTxaI38Rng+Q3PBaC
-         NvAA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=dNzsOgLAi4DpECpGRrewtthquhRyGxeGVQXq8haedDU=;
-        b=VO07nEvtbKbZ3k8rnb8mi3dM0EVyw6V7EeD/IjHf5AU3UWectYImVbRQKIfG0WO8kc
-         giHg4XJ675CCPcnluxd8deA+9Bpi3QvKBBpCTGbTTir1EWs/gpo2RUSTRFxvTovsD+9Y
-         jEeMjRq9UUoYhSXNEc0aQSgD5AAXNbWhxtw7U+Hh3P+kIiYd4TVHefSsycFFKFIrkoan
-         8FITiEJMZNvT6DsZMViVdHItDxiFD5+jot9NwJGKYhCLDK5c296EqoUyhL3fRqTXTass
-         +ILH10sUGOz7Hc//Eany1WR8YiCOT+zoFgk0+Yi3IDDZwgSjz1v2wWiJY92p0QrXl3k2
-         oVeQ==
-X-Gm-Message-State: APjAAAUfbhApC66Ij8gNNfBE1Tb9STb4f5TSbUX+wSVSJPKM1t8vwsAm
-        YmK/t53fKBMHqmkVDsaT1f+KIQ==
-X-Google-Smtp-Source: APXvYqxMfwBB47axCWNEJctHilcnayHipqGXZY261+EFRwNZ/6dzvsnkK6i+idF6ma2zmUwEOo/rBA==
-X-Received: by 2002:a05:620a:31b:: with SMTP id s27mr3219001qkm.264.1565098832774;
-        Tue, 06 Aug 2019 06:40:32 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
-        by smtp.gmail.com with ESMTPSA id u18sm36087109qkj.98.2019.08.06.06.40.32
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 06 Aug 2019 06:40:32 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1huzhW-0004zI-Ru; Tue, 06 Aug 2019 10:40:30 -0300
-Date:   Tue, 6 Aug 2019 10:40:30 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Jason Wang <jasowang@redhat.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH V2 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-Message-ID: <20190806134030.GD11627@ziepe.ca>
-References: <20190801141512.GB23899@ziepe.ca>
- <42ead87b-1749-4c73-cbe4-29dbeb945041@redhat.com>
- <20190802124613.GA11245@ziepe.ca>
- <20190802100414-mutt-send-email-mst@kernel.org>
- <20190802172418.GB11245@ziepe.ca>
- <20190803172944-mutt-send-email-mst@kernel.org>
- <20190804001400.GA25543@ziepe.ca>
- <20190804040034-mutt-send-email-mst@kernel.org>
- <20190806115317.GA11627@ziepe.ca>
- <20190806093633-mutt-send-email-mst@kernel.org>
+        id S1732045AbfHFNla convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 6 Aug 2019 09:41:30 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:44242 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726373AbfHFNla (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:41:30 -0400
+Received: from [38.64.181.146] (helo=nyx.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:DHE_RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1huziP-0003n1-Oh; Tue, 06 Aug 2019 13:41:25 +0000
+Received: by nyx.localdomain (Postfix, from userid 1000)
+        id 7D88924026B; Tue,  6 Aug 2019 09:41:24 -0400 (EDT)
+Received: from nyx (localhost [127.0.0.1])
+        by nyx.localdomain (Postfix) with ESMTP id 79646289F62;
+        Tue,  6 Aug 2019 09:41:24 -0400 (EDT)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     YueHaibing <yuehaibing@huawei.com>
+cc:     vfalico@gmail.com, andy@greyhouse.net, davem@davemloft.net,
+        jiri@resnulli.us, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] bonding: Add vlan tx offload to hw_enc_features
+In-reply-to: <20190805134953.63596-1-yuehaibing@huawei.com>
+References: <20190805134953.63596-1-yuehaibing@huawei.com>
+Comments: In-reply-to YueHaibing <yuehaibing@huawei.com>
+   message dated "Mon, 05 Aug 2019 21:49:53 +0800."
+X-Mailer: MH-E 8.5+bzr; nmh 1.7.1-RC3; GNU Emacs 27.0.50
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190806093633-mutt-send-email-mst@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <4280.1565098884.1@nyx>
+Content-Transfer-Encoding: 8BIT
+Date:   Tue, 06 Aug 2019 09:41:24 -0400
+Message-ID: <4281.1565098884@nyx>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 06, 2019 at 09:36:58AM -0400, Michael S. Tsirkin wrote:
-> On Tue, Aug 06, 2019 at 08:53:17AM -0300, Jason Gunthorpe wrote:
-> > On Sun, Aug 04, 2019 at 04:07:17AM -0400, Michael S. Tsirkin wrote:
-> > > > > > Also, why can't this just permanently GUP the pages? In fact, where
-> > > > > > does it put_page them anyhow? Worrying that 7f466 adds a get_user page
-> > > > > > but does not add a put_page??
-> > > > 
-> > > > You didn't answer this.. Why not just use GUP?
-> > > > 
-> > > > Jason
-> > > 
-> > > Sorry I misunderstood the question. Permanent GUP breaks lots of
-> > > functionality we need such as THP and numa balancing.
-> > 
-> > Really? It doesn't look like that many pages are involved..
-> > 
-> > Jason
-> 
-> Yea. But they just might happen to be heavily accessed ones....
+YueHaibing <yuehaibing@huawei.com> wrote:
 
-Maybe you can solve the numa balance problem some other way and use
-normal GUP..
+>As commit 30d8177e8ac7 ("bonding: Always enable vlan tx offload")
+>said, we should always enable bonding's vlan tx offload, pass the
+>vlan packets to the slave devices with vlan tci, let them to handle
+>vlan implementation.
+>
+>Now if encapsulation protocols like VXLAN is used, skb->encapsulation
+>may be set, then the packet is passed to vlan devicec which based on
 
-Jason 
+	Typo: "devicec"
+
+>bonding device. However in netif_skb_features(), the check of
+>hw_enc_features:
+>
+>	 if (skb->encapsulation)
+>                 features &= dev->hw_enc_features;
+>
+>clears NETIF_F_HW_VLAN_CTAG_TX/NETIF_F_HW_VLAN_STAG_TX. This results
+>in same issue in commit 30d8177e8ac7 like this:
+>
+>vlan_dev_hard_start_xmit
+>  -->dev_queue_xmit
+>    -->validate_xmit_skb
+>      -->netif_skb_features //NETIF_F_HW_VLAN_CTAG_TX is cleared
+>      -->validate_xmit_vlan
+>        -->__vlan_hwaccel_push_inside //skb->tci is cleared
+>...
+> --> bond_start_xmit
+>   --> bond_xmit_hash //BOND_XMIT_POLICY_ENCAP34
+>     --> __skb_flow_dissect // nhoff point to IP header
+>        -->  case htons(ETH_P_8021Q)
+>             // skb_vlan_tag_present is false, so
+>             vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan),
+>             //vlan point to ip header wrongly
+>
+>Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+
+	Looks good to me; should this be tagged with
+
+Fixes: 278339a42a1b ("bonding: propogate vlan_features to bonding master")
+
+	as 30d8177e8ac7 was?  If not, is there an appropriate commit id?
+
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+
+	-J
+
+>---
+> drivers/net/bonding/bond_main.c | 2 ++
+> 1 file changed, 2 insertions(+)
+>
+>diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>index 02fd782..931d9d9 100644
+>--- a/drivers/net/bonding/bond_main.c
+>+++ b/drivers/net/bonding/bond_main.c
+>@@ -1126,6 +1126,8 @@ static void bond_compute_features(struct bonding *bond)
+> done:
+> 	bond_dev->vlan_features = vlan_features;
+> 	bond_dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
+>+				    NETIF_F_HW_VLAN_CTAG_TX |
+>+				    NETIF_F_HW_VLAN_STAG_TX |
+> 				    NETIF_F_GSO_UDP_L4;
+> 	bond_dev->mpls_features = mpls_features;
+> 	bond_dev->gso_max_segs = gso_max_segs;
+>-- 
+>2.7.4
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
