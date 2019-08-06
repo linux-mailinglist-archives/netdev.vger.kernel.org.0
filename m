@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 046718366D
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 18:11:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3B438366F
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 18:12:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387800AbfHFQLv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 12:11:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50122 "EHLO mail.kernel.org"
+        id S2387809AbfHFQLz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 12:11:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50180 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387520AbfHFQLu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 12:11:50 -0400
+        id S2387805AbfHFQLw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 12:11:52 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A2B7B208C3;
-        Tue,  6 Aug 2019 16:11:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3F52D20679;
+        Tue,  6 Aug 2019 16:11:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565107909;
-        bh=B0YYq3qTN5sSv/aD79fKAGihiKaq+gdS7BCyvv9nVVI=;
+        s=default; t=1565107911;
+        bh=dsEU41ZjboX8wiCrbr7wPmTyqRM39fWwxhY2724+fZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=drunLIe+vPO+HL68nHXuyo89gQHCjtQ5mR1jVTGSUF34DdArH1wC5EQFP+mM+sLzy
-         +SExEhVJJEusWGU9AggHML0nYZ+6oPlUh4dtj/ZMqiuDMtzNQB4HzUF9qpVc3Df5lH
-         RMQc1jc6FXwEDUMiZkKE/7IvpCQKDE+WzHUeD+A8=
+        b=t8SBXLiYPNjeN/jbvQWhQ5d3VQuxxMoBrNy3ZT3Wwv1IqK8dAetYijEmSqd1EoyLW
+         LJ3zXPSld5sA+wWuS6fd5v4mE/zKvm9h43wSfElwtf97fxx4C+0dhXTxDyScrnjYsH
+         GBdlqbAlDwS5tpU4haovoTIZJNa8uhW0hKQBCw+k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     netdev@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Nathan Huckleberry <nhuck@google.com>
-Subject: [PATCH 13/17] mvpp2: no need to check return value of debugfs_create functions
-Date:   Tue,  6 Aug 2019 18:11:24 +0200
-Message-Id: <20190806161128.31232-14-gregkh@linuxfoundation.org>
+        intel-wired-lan@lists.osuosl.org
+Subject: [PATCH 14/17] fm10k: no need to check return value of debugfs_create functions
+Date:   Tue,  6 Aug 2019 18:11:25 +0200
+Message-Id: <20190806161128.31232-15-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190806161128.31232-1-gregkh@linuxfoundation.org>
 References: <20190806161128.31232-1-gregkh@linuxfoundation.org>
@@ -47,91 +46,28 @@ When calling debugfs functions, there is no need to ever check the
 return value.  The function can work or not, but the code logic should
 never do something different based on this.
 
+Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>
-Cc: Nick Desaulniers <ndesaulniers@google.com>
-Cc: Nathan Huckleberry <nhuck@google.com>
+Cc: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../ethernet/marvell/mvpp2/mvpp2_debugfs.c    | 19 +------------------
- 1 file changed, 1 insertion(+), 18 deletions(-)
+ drivers/net/ethernet/intel/fm10k/fm10k_debugfs.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-index 274fb07362cb..4a3baa7e0142 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-@@ -452,8 +452,6 @@ static int mvpp2_dbgfs_flow_port_init(struct dentry *parent,
- 	struct dentry *port_dir;
+diff --git a/drivers/net/ethernet/intel/fm10k/fm10k_debugfs.c b/drivers/net/ethernet/intel/fm10k/fm10k_debugfs.c
+index dca104121c05..1d27b2fb23af 100644
+--- a/drivers/net/ethernet/intel/fm10k/fm10k_debugfs.c
++++ b/drivers/net/ethernet/intel/fm10k/fm10k_debugfs.c
+@@ -160,8 +160,6 @@ void fm10k_dbg_q_vector_init(struct fm10k_q_vector *q_vector)
+ 	snprintf(name, sizeof(name), "q_vector.%03d", q_vector->v_idx);
  
- 	port_dir = debugfs_create_dir(port->dev->name, parent);
--	if (IS_ERR(port_dir))
--		return PTR_ERR(port_dir);
- 
- 	port_entry = &port->priv->dbgfs_entries->port_flow_entries[port->id];
- 
-@@ -480,8 +478,6 @@ static int mvpp2_dbgfs_flow_entry_init(struct dentry *parent,
- 	sprintf(flow_entry_name, "%02d", flow);
- 
- 	flow_entry_dir = debugfs_create_dir(flow_entry_name, parent);
--	if (!flow_entry_dir)
--		return -ENOMEM;
- 
- 	entry = &priv->dbgfs_entries->flow_entries[flow];
- 
-@@ -514,8 +510,6 @@ static int mvpp2_dbgfs_flow_init(struct dentry *parent, struct mvpp2 *priv)
- 	int i, ret;
- 
- 	flow_dir = debugfs_create_dir("flows", parent);
--	if (!flow_dir)
--		return -ENOMEM;
- 
- 	for (i = 0; i < MVPP2_N_PRS_FLOWS; i++) {
- 		ret = mvpp2_dbgfs_flow_entry_init(flow_dir, priv, i);
-@@ -539,8 +533,6 @@ static int mvpp2_dbgfs_prs_entry_init(struct dentry *parent,
- 	sprintf(prs_entry_name, "%03d", tid);
- 
- 	prs_entry_dir = debugfs_create_dir(prs_entry_name, parent);
--	if (!prs_entry_dir)
--		return -ENOMEM;
- 
- 	entry = &priv->dbgfs_entries->prs_entries[tid];
- 
-@@ -578,8 +570,6 @@ static int mvpp2_dbgfs_prs_init(struct dentry *parent, struct mvpp2 *priv)
- 	int i, ret;
- 
- 	prs_dir = debugfs_create_dir("parser", parent);
--	if (!prs_dir)
--		return -ENOMEM;
- 
- 	for (i = 0; i < MVPP2_PRS_TCAM_SRAM_SIZE; i++) {
- 		ret = mvpp2_dbgfs_prs_entry_init(prs_dir, priv, i);
-@@ -688,8 +678,6 @@ static int mvpp2_dbgfs_port_init(struct dentry *parent,
- 	struct dentry *port_dir;
- 
- 	port_dir = debugfs_create_dir(port->dev->name, parent);
--	if (IS_ERR(port_dir))
--		return PTR_ERR(port_dir);
- 
- 	debugfs_create_file("parser_entries", 0444, port_dir, port,
- 			    &mvpp2_dbgfs_port_parser_fops);
-@@ -716,15 +704,10 @@ void mvpp2_dbgfs_init(struct mvpp2 *priv, const char *name)
- 	int ret, i;
- 
- 	mvpp2_root = debugfs_lookup(MVPP2_DRIVER_NAME, NULL);
--	if (!mvpp2_root) {
-+	if (!mvpp2_root)
- 		mvpp2_root = debugfs_create_dir(MVPP2_DRIVER_NAME, NULL);
--		if (IS_ERR(mvpp2_root))
--			return;
--	}
- 
- 	mvpp2_dir = debugfs_create_dir(name, mvpp2_root);
--	if (IS_ERR(mvpp2_dir))
+ 	q_vector->dbg_q_vector = debugfs_create_dir(name, interface->dbg_intfc);
+-	if (!q_vector->dbg_q_vector)
 -		return;
  
- 	priv->dbgfs_dir = mvpp2_dir;
- 	priv->dbgfs_entries = kzalloc(sizeof(*priv->dbgfs_entries), GFP_KERNEL);
+ 	/* Generate a file for each rx ring in the q_vector */
+ 	for (i = 0; i < q_vector->tx.count; i++) {
 -- 
 2.22.0
 
