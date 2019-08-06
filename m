@@ -2,206 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51B4183318
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:43:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AB3C83352
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 15:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731883AbfHFNnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 09:43:17 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:59162 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731894AbfHFNm5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:42:57 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1727540AbfHFNwN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 09:52:13 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:44426 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726373AbfHFNwN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 09:52:13 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id BE706C21CC;
-        Tue,  6 Aug 2019 13:42:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1565098977; bh=18B/BrYz2sxVzKeQcjktizOD0pcEwHNkm/ulnP89N5A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
-         References:From;
-        b=ggMGdYW7W/TdZKv7lXxaEWfjmo/y1eQGWGZl5pw5rKnHNzvSgAkLa7aV9H48M6Dfj
-         lKIX0EVMX4yUCAlBh7jwyxmOHlC634Z1VtYftkc29s7Bvpn8RNtQQF6HxESPKLni5s
-         ZW+qzxtYrJgxeQyV5hEDPrBwz9A0TVku2Tc3JNd+pR4jHyIFiQOf0ATNnGgWBy8nnQ
-         +bbxovWKCm8KTIjK1oo+9B7VNop5V6qRUv0m+j23C5EQc0Ab+ABXFaBzCGwg30rmKV
-         heps87PchFFwmNn9ZaIp5NawFjLUHTkUmU6oy+qcI0EjdAeMxiRk7eCcpgswvmhRMn
-         ewiG+JvHfyZqA==
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 7B0AFA007A;
-        Tue,  6 Aug 2019 13:42:55 +0000 (UTC)
-From:   Jose Abreu <Jose.Abreu@synopsys.com>
-To:     netdev@vger.kernel.org
-Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 10/10] net: stmmac: selftests: Add a selftest for Flexible RX Parser
-Date:   Tue,  6 Aug 2019 15:42:51 +0200
-Message-Id: <486b11dcec03cb5a7d0dc166bf57c09627e53a8b.1565098881.git.joabreu@synopsys.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <cover.1565098881.git.joabreu@synopsys.com>
-References: <cover.1565098881.git.joabreu@synopsys.com>
-In-Reply-To: <cover.1565098881.git.joabreu@synopsys.com>
-References: <cover.1565098881.git.joabreu@synopsys.com>
+        by mx1-us1.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id B831614008D;
+        Tue,  6 Aug 2019 13:52:11 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Tue, 6 Aug
+ 2019 06:52:07 -0700
+From:   Edward Cree <ecree@solarflare.com>
+Subject: [PATCH v3 net-next 0/3] net: batched receive in GRO path
+To:     David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        <linux-net-drivers@solarflare.com>
+Message-ID: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
+Date:   Tue, 6 Aug 2019 14:52:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24824.005
+X-TM-AS-Result: No-2.095900-4.000000-10
+X-TMASE-MatchedRID: 80sgmbgkAKBjJRYrYz9aZmgws6g0ewz2fo0lncdGFFP22R14ijZDjBZe
+        oMn8xA+cxhbqMAz+sH6VijEpnyRMhw82vHIf00E6DOL14/DRHdDpVMb1xnESMlT4wXE1Q3+tsvO
+        Ufe+3re0bwAKQ5596XrR/4ZyrTbfcvQZhTFmx+8jylEfNwb6iLfX71s7cIJuTsS0sZEB7c8bDbM
+        epoGwB56ai9oNKk5/0an1kBFEaVX+6qJkiP4WhMyqwx8x+s5lFO4NrJdLQuoHWXfwzppZ8SExT9
+        a2g8S09XVb1YVt9DnuCf3gIpHM8T7MxctdgEdwy52cbj4/WmPtDfut2Lc1Yhwo0WrqzcfeOliNc
+        JScWqB5U4ZgYBGHa9EpQdH2+JITlrFMDyJP7G26FXk+vEfaJJczzMs2dyeyVe+xt+hmLFRNRLTE
+        RhRg1g1YVEmmceHTqpqd12oG3Y4fjtwtQtmXE5ZyebS/i2xjjE9jZI/dKaABUjspoiX02F0DcCr
+        lcXWXIXnxHdapXvcz+Mru+sXzdYHXZ29PKwetshL9NX2TqmkAlWygvtTclwA+XMlIFkG/VA+FKi
+        +KNuiLTvdrN4+rgfZxWmvt/7ojS+nZRZZD696n27WtDgGBc8k16N0DD9tffmyiLZetSf8mZMPCn
+        TMzfOiq2rl3dzGQ1/tQArNcrq34e5Qi72hj5FBFn02NWO/wq0oSuGrtBTJsh2t3AVG+vWNfE5lk
+        FPKYH8w52f2RWypLzFOa3wTBeYvFimqAyUm86OGucnPxU5fhDgw2OfwbhLKMa5OkNpiHkifsL+6
+        CY4RnJZmo0UvMlsUMMprcbiest
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.095900-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24824.005
+X-MDID: 1565099532-1vxpgRdmoQT6
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a selftest for the Flexible RX Parser feature.
+This series listifies part of GRO processing, in a manner which allows those
+ packets which are not GROed (i.e. for which dev_gro_receive returns
+ GRO_NORMAL) to be passed on to the listified regular receive path.
+dev_gro_receive() itself is not listified, nor the per-protocol GRO
+ callback, since GRO's need to hold packets on lists under napi->gro_hash
+ makes keeping the packets on other lists awkward, and since the GRO control
+ block state of held skbs can refer only to one 'new' skb at a time.
+Instead, when napi_frags_finish() handles a GRO_NORMAL result, stash the skb
+ onto a list in the napi struct, which is received at the end of the napi
+ poll or when its length exceeds the (new) sysctl net.core.gro_normal_batch.
 
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
+Performance figures with this series, collected on a back-to-back pair of
+ Solarflare sfn8522-r2 NICs with 120-second NetPerf tests.  In the stats,
+ sample size n for old and new code is 6 runs each; p is from a Welch t-test.
+Tests were run both with GRO enabled and disabled, the latter simulating
+ uncoalesceable packets (e.g. due to IP or TCP options).  The receive side
+ (which was the device under test) had the NetPerf process pinned to one CPU,
+ and the device interrupts pinned to a second CPU.  CPU utilisation figures
+ (used in cases of line-rate performance) are summed across all CPUs.
+net.core.gro_normal_batch was left at its default value of 8.
 
----
-Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Jose Abreu <joabreu@synopsys.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: netdev@vger.kernel.org
-Cc: linux-stm32@st-md-mailman.stormreply.com
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-kernel@vger.kernel.org
----
- .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 98 +++++++++++++++++++++-
- 1 file changed, 97 insertions(+), 1 deletion(-)
+TCP 4 streams, GRO on: all results line rate (9.415Gbps)
+net-next: 210.3% cpu
+after #1: 181.5% cpu (-13.7%, p=0.031 vs net-next)
+after #3: 196.7% cpu (- 8.4%, p=0.136 vs net-next)
+TCP 4 streams, GRO off:
+net-next: 8.017 Gbps
+after #1: 7.785 Gbps (- 2.9%, p=0.385 vs net-next)
+after #3: 7.604 Gbps (- 5.1%, p=0.282 vs net-next.  But note *)
+TCP 1 stream, GRO off:
+net-next: 6.553 Gbps
+after #1: 6.444 Gbps (- 1.7%, p=0.302 vs net-next)
+after #3: 6.790 Gbps (+ 3.6%, p=0.169 vs net-next)
+TCP 1 stream, GRO on, busy_read = 50: all results line rate
+net-next: 156.0% cpu
+after #1: 174.5% cpu (+11.9%, p=0.015 vs net-next)
+after #3: 165.0% cpu (+ 5.8%, p=0.147 vs net-next)
+TCP 1 stream, GRO off, busy_read = 50:
+net-next: 6.488 Gbps
+after #1: 6.625 Gbps (+ 2.1%, p=0.059 vs net-next)
+after #3: 7.351 Gbps (+13.3%, p=0.026 vs net-next)
+TCP_RR 100 streams, GRO off, 8000 byte payload
+net-next: 995.083 us
+after #1: 969.167 us (- 2.6%, p=0.204 vs net-next)
+after #3: 976.433 us (- 1.9%, p=0.254 vs net-next)
+TCP_RR 100 streams, GRO off, 8000 byte payload, busy_read = 50:
+net-next:   2.851 ms
+after #1:   2.871 ms (+ 0.7%, p=0.134 vs net-next)
+after #3:   2.937 ms (+ 3.0%, p<0.001 vs net-next)
+TCP_RR 100 streams, GRO off, 1 byte payload, busy_read = 50:
+net-next: 867.317 us
+after #1: 865.717 us (- 0.2%, p=0.334 vs net-next)
+after #3: 868.517 us (+ 0.1%, p=0.414 vs net-next)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-index 6b08bb15af15..abab84f2ef8b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
-@@ -11,8 +11,10 @@
- #include <linux/ip.h>
- #include <linux/phy.h>
- #include <linux/udp.h>
-+#include <net/pkt_cls.h>
- #include <net/tcp.h>
- #include <net/udp.h>
-+#include <net/tc_act/tc_gact.h>
- #include "stmmac.h"
- 
- struct stmmachdr {
-@@ -229,7 +231,7 @@ static int stmmac_test_loopback_validate(struct sk_buff *skb,
- 			goto out;
- 	}
- 	if (tpriv->packet->src) {
--		if (!ether_addr_equal(ehdr->h_source, orig_ndev->dev_addr))
-+		if (!ether_addr_equal(ehdr->h_source, tpriv->packet->src))
- 			goto out;
- 	}
- 
-@@ -912,6 +914,96 @@ static int stmmac_test_dvlanfilt(struct stmmac_priv *priv)
- 	return ret;
- }
- 
-+#ifdef CONFIG_NET_CLS_ACT
-+static int stmmac_test_rxp(struct stmmac_priv *priv)
-+{
-+	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
-+	struct tc_cls_u32_offload cls_u32 = { };
-+	struct stmmac_packet_attrs attr = { };
-+	struct tc_action **actions, *act;
-+	struct tc_u32_sel *sel;
-+	struct tcf_exts *exts;
-+	int ret, i, nk = 1;
-+
-+	if (!tc_can_offload(priv->dev))
-+		return -EOPNOTSUPP;
-+	if (!priv->dma_cap.frpsel)
-+		return -EOPNOTSUPP;
-+
-+	sel = kzalloc(sizeof(*sel) + nk * sizeof(struct tc_u32_key), GFP_KERNEL);
-+	if (!sel)
-+		return -ENOMEM;
-+
-+	exts = kzalloc(sizeof(*exts), GFP_KERNEL);
-+	if (!exts) {
-+		ret = -ENOMEM;
-+		goto cleanup_sel;
-+	}
-+
-+	actions = kzalloc(nk * sizeof(*actions), GFP_KERNEL);
-+	if (!actions) {
-+		ret = -ENOMEM;
-+		goto cleanup_exts;
-+	}
-+
-+	act = kzalloc(nk * sizeof(*act), GFP_KERNEL);
-+	if (!act) {
-+		ret = -ENOMEM;
-+		goto cleanup_actions;
-+	}
-+
-+	cls_u32.command = TC_CLSU32_NEW_KNODE;
-+	cls_u32.common.chain_index = 0;
-+	cls_u32.common.protocol = htons(ETH_P_ALL);
-+	cls_u32.knode.exts = exts;
-+	cls_u32.knode.sel = sel;
-+	cls_u32.knode.handle = 0x123;
-+
-+	exts->nr_actions = nk;
-+	exts->actions = actions;
-+	for (i = 0; i < nk; i++) {
-+		struct tcf_gact *gact = to_gact(&act[i]);
-+
-+		actions[i] = &act[i];
-+		gact->tcf_action = TC_ACT_SHOT;
-+	}
-+
-+	sel->nkeys = nk;
-+	sel->offshift = 0;
-+	sel->keys[0].off = 6;
-+	sel->keys[0].val = htonl(0xdeadbeef);
-+	sel->keys[0].mask = ~0x0;
-+
-+	ret = stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
-+	if (ret)
-+		goto cleanup_act;
-+
-+	attr.dst = priv->dev->dev_addr;
-+	attr.src = addr;
-+
-+	ret = __stmmac_test_loopback(priv, &attr);
-+	ret = !ret; /* Shall NOT receive packet */
-+
-+	cls_u32.command = TC_CLSU32_DELETE_KNODE;
-+	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
-+
-+cleanup_act:
-+	kfree(act);
-+cleanup_actions:
-+	kfree(actions);
-+cleanup_exts:
-+	kfree(exts);
-+cleanup_sel:
-+	kfree(sel);
-+	return ret;
-+}
-+#else
-+static int stmmac_test_rxp(struct stmmac_priv *priv)
-+{
-+	return -EOPNOTSUPP;
-+}
-+#endif
-+
- #define STMMAC_LOOPBACK_NONE	0
- #define STMMAC_LOOPBACK_MAC	1
- #define STMMAC_LOOPBACK_PHY	2
-@@ -969,6 +1061,10 @@ static const struct stmmac_test {
- 		.name = "Double VLAN Filtering",
- 		.lb = STMMAC_LOOPBACK_PHY,
- 		.fn = stmmac_test_dvlanfilt,
-+	}, {
-+		.name = "Flexible RX Parser   ",
-+		.lb = STMMAC_LOOPBACK_PHY,
-+		.fn = stmmac_test_rxp,
- 	},
- };
- 
--- 
-2.7.4
+(*) These tests produced a mixture of line-rate and below-line-rate results,
+ meaning that statistically speaking the results were 'censored' by the
+ upper bound, and were thus not normally distributed, making a Welch t-test
+ mathematically invalid.  I therefore also calculated estimators according
+ to [1], which gave the following:
+net-next: 8.133 Gbps
+after #1: 8.130 Gbps (- 0.0%, p=0.499 vs net-next)
+after #3: 7.680 Gbps (- 5.6%, p=0.285 vs net-next)
+(though my procedure for determining ν wasn't mathematically well-founded
+ either, so take that p-value with a grain of salt).
+A further check came from dividing the bandwidth figure by the CPU usage for
+ each test run, giving:
+net-next: 3.461
+after #1: 3.198 (- 7.6%, p=0.145 vs net-next)
+after #3: 3.641 (+ 5.2%, p=0.280 vs net-next)
+
+The above results are fairly mixed, and in most cases not statistically
+ significant.  But I think we can roughly conclude that the series
+ marginally improves non-GROable throughput, without hurting latency
+ (except in the large-payload busy-polling case, which in any case yields
+ horrid performance even on net-next (almost triple the latency without
+ busy-poll).  Also, drivers which, unlike sfc, pass UDP traffic to GRO
+ would expect to see a benefit from gaining access to batching.
+
+Changed in v3:
+ * gro_normal_batch sysctl now uses SYSCTL_ONE instead of &one
+ * removed RFC tags (no comments after a week means no-one objects, right?)
+
+Changed in v2:
+ * During busy poll, call gro_normal_list() to receive batched packets
+   after each cycle of the napi busy loop.  See comments in Patch #3 for
+   complications of doing the same in busy_poll_stop().
+
+[1]: Cohen 1959, doi: 10.1080/00401706.1959.10489859
+
+Edward Cree (3):
+  sfc: don't score irq moderation points for GRO
+  sfc: falcon: don't score irq moderation points for GRO
+  net: use listified RX for handling GRO_NORMAL skbs
+
+ drivers/net/ethernet/sfc/falcon/rx.c |  5 +---
+ drivers/net/ethernet/sfc/rx.c        |  5 +---
+ include/linux/netdevice.h            |  3 ++
+ net/core/dev.c                       | 44 ++++++++++++++++++++++++++--
+ net/core/sysctl_net_core.c           |  8 +++++
+ 5 files changed, 54 insertions(+), 11 deletions(-)
 
