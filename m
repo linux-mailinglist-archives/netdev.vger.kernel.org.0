@@ -2,97 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3092483A80
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:43:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62B8A83A88
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:43:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726340AbfHFUnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 16:43:02 -0400
-Received: from mail-eopbgr70070.outbound.protection.outlook.com ([40.107.7.70]:48206
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726068AbfHFUnB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 16:43:01 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LlVMYeM3Za9NXBpc8tVwsIKe45Je13FhqDhvoKYVN5fkpvs+713j5LeWTe+5awLsZvxao5skQgCqV0D+YyvffAwXENzp2nfQK2KToWw1unMXk7YQKxswpzFiSlzqN76UWcwwN88Kqfs2VotP2EPVhEXlHYh470qdHQAt8ypi9Rf0iQs9dO/nHcUGMWM9dQmniGyYmIOrpI0j/4LUMpd7Bq0KpyFBBdxXrfnQceGQAc3JjV7w4VujgB2ZWQatyGK9wQHAcnI5b+NY33Bgm0yuRNGj3V9e42zTNfj/vhfeqyH3tjvSAn3sZNZ8Kt02UyIde6kuAdFywLNwUHqALqaC3w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RC6UTi8hbsNJx196SNdi2dODmCtlTPfqnbKPeSV3LE0=;
- b=LYii3s4ujERJ6ryXl6arML+ZLaeYDFyCLAOkUcper+BzY4PPdv1WOf8HecbNetL9c+ukP0BLQn3xyjPgfgfDg2x00G8YRUMj40XmJywe3o7QrRNxJk9zUrxj30/pgApDCzJ/VKTQkX/rv7p4QZK1DJ5q5HG6Hb6ihPCfUZDbFJc/Wa6ftvdpEi+xE80qPh6nT5+7aaCgEEcMo0Ov8pGgfZozdN66LLncmUyQRXJtxIi1Y82wQP8wxAaB7cx/QzCnGhar2NNVWHJ9Jy4ANFYij8rY+z3ZpXKVuti3/qmSfejs05y7CAY00jo/DddzOV0jEWqFHo6qp+iItPX7jpnAHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=RC6UTi8hbsNJx196SNdi2dODmCtlTPfqnbKPeSV3LE0=;
- b=OlW+pdsbh1SuPsaIb6okb2eFs/6u1VC5COXr8WzlLb5usC2dKtCbxgc5USilYKgRUTnck6F4JXu9KOP10pk5cl5mA6RId6MBdrfNNE2iokSh4pElliCopgWCj9qtxvyU1lHTzbVtH+owmNs/wiGXRavaoll/0O05IAo+WpFNX4Y=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2213.eurprd05.prod.outlook.com (10.168.58.24) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2136.17; Tue, 6 Aug 2019 20:42:57 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2136.018; Tue, 6 Aug 2019
- 20:42:57 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "hslester96@gmail.com" <hslester96@gmail.com>
-CC:     "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] net/mlx5e: Use refcount_t for refcount
-Thread-Topic: [PATCH v2] net/mlx5e: Use refcount_t for refcount
-Thread-Index: AQHVSVIhSHjGbDfeSka9iay/Nq7XtqbunGYA
-Date:   Tue, 6 Aug 2019 20:42:56 +0000
-Message-ID: <aaf9680afe5c62d0cf71ff4382b66b3e4d735008.camel@mellanox.com>
-References: <20190802164828.20243-1-hslester96@gmail.com>
-In-Reply-To: <20190802164828.20243-1-hslester96@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: e91cb3db-a096-47fa-18b7-08d71aaea9c1
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2213;
-x-ms-traffictypediagnostic: DB6PR0501MB2213:
-x-microsoft-antispam-prvs: <DB6PR0501MB2213CE4EDF3D2748828AE692BED50@DB6PR0501MB2213.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 0121F24F22
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(366004)(39860400002)(136003)(376002)(189003)(199004)(54906003)(25786009)(99286004)(2906002)(91956017)(36756003)(76116006)(86362001)(76176011)(2351001)(316002)(58126008)(1411001)(11346002)(446003)(71200400001)(2501003)(71190400001)(186003)(102836004)(6506007)(256004)(26005)(486006)(476003)(2616005)(64756008)(66556008)(66476007)(6436002)(6916009)(81156014)(81166006)(5640700003)(14454004)(8676002)(6512007)(4326008)(305945005)(6246003)(66446008)(7736002)(66946007)(229853002)(8936002)(53936002)(118296001)(5660300002)(66066001)(68736007)(1361003)(3846002)(6486002)(6116002)(4744005)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2213;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: +3rTcz0Zl0/QDXt1GNSILPI7n2u6tyspYfL24+R4O28Bs71KQATACOqSHWu67z6pdcsGwqGaJ5ASF4TXX6DqgQXzGAfBCHKVdI2vgClOQVbOKhjPyX3q3Ej5hLoNrSZsYS1OqudqDhfB1JRRIqRGWflI8rZwkKlJpP/R3QsBDU3F+zTZEJAb3SU/YCOKQKWyUhd3AzuV4n2w50kqIxbNu7aHNOt1rvfnKTjeI8hYJuqZXZeVWh/4kEGyFPAv7T4Y+opuZej/Xgy81awG1iRgHeRhSmuCNg+EZ8oB142S6ylB3hROLj8f1MYRRMir8OdhplgyqzsMvBX9+ZUL0mCfDecSqfBLRzArfEvXTaxDY7E6hze0PmbPcApt+fSHbcWkQUTTFmuhYf+iGhYkUJBFJOGFbHAjXP6avu1SmN8jOwY=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9B85D9351BAF1A43924BC19ACC9325AC@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726771AbfHFUnq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 16:43:46 -0400
+Received: from hqemgate15.nvidia.com ([216.228.121.64]:12036 "EHLO
+        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726539AbfHFUnp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:43:45 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate15.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d49e6890000>; Tue, 06 Aug 2019 13:43:53 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Tue, 06 Aug 2019 13:43:43 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Tue, 06 Aug 2019 13:43:43 -0700
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 6 Aug
+ 2019 20:43:43 +0000
+Subject: Re: [PATCH v6 1/3] mm/gup: add make_dirty arg to
+ put_user_pages_dirty_lock()
+To:     Ira Weiny <ira.weiny@intel.com>, <john.hubbard@gmail.com>
+CC:     Andrew Morton <akpm@linux-foundation.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Boaz Harrosh <boaz@plexistor.com>,
+        Christoph Hellwig <hch@lst.de>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ilya Dryomov <idryomov@gmail.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>, Jens Axboe <axboe@kernel.dk>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        Johannes Thumshirn <jthumshirn@suse.de>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ming Lei <ming.lei@redhat.com>, Sage Weil <sage@redhat.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        Yan Zheng <zyan@redhat.com>, <netdev@vger.kernel.org>,
+        <dri-devel@lists.freedesktop.org>, <linux-mm@kvack.org>,
+        <linux-rdma@vger.kernel.org>, <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20190804214042.4564-1-jhubbard@nvidia.com>
+ <20190804214042.4564-2-jhubbard@nvidia.com>
+ <20190806174017.GB4748@iweiny-DESK2.sc.intel.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <662e3f1e-b63e-ce80-274b-cb407bce6f78@nvidia.com>
+Date:   Tue, 6 Aug 2019 13:43:42 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e91cb3db-a096-47fa-18b7-08d71aaea9c1
-X-MS-Exchange-CrossTenant-originalarrivaltime: 06 Aug 2019 20:42:56.9491
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2213
+In-Reply-To: <20190806174017.GB4748@iweiny-DESK2.sc.intel.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL104.nvidia.com (172.18.146.11) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1565124233; bh=69F2w6W//D6RGOmiznV0xApH922IMQ0bjLWukK3Y3fM=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=ap4Gh4eAjhabzOCGXg03MlGS3E39LbT2CXYDFUwj2rPlbF7hC6RWG9GhsJ2iB7VW/
+         iYlQoSLezyw7mHlxXl/fKIiZ8rXughCfKjTKN4/Z6IMCoXcHiVjqfWI1NEleGSaZ1D
+         nb/98DcL6LZnWfzY2lODnRbMeV4rL6NENctX00s/9WgBVnL9OMB/MDykHOE9G7K2wL
+         YOLJ7T/SYKJKGHtGsae2JANuXCcr7t7WsPen/yG+U/cLlENdGZ/NhUeRG2cxaPNVG0
+         iSR9G6EBnJbeu0s0AK9qSs5J/PxhKEARuOdUaS2rM7tLFwOLC4PrmECrXiOHXA9ve3
+         yBfnp2wxB5hBA==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gU2F0LCAyMDE5LTA4LTAzIGF0IDAwOjQ4ICswODAwLCBDaHVob25nIFl1YW4gd3JvdGU6DQo+
-IHJlZmNvdW50X3QgaXMgYmV0dGVyIGZvciByZWZlcmVuY2UgY291bnRlcnMgc2luY2UgaXRzDQo+
-IGltcGxlbWVudGF0aW9uIGNhbiBwcmV2ZW50IG92ZXJmbG93cy4NCj4gU28gY29udmVydCBhdG9t
-aWNfdCByZWYgY291bnRlcnMgdG8gcmVmY291bnRfdC4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IENo
-dWhvbmcgWXVhbiA8aHNsZXN0ZXI5NkBnbWFpbC5jb20+DQo+IC0tLQ0KPiBDaGFuZ2VzIGluIHYy
-Og0KPiAgIC0gQWRkICNpbmNsdWRlLg0KPiANCg0KQWNrZWQtYnk6IFNhZWVkIE1haGFtZWVkIDxz
-YWVlZG1AbWVsbGFub3guY29tPg0KDQpEYXZlLCB1cCB0byB5b3UgdGFrZSBpdCwgb3IgbGVhdmUg
-aXQgdG8gbWUgOikuDQoNCg==
+On 8/6/19 10:40 AM, Ira Weiny wrote:
+> On Sun, Aug 04, 2019 at 02:40:40PM -0700, john.hubbard@gmail.com wrote:
+>> From: John Hubbard <jhubbard@nvidia.com>
+>>
+>> Provide a more capable variation of put_user_pages_dirty_lock(),
+>> and delete put_user_pages_dirty(). This is based on the
+>> following:
+>>
+>> 1. Lots of call sites become simpler if a bool is passed
+>> into put_user_page*(), instead of making the call site
+>> choose which put_user_page*() variant to call.
+>>
+>> 2. Christoph Hellwig's observation that set_page_dirty_lock()
+>> is usually correct, and set_page_dirty() is usually a
+>> bug, or at least questionable, within a put_user_page*()
+>> calling chain.
+>>
+>> This leads to the following API choices:
+>>
+>>     * put_user_pages_dirty_lock(page, npages, make_dirty)
+>>
+>>     * There is no put_user_pages_dirty(). You have to
+>>       hand code that, in the rare case that it's
+>>       required.
+>>
+>> Reviewed-by: Christoph Hellwig <hch@lst.de>
+>> Cc: Matthew Wilcox <willy@infradead.org>
+>> Cc: Jan Kara <jack@suse.cz>
+>> Cc: Ira Weiny <ira.weiny@intel.com>
+>> Cc: Jason Gunthorpe <jgg@ziepe.ca>
+>> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+> 
+> I assume this is superseded by the patch in the large series?
+> 
+
+Actually, it's the other way around (there is a note that that effect
+in the admittedly wall-of-text cover letter [1] in the 34-patch series.
+
+However, I'm trying hard to ensure that it doesn't actually matter:
+
+* Patch 1 in the latest of each patch series, is identical
+
+* I'm reposting the two series together.
+
+...and yes, it might have been better to merge the two patchsets, but
+the smaller one is more reviewable. And as a result, Andrew has already
+merged it into the akpm tree.
+
+
+[1] https://lore.kernel.org/r/20190804224915.28669-1-jhubbard@nvidia.com
+
+thanks,
+-- 
+John Hubbard
+NVIDIA
