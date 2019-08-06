@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CBEF83183
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 14:38:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 205BD83186
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 14:39:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731272AbfHFMiF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 08:38:05 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:33056 "EHLO
+        id S1728797AbfHFMjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 08:39:14 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:33638 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfHFMiF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 08:38:05 -0400
+        with ESMTP id S1726036AbfHFMjO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 08:39:14 -0400
 Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 045FC60867; Tue,  6 Aug 2019 12:38:03 +0000 (UTC)
+        id 7EC546090F; Tue,  6 Aug 2019 12:39:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1565095084;
-        bh=MxZhSS0UWUmECTjQ0ibmB7ZYrZbDHvCAoNBYCGsedcY=;
+        s=default; t=1565095153;
+        bh=pd7Qw4xZhWXnQJq4hyNdvdBFiPxcv50Ew5013stflR8=;
         h=Subject:From:In-Reply-To:References:To:Cc:Date:From;
-        b=fFf05Ghd1HjbOOk90sDs68AkTudhUvAB6VHZaXgqcBoXIIVpaoyaTBIhdOAqTzWLc
-         YIIzoGwfiB49I9dScLnopeLIcEtYeTCLOf2T9Z7sY1yXBnj6QGSK+ekadenRDXJqzg
-         wCg+v1wCA2K2vHj3RHEY7Ipi15OVZ2v4X/E2hWMA=
+        b=eaEOzmbKx6eas23hBlqxSjkTvt7uxPYr2o097eVSK+mYe/fi5mlx1HdmA0tLUbUKK
+         ZG3ppf1XR2huv5JtBS/MtWRXwPh9y/Sw+aXZj6xjqTrSeGZ76oxHNNuOcYk3imKfGx
+         38NV+EDvBmFeCXn1038FJLWthilZgwIGPnqXxrY0=
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         pdx-caf-mail.web.codeaurora.org
 X-Spam-Level: 
@@ -30,36 +30,32 @@ Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 1843F60590;
-        Tue,  6 Aug 2019 12:38:00 +0000 (UTC)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D6A1B60590;
+        Tue,  6 Aug 2019 12:39:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1565095083;
-        bh=MxZhSS0UWUmECTjQ0ibmB7ZYrZbDHvCAoNBYCGsedcY=;
+        s=default; t=1565095153;
+        bh=pd7Qw4xZhWXnQJq4hyNdvdBFiPxcv50Ew5013stflR8=;
         h=Subject:From:In-Reply-To:References:To:Cc:From;
-        b=BTWajMH4jO+v9S+Qy4uvvdRI7OKpKCIbvAy3fzTBuUv8G12OXRed6//7q4y9tB1hM
-         AnMGUCnqG1bhEi5jDf+hAILcwoDpoNGlEkYdV1irlhPhw2IHSRyiCQLBjRT4YwyilM
-         Tu9ZUlLQIoKhKEkwm0xtuHkkVrr7u7auuJOKswjY=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 1843F60590
+        b=oFlljBMrHfp/5itSxYDO3XvPFc80fAyirUIqngrI4wfxk+Kq9jar2jVMWZKCJXqAZ
+         p6A4/848A955/YtMxeA/ZxuqN7Et/Q2tUMV7QRKxIAYY5Mv1H9BBy2jnYGcXCM++Hn
+         dhpq1dbPwmG6gmAix+6YOWw8nHjTmvhp+27qb+XM=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D6A1B60590
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] brcmsmac: remove three set but not used variables
+Subject: Re: [PATCH] rtw88: pci: remove set but not used variable 'ip_sel'
 From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20190726141535.33212-1-yuehaibing@huawei.com>
-References: <20190726141535.33212-1-yuehaibing@huawei.com>
+In-Reply-To: <20190726142018.20792-1-yuehaibing@huawei.com>
+References: <20190726142018.20792-1-yuehaibing@huawei.com>
 To:     YueHaibing <yuehaibing@huawei.com>
-Cc:     <arend.vanspriel@broadcom.com>, <franky.lin@broadcom.com>,
-        <hante.meuleman@broadcom.com>, <chi-hsien.lin@cypress.com>,
-        <wright.feng@cypress.com>, <linux-kernel@vger.kernel.org>,
+Cc:     <yhchuang@realtek.com>, <linux-kernel@vger.kernel.org>,
         <netdev@vger.kernel.org>, <linux-wireless@vger.kernel.org>,
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        <brcm80211-dev-list@cypress.com>,
         YueHaibing <yuehaibing@huawei.com>
 User-Agent: pwcli/0.0.0-git (https://github.com/kvalo/pwcli/) Python/2.7.12
-Message-Id: <20190806123804.045FC60867@smtp.codeaurora.org>
-Date:   Tue,  6 Aug 2019 12:38:03 +0000 (UTC)
+Message-Id: <20190806123913.7EC546090F@smtp.codeaurora.org>
+Date:   Tue,  6 Aug 2019 12:39:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -69,22 +65,19 @@ YueHaibing <yuehaibing@huawei.com> wrote:
 
 > Fixes gcc '-Wunused-but-set-variable' warning:
 > 
-> drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c: In function 'brcms_c_set_gmode':
-> drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c:5257:7: warning: variable 'preamble_restrict' set but not used [-Wunused-but-set-variable]
-> drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c:5256:6: warning: variable 'preamble' set but not used [-Wunused-but-set-variable]
-> drivers/net/wireless/broadcom/brcm80211/brcmsmac/main.c:5251:7: warning: variable 'shortslot_restrict' set but not used [-Wunused-but-set-variable]
-> 
-> They are never used so can be removed.
+> drivers/net/wireless/realtek/rtw88/pci.c: In function 'rtw_pci_phy_cfg':
+> drivers/net/wireless/realtek/rtw88/pci.c:993:6: warning:
+>  variable 'ip_sel' set but not used [-Wunused-but-set-variable]
 > 
 > Reported-by: Hulk Robot <hulkci@huawei.com>
 > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
 Patch applied to wireless-drivers-next.git, thanks.
 
-de019a3bdd6e brcmsmac: remove three set but not used variables
+d1b68c118238 rtw88: pci: remove set but not used variable 'ip_sel'
 
 -- 
-https://patchwork.kernel.org/patch/11061171/
+https://patchwork.kernel.org/patch/11061177/
 
 https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
