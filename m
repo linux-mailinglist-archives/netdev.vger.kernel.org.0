@@ -2,63 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A0A829E3
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 05:06:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B24C829F2
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 05:18:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731386AbfHFDGV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 5 Aug 2019 23:06:21 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35013 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730974AbfHFDGV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 23:06:21 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n4so5481078pgv.2
-        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 20:06:20 -0700 (PDT)
+        id S1730037AbfHFDSC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 5 Aug 2019 23:18:02 -0400
+Received: from mail-pf1-f175.google.com ([209.85.210.175]:39145 "EHLO
+        mail-pf1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729170AbfHFDSC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 5 Aug 2019 23:18:02 -0400
+Received: by mail-pf1-f175.google.com with SMTP id f17so36688728pfn.6
+        for <netdev@vger.kernel.org>; Mon, 05 Aug 2019 20:18:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=FlvubqIedgeUlDz/PPiAaJ/H2Njn7iS17Qlm1S+ibcs=;
-        b=ynfiagkhgmGZERUei2yzw6PnvDoOnOGKaEU+BMUJIRoWffXtOXvM7JmpSEltHxNXMA
-         oYyljM/tmGwXdC30QlWHHWbcRrYE9qBwLWv7umSLx8+B/ECw6vRLRLIHMOgbn3pi46mt
-         4A3L0A+DOhRb2pQbdkqq3jFUo0M2J6N8Rn5GpoEo7cWttiHS18T3tj0og3hmA6lPjzMr
-         1H5xB2mVcdaFWSbiEBswqQ5jiRkhy1nkaEyR5ccR3jTCnjHxI4JKgfSa15Gn6ncXadnj
-         trmN9tyDkV9ItvX2nZJGnL59ViA4Sqj8UWgo6MZ7JXNTK5w2kx2RIoBKs7hBnfU4I30G
-         /Vfw==
+        bh=ATiM9OVjqbAu5K4l6G49RH+1MbLBmOtStQ85uwlzTR0=;
+        b=AeeaSs8HPokAlg4LIpm69W8s9xqUjZKpWgtPkuVu4wQeRfxumUN69FbJuhy6wi/1CS
+         3/EEnzoBut4opESt/oqaFbQF3u+CrywHCJoqiCVRHIgEVrOg3CUBMaSrYY2XDe5wN7PF
+         V0/j61ontdXEI+yevjiLn0Q2eCmQV+xdPZQz4DGUxgL7wLQ2JNVKjQqR2bdQ9ZwUKC4O
+         VaC1fVdgYDXqmoNnyGWQRUwidm1FCUBWAtqNDDZg+EuDKZiELG3+dHPADTnOqHe3It+X
+         np7sx2TLCENrc45e21cRpDG1PMjz+Iqj6m/GO64jOBKzBC4bpJYwpQOnRaW943w7rO+M
+         j6Gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=FlvubqIedgeUlDz/PPiAaJ/H2Njn7iS17Qlm1S+ibcs=;
-        b=Z3Gf+7QjX04LAhOXvDYkcOXUc15yvFmeWNdm/J7Zbm1F2cKE+VUFmtN8imeC5C9e4Y
-         qTP6kkTa/vjfwSs5iaYbSX7DEOWjkEJWJrEZsVwjQSPtf/scR4ejB4YWhTTWFxmjHJBr
-         IgsGLwzpsACH+jFKrMAsdTT7/IZkw0szijD08zBMwh3aaBZrypSk8q21Iyf986z0IG8Q
-         3gNMC7t9JH6HL2nnCOOlntdzcgO2DELDlv1Nwl/Toq6PJIhYUM+QRNq+cGUSOrkUCTt7
-         y0mW/2SC+gruOQgaphEysBsMbsIRfMp5H2+0c0+cx7QgJs/bNPc6moKrvESUyez/oLWL
-         m44A==
-X-Gm-Message-State: APjAAAV1I5WNUqzY0x7hG8VCkaGgGNFb55YnObrIU0isFP90vPzLP2AB
-        +fMFJWHbLYiso/9vUSKL8h2FxQ==
-X-Google-Smtp-Source: APXvYqyC0NiG+dH81MgzylsXKTEOMaOlrWGlwxH0Q+mcPaNttiuDNofMxMSQSM8JshjuU5dIMYQZPA==
-X-Received: by 2002:a17:90a:b312:: with SMTP id d18mr822646pjr.35.1565060780443;
-        Mon, 05 Aug 2019 20:06:20 -0700 (PDT)
+        bh=ATiM9OVjqbAu5K4l6G49RH+1MbLBmOtStQ85uwlzTR0=;
+        b=qqd1/+HO76H21IXjgJAHn0NDrDSY2W1lSs32+0oq9QsWQ2yT8qbLrgUhjDqaw6t5v6
+         h1ApqRZlUxjWB7qavZda/koHHOooaFupkz/wIQEJuPTAyhPkrwvYRpfRlG8ZYTqETI7V
+         1ziAaeUIRmZyZRwrqU+tsDoBGf5AFVnnl1RnnuMQ96dNYOq0oYce9AHARADCXJst80B4
+         YO47ZfiPa9y4GV3x08OWZTCLpe//tEwKoFwCLgyjDnJDlQD6qjDBGpvnq+l0TvhN8tIc
+         1rny7AaBFqR7UvU1ykVsAV1E2RGx4PnmHnefqZRZCyD8V/dvmtqyVWRGPRuLKg658g50
+         ZBiA==
+X-Gm-Message-State: APjAAAUMugQdPsBOHbenktrqcd4aS3iHqqIu6P5dfC6RHMrLEaB7P4OO
+        neFElJXXiPCoDXa+7UVLyelEMQ==
+X-Google-Smtp-Source: APXvYqzmngMM+gxqVSW6JCJCl2w3KIX6euY3Tpv3hgYFyeuPAkpEpIMrIuswZEbI4HUoL1a4aF3mpA==
+X-Received: by 2002:a17:90a:c58e:: with SMTP id l14mr893786pjt.104.1565061481357;
+        Mon, 05 Aug 2019 20:18:01 -0700 (PDT)
 Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id v14sm91912574pfm.164.2019.08.05.20.06.19
+        by smtp.gmail.com with ESMTPSA id b36sm24130963pjc.16.2019.08.05.20.18.00
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 05 Aug 2019 20:06:20 -0700 (PDT)
-Date:   Mon, 5 Aug 2019 20:05:55 -0700
+        Mon, 05 Aug 2019 20:18:01 -0700 (PDT)
+Date:   Mon, 5 Aug 2019 20:17:36 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-Cc:     <davem@davemloft.net>, <yisen.zhuang@huawei.com>,
-        <salil.mehta@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <leeyou.li@huawei.com>,
-        <xiaowei774@huawei.com>, <nixiaoming@huawei.com>
-Subject: Re: [PATCH v1 1/3] net: hisilicon: make hip04_tx_reclaim
- non-reentrant
-Message-ID: <20190805200555.5a171567@cakuba.netronome.com>
-In-Reply-To: <c150d41b-6f0e-ad49-e8c2-00896fc9cbe4@huawei.com>
-References: <1564835501-90257-1-git-send-email-xiaojiangfeng@huawei.com>
-        <1564835501-90257-2-git-send-email-xiaojiangfeng@huawei.com>
-        <20190805174618.2b3b551a@cakuba.netronome.com>
-        <c150d41b-6f0e-ad49-e8c2-00896fc9cbe4@huawei.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com
+Subject: Re: [net-next 0/8][pull request] 100GbE Intel Wired LAN Driver
+ Updates 2019-08-04
+Message-ID: <20190805201736.7208a2b9@cakuba.netronome.com>
+In-Reply-To: <20190804115926.31944-1-jeffrey.t.kirsher@intel.com>
+References: <20190804115926.31944-1-jeffrey.t.kirsher@intel.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -68,11 +63,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Aug 2019 10:00:52 +0800, Jiangfeng Xiao wrote:
-> If hip04_tx_reclaim is interrupted while it is running, and then
-> __irq_svc->gic_handle_irq->hip04_mac_interrupt->__napi_schedule->hip04_rx_poll->hip04_tx_reclaim
+On Sun,  4 Aug 2019 04:59:18 -0700, Jeff Kirsher wrote:
+> This series contains more updates to fm10k from Jake Keller.
+> 
+> Jake removes the unnecessary initialization of some variables to help
+> resolve static code checker warnings.  Explicitly return success during
+> resume, since the value of 'err' is always success.  Fixed a issue with
+> incrementing a void pointer, which can produce undefined behavior.  Used
+> the __always_unused macro for function templates that are passed as
+> parameters in functions, but are not used.  Simplified the code by
+> removing an unnecessary macro in determining the value of NON_Q_VECTORS.
+> Fixed an issue, using bitwise operations to prevent the low address
+> overwriting the high portion of the address.
 
-Ah right, obviously you can't do stuff after napi_complete_done(), 
-that makes sense.
+Looks good. AFAIK void pointer arithmetic is not uncommon in the
+kernel, but shouldn't hurt to fix it.
 
-Series looks reasonable.
+Do you guys have any plans to fix W=1 C=1 build for Intel drivers?
+That'd be very nice :)
