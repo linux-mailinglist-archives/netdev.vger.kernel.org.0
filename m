@@ -2,89 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 818928385F
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 20:03:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 237DC83865
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 20:07:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732158AbfHFSDv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 14:03:51 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:38096 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726877AbfHFSDv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 14:03:51 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=gFTMaprVsWCgr9Uw9bzdPgJHb9ARiC94eqZBiW4eSVc=; b=3hJwWYcV1ev3cSjzWQU0BfllIo
-        c0F1FYsz9lNNEW84aPfPLdbDLkPq/t8q9EV7adJ5fRB1arSCpe3ygFS0Pa43H3Q0wWm+tXIG+DM8f
-        pYaWeqKRb+aJCdmpS8UGIoSvzO7rQlqH4iftV6+sS2mYgzyOh2wv/L8YE4R0ztLbLqpU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hv3oI-0006f8-Md; Tue, 06 Aug 2019 20:03:46 +0200
-Date:   Tue, 6 Aug 2019 20:03:46 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
+        id S1732509AbfHFSHN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 14:07:13 -0400
+Received: from mail-wr1-f41.google.com ([209.85.221.41]:36157 "EHLO
+        mail-wr1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728558AbfHFSHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 14:07:13 -0400
+Received: by mail-wr1-f41.google.com with SMTP id n4so88873109wrs.3
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 11:07:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=b9ae5Pq/eGFQDXtzdPaS69LITV8GPZXSD6YjxONaXgU=;
+        b=YTqrJUTLnpqHFZmcYA2169UvfgKEfIzGHLdZnEA4NuzU7bxD7FmRxr0Ayzvu5b7BJe
+         bF/coJbcdInp8mE3266/nS/qBGpakiB+zSONng+AaTZoyz1xN/6LglI1Bl+PW+1QVcbA
+         iZ8AS2XrUWP82TtVIv6g3JktWMu7IiGoG6Dv0LCZvZY/Y1QKv+vZcNg9v1MZBum1zDWP
+         tDsjw47rjBiVx1cVwp/vXTJMAP8FmjVPL/Vi6CDkB+prj1EkryeRleyfvGTTt0MW8rXg
+         kP47oT4uw8Z+Fob4Ih0xP8RL8eO0hBdUyTWHlydE3+X+3gVBbH8eEqyQdbKfYZgK1SFq
+         7BdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=b9ae5Pq/eGFQDXtzdPaS69LITV8GPZXSD6YjxONaXgU=;
+        b=sHmpjpmZ9M5nuYvPmURwdkfSdwbLVLkqEaVTMZ0SueHO6B2743ZJx9LgksobypMoqz
+         LnCsd3O1SLNA5SjWrj/tVweHszMKzxlbEzk8LMhBPzP+mFkxTAqTq9zk7KOIHeIOPNEf
+         E7BMvdxlOOUJP9L8V7VE/jAItNEBNF/CZ15BHJT06NXcWUsETZbMwSc7E0Ay0jJLPIpl
+         /88+yHmxqrcWS/6NHbpaNou0sWjffRtgwvMyU8lOw3jJoLzezCc6rpUJmzgXdwxWZxc1
+         hkyhTOGsYYs3jfpNf0kgisERe4oHZ4BmQ5LkosN6DuTVt1asEWP2TLu1+x985bi/5yVa
+         fSvQ==
+X-Gm-Message-State: APjAAAUhsgxpEvFyuUY5n6dJGQj827J4mIt0NhYsTpZm4pAfEvEXwxHq
+        trk5i3BCXPPbE2GfIz71JOq9nA==
+X-Google-Smtp-Source: APXvYqzp+TUzafzE20WvQNBKaOkaUAnaitBoR89XXkVymelhqQOLdZDRimgUqM8MHciMM9K282Q/QA==
+X-Received: by 2002:adf:e708:: with SMTP id c8mr6031549wrm.25.1565114829387;
+        Tue, 06 Aug 2019 11:07:09 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id 5sm76017473wmg.42.2019.08.06.11.07.08
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 11:07:08 -0700 (PDT)
+Date:   Tue, 6 Aug 2019 20:07:07 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
 To:     David Ahern <dsahern@gmail.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, mlxsw@mellanox.com,
-        jakub.kicinski@netronome.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, mkubecek@suse.cz,
-        stephen@networkplumber.org, daniel@iogearbox.net,
-        brouer@redhat.com, eric.dumazet@gmail.com
-Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
- resource limitations
-Message-ID: <20190806180346.GD17072@lunn.ch>
-References: <20190806164036.GA2332@nanopsycho.orion>
- <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        sthemmin@microsoft.com, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
+Message-ID: <20190806180707.GC2332@nanopsycho.orion>
+References: <20190802074838.GC2203@nanopsycho>
+ <6f05d200-49d4-4eb1-cd69-bd88cf8b0167@gmail.com>
+ <20190805055422.GA2349@nanopsycho.orion>
+ <796ba97c-9915-9a44-e933-4a7e22aaef2e@gmail.com>
+ <20190805144927.GD2349@nanopsycho.orion>
+ <566cdf6c-dafc-fb3e-bd94-b75eba3488b5@gmail.com>
+ <20190805152019.GE2349@nanopsycho.orion>
+ <7200bdbb-2a02-92c6-0251-1c59b159dde7@gmail.com>
+ <20190806175323.GB2332@nanopsycho.orion>
+ <fc6a7342-246c-2fe1-a7d1-c7be5bd0a3a3@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <fc6a7342-246c-2fe1-a7d1-c7be5bd0a3a3@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 06, 2019 at 11:38:32AM -0600, David Ahern wrote:
-> On 8/6/19 10:40 AM, Jiri Pirko wrote:
-> > Hi all.
-> > 
-> > I just discussed this with DavidA and I would like to bring this to
-> > broader audience. David wants to limit kernel resources in network
-> > namespaces, for example fibs, fib rules, etc.
-> > 
-> > He claims that devlink api is rich enough to program this limitations
-> > as it already does for mlxsw hw resources for example. If we have this
-> > api for hardware, why don't to reuse it for the kernel and it's
-> > resources too?
-> 
-> The analogy is that a kernel is 'programmed' just like hardware, it has
-> resources just like hardware (e.g., memory) and those resources are
-> limited as well. So the resources consumed by fib entries, rules,
-> nexthops, etc should be controllable.
+Tue, Aug 06, 2019 at 07:55:30PM CEST, dsahern@gmail.com wrote:
+>On 8/6/19 11:53 AM, Jiri Pirko wrote:
+>> Let's figure out the devlink-controlling-kernel-resources thread first.
+>> What you describe here is exactly that.
+>
+>as I mentioned on the phone, any outcome of that thread will be in 5.4
+>at best. Meanwhile this breakage in 5.2 and 5.3 needs to be fixed.
 
-I expect one question that will come up is why not control
-groups. That is often used by the rest of the kernel for resource
-control.
-
-But cgroups are mostly about limiting resources for a collection of
-processes. I don't think that is true for networking resources. The
-resources we are talking about are orthogonal to processes. Or are
-there any resources which should be linked to processes? eBPF
-resources?
-
-> > So the proposal is to have some new device, say "kernelnet", that would
-> > implicitly create per-namespace devlink instance.
-
-Maybe kernelns, to make it clear we are talking about namespace
-resources.
-
-Going back to cgroups concept. They are generally hierarchical. Do we
-need any sort of hierarchy here? Are there some resources we want to
-set a global limit on, and then a per namespace limit on top of that?
-We would then need two names, and kernelnet sounds more like the
-global level?
-
-       Andrew
+Why? netdevsim is a dummy device, the purpose of existence is to test
+kernel api. No real harm breaking it.
