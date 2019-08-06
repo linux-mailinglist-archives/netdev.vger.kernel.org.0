@@ -2,179 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 468C883842
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:53:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A62883844
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:54:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728558AbfHFRx1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 13:53:27 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:35277 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726713AbfHFRx1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:53:27 -0400
-Received: by mail-wm1-f68.google.com with SMTP id l2so77300368wmg.0
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:53:25 -0700 (PDT)
+        id S1729402AbfHFRyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 13:54:13 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:46670 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728756AbfHFRyN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:54:13 -0400
+Received: by mail-pf1-f195.google.com with SMTP id c3so18771024pfa.13
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:54:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=HwW3YghTsHHJFmsJfU+KppgGjjPXJ/htt5fwTBYK4lo=;
-        b=oTaBZBSLyTHVyIaoRlom1I+hCTee8PRb0qGq5VCwuxnoC5Q52OLK6m4z6O65CXsPOQ
-         X/TBmFcD3XP7R0wK4EijHd7kEGqdo7Yh7hYA8ESzoZTppAbTX6tiZDh3AaiHsOrREcjN
-         XiioUIF+kCLClAzKd6Ig7EvHLnO4Gh4bqNTcWqHo/XAbtiGh22sDrPP5J57UzhjbI2qa
-         3nyT325j/AbT7c+j22H9j81hU6Xp5nXiyFv+KlDHZv6HzroA9XdeJcvE1On4xf1ODd5G
-         iWB6HxMjmWoALq/in8948XcEwE9qcdDJmcjizPhZcN4TP7inW+eYY6GQ0c/2OmpmxyoS
-         G7kg==
+        bh=/8ErMGnuYeEpJafTeKt+7MrdPsKsU8b1Km1b1TisCrY=;
+        b=Ivo2uXWwt3POY71IOw50XDWgc7cpO+/+5+Y8MXQPQimLSesy1Eo/S2IlbH7J+ZydoZ
+         bibJyIyxJiDtLjfID0nn9w4AnLaisXPIGqmoOcVnpxNDPdNggtcDFPQPIXhqFFz8AzDw
+         cJ/i6Jup45MPt4X01E33ubqxvlZQBUhaUWtE9k3uqnni/brqby3zKVbh0a52oY5ikn5t
+         MZD/PNmPzDbA+sjbd0smn4IepY9hM/J9UpLJWbmlN43GHdfRx0+gSvZhghBI4Hzit9Ds
+         f4398ojZzLosQioVvqUV8Qcyn1KOidhVb9ItbVcyiQ3ZoPvXDEsFl9KPMOIJMJwlhsfT
+         u9Sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=HwW3YghTsHHJFmsJfU+KppgGjjPXJ/htt5fwTBYK4lo=;
-        b=Wvkyiu1fZvxPSFyTpnNHQQV4dg+5Unf8iGqzWzD015L0Vr2N14XPYkae29tQZrqM3A
-         +h2bRqvX0Nl2rTwEk4OKxytnGTL4ClUV8gOPgJxU+5xdary+sk3AoFhHdCo2SYZf+MnX
-         f6lH7DYdhhiR31ONqnuQnJ7PXsOd68suGvl2PkO6RQFv7a/3tBEpgyAdrouy2sHQsjHW
-         LYDZyLAoKMwqdRxsVHijE5pF2sj23OJAlK+imzFxVC9o7cmOTuofetsgxCmfXfvUILPo
-         OKk7/H1DcyWJajYExBUbz9pq+vXicsCTtTnbRc1o4DYFd3y1pvrX5PByissPrPdAlWCn
-         /4zA==
-X-Gm-Message-State: APjAAAVN3hUf2xU1P1sKFgXFN9uHfakTqz8Mw4OwYhOJvHaI/hCcgTxE
-        EcorKtyoZBJ4bKQJQGOyDx32yw==
-X-Google-Smtp-Source: APXvYqyeRYNTLprIHCsN+1wd4VPhXuv7pISKZX8u0D04ioTvPZOX++BrJ18w8zsxomKExmjT1Gya0Q==
-X-Received: by 2002:a1c:6504:: with SMTP id z4mr5709592wmb.172.1565114004383;
-        Tue, 06 Aug 2019 10:53:24 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id l2sm59932505wmj.4.2019.08.06.10.53.23
+        bh=/8ErMGnuYeEpJafTeKt+7MrdPsKsU8b1Km1b1TisCrY=;
+        b=s24GWIJemZ4zXCWTR6xZpmaRabuCc98F7C5QJmZd5xRtcClxNYCANmY2Cu3YoDGWWV
+         HaQoJc8Ultk0jKe4UuUpC0o0s3Nm1UaV7lwmVDcebbLt4AQcgKHnCoKVgSase/zIB7fs
+         XHHg13xnUqL5XK1GxKfJ8KLkUuFp74CBAu7su7Kv7Lt6fLEpoSUytUWWY06+9fcHgHLt
+         l0yHQ5jkXWAxYy+lr+CgQBAthAkx2D3Z7gBEkHUpt3VL7OUc+cdnklSlIBqHJVxpW2zs
+         kir9ZOYN0W3Dg7yO6tqpns7wDALp/fSYtcM2huoz8prgQQlKos77ZuA/SokFUAPvULQg
+         Rxkw==
+X-Gm-Message-State: APjAAAUzjDPNz3m36AK6Y3izdw4OMLAhKTb9sRJiwU5q1GJxd65eXjbo
+        V5WtONE/hAFPsGZUNNAgPexUEw==
+X-Google-Smtp-Source: APXvYqwSpRPc9HUD1+po8jJlTZikqy/xUdp6Wf8WkCSOlBQD1ECIvi8QR+qw8v8lBOLE+tJCraLs5w==
+X-Received: by 2002:a63:a346:: with SMTP id v6mr4081595pgn.57.1565114052745;
+        Tue, 06 Aug 2019 10:54:12 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id 23sm91839684pfn.176.2019.08.06.10.54.11
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 10:53:24 -0700 (PDT)
-Date:   Tue, 6 Aug 2019 19:53:23 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        sthemmin@microsoft.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v2 1/3] net: devlink: allow to change namespaces
-Message-ID: <20190806175323.GB2332@nanopsycho.orion>
-References: <087f584d-06c5-f4b9-722b-ccb72ce0e5de@gmail.com>
- <89dc6908-68b8-5b0d-0ef7-1eaf1e4e886b@gmail.com>
- <20190802074838.GC2203@nanopsycho>
- <6f05d200-49d4-4eb1-cd69-bd88cf8b0167@gmail.com>
- <20190805055422.GA2349@nanopsycho.orion>
- <796ba97c-9915-9a44-e933-4a7e22aaef2e@gmail.com>
- <20190805144927.GD2349@nanopsycho.orion>
- <566cdf6c-dafc-fb3e-bd94-b75eba3488b5@gmail.com>
- <20190805152019.GE2349@nanopsycho.orion>
- <7200bdbb-2a02-92c6-0251-1c59b159dde7@gmail.com>
+        Tue, 06 Aug 2019 10:54:12 -0700 (PDT)
+Date:   Tue, 6 Aug 2019 10:54:11 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: Re: [PATCH bpf-next v4 1/3] selftests/bpf: test_progs: switch to
+ open_memstream
+Message-ID: <20190806175411.GC23939@mini-arch>
+References: <20190806170901.142264-1-sdf@google.com>
+ <20190806170901.142264-2-sdf@google.com>
+ <CAEf4BzYU6xfcPrHzz0p6dWL3_VM2mD9pKy3T-NfnuDUrd4RMDQ@mail.gmail.com>
+ <20190806174028.GB23939@mini-arch>
+ <CAEf4Bzbt_6Y3bEpsPiHi59KnWoHsk9gQa3XpfRo+gG7-rKqN4w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <7200bdbb-2a02-92c6-0251-1c59b159dde7@gmail.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <CAEf4Bzbt_6Y3bEpsPiHi59KnWoHsk9gQa3XpfRo+gG7-rKqN4w@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 06, 2019 at 07:34:59PM CEST, dsahern@gmail.com wrote:
->On 8/5/19 9:20 AM, Jiri Pirko wrote:
->> Mon, Aug 05, 2019 at 04:51:22PM CEST, dsahern@gmail.com wrote:
->>> On 8/5/19 8:49 AM, Jiri Pirko wrote:
->>>>> Your commit 5fc494225c1eb81309cc4c91f183cd30e4edb674 changed that from a
->>>>> per-namepace accounting to all namespaces managed by a single devlink
->>>>> instance in init_net - which is completely wrong.
->>>> No. Not "all namespaces". Only the one where the devlink is. And that is
->>>> always init_net, until this patchset.
->>>>
->>>>
->>>
->>> Jiri: your change to fib.c does not take into account namespace when
->>> doing rules and routes accounting. you broke it. fix it.
->> 
->> What do you mean by "account namespace"? It's a device resource, why to
->> tight it with namespace? What if you have 2 netdevsim-devlink instances
->> in one namespace? Why the setting should be per-namespace?
->> 
->
->Jiri:
->
->Here's an example of how your 5.2 change to netdevsim broke the resource
->controller:
->
->Create a netdevsim device:
->$ modprobe netdevsim
->$  echo "0 1" > /sys/bus/netdevsim/new_device
->
->Get the current number of IPv4 routes:
->$ n=$(ip -4 ro ls table all | wc -l)
->$ echo $n
->13
->
->Prevent any more from being added. This limit should apply solely to
->this namespace, init_net:
->
->$ devlink resource set netdevsim/netdevsim0 path /IPv4/fib size $n
->$ devlink dev reload netdevsim/netdevsim0
->Error: netdevsim: New size is less than current occupancy.
->devlink answers: Invalid argument
->
->So that is the first breakage: accounting is off - maybe. Note there are
->no other visible namespaces, but who knows what systemd or other
->processes are doing with namespaces. Perhaps this accounting is another
->example of your changes not properly handling namespaces:
->
->$ devlink resource show netdevsim/netdevsim0
->netdevsim/netdevsim0:
->  name IPv4 size unlimited unit entry size_min 0 size_max unlimited
->size_gran 1 dpipe_tables none
->    resources:
->      name fib size 13 occ 17 unit entry size_min 0 size_max unlimited
->size_gran 1 dpipe_tables none
->      name fib-rules size unlimited occ 6 unit entry size_min 0 size_max
->unlimited size_gran 1 dpipe_tables none
->  name IPv6 size unlimited unit entry size_min 0 size_max unlimited
->size_gran 1 dpipe_tables none
->    resources:
->      name fib size unlimited occ 10 unit entry size_min 0 size_max
->unlimited size_gran 1 dpipe_tables none
->      name fib-rules size unlimited occ 4 unit entry size_min 0 size_max
->unlimited size_gran 1 dpipe_tables none
->
->So the occupancy does not match the tables for init_net.
->
->Reset the max to 17, the current occupancy:
->$ devlink resource set netdevsim/netdevsim0 path /IPv4/fib size 17
->$ devlink dev reload netdevsim/netdevsim0
->$ devlink resource show netdevsim/netdevsim0
->netdevsim/netdevsim0:
->  name IPv4 size unlimited unit entry size_min 0 size_max unlimited
->size_gran 1 dpipe_tables none
->    resources:
->      name fib size 17 occ 17 unit entry size_min 0 size_max unlimited
->size_gran 1 dpipe_tables none
->      name fib-rules size unlimited occ 6 unit entry size_min 0 size_max
->unlimited size_gran 1 dpipe_tables none
->  name IPv6 size unlimited unit entry size_min 0 size_max unlimited
->size_gran 1 dpipe_tables none
->    resources:
->      name fib size unlimited occ 10 unit entry size_min 0 size_max
->unlimited size_gran 1 dpipe_tables none
->      name fib-rules size unlimited occ 4 unit entry size_min 0 size_max
->unlimited size_gran 1 dpipe_tables none
->
->Create a new namespace, bring up lo which attempts to add more route
->entries:
->$ unshare -n
->$ ip li set lo up
->
->If you list routes you see the lo routes failed to installed because of
->the limits, but it is a silent failure. Try to add a new route and you
->see the cross namespace accounting now:
->$ ip ro add 192.168.1.0/24 dev lo
->Error: netdevsim: Exceeded number of supported fib entries.
->
->
->Contrast that behavior with 5.1 and you see the new namespaces have no
->bearing on accounting in init_net and limits in init_net do not affect
->other namespaces.
->
->That behavior needs to be restored in 5.2 and 5.3.
+On 08/06, Andrii Nakryiko wrote:
+> On Tue, Aug 6, 2019 at 10:40 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
+> >
+> > On 08/06, Andrii Nakryiko wrote:
+> > > On Tue, Aug 6, 2019 at 10:19 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > > >
+> > > > Use open_memstream to override stdout during test execution.
+> > > > The copy of the original stdout is held in env.stdout and used
+> > > > to print subtest info and dump failed log.
+> > > >
+> > > > test_{v,}printf are now simple wrappers around stdout and will be
+> > > > removed in the next patch.
+> > > >
+> > > > v4:
+> > > > * one field per line for stdout/stderr (Andrii Nakryiko)
+> > > >
+> > > > v3:
+> > > > * don't do strlen over log_buf, log_cnt has it already (Andrii Nakryiko)
+> > > >
+> > > > v2:
+> > > > * add ifdef __GLIBC__ around open_memstream (maybe pointless since
+> > > >   we already depend on glibc for argp_parse)
+> > > > * hijack stderr as well (Andrii Nakryiko)
+> > > > * don't hijack for every test, do it once (Andrii Nakryiko)
+> > > > * log_cap -> log_size (Andrii Nakryiko)
+> > > > * do fseeko in a proper place (Andrii Nakryiko)
+> > > > * check open_memstream returned value (Andrii Nakryiko)
+> > > >
+> > > > Cc: Andrii Nakryiko <andriin@fb.com>
+> > > > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > ---
+> > > >  tools/testing/selftests/bpf/test_progs.c | 115 ++++++++++++-----------
+> > > >  tools/testing/selftests/bpf/test_progs.h |   3 +-
+> > > >  2 files changed, 62 insertions(+), 56 deletions(-)
+> > > >
+> 
+> [...]
+> 
+> > > >  void test__printf(const char *fmt, ...)
+> > > > @@ -477,6 +438,48 @@ static error_t parse_arg(int key, char *arg, struct argp_state *state)
+> > > >         return 0;
+> > > >  }
+> > > >
+> > > > +static void stdio_hijack(void)
+> > > > +{
+> > > > +#ifdef __GLIBC__
+> > > > +       if (env.verbose || (env.test && env.test->force_log)) {
+> > >
+> > > I just also realized that you don't need `(env.test &&
+> > > env.test->force_log)` test. We hijack stdout/stderr before env.test is
+> > > even set, so this does nothing anyways. Plus, force_log can be set in
+> > > the middle of test/sub-test, yet we hijack stdout just once (or even
+> > > if per-test), so it's still going to be "racy". Let's buffer output
+> > > (unless it's env.verbose, which is important to not buffer because
+> > > some tests will have huge output, when failing, so this allows to
+> > > bypass using tons of memory for those, when debugging) and dump at the
+> > > end.
+> > Makes sense, will drop this test and resubmit along with a fix for '-v'
+> > that Alexei discovered. Thanks!
+> 
+> Oh, is it because env.stdout and env.stderr is not set in verbose
+> mode? I'd always set env.stdout/env.stderr at the beginning, next to
+> env.jit_enabled, to never care about "logging modes".
+Yeah, I moved it to the beginning of stdio_hijack() to mirror the 'undo'
+in stdio_restore(). Let me know if you feel strongly about it and want
+it to be near env.jit_enabled instead.
 
-Let's figure out the devlink-controlling-kernel-resources thread first.
-What you describe here is exactly that.
+> > > > +               /* nothing to do, output to stdout by default */
+> > > > +               return;
+> > > > +       }
+> > > > +
+> 
+> [...]
