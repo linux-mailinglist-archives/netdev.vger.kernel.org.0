@@ -2,80 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E17478381A
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:44:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BB6A83824
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 19:45:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387489AbfHFRoU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 13:44:20 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:37047 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727549AbfHFRoU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:44:20 -0400
-Received: by mail-pg1-f194.google.com with SMTP id d1so9150744pgp.4
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:44:19 -0700 (PDT)
+        id S1729815AbfHFRpc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 13:45:32 -0400
+Received: from mail-qt1-f202.google.com ([209.85.160.202]:56483 "EHLO
+        mail-qt1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726373AbfHFRpc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 13:45:32 -0400
+Received: by mail-qt1-f202.google.com with SMTP id x11so75075956qto.23
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 10:45:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ft20ERoDnO7a7/UEws60YLY0pmuH3hySISuvSnj3m34=;
-        b=pD5s7iiCV7WiW9oM8PsGON5H3VLINyXwuDctUmgcpkGGHX/iFKpdkz0YzYSSTEdoUR
-         kRM/+KY7nCYnAfK4Ld3Drl/ZBys/Cjaz+zVf2JuSSHbu6FOfaun7W9y7m52ay6FAzU7n
-         zvn1HNwcNzWIaqoN4LIUXc1gjftb9lTcuMnUWMqSooukRTDMCbOLqmb56SLeTl8Ih678
-         6jR/IwOJ7ZMm+MM0Q26SFOrzDelHvpWZzHFhgjUjaK/Bj7roECjIPvjDyEa2Q3xnfVbO
-         xxCIJk/u6GE6z5rEr4dyfbzn4NelOtg7LvK8zzJbXA4WkvlH/bVDgFFswAUuPHihek35
-         +Pjg==
+        d=google.com; s=20161025;
+        h=date:message-id:mime-version:subject:from:to:cc;
+        bh=fodY2dzKWC74TgSsGgftnxUr1VYkPfXdI8RTegnFuRk=;
+        b=sJp6t5IXcqUT96dkjKtLTK1tR0k3v3HlH03pwxfrO9VwvFVXMi61PXgndw5gvuZ+eR
+         0PTbTRxefBsk57MkTfNxGI+p7bQGcjWJ1bcTcTl+gAELcjaCTK9rqmRkWVJeX48YQ+Hh
+         EJI4wllb7DvbpDwcVfuIfSHocMex5vwh+zPYUzonTYyAv3ngi14Qq2m/6JFmcxZcc0Qf
+         oIOx7AcY7aq7gR5dmZ+5FDE1QILLqdRvp7TCdVMUXhq4atMii/3KK2oncnNRGnQuSnNJ
+         Pd4Y8Cmh+fhnEk5vCmveTMR2WOfrGbmg638Znr/brYpLYjQZogsVYiOcm0m7Vv8rEhf8
+         /CYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ft20ERoDnO7a7/UEws60YLY0pmuH3hySISuvSnj3m34=;
-        b=nOiRA+xhHaiEH+LFCpemSnDlglYwc9EVFtZhwQ+PhZ+3vkZH0a3EUO+1rtHTRCTQ/r
-         gYhMc5NcPFbXNDUMOTMZ4HoyPayMLONlErY3pWZRcVLFcYHhqlevAVkD4VavQJHYWWpo
-         gW75gG2Y5CxIuUNLdV0dfNr+92gHfO5wGVc5JtdkbJxtGAR64b+kkXQYCqwSgb1fqCzD
-         tlUUc1SQZGEYaIeiPc2ZSQJRYwvagUHC5RFrL83/aLsgyIC4YJhRSJQxktKmkEwNMWrX
-         OdzNP4T8vY+BXX6iYZZM5wq45V+9lyPz274zpIpiaIlOdqJDoqItNP3XtPnQRneShEJV
-         iX6g==
-X-Gm-Message-State: APjAAAXtmN0rzIYyPkXaFOkrncjI18eVt8m5uQkZV0Os5NDd1Yun1n/W
-        0w39WqYVwIdj/bBg0EeyS94gog==
-X-Google-Smtp-Source: APXvYqw8dY2HNaP/X8/3qhd00TauU2ZjaTTAlGJ5ZYEZTg4KVPSSCLwSFPfEfJpzHiHDghduDy9Kbg==
-X-Received: by 2002:a17:90a:f498:: with SMTP id bx24mr4396148pjb.91.1565113459298;
-        Tue, 06 Aug 2019 10:44:19 -0700 (PDT)
-Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
-        by smtp.gmail.com with ESMTPSA id x24sm85386807pgl.84.2019.08.06.10.44.19
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 10:44:19 -0700 (PDT)
-Date:   Tue, 6 Aug 2019 10:44:12 -0700
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     netdev@vger.kernel.org, Mirko Lindner <mlindner@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 12/17] skge: no need to check return value of
- debugfs_create functions
-Message-ID: <20190806104412.6e462c4b@hermes.lan>
-In-Reply-To: <20190806161128.31232-13-gregkh@linuxfoundation.org>
-References: <20190806161128.31232-1-gregkh@linuxfoundation.org>
-        <20190806161128.31232-13-gregkh@linuxfoundation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
+        bh=fodY2dzKWC74TgSsGgftnxUr1VYkPfXdI8RTegnFuRk=;
+        b=k6dObBQS/Sa6ETYKesxmcQOoDLI52LwHnQaSFTlT3k0mhNoefOjUs/1TA5gVfBsMbY
+         ZR8ASJ5G57m39nYhBV4OfzuQ1V48o37NTgJzJuq2RKY4Y2bTx3uRaeay7e6bDWlSVVUQ
+         sAUUHeMo9sctDV6et1/bV4Qyox2Y3c45SVl3wEBmZP3eiC3Q14NVzHo7R6qMve4JrrXN
+         /db6E2yx/98lb1mD1gCHIu1n3gvRFxwkrgLTi9EkE2/Eb008FqhSpfxX0RHaSFFdCPAE
+         gGzOIXne9Vd3TJnIwOl6yQjGEObp9MvEh5oL1tYITQPW/+XiEjAoZDubU6BIlJnwGiH+
+         PpTA==
+X-Gm-Message-State: APjAAAWjDJK3aAv94xFPBzgCI/kTFSss96O4ACxVT2VpkmyzP5LmMqjR
+        oM+KCxDlhZ3QUQIQdqOanQZQpi+NpRU1ltCLkDuWlDVpnbNSNksxQsNwAYzfdNxsrhcS7IpQjcW
+        TXKxWpzauYRdogPiLHdcuGfX+30ztfQeXW+jKUnR3MxAN2UA6PbZOwQ==
+X-Google-Smtp-Source: APXvYqzMFWmE9FM0OF+TrYwRTR3HyYzta9/3RP95AyiFEzJQu1m3vxJsxc7JsJ1xxdUKxOb+B2ghXJ8=
+X-Received: by 2002:ac8:27db:: with SMTP id x27mr4387846qtx.4.1565113531481;
+ Tue, 06 Aug 2019 10:45:31 -0700 (PDT)
+Date:   Tue,  6 Aug 2019 10:45:26 -0700
+Message-Id: <20190806174529.8341-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.22.0.770.g0f2c4a37fd-goog
+Subject: [PATCH bpf-next v5 0/3] selftests/bpf: switch test_progs back to stdio
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  6 Aug 2019 18:11:23 +0200
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> wrote:
+I was looking into converting test_sockops* to test_progs framework
+and that requires using cgroup_helpers.c which rely on stdio/stderr.
+Let's use open_memstream to override stdout into buffer during
+subtests instead of custom test_{v,}printf wrappers. That lets
+us continue to use stdio in the subtests and dump it on failure
+if required.
 
-> When calling debugfs functions, there is no need to ever check the
-> return value.  The function can work or not, but the code logic should
-> never do something different based on this.
-> 
-> Cc: Mirko Lindner <mlindner@marvell.com>
-> Cc: Stephen Hemminger <stephen@networkplumber.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+That would also fix bpf_find_map which currently uses printf to
+signal failure (missed during test_printf conversion).
 
-Acked-by: Stephen Hemminger <stephen@networkplumber.org>
+Cc: Andrii Nakryiko <andriin@fb.com>
 
-Did not pull card out of dust bin to test it though
+Stanislav Fomichev (3):
+  selftests/bpf: test_progs: switch to open_memstream
+  selftests/bpf: test_progs: test__printf -> printf
+  selftests/bpf: test_progs: drop extra trailing tab
+
+ .../bpf/prog_tests/bpf_verif_scale.c          |   4 +-
+ .../selftests/bpf/prog_tests/l4lb_all.c       |   2 +-
+ .../selftests/bpf/prog_tests/map_lock.c       |  10 +-
+ .../selftests/bpf/prog_tests/send_signal.c    |   4 +-
+ .../selftests/bpf/prog_tests/spinlock.c       |   2 +-
+ .../bpf/prog_tests/stacktrace_build_id.c      |   4 +-
+ .../bpf/prog_tests/stacktrace_build_id_nmi.c  |   4 +-
+ .../selftests/bpf/prog_tests/xdp_noinline.c   |   4 +-
+ tools/testing/selftests/bpf/test_progs.c      | 131 ++++++++----------
+ tools/testing/selftests/bpf/test_progs.h      |  13 +-
+ 10 files changed, 84 insertions(+), 94 deletions(-)
+
+-- 
+2.22.0.770.g0f2c4a37fd-goog
