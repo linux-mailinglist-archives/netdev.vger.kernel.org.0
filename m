@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 781F68426D
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:25:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B437A8426E
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:25:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729416AbfHGCZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 22:25:24 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:46951 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728906AbfHGCZX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 22:25:23 -0400
-Received: by mail-pf1-f194.google.com with SMTP id c3so19426160pfa.13
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 19:25:23 -0700 (PDT)
+        id S1729583AbfHGCZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 22:25:26 -0400
+Received: from mail-pf1-f174.google.com ([209.85.210.174]:33767 "EHLO
+        mail-pf1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728906AbfHGCZZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 22:25:25 -0400
+Received: by mail-pf1-f174.google.com with SMTP id g2so42568679pfq.0
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 19:25:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=PJxgwheVjWJMZkY4yZBhyAZk9oyVr4L1c/3xuU4qo2A=;
-        b=HHsE6fhbdNis6P/qQuf3meS+mYC/BAggBIIf1V51q/5zGGTM+c+jJ0lxGV9CQ9hBWB
-         ub0RfZIPp0DVcENc3A37k2hI96r2Q1/gtQ9wK65dgswrYQQBgL93T5xInhM6PAqAE9v0
-         4iNVLzQCPRQvyb4vhpKCzNOkOhCM0IA2r7uCD1xXOpEmOXL8UMZQ5HwIb5k6LNeBwJp9
-         SGTgc2jD6Oh3pPOzS+IQR4OV7MX3l1i4OzdlXJ/ufMGSAxkWi6Jy+bzXZygScEMMkdQu
-         WsG6dUFUgHocvA+H576wPWpSLMWlUnJkS8p2xUxd+Wv+so/w/6jbq4unRt7CaSroZ/EQ
-         Jliw==
+        bh=plUmgSq1AS3BekwE3nGgJ8WDdPpxfjKKHqb2I0XLHVo=;
+        b=DcOCAQJGfq8ASa4tJXQdpEzNJXEA/sJNPm7GnHvup095ucskeEVP4tv12oFCWHyZXx
+         znLkOZKIDiAaTU0pOskXjzXU4CFqs1aMiFYopBpDE3Yer+rHlVJykyoCyMfdOGVDG4ax
+         aCiIyufqXwSlGFOj8ISbxv1IDIQX4Vir2JD5x+hYR9F+nnQAs34imImh8HZdL6sTjODM
+         V9nubAE2HTLCOy80+Q3es+tUzSzf0NJsS1fJouNe/sy4U3duFIjE2AwdTG0p5eeyG7Aw
+         ELQPJU39DBxmpBuOg6VahaUtDkepEWrulGHT9oTZfzk/QRYYhXcU3gm/6UbMgXCRxZNe
+         Rl4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=PJxgwheVjWJMZkY4yZBhyAZk9oyVr4L1c/3xuU4qo2A=;
-        b=AUr4U7MbX4XI74fSIIPMoAVIYqm66u3uSmpx0xdrZVskw5Kx4b5nAlmMW6XyrY379j
-         Rqdjt9dBwjSPbdiiRJwxDlJIcA92uoRU91z0r0w0uGeX647QIYkZP7Fdx6wKs1R5D3I5
-         Ko7pZeLZKxZ+4HaS/bbXqf4JArwNMDqt/ccwoHs7c4/HiKM3fUdbnZyyMEksqEp9qvXi
-         1zF2KhAZifn9yIZ3lqq1PcSjsGDrAGIKM2R7qvL5AnkeUnLmTbsXFOyaaQKG+KX7Cz6W
-         YpxuG6TVG0NpJqNmCZJtL/kyfgy0cLuW5GTYL8g6zzVFIue5BUMmyitZjvfOQ3hbpe7I
-         oKuA==
-X-Gm-Message-State: APjAAAXgjOh36mem1GTyKH1LkXXAAoyGV/0TyTPhJ0zuRfzK8jJA7riK
-        kI4L4wU+fJqrfvrWUd8ePa4lGhh6JQ==
-X-Google-Smtp-Source: APXvYqxoUO/UUx+NbLYqDGeXRW79fv94s9gHzR2MJfsMlV1vZdzsz8g/eUdj58b2SWQWNMAeFVHfxw==
-X-Received: by 2002:a63:5765:: with SMTP id h37mr5550229pgm.183.1565144722874;
-        Tue, 06 Aug 2019 19:25:22 -0700 (PDT)
+        bh=plUmgSq1AS3BekwE3nGgJ8WDdPpxfjKKHqb2I0XLHVo=;
+        b=L9bWa1VNdY/EmMz1fsntcIJfxVXak6Ej4ImIbHl7MJlFIG8aIQEKgW8/VAe77heRf0
+         ZiiP2vr9MAjnOHgOKeY45ZdjummSFD3XKqqYSU5TOeY8Gt5d82/lcXxAlsUmU/gAk3zk
+         l9DasS+h8I/XfmHHpnVi8Xheatfr6ZhgJvvzTonzom1PcxFkBiyFvVUpU5ixn2pjaEyR
+         7R+1kq+FSnba6wj1m8ajdL26FjSGZrVZKAGkHgAt5rIKbOhe17FOUW/Z0I61Fb4PH3bt
+         cGO9b9zUA70p+OPkX4zVqoHKDVjvAvzHEQcVNFP7bCzL2UlGqJqCv8ihQG7k3dS2rY/a
+         PQiA==
+X-Gm-Message-State: APjAAAUQTM2d2veEuufAlFtVNPhVO4Fahusq0R6D526EZLCKTe1IbnMT
+        PthZbiYYf5cny04cT/G1x27GCkSb6w==
+X-Google-Smtp-Source: APXvYqw5YF8946wvz/oco5Y1Mgj1fM8RyvcFeNOySGALzCcVSZcpua7w0Ow9pwroGeLKLlEbU30c8Q==
+X-Received: by 2002:a63:121b:: with SMTP id h27mr5685489pgl.335.1565144724780;
+        Tue, 06 Aug 2019 19:25:24 -0700 (PDT)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id b126sm129275991pfa.126.2019.08.06.19.25.21
+        by smtp.gmail.com with ESMTPSA id b126sm129275991pfa.126.2019.08.06.19.25.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 19:25:22 -0700 (PDT)
+        Tue, 06 Aug 2019 19:25:24 -0700 (PDT)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>
 Cc:     netdev@vger.kernel.org
-Subject: [v3,2/4] tools: bpftool: add net detach command to detach XDP on interface
-Date:   Wed,  7 Aug 2019 11:25:07 +0900
-Message-Id: <20190807022509.4214-3-danieltimlee@gmail.com>
+Subject: [v3,3/4] tools: bpftool: add bash-completion for net attach/detach
+Date:   Wed,  7 Aug 2019 11:25:08 +0900
+Message-Id: <20190807022509.4214-4-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190807022509.4214-1-danieltimlee@gmail.com>
 References: <20190807022509.4214-1-danieltimlee@gmail.com>
@@ -61,89 +61,114 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By this commit, using `bpftool net detach`, the attached XDP prog can
-be detached. Detaching the BPF prog will be done through libbpf
-'bpf_set_link_xdp_fd' with the progfd set to -1.
+This commit adds bash-completion for new "net attach/detach"
+subcommand for attaching XDP program on interface.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- tools/bpf/bpftool/net.c | 42 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 41 insertions(+), 1 deletion(-)
+ tools/bpf/bpftool/bash-completion/bpftool | 64 +++++++++++++++++++----
+ 1 file changed, 55 insertions(+), 9 deletions(-)
 
-diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-index c05a3fac5cac..7be96acb08e0 100644
---- a/tools/bpf/bpftool/net.c
-+++ b/tools/bpf/bpftool/net.c
-@@ -343,6 +343,43 @@ static int do_attach(int argc, char **argv)
- 	return 0;
- }
- 
-+static int do_detach(int argc, char **argv)
-+{
-+	enum net_attach_type attach_type;
-+	int progfd, ifindex, err = 0;
-+
-+	/* parse detach args */
-+	if (!REQ_ARGS(3))
-+		return -EINVAL;
-+
-+	attach_type = parse_attach_type(*argv);
-+	if (attach_type == max_net_attach_type) {
-+		p_err("invalid net attach/detach type");
-+		return -EINVAL;
-+	}
-+
-+	NEXT_ARG();
-+	ifindex = net_parse_dev(&argc, &argv);
-+	if (ifindex < 1)
-+		return -EINVAL;
-+
-+	/* detach xdp prog */
-+	progfd = -1;
-+	if (is_prefix("xdp", attach_type_strings[attach_type]))
-+		err = do_attach_detach_xdp(progfd, attach_type, ifindex, NULL);
-+
-+	if (err < 0) {
-+		p_err("interface %s detach failed",
-+		      attach_type_strings[attach_type]);
-+		return err;
-+	}
-+
-+	if (json_output)
-+		jsonw_null(json_wtr);
-+
-+	return 0;
-+}
-+
- static int do_show(int argc, char **argv)
- {
- 	struct bpf_attach_info attach_info = {};
-@@ -419,6 +456,7 @@ static int do_help(int argc, char **argv)
- 	fprintf(stderr,
- 		"Usage: %s %s { show | list } [dev <devname>]\n"
- 		"       %s %s attach ATTACH_TYPE PROG dev <devname> [ overwrite ]\n"
-+		"       %s %s detach ATTACH_TYPE dev <devname>\n"
- 		"       %s %s help\n"
- 		"\n"
- 		"       " HELP_SPEC_PROGRAM "\n"
-@@ -429,7 +467,8 @@ static int do_help(int argc, char **argv)
- 		"      to dump program attachments. For program types\n"
- 		"      sk_{filter,skb,msg,reuseport} and lwt/seg6, please\n"
- 		"      consult iproute2.\n",
--		bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2]);
-+		bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2],
-+		bin_name, argv[-2]);
- 
- 	return 0;
- }
-@@ -438,6 +477,7 @@ static const struct cmd cmds[] = {
- 	{ "show",	do_show },
- 	{ "list",	do_show },
- 	{ "attach",	do_attach },
-+	{ "detach",	do_detach },
- 	{ "help",	do_help },
- 	{ 0 }
- };
+diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
+index c8f42e1fcbc9..1d81cb09d478 100644
+--- a/tools/bpf/bpftool/bash-completion/bpftool
++++ b/tools/bpf/bpftool/bash-completion/bpftool
+@@ -201,6 +201,10 @@ _bpftool()
+             _bpftool_get_prog_tags
+             return 0
+             ;;
++        dev)
++            _sysfs_get_netdevs
++            return 0
++            ;;
+         file|pinned)
+             _filedir
+             return 0
+@@ -399,10 +403,6 @@ _bpftool()
+                             _filedir
+                             return 0
+                             ;;
+-                        dev)
+-                            _sysfs_get_netdevs
+-                            return 0
+-                            ;;
+                         *)
+                             COMPREPLY=( $( compgen -W "map" -- "$cur" ) )
+                             _bpftool_once_attr 'type'
+@@ -498,10 +498,6 @@ _bpftool()
+                         key|value|flags|name|entries)
+                             return 0
+                             ;;
+-                        dev)
+-                            _sysfs_get_netdevs
+-                            return 0
+-                            ;;
+                         *)
+                             _bpftool_once_attr 'type'
+                             _bpftool_once_attr 'key'
+@@ -775,11 +771,61 @@ _bpftool()
+             esac
+             ;;
+         net)
++            local PROG_TYPE='id pinned tag'
++            local ATTACH_TYPES='xdp xdpgeneric xdpdrv xdpoffload'
+             case $command in
++                show|list)
++                    [[ $prev != "$command" ]] && return 0
++                    COMPREPLY=( $( compgen -W 'dev' -- "$cur" ) )
++                    return 0
++                    ;;
++                attach)
++                    case $cword in
++                        3)
++                            COMPREPLY=( $( compgen -W "$ATTACH_TYPES" -- "$cur" ) )
++                            return 0
++                            ;;
++                        4)
++                            COMPREPLY=( $( compgen -W "$PROG_TYPE" -- "$cur" ) )
++                            return 0
++                            ;;
++                        5)
++                            case $prev in
++                                id)
++                                    _bpftool_get_prog_ids
++                                    ;;
++                                pinned)
++                                    _filedir
++                                    ;;
++                            esac
++                            return 0
++                            ;;
++                        6)
++                            COMPREPLY=( $( compgen -W 'dev' -- "$cur" ) )
++                            return 0
++                            ;;
++                        8)
++                            _bpftool_once_attr 'overwrite'
++                            return 0
++                            ;;
++                    esac
++                    ;;
++                detach)
++                    case $cword in
++                        3)
++                            COMPREPLY=( $( compgen -W "$ATTACH_TYPES" -- "$cur" ) )
++                            return 0
++                            ;;
++                        4)
++                            COMPREPLY=( $( compgen -W 'dev' -- "$cur" ) )
++                            return 0
++                            ;;
++                    esac
++                    ;;
+                 *)
+                     [[ $prev == $object ]] && \
+                         COMPREPLY=( $( compgen -W 'help \
+-                            show list' -- "$cur" ) )
++                            show list attach detach' -- "$cur" ) )
+                     ;;
+             esac
+             ;;
 -- 
 2.20.1
 
