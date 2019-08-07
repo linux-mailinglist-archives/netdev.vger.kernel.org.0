@@ -2,60 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F5EB84996
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 12:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61233849F7
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 12:46:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729612AbfHGKcE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 06:32:04 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:35899 "EHLO
-        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726731AbfHGKcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 06:32:02 -0400
+        id S1728592AbfHGKni (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 06:43:38 -0400
+Received: from out3-smtp.messagingengine.com ([66.111.4.27]:42153 "EHLO
+        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726860AbfHGKni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 06:43:38 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id C0040170E;
-        Wed,  7 Aug 2019 06:32:01 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id A005521FB5;
+        Wed,  7 Aug 2019 06:43:36 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 07 Aug 2019 06:32:01 -0400
+  by compute3.internal (MEProxy); Wed, 07 Aug 2019 06:43:36 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=2+WrgvVISrYFpPYeIeZROzSgMJujFq9L/AQrEhl9C4w=; b=MAclWMHQ
-        2bubWkqfWZE/SQr/BIyDP1RBw5QaDGNNBPoNgiVohYES38VwU1mGsG6d0G3thASD
-        DYcKVT9044iOAGY/e6Sp6H827kWrHz9spUFan4DibK3eNZlDNPiMc5hLBZFbBKy7
-        sDdj6Qle/SwIu2BBI8FmU2NSru+YBVfk2m9foNDI4S5kGyoLlVDrHap7SvTR0ZSi
-        inSYgvr0yAmXqgnE0HJQhVKekOiHqE2f/D0Yl1eXkIDgv9l7ECkN/5fde1Fgs5ll
-        ZxHWirfjR48cDR7PzNHtYnt6bbNSWbUOHhBt5+CFe0KDd7ZLO5VbBoI8o9PWoS2f
-        ibBTGJQXP3lqrQ==
-X-ME-Sender: <xms:oahKXY6v0aq76qa_6nE1Gng_QelyLfT8ADXhz-jh94kz4fJ1G9ckOA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudduvddgvdelucetufdoteggodetrfdotf
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=YKM0YBuRhbZFkhuAb
+        siOfTSMNeb7FVTycDpD1KoHcnU=; b=PHT8qhZy/NFrhIosgBs5SzL5+Et0d12YM
+        4RRK6D+tFff+COfi8QlBCaJ7LxxWoXlctGTcQfTO3SDhCsXxA0Y/bNLOnwxgQHyN
+        SBuAkmYdMIkjI59zUkrs0S8CWFZTp9eipsdaL5fwj7AOFReSOgzpDNpHmO9ZzAUF
+        IiMy7tSnOEi0QjtMvDZbISy1OetjOZKd66FaN5hhrEBz8Rl7N9eyEEewKKEleozg
+        76OU09+lE3Y10HRErIrjUZLuoNETkH/Pty1UBPoZkMQLFY94T9f9wbXycFl+z80M
+        rHEnQ9Y9NCcSIXjUqYSN2t0hr5nm2u080EpW3evvx6eh5GWj9vvsw==
+X-ME-Sender: <xms:WKtKXfDUa8ufafu9FMd1Wnvv76Du3fQJdZMd21nB_v0MDoXykVplgQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudduvddgfeduucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeei
-X-ME-Proxy: <xmx:oahKXTlhOxAlb17UnTMnJyAcKjN-ZXMOsrdfdPz_tArRdr2RFE7f3w>
-    <xmx:oahKXeZ6pgxMhwxTJ4R2CFxLBX2RoSwBP9fiKFyBS2h68mw7HGGKIA>
-    <xmx:oahKXRMVjVke0kB3G2MgB_rNEk7KA31z2dDASMNeFDr3v4nzQXQypg>
-    <xmx:oahKXdxDD9-s_EwKtckPgbBddhVZYdkj5AfbR4cZkLuGKutZgicgSw>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:WKtKXU9u4AYsySf9435DKQ1cvjdOMer4asMF-aAzGAjENcWpvu1pkQ>
+    <xmx:WKtKXbr2qFe0e9I6yvaDoEaT_ORCNnjPwV8yF8y3hyBAeqKYpcQD4g>
+    <xmx:WKtKXWGcvhNlVyfq1d0ah5Li5kQIHPmFt_Oixkkj-ddRiaZWrk-6xA>
+    <xmx:WKtKXYhAF4lcXnWtZFWTn43mll_ifAiMbZ_EOHgMwEXwKUeP6gFG-g>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3E9CB380083;
-        Wed,  7 Aug 2019 06:31:59 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id EF4C3380090;
+        Wed,  7 Aug 2019 06:43:34 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
-        toke@redhat.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 10/10] drop_monitor: Expose tail drop counter
-Date:   Wed,  7 Aug 2019 13:30:59 +0300
-Message-Id: <20190807103059.15270-11-idosch@idosch.org>
+Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next] mlxsw: spectrum: Extend to support Spectrum-3 ASIC
+Date:   Wed,  7 Aug 2019 13:42:31 +0300
+Message-Id: <20190807104231.16085-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190807103059.15270-1-idosch@idosch.org>
-References: <20190807103059.15270-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,199 +56,169 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Jiri Pirko <jiri@mellanox.com>
 
-Previous patch made the length of the per-CPU skb drop list
-configurable. Expose a counter that shows how many packets could not be
-enqueued to this list.
+Extend existing driver for Spectrum and Spectrum-2 ASICs
+to support Spectrum-3 ASIC as well.
 
-This allows users determine the desired queue length.
-
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+Reviewed-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- include/uapi/linux/net_dropmon.h |  10 +++
- net/core/drop_monitor.c          | 101 +++++++++++++++++++++++++++++++
- 2 files changed, 111 insertions(+)
+ drivers/net/ethernet/mellanox/mlxsw/Kconfig   |  6 +-
+ drivers/net/ethernet/mellanox/mlxsw/pci.h     |  1 +
+ .../net/ethernet/mellanox/mlxsw/spectrum.c    | 55 +++++++++++++++++++
+ 3 files changed, 59 insertions(+), 3 deletions(-)
 
-diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 8658bcd07e0e..a2d253683237 100644
---- a/include/uapi/linux/net_dropmon.h
-+++ b/include/uapi/linux/net_dropmon.h
-@@ -56,6 +56,8 @@ enum {
- 	NET_DM_CMD_PACKET_ALERT,
- 	NET_DM_CMD_CONFIG_GET,
- 	NET_DM_CMD_CONFIG_NEW,
-+	NET_DM_CMD_STATS_GET,
-+	NET_DM_CMD_STATS_NEW,
- 	_NET_DM_CMD_MAX,
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/Kconfig b/drivers/net/ethernet/mellanox/mlxsw/Kconfig
+index 06c80343d9ed..f458fd1ce9f8 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/Kconfig
++++ b/drivers/net/ethernet/mellanox/mlxsw/Kconfig
+@@ -71,7 +71,7 @@ config MLXSW_SWITCHX2
+ 	  module will be called mlxsw_switchx2.
+ 
+ config MLXSW_SPECTRUM
+-	tristate "Mellanox Technologies Spectrum support"
++	tristate "Mellanox Technologies Spectrum family support"
+ 	depends on MLXSW_CORE && MLXSW_PCI && NET_SWITCHDEV && VLAN_8021Q
+ 	depends on PSAMPLE || PSAMPLE=n
+ 	depends on BRIDGE || BRIDGE=n
+@@ -87,8 +87,8 @@ config MLXSW_SPECTRUM
+ 	select NET_PTP_CLASSIFY if PTP_1588_CLOCK
+ 	default m
+ 	---help---
+-	  This driver supports Mellanox Technologies Spectrum Ethernet
+-	  Switch ASICs.
++	  This driver supports Mellanox Technologies
++	  Spectrum/Spectrum-2/Spectrum-3 Ethernet Switch ASICs.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called mlxsw_spectrum.
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.h b/drivers/net/ethernet/mellanox/mlxsw/pci.h
+index 946339e13eb9..5b1323645a5d 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.h
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.h
+@@ -9,6 +9,7 @@
+ #define PCI_DEVICE_ID_MELLANOX_SWITCHX2		0xc738
+ #define PCI_DEVICE_ID_MELLANOX_SPECTRUM		0xcb84
+ #define PCI_DEVICE_ID_MELLANOX_SPECTRUM2	0xcf6c
++#define PCI_DEVICE_ID_MELLANOX_SPECTRUM3	0xcf70
+ #define PCI_DEVICE_ID_MELLANOX_SWITCHIB		0xcb20
+ #define PCI_DEVICE_ID_MELLANOX_SWITCHIB2	0xcf08
+ 
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+index 5a8e94c0a95a..389861ece418 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.c
+@@ -65,6 +65,7 @@ static const struct mlxsw_fw_rev mlxsw_sp1_fw_rev = {
+ 
+ static const char mlxsw_sp1_driver_name[] = "mlxsw_spectrum";
+ static const char mlxsw_sp2_driver_name[] = "mlxsw_spectrum2";
++static const char mlxsw_sp3_driver_name[] = "mlxsw_spectrum3";
+ static const char mlxsw_sp_driver_version[] = "1.0";
+ 
+ static const unsigned char mlxsw_sp1_mac_mask[ETH_ALEN] = {
+@@ -5290,6 +5291,35 @@ static struct mlxsw_driver mlxsw_sp2_driver = {
+ 	.res_query_enabled		= true,
  };
  
-@@ -79,6 +81,7 @@ enum net_dm_attr {
- 	NET_DM_ATTR_TRUNC_LEN,			/* u32 */
- 	NET_DM_ATTR_ORIG_LEN,			/* u32 */
- 	NET_DM_ATTR_QUEUE_LEN,			/* u32 */
-+	NET_DM_ATTR_STATS,			/* nested */
- 
- 	__NET_DM_ATTR_MAX,
- 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
-@@ -102,4 +105,11 @@ enum {
- 	NET_DM_ATTR_PORT_MAX = __NET_DM_ATTR_PORT_MAX - 1
- };
- 
-+enum {
-+	NET_DM_ATTR_STATS_DROPPED,		/* u64 */
-+
-+	__NET_DM_ATTR_STATS_MAX,
-+	NET_DM_ATTR_STATS_MAX = __NET_DM_ATTR_STATS_MAX - 1
++static struct mlxsw_driver mlxsw_sp3_driver = {
++	.kind				= mlxsw_sp3_driver_name,
++	.priv_size			= sizeof(struct mlxsw_sp),
++	.init				= mlxsw_sp2_init,
++	.fini				= mlxsw_sp_fini,
++	.basic_trap_groups_set		= mlxsw_sp_basic_trap_groups_set,
++	.port_split			= mlxsw_sp_port_split,
++	.port_unsplit			= mlxsw_sp_port_unsplit,
++	.sb_pool_get			= mlxsw_sp_sb_pool_get,
++	.sb_pool_set			= mlxsw_sp_sb_pool_set,
++	.sb_port_pool_get		= mlxsw_sp_sb_port_pool_get,
++	.sb_port_pool_set		= mlxsw_sp_sb_port_pool_set,
++	.sb_tc_pool_bind_get		= mlxsw_sp_sb_tc_pool_bind_get,
++	.sb_tc_pool_bind_set		= mlxsw_sp_sb_tc_pool_bind_set,
++	.sb_occ_snapshot		= mlxsw_sp_sb_occ_snapshot,
++	.sb_occ_max_clear		= mlxsw_sp_sb_occ_max_clear,
++	.sb_occ_port_pool_get		= mlxsw_sp_sb_occ_port_pool_get,
++	.sb_occ_tc_port_bind_get	= mlxsw_sp_sb_occ_tc_port_bind_get,
++	.flash_update			= mlxsw_sp_flash_update,
++	.txhdr_construct		= mlxsw_sp_txhdr_construct,
++	.resources_register		= mlxsw_sp2_resources_register,
++	.params_register		= mlxsw_sp2_params_register,
++	.params_unregister		= mlxsw_sp2_params_unregister,
++	.ptp_transmitted		= mlxsw_sp_ptp_transmitted,
++	.txhdr_len			= MLXSW_TXHDR_LEN,
++	.profile			= &mlxsw_sp2_config_profile,
++	.res_query_enabled		= true,
 +};
 +
- #endif
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index c9b68a093e0f..59c57154485c 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -51,12 +51,18 @@ static int trace_state = TRACE_OFF;
-  */
- static DEFINE_MUTEX(net_dm_mutex);
- 
-+struct net_dm_stats {
-+	u64 dropped;
-+	struct u64_stats_sync syncp;
-+};
-+
- struct per_cpu_dm_data {
- 	spinlock_t		lock;	/* Protects 'skb' and 'send_timer' */
- 	struct sk_buff		*skb;
- 	struct sk_buff_head	drop_queue;
- 	struct work_struct	dm_alert_work;
- 	struct timer_list	send_timer;
-+	struct net_dm_stats	stats;
- };
- 
- struct dm_hw_stat_delta {
-@@ -300,6 +306,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
- 
- unlock_free:
- 	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
-+	u64_stats_update_begin(&data->stats.syncp);
-+	data->stats.dropped++;
-+	u64_stats_update_end(&data->stats.syncp);
- 	consume_skb(nskb);
- }
- 
-@@ -727,6 +736,93 @@ static int net_dm_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
- 	return rc;
- }
- 
-+static void net_dm_stats_read(struct net_dm_stats *stats)
-+{
-+	int cpu;
-+
-+	memset(stats, 0, sizeof(*stats));
-+	for_each_possible_cpu(cpu) {
-+		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
-+		struct net_dm_stats *cpu_stats = &data->stats;
-+		unsigned int start;
-+		u64 dropped;
-+
-+		do {
-+			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
-+			dropped = cpu_stats->dropped;
-+		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
-+
-+		stats->dropped += dropped;
-+	}
-+}
-+
-+static int net_dm_stats_put(struct sk_buff *msg)
-+{
-+	struct net_dm_stats stats;
-+	struct nlattr *attr;
-+
-+	net_dm_stats_read(&stats);
-+
-+	attr = nla_nest_start(msg, NET_DM_ATTR_STATS);
-+	if (!attr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
-+			      stats.dropped, NET_DM_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(msg, attr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(msg, attr);
-+	return -EMSGSIZE;
-+}
-+
-+static int net_dm_stats_fill(struct sk_buff *msg, struct genl_info *info)
-+{
-+	void *hdr;
-+	int rc;
-+
-+	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
-+			  &net_drop_monitor_family, 0, NET_DM_CMD_STATS_NEW);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	rc = net_dm_stats_put(msg);
-+	if (rc)
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+static int net_dm_cmd_stats_get(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct sk_buff *msg;
-+	int rc;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	rc = net_dm_stats_fill(msg, info);
-+	if (rc)
-+		goto free_msg;
-+
-+	return genlmsg_reply(msg, info);
-+
-+free_msg:
-+	nlmsg_free(msg);
-+	return rc;
-+}
-+
- static int dropmon_net_event(struct notifier_block *ev_block,
- 			     unsigned long event, void *ptr)
+ bool mlxsw_sp_port_dev_check(const struct net_device *dev)
  {
-@@ -794,6 +890,10 @@ static const struct genl_ops dropmon_ops[] = {
- 		.cmd = NET_DM_CMD_CONFIG_GET,
- 		.doit = net_dm_cmd_config_get,
- 	},
-+	{
-+		.cmd = NET_DM_CMD_STATS_GET,
-+		.doit = net_dm_cmd_stats_get,
-+	},
+ 	return dev->netdev_ops == &mlxsw_sp_port_netdev_ops;
+@@ -6324,6 +6354,16 @@ static struct pci_driver mlxsw_sp2_pci_driver = {
+ 	.id_table = mlxsw_sp2_pci_id_table,
  };
  
- static int net_dm_nl_pre_doit(const struct genl_ops *ops,
-@@ -860,6 +960,7 @@ static int __init init_net_drop_monitor(void)
- 		data = &per_cpu(dm_cpu_data, cpu);
- 		spin_lock_init(&data->lock);
- 		skb_queue_head_init(&data->drop_queue);
-+		u64_stats_init(&data->stats.syncp);
- 	}
++static const struct pci_device_id mlxsw_sp3_pci_id_table[] = {
++	{PCI_VDEVICE(MELLANOX, PCI_DEVICE_ID_MELLANOX_SPECTRUM3), 0},
++	{0, },
++};
++
++static struct pci_driver mlxsw_sp3_pci_driver = {
++	.name = mlxsw_sp3_driver_name,
++	.id_table = mlxsw_sp3_pci_id_table,
++};
++
+ static int __init mlxsw_sp_module_init(void)
+ {
+ 	int err;
+@@ -6339,6 +6379,10 @@ static int __init mlxsw_sp_module_init(void)
+ 	if (err)
+ 		goto err_sp2_core_driver_register;
  
- 	goto out;
++	err = mlxsw_core_driver_register(&mlxsw_sp3_driver);
++	if (err)
++		goto err_sp3_core_driver_register;
++
+ 	err = mlxsw_pci_driver_register(&mlxsw_sp1_pci_driver);
+ 	if (err)
+ 		goto err_sp1_pci_driver_register;
+@@ -6347,11 +6391,19 @@ static int __init mlxsw_sp_module_init(void)
+ 	if (err)
+ 		goto err_sp2_pci_driver_register;
+ 
++	err = mlxsw_pci_driver_register(&mlxsw_sp3_pci_driver);
++	if (err)
++		goto err_sp3_pci_driver_register;
++
+ 	return 0;
+ 
++err_sp3_pci_driver_register:
++	mlxsw_pci_driver_unregister(&mlxsw_sp2_pci_driver);
+ err_sp2_pci_driver_register:
+ 	mlxsw_pci_driver_unregister(&mlxsw_sp1_pci_driver);
+ err_sp1_pci_driver_register:
++	mlxsw_core_driver_unregister(&mlxsw_sp3_driver);
++err_sp3_core_driver_register:
+ 	mlxsw_core_driver_unregister(&mlxsw_sp2_driver);
+ err_sp2_core_driver_register:
+ 	mlxsw_core_driver_unregister(&mlxsw_sp1_driver);
+@@ -6363,8 +6415,10 @@ static int __init mlxsw_sp_module_init(void)
+ 
+ static void __exit mlxsw_sp_module_exit(void)
+ {
++	mlxsw_pci_driver_unregister(&mlxsw_sp3_pci_driver);
+ 	mlxsw_pci_driver_unregister(&mlxsw_sp2_pci_driver);
+ 	mlxsw_pci_driver_unregister(&mlxsw_sp1_pci_driver);
++	mlxsw_core_driver_unregister(&mlxsw_sp3_driver);
+ 	mlxsw_core_driver_unregister(&mlxsw_sp2_driver);
+ 	mlxsw_core_driver_unregister(&mlxsw_sp1_driver);
+ 	unregister_inet6addr_validator_notifier(&mlxsw_sp_inet6addr_valid_nb);
+@@ -6379,4 +6433,5 @@ MODULE_AUTHOR("Jiri Pirko <jiri@mellanox.com>");
+ MODULE_DESCRIPTION("Mellanox Spectrum driver");
+ MODULE_DEVICE_TABLE(pci, mlxsw_sp1_pci_id_table);
+ MODULE_DEVICE_TABLE(pci, mlxsw_sp2_pci_id_table);
++MODULE_DEVICE_TABLE(pci, mlxsw_sp3_pci_id_table);
+ MODULE_FIRMWARE(MLXSW_SP1_FW_FILENAME);
 -- 
 2.21.0
 
