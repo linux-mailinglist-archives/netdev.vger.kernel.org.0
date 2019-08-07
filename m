@@ -2,58 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2833384CC4
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 15:20:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0820C84CC9
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 15:21:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388276AbfHGNU2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 09:20:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40982 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387957AbfHGNU2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 09:20:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=t8aqXvPw0q5E+uBD13OrFAzMjz9c4sMlYhrCXiVJ+Fg=; b=TrO4rgDO8G9WbuFurc3pU56kH8
-        QVrR8oeF35DVeaV4u77u9VHnRv7tmmgwDOMAmiU4xJ5o2gqvJC5OP9kEaQXzQtpILrtNRH1HMo1Xk
-        IG2b6BIy4ZlTuYAytzkkIEJaK3f2CBqeLEmW/GWA5pmFav7uRcBH0bKfDu50PaE16uJc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hvLrX-0004qH-N1; Wed, 07 Aug 2019 15:20:19 +0200
-Date:   Wed, 7 Aug 2019 15:20:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-Subject: Re: [PATCH 06/16] net: phy: adin: support PHY mode converters
-Message-ID: <20190807132019.GL20422@lunn.ch>
-References: <20190805165453.3989-1-alexandru.ardelean@analog.com>
- <20190805165453.3989-7-alexandru.ardelean@analog.com>
- <20190805145105.GN24275@lunn.ch>
- <15cf5732415c313a7bfe610e7039e7c97b987073.camel@analog.com>
- <20190806153910.GB20422@lunn.ch>
- <7747cb845a9122004b9565f444b4719170f74b35.camel@analog.com>
+        id S2388295AbfHGNVC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 09:21:02 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:44134 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388059AbfHGNVC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 09:21:02 -0400
+Received: by mail-ed1-f68.google.com with SMTP id k8so86166315edr.11;
+        Wed, 07 Aug 2019 06:21:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o7gDnBpDuDwXcYQ6QlYY8efn/08+76Px3igT9oXiK5k=;
+        b=mAq5BtUhI3z8QjtUP5eyHqp1lRL4rZsr/asLgLulVustVZihkiAI2jA/936C7Ne/Ed
+         +xw/1ApoAaKYMSgiUNBNjXo2CB+CdcNkkNBURfQpUUq+UP0tFevI/h82lw+gaAPp7c8S
+         CKxixq506MTIMdNj/oi6+ck/B1WkHpBKKjeO+T0z3AGtCcwQgua98Bzsi8QbSvWdVGEx
+         VerZihDR9aiEfl3sdyDR9h8+g96A8ucnrauVnkL+4u/bf2waTqhRWO11a2nNqQJ4WNHR
+         OvlarePLz5a2++24v8FYro2WWIMz2kQJIkBt2//lDo34fG0oqRghVDuWHYj+Jb5PTL2D
+         R/ww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=o7gDnBpDuDwXcYQ6QlYY8efn/08+76Px3igT9oXiK5k=;
+        b=ujj0mpFg3nG3BbA1sJ6girzUrXNwTU+qxnIJI3kE32lKtuGBrAYRawTOZatd3JKIwd
+         1LA7h1uULi7ca62v4dhdQW8NnOfQiDvcP69bUhXJF65XydteCH4E1hIXnbckAl4bguID
+         k8ALTNR2IJiBNWGbqmlZZ/pfxzp0L6qC6OeXlff9QyaqTSyM+gIr2ZppMQ5KHUnmKkLS
+         SEa4lIXrW0Bk7EI4mTWYRC636jY35aNZzSvT4JHw0VJ6qYsUWx1bdsy9tzw7f5FHr2JY
+         Dv/A1reeR+kgWMD5XMN9O+F7j5EkmzudfrrrW7AGfVHbWEAE7ZmwFbGu6OY0csl2BZ9V
+         Aqww==
+X-Gm-Message-State: APjAAAUrc8H3IboR0rnbo0jSjg878TBOQsumrCGyEGQunZ92+qhvA6yO
+        vzDNUCDE9z3qtNlekGkSbEt6mVJhuBRvWNuvUXi0dw==
+X-Google-Smtp-Source: APXvYqzlJc+LZ/CNeaxM3+J0/iEtUaUJ17IdZUeXr/6iVQDtk6kNp4wINoAEOPiTbMG5Rvj71glBbrpO1B+cBWZPyzM=
+X-Received: by 2002:a17:906:b7d8:: with SMTP id fy24mr8450496ejb.230.1565184060594;
+ Wed, 07 Aug 2019 06:21:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <7747cb845a9122004b9565f444b4719170f74b35.camel@analog.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190807130856.60792-1-yuehaibing@huawei.com> <CA+h21hrrWGrw4kiTfjowWvQ-B6sNPLAcgTaaadA02ZAmYw1SjQ@mail.gmail.com>
+In-Reply-To: <CA+h21hrrWGrw4kiTfjowWvQ-B6sNPLAcgTaaadA02ZAmYw1SjQ@mail.gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 7 Aug 2019 16:20:49 +0300
+Message-ID: <CA+h21hpt1UghzkdQ-x5k37T=SZ8Hc1euV11WyHPrYVCF-rq+Uw@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: sja1105: remove set but not used
+ variables 'tx_vid' and 'rx_vid'
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Is it ok if we defer the solution for this drivers/patchset?
+On Wed, 7 Aug 2019 at 16:19, Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Wed, 7 Aug 2019 at 16:09, YueHaibing <yuehaibing@huawei.com> wrote:
+> >
+> > Fixes gcc '-Wunused-but-set-variable' warning:
+> >
+> > drivers/net/dsa/sja1105/sja1105_main.c: In function sja1105_fdb_dump:
+> > drivers/net/dsa/sja1105/sja1105_main.c:1226:14: warning:
+> >  variable tx_vid set but not used [-Wunused-but-set-variable]
+> > drivers/net/dsa/sja1105/sja1105_main.c:1226:6: warning:
+> >  variable rx_vid set but not used [-Wunused-but-set-variable]
+> >
+> > They are not used since commit 6d7c7d948a2e ("net: dsa:
+> > sja1105: Fix broken learning with vlan_filtering disabled")
+> >
+> > Reported-by: Hulk Robot <hulkci@huawei.com>
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> > ---
+>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-Yes, not a problem if phy-mode means phy-mode.
+This patch should also go to the "net" tree.
 
-     Andrew
+>
+> >  drivers/net/dsa/sja1105/sja1105_main.c | 4 ----
+> >  1 file changed, 4 deletions(-)
+> >
+> > diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+> > index d073baf..df976b25 100644
+> > --- a/drivers/net/dsa/sja1105/sja1105_main.c
+> > +++ b/drivers/net/dsa/sja1105/sja1105_main.c
+> > @@ -1223,12 +1223,8 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+> >  {
+> >         struct sja1105_private *priv = ds->priv;
+> >         struct device *dev = ds->dev;
+> > -       u16 rx_vid, tx_vid;
+> >         int i;
+> >
+> > -       rx_vid = dsa_8021q_rx_vid(ds, port);
+> > -       tx_vid = dsa_8021q_tx_vid(ds, port);
+> > -
+> >         for (i = 0; i < SJA1105_MAX_L2_LOOKUP_COUNT; i++) {
+> >                 struct sja1105_l2_lookup_entry l2_lookup = {0};
+> >                 u8 macaddr[ETH_ALEN];
+> > --
+> > 2.7.4
+> >
+> >
