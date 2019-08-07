@@ -2,151 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3240383A60
-	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:39:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0ED2783A54
+	for <lists+netdev@lfdr.de>; Tue,  6 Aug 2019 22:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726686AbfHFUjU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 16:39:20 -0400
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:2263 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726018AbfHFUjT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:39:19 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d49e5760000>; Tue, 06 Aug 2019 13:39:18 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Tue, 06 Aug 2019 13:39:17 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Tue, 06 Aug 2019 13:39:17 -0700
-Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 6 Aug
- 2019 20:39:16 +0000
-Subject: Re: [PATCH v2 01/34] mm/gup: add make_dirty arg to
- put_user_pages_dirty_lock()
-To:     Ira Weiny <ira.weiny@intel.com>, <john.hubbard@gmail.com>
-CC:     Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jan Kara <jack@suse.cz>, Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        <amd-gfx@lists.freedesktop.org>, <ceph-devel@vger.kernel.org>,
-        <devel@driverdev.osuosl.org>, <devel@lists.orangefs.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <intel-gfx@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-block@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <linux-fbdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-nfs@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-rpi-kernel@lists.infradead.org>,
-        <linux-xfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <rds-devel@oss.oracle.com>, <sparclinux@vger.kernel.org>,
-        <x86@kernel.org>, <xen-devel@lists.xenproject.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Matthew Wilcox <willy@infradead.org>
-References: <20190804224915.28669-1-jhubbard@nvidia.com>
- <20190804224915.28669-2-jhubbard@nvidia.com>
- <20190806173945.GA4748@iweiny-DESK2.sc.intel.com>
-X-Nvconfidentiality: public
-From:   John Hubbard <jhubbard@nvidia.com>
-Message-ID: <0e232d84-e6ea-159e-91d4-77e938377161@nvidia.com>
-Date:   Tue, 6 Aug 2019 13:39:16 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726485AbfHFUda (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 16:33:30 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40557 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfHFUda (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 16:33:30 -0400
+Received: by mail-pf1-f193.google.com with SMTP id p184so42126884pfp.7;
+        Tue, 06 Aug 2019 13:33:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F/hl3E6xWSgLOYfC8vQfPuiPfVoRw6t9KqdsSlnrZOY=;
+        b=Z5R+Ui20vWbz3pMtD8McxT1ePXqXSB0K/nOqoMdMCmQ54UG2cbXg0U2lg3pA41ZebR
+         AWP4t0iEnQHvj+V/sU2PxHCB1JkqD5nBObV4zaJ3p9exwVBeu/4LLhKjE0eRA0/ESoYx
+         Lg92tiFsdOBVW2vzv1I6MWUgnwHvo1EAHa+Te0ARTKC4tIYigDDYm84NOJGx+dnaW+BD
+         GK306WLqw5xIU3JkrCmpkC7bS0Fn/AKMmrmteRAIJ4h9dE18XoppYipulUZhCqWalbGh
+         PDe0mETwoudiO+wQO9BtTKFmZavBvyd33Oec6Gpllw0x3VqMgFQCmJ58noLJUWaynmjY
+         9UCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=F/hl3E6xWSgLOYfC8vQfPuiPfVoRw6t9KqdsSlnrZOY=;
+        b=bCQP5FE95DXMiNOOKN6Q3fVzplnju2pItBwXQiahl6Tuq61CODaFBt1XS0luQyvg/D
+         UAPmZKjpUNqt6enFF9QXdKzVI5uBC/q5bnvSKagONSaSP+1bIK6+FlQtMH+wzuqGedXK
+         p6IKdF0wLkxaHns9VeohVKVha0dQ/uxUwP14YRZ6fSAQjbV96aXqW1cYc2bzB7J9qkS0
+         NliofdcoOTjI0xht5IxVArLBDwj1wN2ikHQDTx10AaOJ9d8xm7jtAKACHUeCNL5UbjZm
+         viIgr+mMetCoxFZCCMl4VjANturPhmuLqvmEzmQ4WKGbtd3N/UDS7VkyOFmm6FwUlhqW
+         fpyw==
+X-Gm-Message-State: APjAAAUHbxAsO+Ko2QBHtc1Huit4pFoTpvDHB2Ed85Lo5ecunCoJ5gS5
+        kMhu5AhRqzcgOle6s5aI9h4=
+X-Google-Smtp-Source: APXvYqydVmi8Htm7y9SQXaN5mFjwL7oDna3ZTCjzJMqqWRRTTBYIPYefxSK8iUvA8rJh0bYbcIpRcg==
+X-Received: by 2002:a17:90a:fa18:: with SMTP id cm24mr4837085pjb.120.1565123609378;
+        Tue, 06 Aug 2019 13:33:29 -0700 (PDT)
+Received: from localhost.localdomain ([27.7.7.163])
+        by smtp.gmail.com with ESMTPSA id x9sm62823174pgp.75.2019.08.06.13.33.25
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 13:33:28 -0700 (PDT)
+From:   Giridhar Prasath R <cristianoprasath@gmail.com>
+To:     isdn@linux-pingi.de
+Cc:     gregkh@linuxfoundation.org, arnd@arndb.de,
+        cristianoprasath@gmail.com, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: isdn: hysdn_procconf_init() remove parantheses from return value
+Date:   Wed,  7 Aug 2019 07:33:31 +0530
+Message-Id: <20190807020331.19729-1-cristianoprasath@gmail.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-In-Reply-To: <20190806173945.GA4748@iweiny-DESK2.sc.intel.com>
-X-Originating-IP: [10.124.1.5]
-X-ClientProxiedBy: HQMAIL104.nvidia.com (172.18.146.11) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1565123958; bh=kP7gTuC3ZdPRsl2ZM8hKtRsMZoJPCXuUqs/7ZYFYlas=;
-        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=De7r6lQUtbn+GTEsMqljgVKTlQIrCw8ZESuRqc7w4LEYPASOCDyQM6KfNGQouIjYR
-         fh0BckBJVbNT9AbXMQb66ZhMKSleBMpCp4Q67sEppT12m031guaO+mSQiN77Vubrty
-         dLwAVLGyjRDyH8bKz/ie59UuEUjWXDBsQB9IGYcfiHyqrDkJ8dhLAwUMAPjRDqyeiY
-         KJw8zEX2A8/HIUmoazoyVwItiLDzuGpYh0geDqgdodA5dwJzt0S2azlo+PhdmfDHXO
-         6GhmRkzx66GKpfVpxeAm8ztIGHTRgebRJf3i5iJHgoMtdv7J6YmmRpepQCyIfl7KA0
-         CyUb7h3ZsvM+w==
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/6/19 10:39 AM, Ira Weiny wrote:
-> On Sun, Aug 04, 2019 at 03:48:42PM -0700, john.hubbard@gmail.com wrote:
->> From: John Hubbard <jhubbard@nvidia.com>
-...
->> -
->>  /**
->> - * put_user_pages_dirty() - release and dirty an array of gup-pinned pages
->> - * @pages:  array of pages to be marked dirty and released.
->> + * put_user_pages_dirty_lock() - release and optionally dirty gup-pinned pages
->> + * @pages:  array of pages to be maybe marked dirty, and definitely released.
-> 
-> Better would be.
-> 
-> @pages:  array of pages to be put
+ERROR: return is not a function, parentheses are not required
+FILE: git/kernels/staging/drivers/staging/isdn/hysdn/hysdn_procconf.c:385
++       return (0);
 
-OK, I'll change to that wording.
+Signed-off-by: Giridhar Prasath R <cristianoprasath@gmail.com>
+---
+ drivers/staging/isdn/hysdn/hysdn_procconf.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
->>   * @npages: number of pages in the @pages array.
->> + * @make_dirty: whether to mark the pages dirty
->>   *
->>   * "gup-pinned page" refers to a page that has had one of the get_user_pages()
->>   * variants called on that page.
->>   *
->>   * For each page in the @pages array, make that page (or its head page, if a
->> - * compound page) dirty, if it was previously listed as clean. Then, release
->> - * the page using put_user_page().
->> + * compound page) dirty, if @make_dirty is true, and if the page was previously
->> + * listed as clean. In any case, releases all pages using put_user_page(),
->> + * possibly via put_user_pages(), for the non-dirty case.
-> 
-> I don't think users of this interface need this level of detail.  I think
-> something like.
-> 
->  * For each page in the @pages array, release the page.  If @make_dirty is
->  * true, mark the page dirty prior to release.
-
-Yes, it is too wordy, I'll change to that.
-
-> 
-...
->> -void put_user_pages_dirty_lock(struct page **pages, unsigned long npages)
->> -{
->> -	__put_user_pages_dirty(pages, npages, set_page_dirty_lock);
->> +	/*
->> +	 * TODO: this can be optimized for huge pages: if a series of pages is
->> +	 * physically contiguous and part of the same compound page, then a
->> +	 * single operation to the head page should suffice.
->> +	 */
-> 
-> I think this comment belongs to the for loop below...  or just something about
-> how to make this and put_user_pages() more efficient.  It is odd, that this is
-> the same comment as in put_user_pages()...
-
-Actually I think I'll just delete the comment entirely, it's just noise really.
-
-> 
-> The code is good.  So... Other than the comments.
-> 
-> Reviewed-by: Ira Weiny <ira.weiny@intel.com>
-
-
-Thanks for the review!
-
-
-thanks,
+diff --git a/drivers/staging/isdn/hysdn/hysdn_procconf.c b/drivers/staging/isdn/hysdn/hysdn_procconf.c
+index 73079213ec94..48afd9f5316e 100644
+--- a/drivers/staging/isdn/hysdn/hysdn_procconf.c
++++ b/drivers/staging/isdn/hysdn/hysdn_procconf.c
+@@ -382,7 +382,7 @@ hysdn_procconf_init(void)
+ 	}
+ 
+ 	printk(KERN_NOTICE "HYSDN: procfs initialised\n");
+-	return (0);
++	return 0;
+ }				/* hysdn_procconf_init */
+ 
+ /*************************************************************************************/
 -- 
-John Hubbard
-NVIDIA
+2.22.0
+
