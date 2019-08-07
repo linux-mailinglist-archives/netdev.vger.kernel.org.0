@@ -2,290 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B35F183EA9
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:14:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F37483ECC
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728523AbfHGBOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:14:04 -0400
-Received: from m9784.mail.qiye.163.com ([220.181.97.84]:1163 "EHLO
-        m9784.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728150AbfHGBOB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:14:01 -0400
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9784.mail.qiye.163.com (Hmail) with ESMTPA id A5B394178B;
-        Wed,  7 Aug 2019 09:13:56 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     jakub.kicinski@netronome.com, pablo@netfilter.org
-Cc:     netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH net-next v7 6/6] netfilter: nf_tables_offload: support indr block call
-Date:   Wed,  7 Aug 2019 09:13:54 +0800
-Message-Id: <1565140434-8109-7-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1565140434-8109-1-git-send-email-wenxu@ucloud.cn>
-References: <1565140434-8109-1-git-send-email-wenxu@ucloud.cn>
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZVkpVSENLQkJCQklJTE5JSENZV1koWU
-        FJQjdXWS1ZQUlXWQkOFx4IWUFZNTQpNjo3JCkuNz5ZBg++
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Nxg6Mgw*ETg3TU0ySgIjTi4Q
-        PwkaChlVSlVKTk1OSk9LT0hMS01JVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQUNPQ0M3Bg++
-X-HM-Tid: 0a6c69a3c6e52086kuqya5b394178b
+        id S1727765AbfHGBbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:31:51 -0400
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:46042 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727527AbfHGBbu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:31:50 -0400
+Received: by mail-yb1-f196.google.com with SMTP id s41so9321750ybe.12
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 18:31:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=T+sIdUCYVl9gdRoUkUG8PgRAt1MU+/JJSzC8cSPoyKI=;
+        b=F4m9knohPlyqe6iRBIqFogCxSMnpxfTnrNWZCR9yxgbB7jxuwk5G49Fr3Yk/Xw8ml9
+         BZedneP/R5GsmdKW1zaP8a4d6U9JK6r3soeGP9+77jQo83aNdUFu0Pg6auBFzgfb745n
+         qZmIri2k5kirqo1rqRPqFtkeh+UaJ+gxE46qehbsLCBwyMGNAb4LzWNxxchylTugTGzF
+         wLgGzWBtDpvrUKQxeBDO2XcdIgDVq4u0XiNjVcNspdW/kjB7dA7kKn81qOuPuEq5vT9D
+         CCLS3aa+sHxb6m2tFFPS/rslez9LrTny5DfBMNa9fxii55Xz7IiwhaDAn2k/m6Tso2Db
+         5r3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=T+sIdUCYVl9gdRoUkUG8PgRAt1MU+/JJSzC8cSPoyKI=;
+        b=RPD4DdG8avs7cd12UcbDn9rfujpprtMu6ustwE11quhSnXdmVutIhnagJ/PpZDoz0A
+         i0C32mS27IObWAMxFagn3TqJM95QPhGQ4NFavULR4QKV7C1VAqc8O8523FPqGWOVtPod
+         0Z8Y0Fj+6FCAavwuQNwgLprUirdB9G8LCg8Us227XfiXOXnO9ViiOLe659o62O7aF/+C
+         pQIiAtDr4NCIYP9oEzWzkoav3oAClU/pmDPgW8rgSrPbPR/hij+/Dso8WvnAQMUgPDSP
+         wIYaPzMZ8Q54uykOXQC059h8cAnnKIsmQb/rwH7cfK1lAd44ZyaCPD45TNVEEwTsvRH9
+         Z3pg==
+X-Gm-Message-State: APjAAAU9iCk/VE9Vswx0lO3TdRQVc4LNYgkLAAib5BSj7lUC1HY0E4L8
+        e3jR1xy6e9Cge8K5M73sc3CnAQ==
+X-Google-Smtp-Source: APXvYqwBSZkykF5JBW3dZ2JAWQGnqKUHEgflynlYlJTG89ph5DdcJK1w1FbC6oyDXFDuWZCqly8qmQ==
+X-Received: by 2002:a25:5986:: with SMTP id n128mr4697126ybb.301.1565141510026;
+        Tue, 06 Aug 2019 18:31:50 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (li1322-146.members.linode.com. [45.79.223.146])
+        by smtp.gmail.com with ESMTPSA id k20sm20014855ywm.106.2019.08.06.18.31.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 06 Aug 2019 18:31:49 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 09:31:39 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com
+Subject: Re: [PATCH v2 0/3] arm/arm64: Add support for function error
+ injection
+Message-ID: <20190807013139.GB6724@leoy-ThinkPad-X240s>
+References: <20190806100015.11256-1-leo.yan@linaro.org>
+ <20190807090811.1e50eb3e1d5a7b85743748e7@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190807090811.1e50eb3e1d5a7b85743748e7@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+On Wed, Aug 07, 2019 at 09:08:11AM +0900, Masami Hiramatsu wrote:
+> On Tue,  6 Aug 2019 18:00:12 +0800
+> Leo Yan <leo.yan@linaro.org> wrote:
+> 
+> > This small patch set is to add support for function error injection;
+> > this can be used to eanble more advanced debugging feature, e.g.
+> > CONFIG_BPF_KPROBE_OVERRIDE.
+> > 
+> > The patch 01/03 is to consolidate the function definition which can be
+> > suared cross architectures, patches 02,03/03 are used for enabling
+> > function error injection on arm64 and arm architecture respectively.
+> > 
+> > I tested on arm64 platform Juno-r2 and one of my laptop with x86
+> > architecture with below steps; I don't test for Arm architecture so
+> > only pass compilation.
+> > 
+> > - Enable kernel configuration:
+> >   CONFIG_BPF_KPROBE_OVERRIDE
+> >   CONFIG_BTRFS_FS
+> >   CONFIG_BPF_EVENTS=y
+> >   CONFIG_KPROBES=y
+> >   CONFIG_KPROBE_EVENTS=y
+> >   CONFIG_BPF_KPROBE_OVERRIDE=y
+> > 
+> > - Build samples/bpf on with Debian rootFS:
+> >   # cd $kernel
+> >   # make headers_install
+> >   # make samples/bpf/ LLC=llc-7 CLANG=clang-7
+> > 
+> > - Run the sample tracex7:
+> >   # dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1
+> >   # DEVICE=$(losetup --show -f testfile.img)
+> >   # mkfs.btrfs -f $DEVICE
+> >   # ./tracex7 testfile.img
+> >   [ 1975.211781] BTRFS error (device (efault)): open_ctree failed
+> >   mount: /mnt/linux-kernel/linux-cs-dev/samples/bpf/tmpmnt: mount(2) system call failed: Cannot allocate memory.
+> > 
+> > Changes from v1:
+> > * Consolidated the function definition into asm-generic header (Will);
+> > * Used APIs to access pt_regs elements (Will);
+> > * Fixed typos in the comments (Will).
+> 
+> This looks good to me.
+> 
+> Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
+> 
+> Thank you!
 
-nftable support indr-block call. It makes nftable an offload vlan
-and tunnel device.
+Thanks a lot for reviewing, Masami.
 
-nft add table netdev firewall
-nft add chain netdev firewall aclout { type filter hook ingress offload device mlx_pf0vf0 priority - 300 \; }
-nft add rule netdev firewall aclout ip daddr 10.0.0.1 fwd to vlan0
-nft add chain netdev firewall aclin { type filter hook ingress device vlan0 priority - 300 \; }
-nft add rule netdev firewall aclin ip daddr 10.0.0.7 fwd to mlx_pf0vf0
-
-Signed-off-by: wenxu <wenxu@ucloud.cn>
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
-v7: no change
-
- include/net/netfilter/nf_tables_offload.h |   4 +
- net/netfilter/nf_tables_api.c             |   7 ++
- net/netfilter/nf_tables_offload.c         | 148 +++++++++++++++++++++++++-----
- 3 files changed, 135 insertions(+), 24 deletions(-)
-
-diff --git a/include/net/netfilter/nf_tables_offload.h b/include/net/netfilter/nf_tables_offload.h
-index 3196663..bffd51a 100644
---- a/include/net/netfilter/nf_tables_offload.h
-+++ b/include/net/netfilter/nf_tables_offload.h
-@@ -63,6 +63,10 @@ struct nft_flow_rule {
- struct nft_flow_rule *nft_flow_rule_create(const struct nft_rule *rule);
- void nft_flow_rule_destroy(struct nft_flow_rule *flow);
- int nft_flow_rule_offload_commit(struct net *net);
-+void nft_indr_block_get_and_ing_cmd(struct net_device *dev,
-+				    flow_indr_block_bind_cb_t *cb,
-+				    void *cb_priv,
-+				    enum flow_block_command command);
- 
- #define NFT_OFFLOAD_MATCH(__key, __base, __field, __len, __reg)		\
- 	(__reg)->base_offset	=					\
-diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
-index 605a7cf..fe3b7b0 100644
---- a/net/netfilter/nf_tables_api.c
-+++ b/net/netfilter/nf_tables_api.c
-@@ -7593,6 +7593,11 @@ static void __net_exit nf_tables_exit_net(struct net *net)
- 	.exit	= nf_tables_exit_net,
- };
- 
-+static struct flow_indr_block_ing_entry block_ing_entry = {
-+	.cb = nft_indr_block_get_and_ing_cmd,
-+	.list = LIST_HEAD_INIT(block_ing_entry.list),
-+};
-+
- static int __init nf_tables_module_init(void)
- {
- 	int err;
-@@ -7624,6 +7629,7 @@ static int __init nf_tables_module_init(void)
- 		goto err5;
- 
- 	nft_chain_route_init();
-+	flow_indr_add_block_ing_cb(&block_ing_entry);
- 	return err;
- err5:
- 	rhltable_destroy(&nft_objname_ht);
-@@ -7640,6 +7646,7 @@ static int __init nf_tables_module_init(void)
- 
- static void __exit nf_tables_module_exit(void)
- {
-+	flow_indr_del_block_ing_cb(&block_ing_entry);
- 	nfnetlink_subsys_unregister(&nf_tables_subsys);
- 	unregister_netdevice_notifier(&nf_tables_flowtable_notifier);
- 	nft_chain_filter_fini();
-diff --git a/net/netfilter/nf_tables_offload.c b/net/netfilter/nf_tables_offload.c
-index 64f5fd5..d3c4c9c 100644
---- a/net/netfilter/nf_tables_offload.c
-+++ b/net/netfilter/nf_tables_offload.c
-@@ -171,24 +171,110 @@ static int nft_flow_offload_unbind(struct flow_block_offload *bo,
- 	return 0;
- }
- 
-+static int nft_block_setup(struct nft_base_chain *basechain,
-+			   struct flow_block_offload *bo,
-+			   enum flow_block_command cmd)
-+{
-+	int err;
-+
-+	switch (cmd) {
-+	case FLOW_BLOCK_BIND:
-+		err = nft_flow_offload_bind(bo, basechain);
-+		break;
-+	case FLOW_BLOCK_UNBIND:
-+		err = nft_flow_offload_unbind(bo, basechain);
-+		break;
-+	default:
-+		WARN_ON_ONCE(1);
-+		err = -EOPNOTSUPP;
-+	}
-+
-+	return err;
-+}
-+
-+static int nft_block_offload_cmd(struct nft_base_chain *chain,
-+				 struct net_device *dev,
-+				 enum flow_block_command cmd)
-+{
-+	struct netlink_ext_ack extack = {};
-+	struct flow_block_offload bo = {};
-+	int err;
-+
-+	bo.net = dev_net(dev);
-+	bo.block = &chain->flow_block;
-+	bo.command = cmd;
-+	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
-+	bo.extack = &extack;
-+	INIT_LIST_HEAD(&bo.cb_list);
-+
-+	err = dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_BLOCK, &bo);
-+	if (err < 0)
-+		return err;
-+
-+	return nft_block_setup(chain, &bo, cmd);
-+}
-+
-+static void nft_indr_block_ing_cmd(struct net_device *dev,
-+				   struct nft_base_chain *chain,
-+				   flow_indr_block_bind_cb_t *cb,
-+				   void *cb_priv,
-+				   enum flow_block_command cmd)
-+{
-+	struct netlink_ext_ack extack = {};
-+	struct flow_block_offload bo = {};
-+
-+	if (!chain)
-+		return;
-+
-+	bo.net = dev_net(dev);
-+	bo.block = &chain->flow_block;
-+	bo.command = cmd;
-+	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
-+	bo.extack = &extack;
-+	INIT_LIST_HEAD(&bo.cb_list);
-+
-+	cb(dev, cb_priv, TC_SETUP_BLOCK, &bo);
-+
-+	nft_block_setup(chain, &bo, cmd);
-+}
-+
-+static int nft_indr_block_offload_cmd(struct nft_base_chain *chain,
-+				      struct net_device *dev,
-+				      enum flow_block_command cmd)
-+{
-+	struct flow_block_offload bo = {};
-+	struct netlink_ext_ack extack = {};
-+
-+	bo.net = dev_net(dev);
-+	bo.block = &chain->flow_block;
-+	bo.command = cmd;
-+	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
-+	bo.extack = &extack;
-+	INIT_LIST_HEAD(&bo.cb_list);
-+
-+	flow_indr_block_call(dev, &bo, cmd);
-+
-+	if (list_empty(&bo.cb_list))
-+		return -EOPNOTSUPP;
-+
-+	return nft_block_setup(chain, &bo, cmd);
-+}
-+
- #define FLOW_SETUP_BLOCK TC_SETUP_BLOCK
- 
- static int nft_flow_offload_chain(struct nft_trans *trans,
- 				  enum flow_block_command cmd)
- {
- 	struct nft_chain *chain = trans->ctx.chain;
--	struct netlink_ext_ack extack = {};
--	struct flow_block_offload bo = {};
- 	struct nft_base_chain *basechain;
- 	struct net_device *dev;
--	int err;
- 
- 	if (!nft_is_base_chain(chain))
- 		return -EOPNOTSUPP;
- 
- 	basechain = nft_base_chain(chain);
- 	dev = basechain->ops.dev;
--	if (!dev || !dev->netdev_ops->ndo_setup_tc)
-+	if (!dev)
- 		return -EOPNOTSUPP;
- 
- 	/* Only default policy to accept is supported for now. */
-@@ -197,26 +283,10 @@ static int nft_flow_offload_chain(struct nft_trans *trans,
- 	    nft_trans_chain_policy(trans) != NF_ACCEPT)
- 		return -EOPNOTSUPP;
- 
--	bo.command = cmd;
--	bo.block = &basechain->flow_block;
--	bo.binder_type = FLOW_BLOCK_BINDER_TYPE_CLSACT_INGRESS;
--	bo.extack = &extack;
--	INIT_LIST_HEAD(&bo.cb_list);
--
--	err = dev->netdev_ops->ndo_setup_tc(dev, FLOW_SETUP_BLOCK, &bo);
--	if (err < 0)
--		return err;
--
--	switch (cmd) {
--	case FLOW_BLOCK_BIND:
--		err = nft_flow_offload_bind(&bo, basechain);
--		break;
--	case FLOW_BLOCK_UNBIND:
--		err = nft_flow_offload_unbind(&bo, basechain);
--		break;
--	}
--
--	return err;
-+	if (dev->netdev_ops->ndo_setup_tc)
-+		return nft_block_offload_cmd(basechain, dev, cmd);
-+	else
-+		return nft_indr_block_offload_cmd(basechain, dev, cmd);
- }
- 
- int nft_flow_rule_offload_commit(struct net *net)
-@@ -266,3 +336,33 @@ int nft_flow_rule_offload_commit(struct net *net)
- 
- 	return err;
- }
-+
-+void nft_indr_block_get_and_ing_cmd(struct net_device *dev,
-+				    flow_indr_block_bind_cb_t *cb,
-+				    void *cb_priv,
-+				    enum flow_block_command command)
-+{
-+	struct net *net = dev_net(dev);
-+	const struct nft_table *table;
-+	const struct nft_chain *chain;
-+
-+	list_for_each_entry_rcu(table, &net->nft.tables, list) {
-+		if (table->family != NFPROTO_NETDEV)
-+			continue;
-+
-+		list_for_each_entry_rcu(chain, &table->chains, list) {
-+			if (nft_is_base_chain(chain)) {
-+				struct nft_base_chain *basechain;
-+
-+				basechain = nft_base_chain(chain);
-+				if (!strncmp(basechain->dev_name, dev->name,
-+					     IFNAMSIZ)) {
-+					nft_indr_block_ing_cmd(dev, basechain,
-+							       cb, cb_priv,
-+							       command);
-+					return;
-+				}
-+			}
-+		}
-+	}
-+}
--- 
-1.8.3.1
-
+Leo.
