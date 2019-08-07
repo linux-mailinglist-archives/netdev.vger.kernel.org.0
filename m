@@ -2,134 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F37483ECC
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:31:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5AB683EDD
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:33:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727765AbfHGBbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:31:51 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:46042 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727527AbfHGBbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:31:50 -0400
-Received: by mail-yb1-f196.google.com with SMTP id s41so9321750ybe.12
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 18:31:50 -0700 (PDT)
+        id S1728736AbfHGBdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:33:54 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:41939 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728654AbfHGBdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:33:50 -0400
+Received: by mail-pg1-f194.google.com with SMTP id x15so32192406pgg.8;
+        Tue, 06 Aug 2019 18:33:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=T+sIdUCYVl9gdRoUkUG8PgRAt1MU+/JJSzC8cSPoyKI=;
-        b=F4m9knohPlyqe6iRBIqFogCxSMnpxfTnrNWZCR9yxgbB7jxuwk5G49Fr3Yk/Xw8ml9
-         BZedneP/R5GsmdKW1zaP8a4d6U9JK6r3soeGP9+77jQo83aNdUFu0Pg6auBFzgfb745n
-         qZmIri2k5kirqo1rqRPqFtkeh+UaJ+gxE46qehbsLCBwyMGNAb4LzWNxxchylTugTGzF
-         wLgGzWBtDpvrUKQxeBDO2XcdIgDVq4u0XiNjVcNspdW/kjB7dA7kKn81qOuPuEq5vT9D
-         CCLS3aa+sHxb6m2tFFPS/rslez9LrTny5DfBMNa9fxii55Xz7IiwhaDAn2k/m6Tso2Db
-         5r3w==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GHzc1obwFKwJgG7nswfPGhmCYytguM8zaNUDmj5ciqU=;
+        b=SVC7DSqJ1aViuFyLacSuD9ekUuon1nsbmGXQ+rccZqQD0M5OpWv4FInOJYOUS0zDrw
+         iiaUKlpU3oYT6EB+TLC7fde9FCQbqLPjcDOo/pPYr/Dy4w9ZLyTeVh++4NmqxXNEZ0Um
+         gS5DfjjL21uHhIzIHJrVsnAGurOzAGDNfpv0OIjYG3RHWT96uJJIGB6LIuNQuZVc7Ym2
+         eeEnUQ4CldleB6IB/9Fxp6/W0nXsF/e4MjOETkKBsrMtb7StZJlqXJT9WcIpX7tnyI6X
+         9gewZeHtS0mR3vhC08tQKk4aqf3pL5knJE/hrGJP04i1jVNIaCHMRTQVdWFD0VLC/Xeg
+         c3+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=T+sIdUCYVl9gdRoUkUG8PgRAt1MU+/JJSzC8cSPoyKI=;
-        b=RPD4DdG8avs7cd12UcbDn9rfujpprtMu6ustwE11quhSnXdmVutIhnagJ/PpZDoz0A
-         i0C32mS27IObWAMxFagn3TqJM95QPhGQ4NFavULR4QKV7C1VAqc8O8523FPqGWOVtPod
-         0Z8Y0Fj+6FCAavwuQNwgLprUirdB9G8LCg8Us227XfiXOXnO9ViiOLe659o62O7aF/+C
-         pQIiAtDr4NCIYP9oEzWzkoav3oAClU/pmDPgW8rgSrPbPR/hij+/Dso8WvnAQMUgPDSP
-         wIYaPzMZ8Q54uykOXQC059h8cAnnKIsmQb/rwH7cfK1lAd44ZyaCPD45TNVEEwTsvRH9
-         Z3pg==
-X-Gm-Message-State: APjAAAU9iCk/VE9Vswx0lO3TdRQVc4LNYgkLAAib5BSj7lUC1HY0E4L8
-        e3jR1xy6e9Cge8K5M73sc3CnAQ==
-X-Google-Smtp-Source: APXvYqwBSZkykF5JBW3dZ2JAWQGnqKUHEgflynlYlJTG89ph5DdcJK1w1FbC6oyDXFDuWZCqly8qmQ==
-X-Received: by 2002:a25:5986:: with SMTP id n128mr4697126ybb.301.1565141510026;
-        Tue, 06 Aug 2019 18:31:50 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (li1322-146.members.linode.com. [45.79.223.146])
-        by smtp.gmail.com with ESMTPSA id k20sm20014855ywm.106.2019.08.06.18.31.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 06 Aug 2019 18:31:49 -0700 (PDT)
-Date:   Wed, 7 Aug 2019 09:31:39 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH v2 0/3] arm/arm64: Add support for function error
- injection
-Message-ID: <20190807013139.GB6724@leoy-ThinkPad-X240s>
-References: <20190806100015.11256-1-leo.yan@linaro.org>
- <20190807090811.1e50eb3e1d5a7b85743748e7@kernel.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GHzc1obwFKwJgG7nswfPGhmCYytguM8zaNUDmj5ciqU=;
+        b=cOfbVzM+PrU74DhiOEMUXussskP/9CaxgiwTAt9LuZ+P6TyuJDJ48GM+Oa8GIfHZU0
+         cuOWuMv8uXhLrMQUVDhlaG8IcDCEHDgV9ag+O63VRPlnAuOJYRj4UazHEjPuVezwUq+k
+         aDhkjLqdQPazzXzkmbn1EHrSjbr6lv3A57pnxxFpNR1ErkQmZgfyXD1P+tr+C4uRkZfC
+         ZACwVAF81mBC4YRHi9mc06q3ZtB4/5lyYhf8UgllT+JXcbNIbR3VaMyMBvitwFDhDFTr
+         VuWMucgcvul7vGgZ1D4dTCo8e0rlImzAtnhw8a9EUWG/+ZIS5oLse6QFmvuF4RbocIAf
+         P4KA==
+X-Gm-Message-State: APjAAAUZKt/Nj59i4FgJbxNvcbPuGRZP5WjY5s4CdN3TJJh64Pi4p0aL
+        uZkfXImwuCznRxvAYZ6bTas=
+X-Google-Smtp-Source: APXvYqxeOvPea8wN4/1KbcpbOcv0WCKYw/yUT+8N/xQtvHJFmkBBq3xYGl9YYXdHhoFcN7NXCSJlJw==
+X-Received: by 2002:a17:90a:e397:: with SMTP id b23mr5992770pjz.117.1565141629443;
+        Tue, 06 Aug 2019 18:33:49 -0700 (PDT)
+Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.33.47
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 18:33:48 -0700 (PDT)
+From:   john.hubbard@gmail.com
+X-Google-Original-From: jhubbard@nvidia.com
+To:     Andrew Morton <akpm@linux-foundation.org>
+Cc:     Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
+        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
+        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
+        sparclinux@vger.kernel.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH v3 03/41] net/xdp: convert put_page() to put_user_page*()
+Date:   Tue,  6 Aug 2019 18:33:02 -0700
+Message-Id: <20190807013340.9706-4-jhubbard@nvidia.com>
+X-Mailer: git-send-email 2.22.0
+In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
+References: <20190807013340.9706-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190807090811.1e50eb3e1d5a7b85743748e7@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=UTF-8
+X-NVConfidentiality: public
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 09:08:11AM +0900, Masami Hiramatsu wrote:
-> On Tue,  6 Aug 2019 18:00:12 +0800
-> Leo Yan <leo.yan@linaro.org> wrote:
-> 
-> > This small patch set is to add support for function error injection;
-> > this can be used to eanble more advanced debugging feature, e.g.
-> > CONFIG_BPF_KPROBE_OVERRIDE.
-> > 
-> > The patch 01/03 is to consolidate the function definition which can be
-> > suared cross architectures, patches 02,03/03 are used for enabling
-> > function error injection on arm64 and arm architecture respectively.
-> > 
-> > I tested on arm64 platform Juno-r2 and one of my laptop with x86
-> > architecture with below steps; I don't test for Arm architecture so
-> > only pass compilation.
-> > 
-> > - Enable kernel configuration:
-> >   CONFIG_BPF_KPROBE_OVERRIDE
-> >   CONFIG_BTRFS_FS
-> >   CONFIG_BPF_EVENTS=y
-> >   CONFIG_KPROBES=y
-> >   CONFIG_KPROBE_EVENTS=y
-> >   CONFIG_BPF_KPROBE_OVERRIDE=y
-> > 
-> > - Build samples/bpf on with Debian rootFS:
-> >   # cd $kernel
-> >   # make headers_install
-> >   # make samples/bpf/ LLC=llc-7 CLANG=clang-7
-> > 
-> > - Run the sample tracex7:
-> >   # dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1
-> >   # DEVICE=$(losetup --show -f testfile.img)
-> >   # mkfs.btrfs -f $DEVICE
-> >   # ./tracex7 testfile.img
-> >   [ 1975.211781] BTRFS error (device (efault)): open_ctree failed
-> >   mount: /mnt/linux-kernel/linux-cs-dev/samples/bpf/tmpmnt: mount(2) system call failed: Cannot allocate memory.
-> > 
-> > Changes from v1:
-> > * Consolidated the function definition into asm-generic header (Will);
-> > * Used APIs to access pt_regs elements (Will);
-> > * Fixed typos in the comments (Will).
-> 
-> This looks good to me.
-> 
-> Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-> 
-> Thank you!
+From: John Hubbard <jhubbard@nvidia.com>
 
-Thanks a lot for reviewing, Masami.
+For pages that were retained via get_user_pages*(), release those pages
+via the new put_user_page*() routines, instead of via put_page() or
+release_pages().
 
-Leo.
+This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+("mm: introduce put_user_page*(), placeholder versions").
+
+Acked-by: Björn Töpel <bjorn.topel@intel.com>
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: John Hubbard <jhubbard@nvidia.com>
+---
+ net/xdp/xdp_umem.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
+
+diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
+index 83de74ca729a..17c4b3d3dc34 100644
+--- a/net/xdp/xdp_umem.c
++++ b/net/xdp/xdp_umem.c
+@@ -166,14 +166,7 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
+ 
+ static void xdp_umem_unpin_pages(struct xdp_umem *umem)
+ {
+-	unsigned int i;
+-
+-	for (i = 0; i < umem->npgs; i++) {
+-		struct page *page = umem->pgs[i];
+-
+-		set_page_dirty_lock(page);
+-		put_page(page);
+-	}
++	put_user_pages_dirty_lock(umem->pgs, umem->npgs, true);
+ 
+ 	kfree(umem->pgs);
+ 	umem->pgs = NULL;
+-- 
+2.22.0
+
