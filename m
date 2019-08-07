@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EDCE5843CD
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:38:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E890843D0
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:38:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727044AbfHGFip (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 01:38:45 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:24862 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726928AbfHGFil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 01:38:41 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x775Xffw007484
-        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 22:38:40 -0700
+        id S1727050AbfHGFis (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 01:38:48 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:27088 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727016AbfHGFio (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 01:38:44 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x775XooN011647
+        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 22:38:43 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=Ny/qtZ4TGZD4xKBOZzpPGCJxytBc3/ysbyqHXyys/SY=;
- b=THybrTg/pf/qW1hlci5drGzL2CkFZ+F5tkBvme6FuTCnqnAzmGDEFtFcPKLaJ09t9Fi6
- 3dtWS/F9gkxkeThrKs5FiRTB26/4jJjYoxf2ty+tlzL4PKI96P3ViW7WCOPSa2BHbO6a
- E/ntbSSauYKxQ/lIuGyUGZx9WmTKx1y4XtY= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u7k0hgvb7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:38:40 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::e) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 6 Aug 2019 22:38:39 -0700
+ content-type; s=facebook; bh=+nxTUC2ma/7lgSvMCVjEB9RhMXYzhvIPt5HvrZYsKUc=;
+ b=RjIQ+0Ec+1fJJvvP7784l0qQ1LFKt0hPhGUrhotd6/ZMqVxU0y5uGo9BWCi3O+Akotqb
+ pIOB1BQ4J42QSQEZxNdbo/WeGbaoTWpDk24ysdABe8UuXNz30/wmg0xz+/wXyW3knoKN
+ Ku5CRLzLD8CxpCfZJSD0LCXRuuOzkKaz3v4= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2u7g3g9k6d-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:38:43 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 6 Aug 2019 22:38:42 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id E8F31861698; Tue,  6 Aug 2019 22:38:38 -0700 (PDT)
+        id 090EF861698; Tue,  6 Aug 2019 22:38:40 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v4 bpf-next 13/14] selftests/bpf: add CO-RE relocs ints tests
-Date:   Tue, 6 Aug 2019 22:38:05 -0700
-Message-ID: <20190807053806.1534571-14-andriin@fb.com>
+Subject: [PATCH v4 bpf-next 14/14] selftests/bpf: add CO-RE relocs misc tests
+Date:   Tue, 6 Aug 2019 22:38:06 -0700
+Message-ID: <20190807053806.1534571-15-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190807053806.1534571-1-andriin@fb.com>
 References: <20190807053806.1534571-1-andriin@fb.com>
@@ -60,283 +60,98 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add various tests validating handling compatible/incompatible integer
-types.
+Add tests validating few edge-cases of capturing offset relocations.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-Acked-by: Song Liu <songliubraving@fb.com>
 ---
- .../selftests/bpf/prog_tests/core_reloc.c     |  40 +++++++
- .../bpf/progs/btf__core_reloc_ints.c          |   3 +
- .../bpf/progs/btf__core_reloc_ints___bool.c   |   3 +
- .../btf__core_reloc_ints___err_bitfield.c     |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_16.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_32.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_64.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_8.c   |   3 +
- .../btf__core_reloc_ints___reverse_sign.c     |   3 +
- .../selftests/bpf/progs/core_reloc_types.h    | 101 ++++++++++++++++++
- .../bpf/progs/test_core_reloc_ints.c          |  44 ++++++++
- 11 files changed, 209 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
+ .../selftests/bpf/prog_tests/core_reloc.c     | 19 +++++++
+ .../bpf/progs/btf__core_reloc_misc.c          |  5 ++
+ .../selftests/bpf/progs/core_reloc_types.h    | 25 ++++++++
+ .../bpf/progs/test_core_reloc_misc.c          | 57 +++++++++++++++++++
+ 4 files changed, 106 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index 77478b51699b..11daf0dbf2a3 100644
+index 11daf0dbf2a3..bcc21db3c974 100644
 --- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
 +++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -145,6 +145,35 @@
- 	.output_len = sizeof(struct core_reloc_ptr_as_arr),		\
- }
- 
-+#define INTS_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
-+	.u8_field = 1,							\
-+	.s8_field = 2,							\
-+	.u16_field = 3,							\
-+	.s16_field = 4,							\
-+	.u32_field = 5,							\
-+	.s32_field = 6,							\
-+	.u64_field = 7,							\
-+	.s64_field = 8,							\
-+}
-+
-+#define INTS_CASE_COMMON(name)						\
-+	.case_name = #name,						\
-+	.bpf_obj_file = "test_core_reloc_ints.o",			\
-+	.btf_src_file = "btf__core_reloc_" #name ".o"
-+
-+#define INTS_CASE(name) {						\
-+	INTS_CASE_COMMON(name),						\
-+	.input = INTS_DATA(core_reloc_##name),				\
-+	.input_len = sizeof(struct core_reloc_##name),			\
-+	.output = INTS_DATA(core_reloc_ints),				\
-+	.output_len = sizeof(struct core_reloc_ints),			\
-+}
-+
-+#define INTS_ERR_CASE(name) {						\
-+	INTS_CASE_COMMON(name),						\
-+	.fails = true,							\
-+}
-+
- struct core_reloc_test_case {
- 	const char *case_name;
- 	const char *bpf_obj_file;
-@@ -220,6 +249,17 @@ static struct core_reloc_test_case test_cases[] = {
- 	/* handling "ptr is an array" semantics */
- 	PTR_AS_ARR_CASE(ptr_as_arr),
- 	PTR_AS_ARR_CASE(ptr_as_arr___diff_sz),
-+
-+	/* int signedness/sizing/bitfield handling */
-+	INTS_CASE(ints),
-+	INTS_CASE(ints___bool),
-+	INTS_CASE(ints___reverse_sign),
-+
-+	INTS_ERR_CASE(ints___err_bitfield),
-+	INTS_ERR_CASE(ints___err_wrong_sz_8),
-+	INTS_ERR_CASE(ints___err_wrong_sz_16),
-+	INTS_ERR_CASE(ints___err_wrong_sz_32),
-+	INTS_ERR_CASE(ints___err_wrong_sz_64),
+@@ -260,6 +260,25 @@ static struct core_reloc_test_case test_cases[] = {
+ 	INTS_ERR_CASE(ints___err_wrong_sz_16),
+ 	INTS_ERR_CASE(ints___err_wrong_sz_32),
+ 	INTS_ERR_CASE(ints___err_wrong_sz_64),
++	
++	/* validate edge cases of capturing relocations */
++	{
++		.case_name = "misc",
++		.bpf_obj_file = "test_core_reloc_misc.o",
++		.btf_src_file = "btf__core_reloc_misc.o",
++		.input = (const char *)&(struct core_reloc_misc_extensible[]){
++			{ .a = 1 },
++			{ .a = 2 }, /* not read */
++			{ .a = 3 },
++		},
++		.input_len = 4 * sizeof(int),
++		.output = STRUCT_TO_CHAR_PTR(core_reloc_misc_output) {
++			.a = 1,
++			.b = 1,
++			.c = 0, /* BUG in clang, should be 3 */
++		},
++		.output_len = sizeof(struct core_reloc_misc_output),
++	},
  };
  
  struct data {
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
 new file mode 100644
-index 000000000000..7d0f041042c5
+index 000000000000..ed9ad8b5b4f8
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
-@@ -0,0 +1,3 @@
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
+@@ -0,0 +1,5 @@
 +#include "core_reloc_types.h"
 +
-+void f(struct core_reloc_ints x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
-new file mode 100644
-index 000000000000..f9359450186e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___bool x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
-new file mode 100644
-index 000000000000..50369e8320a0
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_bitfield x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
-new file mode 100644
-index 000000000000..823bac13d641
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_16 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
-new file mode 100644
-index 000000000000..b44f3be18535
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_32 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
-new file mode 100644
-index 000000000000..9a3dd2099c0f
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_64 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
-new file mode 100644
-index 000000000000..9f11ef5f6e88
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___err_wrong_sz_8 x) {}
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
-new file mode 100644
-index 000000000000..aafb1c5819d7
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
-@@ -0,0 +1,3 @@
-+#include "core_reloc_types.h"
-+
-+void f(struct core_reloc_ints___reverse_sign x) {}
++void f1(struct core_reloc_misc___a x) {}
++void f2(struct core_reloc_misc___b x) {}
++void f3(struct core_reloc_misc_extensible x) {}
 diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-index c17c9279deae..5f3ebd4f6dc3 100644
+index 5f3ebd4f6dc3..10a252b6da55 100644
 --- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
 +++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -1,3 +1,6 @@
-+#include <stdint.h>
-+#include <stdbool.h>
-+
- /*
-  * FLAVORS
-  */
-@@ -539,3 +542,101 @@ struct core_reloc_ptr_as_arr___diff_sz {
- 	char __some_more_padding;
- 	int a;
+@@ -640,3 +640,28 @@ struct core_reloc_ints___err_wrong_sz_64 {
+ 	uint32_t	u64_field; /* not 64-bit anymore */
+ 	int32_t		s64_field; /* not 64-bit anymore */
  };
 +
 +/*
-+ * INTS
++ * MISC
 + */
-+struct core_reloc_ints {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
++struct core_reloc_misc_output {
++	int a, b, c;
 +};
 +
-+/* signed/unsigned types swap */
-+struct core_reloc_ints___reverse_sign {
-+	int8_t		u8_field;
-+	uint8_t		s8_field;
-+	int16_t		u16_field;
-+	uint16_t	s16_field;
-+	int32_t		u32_field;
-+	uint32_t	s32_field;
-+	int64_t		u64_field;
-+	uint64_t	s64_field;
++struct core_reloc_misc___a {
++	int a1;
++	int a2;
 +};
 +
-+struct core_reloc_ints___bool {
-+	bool		u8_field; /* bool instead of uint8 */
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
++struct core_reloc_misc___b {
++	int b1;
++	int b2;
 +};
 +
-+struct core_reloc_ints___err_bitfield {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field: 32; /* bitfields are not supported */
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
++/* this one extends core_reloc_misc_extensible struct from BPF prog */
++struct core_reloc_misc_extensible {
++	int a;
++	int b;
++	int c;
++	int d;
 +};
-+
-+struct core_reloc_ints___err_wrong_sz_8 {
-+	uint16_t	u8_field; /* not 8-bit anymore */
-+	int16_t		s8_field; /* not 8-bit anymore */
-+
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_wrong_sz_16 {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+
-+	uint32_t	u16_field; /* not 16-bit anymore */
-+	int32_t		s16_field; /* not 16-bit anymore */
-+
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_wrong_sz_32 {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+
-+	uint64_t	u32_field; /* not 32-bit anymore */
-+	int64_t		s32_field; /* not 32-bit anymore */
-+
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
-+};
-+
-+struct core_reloc_ints___err_wrong_sz_64 {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+
-+	uint32_t	u64_field; /* not 64-bit anymore */
-+	int32_t		s64_field; /* not 64-bit anymore */
-+};
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_ints.c b/tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
+diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_misc.c b/tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
 new file mode 100644
-index 000000000000..d99233c8008a
+index 000000000000..c59984bd3e23
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
-@@ -0,0 +1,44 @@
++++ b/tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
+@@ -0,0 +1,57 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (c) 2019 Facebook
 +
@@ -351,31 +166,44 @@ index 000000000000..d99233c8008a
 +	char out[256];
 +} data;
 +
-+struct core_reloc_ints {
-+	uint8_t		u8_field;
-+	int8_t		s8_field;
-+	uint16_t	u16_field;
-+	int16_t		s16_field;
-+	uint32_t	u32_field;
-+	int32_t		s32_field;
-+	uint64_t	u64_field;
-+	int64_t		s64_field;
++struct core_reloc_misc_output {
++	int a, b, c;
++};
++
++struct core_reloc_misc___a {
++	int a1;
++	int a2;
++};
++
++struct core_reloc_misc___b {
++	int b1;
++	int b2;
++};
++
++/* fixed two first members, can be extended with new fields */
++struct core_reloc_misc_extensible {
++	int a;
++	int b;
 +};
 +
 +SEC("raw_tracepoint/sys_enter")
-+int test_core_ints(void *ctx)
++int test_core_misc(void *ctx)
 +{
-+	struct core_reloc_ints *in = (void *)&data.in;
-+	struct core_reloc_ints *out = (void *)&data.out;
++	struct core_reloc_misc___a *in_a = (void *)&data.in;
++	struct core_reloc_misc___b *in_b = (void *)&data.in;
++	struct core_reloc_misc_extensible *in_ext = (void *)&data.in;
++	struct core_reloc_misc_output *out = (void *)&data.out;
 +
-+	if (BPF_CORE_READ(&out->u8_field, &in->u8_field) ||
-+	    BPF_CORE_READ(&out->s8_field, &in->s8_field) ||
-+	    BPF_CORE_READ(&out->u16_field, &in->u16_field) ||
-+	    BPF_CORE_READ(&out->s16_field, &in->s16_field) ||
-+	    BPF_CORE_READ(&out->u32_field, &in->u32_field) ||
-+	    BPF_CORE_READ(&out->s32_field, &in->s32_field) ||
-+	    BPF_CORE_READ(&out->u64_field, &in->u64_field) ||
-+	    BPF_CORE_READ(&out->s64_field, &in->s64_field))
++	/* record two different relocations with the same accessor string */
++	if (BPF_CORE_READ(&out->a, &in_a->a1) ||	/* accessor: 0:0 */
++	    BPF_CORE_READ(&out->b, &in_b->b1))		/* accessor: 0:0 */
++		return 1;
++
++	/* Validate relocations capture array-only accesses for structs with
++	 * fixed header, but with potentially extendable tail. This will read
++	 * first 4 bytes of 2nd element of in_ext array of potentially
++	 * variably sized struct core_reloc_misc_extensible. */ 
++	if (BPF_CORE_READ(&out->c, &in_ext[2]))		/* accessor: 2 */
 +		return 1;
 +
 +	return 0;
