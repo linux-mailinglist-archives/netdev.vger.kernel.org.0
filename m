@@ -2,95 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8726F84DEB
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 15:52:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 86A9A84E1E
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 16:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387523AbfHGNwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 09:52:41 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:40518 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729771AbfHGNwk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 09:52:40 -0400
-Received: by mail-pl1-f195.google.com with SMTP id a93so40870790pla.7
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 06:52:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=QnyCTyMbm52NNTF3jvsG/XFHwGBN7xSjxw+ALsjB1gk=;
-        b=hvFXtVNZhyN0kdv9iaA7yZN5RqEBCjciXVvNLIybGo9HT7b3b+wEhDXgwXt9UF8Mrn
-         eZN37QzXBNaCRPUTOtvLbduEWeOl25BDcGmYWV9ZLZmyIY2DelXEGI0guJ8ZqYDWCUc+
-         Uq07GDbvjCnmuho1/UwA+WeZD6IjYNeymq8uFSzW05d1Kn5WjcoE/sdiEk4q9Pnv4DZG
-         rGzgQi4Dw5txGWJVOLLOOxkaXvyGLKhZ4QawFZhVwDTHvgFIyA6iWIhIz3gscwe8DFor
-         gFkbJ3pleEF/BzQx06R1m0tmzKsGUUbphwQkDn43e/6Z8P/hMPwnuj+yzSMhfPUJT3ph
-         I76g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=QnyCTyMbm52NNTF3jvsG/XFHwGBN7xSjxw+ALsjB1gk=;
-        b=An0zlBBic3QUE1Ws95FIhvtCTdAjRkSnG/8+pJx07G6EyMVEWzsWkLY+1XbxoNNgqb
-         jajFIGr+WNWcvuwgK8u4mcjNXqNKcYHSYGqUTC/UvvZMiYRqLOe9jQF/pjvOuCqiWtEV
-         6G18AtGgtqc4TkjHWK1qgcs3og9zg8xUDQiHms4J928z7wYtuhxEuT3/uHCCm8oHHnJE
-         ZTZP0Cw7F4ZvYpuNKYoMptW5vMln4F2zJN1UsJ0091RJlC3F6+S6PF6kv7WJ4XpUwpDV
-         PbxLZ+i6CUi6ww9W7JixEil+HqGu+LaUQ9hflutVyD+/JecvHSNnErwilWl5GyrMe/Uo
-         vo0g==
-X-Gm-Message-State: APjAAAXaDhFwmmFuqw5TkPf6RSACaXEY1m816YGVa7Md5/0dTpituRKX
-        56sf95NtPfyj3XOPJMYcDRF9bg==
-X-Google-Smtp-Source: APXvYqyZHqBPVgXKeTfuam/+wr//DWw1+la2CyEt/5QA6T/uZGoDWyT0btIOkYHc/WOyvZTCa5PcRg==
-X-Received: by 2002:aa7:9dcd:: with SMTP id g13mr9657897pfq.204.1565185959443;
-        Wed, 07 Aug 2019 06:52:39 -0700 (PDT)
-Received: from ?IPv6:2601:646:c200:1ef2:e49d:f1dd:cb7c:c8f6? ([2601:646:c200:1ef2:e49d:f1dd:cb7c:c8f6])
-        by smtp.gmail.com with ESMTPSA id q69sm130734pjb.0.2019.08.07.06.52.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 06:52:37 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-From:   Andy Lutomirski <luto@amacapital.net>
-X-Mailer: iPhone Mail (16G77)
-In-Reply-To: <CACAyw9_fVZFW_x4uyTAiRfeH6oq1KHv0uB2wO84u5JZyD+Unaw@mail.gmail.com>
-Date:   Wed, 7 Aug 2019 06:52:36 -0700
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>, Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <945BCF23-839C-418C-9FBF-46889AE84CA4@amacapital.net>
-References: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com> <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com> <5A2FCD7E-7F54-41E5-BFAE-BB9494E74F2D@fb.com> <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com> <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com> <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com> <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com> <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com> <20190805192122.laxcaz75k4vxdspn@ast-mbp> <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com> <20190806011134.p5baub5l3t5fkmou@ast-mbp> <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com> <CACAyw9_fVZFW_x4uyTAiRfeH6oq1KHv0uB2wO84u5JZyD+Unaw@mail.gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
+        id S2388011AbfHGOCQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 10:02:16 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39334 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387739AbfHGOCQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Aug 2019 10:02:16 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 16CE351F0B;
+        Wed,  7 Aug 2019 14:02:16 +0000 (UTC)
+Received: from [10.72.12.139] (ovpn-12-139.pek2.redhat.com [10.72.12.139])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A825B608AB;
+        Wed,  7 Aug 2019 14:02:13 +0000 (UTC)
+Subject: Re: [PATCH V4 7/9] vhost: do not use RCU to synchronize MMU notifier
+ with worker
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     mst@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org
+References: <20190807070617.23716-1-jasowang@redhat.com>
+ <20190807070617.23716-8-jasowang@redhat.com> <20190807120738.GB1557@ziepe.ca>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ba5f375f-435a-91fd-7fca-bfab0915594b@redhat.com>
+Date:   Wed, 7 Aug 2019 22:02:12 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190807120738.GB1557@ziepe.ca>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Wed, 07 Aug 2019 14:02:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-> On Aug 7, 2019, at 2:03 AM, Lorenz Bauer <lmb@cloudflare.com> wrote:
->=20
->> On Wed, 7 Aug 2019 at 06:24, Andy Lutomirski <luto@kernel.org> wrote:
->> a) Those that, by design, control privileged operations.  This
->> includes most attach calls, but it also includes allow_ptr_leaks,
->> bpf_probe_read(), and quite a few other things.  It also includes all
->> of the by_id calls, I think, unless some clever modification to the
->> way they worked would isolate different users' objects.  I think that
->> persistent objects can do pretty much everything that by_id users
->> would need, so this isn't a big deal.
->=20
-> Slightly OT, since this is an implementation question: GET_MAP_FD_BY_ID
-> is useful to iterate a nested map. This isn't covered by rights to
-> persistent objects,
-> so it would need some thought.
->=20
->=20
+On 2019/8/7 下午8:07, Jason Gunthorpe wrote:
+> On Wed, Aug 07, 2019 at 03:06:15AM -0400, Jason Wang wrote:
+>> We used to use RCU to synchronize MMU notifier with worker. This leads
+>> calling synchronize_rcu() in invalidate_range_start(). But on a busy
+>> system, there would be many factors that may slow down the
+>> synchronize_rcu() which makes it unsuitable to be called in MMU
+>> notifier.
+>>
+>> So this patch switches use seqlock counter to track whether or not the
+>> map was used. The counter was increased when vq try to start or finish
+>> uses the map. This means, when it was even, we're sure there's no
+>> readers and MMU notifier is synchronized. When it was odd, it means
+>> there's a reader we need to wait it to be even again then we are
+>> synchronized. Consider the read critical section is pretty small the
+>> synchronization should be done very fast.
+>>
+>> Reported-by: Michael S. Tsirkin <mst@redhat.com>
+>> Fixes: 7f466032dc9e ("vhost: access vq metadata through kernel virtual address")
+>> Signed-off-by: Jason Wang <jasowang@redhat.com>
+>>   drivers/vhost/vhost.c | 141 ++++++++++++++++++++++++++----------------
+>>   drivers/vhost/vhost.h |   7 ++-
+>>   2 files changed, 90 insertions(+), 58 deletions(-)
+>>
+>> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+>> index cfc11f9ed9c9..57bfbb60d960 100644
+>> +++ b/drivers/vhost/vhost.c
+>> @@ -324,17 +324,16 @@ static void vhost_uninit_vq_maps(struct vhost_virtqueue *vq)
+>>   
+>>   	spin_lock(&vq->mmu_lock);
+>>   	for (i = 0; i < VHOST_NUM_ADDRS; i++) {
+>> -		map[i] = rcu_dereference_protected(vq->maps[i],
+>> -				  lockdep_is_held(&vq->mmu_lock));
+>> +		map[i] = vq->maps[i];
+>>   		if (map[i]) {
+>>   			vhost_set_map_dirty(vq, map[i], i);
+>> -			rcu_assign_pointer(vq->maps[i], NULL);
+>> +			vq->maps[i] = NULL;
+>>   		}
+>>   	}
+>>   	spin_unlock(&vq->mmu_lock);
+>>   
+>> -	/* No need for synchronize_rcu() or kfree_rcu() since we are
+>> -	 * serialized with memory accessors (e.g vq mutex held).
+>> +	/* No need for synchronization since we are serialized with
+>> +	 * memory accessors (e.g vq mutex held).
+>>   	 */
+>>   
+>>   	for (i = 0; i < VHOST_NUM_ADDRS; i++)
+>> @@ -362,6 +361,40 @@ static bool vhost_map_range_overlap(struct vhost_uaddr *uaddr,
+>>   	return !(end < uaddr->uaddr || start > uaddr->uaddr - 1 + uaddr->size);
+>>   }
+>>   
+>> +static void inline vhost_vq_access_map_begin(struct vhost_virtqueue *vq)
+>> +{
+>> +	write_seqcount_begin(&vq->seq);
+>> +}
+>> +
+>> +static void inline vhost_vq_access_map_end(struct vhost_virtqueue *vq)
+>> +{
+>> +	write_seqcount_end(&vq->seq);
+>> +}
+> The write side of a seqlock only provides write barriers. Access to
+>
+> 	map = vq->maps[VHOST_ADDR_USED];
+>
+> Still needs a read side barrier, and then I think this will be no
+> better than a normal spinlock.
+>
+> It also doesn't seem like this algorithm even needs a seqlock, as this
+> is just a one bit flag
 
-A call to get an fd to a map referenced by a map to which you already have a=
-n fd seems reasonable to me. The new fd would inherit the old fd=E2=80=99s a=
-ccess mode.=
+
+Right, so then I tend to use spinlock first for correctness.
+
+
+>
+> atomic_set_bit(using map)
+> smp_mb__after_atomic()
+> .. maps [...]
+> atomic_clear_bit(using map)
+>
+>
+> map = NULL;
+> smp_mb__before_atomic();
+> while (atomic_read_bit(using map))
+>     relax()
+>
+> Again, not clear this could be faster than a spinlock when the
+> barriers are correct...
+
+
+Yes, for next release we may want to use the idea from Michael like to 
+mitigate the impact of mb.
+
+https://lwn.net/Articles/775871/
+
+Thanks
+
+
+>
+> Jason
