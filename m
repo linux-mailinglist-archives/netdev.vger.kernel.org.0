@@ -2,104 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 120E3855EA
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 00:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 483DB85632
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 00:50:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387802AbfHGWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 18:39:28 -0400
-Received: from outbound.smtp.vt.edu ([198.82.183.121]:49426 "EHLO
-        omr1.cc.vt.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729753AbfHGWj2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 18:39:28 -0400
-Received: from mr1.cc.vt.edu (inbound.smtp.ipv6.vt.edu [IPv6:2607:b400:92:9:0:9d:8fcb:4116])
-        by omr1.cc.vt.edu (8.14.4/8.14.4) with ESMTP id x77MdRsr010531
-        for <netdev@vger.kernel.org>; Wed, 7 Aug 2019 18:39:27 -0400
-Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
-        by mr1.cc.vt.edu (8.14.7/8.14.7) with ESMTP id x77MdM7K009135
-        for <netdev@vger.kernel.org>; Wed, 7 Aug 2019 18:39:27 -0400
-Received: by mail-qt1-f200.google.com with SMTP id k31so83843716qte.13
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 15:39:27 -0700 (PDT)
+        id S1730284AbfHGWua (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 18:50:30 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:45038 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729753AbfHGWua (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 18:50:30 -0400
+Received: by mail-qk1-f193.google.com with SMTP id d79so67150743qke.11
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 15:50:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=lJ7a/2k+Tuqr68+mO05d6MJDNw/BHF9g2vQmMFJlUOk=;
+        b=Impmxmwj0oSNd3mf429qRhMEF4T+7Tmx6hO5JqCD8WNbj/SiBs/agzY2Je4JJQ+Hl+
+         fgnPgxjjwLw31o8/X7grs7qjr07W9u9JpP2NHIzeU6CWR3EYqmmuIDV/j7a48MNCbJWO
+         enP2InIzSlLTOn6kkUSRUjAOXvt22cgUCmMRsgsqhDEDTxgqd4jOxrEM3tqcXb3/aguE
+         QfE+S5UyGCOvFNwoBVXOUzObs9qEEtxckzWgT8jWM7plTB1B1UoWYM7AdD1O9SezUerr
+         2iMM1Y0AxnRIIRc8DratXYoH2p3dYfGQN9iPse6FK8COXMBImRbjWTaM2M6KTi65QKgX
+         dk1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:mime-version:date
-         :message-id;
-        bh=r0uwyFJeFvH4bAs10mxKtLGquaNY41+jLpUXPC0EZek=;
-        b=Bla+5XYH4RG6IdRK7paqP28skmkiDLSVCOSAtQoh/ApMj7L88toos6t20JJJ1I5UBK
-         ZO/F6Vlz1py3Isdy9BqqoVP2hhR/2bIF3jws90tFAUY2iHqD07acU3TNESDwZglnHSgH
-         Q3o9xVzktlN82n4q5fQebK06Zzf+Vs4tGA01AFgJN8OUWK9YYa12LBdBcRebzutK6dBs
-         FRVQdCgNi9o2366XK/gyruN2Ji0s2jcsV24xZ717PZsUhP/VDWrnWHYfypW10CFWlZlj
-         lvOZdkC/+FJJVt34TZAjbw4N2As2KwHcP1QcGoNVbYtN5cYOw6pE8IMiiPv8aJ3HkBWq
-         55UA==
-X-Gm-Message-State: APjAAAV1466U0L0VtDbwTcYjKiXRh03b2c2wxVYD/knv6SQuCXlA5boA
-        MZFlqZLmsWWMRaDJgpbVwAT4sH7XwU5H49wGsQgw+8pd9UJiDdoxtjJa63s/nbv9Xha/n/ozhqM
-        iU/j0nCsFR/8g7zZp2zSO7s9bB6Q=
-X-Received: by 2002:ac8:38a8:: with SMTP id f37mr10506216qtc.150.1565217562213;
-        Wed, 07 Aug 2019 15:39:22 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqyq2M4kYBk/DP7a4+BlSJvKHDCJm1Prg2gLCqkUE118sy7EEDEjeDyH6Ho3jOyIRsTfF2KH2g==
-X-Received: by 2002:ac8:38a8:: with SMTP id f37mr10506192qtc.150.1565217561898;
-        Wed, 07 Aug 2019 15:39:21 -0700 (PDT)
-Received: from turing-police ([2601:5c0:c001:4341::359])
-        by smtp.gmail.com with ESMTPSA id w24sm54135617qtb.35.2019.08.07.15.39.20
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=lJ7a/2k+Tuqr68+mO05d6MJDNw/BHF9g2vQmMFJlUOk=;
+        b=CCQxvHiPTAMdB1U5O9mDT9vaVqpsHBXmvulK2Gnj8QHWKsAX+7jvC9ALzf+Q8C4sX2
+         qXj24HRUilyPApeqDnWoAJPL8gOsRJ+WBh81ffxFX0tc6m2JYHHCBkD1SEXetTlQnmt3
+         jus0CaXSaKi8V9ISt3m1GOLNU7ZHw7FelgP9AH13CB+3crgZAHoXjmJ5Iinc3RUvOWeL
+         YOlUueNKrGEjW2/k/kr2XGc94kyLkTgfRMLIog1mw5jjgmbGDl/337HCK1QaY6x/5pRN
+         EbWB3+M25hLrPYD0otxFQgRe1e5XWuBG+N0jqPbXRjLhPDD5mo6IHwaIhkktLJvLDeCK
+         zuYA==
+X-Gm-Message-State: APjAAAVPpN2u2OZx4kEMA7qlwo7mMW00d9HdOsQThTyUfmyTfuJWvCD7
+        12yVjxdvx+mz7TgXqw0WpHZwEA==
+X-Google-Smtp-Source: APXvYqx8s9n2HLXydx+w2D8tM48ExlIWjk6ZYY2/YY/ejkwX/MGnQSAP6IaAEH3W5vNohYOfRWV+jw==
+X-Received: by 2002:a37:717:: with SMTP id 23mr8827411qkh.267.1565218229450;
+        Wed, 07 Aug 2019 15:50:29 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id c20sm33493190qkk.69.2019.08.07.15.50.27
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 07 Aug 2019 15:39:20 -0700 (PDT)
-From:   "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <valdis.kletnieks@vt.edu>
-X-Google-Original-From: "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <Valdis.Kletnieks@vt.edu>
-X-Mailer: exmh version 2.9.0 11/07/2018 with nmh-1.7+dev
-To:     Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>
-cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] Fix non-kerneldoc comment in realtek/rtlwifi/usb.c
-Mime-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Date:   Wed, 07 Aug 2019 18:39:20 -0400
-Message-ID: <5924.1565217560@turing-police>
+        Wed, 07 Aug 2019 15:50:29 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 15:49:59 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH net v2] net/tls: prevent skb_orphan() from leaking TLS
+ plain text with offload
+Message-ID: <20190807154959.67f30851@cakuba.netronome.com>
+In-Reply-To: <CA+FuTSeR1QqAZVTLQ-mJ8iHi+h+ghbrGyT6TWATTecQSbQP6sA@mail.gmail.com>
+References: <20190807060612.19397-1-jakub.kicinski@netronome.com>
+        <CA+FuTScYkHho4hqrGf9q6=4iao-f2P2s258rjtQTCgn+nF-CYg@mail.gmail.com>
+        <20190807110042.690cf50a@cakuba.netronome.com>
+        <CA+FuTSeR1QqAZVTLQ-mJ8iHi+h+ghbrGyT6TWATTecQSbQP6sA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix spurious warning message when building with W=1:
+On Wed, 7 Aug 2019 14:46:23 -0400, Willem de Bruijn wrote:
+> > > > @@ -984,6 +984,9 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+> > > >                         if (!skb)
+> > > >                                 goto wait_for_memory;
+> > > >
+> > > > +#ifdef CONFIG_TLS_DEVICE
+> > > > +                       skb->decrypted = !!(flags & MSG_SENDPAGE_DECRYPTED);
+> > > > +#endif  
+> > >
+> > > Nothing is stopping userspace from passing this new flag. In send
+> > > (tcp_sendmsg_locked) it is ignored. But can it reach do_tcp_sendpages
+> > > through tcp_bpf_sendmsg?  
+> >
+> > Ah, I think you're right, thanks for checking that :( I don't entirely
+> > follow how 0608c69c9a80 ("bpf: sk_msg, sock{map|hash} redirect through
+> > ULP") is safe then.
+> >
+> > One option would be to clear the flags kernel would previously ignore
+> > in tcp_bpf_sendmsg(). But I feel like we should just go back to marking
+> > the socket, since we don't need the per-message flexibility of a flag.
+> >
+> > WDYT?  
+> 
+> I don't feel strongly either way. Passing flags from send through
+> tcp_bpf_sendmsg is probably unintentional, so should probably be
+> addressed anyway? Then this is a bit simpler.
 
-  CC [M]  drivers/net/wireless/realtek/rtlwifi/usb.o
-drivers/net/wireless/realtek/rtlwifi/usb.c:243: warning: Cannot understand  * on line 243 - I thought it was a doc line
-drivers/net/wireless/realtek/rtlwifi/usb.c:760: warning: Cannot understand  * on line 760 - I thought it was a doc line
-drivers/net/wireless/realtek/rtlwifi/usb.c:790: warning: Cannot understand  * on line 790 - I thought it was a doc line
+FWIW I had a closer look at the tcp_bpf_sendmsg() flags, and
+MSG_SENDPAGE_NOPOLICY should be okay to let though there.
 
-Change the comment so gcc doesn't think it's a kerneldoc comment block
+That flag is only meaningful to tls in case sockmap is layered 
+on top of tls and we'd always set it before calling tls.
 
-Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index e24fda5e9087..9478cc0d4f8b 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -239,7 +239,7 @@ static void _rtl_usb_io_handler_release(struct ieee80211_hw *hw)
- 	mutex_destroy(&rtlpriv->io.bb_mutex);
- }
- 
--/**
-+/*
-  *
-  *	Default aggregation handler. Do nothing and just return the oldest skb.
-  */
-@@ -756,7 +756,7 @@ static int rtl_usb_start(struct ieee80211_hw *hw)
- 	return err;
- }
- 
--/**
-+/*
-  *
-  *
-  */
-@@ -786,7 +786,7 @@ static void rtl_usb_cleanup(struct ieee80211_hw *hw)
- 	usb_kill_anchored_urbs(&rtlusb->tx_submitted);
- }
- 
--/**
-+/*
-  *
-  * We may add some struct into struct rtl_usb later. Do deinit here.
-  *
-
+v3 coming soon..
