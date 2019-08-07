@@ -2,155 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 869B984B31
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 14:07:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1493F84B3A
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 14:09:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729712AbfHGMHk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 08:07:40 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:33076 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727171AbfHGMHk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 08:07:40 -0400
-Received: by mail-qt1-f193.google.com with SMTP id r6so83771418qtt.0
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 05:07:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ziepe.ca; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=v26ljGQm8kb1b/B+MgY9iqkRnu2IlPlITotoyjOaRLE=;
-        b=FwqxEndrrseDTfa7IA+ahMyXJcw275sq/ogyK1cE9Brfp/+cA5dthaNKeo43mipwCW
-         6M3TrldZWv7JXH9KLIINp0G6YhemLDU3zOb98Y6ixjqND8Edt4vtD4dtABJZtPFOlNWQ
-         7o+i/B+d4dsypsLc9FAuuiUZqdV3+cuQPd1u7fGeYNEYgtw4WFPR67fjUunxQzqjk+D+
-         m/Hrc+kRzSQLc/Y4MNwDwO+mVI0ImT4tvNWKY8DSYiKFsYOn0c9EH2FZcaFik8oOhgro
-         wCckNCtxQRpeA/pGd5OtN/Hmf4FSEtEBQR4gGNGlbagAyW+no63yQWaSBO4AtHGy6HOL
-         lRNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=v26ljGQm8kb1b/B+MgY9iqkRnu2IlPlITotoyjOaRLE=;
-        b=M+0XAasWvNqD/yvbMIQJAH2+VpvouHqKlEv3atzlLu996tKWnvHITUwy37287/9sRV
-         NKl459L9IoyqF3PXCClk682FFp+/4dsK4yQPXle/IXkF0pqPzyzb4NiKsLT4+aohpOXp
-         Nh4k1Z9Rw8EAX1z9yjstHLW3J3q1A1m84c3Mv+D03SYqrTmLfVYjiqS+RpMUTi0tmwML
-         hXhMRaK8ESk56/TtXPpwf+LqQDAlO63tLUkopCx65pTwSnIJU2GOElWcTxFspPQ2yB9O
-         jfcMGXbiNhm2UrU7uJhfZFDNWK6RAXFTna3TgOr1b/URth+deFniPSdaL2FYIKnihLf3
-         QYRg==
-X-Gm-Message-State: APjAAAXoAqmcM5O77qZkgd4rwvqhJH2oIhEXNHo1Yka5nIEepkEWwRAM
-        VCuvDL+B+GIklyFAqMgvHCIHMQ==
-X-Google-Smtp-Source: APXvYqwdlTEXDfbCbN8MO6nqW9FtHXr3xg/qpTMHDicPu2B1XqjJOXbR74uxCwKcBjwiEflnXc1c9w==
-X-Received: by 2002:a0c:e790:: with SMTP id x16mr7775534qvn.120.1565179659437;
-        Wed, 07 Aug 2019 05:07:39 -0700 (PDT)
-Received: from ziepe.ca (hlfxns017vw-156-34-55-100.dhcp-dynamic.fibreop.ns.bellaliant.net. [156.34.55.100])
-        by smtp.gmail.com with ESMTPSA id p32sm45431550qtb.67.2019.08.07.05.07.38
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 07 Aug 2019 05:07:38 -0700 (PDT)
-Received: from jgg by mlx.ziepe.ca with local (Exim 4.90_1)
-        (envelope-from <jgg@ziepe.ca>)
-        id 1hvKjC-0000z1-4M; Wed, 07 Aug 2019 09:07:38 -0300
-Date:   Wed, 7 Aug 2019 09:07:38 -0300
-From:   Jason Gunthorpe <jgg@ziepe.ca>
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     mst@redhat.com, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH V4 7/9] vhost: do not use RCU to synchronize MMU notifier
- with worker
-Message-ID: <20190807120738.GB1557@ziepe.ca>
-References: <20190807070617.23716-1-jasowang@redhat.com>
- <20190807070617.23716-8-jasowang@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190807070617.23716-8-jasowang@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+        id S1729821AbfHGMIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 08:08:49 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:43074 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729238AbfHGMIt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 08:08:49 -0400
+Received: from Internal Mail-Server by MTLPINE2 (envelope-from paulb@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 7 Aug 2019 15:08:43 +0300
+Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x77C8hr8024370;
+        Wed, 7 Aug 2019 15:08:43 +0300
+From:   Paul Blakey <paulb@mellanox.com>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Justin Pettit <jpettit@nicira.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Simon Horman <simon.horman@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Paul Blakey <paulb@mellanox.com>
+Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+Subject: [PATCH net-next] net: openvswitch: Set OvS recirc_id from tc chain index
+Date:   Wed,  7 Aug 2019 15:08:42 +0300
+Message-Id: <1565179722-22488-1-git-send-email-paulb@mellanox.com>
+X-Mailer: git-send-email 1.8.4.3
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 03:06:15AM -0400, Jason Wang wrote:
-> We used to use RCU to synchronize MMU notifier with worker. This leads
-> calling synchronize_rcu() in invalidate_range_start(). But on a busy
-> system, there would be many factors that may slow down the
-> synchronize_rcu() which makes it unsuitable to be called in MMU
-> notifier.
-> 
-> So this patch switches use seqlock counter to track whether or not the
-> map was used. The counter was increased when vq try to start or finish
-> uses the map. This means, when it was even, we're sure there's no
-> readers and MMU notifier is synchronized. When it was odd, it means
-> there's a reader we need to wait it to be even again then we are
-> synchronized. Consider the read critical section is pretty small the
-> synchronization should be done very fast.
-> 
-> Reported-by: Michael S. Tsirkin <mst@redhat.com>
-> Fixes: 7f466032dc9e ("vhost: access vq metadata through kernel virtual address")
-> Signed-off-by: Jason Wang <jasowang@redhat.com>
->  drivers/vhost/vhost.c | 141 ++++++++++++++++++++++++++----------------
->  drivers/vhost/vhost.h |   7 ++-
->  2 files changed, 90 insertions(+), 58 deletions(-)
-> 
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index cfc11f9ed9c9..57bfbb60d960 100644
-> +++ b/drivers/vhost/vhost.c
-> @@ -324,17 +324,16 @@ static void vhost_uninit_vq_maps(struct vhost_virtqueue *vq)
->  
->  	spin_lock(&vq->mmu_lock);
->  	for (i = 0; i < VHOST_NUM_ADDRS; i++) {
-> -		map[i] = rcu_dereference_protected(vq->maps[i],
-> -				  lockdep_is_held(&vq->mmu_lock));
-> +		map[i] = vq->maps[i];
->  		if (map[i]) {
->  			vhost_set_map_dirty(vq, map[i], i);
-> -			rcu_assign_pointer(vq->maps[i], NULL);
-> +			vq->maps[i] = NULL;
->  		}
->  	}
->  	spin_unlock(&vq->mmu_lock);
->  
-> -	/* No need for synchronize_rcu() or kfree_rcu() since we are
-> -	 * serialized with memory accessors (e.g vq mutex held).
-> +	/* No need for synchronization since we are serialized with
-> +	 * memory accessors (e.g vq mutex held).
->  	 */
->  
->  	for (i = 0; i < VHOST_NUM_ADDRS; i++)
-> @@ -362,6 +361,40 @@ static bool vhost_map_range_overlap(struct vhost_uaddr *uaddr,
->  	return !(end < uaddr->uaddr || start > uaddr->uaddr - 1 + uaddr->size);
->  }
->  
-> +static void inline vhost_vq_access_map_begin(struct vhost_virtqueue *vq)
-> +{
-> +	write_seqcount_begin(&vq->seq);
-> +}
-> +
-> +static void inline vhost_vq_access_map_end(struct vhost_virtqueue *vq)
-> +{
-> +	write_seqcount_end(&vq->seq);
-> +}
+Offloaded OvS datapath rules are translated one to one to tc rules,
+for example the following simplified OvS rule:
 
-The write side of a seqlock only provides write barriers. Access to
+recirc_id(0),in_port(dev1),eth_type(0x0800),ct_state(-trk) actions:ct(),recirc(2)
 
-	map = vq->maps[VHOST_ADDR_USED];
+Will be translated to the following tc rule:
 
-Still needs a read side barrier, and then I think this will be no
-better than a normal spinlock.
+$ tc filter add dev dev1 ingress \
+	    prio 1 chain 0 proto ip \
+		flower tcp ct_state -trk \
+		action ct pipe \
+		action goto chain 2
 
-It also doesn't seem like this algorithm even needs a seqlock, as this
-is just a one bit flag
+Received packets will first travel though tc, and if they aren't stolen
+by it, like in the above rule, they will continue to OvS datapath.
+Since we already did some actions (action ct in this case) which might
+modify the packets, and updated action stats, we would like to continue
+the proccessing with the correct recirc_id in OvS (here recirc_id(2))
+where we left off.
 
-atomic_set_bit(using map)
-smp_mb__after_atomic()
-.. maps [...]
-atomic_clear_bit(using map)
+To support this, introduce a new skb extension for tc, which
+will be used for translating tc chain to ovs recirc_id to
+handle these miss cases. Last tc chain index will be set
+by tc goto chain action and read by OvS datapath.
 
+Signed-off-by: Paul Blakey <paulb@mellanox.com>
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+---
+ include/linux/skbuff.h    | 13 +++++++++++++
+ include/net/sch_generic.h |  5 ++++-
+ net/core/skbuff.c         |  6 ++++++
+ net/openvswitch/flow.c    |  9 +++++++++
+ net/sched/Kconfig         | 13 +++++++++++++
+ net/sched/act_api.c       |  1 +
+ net/sched/cls_api.c       | 12 ++++++++++++
+ 7 files changed, 58 insertions(+), 1 deletion(-)
 
-map = NULL;
-smp_mb__before_atomic();
-while (atomic_read_bit(using map))
-   relax()
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 3aef8d8..fb2a792 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -279,6 +279,16 @@ struct nf_bridge_info {
+ };
+ #endif
+ 
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++/* Chain in tc_skb_ext will be used to share the tc chain with
++ * ovs recirc_id. It will be set to the current chain by tc
++ * and read by ovs to recirc_id.
++ */
++struct tc_skb_ext {
++	__u32 chain;
++};
++#endif
++
+ struct sk_buff_head {
+ 	/* These two members must be first. */
+ 	struct sk_buff	*next;
+@@ -4050,6 +4060,9 @@ enum skb_ext_id {
+ #ifdef CONFIG_XFRM
+ 	SKB_EXT_SEC_PATH,
+ #endif
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++	TC_SKB_EXT,
++#endif
+ 	SKB_EXT_NUM, /* must be last */
+ };
+ 
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index 6b6b012..871feea 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -275,7 +275,10 @@ struct tcf_result {
+ 			unsigned long	class;
+ 			u32		classid;
+ 		};
+-		const struct tcf_proto *goto_tp;
++		struct {
++			const struct tcf_proto *goto_tp;
++			u32 goto_index;
++		};
+ 
+ 		/* used in the skb_tc_reinsert function */
+ 		struct {
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index ea8e8d3..2b40b5a 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -4087,6 +4087,9 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+ #ifdef CONFIG_XFRM
+ 	[SKB_EXT_SEC_PATH] = SKB_EXT_CHUNKSIZEOF(struct sec_path),
+ #endif
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++	[TC_SKB_EXT] = SKB_EXT_CHUNKSIZEOF(struct tc_skb_ext),
++#endif
+ };
+ 
+ static __always_inline unsigned int skb_ext_total_length(void)
+@@ -4098,6 +4101,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
+ #ifdef CONFIG_XFRM
+ 		skb_ext_type_len[SKB_EXT_SEC_PATH] +
+ #endif
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++		skb_ext_type_len[TC_SKB_EXT] +
++#endif
+ 		0;
+ }
+ 
+diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+index bc89e16..0287ead 100644
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -816,6 +816,9 @@ static int key_extract_mac_proto(struct sk_buff *skb)
+ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 			 struct sk_buff *skb, struct sw_flow_key *key)
+ {
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++	struct tc_skb_ext *tc_ext;
++#endif
+ 	int res, err;
+ 
+ 	/* Extract metadata from packet. */
+@@ -848,7 +851,13 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 	if (res < 0)
+ 		return res;
+ 	key->mac_proto = res;
++
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++	tc_ext = skb_ext_find(skb, TC_SKB_EXT);
++	key->recirc_id = tc_ext ? tc_ext->chain : 0;
++#else
+ 	key->recirc_id = 0;
++#endif
+ 
+ 	err = key_extract(skb, key);
+ 	if (!err)
+diff --git a/net/sched/Kconfig b/net/sched/Kconfig
+index afd2ba1..b3faafe 100644
+--- a/net/sched/Kconfig
++++ b/net/sched/Kconfig
+@@ -963,6 +963,19 @@ config NET_IFE_SKBTCINDEX
+         tristate "Support to encoding decoding skb tcindex on IFE action"
+         depends on NET_ACT_IFE
+ 
++config NET_TC_SKB_EXT
++	bool "TC recirculation support"
++	depends on NET_CLS_ACT
++	default y if NET_CLS_ACT
++	select SKB_EXTENSIONS
++
++	help
++	  Say Y here to allow tc chain misses to continue in OvS datapath in
++	  the correct recirc_id, and hardware chain misses to continue in
++	  the correct chain in tc software datapath.
++
++	  Say N here if you won't be using tc<->ovs offload or tc chains offload.
++
+ endif # NET_SCHED
+ 
+ config NET_SCH_FIFO
+diff --git a/net/sched/act_api.c b/net/sched/act_api.c
+index 3397122..c393604 100644
+--- a/net/sched/act_api.c
++++ b/net/sched/act_api.c
+@@ -27,6 +27,7 @@ static void tcf_action_goto_chain_exec(const struct tc_action *a,
+ {
+ 	const struct tcf_chain *chain = rcu_dereference_bh(a->goto_chain);
+ 
++	res->goto_index = chain->index;
+ 	res->goto_tp = rcu_dereference_bh(chain->filter_chain);
+ }
+ 
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 3565d9a..b0b829a 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1660,6 +1660,18 @@ int tcf_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 			goto reset;
+ 		} else if (unlikely(TC_ACT_EXT_CMP(err, TC_ACT_GOTO_CHAIN))) {
+ 			first_tp = res->goto_tp;
++
++#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
++			{
++				struct tc_skb_ext *ext;
++
++				ext = skb_ext_add(skb, TC_SKB_EXT);
++				if (WARN_ON_ONCE(!ext))
++					return TC_ACT_SHOT;
++
++				ext->chain = res->goto_index;
++			}
++#endif
+ 			goto reset;
+ 		}
+ #endif
+-- 
+1.8.3.1
 
-Again, not clear this could be faster than a spinlock when the
-barriers are correct...
-
-Jason
