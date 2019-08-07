@@ -2,178 +2,245 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 72F59843A6
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:24:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EBEC843BD
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:38:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725972AbfHGFYk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 01:24:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51476 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725834AbfHGFYj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 01:24:39 -0400
-Received: from mail-wr1-f45.google.com (mail-wr1-f45.google.com [209.85.221.45])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 219F621880
-        for <netdev@vger.kernel.org>; Wed,  7 Aug 2019 05:24:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565155478;
-        bh=CjuQgL09pQH6XikSknVDOW+uxXrr2z62KM9ggjnnPag=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=hM4kZYk74xC358c7QYNpNu7qK6yiYjEsC953rGv5mWne6TQZuJAH8AAkj/2zlvxD0
-         MwcNCHNEqs4PitehLGOYGZcNNxCb17UyKJfL5rnkW0wdpaMHOwhe4jBkmxs7NqXzAb
-         1PhAstqqCkZvlNYaDbuPkKwAdwjUamzlMgNFL2Ik=
-Received: by mail-wr1-f45.google.com with SMTP id p17so89972108wrf.11
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:24:38 -0700 (PDT)
-X-Gm-Message-State: APjAAAX/D2GoXzfg0aPWe7/FAzEMeq9XbvoVRaQJO7QLMFDEblI1FypO
-        +RzK1GSFT49Kupta6goO355CMF1rMj7OHLx3TDWAaw==
-X-Google-Smtp-Source: APXvYqw7hE1TmqQ9Y5v5Hspi4JaeP11sWfX0sgjg8zNAco0JPNqFazXPgW+OhkVJ4WOiIV/lXoUyQfSnQrqfM95Kzm8=
-X-Received: by 2002:adf:dd0f:: with SMTP id a15mr7721712wrm.265.1565155476577;
- Tue, 06 Aug 2019 22:24:36 -0700 (PDT)
+        id S1726540AbfHGFiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 01:38:18 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:49582 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725972AbfHGFiR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 01:38:17 -0400
+Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x775XrMX011657
+        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 22:38:16 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=1yAapuGwl9hLGNGG+ILp+1NUiTeWw/1t7VG4Vu8ZnzQ=;
+ b=JFPRo3a5rMvrQsxUTjuxicUgovzeQrB8PfSsxaQfFOtj631l9jQmiP5ONd8LecFfqjNs
+ tUfiIDs1Ww+PdapohV2X1JApKmZGIydLKDXrERVW/7/gIhnlls5GPJtNILobqr34adiQ
+ npebSCt3RpDbNAuicT7YiayatZfDPaaF0nI= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2u7g3g9k5c-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:38:16 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Tue, 6 Aug 2019 22:38:15 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id 0CFCC861698; Tue,  6 Aug 2019 22:38:09 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <yhs@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v4 bpf-next 00/14] CO-RE offset relocations
+Date:   Tue, 6 Aug 2019 22:37:52 -0700
+Message-ID: <20190807053806.1534571-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-References: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com> <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com>
- <5A2FCD7E-7F54-41E5-BFAE-BB9494E74F2D@fb.com> <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com>
- <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
- <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
- <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com> <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
- <20190805192122.laxcaz75k4vxdspn@ast-mbp> <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
- <20190806011134.p5baub5l3t5fkmou@ast-mbp>
-In-Reply-To: <20190806011134.p5baub5l3t5fkmou@ast-mbp>
-From:   Andy Lutomirski <luto@kernel.org>
-Date:   Tue, 6 Aug 2019 22:24:25 -0700
-X-Gmail-Original-Message-ID: <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
-Message-ID: <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-07_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=9 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908070059
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 5, 2019 at 6:11 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Mon, Aug 05, 2019 at 02:25:35PM -0700, Andy Lutomirski wrote:
-> > It tries to make the kernel respect the access modes for fds.  Without
-> > this patch, there seem to be some holes: nothing looked at program fds
-> > and, unless I missed something, you could take a readonly fd for a
-> > program, pin the program, and reopen it RW.
->
-> I think it's by design. iirc Daniel had a use case for something like this.
+This patch set implements central part of CO-RE (Compile Once - Run
+Everywhere, see [0] and [1] for slides and video): relocating fields offsets.
+Most of the details are written down as comments to corresponding parts of the
+code.
 
-That seems odd.  Daniel, can you elaborate?
+Patch #1 adds a bunch of commonly useful btf_xxx helpers to simplify working
+with BTF types.
+Patch #2 converts existing libbpf code to these new helpers and removes some
+of pre-existing ones.
+Patch #3 adds loading of .BTF.ext offset relocations section and macros to
+work with its contents.
+Patch #4 implements CO-RE relocations algorithm in libbpf.
+Patch #5 introduced BPF_CORE_READ macro, hiding usage of Clang's
+__builtin_preserve_access_index intrinsic that records offset relocation.
+Patches #6-#14 adds selftests validating various parts of relocation handling,
+type compatibility, etc.
 
-> Hence unprivileged bpf is actually something that can be deprecated.
+For all tests to work, you'll need latest Clang/LLVM supporting
+__builtin_preserve_access_index intrinsic, used for recording offset
+relocations. Kernel on which selftests run should have BTF information built
+in (CONFIG_DEBUG_INFO_BTF=y).
 
-I hope not.  There are a couple setsockopt uses right now, and and
-seccomp will surely want it someday.  And the bpf-inside-container use
-case really is unprivileged bpf -- containers are, in many (most?)
-cases, explicitly not trusted by the host.  But regardless, see below.
+  [0] http://vger.kernel.org/bpfconf2019.html#session-2
+  [1] http://vger.kernel.org/lpc-bpf2018.html#session-2
 
-> > The ability to obtain an fd to a cgroup does *not* imply any right to
-> > modify that cgroup.  The ability to write to a cgroup directory
-> > already means something else -- it's the ability to create cgroups
-> > under the group in question.  I'm suggesting that a new API be added
-> > that allows attaching a bpf program to a cgroup without capabilities
-> > and that instead requires write access to a new file in the cgroup
-> > directory.  (It could be a single file for all bpf types or one file
-> > per type.  I prefer the latter -- it gives the admin finer-grained
-> > control.)
->
-> This is something to discuss. I don't mind something like this,
-> but in general bpf is not for untrusted users.
-> Hence I don't want to overdesign.
+v3->v4:
+- added btf_xxx helpers (Alexei);
+- switched libbpf code to new helpers;
+- reduced amount of logging and simplified format in few places (Alexei);
+- made flavor name parsing logic more strict (exactly three underscores);
+- no uname() error checking (Alexei);
+- updated misc tests to reflect latest Clang fixes (Yonghong);
 
-I think the code would end up being extremely simple.  It would be an
-ABI change, but I think that it could easily be arranged so that new
-and old libbpf would be fully functional on new and old kernels except
-that only new libbpf with a new kernel would be able to attach cgroup
-programs without privilege.  I see no reason to remove the current
-cgroup attach API.
+v2->v3:
+- enclose BPF_CORE_READ args in parens (Song);
 
-> See https://github.com/systemd/systemd/blob/01234e1fe777602265ffd25ab6e73823c62b0efe/src/core/bpf-firewall.c#L671-L674
-> bpf based IP sandboxing doesn't work in 'systemd --user'.
-> That is just one of the problems that people complained about.
+v1->v2:
+- add offsetofend(), fix btf_ext optional fields checks (Song);
+- add bpf_core_dump_spec() for logging spec representation;
+- move special first element processing out of the loop (Song);
+- typo fixes (Song);
+- drop BPF_ST | BPF_MEM insn relocation (Alexei);
+- extracted BPF_CORE_READ into bpf_helpers (Alexei);
+- added extra tests validating Clang capturing relocs correctly (Yonghong);
+- switch core_relocs.c to use sub-tests;
+- updated mods tests after Clang bug was fixed (Yonghong);
+- fix bug enumerating candidate types;
 
-This isn't privilege *dropping* -- this is not having privilege in the
-first place.  Giving systemd --user unrestricted use of bpf() is
-tantamount to making the user root.  But again, see below.
+Andrii Nakryiko (14):
+  libbpf: add helpers for working with BTF types
+  libbpf: convert libbpf code to use new btf helpers
+  libbpf: add .BTF.ext offset relocation section loading
+  libbpf: implement BPF CO-RE offset relocation algorithm
+  selftests/bpf: add BPF_CORE_READ relocatable read macro
+  selftests/bpf: add CO-RE relocs testing setup
+  selftests/bpf: add CO-RE relocs struct flavors tests
+  selftests/bpf: add CO-RE relocs nesting tests
+  selftests/bpf: add CO-RE relocs array tests
+  selftests/bpf: add CO-RE relocs enum/ptr/func_proto tests
+  selftests/bpf: add CO-RE relocs modifiers/typedef tests
+  selftests/bpf: add CO-RE relocs ptr-as-array tests
+  selftests/bpf: add CO-RE relocs ints tests
+  selftests/bpf: add CO-RE relocs misc tests
 
->
-> Inside containers and inside nested containers we need to start processes
-> that will use bpf. All of the processes are trusted.
+ tools/lib/bpf/btf.c                           | 250 ++---
+ tools/lib/bpf/btf.h                           | 180 ++++
+ tools/lib/bpf/btf_dump.c                      | 136 +--
+ tools/lib/bpf/libbpf.c                        | 941 +++++++++++++++++-
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/libbpf_internal.h               | 105 ++
+ tools/testing/selftests/bpf/bpf_helpers.h     |  20 +
+ .../selftests/bpf/prog_tests/core_reloc.c     | 386 +++++++
+ .../bpf/progs/btf__core_reloc_arrays.c        |   3 +
+ .../btf__core_reloc_arrays___diff_arr_dim.c   |   3 +
+ ...btf__core_reloc_arrays___diff_arr_val_sz.c |   3 +
+ .../btf__core_reloc_arrays___err_non_array.c  |   3 +
+ ...btf__core_reloc_arrays___err_too_shallow.c |   3 +
+ .../btf__core_reloc_arrays___err_too_small.c  |   3 +
+ ..._core_reloc_arrays___err_wrong_val_type1.c |   3 +
+ ..._core_reloc_arrays___err_wrong_val_type2.c |   3 +
+ .../bpf/progs/btf__core_reloc_flavors.c       |   3 +
+ .../btf__core_reloc_flavors__err_wrong_name.c |   3 +
+ .../bpf/progs/btf__core_reloc_ints.c          |   3 +
+ .../bpf/progs/btf__core_reloc_ints___bool.c   |   3 +
+ .../btf__core_reloc_ints___err_bitfield.c     |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_16.c  |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_32.c  |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_64.c  |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_8.c   |   3 +
+ .../btf__core_reloc_ints___reverse_sign.c     |   3 +
+ .../bpf/progs/btf__core_reloc_misc.c          |   5 +
+ .../bpf/progs/btf__core_reloc_mods.c          |   3 +
+ .../progs/btf__core_reloc_mods___mod_swap.c   |   3 +
+ .../progs/btf__core_reloc_mods___typedefs.c   |   3 +
+ .../bpf/progs/btf__core_reloc_nesting.c       |   3 +
+ .../btf__core_reloc_nesting___anon_embed.c    |   3 +
+ ...f__core_reloc_nesting___dup_compat_types.c |   5 +
+ ...core_reloc_nesting___err_array_container.c |   3 +
+ ...tf__core_reloc_nesting___err_array_field.c |   3 +
+ ...e_reloc_nesting___err_dup_incompat_types.c |   4 +
+ ...re_reloc_nesting___err_missing_container.c |   3 +
+ ...__core_reloc_nesting___err_missing_field.c |   3 +
+ ..._reloc_nesting___err_nonstruct_container.c |   3 +
+ ...e_reloc_nesting___err_partial_match_dups.c |   4 +
+ .../btf__core_reloc_nesting___err_too_deep.c  |   3 +
+ .../btf__core_reloc_nesting___extra_nesting.c |   3 +
+ ..._core_reloc_nesting___struct_union_mixup.c |   3 +
+ .../bpf/progs/btf__core_reloc_primitives.c    |   3 +
+ ...f__core_reloc_primitives___diff_enum_def.c |   3 +
+ ..._core_reloc_primitives___diff_func_proto.c |   3 +
+ ...f__core_reloc_primitives___diff_ptr_type.c |   3 +
+ ...tf__core_reloc_primitives___err_non_enum.c |   3 +
+ ...btf__core_reloc_primitives___err_non_int.c |   3 +
+ ...btf__core_reloc_primitives___err_non_ptr.c |   3 +
+ .../bpf/progs/btf__core_reloc_ptr_as_arr.c    |   3 +
+ .../btf__core_reloc_ptr_as_arr___diff_sz.c    |   3 +
+ .../selftests/bpf/progs/core_reloc_types.h    | 667 +++++++++++++
+ .../bpf/progs/test_core_reloc_arrays.c        |  55 +
+ .../bpf/progs/test_core_reloc_flavors.c       |  62 ++
+ .../bpf/progs/test_core_reloc_ints.c          |  44 +
+ .../bpf/progs/test_core_reloc_kernel.c        |  36 +
+ .../bpf/progs/test_core_reloc_misc.c          |  57 ++
+ .../bpf/progs/test_core_reloc_mods.c          |  62 ++
+ .../bpf/progs/test_core_reloc_nesting.c       |  46 +
+ .../bpf/progs/test_core_reloc_primitives.c    |  43 +
+ .../bpf/progs/test_core_reloc_ptr_as_arr.c    |  30 +
+ 62 files changed, 2979 insertions(+), 280 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/core_reloc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_dim.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_val_sz.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_non_array.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_shallow.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_small.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_enum_def.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_func_proto.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_ptr_type.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_enum.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_int.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_ptr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr___diff_sz.c
+ create mode 100644 tools/testing/selftests/bpf/progs/core_reloc_types.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_primitives.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ptr_as_arr.c
 
-Trusted by whom?  In a non-nested container, the container manager
-*might* be trusted by the outside world.  In a *nested* container,
-unless the inner container management is controlled from outside the
-outer container, it's not trusted.  I don't know much about how
-Facebook's containers work, but the LXC/LXD/Podman world is moving
-very strongly toward user namespaces and maximally-untrusted
-containers, and I think bpf() should work in that context.
+-- 
+2.17.1
 
-> To solve your concern of bypassing all capable checks...
-> How about we do /dev/bpf/full_verifier first?
-> It will replace capable() checks in the verifier only.
-
-I'm not convinced that "in the verifier" is the right distinction.
-Telling administrators that some setting lets certain users bypass
-bpf() verifier checks doesn't have a clear enough meaning.  I propose,
-instead, that the current capable() checks be divided into three
-categories:
-
-a) Those that, by design, control privileged operations.  This
-includes most attach calls, but it also includes allow_ptr_leaks,
-bpf_probe_read(), and quite a few other things.  It also includes all
-of the by_id calls, I think, unless some clever modification to the
-way they worked would isolate different users' objects.  I think that
-persistent objects can do pretty much everything that by_id users
-would need, so this isn't a big deal.
-
-b) Those that protect code that is considered to be at higher risk of
-exposing security bugs.  In other words, these are things that would
-have no need for privilege if we could prove that the implementation
-was perfect.  This includes bpf2bpf, LPM, etc.
-
-c) Those that serve to prevent excessive resource usage.  This
-includes the bounded loop code (I think -- this might also be category
-(b)) and several explicit checks for program size.
-
-I suppose that the speculative execution mitigation stuff could be
-split out from (b) into its own category.
-
-Based on this, how about a different division: /dev/bpf_dangerous for
-(b) and /dev/bpf_resources for (c)?  And (a) is dealt with by
-gradually reducing the privilege needed for the important operations.
-/dev/bpf_dangerous isn't ideal in the long run though, since a lot of
-the operations in that category will probably become less dangerous as
-the code is better vetted, and people granting "dangerous" permission
-might want to restrict it to only the specific parts that they need.
-/dev/bpf_lpm, /dev/bpf2bpf, etc could work better.
-
-This type of thing actually fits quite nicely into an idea I've been
-thinking about for a while called "implicit rights". In very brief
-summary, there would be objects called /dev/rights/xyz, where xyz is
-the same of a "right".  If there is a readable object of the right
-type at the literal path "/dev/rights/xyz", then you have right xyz.
-There's a bit more flexibility on top of this.  BPF could use
-/dev/rights/bpf/maptypes/lpm and
-/dev/rights/bpf/verifier/bounded_loops, for example.  Other non-BPF
-use cases include a biggie:
-/dev/rights/namespace/create_unprivileged_userns.
-/dev/rights/bind_port/80 would be nice, too.
-
-I may have a bit of time over the next few days to actually prototype
-this.  Would you be interested in using this for BPF?
