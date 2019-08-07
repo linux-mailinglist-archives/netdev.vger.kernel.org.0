@@ -2,154 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D88DA840E7
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:40:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DB799841C7
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:46:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730417AbfHGBkQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:40:16 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:43248 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729144AbfHGBeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:09 -0400
-Received: by mail-pf1-f193.google.com with SMTP id i189so42499259pfg.10;
-        Tue, 06 Aug 2019 18:34:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=60C6UutqWDg70MnmR2wOYRHcozVv05mGJual4EWfkd0=;
-        b=a57ErTytVAxkauYkEPzZRHeGlc0u/A4U5ejAgWPi4ESjwpiFFk6hlPoBGFaPNr39C+
-         Kh0xSgXuJrsK4KZTKR2yEzoaLeUoioeGoUgaErqheNBeKc06PHRqwui84Q8EBbD2l+tL
-         nX9d4d0RSUpPYxjPCjQnBkDN0+Zv6eOTSEhKauRBsgQJexRHp+YFYc3bVaLsL+EpeITh
-         /oPeL3Ga9GujoFOOg6Eq3QUGMLurJ7MLYFEtSSTI2Z3ruqYxpiTRqopLyKlPWxV9WtYJ
-         j/nNcaVxSU6fzyomhmIYzgCq04OEkW1OTZBrVWiS6qgJ9uqJ806PfvtCbg/QGSrKMhpY
-         gQvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=60C6UutqWDg70MnmR2wOYRHcozVv05mGJual4EWfkd0=;
-        b=H+JehYMJzp2Qkflf6COAw+gFETGI+RpnOwpPq+huarvV0r2jet6wsZOW7KEQc30U1C
-         eBAUmcqi5VuxWzEOxjGOzPTVj7IljkqMCPz5r/G6FQM7v+/zdpbHNz++2G7u6gUHcWYX
-         cf2o3GUi6ymMptU/a6NtASbZbEkmI6pqVkl3feuwNYwnhlUoN4mnbZdD0Sig41cBEl2K
-         T8KizDyvQpQ8WDTXXklsZP0BeHQD1oXS4x8AgY1z6fWu/EN8ZbXlrUKiJhiz1pvPqQ+1
-         6IOAKfuNBQy2UiOzPWXEcYJ+lM5hWxsj2IRbqA3Pbiah3HMIxqfnfe1corgQd6rlsCyG
-         Waog==
-X-Gm-Message-State: APjAAAW/JQP9V2RHAcYyZ/ZJJMxRKQ9UOvmpgurfmy+h3+TEEAwNjp3v
-        iFmYaqVrKYWKKtpwgc2CSug=
-X-Google-Smtp-Source: APXvYqzZ9ri0aFEivC8E1vtnTLu0Xt+gGlbh6d5zu26K18i0vLRAS3fRLqoUWVmE7o4ev8ojfCHrHg==
-X-Received: by 2002:a17:90a:ad41:: with SMTP id w1mr5931335pjv.52.1565141648506;
-        Tue, 06 Aug 2019 18:34:08 -0700 (PDT)
-Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.06
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 18:34:08 -0700 (PDT)
-From:   john.hubbard@gmail.com
-X-Google-Original-From: jhubbard@nvidia.com
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
-        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
-        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        Alexandre Bounine <alex.bou9@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Ioan Nicu <ioan.nicu.ext@nokia.com>,
-        Kees Cook <keescook@chromium.org>,
-        Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Subject: [PATCH v3 15/41] rapidio: convert put_page() to put_user_page*()
-Date:   Tue,  6 Aug 2019 18:33:14 -0700
-Message-Id: <20190807013340.9706-16-jhubbard@nvidia.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
-References: <20190807013340.9706-1-jhubbard@nvidia.com>
+        id S1728360AbfHGBqM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:46:12 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4182 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727653AbfHGBqL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 6 Aug 2019 21:46:11 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id EF9C02DD744F68D04751;
+        Wed,  7 Aug 2019 09:46:09 +0800 (CST)
+Received: from [127.0.0.1] (10.133.213.239) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Wed, 7 Aug 2019
+ 09:46:08 +0800
+Subject: Re: [PATCH] bonding: Add vlan tx offload to hw_enc_features
+To:     Jay Vosburgh <jay.vosburgh@canonical.com>
+References: <20190805134953.63596-1-yuehaibing@huawei.com>
+ <4281.1565098884@nyx>
+CC:     <vfalico@gmail.com>, <andy@greyhouse.net>, <davem@davemloft.net>,
+        <jiri@resnulli.us>, <linux-kernel@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+From:   Yuehaibing <yuehaibing@huawei.com>
+Message-ID: <402f6b7a-779d-06f3-e248-386c06a3d97c@huawei.com>
+Date:   Wed, 7 Aug 2019 09:46:07 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
+ Thunderbird/45.2.0
 MIME-Version: 1.0
-X-NVConfidentiality: public
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <4281.1565098884@nyx>
+Content-Type: text/plain; charset="windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Hubbard <jhubbard@nvidia.com>
+On 2019/8/6 21:41, Jay Vosburgh wrote:
+> YueHaibing <yuehaibing@huawei.com> wrote:
+> 
+>> As commit 30d8177e8ac7 ("bonding: Always enable vlan tx offload")
+>> said, we should always enable bonding's vlan tx offload, pass the
+>> vlan packets to the slave devices with vlan tci, let them to handle
+>> vlan implementation.
+>>
+>> Now if encapsulation protocols like VXLAN is used, skb->encapsulation
+>> may be set, then the packet is passed to vlan devicec which based on
+> 
+> 	Typo: "devicec"
 
-For pages that were retained via get_user_pages*(), release those pages
-via the new put_user_page*() routines, instead of via put_page() or
-release_pages().
+oh, yes, thanks!
 
-This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
-("mm: introduce put_user_page*(), placeholder versions").
+> 
+>> bonding device. However in netif_skb_features(), the check of
+>> hw_enc_features:
+>>
+>> 	 if (skb->encapsulation)
+>>                 features &= dev->hw_enc_features;
+>>
+>> clears NETIF_F_HW_VLAN_CTAG_TX/NETIF_F_HW_VLAN_STAG_TX. This results
+>> in same issue in commit 30d8177e8ac7 like this:
+>>
+>> vlan_dev_hard_start_xmit
+>>  -->dev_queue_xmit
+>>    -->validate_xmit_skb
+>>      -->netif_skb_features //NETIF_F_HW_VLAN_CTAG_TX is cleared
+>>      -->validate_xmit_vlan
+>>        -->__vlan_hwaccel_push_inside //skb->tci is cleared
+>> ...
+>> --> bond_start_xmit
+>>   --> bond_xmit_hash //BOND_XMIT_POLICY_ENCAP34
+>>     --> __skb_flow_dissect // nhoff point to IP header
+>>        -->  case htons(ETH_P_8021Q)
+>>             // skb_vlan_tag_present is false, so
+>>             vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan),
+>>             //vlan point to ip header wrongly
+>>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> 
+> 	Looks good to me; should this be tagged with
+> 
+> Fixes: 278339a42a1b ("bonding: propogate vlan_features to bonding master")
+> 
+> 	as 30d8177e8ac7 was?  If not, is there an appropriate commit id?
 
-Cc: Matt Porter <mporter@kernel.crashing.org>
-Cc: Alexandre Bounine <alex.bou9@gmail.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Logan Gunthorpe <logang@deltatee.com>
-Cc: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Cc: Ioan Nicu <ioan.nicu.ext@nokia.com>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Tvrtko Ursulin <tvrtko.ursulin@intel.com>
-Signed-off-by: John Hubbard <jhubbard@nvidia.com>
----
- drivers/rapidio/devices/rio_mport_cdev.c | 9 +++------
- 1 file changed, 3 insertions(+), 6 deletions(-)
+It seems the commit was:
 
-diff --git a/drivers/rapidio/devices/rio_mport_cdev.c b/drivers/rapidio/devices/rio_mport_cdev.c
-index 8155f59ece38..0e8ea0e5a89e 100644
---- a/drivers/rapidio/devices/rio_mport_cdev.c
-+++ b/drivers/rapidio/devices/rio_mport_cdev.c
-@@ -572,14 +572,12 @@ static void dma_req_free(struct kref *ref)
- 	struct mport_dma_req *req = container_of(ref, struct mport_dma_req,
- 			refcount);
- 	struct mport_cdev_priv *priv = req->priv;
--	unsigned int i;
- 
- 	dma_unmap_sg(req->dmach->device->dev,
- 		     req->sgt.sgl, req->sgt.nents, req->dir);
- 	sg_free_table(&req->sgt);
- 	if (req->page_list) {
--		for (i = 0; i < req->nr_pages; i++)
--			put_page(req->page_list[i]);
-+		put_user_pages(req->page_list, req->nr_pages);
- 		kfree(req->page_list);
- 	}
- 
-@@ -815,7 +813,7 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
- 	struct mport_dma_req *req;
- 	struct mport_dev *md = priv->md;
- 	struct dma_chan *chan;
--	int i, ret;
-+	int ret;
- 	int nents;
- 
- 	if (xfer->length == 0)
-@@ -946,8 +944,7 @@ rio_dma_transfer(struct file *filp, u32 transfer_mode,
- 
- err_pg:
- 	if (!req->page_list) {
--		for (i = 0; i < nr_pages; i++)
--			put_page(page_list[i]);
-+		put_user_pages(page_list, nr_pages);
- 		kfree(page_list);
- 	}
- err_req:
--- 
-2.22.0
+Fixes: b2a103e6d0af ("bonding: convert to ndo_fix_features")
+
+> 
+> Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+
+
+Thanks, will send v2.
+
+> 
+> 	-J
+> 
+>> ---
+>> drivers/net/bonding/bond_main.c | 2 ++
+>> 1 file changed, 2 insertions(+)
+>>
+>> diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+>> index 02fd782..931d9d9 100644
+>> --- a/drivers/net/bonding/bond_main.c
+>> +++ b/drivers/net/bonding/bond_main.c
+>> @@ -1126,6 +1126,8 @@ static void bond_compute_features(struct bonding *bond)
+>> done:
+>> 	bond_dev->vlan_features = vlan_features;
+>> 	bond_dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
+>> +				    NETIF_F_HW_VLAN_CTAG_TX |
+>> +				    NETIF_F_HW_VLAN_STAG_TX |
+>> 				    NETIF_F_GSO_UDP_L4;
+>> 	bond_dev->mpls_features = mpls_features;
+>> 	bond_dev->gso_max_segs = gso_max_segs;
+>> -- 
+>> 2.7.4
+> 
+> ---
+> 	-Jay Vosburgh, jay.vosburgh@canonical.com
+> 
+> .
+> 
 
