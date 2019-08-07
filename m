@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C05843C2
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:38:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 237B5843C6
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:38:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbfHGFi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 01:38:27 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7532 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725972AbfHGFi0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 01:38:26 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x775c8tv023075
-        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 22:38:25 -0700
+        id S1726872AbfHGFie (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 01:38:34 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15464 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726753AbfHGFib (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 01:38:31 -0400
+Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x775bZK6004057
+        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 22:38:30 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=iOfZd7MA5zWC0DuD9d1cEk6ZzLzjYfZkHAaodBj0hnc=;
- b=DxpTOJYYYI12Ss2LwR5Dm6G8OjThVvQnvqY96rmoS4fmN9C46gBBQ73d9hpQfDtKWU6G
- sfvNe+2GalfrfSfjD9/FNZKHWfUH/gtO4fHgaHDT4zKNJ6pcTJeIu+Pn8Z2NtSInjSeM
- I3kkJpgFO4NYIeci4cx4ro9PylL6OhAFkIU= 
+ content-type; s=facebook; bh=PrE7fVjtL6vzUimZPzjDHOksYllpBA/NjxVUmD0IRVE=;
+ b=ml2YC/TRjg91e7jbfgh7lWMvGwB7MMA4SrqD19y0wUNHz3j6QCn2/RX8QPtchxRaewbg
+ uOfdCwCvsJA+lYGMcTfmHMxWgjGS3vXbzx53KS8avXWgU3Vs5Oz8HukmNvO3yF19tjYv
+ NtS7/9KRpW5264dSvg5C9Gw2B3ar1+71Hpo= 
 Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u7rn3004u-4
+        by mx0a-00082601.pphosted.com with ESMTP id 2u7jtvgwqf-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:38:25 -0700
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:38:29 -0700
 Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
+ mail.thefacebook.com (2620:10d:c081:35::129) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 6 Aug 2019 22:38:24 -0700
+ Tue, 6 Aug 2019 22:38:28 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id CD5B8861698; Tue,  6 Aug 2019 22:38:22 -0700 (PDT)
+        id 97D27861698; Tue,  6 Aug 2019 22:38:24 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,9 +38,9 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v4 bpf-next 06/14] selftests/bpf: add CO-RE relocs testing setup
-Date:   Tue, 6 Aug 2019 22:37:58 -0700
-Message-ID: <20190807053806.1534571-7-andriin@fb.com>
+Subject: [PATCH v4 bpf-next 07/14] selftests/bpf: add CO-RE relocs struct flavors tests
+Date:   Tue, 6 Aug 2019 22:37:59 -0700
+Message-ID: <20190807053806.1534571-8-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190807053806.1534571-1-andriin@fb.com>
 References: <20190807053806.1534571-1-andriin@fb.com>
@@ -60,161 +60,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add CO-RE relocation test runner. Add one simple test validating that
-libbpf's logic for searching for kernel image and loading BTF out of it
-works.
+Add tests verifying that BPF program can use various struct/union
+"flavors" to extract data from the same target struct/union.
 
 Signed-off-by: Andrii Nakryiko <andriin@fb.com>
 Acked-by: Song Liu <songliubraving@fb.com>
 ---
- .../selftests/bpf/prog_tests/core_reloc.c     | 130 ++++++++++++++++++
- .../bpf/progs/test_core_reloc_kernel.c        |  36 +++++
- 2 files changed, 166 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/core_reloc.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
+ .../selftests/bpf/prog_tests/core_reloc.c     | 34 ++++++++++
+ .../bpf/progs/btf__core_reloc_flavors.c       |  3 +
+ .../btf__core_reloc_flavors__err_wrong_name.c |  3 +
+ .../selftests/bpf/progs/core_reloc_types.h    | 15 +++++
+ .../bpf/progs/test_core_reloc_flavors.c       | 62 +++++++++++++++++++
+ 5 files changed, 117 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
+ create mode 100644 tools/testing/selftests/bpf/progs/core_reloc_types.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
 
 diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-new file mode 100644
-index 000000000000..f31cede82112
---- /dev/null
+index f31cede82112..995d5e9fd4c3 100644
+--- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
 +++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -0,0 +1,130 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
+@@ -1,5 +1,32 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #include <test_progs.h>
++#include "progs/core_reloc_types.h"
 +
-+struct core_reloc_test_case {
-+	const char *case_name;
-+	const char *bpf_obj_file;
-+	const char *btf_src_file;
-+	const char *input;
-+	int input_len;
-+	const char *output;
-+	int output_len;
-+	bool fails;
-+};
++#define STRUCT_TO_CHAR_PTR(struct_name) (const char *)&(struct struct_name)
 +
-+static struct core_reloc_test_case test_cases[] = {
-+	/* validate we can find kernel image and use its BTF for relocs */
-+	{
-+		.case_name = "kernel",
-+		.bpf_obj_file = "test_core_reloc_kernel.o",
-+		.btf_src_file = NULL, /* load from /lib/modules/$(uname -r) */
-+		.input = "",
-+		.input_len = 0,
-+		.output = "\1", /* true */
-+		.output_len = 1,
-+	},
-+};
-+
-+struct data {
-+	char in[256];
-+	char out[256];
-+};
-+
-+void test_core_reloc(void)
-+{
-+	const char *probe_name = "raw_tracepoint/sys_enter";
-+	struct bpf_object_load_attr load_attr = {};
-+	struct core_reloc_test_case *test_case;
-+	int err, duration = 0, i, equal;
-+	struct bpf_link *link = NULL;
-+	struct bpf_map *data_map;
-+	struct bpf_program *prog;
-+	struct bpf_object *obj;
-+	const int zero = 0;
-+	struct data data;
-+
-+	for (i = 0; i < ARRAY_SIZE(test_cases); i++) {
-+		test_case = &test_cases[i];
-+
-+		if (!test__start_subtest(test_case->case_name))
-+			continue;
-+
-+		obj = bpf_object__open(test_case->bpf_obj_file);
-+		if (CHECK(IS_ERR_OR_NULL(obj), "obj_open",
-+			  "failed to open '%s': %ld\n",
-+			  test_case->bpf_obj_file, PTR_ERR(obj)))
-+			continue;
-+
-+		prog = bpf_object__find_program_by_title(obj, probe_name);
-+		if (CHECK(!prog, "find_probe",
-+			  "prog '%s' not found\n", probe_name))
-+			goto cleanup;
-+		bpf_program__set_type(prog, BPF_PROG_TYPE_RAW_TRACEPOINT);
-+
-+		load_attr.obj = obj;
-+		load_attr.log_level = 0;
-+		load_attr.target_btf_path = test_case->btf_src_file;
-+		err = bpf_object__load_xattr(&load_attr);
-+		if (test_case->fails) {
-+			CHECK(!err, "obj_load_fail",
-+			      "should fail to load prog '%s'\n", probe_name);
-+			goto cleanup;
-+		} else {
-+			if (CHECK(err, "obj_load",
-+				  "failed to load prog '%s': %d\n",
-+				  probe_name, err))
-+				goto cleanup;
-+		}
-+
-+		link = bpf_program__attach_raw_tracepoint(prog, "sys_enter");
-+		if (CHECK(IS_ERR(link), "attach_raw_tp", "err %ld\n",
-+			  PTR_ERR(link)))
-+			goto cleanup;
-+
-+		data_map = bpf_object__find_map_by_name(obj, "test_cor.bss");
-+		if (CHECK(!data_map, "find_data_map", "data map not found\n"))
-+			goto cleanup;
-+
-+		memset(&data, 0, sizeof(data));
-+		memcpy(data.in, test_case->input, test_case->input_len);
-+
-+		err = bpf_map_update_elem(bpf_map__fd(data_map),
-+					  &zero, &data, 0);
-+		if (CHECK(err, "update_data_map",
-+			  "failed to update .data map: %d\n", err))
-+			goto cleanup;
-+
-+		/* trigger test run */
-+		usleep(1);
-+
-+		err = bpf_map_lookup_elem(bpf_map__fd(data_map), &zero, &data);
-+		if (CHECK(err, "get_result",
-+			  "failed to get output data: %d\n", err))
-+			goto cleanup;
-+
-+		equal = memcmp(data.out, test_case->output,
-+			       test_case->output_len) == 0;
-+		if (CHECK(!equal, "check_result",
-+			  "input/output data don't match\n")) {
-+			int j;
-+
-+			for (j = 0; j < test_case->input_len; j++) {
-+				test__printf("input byte #%d: 0x%02hhx\n",
-+					     j, test_case->input[j]);
-+			}
-+			for (j = 0; j < test_case->output_len; j++) {
-+				test__printf("output byte #%d: EXP 0x%02hhx GOT 0x%02hhx\n",
-+					     j, test_case->output[j],
-+					     data.out[j]);
-+			}
-+			goto cleanup;
-+		}
-+
-+cleanup:
-+		if (!IS_ERR_OR_NULL(link)) {
-+			bpf_link__destroy(link);
-+			link = NULL;
-+		}
-+		bpf_object__close(obj);
-+	}
++#define FLAVORS_DATA(struct_name) STRUCT_TO_CHAR_PTR(struct_name) {	\
++	.a = 42,							\
++	.b = 0xc001,							\
++	.c = 0xbeef,							\
 +}
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
++
++#define FLAVORS_CASE_COMMON(name)					\
++	.case_name = #name,						\
++	.bpf_obj_file = "test_core_reloc_flavors.o",			\
++	.btf_src_file = "btf__core_reloc_" #name ".o"			\
++
++#define FLAVORS_CASE(name) {						\
++	FLAVORS_CASE_COMMON(name),					\
++	.input = FLAVORS_DATA(core_reloc_##name),			\
++	.input_len = sizeof(struct core_reloc_##name),			\
++	.output = FLAVORS_DATA(core_reloc_flavors),			\
++	.output_len = sizeof(struct core_reloc_flavors),		\
++}
++
++#define FLAVORS_ERR_CASE(name) {					\
++	FLAVORS_CASE_COMMON(name),					\
++	.fails = true,							\
++}
+ 
+ struct core_reloc_test_case {
+ 	const char *case_name;
+@@ -23,6 +50,13 @@ static struct core_reloc_test_case test_cases[] = {
+ 		.output = "\1", /* true */
+ 		.output_len = 1,
+ 	},
++
++	/* validate BPF program can use multiple flavors to match against
++	 * single target BTF type
++	 */
++	FLAVORS_CASE(flavors),
++
++	FLAVORS_ERR_CASE(flavors__err_wrong_name),
+ };
+ 
+ struct data {
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
 new file mode 100644
-index 000000000000..37e02aa3f0c8
+index 000000000000..b74455b91227
 --- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
-@@ -0,0 +1,36 @@
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_flavors x) {}
+diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
+new file mode 100644
+index 000000000000..7b6035f86ee6
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
+@@ -0,0 +1,3 @@
++#include "core_reloc_types.h"
++
++void f(struct core_reloc_flavors__err_wrong_name x) {}
+diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
+new file mode 100644
+index 000000000000..33b0c6a61912
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
+@@ -0,0 +1,15 @@
++/*
++ * FLAVORS
++ */
++struct core_reloc_flavors {
++	int a;
++	int b;
++	int c;
++};
++
++/* this is not a flavor, as it doesn't have triple underscore */
++struct core_reloc_flavors__err_wrong_name {
++	int a;
++	int b;
++	int c;
++};
+diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c b/tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
+new file mode 100644
+index 000000000000..9fda73e87972
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
+@@ -0,0 +1,62 @@
 +// SPDX-License-Identifier: GPL-2.0
 +// Copyright (c) 2019 Facebook
 +
@@ -229,24 +187,50 @@ index 000000000000..37e02aa3f0c8
 +	char out[256];
 +} data;
 +
-+struct task_struct {
-+	int pid;
-+	int tgid;
++struct core_reloc_flavors {
++	int a;
++	int b;
++	int c;
++};
++
++/* local flavor with reversed layout */
++struct core_reloc_flavors___reversed {
++	int c;
++	int b;
++	int a;
++};
++
++/* local flavor with nested/overlapping layout */
++struct core_reloc_flavors___weird {
++	struct {
++		int b;
++	};
++	/* a and c overlap in local flavor, but this should still work
++	 * correctly with target original flavor
++	 */
++	union {
++		int a;
++		int c;
++	};
 +};
 +
 +SEC("raw_tracepoint/sys_enter")
-+int test_core_kernel(void *ctx)
++int test_core_flavors(void *ctx)
 +{
-+	struct task_struct *task = (void *)bpf_get_current_task();
-+	uint64_t pid_tgid = bpf_get_current_pid_tgid();
-+	int pid, tgid;
++	struct core_reloc_flavors *in_orig = (void *)&data.in;
++	struct core_reloc_flavors___reversed *in_rev = (void *)&data.in;
++	struct core_reloc_flavors___weird *in_weird = (void *)&data.in;
++	struct core_reloc_flavors *out = (void *)&data.out;
 +
-+	if (BPF_CORE_READ(&pid, &task->pid) ||
-+	    BPF_CORE_READ(&tgid, &task->tgid))
++	/* read a using weird layout */
++	if (BPF_CORE_READ(&out->a, &in_weird->a))
 +		return 1;
-+
-+	/* validate pid + tgid matches */
-+	data.out[0] = (((uint64_t)pid << 32) | tgid) == pid_tgid;
++	/* read b using reversed layout */
++	if (BPF_CORE_READ(&out->b, &in_rev->b))
++		return 1;
++	/* read c using original layout */
++	if (BPF_CORE_READ(&out->c, &in_orig->c))
++		return 1;
 +
 +	return 0;
 +}
