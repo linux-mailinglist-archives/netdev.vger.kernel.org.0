@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4007283F4C
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:35:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FD0B83F91
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:35:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730145AbfHGBew (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:34:52 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38796 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730025AbfHGBeq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:46 -0400
-Received: by mail-pg1-f195.google.com with SMTP id z14so5311476pga.5;
-        Tue, 06 Aug 2019 18:34:45 -0700 (PDT)
+        id S1730305AbfHGBfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:35:38 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:40834 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730010AbfHGBes (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:48 -0400
+Received: by mail-pg1-f196.google.com with SMTP id w10so42542887pgj.7;
+        Tue, 06 Aug 2019 18:34:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=30MQZ7ywyXKAPoZ0MqYExKYsjkeLdKEHUByfnmRZCb0=;
-        b=g67RvuXxl/7UgwJ5Nsn5m7mCWAd1eJK19OdXPfHISavNg0/hlxqTRWRiZsiObbIxd1
-         z7nTlGaqHPYV4ywgcbsmss6gPc+YHifTLpOQY0K91PQUhyOYukJschqLsfaVLze8bLh+
-         aV53NaTAotE5e+jR4GjhaqKTLNaydraqrAumktndCtlF4SiNrqRjpIehSehjFa47DX/L
-         ADmdLxhsKJt3PHVHlUoQeH6o3x8T/NrnTA5b/OM8c9NkahQxV1Hajc7XXSthUzvuQiX4
-         tXYs8SD3Ckew9oHpIJy9DZatkhmnngs/Je/q+s3mKD0DprEGB/SuCd9kYNKpjjLfUk8q
-         m4IA==
+        bh=H0Etnn7JHR8H7TocLV05oLauZ77NAi3PGTTr9FTaKTw=;
+        b=eS3YB7ZT4YXwuCcgQbB/xbD+n10dBypw+iZZVQIUwi66vhDfcSIp39QkGkG7an7OJl
+         OiukENJvNGRlLtpSvoOFB7XysgcSlBHri3dSlfLLl2JoybffI8wnImTZeHQEdnORxVLa
+         EBXGZhIf+YSKbjfkupoovScD765pOoXW+wmQ3q47Y78G67P4azJFj7Z03p0IlFla0TF0
+         WGS9epzDu3lNP0Hir82G8T/Dsucq+VMZQ717BtULEmOp/zZ+HeTgTfaZfag+K5X0r5bl
+         +CKlJZyT3xTot1t0x6sX+RloIZlzVtbmPtAqvydRbxbh9+Ay6+ppy+Ss6WRVBPk23UrF
+         ZgCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=30MQZ7ywyXKAPoZ0MqYExKYsjkeLdKEHUByfnmRZCb0=;
-        b=f6QyoaEfbxuo9tTZknFSAJWqbXuIhDFPUwVE3hdKY/KhN0tssL28PgEds41wQe8rQ7
-         Mc2KMTcGIcN1oMTYw7EZDVWkX/ES3FEIFu5dyCFNbtAK2m0mxNL5X3YQMi3n0mMloYCf
-         hrxC1dfEzBW06UGbsrqBcqaaSnrzpJ7sVHF7/fuJjUabtXAChd5EYTU+261qU2AVgHek
-         mZbFsyWomhkVZqlLnAlgDt9jk5QdzHy25qQp3HMFLcHa+wASsDrLt+4o9RN5SQqYnb4f
-         nsBi2Quz0YLewB+ul/h2CVL7j+PDv6MgKZPozLm7HNNj3WHNOpEbJZtwwz/xcJLEUVnc
-         4OIg==
-X-Gm-Message-State: APjAAAVn0m9D4Y7TjhBzxMxE5E88b1AlbaoYmKoT6aJKB1EXWAHIYp6q
-        sy2AOcgFeJv4bhOy16WhWM0=
-X-Google-Smtp-Source: APXvYqw4IyvxT+a447mG7S7T32nq/0vx/OylsLzm55tU7UOjf2NCx+Dmal9oDg9eNuXVr0J1x2ZUyQ==
-X-Received: by 2002:a63:36cc:: with SMTP id d195mr5452828pga.157.1565141685421;
-        Tue, 06 Aug 2019 18:34:45 -0700 (PDT)
+        bh=H0Etnn7JHR8H7TocLV05oLauZ77NAi3PGTTr9FTaKTw=;
+        b=fSJ2AsSOXC0LDl/D/lBc6CzNf4M1WdOxZm1Vt0frrTx+zBGvKl7bgvLvDtyhkboebH
+         fptzv6R8IhMcZkVwxmjQo1g+gWV+RYsD1evXUJB/1ulkagtGsA65lnK46DLV84UqIMJz
+         OuuDK2sUbKjNoFitVLK0NRS+O7XiWfvBuWenhcT1zDkRpczvuCCYGwBYctBeV7Q6R3Xe
+         pP6/EnTNOkLBhidjWKWgVq9zbnkeT6i5BTjIRIMTx8uIzKIcuxMwiYwowuzqZ9vXyHpH
+         EcIVnzZqngEHm1fKStnApLrRffNFHsLJOONy7Ikd4koQB44iHAuq7/6+b1eo2oqKbQQT
+         0Frw==
+X-Gm-Message-State: APjAAAXNMcwFSP0vdANjL5DkOeyIha8hAu+NAfeMQuLX9ZV1XmHZOHMJ
+        XqxLU+aQ1IKUIhT+ktvDWgs=
+X-Google-Smtp-Source: APXvYqzWWP/A0o9J09jCJjajCJWgGO/EPyZUANiBcpDufZXSuOwgzfu98JYNHWmK3CJ1oF9MD+qnUg==
+X-Received: by 2002:aa7:8201:: with SMTP id k1mr6559788pfi.97.1565141687010;
+        Tue, 06 Aug 2019 18:34:47 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.43
+        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.45
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 18:34:44 -0700 (PDT)
+        Tue, 06 Aug 2019 18:34:46 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,17 +67,17 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH v3 38/41] powerpc: convert put_page() to put_user_page*()
-Date:   Tue,  6 Aug 2019 18:33:37 -0700
-Message-Id: <20190807013340.9706-39-jhubbard@nvidia.com>
+        Daniel Black <daniel@linux.ibm.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Mike Kravetz <mike.kravetz@oracle.com>
+Subject: [PATCH v3 39/41] mm/mlock.c: convert put_page() to put_user_page*()
+Date:   Tue,  6 Aug 2019 18:33:38 -0700
+Message-Id: <20190807013340.9706-40-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
 References: <20190807013340.9706-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-NVConfidentiality: public
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -94,138 +94,48 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Note that this effectively changes the code's behavior in
-mm_iommu_unpin(): it now ultimately calls set_page_dirty_lock(),
-instead of set_page_dirty(). This is probably more accurate.
-
-As Christoph Hellwig put it, "set_page_dirty() is only safe if we are
-dealing with a file backed page where we have reference on the inode it
-hangs off." [1]
-
-[1] https://lore.kernel.org/r/20190723153640.GB720@lst.de
-
-Cc: Benjamin Herrenschmidt <benh@kernel.crashing.org>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Michael Ellerman <mpe@ellerman.id.au>
-Cc: linuxppc-dev@lists.ozlabs.org
+Cc: Dan Williams <dan.j.williams@intel.com>
+Cc: Daniel Black <daniel@linux.ibm.com>
+Cc: Jan Kara <jack@suse.cz>
+Cc: Jérôme Glisse <jglisse@redhat.com>
+Cc: Matthew Wilcox <willy@infradead.org>
+Cc: Mike Kravetz <mike.kravetz@oracle.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- arch/powerpc/kvm/book3s_64_mmu_hv.c    |  4 ++--
- arch/powerpc/kvm/book3s_64_mmu_radix.c | 19 ++++++++++++++-----
- arch/powerpc/kvm/e500_mmu.c            |  3 +--
- arch/powerpc/mm/book3s64/iommu_api.c   | 11 +++++------
- 4 files changed, 22 insertions(+), 15 deletions(-)
+ mm/mlock.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_64_mmu_hv.c b/arch/powerpc/kvm/book3s_64_mmu_hv.c
-index 9a75f0e1933b..18646b738ce1 100644
---- a/arch/powerpc/kvm/book3s_64_mmu_hv.c
-+++ b/arch/powerpc/kvm/book3s_64_mmu_hv.c
-@@ -731,7 +731,7 @@ int kvmppc_book3s_hv_page_fault(struct kvm_run *run, struct kvm_vcpu *vcpu,
- 		 * we have to drop the reference on the correct tail
- 		 * page to match the get inside gup()
- 		 */
--		put_page(pages[0]);
-+		put_user_page(pages[0]);
+diff --git a/mm/mlock.c b/mm/mlock.c
+index a90099da4fb4..b980e6270e8a 100644
+--- a/mm/mlock.c
++++ b/mm/mlock.c
+@@ -345,7 +345,7 @@ static void __munlock_pagevec(struct pagevec *pvec, struct zone *zone)
+ 				get_page(page); /* for putback_lru_page() */
+ 				__munlock_isolated_page(page);
+ 				unlock_page(page);
+-				put_page(page); /* from follow_page_mask() */
++				put_user_page(page); /* from follow_page_mask() */
+ 			}
+ 		}
  	}
- 	return ret;
- 
-@@ -1206,7 +1206,7 @@ void kvmppc_unpin_guest_page(struct kvm *kvm, void *va, unsigned long gpa,
- 	unsigned long gfn;
- 	int srcu_idx;
- 
--	put_page(page);
-+	put_user_page(page);
- 
- 	if (!dirty)
- 		return;
-diff --git a/arch/powerpc/kvm/book3s_64_mmu_radix.c b/arch/powerpc/kvm/book3s_64_mmu_radix.c
-index 2d415c36a61d..f53273fbfa2d 100644
---- a/arch/powerpc/kvm/book3s_64_mmu_radix.c
-+++ b/arch/powerpc/kvm/book3s_64_mmu_radix.c
-@@ -821,8 +821,12 @@ int kvmppc_book3s_instantiate_page(struct kvm_vcpu *vcpu,
- 	 */
- 	if (!ptep) {
- 		local_irq_enable();
--		if (page)
--			put_page(page);
-+		if (page) {
-+			if (upgrade_write)
-+				put_user_page(page);
-+			else
-+				put_page(page);
-+		}
- 		return RESUME_GUEST;
- 	}
- 	pte = *ptep;
-@@ -870,9 +874,14 @@ int kvmppc_book3s_instantiate_page(struct kvm_vcpu *vcpu,
- 		*levelp = level;
- 
- 	if (page) {
--		if (!ret && (pte_val(pte) & _PAGE_WRITE))
--			set_page_dirty_lock(page);
--		put_page(page);
-+		bool dirty = !ret && (pte_val(pte) & _PAGE_WRITE);
-+		if (upgrade_write)
-+			put_user_pages_dirty_lock(&page, 1, dirty);
-+		else {
-+			if (dirty)
-+				set_page_dirty_lock(page);
-+			put_page(page);
-+		}
- 	}
- 
- 	/* Increment number of large pages if we (successfully) inserted one */
-diff --git a/arch/powerpc/kvm/e500_mmu.c b/arch/powerpc/kvm/e500_mmu.c
-index 2d910b87e441..67bb8d59d4b1 100644
---- a/arch/powerpc/kvm/e500_mmu.c
-+++ b/arch/powerpc/kvm/e500_mmu.c
-@@ -850,8 +850,7 @@ int kvm_vcpu_ioctl_config_tlb(struct kvm_vcpu *vcpu,
-  free_privs_first:
- 	kfree(privs[0]);
-  put_pages:
--	for (i = 0; i < num_pages; i++)
--		put_page(pages[i]);
-+	put_user_pages(pages, num_pages);
-  free_pages:
- 	kfree(pages);
- 	return ret;
-diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s64/iommu_api.c
-index b056cae3388b..e126193ba295 100644
---- a/arch/powerpc/mm/book3s64/iommu_api.c
-+++ b/arch/powerpc/mm/book3s64/iommu_api.c
-@@ -170,9 +170,8 @@ static long mm_iommu_do_alloc(struct mm_struct *mm, unsigned long ua,
- 	return 0;
- 
- free_exit:
--	/* free the reference taken */
--	for (i = 0; i < pinned; i++)
--		put_page(mem->hpages[i]);
-+	/* free the references taken */
-+	put_user_pages(mem->hpages, pinned);
- 
- 	vfree(mem->hpas);
- 	kfree(mem);
-@@ -203,6 +202,7 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
- {
- 	long i;
- 	struct page *page = NULL;
-+	bool dirty = false;
- 
- 	if (!mem->hpas)
- 		return;
-@@ -215,10 +215,9 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
- 		if (!page)
- 			continue;
- 
--		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
--			SetPageDirty(page);
-+		dirty = mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY;
- 
--		put_page(page);
-+		put_user_pages_dirty_lock(&page, 1, dirty);
- 		mem->hpas[i] = 0;
- 	}
- }
+@@ -467,7 +467,7 @@ void munlock_vma_pages_range(struct vm_area_struct *vma,
+ 		if (page && !IS_ERR(page)) {
+ 			if (PageTransTail(page)) {
+ 				VM_BUG_ON_PAGE(PageMlocked(page), page);
+-				put_page(page); /* follow_page_mask() */
++				put_user_page(page); /* follow_page_mask() */
+ 			} else if (PageTransHuge(page)) {
+ 				lock_page(page);
+ 				/*
+@@ -478,7 +478,7 @@ void munlock_vma_pages_range(struct vm_area_struct *vma,
+ 				 */
+ 				page_mask = munlock_vma_page(page);
+ 				unlock_page(page);
+-				put_page(page); /* follow_page_mask() */
++				put_user_page(page); /* follow_page_mask() */
+ 			} else {
+ 				/*
+ 				 * Non-huge pages are handled in batches via
 -- 
 2.22.0
 
