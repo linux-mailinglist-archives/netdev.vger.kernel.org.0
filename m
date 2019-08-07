@@ -2,104 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7406855C0
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 00:25:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 120E3855EA
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 00:39:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389082AbfHGWZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 18:25:52 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:43722 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387536AbfHGWZw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 18:25:52 -0400
-Received: by mail-qt1-f194.google.com with SMTP id w17so9466495qto.10;
-        Wed, 07 Aug 2019 15:25:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4ZReaImTgpx+g4tKexVN6Z5xzwt1fsbk5bazHurmrjE=;
-        b=EuQeDNVacNZDdOwyVaNnHoGiUTmYXApm+RVqF1h+a3y1NxfGtKuLAE+KZ2n7W8JFhX
-         +oUVZYmaZrNHqaLpr9hfdByqqEaB7XG2b5MqnRLLQzFUSGsLwqAo3w08inTLqrhYO4Ir
-         Z3/qRG0rYXcixUtIMWneynkhirVo1icqY8rREKhSV1LOfvHj2BdMNdk427MdfZ/T8c8C
-         sNy4N6XXctp++LcEBv9j2sgtI/Orn83LwRP5yXh1hRQ13U1JEFuyQN5EgqbNxCJhzDVC
-         3ND2Rf0DhDjyx3VJHIvAqNravrUXJQiXksuL2YwR2UX8Kl7gOnkR1wRcg1lPvpiKpk1c
-         WfNQ==
+        id S2387802AbfHGWj2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 18:39:28 -0400
+Received: from outbound.smtp.vt.edu ([198.82.183.121]:49426 "EHLO
+        omr1.cc.vt.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729753AbfHGWj2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 18:39:28 -0400
+Received: from mr1.cc.vt.edu (inbound.smtp.ipv6.vt.edu [IPv6:2607:b400:92:9:0:9d:8fcb:4116])
+        by omr1.cc.vt.edu (8.14.4/8.14.4) with ESMTP id x77MdRsr010531
+        for <netdev@vger.kernel.org>; Wed, 7 Aug 2019 18:39:27 -0400
+Received: from mail-qt1-f200.google.com (mail-qt1-f200.google.com [209.85.160.200])
+        by mr1.cc.vt.edu (8.14.7/8.14.7) with ESMTP id x77MdM7K009135
+        for <netdev@vger.kernel.org>; Wed, 7 Aug 2019 18:39:27 -0400
+Received: by mail-qt1-f200.google.com with SMTP id k31so83843716qte.13
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 15:39:27 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4ZReaImTgpx+g4tKexVN6Z5xzwt1fsbk5bazHurmrjE=;
-        b=uXVTSPr4jFbb6/ivp0FEsFolpllm0tyKLTQWQaIOD2hQSrlpa9DTfCaWTVQaXr2VTB
-         FhPJAEsqq1zBa2ViCoNBWOQJkpqEVCP8IvfJjjjvxlCBLNLBHK/9z9zmXqDW55bneFYE
-         Nh+h7GpqTj4JlbeCf342PkyajgmqX7QjMCGTbkJKPt+S4KP+ybODwAigZorwXLn0gXto
-         X03fQubwYtKNrJqLRWZzhWyCyL0vdjQKzxiHo0xXA6Rsi379ZN0LbqpYYX3bOqrVjKSq
-         SJXQgDb1zywwZ3n8iVEZAhmeCo80SnocbPWGO8DbbYa2w5y0XspwngPVCBLEktDG61f2
-         RVsQ==
-X-Gm-Message-State: APjAAAU/7n1POPb80e7/I/DpRBBE6bJtNrADWVpmSh25LcPhRaMrA7+4
-        rLwS7yqTe7vGeSwvenWt28lCoYtF/9LfLvr8tE+EfAE6EwgLTA7a
-X-Google-Smtp-Source: APXvYqx71kmx3NQ0ZwtFuJVtLYOIAxgbfZkpvc8CHhEbT8SYVnE8H7bTIoOLXA8+dGSZwMzMeipqqZgLuqhx1EfDiLw=
-X-Received: by 2002:a05:6214:1306:: with SMTP id a6mr8401145qvv.38.1565216751560;
- Wed, 07 Aug 2019 15:25:51 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190807214001.872988-1-andriin@fb.com> <20190807214001.872988-5-andriin@fb.com>
- <20190807221649.fiqo2kqj73qjcakr@ast-mbp>
-In-Reply-To: <20190807221649.fiqo2kqj73qjcakr@ast-mbp>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 7 Aug 2019 15:25:40 -0700
-Message-ID: <CAEf4BzZuqPLJ=ModfYqKpU6bDMqZpt_NfDZyPTCOp=Ws0MnAhA@mail.gmail.com>
-Subject: Re: [PATCH v6 bpf-next 04/14] libbpf: implement BPF CO-RE offset
- relocation algorithm
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>, Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:sender:from:to:cc:subject:mime-version:date
+         :message-id;
+        bh=r0uwyFJeFvH4bAs10mxKtLGquaNY41+jLpUXPC0EZek=;
+        b=Bla+5XYH4RG6IdRK7paqP28skmkiDLSVCOSAtQoh/ApMj7L88toos6t20JJJ1I5UBK
+         ZO/F6Vlz1py3Isdy9BqqoVP2hhR/2bIF3jws90tFAUY2iHqD07acU3TNESDwZglnHSgH
+         Q3o9xVzktlN82n4q5fQebK06Zzf+Vs4tGA01AFgJN8OUWK9YYa12LBdBcRebzutK6dBs
+         FRVQdCgNi9o2366XK/gyruN2Ji0s2jcsV24xZ717PZsUhP/VDWrnWHYfypW10CFWlZlj
+         lvOZdkC/+FJJVt34TZAjbw4N2As2KwHcP1QcGoNVbYtN5cYOw6pE8IMiiPv8aJ3HkBWq
+         55UA==
+X-Gm-Message-State: APjAAAV1466U0L0VtDbwTcYjKiXRh03b2c2wxVYD/knv6SQuCXlA5boA
+        MZFlqZLmsWWMRaDJgpbVwAT4sH7XwU5H49wGsQgw+8pd9UJiDdoxtjJa63s/nbv9Xha/n/ozhqM
+        iU/j0nCsFR/8g7zZp2zSO7s9bB6Q=
+X-Received: by 2002:ac8:38a8:: with SMTP id f37mr10506216qtc.150.1565217562213;
+        Wed, 07 Aug 2019 15:39:22 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyq2M4kYBk/DP7a4+BlSJvKHDCJm1Prg2gLCqkUE118sy7EEDEjeDyH6Ho3jOyIRsTfF2KH2g==
+X-Received: by 2002:ac8:38a8:: with SMTP id f37mr10506192qtc.150.1565217561898;
+        Wed, 07 Aug 2019 15:39:21 -0700 (PDT)
+Received: from turing-police ([2601:5c0:c001:4341::359])
+        by smtp.gmail.com with ESMTPSA id w24sm54135617qtb.35.2019.08.07.15.39.20
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 07 Aug 2019 15:39:20 -0700 (PDT)
+From:   "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <valdis.kletnieks@vt.edu>
+X-Google-Original-From: "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <Valdis.Kletnieks@vt.edu>
+X-Mailer: exmh version 2.9.0 11/07/2018 with nmh-1.7+dev
+To:     Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>
+cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Fix non-kerneldoc comment in realtek/rtlwifi/usb.c
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Date:   Wed, 07 Aug 2019 18:39:20 -0400
+Message-ID: <5924.1565217560@turing-police>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 7, 2019 at 3:16 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Wed, Aug 07, 2019 at 02:39:51PM -0700, Andrii Nakryiko wrote:
-> > This patch implements the core logic for BPF CO-RE offsets relocations.
-> > Every instruction that needs to be relocated has corresponding
-> > bpf_offset_reloc as part of BTF.ext. Relocations are performed by trying
-> > to match recorded "local" relocation spec against potentially many
-> > compatible "target" types, creating corresponding spec. Details of the
-> > algorithm are noted in corresponding comments in the code.
-> >
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > Acked-by: Song Liu <songliubraving@fb.com>
-> ...
-> > +static struct btf *bpf_core_find_kernel_btf(void)
-> > +{
-> > +     const char *locations[] = {
-> > +             "/lib/modules/%1$s/vmlinux-%1$s",
-> > +             "/usr/lib/modules/%1$s/kernel/vmlinux",
-> > +     };
->
-> the vmlinux finding logic didn't work out of the box for me.
-> My vmlinux didn't have -`uname -r` suffix.
-> Probably worth adding /boot/vmlinux-uname too.
+Fix spurious warning message when building with W=1:
 
-Yeah, there doesn't appear to be a consensus about standard location.
-For completeness, I'll add a set of paths perf is using in follow-up
-patch. But overall this mess with searching for vmlinux is one of
-motivational factors for https://patchwork.ozlabs.org/patch/1143622/,
-which should fix this problem.
+  CC [M]  drivers/net/wireless/realtek/rtlwifi/usb.o
+drivers/net/wireless/realtek/rtlwifi/usb.c:243: warning: Cannot understand  * on line 243 - I thought it was a doc line
+drivers/net/wireless/realtek/rtlwifi/usb.c:760: warning: Cannot understand  * on line 760 - I thought it was a doc line
+drivers/net/wireless/realtek/rtlwifi/usb.c:790: warning: Cannot understand  * on line 790 - I thought it was a doc line
 
-> May be vmlinuz can have BTF as well?
+Change the comment so gcc doesn't think it's a kerneldoc comment block
 
-Probably, but it might be too expensive to extract it? Either way,
-once .BTF is loadable inside kernel, there won't be a need to search
-for vmlinux/vmlinux location.
+Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
 
->
-> Overall looks great. Applied to bpf-next. Thanks!
->
+diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+index e24fda5e9087..9478cc0d4f8b 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/usb.c
++++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+@@ -239,7 +239,7 @@ static void _rtl_usb_io_handler_release(struct ieee80211_hw *hw)
+ 	mutex_destroy(&rtlpriv->io.bb_mutex);
+ }
+ 
+-/**
++/*
+  *
+  *	Default aggregation handler. Do nothing and just return the oldest skb.
+  */
+@@ -756,7 +756,7 @@ static int rtl_usb_start(struct ieee80211_hw *hw)
+ 	return err;
+ }
+ 
+-/**
++/*
+  *
+  *
+  */
+@@ -786,7 +786,7 @@ static void rtl_usb_cleanup(struct ieee80211_hw *hw)
+ 	usb_kill_anchored_urbs(&rtlusb->tx_submitted);
+ }
+ 
+-/**
++/*
+  *
+  * We may add some struct into struct rtl_usb later. Do deinit here.
+  *
 
-Thanks!
