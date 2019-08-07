@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75FAE8498F
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 12:32:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 483A784993
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 12:32:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728742AbfHGKb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 06:31:57 -0400
-Received: from new1-smtp.messagingengine.com ([66.111.4.221]:37435 "EHLO
+        id S1727175AbfHGKb7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 06:31:59 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:36099 "EHLO
         new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729495AbfHGKbz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 06:31:55 -0400
+        by vger.kernel.org with ESMTP id S1729568AbfHGKb5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 06:31:57 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 58BFC15EB;
-        Wed,  7 Aug 2019 06:31:54 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id D21581674;
+        Wed,  7 Aug 2019 06:31:56 -0400 (EDT)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 07 Aug 2019 06:31:54 -0400
+  by compute3.internal (MEProxy); Wed, 07 Aug 2019 06:31:56 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=NEpfo1sARwye2Rtp6K2gNB6AHArBy4NgIsnRVq+Yqcc=; b=YVCLtMO/
-        DX9OGrZpckIY8YJj5Hy24B3cQelSfn7vOzJTMcGRJCDCppe8d0jms9pS8OBVuDlJ
-        PEayfuey2EXixvOMt8oqjNJziH4WUPafNHJ9SDYcylfSHPTxshgLWxeqwmjaPvyt
-        dbS118uOX9vx6S66D5NFvbbRPebbJfqV4K75+zRbyaR4JuIJLfxNKaWbIeBblA28
-        x6xVuek2fGdnte49VHQHUrDRI8vcOTMfbmvANNTuhcHKkN1RLqZT9MCYOTt9QZiR
-        yJlCVf48HuyYQjXwQHsb/ueWZ6QYiDI5OXpLdKCa0BfMnmiVH0h3bByWInPSYtu3
-        x+zBJ1UWpCKG9Q==
-X-ME-Sender: <xms:mqhKXYyy5cSfp1_bmWJ1-D5yiRpqGSaBmhExAF3ahTGGvCeRGvIqlQ>
+        fm3; bh=GJFe/O8sSnZD/3D9EJvgJXFl/zBoW//k0mkiU90zOZ0=; b=09ubbFat
+        JZ4FvKVKzWeIDAxs4BOL8gXE3AIcJeqPEODk09JIpQ52osAAgBB+M5/VJAS9aSub
+        +qAqyIDQo4BNste/BCiU7O6/vfj+lQQ3H6L1Z2ONv74g65J8HJdiIWyesP3b15ay
+        UFUU1hAmkeIfOnutPIFv75KfWSARfz0PZ1TSo9Xebg2yUeLM3ZhUtmfib5jg9KIl
+        P8F9IMZtGXzu72Yahbdqw5RaJ+oMiFQNndvEJd0P6i6jjvBJ9iRqhELmZljX+Mac
+        PsdEXAybFTV7A9mx371ppf/BFbU2o0SOuYL7C0+uc5g0rCaB05MxcAu9ccL2ZJnC
+        nLlRuzVN79weeA==
+X-ME-Sender: <xms:nKhKXbNzUoJ7RA-7PeqUtw0_urSyDeKnScA2oO0j-y5wp_WtazByiQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudduvddgvdelucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
@@ -35,13 +35,13 @@ X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudduvddgvdelucetufdoteggod
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
     ufhiiigvpeeg
-X-ME-Proxy: <xmx:mqhKXQjDa9YGVWwKtVI94WdchcCjS1M53xWLGursNYosE53qDsOcPg>
-    <xmx:mqhKXVUnJppBzeZi3pqarOLyzkprNN7Fy3FkpFaNEtaXolxDMy7K4Q>
-    <xmx:mqhKXa0m8PAmhm-EcNS_TSWzDI_aet-9_C5FG8CN2AyjLqAXiC9LUw>
-    <xmx:mqhKXeJTJUqlkoHdFQW8Fl2jDlSZY8rw_aluLwafELjDxfriaK6j3w>
+X-ME-Proxy: <xmx:nKhKXUcoFg7o_lSh4ouRBhkJ1myUZe5YBmKCfSd2HsYPKQMV4WBZWQ>
+    <xmx:nKhKXQ9mzOT_ZB-eCB-ZRfimqOUe6YyERqPGktoaP2tWZ5A9jhEC5g>
+    <xmx:nKhKXe3YwbL2e-Bjpibrdgli12oA9Zn4o4ihEkqkFiRT7lpBDZ8KLg>
+    <xmx:nKhKXcn8TnQTs3Sz0yxBTEuKlf_rkSy5XBXTYf82xQzU5DAj_U1k1w>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 59F45380090;
-        Wed,  7 Aug 2019 06:31:51 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 347BA380083;
+        Wed,  7 Aug 2019 06:31:54 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
@@ -50,9 +50,9 @@ Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
         andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next 07/10] drop_monitor: Allow truncation of dropped packets
-Date:   Wed,  7 Aug 2019 13:30:56 +0300
-Message-Id: <20190807103059.15270-8-idosch@idosch.org>
+Subject: [PATCH net-next 08/10] drop_monitor: Add a command to query current configuration
+Date:   Wed,  7 Aug 2019 13:30:57 +0300
+Message-Id: <20190807103059.15270-9-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190807103059.15270-1-idosch@idosch.org>
 References: <20190807103059.15270-1-idosch@idosch.org>
@@ -65,105 +65,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-When sending dropped packets to user space it is not always necessary to
-copy the entire packet as usually only the headers are of interest.
-
-Allow user to specify the truncation length and add the original length
-of the packet as additional metadata to the netlink message.
-
-By default no truncation is performed.
+Users should be able to query the current configuration of drop monitor
+before they start using it. Add a command to query the existing
+configuration which currently consists of alert mode and packet
+truncation length.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
  include/uapi/linux/net_dropmon.h |  2 ++
- net/core/drop_monitor.c          | 19 +++++++++++++++++++
- 2 files changed, 21 insertions(+)
+ net/core/drop_monitor.c          | 48 ++++++++++++++++++++++++++++++++
+ 2 files changed, 50 insertions(+)
 
 diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 22c6108dcfd4..9c7b3ea44ee5 100644
+index 9c7b3ea44ee5..7b15f632c045 100644
 --- a/include/uapi/linux/net_dropmon.h
 +++ b/include/uapi/linux/net_dropmon.h
-@@ -74,6 +74,8 @@ enum net_dm_attr {
- 	NET_DM_ATTR_TIMESTAMP,			/* struct timespec */
- 	NET_DM_ATTR_PAYLOAD,			/* binary */
- 	NET_DM_ATTR_PAD,
-+	NET_DM_ATTR_TRUNC_LEN,			/* u32 */
-+	NET_DM_ATTR_ORIG_LEN,			/* u32 */
- 
- 	__NET_DM_ATTR_MAX,
- 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 5fa0b34033d0..440766e1f260 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -77,6 +77,7 @@ static unsigned long dm_hw_check_delta = 2*HZ;
- static LIST_HEAD(hw_stats_list);
- 
- static enum net_dm_alert_mode net_dm_alert_mode = NET_DM_ALERT_MODE_SUMMARY;
-+static u32 net_dm_trunc_len;
- 
- struct net_dm_alert_ops {
- 	void (*kfree_skb_probe)(void *ignore, struct sk_buff *skb,
-@@ -334,6 +335,8 @@ static size_t net_dm_packet_report_size(size_t payload_len)
- 	       net_dm_in_port_size() +
- 	       /* NET_DM_ATTR_TIMESTAMP */
- 	       nla_total_size(sizeof(struct timespec)) +
-+	       /* NET_DM_ATTR_ORIG_LEN */
-+	       nla_total_size(sizeof(u32)) +
- 	       /* NET_DM_ATTR_PAYLOAD */
- 	       nla_total_size(payload_len);
- }
-@@ -389,6 +392,9 @@ static int net_dm_packet_report_fill(struct sk_buff *msg, struct sk_buff *skb,
- 	    nla_put(msg, NET_DM_ATTR_TIMESTAMP, sizeof(ts), &ts))
- 		goto nla_put_failure;
- 
-+	if (nla_put_u32(msg, NET_DM_ATTR_ORIG_LEN, skb->len))
-+		goto nla_put_failure;
-+
- 	if (!payload_len)
- 		goto out;
- 
-@@ -424,6 +430,8 @@ static void net_dm_packet_report(struct sk_buff *skb)
- 
- 	/* Ensure packet fits inside a single netlink attribute */
- 	payload_len = min_t(size_t, skb->len, NET_DM_MAX_PACKET_SIZE);
-+	if (net_dm_trunc_len)
-+		payload_len = min_t(size_t, net_dm_trunc_len, payload_len);
- 
- 	msg = nlmsg_new(net_dm_packet_report_size(payload_len), GFP_KERNEL);
- 	if (!msg)
-@@ -622,6 +630,14 @@ static int net_dm_alert_mode_set(struct genl_info *info)
- 	return 0;
- }
- 
-+static void net_dm_trunc_len_set(struct genl_info *info)
-+{
-+	if (!info->attrs[NET_DM_ATTR_TRUNC_LEN])
-+		return;
-+
-+	net_dm_trunc_len = nla_get_u32(info->attrs[NET_DM_ATTR_TRUNC_LEN]);
-+}
-+
- static int net_dm_cmd_config(struct sk_buff *skb,
- 			struct genl_info *info)
- {
-@@ -637,6 +653,8 @@ static int net_dm_cmd_config(struct sk_buff *skb,
- 	if (rc)
- 		return rc;
- 
-+	net_dm_trunc_len_set(info);
-+
- 	return 0;
- }
- 
-@@ -695,6 +713,7 @@ static int dropmon_net_event(struct notifier_block *ev_block,
- static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
- 	[NET_DM_ATTR_UNSPEC] = { .strict_start_type = NET_DM_ATTR_UNSPEC + 1 },
- 	[NET_DM_ATTR_ALERT_MODE] = { .type = NLA_U8 },
-+	[NET_DM_ATTR_TRUNC_LEN] = { .type = NLA_U32 },
+@@ -54,6 +54,8 @@ enum {
+ 	NET_DM_CMD_START,
+ 	NET_DM_CMD_STOP,
+ 	NET_DM_CMD_PACKET_ALERT,
++	NET_DM_CMD_CONFIG_GET,
++	NET_DM_CMD_CONFIG_NEW,
+ 	_NET_DM_CMD_MAX,
  };
  
- static const struct genl_ops dropmon_ops[] = {
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index 440766e1f260..f5dfad283fe2 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -671,6 +671,50 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
+ 	return -EOPNOTSUPP;
+ }
+ 
++static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
++{
++	void *hdr;
++
++	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
++			  &net_drop_monitor_family, 0, NET_DM_CMD_CONFIG_NEW);
++	if (!hdr)
++		return -EMSGSIZE;
++
++	if (nla_put_u8(msg, NET_DM_ATTR_ALERT_MODE, net_dm_alert_mode))
++		goto nla_put_failure;
++
++	if (nla_put_u32(msg, NET_DM_ATTR_TRUNC_LEN, net_dm_trunc_len))
++		goto nla_put_failure;
++
++	genlmsg_end(msg, hdr);
++
++	return 0;
++
++nla_put_failure:
++	genlmsg_cancel(msg, hdr);
++	return -EMSGSIZE;
++}
++
++static int net_dm_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
++{
++	struct sk_buff *msg;
++	int rc;
++
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	rc = net_dm_config_fill(msg, info);
++	if (rc)
++		goto free_msg;
++
++	return genlmsg_reply(msg, info);
++
++free_msg:
++	nlmsg_free(msg);
++	return rc;
++}
++
+ static int dropmon_net_event(struct notifier_block *ev_block,
+ 			     unsigned long event, void *ptr)
+ {
+@@ -733,6 +777,10 @@ static const struct genl_ops dropmon_ops[] = {
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+ 		.doit = net_dm_cmd_trace,
+ 	},
++	{
++		.cmd = NET_DM_CMD_CONFIG_GET,
++		.doit = net_dm_cmd_config_get,
++	},
+ };
+ 
+ static int net_dm_nl_pre_doit(const struct genl_ops *ops,
 -- 
 2.21.0
 
