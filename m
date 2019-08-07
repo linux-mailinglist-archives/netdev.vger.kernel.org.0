@@ -2,88 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9198285272
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 19:53:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AA3D85291
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:02:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389027AbfHGRw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 13:52:59 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:34214 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387952AbfHGRw7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 13:52:59 -0400
-Received: by mail-pl1-f196.google.com with SMTP id i2so41929564plt.1;
-        Wed, 07 Aug 2019 10:52:58 -0700 (PDT)
+        id S2389026AbfHGSBM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 14:01:12 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:46568 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387953AbfHGSBM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 14:01:12 -0400
+Received: by mail-qk1-f193.google.com with SMTP id r4so66426251qkm.13
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 11:01:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=U9jURJQ1Uv/DDXBBVFiM0Yx2vC/nTJ5FNJbf0XwSXME=;
-        b=JP6n4lR/dA1+ETGt2vNBFvAISfXJKVyuZg3q4R+tYSDmwDIe7yVp/iDibgeINYmWjX
-         gF2B2+GNwy+XEcrIC5cBPeQBVJiFsn9BG4vCQ/Kdf31HayvW+y15/tr0dg32mfZj/6Xc
-         SLLdDO2oVu9By9/tp3SL+YwWoo2mo5G6v5rcdG3Y+9o2Xr1jvne7E0UA46pccZ13ETOZ
-         nr666LA0/Hdyk+cuO6XWiqG5VEf32YgDSlaE61gqJkNsgDX4Qml+JDoAp0Rd9/7Ik2CP
-         qXpRI+iqPMTsWrrM/BkZWTEZES2GgqxpZYinA3f354lpfsEV40SopQrjmY8f4/9RuPXL
-         V7sQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=RJ6dwC6KBBDkp7iURBtYOksb1lcUUgBCS7afrfMd6OI=;
+        b=NQdwRjBL++fJ6jckdEER3z4/7YO5ZRTOdKot1U284gEJrTl4J3JzC/4rYKvaF8B8Zg
+         k+QWZWfqAlM7FerTXD+GglNnMYL91hOpXL+0qff/eY2rezbCDAcBirdNiMFu+pitso/b
+         c/Or+Li/p7IJ9B31vuZvFeBD12J+QMmF0OASdrWYr1yrPAKiBITye8vu2W2gK4Wx5PDH
+         EE6Z1ToAX2s9RwDZdnIsmypqZhjv7p2DnunAm5dEHRXfWKNZd84QLV2yio+HViYpgb1g
+         R7RPXuXnzGE+PsgR7I7LNWn3DK9Hzl8y/kKVfqlVExmF0NMj1Ahowc4D47bEeacItIJL
+         iD1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=U9jURJQ1Uv/DDXBBVFiM0Yx2vC/nTJ5FNJbf0XwSXME=;
-        b=IE2aIclaxRrECUZrxnqlM0QvlmJv6sx4z61940JccTRubtscibbYN/gyCgm6B8KiQf
-         ucEnb0Bp1aGSo5RocsQJhYjoTmQ3z0X38nBNRmP94G2YQd1hlpGV7x9csORO7Y5npV/Z
-         vhaS6JxFmUgxJzQ/xHKH6FV/XyBBxgdwO3smUCab68s/B1HVa0CWt7W6YtYUZs7aopEv
-         o2jvoFE4qYJonJfpKLqTvGJrQBUKGwQN2QUB1+KWjkga67+PYpVTdKO/r2W/HOiVaCPe
-         2CYC7zN2lK7/7xaPmOogUtSxrqSko6u6JZSWzal1dFzO0gLKshJ69tzJhRHJlyvzI12W
-         8Q7Q==
-X-Gm-Message-State: APjAAAXrE93urVma50iHp6UOt7wwh5iPU+X2qE4JacyVeU82yn1wYSGR
-        dtMVYcjs2B3HGoaeS+VgAO8=
-X-Google-Smtp-Source: APXvYqzHGOJHyi88ZgDd3CqnuW2dE1+GFO/h5SZwZ+XpSaRFkHKmxNboOldlrSNAhD9CACisPs+23Q==
-X-Received: by 2002:a17:902:f213:: with SMTP id gn19mr9517558plb.35.1565200378479;
-        Wed, 07 Aug 2019 10:52:58 -0700 (PDT)
-Received: from [172.27.227.247] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id m6sm91652238pfb.151.2019.08.07.10.52.57
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 10:52:57 -0700 (PDT)
-Subject: Re: [bpf-next PATCH 3/3] samples/bpf: xdp_fwd explain bpf_fib_lookup
- return codes
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     xdp-newbies@vger.kernel.org, a.s.protopopov@gmail.com
-References: <156518133219.5636.728822418668658886.stgit@firesoul>
- <156518138817.5636.3626699603179533211.stgit@firesoul>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <aae3554f-2d55-d2d1-8cd8-2481ca923469@gmail.com>
-Date:   Wed, 7 Aug 2019 11:52:56 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=RJ6dwC6KBBDkp7iURBtYOksb1lcUUgBCS7afrfMd6OI=;
+        b=m54kVunhCB6f6nZIm0w6C/ucgMOOE6LDKpmVp1j7Bs/kdfQnHG6eaBdNm8IkOs2ZZ/
+         7IZDwOxvmZgfCx9s8dujlIXEJiwAbPdlQEqs0O5pnyuqVEB6bveeDZUOVG0sSqRH0edx
+         FgY7JHqZ2i0OVB9A34Mvin/agnxETaab2Zhou0O17WxxnmfkBPPEgsSbqE6AnqW1g5p7
+         4OmGFK0azhl+51gTx3xMInpzDGXqvm01NMHvPEEWkVqNJNzbd/259MReNTf2MYJNlsTB
+         HVA0citASfvHOYdraUhsQjWWvNq1Ti1vuAqNh9+l7M/OqQfgRSZ5m9P3Hiem3VhI6QDM
+         Giig==
+X-Gm-Message-State: APjAAAU8yt/QilJy5Y7zxYIneJ22uKSyw2jx2l32RKrhMED16V0Dr0i5
+        UMDI45qX+2jdkSHcLNDrSbCCIg==
+X-Google-Smtp-Source: APXvYqydeTNq8CkWJjRFFkzXoMrFKynJPDPMeTRB6h1P/fpCrYFEc7lWmfdomgzqcLBy4v86Kpe7aQ==
+X-Received: by 2002:a37:ac19:: with SMTP id e25mr9496413qkm.155.1565200871163;
+        Wed, 07 Aug 2019 11:01:11 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z18sm41552281qka.12.2019.08.07.11.01.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 07 Aug 2019 11:01:11 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 11:00:42 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH net v2] net/tls: prevent skb_orphan() from leaking TLS
+ plain text with offload
+Message-ID: <20190807110042.690cf50a@cakuba.netronome.com>
+In-Reply-To: <CA+FuTScYkHho4hqrGf9q6=4iao-f2P2s258rjtQTCgn+nF-CYg@mail.gmail.com>
+References: <20190807060612.19397-1-jakub.kicinski@netronome.com>
+        <CA+FuTScYkHho4hqrGf9q6=4iao-f2P2s258rjtQTCgn+nF-CYg@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <156518138817.5636.3626699603179533211.stgit@firesoul>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/7/19 6:36 AM, Jesper Dangaard Brouer wrote:
-> Make it clear that this XDP program depend on the network
-> stack to do the ARP resolution.  This is connected with the
-> BPF_FIB_LKUP_RET_NO_NEIGH return code from bpf_fib_lookup().
+On Wed, 7 Aug 2019 12:59:00 -0400, Willem de Bruijn wrote:
+> On Wed, Aug 7, 2019 at 2:06 AM Jakub Kicinski wrote:
+> > diff --git a/net/core/sock.c b/net/core/sock.c
+> > index d57b0cc995a0..0f9619b0892f 100644
+> > --- a/net/core/sock.c
+> > +++ b/net/core/sock.c
+> > @@ -1992,6 +1992,20 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+> >  }
+> >  EXPORT_SYMBOL(skb_set_owner_w);
+> >
+> > +static bool can_skb_orphan_partial(const struct sk_buff *skb)
+> > +{
+> > +#ifdef CONFIG_TLS_DEVICE
+> > +       /* Drivers depend on in-order delivery for crypto offload,
+> > +        * partial orphan breaks out-of-order-OK logic.
+> > +        */
+> > +       if (skb->decrypted)
+> > +               return false;
+> > +#endif
+> > +       return (IS_ENABLED(CONFIG_INET) &&
+> > +               skb->destructor == tcp_wfree) ||  
 > 
-> Another common mistake (seen via XDP-tutorial) is that users
-> don't realize that sysctl net.ipv{4,6}.conf.all.forwarding
-> setting is honored by bpf_fib_lookup.
+> Please add parentheses around IS_ENABLED(CONFIG_INET) &&
+> skb->destructor == tcp_wfree
+
+Mm.. there are parenthesis around them, maybe I'm being slow, 
+could you show me how?
+
+> I was also surprised that this works when tcp_wfree is not defined if
+> !CONFIG_INET. But apparently it does (at -O2?) :)
+
+I was surprised to but in essence it should work the same as
+
+	if (IS_ENABLED(CONFIG_xyz))
+		call_some_xyz_code();
+
+from compiler's perspective, and we do that a lot. Perhaps kbuild 
+bot will prove us wrong :)
+
+> > @@ -984,6 +984,9 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+> >                         if (!skb)
+> >                                 goto wait_for_memory;
+> >
+> > +#ifdef CONFIG_TLS_DEVICE
+> > +                       skb->decrypted = !!(flags & MSG_SENDPAGE_DECRYPTED);
+> > +#endif  
 > 
-> Reported-by: Anton Protopopov <a.s.protopopov@gmail.com>
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->  samples/bpf/xdp_fwd_kern.c |   19 +++++++++++++++++--
->  1 file changed, 17 insertions(+), 2 deletions(-)
+> Nothing is stopping userspace from passing this new flag. In send
+> (tcp_sendmsg_locked) it is ignored. But can it reach do_tcp_sendpages
+> through tcp_bpf_sendmsg?
+
+Ah, I think you're right, thanks for checking that :( I don't entirely
+follow how 0608c69c9a80 ("bpf: sk_msg, sock{map|hash} redirect through
+ULP") is safe then.
+
+One option would be to clear the flags kernel would previously ignore
+in tcp_bpf_sendmsg(). But I feel like we should just go back to marking
+the socket, since we don't need the per-message flexibility of a flag.
+
+WDYT?
+
+> >                         skb_entail(sk, skb);
+> >                         copy = size_goal;
+> >                 }
+> > diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+> > index 6e4afc48d7bb..979520e46e33 100644
+> > --- a/net/ipv4/tcp_output.c
+> > +++ b/net/ipv4/tcp_output.c
+> > @@ -1320,6 +1320,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
+> >         buff = sk_stream_alloc_skb(sk, nsize, gfp, true);
+> >         if (!buff)
+> >                 return -ENOMEM; /* We'll just try again later. */
+> > +       skb_copy_decrypted(buff, skb);  
 > 
+> This code has to copy timestamps, tx_flags, zerocopy state and now
+> this in three locations. Eventually we'll want a single helper for all
+> of them..
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
-
-
+Ack, should I take an action on that for net-next or was it a
+note-to-self? :)
