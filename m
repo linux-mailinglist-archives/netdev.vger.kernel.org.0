@@ -2,113 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 06DD58529A
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:04:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F1203852A3
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:05:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389116AbfHGSDr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 14:03:47 -0400
-Received: from mail-eopbgr40070.outbound.protection.outlook.com ([40.107.4.70]:50595
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2388615AbfHGSDq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 14:03:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aS1PwG88N8RoB1Xq4Zvr7xywoouYcdJJPjXjv1ypPj+xP42vVQf+93nKJJXWq3n9NUki+YBBmin32LksKsyHSinShNx/hiW9C3MldniAMT1BF0sPPZzzEUTHKQx/c3RwNTvnhzmrhMJAZdPcpHJmRYnLbn15fGJKv+FzU/VqKB5uIlV3E6Go/SrwFA+TRAAPQh9Dusu+ZhfyudBWXTM5JhlnLOB7KKxZDxdNELZkAh2kZG7hW/DJzsCeJxFWiZ5nWJAEA+jGbbR6r06IaSe0yLpPQMOIHRW3ZbtjlbDz/RrM7eTlG3j/gtHM2PXUyzv40sgf4/gpBIg6IutLkyXapw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SI6nb2QZ1MqUqDT8AuAEVo37tXYGehTDI32GiVLgBhY=;
- b=TTkMBWIdS8+klmJsXtviP0aIyasMNMVaFgYLBC/TPS5GWxs3WNXW+rSKxLlbeTrgSZYSP3aCgCddprU1pHEeLi3RU+su2LG3S4MUjtB/VM9Hda2SFGw4HCI472QHi9qnQ50Yjt88MUX6G9K2zHELjapanvDviwrAAXPB0uLOR4PeQEcy9poQQO0XJYbJFnfL5Ovl/J3aHTncuLvcT5XwDeGVjhCD8HkqnJPBqyaB6qjlJwm2NCw8A77lr92YgG1UTDyIwpSzvRvX+iMVqfbSOi8qrpEH8eSwm5Vq9FmosS5axDn/xQqfzXWHVW+FbzNFy4XMLqqqa5swGy1SCEPG6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SI6nb2QZ1MqUqDT8AuAEVo37tXYGehTDI32GiVLgBhY=;
- b=YaKWW1V2JMy4zyTeT3NcGwTdj4622Y6tZltg0qQE/yHiwiAjdyw7PfRZ3KRue3JSz7O9SfP7AYP0dJ8Ba+9bWBPhaDSZ/t7g0djO9oGhQIvNQhIRfWqPCpwccOiG445NPrDP1Sy6kDTpsqzx4XHAcxGmckY0abctbjajMlf6aXc=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2520.eurprd05.prod.outlook.com (10.168.74.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.14; Wed, 7 Aug 2019 18:03:43 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2136.018; Wed, 7 Aug 2019
- 18:03:43 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "leon@kernel.org" <leon@kernel.org>
-CC:     "jgg@ziepe.ca" <jgg@ziepe.ca>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "hslester96@gmail.com" <hslester96@gmail.com>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v3] mlx5: Use refcount_t for refcount
-Thread-Topic: [PATCH v3] mlx5: Use refcount_t for refcount
-Thread-Index: AQHVS/qqPWmA6k0y9U2jqPKx2/PeLKbullCAgABu9oCAAPeogA==
-Date:   Wed, 7 Aug 2019 18:03:43 +0000
-Message-ID: <71b2d9688834a69d8db587dd01f92088fd9bf497.camel@mellanox.com>
-References: <20190806015950.18167-1-hslester96@gmail.com>
-         <cbea99e74a1f70b1a67357aaf2afdb55655cd2bd.camel@mellanox.com>
-         <20190807031717.GB4832@mtr-leonro.mtl.com>
-In-Reply-To: <20190807031717.GB4832@mtr-leonro.mtl.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 47d0efe7-3671-40b7-f2ee-08d71b619600
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2520;
-x-ms-traffictypediagnostic: DB6PR0501MB2520:
-x-microsoft-antispam-prvs: <DB6PR0501MB2520CB478DFDC7D57A81E17FBED40@DB6PR0501MB2520.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4303;
-x-forefront-prvs: 01221E3973
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(366004)(136003)(39860400002)(376002)(346002)(189003)(199004)(186003)(1730700003)(6506007)(26005)(102836004)(6512007)(53936002)(6246003)(71190400001)(71200400001)(4326008)(25786009)(256004)(54906003)(58126008)(446003)(316002)(81156014)(8936002)(81166006)(486006)(14444005)(2351001)(11346002)(476003)(6436002)(2616005)(2906002)(5640700003)(6916009)(68736007)(36756003)(66066001)(229853002)(2501003)(478600001)(66446008)(14454004)(99286004)(7736002)(4744005)(6116002)(3846002)(76176011)(8676002)(86362001)(118296001)(305945005)(66946007)(66556008)(5660300002)(6486002)(91956017)(66476007)(64756008)(76116006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2520;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: lwYWm2NFspCbVGVQPud9832ZRda2JvYLoPKY4K+/WWTyj86bGhIieraCW2dKGtHkaTTVBJW5KXaDXwD9MwanEYRjlJPYDZ22d00z7DGhBbW1goz+ZwsAegaV+hRMCjdlMBMp6yROr/kHQ6LMRt8EXZjR4tUX2eqAS6trrXJYHvyrHw2SWEDGuwDM3pPqTyKcKadlZ7Iwsi2LovVrx0GFwYraurarKmQrb1lWtTez8ZK4b7OglqldoPbb+Ti+HtiTd9GgrzavoYRe8nobPdlxOGNBq1wSiX9OjQ6zZfS5TJKYhQgGhtYSe6cdgTIxq1rVYL2uquJOC68zy4om0NCBJtTNuA6sAo5Wm78b4MwNf1aYgJhVSuDKpQhPNoXdgj4ARw0RUNLh1RxjaQfFGGJtF66GqvSHuyvGnXZ+T8Xvs9A=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2E597FA60F51BC42BDFA7D14A1056932@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2389190AbfHGSEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 14:04:55 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:44526 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389041AbfHGSEz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 14:04:55 -0400
+Received: by mail-ot1-f68.google.com with SMTP id b7so57677743otl.11;
+        Wed, 07 Aug 2019 11:04:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sUxeWLtE/Daiia7Q33MNTCsn83ernoCHj08yWaGtIJE=;
+        b=aPwpCUrpNOUzETiyFVOCTnwF1gaqOyv/BhjvaJqzCb6wzgnsrABMqVbe08Oyp1nt9n
+         Tn/Xr7TzuEN9IRzwy3kHOxa1qEkV3AJQZu7ab+BjG0A0sqmdGCKymhjTWbwqamIA2myh
+         GWcFCPBZmRAMQUcej+qsSTrff4tFIQYPzsKXndo8ucAT9ZNWB6GIvZa9obSnS9EbqMLt
+         Q/buaxzhbL88kXkeXOEvX/ztuSycCDIrjwTICaaz1TVrJY47FChY3S0IJ8Zo/l+VifET
+         Bs116d/oby/agW8CiUIuqVn44nqzS3qzI/VFAUbfHDlcF9Wo3f5WDTS7YwaCjAHigRCt
+         oteQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sUxeWLtE/Daiia7Q33MNTCsn83ernoCHj08yWaGtIJE=;
+        b=XOJ2eLql3JapHdC9OdS2da740jT4yVvYaHoPUrQPFc0xKYpqLxmtIhUul4lYOMVYJm
+         hA2pCQfha4Kz9eFndTX0Phjv4SYIh2CFzi1zrISC2+KqRvIVtHZZc5A/I91l4MWkmoPw
+         7PpXpOyjQsuBwtw3gOYg0A/9NWeTd/Tre+dfXovgwKlehS+l1AZ8mLaZ4q3f1WvzYToJ
+         ntZVo2h4e9nmVDbcuNLEA0rqP4ovNbUFsFazSEW+harwCAs13aCX6nobCiBmsR366psX
+         +Gw2q2GnZIrjRIv8PSw15PyCTOlUlQyURAr6s1GoblZrnQPisUGQSLfhHEkpxIYeN5TO
+         qTjA==
+X-Gm-Message-State: APjAAAUYkgyB1+bEqd6kX/JCo0RtkUR1zZyJCBuFRm1l7HBVnxK9AKn8
+        KIHAGtuyEY6qJ+c3pJ0F9PhXjc2xX17DJREDXBc=
+X-Google-Smtp-Source: APXvYqweDPW+lawI/PIIpCrqS8/gZJaBuHDVbcaA4/VbRdGJxi84t2dJ0q6wHFUtCB7xgj+T8S2eGMpifPoxDNjOToA=
+X-Received: by 2002:a05:6638:81:: with SMTP id v1mr11179720jao.72.1565201093597;
+ Wed, 07 Aug 2019 11:04:53 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 47d0efe7-3671-40b7-f2ee-08d71b619600
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Aug 2019 18:03:43.6857
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: saeedm@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2520
+References: <156518133219.5636.728822418668658886.stgit@firesoul> <156518138310.5636.13064696265479533742.stgit@firesoul>
+In-Reply-To: <156518138310.5636.13064696265479533742.stgit@firesoul>
+From:   Y Song <ys114321@gmail.com>
+Date:   Wed, 7 Aug 2019 11:04:17 -0700
+Message-ID: <CAH3MdRUf_2Sk8v2dPeQ_+LfKPPwX9N3QoMDMCGFehd5JQVktcw@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 2/3] samples/bpf: make xdp_fwd more practically
+ usable via devmap lookup
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Xdp <xdp-newbies@vger.kernel.org>, a.s.protopopov@gmail.com,
+        David Ahern <dsahern@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gV2VkLCAyMDE5LTA4LTA3IGF0IDA2OjE3ICswMzAwLCBMZW9uIFJvbWFub3Zza3kgd3JvdGU6
-DQo+IE9uIFR1ZSwgQXVnIDA2LCAyMDE5IGF0IDA4OjQwOjExUE0gKzAwMDAsIFNhZWVkIE1haGFt
-ZWVkIHdyb3RlOg0KPiA+IE9uIFR1ZSwgMjAxOS0wOC0wNiBhdCAwOTo1OSArMDgwMCwgQ2h1aG9u
-ZyBZdWFuIHdyb3RlOg0KPiA+ID4gUmVmZXJlbmNlIGNvdW50ZXJzIGFyZSBwcmVmZXJyZWQgdG8g
-dXNlIHJlZmNvdW50X3QgaW5zdGVhZCBvZg0KPiA+ID4gYXRvbWljX3QuDQo+ID4gPiBUaGlzIGlz
-IGJlY2F1c2UgdGhlIGltcGxlbWVudGF0aW9uIG9mIHJlZmNvdW50X3QgY2FuIHByZXZlbnQNCj4g
-PiA+IG92ZXJmbG93cyBhbmQgZGV0ZWN0IHBvc3NpYmxlIHVzZS1hZnRlci1mcmVlLg0KPiA+ID4g
-U28gY29udmVydCBhdG9taWNfdCByZWYgY291bnRlcnMgdG8gcmVmY291bnRfdC4NCj4gPiA+IA0K
-PiA+ID4gU2lnbmVkLW9mZi1ieTogQ2h1aG9uZyBZdWFuIDxoc2xlc3Rlcjk2QGdtYWlsLmNvbT4N
-Cj4gPiA+IC0tLQ0KPiA+ID4gQ2hhbmdlcyBpbiB2MzoNCj4gPiA+ICAgLSBNZXJnZSB2MiBwYXRj
-aGVzIHRvZ2V0aGVyLg0KPiA+ID4gDQo+ID4gPiAgZHJpdmVycy9pbmZpbmliYW5kL2h3L21seDUv
-c3JxX2NtZC5jICAgICAgICAgfCA2ICsrKy0tLQ0KPiA+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0
-L21lbGxhbm94L21seDUvY29yZS9xcC5jIHwgNiArKystLS0NCj4gPiA+ICBpbmNsdWRlL2xpbnV4
-L21seDUvZHJpdmVyLmggICAgICAgICAgICAgICAgICB8IDMgKystDQo+ID4gPiAgMyBmaWxlcyBj
-aGFuZ2VkLCA4IGluc2VydGlvbnMoKyksIDcgZGVsZXRpb25zKC0pDQo+ID4gPiANCj4gPiANCj4g
-PiBMR1RNLCBMZW9uLCBsZXQgbWUga25vdyBpZiB5b3UgYXJlIGhhcHB5IHdpdGggdGhpcyB2ZXJz
-aW9uLA0KPiA+IHRoaXMgc2hvdWxkIGdvIHRvIG1seDUtbmV4dC4NCj4gDQo+IFRoYW5rcywNCj4g
-QWNrZWQtYnk6IExlb24gUm9tYW5vdnNreSA8bGVvbnJvQG1lbGxhbm94LmNvbT4NCg0KQXBwbGll
-ZCB0byBtbHg1LW5leHQuDQoNClRoYW5rcyAhDQo=
+On Wed, Aug 7, 2019 at 5:37 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>
+> This address the TODO in samples/bpf/xdp_fwd_kern.c, which points out
+> that the chosen egress index should be checked for existence in the
+> devmap. This can now be done via taking advantage of Toke's work in
+> commit 0cdbb4b09a06 ("devmap: Allow map lookups from eBPF").
+>
+> This change makes xdp_fwd more practically usable, as this allows for
+> a mixed environment, where IP-forwarding fallback to network stack, if
+> the egress device isn't configured to use XDP.
+>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  samples/bpf/xdp_fwd_kern.c |   20 ++++++++++++++------
+>  samples/bpf/xdp_fwd_user.c |   36 +++++++++++++++++++++++++-----------
+>  2 files changed, 39 insertions(+), 17 deletions(-)
+>
+> diff --git a/samples/bpf/xdp_fwd_kern.c b/samples/bpf/xdp_fwd_kern.c
+> index e6ffc4ea06f4..4a5ad381ed2a 100644
+> --- a/samples/bpf/xdp_fwd_kern.c
+> +++ b/samples/bpf/xdp_fwd_kern.c
+> @@ -104,13 +104,21 @@ static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
+>
+>         rc = bpf_fib_lookup(ctx, &fib_params, sizeof(fib_params), flags);
+>
+> -       /* verify egress index has xdp support
+> -        * TO-DO bpf_map_lookup_elem(&tx_port, &key) fails with
+> -        *       cannot pass map_type 14 into func bpf_map_lookup_elem#1:
+> -        * NOTE: without verification that egress index supports XDP
+> -        *       forwarding packets are dropped.
+> -        */
+>         if (rc == 0) {
+> +               int *val;
+> +
+> +               /* Verify egress index has been configured as TX-port.
+> +                * (Note: User can still have inserted an egress ifindex that
+> +                * doesn't support XDP xmit, which will result in packet drops).
+> +                *
+> +                * Note: lookup in devmap supported since 0cdbb4b09a0.
+> +                * If not supported will fail with:
+> +                *  cannot pass map_type 14 into func bpf_map_lookup_elem#1:
+> +                */
+> +               val = bpf_map_lookup_elem(&tx_port, &fib_params.ifindex);
+
+It should be "xdp_tx_ports". Otherwise, you will have compilation errors.
+
+> +               if (!val)
+> +                       return XDP_PASS;
+
+Also, maybe we can do
+         if (!bpf_map_lookup_elem(&tx_port, &fib_params.ifindex))
+            return XDP_PASS;
+so we do not need to define val at all.
+
+> +
+>                 if (h_proto == htons(ETH_P_IP))
+>                         ip_decrease_ttl(iph);
+>                 else if (h_proto == htons(ETH_P_IPV6))
+> diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+> index ba012d9f93dd..20951bc27477 100644
+> --- a/samples/bpf/xdp_fwd_user.c
+> +++ b/samples/bpf/xdp_fwd_user.c
+> @@ -27,14 +27,20 @@
+>  #include "libbpf.h"
+>  #include <bpf/bpf.h>
+>
+> -
+> -static int do_attach(int idx, int fd, const char *name)
+> +static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
+>  {
+>         int err;
+>
+> -       err = bpf_set_link_xdp_fd(idx, fd, 0);
+> -       if (err < 0)
+> +       err = bpf_set_link_xdp_fd(idx, prog_fd, 0);
+> +       if (err < 0) {
+>                 printf("ERROR: failed to attach program to %s\n", name);
+> +               return err;
+> +       }
+> +
+> +       /* Adding ifindex as a possible egress TX port */
+> +       err = bpf_map_update_elem(map_fd, &idx, &idx, 0);
+> +       if (err)
+> +               printf("ERROR: failed using device %s as TX-port\n", name);
+>
+>         return err;
+>  }
+> @@ -47,6 +53,9 @@ static int do_detach(int idx, const char *name)
+>         if (err < 0)
+>                 printf("ERROR: failed to detach program from %s\n", name);
+>
+> +       /* TODO: Remember to cleanup map, when adding use of shared map
+> +        *  bpf_map_delete_elem((map_fd, &idx);
+> +        */
+>         return err;
+>  }
+>
+> @@ -67,10 +76,10 @@ int main(int argc, char **argv)
+>         };
+>         const char *prog_name = "xdp_fwd";
+>         struct bpf_program *prog;
+> +       int prog_fd, map_fd = -1;
+>         char filename[PATH_MAX];
+>         struct bpf_object *obj;
+>         int opt, i, idx, err;
+> -       int prog_fd, map_fd;
+>         int attach = 1;
+>         int ret = 0;
+>
+> @@ -103,8 +112,17 @@ int main(int argc, char **argv)
+>                         return 1;
+>                 }
+>
+> -               if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
+> +               err = bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd);
+> +               if (err) {
+> +                       if (err == -22) {
+
+-EINVAL?
+
+For -EINVAL, many things could go wrong. But maybe the blow error
+is the most common one so I am fine with that.
+
+> +                               printf("Does kernel support devmap lookup?\n");
+> +                               /* If not, the error message will be:
+> +                                * "cannot pass map_type 14 into func
+> +                                * bpf_map_lookup_elem#1"
+> +                                */
+> +                       }
+>                         return 1;
+> +               }
+>
+>                 prog = bpf_object__find_program_by_title(obj, prog_name);
+>                 prog_fd = bpf_program__fd(prog);
+> @@ -119,10 +137,6 @@ int main(int argc, char **argv)
+>                         return 1;
+>                 }
+>         }
+> -       if (attach) {
+> -               for (i = 1; i < 64; ++i)
+> -                       bpf_map_update_elem(map_fd, &i, &i, 0);
+> -       }
+>
+>         for (i = optind; i < argc; ++i) {
+>                 idx = if_nametoindex(argv[i]);
+> @@ -138,7 +152,7 @@ int main(int argc, char **argv)
+>                         if (err)
+>                                 ret = err;
+>                 } else {
+> -                       err = do_attach(idx, prog_fd, argv[i]);
+> +                       err = do_attach(idx, prog_fd, map_fd, argv[i]);
+>                         if (err)
+>                                 ret = err;
+>                 }
+>
