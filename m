@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 81A5483F26
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:34:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E75B83FE5
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:36:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730013AbfHGBeo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:34:44 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:41343 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729743AbfHGBei (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:38 -0400
-Received: by mail-pf1-f195.google.com with SMTP id m30so42508301pff.8;
-        Tue, 06 Aug 2019 18:34:38 -0700 (PDT)
+        id S1730405AbfHGBgd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:36:33 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:42637 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729676AbfHGBek (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:40 -0400
+Received: by mail-pl1-f193.google.com with SMTP id ay6so38635695plb.9;
+        Tue, 06 Aug 2019 18:34:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=66nLgLSrAAtLnk7heFQOXwTIycZbzywZGh2gpdUQtHA=;
-        b=hGadGekT36tWWF2x+rPXatg5Phju1cJkPhVohpTnvU9xcLgSYz3c/H9JfBuvb/eqpQ
-         gJm9ULhd1h25PBFy4ZlpC+tAGAEAzuKiPxwK1X6/dMDelBe1FYe+sUe691h23Hpm09qn
-         NtkXw7G9BBhwySB0UzQpKOHO5RlAvdX8JQycevy+XDQPWxcX8dLLfHqYFlfiIf28POCQ
-         XQLWbzezNK3qTnHI7eGrMbtyoSKY/W2T3jkcfT5nC0QYcZ+CMjkTw7ZL3pOdyAZGwJLx
-         tXBADMMsq1ukRK67JdNPKq0uGvf0IBEzyL0wmcyHhzZLuqxNXwAHA+z0PFrP2wNDYOQy
-         6sYA==
+        bh=46lxAY1z81U+mrrESVpVIrQ+fWJc6iHl4OExj8KwBEA=;
+        b=WuyyNqtpvvlvZwulsOSyl6jjDfFZFL7/Zx5rMnqGOdxDRsEuGcdgN1IewvAvlX+Ui3
+         X7btLnm2F40F8RrpBhgVrMU3HOKje9DtE5nK+fpNzyjny+e0S7JZDS2kjkLoxOZDXhQl
+         8/grXg9y3uP/GW5F5PAwd4bWzrVFH3BCp78Eig9BKFd6aIXye5gDuBBhD5viuX1OApXQ
+         9VIP+L4AUKM2VFr2nldHjLjmSVNA49QX09uR5xAkxNN9xQUujG5Q/Q0AKTjDZbsxdlOq
+         g4tQx0EnIYd52Zy5p9V4faNYnaj9xyaWhFJDGaxmSVhObIkgzad4uex02Ars3KOUlzef
+         YWIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=66nLgLSrAAtLnk7heFQOXwTIycZbzywZGh2gpdUQtHA=;
-        b=p2hgyYE49GJQtLUSoDuvLkCqPl0q/qdp6hVPxKnYY7dwpZ8evgmoD8wl5dw9k514jN
-         fzMnauhhUIuhHMG3qNOOQ40dLdOAJ6SZZQPOupdbiHX8MnKP2SUjJIPlzQPjkW1HV+Zr
-         7FtyTgblSFKEeDDFy4yz/IiQPNwbxPqUNzTkJG4/QXXUbiSDmfoPuMaEwBo0WnIlz0pS
-         BTY9ZVQhrbCKoOo9pPFuYA8SykjvKC8S40EQyy4dREzveE03XGpHfJB4GEJgrqx8l+aO
-         bunJNAR5Or1UBCpN5G8gLIXZcgiJwO+Gz13nwikg9C6Bn5spBnNYpPbzM0eDZ78Ixnuj
-         BRXw==
-X-Gm-Message-State: APjAAAXeMEFGyAFdCJTakNWlvl+omKR+07+FVBnH/0z7J1trPOBeqLsg
-        sTQXggNaOu9CV8oCcQYC66Y=
-X-Google-Smtp-Source: APXvYqxVqy6uPNA5pMhiCuVlDYKPDVYd5IZkwA2Cp9U8q1WFZ9BX6VmEjp+QCN9e6zqU7bkXXXxyWA==
-X-Received: by 2002:aa7:9197:: with SMTP id x23mr6650509pfa.95.1565141677758;
-        Tue, 06 Aug 2019 18:34:37 -0700 (PDT)
+        bh=46lxAY1z81U+mrrESVpVIrQ+fWJc6iHl4OExj8KwBEA=;
+        b=C7ZFyjjb0YV18GgLJ6nThE66O7R63akxZeghvqF5mHMGVUU1mDfQ3ncSp/E7n6jY3g
+         tc7CgM5RjrMQ61VDt67hR/LH42dgVUIet1lraP2dk9yNiYQ2wiOUehl5ynbP0wKrF7qs
+         mE/lB3LozvMt0dVeX7PvcciL/TFwF9iBqKO5UYXAD5sdxHq1LhvmbTowrdWLueu63EX9
+         +PF9HBp6fNY6f55qZBi9vSKdulvKFO4reL0p4rzHRPDZSpR75iZ8vFcL+hJfK/LhkvyN
+         XH0iDlqlEVAuDFithRSjDKdeY2w10wYKYOovW8faz8Bj7JgQNcdCkYjgaL5mSOhW79IX
+         165Q==
+X-Gm-Message-State: APjAAAUqNbqQ01MFRyNpyAejWoyoAuQQdmRMj2c1VbKlja7r3HEzsJnX
+        GzgdsUwezCb9oSKsIAogyXA=
+X-Google-Smtp-Source: APXvYqxeu3U+gXlTZOXb8hdX/T/5F9QSVWlhZwpRfNn+ISG+GmBUrBJWAvgFajanndvmV9JUd/JHZg==
+X-Received: by 2002:a17:902:a606:: with SMTP id u6mr5434497plq.275.1565141679262;
+        Tue, 06 Aug 2019 18:34:39 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.36
+        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.37
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 18:34:37 -0700 (PDT)
+        Tue, 06 Aug 2019 18:34:38 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,12 +67,11 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Calum Mackay <calum.mackay@oracle.com>,
-        Trond Myklebust <trond.myklebust@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>
-Subject: [PATCH v3 33/41] fs/nfs: convert put_page() to put_user_page*()
-Date:   Tue,  6 Aug 2019 18:33:32 -0700
-Message-Id: <20190807013340.9706-34-jhubbard@nvidia.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Roman Kiryanov <rkir@google.com>
+Subject: [PATCH v3 34/41] goldfish_pipe: convert put_page() to put_user_page*()
+Date:   Tue,  6 Aug 2019 18:33:33 -0700
+Message-Id: <20190807013340.9706-35-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
 References: <20190807013340.9706-1-jhubbard@nvidia.com>
@@ -93,52 +92,46 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Reviewed-by: Calum Mackay <calum.mackay@oracle.com>
+Note that this effectively changes the code's behavior in
+qp_release_pages(): it now ultimately calls set_page_dirty_lock(),
+instead of set_page_dirty(). This is probably more accurate.
 
-Cc: Trond Myklebust <trond.myklebust@hammerspace.com>
-Cc: Anna Schumaker <anna.schumaker@netapp.com>
-Cc: linux-nfs@vger.kernel.org
+As Christoph Hellwig put it, "set_page_dirty() is only safe if we are
+dealing with a file backed page where we have reference on the inode it
+hangs off." [1]
+
+[1] https://lore.kernel.org/r/20190723153640.GB720@lst.de
+
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Roman Kiryanov <rkir@google.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- fs/nfs/direct.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+ drivers/platform/goldfish/goldfish_pipe.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/fs/nfs/direct.c b/fs/nfs/direct.c
-index 0cb442406168..c0c1b9f2c069 100644
---- a/fs/nfs/direct.c
-+++ b/fs/nfs/direct.c
-@@ -276,13 +276,6 @@ ssize_t nfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
- 	return nfs_file_direct_write(iocb, iter);
+diff --git a/drivers/platform/goldfish/goldfish_pipe.c b/drivers/platform/goldfish/goldfish_pipe.c
+index cef0133aa47a..2bd21020e288 100644
+--- a/drivers/platform/goldfish/goldfish_pipe.c
++++ b/drivers/platform/goldfish/goldfish_pipe.c
+@@ -288,15 +288,12 @@ static int pin_user_pages(unsigned long first_page,
+ static void release_user_pages(struct page **pages, int pages_count,
+ 			       int is_write, s32 consumed_size)
+ {
+-	int i;
++	bool dirty = !is_write && consumed_size > 0;
+ 
+-	for (i = 0; i < pages_count; i++) {
+-		if (!is_write && consumed_size > 0)
+-			set_page_dirty(pages[i]);
+-		put_page(pages[i]);
+-	}
++	put_user_pages_dirty_lock(pages, pages_count, dirty);
  }
  
--static void nfs_direct_release_pages(struct page **pages, unsigned int npages)
--{
--	unsigned int i;
--	for (i = 0; i < npages; i++)
--		put_page(pages[i]);
--}
--
- void nfs_init_cinfo_from_dreq(struct nfs_commit_info *cinfo,
- 			      struct nfs_direct_req *dreq)
- {
-@@ -512,7 +505,7 @@ static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
- 			pos += req_len;
- 			dreq->bytes_left -= req_len;
- 		}
--		nfs_direct_release_pages(pagevec, npages);
-+		put_user_pages(pagevec, npages);
- 		kvfree(pagevec);
- 		if (result < 0)
- 			break;
-@@ -935,7 +928,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
- 			pos += req_len;
- 			dreq->bytes_left -= req_len;
- 		}
--		nfs_direct_release_pages(pagevec, npages);
-+		put_user_pages(pagevec, npages);
- 		kvfree(pagevec);
- 		if (result < 0)
- 			break;
++
+ /* Populate the call parameters, merging adjacent pages together */
+ static void populate_rw_params(struct page **pages,
+ 			       int pages_count,
 -- 
 2.22.0
 
