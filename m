@@ -2,123 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7349E84281
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55156842A0
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729632AbfHGCdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 22:33:51 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:40354 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727653AbfHGCdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 22:33:51 -0400
-Received: by mail-pl1-f196.google.com with SMTP id a93so38582917pla.7
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 19:33:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Y3xlr/twMRjifJJwHicZ/zGb4bZF7oYO+weWTAwoLNk=;
-        b=qlGFDq71m4NliRtGnTsnHMBiz4wTaXlSikVDuUpsuTTM7Xddo2Z7XaqSEssSeBOW96
-         g13SQv287zcfCuU1J9AGj/FXiPXp2OKj4NR/7UHZmXEAF4iEU8BWSp3TfO6ETPIiyV/n
-         Tr7mryL6Sgvvs5+0yqztZjHSLxszZDXMRQyMEhQ+qbaYvHkeXwzsjKaDj50VclV2v0XX
-         j1vDLOEW2legAOPua/yuf3r8XgaSy7QT0fQ+g5p8miDZHRf0qRisDqVMXcLoe3583G/U
-         dcMXh5kmm79Q1lTEDLalE6c6v08ksW70xmV3eIoA+qrl9NvEnygSu+wZtXtsJcTxWAEL
-         LSoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Y3xlr/twMRjifJJwHicZ/zGb4bZF7oYO+weWTAwoLNk=;
-        b=gZhWJiy99pixQla4ChkICWsSqbOFKtuU3GZ4I9oPv473aSwPyQtUzuEX7oLfd/jjlZ
-         keU0We+75/yV8Qj3PtHN8DVbJGvo4225i/jX59obeBL2sGef1eNz/4aOVYHFVWgtj8s4
-         Q2GWJ3xrwlmyIwlOVN6uF27NqfQr83zGb+XRLS99IriPntv7kVezgGlMTH3JGzEMQ/d4
-         XBH1pp7bKVvL6MlsLWwI33WmYEtMDKeddxznUC1ioUjBSmpidKe7elD09TRUm4+0rgM9
-         xjcj/VoT2yCKYIOetsYyTXZNjBQt8A7uJ6zzEDjtBiOroydv7bLjayAAbkZ+vsAU/n/5
-         ppmg==
-X-Gm-Message-State: APjAAAVc2UTbxDLm5AjKBldeLWEg9v2hK22B1E25ohfo9YLplJrhO4DH
-        iNdulehI4KL3bHmO8P/4PZM=
-X-Google-Smtp-Source: APXvYqyyO/tkvCBgmdiFadBm9cP1crhyZ0UsAUThlKWTgRr2iQ+tug+7rUnWBqmMpt1yaVB06n98gw==
-X-Received: by 2002:a17:902:403:: with SMTP id 3mr5986900ple.66.1565145230945;
-        Tue, 06 Aug 2019 19:33:50 -0700 (PDT)
-Received: from [172.27.227.229] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id p19sm100104185pfn.99.2019.08.06.19.33.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 06 Aug 2019 19:33:49 -0700 (PDT)
-Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
- resource limitations
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        davem@davemloft.net, mlxsw@mellanox.com,
-        jakub.kicinski@netronome.com, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, mkubecek@suse.cz,
-        stephen@networkplumber.org, daniel@iogearbox.net,
-        brouer@redhat.com, eric.dumazet@gmail.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-References: <20190806164036.GA2332@nanopsycho.orion>
- <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
- <20190806180346.GD17072@lunn.ch>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
-Date:   Tue, 6 Aug 2019 20:33:47 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190806180346.GD17072@lunn.ch>
-Content-Type: text/plain; charset=utf-8
+        id S1727679AbfHGCuv convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 6 Aug 2019 22:50:51 -0400
+Received: from m4a0040g.houston.softwaregrp.com ([15.124.2.86]:44458 "EHLO
+        m4a0040g.houston.softwaregrp.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726612AbfHGCuu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 22:50:50 -0400
+Received: FROM m4a0040g.houston.softwaregrp.com (15.120.17.147) BY m4a0040g.houston.softwaregrp.com WITH ESMTP;
+ Wed,  7 Aug 2019 02:50:31 +0000
+Received: from M9W0067.microfocus.com (2002:f79:be::f79:be) by
+ M4W0335.microfocus.com (2002:f78:1193::f78:1193) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10; Wed, 7 Aug 2019 02:49:48 +0000
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com (15.124.72.11) by
+ M9W0067.microfocus.com (15.121.0.190) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.1591.10 via Frontend Transport; Wed, 7 Aug 2019 02:49:47 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=huc/nwcaRr4lbs5ciZDuWkZ3pzzbampwc1sDftjJLEl4xNHbh76C7vuJoMB8E0mGKS+HryLAs2ccK4h2E72AKenN5Osp42eb1LnWw6oQdLeBeCAZbMFQRBUflfiAHvTJBg6j3kBf1uN8L4/oaAs9pYuJnSU9qVY6vqCxQuo9sFLiewGoD3u0layY1bVBfBQDPThlGMurj+7I2fXDfc4wajRDQEToSRoQLM7aKenSf/nXl2vAmIfGL0kd4robhvs+oN/S0HdYEZOVIL2m+MB1Q4MssB/b2FrBjz6sgzolwoAvIhfHJnWxW8s5NV6HIMiBz15jDYcVZg+3gJuhGBE3fg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EjA0KI7GnF7EgSCPDj+n1ygbaPRbKH9pXsE3/vpt56Y=;
+ b=RLnRDZAh7ghnFc+m/PubEJbO32z2ZCxDqHmEFg3Y1diRddz3YO9vMNc5lE6/eDo6lzPy0tNNxreOCie0jLAoug/IN3jvo+LeFarpg/PyVchizBbFuYhwcBfazHKBrkKrjFB0vLf32T2+TxMQvkuEiFEgjEDKh1dIsI8qsazUaMRDpH8Wk5bdFWPepPVnV0N0eCOXcjQflCrL44On3Zgq6ZEc9GMwrUkDNBbHoB3U6eIFpolsZLxj/VBnAsbCB9wOjtjx581ISxAU1Z9//X45GwV5JWwqdWrtx9bwhB7XQ4ZEusfzN87oDLJiEYMVNCZZ3DgHMnI0i4mSssYjlvVgpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=suse.com;dmarc=pass action=none header.from=suse.com;dkim=pass
+ header.d=suse.com;arc=none
+Received: from BY5PR18MB3187.namprd18.prod.outlook.com (10.255.139.221) by
+ BY5PR18MB3169.namprd18.prod.outlook.com (10.255.139.213) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2136.14; Wed, 7 Aug 2019 02:49:45 +0000
+Received: from BY5PR18MB3187.namprd18.prod.outlook.com
+ ([fe80::103a:94a8:b58d:3eac]) by BY5PR18MB3187.namprd18.prod.outlook.com
+ ([fe80::103a:94a8:b58d:3eac%4]) with mapi id 15.20.2136.018; Wed, 7 Aug 2019
+ 02:49:45 +0000
+From:   Firo Yang <firo.yang@suse.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "alexander.h.duyck@linux.intel.com" 
+        <alexander.h.duyck@linux.intel.com>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Firo Yang <firo.yang@suse.com>
+Subject: [PATCH v2 1/1] ixgbe: sync the first fragment unconditionally
+Thread-Topic: [PATCH v2 1/1] ixgbe: sync the first fragment unconditionally
+Thread-Index: AQHVTMrFkDapNm+vukGfNKy6YOsjCg==
+Date:   Wed, 7 Aug 2019 02:49:45 +0000
+Message-ID: <20190807024917.27682-1-firo.yang@suse.com>
+Accept-Language: en-US, en-GB, zh-CN
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: SG2PR06CA0088.apcprd06.prod.outlook.com
+ (2603:1096:3:14::14) To BY5PR18MB3187.namprd18.prod.outlook.com
+ (2603:10b6:a03:196::29)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=firo.yang@suse.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.16.4
+x-originating-ip: [45.122.156.254]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: e738d238-4c73-4015-f681-08d71ae1e7b2
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BY5PR18MB3169;
+x-ms-traffictypediagnostic: BY5PR18MB3169:
+x-microsoft-antispam-prvs: <BY5PR18MB3169DB93B12EF9EEC59509C388D40@BY5PR18MB3169.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2089;
+x-forefront-prvs: 01221E3973
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(396003)(376002)(39860400002)(346002)(366004)(136003)(199004)(189003)(6116002)(3846002)(25786009)(5640700003)(6436002)(6506007)(386003)(99286004)(54906003)(26005)(478600001)(2906002)(6486002)(68736007)(44832011)(6512007)(107886003)(486006)(2616005)(476003)(186003)(36756003)(53936002)(6916009)(14454004)(102836004)(4326008)(86362001)(66476007)(50226002)(66946007)(66446008)(64756008)(66556008)(52116002)(81166006)(81156014)(1730700003)(8676002)(8936002)(7736002)(14444005)(256004)(5660300002)(305945005)(1076003)(66066001)(2501003)(71200400001)(71190400001)(2351001)(316002);DIR:OUT;SFP:1102;SCL:1;SRVR:BY5PR18MB3169;H:BY5PR18MB3187.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: suse.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: p8eXH/9hmixvlilwAvX2TpmqCf3nsS/mqFRTOPXapxykJjWFL8VCMrumfVZMg33vUlscJtKMOhiukfwZfUtjCAo0W3LL6o2UG/KGXIeVluSUgxDKTk/rAJ3YvmHewFClgx8WDnpZt89vdT4vOl5VVhmLxZLM7nFBaXUKwuPeSfRwd8h6bZkG/T1B4w34ph9+/lUrdYmnr2Bw817yleRQjmeuWL36H+yTos1bTl4TmbjQdRzzphoKmfGikMJQRAeB18ovgbvWgq9FSXxQ+ABoUzKguME4oMtbV1ULbL2dFkq5jY2jNTVEAaZBUkP06Sl5Rgsslchz/XbVuaWTme0MxUKNm38wx1u4evKhR9Tn6U14XsymekHqUvEYccjwPO8bWiahaW9dTgoIrGCgJtTXzwseN1DomLwI2Iw8NKRu7Ww=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: e738d238-4c73-4015-f681-08d71ae1e7b2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Aug 2019 02:49:45.6312
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 856b813c-16e5-49a5-85ec-6f081e13b527
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: firo.yang@suse.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR18MB3169
+X-OriginatorOrg: suse.com
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some time back supported was added for devlink 'resources'. The idea is
-that hardware (mlxsw) has limited resources (e.g., memory) that can be
-allocated in certain ways (e.g., kvd for mlxsw) thus implementing
-restrictions on the number of programmable entries (e.g., routes,
-neighbors) by userspace.
+In Xen environment, if Xen-swiotlb is enabled, ixgbe driver
+could possibly allocate a page, DMA memory buffer, for the first
+fragment which is not suitable for Xen-swiotlb to do DMA operations.
+Xen-swiotlb have to internally allocate another page for doing DMA
+operations. It requires syncing between those two pages. However,
+since commit f3213d932173 ("ixgbe: Update driver to make use of DMA
+attributes in Rx path"), the unmap operation is performed with
+DMA_ATTR_SKIP_CPU_SYNC. As a result, the sync is not performed.
 
-I contend:
+To fix this problem, always sync before possibly performing a page
+unmap operation.
 
-1. The kernel is an analogy to the hardware: it is programmed by
-userspace, has limited resources (e.g., memory), and that users want to
-control (e.g., limit) the number of networking entities that can be
-programmed - routes, rules, nexthop objects etc and by address family
-(ipv4, ipv6).
+Fixes: f3213d932173 ("ixgbe: Update driver to make use of DMA
+attributes in Rx path")
+Reviewed-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
+Signed-off-by: Firo Yang <firo.yang@suse.com>
+---
 
-2. A consistent operational model across use cases - s/w forwarding, XDP
-forwarding and hardware forwarding - is good for users deploying systems
-based on the Linux networking stack. This aligns with my basic point at
-LPC last November about better integration of XDP and kernel tables.
+Changes from v1:
+ * Imporved the patch description.
+ * Added Reviewed-by: and Fixes: as suggested by Alexander Duyck
 
-The existing devlink API is the right one for all use cases. Most
-notably that the kernel can mimic the hardware from a resource
-management. Trying to say 'use cgroups for s/w forwarding and devlink
-for h/w forwarding' is complicating the lives of users. It is just a
-model and models can apply to more than some rigid definition.
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
-As for the namespace piece of this, the kernel's tables for networking
-are *per namespace*, and so the resource controller must be per
-namespace. This aligns with another consistent theme I have promoted
-over the years - the ability to divide up a single ASIC into multiple,
-virtual switches which are managed per namespace. This is a very popular
-feature from a certain legacy vendor and one that would be good for open
-networking to achieve. This is the basis of my response last week about
-the devlink instance per namespace, and I thought Jiri was moving in
-that direction until our chat today. Jiri's intention is something
-different; we can discuss that on the next version of his patches.
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index cbaf712d6529..200de9838096 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -1825,13 +1825,7 @@ static void ixgbe_pull_tail(struct ixgbe_ring *rx_ring,
+ static void ixgbe_dma_sync_frag(struct ixgbe_ring *rx_ring,
+ 				struct sk_buff *skb)
+ {
+-	/* if the page was released unmap it, else just sync our portion */
+-	if (unlikely(IXGBE_CB(skb)->page_released)) {
+-		dma_unmap_page_attrs(rx_ring->dev, IXGBE_CB(skb)->dma,
+-				     ixgbe_rx_pg_size(rx_ring),
+-				     DMA_FROM_DEVICE,
+-				     IXGBE_RX_DMA_ATTR);
+-	} else if (ring_uses_build_skb(rx_ring)) {
++	if (ring_uses_build_skb(rx_ring)) {
+ 		unsigned long offset = (unsigned long)(skb->data) & ~PAGE_MASK;
+ 
+ 		dma_sync_single_range_for_cpu(rx_ring->dev,
+@@ -1848,6 +1842,14 @@ static void ixgbe_dma_sync_frag(struct ixgbe_ring *rx_ring,
+ 					      skb_frag_size(frag),
+ 					      DMA_FROM_DEVICE);
+ 	}
++
++	/* If the page was released, just unmap it. */
++	if (unlikely(IXGBE_CB(skb)->page_released)) {
++		dma_unmap_page_attrs(rx_ring->dev, IXGBE_CB(skb)->dma,
++				     ixgbe_rx_pg_size(rx_ring),
++				     DMA_FROM_DEVICE,
++				     IXGBE_RX_DMA_ATTR);
++	}
+ }
+ 
+ /**
+-- 
+2.16.4
 
-###
-
-As for the current controller put into netdevsim...
-
-When I started down this road 18-20 months ago, I was copying a lot of
-netdevsim code to create a fake device from which I could have a devlink
-instance to implement the devlink resources. At some point it was silly
-to keep duplicating the code - just make it part of netdevsim. After all
-it really mirrors mlxsw and the resource limits for fib notifier
-handling, it allows testing of the userspace APIs and in kernel notifier
-APIs which allow an entity to veto a change. This is all consistent with
-the intent of netdevsim - s/w based implementation for testing of APIs
-that otherwise require hardware.
