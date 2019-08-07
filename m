@@ -2,79 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B2FE84A53
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 13:05:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0904C84B0F
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 13:52:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387534AbfHGLFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 07:05:49 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:41570 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726418AbfHGLFs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 07:05:48 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x77B4aEJ010731;
-        Wed, 7 Aug 2019 11:05:39 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=+jU+hkuie9yP8XEiBvhE5hja72DYo/HF1oIOUxCq/6Y=;
- b=RfeGUizYtX7YjDmw6IcBOoDm8Xk5qQ3smjLmW3xhrkLCdJLvFRUMhNv9Hxr/ocifuVts
- iOOZLoz29GpSSPuh99+hMq5IzavlD0gAzaTulp2X++ImkDTt06vrAS1328YXgWUCGIV3
- eqG78yoLUcfNBznIzS9YqjoLFfo/Xup6PRMJhydPDkcgUnyy8fcnAyJxB5OZxbrZ9Ajo
- XUd3vxWlTNqwtimiyyBNZM68tKpqej3UCcW1JM3UR8fCM/gqV0DC3DIAWEOSYvTIU/Kn
- kN2KQOS8RaosxF0VfK/Euqo2pB9YzGQYE7ebdJRPRxjvVryC3gjZJ0uZnYJw2QUz103W Qw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2u527pujuk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 07 Aug 2019 11:05:39 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x77B3Qde083420;
-        Wed, 7 Aug 2019 11:05:38 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 2u7667gugs-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 07 Aug 2019 11:05:38 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x77B5VfA030034;
-        Wed, 7 Aug 2019 11:05:32 GMT
-Received: from kadam (/41.57.98.10)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 07 Aug 2019 04:05:31 -0700
-Date:   Wed, 7 Aug 2019 14:05:23 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Giridhar Prasath R <cristianoprasath@gmail.com>
-Cc:     isdn@linux-pingi.de, devel@driverdev.osuosl.org, arnd@arndb.de,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH] staging: isdn: hysdn_procconf_init() remove parantheses
- from return value
-Message-ID: <20190807110523.GN1974@kadam>
-References: <20190807020331.19729-1-cristianoprasath@gmail.com>
+        id S1729745AbfHGLwF convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 7 Aug 2019 07:52:05 -0400
+Received: from skedge04.snt-world.com ([91.208.41.69]:33990 "EHLO
+        skedge04.snt-world.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727096AbfHGLwE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 07:52:04 -0400
+Received: from sntmail14r.snt-is.com (unknown [10.203.32.184])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by skedge04.snt-world.com (Postfix) with ESMTPS id 3C1BC67A7C5;
+        Wed,  7 Aug 2019 13:44:13 +0200 (CEST)
+Received: from sntmail12r.snt-is.com (10.203.32.182) by sntmail14r.snt-is.com
+ (10.203.32.184) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Wed, 7 Aug 2019
+ 13:44:12 +0200
+Received: from sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305]) by
+ sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305%3]) with mapi id
+ 15.01.1713.004; Wed, 7 Aug 2019 13:44:12 +0200
+From:   Schrempf Frieder <frieder.schrempf@kontron.de>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "Thomas Gleixner" <tglx@linutronix.de>,
+        Yangbo Lu <yangbo.lu@nxp.com>,
+        "Schrempf Frieder" <frieder.schrempf@kontron.de>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH] net: fec: Allow the driver to be built for ARM64 SoCs such as
+ i.MX8
+Thread-Topic: [PATCH] net: fec: Allow the driver to be built for ARM64 SoCs
+ such as i.MX8
+Thread-Index: AQHVTRVujOeFcyg/q0+D2PWjkrvdsQ==
+Date:   Wed, 7 Aug 2019 11:44:12 +0000
+Message-ID: <20190807114332.13312-2-frieder.schrempf@kontron.de>
+References: <20190807114332.13312-1-frieder.schrempf@kontron.de>
+In-Reply-To: <20190807114332.13312-1-frieder.schrempf@kontron.de>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-originating-ip: [172.25.9.193]
+x-c2processedorg: 51b406b7-48a2-4d03-b652-521f56ac89f3
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190807020331.19729-1-cristianoprasath@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9341 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=737
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1906280000 definitions=main-1908070123
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9341 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=799 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908070123
+X-SnT-MailScanner-Information: Please contact the ISP for more information
+X-SnT-MailScanner-ID: 3C1BC67A7C5.AEB1D
+X-SnT-MailScanner: Not scanned: please contact your Internet E-Mail Service Provider for details
+X-SnT-MailScanner-SpamCheck: 
+X-SnT-MailScanner-From: frieder.schrempf@kontron.de
+X-SnT-MailScanner-To: claudiu.manoil@nxp.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        ruxandra.radulescu@nxp.com, tglx@linutronix.de, yangbo.lu@nxp.com
+X-Spam-Status: No
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This driver is going to be deleted soon so we aren't accepting cleanups.
+From: Frieder Schrempf <frieder.schrempf@kontron.de>
 
-Thanks!
+The FEC ethernet controller is used in some ARM64 SoCs such as i.MX8.
+To make use of it, append ARM64 to the list of dependencies.
 
-regards,
-dan carpenter
+Signed-off-by: Frieder Schrempf <frieder.schrempf@kontron.de>
+---
+ drivers/net/ethernet/freescale/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/freescale/Kconfig b/drivers/net/ethernet/freescale/Kconfig
+index 6a7e8993119f..f7f4e073d955 100644
+--- a/drivers/net/ethernet/freescale/Kconfig
++++ b/drivers/net/ethernet/freescale/Kconfig
+@@ -23,7 +23,7 @@ if NET_VENDOR_FREESCALE
+ config FEC
+ 	tristate "FEC ethernet controller (of ColdFire and some i.MX CPUs)"
+ 	depends on (M523x || M527x || M5272 || M528x || M520x || M532x || \
+-		   ARCH_MXC || SOC_IMX28 || COMPILE_TEST)
++		   ARCH_MXC || ARM64 || SOC_IMX28 || COMPILE_TEST)
+ 	default ARCH_MXC || SOC_IMX28 if ARM
+ 	select PHYLIB
+ 	imply PTP_1588_CLOCK
+-- 
+2.17.1
