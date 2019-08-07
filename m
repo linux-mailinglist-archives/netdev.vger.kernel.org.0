@@ -2,213 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF78D854BF
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 22:49:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E5965854CE
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 22:55:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389598AbfHGUt2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 16:49:28 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:64048 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389590AbfHGUt0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 16:49:26 -0400
-Received: from pps.filterd (m0109331.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x77Kcdun017651
-        for <netdev@vger.kernel.org>; Wed, 7 Aug 2019 13:49:25 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=facebook; bh=lFDlsCFhy4mlD7Q0koIbBu65FWY8EncNVgC2oNP6XN8=;
- b=hLgg2vYFg7P7lXwPFZbyvKuao+lTQPjxTExnbD/qjRUeHm5rk/gJA39yFMncGbAxF+HN
- 1hgG+OQDXvELk0ZiKFVrNipgmAvtJJFY+ggH2BP3InrEz2uMd0Uva+o+ogJW1xmqBpRV
- IC+Bjg90Pz74HCkCkHm03Fg3AzBqFSltTlo= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u84250dv2-6
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 13:49:25 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 7 Aug 2019 13:49:18 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 95D2186167B; Wed,  7 Aug 2019 13:49:14 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>, <yhs@fb.com>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v5 bpf-next 14/14] selftests/bpf: add CO-RE relocs misc tests
-Date:   Wed, 7 Aug 2019 13:48:43 -0700
-Message-ID: <20190807204843.513594-15-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190807204843.513594-1-andriin@fb.com>
-References: <20190807204843.513594-1-andriin@fb.com>
-X-FB-Internal: Safe
+        id S2388468AbfHGUzS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 16:55:18 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:43929 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729934AbfHGUzS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 16:55:18 -0400
+Received: by mail-pl1-f194.google.com with SMTP id 4so35551394pld.10
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 13:55:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=U/D8itQFbcquUi6ypUZ48jaAzYaZ5NFPMVCkdAnYsYo=;
+        b=WHAE5prFg5jyjK4F7eb8277T1frOWov+AKCsMiuGsOeG76p2VlUVDsrOsIrub3MPYp
+         7O5jXT2oMsrUK8ohYEPx1iTEwHoSlJWc4/q0hfN9IoXTGmFLFfaDH0mT6HGkyvzZB7U3
+         d6pqVeV2CNg21HUO+IGlar2F7hIguyNOEJmOfXPDk11fDZmzUm/dRZcDIei9TtuJn0OC
+         PCamchsQckaOJS1Z+bPVta3HIqTsQLbSDRFdJ8KA7vJR2e62PZrI5ygFujrWi0zs5udE
+         M2EVRYb3tTtbWji2UCev1Rde4kEEcfS/+77xH8WTQeSLvaGUuAOko4lrIc/kuBnae4lC
+         bLig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=U/D8itQFbcquUi6ypUZ48jaAzYaZ5NFPMVCkdAnYsYo=;
+        b=EtT6yVmU/mnZO+BCTiqSF+RjyOV2yERMRsNVpQfrbBeDH2JyHKP8N9gy9C3mrBjMmj
+         dXzj8WOJY1AG9/BI1yr2W+GkrG4P8VQGXTNUNAI9lZ38GwiCMFzQ3wM8EZzsaR4v8UEM
+         5GbjeK+8gEV/74k5vyvUFTEYjfnzfQAGLy3NBlmPiOkZg2ggRgAO5cm0lVofxfW2EYKq
+         uEGgiJFMOXemvEkoclSyBa/Tko+SKZBrkpS/SfywqgAuPRD9N3JE5BL3iPL9OKRWDe+B
+         TAvJWzl/kxvHXFl6lzwoRDIFOegqBGV5YADWr+xNZRf/GQlyMiO2fty4U7abD/3pBZy3
+         lVHA==
+X-Gm-Message-State: APjAAAUnNlM13PxutAq/Yo/LqQR6t8Xr+whGkvIKRWBnPK7OqXGHfTjD
+        RVhCBc7I6LUY+cJbW2xZb8A=
+X-Google-Smtp-Source: APXvYqxSecis+iDcqjPYHDtt+PO9rjntW19inpXlI8wyQlMvzI22gQf5Dkja1snLCp4ysHggowPniQ==
+X-Received: by 2002:a63:89c2:: with SMTP id v185mr9307795pgd.241.1565211317217;
+        Wed, 07 Aug 2019 13:55:17 -0700 (PDT)
+Received: from [172.27.227.247] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id w132sm94268100pfd.78.2019.08.07.13.55.15
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 07 Aug 2019 13:55:16 -0700 (PDT)
+Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
+ resource limitations
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
+        netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, mkubecek@suse.cz,
+        stephen@networkplumber.org, daniel@iogearbox.net,
+        brouer@redhat.com, eric.dumazet@gmail.com
+References: <20190806164036.GA2332@nanopsycho.orion>
+ <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
+ <20190806180346.GD17072@lunn.ch>
+ <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
+ <20190807114918.15e10047@cakuba.netronome.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <c3cd420e-4071-c1b3-4ecb-c995f57ee8ed@gmail.com>
+Date:   Wed, 7 Aug 2019 14:55:14 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-07_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=67 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908070179
-X-FB-Internal: deliver
+In-Reply-To: <20190807114918.15e10047@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add tests validating few edge-cases of capturing offset relocations.
+On 8/7/19 12:49 PM, Jakub Kicinski wrote:
+> Perhaps I'm misinterpreting your point there.
 
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
----
- .../selftests/bpf/prog_tests/core_reloc.c     | 19 +++++++
- .../bpf/progs/btf__core_reloc_misc.c          |  5 ++
- .../selftests/bpf/progs/core_reloc_types.h    | 25 ++++++++
- .../bpf/progs/test_core_reloc_misc.c          | 57 +++++++++++++++++++
- 4 files changed, 106 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
+yes, this thread is getting out of hand.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/core_reloc.c b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-index 251ef8c518f0..f3863f976a48 100644
---- a/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-+++ b/tools/testing/selftests/bpf/prog_tests/core_reloc.c
-@@ -260,6 +260,25 @@ static struct core_reloc_test_case test_cases[] = {
- 	INTS_ERR_CASE(ints___err_wrong_sz_16),
- 	INTS_ERR_CASE(ints___err_wrong_sz_32),
- 	INTS_ERR_CASE(ints___err_wrong_sz_64),
-+	
-+	/* validate edge cases of capturing relocations */
-+	{
-+		.case_name = "misc",
-+		.bpf_obj_file = "test_core_reloc_misc.o",
-+		.btf_src_file = "btf__core_reloc_misc.o",
-+		.input = (const char *)&(struct core_reloc_misc_extensible[]){
-+			{ .a = 1 },
-+			{ .a = 2 }, /* not read */
-+			{ .a = 3 },
-+		},
-+		.input_len = 4 * sizeof(int),
-+		.output = STRUCT_TO_CHAR_PTR(core_reloc_misc_output) {
-+			.a = 1,
-+			.b = 1,
-+			.c = 0, /* BUG in clang, should be 3 */
-+		},
-+		.output_len = sizeof(struct core_reloc_misc_output),
-+	},
- };
- 
- struct data {
-diff --git a/tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c b/tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
-new file mode 100644
-index 000000000000..ed9ad8b5b4f8
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
-@@ -0,0 +1,5 @@
-+#include "core_reloc_types.h"
-+
-+void f1(struct core_reloc_misc___a x) {}
-+void f2(struct core_reloc_misc___b x) {}
-+void f3(struct core_reloc_misc_extensible x) {}
-diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-index 5f3ebd4f6dc3..10a252b6da55 100644
---- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
-+++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -640,3 +640,28 @@ struct core_reloc_ints___err_wrong_sz_64 {
- 	uint32_t	u64_field; /* not 64-bit anymore */
- 	int32_t		s64_field; /* not 64-bit anymore */
- };
-+
-+/*
-+ * MISC
-+ */
-+struct core_reloc_misc_output {
-+	int a, b, c;
-+};
-+
-+struct core_reloc_misc___a {
-+	int a1;
-+	int a2;
-+};
-+
-+struct core_reloc_misc___b {
-+	int b1;
-+	int b2;
-+};
-+
-+/* this one extends core_reloc_misc_extensible struct from BPF prog */
-+struct core_reloc_misc_extensible {
-+	int a;
-+	int b;
-+	int c;
-+	int d;
-+};
-diff --git a/tools/testing/selftests/bpf/progs/test_core_reloc_misc.c b/tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
-new file mode 100644
-index 000000000000..c59984bd3e23
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2019 Facebook
-+
-+#include <linux/bpf.h>
-+#include <stdint.h>
-+#include "bpf_helpers.h"
-+
-+char _license[] SEC("license") = "GPL";
-+
-+static volatile struct data {
-+	char in[256];
-+	char out[256];
-+} data;
-+
-+struct core_reloc_misc_output {
-+	int a, b, c;
-+};
-+
-+struct core_reloc_misc___a {
-+	int a1;
-+	int a2;
-+};
-+
-+struct core_reloc_misc___b {
-+	int b1;
-+	int b2;
-+};
-+
-+/* fixed two first members, can be extended with new fields */
-+struct core_reloc_misc_extensible {
-+	int a;
-+	int b;
-+};
-+
-+SEC("raw_tracepoint/sys_enter")
-+int test_core_misc(void *ctx)
-+{
-+	struct core_reloc_misc___a *in_a = (void *)&data.in;
-+	struct core_reloc_misc___b *in_b = (void *)&data.in;
-+	struct core_reloc_misc_extensible *in_ext = (void *)&data.in;
-+	struct core_reloc_misc_output *out = (void *)&data.out;
-+
-+	/* record two different relocations with the same accessor string */
-+	if (BPF_CORE_READ(&out->a, &in_a->a1) ||	/* accessor: 0:0 */
-+	    BPF_CORE_READ(&out->b, &in_b->b1))		/* accessor: 0:0 */
-+		return 1;
-+
-+	/* Validate relocations capture array-only accesses for structs with
-+	 * fixed header, but with potentially extendable tail. This will read
-+	 * first 4 bytes of 2nd element of in_ext array of potentially
-+	 * variably sized struct core_reloc_misc_extensible. */ 
-+	if (BPF_CORE_READ(&out->c, &in_ext[2]))		/* accessor: 2 */
-+		return 1;
-+
-+	return 0;
-+}
-+
--- 
-2.17.1
+I am not pushing for an in-kernel, fib resource controller. Jiri wants
+to remove the existing devlink resource code from netdevsim into a
+standalone driver, code that was added for testing and as the commit log
+shows as a demonstration of how one could create a controller using the
+devlink API. I added some color commentary as to why a devlink
+controller makes sense for the use case and how it should work, but I am
+not asking for such a controller to be added to the kernel.
 
+The netdevsim resource controller is counter based; the absolute
+simplest form of limits. If I wanted basic counting for a fib resource
+controller, I would add an option to limit the number of fib rules and
+routes using sysctl similar to what exists for neighbors. Consistency. I
+don't need the overhead and unrelated messiness of cgroups. I don't need
+the overhead of handling fib notifiers. fib (rule) add -- check counter,
+increment counter; fib (rule) delete -- decrement counter. Simple, per
+namespace, done.
