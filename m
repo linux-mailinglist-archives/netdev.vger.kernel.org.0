@@ -2,65 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 766B684574
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 09:12:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F90F8459A
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 09:21:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727637AbfHGHMi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 7 Aug 2019 03:12:38 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:44791 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726697AbfHGHMi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 03:12:38 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x777CY7e001852, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x777CY7e001852
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Wed, 7 Aug 2019 15:12:34 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Wed, 7 Aug
- 2019 15:12:33 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
-Subject: RE: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and rx_max_agg_num dynamically
-Thread-Topic: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and
- rx_max_agg_num dynamically
-Thread-Index: AQHVTEjAduvqUw50CkySh6Q/0oky4abuKLuAgAEYyLA=
-Date:   Wed, 7 Aug 2019 07:12:32 +0000
-Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D06C5@RTITMBSVM03.realtek.com.tw>
-References: <1394712342-15778-289-albertk@realtek.com>
-        <1394712342-15778-294-albertk@realtek.com>
- <20190806151007.75a8dd2c@cakuba.netronome.com>
-In-Reply-To: <20190806151007.75a8dd2c@cakuba.netronome.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S2387461AbfHGHVA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 03:21:00 -0400
+Received: from mga03.intel.com ([134.134.136.65]:56011 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727285AbfHGHU7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Aug 2019 03:20:59 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Aug 2019 00:19:42 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,356,1559545200"; 
+   d="scan'208";a="176880179"
+Received: from paasikivi.fi.intel.com ([10.237.72.42])
+  by orsmga003.jf.intel.com with ESMTP; 07 Aug 2019 00:19:32 -0700
+Received: by paasikivi.fi.intel.com (Postfix, from userid 1000)
+        id 9980B202CC; Wed,  7 Aug 2019 10:20:07 +0300 (EEST)
+Date:   Wed, 7 Aug 2019 10:20:07 +0300
+From:   Sakari Ailus <sakari.ailus@linux.intel.com>
+To:     john.hubbard@gmail.com
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
+        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
+        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
+        sparclinux@vger.kernel.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Souptick Joarder <jrdr.linux@gmail.com>
+Subject: Re: [PATCH v3 11/41] media/v4l2-core/mm: convert put_page() to
+ put_user_page*()
+Message-ID: <20190807072007.GG21370@paasikivi.fi.intel.com>
+References: <20190807013340.9706-1-jhubbard@nvidia.com>
+ <20190807013340.9706-12-jhubbard@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190807013340.9706-12-jhubbard@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski [mailto:jakub.kicinski@netronome.com]
-> Sent: Wednesday, August 07, 2019 6:10 AM
-[...]
-> Please don't expose those via sysfs. Ethtool's copybreak and descriptor
-> count should be applicable here, I think.
+On Tue, Aug 06, 2019 at 06:33:10PM -0700, john.hubbard@gmail.com wrote:
+> From: John Hubbard <jhubbard@nvidia.com>
+> 
+> For pages that were retained via get_user_pages*(), release those pages
+> via the new put_user_page*() routines, instead of via put_page() or
+> release_pages().
+> 
+> This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
+> ("mm: introduce put_user_page*(), placeholder versions").
+> 
+> Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
+> Cc: Kees Cook <keescook@chromium.org>
+> Cc: Hans Verkuil <hans.verkuil@cisco.com>
+> Cc: Sakari Ailus <sakari.ailus@linux.intel.com>
+> Cc: Jan Kara <jack@suse.cz>
+> Cc: Robin Murphy <robin.murphy@arm.com>
+> Cc: Souptick Joarder <jrdr.linux@gmail.com>
+> Cc: Dan Williams <dan.j.williams@intel.com>
+> Cc: linux-media@vger.kernel.org
+> Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 
-Excuse me.
-I find struct ethtool_tunable for ETHTOOL_RX_COPYBREAK.
-How about the descriptor count?
+Acked-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-
-Best Regards,
-Hayes
-
-
+-- 
+Sakari Ailus
+sakari.ailus@linux.intel.com
