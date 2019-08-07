@@ -2,79 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9296C84208
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:02:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE4358420D
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:03:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728795AbfHGCC0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 22:02:26 -0400
-Received: from mail-ot1-f49.google.com ([209.85.210.49]:43950 "EHLO
-        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726518AbfHGCCZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 22:02:25 -0400
-Received: by mail-ot1-f49.google.com with SMTP id j11so40771628otp.10;
-        Tue, 06 Aug 2019 19:02:25 -0700 (PDT)
+        id S1728906AbfHGCDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 22:03:03 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:44730 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728686AbfHGCDC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 22:03:02 -0400
+Received: by mail-lf1-f65.google.com with SMTP id v16so8896076lfg.11
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 19:03:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3j2UmLMhc3DW8sr9HQPJo3Bh/NJObVbth2e8SoSUnkA=;
-        b=YvWNH8yFyW4xICEQSvHfIBlfbyLGR/nM18iOrAl689Jbbq8trosj+rv3/3HmUhvGX7
-         bBXIicDitkiqa9s/A0QpUOVKmqKwPEAONq9TTClNzK2/1e9qCXwqLhHgwFvyVLEcpPRk
-         lSPt3vG5cKmYx8k6b3EiZ5Jrt1GBAx/YbZ3wiOpC1CUtQZNoykh+MSysWN/QeiN/4h0Q
-         H13tDujQdzxYv2kXdFCn211kAJLD2Jytf9+llYhLTf3cJYQPJNP6Fpu+544MOFU0mx1X
-         NX9A4obeqEXOlJr4dVOBOWu4mnd+XxTJsG+J7XPsDTSaonevDBmSVStW3OBFTto7s7qV
-         pyUA==
+        h=mime-version:reply-to:from:date:message-id:subject:to;
+        bh=hUcKlTjR1HIw/YzjCQ7WTvYjftRSq8rHNjYT9AykjRQ=;
+        b=o9eweQMKWmNCRajsaZp4AH3AQXd0G+IAHuIUfDy3qiHpaQRdC9bglAvO6OV4Co5u/2
+         5m3+JMZ8YVymNCT9VH6TCpAmSCNsjbgYDFLt63pgr+2WIzz7ffeeFwx2e/6VFm7ptRim
+         5WzwhKxhjTqVnPjOnitTmhfiY5Gt/597SK2f1yw/Xwrgg+yqZbBrtzWT9uCZZlj6KZfl
+         VYSzLyh0jBhTrBl374nNzWO/uv8rNhg+denmE5p0Rq+1QhncHgJ+W+P3hMGRv9rKEwOg
+         LL+1maquxi4pSq+E0WaDm+I8gNe6fQ86CcpqwOu7hfXQHCEmQpKqXAIQ8d57E1vhlCK1
+         sMow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3j2UmLMhc3DW8sr9HQPJo3Bh/NJObVbth2e8SoSUnkA=;
-        b=BmAuYPsh81dHw1ieiVUnX8dksiGAiJ3tCysu9vLMyn/QF+UaeRIsnJBCzrtIOimV8Y
-         MhduJ7JgsnzPGip18UmsUP2AsX0RPA60Ao2vFQZIma+Ji71sluU5es/msSFHlyp+AFzk
-         0VNaE1sXufqrivVjwMBpDPW13HrxJqSM9tHIZafJoFkGXZcBATtEVkWWp2/HQB5ybaV+
-         ICj3lEBPiQ7cNoEVBjzA5qBHeojynauPJImEfw4gJfupyTdEBHT9nwuPWHjJAvw46v1V
-         wagjegosrz+EEMbGNUm0qh9N6xfBWAapY3aShCI0iQXbDW0v5Pk7d+TsGmHAj3yT9qiA
-         dIIw==
-X-Gm-Message-State: APjAAAXq5t8KWNErJDql18ky3GCz2KdlgowZPGpI93newNi+fQR1lJhC
-        Mwvl8ao3hDtR9P5mnSPrRnr+EV0pD0ZVliXkr8cHY87d
-X-Google-Smtp-Source: APXvYqzIxWy3gYFb/WA6vjPSPIT3EBLvejV/dnLa0+4LbUQ7tn8WD//WcNCY3ZqYAsF9w2Mx9Vunds5/BsRRq0ilj7w=
-X-Received: by 2002:a9d:5512:: with SMTP id l18mr6149601oth.260.1565143344701;
- Tue, 06 Aug 2019 19:02:24 -0700 (PDT)
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to;
+        bh=hUcKlTjR1HIw/YzjCQ7WTvYjftRSq8rHNjYT9AykjRQ=;
+        b=tj6cgaLuBmDpXpd1hQ6KbhlsG6Wjy87NbSFHgmLUAhs6tKZ4ZjmbR9GWLpg07BKkQ2
+         plcM8X1IlJxQo8d1tCvT4KqtpRd924VQ0o+91UPWLXrC5W4V99+tXls/ApYyIUYlWUDY
+         68k/+ClbEdhceF6YOgtxJA74svukUajhYHzfCDUxWVJ3K7ih6AAE1IoKBaPXf8CsBhmz
+         yMWojjpw849sciuVIG49/uAwKooPYoqiy3bJCzGE6OXhSFQRwv61XHI5p3yyn85Q217K
+         IVXttkGkpfFEdSPCQQ2aa/XKovfbPYgMKNdgQHxKzpYQsY6YHp3joTMBoclLmp5VSm2o
+         P+OA==
+X-Gm-Message-State: APjAAAWVzVw5JbvdLuxJt6A4P7qekjsNMaqpZFbqYFPn/33SuJLSmpkp
+        kwBXq8Z4sLNhwE78jqwGifKGIAR4wu4MnKhZUBw=
+X-Google-Smtp-Source: APXvYqx63NCS5xUlZp43W+KDDk4O6eijr3C2rATDqqmBcIqMrd1lPin6LVKIePHQ8rO++8JTHZv6b1yA/Mr3r/TRbFA=
+X-Received: by 2002:ac2:5a1c:: with SMTP id q28mr4681670lfn.131.1565143380777;
+ Tue, 06 Aug 2019 19:03:00 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190807093037.65ac614e@canb.auug.org.au> <CAEYOeXMV1DbTsy7U1-Fu0eztVGpw-+ZEJTK0Hzm8xbqCL7fabw@mail.gmail.com>
- <20190807115436.5f02155c@canb.auug.org.au>
-In-Reply-To: <20190807115436.5f02155c@canb.auug.org.au>
-From:   Yifeng Sun <pkusunyifeng@gmail.com>
-Date:   Tue, 6 Aug 2019 19:02:13 -0700
-Message-ID: <CAEYOeXNDR2q6S=6uwBizH=HUmrEtGzGqDMbDRLMp5ONT6Fkd6g@mail.gmail.com>
-Subject: Re: linux-next: Signed-off-by missing for commit in the net-next tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Received: by 2002:a2e:7507:0:0:0:0:0 with HTTP; Tue, 6 Aug 2019 19:03:00 -0700 (PDT)
+Reply-To: beronsimon69@gmail.com
+From:   Simon Beron <agbej57@gmail.com>
+Date:   Wed, 7 Aug 2019 04:03:00 +0200
+Message-ID: <CAPE2HD0X3M7uQvDf5ZkpLnjCh8mQM0OAEiFJPacF7dOanq3qQQ@mail.gmail.com>
+Subject: PARTNERSHIP REQUEST,
+To:     undisclosed-recipients:;
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stephen,
+Dear Friend,
 
-Sure, thanks!
-Yifeng
+I need you to please let me know if there are fast growing investments
+in your country in which i can invest money in. I have access to a
+huge amount of money, which i want to invest in your country, i want
+to know if you can be an agent/partner to me and i will give you a
+commission of 30% only If you agree to assist me, i will like to know
+if the commission is ok for you, also i would love to know more about
+you too. Get Back to me without delay if you are interested
 
-On Tue, Aug 6, 2019 at 6:54 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
->
-> Hi Yifeng,
->
-> On Tue, 6 Aug 2019 16:37:26 -0700 Yifeng Sun <pkusunyifeng@gmail.com> wrote:
-> >
-> > My apologies, thanks for the email. Please add the signed-off if you can.
->
-> Dave does not rebase his trees, so that is not possible.  Just remember
-> for next time, thanks :-)
->
-> --
-> Cheers,
-> Stephen Rothwell
+
+Yours Faithfully
+
+Simon Beron.
