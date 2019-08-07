@@ -2,271 +2,249 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2446385491
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 22:42:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 495D8854AC
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 22:49:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389330AbfHGUmi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 16:42:38 -0400
-Received: from mail-qt1-f175.google.com ([209.85.160.175]:34197 "EHLO
-        mail-qt1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388637AbfHGUmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 16:42:38 -0400
-Received: by mail-qt1-f175.google.com with SMTP id k10so20665342qtq.1
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 13:42:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=A7bkP8kqLoW5V3VR56Rgq4aGk7AIMwdIym2ULmduyIo=;
-        b=JyayH6kOb5Zp4tUOX92PiHX7+HSAErFaj+qiB7d0f+cVUtXg7bqrX1cFz6LSsE/mcw
-         mZY7UjarH5RfSZ6YEnhlugtG0KMrpOdrEIXOPsHLEgolp0oiL+S48Uyi1lD3IZpWcBRV
-         hlAwRMmMGMkfk+7nsaRHsSe8vOEeovacsA0urLCiR01XEeLWgGjl6PKT7UXCv+8/7ZCh
-         5kJbqof3imo7nwuQJLoDCmuuwoaY4BQjZIEeDdZlyPYlBrK6ntAVDeWila61GSbEJibk
-         qfHCOcyBjLG3uBOj6RwK3UmGO8g3ISTplmn2wA3lCxbymqCQN/2txvTQzn+1XT5rCR9Z
-         Wkvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=A7bkP8kqLoW5V3VR56Rgq4aGk7AIMwdIym2ULmduyIo=;
-        b=EYRBG5TwdUPQaFU1pjeeEM9XG1+hKnVfgdNQBvPuIzF+T2FwUDamWWtkOH/imlBu5Y
-         amEVBK71R496XmFbvpLsqKR5UD5TbkjgV347qbBuERB3dmlnIvgLAuasc3+red0Y8FC+
-         0grdAtUnS6Im2GekDDBvOndzRi9kA+ZCsL3EZxeQklVBXb8BaxmvPw4onLYCIKy89dW8
-         0seXzvvv7z2X1Kv8+b5D6BVI/x80irnNBTQUcaFC80u1nKKrRBHIWRLlP7Ou/vrrulpB
-         aikgCVODNuMt0Noh6tqr5i2KlSSU95IBcPUqUr67Y0ZhQElSb1E+x+q7dEaElGYsuyWz
-         FyfQ==
-X-Gm-Message-State: APjAAAW7z+GLn5veq/gbEYOSPe6sMFWynYK6HrVNBV2IzGDW0SzwnAXE
-        A82KyyaRkXPWJAZ0wHoNrpFlcQ==
-X-Google-Smtp-Source: APXvYqwsTDQh9h/wJ67+60sgnX1kMqwqMn1WLia1ffDKUkkWEbVJpTJGVLgegxjNsGDMjqXHxG5Baw==
-X-Received: by 2002:ac8:41d7:: with SMTP id o23mr973806qtm.268.1565210556715;
-        Wed, 07 Aug 2019 13:42:36 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id j2sm41889204qtb.89.2019.08.07.13.42.36
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 07 Aug 2019 13:42:36 -0700 (PDT)
-Date:   Wed, 7 Aug 2019 13:42:08 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [v3,1/4] tools: bpftool: add net attach command to attach XDP
- on interface
-Message-ID: <20190807134208.6601fad2@cakuba.netronome.com>
-In-Reply-To: <20190807022509.4214-2-danieltimlee@gmail.com>
-References: <20190807022509.4214-1-danieltimlee@gmail.com>
-        <20190807022509.4214-2-danieltimlee@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S2389540AbfHGUtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 16:49:08 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:56416 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389513AbfHGUtG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 16:49:06 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x77KmoRa001238
+        for <netdev@vger.kernel.org>; Wed, 7 Aug 2019 13:49:05 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=facebook;
+ bh=5gQZqy1csSMTmg0Hx4PueIFoYGvh/unmwJm+FWTrFk0=;
+ b=Wt/Y7Mt2tZurUsPwg5mT6EDpagtY2aVmGcqj3ESN+yMN/L3kwJmASi8anD0i/fvZMMW+
+ w2VVANyY63SMz8gzpvCBaw/iDaUoFBz8O+cqnGaJwugghYQD5qVGX6Xa3LyYjSjjunjj
+ opLY1XKoL6PTO73ACMEE87D9a25cHy14In4= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2u83wp8eu4-8
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 13:49:05 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 7 Aug 2019 13:48:50 -0700
+Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
+        id ECB2986167B; Wed,  7 Aug 2019 13:48:45 -0700 (PDT)
+Smtp-Origin-Hostprefix: dev
+From:   Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Hostname: dev101.prn2.facebook.com
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
+        <daniel@iogearbox.net>, <yhs@fb.com>
+CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+Smtp-Origin-Cluster: prn2c23
+Subject: [PATCH v5 bpf-next 00/14] CO-RE offset relocations
+Date:   Wed, 7 Aug 2019 13:48:29 -0700
+Message-ID: <20190807204843.513594-1-andriin@fb.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-07_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=9 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908070180
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed,  7 Aug 2019 11:25:06 +0900, Daniel T. Lee wrote:
-> By this commit, using `bpftool net attach`, user can attach XDP prog on
-> interface. New type of enum 'net_attach_type' has been made, as stated at
-> cover-letter, the meaning of 'attach' is, prog will be attached on interface.
-> 
-> With 'overwrite' option at argument, attached XDP program could be replaced.
-> Added new helper 'net_parse_dev' to parse the network device at argument.
-> 
-> BPF prog will be attached through libbpf 'bpf_set_link_xdp_fd'.
-> 
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  tools/bpf/bpftool/net.c | 141 ++++++++++++++++++++++++++++++++++++----
->  1 file changed, 130 insertions(+), 11 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-> index 67e99c56bc88..c05a3fac5cac 100644
-> --- a/tools/bpf/bpftool/net.c
-> +++ b/tools/bpf/bpftool/net.c
-> @@ -55,6 +55,35 @@ struct bpf_attach_info {
->  	__u32 flow_dissector_id;
->  };
->  
-> +enum net_attach_type {
-> +	NET_ATTACH_TYPE_XDP,
-> +	NET_ATTACH_TYPE_XDP_GENERIC,
-> +	NET_ATTACH_TYPE_XDP_DRIVER,
-> +	NET_ATTACH_TYPE_XDP_OFFLOAD,
-> +};
-> +
-> +static const char * const attach_type_strings[] = {
-> +	[NET_ATTACH_TYPE_XDP]		= "xdp",
-> +	[NET_ATTACH_TYPE_XDP_GENERIC]	= "xdpgeneric",
-> +	[NET_ATTACH_TYPE_XDP_DRIVER]	= "xdpdrv",
-> +	[NET_ATTACH_TYPE_XDP_OFFLOAD]	= "xdpoffload",
-> +};
-> +
-> +const size_t max_net_attach_type = ARRAY_SIZE(attach_type_strings);
+This patch set implements central part of CO-RE (Compile Once - Run
+Everywhere, see [0] and [1] for slides and video): relocating fields offsets.
+Most of the details are written down as comments to corresponding parts of the
+code.
 
-Nit: in practice max_.._type is num_types - 1, so perhaps rename this
-to num_.. or such?
+Patch #1 adds a bunch of commonly useful btf_xxx helpers to simplify working
+with BTF types.
+Patch #2 converts existing libbpf code to these new helpers and removes some
+of pre-existing ones.
+Patch #3 adds loading of .BTF.ext offset relocations section and macros to
+work with its contents.
+Patch #4 implements CO-RE relocations algorithm in libbpf.
+Patch #5 introduced BPF_CORE_READ macro, hiding usage of Clang's
+__builtin_preserve_access_index intrinsic that records offset relocation.
+Patches #6-#14 adds selftests validating various parts of relocation handling,
+type compatibility, etc.
 
-> +static enum net_attach_type parse_attach_type(const char *str)
-> +{
-> +	enum net_attach_type type;
-> +
-> +	for (type = 0; type < max_net_attach_type; type++) {
-> +		if (attach_type_strings[type] &&
-> +		   is_prefix(str, attach_type_strings[type]))
+For all tests to work, you'll need latest Clang/LLVM supporting
+__builtin_preserve_access_index intrinsic, used for recording offset
+relocations. Kernel on which selftests run should have BTF information built
+in (CONFIG_DEBUG_INFO_BTF=y).
 
-                   ^
-this is misaligned by one space
+  [0] http://vger.kernel.org/bpfconf2019.html#session-2
+  [1] http://vger.kernel.org/lpc-bpf2018.html#session-2
 
-Please try checkpatch with the --strict option to catch these.
+v4->v5:
+- drop constness for btf_xxx() helpers, allowing to avoid type casts (Alexei);
+- rebase on latest bpf-next, change test__printf back to printf;
 
-> +			return type;
-> +	}
-> +
-> +	return max_net_attach_type;
-> +}
-> +
->  static int dump_link_nlmsg(void *cookie, void *msg, struct nlattr **tb)
->  {
->  	struct bpf_netdev_t *netinfo = cookie;
-> @@ -223,6 +252,97 @@ static int query_flow_dissector(struct bpf_attach_info *attach_info)
->  	return 0;
->  }
->  
-> +static int net_parse_dev(int *argc, char ***argv)
-> +{
-> +	int ifindex;
-> +
-> +	if (is_prefix(**argv, "dev")) {
-> +		NEXT_ARGP();
-> +
-> +		ifindex = if_nametoindex(**argv);
-> +		if (!ifindex)
-> +			p_err("invalid devname %s", **argv);
-> +
-> +		NEXT_ARGP();
-> +	} else {
-> +		p_err("expected 'dev', got: '%s'?", **argv);
-> +		return -1;
-> +	}
-> +
-> +	return ifindex;
-> +}
-> +
-> +static int do_attach_detach_xdp(int progfd, enum net_attach_type attach_type,
-> +				int ifindex, bool overwrite)
-> +{
-> +	__u32 flags = 0;
-> +
-> +	if (!overwrite)
-> +		flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
-> +	if (attach_type == NET_ATTACH_TYPE_XDP_GENERIC)
-> +		flags |= XDP_FLAGS_SKB_MODE;
-> +	if (attach_type == NET_ATTACH_TYPE_XDP_DRIVER)
-> +		flags |= XDP_FLAGS_DRV_MODE;
-> +	if (attach_type == NET_ATTACH_TYPE_XDP_OFFLOAD)
-> +		flags |= XDP_FLAGS_HW_MODE;
-> +
-> +	return bpf_set_link_xdp_fd(ifindex, progfd, flags);
-> +}
-> +
-> +static int do_attach(int argc, char **argv)
-> +{
-> +	enum net_attach_type attach_type;
-> +	int progfd, ifindex, err = 0;
-> +	bool overwrite = false;
-> +
-> +	/* parse attach args */
-> +	if (!REQ_ARGS(5))
-> +		return -EINVAL;
-> +
-> +	attach_type = parse_attach_type(*argv);
-> +	if (attach_type == max_net_attach_type) {
-> +		p_err("invalid net attach/detach type");
+v3->v4:
+- added btf_xxx helpers (Alexei);
+- switched libbpf code to new helpers;
+- reduced amount of logging and simplified format in few places (Alexei);
+- made flavor name parsing logic more strict (exactly three underscores);
+- no uname() error checking (Alexei);
+- updated misc tests to reflect latest Clang fixes (Yonghong);
 
-worth adding the type to the error message so that user know which part
-of command line was wrong:
+v2->v3:
+- enclose BPF_CORE_READ args in parens (Song);
 
-	p_err("invalid net attach/detach type '%s'", *argv);
+v1->v2:
+- add offsetofend(), fix btf_ext optional fields checks (Song);
+- add bpf_core_dump_spec() for logging spec representation;
+- move special first element processing out of the loop (Song);
+- typo fixes (Song);
+- drop BPF_ST | BPF_MEM insn relocation (Alexei);
+- extracted BPF_CORE_READ into bpf_helpers (Alexei);
+- added extra tests validating Clang capturing relocs correctly (Yonghong);
+- switch core_relocs.c to use sub-tests;
+- updated mods tests after Clang bug was fixed (Yonghong);
+- fix bug enumerating candidate types;
 
-> +		return -EINVAL;
-> +	}
-> +
-> +	NEXT_ARG();
+Andrii Nakryiko (14):
+  libbpf: add helpers for working with BTF types
+  libbpf: convert libbpf code to use new btf helpers
+  libbpf: add .BTF.ext offset relocation section loading
+  libbpf: implement BPF CO-RE offset relocation algorithm
+  selftests/bpf: add BPF_CORE_READ relocatable read macro
+  selftests/bpf: add CO-RE relocs testing setup
+  selftests/bpf: add CO-RE relocs struct flavors tests
+  selftests/bpf: add CO-RE relocs nesting tests
+  selftests/bpf: add CO-RE relocs array tests
+  selftests/bpf: add CO-RE relocs enum/ptr/func_proto tests
+  selftests/bpf: add CO-RE relocs modifiers/typedef tests
+  selftests/bpf: add CO-RE relocs ptr-as-array tests
+  selftests/bpf: add CO-RE relocs ints tests
+  selftests/bpf: add CO-RE relocs misc tests
 
-nit: the new line should be before NEXT_ARG(), IOV NEXT_ARG() belongs
-to the code which consumed the argument
+ tools/lib/bpf/btf.c                           | 250 ++---
+ tools/lib/bpf/btf.h                           | 180 ++++
+ tools/lib/bpf/btf_dump.c                      | 138 +--
+ tools/lib/bpf/libbpf.c                        | 941 +++++++++++++++++-
+ tools/lib/bpf/libbpf.h                        |   1 +
+ tools/lib/bpf/libbpf_internal.h               | 105 ++
+ tools/testing/selftests/bpf/bpf_helpers.h     |  20 +
+ .../selftests/bpf/prog_tests/core_reloc.c     | 385 +++++++
+ .../bpf/progs/btf__core_reloc_arrays.c        |   3 +
+ .../btf__core_reloc_arrays___diff_arr_dim.c   |   3 +
+ ...btf__core_reloc_arrays___diff_arr_val_sz.c |   3 +
+ .../btf__core_reloc_arrays___err_non_array.c  |   3 +
+ ...btf__core_reloc_arrays___err_too_shallow.c |   3 +
+ .../btf__core_reloc_arrays___err_too_small.c  |   3 +
+ ..._core_reloc_arrays___err_wrong_val_type1.c |   3 +
+ ..._core_reloc_arrays___err_wrong_val_type2.c |   3 +
+ .../bpf/progs/btf__core_reloc_flavors.c       |   3 +
+ .../btf__core_reloc_flavors__err_wrong_name.c |   3 +
+ .../bpf/progs/btf__core_reloc_ints.c          |   3 +
+ .../bpf/progs/btf__core_reloc_ints___bool.c   |   3 +
+ .../btf__core_reloc_ints___err_bitfield.c     |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_16.c  |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_32.c  |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_64.c  |   3 +
+ .../btf__core_reloc_ints___err_wrong_sz_8.c   |   3 +
+ .../btf__core_reloc_ints___reverse_sign.c     |   3 +
+ .../bpf/progs/btf__core_reloc_misc.c          |   5 +
+ .../bpf/progs/btf__core_reloc_mods.c          |   3 +
+ .../progs/btf__core_reloc_mods___mod_swap.c   |   3 +
+ .../progs/btf__core_reloc_mods___typedefs.c   |   3 +
+ .../bpf/progs/btf__core_reloc_nesting.c       |   3 +
+ .../btf__core_reloc_nesting___anon_embed.c    |   3 +
+ ...f__core_reloc_nesting___dup_compat_types.c |   5 +
+ ...core_reloc_nesting___err_array_container.c |   3 +
+ ...tf__core_reloc_nesting___err_array_field.c |   3 +
+ ...e_reloc_nesting___err_dup_incompat_types.c |   4 +
+ ...re_reloc_nesting___err_missing_container.c |   3 +
+ ...__core_reloc_nesting___err_missing_field.c |   3 +
+ ..._reloc_nesting___err_nonstruct_container.c |   3 +
+ ...e_reloc_nesting___err_partial_match_dups.c |   4 +
+ .../btf__core_reloc_nesting___err_too_deep.c  |   3 +
+ .../btf__core_reloc_nesting___extra_nesting.c |   3 +
+ ..._core_reloc_nesting___struct_union_mixup.c |   3 +
+ .../bpf/progs/btf__core_reloc_primitives.c    |   3 +
+ ...f__core_reloc_primitives___diff_enum_def.c |   3 +
+ ..._core_reloc_primitives___diff_func_proto.c |   3 +
+ ...f__core_reloc_primitives___diff_ptr_type.c |   3 +
+ ...tf__core_reloc_primitives___err_non_enum.c |   3 +
+ ...btf__core_reloc_primitives___err_non_int.c |   3 +
+ ...btf__core_reloc_primitives___err_non_ptr.c |   3 +
+ .../bpf/progs/btf__core_reloc_ptr_as_arr.c    |   3 +
+ .../btf__core_reloc_ptr_as_arr___diff_sz.c    |   3 +
+ .../selftests/bpf/progs/core_reloc_types.h    | 667 +++++++++++++
+ .../bpf/progs/test_core_reloc_arrays.c        |  55 +
+ .../bpf/progs/test_core_reloc_flavors.c       |  62 ++
+ .../bpf/progs/test_core_reloc_ints.c          |  44 +
+ .../bpf/progs/test_core_reloc_kernel.c        |  36 +
+ .../bpf/progs/test_core_reloc_misc.c          |  57 ++
+ .../bpf/progs/test_core_reloc_mods.c          |  62 ++
+ .../bpf/progs/test_core_reloc_nesting.c       |  46 +
+ .../bpf/progs/test_core_reloc_primitives.c    |  43 +
+ .../bpf/progs/test_core_reloc_ptr_as_arr.c    |  30 +
+ 62 files changed, 2979 insertions(+), 281 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/core_reloc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_dim.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_val_sz.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_non_array.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_shallow.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_small.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_enum_def.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_func_proto.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_ptr_type.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_enum.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_int.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_ptr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr___diff_sz.c
+ create mode 100644 tools/testing/selftests/bpf/progs/core_reloc_types.h
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_primitives.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ptr_as_arr.c
 
-> +	progfd = prog_parse_fd(&argc, &argv);
-> +	if (progfd < 0)
-> +		return -EINVAL;
-> +
-> +	ifindex = net_parse_dev(&argc, &argv);
-> +	if (ifindex < 1) {
-> +		close(progfd);
-> +		return -EINVAL;
-> +	}
-> +
-> +	if (argc) {
-> +		if (is_prefix(*argv, "overwrite")) {
-> +			overwrite = true;
-> +		} else {
-> +			p_err("expected 'overwrite', got: '%s'?", *argv);
-> +			close(progfd);
-> +			return -EINVAL;
-> +		}
-> +	}
-> +
-> +	/* attach xdp prog */
-> +	if (is_prefix("xdp", attach_type_strings[attach_type]))
+-- 
+2.17.1
 
-I'm still unclear on why this if is needed
-
-> +		err = do_attach_detach_xdp(progfd, attach_type, ifindex,
-> +					   overwrite);
-> +
-> +	if (err < 0) {
-> +		p_err("interface %s attach failed",
-> +		      attach_type_strings[attach_type]);
-
-Please add the error string, like:
-
-		p_err("interface %s attach failed: %s",
-		      attach_type_strings[attach_type], strerror(errno));
-
-
-> +		return err;
-> +	}
-> +
-> +	if (json_output)
-> +		jsonw_null(json_wtr);
-> +
-> +	return 0;
-> +}
-> +
->  static int do_show(int argc, char **argv)
->  {
->  	struct bpf_attach_info attach_info = {};
-> @@ -231,17 +351,10 @@ static int do_show(int argc, char **argv)
->  	unsigned int nl_pid;
->  	char err_buf[256];
->  
-> -	if (argc == 2) {
-> -		if (strcmp(argv[0], "dev") != 0)
-> -			usage();
-> -		filter_idx = if_nametoindex(argv[1]);
-> -		if (filter_idx == 0) {
-> -			fprintf(stderr, "invalid dev name %s\n", argv[1]);
-> -			return -1;
-> -		}
-> -	} else if (argc != 0) {
-> +	if (argc == 2)
-> +		filter_idx = net_parse_dev(&argc, &argv);
-
-You should check filter_idx is not negative here, no?
-
-> +	else if (argc != 0)
->  		usage();
-> -	}
->  
->  	ret = query_flow_dissector(&attach_info);
->  	if (ret)
