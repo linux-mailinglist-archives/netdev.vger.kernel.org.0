@@ -2,265 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3486842C2
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 05:02:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 44FFD842CE
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 05:10:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727985AbfHGDCk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 23:02:40 -0400
-Received: from f0-dek.dektech.com.au ([210.10.221.142]:37649 "EHLO
-        mail.dektech.com.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726334AbfHGDCj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 23:02:39 -0400
-X-Greylist: delayed 578 seconds by postgrey-1.27 at vger.kernel.org; Tue, 06 Aug 2019 23:02:37 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dektech.com.au (Postfix) with ESMTP id F40DA487AC;
-        Wed,  7 Aug 2019 12:52:56 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=dektech.com.au;
-         h=x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mail_dkim; t=1565146376; bh=ChSX3
-        qnsAtpC1NbJNFuZA3+cM9Wc+xs3zJ81PezW2AI=; b=DWblle9lD5gMJwBU8NWYh
-        Urh/NNC93eENh6iEJHRR3kxgDddZ+rBNZxIwsxlm3CER6mw0a9JOyispkVnQQlbX
-        idg3a5EsX64NokPl63f5LBCUL8QNIHFZsRXkgabPYTK9VVMChjrab4LfeFgWTqyP
-        BCoVph7/HZggWGg0bbdxfo=
-X-Virus-Scanned: amavisd-new at dektech.com.au
-Received: from mail.dektech.com.au ([127.0.0.1])
-        by localhost (mail2.dektech.com.au [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id mbHtgmuJNNZw; Wed,  7 Aug 2019 12:52:56 +1000 (AEST)
-Received: from cba01.dek-tpc.internal (cba01.dek-tpc.internal [172.16.83.49])
-        by mail.dektech.com.au (Postfix) with ESMTP id D02F348755;
-        Wed,  7 Aug 2019 12:52:56 +1000 (AEST)
-Received: by cba01.dek-tpc.internal (Postfix, from userid 1014)
-        id 7F7E318179D; Wed,  7 Aug 2019 12:52:56 +1000 (AEST)
-From:   john.rutherford@dektech.com.au
-To:     davem@davemloft.net, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Cc:     John Rutherford <john.rutherford@dektech.com.au>
-Subject: [net-next v3] tipc: add loopback device tracking
-Date:   Wed,  7 Aug 2019 12:52:29 +1000
-Message-Id: <20190807025229.1599-1-john.rutherford@dektech.com.au>
-X-Mailer: git-send-email 2.13.7
+        id S1727511AbfHGDKo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 23:10:44 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45268 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726797AbfHGDKo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 23:10:44 -0400
+Received: by mail-pf1-f196.google.com with SMTP id r1so42617613pfq.12
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 20:10:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MvCP2w13TKPjtfIvHJrF7al2q5zNEQ/KDWhxBDCYs0g=;
+        b=UGUOAvvnEsZHGtEIuV0RbfiFRXfTMz4kyZKeUTrcersjrmv6td2UcDNZITLO3ApAyN
+         H01PVV6BrpqPc67jZBq7CbMuRjceNosCdMZau6KYviKrJa6ZFJhwWep792vbyz7LNANb
+         C8JlJq2PCDMEFh57gOxA/1Kgm4NQhF/VkhLlrYyzXRYHAQFZJ51ZKeQGeDzQYc9cYwdV
+         yCMntYSd0oZBKuTxt10Tkgdy6zWXSCWvP81ip5a/GOa2gxVGCbkwnR9Upkllomb5xLXS
+         DrVAgWY0wLw3ZdCUOSJaOpvu0JDwAf0GWD/9Yw+XAZJp918tS2Y7osDtji+WuILHWTVI
+         PV1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MvCP2w13TKPjtfIvHJrF7al2q5zNEQ/KDWhxBDCYs0g=;
+        b=F1XrCyzDwHLQL0c1HopkLqYEf75+KJTImRvc3+A1wqh15nVoI7jZtePRCDsxfzpMiV
+         IXFd97mlk0l/DIcudX2mJhBaMR5FxglvAjbg/bH3ABJFjdwRt2ZEH4hifAU7UR54hlQe
+         i/vn7nSCc5hYTFqab5tG3owfaIK5XincwKvDlaL3tkETuVv2ZUmqJ7yG7/48gW5geeY4
+         to05Fj2xBhLZKuJ9xfrHrhWeXoBP8qh42QMzi/9VNI7SDmnJE7EJ9RO/mg7EHuwUbv1L
+         zosLO5kvPWGk0ylDDffh9/TuBYI+II2kTGZybynK+ZivPMztgUgY3jrfwGhb2Qvw91og
+         +xyA==
+X-Gm-Message-State: APjAAAWzwQ9BbKQsiBYyn+KNEShL4sBZ0OxscjQ+62xiZ9SDXXloq0w8
+        rgqFbZo81+INdSS19Fd4YXK6v6Xo6aA=
+X-Google-Smtp-Source: APXvYqyn0vrg1t9TpcHtGc6JOdbOPNxy5H72dlUJYWeh0JnrZM9OcwFlP0BTYKqKhUr0VRdeEgEieQ==
+X-Received: by 2002:a17:90a:19d:: with SMTP id 29mr6431572pjc.71.1565147443375;
+        Tue, 06 Aug 2019 20:10:43 -0700 (PDT)
+Received: from [172.27.227.229] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id 65sm89878334pff.148.2019.08.06.20.10.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 06 Aug 2019 20:10:42 -0700 (PDT)
+Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
+ resource limitations
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, mlxsw@mellanox.com,
+        jakub.kicinski@netronome.com, f.fainelli@gmail.com,
+        vivien.didelot@gmail.com, mkubecek@suse.cz,
+        stephen@networkplumber.org, daniel@iogearbox.net,
+        brouer@redhat.com, eric.dumazet@gmail.com
+References: <20190806164036.GA2332@nanopsycho.orion>
+ <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
+ <20190806180346.GD17072@lunn.ch>
+ <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
+ <20190807025933.GF20422@lunn.ch>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <153eb34b-05dd-4a85-88d8-e5723f41bbe3@gmail.com>
+Date:   Tue, 6 Aug 2019 21:10:40 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
+MIME-Version: 1.0
+In-Reply-To: <20190807025933.GF20422@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Rutherford <john.rutherford@dektech.com.au>
+On 8/6/19 8:59 PM, Andrew Lunn wrote:
+> However, zoom out a bit, from networking to the whole kernel. In
+> general, across the kernel as a whole, resource management is done
+> with cgroups. cgroups is the consistent operational model across the
+> kernel as a whole.
+> 
+> So i think you need a second leg to your argument. You have said why
+> devlink is the right way to do this. But you should also be able to
+> say to Tejun Heo why cgroups is the wrong way to do this, going
+> against the kernel as a whole model. Why is networking special?
+> 
 
-Since node internal messages are passed directly to the socket, it is not
-possible to observe those messages via tcpdump or wireshark.
+So you are saying mlxsw should be using a cgroups based API for its
+resources? netdevsim is for testing kernel APIs sans hardware. Is that
+not what the fib controller netdevsim is doing? It is from my perspective.
 
-We now remedy this by making it possible to clone such messages and send
-the clones to the loopback interface.  The clones are dropped at reception
-and have no functional role except making the traffic visible.
-
-The feature is enabled if network taps are active for the loopback device.
-pcap filtering restrictions require the messages to be presented to the
-receiving side of the loopback device.
-
-v3 - Function dev_nit_active used to check for network taps.
-   - Procedure netif_rx_ni used to send cloned messages to loopback device.
-
-Signed-off-by: John Rutherford <john.rutherford@dektech.com.au>
-Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-Acked-by: Ying Xue <ying.xue@windriver.com>
----
- net/tipc/bcast.c  |  4 +++-
- net/tipc/bearer.c | 64 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
- net/tipc/bearer.h | 10 +++++++++
- net/tipc/core.c   |  5 +++++
- net/tipc/core.h   |  3 +++
- net/tipc/node.c   |  1 +
- net/tipc/topsrv.c |  2 ++
- 7 files changed, 88 insertions(+), 1 deletion(-)
-
-diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
-index 6c997d4..235331d 100644
---- a/net/tipc/bcast.c
-+++ b/net/tipc/bcast.c
-@@ -406,8 +406,10 @@ int tipc_mcast_xmit(struct net *net, struct sk_buff_head *pkts,
- 			rc = tipc_bcast_xmit(net, pkts, cong_link_cnt);
- 	}
- 
--	if (dests->local)
-+	if (dests->local) {
-+		tipc_loopback_trace(net, &localq);
- 		tipc_sk_mcast_rcv(net, &localq, &inputq);
-+	}
- exit:
- 	/* This queue should normally be empty by now */
- 	__skb_queue_purge(pkts);
-diff --git a/net/tipc/bearer.c b/net/tipc/bearer.c
-index 2bed658..93c9616 100644
---- a/net/tipc/bearer.c
-+++ b/net/tipc/bearer.c
-@@ -389,6 +389,11 @@ int tipc_enable_l2_media(struct net *net, struct tipc_bearer *b,
- 		dev_put(dev);
- 		return -EINVAL;
- 	}
-+	if (dev == net->loopback_dev) {
-+		dev_put(dev);
-+		pr_info("Enabling <%s> not permitted\n", b->name);
-+		return -EINVAL;
-+	}
- 
- 	/* Autoconfigure own node identity if needed */
- 	if (!tipc_own_id(net) && hwaddr_len <= NODE_ID_LEN) {
-@@ -674,6 +679,65 @@ void tipc_bearer_stop(struct net *net)
- 	}
- }
- 
-+void tipc_clone_to_loopback(struct net *net, struct sk_buff_head *pkts)
-+{
-+	struct net_device *dev = net->loopback_dev;
-+	struct sk_buff *skb, *_skb;
-+	int exp;
-+
-+	skb_queue_walk(pkts, _skb) {
-+		skb = pskb_copy(_skb, GFP_ATOMIC);
-+		if (!skb)
-+			continue;
-+
-+		exp = SKB_DATA_ALIGN(dev->hard_header_len - skb_headroom(skb));
-+		if (exp > 0 && pskb_expand_head(skb, exp, 0, GFP_ATOMIC)) {
-+			kfree_skb(skb);
-+			continue;
-+		}
-+
-+		skb_reset_network_header(skb);
-+		dev_hard_header(skb, dev, ETH_P_TIPC, dev->dev_addr,
-+				dev->dev_addr, skb->len);
-+		skb->dev = dev;
-+		skb->pkt_type = PACKET_HOST;
-+		skb->ip_summed = CHECKSUM_UNNECESSARY;
-+		skb->protocol = eth_type_trans(skb, dev);
-+		netif_rx_ni(skb);
-+	}
-+}
-+
-+static int tipc_loopback_rcv_pkt(struct sk_buff *skb, struct net_device *dev,
-+				 struct packet_type *pt, struct net_device *od)
-+{
-+	consume_skb(skb);
-+	return NET_RX_SUCCESS;
-+}
-+
-+int tipc_attach_loopback(struct net *net)
-+{
-+	struct net_device *dev = net->loopback_dev;
-+	struct tipc_net *tn = tipc_net(net);
-+
-+	if (!dev)
-+		return -ENODEV;
-+
-+	dev_hold(dev);
-+	tn->loopback_pt.dev = dev;
-+	tn->loopback_pt.type = htons(ETH_P_TIPC);
-+	tn->loopback_pt.func = tipc_loopback_rcv_pkt;
-+	dev_add_pack(&tn->loopback_pt);
-+	return 0;
-+}
-+
-+void tipc_detach_loopback(struct net *net)
-+{
-+	struct tipc_net *tn = tipc_net(net);
-+
-+	dev_remove_pack(&tn->loopback_pt);
-+	dev_put(net->loopback_dev);
-+}
-+
- /* Caller should hold rtnl_lock to protect the bearer */
- static int __tipc_nl_add_bearer(struct tipc_nl_msg *msg,
- 				struct tipc_bearer *bearer, int nlflags)
-diff --git a/net/tipc/bearer.h b/net/tipc/bearer.h
-index 7f4c569..ea0f3c4 100644
---- a/net/tipc/bearer.h
-+++ b/net/tipc/bearer.h
-@@ -232,6 +232,16 @@ void tipc_bearer_xmit(struct net *net, u32 bearer_id,
- 		      struct tipc_media_addr *dst);
- void tipc_bearer_bc_xmit(struct net *net, u32 bearer_id,
- 			 struct sk_buff_head *xmitq);
-+void tipc_clone_to_loopback(struct net *net, struct sk_buff_head *pkts);
-+int tipc_attach_loopback(struct net *net);
-+void tipc_detach_loopback(struct net *net);
-+
-+static inline void tipc_loopback_trace(struct net *net,
-+				       struct sk_buff_head *pkts)
-+{
-+	if (unlikely(dev_nit_active(net->loopback_dev)))
-+		tipc_clone_to_loopback(net, pkts);
-+}
- 
- /* check if device MTU is too low for tipc headers */
- static inline bool tipc_mtu_bad(struct net_device *dev, unsigned int reserve)
-diff --git a/net/tipc/core.c b/net/tipc/core.c
-index c837072..23cb379 100644
---- a/net/tipc/core.c
-+++ b/net/tipc/core.c
-@@ -82,6 +82,10 @@ static int __net_init tipc_init_net(struct net *net)
- 	if (err)
- 		goto out_bclink;
- 
-+	err = tipc_attach_loopback(net);
-+	if (err)
-+		goto out_bclink;
-+
- 	return 0;
- 
- out_bclink:
-@@ -94,6 +98,7 @@ static int __net_init tipc_init_net(struct net *net)
- 
- static void __net_exit tipc_exit_net(struct net *net)
- {
-+	tipc_detach_loopback(net);
- 	tipc_net_stop(net);
- 	tipc_bcast_stop(net);
- 	tipc_nametbl_stop(net);
-diff --git a/net/tipc/core.h b/net/tipc/core.h
-index 7a68e1b..60d8295 100644
---- a/net/tipc/core.h
-+++ b/net/tipc/core.h
-@@ -125,6 +125,9 @@ struct tipc_net {
- 
- 	/* Cluster capabilities */
- 	u16 capabilities;
-+
-+	/* Tracing of node internal messages */
-+	struct packet_type loopback_pt;
- };
- 
- static inline struct tipc_net *tipc_net(struct net *net)
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 550581d..16d251b 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1443,6 +1443,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_head *list,
- 	int rc;
- 
- 	if (in_own_node(net, dnode)) {
-+		tipc_loopback_trace(net, list);
- 		tipc_sk_rcv(net, list);
- 		return 0;
- 	}
-diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
-index f345662..e3a6ba1 100644
---- a/net/tipc/topsrv.c
-+++ b/net/tipc/topsrv.c
-@@ -40,6 +40,7 @@
- #include "socket.h"
- #include "addr.h"
- #include "msg.h"
-+#include "bearer.h"
- #include <net/sock.h>
- #include <linux/module.h>
- 
-@@ -608,6 +609,7 @@ static void tipc_topsrv_kern_evt(struct net *net, struct tipc_event *evt)
- 	memcpy(msg_data(buf_msg(skb)), evt, sizeof(*evt));
- 	skb_queue_head_init(&evtq);
- 	__skb_queue_tail(&evtq, skb);
-+	tipc_loopback_trace(net, &evtq);
- 	tipc_sk_rcv(net, &evtq);
- }
- 
--- 
-2.11.0
-
+I am not the one arguing to change code and functionality that has
+existed for 16 months. I am arguing that the existing resource
+controller satisfies all existing goals (testing in kernel APIs) and
+even satisfies additional ones - like a consistent user experience
+managing networking resources. ie.., I see no reason to change what exists.
