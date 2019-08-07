@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D6DA84E6A
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 16:17:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8558C84E6C
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 16:17:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388144AbfHGORK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2388094AbfHGORK (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 7 Aug 2019 10:17:10 -0400
-Received: from kadath.azazel.net ([81.187.231.250]:45992 "EHLO
+Received: from kadath.azazel.net ([81.187.231.250]:45986 "EHLO
         kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730018AbfHGORK (ORCPT
+        with ESMTP id S1729960AbfHGORK (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 10:17:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
          s=20190108; h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:
@@ -17,24 +17,24 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=NXYlR+HQFy6Sx3WKUA4m6Y2xbDfp30z/3OvKHIZmSz4=; b=JcHs9iQUOwQu6eK0Rp6bunJAyf
-        9uR1HrBaVXK3EN9rOFZTX5+sfiNbY4QjJMOGFopHeRQ+a4P98vayC0HjOCVMbUz67uRziMKPX5hs3
-        e6PPLT5L+tq5jhmYa4z5Nggjfh5yDhSpsmVBxJKhRtmD5Rj1o4Jicme+UHZ4/GjhsRANbJjBGIl5B
-        4f9mhbSq06as7EqzXrFD59g4EioUXb6SMs5vW5YxOweClC7aZE5j3pVEf/fwmBv46msjxA+mnR3+8
-        lOBm3EdzqgYlCtzsccW4tBEUU4m4jFXt5wrOYaycDl/FcskD/BGb6zouz+eY+y1RpHFOEreo5orTA
-        vZdZ5Evg==;
+        bh=O8mjk/fjt5SofqCRbHQvqlx7xv4kN4qGVz8pQ/rWAuU=; b=ZSeD1Sz8Gqa0epyZEwGjCF39rd
+        zyOyRDcrA2HKMqIGyNfkqvZlrAFnVDpIrGjQqubfXpSP4wKlgwRKWRdxz096MheHp+d2jBnardkeQ
+        fdWhTmoosc6kWD89pnrtnykrar1au6EzSBJV/CDFYBgKaZEX1O0EmMGSrqwZ+CUqSQmXIbppKRd5o
+        TCz0hSLhLKFoBp09lt9ICB0g8QAbVbpz4xbl8767S7AdA+4MEpYsLhgDSSA0zV7Un29s71oEYfVXe
+        ziKUTt4DGWcVB2UvoPREEahcU+dV8RtbRYgU49Qyg4hKQmYRb0VZ7ugFMTWOKlEmBr2U5rOqPqAzK
+        LOikGP/Q==;
 Received: from [2001:8b0:fb7d:d6d7:2e4d:54ff:fe4b:a9ae] (helo=ulthar.dreamlands)
         by kadath.azazel.net with esmtp (Exim 4.92)
         (envelope-from <jeremy@azazel.net>)
-        id 1hvMkU-0001Wc-Jw; Wed, 07 Aug 2019 15:17:06 +0100
+        id 1hvMkU-0001Wc-NZ; Wed, 07 Aug 2019 15:17:06 +0100
 From:   Jeremy Sowden <jeremy@azazel.net>
 To:     Pablo Neira Ayuso <pablo@netfilter.org>
 Cc:     Netfilter Devel <netfilter-devel@vger.kernel.org>,
         Net Dev <netdev@vger.kernel.org>,
         Masahiro Yamada <yamada.masahiro@socionext.com>
-Subject: [PATCH net-next v1 3/8] netfilter: added missing IS_ENABLED(CONFIG_BRIDGE_NETFILTER) checks to header-file.
-Date:   Wed,  7 Aug 2019 15:17:00 +0100
-Message-Id: <20190807141705.4864-4-jeremy@azazel.net>
+Subject: [PATCH net-next v1 4/8] netfilter: added missing IS_ENABLED(CONFIG_NF_TABLES) check to header-file.
+Date:   Wed,  7 Aug 2019 15:17:01 +0100
+Message-Id: <20190807141705.4864-5-jeremy@azazel.net>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190807141705.4864-1-jeremy@azazel.net>
 References: <20190722201615.GE23346@azazel.net>
@@ -49,52 +49,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-br_netfilter.h defines inline functions that use an enum constant and
-struct member that are only defined if CONFIG_BRIDGE_NETFILTER is
-enabled.  Added preprocessor checks to ensure br_netfilter.h will
-compile if CONFIG_BRIDGE_NETFILTER is disabled.
+nf_tables.h defines an API comprising several inline functions and
+macros that depend on the nft member of struct net.  However, this is
+only defined is CONFIG_NF_TABLES is enabled.  Added preprocessor checks
+to ensure that nf_tables.h will compile if CONFIG_NF_TABLES is disabled.
 
 Signed-off-by: Jeremy Sowden <jeremy@azazel.net>
 ---
- include/net/netfilter/br_netfilter.h | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ include/net/netfilter/nf_tables.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/include/net/netfilter/br_netfilter.h b/include/net/netfilter/br_netfilter.h
-index ca121ed906df..33533ea852a1 100644
---- a/include/net/netfilter/br_netfilter.h
-+++ b/include/net/netfilter/br_netfilter.h
-@@ -8,12 +8,16 @@
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index 9b624566b82d..66edf76301d3 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -1207,6 +1207,8 @@ void nft_trace_notify(struct nft_traceinfo *info);
+ #define MODULE_ALIAS_NFT_OBJ(type) \
+ 	MODULE_ALIAS("nft-obj-" __stringify(type))
  
- static inline struct nf_bridge_info *nf_bridge_alloc(struct sk_buff *skb)
- {
-+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
- 	struct nf_bridge_info *b = skb_ext_add(skb, SKB_EXT_BRIDGE_NF);
- 
- 	if (b)
- 		memset(b, 0, sizeof(*b));
- 
- 	return b;
-+#else
-+	return NULL;
-+#endif
++#if IS_ENABLED(CONFIG_NF_TABLES)
++
+ /*
+  * The gencursor defines two generations, the currently active and the
+  * next one. Objects contain a bitmask of 2 bits specifying the generations
+@@ -1280,6 +1282,8 @@ static inline void nft_set_elem_change_active(const struct net *net,
+ 	ext->genmask ^= nft_genmask_next(net);
  }
  
- void nf_bridge_update_protocol(struct sk_buff *skb);
-@@ -38,10 +42,14 @@ int br_nf_pre_routing_finish_bridge(struct net *net, struct sock *sk, struct sk_
- 
- static inline struct rtable *bridge_parent_rtable(const struct net_device *dev)
- {
-+#if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
- 	struct net_bridge_port *port;
- 
- 	port = br_port_get_rcu(dev);
- 	return port ? &port->br->fake_rtable : NULL;
-+#else
-+	return NULL;
-+#endif
- }
- 
- struct net_device *setup_pre_routing(struct sk_buff *skb,
++#endif /* IS_ENABLED(CONFIG_NF_TABLES) */
++
+ /*
+  * We use a free bit in the genmask field to indicate the element
+  * is busy, meaning it is currently being processed either by
 -- 
 2.20.1
 
