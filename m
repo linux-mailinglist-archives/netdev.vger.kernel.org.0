@@ -2,82 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E841D84CE4
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 15:26:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8726F84DEB
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 15:52:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388277AbfHGNZy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 09:25:54 -0400
-Received: from skedge04.snt-world.com ([91.208.41.69]:56654 "EHLO
-        skedge04.snt-world.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388268AbfHGNZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 09:25:51 -0400
-Received: from sntmail10s.snt-is.com (unknown [10.203.32.183])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by skedge04.snt-world.com (Postfix) with ESMTPS id 6FFF967F489;
-        Wed,  7 Aug 2019 15:25:49 +0200 (CEST)
-Received: from sntmail12r.snt-is.com (10.203.32.182) by sntmail10s.snt-is.com
- (10.203.32.183) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Wed, 7 Aug 2019
- 15:25:49 +0200
-Received: from sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305]) by
- sntmail12r.snt-is.com ([fe80::e551:8750:7bba:3305%3]) with mapi id
- 15.01.1713.004; Wed, 7 Aug 2019 15:25:49 +0200
-From:   Schrempf Frieder <frieder.schrempf@kontron.de>
-To:     Fabio Estevam <festevam@gmail.com>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "Thomas Gleixner" <tglx@linutronix.de>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] net: fec: Allow the driver to be built for ARM64 SoCs
- such as i.MX8
-Thread-Topic: [PATCH] net: fec: Allow the driver to be built for ARM64 SoCs
- such as i.MX8
-Thread-Index: AQHVTRVujOeFcyg/q0+D2PWjkrvdsabveUKAgAASSwA=
-Date:   Wed, 7 Aug 2019 13:25:49 +0000
-Message-ID: <4041e43f-cab2-0ec9-53fa-2e36ba1220cf@kontron.de>
-References: <20190807114332.13312-1-frieder.schrempf@kontron.de>
- <20190807114332.13312-2-frieder.schrempf@kontron.de>
- <CAOMZO5C61NjX5=7FJj7WpQW=cSvBRi4ADKonUp3CRXtUkSqwCQ@mail.gmail.com>
-In-Reply-To: <CAOMZO5C61NjX5=7FJj7WpQW=cSvBRi4ADKonUp3CRXtUkSqwCQ@mail.gmail.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.25.9.193]
-x-c2processedorg: 51b406b7-48a2-4d03-b652-521f56ac89f3
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <A44EF76706086247BA82CECAD8E4242C@snt-world.com>
-Content-Transfer-Encoding: base64
-MIME-Version: 1.0
-X-SnT-MailScanner-Information: Please contact the ISP for more information
-X-SnT-MailScanner-ID: 6FFF967F489.A07A2
-X-SnT-MailScanner: Not scanned: please contact your Internet E-Mail Service Provider for details
-X-SnT-MailScanner-SpamCheck: 
-X-SnT-MailScanner-From: frieder.schrempf@kontron.de
-X-SnT-MailScanner-To: claudiu.manoil@nxp.com, davem@davemloft.net,
-        festevam@gmail.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, ruxandra.radulescu@nxp.com,
-        tglx@linutronix.de, yangbo.lu@nxp.com
-X-Spam-Status: No
+        id S2387523AbfHGNwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 09:52:41 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:40518 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729771AbfHGNwk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 09:52:40 -0400
+Received: by mail-pl1-f195.google.com with SMTP id a93so40870790pla.7
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 06:52:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=QnyCTyMbm52NNTF3jvsG/XFHwGBN7xSjxw+ALsjB1gk=;
+        b=hvFXtVNZhyN0kdv9iaA7yZN5RqEBCjciXVvNLIybGo9HT7b3b+wEhDXgwXt9UF8Mrn
+         eZN37QzXBNaCRPUTOtvLbduEWeOl25BDcGmYWV9ZLZmyIY2DelXEGI0guJ8ZqYDWCUc+
+         Uq07GDbvjCnmuho1/UwA+WeZD6IjYNeymq8uFSzW05d1Kn5WjcoE/sdiEk4q9Pnv4DZG
+         rGzgQi4Dw5txGWJVOLLOOxkaXvyGLKhZ4QawFZhVwDTHvgFIyA6iWIhIz3gscwe8DFor
+         gFkbJ3pleEF/BzQx06R1m0tmzKsGUUbphwQkDn43e/6Z8P/hMPwnuj+yzSMhfPUJT3ph
+         I76g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=QnyCTyMbm52NNTF3jvsG/XFHwGBN7xSjxw+ALsjB1gk=;
+        b=An0zlBBic3QUE1Ws95FIhvtCTdAjRkSnG/8+pJx07G6EyMVEWzsWkLY+1XbxoNNgqb
+         jajFIGr+WNWcvuwgK8u4mcjNXqNKcYHSYGqUTC/UvvZMiYRqLOe9jQF/pjvOuCqiWtEV
+         6G18AtGgtqc4TkjHWK1qgcs3og9zg8xUDQiHms4J928z7wYtuhxEuT3/uHCCm8oHHnJE
+         ZTZP0Cw7F4ZvYpuNKYoMptW5vMln4F2zJN1UsJ0091RJlC3F6+S6PF6kv7WJ4XpUwpDV
+         PbxLZ+i6CUi6ww9W7JixEil+HqGu+LaUQ9hflutVyD+/JecvHSNnErwilWl5GyrMe/Uo
+         vo0g==
+X-Gm-Message-State: APjAAAXaDhFwmmFuqw5TkPf6RSACaXEY1m816YGVa7Md5/0dTpituRKX
+        56sf95NtPfyj3XOPJMYcDRF9bg==
+X-Google-Smtp-Source: APXvYqyZHqBPVgXKeTfuam/+wr//DWw1+la2CyEt/5QA6T/uZGoDWyT0btIOkYHc/WOyvZTCa5PcRg==
+X-Received: by 2002:aa7:9dcd:: with SMTP id g13mr9657897pfq.204.1565185959443;
+        Wed, 07 Aug 2019 06:52:39 -0700 (PDT)
+Received: from ?IPv6:2601:646:c200:1ef2:e49d:f1dd:cb7c:c8f6? ([2601:646:c200:1ef2:e49d:f1dd:cb7c:c8f6])
+        by smtp.gmail.com with ESMTPSA id q69sm130734pjb.0.2019.08.07.06.52.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 07 Aug 2019 06:52:37 -0700 (PDT)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (1.0)
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+From:   Andy Lutomirski <luto@amacapital.net>
+X-Mailer: iPhone Mail (16G77)
+In-Reply-To: <CACAyw9_fVZFW_x4uyTAiRfeH6oq1KHv0uB2wO84u5JZyD+Unaw@mail.gmail.com>
+Date:   Wed, 7 Aug 2019 06:52:36 -0700
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Song Liu <songliubraving@fb.com>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>, Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <945BCF23-839C-418C-9FBF-46889AE84CA4@amacapital.net>
+References: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com> <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com> <5A2FCD7E-7F54-41E5-BFAE-BB9494E74F2D@fb.com> <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com> <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com> <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com> <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com> <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com> <20190805192122.laxcaz75k4vxdspn@ast-mbp> <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com> <20190806011134.p5baub5l3t5fkmou@ast-mbp> <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com> <CACAyw9_fVZFW_x4uyTAiRfeH6oq1KHv0uB2wO84u5JZyD+Unaw@mail.gmail.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMDcuMDguMTkgMTQ6MjAsIEZhYmlvIEVzdGV2YW0gd3JvdGU6DQo+IEhpIEZyaWVkZXIsDQo+
-IA0KPiBPbiBXZWQsIEF1ZyA3LCAyMDE5IGF0IDk6MDQgQU0gU2NocmVtcGYgRnJpZWRlcg0KPiA8
-ZnJpZWRlci5zY2hyZW1wZkBrb250cm9uLmRlPiB3cm90ZToNCj4+DQo+PiBGcm9tOiBGcmllZGVy
-IFNjaHJlbXBmIDxmcmllZGVyLnNjaHJlbXBmQGtvbnRyb24uZGU+DQo+Pg0KPj4gVGhlIEZFQyBl
-dGhlcm5ldCBjb250cm9sbGVyIGlzIHVzZWQgaW4gc29tZSBBUk02NCBTb0NzIHN1Y2ggYXMgaS5N
-WDguDQo+PiBUbyBtYWtlIHVzZSBvZiBpdCwgYXBwZW5kIEFSTTY0IHRvIHRoZSBsaXN0IG9mIGRl
-cGVuZGVuY2llcy4NCj4gDQo+IEFSQ0hfTVhDIGlzIGFsc28gdXNlZCBieSBpLk1YOCwgc28gdGhl
-cmUgaXMgbm8gbmVlZCBmb3Igc3VjaCBjaGFuZ2UuDQoNCllvdSdyZSByaWdodCBvZiBjb3Vyc2Uu
-IEkgc29tZWhvdyBtYW5hZ2VkIHRvIG1lc3MgdXAgbXkgZGVmY29uZmlnLiBJIA0Kc3RhcnRlZCBv
-dmVyIHdpdGggYSBjbGVhbiBjb25maWcgZnJvbSBhcmNoL2FybTY0L2NvbmZpZ3MvZGVmY29uZmln
-IGFuZCANCmV2ZXJ5dGhpbmcgc2VlbXMgZmluZSBub3cuIFNvcnJ5IGZvciB0aGUgbm9pc2UuDQoN
-Cj4gDQo+IEJ5IHRoZSB3YXk6IGFyY2gvYXJtNjQvY29uZmlncy9kZWZjb25maWcgaGFzIENPTkZJ
-R19GRUM9eSBieSBkZWZhdWx0Lg0KPiA=
+
+> On Aug 7, 2019, at 2:03 AM, Lorenz Bauer <lmb@cloudflare.com> wrote:
+>=20
+>> On Wed, 7 Aug 2019 at 06:24, Andy Lutomirski <luto@kernel.org> wrote:
+>> a) Those that, by design, control privileged operations.  This
+>> includes most attach calls, but it also includes allow_ptr_leaks,
+>> bpf_probe_read(), and quite a few other things.  It also includes all
+>> of the by_id calls, I think, unless some clever modification to the
+>> way they worked would isolate different users' objects.  I think that
+>> persistent objects can do pretty much everything that by_id users
+>> would need, so this isn't a big deal.
+>=20
+> Slightly OT, since this is an implementation question: GET_MAP_FD_BY_ID
+> is useful to iterate a nested map. This isn't covered by rights to
+> persistent objects,
+> so it would need some thought.
+>=20
+>=20
+
+A call to get an fd to a map referenced by a map to which you already have a=
+n fd seems reasonable to me. The new fd would inherit the old fd=E2=80=99s a=
+ccess mode.=
