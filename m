@@ -2,92 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 424EE84BBD
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 14:38:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2BA3484BBF
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 14:38:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729929AbfHGMgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 08:36:22 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:42614 "EHLO mx1.redhat.com"
+        id S2387484AbfHGMg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 08:36:28 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42408 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728235AbfHGMgW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 08:36:22 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        id S1728235AbfHGMg2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Aug 2019 08:36:28 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 0245E300BEB6;
-        Wed,  7 Aug 2019 12:36:22 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id CDCC17C835;
+        Wed,  7 Aug 2019 12:36:27 +0000 (UTC)
 Received: from firesoul.localdomain (ovpn-200-48.brq.redhat.com [10.40.200.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id DD7FD5C258;
-        Wed,  7 Aug 2019 12:36:18 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F08B3F6D7;
+        Wed,  7 Aug 2019 12:36:23 +0000 (UTC)
 Received: from [10.10.10.1] (localhost [IPv6:::1])
-        by firesoul.localdomain (Postfix) with ESMTP id 17A103002D560;
-        Wed,  7 Aug 2019 14:36:18 +0200 (CEST)
-Subject: [bpf-next PATCH 1/3] samples/bpf: xdp_fwd rename devmap name to be
- xdp_tx_ports
+        by firesoul.localdomain (Postfix) with ESMTP id 28E603002D560;
+        Wed,  7 Aug 2019 14:36:23 +0200 (CEST)
+Subject: [bpf-next PATCH 2/3] samples/bpf: make xdp_fwd more practically
+ usable via devmap lookup
 From:   Jesper Dangaard Brouer <brouer@redhat.com>
 To:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     xdp-newbies@vger.kernel.org, a.s.protopopov@gmail.com,
         dsahern@gmail.com, Jesper Dangaard Brouer <brouer@redhat.com>
-Date:   Wed, 07 Aug 2019 14:36:18 +0200
-Message-ID: <156518137803.5636.11766023213864836956.stgit@firesoul>
+Date:   Wed, 07 Aug 2019 14:36:23 +0200
+Message-ID: <156518138310.5636.13064696265479533742.stgit@firesoul>
 In-Reply-To: <156518133219.5636.728822418668658886.stgit@firesoul>
 References: <156518133219.5636.728822418668658886.stgit@firesoul>
 User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Wed, 07 Aug 2019 12:36:22 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Wed, 07 Aug 2019 12:36:27 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The devmap name 'tx_port' came from a copy-paste from xdp_redirect_map
-which only have a single TX port. Change name to xdp_tx_ports
-to make it more descriptive.
+This address the TODO in samples/bpf/xdp_fwd_kern.c, which points out
+that the chosen egress index should be checked for existence in the
+devmap. This can now be done via taking advantage of Toke's work in
+commit 0cdbb4b09a06 ("devmap: Allow map lookups from eBPF").
+
+This change makes xdp_fwd more practically usable, as this allows for
+a mixed environment, where IP-forwarding fallback to network stack, if
+the egress device isn't configured to use XDP.
 
 Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
 ---
- samples/bpf/xdp_fwd_kern.c |    5 +++--
- samples/bpf/xdp_fwd_user.c |    2 +-
- 2 files changed, 4 insertions(+), 3 deletions(-)
+ samples/bpf/xdp_fwd_kern.c |   20 ++++++++++++++------
+ samples/bpf/xdp_fwd_user.c |   36 +++++++++++++++++++++++++-----------
+ 2 files changed, 39 insertions(+), 17 deletions(-)
 
 diff --git a/samples/bpf/xdp_fwd_kern.c b/samples/bpf/xdp_fwd_kern.c
-index a7e94e7ff87d..e6ffc4ea06f4 100644
+index e6ffc4ea06f4..4a5ad381ed2a 100644
 --- a/samples/bpf/xdp_fwd_kern.c
 +++ b/samples/bpf/xdp_fwd_kern.c
-@@ -23,7 +23,8 @@
+@@ -104,13 +104,21 @@ static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
  
- #define IPV6_FLOWINFO_MASK              cpu_to_be32(0x0FFFFFFF)
+ 	rc = bpf_fib_lookup(ctx, &fib_params, sizeof(fib_params), flags);
  
--struct bpf_map_def SEC("maps") tx_port = {
-+/* For TX-traffic redirect requires net_device ifindex to be in this devmap */
-+struct bpf_map_def SEC("maps") xdp_tx_ports = {
- 	.type = BPF_MAP_TYPE_DEVMAP,
- 	.key_size = sizeof(int),
- 	.value_size = sizeof(int),
-@@ -117,7 +118,7 @@ static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
- 
- 		memcpy(eth->h_dest, fib_params.dmac, ETH_ALEN);
- 		memcpy(eth->h_source, fib_params.smac, ETH_ALEN);
--		return bpf_redirect_map(&tx_port, fib_params.ifindex, 0);
-+		return bpf_redirect_map(&xdp_tx_ports, fib_params.ifindex, 0);
- 	}
- 
- 	return XDP_PASS;
+-	/* verify egress index has xdp support
+-	 * TO-DO bpf_map_lookup_elem(&tx_port, &key) fails with
+-	 *       cannot pass map_type 14 into func bpf_map_lookup_elem#1:
+-	 * NOTE: without verification that egress index supports XDP
+-	 *       forwarding packets are dropped.
+-	 */
+ 	if (rc == 0) {
++		int *val;
++
++		/* Verify egress index has been configured as TX-port.
++		 * (Note: User can still have inserted an egress ifindex that
++		 * doesn't support XDP xmit, which will result in packet drops).
++		 *
++		 * Note: lookup in devmap supported since 0cdbb4b09a0.
++		 * If not supported will fail with:
++		 *  cannot pass map_type 14 into func bpf_map_lookup_elem#1:
++		 */
++		val = bpf_map_lookup_elem(&tx_port, &fib_params.ifindex);
++		if (!val)
++			return XDP_PASS;
++
+ 		if (h_proto == htons(ETH_P_IP))
+ 			ip_decrease_ttl(iph);
+ 		else if (h_proto == htons(ETH_P_IPV6))
 diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
-index 5b46ee12c696..ba012d9f93dd 100644
+index ba012d9f93dd..20951bc27477 100644
 --- a/samples/bpf/xdp_fwd_user.c
 +++ b/samples/bpf/xdp_fwd_user.c
-@@ -113,7 +113,7 @@ int main(int argc, char **argv)
+@@ -27,14 +27,20 @@
+ #include "libbpf.h"
+ #include <bpf/bpf.h>
+ 
+-
+-static int do_attach(int idx, int fd, const char *name)
++static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
+ {
+ 	int err;
+ 
+-	err = bpf_set_link_xdp_fd(idx, fd, 0);
+-	if (err < 0)
++	err = bpf_set_link_xdp_fd(idx, prog_fd, 0);
++	if (err < 0) {
+ 		printf("ERROR: failed to attach program to %s\n", name);
++		return err;
++	}
++
++	/* Adding ifindex as a possible egress TX port */
++	err = bpf_map_update_elem(map_fd, &idx, &idx, 0);
++	if (err)
++		printf("ERROR: failed using device %s as TX-port\n", name);
+ 
+ 	return err;
+ }
+@@ -47,6 +53,9 @@ static int do_detach(int idx, const char *name)
+ 	if (err < 0)
+ 		printf("ERROR: failed to detach program from %s\n", name);
+ 
++	/* TODO: Remember to cleanup map, when adding use of shared map
++	 *  bpf_map_delete_elem((map_fd, &idx);
++	 */
+ 	return err;
+ }
+ 
+@@ -67,10 +76,10 @@ int main(int argc, char **argv)
+ 	};
+ 	const char *prog_name = "xdp_fwd";
+ 	struct bpf_program *prog;
++	int prog_fd, map_fd = -1;
+ 	char filename[PATH_MAX];
+ 	struct bpf_object *obj;
+ 	int opt, i, idx, err;
+-	int prog_fd, map_fd;
+ 	int attach = 1;
+ 	int ret = 0;
+ 
+@@ -103,8 +112,17 @@ int main(int argc, char **argv)
  			return 1;
  		}
- 		map_fd = bpf_map__fd(bpf_object__find_map_by_name(obj,
--								  "tx_port"));
-+							"xdp_tx_ports"));
- 		if (map_fd < 0) {
- 			printf("map not found: %s\n", strerror(map_fd));
+ 
+-		if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
++		err = bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd);
++		if (err) {
++			if (err == -22) {
++				printf("Does kernel support devmap lookup?\n");
++				/* If not, the error message will be:
++				 * "cannot pass map_type 14 into func
++				 * bpf_map_lookup_elem#1"
++				 */
++			}
  			return 1;
++		}
+ 
+ 		prog = bpf_object__find_program_by_title(obj, prog_name);
+ 		prog_fd = bpf_program__fd(prog);
+@@ -119,10 +137,6 @@ int main(int argc, char **argv)
+ 			return 1;
+ 		}
+ 	}
+-	if (attach) {
+-		for (i = 1; i < 64; ++i)
+-			bpf_map_update_elem(map_fd, &i, &i, 0);
+-	}
+ 
+ 	for (i = optind; i < argc; ++i) {
+ 		idx = if_nametoindex(argv[i]);
+@@ -138,7 +152,7 @@ int main(int argc, char **argv)
+ 			if (err)
+ 				ret = err;
+ 		} else {
+-			err = do_attach(idx, prog_fd, argv[i]);
++			err = do_attach(idx, prog_fd, map_fd, argv[i]);
+ 			if (err)
+ 				ret = err;
+ 		}
 
