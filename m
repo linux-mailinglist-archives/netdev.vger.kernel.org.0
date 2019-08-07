@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 571C683FBA
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:36:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 144C383FA2
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:35:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730376AbfHGBgN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:36:13 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:40676 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729942AbfHGBel (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:41 -0400
-Received: by mail-pf1-f193.google.com with SMTP id p184so42492954pfp.7;
-        Tue, 06 Aug 2019 18:34:41 -0700 (PDT)
+        id S1730349AbfHGBfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:35:54 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:33444 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729976AbfHGBen (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:43 -0400
+Received: by mail-pf1-f194.google.com with SMTP id g2so42502724pfq.0;
+        Tue, 06 Aug 2019 18:34:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rv0dCo+fqAQ13SgPxACDlFOa16RsKjSPlFe+eBoZNRU=;
-        b=qHcz60oQ83bzms/yVUcFaJau5DPrqarhSsDZyTTm0aO7LPLndWEmnFBY1sB89Xkiaw
-         Ci5ELNET2QWDN41lDa72vOKuXFO7msQrNQNCW1tufAtPZ+zmR4yxxt0Pj/OC6oGA7iex
-         3PC5yUmc2AVOKzZpAx9HhCU3diYcJOxr4dArt0xaN3xcKrvJPt718EmEODcL7rIiZeeH
-         s/ExfBknzqo4fU4jgwTtrXK+8yIatr5xd5LIRucVBNPseWxbqe9SNtY40agI2WekCzaT
-         jqwlI490o0ssAFzKQmdqp0Jn6NCj4NXSf6medXNB8StHKBNUjeQuhT+5EwaqcfdTeEZ0
-         IJRg==
+        bh=cegKTIaYJ+tSle0YiC1yJpybmvJrVZXG5Xryw9OToL0=;
+        b=gZINIBPpiSlkU+80KFQT2S/tbeKnfN8Fqd69WGW6s9PoHlp7eF6XztSLcUxuW4oRoZ
+         aif7qo6403jD2jU7LBsHpubuYdPGQryF8kiw1ZTc3iFqoyXR++oshdcjJ7vxHU3SStmv
+         hRrnv/6QnmfU9YFS9vFfR/LY5o8S7tCbaokKkpmJCmaCQPMpBAUHfIH7veXkFUWyuI/D
+         QxXzz4jXTjDqbca8hg8XrnqAJ/u2yXOWeQAohMq1NTArxvWPC4Z+YJ1UfdhghSe68uD6
+         jg98gaM28Wf1Jgr/YOooV8Oz8uSBvPGIEINpe+ifSuk1KD3Z7HL09IvdAtxhoavy3yVQ
+         XT/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rv0dCo+fqAQ13SgPxACDlFOa16RsKjSPlFe+eBoZNRU=;
-        b=epL8UTUMyUMlW9lktk4XeTKOSOJ2omcrsgqpzfAshrY7QmHB/VZ+85AqTgL9OVJzWP
-         p7e1sKtEMgb+YyL6fuxBRYYwgxEkLOl76wEBpxXbe2rXtXlPb13Y0AtKt1kF2SVWbeOS
-         +UVurclO7Hz4eupRKymC6VgvgTXGBiuWUh3RY8lTJeOt6wN2aZ0N0jyOcoGft63Y2SsK
-         42cY1jupYkUpRPMtaD8mVeHF/A2crofq7IQgEkOhHFtCDfc3Mr1WqLH1/sXk86zB6p4p
-         vne3A0T6rxG5B6qXt4138IMDxEEldCHxRqPlCoA+qb/yAKON+MnJjSzDlAfGuqQ1OafD
-         yLUA==
-X-Gm-Message-State: APjAAAUVxnb7droVFTsse5NnLYL1g3j9G+Gn5tLfjmuNrlrxBU9yoIhe
-        rfqmvfMOf7ku9cNe3XrNU3w=
-X-Google-Smtp-Source: APXvYqwi1XftPUxFaKwB1e+PTjWB5bVcONCYmxHiCc+kjqKz2w944/jyq9w+bhKvdiZQur9bBkceuw==
-X-Received: by 2002:a62:3283:: with SMTP id y125mr6853502pfy.83.1565141680836;
-        Tue, 06 Aug 2019 18:34:40 -0700 (PDT)
+        bh=cegKTIaYJ+tSle0YiC1yJpybmvJrVZXG5Xryw9OToL0=;
+        b=kXtXjNb53Ij2iFhid+3+SixPAB5cfJtRFellFPfPMOvwZ5kvYCQnUV7UCeGUsgYJ3a
+         WVn2oSuIpaOM7wDKXgBuXdsQ+SCS6MtZzKQCXhiirbhA+UlbkV2WIpKIyrvOZI4G4g5v
+         OY6vw6zn+3wDyqXkpS7MuDmB3AVVaZ0zROfMiD9Mlqif058EziNClURXhhlPoLxMzyGF
+         nKeBvG0JilpyxiaYJA5xJcJbwkwWwjaSlLUPB6P06pmCkwWjRvRndlyFc+PizR4s6NO7
+         iUaA+n/mw5x2hsMcsUeV1Yhy2GcvTN6W35UqskuGhsSJINKgZr//mtAjNqTBGsPPIyXB
+         6rFg==
+X-Gm-Message-State: APjAAAVE7TAfJ6Biyb9h0YNwWBxLhLKWkmFvM2obtKNbYo4iHlzCjoB9
+        JrQyVC8SQ4jXEEXLhau2on8=
+X-Google-Smtp-Source: APXvYqzSNe/bSKcNensRQ/IJ84TBXlUJvFYUKsvrq7/hKNH55OC+L+xYYWdqI5nDZFgfOlgeKmaOXw==
+X-Received: by 2002:a65:6256:: with SMTP id q22mr5554856pgv.408.1565141682238;
+        Tue, 06 Aug 2019 18:34:42 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.39
+        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.40
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 18:34:40 -0700 (PDT)
+        Tue, 06 Aug 2019 18:34:41 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -66,16 +66,10 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: [PATCH v3 35/41] kernel/events/core.c: convert put_page() to put_user_page*()
-Date:   Tue,  6 Aug 2019 18:33:34 -0700
-Message-Id: <20190807013340.9706-36-jhubbard@nvidia.com>
+        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>
+Subject: [PATCH v3 36/41] fs/binfmt_elf: convert put_page() to put_user_page*()
+Date:   Tue,  6 Aug 2019 18:33:35 -0700
+Message-Id: <20190807013340.9706-37-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
 References: <20190807013340.9706-1-jhubbard@nvidia.com>
@@ -87,7 +81,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: John Hubbard <jhubbard@nvidia.com>
+From: Ira Weiny <ira.weiny@intel.com>
 
 For pages that were retained via get_user_pages*(), release those pages
 via the new put_user_page*() routines, instead of via put_page() or
@@ -96,30 +90,42 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
+get_dump_page calls get_user_page so put_user_page must be used
+to match.
+
+Signed-off-by: Ira Weiny <ira.weiny@intel.com>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- kernel/events/core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/binfmt_elf.c       | 2 +-
+ fs/binfmt_elf_fdpic.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 0463c1151bae..7be52bbbfe87 100644
---- a/kernel/events/core.c
-+++ b/kernel/events/core.c
-@@ -6426,7 +6426,7 @@ static u64 perf_virt_to_phys(u64 virt)
- 			phys_addr = page_to_phys(p) + virt % PAGE_SIZE;
- 
- 		if (p)
--			put_page(p);
-+			put_user_page(p);
- 	}
- 
- 	return phys_addr;
+diff --git a/fs/binfmt_elf.c b/fs/binfmt_elf.c
+index d4e11b2e04f6..92e4a5ca99d8 100644
+--- a/fs/binfmt_elf.c
++++ b/fs/binfmt_elf.c
+@@ -2377,7 +2377,7 @@ static int elf_core_dump(struct coredump_params *cprm)
+ 				void *kaddr = kmap(page);
+ 				stop = !dump_emit(cprm, kaddr, PAGE_SIZE);
+ 				kunmap(page);
+-				put_page(page);
++				put_user_page(page);
+ 			} else
+ 				stop = !dump_skip(cprm, PAGE_SIZE);
+ 			if (stop)
+diff --git a/fs/binfmt_elf_fdpic.c b/fs/binfmt_elf_fdpic.c
+index d86ebd0dcc3d..321724b3be22 100644
+--- a/fs/binfmt_elf_fdpic.c
++++ b/fs/binfmt_elf_fdpic.c
+@@ -1511,7 +1511,7 @@ static bool elf_fdpic_dump_segments(struct coredump_params *cprm)
+ 				void *kaddr = kmap(page);
+ 				res = dump_emit(cprm, kaddr, PAGE_SIZE);
+ 				kunmap(page);
+-				put_page(page);
++				put_user_page(page);
+ 			} else {
+ 				res = dump_skip(cprm, PAGE_SIZE);
+ 			}
 -- 
 2.22.0
 
