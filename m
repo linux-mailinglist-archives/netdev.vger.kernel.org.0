@@ -2,77 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACF2C853A3
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 21:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 32603853A4
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 21:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389212AbfHGTbO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 15:31:14 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:40162 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389098AbfHGTbO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 15:31:14 -0400
-Received: by mail-pl1-f194.google.com with SMTP id a93so42203841pla.7;
-        Wed, 07 Aug 2019 12:31:13 -0700 (PDT)
+        id S2389265AbfHGTcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 15:32:02 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:42002 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389098AbfHGTcB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 15:32:01 -0400
+Received: by mail-pl1-f196.google.com with SMTP id ay6so42315917plb.9
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 12:32:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bvbPklOdUA/AqR4MNrUOI+g+38lLzjNfbXlN0TQ3HO4=;
-        b=DL1BE6YMswITJ4K3VYSGzaJ6voj7yeF9q7jYt9AUZQIL1fRIzPzaJIKL1G+k+CQ+oX
-         5+bA3g7HaMI5Gpus0G7A8XmxlVJabD/sJZiqLa16OwW2IWMNhQV13LKYJm5VC0FMCVvh
-         DE3AgGWwEDYBpgw631/I+mye949V+mshiNMaATQo+MT2AbpESRT4254WmerIgpuz+3uh
-         bwZ6zb45oJy4SAVAkAWdDzFAAwSpGi+b81noa8cCfnYXmoAL4J+UVxe+ZijW1Qnb0nsE
-         SlwO8KaguQeIJQpnt75dqfiHvWlEOTvszhIxMs3T3R9T1Dq+p2o3/oPS9eHEdo1p18+q
-         BDWA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AJ2kD05VCVUn8C16Taz5xyABWlqxVcueD1McbUdFuUI=;
+        b=chQ7jTwX3lARGlPTLrYmVeLbZKcKbxZKhCoVxJOJRiaE0Ho87SrwZRvIjYep68j8IM
+         M1uGEL2sE0Ci1nJFUZ/WwV8mV/jcy4lEPofuHAUGeJ1b9dLOhtw23Cxw/3M6jPsZHWEh
+         kV+bWEq/PsBEKMpiHpKU4uEhN9dsrFyHCGETuiCBr3Unh5dzFQLyJ3IkkvZz5s7852XY
+         8e/F4tUg2dQk9FEYHyW1Uo1iZPJL4aVYkafnbSDZFa8ArGT+vqUmDE2G2fay7XiZiL11
+         myAteOBaNe8VK/lfct8UTEFsSrOeeBi3uWihd9KuQQ+8pv3zsQYWYNDsB8SHt2RUcadL
+         aT1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bvbPklOdUA/AqR4MNrUOI+g+38lLzjNfbXlN0TQ3HO4=;
-        b=bS2hnZyyZ6VhL0gtyGcDxFol+dbgxpE03uqYh6VyQShtAUEZR16rw4dCwZlQQiCLe9
-         xnUMSHjwl2aLEJrVDWrFBZu//fN8FB/9gkSX9aEBUp5SZDXy7hyx1YA4Dcs7ORhSjQw1
-         UJ8iS7h10IKD+xK765K6spUJnALGlmSz0ayeJ6eMmU49W8nndhB68fwLdVm5lPnRHBCZ
-         92RQRLqIo++MHTUGWMwdvPT1+NSVmgoRFCHio74lSggR7zaTgni4MrwkfZPgJIP5shFQ
-         Q1E5lLACzBfNQqMlZvkLmvr3HZ1EGcJkN7mIDY9jbwSwyKOGSqu7OJTJRrfe0j1ng5sO
-         wIqA==
-X-Gm-Message-State: APjAAAWKoxKLmFW6O6r5L5tR2NzqfnEN9i9nKJZNk1OkqcztdzqGbBdM
-        B3WJJKWg1hmfEXTSudEBNTA=
-X-Google-Smtp-Source: APXvYqzVWWxBBKDC7eDe35wEfCOMKHMh+IsIoVtCmPPJCXntrXo0yOLy42SyIGQ5u0Y5Q2uxmiUMfA==
-X-Received: by 2002:a17:90a:270f:: with SMTP id o15mr46122pje.56.1565206273555;
-        Wed, 07 Aug 2019 12:31:13 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::7084])
-        by smtp.gmail.com with ESMTPSA id v63sm95417494pfv.174.2019.08.07.12.31.12
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=AJ2kD05VCVUn8C16Taz5xyABWlqxVcueD1McbUdFuUI=;
+        b=hZGNX9bd5FOlNbYC1qECqcXbD7FDSjiWbkDRNWbR0+U72uQJhu0dVRNT1z64yXsd0E
+         cYvSBFWV/rn8TA2fn0z5vY/p0n0NABvt/gRClYeiKHJmJHluO0TSTk7GFVBuMbXLi3vD
+         Ipvi1UtTQuxmo5eEcw8kkUrd+DvumNvgfW6TjR9Yd1nQNS2f4pghm0ZGIdWgNlm9xE1e
+         CUA1Fe16UrVlZjmoc5JELON5AaHNr8/UfK8fe35m+JOAmiLTLYGgXDK4qjbYozbd2iyx
+         WKYZpdLYa5sj7irhQn59+Bl+Z0WHMjyirsJ/254M6c+DM/gBxKp8qGui0cyRNNfBj11A
+         6DPw==
+X-Gm-Message-State: APjAAAXSHJO8oaEhh157+IyK7RuVHvCZqyqlphksJThctezUHWnU4PRw
+        4kS0fBmknxDywpGtQ5sM8iMQWXEr
+X-Google-Smtp-Source: APXvYqxm0+YRtWl6T9jIbwhJZPb+k3nRjpUuq7kpQwik9+/EjD34N6ZDqq75x0KBUDcgxP5r3LUs+w==
+X-Received: by 2002:a17:902:bf09:: with SMTP id bi9mr9093989plb.143.1565206320884;
+        Wed, 07 Aug 2019 12:32:00 -0700 (PDT)
+Received: from [172.27.227.247] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id q19sm97852943pfc.62.2019.08.07.12.31.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 12:31:12 -0700 (PDT)
-Date:   Wed, 7 Aug 2019 12:31:11 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andrii Nakryiko <andriin@fb.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
-        daniel@iogearbox.net, yhs@fb.com, andrii.nakryiko@gmail.com,
-        kernel-team@fb.com
-Subject: Re: [PATCH v4 bpf-next 01/14] libbpf: add helpers for working with
- BTF types
-Message-ID: <20190807193110.p5flmxojmdjdg4dj@ast-mbp>
-References: <20190807053806.1534571-1-andriin@fb.com>
- <20190807053806.1534571-2-andriin@fb.com>
+        Wed, 07 Aug 2019 12:32:00 -0700 (PDT)
+Subject: Re: [PATCH net] netdevsim: Restore per-network namespace accounting
+ for fib entries
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        David Ahern <dsahern@kernel.org>, davem@davemloft.net,
+        netdev@vger.kernel.org
+References: <20190806191517.8713-1-dsahern@kernel.org>
+ <20190806153214.25203a68@cakuba.netronome.com>
+ <20190807062712.GE2332@nanopsycho.orion>
+ <dd568650-d5e7-62ee-4fde-db7b68b8962d@gmail.com>
+ <20190807130739.GA2201@nanopsycho>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <f3c47bd5-fad4-6594-7dc6-9e78285a38e1@gmail.com>
+Date:   Wed, 7 Aug 2019 13:31:58 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190807053806.1534571-2-andriin@fb.com>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20190807130739.GA2201@nanopsycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 06, 2019 at 10:37:53PM -0700, Andrii Nakryiko wrote:
-> Add lots of frequently used helpers that simplify working with BTF
-> types.
+On 8/7/19 7:07 AM, Jiri Pirko wrote:
 > 
-> Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-..
-> +/* get bitfield size of a member, assuming t is BTF_KIND_STRUCT or
-> + * BTF_KIND_UNION. If member is not a bitfield, zero is returned. */
+> Yeah. I believe it was a mistake to add it in the first place. Abuses
+> netdevsim for something it is not. I'm fine to use devlink the way you
+> want to after we conclude 2), but outside netdevsim.
+> 
+> Again, netdevsim is there for config api testing purposes. If things
+> got broken, it is not that bit deal. I broke the way it is
+> instantiated significantly for example (iplink->sysfs).
+>
 
-Invalid comment style.
+netdevsim was created as a way of testing hardware focused kernel APIs
+and code paths without hardware. yes?
 
+The devlink api was added to netdevsim to test fib notifiers failing by
+handlers. The notifiers were added for mlxsw - a hardware driver - as a
+way to get notifications of fib changes.
+
+The easiest way to test the error paths was to code limits to fib
+entries very similar to what mlxsw implements with its 'devlink
+resource' implementation. ie., to implement 'devlink resource' for a
+software emulated device. netdevsim was the most logical place for it.
+
+See the commit logs starting at:
+
+commit b349e0b5ec5d7be57ac243fb08ae8b994c928165
+Merge: 6e2135ce54b7 37923ed6b8ce
+Author: David S. Miller <davem@davemloft.net>
+Date:   Thu Mar 29 14:10:31 2018 -0400
+
+    Merge branch 'net-Allow-FIB-notifiers-to-fail-add-and-replace'
+
+    David Ahern says:
+
+    ====================
+    net: Allow FIB notifiers to fail add and replace
+
+
+Everything about that implementation is using the s/w device to test
+code paths targeted at hardware offloads.
