@@ -2,114 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3058E84CBC
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 15:20:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5373984CC1
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 15:20:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388209AbfHGNT3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 09:19:29 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:4188 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387970AbfHGNT2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 09:19:28 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 16225B1D52EED8DA34B7;
-        Wed,  7 Aug 2019 21:19:24 +0800 (CST)
-Received: from localhost.localdomain (10.67.165.24) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.439.0; Wed, 7 Aug 2019 21:19:14 +0800
-From:   Yonglong Liu <liuyonglong@huawei.com>
-To:     <davem@davemloft.net>, <andrew@lunn.ch>, <hkallweit1@gmail.com>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
-        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
-Subject: [PATCH net] net: phy: rtl8211f: do a double read to get real time link status
-Date:   Wed, 7 Aug 2019 21:16:12 +0800
-Message-ID: <1565183772-44268-1-git-send-email-liuyonglong@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        id S2388234AbfHGNT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 09:19:59 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41546 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387957AbfHGNT7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 09:19:59 -0400
+Received: by mail-ed1-f68.google.com with SMTP id p15so86154260eds.8;
+        Wed, 07 Aug 2019 06:19:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VsS99LwnBC3iQ8HWvvQz+DMgbBjpR0gNdAlatU6bOeA=;
+        b=VHHxvIM/f0VQ9SJFvUdoIzgQy3iZlKRCaxFeEfrXRUlstF9eR1j3imfN5H74UiMmja
+         7EhgHjidOeKuIzTjJ1/poY+/a6aM+vjU1LzNOCvbe1ajrJNz3qljEqpqSR7bXSGHfKNP
+         LRtAl1bu6KGV3wpPLV2htTq1o69HqEFFDyb80rJ1J35re6JSpGVvbO7cCNmL0XendxtC
+         Z5BvqumswsLxdr805Pkp7RSXIRK6+3uSdQ4IWTO0stjuq539ejVARGrdiWfjrioEia5D
+         mzw4iNY6pBJPYiMLNRcEy2rRvE1xblZqJ9jOqJKsAKZKXPoGEwefJ7PMcsEpvqUtBxRu
+         SfYQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VsS99LwnBC3iQ8HWvvQz+DMgbBjpR0gNdAlatU6bOeA=;
+        b=CQkB+3DBIBmVMd5GTBLYd+8kWAmlM0D/OIx2b8gbxU7HhE7iSLlBHe3bXtg26GfZWG
+         K22mLvYkJ2BR/HBgfjyGYW0O2PKrm0ompdWfsJ47zQkhVKMLcZ9QvHxu+YD7pRWOUzTe
+         NzF7XdM2FHzMqZjgMKcTkEyMsQSL8rLVyzu9wt47XV2sSaw+AY9SpQpEykqPEGSZX2t0
+         /7RLKiUgl6XE9dUBdgDvDB8/XqdbJcsEh3p2diEWAL9GIuEqLdFGzl8JHOrPU5BElAO8
+         OgHnzegxRLMzfQAH7NzDeHnolTeX9+94FMM6MEfiQhX5l1wAqhcxmJeg5r2qsy20+op5
+         oWOw==
+X-Gm-Message-State: APjAAAVZiA4x37AZMkSP3OJVACUYPih2iKn+1vhWGbS2+AadLm3Y4Mr+
+        lKXbhkD7i39e2uW8sBpMgiZugb7SPzUioxcN074=
+X-Google-Smtp-Source: APXvYqx0eZkI6QO0WgJDZP9/db3DJXaNcEwIkkpd0jQp9gcp+BcQMHgWwwXO26vqbFfQLU0aCXszTwzgZHd0I1WabI0=
+X-Received: by 2002:a17:906:c459:: with SMTP id ck25mr8135070ejb.32.1565183997044;
+ Wed, 07 Aug 2019 06:19:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.165.24]
-X-CFilter-Loop: Reflected
+References: <20190807130856.60792-1-yuehaibing@huawei.com>
+In-Reply-To: <20190807130856.60792-1-yuehaibing@huawei.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 7 Aug 2019 16:19:45 +0300
+Message-ID: <CA+h21hrrWGrw4kiTfjowWvQ-B6sNPLAcgTaaadA02ZAmYw1SjQ@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: dsa: sja1105: remove set but not used
+ variables 'tx_vid' and 'rx_vid'
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[   27.232781] hns3 0000:bd:00.3 eth7: net open
-[   27.237303] 8021q: adding VLAN 0 to HW filter on device eth7
-[   27.242972] IPv6: ADDRCONF(NETDEV_CHANGE): eth7: link becomes ready
-[   27.244449] hns3 0000:bd:00.3: invalid speed (-1)
-[   27.253904] hns3 0000:bd:00.3 eth7: failed to adjust link.
-[   27.259379] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change UP -> RUNNING
-[   27.924903] hns3 0000:bd:00.3 eth7: link up
-[   28.280479] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change RUNNING -> NOLINK
-[   29.208452] hns3 0000:bd:00.3 eth7: link down
-[   32.376745] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change NOLINK -> RUNNING
-[   33.208448] hns3 0000:bd:00.3 eth7: link up
-[   35.253821] hns3 0000:bd:00.3 eth7: net stop
-[   35.258270] hns3 0000:bd:00.3 eth7: link down
+On Wed, 7 Aug 2019 at 16:09, YueHaibing <yuehaibing@huawei.com> wrote:
+>
+> Fixes gcc '-Wunused-but-set-variable' warning:
+>
+> drivers/net/dsa/sja1105/sja1105_main.c: In function sja1105_fdb_dump:
+> drivers/net/dsa/sja1105/sja1105_main.c:1226:14: warning:
+>  variable tx_vid set but not used [-Wunused-but-set-variable]
+> drivers/net/dsa/sja1105/sja1105_main.c:1226:6: warning:
+>  variable rx_vid set but not used [-Wunused-but-set-variable]
+>
+> They are not used since commit 6d7c7d948a2e ("net: dsa:
+> sja1105: Fix broken learning with vlan_filtering disabled")
+>
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> ---
 
-When using rtl8211f in polling mode, may get a invalid speed,
-because of reading a fake link up and autoneg complete status
-immediately after starting autoneg:
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
 
-        ifconfig-1176  [007] ....    27.232763: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x00 val:0x1040
-  kworker/u257:1-670   [015] ....    27.232805: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x04 val:0x01e1
-  kworker/u257:1-670   [015] ....    27.232815: mdio_access: mii-0000:bd:00.3 write phy:0x07 reg:0x04 val:0x05e1
-  kworker/u257:1-670   [015] ....    27.232869: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x79ad
-  kworker/u257:1-670   [015] ....    27.232904: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x09 val:0x0200
-  kworker/u257:1-670   [015] ....    27.232940: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x00 val:0x1040
-  kworker/u257:1-670   [015] ....    27.232949: mdio_access: mii-0000:bd:00.3 write phy:0x07 reg:0x00 val:0x1240
-  kworker/u257:1-670   [015] ....    27.233003: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x79ad
-  kworker/u257:1-670   [015] ....    27.233039: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x0a val:0x3002
-  kworker/u257:1-670   [015] ....    27.233074: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x09 val:0x0200
-  kworker/u257:1-670   [015] ....    27.233110: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x05 val:0x0000
-  kworker/u257:1-670   [000] ....    28.280475: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x7989
-  kworker/u257:1-670   [000] ....    29.304471: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x7989
-
-According to the datasheet of rtl8211f, to get the real time
-link status, need to read MII_BMSR twice.
-
-This patch add a read_status hook for rtl8211f, and do a fake
-phy_read before genphy_read_status(), so that can get real link
-status in genphy_read_status().
-
-Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
----
- drivers/net/phy/realtek.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index a669945..92e27d5 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -256,6 +256,18 @@ static int rtl8366rb_config_init(struct phy_device *phydev)
- 	return ret;
- }
- 
-+static int rtl8211f_read_status(struct phy_device *phydev)
-+{
-+	int status;
-+
-+	/* do a fake read */
-+	status = phy_read(phydev, MII_BMSR);
-+	if (status < 0)
-+		return status;
-+
-+	return genphy_read_status(phydev);
-+}
-+
- static struct phy_driver realtek_drvs[] = {
- 	{
- 		PHY_ID_MATCH_EXACT(0x00008201),
-@@ -325,6 +337,7 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume		= genphy_resume,
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
-+		.read_status	= rtl8211f_read_status,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc800),
- 		.name		= "Generic Realtek PHY",
--- 
-2.8.1
-
+>  drivers/net/dsa/sja1105/sja1105_main.c | 4 ----
+>  1 file changed, 4 deletions(-)
+>
+> diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+> index d073baf..df976b25 100644
+> --- a/drivers/net/dsa/sja1105/sja1105_main.c
+> +++ b/drivers/net/dsa/sja1105/sja1105_main.c
+> @@ -1223,12 +1223,8 @@ static int sja1105_fdb_dump(struct dsa_switch *ds, int port,
+>  {
+>         struct sja1105_private *priv = ds->priv;
+>         struct device *dev = ds->dev;
+> -       u16 rx_vid, tx_vid;
+>         int i;
+>
+> -       rx_vid = dsa_8021q_rx_vid(ds, port);
+> -       tx_vid = dsa_8021q_tx_vid(ds, port);
+> -
+>         for (i = 0; i < SJA1105_MAX_L2_LOOKUP_COUNT; i++) {
+>                 struct sja1105_l2_lookup_entry l2_lookup = {0};
+>                 u8 macaddr[ETH_ALEN];
+> --
+> 2.7.4
+>
+>
