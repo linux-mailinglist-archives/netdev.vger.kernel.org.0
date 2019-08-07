@@ -2,94 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA64784262
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:21:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 73FF98426B
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 04:25:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729117AbfHGCVc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 22:21:32 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:52450 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728772AbfHGCVc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 22:21:32 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id AACF389BD91E6628DD48;
-        Wed,  7 Aug 2019 10:21:29 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Wed, 7 Aug 2019
- 10:21:23 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
-        <davem@davemloft.net>, <jiri@resnulli.us>,
-        <jay.vosburgh@canonical.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH v2] bonding: Add vlan tx offload to hw_enc_features
-Date:   Wed, 7 Aug 2019 10:19:59 +0800
-Message-ID: <20190807021959.58572-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S1729188AbfHGCZU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 22:25:20 -0400
+Received: from mail-pf1-f181.google.com ([209.85.210.181]:33769 "EHLO
+        mail-pf1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728906AbfHGCZT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 22:25:19 -0400
+Received: by mail-pf1-f181.google.com with SMTP id g2so42568554pfq.0
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 19:25:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ekOgQIBsMwnrAjxkyOsz/hK2IP4FxPL2nZk2m1Uz9kY=;
+        b=LNX0pJpIOxQkvrD5XdBv9Q9zI4jlCu1mN1gn1skIn1JFzJGclLXjfvj0SI/bAw6snY
+         lAfrs/wLgtMz/fwQoWu5K7EmHXUgsL0g/PDNOyQkJ/NpehjvliQpMZF6DDibW+8nv5y+
+         opM80qgVkATnMDFG0AE4p487FlYgQRgTNfitHX5ATs9Mcj9sNY+3/e8s5V6FkisON7t3
+         2WBvJW0+29kPboa+X6pgQYcaIh72yxlcBqI3/u6aSjIobp4aWpgfdy+YsSVcIHldEL2E
+         t3k/CgxxEXnxWKC8yTA2efwCdNqveVuVwJq0D3QRw863VVg41DrH1AKy/0GQsfQrTpeV
+         LoaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ekOgQIBsMwnrAjxkyOsz/hK2IP4FxPL2nZk2m1Uz9kY=;
+        b=ZK03Jn/x6ZiLw7aTG0UCSOS47sQhDCCH+tqXsIUkSFhnsTy8SjcyVtxkkzv2JLKijd
+         B2YwMuQ8AJo5Sg8aJCtWFQrt9GuJJ5hNo2q4xtCvEUCnJSCNKYxCOX9fRF1sGwSLlIiE
+         /f0Pq442QS7jmvhRcHXyv59SqIrHJddqqUDOxFcgGRJse0oz/cd7hH/c6cK1QchyeA+U
+         esvI1dlw9DkU8V5n8pHkKb/RskhvkiE4T/tcsGpd1Pu9xqNJcLjGTDMHMyjoNoCq4MUd
+         BDYahX59tHPMIO5gTiTkZL+IlQ6GeAhRPZwMB43yZDW1/LbQ0jMqPEttpG41xRjUwm2h
+         9Sgw==
+X-Gm-Message-State: APjAAAWZzv2urdDGgm2L2MnO1WuI1alI/EK4hM3x0zIlW6b36Pi7RSym
+        yR2wd+klWBMs2ljIbJWgGM4oPMRZjg==
+X-Google-Smtp-Source: APXvYqyHt9ZoL14ybVH9rrRn6xMdMJ2Clmc8cn6o4JDSrBinN31/GvjgvkL82/Hyp/u41J8MC1WNIw==
+X-Received: by 2002:a62:1d8f:: with SMTP id d137mr7050346pfd.207.1565144718767;
+        Tue, 06 Aug 2019 19:25:18 -0700 (PDT)
+Received: from localhost.localdomain ([110.35.161.54])
+        by smtp.gmail.com with ESMTPSA id b126sm129275991pfa.126.2019.08.06.19.25.16
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 19:25:18 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [v3,0/4] tools: bpftool: add net attach/detach command to attach XDP prog
+Date:   Wed,  7 Aug 2019 11:25:05 +0900
+Message-Id: <20190807022509.4214-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As commit 30d8177e8ac7 ("bonding: Always enable vlan tx offload")
-said, we should always enable bonding's vlan tx offload, pass the
-vlan packets to the slave devices with vlan tci, let them to handle
-vlan implementation.
+Currently, bpftool net only supports dumping progs attached on the
+interface. To attach XDP prog on interface, user must use other tool
+(eg. iproute2). By this patch, with `bpftool net attach/detach`, user
+can attach/detach XDP prog on interface.
 
-Now if encapsulation protocols like VXLAN is used, skb->encapsulation
-may be set, then the packet is passed to vlan device which based on
-bonding device. However in netif_skb_features(), the check of
-hw_enc_features:
+    # bpftool prog
+	16: xdp  name xdp_prog1  tag 539ec6ce11b52f98  gpl
+        loaded_at 2019-08-07T08:30:17+0900  uid 0
+    ...
+	20: xdp  name xdp_fwd_prog  tag b9cb69f121e4a274  gpl
+        loaded_at 2019-08-07T08:30:17+0900  uid 0
+    
+	# bpftool net attach xdpdrv id 16 dev enp6s0np0
+    # bpftool net
+    xdp:
+	enp6s0np0(4) driver id 16
+    
+	# bpftool net attach xdpdrv id 20 dev enp6s0np0 overwrite
+    # bpftool net
+    xdp:
+	enp6s0np0(4) driver id 20
 
-	 if (skb->encapsulation)
-                 features &= dev->hw_enc_features;
+	# bpftool net detach xdpdrv dev enp6s0np0
+    # bpftool net
+    xdp:
 
-clears NETIF_F_HW_VLAN_CTAG_TX/NETIF_F_HW_VLAN_STAG_TX. This results
-in same issue in commit 30d8177e8ac7 like this:
 
-vlan_dev_hard_start_xmit
-  -->dev_queue_xmit
-    -->validate_xmit_skb
-      -->netif_skb_features //NETIF_F_HW_VLAN_CTAG_TX is cleared
-      -->validate_xmit_vlan
-        -->__vlan_hwaccel_push_inside //skb->tci is cleared
-...
- --> bond_start_xmit
-   --> bond_xmit_hash //BOND_XMIT_POLICY_ENCAP34
-     --> __skb_flow_dissect // nhoff point to IP header
-        -->  case htons(ETH_P_8021Q)
-             // skb_vlan_tag_present is false, so
-             vlan = __skb_header_pointer(skb, nhoff, sizeof(_vlan),
-             //vlan point to ip header wrongly
+While this patch only contains support for XDP, through `net
+attach/detach`, bpftool can further support other prog attach types.
 
-Fixes: b2a103e6d0af ("bonding: convert to ndo_fix_features")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+XDP attach/detach tested on Mellanox ConnectX-4 and Netronome Agilio.
+
 ---
-v2: fix a log typo, add Fixes tag
----
- drivers/net/bonding/bond_main.c | 2 ++
- 1 file changed, 2 insertions(+)
+Changes in v3:
+  - added 'overwrite' option for replacing previously attached XDP prog
+  - command argument order has been changed ('ATTACH_TYPE' comes first)
+  - add 'dev' keyword in front of <devname>
+  - added bash-completion and documentation
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 02fd782..931d9d9 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -1126,6 +1126,8 @@ static void bond_compute_features(struct bonding *bond)
- done:
- 	bond_dev->vlan_features = vlan_features;
- 	bond_dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
-+				    NETIF_F_HW_VLAN_CTAG_TX |
-+				    NETIF_F_HW_VLAN_STAG_TX |
- 				    NETIF_F_GSO_UDP_L4;
- 	bond_dev->mpls_features = mpls_features;
- 	bond_dev->gso_max_segs = gso_max_segs;
+Changes in v2:
+  - command 'load/unload' changed to 'attach/detach' for the consistency
+
+Daniel T. Lee (4):
+  tools: bpftool: add net attach command to attach XDP on interface
+  tools: bpftool: add net detach command to detach XDP on interface
+  tools: bpftool: add bash-completion for net attach/detach
+  tools: bpftool: add documentation for net attach/detach
+
+ .../bpf/bpftool/Documentation/bpftool-net.rst |  51 ++++-
+ tools/bpf/bpftool/bash-completion/bpftool     |  64 ++++++-
+ tools/bpf/bpftool/net.c                       | 181 ++++++++++++++++--
+ 3 files changed, 273 insertions(+), 23 deletions(-)
+
 -- 
-2.7.4
-
+2.20.1
 
