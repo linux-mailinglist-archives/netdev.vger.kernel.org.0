@@ -2,237 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D11D885B10
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:51:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 08EDB85B62
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 09:15:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731035AbfHHGvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 02:51:23 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:37120 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730903AbfHHGvX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 02:51:23 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 78F652F8BF1;
-        Thu,  8 Aug 2019 06:51:22 +0000 (UTC)
-Received: from carbon (ovpn-200-43.brq.redhat.com [10.40.200.43])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 909FF194B6;
-        Thu,  8 Aug 2019 06:51:17 +0000 (UTC)
-Date:   Thu, 8 Aug 2019 08:51:15 +0200
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Y Song <ys114321@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Xdp <xdp-newbies@vger.kernel.org>, a.s.protopopov@gmail.com,
-        David Ahern <dsahern@gmail.com>, brouer@redhat.com
-Subject: Re: [bpf-next PATCH 2/3] samples/bpf: make xdp_fwd more practically
- usable via devmap lookup
-Message-ID: <20190808085115.23f12cc0@carbon>
-In-Reply-To: <CAH3MdRUf_2Sk8v2dPeQ_+LfKPPwX9N3QoMDMCGFehd5JQVktcw@mail.gmail.com>
-References: <156518133219.5636.728822418668658886.stgit@firesoul>
-        <156518138310.5636.13064696265479533742.stgit@firesoul>
-        <CAH3MdRUf_2Sk8v2dPeQ_+LfKPPwX9N3QoMDMCGFehd5JQVktcw@mail.gmail.com>
+        id S1731198AbfHHHPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 03:15:35 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:40544 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725817AbfHHHPf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 03:15:35 -0400
+Received: by mail-yb1-f194.google.com with SMTP id j6so3377514ybm.7
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 00:15:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cyMq0TgtB9lz08Wm0cH/3Gne0YN9zIz2WPr4TGO+rtM=;
+        b=XqZP+7loYcwZ3he2fSnDYg8FOGnfJX7HhVnMyJgRdZrTKTTTN2sP4YVEXSWQYyzusj
+         1sQic/QMCQOgMIeIoy7U2ceAa+xjQKLMm6KzNuQ50v8U8mhIWnVUmbpxdsxbLsJzLh0q
+         r22e0jsJoY9Krfm97NKXcS5dsqSqOCRRqaid89VsFZRvXc6LREaT7XsEVBIJgSs5xzaE
+         mAUrnDlXgSY5ps+Om4ia2dBnVX3HhiZ98fMFLtZdMcnQB6qUlA7zSveLUq7zpucqIVwE
+         JNkmpBQvpoNN7vSBPAgCW/WnPgnfUNSGW4+j7aZIPBL7PZ0bHksEZsCAwYEXwLXfw6Q+
+         8bOQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cyMq0TgtB9lz08Wm0cH/3Gne0YN9zIz2WPr4TGO+rtM=;
+        b=QwlNgCuF9A9BKNVVVRvtEkJWpdEedMVxAA+ueIGc2vENkcAgBEfIisSfVEB3xYWpDj
+         dYSwTTzL/7sErp1IaW19DqgHdDVTkyPDAUdDC1xvS+VjoOofAqJLvJmXBo9Mxjnlr96p
+         RhyR9iYblfAjl8li/06TTjASA0MKrRuoPjbyKsKa2f1sUBUZf1jY2gqVI2gDQArMvPUY
+         v+N3KpKcMvWio55iQkm0DnhFb+zWj82gpcW9r5azkh8jp0A0m9kXwJ85fdQgG3GgyHrX
+         3eUrve8FlmGExcFLbZXt5hnnIFFok3FVScpG0c5ZOifT4B45VXEzgbBk3BVaok+K+i9x
+         sXdA==
+X-Gm-Message-State: APjAAAVz1PDoN2F0q2BqpPwfbD+iqjAbaffCbe/W8hqvv77MPHqHGXy0
+        Pzkph0Ejs1G5iTZgRRHwhdCoe8YG9KuJ6l3cMA==
+X-Google-Smtp-Source: APXvYqwO0GkfpTvzpCz8z8eNEK0DRPMOq60RVf3DB9TU/yr+XrVP1l1J5wUSCf/yzuzznqSUmhlBmvLQHcGCtkYxHBM=
+X-Received: by 2002:a25:938e:: with SMTP id a14mr4829428ybm.333.1565248533402;
+ Thu, 08 Aug 2019 00:15:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 08 Aug 2019 06:51:22 +0000 (UTC)
+References: <20190807022509.4214-1-danieltimlee@gmail.com> <20190807022509.4214-2-danieltimlee@gmail.com>
+ <20190807134208.6601fad2@cakuba.netronome.com>
+In-Reply-To: <20190807134208.6601fad2@cakuba.netronome.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Thu, 8 Aug 2019 07:15:22 +0900
+Message-ID: <CAEKGpzj1VKWuWioEmRkNXrgfDdT-KkWZWsrbY+p=yyK8sPctwg@mail.gmail.com>
+Subject: Re: [v3,1/4] tools: bpftool: add net attach command to attach XDP on interface
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 7 Aug 2019 11:04:17 -0700
-Y Song <ys114321@gmail.com> wrote:
-
-> On Wed, Aug 7, 2019 at 5:37 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+On Thu, Aug 8, 2019 at 5:42 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Wed,  7 Aug 2019 11:25:06 +0900, Daniel T. Lee wrote:
+> > By this commit, using `bpftool net attach`, user can attach XDP prog on
+> > interface. New type of enum 'net_attach_type' has been made, as stated at
+> > cover-letter, the meaning of 'attach' is, prog will be attached on interface.
 > >
-> > This address the TODO in samples/bpf/xdp_fwd_kern.c, which points out
-> > that the chosen egress index should be checked for existence in the
-> > devmap. This can now be done via taking advantage of Toke's work in
-> > commit 0cdbb4b09a06 ("devmap: Allow map lookups from eBPF").
+> > With 'overwrite' option at argument, attached XDP program could be replaced.
+> > Added new helper 'net_parse_dev' to parse the network device at argument.
 > >
-> > This change makes xdp_fwd more practically usable, as this allows for
-> > a mixed environment, where IP-forwarding fallback to network stack, if
-> > the egress device isn't configured to use XDP.
+> > BPF prog will be attached through libbpf 'bpf_set_link_xdp_fd'.
 > >
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 > > ---
-> >  samples/bpf/xdp_fwd_kern.c |   20 ++++++++++++++------
-> >  samples/bpf/xdp_fwd_user.c |   36 +++++++++++++++++++++++++-----------
-> >  2 files changed, 39 insertions(+), 17 deletions(-)
+> >  tools/bpf/bpftool/net.c | 141 ++++++++++++++++++++++++++++++++++++----
+> >  1 file changed, 130 insertions(+), 11 deletions(-)
 > >
-> > diff --git a/samples/bpf/xdp_fwd_kern.c b/samples/bpf/xdp_fwd_kern.c
-> > index e6ffc4ea06f4..4a5ad381ed2a 100644
-> > --- a/samples/bpf/xdp_fwd_kern.c
-> > +++ b/samples/bpf/xdp_fwd_kern.c
-> > @@ -104,13 +104,21 @@ static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
+> > diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+> > index 67e99c56bc88..c05a3fac5cac 100644
+> > --- a/tools/bpf/bpftool/net.c
+> > +++ b/tools/bpf/bpftool/net.c
+> > @@ -55,6 +55,35 @@ struct bpf_attach_info {
+> >       __u32 flow_dissector_id;
+> >  };
 > >
-> >         rc = bpf_fib_lookup(ctx, &fib_params, sizeof(fib_params), flags);
-> >
-> > -       /* verify egress index has xdp support
-> > -        * TO-DO bpf_map_lookup_elem(&tx_port, &key) fails with
-> > -        *       cannot pass map_type 14 into func bpf_map_lookup_elem#1:
-> > -        * NOTE: without verification that egress index supports XDP
-> > -        *       forwarding packets are dropped.
-> > -        */
-> >         if (rc == 0) {
-> > +               int *val;
+> > +enum net_attach_type {
+> > +     NET_ATTACH_TYPE_XDP,
+> > +     NET_ATTACH_TYPE_XDP_GENERIC,
+> > +     NET_ATTACH_TYPE_XDP_DRIVER,
+> > +     NET_ATTACH_TYPE_XDP_OFFLOAD,
+> > +};
 > > +
-> > +               /* Verify egress index has been configured as TX-port.
-> > +                * (Note: User can still have inserted an egress ifindex that
-> > +                * doesn't support XDP xmit, which will result in packet drops).
-> > +                *
-> > +                * Note: lookup in devmap supported since 0cdbb4b09a0.
-> > +                * If not supported will fail with:
-> > +                *  cannot pass map_type 14 into func bpf_map_lookup_elem#1:
-> > +                */
-> > +               val = bpf_map_lookup_elem(&tx_port, &fib_params.ifindex);  
-> 
-> It should be "xdp_tx_ports". Otherwise, you will have compilation errors.
-
-Ups. This happened in my rebase, where I moved the rename patch [1/3]
-before this one.  Thanks for catching this!
-
-> > +               if (!val)
-> > +                       return XDP_PASS;  
-> 
-> Also, maybe we can do
->          if (!bpf_map_lookup_elem(&tx_port, &fib_params.ifindex))
->             return XDP_PASS;
-> so we do not need to define val at all.
-
-I had it this way, because I also checked the contents (of the pointer
-*val) to check if this was the correct ifindex, but I removed that
-check again (as user side always insert correctly).  So, I guess I
-could take your suggestion now.
-
-
+> > +static const char * const attach_type_strings[] = {
+> > +     [NET_ATTACH_TYPE_XDP]           = "xdp",
+> > +     [NET_ATTACH_TYPE_XDP_GENERIC]   = "xdpgeneric",
+> > +     [NET_ATTACH_TYPE_XDP_DRIVER]    = "xdpdrv",
+> > +     [NET_ATTACH_TYPE_XDP_OFFLOAD]   = "xdpoffload",
+> > +};
 > > +
-> >                 if (h_proto == htons(ETH_P_IP))
-> >                         ip_decrease_ttl(iph);
-> >                 else if (h_proto == htons(ETH_P_IPV6))
-> > diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
-> > index ba012d9f93dd..20951bc27477 100644
-> > --- a/samples/bpf/xdp_fwd_user.c
-> > +++ b/samples/bpf/xdp_fwd_user.c
-> > @@ -27,14 +27,20 @@
-> >  #include "libbpf.h"
-> >  #include <bpf/bpf.h>
-> >
-> > -
-> > -static int do_attach(int idx, int fd, const char *name)
-> > +static int do_attach(int idx, int prog_fd, int map_fd, const char
-> > *name) {
-> >         int err;
-> >
-> > -       err = bpf_set_link_xdp_fd(idx, fd, 0);
-> > -       if (err < 0)
-> > +       err = bpf_set_link_xdp_fd(idx, prog_fd, 0);
-> > +       if (err < 0) {
-> >                 printf("ERROR: failed to attach program to %s\n",
-> > name);
-> > +               return err;
-> > +       }
+> > +const size_t max_net_attach_type = ARRAY_SIZE(attach_type_strings);
+>
+> Nit: in practice max_.._type is num_types - 1, so perhaps rename this
+> to num_.. or such?
+>
+
+I can see at 'map.c', it declares ARRAY_SIZE with '_size' suffix.
+         const size_t map_type_name_size = ARRAY_SIZE(map_type_name);
+
+I'll change this variable name 'max_net_attach_type' to 'net_attach_type_size'.
+
+> > +static enum net_attach_type parse_attach_type(const char *str)
+> > +{
+> > +     enum net_attach_type type;
 > > +
-> > +       /* Adding ifindex as a possible egress TX port */
-> > +       err = bpf_map_update_elem(map_fd, &idx, &idx, 0);
-> > +       if (err)
-> > +               printf("ERROR: failed using device %s as
-> > TX-port\n", name);
-> >
-> >         return err;
-> >  }
-> > @@ -47,6 +53,9 @@ static int do_detach(int idx, const char *name)
-> >         if (err < 0)
-> >                 printf("ERROR: failed to detach program from %s\n",
-> > name);
-> >
-> > +       /* TODO: Remember to cleanup map, when adding use of shared
-> > map
-> > +        *  bpf_map_delete_elem((map_fd, &idx);
-> > +        */
-> >         return err;
+> > +     for (type = 0; type < max_net_attach_type; type++) {
+> > +             if (attach_type_strings[type] &&
+> > +                is_prefix(str, attach_type_strings[type]))
+>
+>                    ^
+> this is misaligned by one space
+>
+> Please try checkpatch with the --strict option to catch these.
+>
+
+I didn't know checkpatch has strict option.
+Thanks for letting me know!
+
+> > +                     return type;
+> > +     }
+> > +
+> > +     return max_net_attach_type;
+> > +}
+> > +
+> >  static int dump_link_nlmsg(void *cookie, void *msg, struct nlattr **tb)
+> >  {
+> >       struct bpf_netdev_t *netinfo = cookie;
+> > @@ -223,6 +252,97 @@ static int query_flow_dissector(struct bpf_attach_info *attach_info)
+> >       return 0;
 > >  }
 > >
-> > @@ -67,10 +76,10 @@ int main(int argc, char **argv)
-> >         };
-> >         const char *prog_name = "xdp_fwd";
-> >         struct bpf_program *prog;
-> > +       int prog_fd, map_fd = -1;
-> >         char filename[PATH_MAX];
-> >         struct bpf_object *obj;
-> >         int opt, i, idx, err;
-> > -       int prog_fd, map_fd;
-> >         int attach = 1;
-> >         int ret = 0;
+> > +static int net_parse_dev(int *argc, char ***argv)
+> > +{
+> > +     int ifindex;
+> > +
+> > +     if (is_prefix(**argv, "dev")) {
+> > +             NEXT_ARGP();
+> > +
+> > +             ifindex = if_nametoindex(**argv);
+> > +             if (!ifindex)
+> > +                     p_err("invalid devname %s", **argv);
+> > +
+> > +             NEXT_ARGP();
+> > +     } else {
+> > +             p_err("expected 'dev', got: '%s'?", **argv);
+> > +             return -1;
+> > +     }
+> > +
+> > +     return ifindex;
+> > +}
+> > +
+> > +static int do_attach_detach_xdp(int progfd, enum net_attach_type attach_type,
+> > +                             int ifindex, bool overwrite)
+> > +{
+> > +     __u32 flags = 0;
+> > +
+> > +     if (!overwrite)
+> > +             flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+> > +     if (attach_type == NET_ATTACH_TYPE_XDP_GENERIC)
+> > +             flags |= XDP_FLAGS_SKB_MODE;
+> > +     if (attach_type == NET_ATTACH_TYPE_XDP_DRIVER)
+> > +             flags |= XDP_FLAGS_DRV_MODE;
+> > +     if (attach_type == NET_ATTACH_TYPE_XDP_OFFLOAD)
+> > +             flags |= XDP_FLAGS_HW_MODE;
+> > +
+> > +     return bpf_set_link_xdp_fd(ifindex, progfd, flags);
+> > +}
+> > +
+> > +static int do_attach(int argc, char **argv)
+> > +{
+> > +     enum net_attach_type attach_type;
+> > +     int progfd, ifindex, err = 0;
+> > +     bool overwrite = false;
+> > +
+> > +     /* parse attach args */
+> > +     if (!REQ_ARGS(5))
+> > +             return -EINVAL;
+> > +
+> > +     attach_type = parse_attach_type(*argv);
+> > +     if (attach_type == max_net_attach_type) {
+> > +             p_err("invalid net attach/detach type");
+>
+> worth adding the type to the error message so that user know which part
+> of command line was wrong:
+>
+>         p_err("invalid net attach/detach type '%s'", *argv);
+>
+
+It sounds reasonable.
+I'll update the error message.
+
+
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     NEXT_ARG();
+>
+> nit: the new line should be before NEXT_ARG(), IOV NEXT_ARG() belongs
+> to the code which consumed the argument
+>
+
+I'm not sure I'm following.
+Are you saying that, at here the newline shouldn't be necessary?
+
+> > +     progfd = prog_parse_fd(&argc, &argv);
+> > +     if (progfd < 0)
+> > +             return -EINVAL;
+> > +
+> > +     ifindex = net_parse_dev(&argc, &argv);
+> > +     if (ifindex < 1) {
+> > +             close(progfd);
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     if (argc) {
+> > +             if (is_prefix(*argv, "overwrite")) {
+> > +                     overwrite = true;
+> > +             } else {
+> > +                     p_err("expected 'overwrite', got: '%s'?", *argv);
+> > +                     close(progfd);
+> > +                     return -EINVAL;
+> > +             }
+> > +     }
+> > +
+> > +     /* attach xdp prog */
+> > +     if (is_prefix("xdp", attach_type_strings[attach_type]))
+>
+> I'm still unclear on why this if is needed
+>
+
+Just an code structure that shows extensibility for other attachment types.
+Well, for now there's no other type than XDP, so it's not necessary.
+
+> > +             err = do_attach_detach_xdp(progfd, attach_type, ifindex,
+> > +                                        overwrite);
+> > +
+> > +     if (err < 0) {
+> > +             p_err("interface %s attach failed",
+> > +                   attach_type_strings[attach_type]);
+>
+> Please add the error string, like:
+>
+>                 p_err("interface %s attach failed: %s",
+>                       attach_type_strings[attach_type], strerror(errno));
+>
+>
+
+Oh. Didn't think of propagate errno to error message.
+I'll update it right away.
+
+> > +             return err;
+> > +     }
+> > +
+> > +     if (json_output)
+> > +             jsonw_null(json_wtr);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> >  static int do_show(int argc, char **argv)
+> >  {
+> >       struct bpf_attach_info attach_info = {};
+> > @@ -231,17 +351,10 @@ static int do_show(int argc, char **argv)
+> >       unsigned int nl_pid;
+> >       char err_buf[256];
 > >
-> > @@ -103,8 +112,17 @@ int main(int argc, char **argv)
-> >                         return 1;
-> >                 }
+> > -     if (argc == 2) {
+> > -             if (strcmp(argv[0], "dev") != 0)
+> > -                     usage();
+> > -             filter_idx = if_nametoindex(argv[1]);
+> > -             if (filter_idx == 0) {
+> > -                     fprintf(stderr, "invalid dev name %s\n", argv[1]);
+> > -                     return -1;
+> > -             }
+> > -     } else if (argc != 0) {
+> > +     if (argc == 2)
+> > +             filter_idx = net_parse_dev(&argc, &argv);
+>
+> You should check filter_idx is not negative here, no?
+>
+
+You're right.
+I'll update it.
+
+> > +     else if (argc != 0)
+> >               usage();
+> > -     }
 > >
-> > -               if (bpf_prog_load_xattr(&prog_load_attr, &obj,
-> > &prog_fd))
-> > +               err = bpf_prog_load_xattr(&prog_load_attr, &obj,
-> > &prog_fd);
-> > +               if (err) {
-> > +                       if (err == -22) {  
-> 
-> -EINVAL?
+> >       ret = query_flow_dissector(&attach_info);
+> >       if (ret)
 
-Yes.
-
-> For -EINVAL, many things could go wrong. But maybe the blow error
-> is the most common one so I am fine with that.
-
-Yes, it is rather sad, that we don't have better/more return codes,
-such that we can react better to these.
-
-E.g. if this was part of a open source project (external to the
-kernel), I could have two XDP-BPF programs, one that use this feature
-and one that don't.  If I had a more specific return code, then I could
-load the other if the first failed.
-
-
-> > +                               printf("Does kernel support devmap lookup?\n");
-> > +                               /* If not, the error message will be:
-> > +                                * "cannot pass map_type 14 into func
-> > +                                * bpf_map_lookup_elem#1"
-> > +                                */
-> > +                       }
-> >                         return 1;
-> > +               }
-> >
-> >                 prog = bpf_object__find_program_by_title(obj, prog_name);
-> >                 prog_fd = bpf_program__fd(prog);
-> > @@ -119,10 +137,6 @@ int main(int argc, char **argv)
-> >                         return 1;
-> >                 }
-> >         }
-> > -       if (attach) {
-> > -               for (i = 1; i < 64; ++i)
-> > -                       bpf_map_update_elem(map_fd, &i, &i, 0);
-> > -       }
-> >
-> >         for (i = optind; i < argc; ++i) {
-> >                 idx = if_nametoindex(argv[i]);
-> > @@ -138,7 +152,7 @@ int main(int argc, char **argv)
-> >                         if (err)
-> >                                 ret = err;
-> >                 } else {
-> > -                       err = do_attach(idx, prog_fd, argv[i]);
-> > +                       err = do_attach(idx, prog_fd, map_fd, argv[i]);
-> >                         if (err)
-> >                                 ret = err;
-> >                 }
-> >  
-
-I'll send a V2
-
--- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+Thank you for your assistance.
