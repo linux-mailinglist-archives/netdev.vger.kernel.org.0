@@ -2,182 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DEDBC8519A
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 19:02:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D61AD8519F
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 19:05:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388824AbfHGRCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 13:02:41 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:41314 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387967AbfHGRCl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 13:02:41 -0400
-Received: by mail-ot1-f67.google.com with SMTP id o101so107124267ota.8
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 10:02:40 -0700 (PDT)
+        id S2389045AbfHGRE6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 13:04:58 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33254 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388480AbfHGRE6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 13:04:58 -0400
+Received: by mail-pl1-f196.google.com with SMTP id c14so41638418plo.0
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 10:04:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X2vuNE7PJBhdWCvzlvCRPtvvFBe7N7JmPa/xwKbpMZI=;
-        b=c+cifb0JUt8IAOmI2yR3/7C62SRIXSfCfmmZ7CP8PYLclE1iW/I1WGhYMaEutazSFB
-         /80MCKM4kdGstnt+AZR7VEotrdxX7PMQrjPLcIEzcjp5W2Xvi3rTHBB3mH9g9/B4SyYp
-         epR4i/+8cVWgzJopR9bDVu9eeHu5OQghT+JygTvdhG2ODC0lv3pjqGqGJU/Lp364WcTN
-         H88b1l3IY84L4JfndzDOEx5GO5YpWkk2nyY4wnCBx94P3zqrLuyKM8kB5W9CZNNPHJS/
-         dmiLOsDHic5N1Mm8H/Ruo/2+By+cQHdhZvR67qpZfgWRs48wSOsVNFZe5EOlA16wCZge
-         2NTQ==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jvijXR0N1UhWnmCMLZgGc0uUllTfrVpMODKwZ+a/Lpk=;
+        b=K0DdoHalNpqfXUXNlfVOTZluh1fZjO1htfDRq9m56tp8GguieWpk29NqYn/JHIlMqX
+         x5omTQvbjQSqMW8FvWgPKUdfN50lnF0E8gIi/YwVkfPDfUnGC3HDSRFOOmN2hMG8jYmH
+         IC0aggl0QQoDe4VmNAgyaeKoZkLunk0LyVC4E=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X2vuNE7PJBhdWCvzlvCRPtvvFBe7N7JmPa/xwKbpMZI=;
-        b=j3CB+wFmYSAzKZ3ZwmQtJ0lksbtortIFfJSCB186t9MS3UQBghbhUHYPK9H8EqSdHW
-         i6+0EJ3EqMfE62fsZZOgHYTBQ5YQVw4CnAKt5Owua2XnLfklE7HHXz5bXXzHSLPuqTPs
-         Y16ELzPQxwidcNWK19FMqGtSaTvwYIVH7vv7z69o6ta0e4dKfOLMlSef2Ij/9dQXCGWY
-         vLQU3CvLLxA7V69ofLpktqCulz/PU/s37vVvFiJHL0JL9ShFKixkISV5YzDdXDvwae8P
-         luHHRLhT0nKqZHa7WxBumdedDjiFErSnFsSPDkNv7KAq4Gi6Q0eU0DZLemvggIWPFaOp
-         uvAg==
-X-Gm-Message-State: APjAAAW0SumzU2e4BU9d63hk7rqSGthdtZ1IBirBE9yh2KvEUrL6D0N3
-        6wvh/shkHBrByLSpYmuWpc0k7IYpUV+vSn1BHQk=
-X-Google-Smtp-Source: APXvYqxL19JismHlng1Pger/xv4LAd+f6cpsMa7dexDF6yc6USPeJ/fQb+7SWNgKC2lc+GQUlfuvi/dJBPKJW6AcRQM=
-X-Received: by 2002:a5e:8704:: with SMTP id y4mr9792419ioj.135.1565197360091;
- Wed, 07 Aug 2019 10:02:40 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jvijXR0N1UhWnmCMLZgGc0uUllTfrVpMODKwZ+a/Lpk=;
+        b=IW07I0qKVdAE/C6TMGQzeun3WSKk9qo/UM3FuePGlDPK6hdhH7lJ8kTpweu/BcwMCX
+         xxkz3z97iceTJcwvs5nI8P8BMrbi6MmZMZUgNXr+W2kY2zF1w0C2V2zP3xVVs7Ee2/bK
+         aVWwqinsnxNX0kLK9aP4+f8y9L3RVJFTJ4CJhWwFdZg+G34pSa0XpY2EZM0I9Ul3vBDI
+         7nWy+ChwYC6LKlyiwc3k/4bq/Mg2/6Of+I6ziHi778puRp92fqcyNidxfLYQXJajbiLP
+         g6ECJlVS8dX9+h+0i5A4c3OqRpFSfiZ3EEPL6lLUDs8QZJcfoCTYDxPjkyx/YPM9EWhW
+         9p1g==
+X-Gm-Message-State: APjAAAXJ+F36ZQ1dJvCPRaSKxzRLSe4Dw7ttrfExl6kAJiBZrlVRU3jh
+        iYo7vw8YpuA8CowEhFmz6EbIPA==
+X-Google-Smtp-Source: APXvYqxVB0ltkjMiFBNmYoV5UmkVDZAAacu/2A70V1J3piCWKQtT26uSS+wdaVnwrrq6Cj47oV1iCA==
+X-Received: by 2002:aa7:92cb:: with SMTP id k11mr10521596pfa.126.1565197497581;
+        Wed, 07 Aug 2019 10:04:57 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id i3sm98421238pfo.138.2019.08.07.10.04.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 07 Aug 2019 10:04:56 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH v5 0/4] net: phy: Add support for DT configuration of PHY LEDs and use it for RTL8211E
+Date:   Wed,  7 Aug 2019 10:04:45 -0700
+Message-Id: <20190807170449.205378-1-mka@chromium.org>
+X-Mailer: git-send-email 2.22.0.770.g0f2c4a37fd-goog
 MIME-Version: 1.0
-References: <20190807022509.4214-1-danieltimlee@gmail.com> <20190807022509.4214-3-danieltimlee@gmail.com>
-In-Reply-To: <20190807022509.4214-3-danieltimlee@gmail.com>
-From:   Y Song <ys114321@gmail.com>
-Date:   Wed, 7 Aug 2019 10:02:04 -0700
-Message-ID: <CAH3MdRW4LgdLoqSpLsWUOwjnNhJA1sodHqSD2Z14JY6aHMaKxg@mail.gmail.com>
-Subject: Re: [v3,2/4] tools: bpftool: add net detach command to detach XDP on interface
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 6, 2019 at 7:25 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
->
-> By this commit, using `bpftool net detach`, the attached XDP prog can
-> be detached. Detaching the BPF prog will be done through libbpf
-> 'bpf_set_link_xdp_fd' with the progfd set to -1.
->
-> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> ---
->  tools/bpf/bpftool/net.c | 42 ++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 41 insertions(+), 1 deletion(-)
->
-> diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
-> index c05a3fac5cac..7be96acb08e0 100644
-> --- a/tools/bpf/bpftool/net.c
-> +++ b/tools/bpf/bpftool/net.c
-> @@ -343,6 +343,43 @@ static int do_attach(int argc, char **argv)
->         return 0;
->  }
->
-> +static int do_detach(int argc, char **argv)
-> +{
-> +       enum net_attach_type attach_type;
-> +       int progfd, ifindex, err = 0;
-> +
-> +       /* parse detach args */
-> +       if (!REQ_ARGS(3))
-> +               return -EINVAL;
-> +
-> +       attach_type = parse_attach_type(*argv);
-> +       if (attach_type == max_net_attach_type) {
-> +               p_err("invalid net attach/detach type");
-> +               return -EINVAL;
-> +       }
-> +
-> +       NEXT_ARG();
-> +       ifindex = net_parse_dev(&argc, &argv);
-> +       if (ifindex < 1)
-> +               return -EINVAL;
-> +
-> +       /* detach xdp prog */
-> +       progfd = -1;
-> +       if (is_prefix("xdp", attach_type_strings[attach_type]))
-> +               err = do_attach_detach_xdp(progfd, attach_type, ifindex, NULL);
+This series adds a generic binding to configure PHY LEDs through
+the device tree, and phylib support for reading the information
+from the DT. PHY drivers that support the generic binding should
+implement the new hook .config_led.
 
-I found an issue here. This is probably related to do_attach_detach_xdp.
+Enable DT configuration of the RTL8211E LEDs by implementing the
+.config_led hook of the driver. Certain registers of the RTL8211E
+can only be accessed through a vendor specific extended page
+mechanism. Extended pages need to be accessed for the LED
+configuration. This series adds helpers to facilitate accessing
+extended pages.
 
--bash-4.4$ sudo ./bpftool net attach x pinned /sys/fs/bpf/xdp_example dev v1
--bash-4.4$ sudo ./bpftool net
-xdp:
-v1(4) driver id 1172
+(subject updated, was "net: phy: realtek: Enable configuration
+of RTL8211E LEDs")
 
-tc:
-eth0(2) clsact/ingress fbflow_icmp id 29 act []
-eth0(2) clsact/egress cls_fg_dscp_section id 27 act []
-eth0(2) clsact/egress fbflow_egress id 28
-eth0(2) clsact/egress fbflow_sslwall_egress id 35
+Matthias Kaehlcke (4):
+  dt-bindings: net: phy: Add subnode for LED configuration
+  net: phy: Add support for generic LED configuration through the DT
+  net: phy: realtek: Add helpers for accessing RTL8211x extension pages
+  net: phy: realtek: Add LED configuration support for RTL8211E
 
-flow_dissector:
+ .../devicetree/bindings/net/ethernet-phy.yaml |  59 +++++++
+ drivers/net/phy/phy_device.c                  |  72 +++++++++
+ drivers/net/phy/realtek.c                     | 148 ++++++++++++++++--
+ include/linux/phy.h                           |  22 +++
+ 4 files changed, 286 insertions(+), 15 deletions(-)
 
--bash-4.4$ sudo ./bpftool net detach x dev v2
--bash-4.4$ sudo ./bpftool net
-xdp:
-v1(4) driver id 1172
+-- 
+2.22.0.770.g0f2c4a37fd-goog
 
-tc:
-eth0(2) clsact/ingress fbflow_icmp id 29 act []
-eth0(2) clsact/egress cls_fg_dscp_section id 27 act []
-eth0(2) clsact/egress fbflow_egress id 28
-eth0(2) clsact/egress fbflow_sslwall_egress id 35
-
-flow_dissector:
-
--bash-4.4$
-
-Basically detaching may fail due to wrong dev name or wrong type, etc.
-But the tool did not return an error. Is this expected?
-This may be related to this funciton "bpf_set_link_xdp_fd()".
-So this patch itself should be okay.
-
-> +
-> +       if (err < 0) {
-> +               p_err("interface %s detach failed",
-> +                     attach_type_strings[attach_type]);
-> +               return err;
-> +       }
-> +
-> +       if (json_output)
-> +               jsonw_null(json_wtr);
-> +
-> +       return 0;
-> +}
-> +
->  static int do_show(int argc, char **argv)
->  {
->         struct bpf_attach_info attach_info = {};
-> @@ -419,6 +456,7 @@ static int do_help(int argc, char **argv)
->         fprintf(stderr,
->                 "Usage: %s %s { show | list } [dev <devname>]\n"
->                 "       %s %s attach ATTACH_TYPE PROG dev <devname> [ overwrite ]\n"
-> +               "       %s %s detach ATTACH_TYPE dev <devname>\n"
->                 "       %s %s help\n"
->                 "\n"
->                 "       " HELP_SPEC_PROGRAM "\n"
-> @@ -429,7 +467,8 @@ static int do_help(int argc, char **argv)
->                 "      to dump program attachments. For program types\n"
->                 "      sk_{filter,skb,msg,reuseport} and lwt/seg6, please\n"
->                 "      consult iproute2.\n",
-> -               bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2]);
-> +               bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2],
-> +               bin_name, argv[-2]);
->
->         return 0;
->  }
-> @@ -438,6 +477,7 @@ static const struct cmd cmds[] = {
->         { "show",       do_show },
->         { "list",       do_show },
->         { "attach",     do_attach },
-> +       { "detach",     do_detach },
->         { "help",       do_help },
->         { 0 }
->  };
-> --
-> 2.20.1
->
