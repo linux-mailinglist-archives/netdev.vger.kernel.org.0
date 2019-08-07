@@ -2,129 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C30FD83E3D
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 02:21:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DAEBB83E40
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 02:23:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727420AbfHGAVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 20:21:24 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:59238 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726375AbfHGAVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 20:21:24 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7707rqS007591
-        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 17:21:23 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=he/2Z0ENIriYPhFo9YJ+fTiLFe2HN0KKpsDTYLP2IlE=;
- b=fRpmoOPe2fDK3434gxhp9ipnXgFCXPsxdQKdWA3RTYtIfXvtsXpx9MCVgiQS5zglI30K
- etZS05UrYZpXprpa9IbXeew6qgWV4bLoZFdy+0aLQEuOtOTpU6viCZUqAZh8vC8O+y1r
- qiJ75OwnA4rWw3VKs+NXFo8cDdxWyORuQc8= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u7dfs1jh2-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 17:21:22 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 6 Aug 2019 17:21:21 -0700
-Received: by devvm24792.prn1.facebook.com (Postfix, from userid 150176)
-        id 8FFE818C66019; Tue,  6 Aug 2019 17:21:19 -0700 (PDT)
-Smtp-Origin-Hostprefix: devvm
-From:   Tao Ren <taoren@fb.com>
-Smtp-Origin-Hostname: devvm24792.prn1.facebook.com
-To:     Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S . Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <openbmc@lists.ozlabs.org>,
-        William Kennington <wak@google.com>,
-        Joel Stanley <joel@jms.id.au>
-CC:     Tao Ren <taoren@fb.com>
-Smtp-Origin-Cluster: prn1c35
-Subject: [PATCH net-next] net/ncsi: allow to customize BMC MAC Address offset
-Date:   Tue, 6 Aug 2019 17:21:18 -0700
-Message-ID: <20190807002118.164360-1-taoren@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
+        id S1726542AbfHGAXl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 20:23:41 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:39507 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726331AbfHGAXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 20:23:41 -0400
+Received: by mail-lj1-f193.google.com with SMTP id v18so83709485ljh.6;
+        Tue, 06 Aug 2019 17:23:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=+jgw5XL6Jgb9sIk37/4bnAwBoJ06VkKSpglKUxVGiVY=;
+        b=N/vOi6tQWtSa4fZlL3F+40Kr7Xf0sYl6Q6p9uCxFxnOFsp1trDKakl+3pHN4qOs7Tk
+         JnRXbIzU7HE5o0Fh1strGq1dmOCqkKhopwspverw9ucgg8UDY13m7qo2QrGOvAyyaDGC
+         SR5FnHwSxdcqeDgc1/dOxo0cRpEGGcADfrEjhjV3wgK4bcQ8kUevU9IYwTdmWRSsFMvt
+         yPV+eB6kjlQmX9FD8J+hMmhXVFZfgFuT1sqKC+N+B2FGYuH+GpCkSzjbJNLR6wK/TjG3
+         le5MJtgqcIJ8QeGQ21tPQ7cyIAVeHGV587OUtej4m5pmtZklXlS/YNf3dXct3i7XrGJU
+         MeVA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=+jgw5XL6Jgb9sIk37/4bnAwBoJ06VkKSpglKUxVGiVY=;
+        b=nwd7RWXUbr30D+vEMnOFNUfdrG1FkEmDrDr4zk/bkbTWBpsiFJXRpGfELwyXV6xoIM
+         FXBRE3EPqYH2Mpe/GSbI7uUIuY53jgjK9zMu1ML7SliPz1YxHrt2+bAS8fXR+emCFEGC
+         QXHo/82lSBvvX8zgaowhZdryw49NH+p/uB4AkSRx64xnW1Ml6KQjH0DlDruwrE1ojQoy
+         0ZpEHcOLOSf7Sxp5lPbzaUL3pCpYvxSWzAOOObRHQT2/g8psB6kB4B9GSy6gJZQC04bG
+         B19Lk0KaNIqII8eVGHkS048rbsLYCiy9WV9g63+zkAQwKhYEUyY9z4VGFyRIOrsUG44m
+         27vg==
+X-Gm-Message-State: APjAAAW9wpNadXp+jjP1qdDJBh9pKOdvfoYedGIXxNqE1WnbLI71SBSD
+        byhO+/RaE0zLlJycrzo1EnIpMRkqJx2NzV6iCbc=
+X-Google-Smtp-Source: APXvYqw/nADFw0RL43Leb02ZvzV/xWNuKEtGZvvPH7/ZeKECHxmnyAyLo2cc35XPOwrZkGE3ZTDhiWSNyTA0ZkoPfiA=
+X-Received: by 2002:a2e:a311:: with SMTP id l17mr3127974lje.214.1565137419207;
+ Tue, 06 Aug 2019 17:23:39 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-06_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=667 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908070000
-X-FB-Internal: deliver
+References: <20190806174529.8341-1-sdf@google.com>
+In-Reply-To: <20190806174529.8341-1-sdf@google.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 6 Aug 2019 17:23:27 -0700
+Message-ID: <CAADnVQK-TK1T+MQj21HMxS9+9GDx3HnQmPLxWET0paoo+V_5dg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5 0/3] selftests/bpf: switch test_progs back to stdio
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently BMC's MAC address is calculated by adding 1 to NCSI NIC's base
-MAC address when CONFIG_NCSI_OEM_CMD_GET_MAC option is enabled. The logic
-doesn't work for platforms with different BMC MAC offset: for example,
-Facebook Yamp BMC's MAC address is calculated by adding 2 to NIC's base
-MAC address ("BaseMAC + 1" is reserved for Host use).
+On Tue, Aug 6, 2019 at 10:45 AM Stanislav Fomichev <sdf@google.com> wrote:
+>
+> I was looking into converting test_sockops* to test_progs framework
+> and that requires using cgroup_helpers.c which rely on stdio/stderr.
+> Let's use open_memstream to override stdout into buffer during
+> subtests instead of custom test_{v,}printf wrappers. That lets
+> us continue to use stdio in the subtests and dump it on failure
+> if required.
+>
+> That would also fix bpf_find_map which currently uses printf to
+> signal failure (missed during test_printf conversion).
 
-This patch adds NET_NCSI_MC_MAC_OFFSET config option to customize offset
-between NIC's Base MAC address and BMC's MAC address. Its default value is
-set to 1 to avoid breaking existing users.
-
-Signed-off-by: Tao Ren <taoren@fb.com>
----
- net/ncsi/Kconfig    |  8 ++++++++
- net/ncsi/ncsi-rsp.c | 15 +++++++++++++--
- 2 files changed, 21 insertions(+), 2 deletions(-)
-
-diff --git a/net/ncsi/Kconfig b/net/ncsi/Kconfig
-index 2f1e5756c03a..be8efe1ed99e 100644
---- a/net/ncsi/Kconfig
-+++ b/net/ncsi/Kconfig
-@@ -17,3 +17,11 @@ config NCSI_OEM_CMD_GET_MAC
- 	---help---
- 	  This allows to get MAC address from NCSI firmware and set them back to
- 		controller.
-+config NET_NCSI_MC_MAC_OFFSET
-+	int
-+	prompt "Offset of Management Controller's MAC Address"
-+	depends on NCSI_OEM_CMD_GET_MAC
-+	default 1
-+	help
-+	  This defines the offset between Network Controller's (base) MAC
-+	  address and Management Controller's MAC address.
-diff --git a/net/ncsi/ncsi-rsp.c b/net/ncsi/ncsi-rsp.c
-index 7581bf919885..24a791f9ebf5 100644
---- a/net/ncsi/ncsi-rsp.c
-+++ b/net/ncsi/ncsi-rsp.c
-@@ -656,6 +656,11 @@ static int ncsi_rsp_handler_oem_bcm_gma(struct ncsi_request *nr)
- 	struct ncsi_rsp_oem_pkt *rsp;
- 	struct sockaddr saddr;
- 	int ret = 0;
-+#ifdef CONFIG_NET_NCSI_MC_MAC_OFFSET
-+	int mac_offset = CONFIG_NET_NCSI_MC_MAC_OFFSET;
-+#else
-+	int mac_offset = 1;
-+#endif
- 
- 	/* Get the response header */
- 	rsp = (struct ncsi_rsp_oem_pkt *)skb_network_header(nr->rsp);
-@@ -663,8 +668,14 @@ static int ncsi_rsp_handler_oem_bcm_gma(struct ncsi_request *nr)
- 	saddr.sa_family = ndev->type;
- 	ndev->priv_flags |= IFF_LIVE_ADDR_CHANGE;
- 	memcpy(saddr.sa_data, &rsp->data[BCM_MAC_ADDR_OFFSET], ETH_ALEN);
--	/* Increase mac address by 1 for BMC's address */
--	eth_addr_inc((u8 *)saddr.sa_data);
-+
-+	/* Management Controller's MAC address is calculated by adding
-+	 * the offset to Network Controller's (base) MAC address.
-+	 * Note: negative offset is "ignored", and BMC will use the Base
-+	 * MAC address in this case.
-+	 */
-+	while (mac_offset-- > 0)
-+		eth_addr_inc((u8 *)saddr.sa_data);
- 	if (!is_valid_ether_addr((const u8 *)saddr.sa_data))
- 		return -ENXIO;
- 
--- 
-2.17.1
-
+Applied. Thanks
