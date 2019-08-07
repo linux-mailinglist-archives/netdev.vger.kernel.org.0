@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19B348405F
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:38:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1C5A84041
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:37:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729678AbfHGBe1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:34:27 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39214 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729578AbfHGBeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:24 -0400
-Received: by mail-pl1-f194.google.com with SMTP id b7so38640258pls.6;
-        Tue, 06 Aug 2019 18:34:23 -0700 (PDT)
+        id S1729725AbfHGBe3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:34:29 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34376 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729604AbfHGBe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:26 -0400
+Received: by mail-pf1-f193.google.com with SMTP id b13so42497035pfo.1;
+        Tue, 06 Aug 2019 18:34:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=3zvxFRr3gjg9t3ZKCwZWoMY3PeLUGF9FofBT0j+JfJs=;
-        b=L/mKoqNBpvGTGBp3epVJp9Jwmcabm5Zof/TP6cMpNTp5QyY/bNS8ra/phjhs5sRAaN
-         E5tTttcEItcQL3b5Zem0k5qJxKcKktTUshMTiNWzGKXLywBoBoQ5bitV/RkFpPMu2On5
-         4WHRSoAhmad+Sq/Uze+Lrqj/EHMra+wpLWdL/I1wMa19gtn+2FmmEpJ2BiwYWrwVtu4s
-         ErDZEb/zzGVZaJO6WBAU6eZcAtQlFXpJrdCTpwcNxdnIPyz2Lta4bzP9L9aVvEMuLhxO
-         FtQSTpdSuYFA1RpMOlExoKqI8fe7oDB8Q9BkX/iI0jL+EMoGr57KcyP7PRTXBQFgsK3f
-         6S2w==
+        bh=lKIFYbXGeRFczJ7GPuSawhtMV9YIx2+MYUTps7oOTAE=;
+        b=rAOpaTjUSe2mFnrvmhnJS8xKHHDfXHpmD+l4Uv9l8gmgovmdA6+wJqXqls9UsmJQBz
+         ep3JWBTwWzs2IRGwW41GCxQWL8zWFiSR6uy1gns5wXkfbjCngWqZazp0XVGWvkIrwV7K
+         z/fUXqz3btTykEGkC1n2yQAIcvStpMcGGmLYj4sdGhsYd7aWY+K2HM0TRDI35Ihws22z
+         bA5Wn1kxkVVUCZDFZU2yV7yqOW35XJ9lVNcA81nOyQ1MEO7P4qKnD+B4GkGo8p2H58WM
+         u5trmpjCembtTJLb3EXiFKzyKJTiFQRUI8DgENKYMdkcBAeXgiFZBUUnvfxQ+ER9+IzC
+         DzYw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=3zvxFRr3gjg9t3ZKCwZWoMY3PeLUGF9FofBT0j+JfJs=;
-        b=Wiku0SIadoGoJZyG8QeTGcnc3A71j180wVszEapG6nwv43TpkXveXZJiIK7KM2kTTC
-         ut3iv3Bb61tIujGuehAkgwQSghrKL962BzPPG02AP1yMf+eI71fwF6j9M5baLc71GzZ5
-         oBig2royLLzO5ZSyVQJiditdyLIYekkTjxBAugAqJff0EtQHAvYtG0JN/39bZoIrWMPv
-         ZnalwY0wg27/jMquK6Tek8NYUz7+yA7bY1lR/BV/QGQvpAz4jJGWYgB1eYXX0KJ9sUhD
-         d6W0mULnB+UzDUT9LfglM8CrjJIz+T5QbjYpnElHX/I1LFRABjpqSPK9W/ZM3zQcZLy+
-         yOBQ==
-X-Gm-Message-State: APjAAAVUVMB35CXpFn6r9x0Xfud5yjqAXMZN1PACIV0ID4up/Na87Un+
-        8v8yqIPZgYZEDROsYBtT3yXyup4J
-X-Google-Smtp-Source: APXvYqw776L+7/s1i5+0uj4rHYr4XOYwzb6gLf8HmDykG/CGNwoS9owiEzaUd2cmiWPaV4acbHnsQA==
-X-Received: by 2002:a17:902:4683:: with SMTP id p3mr5420824pld.31.1565141663334;
-        Tue, 06 Aug 2019 18:34:23 -0700 (PDT)
+        bh=lKIFYbXGeRFczJ7GPuSawhtMV9YIx2+MYUTps7oOTAE=;
+        b=SFA0llfQ5r7mgSC4trDhH2uPMJ+Q9RmJ/va71kDJSboAN8jWwRhq/Fo4ikBeFqbsl3
+         7YY491VbUgk4RFmYUZisNrblaXMhsQtljLr/n6axmwWGAzT1Z/vIKwHqi0nEUU72EpMq
+         7Pwohs1YRCMIBlVhI06d46A6mK4GkJqWbtSv6W8xJkou/PopmmM+zhhZ0iR8j6Af4DOv
+         AiVgU43VTGYNi7WbUZK0FUajIVaLBdMY7AtHTuk1S5K5dvjN8rXsJRuNEt+OEUIKlhQC
+         83rBmtwu7yJmfhbxwpF6Q8+Qb4fqdL30y4Tu1xfZ3WQLGGVX2Xcrf/UqaZ2nS0czcMOa
+         ePFQ==
+X-Gm-Message-State: APjAAAXfxrxqcyPWAAkLy91uyL31gSbsYfumJXFyR/OZb82KMxpC3O5c
+        zB447nGKw1LXOaROyD7fSJYdNzyz
+X-Google-Smtp-Source: APXvYqy16jzsEED+wwh8ENkTlGqxRvZ0RoyFpGJNp0G/IOpaWMDvDoKlXk8GjrxTBQC2gP0d6Cw0/w==
+X-Received: by 2002:a65:4205:: with SMTP id c5mr5563561pgq.267.1565141664948;
+        Tue, 06 Aug 2019 18:34:24 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.21
+        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 18:34:22 -0700 (PDT)
+        Tue, 06 Aug 2019 18:34:24 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,11 +67,15 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Mike Marshall <hubcap@omnibond.com>,
-        Martin Brandenburg <martin@omnibond.com>
-Subject: [PATCH v3 24/41] orangefs: convert put_page() to put_user_page*()
-Date:   Tue,  6 Aug 2019 18:33:23 -0700
-Message-Id: <20190807013340.9706-25-jhubbard@nvidia.com>
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>
+Subject: [PATCH v3 25/41] uprobes: convert put_page() to put_user_page*()
+Date:   Tue,  6 Aug 2019 18:33:24 -0700
+Message-Id: <20190807013340.9706-26-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
 References: <20190807013340.9706-1-jhubbard@nvidia.com>
@@ -92,39 +96,48 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-Cc: Mike Marshall <hubcap@omnibond.com>
-Cc: Martin Brandenburg <martin@omnibond.com>
-Cc: devel@lists.orangefs.org
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- fs/orangefs/orangefs-bufmap.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ kernel/events/uprobes.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/fs/orangefs/orangefs-bufmap.c b/fs/orangefs/orangefs-bufmap.c
-index 2bb916d68576..f2f33a16d604 100644
---- a/fs/orangefs/orangefs-bufmap.c
-+++ b/fs/orangefs/orangefs-bufmap.c
-@@ -168,10 +168,7 @@ static DEFINE_SPINLOCK(orangefs_bufmap_lock);
- static void
- orangefs_bufmap_unmap(struct orangefs_bufmap *bufmap)
- {
--	int i;
--
--	for (i = 0; i < bufmap->page_count; i++)
--		put_page(bufmap->page_array[i]);
-+	put_user_pages(bufmap->page_array, bufmap->page_count);
+diff --git a/kernel/events/uprobes.c b/kernel/events/uprobes.c
+index 84fa00497c49..4a575de8cec8 100644
+--- a/kernel/events/uprobes.c
++++ b/kernel/events/uprobes.c
+@@ -397,7 +397,7 @@ __update_ref_ctr(struct mm_struct *mm, unsigned long vaddr, short d)
+ 	ret = 0;
+ out:
+ 	kunmap_atomic(kaddr);
+-	put_page(page);
++	put_user_page(page);
+ 	return ret;
  }
  
- static void
-@@ -280,7 +277,7 @@ orangefs_bufmap_map(struct orangefs_bufmap *bufmap,
+@@ -504,7 +504,7 @@ int uprobe_write_opcode(struct arch_uprobe *auprobe, struct mm_struct *mm,
+ 	ret = __replace_page(vma, vaddr, old_page, new_page);
+ 	put_page(new_page);
+ put_old:
+-	put_page(old_page);
++	put_user_page(old_page);
  
- 		for (i = 0; i < ret; i++) {
- 			SetPageError(bufmap->page_array[i]);
--			put_page(bufmap->page_array[i]);
-+			put_user_page(bufmap->page_array[i]);
- 		}
- 		return -ENOMEM;
- 	}
+ 	if (unlikely(ret == -EAGAIN))
+ 		goto retry;
+@@ -1981,7 +1981,7 @@ static int is_trap_at_addr(struct mm_struct *mm, unsigned long vaddr)
+ 		return result;
+ 
+ 	copy_from_page(page, vaddr, &opcode, UPROBE_SWBP_INSN_SIZE);
+-	put_page(page);
++	put_user_page(page);
+  out:
+ 	/* This needs to return true for any variant of the trap insn */
+ 	return is_trap_insn(&opcode);
 -- 
 2.22.0
 
