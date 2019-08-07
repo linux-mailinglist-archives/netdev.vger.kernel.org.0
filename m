@@ -2,195 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D646784921
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 12:09:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12CAF84984
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 12:32:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726564AbfHGKJe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 06:09:34 -0400
-Received: from bilbo.ozlabs.org ([203.11.71.1]:35853 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725991AbfHGKJe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 06:09:34 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 463S0X0wZpz9sNF;
-        Wed,  7 Aug 2019 20:09:32 +1000 (AEST)
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     Thomas Falcon <tlfalcon@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: Re: [PATCH net-next v2] ibmveth: Allow users to update reported speed and duplex
-In-Reply-To: <1565108588-17331-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1565108588-17331-1-git-send-email-tlfalcon@linux.ibm.com>
-Date:   Wed, 07 Aug 2019 20:09:26 +1000
-Message-ID: <87imr9uw15.fsf@concordia.ellerman.id.au>
+        id S1727842AbfHGKbj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 06:31:39 -0400
+Received: from new1-smtp.messagingengine.com ([66.111.4.221]:34471 "EHLO
+        new1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726564AbfHGKbj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 06:31:39 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id D2BD212FE;
+        Wed,  7 Aug 2019 06:31:37 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Wed, 07 Aug 2019 06:31:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=624m75J42PaR9MI1k
+        IYMldtqz2ct/x4zo/oUsNfHaJM=; b=fFVSbvTOKi0V6npTmmAyFe3Uzcm10G8gl
+        VEErAj7vmIpwpQi6QozDoshYLbAZD3BGE04T5SOSXb0sJ01H+KSi4p/3uXO+1fT7
+        c0u07+WlGQTNfMQlZoJQ6OFA7lgVqqOvH1jQWZCDmc2Gl0f1ctpIgnoVEeL7gqN9
+        hicRpBFmGIjP8foOHxgETCUkT5YC5yFqAR3uTuMcFjLl1zInmgSaOc53rViF8w8m
+        kFcLt752WMsNhkMyybFK0v16Mq7yn7BRBmrS/EpYnbRKez8ek9fYJnEzJC72EbIl
+        JHh+FbG19Rhy7zx8wUv8FFDTyIZigXa/txp36QKhW83rcaMbRC2tQ==
+X-ME-Sender: <xms:iKhKXYgrx9TVeaKI8EF-WwhCHdmb595FmiMus8AuzwIvECc6Psp8WA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudduvddgvdelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuffhomhgrihhnpehgihhthhhusgdrtghomhdpohiilhgrsghsrdhorh
+    hgnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhho
+    mhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:iKhKXQG0sinpLvfAdCBpAMpfdtfrghyRZsQvZY-zdaby-dTIKiG3aw>
+    <xmx:iKhKXWRISLGO_3JEuJWv16sYp5Op4a9Qq8ECq18PJ6HnFoCvKsv2Eg>
+    <xmx:iKhKXVzI6VU_QJRHoR0GCvam0QPpof7qcGfofc29aYQe1qtaRaiUpA>
+    <xmx:iahKXeqHcenN6jczV7KlymC-gAO6GJIA23cKUijy_I7YfJuds4AVwg>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id BA2B6380090;
+        Wed,  7 Aug 2019 06:31:33 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
+        toke@redhat.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
+        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next 00/10] drop_monitor: Capture dropped packets and metadata
+Date:   Wed,  7 Aug 2019 13:30:49 +0300
+Message-Id: <20190807103059.15270-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thomas Falcon <tlfalcon@linux.ibm.com> writes:
-> Reported ethtool link settings for the ibmveth driver are currently
-> hardcoded and no longer reflect the actual capabilities of supported
-> hardware. There is no interface designed for retrieving this information
-> from device firmware nor is there any way to update current settings
-> to reflect observed or expected link speeds.
->
-> To avoid breaking existing configurations, retain current values as
-> default settings but let users update them to match the expected
-> capabilities of underlying hardware if needed. This update would
-> allow the use of configurations that rely on certain link speed
-> settings, such as LACP. This patch is based on the implementation
-> in virtio_net.
->
-> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
-> ---
-> v2: Updated default driver speed/duplex settings to avoid
->     breaking existing setups
+From: Ido Schimmel <idosch@mellanox.com>
 
-Thanks.
+So far drop monitor supported only one mode of operation in which a
+summary of recent packet drops is periodically sent to user space as a
+netlink event. The event only includes the drop location (program
+counter) and number of drops in the last interval.
 
-I won't give you an ack because I don't know jack about network drivers
-these days, but I think that alleviates my concern about breaking
-existing setups. I'll leave the rest of the review up to the networking
-folks.
+While this mode of operation allows one to understand if the system is
+dropping packets, it is not sufficient if a more detailed analysis is
+required. Both the packet itself and related metadata are missing.
 
-cheers
+This patchset extends drop monitor with another mode of operation where
+the packet - potentially truncated - and metadata (e.g., drop location,
+timestamp, netdev) are sent to user space as a netlink event. Thanks to
+the extensible nature of netlink, more metadata can be added in the
+future.
 
-> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-> index d654c23..5dc634f 100644
-> --- a/drivers/net/ethernet/ibm/ibmveth.c
-> +++ b/drivers/net/ethernet/ibm/ibmveth.c
-> @@ -712,31 +712,68 @@ static int ibmveth_close(struct net_device *netdev)
->  	return 0;
->  }
->  
-> -static int netdev_get_link_ksettings(struct net_device *dev,
-> -				     struct ethtool_link_ksettings *cmd)
-> +static bool
-> +ibmveth_validate_ethtool_cmd(const struct ethtool_link_ksettings *cmd)
->  {
-> -	u32 supported, advertising;
-> -
-> -	supported = (SUPPORTED_1000baseT_Full | SUPPORTED_Autoneg |
-> -				SUPPORTED_FIBRE);
-> -	advertising = (ADVERTISED_1000baseT_Full | ADVERTISED_Autoneg |
-> -				ADVERTISED_FIBRE);
-> -	cmd->base.speed = SPEED_1000;
-> -	cmd->base.duplex = DUPLEX_FULL;
-> -	cmd->base.port = PORT_FIBRE;
-> -	cmd->base.phy_address = 0;
-> -	cmd->base.autoneg = AUTONEG_ENABLE;
-> -
-> -	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
-> -						supported);
-> -	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
-> -						advertising);
-> +	struct ethtool_link_ksettings diff1 = *cmd;
-> +	struct ethtool_link_ksettings diff2 = {};
-> +
-> +	diff2.base.port = PORT_OTHER;
-> +	diff1.base.speed = 0;
-> +	diff1.base.duplex = 0;
-> +	diff1.base.cmd = 0;
-> +	diff1.base.link_mode_masks_nwords = 0;
-> +	ethtool_link_ksettings_zero_link_mode(&diff1, advertising);
-> +
-> +	return !memcmp(&diff1.base, &diff2.base, sizeof(diff1.base)) &&
-> +		bitmap_empty(diff1.link_modes.supported,
-> +			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
-> +		bitmap_empty(diff1.link_modes.advertising,
-> +			     __ETHTOOL_LINK_MODE_MASK_NBITS) &&
-> +		bitmap_empty(diff1.link_modes.lp_advertising,
-> +			     __ETHTOOL_LINK_MODE_MASK_NBITS);
-> +}
-> +
-> +static int ibmveth_set_link_ksettings(struct net_device *dev,
-> +				      const struct ethtool_link_ksettings *cmd)
-> +{
-> +	struct ibmveth_adapter *adapter = netdev_priv(dev);
-> +	u32 speed;
-> +	u8 duplex;
-> +
-> +	speed = cmd->base.speed;
-> +	duplex = cmd->base.duplex;
-> +	/* don't allow custom speed and duplex */
-> +	if (!ethtool_validate_speed(speed) ||
-> +	    !ethtool_validate_duplex(duplex) ||
-> +	    !ibmveth_validate_ethtool_cmd(cmd))
-> +		return -EINVAL;
-> +	adapter->speed = speed;
-> +	adapter->duplex = duplex;
->  
->  	return 0;
->  }
->  
-> -static void netdev_get_drvinfo(struct net_device *dev,
-> -			       struct ethtool_drvinfo *info)
-> +static int ibmveth_get_link_ksettings(struct net_device *dev,
-> +				      struct ethtool_link_ksettings *cmd)
-> +{
-> +	struct ibmveth_adapter *adapter = netdev_priv(dev);
-> +
-> +	cmd->base.speed = adapter->speed;
-> +	cmd->base.duplex = adapter->duplex;
-> +	cmd->base.port = PORT_OTHER;
-> +
-> +	return 0;
-> +}
-> +
-> +static void ibmveth_init_link_settings(struct ibmveth_adapter *adapter)
-> +{
-> +	adapter->duplex = DUPLEX_FULL;
-> +	adapter->speed = SPEED_1000;
-> +}
-> +
-> +static void ibmveth_get_drvinfo(struct net_device *dev,
-> +				struct ethtool_drvinfo *info)
->  {
->  	strlcpy(info->driver, ibmveth_driver_name, sizeof(info->driver));
->  	strlcpy(info->version, ibmveth_driver_version, sizeof(info->version));
-> @@ -965,12 +1002,13 @@ static void ibmveth_get_ethtool_stats(struct net_device *dev,
->  }
->  
->  static const struct ethtool_ops netdev_ethtool_ops = {
-> -	.get_drvinfo		= netdev_get_drvinfo,
-> +	.get_drvinfo		= ibmveth_get_drvinfo,
->  	.get_link		= ethtool_op_get_link,
->  	.get_strings		= ibmveth_get_strings,
->  	.get_sset_count		= ibmveth_get_sset_count,
->  	.get_ethtool_stats	= ibmveth_get_ethtool_stats,
-> -	.get_link_ksettings	= netdev_get_link_ksettings,
-> +	.get_link_ksettings	= ibmveth_get_link_ksettings,
-> +	.set_link_ksettings	= ibmveth_set_link_ksettings
->  };
->  
->  static int ibmveth_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
-> @@ -1647,6 +1685,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
->  	adapter->netdev = netdev;
->  	adapter->mcastFilterSize = *mcastFilterSize_p;
->  	adapter->pool_config = 0;
-> +	ibmveth_init_link_settings(adapter);
->  
->  	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
->  
-> diff --git a/drivers/net/ethernet/ibm/ibmveth.h b/drivers/net/ethernet/ibm/ibmveth.h
-> index 4e9bf34..db96c88 100644
-> --- a/drivers/net/ethernet/ibm/ibmveth.h
-> +++ b/drivers/net/ethernet/ibm/ibmveth.h
-> @@ -162,6 +162,9 @@ struct ibmveth_adapter {
->      u64 tx_send_failed;
->      u64 tx_large_packets;
->      u64 rx_large_packets;
-> +    /* Ethtool settings */
-> +    u8 duplex;
-> +    u32 speed;
->  };
->  
->  /*
-> -- 
-> 1.8.3.1
+To avoid performing expensive operations in the context in which
+kfree_skb() is called, the dropped skbs are cloned and queued on per-CPU
+skb drop list. The list is then processed in process context (using a
+workqueue), where the netlink messages are allocated, prepared and
+finally sent to user space.
+
+A follow-up patchset will integrate drop monitor with devlink and allow
+the latter to call into drop monitor to report hardware drops. In the
+future, XDP drops can be added as well, thereby making drop monitor the
+go-to netlink channel for diagnosing all packet drops.
+
+Example usage with patched dropwatch [1] can be found here [2]. Example
+dissection of drop monitor netlink events with patched wireshark [3] can
+be found here [4]. I will submit both changes upstream after the kernel
+changes are accepted. Another change worth making is adding a dropmon
+pseudo interface to libpcap, similar to the nflog interface [5]. This
+will allow users to specifically listen on dropmon traffic instead of
+capturing all netlink packets via the nlmon netdev.
+
+Patches #1-#5 prepare the code towards the actual changes in later
+patches.
+
+Patch #6 adds another mode of operation to drop monitor in which the
+dropped packet itself is notified to user space along with metadata.
+
+Patch #7 allows users to truncate reported packets to a specific length,
+in case only the headers are of interest. The original length of the
+packet is added as metadata to the netlink notification.
+
+Patch #8 allows user to query the current configuration of drop monitor
+(e.g., alert mode, truncation length).
+
+Patches #9-#10 allow users to tune the length of the per-CPU skb drop
+list according to their needs.
+
+Changes since RFC [6]:
+* Limit the length of the per-CPU skb drop list and make it configurable
+* Do not use the hysteresis timer in packet alert mode
+* Introduce alert mode operations in a separate patch and only then
+  introduce the new alert mode
+* Use 'skb->skb_iif' instead of 'skb->dev' because the latter is inside
+  a union with 'dev_scratch' and therefore not guaranteed to point to a
+  valid netdev
+* Return '-EBUSY' instead of '-EOPNOTSUPP' when trying to configure drop
+  monitor while it is monitoring
+* Did not change schedule_work() in favor of schedule_work_on() as I did
+  not observe a change in number of tail drops
+
+[1] https://github.com/idosch/dropwatch/tree/packet-mode
+[2] https://gist.github.com/idosch/166b64384577174230fd2523866f6b1c#file-gistfile1-txt
+[3] https://github.com/idosch/wireshark/tree/drop-monitor-v1
+[4] https://gist.github.com/idosch/166b64384577174230fd2523866f6b1c#file-gistfile2-txt
+[5] https://github.com/the-tcpdump-group/libpcap/blob/master/pcap-netfilter-linux.c
+[6] https://patchwork.ozlabs.org/cover/1135226/
+
+Ido Schimmel (10):
+  drop_monitor: Split tracing enable / disable to different functions
+  drop_monitor: Initialize timer and work item upon tracing enable
+  drop_monitor: Reset per-CPU data before starting to trace
+  drop_monitor: Require CAP_NET_ADMIN for drop monitor configuration
+  drop_monitor: Add alert mode operations
+  drop_monitor: Add packet alert mode
+  drop_monitor: Allow truncation of dropped packets
+  drop_monitor: Add a command to query current configuration
+  drop_monitor: Make drop queue length configurable
+  drop_monitor: Expose tail drop counter
+
+ include/uapi/linux/net_dropmon.h |  50 +++
+ net/core/drop_monitor.c          | 594 +++++++++++++++++++++++++++++--
+ 2 files changed, 607 insertions(+), 37 deletions(-)
+
+-- 
+2.21.0
+
