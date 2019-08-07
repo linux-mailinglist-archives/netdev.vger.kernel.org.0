@@ -2,176 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE9F085333
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:48:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2ABD38533A
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389386AbfHGSrD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 14:47:03 -0400
-Received: from mail-yb1-f195.google.com ([209.85.219.195]:44021 "EHLO
-        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389382AbfHGSrD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 14:47:03 -0400
-Received: by mail-yb1-f195.google.com with SMTP id o82so927599ybg.10
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 11:47:02 -0700 (PDT)
+        id S2389411AbfHGSts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 14:49:48 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:40009 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389382AbfHGSts (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 14:49:48 -0400
+Received: by mail-qk1-f193.google.com with SMTP id s145so66668841qke.7
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 11:49:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TSvcbL9MFdLemA/L6TxyFcB+835LxwVopQXYfElxn3o=;
-        b=OmrSaCEy/hJ1AroKw3rROhKVEktF82iuT5ktrrH20LoZHKQx2zYKJf1q6aIvcWZcBp
-         VHyZIGHfbMgpyldo9DIPtR8+Nco6nKGcJmNFIvYIV9oy6M7kao0UwBBqOrl5jrLVSSl4
-         S+cnHFWBttSw4aoyZtpXBbLJ5WllYKu3tm2I5zAe0dn6Rhm/IlHZ2QqMUXAmvDR0L1H2
-         NxPtmAk+GRIk40bNU0suljtcrm8ZAGTAczxQziaGe5gMOMGknYehB8+mBpGGv7eulHEl
-         TUYOquOGljtDXnC+SfLm0FEHWNOY35bMT7IY3bBHaHUE3d6qS4VRu0vZzKu+DJD/D8Xg
-         aA4g==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=EADlsWbFtenzGYIUebwf0XoKyxnHp7MoePgcqzX4CVE=;
+        b=q2BvYEdG153ZC8dSjAjkPRoGKTFaQj8SotYB61+Ust4qgY40NbWY6ywKOeY4fi8oli
+         yheaabmGsI+PCUWe/rZbxzcewjvb4sfsXOPGfoH+C2mvCVF51pBEFEu0iehcTkzMRpit
+         vITCvP99YmXS8myOQGvRqsRhrzjw5SO0lzEj3s93fGz6qzS2rvHezwKIzgahhho8CVKs
+         oXKR6dkiOmTc4rvej0C5Gcfb29SYlBxYXZYmVcV6BYuRqUxDOUHuEQEHxiFwIznAOzJI
+         mtawdOCgoL8EwHb5tU1sUgaeM3QLu/DMEiq37PjPdiaAyEvzkEei95DyEFEsh2ky68t4
+         v64g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TSvcbL9MFdLemA/L6TxyFcB+835LxwVopQXYfElxn3o=;
-        b=EZkr2F+FLC6A1KL557XbjmgP8TYL2/K8Mtmp8AWiUDEIhnrQFUBjWyeuGRrfi3Kcq0
-         0HmyJYE13uRtqPBK+2iDFFppTPhhnBukHdX1Ky8Yzl7FQZhtu/Z0DPtos/r9XoL7yDjn
-         o1iXGWcqGtcEHoAGJl8fjN60s9FuD5en14B65AkMHEwZfvrulaLyMJcpKNMU+F+RagmW
-         dvKTRuThCEEgBwUF4ANALHtib+9xRF67aZIjG3ElNZPT6P/HIvqN5fouOf3Du2vDVYOw
-         KyO8EM58VDCPte2zPngliqWmJsyAE7pABJtkh1sLgmujlIFDN4Kr/Tgyeb15jfvkcRrY
-         CIBA==
-X-Gm-Message-State: APjAAAWdugJpa1IrXHNMHFcf/v0QaY+eVnKkREFn9dkKw71S+jRY5lSq
-        FGNRptCqS9Y5ntnU3cnHLAjO/BWt
-X-Google-Smtp-Source: APXvYqzDcefUiA4/l6fs/Kbg5rzpNJl/HLf3eR3HQjq/KUwNjQ2Z8I3UDW22elmjyQRAHekBfCVoMA==
-X-Received: by 2002:a5b:405:: with SMTP id m5mr6917880ybp.200.1565203621297;
-        Wed, 07 Aug 2019 11:47:01 -0700 (PDT)
-Received: from mail-yw1-f42.google.com (mail-yw1-f42.google.com. [209.85.161.42])
-        by smtp.gmail.com with ESMTPSA id v12sm20596654ywv.15.2019.08.07.11.47.00
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 11:47:00 -0700 (PDT)
-Received: by mail-yw1-f42.google.com with SMTP id i138so32830206ywg.8
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 11:47:00 -0700 (PDT)
-X-Received: by 2002:a81:3945:: with SMTP id g66mr3633122ywa.368.1565203619612;
- Wed, 07 Aug 2019 11:46:59 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=EADlsWbFtenzGYIUebwf0XoKyxnHp7MoePgcqzX4CVE=;
+        b=kFweYJg0INCjO93dLA2cXrUSqhW/h5O2LHyBBJJ+p3ufBYIusIzfh5EgoMJY1vJkcp
+         5zLYR0rLwath1lAlYXQrfwT0S81j91xix8co6+1Yzw8CfxJKd7JVD9WKiudRwgt2tQ8Y
+         KxDRBrVK/DNVhO+FZmRoL4d/q5dMSfapke+Elf28kWZPRMEd7IyOmgSnkH33stZDFJnk
+         W0OR6W3h6ZHdhcklcBl8F/V2AOdousZYWBw7LA1VA7EEfAf/ZzSJSVw98lNKLyyv9XrT
+         EcFRrNWMQQHVmAe4vQf6x+kZOEiwaTny+Q61et5lXnvVL8hh+rBwBb9sAmO4zqgY5rbX
+         v+jQ==
+X-Gm-Message-State: APjAAAX0KCRHBBHdDHG9MXtDAF8KbnhSUTYtMLB8uuoS9xOWGhh7DZZY
+        l6nQvHtlGpMsXAKJivfWQmjU/g==
+X-Google-Smtp-Source: APXvYqyGHtXocAWO+9+kUZQgdWR+WvRZbSjJiNfTBMBgvfGV3R0dHsb1JAcr2B2v6uZy7QmbDUDX9w==
+X-Received: by 2002:ae9:f80b:: with SMTP id x11mr9683609qkh.479.1565203786894;
+        Wed, 07 Aug 2019 11:49:46 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t6sm40235873qkh.129.2019.08.07.11.49.45
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 07 Aug 2019 11:49:46 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 11:49:18 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
+        netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, mkubecek@suse.cz,
+        stephen@networkplumber.org, daniel@iogearbox.net,
+        brouer@redhat.com, eric.dumazet@gmail.com
+Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
+ resource limitations
+Message-ID: <20190807114918.15e10047@cakuba.netronome.com>
+In-Reply-To: <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
+References: <20190806164036.GA2332@nanopsycho.orion>
+        <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
+        <20190806180346.GD17072@lunn.ch>
+        <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190807060612.19397-1-jakub.kicinski@netronome.com>
- <CA+FuTScYkHho4hqrGf9q6=4iao-f2P2s258rjtQTCgn+nF-CYg@mail.gmail.com> <20190807110042.690cf50a@cakuba.netronome.com>
-In-Reply-To: <20190807110042.690cf50a@cakuba.netronome.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 7 Aug 2019 14:46:23 -0400
-X-Gmail-Original-Message-ID: <CA+FuTSeR1QqAZVTLQ-mJ8iHi+h+ghbrGyT6TWATTecQSbQP6sA@mail.gmail.com>
-Message-ID: <CA+FuTSeR1QqAZVTLQ-mJ8iHi+h+ghbrGyT6TWATTecQSbQP6sA@mail.gmail.com>
-Subject: Re: [PATCH net v2] net/tls: prevent skb_orphan() from leaking TLS
- plain text with offload
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        oss-drivers@netronome.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 7, 2019 at 2:01 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Wed, 7 Aug 2019 12:59:00 -0400, Willem de Bruijn wrote:
-> > On Wed, Aug 7, 2019 at 2:06 AM Jakub Kicinski wrote:
-> > > diff --git a/net/core/sock.c b/net/core/sock.c
-> > > index d57b0cc995a0..0f9619b0892f 100644
-> > > --- a/net/core/sock.c
-> > > +++ b/net/core/sock.c
-> > > @@ -1992,6 +1992,20 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
-> > >  }
-> > >  EXPORT_SYMBOL(skb_set_owner_w);
-> > >
-> > > +static bool can_skb_orphan_partial(const struct sk_buff *skb)
-> > > +{
-> > > +#ifdef CONFIG_TLS_DEVICE
-> > > +       /* Drivers depend on in-order delivery for crypto offload,
-> > > +        * partial orphan breaks out-of-order-OK logic.
-> > > +        */
-> > > +       if (skb->decrypted)
-> > > +               return false;
-> > > +#endif
-> > > +       return (IS_ENABLED(CONFIG_INET) &&
-> > > +               skb->destructor == tcp_wfree) ||
-> >
-> > Please add parentheses around IS_ENABLED(CONFIG_INET) &&
-> > skb->destructor == tcp_wfree
->
-> Mm.. there are parenthesis around them, maybe I'm being slow,
-> could you show me how?
+On Tue, 6 Aug 2019 20:33:47 -0600, David Ahern wrote:
+> Some time back supported was added for devlink 'resources'. The idea is
+> that hardware (mlxsw) has limited resources (e.g., memory) that can be
+> allocated in certain ways (e.g., kvd for mlxsw) thus implementing
+> restrictions on the number of programmable entries (e.g., routes,
+> neighbors) by userspace.
+> 
+> I contend:
+> 
+> 1. The kernel is an analogy to the hardware: it is programmed by
+> userspace, has limited resources (e.g., memory), and that users want to
+> control (e.g., limit) the number of networking entities that can be
+> programmed - routes, rules, nexthop objects etc and by address family
+> (ipv4, ipv6).
 
-I mean
+Memory hierarchy for ASIC is more complex and changes more often than
+we want to change the model and kernel ABIs. The API in devlink is
+intended for TCAM partitioning.
 
-    return (skb->destructor == sock_wfree ||
-               (IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree))
+> 2. A consistent operational model across use cases - s/w forwarding, XDP
+> forwarding and hardware forwarding - is good for users deploying systems
+> based on the Linux networking stack. This aligns with my basic point at
+> LPC last November about better integration of XDP and kernel tables.
+> 
+> The existing devlink API is the right one for all use cases. Most
+> notably that the kernel can mimic the hardware from a resource
+> management. Trying to say 'use cgroups for s/w forwarding and devlink
+> for h/w forwarding' is complicating the lives of users. It is just a
+> model and models can apply to more than some rigid definition.
 
-In other words, (a || (b && c)) instead of (a || b && c). Though the
-existing code also eschews the extra parentheses.
+This argument holds no water. Only a tiny fraction of Linux networking
+users will have an high performance forwarding ASIC attached to their
+CPUs. So we'll make 99.9% of users who never seen devlink learn the
+tool for device control to control kernel resource?
 
-> > I was also surprised that this works when tcp_wfree is not defined if
-> > !CONFIG_INET. But apparently it does (at -O2?) :)
->
-> I was surprised to but in essence it should work the same as
->
->         if (IS_ENABLED(CONFIG_xyz))
->                 call_some_xyz_code();
->
-> from compiler's perspective, and we do that a lot. Perhaps kbuild
-> bot will prove us wrong :)
->
-> > > @@ -984,6 +984,9 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
-> > >                         if (!skb)
-> > >                                 goto wait_for_memory;
-> > >
-> > > +#ifdef CONFIG_TLS_DEVICE
-> > > +                       skb->decrypted = !!(flags & MSG_SENDPAGE_DECRYPTED);
-> > > +#endif
-> >
-> > Nothing is stopping userspace from passing this new flag. In send
-> > (tcp_sendmsg_locked) it is ignored. But can it reach do_tcp_sendpages
-> > through tcp_bpf_sendmsg?
->
-> Ah, I think you're right, thanks for checking that :( I don't entirely
-> follow how 0608c69c9a80 ("bpf: sk_msg, sock{map|hash} redirect through
-> ULP") is safe then.
->
-> One option would be to clear the flags kernel would previously ignore
-> in tcp_bpf_sendmsg(). But I feel like we should just go back to marking
-> the socket, since we don't need the per-message flexibility of a flag.
->
-> WDYT?
+Perhaps I'm misinterpreting your point there.
 
-I don't feel strongly either way. Passing flags from send through
-tcp_bpf_sendmsg is probably unintentional, so should probably be
-addressed anyway? Then this is a bit simpler.
+> As for the namespace piece of this, the kernel's tables for networking
+> are *per namespace*, and so the resource controller must be per
+> namespace. This aligns with another consistent theme I have promoted
+> over the years - the ability to divide up a single ASIC into multiple,
+> virtual switches which are managed per namespace. This is a very popular
+> feature from a certain legacy vendor and one that would be good for open
+> networking to achieve. This is the basis of my response last week about
+> the devlink instance per namespace, and I thought Jiri was moving in
+> that direction until our chat today. Jiri's intention is something
+> different; we can discuss that on the next version of his patches.
 
-> > >                         skb_entail(sk, skb);
-> > >                         copy = size_goal;
-> > >                 }
-> > > diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> > > index 6e4afc48d7bb..979520e46e33 100644
-> > > --- a/net/ipv4/tcp_output.c
-> > > +++ b/net/ipv4/tcp_output.c
-> > > @@ -1320,6 +1320,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
-> > >         buff = sk_stream_alloc_skb(sk, nsize, gfp, true);
-> > >         if (!buff)
-> > >                 return -ENOMEM; /* We'll just try again later. */
-> > > +       skb_copy_decrypted(buff, skb);
-> >
-> > This code has to copy timestamps, tx_flags, zerocopy state and now
-> > this in three locations. Eventually we'll want a single helper for all
-> > of them..
->
-> Ack, should I take an action on that for net-next or was it a
-> note-to-self? :)
-
-Note-to-self :)
-
-As a matter of fact, your patch showed me that we actually miss the
-tstamp case in tcp_mtu_probe..
+Resource limits per namespace make perfect sense. Just not configured
+via devlink..
