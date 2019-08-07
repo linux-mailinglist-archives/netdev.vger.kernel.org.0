@@ -2,139 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3CEE8547D
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 22:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C5A18548E
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 22:40:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389390AbfHGUbe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 16:31:34 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:37119 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389079AbfHGUbd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 16:31:33 -0400
-X-Originating-IP: 209.85.221.174
-Received: from mail-vk1-f174.google.com (mail-vk1-f174.google.com [209.85.221.174])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id EE93D240002;
-        Wed,  7 Aug 2019 20:31:30 +0000 (UTC)
-Received: by mail-vk1-f174.google.com with SMTP id m17so18329110vkl.2;
-        Wed, 07 Aug 2019 13:31:30 -0700 (PDT)
-X-Gm-Message-State: APjAAAVcbxDHPtqhuDkWbLqHoK3XDZu04v1gyrYrlluhTdtNG3BHxSTq
-        bj0SpekyJqwIQsqViBmgJ3wq/PU92/YGoLSyMfU=
-X-Google-Smtp-Source: APXvYqzLIZg3NZan6L53I92NHzP9wEor6WTCAAsmzD1hD6JhV6I8I489qLTumtcPds3oThIv3GtsqqkyvL/duMokZ5Y=
-X-Received: by 2002:a1f:1b0a:: with SMTP id b10mr4289060vkb.19.1565209889563;
- Wed, 07 Aug 2019 13:31:29 -0700 (PDT)
+        id S2388857AbfHGUkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 16:40:35 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:41908 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388428AbfHGUkf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 16:40:35 -0400
+Received: by mail-pl1-f193.google.com with SMTP id m9so42352223pls.8
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 13:40:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7BKNEE72UxSnSKIw4VcoHbrzoR4aXi5X2Q2IPkzNqYw=;
+        b=PXR3WCs/a5E92zqc/8umH0P82lEJWKrMS+zDXt5OGC6d6g/BTcYHVcJCrdVKIlw8y7
+         TAx59XFIAWWlJwNf7B7gP9m4+Qvjsvfd7Is4VqJ7IvfoTj7w87ymSTaBrAdk22lvb62T
+         MQ+cdoIEz4qw5Mh4+QMh9SKepIQ006uef6kWStVsSkXtR9I5tjTjvnNqGv+5vhgk6OAz
+         UFuYmGyhzW84/HpfuL/ZarBVZpwaCfARFuM/p4CcSo0iaK2kffe0z06vd6i9P4TPe4b3
+         AdXkHlR05jnNv3z9Lr4IriGJPWUQhacvRxL5kJtgL3+kGre8H4QtOtHUNL0APJKTs9EY
+         oTDQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7BKNEE72UxSnSKIw4VcoHbrzoR4aXi5X2Q2IPkzNqYw=;
+        b=FVQFbm7wv6UKnafs1kfUNb1Kk6E4aZqX/j2rqAmf/Q+4q6U2lp/VJgalrZ2bGhXfD5
+         j5Cp1jeYnCpALL1lrTiKeWsLlpGojmcmH+a1ibHtyjJqWMy5HJ0hzZOer4uG8f0QqCCf
+         xraJsVY1tiwnh3y00PL85bTgEz8gU8CzDLvZYxSIkMMWpQ1CbYEl6V8+41uSNFTOxJDo
+         r3oLBNKwbKE+0ik1f6xWI4lVlduajzH+oGzpGRA5qrDFrhFDJVV5PrzH3HAF/kf/dNDy
+         WnF8cWnNFp4ZO746pJOs6P4CQFYqNHb30sQaJWERoG495byOq5/z6i7nS1S4DPqnvsDU
+         87wQ==
+X-Gm-Message-State: APjAAAWaxPewQw/WsNKekktaaPNrANshmaxDgDXikhgQyOqxnGsQFgm+
+        UfOAPrkAvM2sMz2qH9iyYvjQ32hLrLw=
+X-Google-Smtp-Source: APXvYqx+GJocQ0pLALyh6i9ljtL+bB+4xbWH811HBDFtTDdGWmWw86WIG499PQ0cGOn/IBhwMIjm+w==
+X-Received: by 2002:a63:8f55:: with SMTP id r21mr9276754pgn.318.1565210434394;
+        Wed, 07 Aug 2019 13:40:34 -0700 (PDT)
+Received: from localhost ([192.55.54.42])
+        by smtp.gmail.com with ESMTPSA id cx22sm77856pjb.25.2019.08.07.13.40.32
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 07 Aug 2019 13:40:34 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 22:40:18 +0200
+From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+To:     Y Song <ys114321@gmail.com>
+Cc:     "Daniel T. Lee" <danieltimlee@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>, jakub.kicinski@netronome.com
+Subject: Re: [v3,2/4] tools: bpftool: add net detach command to detach XDP
+ on interface
+Message-ID: <20190807223807.00002740@gmail.com>
+In-Reply-To: <CAH3MdRX2SYj+79+L_FJtxMQZfPQDtYDFEbgH6VGAKMYnBXU4Vw@mail.gmail.com>
+References: <20190807022509.4214-1-danieltimlee@gmail.com>
+        <20190807022509.4214-3-danieltimlee@gmail.com>
+        <CAH3MdRW4LgdLoqSpLsWUOwjnNhJA1sodHqSD2Z14JY6aHMaKxg@mail.gmail.com>
+        <20190807203041.000020a8@gmail.com>
+        <CAH3MdRX2SYj+79+L_FJtxMQZfPQDtYDFEbgH6VGAKMYnBXU4Vw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-w64-mingw32)
 MIME-Version: 1.0
-References: <20190806115932.3044-1-hdanton@sina.com>
-In-Reply-To: <20190806115932.3044-1-hdanton@sina.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Wed, 7 Aug 2019 13:32:40 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_BmuAxdch-nbaTS-1eXN-0goUb5UXtYDr==0KeM9vVsRw@mail.gmail.com>
-Message-ID: <CAOrHB_BmuAxdch-nbaTS-1eXN-0goUb5UXtYDr==0KeM9vVsRw@mail.gmail.com>
-Subject: Re: memory leak in internal_dev_create
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+13210896153522fe1ee5@syzkaller.appspotmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        ovs dev <dev@openvswitch.org>, linux-kernel@vger.kernel.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 6, 2019 at 5:00 AM Hillf Danton <hdanton@sina.com> wrote:
->
->
-> On Tue, 06 Aug 2019 01:58:05 -0700
-> > Hello,
+On Wed, 7 Aug 2019 13:12:17 -0700
+Y Song <ys114321@gmail.com> wrote:
+
+> On Wed, Aug 7, 2019 at 11:30 AM Maciej Fijalkowski
+> <maciejromanfijalkowski@gmail.com> wrote:
 > >
-> > syzbot found the following crash on:
+> > On Wed, 7 Aug 2019 10:02:04 -0700
+> > Y Song <ys114321@gmail.com> wrote:
+> >  
+> > > On Tue, Aug 6, 2019 at 7:25 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:  
+> > > >
+> > > > By this commit, using `bpftool net detach`, the attached XDP prog can
+> > > > be detached. Detaching the BPF prog will be done through libbpf
+> > > > 'bpf_set_link_xdp_fd' with the progfd set to -1.
+> > > >
+> > > > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > > > ---
+> > > >  tools/bpf/bpftool/net.c | 42 ++++++++++++++++++++++++++++++++++++++++-
+> > > >  1 file changed, 41 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+> > > > index c05a3fac5cac..7be96acb08e0 100644
+> > > > --- a/tools/bpf/bpftool/net.c
+> > > > +++ b/tools/bpf/bpftool/net.c
+> > > > @@ -343,6 +343,43 @@ static int do_attach(int argc, char **argv)
+> > > >         return 0;
+> > > >  }
+> > > >
+> > > > +static int do_detach(int argc, char **argv)
+> > > > +{
+> > > > +       enum net_attach_type attach_type;
+> > > > +       int progfd, ifindex, err = 0;
+> > > > +
+> > > > +       /* parse detach args */
+> > > > +       if (!REQ_ARGS(3))
+> > > > +               return -EINVAL;
+> > > > +
+> > > > +       attach_type = parse_attach_type(*argv);
+> > > > +       if (attach_type == max_net_attach_type) {
+> > > > +               p_err("invalid net attach/detach type");
+> > > > +               return -EINVAL;
+> > > > +       }
+> > > > +
+> > > > +       NEXT_ARG();
+> > > > +       ifindex = net_parse_dev(&argc, &argv);
+> > > > +       if (ifindex < 1)
+> > > > +               return -EINVAL;
+> > > > +
+> > > > +       /* detach xdp prog */
+> > > > +       progfd = -1;
+> > > > +       if (is_prefix("xdp", attach_type_strings[attach_type]))
+> > > > +               err = do_attach_detach_xdp(progfd, attach_type, ifindex, NULL);  
+> > >
+> > > I found an issue here. This is probably related to do_attach_detach_xdp.
+> > >
+> > > -bash-4.4$ sudo ./bpftool net attach x pinned /sys/fs/bpf/xdp_example dev v1
+> > > -bash-4.4$ sudo ./bpftool net
+> > > xdp:
+> > > v1(4) driver id 1172
+> > >
+> > > tc:
+> > > eth0(2) clsact/ingress fbflow_icmp id 29 act []
+> > > eth0(2) clsact/egress cls_fg_dscp_section id 27 act []
+> > > eth0(2) clsact/egress fbflow_egress id 28
+> > > eth0(2) clsact/egress fbflow_sslwall_egress id 35
+> > >
+> > > flow_dissector:
+> > >
+> > > -bash-4.4$ sudo ./bpftool net detach x dev v2  
 > >
+> > Shouldn't this be v1 as dev?  
+> 
+> I am testing a scenario where with wrong devname
+> we did not return an error.
 
-...
-> > BUG: memory leak
-> > unreferenced object 0xffff8881228ca500 (size 128):
-> >    comm "syz-executor032", pid 7015, jiffies 4294944622 (age 7.880s)
-> >    hex dump (first 32 bytes):
-> >      00 f0 27 18 81 88 ff ff 80 ac 8c 22 81 88 ff ff  ..'........"....
-> >      40 b7 23 17 81 88 ff ff 00 00 00 00 00 00 00 00  @.#.............
-> >    backtrace:
-> >      [<000000000eb78212>] kmemleak_alloc_recursive  include/linux/kmemleak.h:43 [inline]
-> >      [<000000000eb78212>] slab_post_alloc_hook mm/slab.h:522 [inline]
-> >      [<000000000eb78212>] slab_alloc mm/slab.c:3319 [inline]
-> >      [<000000000eb78212>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
-> >      [<00000000006ea6c6>] kmalloc include/linux/slab.h:552 [inline]
-> >      [<00000000006ea6c6>] kzalloc include/linux/slab.h:748 [inline]
-> >      [<00000000006ea6c6>] ovs_vport_alloc+0x37/0xf0  net/openvswitch/vport.c:130
-> >      [<00000000f9a04a7d>] internal_dev_create+0x24/0x1d0  net/openvswitch/vport-internal_dev.c:164
-> >      [<0000000056ee7c13>] ovs_vport_add+0x81/0x190  net/openvswitch/vport.c:199
-> >      [<000000005434efc7>] new_vport+0x19/0x80 net/openvswitch/datapath.c:194
-> >      [<00000000b7b253f1>] ovs_dp_cmd_new+0x22f/0x410  net/openvswitch/datapath.c:1614
-> >      [<00000000e0988518>] genl_family_rcv_msg+0x2ab/0x5b0  net/netlink/genetlink.c:629
-> >      [<00000000d0cc9347>] genl_rcv_msg+0x54/0x9c net/netlink/genetlink.c:654
-> >      [<000000006694b647>] netlink_rcv_skb+0x61/0x170  net/netlink/af_netlink.c:2477
-> >      [<0000000088381f37>] genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
-> >      [<00000000dad42a47>] netlink_unicast_kernel  net/netlink/af_netlink.c:1302 [inline]
-> >      [<00000000dad42a47>] netlink_unicast+0x1ec/0x2d0  net/netlink/af_netlink.c:1328
-> >      [<0000000067e6b079>] netlink_sendmsg+0x270/0x480  net/netlink/af_netlink.c:1917
-> >      [<00000000aab08a47>] sock_sendmsg_nosec net/socket.c:637 [inline]
-> >      [<00000000aab08a47>] sock_sendmsg+0x54/0x70 net/socket.c:657
-> >      [<000000004cb7c11d>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2311
-> >      [<00000000c4901c63>] __sys_sendmsg+0x80/0xf0 net/socket.c:2356
-> >      [<00000000c10abb2d>] __do_sys_sendmsg net/socket.c:2365 [inline]
-> >      [<00000000c10abb2d>] __se_sys_sendmsg net/socket.c:2363 [inline]
-> >      [<00000000c10abb2d>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2363
->
->
-> Always free vport manually unless register_netdevice() succeeds.
->
-> --- a/net/openvswitch/vport-internal_dev.c
-> +++ b/net/openvswitch/vport-internal_dev.c
-> @@ -137,7 +137,7 @@ static void do_setup(struct net_device *
->         netdev->priv_flags |= IFF_LIVE_ADDR_CHANGE | IFF_OPENVSWITCH |
->                               IFF_NO_QUEUE;
->         netdev->needs_free_netdev = true;
-> -       netdev->priv_destructor = internal_dev_destructor;
-> +       netdev->priv_destructor = NULL;
->         netdev->ethtool_ops = &internal_dev_ethtool_ops;
->         netdev->rtnl_link_ops = &internal_dev_link_ops;
->
-> @@ -159,7 +159,6 @@ static struct vport *internal_dev_create
->         struct internal_dev *internal_dev;
->         struct net_device *dev;
->         int err;
-> -       bool free_vport = true;
->
->         vport = ovs_vport_alloc(0, &ovs_internal_vport_ops, parms);
->         if (IS_ERR(vport)) {
-> @@ -190,10 +189,9 @@ static struct vport *internal_dev_create
->
->         rtnl_lock();
->         err = register_netdevice(vport->dev);
-> -       if (err) {
-> -               free_vport = false;
-> +       if (err)
->                 goto error_unlock;
-> -       }
-> +       vport->dev->priv_destructor = internal_dev_destructor;
->
-I am not sure why have you moved this assignment out of do_setup().
+Ah ok. In this scenario if driver has a native xdp support we would be invoking
+its ndo_bpf even if there's no prog currently attached and it wouldn't return
+error value.
 
-Otherwise patch looks good to me.
+Looking at dev_xdp_uninstall, setting driver's prog to NULL is being done only
+when prog is attached. Maybe we should consider querying the driver in
+dev_change_xdp_fd regardless of passed fd value? E.g. don't query only when
+prog >= 0.
 
-Thanks.
->         dev_set_promiscuity(vport->dev, 1);
->         rtnl_unlock();
-> @@ -207,8 +205,7 @@ error_unlock:
->  error_free_netdev:
->         free_netdev(dev);
->  error_free_vport:
-> -       if (free_vport)
-> -               ovs_vport_free(vport);
-> +       ovs_vport_free(vport);
->  error:
->         return ERR_PTR(err);
->  }
-> --
->
+I don't recall whether this was brought up previously.
+
+CCing Jakub so we have one thread.
+
+Maciej
+
+> 
+> Yes, if dev "v1", it works as expected.
+> 
+> >  
+> > > -bash-4.4$ sudo ./bpftool net
+> > > xdp:
+> > > v1(4) driver id 1172
+> > >
+> > > tc:
+> > > eth0(2) clsact/ingress fbflow_icmp id 29 act []
+> > > eth0(2) clsact/egress cls_fg_dscp_section id 27 act []
+> > > eth0(2) clsact/egress fbflow_egress id 28
+> > > eth0(2) clsact/egress fbflow_sslwall_egress id 35
+> > >
+> > > flow_dissector:
+> > >
+> > > -bash-4.4$
+> > >
+> > > Basically detaching may fail due to wrong dev name or wrong type, etc.
+> > > But the tool did not return an error. Is this expected?
+> > > This may be related to this funciton "bpf_set_link_xdp_fd()".
+> > > So this patch itself should be okay.
+> > >  
+> > > > +
+> > > > +       if (err < 0) {
+> > > > +               p_err("interface %s detach failed",
+> > > > +                     attach_type_strings[attach_type]);
+> > > > +               return err;
+> > > > +       }
+> > > > +
+> > > > +       if (json_output)
+> > > > +               jsonw_null(json_wtr);
+> > > > +
+> > > > +       return 0;
+> > > > +}
+> > > > +
+> > > >  static int do_show(int argc, char **argv)
+> > > >  {
+> > > >         struct bpf_attach_info attach_info = {};
+> > > > @@ -419,6 +456,7 @@ static int do_help(int argc, char **argv)
+> > > >         fprintf(stderr,
+> > > >                 "Usage: %s %s { show | list } [dev <devname>]\n"
+> > > >                 "       %s %s attach ATTACH_TYPE PROG dev <devname> [ overwrite ]\n"
+> > > > +               "       %s %s detach ATTACH_TYPE dev <devname>\n"
+> > > >                 "       %s %s help\n"
+> > > >                 "\n"
+> > > >                 "       " HELP_SPEC_PROGRAM "\n"
+> > > > @@ -429,7 +467,8 @@ static int do_help(int argc, char **argv)
+> > > >                 "      to dump program attachments. For program types\n"
+> > > >                 "      sk_{filter,skb,msg,reuseport} and lwt/seg6, please\n"
+> > > >                 "      consult iproute2.\n",
+> > > > -               bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2]);
+> > > > +               bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2],
+> > > > +               bin_name, argv[-2]);
+> > > >
+> > > >         return 0;
+> > > >  }
+> > > > @@ -438,6 +477,7 @@ static const struct cmd cmds[] = {
+> > > >         { "show",       do_show },
+> > > >         { "list",       do_show },
+> > > >         { "attach",     do_attach },
+> > > > +       { "detach",     do_detach },
+> > > >         { "help",       do_help },
+> > > >         { 0 }
+> > > >  };
+> > > > --
+> > > > 2.20.1
+> > > >  
+> >  
+
