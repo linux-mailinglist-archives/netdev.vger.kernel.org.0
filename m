@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05035846AA
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 10:04:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 277A1846A6
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 10:04:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387594AbfHGIDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 04:03:30 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:33692 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728158AbfHGID3 (ORCPT
+        id S2387489AbfHGID3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 04:03:29 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:33656 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728073AbfHGID3 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 04:03:29 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 01A43C1223;
-        Wed,  7 Aug 2019 08:03:27 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 04537C1228;
+        Wed,  7 Aug 2019 08:03:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1565165008; bh=eBMPOuh0v9O9ulHd06aLqfLtwIkkPmEonXAVFGrbEOA=;
+        t=1565165008; bh=18B/BrYz2sxVzKeQcjktizOD0pcEwHNkm/ulnP89N5A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=CnbFrniNS9AXyIq9Yxk/lTHaxLBttFXLgtQ1lvTR5RqrcGyz5TJ2yYHTrOquJY09J
-         XwZ2VFbwaxT/bwEgZGVF9MUfWuoTw3TJnrEJhs6N+f2Dr5vchICDjg2mBfWj9PuMb+
-         YdnKN1cL/VCTKPc72AB2YFCX7ZsFQnTWvOup0PmGWl9fJ+V4jM2ip1wu/f9PJdJZoe
-         n+uhwNU2vXONaDMvra4NNdUHX7jYszvRFwyzKKe5LIwcADwaxhyJA2LPPUvlZlQpqY
-         9thnQBLWT0GgxK4TRfsd9q0HiEykkRQ+EflBijQQCaNkS4VKnCY4p9lUviyZbjaXer
-         qzbCjLDQG+Ccw==
+        b=J0SjFBY7p3tHnixu17GQmKLzEIEqY225fRN41nepShur3EePhWr3eCR/zziEOypj6
+         5MbQW5tYmlI2AozsTeyNmA69vneLUOZMJkpa/xk+mC3xzzCEmYZ9yj6i6+5ui1pT0v
+         V+Zs+Pfo3fGPG323fG6UhlHIsE7TgrPm4/GmRa9M7EEDYZ5VkqIJ7UHHwGX2BkhPH9
+         zmTBy42FfoXYeYW8Zf5rxV37AkrTRbKCsTsPu4AHBqglCTICV+owprbwNb8B+3zskm
+         a7CtGyvV6MvmykqbEU8BvwGOwtLKUW3ckC/2LMsjgIhI8xFJm7mmWyF3u/EiOLYumc
+         4y06kITDZoSPQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id B34D6A0079;
+        by mailhost.synopsys.com (Postfix) with ESMTP id BDEDCA007C;
         Wed,  7 Aug 2019 08:03:26 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
@@ -39,9 +39,9 @@ Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v3 09/10] net: stmmac: Add Flexible RX Parser support in XGMAC
-Date:   Wed,  7 Aug 2019 10:03:17 +0200
-Message-Id: <e85c582f1f4ee553d4028c9b3457f8102f94ea48.1565164730.git.joabreu@synopsys.com>
+Subject: [PATCH net-next v3 10/10] net: stmmac: selftests: Add a selftest for Flexible RX Parser
+Date:   Wed,  7 Aug 2019 10:03:18 +0200
+Message-Id: <1db98f63265e0e8727a56a4d963164d133c5cef0.1565164730.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1565164729.git.joabreu@synopsys.com>
 References: <cover.1565164729.git.joabreu@synopsys.com>
@@ -52,8 +52,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XGMAC cores also support the Flexible RX Parser feature. Add the support
-for it in the XGMAC core.
+Add a selftest for the Flexible RX Parser feature.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 
@@ -68,271 +67,141 @@ Cc: linux-stm32@st-md-mailman.stormreply.com
 Cc: linux-arm-kernel@lists.infradead.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  13 ++
- .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 190 +++++++++++++++++++++
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |   3 +
- 3 files changed, 206 insertions(+)
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 98 +++++++++++++++++++++-
+ 1 file changed, 97 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 34a53f2141dc..429c94e40c73 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -112,6 +112,9 @@
- #define XGMAC_HWFEAT_RXQCNT		GENMASK(3, 0)
- #define XGMAC_HW_FEATURE3		0x00000128
- #define XGMAC_HWFEAT_ASP		GENMASK(15, 14)
-+#define XGMAC_HWFEAT_FRPES		GENMASK(12, 11)
-+#define XGMAC_HWFEAT_FRPPB		GENMASK(10, 9)
-+#define XGMAC_HWFEAT_FRPSEL		BIT(3)
- #define XGMAC_MAC_DPP_FSM_INT_STATUS	0x00000150
- #define XGMAC_MAC_FSM_CONTROL		0x00000158
- #define XGMAC_PRTYEN			BIT(1)
-@@ -145,6 +148,7 @@
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+index 6b08bb15af15..abab84f2ef8b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_selftests.c
+@@ -11,8 +11,10 @@
+ #include <linux/ip.h>
+ #include <linux/phy.h>
+ #include <linux/udp.h>
++#include <net/pkt_cls.h>
+ #include <net/tcp.h>
+ #include <net/udp.h>
++#include <net/tc_act/tc_gact.h>
+ #include "stmmac.h"
  
- /* MTL Registers */
- #define XGMAC_MTL_OPMODE		0x00001000
-+#define XGMAC_FRPE			BIT(15)
- #define XGMAC_ETSALG			GENMASK(6, 5)
- #define XGMAC_WRR			(0x0 << 5)
- #define XGMAC_WFQ			(0x1 << 5)
-@@ -160,6 +164,15 @@
- #define XGMAC_TC_PRTY_MAP1		0x00001044
- #define XGMAC_PSTC(x)			GENMASK((x) * 8 + 7, (x) * 8)
- #define XGMAC_PSTC_SHIFT(x)		((x) * 8)
-+#define XGMAC_MTL_RXP_CONTROL_STATUS	0x000010a0
-+#define XGMAC_RXPI			BIT(31)
-+#define XGMAC_NPE			GENMASK(23, 16)
-+#define XGMAC_NVE			GENMASK(7, 0)
-+#define XGMAC_MTL_RXP_IACC_CTRL_ST	0x000010b0
-+#define XGMAC_STARTBUSY			BIT(31)
-+#define XGMAC_WRRDN			BIT(16)
-+#define XGMAC_ADDR			GENMASK(9, 0)
-+#define XGMAC_MTL_RXP_IACC_DATA		0x000010b4
- #define XGMAC_MTL_ECC_CONTROL		0x000010c0
- #define XGMAC_MTL_SAFETY_INT_STATUS	0x000010c4
- #define XGMAC_MEUIS			BIT(1)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index 19dfb72cab11..767f3fe5efaa 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-@@ -808,6 +808,195 @@ static int dwxgmac3_safety_feat_dump(struct stmmac_safety_stats *stats,
- 	return 0;
+ struct stmmachdr {
+@@ -229,7 +231,7 @@ static int stmmac_test_loopback_validate(struct sk_buff *skb,
+ 			goto out;
+ 	}
+ 	if (tpriv->packet->src) {
+-		if (!ether_addr_equal(ehdr->h_source, orig_ndev->dev_addr))
++		if (!ether_addr_equal(ehdr->h_source, tpriv->packet->src))
+ 			goto out;
+ 	}
+ 
+@@ -912,6 +914,96 @@ static int stmmac_test_dvlanfilt(struct stmmac_priv *priv)
+ 	return ret;
  }
  
-+static int dwxgmac3_rxp_disable(void __iomem *ioaddr)
++#ifdef CONFIG_NET_CLS_ACT
++static int stmmac_test_rxp(struct stmmac_priv *priv)
 +{
-+	u32 val = readl(ioaddr + XGMAC_MTL_OPMODE);
++	unsigned char addr[ETH_ALEN] = {0xde, 0xad, 0xbe, 0xef, 0x00, 0x00};
++	struct tc_cls_u32_offload cls_u32 = { };
++	struct stmmac_packet_attrs attr = { };
++	struct tc_action **actions, *act;
++	struct tc_u32_sel *sel;
++	struct tcf_exts *exts;
++	int ret, i, nk = 1;
 +
-+	val &= ~XGMAC_FRPE;
-+	writel(val, ioaddr + XGMAC_MTL_OPMODE);
++	if (!tc_can_offload(priv->dev))
++		return -EOPNOTSUPP;
++	if (!priv->dma_cap.frpsel)
++		return -EOPNOTSUPP;
 +
-+	return 0;
-+}
++	sel = kzalloc(sizeof(*sel) + nk * sizeof(struct tc_u32_key), GFP_KERNEL);
++	if (!sel)
++		return -ENOMEM;
 +
-+static void dwxgmac3_rxp_enable(void __iomem *ioaddr)
-+{
-+	u32 val;
-+
-+	val = readl(ioaddr + XGMAC_MTL_OPMODE);
-+	val |= XGMAC_FRPE;
-+	writel(val, ioaddr + XGMAC_MTL_OPMODE);
-+}
-+
-+static int dwxgmac3_rxp_update_single_entry(void __iomem *ioaddr,
-+					    struct stmmac_tc_entry *entry,
-+					    int pos)
-+{
-+	int ret, i;
-+
-+	for (i = 0; i < (sizeof(entry->val) / sizeof(u32)); i++) {
-+		int real_pos = pos * (sizeof(entry->val) / sizeof(u32)) + i;
-+		u32 val;
-+
-+		/* Wait for ready */
-+		ret = readl_poll_timeout(ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST,
-+					 val, !(val & XGMAC_STARTBUSY), 1, 10000);
-+		if (ret)
-+			return ret;
-+
-+		/* Write data */
-+		val = *((u32 *)&entry->val + i);
-+		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_DATA);
-+
-+		/* Write pos */
-+		val = real_pos & XGMAC_ADDR;
-+		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST);
-+
-+		/* Write OP */
-+		val |= XGMAC_WRRDN;
-+		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST);
-+
-+		/* Start Write */
-+		val |= XGMAC_STARTBUSY;
-+		writel(val, ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST);
-+
-+		/* Wait for done */
-+		ret = readl_poll_timeout(ioaddr + XGMAC_MTL_RXP_IACC_CTRL_ST,
-+					 val, !(val & XGMAC_STARTBUSY), 1, 10000);
-+		if (ret)
-+			return ret;
++	exts = kzalloc(sizeof(*exts), GFP_KERNEL);
++	if (!exts) {
++		ret = -ENOMEM;
++		goto cleanup_sel;
 +	}
 +
-+	return 0;
-+}
-+
-+static struct stmmac_tc_entry *
-+dwxgmac3_rxp_get_next_entry(struct stmmac_tc_entry *entries,
-+			    unsigned int count, u32 curr_prio)
-+{
-+	struct stmmac_tc_entry *entry;
-+	u32 min_prio = ~0x0;
-+	int i, min_prio_idx;
-+	bool found = false;
-+
-+	for (i = count - 1; i >= 0; i--) {
-+		entry = &entries[i];
-+
-+		/* Do not update unused entries */
-+		if (!entry->in_use)
-+			continue;
-+		/* Do not update already updated entries (i.e. fragments) */
-+		if (entry->in_hw)
-+			continue;
-+		/* Let last entry be updated last */
-+		if (entry->is_last)
-+			continue;
-+		/* Do not return fragments */
-+		if (entry->is_frag)
-+			continue;
-+		/* Check if we already checked this prio */
-+		if (entry->prio < curr_prio)
-+			continue;
-+		/* Check if this is the minimum prio */
-+		if (entry->prio < min_prio) {
-+			min_prio = entry->prio;
-+			min_prio_idx = i;
-+			found = true;
-+		}
++	actions = kzalloc(nk * sizeof(*actions), GFP_KERNEL);
++	if (!actions) {
++		ret = -ENOMEM;
++		goto cleanup_exts;
 +	}
 +
-+	if (found)
-+		return &entries[min_prio_idx];
-+	return NULL;
-+}
++	act = kzalloc(nk * sizeof(*act), GFP_KERNEL);
++	if (!act) {
++		ret = -ENOMEM;
++		goto cleanup_actions;
++	}
 +
-+static int dwxgmac3_rxp_config(void __iomem *ioaddr,
-+			       struct stmmac_tc_entry *entries,
-+			       unsigned int count)
-+{
-+	struct stmmac_tc_entry *entry, *frag;
-+	int i, ret, nve = 0;
-+	u32 curr_prio = 0;
-+	u32 old_val, val;
++	cls_u32.command = TC_CLSU32_NEW_KNODE;
++	cls_u32.common.chain_index = 0;
++	cls_u32.common.protocol = htons(ETH_P_ALL);
++	cls_u32.knode.exts = exts;
++	cls_u32.knode.sel = sel;
++	cls_u32.knode.handle = 0x123;
 +
-+	/* Force disable RX */
-+	old_val = readl(ioaddr + XGMAC_RX_CONFIG);
-+	val = old_val & ~XGMAC_CONFIG_RE;
-+	writel(val, ioaddr + XGMAC_RX_CONFIG);
++	exts->nr_actions = nk;
++	exts->actions = actions;
++	for (i = 0; i < nk; i++) {
++		struct tcf_gact *gact = to_gact(&act[i]);
 +
-+	/* Disable RX Parser */
-+	ret = dwxgmac3_rxp_disable(ioaddr);
++		actions[i] = &act[i];
++		gact->tcf_action = TC_ACT_SHOT;
++	}
++
++	sel->nkeys = nk;
++	sel->offshift = 0;
++	sel->keys[0].off = 6;
++	sel->keys[0].val = htonl(0xdeadbeef);
++	sel->keys[0].mask = ~0x0;
++
++	ret = stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
 +	if (ret)
-+		goto re_enable;
++		goto cleanup_act;
 +
-+	/* Set all entries as NOT in HW */
-+	for (i = 0; i < count; i++) {
-+		entry = &entries[i];
-+		entry->in_hw = false;
-+	}
++	attr.dst = priv->dev->dev_addr;
++	attr.src = addr;
 +
-+	/* Update entries by reverse order */
-+	while (1) {
-+		entry = dwxgmac3_rxp_get_next_entry(entries, count, curr_prio);
-+		if (!entry)
-+			break;
++	ret = __stmmac_test_loopback(priv, &attr);
++	ret = !ret; /* Shall NOT receive packet */
 +
-+		curr_prio = entry->prio;
-+		frag = entry->frag_ptr;
++	cls_u32.command = TC_CLSU32_DELETE_KNODE;
++	stmmac_tc_setup_cls_u32(priv, priv, &cls_u32);
 +
-+		/* Set special fragment requirements */
-+		if (frag) {
-+			entry->val.af = 0;
-+			entry->val.rf = 0;
-+			entry->val.nc = 1;
-+			entry->val.ok_index = nve + 2;
-+		}
-+
-+		ret = dwxgmac3_rxp_update_single_entry(ioaddr, entry, nve);
-+		if (ret)
-+			goto re_enable;
-+
-+		entry->table_pos = nve++;
-+		entry->in_hw = true;
-+
-+		if (frag && !frag->in_hw) {
-+			ret = dwxgmac3_rxp_update_single_entry(ioaddr, frag, nve);
-+			if (ret)
-+				goto re_enable;
-+			frag->table_pos = nve++;
-+			frag->in_hw = true;
-+		}
-+	}
-+
-+	if (!nve)
-+		goto re_enable;
-+
-+	/* Update all pass entry */
-+	for (i = 0; i < count; i++) {
-+		entry = &entries[i];
-+		if (!entry->is_last)
-+			continue;
-+
-+		ret = dwxgmac3_rxp_update_single_entry(ioaddr, entry, nve);
-+		if (ret)
-+			goto re_enable;
-+
-+		entry->table_pos = nve++;
-+	}
-+
-+	/* Assume n. of parsable entries == n. of valid entries */
-+	val = (nve << 16) & XGMAC_NPE;
-+	val |= nve & XGMAC_NVE;
-+	writel(val, ioaddr + XGMAC_MTL_RXP_CONTROL_STATUS);
-+
-+	/* Enable RX Parser */
-+	dwxgmac3_rxp_enable(ioaddr);
-+
-+re_enable:
-+	/* Re-enable RX */
-+	writel(old_val, ioaddr + XGMAC_RX_CONFIG);
++cleanup_act:
++	kfree(act);
++cleanup_actions:
++	kfree(actions);
++cleanup_exts:
++	kfree(exts);
++cleanup_sel:
++	kfree(sel);
 +	return ret;
 +}
++#else
++static int stmmac_test_rxp(struct stmmac_priv *priv)
++{
++	return -EOPNOTSUPP;
++}
++#endif
 +
- const struct stmmac_ops dwxgmac210_ops = {
- 	.core_init = dwxgmac2_core_init,
- 	.set_mac = dwxgmac2_set_mac,
-@@ -843,6 +1032,7 @@ const struct stmmac_ops dwxgmac210_ops = {
- 	.set_mac_loopback = dwxgmac2_set_mac_loopback,
- 	.rss_configure = dwxgmac2_rss_configure,
- 	.update_vlan_hash = dwxgmac2_update_vlan_hash,
-+	.rxp_config = dwxgmac3_rxp_config,
+ #define STMMAC_LOOPBACK_NONE	0
+ #define STMMAC_LOOPBACK_MAC	1
+ #define STMMAC_LOOPBACK_PHY	2
+@@ -969,6 +1061,10 @@ static const struct stmmac_test {
+ 		.name = "Double VLAN Filtering",
+ 		.lb = STMMAC_LOOPBACK_PHY,
+ 		.fn = stmmac_test_dvlanfilt,
++	}, {
++		.name = "Flexible RX Parser   ",
++		.lb = STMMAC_LOOPBACK_PHY,
++		.fn = stmmac_test_rxp,
+ 	},
  };
  
- int dwxgmac2_setup(struct stmmac_priv *priv)
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index e4a1c877f2e1..18cbf4ab4ad2 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -403,6 +403,9 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
- 	/* MAC HW feature 3 */
- 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE3);
- 	dma_cap->asp = (hw_cap & XGMAC_HWFEAT_ASP) >> 14;
-+	dma_cap->frpes = (hw_cap & XGMAC_HWFEAT_FRPES) >> 11;
-+	dma_cap->frpbs = (hw_cap & XGMAC_HWFEAT_FRPPB) >> 9;
-+	dma_cap->frpsel = (hw_cap & XGMAC_HWFEAT_FRPSEL) >> 3;
- }
- 
- static void dwxgmac2_rx_watchdog(void __iomem *ioaddr, u32 riwt, u32 nchan)
 -- 
 2.7.4
 
