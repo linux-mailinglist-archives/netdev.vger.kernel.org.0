@@ -2,183 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D57D8518D
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 18:59:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DEDBC8519A
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 19:02:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730149AbfHGQ7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 12:59:41 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:37031 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729804AbfHGQ7l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 12:59:41 -0400
-Received: by mail-yb1-f193.google.com with SMTP id i1so25330023ybo.4
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 09:59:40 -0700 (PDT)
+        id S2388824AbfHGRCl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 13:02:41 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:41314 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387967AbfHGRCl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 13:02:41 -0400
+Received: by mail-ot1-f67.google.com with SMTP id o101so107124267ota.8
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 10:02:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gyNwybw8VXShXpoDRYy43ve4PM+gvZH/Whv5uWEXwS8=;
-        b=jO9KZipqu8Dld/+ZvUTV1x1zHYnfVqYdnYrUsitarU6qLYMZ7uVxoXjMKXvQvMhRpW
-         qU+/6JVT/VrS53spTGcCCbs4aaHoDSWXiB+HBbAGvgJhUV0v5bpfVKOGjT2UPBjkdoDB
-         8g8NU7VEJCr/wcNkBc9u0uTYlTJvriT2QVeWfRU8rdOwgBBX+TpzZiQdJ8RS/fCYWHtM
-         S9TyN8bJ77lT7TbE9SaF2kmUuB/hMEDGnHe2wYKMs4DJY6dsQXGuozMqVPL2Cl4APgKY
-         6GbyqB6PrRam5YNf8TDNnMIc8PhKyjW/30AcptSQDg1CogWAPwmrG5hBAOmFIWnrhpBc
-         bsMw==
+        bh=X2vuNE7PJBhdWCvzlvCRPtvvFBe7N7JmPa/xwKbpMZI=;
+        b=c+cifb0JUt8IAOmI2yR3/7C62SRIXSfCfmmZ7CP8PYLclE1iW/I1WGhYMaEutazSFB
+         /80MCKM4kdGstnt+AZR7VEotrdxX7PMQrjPLcIEzcjp5W2Xvi3rTHBB3mH9g9/B4SyYp
+         epR4i/+8cVWgzJopR9bDVu9eeHu5OQghT+JygTvdhG2ODC0lv3pjqGqGJU/Lp364WcTN
+         H88b1l3IY84L4JfndzDOEx5GO5YpWkk2nyY4wnCBx94P3zqrLuyKM8kB5W9CZNNPHJS/
+         dmiLOsDHic5N1Mm8H/Ruo/2+By+cQHdhZvR67qpZfgWRs48wSOsVNFZe5EOlA16wCZge
+         2NTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gyNwybw8VXShXpoDRYy43ve4PM+gvZH/Whv5uWEXwS8=;
-        b=D86EQDfWsQfRPP/pR6pypieMlaHc87NmpTTExaZAgFqbFUo9eWiuEN6SR/MkYR0c9N
-         vi9ClNDKDxTT57lsDVsfDx5LvNA16YFTmZ/FVkujhTHSgtsueHhyWGt6Js3aoTYMfiZg
-         3C7pG8vQNo7UsQarlNwR6qc2o1sa00QmiBzEl961J1ggvcoh1EaicDC6nOtFhcxXwSlh
-         ZP9ru8ukBD08Lr6rqgd0qhcHLryP8wnm8Id4CP/VbJQ8G8GVTUDDcaHRrYlxgXs8+PfM
-         P7hxDQtFttD50v2jHGgVgFw8Zd7JHzBxRuSGlGuHf/nNW++W5FNcbWL2mja3o2On6zoT
-         Q/Jw==
-X-Gm-Message-State: APjAAAXUmvSTkWHXVTh620lhIFR4FA8rR3Da9F28vSQvMRem5mMfn840
-        MBeRsOrNlCfy7G5VM0od+Cc2aY56
-X-Google-Smtp-Source: APXvYqwZiZgHmqCXlMyOCbl+ennA26Wdvjyqv+1RVrLx+p2339Mf0FGY1kBEF9uCYyiHn9OpLJymuw==
-X-Received: by 2002:a25:1dd4:: with SMTP id d203mr6766187ybd.124.1565197179169;
-        Wed, 07 Aug 2019 09:59:39 -0700 (PDT)
-Received: from mail-yw1-f47.google.com (mail-yw1-f47.google.com. [209.85.161.47])
-        by smtp.gmail.com with ESMTPSA id l82sm21984675ywb.64.2019.08.07.09.59.38
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 09:59:38 -0700 (PDT)
-Received: by mail-yw1-f47.google.com with SMTP id x67so31355233ywd.3
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 09:59:38 -0700 (PDT)
-X-Received: by 2002:a81:3301:: with SMTP id z1mr2396111ywz.190.1565197177626;
- Wed, 07 Aug 2019 09:59:37 -0700 (PDT)
+        bh=X2vuNE7PJBhdWCvzlvCRPtvvFBe7N7JmPa/xwKbpMZI=;
+        b=j3CB+wFmYSAzKZ3ZwmQtJ0lksbtortIFfJSCB186t9MS3UQBghbhUHYPK9H8EqSdHW
+         i6+0EJ3EqMfE62fsZZOgHYTBQ5YQVw4CnAKt5Owua2XnLfklE7HHXz5bXXzHSLPuqTPs
+         Y16ELzPQxwidcNWK19FMqGtSaTvwYIVH7vv7z69o6ta0e4dKfOLMlSef2Ij/9dQXCGWY
+         vLQU3CvLLxA7V69ofLpktqCulz/PU/s37vVvFiJHL0JL9ShFKixkISV5YzDdXDvwae8P
+         luHHRLhT0nKqZHa7WxBumdedDjiFErSnFsSPDkNv7KAq4Gi6Q0eU0DZLemvggIWPFaOp
+         uvAg==
+X-Gm-Message-State: APjAAAW0SumzU2e4BU9d63hk7rqSGthdtZ1IBirBE9yh2KvEUrL6D0N3
+        6wvh/shkHBrByLSpYmuWpc0k7IYpUV+vSn1BHQk=
+X-Google-Smtp-Source: APXvYqxL19JismHlng1Pger/xv4LAd+f6cpsMa7dexDF6yc6USPeJ/fQb+7SWNgKC2lc+GQUlfuvi/dJBPKJW6AcRQM=
+X-Received: by 2002:a5e:8704:: with SMTP id y4mr9792419ioj.135.1565197360091;
+ Wed, 07 Aug 2019 10:02:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190807060612.19397-1-jakub.kicinski@netronome.com>
-In-Reply-To: <20190807060612.19397-1-jakub.kicinski@netronome.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 7 Aug 2019 12:59:00 -0400
-X-Gmail-Original-Message-ID: <CA+FuTScYkHho4hqrGf9q6=4iao-f2P2s258rjtQTCgn+nF-CYg@mail.gmail.com>
-Message-ID: <CA+FuTScYkHho4hqrGf9q6=4iao-f2P2s258rjtQTCgn+nF-CYg@mail.gmail.com>
-Subject: Re: [PATCH net v2] net/tls: prevent skb_orphan() from leaking TLS
- plain text with offload
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        oss-drivers@netronome.com
+References: <20190807022509.4214-1-danieltimlee@gmail.com> <20190807022509.4214-3-danieltimlee@gmail.com>
+In-Reply-To: <20190807022509.4214-3-danieltimlee@gmail.com>
+From:   Y Song <ys114321@gmail.com>
+Date:   Wed, 7 Aug 2019 10:02:04 -0700
+Message-ID: <CAH3MdRW4LgdLoqSpLsWUOwjnNhJA1sodHqSD2Z14JY6aHMaKxg@mail.gmail.com>
+Subject: Re: [v3,2/4] tools: bpftool: add net detach command to detach XDP on interface
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 7, 2019 at 2:06 AM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
+On Tue, Aug 6, 2019 at 7:25 PM Daniel T. Lee <danieltimlee@gmail.com> wrote:
 >
-> sk_validate_xmit_skb() and drivers depend on the sk member of
-> struct sk_buff to identify segments requiring encryption.
-> Any operation which removes or does not preserve the original TLS
-> socket such as skb_orphan() or skb_clone() will cause clear text
-> leaks.
+> By this commit, using `bpftool net detach`, the attached XDP prog can
+> be detached. Detaching the BPF prog will be done through libbpf
+> 'bpf_set_link_xdp_fd' with the progfd set to -1.
 >
-> Make the TCP socket underlying an offloaded TLS connection
-> mark all skbs as decrypted, if TLS TX is in offload mode.
-> Then in sk_validate_xmit_skb() catch skbs which have no socket
-> (or a socket with no validation) and decrypted flag set.
->
-> Note that CONFIG_SOCK_VALIDATE_XMIT, CONFIG_TLS_DEVICE and
-> sk->sk_validate_xmit_skb are slightly interchangeable right now,
-> they all imply TLS offload. The new checks are guarded by
-> CONFIG_TLS_DEVICE because that's the option guarding the
-> sk_buff->decrypted member.
->
-> Second, smaller issue with orphaning is that it breaks
-> the guarantee that packets will be delivered to device
-> queues in-order. All TLS offload drivers depend on that
-> scheduling property. This means skb_orphan_partial()'s
-> trick of preserving partial socket references will cause
-> issues in the drivers. We need a full orphan, and as a
-> result netem delay/throttling will cause all TLS offload
-> skbs to be dropped.
->
-> Reusing the sk_buff->decrypted flag also protects from
-> leaking clear text when incoming, decrypted skb is redirected
-> (e.g. by TC).
->
-> See commit 0608c69c9a80 ("bpf: sk_msg, sock{map|hash} redirect
-> through ULP") for justification why the internal flag is safe.
->
-> v2:
->  - remove superfluous decrypted mark copy (Willem);
->  - remove the stale doc entry (Boris);
->  - rely entirely on EOR marking to prevent coalescing (Boris);
->  - use an internal sendpages flag instead of marking the socket
->    (Boris).
->
-> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 > ---
->  Documentation/networking/tls-offload.rst | 18 ------------------
->  include/linux/skbuff.h                   |  8 ++++++++
->  include/linux/socket.h                   |  3 +++
->  include/net/sock.h                       | 10 +++++++++-
->  net/core/sock.c                          | 20 +++++++++++++++-----
->  net/ipv4/tcp.c                           |  3 +++
->  net/ipv4/tcp_output.c                    |  3 +++
->  net/tls/tls_device.c                     |  9 +++++++--
->  8 files changed, 48 insertions(+), 26 deletions(-)
-
-> diff --git a/net/core/sock.c b/net/core/sock.c
-> index d57b0cc995a0..0f9619b0892f 100644
-> --- a/net/core/sock.c
-> +++ b/net/core/sock.c
-> @@ -1992,6 +1992,20 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
+>  tools/bpf/bpftool/net.c | 42 ++++++++++++++++++++++++++++++++++++++++-
+>  1 file changed, 41 insertions(+), 1 deletion(-)
+>
+> diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+> index c05a3fac5cac..7be96acb08e0 100644
+> --- a/tools/bpf/bpftool/net.c
+> +++ b/tools/bpf/bpftool/net.c
+> @@ -343,6 +343,43 @@ static int do_attach(int argc, char **argv)
+>         return 0;
 >  }
->  EXPORT_SYMBOL(skb_set_owner_w);
 >
-> +static bool can_skb_orphan_partial(const struct sk_buff *skb)
+> +static int do_detach(int argc, char **argv)
 > +{
-> +#ifdef CONFIG_TLS_DEVICE
-> +       /* Drivers depend on in-order delivery for crypto offload,
-> +        * partial orphan breaks out-of-order-OK logic.
-> +        */
-> +       if (skb->decrypted)
-> +               return false;
-> +#endif
-> +       return (IS_ENABLED(CONFIG_INET) &&
-> +               skb->destructor == tcp_wfree) ||
+> +       enum net_attach_type attach_type;
+> +       int progfd, ifindex, err = 0;
+> +
+> +       /* parse detach args */
+> +       if (!REQ_ARGS(3))
+> +               return -EINVAL;
+> +
+> +       attach_type = parse_attach_type(*argv);
+> +       if (attach_type == max_net_attach_type) {
+> +               p_err("invalid net attach/detach type");
+> +               return -EINVAL;
+> +       }
+> +
+> +       NEXT_ARG();
+> +       ifindex = net_parse_dev(&argc, &argv);
+> +       if (ifindex < 1)
+> +               return -EINVAL;
+> +
+> +       /* detach xdp prog */
+> +       progfd = -1;
+> +       if (is_prefix("xdp", attach_type_strings[attach_type]))
+> +               err = do_attach_detach_xdp(progfd, attach_type, ifindex, NULL);
 
-Please add parentheses around IS_ENABLED(CONFIG_INET) &&
-skb->destructor == tcp_wfree
+I found an issue here. This is probably related to do_attach_detach_xdp.
 
-I was also surprised that this works when tcp_wfree is not defined if
-!CONFIG_INET. But apparently it does (at -O2?) :)
+-bash-4.4$ sudo ./bpftool net attach x pinned /sys/fs/bpf/xdp_example dev v1
+-bash-4.4$ sudo ./bpftool net
+xdp:
+v1(4) driver id 1172
 
-> @@ -984,6 +984,9 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
->                         if (!skb)
->                                 goto wait_for_memory;
+tc:
+eth0(2) clsact/ingress fbflow_icmp id 29 act []
+eth0(2) clsact/egress cls_fg_dscp_section id 27 act []
+eth0(2) clsact/egress fbflow_egress id 28
+eth0(2) clsact/egress fbflow_sslwall_egress id 35
+
+flow_dissector:
+
+-bash-4.4$ sudo ./bpftool net detach x dev v2
+-bash-4.4$ sudo ./bpftool net
+xdp:
+v1(4) driver id 1172
+
+tc:
+eth0(2) clsact/ingress fbflow_icmp id 29 act []
+eth0(2) clsact/egress cls_fg_dscp_section id 27 act []
+eth0(2) clsact/egress fbflow_egress id 28
+eth0(2) clsact/egress fbflow_sslwall_egress id 35
+
+flow_dissector:
+
+-bash-4.4$
+
+Basically detaching may fail due to wrong dev name or wrong type, etc.
+But the tool did not return an error. Is this expected?
+This may be related to this funciton "bpf_set_link_xdp_fd()".
+So this patch itself should be okay.
+
+> +
+> +       if (err < 0) {
+> +               p_err("interface %s detach failed",
+> +                     attach_type_strings[attach_type]);
+> +               return err;
+> +       }
+> +
+> +       if (json_output)
+> +               jsonw_null(json_wtr);
+> +
+> +       return 0;
+> +}
+> +
+>  static int do_show(int argc, char **argv)
+>  {
+>         struct bpf_attach_info attach_info = {};
+> @@ -419,6 +456,7 @@ static int do_help(int argc, char **argv)
+>         fprintf(stderr,
+>                 "Usage: %s %s { show | list } [dev <devname>]\n"
+>                 "       %s %s attach ATTACH_TYPE PROG dev <devname> [ overwrite ]\n"
+> +               "       %s %s detach ATTACH_TYPE dev <devname>\n"
+>                 "       %s %s help\n"
+>                 "\n"
+>                 "       " HELP_SPEC_PROGRAM "\n"
+> @@ -429,7 +467,8 @@ static int do_help(int argc, char **argv)
+>                 "      to dump program attachments. For program types\n"
+>                 "      sk_{filter,skb,msg,reuseport} and lwt/seg6, please\n"
+>                 "      consult iproute2.\n",
+> -               bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2]);
+> +               bin_name, argv[-2], bin_name, argv[-2], bin_name, argv[-2],
+> +               bin_name, argv[-2]);
 >
-> +#ifdef CONFIG_TLS_DEVICE
-> +                       skb->decrypted = !!(flags & MSG_SENDPAGE_DECRYPTED);
-> +#endif
-
-Nothing is stopping userspace from passing this new flag. In send
-(tcp_sendmsg_locked) it is ignored. But can it reach do_tcp_sendpages
-through tcp_bpf_sendmsg?
-
->                         skb_entail(sk, skb);
->                         copy = size_goal;
->                 }
-> diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-> index 6e4afc48d7bb..979520e46e33 100644
-> --- a/net/ipv4/tcp_output.c
-> +++ b/net/ipv4/tcp_output.c
-> @@ -1320,6 +1320,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
->         buff = sk_stream_alloc_skb(sk, nsize, gfp, true);
->         if (!buff)
->                 return -ENOMEM; /* We'll just try again later. */
-> +       skb_copy_decrypted(buff, skb);
-
-This code has to copy timestamps, tx_flags, zerocopy state and now
-this in three locations. Eventually we'll want a single helper for all
-of them..
+>         return 0;
+>  }
+> @@ -438,6 +477,7 @@ static const struct cmd cmds[] = {
+>         { "show",       do_show },
+>         { "list",       do_show },
+>         { "attach",     do_attach },
+> +       { "detach",     do_detach },
+>         { "help",       do_help },
+>         { 0 }
+>  };
+> --
+> 2.20.1
+>
