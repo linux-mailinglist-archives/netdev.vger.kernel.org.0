@@ -2,201 +2,464 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1863884301
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 05:45:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD81484366
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 06:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbfHGDpv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 23:45:51 -0400
-Received: from gate2.alliedtelesis.co.nz ([202.36.163.20]:54916 "EHLO
-        gate2.alliedtelesis.co.nz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727359AbfHGDpv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 23:45:51 -0400
-Received: from mmarshal3.atlnz.lc (mmarshal3.atlnz.lc [10.32.18.43])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by gate2.alliedtelesis.co.nz (Postfix) with ESMTPS id 9B86A886BF;
-        Wed,  7 Aug 2019 15:45:47 +1200 (NZST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alliedtelesis.co.nz;
-        s=mail181024; t=1565149547;
-        bh=WOgXwv8hLflF8etTp24fLFm/K4eLww1QjBDI++02SKY=;
-        h=From:To:CC:Subject:Date:References:In-Reply-To;
-        b=Fm7HOtyAF8/t5VWoF3qbsRgh1+n1Kp8wlHFbZeDlno0BivB2d3pkivVKgXtV//oaL
-         WUGT/M3D/L0RTFife1DtIX5ze/ZK73OEMe8ylZFJ8lubX7qjCpMW7eSinNUaV/sqVi
-         LUd38R7igoi+5qbfsoPWsYauYMM1/U0NJhkECw7a13knqI56ihk2zuVb6iUDXLJXD0
-         kRUKtAHFBOs06ly8+KSNsM093E4zsQ19maggW1vgunUYkK3Dq1OIyxxGDfZkSXpVYq
-         aKbwbx29zZ3yqkUxAnCqorOy4wiYrXSMhAzRhr+fZgpskhT6JUO7XsdhrQEBk3dzRQ
-         phCqQnujAdvUg==
-Received: from svr-chch-ex1.atlnz.lc (Not Verified[10.32.16.77]) by mmarshal3.atlnz.lc with Trustwave SEG (v7,5,8,10121)
-        id <B5d4a496b0000>; Wed, 07 Aug 2019 15:45:47 +1200
-Received: from svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) by
- svr-chch-ex1.atlnz.lc (2001:df5:b000:bc8::77) with Microsoft SMTP Server
- (TLS) id 15.0.1156.6; Wed, 7 Aug 2019 15:45:44 +1200
-Received: from svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8]) by
- svr-chch-ex1.atlnz.lc ([fe80::409d:36f5:8899:92e8%12]) with mapi id
- 15.00.1156.000; Wed, 7 Aug 2019 15:45:44 +1200
-From:   Chris Packham <Chris.Packham@alliedtelesis.co.nz>
-To:     "jon.maloy@ericsson.com" <jon.maloy@ericsson.com>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: Slowness forming TIPC cluster with explicit node addresses
-Thread-Topic: Slowness forming TIPC cluster with explicit node addresses
-Thread-Index: AQHVQ0Hkw5M86TmlWkazctTgG4cJIabc5XqAgALa5YCABtFugIAFBHpw//9MBoCABC4cMP//RRcA
-Date:   Wed, 7 Aug 2019 03:45:44 +0000
-Message-ID: <1565149544.19352.20.camel@alliedtelesis.co.nz>
-References: <1564097836.11887.16.camel@alliedtelesis.co.nz>
-         <CH2PR15MB35754D65AB240A74AE488E719AC00@CH2PR15MB3575.namprd15.prod.outlook.com>
-         <1564347861.9737.25.camel@alliedtelesis.co.nz>
-         <1564722689.4914.27.camel@alliedtelesis.co.nz>
-         <CH2PR15MB3575BF6FC4001C19B8A789559ADB0@CH2PR15MB3575.namprd15.prod.outlook.com>
-         <1564959879.27215.18.camel@alliedtelesis.co.nz>
-         <CH2PR15MB35759E27F2A01FAE59AB66809AD40@CH2PR15MB3575.namprd15.prod.outlook.com>
-In-Reply-To: <CH2PR15MB35759E27F2A01FAE59AB66809AD40@CH2PR15MB3575.namprd15.prod.outlook.com>
-Accept-Language: en-NZ, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: Evolution 3.18.5.2-0ubuntu3.2 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [2001:df5:b000:22:3a2c:4aff:fe70:2b02]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <E5CC2ED20F9604448DF9FD9B99FD2FB3@atlnz.lc>
-Content-Transfer-Encoding: base64
+        id S1725940AbfHGEdo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 00:33:44 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:39234 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725802AbfHGEdn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 00:33:43 -0400
+Received: by mail-qk1-f194.google.com with SMTP id w190so64806424qkc.6;
+        Tue, 06 Aug 2019 21:33:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=vOPqJgWNehEy9crXZKz8GPnx2vq5uni2pd1M4IMPc54=;
+        b=erAek+whZpjfEnnYO4QCc+kEBOiqax0VY2n3JfFa65ACqIiVA/LPMfWvdv37qupjBh
+         8K5/h59pCKQgczxs/Y+S0zdKSrUV3pN0W1FHxMUgWr5DYuLCj/mXW83p4uvajMMSOzFV
+         GVuhBHGs9hcmnJ9I587+z2k5Z+DdzNIKoTfaycxxuCjncOUYwv1H0NdeGIhyPKZrwoCz
+         qB+nGh/dy49NgY+TYJhnyabtM92BCgQR7dP9HyyI1tqLFFWWxPrzgmmQpWSdUKjaP7S4
+         H42qZzci7OyZFa+JoTOxHWC6zFdA+BrEwdqKK+AtYl5eiKOpvuYuG671ImZ/O43GTXSE
+         5clw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=vOPqJgWNehEy9crXZKz8GPnx2vq5uni2pd1M4IMPc54=;
+        b=DmcMFDqRz+Mha1GQIe4h+LnTtUkW6egF1y+Lm774MewKH3ENZTB4Sul7lNrubnSB7F
+         Wvs2+HVyme0Z1kpuK6S0OzpEJZFwJ3exz0KqUWbcJAWJ1aj95fLMAAJxTHm0kpjXpIpP
+         qZvvl9fS11KSYT5YXDZmD0Q5Efl4Gd1bR3P6e0Q/lC8ugWAgY11FB5CvacdfFOa0EWls
+         EVKUwL/twADQJPi2LQQOF/MXmtkwHbhSm3hMVh3wITpUEQpkLQ28sQc5WXpEC90HU1FC
+         noEGGshuW3SU5Et6vtxN1ElTGiOBiS/k7qDkuU9N642zBn7qOUAqUgnlw/9HbrpEnZyb
+         /mmg==
+X-Gm-Message-State: APjAAAUC8770zD5FvWScXR9rQ7sXUn4aUJorku8RBi4ZruQ9SiIMT9hS
+        8GCv7XiBNDXvtAY38SGi/lU=
+X-Google-Smtp-Source: APXvYqx1vB2MGXtFOH3DOpsh4cJ8vOqsDKyxD913r6mW+jyGP+rXElfHJG+CcA1m6vb9heXXN4f5Cw==
+X-Received: by 2002:a05:620a:1497:: with SMTP id w23mr6375752qkj.49.1565152422034;
+        Tue, 06 Aug 2019 21:33:42 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id s25sm37510295qkm.130.2019.08.06.21.33.40
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 06 Aug 2019 21:33:40 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 00:33:39 -0400
+Message-ID: <20190807003339.GC1368@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Chen-Yu Tsai <wens@kernel.org>
+Cc:     Chen-Yu Tsai <wens@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] net: dsa: Check existence of .port_mdb_add
+ callback before calling it
+In-Reply-To: <CAGb2v666sNV41rejf=wTJB2gYeDGAHNHn1NyxyRh3E6y9C=11A@mail.gmail.com>
+References: <20190806075325.9011-1-wens@kernel.org>
+ <20190806131513.GB2822@t480s.localdomain>
+ <CAGb2v67cZb_JKDHSb-9Tm1KnTxw5FOG3faZoQSGef_FzkdSszA@mail.gmail.com>
+ <20190806163402.GB16656@t480s.localdomain>
+ <CAGb2v666sNV41rejf=wTJB2gYeDGAHNHn1NyxyRh3E6y9C=11A@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgSm9uLA0KDQpPbiBXZWQsIDIwMTktMDgtMDcgYXQgMDI6NTUgKzAwMDAsIEpvbiBNYWxveSB3
-cm90ZToNCj4gDQo+ID4gDQo+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gPiBGcm9t
-OiBDaHJpcyBQYWNraGFtIDxDaHJpcy5QYWNraGFtQGFsbGllZHRlbGVzaXMuY28ubno+DQo+ID4g
-U2VudDogNC1BdWctMTkgMTk6MDUNCj4gPiBUbzogSm9uIE1hbG95IDxqb24ubWFsb3lAZXJpY3Nz
-b24uY29tPjsgdGlwYy0NCj4gPiBkaXNjdXNzaW9uQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiA+
-IENjOiBuZXRkZXZAdmdlci5rZXJuZWwub3JnOyBsaW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3Jn
-DQo+ID4gU3ViamVjdDogUmU6IFNsb3duZXNzIGZvcm1pbmcgVElQQyBjbHVzdGVyIHdpdGggZXhw
-bGljaXQgbm9kZQ0KPiA+IGFkZHJlc3Nlcw0KPiA+IA0KPiA+IE9uIFN1biwgMjAxOS0wOC0wNCBh
-dCAyMTo1MyArMDAwMCwgSm9uIE1hbG95IHdyb3RlOg0KPiA+ID4gDQo+ID4gPiANCj4gPiA+ID4g
-DQo+ID4gPiA+IA0KPiA+ID4gPiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiA+ID4gPiBG
-cm9tOiBuZXRkZXYtb3duZXJAdmdlci5rZXJuZWwub3JnIDxuZXRkZXYtb3duZXJAdmdlci5rZXJu
-ZWwub3INCj4gPiA+ID4gZz4NCj4gPiBPbg0KPiA+ID4gDQo+ID4gPiA+IA0KPiA+ID4gPiBCZWhh
-bGYgT2YgQ2hyaXMgUGFja2hhbQ0KPiA+ID4gPiBTZW50OiAyLUF1Zy0xOSAwMToxMQ0KPiA+ID4g
-PiBUbzogSm9uIE1hbG95IDxqb24ubWFsb3lAZXJpY3Nzb24uY29tPjsgdGlwYy0NCj4gPiA+ID4g
-ZGlzY3Vzc2lvbkBsaXN0cy5zb3VyY2Vmb3JnZS5uZXQNCj4gPiA+ID4gQ2M6IG5ldGRldkB2Z2Vy
-Lmtlcm5lbC5vcmc7IGxpbnV4LWtlcm5lbEB2Z2VyLmtlcm5lbC5vcmcNCj4gPiA+ID4gU3ViamVj
-dDogUmU6IFNsb3duZXNzIGZvcm1pbmcgVElQQyBjbHVzdGVyIHdpdGggZXhwbGljaXQgbm9kZQ0K
-PiA+ID4gPiBhZGRyZXNzZXMNCj4gPiA+ID4gDQo+ID4gPiA+IE9uIE1vbiwgMjAxOS0wNy0yOSBh
-dCAwOTowNCArMTIwMCwgQ2hyaXMgUGFja2hhbSB3cm90ZToNCj4gPiA+ID4gPiANCj4gPiA+ID4g
-PiANCj4gPiA+ID4gPiBPbiBGcmksIDIwMTktMDctMjYgYXQgMTM6MzEgKzAwMDAsIEpvbiBNYWxv
-eSB3cm90ZToNCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiANCj4gPiA+
-ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IA0K
-PiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0N
-Cj4gPiA+ID4gPiA+ID4gRnJvbTogbmV0ZGV2LW93bmVyQHZnZXIua2VybmVsLm9yZyA8bmV0ZGV2
-LQ0KPiA+ID4gPiBvd25lckB2Z2VyLmtlcm5lbC5vcmc+DQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4g
-DQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+
-ID4gDQo+ID4gPiA+ID4gPiA+IE9uIEJlaGFsZiBPZiBDaHJpcyBQYWNraGFtDQo+ID4gPiA+ID4g
-PiA+IFNlbnQ6IDI1LUp1bC0xOSAxOTozNw0KPiA+ID4gPiA+ID4gPiBUbzogdGlwYy1kaXNjdXNz
-aW9uQGxpc3RzLnNvdXJjZWZvcmdlLm5ldA0KPiA+ID4gPiA+ID4gPiBDYzogbmV0ZGV2QHZnZXIu
-a2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVsLm9yZw0KPiA+ID4gPiA+ID4gPiBT
-dWJqZWN0OiBTbG93bmVzcyBmb3JtaW5nIFRJUEMgY2x1c3RlciB3aXRoIGV4cGxpY2l0IG5vZGUN
-Cj4gPiA+ID4gPiA+ID4gYWRkcmVzc2VzDQo+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBI
-aSwNCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IEknbSBoYXZpbmcgcHJvYmxlbXMgZm9y
-bWluZyBhIFRJUEMgY2x1c3RlciBiZXR3ZWVuIDINCj4gPiA+ID4gPiA+ID4gbm9kZXMuDQo+ID4g
-PiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBUaGlzIGlzIHRoZSBiYXNpYyBzdGVwcyBJJ20gZ29p
-bmcgdGhyb3VnaCBvbiBlYWNoIG5vZGUuDQo+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBt
-b2Rwcm9iZSB0aXBjDQo+ID4gPiA+ID4gPiA+IGlwIGxpbmsgc2V0IGV0aDIgdXANCj4gPiA+ID4g
-PiA+ID4gdGlwYyBub2RlIHNldCBhZGRyIDEuMS41ICMgb3IgMS4xLjYgdGlwYyBiZWFyZXIgZW5h
-YmxlDQo+ID4gPiA+ID4gPiA+IG1lZGlhDQo+ID4gPiA+ID4gPiA+IGV0aCBkZXYgZXRoMA0KPiA+
-ID4gPiA+ID4gZXRoMiwgSSBhc3N1bWUuLi4NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+IFllcyBz
-b3JyeSBJIGtlZXAgc3dpdGNoaW5nIGJldHdlZW4gYmV0d2VlbiBFdGhlcm5ldCBwb3J0cyBmb3IN
-Cj4gPiA+ID4gPiB0ZXN0aW5nDQo+ID4gPiA+ID4gc28gSSBoYW5kIGVkaXRlZCB0aGUgZW1haWwu
-DQo+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gDQo+
-ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4g
-PiA+IA0KPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gVGhlbiB0byBjb25maXJtIGlmIHRo
-ZSBjbHVzdGVyIGlzIGZvcm1lZCBJIHVzZcKgdGlwYyBsaW5rDQo+ID4gPiA+ID4gPiA+IGxpc3QN
-Cj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IFtyb290QG5vZGUtNSB+XSMgdGlwYyBsaW5r
-IGxpc3QNCj4gPiA+ID4gPiA+ID4gYnJvYWRjYXN0LWxpbms6IHVwDQo+ID4gPiA+ID4gPiA+IC4u
-Lg0KPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gTG9va2luZyBhdCB0Y3BkdW1wIHRoZSB0
-d28gbm9kZXMgYXJlIHNlbmRpbmcgcGFja2V0cw0KPiA+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+
-ID4gMjI6MzA6MDUuNzgyMzIwIFRJUEMgdjIuMCAxLjEuNSA+IDAuMC4wLCBoZWFkZXJsZW5ndGgg
-NjANCj4gPiA+ID4gPiA+ID4gYnl0ZXMsDQo+ID4gPiA+ID4gPiA+IE1lc3NhZ2VTaXplDQo+ID4g
-PiA+ID4gPiA+IDc2IGJ5dGVzLCBOZWlnaGJvciBEZXRlY3Rpb24gUHJvdG9jb2wgaW50ZXJuYWws
-DQo+ID4gPiA+ID4gPiA+IG1lc3NhZ2VUeXBlDQo+ID4gPiA+ID4gPiA+IExpbmsNCj4gPiA+ID4g
-PiA+ID4gcmVxdWVzdA0KPiA+ID4gPiA+ID4gPiAyMjozMDowNS44NjM1NTUgVElQQyB2Mi4wIDEu
-MS42ID4gMC4wLjAsIGhlYWRlcmxlbmd0aCA2MA0KPiA+ID4gPiA+ID4gPiBieXRlcywNCj4gPiA+
-ID4gPiA+ID4gTWVzc2FnZVNpemUNCj4gPiA+ID4gPiA+ID4gNzYgYnl0ZXMsIE5laWdoYm9yIERl
-dGVjdGlvbiBQcm90b2NvbCBpbnRlcm5hbCwNCj4gPiA+ID4gPiA+ID4gbWVzc2FnZVR5cGUNCj4g
-PiA+ID4gPiA+ID4gTGluaw0KPiA+ID4gPiA+ID4gPiByZXF1ZXN0DQo+ID4gPiA+ID4gPiA+IA0K
-PiA+ID4gPiA+ID4gPiBFdmVudHVhbGx5IChhZnRlciBhIGZldyBtaW51dGVzKSB0aGUgbGluayBk
-b2VzIGNvbWUgdXANCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IFtyb290QG5vZGUtNsKg
-fl0jIHRpcGMgbGluayBsaXN0DQo+ID4gPiA+ID4gPiA+IGJyb2FkY2FzdC1saW5rOiB1cA0KPiA+
-ID4gPiA+ID4gPiAxMDAxMDA2OmV0aDItMTAwMTAwNTpldGgyOiB1cA0KPiA+ID4gPiA+ID4gPiAN
-Cj4gPiA+ID4gPiA+ID4gW3Jvb3RAbm9kZS01wqB+XSMgdGlwYyBsaW5rIGxpc3QNCj4gPiA+ID4g
-PiA+ID4gYnJvYWRjYXN0LWxpbms6IHVwDQo+ID4gPiA+ID4gPiA+IDEwMDEwMDU6ZXRoMi0xMDAx
-MDA2OmV0aDI6IHVwDQo+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBXaGVuIEkgcmVtb3Zl
-IHRoZSAidGlwYyBub2RlIHNldCBhZGRyIiB0aGluZ3Mgc2VlbSB0bw0KPiA+ID4gPiA+ID4gPiBr
-aWNrDQo+ID4gPiA+ID4gPiA+IGludG8NCj4gPiA+ID4gPiA+ID4gbGlmZSBzdHJhaWdodCBhd2F5
-DQo+ID4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gPiBbcm9vdEBub2RlLTUgfl0jIHRpcGMgbGlu
-ayBsaXN0DQo+ID4gPiA+ID4gPiA+IGJyb2FkY2FzdC1saW5rOiB1cA0KPiA+ID4gPiA+ID4gPiAw
-MDUwYjYxYmQyYWE6ZXRoMi0wMDUwYjYxZTZkZmE6ZXRoMjogdXANCj4gPiA+ID4gPiA+ID4gDQo+
-ID4gPiA+ID4gPiA+IFNvIHRoZXJlIGFwcGVhcnMgdG8gYmUgc29tZSBkaWZmZXJlbmNlIGluIGJl
-aGF2aW91cg0KPiA+ID4gPiA+ID4gPiBiZXR3ZWVuDQo+ID4gPiA+ID4gPiA+IGhhdmluZw0KPiA+
-ID4gPiA+ID4gPiBhbiBleHBsaWNpdCBub2RlIGFkZHJlc3MgYW5kIHVzaW5nIHRoZSBkZWZhdWx0
-Lg0KPiA+ID4gPiA+ID4gPiBVbmZvcnR1bmF0ZWx5DQo+ID4gPiA+ID4gPiA+IG91cg0KPiA+ID4g
-PiA+ID4gPiBhcHBsaWNhdGlvbiByZWxpZXMgb24gc2V0dGluZyB0aGUgbm9kZSBhZGRyZXNzZXMu
-DQo+ID4gPiA+ID4gPiBJIGRvIHRoaXMgbWFueSB0aW1lcyBhIGRheSwgd2l0aG91dCBhbnkgcHJv
-YmxlbXMuIElmIHRoZXJlDQo+ID4gPiA+ID4gPiB3b3VsZCBiZQ0KPiA+ID4gPiA+ID4gYW55IHRp
-bWUgZGlmZmVyZW5jZSwgSSB3b3VsZCBleHBlY3QgdGhlICdhdXRvIGNvbmZpZ3VyYWJsZScNCj4g
-PiA+ID4gPiA+IHZlcnNpb24NCj4gPiA+ID4gPiA+IHRvIGJlIHNsb3dlciwgYmVjYXVzZSBpdCBp
-bnZvbHZlcyBhIERBRCBzdGVwLg0KPiA+ID4gPiA+ID4gQXJlIHlvdSBzdXJlIHlvdSBkb24ndCBo
-YXZlIGFueSBvdGhlciBub2RlcyBydW5uaW5nIGluIHlvdXINCj4gPiA+ID4gPiA+IHN5c3RlbT8N
-Cj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gLy8vam9uDQo+ID4gPiA+ID4gPiANCj4gPiA+ID4g
-PiBOb3BlIHRoZSB0d28gbm9kZXMgYXJlIGNvbm5lY3RlZCBiYWNrIHRvIGJhY2suIERvZXMgdGhl
-DQo+ID4gPiA+ID4gbnVtYmVyIG9mDQo+ID4gPiA+ID4gRXRoZXJuZXQgaW50ZXJmYWNlcyBtYWtl
-IGEgZGlmZmVyZW5jZT8gQXMgeW91IGNhbiBzZWUgSSd2ZQ0KPiA+ID4gPiA+IGdvdCAzDQo+ID4g
-PiA+ID4gb24NCj4gPiA+ID4gPiBlYWNoIG5vZGUuIE9uZSBpcyBjb21wbGV0ZWx5IGRpc2Nvbm5l
-Y3RlZCwgb25lIGlzIGZvciBib290aW5nDQo+ID4gPiA+ID4gb3Zlcg0KPiA+ID4gPiA+IFRGVFAN
-Cj4gPiA+ID4gPiDCoChvbmx5IHVzZWQgYnkgVS1ib290KSBhbmQgdGhlIG90aGVyIGlzIHRoZSBV
-U0IgRXRoZXJuZXQgSSdtDQo+ID4gPiA+ID4gdXNpbmcgZm9yDQo+ID4gPiA+ID4gdGVzdGluZy4N
-Cj4gPiA+ID4gPiANCj4gPiA+ID4gU28gSSBjYW4gc3RpbGwgcmVwcm9kdWNlIHRoaXMgb24gbm9k
-ZXMgdGhhdCBvbmx5IGhhdmUgb25lDQo+ID4gPiA+IG5ldHdvcmsNCj4gPiA+ID4gaW50ZXJmYWNl
-IGFuZA0KPiA+ID4gPiBhcmUgdGhlIG9ubHkgdGhpbmdzIGNvbm5lY3RlZC4NCj4gPiA+ID4gDQo+
-ID4gPiA+IEkgZGlkIGZpbmQgb25lIHRoaW5nIHRoYXQgaGVscHMNCj4gPiA+ID4gDQo+ID4gPiA+
-IGRpZmYgLS1naXQgYS9uZXQvdGlwYy9kaXNjb3Zlci5jIGIvbmV0L3RpcGMvZGlzY292ZXIuYyBp
-bmRleA0KPiA+ID4gPiBjMTM4ZDY4ZThhNjkuLjQ5OTIxZGFkNDA0YSAxMDA2NDQNCj4gPiA+ID4g
-LS0tIGEvbmV0L3RpcGMvZGlzY292ZXIuYw0KPiA+ID4gPiArKysgYi9uZXQvdGlwYy9kaXNjb3Zl
-ci5jDQo+ID4gPiA+IEBAIC0zNTgsMTAgKzM1OCwxMCBAQCBpbnQgdGlwY19kaXNjX2NyZWF0ZShz
-dHJ1Y3QgbmV0ICpuZXQsDQo+ID4gPiA+IHN0cnVjdA0KPiA+ID4gPiB0aXBjX2JlYXJlciAqYiwN
-Cj4gPiA+ID4gwqDCoMKgwqDCoMKgwqDCoHRpcGNfZGlzY19pbml0X21zZyhuZXQsIGQtPnNrYiwg
-RFNDX1JFUV9NU0csIGIpOw0KPiA+ID4gPiANCj4gPiA+ID4gwqDCoMKgwqDCoMKgwqDCoC8qIERv
-IHdlIG5lZWQgYW4gYWRkcmVzcyB0cmlhbCBwZXJpb2QgZmlyc3QgPyAqLw0KPiA+ID4gPiAtwqDC
-oMKgwqDCoMKgwqBpZiAoIXRpcGNfb3duX2FkZHIobmV0KSkgew0KPiA+ID4gPiArLy/CoMKgwqDC
-oMKgaWYgKCF0aXBjX293bl9hZGRyKG5ldCkpIHsNCj4gPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKg
-wqDCoMKgwqDCoMKgwqB0bi0+YWRkcl90cmlhbF9lbmQgPSBqaWZmaWVzICsNCj4gPiA+ID4gbXNl
-Y3NfdG9famlmZmllcygxMDAwKTsNCj4gPiA+ID4gwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
-oMKgwqBtc2dfc2V0X3R5cGUoYnVmX21zZyhkLT5za2IpLCBEU0NfVFJJQUxfTVNHKTsNCj4gPiA+
-ID4gLcKgwqDCoMKgwqDCoMKgfQ0KPiA+ID4gPiArLy/CoMKgwqDCoMKgfQ0KPiA+ID4gPiDCoMKg
-wqDCoMKgwqDCoMKgbWVtY3B5KCZkLT5kZXN0LCBkZXN0LCBzaXplb2YoKmRlc3QpKTsNCj4gPiA+
-ID4gwqDCoMKgwqDCoMKgwqDCoGQtPm5ldCA9IG5ldDsNCj4gPiA+ID4gwqDCoMKgwqDCoMKgwqDC
-oGQtPmJlYXJlcl9pZCA9IGItPmlkZW50aXR5Ow0KPiA+ID4gPiANCj4gPiA+ID4gSSB0aGluayBi
-ZWNhdXNlIHdpdGggcHJlLWNvbmZpZ3VyZWQgYWRkcmVzc2VzIHRoZSBkdXBsaWNhdGUNCj4gPiA+
-ID4gYWRkcmVzcw0KPiA+ID4gPiBkZXRlY3Rpb24NCj4gPiA+ID4gaXMgc2tpcHBlZCB0aGUgc2hv
-cnRlciBpbml0IHBoYXNlIGlzIHNraXBwZWQuIFdvdWxkIGlzIG1ha2UNCj4gPiA+ID4gc2Vuc2UN
-Cj4gPiA+ID4gdG8NCj4gPiA+ID4gdW5jb25kaXRpb25hbGx5IGRvIHRoZSB0cmlhbCBzdGVwPyBP
-ciBpcyB0aGVyZSBzb21lIGJldHRlciB3YXkNCj4gPiA+ID4gdG8NCj4gPiA+ID4gZ2V0IHRoaW5n
-cyB0bw0KPiA+ID4gPiB0cmFuc2l0aW9uIHdpdGggcHJlLWFzc2lnbmVkIGFkZHJlc3Nlcy4NCj4g
-PiA+IEkgYW0gb24gdmFjYXRpb24gdW50aWwgdGhlIGVuZCBvZiBuZXh0LXdlZWssIHNvIEkgY2Fu
-J3QgZ2l2ZSB5b3UNCj4gPiA+IGFueQ0KPiA+ID4gZ29vZCBhbmFseXNpcyByaWdodCBub3cuDQo+
-ID4gVGhhbmtzIGZvciB0YWtpbmcgdGhlIHRpbWUgdG8gcmVzcG9uZC4NCj4gPiANCj4gPiA+IA0K
-PiA+ID4gVG8gZG8gdGhlIHRyaWFsIHN0ZXAgZG9lc27igJl0IG1ha2UgbXVjaCBzZW5zZSB0byBt
-ZSwgLWl0IHdvdWxkDQo+ID4gPiBvbmx5DQo+ID4gPiBkZWxheSB0aGUgc2V0dXAgdW5uZWNlc3Nh
-cmlseSAoYnV0IHdpdGggb25seSAxIHNlY29uZCkuDQo+ID4gPiBDYW4geW91IGNoZWNrIHRoZSBp
-bml0aWFsIHZhbHVlIG9mIGFkZHJfdHJpYWxfZW5kIHdoZW4gdGhlcmUgYQ0KPiA+ID4gcHJlLQ0K
-PiA+ID4gY29uZmlndXJlZCBhZGRyZXNzPw0KPiA+IEkgaGFkIHRoZSBzYW1lIHRob3VnaHQuIEZv
-ciBib3RoIG15IGRldmljZXMgJ2FkZHJfdHJpYWxfZW5kID0gMCcgc28NCj4gPiBJDQo+ID4gdGhp
-bmvCoHRpcGNfZGlzY19hZGRyX3RyaWFsX21zZyBzaG91bGQgZW5kIHVwIHdpdGggdHJpYWwgPT0g
-ZmFsc2UNCj4gSSBzdWdnZXN0IHlvdSB0cnkgaW5pdGlhbGl6aW5nIGl0IHRvIGppZmZpZXMgYW5k
-IHNlZSB3aGF0IGhhcHBlbnMuDQo+IA0KDQpTZXR0aW5nwqBhZGRyX3RyaWFsX2VuZCB0byBqaWZm
-aWVzIHNlZW1zIHRvIGRvIHRoZSB0cmljay4gSSdsbCBwcmVwYXJlIGENCnBhdGNoIGFuZCBzZW5k
-IGl0IHRocm91Z2gu
+Hi Chen-Yu,
+
+On Wed, 7 Aug 2019 11:18:28 +0800, Chen-Yu Tsai <wens@kernel.org> wrote:
+> On Wed, Aug 7, 2019 at 4:34 AM Vivien Didelot <vivien.didelot@gmail.com> wrote:
+> >
+> > Hi Chen-Yu,
+> >
+> > On Wed, 7 Aug 2019 01:49:37 +0800, Chen-Yu Tsai <wens@kernel.org> wrote:
+> > > On Wed, Aug 7, 2019 at 1:15 AM Vivien Didelot <vivien.didelot@gmail.com> wrote:
+> > > >
+> > > > Hi Chen-Yu,
+> > > >
+> > > > On Tue,  6 Aug 2019 15:53:25 +0800, Chen-Yu Tsai <wens@kernel.org> wrote:
+> > > > > From: Chen-Yu Tsai <wens@csie.org>
+> > > > >
+> > > > > With the recent addition of commit 75dad2520fc3 ("net: dsa: b53: Disable
+> > > > > all ports on setup"), users of b53 (BCM53125 on Lamobo R1 in my case)
+> > > > > are forced to use the dsa subsystem to enable the switch, instead of
+> > > > > having it in the default transparent "forward-to-all" mode.
+> > > > >
+> > > > > The b53 driver does not support mdb bitmap functions. However the dsa
+> > > > > layer does not check for the existence of the .port_mdb_add callback
+> > > > > before actually using it. This results in a NULL pointer dereference,
+> > > > > as shown in the kernel oops below.
+> > > > >
+> > > > > The other functions seem to be properly guarded. Do the same for
+> > > > > .port_mdb_add in dsa_switch_mdb_add_bitmap() as well.
+> > > > >
+> > > > > b53 is not the only driver that doesn't support mdb bitmap functions.
+> > > > > Others include bcm_sf2, dsa_loop, lantiq_gswip, mt7530, mv88e6060,
+> > > > > qca8k, realtek-smi, and vitesse-vsc73xx.
+> > > >
+> > > > I don't know what you mean by that, there's no "mdb bitmap function"
+> > > > support for drivers, only the port_mdb_{prepare,add,del} callbacks...
+> > >
+> > > The term was coined from commit e6db98db8a95 ("net: dsa: add switch mdb
+> > > bitmap functions"). But yeah, .port_mdb_* ops/callbacks would be more
+> > > appropriate.
+> > >
+> > > > >     8<--- cut here ---
+> > > > >     Unable to handle kernel NULL pointer dereference at virtual address 00000000
+> > > > >     pgd = (ptrval)
+> > > > >     [00000000] *pgd=00000000
+> > > > >     Internal error: Oops: 80000005 [#1] SMP ARM
+> > > > >     Modules linked in: rtl8xxxu rtl8192cu rtl_usb rtl8192c_common rtlwifi mac80211 cfg80211
+> > > > >     CPU: 1 PID: 134 Comm: kworker/1:2 Not tainted 5.3.0-rc1-00247-gd3519030752a #1
+> > > > >     Hardware name: Allwinner sun7i (A20) Family
+> > > > >     Workqueue: events switchdev_deferred_process_work
+> > > > >     PC is at 0x0
+> > > > >     LR is at dsa_switch_event+0x570/0x620
+> > > > >     pc : [<00000000>]    lr : [<c08533ec>]    psr: 80070013
+> > > > >     sp : ee871db8  ip : 00000000  fp : ee98d0a4
+> > > > >     r10: 0000000c  r9 : 00000008  r8 : ee89f710
+> > > > >     r7 : ee98d040  r6 : ee98d088  r5 : c0f04c48  r4 : ee98d04c
+> > > > >     r3 : 00000000  r2 : ee89f710  r1 : 00000008  r0 : ee98d040
+> > > > >     Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> > > > >     Control: 10c5387d  Table: 6deb406a  DAC: 00000051
+> > > > >     Process kworker/1:2 (pid: 134, stack limit = 0x(ptrval))
+> > > > >     Stack: (0xee871db8 to 0xee872000)
+> > > > >     1da0:                                                       ee871e14 103ace2d
+> > > > >     1dc0: 00000000 ffffffff 00000000 ee871e14 00000005 00000000 c08524a0 00000000
+> > > > >     1de0: ffffe000 c014bdfc c0f04c48 ee871e98 c0f04c48 ee9e5000 c0851120 c014bef0
+> > > > >     1e00: 00000000 b643aea2 ee9b4068 c08509a8 ee2bf940 ee89f710 ee871ecb 00000000
+> > > > >     1e20: 00000008 103ace2d 00000000 c087e248 ee29c868 103ace2d 00000001 ffffffff
+> > > > >     1e40: 00000000 ee871e98 00000006 00000000 c0fb2a50 c087e2d0 ffffffff c08523c4
+> > > > >     1e60: ffffffff c014bdfc 00000006 c0fad2d0 ee871e98 ee89f710 00000000 c014c500
+> > > > >     1e80: 00000000 ee89f3c0 c0f04c48 00000000 ee9e5000 c087dfb4 ee9e5000 00000000
+> > > > >     1ea0: ee89f710 ee871ecb 00000001 103ace2d 00000000 c0f04c48 00000000 c087e0a8
+> > > > >     1ec0: 00000000 efd9a3e0 0089f3c0 103ace2d ee89f700 ee89f710 ee9e5000 00000122
+> > > > >     1ee0: 00000100 c087e130 ee89f700 c0fad2c8 c1003ef0 c087de4c 2e928000 c0fad2ec
+> > > > >     1f00: c0fad2ec ee839580 ef7a62c0 ef7a9400 00000000 c087def8 c0fad2ec c01447dc
+> > > > >     1f20: ef315640 ef7a62c0 00000008 ee839580 ee839594 ef7a62c0 00000008 c0f03d00
+> > > > >     1f40: ef7a62d8 ef7a62c0 ffffe000 c0145b84 ffffe000 c0fb2420 c0bfaa8c 00000000
+> > > > >     1f60: ffffe000 ee84b600 ee84b5c0 00000000 ee870000 ee839580 c0145b40 ef0e5ea4
+> > > > >     1f80: ee84b61c c014a6f8 00000001 ee84b5c0 c014a5b0 00000000 00000000 00000000
+> > > > >     1fa0: 00000000 00000000 00000000 c01010e8 00000000 00000000 00000000 00000000
+> > > > >     1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> > > > >     1fe0: 00000000 00000000 00000000 00000000 00000013 00000000 00000000 00000000
+> > > > >     [<c08533ec>] (dsa_switch_event) from [<c014bdfc>] (notifier_call_chain+0x48/0x84)
+> > > > >     [<c014bdfc>] (notifier_call_chain) from [<c014bef0>] (raw_notifier_call_chain+0x18/0x20)
+> > > > >     [<c014bef0>] (raw_notifier_call_chain) from [<c08509a8>] (dsa_port_mdb_add+0x48/0x74)
+> > > > >     [<c08509a8>] (dsa_port_mdb_add) from [<c087e248>] (__switchdev_handle_port_obj_add+0x54/0xd4)
+> > > > >     [<c087e248>] (__switchdev_handle_port_obj_add) from [<c087e2d0>] (switchdev_handle_port_obj_add+0x8/0x14)
+> > > > >     [<c087e2d0>] (switchdev_handle_port_obj_add) from [<c08523c4>] (dsa_slave_switchdev_blocking_event+0x94/0xa4)
+> > > > >     [<c08523c4>] (dsa_slave_switchdev_blocking_event) from [<c014bdfc>] (notifier_call_chain+0x48/0x84)
+> > > > >     [<c014bdfc>] (notifier_call_chain) from [<c014c500>] (blocking_notifier_call_chain+0x50/0x68)
+> > > > >     [<c014c500>] (blocking_notifier_call_chain) from [<c087dfb4>] (switchdev_port_obj_notify+0x44/0xa8)
+> > > > >     [<c087dfb4>] (switchdev_port_obj_notify) from [<c087e0a8>] (switchdev_port_obj_add_now+0x90/0x104)
+> > > > >     [<c087e0a8>] (switchdev_port_obj_add_now) from [<c087e130>] (switchdev_port_obj_add_deferred+0x14/0x5c)
+> > > > >     [<c087e130>] (switchdev_port_obj_add_deferred) from [<c087de4c>] (switchdev_deferred_process+0x64/0x104)
+> > > > >     [<c087de4c>] (switchdev_deferred_process) from [<c087def8>] (switchdev_deferred_process_work+0xc/0x14)
+> > > > >     [<c087def8>] (switchdev_deferred_process_work) from [<c01447dc>] (process_one_work+0x218/0x50c)
+> > > > >     [<c01447dc>] (process_one_work) from [<c0145b84>] (worker_thread+0x44/0x5bc)
+> > > > >     [<c0145b84>] (worker_thread) from [<c014a6f8>] (kthread+0x148/0x150)
+> > > > >     [<c014a6f8>] (kthread) from [<c01010e8>] (ret_from_fork+0x14/0x2c)
+> > > > >     Exception stack(0xee871fb0 to 0xee871ff8)
+> > > > >     1fa0:                                     00000000 00000000 00000000 00000000
+> > > > >     1fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> > > > >     1fe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> > > > >     Code: bad PC value
+> > > > >     ---[ end trace 1292c61abd17b130 ]---
+> > > > >
+> > > > >     [<c08533ec>] (dsa_switch_event) from [<c014bdfc>] (notifier_call_chain+0x48/0x84)
+> > > > >     corresponds to
+> > > > >
+> > > > >       $ arm-linux-gnueabihf-addr2line -C -i -e vmlinux c08533ec
+> > > > >
+> > > > >       linux/net/dsa/switch.c:156
+> > > > >       linux/net/dsa/switch.c:178
+> > > > >       linux/net/dsa/switch.c:328
+> > > > >
+> > > > > Fixes: e6db98db8a95 ("net: dsa: add switch mdb bitmap functions")
+> > > > > Signed-off-by: Chen-Yu Tsai <wens@csie.org>
+> > > > > ---
+> > > > > Changes since v1:
+> > > > >
+> > > > >   - Moved the check to the beginning of dsa_switch_mdb_add()
+> > > > >
+> > > > > Looks like we could also move the ops check out of
+> > > > > dsa_switch_mdb_prepare_bitmap(), though I suppose keeping the code the
+> > > > > way it is now is clearer.
+> > > > >
+> > > > > ---
+> > > > >  net/dsa/switch.c | 3 +++
+> > > > >  1 file changed, 3 insertions(+)
+> > > > >
+> > > > > diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+> > > > > index 4ec5b7f85d51..231af5268656 100644
+> > > > > --- a/net/dsa/switch.c
+> > > > > +++ b/net/dsa/switch.c
+> > > > > @@ -164,6 +164,9 @@ static int dsa_switch_mdb_add(struct dsa_switch *ds,
+> > > > >       struct switchdev_trans *trans = info->trans;
+> > > > >       int port;
+> > > > >
+> > > > > +     if (!ds->ops->port_mdb_add)
+> > > > > +             return -EOPNOTSUPP;
+> > > > > +
+> > > > >       /* Build a mask of Multicast group members */
+> > > > >       bitmap_zero(ds->bitmap, ds->num_ports);
+> > > > >       if (ds->index == info->sw_index)
+> > > > > --
+> > > > > 2.20.1
+> > > > >
+> > > >
+> > > > I don't understand the crash here, nor the fix. dsa_switch_mdb_add()
+> > > > is supposed to be called through switchdev with a prepare phase,
+> > > > which checks for ds->ops->port_mdb_add. Do you mean that a switchdev
+> > > > MDB object is added somewhere without a prepare phase? If that's
+> > > > the case, this is what the commit message must say. Then the
+> > >
+> > > I had pretty much zero understanding of how switchdev and dsa work.
+> > > The symptom is a NULL pointer reference, resulting from an unsupported
+> > > callback that was not checked before being called, as described above.
+> > > And that is what I mean. A NULL pointer reference happened when it
+> > > should not have.
+> > >
+> > > Based on what you just mentioned, yes it does look like an object was
+> > > added without a prepare phase. Randomly looking through the net/dsa
+> > > code, it seems only dsa_port_vid_add() does a prepare phase, judging
+> > > by .ph_prepare being set. dsa_port_{vlan,mbd,fdb}_add directly call
+> > > the add phase, without the prepare phase. So I'm guessing "supposed
+> > > to be called with a prepare phase" is not quite accurate. This also
+> > > exceeds the scope of the simple fix I had in mind.
+> > >
+> > > > ds->ops->port_mdb_add check must go where it is used, that is to say
+> > > > at the beginning of dsa_switch_mdb_add_bitmap() (similarly to what
+> > > > dsa_switch_mdb_prepare_bitmap() does), not in dsa_switch_mdb_add.
+> > >
+> > > Andrew asked me to move it to where it is now. Please take a look at
+> > > v1 [2] if it's what you would like.
+> > >
+> > > I'm ok either way.
+> >
+> > I still cannot find in the code where a SWITCHDEV_OBJ_ID_PORT_MDB object
+> > gets added without a prepare phase or a trans object, but it wouldn't hurt to
+> > double check the presence of ds->ops->port_mdb_add before calling it anyway,
+> > since a patch may actually bypass this prepare phase.
+> 
+> I dug a bit more and I couldn't find it either. AFAICS the only place it
+> gets called is through the notification chain invoked in
+> switchdev_port_obj_add_now(),
+> which specifically has prepare and commit phases.
+> 
+> > Your v1 patch was a bit confusing and changed the signature of the function
+> > at the same time. Please check the callback where it is used, like this:
+> >
+> >     diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+> >     index 4ec5b7f85d51..09d9286b27cc 100644
+> >     --- a/net/dsa/switch.c
+> >     +++ b/net/dsa/switch.c
+> >     @@ -153,6 +153,9 @@ static void dsa_switch_mdb_add_bitmap(struct dsa_switch *ds,
+> >      {
+> >             int port;
+> >
+> >     +       if (!ds->ops->port_mdb_add)
+> >     +               return;
+> >     +
+> >             for_each_set_bit(port, bitmap, ds->num_ports)
+> >                     ds->ops->port_mdb_add(ds, port, mdb);
+> >      }
+> >
+> >
+> > This will be easier to maintain. Please provide a simpler commit message,
+> 
+> OK. How about:
+> 
+> The dsa framework has optional .port_mdb_{prepare,add,delete} callback fields
+
+s/delete/del/
+
+> for drivers to handle multicast database entries. When adding an entry, the
+> framework goes through a prepare phase, then a commit phase. Drivers not
+> providing these callbacks should be detected in the prepare phase.
+> 
+> For some unknown reason, the guard in the prepare phase is insufficient,
+
+I'd change the line above with something like:
+
+    DSA core may still bypass the bridge layer and call the dsa_port_mdb_add
+    function directly with no prepare phase or no switchdev trans object,
+
+> and the framework ends up calling an undefined .port_mdb_add callback.
+> This results in a NULL pointer dereference, as shown in the log below.
+
+But yes you get the idea right ;-)
+
+> Add a check for .port_mdb_add before calling it in dsa_switch_mdb_add_bitmap().
+> 
+> <attach log>
+> 
+> > this one is not relevant. Are you actually able to reproduce this stack
+> > trace? If not, that is not necessary to add it to the commit message...
+> 
+> Yes I can reproduce it. Just did on a vanilla v5.3-rc3 kernel.
+> 
+> [   71.827837] br0: port 1(eth0.1) entered blocking state
+> [   71.844072] br0: port 1(eth0.1) entered disabled state
+> [   71.849669] device eth0.1 entered promiscuous mode
+> [   71.865848] device eth0 entered promiscuous mode
+> [   71.876535] br0: port 2(wan) entered blocking state
+> [   71.881475] br0: port 2(wan) entered disabled state
+> [   71.888631] device wan entered promiscuous mode
+> [   71.914341] bcm53xx stmmac-0:1e wan: configuring for phy/gmii link mode
+> [   71.921505] 8021q: adding VLAN 0 to HW filter on device wan
+> [   71.930146] bcm53xx stmmac-0:1e wan: Link is Up - 1Gbps/Full - flow
+> control rx/tx
+> [   71.932360] br0: port 3(lan1) entered blocking state
+> [   71.942751] br0: port 3(lan1) entered disabled state
+> [   71.950128] device lan1 entered promiscuous mode
+> [   71.970024] bcm53xx stmmac-0:1e lan1: configuring for phy/gmii link mode
+> [   71.977157] 8021q: adding VLAN 0 to HW filter on device lan1
+> [   71.988159] br0: port 4(lan2) entered blocking state
+> [   71.993158] br0: port 4(lan2) entered disabled state
+> [   72.001235] device lan2 entered promiscuous mode
+> [   72.020994] bcm53xx stmmac-0:1e lan2: configuring for phy/gmii link mode
+> [   72.028081] 8021q: adding VLAN 0 to HW filter on device lan2
+> [   72.035797] bcm53xx stmmac-0:1e lan2: Link is Up - 1Gbps/Full -
+> flow control rx/tx
+> [   72.038767] br0: port 5(lan3) entered blocking state
+> [   72.048450] br0: port 5(lan3) entered disabled state
+> [   72.057129] device lan3 entered promiscuous mode
+> [   72.076956] bcm53xx stmmac-0:1e lan3: configuring for phy/gmii link mode
+> [   72.084004] 8021q: adding VLAN 0 to HW filter on device lan3
+> [   72.091352] bcm53xx stmmac-0:1e lan3: Link is Up - 1Gbps/Full -
+> flow control rx/tx
+> [   72.095168] br0: port 6(lan4) entered blocking state
+> [   72.103926] br0: port 6(lan4) entered disabled state
+> [   72.113313] device lan4 entered promiscuous mode
+> [   72.133293] bcm53xx stmmac-0:1e lan4: configuring for phy/gmii link mode
+> [   72.140410] 8021q: adding VLAN 0 to HW filter on device lan4
+> [   72.147682] bcm53xx stmmac-0:1e lan4: Link is Up - 100Mbps/Full -
+> flow control rx/tx
+> [   72.155915] br0: port 6(lan4) entered blocking state
+> [   72.160905] br0: port 6(lan4) entered forwarding state
+> [   72.166135] br0: port 5(lan3) entered blocking state
+> [   72.171111] br0: port 5(lan3) entered forwarding state
+> [   72.176300] br0: port 4(lan2) entered blocking state
+> [   72.181277] br0: port 4(lan2) entered forwarding state
+> [   72.186472] br0: port 2(wan) entered blocking state
+> [   72.191361] br0: port 2(wan) entered forwarding state
+> [   72.196453] br0: port 1(eth0.1) entered blocking state
+> [   72.201601] br0: port 1(eth0.1) entered forwarding state
+> 
+> Waiting for br0 to get ready (MAXWAIT is 32 seconds).
+> [   72.244956] 8<--- cut here ---
+> [   72.248072] Unable to handle kernel NULL pointer dereference at
+> virtual address 00000000
+> [   72.256331] pgd = (ptrval)
+> [   72.259048] [00000000] *pgd=00000000
+> [   72.262642] Internal error: Oops: 80000005 [#1] SMP ARM
+> [   72.267869] Modules linked in:
+> [   72.270934] CPU: 1 PID: 134 Comm: kworker/1:2 Not tainted 5.3.0-rc3 #1
+> [   72.277458] Hardware name: Allwinner sun7i (A20) Family
+> [   72.282699] Workqueue: events switchdev_deferred_process_work
+> [   72.288447] PC is at 0x0
+> [   72.290988] LR is at dsa_switch_event+0x570/0x620
+> [   72.295691] pc : [<00000000>]    lr : [<c0853890>]    psr: 80070113
+> [   72.301955] sp : ef3cfdb8  ip : 00000000  fp : ef0ad0a4
+> [   72.307180] r10: 0000000c  r9 : 00000008  r8 : eeb3b450
+> [   72.312405] r7 : ef0ad040  r6 : ef0ad088  r5 : c0f04c48  r4 : ef0ad04c
+> [   72.318931] r3 : 00000000  r2 : eeb3b450  r1 : 00000008  r0 : ef0ad040
+> [   72.325459] Flags: Nzcv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+> [   72.332593] Control: 10c5387d  Table: 6de6406a  DAC: 00000051
+> [   72.338340] Process kworker/1:2 (pid: 134, stack limit = 0x(ptrval))
+> [   72.344692] Stack: (0xef3cfdb8 to 0xef3d0000)
+> [   72.349085] fda0:
+>     ef3cfe14 46893f30
+> [   72.357329] fdc0: 00000000 ffffffff 00000000 ef3cfe14 00000005
+> 00000000 c0852944 00000000
+> [   72.365550] fde0: ffffe000 c014be24 c0f04c48 ef3cfe98 c0f04c48
+> ee9ea800 c08515d8 c014bf18
+> [   72.373739] fe00: 00000000 63a7c876 ee9b0068 c0850e60 ef26e800
+> eeb3b450 ef3cfecb 00000000
+> [   72.381921] fe20: 00000008 46893f30 00000000 c087e718 eebe2068
+> 46893f30 c0e72400 ffffffff
+> [   72.390102] fe40: 00000000 ef3cfe98 00000006 00000000 c0fb2a50
+> c087e7a0 ffffffff c0852868
+> [   72.398283] fe60: ffffffff c014be24 00000006 c0fad2d0 ef3cfe98
+> eeb3b450 00000000 c014c528
+> [   72.406463] fe80: 00000000 c015dcf8 c0f04c48 00000000 ee9ea800
+> c087e484 ee9ea800 00000000
+> [   72.414644] fea0: eeb3b450 ef3cfecb 00000001 46893f30 00000000
+> c0f04c48 00000000 c087e578
+> [   72.422825] fec0: 00000000 ef26e780 00024400 46893f30 eeb3b440
+> eeb3b450 ee9ea800 00000122
+> [   72.430998] fee0: 00000100 c087e600 eeb3b440 c0fad2c8 c1003ef0
+> c087e31c 2e928000 c0fad2ec
+> [   72.439179] ff00: c0fad2ec ee858080 ef7a62c0 ef7a9400 00000000
+> c087e3c8 c0fad2ec c0144804
+> [   72.447360] ff20: ef312280 ef7a62c0 00000008 ee858080 ee858094
+> ef7a62c0 00000008 c0f03d00
+> [   72.455541] ff40: ef7a62d8 ef7a62c0 ffffe000 c0145bac ffffe000
+> c0fb2420 c0bfa1ec 00000000
+> [   72.463721] ff60: ffffe000 ee855c40 ee855c00 00000000 ef3ce000
+> ee858080 c0145b68 ef0e5ea4
+> [   72.471902] ff80: ee855c5c c014a720 0000000b ee855c00 c014a5d8
+> 00000000 00000000 00000000
+> [   72.480082] ffa0: 00000000 00000000 00000000 c01010e8 00000000
+> 00000000 00000000 00000000
+> [   72.488262] ffc0: 00000000 00000000 00000000 00000000 00000000
+> 00000000 00000000 00000000
+> [   72.496442] ffe0: 00000000 00000000 00000000 00000000 00000013
+> 00000000 00000000 00000000
+> [   72.504652] [<c0853890>] (dsa_switch_event) from [<c014be24>]
+> (notifier_call_chain+0x48/0x84)
+> [   72.513184] [<c014be24>] (notifier_call_chain) from [<c014bf18>]
+> (raw_notifier_call_chain+0x18/0x20)
+> [   72.522321] [<c014bf18>] (raw_notifier_call_chain) from
+> [<c0850e60>] (dsa_port_mdb_add+0x48/0x74)
+> [   72.531200] [<c0850e60>] (dsa_port_mdb_add) from [<c087e718>]
+> (__switchdev_handle_port_obj_add+0x54/0xd4)
+> [   72.540773] [<c087e718>] (__switchdev_handle_port_obj_add) from
+> [<c087e7a0>] (switchdev_handle_port_obj_add+0x8/0x14)
+> [   72.551385] [<c087e7a0>] (switchdev_handle_port_obj_add) from
+> [<c0852868>] (dsa_slave_switchdev_blocking_event+0x94/0xa4)
+> [   72.562343] [<c0852868>] (dsa_slave_switchdev_blocking_event) from
+> [<c014be24>] (notifier_call_chain+0x48/0x84)
+> [   72.572434] [<c014be24>] (notifier_call_chain) from [<c014c528>]
+> (blocking_notifier_call_chain+0x50/0x68)
+> [   72.582004] [<c014c528>] (blocking_notifier_call_chain) from
+> [<c087e484>] (switchdev_port_obj_notify+0x44/0xa8)
+> [   72.592094] [<c087e484>] (switchdev_port_obj_notify) from
+> [<c087e578>] (switchdev_port_obj_add_now+0x90/0x104)
+> [   72.602098] [<c087e578>] (switchdev_port_obj_add_now) from
+> [<c087e600>] (switchdev_port_obj_add_deferred+0x14/0x5c)
+> [   72.612537] [<c087e600>] (switchdev_port_obj_add_deferred) from
+> [<c087e31c>] (switchdev_deferred_process+0x64/0x104)
+> [   72.623060] [<c087e31c>] (switchdev_deferred_process) from
+> [<c087e3c8>] (switchdev_deferred_process_work+0xc/0x14)
+> [   72.633412] [<c087e3c8>] (switchdev_deferred_process_work) from
+> [<c0144804>] (process_one_work+0x218/0x50c)
+> [   72.643156] [<c0144804>] (process_one_work) from [<c0145bac>]
+> (worker_thread+0x44/0x5bc)
+> [   72.651253] [<c0145bac>] (worker_thread) from [<c014a720>]
+> (kthread+0x148/0x150)
+> [   72.658657] [<c014a720>] (kthread) from [<c01010e8>]
+> (ret_from_fork+0x14/0x2c)
+> [   72.665879] Exception stack(0xef3cffb0 to 0xef3cfff8)
+> [   72.670932] ffa0:                                     00000000
+> 00000000 00000000 00000000
+> [   72.679112] ffc0: 00000000 00000000 00000000 00000000 00000000
+> 00000000 00000000 00000000
+> [   72.687291] ffe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> [   72.693911] Code: bad PC value
+> [   72.697022] ---[ end trace c7626868564873c8 ]---
+
+Good to know!
+
+
+Thank you,
+
+	Vivien
