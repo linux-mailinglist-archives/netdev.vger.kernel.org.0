@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ABD38533A
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:49:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C89A8534E
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:59:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389411AbfHGSts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 14:49:48 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:40009 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389382AbfHGSts (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 14:49:48 -0400
-Received: by mail-qk1-f193.google.com with SMTP id s145so66668841qke.7
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 11:49:47 -0700 (PDT)
+        id S2388911AbfHGS6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 14:58:25 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:38884 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388681AbfHGS6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 14:58:25 -0400
+Received: by mail-qk1-f196.google.com with SMTP id u190so3031901qkh.5
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 11:58:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=EADlsWbFtenzGYIUebwf0XoKyxnHp7MoePgcqzX4CVE=;
-        b=q2BvYEdG153ZC8dSjAjkPRoGKTFaQj8SotYB61+Ust4qgY40NbWY6ywKOeY4fi8oli
-         yheaabmGsI+PCUWe/rZbxzcewjvb4sfsXOPGfoH+C2mvCVF51pBEFEu0iehcTkzMRpit
-         vITCvP99YmXS8myOQGvRqsRhrzjw5SO0lzEj3s93fGz6qzS2rvHezwKIzgahhho8CVKs
-         oXKR6dkiOmTc4rvej0C5Gcfb29SYlBxYXZYmVcV6BYuRqUxDOUHuEQEHxiFwIznAOzJI
-         mtawdOCgoL8EwHb5tU1sUgaeM3QLu/DMEiq37PjPdiaAyEvzkEei95DyEFEsh2ky68t4
-         v64g==
+        bh=WVunkXsG8XZbeEnoVNwmkqXUjwY5REKBxuYmjRJ7pSE=;
+        b=prb0fQ20nSpHlLj8xDJX8RhqslqANtDYyEEqkcOeSONQfdbEfz9AngQjh+CA9AsxjG
+         FSqn6q2hYJAwaLQtm3gHuomPLEd0B/2gHo1I/6T5bXitAkplZp6K3HizdxGpiDFBlR4y
+         OcrTrh5WrViowoYDhWrkFvhTk5G2zWAWtXLAsHtgAkTMs1+dhH4NPriFZsn4KcZpEUwg
+         /yNQRPboCVKOtmAHazRVM7kVrZJC0X6ee3miASFXezi7yn7n8ADbCBYn31OndYWZYeKJ
+         04NNddmML8rww8+uiQqMnLBqtSmBiQSKREZYRgsIJXypWk7moxUb92eeQhNeeVupXg+a
+         CANg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=EADlsWbFtenzGYIUebwf0XoKyxnHp7MoePgcqzX4CVE=;
-        b=kFweYJg0INCjO93dLA2cXrUSqhW/h5O2LHyBBJJ+p3ufBYIusIzfh5EgoMJY1vJkcp
-         5zLYR0rLwath1lAlYXQrfwT0S81j91xix8co6+1Yzw8CfxJKd7JVD9WKiudRwgt2tQ8Y
-         KxDRBrVK/DNVhO+FZmRoL4d/q5dMSfapke+Elf28kWZPRMEd7IyOmgSnkH33stZDFJnk
-         W0OR6W3h6ZHdhcklcBl8F/V2AOdousZYWBw7LA1VA7EEfAf/ZzSJSVw98lNKLyyv9XrT
-         EcFRrNWMQQHVmAe4vQf6x+kZOEiwaTny+Q61et5lXnvVL8hh+rBwBb9sAmO4zqgY5rbX
-         v+jQ==
-X-Gm-Message-State: APjAAAX0KCRHBBHdDHG9MXtDAF8KbnhSUTYtMLB8uuoS9xOWGhh7DZZY
-        l6nQvHtlGpMsXAKJivfWQmjU/g==
-X-Google-Smtp-Source: APXvYqyGHtXocAWO+9+kUZQgdWR+WvRZbSjJiNfTBMBgvfGV3R0dHsb1JAcr2B2v6uZy7QmbDUDX9w==
-X-Received: by 2002:ae9:f80b:: with SMTP id x11mr9683609qkh.479.1565203786894;
-        Wed, 07 Aug 2019 11:49:46 -0700 (PDT)
+        bh=WVunkXsG8XZbeEnoVNwmkqXUjwY5REKBxuYmjRJ7pSE=;
+        b=nhHlUqjUaW8jRdZkP64vFiC6HYiq57h3lEBtJHAyQr6ok0G+hqrE05vugpOKdno3WK
+         iTRixoAHOqlz/u8lL+PbvW7pdsqqu26s5qh/nIG0d6nkz4E1VpQ3yuQNZlZw/3UHwgCm
+         SrO4mv30wmIRf0Pl6EQ8eTejHGECmo02MX+h9imKwPrPZkt6mAGuDkkGB/j3EfAHUggn
+         JaFYcVjFI1hxYqxqdo/nRJmo9rojOOdA95TgkYFpsRQau6ALNjVhLfI1woaTAoMG/9Dt
+         BZVNkgdG2dFUhVLx8yqedbqJy6HRJCFmywxJdSkc0oaDNczIYbQyaG84hCdnomH9pTe/
+         H+WQ==
+X-Gm-Message-State: APjAAAWmXUNhHK9rLVgTSaPfsnREG6AlsjN9ULwzgEBCu5VCe/KgQCTP
+        Hg7DHWmiKgnBWsP6dqvSWPx0YQ==
+X-Google-Smtp-Source: APXvYqz0QRm9BhUU0/fw0PPzRk3NX71ISJm9q8YNi3vplPmYN6yBJFp4uRPri0xc1KWdKw5UzpnzoA==
+X-Received: by 2002:a37:dcc7:: with SMTP id v190mr9936845qki.169.1565204304694;
+        Wed, 07 Aug 2019 11:58:24 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t6sm40235873qkh.129.2019.08.07.11.49.45
+        by smtp.gmail.com with ESMTPSA id y42sm57763692qtc.66.2019.08.07.11.58.23
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 07 Aug 2019 11:49:46 -0700 (PDT)
-Date:   Wed, 7 Aug 2019 11:49:18 -0700
+        Wed, 07 Aug 2019 11:58:24 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 11:57:55 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
 To:     David Ahern <dsahern@gmail.com>
 Cc:     Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
@@ -54,12 +54,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
         brouer@redhat.com, eric.dumazet@gmail.com
 Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
  resource limitations
-Message-ID: <20190807114918.15e10047@cakuba.netronome.com>
-In-Reply-To: <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
+Message-ID: <20190807115755.26804e42@cakuba.netronome.com>
+In-Reply-To: <153eb34b-05dd-4a85-88d8-e5723f41bbe3@gmail.com>
 References: <20190806164036.GA2332@nanopsycho.orion>
         <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
         <20190806180346.GD17072@lunn.ch>
         <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
+        <20190807025933.GF20422@lunn.ch>
+        <153eb34b-05dd-4a85-88d8-e5723f41bbe3@gmail.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -69,53 +71,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Aug 2019 20:33:47 -0600, David Ahern wrote:
-> Some time back supported was added for devlink 'resources'. The idea is
-> that hardware (mlxsw) has limited resources (e.g., memory) that can be
-> allocated in certain ways (e.g., kvd for mlxsw) thus implementing
-> restrictions on the number of programmable entries (e.g., routes,
-> neighbors) by userspace.
+On Tue, 6 Aug 2019 21:10:40 -0600, David Ahern wrote:
+> On 8/6/19 8:59 PM, Andrew Lunn wrote:
+> > However, zoom out a bit, from networking to the whole kernel. In
+> > general, across the kernel as a whole, resource management is done
+> > with cgroups. cgroups is the consistent operational model across the
+> > kernel as a whole.
+> > 
+> > So i think you need a second leg to your argument. You have said why
+> > devlink is the right way to do this. But you should also be able to
+> > say to Tejun Heo why cgroups is the wrong way to do this, going
+> > against the kernel as a whole model. Why is networking special?
+> >   
 > 
-> I contend:
-> 
-> 1. The kernel is an analogy to the hardware: it is programmed by
-> userspace, has limited resources (e.g., memory), and that users want to
-> control (e.g., limit) the number of networking entities that can be
-> programmed - routes, rules, nexthop objects etc and by address family
-> (ipv4, ipv6).
+> So you are saying mlxsw should be using a cgroups based API for its
+> resources? netdevsim is for testing kernel APIs sans hardware. Is that
+> not what the fib controller netdevsim is doing? It is from my perspective.
 
-Memory hierarchy for ASIC is more complex and changes more often than
-we want to change the model and kernel ABIs. The API in devlink is
-intended for TCAM partitioning.
+Why would all the drivers have to pay attention to resource limits?
+Shouldn't we try to implement that at a higher layer?
 
-> 2. A consistent operational model across use cases - s/w forwarding, XDP
-> forwarding and hardware forwarding - is good for users deploying systems
-> based on the Linux networking stack. This aligns with my basic point at
-> LPC last November about better integration of XDP and kernel tables.
-> 
-> The existing devlink API is the right one for all use cases. Most
-> notably that the kernel can mimic the hardware from a resource
-> management. Trying to say 'use cgroups for s/w forwarding and devlink
-> for h/w forwarding' is complicating the lives of users. It is just a
-> model and models can apply to more than some rigid definition.
+> I am not the one arguing to change code and functionality that has
+> existed for 16 months. I am arguing that the existing resource
+> controller satisfies all existing goals (testing in kernel APIs) and
+> even satisfies additional ones - like a consistent user experience
+> managing networking resources. ie.., I see no reason to change what exists.
 
-This argument holds no water. Only a tiny fraction of Linux networking
-users will have an high performance forwarding ASIC attached to their
-CPUs. So we'll make 99.9% of users who never seen devlink learn the
-tool for device control to control kernel resource?
+Please don't use the netdevsim code as an argument that something
+already exists. The only legitimate use of that code is to validate
+the devlink resource API and that the notifier can fail the insertion.
 
-Perhaps I'm misinterpreting your point there.
-
-> As for the namespace piece of this, the kernel's tables for networking
-> are *per namespace*, and so the resource controller must be per
-> namespace. This aligns with another consistent theme I have promoted
-> over the years - the ability to divide up a single ASIC into multiple,
-> virtual switches which are managed per namespace. This is a very popular
-> feature from a certain legacy vendor and one that would be good for open
-> networking to achieve. This is the basis of my response last week about
-> the devlink instance per namespace, and I thought Jiri was moving in
-> that direction until our chat today. Jiri's intention is something
-> different; we can discuss that on the next version of his patches.
-
-Resource limits per namespace make perfect sense. Just not configured
-via devlink..
+We try to encourage adding tests and are generally more willing to
+merge test code. Possible abuse of that for establishing precedents 
+is worrying.
