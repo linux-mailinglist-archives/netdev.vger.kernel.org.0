@@ -2,114 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AEFA8509B
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 18:06:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CE2A850A3
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 18:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388886AbfHGQGZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 12:06:25 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:45306 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387626AbfHGQGY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 12:06:24 -0400
-Received: by mail-ot1-f66.google.com with SMTP id x21so13099080otq.12;
-        Wed, 07 Aug 2019 09:06:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=AOfNJoVis4tu5FW/x4K5fd3Kb4BI9lC9c+PcHuGbSJI=;
-        b=rHZRSP4Mj7U/HkytF9Zva56bn+5Sg4odmEri/N7n+ITRLCyiUj2eMmCJlHy4XlLYsc
-         7gJIN/GF3DAsUHa4BH7V0W2QaOPem6U3rgj0srz/w+BOfWwZ+8s7urdEe+Z3nXeAP9o6
-         6+oCplvH6V5cloglseO3mDXC06ioD25CV2idliDu8whCh8Py2B8HSijwVJ4l/U3wzT/e
-         2PI/Sf1UElctkc8X8QP9CZGa6RbSuvH81uctJMqTFtQhvbRtItLQ5e4wLnXl8N3jSmuI
-         E0FWZ/m5t803vlXqBH1l4W/l02psddI0zSf8Vq/2EzBEDcA8/sbkzk7IYRug/6obhO5Q
-         MI3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AOfNJoVis4tu5FW/x4K5fd3Kb4BI9lC9c+PcHuGbSJI=;
-        b=f8r64OV/fk/WlgkfqMqSEgiUXYv3muVCAOZJrjj8H1j1lKbOG6nSlVnOoGe6fp1LD4
-         TCacV1ixcT6qwXfynZByFjErAGeO1pxPXk28YKHUT9UOXHsRZu/08G1U2wuplTbsLYlH
-         SMtLlM6jEzs3I6mh1nvieO2i1ItKNOyZihAb9nPWMHYH0AjUemAMdrB0bNcCOFjl30sa
-         6GMhSgkYnOOeYmIjBOUtnpMtjjwFfWRYFSTTQza7+p4hQYpRPgepweyRpWh/bY4W37aT
-         QPmWEfu9T9sm3/dciLpQHVFQFzrDQ7Hz3oRDmKR9i/XmOydaqHHEb4V0jbnReSrMdNBr
-         zCAQ==
-X-Gm-Message-State: APjAAAU8Y8ae2gFUKJ1k1X/zo7JCWe9Ss0VSPmHbhnbisNhvf0kgEq4i
-        NJFDuhyVeRfgNp4O16/7wfEg6ssQIP1H9/q1SLc=
-X-Google-Smtp-Source: APXvYqwVvjHIkuTBZZW6ETURsPt3jc50m2JDUoKCPRZ5XBlEz5RskqQ9NfuypJ8JlV4IerpOHeGb3SA1EexymMe2UPE=
-X-Received: by 2002:a6b:dd18:: with SMTP id f24mr9312803ioc.97.1565193983972;
- Wed, 07 Aug 2019 09:06:23 -0700 (PDT)
+        id S2388908AbfHGQHM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 12:07:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50764 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387626AbfHGQHL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Aug 2019 12:07:11 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A13A21BE6;
+        Wed,  7 Aug 2019 16:07:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565194030;
+        bh=E8bdniH7GEe82u/7JEL+uxk6gjFBOvyc0Oi4etg1SVc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=SEj+6gpnphgaOuGwin4BSXurY7dltSUAWKl1HeSn+kqS15h5ms8/G14epxZhTJgUK
+         mHGkYeitoMqI4n99Q0+4t+6gSft95N6CpaSiCYPgJEQDOfnb7DRodvpDALtHfeOJxM
+         6TC/+7TGJwCx/duzyyqtESUSzkEgmwFgHUivMDWU=
+Date:   Wed, 7 Aug 2019 17:07:03 +0100
+From:   Will Deacon <will@kernel.org>
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 0/3] arm/arm64: Add support for function error
+ injection
+Message-ID: <20190807160703.pe4jxak7hs7ptvde@willie-the-truck>
+References: <20190806100015.11256-1-leo.yan@linaro.org>
 MIME-Version: 1.0
-References: <20190807024917.27682-1-firo.yang@suse.com> <85aaefdf-d454-1823-5840-d9e2f71ffb19@oracle.com>
- <20190807083831.GA6811@linux-6qg8> <20190807160853.00001d71@gmail.com>
-In-Reply-To: <20190807160853.00001d71@gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 7 Aug 2019 09:06:12 -0700
-Message-ID: <CAKgT0UfEh8cvTht3yceyXqwReJOQkcpJV8j0vHSJwookTWhn_Q@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH v2 1/1] ixgbe: sync the first fragment unconditionally
-To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-Cc:     Firo Yang <firo.yang@suse.com>, Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Jacob Wen <jian.w.wen@oracle.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Alexander Duyck <alexander.h.duyck@linux.intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190806100015.11256-1-leo.yan@linaro.org>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 7, 2019 at 7:09 AM Maciej Fijalkowski
-<maciejromanfijalkowski@gmail.com> wrote:
->
-> On Wed, 7 Aug 2019 08:38:43 +0000
-> Firo Yang <firo.yang@suse.com> wrote:
->
-> > The 08/07/2019 15:56, Jacob Wen wrote:
-> > > I think the description is not correct. Consider using something like below.
-> > Thank you for comments.
-> >
-> > >
-> > > In Xen environment, due to memory fragmentation ixgbe may allocate a 'DMA'
-> > > buffer with pages that are not physically contiguous.
-> > Actually, I didn't look into the reason why ixgbe got a DMA buffer which
-> > was mapped to Xen-swiotlb area.
->
-> I think that neither of these descriptions are telling us what was truly
-> broken. They lack what Alexander wrote on v1 thread of this patch.
->
-> ixgbe_dma_sync_frag is called only on case when the current descriptor has EOP
-> bit set, skb was already allocated and you'll be adding a current buffer as a
-> frag. DMA unmapping for the first frag was intentionally skipped and we will be
-> unmapping it here, in ixgbe_dma_sync_frag. As Alex said, we're using the
-> DMA_ATTR_SKIP_CPU_SYNC attribute which obliges us to perform a sync manually
-> and it was missing.
->
-> So IMHO the commit description should include descriptions from both xen and
-> ixgbe worlds, the v2 lacks info about ixgbe case.
->
-> BTW Alex, what was the initial reason for holding off with unmapping the first
-> buffer? Asking because IIRC the i40e and ice behave a bit different here. We
-> don't look there for EOP at all when building/constructing skb and not delaying
-> the unmap of non-eop buffers.
->
-> Thanks,
-> Maciej
+On Tue, Aug 06, 2019 at 06:00:12PM +0800, Leo Yan wrote:
+> This small patch set is to add support for function error injection;
+> this can be used to eanble more advanced debugging feature, e.g.
+> CONFIG_BPF_KPROBE_OVERRIDE.
+> 
+> The patch 01/03 is to consolidate the function definition which can be
+> suared cross architectures, patches 02,03/03 are used for enabling
+> function error injection on arm64 and arm architecture respectively.
+> 
+> I tested on arm64 platform Juno-r2 and one of my laptop with x86
+> architecture with below steps; I don't test for Arm architecture so
+> only pass compilation.
 
-The reason why we have to hold off on unmapping the first buffer is
-because in the case of Receive Side Coalescing (RSC), also known as Large
-Receive Offload (LRO), the header of the packet is updated for each
-additional frame that is added. As such you can end up with the device
-writing data, header, data, header, data, header where each data write
-would update a new descriptor, but the header will only ever update the
-first descriptor in the chain. As such if we unmapped it earlier it would
-result in an IOMMU fault because the device would be rewriting the header
-after it had been unmapped.
+Thanks. I've queued the first two patches up here:
 
-The devices supported by the ixgbe driver are the only ones that have
-RSC/LRO support. As such this behavior is present for ixgbe, but not for
-other Intel NIC drivers including igb, igbvf, ixgbevf, i40e, etc.
+https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/log/?h=for-next/error-injection
 
-- Alex
+Will
