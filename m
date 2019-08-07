@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 887D28408D
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:38:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 106BE83EF9
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:34:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730074AbfHGBiw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:38:52 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:42330 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729433AbfHGBeU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:20 -0400
-Received: by mail-pf1-f194.google.com with SMTP id q10so42483274pff.9;
-        Tue, 06 Aug 2019 18:34:19 -0700 (PDT)
+        id S1729575AbfHGBeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:34:23 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:39655 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729486AbfHGBeV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:21 -0400
+Received: by mail-pg1-f196.google.com with SMTP id u17so42543853pgi.6;
+        Tue, 06 Aug 2019 18:34:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=py067aGaFWqYQnWW3CrL2Yk9VWIyNl4WEpwUsrZ7LgI=;
-        b=iMIf7vv1OqjXs/pb2O80RbThn+V5BnR0qPinv0FzH0+g7xzprGLZVDhHDxqDtetcXv
-         SaFnJoqNzRoFcPTVGSdSF8TWmFRSDY6HyI/xKEnGPkkBlyCLQ6e2r6EYWiPfaVK2Vmzt
-         JZbyLYWCDWgBCgJU9imVgUMeONuNrElpVb025PXYsw4Ce7zDMpi0HqX5tsCmiW5ztLIV
-         YDzIY1y6BpKbNCZAoclL3hg7itbVU1NhtHk3aXipSm7TKgtN0MS2OckyNUh0niZVwB8z
-         njr19wA60AtVpgYuy80idYiGH3Z0ffMXU+t6KgBLR+IFYvULEDog7RhMgjNZybcJ+5TY
-         bmmA==
+        bh=PTeNIVNtmjQFCjQxL5R5M/OrbQjiP2mk2OJMaygoDr4=;
+        b=BG5A7XtqqH4f15Klc4uU0q4X0R2Yv3wfhImw8oiXt1v6JO5KY1LfJ/FOOlCOXGnxrU
+         VariQ4IygIhND6FU5kQCuk9//LCB/lYGlYLJ8TWLMj0IGcKtGZaK7cHMiGMOL9oUoiZc
+         YswM2ntpv1sQkIcN3tEUtcv2aNlSoNXxcBOnTcDMk5HYtBIeSLrq5eWXN9nroLrC19Z/
+         C0ZG1Pu1hecBjOrW3c3xob4Zs7H7sVar9fXDnKdmBW1H5ACiR9/XADMiFFYI0P1SdPij
+         tJqcrXGje17KBWR1RldTVMzhM/TqzNCkMDLzOIHQRTxPFXZrOO5rIe3URKbbtNFMFJkR
+         bC8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=py067aGaFWqYQnWW3CrL2Yk9VWIyNl4WEpwUsrZ7LgI=;
-        b=CL00Eps7RqqtIKJhwmE4OQ0P+PIEzB/svl/5+6s9arHDJMtRkBgUwI4ZFzbWmFMvNk
-         H1DGyZRYhcy4EM3b1Q+R0gOVvEFA6f5YUuU6D4c/EeQPRsyIYFEudOAZlDJdxEalPtoh
-         zqi70KaUeoFPkiQLEIscdhPxIvqgL7PLrckkFcIxWtS7+Im42izHF4y5TY4ossRbGfFs
-         J8Qiw5VO5BFsCBRQFiSCAAgFy9y7ZLCLreMR1ZeprwBfx1/lcmQfi7zGRl5zF7zHL9Ja
-         QMc7R1T0qMZLfLtp05KBJt7Se+3ow090MLMtMDPWCw+l9ve86XWwhhhRmqbbBRqUjiN/
-         rrpQ==
-X-Gm-Message-State: APjAAAUE6WliiCQa+3j5AR3qVtbtq/Nx8ifP/SfnOG+49ulLgf8udGGh
-        OU3D7wnd0llTpRL9qFfd9Nc=
-X-Google-Smtp-Source: APXvYqzEjGdQT4zwHkPHC3zuchqcBixfKdrLByyRaCgYuUpeMBSsZZqsbT+G0enkm62MLPirbgVZ8A==
-X-Received: by 2002:a17:90a:fa07:: with SMTP id cm7mr5782148pjb.138.1565141658674;
-        Tue, 06 Aug 2019 18:34:18 -0700 (PDT)
+        bh=PTeNIVNtmjQFCjQxL5R5M/OrbQjiP2mk2OJMaygoDr4=;
+        b=kRVJieXvImOixcfFLveXbK99FGO7xgUMCGKlHLH4esjlLpSulhjS86h0P2hM7mbmVe
+         o334t0YiA3MDisTQfOOcxiIIS9EGZ3Opq4zxG7L+IBERPFet9BN/gcVva9O28UPCpOmk
+         qO+fYW2twZcxq3AP3+Id+ydCivM0okMJOg/qpnHVAXA84++7gZYbQrvrzMzFoQaT+e7/
+         +uo9x2S7Iqc6OtX2lORuMHVQYVcxY5f/58Tq5O5cNClhEEGUZZsEv+NoSzBak2GfXmWx
+         JrweIG62ZfsIN7sO5/ufn6Wcw+on7TtjFVUbgDI+j8QkpZ+T1J+IMcBZrfh3tm8Bwl41
+         XRHw==
+X-Gm-Message-State: APjAAAUfP7Jr2mRlKMkonW4uVx5Srq6vayFqOxdbOZx7hdM5RE5YSjR/
+        s7HnxSlzjb11cb/fLdWEiDM=
+X-Google-Smtp-Source: APXvYqwNS1xrXhm+UjCuzC7PKxoGrXRgWDwKbPmsbF2Yg7VGgKZOnBNXO8oPa1127+JgtcA8HVibPw==
+X-Received: by 2002:a63:c055:: with SMTP id z21mr5455551pgi.380.1565141660136;
+        Tue, 06 Aug 2019 18:34:20 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.17
+        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.34.18
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 18:34:18 -0700 (PDT)
+        Tue, 06 Aug 2019 18:34:19 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,12 +67,11 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 21/41] fsl_hypervisor: convert put_page() to put_user_page*()
-Date:   Tue,  6 Aug 2019 18:33:20 -0700
-Message-Id: <20190807013340.9706-22-jhubbard@nvidia.com>
+        Juergen Gross <jgross@suse.com>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Subject: [PATCH v3 22/41] xen: convert put_page() to put_user_page*()
+Date:   Tue,  6 Aug 2019 18:33:21 -0700
+Message-Id: <20190807013340.9706-23-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
 References: <20190807013340.9706-1-jhubbard@nvidia.com>
@@ -93,37 +92,100 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-This changes the release code slightly, because each page slot in the
-page_list[] array is no longer checked for NULL. However, that check
-was wrong anyway, because the get_user_pages() pattern of usage here
-never allowed for NULL entries within a range of pinned pages.
+This also handles pages[i] == NULL cases, thanks to an approach
+that is actually written by Juergen Gross.
 
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Rob Herring <robh@kernel.org>
+Signed-off-by: Juergen Gross <jgross@suse.com>
+
+Cc: Boris Ostrovsky <boris.ostrovsky@oracle.com>
+Cc: xen-devel@lists.xenproject.org
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/virt/fsl_hypervisor.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/xen/privcmd.c | 32 +++++++++++---------------------
+ 1 file changed, 11 insertions(+), 21 deletions(-)
 
-diff --git a/drivers/virt/fsl_hypervisor.c b/drivers/virt/fsl_hypervisor.c
-index 93d5bebf9572..a8f78d572c45 100644
---- a/drivers/virt/fsl_hypervisor.c
-+++ b/drivers/virt/fsl_hypervisor.c
-@@ -292,11 +292,8 @@ static long ioctl_memcpy(struct fsl_hv_ioctl_memcpy __user *p)
- 		virt_to_phys(sg_list), num_pages);
+diff --git a/drivers/xen/privcmd.c b/drivers/xen/privcmd.c
+index c6070e70dd73..c7d0763ca8c2 100644
+--- a/drivers/xen/privcmd.c
++++ b/drivers/xen/privcmd.c
+@@ -582,10 +582,11 @@ static long privcmd_ioctl_mmap_batch(
  
- exit:
--	if (pages) {
--		for (i = 0; i < num_pages; i++)
--			if (pages[i])
--				put_page(pages[i]);
+ static int lock_pages(
+ 	struct privcmd_dm_op_buf kbufs[], unsigned int num,
+-	struct page *pages[], unsigned int nr_pages)
++	struct page *pages[], unsigned int *nr_pages)
+ {
+-	unsigned int i;
++	unsigned int i, free = *nr_pages;
+ 
++	*nr_pages = 0;
+ 	for (i = 0; i < num; i++) {
+ 		unsigned int requested;
+ 		int pinned;
+@@ -593,35 +594,22 @@ static int lock_pages(
+ 		requested = DIV_ROUND_UP(
+ 			offset_in_page(kbufs[i].uptr) + kbufs[i].size,
+ 			PAGE_SIZE);
+-		if (requested > nr_pages)
++		if (requested > free)
+ 			return -ENOSPC;
+ 
+ 		pinned = get_user_pages_fast(
+ 			(unsigned long) kbufs[i].uptr,
+-			requested, FOLL_WRITE, pages);
++			requested, FOLL_WRITE, pages + *nr_pages);
+ 		if (pinned < 0)
+ 			return pinned;
+ 
+-		nr_pages -= pinned;
+-		pages += pinned;
++		free -= pinned;
++		*nr_pages += pinned;
+ 	}
+ 
+ 	return 0;
+ }
+ 
+-static void unlock_pages(struct page *pages[], unsigned int nr_pages)
+-{
+-	unsigned int i;
+-
+-	if (!pages)
+-		return;
+-
+-	for (i = 0; i < nr_pages; i++) {
+-		if (pages[i])
+-			put_page(pages[i]);
 -	}
-+	if (pages)
-+		put_user_pages(pages, num_pages);
+-}
+-
+ static long privcmd_ioctl_dm_op(struct file *file, void __user *udata)
+ {
+ 	struct privcmd_data *data = file->private_data;
+@@ -681,11 +669,12 @@ static long privcmd_ioctl_dm_op(struct file *file, void __user *udata)
  
- 	kfree(sg_list_unaligned);
+ 	xbufs = kcalloc(kdata.num, sizeof(*xbufs), GFP_KERNEL);
+ 	if (!xbufs) {
++		nr_pages = 0;
+ 		rc = -ENOMEM;
+ 		goto out;
+ 	}
+ 
+-	rc = lock_pages(kbufs, kdata.num, pages, nr_pages);
++	rc = lock_pages(kbufs, kdata.num, pages, &nr_pages);
+ 	if (rc)
+ 		goto out;
+ 
+@@ -699,7 +688,8 @@ static long privcmd_ioctl_dm_op(struct file *file, void __user *udata)
+ 	xen_preemptible_hcall_end();
+ 
+ out:
+-	unlock_pages(pages, nr_pages);
++	if (pages)
++		put_user_pages(pages, nr_pages);
+ 	kfree(xbufs);
  	kfree(pages);
+ 	kfree(kbufs);
 -- 
 2.22.0
 
