@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E531F84144
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:41:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CDD6F84124
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 03:41:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730570AbfHGBlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 21:41:52 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38734 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728778AbfHGBd6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:33:58 -0400
-Received: by mail-pg1-f195.google.com with SMTP id z14so5310471pga.5;
-        Tue, 06 Aug 2019 18:33:57 -0700 (PDT)
+        id S1728927AbfHGBeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 21:34:02 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:37008 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728828AbfHGBeA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 21:34:00 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 19so42486452pfa.4;
+        Tue, 06 Aug 2019 18:33:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YDBAQLU7S2U/jcsuraEitExVA8qAggFNDXffEk4LOSU=;
-        b=fH35navam8Lh5O3/qNrV94jl6iS2d0GfzCxk/u0RVGSb5dvr8ME5vr6Nrz7RbT0FzH
-         b+0bwfj6a40pZ7ZDEBSPteuD+EtCdatETgtIbhA4HjNGhTvq4/6/8Hfd0cWzD4ACfYbW
-         rgRW0nwu/E9vCWm7L7kW1f14dc8w0gfs4RZvtHi6Oflt61RfXIS6VkmL4oCieKfyzE0K
-         4m3Xz2o0LiyRj0Y9KXj50L4atLA3dDsoGvMpdRLog6j+z0Lu9QLqi3MvwrgBmW5y8MHT
-         21A4qIppa4JRGq/2QNHN+lrWM1Z/51ATanglohKPJpBhZfdY/rs/WBKjHemXIrn3RGac
-         3taQ==
+        bh=o2GwgSJoRuvPfZ2J7Awdgxw+WyrY01QvDnyFb1fV9Xk=;
+        b=DBS4QEOYd7JEbPuapIEybK6yPbT9yH436NCQH6rDrbBzuYucty6BaNvhoi5hH6v0CL
+         JtOgJ70gNZTF533IB2dCY0X/unBQS7PQHTF2oj+dliPmRRfT3OJ5pHnotZJGhHxVZbfq
+         YQRB/9ot1828nW5dFsiXI0WjJ5tnCXQL7Z7DBkE4dxbfbAjeZHXxEyOO1PgLYGM0R/tb
+         bQj3p4j+QH0APLbNBrYDCK8UA7Rjj5eJjYvOiTQSaFgxud4esYtpeLsQ7vEEpZptaSxw
+         yfJ/AgnnMUJmxUFLjnK1nFuoz+yKZ9OxcxA/Lu5XV7Z6R3lgOiOVPkE/r0yTZn6GHACF
+         KMsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YDBAQLU7S2U/jcsuraEitExVA8qAggFNDXffEk4LOSU=;
-        b=YoP8XRuPEAp5lgs4zYlM3So8VYbVf9geGwdAQFd1FJs1JvhNtXm0T+gawTPmCzi11C
-         tSUeG6oK4Dv4hXuFDKfhXU+0xV/1euUMqJ69z/xN3KGdwTiSHM8Y7TatJVtXauKykCT/
-         Kj4wOMP7GQ1G1bqY5HSOrM9iLx2leC/SA8R8beKkjd7qKOVLeV/RzEAWDBIZQAm1FrMs
-         SFLncMJTp8knwIgSiJ/PkoecJFkyvMlVlANH7pQCmVL1zB4Nt8U8SVON7Ob5FTCbhT/n
-         3TO0fbKLD3HQnMhFmjZeHODvAVrV+HlOR8wRcGvh6C/Oil6W/3+/k7LaDXPdeEa80Ymx
-         VJag==
-X-Gm-Message-State: APjAAAVWAZJpzb2dUeDiB/DvsEeTadKCNsNQPgcqW0RlY3dZMhz6XPrA
-        4re0jTEuolbiZ8ZIbfkBncEVkohA
-X-Google-Smtp-Source: APXvYqxowmB5KY9x5+3VpBUz7AtpjaBcc2B1U6EZUCl5VRWjmEE9hilm+u0BPGPiavOiCOJ108uPDQ==
-X-Received: by 2002:a17:90a:30cf:: with SMTP id h73mr6096915pjb.42.1565141637378;
-        Tue, 06 Aug 2019 18:33:57 -0700 (PDT)
+        bh=o2GwgSJoRuvPfZ2J7Awdgxw+WyrY01QvDnyFb1fV9Xk=;
+        b=PP3Y9450sjoMUdNy9U7q7TwNw/XmZlO0XO8t9Q0NAdEYiOFL4X0FTsLchdmXXHA9DI
+         IMDpKYmsO8MNHC02MNZeEBZVZ/Mj6LVA+jTjppsYpGNZyJqw8NzXpzFpnULMqk3KcRro
+         xYhsn6kgrIcATGzXwfwI2T+8omsmnBPTWZQ2OQO1RxBWwmKpu3frbT89TgMjsvMi7JqF
+         63869nwfh/T6WM5D1u6mDJ52eUh5e/ZMtSldIQ/jWSNpI6zkJQsIwk0ufmTRILAPaiz6
+         Pzi4OtrltWkRyd2BzIqYSjFtYpWiO7DdIq0mzZ1tBnTybovtSW/h9GkFL6S1yGTgVSoT
+         +Gog==
+X-Gm-Message-State: APjAAAVnz420e/3tpHcX3VmhijB+FM1TXZksvNQrRMUrxVz1Do6p63rg
+        r/yV74GeSkJw7WyKLmka6IQ=
+X-Google-Smtp-Source: APXvYqy30p2NohP2KIU0EnEWVyTf80c7khXPPY91tyi1XYk0o5oiq5Uprgt54o6LNZgppKd61nE9YQ==
+X-Received: by 2002:a17:90a:6097:: with SMTP id z23mr6014303pji.75.1565141638870;
+        Tue, 06 Aug 2019 18:33:58 -0700 (PDT)
 Received: from blueforge.nvidia.com (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.33.55
+        by smtp.gmail.com with ESMTPSA id u69sm111740800pgu.77.2019.08.06.18.33.57
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 06 Aug 2019 18:33:56 -0700 (PDT)
+        Tue, 06 Aug 2019 18:33:58 -0700 (PDT)
 From:   john.hubbard@gmail.com
 X-Google-Original-From: jhubbard@nvidia.com
 To:     Andrew Morton <akpm@linux-foundation.org>
@@ -67,17 +67,18 @@ Cc:     Christoph Hellwig <hch@infradead.org>,
         netdev@vger.kernel.org, rds-devel@oss.oracle.com,
         sparclinux@vger.kernel.org, x86@kernel.org,
         xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        David Zhou <David1.Zhou@amd.com>,
         David Airlie <airlied@linux.ie>
-Subject: [PATCH v3 08/41] drm/i915: convert put_page() to put_user_page*()
-Date:   Tue,  6 Aug 2019 18:33:07 -0700
-Message-Id: <20190807013340.9706-9-jhubbard@nvidia.com>
+Subject: [PATCH v3 09/41] drm/radeon: convert put_page() to put_user_page*()
+Date:   Tue,  6 Aug 2019 18:33:08 -0700
+Message-Id: <20190807013340.9706-10-jhubbard@nvidia.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190807013340.9706-1-jhubbard@nvidia.com>
 References: <20190807013340.9706-1-jhubbard@nvidia.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-NVConfidentiality: public
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -94,53 +95,29 @@ release_pages().
 This is part a tree-wide conversion, as described in commit fc1d8e7cca2d
 ("mm: introduce put_user_page*(), placeholder versions").
 
-This is a merge-able version of the fix, because it restricts
-itself to put_user_page() and put_user_pages(), both of which
-have not changed their APIs. Later, i915_gem_userptr_put_pages()
-can be simplified to use put_user_pages_dirty_lock().
-
-Acked-by: Rodrigo Vivi <rodrigo.vivi@intel.com>
-
-Cc: Jani Nikula <jani.nikula@linux.intel.com>
-Cc: Joonas Lahtinen <joonas.lahtinen@linux.intel.com>
+Cc: Alex Deucher <alexander.deucher@amd.com>
+Cc: Christian König <christian.koenig@amd.com>
+Cc: David (ChunMing) Zhou <David1.Zhou@amd.com>
 Cc: David Airlie <airlied@linux.ie>
-Cc: intel-gfx@lists.freedesktop.org
+Cc: amd-gfx@lists.freedesktop.org
 Cc: dri-devel@lists.freedesktop.org
 Signed-off-by: John Hubbard <jhubbard@nvidia.com>
 ---
- drivers/gpu/drm/i915/gem/i915_gem_userptr.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/radeon/radeon_ttm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-index 2caa594322bc..76dda2923cf1 100644
---- a/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-+++ b/drivers/gpu/drm/i915/gem/i915_gem_userptr.c
-@@ -527,7 +527,7 @@ __i915_gem_userptr_get_pages_worker(struct work_struct *_work)
- 	}
- 	mutex_unlock(&obj->mm.lock);
+diff --git a/drivers/gpu/drm/radeon/radeon_ttm.c b/drivers/gpu/drm/radeon/radeon_ttm.c
+index fb3696bc616d..4c9943fa10df 100644
+--- a/drivers/gpu/drm/radeon/radeon_ttm.c
++++ b/drivers/gpu/drm/radeon/radeon_ttm.c
+@@ -540,7 +540,7 @@ static int radeon_ttm_tt_pin_userptr(struct ttm_tt *ttm)
+ 	kfree(ttm->sg);
  
--	release_pages(pvec, pinned);
-+	put_user_pages(pvec, pinned);
- 	kvfree(pvec);
- 
- 	i915_gem_object_put(obj);
-@@ -640,7 +640,7 @@ static int i915_gem_userptr_get_pages(struct drm_i915_gem_object *obj)
- 		__i915_gem_userptr_set_active(obj, true);
- 
- 	if (IS_ERR(pages))
--		release_pages(pvec, pinned);
-+		put_user_pages(pvec, pinned);
- 	kvfree(pvec);
- 
- 	return PTR_ERR_OR_ZERO(pages);
-@@ -675,7 +675,7 @@ i915_gem_userptr_put_pages(struct drm_i915_gem_object *obj,
- 			set_page_dirty_lock(page);
- 
- 		mark_page_accessed(page);
--		put_page(page);
-+		put_user_page(page);
- 	}
- 	obj->mm.dirty = false;
+ release_pages:
+-	release_pages(ttm->pages, pinned);
++	put_user_pages(ttm->pages, pinned);
+ 	return r;
+ }
  
 -- 
 2.22.0
