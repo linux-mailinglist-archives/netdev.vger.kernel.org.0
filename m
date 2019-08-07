@@ -2,105 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3C89A8534E
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 20:59:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0278536B
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 21:07:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388911AbfHGS6Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 14:58:25 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:38884 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388681AbfHGS6Z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 14:58:25 -0400
-Received: by mail-qk1-f196.google.com with SMTP id u190so3031901qkh.5
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 11:58:25 -0700 (PDT)
+        id S2388907AbfHGTHm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 15:07:42 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37136 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388852AbfHGTHm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 15:07:42 -0400
+Received: by mail-pl1-f194.google.com with SMTP id b3so42219582plr.4;
+        Wed, 07 Aug 2019 12:07:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=WVunkXsG8XZbeEnoVNwmkqXUjwY5REKBxuYmjRJ7pSE=;
-        b=prb0fQ20nSpHlLj8xDJX8RhqslqANtDYyEEqkcOeSONQfdbEfz9AngQjh+CA9AsxjG
-         FSqn6q2hYJAwaLQtm3gHuomPLEd0B/2gHo1I/6T5bXitAkplZp6K3HizdxGpiDFBlR4y
-         OcrTrh5WrViowoYDhWrkFvhTk5G2zWAWtXLAsHtgAkTMs1+dhH4NPriFZsn4KcZpEUwg
-         /yNQRPboCVKOtmAHazRVM7kVrZJC0X6ee3miASFXezi7yn7n8ADbCBYn31OndYWZYeKJ
-         04NNddmML8rww8+uiQqMnLBqtSmBiQSKREZYRgsIJXypWk7moxUb92eeQhNeeVupXg+a
-         CANg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=vsDTBJJ0ypH9fpl/tZNLdNhg4lWZTK6zoRj1I99eK2Q=;
+        b=Tahh0Xltm/LjVmnTzoUJpnXKsbWs1iOEsw8f0xkQVKf52GvlsWj8yq3pEKfgkjfFzR
+         Jc1rdZg7f+J+PTt+NYQJiUljcaCPgtn1v+pfmqvLT+MbM/X/HeJcfYsOGJX2V5RbxMZ7
+         uFA2PNvyYvMSjm6zRUiTyv2aUS9vqlSx7jP2TTfBzOaTGO/ejrWUTeT5ahs1QXk1OGHS
+         X2s4abkjk5EPqtCLAfYDRLAuXXyQicrZGNJ0Ov5Fsprx+bEvhxLoyqfTipLju7k23KEX
+         crz3VQcC7Dhvib62qfRI+T3OZfpUxK8AArRMgP7Nzu9seXwX2LdpDnr/VlXisXypinxb
+         g82g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=WVunkXsG8XZbeEnoVNwmkqXUjwY5REKBxuYmjRJ7pSE=;
-        b=nhHlUqjUaW8jRdZkP64vFiC6HYiq57h3lEBtJHAyQr6ok0G+hqrE05vugpOKdno3WK
-         iTRixoAHOqlz/u8lL+PbvW7pdsqqu26s5qh/nIG0d6nkz4E1VpQ3yuQNZlZw/3UHwgCm
-         SrO4mv30wmIRf0Pl6EQ8eTejHGECmo02MX+h9imKwPrPZkt6mAGuDkkGB/j3EfAHUggn
-         JaFYcVjFI1hxYqxqdo/nRJmo9rojOOdA95TgkYFpsRQau6ALNjVhLfI1woaTAoMG/9Dt
-         BZVNkgdG2dFUhVLx8yqedbqJy6HRJCFmywxJdSkc0oaDNczIYbQyaG84hCdnomH9pTe/
-         H+WQ==
-X-Gm-Message-State: APjAAAWmXUNhHK9rLVgTSaPfsnREG6AlsjN9ULwzgEBCu5VCe/KgQCTP
-        Hg7DHWmiKgnBWsP6dqvSWPx0YQ==
-X-Google-Smtp-Source: APXvYqz0QRm9BhUU0/fw0PPzRk3NX71ISJm9q8YNi3vplPmYN6yBJFp4uRPri0xc1KWdKw5UzpnzoA==
-X-Received: by 2002:a37:dcc7:: with SMTP id v190mr9936845qki.169.1565204304694;
-        Wed, 07 Aug 2019 11:58:24 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id y42sm57763692qtc.66.2019.08.07.11.58.23
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 07 Aug 2019 11:58:24 -0700 (PDT)
-Date:   Wed, 7 Aug 2019 11:57:55 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Jiri Pirko <jiri@resnulli.us>,
-        netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com, mkubecek@suse.cz,
-        stephen@networkplumber.org, daniel@iogearbox.net,
-        brouer@redhat.com, eric.dumazet@gmail.com
-Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
- resource limitations
-Message-ID: <20190807115755.26804e42@cakuba.netronome.com>
-In-Reply-To: <153eb34b-05dd-4a85-88d8-e5723f41bbe3@gmail.com>
-References: <20190806164036.GA2332@nanopsycho.orion>
-        <c615dce5-9307-7640-2877-4e5c01e565c0@gmail.com>
-        <20190806180346.GD17072@lunn.ch>
-        <e0047c07-11a0-423c-9560-3806328a0d76@gmail.com>
-        <20190807025933.GF20422@lunn.ch>
-        <153eb34b-05dd-4a85-88d8-e5723f41bbe3@gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vsDTBJJ0ypH9fpl/tZNLdNhg4lWZTK6zoRj1I99eK2Q=;
+        b=qCqJSQOKySmb0RYQnIP49dI+dkeLGa170h/RWIeIhLHt6oc2eOHSMEDk72Oi6HiSoC
+         j05J7WV8hdg8scGn3C+svMFmuvgcDf5f7eYNmPI+FuwL+ey+qoVM7IgX7fpWpo5IuIMD
+         X/X+9M3xyl7ZL7keOvl1sjuHidHKT35WIBQKDRQeaUoCByxfAGuPTLmhwKDcwD7cdvSy
+         0QkQ6Km2EIbAprPYftuKUWEUJ7S48rvKj5tzmEXLswWQUoMyjzy4gdOQjlvgyKBJW1Mq
+         WA8MPYMSzuMpCWLlKaPuZEeeqFKY3+drBAUo5G8fmnq9i95+LncqEuoR6HlmJYpFU4QZ
+         f24g==
+X-Gm-Message-State: APjAAAVYnSPBmZT9Tcyx0cAkTMznr9BYb1TVNXmh0cUmCvrZX8XZDpbP
+        rultGUISlI06Es+/YGw3RcU=
+X-Google-Smtp-Source: APXvYqxGZ1JrT6BNB+g/l62bZh9G2FdoYxv2xYJEQxg1B3FDHWfKwUw9uEfRFr9tl4hAp8gre2CTnw==
+X-Received: by 2002:a65:6495:: with SMTP id e21mr9055614pgv.359.1565204861188;
+        Wed, 07 Aug 2019 12:07:41 -0700 (PDT)
+Received: from [172.27.227.247] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id r2sm113154271pfl.67.2019.08.07.12.07.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 07 Aug 2019 12:07:40 -0700 (PDT)
+Subject: Re: [PATCH iproute2-next] rdma: Add driver QP type string
+To:     Gal Pressman <galpress@amazon.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Leon Romanovsky <leon@kernel.org>
+References: <20190804080756.58364-1-galpress@amazon.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <abdb0a98-dc7c-eea9-2382-507dea7a5391@gmail.com>
+Date:   Wed, 7 Aug 2019 13:07:38 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190804080756.58364-1-galpress@amazon.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 6 Aug 2019 21:10:40 -0600, David Ahern wrote:
-> On 8/6/19 8:59 PM, Andrew Lunn wrote:
-> > However, zoom out a bit, from networking to the whole kernel. In
-> > general, across the kernel as a whole, resource management is done
-> > with cgroups. cgroups is the consistent operational model across the
-> > kernel as a whole.
-> > 
-> > So i think you need a second leg to your argument. You have said why
-> > devlink is the right way to do this. But you should also be able to
-> > say to Tejun Heo why cgroups is the wrong way to do this, going
-> > against the kernel as a whole model. Why is networking special?
-> >   
+On 8/4/19 2:07 AM, Gal Pressman wrote:
+> RDMA resource tracker now tracks driver QPs as well, add driver QP type
+> string to qp_types_to_str function.
 > 
-> So you are saying mlxsw should be using a cgroups based API for its
-> resources? netdevsim is for testing kernel APIs sans hardware. Is that
-> not what the fib controller netdevsim is doing? It is from my perspective.
+> Signed-off-by: Gal Pressman <galpress@amazon.com>
+> ---
+>  rdma/res.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
+> 
 
-Why would all the drivers have to pay attention to resource limits?
-Shouldn't we try to implement that at a higher layer?
+applied to iproute2-next. Thanks
 
-> I am not the one arguing to change code and functionality that has
-> existed for 16 months. I am arguing that the existing resource
-> controller satisfies all existing goals (testing in kernel APIs) and
-> even satisfies additional ones - like a consistent user experience
-> managing networking resources. ie.., I see no reason to change what exists.
 
-Please don't use the netdevsim code as an argument that something
-already exists. The only legitimate use of that code is to validate
-the devlink resource API and that the notifier can fail the insertion.
-
-We try to encourage adding tests and are generally more willing to
-merge test code. Possible abuse of that for establishing precedents 
-is worrying.
