@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EBEC843BD
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:38:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CCA5843BB
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 07:38:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726540AbfHGFiS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 01:38:18 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:49582 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725972AbfHGFiR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 01:38:17 -0400
-Received: from pps.filterd (m0044008.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x775XrMX011657
-        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 22:38:16 -0700
+        id S1726258AbfHGFiQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 01:38:16 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:16656 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725972AbfHGFiP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 01:38:15 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x775c5md003972
+        for <netdev@vger.kernel.org>; Tue, 6 Aug 2019 22:38:14 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=1yAapuGwl9hLGNGG+ILp+1NUiTeWw/1t7VG4Vu8ZnzQ=;
- b=JFPRo3a5rMvrQsxUTjuxicUgovzeQrB8PfSsxaQfFOtj631l9jQmiP5ONd8LecFfqjNs
- tUfiIDs1Ww+PdapohV2X1JApKmZGIydLKDXrERVW/7/gIhnlls5GPJtNILobqr34adiQ
- npebSCt3RpDbNAuicT7YiayatZfDPaaF0nI= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2u7g3g9k5c-4
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:38:16 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Tue, 6 Aug 2019 22:38:15 -0700
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=facebook; bh=wzvdywExQXfhOuipF+mU2x3qqZUEr2ujpdiTapcoce0=;
+ b=dI3cQkfzK2p1vfZ9KcuHmmLWYn5E/ypYnuNscsS43JQCASnszTZrA0cP4JBOStpTBIxH
+ B9O857vrfRzBy1yVJ1BwFIwMn64S9TC+h+4KN9lqG2YeDPtczyirucnsSIGV1nIRgTfO
+ bLuns0sBsV+V4SDevWvNcxwpjTBsNLUnDcA= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0b-00082601.pphosted.com with ESMTP id 2u7jemgywt-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 22:38:14 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::c) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 6 Aug 2019 22:38:13 -0700
 Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id 0CFCC861698; Tue,  6 Aug 2019 22:38:09 -0700 (PDT)
+        id 210DF861698; Tue,  6 Aug 2019 22:38:12 -0700 (PDT)
 Smtp-Origin-Hostprefix: dev
 From:   Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Hostname: dev101.prn2.facebook.com
@@ -38,209 +38,230 @@ To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
 CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
         Andrii Nakryiko <andriin@fb.com>
 Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v4 bpf-next 00/14] CO-RE offset relocations
-Date:   Tue, 6 Aug 2019 22:37:52 -0700
-Message-ID: <20190807053806.1534571-1-andriin@fb.com>
+Subject: [PATCH v4 bpf-next 01/14] libbpf: add helpers for working with BTF types
+Date:   Tue, 6 Aug 2019 22:37:53 -0700
+Message-ID: <20190807053806.1534571-2-andriin@fb.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190807053806.1534571-1-andriin@fb.com>
+References: <20190807053806.1534571-1-andriin@fb.com>
 X-FB-Internal: Safe
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-07_01:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=9 phishscore=0 bulkscore=0 spamscore=0
+ malwarescore=0 suspectscore=25 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
  mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908070059
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908070060
 X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set implements central part of CO-RE (Compile Once - Run
-Everywhere, see [0] and [1] for slides and video): relocating fields offsets.
-Most of the details are written down as comments to corresponding parts of the
-code.
+Add lots of frequently used helpers that simplify working with BTF
+types.
 
-Patch #1 adds a bunch of commonly useful btf_xxx helpers to simplify working
-with BTF types.
-Patch #2 converts existing libbpf code to these new helpers and removes some
-of pre-existing ones.
-Patch #3 adds loading of .BTF.ext offset relocations section and macros to
-work with its contents.
-Patch #4 implements CO-RE relocations algorithm in libbpf.
-Patch #5 introduced BPF_CORE_READ macro, hiding usage of Clang's
-__builtin_preserve_access_index intrinsic that records offset relocation.
-Patches #6-#14 adds selftests validating various parts of relocation handling,
-type compatibility, etc.
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+---
+ tools/lib/bpf/btf.h | 176 ++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 176 insertions(+)
 
-For all tests to work, you'll need latest Clang/LLVM supporting
-__builtin_preserve_access_index intrinsic, used for recording offset
-relocations. Kernel on which selftests run should have BTF information built
-in (CONFIG_DEBUG_INFO_BTF=y).
-
-  [0] http://vger.kernel.org/bpfconf2019.html#session-2
-  [1] http://vger.kernel.org/lpc-bpf2018.html#session-2
-
-v3->v4:
-- added btf_xxx helpers (Alexei);
-- switched libbpf code to new helpers;
-- reduced amount of logging and simplified format in few places (Alexei);
-- made flavor name parsing logic more strict (exactly three underscores);
-- no uname() error checking (Alexei);
-- updated misc tests to reflect latest Clang fixes (Yonghong);
-
-v2->v3:
-- enclose BPF_CORE_READ args in parens (Song);
-
-v1->v2:
-- add offsetofend(), fix btf_ext optional fields checks (Song);
-- add bpf_core_dump_spec() for logging spec representation;
-- move special first element processing out of the loop (Song);
-- typo fixes (Song);
-- drop BPF_ST | BPF_MEM insn relocation (Alexei);
-- extracted BPF_CORE_READ into bpf_helpers (Alexei);
-- added extra tests validating Clang capturing relocs correctly (Yonghong);
-- switch core_relocs.c to use sub-tests;
-- updated mods tests after Clang bug was fixed (Yonghong);
-- fix bug enumerating candidate types;
-
-Andrii Nakryiko (14):
-  libbpf: add helpers for working with BTF types
-  libbpf: convert libbpf code to use new btf helpers
-  libbpf: add .BTF.ext offset relocation section loading
-  libbpf: implement BPF CO-RE offset relocation algorithm
-  selftests/bpf: add BPF_CORE_READ relocatable read macro
-  selftests/bpf: add CO-RE relocs testing setup
-  selftests/bpf: add CO-RE relocs struct flavors tests
-  selftests/bpf: add CO-RE relocs nesting tests
-  selftests/bpf: add CO-RE relocs array tests
-  selftests/bpf: add CO-RE relocs enum/ptr/func_proto tests
-  selftests/bpf: add CO-RE relocs modifiers/typedef tests
-  selftests/bpf: add CO-RE relocs ptr-as-array tests
-  selftests/bpf: add CO-RE relocs ints tests
-  selftests/bpf: add CO-RE relocs misc tests
-
- tools/lib/bpf/btf.c                           | 250 ++---
- tools/lib/bpf/btf.h                           | 180 ++++
- tools/lib/bpf/btf_dump.c                      | 136 +--
- tools/lib/bpf/libbpf.c                        | 941 +++++++++++++++++-
- tools/lib/bpf/libbpf.h                        |   1 +
- tools/lib/bpf/libbpf_internal.h               | 105 ++
- tools/testing/selftests/bpf/bpf_helpers.h     |  20 +
- .../selftests/bpf/prog_tests/core_reloc.c     | 386 +++++++
- .../bpf/progs/btf__core_reloc_arrays.c        |   3 +
- .../btf__core_reloc_arrays___diff_arr_dim.c   |   3 +
- ...btf__core_reloc_arrays___diff_arr_val_sz.c |   3 +
- .../btf__core_reloc_arrays___err_non_array.c  |   3 +
- ...btf__core_reloc_arrays___err_too_shallow.c |   3 +
- .../btf__core_reloc_arrays___err_too_small.c  |   3 +
- ..._core_reloc_arrays___err_wrong_val_type1.c |   3 +
- ..._core_reloc_arrays___err_wrong_val_type2.c |   3 +
- .../bpf/progs/btf__core_reloc_flavors.c       |   3 +
- .../btf__core_reloc_flavors__err_wrong_name.c |   3 +
- .../bpf/progs/btf__core_reloc_ints.c          |   3 +
- .../bpf/progs/btf__core_reloc_ints___bool.c   |   3 +
- .../btf__core_reloc_ints___err_bitfield.c     |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_16.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_32.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_64.c  |   3 +
- .../btf__core_reloc_ints___err_wrong_sz_8.c   |   3 +
- .../btf__core_reloc_ints___reverse_sign.c     |   3 +
- .../bpf/progs/btf__core_reloc_misc.c          |   5 +
- .../bpf/progs/btf__core_reloc_mods.c          |   3 +
- .../progs/btf__core_reloc_mods___mod_swap.c   |   3 +
- .../progs/btf__core_reloc_mods___typedefs.c   |   3 +
- .../bpf/progs/btf__core_reloc_nesting.c       |   3 +
- .../btf__core_reloc_nesting___anon_embed.c    |   3 +
- ...f__core_reloc_nesting___dup_compat_types.c |   5 +
- ...core_reloc_nesting___err_array_container.c |   3 +
- ...tf__core_reloc_nesting___err_array_field.c |   3 +
- ...e_reloc_nesting___err_dup_incompat_types.c |   4 +
- ...re_reloc_nesting___err_missing_container.c |   3 +
- ...__core_reloc_nesting___err_missing_field.c |   3 +
- ..._reloc_nesting___err_nonstruct_container.c |   3 +
- ...e_reloc_nesting___err_partial_match_dups.c |   4 +
- .../btf__core_reloc_nesting___err_too_deep.c  |   3 +
- .../btf__core_reloc_nesting___extra_nesting.c |   3 +
- ..._core_reloc_nesting___struct_union_mixup.c |   3 +
- .../bpf/progs/btf__core_reloc_primitives.c    |   3 +
- ...f__core_reloc_primitives___diff_enum_def.c |   3 +
- ..._core_reloc_primitives___diff_func_proto.c |   3 +
- ...f__core_reloc_primitives___diff_ptr_type.c |   3 +
- ...tf__core_reloc_primitives___err_non_enum.c |   3 +
- ...btf__core_reloc_primitives___err_non_int.c |   3 +
- ...btf__core_reloc_primitives___err_non_ptr.c |   3 +
- .../bpf/progs/btf__core_reloc_ptr_as_arr.c    |   3 +
- .../btf__core_reloc_ptr_as_arr___diff_sz.c    |   3 +
- .../selftests/bpf/progs/core_reloc_types.h    | 667 +++++++++++++
- .../bpf/progs/test_core_reloc_arrays.c        |  55 +
- .../bpf/progs/test_core_reloc_flavors.c       |  62 ++
- .../bpf/progs/test_core_reloc_ints.c          |  44 +
- .../bpf/progs/test_core_reloc_kernel.c        |  36 +
- .../bpf/progs/test_core_reloc_misc.c          |  57 ++
- .../bpf/progs/test_core_reloc_mods.c          |  62 ++
- .../bpf/progs/test_core_reloc_nesting.c       |  46 +
- .../bpf/progs/test_core_reloc_primitives.c    |  43 +
- .../bpf/progs/test_core_reloc_ptr_as_arr.c    |  30 +
- 62 files changed, 2979 insertions(+), 280 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/core_reloc.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_dim.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_val_sz.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_non_array.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_shallow.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_small.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_enum_def.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_func_proto.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_ptr_type.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_enum.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_int.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_ptr.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr.c
- create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr___diff_sz.c
- create mode 100644 tools/testing/selftests/bpf/progs/core_reloc_types.h
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_primitives.c
- create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ptr_as_arr.c
-
+diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
+index 88a52ae56fc6..63c939b71efe 100644
+--- a/tools/lib/bpf/btf.h
++++ b/tools/lib/bpf/btf.h
+@@ -5,6 +5,7 @@
+ #define __LIBBPF_BTF_H
+ 
+ #include <stdarg.h>
++#include <linux/btf.h>
+ #include <linux/types.h>
+ 
+ #ifdef __cplusplus
+@@ -120,6 +121,181 @@ LIBBPF_API void btf_dump__free(struct btf_dump *d);
+ 
+ LIBBPF_API int btf_dump__dump_type(struct btf_dump *d, __u32 id);
+ 
++/*
++ * A set of helpers for easier BTF types handling
++ */
++static inline __u16 btf_kind(const struct btf_type *t)
++{
++	return BTF_INFO_KIND(t->info);
++}
++
++static inline __u16 btf_vlen(const struct btf_type *t)
++{
++	return BTF_INFO_VLEN(t->info);
++}
++
++static inline bool btf_kflag(const struct btf_type *t)
++{
++	return BTF_INFO_KFLAG(t->info);
++}
++
++static inline bool btf_is_int(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_INT;
++}
++
++static inline bool btf_is_ptr(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_PTR;
++}
++
++static inline bool btf_is_array(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_ARRAY;
++}
++
++static inline bool btf_is_struct(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_STRUCT;
++}
++
++static inline bool btf_is_union(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_UNION;
++}
++
++static inline bool btf_is_composite(const struct btf_type *t)
++{
++	__u16 kind = btf_kind(t);
++
++	return kind == BTF_KIND_STRUCT || kind == BTF_KIND_UNION;
++}
++
++static inline bool btf_is_enum(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_ENUM;
++}
++
++static inline bool btf_is_fwd(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_FWD;
++}
++
++static inline bool btf_is_typedef(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_TYPEDEF;
++}
++
++static inline bool btf_is_volatile(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_VOLATILE;
++}
++
++static inline bool btf_is_const(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_CONST;
++}
++
++static inline bool btf_is_restrict(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_RESTRICT;
++}
++
++static inline bool btf_is_mod(const struct btf_type *t)
++{
++	__u16 kind = btf_kind(t);
++
++	return kind == BTF_KIND_VOLATILE ||
++	       kind == BTF_KIND_CONST ||
++	       kind == BTF_KIND_RESTRICT;
++}
++
++static inline bool btf_is_func(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_FUNC;
++}
++
++static inline bool btf_is_func_proto(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_FUNC_PROTO;
++}
++
++static inline bool btf_is_var(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_VAR;
++}
++
++static inline bool btf_is_datasec(const struct btf_type *t)
++{
++	return btf_kind(t) == BTF_KIND_DATASEC;
++}
++
++static inline __u8 btf_int_encoding(const struct btf_type *t)
++{
++	return BTF_INT_ENCODING(*(__u32 *)(t + 1));
++}
++
++static inline __u8 btf_int_offset(const struct btf_type *t)
++{
++	return BTF_INT_OFFSET(*(__u32 *)(t + 1));
++}
++
++static inline __u8 btf_int_bits(const struct btf_type *t)
++{
++	return BTF_INT_BITS(*(__u32 *)(t + 1));
++}
++
++static inline const struct btf_array *btf_array(const struct btf_type *t)
++{
++	return (const struct btf_array *)(t + 1);
++}
++
++static inline const struct btf_enum *btf_enum(const struct btf_type *t)
++{
++	return (const struct btf_enum *)(t + 1);
++}
++
++static inline const struct btf_member *btf_members(const struct btf_type *t)
++{
++	return (const struct btf_member *)(t + 1);
++}
++
++/* get bit offset of a member with specified index */
++static inline const __u32 btf_member_bit_offset(const struct btf_type *t,
++					        __u32 member_idx)
++{
++	const struct btf_member *m = btf_members(t) + member_idx;
++	bool kflag = btf_kflag(t);
++
++	return kflag ? BTF_MEMBER_BIT_OFFSET(m->offset) : m->offset;
++}
++/* get bitfield size of a member, assuming t is BTF_KIND_STRUCT or
++ * BTF_KIND_UNION. If member is not a bitfield, zero is returned. */
++static inline const __u32 btf_member_bitfield_size(const struct btf_type *t,
++						   __u32 member_idx)
++{
++	const struct btf_member *m = btf_members(t) + member_idx;
++	bool kflag = btf_kflag(t);
++
++	return kflag ? BTF_MEMBER_BITFIELD_SIZE(m->offset) : 0;
++}
++
++static inline const struct btf_param *btf_params(const struct btf_type *t)
++{
++	return (const struct btf_param *)(t + 1);
++}
++
++static inline const struct btf_var *btf_var(const struct btf_type *t)
++{
++	return (const struct btf_var *)(t + 1);
++}
++
++static inline const struct btf_var_secinfo *
++btf_var_secinfos(const struct btf_type *t)
++{
++	return (const struct btf_var_secinfo *)(t + 1);
++}
++
+ #ifdef __cplusplus
+ } /* extern "C" */
+ #endif
 -- 
 2.17.1
 
