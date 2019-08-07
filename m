@@ -2,140 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C075E83E21
-	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 02:08:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC00983E35
+	for <lists+netdev@lfdr.de>; Wed,  7 Aug 2019 02:19:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727411AbfHGAIV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 6 Aug 2019 20:08:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60338 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726085AbfHGAIU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 6 Aug 2019 20:08:20 -0400
-Received: from devnote2 (NE2965lan1.rev.em-net.ne.jp [210.141.244.193])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED7FA2089E;
-        Wed,  7 Aug 2019 00:08:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565136499;
-        bh=FhChKXsPPb1L8MSYtmcGqA0kOKtJaeO7DrzVbRT1MXs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=TAeG++7BBNLdzsT8EeUACw88fONFc1pQcT8EUvAlKq8EqeLzcGZIz0ceLh4nYgX84
-         xTRDE/BvbyzWZvQYIvI12bG0fb2Hr+ia9Vz72+zfUolIsY7N4a0uoRfA30sNdV3zwc
-         LDnEWEZxfNuA7Zo/uTF7X1Z/DVFpbZNzGS5Nb8/c=
-Date:   Wed, 7 Aug 2019 09:08:11 +0900
-From:   Masami Hiramatsu <mhiramat@kernel.org>
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Russell King <linux@armlinux.org.uk>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH v2 0/3] arm/arm64: Add support for function error
- injection
-Message-Id: <20190807090811.1e50eb3e1d5a7b85743748e7@kernel.org>
-In-Reply-To: <20190806100015.11256-1-leo.yan@linaro.org>
-References: <20190806100015.11256-1-leo.yan@linaro.org>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726431AbfHGATf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 6 Aug 2019 20:19:35 -0400
+Received: from mail-qt1-f171.google.com ([209.85.160.171]:44878 "EHLO
+        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726340AbfHGATf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 6 Aug 2019 20:19:35 -0400
+Received: by mail-qt1-f171.google.com with SMTP id 44so55516578qtg.11
+        for <netdev@vger.kernel.org>; Tue, 06 Aug 2019 17:19:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hQP3AxityeIthQe511tHjlhhvw8xArH7gbP2iVT9D4Q=;
+        b=esdCvdGpMWHdUyOvd5yR7Gx7/DgV2g6yjD9kTCaXYy5vVbF89NKKN84dskNmPgGxt6
+         R+1qpGyzXvFB7afccwtwI+duEOHuHOosp9mrrYFGvo0AIz75ZxlTrplbuSvKRBL5Ag8u
+         9BuefzUpiufdcJR1IVJV4CIzCVIt4ERnGWWle5Tnc52rOV5tg0MnxrcVzMcWM9qHvsDP
+         wqBs5q+7dl026XK+I2tf5wQ5oMu07XcuftCMASL71141VT88u6s43XpMszCJchNj8gBh
+         ngbdBBI/Uqv1Y/TYgGT/PDmHXqCOP3E1Btn7C0zulq+XY3gtjl1mW1PAfFNBCicMyye+
+         gCkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hQP3AxityeIthQe511tHjlhhvw8xArH7gbP2iVT9D4Q=;
+        b=bqHVkDj2t/qYrW0sBVquW4auPEQ21pTAueXNos9sLNN+REHFObXN0KGVClD47HwvPq
+         w53KkAT/QVmMsSqZHTCxxcyXLZ9vQGY/yvA1IRvY/tHXdae5yC/tpViKzYvH5Bn4pKjA
+         EOX/4HfaN4RpCxFe5nLvGgwziJbmlK3esNIQSbLlqmRuOyYj9rpC/YFupTe+/1EPjc3f
+         zE1W7eRxQvbstneVlOLWeu0nrvtQ7yFxUOpHyzYL29bHAOCgCWCtesG97gy0azQXpVRe
+         cPB8+pguT/yMtFHI3AgFw4KlOADN1DuyvCPnoXJq5TMZchunQh25NGVXCpir8rVdW+Mk
+         65lA==
+X-Gm-Message-State: APjAAAViUJC7GH5xeKlFyJtSoATWvYE3cUiSN7iDj5eNzF4SMewIeVyq
+        XNDkgnxohtwTTMKV90MigXT7sg==
+X-Google-Smtp-Source: APXvYqwnoK90JYybpVflra8o69gKlsXnYlKN8Bnw0NvlQd2Xagxo8naytMugwblEf6LjG2EU8fqu/w==
+X-Received: by 2002:ac8:6c31:: with SMTP id k17mr5568504qtu.253.1565137174201;
+        Tue, 06 Aug 2019 17:19:34 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id i5sm35547554qtp.20.2019.08.06.17.19.32
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 06 Aug 2019 17:19:33 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH bpf 0/2] tools: bpftool: fix pinning error messages
+Date:   Tue,  6 Aug 2019 17:19:21 -0700
+Message-Id: <20190807001923.19483-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue,  6 Aug 2019 18:00:12 +0800
-Leo Yan <leo.yan@linaro.org> wrote:
+Hi!
 
-> This small patch set is to add support for function error injection;
-> this can be used to eanble more advanced debugging feature, e.g.
-> CONFIG_BPF_KPROBE_OVERRIDE.
-> 
-> The patch 01/03 is to consolidate the function definition which can be
-> suared cross architectures, patches 02,03/03 are used for enabling
-> function error injection on arm64 and arm architecture respectively.
-> 
-> I tested on arm64 platform Juno-r2 and one of my laptop with x86
-> architecture with below steps; I don't test for Arm architecture so
-> only pass compilation.
-> 
-> - Enable kernel configuration:
->   CONFIG_BPF_KPROBE_OVERRIDE
->   CONFIG_BTRFS_FS
->   CONFIG_BPF_EVENTS=y
->   CONFIG_KPROBES=y
->   CONFIG_KPROBE_EVENTS=y
->   CONFIG_BPF_KPROBE_OVERRIDE=y
-> 
-> - Build samples/bpf on with Debian rootFS:
->   # cd $kernel
->   # make headers_install
->   # make samples/bpf/ LLC=llc-7 CLANG=clang-7
-> 
-> - Run the sample tracex7:
->   # dd if=/dev/zero of=testfile.img bs=1M seek=1000 count=1
->   # DEVICE=$(losetup --show -f testfile.img)
->   # mkfs.btrfs -f $DEVICE
->   # ./tracex7 testfile.img
->   [ 1975.211781] BTRFS error (device (efault)): open_ctree failed
->   mount: /mnt/linux-kernel/linux-cs-dev/samples/bpf/tmpmnt: mount(2) system call failed: Cannot allocate memory.
-> 
-> Changes from v1:
-> * Consolidated the function definition into asm-generic header (Will);
-> * Used APIs to access pt_regs elements (Will);
-> * Fixed typos in the comments (Will).
+First make sure we don't use "prog" in error messages because
+the pinning operation could be performed on a map. Second add
+back missing error message if pin syscall failed.
 
-This looks good to me.
+Jakub Kicinski (2):
+  tools: bpftool: fix error message (prog -> object)
+  tools: bpftool: add error message on pin failure
 
-Reviewed-by: Masami Hiramatsu <mhiramat@kernel.org>
-
-Thank you!
-
-> 
-> 
-> Leo Yan (3):
->   error-injection: Consolidate override function definition
->   arm64: Add support for function error injection
->   arm: Add support for function error injection
-> 
->  arch/arm/Kconfig                           |  1 +
->  arch/arm/include/asm/ptrace.h              |  5 +++++
->  arch/arm/lib/Makefile                      |  2 ++
->  arch/arm/lib/error-inject.c                | 19 +++++++++++++++++++
->  arch/arm64/Kconfig                         |  1 +
->  arch/arm64/include/asm/ptrace.h            |  5 +++++
->  arch/arm64/lib/Makefile                    |  2 ++
->  arch/arm64/lib/error-inject.c              | 18 ++++++++++++++++++
->  arch/powerpc/include/asm/error-injection.h | 13 -------------
->  arch/x86/include/asm/error-injection.h     | 13 -------------
->  include/asm-generic/error-injection.h      |  6 ++++++
->  include/linux/error-injection.h            |  6 +++---
->  12 files changed, 62 insertions(+), 29 deletions(-)
->  create mode 100644 arch/arm/lib/error-inject.c
->  create mode 100644 arch/arm64/lib/error-inject.c
->  delete mode 100644 arch/powerpc/include/asm/error-injection.h
->  delete mode 100644 arch/x86/include/asm/error-injection.h
-> 
-> -- 
-> 2.17.1
-> 
-
+ tools/bpf/bpftool/common.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 -- 
-Masami Hiramatsu <mhiramat@kernel.org>
+2.21.0
+
