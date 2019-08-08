@@ -2,66 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B86B85A49
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:11:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 43D2085A50
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:12:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730990AbfHHGLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 02:11:47 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35756 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726475AbfHHGLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 02:11:47 -0400
-Received: by mail-wm1-f66.google.com with SMTP id l2so1151494wmg.0;
-        Wed, 07 Aug 2019 23:11:45 -0700 (PDT)
+        id S1731030AbfHHGMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 02:12:48 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46206 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730694AbfHHGMs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 02:12:48 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z1so93648350wru.13
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 23:12:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=mMFe6N5rGAQL4xugeXf4jUCNrDrEI+HfMzmjEgPHykI=;
-        b=EddoiczG0iEDxUrnZLmFmAqNUTIAcKmvU1h79i/77dDoNiShA1mWQ6EQ5Xkqr+wJsu
-         gTBhutzRW+eKJMaJ9Jr3zDluF4xkAJQVA31ZY2jqSkIpobAV6lWikvowheyJwe2rc3fP
-         BJiNDd0/M8RwqlE+Z+/RXa5vUqR1D1e1PzjdK4/qMyhEZZSumHDubiZJhZMlvslFYPXt
-         b6gl5BP1Hy6mJ/wMxSzrjdQUTuNm3tj+jKSVAny582eC+DeD5W9dnVj7/vTc6hydXYjO
-         FbXnynw5E4LGkICuX+phbOdBTg/yEE/ZsG9SOvj/fAAkcJR4gHkc4seNhFuUBXcVHi20
-         80fQ==
+        bh=U0s/TE2KV6UWHDtgqwRw1jB8OvUt1IQe30q53AHk1hk=;
+        b=H3CQAuen1EN6ba8KcVUfBquRIXKgMyFmmG0Oe5AklCEic1U0eG2IYi1ZcprGtsDQtq
+         F+EvOHn+chHntsC+hMgberUR8vB3J4C70a7JF6//uj0erRQreyGPPADQXI8NG8mehwY9
+         vPB0SjugZyUOsE8IaWFoC8sUmKTYhHpZbygOHihRGalsTM3M1mkCFCgbFaPYc8vweO2v
+         B55ygvboV1r2AReCiszkvZewhQ7noQtzzhogWtATaQkVlrBggDiNvw3zMkvHp9G3gEa/
+         R/YmDxDWTRkZrkkRD1OCbt17sa3lmzexV1ammBJHm6uZSaPdw743617t3TE34pQbGV5O
+         wt1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=mMFe6N5rGAQL4xugeXf4jUCNrDrEI+HfMzmjEgPHykI=;
-        b=XoGjFWpZvl2dkhayYT+e9uJIMQN6SmIoaYaLO5/gyf7Ptrsdn/Ph73KVywpKzEW7Tf
-         5uIL+mgrrdPTJqrSBJZZqfsP01OOcuR82sgWG3rcOEEU2WHOfYS1/cbDJHDJQdcskxKl
-         LlJD5ySyeCddnKl0ZN/1PImot5WRP137fCV3sg0o8tIfL+sKJXS2IIbBzb0t87waSScD
-         /5ARzapN35rlNAga3vxRbNg95OhXprZIyvMtxk7vco1BKsw3FxRgAQPlBDt6J85Ly9YL
-         9uxEGZkUF7ViXP/xANVpUsfdCqLXVh4waofTlOKv9vHB3f4oWVrioiKW/O4npzKHMSKR
-         9nPg==
-X-Gm-Message-State: APjAAAXO9zy4DrWTsHvv4xDsdF4ZVqHMZHkzf3837nfUmUftYd4VAdVp
-        R7UZAXX7i2sl+G1nHbU78ZIPQmN3
-X-Google-Smtp-Source: APXvYqyIoZr6LyMXbISicANkZCBY6Cts5JbF7pVB+ooQLCrXp3GC7DZv9SZsT/o+TOM8UmbrkTebPA==
-X-Received: by 2002:a1c:c747:: with SMTP id x68mr2155419wmf.138.1565244704272;
-        Wed, 07 Aug 2019 23:11:44 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:b0d6:7b82:d784:3855? (p200300EA8F2F3200B0D67B82D7843855.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:b0d6:7b82:d784:3855])
-        by smtp.googlemail.com with ESMTPSA id 66sm13484231wrc.83.2019.08.07.23.11.43
+        bh=U0s/TE2KV6UWHDtgqwRw1jB8OvUt1IQe30q53AHk1hk=;
+        b=XeoYCpzQanu9QkGpLHWsTjnXA6Ez7rPl5as8Rt+r/rLDmT8CtgFVK8u4p2mg4NN5QM
+         fZO6GKB8WA3m6boeh2VtQ0qY6eF6Hl4I8mUGOrvlFZ4Abo1GXUnjrmLA55vhHG2DYCh6
+         3RNpW86RtRfwAqhf+O+zn1uSyBcFa2T7pfO2qyu1MwEZdpZ6eAKi36N7pRKj5Da9ZTDA
+         Y9asSF8GzQphNYLAZfl/vPcHYlZppDsfpMpteKm3OzB/12XQa3oYm1S817kKbXBnfACk
+         avKMdUu+25VBPgrWM3hSyXGBWDzbk8NsL595x+k/nuj4cpiDJODAgdQ9MTI1azXicD/3
+         xpGg==
+X-Gm-Message-State: APjAAAUnatvQ/xRqlCiWco5ngxNMIpwdDAiAZS3xveVgKJa1ZVmbQPaY
+        XUjanz9DGrTNh4MHer+JKHQ=
+X-Google-Smtp-Source: APXvYqxkmwm8HYzroVBYOTrzQiJ2VWw+/UnCk4GK9eBTIIqLoX8iwmfeCjlji9FzaiCK4Cy6sNGtew==
+X-Received: by 2002:adf:ed0e:: with SMTP id a14mr15171502wro.259.1565244766283;
+        Wed, 07 Aug 2019 23:12:46 -0700 (PDT)
+Received: from [192.168.8.147] (72.163.185.81.rev.sfr.net. [81.185.163.72])
+        by smtp.gmail.com with ESMTPSA id b203sm2250184wmd.41.2019.08.07.23.12.45
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 23:11:43 -0700 (PDT)
-Subject: Re: [PATCH net] net: phy: rtl8211f: do a double read to get real time
- link status
-To:     Yonglong Liu <liuyonglong@huawei.com>, davem@davemloft.net,
-        andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linuxarm@huawei.com, salil.mehta@huawei.com,
-        yisen.zhuang@huawei.com, shiju.jose@huawei.com
-References: <1565183772-44268-1-git-send-email-liuyonglong@huawei.com>
- <d67831ab-8902-a653-3db9-b2f55adacabd@gmail.com>
- <e663235c-93eb-702d-5a9c-8f781d631c42@huawei.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <080b68c7-abe6-d142-da4b-26e8a7d4dc19@gmail.com>
-Date:   Thu, 8 Aug 2019 08:11:33 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Wed, 07 Aug 2019 23:12:45 -0700 (PDT)
+Subject: Re: [PATCH v2 1/2] tcp: add new tcp_mtu_probe_floor sysctl
+To:     Josh Hunt <johunt@akamai.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, edumazet@google.com, ncardwell@google.com
+References: <1565221950-1376-1-git-send-email-johunt@akamai.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a3a69a9d-5e30-77c4-02e2-c644bfdab820@gmail.com>
+Date:   Thu, 8 Aug 2019 08:12:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <e663235c-93eb-702d-5a9c-8f781d631c42@huawei.com>
+In-Reply-To: <1565221950-1376-1-git-send-email-johunt@akamai.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,74 +64,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.08.2019 03:15, Yonglong Liu wrote:
+
+
+On 8/8/19 1:52 AM, Josh Hunt wrote:
+> The current implementation of TCP MTU probing can considerably
+> underestimate the MTU on lossy connections allowing the MSS to get down to
+> 48. We have found that in almost all of these cases on our networks these
+> paths can handle much larger MTUs meaning the connections are being
+> artificially limited. Even though TCP MTU probing can raise the MSS back up
+> we have seen this not to be the case causing connections to be "stuck" with
+> an MSS of 48 when heavy loss is present.
 > 
+> Prior to pushing out this change we could not keep TCP MTU probing enabled
+> b/c of the above reasons. Now with a reasonble floor set we've had it
+> enabled for the past 6 months.
+
+I am still sad to see you do not share what is a reasonable value and let
+everybody guess. 
+
+It seems to be a top-secret value.
+
 > 
-> On 2019/8/8 0:47, Heiner Kallweit wrote:
->> On 07.08.2019 15:16, Yonglong Liu wrote:
->>> [   27.232781] hns3 0000:bd:00.3 eth7: net open
->>> [   27.237303] 8021q: adding VLAN 0 to HW filter on device eth7
->>> [   27.242972] IPv6: ADDRCONF(NETDEV_CHANGE): eth7: link becomes ready
->>> [   27.244449] hns3 0000:bd:00.3: invalid speed (-1)
->>> [   27.253904] hns3 0000:bd:00.3 eth7: failed to adjust link.
->>> [   27.259379] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change UP -> RUNNING
->>> [   27.924903] hns3 0000:bd:00.3 eth7: link up
->>> [   28.280479] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change RUNNING -> NOLINK
->>> [   29.208452] hns3 0000:bd:00.3 eth7: link down
->>> [   32.376745] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change NOLINK -> RUNNING
->>> [   33.208448] hns3 0000:bd:00.3 eth7: link up
->>> [   35.253821] hns3 0000:bd:00.3 eth7: net stop
->>> [   35.258270] hns3 0000:bd:00.3 eth7: link down
->>>
->>> When using rtl8211f in polling mode, may get a invalid speed,
->>> because of reading a fake link up and autoneg complete status
->>> immediately after starting autoneg:
->>>
->>>         ifconfig-1176  [007] ....    27.232763: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x00 val:0x1040
->>>   kworker/u257:1-670   [015] ....    27.232805: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x04 val:0x01e1
->>>   kworker/u257:1-670   [015] ....    27.232815: mdio_access: mii-0000:bd:00.3 write phy:0x07 reg:0x04 val:0x05e1
->>>   kworker/u257:1-670   [015] ....    27.232869: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x79ad
->>>   kworker/u257:1-670   [015] ....    27.232904: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x09 val:0x0200
->>>   kworker/u257:1-670   [015] ....    27.232940: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x00 val:0x1040
->>>   kworker/u257:1-670   [015] ....    27.232949: mdio_access: mii-0000:bd:00.3 write phy:0x07 reg:0x00 val:0x1240
->>>   kworker/u257:1-670   [015] ....    27.233003: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x79ad
->>>   kworker/u257:1-670   [015] ....    27.233039: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x0a val:0x3002
->>>   kworker/u257:1-670   [015] ....    27.233074: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x09 val:0x0200
->>>   kworker/u257:1-670   [015] ....    27.233110: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x05 val:0x0000
->>>   kworker/u257:1-670   [000] ....    28.280475: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x7989
->>>   kworker/u257:1-670   [000] ....    29.304471: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x7989
->>>
->>> According to the datasheet of rtl8211f, to get the real time
->>> link status, need to read MII_BMSR twice.
->>>
->>> This patch add a read_status hook for rtl8211f, and do a fake
->>> phy_read before genphy_read_status(), so that can get real link
->>> status in genphy_read_status().
->>>
->>> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
->>> ---
->>>  drivers/net/phy/realtek.c | 13 +++++++++++++
->>>  1 file changed, 13 insertions(+)
->>>
->> Is this an accidental resubmit? Because we discussed this in
->> https://marc.info/?t=156413509900003&r=1&w=2 and a fix has
->> been applied already.
->>
->> Heiner
->>
->> .
->>
+> The new sysctl will still default to TCP_MIN_SND_MSS (48), but gives
+> administrators the ability to control the floor of MSS probing.
 > 
-> In https://marc.info/?t=156413509900003&r=1&w=2 , the invalid speed
-> recurrence rate is almost 100%, and I had test the solution about
-> 5 times and it works. But yesterday it happen again suddenly, and than
-> I fount that the recurrence rate reduce to 10%. This time we get 0x79ad
-> after autoneg started which is not 0x798d from last discussion.
-> 
-> 
-> 
-OK, I'll have a look.
-However the approach is wrong. The double read is related to the latching
-of link-down events. This is done by all PHY's and not specific to RT8211F.
-Also it's not related to the problem. I assume any sufficient delay would
-do instead of the read.
+> Signed-off-by: Josh Hunt <johunt@akamai.com>
+
+Signed-off-by: Eric Dumazet <edumazet@google.com>
