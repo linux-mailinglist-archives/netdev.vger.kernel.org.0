@@ -2,468 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F2804856F8
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 02:09:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83DDC85733
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 02:19:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389759AbfHHAIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 20:08:53 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:42926 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389760AbfHHAIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 20:08:30 -0400
-Received: by mail-pg1-f193.google.com with SMTP id t132so43008601pgb.9
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 17:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rr5fxBi2oSUb1ENDkejqRrom+Qly2XgxOWDI0MGIgPo=;
-        b=DhonMwILImLSlS/P8FZIUgizhMMGphTP+RHTNtQ14Osysmk1euwK6qzXZM+Zd+A0ER
-         /WIN57ptIz2I2jJhRhmr++8enc7p1zZCVA1cM+W5Db3UGhaq2JtkezMt2YUa+MnsvyCO
-         WkJN1u4e/CTy3woFc0vWJqrk7eBPJvhd1AoyfR7QFP/1e2QXjlReBC8mS9m9SjDCYhKL
-         MvPhc1bvXvSppIBSHuNd3c+uv+g2DGbJpM343Y5rXuDYU7yBJuZs0OFAACCaaphtPzHV
-         a+yBOLvBOYedSZbDH5GFOwWymUlDBUEZnG0bLGlfxO3t204jGJZMP+TUy2PfNTPOpeY5
-         NlOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rr5fxBi2oSUb1ENDkejqRrom+Qly2XgxOWDI0MGIgPo=;
-        b=JJg5u4KAkDguNxh4v0GhouK6Fr8LPKth2qTYwXI95A07M+R9DwPIjWNkppxaGcY+dk
-         FDsu/aZuntBPNOB082+wWFRyiV24E9etUydvbKdhX+kwQpdXyj3gtOk8IM6Jqe598Dgg
-         TSUlQ05YFAB0OK0lMB9Cve8dw+qLmZDSLyvX5c4pXaBVOPfYY2ilCWU9hDA8ut6eIU9S
-         joTNuNNE5ZddM9F3M9iIDnMotX3f/2F/hyQnjZzU58o40704xnVAxOEqay29HcgqQ3uB
-         5E5cSTsepDp7N8UjhqgwJUdpU0qL6zKWW8El3yELm0bJhEBEi9npRkse5LMGgYSdqiS2
-         5/vA==
-X-Gm-Message-State: APjAAAXLRGL7HKqMKwhKH63FbI6x6nIUKYJaaEy4za8aGIHy5PRu05Ki
-        dJTC6BeiYZXVfFcsph5qfXMjjg==
-X-Google-Smtp-Source: APXvYqzod+gSnvi0x4AwWCAm9hQeGlBsEun9U0sEu29zm7bRGNRG5zYpWESsbeKPY7eDg9s4PVm14A==
-X-Received: by 2002:a17:90a:246f:: with SMTP id h102mr1021035pje.126.1565222909791;
-        Wed, 07 Aug 2019 17:08:29 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id p27sm137634481pfq.136.2019.08.07.17.08.29
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 07 Aug 2019 17:08:29 -0700 (PDT)
-Date:   Wed, 7 Aug 2019 17:08:28 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
+        id S1730551AbfHHATc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 20:19:32 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:2172 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729960AbfHHATb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 20:19:31 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7809tk1030304;
+        Wed, 7 Aug 2019 17:19:03 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=eLiiaRcPY81/A2NtauRP1ceEpGURks4Epr7BU9UZwV8=;
+ b=aM1KDqIxiRg5c+UPfi+agZdSKXmhW0nsWGiN2JBnqiUHnPqZWEQwcn2CrcMgPL9xFdd2
+ E8uwQqGttlbZtmh9nnmp9ZmUVjQ5zMS1/8xgSGBprtQHBi5gPZuZSsikn3Fz6HVYkmrU
+ iv/HtwESz+gDSUGDR8QrTqFRLzDvRd08+Xw= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2u87ufg81d-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 07 Aug 2019 17:19:03 -0700
+Received: from ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) by
+ ash-exhub204.TheFacebook.com (2620:10d:c0a8:83::4) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 7 Aug 2019 17:19:01 -0700
+Received: from NAM01-SN1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 7 Aug 2019 17:19:01 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bnHbOCkiGAdZDRnHs2Q2vpUQAsfu37akeeeIz3dmHDsLbwdMk2U8L+U2RrG8nY11zu377ZJtTp1YvKnx6kKB0x8xz2JPoRwSXneGgRiy77/jwczW5wKr5pwh+OuNP/1TCTkrO4LRM2Ev6RXZUj91khCPFYn5NT4EQoDdt/9+FG0xGZpc+61rM2i33UW1OrxK/1RY8LK7WQrgMuXNBTg0xKH5MZPh2Z3C7wKeFmy7/PRsQnVDHcwfJi4MTjqvM3IPk7QowR237n4qCDSGiy9SUq0soZX7wG93mVme1RS9pluPtf+yIwOd7Lp79jb2uuYbdPBC5lJFqtY/4NVFJ+q3CQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eLiiaRcPY81/A2NtauRP1ceEpGURks4Epr7BU9UZwV8=;
+ b=I0J8LEBWHhQyI4cXvPothVtMnhUcMSa6vhO6s6f9tqVGRnngU3pwUjVjlHLLtZPYjj8LzD9rKLrHXQzp+PRPafIUEofJPp/uuDCfNK2TyP6+JX8GlDqXQ62EXaE+HHmrJOQjuRTDB58/wKh2TolfKHcpwiS+q1SkUbvtbfIgpIWG0VPo7GCdWjXNZo02RwraLJPbxo+B08IJ/Ln0x6ABpJqoYaRQ+3E4DcLPoH5UnDURtOuaHniYupiT8/CX/FwNfGrBd9DqU6e6NrdazJZ5rtMui0lK5XIgbRhAFenGChya+S8WOdXapR/lsUjkHt7VJhS1YmXyUHyywG1LyqdY/A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=fb.com;dmarc=pass action=none header.from=fb.com;dkim=pass
+ header.d=fb.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eLiiaRcPY81/A2NtauRP1ceEpGURks4Epr7BU9UZwV8=;
+ b=bRRmFRh8p9fB89/DHxtYPGTnxavubyQp+BluWSro7aCKG6z9Q34wQHrt6Iuxrz60K3p1YSkW0Z5yeFtp/WpLJbRCCzR1K+YzT4MyRc8T4/KsnOlgcyJWlg3FWZDSG5gHl504N2kbWrrXdVuZtll4JQm32MNtBJrdZWLK5i6VuRA=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB2727.namprd15.prod.outlook.com (20.179.157.88) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2136.14; Thu, 8 Aug 2019 00:19:00 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::e499:ecba:ec04:abac]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::e499:ecba:ec04:abac%5]) with mapi id 15.20.2136.018; Thu, 8 Aug 2019
+ 00:19:00 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+CC:     Stanislav Fomichev <sdf@google.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "ast@kernel.org" <ast@kernel.org>,
         "daniel@iogearbox.net" <daniel@iogearbox.net>,
         Martin Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next 3/3] selftests/bpf: add sockopt
- clone/inheritance test
-Message-ID: <20190808000828.GB2820@mini-arch>
+Subject: Re: [PATCH bpf-next 1/3] bpf: support cloning sk storage on accept()
+Thread-Topic: [PATCH bpf-next 1/3] bpf: support cloning sk storage on accept()
+Thread-Index: AQHVTTdwUPivpnTVP0StwugAgCIRIabv2OiAgACGp4CAAAO+gA==
+Date:   Thu, 8 Aug 2019 00:18:59 +0000
+Message-ID: <d4388370-d26d-1ee4-3dcc-a86a008fa9a2@fb.com>
 References: <20190807154720.260577-1-sdf@google.com>
- <20190807154720.260577-4-sdf@google.com>
- <5a18a8ed-ab1b-de15-5dff-2b4a068bbe56@fb.com>
+ <20190807154720.260577-2-sdf@google.com>
+ <9bd56e49-c38d-e1c4-1ff3-8250531d0d48@fb.com>
+ <20190808000533.GA2820@mini-arch>
+In-Reply-To: <20190808000533.GA2820@mini-arch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR08CA0012.namprd08.prod.outlook.com
+ (2603:10b6:a03:100::25) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::1:f6d1]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2b9e7b5a-6419-44d1-0ebb-08d71b960282
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2727;
+x-ms-traffictypediagnostic: BYAPR15MB2727:
+x-microsoft-antispam-prvs: <BYAPR15MB2727A3E6D3871880D23F8249D3D70@BYAPR15MB2727.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 012349AD1C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(346002)(376002)(39860400002)(366004)(396003)(189003)(199004)(14454004)(53936002)(46003)(6486002)(6436002)(31686004)(81156014)(81166006)(25786009)(8676002)(486006)(476003)(4326008)(2616005)(8936002)(11346002)(5660300002)(6512007)(76176011)(446003)(186003)(102836004)(386003)(6506007)(53546011)(7736002)(478600001)(229853002)(305945005)(256004)(2906002)(316002)(71190400001)(52116002)(71200400001)(14444005)(6116002)(6246003)(36756003)(66446008)(64756008)(66556008)(31696002)(66946007)(86362001)(66476007)(54906003)(6916009)(99286004);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2727;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: YPdOGaAEnZItTAGXylUe0IPrlvT5H+uhWrnwVziXmqPYyYEYfYftd1XZyFk23VJ+OGW43ddz2aFm1BtWD3gEFwnyOg12G6iwJxcZMxMn5TJG06GvPvE8ZHVxMjesRKBOB158SV/EWQXdiSFXsyX6Kvw2OVyaB9FO+XRUPHqoqpxz9YsJ5boaDVuh113p6NRv6t2Tmn0v1yYknNGbx8XcH7YdNH4X6PRN+GqxbxC/lTwmbptsQ6QTz2DElyIooaujrq3PyFDND99pWRuHByWn2NCOcYRJpMoqsKbkSYoP9nyUJ3HLrF9m2ayNjPi8nyjA1bYHI4XP/MIfrqhxnO/eDvxjNXwkc/sRxSuyCD4a7X0vmdlpGLppHsuLsIvD3mKkwGnr3N95MoS0FaNtL/ZDDOcbk6D0ry+UYJktnyykFfA=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F5334C3CB73A1C4D9EB70C73630EB49D@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5a18a8ed-ab1b-de15-5dff-2b4a068bbe56@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b9e7b5a-6419-44d1-0ebb-08d71b960282
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2019 00:19:00.1694
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yhs@fb.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2727
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-07_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908080000
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/07, Yonghong Song wrote:
-> 
-> 
-> On 8/7/19 8:47 AM, Stanislav Fomichev wrote:
-> > Add a test that calls setsockopt on the listener socket which triggers
-> > BPF program. This BPF program writes to the sk storage and sets
-> > clone flag. Make sure that sk storage is cloned for a newly
-> > accepted connection.
-> > 
-> > We have two cloned maps in the tests to make sure we hit both cases
-> > in bpf_sk_storage_clone: first element (sk_storage_alloc) and
-> > non-first element(s) (selem_link_map).
-> > 
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >   tools/testing/selftests/bpf/.gitignore        |   1 +
-> >   tools/testing/selftests/bpf/Makefile          |   3 +-
-> >   .../selftests/bpf/progs/sockopt_inherit.c     | 102 +++++++
-> >   .../selftests/bpf/test_sockopt_inherit.c      | 252 ++++++++++++++++++
-> >   4 files changed, 357 insertions(+), 1 deletion(-)
-> >   create mode 100644 tools/testing/selftests/bpf/progs/sockopt_inherit.c
-> >   create mode 100644 tools/testing/selftests/bpf/test_sockopt_inherit.c
-> > 
-> > diff --git a/tools/testing/selftests/bpf/.gitignore b/tools/testing/selftests/bpf/.gitignore
-> > index 90f70d2c7c22..60c9338cd9b4 100644
-> > --- a/tools/testing/selftests/bpf/.gitignore
-> > +++ b/tools/testing/selftests/bpf/.gitignore
-> > @@ -42,4 +42,5 @@ xdping
-> >   test_sockopt
-> >   test_sockopt_sk
-> >   test_sockopt_multi
-> > +test_sockopt_inherit
-> >   test_tcp_rtt
-> > diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-> > index 3bd0f4a0336a..c875763a851a 100644
-> > --- a/tools/testing/selftests/bpf/Makefile
-> > +++ b/tools/testing/selftests/bpf/Makefile
-> > @@ -29,7 +29,7 @@ TEST_GEN_PROGS = test_verifier test_tag test_maps test_lru_map test_lpm_map test
-> >   	test_cgroup_storage test_select_reuseport test_section_names \
-> >   	test_netcnt test_tcpnotify_user test_sock_fields test_sysctl test_hashmap \
-> >   	test_btf_dump test_cgroup_attach xdping test_sockopt test_sockopt_sk \
-> > -	test_sockopt_multi test_tcp_rtt
-> > +	test_sockopt_multi test_sockopt_inherit test_tcp_rtt
-> >   
-> >   BPF_OBJ_FILES = $(patsubst %.c,%.o, $(notdir $(wildcard progs/*.c)))
-> >   TEST_GEN_FILES = $(BPF_OBJ_FILES)
-> > @@ -110,6 +110,7 @@ $(OUTPUT)/test_cgroup_attach: cgroup_helpers.c
-> >   $(OUTPUT)/test_sockopt: cgroup_helpers.c
-> >   $(OUTPUT)/test_sockopt_sk: cgroup_helpers.c
-> >   $(OUTPUT)/test_sockopt_multi: cgroup_helpers.c
-> > +$(OUTPUT)/test_sockopt_inherit: cgroup_helpers.c
-> >   $(OUTPUT)/test_tcp_rtt: cgroup_helpers.c
-> >   
-> >   .PHONY: force
-> > diff --git a/tools/testing/selftests/bpf/progs/sockopt_inherit.c b/tools/testing/selftests/bpf/progs/sockopt_inherit.c
-> > new file mode 100644
-> > index 000000000000..357fc9db5874
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/sockopt_inherit.c
-> > @@ -0,0 +1,102 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <linux/bpf.h>
-> > +#include "bpf_helpers.h"
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > +__u32 _version SEC("version") = 1;
-> > +
-> > +#define SOL_CUSTOM			0xdeadbeef
-> > +#define CUSTOM_INHERIT1			0
-> > +#define CUSTOM_INHERIT2			1
-> > +#define CUSTOM_LISTENER			2
-> > +
-> > +struct sockopt_inherit {
-> > +	__u8 val;
-> > +};
-> > +
-> > +struct bpf_map_def SEC("maps") cloned1_map = {
-> > +	.type = BPF_MAP_TYPE_SK_STORAGE,
-> > +	.key_size = sizeof(int),
-> > +	.value_size = sizeof(struct sockopt_inherit),
-> > +	.map_flags = BPF_F_NO_PREALLOC,
-> > +};
-> > +BPF_ANNOTATE_KV_PAIR(cloned1_map, int, struct sockopt_inherit);
-> > +
-> > +struct bpf_map_def SEC("maps") cloned2_map = {
-> > +	.type = BPF_MAP_TYPE_SK_STORAGE,
-> > +	.key_size = sizeof(int),
-> > +	.value_size = sizeof(struct sockopt_inherit),
-> > +	.map_flags = BPF_F_NO_PREALLOC,
-> > +};
-> > +BPF_ANNOTATE_KV_PAIR(cloned2_map, int, struct sockopt_inherit);
-> > +
-> > +struct bpf_map_def SEC("maps") listener_map = {
-> > +	.type = BPF_MAP_TYPE_SK_STORAGE,
-> > +	.key_size = sizeof(int),
-> > +	.value_size = sizeof(struct sockopt_inherit),
-> > +	.map_flags = BPF_F_NO_PREALLOC,
-> > +};
-> > +BPF_ANNOTATE_KV_PAIR(listener_map, int, struct sockopt_inherit);
-> 
-> Your still use the old way for map definitions. Is this possible for you
-> to use new map definitions (in section ".maps")?
-Ah, my bad, I'm not used to the new defs. Will fix!
-
-> > +
-> > +static __inline struct sockopt_inherit *get_storage(struct bpf_sockopt *ctx)
-> > +{
-> > +	if (ctx->optname == CUSTOM_INHERIT1)
-> > +		return bpf_sk_storage_get(&cloned1_map, ctx->sk, 0,
-> > +					  BPF_SK_STORAGE_GET_F_CREATE |
-> > +					  BPF_SK_STORAGE_GET_F_CLONE);
-> > +	else if (ctx->optname == CUSTOM_INHERIT2)
-> > +		return bpf_sk_storage_get(&cloned2_map, ctx->sk, 0,
-> > +					  BPF_SK_STORAGE_GET_F_CREATE |
-> > +					  BPF_SK_STORAGE_GET_F_CLONE);
-> > +	else
-> > +		return bpf_sk_storage_get(&listener_map, ctx->sk, 0,
-> > +					  BPF_SK_STORAGE_GET_F_CREATE);
-> > +}
-> > +
-> [.....]> diff --git a/tools/testing/selftests/bpf/test_sockopt_inherit.c 
-> b/tools/testing/selftests/bpf/test_sockopt_inherit.c
-> > new file mode 100644
-> > index 000000000000..e47b9c28d743
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/test_sockopt_inherit.c
-> > @@ -0,0 +1,252 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <error.h>
-> > +#include <errno.h>
-> > +#include <stdio.h>
-> > +#include <unistd.h>
-> > +#include <sys/types.h>
-> > +#include <sys/socket.h>
-> > +#include <netinet/in.h>
-> > +#include <pthread.h>
-> > +
-> > +#include <linux/filter.h>
-> > +#include <bpf/bpf.h>
-> > +#include <bpf/libbpf.h>
-> > +
-> > +#include "bpf_rlimit.h"
-> > +#include "bpf_util.h"
-> > +#include "cgroup_helpers.h"
-> > +
-> > +#define CG_PATH				"/sockopt_inherit"
-> > +#define SOL_CUSTOM			0xdeadbeef
-> > +#define CUSTOM_INHERIT1			0
-> > +#define CUSTOM_INHERIT2			1
-> > +#define CUSTOM_LISTENER			2
-> > +
-> > +static int connect_to_server(int server_fd)
-> > +{
-> > +	struct sockaddr_storage addr;
-> > +	socklen_t len = sizeof(addr);
-> > +	int fd;
-> > +
-> > +	fd = socket(AF_INET, SOCK_STREAM, 0);
-> > +	if (fd < 0) {
-> > +		log_err("Failed to create client socket");
-> > +		return -1;
-> > +	}
-> > +
-> > +	if (getsockname(server_fd, (struct sockaddr *)&addr, &len)) {
-> > +		log_err("Failed to get server addr");
-> > +		goto out;
-> > +	}
-> > +
-> > +	if (connect(fd, (const struct sockaddr *)&addr, len) < 0) {
-> > +		log_err("Fail to connect to server");
-> > +		goto out;
-> > +	}
-> > +
-> > +	return fd;
-> > +
-> > +out:
-> > +	close(fd);
-> > +	return -1;
-> > +}
-> > +
-> > +static int verify_sockopt(int fd, int optname, const char *msg, char expected)
-> > +{
-> > +	socklen_t optlen = 1;
-> > +	char buf = 0;
-> > +	int err;
-> > +
-> > +	err = getsockopt(fd, SOL_CUSTOM, optname, &buf, &optlen);
-> > +	if (err) {
-> > +		log_err("%s: failed to call getsockopt", msg);
-> > +		return 1;
-> > +	}
-> > +
-> > +	log_err("%s %d: got=0x%x ? expected=0x%x", msg, optname, buf, expected);
-> 
-> There may not be error here.
-Good point, will switch to simple printf.
-
-> > +
-> > +	if (buf != expected) {
-> > +		log_err("%s: unexpected getsockopt value %d != %d", msg,
-> > +			buf, expected);
-> > +		return 1;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static void *server_thread(void *arg)
-> > +{
-> > +	struct sockaddr_storage addr;
-> > +	socklen_t len = sizeof(addr);
-> > +	int fd = *(int *)arg;
-> > +	int client_fd;
-> > +	int err = 0;
-> > +
-> > +	if (listen(fd, 1) < 0)
-> > +		error(1, errno, "Failed to listed on socket");
-> > +
-> > +	err += verify_sockopt(fd, CUSTOM_INHERIT1, "listen", 1);
-> > +	err += verify_sockopt(fd, CUSTOM_INHERIT2, "listen", 1);
-> > +	err += verify_sockopt(fd, CUSTOM_LISTENER, "listen", 1);
-> > +
-> > +	client_fd = accept(fd, (struct sockaddr *)&addr, &len);
-> > +	if (client_fd < 0)
-> > +		error(1, errno, "Failed to accept client");
-> > +
-> > +	err += verify_sockopt(client_fd, CUSTOM_INHERIT1, "accept", 1);
-> > +	err += verify_sockopt(client_fd, CUSTOM_INHERIT2, "accept", 1);
-> > +	err += verify_sockopt(client_fd, CUSTOM_LISTENER, "accept", 0);
-> > +
-> > +	close(client_fd);
-> > +
-> > +	return (void *)(long)err;
-> > +}
-> > +
-> > +static int start_server(void)
-> > +{
-> > +	struct sockaddr_in addr = {
-> > +		.sin_family = AF_INET,
-> > +		.sin_addr.s_addr = htonl(INADDR_LOOPBACK),
-> > +	};
-> > +	char buf;
-> > +	int err;
-> > +	int fd;
-> > +	int i;
-> > +
-> > +	fd = socket(AF_INET, SOCK_STREAM, 0);
-> > +	if (fd < 0) {
-> > +		log_err("Failed to create server socket");
-> > +		return -1;
-> > +	}
-> > +
-> > +	for (i = CUSTOM_INHERIT1; i <= CUSTOM_LISTENER; i++) {
-> > +		buf = 0x01;
-> > +		err = setsockopt(fd, SOL_CUSTOM, i, &buf, 1);
-> > +		if (err) {
-> > +			log_err("Failed to call setsockopt(%d)", i);
-> > +			close(fd);
-> > +			return -1;
-> > +		}
-> > +	}
-> > +
-> > +	if (bind(fd, (const struct sockaddr *)&addr, sizeof(addr)) < 0) {
-> > +		log_err("Failed to bind socket");
-> > +		close(fd);
-> > +		return -1;
-> > +	}
-> > +
-> > +	return fd;
-> > +}
-> > +
-> > +static int prog_attach(struct bpf_object *obj, int cgroup_fd, const char *title)
-> > +{
-> > +	enum bpf_attach_type attach_type;
-> > +	enum bpf_prog_type prog_type;
-> > +	struct bpf_program *prog;
-> > +	int err;
-> > +
-> > +	err = libbpf_prog_type_by_name(title, &prog_type, &attach_type);
-> > +	if (err) {
-> > +		log_err("Failed to deduct types for %s BPF program", title);
-> > +		return -1;
-> > +	}
-> > +
-> > +	prog = bpf_object__find_program_by_title(obj, title);
-> > +	if (!prog) {
-> > +		log_err("Failed to find %s BPF program", title);
-> > +		return -1;
-> > +	}
-> > +
-> > +	err = bpf_prog_attach(bpf_program__fd(prog), cgroup_fd,
-> > +			      attach_type, 0);
-> > +	if (err) {
-> > +		log_err("Failed to attach %s BPF program", title);
-> > +		return -1;
-> > +	}
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int run_test(int cgroup_fd)
-> > +{
-> > +	struct bpf_prog_load_attr attr = {
-> > +		.file = "./sockopt_inherit.o",
-> > +	};
-> > +	int server_fd = -1, client_fd;
-> > +	struct bpf_object *obj;
-> > +	void *server_err;
-> > +	pthread_t tid;
-> > +	int ignored;
-> > +	int err;
-> > +
-> > +	err = bpf_prog_load_xattr(&attr, &obj, &ignored);
-> > +	if (err) {
-> > +		log_err("Failed to load BPF object");
-> > +		return -1;
-> > +	}
-> > +
-> > +	err = prog_attach(obj, cgroup_fd, "cgroup/getsockopt");
-> > +	if (err)
-> > +		goto close_bpf_object;
-> > +
-> > +	err = prog_attach(obj, cgroup_fd, "cgroup/setsockopt");
-> > +	if (err)
-> > +		goto close_bpf_object;
-> > +
-> > +	server_fd = start_server();
-> > +	if (server_fd < 0) {
-> > +		err = -1;
-> > +		goto close_bpf_object;
-> > +	}
-> > +
-> > +	pthread_create(&tid, NULL, server_thread, (void *)&server_fd);
-> > +
-> > +	client_fd = connect_to_server(server_fd);
-> > +	if (client_fd < 0) {
-> > +		err = -1;
-> > +		goto close_bpf_object;
-> > +	}
-> > +
-> > +	err += verify_sockopt(client_fd, CUSTOM_INHERIT1, "connect", 0);
-> > +	err += verify_sockopt(client_fd, CUSTOM_INHERIT2, "connect", 0);
-> > +	err += verify_sockopt(client_fd, CUSTOM_LISTENER, "connect", 0);
-> > +
-> > +	pthread_join(tid, &server_err);
-> > +
-> > +	err += (int)(long)server_err;
-> > +
-> > +	close(client_fd);
-> > +
-> > +close_bpf_object:
-> > +	bpf_object__close(obj);
-> > +	close(server_fd);
-> 
-> server_fd could be -1 here.
-I've initialized it to -1 so we can close(-1) here and not close(some
-random data). Shouldn't be a problem, right?
-
-The order is backwards though, should be:
-close(server_fd);
-bpf_object__close(obj);
-
-I can probably add a label for bpf_object__close case to avoid this close(-1).
-Will do for a v2.
-
-> > +	return err;
-> > +}
-> > +
-> > +int main(int args, char **argv)
-> > +{
-> > +	int cgroup_fd;
-> > +	int err = EXIT_SUCCESS;
-> > +
-> > +	if (setup_cgroup_environment())
-> > +		return err;
-> > +
-> > +	cgroup_fd = create_and_get_cgroup(CG_PATH);
-> > +	if (cgroup_fd < 0)
-> > +		goto cleanup_cgroup_env;
-> > +
-> > +	if (join_cgroup(CG_PATH))
-> > +		goto cleanup_cgroup;
-> > +
-> > +	if (run_test(cgroup_fd))
-> > +		err = EXIT_FAILURE;
-> > +
-> > +	printf("test_sockopt_inherit: %s\n",
-> > +	       err == EXIT_SUCCESS ? "PASSED" : "FAILED");
-> > +
-> > +cleanup_cgroup:
-> > +	close(cgroup_fd);
-> > +cleanup_cgroup_env:
-> > +	cleanup_cgroup_environment();
-> > +	return err;
-> > +}
-> > 
+DQoNCk9uIDgvNy8xOSA1OjA1IFBNLCBTdGFuaXNsYXYgRm9taWNoZXYgd3JvdGU6DQo+IE9uIDA4
+LzA3LCBZb25naG9uZyBTb25nIHdyb3RlOg0KPj4NCj4+DQo+PiBPbiA4LzcvMTkgODo0NyBBTSwg
+U3RhbmlzbGF2IEZvbWljaGV2IHdyb3RlOg0KPj4+IEFkZCBuZXcgaGVscGVyIGJwZl9za19zdG9y
+YWdlX2Nsb25lIHdoaWNoIG9wdGlvbmFsbHkgY2xvbmVzIHNrIHN0b3JhZ2UNCj4+PiBhbmQgY2Fs
+bCBpdCBmcm9tIGJwZl9za19zdG9yYWdlX2Nsb25lLiBSZXVzZSB0aGUgZ2FwIGluDQo+Pj4gYnBm
+X3NrX3N0b3JhZ2VfZWxlbSB0byBzdG9yZSBjbG9uZS9ub24tY2xvbmUgZmxhZy4NCj4+Pg0KPj4+
+IENjOiBNYXJ0aW4gS2FGYWkgTGF1IDxrYWZhaUBmYi5jb20+DQo+Pj4gU2lnbmVkLW9mZi1ieTog
+U3RhbmlzbGF2IEZvbWljaGV2IDxzZGZAZ29vZ2xlLmNvbT4NCj4+DQo+PiBJIHRyaWVkIHRvIHNl
+ZSB3aGV0aGVyIEkgY2FuIGZpbmQgYW55IG1pc3NpbmcgcmFjZSBjb25kaXRpb25zIGluDQo+PiB0
+aGUgY29kZSBidXQgSSBmYWlsZWQuIFNvIGV4Y2VwdCBhIG1pbm9yIGNvbW1lbnRzIGJlbG93LA0K
+PiBUaGFua3MgZm9yIGEgcmV2aWV3IQ0KPiANCj4+IEFja2VkLWJ5OiBZb25naG9uZyBTb25nIDx5
+aHNAZmIuY29tPg0KPj4NCj4+PiAtLS0NCj4+PiAgICBpbmNsdWRlL25ldC9icGZfc2tfc3RvcmFn
+ZS5oIHwgIDEwICsrKysNCj4+PiAgICBpbmNsdWRlL3VhcGkvbGludXgvYnBmLmggICAgIHwgICAx
+ICsNCj4+PiAgICBuZXQvY29yZS9icGZfc2tfc3RvcmFnZS5jICAgIHwgMTAyICsrKysrKysrKysr
+KysrKysrKysrKysrKysrKysrKysrKy0tDQo+Pj4gICAgbmV0L2NvcmUvc29jay5jICAgICAgICAg
+ICAgICB8ICAgOSArKy0tDQo+Pj4gICAgNCBmaWxlcyBjaGFuZ2VkLCAxMTUgaW5zZXJ0aW9ucygr
+KSwgNyBkZWxldGlvbnMoLSkNCj4+Pg0KPj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL25ldC9icGZf
+c2tfc3RvcmFnZS5oIGIvaW5jbHVkZS9uZXQvYnBmX3NrX3N0b3JhZ2UuaA0KPj4+IGluZGV4IGI5
+ZGNiMDJlNzU2Yi4uOGU0ZjgzMWQyZTUyIDEwMDY0NA0KPj4+IC0tLSBhL2luY2x1ZGUvbmV0L2Jw
+Zl9za19zdG9yYWdlLmgNCj4+PiArKysgYi9pbmNsdWRlL25ldC9icGZfc2tfc3RvcmFnZS5oDQo+
+Pj4gQEAgLTEwLDQgKzEwLDE0IEBAIHZvaWQgYnBmX3NrX3N0b3JhZ2VfZnJlZShzdHJ1Y3Qgc29j
+ayAqc2spOw0KPj4+ICAgIGV4dGVybiBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gYnBmX3Nr
+X3N0b3JhZ2VfZ2V0X3Byb3RvOw0KPj4+ICAgIGV4dGVybiBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNf
+cHJvdG8gYnBmX3NrX3N0b3JhZ2VfZGVsZXRlX3Byb3RvOw0KPj4+ICAgIA0KPj4+ICsjaWZkZWYg
+Q09ORklHX0JQRl9TWVNDQUxMDQo+Pj4gK2ludCBicGZfc2tfc3RvcmFnZV9jbG9uZShjb25zdCBz
+dHJ1Y3Qgc29jayAqc2ssIHN0cnVjdCBzb2NrICpuZXdzayk7DQo+Pj4gKyNlbHNlDQo+Pj4gK3N0
+YXRpYyBpbmxpbmUgaW50IGJwZl9za19zdG9yYWdlX2Nsb25lKGNvbnN0IHN0cnVjdCBzb2NrICpz
+aywNCj4+PiArCQkJCSAgICAgICBzdHJ1Y3Qgc29jayAqbmV3c2spDQo+Pj4gK3sNCj4+PiArCXJl
+dHVybiAwOw0KPj4+ICt9DQo+Pj4gKyNlbmRpZg0KPj4+ICsNCj4+PiAgICAjZW5kaWYgLyogX0JQ
+Rl9TS19TVE9SQUdFX0ggKi8NCj4+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L2Jw
+Zi5oIGIvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+Pj4gaW5kZXggNDM5M2JkNGIyNDE5Li4w
+MDQ1OWNhNGM4Y2YgMTAwNjQ0DQo+Pj4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+
+Pj4gKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+Pj4gQEAgLTI5MzEsNiArMjkzMSw3
+IEBAIGVudW0gYnBmX2Z1bmNfaWQgew0KPj4+ICAgIA0KPj4+ICAgIC8qIEJQRl9GVU5DX3NrX3N0
+b3JhZ2VfZ2V0IGZsYWdzICovDQo+Pj4gICAgI2RlZmluZSBCUEZfU0tfU1RPUkFHRV9HRVRfRl9D
+UkVBVEUJKDFVTEwgPDwgMCkNCj4+PiArI2RlZmluZSBCUEZfU0tfU1RPUkFHRV9HRVRfRl9DTE9O
+RQkoMVVMTCA8PCAxKQ0KPj4+ICAgIA0KPj4+ICAgIC8qIE1vZGUgZm9yIEJQRl9GVU5DX3NrYl9h
+ZGp1c3Rfcm9vbSBoZWxwZXIuICovDQo+Pj4gICAgZW51bSBicGZfYWRqX3Jvb21fbW9kZSB7DQo+
+Pj4gZGlmZiAtLWdpdCBhL25ldC9jb3JlL2JwZl9za19zdG9yYWdlLmMgYi9uZXQvY29yZS9icGZf
+c2tfc3RvcmFnZS5jDQo+Pj4gaW5kZXggOTRjN2Y3N2VjYjZiLi5iNmRlYTY3OTY1YmMgMTAwNjQ0
+DQo+Pj4gLS0tIGEvbmV0L2NvcmUvYnBmX3NrX3N0b3JhZ2UuYw0KPj4+ICsrKyBiL25ldC9jb3Jl
+L2JwZl9za19zdG9yYWdlLmMNCj4+PiBAQCAtMTIsNiArMTIsOSBAQA0KPj4+ICAgIA0KPj4+ICAg
+IHN0YXRpYyBhdG9taWNfdCBjYWNoZV9pZHg7DQo+Pj4gICAgDQo+Pj4gKyNkZWZpbmUgQlBGX1NL
+X1NUT1JBR0VfR0VUX0ZfTUFTSwkoQlBGX1NLX1NUT1JBR0VfR0VUX0ZfQ1JFQVRFIHwgXA0KPj4+
+ICsJCQkJCSBCUEZfU0tfU1RPUkFHRV9HRVRfRl9DTE9ORSkNCj4+PiArDQo+Pj4gICAgc3RydWN0
+IGJ1Y2tldCB7DQo+Pj4gICAgCXN0cnVjdCBobGlzdF9oZWFkIGxpc3Q7DQo+Pj4gICAgCXJhd19z
+cGlubG9ja190IGxvY2s7DQo+Pj4gQEAgLTY2LDcgKzY5LDggQEAgc3RydWN0IGJwZl9za19zdG9y
+YWdlX2VsZW0gew0KPj4+ICAgIAlzdHJ1Y3QgaGxpc3Rfbm9kZSBzbm9kZTsJLyogTGlua2VkIHRv
+IGJwZl9za19zdG9yYWdlICovDQo+Pj4gICAgCXN0cnVjdCBicGZfc2tfc3RvcmFnZSBfX3JjdSAq
+c2tfc3RvcmFnZTsNCj4+PiAgICAJc3RydWN0IHJjdV9oZWFkIHJjdTsNCj4+PiAtCS8qIDggYnl0
+ZXMgaG9sZSAqLw0KPj4+ICsJdTggY2xvbmU6MTsNCj4+PiArCS8qIDcgYnl0ZXMgaG9sZSAqLw0K
+Pj4+ICAgIAkvKiBUaGUgZGF0YSBpcyBzdG9yZWQgaW4gYW90aGVyIGNhY2hlbGluZSB0byBtaW5p
+bWl6ZQ0KPj4+ICAgIAkgKiB0aGUgbnVtYmVyIG9mIGNhY2hlbGluZXMgYWNjZXNzIGR1cmluZyBh
+IGNhY2hlIGhpdC4NCj4+PiAgICAJICovDQo+Pj4gQEAgLTUwOSw3ICs1MTMsNyBAQCBzdGF0aWMg
+aW50IHNrX3N0b3JhZ2VfZGVsZXRlKHN0cnVjdCBzb2NrICpzaywgc3RydWN0IGJwZl9tYXAgKm1h
+cCkNCj4+PiAgICAJcmV0dXJuIDA7DQo+Pj4gICAgfQ0KPj4+ICAgIA0KPj4+IC0vKiBDYWxsZWQg
+YnkgX19za19kZXN0cnVjdCgpICovDQo+Pj4gKy8qIENhbGxlZCBieSBfX3NrX2Rlc3RydWN0KCkg
+JiBicGZfc2tfc3RvcmFnZV9jbG9uZSgpICovDQo+Pj4gICAgdm9pZCBicGZfc2tfc3RvcmFnZV9m
+cmVlKHN0cnVjdCBzb2NrICpzaykNCj4+PiAgICB7DQo+Pj4gICAgCXN0cnVjdCBicGZfc2tfc3Rv
+cmFnZV9lbGVtICpzZWxlbTsNCj4+PiBAQCAtNzM5LDE5ICs3NDMsMTA2IEBAIHN0YXRpYyBpbnQg
+YnBmX2ZkX3NrX3N0b3JhZ2VfZGVsZXRlX2VsZW0oc3RydWN0IGJwZl9tYXAgKm1hcCwgdm9pZCAq
+a2V5KQ0KPj4+ICAgIAlyZXR1cm4gZXJyOw0KPj4+ICAgIH0NCj4+PiAgICANCj4+PiArc3RhdGlj
+IHN0cnVjdCBicGZfc2tfc3RvcmFnZV9lbGVtICoNCj4+PiArYnBmX3NrX3N0b3JhZ2VfY2xvbmVf
+ZWxlbShzdHJ1Y3Qgc29jayAqbmV3c2ssDQo+Pj4gKwkJCSAgc3RydWN0IGJwZl9za19zdG9yYWdl
+X21hcCAqc21hcCwNCj4+PiArCQkJICBzdHJ1Y3QgYnBmX3NrX3N0b3JhZ2VfZWxlbSAqc2VsZW0p
+DQo+Pj4gK3sNCj4+PiArCXN0cnVjdCBicGZfc2tfc3RvcmFnZV9lbGVtICpjb3B5X3NlbGVtOw0K
+Pj4+ICsNCj4+PiArCWNvcHlfc2VsZW0gPSBzZWxlbV9hbGxvYyhzbWFwLCBuZXdzaywgTlVMTCwg
+dHJ1ZSk7DQo+Pj4gKwlpZiAoIWNvcHlfc2VsZW0pDQo+Pj4gKwkJcmV0dXJuIEVSUl9QVFIoLUVO
+T01FTSk7DQo+Pj4gKw0KPj4+ICsJaWYgKG1hcF92YWx1ZV9oYXNfc3Bpbl9sb2NrKCZzbWFwLT5t
+YXApKQ0KPj4+ICsJCWNvcHlfbWFwX3ZhbHVlX2xvY2tlZCgmc21hcC0+bWFwLCBTREFUQShjb3B5
+X3NlbGVtKS0+ZGF0YSwNCj4+PiArCQkJCSAgICAgIFNEQVRBKHNlbGVtKS0+ZGF0YSwgdHJ1ZSk7
+DQo+Pj4gKwllbHNlDQo+Pj4gKwkJY29weV9tYXBfdmFsdWUoJnNtYXAtPm1hcCwgU0RBVEEoY29w
+eV9zZWxlbSktPmRhdGEsDQo+Pj4gKwkJCSAgICAgICBTREFUQShzZWxlbSktPmRhdGEpOw0KPj4+
+ICsNCj4+PiArCXJldHVybiBjb3B5X3NlbGVtOw0KPj4+ICt9DQo+Pj4gKw0KPj4+ICtpbnQgYnBm
+X3NrX3N0b3JhZ2VfY2xvbmUoY29uc3Qgc3RydWN0IHNvY2sgKnNrLCBzdHJ1Y3Qgc29jayAqbmV3
+c2spDQo+Pj4gK3sNCj4+PiArCXN0cnVjdCBicGZfc2tfc3RvcmFnZSAqbmV3X3NrX3N0b3JhZ2Ug
+PSBOVUxMOw0KPj4+ICsJc3RydWN0IGJwZl9za19zdG9yYWdlICpza19zdG9yYWdlOw0KPj4+ICsJ
+c3RydWN0IGJwZl9za19zdG9yYWdlX2VsZW0gKnNlbGVtOw0KPj4+ICsJaW50IHJldDsNCj4+PiAr
+DQo+Pj4gKwlSQ1VfSU5JVF9QT0lOVEVSKG5ld3NrLT5za19icGZfc3RvcmFnZSwgTlVMTCk7DQo+
+Pj4gKw0KPj4+ICsJcmN1X3JlYWRfbG9jaygpOw0KPj4+ICsJc2tfc3RvcmFnZSA9IHJjdV9kZXJl
+ZmVyZW5jZShzay0+c2tfYnBmX3N0b3JhZ2UpOw0KPj4+ICsNCj4+PiArCWlmICghc2tfc3RvcmFn
+ZSB8fCBobGlzdF9lbXB0eSgmc2tfc3RvcmFnZS0+bGlzdCkpDQo+Pj4gKwkJZ290byBvdXQ7DQo+
+Pj4gKw0KPj4+ICsJaGxpc3RfZm9yX2VhY2hfZW50cnlfcmN1KHNlbGVtLCAmc2tfc3RvcmFnZS0+
+bGlzdCwgc25vZGUpIHsNCj4+PiArCQlzdHJ1Y3QgYnBmX3NrX3N0b3JhZ2VfbWFwICpzbWFwOw0K
+Pj4+ICsJCXN0cnVjdCBicGZfc2tfc3RvcmFnZV9lbGVtICpjb3B5X3NlbGVtOw0KPj4+ICsNCj4+
+PiArCQlpZiAoIXNlbGVtLT5jbG9uZSkNCj4+PiArCQkJY29udGludWU7DQo+Pj4gKw0KPj4+ICsJ
+CXNtYXAgPSByY3VfZGVyZWZlcmVuY2UoU0RBVEEoc2VsZW0pLT5zbWFwKTsNCj4+PiArCQlpZiAo
+IXNtYXApDQo+Pj4gKwkJCWNvbnRpbnVlOw0KPj4+ICsNCj4+PiArCQljb3B5X3NlbGVtID0gYnBm
+X3NrX3N0b3JhZ2VfY2xvbmVfZWxlbShuZXdzaywgc21hcCwgc2VsZW0pOw0KPj4+ICsJCWlmIChJ
+U19FUlIoY29weV9zZWxlbSkpIHsNCj4+PiArCQkJcmV0ID0gUFRSX0VSUihjb3B5X3NlbGVtKTsN
+Cj4+PiArCQkJZ290byBlcnI7DQo+Pj4gKwkJfQ0KPj4+ICsNCj4+PiArCQlpZiAoIW5ld19za19z
+dG9yYWdlKSB7DQo+Pj4gKwkJCXJldCA9IHNrX3N0b3JhZ2VfYWxsb2MobmV3c2ssIHNtYXAsIGNv
+cHlfc2VsZW0pOw0KPj4+ICsJCQlpZiAocmV0KSB7DQo+Pj4gKwkJCQlrZnJlZShjb3B5X3NlbGVt
+KTsNCj4+PiArCQkJCWF0b21pY19zdWIoc21hcC0+ZWxlbV9zaXplLA0KPj4+ICsJCQkJCSAgICZu
+ZXdzay0+c2tfb21lbV9hbGxvYyk7DQo+Pj4gKwkJCQlnb3RvIGVycjsNCj4+PiArCQkJfQ0KPj4+
+ICsNCj4+PiArCQkJbmV3X3NrX3N0b3JhZ2UgPSByY3VfZGVyZWZlcmVuY2UoY29weV9zZWxlbS0+
+c2tfc3RvcmFnZSk7DQo+Pj4gKwkJCWNvbnRpbnVlOw0KPj4+ICsJCX0NCj4+PiArDQo+Pj4gKwkJ
+cmF3X3NwaW5fbG9ja19iaCgmbmV3X3NrX3N0b3JhZ2UtPmxvY2spOw0KPj4+ICsJCXNlbGVtX2xp
+bmtfbWFwKHNtYXAsIGNvcHlfc2VsZW0pOw0KPj4+ICsJCV9fc2VsZW1fbGlua19zayhuZXdfc2tf
+c3RvcmFnZSwgY29weV9zZWxlbSk7DQo+Pj4gKwkJcmF3X3NwaW5fdW5sb2NrX2JoKCZuZXdfc2tf
+c3RvcmFnZS0+bG9jayk7DQo+Pg0KPj4gQ29uc2lkZXJpbmcgaW4gdGhpcyBwYXJ0aWN1bGFyIGNh
+c2UsIG5ldyBzb2NrZXQgaXMgbm90IHZpc2libGUgdG8NCj4+IG91dHNpZGUgd29ybGQgeWV0IChi
+b3RoIGtlcm5lbCBhbmQgdXNlciBzcGFjZSksIG1hcF9kZWxldGUvbWFwX3VwZGF0ZQ0KPj4gb3Bl
+cmF0aW9ucyBhcmUgbm90IGFwcGxpY2FibGUgaW4gdGhpcyBzaXR1YXRpb24sIHNvDQo+PiB0aGUg
+YWJvdmUgcmF3X3NwaW5fbG9ja19iaCgpIHByb2JhYmx5IG5vdCBuZWVkZWQuDQo+IEkgYWdyZWUs
+IGl0J3MgZG9pbmcgbm90aGluZywgYnV0IF9fc2VsZW1fbGlua19zayBoYXMgdGhlIGZvbGxvd2lu
+ZyBjb21tZW50Og0KPiAvKiBza19zdG9yYWdlLT5sb2NrIG11c3QgYmUgaGVsZCBhbmQgc2tfc3Rv
+cmFnZS0+bGlzdCBjYW5ub3QgYmUgZW1wdHkgKi8NCj4gDQo+IEp1c3Qgd2FudGVkIHRvIGtlZXAg
+dGhhdCBpbnZhcmlhbnQgZm9yIHRoaXMgY2FsbCBzaXRlIGFzIHdlbGwgKGluIGNhc2UNCj4gd2Ug
+YWRkIHNvbWUgbG9ja2RlcCBlbmZvcmNlbWVudCBvciBzbXRoIGVsc2UpLiBXRFlUPw0KDQpBZ3Jl
+ZS4gTGV0IHVzIGtlZXAgdGhlIGxvY2tpbmcgdG8gYmUgY29uc2lzdGVudCB3aXRoIG90aGVyIHVz
+ZXMgaW4NCnRoZSBzYW1lIGZpbGUuIFRoaXMgaXMgbm90IHRoZSBjcml0aWNhbCBwYXRoLg0KDQo=
