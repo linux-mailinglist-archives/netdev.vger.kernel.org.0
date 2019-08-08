@@ -2,68 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC69D85AA0
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FF8585ACD
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:30:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731247AbfHHGYH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 02:24:07 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:3783 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726187AbfHHGYH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 02:24:07 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 8FAB4BD13FE50CABA2B0;
-        Thu,  8 Aug 2019 14:24:05 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.439.0; Thu, 8 Aug 2019
- 14:23:57 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
-        <davem@davemloft.net>, <jiri@resnulli.us>,
-        <jay.vosburgh@canonical.com>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH v2] team: Add vlan tx offload to hw_enc_features
-Date:   Thu, 8 Aug 2019 14:22:47 +0800
-Message-ID: <20190808062247.38352-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
-In-Reply-To: <20190807023808.51976-1-yuehaibing@huawei.com>
-References: <20190807023808.51976-1-yuehaibing@huawei.com>
+        id S1731384AbfHHGax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 02:30:53 -0400
+Received: from mout.kundenserver.de ([212.227.17.10]:58963 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725817AbfHHGax (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 02:30:53 -0400
+Received: from heimpold-pc.localnet ([109.104.52.1]) by
+ mrelayeu.kundenserver.de (mreue106 [212.227.15.183]) with ESMTPSA (Nemesis)
+ id 1Mi27T-1iYoNQ0DDt-00e2OF; Thu, 08 Aug 2019 08:30:45 +0200
+From:   Michael Heimpold <michael.heimpold@i2se.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Yangtao Li <tiny.windzz@gmail.com>
+Subject: Re: [PATCH 11/17] qca: no need to check return value of debugfs_create functions
+Date:   Thu, 08 Aug 2019 08:30:43 +0200
+Message-ID: <2169368.OBVzby0tpl@heimpold-pc>
+Organization: I2SE GmbH
+In-Reply-To: <20190806161128.31232-12-gregkh@linuxfoundation.org>
+References: <20190806161128.31232-1-gregkh@linuxfoundation.org> <20190806161128.31232-12-gregkh@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Provags-ID: V03:K1:tXCVQTC/EsKqthred35hucXs6u/3X9JIHizQHHVZ+Zwoz/bJI+y
+ 0asTBu248U1FFKfOpA3k/T0x3BlU2o7zuvckUHdzJ2DT7B7CEXioKxOpFruHEYN/R7Ra5pM
+ 7VLjxt9TEfXUFYYLKsEcTMgobQmth8TF5Fs7645fD5VzjXujuCnK5lumvpxrCs94R3GjBi5
+ OwGB9xme5NtQMuyx8YFOg==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:xajjXm82mvk=:HY5LQz7tlxCfbt4YSZuiLm
+ BeijIj+2Ag3g5Hi6jT9iGpgPZkC/o8MNctmI6nO3jtrCNvruKbsVCKf4Klw37YPSnEFfM+j7h
+ BeyouiqnQ6+KwoHpoUnV1IF+k8Pc4QwbsAPNguvx4h9I6CCdxOxtkzZUBofBBqk/yGjhZXXPm
+ 7dV4PY6+zgxzC5ChszGru2j2AeZ05xBSD7IbqkXH4LQ3CcSS7yV3zDhixLTvwO0z3YJ9WGOWH
+ PnCH5QzRmtEeMbnKfdyWokZsdYBqXBgsdYw06pk1ZlwhIAUwMaVjYjF3khacls93Ou77oISG9
+ WuCUKQSp2uvTLZg413+9gg7GWDky5m41EyD1esEGUcD1mfQBCWm4aNFQ+i79dmq9y87UOhqEi
+ 63w2coaT7a5XtxUu73iC4BKN7HGcSaYEs4k2htck10U5+fuSaiAjft+/kegGSy9BpT7/t0J8j
+ YP2Idp5dVjEbji8Iewt6U8ywUqQZSSL1ezqSPhletNxLBpGtKpJmyxsYzdAMz/yf98Bb3sXpD
+ yXpkGITaxDmLc0Wja1wx2qhTZDfB/1EAu7S1AN1AzxciyJECiSo9Htjbliu1qWtxCquoJ+2oP
+ 5hJ3TT9m1wn44BOnH73Xc2WbTRcZjAhnFFbn7eSt7zLGzYT74U7Mv60RW3AqM65MIIonJ81xc
+ GJBe+uA+y1EcRJFsz/ucoJuJGinHsvuDU5pzksgsotFnr3xm0uzZgbKh14gujyKUGX0RMYOQc
+ pvkI454gzdZ4Dmz8ZxXdsFe4usZX2306F/VKNi0TkYXVMXKpVoB6f2mF1CD3v2YUaFNzKwaKf
+ wRmks6Z
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We should also enable team's vlan tx offload in hw_enc_features,
-pass the vlan packets to the slave devices with vlan tci, let the
-slave handle vlan tunneling offload implementation.
+Am Dienstag, 6. August 2019, 18:11:22 CEST schrieb Greg Kroah-Hartman:
+> When calling debugfs functions, there is no need to ever check the
+> return value.  The function can work or not, but the code logic should
+> never do something different based on this.
+> 
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Stefan Wahren <stefan.wahren@i2se.com>
+> Cc: Michael Heimpold <michael.heimpold@i2se.com>
+> Cc: Yangtao Li <tiny.windzz@gmail.com>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  drivers/net/ethernet/qualcomm/qca_debug.c | 13 +++----------
+>  1 file changed, 3 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/qualcomm/qca_debug.c
+> b/drivers/net/ethernet/qualcomm/qca_debug.c index
+> bcb890b18a94..702aa217a27a 100644
+> --- a/drivers/net/ethernet/qualcomm/qca_debug.c
+> +++ b/drivers/net/ethernet/qualcomm/qca_debug.c
+> @@ -131,17 +131,10 @@ DEFINE_SHOW_ATTRIBUTE(qcaspi_info);
+>  void
+>  qcaspi_init_device_debugfs(struct qcaspi *qca)
+>  {
+> -	struct dentry *device_root;
+> +	qca->device_root = debugfs_create_dir(dev_name(&qca->net_dev->dev),
+> +					      NULL);
+> 
+> -	device_root = debugfs_create_dir(dev_name(&qca->net_dev->dev), NULL);
+> -	qca->device_root = device_root;
+> -
+> -	if (IS_ERR(device_root) || !device_root) {
+> -		pr_warn("failed to create debugfs directory for %s\n",
+> -			dev_name(&qca->net_dev->dev));
+> -		return;
+> -	}
+> -	debugfs_create_file("info", S_IFREG | 0444, device_root, qca,
+> +	debugfs_create_file("info", S_IFREG | 0444, qca->device_root, qca,
+>  			    &qcaspi_info_fops);
+>  }
 
-Fixes: 3268e5cb494d ("team: Advertise tunneling offload features")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
-v2: fix commit log typo
----
- drivers/net/team/team.c | 2 ++
- 1 file changed, 2 insertions(+)
+Acked-by: Michael Heimpold <michael.heimpold@i2se.com>
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index abfa0da..e8089de 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -1004,6 +1004,8 @@ static void __team_compute_features(struct team *team)
- 
- 	team->dev->vlan_features = vlan_features;
- 	team->dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
-+				     NETIF_F_HW_VLAN_CTAG_TX |
-+				     NETIF_F_HW_VLAN_STAG_TX |
- 				     NETIF_F_GSO_UDP_L4;
- 	team->dev->hard_header_len = max_hard_header_len;
- 
--- 
-2.7.4
+
 
 
