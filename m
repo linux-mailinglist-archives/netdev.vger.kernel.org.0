@@ -2,55 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41DA48661B
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 17:43:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B8B986625
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 17:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390156AbfHHPm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 11:42:58 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44704 "EHLO vps0.lunn.ch"
+        id S2390068AbfHHPqm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 11:46:42 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:56262 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390135AbfHHPm4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 11:42:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=71BgATi3fwScYhoG1VjUtXuzsnzG/QI4KdsUv9j4q2E=; b=W0+BR44zZTlOQ4LIzNLurbZaID
-        vxDpecDrIx2bOllUdp0MwEjpKeqtKA/E9c8GAcUigX5J2Lv1RQg61KphQehwtdl784kYAuVJ+pf1W
-        ycL9Y4UlwXvXkKBgR0K8EH6v1RCncBF/F+YgEcW9Jx+S3RP+Zfj81ijzpeSrCyCdWXR8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hvkZ3-0003zM-4X; Thu, 08 Aug 2019 17:42:53 +0200
-Date:   Thu, 8 Aug 2019 17:42:53 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, f.fainelli@gmail.com,
-        hkallweit1@gmail.com
-Subject: Re: [PATCH v2 08/15] net: phy: adin: make RMII fifo depth
- configurable
-Message-ID: <20190808154253.GH27917@lunn.ch>
-References: <20190808123026.17382-1-alexandru.ardelean@analog.com>
- <20190808123026.17382-9-alexandru.ardelean@analog.com>
+        id S1733143AbfHHPqm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 11:46:42 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5BF62316E532;
+        Thu,  8 Aug 2019 15:46:42 +0000 (UTC)
+Received: from firesoul.localdomain (ovpn-200-48.brq.redhat.com [10.40.200.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D4448600CC;
+        Thu,  8 Aug 2019 15:46:37 +0000 (UTC)
+Received: from [10.10.10.1] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 7B9193002D561;
+        Thu,  8 Aug 2019 17:46:36 +0200 (CEST)
+Subject: [bpf-next v2 PATCH 0/3] bpf: improvements to xdp_fwd sample
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     netdev@vger.kernel.org, Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     a.s.protopopov@gmail.com, dsahern@gmail.com,
+        Toke =?utf-8?q?H=C3=B8iland-J=C3=B8rgensen?= <toke@toke.dk>,
+        ys114321@gmail.com, Jesper Dangaard Brouer <brouer@redhat.com>
+Date:   Thu, 08 Aug 2019 17:46:36 +0200
+Message-ID: <156527914510.20297.12225832190052744019.stgit@firesoul>
+User-Agent: StGit/0.17.1-dirty
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190808123026.17382-9-alexandru.ardelean@analog.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Thu, 08 Aug 2019 15:46:42 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 08, 2019 at 03:30:19PM +0300, Alexandru Ardelean wrote:
-> The FIFO depth can be configured for the RMII mode. This change adds
-> support for doing this via device-tree (or ACPI).
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+V2: Addressed issues point out by Yonghong Song
+ - Please ACK patch 2/3 again
+ - Added ACKs and reviewed-by to other patches
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This patchset is focused on improvements for XDP forwarding sample
+named xdp_fwd, which leverage the existing FIB routing tables as
+described in LPC2018[1] talk by David Ahern.
 
-    Andrew
+The primary motivation is to illustrate how Toke's recent work
+improves usability of XDP_REDIRECT via lookups in devmap. The other
+patches are to help users understand the sample.
+
+I have more improvements to xdp_fwd, but those might requires changes
+to libbpf.  Thus, sending these patches first as they are isolated.
+
+[1] http://vger.kernel.org/lpc-networking2018.html#session-1
+
+---
+
+Jesper Dangaard Brouer (3):
+      samples/bpf: xdp_fwd rename devmap name to be xdp_tx_ports
+      samples/bpf: make xdp_fwd more practically usable via devmap lookup
+      samples/bpf: xdp_fwd explain bpf_fib_lookup return codes
+
+
+ samples/bpf/xdp_fwd_kern.c |   39 ++++++++++++++++++++++++++++++---------
+ samples/bpf/xdp_fwd_user.c |   38 ++++++++++++++++++++++++++------------
+ 2 files changed, 56 insertions(+), 21 deletions(-)
+
+--
