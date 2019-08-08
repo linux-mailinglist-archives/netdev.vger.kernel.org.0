@@ -2,347 +2,309 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2767856B3
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 02:04:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54C48856B7
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 02:06:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388270AbfHHAE1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 20:04:27 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:43914 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730145AbfHHAE1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 20:04:27 -0400
-Received: by mail-qt1-f193.google.com with SMTP id w17so9670685qto.10
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 17:04:26 -0700 (PDT)
+        id S2388496AbfHHAFg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 20:05:36 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:36681 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730145AbfHHAFg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 20:05:36 -0400
+Received: by mail-pf1-f195.google.com with SMTP id r7so42995726pfl.3
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 17:05:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8vfdto8IxwvZdSfLkZuspdXoI3csBBhYMHta7e51Lls=;
-        b=wgUOXjAyJB25eIBNUJYOjkiI9PPaRKy1MwH/hhCXM+mTCXnHjwmGkKEfK7dDg4kSZ3
-         SQDzK3zzdXfIB2nEmEEWNr4Dxganl7dVAq4QB3p9vmMyx77/4ObNrLJ4vgFHsT9xgLdo
-         WfwO2AGgEahkrpvd9l1lmd5cX6IsJ9kCApmrlG8AYAOPgg8zbrhkHzHZ8FcPYLY8l285
-         EKLlOqWDuKPdOZFAEO32qGA7X32whAgDcjW+2WzLDGy+HXI+BVp/OxKcwtXeW7oo95xG
-         lTR2D2fGsT3r4/g7n+aGpvC7aohKOGc6h2usbpTAVAxjRFlw8vVjKCBlvjOIRQ23J0LD
-         xZ9A==
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=5rNLUcyU+g8cIHRhCVxOiEzBg5fOWUyZNgUAXG+TC6M=;
+        b=rVjnwp/5mTAWFNgoUEhkYc7GXD6gczuDvo2A+mYcln4aP993nkH/3fv+uWt95j0YKL
+         Ptqi0tweakRfWAq45bPC5QzfXFmAJbFEyuIOZd220W9t7VzccC/sjpT2UzxEnrRPHVha
+         9m80DzYDOPxemQXJDmpWe8h66+zXUWoWeFl+zLAxxfM3UCvTyvhD20Y7G4w4Wz89fh9i
+         aXerq2pe8xtjU/5siWnRGpkmxcjx/lvfA5Q9xN7+YlquOQj0PkHapwZtQzTPZUXBbeDJ
+         vWSaBavXM5kftWgaJ6BuRjKaYS7pDEwwYcVzjmIGlrxapwOrCVvFatA4jzQCPknWfcuF
+         4LnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8vfdto8IxwvZdSfLkZuspdXoI3csBBhYMHta7e51Lls=;
-        b=T5r4z5A0Yy/Bn8IJmKnO0eqQ9VUwfug8Fn5QOeH8ssC/qQfO2DhSgBJVfooAYPIAAk
-         eUY8eWv9D+7/o9Qne5eN5Yjfe4kVB6/h5g+dKZc96210u5VbpdLVlNBqq00gjScv3mER
-         m31grVBYdMBXo4cHN/56mxN9oKIGok21Kar2VyPJ2md0u9id8V0AcNDuF6WDc951NAtk
-         v6MWrgXFGxIN4ByurrTb2p4RJUxJck5a+bIwZlAlEy8X+7v5z2dgZTxp3q0GL1Y9mnoe
-         F4EQh8N6aXDhxzrHdVgm7ru7s3h+Evfujw2LQ3wZPPJVoHpTGQcz8AEIZDaFpTfbe9+C
-         4Q9w==
-X-Gm-Message-State: APjAAAVA5xS85PBACLtDZT0d6o8/+Zot25jJcNKY+ULnf8AEXefw/VSR
-        9OvbRqvYPpmYYpUl+oGuxJaptg==
-X-Google-Smtp-Source: APXvYqzRv4pBdFOqYGnylRZFbFR6DNKlttkwi4P/5Ry46T2ziLR9DLWkNGFyQsVxhjE1Cn9oQbPTZQ==
-X-Received: by 2002:ac8:264a:: with SMTP id v10mr10446283qtv.255.1565222666195;
-        Wed, 07 Aug 2019 17:04:26 -0700 (PDT)
-Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id p59sm41116127qtd.75.2019.08.07.17.04.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 17:04:24 -0700 (PDT)
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, davejwatson@fb.com, borisp@mellanox.com,
-        aviadye@mellanox.com, john.fastabend@gmail.com,
-        daniel@iogearbox.net, willemb@google.com, edumazet@google.com,
-        alexei.starovoitov@gmail.com, oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH net v3] net/tls: prevent skb_orphan() from leaking TLS plain text with offload
-Date:   Wed,  7 Aug 2019 17:03:59 -0700
-Message-Id: <20190808000359.20785-1-jakub.kicinski@netronome.com>
-X-Mailer: git-send-email 2.21.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=5rNLUcyU+g8cIHRhCVxOiEzBg5fOWUyZNgUAXG+TC6M=;
+        b=nFNM8iMf/yptmH1pAGrQm9Zqi+De1CM2h85ALhwravD4KbvhU3ZzzzItP4KAJSRxER
+         AsFi/CgrfLW2unrA5m/st0nZd7elqbkbkhh6Qu5XZfEqjxK2t4ZTjiLUpvK4khb+rXjX
+         pcrmfAH/EADXVHjgc9usJI0k++l7MESqHDATwW60GB7BLrHDT7UxNxJ3BLigh8HSNLft
+         2w7NLcJD2m9t44b+NUz2fATToBnjK5uUXdf9IHOHyeMMrOizTs2Sn1CR5qdrKsFP5kqO
+         UfxUvvt5ROLYfyRSkJPHmBVBl6My3rscUaOQFQG3oeik0FhdOl5jiue6ledGnWebT/ct
+         8jhA==
+X-Gm-Message-State: APjAAAUfmcqjR/FmfXcW76hwpFupmxcZXRjBIKy8sJfjIa3Y4BQL0+xf
+        yNwsP58IWqvrux8DquCUiZbXhA==
+X-Google-Smtp-Source: APXvYqxJMwvJpKM6qKh1GcP1on/3/77uccJwJ6rwh+7OCow1cJPsjp+WsZNFH+Kx+27piRZSzXrMVw==
+X-Received: by 2002:a17:90a:8a15:: with SMTP id w21mr1027328pjn.134.1565222734806;
+        Wed, 07 Aug 2019 17:05:34 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id i124sm171749195pfe.61.2019.08.07.17.05.33
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 07 Aug 2019 17:05:34 -0700 (PDT)
+Date:   Wed, 7 Aug 2019 17:05:33 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Martin Lau <kafai@fb.com>
+Subject: Re: [PATCH bpf-next 1/3] bpf: support cloning sk storage on accept()
+Message-ID: <20190808000533.GA2820@mini-arch>
+References: <20190807154720.260577-1-sdf@google.com>
+ <20190807154720.260577-2-sdf@google.com>
+ <9bd56e49-c38d-e1c4-1ff3-8250531d0d48@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9bd56e49-c38d-e1c4-1ff3-8250531d0d48@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-sk_validate_xmit_skb() and drivers depend on the sk member of
-struct sk_buff to identify segments requiring encryption.
-Any operation which removes or does not preserve the original TLS
-socket such as skb_orphan() or skb_clone() will cause clear text
-leaks.
+On 08/07, Yonghong Song wrote:
+> 
+> 
+> On 8/7/19 8:47 AM, Stanislav Fomichev wrote:
+> > Add new helper bpf_sk_storage_clone which optionally clones sk storage
+> > and call it from bpf_sk_storage_clone. Reuse the gap in
+> > bpf_sk_storage_elem to store clone/non-clone flag.
+> > 
+> > Cc: Martin KaFai Lau <kafai@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> 
+> I tried to see whether I can find any missing race conditions in
+> the code but I failed. So except a minor comments below,
+Thanks for a review!
 
-Make the TCP socket underlying an offloaded TLS connection
-mark all skbs as decrypted, if TLS TX is in offload mode.
-Then in sk_validate_xmit_skb() catch skbs which have no socket
-(or a socket with no validation) and decrypted flag set.
+> Acked-by: Yonghong Song <yhs@fb.com>
+> 
+> > ---
+> >   include/net/bpf_sk_storage.h |  10 ++++
+> >   include/uapi/linux/bpf.h     |   1 +
+> >   net/core/bpf_sk_storage.c    | 102 +++++++++++++++++++++++++++++++++--
+> >   net/core/sock.c              |   9 ++--
+> >   4 files changed, 115 insertions(+), 7 deletions(-)
+> > 
+> > diff --git a/include/net/bpf_sk_storage.h b/include/net/bpf_sk_storage.h
+> > index b9dcb02e756b..8e4f831d2e52 100644
+> > --- a/include/net/bpf_sk_storage.h
+> > +++ b/include/net/bpf_sk_storage.h
+> > @@ -10,4 +10,14 @@ void bpf_sk_storage_free(struct sock *sk);
+> >   extern const struct bpf_func_proto bpf_sk_storage_get_proto;
+> >   extern const struct bpf_func_proto bpf_sk_storage_delete_proto;
+> >   
+> > +#ifdef CONFIG_BPF_SYSCALL
+> > +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk);
+> > +#else
+> > +static inline int bpf_sk_storage_clone(const struct sock *sk,
+> > +				       struct sock *newsk)
+> > +{
+> > +	return 0;
+> > +}
+> > +#endif
+> > +
+> >   #endif /* _BPF_SK_STORAGE_H */
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 4393bd4b2419..00459ca4c8cf 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -2931,6 +2931,7 @@ enum bpf_func_id {
+> >   
+> >   /* BPF_FUNC_sk_storage_get flags */
+> >   #define BPF_SK_STORAGE_GET_F_CREATE	(1ULL << 0)
+> > +#define BPF_SK_STORAGE_GET_F_CLONE	(1ULL << 1)
+> >   
+> >   /* Mode for BPF_FUNC_skb_adjust_room helper. */
+> >   enum bpf_adj_room_mode {
+> > diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+> > index 94c7f77ecb6b..b6dea67965bc 100644
+> > --- a/net/core/bpf_sk_storage.c
+> > +++ b/net/core/bpf_sk_storage.c
+> > @@ -12,6 +12,9 @@
+> >   
+> >   static atomic_t cache_idx;
+> >   
+> > +#define BPF_SK_STORAGE_GET_F_MASK	(BPF_SK_STORAGE_GET_F_CREATE | \
+> > +					 BPF_SK_STORAGE_GET_F_CLONE)
+> > +
+> >   struct bucket {
+> >   	struct hlist_head list;
+> >   	raw_spinlock_t lock;
+> > @@ -66,7 +69,8 @@ struct bpf_sk_storage_elem {
+> >   	struct hlist_node snode;	/* Linked to bpf_sk_storage */
+> >   	struct bpf_sk_storage __rcu *sk_storage;
+> >   	struct rcu_head rcu;
+> > -	/* 8 bytes hole */
+> > +	u8 clone:1;
+> > +	/* 7 bytes hole */
+> >   	/* The data is stored in aother cacheline to minimize
+> >   	 * the number of cachelines access during a cache hit.
+> >   	 */
+> > @@ -509,7 +513,7 @@ static int sk_storage_delete(struct sock *sk, struct bpf_map *map)
+> >   	return 0;
+> >   }
+> >   
+> > -/* Called by __sk_destruct() */
+> > +/* Called by __sk_destruct() & bpf_sk_storage_clone() */
+> >   void bpf_sk_storage_free(struct sock *sk)
+> >   {
+> >   	struct bpf_sk_storage_elem *selem;
+> > @@ -739,19 +743,106 @@ static int bpf_fd_sk_storage_delete_elem(struct bpf_map *map, void *key)
+> >   	return err;
+> >   }
+> >   
+> > +static struct bpf_sk_storage_elem *
+> > +bpf_sk_storage_clone_elem(struct sock *newsk,
+> > +			  struct bpf_sk_storage_map *smap,
+> > +			  struct bpf_sk_storage_elem *selem)
+> > +{
+> > +	struct bpf_sk_storage_elem *copy_selem;
+> > +
+> > +	copy_selem = selem_alloc(smap, newsk, NULL, true);
+> > +	if (!copy_selem)
+> > +		return ERR_PTR(-ENOMEM);
+> > +
+> > +	if (map_value_has_spin_lock(&smap->map))
+> > +		copy_map_value_locked(&smap->map, SDATA(copy_selem)->data,
+> > +				      SDATA(selem)->data, true);
+> > +	else
+> > +		copy_map_value(&smap->map, SDATA(copy_selem)->data,
+> > +			       SDATA(selem)->data);
+> > +
+> > +	return copy_selem;
+> > +}
+> > +
+> > +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk)
+> > +{
+> > +	struct bpf_sk_storage *new_sk_storage = NULL;
+> > +	struct bpf_sk_storage *sk_storage;
+> > +	struct bpf_sk_storage_elem *selem;
+> > +	int ret;
+> > +
+> > +	RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
+> > +
+> > +	rcu_read_lock();
+> > +	sk_storage = rcu_dereference(sk->sk_bpf_storage);
+> > +
+> > +	if (!sk_storage || hlist_empty(&sk_storage->list))
+> > +		goto out;
+> > +
+> > +	hlist_for_each_entry_rcu(selem, &sk_storage->list, snode) {
+> > +		struct bpf_sk_storage_map *smap;
+> > +		struct bpf_sk_storage_elem *copy_selem;
+> > +
+> > +		if (!selem->clone)
+> > +			continue;
+> > +
+> > +		smap = rcu_dereference(SDATA(selem)->smap);
+> > +		if (!smap)
+> > +			continue;
+> > +
+> > +		copy_selem = bpf_sk_storage_clone_elem(newsk, smap, selem);
+> > +		if (IS_ERR(copy_selem)) {
+> > +			ret = PTR_ERR(copy_selem);
+> > +			goto err;
+> > +		}
+> > +
+> > +		if (!new_sk_storage) {
+> > +			ret = sk_storage_alloc(newsk, smap, copy_selem);
+> > +			if (ret) {
+> > +				kfree(copy_selem);
+> > +				atomic_sub(smap->elem_size,
+> > +					   &newsk->sk_omem_alloc);
+> > +				goto err;
+> > +			}
+> > +
+> > +			new_sk_storage = rcu_dereference(copy_selem->sk_storage);
+> > +			continue;
+> > +		}
+> > +
+> > +		raw_spin_lock_bh(&new_sk_storage->lock);
+> > +		selem_link_map(smap, copy_selem);
+> > +		__selem_link_sk(new_sk_storage, copy_selem);
+> > +		raw_spin_unlock_bh(&new_sk_storage->lock);
+> 
+> Considering in this particular case, new socket is not visible to 
+> outside world yet (both kernel and user space), map_delete/map_update
+> operations are not applicable in this situation, so
+> the above raw_spin_lock_bh() probably not needed.
+I agree, it's doing nothing, but __selem_link_sk has the following comment:
+/* sk_storage->lock must be held and sk_storage->list cannot be empty */
 
-Note that CONFIG_SOCK_VALIDATE_XMIT, CONFIG_TLS_DEVICE and
-sk->sk_validate_xmit_skb are slightly interchangeable right now,
-they all imply TLS offload. The new checks are guarded by
-CONFIG_TLS_DEVICE because that's the option guarding the
-sk_buff->decrypted member.
+Just wanted to keep that invariant for this call site as well (in case
+we add some lockdep enforcement or smth else). WDYT?
 
-Second, smaller issue with orphaning is that it breaks
-the guarantee that packets will be delivered to device
-queues in-order. All TLS offload drivers depend on that
-scheduling property. This means skb_orphan_partial()'s
-trick of preserving partial socket references will cause
-issues in the drivers. We need a full orphan, and as a
-result netem delay/throttling will cause all TLS offload
-skbs to be dropped.
-
-Reusing the sk_buff->decrypted flag also protects from
-leaking clear text when incoming, decrypted skb is redirected
-(e.g. by TC).
-
-See commit 0608c69c9a80 ("bpf: sk_msg, sock{map|hash} redirect
-through ULP") for justification why the internal flag is safe.
-The only location which could leak the flag in is tcp_bpf_sendmsg(),
-which is taken care of by clearing the previously unused bit.
-
-v2:
- - remove superfluous decrypted mark copy (Willem);
- - remove the stale doc entry (Boris);
- - rely entirely on EOR marking to prevent coalescing (Boris);
- - use an internal sendpages flag instead of marking the socket
-   (Boris).
-v3 (Willem):
- - reorganize the can_skb_orphan_partial() condition;
- - fix the flag leak-in through tcp_bpf_sendmsg.
-
-Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- Documentation/networking/tls-offload.rst | 18 ------------------
- include/linux/skbuff.h                   |  8 ++++++++
- include/linux/socket.h                   |  3 +++
- include/net/sock.h                       | 10 +++++++++-
- net/core/sock.c                          | 19 ++++++++++++++-----
- net/ipv4/tcp.c                           |  3 +++
- net/ipv4/tcp_bpf.c                       |  6 +++++-
- net/ipv4/tcp_output.c                    |  3 +++
- net/tls/tls_device.c                     |  9 +++++++--
- 9 files changed, 52 insertions(+), 27 deletions(-)
-
-diff --git a/Documentation/networking/tls-offload.rst b/Documentation/networking/tls-offload.rst
-index b70b70dc4524..0dd3f748239f 100644
---- a/Documentation/networking/tls-offload.rst
-+++ b/Documentation/networking/tls-offload.rst
-@@ -506,21 +506,3 @@ Drivers should ignore the changes to TLS the device feature flags.
- These flags will be acted upon accordingly by the core ``ktls`` code.
- TLS device feature flags only control adding of new TLS connection
- offloads, old connections will remain active after flags are cleared.
--
--Known bugs
--==========
--
--skb_orphan() leaks clear text
-------------------------------
--
--Currently drivers depend on the :c:member:`sk` member of
--:c:type:`struct sk_buff <sk_buff>` to identify segments requiring
--encryption. Any operation which removes or does not preserve the socket
--association such as :c:func:`skb_orphan` or :c:func:`skb_clone`
--will cause the driver to miss the packets and lead to clear text leaks.
--
--Redirects leak clear text
---------------------------
--
--In the RX direction, if segment has already been decrypted by the device
--and it gets redirected or mirrored - clear text will be transmitted out.
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index d8af86d995d6..ba5583522d24 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1374,6 +1374,14 @@ static inline void skb_copy_hash(struct sk_buff *to, const struct sk_buff *from)
- 	to->l4_hash = from->l4_hash;
- };
- 
-+static inline void skb_copy_decrypted(struct sk_buff *to,
-+				      const struct sk_buff *from)
-+{
-+#ifdef CONFIG_TLS_DEVICE
-+	to->decrypted = from->decrypted;
-+#endif
-+}
-+
- #ifdef NET_SKBUFF_DATA_USES_OFFSET
- static inline unsigned char *skb_end_pointer(const struct sk_buff *skb)
- {
-diff --git a/include/linux/socket.h b/include/linux/socket.h
-index 97523818cb14..fc0bed59fc84 100644
---- a/include/linux/socket.h
-+++ b/include/linux/socket.h
-@@ -292,6 +292,9 @@ struct ucred {
- #define MSG_BATCH	0x40000 /* sendmmsg(): more messages coming */
- #define MSG_EOF         MSG_FIN
- #define MSG_NO_SHARED_FRAGS 0x80000 /* sendpage() internal : page frags are not shared */
-+#define MSG_SENDPAGE_DECRYPTED	0x100000 /* sendpage() internal : page may carry
-+					  * plain text and require encryption
-+					  */
- 
- #define MSG_ZEROCOPY	0x4000000	/* Use user data in kernel path */
- #define MSG_FASTOPEN	0x20000000	/* Send data in TCP SYN */
-diff --git a/include/net/sock.h b/include/net/sock.h
-index 228db3998e46..2c53f1a1d905 100644
---- a/include/net/sock.h
-+++ b/include/net/sock.h
-@@ -2482,6 +2482,7 @@ static inline bool sk_fullsock(const struct sock *sk)
- 
- /* Checks if this SKB belongs to an HW offloaded socket
-  * and whether any SW fallbacks are required based on dev.
-+ * Check decrypted mark in case skb_orphan() cleared socket.
-  */
- static inline struct sk_buff *sk_validate_xmit_skb(struct sk_buff *skb,
- 						   struct net_device *dev)
-@@ -2489,8 +2490,15 @@ static inline struct sk_buff *sk_validate_xmit_skb(struct sk_buff *skb,
- #ifdef CONFIG_SOCK_VALIDATE_XMIT
- 	struct sock *sk = skb->sk;
- 
--	if (sk && sk_fullsock(sk) && sk->sk_validate_xmit_skb)
-+	if (sk && sk_fullsock(sk) && sk->sk_validate_xmit_skb) {
- 		skb = sk->sk_validate_xmit_skb(sk, dev, skb);
-+#ifdef CONFIG_TLS_DEVICE
-+	} else if (unlikely(skb->decrypted)) {
-+		pr_warn_ratelimited("unencrypted skb with no associated socket - dropping\n");
-+		kfree_skb(skb);
-+		skb = NULL;
-+#endif
-+	}
- #endif
- 
- 	return skb;
-diff --git a/net/core/sock.c b/net/core/sock.c
-index d57b0cc995a0..6d08553f885c 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1992,6 +1992,19 @@ void skb_set_owner_w(struct sk_buff *skb, struct sock *sk)
- }
- EXPORT_SYMBOL(skb_set_owner_w);
- 
-+static bool can_skb_orphan_partial(const struct sk_buff *skb)
-+{
-+#ifdef CONFIG_TLS_DEVICE
-+	/* Drivers depend on in-order delivery for crypto offload,
-+	 * partial orphan breaks out-of-order-OK logic.
-+	 */
-+	if (skb->decrypted)
-+		return false;
-+#endif
-+	return (skb->destructor == sock_wfree ||
-+		(IS_ENABLED(CONFIG_INET) && skb->destructor == tcp_wfree));
-+}
-+
- /* This helper is used by netem, as it can hold packets in its
-  * delay queue. We want to allow the owner socket to send more
-  * packets, as if they were already TX completed by a typical driver.
-@@ -2003,11 +2016,7 @@ void skb_orphan_partial(struct sk_buff *skb)
- 	if (skb_is_tcp_pure_ack(skb))
- 		return;
- 
--	if (skb->destructor == sock_wfree
--#ifdef CONFIG_INET
--	    || skb->destructor == tcp_wfree
--#endif
--		) {
-+	if (can_skb_orphan_partial(skb)) {
- 		struct sock *sk = skb->sk;
- 
- 		if (refcount_inc_not_zero(&sk->sk_refcnt)) {
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 776905899ac0..77b485d60b9d 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -984,6 +984,9 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
- 			if (!skb)
- 				goto wait_for_memory;
- 
-+#ifdef CONFIG_TLS_DEVICE
-+			skb->decrypted = !!(flags & MSG_SENDPAGE_DECRYPTED);
-+#endif
- 			skb_entail(sk, skb);
- 			copy = size_goal;
- 		}
-diff --git a/net/ipv4/tcp_bpf.c b/net/ipv4/tcp_bpf.c
-index 3d1e15401384..8a56e09cfb0e 100644
---- a/net/ipv4/tcp_bpf.c
-+++ b/net/ipv4/tcp_bpf.c
-@@ -398,10 +398,14 @@ static int tcp_bpf_send_verdict(struct sock *sk, struct sk_psock *psock,
- static int tcp_bpf_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
- {
- 	struct sk_msg tmp, *msg_tx = NULL;
--	int flags = msg->msg_flags | MSG_NO_SHARED_FRAGS;
- 	int copied = 0, err = 0;
- 	struct sk_psock *psock;
- 	long timeo;
-+	int flags;
-+
-+	/* Don't let internal do_tcp_sendpages() flags through */
-+	flags = (msg->msg_flags & ~MSG_SENDPAGE_DECRYPTED);
-+	flags |= MSG_NO_SHARED_FRAGS;
- 
- 	psock = sk_psock_get(sk);
- 	if (unlikely(!psock))
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index 6e4afc48d7bb..979520e46e33 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1320,6 +1320,7 @@ int tcp_fragment(struct sock *sk, enum tcp_queue tcp_queue,
- 	buff = sk_stream_alloc_skb(sk, nsize, gfp, true);
- 	if (!buff)
- 		return -ENOMEM; /* We'll just try again later. */
-+	skb_copy_decrypted(buff, skb);
- 
- 	sk->sk_wmem_queued += buff->truesize;
- 	sk_mem_charge(sk, buff->truesize);
-@@ -1874,6 +1875,7 @@ static int tso_fragment(struct sock *sk, struct sk_buff *skb, unsigned int len,
- 	buff = sk_stream_alloc_skb(sk, 0, gfp, true);
- 	if (unlikely(!buff))
- 		return -ENOMEM;
-+	skb_copy_decrypted(buff, skb);
- 
- 	sk->sk_wmem_queued += buff->truesize;
- 	sk_mem_charge(sk, buff->truesize);
-@@ -2143,6 +2145,7 @@ static int tcp_mtu_probe(struct sock *sk)
- 	sk_mem_charge(sk, nskb->truesize);
- 
- 	skb = tcp_send_head(sk);
-+	skb_copy_decrypted(nskb, skb);
- 
- 	TCP_SKB_CB(nskb)->seq = TCP_SKB_CB(skb)->seq;
- 	TCP_SKB_CB(nskb)->end_seq = TCP_SKB_CB(skb)->seq + probe_size;
-diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-index 7c0b2b778703..43922d86e510 100644
---- a/net/tls/tls_device.c
-+++ b/net/tls/tls_device.c
-@@ -373,9 +373,9 @@ static int tls_push_data(struct sock *sk,
- 	struct tls_context *tls_ctx = tls_get_ctx(sk);
- 	struct tls_prot_info *prot = &tls_ctx->prot_info;
- 	struct tls_offload_context_tx *ctx = tls_offload_ctx_tx(tls_ctx);
--	int tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
- 	int more = flags & (MSG_SENDPAGE_NOTLAST | MSG_MORE);
- 	struct tls_record_info *record = ctx->open_record;
-+	int tls_push_record_flags;
- 	struct page_frag *pfrag;
- 	size_t orig_size = size;
- 	u32 max_open_record_len;
-@@ -390,6 +390,9 @@ static int tls_push_data(struct sock *sk,
- 	if (sk->sk_err)
- 		return -sk->sk_err;
- 
-+	flags |= MSG_SENDPAGE_DECRYPTED;
-+	tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
-+
- 	timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
- 	if (tls_is_partially_sent_record(tls_ctx)) {
- 		rc = tls_push_partial_record(sk, tls_ctx, flags);
-@@ -576,7 +579,9 @@ void tls_device_write_space(struct sock *sk, struct tls_context *ctx)
- 		gfp_t sk_allocation = sk->sk_allocation;
- 
- 		sk->sk_allocation = GFP_ATOMIC;
--		tls_push_partial_record(sk, ctx, MSG_DONTWAIT | MSG_NOSIGNAL);
-+		tls_push_partial_record(sk, ctx,
-+					MSG_DONTWAIT | MSG_NOSIGNAL |
-+					MSG_SENDPAGE_DECRYPTED);
- 		sk->sk_allocation = sk_allocation;
- 	}
- }
--- 
-2.21.0
-
+> > +	}
+> > +
+> > +out:
+> > +	rcu_read_unlock();
+> > +	return 0;
+> > +
+> > +err:
+> > +	rcu_read_unlock();
+> > +
+> > +	bpf_sk_storage_free(newsk);
+> > +	return ret;
+> > +}
+> > +
+> >   BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map, struct sock *, sk,
+> >   	   void *, value, u64, flags)
+> >   {
+> >   	struct bpf_sk_storage_data *sdata;
+> >   
+> > -	if (flags > BPF_SK_STORAGE_GET_F_CREATE)
+> > +	if (flags & ~BPF_SK_STORAGE_GET_F_MASK)
+> > +		return (unsigned long)NULL;
+> > +
+> > +	if ((flags & BPF_SK_STORAGE_GET_F_CLONE) &&
+> > +	    !(flags & BPF_SK_STORAGE_GET_F_CREATE))
+> >   		return (unsigned long)NULL;
+> >   
+> >   	sdata = sk_storage_lookup(sk, map, true);
+> >   	if (sdata)
+> >   		return (unsigned long)sdata->data;
+> >   
+> > -	if (flags == BPF_SK_STORAGE_GET_F_CREATE &&
+> > +	if ((flags & BPF_SK_STORAGE_GET_F_CREATE) &&
+> >   	    /* Cannot add new elem to a going away sk.
+> >   	     * Otherwise, the new elem may become a leak
+> >   	     * (and also other memory issues during map
+> > @@ -762,6 +853,9 @@ BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map, struct sock *, sk,
+> >   		/* sk must be a fullsock (guaranteed by verifier),
+> >   		 * so sock_gen_put() is unnecessary.
+> >   		 */
+> > +		if (!IS_ERR(sdata))
+> > +			SELEM(sdata)->clone =
+> > +				!!(flags & BPF_SK_STORAGE_GET_F_CLONE);
+> >   		sock_put(sk);
+> >   		return IS_ERR(sdata) ?
+> >   			(unsigned long)NULL : (unsigned long)sdata->data;
+> > diff --git a/net/core/sock.c b/net/core/sock.c
+> > index d57b0cc995a0..f5e801a9cea4 100644
+> > --- a/net/core/sock.c
+> > +++ b/net/core/sock.c
+> > @@ -1851,9 +1851,12 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+> >   			goto out;
+> >   		}
+> >   		RCU_INIT_POINTER(newsk->sk_reuseport_cb, NULL);
+> > -#ifdef CONFIG_BPF_SYSCALL
+> > -		RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
+> > -#endif
+> > +
+> > +		if (bpf_sk_storage_clone(sk, newsk)) {
+> > +			sk_free_unlock_clone(newsk);
+> > +			newsk = NULL;
+> > +			goto out;
+> > +		}
+> >   
+> >   		newsk->sk_err	   = 0;
+> >   		newsk->sk_err_soft = 0;
+> > 
