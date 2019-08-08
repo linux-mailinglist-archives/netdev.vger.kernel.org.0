@@ -2,135 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FD60858B1
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 05:46:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 134B4858C3
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 05:48:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389742AbfHHDqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 23:46:55 -0400
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:14417 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728167AbfHHDqy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 23:46:54 -0400
-Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
-        id <B5d4b9b2c0000>; Wed, 07 Aug 2019 20:46:53 -0700
-Received: from hqmail.nvidia.com ([172.20.161.6])
-  by hqpgpgate101.nvidia.com (PGP Universal service);
-  Wed, 07 Aug 2019 20:46:51 -0700
-X-PGP-Universal: processed;
-        by hqpgpgate101.nvidia.com on Wed, 07 Aug 2019 20:46:51 -0700
-Received: from ngvpn01-164-84.dyn.scz.us.nvidia.com (172.20.13.39) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Thu, 8 Aug 2019 03:46:50 +0000
-Subject: Re: [PATCH 00/34] put_user_pages(): miscellaneous call sites
-To:     Ira Weiny <ira.weiny@intel.com>, Michal Hocko <mhocko@kernel.org>
-CC:     Jan Kara <jack@suse.cz>, Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        <amd-gfx@lists.freedesktop.org>, <ceph-devel@vger.kernel.org>,
-        <devel@driverdev.osuosl.org>, <devel@lists.orangefs.org>,
-        <dri-devel@lists.freedesktop.org>,
-        <intel-gfx@lists.freedesktop.org>, <kvm@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-block@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
-        <linux-fbdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-media@vger.kernel.org>, <linux-mm@kvack.org>,
-        <linux-nfs@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
-        <linux-rpi-kernel@lists.infradead.org>,
-        <linux-xfs@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <rds-devel@oss.oracle.com>, <sparclinux@vger.kernel.org>,
-        <x86@kernel.org>, <xen-devel@lists.xenproject.org>
-References: <20190802022005.5117-1-jhubbard@nvidia.com>
- <20190802091244.GD6461@dhcp22.suse.cz>
- <20190802124146.GL25064@quack2.suse.cz>
- <20190802142443.GB5597@bombadil.infradead.org>
- <20190802145227.GQ25064@quack2.suse.cz>
- <076e7826-67a5-4829-aae2-2b90f302cebd@nvidia.com>
- <20190807083726.GA14658@quack2.suse.cz>
- <20190807084649.GQ11812@dhcp22.suse.cz>
- <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
-From:   John Hubbard <jhubbard@nvidia.com>
-X-Nvconfidentiality: public
-Message-ID: <e648a7f3-6a1b-c9ea-1121-7ab69b6b173d@nvidia.com>
-Date:   Wed, 7 Aug 2019 20:46:50 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        id S2389749AbfHHDsN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 23:48:13 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:44683 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727950AbfHHDsM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 23:48:12 -0400
+Received: by mail-ot1-f68.google.com with SMTP id b7so62904457otl.11;
+        Wed, 07 Aug 2019 20:48:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/VvNaj/wtNAj4hKnQgUonNXIEppB0e4o77A5BHU4ets=;
+        b=oFgFpikvDc0LWHCtOrIugnKh9+eXAJVHHOe4wklWYmEDIMxXfijLbgBnwiTvXiIVlk
+         Jy1Ou8DeMrrjB8dTWDhTXAZEgNDJqZ63tYjKxq4yzkcN57krzxBQtt8HI5OiqP13yNcC
+         PTQ/3S62lHM3mAYwndCc8Grk8/THRDreZUf2a/b0HbHxfirQUiOKrcm1/6lVtF172WDp
+         ShwJgFtlu3dr0eIt1LbMkFfMOIQvkH1td9BeHWROPViUKRxJQcoYeKiukHkLL5+5qMpX
+         73c3tPDkbsXGLXG92Ffxb3T1Ek0pLZm+RYBDW4YAwjJVdaslCQ+h4DqVslQBbfrmwNOZ
+         sCsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/VvNaj/wtNAj4hKnQgUonNXIEppB0e4o77A5BHU4ets=;
+        b=noNhQgLmJWCh3cC347eZCYgfePOpWmxhpXQ25eyLJmfkN5Lb2pnOEola4cx2oFZahr
+         5MncGamq4rkBfcpt7H1o+Sdi3Q9QFojLA9LKRqV2en5GkzPlmx4xGkVnb6DmNraTDzkz
+         FSzQ4H+rYAfrKcu+5BEbk2QwNpYx4M3uSCzGZZA8VMi0TOmt3j20Jvfl1/JKiVLYPu25
+         PzTQyHKXEv5fen9kE6jF8GJyygaRH6U5dDgQCiR5TNnOTsHAEg0M++4WvtiPNMXLgazc
+         rJ+NXTzfKm86ZpGCtwyOWH6VSEzHnN+vHoZKOhKjo3UtsQe/gTeTno674ZRNjK2VfHpl
+         UtcA==
+X-Gm-Message-State: APjAAAUS7rz0d8gGfjLY0XlWGs+2RpFdBxvd+o8t4R/EuCIMWjsgjm2J
+        AuC+EpalirGgm+LfWNzaH227ypa2x6NT+I96HDm8wA==
+X-Google-Smtp-Source: APXvYqwF/lDey/44H3kjnI1EW/XcWxjPOi+4mT3kp6ztUTkr7W6KuiYV+NefQFDaFmFbmfRUPcsC+RIWfCeo8thfE8E=
+X-Received: by 2002:a6b:b549:: with SMTP id e70mr6033144iof.95.1565236091528;
+ Wed, 07 Aug 2019 20:48:11 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
-X-Originating-IP: [172.20.13.39]
-X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
- HQMAIL107.nvidia.com (172.20.187.13)
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1565236013; bh=oa/UlzMF1BY8hfwSUK2E34E4BK86wv0rI2GL87o8kWQ=;
-        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
-         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
-         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
-         Content-Transfer-Encoding;
-        b=caNdsK+H718e8IaMHboxAo7N5kSDjdO0aPPP7qMD/uXC6LIuseTU5yocCYztoyhLS
-         A8theOeNn9DFbaKSyltNZVy/0B3VPZPEr/7HwHnfipqBI1W9E/1RXgk4cYboMCcd2v
-         K1AubOjDxM7RJmlTd1q1ZO/DARZkbUQqfdDa7AtzCGn8CgjUMfboXlhtit5supcfVJ
-         t3SF5BlWoOZ+ktHQ+Gy0QbysjhXaepl4K0zI9Pv3YsYauPp0cOOqMsTfKIdJYZp847
-         qDjXLEk745BEl9a58mwF6yYg4Z7StCZBL718mfzBDBCPCwNZsIoTbJbWCkazTDd50+
-         NvHzitKycTv2g==
+References: <20190807024917.27682-1-firo.yang@suse.com> <85aaefdf-d454-1823-5840-d9e2f71ffb19@oracle.com>
+ <20190807083831.GA6811@linux-6qg8> <901704f1-163d-9dd8-4d20-93fa19f4435d@oracle.com>
+In-Reply-To: <901704f1-163d-9dd8-4d20-93fa19f4435d@oracle.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 7 Aug 2019 20:48:00 -0700
+Message-ID: <CAKgT0Uda0x8N7jv5Ex4x0tv85RgeHr5XQJCvDWCrD9VBu-4QPA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/1] ixgbe: sync the first fragment unconditionally
+To:     Jacob Wen <jian.w.wen@oracle.com>
+Cc:     Firo Yang <firo.yang@suse.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "jeffrey.t.kirsher@intel.com" <jeffrey.t.kirsher@intel.com>,
+        "alexander.h.duyck@linux.intel.com" 
+        <alexander.h.duyck@linux.intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/7/19 7:36 PM, Ira Weiny wrote:
-> On Wed, Aug 07, 2019 at 10:46:49AM +0200, Michal Hocko wrote:
->> On Wed 07-08-19 10:37:26, Jan Kara wrote:
->>> On Fri 02-08-19 12:14:09, John Hubbard wrote:
->>>> On 8/2/19 7:52 AM, Jan Kara wrote:
->>>>> On Fri 02-08-19 07:24:43, Matthew Wilcox wrote:
->>>>>> On Fri, Aug 02, 2019 at 02:41:46PM +0200, Jan Kara wrote:
->>>>>>> On Fri 02-08-19 11:12:44, Michal Hocko wrote:
->>>>>>>> On Thu 01-08-19 19:19:31, john.hubbard@gmail.com wrote:
-  [...]
-> Before I go on, I would like to say that the "imbalance" of get_user_pages()
-> and put_page() bothers me from a purist standpoint...  However, since this
-> discussion cropped up I went ahead and ported my work to Linus' current master
-> (5.3-rc3+) and in doing so I only had to steal a bit of Johns code...  Sorry
-> John...  :-(
-> 
-> I don't have the commit messages all cleaned up and I know there may be some
-> discussion on these new interfaces but I wanted to throw this series out there
-> because I think it may be what Jan and Michal are driving at (or at least in
-> that direction.
-> 
-> Right now only RDMA and DAX FS's are supported.  Other users of GUP will still
-> fail on a DAX file and regular files will still be at risk.[2]
-> 
-> I've pushed this work (based 5.3-rc3+ (33920f1ec5bf)) here[3]:
-> 
-> https://github.com/weiny2/linux-kernel/tree/linus-rdmafsdax-b0-v3
-> 
-> I think the most relevant patch to this conversation is:
-> 
-> https://github.com/weiny2/linux-kernel/commit/5d377653ba5cf11c3b716f904b057bee6641aaf6
-> 
+On Wed, Aug 7, 2019 at 6:58 PM Jacob Wen <jian.w.wen@oracle.com> wrote:
+>
+>
+> On 8/7/19 4:38 PM, Firo Yang wrote:
+> > The 08/07/2019 15:56, Jacob Wen wrote:
+> >> I think the description is not correct. Consider using something like below.
+> > Thank you for comments.
+> >
+> >> In Xen environment, due to memory fragmentation ixgbe may allocate a 'DMA'
+> >> buffer with pages that are not physically contiguous.
+> > Actually, I didn't look into the reason why ixgbe got a DMA buffer which
+> > was mapped to Xen-swiotlb area.
+> Yes. I was wrong. You don't need to tell the exact reason.
+> >
+> > But I don't think this issue relates to phsical memory contiguity because, in
+> > our case, one ixgbe_rx_buffer only associates at most one page.
+>
+> This is interesting.
+>
+> I guess the performance of the NIC in your environment is not good due
+> to the extra cost of bounce buffer.
 
-ohhh...can you please avoid using the old __put_user_pages_dirty()
-function? I thought I'd caught things early enough to get away with
-the rename and deletion of that. You could either:
+If I recall correctly the Rx performance for ixgbe shouldn't be too
+bad even with a bounce buffer. The cost for map/unmap are expensive
+for a bounce buffer setup but the syncs are just copies so they are
+pretty cheap in comparison. The driver can take advantage of that on
+Rx since it leaves the pages mapped and just syncs the portion of the
+pages that are used.
 
-a) open code an implementation of vaddr_put_pages_dirty_lock() that
-doesn't call any of the *put_user_pages_dirty*() variants, or
-
-b) include my first patch ("") are part of your series, or
-
-c) base this on Andrews's tree, which already has merged in my first patch.
-
-
-thanks,
--- 
-John Hubbard
-NVIDIA
+Now if you are hitting the bounce buffer on the Tx side that is
+another matter as you have to allocate the buffer on demand and that
+is quite expensive.
