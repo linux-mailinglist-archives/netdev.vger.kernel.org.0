@@ -2,158 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 114B485CBF
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 10:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C083E85CF0
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 10:34:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731997AbfHHI0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 04:26:33 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:37138 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731592AbfHHI0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 04:26:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=jwxaTIm/AFYo95zIn4GSJClude56iUhYynHxK1wSpGY=; b=e6xc2qlyX7rvW6YuX6sxxvq5H
-        K5YLBG5R3W79nHYnYrjeNkeHrLkuv5701JgsuFwSW5p+8ND8JypISpN+cs24cMsYUNoKB2nKUeabd
-        fdX9Y63MnRGFCWVw194tJlRcaWuFXqHJTW0hTL03pjW9+1R0qp6vt9yKUr+Dy1mxfh/1ZVg/SlHhg
-        lw5uivZaBr4axvrqqkzQguD0RJxwbVH0rUu02Znuo7al1E9xCA5hNYJ8LigVpGXiTKLUMRzxhVOQh
-        A0Xrl6p14k/XgOMta/CMfmgw6iDrhLzAB5vMWMU6vqf30uzL5DQxnjKNJudP+lJB9IQoXELa5RZ3g
-        fis067yLQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:42380)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hvdkj-0002h1-Db; Thu, 08 Aug 2019 09:26:29 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hvdkg-0002Ik-CQ; Thu, 08 Aug 2019 09:26:26 +0100
-Date:   Thu, 8 Aug 2019 09:26:26 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Jose Abreu <Jose.Abreu@synopsys.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: Clause 73 and USXGMII
-Message-ID: <20190808082626.GB5193@shell.armlinux.org.uk>
-References: <BN8PR12MB32662070AAC1C34BA47C0763D3D40@BN8PR12MB3266.namprd12.prod.outlook.com>
- <BN8PR12MB3266A710111427071814D371D3D70@BN8PR12MB3266.namprd12.prod.outlook.com>
+        id S1731956AbfHHIef (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 04:34:35 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:37504 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731719AbfHHIee (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 04:34:34 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z23so1525569wmf.2
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 01:34:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=mMmTAA9uwX7k2d0dICBYSFNZ7kvwksWoj4TArL7LYtw=;
+        b=B9yvGiP3ObkaYr/XiNblKzIpCWStkPCQWKWFyNpORDm0y9S1f6DVBwVJ0KYfX9VK+M
+         M60ybchlLzTGgpEOJT4KbIsKOJSlMvOHxVtzulgM7lsJ8eAeZVDcmEc/jA3zw1nZ21lb
+         zhFcs51CLoQ5Y7wJkEARd7jqqELrDLRN7EMtU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=mMmTAA9uwX7k2d0dICBYSFNZ7kvwksWoj4TArL7LYtw=;
+        b=XSkX0Uci5bf8eaC2Hrl10xHNEvY7YfaGZVjxvb3TKjAxSMZJEVohUuYJYU6AlPIa7B
+         9bzhK9/vzKzHHvrhkywD1GSzy7y6JtfvRbZpPRCCnysjAPVwE1IuS3vtgJi3BHBje6M0
+         owHBdYM0+vB1dpIvj2Wo/IXEJ4ExTpYAf5023nt46OlWOTu+8mes7QE+mrGiuMtGXmt7
+         C16HpJ7Rw4eQl5cS3fICFrInPxqvEGm4NPedEDZR9dg2Jd7qHH4H5+3uhnY6Obwzlh1U
+         3etxUJAzGyiGmC4GVCUs8co8VJ7ngq2jhmk8EZgt/yLYgSJgEwQfGXJQm7KxJBBEqqKg
+         ONzQ==
+X-Gm-Message-State: APjAAAUCNqSSPlDgZzhXCZsTerRGro6YjvdAl2xx0eDuAfS43hwCwlQV
+        Au1kzi08BednmkLECE+abdywKEzFgJA4Lg==
+X-Google-Smtp-Source: APXvYqzTyjpvsIkYfRv7/lLzsov7YmtVSclFqL5hkvNFm23ihiGCJLMg9go+97Mj0cKjQ0p3dr3J+w==
+X-Received: by 2002:a05:600c:292:: with SMTP id 18mr2349796wmk.51.1565253271880;
+        Thu, 08 Aug 2019 01:34:31 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id s2sm1486698wmj.33.2019.08.08.01.34.29
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 08 Aug 2019 01:34:31 -0700 (PDT)
+Subject: Re: [PATCH v2 1/1] net: bridge: use mac_len in bridge forwarding
+To:     Zahari Doychev <zahari.doychev@linux.com>
+Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
+        roopa@cumulusnetworks.com, jhs@mojatatu.com, dsahern@gmail.com,
+        simon.horman@netronome.com, makita.toshiaki@lab.ntt.co.jp,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, ast@plumgrid.com,
+        johannes@sipsolutions.net, alexei.starovoitov@gmail.com
+References: <20190805153740.29627-1-zahari.doychev@linux.com>
+ <20190805153740.29627-2-zahari.doychev@linux.com>
+ <48058179-9690-54e2-f60c-c372446bfde9@cumulusnetworks.com>
+ <20190808080428.o2eqqfdscl274sr5@tycho>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <a782c232-2119-3240-904e-4374771e92d0@cumulusnetworks.com>
+Date:   Thu, 8 Aug 2019 11:34:29 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <BN8PR12MB3266A710111427071814D371D3D70@BN8PR12MB3266.namprd12.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190808080428.o2eqqfdscl274sr5@tycho>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 08/08/2019 11:04, Zahari Doychev wrote:
+> On Wed, Aug 07, 2019 at 12:17:43PM +0300, Nikolay Aleksandrov wrote:
+>> Hi Zahari,
+>> On 05/08/2019 18:37, Zahari Doychev wrote:
+>>> The bridge code cannot forward packets from various paths that set up the
+>>> SKBs in different ways. Some of these packets get corrupted during the
+>>> forwarding as not always is just ETH_HLEN pulled at the front. This happens
+>>> e.g. when VLAN tags are pushed bu using tc act_vlan on ingress.
+>> Overall the patch looks good, I think it shouldn't introduce any regressions
+>> at least from the codepaths I was able to inspect, but please include more
+>> details in here from the cover letter, in fact you don't need it just add all of
+>> the details here so we have them, especially the test setup. Also please provide
+>> some details how this patch was tested. It'd be great if you could provide a
+>> selftest for it so we can make sure it's considered when doing future changes.
+> 
+> Hi Nik,
+> 
+> Thanks for the reply. I will do the suggested corrections and try creating a
+> selftest. I assume it should go to the net/forwarding together with the other
+> bridge tests as a separate patch.
+> 
+> Regards,
+> Zahari
+> 
+
 Hi,
+Yes, the selftest should target net-next and go to net/forwarding.
 
-Have you tried enabling debug mode in phylink (add #define DEBUG at the
-top of the file) ?
+Thanks,
+ Nik
 
-Thanks.
+>>
+>> Thank you,
+>>  Nik
+>>
+>>>
+>>> The problem is fixed by using skb->mac_len instead of ETH_HLEN, which makes
+>>> sure that the skb headers are correctly restored. This usually does not
+>>> change anything, execpt the local bridge transmits which now need to set
+>>> the skb->mac_len correctly in br_dev_xmit, as well as the broken case noted
+>>> above.
+>>>
+>>> Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
+>>> ---
+>>>  net/bridge/br_device.c  | 3 ++-
+>>>  net/bridge/br_forward.c | 4 ++--
+>>>  net/bridge/br_vlan.c    | 3 ++-
+>>>  3 files changed, 6 insertions(+), 4 deletions(-)
+>>>
+>>> diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
+>>> index 681b72862c16..aeb77ff60311 100644
+>>> --- a/net/bridge/br_device.c
+>>> +++ b/net/bridge/br_device.c
+>>> @@ -55,8 +55,9 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>  	BR_INPUT_SKB_CB(skb)->frag_max_size = 0;
+>>>  
+>>>  	skb_reset_mac_header(skb);
+>>> +	skb_reset_mac_len(skb);
+>>>  	eth = eth_hdr(skb);
+>>> -	skb_pull(skb, ETH_HLEN);
+>>> +	skb_pull(skb, skb->mac_len);
+>>>  
+>>>  	if (!br_allowed_ingress(br, br_vlan_group_rcu(br), skb, &vid))
+>>>  		goto out;
+>>> diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
+>>> index 86637000f275..edb4f3533f05 100644
+>>> --- a/net/bridge/br_forward.c
+>>> +++ b/net/bridge/br_forward.c
+>>> @@ -32,7 +32,7 @@ static inline int should_deliver(const struct net_bridge_port *p,
+>>>  
+>>>  int br_dev_queue_push_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
+>>>  {
+>>> -	skb_push(skb, ETH_HLEN);
+>>> +	skb_push(skb, skb->mac_len);
+>>>  	if (!is_skb_forwardable(skb->dev, skb))
+>>>  		goto drop;
+>>>  
+>>> @@ -94,7 +94,7 @@ static void __br_forward(const struct net_bridge_port *to,
+>>>  		net = dev_net(indev);
+>>>  	} else {
+>>>  		if (unlikely(netpoll_tx_running(to->br->dev))) {
+>>> -			skb_push(skb, ETH_HLEN);
+>>> +			skb_push(skb, skb->mac_len);
+>>>  			if (!is_skb_forwardable(skb->dev, skb))
+>>>  				kfree_skb(skb);
+>>>  			else
+>>> diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
+>>> index 021cc9f66804..88244c9cc653 100644
+>>> --- a/net/bridge/br_vlan.c
+>>> +++ b/net/bridge/br_vlan.c
+>>> @@ -466,13 +466,14 @@ static bool __allowed_ingress(const struct net_bridge *br,
+>>>  		/* Tagged frame */
+>>>  		if (skb->vlan_proto != br->vlan_proto) {
+>>>  			/* Protocol-mismatch, empty out vlan_tci for new tag */
+>>> -			skb_push(skb, ETH_HLEN);
+>>> +			skb_push(skb, skb->mac_len);
+>>>  			skb = vlan_insert_tag_set_proto(skb, skb->vlan_proto,
+>>>  							skb_vlan_tag_get(skb));
+>>>  			if (unlikely(!skb))
+>>>  				return false;
+>>>  
+>>>  			skb_pull(skb, ETH_HLEN);
+>>> +			skb_reset_network_header(skb);
+>>>  			skb_reset_mac_len(skb);
+>>>  			*vid = 0;
+>>>  			tagged = false;
+>>>
+>>
 
-On Thu, Aug 08, 2019 at 08:17:29AM +0000, Jose Abreu wrote:
-> ++ PHY Experts
-> 
-> From: Jose Abreu <joabreu@synopsys.com>
-> Date: Aug/07/2019, 16:46:23 (UTC+00:00)
-> 
-> > Hello,
-> > 
-> > I've some sample code for Clause 73 support using Synopsys based XPCS 
-> > but I would like to clarify some things that I noticed.
-> > 
-> > I'm using USXGMII as interface and a single SERDES that operates at 10G 
-> > rate but MAC side is working at 2.5G. Maximum available bandwidth is 
-> > therefore 2.5Gbps.
-> > 
-> > So, I configure USXGMII for 2.5G mode and it works but if I try to limit 
-> > the autoneg abilities to 2.5G max then it never finishes:
-> > # ethtool enp4s0
-> > Settings for enp4s0:
-> > 	Supported ports: [ ]
-> > 	Supported link modes:   1000baseKX/Full 
-> > 	                        2500baseX/Full 
-> > 	Supported pause frame use: Symmetric Receive-only
-> > 	Supports auto-negotiation: Yes
-> > 	Supported FEC modes: Not reported
-> > 	Advertised link modes:  1000baseKX/Full 
-> > 	                        2500baseX/Full 
-> > 	Advertised pause frame use: Symmetric Receive-only
-> > 	Advertised auto-negotiation: Yes
-> > 	Advertised FEC modes: Not reported
-> > 	Speed: Unknown!
-> > 	Duplex: Unknown! (255)
-> > 	Port: MII
-> > 	PHYAD: 0
-> > 	Transceiver: internal
-> > 	Auto-negotiation: on
-> > 	Supports Wake-on: ug
-> > 	Wake-on: d
-> > 	Current message level: 0x0000003f (63)
-> > 			       drv probe link timer ifdown ifup
-> > 	Link detected: no
-> > 
-> > When I do not limit autoneg and I say that maximum limit is 10G then I 
-> > get Link Up and autoneg finishes with this outcome:
-> > # ethtool enp4s0
-> > Settings for enp4s0:
-> > 	Supported ports: [ ]
-> > 	Supported link modes:   1000baseKX/Full 
-> > 	                        2500baseX/Full 
-> > 	                        10000baseKX4/Full 
-> > 	                        10000baseKR/Full 
-> > 	Supported pause frame use: Symmetric Receive-only
-> > 	Supports auto-negotiation: Yes
-> > 	Supported FEC modes: Not reported
-> > 	Advertised link modes:  1000baseKX/Full 
-> > 	                        2500baseX/Full 
-> > 	                        10000baseKX4/Full 
-> > 	                        10000baseKR/Full 
-> > 	Advertised pause frame use: Symmetric Receive-only
-> > 	Advertised auto-negotiation: Yes
-> > 	Advertised FEC modes: Not reported
-> > 	Link partner advertised link modes:  1000baseKX/Full 
-> > 	                                     2500baseX/Full 
-> > 	                                     10000baseKX4/Full 
-> > 	                                     10000baseKR/Full 
-> > 	Link partner advertised pause frame use: Symmetric Receive-only
-> > 	Link partner advertised auto-negotiation: Yes
-> > 	Link partner advertised FEC modes: Not reported
-> > 	Speed: 2500Mb/s
-> > 	Duplex: Full
-> > 	Port: MII <- Never mind this, it's a SW issue
-> > 	PHYAD: 0
-> > 	Transceiver: internal
-> > 	Auto-negotiation: on
-> > 	Supports Wake-on: ug
-> > 	Wake-on: d
-> > 	Current message level: 0x0000003f (63)
-> > 			       drv probe link timer ifdown ifup
-> > 	Link detected: yes
-> > 
-> > I was expecting that, as MAC side is limited to 2.5G, I should set in 
-> > phylink the correct capabilities and then outcome of autoneg would only 
-> > have up to 2.5G modes. Am I wrong ?
-> > 
-> > ---
-> > Thanks,
-> > Jose Miguel Abreu
-> 
-> 
-> ---
-> Thanks,
-> Jose Miguel Abreu
-> 
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
