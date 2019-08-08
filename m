@@ -2,118 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E56F286880
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:11:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 23F8B8687E
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:11:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390172AbfHHSLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 14:11:37 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:42342 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbfHHSLh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 14:11:37 -0400
-Received: by mail-ed1-f67.google.com with SMTP id v15so91865084eds.9
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 11:11:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kdqAuCwFB2yHNZLfgfFzFdlW+/F5em+ndVdBrW8itUw=;
-        b=SWzySL0Xc7qM5l2UTwUpLz/xsjX3gifhAZ8Uxtc4o5HX9ecRr8BL9kh3dX6irwEy0P
-         KAfhBpMQj3JMo12M5580DRwNMVvDqjdqrljwfXqAa5tDr6MORhibhmM68QldG9+t2VDa
-         rCggeCE6oWkbvuCB4/Kst47kV07LsC9Mr+ZGaAKH/O9kCAR1eb8Kv/Ykn8Fe//ZKCsMl
-         YNfmE1Ppi3iICmXgiP+NuR+rcePrOLqvl0HryD2khmoX1+2oJzJp1RXVA9ds4vB2rdTK
-         x5ezcbK5px2X5ePrN6eLZvsFf2gJb9kwiR7unuOcmfAEYmgFYCqbjB4OTsSxpkjr0B0U
-         RRFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kdqAuCwFB2yHNZLfgfFzFdlW+/F5em+ndVdBrW8itUw=;
-        b=dOJoMq7y+rRRvGZKd+vLfvYfxDfapd3LfrqBtlfYEQwddneGBq9OdpXP+5u0ke43bU
-         OA+DPJXPfClpnybVAXwEWIfhpZSWId/CXL+yLIe5jo9rHIUyrvf4tTPSsAIR72HfD3OE
-         0oPX9aV1lqoxIp3tG7hbAamQuXvT0fDvi+YiBBo9pleskHnkKQWOXy+jiA9XlUsT972X
-         f4dDjUYmnD6BIKHWAPoX+iDPqToqjxXepWHbOTiRh1h3CDsaLsnnMC7ak3039N+MNdoA
-         dD7/VFcggwJmreXYZfAq1WP8/hpBQnDB0ZwP83xgZB88ym5rWYHfP5+po/JD9mcA0DCG
-         miag==
-X-Gm-Message-State: APjAAAXb42yJxJ+nKI+4DCbSDC1TiKoW+y0QB845YAL+JDLqPgRQK4a8
-        L9Qiu++bC4UDNcjOerPA7ivBVYGKzhBwzk/IgOE=
-X-Google-Smtp-Source: APXvYqy57Lk4VXkx6+o+u3XSi5sqyiEAVv4AF5fQzE7ndsyQa/e+nS0RPSwFUQqk36cKWT0wTp+BkzLhKSQdk4kp3/I=
-X-Received: by 2002:a50:eb8f:: with SMTP id y15mr17579665edr.31.1565287895467;
- Thu, 08 Aug 2019 11:11:35 -0700 (PDT)
+        id S2389754AbfHHSLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 14:11:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52572 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725535AbfHHSLH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 14:11:07 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5DE3821743;
+        Thu,  8 Aug 2019 18:11:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565287866;
+        bh=VQIOY0vBzuYscrqn68EABa55zxTZLbGjt3/l6q9cOAY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=xdrkj+0hZtP1qj4oUD1AxSDlDuoiKG8VcdttnCp4FelzfZoC5uDp0WRnRMAyxMQKE
+         jxGWs49FzLgOld8rhoJP/En/UFXtE8Xaobwq2BVzMH5PBJ07EfuCUsjuQYcWQ+ikb8
+         rNwGD0At0fsoxKJO2Ncnb9rM9MEIarZLVK+AJQt0=
+Date:   Thu, 8 Aug 2019 20:11:04 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>, Sam Ravnborg <sam@ravnborg.org>
+Subject: Re: [PATCH v2 bpf-next] btf: expose BTF info through sysfs
+Message-ID: <20190808181104.GA31357@kroah.com>
+References: <20190808003215.1462821-1-andriin@fb.com>
+ <89a6e282-0250-4264-128d-469be99073e9@fb.com>
+ <20190808060812.GA25150@kroah.com>
+ <CAEf4BzaWtumTrc7h1t3w8hA1L8mVo2Cm0B+eLSe4eSghFAu3iw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20190808000359.20785-1-jakub.kicinski@netronome.com>
- <CA+FuTSc7H6X+rRnxZ5NcFiNy+pw1YCONiUr+K6g800DXzT_0EA@mail.gmail.com> <20190808103148.164bec9f@cakuba.netronome.com>
-In-Reply-To: <20190808103148.164bec9f@cakuba.netronome.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 8 Aug 2019 14:10:59 -0400
-Message-ID: <CAF=yD-+2N8dcJChFy9s+raVA3KjOVb76yr-1xVtGX+apNmGpXQ@mail.gmail.com>
-Subject: Re: [PATCH net v3] net/tls: prevent skb_orphan() from leaking TLS
- plain text with offload
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        oss-drivers@netronome.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaWtumTrc7h1t3w8hA1L8mVo2Cm0B+eLSe4eSghFAu3iw@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 8, 2019 at 1:32 PM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Thu, 8 Aug 2019 11:59:18 -0400, Willem de Bruijn wrote:
-> > > diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> > > index 7c0b2b778703..43922d86e510 100644
-> > > --- a/net/tls/tls_device.c
-> > > +++ b/net/tls/tls_device.c
-> > > @@ -373,9 +373,9 @@ static int tls_push_data(struct sock *sk,
-> > >         struct tls_context *tls_ctx = tls_get_ctx(sk);
-> > >         struct tls_prot_info *prot = &tls_ctx->prot_info;
-> > >         struct tls_offload_context_tx *ctx = tls_offload_ctx_tx(tls_ctx);
-> > > -       int tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
-> > >         int more = flags & (MSG_SENDPAGE_NOTLAST | MSG_MORE);
-> > >         struct tls_record_info *record = ctx->open_record;
-> > > +       int tls_push_record_flags;
-> > >         struct page_frag *pfrag;
-> > >         size_t orig_size = size;
-> > >         u32 max_open_record_len;
-> > > @@ -390,6 +390,9 @@ static int tls_push_data(struct sock *sk,
-> > >         if (sk->sk_err)
-> > >                 return -sk->sk_err;
+On Thu, Aug 08, 2019 at 10:53:44AM -0700, Andrii Nakryiko wrote:
+> On Wed, Aug 7, 2019 at 11:08 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+> >
+> > On Thu, Aug 08, 2019 at 04:24:25AM +0000, Yonghong Song wrote:
 > > >
-> > > +       flags |= MSG_SENDPAGE_DECRYPTED;
-> > > +       tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
-> > > +
+> > >
+> > > On 8/7/19 5:32 PM, Andrii Nakryiko wrote:
+> > > > Make .BTF section allocated and expose its contents through sysfs.
 > >
-> > Without being too familiar with this code: can this plaintext flag be
-> > set once, closer to the call to do_tcp_sendpages, in tls_push_sg?
+> > Was this original patch not on bpf@vger?  I can't find it in my
+> > archive.  Anyway...
 > >
-> > Instead of two locations with multiple non-trivial codepaths between
-> > them and do_tcp_sendpages.
+> > > > /sys/kernel/btf directory is created to contain all the BTFs present
+> > > > inside kernel. Currently there is only kernel's main BTF, represented as
+> > > > /sys/kernel/btf/kernel file. Once kernel modules' BTFs are supported,
+> > > > each module will expose its BTF as /sys/kernel/btf/<module-name> file.
 > >
-> > Or are there paths where the flag is not set? Which I imagine would
-> > imply already passing s/w encrypted ciphertext.
->
-> tls_push_sg() is shared with sw path which doesn't have the device
-> validation.
->
-> Device TLS can read tls_push_sg() via tls_push_partial_record() and
-> tls_push_data(). tls_push_data() is addressed directly here,
-> tls_push_partial_record() is again shared with SW path, so we have to
-> address it by adding the flag in tls_device_write_space().
->
-> The alternative is to add a conditional to tls_push_sg() which is
-> a little less nice from performance and layering PoV but it is a lot
-> simpler..
->
-> Should I change?
+> > Why are you using sysfs for this?  Who uses "BTF"s?  Are these debugging
+> > images that only people working on developing bpf programs are going to
+> > need, or are these things that you are going to need on a production
+> > system?
+> 
+> We need it in production system. One immediate and direct use case is
+> BPF CO-RE (Compile Once - Run Everywhere), which aims to allow to
+> pre-compile BPF applications (even those that read internal kernel
+> structures) using any local kernel headers, and then distribute and
+> run them in binary form on all target production machines without
+> dependencies on kernel headers and having Clang on target machine to
+> compile C to BPF IR. Libbpf is doing all those adjustments/relocations
+> based on kernel's actual BTF. See [0] for a summary and slides, if you
+> curious to learn more.
+> 
+>   [0] http://vger.kernel.org/bpfconf2019.html#session-2
 
-Not at all. Thanks for the detailed explanation. That answered my last question
+Ok, then a binary sysfs file is fine, no objection from me.
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+> > I ask as maybe debugfs is the best place for this if they are not needed
+> > on production systems.
+> >
+> >
+> > > >
+> > > > Current approach relies on a few pieces coming together:
+> > > > 1. pahole is used to take almost final vmlinux image (modulo .BTF and
+> > > >     kallsyms) and generate .BTF section by converting DWARF info into
+> > > >     BTF. This section is not allocated and not mapped to any segment,
+> > > >     though, so is not yet accessible from inside kernel at runtime.
+> > > > 2. objcopy dumps .BTF contents into binary file and subsequently
+> > > >     convert binary file into linkable object file with automatically
+> > > >     generated symbols _binary__btf_kernel_bin_start and
+> > > >     _binary__btf_kernel_bin_end, pointing to start and end, respectively,
+> > > >     of BTF raw data.
+> > > > 3. final vmlinux image is generated by linking this object file (and
+> > > >     kallsyms, if necessary). sysfs_btf.c then creates
+> > > >     /sys/kernel/btf/kernel file and exposes embedded BTF contents through
+> > > >     it. This allows, e.g., libbpf and bpftool access BTF info at
+> > > >     well-known location, without resorting to searching for vmlinux image
+> > > >     on disk (location of which is not standardized and vmlinux image
+> > > >     might not be even available in some scenarios, e.g., inside qemu
+> > > >     during testing).
+> > > >
+> > > > Alternative approach using .incbin assembler directive to embed BTF
+> > > > contents directly was attempted but didn't work, because sysfs_proc.o is
+> > > > not re-compiled during link-vmlinux.sh stage. This is required, though,
+> > > > to update embedded BTF data (initially empty data is embedded, then
+> > > > pahole generates BTF info and we need to regenerate sysfs_btf.o with
+> > > > updated contents, but it's too late at that point).
+> > > >
+> > > > If BTF couldn't be generated due to missing or too old pahole,
+> > > > sysfs_btf.c handles that gracefully by detecting that
+> > > > _binary__btf_kernel_bin_start (weak symbol) is 0 and not creating
+> > > > /sys/kernel/btf at all.
+> > > >
+> > > > v1->v2:
+> > > > - allow kallsyms stage to re-use vmlinux generated by gen_btf();
+> > > >
+> > > > Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+> > > > Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > > > Cc: Jiri Olsa <jolsa@kernel.org>
+> > > > Cc: Sam Ravnborg <sam@ravnborg.org>
+> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > > > ---
+> > > >   kernel/bpf/Makefile     |  3 +++
+> > > >   kernel/bpf/sysfs_btf.c  | 52 ++++++++++++++++++++++++++++++++++++++
+> > > >   scripts/link-vmlinux.sh | 55 +++++++++++++++++++++++++++--------------
+> > > >   3 files changed, 91 insertions(+), 19 deletions(-)
+> > > >   create mode 100644 kernel/bpf/sysfs_btf.c
+> >
+> > First rule, you can't create new sysfs files without a matching
+> > Documentation/ABI/ set of entries.  Please do that for the next version
+> > of this patch so we can properly check to see if what you are
+> > documenting lines up with the code.  Otherwise we just have to guess as
+> > to what the entries you are creating actually do.
+> 
+> Yep, sure, I wasn't aware, will add in v3.
+
+thanks.
+
+> > > > +static int __init btf_kernel_init(void)
+> > > > +{
+> > > > +   if (!_binary__btf_kernel_bin_start)
+> > > > +           return 0;
+> > > > +
+> > > > +   btf_kernel_attr.size = _binary__btf_kernel_bin_end -
+> > > > +                          _binary__btf_kernel_bin_start;
+> > > > +
+> > > > +   return sysfs_create_group(kernel_kobj, &btf_group_attr);
+> >
+> > You are nesting directories here without a "real" kobject in the middle.
+> > Are you _sure_ you want to do that?  It's going to get really tricky
+> > later on based on your comments above about creating multiple files in
+> > that directory over time once "modules" are allowed.
+> 
+> My thinking was that when we have BTF for modules, I'll need to do
+> some code adjustments anyway, at which point it will be more clear how
+> we want to structure that. But I can add explicit kobject as static
+> variable right now, no problems. Later on we probably will just switch
+> it to be exported, so that modules can self-register/unregister their
+> BTFs autonomously.
+
+A "real" kobject to start with here would probably be best.  Keeps
+things simpler later as well.
+
+thanks,
+
+greg k-h
