@@ -2,98 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF78686A91
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 21:28:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91CAE86A98
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 21:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732544AbfHHT2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 15:28:44 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:45695 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727649AbfHHT2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 15:28:44 -0400
-Received: by mail-yb1-f193.google.com with SMTP id s41so12372736ybe.12
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 12:28:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KEA38hARLo4SuT5GCZPzTtdySvuM017Qa0pF++XwdV8=;
-        b=r6LEmxzm3OtAanowl1SIgfTe/QEftawdCk0MD8u0Y9GLT9b+KQIm9TBFwWVFY++6Di
-         CVm6xoxR1re7mLEXkQGSn59ptYqKL6pY5aKH8Oq8oCmuk0FMlStUP5aKTGrIFTdu2InR
-         cEM6uT5lb1QS+HtTTsfh1zJFfmcAusNA6HlNR0fSVQ0H5lVMvHhUOL3+hNmbFwx3em/U
-         8HppZXH4eA2garzMpEOqgvvVgWbfNEu0eNX0n7CkYm5Zj4Wi63Dv3lSU/g0GANmwTOOH
-         ZjfQ+ddCcS2vcmZdMOibWHWycr/v3uAq92Xw+3qfw/oLyzEDOq7p6H7MjhxvgJcOmfcW
-         LmrA==
+        id S1732327AbfHHTan convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Aug 2019 15:30:43 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:41144 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725785AbfHHTam (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 15:30:42 -0400
+Received: by mail-ed1-f67.google.com with SMTP id w5so3502440edl.8
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 12:30:41 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KEA38hARLo4SuT5GCZPzTtdySvuM017Qa0pF++XwdV8=;
-        b=As0xEgHv5q2ck/brqb6UfP9mNLS8OPnaeeHcktYva9u9lckj7cB2LLX1dlTd46oZAs
-         tr/XL6UbaXy2ioxj0cyfGTQon31jdSuBUL/8unhKmu/G7RoeNs17xq+KxmyfpClVyva9
-         ZUloh0M41e5WR6+60S4chL1seE6Mf2UiAvzF/jyEoh/6cNUdI68HfimmYVT8mnU8a/gZ
-         ah6Of9dqJpyhq0ermX2h3dmpuggV1DKCjuYofYX18QG6Ib54HRqkv51dUg1kx6pgFNyQ
-         H1HzjIGCIz2xy9qdlCgvLRtD2emov4R757XCFqX6Pu0+qTE/Vc/JPfNyu12a2YBJPhLA
-         sjqg==
-X-Gm-Message-State: APjAAAVCzVOMOp62cwq8p5xhPV9wYIPdOtgyGjB1suwNz/iYrxGPFpd+
-        GiUXFyUuICnlHnLkiztIPHks/uGG7HYXMKik9w==
-X-Google-Smtp-Source: APXvYqy9Ex52zGlHxdEP1GmRjit5t5IsEN55bQJbm+RLE+ilGcyTJV93iLd/bMY8JAwDfO+TUHdWFOiW2o2m4F0pLt8=
-X-Received: by 2002:a5b:d08:: with SMTP id y8mr11125134ybp.464.1565292523316;
- Thu, 08 Aug 2019 12:28:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190807022509.4214-1-danieltimlee@gmail.com> <20190807022509.4214-4-danieltimlee@gmail.com>
- <5cd88036-8682-8d26-b795-caf96e1e883f@netronome.com>
-In-Reply-To: <5cd88036-8682-8d26-b795-caf96e1e883f@netronome.com>
-From:   "Daniel T. Lee" <danieltimlee@gmail.com>
-Date:   Fri, 9 Aug 2019 04:28:32 +0900
-Message-ID: <CAEKGpzgOEG0yi4vXFf23vVSAWwttJQpni-Cg+iD7ORHrbSitiA@mail.gmail.com>
-Subject: Re: [v3,3/4] tools: bpftool: add bash-completion for net attach/detach
-To:     Quentin Monnet <quentin.monnet@netronome.com>
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Wsw6Id5oaRGsi6j66DvfkEzdpI+jUJL6LTbJLknluVk=;
+        b=UVSGWPWXuMRhqb8iDKpqaECp04QelZvoLTjoMLONSGht6GHJsU1gCGywQ/kaHZ6uWq
+         Cmy9sPwXfUdGEafgkWZP6ujrOJv0mtRVW8WUUBl7EZJMet+74aN2BWtP/RtKWK0/vaCi
+         APNXE8cozr5wzO/65IS0RT0xiBcSuMlP/lCLsiKgZ6W6+ObCNvnSq+DlUOWHcsAbeNXL
+         n80hCLEsBnvMwFRogIpW3z8pW/qgxlTNYSGG7cl2yIRWn2kNjoPEEUeHJxhCSPXV9KFV
+         ZKpWuTU00EpkJvrZq5w9oNwMSsGXHRpsTRybM7685R/Sucl6Q2Yrf1kNSIog55kc81nL
+         3SrA==
+X-Gm-Message-State: APjAAAUDbncQL2fqBM2UigirxSU//RZlQw4RVb0SN0o2DF3hStFBpTY5
+        LHIgU4qnDIuR8MbEyLRRefKsqQ==
+X-Google-Smtp-Source: APXvYqxna7NIJkL/qULpNj4zd8jkpFeZh5eY3Sn1dw8UJJuDUQQ+VYdteqyl2WxD1uDlnW47edBnJg==
+X-Received: by 2002:a50:f98a:: with SMTP id q10mr17846227edn.267.1565292641093;
+        Thu, 08 Aug 2019 12:30:41 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id a18sm12876356ejp.2.2019.08.08.12.30.40
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 08 Aug 2019 12:30:40 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id CE8061804B2; Thu,  8 Aug 2019 21:30:39 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
 Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBl?= =?utf-8?B?bA==?= 
+        <bjorn.topel@gmail.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf-next v5 0/6] xdp: Add devmap_hash map type
+In-Reply-To: <CAADnVQJpYeQ68V5BE2r3BhbraBh7G8dSd8zknFUJxtW4GwNkuA@mail.gmail.com>
+References: <156415721066.13581.737309854787645225.stgit@alrua-x1> <CAADnVQJpYeQ68V5BE2r3BhbraBh7G8dSd8zknFUJxtW4GwNkuA@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 08 Aug 2019 21:30:39 +0200
+Message-ID: <87k1bnsbds.fsf@toke.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 9, 2019 at 1:48 AM Quentin Monnet
-<quentin.monnet@netronome.com> wrote:
->
-> 2019-08-07 11:25 UTC+0900 ~ Daniel T. Lee <danieltimlee@gmail.com>
-> > This commit adds bash-completion for new "net attach/detach"
-> > subcommand for attaching XDP program on interface.
-> >
-> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
-> > ---
-> >  tools/bpf/bpftool/bash-completion/bpftool | 64 +++++++++++++++++++----
-> >  1 file changed, 55 insertions(+), 9 deletions(-)
-> >
-> > diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-> > index c8f42e1fcbc9..1d81cb09d478 100644
-> > --- a/tools/bpf/bpftool/bash-completion/bpftool
-> > +++ b/tools/bpf/bpftool/bash-completion/bpftool
-> > @@ -201,6 +201,10 @@ _bpftool()
-> >              _bpftool_get_prog_tags
-> >              return 0
-> >              ;;
-> > +        dev)
-> > +            _sysfs_get_netdevs
-> > +            return 0
-> > +            ;;
->
-> Makes sense to have this for "dev", thanks! But it seems you missed one
-> place where it was used, for "bpftool feature probe" (We have "[[ $prev
-> == "dev" ]] && _sysfs_get_netdevs && return 0"). Could you also remove
-> that one please?
->
-> Other than this looks good, thanks:
->
-> Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
 
-My bad. Thanks for letting me know.
-I'll update it with the next version of patch.
+> On Fri, Jul 26, 2019 at 9:06 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> This series adds a new map type, devmap_hash, that works like the existing
+>> devmap type, but using a hash-based indexing scheme. This is useful for the use
+>> case where a devmap is indexed by ifindex (for instance for use with the routing
+>> table lookup helper). For this use case, the regular devmap needs to be sized
+>> after the maximum ifindex number, not the number of devices in it. A hash-based
+>> indexing scheme makes it possible to size the map after the number of devices it
+>> should contain instead.
+>>
+>> This was previously part of my patch series that also turned the regular
+>> bpf_redirect() helper into a map-based one; for this series I just pulled out
+>> the patches that introduced the new map type.
+>>
+>> Changelog:
+>>
+>> v5:
+>>
+>> - Dynamically set the number of hash buckets by rounding up max_entries to the
+>>   nearest power of two (mirroring the regular hashmap), as suggested by Jesper.
+>
+> fyi I'm waiting for Jesper to review this new version.
 
-Thank you for your review.
-I really appreciate it.
+Ping Jesper? :)
+
+-Toke
