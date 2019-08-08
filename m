@@ -2,106 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E654862BE
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 15:15:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0D0D786330
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 15:32:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733005AbfHHNPY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 09:15:24 -0400
-Received: from packetmixer.de ([79.140.42.25]:58748 "EHLO
-        mail.mail.packetmixer.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732983AbfHHNPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 09:15:23 -0400
-Received: from kero.packetmixer.de (p200300C5971AA600E0A7EA13A3520353.dip0.t-ipconnect.de [IPv6:2003:c5:971a:a600:e0a7:ea13:a352:353])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mail.packetmixer.de (Postfix) with ESMTPSA id C9D8A6207A;
-        Thu,  8 Aug 2019 15:06:22 +0200 (CEST)
-From:   Simon Wunderlich <sw@simonwunderlich.de>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, b.a.t.m.a.n@lists.open-mesh.org,
-        =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>
-Subject: [PATCH 4/4] batman-adv: BATMAN_V: aggregate OGMv2 packets
-Date:   Thu,  8 Aug 2019 15:06:19 +0200
-Message-Id: <20190808130619.4481-5-sw@simonwunderlich.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190808130619.4481-1-sw@simonwunderlich.de>
-References: <20190808130619.4481-1-sw@simonwunderlich.de>
+        id S1733147AbfHHNc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 09:32:27 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44254 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732909AbfHHNcX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 09:32:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=GHo/6QReMThwQvyBgODim8yuFC35rBgqhlgJLF2q8Q4=; b=oTFysx+mCgXvRtdsg5J4CTTGW9
+        HLBr7jV26zYbqX3l5R1W+PwgvvBWC+pzrJ3PQPhNUQyC24TlfZZebDOLgNBcbMNYiq6arqFiIqBnb
+        RIZABxEu3b7a9BLjmVbOsv1luWS1rqlniXD45/u4PrYAH1Ue6Z0VevzULWXe6kCo64n8=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hviWX-0002zd-D4; Thu, 08 Aug 2019 15:32:09 +0200
+Date:   Thu, 8 Aug 2019 15:32:09 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Tao Ren <taoren@fb.com>
+Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        William Kennington <wak@google.com>,
+        Joel Stanley <joel@jms.id.au>
+Subject: Re: [PATCH net-next] net/ncsi: allow to customize BMC MAC Address
+ offset
+Message-ID: <20190808133209.GB32706@lunn.ch>
+References: <20190807002118.164360-1-taoren@fb.com>
+ <20190807112518.644a21a2@cakuba.netronome.com>
+ <20190807184143.GE26047@lunn.ch>
+ <806a76a8-229a-7f24-33c7-2cf2094f3436@fb.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <806a76a8-229a-7f24-33c7-2cf2094f3436@fb.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Linus Lüssing <linus.luessing@c0d3.blue>
+> Let me prepare patch v2 using device tree. I'm not sure if standard
+> "mac-address" fits this situation because all we need is an offset
+> (integer) and BMC MAC is calculated by adding the offset to NIC's
+> MAC address. Anyways, let me work out v2 patch we can discuss more
+> then.
 
-Instead of transmitting individual OGMv2 packets from the aggregation
-queue merge those OGMv2 packets into a single one and transmit this
-aggregate instead.
+Hi Tao
 
-This reduces overhead as it saves an ethernet header and a transmission
-per aggregated OGMv2 packet.
+I don't know BMC terminology. By NICs MAC address, you are referring
+to the hosts MAC address? The MAC address the big CPU is using for its
+interface?  Where does this NIC get its MAC address from? If the BMCs
+bootloader has access to it, it can set the mac-address property in
+the device tree.
 
-Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
----
- net/batman-adv/bat_v_ogm.c | 28 +++++++++++++++++++++++++++-
- 1 file changed, 27 insertions(+), 1 deletion(-)
-
-diff --git a/net/batman-adv/bat_v_ogm.c b/net/batman-adv/bat_v_ogm.c
-index 52c990b54de5..319249f0f85f 100644
---- a/net/batman-adv/bat_v_ogm.c
-+++ b/net/batman-adv/bat_v_ogm.c
-@@ -191,18 +191,44 @@ static void batadv_v_ogm_aggr_list_free(struct batadv_hard_iface *hard_iface)
-  * batadv_v_ogm_aggr_send() - flush & send aggregation queue
-  * @hard_iface: the interface with the aggregation queue to flush
-  *
-+ * Aggregates all OGMv2 packets currently in the aggregation queue into a
-+ * single OGMv2 packet and transmits this aggregate.
-+ *
-+ * The aggregation queue is empty after this call.
-+ *
-  * Caller needs to hold the hard_iface->bat_v.aggr_list_lock.
-  */
- static void batadv_v_ogm_aggr_send(struct batadv_hard_iface *hard_iface)
- {
-+	unsigned int aggr_len = hard_iface->bat_v.aggr_len;
-+	struct sk_buff *skb_aggr;
-+	unsigned int ogm_len;
- 	struct sk_buff *skb;
- 
- 	lockdep_assert_held(&hard_iface->bat_v.aggr_list_lock);
- 
-+	if (!aggr_len)
-+		return;
-+
-+	skb_aggr = dev_alloc_skb(aggr_len + ETH_HLEN + NET_IP_ALIGN);
-+	if (!skb_aggr) {
-+		batadv_v_ogm_aggr_list_free(hard_iface);
-+		return;
-+	}
-+
-+	skb_reserve(skb_aggr, ETH_HLEN + NET_IP_ALIGN);
-+	skb_reset_network_header(skb_aggr);
-+
- 	while ((skb = skb_dequeue(&hard_iface->bat_v.aggr_list))) {
- 		hard_iface->bat_v.aggr_len -= batadv_v_ogm_len(skb);
--		batadv_v_ogm_send_to_if(skb, hard_iface);
-+
-+		ogm_len = batadv_v_ogm_len(skb);
-+		skb_put_data(skb_aggr, skb->data, ogm_len);
-+
-+		consume_skb(skb);
- 	}
-+
-+	batadv_v_ogm_send_to_if(skb_aggr, hard_iface);
- }
- 
- /**
--- 
-2.20.1
-
+    Andrew
