@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD0B68616C
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 14:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA23186177
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 14:17:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728718AbfHHMOG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 08:14:06 -0400
-Received: from www62.your-server.de ([213.133.104.62]:36446 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbfHHMOG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 08:14:06 -0400
-Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hvh30-0001kV-LN; Thu, 08 Aug 2019 13:57:34 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, m@lambda.lt,
-        edumazet@google.com, ast@kernel.org, willemb@google.com,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH net v2 2/2] bpf: sync bpf.h to tools infrastructure
-Date:   Thu,  8 Aug 2019 13:57:26 +0200
-Message-Id: <20190808115726.31703-3-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190808115726.31703-1-daniel@iogearbox.net>
-References: <20190808115726.31703-1-daniel@iogearbox.net>
+        id S1729144AbfHHMRD convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Aug 2019 08:17:03 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:42709 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727242AbfHHMRD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 08:17:03 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x78CGwi7006268, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x78CGwi7006268
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Thu, 8 Aug 2019 20:16:58 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Thu, 8 Aug
+ 2019 20:16:52 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: RE: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and rx_max_agg_num dynamically
+Thread-Topic: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and
+ rx_max_agg_num dynamically
+Thread-Index: AQHVTEjAduvqUw50CkySh6Q/0oky4abuKLuAgALKe5D//6zrgIAAi5Rw
+Date:   Thu, 8 Aug 2019 12:16:50 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D0F3F@RTITMBSVM03.realtek.com.tw>
+References: <1394712342-15778-289-albertk@realtek.com>
+        <1394712342-15778-294-albertk@realtek.com>
+        <20190806151007.75a8dd2c@cakuba.netronome.com>
+        <0835B3720019904CB8F7AA43166CEEB2F18D0D8E@RTITMBSVM03.realtek.com.tw>
+ <20190808134959.00006a58@gmail.com>
+In-Reply-To: <20190808134959.00006a58@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25535/Thu Aug  8 10:18:42 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pull in updates in BPF helper function description.
+Maciej Fijalkowski [mailto:maciejromanfijalkowski@gmail.com]
+> Sent: Thursday, August 08, 2019 7:50 PM
+[...]
+> > Excuse me again.
+> > I find the kernel supports the copybreak of Ethtool.
+> > However, I couldn't find a command of Ethtool to use it.
+> 
+> Ummm there's set_tunable ops. Amazon's ena driver is making use of it from
+> what
+> I see. Look at ena_set_tunable() in
+> drivers/net/ethernet/amazon/ena/ena_ethtool.c.
 
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
----
- tools/include/uapi/linux/bpf.h | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+The kernel could support it. And I has finished it.
+However, when I want to test it by ethtool, I couldn't find suitable command.
+I couldn't find relative feature in the source code of ethtool, either.
 
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index 4e455018da65..a5aa7d3ac6a1 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -1466,8 +1466,8 @@ union bpf_attr {
-  * 		If no cookie has been set yet, generate a new cookie. Once
-  * 		generated, the socket cookie remains stable for the life of the
-  * 		socket. This helper can be useful for monitoring per socket
-- * 		networking traffic statistics as it provides a unique socket
-- * 		identifier per namespace.
-+ * 		networking traffic statistics as it provides a global socket
-+ * 		identifier that can be assumed unique.
-  * 	Return
-  * 		A 8-byte long non-decreasing number on success, or 0 if the
-  * 		socket field is missing inside *skb*.
-@@ -1571,8 +1571,11 @@ union bpf_attr {
-  * 		but this is only implemented for native XDP (with driver
-  * 		support) as of this writing).
-  *
-- * 		All values for *flags* are reserved for future usage, and must
-- * 		be left at zero.
-+ * 		The lower two bits of *flags* are used as the return code if
-+ * 		the map lookup fails. This is so that the return value can be
-+ * 		one of the XDP program return codes up to XDP_TX, as chosen by
-+ * 		the caller. Any higher bits in the *flags* argument must be
-+ * 		unset.
-  *
-  * 		When used to redirect packets to net devices, this helper
-  * 		provides a high performance increase over **bpf_redirect**\ ().
--- 
-2.17.1
+
+Best Regards,
+Hayes
+
 
