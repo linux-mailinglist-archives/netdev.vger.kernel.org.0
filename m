@@ -2,206 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1D6A8582D
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 04:37:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F07E85851
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 04:53:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389645AbfHHChI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 22:37:08 -0400
-Received: from mga02.intel.com ([134.134.136.20]:4305 "EHLO mga02.intel.com"
+        id S2389560AbfHHCxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 22:53:31 -0400
+Received: from ozlabs.org ([203.11.71.1]:35857 "EHLO ozlabs.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728025AbfHHChH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 22:37:07 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 07 Aug 2019 19:36:39 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,358,1559545200"; 
-   d="scan'208";a="186207302"
-Received: from iweiny-desk2.sc.intel.com ([10.3.52.157])
-  by orsmga002.jf.intel.com with ESMTP; 07 Aug 2019 19:36:38 -0700
-Date:   Wed, 7 Aug 2019 19:36:37 -0700
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Michal Hocko <mhocko@kernel.org>
-Cc:     Jan Kara <jack@suse.cz>, John Hubbard <jhubbard@nvidia.com>,
-        Matthew Wilcox <willy@infradead.org>, john.hubbard@gmail.com,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
-        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
-        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org
-Subject: Re: [PATCH 00/34] put_user_pages(): miscellaneous call sites
-Message-ID: <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
-References: <20190802022005.5117-1-jhubbard@nvidia.com>
- <20190802091244.GD6461@dhcp22.suse.cz>
- <20190802124146.GL25064@quack2.suse.cz>
- <20190802142443.GB5597@bombadil.infradead.org>
- <20190802145227.GQ25064@quack2.suse.cz>
- <076e7826-67a5-4829-aae2-2b90f302cebd@nvidia.com>
- <20190807083726.GA14658@quack2.suse.cz>
- <20190807084649.GQ11812@dhcp22.suse.cz>
+        id S1727978AbfHHCxb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Aug 2019 22:53:31 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 463tGw3FLXz9s7T;
+        Thu,  8 Aug 2019 12:53:27 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1565232808;
+        bh=/PuKtT7hVEGOuEdR+eb2Zo3CrrUaO63bl10cgsb8BH4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=h2J8ojQiYVX+SIFRiezM7ePsVtjVQwzWzFA0f9xnHmsBVnu6Fsaz2F2RMt4X+z++0
+         C84YjQH/VGCZXtzn0W6H7l+JDtcKvsASqlS63+WBijsGT/Z4v6op/oIfRAAD/WbX5+
+         kF2VMypPt4quEdbIJ7DJu4SDt8tUIBRhKTu/JhnGUagOJMezxE9rD6jt1/ichXiG1m
+         mU275Hk37Hjy19kgIUugnWW8Ze3Q4csh6zHOVlmJY8opVj6ZGMbA5+3BhVdj86jAhn
+         1rOzaMHqhE3LF1GQ1Vr5mqLvSbKDG3HZi9DRY62yJmiawXDEa+akB9XNDxI26JwxzN
+         7X25Qy+eMoyWQ==
+Date:   Thu, 8 Aug 2019 12:53:26 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>
+Subject: linux-next: manual merge of the bpf-next tree with Linus' tree
+Message-ID: <20190808125326.614065d6@canb.auug.org.au>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190807084649.GQ11812@dhcp22.suse.cz>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+Content-Type: multipart/signed; boundary="Sig_/t965bQleaCIqT2n30_GaWGl";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 10:46:49AM +0200, Michal Hocko wrote:
-> On Wed 07-08-19 10:37:26, Jan Kara wrote:
-> > On Fri 02-08-19 12:14:09, John Hubbard wrote:
-> > > On 8/2/19 7:52 AM, Jan Kara wrote:
-> > > > On Fri 02-08-19 07:24:43, Matthew Wilcox wrote:
-> > > > > On Fri, Aug 02, 2019 at 02:41:46PM +0200, Jan Kara wrote:
-> > > > > > On Fri 02-08-19 11:12:44, Michal Hocko wrote:
-> > > > > > > On Thu 01-08-19 19:19:31, john.hubbard@gmail.com wrote:
-> > > > > > > [...]
-> > > > > > > > 2) Convert all of the call sites for get_user_pages*(), to
-> > > > > > > > invoke put_user_page*(), instead of put_page(). This involves dozens of
-> > > > > > > > call sites, and will take some time.
-> > > > > > > 
-> > > > > > > How do we make sure this is the case and it will remain the case in the
-> > > > > > > future? There must be some automagic to enforce/check that. It is simply
-> > > > > > > not manageable to do it every now and then because then 3) will simply
-> > > > > > > be never safe.
-> > > > > > > 
-> > > > > > > Have you considered coccinele or some other scripted way to do the
-> > > > > > > transition? I have no idea how to deal with future changes that would
-> > > > > > > break the balance though.
-> > > 
-> > > Hi Michal,
-> > > 
-> > > Yes, I've thought about it, and coccinelle falls a bit short (it's not smart
-> > > enough to know which put_page()'s to convert). However, there is a debug
-> > > option planned: a yet-to-be-posted commit [1] uses struct page extensions
-> > > (obviously protected by CONFIG_DEBUG_GET_USER_PAGES_REFERENCES) to add
-> > > a redundant counter. That allows:
-> > > 
-> > > void __put_page(struct page *page)
-> > > {
-> > > 	...
-> > > 	/* Someone called put_page() instead of put_user_page() */
-> > > 	WARN_ON_ONCE(atomic_read(&page_ext->pin_count) > 0);
-> > > 
-> > > > > > 
-> > > > > > Yeah, that's why I've been suggesting at LSF/MM that we may need to create
-> > > > > > a gup wrapper - say vaddr_pin_pages() - and track which sites dropping
-> > > > > > references got converted by using this wrapper instead of gup. The
-> > > > > > counterpart would then be more logically named as unpin_page() or whatever
-> > > > > > instead of put_user_page().  Sure this is not completely foolproof (you can
-> > > > > > create new callsite using vaddr_pin_pages() and then just drop refs using
-> > > > > > put_page()) but I suppose it would be a high enough barrier for missed
-> > > > > > conversions... Thoughts?
-> > > 
-> > > The debug option above is still a bit simplistic in its implementation
-> > > (and maybe not taking full advantage of the data it has), but I think
-> > > it's preferable, because it monitors the "core" and WARNs.
-> > > 
-> > > Instead of the wrapper, I'm thinking: documentation and the passage of
-> > > time, plus the debug option (perhaps enhanced--probably once I post it
-> > > someone will notice opportunities), yes?
-> > 
-> > So I think your debug option and my suggested renaming serve a bit
-> > different purposes (and thus both make sense). If you do the renaming, you
-> > can just grep to see unconverted sites. Also when someone merges new GUP
-> > user (unaware of the new rules) while you switch GUP to use pins instead of
-> > ordinary references, you'll get compilation error in case of renaming
-> > instead of hard to debug refcount leak without the renaming. And such
-> > conflict is almost bound to happen given the size of GUP patch set... Also
-> > the renaming serves against the "coding inertia" - i.e., GUP is around for
-> > ages so people just use it without checking any documentation or comments.
-> > After switching how GUP works, what used to be correct isn't anymore so
-> > renaming the function serves as a warning that something has really
-> > changed.
-> 
-> Fully agreed!
+--Sig_/t965bQleaCIqT2n30_GaWGl
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Ok Prior to this I've been basing all my work for the RDMA/FS DAX stuff in
-Johns put_user_pages()...  (Including when I proposed failing truncate with a
-lease in June [1])
+Hi all,
 
-However, based on the suggestions in that thread it became clear that a new
-interface was going to need to be added to pass in the "RDMA file" information
-to GUP to associate file pins with the correct processes...
+Today's linux-next merge of the bpf-next tree got a conflict in:
 
-I have many drawings on my white board with "a whole lot of lines" on them to
-make sure that if a process opens a file, mmaps it, pins it with RDMA, _closes_
-it, and ummaps it; that the resulting file pin can still be traced back to the
-RDMA context and all the processes which may have access to it....  No matter
-where the original context may have come from.  I believe I have accomplished
-that.
+  tools/lib/bpf/libbpf.c
 
-Before I go on, I would like to say that the "imbalance" of get_user_pages()
-and put_page() bothers me from a purist standpoint...  However, since this
-discussion cropped up I went ahead and ported my work to Linus' current master
-(5.3-rc3+) and in doing so I only had to steal a bit of Johns code...  Sorry
-John...  :-(
+between commit:
 
-I don't have the commit messages all cleaned up and I know there may be some
-discussion on these new interfaces but I wanted to throw this series out there
-because I think it may be what Jan and Michal are driving at (or at least in
-that direction.
+  1d4126c4e119 ("libbpf: sanitize VAR to conservative 1-byte INT")
 
-Right now only RDMA and DAX FS's are supported.  Other users of GUP will still
-fail on a DAX file and regular files will still be at risk.[2]
+from Linus' tree and commit:
 
-I've pushed this work (based 5.3-rc3+ (33920f1ec5bf)) here[3]:
+  b03bc6853c0e ("libbpf: convert libbpf code to use new btf helpers")
 
-https://github.com/weiny2/linux-kernel/tree/linus-rdmafsdax-b0-v3
+from the bpf-next tree.
 
-I think the most relevant patch to this conversation is:
+I fixed it up (see below) and can carry the fix as necessary. This
+is now fixed as far as linux-next is concerned, but any non trivial
+conflicts should be mentioned to your upstream maintainer when your tree
+is submitted for merging.  You may also want to consider cooperating
+with the maintainer of the conflicting tree to minimise any particularly
+complex conflicts.
 
-https://github.com/weiny2/linux-kernel/commit/5d377653ba5cf11c3b716f904b057bee6641aaf6
+--=20
+Cheers,
+Stephen Rothwell
 
-I stole Jans suggestion for a name as the name I used while prototyping was
-pretty bad...  So Thanks Jan...  ;-)
+diff --cc tools/lib/bpf/libbpf.c
+index 2b57d7ea7836,3abf2dd1b3b5..000000000000
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@@ -1370,22 -1374,16 +1372,21 @@@ static void bpf_object__sanitize_btf(st
+ =20
+  	for (i =3D 1; i <=3D btf__get_nr_types(btf); i++) {
+  		t =3D (struct btf_type *)btf__type_by_id(btf, i);
+- 		kind =3D BTF_INFO_KIND(t->info);
+ =20
+- 		if (!has_datasec && kind =3D=3D BTF_KIND_VAR) {
++ 		if (!has_datasec && btf_is_var(t)) {
+  			/* replace VAR with INT */
+  			t->info =3D BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
+ -			t->size =3D sizeof(int);
+ -			*(int *)(t + 1) =3D BTF_INT_ENC(0, 0, 32);
+ +			/*
+ +			 * using size =3D 1 is the safest choice, 4 will be too
+ +			 * big and cause kernel BTF validation failure if
+ +			 * original variable took less than 4 bytes
+ +			 */
+ +			t->size =3D 1;
+- 			*(int *)(t+1) =3D BTF_INT_ENC(0, 0, 8);
+- 		} else if (!has_datasec && kind =3D=3D BTF_KIND_DATASEC) {
+++			*(int *)(t + 1) =3D BTF_INT_ENC(0, 0, 8);
++ 		} else if (!has_datasec && btf_is_datasec(t)) {
+  			/* replace DATASEC with STRUCT */
+- 			struct btf_var_secinfo *v =3D (void *)(t + 1);
+- 			struct btf_member *m =3D (void *)(t + 1);
++ 			const struct btf_var_secinfo *v =3D btf_var_secinfos(t);
++ 			struct btf_member *m =3D btf_members(t);
+  			struct btf_type *vt;
+  			char *name;
+ =20
 
-Also thanks to John for his contribution on some of this.  I'm still tweaking
-put_user_pages under the hood on the DAX path.
+--Sig_/t965bQleaCIqT2n30_GaWGl
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-Ira
+-----BEGIN PGP SIGNATURE-----
 
-[1] https://lwn.net/Articles/790544/
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1LjqYACgkQAVBC80lX
+0GyyZQf9HpGsTBYYj/EbUlYjBJQiYNKf3nilJ36/aZKDUa9R6wBu3tHu6p24zRRh
+cSvwL8hit9tcUZOI1t4OyVh64mlW8GRxE5kKu0722dxRnSMQx7Td3LTA6inrlCCV
+CnJRlEoCHpP7vITbo+0cwVhJt+OR4k4/GEAf/mZVqZAwoXMsUZkC6LY30aKWDJfc
+3TzURLuzemJSJvZAsNOXDHevUM++t+01n1iq+3Y6bf9grOyQc9NI732GKTTxOPEE
+FpNhnSp8H24r2yBiuIgJqHSNAwZy/03TUtiijE8xomQZoIWOUn10BL4d2tnP/kpn
+kU6k1xWsopkhAi54Z0ebJcEEjpDLWA==
+=cXek
+-----END PGP SIGNATURE-----
 
-[2] I've been looking into how to support io_uring next but I've had some issue
-getting a test program to actually call GUP in that code path...  :-(
-
-[3] If it would be easier I can just throw an RFC on the list but right now the
-cover letter and some of the commit messages are full of the old stuff and
-various ideas I have had...
-
-> 
-> > Your refcount debug patches are good to catch bugs in the conversions done
-> > but that requires you to be able to excercise the code path in the first
-> > place which may require particular HW or so, and you also have to enable
-> > the debug option which means you already aim at verifying the GUP
-> > references are treated properly.
-> > 
-> > 								Honza
-> > 
-> > -- 
-> > Jan Kara <jack@suse.com>
-> > SUSE Labs, CR
-> 
-> -- 
-> Michal Hocko
-> SUSE Labs
+--Sig_/t965bQleaCIqT2n30_GaWGl--
