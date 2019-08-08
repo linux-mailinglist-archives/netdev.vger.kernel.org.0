@@ -2,99 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BABB86C16
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 23:08:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 928A486C19
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 23:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390202AbfHHVI3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 17:08:29 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42457 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732609AbfHHVI3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 17:08:29 -0400
-Received: by mail-pg1-f194.google.com with SMTP id t132so44684202pgb.9
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 14:08:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=W8919ktjzmuqwSKIG0s3FEbb7dmg7CXmeFbwYm0Jh+M=;
-        b=tXPGsr1C5YDFRUIQccImdZ9OLV6P0I4GaPwEFH5hWW7Dh9hYdVrKZL0TzEW5Xaj6b1
-         dFBQ2+zHVJY6MX//5wD9yzlNq94W6A6wzWao2B+XF/TXIuSjSYLGIWPQ0//BhpUhFxWz
-         FbLSvW8T7YtkI3zgQHlU2B6mtUhab8GoR8KqIxIqKUToO1vNxZGggnQ8hk36f663+Egs
-         nh6BII0yAbcewAQygWSyr/MFT2Ku8biMtj/IBIUPrI3EXb9Uni2WGUlHcRI4sRIvF/Aw
-         V8WqN4q9aKE/vk3XYOVFaMSMXFBGloqQozKDHdmRmaqKCmi+2YP8SIuG8CNlkB3rpYdx
-         k19Q==
+        id S2390392AbfHHVKE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 8 Aug 2019 17:10:04 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:40872 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732427AbfHHVKD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 17:10:03 -0400
+Received: by mail-lj1-f194.google.com with SMTP id m8so56596305lji.7
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 14:10:01 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=W8919ktjzmuqwSKIG0s3FEbb7dmg7CXmeFbwYm0Jh+M=;
-        b=GVI4rj/VH65Tn8Som5pPQ7q1hwnramaPjyNp5XS45O4yQcYMcZ/BFJOn7Dun05EKNH
-         g7DBdv36uBxNKLlcEPfZxq3dZ9tJXo1e/z0/wxRcINuUg6WpmaqpenBM3uTfa/ECWWhZ
-         oyKN5iaERfpBmKSm0jveRg1JMKbAPgW3KwVyDAcm3Aw8RfpvDZCpSvn/mP2L7/ybbeuu
-         mhnJSZ3QjHPmIrKtRGHt/8kHkFAPK39gHYZhQXc0A89O/kI/veTWBFKn+BnQc6jx4nBL
-         iByb1Fe+hD4jGCL1e+drUEoENVNH9/SLfvcSMd3+zOBy6Utd1HgsQ3kdevek1VYscTwo
-         1EIA==
-X-Gm-Message-State: APjAAAU99FsQkdlmkhREFPwu7OwOBnsUJYfZaOKFhR6Y4vRwtK6VRS+w
-        jvp9hgD6SreetX1WEE2nSTk=
-X-Google-Smtp-Source: APXvYqxZh+Kma4wINR1+kACpRiG/Zhely5+heYxiz0Vs+18ktaux6bqgxP3PtOkPAGzuYCLE40n85Q==
-X-Received: by 2002:a65:4304:: with SMTP id j4mr14840883pgq.419.1565298508673;
-        Thu, 08 Aug 2019 14:08:28 -0700 (PDT)
-Received: from [172.27.227.216] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id l17sm20768956pgj.44.2019.08.08.14.08.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Aug 2019 14:08:27 -0700 (PDT)
-Subject: Re: [PATCH net-next 00/10] drop_monitor: Capture dropped packets and
- metadata
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
-        toke@redhat.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-References: <20190807103059.15270-1-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <745e5ab5-e254-ecd0-565a-371c5b6d0df0@gmail.com>
-Date:   Thu, 8 Aug 2019 15:08:25 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=evKrNs0X1uQHFupHQ4e1H+JbvwSVldaodvk2360XbX8=;
+        b=ZJmpQJraQpCcfefxDVRFenqE4FNet/kfd/co0xEHQ7gXJbyUnhFmRi+fEjAex0sNEY
+         +0W4Koh5zb4Sn7O+nBmJzE5x4hWUSfPW+XPvzIsBBs3KSo2cTwL1cXs5jtFH/jwOWVRD
+         eZu38LIuizVBJrSGvCxF1Z4DQRhO4yP7bXoAsvXcD6tCNkBwEuOEfhnk77fbXoePTewn
+         SvAFuh7TjofWtpMQSx5YZfiwrx3T1u2BlkxNr4S06Ck2HMFcaBh8HBIkI+ElrYTAO5wB
+         a3X/C3gbkp2irZLCTPNU4QpgkncZXX4VuE5mlCKktHkCTROofOMsdx5KnhAu4sBkxzdR
+         cMPg==
+X-Gm-Message-State: APjAAAVJ2hBG2CQ2VHzAqTR5U4pV/sOIOCTV17mPPpohE+OnhS77Heiw
+        ogoE793X5nBcbGH1prTuQKBXGjJu9X8=
+X-Google-Smtp-Source: APXvYqyOjKHv4xjkGM7YZ0YwOTFm8msd+yhzY/ZtxPj7OZIf+VEC7vhSlgb3K8lPwftE/QL+VPRjQA==
+X-Received: by 2002:a2e:9048:: with SMTP id n8mr9425484ljg.37.1565298600375;
+        Thu, 08 Aug 2019 14:10:00 -0700 (PDT)
+Received: from mail-lf1-f43.google.com (mail-lf1-f43.google.com. [209.85.167.43])
+        by smtp.gmail.com with ESMTPSA id b2sm24868lje.98.2019.08.08.14.09.59
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 08 Aug 2019 14:09:59 -0700 (PDT)
+Received: by mail-lf1-f43.google.com with SMTP id a30so4835296lfk.12
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 14:09:59 -0700 (PDT)
+X-Received: by 2002:a19:cbc4:: with SMTP id b187mr10182066lfg.27.1565298599300;
+ Thu, 08 Aug 2019 14:09:59 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190807103059.15270-1-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190714200501.1276-1-valentin@longchamp.me> <CADYrJDwvwVThmOwHZ4Moqenf=-iqoHC+yJ_uxtrD8sDso33rjg@mail.gmail.com>
+ <2243421e574c72c5e75d27cc0122338e2e0bde63.camel@buserror.net> <VI1PR04MB55679AAE8DDC3160B9CCE073ECDC0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR04MB55679AAE8DDC3160B9CCE073ECDC0@VI1PR04MB5567.eurprd04.prod.outlook.com>
+From:   Valentin Longchamp <valentin@longchamp.me>
+Date:   Thu, 8 Aug 2019 23:09:49 +0200
+X-Gmail-Original-Message-ID: <CADYrJDxsQ3H7b_BHOfmfTNb1OuXt+vzTg4k8Goj8tKPaaOMz_g@mail.gmail.com>
+Message-ID: <CADYrJDxsQ3H7b_BHOfmfTNb1OuXt+vzTg4k8Goj8tKPaaOMz_g@mail.gmail.com>
+Subject: Re: [PATCH] powerpc/kmcent2: update the ethernet devices' phy properties
+To:     Madalin-cristian Bucur <madalin.bucur@nxp.com>
+Cc:     Scott Wood <oss@buserror.net>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        "galak@kernel.crashing.org" <galak@kernel.crashing.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/7/19 4:30 AM, Ido Schimmel wrote:
-> Example usage with patched dropwatch [1] can be found here [2]. Example
-> dissection of drop monitor netlink events with patched wireshark [3] can
-> be found here [4]. I will submit both changes upstream after the kernel
-> changes are accepted. Another change worth making is adding a dropmon
-> pseudo interface to libpcap, similar to the nflog interface [5]. This
-> will allow users to specifically listen on dropmon traffic instead of
-> capturing all netlink packets via the nlmon netdev.
+Le mar. 30 juil. 2019 à 11:44, Madalin-cristian Bucur
+<madalin.bucur@nxp.com> a écrit :
+>
+> > -----Original Message-----
+> >
+> > > Le dim. 14 juil. 2019 à 22:05, Valentin Longchamp
+> > > <valentin@longchamp.me> a écrit :
+> > > >
+> > > > Change all phy-connection-type properties to phy-mode that are better
+> > > > supported by the fman driver.
+> > > >
+> > > > Use the more readable fixed-link node for the 2 sgmii links.
+> > > >
+> > > > Change the RGMII link to rgmii-id as the clock delays are added by the
+> > > > phy.
+> > > >
+> > > > Signed-off-by: Valentin Longchamp <valentin@longchamp.me>
+> >
+> > I don't see any other uses of phy-mode in arch/powerpc/boot/dts/fsl, and I see
+> > lots of phy-connection-type with fman.  Madalin, does this patch look OK?
+> >
+> > -Scott
+>
+> Hi,
+>
+> we are using "phy-connection-type" not "phy-mode" for the NXP (former Freescale)
+> DPAA platforms. While the two seem to be interchangeable ("phy-mode" seems to be
+> more recent, looking at the device tree bindings), the driver code in Linux seems
+> to use one or the other, not both so one should stick with the variant the driver
+> is using. To make things more complex, there may be dependencies in bootloaders,
+> I see code in u-boot using only "phy-connection-type" or only "phy-mode".
+>
+> I'd leave "phy-connection-type" as is.
 
-Nice work, Ido.
+So I have finally had time to have a look and now I understand what
+happens. You are right, there are bootloader dependencies: u-boot
+calls fdt_fixup_phy_connection() that somehow in our case adds (or
+changes if already in the device tree) the phy-connection-type
+property to a wrong value ! By having a phy-mode in the device tree,
+that is not changed by u-boot and by chance picked up by the kernel
+fman driver (of_get_phy_mode() ) over phy-connection-mode, the below
+patch fixes it for us.
 
-On top of your dropwatch changes I added the ability to print the
-payload as hex. e.g.,
+I agree with you, it's not correct to have both phy-connection-type
+and phy-mode. Ideally, u-boot on the board should be reworked so that
+it does not perform the above wrong fixup. However, in an "unfixed"
+.dtb (I have disabled fdt_fixup_phy_connection), the device tree in
+the end only has either phy-connection-type or phy-mode, according to
+what was chosen in the .dts file. And the fman driver works well with
+both (thanks to the call to of_get_phy_mode() ). I would therefore
+argue that even if all other DPAA platforms use phy-connection-type,
+phy-mode is valid as well. (Furthermore we already have hundreds of
+such boards in the field and we don't really support "remote" u-boot
+update, so the u-boot fix is going to be difficult for us to pull).
 
-Issue Ctrl-C to stop monitoring
-drop at: nf_hook_slow+0x59/0x98 (0xffffffff814ec532)
-input port ifindex: 1
-timestamp: Thu Aug  8 15:04:02 2019 360015026 nsec
-length: 64
-00 00 00 00 00 00 00 00  00 00 00 00 08 00 45 00      ........ ......E.
-00 3c e7 50 40 00 40 06  55 69 7f 00 00 01 7f 00      .<.P@.@. Ui......
-00 01 80 2c 30 39 74 b9  c7 4d 00 00 00 00 a0 02      ...,09t. .M......
-ff d7 fe 30 00 00 02 04  ff d7 04 02 08 0a 53 79       ...0.... ......Sy
-original length: 74
+Valentin
 
-
-Seems like the skb protocol is also needed to properly parse the payload
-- ie., to know it is an ethernet header, followed by ip and tcp.
+>
+> Madalin
+>
+> > > > ---
+> > > >  arch/powerpc/boot/dts/fsl/kmcent2.dts | 16 +++++++++++-----
+> > > >  1 file changed, 11 insertions(+), 5 deletions(-)
+> > > >
+> > > > diff --git a/arch/powerpc/boot/dts/fsl/kmcent2.dts
+> > > > b/arch/powerpc/boot/dts/fsl/kmcent2.dts
+> > > > index 48b7f9797124..c3e0741cafb1 100644
+> > > > --- a/arch/powerpc/boot/dts/fsl/kmcent2.dts
+> > > > +++ b/arch/powerpc/boot/dts/fsl/kmcent2.dts
+> > > > @@ -210,13 +210,19 @@
+> > > >
+> > > >                 fman@400000 {
+> > > >                         ethernet@e0000 {
+> > > > -                               fixed-link = <0 1 1000 0 0>;
+> > > > -                               phy-connection-type = "sgmii";
+> > > > +                               phy-mode = "sgmii";
+> > > > +                               fixed-link {
+> > > > +                                       speed = <1000>;
+> > > > +                                       full-duplex;
+> > > > +                               };
+> > > >                         };
+> > > >
+> > > >                         ethernet@e2000 {
+> > > > -                               fixed-link = <1 1 1000 0 0>;
+> > > > -                               phy-connection-type = "sgmii";
+> > > > +                               phy-mode = "sgmii";
+> > > > +                               fixed-link {
+> > > > +                                       speed = <1000>;
+> > > > +                                       full-duplex;
+> > > > +                               };
+> > > >                         };
+> > > >
+> > > >                         ethernet@e4000 {
+> > > > @@ -229,7 +235,7 @@
+> > > >
+> > > >                         ethernet@e8000 {
+> > > >                                 phy-handle = <&front_phy>;
+> > > > -                               phy-connection-type = "rgmii";
+> > > > +                               phy-mode = "rgmii-id";
+> > > >                         };
+> > > >
+> > > >                         mdio0: mdio@fc000 {
+> > > > --
+> > > > 2.17.1
+> > > >
+> > >
+> > >
+>
