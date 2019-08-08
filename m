@@ -2,89 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0EA786D97
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 01:03:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 259DA86D9A
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 01:03:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404726AbfHHXD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 19:03:26 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45982 "EHLO vps0.lunn.ch"
+        id S2404810AbfHHXDd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 19:03:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44884 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731914AbfHHXDZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 19:03:25 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=0qysza0t5x4YnR1J1GnXkteIKUHwo96QeVpN+I6T7gg=; b=o0rmPI6ayeZn/8BYyfgQ7TOORf
-        f1n13nWBm6NtHgZsZnaqWz2QwjG8/qqWGYrbUOmoUcIcTjc8at5i+H3MC9LaRnHzI1ffi7xx1HW6R
-        wi0JRvV9m6/A05EApxOHCp6klE5322C0XdtsRr9Q9dSPZ4S6o1+My1Tu6v/W+BwGugec=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hvrRA-0006fc-TS; Fri, 09 Aug 2019 01:03:12 +0200
-Date:   Fri, 9 Aug 2019 01:03:12 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tao Ren <taoren@fb.com>
-Cc:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        William Kennington <wak@google.com>
-Subject: Re: [PATCH net-next] net/ncsi: allow to customize BMC MAC Address
- offset
-Message-ID: <20190808230312.GS27917@lunn.ch>
-References: <20190807002118.164360-1-taoren@fb.com>
- <20190807112518.644a21a2@cakuba.netronome.com>
- <20190807184143.GE26047@lunn.ch>
- <806a76a8-229a-7f24-33c7-2cf2094f3436@fb.com>
- <20190808133209.GB32706@lunn.ch>
- <77762b10-b8e7-b8a4-3fc0-e901707a1d54@fb.com>
- <20190808211629.GQ27917@lunn.ch>
- <ac22bbe0-36ca-b4b9-7ea7-7b1741c2070d@fb.com>
+        id S1731914AbfHHXDd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 19:03:33 -0400
+Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 94C3921882;
+        Thu,  8 Aug 2019 23:03:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565305412;
+        bh=QRiWcpOmqSG478GZ6dRD3+tP13fLbIjZos1PdD7Y5L4=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=jLBaHUAViZFbtrocqWEYJAPF9vAtzKL+5lyIgZBkWIUog030rRnlQi97X5WJhkHUt
+         OFOvJStvASD4661JQthdAS85ezqsRxB/O42H55s7bpuqz2cLLHbTmxEzPhhKY5WdBK
+         LL9orqnKTDrfq7sJadOwOAIwjw/qiA3FH8Y38LiQ=
+Received: by mail-qk1-f182.google.com with SMTP id w190so70249480qkc.6;
+        Thu, 08 Aug 2019 16:03:32 -0700 (PDT)
+X-Gm-Message-State: APjAAAUdxw5uGMbmZON/tPOG2CjUyhDWthXTFWGyKRwLC2zVcHw+FnLr
+        iEygwMuNPcqzwVHapVV8/LgIqeYJFCuP27BKJQ==
+X-Google-Smtp-Source: APXvYqzYXzfAJhXKOkku9dmFfozi4Ar6VsA5bWi/9Kt+tWJnLEPC7bk/B5cZWZWAZ+rF3sSMan2C01cu5QJg5ONoRb0=
+X-Received: by 2002:a37:a44a:: with SMTP id n71mr15405204qke.393.1565305411726;
+ Thu, 08 Aug 2019 16:03:31 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ac22bbe0-36ca-b4b9-7ea7-7b1741c2070d@fb.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+References: <20190808123026.17382-1-alexandru.ardelean@analog.com> <20190808123026.17382-16-alexandru.ardelean@analog.com>
+In-Reply-To: <20190808123026.17382-16-alexandru.ardelean@analog.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Thu, 8 Aug 2019 17:03:20 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+zH9cL5-8aDARzPar+xoD71WbESTckGjzaUTodu-+Trg@mail.gmail.com>
+Message-ID: <CAL_Jsq+zH9cL5-8aDARzPar+xoD71WbESTckGjzaUTodu-+Trg@mail.gmail.com>
+Subject: Re: [PATCH v2 15/15] dt-bindings: net: add bindings for ADIN PHY driver
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> After giving it more thought, I'm thinking about adding ncsi dt node
-> with following structure (mac/ncsi similar to mac/mdio/phy):
-> 
-> &mac0 {
->     /* MAC properties... */
-> 
->     use-ncsi;
+On Thu, Aug 8, 2019 at 6:31 AM Alexandru Ardelean
+<alexandru.ardelean@analog.com> wrote:
+>
+> This change adds bindings for the Analog Devices ADIN PHY driver, detailing
+> all the properties implemented by the driver.
+>
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> ---
+>  .../devicetree/bindings/net/adi,adin.yaml     | 76 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 77 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/adi,adin.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
+> new file mode 100644
+> index 000000000000..86177c8fe23a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
+> @@ -0,0 +1,76 @@
+> +# SPDX-License-Identifier: GPL-2.0+
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/net/adi,adin.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices ADIN1200/ADIN1300 PHY
+> +
+> +maintainers:
+> +  - Alexandru Ardelean <alexandru.ardelean@analog.com>
+> +
+> +description: |
+> +  Bindings for Analog Devices Industrial Ethernet PHYs
+> +
+> +allOf:
+> +  - $ref: ethernet-phy.yaml#
+> +
+> +properties:
+> +  adi,rx-internal-delay-ps:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: |
+> +      RGMII RX Clock Delay used only when PHY operates in RGMII mode with
+> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-rxid') in pico-seconds.
+> +    enum: [ 1600, 1800, 2000, 2200, 2400 ]
+> +    default: 2000
 
-This property seems to be specific to Faraday FTGMAC100. Are you going
-to make it more generic? 
+This doesn't actually do what you think. The '$ref' has to be under an
+'allOf' to work. It's an oddity of json-schema. However, anything with
+a standard unit suffix already has a schema to define the type, so you
+don't need to here and can just drop $ref.
 
->     ncsi {
->         /* ncsi level properties if any */
-> 
->         package@0 {
-
-You should get Rob Herring involved. This is not really describing
-hardware, so it might get rejected by the device tree maintainer.
-
-> 1) mac driver doesn't need to parse "mac-offset" stuff: these
-> ncsi-network-controller specific settings should be parsed in ncsi
-> stack.
-
-> 2) get_bmc_mac_address command is a channel specific command, and
-> technically people can configure different offset/formula for
-> different channels.
-
-Does that mean the NCSA code puts the interface into promiscuous mode?
-Or at least adds these unicast MAC addresses to the MAC receive
-filter? Humm, ftgmac100 only seems to support multicast address
-filtering, not unicast filters, so it must be using promisc mode, if
-you expect to receive frames using this MAC address.
-
-	   Andrew
+> +
+> +  adi,tx-internal-delay-ps:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: |
+> +      RGMII TX Clock Delay used only when PHY operates in RGMII mode with
+> +      internal delay (phy-mode is 'rgmii-id' or 'rgmii-txid') in pico-seconds.
+> +    enum: [ 1600, 1800, 2000, 2200, 2400 ]
+> +    default: 2000
+> +
+> +  adi,fifo-depth-bits:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description: |
+> +      When operating in RMII mode, this option configures the FIFO depth.
+> +    enum: [ 4, 8, 12, 16, 20, 24 ]
+> +    default: 8
+> +
+> +  adi,disable-energy-detect:
+> +    description: |
+> +      Disables Energy Detect Powerdown Mode (default disabled, i.e energy detect
+> +      is enabled if this property is unspecified)
+> +    type: boolean
+> +
+> +examples:
+> +  - |
+> +    ethernet {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        phy-mode = "rgmii-id";
+> +
+> +        ethernet-phy@0 {
+> +            reg = <0>;
+> +
+> +            adi,rx-internal-delay-ps = <1800>;
+> +            adi,tx-internal-delay-ps = <2200>;
+> +        };
+> +    };
+> +  - |
+> +    ethernet {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        phy-mode = "rmii";
+> +
+> +        ethernet-phy@1 {
+> +            reg = <1>;
+> +
+> +            adi,fifo-depth-bits = <16>;
+> +            adi,disable-energy-detect;
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e8aa8a667864..fd9ab61c2670 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -944,6 +944,7 @@ L:  netdev@vger.kernel.org
+>  W:     http://ez.analog.com/community/linux-device-drivers
+>  S:     Supported
+>  F:     drivers/net/phy/adin.c
+> +F:     Documentation/devicetree/bindings/net/adi,adin.yaml
+>
+>  ANALOG DEVICES INC ADIS DRIVER LIBRARY
+>  M:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+> --
+> 2.20.1
+>
