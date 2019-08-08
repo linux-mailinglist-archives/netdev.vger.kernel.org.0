@@ -2,125 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C2A86B6B
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B9E186B78
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:24:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404879AbfHHUWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 16:22:33 -0400
-Received: from mail-eopbgr60084.outbound.protection.outlook.com ([40.107.6.84]:35264
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2404864AbfHHUWc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 16:22:32 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k3YgWLsrrF8/+1j0AxfcDA2CgO5NS08vSYI6ICJjBQ3aK7yEBs3SchoTiG2+ForK9W4/s3m8PXDY1FM315CB4jUVCwI+pbwJt6Y4VVfxZTH8Nw+Nxtg4Ep/E3xzonKH1GHOcE9AiM5tZKMs3bx/yV7xp0ApMak9xP9mMdtIM9AueRpgVxvq/3YxDRTMQQbZLvrFTsJ+J3dlZOzlMpM9GGAYfJ0QIG9wviU78hTTpFMDpq5Ukswh4CHntEoRuIHhVo9FknOKwAgGZr/dFYJf56YgL6Z26p5nVk/nC89ElOCg3RmpoUSTLpyyHA6Y4wmiOh7n5i51QjDFTbo1J+WC5Uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LEZrLwc7ebgnaIs4m4w632mXO8LSmF3xbFlkpB98ilQ=;
- b=ePQal4n6X06IVhPDLjNMOXwo29J/6pKeCwYTauBAfMhoin4W98TtCvgGJbImaTb4jJsKSzix3WbIwDDwP/tpcTcnY396O6JP+A5CD7RX3vZ0EVZbgS0fY1rkBABUL5bbZmyYWSA5Fq4wSC75L986/kBvx8kclI3CBaDJCUcKU5PiSWdx9wx776iJ1/wTFMzwyRdwTCsVYldfnn15iWUA6TLdyKD80Se55N73FpOGQpIgP3qfWka43RNi44mIDDQKZmo+KlKxFz5GBG1deAr2mCUgqpEtIIPprBPxaZOHYai1KPFXi38SGLTSPV2feRVZhWTEPvzqm6B/QInleZlK/w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=LEZrLwc7ebgnaIs4m4w632mXO8LSmF3xbFlkpB98ilQ=;
- b=nC0PfDekPWf2FtCPYBW/mgPp4XswS92oaualJEI1iC4JzWEMIlTBew+TUWBrJ380xX5DKeSXsReUUEA7uY45BOnIYmIQOVtaaG7iCkZO2Xo6m+GFuVN5IqNl9sdKGiy/wSkllDGqIBrE+QTZTmJmqXbBgVaxTAqL/BZewBDRPXA=
-Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
- AM4PR0501MB2257.eurprd05.prod.outlook.com (10.165.45.27) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.15; Thu, 8 Aug 2019 20:22:21 +0000
-Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
- ([fe80::e414:3306:9996:bb7a]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
- ([fe80::e414:3306:9996:bb7a%4]) with mapi id 15.20.2157.015; Thu, 8 Aug 2019
- 20:22:21 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Aya Levin <ayal@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net 12/12] net/mlx5e: Remove redundant check in CQE recovery flow of
- tx reporter
-Thread-Topic: [net 12/12] net/mlx5e: Remove redundant check in CQE recovery
- flow of tx reporter
-Thread-Index: AQHVTib7pA5Y4QCX8E218IZLPmLfuQ==
-Date:   Thu, 8 Aug 2019 20:22:21 +0000
-Message-ID: <20190808202025.11303-13-saeedm@mellanox.com>
-References: <20190808202025.11303-1-saeedm@mellanox.com>
-In-Reply-To: <20190808202025.11303-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR08CA0067.namprd08.prod.outlook.com
- (2603:10b6:a03:117::44) To AM4PR0501MB2756.eurprd05.prod.outlook.com
- (2603:10a6:200:5c::10)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 867b4674-715e-4582-2629-08d71c3e1dc2
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR0501MB2257;
-x-ms-traffictypediagnostic: AM4PR0501MB2257:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0501MB225768D1314D51E9CABB8C20BED70@AM4PR0501MB2257.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4714;
-x-forefront-prvs: 012349AD1C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(39860400002)(366004)(136003)(376002)(396003)(189003)(199004)(53936002)(66556008)(50226002)(66946007)(64756008)(66446008)(2906002)(107886003)(66476007)(6512007)(6916009)(81166006)(6486002)(2616005)(11346002)(1076003)(256004)(476003)(486006)(446003)(71190400001)(71200400001)(6436002)(81156014)(86362001)(305945005)(76176011)(7736002)(52116002)(478600001)(36756003)(102836004)(6506007)(386003)(54906003)(99286004)(3846002)(5660300002)(6116002)(66066001)(4326008)(26005)(316002)(8676002)(25786009)(8936002)(14454004)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2257;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 075BW8KEecY7Ydk3S5BgJYJ5E738SFitY3L3VQQ5bY27m7Lcm452SF+Ef5WoMJ8WJPjKAUHFm3TvGYRunAfvjUvk+GXvlV2JQ5FqtcMWNhSXKBpzdKQ3X1+iFcgAQXqt+psA5QED/2PMoDCYM12hlZcv0gWGOnaZN0YWC2MORYvjFL7hg9udsEqagTv7FZTQK2hYZkHfN3cmwJzlTwoBO/YHYUqqTMBX/Ik6/gqsutsmzrKtsvSyk3Rlx/9hEaYomdc6oAngREpIkWTwuxOOrl2eFikLxItIdMZa1pvuY1+lJVDFp+hKLgahR+wwHQ5akCHOLRPypO704bl87sr/S8BzcOJzRR+Kt82Ht4jZTTUqnjGEgVbhj3GejNbJuNBXpDdazexh392xrOr2frNj38c3R6beiecVupFmh60TrJ4=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2404800AbfHHUY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 16:24:56 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:45926 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404761AbfHHUYz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 16:24:55 -0400
+Received: by mail-wr1-f65.google.com with SMTP id q12so5896225wrj.12
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 13:24:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=YxB2ijBa0B5JnLTqETqv8NUiNPz90Lza2sxT0kXPChg=;
+        b=IiP0AQ7cJOlhG4pdC7uJrqHZ0W/BtrteFcmmCGTotoWSeXJ1thQzxiRC2bjoWpjyFh
+         q2awT4RuCeVqBzkaRe7L0dOURsGxLx9oHA4wXXTQZpAFZqnYQPBAmpHzaL1b14NBZJy1
+         JGwKo6l2M0J5+K8LJh9FmDm+utDiyEVZqh9ToD/kkpM+Kt/++0hB6sbSmka2aESm2qx8
+         /nn3hZ4eaMeyOmnnUiGJacB+1TfdEq67MbW0sbwwSsGPO1RPwmqRD7559aXkJfmjuxzL
+         QjrRGQ1RNxkcJcjA/d6Mdk5PvsbdfCKxU5HSURM1H0ssa1ZIfgmOBvZ1PcoyMi5M8KHq
+         OsdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=YxB2ijBa0B5JnLTqETqv8NUiNPz90Lza2sxT0kXPChg=;
+        b=Q+pYMQL1RphxRGiMn1AB+GFsnYO+8sPs5bRfWuQftbpjQuxwR1Wga325n9/EdKnnyS
+         EToHSuYcsAyx1g0+n0lzDU8A0eyFfnXqOOHlXtvYjWG5BOSS4WnRJYPKj7F60ddhHtjj
+         NvSW5cYZrdS4/F9+LRhE39GvutecQWW1cmsSOWYNeoUioOligfHjisjaFOtv+610MILK
+         A4Wyb4YtdvQwBvrHt8WVw9BlRP3hdtS64W6w6x/i/azBQRrArUGYECnqeRQ7V0KCA1eS
+         kneR7oHq17lak11/XPIx4zG3ZEga5VgagNYqA9a0zzCmq34RzlqcGexPTYXbdr5R1p2F
+         x2vg==
+X-Gm-Message-State: APjAAAWEcYrh/dVQlaF4Hnxw72P2vFOyUMdtHeb0jH8HvCPGgeBp4IDk
+        QYALZ47JfrSmt6oiRwvdK9XSTItQ
+X-Google-Smtp-Source: APXvYqyk2Z1oH4vJLwO3SEBAZxamrpz/pqmBfKyzbnTqqiBtRZ9Y9Gli6cKjhXZVkfwkf2Z3U13QYQ==
+X-Received: by 2002:a5d:6409:: with SMTP id z9mr6620444wru.308.1565295893415;
+        Thu, 08 Aug 2019 13:24:53 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf? (p200300EA8F2F3200EC8A8637BF5F7FAF.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf])
+        by smtp.googlemail.com with ESMTPSA id n14sm183286224wra.75.2019.08.08.13.24.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 08 Aug 2019 13:24:52 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/3] net: phy: realtek: add support for the
+ 2.5Gbps PHY in RTL8125
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <ddbf28b9-f32e-7399-10a6-27b79ca0aaf9@gmail.com>
+ <64769c3d-42b6-8eb8-26e4-722869408986@gmail.com>
+ <20190808193743.GL27917@lunn.ch>
+ <f34d1117-510f-861f-59f0-51e0e87ead1e@gmail.com>
+ <20190808202029.GN27917@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <94cc3fe3-98ed-d8d2-2444-84bf3eae0c5e@gmail.com>
+Date:   Thu, 8 Aug 2019 22:24:46 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 867b4674-715e-4582-2629-08d71c3e1dc2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2019 20:22:21.5024
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: d4OSxpUwg1mPpfuIy9lUUh66ohTajGkhb17noCsOUmdvXv7DUhQ6Xn/krT4P9W/+kYn8v1USds00xp/iPDHITA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2257
+In-Reply-To: <20190808202029.GN27917@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aya Levin <ayal@mellanox.com>
+On 08.08.2019 22:20, Andrew Lunn wrote:
+>> I have a contact in Realtek who provided the information about
+>> the vendor-specific registers used in the patch. I also asked for
+>> a method to auto-detect 2.5Gbps support but have no feedback so far.
+>> What may contribute to the problem is that also the integrated 1Gbps
+>> PHY's (all with the same PHY ID) differ significantly from each other,
+>> depending on the network chip version.
+> 
+> Hi Heiner
+> 
+> Some of the PHYs embedded in Marvell switches have an OUI, but no
+> product ID. We work around this brokenness by trapping the reads to
+> the ID registers in the MDIO bus controller driver and inserting the
+> switch product ID. The Marvell PHY driver then recognises these IDs
+> and does the right thing.
+> 
+> Maybe you can do something similar here?
+> 
+Yes, this would be an idea. Let me check.
 
-Remove check of recovery bit, in the beginning of the CQE recovery
-function. This test is already performed right before the reporter
-is invoked, when CQE error is detected.
-
-Fixes: de8650a82071 ("net/mlx5e: Add tx reporter support")
-Signed-off-by: Aya Levin <ayal@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c b/dri=
-vers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-index b91814ecfbc9..c7f86453c638 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/reporter_tx.c
-@@ -76,9 +76,6 @@ static int mlx5e_tx_reporter_err_cqe_recover(struct mlx5e=
-_txqsq *sq)
- 	u8 state;
- 	int err;
-=20
--	if (!test_bit(MLX5E_SQ_STATE_RECOVERING, &sq->state))
--		return 0;
--
- 	err =3D mlx5_core_query_sq_state(mdev, sq->sqn, &state);
- 	if (err) {
- 		netdev_err(dev, "Failed to query SQ 0x%x state. err =3D %d\n",
---=20
-2.21.0
+>       Andrew
+> 
+Thanks, Heiner
 
