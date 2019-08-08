@@ -2,89 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34A1885799
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 03:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC857857B4
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 03:40:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730623AbfHHBZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 21:25:25 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:42808 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388123AbfHHBZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 21:25:25 -0400
-Received: by mail-lf1-f67.google.com with SMTP id s19so2821778lfb.9;
-        Wed, 07 Aug 2019 18:25:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=WALHYbL6Vte2cCvcL12sTP7SZuLz/kywiqxZgre8dac=;
-        b=WaE2E25a/XQLbhz+KRClhx9IQzbUisle6+JsonQkA9e/ZX8/SuOc6eWrV5pd1gvLtA
-         EjG7SOr+fWr5Lwhse5+1gCOwQ5eeQXuI1uMcI5DJRiXhciUiljwSompr7bKTUOz1Ue2i
-         clTkNLHHPrbN/TXqdz5X5W7/bcBsQ0oGDkFFkt6NraPbh5aFhfamru1KM9+1nsVdt5fi
-         xYEk98ecaD7hYYGTWmglccTed1BmP9DCEyHBfpKP41yUWQj745/86lg0xcKwnUx9Icra
-         0fRXL9bPhH/vaXtnzW6wercvbMzPY/XLbvDCnGLofvPLv4hHzdKrPlr2NI4K/pyTVcCC
-         WEcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=WALHYbL6Vte2cCvcL12sTP7SZuLz/kywiqxZgre8dac=;
-        b=Wth+kksdgv/99RyqlA7Th8P6TtXzFO57jf3hwPip3zLbIDR7rS281LuaFpdXXZxwby
-         62ZyjK+6u6vsvAYGS5nRNTC7z/qpBZPSz3/43RLOExnBOb7uKXhBzbKKK1O8CiUSL3+A
-         8ccXfe+OJGU8lvrtPbvWvROpWk5yEgOOUjjYqtmnCMssKATS2dddG+UsjeqMSE08KKBf
-         F1nUh0FdVBH1Dt7kSQ2wWh5DGPphD15XIfzbUtN7qmB39HO3LAK8E+kCkQgg+9xfwlFc
-         wHl9kaQJipvEwgP0IqwWT3gj9SwFNFJRCjDC8Mrxmw+KgSQK1YAqpvp5FC+KdejnoB/9
-         6Ehg==
-X-Gm-Message-State: APjAAAWg1SKni217fqcOaKb5iv6T1YKuScxU/cTLSz7pqWsrh0yhYdHk
-        3TLK5poU2EjiIMNxyyViasR6OmKCsxbnBPGpug5CZg==
-X-Google-Smtp-Source: APXvYqwNA1pNFjPW3qrWYh3Pv1x//20EKmaPrJrk66WuONfbcbUPhPx+zbokR4x1lrUbF6LXPBLdw18VqB85fWqST/0=
-X-Received: by 2002:ac2:465e:: with SMTP id s30mr7729531lfo.19.1565227522808;
- Wed, 07 Aug 2019 18:25:22 -0700 (PDT)
+        id S2389677AbfHHBkd convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 7 Aug 2019 21:40:33 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:56818 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389044AbfHHBkc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 21:40:32 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x781eRGZ001209, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCAS11.realtek.com.tw[172.21.6.12])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x781eRGZ001209
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Thu, 8 Aug 2019 09:40:27 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCAS11.realtek.com.tw ([fe80::7c6d:ced5:c4ff:8297%15]) with mapi id
+ 14.03.0439.000; Thu, 8 Aug 2019 09:40:26 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
+CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>
+Subject: RE: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and rx_max_agg_num dynamically
+Thread-Topic: [PATCH net-next 5/5] r8152: change rx_frag_head_sz and
+ rx_max_agg_num dynamically
+Thread-Index: AQHVTEjAduvqUw50CkySh6Q/0oky4abuKLuAgAEYyLD//9tQAIABWhmg
+Date:   Thu, 8 Aug 2019 01:40:25 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D099A@RTITMBSVM03.realtek.com.tw>
+References: <1394712342-15778-289-albertk@realtek.com>
+        <1394712342-15778-294-albertk@realtek.com>
+        <20190806151007.75a8dd2c@cakuba.netronome.com>
+        <0835B3720019904CB8F7AA43166CEEB2F18D06C5@RTITMBSVM03.realtek.com.tw>
+ <20190807144346.00005d2b@gmail.com>
+In-Reply-To: <20190807144346.00005d2b@gmail.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-References: <20190808003856.555097-1-yhs@fb.com>
-In-Reply-To: <20190808003856.555097-1-yhs@fb.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 7 Aug 2019 18:25:11 -0700
-Message-ID: <CAADnVQKaKKHJrVd4Gi5-1hC42S02LPYEGzwn1MEaRB49FS43bw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] tools/bpf: fix core_reloc.c compilation error
-To:     Yonghong Song <yhs@fb.com>
-Cc:     bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 7, 2019 at 5:42 PM Yonghong Song <yhs@fb.com> wrote:
->
-> On my local machine, I have the following compilation errors:
-> =3D=3D=3D=3D=3D
->   In file included from prog_tests/core_reloc.c:3:0:
->   ./progs/core_reloc_types.h:517:46: error: expected =E2=80=98=3D=E2=80=
-=99, =E2=80=98,=E2=80=99, =E2=80=98;=E2=80=99, =E2=80=98asm=E2=80=99 or =E2=
-=80=98__attribute__=E2=80=99 before =E2=80=98fancy_char_ptr_t=E2=80=99
->  typedef const char * const volatile restrict fancy_char_ptr_t;
->                                               ^
->   ./progs/core_reloc_types.h:527:2: error: unknown type name =E2=80=98fan=
-cy_char_ptr_t=E2=80=99
->     fancy_char_ptr_t d;
->     ^
-> =3D=3D=3D=3D=3D
->
-> I am using gcc 4.8.5. Later compilers may change their behavior not emitt=
-ing the
-> error. Nevertheless, let us fix the issue. "restrict" can be tested
-> without typedef.
->
-> Fixes: 9654e2ae908e ("selftests/bpf: add CO-RE relocs modifiers/typedef t=
-ests")
-> Cc: Andrii Nakryiko <andriin@fb.com>
-> Signed-off-by: Yonghong Song <yhs@fb.com>
+Maciej Fijalkowski [mailto:maciejromanfijalkowski@gmail.com]
+> Sent: Wednesday, August 07, 2019 8:44 PM
+[...]
+> > Excuse me.
+> > I find struct ethtool_tunable for ETHTOOL_RX_COPYBREAK.
+> > How about the descriptor count?
+> 
+> Look how drivers implement ethtool's set_ringparam ops.
 
-Applied. Thanks.
+I would check it. Thanks.
+
+
+Best Regards,
+Hayes
+
+
