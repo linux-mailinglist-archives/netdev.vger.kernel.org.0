@@ -2,135 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F6AD867A1
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 19:04:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1D62867D8
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 19:21:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404204AbfHHREj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 13:04:39 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:45702 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404181AbfHHREj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 13:04:39 -0400
-Received: by mail-ot1-f66.google.com with SMTP id x21so28167011otq.12
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 10:04:38 -0700 (PDT)
+        id S2404278AbfHHRVU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 13:21:20 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:46744 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404258AbfHHRVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 13:21:19 -0400
+Received: by mail-ed1-f66.google.com with SMTP id z51so4221397edz.13
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 10:21:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=riotgames.com; s=riotgames;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ElTMuNeoHI+HHYYsxCZw6Aps3F3VALIwkdZIOhALrxA=;
-        b=f7IPdWVvvQMrIFT5y6nMX9j1ZB6ZXkOLJIJ/Aq5Npp3ljgbC8uD1wTUVb1YGYqPbuz
-         2Rzw23yxRRYVZsgsnaQGiqh94Fj/NWZBilmwBU+klcpKW3+RuKKJv9ppHnq2b+e6xWbH
-         MDzXtNYeTk7otDrS+3VsOYB6WIej4R7njmXKmAYYDXeDdwxfJ0YwuNtBz/CAyqvm9GJN
-         FvFHIHEnjvkyILnV7hJTjPFqxljPzGr2S+gE+YqEiUsX2oVcmrByhzE8PblD09YU5CzF
-         S9rzKRPbV3v7sewdRDTeVVN78AVthP8aLdWbboRhtFiZsenQ7fbxqTsNDHlIK8CvidEr
-         dCEA==
+        bh=5hoC6tekzvmnBWFpFgVYWi4ETgq/6NaE8lqjt5l31oE=;
+        b=UghuymG3LVmw8hvEWxI8szPlFSJo/LEtj0r3o1UQAAk2owWe4vKhsYc0X4dppVAKLK
+         /o9MCR1Juki/ZxdAqqW8StWTYqEux79oi3B8HW7M1moXDN/AJZH1A6S/i8hdpCRUgCX8
+         0SPIuFDc/P8NP6vbhG2KTRbplA0HSVLUf0cq8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ElTMuNeoHI+HHYYsxCZw6Aps3F3VALIwkdZIOhALrxA=;
-        b=b5N6HcoMy4xRI5tz2EpxhoJcxU0Pke+L3xvcUTKGOS5z6prpA/HHTogvyfA7fFHNCF
-         +O5J5dbSuL8AVQHFmddidOmiFfWUsUbsBHJPiGqZDFkA8Kd5OkdZIj1LQ9IZQqBHryvZ
-         yRuha8aFNkITbcVtFs0t7oiAeDHfdyk4TlQMRj2khEqrYNmBiAmW2xHOnSfRtymcslNy
-         VWvyp3VkWKQhVKvtQDGshlJ1IHMrJ9io+yhAqm+Xok96uKI16dVICaWs5g497380NsVL
-         JMk8egP0dulOdiHykYcPBry7qRtG7Y2wH81TKC6fW7x6ezLXigv3YHx459b5OfQoNmGw
-         3SaQ==
-X-Gm-Message-State: APjAAAVGJnJH/iXGU99+ZcV5OqR+WUYM9j91srHX0t5LsdWnQw0n0MnY
-        PKt0yRD2q1tvs2z93aEV2dL0wQb/NYzfzgi4EJLzXQ==
-X-Google-Smtp-Source: APXvYqzxBjBYPr3wPY34IaD0DcbIQJtetwQGaIiLDFAooByqTCVN6/j1974v7EFlnwsdK9dVBWgHIWVrxKUZGxtpblE=
-X-Received: by 2002:a5e:de0d:: with SMTP id e13mr6746503iok.144.1565283877966;
- Thu, 08 Aug 2019 10:04:37 -0700 (PDT)
+        bh=5hoC6tekzvmnBWFpFgVYWi4ETgq/6NaE8lqjt5l31oE=;
+        b=of0lOakePN4F6KOXLw6khafU8PY7IYHKuS7PljNPIGlwjt+xD2ymNHJQ0FSgsG9enY
+         n/fDg8R3TlTl4BfTax5KJ+58M/ZJS2lysus5MdWDRNxOTBdRaH4SfxadjSMNl3MkOFVB
+         YZj/V5g7EEFiCutE70ch5v+OPpj2/HAMXaG5jZspo8I3JY/QcCxboLNnuhuYKEeNC6/U
+         H1rS7GA9IGDbpbLEadpxgsG8mTDCL6TaeQg+8c/SLQfNBL4yGT7VZChyjrX60gQiMiM3
+         yKBmMmVsbc7mlTMR76rrsAftR2/tnpxMDWbg/SF1Ro8/RUQGnS9alHoFSkw1s1uIrnja
+         Jynw==
+X-Gm-Message-State: APjAAAX9EgxDerVup8/eBEhPeY/sYVJBgIBLu+hqLTKTg3wRF6xhcQ4g
+        lfq/soXQ1b1eOLKSp0/+E4s59+8HTAVVViNuvGgslw==
+X-Google-Smtp-Source: APXvYqyY725AhpQZDFUYOGqSoqtr1qapj+5xHZavJfF3iOC5sl7977OX5m7Hk7sAlbMfz6AGR75KoEzf+TBvRjyxzxo=
+X-Received: by 2002:a17:906:1916:: with SMTP id a22mr14116370eje.271.1565284878053;
+ Thu, 08 Aug 2019 10:21:18 -0700 (PDT)
 MIME-Version: 1.0
-References: <000000000000edcb3c058e6143d5@google.com> <00000000000083ffc4058e9dddf0@google.com>
- <CAHk-=why-PdP_HNbskRADMp1bnj+FwUDYpUZSYoNLNHMRPtoVA@mail.gmail.com>
-In-Reply-To: <CAHk-=why-PdP_HNbskRADMp1bnj+FwUDYpUZSYoNLNHMRPtoVA@mail.gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 8 Aug 2019 19:04:26 +0200
-Message-ID: <CACT4Y+bgH9f090N6G0H0zpPBrM-pW7aXXqt9kMxLjFk2jmpAEw@mail.gmail.com>
-Subject: Re: memory leak in kobject_set_name_vargs (2)
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     syzbot <syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        David Miller <davem@davemloft.net>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        Linux-MM <linux-mm@kvack.org>, luciano.coelho@intel.com,
-        Netdev <netdev@vger.kernel.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+References: <156518133219.5636.728822418668658886.stgit@firesoul>
+ <20190807150010.1a58a1d2@carbon> <CAC1LvL29KS9CKcXYwR4EHeNo7++i4hYQuXfY5OLtbPFDVUO2mw@mail.gmail.com>
+ <20190808112955.5a29c9e1@carbon>
+In-Reply-To: <20190808112955.5a29c9e1@carbon>
+From:   Zvi Effron <zeffron@riotgames.com>
+Date:   Thu, 8 Aug 2019 12:21:06 -0500
+Message-ID: <CAC1LvL2Z7VMykO0nK3mxN=RseYGEHgjD8=hKQz0EXWWN3c1QRA@mail.gmail.com>
+Subject: Re: [bpf-next PATCH 0/3] bpf: improvements to xdp_fwd sample
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     Xdp <xdp-newbies@vger.kernel.org>,
+        Anton Protopopov <a.s.protopopov@gmail.com>, dsahern@gmail.com,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jul 27, 2019 at 4:29 AM Linus Torvalds
-<torvalds@linux-foundation.org> wrote:
+On Thu, Aug 8, 2019 at 4:30 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
 >
-> On Fri, Jul 26, 2019 at 4:26 PM syzbot
-> <syzbot+ad8ca40ecd77896d51e2@syzkaller.appspotmail.com> wrote:
-> >
-> > syzbot has bisected this bug to:
-> >
-> > commit 0e034f5c4bc408c943f9c4a06244415d75d7108c
-> > Author: Linus Torvalds <torvalds@linux-foundation.org>
-> > Date:   Wed May 18 18:51:25 2016 +0000
-> >
-> >      iwlwifi: fix mis-merge that breaks the driver
+> Another improvement from Toke, is that the bpf_redirect_map() helper,
+> now also check if the redirect index is valid in the map.  If not, then
+> it returns another value than XDP_REDIRECT.  You can choose the
+> alternative return value yourself, via "flags" e.g. XDP_PASS.  Thus,
+> you don't even need to check/validate devmap in your BPF-code, as it is
+> part of the bpf_redirect_map() call now.
 >
-> While this bisection looks more likely than the other syzbot entry
-> that bisected to a version change, I don't think it is correct eitger.
+>  action = bpf_redirect_map(&map, &index, flags_as_xdp_value)
 >
-> The bisection ended up doing a lot of "git bisect skip" because of the
+> The default flags used in most programs today is 0, which maps to
+> XDP_ABORTED.  This is sort of a small UAPI change, but for the better.
+> As today, the packet is dropped later, only diagnose/seen via
+> tracepoint xdp:xdp_redirect_map_err.
 >
->     undefined reference to `nf_nat_icmp_reply_translation'
->
-> issue. Also, the memory leak doesn't seem to be entirely reliable:
-> when the bisect does 10 runs to verify that some test kernel is bad,
-> there are a couple of cases where only one or two of the ten run
-> failed.
->
-> Which makes me wonder if one or two of the "everything OK" runs were
-> actually buggy, but just happened to have all ten pass...
+That's great to hear, as I'd thought it already worked that way (minus
+the flags to specify what the alternate action is).
 
+Thanks for explaining!
 
-I agree this is unrelated.
-
-Bisection of memory leaks is now turned off completely after a
-week-long experiment (details:
-https://groups.google.com/d/msg/syzkaller/sR8aAXaWEF4/k34t365JBgAJ)
-
-FWIW 'git bisect skip' is not a problem in itself. If the bisection
-will end up being inconclusive due to this, then syzbot will not
-attribute it to any commit (won't send an email at all), it will just
-show the commit range in the web UI for the bug.
-
-Low probability wasn't the root cause as well, first runs ended with
-10/10 precision:
-
-bisecting cause commit starting from 3bfe1fc46794631366faa3ef075e1b0ff7ba120a
-building syzkaller on 1656845f45f284c574eb4f8bfe85dd7916a47a3a
-testing commit 3bfe1fc46794631366faa3ef075e1b0ff7ba120a with gcc (GCC) 8.1.0
-all runs: crashed: memory leak in kobject_set_name_vargs
-testing release v5.2
-testing commit 0ecfebd2b52404ae0c54a878c872bb93363ada36 with gcc (GCC) 8.1.0
-all runs: crashed: memory leak in kobject_set_name_vargs
-testing release v5.1
-testing commit e93c9c99a629c61837d5a7fc2120cd2b6c70dbdd with gcc (GCC) 8.1.0
-all runs: crashed: memory leak in kobject_set_name_vargs
-testing release v5.0
-testing commit 1c163f4c7b3f621efff9b28a47abb36f7378d783 with gcc (GCC) 8.1.0
-all runs: crashed: memory leak in kobject_set_name_vargs
-testing release v4.20
-testing commit 8fe28cb58bcb235034b64cbbb7550a8a43fd88be with gcc (GCC) 8.1.0
-all runs: crashed: memory leak in kobject_set_name_vargs
-testing release v4.19
-testing commit 84df9525b0c27f3ebc2ebb1864fa62a97fdedb7d with gcc (GCC) 8.1.0
-all runs: crashed: memory leak in kobject_set_name_vargs
-
-But it was distracted by other bugs and other memory leaks (which
-reproduce with lower probability) and then the process went random
-(which confirms the bisection analysis results).
+--Zvi
