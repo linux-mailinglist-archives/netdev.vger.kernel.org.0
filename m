@@ -2,97 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2347B86ABF
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 21:48:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5ACA686AB9
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 21:47:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390169AbfHHTsL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 15:48:11 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:51285 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732544AbfHHTsL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 15:48:11 -0400
-Received: by mail-wm1-f67.google.com with SMTP id 207so3508859wma.1
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 12:48:09 -0700 (PDT)
+        id S1732327AbfHHTrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 15:47:24 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:41611 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728025AbfHHTrX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 15:47:23 -0400
+Received: by mail-ot1-f65.google.com with SMTP id o101so123441915ota.8
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 12:47:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=/2fxFs41NwQWIty5xzwZL2Xf3rruq63o4Zcf2usdTGg=;
-        b=NSBF00O7rk4P1rDI4j1iTl9OKHfC7TYFtRvUWKw1KOYKSaZD9fuhImzSTdAynL6k32
-         Z/tbd97cPOxku4ASMVaMBvmB1I/WdvDScuo0S+4Zhx7//3nBzt8O7cwHILr6gDZbL0I8
-         1nJGagkbMm1wIWoKUc9LIsl2N8yazgHrxSTI87dLfzo3iTipI+8Ok3gifUFUXgSryWaH
-         3A89VVr765GZg2sqeyEPdRsTlr4GiQQ+xK6be0RNc6jq08YyalEjiajHpgh79yh1nAnb
-         XmbxIGRKKJ2ogPJU/htg8SmWkgeUFnpIagfVE2PUSrD3+A5tbNahfbVhRUlIVTVwEq72
-         KGKA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aoscBPHz3zXVrqZF7nIahC0lLZ2C7bmdx9G+BQ3FK6w=;
+        b=jRbruSeKOOQMhDbLbeBTcdCRXowPAAnqrrzn7rKxkGmVBjNatfMszrk5FxBIM4tqHU
+         UXoh6O1ffoFYff74+nzW9zNgGWZn0C46C+tIe505k3cR+8TWRML/sOnuG2AUOP8csahz
+         Fsi0W1mWXBKXTpaU4lpLnXzbsCoD47o2C8e96DoTv8Xm0CiWa5wL39S8oKdtVeOMUNM/
+         5aV+ndXAoDyxcCJTOx+q/AvAi8gPAz9UrnCKYVlRtX16ivtp+adQbXhHkNqXTZ8uv3Gx
+         7JV8pkfcuJDeIlb3LRJgHZW66Gjw+soC9SG+FFzueHniasiV9bZAICClx+SoZlJihbyt
+         b2RQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=/2fxFs41NwQWIty5xzwZL2Xf3rruq63o4Zcf2usdTGg=;
-        b=UbGDS2lbv1OLIWO/a7wuvnosmA9Z3oU0YtUVFrWiwITBpjQxeQWca3gnxMtmyXYAqL
-         jJ7q7zI1M4fJShUJ1bRfze9UXKftnwwSP1fdqvOrz3X5Fr6IIT3AvRaTYchRNPbihqdF
-         kmhaSX/xzXGICYeI07HXbU+m4LTJFfof/gZV/wdblXymT7QLmN5v2ognTUgIUJ9aXnx/
-         hN21b7gQw5+gxdzP60jEA7nH8DRr17/sNFbzm39gd9GVb4YzpIPlH6ZkLo26cuK/ZCl/
-         zFjQ1WPTDn+Gusn4v+JM7yiA1QlI59RmaTxHiYwtjShzocTV7H9T9rr5JhfhkK8ZitNw
-         BuWQ==
-X-Gm-Message-State: APjAAAXTYSRn/PStIU709TBc+BuPNUp14iiCWy+vvMuUSfMU98LpSeG5
-        RAyxhlGKTKVLO2uig8jS/u0NR8Xh
-X-Google-Smtp-Source: APXvYqwlf7pMTDvWiZujNDPE6HX2l7GNJ+1gAuNMUKbb3X/MAw0uKhLWw29MXGTZMPeH/Rw720OggQ==
-X-Received: by 2002:a05:600c:551:: with SMTP id k17mr6155324wmc.53.1565293688909;
-        Thu, 08 Aug 2019 12:48:08 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf? (p200300EA8F2F3200EC8A8637BF5F7FAF.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf])
-        by smtp.googlemail.com with ESMTPSA id v5sm145582782wre.50.2019.08.08.12.48.08
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Aug 2019 12:48:08 -0700 (PDT)
-Subject: Re: [PATCH net-next 3/3] net: phy: realtek: add support for the
- 2.5Gbps PHY in RTL8125
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ddbf28b9-f32e-7399-10a6-27b79ca0aaf9@gmail.com>
- <64769c3d-42b6-8eb8-26e4-722869408986@gmail.com>
- <20190808193743.GL27917@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <f34d1117-510f-861f-59f0-51e0e87ead1e@gmail.com>
-Date:   Thu, 8 Aug 2019 21:46:24 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aoscBPHz3zXVrqZF7nIahC0lLZ2C7bmdx9G+BQ3FK6w=;
+        b=XzjOIEG77pggLtI8j6coAXOWhpbS9jjwJ1qh/EHQV1AqUgd/g14NIrYe+7kKoOf8MS
+         dUrnkXt9O41KViU8qXub/bJ1h55J7S9F0Q3T0tnUr6ZJJ6SxzqakabL7DNMZVJdTsnk/
+         ZCAAJV7dxlufarpch7kg2Ztnv0SjLL+ByXAm7+V0asAYQoyY4rO6xfHy2GaXn7McpXV7
+         RGvu0bRjZpNhRJvV6iUz72zgl5YlRWtzXd98V9F/GMc4zQv20qAtXXO78OO/AoOAdGUy
+         7rOfgB0Fkm5sLkvcdjMj+PPqtC+TOuLabglMI9QnnjriH53BoiC23DjCj7l2s+IUSFb1
+         CasQ==
+X-Gm-Message-State: APjAAAXQ6NBgKY9ziJA0TnF94jNtw20NxrAnfTZKyeRqZ6CLPu4+nnrG
+        eRVBNqFfctljHzp0bqPnkLkDYNhqyE5kYXkn4LG331l2hqA=
+X-Google-Smtp-Source: APXvYqxTYbLp/LWq0YBd2S/vGzOLb4LP2vz+wbiuIbJKyjfCWpc7x90pJrNzE2PHxunnrV0FOpp19HNF9rP2HHLPZjQ=
+X-Received: by 2002:a5d:9448:: with SMTP id x8mr18264878ior.102.1565293642428;
+ Thu, 08 Aug 2019 12:47:22 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190808193743.GL27917@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <156528102557.22124.261409336813472418.stgit@firesoul> <156528106270.22124.2563148023961869582.stgit@firesoul>
+In-Reply-To: <156528106270.22124.2563148023961869582.stgit@firesoul>
+From:   Y Song <ys114321@gmail.com>
+Date:   Thu, 8 Aug 2019 12:46:46 -0700
+Message-ID: <CAH3MdRXZ-Wy4zADhQvba8rWEZrZNZi4SjorkJfrJo42oufinAw@mail.gmail.com>
+Subject: Re: [bpf-next v3 PATCH 2/3] samples/bpf: make xdp_fwd more
+ practically usable via devmap lookup
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        a.s.protopopov@gmail.com, David Ahern <dsahern@gmail.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@toke.dk>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.08.2019 21:37, Andrew Lunn wrote:
-> On Thu, Aug 08, 2019 at 09:05:54PM +0200, Heiner Kallweit wrote:
->> This adds support for the integrated 2.5Gbps PHY in Realtek RTL8125.
->> Advertisement of 2.5Gbps mode is done via a vendor-specific register.
->> Same applies to reading NBase-T link partner advertisement.
->> Unfortunately this 2.5Gbps PHY shares the PHY ID with the integrated
->> 1Gbps PHY's in other Realtek network chips and so far no method is
->> known to differentiate them.
-> 
-> That is not nice.
-> 
-Indeed.
+On Thu, Aug 8, 2019 at 9:17 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+>
+> This address the TODO in samples/bpf/xdp_fwd_kern.c, which points out
+> that the chosen egress index should be checked for existence in the
+> devmap. This can now be done via taking advantage of Toke's work in
+> commit 0cdbb4b09a06 ("devmap: Allow map lookups from eBPF").
+>
+> This change makes xdp_fwd more practically usable, as this allows for
+> a mixed environment, where IP-forwarding fallback to network stack, if
+> the egress device isn't configured to use XDP.
+>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Reviewed-by: David Ahern <dsahern@gmail.com>
 
-> Do you have any contacts in Realtek who can provide us with
-> information? Maybe there is another undocumented vendor specific
-> register?
-> 
-I have a contact in Realtek who provided the information about
-the vendor-specific registers used in the patch. I also asked for
-a method to auto-detect 2.5Gbps support but have no feedback so far.
-What may contribute to the problem is that also the integrated 1Gbps
-PHY's (all with the same PHY ID) differ significantly from each other,
-depending on the network chip version.
+Acked-by: Yonghong Song <yhs@fb.com>
 
-> 	Andrew
-> 
-Heiner
+> ---
+>  samples/bpf/xdp_fwd_kern.c |   17 +++++++++++------
+>  samples/bpf/xdp_fwd_user.c |   33 ++++++++++++++++++++++-----------
+>  2 files changed, 33 insertions(+), 17 deletions(-)
+>
+> diff --git a/samples/bpf/xdp_fwd_kern.c b/samples/bpf/xdp_fwd_kern.c
+> index e6ffc4ea06f4..a43d6953c054 100644
+> --- a/samples/bpf/xdp_fwd_kern.c
+> +++ b/samples/bpf/xdp_fwd_kern.c
+> @@ -104,13 +104,18 @@ static __always_inline int xdp_fwd_flags(struct xdp_md *ctx, u32 flags)
+>
+>         rc = bpf_fib_lookup(ctx, &fib_params, sizeof(fib_params), flags);
+>
+> -       /* verify egress index has xdp support
+> -        * TO-DO bpf_map_lookup_elem(&tx_port, &key) fails with
+> -        *       cannot pass map_type 14 into func bpf_map_lookup_elem#1:
+> -        * NOTE: without verification that egress index supports XDP
+> -        *       forwarding packets are dropped.
+> -        */
+>         if (rc == 0) {
+> +               /* Verify egress index has been configured as TX-port.
+> +                * (Note: User can still have inserted an egress ifindex that
+> +                * doesn't support XDP xmit, which will result in packet drops).
+> +                *
+> +                * Note: lookup in devmap supported since 0cdbb4b09a0.
+> +                * If not supported will fail with:
+> +                *  cannot pass map_type 14 into func bpf_map_lookup_elem#1:
+> +                */
+> +               if (!bpf_map_lookup_elem(&xdp_tx_ports, &fib_params.ifindex))
+> +                       return XDP_PASS;
+> +
+>                 if (h_proto == htons(ETH_P_IP))
+>                         ip_decrease_ttl(iph);
+>                 else if (h_proto == htons(ETH_P_IPV6))
+> diff --git a/samples/bpf/xdp_fwd_user.c b/samples/bpf/xdp_fwd_user.c
+> index ba012d9f93dd..97ff1dad7669 100644
+> --- a/samples/bpf/xdp_fwd_user.c
+> +++ b/samples/bpf/xdp_fwd_user.c
+> @@ -27,14 +27,20 @@
+>  #include "libbpf.h"
+>  #include <bpf/bpf.h>
+>
+> -
+> -static int do_attach(int idx, int fd, const char *name)
+> +static int do_attach(int idx, int prog_fd, int map_fd, const char *name)
+>  {
+>         int err;
+>
+> -       err = bpf_set_link_xdp_fd(idx, fd, 0);
+> -       if (err < 0)
+> +       err = bpf_set_link_xdp_fd(idx, prog_fd, 0);
+> +       if (err < 0) {
+>                 printf("ERROR: failed to attach program to %s\n", name);
+> +               return err;
+> +       }
+> +
+> +       /* Adding ifindex as a possible egress TX port */
+> +       err = bpf_map_update_elem(map_fd, &idx, &idx, 0);
+> +       if (err)
+> +               printf("ERROR: failed using device %s as TX-port\n", name);
+>
+>         return err;
+>  }
+> @@ -47,6 +53,9 @@ static int do_detach(int idx, const char *name)
+>         if (err < 0)
+>                 printf("ERROR: failed to detach program from %s\n", name);
+>
+> +       /* TODO: Remember to cleanup map, when adding use of shared map
+> +        *  bpf_map_delete_elem((map_fd, &idx);
+> +        */
+>         return err;
+>  }
+>
+> @@ -67,10 +76,10 @@ int main(int argc, char **argv)
+>         };
+>         const char *prog_name = "xdp_fwd";
+>         struct bpf_program *prog;
+> +       int prog_fd, map_fd = -1;
+>         char filename[PATH_MAX];
+>         struct bpf_object *obj;
+>         int opt, i, idx, err;
+> -       int prog_fd, map_fd;
+>         int attach = 1;
+>         int ret = 0;
+>
+> @@ -103,8 +112,14 @@ int main(int argc, char **argv)
+>                         return 1;
+>                 }
+>
+> -               if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
+> +               err = bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd);
+> +               if (err) {
+> +                       printf("Does kernel support devmap lookup?\n");
+> +                       /* If not, the error message will be:
+> +                        *  "cannot pass map_type 14 into func bpf_map_lookup_elem#1"
+> +                        */
+>                         return 1;
+> +               }
+>
+>                 prog = bpf_object__find_program_by_title(obj, prog_name);
+>                 prog_fd = bpf_program__fd(prog);
+> @@ -119,10 +134,6 @@ int main(int argc, char **argv)
+>                         return 1;
+>                 }
+>         }
+> -       if (attach) {
+> -               for (i = 1; i < 64; ++i)
+> -                       bpf_map_update_elem(map_fd, &i, &i, 0);
+> -       }
+>
+>         for (i = optind; i < argc; ++i) {
+>                 idx = if_nametoindex(argv[i]);
+> @@ -138,7 +149,7 @@ int main(int argc, char **argv)
+>                         if (err)
+>                                 ret = err;
+>                 } else {
+> -                       err = do_attach(idx, prog_fd, argv[i]);
+> +                       err = do_attach(idx, prog_fd, map_fd, argv[i]);
+>                         if (err)
+>                                 ret = err;
+>                 }
+>
