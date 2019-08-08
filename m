@@ -2,103 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5375486B28
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:10:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03B2C86B52
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:20:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404514AbfHHUKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 16:10:47 -0400
-Received: from kadath.azazel.net ([81.187.231.250]:39856 "EHLO
-        kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404505AbfHHUKq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 16:10:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
-         s=20190108; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        id S2404733AbfHHUUd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 16:20:33 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45582 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404467AbfHHUUc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 16:20:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=oupiFS6tcEXohv573seS8h77QHXcH4NQjg9LtVsFxPk=; b=A28VPHlbLXz6ryks3UQ0fF6VMw
-        qf97dQPLdML4tWPJ6puO+2n+XT8lYz08E3Qb9oZUP6Kr/d+O4HDbpLdsSBsfo0Hav6T4M9u8qwFkt
-        SwojWvrZj+npCkZbROuFWs4AaroKPoSTfev+L/CHaLiuqvBGZ5FR5Jz+unU9MPVYUxYLOaC3C9d2n
-        d+1mVeid/3ZtHW1zD2BYk2Sqs6NCcoVaN9DfbOYOu3Va7oqMv4lemnapqsGb3affEp6c8TJ7M3wFg
-        oQmqqxxVS92U7BXy7hl24VqW/uw3eodnlyOiJefi5wsD7S4eTtK2gUvIQc+oZ9lmefN4uv40aqK+f
-        4GE7KxLQ==;
-Received: from celephais.dreamlands.azazel.net ([2001:8b0:fb7d:d6d7:5ec5:d4ff:fe95:cee6] helo=azazel.net)
-        by kadath.azazel.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <jeremy@azazel.net>)
-        id 1hvokG-0000L8-4Y; Thu, 08 Aug 2019 21:10:44 +0100
-Date:   Thu, 8 Aug 2019 21:10:43 +0100
-From:   Jeremy Sowden <jeremy@azazel.net>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Netfilter Devel <netfilter-devel@vger.kernel.org>,
-        Net Dev <netdev@vger.kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>
-Subject: Re: [PATCH net-next v1 1/8] netfilter: inlined four headers files
- into another one.
-Message-ID: <20190808201042.GA4299@azazel.net>
-References: <20190722201615.GE23346@azazel.net>
- <20190807141705.4864-1-jeremy@azazel.net>
- <20190807141705.4864-2-jeremy@azazel.net>
- <20190808112355.w3ax3twuf6b7pwc7@salvia>
+        bh=0ZbhcQSKDqCCErzmqb996yvUYEHV8ffjTNy/zw4MZ/M=; b=ed0VB4KNnf7RliplYnx3Zg4cuW
+        jWncZDVebs44S/BGUuoyFqXQyMLVd8Vtv2XqaKC8FC1NxVQbRQdjHNlo/38rGbOSTaIw97+afjx9b
+        yRlRkzP358Yz4PmTIPlR5GdM+tNJyy86rer45SENQgIe5mmuOW9ksdymnZC+7FeTqvzk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hvoth-0005mk-8a; Thu, 08 Aug 2019 22:20:29 +0200
+Date:   Thu, 8 Aug 2019 22:20:29 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: phy: realtek: add support for the
+ 2.5Gbps PHY in RTL8125
+Message-ID: <20190808202029.GN27917@lunn.ch>
+References: <ddbf28b9-f32e-7399-10a6-27b79ca0aaf9@gmail.com>
+ <64769c3d-42b6-8eb8-26e4-722869408986@gmail.com>
+ <20190808193743.GL27917@lunn.ch>
+ <f34d1117-510f-861f-59f0-51e0e87ead1e@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="qDbXVdCdHGoSgWSk"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190808112355.w3ax3twuf6b7pwc7@salvia>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:8b0:fb7d:d6d7:5ec5:d4ff:fe95:cee6
-X-SA-Exim-Mail-From: jeremy@azazel.net
-X-SA-Exim-Scanned: No (on kadath.azazel.net); SAEximRunCond expanded to false
+In-Reply-To: <f34d1117-510f-861f-59f0-51e0e87ead1e@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> I have a contact in Realtek who provided the information about
+> the vendor-specific registers used in the patch. I also asked for
+> a method to auto-detect 2.5Gbps support but have no feedback so far.
+> What may contribute to the problem is that also the integrated 1Gbps
+> PHY's (all with the same PHY ID) differ significantly from each other,
+> depending on the network chip version.
 
---qDbXVdCdHGoSgWSk
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Hi Heiner
 
-On 2019-08-08, at 13:23:55 +0200, Pablo Neira Ayuso wrote:
-> On Wed, Aug 07, 2019 at 03:16:58PM +0100, Jeremy Sowden wrote:
-> [...]
-> > +/* Called from uadd only, protected by the set spinlock.
-> > + * The kadt functions don't use the comment extensions in any way.
-> > + */
-> > +static inline void
-> > +ip_set_init_comment(struct ip_set *set, struct ip_set_comment *comment,
-> > +		    const struct ip_set_ext *ext)
->
-> Not related to this patch, but I think the number of inline functions
-> could be reduced a bit by exporting symbols? Specifically for
-> functions that are called from the netlink control plane, ie. _uadd()
-> functions. I think forcing the compiler to inline this is not useful.
-> This could be done in a follow up patchset.
+Some of the PHYs embedded in Marvell switches have an OUI, but no
+product ID. We work around this brokenness by trapping the reads to
+the ID registers in the MDIO bus controller driver and inserting the
+switch product ID. The Marvell PHY driver then recognises these IDs
+and does the right thing.
 
-I'll take a look.
+Maybe you can do something similar here?
 
-J.
-
---qDbXVdCdHGoSgWSk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEZ8d+2N/NBLDbUxIF0Z7UzfnX9sMFAl1MgbkACgkQ0Z7UzfnX
-9sMH+g//Xo8lZa3oxjLdnUNKikemZiYQ/IbNiSFwwKs4WRMWMIuuXNFhtzMHtf71
-A5ovtI6aylTcK5KA7Qwx4EIEHS6jMcpGXw+jMRt8UHGI6D8jIKuwj5inTXor6TvB
-jkr3rfDYjRh2qLDmjQLC6L1rb8YG7U1+jlN+lHfasHgPls+NP8nhqHmfbwU9J24t
-LbcajuoY88UMuqqAY2WS3qg3S/4CUZ1kpVUJIA1NUCEw8KivgvUiO+ByvtMgRR6Q
-owjcCKWv90PEMS3PYzmOsykIIUSSDITpM4N3ZiIhJSh4f5/T2h6uPH/nL7pRSNqf
-r+U31MEXggPkRJG1Ig19fa0yaGmDBZbzyWLE5RnbK4G+6T8+V9+e3ffNPYYH9vFE
-ypLrEzc75DFF/N+mXwsWWs82weyhkt7FCqi1grjZs5zhtMciRHeN5v/lCbCZtpqb
-9J7tlD+DFH+pNjPwXP8Qxm/YzMiCboVvHyCHHpKRhkxhk/QxjHJ3i5U3gG/4/dPY
-QiW3e1XDj6jHSz+XDFqspcoGIEp9pVHoC58HgFdELoZo53A+kMsQ9B0KFExalPOH
-lLT3SCDeu+CkVY3EU1J5vfErFTnkv77cQuNSl5UoRpT8zhV3ZQUY4wE06vWKLMNN
-GGBLxuUxQdqZUbaRXvxheMnp0YSxPmYT2oIrn2rUk3UBC96Q2k4=
-=uRpK
------END PGP SIGNATURE-----
-
---qDbXVdCdHGoSgWSk--
+      Andrew
