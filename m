@@ -2,105 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DCFEF85758
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 02:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C97E85771
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 03:15:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389423AbfHHA54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 20:57:56 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37924 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730433AbfHHA54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 20:57:56 -0400
-Received: by mail-ot1-f66.google.com with SMTP id d17so111990614oth.5;
-        Wed, 07 Aug 2019 17:57:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QWroORoYJJEypRbywT1Vg4gyvbrefE5EQmwaaN8kPSc=;
-        b=E8ZRAIimD3NWKzKqu/YwNjL4J+25+uMXaiZMMdO24Y/0PuLvdruAdtuKjGDe3MmxWv
-         20JHunB6aSSQadO8VKSl4Yj26rjTEON+qvqsWIXKpbVvFjW6rXzRrpkMFCvy7vWRcar3
-         D2oQBbE1oV7NnUtf1ZY+f+m5IKsEa7eAK7F+wv31UOE7RRwz8x74EWA7xAKjjixD/qqo
-         5sku8fLL/UheU4jomfDhIsTl/ziNQiACSc+EwFgUrPJUayUTIE4tgKAaQipfQ0A9yHfR
-         1q0e4QjNcpsZOLMX4sNL90kS+WRBeuv8UH++wwwCY5pY3wJa8t8og8dTAdiotO2xWaVR
-         BUcA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QWroORoYJJEypRbywT1Vg4gyvbrefE5EQmwaaN8kPSc=;
-        b=RVXd3gFiEkgorbPhaVNj5m3++pghdIXThxv1ghYH10iEo44J7XO133k3jTHHiCfD02
-         pqXXH5ZBkuWF0if997s90wyUyXmRykPsBYgDbfeacKSA46eDx89ernYJYfUGn7TALJd2
-         UPtlCQ2w14fkxrIxtkB6rfO5Nv8fnNilgkAr90i3aWwn4kGvxhnEj+g50QQV2o2FH0qk
-         ub3LWLuiJsyv6TdyIf4z8AI4AbFFMmx2Y0Ccrt/pXswReghfw8cVNSOR2Gs3IWx9NlsU
-         7aLx9YAhJoZEk1JLKepUjHgzBf+FVUKvUiY0UbV5l9eL0b48z/ehH9mxFcFbvVjWa6Xw
-         FXTA==
-X-Gm-Message-State: APjAAAWPfwowNMrx2xxmT1C8TR9Mv9hopm4XAZ5yZhVeF+tu3Qzt/9RB
-        XYy1njtDoJkyxp+pMz+HKnF+8/X0
-X-Google-Smtp-Source: APXvYqxwuFAq7MHTNxNRQPD1XiAsT9tm40H5OgHUHjAkyjHNCYerWkPZGyqH0v7GbhIEW6STp5VBDw==
-X-Received: by 2002:aca:5451:: with SMTP id i78mr682009oib.85.1565225875079;
-        Wed, 07 Aug 2019 17:57:55 -0700 (PDT)
-Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
-        by smtp.gmail.com with ESMTPSA id k3sm31031721otr.1.2019.08.07.17.57.53
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 07 Aug 2019 17:57:54 -0700 (PDT)
-Subject: Re: [PATCH] Fix non-kerneldoc comment in realtek/rtlwifi/usb.c
-To:     =?UTF-8?Q?Valdis_Kl=c4=93tnieks?= <valdis.kletnieks@vt.edu>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <5924.1565217560@turing-police>
-From:   Larry Finger <Larry.Finger@lwfinger.net>
-Message-ID: <371d1a31-2daa-202e-85ea-6fe20c36bc2a@lwfinger.net>
-Date:   Wed, 7 Aug 2019 19:57:52 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2389026AbfHHBPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 21:15:04 -0400
+Received: from szxga01-in.huawei.com ([45.249.212.187]:3933 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1730038AbfHHBPE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 7 Aug 2019 21:15:04 -0400
+Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.54])
+        by Forcepoint Email with ESMTP id 13737E7A906BCBCFF543;
+        Thu,  8 Aug 2019 09:15:02 +0800 (CST)
+Received: from dggeme760-chm.china.huawei.com (10.3.19.106) by
+ DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Thu, 8 Aug 2019 09:15:01 +0800
+Received: from [127.0.0.1] (10.57.37.248) by dggeme760-chm.china.huawei.com
+ (10.3.19.106) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1591.10; Thu, 8
+ Aug 2019 09:15:01 +0800
+Subject: Re: [PATCH net] net: phy: rtl8211f: do a double read to get real time
+ link status
+To:     Heiner Kallweit <hkallweit1@gmail.com>, <davem@davemloft.net>,
+        <andrew@lunn.ch>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
+References: <1565183772-44268-1-git-send-email-liuyonglong@huawei.com>
+ <d67831ab-8902-a653-3db9-b2f55adacabd@gmail.com>
+From:   Yonglong Liu <liuyonglong@huawei.com>
+Message-ID: <e663235c-93eb-702d-5a9c-8f781d631c42@huawei.com>
+Date:   Thu, 8 Aug 2019 09:15:00 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.2.1
 MIME-Version: 1.0
-In-Reply-To: <5924.1565217560@turing-police>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <d67831ab-8902-a653-3db9-b2f55adacabd@gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.57.37.248]
+X-ClientProxiedBy: dggeme702-chm.china.huawei.com (10.1.199.98) To
+ dggeme760-chm.china.huawei.com (10.3.19.106)
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/7/19 5:39 PM, Valdis Klētnieks wrote:
 
-When this driver was originally entered, a line with "/*" was flagged by 
-checkpatch.pl. In fact, when I make your change, I get
 
-WARNING: networking block comments don't use an empty /* line, use /* Comment...
-#243: FILE: drivers/net/wireless/realtek/rtlwifi/usb.c:243:
-+/*
-+ *
+On 2019/8/8 0:47, Heiner Kallweit wrote:
+> On 07.08.2019 15:16, Yonglong Liu wrote:
+>> [   27.232781] hns3 0000:bd:00.3 eth7: net open
+>> [   27.237303] 8021q: adding VLAN 0 to HW filter on device eth7
+>> [   27.242972] IPv6: ADDRCONF(NETDEV_CHANGE): eth7: link becomes ready
+>> [   27.244449] hns3 0000:bd:00.3: invalid speed (-1)
+>> [   27.253904] hns3 0000:bd:00.3 eth7: failed to adjust link.
+>> [   27.259379] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change UP -> RUNNING
+>> [   27.924903] hns3 0000:bd:00.3 eth7: link up
+>> [   28.280479] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change RUNNING -> NOLINK
+>> [   29.208452] hns3 0000:bd:00.3 eth7: link down
+>> [   32.376745] RTL8211F Gigabit Ethernet mii-0000:bd:00.3:07: PHY state change NOLINK -> RUNNING
+>> [   33.208448] hns3 0000:bd:00.3 eth7: link up
+>> [   35.253821] hns3 0000:bd:00.3 eth7: net stop
+>> [   35.258270] hns3 0000:bd:00.3 eth7: link down
+>>
+>> When using rtl8211f in polling mode, may get a invalid speed,
+>> because of reading a fake link up and autoneg complete status
+>> immediately after starting autoneg:
+>>
+>>         ifconfig-1176  [007] ....    27.232763: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x00 val:0x1040
+>>   kworker/u257:1-670   [015] ....    27.232805: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x04 val:0x01e1
+>>   kworker/u257:1-670   [015] ....    27.232815: mdio_access: mii-0000:bd:00.3 write phy:0x07 reg:0x04 val:0x05e1
+>>   kworker/u257:1-670   [015] ....    27.232869: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x79ad
+>>   kworker/u257:1-670   [015] ....    27.232904: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x09 val:0x0200
+>>   kworker/u257:1-670   [015] ....    27.232940: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x00 val:0x1040
+>>   kworker/u257:1-670   [015] ....    27.232949: mdio_access: mii-0000:bd:00.3 write phy:0x07 reg:0x00 val:0x1240
+>>   kworker/u257:1-670   [015] ....    27.233003: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x79ad
+>>   kworker/u257:1-670   [015] ....    27.233039: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x0a val:0x3002
+>>   kworker/u257:1-670   [015] ....    27.233074: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x09 val:0x0200
+>>   kworker/u257:1-670   [015] ....    27.233110: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x05 val:0x0000
+>>   kworker/u257:1-670   [000] ....    28.280475: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x7989
+>>   kworker/u257:1-670   [000] ....    29.304471: mdio_access: mii-0000:bd:00.3 read  phy:0x07 reg:0x01 val:0x7989
+>>
+>> According to the datasheet of rtl8211f, to get the real time
+>> link status, need to read MII_BMSR twice.
+>>
+>> This patch add a read_status hook for rtl8211f, and do a fake
+>> phy_read before genphy_read_status(), so that can get real link
+>> status in genphy_read_status().
+>>
+>> Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+>> ---
+>>  drivers/net/phy/realtek.c | 13 +++++++++++++
+>>  1 file changed, 13 insertions(+)
+>>
+> Is this an accidental resubmit? Because we discussed this in
+> https://marc.info/?t=156413509900003&r=1&w=2 and a fix has
+> been applied already.
+> 
+> Heiner
+> 
+> .
+> 
 
-To avoid a loop of "fixing" compiler/checkpatch warnings, you need to put the 
-first real line of the comment on the line of the "/*". For the first of your 
-patches, that results in
+In https://marc.info/?t=156413509900003&r=1&w=2 , the invalid speed
+recurrence rate is almost 100%, and I had test the solution about
+5 times and it works. But yesterday it happen again suddenly, and than
+I fount that the recurrence rate reduce to 10%. This time we get 0x79ad
+after autoneg started which is not 0x798d from last discussion.
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c 
-b/drivers/net/wireless/realtek/rtlwifi/usb.c
-index 34d68dbf4b4c..f89ceac25eff 100644
---- a/drivers/net/wireless/realtek/rtlwifi/usb.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
-@@ -239,10 +239,7 @@ static void _rtl_usb_io_handler_release(struct ieee80211_hw 
-*hw)
-         mutex_destroy(&rtlpriv->io.bb_mutex);
-  }
--/**
-- *
-- *     Default aggregation handler. Do nothing and just return the oldest skb.
-- */
-+/* Default aggregation handler. Do nothing and just return the oldest skb.  */
-  static struct sk_buff *_none_usb_tx_aggregate_hdl(struct ieee80211_hw *hw,
-                                                   struct sk_buff_head *list)
 
-Because you merely shift the warning to a different tool,
-
-NACK.
-
-Larry
