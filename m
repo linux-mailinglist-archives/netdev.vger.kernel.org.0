@@ -2,117 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B088D8681F
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 19:32:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03EC986847
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 19:47:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404324AbfHHRcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 13:32:22 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:45619 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404276AbfHHRcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 13:32:22 -0400
-Received: by mail-qt1-f194.google.com with SMTP id f7so122826qtq.12
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 10:32:21 -0700 (PDT)
+        id S1732786AbfHHRry (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 13:47:54 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:35712 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728020AbfHHRry (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 13:47:54 -0400
+Received: by mail-qt1-f193.google.com with SMTP id d23so93101640qto.2;
+        Thu, 08 Aug 2019 10:47:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=ShTl8NzjuFW4H+evSiyW4NbMbiHqGaETrF4McIh94ME=;
-        b=Dp3Gif+0bf4aZFxAZ6NkwiGMqG9RXmCBpvAZAjNenCWfaPA7I0a0lB/9pvtm+EmdWC
-         I6hv4CIqgbhJe4mWu+nn+Dj79b1lGyPYu6Sxmn4I4Z41yJXpsNsZgZBqVz6/mSzVNoYb
-         G1sRnHhuR4ookjU2+uaNnjr/7Bb216UszEJwCLoJbBTAV3VsD0xfaLnmFLoIAdWNQaSY
-         sHWD/vB0/Mm99iuIaYsEi+buncrkmqqEkMSZ46GL4du+SpIb/86df3/sJ6LozBdhpMkp
-         gqVPMc2tQz/YsDTBH+cWGliCZdt5bfWQLVQi9vU+THPjDw/1fqGdWCK0sYUyss+zyTXg
-         47eA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ve448YTVFAAEC23KtyNHOIdfsWIqVwdZMMYjva/9ARk=;
+        b=RsS60EFJW2WbbqFSqkqfnXrDXX62PqLjdszCShukimFNMnuy+E/8ig7vNFNyUhQrdw
+         Y/crX8d+jmZejO199IqhVeAbadoqx2nk9DW3OeBx5GlR1Ls69VeNyrwRvQMgz9OytIQS
+         OaqZwbF0N+msqnNzWOAXmf19+pxL5cZmZdY4+8y1uZ8WLqsOrxHE3LzgZ5KGSMbodGqi
+         +BvndEgqcX+LdL6tYo7Znr8fY035iFZfxgqUsMMtbrdOyVQj96O7Ebf91Yc8ev+EzJtd
+         0cS3u1gnbZhSLL1DK+fUuDYxLma79ytV2AX/ZPxZof8c+z2YT0005+SKg9H3VprHDjfe
+         uUAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=ShTl8NzjuFW4H+evSiyW4NbMbiHqGaETrF4McIh94ME=;
-        b=sXWmWGkMY8ANVR5pGvEh9jV5V373n7kMTnLMFtocaxmL+7tQ5ShpnxrFRf0GEptuUG
-         7OZcH/yHYHT9tQ1SNL/03tUXx56r3JhflN0UJt+YxgjXtP9NyYVgdLsTDYWue0JK/Rdw
-         xi4V/omgKihEuWPw93pOC1m9Jvza2C9Ywk2tFrddByTa0/mUEhZL3tfgSdWsFFkqIS4u
-         u1XaKk1Sxl9vpDRKcZK4jZUTY8ltnlGIOxRtz2L7ezIb/l6Ua26PyaU4E22jy7rPIA/A
-         0eG8wqHfgwKOyl44I/IzQk4OBTeczMAjQgAdQFFZOe+INDG7FeAy1N5ZgSUMbS7VR6sg
-         FHog==
-X-Gm-Message-State: APjAAAVfzY00V+ikAbF+GSAwEQWnJFH7jqpH7bWQ49ZH+FzDyRazdFFF
-        UWrw8uzltJFwNJOfG4cR8YqQIw==
-X-Google-Smtp-Source: APXvYqxzCzO+Gnqjjfd1Jg5u3oDJ6EQ/fsrFwUYsO2BEeRZkqojlBvw3Pitu9Q5Sfu+6W0g/Fcvzrw==
-X-Received: by 2002:a0c:ba0b:: with SMTP id w11mr14327548qvf.71.1565285541347;
-        Thu, 08 Aug 2019 10:32:21 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id 6sm649263qtu.15.2019.08.08.10.32.19
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 08 Aug 2019 10:32:21 -0700 (PDT)
-Date:   Thu, 8 Aug 2019 10:31:48 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     John Fastabend <john.fastabend@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH net v3] net/tls: prevent skb_orphan() from leaking TLS
- plain text with offload
-Message-ID: <20190808103148.164bec9f@cakuba.netronome.com>
-In-Reply-To: <CA+FuTSc7H6X+rRnxZ5NcFiNy+pw1YCONiUr+K6g800DXzT_0EA@mail.gmail.com>
-References: <20190808000359.20785-1-jakub.kicinski@netronome.com>
-        <CA+FuTSc7H6X+rRnxZ5NcFiNy+pw1YCONiUr+K6g800DXzT_0EA@mail.gmail.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ve448YTVFAAEC23KtyNHOIdfsWIqVwdZMMYjva/9ARk=;
+        b=ji/TRxK32Gmh6g8jwIk8CsqMxmoyy+0mLraojTNho+gs850frvILSWVRCVk78+M2dY
+         m5b2TdkRVOe4f2D9zfDfpkLs8LHzqI4vOaA9YX2eBDp6DJA/dR0JzqxDeGZekcwX3oQj
+         5RqUToAObffVnRRr+RiK7+/2B25Dgkc6pYY8X4NwC1kv/roMAXKdato6G5i6KJSviUCb
+         GD6X9dW3pOfcm3IoXB0SdJ6PEyUVmsIUl8n+35KnJDX+N7Jgm6sHvwX/ScbSJLTi04zm
+         p+R+lx85jV8jlzesoeyd/bg4Nc8Xl9aUHjcINADxywcpBgMTAr2i8EKbmfxA2VooG0mK
+         e8xg==
+X-Gm-Message-State: APjAAAUBnGeqFHOs6+eXkbj1U2khCozFVf7EbFBkJh2rN5rWeCbcqzXR
+        N4OCrJR4ORdQDRmPA6jpB7KbpZn+1fW+u+2h7YA=
+X-Google-Smtp-Source: APXvYqxSncyUYgj6nnhGr0swFIKM4wrhURHKFa3h39vR+wwapmfV05i8n1lfpz4qtRs2ddbeg97wJhaGCUjsAiEUiCk=
+X-Received: by 2002:ac8:1e9b:: with SMTP id c27mr8458728qtm.171.1565286472975;
+ Thu, 08 Aug 2019 10:47:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20190808003215.1462821-1-andriin@fb.com> <89a6e282-0250-4264-128d-469be99073e9@fb.com>
+In-Reply-To: <89a6e282-0250-4264-128d-469be99073e9@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 8 Aug 2019 10:47:41 -0700
+Message-ID: <CAEf4BzYAZ7x+PY0t90ty9RVSm1FSmc9XqY216DtJCA-giK3fUg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] btf: expose BTF info through sysfs
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>, Sam Ravnborg <sam@ravnborg.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Aug 2019 11:59:18 -0400, Willem de Bruijn wrote:
-> > diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
-> > index 7c0b2b778703..43922d86e510 100644
-> > --- a/net/tls/tls_device.c
-> > +++ b/net/tls/tls_device.c
-> > @@ -373,9 +373,9 @@ static int tls_push_data(struct sock *sk,
-> >         struct tls_context *tls_ctx = tls_get_ctx(sk);
-> >         struct tls_prot_info *prot = &tls_ctx->prot_info;
-> >         struct tls_offload_context_tx *ctx = tls_offload_ctx_tx(tls_ctx);
-> > -       int tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
-> >         int more = flags & (MSG_SENDPAGE_NOTLAST | MSG_MORE);
-> >         struct tls_record_info *record = ctx->open_record;
-> > +       int tls_push_record_flags;
-> >         struct page_frag *pfrag;
-> >         size_t orig_size = size;
-> >         u32 max_open_record_len;
-> > @@ -390,6 +390,9 @@ static int tls_push_data(struct sock *sk,
-> >         if (sk->sk_err)
-> >                 return -sk->sk_err;
+On Wed, Aug 7, 2019 at 9:24 PM Yonghong Song <yhs@fb.com> wrote:
+>
+>
+>
+> On 8/7/19 5:32 PM, Andrii Nakryiko wrote:
+> > Make .BTF section allocated and expose its contents through sysfs.
 > >
-> > +       flags |= MSG_SENDPAGE_DECRYPTED;
-> > +       tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
-> > +  
-> 
-> Without being too familiar with this code: can this plaintext flag be
-> set once, closer to the call to do_tcp_sendpages, in tls_push_sg?
-> 
-> Instead of two locations with multiple non-trivial codepaths between
-> them and do_tcp_sendpages.
-> 
-> Or are there paths where the flag is not set? Which I imagine would
-> imply already passing s/w encrypted ciphertext.
+> > /sys/kernel/btf directory is created to contain all the BTFs present
+> > inside kernel. Currently there is only kernel's main BTF, represented as
+> > /sys/kernel/btf/kernel file. Once kernel modules' BTFs are supported,
+> > each module will expose its BTF as /sys/kernel/btf/<module-name> file.
+> >
+> > Current approach relies on a few pieces coming together:
+> > 1. pahole is used to take almost final vmlinux image (modulo .BTF and
+> >     kallsyms) and generate .BTF section by converting DWARF info into
+> >     BTF. This section is not allocated and not mapped to any segment,
+> >     though, so is not yet accessible from inside kernel at runtime.
+> > 2. objcopy dumps .BTF contents into binary file and subsequently
+> >     convert binary file into linkable object file with automatically
+> >     generated symbols _binary__btf_kernel_bin_start and
+> >     _binary__btf_kernel_bin_end, pointing to start and end, respectively,
+> >     of BTF raw data.
+> > 3. final vmlinux image is generated by linking this object file (and
+> >     kallsyms, if necessary). sysfs_btf.c then creates
+> >     /sys/kernel/btf/kernel file and exposes embedded BTF contents through
+> >     it. This allows, e.g., libbpf and bpftool access BTF info at
+> >     well-known location, without resorting to searching for vmlinux image
+> >     on disk (location of which is not standardized and vmlinux image
+> >     might not be even available in some scenarios, e.g., inside qemu
+> >     during testing).
+> >
+> > Alternative approach using .incbin assembler directive to embed BTF
+> > contents directly was attempted but didn't work, because sysfs_proc.o is
+> > not re-compiled during link-vmlinux.sh stage. This is required, though,
+> > to update embedded BTF data (initially empty data is embedded, then
+> > pahole generates BTF info and we need to regenerate sysfs_btf.o with
+> > updated contents, but it's too late at that point).
+> >
+> > If BTF couldn't be generated due to missing or too old pahole,
+> > sysfs_btf.c handles that gracefully by detecting that
+> > _binary__btf_kernel_bin_start (weak symbol) is 0 and not creating
+> > /sys/kernel/btf at all.
+> >
+> > v1->v2:
+> > - allow kallsyms stage to re-use vmlinux generated by gen_btf();
+> >
+> > Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
+> > Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
+> > Cc: Jiri Olsa <jolsa@kernel.org>
+> > Cc: Sam Ravnborg <sam@ravnborg.org>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+> > ---
 
-tls_push_sg() is shared with sw path which doesn't have the device
-validation. 
+[...]
 
-Device TLS can read tls_push_sg() via tls_push_partial_record() and
-tls_push_data(). tls_push_data() is addressed directly here,
-tls_push_partial_record() is again shared with SW path, so we have to
-address it by adding the flag in tls_device_write_space().
+> > +
+> > +     # dump .BTF section into raw binary file to link with final vmlinux
+> > +     bin_arch=$(${OBJDUMP} -f ${1} | grep architecture | \
+> > +             cut -d, -f1 | cut -d' ' -f2)
+> > +     ${OBJCOPY} --dump-section .BTF=.btf.kernel.bin ${1} 2>/dev/null
+> > +     ${OBJCOPY} -I binary -O ${CONFIG_OUTPUT_FORMAT} -B ${bin_arch} \
+> > +             --rename-section .data=.BTF .btf.kernel.bin ${2}
+>
+> Currently, the binary size on my config is about 2.6MB. Do you think
+> we could or need to compress it to make it smaller? I tried gzip
+> and the compressed size is 0.9MB.
 
-The alternative is to add a conditional to tls_push_sg() which is 
-a little less nice from performance and layering PoV but it is a lot
-simpler..
+I'd really prefer to keep it uncompressed for two main reasons:
+- by having this in uncompressed form, kernel itself can use this BTF
+data from inside with almost no additional memory (except maybe for
+index from type ID to actual location of type info), which opens up a
+lot of new and interesting opportunities, like kernel returning its
+own BTF and BTF type ID for various types (think about driver metdata,
+all those special maps, etc).
+- if we are doing compression, now we need to decide on best
+compression format, teach it libbpf (which will make libbpf also
+bigger and depending on extra libraries), etc.
 
-Should I change?
+So basically, in exchange of 1-1.5MB extra memory we get a bunch of
+new problems we normally don't have to deal with.
+
+>
+> >   }
+> >
+> >   # Create ${2} .o file with all symbols from the ${1} object file
+> > @@ -153,6 +164,7 @@ sortextable()
+> >   # Delete output files in case of error
+> >   cleanup()
+> >   {
+
+[...]
