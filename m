@@ -2,75 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7676C85E34
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 11:25:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 83AE085E43
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 11:30:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732206AbfHHJZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 05:25:24 -0400
-Received: from foss.arm.com ([217.140.110.172]:58772 "EHLO foss.arm.com"
+        id S1732176AbfHHJaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 05:30:00 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:32702 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730678AbfHHJZY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 05:25:24 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 7BE571596;
-        Thu,  8 Aug 2019 02:25:23 -0700 (PDT)
-Received: from localhost (unknown [10.37.6.20])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EDCCF3F73D;
-        Thu,  8 Aug 2019 02:25:22 -0700 (PDT)
-Date:   Thu, 8 Aug 2019 10:25:21 +0100
-From:   Andrew Murray <andrew.murray@arm.com>
-To:     Denis Efremov <efremov@linux.com>
-Cc:     Bjorn Helgaas <bjorn.helgaas@gmail.com>,
-        Derek Chickles <dchickles@marvell.com>,
-        Satanand Burla <sburla@marvell.com>,
-        Felix Manlunas <fmanlunas@marvell.com>, netdev@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] liquidio: Use pcie_flr() instead of reimplementing it
-Message-ID: <20190808092520.GR56241@e119886-lin.cambridge.arm.com>
-References: <20190808045753.5474-1-efremov@linux.com>
+        id S1731038AbfHHJaA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 05:30:00 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 1A19030FB8C3;
+        Thu,  8 Aug 2019 09:30:00 +0000 (UTC)
+Received: from carbon (ovpn-200-43.brq.redhat.com [10.40.200.43])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B529710016E9;
+        Thu,  8 Aug 2019 09:29:57 +0000 (UTC)
+Date:   Thu, 8 Aug 2019 11:29:55 +0200
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Zvi Effron <zeffron@riotgames.com>
+Cc:     Xdp <xdp-newbies@vger.kernel.org>,
+        Anton Protopopov <a.s.protopopov@gmail.com>, dsahern@gmail.com,
+        Toke =?UTF-8?B?SMO4aWxh?= =?UTF-8?B?bmQtSsO4cmdlbnNlbg==?= 
+        <toke@redhat.com>, brouer@redhat.com,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [bpf-next PATCH 0/3] bpf: improvements to xdp_fwd sample
+Message-ID: <20190808112955.5a29c9e1@carbon>
+In-Reply-To: <CAC1LvL29KS9CKcXYwR4EHeNo7++i4hYQuXfY5OLtbPFDVUO2mw@mail.gmail.com>
+References: <156518133219.5636.728822418668658886.stgit@firesoul>
+        <20190807150010.1a58a1d2@carbon>
+        <CAC1LvL29KS9CKcXYwR4EHeNo7++i4hYQuXfY5OLtbPFDVUO2mw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190808045753.5474-1-efremov@linux.com>
-User-Agent: Mutt/1.10.1+81 (426a6c1) (2018-08-26)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Thu, 08 Aug 2019 09:30:00 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 08, 2019 at 07:57:53AM +0300, Denis Efremov wrote:
-> octeon_mbox_process_cmd() directly writes the PCI_EXP_DEVCTL_BCR_FLR
-> bit, which bypasses timing requirements imposed by the PCIe spec.
-> This patch fixes the function to use the pcie_flr() interface instead.
-> 
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-> ---
->  drivers/net/ethernet/cavium/liquidio/octeon_mailbox.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/cavium/liquidio/octeon_mailbox.c b/drivers/net/ethernet/cavium/liquidio/octeon_mailbox.c
-> index 021d99cd1665..614d07be7181 100644
-> --- a/drivers/net/ethernet/cavium/liquidio/octeon_mailbox.c
-> +++ b/drivers/net/ethernet/cavium/liquidio/octeon_mailbox.c
-> @@ -260,9 +260,7 @@ static int octeon_mbox_process_cmd(struct octeon_mbox *mbox,
->  		dev_info(&oct->pci_dev->dev,
->  			 "got a request for FLR from VF that owns DPI ring %u\n",
->  			 mbox->q_no);
-> -		pcie_capability_set_word(
-> -			oct->sriov_info.dpiring_to_vfpcidev_lut[mbox->q_no],
-> -			PCI_EXP_DEVCTL, PCI_EXP_DEVCTL_BCR_FLR);
-> +		pcie_flr(oct->sriov_info.dpiring_to_vfpcidev_lut[mbox->q_no]);
->  		break;
+On Wed, 7 Aug 2019 15:09:09 -0700
+Zvi Effron <zeffron@riotgames.com> wrote:
 
-It's possible for pcie_flr to fail if the device doesn't become ready soon
-enough after reset in which case it returns ENOTTY. I think it's OK not to
-test the return value here though, as pci_dev_wait will print a warning
-anyway, and I'm not sure what you'd do with it anyway.
+> On Wed, Aug 7, 2019 at 6:00 AM Jesper Dangaard Brouer <brouer@redhat.com> wrote:
+> >
+> > Toke's devmap lookup improvement is first avail in kernel v5.3.
+> > Thus, not part of XDP-tutorial yet.
+> >  
+> I probably missed this in an earlier email, but what are Toke's devmap
+> improvements? Performance? Capability?
 
-Reviewed-by: Andrew Murray <andrew.murray@arm.com>
+Toke's devmap and redirect improvements are primarily about usability.
 
->  
->  	case OCTEON_PF_CHANGED_VF_MACADDR:
-> -- 
-> 2.21.0
-> 
+Currently, from BPF-context (kernel-side) you cannot read the contents
+of devmap (or cpumap or xskmap(AF_XDP)).  Because for devmap you get
+the real pointer to the net_device ifindex, and we cannot allow you to
+write/change that from BPF (kernel would likely crash or be inconsistent).
+
+The work-around, is to keep a shadow map, that contains the "config" of
+the devmap, which you check/validate against instead.  It is just a pain
+to maintain this shadow map.  Toke's change allow you to read devmap
+from BPF-context.  Thus, you can avoid this shadow map.
+
+Another improvement from Toke, is that the bpf_redirect_map() helper,
+now also check if the redirect index is valid in the map.  If not, then
+it returns another value than XDP_REDIRECT.  You can choose the
+alternative return value yourself, via "flags" e.g. XDP_PASS.  Thus,
+you don't even need to check/validate devmap in your BPF-code, as it is
+part of the bpf_redirect_map() call now.
+
+ action = bpf_redirect_map(&map, &index, flags_as_xdp_value) 
+
+The default flags used in most programs today is 0, which maps to
+XDP_ABORTED.  This is sort of a small UAPI change, but for the better.
+As today, the packet is dropped later, only diagnose/seen via
+tracepoint xdp:xdp_redirect_map_err.
+
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+ 
