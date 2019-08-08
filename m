@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E04D86772
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 18:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EE82786773
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 18:48:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404172AbfHHQso (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 12:48:44 -0400
-Received: from mail-wr1-f46.google.com ([209.85.221.46]:43359 "EHLO
-        mail-wr1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728289AbfHHQso (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 12:48:44 -0400
-Received: by mail-wr1-f46.google.com with SMTP id p13so21017157wru.10
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 09:48:41 -0700 (PDT)
+        id S2404176AbfHHQsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 12:48:50 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51891 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728289AbfHHQsu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 12:48:50 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 207so3074663wma.1
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 09:48:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=ik0tB7a65fu1lS8UXFDknSwtrLbHMgx6PQIkEy3rTKY=;
-        b=FnqvZLQabJkA9qdn+4b7jIJkELkRdLrWu9OikleSjLfPjI4+h72nQ8F62GkUqNej2S
-         3J4XOMLut6YEeiDfARHTRTv5x38Chy1tgZmcRtsc8zsZPC+i/aAgR3kKjbv3qScD/ZwV
-         0QdRtSYRwf1rXUehfpe7qi7AM7heEyTGBZ9M37hskZdoqxXLD1Yokgx5W2PeL4yn1uLZ
-         38ugkg1yhevaBUpyEkK90iBVCQICeE3iDY09DHRlySVJGfMp3hRx9RiuroL5FuunXlyA
-         ME8RfAZgXMbsXAu9Ep3V00j2h94JArs9ip+jtrLqBfpRkoCCVdQvtssWwR1cQdPJW62v
-         3how==
+        bh=7DbNTpBDyR0gJrQAZtE2rEQTa/g7wOQaWTWKLdoXwv8=;
+        b=uLkpu2p6TyGLi4/GawsdqQa0qpCRfPNp8CzZ5CxfWneKgRpupnTI2JIBNMcmPCzxW1
+         ND0Hm9D59EznxBXsxOJNWSdxVKaUhZyuP+/mYxjVxSjQeF8zcPE4SI+rr2BQrykGrHCz
+         ipF4Gf3IycaeTfjy/ifWUsGxLt7kN/1GPez4UXyOZEjcIunpV7tUI2EcLfbC7NV9ewn7
+         WI/QUjJPC70O3yB5XtbaEUkPxKN07SmrqYIZhVhM7NJrCmw5AkwDLBMbm0mM8cqyzO0v
+         SYmCemdslVxFYVk6u//yhsdTujQLUrDGlWuirjbDpHb9M6RyX7dlbFv67kh0uzSontHM
+         d24g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=ik0tB7a65fu1lS8UXFDknSwtrLbHMgx6PQIkEy3rTKY=;
-        b=aWQoMHoo+UhqKdJL1xVQN3jJ7PiHBFDC/hwLIkG4oZU3d0kcOS2NkPcdB0CEiOPvRc
-         /JduoMKKehfOTCOPO+abuNazRa7nDydQuOOdNApP7EE1r50qCufVXgJANdzfpV8MYPVA
-         XEyvIcsECeo6+vc3RiMSfWc1AuA2gmQVFNhqRYdJlkwrsfzQL9C9Pm4BdzQLF/BTsZWv
-         UTV5VW+34qXTvy60l2lmoCaWjOLBlYWAr9b7nF4U4UqwdKonzdrVOTsKyGyRRLznUmpH
-         j6O8lfimwHbgQLFlDLwGf0v8AZdC1REIRzQY9M5OnsjOqxRe3fubM77rt5ZNJMdpqXoC
-         /d+w==
-X-Gm-Message-State: APjAAAU4vuaBvVUfhM1AP3EvQkhhHsLQ3XG4W2I00xew6hrIns8Ucd5S
-        gzxzEuRA0u3GjyCPxhTkcjvhdGynBao=
-X-Google-Smtp-Source: APXvYqy+90VgioYFif7mbHxlavdCERbSrLSI7embJ8fzxdiEO06uAB9Morfbo7VO44wZo9g6dQRzwA==
-X-Received: by 2002:adf:8364:: with SMTP id 91mr18103794wrd.13.1565282920839;
-        Thu, 08 Aug 2019 09:48:40 -0700 (PDT)
+        bh=7DbNTpBDyR0gJrQAZtE2rEQTa/g7wOQaWTWKLdoXwv8=;
+        b=oV1r/5Xzdsi30fYgp9Suc5UVcvdd9QGSRYwndaaja+YD2SnqXdMsuE4mX0RHWS6WOm
+         sMqiDB1EU57TS3iDTqjXlRMoUKHFCCBJ03Pg3cHtwT5BO5d7PCePWe0dpAWIDUTSlcol
+         1Z8Tn9Oue7yHRucR86u+RdhMVmBVF+iXrM6zlFNV7lGDFwSc+CnM2HEoA3owNP2jgvf3
+         lJUU4W3Ye+7OjPGdG3aLnh2hbmqz7/vGub+HjVtfivIdHw8j9+TxwknU2PfND45r33oW
+         pmpiDVx0XBWq8WU0g8K/sYx9Yfwc8wocjqt9TSnmbu+37OjyZj65vtYlso80/OQlI3HH
+         Lnsg==
+X-Gm-Message-State: APjAAAVoOZxxSHpjmt8GgVKcylutPqZNUDfiR/Ch3YGAS0FQLU9D46VV
+        sxLibhoL0RBktjucTCqNyktEy8CVpL0=
+X-Google-Smtp-Source: APXvYqzVq9QEEvYkuNe+WrAXuUyigzvlSdxR7TNQr/Gr9+ihme1HMd7mozXDxN8Q9lOqIjd9mvNLEQ==
+X-Received: by 2002:a1c:6145:: with SMTP id v66mr3933303wmb.42.1565282926940;
+        Thu, 08 Aug 2019 09:48:46 -0700 (PDT)
 Received: from [172.20.1.254] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id o20sm241944268wrh.8.2019.08.08.09.48.40
+        by smtp.gmail.com with ESMTPSA id g2sm3339433wmh.0.2019.08.08.09.48.46
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Aug 2019 09:48:40 -0700 (PDT)
+        Thu, 08 Aug 2019 09:48:46 -0700 (PDT)
 To:     "Daniel T. Lee" <danieltimlee@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>
 Cc:     netdev@vger.kernel.org
 References: <20190807022509.4214-1-danieltimlee@gmail.com>
- <20190807022509.4214-4-danieltimlee@gmail.com>
+ <20190807022509.4214-5-danieltimlee@gmail.com>
 From:   Quentin Monnet <quentin.monnet@netronome.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
@@ -97,14 +97,13 @@ Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
  oHhplrRgXwPBSOkMMlLKu+FJsmYVFeLAJ81sfmFuTTliRb3Fl2Q27cEr7kNKlsz/t6vLSEN2
  j8x+tWD8x53SEOSn94g2AyJA9Txh2xBhWGuZ9CpBuXjtPrnRSd8xdrw36AL53goTt/NiLHUd
  RHhSHGnKaQ6MfrTge5Q0h5A=
-Subject: Re: [v3,3/4] tools: bpftool: add bash-completion for net
- attach/detach
-Message-ID: <5cd88036-8682-8d26-b795-caf96e1e883f@netronome.com>
-Date:   Thu, 8 Aug 2019 17:48:39 +0100
+Subject: Re: [v3,4/4] tools: bpftool: add documentation for net attach/detach
+Message-ID: <1cc16243-ad5a-87f3-7727-31a58599bf04@netronome.com>
+Date:   Thu, 8 Aug 2019 17:48:45 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190807022509.4214-4-danieltimlee@gmail.com>
+In-Reply-To: <20190807022509.4214-5-danieltimlee@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
@@ -114,32 +113,74 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 2019-08-07 11:25 UTC+0900 ~ Daniel T. Lee <danieltimlee@gmail.com>
-> This commit adds bash-completion for new "net attach/detach"
-> subcommand for attaching XDP program on interface.
+> Since, new sub-command 'net attach/detach' has been added for
+> attaching XDP program on interface,
+> this commit documents usage and sample output of `net attach/detach`.
 > 
 > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 > ---
->  tools/bpf/bpftool/bash-completion/bpftool | 64 +++++++++++++++++++----
->  1 file changed, 55 insertions(+), 9 deletions(-)
+>  .../bpf/bpftool/Documentation/bpftool-net.rst | 51 +++++++++++++++++--
+>  1 file changed, 48 insertions(+), 3 deletions(-)
 > 
-> diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-> index c8f42e1fcbc9..1d81cb09d478 100644
-> --- a/tools/bpf/bpftool/bash-completion/bpftool
-> +++ b/tools/bpf/bpftool/bash-completion/bpftool
-> @@ -201,6 +201,10 @@ _bpftool()
->              _bpftool_get_prog_tags
->              return 0
->              ;;
-> +        dev)
-> +            _sysfs_get_netdevs
-> +            return 0
-> +            ;;
+> diff --git a/tools/bpf/bpftool/Documentation/bpftool-net.rst b/tools/bpf/bpftool/Documentation/bpftool-net.rst
+> index d8e5237a2085..4ad1a380e186 100644
+> --- a/tools/bpf/bpftool/Documentation/bpftool-net.rst
+> +++ b/tools/bpf/bpftool/Documentation/bpftool-net.rst
+> @@ -15,17 +15,22 @@ SYNOPSIS
+>  	*OPTIONS* := { [{ **-j** | **--json** }] [{ **-p** | **--pretty** }] }
+>  
+>  	*COMMANDS* :=
+> -	{ **show** | **list** } [ **dev** name ] | **help**
+> +	{ **show** | **list** | **attach** | **detach** | **help** }
+>  
+>  NET COMMANDS
+>  ============
+>  
+> -|	**bpftool** **net { show | list } [ dev name ]**
+> +|	**bpftool** **net { show | list }** [ **dev** *name* ]
+> +|	**bpftool** **net attach** *ATTACH_TYPE* *PROG* **dev** *name* [ **overwrite** ]
+> +|	**bpftool** **net detach** *ATTACH_TYPE* **dev** *name*
 
-Makes sense to have this for "dev", thanks! But it seems you missed one
-place where it was used, for "bpftool feature probe" (We have "[[ $prev
-== "dev" ]] && _sysfs_get_netdevs && return 0"). Could you also remove
-that one please?
+Nit: Could we have "name" in capital letters (everywhere in the file),
+to make this file consistent with the formatting used for
+bpftool-prog.rst and bpftool-map.rst?
 
-Other than this looks good, thanks:
+>  |	**bpftool** **net help**
+> +|
+> +|	*PROG* := { **id** *PROG_ID* | **pinned** *FILE* | **tag** *PROG_TAG* }
+> +|	*ATTACH_TYPE* := { **xdp** | **xdpgeneric** | **xdpdrv** | **xdpoffload** }
+>  
+>  DESCRIPTION
+>  ===========
+> -	**bpftool net { show | list } [ dev name ]**
+> +	**bpftool net { show | list }** [ **dev** *name* ]
+>                    List bpf program attachments in the kernel networking subsystem.
+>  
+>                    Currently, only device driver xdp attachments and tc filter
+> @@ -47,6 +52,18 @@ DESCRIPTION
+>                    all bpf programs attached to non clsact qdiscs, and finally all
+>                    bpf programs attached to root and clsact qdisc.
+>  
+> +	**bpftool** **net attach** *ATTACH_TYPE* *PROG* **dev** *name* [ **overwrite** ]
+> +                  Attach bpf program *PROG* to network interface *name* with
+> +                  type specified by *ATTACH_TYPE*. Previously attached bpf program
+> +                  can be replaced by the command used with **overwrite** option.
+> +                  Currently, *ATTACH_TYPE* only contains XDP programs.
 
-Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
+Other nit: "ATTACH_TYPE only contains XDP programs" sounds odd to me.
+Could we maybe phrase this something like: "Currently, only XDP-related
+modes are supported for ATTACH_TYPE"?
+
+Also, could you please provide a brief description of the different
+attach types? In particular, explaining what "xdp" alone stands for
+might be useful.
+
+Thanks,
+Quentin
+
+> +
+> +	**bpftool** **net detach** *ATTACH_TYPE* **dev** *name*
+> +                  Detach bpf program attached to network interface *name* with
+> +                  type specified by *ATTACH_TYPE*. To detach bpf program, same
+> +                  *ATTACH_TYPE* previously used for attach must be specified.
+> +                  Currently, *ATTACH_TYPE* only contains XDP programs.
