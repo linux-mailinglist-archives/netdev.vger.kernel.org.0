@@ -2,134 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 653BF867E3
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 19:24:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B088D8681F
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 19:32:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404259AbfHHRYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 13:24:11 -0400
-Received: from mail-ot1-f72.google.com ([209.85.210.72]:48670 "EHLO
-        mail-ot1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404225AbfHHRYH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 13:24:07 -0400
-Received: by mail-ot1-f72.google.com with SMTP id b4so63135851otf.15
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 10:24:07 -0700 (PDT)
+        id S2404324AbfHHRcW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 13:32:22 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:45619 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404276AbfHHRcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 13:32:22 -0400
+Received: by mail-qt1-f194.google.com with SMTP id f7so122826qtq.12
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 10:32:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ShTl8NzjuFW4H+evSiyW4NbMbiHqGaETrF4McIh94ME=;
+        b=Dp3Gif+0bf4aZFxAZ6NkwiGMqG9RXmCBpvAZAjNenCWfaPA7I0a0lB/9pvtm+EmdWC
+         I6hv4CIqgbhJe4mWu+nn+Dj79b1lGyPYu6Sxmn4I4Z41yJXpsNsZgZBqVz6/mSzVNoYb
+         G1sRnHhuR4ookjU2+uaNnjr/7Bb216UszEJwCLoJbBTAV3VsD0xfaLnmFLoIAdWNQaSY
+         sHWD/vB0/Mm99iuIaYsEi+buncrkmqqEkMSZ46GL4du+SpIb/86df3/sJ6LozBdhpMkp
+         gqVPMc2tQz/YsDTBH+cWGliCZdt5bfWQLVQi9vU+THPjDw/1fqGdWCK0sYUyss+zyTXg
+         47eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=e1gv1WeJMlHGANR4IY6E8iV8unm9tW2t77TdB7HR+60=;
-        b=KjCkYYHOTUpo6WEgRxPPusauA+RYxEKVRrLW4lU553QmBjvtdL5W55fnkliflJytVi
-         iIRsrmvCIUHQDbbCEBREnLY3/Dnw7a4AHJNVAWuND+uh57qbtgpY5qpuKt0e2+p8OhnM
-         SU3NY17kiM+eQVWYptLqrZOIyaskf4ZiRAgT5vZpRAcfU/8tsj/1u0ZdIudtwjtR4sQu
-         omgWSvRSe58HQn0yk4o7uroF1GDQJMSi2ecItuCQuvo0ZxSTrHdf3PDdrJtvYPiEoezX
-         tS2jb0P00aNW638i05yJUaPIEpuHBypSUM3D9rbguhwEaYZXOih0cL7sRob1EYFarRyj
-         L+7A==
-X-Gm-Message-State: APjAAAWPd7qr6s1T4vGcq1th6MPqf2gIogDR0xairxhdB62Sm6xir1q8
-        y5Y/V0zNx2Zb8BITsyX+JqK/Us5hodE0V395EUygwMMt9kBH
-X-Google-Smtp-Source: APXvYqzHlVEvfdz4GO9vSY+QKFPioOgYcsWeEKwBh81ovnl0oAHiXc6BpMVJ4i5rb188ZzJ2tLSS7sfQWxzKOCnTzVv6npF1DGib
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ShTl8NzjuFW4H+evSiyW4NbMbiHqGaETrF4McIh94ME=;
+        b=sXWmWGkMY8ANVR5pGvEh9jV5V373n7kMTnLMFtocaxmL+7tQ5ShpnxrFRf0GEptuUG
+         7OZcH/yHYHT9tQ1SNL/03tUXx56r3JhflN0UJt+YxgjXtP9NyYVgdLsTDYWue0JK/Rdw
+         xi4V/omgKihEuWPw93pOC1m9Jvza2C9Ywk2tFrddByTa0/mUEhZL3tfgSdWsFFkqIS4u
+         u1XaKk1Sxl9vpDRKcZK4jZUTY8ltnlGIOxRtz2L7ezIb/l6Ua26PyaU4E22jy7rPIA/A
+         0eG8wqHfgwKOyl44I/IzQk4OBTeczMAjQgAdQFFZOe+INDG7FeAy1N5ZgSUMbS7VR6sg
+         FHog==
+X-Gm-Message-State: APjAAAVfzY00V+ikAbF+GSAwEQWnJFH7jqpH7bWQ49ZH+FzDyRazdFFF
+        UWrw8uzltJFwNJOfG4cR8YqQIw==
+X-Google-Smtp-Source: APXvYqxzCzO+Gnqjjfd1Jg5u3oDJ6EQ/fsrFwUYsO2BEeRZkqojlBvw3Pitu9Q5Sfu+6W0g/Fcvzrw==
+X-Received: by 2002:a0c:ba0b:: with SMTP id w11mr14327548qvf.71.1565285541347;
+        Thu, 08 Aug 2019 10:32:21 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id 6sm649263qtu.15.2019.08.08.10.32.19
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 08 Aug 2019 10:32:21 -0700 (PDT)
+Date:   Thu, 8 Aug 2019 10:31:48 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        davejwatson@fb.com, borisp@mellanox.com, aviadye@mellanox.com,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH net v3] net/tls: prevent skb_orphan() from leaking TLS
+ plain text with offload
+Message-ID: <20190808103148.164bec9f@cakuba.netronome.com>
+In-Reply-To: <CA+FuTSc7H6X+rRnxZ5NcFiNy+pw1YCONiUr+K6g800DXzT_0EA@mail.gmail.com>
+References: <20190808000359.20785-1-jakub.kicinski@netronome.com>
+        <CA+FuTSc7H6X+rRnxZ5NcFiNy+pw1YCONiUr+K6g800DXzT_0EA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-Received: by 2002:a02:c012:: with SMTP id y18mr6831313jai.85.1565285046564;
- Thu, 08 Aug 2019 10:24:06 -0700 (PDT)
-Date:   Thu, 08 Aug 2019 10:24:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002c418a058f9e53cf@google.com>
-Subject: general protection fault in perf_tp_event_match (2)
-From:   syzbot <syzbot+076ba900c4a9a0f67aba@syzkaller.appspotmail.com>
-To:     acme@kernel.org, alexander.shishkin@linux.intel.com,
-        ast@kernel.org, bpf@vger.kernel.org, daniel@iogearbox.net,
-        jolsa@redhat.com, kafai@fb.com, linux-kernel@vger.kernel.org,
-        mingo@redhat.com, namhyung@kernel.org, netdev@vger.kernel.org,
-        peterz@infradead.org, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, 8 Aug 2019 11:59:18 -0400, Willem de Bruijn wrote:
+> > diff --git a/net/tls/tls_device.c b/net/tls/tls_device.c
+> > index 7c0b2b778703..43922d86e510 100644
+> > --- a/net/tls/tls_device.c
+> > +++ b/net/tls/tls_device.c
+> > @@ -373,9 +373,9 @@ static int tls_push_data(struct sock *sk,
+> >         struct tls_context *tls_ctx = tls_get_ctx(sk);
+> >         struct tls_prot_info *prot = &tls_ctx->prot_info;
+> >         struct tls_offload_context_tx *ctx = tls_offload_ctx_tx(tls_ctx);
+> > -       int tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
+> >         int more = flags & (MSG_SENDPAGE_NOTLAST | MSG_MORE);
+> >         struct tls_record_info *record = ctx->open_record;
+> > +       int tls_push_record_flags;
+> >         struct page_frag *pfrag;
+> >         size_t orig_size = size;
+> >         u32 max_open_record_len;
+> > @@ -390,6 +390,9 @@ static int tls_push_data(struct sock *sk,
+> >         if (sk->sk_err)
+> >                 return -sk->sk_err;
+> >
+> > +       flags |= MSG_SENDPAGE_DECRYPTED;
+> > +       tls_push_record_flags = flags | MSG_SENDPAGE_NOTLAST;
+> > +  
+> 
+> Without being too familiar with this code: can this plaintext flag be
+> set once, closer to the call to do_tcp_sendpages, in tls_push_sg?
+> 
+> Instead of two locations with multiple non-trivial codepaths between
+> them and do_tcp_sendpages.
+> 
+> Or are there paths where the flag is not set? Which I imagine would
+> imply already passing s/w encrypted ciphertext.
 
-syzbot found the following crash on:
+tls_push_sg() is shared with sw path which doesn't have the device
+validation. 
 
-HEAD commit:    1e78030e Merge tag 'mmc-v5.3-rc1' of git://git.kernel.org/..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=1011831a600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=4c7b914a2680c9c6
-dashboard link: https://syzkaller.appspot.com/bug?extid=076ba900c4a9a0f67aba
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+Device TLS can read tls_push_sg() via tls_push_partial_record() and
+tls_push_data(). tls_push_data() is addressed directly here,
+tls_push_partial_record() is again shared with SW path, so we have to
+address it by adding the flag in tls_device_write_space().
 
-Unfortunately, I don't have any reproducer for this crash yet.
+The alternative is to add a conditional to tls_push_sg() which is 
+a little less nice from performance and layering PoV but it is a lot
+simpler..
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+076ba900c4a9a0f67aba@syzkaller.appspotmail.com
-
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 22070 Comm: syz-executor.3 Not tainted 5.3.0-rc2+ #86
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:perf_tp_event_match+0x31/0x260 kernel/events/core.c:8560
-Code: 89 f6 41 55 49 89 d5 41 54 53 48 89 fb e8 b7 0e ea ff 48 8d bb d0 01  
-00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84  
-c0 74 08 3c 03 0f 8e cc 01 00 00 44 8b a3 d0 01 00
-RSP: 0018:ffff88804ffa7790 EFLAGS: 00010007
-RAX: dffffc0000000000 RBX: 00000000ffffff9f RCX: ffffffff818bcb73
-RDX: 000000002000002d RSI: ffffffff818890b9 RDI: 000000010000016f
-RBP: ffff88804ffa77b0 R08: ffff8880531ba640 R09: ffffed100a6374c9
-R10: ffffed100a6374c8 R11: ffff8880531ba647 R12: ffff8880ae830860
-R13: ffff8880ae830860 R14: ffff88804ffa7880 R15: dffffc0000000000
-FS:  00005555556d7940(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000738008 CR3: 000000004cad5000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  perf_tp_event+0x1ea/0x730 kernel/events/core.c:8611
-  perf_trace_run_bpf_submit+0x131/0x190 kernel/events/core.c:8586
-  perf_trace_sched_wakeup_template+0x42d/0x5d0  
-include/trace/events/sched.h:57
-  trace_sched_wakeup_new include/trace/events/sched.h:103 [inline]
-  wake_up_new_task+0x70f/0xbd0 kernel/sched/core.c:2848
-  _do_fork+0x26c/0xfa0 kernel/fork.c:2393
-  __do_sys_clone kernel/fork.c:2524 [inline]
-  __se_sys_clone kernel/fork.c:2505 [inline]
-  __x64_sys_clone+0x18d/0x250 kernel/fork.c:2505
-  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x457dfa
-Code: f7 d8 64 89 04 25 d4 02 00 00 64 4c 8b 0c 25 10 00 00 00 31 d2 4d 8d  
-91 d0 02 00 00 31 f6 bf 11 00 20 01 b8 38 00 00 00 0f 05 <48> 3d 00 f0 ff  
-ff 0f 87 f5 00 00 00 85 c0 41 89 c5 0f 85 fc 00 00
-RSP: 002b:00007ffcf0b1c640 EFLAGS: 00000246 ORIG_RAX: 0000000000000038
-RAX: ffffffffffffffda RBX: 00007ffcf0b1c640 RCX: 0000000000457dfa
-RDX: 0000000000000000 RSI: 0000000000000000 RDI: 0000000001200011
-RBP: 00007ffcf0b1c680 R08: 0000000000000001 R09: 00005555556d7940
-R10: 00005555556d7c10 R11: 0000000000000246 R12: 0000000000000001
-R13: 0000000000000000 R14: 0000000000000000 R15: 00007ffcf0b1c6d0
-Modules linked in:
----[ end trace 8f4efeb0ada52ec1 ]---
-RIP: 0010:perf_tp_event_match+0x31/0x260 kernel/events/core.c:8560
-Code: 89 f6 41 55 49 89 d5 41 54 53 48 89 fb e8 b7 0e ea ff 48 8d bb d0 01  
-00 00 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <0f> b6 04 02 84  
-c0 74 08 3c 03 0f 8e cc 01 00 00 44 8b a3 d0 01 00
-RSP: 0018:ffff88804ffa7790 EFLAGS: 00010007
-RAX: dffffc0000000000 RBX: 00000000ffffff9f RCX: ffffffff818bcb73
-RDX: 000000002000002d RSI: ffffffff818890b9 RDI: 000000010000016f
-RBP: ffff88804ffa77b0 R08: ffff8880531ba640 R09: ffffed100a6374c9
-R10: ffffed100a6374c8 R11: ffff8880531ba647 R12: ffff8880ae830860
-R13: ffff8880ae830860 R14: ffff88804ffa7880 R15: dffffc0000000000
-FS:  00005555556d7940(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000000738008 CR3: 000000004cad5000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Should I change?
