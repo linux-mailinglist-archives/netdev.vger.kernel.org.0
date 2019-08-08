@@ -2,85 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B0FB9859E7
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 07:43:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5AD4859F3
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 07:45:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731038AbfHHFmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 01:42:46 -0400
-Received: from ozlabs.org ([203.11.71.1]:56463 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725868AbfHHFmp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 01:42:45 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 463y252c4Xz9sN1;
-        Thu,  8 Aug 2019 15:42:37 +1000 (AEST)
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     john.hubbard@gmail.com, Andrew Morton <akpm@linux-foundation.org>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Dave Chinner <david@fromorbit.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Ira Weiny <ira.weiny@intel.com>, Jan Kara <jack@suse.cz>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        =?utf-8?B?SsOpcsO0?= =?utf-8?B?bWU=?= Glisse 
-        <jglisse@redhat.com>, LKML <linux-kernel@vger.kernel.org>,
-        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
-        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-mm@kvack.org,
-        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
-        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
-        sparclinux@vger.kernel.org, x86@kernel.org,
-        xen-devel@lists.xenproject.org, John Hubbard <jhubbard@nvidia.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Christoph Hellwig <hch@lst.de>, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH v3 38/41] powerpc: convert put_page() to put_user_page*()
-In-Reply-To: <20190807013340.9706-39-jhubbard@nvidia.com>
-References: <20190807013340.9706-1-jhubbard@nvidia.com> <20190807013340.9706-39-jhubbard@nvidia.com>
-Date:   Thu, 08 Aug 2019 15:42:34 +1000
-Message-ID: <87k1botdpx.fsf@concordia.ellerman.id.au>
-MIME-Version: 1.0
-Content-Type: text/plain
+        id S1731054AbfHHFnb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 01:43:31 -0400
+Received: from outbound.smtp.vt.edu ([198.82.183.121]:60020 "EHLO
+        omr2.cc.vt.edu" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1731022AbfHHFna (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 01:43:30 -0400
+Received: from mr3.cc.vt.edu (mr3.cc.vt.edu [IPv6:2607:b400:92:8500:0:7f:b804:6b0a])
+        by omr2.cc.vt.edu (8.14.4/8.14.4) with ESMTP id x785hTZ6007801
+        for <netdev@vger.kernel.org>; Thu, 8 Aug 2019 01:43:30 -0400
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com [209.85.160.197])
+        by mr3.cc.vt.edu (8.14.7/8.14.7) with ESMTP id x785hOcV014747
+        for <netdev@vger.kernel.org>; Thu, 8 Aug 2019 01:43:29 -0400
+Received: by mail-qt1-f197.google.com with SMTP id l9so84280723qtu.12
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 22:43:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:mime-version:date
+         :message-id;
+        bh=c6yvSjRSPSPtd7WKVRhn/33mlt2UI1aeE4hr0QgnAWg=;
+        b=s53ch8IEDAs8tZJvv5iJy4mBcYjNkMMrMMAmwdSiQz7p6W+hW99e5oRVE5GB1wCAsp
+         2Yj54/pE/onn7eodt/hbCNz+0nkUk2ZhUmj75HP1QqzkXzb3j2a88klnsux5cFV4Z3Af
+         l0uaFoWiNnG1zE+p8u6EZ7HveCrdcAFEMt/GvHhb7CcFf9l/LLMRdA9aYi0FMLeKMU5z
+         7YMq6A8p3v+HEOkGy+Uv6NWD+OYYNUaMrk330A1jFSqkR+hQIve7u+QElhHD4yUFrZ3T
+         /6bQXe5HezxmSdUzgvbO7UGfI1cJw6cI5uqH2CrGCWTB94AQmEEoJJcJPh+fL/bwmmYr
+         IHWQ==
+X-Gm-Message-State: APjAAAXW6DCKR/eJox6hvsp66jQ3a6EsOuKjLUekoP2VG9mMalaz0jep
+        wt86C44GgPLF+C4QMOOZn5eLJnkEsgzwNw1numcBfYlIuF4BI7V1Pqs8hCyzNRhpsrUGU3Ct/gk
+        lr84TUSg20eKj/FGyEaC0t6Lm1sQ=
+X-Received: by 2002:a37:dcc7:: with SMTP id v190mr12012689qki.169.1565243004367;
+        Wed, 07 Aug 2019 22:43:24 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqzKldRnyI5SL9XuBns9hAd6WuyGhSYe29+X/2gQVf84YuCE8HdYQj3/BaWF8ziX92uInHbLyQ==
+X-Received: by 2002:a37:dcc7:: with SMTP id v190mr12012675qki.169.1565243004139;
+        Wed, 07 Aug 2019 22:43:24 -0700 (PDT)
+Received: from turing-police ([2601:5c0:c001:4341::359])
+        by smtp.gmail.com with ESMTPSA id h18sm36284621qkj.134.2019.08.07.22.43.22
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 07 Aug 2019 22:43:23 -0700 (PDT)
+From:   "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <valdis.kletnieks@vt.edu>
+X-Google-Original-From: "Valdis =?utf-8?Q?Kl=c4=93tnieks?=" <Valdis.Kletnieks@vt.edu>
+X-Mailer: exmh version 2.9.0 11/07/2018 with nmh-1.7+dev
+To:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>
+Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net/netfilter/nf_nat_proto.c - make tables static
+Mime-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Date:   Thu, 08 Aug 2019 01:43:22 -0400
+Message-ID: <55481.1565243002@turing-police>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
+Sparse warns about two tables not being declared.
 
-john.hubbard@gmail.com writes:
-> diff --git a/arch/powerpc/mm/book3s64/iommu_api.c b/arch/powerpc/mm/book3s64/iommu_api.c
-> index b056cae3388b..e126193ba295 100644
-> --- a/arch/powerpc/mm/book3s64/iommu_api.c
-> +++ b/arch/powerpc/mm/book3s64/iommu_api.c
-> @@ -203,6 +202,7 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
->  {
->  	long i;
->  	struct page *page = NULL;
-> +	bool dirty = false;
+  CHECK   net/netfilter/nf_nat_proto.c
+net/netfilter/nf_nat_proto.c:725:26: warning: symbol 'nf_nat_ipv4_ops' was not declared. Should it be static?
+net/netfilter/nf_nat_proto.c:964:26: warning: symbol 'nf_nat_ipv6_ops' was not declared. Should it be static?
 
-I don't think you need that initialisation do you?
+And in fact they can indeed be static.
 
->  	if (!mem->hpas)
->  		return;
-> @@ -215,10 +215,9 @@ static void mm_iommu_unpin(struct mm_iommu_table_group_mem_t *mem)
->  		if (!page)
->  			continue;
->  
-> -		if (mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY)
-> -			SetPageDirty(page);
-> +		dirty = mem->hpas[i] & MM_IOMMU_TABLE_GROUP_PAGE_DIRTY;
-> -		put_page(page);
-> +		put_user_pages_dirty_lock(&page, 1, dirty);
->  		mem->hpas[i] = 0;
->  	}
->  }
+Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
 
-cheers
+diff --git a/net/netfilter/nf_nat_proto.c b/net/netfilter/nf_nat_proto.c
+index 7ac733ebd060..0a59c14b5177 100644
+--- a/net/netfilter/nf_nat_proto.c
++++ b/net/netfilter/nf_nat_proto.c
+@@ -722,7 +722,7 @@ nf_nat_ipv4_local_fn(void *priv, struct sk_buff *skb,
+ 	return ret;
+ }
+ 
+-const struct nf_hook_ops nf_nat_ipv4_ops[] = {
++static const struct nf_hook_ops nf_nat_ipv4_ops[] = {
+ 	/* Before packet filtering, change destination */
+ 	{
+ 		.hook		= nf_nat_ipv4_in,
+@@ -961,7 +961,7 @@ nf_nat_ipv6_local_fn(void *priv, struct sk_buff *skb,
+ 	return ret;
+ }
+ 
+-const struct nf_hook_ops nf_nat_ipv6_ops[] = {
++static const struct nf_hook_ops nf_nat_ipv6_ops[] = {
+ 	/* Before packet filtering, change destination */
+ 	{
+ 		.hook		= nf_nat_ipv6_in,
+
