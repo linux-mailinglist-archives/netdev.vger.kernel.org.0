@@ -2,39 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA58386752
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 18:44:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A19FF86754
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 18:44:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390210AbfHHQoJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 12:44:09 -0400
-Received: from mail-ot1-f69.google.com ([209.85.210.69]:44827 "EHLO
-        mail-ot1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389746AbfHHQoI (ORCPT
+        id S2390214AbfHHQoL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 12:44:11 -0400
+Received: from mail-ot1-f70.google.com ([209.85.210.70]:50471 "EHLO
+        mail-ot1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390133AbfHHQoI (ORCPT
         <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 12:44:08 -0400
-Received: by mail-ot1-f69.google.com with SMTP id q16so62949150otn.11
+Received: by mail-ot1-f70.google.com with SMTP id a21so62929554otk.17
         for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 09:44:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=iMvZ/m27+Coh4q2kypY8c+/9YvSWV25rvuLfoAzVCWs=;
-        b=tj9daViRDX3TFsxKcku7VO7FaeLMomj7WoamtvR+KAT5au1xd3QtXTZZR8oTWvMFCW
-         yo6L/gokG/oV4bKDCzl6e3haMe4D2dGKcovwyOcUmfzJxOqHgENtd4sbj0yAS3Uf7Z7l
-         x4TkA2BFUUsW8FMTbLMBEfOw4mUifYPMpU6SbPL05mn8Mjtn40ywHPSGtanc4ij/vAAR
-         J6NTFH8ROPde3jzpbO8gpEwS2Jz68CgamMgCSsTTW0sleW7zlAnKx0Ct+sdg9TBAtVBQ
-         tPQ/d48aVWjh6wlmBXNBf68qbC2n5mZxFFM75wly2BK28QdG1zT6yMbNADJ5/g0Agrpr
-         PfQw==
-X-Gm-Message-State: APjAAAXvaQPCgY+v0w/LVESEVNEnF52rQB+fiKsf+0kr36krQJD2Z6jz
-        GCOkf3BHCi3w6ng10XTs4IaZAM1ZX8ISflN8UoZcs0SkLDBo
-X-Google-Smtp-Source: APXvYqxHcP/FOawJxr9LBBv9fK/CPNC9T6++eJmBhZKGUxshGNO+LS58yl82k11uwsGUTDeHVj8QS2XhutJbJo0fT9vyrn6iS11V
+        bh=iHsPdrpnVUzzAO5Tf1V0+Uz36Wmve8VdL1a5sOx66mk=;
+        b=nUiYB3qF7e8MCXb6HgcOSBj8j3fIUKdSvhcSmGvN+ejGQW/ppoSnTE7SFNr54SMuvX
+         XF1dMVPvXtbJqufoChLK/BqUQOxITfww2e8Mi3ItnIawrXt1qQpgpQbLMRo0RMsLiUd1
+         ZEfORuPnh0n+fKu1FSTr8icenb7zctwkrD1ydWz5a9Pmg79jxVVI+RySX0R98MRkpybz
+         Mi1P0XfFAl5YpwK9n58XztPrjVQboYXNhqQ/bGJwAiMhI0olSHq0oTf+4l1cni43VmwP
+         2BBQtVfaFsLNIu/LRjC3M0LpRBkjn2G8wVcG2EEKN1U7F2IpmWtQVxKUICYl58Vv/tRs
+         vTlA==
+X-Gm-Message-State: APjAAAUSUdiJ/iArmov9mmC1yd013Z53FA0wn1YMB65LBajeXZ/JKjXO
+        OzjscJKQWJzdYNYxSk6qbI+pEduwUD3uD6eRg2U4yKcqXfri
+X-Google-Smtp-Source: APXvYqyo78jxXQQ0AW+OjxxN1emWNnXNmX+2l9sgSJE9/qUF4I8w6aVsT1ES1JQr8NOm156voc57iQ+bbleVs3sKqbBauCgIdNSO
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8d15:: with SMTP id p21mr15404757ioj.219.1565282646712;
- Thu, 08 Aug 2019 09:44:06 -0700 (PDT)
-Date:   Thu, 08 Aug 2019 09:44:06 -0700
+X-Received: by 2002:a5d:928a:: with SMTP id s10mr16244046iom.29.1565282647023;
+ Thu, 08 Aug 2019 09:44:07 -0700 (PDT)
+Date:   Thu, 08 Aug 2019 09:44:07 -0700
 X-Google-Appengine-App-Id: s~syzkaller
 X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000216779058f9dc40e@google.com>
-Subject: general protection fault in tls_tx_records
-From:   syzbot <syzbot+97d0cf528b9c8e9be7f4@syzkaller.appspotmail.com>
+Message-ID: <000000000000262820058f9dc474@google.com>
+Subject: KASAN: use-after-free Read in tls_wait_data
+From:   syzbot <syzbot+30c791a76814a3c6c9f9@syzkaller.appspotmail.com>
 To:     ast@kernel.org, aviadye@mellanox.com, borisp@mellanox.com,
         bpf@vger.kernel.org, daniel@iogearbox.net, davejwatson@fb.com,
         davem@davemloft.net, jakub.kicinski@netronome.com,
@@ -51,62 +51,112 @@ Hello,
 
 syzbot found the following crash on:
 
-HEAD commit:    ce96e791 Add linux-next specific files for 20190731
+HEAD commit:    7b4980e0 Add linux-next specific files for 20190802
 git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13ce4fd0600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=fca5b9d53db6585c
-dashboard link: https://syzkaller.appspot.com/bug?extid=97d0cf528b9c8e9be7f4
+console output: https://syzkaller.appspot.com/x/log.txt?x=14a749b4600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=7e1348afd44b5e02
+dashboard link: https://syzkaller.appspot.com/bug?extid=30c791a76814a3c6c9f9
 compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
 
 Unfortunately, I don't have any reproducer for this crash yet.
 
 IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+97d0cf528b9c8e9be7f4@syzkaller.appspotmail.com
+Reported-by: syzbot+30c791a76814a3c6c9f9@syzkaller.appspotmail.com
 
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 12 Comm: kworker/0:1 Not tainted 5.3.0-rc2-next-20190731 #56
+==================================================================
+BUG: KASAN: use-after-free in tls_wait_data+0x884/0x980  
+net/tls/tls_sw.c:1261
+Read of size 8 at addr ffff88808ea9f890 by task syz-executor.2/31898
+
+CPU: 1 PID: 31898 Comm: syz-executor.2 Not tainted 5.3.0-rc2-next-20190802  
+#58
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
 Google 01/01/2011
-Workqueue: events tx_work_handler
-RIP: 0010:tls_tx_records+0x5e/0x740 net/tls/tls_sw.c:365
-Code: 80 3c 02 00 0f 85 31 06 00 00 49 8b 87 b0 06 00 00 48 8d 78 28 48 89  
-45 c0 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
-85 1b 06 00 00 48 8b 45 c0 48 8d 78 60 48 8b 58 28
-RSP: 0018:ffff8880a98d7cb0 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 1ffffffff134c016
-RDX: 0000000000000005 RSI: ffffffff862e74fc RDI: 0000000000000028
-RBP: ffff8880a98d7d00 R08: ffff8880a98c8300 R09: 0000000000000000
-R10: fffffbfff134b9d8 R11: ffff8880a98c8300 R12: ffff88808eb47cc0
-R13: ffff8880a9ac4c40 R14: ffff88808eb47de8 R15: ffff8880a9ac4c40
-FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000000001b30e80 CR3: 000000009c1a0000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
 Call Trace:
-  tx_work_handler+0x134/0x180 net/tls/tls_sw.c:2176
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  print_address_description.cold+0xd4/0x306 mm/kasan/report.c:351
+  __kasan_report.cold+0x1b/0x36 mm/kasan/report.c:482
+  kasan_report+0x12/0x17 mm/kasan/common.c:610
+  __asan_report_load8_noabort+0x14/0x20 mm/kasan/generic_report.c:132
+  tls_wait_data+0x884/0x980 net/tls/tls_sw.c:1261
+  tls_sw_recvmsg+0x57d/0x17c0 net/tls/tls_sw.c:1730
+  inet_recvmsg+0x136/0x620 net/ipv4/af_inet.c:838
+  sock_recvmsg_nosec+0x89/0xb0 net/socket.c:871
+  ___sys_recvmsg+0x271/0x5a0 net/socket.c:2480
+  do_recvmmsg+0x27e/0x7a0 net/socket.c:2601
+  __sys_recvmmsg+0x259/0x270 net/socket.c:2680
+  __do_sys_recvmmsg net/socket.c:2703 [inline]
+  __se_sys_recvmmsg net/socket.c:2696 [inline]
+  __x64_sys_recvmmsg+0xe6/0x140 net/socket.c:2696
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459829
+Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007f6093e3ec78 EFLAGS: 00000246 ORIG_RAX: 000000000000012b
+RAX: ffffffffffffffda RBX: 0000000000000005 RCX: 0000000000459829
+RDX: 0000000000000004 RSI: 00000000200031c0 RDI: 0000000000000003
+RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007f6093e3f6d4
+R13: 00000000004c6d67 R14: 00000000004dc0a8 R15: 00000000ffffffff
+
+Allocated by task 31898:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_kmalloc mm/kasan/common.c:486 [inline]
+  __kasan_kmalloc.constprop.0+0xcf/0xe0 mm/kasan/common.c:459
+  kasan_kmalloc+0x9/0x10 mm/kasan/common.c:500
+  kmem_cache_alloc_trace+0x158/0x790 mm/slab.c:3550
+  kmalloc include/linux/slab.h:552 [inline]
+  kzalloc include/linux/slab.h:686 [inline]
+  tls_set_sw_offload+0x110a/0x1567 net/tls/tls_sw.c:2243
+  do_tls_setsockopt_conf net/tls/tls_main.c:594 [inline]
+  do_tls_setsockopt net/tls/tls_main.c:630 [inline]
+  tls_setsockopt+0x68d/0x8d0 net/tls/tls_main.c:649
+  sock_common_setsockopt+0x94/0xd0 net/core/sock.c:3130
+  __sys_setsockopt+0x261/0x4c0 net/socket.c:2084
+  __do_sys_setsockopt net/socket.c:2100 [inline]
+  __se_sys_setsockopt net/socket.c:2097 [inline]
+  __x64_sys_setsockopt+0xbe/0x150 net/socket.c:2097
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Freed by task 17:
+  save_stack+0x23/0x90 mm/kasan/common.c:69
+  set_track mm/kasan/common.c:77 [inline]
+  __kasan_slab_free+0x102/0x150 mm/kasan/common.c:448
+  kasan_slab_free+0xe/0x10 mm/kasan/common.c:456
+  __cache_free mm/slab.c:3425 [inline]
+  kfree+0x10a/0x2c0 mm/slab.c:3756
+  tls_sw_free_ctx_rx+0x31/0x40 net/tls/tls_sw.c:2145
+  tls_ctx_free_deferred+0xc4/0x130 net/tls/tls_main.c:279
   process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
   worker_thread+0x98/0xe40 kernel/workqueue.c:2415
   kthread+0x361/0x430 kernel/kthread.c:255
   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Modules linked in:
----[ end trace c75bda97ceb541bf ]---
-RIP: 0010:tls_tx_records+0x5e/0x740 net/tls/tls_sw.c:365
-Code: 80 3c 02 00 0f 85 31 06 00 00 49 8b 87 b0 06 00 00 48 8d 78 28 48 89  
-45 c0 48 b8 00 00 00 00 00 fc ff df 48 89 fa 48 c1 ea 03 <80> 3c 02 00 0f  
-85 1b 06 00 00 48 8b 45 c0 48 8d 78 60 48 8b 58 28
-RSP: 0018:ffff8880a98d7cb0 EFLAGS: 00010206
-RAX: dffffc0000000000 RBX: 0000000000000001 RCX: 1ffffffff134c016
-RDX: 0000000000000005 RSI: ffffffff862e74fc RDI: 0000000000000028
-RBP: ffff8880a98d7d00 R08: ffff8880a98c8300 R09: 0000000000000000
-R10: fffffbfff134b9d8 R11: ffff8880a98c8300 R12: ffff88808eb47cc0
-R13: ffff8880a9ac4c40 R14: ffff88808eb47de8 R15: ffff8880a9ac4c40
-FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007ffd4f4eadac CR3: 00000000987e6000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+
+The buggy address belongs to the object at ffff88808ea9f680
+  which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 528 bytes inside of
+  1024-byte region [ffff88808ea9f680, ffff88808ea9fa80)
+The buggy address belongs to the page:
+page:ffffea00023aa780 refcount:1 mapcount:0 mapping:ffff8880aa400c40  
+index:0x0 compound_mapcount: 0
+flags: 0x1fffc0000010200(slab|head)
+raw: 01fffc0000010200 ffffea000295f888 ffffea00021f7908 ffff8880aa400c40
+raw: 0000000000000000 ffff88808ea9e000 0000000100000007 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+  ffff88808ea9f780: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88808ea9f800: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> ffff88808ea9f880: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+                          ^
+  ffff88808ea9f900: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+  ffff88808ea9f980: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+==================================================================
 
 
 ---
