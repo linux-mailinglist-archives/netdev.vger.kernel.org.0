@@ -2,70 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 444A286865
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:03:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B5986868
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:04:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732786AbfHHSDb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 14:03:31 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49066 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728289AbfHHSDb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 14:03:31 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id B057C154FFFF0;
-        Thu,  8 Aug 2019 11:03:30 -0700 (PDT)
-Date:   Thu, 08 Aug 2019 11:03:30 -0700 (PDT)
-Message-Id: <20190808.110330.1163430543960132818.davem@davemloft.net>
-To:     oneukum@suse.com
-Cc:     netdev@vger.kernel.org, wg@grandegger.com, mkl@pengutronix.de,
-        linux-can@vger.kernel.org
-Subject: Re: [PATCH] pcan_usb_fd: zero out the common command buffer
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190808092825.23470-1-oneukum@suse.com>
-References: <20190808092825.23470-1-oneukum@suse.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 08 Aug 2019 11:03:30 -0700 (PDT)
+        id S1733200AbfHHSED (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 14:04:03 -0400
+Received: from smtp1.emailarray.com ([65.39.216.14]:44921 "EHLO
+        smtp1.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730170AbfHHSED (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 14:04:03 -0400
+Received: (qmail 63725 invoked by uid 89); 8 Aug 2019 18:04:02 -0000
+Received: from unknown (HELO ?172.20.41.143?) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTk5LjIwMS42NC4xMzc=) (POLARISLOCAL)  
+  by smtp1.emailarray.com with (AES256-GCM-SHA384 encrypted) SMTP; 8 Aug 2019 18:04:02 -0000
+From:   "Jonathan Lemon" <jlemon@flugsvamp.com>
+To:     "Andrew Lunn" <andrew@lunn.ch>
+Cc:     "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        "Jiri Pirko" <jiri@resnulli.us>, dsahern@gmail.com,
+        netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com, mkubecek@suse.cz,
+        stephen@networkplumber.org, daniel@iogearbox.net,
+        brouer@redhat.com, eric.dumazet@gmail.com
+Subject: Re: [RFC] implicit per-namespace devlink instance to set kernel
+ resource limitations
+Date:   Thu, 08 Aug 2019 11:03:55 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <1FA58865-9B77-47C9-BC27-78DBA9C9C3D4@flugsvamp.com>
+In-Reply-To: <20190806190637.GE17072@lunn.ch>
+References: <20190806164036.GA2332@nanopsycho.orion>
+ <20190806112717.3b070d07@cakuba.netronome.com>
+ <20190806183841.GD2332@nanopsycho.orion>
+ <20190806115449.5b3a9d97@cakuba.netronome.com>
+ <20190806190637.GE17072@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Oliver Neukum <oneukum@suse.com>
-Date: Thu,  8 Aug 2019 11:28:25 +0200
 
-> Lest we leak kernel memory to a device we better zero out buffers.
-> 
-> Reported-by: syzbot+513e4d0985298538bf9b@syzkaller.appspotmail.com
-> Signed-off-by: Oliver Neukum <oneukum@suse.com>
 
-Please CC: the CAN subsystem maintainers, as this is clearly listed in the
-MAINTAINERS file.
+On 6 Aug 2019, at 12:06, Andrew Lunn wrote:
 
-Thank you.
+> On Tue, Aug 06, 2019 at 11:54:49AM -0700, Jakub Kicinski wrote:
+>> On Tue, 6 Aug 2019 20:38:41 +0200, Jiri Pirko wrote:
+>>>>> So the proposal is to have some new device, say "kernelnet", that
+>>>>> would implicitly create per-namespace devlink instance. This 
+>>>>> devlink
+>>>>> instance would be used to setup resource limits. Like:
+>>>>>
+>>>>> devlink resource set kernelnet path /IPv4/fib size 96
+>>>>> devlink -N ns1name resource set kernelnet path /IPv6/fib size 100
+>>>>> devlink -N ns2name resource set kernelnet path /IPv4/fib-rules 
+>>>>> size 8
+>>>>>
+>>>>> To me it sounds a bit odd for kernel namespace to act as a device, 
+>>>>> but
+>>>>> thinking about it more, it makes sense. Probably better than to 
+>>>>> define
+>>>>> a new api. User would use the same tool to work with kernel and 
+>>>>> hw.
+>>>>>
+>>>>> Also we can implement other devlink functionality, like dpipe.
+>>>>> User would then have visibility of network pipeline, tables,
+>>>>> utilization, etc. It is related to the resources too.
+>>>>>
+>>>>> What do you think?
+>>>>
+>>>> I'm no expert here but seems counter intuitive that device tables 
+>>>> would
+>>>> be aware of namespaces in the first place. Are we not reinventing
+>>>> cgroup controllers based on a device API? IMHO from a perspective 
+>>>> of
+>>>> someone unfamiliar with routing offload this seems backwards :)
+>>>
+>>> Can we use cgroup for fib and other limitations instead?
+>>
+>> Not sure the question is to me, I don't feel particularly qualified,
+>> I've never worked with VDCs or wrote a switch driver.. But I'd see
+>> cgroups as a natural fit, and if I read Andrew's reply right so does
+>> he..
+>
+> Hi Jakub
+>
+> I think there needs to be a clearly reasoned argument why cgroups is
+> the wrong answer to this problem. I myself don't know enough to give
+> that answer, but i can pose the question.
+>
+>      Andrew
 
-> ---
->  drivers/net/can/usb/peak_usb/pcan_usb_fd.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-> index 34761c3a6286..47cc1ff5b88e 100644
-> --- a/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-> +++ b/drivers/net/can/usb/peak_usb/pcan_usb_fd.c
-> @@ -841,7 +841,7 @@ static int pcan_usb_fd_init(struct peak_usb_device *dev)
->  			goto err_out;
->  
->  		/* allocate command buffer once for all for the interface */
-> -		pdev->cmd_buffer_addr = kmalloc(PCAN_UFD_CMD_BUFFER_SIZE,
-> +		pdev->cmd_buffer_addr = kzalloc(PCAN_UFD_CMD_BUFFER_SIZE,
->  						GFP_KERNEL);
->  		if (!pdev->cmd_buffer_addr)
->  			goto err_out_1;
-> -- 
-> 2.16.4
-> 
+For the example above, the first question would be why is the 
+restriction
+based on the number of entries instead of their memory footprint?  The 
+resource
+being consumed is memory, so I'd think that should be what is monitored.
+
+Quickly scanning the cgroups documentation, it seems there is a device 
+controller,
+so this isn't just process based.  ISTR that Larry Brakmo was working on 
+a network
+bandwidth limiter, which is controlled by cgroups.
+-- 
+Jonathan
+
+
+
