@@ -2,177 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 23F8B8687E
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:11:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B2108688A
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:17:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389754AbfHHSLI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 14:11:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52572 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725535AbfHHSLH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 14:11:07 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5DE3821743;
-        Thu,  8 Aug 2019 18:11:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565287866;
-        bh=VQIOY0vBzuYscrqn68EABa55zxTZLbGjt3/l6q9cOAY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=xdrkj+0hZtP1qj4oUD1AxSDlDuoiKG8VcdttnCp4FelzfZoC5uDp0WRnRMAyxMQKE
-         jxGWs49FzLgOld8rhoJP/En/UFXtE8Xaobwq2BVzMH5PBJ07EfuCUsjuQYcWQ+ikb8
-         rNwGD0At0fsoxKJO2Ncnb9rM9MEIarZLVK+AJQt0=
-Date:   Thu, 8 Aug 2019 20:11:04 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>, Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v2 bpf-next] btf: expose BTF info through sysfs
-Message-ID: <20190808181104.GA31357@kroah.com>
-References: <20190808003215.1462821-1-andriin@fb.com>
- <89a6e282-0250-4264-128d-469be99073e9@fb.com>
- <20190808060812.GA25150@kroah.com>
- <CAEf4BzaWtumTrc7h1t3w8hA1L8mVo2Cm0B+eLSe4eSghFAu3iw@mail.gmail.com>
+        id S2389754AbfHHSRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 14:17:31 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46853 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731038AbfHHSRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 14:17:30 -0400
+Received: by mail-wr1-f65.google.com with SMTP id z1so95854875wru.13
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 11:17:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=lkRdfAv4SliBbE+lXipyZVybVtjoAnnBUhrn2DrhOmc=;
+        b=phqms/RHcxSw4VMpBfXnhRjuSBDiH6soMLYAUR1Vflknjy0pbFlxn8U7w36LgYeNQa
+         csWPepX8w6BGZyokYKAOm3Apob85WsQDz+AOh1JXOW1Jku3a4JiLtbVnlGmrsmnUdrhj
+         hK/m0IjtFalmIexO3zlQoIsxYpPOhAGJtT+1Ctvv+0RELs0rRKJxxGgFQz5/X8a/DNBM
+         LRjiuT8pzXXCTzM6EcAs38fmZA2+0MBCgA8BVevolMI3IHFfIta3HCaJS2Aab8JdcZJs
+         rY/M/WMBPRbAi2CmIUqUR0ms2rOitaD7QT3jKC/vT3fMtQ/3VAfgWK3/zqdg60hLRQbQ
+         2Qqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=lkRdfAv4SliBbE+lXipyZVybVtjoAnnBUhrn2DrhOmc=;
+        b=boVvc6x4lqYLKAFf7ZE3V+/wtZ4agbNfpjQEgnURft5InTg+uRZLcuaw+ZXwjqLua3
+         YtdT0x70mEbkEiMdjqMxbRY4fjr0zjWWyqrCd7v1LX1aErP8DrJEmGCLPt+KiuybEH8n
+         47D5jGhqcvZRAN+vDk5SlvX9xR9jaQLDB8X9+z6s9OiZxewZdqBtJDhNqWMkxHH6sOXb
+         IX8A5mWz3Rvh2XBjY4j61+3aBls8tJddCiOyAnyz908GezzJ1inpHgHHpV4pVtf7jFyw
+         aZGT+8spH5uz6OlSlJSVNi69ldJq/C8UxoiGogILJWTALQJrIfN+ZJGIFWnWcxPTKuxb
+         ADHw==
+X-Gm-Message-State: APjAAAXG2YbH/tnKfowBZ8XjlfwuL3iz9rYp3IIQVJHo4g2AHj3gXjDO
+        cbGuci4dVGI83PNOBo0iGVQxBEV9
+X-Google-Smtp-Source: APXvYqx4HQBPAs+Q9ZVow/94qfmDZKL8yyBbK7qdp19Bnu6HLaLkpQBfeTD/yrIEVptO5mAv5R9ZuQ==
+X-Received: by 2002:a5d:534f:: with SMTP id t15mr10280524wrv.239.1565288247706;
+        Thu, 08 Aug 2019 11:17:27 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf? (p200300EA8F2F3200EC8A8637BF5F7FAF.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf])
+        by smtp.googlemail.com with ESMTPSA id r5sm5558572wmh.35.2019.08.08.11.17.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 08 Aug 2019 11:17:26 -0700 (PDT)
+Subject: Re: [PATCH net-next] r8169: make use of xmit_more
+To:     =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sander Eikelenboom <linux@eikelenboom.it>,
+        Eric Dumazet <edumazet@google.com>
+References: <2950b2f7-7460-cce0-d964-ad654d897295@gmail.com>
+ <acd65426-0c7e-8c5f-a002-a36286f09122@applied-asynchrony.com>
+ <cfb9a1c7-57c8-db04-1081-ac1cb92bb447@applied-asynchrony.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <a19bb3de-a866-d342-7cca-020fef219d03@gmail.com>
+Date:   Thu, 8 Aug 2019 20:17:21 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzaWtumTrc7h1t3w8hA1L8mVo2Cm0B+eLSe4eSghFAu3iw@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <cfb9a1c7-57c8-db04-1081-ac1cb92bb447@applied-asynchrony.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 08, 2019 at 10:53:44AM -0700, Andrii Nakryiko wrote:
-> On Wed, Aug 7, 2019 at 11:08 PM Greg KH <gregkh@linuxfoundation.org> wrote:
-> >
-> > On Thu, Aug 08, 2019 at 04:24:25AM +0000, Yonghong Song wrote:
-> > >
-> > >
-> > > On 8/7/19 5:32 PM, Andrii Nakryiko wrote:
-> > > > Make .BTF section allocated and expose its contents through sysfs.
-> >
-> > Was this original patch not on bpf@vger?  I can't find it in my
-> > archive.  Anyway...
-> >
-> > > > /sys/kernel/btf directory is created to contain all the BTFs present
-> > > > inside kernel. Currently there is only kernel's main BTF, represented as
-> > > > /sys/kernel/btf/kernel file. Once kernel modules' BTFs are supported,
-> > > > each module will expose its BTF as /sys/kernel/btf/<module-name> file.
-> >
-> > Why are you using sysfs for this?  Who uses "BTF"s?  Are these debugging
-> > images that only people working on developing bpf programs are going to
-> > need, or are these things that you are going to need on a production
-> > system?
+On 08.08.2019 17:53, Holger Hoffstätte wrote:
+> On 8/8/19 4:37 PM, Holger Hoffstätte wrote:
+>>
+>> Hello Heiner -
+>>
+>> On 7/28/19 11:25 AM, Heiner Kallweit wrote:
+>>> There was a previous attempt to use xmit_more, but the change had to be
+>>> reverted because under load sometimes a transmit timeout occurred [0].
+>>> Maybe this was caused by a missing memory barrier, the new attempt
+>>> keeps the memory barrier before the call to netif_stop_queue like it
+>>> is used by the driver as of today. The new attempt also changes the
+>>> order of some calls as suggested by Eric.
+>>>
+>>> [0] https://lkml.org/lkml/2019/2/10/39
+>>>
+>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>>
+>> I decided to take one for the team and merged this into my 5.2.x tree (just
+>> fixing up the path) and it has been working fine for the last 2 weeks in two
+>> machines..until today, when for the first time in forever some random NFS traffic
+>> made this old friend come out from under the couch:
+>>
+>> [Aug 8 14:13] ------------[ cut here ]------------
+>> [  +0.000006] NETDEV WATCHDOG: eth0 (r8169): transmit queue 0 timed out
+>> [  +0.000021] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x21f/0x230
+>> [  +0.000001] Modules linked in: lz4 lz4_compress lz4_decompress nfsd auth_rpcgss oid_registry lockd grace sunrpc sch_fq_codel btrfs xor zstd_compress raid6_pq zstd_decompress bfq jitterentropy_rng nct6775 hwmon_vid coretemp hwmon x86_pkg_temp_thermal aesni_intel aes_x86_64 i915 glue_helper crypto_simd cryptd i2c_i801 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper syscopyarea usbhid sysfillrect r8169 sysimgblt fb_sys_fops realtek drm libphy drm_panel_orientation_quirks i2c_core video backlight mq_deadline
+>> [  +0.000026] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.2.7 #1
+>> [  +0.000001] Hardware name: System manufacturer System Product Name/P8Z68-V LX, BIOS 4105 07/01/2013
+>> [  +0.000004] RIP: 0010:dev_watchdog+0x21f/0x230
+>> [  +0.000002] Code: 3b 00 75 ea eb ad 4c 89 ef c6 05 1c 45 bd 00 01 e8 66 35 fc ff 44 89 e1 4c 89 ee 48 c7 c7 e8 5e fc 81 48 89 c2 e8 90 df 92 ff <0f> 0b eb 8e 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 66 66 66 66 90
+>> [  +0.000002] RSP: 0018:ffffc90000118e68 EFLAGS: 00010286
+>> [  +0.000002] RAX: 0000000000000000 RBX: ffff8887f7837600 RCX: 0000000000000303
+>> [  +0.000001] RDX: 0000000000000001 RSI: 0000000000000092 RDI: ffffffff827a488c
+>> [  +0.000001] RBP: ffff8887f9fbc440 R08: 0000000000000303 R09: 0000000000000003
+>> [  +0.000001] R10: 000000000001004c R11: 0000000000000001 R12: 0000000000000000
+>> [  +0.000009] R13: ffff8887f9fbc000 R14: ffffffff8173aa20 R15: dead000000000200
+>> [  +0.000001] FS:  0000000000000000(0000) GS:ffff8887ff580000(0000) knlGS:0000000000000000
+>> [  +0.000000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>> [  +0.000001] CR2: 00007f8d1c04d000 CR3: 0000000002209001 CR4: 00000000000606e0
+>> [  +0.000000] Call Trace:
+>> [  +0.000002]  <IRQ>
+>> [  +0.000005]  call_timer_fn+0x2b/0x120
+>> [  +0.000002]  expire_timers+0xa4/0x100
+>> [  +0.000001]  run_timer_softirq+0x8c/0x170
+>> [  +0.000002]  ? __hrtimer_run_queues+0x13a/0x290
+>> [  +0.000003]  ? sched_clock_cpu+0xe/0x130
+>> [  +0.000003]  __do_softirq+0xeb/0x2de
+>> [  +0.000003]  irq_exit+0x9d/0xe0
+>> [  +0.000002]  smp_apic_timer_interrupt+0x60/0x110
+>> [  +0.000003]  apic_timer_interrupt+0xf/0x20
+>> [  +0.000001]  </IRQ>
+>> [  +0.000003] RIP: 0010:cpuidle_enter_state+0xad/0x930
+>> [  +0.000001] Code: c5 66 66 66 66 90 31 ff e8 90 99 9e ff 80 7c 24 0b 00 74 12 9c 58 f6 c4 02 0f 85 39 08 00 00 31 ff e8 e7 26 a2 ff fb 45 85 e4 <0f> 88 34 02 00 00 49 63 cc 4c 2b 2c 24 48 8d 04 49 48 c1 e0 05 8b
+>> [  +0.000000] RSP: 0018:ffffc9000008be50 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
+>> [  +0.000001] RAX: ffff8887ff5a9180 RBX: ffffffff822b6c40 RCX: 000000000000001f
+>> [  +0.000001] RDX: 0000000000000000 RSI: 0000000033087154 RDI: 0000000000000000
+>> [  +0.000001] RBP: ffff8887ff5b1310 R08: 000030d021fae397 R09: ffff8887ff59c8c0
+>> [  +0.000000] R10: ffff8887ff59c8c0 R11: 0000000000000006 R12: 0000000000000004
+>> [  +0.000001] R13: 000030d021fae397 R14: 0000000000000004 R15: ffff8887fc281600
+>> [  +0.000001]  cpuidle_enter+0x29/0x40
+>> [  +0.000002]  do_idle+0x1e5/0x280
+>> [  +0.000001]  cpu_startup_entry+0x19/0x20
+>> [  +0.000002]  start_secondary+0x186/0x1c0
+>> [  +0.000001]  secondary_startup_64+0xa4/0xb0
+>> [  +0.000001] ---[ end trace 99493c768580f4fd ]---
+>>
+>> The device is:
+>>
+>> Aug  7 23:19:09 tux kernel: libphy: r8169: probed
+>> Aug  7 23:19:09 tux kernel: r8169 0000:04:00.0 eth0: RTL8168evl/8111evl, c8:60:00:68:33:cc, XID 2c9, IRQ 36
+>> Aug  7 23:19:09 tux kernel: r8169 0000:04:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko]
+>> Aug  7 23:19:12 tux kernel: RTL8211E Gigabit Ethernet r8169-400:00: attached PHY driver [RTL8211E Gigabit Ethernet] (mii_bus:phy_addr=r8169-400:00, irq=IGNORE)
+>> Aug  7 23:19:13 tux kernel: r8169 0000:04:00.0 eth0: No native access to PCI extended config space, falling back to CSI
+>>
+>> and using fq_codel, of course.
+>>
+>> This cpuidle hiccup used to be completely gone without xmit_more and this was
+>> the first (and so far only) time since merging it (regardless of load).
+>> Also, while I'm using BMQ as CPU scheduler, that hasn't made a difference for
+>> this particular problem in the past (with MuQSS/PDS) either; way back when I had
+>> Eric's previous attempt(s) it also hiccupped with CFS.
+>>
+>> Revert or wait for more reports when -next is merged in 5.4?
 > 
-> We need it in production system. One immediate and direct use case is
-> BPF CO-RE (Compile Once - Run Everywhere), which aims to allow to
-> pre-compile BPF applications (even those that read internal kernel
-> structures) using any local kernel headers, and then distribute and
-> run them in binary form on all target production machines without
-> dependencies on kernel headers and having Clang on target machine to
-> compile C to BPF IR. Libbpf is doing all those adjustments/relocations
-> based on kernel's actual BTF. See [0] for a summary and slides, if you
-> curious to learn more.
+> Another question/data point: I've had the whole basket of offloads activated:
 > 
->   [0] http://vger.kernel.org/bpfconf2019.html#session-2
-
-Ok, then a binary sysfs file is fine, no objection from me.
-
-> > I ask as maybe debugfs is the best place for this if they are not needed
-> > on production systems.
-> >
-> >
-> > > >
-> > > > Current approach relies on a few pieces coming together:
-> > > > 1. pahole is used to take almost final vmlinux image (modulo .BTF and
-> > > >     kallsyms) and generate .BTF section by converting DWARF info into
-> > > >     BTF. This section is not allocated and not mapped to any segment,
-> > > >     though, so is not yet accessible from inside kernel at runtime.
-> > > > 2. objcopy dumps .BTF contents into binary file and subsequently
-> > > >     convert binary file into linkable object file with automatically
-> > > >     generated symbols _binary__btf_kernel_bin_start and
-> > > >     _binary__btf_kernel_bin_end, pointing to start and end, respectively,
-> > > >     of BTF raw data.
-> > > > 3. final vmlinux image is generated by linking this object file (and
-> > > >     kallsyms, if necessary). sysfs_btf.c then creates
-> > > >     /sys/kernel/btf/kernel file and exposes embedded BTF contents through
-> > > >     it. This allows, e.g., libbpf and bpftool access BTF info at
-> > > >     well-known location, without resorting to searching for vmlinux image
-> > > >     on disk (location of which is not standardized and vmlinux image
-> > > >     might not be even available in some scenarios, e.g., inside qemu
-> > > >     during testing).
-> > > >
-> > > > Alternative approach using .incbin assembler directive to embed BTF
-> > > > contents directly was attempted but didn't work, because sysfs_proc.o is
-> > > > not re-compiled during link-vmlinux.sh stage. This is required, though,
-> > > > to update embedded BTF data (initially empty data is embedded, then
-> > > > pahole generates BTF info and we need to regenerate sysfs_btf.o with
-> > > > updated contents, but it's too late at that point).
-> > > >
-> > > > If BTF couldn't be generated due to missing or too old pahole,
-> > > > sysfs_btf.c handles that gracefully by detecting that
-> > > > _binary__btf_kernel_bin_start (weak symbol) is 0 and not creating
-> > > > /sys/kernel/btf at all.
-> > > >
-> > > > v1->v2:
-> > > > - allow kallsyms stage to re-use vmlinux generated by gen_btf();
-> > > >
-> > > > Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> > > > Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-> > > > Cc: Jiri Olsa <jolsa@kernel.org>
-> > > > Cc: Sam Ravnborg <sam@ravnborg.org>
-> > > > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > > > ---
-> > > >   kernel/bpf/Makefile     |  3 +++
-> > > >   kernel/bpf/sysfs_btf.c  | 52 ++++++++++++++++++++++++++++++++++++++
-> > > >   scripts/link-vmlinux.sh | 55 +++++++++++++++++++++++++++--------------
-> > > >   3 files changed, 91 insertions(+), 19 deletions(-)
-> > > >   create mode 100644 kernel/bpf/sysfs_btf.c
-> >
-> > First rule, you can't create new sysfs files without a matching
-> > Documentation/ABI/ set of entries.  Please do that for the next version
-> > of this patch so we can properly check to see if what you are
-> > documenting lines up with the code.  Otherwise we just have to guess as
-> > to what the entries you are creating actually do.
+>   ethtool --offload eth0 rx on tx on gro on gso on sg on tso on
 > 
-> Yep, sure, I wasn't aware, will add in v3.
-
-thanks.
-
-> > > > +static int __init btf_kernel_init(void)
-> > > > +{
-> > > > +   if (!_binary__btf_kernel_bin_start)
-> > > > +           return 0;
-> > > > +
-> > > > +   btf_kernel_attr.size = _binary__btf_kernel_bin_end -
-> > > > +                          _binary__btf_kernel_bin_start;
-> > > > +
-> > > > +   return sysfs_create_group(kernel_kobj, &btf_group_attr);
-> >
-> > You are nesting directories here without a "real" kobject in the middle.
-> > Are you _sure_ you want to do that?  It's going to get really tricky
-> > later on based on your comments above about creating multiple files in
-> > that directory over time once "modules" are allowed.
+> and this caused zero problems without the xmit_more patch. However I just saw
+> that net-next has a patch where TSO is disabled due to a known HW defect in
+> RTL8168evl, which is of course what I have. Could this be the reason for the
+> stall/hiccup when xmit_more has its fingers in the pie? I kind of know what
+> xmit_more does, just not how it could interact with a possibly broken TSO that
+> nevertheless seems to work fine otherwise..
 > 
-> My thinking was that when we have BTF for modules, I'll need to do
-> some code adjustments anyway, at which point it will be more clear how
-> we want to structure that. But I can add explicit kobject as static
-> variable right now, no problems. Later on we probably will just switch
-> it to be exported, so that modules can self-register/unregister their
-> BTFs autonomously.
 
-A "real" kobject to start with here would probably be best.  Keeps
-things simpler later as well.
+I was about to ask exactly that, whether you have TSO enabled. I don't know what
+can trigger the HW issue, it was just confirmed by Realtek that this chip version
+has a problem with TSO. So the logical conclusion is: test w/o TSO, ideally the
+linux-next version.
 
-thanks,
-
-greg k-h
+> thanks
+> Holger
+> 
+Heiner
