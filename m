@@ -2,168 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 018A185C6C
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 10:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFB9385C92
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 10:14:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731719AbfHHIEe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 04:04:34 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:41066 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731281AbfHHIEe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 04:04:34 -0400
-Received: by mail-wr1-f66.google.com with SMTP id c2so90704951wrm.8
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 01:04:31 -0700 (PDT)
+        id S1732006AbfHHIOE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 04:14:04 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:47052 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731781AbfHHIOE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 04:14:04 -0400
+Received: by mail-ot1-f66.google.com with SMTP id z23so6973880ote.13;
+        Thu, 08 Aug 2019 01:14:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zMsNZPgG1h/gk8iP3BIALAS6VnOFS8kzvEAWQ1MBsZg=;
-        b=CHH1omBqOPi6U3LqSz9XFqLi7lP+MV2oshT2YuNoDzXouyWYREEgdPzEn1mp3X/cpc
-         nYQT1BC0/rEbf36R5XsAubuizp3A5Z/yCK13JiDmq15VNRRaxCj7/epuAU46LXeMEbtC
-         cCCEsjJfeeUzFYZZJN6u1qO/3r4KlJqhdhL6red4j1Mkxde7a1jjib/G1pBX0E4fe43w
-         tBb7KfQvUwWtw0wIV5yX7PUhaGung4lGni1PAg3U3650Q+0Ky2/Cd1mfqEKgRgKHmnBS
-         KGrZw/DAykfnmcp6ZCHKSG3WwgYnCljD5qJoePOEg+wa5YVydjdsxGs1/V4Ho3skWkF4
-         QPqA==
+        d=gmail.com; s=20161025;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=aYc/fc0DGbtltCecOiZ42Q6vOGrrQUgvpSTpwJEiq3I=;
+        b=a289ZnMYfQ/po7+vfNhUyM/J6ww22Y2jhZP0KOPGynknnV2NJiu0Pk7vrnRA+44rIN
+         FJKlDoFSoLeq4X087B2CjQKvUBBuoAqra7M0gQlVvFuMyXxkB5sfF2RrTGyt9ptr24Vu
+         /KMPX61+CBCa075MJJw+ZDqTRKLrL7PE9pf26b7s0rldnZLVI8FwdpH7S/k7ojR+BqSi
+         Jt9V1qKzRPUzOo0qaV8bsm7sFgY3KkLRWfhbG9xQcDU9U1GvSfEk35HuPwuFdJYz2jao
+         PyXy4H2SFwYvG1mxgokzISbk4BsUUk/gWWelumBCtPW3nF4C3v1zn7O0qmgdSMCIGORv
+         bRZw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zMsNZPgG1h/gk8iP3BIALAS6VnOFS8kzvEAWQ1MBsZg=;
-        b=IpjGoa9/Fv/AVgJzNlS44D8g+3q00H6CpZSMY72XiOQ/LhRJhXeXdVXSN15wRosii7
-         Z4g7lmA3DcoIOhJ2TKjy1IOwj6wxCUQjYtsEZ/T/Q9v1FoPLYjkLkJYUvC0P9FWa+A2r
-         pAewhl5g1QQ6bBFf8RGGMbmRwBnq9ebSX7kmFEMeUUxnl+cu1aFzABzQkdd73Vseu5XP
-         avprbWaX+0WCSUigfus40tTR7O60w9yv8XAbSF2hyXpf26r7z6WqxYG8hdRA0DJVmNei
-         99HjoAtt+Pu6ftAiRDRZ7YeWgt5nvupxnPegKkU3bQOFpDhsbJaQjHU1WenQ+Ap5gP9F
-         Dh1g==
-X-Gm-Message-State: APjAAAUm6qlpLqiIaqC5Z9TenY6li3Tkm6Gh7TBN1Mb30ayktttTBKTm
-        ZF8s7KdbnkZ/wAMbjVFAvBs=
-X-Google-Smtp-Source: APXvYqwcCmOCECVPe3g66qXq1EukQ0kTA+KuiuWlG+x7+4RS4Rw/MHHc+Xj4GTCR8bUBXzhoWjN65Q==
-X-Received: by 2002:adf:c7c7:: with SMTP id y7mr15041576wrg.44.1565251470932;
-        Thu, 08 Aug 2019 01:04:30 -0700 (PDT)
-Received: from tycho (ipbcc09208.dynamic.kabel-deutschland.de. [188.192.146.8])
-        by smtp.gmail.com with ESMTPSA id t19sm1449349wmi.29.2019.08.08.01.04.29
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 08 Aug 2019 01:04:30 -0700 (PDT)
-Date:   Thu, 8 Aug 2019 10:04:29 +0200
-From:   Zahari Doychev <zahari.doychev@linux.com>
-To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Cc:     netdev@vger.kernel.org, bridge@lists.linux-foundation.org,
-        roopa@cumulusnetworks.com, jhs@mojatatu.com, dsahern@gmail.com,
-        simon.horman@netronome.com, makita.toshiaki@lab.ntt.co.jp,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, ast@plumgrid.com,
-        johannes@sipsolutions.net, alexei.starovoitov@gmail.com
-Subject: Re: [PATCH v2 1/1] net: bridge: use mac_len in bridge forwarding
-Message-ID: <20190808080428.o2eqqfdscl274sr5@tycho>
-References: <20190805153740.29627-1-zahari.doychev@linux.com>
- <20190805153740.29627-2-zahari.doychev@linux.com>
- <48058179-9690-54e2-f60c-c372446bfde9@cumulusnetworks.com>
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=aYc/fc0DGbtltCecOiZ42Q6vOGrrQUgvpSTpwJEiq3I=;
+        b=eQzCVPl+guuDPb6R36yUvKbtMSOj/g1xJBbwaXZ3QcrYRdEEhMxgL96nb5uyR1fQFL
+         NK9t18CMTIdS1AYtEl8LnfbAeU30uMOUp5a0wGhVbBJoTMKW0An5fwto1zdVd/Ijomgr
+         rGyW45cJ0M8l1mngYBjIfaZb1SmDVRWvexn7HfvzPFxoueFAPH26uPBRn0KBlqWhFDxj
+         nJzwTsH5IUgCCX2mo7OdkweBM4LLDgUPIDiG+Iel0cAKbbpiIZiiZxceOeljdETjeqVg
+         7mdycokrEfa9npwhQy60GgF6ftFnwC8Z+0r7yEx/SYbom4yDOD/y4Rd620gXNpQKUCZb
+         byiQ==
+X-Gm-Message-State: APjAAAUmAoWJYaBE+pP9pz9T5Cf6EZFydEvnBB5F2vjm21Tq6LqouaRY
+        4qBFTSL1F5HflTQEWEAFbUcJUNOt
+X-Google-Smtp-Source: APXvYqxzmR8GRo68Eu8Mczl6JKSliOBoEHOHcBKOcCXXTMVc0ZPd/qRDCCLbplRI+89NQJQj7HJQrA==
+X-Received: by 2002:a9d:7cd1:: with SMTP id r17mr12052163otn.356.1565252043247;
+        Thu, 08 Aug 2019 01:14:03 -0700 (PDT)
+Received: from [192.168.1.112] (cpe-24-31-245-230.kc.res.rr.com. [24.31.245.230])
+        by smtp.gmail.com with ESMTPSA id d22sm31412123oig.38.2019.08.08.01.14.02
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Thu, 08 Aug 2019 01:14:02 -0700 (PDT)
+Subject: Re: [PATCH v2] Fix non-kerneldoc comment in realtek/rtlwifi/usb.c
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     =?UTF-8?Q?Valdis_Kl=c4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <34195.1565229118@turing-police>
+ <15df2564-8815-f351-8fb2-b46611a90234@lwfinger.net>
+ <877e7odte2.fsf@kamboji.qca.qualcomm.com>
+From:   Larry Finger <Larry.Finger@lwfinger.net>
+Message-ID: <01fcbe35-e004-a9bf-c180-3e75fa3ab427@lwfinger.net>
+Date:   Thu, 8 Aug 2019 03:14:01 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <48058179-9690-54e2-f60c-c372446bfde9@cumulusnetworks.com>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <877e7odte2.fsf@kamboji.qca.qualcomm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 12:17:43PM +0300, Nikolay Aleksandrov wrote:
-> Hi Zahari,
-> On 05/08/2019 18:37, Zahari Doychev wrote:
-> > The bridge code cannot forward packets from various paths that set up the
-> > SKBs in different ways. Some of these packets get corrupted during the
-> > forwarding as not always is just ETH_HLEN pulled at the front. This happens
-> > e.g. when VLAN tags are pushed bu using tc act_vlan on ingress.
-> Overall the patch looks good, I think it shouldn't introduce any regressions
-> at least from the codepaths I was able to inspect, but please include more
-> details in here from the cover letter, in fact you don't need it just add all of
-> the details here so we have them, especially the test setup. Also please provide
-> some details how this patch was tested. It'd be great if you could provide a
-> selftest for it so we can make sure it's considered when doing future changes.
-
-Hi Nik,
-
-Thanks for the reply. I will do the suggested corrections and try creating a
-selftest. I assume it should go to the net/forwarding together with the other
-bridge tests as a separate patch.
-
-Regards,
-Zahari
-
+On 8/8/19 2:10 AM, Kalle Valo wrote:
+> Larry Finger <Larry.Finger@lwfinger.net> writes:
 > 
-> Thank you,
->  Nik
+>> On 8/7/19 8:51 PM, Valdis Klētnieks wrote:
+>>> Fix spurious warning message when building with W=1:
+>>>
+>>>     CC [M]  drivers/net/wireless/realtek/rtlwifi/usb.o
+>>> drivers/net/wireless/realtek/rtlwifi/usb.c:243: warning: Cannot understand  * on line 243 - I thought it was a doc line
+>>> drivers/net/wireless/realtek/rtlwifi/usb.c:760: warning: Cannot understand  * on line 760 - I thought it was a doc line
+>>> drivers/net/wireless/realtek/rtlwifi/usb.c:790: warning: Cannot understand  * on line 790 - I thought it was a doc line
+>>>
+>>> Clean up the comment format.
+>>>
+>>> Signed-off-by: Valdis Kletnieks <valdis.kletnieks@vt.edu>
+>>>
+>>> ---
+>>> Changes since v1:  Larry Finger pointed out the patch wasn't checkpatch-clean.
+>>>
+>>> diff --git a/drivers/net/wireless/realtek/rtlwifi/usb.c b/drivers/net/wireless/realtek/rtlwifi/usb.c
+>>> index 34d68dbf4b4c..4b59f3b46b28 100644
+>>> --- a/drivers/net/wireless/realtek/rtlwifi/usb.c
+>>> +++ b/drivers/net/wireless/realtek/rtlwifi/usb.c
+>>> @@ -239,10 +239,7 @@ static void _rtl_usb_io_handler_release(struct ieee80211_hw *hw)
+>>>    	mutex_destroy(&rtlpriv->io.bb_mutex);
+>>>    }
+>>>    -/**
+>>> - *
+>>> - *	Default aggregation handler. Do nothing and just return the oldest skb.
+>>> - */
+>>> +/*	Default aggregation handler. Do nothing and just return the oldest skb.  */
+>>>    static struct sk_buff *_none_usb_tx_aggregate_hdl(struct ieee80211_hw *hw,
+>>>    						  struct sk_buff_head *list)
+>>>    {
+>>> @@ -756,11 +753,6 @@ static int rtl_usb_start(struct ieee80211_hw *hw)
+>>>    	return err;
+>>>    }
+>>>    -/**
+>>> - *
+>>> - *
+>>> - */
+>>> -
+>>>    /*=======================  tx =========================================*/
+>>>    static void rtl_usb_cleanup(struct ieee80211_hw *hw)
+>>>    {
+>>> @@ -786,11 +778,7 @@ static void rtl_usb_cleanup(struct ieee80211_hw *hw)
+>>>    	usb_kill_anchored_urbs(&rtlusb->tx_submitted);
+>>>    }
+>>>    -/**
+>>> - *
+>>> - * We may add some struct into struct rtl_usb later. Do deinit here.
+>>> - *
+>>> - */
+>>> +/* We may add some struct into struct rtl_usb later. Do deinit here.  */
+>>>    static void rtl_usb_deinit(struct ieee80211_hw *hw)
+>>>    {
+>>>    	rtl_usb_cleanup(hw);
+>>
+>> I missed that the subject line should be "rtwifi: Fix ....". Otherwise it is OK.
 > 
-> > 
-> > The problem is fixed by using skb->mac_len instead of ETH_HLEN, which makes
-> > sure that the skb headers are correctly restored. This usually does not
-> > change anything, execpt the local bridge transmits which now need to set
-> > the skb->mac_len correctly in br_dev_xmit, as well as the broken case noted
-> > above.
-> > 
-> > Signed-off-by: Zahari Doychev <zahari.doychev@linux.com>
-> > ---
-> >  net/bridge/br_device.c  | 3 ++-
-> >  net/bridge/br_forward.c | 4 ++--
-> >  net/bridge/br_vlan.c    | 3 ++-
-> >  3 files changed, 6 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-> > index 681b72862c16..aeb77ff60311 100644
-> > --- a/net/bridge/br_device.c
-> > +++ b/net/bridge/br_device.c
-> > @@ -55,8 +55,9 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
-> >  	BR_INPUT_SKB_CB(skb)->frag_max_size = 0;
-> >  
-> >  	skb_reset_mac_header(skb);
-> > +	skb_reset_mac_len(skb);
-> >  	eth = eth_hdr(skb);
-> > -	skb_pull(skb, ETH_HLEN);
-> > +	skb_pull(skb, skb->mac_len);
-> >  
-> >  	if (!br_allowed_ingress(br, br_vlan_group_rcu(br), skb, &vid))
-> >  		goto out;
-> > diff --git a/net/bridge/br_forward.c b/net/bridge/br_forward.c
-> > index 86637000f275..edb4f3533f05 100644
-> > --- a/net/bridge/br_forward.c
-> > +++ b/net/bridge/br_forward.c
-> > @@ -32,7 +32,7 @@ static inline int should_deliver(const struct net_bridge_port *p,
-> >  
-> >  int br_dev_queue_push_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
-> >  {
-> > -	skb_push(skb, ETH_HLEN);
-> > +	skb_push(skb, skb->mac_len);
-> >  	if (!is_skb_forwardable(skb->dev, skb))
-> >  		goto drop;
-> >  
-> > @@ -94,7 +94,7 @@ static void __br_forward(const struct net_bridge_port *to,
-> >  		net = dev_net(indev);
-> >  	} else {
-> >  		if (unlikely(netpoll_tx_running(to->br->dev))) {
-> > -			skb_push(skb, ETH_HLEN);
-> > +			skb_push(skb, skb->mac_len);
-> >  			if (!is_skb_forwardable(skb->dev, skb))
-> >  				kfree_skb(skb);
-> >  			else
-> > diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-> > index 021cc9f66804..88244c9cc653 100644
-> > --- a/net/bridge/br_vlan.c
-> > +++ b/net/bridge/br_vlan.c
-> > @@ -466,13 +466,14 @@ static bool __allowed_ingress(const struct net_bridge *br,
-> >  		/* Tagged frame */
-> >  		if (skb->vlan_proto != br->vlan_proto) {
-> >  			/* Protocol-mismatch, empty out vlan_tci for new tag */
-> > -			skb_push(skb, ETH_HLEN);
-> > +			skb_push(skb, skb->mac_len);
-> >  			skb = vlan_insert_tag_set_proto(skb, skb->vlan_proto,
-> >  							skb_vlan_tag_get(skb));
-> >  			if (unlikely(!skb))
-> >  				return false;
-> >  
-> >  			skb_pull(skb, ETH_HLEN);
-> > +			skb_reset_network_header(skb);
-> >  			skb_reset_mac_len(skb);
-> >  			*vid = 0;
-> >  			tagged = false;
-> > 
-> 
+> I can fix the subject during commit.
+
+OK. Acked-by: Larry Finger<Larry.Finger@lwfinger.net>
+
+Thanks,
+
+Larry
+
+
