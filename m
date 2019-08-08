@@ -2,143 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1EEA864CD
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 16:50:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FB9A864E5
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 16:58:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390058AbfHHOuC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 10:50:02 -0400
-Received: from mail-eopbgr750071.outbound.protection.outlook.com ([40.107.75.71]:13134
-        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732901AbfHHOuC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 10:50:02 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=HsjnyM5YzursRdLBKRr9N5sjmQNCRkHDQddWltcK+ZOCYYFlOWT9OIXnnTgPcfLFQNuTxvjFqmCuBKoIQgSKyRttTLlp2GGcOrYqQSlFGkI86dtbBTqG29jKTwVoVRj2fzsrLeDYYyB1JpJ4QbIvLwoSkjuk8xTsEh61ZEc7ldLQKKQLo/gX6eEUiYpVjCxDEk7UtakleqDbOa6JvYHEdZY+mEJhU3Xm7fwO+bJta7f9pAv/RJrYweoNxCDsNU430LU3v2mv8QDcpMcPKOif1KDq5VWKxqW1bLRw986b6tw+BqHAkJNeMPYqxHmuq4OAf7sRFkZxNcwTMIrPM+W2Gg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yL0nlJSeSM94CHyhyv86iXc4NfKp1W9+6UOQAB2lJSg=;
- b=kdkEgb4vjtai36wGjr/VCR29RX96qDIkIPv1Km73AROAhgFjWeUZuR3Wihstm/LUFFH758VDsJfW/F02Tz8jNUDmid7XEaPdectuiGO3ixqp2qywf8CqlOx7Z0Bfss+X8ngFlMa8QilQWW54tqI9ac1rPNkxug8QF8MoT4vfTawdGunqbtqtqWQPsUBvBdd0F7uhADUpDStmC+oeFZqmkZHy9ESL9Rch4SPGBfUewdt7tIkEtKzn82j10fRBAFT9L35PVPgTce9PAKFLi1wtIK4fefyPYAV7oDrjjzmlWghHfemF4PIPOCwSqiZjBOxasycBG4jsUMrbhf0uH1kanQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=ericsson.com; dmarc=pass action=none header.from=ericsson.com;
- dkim=pass header.d=ericsson.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ericsson.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yL0nlJSeSM94CHyhyv86iXc4NfKp1W9+6UOQAB2lJSg=;
- b=L4qerM9HygZjvgAyZ5eNDfMG1GdDs7CqPSj2pb73laOHUk2hw4WASFv1fgJlsGaVsMzhsj2ewz/IjPOIOWxjhVHVSwNfijVon0ahiuglozsZeY+RAcCbMn7sk9zrzNL6/+zjHtSZdmqC+8LgpzQqj1A+QLBM0YhKLxJSWOptimc=
-Received: from MN2PR15MB3581.namprd15.prod.outlook.com (52.132.172.94) by
- MN2PR15MB3104.namprd15.prod.outlook.com (20.178.252.10) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.14; Thu, 8 Aug 2019 14:49:59 +0000
-Received: from MN2PR15MB3581.namprd15.prod.outlook.com
- ([fe80::a8a2:3747:eeff:2cfe]) by MN2PR15MB3581.namprd15.prod.outlook.com
- ([fe80::a8a2:3747:eeff:2cfe%7]) with mapi id 15.20.2157.015; Thu, 8 Aug 2019
- 14:49:59 +0000
-From:   Jon Maloy <jon.maloy@ericsson.com>
-To:     Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        "ying.xue@windriver.com" <ying.xue@windriver.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "tipc-discussion@lists.sourceforge.net" 
-        <tipc-discussion@lists.sourceforge.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH] tipc: set addr_trail_end when using explicit node
- addresses
-Thread-Topic: [PATCH] tipc: set addr_trail_end when using explicit node
- addresses
-Thread-Index: AQHVTNxmcyx4K5X64kCOEEbx4BfRSKbxVbDQ
-Date:   Thu, 8 Aug 2019 14:49:59 +0000
-Message-ID: <MN2PR15MB358160FE1011F0ED1C785A2E9AD70@MN2PR15MB3581.namprd15.prod.outlook.com>
-References: <20190807045543.28373-1-chris.packham@alliedtelesis.co.nz>
-In-Reply-To: <20190807045543.28373-1-chris.packham@alliedtelesis.co.nz>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jon.maloy@ericsson.com; 
-x-originating-ip: [75.146.241.189]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 72f0e3de-d39b-4a1d-1fc6-08d71c0fafd2
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR15MB3104;
-x-ms-traffictypediagnostic: MN2PR15MB3104:
-x-microsoft-antispam-prvs: <MN2PR15MB31040DA26616194FFC5B6EBB9AD70@MN2PR15MB3104.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 012349AD1C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(376002)(136003)(366004)(396003)(13464003)(189003)(199004)(102836004)(86362001)(81166006)(2201001)(53546011)(81156014)(6506007)(7736002)(14444005)(305945005)(256004)(26005)(2501003)(186003)(71200400001)(52536014)(11346002)(14454004)(99286004)(446003)(66446008)(64756008)(66556008)(486006)(5660300002)(476003)(4326008)(33656002)(76116006)(2906002)(66946007)(66476007)(7696005)(76176011)(44832011)(316002)(6116002)(3846002)(478600001)(8676002)(110136005)(53936002)(71190400001)(25786009)(74316002)(8936002)(66066001)(55016002)(229853002)(9686003)(6246003)(6436002)(54906003);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR15MB3104;H:MN2PR15MB3581.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: ericsson.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: /ygghzORsSgFAz9KVoVG+3VypaDCZ9fRsv2oTYTn6sMVKa5HKhSVNcfCD8ED9PBTsY9o9ySU6/JFtqjBxCgTI++sk78psYVcNmxk8Lw0JidOquSgYISEVmlYBc5kbv1olx6ONSrbQJ/H/+1cU/MknSBDCx3ziI32x0rKzjIZ1/Q6ZJ33WjlyBeRnUC2j/wtod9dltflB4EHeo61lMPbdfG3uSC4sfpWfcsvLvScJsypfWI3TP7M3Er4B9wp54AHip4XCsXkd4cJ+5h/PgWC/nZwH28lQvJbGUPTeCVyAP6YxCI7sSVq/2BKPrx7lYbQt1SG9hDFp5FpA1JjsYdORKtVHzSeA6Y0eFf56FLx+IUrifiH3+zuEMaoU6DR23Ex7s9G212twKeluiTSNGt+RUaDBwOlpZ6VVN6jO9bvPH9I=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1733025AbfHHO6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 10:58:06 -0400
+Received: from mail-ot1-f71.google.com ([209.85.210.71]:55721 "EHLO
+        mail-ot1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725785AbfHHO6G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 10:58:06 -0400
+Received: by mail-ot1-f71.google.com with SMTP id p7so62248627otk.22
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 07:58:05 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=hzPCZwefKJfQcvn5B7LPmicli4s8uiqMv/SP2gxfHXg=;
+        b=koDEoVG92rkAMxlwyAXVdVXggm+1Kz83Frzf9XzCq0kG0lMVR9urId2g2312klTeth
+         QDl1J1lqI0xJlI143WIJh2oifsYRVPoOvYXLdcn2iloOwRH3c3xL/3L+RRA155D//z9h
+         cV+qRWllJgRTdtMyml5ZU47zjZ9mGywwRwR/Odl62bGazMbQhkBO6AmsiQ90ON5WlOtG
+         +Feqc6GSrGvmZqHTyF10o/5nHOX+MoA+mZXaD4LNHSH85MhY2VAe8MwCgVCxRqnTDUfO
+         bqywPKttmKJIi8Iu62/CXXL/zJqjj5CoeI6YCEcS+/6uTrZ8u4IJEQvZEy9QSHJw0GfH
+         iM4Q==
+X-Gm-Message-State: APjAAAWIODe+JLHR2fEI35/TPWWQvJADFMDKiRkm4NY5m0UvXMw95r6Z
+        Tr8kZUTpF0Xk06Nke96kKyPf5kc9DG4X1cyElr5faVLfTCzs
+X-Google-Smtp-Source: APXvYqwDuB4Usf52KhYW2cUba6zYP1GiRCFwKZz8FS9QcEa26TO21VotgwzpkHA8HVAZ0/wMGyjDY/77LlbDwzXW1RAx7kGPnZ53
 MIME-Version: 1.0
-X-OriginatorOrg: ericsson.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 72f0e3de-d39b-4a1d-1fc6-08d71c0fafd2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2019 14:49:59.2647
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 92e84ceb-fbfd-47ab-be52-080c6b87953f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: lKde4D9ScGVGL4Dw2TxWMrYwGRN4fW/E6GVdZ0s+0K6KguQTsTGCUzSHX1ka65/u1GWU1bk35DoYd/XPeq1OYQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR15MB3104
+X-Received: by 2002:a02:b791:: with SMTP id f17mr5130499jam.51.1565276285514;
+ Thu, 08 Aug 2019 07:58:05 -0700 (PDT)
+Date:   Thu, 08 Aug 2019 07:58:05 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000f93dd2058f9c4873@google.com>
+Subject: memory leak in sctp_get_port_local (2)
+From:   syzbot <syzbot+2d7ecdf99f15689032b3@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com,
+        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-You should rather set this one unconditionally in tipc_set_node_addr().
-The problems is not about the state machine, but that jiffies is close to t=
-he wrap-around time, so that it is perceived as being before the time "0".
+Hello,
 
-BR
-///jon
+syzbot found the following crash on:
+
+HEAD commit:    0eb0ce0a Merge tag 'spi-fix-v5.3-rc3' of git://git.kernel...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=1234588c600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=39113f5c48aea971
+dashboard link: https://syzkaller.appspot.com/bug?extid=2d7ecdf99f15689032b3
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=160e1906600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=140ab906600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+2d7ecdf99f15689032b3@syzkaller.appspotmail.com
+
+executing program
+executing program
+executing program
+executing program
+executing program
+BUG: memory leak
+unreferenced object 0xffff88810fa4b380 (size 64):
+   comm "syz-executor900", pid 7117, jiffies 4294946947 (age 16.560s)
+   hex dump (first 32 bytes):
+     20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
+     58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
+   backtrace:
+     [<00000000f1461735>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
+     [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
+     [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+     [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
+     [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0  
+net/sctp/socket.c:8121
+     [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
+     [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
+     [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
+     [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
+     [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
+     [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
+     [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
+     [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:296
+     [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff88810fa4b380 (size 64):
+   comm "syz-executor900", pid 7117, jiffies 4294946947 (age 19.260s)
+   hex dump (first 32 bytes):
+     20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
+     58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
+   backtrace:
+     [<00000000f1461735>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
+     [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
+     [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+     [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
+     [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0  
+net/sctp/socket.c:8121
+     [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
+     [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
+     [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
+     [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
+     [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
+     [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
+     [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
+     [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:296
+     [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff88810fa4b380 (size 64):
+   comm "syz-executor900", pid 7117, jiffies 4294946947 (age 21.990s)
+   hex dump (first 32 bytes):
+     20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
+     58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
+   backtrace:
+     [<00000000f1461735>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
+     [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
+     [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+     [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
+     [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0  
+net/sctp/socket.c:8121
+     [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
+     [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
+     [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
+     [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
+     [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
+     [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
+     [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
+     [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:296
+     [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+BUG: memory leak
+unreferenced object 0xffff88810fa4b380 (size 64):
+   comm "syz-executor900", pid 7117, jiffies 4294946947 (age 22.940s)
+   hex dump (first 32 bytes):
+     20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
+     58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
+   backtrace:
+     [<00000000f1461735>] kmemleak_alloc_recursive  
+include/linux/kmemleak.h:43 [inline]
+     [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
+     [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
+     [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
+     [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
+     [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0  
+net/sctp/socket.c:8121
+     [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
+     [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
+     [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
+     [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
+     [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
+     [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
+     [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
+     [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0  
+arch/x86/entry/common.c:296
+     [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+executing program
+executing program
+executing program
+executing program
 
 
-> -----Original Message-----
-> From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> Behalf Of Chris Packham
-> Sent: 7-Aug-19 00:56
-> To: Jon Maloy <jon.maloy@ericsson.com>; ying.xue@windriver.com;
-> davem@davemloft.net
-> Cc: netdev@vger.kernel.org; tipc-discussion@lists.sourceforge.net; linux-
-> kernel@vger.kernel.org; Chris Packham <chris.packham@alliedtelesis.co.nz>
-> Subject: [PATCH] tipc: set addr_trail_end when using explicit node addres=
-ses
->=20
-> When tipc uses auto-generated node addresses it goes through a duplicate
-> address detection phase to ensure the address is unique.
->=20
-> When using explicitly configured node names the DAD phase is skipped.
-> However addr_trail_end was being left set to 0 which causes parts of the =
-tipc
-> state machine to assume that the address is not yet valid and unnecessari=
-ly
-> delays the discovery phase. By setting addr_trail_end to jiffies when usi=
-ng
-> explicit addresses we ensure that we move straight to discovery.
->=20
-> Signed-off-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> ---
->  net/tipc/discover.c | 2 ++
->  1 file changed, 2 insertions(+)
->=20
-> diff --git a/net/tipc/discover.c b/net/tipc/discover.c index
-> c138d68e8a69..f83bfe8c9443 100644
-> --- a/net/tipc/discover.c
-> +++ b/net/tipc/discover.c
-> @@ -361,6 +361,8 @@ int tipc_disc_create(struct net *net, struct
-> tipc_bearer *b,
->  	if (!tipc_own_addr(net)) {
->  		tn->addr_trial_end =3D jiffies + msecs_to_jiffies(1000);
->  		msg_set_type(buf_msg(d->skb), DSC_TRIAL_MSG);
-> +	} else {
-> +		tn->addr_trial_end =3D jiffies;
->  	}
->  	memcpy(&d->dest, dest, sizeof(*dest));
->  	d->net =3D net;
-> --
-> 2.22.0
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
