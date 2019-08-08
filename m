@@ -2,222 +2,361 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B01E85AE7
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93C9285AEC
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:40:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731281AbfHHGjX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 02:39:23 -0400
-Received: from mail-eopbgr50071.outbound.protection.outlook.com ([40.107.5.71]:45086
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731129AbfHHGjW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 02:39:22 -0400
+        id S1731427AbfHHGkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 02:40:17 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:15110 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731325AbfHHGkR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 02:40:17 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x786bReF002688;
+        Wed, 7 Aug 2019 23:39:52 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=os6bS8kcoQ+358AZituoLT/A+65pzk3NcUfaMqe58/o=;
+ b=kveJLjMoMhq21oD9WVEkygTDuvJh7W4A/rCCdi4IlRD5teNtAYHd0Dj6eiaZDsh8RO+Q
+ lGTumchkvhu83KePAWV+BpINPpqaobUTrzn1lSDAnOm2Kwi1381Uk98uSSDoT8yKpvlH
+ Qd5l0aV2rIOYC0ZBopX1udbDoJbW4W7OgSs= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0b-00082601.pphosted.com with ESMTP id 2u87tss39r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 07 Aug 2019 23:39:51 -0700
+Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
+ ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 7 Aug 2019 23:39:51 -0700
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Wed, 7 Aug 2019 23:39:51 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XPdvswgyXPwve/invWo6X5e3Id7zEsTbgKsZ9onOGDHgeVeunpzJDcneNQXgd4MhtCeI0MHaOYgu61sossjDhwYCXkW6CenKqIuTpZSHC+Upo1jmasGnX5iSl3sKRu1EkzTFN/4gMGFAmUa7zexM1Gw+MwGJ7nfgwLibNVabIrDDxIYvdg+Ktu2dF0d5ePiOCEHaawQAX31mz1LLeikI1xlniBcAdsRCv/PJ9uhZpgGwozPj1KwjHJfz7vKeXK/P0/icvcHqdCyLewTvOZNgkYuB6qyyFqfoEYs01+3DWTiB7RiYmv7GHtt3jjlGdMomc9l1idqhPEajqzxgNdUXFg==
+ b=dm/G2rh1Vsho2Sx+Q2Te/ThdLN+aJsK4nIaK36iXNEi9MbvEzO+TaVk9A4i5jFLsrpvIrhRD02owTErBvmlSldDFX7JgcawQn24MYu7lORKuxU8Z5BvsJcYgLNMENt/dY8HjKQsLBCHPdNW6OC0Hje7Y1ByVkWST0hBeXDFGiDY6A6Ucivix7eD3qrQjux0gB/ZYG9y8rR/EV/YGsxBcb95fpRM1nVnmTGWWRV4G5JsvHEb51A+PzXuFCOk6ngQKnpMsoi10S9NyKO27SqBrufkvjqXwX/HVXN4QpC9cLb1pPYT5gS2sWjXUyhYgkMYiU9UNuJHUP0nTYSUzCdaMmw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=94QyGBi4KVQiQBKVLa11oOkBFM4NrWqtDGKNFYBubaw=;
- b=fZG+fJprbOc56Ybe53PHWZYvEmFjO7IvaCi5VZKiSDsS9D85O+qafGlRnE7QFwn9dHQVnTWsF7cTrgsy++RLM3lY+gvtFXn/giNWK1UQbx6x0siRlyG3juq8L/+2jfSIBiWcCjkzTtTlIa6H2CAxvoEcfMl2C8lDe/on5/7cv8V6Cy/xZMuB9X/uUAjkJv9UUSuCf8i6/p1eOzz9yMf3o6msbe0ogcTuvlOUosFHK/gkFOFi+yGEqBoPSUDEgP4DkMEan9rFvIuy9Eo8feWdeltSZEogy8RVs0TQ7N5HmomCI608jDDa3zoXvggFMm8LAFGVMx2Pkk14GUmb2mxgTw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
+ bh=os6bS8kcoQ+358AZituoLT/A+65pzk3NcUfaMqe58/o=;
+ b=bTTgIfOZpMvnL55c/SdebnUw9DjVgJMfpP2zCviD0By3KBu+pqJBA1xjCIiaW/wUKLktPoV3JmbXHxyN0BMD30AQVLxKjgXUnGKgReewsx2droemXIb5qmp2RhPuNKGtS4T0iB6HHBaia8/VDzVmozgxp+mkpsBfdaMJpy8WqhuamRIjukskI1RgSwup3y2PoR69j1fG+mTciMi6eAwf17v5IjKrTxuxZUg1slC6iD9EPels3/cL0snxixlvF1cqfOqDJcO4P3sWyR6K7JffZlL21E1LR0ESfrROUJMZHDAuKfiussqX6wEj9ecM6eSJO6ljv0st8vB6PGJeQRXF7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=fb.com;dmarc=pass action=none header.from=fb.com;dkim=pass
+ header.d=fb.com;arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=94QyGBi4KVQiQBKVLa11oOkBFM4NrWqtDGKNFYBubaw=;
- b=KBDwFm+sqkP6IZu5BfCBBaRivGOhhllaL4rstDDH5ThxvwlJJS1K0g8epN2uRTEms3C2nVxIcI2e2y839bpl9db+rcUaOlaSq0ALuCEFvo757fx/h643bJvhHQqxovqwkW4YqaffenlEuclS8QA8q+sN8ec9/xQFqiatrea1RHE=
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com (10.171.190.30) by
- AM4PR05MB3171.eurprd05.prod.outlook.com (10.171.189.16) with Microsoft SMTP
+ bh=os6bS8kcoQ+358AZituoLT/A+65pzk3NcUfaMqe58/o=;
+ b=i90h7xsgi/V8NmewP9bWEMMg8VoPAsXSK6nH4qUduCZRl5g5yzPPJlzpfQFkYQa+v/RHK+0hSNlZtJ1KrhVcr1pTbJbhiAoPdxiAqVhKrqFj9MEWQHdkg7KzlP73uBr3xY5pPQ/Eeb6BOc2jk6fsAfw/CKpP0X45viKaCXi0Yos=
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com (10.174.97.138) by
+ MWHPR15MB1837.namprd15.prod.outlook.com (10.174.255.141) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.18; Thu, 8 Aug 2019 06:39:16 +0000
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::d027:14a2:95db:6f1f]) by AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::d027:14a2:95db:6f1f%7]) with mapi id 15.20.2136.018; Thu, 8 Aug 2019
- 06:39:16 +0000
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+ 15.20.2136.15; Thu, 8 Aug 2019 06:39:49 +0000
+Received: from MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::e44d:56a4:6a5:d1a]) by MWHPR15MB1790.namprd15.prod.outlook.com
+ ([fe80::e44d:56a4:6a5:d1a%3]) with mapi id 15.20.2157.015; Thu, 8 Aug 2019
+ 06:39:49 +0000
+From:   Martin Lau <kafai@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Justin Pettit <jpettit@nicira.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Simon Horman <simon.horman@netronome.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
-Subject: Re: [PATCH net-next] net: openvswitch: Set OvS recirc_id from tc
- chain index
-Thread-Topic: [PATCH net-next] net: openvswitch: Set OvS recirc_id from tc
- chain index
-Thread-Index: AQHVTRjlJ4rvN3xFsU2F7hr1t29bFqbvx34AgAEGS4A=
-Date:   Thu, 8 Aug 2019 06:39:16 +0000
-Message-ID: <6b6d60b6-f602-aa45-28c3-3a19ee6d18b2@mellanox.com>
-References: <1565179722-22488-1-git-send-email-paulb@mellanox.com>
- <20190807150026.GE21609@localhost.localdomain>
-In-Reply-To: <20190807150026.GE21609@localhost.localdomain>
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next 1/3] bpf: support cloning sk storage on accept()
+Thread-Topic: [PATCH bpf-next 1/3] bpf: support cloning sk storage on accept()
+Thread-Index: AQHVTTduqbJFH1x3FkOpJFu+AIokkKbwza8A
+Date:   Thu, 8 Aug 2019 06:39:49 +0000
+Message-ID: <20190808063936.3p4ahtdkw35rrzqu@kafai-mbp>
+References: <20190807154720.260577-1-sdf@google.com>
+ <20190807154720.260577-2-sdf@google.com>
+In-Reply-To: <20190807154720.260577-2-sdf@google.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR2P264CA0023.FRAP264.PROD.OUTLOOK.COM (2603:10a6:101::35)
- To AM4PR05MB3411.eurprd05.prod.outlook.com (2603:10a6:205:b::30)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=paulb@mellanox.com; 
+x-clientproxiedby: CO2PR04CA0054.namprd04.prod.outlook.com
+ (2603:10b6:102:1::22) To MWHPR15MB1790.namprd15.prod.outlook.com
+ (2603:10b6:301:53::10)
 x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
+x-originating-ip: [2620:10d:c090:180::a50f]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 474714c1-7279-445e-c133-08d71bcb2222
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3171;
-x-ms-traffictypediagnostic: AM4PR05MB3171:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB3171E40E3A1086B16CCA418CCFD70@AM4PR05MB3171.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-office365-filtering-correlation-id: 4aad060a-98fa-4f17-c1bb-08d71bcb358b
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1837;
+x-ms-traffictypediagnostic: MWHPR15MB1837:
+x-microsoft-antispam-prvs: <MWHPR15MB18370379B5CAD75A0CFAA51AD5D70@MWHPR15MB1837.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8273;
 x-forefront-prvs: 012349AD1C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(39860400002)(376002)(366004)(396003)(346002)(199004)(189003)(6436002)(6512007)(25786009)(486006)(6486002)(53936002)(446003)(64756008)(11346002)(107886003)(186003)(86362001)(476003)(2616005)(6246003)(6916009)(102836004)(4326008)(256004)(66476007)(66946007)(53546011)(6506007)(66446008)(14444005)(386003)(66556008)(76176011)(52116002)(316002)(54906003)(478600001)(31686004)(8936002)(5660300002)(71200400001)(71190400001)(3846002)(229853002)(36756003)(305945005)(81156014)(26005)(31696002)(2906002)(14454004)(7736002)(81166006)(6116002)(99286004)(8676002)(66066001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3171;H:AM4PR05MB3411.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(136003)(346002)(376002)(396003)(366004)(39860400002)(189003)(199004)(64756008)(66476007)(25786009)(54906003)(6916009)(316002)(14454004)(6116002)(99286004)(33716001)(1076003)(52116002)(186003)(46003)(2906002)(6506007)(446003)(5660300002)(386003)(478600001)(102836004)(11346002)(486006)(66946007)(6246003)(8936002)(81156014)(476003)(4326008)(86362001)(53936002)(76176011)(14444005)(256004)(71200400001)(305945005)(7736002)(6436002)(71190400001)(9686003)(6512007)(6486002)(229853002)(8676002)(66556008)(81166006)(66446008);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1837;H:MWHPR15MB1790.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: qXotuqbVLY45TCzJJFbWLtd2Gfo/airvCy5mCgfgeBR7DDuMLJxBpmZyGH8QmSY6FGG+Vm/eNUfZm5k5i3F1gnJVnMdqOhSOPzJY1k1hSEDlAdIzbVckLqzL6+ZrY7Q2GyR0rvDbY0JYXY5r020ccXv8LRC7gfec0s9YXGf8yJXYqe4DyT1rov0NGi0g1Sp+xCn242ruZjI8J/y5nDMrgLY3C138+7GcZ8iQUd8mjjbLLCjkD75xvY1aOM3ijQDqa5Gz1czO6ZuBtmBRpRMWrA3vfrG5gGTiyfsocYGpmYznSgs0mEEY7KLZxHvWCtWtrSb74ADHZ/wIb3hSVaMMn6ANTouvc/jFsEEBLDTbvT7jCdtgL24BkPu9m0gD6wHrHeWZTbf0cRw8RYcBxCQzO12UOQTI+QyIcEiH1UiLJLM=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <85E054B50EEF5749907978380D5EA08E@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: 15h+u4povO1iQYk2PRsMRewdFt4v20rjKY0Z8+cLFYvr8bZxSe6r3pAHZ0lQ6rd8R2p7Xu1tb8dndlEdwH4b45WEqTrlgSpLMZjOfZqDZZnoHw7lT3cwcbzAH+dgmeEc4zJ98uf4OQ1nYCtBw2vADQtSBDeEWuCRfbgYl1JRn+4uFT1bwBY00rqdizd2lNV6qG1iAat2qsBCedGdl5ocVJ5/I7q+Pmk/iWu0fP62xDYam+80Gm8D0EdO6pioSMdspjSF7+Rpn7jhPoZowEQ5Ffby4dAv56HJDOGdBX6RxUE+KSCyuMuDNXEvZyoJ/7Twjf6Izkq5LGJL5WPemlrWdaGaUnYgUaEkHM8leQ9QurgUMWw7eD33TCoWIjb4/eHkHLuCYiyR9m2zny9oWe7MtJCsSeZxXt7qpquDv/fn7Jk=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <7B06577F9599ED42AAD608FFDDA8B9C1@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 474714c1-7279-445e-c133-08d71bcb2222
-X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2019 06:39:16.3357
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4aad060a-98fa-4f17-c1bb-08d71bcb358b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2019 06:39:49.4383
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: paulb@mellanox.com
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3171
+X-MS-Exchange-CrossTenant-userprincipalname: QgaoLOKenYKYpAf7shm2hAG7olze3xUXTHOLVbP9Wk/g3p4Dhk0Yp+YbSrc/xPQ1
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1837
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-08_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908080074
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiA4LzcvMjAxOSA2OjAwIFBNLCBNYXJjZWxvIFJpY2FyZG8gTGVpdG5lciB3cm90ZToNCj4g
-T24gV2VkLCBBdWcgMDcsIDIwMTkgYXQgMDM6MDg6NDJQTSArMDMwMCwgUGF1bCBCbGFrZXkgd3Jv
-dGU6DQo+PiBPZmZsb2FkZWQgT3ZTIGRhdGFwYXRoIHJ1bGVzIGFyZSB0cmFuc2xhdGVkIG9uZSB0
-byBvbmUgdG8gdGMgcnVsZXMsDQo+PiBmb3IgZXhhbXBsZSB0aGUgZm9sbG93aW5nIHNpbXBsaWZp
-ZWQgT3ZTIHJ1bGU6DQo+Pg0KPj4gcmVjaXJjX2lkKDApLGluX3BvcnQoZGV2MSksZXRoX3R5cGUo
-MHgwODAwKSxjdF9zdGF0ZSgtdHJrKSBhY3Rpb25zOmN0KCkscmVjaXJjKDIpDQo+Pg0KPj4gV2ls
-bCBiZSB0cmFuc2xhdGVkIHRvIHRoZSBmb2xsb3dpbmcgdGMgcnVsZToNCj4+DQo+PiAkIHRjIGZp
-bHRlciBhZGQgZGV2IGRldjEgaW5ncmVzcyBcDQo+PiAJICAgIHByaW8gMSBjaGFpbiAwIHByb3Rv
-IGlwIFwNCj4+IAkJZmxvd2VyIHRjcCBjdF9zdGF0ZSAtdHJrIFwNCj4+IAkJYWN0aW9uIGN0IHBp
-cGUgXA0KPj4gCQlhY3Rpb24gZ290byBjaGFpbiAyDQo+Pg0KPj4gUmVjZWl2ZWQgcGFja2V0cyB3
-aWxsIGZpcnN0IHRyYXZlbCB0aG91Z2ggdGMsIGFuZCBpZiB0aGV5IGFyZW4ndCBzdG9sZW4NCj4+
-IGJ5IGl0LCBsaWtlIGluIHRoZSBhYm92ZSBydWxlLCB0aGV5IHdpbGwgY29udGludWUgdG8gT3ZT
-IGRhdGFwYXRoLg0KPj4gU2luY2Ugd2UgYWxyZWFkeSBkaWQgc29tZSBhY3Rpb25zIChhY3Rpb24g
-Y3QgaW4gdGhpcyBjYXNlKSB3aGljaCBtaWdodA0KPj4gbW9kaWZ5IHRoZSBwYWNrZXRzLCBhbmQg
-dXBkYXRlZCBhY3Rpb24gc3RhdHMsIHdlIHdvdWxkIGxpa2UgdG8gY29udGludWUNCj4+IHRoZSBw
-cm9jY2Vzc2luZyB3aXRoIHRoZSBjb3JyZWN0IHJlY2lyY19pZCBpbiBPdlMgKGhlcmUgcmVjaXJj
-X2lkKDIpKQ0KPj4gd2hlcmUgd2UgbGVmdCBvZmYuDQo+Pg0KPj4gVG8gc3VwcG9ydCB0aGlzLCBp
-bnRyb2R1Y2UgYSBuZXcgc2tiIGV4dGVuc2lvbiBmb3IgdGMsIHdoaWNoDQo+PiB3aWxsIGJlIHVz
-ZWQgZm9yIHRyYW5zbGF0aW5nIHRjIGNoYWluIHRvIG92cyByZWNpcmNfaWQgdG8NCj4+IGhhbmRs
-ZSB0aGVzZSBtaXNzIGNhc2VzLiBMYXN0IHRjIGNoYWluIGluZGV4IHdpbGwgYmUgc2V0DQo+PiBi
-eSB0YyBnb3RvIGNoYWluIGFjdGlvbiBhbmQgcmVhZCBieSBPdlMgZGF0YXBhdGguDQo+Pg0KPj4g
-U2lnbmVkLW9mZi1ieTogUGF1bCBCbGFrZXkgPHBhdWxiQG1lbGxhbm94LmNvbT4NCj4+IFNpZ25l
-ZC1vZmYtYnk6IFZsYWQgQnVzbG92IDx2bGFkYnVAbWVsbGFub3guY29tPg0KPj4gQWNrZWQtYnk6
-IEppcmkgUGlya28gPGppcmlAbWVsbGFub3guY29tPg0KPiBSZXZpZXdlZC1ieTogTWFyY2VsbyBS
-aWNhcmRvIExlaXRuZXIgPG1hcmNlbG8ubGVpdG5lckBnbWFpbC5jb20+DQoNClRoYW5rcyENCg0K
-DQo+PiAtLS0NCj4+ICAgaW5jbHVkZS9saW51eC9za2J1ZmYuaCAgICB8IDEzICsrKysrKysrKysr
-KysNCj4+ICAgaW5jbHVkZS9uZXQvc2NoX2dlbmVyaWMuaCB8ICA1ICsrKystDQo+PiAgIG5ldC9j
-b3JlL3NrYnVmZi5jICAgICAgICAgfCAgNiArKysrKysNCj4+ICAgbmV0L29wZW52c3dpdGNoL2Zs
-b3cuYyAgICB8ICA5ICsrKysrKysrKw0KPj4gICBuZXQvc2NoZWQvS2NvbmZpZyAgICAgICAgIHwg
-MTMgKysrKysrKysrKysrKw0KPj4gICBuZXQvc2NoZWQvYWN0X2FwaS5jICAgICAgIHwgIDEgKw0K
-Pj4gICBuZXQvc2NoZWQvY2xzX2FwaS5jICAgICAgIHwgMTIgKysrKysrKysrKysrDQo+PiAgIDcg
-ZmlsZXMgY2hhbmdlZCwgNTggaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPj4NCj4+IGRp
-ZmYgLS1naXQgYS9pbmNsdWRlL2xpbnV4L3NrYnVmZi5oIGIvaW5jbHVkZS9saW51eC9za2J1ZmYu
-aA0KPj4gaW5kZXggM2FlZjhkOC4uZmIyYTc5MiAxMDA2NDQNCj4+IC0tLSBhL2luY2x1ZGUvbGlu
-dXgvc2tidWZmLmgNCj4+ICsrKyBiL2luY2x1ZGUvbGludXgvc2tidWZmLmgNCj4+IEBAIC0yNzks
-NiArMjc5LDE2IEBAIHN0cnVjdCBuZl9icmlkZ2VfaW5mbyB7DQo+PiAgIH07DQo+PiAgICNlbmRp
-Zg0KPj4gICANCj4+ICsjaWYgSVNfRU5BQkxFRChDT05GSUdfTkVUX1RDX1NLQl9FWFQpDQo+PiAr
-LyogQ2hhaW4gaW4gdGNfc2tiX2V4dCB3aWxsIGJlIHVzZWQgdG8gc2hhcmUgdGhlIHRjIGNoYWlu
-IHdpdGgNCj4+ICsgKiBvdnMgcmVjaXJjX2lkLiBJdCB3aWxsIGJlIHNldCB0byB0aGUgY3VycmVu
-dCBjaGFpbiBieSB0Yw0KPj4gKyAqIGFuZCByZWFkIGJ5IG92cyB0byByZWNpcmNfaWQuDQo+PiAr
-ICovDQo+PiArc3RydWN0IHRjX3NrYl9leHQgew0KPj4gKwlfX3UzMiBjaGFpbjsNCj4+ICt9Ow0K
-Pj4gKyNlbmRpZg0KPj4gKw0KPj4gICBzdHJ1Y3Qgc2tfYnVmZl9oZWFkIHsNCj4+ICAgCS8qIFRo
-ZXNlIHR3byBtZW1iZXJzIG11c3QgYmUgZmlyc3QuICovDQo+PiAgIAlzdHJ1Y3Qgc2tfYnVmZgkq
-bmV4dDsNCj4+IEBAIC00MDUwLDYgKzQwNjAsOSBAQCBlbnVtIHNrYl9leHRfaWQgew0KPj4gICAj
-aWZkZWYgQ09ORklHX1hGUk0NCj4+ICAgCVNLQl9FWFRfU0VDX1BBVEgsDQo+PiAgICNlbmRpZg0K
-Pj4gKyNpZiBJU19FTkFCTEVEKENPTkZJR19ORVRfVENfU0tCX0VYVCkNCj4+ICsJVENfU0tCX0VY
-VCwNCj4+ICsjZW5kaWYNCj4+ICAgCVNLQl9FWFRfTlVNLCAvKiBtdXN0IGJlIGxhc3QgKi8NCj4+
-ICAgfTsNCj4+ICAgDQo+PiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9uZXQvc2NoX2dlbmVyaWMuaCBi
-L2luY2x1ZGUvbmV0L3NjaF9nZW5lcmljLmgNCj4+IGluZGV4IDZiNmIwMTIuLjg3MWZlZWEgMTAw
-NjQ0DQo+PiAtLS0gYS9pbmNsdWRlL25ldC9zY2hfZ2VuZXJpYy5oDQo+PiArKysgYi9pbmNsdWRl
-L25ldC9zY2hfZ2VuZXJpYy5oDQo+PiBAQCAtMjc1LDcgKzI3NSwxMCBAQCBzdHJ1Y3QgdGNmX3Jl
-c3VsdCB7DQo+PiAgIAkJCXVuc2lnbmVkIGxvbmcJY2xhc3M7DQo+PiAgIAkJCXUzMgkJY2xhc3Np
-ZDsNCj4+ICAgCQl9Ow0KPj4gLQkJY29uc3Qgc3RydWN0IHRjZl9wcm90byAqZ290b190cDsNCj4+
-ICsJCXN0cnVjdCB7DQo+PiArCQkJY29uc3Qgc3RydWN0IHRjZl9wcm90byAqZ290b190cDsNCj4+
-ICsJCQl1MzIgZ290b19pbmRleDsNCj4+ICsJCX07DQo+PiAgIA0KPj4gICAJCS8qIHVzZWQgaW4g
-dGhlIHNrYl90Y19yZWluc2VydCBmdW5jdGlvbiAqLw0KPj4gICAJCXN0cnVjdCB7DQo+PiBkaWZm
-IC0tZ2l0IGEvbmV0L2NvcmUvc2tidWZmLmMgYi9uZXQvY29yZS9za2J1ZmYuYw0KPj4gaW5kZXgg
-ZWE4ZThkMy4uMmI0MGI1YSAxMDA2NDQNCj4+IC0tLSBhL25ldC9jb3JlL3NrYnVmZi5jDQo+PiAr
-KysgYi9uZXQvY29yZS9za2J1ZmYuYw0KPj4gQEAgLTQwODcsNiArNDA4Nyw5IEBAIGludCBza2Jf
-Z3JvX3JlY2VpdmUoc3RydWN0IHNrX2J1ZmYgKnAsIHN0cnVjdCBza19idWZmICpza2IpDQo+PiAg
-ICNpZmRlZiBDT05GSUdfWEZSTQ0KPj4gICAJW1NLQl9FWFRfU0VDX1BBVEhdID0gU0tCX0VYVF9D
-SFVOS1NJWkVPRihzdHJ1Y3Qgc2VjX3BhdGgpLA0KPj4gICAjZW5kaWYNCj4+ICsjaWYgSVNfRU5B
-QkxFRChDT05GSUdfTkVUX1RDX1NLQl9FWFQpDQo+PiArCVtUQ19TS0JfRVhUXSA9IFNLQl9FWFRf
-Q0hVTktTSVpFT0Yoc3RydWN0IHRjX3NrYl9leHQpLA0KPj4gKyNlbmRpZg0KPj4gICB9Ow0KPj4g
-ICANCj4+ICAgc3RhdGljIF9fYWx3YXlzX2lubGluZSB1bnNpZ25lZCBpbnQgc2tiX2V4dF90b3Rh
-bF9sZW5ndGgodm9pZCkNCj4+IEBAIC00MDk4LDYgKzQxMDEsOSBAQCBzdGF0aWMgX19hbHdheXNf
-aW5saW5lIHVuc2lnbmVkIGludCBza2JfZXh0X3RvdGFsX2xlbmd0aCh2b2lkKQ0KPj4gICAjaWZk
-ZWYgQ09ORklHX1hGUk0NCj4+ICAgCQlza2JfZXh0X3R5cGVfbGVuW1NLQl9FWFRfU0VDX1BBVEhd
-ICsNCj4+ICAgI2VuZGlmDQo+PiArI2lmIElTX0VOQUJMRUQoQ09ORklHX05FVF9UQ19TS0JfRVhU
-KQ0KPj4gKwkJc2tiX2V4dF90eXBlX2xlbltUQ19TS0JfRVhUXSArDQo+PiArI2VuZGlmDQo+PiAg
-IAkJMDsNCj4+ICAgfQ0KPj4gICANCj4+IGRpZmYgLS1naXQgYS9uZXQvb3BlbnZzd2l0Y2gvZmxv
-dy5jIGIvbmV0L29wZW52c3dpdGNoL2Zsb3cuYw0KPj4gaW5kZXggYmM4OWUxNi4uMDI4N2VhZCAx
-MDA2NDQNCj4+IC0tLSBhL25ldC9vcGVudnN3aXRjaC9mbG93LmMNCj4+ICsrKyBiL25ldC9vcGVu
-dnN3aXRjaC9mbG93LmMNCj4+IEBAIC04MTYsNiArODE2LDkgQEAgc3RhdGljIGludCBrZXlfZXh0
-cmFjdF9tYWNfcHJvdG8oc3RydWN0IHNrX2J1ZmYgKnNrYikNCj4+ICAgaW50IG92c19mbG93X2tl
-eV9leHRyYWN0KGNvbnN0IHN0cnVjdCBpcF90dW5uZWxfaW5mbyAqdHVuX2luZm8sDQo+PiAgIAkJ
-CSBzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBzdHJ1Y3Qgc3dfZmxvd19rZXkgKmtleSkNCj4+ICAgew0K
-Pj4gKyNpZiBJU19FTkFCTEVEKENPTkZJR19ORVRfVENfU0tCX0VYVCkNCj4+ICsJc3RydWN0IHRj
-X3NrYl9leHQgKnRjX2V4dDsNCj4+ICsjZW5kaWYNCj4+ICAgCWludCByZXMsIGVycjsNCj4+ICAg
-DQo+PiAgIAkvKiBFeHRyYWN0IG1ldGFkYXRhIGZyb20gcGFja2V0LiAqLw0KPj4gQEAgLTg0OCw3
-ICs4NTEsMTMgQEAgaW50IG92c19mbG93X2tleV9leHRyYWN0KGNvbnN0IHN0cnVjdCBpcF90dW5u
-ZWxfaW5mbyAqdHVuX2luZm8sDQo+PiAgIAlpZiAocmVzIDwgMCkNCj4+ICAgCQlyZXR1cm4gcmVz
-Ow0KPj4gICAJa2V5LT5tYWNfcHJvdG8gPSByZXM7DQo+PiArDQo+PiArI2lmIElTX0VOQUJMRUQo
-Q09ORklHX05FVF9UQ19TS0JfRVhUKQ0KPj4gKwl0Y19leHQgPSBza2JfZXh0X2ZpbmQoc2tiLCBU
-Q19TS0JfRVhUKTsNCj4+ICsJa2V5LT5yZWNpcmNfaWQgPSB0Y19leHQgPyB0Y19leHQtPmNoYWlu
-IDogMDsNCj4+ICsjZWxzZQ0KPj4gICAJa2V5LT5yZWNpcmNfaWQgPSAwOw0KPj4gKyNlbmRpZg0K
-Pj4gICANCj4+ICAgCWVyciA9IGtleV9leHRyYWN0KHNrYiwga2V5KTsNCj4+ICAgCWlmICghZXJy
-KQ0KPj4gZGlmZiAtLWdpdCBhL25ldC9zY2hlZC9LY29uZmlnIGIvbmV0L3NjaGVkL0tjb25maWcN
-Cj4+IGluZGV4IGFmZDJiYTEuLmIzZmFhZmUgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvc2NoZWQvS2Nv
-bmZpZw0KPj4gKysrIGIvbmV0L3NjaGVkL0tjb25maWcNCj4+IEBAIC05NjMsNiArOTYzLDE5IEBA
-IGNvbmZpZyBORVRfSUZFX1NLQlRDSU5ERVgNCj4+ICAgICAgICAgICB0cmlzdGF0ZSAiU3VwcG9y
-dCB0byBlbmNvZGluZyBkZWNvZGluZyBza2IgdGNpbmRleCBvbiBJRkUgYWN0aW9uIg0KPj4gICAg
-ICAgICAgIGRlcGVuZHMgb24gTkVUX0FDVF9JRkUNCj4+ICAgDQo+PiArY29uZmlnIE5FVF9UQ19T
-S0JfRVhUDQo+PiArCWJvb2wgIlRDIHJlY2lyY3VsYXRpb24gc3VwcG9ydCINCj4+ICsJZGVwZW5k
-cyBvbiBORVRfQ0xTX0FDVA0KPj4gKwlkZWZhdWx0IHkgaWYgTkVUX0NMU19BQ1QNCj4+ICsJc2Vs
-ZWN0IFNLQl9FWFRFTlNJT05TDQo+PiArDQo+PiArCWhlbHANCj4+ICsJICBTYXkgWSBoZXJlIHRv
-IGFsbG93IHRjIGNoYWluIG1pc3NlcyB0byBjb250aW51ZSBpbiBPdlMgZGF0YXBhdGggaW4NCj4+
-ICsJICB0aGUgY29ycmVjdCByZWNpcmNfaWQsIGFuZCBoYXJkd2FyZSBjaGFpbiBtaXNzZXMgdG8g
-Y29udGludWUgaW4NCj4+ICsJICB0aGUgY29ycmVjdCBjaGFpbiBpbiB0YyBzb2Z0d2FyZSBkYXRh
-cGF0aC4NCj4+ICsNCj4+ICsJICBTYXkgTiBoZXJlIGlmIHlvdSB3b24ndCBiZSB1c2luZyB0Yzwt
-Pm92cyBvZmZsb2FkIG9yIHRjIGNoYWlucyBvZmZsb2FkLg0KPj4gKw0KPj4gICBlbmRpZiAjIE5F
-VF9TQ0hFRA0KPj4gICANCj4+ICAgY29uZmlnIE5FVF9TQ0hfRklGTw0KPj4gZGlmZiAtLWdpdCBh
-L25ldC9zY2hlZC9hY3RfYXBpLmMgYi9uZXQvc2NoZWQvYWN0X2FwaS5jDQo+PiBpbmRleCAzMzk3
-MTIyLi5jMzkzNjA0IDEwMDY0NA0KPj4gLS0tIGEvbmV0L3NjaGVkL2FjdF9hcGkuYw0KPj4gKysr
-IGIvbmV0L3NjaGVkL2FjdF9hcGkuYw0KPj4gQEAgLTI3LDYgKzI3LDcgQEAgc3RhdGljIHZvaWQg
-dGNmX2FjdGlvbl9nb3RvX2NoYWluX2V4ZWMoY29uc3Qgc3RydWN0IHRjX2FjdGlvbiAqYSwNCj4+
-ICAgew0KPj4gICAJY29uc3Qgc3RydWN0IHRjZl9jaGFpbiAqY2hhaW4gPSByY3VfZGVyZWZlcmVu
-Y2VfYmgoYS0+Z290b19jaGFpbik7DQo+PiAgIA0KPj4gKwlyZXMtPmdvdG9faW5kZXggPSBjaGFp
-bi0+aW5kZXg7DQo+PiAgIAlyZXMtPmdvdG9fdHAgPSByY3VfZGVyZWZlcmVuY2VfYmgoY2hhaW4t
-PmZpbHRlcl9jaGFpbik7DQo+PiAgIH0NCj4+ICAgDQo+PiBkaWZmIC0tZ2l0IGEvbmV0L3NjaGVk
-L2Nsc19hcGkuYyBiL25ldC9zY2hlZC9jbHNfYXBpLmMNCj4+IGluZGV4IDM1NjVkOWEuLmIwYjgy
-OWEgMTAwNjQ0DQo+PiAtLS0gYS9uZXQvc2NoZWQvY2xzX2FwaS5jDQo+PiArKysgYi9uZXQvc2No
-ZWQvY2xzX2FwaS5jDQo+PiBAQCAtMTY2MCw2ICsxNjYwLDE4IEBAIGludCB0Y2ZfY2xhc3NpZnko
-c3RydWN0IHNrX2J1ZmYgKnNrYiwgY29uc3Qgc3RydWN0IHRjZl9wcm90byAqdHAsDQo+PiAgIAkJ
-CWdvdG8gcmVzZXQ7DQo+PiAgIAkJfSBlbHNlIGlmICh1bmxpa2VseShUQ19BQ1RfRVhUX0NNUChl
-cnIsIFRDX0FDVF9HT1RPX0NIQUlOKSkpIHsNCj4+ICAgCQkJZmlyc3RfdHAgPSByZXMtPmdvdG9f
-dHA7DQo+PiArDQo+PiArI2lmIElTX0VOQUJMRUQoQ09ORklHX05FVF9UQ19TS0JfRVhUKQ0KPj4g
-KwkJCXsNCj4+ICsJCQkJc3RydWN0IHRjX3NrYl9leHQgKmV4dDsNCj4+ICsNCj4+ICsJCQkJZXh0
-ID0gc2tiX2V4dF9hZGQoc2tiLCBUQ19TS0JfRVhUKTsNCj4+ICsJCQkJaWYgKFdBUk5fT05fT05D
-RSghZXh0KSkNCj4+ICsJCQkJCXJldHVybiBUQ19BQ1RfU0hPVDsNCj4+ICsNCj4+ICsJCQkJZXh0
-LT5jaGFpbiA9IHJlcy0+Z290b19pbmRleDsNCj4+ICsJCQl9DQo+PiArI2VuZGlmDQo+PiAgIAkJ
-CWdvdG8gcmVzZXQ7DQo+PiAgIAkJfQ0KPj4gICAjZW5kaWYNCj4+IC0tIA0KPj4gMS44LjMuMQ0K
-Pj4NCg==
+On Wed, Aug 07, 2019 at 08:47:18AM -0700, Stanislav Fomichev wrote:
+> Add new helper bpf_sk_storage_clone which optionally clones sk storage
+> and call it from bpf_sk_storage_clone. Reuse the gap in
+> bpf_sk_storage_elem to store clone/non-clone flag.
+>=20
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+>  include/net/bpf_sk_storage.h |  10 ++++
+>  include/uapi/linux/bpf.h     |   1 +
+>  net/core/bpf_sk_storage.c    | 102 +++++++++++++++++++++++++++++++++--
+>  net/core/sock.c              |   9 ++--
+>  4 files changed, 115 insertions(+), 7 deletions(-)
+>=20
+> diff --git a/include/net/bpf_sk_storage.h b/include/net/bpf_sk_storage.h
+> index b9dcb02e756b..8e4f831d2e52 100644
+> --- a/include/net/bpf_sk_storage.h
+> +++ b/include/net/bpf_sk_storage.h
+> @@ -10,4 +10,14 @@ void bpf_sk_storage_free(struct sock *sk);
+>  extern const struct bpf_func_proto bpf_sk_storage_get_proto;
+>  extern const struct bpf_func_proto bpf_sk_storage_delete_proto;
+> =20
+> +#ifdef CONFIG_BPF_SYSCALL
+> +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk);
+> +#else
+> +static inline int bpf_sk_storage_clone(const struct sock *sk,
+> +				       struct sock *newsk)
+> +{
+> +	return 0;
+> +}
+> +#endif
+> +
+>  #endif /* _BPF_SK_STORAGE_H */
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 4393bd4b2419..00459ca4c8cf 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -2931,6 +2931,7 @@ enum bpf_func_id {
+> =20
+>  /* BPF_FUNC_sk_storage_get flags */
+>  #define BPF_SK_STORAGE_GET_F_CREATE	(1ULL << 0)
+> +#define BPF_SK_STORAGE_GET_F_CLONE	(1ULL << 1)
+It is only used in bpf_sk_storage_get().
+What if the elem is created from bpf_fd_sk_storage_update_elem()
+i.e. from the syscall API ?
+
+What may be the use case for a map to have both CLONE and non-CLONE
+elements?  If it is not the case, would it be better to add
+BPF_F_CLONE to bpf_attr->map_flags?
+
+> =20
+>  /* Mode for BPF_FUNC_skb_adjust_room helper. */
+>  enum bpf_adj_room_mode {
+> diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
+> index 94c7f77ecb6b..b6dea67965bc 100644
+> --- a/net/core/bpf_sk_storage.c
+> +++ b/net/core/bpf_sk_storage.c
+> @@ -12,6 +12,9 @@
+> =20
+>  static atomic_t cache_idx;
+> =20
+> +#define BPF_SK_STORAGE_GET_F_MASK	(BPF_SK_STORAGE_GET_F_CREATE | \
+> +					 BPF_SK_STORAGE_GET_F_CLONE)
+> +
+>  struct bucket {
+>  	struct hlist_head list;
+>  	raw_spinlock_t lock;
+> @@ -66,7 +69,8 @@ struct bpf_sk_storage_elem {
+>  	struct hlist_node snode;	/* Linked to bpf_sk_storage */
+>  	struct bpf_sk_storage __rcu *sk_storage;
+>  	struct rcu_head rcu;
+> -	/* 8 bytes hole */
+> +	u8 clone:1;
+> +	/* 7 bytes hole */
+>  	/* The data is stored in aother cacheline to minimize
+>  	 * the number of cachelines access during a cache hit.
+>  	 */
+> @@ -509,7 +513,7 @@ static int sk_storage_delete(struct sock *sk, struct =
+bpf_map *map)
+>  	return 0;
+>  }
+> =20
+> -/* Called by __sk_destruct() */
+> +/* Called by __sk_destruct() & bpf_sk_storage_clone() */
+>  void bpf_sk_storage_free(struct sock *sk)
+>  {
+>  	struct bpf_sk_storage_elem *selem;
+> @@ -739,19 +743,106 @@ static int bpf_fd_sk_storage_delete_elem(struct bp=
+f_map *map, void *key)
+>  	return err;
+>  }
+> =20
+> +static struct bpf_sk_storage_elem *
+> +bpf_sk_storage_clone_elem(struct sock *newsk,
+> +			  struct bpf_sk_storage_map *smap,
+> +			  struct bpf_sk_storage_elem *selem)
+> +{
+> +	struct bpf_sk_storage_elem *copy_selem;
+> +
+> +	copy_selem =3D selem_alloc(smap, newsk, NULL, true);
+> +	if (!copy_selem)
+> +		return ERR_PTR(-ENOMEM);
+nit.
+may be just return NULL as selem_alloc() does.
+
+> +
+> +	if (map_value_has_spin_lock(&smap->map))
+> +		copy_map_value_locked(&smap->map, SDATA(copy_selem)->data,
+> +				      SDATA(selem)->data, true);
+> +	else
+> +		copy_map_value(&smap->map, SDATA(copy_selem)->data,
+> +			       SDATA(selem)->data);
+> +
+> +	return copy_selem;
+> +}
+> +
+> +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk)
+> +{
+> +	struct bpf_sk_storage *new_sk_storage =3D NULL;
+> +	struct bpf_sk_storage *sk_storage;
+> +	struct bpf_sk_storage_elem *selem;
+> +	int ret;
+> +
+> +	RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
+> +
+> +	rcu_read_lock();
+> +	sk_storage =3D rcu_dereference(sk->sk_bpf_storage);
+> +
+> +	if (!sk_storage || hlist_empty(&sk_storage->list))
+> +		goto out;
+> +
+> +	hlist_for_each_entry_rcu(selem, &sk_storage->list, snode) {
+> +		struct bpf_sk_storage_map *smap;
+> +		struct bpf_sk_storage_elem *copy_selem;
+> +
+> +		if (!selem->clone)
+> +			continue;
+> +
+> +		smap =3D rcu_dereference(SDATA(selem)->smap);
+> +		if (!smap)
+smap should not be NULL.
+
+> +			continue;
+> +
+> +		copy_selem =3D bpf_sk_storage_clone_elem(newsk, smap, selem);
+> +		if (IS_ERR(copy_selem)) {
+> +			ret =3D PTR_ERR(copy_selem);
+> +			goto err;
+> +		}
+> +
+> +		if (!new_sk_storage) {
+> +			ret =3D sk_storage_alloc(newsk, smap, copy_selem);
+> +			if (ret) {
+> +				kfree(copy_selem);
+> +				atomic_sub(smap->elem_size,
+> +					   &newsk->sk_omem_alloc);
+> +				goto err;
+> +			}
+> +
+> +			new_sk_storage =3D rcu_dereference(copy_selem->sk_storage);
+> +			continue;
+> +		}
+> +
+> +		raw_spin_lock_bh(&new_sk_storage->lock);
+> +		selem_link_map(smap, copy_selem);
+Unlike the existing selem-update use-cases in bpf_sk_storage.c,
+the smap->map.refcnt has not been held here.  Reading the smap
+is fine.  However, adding a new selem to a deleting smap is an issue.
+Hence, I think bpf_map_inc_not_zero() should be done first.
+
+> +		__selem_link_sk(new_sk_storage, copy_selem);
+> +		raw_spin_unlock_bh(&new_sk_storage->lock);
+> +	}
+> +
+> +out:
+> +	rcu_read_unlock();
+> +	return 0;
+> +
+> +err:
+> +	rcu_read_unlock();
+> +
+> +	bpf_sk_storage_free(newsk);
+> +	return ret;
+> +}
+> +
+>  BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map, struct sock *, sk,
+>  	   void *, value, u64, flags)
+>  {
+>  	struct bpf_sk_storage_data *sdata;
+> =20
+> -	if (flags > BPF_SK_STORAGE_GET_F_CREATE)
+> +	if (flags & ~BPF_SK_STORAGE_GET_F_MASK)
+> +		return (unsigned long)NULL;
+> +
+> +	if ((flags & BPF_SK_STORAGE_GET_F_CLONE) &&
+> +	    !(flags & BPF_SK_STORAGE_GET_F_CREATE))
+>  		return (unsigned long)NULL;
+> =20
+>  	sdata =3D sk_storage_lookup(sk, map, true);
+>  	if (sdata)
+>  		return (unsigned long)sdata->data;
+> =20
+> -	if (flags =3D=3D BPF_SK_STORAGE_GET_F_CREATE &&
+> +	if ((flags & BPF_SK_STORAGE_GET_F_CREATE) &&
+>  	    /* Cannot add new elem to a going away sk.
+>  	     * Otherwise, the new elem may become a leak
+>  	     * (and also other memory issues during map
+> @@ -762,6 +853,9 @@ BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map,=
+ struct sock *, sk,
+>  		/* sk must be a fullsock (guaranteed by verifier),
+>  		 * so sock_gen_put() is unnecessary.
+>  		 */
+> +		if (!IS_ERR(sdata))
+> +			SELEM(sdata)->clone =3D
+> +				!!(flags & BPF_SK_STORAGE_GET_F_CLONE);
+>  		sock_put(sk);
+>  		return IS_ERR(sdata) ?
+>  			(unsigned long)NULL : (unsigned long)sdata->data;
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index d57b0cc995a0..f5e801a9cea4 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -1851,9 +1851,12 @@ struct sock *sk_clone_lock(const struct sock *sk, =
+const gfp_t priority)
+>  			goto out;
+>  		}
+>  		RCU_INIT_POINTER(newsk->sk_reuseport_cb, NULL);
+> -#ifdef CONFIG_BPF_SYSCALL
+> -		RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
+> -#endif
+> +
+> +		if (bpf_sk_storage_clone(sk, newsk)) {
+> +			sk_free_unlock_clone(newsk);
+> +			newsk =3D NULL;
+> +			goto out;
+> +		}
+> =20
+>  		newsk->sk_err	   =3D 0;
+>  		newsk->sk_err_soft =3D 0;
+> --=20
+> 2.22.0.770.g0f2c4a37fd-goog
+>=20
