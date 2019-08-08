@@ -2,205 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8CC985A40
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:08:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EEA8A85A44
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 08:10:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730743AbfHHGIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 02:08:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59656 "EHLO mail.kernel.org"
+        id S1730934AbfHHGJt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 02:09:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726187AbfHHGIP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 02:08:15 -0400
+        id S1726187AbfHHGJt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 02:09:49 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EDF8A217D7;
-        Thu,  8 Aug 2019 06:08:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DF2D32186A;
+        Thu,  8 Aug 2019 06:09:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565244494;
-        bh=0KshACwO599W/WEmZmpetg0852NqbEMymcfCazMTA2g=;
+        s=default; t=1565244588;
+        bh=V0IGGKZJxEdUkjdotGPslilaf3h8Z7VHCP72GlnYyqg=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=o8ifqNDtnUZvyw4t0kM2Ero+SNXHtNkDQDujFn2cBG/N8MJ9uAUbkJlfdDKCQlDlc
-         uTLCrTSTUmXe8LmnMWGmAodOZEeXu4uhLIVa1CEykPC7gRnnxjKQyEskKrPnF0zEu6
-         bMC4Su6Vgetcagsi9wOwacm3lOTN6WmVEiKXNrbc=
-Date:   Thu, 8 Aug 2019 08:08:12 +0200
+        b=Xm4dzyLKbuRe068j/bDR4e+aMlXqv085JUE0lTHgppE+6Oi7c534/KaCD4vOYPWy7
+         oU0Ff9+7PZkU4dMah7zhB6qVZ4DYkTALbfydhJlVNo88nyyDthaYLPdMGKc1hEeSPi
+         lUz2dYzEt5mH7jHZzolQTyAEAz4j7JX+oHZAycF0=
+Date:   Thu, 8 Aug 2019 08:09:46 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andriin@fb.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>,
+To:     Andrii Nakryiko <andriin@fb.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, yhs@fb.com, andrii.nakryiko@gmail.com,
+        kernel-team@fb.com,
         Masahiro Yamada <yamada.masahiro@socionext.com>,
         Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>, Sam Ravnborg <sam@ravnborg.org>
-Subject: Re: [PATCH v2 bpf-next] btf: expose BTF info through sysfs
-Message-ID: <20190808060812.GA25150@kroah.com>
-References: <20190808003215.1462821-1-andriin@fb.com>
- <89a6e282-0250-4264-128d-469be99073e9@fb.com>
+        Jiri Olsa <jolsa@kernel.org>
+Subject: Re: [PATCH bpf-next] btf: expose BTF info through sysfs
+Message-ID: <20190808060946.GB25150@kroah.com>
+References: <20190807183821.138728-1-andriin@fb.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <89a6e282-0250-4264-128d-469be99073e9@fb.com>
+In-Reply-To: <20190807183821.138728-1-andriin@fb.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 08, 2019 at 04:24:25AM +0000, Yonghong Song wrote:
-> 
-> 
-> On 8/7/19 5:32 PM, Andrii Nakryiko wrote:
-> > Make .BTF section allocated and expose its contents through sysfs.
+On Wed, Aug 07, 2019 at 11:38:21AM -0700, Andrii Nakryiko wrote:
+> Make .BTF section allocated and expose its contents through sysfs.
 
-Was this original patch not on bpf@vger?  I can't find it in my
-archive.  Anyway...
+Ah, found the original of this, sorry for the noise on the previous
+response...
 
-> > /sys/kernel/btf directory is created to contain all the BTFs present
-> > inside kernel. Currently there is only kernel's main BTF, represented as
-> > /sys/kernel/btf/kernel file. Once kernel modules' BTFs are supported,
-> > each module will expose its BTF as /sys/kernel/btf/<module-name> file.
-
-Why are you using sysfs for this?  Who uses "BTF"s?  Are these debugging
-images that only people working on developing bpf programs are going to
-need, or are these things that you are going to need on a production
-system?
-
-I ask as maybe debugfs is the best place for this if they are not needed
-on production systems.
-
-
-> > 
-> > Current approach relies on a few pieces coming together:
-> > 1. pahole is used to take almost final vmlinux image (modulo .BTF and
-> >     kallsyms) and generate .BTF section by converting DWARF info into
-> >     BTF. This section is not allocated and not mapped to any segment,
-> >     though, so is not yet accessible from inside kernel at runtime.
-> > 2. objcopy dumps .BTF contents into binary file and subsequently
-> >     convert binary file into linkable object file with automatically
-> >     generated symbols _binary__btf_kernel_bin_start and
-> >     _binary__btf_kernel_bin_end, pointing to start and end, respectively,
-> >     of BTF raw data.
-> > 3. final vmlinux image is generated by linking this object file (and
-> >     kallsyms, if necessary). sysfs_btf.c then creates
-> >     /sys/kernel/btf/kernel file and exposes embedded BTF contents through
-> >     it. This allows, e.g., libbpf and bpftool access BTF info at
-> >     well-known location, without resorting to searching for vmlinux image
-> >     on disk (location of which is not standardized and vmlinux image
-> >     might not be even available in some scenarios, e.g., inside qemu
-> >     during testing).
-> > 
-> > Alternative approach using .incbin assembler directive to embed BTF
-> > contents directly was attempted but didn't work, because sysfs_proc.o is
-> > not re-compiled during link-vmlinux.sh stage. This is required, though,
-> > to update embedded BTF data (initially empty data is embedded, then
-> > pahole generates BTF info and we need to regenerate sysfs_btf.o with
-> > updated contents, but it's too late at that point).
-> > 
-> > If BTF couldn't be generated due to missing or too old pahole,
-> > sysfs_btf.c handles that gracefully by detecting that
-> > _binary__btf_kernel_bin_start (weak symbol) is 0 and not creating
-> > /sys/kernel/btf at all.
-> > 
-> > v1->v2:
-> > - allow kallsyms stage to re-use vmlinux generated by gen_btf();
-> > 
-> > Cc: Masahiro Yamada <yamada.masahiro@socionext.com>
-> > Cc: Arnaldo Carvalho de Melo <acme@redhat.com>
-> > Cc: Jiri Olsa <jolsa@kernel.org>
-> > Cc: Sam Ravnborg <sam@ravnborg.org>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
-> > ---
-> >   kernel/bpf/Makefile     |  3 +++
-> >   kernel/bpf/sysfs_btf.c  | 52 ++++++++++++++++++++++++++++++++++++++
-> >   scripts/link-vmlinux.sh | 55 +++++++++++++++++++++++++++--------------
-> >   3 files changed, 91 insertions(+), 19 deletions(-)
-> >   create mode 100644 kernel/bpf/sysfs_btf.c
-
-First rule, you can't create new sysfs files without a matching
-Documentation/ABI/ set of entries.  Please do that for the next version
-of this patch so we can properly check to see if what you are
-documenting lines up with the code.  Otherwise we just have to guess as
-to what the entries you are creating actually do.
-
-> > 
-> > diff --git a/kernel/bpf/Makefile b/kernel/bpf/Makefile
-> > index 29d781061cd5..e1d9adb212f9 100644
-> > --- a/kernel/bpf/Makefile
-> > +++ b/kernel/bpf/Makefile
-> > @@ -22,3 +22,6 @@ obj-$(CONFIG_CGROUP_BPF) += cgroup.o
-> >   ifeq ($(CONFIG_INET),y)
-> >   obj-$(CONFIG_BPF_SYSCALL) += reuseport_array.o
-> >   endif
-> > +ifeq ($(CONFIG_SYSFS),y)
-> > +obj-$(CONFIG_DEBUG_INFO_BTF) += sysfs_btf.o
-> > +endif
-> > diff --git a/kernel/bpf/sysfs_btf.c b/kernel/bpf/sysfs_btf.c
-> > new file mode 100644
-> > index 000000000000..ac06ce1d62e8
-> > --- /dev/null
-> > +++ b/kernel/bpf/sysfs_btf.c
-> > @@ -0,0 +1,52 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Provide kernel BTF information for introspection and use by eBPF tools.
-> > + */
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/kobject.h>
-> > +#include <linux/init.h>
-> > +
-> > +/* See scripts/link-vmlinux.sh, gen_btf() func for details */
-> > +extern char __weak _binary__btf_kernel_bin_start[];
-> > +extern char __weak _binary__btf_kernel_bin_end[];
-> > +
-> > +static ssize_t
-> > +btf_kernel_read(struct file *file, struct kobject *kobj,
-> > +		struct bin_attribute *bin_attr,
-> > +		char *buf, loff_t off, size_t len)
-> > +{
-> > +	memcpy(buf, _binary__btf_kernel_bin_start + off, len);
-> > +	return len;
-> > +}
-> > +
-> > +static struct bin_attribute btf_kernel_attr __ro_after_init = {
-> > +	.attr = {
-> > +		.name = "kernel",
-> > +		.mode = 0444,
-> > +	},
-> > +	.read = btf_kernel_read,
-> > +};
-
-BIN_ATTR_RO()?
-
-> > +
-> > +static struct bin_attribute *btf_attrs[] __ro_after_init = {
-> > +	&btf_kernel_attr,
-> > +	NULL,
-> > +};
-> > +
-> > +static struct attribute_group btf_group_attr __ro_after_init = {
-> > +	.name = "btf",
-> > +	.bin_attrs = btf_attrs,
-> > +};
-> > +
-> > +static int __init btf_kernel_init(void)
-> > +{
-> > +	if (!_binary__btf_kernel_bin_start)
-> > +		return 0;
-> > +
-> > +	btf_kernel_attr.size = _binary__btf_kernel_bin_end -
-> > +			       _binary__btf_kernel_bin_start;
-> > +
-> > +	return sysfs_create_group(kernel_kobj, &btf_group_attr);
-
-You are nesting directories here without a "real" kobject in the middle.
-Are you _sure_ you want to do that?  It's going to get really tricky
-later on based on your comments above about creating multiple files in
-that directory over time once "modules" are allowed.
+Still need Documentation/ABI/ entries though :)
 
 thanks,
 
