@@ -2,129 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F07E85851
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 04:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FD60858B1
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 05:46:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389560AbfHHCxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 22:53:31 -0400
-Received: from ozlabs.org ([203.11.71.1]:35857 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727978AbfHHCxb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 7 Aug 2019 22:53:31 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 463tGw3FLXz9s7T;
-        Thu,  8 Aug 2019 12:53:27 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1565232808;
-        bh=/PuKtT7hVEGOuEdR+eb2Zo3CrrUaO63bl10cgsb8BH4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=h2J8ojQiYVX+SIFRiezM7ePsVtjVQwzWzFA0f9xnHmsBVnu6Fsaz2F2RMt4X+z++0
-         C84YjQH/VGCZXtzn0W6H7l+JDtcKvsASqlS63+WBijsGT/Z4v6op/oIfRAAD/WbX5+
-         kF2VMypPt4quEdbIJ7DJu4SDt8tUIBRhKTu/JhnGUagOJMezxE9rD6jt1/ichXiG1m
-         mU275Hk37Hjy19kgIUugnWW8Ze3Q4csh6zHOVlmJY8opVj6ZGMbA5+3BhVdj86jAhn
-         1rOzaMHqhE3LF1GQ1Vr5mqLvSbKDG3HZi9DRY62yJmiawXDEa+akB9XNDxI26JwxzN
-         7X25Qy+eMoyWQ==
-Date:   Thu, 8 Aug 2019 12:53:26 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: linux-next: manual merge of the bpf-next tree with Linus' tree
-Message-ID: <20190808125326.614065d6@canb.auug.org.au>
+        id S2389742AbfHHDqz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 23:46:55 -0400
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:14417 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728167AbfHHDqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 23:46:54 -0400
+Received: from hqpgpgate101.nvidia.com (Not Verified[216.228.121.13]) by hqemgate16.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d4b9b2c0000>; Wed, 07 Aug 2019 20:46:53 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate101.nvidia.com (PGP Universal service);
+  Wed, 07 Aug 2019 20:46:51 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate101.nvidia.com on Wed, 07 Aug 2019 20:46:51 -0700
+Received: from ngvpn01-164-84.dyn.scz.us.nvidia.com (172.20.13.39) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Thu, 8 Aug 2019 03:46:50 +0000
+Subject: Re: [PATCH 00/34] put_user_pages(): miscellaneous call sites
+To:     Ira Weiny <ira.weiny@intel.com>, Michal Hocko <mhocko@kernel.org>
+CC:     Jan Kara <jack@suse.cz>, Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        <amd-gfx@lists.freedesktop.org>, <ceph-devel@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <devel@lists.orangefs.org>,
+        <dri-devel@lists.freedesktop.org>,
+        <intel-gfx@lists.freedesktop.org>, <kvm@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-block@vger.kernel.org>, <linux-crypto@vger.kernel.org>,
+        <linux-fbdev@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        <linux-media@vger.kernel.org>, <linux-mm@kvack.org>,
+        <linux-nfs@vger.kernel.org>, <linux-rdma@vger.kernel.org>,
+        <linux-rpi-kernel@lists.infradead.org>,
+        <linux-xfs@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <rds-devel@oss.oracle.com>, <sparclinux@vger.kernel.org>,
+        <x86@kernel.org>, <xen-devel@lists.xenproject.org>
+References: <20190802022005.5117-1-jhubbard@nvidia.com>
+ <20190802091244.GD6461@dhcp22.suse.cz>
+ <20190802124146.GL25064@quack2.suse.cz>
+ <20190802142443.GB5597@bombadil.infradead.org>
+ <20190802145227.GQ25064@quack2.suse.cz>
+ <076e7826-67a5-4829-aae2-2b90f302cebd@nvidia.com>
+ <20190807083726.GA14658@quack2.suse.cz>
+ <20190807084649.GQ11812@dhcp22.suse.cz>
+ <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
+From:   John Hubbard <jhubbard@nvidia.com>
+X-Nvconfidentiality: public
+Message-ID: <e648a7f3-6a1b-c9ea-1121-7ab69b6b173d@nvidia.com>
+Date:   Wed, 7 Aug 2019 20:46:50 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/t965bQleaCIqT2n30_GaWGl";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+In-Reply-To: <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
+X-Originating-IP: [172.20.13.39]
+X-ClientProxiedBy: HQMAIL107.nvidia.com (172.20.187.13) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1565236013; bh=oa/UlzMF1BY8hfwSUK2E34E4BK86wv0rI2GL87o8kWQ=;
+        h=X-PGP-Universal:Subject:To:CC:References:From:X-Nvconfidentiality:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=caNdsK+H718e8IaMHboxAo7N5kSDjdO0aPPP7qMD/uXC6LIuseTU5yocCYztoyhLS
+         A8theOeNn9DFbaKSyltNZVy/0B3VPZPEr/7HwHnfipqBI1W9E/1RXgk4cYboMCcd2v
+         K1AubOjDxM7RJmlTd1q1ZO/DARZkbUQqfdDa7AtzCGn8CgjUMfboXlhtit5supcfVJ
+         t3SF5BlWoOZ+ktHQ+Gy0QbysjhXaepl4K0zI9Pv3YsYauPp0cOOqMsTfKIdJYZp847
+         qDjXLEk745BEl9a58mwF6yYg4Z7StCZBL718mfzBDBCPCwNZsIoTbJbWCkazTDd50+
+         NvHzitKycTv2g==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/t965bQleaCIqT2n30_GaWGl
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On 8/7/19 7:36 PM, Ira Weiny wrote:
+> On Wed, Aug 07, 2019 at 10:46:49AM +0200, Michal Hocko wrote:
+>> On Wed 07-08-19 10:37:26, Jan Kara wrote:
+>>> On Fri 02-08-19 12:14:09, John Hubbard wrote:
+>>>> On 8/2/19 7:52 AM, Jan Kara wrote:
+>>>>> On Fri 02-08-19 07:24:43, Matthew Wilcox wrote:
+>>>>>> On Fri, Aug 02, 2019 at 02:41:46PM +0200, Jan Kara wrote:
+>>>>>>> On Fri 02-08-19 11:12:44, Michal Hocko wrote:
+>>>>>>>> On Thu 01-08-19 19:19:31, john.hubbard@gmail.com wrote:
+  [...]
+> Before I go on, I would like to say that the "imbalance" of get_user_pages()
+> and put_page() bothers me from a purist standpoint...  However, since this
+> discussion cropped up I went ahead and ported my work to Linus' current master
+> (5.3-rc3+) and in doing so I only had to steal a bit of Johns code...  Sorry
+> John...  :-(
+> 
+> I don't have the commit messages all cleaned up and I know there may be some
+> discussion on these new interfaces but I wanted to throw this series out there
+> because I think it may be what Jan and Michal are driving at (or at least in
+> that direction.
+> 
+> Right now only RDMA and DAX FS's are supported.  Other users of GUP will still
+> fail on a DAX file and regular files will still be at risk.[2]
+> 
+> I've pushed this work (based 5.3-rc3+ (33920f1ec5bf)) here[3]:
+> 
+> https://github.com/weiny2/linux-kernel/tree/linus-rdmafsdax-b0-v3
+> 
+> I think the most relevant patch to this conversation is:
+> 
+> https://github.com/weiny2/linux-kernel/commit/5d377653ba5cf11c3b716f904b057bee6641aaf6
+> 
 
-Hi all,
+ohhh...can you please avoid using the old __put_user_pages_dirty()
+function? I thought I'd caught things early enough to get away with
+the rename and deletion of that. You could either:
 
-Today's linux-next merge of the bpf-next tree got a conflict in:
+a) open code an implementation of vaddr_put_pages_dirty_lock() that
+doesn't call any of the *put_user_pages_dirty*() variants, or
 
-  tools/lib/bpf/libbpf.c
+b) include my first patch ("") are part of your series, or
 
-between commit:
+c) base this on Andrews's tree, which already has merged in my first patch.
 
-  1d4126c4e119 ("libbpf: sanitize VAR to conservative 1-byte INT")
 
-from Linus' tree and commit:
-
-  b03bc6853c0e ("libbpf: convert libbpf code to use new btf helpers")
-
-from the bpf-next tree.
-
-I fixed it up (see below) and can carry the fix as necessary. This
-is now fixed as far as linux-next is concerned, but any non trivial
-conflicts should be mentioned to your upstream maintainer when your tree
-is submitted for merging.  You may also want to consider cooperating
-with the maintainer of the conflicting tree to minimise any particularly
-complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
-diff --cc tools/lib/bpf/libbpf.c
-index 2b57d7ea7836,3abf2dd1b3b5..000000000000
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@@ -1370,22 -1374,16 +1372,21 @@@ static void bpf_object__sanitize_btf(st
- =20
-  	for (i =3D 1; i <=3D btf__get_nr_types(btf); i++) {
-  		t =3D (struct btf_type *)btf__type_by_id(btf, i);
-- 		kind =3D BTF_INFO_KIND(t->info);
- =20
-- 		if (!has_datasec && kind =3D=3D BTF_KIND_VAR) {
-+ 		if (!has_datasec && btf_is_var(t)) {
-  			/* replace VAR with INT */
-  			t->info =3D BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
- -			t->size =3D sizeof(int);
- -			*(int *)(t + 1) =3D BTF_INT_ENC(0, 0, 32);
- +			/*
- +			 * using size =3D 1 is the safest choice, 4 will be too
- +			 * big and cause kernel BTF validation failure if
- +			 * original variable took less than 4 bytes
- +			 */
- +			t->size =3D 1;
-- 			*(int *)(t+1) =3D BTF_INT_ENC(0, 0, 8);
-- 		} else if (!has_datasec && kind =3D=3D BTF_KIND_DATASEC) {
-++			*(int *)(t + 1) =3D BTF_INT_ENC(0, 0, 8);
-+ 		} else if (!has_datasec && btf_is_datasec(t)) {
-  			/* replace DATASEC with STRUCT */
-- 			struct btf_var_secinfo *v =3D (void *)(t + 1);
-- 			struct btf_member *m =3D (void *)(t + 1);
-+ 			const struct btf_var_secinfo *v =3D btf_var_secinfos(t);
-+ 			struct btf_member *m =3D btf_members(t);
-  			struct btf_type *vt;
-  			char *name;
- =20
-
---Sig_/t965bQleaCIqT2n30_GaWGl
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1LjqYACgkQAVBC80lX
-0GyyZQf9HpGsTBYYj/EbUlYjBJQiYNKf3nilJ36/aZKDUa9R6wBu3tHu6p24zRRh
-cSvwL8hit9tcUZOI1t4OyVh64mlW8GRxE5kKu0722dxRnSMQx7Td3LTA6inrlCCV
-CnJRlEoCHpP7vITbo+0cwVhJt+OR4k4/GEAf/mZVqZAwoXMsUZkC6LY30aKWDJfc
-3TzURLuzemJSJvZAsNOXDHevUM++t+01n1iq+3Y6bf9grOyQc9NI732GKTTxOPEE
-FpNhnSp8H24r2yBiuIgJqHSNAwZy/03TUtiijE8xomQZoIWOUn10BL4d2tnP/kpn
-kU6k1xWsopkhAi54Z0ebJcEEjpDLWA==
-=cXek
------END PGP SIGNATURE-----
-
---Sig_/t965bQleaCIqT2n30_GaWGl--
+thanks,
+-- 
+John Hubbard
+NVIDIA
