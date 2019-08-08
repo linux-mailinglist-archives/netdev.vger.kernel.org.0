@@ -2,237 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E41886B1D
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:08:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 989F286B1E
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:08:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404237AbfHHUIE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 16:08:04 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:54105 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732704AbfHHUIE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 16:08:04 -0400
-Received: from p200300ddd71876597e7a91fffec98e25.dip0.t-ipconnect.de ([2003:dd:d718:7659:7e7a:91ff:fec9:8e25])
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1hvohZ-0007MH-CH; Thu, 08 Aug 2019 22:07:57 +0200
-Date:   Thu, 8 Aug 2019 22:07:51 +0200 (CEST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     syzbot <syzbot+2d55fb97f42947bbcddd@syzkaller.appspotmail.com>
-cc:     Frederic Weisbecker <fweisbec@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        syzkaller-bugs@googlegroups.com,
-        Eric Dumazet <edumazet@google.com>, netdev@vger.kernel.org
-Subject: Re: BUG: soft lockup in tcp_delack_timer
-In-Reply-To: <00000000000094d2b5058f9df271@google.com>
-Message-ID: <alpine.DEB.2.21.1908082206350.2882@nanos.tec.linutronix.de>
-References: <00000000000094d2b5058f9df271@google.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S2404429AbfHHUIQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 16:08:16 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:36114 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732704AbfHHUIQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 16:08:16 -0400
+Received: by mail-wm1-f65.google.com with SMTP id g67so3589181wme.1
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 13:08:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zJlr9wkYw4QBmLfWwHxHN0iNQhLKqTcj/RqQxeCLHa8=;
+        b=FN95/zY0nAePfklhhxS8XC6NzJel1TihJZQkesgTjN0n3dW3CAlnGXNY73cWDAJ4qk
+         D5o8Bitnkz5kBZ2SSF9AA+NaiY1H6lsBQcEkXuaYmmumzrSK3XKWUEzm0caDjI5GXWOe
+         GmRjzVly52XaylSCUVg0/kcWJp3wc6NmDCtiRRaINYaEc2gxqgI8xTaLfpegjU+6znIA
+         PKFE2gU/JVl7da2lGMiVLSK91Ks76o9c/VVBtN7BSbaSojJEWiOEQcJTRcGemcKrG8VX
+         PMeeevVzcrE88f+YpaaVxQjLb+ldjn1Uu1hbKtJmbqsq2H4NYwnWpXL4J5Gn3Bt+EH5+
+         pTjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zJlr9wkYw4QBmLfWwHxHN0iNQhLKqTcj/RqQxeCLHa8=;
+        b=XTyoyCTEwcnD5VWh02hgEtos5p1Kpz0op1aleygwBIcLinJnXUeVDUe7KajcBw21EU
+         fK2LrvJO4Q8AQuRKqoYGBqvjrDW8OAMeJlMNryo5xc3X55pnMyLCI6INR7j/QpbvkESm
+         jr1WnL1FWKNWxELRjIInuoWxpfDRQnw0jtjJ2OGKygQaq5yrGBETyD+wjtTwSb0NNyBd
+         E7VLbcfx/PB8/MqO7Dt68BjVXhZPNsWt4mGztvz46P+CNO3QApB4dSMKG/sRYUpyc/Qq
+         E8vqNdetq5eJ6ogRT3IVIO++6zWw4pzCDugvC3XQAKDMRQj8gy89QUlL1+L58Dp/ZAw/
+         /0rw==
+X-Gm-Message-State: APjAAAXcm08o0KxzrJwuD0bsnIvTNYO2UW+/XKu7KN8WhQZ0w3q0H8kd
+        9T0lcGp7at9zbBX65EMPAR8=
+X-Google-Smtp-Source: APXvYqztMoi7jWjmMFZ+vZd67r8E0p3K3qU6wEHK8aa8wAnAMSd2fHk3eGr8+7Qay7bWDCCX47MnXQ==
+X-Received: by 2002:a1c:6555:: with SMTP id z82mr6560881wmb.129.1565294893916;
+        Thu, 08 Aug 2019 13:08:13 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf? (p200300EA8F2F3200EC8A8637BF5F7FAF.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf])
+        by smtp.googlemail.com with ESMTPSA id k9sm33052641wrd.46.2019.08.08.13.08.12
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 08 Aug 2019 13:08:13 -0700 (PDT)
+Subject: Re: [PATCH net-next] r8169: make use of xmit_more
+To:     =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sander Eikelenboom <linux@eikelenboom.it>,
+        Eric Dumazet <edumazet@google.com>
+References: <2950b2f7-7460-cce0-d964-ad654d897295@gmail.com>
+ <acd65426-0c7e-8c5f-a002-a36286f09122@applied-asynchrony.com>
+ <cfb9a1c7-57c8-db04-1081-ac1cb92bb447@applied-asynchrony.com>
+ <a19bb3de-a866-d342-7cca-020fef219d03@gmail.com>
+ <868a1f4c-5fba-c64b-ea31-30a3770e6a2f@applied-asynchrony.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <f08a3207-0930-4b71-16f1-81e352f87a9c@gmail.com>
+Date:   Thu, 8 Aug 2019 22:08:08 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+In-Reply-To: <868a1f4c-5fba-c64b-ea31-30a3770e6a2f@applied-asynchrony.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 8 Aug 2019, syzbot wrote:
+On 08.08.2019 21:52, Holger Hoffstätte wrote:
+> On 8/8/19 8:17 PM, Heiner Kallweit wrote:
+>> On 08.08.2019 17:53, Holger Hoffstätte wrote:
+>>> On 8/8/19 4:37 PM, Holger Hoffstätte wrote:
+>>>>
+>>>> Hello Heiner -
+>>>>
+>>>> On 7/28/19 11:25 AM, Heiner Kallweit wrote:
+>>>>> There was a previous attempt to use xmit_more, but the change had to be
+>>>>> reverted because under load sometimes a transmit timeout occurred [0].
+>>>>> Maybe this was caused by a missing memory barrier, the new attempt
+>>>>> keeps the memory barrier before the call to netif_stop_queue like it
+>>>>> is used by the driver as of today. The new attempt also changes the
+>>>>> order of some calls as suggested by Eric.
+>>>>>
+>>>>> [0] https://lkml.org/lkml/2019/2/10/39
+>>>>>
+>>>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>>>>
+>>>> I decided to take one for the team and merged this into my 5.2.x tree (just
+>>>> fixing up the path) and it has been working fine for the last 2 weeks in two
+>>>> machines..until today, when for the first time in forever some random NFS traffic
+>>>> made this old friend come out from under the couch:
+>>>>
+>>>> [Aug 8 14:13] ------------[ cut here ]------------
+>>>> [  +0.000006] NETDEV WATCHDOG: eth0 (r8169): transmit queue 0 timed out
+>>>> [  +0.000021] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x21f/0x230
+>>>> [  +0.000001] Modules linked in: lz4 lz4_compress lz4_decompress nfsd auth_rpcgss oid_registry lockd grace sunrpc sch_fq_codel btrfs xor zstd_compress raid6_pq zstd_decompress bfq jitterentropy_rng nct6775 hwmon_vid coretemp hwmon x86_pkg_temp_thermal aesni_intel aes_x86_64 i915 glue_helper crypto_simd cryptd i2c_i801 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper syscopyarea usbhid sysfillrect r8169 sysimgblt fb_sys_fops realtek drm libphy drm_panel_orientation_quirks i2c_core video backlight mq_deadline
+>>>> [  +0.000026] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.2.7 #1
+>>>> [  +0.000001] Hardware name: System manufacturer System Product Name/P8Z68-V LX, BIOS 4105 07/01/2013
+>>>> [  +0.000004] RIP: 0010:dev_watchdog+0x21f/0x230
+>>>> [  +0.000002] Code: 3b 00 75 ea eb ad 4c 89 ef c6 05 1c 45 bd 00 01 e8 66 35 fc ff 44 89 e1 4c 89 ee 48 c7 c7 e8 5e fc 81 48 89 c2 e8 90 df 92 ff <0f> 0b eb 8e 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 66 66 66 66 90
+>>>> [  +0.000002] RSP: 0018:ffffc90000118e68 EFLAGS: 00010286
+>>>> [  +0.000002] RAX: 0000000000000000 RBX: ffff8887f7837600 RCX: 0000000000000303
+>>>> [  +0.000001] RDX: 0000000000000001 RSI: 0000000000000092 RDI: ffffffff827a488c
+>>>> [  +0.000001] RBP: ffff8887f9fbc440 R08: 0000000000000303 R09: 0000000000000003
+>>>> [  +0.000001] R10: 000000000001004c R11: 0000000000000001 R12: 0000000000000000
+>>>> [  +0.000009] R13: ffff8887f9fbc000 R14: ffffffff8173aa20 R15: dead000000000200
+>>>> [  +0.000001] FS:  0000000000000000(0000) GS:ffff8887ff580000(0000) knlGS:0000000000000000
+>>>> [  +0.000000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>>>> [  +0.000001] CR2: 00007f8d1c04d000 CR3: 0000000002209001 CR4: 00000000000606e0
+>>>> [  +0.000000] Call Trace:
+>>>> [  +0.000002]  <IRQ>
+>>>> [  +0.000005]  call_timer_fn+0x2b/0x120
+>>>> [  +0.000002]  expire_timers+0xa4/0x100
+>>>> [  +0.000001]  run_timer_softirq+0x8c/0x170
+>>>> [  +0.000002]  ? __hrtimer_run_queues+0x13a/0x290
+>>>> [  +0.000003]  ? sched_clock_cpu+0xe/0x130
+>>>> [  +0.000003]  __do_softirq+0xeb/0x2de
+>>>> [  +0.000003]  irq_exit+0x9d/0xe0
+>>>> [  +0.000002]  smp_apic_timer_interrupt+0x60/0x110
+>>>> [  +0.000003]  apic_timer_interrupt+0xf/0x20
+>>>> [  +0.000001]  </IRQ>
+>>>> [  +0.000003] RIP: 0010:cpuidle_enter_state+0xad/0x930
+>>>> [  +0.000001] Code: c5 66 66 66 66 90 31 ff e8 90 99 9e ff 80 7c 24 0b 00 74 12 9c 58 f6 c4 02 0f 85 39 08 00 00 31 ff e8 e7 26 a2 ff fb 45 85 e4 <0f> 88 34 02 00 00 49 63 cc 4c 2b 2c 24 48 8d 04 49 48 c1 e0 05 8b
+>>>> [  +0.000000] RSP: 0018:ffffc9000008be50 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
+>>>> [  +0.000001] RAX: ffff8887ff5a9180 RBX: ffffffff822b6c40 RCX: 000000000000001f
+>>>> [  +0.000001] RDX: 0000000000000000 RSI: 0000000033087154 RDI: 0000000000000000
+>>>> [  +0.000001] RBP: ffff8887ff5b1310 R08: 000030d021fae397 R09: ffff8887ff59c8c0
+>>>> [  +0.000000] R10: ffff8887ff59c8c0 R11: 0000000000000006 R12: 0000000000000004
+>>>> [  +0.000001] R13: 000030d021fae397 R14: 0000000000000004 R15: ffff8887fc281600
+>>>> [  +0.000001]  cpuidle_enter+0x29/0x40
+>>>> [  +0.000002]  do_idle+0x1e5/0x280
+>>>> [  +0.000001]  cpu_startup_entry+0x19/0x20
+>>>> [  +0.000002]  start_secondary+0x186/0x1c0
+>>>> [  +0.000001]  secondary_startup_64+0xa4/0xb0
+>>>> [  +0.000001] ---[ end trace 99493c768580f4fd ]---
+>>>>
+>>>> The device is:
+>>>>
+>>>> Aug  7 23:19:09 tux kernel: libphy: r8169: probed
+>>>> Aug  7 23:19:09 tux kernel: r8169 0000:04:00.0 eth0: RTL8168evl/8111evl, c8:60:00:68:33:cc, XID 2c9, IRQ 36
+>>>> Aug  7 23:19:09 tux kernel: r8169 0000:04:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko]
+>>>> Aug  7 23:19:12 tux kernel: RTL8211E Gigabit Ethernet r8169-400:00: attached PHY driver [RTL8211E Gigabit Ethernet] (mii_bus:phy_addr=r8169-400:00, irq=IGNORE)
+>>>> Aug  7 23:19:13 tux kernel: r8169 0000:04:00.0 eth0: No native access to PCI extended config space, falling back to CSI
+>>>>
+>>>> and using fq_codel, of course.
+>>>>
+>>>> This cpuidle hiccup used to be completely gone without xmit_more and this was
+>>>> the first (and so far only) time since merging it (regardless of load).
+>>>> Also, while I'm using BMQ as CPU scheduler, that hasn't made a difference for
+>>>> this particular problem in the past (with MuQSS/PDS) either; way back when I had
+>>>> Eric's previous attempt(s) it also hiccupped with CFS.
+>>>>
+>>>> Revert or wait for more reports when -next is merged in 5.4?
+>>>
+>>> Another question/data point: I've had the whole basket of offloads activated:
+>>>
+>>>    ethtool --offload eth0 rx on tx on gro on gso on sg on tso on
+>>>
+>>> and this caused zero problems without the xmit_more patch. However I just saw
+>>> that net-next has a patch where TSO is disabled due to a known HW defect in
+>>> RTL8168evl, which is of course what I have. Could this be the reason for the
+>>> stall/hiccup when xmit_more has its fingers in the pie? I kind of know what
+>>> xmit_more does, just not how it could interact with a possibly broken TSO that
+>>> nevertheless seems to work fine otherwise..
+>>>
+>>
+>> I was about to ask exactly that, whether you have TSO enabled. I don't know what
+>> can trigger the HW issue, it was just confirmed by Realtek that this chip version
+>> has a problem with TSO. So the logical conclusion is: test w/o TSO, ideally the
+>> linux-next version.
+> 
+> So disabling TSO alone didn't work - it leads to reduced throughout (~70 MB/s in iperf).
+> Instead I decided to backport 93681cd7d94f ("r8169: enable HW csum and TSO"), which
+> wasn't easy due to cleanups/renamings of dependencies, but I managed to backport
+> it and .. got the same problem of reduced throughout. wat?!
+> 
+> After lots of trial & error I started disabling all offloads and finally found
+> that sg (Scatter-Gather) enabled alone - without TSO - will lead to the throughput
+> drop. So the culprit seems 93681cd7d94f, which disabled TSO on my NIC, but left
+> sg on by default. This weas repeatable - switch on sg, throughput drop; turn it
+> off - smooth sailing, now with reduced buffers.
+> 
+> I modified the relevant bits to disable tso & sg like this:
+> 
+>     /* RTL8168e-vl has a HW issue with TSO */
+>     if (tp->mac_version == RTL_GIGA_MAC_VER_34) {
+> +        dev->vlan_features &= ~(NETIF_F_ALL_TSO|NETIF_F_SG);
+> +        dev->hw_features &= ~(NETIF_F_ALL_TSO|NETIF_F_SG);
+> +        dev->features &= ~(NETIF_F_ALL_TSO|NETIF_F_SG);
+>     }
+> 
+> This seems to work since it restores performance without sg/tso by default
+> and without any additional offloads, yet with xmit_more in the mix.
+> We'll see whether that is stable over the next few days, but I strongly
+> suspect it will be good and that the hiccups were due to xmit_more/TSO
+> interaction.
+> 
+Thanks a lot for the analysis and testing. Then I'll submit the disabling
+of SG on RTL8168evl (on your behalf), independent of whether it fixes
+the timeout issue.
 
-Cc+ Eric, net-dev
+> thanks,
+> Holger
+> 
+Heiner
 
-> Hello,
-> 
-> syzbot found the following crash on:
-> 
-> HEAD commit:    0d8b3265 Add linux-next specific files for 20190729
-> git tree:       linux-next
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1101fdc8600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=ae96f3b8a7e885f7
-> dashboard link: https://syzkaller.appspot.com/bug?extid=2d55fb97f42947bbcddd
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> 
-> Unfortunately, I don't have any reproducer for this crash yet.
-> 
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+2d55fb97f42947bbcddd@syzkaller.appspotmail.com
-> 
-> net_ratelimit: 2 callbacks suppressed
-> TCP: request_sock_TCPv6: Possible SYN flooding on port 20002. Sending cookies.
-> Check SNMP counters.
-> watchdog: BUG: soft lockup - CPU#0 stuck for 122s! [swapper/0:0]
-> Modules linked in:
-> irq event stamp: 92022
-> hardirqs last  enabled at (92021): [<ffffffff81660331>]
-> tick_nohz_idle_exit+0x181/0x2e0 kernel/time/tick-sched.c:1180
-> hardirqs last disabled at (92022): [<ffffffff873d5d7d>]
-> __schedule+0x1dd/0x15b0 kernel/sched/core.c:3862
-> softirqs last  enabled at (90810): [<ffffffff876006cd>]
-> __do_softirq+0x6cd/0x98c kernel/softirq.c:319
-> softirqs last disabled at (90703): [<ffffffff8144fc1b>] invoke_softirq
-> kernel/softirq.c:373 [inline]
-> softirqs last disabled at (90703): [<ffffffff8144fc1b>] irq_exit+0x19b/0x1e0
-> kernel/softirq.c:413
-> CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.3.0-rc2-next-20190729 #54
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
-> 01/01/2011
-> RIP: 0010:cpu_relax arch/x86/include/asm/processor.h:656 [inline]
-> RIP: 0010:virt_spin_lock arch/x86/include/asm/qspinlock.h:84 [inline]
-> RIP: 0010:native_queued_spin_lock_slowpath+0x132/0x9f0
-> kernel/locking/qspinlock.c:325
-> Code: 00 00 00 48 8b 45 d0 65 48 33 04 25 28 00 00 00 0f 85 37 07 00 00 48 81
-> c4 98 00 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d c3 f3 90 <e9> 73 ff ff ff 8b 45
-> 98 4c 8d 65 d8 3d 00 01 00 00 0f 84 e5 00 00
-> RSP: 0018:ffff8880ae809b48 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
-> RAX: 0000000000000000 RBX: ffff8880621cd088 RCX: ffffffff8158f117
-> RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffff8880621cd088
-> RBP: ffff8880ae809c08 R08: 1ffff1100c439a11 R09: ffffed100c439a12
-> R10: ffffed100c439a11 R11: ffff8880621cd08b R12: 0000000000000001
-> R13: 0000000000000003 R14: ffffed100c439a11 R15: 0000000000000001
-> FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000000001541e88 CR3: 0000000068089000 CR4: 00000000001406f0
-> Call Trace:
-> <IRQ>
-> pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:642 [inline]
-> queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:50 [inline]
-> queued_spin_lock include/asm-generic/qspinlock.h:81 [inline]
-> do_raw_spin_lock+0x20e/0x2e0 kernel/locking/spinlock_debug.c:113
-> __raw_spin_lock include/linux/spinlock_api_smp.h:143 [inline]
-> _raw_spin_lock+0x37/0x40 kernel/locking/spinlock.c:151
-> spin_lock include/linux/spinlock.h:338 [inline]
-> tcp_delack_timer+0x2b/0x2a0 net/ipv4/tcp_timer.c:318
-> call_timer_fn+0x1ac/0x780 kernel/time/timer.c:1322
-> expire_timers kernel/time/timer.c:1366 [inline]
-> __run_timers kernel/time/timer.c:1685 [inline]
-> __run_timers kernel/time/timer.c:1653 [inline]
-> run_timer_softirq+0x697/0x17a0 kernel/time/timer.c:1698
-> __do_softirq+0x262/0x98c kernel/softirq.c:292
-> invoke_softirq kernel/softirq.c:373 [inline]
-> irq_exit+0x19b/0x1e0 kernel/softirq.c:413
-> exiting_irq arch/x86/include/asm/apic.h:536 [inline]
-> smp_apic_timer_interrupt+0x1a3/0x610 arch/x86/kernel/apic/apic.c:1095
-> apic_timer_interrupt+0xf/0x20 arch/x86/entry/entry_64.S:828
-> </IRQ>
-> RIP: 0010:native_safe_halt+0xe/0x10 arch/x86/include/asm/irqflags.h:61
-> Code: c8 75 6e fa eb 8a 90 90 90 90 90 90 e9 07 00 00 00 0f 00 2d c4 b2 49 00
-> f4 c3 66 90 e9 07 00 00 00 0f 00 2d b4 b2 49 00 fb f4 <c3> 90 55 48 89 e5 41
-> 57 41 56 41 55 41 54 53 e8 8e 56 21 fa e8 29
-> RSP: 0018:ffffffff88c07ce8 EFLAGS: 00000282 ORIG_RAX: ffffffffffffff13
-> RAX: 1ffffffff11a5e87 RBX: ffffffff88c7a1c0 RCX: 1ffffffff134bca6
-> RDX: dffffc0000000000 RSI: ffffffff81779dee RDI: ffffffff873e794c
-> RBP: ffffffff88c07d18 R08: ffffffff88c7a1c0 R09: fffffbfff118f439
-> R10: fffffbfff118f438 R11: ffffffff88c7a1c7 R12: dffffc0000000000
-> R13: ffffffff89a5b340 R14: 0000000000000000 R15: 0000000000000000
-> arch_cpu_idle+0xa/0x10 arch/x86/kernel/process.c:571
-> default_idle_call+0x84/0xb0 kernel/sched/idle.c:94
-> cpuidle_idle_call kernel/sched/idle.c:154 [inline]
-> do_idle+0x413/0x760 kernel/sched/idle.c:263
-> cpu_startup_entry+0x1b/0x20 kernel/sched/idle.c:354
-> rest_init+0x245/0x37b init/main.c:451
-> arch_call_rest_init+0xe/0x1b
-> start_kernel+0x912/0x951 init/main.c:785
-> x86_64_start_reservations+0x29/0x2b arch/x86/kernel/head64.c:472
-> x86_64_start_kernel+0x77/0x7b arch/x86/kernel/head64.c:453
-> secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:241
-> Sending NMI from CPU 0 to CPUs 1:
-> INFO: NMI handler (nmi_cpu_backtrace_handler) took too long to run: 1.339
-> msecs
-> NMI backtrace for cpu 1
-> CPU: 1 PID: 7447 Comm: syz-executor.5 Not tainted 5.3.0-rc2-next-20190729 #54
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google
-> 01/01/2011
-> RIP: 0010:cpu_relax arch/x86/include/asm/processor.h:656 [inline]
-> RIP: 0010:virt_spin_lock arch/x86/include/asm/qspinlock.h:84 [inline]
-> RIP: 0010:native_queued_spin_lock_slowpath+0x132/0x9f0
-> kernel/locking/qspinlock.c:325
-> Code: 00 00 00 48 8b 45 d0 65 48 33 04 25 28 00 00 00 0f 85 37 07 00 00 48 81
-> c4 98 00 00 00 5b 41 5c 41 5d 41 5e 41 5f 5d c3 f3 90 <e9> 73 ff ff ff 8b 45
-> 98 4c 8d 65 d8 3d 00 01 00 00 0f 84 e5 00 00
-> RSP: 0018:ffff8880ae909210 EFLAGS: 00000202
-> RAX: 0000000000000000 RBX: ffff8880621cd088 RCX: ffffffff8158f117
-> RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffff8880621cd088
-> RBP: ffff8880ae9092d0 R08: 1ffff1100c439a11 R09: ffffed100c439a12
-> R10: ffffed100c439a11 R11: ffff8880621cd08b R12: 0000000000000001
-> R13: 0000000000000003 R14: ffffed100c439a11 R15: 0000000000000001
-> FS:  0000555557246940(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> CR2: 0000001b32b29000 CR3: 00000000a4e3a000 CR4: 00000000001406e0
-> Call Trace:
-> <IRQ>
-> pv_queued_spin_lock_slowpath arch/x86/include/asm/paravirt.h:642 [inline]
-> queued_spin_lock_slowpath arch/x86/include/asm/qspinlock.h:50 [inline]
-> queued_spin_lock include/asm-generic/qspinlock.h:81 [inline]
-> do_raw_spin_lock+0x20e/0x2e0 kernel/locking/spinlock_debug.c:113
-> __raw_spin_lock_bh include/linux/spinlock_api_smp.h:136 [inline]
-> _raw_spin_lock_bh+0x3b/0x50 kernel/locking/spinlock.c:175
-> spin_lock_bh include/linux/spinlock.h:343 [inline]
-> release_sock+0x20/0x1c0 net/core/sock.c:2932
-> wait_on_pending_writer+0x20f/0x420 net/tls/tls_main.c:91
-> tls_sk_proto_cleanup+0x2c5/0x3e0 net/tls/tls_main.c:295
-> tls_sk_proto_unhash+0x90/0x3f0 net/tls/tls_main.c:330
-> tcp_set_state+0x5b9/0x7d0 net/ipv4/tcp.c:2235
-> tcp_done+0xe2/0x320 net/ipv4/tcp.c:3824
-> tcp_reset+0x132/0x500 net/ipv4/tcp_input.c:4080
-> tcp_validate_incoming+0xa2d/0x1660 net/ipv4/tcp_input.c:5440
-> tcp_rcv_established+0x6b5/0x1e70 net/ipv4/tcp_input.c:5648
-> tcp_v6_do_rcv+0x41e/0x12c0 net/ipv6/tcp_ipv6.c:1356
-> tcp_v6_rcv+0x31f1/0x3500 net/ipv6/tcp_ipv6.c:1588
-> ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
-> ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
-> NF_HOOK include/linux/netfilter.h:305 [inline]
-> NF_HOOK include/linux/netfilter.h:299 [inline]
-> ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
-> dst_input include/net/dst.h:442 [inline]
-> ip6_rcv_finish+0x1de/0x2f0 net/ipv6/ip6_input.c:76
-> NF_HOOK include/linux/netfilter.h:305 [inline]
-> NF_HOOK include/linux/netfilter.h:299 [inline]
-> ipv6_rcv+0x10e/0x420 net/ipv6/ip6_input.c:272
-> __netif_receive_skb_one_core+0x113/0x1a0 net/core/dev.c:4999
-> __netif_receive_skb+0x2c/0x1d0 net/core/dev.c:5113
-> process_backlog+0x206/0x750 net/core/dev.c:5924
-> napi_poll net/core/dev.c:6347 [inline]
-> net_rx_action+0x508/0x10c0 net/core/dev.c:6413
-> __do_softirq+0x262/0x98c kernel/softirq.c:292
-> do_softirq_own_stack+0x2a/0x40 arch/x86/entry/entry_64.S:1080
-> </IRQ>
-> do_softirq.part.0+0x11a/0x170 kernel/softirq.c:337
-> do_softirq kernel/softirq.c:329 [inline]
-> __local_bh_enable_ip+0x211/0x270 kernel/softirq.c:189
-> local_bh_enable include/linux/bottom_half.h:32 [inline]
-> inet_csk_listen_stop+0x1e0/0x850 net/ipv4/inet_connection_sock.c:993
-> tcp_close+0xd5b/0x10e0 net/ipv4/tcp.c:2338
-> inet_release+0xed/0x200 net/ipv4/af_inet.c:427
-> inet6_release+0x53/0x80 net/ipv6/af_inet6.c:470
-> __sock_release+0xce/0x280 net/socket.c:590
-> sock_close+0x1e/0x30 net/socket.c:1268
-> __fput+0x2ff/0x890 fs/file_table.c:280
-> ____fput+0x16/0x20 fs/file_table.c:313
-> task_work_run+0x145/0x1c0 kernel/task_work.c:113
-> tracehook_notify_resume include/linux/tracehook.h:188 [inline]
-> exit_to_usermode_loop+0x316/0x380 arch/x86/entry/common.c:163
-> prepare_exit_to_usermode arch/x86/entry/common.c:194 [inline]
-> syscall_return_slowpath arch/x86/entry/common.c:274 [inline]
-> do_syscall_64+0x65f/0x760 arch/x86/entry/common.c:300
-> entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> RIP: 0033:0x413511
-> Code: 75 14 b8 03 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 04 1b 00 00 c3 48 83
-> ec 08 e8 0a fc ff ff 48 89 04 24 b8 03 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2
-> e8 53 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
-> RSP: 002b:00007ffebfc402f0 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
-> RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000413511
-> RDX: 0000000000000000 RSI: 000000000000183f RDI: 0000000000000004
-> RBP: 0000000000000001 R08: 00000000c44ab83f R09: 00000000c44ab843
-> R10: 00007ffebfc403d0 R11: 0000000000000293 R12: 000000000075c9a0
-> R13: 000000000075c9a0 R14: 0000000000760750 R15: ffffffffffffffff
-> 
-> 
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
-> 
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
