@@ -2,73 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 29DC086BB2
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:39:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A198686BC1
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 22:42:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390186AbfHHUjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 16:39:39 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:45658 "EHLO vps0.lunn.ch"
+        id S2403873AbfHHUmG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 16:42:06 -0400
+Received: from mga11.intel.com ([192.55.52.93]:38354 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725785AbfHHUji (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 16:39:38 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=o1ab5hvyDud1JwiSt72xPEY0As9rAHAnTbN6/WPbCF0=; b=16J1OHQK3pgK71LBbbFncpXW+r
-        1iPSFx62hYqOGNpZuoGUTPUu/dIyJ19KaUiKM9OFQLuKPIuDmowXjqz9a/FocsB/9KoB0IQ32EI+E
-        L5EPDyjIZdcLLa+Q3tflkeJR0shp1fhl6Y4h+yRxwisvlQNk1Kumkzn46eVcngqjoAC8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hvpC8-0005w6-4c; Thu, 08 Aug 2019 22:39:32 +0200
-Date:   Thu, 8 Aug 2019 22:39:32 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, davem@davemloft.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, f.fainelli@gmail.com
-Subject: Re: [PATCH v2 13/15] net: phy: adin: configure downshift on
- config_init
-Message-ID: <20190808203932.GP27917@lunn.ch>
-References: <20190808123026.17382-1-alexandru.ardelean@analog.com>
- <20190808123026.17382-14-alexandru.ardelean@analog.com>
- <420c8e15-3361-a722-4ad1-3c448b1d3bc1@gmail.com>
+        id S1733140AbfHHUmF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 16:42:05 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 08 Aug 2019 13:42:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,362,1559545200"; 
+   d="scan'208";a="374981565"
+Received: from ellie.jf.intel.com (HELO ellie) ([10.24.12.198])
+  by fmsmga006.fm.intel.com with ESMTP; 08 Aug 2019 13:42:04 -0700
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     David Miller <davem@davemloft.net>, yuehaibing@huawei.com
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] taprio: remove unused variable 'entry_list_policy'
+In-Reply-To: <20190808.113813.478689798535715440.davem@davemloft.net>
+References: <20190808142623.69188-1-yuehaibing@huawei.com> <20190808.113813.478689798535715440.davem@davemloft.net>
+Date:   Thu, 08 Aug 2019 13:42:04 -0700
+Message-ID: <87mugjtmn7.fsf@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <420c8e15-3361-a722-4ad1-3c448b1d3bc1@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 08, 2019 at 09:38:40PM +0200, Heiner Kallweit wrote:
-> On 08.08.2019 14:30, Alexandru Ardelean wrote:
-> > Down-speed auto-negotiation may not always be enabled, in which case the
-> > PHY won't down-shift to 100 or 10 during auto-negotiation.
-> > 
-> > This change enables downshift and configures the number of retries to
-> > default 8 (maximum supported value).
-> > 
-> > The change has been adapted from the Marvell PHY driver.
-> > 
-> Instead of a fixed downshift setting (like in the Marvell driver) you
-> may consider to implement the ethtool phy-tunable ETHTOOL_PHY_DOWNSHIFT.
+Hi,
 
-Hi Alexandru
+David Miller <davem@davemloft.net> writes:
 
-Upps, sorry, my bad.
+> From: YueHaibing <yuehaibing@huawei.com>
+> Date: Thu, 8 Aug 2019 22:26:23 +0800
+>
+>> net/sched/sch_taprio.c:680:32: warning:
+>>  entry_list_policy defined but not used [-Wunused-const-variable=]
+>> 
+>> It is not used since commit a3d43c0d56f1 ("taprio: Add
+>> support adding an admin schedule")
+>> 
+>> Reported-by: Hulk Robot <hulkci@huawei.com>
+>> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+>
+> This is probably unintentional and a bug, we should be using that
+> policy value to validate that the sched list is indeed a nested
+> attribute.
 
-I looked at marvell_set_downshift(), and assumed it was connected to
-the phy-tunable. I have patches somewhere which does that. But they
-have not made it into mainline yet.
+Removing this policy should be fine.
 
-> See the Aquantia PHY driver for an example.
+One of the points of commit (as explained in the commit message)
+a3d43c0d56f1 ("taprio: Add support adding an admin schedule") is that it
+removes support (it now returns "not supported") for schedules using the
+TCA_TAPRIO_ATTR_SCHED_SINGLE_ENTRY attribute (which were never used),
+the parsing of those types of schedules was the only user of this
+policy.
 
-Yes, that does have all the tunable stuff.
+>
+> I'm not applying this without at least a better and clear commit
+> message explaining why we shouldn't be using this policy any more.
 
-     Andrew
+YueHaibing may use the text above in the commit message of a new spin of
+this patch if you think it's clear enough.
+
+
+Cheers,
+--
+Vinicius
