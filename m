@@ -2,105 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C650B85745
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 02:39:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8EA85750
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 02:53:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389518AbfHHAjD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 7 Aug 2019 20:39:03 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:53678 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389488AbfHHAjC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 20:39:02 -0400
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x780RX5R032447
-        for <netdev@vger.kernel.org>; Wed, 7 Aug 2019 17:39:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=facebook;
- bh=y4suneNXnOUhAS+0Se9kjnvNT70cdMWBPHZlzyGENtM=;
- b=ftZWvua4GDUT2BXkLMh0SeGRe0L8A2OBU0kQwPmqil5J9AGJ8mzYNzCp4Y485DneN+A4
- NdyO+OL+RT83Zvs9LzxgoCgwYkS8QIgo5n+G1MtfCmuzkuS57g0KNY1sff/7EdvRwb1s
- mw2cWaCEbGOT0oTjGniXAd5utg2M0WtQo84= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0001303.ppops.net with ESMTP id 2u87u1g95s-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 17:39:01 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 7 Aug 2019 17:38:59 -0700
-Received: by devbig003.ftw2.facebook.com (Postfix, from userid 128203)
-        id C3C67370280D; Wed,  7 Aug 2019 17:38:56 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Yonghong Song <yhs@fb.com>
-Smtp-Origin-Hostname: devbig003.ftw2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>, <kernel-team@fb.com>,
-        Yonghong Song <yhs@fb.com>, Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf-next] tools/bpf: fix core_reloc.c compilation error
-Date:   Wed, 7 Aug 2019 17:38:56 -0700
-Message-ID: <20190808003856.555097-1-yhs@fb.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730547AbfHHAxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 7 Aug 2019 20:53:15 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:40257 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730382AbfHHAxP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 7 Aug 2019 20:53:15 -0400
+Received: by mail-pg1-f196.google.com with SMTP id w10so43063539pgj.7
+        for <netdev@vger.kernel.org>; Wed, 07 Aug 2019 17:53:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RYvASjp7Wn9RMY59p408gW18WYgaC6cZBG6rwBoYt8c=;
+        b=EQ1V5532pWSC01xRIbBals7TfyG8s0+WGku7qiJ5OJ8JmmQN7e+VFUFiIRP4vj2NWq
+         SJtgkNzW3gStYja/vtBrUY+SBwOsXWnZsCNGWiGNjGtg6Yji/EkgQ3mDYSdjFuJm3BC/
+         YKOCb/nDnL1cpXWi/bMZHltHFiEn8YRLmKfnY=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=RYvASjp7Wn9RMY59p408gW18WYgaC6cZBG6rwBoYt8c=;
+        b=D+fXE29NCoWfvZIoWWpaQTu2QR77O4cifgA8IMazZgU2ugTXqN52H3CQfOwnQa8ncl
+         A3gbvIOUi5KmOQnH9C9Wiv6av4dToGxs3/V9vu6myJk1DO81zS2thr8muj+oA2K1RCCH
+         wA1DNzPk2rXKFpZBktX5Fwq7fCsL648sNPQOV9VaHFLClGEZfaT6e9orZknZHxJF1h4F
+         KU4f0Z3qutfhxlZVBZFRXycgu5Q9mttVwZeZEYmiapsQre62Uh1uT6i6RTUXUhs0AGKB
+         mRVydR6f9Etk9j2YltUYssqdID7vhQusU2QShR3yVgbyeiwFcR1Wa8vDyIELkYrz9ZuN
+         nkfQ==
+X-Gm-Message-State: APjAAAUGb6OBl4gW+P/KI9VAt87H/rGScZZ1xwynnDRRyAPDe7q7iRm6
+        juECAvj7BNkEm07e5HRJPlr7/g==
+X-Google-Smtp-Source: APXvYqyMfzV1h6/SCyekjmDcrbuLcZLPLV1nHCP/caQMz+jJuG+42aGNUBeRBEeIFp/PVkM4tniLEw==
+X-Received: by 2002:aa7:93bb:: with SMTP id x27mr12721421pff.10.1565225595039;
+        Wed, 07 Aug 2019 17:53:15 -0700 (PDT)
+Received: from egranata0.mtv.corp.google.com ([2620:15c:202:0:20e7:7eb9:f5ee:bbbc])
+        by smtp.gmail.com with ESMTPSA id 64sm94456617pfe.128.2019.08.07.17.53.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 07 Aug 2019 17:53:14 -0700 (PDT)
+From:   egranata@chromium.org
+To:     linux-kernel@vger.kernel.org
+Cc:     mst@redhat.com, jasowang@redhat.com, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        trivial@kernel.org, egranata@google.com
+Subject: [PATCH] vhost: do not reference a file that does not exist
+Date:   Wed,  7 Aug 2019 17:52:55 -0700
+Message-Id: <20190808005255.106299-1-egranata@chromium.org>
+X-Mailer: git-send-email 2.22.0.770.g0f2c4a37fd-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-FB-Internal: Safe
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-07_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=8 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=990 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908080001
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On my local machine, I have the following compilation errors:
-=3D=3D=3D=3D=3D
-  In file included from prog_tests/core_reloc.c:3:0:
-  ./progs/core_reloc_types.h:517:46: error: expected =E2=80=98=3D=E2=80=99=
-, =E2=80=98,=E2=80=99, =E2=80=98;=E2=80=99, =E2=80=98asm=E2=80=99 or =E2=80=
-=98__attribute__=E2=80=99 before =E2=80=98fancy_char_ptr_t=E2=80=99
- typedef const char * const volatile restrict fancy_char_ptr_t;
-                                              ^
-  ./progs/core_reloc_types.h:527:2: error: unknown type name =E2=80=98fan=
-cy_char_ptr_t=E2=80=99
-    fancy_char_ptr_t d;
-    ^
-=3D=3D=3D=3D=3D
+From: Enrico Granata <egranata@google.com>
 
-I am using gcc 4.8.5. Later compilers may change their behavior not emitt=
-ing the
-error. Nevertheless, let us fix the issue. "restrict" can be tested
-without typedef.
+lguest was removed from the mainline kernel in late 2017.
 
-Fixes: 9654e2ae908e ("selftests/bpf: add CO-RE relocs modifiers/typedef t=
-ests")
-Cc: Andrii Nakryiko <andriin@fb.com>
-Signed-off-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Enrico Granata <egranata@google.com>
 ---
- tools/testing/selftests/bpf/progs/core_reloc_types.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vhost/vhost.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/progs/core_reloc_types.h b/tools=
-/testing/selftests/bpf/progs/core_reloc_types.h
-index 10a252b6da55..f686a8138d90 100644
---- a/tools/testing/selftests/bpf/progs/core_reloc_types.h
-+++ b/tools/testing/selftests/bpf/progs/core_reloc_types.h
-@@ -514,7 +514,7 @@ typedef arr1_t arr2_t;
- typedef arr2_t arr3_t;
- typedef arr3_t arr4_t;
-=20
--typedef const char * const volatile restrict fancy_char_ptr_t;
-+typedef const char * const volatile fancy_char_ptr_t;
-=20
- typedef core_reloc_mods_substruct_t core_reloc_mods_substruct_tt;
-=20
---=20
-2.17.1
+diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
+index 0536f8526359..2c376cb66971 100644
+--- a/drivers/vhost/vhost.c
++++ b/drivers/vhost/vhost.c
+@@ -4,8 +4,8 @@
+  *
+  * Author: Michael S. Tsirkin <mst@redhat.com>
+  *
+- * Inspiration, some code, and most witty comments come from
+- * Documentation/virtual/lguest/lguest.c, by Rusty Russell
++ * Inspiration, some code, and most witty comments come from lguest.c
++ * by Rusty Russell
+  *
+  * Generic code for virtio server in host kernel.
+  */
+-- 
+2.22.0.770.g0f2c4a37fd-goog
 
