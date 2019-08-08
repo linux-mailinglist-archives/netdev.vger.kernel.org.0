@@ -2,148 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE32686CF4
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 00:11:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D43D686D34
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 00:27:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404518AbfHHWL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 18:11:29 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:37735 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbfHHWL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 18:11:29 -0400
-Received: by mail-wr1-f68.google.com with SMTP id b3so3995421wro.4;
-        Thu, 08 Aug 2019 15:11:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=DUFalbPLgQ79S1HKBE8+gtAVHYDFf8kRrltg8JK5gHo=;
-        b=GrHFzmpFxtOscokodsO7daDjk84Q/OJ2IZS7SomAGPleaL8JE2NSe9/H13UOWgK5Lx
-         Q3trityf98SqSsd2oAE7h0zZmHWKqKLpu6/gg+x0Q7lSDSgNuTbr16deZebwQpkyItcB
-         FyEOSWmY6Gl7GPnZQV5Zof3vW4wAVNvZH4+D1x3X1qYdtSv6VQAj9MCnThq4YN3XyCv5
-         3PmyiFqrmy/OIS+1CbT5FUz5DzmbPjaBwzbSpqXKMJSl/1Ic3nlVE+ac42rmp5MPP8YD
-         bc/1lec7KWPSFPnW54hVXpjcXe47eSsaEMZtqnGFlV+m7JVBaeRP3q4Sa0K5oTmctaq9
-         DBhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DUFalbPLgQ79S1HKBE8+gtAVHYDFf8kRrltg8JK5gHo=;
-        b=JAqdWeDzaSyC3kbgSkHz9LJXEMHiji3BvjjHYv5zxQbGlgxtrVhW4ZeusFZxC4KBTo
-         6cGy+68FpGdKn+j7wvTtJj9/2f5V0PEaC12j12Da54tXvH576KHnoUjDUBxxU77MG45h
-         8q/e/KlcZHIFbHsH7LN/1csmIPYI4ZmNIiGMZbHF302EM7f3efA9MXvw6FeHsjFQjiBq
-         3l434WNaXeuCDbE729QYztqKDMVe9V5310HDa5pDmoCqLrCpbzcUhuvwngn3n8IN4sBP
-         QMeXXUnHcNgZDnqK9PXu74XtXMpeQAcw/2m9UhlnklftrecNQ49dmQfT/HjspKtuuwjU
-         jJbA==
-X-Gm-Message-State: APjAAAWlQgY88zf+PFUHOErNvZOqqTPhEFjW/TemfLI0V4fygPZ7Xzhq
-        S3LMyoZb/dZ/d3SE1ALoTuA=
-X-Google-Smtp-Source: APXvYqwfedFez8JUUPUSTs97nv45Gikq8yuXYU80pv8ot4OF9lSma2MRIiDYVMaRG3RNKnIa9KedPg==
-X-Received: by 2002:a5d:55c2:: with SMTP id i2mr19264141wrw.96.1565302286135;
-        Thu, 08 Aug 2019 15:11:26 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:6862:4959:200d:42a? (p200300EA8F2F320068624959200D042A.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:6862:4959:200d:42a])
-        by smtp.googlemail.com with ESMTPSA id y18sm3425947wmi.23.2019.08.08.15.11.25
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Aug 2019 15:11:25 -0700 (PDT)
-Subject: Re: [PATCH net-next v4 2/2] net: phy: broadcom: add 1000Base-X
- support for BCM54616S
-To:     Tao Ren <taoren@fb.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        id S2404775AbfHHW1A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 18:27:00 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:54698 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1732708AbfHHW07 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 18:26:59 -0400
+Received: from pps.filterd (m0001255.ppops.net [127.0.0.1])
+        by mx0b-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x78MN1qM011635;
+        Thu, 8 Aug 2019 15:26:41 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=na5DQSykmYjV2XFT/RRnI0NDwRI3L21oaeLfEFeTnhA=;
+ b=OHXGGJIHs8su8bLnD7ejfbOJaEiVvY1HtRJ2e96kt6yvQf6td/4rXAjpMEjDXKI/JX+R
+ nrdH2PuoVpysNsOWDgncXaJ9WxCO6bxFzCabVqg9/X/jCj96Mf94dHbRSTJ1+LE+Odbx
+ /FQ5o7PoNvxHSAIBTsc2NteSgt8kKjYhnKk= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0b-00082601.pphosted.com with ESMTP id 2u8p4b1j6f-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 08 Aug 2019 15:26:41 -0700
+Received: from prn-hub06.TheFacebook.com (2620:10d:c081:35::130) by
+ prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Thu, 8 Aug 2019 15:26:39 -0700
+Received: from NAM03-BY2-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.30) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Thu, 8 Aug 2019 15:26:39 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SlxypHuE6eYPyi9cvjTjtWtlXfZ95GUDT3VHOsUkjFI5wsJ+s3Dlrn5AQ7pEbQz0npExbwzeD91Dfe5D1yxrjFR3wIGAzPMQB3mDEzJxTYWqWL4DKbv2UyWf+tIoePEjC1jbtfc9kPZ6xC6xF17+8SE9pPG++A7H6JqNk2yCTaOwrpWuaux+AI3gbxzhEejFKmWmZ4JhC+ZmtKf9VGWiwbJPdVejW9AHVxfoPS8afSCad2eDDIvgIncxp1sUvQLZFNgyl4uvpxJ4bSc+edum/vZIAv/OpzQaguLyvQiAr1R8hlfGBRRK5LX5MWlercJPSkUzUQCBW1Yb5RgOCRsiAA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=na5DQSykmYjV2XFT/RRnI0NDwRI3L21oaeLfEFeTnhA=;
+ b=VqLs9lUA2xSziQfTYyfRp7bvoOjEqG9AtjUjVbWBtLJItlp2E8Zj9eGx9cW00UuZ6TlhbynAHG0DabhgZOh/la7niY1utUnTkZ+kaDmYfPmaWM7LfBMV8h27Ju7WduSiJ1ZOzQEibKBOf9qxsBMRjSoRF99NIUh51vRvPRtNoZsjce4phyJRGUco9WJMEpt9p+Iw7yajspaLJcwnquqPnUZe8Udn0er7BRncR2xsJ7AovQNGL0Oo5ksuHzJChzGICS1S4eI48bQim4y1ZSWpeNw54uF17Z+Ct16OdEJUBnrdGALNz8i6CMQe3Y+imBMPC0cq9wFfXdWxLEO4orqAdg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=na5DQSykmYjV2XFT/RRnI0NDwRI3L21oaeLfEFeTnhA=;
+ b=g6/3rx6J9RBJrdP7IVVKGNAw2JY43mabcDcSpRFtjHdK8MBSDKemRlH+0rT3nQdQxhsvtufcQF4CwmAqTI+1JGA3SRVDxw3Y7HM+uuH+MusbY15YQf2nxW8kBnN4ko7Wa567IFpcQiJWBcQcIj+DUWOXZb9WpKO2vuu2SlFCeIk=
+Received: from MWHPR15MB1216.namprd15.prod.outlook.com (10.175.2.17) by
+ MWHPR15MB1230.namprd15.prod.outlook.com (10.175.2.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.16; Thu, 8 Aug 2019 22:26:24 +0000
+Received: from MWHPR15MB1216.namprd15.prod.outlook.com
+ ([fe80::2971:619a:860e:b6cc]) by MWHPR15MB1216.namprd15.prod.outlook.com
+ ([fe80::2971:619a:860e:b6cc%2]) with mapi id 15.20.2157.015; Thu, 8 Aug 2019
+ 22:26:24 +0000
+From:   Tao Ren <taoren@fb.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Jakub Kicinski <jakub.kicinski@netronome.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
-References: <20190806210931.3723590-1-taoren@fb.com>
- <fe0d39ea-91f3-0cac-f13b-3d46ea1748a3@fb.com>
- <cfd6e14e-a447-aedb-5bd6-bf65b4b6f98a@gmail.com>
- <a827c44c-3946-8f6f-e515-b476fd375cf6@fb.com>
- <14c1591b-26e1-3a2f-f6c4-beb2c8978e41@fb.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <6d080f3e-48b9-a65d-b73e-576296e98738@gmail.com>
-Date:   Fri, 9 Aug 2019 00:11:17 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <14c1591b-26e1-3a2f-f6c4-beb2c8978e41@fb.com>
-Content-Type: text/plain; charset=utf-8
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        William Kennington <wak@google.com>
+Subject: Re: [PATCH net-next] net/ncsi: allow to customize BMC MAC Address
+ offset
+Thread-Topic: [PATCH net-next] net/ncsi: allow to customize BMC MAC Address
+ offset
+Thread-Index: AQHVTLYXvEPb5D4KhEGV/bPPR833MKbwAYEAgAAEloCAADQnAIABB7CA///nDgCAAJqugIAAE4WA
+Date:   Thu, 8 Aug 2019 22:26:24 +0000
+Message-ID: <ac22bbe0-36ca-b4b9-7ea7-7b1741c2070d@fb.com>
+References: <20190807002118.164360-1-taoren@fb.com>
+ <20190807112518.644a21a2@cakuba.netronome.com>
+ <20190807184143.GE26047@lunn.ch>
+ <806a76a8-229a-7f24-33c7-2cf2094f3436@fb.com>
+ <20190808133209.GB32706@lunn.ch>
+ <77762b10-b8e7-b8a4-3fc0-e901707a1d54@fb.com>
+ <20190808211629.GQ27917@lunn.ch>
+In-Reply-To: <20190808211629.GQ27917@lunn.ch>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR21CA0035.namprd21.prod.outlook.com
+ (2603:10b6:300:129::21) To MWHPR15MB1216.namprd15.prod.outlook.com
+ (2603:10b6:320:22::17)
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::5aeb]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 57c6d56d-6822-486c-6636-08d71c4f724c
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1230;
+x-ms-traffictypediagnostic: MWHPR15MB1230:
+x-microsoft-antispam-prvs: <MWHPR15MB123039EF5ED717F4B581DA11B2D70@MWHPR15MB1230.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-forefront-prvs: 012349AD1C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(396003)(346002)(39860400002)(136003)(199004)(189003)(446003)(486006)(58126008)(2616005)(4326008)(11346002)(476003)(64126003)(53936002)(52116002)(54906003)(65956001)(316002)(6246003)(229853002)(186003)(6436002)(81166006)(2906002)(305945005)(65806001)(8676002)(14454004)(81156014)(6512007)(65826007)(53546011)(6506007)(386003)(102836004)(31696002)(5660300002)(66946007)(99286004)(25786009)(76176011)(71200400001)(31686004)(66446008)(66476007)(66556008)(64756008)(6916009)(36756003)(14444005)(8936002)(46003)(86362001)(256004)(6486002)(7736002)(6116002)(478600001)(71190400001);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1230;H:MWHPR15MB1216.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: QCfRTuZBhjRolOdS0Nmjq17iC24aSAUbayAedlVoPGYzXnGybE+ccfCjL4/mQ2TBLuCtnBJ7xFMV9A2une1bMMdc2RCDqRcCoB+io/Lb+ynpREnaxRW750VMphkUMJ1Kd/z7VorZJ04ADfjRNhK6YhiRn990K3almpFozZ7yw2Iwo2/S0gJnp3KI9CQBI27Dl681Z/NLHJSuNsuenErcWvDym5Oe9YwKDKOUBXOWTGcKgZRMWyiN8sR3u2v9nHxcMcr1+ckICPBA5PJyFtVLyzho4cueHqKpPoYdtnm5d5dLkNpE3BGZ+4tvi/W100rOr/h9e47pyVzZvn/tOoBzUhIRBFzR7c1P0x/rN8FhHlx71Lb+P8ENQU65cFaY1UeZGzcogfdl7cb9LXYTs5e2AoKPOr/k/bQJsvAdAjJnmf8=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DEE09A85E7BF5F40848D5F79138D64FA@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 57c6d56d-6822-486c-6636-08d71c4f724c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 08 Aug 2019 22:26:24.4387
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OsMDLvQYB5vQesnOHfdA34M779+nJathXiqLlVb+sNPi+VOM5ZBLC5twbIdT5RKl
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1230
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-08_09:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908080198
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.08.2019 23:47, Tao Ren wrote:
-> Hi Heiner,
-> 
-> On 8/7/19 9:24 PM, Tao Ren wrote:
->> Hi Heiner,
->>
->> On 8/7/19 12:18 PM, Heiner Kallweit wrote:
->>> On 06.08.2019 23:42, Tao Ren wrote:
->>>> Hi Andrew / Heiner / Vladimir,
->>>>
->>>> On 8/6/19 2:09 PM, Tao Ren wrote:
->>>>> The BCM54616S PHY cannot work properly in RGMII->1000Base-KX mode (for
->>>>> example, on Facebook CMM BMC platform), mainly because genphy functions
->>>>> are designed for copper links, and 1000Base-X (clause 37) auto negotiation
->>>>> needs to be handled differently.
->>>>>
->>>>> This patch enables 1000Base-X support for BCM54616S by customizing 3
->>>>> driver callbacks:
->>>>>
->>>>>   - probe: probe callback detects PHY's operation mode based on
->>>>>     INTERF_SEL[1:0] pins and 1000X/100FX selection bit in SerDES 100-FX
->>>>>     Control register.
->>>>>
->>>>>   - config_aneg: bcm54616s_config_aneg_1000bx function is added for auto
->>>>>     negotiation in 1000Base-X mode.
->>>>>
->>>>>   - read_status: BCM54616S and BCM5482 PHY share the same read_status
->>>>>     callback which manually set link speed and duplex mode in 1000Base-X
->>>>>     mode.
->>>>>
->>>>> Signed-off-by: Tao Ren <taoren@fb.com>
->>>>
->>>> I customized config_aneg function for BCM54616S 1000Base-X mode and link-down issue is also fixed: the patch is tested on Facebook CMM and Minipack BMC and everything looks normal. Please kindly review when you have bandwidth and let me know if you have further suggestions.
->>>>
->>>> BTW, I would be happy to help if we decide to add a set of genphy functions for clause 37, although that may mean I need more help/guidance from you :-)
->>>
->>> You want to have standard clause 37 aneg and this should be generic in phylib.
->>> I hacked together a first version that is compile-tested only:
->>> https://urldefense.proofpoint.com/v2/url?u=https-3A__patchwork.ozlabs.org_patch_1143631_&d=DwICaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=iYElT7HC77pRZ3byVvW8ng&m=ZJArOJvHqNkqvs1x8l9HjfxjCN8e5xJpPz2YViBuKRA&s=EskpfBQtu9IBVeb96dv-sz76xIz4tJK5-lD4-qdIyWI&e= 
->>> It supports fixed mode too.
->>>
->>> It doesn't support half duplex mode because phylib doesn't know 1000BaseX HD yet.
->>> Not sure whether half duplex mode is used at all in reality.
->>>
->>> You could test the new core functions in your own config_aneg and read_status
->>> callback implementations.
->>
->> Thank you very much for the help! I'm planning to add these functions but I haven't started yet because I'm still going through clause 37 :-)
->>
->> Let me apply your patch and run some test on my platform. Will share you results tomorrow.
-> 
-> The patch "net: phy: add support for clause 37 auto-negotiation" works on my CMM platform, with just 1 minor change in phy.h (I guess it's typo?). Thanks again for the help!
-> 
-> -int genphy_c37_aneg_done(struct phy_device *phydev);
-> +int genphy_c37_config_aneg(struct phy_device *phydev);
-> 
-Indeed, this was a typo. Thanks.
-
-> BTW, shall I send out my patch v5 now (based on your patch)? Or I should wait till your patch is included in net-next and then send out my patch?
-> 
-Adding new functions to the core is typically only acceptable if in the
-same patch series a user of the new functions is added. Therefore it's
-best if you include my patch in your series (just remove the RFC tag and
-set the From: properly).
-
-> 
-> Cheers,
-> 
-> Tao
-> 
-Heiner
+T24gOC84LzE5IDI6MTYgUE0sIEFuZHJldyBMdW5uIHdyb3RlOg0KPiBPbiBUaHUsIEF1ZyAwOCwg
+MjAxOSBhdCAwNzowMjo1NFBNICswMDAwLCBUYW8gUmVuIHdyb3RlOg0KPj4gSGkgQW5kcmV3LA0K
+Pj4NCj4+IE9uIDgvOC8xOSA2OjMyIEFNLCBBbmRyZXcgTHVubiB3cm90ZToNCj4+Pj4gTGV0IG1l
+IHByZXBhcmUgcGF0Y2ggdjIgdXNpbmcgZGV2aWNlIHRyZWUuIEknbSBub3Qgc3VyZSBpZiBzdGFu
+ZGFyZA0KPj4+PiAibWFjLWFkZHJlc3MiIGZpdHMgdGhpcyBzaXR1YXRpb24gYmVjYXVzZSBhbGwg
+d2UgbmVlZCBpcyBhbiBvZmZzZXQNCj4+Pj4gKGludGVnZXIpIGFuZCBCTUMgTUFDIGlzIGNhbGN1
+bGF0ZWQgYnkgYWRkaW5nIHRoZSBvZmZzZXQgdG8gTklDJ3MNCj4+Pj4gTUFDIGFkZHJlc3MuIEFu
+eXdheXMsIGxldCBtZSB3b3JrIG91dCB2MiBwYXRjaCB3ZSBjYW4gZGlzY3VzcyBtb3JlDQo+Pj4+
+IHRoZW4uDQo+Pj4NCj4+PiBIaSBUYW8NCj4+Pg0KPj4+IEkgZG9uJ3Qga25vdyBCTUMgdGVybWlu
+b2xvZ3kuIEJ5IE5JQ3MgTUFDIGFkZHJlc3MsIHlvdSBhcmUgcmVmZXJyaW5nDQo+Pj4gdG8gdGhl
+IGhvc3RzIE1BQyBhZGRyZXNzPyBUaGUgTUFDIGFkZHJlc3MgdGhlIGJpZyBDUFUgaXMgdXNpbmcg
+Zm9yIGl0cw0KPj4+IGludGVyZmFjZT8gIFdoZXJlIGRvZXMgdGhpcyBOSUMgZ2V0IGl0cyBNQUMg
+YWRkcmVzcyBmcm9tPyBJZiB0aGUgQk1Dcw0KPj4+IGJvb3Rsb2FkZXIgaGFzIGFjY2VzcyB0byBp
+dCwgaXQgY2FuIHNldCB0aGUgbWFjLWFkZHJlc3MgcHJvcGVydHkgaW4NCj4+PiB0aGUgZGV2aWNl
+IHRyZWUuDQo+Pg0KPj4gU29ycnkgZm9yIHRoZSBjb25mdXNpb24gYW5kIGxldCBtZSBjbGFyaWZ5
+IG1vcmU6DQo+Pg0KPiANCj4+IFRoZSBOSUMgaGVyZSByZWZlcnMgdG8gdGhlIE5ldHdvcmsgY29u
+dHJvbGxlciB3aGljaCBwcm92aWRlIG5ldHdvcmsNCj4+IGNvbm5lY3Rpdml0eSBmb3IgYm90aCBC
+TUMgKHZpYSBOQy1TSSkgYW5kIEhvc3QgKGZvciBleGFtcGxlLCB2aWENCj4+IFBDSWUpLg0KPj4N
+Cj4gDQo+PiBPbiBGYWNlYm9vayBZYW1wIEJNQywgQk1DIHNlbmRzIE5DU0lfT0VNX0dFVF9NQUMg
+Y29tbWFuZCAoYXMgYW4NCj4+IGV0aGVybmV0IHBhY2tldCkgdG8gdGhlIE5ldHdvcmsgQ29udHJv
+bGxlciB3aGlsZSBicmluZ2luZyB1cCBldGgwLA0KPj4gYW5kIHRoZSAoQnJvYWRjb20pIE5ldHdv
+cmsgQ29udHJvbGxlciByZXBsaWVzIHdpdGggdGhlIEJhc2UgTUFDDQo+PiBBZGRyZXNzIHJlc2Vy
+dmVkIGZvciB0aGUgcGxhdGZvcm0uIEFzIGZvciBZYW1wLCBCYXNlLU1BQyBhbmQNCj4+IEJhc2Ut
+TUFDKzEgYXJlIHVzZWQgYnkgSG9zdCAoYmlnIENQVSkgYW5kIEJhc2UtTUFDKzIgYXJlIGFzc2ln
+bmVkIHRvDQo+PiBCTUMuIEluIG15IG9waW5pb24sIEJhc2UgTUFDIGFuZCBNQUMgYWRkcmVzcyBh
+c3NpZ25tZW50cyBhcmUNCj4+IGNvbnRyb2xsZWQgYnkgTmV0d29yayBDb250cm9sbGVyLCB3aGlj
+aCBpcyB0cmFuc3BhcmVudCB0byBib3RoIEJNQw0KPj4gYW5kIEhvc3QuDQo+IA0KPiBIaSBUYW8N
+Cj4gDQo+IEkndmUgbm90IGRvbmUgYW55IHdvcmsgaW4gdGhlIEJNQyBmaWVsZCwgc28gdGhhbmtz
+IGZvciBleHBsYWluaW5nDQo+IHRoaXMuDQo+IA0KPiBJbiBhIHR5cGljYWwgZW1iZWRkZWQgc3lz
+dGVtLCBlYWNoIG5ldHdvcmsgaW50ZXJmYWNlIGlzIGFzc2lnbmVkIGEgTUFDDQo+IGFkZHJlc3Mg
+YnkgdGhlIHZlbmRvci4gQnV0IGhlcmUsIHRoaW5ncyBhcmUgZGlmZmVyZW50LiBUaGUgQk1DIFNv
+Qw0KPiBuZXR3b3JrIGludGVyZmFjZSBoYXMgbm90IGJlZW4gYXNzaWduZWQgYSBNQUMgYWRkcmVz
+cywgaXQgbmVlZHMgdG8gYXNrDQo+IHRoZSBuZXR3b3JrIGNvbnRyb2xsZXIgZm9yIGl0cyBNQUMg
+YWRkcmVzcywgYW5kIHRoZW4gZG8gc29tZSBtYWdpY2FsDQo+IHRyYW5zZm9ybWF0aW9uIG9uIHRo
+ZSBhbnN3ZXIgdG8gZGVyaXZlIGEgTUFDIGFkZHJlc3MgZm9yDQo+IGl0c2VsZi4gQ29ycmVjdD8N
+Cg0KWWVzLiBJdCdzIGNvcnJlY3QuDQoNCj4gSXQgc2VlbXMgbGlrZSBhIGJldHRlciBkZXNpZ24g
+d291bGQgb2YgYmVlbiwgdGhlIEJNQyBzZW5kcyBhDQo+IE5DU0lfT0VNX0dFVF9CTUNfTUFDIGFu
+ZCB0aGUgYW5zd2VyIGl0IGdldHMgYmFjayBpcyB0aGUgTUFDIGFkZHJlc3MNCj4gdGhlIEJNQyBz
+aG91bGQgdXNlLiBObyBtYWdpYyBpbnZvbHZlZC4gQnV0IGkgZ3Vlc3MgaXQgaXMgdG9vIGxhdGUg
+dG8NCj4gZG8gdGhhdCBub3cuDQoNClNvbWUgTkNTSSBOZXR3b3JrIENvbnRyb2xsZXJzIHN1cHBv
+cnQgc3VjaCBPRU0gY29tbWFuZCAoR2V0IFByb3Zpc2lvbmVkIEJNQyBNQUMgQWRkcmVzcyksIGJ1
+dCB1bmZvcnR1bmF0ZWx5IGl0J3Mgbm90IHN1cHBvcnRlZCBvbiBZYW1wLg0KDQo+PiBJJ20gbm90
+IHN1cmUgaWYgSSB1bmRlcnN0YW5kIHlvdXIgc3VnZ2VzdGlvbiBjb3JyZWN0bHk6IGRvIHlvdSBt
+ZWFuDQo+PiB3ZSBzaG91bGQgbW92ZSB0aGUgbG9naWMgKEdFVF9NQUMgZnJvbSBOZXR3b3JrIENv
+bnRyb2xsZXIsIGFkZGluZw0KPj4gb2Zmc2V0IGFuZCBjb25maWd1cmluZyBCTUMgTUFDKSBmcm9t
+IGtlcm5lbCB0byBib290IGxvYWRlcj8NCj4gDQo+IEluIGdlbmVyYWwsIHRoZSBrZXJuZWwgaXMg
+Z2VuZXJpYy4gSXQgcHJvYmFibHkgYm9vdHMgb24gYW55IEFSTSBzeXN0ZW0NCj4gd2hpY2ggaXMg
+aGFzIHRoZSBuZWVkZWQgbW9kdWxlcyBmb3IuIFRoZSBib290bG9hZGVyIGlzIG9mdGVuIG11Y2gg
+bW9yZQ0KPiBzcGVjaWZpYy4gSXQgbWlnaHQgbm90IGJlIGZ1bGx5IHBsYXRmb3JtIHNwZWNpZmlj
+LCBidXQgaXQgd2lsbCBiZSBhdA0KPiBsZWFzdCBzcGVjaWZpYyB0byB0aGUgZ2VuZXJhbCBmYW1p
+bHkgb2YgQk1DIFNvQ3MuIElmIHlvdSBjb25zaWRlciB0aGUNCj4gY29tYmluYXRpb24gb2YgdGhl
+IEJNQyBib290bG9hZGVyIGFuZCB0aGUgZGV2aWNlIHRyZWUgYmxvYiwgeW91IGhhdmUNCj4gc29t
+ZXRoaW5nIHNwZWNpZmljIHRvIHRoZSBwbGF0Zm9ybS4gVGhpcyBtYWdpY2FsIHRyYW5zZm9ybWF0
+aW9uIG9mDQo+IGFkZGluZyAyIHNlZW1zIHRvIGJlIHZlcnkgcGxhdGZvcm0gc3BlY2lmaWMuIFNv
+IGhhdmluZyB0aGlzIG1hZ2ljIGluDQo+IHRoZSBib290bG9hZGVyK0RUIHNlZW1zIGxpa2UgdGhl
+IGJlc3QgcGxhY2UgdG8gcHV0IGl0Lg0KDQpJIHVuZGVyc3RhbmQgeW91ciBjb25jZXJuIG5vdy4g
+VGhhbmsgeW91IGZvciB0aGUgZXhwbGFuYXRpb24uDQoNCj4gSG93ZXZlciwgaG93IHlvdSBwYXNz
+IHRoZSByZXN1bHRpbmcgTUFDIGFkZHJlc3MgdG8gdGhlIGtlcm5lbCBzaG91bGQNCj4gYmUgYXMg
+Z2VuZXJpYyBhcyBwb3NzaWJsZS4gVGhlIERUICJtYWMtYWRkcmVzcyIgcHJvcGVydHkgaXMgdmVy
+eQ0KPiBnZW5lcmljLCBtYW55IE1BQyBkcml2ZXJzIHVuZGVyc3RhbmQgaXQuIFVzaW5nIGl0IGFs
+c28gYWxsb3dzIGZvcg0KPiB2ZW5kb3JzIHdoaWNoIGFjdHVhbGx5IGFzc2lnbiBhIE1BQyBhZGRy
+ZXNzIHRvIHRoZSBCTUMgdG8gcGFzcyBpdCB0bw0KPiB0aGUgQk1DLCBhdm9pZGluZyBhbGwgdGhp
+cyBOQ1NJX09FTV9HRVRfTUFDIGhhbmRzaGFrZS4gSGF2aW5nIGFuIEFQSQ0KPiB3aGljaCBqdXN0
+IHBhc3NpbmcgJzInIGlzIG5vdCBnZW5lcmljIGF0IGFsbC4NCg0KQWZ0ZXIgZ2l2aW5nIGl0IG1v
+cmUgdGhvdWdodCwgSSdtIHRoaW5raW5nIGFib3V0IGFkZGluZyBuY3NpIGR0IG5vZGUgd2l0aCBm
+b2xsb3dpbmcgc3RydWN0dXJlIChtYWMvbmNzaSBzaW1pbGFyIHRvIG1hYy9tZGlvL3BoeSk6DQoN
+CiZtYWMwIHsNCiAgICAvKiBNQUMgcHJvcGVydGllcy4uLiAqLw0KDQogICAgdXNlLW5jc2k7DQog
+ICAgbmNzaSB7DQogICAgICAgIC8qIG5jc2kgbGV2ZWwgcHJvcGVydGllcyBpZiBhbnkgKi8NCg0K
+ICAgICAgICBwYWNrYWdlQDAgew0KICAgICAgICAgICAgLyogcGFja2FnZSBsZXZlbCBwcm9wZXJ0
+aWVzIGlmIGFueSAqLw0KDQogICAgICAgICAgICBjaGFubmVsQDAgew0KICAgICAgICAgICAgICAg
+IC8qIGNoYW5uZWwgbGV2ZWwgcHJvcGVydGllcyBpZiBhbnkgKi8NCg0KICAgICAgICAgICAgICAg
+IGJtYy1tYWMtb2Zmc2V0ID0gPDI+Ow0KICAgICAgICAgICAgfTsNCg0KICAgICAgICAgICAgY2hh
+bm5lbEAxIHsNCiAgICAgICAgICAgICAgICAvKiBjaGFubmVsICMxIHByb3BlcnRpZXMgKi8NCiAg
+ICAgICAgICAgIH07DQogICAgICAgIH07DQoNCiAgICAgICAgLyogcGFja2FnZSAjMSBwcm9wZXJ0
+aWVzIHN0YXJ0IGhlcmUuLiAqLw0KICAgIH07DQp9Ow0KDQpUaGUgcmVhc29ucyBiZWhpbmQgdGhp
+cyBhcmU6DQoNCjEpIG1hYyBkcml2ZXIgZG9lc24ndCBuZWVkIHRvIHBhcnNlICJtYWMtb2Zmc2V0
+IiBzdHVmZjogdGhlc2UgbmNzaS1uZXR3b3JrLWNvbnRyb2xsZXIgc3BlY2lmaWMgc2V0dGluZ3Mg
+c2hvdWxkIGJlIHBhcnNlZCBpbiBuY3NpIHN0YWNrLg0KDQoyKSBnZXRfYm1jX21hY19hZGRyZXNz
+IGNvbW1hbmQgaXMgYSBjaGFubmVsIHNwZWNpZmljIGNvbW1hbmQsIGFuZCB0ZWNobmljYWxseSBw
+ZW9wbGUgY2FuIGNvbmZpZ3VyZSBkaWZmZXJlbnQgb2Zmc2V0L2Zvcm11bGEgZm9yIGRpZmZlcmVu
+dCBjaGFubmVscy4NCg0KQW55IGNvbmNlcm5zIG9yIHN1Z2dlc3Rpb25zPw0KDQoNClRoYW5rcywN
+Cg0KVGFvDQo=
