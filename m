@@ -2,176 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B2108688A
-	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:17:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 48D1686895
+	for <lists+netdev@lfdr.de>; Thu,  8 Aug 2019 20:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389754AbfHHSRb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 14:17:31 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:46853 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731038AbfHHSRa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 14:17:30 -0400
-Received: by mail-wr1-f65.google.com with SMTP id z1so95854875wru.13
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 11:17:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lkRdfAv4SliBbE+lXipyZVybVtjoAnnBUhrn2DrhOmc=;
-        b=phqms/RHcxSw4VMpBfXnhRjuSBDiH6soMLYAUR1Vflknjy0pbFlxn8U7w36LgYeNQa
-         csWPepX8w6BGZyokYKAOm3Apob85WsQDz+AOh1JXOW1Jku3a4JiLtbVnlGmrsmnUdrhj
-         hK/m0IjtFalmIexO3zlQoIsxYpPOhAGJtT+1Ctvv+0RELs0rRKJxxGgFQz5/X8a/DNBM
-         LRjiuT8pzXXCTzM6EcAs38fmZA2+0MBCgA8BVevolMI3IHFfIta3HCaJS2Aab8JdcZJs
-         rY/M/WMBPRbAi2CmIUqUR0ms2rOitaD7QT3jKC/vT3fMtQ/3VAfgWK3/zqdg60hLRQbQ
-         2Qqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lkRdfAv4SliBbE+lXipyZVybVtjoAnnBUhrn2DrhOmc=;
-        b=boVvc6x4lqYLKAFf7ZE3V+/wtZ4agbNfpjQEgnURft5InTg+uRZLcuaw+ZXwjqLua3
-         YtdT0x70mEbkEiMdjqMxbRY4fjr0zjWWyqrCd7v1LX1aErP8DrJEmGCLPt+KiuybEH8n
-         47D5jGhqcvZRAN+vDk5SlvX9xR9jaQLDB8X9+z6s9OiZxewZdqBtJDhNqWMkxHH6sOXb
-         IX8A5mWz3Rvh2XBjY4j61+3aBls8tJddCiOyAnyz908GezzJ1inpHgHHpV4pVtf7jFyw
-         aZGT+8spH5uz6OlSlJSVNi69ldJq/C8UxoiGogILJWTALQJrIfN+ZJGIFWnWcxPTKuxb
-         ADHw==
-X-Gm-Message-State: APjAAAXG2YbH/tnKfowBZ8XjlfwuL3iz9rYp3IIQVJHo4g2AHj3gXjDO
-        cbGuci4dVGI83PNOBo0iGVQxBEV9
-X-Google-Smtp-Source: APXvYqx4HQBPAs+Q9ZVow/94qfmDZKL8yyBbK7qdp19Bnu6HLaLkpQBfeTD/yrIEVptO5mAv5R9ZuQ==
-X-Received: by 2002:a5d:534f:: with SMTP id t15mr10280524wrv.239.1565288247706;
-        Thu, 08 Aug 2019 11:17:27 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf? (p200300EA8F2F3200EC8A8637BF5F7FAF.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:ec8a:8637:bf5f:7faf])
-        by smtp.googlemail.com with ESMTPSA id r5sm5558572wmh.35.2019.08.08.11.17.26
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 08 Aug 2019 11:17:26 -0700 (PDT)
-Subject: Re: [PATCH net-next] r8169: make use of xmit_more
-To:     =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Sander Eikelenboom <linux@eikelenboom.it>,
-        Eric Dumazet <edumazet@google.com>
-References: <2950b2f7-7460-cce0-d964-ad654d897295@gmail.com>
- <acd65426-0c7e-8c5f-a002-a36286f09122@applied-asynchrony.com>
- <cfb9a1c7-57c8-db04-1081-ac1cb92bb447@applied-asynchrony.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <a19bb3de-a866-d342-7cca-020fef219d03@gmail.com>
-Date:   Thu, 8 Aug 2019 20:17:21 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+        id S2390213AbfHHSSx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 14:18:53 -0400
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:14243 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731038AbfHHSSw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 14:18:52 -0400
+Received: from hqpgpgate102.nvidia.com (Not Verified[216.228.121.13]) by hqemgate14.nvidia.com (using TLS: TLSv1.2, DES-CBC3-SHA)
+        id <B5d4c678b0000>; Thu, 08 Aug 2019 11:18:52 -0700
+Received: from hqmail.nvidia.com ([172.20.161.6])
+  by hqpgpgate102.nvidia.com (PGP Universal service);
+  Thu, 08 Aug 2019 11:18:50 -0700
+X-PGP-Universal: processed;
+        by hqpgpgate102.nvidia.com on Thu, 08 Aug 2019 11:18:50 -0700
+Received: from [10.110.48.28] (10.124.1.5) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 8 Aug
+ 2019 18:18:49 +0000
+Subject: Re: [PATCH 00/34] put_user_pages(): miscellaneous call sites
+To:     "Weiny, Ira" <ira.weiny@intel.com>,
+        Michal Hocko <mhocko@kernel.org>
+CC:     Jan Kara <jack@suse.cz>, Matthew Wilcox <willy@infradead.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        "Williams, Dan J" <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?UTF-8?B?SsOpcsO0bWUgR2xpc3Nl?= <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        "ceph-devel@vger.kernel.org" <ceph-devel@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "devel@lists.orangefs.org" <devel@lists.orangefs.org>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-block@vger.kernel.org" <linux-block@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
+        "linux-fsdevel@vger.kernel.org" <linux-fsdevel@vger.kernel.org>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-nfs@vger.kernel.org" <linux-nfs@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "linux-rpi-kernel@lists.infradead.org" 
+        <linux-rpi-kernel@lists.infradead.org>,
+        "linux-xfs@vger.kernel.org" <linux-xfs@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "sparclinux@vger.kernel.org" <sparclinux@vger.kernel.org>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "xen-devel@lists.xenproject.org" <xen-devel@lists.xenproject.org>
+References: <20190802022005.5117-1-jhubbard@nvidia.com>
+ <20190802091244.GD6461@dhcp22.suse.cz>
+ <20190802124146.GL25064@quack2.suse.cz>
+ <20190802142443.GB5597@bombadil.infradead.org>
+ <20190802145227.GQ25064@quack2.suse.cz>
+ <076e7826-67a5-4829-aae2-2b90f302cebd@nvidia.com>
+ <20190807083726.GA14658@quack2.suse.cz>
+ <20190807084649.GQ11812@dhcp22.suse.cz>
+ <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
+ <e648a7f3-6a1b-c9ea-1121-7ab69b6b173d@nvidia.com>
+ <2807E5FD2F6FDA4886F6618EAC48510E79E79644@CRSMSX101.amr.corp.intel.com>
+X-Nvconfidentiality: public
+From:   John Hubbard <jhubbard@nvidia.com>
+Message-ID: <b1b33292-d929-f9ff-dd75-02828228f35e@nvidia.com>
+Date:   Thu, 8 Aug 2019 11:18:49 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <cfb9a1c7-57c8-db04-1081-ac1cb92bb447@applied-asynchrony.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <2807E5FD2F6FDA4886F6618EAC48510E79E79644@CRSMSX101.amr.corp.intel.com>
+X-Originating-IP: [10.124.1.5]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+Content-Type: text/plain; charset="utf-8"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1565288332; bh=JXH0z+PATu5ChINAttu0xw8NI7VYrjVhdTogRmB3Q5s=;
+        h=X-PGP-Universal:Subject:To:CC:References:X-Nvconfidentiality:From:
+         Message-ID:Date:User-Agent:MIME-Version:In-Reply-To:
+         X-Originating-IP:X-ClientProxiedBy:Content-Type:Content-Language:
+         Content-Transfer-Encoding;
+        b=Ne1ScLdQ+tu5qOaISiLlk/MzD+D0tWGCUEcW8KATp/99KORz80qhTvSS0MA86k71v
+         1gG74XZNfpVRbFXyQsXs+wV66Ly/i7Omeym8buU22OwtUh/B674iBCJPOoXFe5hxmV
+         1e7OUBsDbdwXkl/h4Pjx1eOWT4qAVANZ24jESe93raeMkGLORABLpzcfJ+l/YUvFr/
+         bUBCYBUk9JXLyxcXRRJ6Qo5DLPNTbuOY1/JVx8JLOWf78tx+O5w4P2ZxYGmo4q53CG
+         aum+FjJWUhUsxhssDMyUyjXEHRPMBfcGtXYtpdJqmbhfodN4x0QDM6mw3fwyew2GF4
+         p5OXETBP5SbRg==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08.08.2019 17:53, Holger Hoffstätte wrote:
-> On 8/8/19 4:37 PM, Holger Hoffstätte wrote:
+On 8/8/19 9:25 AM, Weiny, Ira wrote:
 >>
->> Hello Heiner -
->>
->> On 7/28/19 11:25 AM, Heiner Kallweit wrote:
->>> There was a previous attempt to use xmit_more, but the change had to be
->>> reverted because under load sometimes a transmit timeout occurred [0].
->>> Maybe this was caused by a missing memory barrier, the new attempt
->>> keeps the memory barrier before the call to netif_stop_queue like it
->>> is used by the driver as of today. The new attempt also changes the
->>> order of some calls as suggested by Eric.
->>>
->>> [0] https://lkml.org/lkml/2019/2/10/39
->>>
->>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->>
->> I decided to take one for the team and merged this into my 5.2.x tree (just
->> fixing up the path) and it has been working fine for the last 2 weeks in two
->> machines..until today, when for the first time in forever some random NFS traffic
->> made this old friend come out from under the couch:
->>
->> [Aug 8 14:13] ------------[ cut here ]------------
->> [  +0.000006] NETDEV WATCHDOG: eth0 (r8169): transmit queue 0 timed out
->> [  +0.000021] WARNING: CPU: 3 PID: 0 at net/sched/sch_generic.c:442 dev_watchdog+0x21f/0x230
->> [  +0.000001] Modules linked in: lz4 lz4_compress lz4_decompress nfsd auth_rpcgss oid_registry lockd grace sunrpc sch_fq_codel btrfs xor zstd_compress raid6_pq zstd_decompress bfq jitterentropy_rng nct6775 hwmon_vid coretemp hwmon x86_pkg_temp_thermal aesni_intel aes_x86_64 i915 glue_helper crypto_simd cryptd i2c_i801 intel_gtt i2c_algo_bit iosf_mbi drm_kms_helper syscopyarea usbhid sysfillrect r8169 sysimgblt fb_sys_fops realtek drm libphy drm_panel_orientation_quirks i2c_core video backlight mq_deadline
->> [  +0.000026] CPU: 3 PID: 0 Comm: swapper/3 Not tainted 5.2.7 #1
->> [  +0.000001] Hardware name: System manufacturer System Product Name/P8Z68-V LX, BIOS 4105 07/01/2013
->> [  +0.000004] RIP: 0010:dev_watchdog+0x21f/0x230
->> [  +0.000002] Code: 3b 00 75 ea eb ad 4c 89 ef c6 05 1c 45 bd 00 01 e8 66 35 fc ff 44 89 e1 4c 89 ee 48 c7 c7 e8 5e fc 81 48 89 c2 e8 90 df 92 ff <0f> 0b eb 8e 66 66 2e 0f 1f 84 00 00 00 00 00 66 90 66 66 66 66 90
->> [  +0.000002] RSP: 0018:ffffc90000118e68 EFLAGS: 00010286
->> [  +0.000002] RAX: 0000000000000000 RBX: ffff8887f7837600 RCX: 0000000000000303
->> [  +0.000001] RDX: 0000000000000001 RSI: 0000000000000092 RDI: ffffffff827a488c
->> [  +0.000001] RBP: ffff8887f9fbc440 R08: 0000000000000303 R09: 0000000000000003
->> [  +0.000001] R10: 000000000001004c R11: 0000000000000001 R12: 0000000000000000
->> [  +0.000009] R13: ffff8887f9fbc000 R14: ffffffff8173aa20 R15: dead000000000200
->> [  +0.000001] FS:  0000000000000000(0000) GS:ffff8887ff580000(0000) knlGS:0000000000000000
->> [  +0.000000] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> [  +0.000001] CR2: 00007f8d1c04d000 CR3: 0000000002209001 CR4: 00000000000606e0
->> [  +0.000000] Call Trace:
->> [  +0.000002]  <IRQ>
->> [  +0.000005]  call_timer_fn+0x2b/0x120
->> [  +0.000002]  expire_timers+0xa4/0x100
->> [  +0.000001]  run_timer_softirq+0x8c/0x170
->> [  +0.000002]  ? __hrtimer_run_queues+0x13a/0x290
->> [  +0.000003]  ? sched_clock_cpu+0xe/0x130
->> [  +0.000003]  __do_softirq+0xeb/0x2de
->> [  +0.000003]  irq_exit+0x9d/0xe0
->> [  +0.000002]  smp_apic_timer_interrupt+0x60/0x110
->> [  +0.000003]  apic_timer_interrupt+0xf/0x20
->> [  +0.000001]  </IRQ>
->> [  +0.000003] RIP: 0010:cpuidle_enter_state+0xad/0x930
->> [  +0.000001] Code: c5 66 66 66 66 90 31 ff e8 90 99 9e ff 80 7c 24 0b 00 74 12 9c 58 f6 c4 02 0f 85 39 08 00 00 31 ff e8 e7 26 a2 ff fb 45 85 e4 <0f> 88 34 02 00 00 49 63 cc 4c 2b 2c 24 48 8d 04 49 48 c1 e0 05 8b
->> [  +0.000000] RSP: 0018:ffffc9000008be50 EFLAGS: 00000202 ORIG_RAX: ffffffffffffff13
->> [  +0.000001] RAX: ffff8887ff5a9180 RBX: ffffffff822b6c40 RCX: 000000000000001f
->> [  +0.000001] RDX: 0000000000000000 RSI: 0000000033087154 RDI: 0000000000000000
->> [  +0.000001] RBP: ffff8887ff5b1310 R08: 000030d021fae397 R09: ffff8887ff59c8c0
->> [  +0.000000] R10: ffff8887ff59c8c0 R11: 0000000000000006 R12: 0000000000000004
->> [  +0.000001] R13: 000030d021fae397 R14: 0000000000000004 R15: ffff8887fc281600
->> [  +0.000001]  cpuidle_enter+0x29/0x40
->> [  +0.000002]  do_idle+0x1e5/0x280
->> [  +0.000001]  cpu_startup_entry+0x19/0x20
->> [  +0.000002]  start_secondary+0x186/0x1c0
->> [  +0.000001]  secondary_startup_64+0xa4/0xb0
->> [  +0.000001] ---[ end trace 99493c768580f4fd ]---
->>
->> The device is:
->>
->> Aug  7 23:19:09 tux kernel: libphy: r8169: probed
->> Aug  7 23:19:09 tux kernel: r8169 0000:04:00.0 eth0: RTL8168evl/8111evl, c8:60:00:68:33:cc, XID 2c9, IRQ 36
->> Aug  7 23:19:09 tux kernel: r8169 0000:04:00.0 eth0: jumbo features [frames: 9200 bytes, tx checksumming: ko]
->> Aug  7 23:19:12 tux kernel: RTL8211E Gigabit Ethernet r8169-400:00: attached PHY driver [RTL8211E Gigabit Ethernet] (mii_bus:phy_addr=r8169-400:00, irq=IGNORE)
->> Aug  7 23:19:13 tux kernel: r8169 0000:04:00.0 eth0: No native access to PCI extended config space, falling back to CSI
->>
->> and using fq_codel, of course.
->>
->> This cpuidle hiccup used to be completely gone without xmit_more and this was
->> the first (and so far only) time since merging it (regardless of load).
->> Also, while I'm using BMQ as CPU scheduler, that hasn't made a difference for
->> this particular problem in the past (with MuQSS/PDS) either; way back when I had
->> Eric's previous attempt(s) it also hiccupped with CFS.
->>
->> Revert or wait for more reports when -next is merged in 5.4?
-> 
-> Another question/data point: I've had the whole basket of offloads activated:
-> 
->   ethtool --offload eth0 rx on tx on gro on gso on sg on tso on
-> 
-> and this caused zero problems without the xmit_more patch. However I just saw
-> that net-next has a patch where TSO is disabled due to a known HW defect in
-> RTL8168evl, which is of course what I have. Could this be the reason for the
-> stall/hiccup when xmit_more has its fingers in the pie? I kind of know what
-> xmit_more does, just not how it could interact with a possibly broken TSO that
-> nevertheless seems to work fine otherwise..
+>> On 8/7/19 7:36 PM, Ira Weiny wrote:
+>>> On Wed, Aug 07, 2019 at 10:46:49AM +0200, Michal Hocko wrote:
+>>>> On Wed 07-08-19 10:37:26, Jan Kara wrote:
+>>>>> On Fri 02-08-19 12:14:09, John Hubbard wrote:
+>>>>>> On 8/2/19 7:52 AM, Jan Kara wrote:
+>>>>>>> On Fri 02-08-19 07:24:43, Matthew Wilcox wrote:
+>>>>>>>> On Fri, Aug 02, 2019 at 02:41:46PM +0200, Jan Kara wrote:
+>>>>>>>>> On Fri 02-08-19 11:12:44, Michal Hocko wrote:
+>>>>>>>>>> On Thu 01-08-19 19:19:31, john.hubbard@gmail.com wrote:
+>>   [...]
+> Yep I can do this.  I did not realize that Andrew had accepted any of this work.  I'll check out his tree.  But I don't think he is going to accept this series through his tree.  So what is the ETA on that landing in Linus' tree?
 > 
 
-I was about to ask exactly that, whether you have TSO enabled. I don't know what
-can trigger the HW issue, it was just confirmed by Realtek that this chip version
-has a problem with TSO. So the logical conclusion is: test w/o TSO, ideally the
-linux-next version.
+I'd expect it to go into 5.4, according to my understanding of how
+the release cycles are arranged.
 
-> thanks
-> Holger
+
+> To that point I'm still not sure who would take all this as I am now touching mm, procfs, rdma, ext4, and xfs.
 > 
-Heiner
+> I just thought I would chime in with my progress because I'm to a point where things are working and so I can submit the code but I'm not sure what I can/should depend on landing...  Also, now that 0day has run overnight it has found issues with this rebase so I need to clean those up...  Perhaps I will base on Andrew's tree prior to doing that...
+
+I'm certainly not the right person to answer, but in spite of that, I'd think
+Andrew's tree is a reasonable place for it. Sort of.
+
+thanks,
+-- 
+John Hubbard
+NVIDIA
