@@ -2,123 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5154587AD4
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:09:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 569FE87B14
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406739AbfHINJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 09:09:18 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35226 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbfHINJR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:09:17 -0400
-Received: by mail-wm1-f66.google.com with SMTP id l2so5587944wmg.0
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:09:17 -0700 (PDT)
+        id S2406928AbfHINY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 09:24:58 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:51035 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2406273AbfHINY6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:24:58 -0400
+Received: by mail-wm1-f67.google.com with SMTP id v15so5724247wml.0;
+        Fri, 09 Aug 2019 06:24:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/fnCoI0maadSEbgFkw64JuyIT5P+u09qAKU5VD0YmdE=;
-        b=fZfoh/5Dm9cRvAicbzT6MfB35RoEtAbK/bDhpM1Kgb4txBzHdXowDfk0eZVL3h7HlZ
-         bPE9rBTxkJ9ujBX/ceWKId4bdZyZFycEf+cH/VmJ+gN5O3myUBONkdnV2+NNx08HsZez
-         YpyF81cIjXVl4tOk/gxhkztiaPhsO4ERKbuxdJyyqnL+DKpNeaDODRhpLVUAjX9Rw5HV
-         fT4UjHTGPf3JL5hfphfaiqnW/pUYZVMmO67vrh1KYvMVhxXfs5/IrT8R/iV1Nx8nBHbw
-         +bOr1pNezX+/RyazPlnD8etXKNJgIcEUomFiELSNoMygGZE8t9eX4+pwBpCoogUkNIgN
-         OWCA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=ILDppnCmjlOfgJgJ2qNB5ceciycNxLir06qMezCpixc=;
+        b=eZT+w59UUZFyL2cCRDMRHbuHDIC4RKWJEJrzCdA8oNEb6thqLiNew7cw7jfP0Phi7J
+         f+FMHqlAI16KHYSE0ibaSbNqX+dizyMIqiEEEwVV3QIwtMbLv02nJ5CQvVYuUxBXR/VF
+         0l8m7qMLUqGDNtWlKpHhxIRJJCdztftGKS301K7JgJ9CsKj+RKbbSLvjJbF6EvypPIlT
+         HsPE+Gv/ODbYaM22lNsT33zTECWqnV3KUF3jwZLDkWtami3ij+fUi6/LQnR9Ht9Jh4VY
+         781LpF4t7NA2AHAViDrw8v0kl+ezWbfaOn0hkp/rN6EGmJL4j/dHpKgmfceU6/hl+c7n
+         e7ug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/fnCoI0maadSEbgFkw64JuyIT5P+u09qAKU5VD0YmdE=;
-        b=kYXy6ZvywtFUI6A69KFFJuhnfLpW3B9b83A2PT75rBXWFZqiPSNTvQhfdDaDOkHXIc
-         fFY/9ymiehMC/HQFeXkWel9MsV8rf8bl2h7fUIDzmeEEwgC+4eEU1rkOfL8YaoiNqzoj
-         /JwdRy2GbaPRVOHWSKHMGiQChXK62Rm6pq0t8YIXywjr1dBq1zaCBA2Cu6DJVnXYHQVx
-         knRLad4Co9O8MJgUyPqHnvxjuRN6BIuYykr3DwTZhTxZdPKshqKLZiqEDWP6tOHPqLl6
-         Tno8J5CH0LCceoduidQCQRj3Z0STLhn51U658U2tdYDakzrmzP6VXm/mSGkZlfVRil9s
-         6GFg==
-X-Gm-Message-State: APjAAAVDTBLN0cdULkapv6t9w3V76/0GhpmQjKa8xzi6oL3kdYvfSzrT
-        gTW7600ZD14RCqlfwkx89Zn54aV9FYIuruiIeAYOMA==
-X-Google-Smtp-Source: APXvYqwfP2polDvDLdIXeVBlLWKsZ3tuE9c7fnhbcD5AEM4FvpgfwA0Hrcti55Rbh0ra3OSYtC+Ea9Tt7gBiWhMEWTw=
-X-Received: by 2002:a1c:be19:: with SMTP id o25mr10477830wmf.54.1565356155898;
- Fri, 09 Aug 2019 06:09:15 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=ILDppnCmjlOfgJgJ2qNB5ceciycNxLir06qMezCpixc=;
+        b=VfuIjVaWUUoGcB6GumWyfYT+9DnU3kXhEg+mwjeczyTWQaoFTBAalQfVWGT2E382YK
+         uh6NjRKRn2ZSRCzK4/dxKFRIA/3ey9qql0Twc13vfjky46JfT/B5jEPS9vgcZmkTj1jd
+         RWsmciCYwAAv92Zl4ZDm30s0UgbASMEHvQvqrgpaVfhLqYZwS9j3P4F7X9I6DegnrBG8
+         Ey5LDH6JU8j4ehpwQLLyfztHv3CN/pSEUXtvnKL9XralshrvueBQpW49a5rxNHyHsqm6
+         gWz/SliBDJoJOIqQoR0AQCVoNOL6DYgPaSo6lE5VQgl9G70IloCjXY/PzkJCmmSnKnAf
+         qpDQ==
+X-Gm-Message-State: APjAAAVRlxFVAu6rkun1MxN8GiwYuPZM5it0L+WlYaodaGtYUwhyQVx8
+        YBQICWGSabTYoukjcWS7fEI=
+X-Google-Smtp-Source: APXvYqyoIq7cQyCyqyaTH2fo4y1zxmmZ+SxcwfcCyTtt3q94bYPWzefG8vVhK4GVKNwWCIJEWnX5Vw==
+X-Received: by 2002:a1c:ab06:: with SMTP id u6mr10757190wme.125.1565357095875;
+        Fri, 09 Aug 2019 06:24:55 -0700 (PDT)
+Received: from localhost ([197.211.57.145])
+        by smtp.gmail.com with ESMTPSA id a2sm4863912wmj.9.2019.08.09.06.24.50
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 09 Aug 2019 06:24:55 -0700 (PDT)
+Date:   Fri, 9 Aug 2019 14:23:49 +0100
+From:   Sheriff Esseson <sheriffesseson@gmail.com>
+To:     skhan@linuxfoundation.org
+Cc:     linux-kernel-mentees@lists.linuxfoundation.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "open list:DOCUMENTATION" <linux-doc@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:RISC-V ARCHITECTURE" <linux-riscv@lists.infradead.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <netdev@vger.kernel.org>,
+        "open list:BPF (Safe dynamic programs and tools)" 
+        <bpf@vger.kernel.org>
+Subject: [PATCH v2] Documentation: virt: Fix broken reference to virt tree's
+ index
+Message-ID: <20190809132349.GA15460@localhost>
 MIME-Version: 1.0
-References: <20190809120447.93591-1-edumazet@google.com>
-In-Reply-To: <20190809120447.93591-1-edumazet@google.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Fri, 9 Aug 2019 09:08:38 -0400
-Message-ID: <CACSApvYPHU2WeAm7kL+RHmeu-Cu1VfVVsLfLUAQHL0-X7BGZFA@mail.gmail.com>
-Subject: Re: [PATCH net-next] tcp: batch calls to sk_flush_backlog()
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 9, 2019 at 8:04 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> Starting from commit d41a69f1d390 ("tcp: make tcp_sendmsg() aware of socket backlog")
-> loopback flows got hurt, because for each skb sent, the socket receives an
-> immediate ACK and sk_flush_backlog() causes extra work.
->
-> Intent was to not let the backlog grow too much, but we went a bit too far.
->
-> We can check the backlog every 16 skbs (about 1MB chunks)
-> to increase TCP over loopback performance by about 15 %
->
-> Note that the call to sk_flush_backlog() handles a single ACK,
-> thanks to coalescing done on backlog, but cleans the 16 skbs
-> found in rtx rb-tree.
->
-> Reported-by: Soheil Hassas Yeganeh <soheil@google.com>
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
+Fix broken reference to virt/index.rst.
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+Fixes: 2f5947dfcaec ("Documentation: move Documentation/virtual to
+Documentation/virt")
 
-Thank you very much, Eric!
+Signed-off-by: Sheriff Esseson <sheriffesseson@gmail.com>
+---
 
-> ---
->  net/ipv4/tcp.c | 11 ++++++-----
->  1 file changed, 6 insertions(+), 5 deletions(-)
->
-> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-> index a0a66321c0ee99918b2080219dbaefcf3c398e13..f8fa1686f7f3e64f5d4ea8163e7f87538cc0d672 100644
-> --- a/net/ipv4/tcp.c
-> +++ b/net/ipv4/tcp.c
-> @@ -1162,7 +1162,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->         struct sockcm_cookie sockc;
->         int flags, err, copied = 0;
->         int mss_now = 0, size_goal, copied_syn = 0;
-> -       bool process_backlog = false;
-> +       int process_backlog = 0;
->         bool zc = false;
->         long timeo;
->
-> @@ -1254,9 +1254,10 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->                         if (!sk_stream_memory_free(sk))
->                                 goto wait_for_sndbuf;
->
-> -                       if (process_backlog && sk_flush_backlog(sk)) {
-> -                               process_backlog = false;
-> -                               goto restart;
-> +                       if (unlikely(process_backlog >= 16)) {
-> +                               process_backlog = 0;
-> +                               if (sk_flush_backlog(sk))
-> +                                       goto restart;
->                         }
->                         first_skb = tcp_rtx_and_write_queues_empty(sk);
->                         skb = sk_stream_alloc_skb(sk, 0, sk->sk_allocation,
-> @@ -1264,7 +1265,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
->                         if (!skb)
->                                 goto wait_for_memory;
->
-> -                       process_backlog = true;
-> +                       process_backlog++;
->                         skb->ip_summed = CHECKSUM_PARTIAL;
->
->                         skb_entail(sk, skb);
-> --
-> 2.23.0.rc1.153.gdeed80330f-goog
->
+Changes in v2:
+	- Fix patch description. 
+
+ Documentation/index.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/index.rst b/Documentation/index.rst
+index 2df5a3da563c..5205430305d5 100644
+--- a/Documentation/index.rst
++++ b/Documentation/index.rst
+@@ -115,7 +115,7 @@ needed).
+    target/index
+    timers/index
+    watchdog/index
+-   virtual/index
++   virt/index
+    input/index
+    hwmon/index
+    gpu/index
+-- 
+2.17.1
+
