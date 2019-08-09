@@ -2,323 +2,359 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB03A87EE6
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 18:05:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74ED487EEA
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 18:06:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437036AbfHIQF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 12:05:56 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:50794 "EHLO mx1.redhat.com"
+        id S2437048AbfHIQGD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 12:06:03 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:37082 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2436980AbfHIQF4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 12:05:56 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        id S2436882AbfHIQGD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 12:06:03 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 3EBA4307D921;
-        Fri,  9 Aug 2019 16:05:55 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 80D81308FEC1;
+        Fri,  9 Aug 2019 16:06:02 +0000 (UTC)
 Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3B837600CC;
-        Fri,  9 Aug 2019 16:05:54 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 4525B5D9D3;
+        Fri,  9 Aug 2019 16:06:01 +0000 (UTC)
 Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
  Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
  Kingdom.
  Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 1/2] rxrpc: Fix local endpoint refcounting
+Subject: [PATCH net 2/2] rxrpc: Don't bother generating maxSkew in the ACK
+ packet
 From:   David Howells <dhowells@redhat.com>
 To:     netdev@vger.kernel.org
 Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Date:   Fri, 09 Aug 2019 17:05:53 +0100
-Message-ID: <156536675348.17478.5510912190884111298.stgit@warthog.procyon.org.uk>
+Date:   Fri, 09 Aug 2019 17:06:00 +0100
+Message-ID: <156536676047.17478.4311933006996701836.stgit@warthog.procyon.org.uk>
 In-Reply-To: <156536674651.17478.15139844428920800280.stgit@warthog.procyon.org.uk>
 References: <156536674651.17478.15139844428920800280.stgit@warthog.procyon.org.uk>
 User-Agent: StGit/unknown-version
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Fri, 09 Aug 2019 16:05:55 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Fri, 09 Aug 2019 16:06:02 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The object lifetime management on the rxrpc_local struct is broken in that
-the rxrpc_local_processor() function is expected to clean up and remove an
-object - but it may get requeued by packets coming in on the backing UDP
-socket once it starts running.
+Don't bother generating maxSkew in the ACK packet as it has been obsolete
+since AFS 3.1.
 
-This may result in the assertion in rxrpc_local_rcu() firing because the
-memory has been scheduled for RCU destruction whilst still queued:
-
-	rxrpc: Assertion failed
-	------------[ cut here ]------------
-	kernel BUG at net/rxrpc/local_object.c:468!
-
-Note that if the processor comes around before the RCU free function, it
-will just do nothing because ->dead is true.
-
-Fix this by adding a separate refcount to count active users of the
-endpoint that causes the endpoint to be destroyed when it reaches 0.
-
-The original refcount can then be used to refcount objects through the work
-processor and cause the memory to be rcu freed when that reaches 0.
-
-Fixes: 4f95dd78a77e ("rxrpc: Rework local endpoint management")
-Reported-by: syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com
 Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Jeffrey Altman <jaltman@auristor.com>
 ---
 
- net/rxrpc/af_rxrpc.c     |    4 +-
- net/rxrpc/ar-internal.h  |    5 ++-
- net/rxrpc/input.c        |   16 ++++++---
- net/rxrpc/local_object.c |   86 +++++++++++++++++++++++++++++-----------------
- 4 files changed, 72 insertions(+), 39 deletions(-)
+ net/rxrpc/af_rxrpc.c    |    2 +-
+ net/rxrpc/ar-internal.h |    3 +--
+ net/rxrpc/call_event.c  |   15 ++++++---------
+ net/rxrpc/input.c       |   43 ++++++++++++++++---------------------------
+ net/rxrpc/output.c      |    3 +--
+ net/rxrpc/recvmsg.c     |    6 +++---
+ 6 files changed, 28 insertions(+), 44 deletions(-)
 
 diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-index d09eaf153544..8c9bd3ae9edf 100644
+index 8c9bd3ae9edf..0dbbfd1b6487 100644
 --- a/net/rxrpc/af_rxrpc.c
 +++ b/net/rxrpc/af_rxrpc.c
-@@ -193,7 +193,7 @@ static int rxrpc_bind(struct socket *sock, struct sockaddr *saddr, int len)
- 
- service_in_use:
- 	write_unlock(&local->services_lock);
--	rxrpc_put_local(local);
-+	rxrpc_unuse_local(local);
- 	ret = -EADDRINUSE;
- error_unlock:
- 	release_sock(&rx->sk);
-@@ -901,7 +901,7 @@ static int rxrpc_release_sock(struct sock *sk)
- 	rxrpc_queue_work(&rxnet->service_conn_reaper);
- 	rxrpc_queue_work(&rxnet->client_conn_reaper);
- 
--	rxrpc_put_local(rx->local);
-+	rxrpc_unuse_local(rx->local);
- 	rx->local = NULL;
- 	key_put(rx->key);
- 	rx->key = NULL;
+@@ -402,7 +402,7 @@ EXPORT_SYMBOL(rxrpc_kernel_check_life);
+  */
+ void rxrpc_kernel_probe_life(struct socket *sock, struct rxrpc_call *call)
+ {
+-	rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, 0, true, false,
++	rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, true, false,
+ 			  rxrpc_propose_ack_ping_for_check_life);
+ 	rxrpc_send_ack_packet(call, true, NULL);
+ }
 diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index 822f45386e31..9796c45d2f6a 100644
+index 9796c45d2f6a..145335611af6 100644
 --- a/net/rxrpc/ar-internal.h
 +++ b/net/rxrpc/ar-internal.h
-@@ -254,7 +254,8 @@ struct rxrpc_security {
-  */
- struct rxrpc_local {
- 	struct rcu_head		rcu;
--	atomic_t		usage;
-+	atomic_t		active_users;	/* Number of users of the local endpoint */
-+	atomic_t		usage;		/* Number of references to the structure */
- 	struct rxrpc_net	*rxnet;		/* The network ns in which this resides */
- 	struct list_head	link;
- 	struct socket		*socket;	/* my UDP socket */
-@@ -1002,6 +1003,8 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *, const struct sockaddr_rxrpc
- struct rxrpc_local *rxrpc_get_local(struct rxrpc_local *);
- struct rxrpc_local *rxrpc_get_local_maybe(struct rxrpc_local *);
- void rxrpc_put_local(struct rxrpc_local *);
-+struct rxrpc_local *rxrpc_use_local(struct rxrpc_local *);
-+void rxrpc_unuse_local(struct rxrpc_local *);
- void rxrpc_queue_local(struct rxrpc_local *);
- void rxrpc_destroy_all_locals(struct rxrpc_net *);
+@@ -650,7 +650,6 @@ struct rxrpc_call {
  
+ 	/* receive-phase ACK management */
+ 	u8			ackr_reason;	/* reason to ACK */
+-	u16			ackr_skew;	/* skew on packet being ACK'd */
+ 	rxrpc_serial_t		ackr_serial;	/* serial of packet being ACK'd */
+ 	rxrpc_serial_t		ackr_first_seq;	/* first sequence number received */
+ 	rxrpc_seq_t		ackr_prev_seq;	/* previous sequence number received */
+@@ -744,7 +743,7 @@ int rxrpc_reject_call(struct rxrpc_sock *);
+ /*
+  * call_event.c
+  */
+-void rxrpc_propose_ACK(struct rxrpc_call *, u8, u16, u32, bool, bool,
++void rxrpc_propose_ACK(struct rxrpc_call *, u8, u32, bool, bool,
+ 		       enum rxrpc_propose_ack_trace);
+ void rxrpc_process_call(struct work_struct *);
+ 
+diff --git a/net/rxrpc/call_event.c b/net/rxrpc/call_event.c
+index bc2adeb3acb9..c767679bfa5d 100644
+--- a/net/rxrpc/call_event.c
++++ b/net/rxrpc/call_event.c
+@@ -43,8 +43,7 @@ static void rxrpc_propose_ping(struct rxrpc_call *call,
+  * propose an ACK be sent
+  */
+ static void __rxrpc_propose_ACK(struct rxrpc_call *call, u8 ack_reason,
+-				u16 skew, u32 serial, bool immediate,
+-				bool background,
++				u32 serial, bool immediate, bool background,
+ 				enum rxrpc_propose_ack_trace why)
+ {
+ 	enum rxrpc_propose_ack_outcome outcome = rxrpc_propose_ack_use;
+@@ -69,14 +68,12 @@ static void __rxrpc_propose_ACK(struct rxrpc_call *call, u8 ack_reason,
+ 		if (RXRPC_ACK_UPDATEABLE & (1 << ack_reason)) {
+ 			outcome = rxrpc_propose_ack_update;
+ 			call->ackr_serial = serial;
+-			call->ackr_skew = skew;
+ 		}
+ 		if (!immediate)
+ 			goto trace;
+ 	} else if (prior > rxrpc_ack_priority[call->ackr_reason]) {
+ 		call->ackr_reason = ack_reason;
+ 		call->ackr_serial = serial;
+-		call->ackr_skew = skew;
+ 	} else {
+ 		outcome = rxrpc_propose_ack_subsume;
+ 	}
+@@ -137,11 +134,11 @@ static void __rxrpc_propose_ACK(struct rxrpc_call *call, u8 ack_reason,
+  * propose an ACK be sent, locking the call structure
+  */
+ void rxrpc_propose_ACK(struct rxrpc_call *call, u8 ack_reason,
+-		       u16 skew, u32 serial, bool immediate, bool background,
++		       u32 serial, bool immediate, bool background,
+ 		       enum rxrpc_propose_ack_trace why)
+ {
+ 	spin_lock_bh(&call->lock);
+-	__rxrpc_propose_ACK(call, ack_reason, skew, serial,
++	__rxrpc_propose_ACK(call, ack_reason, serial,
+ 			    immediate, background, why);
+ 	spin_unlock_bh(&call->lock);
+ }
+@@ -239,7 +236,7 @@ static void rxrpc_resend(struct rxrpc_call *call, unsigned long now_j)
+ 		ack_ts = ktime_sub(now, call->acks_latest_ts);
+ 		if (ktime_to_ns(ack_ts) < call->peer->rtt)
+ 			goto out;
+-		rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, 0, true, false,
++		rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, true, false,
+ 				  rxrpc_propose_ack_ping_for_lost_ack);
+ 		rxrpc_send_ack_packet(call, true, NULL);
+ 		goto out;
+@@ -372,7 +369,7 @@ void rxrpc_process_call(struct work_struct *work)
+ 	if (time_after_eq(now, t)) {
+ 		trace_rxrpc_timer(call, rxrpc_timer_exp_keepalive, now);
+ 		cmpxchg(&call->keepalive_at, t, now + MAX_JIFFY_OFFSET);
+-		rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, 0, true, true,
++		rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, true, true,
+ 				  rxrpc_propose_ack_ping_for_keepalive);
+ 		set_bit(RXRPC_CALL_EV_PING, &call->events);
+ 	}
+@@ -407,7 +404,7 @@ void rxrpc_process_call(struct work_struct *work)
+ 	send_ack = NULL;
+ 	if (test_and_clear_bit(RXRPC_CALL_EV_ACK_LOST, &call->events)) {
+ 		call->acks_lost_top = call->tx_top;
+-		rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, 0, true, false,
++		rxrpc_propose_ACK(call, RXRPC_ACK_PING, 0, true, false,
+ 				  rxrpc_propose_ack_ping_for_lost_ack);
+ 		send_ack = &call->acks_lost_ping;
+ 	}
 diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-index 5bd6f1546e5c..ee95d1cd1cdf 100644
+index ee95d1cd1cdf..dd47d465d1d3 100644
 --- a/net/rxrpc/input.c
 +++ b/net/rxrpc/input.c
-@@ -1108,8 +1108,12 @@ static void rxrpc_post_packet_to_local(struct rxrpc_local *local,
- {
- 	_enter("%p,%p", local, skb);
- 
--	skb_queue_tail(&local->event_queue, skb);
--	rxrpc_queue_local(local);
-+	if (rxrpc_get_local_maybe(local)) {
-+		skb_queue_tail(&local->event_queue, skb);
-+		rxrpc_queue_local(local);
-+	} else {
-+		rxrpc_free_skb(skb, rxrpc_skb_rx_freed);
-+	}
- }
- 
- /*
-@@ -1119,8 +1123,12 @@ static void rxrpc_reject_packet(struct rxrpc_local *local, struct sk_buff *skb)
- {
- 	CHECK_SLAB_OKAY(&local->usage);
- 
--	skb_queue_tail(&local->reject_queue, skb);
--	rxrpc_queue_local(local);
-+	if (rxrpc_get_local_maybe(local)) {
-+		skb_queue_tail(&local->reject_queue, skb);
-+		rxrpc_queue_local(local);
-+	} else {
-+		rxrpc_free_skb(skb, rxrpc_skb_rx_freed);
-+	}
- }
- 
- /*
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index b1c71bad510b..9798159ee65f 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -79,6 +79,7 @@ static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
- 	local = kzalloc(sizeof(struct rxrpc_local), GFP_KERNEL);
- 	if (local) {
- 		atomic_set(&local->usage, 1);
-+		atomic_set(&local->active_users, 1);
- 		local->rxnet = rxnet;
- 		INIT_LIST_HEAD(&local->link);
- 		INIT_WORK(&local->processor, rxrpc_local_processor);
-@@ -266,11 +267,8 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 		 * bind the transport socket may still fail if we're attempting
- 		 * to use a local address that the dying object is still using.
- 		 */
--		if (!rxrpc_get_local_maybe(local)) {
--			cursor = cursor->next;
--			list_del_init(&local->link);
-+		if (!rxrpc_use_local(local))
- 			break;
--		}
- 
- 		age = "old";
- 		goto found;
-@@ -284,7 +282,10 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
- 	if (ret < 0)
- 		goto sock_error;
- 
--	list_add_tail(&local->link, cursor);
-+	if (cursor != &rxnet->local_endpoints)
-+		list_replace(cursor, &local->link);
-+	else
-+		list_add_tail(&local->link, cursor);
- 	age = "new";
- 
- found:
-@@ -342,7 +343,8 @@ struct rxrpc_local *rxrpc_get_local_maybe(struct rxrpc_local *local)
- }
- 
- /*
-- * Queue a local endpoint.
-+ * Queue a local endpoint unless it has become unreferenced and pass the
-+ * caller's reference to the work item.
+@@ -196,15 +196,14 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
+  * Ping the other end to fill our RTT cache and to retrieve the rwind
+  * and MTU parameters.
   */
- void rxrpc_queue_local(struct rxrpc_local *local)
+-static void rxrpc_send_ping(struct rxrpc_call *call, struct sk_buff *skb,
+-			    int skew)
++static void rxrpc_send_ping(struct rxrpc_call *call, struct sk_buff *skb)
  {
-@@ -351,15 +353,8 @@ void rxrpc_queue_local(struct rxrpc_local *local)
- 	if (rxrpc_queue_work(&local->processor))
- 		trace_rxrpc_local(local, rxrpc_local_queued,
- 				  atomic_read(&local->usage), here);
--}
--
--/*
-- * A local endpoint reached its end of life.
-- */
--static void __rxrpc_put_local(struct rxrpc_local *local)
--{
--	_enter("%d", local->debug_id);
--	rxrpc_queue_work(&local->processor);
-+	else
-+		rxrpc_put_local(local);
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	ktime_t now = skb->tstamp;
+ 
+ 	if (call->peer->rtt_usage < 3 ||
+ 	    ktime_before(ktime_add_ms(call->peer->rtt_last_req, 1000), now))
+-		rxrpc_propose_ACK(call, RXRPC_ACK_PING, skew, sp->hdr.serial,
++		rxrpc_propose_ACK(call, RXRPC_ACK_PING, sp->hdr.serial,
+ 				  true, true,
+ 				  rxrpc_propose_ack_ping_for_params);
  }
- 
+@@ -419,8 +418,7 @@ static void rxrpc_input_dup_data(struct rxrpc_call *call, rxrpc_seq_t seq,
  /*
-@@ -375,10 +370,45 @@ void rxrpc_put_local(struct rxrpc_local *local)
- 		trace_rxrpc_local(local, rxrpc_local_put, n, here);
+  * Process a DATA packet, adding the packet to the Rx ring.
+  */
+-static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb,
+-			     u16 skew)
++static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
+ {
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	enum rxrpc_call_state state;
+@@ -600,11 +598,11 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb,
  
- 		if (n == 0)
--			__rxrpc_put_local(local);
-+			call_rcu(&local->rcu, rxrpc_local_rcu);
+ ack:
+ 	if (ack)
+-		rxrpc_propose_ACK(call, ack, skew, ack_serial,
++		rxrpc_propose_ACK(call, ack, ack_serial,
+ 				  immediate_ack, true,
+ 				  rxrpc_propose_ack_input_data);
+ 	else
+-		rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, skew, serial,
++		rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial,
+ 				  false, true,
+ 				  rxrpc_propose_ack_input_data);
+ 
+@@ -822,8 +820,7 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
+  * soft-ACK means that the packet may be discarded and retransmission
+  * requested.  A phase is complete when all packets are hard-ACK'd.
+  */
+-static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb,
+-			    u16 skew)
++static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
+ {
+ 	struct rxrpc_ack_summary summary = { 0 };
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+@@ -867,11 +864,11 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb,
+ 	if (buf.ack.reason == RXRPC_ACK_PING) {
+ 		_proto("Rx ACK %%%u PING Request", sp->hdr.serial);
+ 		rxrpc_propose_ACK(call, RXRPC_ACK_PING_RESPONSE,
+-				  skew, sp->hdr.serial, true, true,
++				  sp->hdr.serial, true, true,
+ 				  rxrpc_propose_ack_respond_to_ping);
+ 	} else if (sp->hdr.flags & RXRPC_REQUEST_ACK) {
+ 		rxrpc_propose_ACK(call, RXRPC_ACK_REQUESTED,
+-				  skew, sp->hdr.serial, true, true,
++				  sp->hdr.serial, true, true,
+ 				  rxrpc_propose_ack_respond_to_ack);
  	}
- }
  
-+/*
-+ * Start using a local endpoint.
-+ */
-+struct rxrpc_local *rxrpc_use_local(struct rxrpc_local *local)
-+{
-+	unsigned int au;
-+
-+	local = rxrpc_get_local_maybe(local);
-+	if (!local)
-+		return NULL;
-+
-+	au = atomic_fetch_add_unless(&local->active_users, 1, 0);
-+	if (au == 0) {
-+		rxrpc_put_local(local);
-+		return NULL;
-+	}
-+
-+	return local;
-+}
-+
-+/*
-+ * Cease using a local endpoint.  Once the number of active users reaches 0, we
-+ * start the closure of the transport in the work processor.
-+ */
-+void rxrpc_unuse_local(struct rxrpc_local *local)
-+{
-+	unsigned int au;
-+
-+	au = atomic_dec_return(&local->active_users);
-+	if (au == 0)
-+		rxrpc_queue_local(local);
-+	else
-+		rxrpc_put_local(local);
-+}
-+
- /*
-  * Destroy a local endpoint's socket and then hand the record to RCU to dispose
-  * of.
-@@ -393,16 +423,6 @@ static void rxrpc_local_destroyer(struct rxrpc_local *local)
+@@ -948,7 +945,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb,
+ 	    RXRPC_TX_ANNO_LAST &&
+ 	    summary.nr_acks == call->tx_top - hard_ack &&
+ 	    rxrpc_is_client_call(call))
+-		rxrpc_propose_ACK(call, RXRPC_ACK_PING, skew, sp->hdr.serial,
++		rxrpc_propose_ACK(call, RXRPC_ACK_PING, sp->hdr.serial,
+ 				  false, true,
+ 				  rxrpc_propose_ack_ping_for_lost_reply);
  
- 	_enter("%d", local->debug_id);
- 
--	/* We can get a race between an incoming call packet queueing the
--	 * processor again and the work processor starting the destruction
--	 * process which will shut down the UDP socket.
--	 */
--	if (local->dead) {
--		_leave(" [already dead]");
--		return;
--	}
--	local->dead = true;
--
- 	mutex_lock(&rxnet->local_mutex);
- 	list_del_init(&local->link);
- 	mutex_unlock(&rxnet->local_mutex);
-@@ -422,13 +442,11 @@ static void rxrpc_local_destroyer(struct rxrpc_local *local)
- 	 */
- 	rxrpc_purge_queue(&local->reject_queue);
- 	rxrpc_purge_queue(&local->event_queue);
--
--	_debug("rcu local %d", local->debug_id);
--	call_rcu(&local->rcu, rxrpc_local_rcu);
- }
- 
- /*
-- * Process events on an endpoint
-+ * Process events on an endpoint.  The work item carries a ref which
-+ * we must release.
+@@ -1004,7 +1001,7 @@ static void rxrpc_input_abort(struct rxrpc_call *call, struct sk_buff *skb)
+  * Process an incoming call packet.
   */
- static void rxrpc_local_processor(struct work_struct *work)
+ static void rxrpc_input_call_packet(struct rxrpc_call *call,
+-				    struct sk_buff *skb, u16 skew)
++				    struct sk_buff *skb)
  {
-@@ -441,8 +459,10 @@ static void rxrpc_local_processor(struct work_struct *work)
+ 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
+ 	unsigned long timo;
+@@ -1023,11 +1020,11 @@ static void rxrpc_input_call_packet(struct rxrpc_call *call,
  
- 	do {
- 		again = false;
--		if (atomic_read(&local->usage) == 0)
--			return rxrpc_local_destroyer(local);
-+		if (atomic_read(&local->active_users) == 0) {
-+			rxrpc_local_destroyer(local);
-+			break;
-+		}
+ 	switch (sp->hdr.type) {
+ 	case RXRPC_PACKET_TYPE_DATA:
+-		rxrpc_input_data(call, skb, skew);
++		rxrpc_input_data(call, skb);
+ 		break;
  
- 		if (!skb_queue_empty(&local->reject_queue)) {
- 			rxrpc_reject_packets(local);
-@@ -454,6 +474,8 @@ static void rxrpc_local_processor(struct work_struct *work)
- 			again = true;
+ 	case RXRPC_PACKET_TYPE_ACK:
+-		rxrpc_input_ack(call, skb, skew);
++		rxrpc_input_ack(call, skb);
+ 		break;
+ 
+ 	case RXRPC_PACKET_TYPE_BUSY:
+@@ -1181,7 +1178,6 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 	struct rxrpc_peer *peer = NULL;
+ 	struct rxrpc_sock *rx = NULL;
+ 	unsigned int channel;
+-	int skew = 0;
+ 
+ 	_enter("%p", udp_sk);
+ 
+@@ -1309,15 +1305,8 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 			goto out;
  		}
- 	} while (again);
-+
-+	rxrpc_put_local(local);
- }
  
- /*
+-		/* Note the serial number skew here */
+-		skew = (int)sp->hdr.serial - (int)conn->hi_serial;
+-		if (skew >= 0) {
+-			if (skew > 0)
+-				conn->hi_serial = sp->hdr.serial;
+-		} else {
+-			skew = -skew;
+-			skew = min(skew, 65535);
+-		}
++		if ((int)sp->hdr.serial - (int)conn->hi_serial > 0)
++			conn->hi_serial = sp->hdr.serial;
+ 
+ 		/* Call-bound packets are routed by connection channel. */
+ 		channel = sp->hdr.cid & RXRPC_CHANNELMASK;
+@@ -1380,11 +1369,11 @@ int rxrpc_input_packet(struct sock *udp_sk, struct sk_buff *skb)
+ 		call = rxrpc_new_incoming_call(local, rx, skb);
+ 		if (!call)
+ 			goto reject_packet;
+-		rxrpc_send_ping(call, skb, skew);
++		rxrpc_send_ping(call, skb);
+ 		mutex_unlock(&call->user_mutex);
+ 	}
+ 
+-	rxrpc_input_call_packet(call, skb, skew);
++	rxrpc_input_call_packet(call, skb);
+ 	goto discard;
+ 
+ discard:
+diff --git a/net/rxrpc/output.c b/net/rxrpc/output.c
+index 948e3fe249ec..369e516c4bdf 100644
+--- a/net/rxrpc/output.c
++++ b/net/rxrpc/output.c
+@@ -87,7 +87,7 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
+ 	*_top = top;
+ 
+ 	pkt->ack.bufferSpace	= htons(8);
+-	pkt->ack.maxSkew	= htons(call->ackr_skew);
++	pkt->ack.maxSkew	= htons(0);
+ 	pkt->ack.firstPacket	= htonl(hard_ack + 1);
+ 	pkt->ack.previousPacket	= htonl(call->ackr_prev_seq);
+ 	pkt->ack.serial		= htonl(serial);
+@@ -228,7 +228,6 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, bool ping,
+ 			if (ping)
+ 				clear_bit(RXRPC_CALL_PINGING, &call->flags);
+ 			rxrpc_propose_ACK(call, pkt->ack.reason,
+-					  ntohs(pkt->ack.maxSkew),
+ 					  ntohl(pkt->ack.serial),
+ 					  false, true,
+ 					  rxrpc_propose_ack_retry_tx);
+diff --git a/net/rxrpc/recvmsg.c b/net/rxrpc/recvmsg.c
+index 5abf46cf9e6c..9a7e1bc9791d 100644
+--- a/net/rxrpc/recvmsg.c
++++ b/net/rxrpc/recvmsg.c
+@@ -141,7 +141,7 @@ static void rxrpc_end_rx_phase(struct rxrpc_call *call, rxrpc_serial_t serial)
+ 	ASSERTCMP(call->rx_hard_ack, ==, call->rx_top);
+ 
+ 	if (call->state == RXRPC_CALL_CLIENT_RECV_REPLY) {
+-		rxrpc_propose_ACK(call, RXRPC_ACK_IDLE, 0, serial, false, true,
++		rxrpc_propose_ACK(call, RXRPC_ACK_IDLE, serial, false, true,
+ 				  rxrpc_propose_ack_terminal_ack);
+ 		//rxrpc_send_ack_packet(call, false, NULL);
+ 	}
+@@ -159,7 +159,7 @@ static void rxrpc_end_rx_phase(struct rxrpc_call *call, rxrpc_serial_t serial)
+ 		call->state = RXRPC_CALL_SERVER_ACK_REQUEST;
+ 		call->expect_req_by = jiffies + MAX_JIFFY_OFFSET;
+ 		write_unlock_bh(&call->state_lock);
+-		rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, 0, serial, false, true,
++		rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial, false, true,
+ 				  rxrpc_propose_ack_processing_op);
+ 		break;
+ 	default:
+@@ -212,7 +212,7 @@ static void rxrpc_rotate_rx_window(struct rxrpc_call *call)
+ 		if (after_eq(hard_ack, call->ackr_consumed + 2) ||
+ 		    after_eq(top, call->ackr_seen + 2) ||
+ 		    (hard_ack == top && after(hard_ack, call->ackr_consumed)))
+-			rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, 0, serial,
++			rxrpc_propose_ACK(call, RXRPC_ACK_DELAY, serial,
+ 					  true, true,
+ 					  rxrpc_propose_ack_rotate_rx);
+ 		if (call->ackr_reason && call->ackr_reason != RXRPC_ACK_DELAY)
 
