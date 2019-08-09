@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95A7287773
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ECB887770
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:33:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406436AbfHIKcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 06:32:47 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41664 "EHLO mx1.suse.de"
+        id S2406548AbfHIKdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 06:33:36 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41698 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2405786AbfHIKcr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2405948AbfHIKcr (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 9 Aug 2019 06:32:47 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 5CBD4AFF9;
+        by mx1.suse.de (Postfix) with ESMTP id E925AAFFB;
         Fri,  9 Aug 2019 10:32:44 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Ralf Baechle <ralf@linux-mips.org>,
@@ -31,9 +31,9 @@ To:     Ralf Baechle <ralf@linux-mips.org>,
         linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
         netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH v4 3/9] nvmem: core: add nvmem_device_find
-Date:   Fri,  9 Aug 2019 12:32:25 +0200
-Message-Id: <20190809103235.16338-4-tbogendoerfer@suse.de>
+Subject: [PATCH v4 4/9] MIPS: PCI: refactor ioc3 special handling
+Date:   Fri,  9 Aug 2019 12:32:26 +0200
+Message-Id: <20190809103235.16338-5-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.13.7
 In-Reply-To: <20190809103235.16338-1-tbogendoerfer@suse.de>
 References: <20190809103235.16338-1-tbogendoerfer@suse.de>
@@ -42,164 +42,278 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-nvmem_device_find provides a way to search for nvmem devices with
-the help of a match function simlair to bus_find_device.
+Refactored code to only have one ioc3 special handling for read
+access and one for write access.
 
 Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 ---
- drivers/nvmem/core.c           | 62 ++++++++++++++++++++++--------------------
- include/linux/nvmem-consumer.h |  9 ++++++
- 2 files changed, 41 insertions(+), 30 deletions(-)
+ arch/mips/pci/pci-xtalk-bridge.c | 167 +++++++++++++++------------------------
+ 1 file changed, 62 insertions(+), 105 deletions(-)
 
-diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index ac5d945be88a..e591ba54758f 100644
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -76,36 +76,18 @@ static struct bus_type nvmem_bus_type = {
- 	.name		= "nvmem",
- };
- 
-+#if IS_ENABLED(CONFIG_OF)
- static int of_nvmem_match(struct device *dev, const void *nvmem_np)
+diff --git a/arch/mips/pci/pci-xtalk-bridge.c b/arch/mips/pci/pci-xtalk-bridge.c
+index bcf7f559789a..7b4d40354ee7 100644
+--- a/arch/mips/pci/pci-xtalk-bridge.c
++++ b/arch/mips/pci/pci-xtalk-bridge.c
+@@ -20,16 +20,50 @@
+  * Most of the IOC3 PCI config register aren't present
+  * we emulate what is needed for a normal PCI enumeration
+  */
+-static u32 emulate_ioc3_cfg(int where, int size)
++static int ioc3_cfg_rd(void *addr, int where, int size, u32 *value)
  {
- 	return dev->of_node == nvmem_np;
- }
-+#endif
+-	if (size == 1 && where == 0x3d)
+-		return 0x01;
+-	else if (size == 2 && where == 0x3c)
+-		return 0x0100;
+-	else if (size == 4 && where == 0x3c)
+-		return 0x00000100;
++	u32 cf, shift, mask;
  
--static struct nvmem_device *of_nvmem_find(struct device_node *nvmem_np)
-+static int nvmem_match_name(struct device *dev, const void *data)
- {
--	struct device *d;
--
--	if (!nvmem_np)
--		return NULL;
--
--	d = bus_find_device(&nvmem_bus_type, NULL, nvmem_np, of_nvmem_match);
--
--	if (!d)
--		return NULL;
-+	const char *name = data;
- 
--	return to_nvmem_device(d);
--}
--
--static struct nvmem_device *nvmem_find(const char *name)
--{
--	struct device *d;
--
--	d = bus_find_device_by_name(&nvmem_bus_type, NULL, name);
--
--	if (!d)
--		return NULL;
--
--	return to_nvmem_device(d);
-+	return sysfs_streq(name, dev_name(dev));
- }
- 
- static void nvmem_cell_drop(struct nvmem_cell *cell)
-@@ -537,13 +519,16 @@ int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
- }
- EXPORT_SYMBOL(devm_nvmem_unregister);
- 
--static struct nvmem_device *__nvmem_device_get(struct device_node *np,
--					       const char *nvmem_name)
-+static struct nvmem_device *__nvmem_device_get(void *data,
-+			int (*match)(struct device *dev, const void *data))
- {
- 	struct nvmem_device *nvmem = NULL;
-+	struct device *dev;
- 
- 	mutex_lock(&nvmem_mutex);
--	nvmem = np ? of_nvmem_find(np) : nvmem_find(nvmem_name);
-+	dev = bus_find_device(&nvmem_bus_type, NULL, data, match);
-+	if (dev)
-+		nvmem = to_nvmem_device(dev);
- 	mutex_unlock(&nvmem_mutex);
- 	if (!nvmem)
- 		return ERR_PTR(-EPROBE_DEFER);
-@@ -592,7 +577,7 @@ struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
- 	if (!nvmem_np)
- 		return ERR_PTR(-ENOENT);
- 
--	return __nvmem_device_get(nvmem_np, NULL);
-+	return __nvmem_device_get(nvmem_np, of_nvmem_match);
- }
- EXPORT_SYMBOL_GPL(of_nvmem_device_get);
- #endif
-@@ -618,10 +603,26 @@ struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
- 
- 	}
- 
--	return __nvmem_device_get(NULL, dev_name);
-+	return __nvmem_device_get((void *)dev_name, nvmem_match_name);
- }
- EXPORT_SYMBOL_GPL(nvmem_device_get);
- 
-+/**
-+ * nvmem_device_find() - Find nvmem device with matching function
-+ *
-+ * @data: Data to pass to match function
-+ * @match: Callback function to check device
-+ *
-+ * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
-+ * on success.
-+ */
-+struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data))
-+{
-+	return __nvmem_device_get(data, match);
-+}
-+EXPORT_SYMBOL_GPL(nvmem_device_find);
+-	return 0;
++	switch (where & ~3) {
++	case 0x00 ... 0x10:
++	case 0x40 ... 0x44:
++		if (get_dbe(cf, (u32 *)addr))
++			return PCIBIOS_DEVICE_NOT_FOUND;
++		break;
++	case 0x3c:
++		/* emulate sane interrupt pin value */
++		cf = 0x00000100;
++		break;
++	default:
++		cf = 0;
++		break;
++	}
++	shift = (where & 3) << 3;
++	mask = 0xffffffffU >> ((4 - size) << 3);
++	*value = (cf >> shift) & mask;
 +
- static int devm_nvmem_device_match(struct device *dev, void *res, void *data)
- {
- 	struct nvmem_device **nvmem = res;
-@@ -715,7 +716,8 @@ nvmem_cell_get_from_lookup(struct device *dev, const char *con_id)
- 		if ((strcmp(lookup->dev_id, dev_id) == 0) &&
- 		    (strcmp(lookup->con_id, con_id) == 0)) {
- 			/* This is the right entry. */
--			nvmem = __nvmem_device_get(NULL, lookup->nvmem_name);
-+			nvmem = __nvmem_device_get((void *)lookup->nvmem_name,
-+						   nvmem_match_name);
- 			if (IS_ERR(nvmem)) {
- 				/* Provider may not be registered yet. */
- 				cell = ERR_CAST(nvmem);
-@@ -785,7 +787,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
- 	if (!nvmem_np)
- 		return ERR_PTR(-EINVAL);
- 
--	nvmem = __nvmem_device_get(nvmem_np, NULL);
-+	nvmem = __nvmem_device_get(nvmem_np, of_nvmem_match);
- 	of_node_put(nvmem_np);
- 	if (IS_ERR(nvmem))
- 		return ERR_CAST(nvmem);
-diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
-index 8f8be5b00060..02dc4aa992b2 100644
---- a/include/linux/nvmem-consumer.h
-+++ b/include/linux/nvmem-consumer.h
-@@ -89,6 +89,9 @@ void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries,
- int nvmem_register_notifier(struct notifier_block *nb);
- int nvmem_unregister_notifier(struct notifier_block *nb);
- 
-+struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data));
-+
- #else
- 
- static inline struct nvmem_cell *nvmem_cell_get(struct device *dev,
-@@ -204,6 +207,12 @@ static inline int nvmem_unregister_notifier(struct notifier_block *nb)
- 	return -EOPNOTSUPP;
- }
- 
-+static inline struct nvmem_device *nvmem_device_find(void *data,
-+			int (*match)(struct device *dev, const void *data))
-+{
-+	return NULL;
++	return PCIBIOS_SUCCESSFUL;
 +}
 +
- #endif /* CONFIG_NVMEM */
++static int ioc3_cfg_wr(void *addr, int where, int size, u32 value)
++{
++	u32 cf, shift, mask, smask;
++
++	if ((where >= 0x14 && where < 0x40) || (where >= 0x48))
++		return PCIBIOS_SUCCESSFUL;
++
++	if (get_dbe(cf, (u32 *)addr))
++		return PCIBIOS_DEVICE_NOT_FOUND;
++
++	shift = ((where & 3) << 3);
++	mask = (0xffffffffU >> ((4 - size) << 3));
++	smask = mask << shift;
++
++	cf = (cf & ~smask) | ((value & mask) << shift);
++	if (put_dbe(cf, (u32 *)addr))
++		return PCIBIOS_DEVICE_NOT_FOUND;
++
++	return PCIBIOS_SUCCESSFUL;
+ }
  
- #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
+ static void bridge_disable_swapping(struct pci_dev *dev)
+@@ -64,7 +98,7 @@ static int pci_conf0_read_config(struct pci_bus *bus, unsigned int devfn,
+ 	int slot = PCI_SLOT(devfn);
+ 	int fn = PCI_FUNC(devfn);
+ 	void *addr;
+-	u32 cf, shift, mask;
++	u32 cf;
+ 	int res;
+ 
+ 	addr = &bridge->b_type0_cfg_dev[slot].f[fn].c[PCI_VENDOR_ID];
+@@ -75,8 +109,10 @@ static int pci_conf0_read_config(struct pci_bus *bus, unsigned int devfn,
+ 	 * IOC3 is broken beyond belief ...  Don't even give the
+ 	 * generic PCI code a chance to look at it for real ...
+ 	 */
+-	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16)))
+-		goto is_ioc3;
++	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16))) {
++		addr = &bridge->b_type0_cfg_dev[slot].f[fn].l[where >> 2];
++		return ioc3_cfg_rd(addr, where, size, value);
++	}
+ 
+ 	addr = &bridge->b_type0_cfg_dev[slot].f[fn].c[where ^ (4 - size)];
+ 
+@@ -88,26 +124,6 @@ static int pci_conf0_read_config(struct pci_bus *bus, unsigned int devfn,
+ 		res = get_dbe(*value, (u32 *)addr);
+ 
+ 	return res ? PCIBIOS_DEVICE_NOT_FOUND : PCIBIOS_SUCCESSFUL;
+-
+-is_ioc3:
+-
+-	/*
+-	 * IOC3 special handling
+-	 */
+-	if ((where >= 0x14 && where < 0x40) || (where >= 0x48)) {
+-		*value = emulate_ioc3_cfg(where, size);
+-		return PCIBIOS_SUCCESSFUL;
+-	}
+-
+-	addr = &bridge->b_type0_cfg_dev[slot].f[fn].l[where >> 2];
+-	if (get_dbe(cf, (u32 *)addr))
+-		return PCIBIOS_DEVICE_NOT_FOUND;
+-
+-	shift = ((where & 3) << 3);
+-	mask = (0xffffffffU >> ((4 - size) << 3));
+-	*value = (cf >> shift) & mask;
+-
+-	return PCIBIOS_SUCCESSFUL;
+ }
+ 
+ static int pci_conf1_read_config(struct pci_bus *bus, unsigned int devfn,
+@@ -119,7 +135,7 @@ static int pci_conf1_read_config(struct pci_bus *bus, unsigned int devfn,
+ 	int slot = PCI_SLOT(devfn);
+ 	int fn = PCI_FUNC(devfn);
+ 	void *addr;
+-	u32 cf, shift, mask;
++	u32 cf;
+ 	int res;
+ 
+ 	bridge_write(bc, b_pci_cfg, (busno << 16) | (slot << 11));
+@@ -131,8 +147,10 @@ static int pci_conf1_read_config(struct pci_bus *bus, unsigned int devfn,
+ 	 * IOC3 is broken beyond belief ...  Don't even give the
+ 	 * generic PCI code a chance to look at it for real ...
+ 	 */
+-	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16)))
+-		goto is_ioc3;
++	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16))) {
++		addr = &bridge->b_type1_cfg.c[(fn << 8) | (where & ~3)];
++		return ioc3_cfg_rd(addr, where, size, value);
++	}
+ 
+ 	addr = &bridge->b_type1_cfg.c[(fn << 8) | (where ^ (4 - size))];
+ 
+@@ -144,26 +162,6 @@ static int pci_conf1_read_config(struct pci_bus *bus, unsigned int devfn,
+ 		res = get_dbe(*value, (u32 *)addr);
+ 
+ 	return res ? PCIBIOS_DEVICE_NOT_FOUND : PCIBIOS_SUCCESSFUL;
+-
+-is_ioc3:
+-
+-	/*
+-	 * IOC3 special handling
+-	 */
+-	if ((where >= 0x14 && where < 0x40) || (where >= 0x48)) {
+-		*value = emulate_ioc3_cfg(where, size);
+-		return PCIBIOS_SUCCESSFUL;
+-	}
+-
+-	addr = &bridge->b_type1_cfg.c[(fn << 8) | where];
+-	if (get_dbe(cf, (u32 *)addr))
+-		return PCIBIOS_DEVICE_NOT_FOUND;
+-
+-	shift = ((where & 3) << 3);
+-	mask = (0xffffffffU >> ((4 - size) << 3));
+-	*value = (cf >> shift) & mask;
+-
+-	return PCIBIOS_SUCCESSFUL;
+ }
+ 
+ static int pci_read_config(struct pci_bus *bus, unsigned int devfn,
+@@ -183,7 +181,7 @@ static int pci_conf0_write_config(struct pci_bus *bus, unsigned int devfn,
+ 	int slot = PCI_SLOT(devfn);
+ 	int fn = PCI_FUNC(devfn);
+ 	void *addr;
+-	u32 cf, shift, mask, smask;
++	u32 cf;
+ 	int res;
+ 
+ 	addr = &bridge->b_type0_cfg_dev[slot].f[fn].c[PCI_VENDOR_ID];
+@@ -194,8 +192,10 @@ static int pci_conf0_write_config(struct pci_bus *bus, unsigned int devfn,
+ 	 * IOC3 is broken beyond belief ...  Don't even give the
+ 	 * generic PCI code a chance to look at it for real ...
+ 	 */
+-	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16)))
+-		goto is_ioc3;
++	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16))) {
++		addr = &bridge->b_type0_cfg_dev[slot].f[fn].l[where >> 2];
++		return ioc3_cfg_wr(addr, where, size, value);
++	}
+ 
+ 	addr = &bridge->b_type0_cfg_dev[slot].f[fn].c[where ^ (4 - size)];
+ 
+@@ -210,29 +210,6 @@ static int pci_conf0_write_config(struct pci_bus *bus, unsigned int devfn,
+ 		return PCIBIOS_DEVICE_NOT_FOUND;
+ 
+ 	return PCIBIOS_SUCCESSFUL;
+-
+-is_ioc3:
+-
+-	/*
+-	 * IOC3 special handling
+-	 */
+-	if ((where >= 0x14 && where < 0x40) || (where >= 0x48))
+-		return PCIBIOS_SUCCESSFUL;
+-
+-	addr = &bridge->b_type0_cfg_dev[slot].f[fn].l[where >> 2];
+-
+-	if (get_dbe(cf, (u32 *)addr))
+-		return PCIBIOS_DEVICE_NOT_FOUND;
+-
+-	shift = ((where & 3) << 3);
+-	mask = (0xffffffffU >> ((4 - size) << 3));
+-	smask = mask << shift;
+-
+-	cf = (cf & ~smask) | ((value & mask) << shift);
+-	if (put_dbe(cf, (u32 *)addr))
+-		return PCIBIOS_DEVICE_NOT_FOUND;
+-
+-	return PCIBIOS_SUCCESSFUL;
+ }
+ 
+ static int pci_conf1_write_config(struct pci_bus *bus, unsigned int devfn,
+@@ -244,7 +221,7 @@ static int pci_conf1_write_config(struct pci_bus *bus, unsigned int devfn,
+ 	int fn = PCI_FUNC(devfn);
+ 	int busno = bus->number;
+ 	void *addr;
+-	u32 cf, shift, mask, smask;
++	u32 cf;
+ 	int res;
+ 
+ 	bridge_write(bc, b_pci_cfg, (busno << 16) | (slot << 11));
+@@ -256,8 +233,10 @@ static int pci_conf1_write_config(struct pci_bus *bus, unsigned int devfn,
+ 	 * IOC3 is broken beyond belief ...  Don't even give the
+ 	 * generic PCI code a chance to look at it for real ...
+ 	 */
+-	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16)))
+-		goto is_ioc3;
++	if (cf == (PCI_VENDOR_ID_SGI | (PCI_DEVICE_ID_SGI_IOC3 << 16))) {
++		addr = &bridge->b_type0_cfg_dev[slot].f[fn].l[where >> 2];
++		return ioc3_cfg_wr(addr, where, size, value);
++	}
+ 
+ 	addr = &bridge->b_type1_cfg.c[(fn << 8) | (where ^ (4 - size))];
+ 
+@@ -272,28 +251,6 @@ static int pci_conf1_write_config(struct pci_bus *bus, unsigned int devfn,
+ 		return PCIBIOS_DEVICE_NOT_FOUND;
+ 
+ 	return PCIBIOS_SUCCESSFUL;
+-
+-is_ioc3:
+-
+-	/*
+-	 * IOC3 special handling
+-	 */
+-	if ((where >= 0x14 && where < 0x40) || (where >= 0x48))
+-		return PCIBIOS_SUCCESSFUL;
+-
+-	addr = &bridge->b_type0_cfg_dev[slot].f[fn].l[where >> 2];
+-	if (get_dbe(cf, (u32 *)addr))
+-		return PCIBIOS_DEVICE_NOT_FOUND;
+-
+-	shift = ((where & 3) << 3);
+-	mask = (0xffffffffU >> ((4 - size) << 3));
+-	smask = mask << shift;
+-
+-	cf = (cf & ~smask) | ((value & mask) << shift);
+-	if (put_dbe(cf, (u32 *)addr))
+-		return PCIBIOS_DEVICE_NOT_FOUND;
+-
+-	return PCIBIOS_SUCCESSFUL;
+ }
+ 
+ static int pci_write_config(struct pci_bus *bus, unsigned int devfn,
 -- 
 2.13.7
 
