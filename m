@@ -2,82 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97BF187A95
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:54:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5154587AD4
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:09:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406943AbfHIMyb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 08:54:31 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:40375 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2406934AbfHIMya (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 08:54:30 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9C1021425;
-        Fri,  9 Aug 2019 08:54:29 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 09 Aug 2019 08:54:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm3; bh=PGm6a7n2P2Lq732ozHzBOVkiNbmpy9g56pJ5QpmXH
-        Uo=; b=A5G+njDjOR6hCGV4m3+caXJHUtrMw4vrnZUV4Gm9NjaLumeYSsOUsoUDx
-        tbjNUBM9IrEe9IxmOru0wUh9joF8g98H72qyk1aLbZsT7VzgJURjNPHdFFbbAaiW
-        e4Wtx3da2+1xCiROXUnlMt9Q1dTYM62CwO8Pllj1n9vUfR+/CplQPQ7y/Z6nyqIA
-        fJ2XHaxckypl8JSRZW4pLyjxU37tlDzFO9PIncjfJBTPPfZxiwqnScesGnNDRKGz
-        Tt3v1kSz1i5jT8CwCzIhD6e6PoCMholLrqCgMogjXWwuFQjXo+UfkylLV3pX8eG2
-        C9sFKO4ahlKxxZEo8y/oewkAEhCjA==
-X-ME-Sender: <xms:A21NXTD9CIZvhAshlxFjWKAjwSoXv1VW2cGjlQKPEwoFAo-khHGvxw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddujedgheekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjggfsehtkeertddtredunecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepje
-    elrddujeelrdekhedrvddtleenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:A21NXehXovrFklOf1SNd_GkKnpWWdKy8CAvf5GCU3Cxf8bvYVOcQjw>
-    <xmx:A21NXWcr0AiYjrw585nbAwCF9LtED7tQhnTSOqzCZFSP0qHYxuVGHw>
-    <xmx:A21NXTlZmKmgRmRnoBMATwgsV0noHDB3RuA0k8iKGfuVkEWwr6G7gw>
-    <xmx:BW1NXfVBiNv1ZKxEHHQvyY7rbD9MZbgqQbpNmQ5itXy-lNGR2dORFw>
-Received: from localhost (bzq-79-179-85-209.red.bezeqint.net [79.179.85.209])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 0140C8005B;
-        Fri,  9 Aug 2019 08:54:26 -0400 (EDT)
-Date:   Fri, 9 Aug 2019 15:54:18 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        jiri@mellanox.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next 00/10] drop_monitor: Capture dropped packets and
- metadata
-Message-ID: <20190809125418.GB2931@splinter>
-References: <20190807103059.15270-1-idosch@idosch.org>
- <87o90yrar8.fsf@toke.dk>
+        id S2406739AbfHINJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 09:09:18 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35226 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726232AbfHINJR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:09:17 -0400
+Received: by mail-wm1-f66.google.com with SMTP id l2so5587944wmg.0
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:09:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/fnCoI0maadSEbgFkw64JuyIT5P+u09qAKU5VD0YmdE=;
+        b=fZfoh/5Dm9cRvAicbzT6MfB35RoEtAbK/bDhpM1Kgb4txBzHdXowDfk0eZVL3h7HlZ
+         bPE9rBTxkJ9ujBX/ceWKId4bdZyZFycEf+cH/VmJ+gN5O3myUBONkdnV2+NNx08HsZez
+         YpyF81cIjXVl4tOk/gxhkztiaPhsO4ERKbuxdJyyqnL+DKpNeaDODRhpLVUAjX9Rw5HV
+         fT4UjHTGPf3JL5hfphfaiqnW/pUYZVMmO67vrh1KYvMVhxXfs5/IrT8R/iV1Nx8nBHbw
+         +bOr1pNezX+/RyazPlnD8etXKNJgIcEUomFiELSNoMygGZE8t9eX4+pwBpCoogUkNIgN
+         OWCA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/fnCoI0maadSEbgFkw64JuyIT5P+u09qAKU5VD0YmdE=;
+        b=kYXy6ZvywtFUI6A69KFFJuhnfLpW3B9b83A2PT75rBXWFZqiPSNTvQhfdDaDOkHXIc
+         fFY/9ymiehMC/HQFeXkWel9MsV8rf8bl2h7fUIDzmeEEwgC+4eEU1rkOfL8YaoiNqzoj
+         /JwdRy2GbaPRVOHWSKHMGiQChXK62Rm6pq0t8YIXywjr1dBq1zaCBA2Cu6DJVnXYHQVx
+         knRLad4Co9O8MJgUyPqHnvxjuRN6BIuYykr3DwTZhTxZdPKshqKLZiqEDWP6tOHPqLl6
+         Tno8J5CH0LCceoduidQCQRj3Z0STLhn51U658U2tdYDakzrmzP6VXm/mSGkZlfVRil9s
+         6GFg==
+X-Gm-Message-State: APjAAAVDTBLN0cdULkapv6t9w3V76/0GhpmQjKa8xzi6oL3kdYvfSzrT
+        gTW7600ZD14RCqlfwkx89Zn54aV9FYIuruiIeAYOMA==
+X-Google-Smtp-Source: APXvYqwfP2polDvDLdIXeVBlLWKsZ3tuE9c7fnhbcD5AEM4FvpgfwA0Hrcti55Rbh0ra3OSYtC+Ea9Tt7gBiWhMEWTw=
+X-Received: by 2002:a1c:be19:: with SMTP id o25mr10477830wmf.54.1565356155898;
+ Fri, 09 Aug 2019 06:09:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <87o90yrar8.fsf@toke.dk>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190809120447.93591-1-edumazet@google.com>
+In-Reply-To: <20190809120447.93591-1-edumazet@google.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Fri, 9 Aug 2019 09:08:38 -0400
+Message-ID: <CACSApvYPHU2WeAm7kL+RHmeu-Cu1VfVVsLfLUAQHL0-X7BGZFA@mail.gmail.com>
+Subject: Re: [PATCH net-next] tcp: batch calls to sk_flush_backlog()
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 09, 2019 at 10:41:47AM +0200, Toke Høiland-Jørgensen wrote:
-> This is great. Are you planning to add the XDP integration as well? :)
+On Fri, Aug 9, 2019 at 8:04 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> Starting from commit d41a69f1d390 ("tcp: make tcp_sendmsg() aware of socket backlog")
+> loopback flows got hurt, because for each skb sent, the socket receives an
+> immediate ACK and sk_flush_backlog() causes extra work.
+>
+> Intent was to not let the backlog grow too much, but we went a bit too far.
+>
+> We can check the backlog every 16 skbs (about 1MB chunks)
+> to increase TCP over loopback performance by about 15 %
+>
+> Note that the call to sk_flush_backlog() handles a single ACK,
+> thanks to coalescing done on backlog, but cleans the 16 skbs
+> found in rtx rb-tree.
+>
+> Reported-by: Soheil Hassas Yeganeh <soheil@google.com>
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
 
-Thanks, Toke. From one of your previous replies I got the impression
-that another hook needs to be added in order to catch 'XDP_DROP' as it
-is not covered by the 'xdp_exception' tracepoint which only covers
-'XDP_ABORTED'. If you can take care of that, I can look into the
-integration with drop monitor.
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-I kept the XDP case in mind while working on the hardware originated
-drops and I think that extending drop monitor for this use case should
-be relatively straightforward. I will Cc you on the patchset that adds
-monitoring of hardware drops and comment with how I think XDP
-integration should look like.
+Thank you very much, Eric!
+
+> ---
+>  net/ipv4/tcp.c | 11 ++++++-----
+>  1 file changed, 6 insertions(+), 5 deletions(-)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index a0a66321c0ee99918b2080219dbaefcf3c398e13..f8fa1686f7f3e64f5d4ea8163e7f87538cc0d672 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -1162,7 +1162,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+>         struct sockcm_cookie sockc;
+>         int flags, err, copied = 0;
+>         int mss_now = 0, size_goal, copied_syn = 0;
+> -       bool process_backlog = false;
+> +       int process_backlog = 0;
+>         bool zc = false;
+>         long timeo;
+>
+> @@ -1254,9 +1254,10 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+>                         if (!sk_stream_memory_free(sk))
+>                                 goto wait_for_sndbuf;
+>
+> -                       if (process_backlog && sk_flush_backlog(sk)) {
+> -                               process_backlog = false;
+> -                               goto restart;
+> +                       if (unlikely(process_backlog >= 16)) {
+> +                               process_backlog = 0;
+> +                               if (sk_flush_backlog(sk))
+> +                                       goto restart;
+>                         }
+>                         first_skb = tcp_rtx_and_write_queues_empty(sk);
+>                         skb = sk_stream_alloc_skb(sk, 0, sk->sk_allocation,
+> @@ -1264,7 +1265,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+>                         if (!skb)
+>                                 goto wait_for_memory;
+>
+> -                       process_backlog = true;
+> +                       process_backlog++;
+>                         skb->ip_summed = CHECKSUM_PARTIAL;
+>
+>                         skb_entail(sk, skb);
+> --
+> 2.23.0.rc1.153.gdeed80330f-goog
+>
