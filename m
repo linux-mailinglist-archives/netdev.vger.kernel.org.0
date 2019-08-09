@@ -2,254 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3305A86EE3
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 02:39:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C83A686EEB
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 02:45:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404805AbfHIAjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 20:39:22 -0400
-Received: from lekensteyn.nl ([178.21.112.251]:43487 "EHLO lekensteyn.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729419AbfHIAjW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 20:39:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lekensteyn.nl; s=s2048-2015-q1;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=r90wL/Ks4pA4BZA8O5Jq8YSGVxkXl8P1VcQY0Xc5riI=;
-        b=VaqZGLEUMM1XMLTN55b71wTG0zK1lyaxxlB0sX/Ot9g+OHMAxRJAj91i8jshNy+jS/6nVUlKtM/QiUyH7vyVbDMyKCrNUB/yjz5UfsR/1fPpA9t2wY6ti7fpV7bI5BHORflHrJ2MCkUs2QcyuCh6Dx+onzYYGWwhxENO9glJJMH0KVX7IvyKC6q8zDUJwcWkRE5pslC1WjCiA71ZkSNZvpza3LZyVnZyQSZXbqBTNgk81LdukAhJYABt02lOdHTocEZxKHa/gd0nJXLqIx7irVNjnaOaS74FEUALiFyOdcpI9I7BO1bolW+CapBW9Y/FrjWPtKo9qM/c89wSHJ4P/w==;
-Received: by lekensteyn.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.84_2)
-        (envelope-from <peter@lekensteyn.nl>)
-        id 1hvsw4-0007Q2-QJ; Fri, 09 Aug 2019 02:39:17 +0200
-From:   Peter Wu <peter@lekensteyn.nl>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH v3] tools: bpftool: fix reading from /proc/config.gz
-Date:   Fri,  9 Aug 2019 01:39:11 +0100
-Message-Id: <20190809003911.7852-1-peter@lekensteyn.nl>
-X-Mailer: git-send-email 2.22.0
+        id S2404958AbfHIApX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 20:45:23 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:39996 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729419AbfHIApX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 20:45:23 -0400
+Received: by mail-qt1-f194.google.com with SMTP id a15so94176221qtn.7;
+        Thu, 08 Aug 2019 17:45:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=YbIEMZbtzCXpq/MNUh4eWzpCyaArIiGShovNn2U+vxo=;
+        b=TWTRQBLMTs6ciccZhps1ttQ4fZK9Xg7OiSrrrWfMirmK8xJ1bxCJPHElOVKTZbV9RG
+         tBqrG87zGb1uf/pCL70VCfLQUaV9UwEDQzySbKg44Z7P3vA/7dQxpQ10LZ/q4sWzxlwi
+         pZxeveZiN9a81X1gWRWphTmCjhVyP6ng0hbBx/JxMfw2wKacH6NVuG4BuGsHNmtOfliw
+         yVaAgLeRYgonkZA4hfrwFGL+jVXjGWXhJpBIaJTsu2lzloJmYm4GB0bkxJ+fWK28VZ50
+         pTGVkcKndbe6jXzjGwipjRuXIb862pi2AMKyNrwoQbBDuP4lww3krG4YPtjwkj1RkPV5
+         woDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=YbIEMZbtzCXpq/MNUh4eWzpCyaArIiGShovNn2U+vxo=;
+        b=aQZAeiXij5WITWInYo064129NMTHLkJjvjVjkVd6DdZKgK/3EYxNO8Y0sDEzWdgP+Y
+         ITW3kkdttwVicIjzUl2trJc7ASGbK0nUmyc/acFfPV3q3ZdWOkdYSCabm0Ad5c1Jz4HZ
+         quyvsAqP1TNvpHkq1JcSG6J/1yak3lMW3V24nfBM2Vzf7u3moq4HmQ1FvKY3O3c980Ze
+         iFkXeNvfHr/OEvewERL9CAYmn2+ZS1nnGkec7fwXeH4WEJtF41XWdC9wpwJy+3SU+IOd
+         BJO6Pha+8pKC2yD9yR7aWdiI5JLIzLfF7Jl1zOYijDMTyoPiDLVgRbPTpXJ/US4w8OE+
+         Vndw==
+X-Gm-Message-State: APjAAAWFToEWfnbvgUSMk14m/CVtGeIBlVv9yvOpjHockrfcas+KyGeG
+        7F0G7DdexIYy6l1IKQa4KTQ=
+X-Google-Smtp-Source: APXvYqygRXht2AbFPnYF6rY+qxqh/NxMhl/JPp04DrEq4iH55DI/mUE6Vxr7898TFiPui0U9W9OipQ==
+X-Received: by 2002:a0c:e1cd:: with SMTP id v13mr15727930qvl.245.1565311521542;
+        Thu, 08 Aug 2019 17:45:21 -0700 (PDT)
+Received: from localhost.localdomain ([177.220.172.117])
+        by smtp.gmail.com with ESMTPSA id w62sm38405674qkd.30.2019.08.08.17.45.19
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 08 Aug 2019 17:45:20 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id DF7E2C0ABC; Thu,  8 Aug 2019 21:45:17 -0300 (-03)
+Date:   Thu, 8 Aug 2019 21:45:17 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     Pravin Shelar <pshelar@ovn.org>
+Cc:     Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+13210896153522fe1ee5@syzkaller.appspotmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        ovs dev <dev@openvswitch.org>, linux-kernel@vger.kernel.org,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        syzkaller-bugs@googlegroups.com
+Subject: Re: memory leak in internal_dev_create
+Message-ID: <20190809004517.GD4063@localhost.localdomain>
+References: <20190806115932.3044-1-hdanton@sina.com>
+ <CAOrHB_BmuAxdch-nbaTS-1eXN-0goUb5UXtYDr==0KeM9vVsRw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -0.0 (/)
-X-Spam-Status: No, hits=-0.0 required=5.0 tests=NO_RELAYS=-0.001 autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAOrHB_BmuAxdch-nbaTS-1eXN-0goUb5UXtYDr==0KeM9vVsRw@mail.gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-/proc/config has never existed as far as I can see, but /proc/config.gz
-is present on Arch Linux. Add support for decompressing config.gz using
-zlib which is a mandatory dependency of libelf. Replace existing stdio
-functions with gzFile operations since the latter transparently handles
-uncompressed and gzip-compressed files.
+On Wed, Aug 07, 2019 at 01:32:40PM -0700, Pravin Shelar wrote:
+> On Tue, Aug 6, 2019 at 5:00 AM Hillf Danton <hdanton@sina.com> wrote:
+> >
+> >
+> > On Tue, 06 Aug 2019 01:58:05 -0700
+> > > Hello,
+> > >
+> > > syzbot found the following crash on:
+> > >
+> 
+> ...
+> > > BUG: memory leak
+> > > unreferenced object 0xffff8881228ca500 (size 128):
+> > >    comm "syz-executor032", pid 7015, jiffies 4294944622 (age 7.880s)
+> > >    hex dump (first 32 bytes):
+> > >      00 f0 27 18 81 88 ff ff 80 ac 8c 22 81 88 ff ff  ..'........"....
+> > >      40 b7 23 17 81 88 ff ff 00 00 00 00 00 00 00 00  @.#.............
+> > >    backtrace:
+> > >      [<000000000eb78212>] kmemleak_alloc_recursive  include/linux/kmemleak.h:43 [inline]
+> > >      [<000000000eb78212>] slab_post_alloc_hook mm/slab.h:522 [inline]
+> > >      [<000000000eb78212>] slab_alloc mm/slab.c:3319 [inline]
+> > >      [<000000000eb78212>] kmem_cache_alloc_trace+0x145/0x2c0 mm/slab.c:3548
+> > >      [<00000000006ea6c6>] kmalloc include/linux/slab.h:552 [inline]
+> > >      [<00000000006ea6c6>] kzalloc include/linux/slab.h:748 [inline]
+> > >      [<00000000006ea6c6>] ovs_vport_alloc+0x37/0xf0  net/openvswitch/vport.c:130
+> > >      [<00000000f9a04a7d>] internal_dev_create+0x24/0x1d0  net/openvswitch/vport-internal_dev.c:164
+> > >      [<0000000056ee7c13>] ovs_vport_add+0x81/0x190  net/openvswitch/vport.c:199
+> > >      [<000000005434efc7>] new_vport+0x19/0x80 net/openvswitch/datapath.c:194
+> > >      [<00000000b7b253f1>] ovs_dp_cmd_new+0x22f/0x410  net/openvswitch/datapath.c:1614
+> > >      [<00000000e0988518>] genl_family_rcv_msg+0x2ab/0x5b0  net/netlink/genetlink.c:629
+> > >      [<00000000d0cc9347>] genl_rcv_msg+0x54/0x9c net/netlink/genetlink.c:654
+> > >      [<000000006694b647>] netlink_rcv_skb+0x61/0x170  net/netlink/af_netlink.c:2477
+> > >      [<0000000088381f37>] genl_rcv+0x29/0x40 net/netlink/genetlink.c:665
+> > >      [<00000000dad42a47>] netlink_unicast_kernel  net/netlink/af_netlink.c:1302 [inline]
+> > >      [<00000000dad42a47>] netlink_unicast+0x1ec/0x2d0  net/netlink/af_netlink.c:1328
+> > >      [<0000000067e6b079>] netlink_sendmsg+0x270/0x480  net/netlink/af_netlink.c:1917
+> > >      [<00000000aab08a47>] sock_sendmsg_nosec net/socket.c:637 [inline]
+> > >      [<00000000aab08a47>] sock_sendmsg+0x54/0x70 net/socket.c:657
+> > >      [<000000004cb7c11d>] ___sys_sendmsg+0x393/0x3c0 net/socket.c:2311
+> > >      [<00000000c4901c63>] __sys_sendmsg+0x80/0xf0 net/socket.c:2356
+> > >      [<00000000c10abb2d>] __do_sys_sendmsg net/socket.c:2365 [inline]
+> > >      [<00000000c10abb2d>] __se_sys_sendmsg net/socket.c:2363 [inline]
+> > >      [<00000000c10abb2d>] __x64_sys_sendmsg+0x23/0x30 net/socket.c:2363
+> >
+> >
+> > Always free vport manually unless register_netdevice() succeeds.
+> >
+> > --- a/net/openvswitch/vport-internal_dev.c
+> > +++ b/net/openvswitch/vport-internal_dev.c
+> > @@ -137,7 +137,7 @@ static void do_setup(struct net_device *
+> >         netdev->priv_flags |= IFF_LIVE_ADDR_CHANGE | IFF_OPENVSWITCH |
+> >                               IFF_NO_QUEUE;
+> >         netdev->needs_free_netdev = true;
+> > -       netdev->priv_destructor = internal_dev_destructor;
+> > +       netdev->priv_destructor = NULL;
+> >         netdev->ethtool_ops = &internal_dev_ethtool_ops;
+> >         netdev->rtnl_link_ops = &internal_dev_link_ops;
+> >
+> > @@ -159,7 +159,6 @@ static struct vport *internal_dev_create
+> >         struct internal_dev *internal_dev;
+> >         struct net_device *dev;
+> >         int err;
+> > -       bool free_vport = true;
+> >
+> >         vport = ovs_vport_alloc(0, &ovs_internal_vport_ops, parms);
+> >         if (IS_ERR(vport)) {
+> > @@ -190,10 +189,9 @@ static struct vport *internal_dev_create
+> >
+> >         rtnl_lock();
+> >         err = register_netdevice(vport->dev);
+> > -       if (err) {
+> > -               free_vport = false;
+> > +       if (err)
+> >                 goto error_unlock;
+> > -       }
+> > +       vport->dev->priv_destructor = internal_dev_destructor;
+> >
+> I am not sure why have you moved this assignment out of do_setup().
+> 
+> Otherwise patch looks good to me.
+> 
+> Thanks.
 
-Cc: Quentin Monnet <quentin.monnet@netronome.com>
-Signed-off-by: Peter Wu <peter@lekensteyn.nl>
----
- v3: replace popen(gunzip) by linking directly to zlib. Reword commit
-     message, remove "Fixes" line. (this patch)
- v2: fix style (reorder vars as reverse xmas tree, rename function,
-     braces), fallback to /proc/config.gz if uname() fails.
-     https://lkml.kernel.org/r/20190806010702.3303-1-peter@lekensteyn.nl
- v1: https://lkml.kernel.org/r/20190805001541.8096-1-peter@lekensteyn.nl
+Seems it's to avoid re-introducing the issue that was fixed by:
 
-Hi,
+commit 309b66970ee2abf721ecd0876a48940fa0b99a35
+Author: Taehee Yoo <ap420073@gmail.com>
+Date:   Sun Jun 9 23:26:21 2019 +0900
 
-Thanks to Jakub for observing that zlib is already used by libelf, this
-simplifies the patch tremendously as the same API can be used for both
-compressed and uncompressed files. No special case exists anymore for
-fclose/pclose.
+    net: openvswitch: do not free vport if register_netdevice() is failed.
 
-According to configure.ac in elfutils, zlib is mandatory, so I just
-assume it to be available. For simplicity I also silently assume lines
-to be less than 4096 characters. If that is not the case, then lines
-will appear truncated, but that should not be an issue for the
-CONFIG_xyz lines that we are scanning for.
+A Fixes: 309b66970ee2a  is welcomed then.
 
-Jakub requested the handle leak fix to be posted separately against the
-bpf tree, but since the whole code is rewritten I am not sure if it is
-worth it. It is an unusual edge case: /boot/config-$(uname -r) could be
-opened, but starts with unexpected data.
-
-Kind regards,
-Peter
----
- tools/bpf/bpftool/Makefile  |   2 +-
- tools/bpf/bpftool/feature.c | 105 ++++++++++++++++++------------------
- 2 files changed, 54 insertions(+), 53 deletions(-)
-
-diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-index a7afea4dec47..078bd0dcfba5 100644
---- a/tools/bpf/bpftool/Makefile
-+++ b/tools/bpf/bpftool/Makefile
-@@ -52,7 +52,7 @@ ifneq ($(EXTRA_LDFLAGS),)
- LDFLAGS += $(EXTRA_LDFLAGS)
- endif
- 
--LIBS = -lelf $(LIBBPF)
-+LIBS = -lelf -lz $(LIBBPF)
- 
- INSTALL ?= install
- RM ?= rm -f
-diff --git a/tools/bpf/bpftool/feature.c b/tools/bpf/bpftool/feature.c
-index d672d9086fff..03bdc5b3ac49 100644
---- a/tools/bpf/bpftool/feature.c
-+++ b/tools/bpf/bpftool/feature.c
-@@ -14,6 +14,7 @@
- 
- #include <bpf.h>
- #include <libbpf.h>
-+#include <zlib.h>
- 
- #include "main.h"
- 
-@@ -284,34 +285,32 @@ static void probe_jit_limit(void)
- 	}
- }
- 
--static char *get_kernel_config_option(FILE *fd, const char *option)
-+static bool read_next_kernel_config_option(gzFile file, char *buf, size_t n,
-+					   char **value)
- {
--	size_t line_n = 0, optlen = strlen(option);
--	char *res, *strval, *line = NULL;
--	ssize_t n;
-+	char *sep;
- 
--	rewind(fd);
--	while ((n = getline(&line, &line_n, fd)) > 0) {
--		if (strncmp(line, option, optlen))
-+	while (gzgets(file, buf, n)) {
-+		if (strncmp(buf, "CONFIG_", 7))
- 			continue;
--		/* Check we have at least '=', value, and '\n' */
--		if (strlen(line) < optlen + 3)
--			continue;
--		if (*(line + optlen) != '=')
-+
-+		sep = strchr(buf, '=');
-+		if (!sep)
- 			continue;
- 
- 		/* Trim ending '\n' */
--		line[strlen(line) - 1] = '\0';
-+		buf[strlen(buf) - 1] = '\0';
-+
-+		/* Split on '=' and ensure that a value is present. */
-+		*sep = '\0';
-+		if (!sep[1])
-+			continue;
- 
--		/* Copy and return config option value */
--		strval = line + optlen + 1;
--		res = strdup(strval);
--		free(line);
--		return res;
-+		*value = sep + 1;
-+		return true;
- 	}
--	free(line);
- 
--	return NULL;
-+	return false;
- }
- 
- static void probe_kernel_image_config(void)
-@@ -386,59 +385,61 @@ static void probe_kernel_image_config(void)
- 		/* test_bpf module for BPF tests */
- 		"CONFIG_TEST_BPF",
- 	};
--	char *value, *buf = NULL;
-+	char *values[ARRAY_SIZE(options)] = { };
- 	struct utsname utsn;
- 	char path[PATH_MAX];
--	size_t i, n;
--	ssize_t ret;
--	FILE *fd;
-+	gzFile file = NULL;
-+	char buf[4096];
-+	char *value;
-+	size_t i;
- 
--	if (uname(&utsn))
--		goto no_config;
-+	if (!uname(&utsn)) {
-+		snprintf(path, sizeof(path), "/boot/config-%s", utsn.release);
- 
--	snprintf(path, sizeof(path), "/boot/config-%s", utsn.release);
-+		/* gzopen also accepts uncompressed files. */
-+		file = gzopen(path, "r");
-+	}
- 
--	fd = fopen(path, "r");
--	if (!fd && errno == ENOENT) {
--		/* Some distributions put the config file at /proc/config, give
--		 * it a try.
--		 * Sometimes it is also at /proc/config.gz but we do not try
--		 * this one for now, it would require linking against libz.
-+	if (!file) {
-+		/* Some distributions build with CONFIG_IKCONFIG=y and put the
-+		 * config file at /proc/config.gz.
- 		 */
--		fd = fopen("/proc/config", "r");
-+		file = gzopen("/proc/config.gz", "r");
- 	}
--	if (!fd) {
-+	if (!file) {
- 		p_info("skipping kernel config, can't open file: %s",
- 		       strerror(errno));
--		goto no_config;
-+		goto end_parse;
- 	}
- 	/* Sanity checks */
--	ret = getline(&buf, &n, fd);
--	ret = getline(&buf, &n, fd);
--	if (!buf || !ret) {
-+	if (!gzgets(file, buf, sizeof(buf)) ||
-+	    !gzgets(file, buf, sizeof(buf))) {
- 		p_info("skipping kernel config, can't read from file: %s",
- 		       strerror(errno));
--		free(buf);
--		goto no_config;
-+		goto end_parse;
- 	}
- 	if (strcmp(buf, "# Automatically generated file; DO NOT EDIT.\n")) {
- 		p_info("skipping kernel config, can't find correct file");
--		free(buf);
--		goto no_config;
-+		goto end_parse;
- 	}
--	free(buf);
- 
--	for (i = 0; i < ARRAY_SIZE(options); i++) {
--		value = get_kernel_config_option(fd, options[i]);
--		print_kernel_option(options[i], value);
--		free(value);
-+	while (read_next_kernel_config_option(file, buf, sizeof(buf), &value)) {
-+		for (i = 0; i < ARRAY_SIZE(options); i++) {
-+			if (values[i] || strcmp(buf, options[i]))
-+				continue;
-+
-+			values[i] = strdup(value);
-+		}
- 	}
--	fclose(fd);
--	return;
- 
--no_config:
--	for (i = 0; i < ARRAY_SIZE(options); i++)
--		print_kernel_option(options[i], NULL);
-+end_parse:
-+	if (file)
-+		gzclose(file);
-+
-+	for (i = 0; i < ARRAY_SIZE(options); i++) {
-+		print_kernel_option(options[i], values[i]);
-+		free(values[i]);
-+	}
- }
- 
- static bool probe_bpf_syscall(const char *define_prefix)
--- 
-2.22.0
-
+> >         dev_set_promiscuity(vport->dev, 1);
+> >         rtnl_unlock();
+> > @@ -207,8 +205,7 @@ error_unlock:
+> >  error_free_netdev:
+> >         free_netdev(dev);
+> >  error_free_vport:
+> > -       if (free_vport)
+> > -               ovs_vport_free(vport);
+> > +       ovs_vport_free(vport);
+> >  error:
+> >         return ERR_PTR(err);
+> >  }
+> > --
+> >
+> 
