@@ -2,118 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F3B877C3
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:48:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CF087808
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:58:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726358AbfHIKsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 06:48:10 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42083 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726168AbfHIKsK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 06:48:10 -0400
-Received: by mail-pf1-f195.google.com with SMTP id q10so45838318pff.9
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 03:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=SWSgHhHu/9BjvEKvg6DvYw5jthq0QCStuXD5Y25D++k=;
-        b=olBzn9Iae3J+Se9iHRoHNcpUalAkm0ZD09Av8Rhf0Un1Erb82ltsMGyfBJNHsDpsio
-         LlbQvDyOt9ixqafHrC8B30eZNQFydT4ALlqO+PDtaXDqR4t+msvvRbMRJA9mlCGEu1hk
-         OWPdIUoClXdonkrlZl0wMf7etys7/V0IUfhh6KzMsReQc8ryg6G4ekAD7BMSlJ7V2qmU
-         erp/KwrNpRh1Rsx4z65y13/nqjod+Jpum23/PTaXvdW+hSPFj9YiD2+AqR4K2BRVzNSd
-         eap5YaVNNKHXwu78ZyVTVLyxgl5j7Dke93bjTNx2H5SEjKGaVOV9aCWV5DhSzXE2AMVB
-         pBMA==
+        id S2406365AbfHIK6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 06:58:07 -0400
+Received: from mail-ot1-f71.google.com ([209.85.210.71]:51786 "EHLO
+        mail-ot1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbfHIK6H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 06:58:07 -0400
+Received: by mail-ot1-f71.google.com with SMTP id h12so67893393otn.18
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 03:58:06 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=SWSgHhHu/9BjvEKvg6DvYw5jthq0QCStuXD5Y25D++k=;
-        b=eJBiRigWnJvCYgZ2ZUcAoqpe9MvJNRJZiE2Ses2j04f2D8xluV2SGdX00WyEM0yqam
-         qMkvHYjKhGEQos8/W5YCfTredMIUi4geQfwIc8af4PrhUsPgFM1kocKqdajFah9pGcv+
-         ygM0qSGUgoux9pjXZZOUR8GDD59T4kp5kgGlT861iwbYPDTH+7+uurhlx5LlP+sZpHQb
-         sXnu7wd3sTLHb6p2Tol3CwStn6RfzmhyHs7dEv07SzwcuLuyXJh/MEOqEjPNWWV5+pdL
-         fEKBgDiVySl3x69JNBWi8/5dt9zlCLHFAGJgep8qyE5OU2kW1vjb3k1KjwaLZ5YPRF14
-         BDjw==
-X-Gm-Message-State: APjAAAXJFARO994H3R/Au5eJGW1h59Haaw5ECeLtQzhDNG0Dx3uiU8kX
-        93L2e3KhMZG5OsPTzYIZ9lL2zA==
-X-Google-Smtp-Source: APXvYqxgJ7LJSyfYIqCUqyw0nl4BRa1wS+HCiJ9jJJusPxs6KdjJu0Q2m1OI1WoKhxp7olOZNBxCag==
-X-Received: by 2002:aa7:82da:: with SMTP id f26mr20912390pfn.82.1565347689544;
-        Fri, 09 Aug 2019 03:48:09 -0700 (PDT)
-Received: from localhost.localdomain (li456-16.members.linode.com. [50.116.10.16])
-        by smtp.gmail.com with ESMTPSA id l44sm4651449pje.29.2019.08.09.03.48.05
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 03:48:08 -0700 (PDT)
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH] perf trace: Fix segmentation fault when access syscall info
-Date:   Fri,  9 Aug 2019 18:47:52 +0800
-Message-Id: <20190809104752.27338-1-leo.yan@linaro.org>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=mUAdjdWVqLEji+9QaZjr6SC7lAukAXPaOBa5eBib/zQ=;
+        b=RHLB3eflu30fWvSPZ/THJIyC28uuWcwydG7QajDePCNq8qLZAOoXZPe4gUYOfwEgwa
+         oIi50JK8S5YUE5PLe9z9J/gOMMoLELAYl1PRa+fpZBP6zAsKaKXvpEpD/ASl6j9jP71d
+         48oj9Hf7y2+p4iNA0CPMRyPMdjvJ7f63mYQ+AfWoJvo05q0AIjOkkjRe/bZVg1MvnTuD
+         J2n87yHyntZlW93kL6joIqsrIBqk63dDxpuVNjC1GN9vVCNbtQeEt66y7TrzB7r4hNpf
+         AJEPSHdy/s9t+NVLw3iq7H9nPEVXvGCJucYogdObJWZPWW+bwdB1fsXieXEy49edgxhi
+         lFhw==
+X-Gm-Message-State: APjAAAW0jBdQc6lpcSGTz7+EPkcY76Lbw948YS9bChJ/VtyILjxJ7j/R
+        DGi2Z75dnWug1JFzGIwzKxKa8HnIUUvxe0HQg7mJ1k92+d+v
+X-Google-Smtp-Source: APXvYqzfxc+WwHQY5PBUiXp07yIZY9T57CR+iHoYVMfbZymKTn0MCiZnMfMSJrsjUldT/7ClvmsuVvR5jWyz41ngOahYU63+uD9g
+MIME-Version: 1.0
+X-Received: by 2002:a5d:924e:: with SMTP id e14mr19114492iol.215.1565348286229;
+ Fri, 09 Aug 2019 03:58:06 -0700 (PDT)
+Date:   Fri, 09 Aug 2019 03:58:06 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000008cf14e058fad0c41@google.com>
+Subject: KASAN: null-ptr-deref Write in rxrpc_unuse_local
+From:   syzbot <syzbot+20dee719a2e090427b5f@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-'perf trace' reports the segmentation fault as below on Arm64:
+Hello,
 
-  # perf trace -e string -e augmented_raw_syscalls.c
-  LLVM: dumping tools/perf/examples/bpf/augmented_raw_syscalls.o
-  perf: Segmentation fault
-  Obtained 12 stack frames.
-  perf(sighandler_dump_stack+0x47) [0xaaaaac96ac87]
-  linux-vdso.so.1(+0x5b7) [0xffffadbeb5b7]
-  /lib/aarch64-linux-gnu/libc.so.6(strlen+0x10) [0xfffface7d5d0]
-  /lib/aarch64-linux-gnu/libc.so.6(_IO_vfprintf+0x1ac7) [0xfffface49f97]
-  /lib/aarch64-linux-gnu/libc.so.6(__vsnprintf_chk+0xc7) [0xffffacedfbe7]
-  perf(scnprintf+0x97) [0xaaaaac9ca3ff]
-  perf(+0x997bb) [0xaaaaac8e37bb]
-  perf(cmd_trace+0x28e7) [0xaaaaac8ec09f]
-  perf(+0xd4a13) [0xaaaaac91ea13]
-  perf(main+0x62f) [0xaaaaac8a147f]
-  /lib/aarch64-linux-gnu/libc.so.6(__libc_start_main+0xe3) [0xfffface22d23]
-  perf(+0x57723) [0xaaaaac8a1723]
-  Segmentation fault
+syzbot found the following crash on:
 
-This issue is introduced by commit 30a910d7d3e0 ("perf trace:
-Preallocate the syscall table"), it allocates trace->syscalls.table[]
-array and the element count is 'trace->sctbl->syscalls.nr_entries';
-but on Arm64, the system call number is not continuously used; e.g. the
-syscall maximum id is 436 but the real entries is only 281.  So the
-table is allocated with 'nr_entries' as the element count, but it
-accesses the table with the syscall id, which might be out of the bound
-of the array and cause the segmentation fault.
+HEAD commit:    87b983f5 Add linux-next specific files for 20190809
+git tree:       linux-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=143aecee600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=28eea330e11df0eb
+dashboard link: https://syzkaller.appspot.com/bug?extid=20dee719a2e090427b5f
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ceae36600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10ebc40e600000
 
-This patch allocates trace->syscalls.table[] with the element count is
-'trace->sctbl->syscalls.max_id + 1', this allows any id to access the
-table without out of the bound.
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+20dee719a2e090427b5f@syzkaller.appspotmail.com
 
-Fixes: 30a910d7d3e0 ("perf trace: Preallocate the syscall table")
-Signed-off-by: Leo Yan <leo.yan@linaro.org>
+==================================================================
+BUG: KASAN: null-ptr-deref in atomic_sub_return  
+include/asm-generic/atomic-instrumented.h:159 [inline]
+BUG: KASAN: null-ptr-deref in atomic_dec_return  
+include/linux/atomic-fallback.h:455 [inline]
+BUG: KASAN: null-ptr-deref in rxrpc_unuse_local+0x23/0x70  
+net/rxrpc/local_object.c:405
+Write of size 4 at addr 0000000000000010 by task syz-executor725/10010
+
+CPU: 1 PID: 10010 Comm: syz-executor725 Not tainted 5.3.0-rc3-next-20190809  
+#63
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  __kasan_report.cold+0x5/0x36 mm/kasan/report.c:486
+  kasan_report+0x12/0x17 mm/kasan/common.c:610
+  check_memory_region_inline mm/kasan/generic.c:185 [inline]
+  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
+  __kasan_check_write+0x14/0x20 mm/kasan/common.c:98
+  atomic_sub_return include/asm-generic/atomic-instrumented.h:159 [inline]
+  atomic_dec_return include/linux/atomic-fallback.h:455 [inline]
+  rxrpc_unuse_local+0x23/0x70 net/rxrpc/local_object.c:405
+  rxrpc_release_sock net/rxrpc/af_rxrpc.c:904 [inline]
+  rxrpc_release+0x47d/0x840 net/rxrpc/af_rxrpc.c:930
+  __sock_release+0xce/0x280 net/socket.c:590
+  sock_close+0x1e/0x30 net/socket.c:1268
+  __fput+0x2ff/0x890 fs/file_table.c:280
+  ____fput+0x16/0x20 fs/file_table.c:313
+  task_work_run+0x145/0x1c0 kernel/task_work.c:113
+  exit_task_work include/linux/task_work.h:22 [inline]
+  do_exit+0x92f/0x2e50 kernel/exit.c:879
+  do_group_exit+0x135/0x360 kernel/exit.c:983
+  __do_sys_exit_group kernel/exit.c:994 [inline]
+  __se_sys_exit_group kernel/exit.c:992 [inline]
+  __x64_sys_exit_group+0x44/0x50 kernel/exit.c:992
+  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x43ed68
+Code: Bad RIP value.
+RSP: 002b:00007ffc2b7b93f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043ed68
+RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
+RBP: 00000000004be568 R08: 00000000000000e7 R09: ffffffffffffffd0
+R10: 00000000ffffffff R11: 0000000000000246 R12: 0000000000000001
+R13: 00000000006d0180 R14: 0000000000000000 R15: 0000000000000000
+==================================================================
+
+
 ---
- tools/perf/builtin-trace.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
-diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-index 75eb3811e942..d553d06a9aeb 100644
---- a/tools/perf/builtin-trace.c
-+++ b/tools/perf/builtin-trace.c
-@@ -1492,7 +1492,7 @@ static int trace__read_syscall_info(struct trace *trace, int id)
- 	const char *name = syscalltbl__name(trace->sctbl, id);
- 
- 	if (trace->syscalls.table == NULL) {
--		trace->syscalls.table = calloc(trace->sctbl->syscalls.nr_entries, sizeof(*sc));
-+		trace->syscalls.table = calloc(trace->sctbl->syscalls.max_id + 1, sizeof(*sc));
- 		if (trace->syscalls.table == NULL)
- 			return -ENOMEM;
- 	}
--- 
-2.17.1
-
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
