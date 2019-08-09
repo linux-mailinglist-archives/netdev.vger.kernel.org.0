@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5941287A13
+	by mail.lfdr.de (Postfix) with ESMTP id D36ED87A14
 	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:32:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406967AbfHIMb5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 08:31:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58448 "EHLO mail.kernel.org"
+        id S2406974AbfHIMcB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 08:32:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58500 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406946AbfHIMb5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 08:31:57 -0400
+        id S2406946AbfHIMb7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 08:31:59 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A56CE217D7;
-        Fri,  9 Aug 2019 12:31:55 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 43F202166E;
+        Fri,  9 Aug 2019 12:31:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565353916;
-        bh=YXredxS6VuGAA2GZ7NTzDgJWsoabv2GNy155CgHoO1I=;
+        s=default; t=1565353918;
+        bh=4JqN3jWAXz09YeqxlYxXimJrwjzfobWefS8qprG7tJo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xe/pHCAb81gQ0nvxDxi3h0NZ5vnDctrQRzt+kiW5UgpSS6kvplmTUmJeAEe6jpo0p
-         sssEuJWsD/iJ0fuPWSoSsEHRS+TKGL0ijssZL3V1j2XlyIIIC1/ELbtpooNx+fmpne
-         FP3F/4GMUxtP1JX3s8kp3OVd1OkKQ3csLZapS/iE=
+        b=uYo6oNGOqO4y4xvSuBhr7et7iSP/PXjjlBEj9kl4PUrn3sRvP6aCihtpd6j6aKukn
+         A42XsIhQdWguWY9DQI2jqoiNrKOPbdmL3kGS6hAVte4Lss07SzER0L9hedCtm5vBKh
+         nGRKZTMaut/jpM6BIHLgOkZNvcOQOhamgSJ2tZ2g=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     netdev@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Michael Heimpold <michael.heimpold@i2se.com>,
-        Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH v2 11/17] qca: no need to check return value of debugfs_create functions
-Date:   Fri,  9 Aug 2019 14:31:02 +0200
-Message-Id: <20190809123108.27065-12-gregkh@linuxfoundation.org>
+        Mirko Lindner <mlindner@marvell.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH v2 12/17] skge: no need to check return value of debugfs_create functions
+Date:   Fri,  9 Aug 2019 14:31:03 +0200
+Message-Id: <20190809123108.27065-13-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190809123108.27065-1-gregkh@linuxfoundation.org>
 References: <20190809123108.27065-1-gregkh@linuxfoundation.org>
@@ -47,39 +46,84 @@ When calling debugfs functions, there is no need to ever check the
 return value.  The function can work or not, but the code logic should
 never do something different based on this.
 
+Cc: Mirko Lindner <mlindner@marvell.com>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
 Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Michael Heimpold <michael.heimpold@i2se.com>
-Cc: Yangtao Li <tiny.windzz@gmail.com>
 Cc: netdev@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/qualcomm/qca_debug.c | 13 +++----------
- 1 file changed, 3 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/marvell/skge.c | 39 +++++++----------------------
+ 1 file changed, 9 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/net/ethernet/qualcomm/qca_debug.c b/drivers/net/ethernet/qualcomm/qca_debug.c
-index bcb890b18a94..702aa217a27a 100644
---- a/drivers/net/ethernet/qualcomm/qca_debug.c
-+++ b/drivers/net/ethernet/qualcomm/qca_debug.c
-@@ -131,17 +131,10 @@ DEFINE_SHOW_ATTRIBUTE(qcaspi_info);
- void
- qcaspi_init_device_debugfs(struct qcaspi *qca)
+diff --git a/drivers/net/ethernet/marvell/skge.c b/drivers/net/ethernet/marvell/skge.c
+index 06dffee81e02..0a2ec387a482 100644
+--- a/drivers/net/ethernet/marvell/skge.c
++++ b/drivers/net/ethernet/marvell/skge.c
+@@ -3731,7 +3731,6 @@ static int skge_device_event(struct notifier_block *unused,
  {
--	struct dentry *device_root;
-+	qca->device_root = debugfs_create_dir(dev_name(&qca->net_dev->dev),
-+					      NULL);
+ 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+ 	struct skge_port *skge;
+-	struct dentry *d;
  
--	device_root = debugfs_create_dir(dev_name(&qca->net_dev->dev), NULL);
--	qca->device_root = device_root;
+ 	if (dev->netdev_ops->ndo_open != &skge_up || !skge_debug)
+ 		goto done;
+@@ -3739,33 +3738,20 @@ static int skge_device_event(struct notifier_block *unused,
+ 	skge = netdev_priv(dev);
+ 	switch (event) {
+ 	case NETDEV_CHANGENAME:
+-		if (skge->debugfs) {
+-			d = debugfs_rename(skge_debug, skge->debugfs,
+-					   skge_debug, dev->name);
+-			if (d)
+-				skge->debugfs = d;
+-			else {
+-				netdev_info(dev, "rename failed\n");
+-				debugfs_remove(skge->debugfs);
+-			}
+-		}
++		if (skge->debugfs)
++			skge->debugfs = debugfs_rename(skge_debug,
++						       skge->debugfs,
++						       skge_debug, dev->name);
+ 		break;
+ 
+ 	case NETDEV_GOING_DOWN:
+-		if (skge->debugfs) {
+-			debugfs_remove(skge->debugfs);
+-			skge->debugfs = NULL;
+-		}
++		debugfs_remove(skge->debugfs);
++		skge->debugfs = NULL;
+ 		break;
+ 
+ 	case NETDEV_UP:
+-		d = debugfs_create_file(dev->name, 0444,
+-					skge_debug, dev,
+-					&skge_debug_fops);
+-		if (!d || IS_ERR(d))
+-			netdev_info(dev, "debugfs create failed\n");
+-		else
+-			skge->debugfs = d;
++		skge->debugfs = debugfs_create_file(dev->name, 0444, skge_debug,
++						    dev, &skge_debug_fops);
+ 		break;
+ 	}
+ 
+@@ -3780,15 +3766,8 @@ static struct notifier_block skge_notifier = {
+ 
+ static __init void skge_debug_init(void)
+ {
+-	struct dentry *ent;
 -
--	if (IS_ERR(device_root) || !device_root) {
--		pr_warn("failed to create debugfs directory for %s\n",
--			dev_name(&qca->net_dev->dev));
+-	ent = debugfs_create_dir("skge", NULL);
+-	if (!ent || IS_ERR(ent)) {
+-		pr_info("debugfs create directory failed\n");
 -		return;
 -	}
--	debugfs_create_file("info", S_IFREG | 0444, device_root, qca,
-+	debugfs_create_file("info", S_IFREG | 0444, qca->device_root, qca,
- 			    &qcaspi_info_fops);
++	skge_debug = debugfs_create_dir("skge", NULL);
+ 
+-	skge_debug = ent;
+ 	register_netdevice_notifier(&skge_notifier);
  }
  
 -- 
