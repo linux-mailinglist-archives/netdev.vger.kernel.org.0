@@ -2,58 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 422FA882D3
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:45:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBAFB882D5
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:45:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406965AbfHISpe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 14:45:34 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:50448 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726219AbfHISpd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 14:45:33 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v15so6645315wml.0
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 11:45:32 -0700 (PDT)
+        id S2436479AbfHISpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 14:45:36 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:37751 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726558AbfHISpe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 14:45:34 -0400
+Received: by mail-wm1-f65.google.com with SMTP id z23so6453684wmf.2
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 11:45:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=P0n5meOT6sPh0BKo7DbVL/aBE233Zl5+u9Q2+WYA0Ko=;
-        b=gwJlS74MDdyr/ZpZ/LTP5K7HBwJqCZ+UnWCVtfdHBi4Jw2RZ2WHGEYFfmESnWqMOwb
-         mitbemzH9c+0g3b5vmfwyE99Vp9WhVwbSdNjFePL0N38CialB3MN/KU/QArh3JipMW/r
-         tKSxKnFcxHX4MOaoWajbZMc9GDj6cXbK2OP8J5ij8ZBIi/K7bP4Xaijy7jgZ1bLa3GJJ
-         yxZJvfzjWxijUOyTZKkM3qdzK9WvcgnDOWgL9qrt0a4Aw9s8hGN8Ix2oSYkzZBqVy9ij
-         W0GTdyu773lZA7OlTHzF22iqZ8Ud8vnJvJsI1yhcEzHnqvzo4AIJuv6o/KGaCVb0f6rQ
-         bJsA==
+        bh=iAl3FTn1nncAdom/v1tJNkBn6eoR882on+kp/bND09c=;
+        b=AlJeUGLguwZeqPoprt2rfp2u6brRW9nXLpw/mIuvSwcL2MueEsjlv3yG9kJn5eWNwV
+         LlAiW/fWZFxLXDNhZvUPJ/cGCUPAnhthe5gwZGD6V3KclQyXzHmvbaU/k2oaNCHfOP+x
+         vtMHX08y+xzISPIjF2n+xaDjzt3Xj0wVSGxPUoVv7aTNNj7wdN4dPZzSzlc1rGtb/nZj
+         pRO/yklE2TZEjabkaN+eo2j7R70mD/jN7W6rhaDY7z7iUVmZAePIVW5sdJ5neGSymB07
+         E5O4npMiRvoDBK3XUtmK4D1WbWAFyEil4VAJsflGxlzPMnhY8PMXyWgfzPNRlJ4MExTe
+         sMEQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=P0n5meOT6sPh0BKo7DbVL/aBE233Zl5+u9Q2+WYA0Ko=;
-        b=rywkpfIHgXVeKLeENlU+mGfGfB0gA51JNU2+pg8YT++Fxz0zXx2XloEOAayz25mLaU
-         osgebt64RAfHaZSagN/Ng1iDllr16AGM86EwlC/NH1yp/OnRt6XJf8N0b+muFw/cKrrg
-         0OphgcX3D+/pFTEpYRon7lu8W8IRfCVO5+KZw10akconOSLQZ+lsKMgqI/RhkA5dVzsS
-         xfX64j+WFISbZgMayJQCkD9f/zX3sh372aNnqu80HYx+LBkeD3NgB4S8XCqRXDiBMRQt
-         0Xb7WORtJVo294CacPeIOJ6AcS4/Nt0O9zMiiiUp4+vaxk1DykdfxS0b4xPNHXEZp/lH
-         KddQ==
-X-Gm-Message-State: APjAAAVsCNqO1qG9/5KBSxYqYr9NkzkYZNA+MfLx1M2KC944cixqQtx/
-        WFXl8p7ZlBnifOI8brIhP3Vw50lv
-X-Google-Smtp-Source: APXvYqw6e7rq44n2ImmzSD9Lq7pXcwd+jhyXGaY/Czo2ukZtZSoW4yLnFWsap9SeVHrBF2v+m6ZaSQ==
-X-Received: by 2002:a1c:e715:: with SMTP id e21mr12767690wmh.16.1565376331444;
-        Fri, 09 Aug 2019 11:45:31 -0700 (PDT)
+        bh=iAl3FTn1nncAdom/v1tJNkBn6eoR882on+kp/bND09c=;
+        b=tm0BRtwFfnrKFtdOvEYfvju+nbyxviPOZsAC3G4DACgATPE7GBcnoCMdDbx4BbMQe7
+         t7pnqcAkWHODMfXcRQSXo/6zveMNA30VIkPm+R+0pLcz6mEpsGk+ZncWbboLH8kiFw/x
+         pYs3pfOVsFgQA11TD6HmOdwn1kgyRdBDoLuHk413ECGQnvgvtecBOcn2LBtRPKrXbhih
+         ZYkjOq4AmzgGzFi3KIK2zVIrzneduXz4HPBfQhTgmwJb+g+/pNT7quNrmYRJWJ+0y+oo
+         RBHEY5qMsD6Uda7l69z1yH1p9IkzSh2JCGgAPlaGF6ARD6RvFV8EHLNsV6aqRd4qXobs
+         ihyg==
+X-Gm-Message-State: APjAAAUtqSrejPIsUOXjQn9PNpFKGdtZf3lZqZPRKuYRJqei7++GSh5j
+        HpHNUaAAX8m3pbVe4xpuBA1W8dV+
+X-Google-Smtp-Source: APXvYqwHS09AUotk0ZYDKTyIxATvz6sHaINV5LPTR/XiyM8QMlgsJmyZzMlI8HOiVz+/mXLnJ9pzHw==
+X-Received: by 2002:a1c:407:: with SMTP id 7mr13105147wme.113.1565376332659;
+        Fri, 09 Aug 2019 11:45:32 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f2f:3200:2994:d24a:66a1:e0e5? (p200300EA8F2F32002994D24A66A1E0E5.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:2994:d24a:66a1:e0e5])
-        by smtp.googlemail.com with ESMTPSA id c15sm30244561wrb.80.2019.08.09.11.45.30
+        by smtp.googlemail.com with ESMTPSA id q20sm29239305wrc.79.2019.08.09.11.45.31
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 09 Aug 2019 11:45:30 -0700 (PDT)
-Subject: [PATCH net-next v2 3/4] net: phy: add phy_modify_paged_changed
+        Fri, 09 Aug 2019 11:45:32 -0700 (PDT)
+Subject: [PATCH net-next v2 4/4] net: phy: realtek: add support for the
+ 2.5Gbps PHY in RTL8125
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         David Miller <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <755b2bc9-22cb-f529-4188-0f4b6e48efbd@gmail.com>
-Message-ID: <741a9493-e9a1-be4e-a2e9-e15294362005@gmail.com>
-Date:   Fri, 9 Aug 2019 20:44:22 +0200
+Message-ID: <49454e5b-465d-540e-cc01-07717a773e33@gmail.com>
+Date:   Fri, 9 Aug 2019 20:45:14 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
@@ -66,81 +67,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add helper function phy_modify_paged_changed, behavios is the same
-as for phy_modify_changed.
+This adds support for the integrated 2.5Gbps PHY in Realtek RTL8125.
+Advertisement of 2.5Gbps mode is done via a vendor-specific register.
+Same applies to reading NBase-T link partner advertisement.
+Unfortunately this 2.5Gbps PHY shares the PHY ID with the integrated
+1Gbps PHY's in other Realtek network chips and so far no method is
+known to differentiate them. As a workaround use a dedicated fake PHY ID
+that is set by the network driver by intercepting the MDIO PHY ID read.
+
+v2:
+- Create dedicated PHY driver and use a fake PHY ID that is injected by
+  the network driver. Suggested by Andrew Lunn.
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/phy/phy-core.c | 29 ++++++++++++++++++++++++-----
- include/linux/phy.h        |  2 ++
- 2 files changed, 26 insertions(+), 5 deletions(-)
+ drivers/net/phy/realtek.c | 62 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 16667fbac..9ae3abb2d 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -783,24 +783,43 @@ int phy_write_paged(struct phy_device *phydev, int page, u32 regnum, u16 val)
- EXPORT_SYMBOL(phy_write_paged);
+diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
+index a669945eb..5b466e80d 100644
+--- a/drivers/net/phy/realtek.c
++++ b/drivers/net/phy/realtek.c
+@@ -39,6 +39,11 @@
+ #define RTL8366RB_POWER_SAVE			0x15
+ #define RTL8366RB_POWER_SAVE_ON			BIT(12)
  
- /**
-- * phy_modify_paged() - Convenience function for modifying a paged register
-+ * phy_modify_paged_changed() - Function for modifying a paged register
-  * @phydev: a pointer to a &struct phy_device
-  * @page: the page for the phy
-  * @regnum: register number
-  * @mask: bit mask of bits to clear
-  * @set: bit mask of bits to set
-  *
-- * Same rules as for phy_read() and phy_write().
-+ * Returns negative errno, 0 if there was no change, and 1 in case of change
-  */
--int phy_modify_paged(struct phy_device *phydev, int page, u32 regnum,
--		     u16 mask, u16 set)
-+int phy_modify_paged_changed(struct phy_device *phydev, int page, u32 regnum,
-+			     u16 mask, u16 set)
- {
- 	int ret = 0, oldpage;
- 
- 	oldpage = phy_select_page(phydev, page);
- 	if (oldpage >= 0)
--		ret = __phy_modify(phydev, regnum, mask, set);
-+		ret = __phy_modify_changed(phydev, regnum, mask, set);
- 
- 	return phy_restore_page(phydev, oldpage, ret);
++#define RTL_ADV_2500FULL			BIT(7)
++#define RTL_LPADV_10000FULL			BIT(11)
++#define RTL_LPADV_5000FULL			BIT(6)
++#define RTL_LPADV_2500FULL			BIT(5)
++
+ MODULE_DESCRIPTION("Realtek PHY driver");
+ MODULE_AUTHOR("Johnson Leung");
+ MODULE_LICENSE("GPL");
+@@ -256,6 +261,53 @@ static int rtl8366rb_config_init(struct phy_device *phydev)
+ 	return ret;
  }
-+EXPORT_SYMBOL(phy_modify_paged_changed);
-+
-+/**
-+ * phy_modify_paged() - Convenience function for modifying a paged register
-+ * @phydev: a pointer to a &struct phy_device
-+ * @page: the page for the phy
-+ * @regnum: register number
-+ * @mask: bit mask of bits to clear
-+ * @set: bit mask of bits to set
-+ *
-+ * Same rules as for phy_read() and phy_write().
-+ */
-+int phy_modify_paged(struct phy_device *phydev, int page, u32 regnum,
-+		     u16 mask, u16 set)
-+{
-+	int ret = phy_modify_paged_changed(phydev, page, regnum, mask, set);
-+
-+	return ret < 0 ? ret : 0;
-+}
- EXPORT_SYMBOL(phy_modify_paged);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 7117825ee..781f4810c 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -984,6 +984,8 @@ int phy_select_page(struct phy_device *phydev, int page);
- int phy_restore_page(struct phy_device *phydev, int oldpage, int ret);
- int phy_read_paged(struct phy_device *phydev, int page, u32 regnum);
- int phy_write_paged(struct phy_device *phydev, int page, u32 regnum, u16 val);
-+int phy_modify_paged_changed(struct phy_device *phydev, int page, u32 regnum,
-+			     u16 mask, u16 set);
- int phy_modify_paged(struct phy_device *phydev, int page, u32 regnum,
- 		     u16 mask, u16 set);
  
++static int rtl8125_get_features(struct phy_device *phydev)
++{
++	linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
++			 phydev->supported);
++
++	return genphy_read_abilities(phydev);
++}
++
++static int rtl8125_config_aneg(struct phy_device *phydev)
++{
++	int ret = 0;
++
++	if (phydev->autoneg == AUTONEG_ENABLE) {
++		u16 adv2500 = 0;
++
++		if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
++				      phydev->advertising))
++			adv2500 = RTL_ADV_2500FULL;
++
++		ret = phy_modify_paged_changed(phydev, 0xa5d, 0x12,
++					       RTL_ADV_2500FULL, adv2500);
++		if (ret < 0)
++			return ret;
++	}
++
++	return __genphy_config_aneg(phydev, ret);
++}
++
++static int rtl8125_read_status(struct phy_device *phydev)
++{
++	if (phydev->autoneg == AUTONEG_ENABLE) {
++		int lpadv = phy_read_paged(phydev, 0xa5d, 0x13);
++
++		if (lpadv < 0)
++			return lpadv;
++
++		linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
++			phydev->lp_advertising, lpadv & RTL_LPADV_10000FULL);
++		linkmode_mod_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
++			phydev->lp_advertising, lpadv & RTL_LPADV_5000FULL);
++		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
++			phydev->lp_advertising, lpadv & RTL_LPADV_2500FULL);
++	}
++
++	return genphy_read_status(phydev);
++}
++
+ static struct phy_driver realtek_drvs[] = {
+ 	{
+ 		PHY_ID_MATCH_EXACT(0x00008201),
+@@ -332,6 +384,16 @@ static struct phy_driver realtek_drvs[] = {
+ 		.resume		= genphy_resume,
+ 		.read_page	= rtl821x_read_page,
+ 		.write_page	= rtl821x_write_page,
++	}, {
++		PHY_ID_MATCH_EXACT(0x001cca50),
++		.name		= "RTL8125 2.5Gbps internal",
++		.get_features	= rtl8125_get_features,
++		.config_aneg	= rtl8125_config_aneg,
++		.read_status	= rtl8125_read_status,
++		.suspend	= genphy_suspend,
++		.resume		= genphy_resume,
++		.read_page	= rtl821x_read_page,
++		.write_page	= rtl821x_write_page,
+ 	}, {
+ 		PHY_ID_MATCH_EXACT(0x001cc961),
+ 		.name		= "RTL8366RB Gigabit Ethernet",
 -- 
 2.22.0
 
