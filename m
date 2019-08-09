@@ -2,98 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FE098812A
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 19:29:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE9FA88139
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 19:32:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436619AbfHIR3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 13:29:13 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:44525 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436582AbfHIR3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 13:29:12 -0400
-Received: by mail-pg1-f195.google.com with SMTP id i18so46185549pgl.11;
-        Fri, 09 Aug 2019 10:29:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FUrszxfu12TYz4RSVAJdRYMRyY1/E4H2D0WlNLvKSkU=;
-        b=kdszIFnCo6sZZCcRhyiqMMSZhlU8v9rxWv4gClrYhWcMSOFFyiNSwbUzdaAjCk0RGj
-         jpZpkE50HqF55Vq3vd/tqgnYNVGXou0jM7Vw3SyRlfYcGheZBxa6TJuvs9P+k2xOzRxf
-         ohVGmJ5t0+s6BU+tYqq/KEXmo9Tj3otw8BO8XS0cRmrarLZyZgTjQEcqOJMAw3z4FZiu
-         mn6glH3aeIXR3mpcuOPegWlySanHChSNkE4WM/wJWZ6k0Hwins7b/RjM9rQWkCoZeL8u
-         P0raqZHkk8UlURJTbOPbIzpoB2KMoTyigkkjH6MeGiz0NeoiTpWiCPYe3yK5BQgX41Dh
-         g+0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FUrszxfu12TYz4RSVAJdRYMRyY1/E4H2D0WlNLvKSkU=;
-        b=fvhxnTgpZ4QuYqLmkbMTGKRmzrvO1u1OowfZUepou7ZKVMqpqmqHV4mdPfp5fHEI71
-         ePxXG8FdIGuRhfzZWTogTNWcbEg0E25ZtTf38IkLwUnh9c2u/XFQZ2f2PPdY7N+il2pg
-         wTfC7zR7f+1vcdnmxNKUPAQZcudNQMl8/dinup7N4CxB3qcUOpMl3U0wBVR1aWhqLjQ/
-         4RE8Xulm0RRPsmxQqAiKSbLWt7hc6099YoiVyuC3MQxVteQqeX3sbsdL7F701KwhB/tK
-         bHds+yS65yTkMX6O1ZFbQPLNT+AU1I4kjFTarGoVxGSvb6wG3kz4t1sZMEIx5GSygnJM
-         wM1Q==
-X-Gm-Message-State: APjAAAW2rWT6YEdXjd/P8HAyX0q5o/sRU8qCf9i+Q3yiaRspkgUN/RCZ
-        tPgrJkXmQZhJt4gjsLB8u+QyH84S55Dhv94C4iw=
-X-Google-Smtp-Source: APXvYqxBYUW+814s+7lrviU0TmD+7hu5PuAQYHJhVfj/j8HK6bW+t1XT1YwWM5b+aguA27df/H70hLt2izbcuuCAT+0=
-X-Received: by 2002:a17:90a:b883:: with SMTP id o3mr10416653pjr.50.1565371751473;
- Fri, 09 Aug 2019 10:29:11 -0700 (PDT)
+        id S2407373AbfHIRcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 13:32:20 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:32856 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726157AbfHIRcS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 13:32:18 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 914AD98007A;
+        Fri,  9 Aug 2019 17:32:11 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 9 Aug
+ 2019 10:32:04 -0700
+Subject: Re: [PATCH v3 net-next 0/3] net: batched receive in GRO path
+To:     Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
+CC:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        "Eric Dumazet" <eric.dumazet@gmail.com>,
+        "linux-net-drivers@solarflare.com" <linux-net-drivers@solarflare.com>
+References: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
+ <AM0PR04MB4994C1A8F32FB6C9A7EE057E94D60@AM0PR04MB4994.eurprd04.prod.outlook.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <a6faf533-6dd3-d7d7-9464-1fe87d0ac7fc@solarflare.com>
+Date:   Fri, 9 Aug 2019 18:32:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-References: <000000000000a244b3058f9dc7d6@google.com> <4616850c-bf9e-d32a-3cfb-dbbaec5e17f2@I-love.SAKURA.ne.jp>
- <CACT4Y+Y7d29kA1fpS13QvSopknuChPANRc9evxeWiJd-zkyNug@mail.gmail.com>
-In-Reply-To: <CACT4Y+Y7d29kA1fpS13QvSopknuChPANRc9evxeWiJd-zkyNug@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 9 Aug 2019 10:29:00 -0700
-Message-ID: <CAM_iQpVUZGrz_w2Mv1YzCZaOpi9WdhJAZm_=ZkWRame=6odoog@mail.gmail.com>
-Subject: Re: KASAN: use-after-free Read in tomoyo_socket_sendmsg_permission
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        syzbot <syzbot+b91501546ab4037f685f@syzkaller.appspotmail.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        linux-hams <linux-hams@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <AM0PR04MB4994C1A8F32FB6C9A7EE057E94D60@AM0PR04MB4994.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24836.003
+X-TM-AS-Result: No-2.112500-4.000000-10
+X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9+IfriO3cV8RE6qvV2uOcub8g
+        3TlUXOF7nbLB5zXDLB2q3CLfAyeEI2cPPLBO2A0bN19PjPJahlJ6i696PjRPiPkuQv9PIVnN10d
+        pxFjKl75/MmgtAHVjaLr7cyh+G7QMNO5dlFRJNAYr+fETfhSxIzYj3YEUmwiMYxGZfkM2VceUR6
+        6C6i5v8zNL/d/R0RZNNhTrvE0YItIrP1wc0Kr8faHXpVd0THLOfS0Ip2eEHnzWRN8STJpl3PoLR
+        4+zsDTt9VPDReA7LdprPSROiqR4dyNZ+CCPkCIO0HD7n31YzE6vuDUKMZ4pUhXduck8JbqKqE+b
+        /qlJMMZjEVwCkbftjhxxume6OboREoCMXu4zsQhR029mOM6P0LrcE8xytxC5d5hZXZFoB8PxWx9
+        3BSYyycC+ksT6a9fy
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--2.112500-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24836.003
+X-MDID: 1565371935-oWOmd0fVaxvo
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 9, 2019 at 1:53 AM Dmitry Vyukov <dvyukov@google.com> wrote:
+On 09/08/2019 18:14, Ioana Ciocoi Radulescu wrote:
+> Hi Edward,
 >
-> On Fri, Aug 9, 2019 at 12:08 AM Tetsuo Handa
-> <penguin-kernel@i-love.sakura.ne.jp> wrote:
-> >
-> > On 2019/08/09 1:45, syzbot wrote:
-> > > Hello,
-> > >
-> > > syzbot found the following crash on:
-> > >
-> > > HEAD commit:    107e47cc vrf: make sure skb->data contains ip header to ma..
-> > > git tree:       net
-> > > console output: https://syzkaller.appspot.com/x/log.txt?x=139506d8600000
-> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=4dba67bf8b8c9ad7
-> > > dashboard link: https://syzkaller.appspot.com/bug?extid=b91501546ab4037f685f
-> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> >
-> > This is not TOMOYO's bug. LSM modules expect that "struct sock" does not go away.
-> >
-> > Also, another use-after-free (presumably on the same "struct sock") was concurrently
-> > inflight at nr_insert_socket() in net/netrom/af_netrom.c . Thus, suspecting netrom's bug.
->
-> There is a number of UAFs/refcount bugs in nr sockets lately. Most
-> likely it's the same issue them. Most of them were bisected to:
->
-> commit c8c8218ec5af5d2598381883acbefbf604e56b5e
-> Date: Thu Jun 27 21:30:58 2019 +0000
->   netrom: fix a memory leak in nr_rx_frame()
+> I'm probably missing a lot of context here, but is there a reason
+> this change targets only the napi_gro_frags() path and not the
+> napi_gro_receive() one?
+> I'm trying to understand what drivers that don't call napi_gro_frags()
+> should do in order to benefit from this batching feature.
+The sfc driver (which is what I have lots of hardware for, so I can
+ test it) uses napi_gro_frags().
+It should be possible to do a similar patch to napi_gro_receive(),
+ if someone wants to put in the effort of writing and testing it.
+However, there are many more callers, so more effort required to
+ make sure none of them care whether the return value is GRO_DROP
+ or GRO_NORMAL (since the listified version cannot give that
+ indication).
+Also, the guidance from Eric is that drivers seeking high performance
+ should use napi_gro_frags(), as this allows GRO to recycle the SKB.
 
-The UAF introduced by this commit has been fixed. There is
-another UAF in netrom which exists long before the above commit,
-it is not fixed. The last time I looked at it, it seems related to the
-state machine used by netrom sockets, so it is not easy.
+All of this together means I don't plan to submit such a patch; I
+ would however be happy to review a patch if someone else writes one.
 
-Thanks,
+HTH,
+-Ed
