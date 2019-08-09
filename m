@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 316928863A
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:50:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 094658863B
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:50:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729234AbfHIWuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 18:50:21 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:43551 "EHLO
+        id S1729327AbfHIWuX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 18:50:23 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:38433 "EHLO
         mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728820AbfHIWuV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 18:50:21 -0400
-Received: by mail-qt1-f193.google.com with SMTP id w17so16777504qto.10
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 15:50:20 -0700 (PDT)
+        with ESMTP id S1728820AbfHIWuW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 18:50:22 -0400
+Received: by mail-qt1-f193.google.com with SMTP id n11so97381683qtl.5
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 15:50:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SCcnNL+FTFxq+gGN3wMsZF6efKCQJKPmsrlE4tC5xvI=;
-        b=JubBPvtpE6k1iEMWkzsyOgch7q+ymZaXe2TX452wIHQvxk5LOuzmHG3WsH5uywx+Ml
-         9QNHcwH9IECP/HwLcIy2mKxQj46b5AHmAvSSn2kU8dZONHzsdDmy9L67/ZfH0dNuntSe
-         kG5btqmc80197iE/NBiunNwnAGj2vBY4Q973A8Hftva8bvJu8teWQfhjHd3X21wg6FjG
-         b+PybtSU+gdcMMuAZkF0h+/k/8WdXQqS4L5/WP7TTGP6vl/6qoW3Fy8N95jG//J4QZkA
-         5QWthNHv+p1rdq1W7kYG6ktdssP7zA5BhpjILWIDKLN4cU/MgMc/nNGIZVN9e9hW2osB
-         gsOw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=gpicpGdXTK1PGBwl0mUzVUTuW/a7NOSNYmHY4CsCJao=;
+        b=MQc6CohN7GdAAAWIjoStcvcZlHac1dExi0UFKKpv4IVLNeepgHdvZr58beUdz6MGt1
+         MPZkt94L43cfOI4EdSe6mmhiKPxs7bL+lFRdcysIqhZMXGkfnJ/7s5icKC330V9rjCKX
+         pP3euZ7oe0uRre/8Cqz4ofbQ3cNGfFL0LWIjaGdIVRnLeUJg3UrtmaK+BLQzZW7OiYqi
+         0LRSRVr0A154qYAxTv3/GGMqyEtI8s5qgTj302HAOXUEPOgG74PIkNHwCxTeb3+VAAnW
+         ZrYqvole7FusKaUvA845MIcrzlLN1x10WszoplKtV+SvH5iyhZckg+8WB8AicGx8w9FL
+         g6bA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SCcnNL+FTFxq+gGN3wMsZF6efKCQJKPmsrlE4tC5xvI=;
-        b=mqyS42QL6qFio+MpFn2xdaBsG9gtKjfhFo0T+SW2O4UyfFYQZlKuM9wO0dulXzWPYi
-         Lgo8/Ni34DAh75fAQBAjVaKNL5gbL+7wpMVZl/o9FxkrTBT58STnwc+U7Jr0DXmPxOY1
-         SyPWGtPDFHk8JFEojINn808mAfvi5aWAmZo0LE9aVQiABOE9sMAkE2lLs7nr7LyesLva
-         zq3MIkV8K8E+lVLTwRtu4tIMcn5fCRXCWPaOmWNy27UZKfHaD0x71sKCjXDkAAci5jDx
-         DtIUxID1mFzFVj+BZ54AvGGbPYOQJx4GJ9yzawS+yRU/0hQuK1ouoyhRRaeveAsqAv5U
-         FDdg==
-X-Gm-Message-State: APjAAAXDtRewWdHdPo5F3Wl0AG/yaSnX5NkpQCKBAvIiHEJh76KGneob
-        /Pg169s36SQAG7B9wzJoIVlxXaKo
-X-Google-Smtp-Source: APXvYqzjbx8FA7OVSnx0wmG+5tn4UMp2IxR25eeC1sZ+gwY7lENk0S4r6Zz5Kv0U1cMUWgv9w0fkQQ==
-X-Received: by 2002:ac8:538b:: with SMTP id x11mr5011353qtp.137.1565391019708;
-        Fri, 09 Aug 2019 15:50:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=gpicpGdXTK1PGBwl0mUzVUTuW/a7NOSNYmHY4CsCJao=;
+        b=uLpar9+AEZaNLDQFDBgtLAmcIILTP+d3BdsKNhSd+zpw95qsc7ALdZw4E6y/Zup/tj
+         MtrVOArz5rdivuH/1762kkmIUjwfcJFnH+n3VNubMjJ6VC3zI6MCK8N824mw87O6GcLq
+         r5N6d9xDuZSO5Re4Xn+fKIlsNaVsXV2quj5pdEBXeF0W5Jxsj3LIwPwKOqa1PWnlo6C4
+         1iUsaJVsR+CRlgidRPsHxM2hHBSd8RVLOwnsHCQmDxrjQz9sJgdlWUqwR8X0ZIddtIql
+         b7JyOVEoW/tkqFyoZm/okzxDEVN1hkDg7K+D3onA/ZH1KxH9jiSmcI5EBfXDjrh61Eep
+         IBbQ==
+X-Gm-Message-State: APjAAAUH7zuu9ZluZR9DIpoe5GIecBRJeSI32TY6pxWmslaaF4aANaBT
+        H9syNrMg0aE9/Lbe5UGBjdaIPMei
+X-Google-Smtp-Source: APXvYqwrcgQiKhRnLWdQ/nAxfxZl6CvAAavRIBcKvLnX0BKz2OAldRcLPKEMx6ro8ys1Tu5wmpM9IQ==
+X-Received: by 2002:ac8:2439:: with SMTP id c54mr19945788qtc.160.1565391021041;
+        Fri, 09 Aug 2019 15:50:21 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id k33sm49753265qte.69.2019.08.09.15.50.18
+        by smtp.gmail.com with ESMTPSA id t1sm7496539qkb.68.2019.08.09.15.50.20
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 15:50:18 -0700 (PDT)
+        Fri, 09 Aug 2019 15:50:20 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
         Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 0/7] net: dsa: mv88e6xxx: prepare Wait Bit operation
-Date:   Fri,  9 Aug 2019 18:47:52 -0400
-Message-Id: <20190809224759.5743-1-vivien.didelot@gmail.com>
+Subject: [PATCH net-next 1/7] net: dsa: mv88e6xxx: wait for 88E6185 PPU disabled
+Date:   Fri,  9 Aug 2019 18:47:53 -0400
+Message-Id: <20190809224759.5743-2-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.22.0
+In-Reply-To: <20190809224759.5743-1-vivien.didelot@gmail.com>
+References: <20190809224759.5743-1-vivien.didelot@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,37 +61,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Remote Management Interface has its own implementation of a Wait
-Bit operation, which requires a bit number and a value to wait for.
+The PPU state of 88E6185 can be either "Disabled at Reset" or
+"Disabled after Initialization". Because we intentionally clear the
+PPU Enabled bit before checking its state, it is safe to wait for the
+MV88E6185_G1_STS_PPU_STATE_DISABLED state explicitly instead of waiting
+for any state different than MV88E6185_G1_STS_PPU_STATE_POLLING.
 
-In order to prepare the introduction of this implementation, rework the
-code waiting for bits and masks in mv88e6xxx to match this signature.
+Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+---
+ drivers/net/dsa/mv88e6xxx/global1.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-This has the benefit to unify the implementation of wait routines while
-removing obsolete wait and update functions and also reducing the code.
-
-Vivien Didelot (7):
-  net: dsa: mv88e6xxx: wait for 88E6185 PPU disabled
-  net: dsa: mv88e6xxx: introduce wait mask routine
-  net: dsa: mv88e6xxx: introduce wait bit routine
-  net: dsa: mv88e6xxx: wait for AVB Busy bit
-  net: dsa: mv88e6xxx: remove wait and update routines
-  net: dsa: mv88e6xxx: fix SMI bit checking
-  net: dsa: mv88e6xxx: add delay in direct SMI wait
-
- drivers/net/dsa/mv88e6xxx/chip.c            | 76 ++++++++---------
- drivers/net/dsa/mv88e6xxx/chip.h            |  7 +-
- drivers/net/dsa/mv88e6xxx/global1.c         | 95 ++++++---------------
- drivers/net/dsa/mv88e6xxx/global1.h         |  5 +-
- drivers/net/dsa/mv88e6xxx/global1_atu.c     |  7 +-
- drivers/net/dsa/mv88e6xxx/global1_vtu.c     |  6 +-
- drivers/net/dsa/mv88e6xxx/global2.c         | 72 +++++++++-------
- drivers/net/dsa/mv88e6xxx/global2.h         | 12 +--
- drivers/net/dsa/mv88e6xxx/global2_avb.c     | 29 ++++++-
- drivers/net/dsa/mv88e6xxx/global2_scratch.c |  3 +-
- drivers/net/dsa/mv88e6xxx/smi.c             |  4 +-
- 11 files changed, 155 insertions(+), 161 deletions(-)
-
+diff --git a/drivers/net/dsa/mv88e6xxx/global1.c b/drivers/net/dsa/mv88e6xxx/global1.c
+index 1323ef30a5e9..bbd31c9f8b48 100644
+--- a/drivers/net/dsa/mv88e6xxx/global1.c
++++ b/drivers/net/dsa/mv88e6xxx/global1.c
+@@ -46,7 +46,7 @@ static int mv88e6185_g1_wait_ppu_disabled(struct mv88e6xxx_chip *chip)
+ 
+ 		/* Check the value of the PPUState bits 15:14 */
+ 		state &= MV88E6185_G1_STS_PPU_STATE_MASK;
+-		if (state != MV88E6185_G1_STS_PPU_STATE_POLLING)
++		if (state == MV88E6185_G1_STS_PPU_STATE_DISABLED)
+ 			return 0;
+ 
+ 		usleep_range(1000, 2000);
 -- 
 2.22.0
 
