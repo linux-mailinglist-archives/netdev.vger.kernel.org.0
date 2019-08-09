@@ -2,143 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C72AC87B18
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E806F87B1D
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:27:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407072AbfHINZb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 09:25:31 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:40408 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406273AbfHINZa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:25:30 -0400
-Received: by mail-qk1-f193.google.com with SMTP id s145so71595691qke.7;
-        Fri, 09 Aug 2019 06:25:30 -0700 (PDT)
+        id S2406985AbfHIN1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 09:27:19 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:54890 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726091AbfHIN1T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:27:19 -0400
+Received: by mail-wm1-f68.google.com with SMTP id p74so5724697wme.4
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:27:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=2ZrY/b4WntgdLGp44kkX12ktRp+3EYn+/QxZioshkhU=;
-        b=Cf5fmB7mzINWWtrGpKp//JYl/uShFrRYFRezo/n+I+yOCKP6rkv6U92vt0YdSYbgSo
-         0BhJVMNKmLB+Gs4wXSgvOj+yXSLtGc1lg5dzWXvSCXyOzMpG3CDDUkrieA0maDrwwWY5
-         fWvyhyNA88Ohw/5spZ+0mSk51Mlnn/vXYgsedRAN219VgyMt0gcD1xKOAYd3rQWcP8N9
-         1+6tStmEY6eLumRqFIcvMMPSXVpywmgg5emaN9h/TqI+sCJu+MLhkeP0lUy1LMd/44pt
-         0EArm9PRrnH6wdGOlUrqqg09ViTBXGWEIt/pwRfVbtrGWCkDorcBu6qePEDjmcXb/E0r
-         Betg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xDbAWdqUfFV9SlWt1VScjxm8ITThRJ1Kg5mp8bZU+mw=;
+        b=SHlMGDpQlp5cCvEYOii+ur08M9LCMSP1uQIDMcctMriQHPLTyZmy1E/7Wic7Y48Qz9
+         xpS4JPS5w8UbVyma3FSHXKucyFkrctQj3Qje4OBdZE4TvNJPBBGhiR/G6OQAIWhTpwvG
+         rMlBFojuWXIanTiY+MK9mp0Z3QcQAG1O6I0DRkj9Qe8uHHqLgCQWhBqMAXJ3Bp5mJeFI
+         V6efNqFgtZYhAk9hcf88fdhyV5wDWaHQFSV1BzHIwM7fBDDawZ5ACFJUGOP1lhTt9Ip4
+         5HPNeE3h/lbB+b/VQyEX9L313MzwzcC81QhRUHwSzxTJlG9obTzSWrcJCvtkokBHy0tR
+         i9Jw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=2ZrY/b4WntgdLGp44kkX12ktRp+3EYn+/QxZioshkhU=;
-        b=SQOfEPs5p0680gDlJzvZyRsTs2yLZliarEY4D2dCk1EnDMU6JUX3smVwbFN6l9cTby
-         DCVkeYWnZlZv8hgetM+b3tJzgQN+f5Pg+JxNz4et55mdkJDcVpZAVLc7x64MXzNRiQr4
-         cYOwgpQExKK/vwU53Nblj2P3izetXqN15ycrQw/cWG6PqJBbltuOCzrUh2ndDA7Pkeab
-         o6aa/OBe7FFer5+83KogClgRcBFkkMn33KzOYe4yXV5RbqQ0vrMqfgyNxl3OthORGUP7
-         dxrjQzj5ugo8kg8PgD+ohm0lLpQJTnzfThP6pi+7UJBTr2++qtmdIMJzG46mdBD2yKTq
-         ZV6A==
-X-Gm-Message-State: APjAAAU3NdAOrH4OMwaSxBS/NR5hHOznR2jIwMRbxLNZbzkzEq7Q0SnA
-        FWcAR/JeEVV+aXia5ObVKGM=
-X-Google-Smtp-Source: APXvYqwFMz2xOQB1F9Th3KiEIo21jHYwJ4apOW05gm1IGEUJFXLHHHJDAkaGMO/oVYNrOB9QG70F7Q==
-X-Received: by 2002:a37:c87:: with SMTP id 129mr16707779qkm.240.1565357129652;
-        Fri, 09 Aug 2019 06:25:29 -0700 (PDT)
-Received: from quaco.ghostprotocols.net ([179.97.35.50])
-        by smtp.gmail.com with ESMTPSA id z18sm39964608qki.110.2019.08.09.06.25.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=xDbAWdqUfFV9SlWt1VScjxm8ITThRJ1Kg5mp8bZU+mw=;
+        b=De/SZIAdPM72VO5XPedLbF+/OVNBWm4Kebdg1/+jxx4BM9ZPHc9mSuNGShb8HHONxm
+         tus/J4iVjvRcJUxkcp1Y8/wwlDtTJJecUmPOWiOhnf0u2on/JqCzzIHeSykXy6OX/zhI
+         oWdlKf17Nx7fN6EPNfH9aXZBduuD3HCSFIg9YyIJl7TYvUmH6A6vE6BIJRV8RDs//ibH
+         l5syvDGp4/DhSZThpcRUAMBU4mi7Qp2CZTd6rBeC+irW0GZdPNZF/BOVBHshqWaxNhzv
+         bi3C/IWskjyV8zD8o1E9iaVqLgX7F2J/f2c8iW9soYyXr7vuWFzvs0pUt4fW8CMJFuMD
+         Btyw==
+X-Gm-Message-State: APjAAAUqIQDpqmuA3R+BW6ETtqWaOeS3XCWm+y8Mibnk+RVkr/w9VJEi
+        i1dlHG1xO/0dm95EAncTzqABex4AgLg=
+X-Google-Smtp-Source: APXvYqwM5b1yjjWVvRoYTWG+Yv9kf1pk7nnvqMj+91tEh60lyW6GeMdR/FH/9iwvEb3n47jPda640A==
+X-Received: by 2002:a1c:d185:: with SMTP id i127mr11379962wmg.63.1565357236507;
+        Fri, 09 Aug 2019 06:27:16 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id f12sm108666660wrg.5.2019.08.09.06.27.15
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 06:25:29 -0700 (PDT)
-From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 8885440340; Fri,  9 Aug 2019 10:25:22 -0300 (-03)
-Date:   Fri, 9 Aug 2019 10:25:22 -0300
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] perf trace: Fix segmentation fault when access syscall
- info
-Message-ID: <20190809132522.GB20899@kernel.org>
-References: <20190809104752.27338-1-leo.yan@linaro.org>
+        Fri, 09 Aug 2019 06:27:16 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, tariqt@mellanox.com, valex@mellanox.com,
+        mlxsw@mellanox.com
+Subject: [patch net-next] devlink: remove pointless data_len arg from region snapshot create
+Date:   Fri,  9 Aug 2019 15:27:15 +0200
+Message-Id: <20190809132715.24282-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190809104752.27338-1-leo.yan@linaro.org>
-X-Url:  http://acmel.wordpress.com
-User-Agent: Mutt/1.12.0 (2019-05-25)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Em Fri, Aug 09, 2019 at 06:47:52PM +0800, Leo Yan escreveu:
-> 'perf trace' reports the segmentation fault as below on Arm64:
-> 
->   # perf trace -e string -e augmented_raw_syscalls.c
->   LLVM: dumping tools/perf/examples/bpf/augmented_raw_syscalls.o
->   perf: Segmentation fault
->   Obtained 12 stack frames.
->   perf(sighandler_dump_stack+0x47) [0xaaaaac96ac87]
->   linux-vdso.so.1(+0x5b7) [0xffffadbeb5b7]
->   /lib/aarch64-linux-gnu/libc.so.6(strlen+0x10) [0xfffface7d5d0]
->   /lib/aarch64-linux-gnu/libc.so.6(_IO_vfprintf+0x1ac7) [0xfffface49f97]
->   /lib/aarch64-linux-gnu/libc.so.6(__vsnprintf_chk+0xc7) [0xffffacedfbe7]
->   perf(scnprintf+0x97) [0xaaaaac9ca3ff]
->   perf(+0x997bb) [0xaaaaac8e37bb]
->   perf(cmd_trace+0x28e7) [0xaaaaac8ec09f]
->   perf(+0xd4a13) [0xaaaaac91ea13]
->   perf(main+0x62f) [0xaaaaac8a147f]
->   /lib/aarch64-linux-gnu/libc.so.6(__libc_start_main+0xe3) [0xfffface22d23]
->   perf(+0x57723) [0xaaaaac8a1723]
->   Segmentation fault
-> 
-> This issue is introduced by commit 30a910d7d3e0 ("perf trace:
-> Preallocate the syscall table"), it allocates trace->syscalls.table[]
-> array and the element count is 'trace->sctbl->syscalls.nr_entries';
-> but on Arm64, the system call number is not continuously used; e.g. the
-> syscall maximum id is 436 but the real entries is only 281.  So the
-> table is allocated with 'nr_entries' as the element count, but it
-> accesses the table with the syscall id, which might be out of the bound
-> of the array and cause the segmentation fault.
-> 
-> This patch allocates trace->syscalls.table[] with the element count is
-> 'trace->sctbl->syscalls.max_id + 1', this allows any id to access the
-> table without out of the bound.
+From: Jiri Pirko <jiri@mellanox.com>
 
-Thanks a lot! My bad, that is why we have that max_id there, I forgot
-about it and since I tested so far only on x86_64... applied to
-perf/core, since it is only on:
+The size of the snapshot has to be the same as the size of the region,
+therefore no need to pass it again during snapshot creation. Remove the
+arg and use region->size instead.
 
-[acme@quaco perf]$ git tag --contains 30a910d7d3e0
-perf-core-for-mingo-5.4-20190729
-[acme@quaco perf]$
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+---
+ drivers/net/ethernet/mellanox/mlx4/crdump.c | 7 ++-----
+ include/net/devlink.h                       | 2 +-
+ net/core/devlink.c                          | 9 +++------
+ 3 files changed, 6 insertions(+), 12 deletions(-)
 
-- Arnaldo
+diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
+index 88316c743820..eaf08f7ad128 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
++++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
+@@ -99,8 +99,7 @@ static void mlx4_crdump_collect_crspace(struct mlx4_dev *dev,
+ 					readl(cr_space + offset);
  
-> Fixes: 30a910d7d3e0 ("perf trace: Preallocate the syscall table")
-> Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> ---
->  tools/perf/builtin-trace.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-> index 75eb3811e942..d553d06a9aeb 100644
-> --- a/tools/perf/builtin-trace.c
-> +++ b/tools/perf/builtin-trace.c
-> @@ -1492,7 +1492,7 @@ static int trace__read_syscall_info(struct trace *trace, int id)
->  	const char *name = syscalltbl__name(trace->sctbl, id);
->  
->  	if (trace->syscalls.table == NULL) {
-> -		trace->syscalls.table = calloc(trace->sctbl->syscalls.nr_entries, sizeof(*sc));
-> +		trace->syscalls.table = calloc(trace->sctbl->syscalls.max_id + 1, sizeof(*sc));
->  		if (trace->syscalls.table == NULL)
->  			return -ENOMEM;
->  	}
-> -- 
-> 2.17.1
-
+ 		err = devlink_region_snapshot_create(crdump->region_crspace,
+-						     cr_res_size, crspace_data,
+-						     id, &kvfree);
++						     crspace_data, id, &kvfree);
+ 		if (err) {
+ 			kvfree(crspace_data);
+ 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
+@@ -139,9 +138,7 @@ static void mlx4_crdump_collect_fw_health(struct mlx4_dev *dev,
+ 					readl(health_buf_start + offset);
+ 
+ 		err = devlink_region_snapshot_create(crdump->region_fw_health,
+-						     HEALTH_BUFFER_SIZE,
+-						     health_data,
+-						     id, &kvfree);
++						     health_data, id, &kvfree);
+ 		if (err) {
+ 			kvfree(health_data);
+ 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 98b89eabd73a..c45b10d79b14 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -705,7 +705,7 @@ struct devlink_region *devlink_region_create(struct devlink *devlink,
+ 					     u64 region_size);
+ void devlink_region_destroy(struct devlink_region *region);
+ u32 devlink_region_shapshot_id_get(struct devlink *devlink);
+-int devlink_region_snapshot_create(struct devlink_region *region, u64 data_len,
++int devlink_region_snapshot_create(struct devlink_region *region,
+ 				   u8 *data, u32 snapshot_id,
+ 				   devlink_snapshot_data_dest_t *data_destructor);
+ int devlink_info_serial_number_put(struct devlink_info_req *req,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 57e2bcc9fe4c..95699bfb28e1 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -351,7 +351,6 @@ struct devlink_snapshot {
+ 	struct list_head list;
+ 	struct devlink_region *region;
+ 	devlink_snapshot_data_dest_t *data_destructor;
+-	u64 data_len;
+ 	u8 *data;
+ 	u32 id;
+ };
+@@ -3833,8 +3832,8 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
+ 	if (!snapshot)
+ 		return -EINVAL;
+ 
+-	if (end_offset > snapshot->data_len || dump)
+-		end_offset = snapshot->data_len;
++	if (end_offset > region->size || dump)
++		end_offset = region->size;
+ 
+ 	while (curr_offset < end_offset) {
+ 		u32 data_size;
+@@ -6880,12 +6879,11 @@ EXPORT_SYMBOL_GPL(devlink_region_shapshot_id_get);
+  *	The @snapshot_id should be obtained using the getter function.
+  *
+  *	@region: devlink region of the snapshot
+- *	@data_len: size of snapshot data
+  *	@data: snapshot data
+  *	@snapshot_id: snapshot id to be created
+  *	@data_destructor: pointer to destructor function to free data
+  */
+-int devlink_region_snapshot_create(struct devlink_region *region, u64 data_len,
++int devlink_region_snapshot_create(struct devlink_region *region,
+ 				   u8 *data, u32 snapshot_id,
+ 				   devlink_snapshot_data_dest_t *data_destructor)
+ {
+@@ -6915,7 +6913,6 @@ int devlink_region_snapshot_create(struct devlink_region *region, u64 data_len,
+ 	snapshot->id = snapshot_id;
+ 	snapshot->region = region;
+ 	snapshot->data = data;
+-	snapshot->data_len = data_len;
+ 	snapshot->data_destructor = data_destructor;
+ 
+ 	list_add_tail(&snapshot->list, &region->snapshot_list);
 -- 
+2.21.0
 
-- Arnaldo
