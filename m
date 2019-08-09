@@ -2,84 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E82A87C85
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 16:20:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CB0B87CDF
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 16:41:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407113AbfHIOUD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 10:20:03 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:41046 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbfHIOUD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 10:20:03 -0400
-Received: by mail-qk1-f194.google.com with SMTP id g17so1061588qkk.8;
-        Fri, 09 Aug 2019 07:20:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iqpS6f4iYT2/EOjyhlDBwimFIDoQ2vjPU9zyXzeymVs=;
-        b=tgGY1n0aBq1wKRyOE9mbT7s3RsuCu6FgHAPajrNs49W6xNDNuuAvZ3HM4L/hXgys30
-         QLAl3mnAEJtFOeRw0fAmJ3LdBx9nq05hQzg6knN7Znykfb3fvo2IKs+zjhUQS6cqpQ22
-         ijEhehP3zy+v71aQfpVYsClxRfSlxGL1afgYfvjqNRkOjk6HDu6IudEsXfphJTGM9srJ
-         1cf1PFaTftLzRizDDHjfVsAfDksMVPT8I8y9TjWH3YbXUoT36edrLBuPhlKaYMmFvASN
-         YVVEEv+FOIq6FRRJYScZoLazV2uYwS9UDTEkuhjW53AHvuB1d1WadYnxXGpeWrLEZO3x
-         JdOg==
-X-Gm-Message-State: APjAAAXDxVeskRlnapr5AGSYvOW7zYvbLNyU2j9d+P3tgbQ2sICMtZW8
-        gXGXkxW76cxl4mqtx5W0BbbONm+N7oOR9WnLzeo=
-X-Google-Smtp-Source: APXvYqy/OT0e+ifcdg76ad6xNKU9QCStCMIG/+ooQXzRuWl//U3NqYzpdPro7Befy76nezGoQdOa5mEAGNXNhGehJZQ=
-X-Received: by 2002:a37:4ac3:: with SMTP id x186mr17754552qka.138.1565360402354;
- Fri, 09 Aug 2019 07:20:02 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-6-arnd@arndb.de>
- <CA+rxa6p4gD7+6-aRyd4-V4TvkyMiUh9ueMLc6ggBaDC=LG7fQg@mail.gmail.com>
-In-Reply-To: <CA+rxa6p4gD7+6-aRyd4-V4TvkyMiUh9ueMLc6ggBaDC=LG7fQg@mail.gmail.com>
+        id S2406753AbfHIOlc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 10:41:32 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:60337 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726157AbfHIOlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 10:41:31 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MkW10-1ibFNJ1O5W-00m6H3; Fri, 09 Aug 2019 16:40:55 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 9 Aug 2019 16:19:46 +0200
-Message-ID: <CAK8P3a0Do2=80bOEgi2=773rtek3wkHuQNESePZijy8f6pWJAg@mail.gmail.com>
-Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
-To:     Sylvain Lemieux <slemieux.tyco@gmail.com>
-Cc:     soc@kernel.org,
-        "moderated list:ARM PORT" <linux-arm-kernel@lists.infradead.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Gregory Clement <gregory.clement@bootlin.com>,
+To:     soc@kernel.org
+Cc:     Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Alan Stern <stern@rowland.harvard.edu>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Guenter Roeck <linux@roeck-us.net>, linux-gpio@vger.kernel.org,
+        netdev@vger.kernel.org, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org
+Subject: [PATCH v2 00/13] v2: ARM: move lpc32xx to multiplatform
+Date:   Fri,  9 Aug 2019 16:40:26 +0200
+Message-Id: <20190809144043.476786-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:EDVZmvF9arLwN7tfCBk9s4OVXP20FvpzsVOImPPefg+0CLYE69K
+ gQAFFbE132roeOF6ToiNpoEiuz6MoXQQoc5ph+0VQSsr2DOk/xyOnFdZ2yMpZ8kHXXDBjmX
+ A8C1gOPJ7TLLjUPO1DDoXFvV90K+Q0ox7QSuSMrwxO7Jb3D1G7p8BVK5xTzCRV9mr0GgrzD
+ OwFVQkMOVFv8a5Cr1SW2Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:DPoVW4gPjGQ=:8tG2AyA6Pk3b3tvngr6K5k
+ UMk3gPJV3BUtXv9nOJp7EvdBEwjSP1CtrdEXCNtEjUcawe0Pjf8Oy+Oz54J4+/x4CR/2rvHPa
+ gpdlQvCpws7DVMLQkcUgXF5nXU3i3nqr3aQlv9+MQBVPsOeC/4KDgkmDIlZVkpN4ynr4u7ucB
+ pu5WfQYm7lX8z2DvSWk7Jn/rSFxWFoWsN9AI3xUZs6pqAkjISwm7g1zj0r3DeZkxcnrFNH1IC
+ Egz1Ue13UnEuIbxdnowFCmkpbfHazRhxw48ERNB90saDpeer/Sfiohh/EdYsJRhBmP3r4qGIs
+ +hPd1B4v+tUWpAYpMDyNtJRuDSdY172Id6TFWwTfK2VuLkB9ao+/dWU4SVVvT+AlgJOv7mrag
+ yxf03FHvK+XpX2qgcpa4cziL54bf9OI7XmWHKooibuT2eSYSJ6U7TKh1q5rLi0sM21XV5X9vo
+ NoPD1teaUKJgXdmJzymvD8djLtwU5kyqACDEpfMdtI6Jz+NGrX4mbKeXFeREvcJy2hzyr3cHO
+ tqwe/jezzuaak1my9LxlhwtyAkQsThdCtdGwZAEEHIwEfIIVldDpQcLW3O9CM/DuL7mzrW4MG
+ QI+sI9RMaYFn11ATDc0BslmVI9Ed0tLk9mabp6wQUA8VioOBGUNQHUwI/Ach2uOPRo8wIWgEw
+ 4n28RI2aSzpaniC2eJhokOSjmOmfgSaC4kke4SvZJSNAMYdtJBvft9fpIWnThM9b34xRSoZTc
+ hGLgRyCeKuJkOaJQNWoTa81HQn+8nkhKCeCXPw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 6, 2019 at 10:02 PM Sylvain Lemieux <slemieux.tyco@gmail.com> wrote:
+Version 2 contains some minor changes based on earlier feedback
+and from the 0day build bot testing on other architectures. The
+only patch that changed significantly is the one for the gpio driver.
 
-> >
-> > +       gpio_reg_base = devm_platform_ioremap_resource(pdev, 0);
-> > +       if (gpio_reg_base)
-> > +               return -ENXIO;
->
-> The probe function will always return an error.
-> Please replace the previous 2 lines with:
->     if (IS_ERR(gpio_reg_base))
->         return PTR_ERR(gpio_reg_base);
->
-> You can add my acked-by and tested-by in the v2 patch.
-> Acked-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
-> Tested-by: Sylvain Lemieux <slemieux.tyco@gmail.com>
+I would suggest we merge this version into the soc tree directly
+if there are no further concerns.
 
-Ok, fixed now, along with addressing Bartosz' concerns.
+      Arnd
 
-       Arnd
+Arnd Bergmann (12):
+  usb: ohci-nxp: enable compile-testing
+  usb: udc: lpc32xx: allow compile-testing
+  watchdog: pnx4008_wdt: allow compile-testing
+  serial: lpc32xx_hs: allow compile-testing
+  gpio: lpc32xx: allow building on non-lpc32xx targets
+  net: lpc-enet: factor out iram access
+  net: lpc-enet: move phy setup into platform code
+  net: lpc-enet: fix printk format strings
+  net: lpc-enet: allow compile testing
+  serial: lpc32xx: allow compile testing
+  ARM: lpc32xx: clean up header files
+  ARM: lpc32xx: allow multiplatform build
+
+kbuild test robot (1):
+  net: lpc-enet: fix badzero.cocci warnings
+
+ arch/arm/Kconfig                              |  17 +--
+ arch/arm/configs/lpc32xx_defconfig            |   2 +
+ arch/arm/mach-lpc32xx/Kconfig                 |  11 ++
+ arch/arm/mach-lpc32xx/common.c                |  24 +++-
+ arch/arm/mach-lpc32xx/common.h                |   1 -
+ arch/arm/mach-lpc32xx/include/mach/board.h    |  15 ---
+ .../mach-lpc32xx/include/mach/entry-macro.S   |  28 -----
+ arch/arm/mach-lpc32xx/include/mach/hardware.h |  25 ----
+ .../mach-lpc32xx/include/mach/uncompress.h    |  50 --------
+ .../{include/mach/platform.h => lpc32xx.h}    |  18 ++-
+ arch/arm/mach-lpc32xx/pm.c                    |   3 +-
+ arch/arm/mach-lpc32xx/serial.c                |  33 ++++-
+ arch/arm/mach-lpc32xx/suspend.S               |   3 +-
+ drivers/gpio/Kconfig                          |   7 ++
+ drivers/gpio/Makefile                         |   2 +-
+ drivers/gpio/gpio-lpc32xx.c                   | 118 ++++++++++--------
+ drivers/net/ethernet/nxp/Kconfig              |   2 +-
+ drivers/net/ethernet/nxp/lpc_eth.c            |  45 +++----
+ drivers/tty/serial/Kconfig                    |   3 +-
+ drivers/tty/serial/lpc32xx_hs.c               |  37 +-----
+ drivers/usb/gadget/udc/Kconfig                |   3 +-
+ drivers/usb/gadget/udc/lpc32xx_udc.c          |   3 +-
+ drivers/usb/host/Kconfig                      |   3 +-
+ drivers/usb/host/ohci-nxp.c                   |  25 ++--
+ drivers/watchdog/Kconfig                      |   2 +-
+ drivers/watchdog/pnx4008_wdt.c                |   1 -
+ include/linux/soc/nxp/lpc32xx-misc.h          |  33 +++++
+ 27 files changed, 242 insertions(+), 272 deletions(-)
+ create mode 100644 arch/arm/mach-lpc32xx/Kconfig
+ delete mode 100644 arch/arm/mach-lpc32xx/include/mach/board.h
+ delete mode 100644 arch/arm/mach-lpc32xx/include/mach/entry-macro.S
+ delete mode 100644 arch/arm/mach-lpc32xx/include/mach/hardware.h
+ delete mode 100644 arch/arm/mach-lpc32xx/include/mach/uncompress.h
+ rename arch/arm/mach-lpc32xx/{include/mach/platform.h => lpc32xx.h} (98%)
+ create mode 100644 include/linux/soc/nxp/lpc32xx-misc.h
+
+-- 
+2.20.0
+
+Cc: soc@kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: Vladimir Zapolskiy <vz@mleia.com>
+Cc: Sylvain Lemieux <slemieux.tyco@gmail.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Alan Stern <stern@rowland.harvard.edu>
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: linux-gpio@vger.kernel.org
+Cc: netdev@vger.kernel.org
+Cc: linux-serial@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
+Cc: linux-watchdog@vger.kernel.org
+
