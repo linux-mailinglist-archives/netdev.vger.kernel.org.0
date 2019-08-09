@@ -2,187 +2,354 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3022B883C7
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 22:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 04FD888405
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 22:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfHIUVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 16:21:43 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33001 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725927AbfHIUVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 16:21:43 -0400
-Received: by mail-wm1-f67.google.com with SMTP id p77so6884645wme.0;
-        Fri, 09 Aug 2019 13:21:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=KRYBujXeesavxkZEhR2u/6WvFBsfbrUIYbLhrwxBRGM=;
-        b=uFKxwL3JgE0/swoMA2NXpTNyIp5TCvLNtLftadRXPE/WyTthtwaM2pE5IPvoVns/IL
-         VAmK0o271QCRnGMdGuZw79XaH19S845iC1xUOvhW1KT21Rq8SGcqPf2IP/XnBG2bOc3U
-         lLmdLEe0fcLzz8WAj8U5ZTmduFnBj13zt0c2TJcfh3nfq/uAb6bIlLk9Egwz7LTlKbsP
-         H+rc5M30ZNNJr0f+SQs1FY8vuU8nPE93PU3KS2F/j8zaM3WR52mm+OOEZ2/lcQMRLxa9
-         V5CV15JQo5ZXNzw9df6jVDSzCUaBGPz9pgDTOy2tlYw3L2hKub06oRq6cI4PhW82CjTm
-         Q+JA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=KRYBujXeesavxkZEhR2u/6WvFBsfbrUIYbLhrwxBRGM=;
-        b=ad6EKO4rzX2wE6DY5BBwm0kNusWbMiCzH9k+fDFPdQIB/LDD6t+yFDks3LVZjmfM4d
-         pCfjHWxyzgfxxKvSoTrjdfCU4fCX8HSh13qc/LH+paCGWz/GxvYRHLS0Ew9LYwK7qBz3
-         Cvs7Lv/yKJzpL8nbkQ7dji2T7imTOHpjf4JuwNqyPBrilCQwm/v6qfNbUmqJNkyTjvOr
-         N53/oxoaJ77nZ9TPWLGidlHnSTXl0EqlePvPQpD8EPUNPG/4kVsGwDoxazAFGvOTsdWr
-         96yL28FAGHEpLE1YQmE2lp2+AidL//SVj+3/+oL5/Dq8bvMV4p5k1i+Uym+m0UQnM968
-         QVTw==
-X-Gm-Message-State: APjAAAXTw3FEYUlaHNZX/9vCmJvK7kABwQoW6f9OiJ2/hMMxtpbdrPEa
-        b+78m8Nn3Xvz/MYhUKJ9QJU=
-X-Google-Smtp-Source: APXvYqyLCY2+UnvuTTTsqp0D0bjjDvSXFr7omopd9/6FzcqezAx2P2Hvi0mh6qbVaBd/hIzjpvsyBQ==
-X-Received: by 2002:a1c:61d4:: with SMTP id v203mr11610033wmb.164.1565382100073;
-        Fri, 09 Aug 2019 13:21:40 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:2994:d24a:66a1:e0e5? (p200300EA8F2F32002994D24A66A1E0E5.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:2994:d24a:66a1:e0e5])
-        by smtp.googlemail.com with ESMTPSA id o11sm305922wrw.19.2019.08.09.13.21.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 09 Aug 2019 13:21:39 -0700 (PDT)
-Subject: Re: [PATCH net-next v6 3/3] net: phy: broadcom: add 1000Base-X
- support for BCM54616S
-To:     Tao Ren <taoren@fb.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
-References: <20190809054411.1015962-1-taoren@fb.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <97cd059c-d98e-1392-c814-f3bd628e6366@gmail.com>
-Date:   Fri, 9 Aug 2019 22:21:31 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728231AbfHIU24 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 16:28:56 -0400
+Received: from mout.kundenserver.de ([212.227.126.135]:54781 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726219AbfHIU2y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 16:28:54 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue009 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1M7JvQ-1hxGt81mMG-007hOC; Fri, 09 Aug 2019 22:27:58 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     soc@kernel.org
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        "Wanzongshun (Vincent)" <wanzongshun@huawei.com>,
+        Greg Ungerer <gerg@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-serial@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        linux-input@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>,
+        Mark Brown <broonie@kernel.org>, alsa-devel@alsa-project.org,
+        linux-spi@vger.kernel.org,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        linux-fbdev@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-mtd@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 00/16] ARM: remove ks8695 and w90x900 platforms
+Date:   Fri,  9 Aug 2019 22:27:28 +0200
+Message-Id: <20190809202749.742267-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-In-Reply-To: <20190809054411.1015962-1-taoren@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:e79DZkgFNZp9dvGTGpRIzDbp1U9xKtmOwS7NFPvWoCd6W8DgsD8
+ jFUaOsADnQ6HFt2f8JSvwKT8EjJLooql7wgw8IHL92/OCsO8hIy6Llwq9pC9ITibTzSW0Zi
+ WnvPGjly+Jz6QZvY0sMmV3ekLUbB3HHPOjhXkeR+1bHaYxthIA0XyrnigzaPJoW2SE4PbNJ
+ ZX50iQEG1VqSY3M3Abx7A==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:rQFXwhsBnbk=:vcvGYL5gwOuGJrKu5EyJdE
+ pXygFIdcThx5H7XMGCHmk35kpFvAy/2y+Wkb4oZXuz1GjFsbLNqvdkVSjkUsesOEG+8YHB+Wv
+ SXL4XjEZulOtG1QTXPnly6foF3gfGzwf5EXRucbGcOPLfHyfiV19XiOztVmavCg2PTcPt0cLU
+ TeX23Y+MSGxSVegJjUIkfYkzIM5wwLUl2pUVYycLOyYhJS9rZiIx5dbyX3WMBZxxfVlNGu6HN
+ LdnzKzi/L2t2OKa4LfwZd937QYk4rqsZymU+PUfEKiQwe+J+X4Hzkr7t0EhHS+lLSUh85jknc
+ Rxs2+jz/0IlHIN5Xg6EHnSgzSEsFrUwS6KNspyEfffxN+vNESdlB4K71f70/b05uKwwxJTFBu
+ L3u+ZZrQq2QpmF1XgxagBsCc2DI5j0OlW72Kx/6IU1BIwMILJRC9z9ouU1ibHJ28+fzfQLZ0K
+ 3XJb0cSZGsI8sxflpYzLQunxdv8mUeZNBZCmpsWWSDFLxqOmFnxBCbDX7p+4CSB5AVnccWbJb
+ 43frVwPcAXU8YrjXMqUXYTXmE/MWCrx3j17tK7op3/zRwi2QXApGezne/G03i0gnHAgS8QE4a
+ 6CWVbu6M6/6wJN24YtbQP91ovCVnK+1qQO0vqei4lgMzNBE1d82Ti91AO8cZyF7LGJwLv+kQu
+ 2HEAtywxk7QwdTDYMR8yI67QGy3UzJg/rjjBxJ3LA1Dh7cjxE0LAdmBIj8iNlZ4wXUwi+x7B2
+ C1devbxpoi3Vyy6OBbE6SWUn/lPO76kTgiU/gw==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09.08.2019 07:44, Tao Ren wrote:
-> The BCM54616S PHY cannot work properly in RGMII->1000Base-KX mode (for
-> example, on Facebook CMM BMC platform), mainly because genphy functions
-> are designed for copper links, and 1000Base-X (clause 37) auto negotiation
-> needs to be handled differently.
-> 
-> This patch enables 1000Base-X support for BCM54616S by customizing 3
-> driver callbacks:
-> 
->   - probe: probe callback detects PHY's operation mode based on
->     INTERF_SEL[1:0] pins and 1000X/100FX selection bit in SerDES 100-FX
->     Control register.
-> 
->   - config_aneg: calls genphy_c37_config_aneg when the PHY is running in
->     1000Base-X mode; otherwise, genphy_config_aneg will be called.
-> 
->   - read_status: calls genphy_c37_read_status when the PHY is running in
->     1000Base-X mode; otherwise, genphy_read_status will be called.
-> 
-> Signed-off-by: Tao Ren <taoren@fb.com>
-> ---
->  Changes in v6:
->   - nothing changed.
->  Changes in v5:
->   - include Heiner's patch "net: phy: add support for clause 37
->     auto-negotiation" into the series.
->   - use genphy_c37_config_aneg and genphy_c37_read_status in BCM54616S
->     PHY driver's callback when the PHY is running in 1000Base-X mode.
->  Changes in v4:
->   - add bcm54616s_config_aneg_1000bx() to deal with auto negotiation in
->     1000Base-X mode.
->  Changes in v3:
->   - rename bcm5482_read_status to bcm54xx_read_status so the callback can
->     be shared by BCM5482 and BCM54616S.
->  Changes in v2:
->   - Auto-detect PHY operation mode instead of passing DT node.
->   - move PHY mode auto-detect logic from config_init to probe callback.
->   - only set speed (not including duplex) in read_status callback.
->   - update patch description with more background to avoid confusion.
->   - patch #1 in the series ("net: phy: broadcom: set features explicitly
->     for BCM54616") is dropped: the fix should go to get_features callback
->     which may potentially depend on this patch.
-> 
->  drivers/net/phy/broadcom.c | 54 +++++++++++++++++++++++++++++++++++---
->  include/linux/brcmphy.h    | 10 +++++--
->  2 files changed, 58 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-> index 937d0059e8ac..fbd76a31c142 100644
-> --- a/drivers/net/phy/broadcom.c
-> +++ b/drivers/net/phy/broadcom.c
-> @@ -383,9 +383,9 @@ static int bcm5482_config_init(struct phy_device *phydev)
->  		/*
->  		 * Select 1000BASE-X register set (primary SerDes)
->  		 */
-> -		reg = bcm_phy_read_shadow(phydev, BCM5482_SHD_MODE);
-> -		bcm_phy_write_shadow(phydev, BCM5482_SHD_MODE,
-> -				     reg | BCM5482_SHD_MODE_1000BX);
-> +		reg = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
-> +		bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE,
-> +				     reg | BCM54XX_SHD_MODE_1000BX);
->  
->  		/*
->  		 * LED1=ACTIVITYLED, LED3=LINKSPD[2]
-> @@ -451,12 +451,44 @@ static int bcm5481_config_aneg(struct phy_device *phydev)
->  	return ret;
->  }
->  
-> +static int bcm54616s_probe(struct phy_device *phydev)
-> +{
-> +	int val, intf_sel;
-> +
-> +	val = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
-> +	if (val < 0)
-> +		return val;
-> +
-> +	/* The PHY is strapped in RGMII to fiber mode when INTERF_SEL[1:0]
-> +	 * is 01b.
-> +	 */
-> +	intf_sel = (val & BCM54XX_SHD_INTF_SEL_MASK) >> 1;
-> +	if (intf_sel == 1) {
-> +		val = bcm_phy_read_shadow(phydev, BCM54616S_SHD_100FX_CTRL);
-> +		if (val < 0)
-> +			return val;
-> +
-> +		/* Bit 0 of the SerDes 100-FX Control register, when set
-> +		 * to 1, sets the MII/RGMII -> 100BASE-FX configuration.
-> +		 * When this bit is set to 0, it sets the GMII/RGMII ->
-> +		 * 1000BASE-X configuration.
-> +		 */
-> +		if (!(val & BCM54616S_100FX_MODE))
-> +			phydev->dev_flags |= PHY_BCM_FLAGS_MODE_1000BX;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int bcm54616s_config_aneg(struct phy_device *phydev)
->  {
->  	int ret;
->  
->  	/* Aneg firsly. */
-> -	ret = genphy_config_aneg(phydev);
-> +	if (phydev->dev_flags & PHY_BCM_FLAGS_MODE_1000BX)
-> +		ret = genphy_c37_config_aneg(phydev);
-> +	else
-> +		ret = genphy_config_aneg(phydev);
->  
+As discussed previously, these two ARM platforms have no
+known remaining users, let's remove them completely.
 
-I'm just wondering whether it needs to be considered that 100base-FX
-doesn't support auto-negotiation. I suppose BMSR reports aneg as
-supported, therefore phylib will use aneg per default.
-Not sure who could set 100Base-FX mode when, but maybe at that place
-also phydev->autoneg needs to be cleared. Did you test 100Base-FX mode?
+Subsystem maintainers: feel free to take the driver removals
+through your respective trees, they are all independent of
+one another. We can merge any remaining patches through the
+soc tree.
 
-Heiner
+      Arnd
+
+Arnd Bergmann (16):
+  ARM: remove ks8695 platform
+  serial: remove ks8695 driver
+  gpio: remove ks8695 driver
+  watchdog: remove ks8695 driver
+  net: remove ks8695 driver
+  watchdog: remove w90x900 driver
+  spi: remove w90x900 driver
+  ASoC: remove w90x900/nuc900 platform drivers
+  fbdev: remove w90x900/nuc900 platform drivers
+  Input: remove w90x900 keyboard driver
+  Input: remove w90x900 touchscreen driver
+  mtd: rawnand: remove w90x900 driver
+  net: remove w90p910-ether driver
+  rtc: remove w90x900/nuc900 driver
+  usb: remove ehci-w90x900 driver
+  ARM: remove w90x900 platform
+
+Cc: "Wanzongshun (Vincent)" <wanzongshun@huawei.com>
+Cc: Greg Ungerer <gerg@kernel.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-serial@vger.kernel.org
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: linux-input@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Cc: linux-gpio@vger.kernel.org
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Cc: Guenter Roeck <linux@roeck-us.net>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: alsa-devel@alsa-project.org
+Cc: linux-spi@vger.kernel.org
+Cc: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
+Cc: linux-fbdev@vger.kernel.org
+Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+Cc: linux-mtd@lists.infradead.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+
+ .../watchdog/watchdog-parameters.rst          |   19 -
+ MAINTAINERS                                   |   22 -
+ arch/arm/Kconfig                              |   34 +-
+ arch/arm/Kconfig.debug                        |    8 -
+ arch/arm/Makefile                             |    2 -
+ arch/arm/configs/acs5k_defconfig              |   77 -
+ arch/arm/configs/acs5k_tiny_defconfig         |   69 -
+ arch/arm/configs/ks8695_defconfig             |   67 -
+ arch/arm/configs/nuc910_defconfig             |   51 -
+ arch/arm/configs/nuc950_defconfig             |   67 -
+ arch/arm/configs/nuc960_defconfig             |   57 -
+ arch/arm/include/debug/ks8695.S               |   37 -
+ arch/arm/mach-ks8695/Kconfig                  |   88 -
+ arch/arm/mach-ks8695/Makefile                 |   23 -
+ arch/arm/mach-ks8695/Makefile.boot            |    9 -
+ arch/arm/mach-ks8695/board-acs5k.c            |  238 ---
+ arch/arm/mach-ks8695/board-dsm320.c           |  127 --
+ arch/arm/mach-ks8695/board-micrel.c           |   59 -
+ arch/arm/mach-ks8695/board-og.c               |  197 --
+ arch/arm/mach-ks8695/board-sg.c               |  118 --
+ arch/arm/mach-ks8695/cpu.c                    |   60 -
+ arch/arm/mach-ks8695/devices.c                |  197 --
+ arch/arm/mach-ks8695/devices.h                |   29 -
+ arch/arm/mach-ks8695/generic.h                |   12 -
+ .../mach-ks8695/include/mach/entry-macro.S    |   47 -
+ .../mach-ks8695/include/mach/gpio-ks8695.h    |   36 -
+ arch/arm/mach-ks8695/include/mach/hardware.h  |   42 -
+ arch/arm/mach-ks8695/include/mach/irqs.h      |   51 -
+ arch/arm/mach-ks8695/include/mach/memory.h    |   51 -
+ arch/arm/mach-ks8695/include/mach/regs-gpio.h |   55 -
+ arch/arm/mach-ks8695/include/mach/regs-irq.h  |   41 -
+ arch/arm/mach-ks8695/include/mach/regs-misc.h |   97 -
+ .../mach-ks8695/include/mach/regs-switch.h    |   66 -
+ arch/arm/mach-ks8695/include/mach/regs-uart.h |   89 -
+ .../arm/mach-ks8695/include/mach/uncompress.h |   33 -
+ arch/arm/mach-ks8695/irq.c                    |  164 --
+ arch/arm/mach-ks8695/pci.c                    |  247 ---
+ arch/arm/mach-ks8695/regs-hpna.h              |   25 -
+ arch/arm/mach-ks8695/regs-lan.h               |   65 -
+ arch/arm/mach-ks8695/regs-mem.h               |   89 -
+ arch/arm/mach-ks8695/regs-pci.h               |   53 -
+ arch/arm/mach-ks8695/regs-sys.h               |   34 -
+ arch/arm/mach-ks8695/regs-wan.h               |   65 -
+ arch/arm/mach-ks8695/time.c                   |  159 --
+ arch/arm/mach-w90x900/Kconfig                 |   50 -
+ arch/arm/mach-w90x900/Makefile                |   20 -
+ arch/arm/mach-w90x900/Makefile.boot           |    4 -
+ arch/arm/mach-w90x900/clksel.c                |   88 -
+ arch/arm/mach-w90x900/clock.c                 |  121 --
+ arch/arm/mach-w90x900/clock.h                 |   40 -
+ arch/arm/mach-w90x900/cpu.c                   |  238 ---
+ arch/arm/mach-w90x900/cpu.h                   |   56 -
+ arch/arm/mach-w90x900/dev.c                   |  537 ------
+ arch/arm/mach-w90x900/gpio.c                  |  150 --
+ .../mach-w90x900/include/mach/entry-macro.S   |   26 -
+ arch/arm/mach-w90x900/include/mach/hardware.h |   19 -
+ arch/arm/mach-w90x900/include/mach/irqs.h     |   82 -
+ arch/arm/mach-w90x900/include/mach/map.h      |  153 --
+ arch/arm/mach-w90x900/include/mach/mfp.h      |   21 -
+ .../mach-w90x900/include/mach/regs-clock.h    |   49 -
+ arch/arm/mach-w90x900/include/mach/regs-irq.h |   46 -
+ arch/arm/mach-w90x900/include/mach/regs-ldm.h |  248 ---
+ .../mach-w90x900/include/mach/regs-serial.h   |   54 -
+ .../mach-w90x900/include/mach/uncompress.h    |   43 -
+ arch/arm/mach-w90x900/irq.c                   |  212 ---
+ arch/arm/mach-w90x900/mach-nuc910evb.c        |   38 -
+ arch/arm/mach-w90x900/mach-nuc950evb.c        |   42 -
+ arch/arm/mach-w90x900/mach-nuc960evb.c        |   38 -
+ arch/arm/mach-w90x900/mfp.c                   |  197 --
+ arch/arm/mach-w90x900/nuc910.c                |   58 -
+ arch/arm/mach-w90x900/nuc910.h                |   17 -
+ arch/arm/mach-w90x900/nuc950.c                |   52 -
+ arch/arm/mach-w90x900/nuc950.h                |   17 -
+ arch/arm/mach-w90x900/nuc960.c                |   50 -
+ arch/arm/mach-w90x900/nuc960.h                |   17 -
+ arch/arm/mach-w90x900/nuc9xx.h                |   22 -
+ arch/arm/mach-w90x900/regs-ebi.h              |   29 -
+ arch/arm/mach-w90x900/regs-gcr.h              |   34 -
+ arch/arm/mach-w90x900/regs-timer.h            |   37 -
+ arch/arm/mach-w90x900/regs-usb.h              |   31 -
+ arch/arm/mach-w90x900/time.c                  |  168 --
+ arch/arm/mm/Kconfig                           |    2 +-
+ drivers/gpio/Makefile                         |    1 -
+ drivers/gpio/gpio-ks8695.c                    |  284 ---
+ drivers/input/keyboard/Kconfig                |   11 -
+ drivers/input/keyboard/Makefile               |    1 -
+ drivers/input/keyboard/w90p910_keypad.c       |  264 ---
+ drivers/input/touchscreen/Kconfig             |    9 -
+ drivers/input/touchscreen/Makefile            |    1 -
+ drivers/input/touchscreen/w90p910_ts.c        |  331 ----
+ drivers/mtd/nand/raw/Kconfig                  |    8 -
+ drivers/mtd/nand/raw/Makefile                 |    1 -
+ drivers/mtd/nand/raw/nuc900_nand.c            |  304 ---
+ drivers/net/ethernet/Kconfig                  |    1 -
+ drivers/net/ethernet/Makefile                 |    1 -
+ drivers/net/ethernet/micrel/Kconfig           |   11 +-
+ drivers/net/ethernet/micrel/Makefile          |    1 -
+ drivers/net/ethernet/micrel/ks8695net.c       | 1632 -----------------
+ drivers/net/ethernet/micrel/ks8695net.h       |  108 --
+ drivers/net/ethernet/nuvoton/Kconfig          |   29 -
+ drivers/net/ethernet/nuvoton/Makefile         |    6 -
+ drivers/net/ethernet/nuvoton/w90p910_ether.c  | 1082 -----------
+ drivers/rtc/Kconfig                           |    7 -
+ drivers/rtc/Makefile                          |    1 -
+ drivers/rtc/rtc-nuc900.c                      |  271 ---
+ drivers/spi/Kconfig                           |    7 -
+ drivers/spi/Makefile                          |    1 -
+ drivers/spi/spi-nuc900.c                      |  429 -----
+ drivers/tty/serial/Kconfig                    |   17 -
+ drivers/tty/serial/Makefile                   |    1 -
+ drivers/tty/serial/serial_ks8695.c            |  698 -------
+ drivers/usb/host/Kconfig                      |    6 -
+ drivers/usb/host/Makefile                     |    1 -
+ drivers/usb/host/ehci-w90x900.c               |  130 --
+ drivers/video/fbdev/Kconfig                   |   14 -
+ drivers/video/fbdev/Makefile                  |    1 -
+ drivers/video/fbdev/nuc900fb.c                |  760 --------
+ drivers/video/fbdev/nuc900fb.h                |   51 -
+ drivers/watchdog/Kconfig                      |   16 -
+ drivers/watchdog/Makefile                     |    2 -
+ drivers/watchdog/ks8695_wdt.c                 |  319 ----
+ drivers/watchdog/nuc900_wdt.c                 |  302 ---
+ include/Kbuild                                |    2 -
+ include/linux/platform_data/keypad-w90p910.h  |   16 -
+ include/linux/platform_data/spi-nuc900.h      |   29 -
+ include/linux/platform_data/video-nuc900fb.h  |   79 -
+ include/uapi/linux/serial_core.h              |    3 -
+ sound/soc/Kconfig                             |    1 -
+ sound/soc/Makefile                            |    1 -
+ sound/soc/nuc900/Kconfig                      |   29 -
+ sound/soc/nuc900/Makefile                     |   12 -
+ sound/soc/nuc900/nuc900-ac97.c                |  391 ----
+ sound/soc/nuc900/nuc900-audio.c               |   73 -
+ sound/soc/nuc900/nuc900-audio.h               |  108 --
+ sound/soc/nuc900/nuc900-pcm.c                 |  321 ----
+ 135 files changed, 6 insertions(+), 14461 deletions(-)
+ delete mode 100644 arch/arm/configs/acs5k_defconfig
+ delete mode 100644 arch/arm/configs/acs5k_tiny_defconfig
+ delete mode 100644 arch/arm/configs/ks8695_defconfig
+ delete mode 100644 arch/arm/configs/nuc910_defconfig
+ delete mode 100644 arch/arm/configs/nuc950_defconfig
+ delete mode 100644 arch/arm/configs/nuc960_defconfig
+ delete mode 100644 arch/arm/include/debug/ks8695.S
+ delete mode 100644 arch/arm/mach-ks8695/Kconfig
+ delete mode 100644 arch/arm/mach-ks8695/Makefile
+ delete mode 100644 arch/arm/mach-ks8695/Makefile.boot
+ delete mode 100644 arch/arm/mach-ks8695/board-acs5k.c
+ delete mode 100644 arch/arm/mach-ks8695/board-dsm320.c
+ delete mode 100644 arch/arm/mach-ks8695/board-micrel.c
+ delete mode 100644 arch/arm/mach-ks8695/board-og.c
+ delete mode 100644 arch/arm/mach-ks8695/board-sg.c
+ delete mode 100644 arch/arm/mach-ks8695/cpu.c
+ delete mode 100644 arch/arm/mach-ks8695/devices.c
+ delete mode 100644 arch/arm/mach-ks8695/devices.h
+ delete mode 100644 arch/arm/mach-ks8695/generic.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/entry-macro.S
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/gpio-ks8695.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/hardware.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/irqs.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/memory.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/regs-gpio.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/regs-irq.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/regs-misc.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/regs-switch.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/regs-uart.h
+ delete mode 100644 arch/arm/mach-ks8695/include/mach/uncompress.h
+ delete mode 100644 arch/arm/mach-ks8695/irq.c
+ delete mode 100644 arch/arm/mach-ks8695/pci.c
+ delete mode 100644 arch/arm/mach-ks8695/regs-hpna.h
+ delete mode 100644 arch/arm/mach-ks8695/regs-lan.h
+ delete mode 100644 arch/arm/mach-ks8695/regs-mem.h
+ delete mode 100644 arch/arm/mach-ks8695/regs-pci.h
+ delete mode 100644 arch/arm/mach-ks8695/regs-sys.h
+ delete mode 100644 arch/arm/mach-ks8695/regs-wan.h
+ delete mode 100644 arch/arm/mach-ks8695/time.c
+ delete mode 100644 arch/arm/mach-w90x900/Kconfig
+ delete mode 100644 arch/arm/mach-w90x900/Makefile
+ delete mode 100644 arch/arm/mach-w90x900/Makefile.boot
+ delete mode 100644 arch/arm/mach-w90x900/clksel.c
+ delete mode 100644 arch/arm/mach-w90x900/clock.c
+ delete mode 100644 arch/arm/mach-w90x900/clock.h
+ delete mode 100644 arch/arm/mach-w90x900/cpu.c
+ delete mode 100644 arch/arm/mach-w90x900/cpu.h
+ delete mode 100644 arch/arm/mach-w90x900/dev.c
+ delete mode 100644 arch/arm/mach-w90x900/gpio.c
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/entry-macro.S
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/hardware.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/irqs.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/map.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/mfp.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/regs-clock.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/regs-irq.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/regs-ldm.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/regs-serial.h
+ delete mode 100644 arch/arm/mach-w90x900/include/mach/uncompress.h
+ delete mode 100644 arch/arm/mach-w90x900/irq.c
+ delete mode 100644 arch/arm/mach-w90x900/mach-nuc910evb.c
+ delete mode 100644 arch/arm/mach-w90x900/mach-nuc950evb.c
+ delete mode 100644 arch/arm/mach-w90x900/mach-nuc960evb.c
+ delete mode 100644 arch/arm/mach-w90x900/mfp.c
+ delete mode 100644 arch/arm/mach-w90x900/nuc910.c
+ delete mode 100644 arch/arm/mach-w90x900/nuc910.h
+ delete mode 100644 arch/arm/mach-w90x900/nuc950.c
+ delete mode 100644 arch/arm/mach-w90x900/nuc950.h
+ delete mode 100644 arch/arm/mach-w90x900/nuc960.c
+ delete mode 100644 arch/arm/mach-w90x900/nuc960.h
+ delete mode 100644 arch/arm/mach-w90x900/nuc9xx.h
+ delete mode 100644 arch/arm/mach-w90x900/regs-ebi.h
+ delete mode 100644 arch/arm/mach-w90x900/regs-gcr.h
+ delete mode 100644 arch/arm/mach-w90x900/regs-timer.h
+ delete mode 100644 arch/arm/mach-w90x900/regs-usb.h
+ delete mode 100644 arch/arm/mach-w90x900/time.c
+ delete mode 100644 drivers/gpio/gpio-ks8695.c
+ delete mode 100644 drivers/input/keyboard/w90p910_keypad.c
+ delete mode 100644 drivers/input/touchscreen/w90p910_ts.c
+ delete mode 100644 drivers/mtd/nand/raw/nuc900_nand.c
+ delete mode 100644 drivers/net/ethernet/micrel/ks8695net.c
+ delete mode 100644 drivers/net/ethernet/micrel/ks8695net.h
+ delete mode 100644 drivers/net/ethernet/nuvoton/Kconfig
+ delete mode 100644 drivers/net/ethernet/nuvoton/Makefile
+ delete mode 100644 drivers/net/ethernet/nuvoton/w90p910_ether.c
+ delete mode 100644 drivers/rtc/rtc-nuc900.c
+ delete mode 100644 drivers/spi/spi-nuc900.c
+ delete mode 100644 drivers/tty/serial/serial_ks8695.c
+ delete mode 100644 drivers/usb/host/ehci-w90x900.c
+ delete mode 100644 drivers/video/fbdev/nuc900fb.c
+ delete mode 100644 drivers/video/fbdev/nuc900fb.h
+ delete mode 100644 drivers/watchdog/ks8695_wdt.c
+ delete mode 100644 drivers/watchdog/nuc900_wdt.c
+ delete mode 100644 include/linux/platform_data/keypad-w90p910.h
+ delete mode 100644 include/linux/platform_data/spi-nuc900.h
+ delete mode 100644 include/linux/platform_data/video-nuc900fb.h
+ delete mode 100644 sound/soc/nuc900/Kconfig
+ delete mode 100644 sound/soc/nuc900/Makefile
+ delete mode 100644 sound/soc/nuc900/nuc900-ac97.c
+ delete mode 100644 sound/soc/nuc900/nuc900-audio.c
+ delete mode 100644 sound/soc/nuc900/nuc900-audio.h
+ delete mode 100644 sound/soc/nuc900/nuc900-pcm.c
+
+-- 
+2.20.0
+
