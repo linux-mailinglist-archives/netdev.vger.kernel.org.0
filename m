@@ -2,259 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D74687753
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:33:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F3B877C3
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:48:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406509AbfHIKdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 06:33:02 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41870 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2406477AbfHIKcy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 06:32:54 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 78980B04F;
-        Fri,  9 Aug 2019 10:32:51 +0000 (UTC)
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH v4 9/9] Input: add IOC3 serio driver
-Date:   Fri,  9 Aug 2019 12:32:31 +0200
-Message-Id: <20190809103235.16338-10-tbogendoerfer@suse.de>
-X-Mailer: git-send-email 2.13.7
-In-Reply-To: <20190809103235.16338-1-tbogendoerfer@suse.de>
-References: <20190809103235.16338-1-tbogendoerfer@suse.de>
+        id S1726358AbfHIKsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 06:48:10 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:42083 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726168AbfHIKsK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 06:48:10 -0400
+Received: by mail-pf1-f195.google.com with SMTP id q10so45838318pff.9
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 03:48:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=SWSgHhHu/9BjvEKvg6DvYw5jthq0QCStuXD5Y25D++k=;
+        b=olBzn9Iae3J+Se9iHRoHNcpUalAkm0ZD09Av8Rhf0Un1Erb82ltsMGyfBJNHsDpsio
+         LlbQvDyOt9ixqafHrC8B30eZNQFydT4ALlqO+PDtaXDqR4t+msvvRbMRJA9mlCGEu1hk
+         OWPdIUoClXdonkrlZl0wMf7etys7/V0IUfhh6KzMsReQc8ryg6G4ekAD7BMSlJ7V2qmU
+         erp/KwrNpRh1Rsx4z65y13/nqjod+Jpum23/PTaXvdW+hSPFj9YiD2+AqR4K2BRVzNSd
+         eap5YaVNNKHXwu78ZyVTVLyxgl5j7Dke93bjTNx2H5SEjKGaVOV9aCWV5DhSzXE2AMVB
+         pBMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=SWSgHhHu/9BjvEKvg6DvYw5jthq0QCStuXD5Y25D++k=;
+        b=eJBiRigWnJvCYgZ2ZUcAoqpe9MvJNRJZiE2Ses2j04f2D8xluV2SGdX00WyEM0yqam
+         qMkvHYjKhGEQos8/W5YCfTredMIUi4geQfwIc8af4PrhUsPgFM1kocKqdajFah9pGcv+
+         ygM0qSGUgoux9pjXZZOUR8GDD59T4kp5kgGlT861iwbYPDTH+7+uurhlx5LlP+sZpHQb
+         sXnu7wd3sTLHb6p2Tol3CwStn6RfzmhyHs7dEv07SzwcuLuyXJh/MEOqEjPNWWV5+pdL
+         fEKBgDiVySl3x69JNBWi8/5dt9zlCLHFAGJgep8qyE5OU2kW1vjb3k1KjwaLZ5YPRF14
+         BDjw==
+X-Gm-Message-State: APjAAAXJFARO994H3R/Au5eJGW1h59Haaw5ECeLtQzhDNG0Dx3uiU8kX
+        93L2e3KhMZG5OsPTzYIZ9lL2zA==
+X-Google-Smtp-Source: APXvYqxgJ7LJSyfYIqCUqyw0nl4BRa1wS+HCiJ9jJJusPxs6KdjJu0Q2m1OI1WoKhxp7olOZNBxCag==
+X-Received: by 2002:aa7:82da:: with SMTP id f26mr20912390pfn.82.1565347689544;
+        Fri, 09 Aug 2019 03:48:09 -0700 (PDT)
+Received: from localhost.localdomain (li456-16.members.linode.com. [50.116.10.16])
+        by smtp.gmail.com with ESMTPSA id l44sm4651449pje.29.2019.08.09.03.48.05
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 09 Aug 2019 03:48:08 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     Leo Yan <leo.yan@linaro.org>
+Subject: [PATCH] perf trace: Fix segmentation fault when access syscall info
+Date:   Fri,  9 Aug 2019 18:47:52 +0800
+Message-Id: <20190809104752.27338-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds a platform driver for supporting keyboard and mouse
-interface of SGI IOC3 chips.
+'perf trace' reports the segmentation fault as below on Arm64:
 
-Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+  # perf trace -e string -e augmented_raw_syscalls.c
+  LLVM: dumping tools/perf/examples/bpf/augmented_raw_syscalls.o
+  perf: Segmentation fault
+  Obtained 12 stack frames.
+  perf(sighandler_dump_stack+0x47) [0xaaaaac96ac87]
+  linux-vdso.so.1(+0x5b7) [0xffffadbeb5b7]
+  /lib/aarch64-linux-gnu/libc.so.6(strlen+0x10) [0xfffface7d5d0]
+  /lib/aarch64-linux-gnu/libc.so.6(_IO_vfprintf+0x1ac7) [0xfffface49f97]
+  /lib/aarch64-linux-gnu/libc.so.6(__vsnprintf_chk+0xc7) [0xffffacedfbe7]
+  perf(scnprintf+0x97) [0xaaaaac9ca3ff]
+  perf(+0x997bb) [0xaaaaac8e37bb]
+  perf(cmd_trace+0x28e7) [0xaaaaac8ec09f]
+  perf(+0xd4a13) [0xaaaaac91ea13]
+  perf(main+0x62f) [0xaaaaac8a147f]
+  /lib/aarch64-linux-gnu/libc.so.6(__libc_start_main+0xe3) [0xfffface22d23]
+  perf(+0x57723) [0xaaaaac8a1723]
+  Segmentation fault
+
+This issue is introduced by commit 30a910d7d3e0 ("perf trace:
+Preallocate the syscall table"), it allocates trace->syscalls.table[]
+array and the element count is 'trace->sctbl->syscalls.nr_entries';
+but on Arm64, the system call number is not continuously used; e.g. the
+syscall maximum id is 436 but the real entries is only 281.  So the
+table is allocated with 'nr_entries' as the element count, but it
+accesses the table with the syscall id, which might be out of the bound
+of the array and cause the segmentation fault.
+
+This patch allocates trace->syscalls.table[] with the element count is
+'trace->sctbl->syscalls.max_id + 1', this allows any id to access the
+table without out of the bound.
+
+Fixes: 30a910d7d3e0 ("perf trace: Preallocate the syscall table")
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- drivers/input/serio/Kconfig   |  10 +++
- drivers/input/serio/Makefile  |   1 +
- drivers/input/serio/ioc3kbd.c | 163 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 174 insertions(+)
- create mode 100644 drivers/input/serio/ioc3kbd.c
+ tools/perf/builtin-trace.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/serio/Kconfig b/drivers/input/serio/Kconfig
-index f3e18f8ef9ca..373a1646019e 100644
---- a/drivers/input/serio/Kconfig
-+++ b/drivers/input/serio/Kconfig
-@@ -165,6 +165,16 @@ config SERIO_MACEPS2
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called maceps2.
+diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
+index 75eb3811e942..d553d06a9aeb 100644
+--- a/tools/perf/builtin-trace.c
++++ b/tools/perf/builtin-trace.c
+@@ -1492,7 +1492,7 @@ static int trace__read_syscall_info(struct trace *trace, int id)
+ 	const char *name = syscalltbl__name(trace->sctbl, id);
  
-+config SERIO_SGI_IOC3
-+	tristate "SGI IOC3 PS/2 controller"
-+	depends on SGI_MFD_IOC3
-+	help
-+	  Say Y here if you have an SGI Onyx2, SGI Octane or IOC3 PCI card
-+	  and you want to attach and use a keyboard, mouse, or both.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ioc3kbd.
-+
- config SERIO_LIBPS2
- 	tristate "PS/2 driver library"
- 	depends on SERIO_I8042 || SERIO_I8042=n
-diff --git a/drivers/input/serio/Makefile b/drivers/input/serio/Makefile
-index 67950a5ccb3f..6d97bad7b844 100644
---- a/drivers/input/serio/Makefile
-+++ b/drivers/input/serio/Makefile
-@@ -20,6 +20,7 @@ obj-$(CONFIG_HIL_MLC)		+= hp_sdc_mlc.o hil_mlc.o
- obj-$(CONFIG_SERIO_PCIPS2)	+= pcips2.o
- obj-$(CONFIG_SERIO_PS2MULT)	+= ps2mult.o
- obj-$(CONFIG_SERIO_MACEPS2)	+= maceps2.o
-+obj-$(CONFIG_SERIO_SGI_IOC3)	+= ioc3kbd.o
- obj-$(CONFIG_SERIO_LIBPS2)	+= libps2.o
- obj-$(CONFIG_SERIO_RAW)		+= serio_raw.o
- obj-$(CONFIG_SERIO_AMS_DELTA)	+= ams_delta_serio.o
-diff --git a/drivers/input/serio/ioc3kbd.c b/drivers/input/serio/ioc3kbd.c
-new file mode 100644
-index 000000000000..6840e3c23fed
---- /dev/null
-+++ b/drivers/input/serio/ioc3kbd.c
-@@ -0,0 +1,163 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * SGI IOC3 PS/2 controller driver for linux
-+ *
-+ * Copyright (C) 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
-+ *
-+ * Based on code Copyright (C) 2005 Stanislaw Skowronek <skylark@unaligned.org>
-+ *               Copyright (C) 2009 Johannes Dickgreber <tanzy@gmx.de>
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/init.h>
-+#include <linux/io.h>
-+#include <linux/serio.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+
-+#include <asm/sn/ioc3.h>
-+
-+struct ioc3kbd_data {
-+	struct ioc3_serioregs __iomem *regs;
-+	struct serio *kbd, *aux;
-+	int irq;
-+};
-+
-+static int ioc3kbd_write(struct serio *dev, u8 val)
-+{
-+	struct ioc3kbd_data *d = dev->port_data;
-+	unsigned long timeout = 0;
-+	u32 mask;
-+
-+	mask = (dev == d->aux) ? KM_CSR_M_WRT_PEND : KM_CSR_K_WRT_PEND;
-+	while ((readl(&d->regs->km_csr) & mask) && (timeout < 1000)) {
-+		udelay(100);
-+		timeout++;
-+	}
-+
-+	if (timeout >= 1000)
-+		return -ETIMEDOUT;
-+
-+	writel(val, dev == d->aux ? &d->regs->m_wd : &d->regs->k_wd);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t ioc3kbd_intr(int itq, void *dev_id)
-+{
-+	struct ioc3kbd_data *d = dev_id;
-+	u32 data_k, data_m;
-+
-+	data_k = readl(&d->regs->k_rd);
-+	data_m = readl(&d->regs->m_rd);
-+
-+	if (data_k & KM_RD_VALID_0)
-+		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_0_SHIFT) & 0xff,
-+				0);
-+	if (data_k & KM_RD_VALID_1)
-+		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_1_SHIFT) & 0xff,
-+				0);
-+	if (data_k & KM_RD_VALID_2)
-+		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_2_SHIFT) & 0xff,
-+				0);
-+	if (data_m & KM_RD_VALID_0)
-+		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_0_SHIFT) & 0xff,
-+				0);
-+	if (data_m & KM_RD_VALID_1)
-+		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_1_SHIFT) & 0xff,
-+				0);
-+	if (data_m & KM_RD_VALID_2)
-+		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_2_SHIFT) & 0xff,
-+				0);
-+
-+	return 0;
-+}
-+
-+static int ioc3kbd_probe(struct platform_device *pdev)
-+{
-+	struct ioc3_serioregs __iomem *regs;
-+	struct device *dev = &pdev->dev;
-+	struct ioc3kbd_data *d;
-+	struct serio *sk, *sa;
-+	int irq, ret;
-+
-+	regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(regs))
-+		return PTR_ERR(regs);
-+
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0)
-+		return -ENXIO;
-+
-+	d = devm_kzalloc(&pdev->dev, sizeof(*d), GFP_KERNEL);
-+	if (!d)
-+		return -ENOMEM;
-+
-+	sk = kzalloc(sizeof(*sk), GFP_KERNEL);
-+	if (!sk)
-+		return -ENOMEM;
-+
-+	sa = kzalloc(sizeof(*sa), GFP_KERNEL);
-+	if (!sa) {
-+		kfree(sk);
-+		return -ENOMEM;
-+	}
-+
-+	sk->id.type = SERIO_8042;
-+	sk->write = ioc3kbd_write;
-+	snprintf(sk->name, sizeof(sk->name), "IOC3 keyboard %d", pdev->id);
-+	snprintf(sk->phys, sizeof(sk->phys), "ioc3/serio%dkbd", pdev->id);
-+	sk->port_data = d;
-+	sk->dev.parent = &pdev->dev;
-+
-+	sa->id.type = SERIO_8042;
-+	sa->write = ioc3kbd_write;
-+	snprintf(sa->name, sizeof(sa->name), "IOC3 auxiliary %d", pdev->id);
-+	snprintf(sa->phys, sizeof(sa->phys), "ioc3/serio%daux", pdev->id);
-+	sa->port_data = d;
-+	sa->dev.parent = dev;
-+
-+	d->regs = regs;
-+	d->kbd = sk;
-+	d->aux = sa;
-+	d->irq = irq;
-+
-+	platform_set_drvdata(pdev, d);
-+	serio_register_port(d->kbd);
-+	serio_register_port(d->aux);
-+
-+	ret = devm_request_irq(&pdev->dev, irq, ioc3kbd_intr, IRQF_SHARED,
-+			       "ioc3-kbd", d);
-+	if (ret) {
-+		dev_err(&pdev->dev, "could not request IRQ %d\n", irq);
-+		serio_unregister_port(d->kbd);
-+		serio_unregister_port(d->aux);
-+		kfree(sk);
-+		kfree(sa);
-+		return ret;
-+	}
-+	return 0;
-+}
-+
-+static int ioc3kbd_remove(struct platform_device *pdev)
-+{
-+	struct ioc3kbd_data *d = platform_get_drvdata(pdev);
-+
-+	devm_free_irq(&pdev->dev, d->irq, d);
-+	serio_unregister_port(d->kbd);
-+	serio_unregister_port(d->aux);
-+	return 0;
-+}
-+
-+static struct platform_driver ioc3kbd_driver = {
-+	.probe          = ioc3kbd_probe,
-+	.remove         = ioc3kbd_remove,
-+	.driver = {
-+		.name = "ioc3-kbd",
-+	},
-+};
-+module_platform_driver(ioc3kbd_driver);
-+
-+MODULE_AUTHOR("Thomas Bogendoerfer <tbogendoerfer@suse.de>");
-+MODULE_DESCRIPTION("SGI IOC3 serio driver");
-+MODULE_LICENSE("GPL");
+ 	if (trace->syscalls.table == NULL) {
+-		trace->syscalls.table = calloc(trace->sctbl->syscalls.nr_entries, sizeof(*sc));
++		trace->syscalls.table = calloc(trace->sctbl->syscalls.max_id + 1, sizeof(*sc));
+ 		if (trace->syscalls.table == NULL)
+ 			return -ENOMEM;
+ 	}
 -- 
-2.13.7
+2.17.1
 
