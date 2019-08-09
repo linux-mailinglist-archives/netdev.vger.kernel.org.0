@@ -2,106 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C72F787D08
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 16:44:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D11AD87D0B
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 16:45:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407167AbfHIOol (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 10:44:41 -0400
-Received: from mout.kundenserver.de ([212.227.126.133]:33633 "EHLO
+        id S2407014AbfHIOo6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 10:44:58 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:53237 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbfHIOol (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 10:44:41 -0400
+        with ESMTP id S1726157AbfHIOo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 10:44:57 -0400
 Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
  (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1Mth79-1iAbbg0rWx-00v4ZM; Fri, 09 Aug 2019 16:44:27 +0200
+ 1M7ehh-1hwwfj3ddd-0084kM; Fri, 09 Aug 2019 16:44:47 +0200
 From:   Arnd Bergmann <arnd@arndb.de>
 To:     soc@kernel.org
 Cc:     Vladimir Zapolskiy <vz@mleia.com>,
         Sylvain Lemieux <slemieux.tyco@gmail.com>,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Arnd Bergmann <arnd@arndb.de>,
-        kbuild test robot <lkp@intel.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH v2 09/13] net: lpc-enet: fix printk format strings
-Date:   Fri,  9 Aug 2019 16:40:35 +0200
-Message-Id: <20190809144043.476786-10-arnd@arndb.de>
+Subject: [PATCH v2 10/13] net: lpc-enet: allow compile testing
+Date:   Fri,  9 Aug 2019 16:40:36 +0200
+Message-Id: <20190809144043.476786-11-arnd@arndb.de>
 X-Mailer: git-send-email 2.20.0
 In-Reply-To: <20190809144043.476786-1-arnd@arndb.de>
 References: <20190809144043.476786-1-arnd@arndb.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:6Fx2odY0ygf+ZHM70dyaWh2GH0CHTs6YpTvBzkGXRPduV6BL0xl
- t72e5WbYRZFfSyvNB5wHUAwHLeZrRfgO4HsFF1kwFOkXWXfEfef0oUUQmo9a7s+ITnC2TC+
- 83aglvlCCZmL5CEyNOodIIoVqFkema1G7urRVaVoGoYERLaBffBuydHZlG05der7HKlg+8P
- OTW/9RUwYKzKBmDHb7gtQ==
+X-Provags-ID: V03:K1:RCFvjeuu0t6f1S3c2jeBwyAit2sEKCe3winoluK8TV6k5NAoOUO
+ 0HaU0UeVh1bfmegCwZ/LxZYBGuVQ+7eXPexo60SZ4/fhiQPq4crzC1qGmIJ/ZR2C10ryy8P
+ +3n+Rbdz54ykoqC2GhA3rvwxeJ73S0gOOpx9LpPn+IDp8M7Qct4l2VjHj5K1QVYXDT4/g+1
+ gvS4O0eBreeQVVrF4XDYQ==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:IvXMTkvFbS0=:zCF+fdgg8gxSjM2KXJSPbJ
- VtwjpBPJBmUSNRZymPnwHy8UAVEH3AY87/wx7kAmDEo7Ulj2EaWiGC+0HiQ+ndiYtZKiyTLxl
- JAXVJ86moHoU7dHh7NqiGOJ2Y4Hr0CJHSWHTSLtnvX+b+hOeE+I/11Yi4s77Awb0yLy6lryhB
- tlDFKkKYJw8B19AA8zNr2iy0oVlqeNbck1fB/uiFuBrEiGvBRWOoPAt3pCDicmfFHv8EBM8vw
- 2XMGotVZeXkuUwizIf9EXHPFDdz4VAl8pn3M5/mWc78z0ybKFzqIgthgmFglQat1OsHelO1QD
- rXrQhGs5SUXc+uStB+paJsNTPN77kxpbjTV+w1O1yCYC3Amyvmv/bSZmAf1YEOd6KlfBjpDD3
- VzNB1aQlAkF1mrKyvzy7ZRgkv9JmAZQ5xz2VRkNSu6mL0bMduELxlE+SIo4n1PkN0U/qfxVWP
- bzpXA/qiauT/MF13bZEN91IdcPpgpWVjz1G+9dq74SI3PLbTa+dWwGXXqwid4XAHRYbMqVDQi
- lvGIftyfNw8cJGgSEAyUBkbjfbnav+dp0GVwlM9+1ALdO7BkzPgrWKYSwT6SlUk1jraB2KY2W
- S9Q4BHZnG38FT0fpiQZsHq8FDrRVjQwz3OVmvGgF0MdVfh0VJyDOAHaG24pv5LIz/3i9bvb2l
- sj1C+PreIxrQ7mIjxDi988Xvgo8p3tN2V5ylpjAX/3tK8g2/6yAwypL2liN89WbYLGX0HT2tp
- GnBSi/LdGRTsDTOWzvgCZ0kpO6+9F4WT0WoDNg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vO1wbEWxD8I=:6+u3R4GfutAihcMR0mmONZ
+ HP7bzqimvfTuINSG21LTieDz2KUv6efnOlbOGeMn/i80QZwho0TC8mAEWfJXPHxbAKDG5Suh4
+ RknDI+FhEgZXDXw+DJvO73m1TbsaSWq2ADaOzaNwMKz7Yz4pLjKnkyjMsAXyqXqCKvpsnzanG
+ DgCK/RBBm1OyJ4pOqRVtrly4GqCbLNtqtqww+vCW+wF2UVLD8sfjRbflblvU3XjSkdb8lxMjW
+ Od8LUDWA4Q/S4zjmOaM8r+7U6V1V9EUUhMU8ZmL7yMbEansGeMyI01jfvMSd/YY4eJ7Z5j9Mi
+ 4uew4FuY2ITGLxTVi3UPQQVs+qsi8o/GhBVluXyBAkVbRigHeUHG8DvCn2LGcPkWDbBBtAs++
+ cnGw/LGJ1ElnskF8l3d/+52MiyvPTv7yNgPEPXW0G+JcTKe+NE3ZVT/64VkZrjVXr4w57wx5h
+ v005eDqI5QkSiqRdjwzeJxgfoXeUsRsJrZtQtZyQOphMoQeJKZsR9dHCZBwq/ocx8x8bC7iGf
+ BMS2ffpA+JkheWx0C7rTmkMzyAnIFPMYV/Po522SNNBCx4MlExhIzMw5aWwG5vujNXpeXtrSD
+ 0WeGsWIjjNnImHwadAS1ScB4KbQd0Xcv7VSH83TABwqk/9+M0AiscaQ6OL6rauWRhnvvucmdq
+ hJ4xCU1b0ilijKOsiP6+DOn9UJH6iQOSwn5qWI79J+uZC16GTA08mzqfWm9BYDLFzck/qhkE9
+ 5iCn+1XwlD62XtNtWSIAMC5X1XYrH4ZPc/M73w==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-compile-testing this driver on other architectures showed
-multiple warnings:
+The lpc-enet driver can now be built on all platforms, so
+allow compile testing as well.
 
-  drivers/net/ethernet/nxp/lpc_eth.c: In function 'lpc_eth_drv_probe':
-  drivers/net/ethernet/nxp/lpc_eth.c:1337:19: warning: format '%d' expects argument of type 'int', but argument 4 has type 'resource_size_t {aka long long unsigned int}' [-Wformat=]
+Add one missing header inclusion that is required in some
+configurations.
 
-  drivers/net/ethernet/nxp/lpc_eth.c:1342:19: warning: format '%x' expects argument of type 'unsigned int', but argument 4 has type 'dma_addr_t {aka long long unsigned int}' [-Wformat=]
-
-Use format strings that work on all architectures.
-
-Reported-by: kbuild test robot <lkp@intel.com>
 Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/net/ethernet/nxp/lpc_eth.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/nxp/Kconfig   | 2 +-
+ drivers/net/ethernet/nxp/lpc_eth.c | 1 +
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/nxp/Kconfig b/drivers/net/ethernet/nxp/Kconfig
+index 261f107e2be0..418afb84c84b 100644
+--- a/drivers/net/ethernet/nxp/Kconfig
++++ b/drivers/net/ethernet/nxp/Kconfig
+@@ -1,7 +1,7 @@
+ # SPDX-License-Identifier: GPL-2.0-only
+ config LPC_ENET
+         tristate "NXP ethernet MAC on LPC devices"
+-        depends on ARCH_LPC32XX
++        depends on ARCH_LPC32XX || COMPILE_TEST
+         select PHYLIB
+         help
+ 	  Say Y or M here if you want to use the NXP ethernet MAC included on
 diff --git a/drivers/net/ethernet/nxp/lpc_eth.c b/drivers/net/ethernet/nxp/lpc_eth.c
-index 797bdbbcef76..96d509c418bf 100644
+index 96d509c418bf..141571e2ec11 100644
 --- a/drivers/net/ethernet/nxp/lpc_eth.c
 +++ b/drivers/net/ethernet/nxp/lpc_eth.c
-@@ -1333,13 +1333,14 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
- 	pldat->dma_buff_base_p = dma_handle;
- 
- 	netdev_dbg(ndev, "IO address space     :%pR\n", res);
--	netdev_dbg(ndev, "IO address size      :%d\n", resource_size(res));
-+	netdev_dbg(ndev, "IO address size      :%zd\n",
-+			(size_t)resource_size(res));
- 	netdev_dbg(ndev, "IO address (mapped)  :0x%p\n",
- 			pldat->net_base);
- 	netdev_dbg(ndev, "IRQ number           :%d\n", ndev->irq);
--	netdev_dbg(ndev, "DMA buffer size      :%d\n", pldat->dma_buff_size);
--	netdev_dbg(ndev, "DMA buffer P address :0x%08x\n",
--			pldat->dma_buff_base_p);
-+	netdev_dbg(ndev, "DMA buffer size      :%zd\n", pldat->dma_buff_size);
-+	netdev_dbg(ndev, "DMA buffer P address :%pad\n",
-+			&pldat->dma_buff_base_p);
- 	netdev_dbg(ndev, "DMA buffer V address :0x%p\n",
- 			pldat->dma_buff_base_v);
- 
-@@ -1386,8 +1387,8 @@ static int lpc_eth_drv_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto err_out_unregister_netdev;
- 
--	netdev_info(ndev, "LPC mac at 0x%08x irq %d\n",
--	       res->start, ndev->irq);
-+	netdev_info(ndev, "LPC mac at 0x%08lx irq %d\n",
-+	       (unsigned long)res->start, ndev->irq);
- 
- 	device_init_wakeup(dev, 1);
- 	device_set_wakeup_enable(dev, 0);
+@@ -14,6 +14,7 @@
+ #include <linux/crc32.h>
+ #include <linux/etherdevice.h>
+ #include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/of_net.h>
+ #include <linux/phy.h>
+ #include <linux/platform_device.h>
 -- 
 2.20.0
 
