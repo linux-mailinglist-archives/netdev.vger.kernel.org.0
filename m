@@ -2,145 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F0D28841A
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 22:35:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C22C8841D
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 22:37:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726537AbfHIUfP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 16:35:15 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:46402 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725985AbfHIUfO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 16:35:14 -0400
-Received: by mail-qt1-f195.google.com with SMTP id j15so3508738qtl.13
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 13:35:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=eGij1FbB9MgvxaYppuZV1K7DcJdfdX5GiLALsqu+zdk=;
-        b=gR+D6iiBjbY6YUZdGyZSpYq3ujV9tCsEJVukL2O0IdzzyuHe+EoZtV0j+KDbWLGkU6
-         O/TH5Vh7YTJ/CAJ4WOiS2sN9CWLV8Ciw/IWZMgC24j+qcm2LvpAWvGPV87CToa3hrgJG
-         TqRqqr2rc4MmuPWhzW5Auh5CBZ5K9cW//N6WLcy3lXYj2oagweuhosojSclSMOZNYgHj
-         M5Fh1OMFRoRr5j+ODXWdTQC7nL9m62n5Gxy6HEHM3FcoJqHTARiZHMDLK6KRUGiHwD+y
-         sbRlwP9FPuw+DFBQklflbCGzHZuq0eQmmkmmFGrDvC6n8TCUIUznjZ5rPMmnZWU9W0kK
-         p8Rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=eGij1FbB9MgvxaYppuZV1K7DcJdfdX5GiLALsqu+zdk=;
-        b=rfsvXmYp2LhCOj/OtAm1gj6JgnWqhjY0n7URd6EFN8P/ZgKvfkEPbXDsALxMwkTY+p
-         EnsQL32s5ZyxLfxofrpl4BYYIKsagVASxHgxUEtOb2phXrAoWHS6RgNjqA6TYEpwGsa/
-         8b085Sb7IZBI4IiY34z3d0R/is97Z+oTmfEHmBfAcejd0xoJMvAmUSbeioDmM2TuXGFs
-         +g0uRCgik8UlQrAoNWgdK2/kaFsAOUVvLLHn4uvn7s/aRl2OjE/xzS93JqijkjflIDuu
-         Lb0ySQ8T2I3rHhY+7pi/0nz+7NuUwCFDHDvj9un9cmntXbcr2xlNyGseMUuUdwa5KvRt
-         jzjg==
-X-Gm-Message-State: APjAAAVSRe4YRhEwCYwKsVi6B0oD3YMDxSP20iQ5GSXFNoT2tmPVJvXr
-        y3NhtqGSQTeLs/6e8nuDJOYjVcaZ+1g=
-X-Google-Smtp-Source: APXvYqwr4RA/ml4OIp/H+H4m4sminido+4Cokq14wHQ7nQRkY2KrDRMMK2dmVoaw65H4T3SbYRgMpQ==
-X-Received: by 2002:ac8:53c7:: with SMTP id c7mr19537664qtq.162.1565382913830;
-        Fri, 09 Aug 2019 13:35:13 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id s58sm5731144qth.59.2019.08.09.13.35.12
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 13:35:13 -0700 (PDT)
-Date:   Fri, 9 Aug 2019 13:35:09 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     davem@davemloft.net, sd@queasysnail.net, andrew@lunn.ch,
-        f.fainelli@gmail.com, hkallweit1@gmail.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
-        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com
-Subject: Re: [PATCH net-next v2 4/9] net: introduce MACsec ops and add a
- reference in net_device
-Message-ID: <20190809133509.12dbead1@cakuba.netronome.com>
-In-Reply-To: <20190808140600.21477-5-antoine.tenart@bootlin.com>
-References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
-        <20190808140600.21477-5-antoine.tenart@bootlin.com>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+        id S1726053AbfHIUhH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 16:37:07 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:37774 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726125AbfHIUhH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 16:37:07 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id C9BF81456E97B;
+        Fri,  9 Aug 2019 13:37:06 -0700 (PDT)
+Date:   Fri, 09 Aug 2019 13:37:06 -0700 (PDT)
+Message-Id: <20190809.133706.1598956680657409884.davem@davemloft.net>
+To:     saeedm@mellanox.com
+Cc:     netdev@vger.kernel.org
+Subject: Re: [pull request][net 00/12] Mellanox, mlx5 fixes 2019-08-08
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190808202025.11303-1-saeedm@mellanox.com>
+References: <20190808202025.11303-1-saeedm@mellanox.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 09 Aug 2019 13:37:07 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu,  8 Aug 2019 16:05:55 +0200, Antoine Tenart wrote:
-> This patch introduces MACsec ops for drivers to support offloading
-> MACsec operations. A reference to those ops is added in net_device.
+From: Saeed Mahameed <saeedm@mellanox.com>
+Date: Thu, 8 Aug 2019 20:21:58 +0000
+
+> This series introduces some fixes to mlx5 driver.
 > 
-> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
-> ---
->  include/linux/netdevice.h | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
+> Highlights:
+> 1) From Tariq, Critical mlx5 kTLS fixes to better align with hw specs.
+> 2) From Aya, Fixes to mlx5 tx devlink health reporter.
+> 3) From Maxim, aRFs parsing to use flow dissector to avoid relying on
+> invalid skb fields.
 > 
-> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-> index 88292953aa6f..59ff123d62e3 100644
-> --- a/include/linux/netdevice.h
-> +++ b/include/linux/netdevice.h
-> @@ -53,6 +53,7 @@ struct netpoll_info;
->  struct device;
->  struct phy_device;
->  struct dsa_port;
-> +struct macsec_context;
->  
->  struct sfp_bus;
->  /* 802.11 specific */
-> @@ -910,6 +911,29 @@ struct xfrmdev_ops {
->  };
->  #endif
->  
-> +#if defined(CONFIG_MACSEC)
-> +struct macsec_ops {
+> Please pull and let me know if there is any problem.
 
-I think it'd be cleaner to have macsec_ops declared in macsec.h
-and forward declare macsec_ops rather than macsec_context.
+Pulled.
 
-> +	/* Device wide */
-> +	int (*mdo_dev_open)(struct macsec_context *ctx);
-> +	int (*mdo_dev_stop)(struct macsec_context *ctx);
-> +	/* SecY */
-> +	int (*mdo_add_secy)(struct macsec_context *ctx);
-> +	int (*mdo_upd_secy)(struct macsec_context *ctx);
-> +	int (*mdo_del_secy)(struct macsec_context *ctx);
-> +	/* Security channels */
-> +	int (*mdo_add_rxsc)(struct macsec_context *ctx);
-> +	int (*mdo_upd_rxsc)(struct macsec_context *ctx);
-> +	int (*mdo_del_rxsc)(struct macsec_context *ctx);
-> +	/* Security associations */
-> +	int (*mdo_add_rxsa)(struct macsec_context *ctx);
-> +	int (*mdo_upd_rxsa)(struct macsec_context *ctx);
-> +	int (*mdo_del_rxsa)(struct macsec_context *ctx);
-> +	int (*mdo_add_txsa)(struct macsec_context *ctx);
-> +	int (*mdo_upd_txsa)(struct macsec_context *ctx);
-> +	int (*mdo_del_txsa)(struct macsec_context *ctx);
-> +};
-> +#endif
-> +
->  struct dev_ifalias {
->  	struct rcu_head rcuhead;
->  	char ifalias[];
-> @@ -1755,6 +1779,8 @@ enum netdev_priv_flags {
->   *
->   *	@wol_enabled:	Wake-on-LAN is enabled
->   *
-> + *	@macsec_ops:    MACsec offloading ops
-> + *
->   *	FIXME: cleanup struct net_device such that network protocol info
->   *	moves out.
->   */
-> @@ -2036,6 +2062,11 @@ struct net_device {
->  	struct lock_class_key	*qdisc_running_key;
->  	bool			proto_down;
->  	unsigned		wol_enabled:1;
-> +
-> +#if IS_ENABLED(CONFIG_MACSEC)
-> +	/* MACsec management functions */
-> +	const struct macsec_ops *macsec_ops;
-> +#endif
->  };
->  #define to_net_dev(d) container_of(d, struct net_device, dev)
->  
+> For -stable v4.3
+>  ('net/mlx5e: Only support tx/rx pause setting for port owner')
+> For -stable v4.9
+>  ('net/mlx5e: Use flow keys dissector to parse packets for ARFS')
+> For -stable v5.1
+>  ('net/mlx5e: Fix false negative indication on tx reporter CQE recovery')
+>  ('net/mlx5e: Remove redundant check in CQE recovery flow of tx reporter')
+>  ('net/mlx5e: ethtool, Avoid setting speed to 56GBASE when autoneg off')
 
+Queued up.
+
+> Note: when merged with net-next this minor conflict will pop up:
+> ++<<<<<<< (net-next)
+>  +      if (is_eswitch_flow) {
+>  +              flow->esw_attr->match_level = match_level;
+>  +              flow->esw_attr->tunnel_match_level = tunnel_match_level;
+> ++=======
+> +       if (flow->flags & MLX5E_TC_FLOW_ESWITCH) {
+> +               flow->esw_attr->inner_match_level = inner_match_level;
+> +               flow->esw_attr->outer_match_level = outer_match_level;
+> ++>>>>>>> (net)
+> 
+> To resolve, use hunks from net (2nd) and replace:
+> if (flow->flags & MLX5E_TC_FLOW_ESWITCH) 
+> with
+> if (is_eswitch_flow)
+
+Thanks for this.
