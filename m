@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADB2B86ED7
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 02:29:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E978686ED9
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 02:30:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404550AbfHIA36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 20:29:58 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:38727 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725785AbfHIA36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 20:29:58 -0400
-Received: by mail-pl1-f195.google.com with SMTP id m12so5618556plt.5
-        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 17:29:57 -0700 (PDT)
+        id S2404788AbfHIAaB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 20:30:01 -0400
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:35742 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725785AbfHIAaA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 20:30:00 -0400
+Received: by mail-pf1-f176.google.com with SMTP id u14so45056663pfn.2
+        for <netdev@vger.kernel.org>; Thu, 08 Aug 2019 17:30:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Nwc+/eulLtW+0PxrVdtpTBuhicTvT8IdNuzaicrktfs=;
-        b=JVJ1vUJCzCs7vNTK22zkJ8pOK/fKd41O90s8BNDxUlOqG72+tlKOoYwGZt4TIhXm5G
-         uQ1psO7g2tE1jUgWf2MNxDVB0iqXmQiLVDNOl25ZGclv6WWmPxRtykRppBT0Q9JrPV+9
-         K4bLH1vCr+MG/T+nrbZ162ULnIwH6kZOTpVwRIczmozP85LPF/Uus0PIJNGyTMZTWmL/
-         Hba2+E2i1lF8LA5BInkYWslDWyO83bv2qKoNqLet0FTLmFyZyso2Asr3Fq0VlSTNkp64
-         J8yTdDhGA7r3ABf5gJC1TDzGEWdBYUfe8E3ED8wKGKV3Tqd3fqeV4GNhoReQFwME9IPk
-         yEbA==
+        bh=u/nXWpNSeGFIyklrLRRQT3xvMC4M56hj2D2gnIgpjGY=;
+        b=U18YNFion7EFv5dCS362FUjpTMX9oGk3kSoV6JLLoX4xbzbsl5H83PgslrDhgTfmhL
+         qpgsOWmD8UKGyWRkD6MUTsW8PbF2NrQ8MeOkmm4qDpeZIFt4XgObhjVub3ffBgabkKB/
+         9l/alUmKWFJgVdSZeTggweaHh6luAJYRm/HQhNG7kKqE0DEVqSbAB9o2FOuFNn6eR26T
+         bV79/ilm7xf/n/rnsWGpUEl22nJp6c5Sv2r7A8R6+oiKjZ5SbyFxlmRJBqpGKUSvq131
+         CLW6DaEYpXHlsvLTwh2kMNd/wsXiLh/J0Z/NEM+W/pLwfv8FBAHKtEQE0fiuXHNEJ2f/
+         xaKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Nwc+/eulLtW+0PxrVdtpTBuhicTvT8IdNuzaicrktfs=;
-        b=gBYW7Uu55q2qEWgDQ9TRDiMuSVsuM1OfmcINFwLE9MmQHVkgV0m34sPXHU+22reofI
-         y+b/S2As0qhX9JsOvX9rEhYJu0LJK9r/A6qMNhAIWxvYib/VZ4bb/AuW1n+Bsws1aIPH
-         EQju3IFMxSyH2jF6j295cwQ3wVMiHknl5yX+itDaUWK05e7K0c+7vNskfMl1k6mpYzMY
-         wIIvnGYqe5hznKtdVK/i72i4dEFBqyUDG9zB+GpLfmhvqRIbDTMTeduIXM4BxQmmytp1
-         2v5cKVuBaEZSQK9pXU3fvGJFrmlNbsS2M60ElNaTvRSDQOwQx86rFjrJ3EDJIc48L/vN
-         kAaQ==
-X-Gm-Message-State: APjAAAUcg7WyPjjwXcFLVj2LS8RR7cJzMxdJq5PG+F7p21umi9HVyehI
-        AeQV96R+JzW+fJNPJAoe4y1rhK2iDRgG+A==
-X-Google-Smtp-Source: APXvYqxq+MhcaRthmzHe6t1h3wfk0Yvi46I+5JKof4ItnFurUtbFRDl4RVdRm+bL1VU2mfHV6+Hm7A==
-X-Received: by 2002:a17:902:7686:: with SMTP id m6mr16384284pll.239.1565310597102;
-        Thu, 08 Aug 2019 17:29:57 -0700 (PDT)
+        bh=u/nXWpNSeGFIyklrLRRQT3xvMC4M56hj2D2gnIgpjGY=;
+        b=FCCahZGUG6jwnLXGqa6ANbqGgYuXA8wLu5/ybkfTM5RItgmk+LxZh8aUEyKP7MNSbe
+         paAJn0wxWX/lR2PacddJO+zYswN3Rcwfn5PXPd+gxQPhvrDunVYjxATRxDLfIw1Frei/
+         hyo7wrzqMyBKUbTPw7SjoR+l38WJNHKx9iWwDuImzOsaWxmEenVIWDjV+gJfZE1xfFty
+         yGQ4+NJdRgNFdthpGVRHwmbAem899Va6oZoHY6DRhnUQ0dcpyHpYQMrIHBDu3BgzTEfK
+         Jv/X4SsjA1W2o7RuP1UNoqV4CtVyKX4pQKs8YIeUi25XstUvs12SMJjhUZyaJfBLiGgi
+         xnmQ==
+X-Gm-Message-State: APjAAAV5v19Fsr+c+TjkstWKTCSdlteBrRltz7iwSgsyrw+68Sn05TjF
+        PzCoygRx1XkjSzi35PcGu5r1GcmA8QcDsg==
+X-Google-Smtp-Source: APXvYqwcwTrsNoPOW1rp08d+2xha/WME97PevGijrVMxFM7LhNp/H3LpgKu5DmPniFBtuqvUiMvF8Q==
+X-Received: by 2002:a17:90a:9bca:: with SMTP id b10mr6659352pjw.90.1565310599502;
+        Thu, 08 Aug 2019 17:29:59 -0700 (PDT)
 Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 196sm103991808pfy.167.2019.08.08.17.29.54
+        by smtp.gmail.com with ESMTPSA id 196sm103991808pfy.167.2019.08.08.17.29.57
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 08 Aug 2019 17:29:56 -0700 (PDT)
+        Thu, 08 Aug 2019 17:29:59 -0700 (PDT)
 From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Joe Perches <joe@perches.com>,
         Thomas Falcon <tlfalcon@linux.ibm.com>,
         "David S . Miller" <davem@davemloft.net>,
         Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv2 net 0/2] Add netdev_level_ratelimited to avoid netdev msg flush
-Date:   Fri,  9 Aug 2019 08:29:39 +0800
-Message-Id: <20190809002941.15341-1-liuhangbin@gmail.com>
+Subject: [PATCHv2 net 1/2] netdevice.h: add netdev_level_ratelimited for netdevice
+Date:   Fri,  9 Aug 2019 08:29:40 +0800
+Message-Id: <20190809002941.15341-2-liuhangbin@gmail.com>
 X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190801090347.8258-1-liuhangbin@gmail.com>
+In-Reply-To: <20190809002941.15341-1-liuhangbin@gmail.com>
 References: <20190801090347.8258-1-liuhangbin@gmail.com>
+ <20190809002941.15341-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,28 +64,79 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set add netdev_level_ratelimited to avoid netdev msg flush.
-The second patch fixed ibmveth msg flush when add lots of(e.g. 2000) group
-memberships in one group at the same time.
+Add netdev_level_ratelimited so we can use it in the future.
+The code is copied from device.h.
 
-In my testing, there will be the
+Suggested-by: Joe Perches <joe@perches.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ include/linux/netdevice.h | 53 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 53 insertions(+)
 
-ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
-
-error when add more thann 256 memberships in one multicast group. I haven't
-found this issue on other driver. It looks like an ibm driver issue and need
-to be fixed separately.
-
-v2: add netdev_level_ratelimited as Joe Perches suggested
-
-Hangbin Liu (2):
-  netdevice.h: add netdev_level_ratelimited for netdevice
-  ibmveth: use net_err_ratelimited when set_multicast_list
-
- drivers/net/ethernet/ibm/ibmveth.c |  5 ++-
- include/linux/netdevice.h          | 53 ++++++++++++++++++++++++++++++
- 2 files changed, 55 insertions(+), 3 deletions(-)
-
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 88292953aa6f..4e37065c6717 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -4737,6 +4737,59 @@ do {								\
+ #define netdev_info_once(dev, fmt, ...) \
+ 	netdev_level_once(KERN_INFO, dev, fmt, ##__VA_ARGS__)
+ 
++#define netdev_level_ratelimited(netdev_level, dev, fmt, ...)		\
++do {									\
++	static DEFINE_RATELIMIT_STATE(_rs,				\
++				      DEFAULT_RATELIMIT_INTERVAL,	\
++				      DEFAULT_RATELIMIT_BURST);		\
++	if (__ratelimit(&_rs))						\
++		netdev_level(dev, fmt, ##__VA_ARGS__);			\
++} while (0)
++
++#define netdev_emerg_ratelimited(dev, fmt, ...)				\
++	netdev_level_ratelimited(netdev_emerg, dev, fmt, ##__VA_ARGS__)
++#define netdev_alert_ratelimited(dev, fmt, ...)				\
++	netdev_level_ratelimited(netdev_alert, dev, fmt, ##__VA_ARGS__)
++#define netdev_crit_ratelimited(dev, fmt, ...)				\
++	netdev_level_ratelimited(netdev_crit, dev, fmt, ##__VA_ARGS__)
++#define netdev_err_ratelimited(dev, fmt, ...)				\
++	netdev_level_ratelimited(netdev_err, dev, fmt, ##__VA_ARGS__)
++#define netdev_warn_ratelimited(dev, fmt, ...)				\
++	netdev_level_ratelimited(netdev_warn, dev, fmt, ##__VA_ARGS__)
++#define netdev_notice_ratelimited(dev, fmt, ...)			\
++	netdev_level_ratelimited(netdev_notice, dev, fmt, ##__VA_ARGS__)
++#define netdev_info_ratelimited(dev, fmt, ...)				\
++	netdev_level_ratelimited(netdev_info, dev, fmt, ##__VA_ARGS__)
++#if defined(CONFIG_DYNAMIC_DEBUG)
++/* descriptor check is first to prevent flooding with "callbacks suppressed" */
++#define netdev_dbg_ratelimited(dev, fmt, ...)				\
++do {									\
++	static DEFINE_RATELIMIT_STATE(_rs,				\
++				      DEFAULT_RATELIMIT_INTERVAL,	\
++				      DEFAULT_RATELIMIT_BURST);		\
++	DEFINE_DYNAMIC_DEBUG_METADATA(descriptor, fmt);			\
++	if (DYNAMIC_DEBUG_BRANCH(descriptor) &&				\
++	    __ratelimit(&_rs))						\
++		__dynamic_netdev_dbg(&descriptor, dev, dev_fmt(fmt),	\
++				     ##__VA_ARGS__);			\
++} while (0)
++#elif defined(DEBUG)
++#define netdev_dbg_ratelimited(dev, fmt, ...)				\
++do {									\
++	static DEFINE_RATELIMIT_STATE(_rs,				\
++				      DEFAULT_RATELIMIT_INTERVAL,	\
++				      DEFAULT_RATELIMIT_BURST);		\
++	if (__ratelimit(&_rs))						\
++		netdev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
++} while (0)
++#else
++#define netdev_dbg_ratelimited(dev, fmt, ...)				\
++do {									\
++	if (0)								\
++		netdev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
++} while (0)
++#endif
++
+ #define MODULE_ALIAS_NETDEV(device) \
+ 	MODULE_ALIAS("netdev-" device)
+ 
 -- 
 2.19.2
 
