@@ -2,95 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AD31880EF
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 19:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1226988100
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 19:14:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437246AbfHIRKT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 13:10:19 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:33256 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405964AbfHIRKT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 13:10:19 -0400
-Received: by mail-qt1-f195.google.com with SMTP id v38so4106889qtb.0
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 10:10:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=HYlMdQZHty7Wwn5aBEwnxMd2NQWL3qhElMNkZdxbKhc=;
-        b=DixSJdO0PcZNe8/VlatDjJniiCf1jvJ/3ZILg0pMdueHUlHcDYMdyzSSF/rXDSfGHE
-         lkj4JXar3aHBYxMxWkhlq3861EoUjm2oT2TTcd1kAvkFjwLLbFGQHYsD3PIHtdkuH1p7
-         P4XLxiOa2hZNgeNSTfkoA+lenF6VzfCHOvGCEqCkimKL5I+JnpoA+x/tdb6rStpahrYi
-         wAqiHjOsOxJ2cDMhUc/lJMF6+m9bttUyDSW7b1DrLwDmQNvOVekWC2jj8zXOKk9JCcHd
-         fXe0Vj1qP5M+V99TWe28KhFCGgi9Uw1wu1LD47RZBojYCcSUo7CKhjBfciIyKKxsDBMN
-         QlQw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=HYlMdQZHty7Wwn5aBEwnxMd2NQWL3qhElMNkZdxbKhc=;
-        b=FQE+M9BdCuraTNu+q0dxvlegOaYFVFJze07TPkdOQbp9hIGJUnzfshQQKhT5w/8tN5
-         /m5hR/l9/yyXMhuMiGr94MQJMKKrWP1y2GqZT54PnIB6S8va6W2x9xeObZrr5n3fc+Y0
-         GY3gP2arjloSkLevh7NHRbesE+uBhajjRFUfw1uXnsBDMMPvYyH/b1Pr6Qx7LxdgiDEv
-         W0LvdTiXQafhynIHbFQNAURpGNYpi1/oP7CbR6gQg9+2YbcP3BWxM9iBtDGzmATvfuii
-         vdQdiZfDScLnUuEt1VPk4tNqQN4t4oKIymR0F9MD/InaHLemc2b1hRUohOv6F1L5Le5a
-         ltwQ==
-X-Gm-Message-State: APjAAAUvrqeStRoFJW3Xd6xVJxSlmay92tVN8x4SuNOWh6sVC/UXEo0M
-        PNPG0c+7+1Vc2R0ZVA5g+RRxKA==
-X-Google-Smtp-Source: APXvYqwiEroAY5rluPLihZqReA/ZG8p6YPG6l0KQaPpFiMB03Wk5N9Un+BKo5cSe/LUPBK1cXhQGYg==
-X-Received: by 2002:aed:2667:: with SMTP id z94mr9985343qtc.343.1565370618760;
-        Fri, 09 Aug 2019 10:10:18 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id w62sm39380548qkd.30.2019.08.09.10.10.17
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 10:10:18 -0700 (PDT)
-Date:   Fri, 9 Aug 2019 10:10:15 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edwin Peer <edwin.peer@netronome.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        oss-drivers@netronome.com
-Subject: Re: [PATCH v2 08/17] nfp: no need to check return value of
- debugfs_create functions
-Message-ID: <20190809101015.62bca698@cakuba.netronome.com>
-In-Reply-To: <20190809123108.27065-9-gregkh@linuxfoundation.org>
-References: <20190809123108.27065-1-gregkh@linuxfoundation.org>
-        <20190809123108.27065-9-gregkh@linuxfoundation.org>
-Organization: Netronome Systems, Ltd.
+        id S2436774AbfHIROz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 13:14:55 -0400
+Received: from mail-eopbgr40055.outbound.protection.outlook.com ([40.107.4.55]:35462
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2406904AbfHIROy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 13:14:54 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=FuYkKKn3/G9Mdvfks5GU72MTEz2fHoThiFA9LnzrbfDZS2pRbIxXiBNGqJQt7l9LNtqpaMthmM2vjYBNJPSUKaAnJIRm3x+HqwgXoFGioHjMhpQ3Vi2DiD3YYEGOGSkLZXnV5IYauqb5vZ5zQaW6E/TNAZ6ajYuDBobPyajfxjFkbk3nJNONNfExo9xhnHRoK8WBJRb3/Kum3rq1OCBc2X64Yl6mmLqtMn5rweTYzDx/yhlpGuMe1gtNE1hUgidRWoElOdDSvVfLXdRwcnRD76zakUvJ5w2qlqFkLzpjs5RZK1LHhmXD6Crqs0S8Qu6PXZohHyP67QJUocZyluZN/A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wmvml0c9+t/9pRXzRhT2f2pueCksgH6icgKnBfFmmwQ=;
+ b=HMUzbTmiZKVTkZzmKY64FMq/YdheM3YOB6uXB1ogJlFou3UwmXybW8E0u6Y2r5rge24lOMszmEdv3jjEdvQ9F7cppuvBCEjlkYrvCanEi7R/b23hZSkqI0zv1azzm5HTAh3sYnzWR9yzxXnQL0SFXPK7CZOeHLiaEexs6H1RxSEHgOtSu5yYt5gM5krhfI4+dgH6rrRd00zqQNr8f4pMtxvzAVLR4AlsfMpWjRhLObZE2wzmPL0HBnO04GAscULISJb3e0OpefoNaxdEXkVx3vAxC31Fb1tpZsoseS/F2oGbafZ+12Izue+HF+J4d8WbeaXc3qpAfiFhB9PM6OonJg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=wmvml0c9+t/9pRXzRhT2f2pueCksgH6icgKnBfFmmwQ=;
+ b=c2rqqT9Bl+kvrhmAhoYu0OGBuNLaoAbtcc5hlzme5Ku0tA9Zm7cjW07n9Rz5eQe8MJV0LpxEIqaAL+/aYxHEbUaAYKeYyteufKMZWTcHoScYyK4S6aAlCHjLRkLylKixGCoubGUpL8onwXqsFhhFH+DJbE1VVexEnESuFF2T78M=
+Received: from AM0PR04MB4994.eurprd04.prod.outlook.com (20.176.215.215) by
+ AM0PR04MB6226.eurprd04.prod.outlook.com (20.179.36.20) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.16; Fri, 9 Aug 2019 17:14:50 +0000
+Received: from AM0PR04MB4994.eurprd04.prod.outlook.com
+ ([fe80::41a7:61ce:8705:d82d]) by AM0PR04MB4994.eurprd04.prod.outlook.com
+ ([fe80::41a7:61ce:8705:d82d%2]) with mapi id 15.20.2157.020; Fri, 9 Aug 2019
+ 17:14:50 +0000
+From:   Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
+To:     Edward Cree <ecree@solarflare.com>,
+        David Miller <davem@davemloft.net>
+CC:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "linux-net-drivers@solarflare.com" <linux-net-drivers@solarflare.com>
+Subject: RE: [PATCH v3 net-next 0/3] net: batched receive in GRO path
+Thread-Topic: [PATCH v3 net-next 0/3] net: batched receive in GRO path
+Thread-Index: AQHVTF4qlNUmbVhe8E+hjl7kqsPKZ6bzEZTw
+Date:   Fri, 9 Aug 2019 17:14:50 +0000
+Message-ID: <AM0PR04MB4994C1A8F32FB6C9A7EE057E94D60@AM0PR04MB4994.eurprd04.prod.outlook.com>
+References: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
+In-Reply-To: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=ruxandra.radulescu@nxp.com; 
+x-originating-ip: [212.146.100.6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: aa80b777-97cf-405e-7830-08d71ced1664
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR04MB6226;
+x-ms-traffictypediagnostic: AM0PR04MB6226:
+x-microsoft-antispam-prvs: <AM0PR04MB622696BB819F0828014BDC8894D60@AM0PR04MB6226.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 01244308DF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(13464003)(199004)(189003)(305945005)(74316002)(55016002)(6436002)(71200400001)(71190400001)(229853002)(3846002)(6116002)(33656002)(110136005)(54906003)(486006)(26005)(11346002)(76116006)(186003)(52536014)(7696005)(66476007)(66556008)(64756008)(66446008)(446003)(81166006)(81156014)(76176011)(66946007)(476003)(102836004)(53546011)(6506007)(316002)(5660300002)(8676002)(8936002)(99286004)(14454004)(2906002)(14444005)(7736002)(86362001)(256004)(25786009)(9686003)(478600001)(53936002)(4326008)(66066001)(6246003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB6226;H:AM0PR04MB4994.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: USQrz7+lxBV5dO1UTm8GHzhb98yp8TLydQ0NvQayLFQAXvO8PwcIdnPJIC6jbtlcpKsh+Hgo7ODQ8ZMdO/co8qDEU+YhXKp3FY+aAJ6SoRB9hmIGyEdhGBIxHjyhBSgeVAsdax5QWfvKSP/bl33TmoP0MRAYeXAREuxHyx1pjcsIKSrn0m6k61AJ7TlCfljPI4z5kHOxLZkEWwXoAaGb8FNdATv/Wpfbpr21dqBlHeVFmJGKLLnas3dKHsZ+Vf690WxOqGeV3HmYKIcCzH9efvPPnLHDcPixPHg6hw9A7PdAvb87MLpItBZrOoEUP0s6x+mTZ6MNRdSuRZXV8zzgvRTdrfjXSNoA5n4KWCbFQOVk4Ik+1jW2dM1EiUnbVjBjKkBI4aZhyEFNdbc9oDIqwAXBurpgEZmIiQwv68RXvG0=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: aa80b777-97cf-405e-7830-08d71ced1664
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2019 17:14:50.3595
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: gfdhoUlg5cwWVHuXro0uztz1KGSn1JeFETddHQewyX2asPD6J9uOXhx17c63GXLRUyF2V4UF5LhCwvvnbTerarpwHLm0vT9ElZXrJRHhctg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB6226
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  9 Aug 2019 14:30:59 +0200, Greg Kroah-Hartman wrote:
-> When calling debugfs functions, there is no need to ever check the
-> return value.  The function can work or not, but the code logic should
-> never do something different based on this.
-> 
-> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Jesper Dangaard Brouer <hawk@kernel.org>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Edwin Peer <edwin.peer@netronome.com>
-> Cc: Yangtao Li <tiny.windzz@gmail.com>
-> Cc: Simon Horman <simon.horman@netronome.com>
-> Cc: oss-drivers@netronome.com
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-Still
-
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-
-:) Thanks!
+PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBuZXRkZXYtb3duZXJAdmdlci5r
+ZXJuZWwub3JnIDxuZXRkZXYtb3duZXJAdmdlci5rZXJuZWwub3JnPiBPbg0KPiBCZWhhbGYgT2Yg
+RWR3YXJkIENyZWUNCj4gU2VudDogVHVlc2RheSwgQXVndXN0IDYsIDIwMTkgNDo1MiBQTQ0KPiBU
+bzogRGF2aWQgTWlsbGVyIDxkYXZlbUBkYXZlbWxvZnQubmV0Pg0KPiBDYzogbmV0ZGV2IDxuZXRk
+ZXZAdmdlci5rZXJuZWwub3JnPjsgRXJpYyBEdW1hemV0DQo+IDxlcmljLmR1bWF6ZXRAZ21haWwu
+Y29tPjsgbGludXgtbmV0LWRyaXZlcnNAc29sYXJmbGFyZS5jb20NCj4gU3ViamVjdDogW1BBVENI
+IHYzIG5ldC1uZXh0IDAvM10gbmV0OiBiYXRjaGVkIHJlY2VpdmUgaW4gR1JPIHBhdGgNCj4gDQo+
+IFRoaXMgc2VyaWVzIGxpc3RpZmllcyBwYXJ0IG9mIEdSTyBwcm9jZXNzaW5nLCBpbiBhIG1hbm5l
+ciB3aGljaCBhbGxvd3MgdGhvc2UNCj4gIHBhY2tldHMgd2hpY2ggYXJlIG5vdCBHUk9lZCAoaS5l
+LiBmb3Igd2hpY2ggZGV2X2dyb19yZWNlaXZlIHJldHVybnMNCj4gIEdST19OT1JNQUwpIHRvIGJl
+IHBhc3NlZCBvbiB0byB0aGUgbGlzdGlmaWVkIHJlZ3VsYXIgcmVjZWl2ZSBwYXRoLg0KPiBkZXZf
+Z3JvX3JlY2VpdmUoKSBpdHNlbGYgaXMgbm90IGxpc3RpZmllZCwgbm9yIHRoZSBwZXItcHJvdG9j
+b2wgR1JPDQo+ICBjYWxsYmFjaywgc2luY2UgR1JPJ3MgbmVlZCB0byBob2xkIHBhY2tldHMgb24g
+bGlzdHMgdW5kZXIgbmFwaS0+Z3JvX2hhc2gNCj4gIG1ha2VzIGtlZXBpbmcgdGhlIHBhY2tldHMg
+b24gb3RoZXIgbGlzdHMgYXdrd2FyZCwgYW5kIHNpbmNlIHRoZSBHUk8gY29udHJvbA0KPiAgYmxv
+Y2sgc3RhdGUgb2YgaGVsZCBza2JzIGNhbiByZWZlciBvbmx5IHRvIG9uZSAnbmV3JyBza2IgYXQg
+YSB0aW1lLg0KPiBJbnN0ZWFkLCB3aGVuIG5hcGlfZnJhZ3NfZmluaXNoKCkgaGFuZGxlcyBhIEdS
+T19OT1JNQUwgcmVzdWx0LCBzdGFzaCB0aGUgc2tiDQo+ICBvbnRvIGEgbGlzdCBpbiB0aGUgbmFw
+aSBzdHJ1Y3QsIHdoaWNoIGlzIHJlY2VpdmVkIGF0IHRoZSBlbmQgb2YgdGhlIG5hcGkNCj4gIHBv
+bGwgb3Igd2hlbiBpdHMgbGVuZ3RoIGV4Y2VlZHMgdGhlIChuZXcpIHN5c2N0bCBuZXQuY29yZS5n
+cm9fbm9ybWFsX2JhdGNoLg0KDQpIaSBFZHdhcmQsDQoNCkknbSBwcm9iYWJseSBtaXNzaW5nIGEg
+bG90IG9mIGNvbnRleHQgaGVyZSwgYnV0IGlzIHRoZXJlIGEgcmVhc29uDQp0aGlzIGNoYW5nZSB0
+YXJnZXRzIG9ubHkgdGhlIG5hcGlfZ3JvX2ZyYWdzKCkgcGF0aCBhbmQgbm90IHRoZQ0KbmFwaV9n
+cm9fcmVjZWl2ZSgpIG9uZT8NCg0KSSdtIHRyeWluZyB0byB1bmRlcnN0YW5kIHdoYXQgZHJpdmVy
+cyB0aGF0IGRvbid0IGNhbGwgbmFwaV9ncm9fZnJhZ3MoKQ0Kc2hvdWxkIGRvIGluIG9yZGVyIHRv
+IGJlbmVmaXQgZnJvbSB0aGlzIGJhdGNoaW5nIGZlYXR1cmUuDQoNClRoYW5rcywNCklvYW5hDQo=
