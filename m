@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E806F87B1D
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2960387B2C
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:33:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406985AbfHIN1T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 09:27:19 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:54890 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbfHIN1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:27:19 -0400
-Received: by mail-wm1-f68.google.com with SMTP id p74so5724697wme.4
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:27:17 -0700 (PDT)
+        id S2406992AbfHINdB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 09:33:01 -0400
+Received: from mail-pf1-f173.google.com ([209.85.210.173]:45088 "EHLO
+        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbfHINdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:33:01 -0400
+Received: by mail-pf1-f173.google.com with SMTP id w26so808503pfq.12
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:33:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=xDbAWdqUfFV9SlWt1VScjxm8ITThRJ1Kg5mp8bZU+mw=;
-        b=SHlMGDpQlp5cCvEYOii+ur08M9LCMSP1uQIDMcctMriQHPLTyZmy1E/7Wic7Y48Qz9
-         xpS4JPS5w8UbVyma3FSHXKucyFkrctQj3Qje4OBdZE4TvNJPBBGhiR/G6OQAIWhTpwvG
-         rMlBFojuWXIanTiY+MK9mp0Z3QcQAG1O6I0DRkj9Qe8uHHqLgCQWhBqMAXJ3Bp5mJeFI
-         V6efNqFgtZYhAk9hcf88fdhyV5wDWaHQFSV1BzHIwM7fBDDawZ5ACFJUGOP1lhTt9Ip4
-         5HPNeE3h/lbB+b/VQyEX9L313MzwzcC81QhRUHwSzxTJlG9obTzSWrcJCvtkokBHy0tR
-         i9Jw==
+        bh=Mj8zOEJLehxhwpmimz0j7s8vN7Fm8n73QrYr7XDAlPE=;
+        b=DIobLYjqPNlfRv2OqhYWImOuTDwKXsjMQ5LfRaJpdzo30csmVrNDlayB0C8EF5SRaw
+         4misOKtHCPfySJ0efcj01oUNwXgT59COwwyIMoyZtZ6SyRn6gtpoyDCUAgEro3kTUvcI
+         +5g3jP6t05nNNwwE+c7SsyZs8vXF/huqo6PnRD6d4T9a0PuGH6hWUMHZu2AoLASxTIYp
+         L4nDmySizLnqn/nBN6M2Y94AhHrJD0g7bR6+WVjhSalQIOue65nSJPA67PYY7o2nNAt0
+         0fyMi/ASwfS0BiRRSKM1SlfTPsRcICrnrmB+KMJxqpreZZROLEPzJYwUJBMl1syrzSar
+         gO2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=xDbAWdqUfFV9SlWt1VScjxm8ITThRJ1Kg5mp8bZU+mw=;
-        b=De/SZIAdPM72VO5XPedLbF+/OVNBWm4Kebdg1/+jxx4BM9ZPHc9mSuNGShb8HHONxm
-         tus/J4iVjvRcJUxkcp1Y8/wwlDtTJJecUmPOWiOhnf0u2on/JqCzzIHeSykXy6OX/zhI
-         oWdlKf17Nx7fN6EPNfH9aXZBduuD3HCSFIg9YyIJl7TYvUmH6A6vE6BIJRV8RDs//ibH
-         l5syvDGp4/DhSZThpcRUAMBU4mi7Qp2CZTd6rBeC+irW0GZdPNZF/BOVBHshqWaxNhzv
-         bi3C/IWskjyV8zD8o1E9iaVqLgX7F2J/f2c8iW9soYyXr7vuWFzvs0pUt4fW8CMJFuMD
-         Btyw==
-X-Gm-Message-State: APjAAAUqIQDpqmuA3R+BW6ETtqWaOeS3XCWm+y8Mibnk+RVkr/w9VJEi
-        i1dlHG1xO/0dm95EAncTzqABex4AgLg=
-X-Google-Smtp-Source: APXvYqwM5b1yjjWVvRoYTWG+Yv9kf1pk7nnvqMj+91tEh60lyW6GeMdR/FH/9iwvEb3n47jPda640A==
-X-Received: by 2002:a1c:d185:: with SMTP id i127mr11379962wmg.63.1565357236507;
-        Fri, 09 Aug 2019 06:27:16 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id f12sm108666660wrg.5.2019.08.09.06.27.15
+        bh=Mj8zOEJLehxhwpmimz0j7s8vN7Fm8n73QrYr7XDAlPE=;
+        b=k9OoGAfcNABKOMiA0bQRQbp/KxTkccLvTMPt0Lp3GMHr4UEexotMtyJR2sw6Fr5sLA
+         IcQlBx1+m5k+uwtM8Y9IEMt+fyvu0CrFgjEC+zL+j1wkja+H66CsQtFaiJVYXKeF6c+C
+         g203HN82DeFHHy33TbeJpZQYvjBxv9huo1JoGuV9q+7k7bLIBDTqVVdcbx0GR/OIGEBB
+         udmjnC0EdB13PwzZhRQd19kC2HKX40UjyvcB+wB/2JMKgzpAPCwyNvfnAe9MaHPTK4rY
+         /kH1O0/Y+bYNhumbJxEPOSX8KeJsUwWObzAFbu6RqjIhAxTZaGTj0HxGqi/BOFJf3ftQ
+         rPpw==
+X-Gm-Message-State: APjAAAUmyt/qVhBuaL4f8yDxpFWarw8UNh9gFiR9HWWJ6T8v7eN4uSws
+        b+Qr1SgSjCGEOnXabF6sTA==
+X-Google-Smtp-Source: APXvYqy3CBpxZhgTgF5rbWBKC3su90k2N4CpJxQYIevJyLyJgolQAcPMeMl1ichKvB5hQ2au+DvP/g==
+X-Received: by 2002:a63:de4f:: with SMTP id y15mr18098875pgi.239.1565357580546;
+        Fri, 09 Aug 2019 06:33:00 -0700 (PDT)
+Received: from localhost.localdomain ([110.35.161.54])
+        by smtp.gmail.com with ESMTPSA id f15sm7242912pje.17.2019.08.09.06.32.54
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 06:27:16 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, tariqt@mellanox.com, valex@mellanox.com,
-        mlxsw@mellanox.com
-Subject: [patch net-next] devlink: remove pointless data_len arg from region snapshot create
-Date:   Fri,  9 Aug 2019 15:27:15 +0200
-Message-Id: <20190809132715.24282-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
+        Fri, 09 Aug 2019 06:32:56 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [v4,0/4] tools: bpftool: add net attach/detach command to attach XDP prog
+Date:   Fri,  9 Aug 2019 22:32:44 +0900
+Message-Id: <20190809133248.19788-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -59,102 +59,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Currently, bpftool net only supports dumping progs attached on the
+interface. To attach XDP prog on interface, user must use other tool
+(eg. iproute2). By this patch, with `bpftool net attach/detach`, user
+can attach/detach XDP prog on interface.
 
-The size of the snapshot has to be the same as the size of the region,
-therefore no need to pass it again during snapshot creation. Remove the
-arg and use region->size instead.
+    # bpftool prog
+        16: xdp  name xdp_prog1  tag 539ec6ce11b52f98  gpl
+        loaded_at 2019-08-07T08:30:17+0900  uid 0
+        ...
+        20: xdp  name xdp_fwd_prog  tag b9cb69f121e4a274  gpl
+        loaded_at 2019-08-07T08:30:17+0900  uid 0
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+    # bpftool net attach xdpdrv id 16 dev enp6s0np0
+    # bpftool net
+    xdp:
+        enp6s0np0(4) driver id 16
+
+    # bpftool net attach xdpdrv id 20 dev enp6s0np0 overwrite
+    # bpftool net
+    xdp:
+        enp6s0np0(4) driver id 20
+
+    # bpftool net detach xdpdrv dev enp6s0np0
+    # bpftool net
+    xdp:
+
+
+While this patch only contains support for XDP, through `net
+attach/detach`, bpftool can further support other prog attach types.
+
+XDP attach/detach tested on Mellanox ConnectX-4 and Netronome Agilio.
+
 ---
- drivers/net/ethernet/mellanox/mlx4/crdump.c | 7 ++-----
- include/net/devlink.h                       | 2 +-
- net/core/devlink.c                          | 9 +++------
- 3 files changed, 6 insertions(+), 12 deletions(-)
+Changes in v4:
+  - rename variable, attach/detach error message enhancement
+  - bash-completion cleanup, doc update with brief description (attach types)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/crdump.c b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-index 88316c743820..eaf08f7ad128 100644
---- a/drivers/net/ethernet/mellanox/mlx4/crdump.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/crdump.c
-@@ -99,8 +99,7 @@ static void mlx4_crdump_collect_crspace(struct mlx4_dev *dev,
- 					readl(cr_space + offset);
- 
- 		err = devlink_region_snapshot_create(crdump->region_crspace,
--						     cr_res_size, crspace_data,
--						     id, &kvfree);
-+						     crspace_data, id, &kvfree);
- 		if (err) {
- 			kvfree(crspace_data);
- 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
-@@ -139,9 +138,7 @@ static void mlx4_crdump_collect_fw_health(struct mlx4_dev *dev,
- 					readl(health_buf_start + offset);
- 
- 		err = devlink_region_snapshot_create(crdump->region_fw_health,
--						     HEALTH_BUFFER_SIZE,
--						     health_data,
--						     id, &kvfree);
-+						     health_data, id, &kvfree);
- 		if (err) {
- 			kvfree(health_data);
- 			mlx4_warn(dev, "crdump: devlink create %s snapshot id %d err %d\n",
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 98b89eabd73a..c45b10d79b14 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -705,7 +705,7 @@ struct devlink_region *devlink_region_create(struct devlink *devlink,
- 					     u64 region_size);
- void devlink_region_destroy(struct devlink_region *region);
- u32 devlink_region_shapshot_id_get(struct devlink *devlink);
--int devlink_region_snapshot_create(struct devlink_region *region, u64 data_len,
-+int devlink_region_snapshot_create(struct devlink_region *region,
- 				   u8 *data, u32 snapshot_id,
- 				   devlink_snapshot_data_dest_t *data_destructor);
- int devlink_info_serial_number_put(struct devlink_info_req *req,
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 57e2bcc9fe4c..95699bfb28e1 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -351,7 +351,6 @@ struct devlink_snapshot {
- 	struct list_head list;
- 	struct devlink_region *region;
- 	devlink_snapshot_data_dest_t *data_destructor;
--	u64 data_len;
- 	u8 *data;
- 	u32 id;
- };
-@@ -3833,8 +3832,8 @@ static int devlink_nl_region_read_snapshot_fill(struct sk_buff *skb,
- 	if (!snapshot)
- 		return -EINVAL;
- 
--	if (end_offset > snapshot->data_len || dump)
--		end_offset = snapshot->data_len;
-+	if (end_offset > region->size || dump)
-+		end_offset = region->size;
- 
- 	while (curr_offset < end_offset) {
- 		u32 data_size;
-@@ -6880,12 +6879,11 @@ EXPORT_SYMBOL_GPL(devlink_region_shapshot_id_get);
-  *	The @snapshot_id should be obtained using the getter function.
-  *
-  *	@region: devlink region of the snapshot
-- *	@data_len: size of snapshot data
-  *	@data: snapshot data
-  *	@snapshot_id: snapshot id to be created
-  *	@data_destructor: pointer to destructor function to free data
-  */
--int devlink_region_snapshot_create(struct devlink_region *region, u64 data_len,
-+int devlink_region_snapshot_create(struct devlink_region *region,
- 				   u8 *data, u32 snapshot_id,
- 				   devlink_snapshot_data_dest_t *data_destructor)
- {
-@@ -6915,7 +6913,6 @@ int devlink_region_snapshot_create(struct devlink_region *region, u64 data_len,
- 	snapshot->id = snapshot_id;
- 	snapshot->region = region;
- 	snapshot->data = data;
--	snapshot->data_len = data_len;
- 	snapshot->data_destructor = data_destructor;
- 
- 	list_add_tail(&snapshot->list, &region->snapshot_list);
+Changes in v3:
+  - added 'overwrite' option for replacing previously attached XDP prog
+  - command argument order has been changed ('ATTACH_TYPE' comes first)
+  - add 'dev' keyword in front of <devname>
+  - added bash-completion and documentation
+
+Changes in v2:
+  - command 'load/unload' changed to 'attach/detach' for the consistency
+
+Daniel T. Lee (4):
+  tools: bpftool: add net attach command to attach XDP on interface
+  tools: bpftool: add net detach command to detach XDP on interface
+  tools: bpftool: add bash-completion for net attach/detach
+  tools: bpftool: add documentation for net attach/detach
+
+ .../bpf/bpftool/Documentation/bpftool-net.rst |  57 +++++-
+ tools/bpf/bpftool/bash-completion/bpftool     |  65 ++++++-
+ tools/bpf/bpftool/net.c                       | 176 +++++++++++++++++-
+ 3 files changed, 278 insertions(+), 20 deletions(-)
+
 -- 
-2.21.0
+2.20.1
 
