@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C73108849D
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 23:26:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4B7588530
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 23:45:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728167AbfHIV0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 17:26:39 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:41200 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726263AbfHIV0i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 17:26:38 -0400
-Received: by mail-qk1-f194.google.com with SMTP id g17so2114201qkk.8
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 14:26:38 -0700 (PDT)
+        id S1726475AbfHIVpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 17:45:13 -0400
+Received: from mail-qt1-f180.google.com ([209.85.160.180]:42206 "EHLO
+        mail-qt1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbfHIVpN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 17:45:13 -0400
+Received: by mail-qt1-f180.google.com with SMTP id t12so8685212qtp.9
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 14:45:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=u1+ZHMwL7ktzjtiIpIrLhQZ44PIIFJNHWIzLepMnfpM=;
-        b=GpNKEfa78X950/Ovlu3fIkG+IpGx+n8vdx2z/QiMw5zHgAwYkSbAEx7PVe+Q+l7Pqg
-         t+tWOAVZxv0VKA9p7Iot8VtIC3zCOUV4kF2ix7Qic2AulWH6vwzbnYq4Hl5GgEs9DAcR
-         0VuC2kJxmvhqMVhp7DxzTQUrwLwEtJfCQLmGu0Pk0XAhEs8elmuGIF+OL1xsTxNfJhBK
-         r43TM1lHNsOoEf2XXvOtNfD6tbIfqdy04hPiaihLWby8oCGAhtijDq/NdAo2HAFV9muq
-         w2o91V8eMEmQS+ATrIy1P0DoFbiJT98bq+SlSV8u+O5uCduoC/Gfec6vzUP+lQxjHmVF
-         MIpA==
+        bh=oop+AI5c482oQpT0qZjGNJLdeB7Bty54SwaOuvEy/7A=;
+        b=nz+gw1pGviyEjsT2Pp5j981uYjbNd6UavWAXDhz/PuiAZHq9GJGHaBbO1heePqw+AR
+         HNJCZ6VL2HnI55H6MxWQqVsd+Psbngvg9NYV1OoZbnuqnCx1vcHpaCjnANx+693/lRjc
+         0le7B+qJzemNOswwLdV+WKkc1IJEAPRugHIxbvkF5JIlf5bT+/wZi70DvbqyTOLzzIk2
+         Um3EyNAbfQidxQoPPAa0DaNzEJqQy3BHV2ZlGYuuLZEVv22z93CTczeuJDHW0C3loRGJ
+         AIy7ykSlDTu0PGrt+kCxv9uVYeRjgX7qjuDWf/zgvoRGYoIhRcfbQyiROSZ9qDOc4VY8
+         fwxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=u1+ZHMwL7ktzjtiIpIrLhQZ44PIIFJNHWIzLepMnfpM=;
-        b=EgzV1fC67258yYJsJBgWqtpq6TWYWTxn9GI0eJp3RE+48jGfcN1btvQuuSyf0RDQ9S
-         Lp4BUDspmKAkn2l8kX+3G5n2QFTUKNT1j6MzCLjdIdXeKDFeYuikvONR7xupVUS9pLgZ
-         +L82ZJCCW7g2z2eKxIlSrwYKZ22BpitglS59TyGuKkootK9jvTdvs98zApRNg/1Ngn5G
-         XElqmBVDtn1s55uSlvY4ljvnqPsBVLINSNO7tw6DhLbIRUiW79AJ2zfLsR4+L41c0i+4
-         /6dugNzHfRmV58BlN+ODjtOscTFT+RK1O3XkXRVa9xqMJ6GNj/heVouEj2yW4iAZdnlI
-         5GQw==
-X-Gm-Message-State: APjAAAXpIaV/R831UtWb3DA9qPMwE2XKvg/3cSPr59EvCBW4Gbee7J1q
-        0wmkS+Dbpa3YqPCL0QSUxm2hNjAvihE=
-X-Google-Smtp-Source: APXvYqxzvd2znr2YTbcmNzNMfvj6Zg7h2kj0Ti1sWiXtuOpfYW72GUBha0dmWKkRMFnBQuya4IIPHA==
-X-Received: by 2002:a37:bd7:: with SMTP id 206mr20497203qkl.440.1565385997979;
-        Fri, 09 Aug 2019 14:26:37 -0700 (PDT)
+        bh=oop+AI5c482oQpT0qZjGNJLdeB7Bty54SwaOuvEy/7A=;
+        b=mvhrq4mKrV/oEDqfNnmD7XG2FF5KAqiZiMYgXcbWHgOueVE8Ise68CW+DvWgENORUU
+         qFsqxRbCf8SBGpgB79aHxgh0d17XHFf6WuWHJIlqRdCbwKo0Po9WMSMU28uv1+Ufw0S5
+         XkjwoPx+EgOsnXTaC2cLLvKIjmjY+rCXWCSmQEcRcmtDa43zZyc+Hog86O+yqo0f5HgH
+         6AVTDPv2BErnn/36EPwe2DUcIPGpbCJwxCjcUypN5g5SNwjORjDM207s16qpy5FI16k4
+         AVEDfqqoKC1ipz7gOsbTqn/Sy/IKV8EuA8aoCh9alMMQRNJ3o1Di2/DCZqEywNTTIe1f
+         W4rg==
+X-Gm-Message-State: APjAAAWZZ/D3fvQfahzYEjkjlUwB9F+I6D8Po0Zfscs0EmP/HBlWvrHf
+        Y2Zr7GFIBrh+RmhQ5bfujWn0iw==
+X-Google-Smtp-Source: APXvYqxUGt2HPpiDgUAoI+sRiwk39O6vocCatpWedFsSsf3coSkUqQ+u9Txx8WGk5TondZwj3pI26Q==
+X-Received: by 2002:a0c:895b:: with SMTP id 27mr19582421qvq.94.1565387112083;
+        Fri, 09 Aug 2019 14:45:12 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id b13sm58487111qtk.55.2019.08.09.14.26.37
+        by smtp.gmail.com with ESMTPSA id t1sm7424600qkb.68.2019.08.09.14.45.11
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 14:26:37 -0700 (PDT)
-Date:   Fri, 9 Aug 2019 14:26:35 -0700
+        Fri, 09 Aug 2019 14:45:11 -0700 (PDT)
+Date:   Fri, 9 Aug 2019 14:45:09 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com
-Subject: Re: [patch net-next] netdevsim: register couple of devlink params
-Message-ID: <20190809142635.52a6275d@cakuba.netronome.com>
-In-Reply-To: <20190809110512.31779-1-jiri@resnulli.us>
-References: <20190809110512.31779-1-jiri@resnulli.us>
+To:     "Daniel T. Lee" <danieltimlee@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [v4,0/4] tools: bpftool: add net attach/detach command to
+ attach XDP prog
+Message-ID: <20190809144509.066d16f8@cakuba.netronome.com>
+In-Reply-To: <20190809133248.19788-1-danieltimlee@gmail.com>
+References: <20190809133248.19788-1-danieltimlee@gmail.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,36 +63,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  9 Aug 2019 13:05:12 +0200, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@mellanox.com>
+On Fri,  9 Aug 2019 22:32:44 +0900, Daniel T. Lee wrote:
+> Currently, bpftool net only supports dumping progs attached on the
+> interface. To attach XDP prog on interface, user must use other tool
+> (eg. iproute2). By this patch, with `bpftool net attach/detach`, user
+> can attach/detach XDP prog on interface.
 > 
-> Register couple of devlink params, one generic, one driver-specific.
-> Make the values available over debugfs.
+>     # bpftool prog
+>         16: xdp  name xdp_prog1  tag 539ec6ce11b52f98  gpl
+>         loaded_at 2019-08-07T08:30:17+0900  uid 0
+>         ...
+>         20: xdp  name xdp_fwd_prog  tag b9cb69f121e4a274  gpl
+>         loaded_at 2019-08-07T08:30:17+0900  uid 0
 > 
-> Example:
-> $ echo "111" > /sys/bus/netdevsim/new_device
-> $ devlink dev param
-> netdevsim/netdevsim111:
->   name max_macs type generic
->     values:
->       cmode driverinit value 32
->   name test1 type driver-specific
->     values:
->       cmode driverinit value true
-> $ cat /sys/kernel/debug/netdevsim/netdevsim111/max_macs
-> 32
-> $ cat /sys/kernel/debug/netdevsim/netdevsim111/test1
-> Y
-> $ devlink dev param set netdevsim/netdevsim111 name max_macs cmode driverinit value 16
-> $ devlink dev param set netdevsim/netdevsim111 name test1 cmode driverinit value false
-> $ devlink dev reload netdevsim/netdevsim111
-> $ cat /sys/kernel/debug/netdevsim/netdevsim111/max_macs
-> 16
-> $ cat /sys/kernel/debug/netdevsim/netdevsim111/test1
+>     # bpftool net attach xdpdrv id 16 dev enp6s0np0
+>     # bpftool net
+>     xdp:
+>         enp6s0np0(4) driver id 16
 > 
-> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+>     # bpftool net attach xdpdrv id 20 dev enp6s0np0 overwrite
+>     # bpftool net
+>     xdp:
+>         enp6s0np0(4) driver id 20
+> 
+>     # bpftool net detach xdpdrv dev enp6s0np0
+>     # bpftool net
+>     xdp:
+> 
+> 
+> While this patch only contains support for XDP, through `net
+> attach/detach`, bpftool can further support other prog attach types.
+> 
+> XDP attach/detach tested on Mellanox ConnectX-4 and Netronome Agilio.
 
-The netdevsim patch looks good, what's the plan for tests?
+Looks good to me now*, thanks!
 
-We don't need much perhaps what you have in the commit message 
-as a script which can be run by automated bots would be sufficient?
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+
+* apart from the entire duplication thing.
