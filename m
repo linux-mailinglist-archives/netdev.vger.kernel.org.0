@@ -2,463 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62D9A88634
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:47:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 316928863A
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:50:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727012AbfHIWrJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 18:47:09 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:37832 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726137AbfHIWrI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 18:47:08 -0400
-Received: by mail-ot1-f65.google.com with SMTP id f17so3274375otq.4
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 15:47:07 -0700 (PDT)
+        id S1729234AbfHIWuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 18:50:21 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:43551 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728820AbfHIWuV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 18:50:21 -0400
+Received: by mail-qt1-f193.google.com with SMTP id w17so16777504qto.10
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 15:50:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=mojatatu-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=FfqeoglKJI5wxr9DhrtTTsYEfi55AC9LzbDVcIyMk+o=;
-        b=mz8jMRV+juEHzYGcrqrc9zY0KVZnsoCf7su0uUBqaPNzcB+s7/GB65WWaoqIO/2ZRB
-         /T0Wx+0eNt6nCxpuKkVPJCfJxXCESWGVP3OVFjmAoJnUQe9apKnn6Orad7IjuLY7ng5p
-         QKrx5YRA8fhnVSpacDVm5jY4e4UvDzbG90xAZiw9PyxekFkIoFBl3e81RlUiNTJ54sVp
-         e6spQvppDGQ2F15AHCRcoCBGOlUyP2B4R76lneqZsHeaIpwcFjxm+hLlNVK99hw+kV8k
-         aFxDIHSuWA581na5BlwE1M45BXvUIy6wXkM5LvIUbWMJKhPcx0VxS+Oc/Edn8f9vHIv2
-         osMA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SCcnNL+FTFxq+gGN3wMsZF6efKCQJKPmsrlE4tC5xvI=;
+        b=JubBPvtpE6k1iEMWkzsyOgch7q+ymZaXe2TX452wIHQvxk5LOuzmHG3WsH5uywx+Ml
+         9QNHcwH9IECP/HwLcIy2mKxQj46b5AHmAvSSn2kU8dZONHzsdDmy9L67/ZfH0dNuntSe
+         kG5btqmc80197iE/NBiunNwnAGj2vBY4Q973A8Hftva8bvJu8teWQfhjHd3X21wg6FjG
+         b+PybtSU+gdcMMuAZkF0h+/k/8WdXQqS4L5/WP7TTGP6vl/6qoW3Fy8N95jG//J4QZkA
+         5QWthNHv+p1rdq1W7kYG6ktdssP7zA5BhpjILWIDKLN4cU/MgMc/nNGIZVN9e9hW2osB
+         gsOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FfqeoglKJI5wxr9DhrtTTsYEfi55AC9LzbDVcIyMk+o=;
-        b=c4LDtiMa6pH1sR033z6n4KCzR1uWkDNwAbFfWV0PMb5BeqxOjk52wtbDu1FKAATXVH
-         p084mpN59zSUozltwsdY1WVqQu2Zy0UGiiT4xrPlOpviHG5w5bsm3N+x43AAxqYucKQk
-         nrBy3mm2Z+aJdP58A9wyymycczF1MEYtHIfu3jxm95+tCaywjHoH4YFZhkIcZWod0958
-         h1wQi9AMba6j5MV8aJb1ITzBCa1Q6CNhLluD3DBYi3qzvjtirgZzMRRaSqXHt4l0FDGB
-         bCJKoYk6a56xxXGcc1Zg2cYXZTZF39fcHHBgjh8veigUIGu5+jOHkOAJjx7IxW0sqrTl
-         y3pg==
-X-Gm-Message-State: APjAAAXH1WnR7xSgiJ7E20ImrBis96get7HZtiQ19fwJ31e4u7ZlnzAb
-        Te/gRgdMsnAHBITEdB6NShT7Z3I9d+I=
-X-Google-Smtp-Source: APXvYqx4k8qgvrt7o+Cy22oPA4LbjG0WyaZT8OS4T+6bfMIljBZcyd12dFwhOTLr2+6Gj8rDVbmysA==
-X-Received: by 2002:a6b:b804:: with SMTP id i4mr22060082iof.119.1565390826683;
-        Fri, 09 Aug 2019 15:47:06 -0700 (PDT)
-Received: from mojatatu.com ([74.127.212.48])
-        by smtp.gmail.com with ESMTPSA id n7sm73154468ioo.79.2019.08.09.15.46.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 09 Aug 2019 15:47:06 -0700 (PDT)
-From:   Roman Mashak <mrv@mojatatu.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kernel@mojatatu.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        Roman Mashak <mrv@mojatatu.com>
-Subject: [PATCH net-next 1/1] tc-testing: added tdc tests for matchall filter
-Date:   Fri,  9 Aug 2019 18:46:40 -0400
-Message-Id: <1565390800-26061-1-git-send-email-mrv@mojatatu.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SCcnNL+FTFxq+gGN3wMsZF6efKCQJKPmsrlE4tC5xvI=;
+        b=mqyS42QL6qFio+MpFn2xdaBsG9gtKjfhFo0T+SW2O4UyfFYQZlKuM9wO0dulXzWPYi
+         Lgo8/Ni34DAh75fAQBAjVaKNL5gbL+7wpMVZl/o9FxkrTBT58STnwc+U7Jr0DXmPxOY1
+         SyPWGtPDFHk8JFEojINn808mAfvi5aWAmZo0LE9aVQiABOE9sMAkE2lLs7nr7LyesLva
+         zq3MIkV8K8E+lVLTwRtu4tIMcn5fCRXCWPaOmWNy27UZKfHaD0x71sKCjXDkAAci5jDx
+         DtIUxID1mFzFVj+BZ54AvGGbPYOQJx4GJ9yzawS+yRU/0hQuK1ouoyhRRaeveAsqAv5U
+         FDdg==
+X-Gm-Message-State: APjAAAXDtRewWdHdPo5F3Wl0AG/yaSnX5NkpQCKBAvIiHEJh76KGneob
+        /Pg169s36SQAG7B9wzJoIVlxXaKo
+X-Google-Smtp-Source: APXvYqzjbx8FA7OVSnx0wmG+5tn4UMp2IxR25eeC1sZ+gwY7lENk0S4r6Zz5Kv0U1cMUWgv9w0fkQQ==
+X-Received: by 2002:ac8:538b:: with SMTP id x11mr5011353qtp.137.1565391019708;
+        Fri, 09 Aug 2019 15:50:19 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id k33sm49753265qte.69.2019.08.09.15.50.18
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 09 Aug 2019 15:50:18 -0700 (PDT)
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Subject: [PATCH net-next 0/7] net: dsa: mv88e6xxx: prepare Wait Bit operation
+Date:   Fri,  9 Aug 2019 18:47:52 -0400
+Message-Id: <20190809224759.5743-1-vivien.didelot@gmail.com>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Roman Mashak <mrv@mojatatu.com>
----
- .../tc-testing/tc-tests/filters/matchall.json      | 391 +++++++++++++++++++++
- 1 file changed, 391 insertions(+)
- create mode 100644 tools/testing/selftests/tc-testing/tc-tests/filters/matchall.json
+The Remote Management Interface has its own implementation of a Wait
+Bit operation, which requires a bit number and a value to wait for.
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/matchall.json b/tools/testing/selftests/tc-testing/tc-tests/filters/matchall.json
-new file mode 100644
-index 000000000000..5f24c0598624
---- /dev/null
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/matchall.json
-@@ -0,0 +1,391 @@
-+[
-+    {
-+        "id": "f62b",
-+        "name": "Add ingress matchall filter for protocol ipv4 and action PASS",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ip matchall action ok",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ip matchall",
-+        "matchPattern": "^filter parent ffff: protocol ip pref 1 matchall.*handle 0x1.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "7f09",
-+        "name": "Add egress matchall filter for protocol ipv4 and action PASS",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 root handle 1: prio"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent 1: handle 0x1 prio 1 protocol ip matchall action ok",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent 1: handle 1 prio 1 protocol ip matchall",
-+        "matchPattern": "^filter parent 1: protocol ip pref 1 matchall.*handle 0x1.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 root handle 1: prio",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "0596",
-+        "name": "Add ingress matchall filter for protocol ipv6 and action DROP",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall action drop",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 1 protocol ipv6 matchall",
-+        "matchPattern": "^filter parent ffff: protocol ipv6 pref 1 matchall.*handle 0x1.*gact action drop.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "41df",
-+        "name": "Add egress matchall filter for protocol ipv6 and action DROP",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 root handle 1: prio"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent 1: handle 0x1 prio 1 protocol ipv6 matchall action drop",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent 1: handle 1 prio 1 protocol ipv6 matchall",
-+        "matchPattern": "^filter parent 1: protocol ipv6 pref 1 matchall.*handle 0x1.*gact action drop.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 root handle 1: prio",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "e1da",
-+        "name": "Add ingress matchall filter for protocol ipv4 and action PASS with priority at 16-bit maximum",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 65535 protocol ipv4 matchall action pass",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 65535 protocol ipv4 matchall",
-+        "matchPattern": "^filter parent ffff: protocol ip pref 65535 matchall.*handle 0x1.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "3de5",
-+        "name": "Add egress matchall filter for protocol ipv4 and action PASS with priority at 16-bit maximum",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 root handle 1: prio"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent 1: handle 0x1 prio 65535 protocol ipv4 matchall action pass",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent 1: handle 1 prio 65535 protocol ipv4 matchall",
-+        "matchPattern": "^filter parent 1: protocol ip pref 65535 matchall.*handle 0x1.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 root handle 1: prio",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "72d7",
-+        "name": "Add ingress matchall filter for protocol ipv4 and action PASS with priority exceeding 16-bit maximum",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 655355 protocol ipv4 matchall action pass",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 1 prio 655355 protocol ipv4 matchall",
-+        "matchPattern": "^filter parent ffff: protocol ip pref 655355 matchall.*handle 0x1.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "41d3",
-+        "name": "Add egress matchall filter for protocol ipv4 and action PASS with priority exceeding 16-bit maximum",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 root handle 1: prio"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent 1: handle 0x1 prio 655355 protocol ipv4 matchall action pass",
-+        "expExitCode": "255",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent 1: handle 1 prio 655355 protocol ipv4 matchall",
-+        "matchPattern": "^filter parent 1: protocol ip pref 655355 matchall.*handle 0x1.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 root handle 1: prio",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "f755",
-+        "name": "Add ingress matchall filter for all protocols and action CONTINUE with handle at 32-bit maximum",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0xffffffff prio 1 protocol all matchall action continue",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 0xffffffff prio 1 protocol all matchall",
-+        "matchPattern": "^filter parent ffff: protocol all pref 1 matchall.*handle 0xffffffff.*gact action continue.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "2c33",
-+        "name": "Add egress matchall filter for all protocols and action CONTINUE with handle at 32-bit maximum",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 root handle 1: prio"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent 1: handle 0xffffffff prio 1 protocol all matchall action continue",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent 1: handle 0xffffffff prio 1 protocol all matchall",
-+        "matchPattern": "^filter parent 1: protocol all pref 1 matchall.*handle 0xffffffff.*gact action continue.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 root handle 1: prio",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "0e4a",
-+        "name": "Add ingress matchall filter for all protocols and action RECLASSIFY with skip_hw flag",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol all matchall skip_hw action reclassify",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 0x1 prio 1 protocol all matchall",
-+        "matchPattern": "^filter parent ffff: protocol all pref 1 matchall.*handle 0x1.*skip_hw.*not_in_hw.*gact action reclassify.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "7f60",
-+        "name": "Add egress matchall filter for all protocols and action RECLASSIFY with skip_hw flag",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 root handle 1: prio"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent 1: handle 0x1 prio 1 protocol all matchall skip_hw action reclassify",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent 1: handle 0x1 prio 1 protocol all matchall",
-+        "matchPattern": "^filter parent 1: protocol all pref 1 matchall.*handle 0x1.*skip_hw.*not_in_hw.*gact action reclassify.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 root handle 1: prio",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "8bd2",
-+        "name": "Add ingress matchall filter for protocol ipv6 and action PASS with classid",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall classid 1:1 action pass",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall",
-+        "matchPattern": "^filter parent ffff: protocol ipv6 pref 1 matchall.*handle 0x1.*flowid 1:1.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "2a4a",
-+        "name": "Add ingress matchall filter for protocol ipv6 and action PASS with invalid classid",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress"
-+        ],
-+        "cmdUnderTest": "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall classid 6789defg action pass",
-+        "expExitCode": "1",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall",
-+        "matchPattern": "^filter protocol ipv6 pref 1 matchall.*handle 0x1.*flowid 6789defg.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "eaf8",
-+        "name": "Delete single ingress matchall filter",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall classid 1:2 action pass"
-+        ],
-+        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter get dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv6 matchall",
-+        "matchPattern": "^filter protocol ipv6 pref 1 matchall.*handle 0x1.*flowid 1:2.*gact action pass.*ref 1 bind 1",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "76ad",
-+        "name": "Delete all ingress matchall filters",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol all matchall classid 1:2 action pass",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x2 prio 2 protocol all matchall classid 1:3 action pass",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x3 prio 3 protocol all matchall classid 1:4 action pass",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x4 prio 4 protocol all matchall classid 1:5 action pass"
-+        ],
-+        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff:",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
-+        "matchPattern": "^filter protocol all pref.*matchall.*handle.*flowid.*gact action pass",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "1eb9",
-+        "name": "Delete single ingress matchall filter out of multiple",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol all matchall classid 1:2 action pass",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x2 prio 2 protocol all matchall classid 1:3 action pass",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x3 prio 3 protocol all matchall classid 1:4 action pass",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x4 prio 4 protocol all matchall classid 1:5 action pass"
-+        ],
-+        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: protocol all handle 0x2 prio 2 matchall",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
-+        "matchPattern": "^filter protocol all pref 2 matchall.*handle 0x2 flowid 1:2.*gact action pass",
-+        "matchCount": "0",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    },
-+    {
-+        "id": "6d63",
-+        "name": "Delete ingress matchall filter by chain ID",
-+        "category": [
-+            "filter",
-+            "matchall"
-+        ],
-+        "setup": [
-+            "$IP link add dev $DEV1 type dummy || /bin/true",
-+            "$TC qdisc add dev $DEV1 ingress",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol all chain 1 matchall classid 1:1 action pass",
-+            "$TC filter add dev $DEV1 parent ffff: handle 0x1 prio 1 protocol ipv4 chain 2 matchall classid 1:3 action continue"
-+        ],
-+        "cmdUnderTest": "$TC filter del dev $DEV1 parent ffff: chain 2",
-+        "expExitCode": "0",
-+        "verifyCmd": "$TC filter show dev $DEV1 parent ffff:",
-+        "matchPattern": "^filter protocol all pref 1 matchall chain 1 handle 0x1 flowid 1:1.*gact action pass",
-+        "matchCount": "1",
-+        "teardown": [
-+            "$TC qdisc del dev $DEV1 ingress",
-+            "$IP link del dev $DEV1 type dummy"
-+        ]
-+    }
-+]
+In order to prepare the introduction of this implementation, rework the
+code waiting for bits and masks in mv88e6xxx to match this signature.
+
+This has the benefit to unify the implementation of wait routines while
+removing obsolete wait and update functions and also reducing the code.
+
+Vivien Didelot (7):
+  net: dsa: mv88e6xxx: wait for 88E6185 PPU disabled
+  net: dsa: mv88e6xxx: introduce wait mask routine
+  net: dsa: mv88e6xxx: introduce wait bit routine
+  net: dsa: mv88e6xxx: wait for AVB Busy bit
+  net: dsa: mv88e6xxx: remove wait and update routines
+  net: dsa: mv88e6xxx: fix SMI bit checking
+  net: dsa: mv88e6xxx: add delay in direct SMI wait
+
+ drivers/net/dsa/mv88e6xxx/chip.c            | 76 ++++++++---------
+ drivers/net/dsa/mv88e6xxx/chip.h            |  7 +-
+ drivers/net/dsa/mv88e6xxx/global1.c         | 95 ++++++---------------
+ drivers/net/dsa/mv88e6xxx/global1.h         |  5 +-
+ drivers/net/dsa/mv88e6xxx/global1_atu.c     |  7 +-
+ drivers/net/dsa/mv88e6xxx/global1_vtu.c     |  6 +-
+ drivers/net/dsa/mv88e6xxx/global2.c         | 72 +++++++++-------
+ drivers/net/dsa/mv88e6xxx/global2.h         | 12 +--
+ drivers/net/dsa/mv88e6xxx/global2_avb.c     | 29 ++++++-
+ drivers/net/dsa/mv88e6xxx/global2_scratch.c |  3 +-
+ drivers/net/dsa/mv88e6xxx/smi.c             |  4 +-
+ 11 files changed, 155 insertions(+), 161 deletions(-)
+
 -- 
-2.7.4
+2.22.0
 
