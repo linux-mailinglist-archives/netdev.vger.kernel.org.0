@@ -2,157 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A283988585
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:04:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C8588588
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:04:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729704AbfHIWEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 18:04:54 -0400
-Received: from mail-eopbgr10055.outbound.protection.outlook.com ([40.107.1.55]:23013
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729331AbfHIWEw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 18:04:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RnMaBJodzHAfHnN5Y8i2McrrA285CDrJ4Tv/2LqLTaw8aXIex5McZ2Cd9clRoJ8/Fv/vjbxVwSYEDfEv2+dPsBGuXICf36s3OU7OgmUj8KW9HU4aPECY5V0M3zFB3Lls+eAlXFkJXvGANhHRkwv/4QfbpVvzw6P7XpRZiKadBFckUkrS0fBn8ezCN6P34loeWf9tcpJ5pu+hFieH5Qdj41UgPwMtEIeYoOVqq1gJUVsNMwleq0jIDJa+DC6sWbsKmNuTe52zB+2XT2jFlyUZm2kGUm97uQ+VOto7k5IK7/8jOgcpTFCAKw/lmhzyrlI4yrhBArwcscDCTwfV8yTtQQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BdOyWMDRjfatkZx6jqwxlrv5P18357tH1g+odUxJVvQ=;
- b=WHeOO3wX0l2t7cfLu7mk3yVOO4CdLSW/bldKyTcoN1lsGj1/6cXmL8ElTXBG+Az1QS+cb/RX8FL+Vq7LUCAgGkHonctn/7D6YTPRteTAy2M+Tcd7BwTOHEkYCos+s0rK5GKsHhp38f1s6Du8O5O5AB1QEx+BnqpEWNRyi4TvqiEb9+J9AyPhla5hy/bHfKZjfZwD6GVjnXgb4eRCgxWfY8LB3+2tBw37y+GAMOh9vO0Di6E7rkRq6d1ijrkZPOmwZJFjmAVNm2jxlCDJW/nRhbaIHhjWjDcJJuse1PKCzMTDejT8LXxFdvaC63GiL5VP6YLhFgAQQgGfK/9sHfAviA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=mellanox.com;dmarc=pass action=none
- header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BdOyWMDRjfatkZx6jqwxlrv5P18357tH1g+odUxJVvQ=;
- b=ogQE3uB8WTTmXxCd2x7uKMD5OL6rOw5/zCEoJUhe13aepYKpX56lAReigCXKWXE3wYVV9SMECr2uHsPogz0wPARvxjm0QfbZentFgFvktgraXQ+E953Mk3wj0RcryI1zz4MA6z8EFNDQ3lRc5roFo9BXc0MseEuRxPDwGrLx++c=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2405.eurprd05.prod.outlook.com (10.168.71.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2136.12; Fri, 9 Aug 2019 22:04:44 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2157.020; Fri, 9 Aug 2019
- 22:04:44 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Chuhong Yuan <hslester96@gmail.com>,
-        Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 15/15] net/mlx5e: Use refcount_t for refcount
-Thread-Topic: [net-next 15/15] net/mlx5e: Use refcount_t for refcount
-Thread-Index: AQHVTv5zu+/JdnNDhUOmeBC6PF9Bug==
-Date:   Fri, 9 Aug 2019 22:04:44 +0000
-Message-ID: <20190809220359.11516-16-saeedm@mellanox.com>
-References: <20190809220359.11516-1-saeedm@mellanox.com>
-In-Reply-To: <20190809220359.11516-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR05CA0009.namprd05.prod.outlook.com
- (2603:10b6:a03:c0::22) To DB6PR0501MB2759.eurprd05.prod.outlook.com
- (2603:10a6:4:84::7)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6283c97f-d8cc-413d-45e1-08d71d1595d7
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2405;
-x-ms-traffictypediagnostic: DB6PR0501MB2405:
-x-microsoft-antispam-prvs: <DB6PR0501MB240529BB0476428FBA1BDB10BED60@DB6PR0501MB2405.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2276;
-x-forefront-prvs: 01244308DF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(366004)(376002)(396003)(39860400002)(189003)(199004)(446003)(66556008)(36756003)(6512007)(6436002)(99286004)(66476007)(26005)(102836004)(53936002)(478600001)(5660300002)(316002)(8936002)(4326008)(486006)(71190400001)(11346002)(2616005)(386003)(66446008)(66946007)(6506007)(186003)(64756008)(6916009)(3846002)(6116002)(256004)(52116002)(305945005)(1076003)(476003)(81156014)(14444005)(8676002)(107886003)(81166006)(86362001)(7736002)(14454004)(50226002)(71200400001)(66066001)(54906003)(2906002)(25786009)(6486002)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2405;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: /tsPqDZ6cvs6v8vAy9aR80dNw+3gZDHwPN8Xb0/GFfTmVzcPui9iRCqRf6Syo6tYGdrmQLS+erBOiOzEgd3v4zu6uG7CGo0EHjkZCotoL8Kg922LnwVqnpbvVgc8JNQuVYtKmRF8RNAaWkN/OKf0y0/1gO1rbCnXNwlWToXL0YrG/WE+1RoGolocXWKvfH5UDWp6XyTay6lMQwM5F+SxZuYuzclHCvHxjkQV7gVYjYDjq3rkQ/UowVsday+6OVKyIw+EG3ofjexy5uzMB63+sd5KC9A77GGdszy9M/0ev7KXm/TXzr7q8QJQ11xqzPo6SqP619ZMmUzWFkX1mG7hnTWAO4GeyoHOqT5JcrCTb0GvUtFYShrVwtIB8ESc6P+zXpA0PVwX/yHQlHiAhDrzPAIQrgvPMNke18tn34gsuyM=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1729851AbfHIWEz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 18:04:55 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:44533 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729639AbfHIWEy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 18:04:54 -0400
+Received: by mail-pf1-f196.google.com with SMTP id t16so46703487pfe.11;
+        Fri, 09 Aug 2019 15:04:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=o2KGjmwUbr1cs5TsIsFMJ/0FkhUZd/ApycxTUddQoE0=;
+        b=WYG6lBTDqSGni5FHKqhELWRvOsilGlKRAjXJkOYt7wTryC+WDqUuGDpAG+fxZjuAkQ
+         sGZt2j1XgC9bgLHSFs4Uw/887666782zqbAkRrKk/oPYdQVyJirBkGr537Ch4IEYD7et
+         ihz0lrN5yTLhqPiGKN1aibVcIr7SRprlFVj5bffYm8k5pNfCtfYSs2Y9Q0mtuHmj5TJN
+         oWeQKlSx7KOJ+O0ZI+6Z56EFOAVRPnumAMnrAqZoRRTiQmbGyGUjRZmF7qoyJiNpiO0N
+         iOMWliORS88/uV9sYQ8b/ab3SXyJXP1rSJGfiS+kxUwyAtiy3xOAwGlI1BOhBwbPuF30
+         G52w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=o2KGjmwUbr1cs5TsIsFMJ/0FkhUZd/ApycxTUddQoE0=;
+        b=OwpHel9CnsZKrzuDl+MmFeKr4GI1jlR4aZyBMXKUimzHh4kFfzsXcCZTY8J13Wgw7z
+         rGKpkK0ygiU2fxt1gK3g+sh3HydQxJWmI35T6rscjED6GkjDtztSjJxj2tqycG2cUP9W
+         5+pGquEtSsuk4dgUZat0PHzH52ivEcQ4zmBLUwxtp91Mg4Mf1Vb04Nv/xyDptYYkBNns
+         kn7u/LwHE+HKCAvgUR2hEtnekFpXLihvnvdDa02+zdva37Mj3MfSv9d1LGtbpbjjwAPe
+         BU0pBDd+qBFae8Qlmiz2WWIEH8l3cO+9XTIF6pqzHPoO0DFhIPpbtf1a5LNCsrs/9H1p
+         C7vA==
+X-Gm-Message-State: APjAAAUzmWzO4i38UhhXIMU3uBmpLIo/0Wk9hDIrbMQ8ClR4sn7YWl+Q
+        F7fdypwTjiKegZDM7PeTYJY=
+X-Google-Smtp-Source: APXvYqyiRrp//J7RveYsA93qftn7Bn/hCBFIPoJL5S/+gF+H3TOULotl9wQ2o5O0LdJ9UpMkLBi2TA==
+X-Received: by 2002:a63:590f:: with SMTP id n15mr19481072pgb.190.1565388293082;
+        Fri, 09 Aug 2019 15:04:53 -0700 (PDT)
+Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
+        by smtp.gmail.com with ESMTPSA id q22sm96124715pgh.49.2019.08.09.15.04.51
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 09 Aug 2019 15:04:52 -0700 (PDT)
+Date:   Fri, 9 Aug 2019 15:04:50 -0700
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 9/9] Input: add IOC3 serio driver
+Message-ID: <20190809220450.GP178933@dtor-ws>
+References: <20190809103235.16338-1-tbogendoerfer@suse.de>
+ <20190809103235.16338-10-tbogendoerfer@suse.de>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6283c97f-d8cc-413d-45e1-08d71d1595d7
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2019 22:04:44.3375
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 3unRc4AwkPXIIJ6RB5suwMQsSB6uvtuWr7nyoM+b7qZoplBfkFEf/hOMskb06GSS5R7YRAe18BTUrJpZw0Z+MA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2405
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190809103235.16338-10-tbogendoerfer@suse.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuhong Yuan <hslester96@gmail.com>
+On Fri, Aug 09, 2019 at 12:32:31PM +0200, Thomas Bogendoerfer wrote:
+> This patch adds a platform driver for supporting keyboard and mouse
+> interface of SGI IOC3 chips.
+> 
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> ---
+>  drivers/input/serio/Kconfig   |  10 +++
+>  drivers/input/serio/Makefile  |   1 +
+>  drivers/input/serio/ioc3kbd.c | 163 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 174 insertions(+)
+>  create mode 100644 drivers/input/serio/ioc3kbd.c
+> 
+> diff --git a/drivers/input/serio/Kconfig b/drivers/input/serio/Kconfig
+> index f3e18f8ef9ca..373a1646019e 100644
+> --- a/drivers/input/serio/Kconfig
+> +++ b/drivers/input/serio/Kconfig
+> @@ -165,6 +165,16 @@ config SERIO_MACEPS2
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called maceps2.
+>  
+> +config SERIO_SGI_IOC3
+> +	tristate "SGI IOC3 PS/2 controller"
+> +	depends on SGI_MFD_IOC3
+> +	help
+> +	  Say Y here if you have an SGI Onyx2, SGI Octane or IOC3 PCI card
+> +	  and you want to attach and use a keyboard, mouse, or both.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called ioc3kbd.
+> +
+>  config SERIO_LIBPS2
+>  	tristate "PS/2 driver library"
+>  	depends on SERIO_I8042 || SERIO_I8042=n
+> diff --git a/drivers/input/serio/Makefile b/drivers/input/serio/Makefile
+> index 67950a5ccb3f..6d97bad7b844 100644
+> --- a/drivers/input/serio/Makefile
+> +++ b/drivers/input/serio/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_HIL_MLC)		+= hp_sdc_mlc.o hil_mlc.o
+>  obj-$(CONFIG_SERIO_PCIPS2)	+= pcips2.o
+>  obj-$(CONFIG_SERIO_PS2MULT)	+= ps2mult.o
+>  obj-$(CONFIG_SERIO_MACEPS2)	+= maceps2.o
+> +obj-$(CONFIG_SERIO_SGI_IOC3)	+= ioc3kbd.o
+>  obj-$(CONFIG_SERIO_LIBPS2)	+= libps2.o
+>  obj-$(CONFIG_SERIO_RAW)		+= serio_raw.o
+>  obj-$(CONFIG_SERIO_AMS_DELTA)	+= ams_delta_serio.o
+> diff --git a/drivers/input/serio/ioc3kbd.c b/drivers/input/serio/ioc3kbd.c
+> new file mode 100644
+> index 000000000000..6840e3c23fed
+> --- /dev/null
+> +++ b/drivers/input/serio/ioc3kbd.c
+> @@ -0,0 +1,163 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * SGI IOC3 PS/2 controller driver for linux
+> + *
+> + * Copyright (C) 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> + *
+> + * Based on code Copyright (C) 2005 Stanislaw Skowronek <skylark@unaligned.org>
+> + *               Copyright (C) 2009 Johannes Dickgreber <tanzy@gmx.de>
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/serio.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <asm/sn/ioc3.h>
+> +
+> +struct ioc3kbd_data {
+> +	struct ioc3_serioregs __iomem *regs;
+> +	struct serio *kbd, *aux;
+> +	int irq;
+> +};
+> +
+> +static int ioc3kbd_write(struct serio *dev, u8 val)
+> +{
+> +	struct ioc3kbd_data *d = dev->port_data;
+> +	unsigned long timeout = 0;
+> +	u32 mask;
+> +
+> +	mask = (dev == d->aux) ? KM_CSR_M_WRT_PEND : KM_CSR_K_WRT_PEND;
+> +	while ((readl(&d->regs->km_csr) & mask) && (timeout < 1000)) {
+> +		udelay(100);
+> +		timeout++;
+> +	}
+> +
+> +	if (timeout >= 1000)
+> +		return -ETIMEDOUT;
+> +
+> +	writel(val, dev == d->aux ? &d->regs->m_wd : &d->regs->k_wd);
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t ioc3kbd_intr(int itq, void *dev_id)
+> +{
+> +	struct ioc3kbd_data *d = dev_id;
+> +	u32 data_k, data_m;
+> +
+> +	data_k = readl(&d->regs->k_rd);
+> +	data_m = readl(&d->regs->m_rd);
+> +
+> +	if (data_k & KM_RD_VALID_0)
+> +		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_0_SHIFT) & 0xff,
+> +				0);
+> +	if (data_k & KM_RD_VALID_1)
+> +		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_1_SHIFT) & 0xff,
+> +				0);
+> +	if (data_k & KM_RD_VALID_2)
+> +		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_2_SHIFT) & 0xff,
+> +				0);
+> +	if (data_m & KM_RD_VALID_0)
+> +		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_0_SHIFT) & 0xff,
+> +				0);
+> +	if (data_m & KM_RD_VALID_1)
+> +		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_1_SHIFT) & 0xff,
+> +				0);
+> +	if (data_m & KM_RD_VALID_2)
+> +		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_2_SHIFT) & 0xff,
+> +				0);
+> +
+> +	return 0;
 
-refcount_t is better for reference counters since its
-implementation can prevent overflows.
-So convert atomic_t ref counters to refcount_t.
+IRQ_NONE? Or IRQ_HANDLED?
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+> +}
+> +
+> +static int ioc3kbd_probe(struct platform_device *pdev)
+> +{
+> +	struct ioc3_serioregs __iomem *regs;
+> +	struct device *dev = &pdev->dev;
+> +	struct ioc3kbd_data *d;
+> +	struct serio *sk, *sa;
+> +	int irq, ret;
+> +
+> +	regs = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(regs))
+> +		return PTR_ERR(regs);
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0)
+> +		return -ENXIO;
+> +
+> +	d = devm_kzalloc(&pdev->dev, sizeof(*d), GFP_KERNEL);
+> +	if (!d)
+> +		return -ENOMEM;
+> +
+> +	sk = kzalloc(sizeof(*sk), GFP_KERNEL);
+> +	if (!sk)
+> +		return -ENOMEM;
+> +
+> +	sa = kzalloc(sizeof(*sa), GFP_KERNEL);
+> +	if (!sa) {
+> +		kfree(sk);
+> +		return -ENOMEM;
+> +	}
+> +
+> +	sk->id.type = SERIO_8042;
+> +	sk->write = ioc3kbd_write;
+> +	snprintf(sk->name, sizeof(sk->name), "IOC3 keyboard %d", pdev->id);
+> +	snprintf(sk->phys, sizeof(sk->phys), "ioc3/serio%dkbd", pdev->id);
+> +	sk->port_data = d;
+> +	sk->dev.parent = &pdev->dev;
+> +
+> +	sa->id.type = SERIO_8042;
+> +	sa->write = ioc3kbd_write;
+> +	snprintf(sa->name, sizeof(sa->name), "IOC3 auxiliary %d", pdev->id);
+> +	snprintf(sa->phys, sizeof(sa->phys), "ioc3/serio%daux", pdev->id);
+> +	sa->port_data = d;
+> +	sa->dev.parent = dev;
+> +
+> +	d->regs = regs;
+> +	d->kbd = sk;
+> +	d->aux = sa;
+> +	d->irq = irq;
+> +
+> +	platform_set_drvdata(pdev, d);
+> +	serio_register_port(d->kbd);
+> +	serio_register_port(d->aux);
+> +
+> +	ret = devm_request_irq(&pdev->dev, irq, ioc3kbd_intr, IRQF_SHARED,
+> +			       "ioc3-kbd", d);
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c b/drivers/=
-net/ethernet/mellanox/mlx5/core/lib/vxlan.c
-index b9d4f4e19ff9..148b55c3db7a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/vxlan.c
-@@ -32,6 +32,7 @@
-=20
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/refcount.h>
- #include <linux/mlx5/driver.h>
- #include <net/vxlan.h>
- #include "mlx5_core.h"
-@@ -48,7 +49,7 @@ struct mlx5_vxlan {
-=20
- struct mlx5_vxlan_port {
- 	struct hlist_node hlist;
--	atomic_t refcount;
-+	refcount_t refcount;
- 	u16 udp_port;
- };
-=20
-@@ -113,7 +114,7 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 p=
-ort)
-=20
- 	vxlanp =3D mlx5_vxlan_lookup_port(vxlan, port);
- 	if (vxlanp) {
--		atomic_inc(&vxlanp->refcount);
-+		refcount_inc(&vxlanp->refcount);
- 		return 0;
- 	}
-=20
-@@ -137,7 +138,7 @@ int mlx5_vxlan_add_port(struct mlx5_vxlan *vxlan, u16 p=
-ort)
- 	}
-=20
- 	vxlanp->udp_port =3D port;
--	atomic_set(&vxlanp->refcount, 1);
-+	refcount_set(&vxlanp->refcount, 1);
-=20
- 	spin_lock_bh(&vxlan->lock);
- 	hash_add(vxlan->htable, &vxlanp->hlist, port);
-@@ -170,7 +171,7 @@ int mlx5_vxlan_del_port(struct mlx5_vxlan *vxlan, u16 p=
-ort)
- 		goto out_unlock;
- 	}
-=20
--	if (atomic_dec_and_test(&vxlanp->refcount)) {
-+	if (refcount_dec_and_test(&vxlanp->refcount)) {
- 		hash_del(&vxlanp->hlist);
- 		remove =3D true;
- 	}
---=20
-2.21.0
+Just request_irq(); there is not really any benefit from devm since you
+free it manually.
 
+What else is sharing this interrupt?
+
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "could not request IRQ %d\n", irq);
+> +		serio_unregister_port(d->kbd);
+> +		serio_unregister_port(d->aux);
+> +		kfree(sk);
+> +		kfree(sa);
+> +		return ret;
+> +	}
+> +	return 0;
+> +}
+> +
+> +static int ioc3kbd_remove(struct platform_device *pdev)
+> +{
+> +	struct ioc3kbd_data *d = platform_get_drvdata(pdev);
+> +
+> +	devm_free_irq(&pdev->dev, d->irq, d);
+> +	serio_unregister_port(d->kbd);
+> +	serio_unregister_port(d->aux);
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver ioc3kbd_driver = {
+> +	.probe          = ioc3kbd_probe,
+> +	.remove         = ioc3kbd_remove,
+> +	.driver = {
+> +		.name = "ioc3-kbd",
+> +	},
+> +};
+> +module_platform_driver(ioc3kbd_driver);
+> +
+> +MODULE_AUTHOR("Thomas Bogendoerfer <tbogendoerfer@suse.de>");
+> +MODULE_DESCRIPTION("SGI IOC3 serio driver");
+> +MODULE_LICENSE("GPL");
+> -- 
+> 2.13.7
+> 
+
+Thanks.
+
+-- 
+Dmitry
