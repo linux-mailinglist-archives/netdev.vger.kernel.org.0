@@ -2,137 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6731D886D2
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 01:11:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C422F886DA
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 01:20:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726475AbfHIXLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 19:11:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55258 "EHLO mail.kernel.org"
+        id S1726972AbfHIXUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 19:20:49 -0400
+Received: from lekensteyn.nl ([178.21.112.251]:47265 "EHLO lekensteyn.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726125AbfHIXLp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 19:11:45 -0400
-Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 308442086D;
-        Fri,  9 Aug 2019 23:11:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565392304;
-        bh=+aBbco4oASy821Kckd+3T6eOhVInP0auiGj+grXwjNo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EhegFTq8eU9luJCzrS4BIs2MF0sjumDV2omQMVECWwZ7q0wqRkrpdxU85pZuzrnoK
-         G4/BXYHf6HDGz5P0gnGmKTerm2Ewh+vlrZU1SjjHNpjUqhEvWf9j84/OCVGzl443uV
-         cV7CS/lXj0PEYvv34m4DkMhxJf3FDs1htc2cmG08=
-From:   David Ahern <dsahern@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next] selftests: Fix detection of nettest command in fcnal-test
-Date:   Fri,  9 Aug 2019 16:13:38 -0700
-Message-Id: <20190809231338.29105-1-dsahern@kernel.org>
-X-Mailer: git-send-email 2.11.0
+        id S1726219AbfHIXUt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 19:20:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lekensteyn.nl; s=s2048-2015-q1;
+        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=6APAfBHR3fK9TP76TpkiaRQRTEUbRsXbffX4Q7vJC1I=;
+        b=U/wBjuTegmKHKER0lil9F75jaRcdKEMOOHYmF/W6r9JxvPvFjG1zCKF77Aq6BNavbw2gnFwRsPRGNnZVsLSFPRV8NHQZ7NO0wFRGgQCdHP7y3TcWSqrpix7M0g5SQf06asGWx1O+PEMDvVrIm8hKMc6knNBV8ymyU8CwRF3zbN0YDVUNARkzg3+OLQAbna8QKlvo4/H+05K2t9aF2tZ+4cbR1YIWkv7VHRGxDz1uxZ1p+W2eOWzyyWihWDH9s+CWHUR1Vw6OhoKjphuIpmiyUJ5irV5nZ4Kocgwu8ii2vyEC+LmH+z+wy+/UEfs3t5ouQtqcPD/hUhYmxRKnggRpng==;
+Received: by lekensteyn.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.84_2)
+        (envelope-from <peter@lekensteyn.nl>)
+        id 1hwEBg-00073d-0b; Sat, 10 Aug 2019 01:20:44 +0200
+Date:   Sat, 10 Aug 2019 00:20:42 +0100
+From:   Peter Wu <peter@lekensteyn.nl>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        Stanislav Fomichev <sdf@google.com>,
+        Quentin Monnet <quentin.monnet@netronome.com>
+Subject: Re: [PATCH v3] tools: bpftool: fix reading from /proc/config.gz
+Message-ID: <20190809232042.GA26522@al>
+References: <20190809003911.7852-1-peter@lekensteyn.nl>
+ <20190809153210.GD2820@mini-arch>
+ <20190809140956.24369b00@cakuba.netronome.com>
+ <20190809214831.GE2820@mini-arch>
+ <20190809145726.2972fa7a@cakuba.netronome.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190809145726.2972fa7a@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Spam-Score: -0.0 (/)
+X-Spam-Status: No, hits=-0.0 required=5.0 tests=NO_RELAYS=-0.001 autolearn=unavailable autolearn_force=no
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@gmail.com>
+Hi all,
 
-Most of the tests run by fcnal-test.sh relies on the nettest command.
-Rather than trying to cover all of the individual tests, check for the
-binary only at the beginning.
+Thanks for the lovely feedback :)
 
-Also removes the need for log_error which is undefined.
+On Fri, Aug 09, 2019 at 02:57:26PM -0700, Jakub Kicinski wrote:
+> On Fri, 9 Aug 2019 14:48:31 -0700, Stanislav Fomichev wrote:
+> > I'm just being nit picky :-)
+> > Because changelog says we already depend on -lz, but then in the patch
+> > we explicitly add it.
 
-Fixes: 6f9d5cacfe07 ("selftests: Setup for functional tests for fib and socket lookups")
-Signed-off-by: David Ahern <dsahern@gmail.com>
----
- tools/testing/selftests/net/fcnal-test.sh | 38 +++++--------------------------
- 1 file changed, 6 insertions(+), 32 deletions(-)
+What I meant by that is that zlib is not a new dependency since it is
+already a mandatory dependency of libelf which is currently marked as
+mandatory dependency in bpftool. That is why I did not bother with
+adding a feature test either since it would be redundant.
 
-diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
-index bd6b564382ec..9fd3a0b97f0d 100755
---- a/tools/testing/selftests/net/fcnal-test.sh
-+++ b/tools/testing/selftests/net/fcnal-test.sh
-@@ -998,13 +998,6 @@ ipv4_tcp_vrf()
- ipv4_tcp()
- {
- 	log_section "IPv4/TCP"
--
--	which nettest >/dev/null
--	if [ $? -ne 0 ]; then
--		log_error "nettest not found; skipping tests"
--		return
--	fi
--
- 	log_subsection "No VRF"
- 	setup
- 
-@@ -1375,12 +1368,6 @@ ipv4_udp_vrf()
- 
- ipv4_udp()
- {
--	which nettest >/dev/null
--	if [ $? -ne 0 ]; then
--		log_error "nettest not found; skipping tests"
--		return
--	fi
--
- 	log_section "IPv4/UDP"
- 	log_subsection "No VRF"
- 
-@@ -2314,13 +2301,6 @@ ipv6_tcp_vrf()
- ipv6_tcp()
- {
- 	log_section "IPv6/TCP"
--
--	which nettest >/dev/null
--	if [ $? -ne 0 ]; then
--		log_error "nettest not found; skipping tests"
--		return
--	fi
--
- 	log_subsection "No VRF"
- 	setup
- 
-@@ -3156,12 +3136,6 @@ netfilter_icmp()
- 
- ipv4_netfilter()
- {
--	which nettest >/dev/null
--	if [ $? -ne 0 ]; then
--		log_error "nettest not found; skipping tests"
--		return
--	fi
--
- 	log_section "IPv4 Netfilter"
- 	log_subsection "TCP reset"
- 
-@@ -3219,12 +3193,6 @@ netfilter_icmp6()
- 
- ipv6_netfilter()
- {
--	which nettest >/dev/null
--	if [ $? -ne 0 ]; then
--		log_error "nettest not found; skipping tests"
--		return
--	fi
--
- 	log_section "IPv6 Netfilter"
- 	log_subsection "TCP reset"
- 
-@@ -3422,6 +3390,12 @@ elif [ "$TESTS" = "ipv6" ]; then
- 	TESTS="$TESTS_IPV6"
- fi
- 
-+which nettest >/dev/null
-+if [ $? -ne 0 ]; then
-+	echo "'nettest' command not found; skipping tests"
-+	exit 0
-+fi
-+
- declare -i nfail=0
- declare -i nsuccess=0
- 
+Adding an explicit dependency helps if you want to build bpftool as
+static binary, or if libelf somehow drops zlib in the future.
 -- 
-2.11.0
-
+Kind regards,
+Peter Wu
+https://lekensteyn.nl
