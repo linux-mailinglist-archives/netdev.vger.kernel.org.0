@@ -2,87 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C36488641
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:50:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D8D4B88643
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:54:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729771AbfHIWuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 18:50:32 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:42252 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729721AbfHIWua (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 18:50:30 -0400
-Received: by mail-qt1-f196.google.com with SMTP id t12so8813828qtp.9
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 15:50:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=v1sOcuMv/2uHBK2P4/sE7Lsttb6UgjXcKXXXqrXRrS8=;
-        b=s5RRib5qQIwF3vV0Ij5WvebwRR174Rr+uoXOPzXpHVzufihJ8dWKcIugNhnlNEZAql
-         FfQYkA6JYc3eMS/V7281HXLrBGfszwvwCIqQ2MuAEJK5osFhmqQP2m3y3nLs0QclZ3Ta
-         mWPPAHPoWRCBHxUr0hWLEtsU3GMDLxsdOuBjJGqHIJoWxmogOCpebsfIpnZE72UDiooe
-         y99/OGZh/8ald/0/L/Sb/yqngVTmdZVULoFWxxsbKuGS4H8KR0fBnGRdgnfNk2SoA4Ny
-         s3YdQ0CnItPxBp0j9lbzuTPRk4E+LUjmiiE8HEKcIIyxe+zHvUSJDD2czp7g5sVpirP7
-         gKOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=v1sOcuMv/2uHBK2P4/sE7Lsttb6UgjXcKXXXqrXRrS8=;
-        b=WDEURrM5RphKMHsgYbopBv3mnMp1V0od8ohV9jrbhxRneskgYF0CzWUDGEEdZfSw39
-         eHFb0idNYa2in5+OrCZ0W2jdmWW8GZWkLb8Ush6Ozv8Rp5XxU8cHH+qTCuFVHsyVOrnK
-         d4L90FBwGazmEL8Jf+4zNgf3qwzdWv2KNzdR266C322OiwDON0l/wzmzU3+ZMOyF0gju
-         HxVBRxrsWrHvoSWeuZT8Hejk9mMndyLdwxVNDxW38sw7g2hZr09LvYKSt8g046Ir/4G6
-         kvZD49i/8agTinZSpfAanbbvlyjcTutF36cMOK2IDZWgxuV1yZcZzuoM4fxDwdSSPRBT
-         FD5Q==
-X-Gm-Message-State: APjAAAUrM+mmWpOmPkFk68Mgoqm4GdYDsGYQDaekYjgz4vX0QbcIlw5g
-        p3B7jpkfnPHkeqAbngRdHYIjZ/x9
-X-Google-Smtp-Source: APXvYqyvUnpsCmgG2Ci+Rdr+C6p1ylk3Dlrmvcd3p43SBFyV/8lQW4i/OZBhTZgR3NyC0Cgurrq7sw==
-X-Received: by 2002:aed:3f57:: with SMTP id q23mr15018847qtf.39.1565391029150;
-        Fri, 09 Aug 2019 15:50:29 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id i5sm39678355qtp.20.2019.08.09.15.50.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 15:50:28 -0700 (PDT)
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 7/7] net: dsa: mv88e6xxx: add delay in direct SMI wait
-Date:   Fri,  9 Aug 2019 18:47:59 -0400
-Message-Id: <20190809224759.5743-8-vivien.didelot@gmail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190809224759.5743-1-vivien.didelot@gmail.com>
-References: <20190809224759.5743-1-vivien.didelot@gmail.com>
+        id S1726219AbfHIWyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 18:54:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:49160 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726022AbfHIWyk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 18:54:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=O2V/zfD8lGKgaXIk5ED+s485D/krj/OxHyJFSPZ8Jts=; b=xLf+9BHhjm10P8Ad1iJI2oIWG1
+        W7wZX/mnuiS7cWbUsrNB4iT6yUEWxdNBVDTYEkR1DdrRudOQxjv7SfoE+96j9g3E6piWtz/iNg4jn
+        Z2t3jjJwjTiSSzxpPNlaVPJTXMKF/WQKcNyhvZ76LqzQz+nMv0qHBu6gIBigWCFTLnLI=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hwDmN-0004sx-EP; Sat, 10 Aug 2019 00:54:35 +0200
+Date:   Sat, 10 Aug 2019 00:54:35 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next v2 4/4] net: phy: realtek: add support for the
+ 2.5Gbps PHY in RTL8125
+Message-ID: <20190809225435.GE32706@lunn.ch>
+References: <755b2bc9-22cb-f529-4188-0f4b6e48efbd@gmail.com>
+ <49454e5b-465d-540e-cc01-07717a773e33@gmail.com>
+ <20190809191822.GZ27917@lunn.ch>
+ <c8e2b3e7-1d0b-eba3-6a36-8808641f3031@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c8e2b3e7-1d0b-eba3-6a36-8808641f3031@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mv88e6xxx_smi_direct_wait routine is used to wait on indirect
-registers access. It is of no exception and must delay between read
-attempts, like other wait routines.
+On Fri, Aug 09, 2019 at 09:31:32PM +0200, Heiner Kallweit wrote:
+> On 09.08.2019 21:18, Andrew Lunn wrote:
+> >> +	}, {
+> >> +		PHY_ID_MATCH_EXACT(0x001cca50),
+> > 
+> > Hi Heiner
+> > 
+> Hi Andrew,
+> 
+> > With the Marvell driver, i looked at the range of IDs the PHYs where
+> > using. The switch, being MDIO based, also has ID values. The PHY range
+> > and the switch range are well separated, and it seems unlikely Marvell
+> > would reuse a switch ID in a PHY which was not compatible with the
+> > PHY.
+> > 
+> > Could you explain why you picked this value for the PHY? What makes
+> > you think it is not in use by another Realtek PHY? 
+> > 
+> 0x001cc800 being the Realtek OUI, I've seen only PHY's with ID
+> 0x001cc8XX and 0x001cc9XX so far. Realtek doesn't seem to have such
+> a clear separation between PHY and switch PHY ID's.
+> 
+> Example:
+> 0x001cc961 (RTL8366, switch)
+> 0x001cc916 (RTL8211F, PHY)
+> 
+> Last digit of the model is used as model number.
+> I did the same and used 5 as model number (from RTL8125).
+> Revision number is set to 0 because RTL8125 is brand-new.
+> 
+> I chose a PHY ID in 0x001ccaXX range because it isn't used by
+> Realtek AFAIK.
 
-Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/smi.c | 2 ++
- 1 file changed, 2 insertions(+)
+Hi Heiner
 
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-index 18e87a5a20a3..282fe08db050 100644
---- a/drivers/net/dsa/mv88e6xxx/smi.c
-+++ b/drivers/net/dsa/mv88e6xxx/smi.c
-@@ -66,6 +66,8 @@ static int mv88e6xxx_smi_direct_wait(struct mv88e6xxx_chip *chip,
- 
- 		if (!!(data & BIT(bit)) == !!val)
- 			return 0;
-+
-+		usleep_range(1000, 2000);
- 	}
- 
- 	return -ETIMEDOUT;
--- 
-2.22.0
+O.K.
 
+This should also be something which is internal. If Realtek do happen
+to use the ID, we can change both the MAC and the PHY to an new ID to
+avoid the collision.
+
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
