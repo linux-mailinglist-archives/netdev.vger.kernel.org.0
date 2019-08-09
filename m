@@ -2,61 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 78A3B87E53
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 17:43:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 977D187E63
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 17:46:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436799AbfHIPnK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 11:43:10 -0400
-Received: from www62.your-server.de ([213.133.104.62]:51038 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726255AbfHIPnK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 11:43:10 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hw72p-0000y4-Ns; Fri, 09 Aug 2019 17:43:07 +0200
-Received: from [178.193.45.231] (helo=pc-63.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hw72p-0002ks-I4; Fri, 09 Aug 2019 17:43:07 +0200
-Subject: Re: [PATCH bpf 0/2] tools: bpftool: fix pinning error messages
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        alexei.starovoitov@gmail.com
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        oss-drivers@netronome.com
-References: <20190807001923.19483-1-jakub.kicinski@netronome.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <cc58a0b1-b0f2-29fb-8e1c-982f5d3126bf@iogearbox.net>
-Date:   Fri, 9 Aug 2019 17:43:07 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2436789AbfHIPqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 11:46:13 -0400
+Received: from mx2.suse.de ([195.135.220.15]:57522 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2436647AbfHIPqN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 11:46:13 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id AF353AD23;
+        Fri,  9 Aug 2019 15:46:11 +0000 (UTC)
+Received: by unicorn.suse.cz (Postfix, from userid 1000)
+        id 03EC8E0441; Fri,  9 Aug 2019 17:46:10 +0200 (CEST)
+Date:   Fri, 9 Aug 2019 17:46:09 +0200
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        David Ahern <dsahern@gmail.com>, dcbw@redhat.com,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+Message-ID: <20190809154609.GG31971@unicorn.suse.cz>
+References: <20190719110029.29466-1-jiri@resnulli.us>
+ <20190719110029.29466-4-jiri@resnulli.us>
+ <CAJieiUi+gKKc94bKfC-N5LBc=FdzGGo_8+x2oTstihFaUpkKSA@mail.gmail.com>
+ <20190809062558.GA2344@nanopsycho.orion>
+ <CAJieiUj7nzHdRUjBpnfL5bKPszJL0b_hKjxpjM0RGd9ocF3EoA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190807001923.19483-1-jakub.kicinski@netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25536/Fri Aug  9 10:22:54 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAJieiUj7nzHdRUjBpnfL5bKPszJL0b_hKjxpjM0RGd9ocF3EoA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/7/19 2:19 AM, Jakub Kicinski wrote:
-> Hi!
-> 
-> First make sure we don't use "prog" in error messages because
-> the pinning operation could be performed on a map. Second add
-> back missing error message if pin syscall failed.
-> 
-> Jakub Kicinski (2):
->    tools: bpftool: fix error message (prog -> object)
->    tools: bpftool: add error message on pin failure
-> 
->   tools/bpf/bpftool/common.c | 8 ++++++--
->   1 file changed, 6 insertions(+), 2 deletions(-)
-> 
+On Fri, Aug 09, 2019 at 08:40:25AM -0700, Roopa Prabhu wrote:
+> to that point, I am also not sure why we have a new API For multiple
+> names. I mean why support more than two names  (existing old name and
+> a new name to remove the length limitation) ?
 
-Applied, thanks!
+One use case is to allow "predictable names" from udev/systemd to work
+the way do for e.g. block devices, see
+
+  http://lkml.kernel.org/r/20190628162716.GF29149@unicorn.suse.cz
+
+Michal
