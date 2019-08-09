@@ -2,52 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 605A18858E
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:05:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B915C88581
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:04:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbfHIWF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 18:05:27 -0400
-Received: from mail-eopbgr60058.outbound.protection.outlook.com ([40.107.6.58]:18565
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        id S1729503AbfHIWEr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 18:04:47 -0400
+Received: from mail-eopbgr10055.outbound.protection.outlook.com ([40.107.1.55]:23013
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726457AbfHIWF1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 18:05:27 -0400
+        id S1728985AbfHIWEo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 18:04:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FUhs+BhGv3UDINHJFqk7IHJ1y1OOHT4qmq497wCM5nx5Ud0s7k2vFO968nG+GYPigvsoNbk5B4iMJ7Ey02xeU5X55SoTlspRcp9Q7Qbuvuh1YaCB436s+vqTGCRfwr1RDKJlAermKBJiOZGneuHgBHtQhrj3BFqsQjiUglTlORXZlnAiNWiqkTLokSZCBg+YqxmoEZ0tT88h+5ZJ/lyQq8+9XIm9DW853pmRG2+9aSITl4j4bhV5GFUqFiM5yXaULK1npkl0YJSWI/0B6oXO3uqC41AsG4hYmhO25Ye6rHrPPqUaPPquAk5bm73p+oaiLv+Q9rCvNWIQPw+D2zjugQ==
+ b=I4twqyaSrDYwMolGlR5dNSYbeQ1MOnjPom3ADFTOrUr0pwj7YSpM4vJXX23FPEJeoc9FQc446zc7LQ9G9dzcS2gF6DCC7slteA8rKrrpMmwPZFZQP21RSVHnMTdXZ7pL2W45UBX61yYrtpEonCgMTuHe8B7JQ3inPKmiwr39fmfrUzlzrUSncq7xbQpGQhTe2i509nTUbXqubE8twIr3eLoMh0iFX3moWRhsgCvBJSgW8P6xWbF5Y39/oM1iYc4T5Sy32VVRMjViBYmBvib/rJqfhdDjOCsx+lBZ4inhQNXSSF0iHdQEh36Pnemo8oS8/sbanDbzhGW/6Xmpd8Un7A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i5rMqL4XWAVg0qbV91D7eB4KdDg5qbohzt5ekvoJO3s=;
- b=eGrdrXXtblY+xGCX+PxSMag2HX9e1vMwKatcorhASpbrf6RKgaZu0VHA5gmLttV28Ono2wq0fWFtHG9kNAeoBamqPVds8hM9+YzHtW6m2jFFD7z5tsnw54S0Ik/i9PRI8a+9sgagHZoOV3/SE5w2vXxWdQ15xZS4gupnmuDfhWGmKuln3Smma5Nm1Tch26S9vLESRWOH0AKT3h79gENTnCiQuhrAChWNyH2Klkw+kttjO+ZYIAsU5GE8bmKsfVUHJpiqyuPcraSlyRlQCpceEBKY+e+QWp9EozAZO/U5kIXfjjP5+K4l7HxotC1OudoxTDrsDzXoGysj6I1vgwTc9A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
+ bh=sFJIkHjY33VOC5/cJV3w2PMZh8M6YpX+tZCqoVSwhgE=;
+ b=XMRcbrTsgRyIm5JIE+m/05PRdS/P0NWaEm3GHiUM6GpAeem7/rOBPkK5/wNYgjVCPjy52xLlY0of7ljL3/fQyqQHCVWhu3H6U/Ie201okXx2DBjsD1Nhynn9RcVUxsUenwYEOKVvhkHKFa3tJYfCW+2gwDEBTzw1vDIQp+7ffoPHS6fUIoUsA50PWR1Be+9dhbAWVopc4UKeDXyjpSyOAPgSKzbAdiMRGGtesI1J8IvZ+OW0mqaJJoRx/6AZ1B4psj5Mvn/px8Jbfs+BZtprG9p882sPGCAOIBRO8R7pgke3ZFoz5qBMLzvUDC9h75Yq7fJHubcByv+CNg7DFXvTkA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=mellanox.com;dmarc=pass action=none
+ header.from=mellanox.com;dkim=pass header.d=mellanox.com;arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=i5rMqL4XWAVg0qbV91D7eB4KdDg5qbohzt5ekvoJO3s=;
- b=VG4VP/2FxPlUEU4SMrkl3V1RpWTZ/CFXYo+ONOh5ONuw+NqqBrkn3t8vyu1QqkVa1u5BLlGsgYC66BPCk+SNmR7BPaANkcUPBEVVzRFRmuUFq0PMpaoilU662b1Cg/hK95FA3OA76psz8I1GL/zviBLzQ7EGif4ZTueCQJwlyR8=
+ bh=sFJIkHjY33VOC5/cJV3w2PMZh8M6YpX+tZCqoVSwhgE=;
+ b=delfEZ15+B5Z2pk62LFV1TCI5MiFNaPwoC/lwNxZYJ303g1DvwZEwGDi6M0JxDyvOHVH5oRkOgYvPr3ZOgbVUBccovO/srxzT3vXBKrgT4uRwsqDvQlnuKbrWc8BVppQ2nKrQCpLgFyaevzJHGgJTMuqbwlq0qF3nWjwjxCMZ2Q=
 Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2856.eurprd05.prod.outlook.com (10.172.225.143) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.16; Fri, 9 Aug 2019 22:04:37 +0000
+ DB6PR0501MB2405.eurprd05.prod.outlook.com (10.168.71.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2136.12; Fri, 9 Aug 2019 22:04:39 +0000
 Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
  ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
  ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2157.020; Fri, 9 Aug 2019
- 22:04:37 +0000
+ 22:04:39 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Roi Dayan <roid@mellanox.com>,
+        Parav Pandit <parav@mellanox.com>,
+        Vu Pham <vuhuong@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 11/15] net/mlx5e: Allow concurrent creation of encap
- entries
-Thread-Topic: [net-next 11/15] net/mlx5e: Allow concurrent creation of encap
- entries
-Thread-Index: AQHVTv5v/y3P2ZgzbE28ueNTIINctg==
-Date:   Fri, 9 Aug 2019 22:04:37 +0000
-Message-ID: <20190809220359.11516-12-saeedm@mellanox.com>
+Subject: [net-next 12/15] net/mlx5: E-switch, Removed unused hwid
+Thread-Topic: [net-next 12/15] net/mlx5: E-switch, Removed unused hwid
+Thread-Index: AQHVTv5wJyFkikyWMUqHz4lBVt3aug==
+Date:   Fri, 9 Aug 2019 22:04:39 +0000
+Message-ID: <20190809220359.11516-13-saeedm@mellanox.com>
 References: <20190809220359.11516-1-saeedm@mellanox.com>
 In-Reply-To: <20190809220359.11516-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -63,146 +61,94 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 34abc179-2219-460b-5a10-08d71d1591cb
+x-ms-office365-filtering-correlation-id: 8333b873-79cc-42fb-1fc2-08d71d1592ef
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2856;
-x-ms-traffictypediagnostic: DB6PR0501MB2856:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0501MB28564BC5B386899196DB4D52BED60@DB6PR0501MB2856.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2405;
+x-ms-traffictypediagnostic: DB6PR0501MB2405:
+x-microsoft-antispam-prvs: <DB6PR0501MB2405F8FA0EA70D101C59A9F8BED60@DB6PR0501MB2405.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3968;
 x-forefront-prvs: 01244308DF
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(396003)(366004)(376002)(39860400002)(199004)(189003)(2616005)(446003)(316002)(14444005)(256004)(5024004)(64756008)(54906003)(1076003)(476003)(26005)(6512007)(478600001)(186003)(486006)(36756003)(66066001)(6916009)(8936002)(6486002)(8676002)(81166006)(14454004)(71190400001)(50226002)(81156014)(71200400001)(66556008)(66476007)(5660300002)(66946007)(66446008)(52116002)(6436002)(11346002)(102836004)(99286004)(3846002)(107886003)(6116002)(4326008)(86362001)(386003)(7736002)(25786009)(2906002)(76176011)(305945005)(53936002)(6506007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2856;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(136003)(366004)(376002)(396003)(39860400002)(189003)(199004)(446003)(66556008)(36756003)(6512007)(6436002)(99286004)(66476007)(26005)(102836004)(53936002)(478600001)(5660300002)(316002)(8936002)(4326008)(486006)(71190400001)(11346002)(2616005)(386003)(66446008)(66946007)(6506007)(186003)(64756008)(6916009)(3846002)(6116002)(256004)(52116002)(305945005)(1076003)(476003)(81156014)(8676002)(107886003)(81166006)(86362001)(7736002)(14454004)(50226002)(71200400001)(66066001)(54906003)(2906002)(25786009)(6486002)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2405;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: sKmgoY82jKWfMI2agFOMCOlYIXBCtrMTjP+x+Fc/DB2tiu6w0YtJBuNj1O8+hK1olTiLjuwQEWGAsUABBQgPsQGt+gj2IZVjKfwOCD3g66n8miEQXTIWyNOAPBgKG7qkNuoxh+aQhZRjw+7MSDICP2MNBnADERdjMzyFLWal2Y4Mx5oZcKMz+kuUF7TAxPgLVoyXcMW+cCRTbgaaTzdD2YNLCgAP9pCoOwJfKYea+3qt79UXtXnM8cB3jX2NcLR8buCHKAVpfGk70CFhrCZGaavYxe7Ct0bU4ZuUZsfwCXy5Bv5U2fRF8lUglOtUWSJEnWXoJT6ajsvFW/yS0Nh8MeTI5x7qCCUTeXhhdhZ3p4YHRg3IId83l+wgmKUrgVj1SHX5YUYJq7eSH7Ayhv1vBAvBjnM6ygS6SXfjHukDr94=
+x-microsoft-antispam-message-info: wchUTjppgP817QilhKFvETX4YoEGrdp9jRQuZHU51PxmuwuQsmBL2aFizJWmHb7sMgi2s8QJCI+kgRs9HzT2uj/m3mkrZQpB68z2rCJ9uhtokbq6xyppARMBgYO00NXHMDU+4eDS9mjkbz4K31OZVwsktbvi4H111fJh72EDQ0bOvyT3e5ItJWtqjtf+5N8m5cvCEAqJUv20N79N7T8vpmHZa5OlXZnnlEa6piuHvi4iMiZD7j53Q7WSm88EBbC91wuekfUvR1u0pl9djTzMYyD+0vQE6pSOBwExpQqMmXXH7qAkJZEloAvMFgNlHw/Lenlk0JByAjnHfyBA72S2qcsAdDdsA06peVF/Xwl2QRVEgKeEYBidbPhXSAApwyg3WX95whDi18bvrwNRnT4rB0HsfxzxE4WjZwdUv0lYczs=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 34abc179-2219-460b-5a10-08d71d1591cb
-X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2019 22:04:37.7284
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8333b873-79cc-42fb-1fc2-08d71d1592ef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2019 22:04:39.5356
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: q3haW39x7FiwSd5vj9r7oTCe2LH0NIi7q2ggyvFftVRB/wr6dwl3ucIzqjWChKtBOq+ObkG36R4MeZXM79kLbw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2856
+X-MS-Exchange-CrossTenant-userprincipalname: Gr11BCj3ZhkIgwe1HUita3g4A2srohIwxNW1yji7ZlaT11x4B+rCcMqwF69ZntkE1pSaawrIC1uUO5Omq3RGrQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2405
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vlad Buslov <vladbu@mellanox.com>
+From: Parav Pandit <parav@mellanox.com>
 
-Encap entries creation is fully synchronized by encap_tbl_lock. In order to
-allow concurrent allocation of hardware resources used to offload
-encapsulation, extend mlx5e_encap_entry with 'res_ready' completion. Move
-call to mlx5e_tc_tun_create_header_ipv{4|6}() out of encap_tbl_lock
-critical section. Modify code that attaches new flows to existing encap to
-wait for 'res_ready' completion before using the entry. Insert encap entry
-to table before provisioning it to hardware and modify all users of the
-encap table to verify that encap was fully initialized by checking
-completion result for non-zero value (and to wait for 'res_ready'
-completion, if necessary).
+Currently mlx5_eswitch_rep stores same hw ID for all representors.
+However it is never used from this structure.
+It is always used from mlx5_vport.
 
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Reviewed-by: Roi Dayan <roid@mellanox.com>
+Hence, remove unused field.
+
+Signed-off-by: Parav Pandit <parav@mellanox.com>
+Reviewed-by: Vu Pham <vuhuong@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en_rep.h  |  2 ++
- .../net/ethernet/mellanox/mlx5/core/en_tc.c   | 33 +++++++++++++++----
- 2 files changed, 29 insertions(+), 6 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c | 6 +-----
+ include/linux/mlx5/eswitch.h                               | 1 -
+ 2 files changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h b/drivers/net=
-/ethernet/mellanox/mlx5/core/en_rep.h
-index 2e970d0729be..8ac96727cad8 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rep.h
-@@ -165,6 +165,8 @@ struct mlx5e_encap_entry {
- 	char *encap_header;
- 	int encap_size;
- 	refcount_t refcnt;
-+	struct completion res_ready;
-+	int compl_result;
- };
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/d=
+rivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 8fe5dddf18d0..42cc5001255b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -1393,10 +1393,9 @@ void esw_offloads_cleanup_reps(struct mlx5_eswitch *=
+esw)
+ int esw_offloads_init_reps(struct mlx5_eswitch *esw)
+ {
+ 	int total_vports =3D esw->total_vports;
+-	struct mlx5_core_dev *dev =3D esw->dev;
+ 	struct mlx5_eswitch_rep *rep;
+-	u8 hw_id[ETH_ALEN], rep_type;
+ 	int vport_index;
++	u8 rep_type;
 =20
- struct mlx5e_rep_sq {
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_tc.c
-index c13db9bc1f9b..5be3da621499 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -2904,8 +2904,18 @@ static int mlx5e_attach_encap(struct mlx5e_priv *pri=
-v,
- 	e =3D mlx5e_encap_get(priv, &key, hash_key);
+ 	esw->offloads.vport_reps =3D kcalloc(total_vports,
+ 					   sizeof(struct mlx5_eswitch_rep),
+@@ -1404,12 +1403,9 @@ int esw_offloads_init_reps(struct mlx5_eswitch *esw)
+ 	if (!esw->offloads.vport_reps)
+ 		return -ENOMEM;
 =20
- 	/* must verify if encap is valid or not */
--	if (e)
-+	if (e) {
-+		mutex_unlock(&esw->offloads.encap_tbl_lock);
-+		wait_for_completion(&e->res_ready);
-+
-+		/* Protect against concurrent neigh update. */
-+		mutex_lock(&esw->offloads.encap_tbl_lock);
-+		if (e->compl_result) {
-+			err =3D -EREMOTEIO;
-+			goto out_err;
-+		}
- 		goto attach_flow;
-+	}
-=20
- 	e =3D kzalloc(sizeof(*e), GFP_KERNEL);
- 	if (!e) {
-@@ -2914,22 +2924,32 @@ static int mlx5e_attach_encap(struct mlx5e_priv *pr=
-iv,
- 	}
-=20
- 	refcount_set(&e->refcnt, 1);
-+	init_completion(&e->res_ready);
-+
- 	e->tun_info =3D tun_info;
- 	err =3D mlx5e_tc_tun_init_encap_attr(mirred_dev, priv, e, extack);
--	if (err)
-+	if (err) {
-+		kfree(e);
-+		e =3D NULL;
- 		goto out_err;
-+	}
-=20
- 	INIT_LIST_HEAD(&e->flows);
-+	hash_add_rcu(esw->offloads.encap_tbl, &e->encap_hlist, hash_key);
-+	mutex_unlock(&esw->offloads.encap_tbl_lock);
-=20
- 	if (family =3D=3D AF_INET)
- 		err =3D mlx5e_tc_tun_create_header_ipv4(priv, mirred_dev, e);
- 	else if (family =3D=3D AF_INET6)
- 		err =3D mlx5e_tc_tun_create_header_ipv6(priv, mirred_dev, e);
-=20
--	if (err)
-+	/* Protect against concurrent neigh update. */
-+	mutex_lock(&esw->offloads.encap_tbl_lock);
-+	complete_all(&e->res_ready);
-+	if (err) {
-+		e->compl_result =3D err;
- 		goto out_err;
+-	mlx5_query_mac_address(dev, hw_id);
 -
--	hash_add_rcu(esw->offloads.encap_tbl, &e->encap_hlist, hash_key);
-+	}
+ 	mlx5_esw_for_all_reps(esw, vport_index, rep) {
+ 		rep->vport =3D mlx5_eswitch_index_to_vport_num(esw, vport_index);
+ 		rep->vport_index =3D vport_index;
+-		ether_addr_copy(rep->hw_id, hw_id);
 =20
- attach_flow:
- 	flow->encaps[out_index].e =3D e;
-@@ -2949,7 +2969,8 @@ static int mlx5e_attach_encap(struct mlx5e_priv *priv=
-,
-=20
- out_err:
- 	mutex_unlock(&esw->offloads.encap_tbl_lock);
--	kfree(e);
-+	if (e)
-+		mlx5e_encap_put(priv, e);
- 	return err;
- }
-=20
+ 		for (rep_type =3D 0; rep_type < NUM_REP_TYPES; rep_type++)
+ 			atomic_set(&rep->rep_data[rep_type].state,
+diff --git a/include/linux/mlx5/eswitch.h b/include/linux/mlx5/eswitch.h
+index 46b5ba029802..38a70d16d8d5 100644
+--- a/include/linux/mlx5/eswitch.h
++++ b/include/linux/mlx5/eswitch.h
+@@ -44,7 +44,6 @@ struct mlx5_eswitch_rep_data {
+ struct mlx5_eswitch_rep {
+ 	struct mlx5_eswitch_rep_data rep_data[NUM_REP_TYPES];
+ 	u16		       vport;
+-	u8		       hw_id[ETH_ALEN];
+ 	u16		       vlan;
+ 	/* Only IB rep is using vport_index */
+ 	u16		       vport_index;
 --=20
 2.21.0
 
