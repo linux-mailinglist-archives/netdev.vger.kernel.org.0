@@ -2,214 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 069F987429
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 10:33:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84EA687434
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 10:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405931AbfHIId0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 04:33:26 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37092 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726059AbfHIId0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 04:33:26 -0400
-Received: by mail-wr1-f65.google.com with SMTP id b3so5053275wro.4;
-        Fri, 09 Aug 2019 01:33:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HRsFWJCGEg81aEIDlBzmTAhEZn5T+q9bOuC2TQ0ccOc=;
-        b=vhprXY5oe3sC3J0Yg4nK27TJkzyVahLpZSzOQtoVrUl7MijMNYfln7lCwsZBdGAHoL
-         QVTUz651AN9ouubzBead0CyeDvVZzqzo8sEhzQMbV9UE4mcdQ37GkEknm6s0DdtRwvyQ
-         VP3iyYsX4Yisr8VdajI0/EOyyTZUWOlBP0rfPkbJ4AymqpxlDEzV1dkPb1FzDBOOKycp
-         vdgREuUnbcIeXi2vHRcttpPYrI0ZDwx6BcvHvuNhBSBklQ5luv0ZDpOI2DgTOPigumcK
-         p+v8pFcr+DS3TFtAbwFnUvqBq1i8Y+KAJmKXed9ipE3GxlgedUcLumHYxSWsh2ARRVC+
-         156A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HRsFWJCGEg81aEIDlBzmTAhEZn5T+q9bOuC2TQ0ccOc=;
-        b=iy5a2tv3WSHEztvqor1n/CgnE4RKdYfCp5nLStO0EstYI2uKv59WNTRsYlZEX0zPv2
-         PmklHDXfwg8L5zb6Xc67Q0H1zq8Inhw0KoXh62+4xyMUTRkEX6gTZDe5Ba6DxDPHotK+
-         NVd1mz3bG0aMwfFZjw7uP64G6YlzmSxvSVfwzTCsmwOarCR385245mGcn4KDNiHBR2rD
-         I5GSdRaJtNjsx5Ikq/IBGGLXY4VIrgD2qXlpP8jBXTj/bO7c3cK8mcHqH/ZYJcmyH8lX
-         UKb/GyzXZ0gTCKGM/woMYpj7i4wv99EBaEi2p8HHIkGoGxvf12Mp9xBeTIVIMBCAmPeA
-         nzIw==
-X-Gm-Message-State: APjAAAWBnTEgbap0zyBKBZaYAwian24MeY6uACJmBJBih+WXr8bwxdi2
-        uMdmze4/jFfOhcqF40J1ePSDTtO4AhpP49tBpkEbh6WIws0=
-X-Google-Smtp-Source: APXvYqxTnFm0PrXhSF/1W7K+W/Sofn9fBna7h+3iKBXURFL0sqXTaaElMBoHX0mQnCdGmD58vNgzbo+u2HuqmJiXlTY=
-X-Received: by 2002:a5d:490a:: with SMTP id x10mr18443111wrq.152.1565339602619;
- Fri, 09 Aug 2019 01:33:22 -0700 (PDT)
+        id S2405970AbfHIIel (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 04:34:41 -0400
+Received: from mx2.suse.de ([195.135.220.15]:38264 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726054AbfHIIek (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 04:34:40 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id DD89FAE49;
+        Fri,  9 Aug 2019 08:34:36 +0000 (UTC)
+Received: by quack2.suse.cz (Postfix, from userid 1000)
+        id DC04B1E437E; Fri,  9 Aug 2019 10:34:35 +0200 (CEST)
+Date:   Fri, 9 Aug 2019 10:34:35 +0200
+From:   Jan Kara <jack@suse.cz>
+To:     Ira Weiny <ira.weiny@intel.com>
+Cc:     Michal Hocko <mhocko@kernel.org>, Jan Kara <jack@suse.cz>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>, john.hubbard@gmail.com,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Dave Chinner <david@fromorbit.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        =?iso-8859-1?B?Suly9G1l?= Glisse <jglisse@redhat.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        amd-gfx@lists.freedesktop.org, ceph-devel@vger.kernel.org,
+        devel@driverdev.osuosl.org, devel@lists.orangefs.org,
+        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
+        kvm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-block@vger.kernel.org, linux-crypto@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mm@kvack.org,
+        linux-nfs@vger.kernel.org, linux-rdma@vger.kernel.org,
+        linux-rpi-kernel@lists.infradead.org, linux-xfs@vger.kernel.org,
+        netdev@vger.kernel.org, rds-devel@oss.oracle.com,
+        sparclinux@vger.kernel.org, x86@kernel.org,
+        xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 00/34] put_user_pages(): miscellaneous call sites
+Message-ID: <20190809083435.GA17568@quack2.suse.cz>
+References: <20190802022005.5117-1-jhubbard@nvidia.com>
+ <20190802091244.GD6461@dhcp22.suse.cz>
+ <20190802124146.GL25064@quack2.suse.cz>
+ <20190802142443.GB5597@bombadil.infradead.org>
+ <20190802145227.GQ25064@quack2.suse.cz>
+ <076e7826-67a5-4829-aae2-2b90f302cebd@nvidia.com>
+ <20190807083726.GA14658@quack2.suse.cz>
+ <20190807084649.GQ11812@dhcp22.suse.cz>
+ <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
 MIME-Version: 1.0
-References: <000000000000f93dd2058f9c4873@google.com>
-In-Reply-To: <000000000000f93dd2058f9c4873@google.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 9 Aug 2019 16:33:11 +0800
-Message-ID: <CADvbK_dqTGZKWNmapcbyYVfLjuwzjSaqs0PHv687AjAvtPo3Zw@mail.gmail.com>
-Subject: Re: memory leak in sctp_get_port_local (2)
-To:     syzbot <syzbot+2d7ecdf99f15689032b3@syzkaller.appspotmail.com>
-Cc:     davem <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>,
-        linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Vlad Yasevich <vyasevich@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190808023637.GA1508@iweiny-DESK2.sc.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 8, 2019 at 11:01 PM syzbot
-<syzbot+2d7ecdf99f15689032b3@syzkaller.appspotmail.com> wrote:
->
-> Hello,
->
-> syzbot found the following crash on:
->
-> HEAD commit:    0eb0ce0a Merge tag 'spi-fix-v5.3-rc3' of git://git.kernel...
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=1234588c600000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=39113f5c48aea971
-> dashboard link: https://syzkaller.appspot.com/bug?extid=2d7ecdf99f15689032b3
-> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=160e1906600000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=140ab906600000
->
-> IMPORTANT: if you fix the bug, please add the following tag to the commit:
-> Reported-by: syzbot+2d7ecdf99f15689032b3@syzkaller.appspotmail.com
->
-> executing program
-> executing program
-> executing program
-> executing program
-> executing program
-> BUG: memory leak
-> unreferenced object 0xffff88810fa4b380 (size 64):
->    comm "syz-executor900", pid 7117, jiffies 4294946947 (age 16.560s)
->    hex dump (first 32 bytes):
->      20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
->      58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
->    backtrace:
->      [<00000000f1461735>] kmemleak_alloc_recursive
-> include/linux/kmemleak.h:43 [inline]
->      [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
->      [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
->      [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
->      [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
->      [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0
-> net/sctp/socket.c:8121
->      [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
->      [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
->      [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
->      [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
->      [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
->      [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
->      [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
->      [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0
-> arch/x86/entry/common.c:296
->      [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> BUG: memory leak
-> unreferenced object 0xffff88810fa4b380 (size 64):
->    comm "syz-executor900", pid 7117, jiffies 4294946947 (age 19.260s)
->    hex dump (first 32 bytes):
->      20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
->      58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
->    backtrace:
->      [<00000000f1461735>] kmemleak_alloc_recursive
-> include/linux/kmemleak.h:43 [inline]
->      [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
->      [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
->      [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
->      [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
->      [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0
-> net/sctp/socket.c:8121
->      [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
->      [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
->      [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
->      [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
->      [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
->      [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
->      [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
->      [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0
-> arch/x86/entry/common.c:296
->      [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> BUG: memory leak
-> unreferenced object 0xffff88810fa4b380 (size 64):
->    comm "syz-executor900", pid 7117, jiffies 4294946947 (age 21.990s)
->    hex dump (first 32 bytes):
->      20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
->      58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
->    backtrace:
->      [<00000000f1461735>] kmemleak_alloc_recursive
-> include/linux/kmemleak.h:43 [inline]
->      [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
->      [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
->      [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
->      [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
->      [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0
-> net/sctp/socket.c:8121
->      [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
->      [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
->      [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
->      [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
->      [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
->      [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
->      [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
->      [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0
-> arch/x86/entry/common.c:296
->      [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> BUG: memory leak
-> unreferenced object 0xffff88810fa4b380 (size 64):
->    comm "syz-executor900", pid 7117, jiffies 4294946947 (age 22.940s)
->    hex dump (first 32 bytes):
->      20 4e 00 00 89 e7 4c 8d 00 00 00 00 00 00 00 00   N....L.........
->      58 40 dd 16 82 88 ff ff 00 00 00 00 00 00 00 00  X@..............
->    backtrace:
->      [<00000000f1461735>] kmemleak_alloc_recursive
-> include/linux/kmemleak.h:43 [inline]
->      [<00000000f1461735>] slab_post_alloc_hook mm/slab.h:522 [inline]
->      [<00000000f1461735>] slab_alloc mm/slab.c:3319 [inline]
->      [<00000000f1461735>] kmem_cache_alloc+0x13f/0x2c0 mm/slab.c:3483
->      [<00000000ff3ccf22>] sctp_bucket_create net/sctp/socket.c:8374 [inline]
->      [<00000000ff3ccf22>] sctp_get_port_local+0x189/0x5b0
-> net/sctp/socket.c:8121
->      [<00000000eed41612>] sctp_do_bind+0xcc/0x1e0 net/sctp/socket.c:402
->      [<000000002bf65239>] sctp_bind+0x44/0x70 net/sctp/socket.c:302
->      [<00000000b1aaaf57>] inet_bind+0x40/0xc0 net/ipv4/af_inet.c:441
->      [<00000000db36b917>] __sys_bind+0x11c/0x140 net/socket.c:1647
->      [<00000000679cfe3c>] __do_sys_bind net/socket.c:1658 [inline]
->      [<00000000679cfe3c>] __se_sys_bind net/socket.c:1656 [inline]
->      [<00000000679cfe3c>] __x64_sys_bind+0x1e/0x30 net/socket.c:1656
->      [<000000002aac3ac2>] do_syscall_64+0x76/0x1a0
-> arch/x86/entry/common.c:296
->      [<000000000c38e074>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
->
-> executing program
-> executing program
-> executing program
-> executing program
-should be fixed by:
-commit 9b6c08878e23adb7cc84bdca94d8a944b03f099e
-Author: Xin Long <lucien.xin@gmail.com>
-Date:   Wed Jun 26 16:31:39 2019 +0800
+On Wed 07-08-19 19:36:37, Ira Weiny wrote:
+> On Wed, Aug 07, 2019 at 10:46:49AM +0200, Michal Hocko wrote:
+> > > So I think your debug option and my suggested renaming serve a bit
+> > > different purposes (and thus both make sense). If you do the renaming, you
+> > > can just grep to see unconverted sites. Also when someone merges new GUP
+> > > user (unaware of the new rules) while you switch GUP to use pins instead of
+> > > ordinary references, you'll get compilation error in case of renaming
+> > > instead of hard to debug refcount leak without the renaming. And such
+> > > conflict is almost bound to happen given the size of GUP patch set... Also
+> > > the renaming serves against the "coding inertia" - i.e., GUP is around for
+> > > ages so people just use it without checking any documentation or comments.
+> > > After switching how GUP works, what used to be correct isn't anymore so
+> > > renaming the function serves as a warning that something has really
+> > > changed.
+> > 
+> > Fully agreed!
+> 
+> Ok Prior to this I've been basing all my work for the RDMA/FS DAX stuff in
+> Johns put_user_pages()...  (Including when I proposed failing truncate with a
+> lease in June [1])
+> 
+> However, based on the suggestions in that thread it became clear that a new
+> interface was going to need to be added to pass in the "RDMA file" information
+> to GUP to associate file pins with the correct processes...
+> 
+> I have many drawings on my white board with "a whole lot of lines" on them to
+> make sure that if a process opens a file, mmaps it, pins it with RDMA, _closes_
+> it, and ummaps it; that the resulting file pin can still be traced back to the
+> RDMA context and all the processes which may have access to it....  No matter
+> where the original context may have come from.  I believe I have accomplished
+> that.
+> 
+> Before I go on, I would like to say that the "imbalance" of get_user_pages()
+> and put_page() bothers me from a purist standpoint...  However, since this
+> discussion cropped up I went ahead and ported my work to Linus' current master
+> (5.3-rc3+) and in doing so I only had to steal a bit of Johns code...  Sorry
+> John...  :-(
+> 
+> I don't have the commit messages all cleaned up and I know there may be some
+> discussion on these new interfaces but I wanted to throw this series out there
+> because I think it may be what Jan and Michal are driving at (or at least in
+> that direction.
+> 
+> Right now only RDMA and DAX FS's are supported.  Other users of GUP will still
+> fail on a DAX file and regular files will still be at risk.[2]
+> 
+> I've pushed this work (based 5.3-rc3+ (33920f1ec5bf)) here[3]:
+> 
+> https://github.com/weiny2/linux-kernel/tree/linus-rdmafsdax-b0-v3
+> 
+> I think the most relevant patch to this conversation is:
+> 
+> https://github.com/weiny2/linux-kernel/commit/5d377653ba5cf11c3b716f904b057bee6641aaf6
+> 
+> I stole Jans suggestion for a name as the name I used while prototyping was
+> pretty bad...  So Thanks Jan...  ;-)
 
-    sctp: not bind the socket in sctp_connect
+For your function, I'd choose a name like vaddr_pin_leased_pages() so that
+association with a lease is clear from the name :) Also I'd choose the
+counterpart to be vaddr_unpin_leased_page[s](). Especially having put_page in
+the name looks confusing to me...
 
-was this commit included in the testing kernel?
+								Honza
 
->
->
-> ---
-> This bug is generated by a bot. It may contain errors.
-> See https://goo.gl/tpsmEJ for more information about syzbot.
-> syzbot engineers can be reached at syzkaller@googlegroups.com.
->
-> syzbot will keep track of this bug report. See:
-> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> syzbot can test patches for this bug, for details see:
-> https://goo.gl/tpsmEJ#testing-patches
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
