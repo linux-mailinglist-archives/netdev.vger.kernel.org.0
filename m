@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 428E486FAB
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 04:34:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DCED986FB2
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 04:34:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405388AbfHICdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 22:33:51 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:58994 "EHLO huawei.com"
+        id S2405465AbfHICeO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 22:34:14 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:59002 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2405026AbfHICdg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 22:33:36 -0400
+        id S2405051AbfHICdf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 22:33:35 -0400
 Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 0D919907BA47D655C575;
+        by Forcepoint Email with ESMTP id 24FA9DD27F72345221D1;
         Fri,  9 Aug 2019 10:33:32 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Zhongzhu Liu <liuzhongzhu@huawei.com>,
+        <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 01/12] net: hns3: fix GFP flag error in hclge_mac_update_stats()
-Date:   Fri, 9 Aug 2019 10:31:07 +0800
-Message-ID: <1565317878-31806-2-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 03/12] net: hns3: clean up for vlan handling in hns3_fill_desc_vtags
+Date:   Fri, 9 Aug 2019 10:31:09 +0800
+Message-ID: <1565317878-31806-4-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1565317878-31806-1-git-send-email-tanhuazhong@huawei.com>
 References: <1565317878-31806-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,71 +38,245 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Zhongzhu Liu <liuzhongzhu@huawei.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-When CONFIG_DEBUG_ATOMIC_SLEEP on, calling kzalloc with
-GFP_KERNEL in hclge_mac_update_stats() will get below warning:
+This patch refactors the hns3_fill_desc_vtags function
+by avoiding passing too many parameters, reducing indent
+level and some other clean up.
 
-[   52.514677] BUG: sleeping function called from invalid context at mm/slab.h:501
-[   52.522051] in_atomic(): 0, irqs_disabled(): 0, pid: 1015, name: ifconfig
-[   52.528827] 2 locks held by ifconfig/1015:
-[   52.532921]  #0: (____ptrval____) (&p->lock){....}, at: seq_read+0x54/0x748
-[   52.539878]  #1: (____ptrval____) (rcu_read_lock){....}, at: dev_seq_start+0x0/0x140
-[   52.547610] CPU: 16 PID: 1015 Comm: ifconfig Not tainted 5.3.0-rc3-00697-g20b80be #98
-[   52.555408] Hardware name: Huawei TaiShan 2280 V2/BC82AMDC, BIOS 2280-V2 CS V3.B050.01 08/08/2019
-[   52.564242] Call trace:
-[   52.566687]  dump_backtrace+0x0/0x1f8
-[   52.570338]  show_stack+0x14/0x20
-[   52.573646]  dump_stack+0xb4/0xec
-[   52.576950]  ___might_sleep+0x178/0x198
-[   52.580773]  __might_sleep+0x74/0xe0
-[   52.584338]  __kmalloc+0x244/0x2d8
-[   52.587744]  hclge_mac_update_stats+0xc8/0x1f8 [hclge]
-[   52.592870]  hclge_update_stats+0xe0/0x170 [hclge]
-[   52.597651]  hns3_nic_get_stats64+0xa0/0x458 [hns3]
-[   52.602514]  dev_get_stats+0x58/0x138
-[   52.606165]  dev_seq_printf_stats+0x8c/0x280
-[   52.610420]  dev_seq_show+0x14/0x40
-[   52.613898]  seq_read+0x574/0x748
-[   52.617205]  proc_reg_read+0xb4/0x108
-[   52.620857]  __vfs_read+0x54/0xa8
-[   52.624162]  vfs_read+0xa0/0x190
-[   52.627380]  ksys_read+0xc8/0x178
-[   52.630685]  __arm64_sys_read+0x40/0x50
-[   52.634509]  el0_svc_common.constprop.0+0x120/0x1e0
-[   52.639369]  el0_svc_handler+0x50/0x90
-[   52.643106]  el0_svc+0x8/0xc
+This patch also adds the hns3_fill_skb_desc function to
+fill the first desc of a skb.
 
-So this patch uses GFP_ATOMIC instead of GFP_KERNEL to fix it.
-
-Fixes: d174ea75c96a ("net: hns3: add statistics for PFC frames and MAC control frames")
-Signed-off-by: Zhongzhu Liu <liuzhongzhu@huawei.com>
-Reviewed-by: Yunsheng Lin <linyunsheng@huawei.com>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Reviewed-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c | 167 +++++++++++++-----------
+ 1 file changed, 89 insertions(+), 78 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index b7399f5..c0feae3a 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -364,9 +364,13 @@ static int hclge_mac_update_stats_complete(struct hclge_dev *hdev, u32 desc_num)
- 	u16 i, k, n;
- 	int ret;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index ed05fb9..fd6a3d5 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -45,6 +45,9 @@ MODULE_PARM_DESC(debug, " Network interface message level setting");
+ #define DEFAULT_MSG_LEVEL (NETIF_MSG_PROBE | NETIF_MSG_LINK | \
+ 			   NETIF_MSG_IFDOWN | NETIF_MSG_IFUP)
  
--	desc = kcalloc(desc_num, sizeof(struct hclge_desc), GFP_KERNEL);
-+	/* This may be called inside atomic sections,
-+	 * so GFP_ATOMIC is more suitalbe here
-+	 */
-+	desc = kcalloc(desc_num, sizeof(struct hclge_desc), GFP_ATOMIC);
- 	if (!desc)
- 		return -ENOMEM;
++#define HNS3_INNER_VLAN_TAG	1
++#define HNS3_OUTER_VLAN_TAG	2
 +
- 	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_STATS_MAC_ALL, true);
- 	ret = hclge_cmd_send(&hdev->hw, desc, desc_num);
- 	if (ret) {
+ /* hns3_pci_tbl - PCI Device ID Table
+  *
+  * Last entry must be all 0s
+@@ -961,16 +964,16 @@ static void hns3_set_txbd_baseinfo(u16 *bdtp_fe_sc_vld_ra_ri, int frag_end)
+ 	hns3_set_field(*bdtp_fe_sc_vld_ra_ri, HNS3_TXD_VLD_B, 1U);
+ }
+ 
+-static int hns3_fill_desc_vtags(struct sk_buff *skb,
+-				struct hns3_enet_ring *tx_ring,
+-				u32 *inner_vlan_flag,
+-				u32 *out_vlan_flag,
+-				u16 *inner_vtag,
+-				u16 *out_vtag)
++static int hns3_handle_vtags(struct hns3_enet_ring *tx_ring,
++			     struct sk_buff *skb)
+ {
+-#define HNS3_TX_VLAN_PRIO_SHIFT 13
+-
+ 	struct hnae3_handle *handle = tx_ring->tqp->handle;
++	struct vlan_ethhdr *vhdr;
++	int rc;
++
++	if (!(skb->protocol == htons(ETH_P_8021Q) ||
++	      skb_vlan_tag_present(skb)))
++		return 0;
+ 
+ 	/* Since HW limitation, if port based insert VLAN enabled, only one VLAN
+ 	 * header is allowed in skb, otherwise it will cause RAS error.
+@@ -981,8 +984,7 @@ static int hns3_fill_desc_vtags(struct sk_buff *skb,
+ 		return -EINVAL;
+ 
+ 	if (skb->protocol == htons(ETH_P_8021Q) &&
+-	    !(tx_ring->tqp->handle->kinfo.netdev->features &
+-	    NETIF_F_HW_VLAN_CTAG_TX)) {
++	    !(handle->kinfo.netdev->features & NETIF_F_HW_VLAN_CTAG_TX)) {
+ 		/* When HW VLAN acceleration is turned off, and the stack
+ 		 * sets the protocol to 802.1q, the driver just need to
+ 		 * set the protocol to the encapsulated ethertype.
+@@ -992,45 +994,92 @@ static int hns3_fill_desc_vtags(struct sk_buff *skb,
+ 	}
+ 
+ 	if (skb_vlan_tag_present(skb)) {
+-		u16 vlan_tag;
+-
+-		vlan_tag = skb_vlan_tag_get(skb);
+-		vlan_tag |= (skb->priority & 0x7) << HNS3_TX_VLAN_PRIO_SHIFT;
+-
+ 		/* Based on hw strategy, use out_vtag in two layer tag case,
+ 		 * and use inner_vtag in one tag case.
+ 		 */
+-		if (skb->protocol == htons(ETH_P_8021Q)) {
+-			if (handle->port_base_vlan_state ==
+-			    HNAE3_PORT_BASE_VLAN_DISABLE){
+-				hns3_set_field(*out_vlan_flag,
+-					       HNS3_TXD_OVLAN_B, 1);
+-				*out_vtag = vlan_tag;
+-			} else {
+-				hns3_set_field(*inner_vlan_flag,
+-					       HNS3_TXD_VLAN_B, 1);
+-				*inner_vtag = vlan_tag;
+-			}
+-		} else {
+-			hns3_set_field(*inner_vlan_flag, HNS3_TXD_VLAN_B, 1);
+-			*inner_vtag = vlan_tag;
+-		}
+-	} else if (skb->protocol == htons(ETH_P_8021Q)) {
+-		struct vlan_ethhdr *vhdr;
+-		int rc;
++		if (skb->protocol == htons(ETH_P_8021Q) &&
++		    handle->port_base_vlan_state ==
++		    HNAE3_PORT_BASE_VLAN_DISABLE)
++			rc = HNS3_OUTER_VLAN_TAG;
++		else
++			rc = HNS3_INNER_VLAN_TAG;
+ 
+-		rc = skb_cow_head(skb, 0);
+-		if (unlikely(rc < 0))
+-			return rc;
+-		vhdr = (struct vlan_ethhdr *)skb->data;
+-		vhdr->h_vlan_TCI |= cpu_to_be16((skb->priority & 0x7)
+-					<< HNS3_TX_VLAN_PRIO_SHIFT);
++		skb->protocol = vlan_get_protocol(skb);
++		return rc;
+ 	}
+ 
++	rc = skb_cow_head(skb, 0);
++	if (unlikely(rc < 0))
++		return rc;
++
++	vhdr = (struct vlan_ethhdr *)skb->data;
++	vhdr->h_vlan_TCI |= cpu_to_be16((skb->priority << VLAN_PRIO_SHIFT)
++					 & VLAN_PRIO_MASK);
++
+ 	skb->protocol = vlan_get_protocol(skb);
+ 	return 0;
+ }
+ 
++static int hns3_fill_skb_desc(struct hns3_enet_ring *ring,
++			      struct sk_buff *skb, struct hns3_desc *desc)
++{
++	u32 ol_type_vlan_len_msec = 0;
++	u32 type_cs_vlan_tso = 0;
++	u32 paylen = skb->len;
++	u16 inner_vtag = 0;
++	u16 out_vtag = 0;
++	u16 mss = 0;
++	int ret;
++
++	ret = hns3_handle_vtags(ring, skb);
++	if (unlikely(ret < 0)) {
++		return ret;
++	} else if (ret == HNS3_INNER_VLAN_TAG) {
++		inner_vtag = skb_vlan_tag_get(skb);
++		inner_vtag |= (skb->priority << VLAN_PRIO_SHIFT) &
++				VLAN_PRIO_MASK;
++		hns3_set_field(type_cs_vlan_tso, HNS3_TXD_VLAN_B, 1);
++	} else if (ret == HNS3_OUTER_VLAN_TAG) {
++		out_vtag = skb_vlan_tag_get(skb);
++		out_vtag |= (skb->priority << VLAN_PRIO_SHIFT) &
++				VLAN_PRIO_MASK;
++		hns3_set_field(ol_type_vlan_len_msec, HNS3_TXD_OVLAN_B,
++			       1);
++	}
++
++	if (skb->ip_summed == CHECKSUM_PARTIAL) {
++		u8 ol4_proto, il4_proto;
++
++		skb_reset_mac_len(skb);
++
++		ret = hns3_get_l4_protocol(skb, &ol4_proto, &il4_proto);
++		if (unlikely(ret))
++			return ret;
++
++		ret = hns3_set_l2l3l4(skb, ol4_proto, il4_proto,
++				      &type_cs_vlan_tso,
++				      &ol_type_vlan_len_msec);
++		if (unlikely(ret))
++			return ret;
++
++		ret = hns3_set_tso(skb, &paylen, &mss,
++				   &type_cs_vlan_tso);
++		if (unlikely(ret))
++			return ret;
++	}
++
++	/* Set txbd */
++	desc->tx.ol_type_vlan_len_msec =
++		cpu_to_le32(ol_type_vlan_len_msec);
++	desc->tx.type_cs_vlan_tso_len = cpu_to_le32(type_cs_vlan_tso);
++	desc->tx.paylen = cpu_to_le32(paylen);
++	desc->tx.mss = cpu_to_le16(mss);
++	desc->tx.vlan_tag = cpu_to_le16(inner_vtag);
++	desc->tx.outer_vlan_tag = cpu_to_le16(out_vtag);
++
++	return 0;
++}
++
+ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
+ 			  unsigned int size, int frag_end,
+ 			  enum hns_desc_type type)
+@@ -1045,50 +1094,12 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
+ 
+ 	if (type == DESC_TYPE_SKB) {
+ 		struct sk_buff *skb = (struct sk_buff *)priv;
+-		u32 ol_type_vlan_len_msec = 0;
+-		u32 type_cs_vlan_tso = 0;
+-		u32 paylen = skb->len;
+-		u16 inner_vtag = 0;
+-		u16 out_vtag = 0;
+-		u16 mss = 0;
+ 		int ret;
+ 
+-		ret = hns3_fill_desc_vtags(skb, ring, &type_cs_vlan_tso,
+-					   &ol_type_vlan_len_msec,
+-					   &inner_vtag, &out_vtag);
++		ret = hns3_fill_skb_desc(ring, skb, desc);
+ 		if (unlikely(ret))
+ 			return ret;
+ 
+-		if (skb->ip_summed == CHECKSUM_PARTIAL) {
+-			u8 ol4_proto, il4_proto;
+-
+-			skb_reset_mac_len(skb);
+-
+-			ret = hns3_get_l4_protocol(skb, &ol4_proto, &il4_proto);
+-			if (unlikely(ret))
+-				return ret;
+-
+-			ret = hns3_set_l2l3l4(skb, ol4_proto, il4_proto,
+-					      &type_cs_vlan_tso,
+-					      &ol_type_vlan_len_msec);
+-			if (unlikely(ret))
+-				return ret;
+-
+-			ret = hns3_set_tso(skb, &paylen, &mss,
+-					   &type_cs_vlan_tso);
+-			if (unlikely(ret))
+-				return ret;
+-		}
+-
+-		/* Set txbd */
+-		desc->tx.ol_type_vlan_len_msec =
+-			cpu_to_le32(ol_type_vlan_len_msec);
+-		desc->tx.type_cs_vlan_tso_len =	cpu_to_le32(type_cs_vlan_tso);
+-		desc->tx.paylen = cpu_to_le32(paylen);
+-		desc->tx.mss = cpu_to_le16(mss);
+-		desc->tx.vlan_tag = cpu_to_le16(inner_vtag);
+-		desc->tx.outer_vlan_tag = cpu_to_le16(out_vtag);
+-
+ 		dma = dma_map_single(dev, skb->data, size, DMA_TO_DEVICE);
+ 	} else {
+ 		frag = (skb_frag_t *)priv;
 -- 
 2.7.4
 
