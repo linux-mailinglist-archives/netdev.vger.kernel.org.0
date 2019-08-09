@@ -2,145 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F9E875FA
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 11:32:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 21FFA87669
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 11:43:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406174AbfHIJcC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 05:32:02 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45981 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405876AbfHIJcC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 05:32:02 -0400
-Received: by mail-wr1-f68.google.com with SMTP id q12so7342524wrj.12
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 02:32:00 -0700 (PDT)
+        id S2406077AbfHIJnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 05:43:14 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:40300 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726152AbfHIJnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 05:43:14 -0400
+Received: by mail-ed1-f67.google.com with SMTP id h8so6192212edv.7;
+        Fri, 09 Aug 2019 02:43:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:openpgp:autocrypt:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=7xl4Fxz1zkuKhZY0T+DBnZURadM5hWOlSpQpQ4x+iYI=;
-        b=zq+sCrrHuP1zwsq5Z24lxPWAOi2UiWGLr0liOc8JGvDoRtsxoeNufIes/YwhMQen4j
-         l1hjznGhPLY+PfJoLt+daMcI+S0mdvFjgxs3PeYhy0PhGoQJP2vodAE0KRguFMnO/2yU
-         5KZt1bckXqoy0Np0gHfOoVStkcg1jVLtghC/L7pCt3NLjchm3Aor4hkqQJllJK/oOq/y
-         dplcIvZIuO7UkO10kTkbLctD78DjNu2P4FGeXppnAgvth9DjV4cv6rzjzcayTL/HIT6/
-         6Pvf8VxpFBwFnf0OrGk8C2MEU7Lq2zRHSUdyYUR+7fhypDorjMKGZ0EiGRrmOdQobmkA
-         DAdA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/lYu/e47EnsyNFO2LSj0BQZUPA891bB6xOUbTQXck3k=;
+        b=iRSHIAoCehbO1dVJjrk5QF/hzmOCTQNgxIIcn7YckOVRAm+0XQzij9QF48TBMNLt9d
+         EBphcT+ovzxMiPGdfnK1f+28gfYZtqC1YUYtlfgYoK0Qf5CAenPd/4lBVuOIb8wCqDas
+         kjbQc00sgNTgR1qgU4hgrtJ+7A5UEBzUhjGd5Ld18x70P261etvIs7+2SJ6zqV/HPcZ+
+         6Rmk4Ni5HaSwhK1OWJL2GW2DPvB+kshGD0HQwJJ8v3KrcNtD+MKqMr7r1ysPHUEvJa4p
+         pF/5YuaRxWy6hCGBnGV8QtEO1IkK8GG6DLRAHIuZHz8BrqRStIskb1TCcbBXso7FklsB
+         1Vig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :organization:message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=7xl4Fxz1zkuKhZY0T+DBnZURadM5hWOlSpQpQ4x+iYI=;
-        b=FNp2/JnjUJhEnkBP4SwRQzSrqk7aHa8w729wlXOjiFlkScMANh+TwZnJ/Kr50GHP3L
-         8fMS1+iMgYOFFMcjRgYc1DNQ7RzkGNPzpDNVs2yHM9YuSb+HtB/mV0em8hZEF9NodJDx
-         MQfyIepsxtTaA8aVoZQ+hoR00B0y51LqtKl1yysy1cu/UDlkNVE7wYEmMCCY64ppQsnE
-         vvFrJxGJaN/A5J01SRHDQdBibWCPrqWKThCIZ2Um8+sf71VxcOixV9Go6dvk1aYbnBTo
-         2cFy/L6UZCO2q2wrxab3XnIpZpdysr7c6KvC1lfD6O6lPor8BiVqF2WKpfYV8SwDothy
-         vtdA==
-X-Gm-Message-State: APjAAAUOPBRHScN7KjNMp354EYnior3KXXw4/dJIv869K8ijpvljnsgf
-        io3mUTa95Kzt45tSEQ0cZj1ESQ==
-X-Google-Smtp-Source: APXvYqw944iPQH2qQN50PmaPHC4lvJ0N0eak5vEu5unZkeS4AMUzsRM5FGRL5u4veWWjxO8395O/Lw==
-X-Received: by 2002:adf:e5c4:: with SMTP id a4mr8213433wrn.87.1565343119382;
-        Fri, 09 Aug 2019 02:31:59 -0700 (PDT)
-Received: from [10.1.2.12] (lmontsouris-657-1-212-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id t10sm491288wru.96.2019.08.09.02.31.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 09 Aug 2019 02:31:58 -0700 (PDT)
-Subject: Re: [PATCH v3 0/2] dt-bindings: net: meson-dwmac: convert to yaml
-To:     David Miller <davem@davemloft.net>
-Cc:     robh+dt@kernel.org, martin.blumenstingl@googlemail.com,
-        devicetree@vger.kernel.org, netdev@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20190808114101.29982-1-narmstrong@baylibre.com>
- <20190808.112033.180369877501058953.davem@davemloft.net>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=narmstrong@baylibre.com; prefer-encrypt=mutual; keydata=
- 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
- ZaTUOEkgIor5losDrePdPgE=
-Organization: Baylibre
-Message-ID: <e39ca095-d68e-7231-f746-2470e16cd2e9@baylibre.com>
-Date:   Fri, 9 Aug 2019 11:31:58 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/lYu/e47EnsyNFO2LSj0BQZUPA891bB6xOUbTQXck3k=;
+        b=bQ65nz8peSlnpzkoy9FemiKswnzYCd5rCcGS5DG/HLdYhdRzQpwWd33+JEUut5Ja4d
+         jah3Qu3JM6ZZpXBXWvva1CoJ0X+PoF4hJSyZVlQojp69gVRjNWKx2SwEn1zw8uNB73RL
+         b8O+PTzT4SZWeAgsfFbQiuDQxHg4YuLZhV8fwG+HP1sotGTQIgWcuDa1rnQ44EvVkJih
+         1Gvu0bHA6vevIf7MLgVYlkLr0xlGTMWOLhWkDf8789kaeUQr4o1v3b2WQJTg03w1MCCx
+         3kVP4d+3LT0Ty623bJjljM2VHMadfppa0NVv/EkPbmV3DUCuJtEAqL2212EonUx7TsAh
+         TUUw==
+X-Gm-Message-State: APjAAAV2TQTJ6t6oK1Q34DmaI74T8iEcZDT0gxB3nibqJJLlkl9MVhNP
+        +5CosARlvePW98oGeziEd1TgbbhgPz67cIuRETN9tQ==
+X-Google-Smtp-Source: APXvYqxVdiPOOCTMWJskwGRKzFHXzIRK9YGnpC/sX78zcPM+MmvVQt4pR09fZ/Y5p1ameDXTlt9n/UFg9T9EgB5ytqI=
+X-Received: by 2002:a17:907:2069:: with SMTP id qp9mr6652404ejb.90.1565343792337;
+ Fri, 09 Aug 2019 02:43:12 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20190808.112033.180369877501058953.davem@davemloft.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20190809005754.23009-1-git@andred.net>
+In-Reply-To: <20190809005754.23009-1-git@andred.net>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 9 Aug 2019 12:43:01 +0300
+Message-ID: <CA+h21hp-K0ryB39O4X9n-mCwapiXoWy5WP6ZsvswgcDy-WBYVw@mail.gmail.com>
+Subject: Re: [PATCH] net: phy: at803x: stop switching phy delay config needlessly
+To:     =?UTF-8?Q?Andr=C3=A9_Draszik?= <git@andred.net>
+Cc:     lkml <linux-kernel@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Andre,
 
-On 08/08/2019 20:20, David Miller wrote:
-> From: Neil Armstrong <narmstrong@baylibre.com>
-> Date: Thu,  8 Aug 2019 13:40:59 +0200
-> 
->> This patchsets converts the Amlogic Meson DWMAC glue bindings over to
->> YAML schemas using the already converted dwmac bindings.
->>
->> The first patch is needed because the Amlogic glue needs a supplementary
->> reg cell to access the DWMAC glue registers.
->>
->> Changes since v2:
->> - Added review tags
->> - Updated allwinner,sun7i-a20-gmac.yaml reg maxItems
-> 
-> Where is this targetted to be merged, an ARM tree?  Or one of my
-> networking trees?
-> 
+On Fri, 9 Aug 2019 at 03:58, Andr=C3=A9 Draszik <git@andred.net> wrote:
+>
+> This driver does a funny dance disabling and re-enabling
+> RX and/or TX delays. In any of the RGMII-ID modes, it first
+> disables the delays, just to re-enable them again right
+> away. This looks like a needless exercise.
+>
+> Just enable the respective delays when in any of the
+> relevant 'id' modes, and disable them otherwise.
+>
+> Also, remove comments which don't add anything that can't be
+> seen by looking at the code.
+>
+> Signed-off-by: Andr=C3=A9 Draszik <git@andred.net>
+> CC: Andrew Lunn <andrew@lunn.ch>
+> CC: Florian Fainelli <f.fainelli@gmail.com>
+> CC: Heiner Kallweit <hkallweit1@gmail.com>
+> CC: "David S. Miller" <davem@davemloft.net>
+> CC: netdev@vger.kernel.org
+> ---
 
-I assume you can take it in one of your net trees.
+Is there any particular problem you're facing? Does this make any differenc=
+e?
 
-Thanks,
-Neil
+>  drivers/net/phy/at803x.c | 26 ++++++--------------------
+>  1 file changed, 6 insertions(+), 20 deletions(-)
+>
+> diff --git a/drivers/net/phy/at803x.c b/drivers/net/phy/at803x.c
+> index 222ccd9ecfce..2ab51f552e92 100644
+> --- a/drivers/net/phy/at803x.c
+> +++ b/drivers/net/phy/at803x.c
+> @@ -257,35 +257,21 @@ static int at803x_config_init(struct phy_device *ph=
+ydev)
+>          *   after HW reset: RX delay enabled and TX delay disabled
+>          *   after SW reset: RX delay enabled, while TX delay retains the
+>          *   value before reset.
+> -        *
+> -        * So let's first disable the RX and TX delays in PHY and enable
+> -        * them based on the mode selected (this also takes care of RGMII
+> -        * mode where we expect delays to be disabled)
+>          */
+> -
+> -       ret =3D at803x_disable_rx_delay(phydev);
+> -       if (ret < 0)
+> -               return ret;
+> -       ret =3D at803x_disable_tx_delay(phydev);
+> -       if (ret < 0)
+> -               return ret;
+> -
+>         if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
+>             phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_RXID) {
+> -               /* If RGMII_ID or RGMII_RXID are specified enable RX dela=
+y,
+> -                * otherwise keep it disabled
+> -                */
+>                 ret =3D at803x_enable_rx_delay(phydev);
+> -               if (ret < 0)
+> -                       return ret;
+> +       } else {
+> +               ret =3D at803x_disable_rx_delay(phydev);
+>         }
+> +       if (ret < 0)
+> +               return ret;
+>
+>         if (phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_ID ||
+>             phydev->interface =3D=3D PHY_INTERFACE_MODE_RGMII_TXID) {
+> -               /* If RGMII_ID or RGMII_TXID are specified enable TX dela=
+y,
+> -                * otherwise keep it disabled
+> -                */
+>                 ret =3D at803x_enable_tx_delay(phydev);
+> +       } else {
+> +               ret =3D at803x_disable_tx_delay(phydev);
+>         }
+>
+>         return ret;
+> --
+> 2.20.1
+>
+
+Regards,
+-Vladimir
