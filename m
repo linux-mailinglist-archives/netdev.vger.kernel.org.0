@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 818598775A
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:33:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D74687753
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:33:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406523AbfHIKdL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 06:33:11 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41830 "EHLO mx1.suse.de"
+        id S2406509AbfHIKdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 06:33:02 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41870 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2406468AbfHIKcw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 06:32:52 -0400
+        id S2406477AbfHIKcy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 06:32:54 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id A39E3B048;
-        Fri,  9 Aug 2019 10:32:50 +0000 (UTC)
+        by mx1.suse.de (Postfix) with ESMTP id 78980B04F;
+        Fri,  9 Aug 2019 10:32:51 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Ralf Baechle <ralf@linux-mips.org>,
         Paul Burton <paul.burton@mips.com>,
@@ -31,9 +31,9 @@ To:     Ralf Baechle <ralf@linux-mips.org>,
         linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
         netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
         linux-serial@vger.kernel.org
-Subject: [PATCH v4 8/9] MIPS: SGI-IP27: fix readb/writeb addressing
-Date:   Fri,  9 Aug 2019 12:32:30 +0200
-Message-Id: <20190809103235.16338-9-tbogendoerfer@suse.de>
+Subject: [PATCH v4 9/9] Input: add IOC3 serio driver
+Date:   Fri,  9 Aug 2019 12:32:31 +0200
+Message-Id: <20190809103235.16338-10-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.13.7
 In-Reply-To: <20190809103235.16338-1-tbogendoerfer@suse.de>
 References: <20190809103235.16338-1-tbogendoerfer@suse.de>
@@ -42,378 +42,219 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Our chosen byte swapping, which is what firmware already uses, is to
-do readl/writel by normal lw/sw intructions (data invariance). This
-also means we need to mangle addresses for u8 and u16 accesses. The
-mangling for 16bit has been done aready, but 8bit one was missing.
-Correcting this causes different addresses for accesses to the
-SuperIO and local bus of the IOC3 chip. This is fixed by changing
-byte order in ioc3 and m48rtc_rtc structs.
+This patch adds a platform driver for supporting keyboard and mouse
+interface of SGI IOC3 chips.
 
-Acked-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 ---
- arch/mips/include/asm/mach-ip27/mangle-port.h |   4 +-
- arch/mips/include/asm/sn/ioc3.h               | 198 +++++++++++++-------------
- arch/mips/sgi-ip27/ip27-console.c             |   5 +-
- drivers/rtc/rtc-m48t35.c                      |  11 ++
- drivers/tty/serial/8250/8250_ioc3.c           |   4 +-
- 5 files changed, 115 insertions(+), 107 deletions(-)
+ drivers/input/serio/Kconfig   |  10 +++
+ drivers/input/serio/Makefile  |   1 +
+ drivers/input/serio/ioc3kbd.c | 163 ++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 174 insertions(+)
+ create mode 100644 drivers/input/serio/ioc3kbd.c
 
-diff --git a/arch/mips/include/asm/mach-ip27/mangle-port.h b/arch/mips/include/asm/mach-ip27/mangle-port.h
-index f6e4912ea062..27c56efa519f 100644
---- a/arch/mips/include/asm/mach-ip27/mangle-port.h
-+++ b/arch/mips/include/asm/mach-ip27/mangle-port.h
-@@ -8,7 +8,7 @@
- #ifndef __ASM_MACH_IP27_MANGLE_PORT_H
- #define __ASM_MACH_IP27_MANGLE_PORT_H
+diff --git a/drivers/input/serio/Kconfig b/drivers/input/serio/Kconfig
+index f3e18f8ef9ca..373a1646019e 100644
+--- a/drivers/input/serio/Kconfig
++++ b/drivers/input/serio/Kconfig
+@@ -165,6 +165,16 @@ config SERIO_MACEPS2
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called maceps2.
  
--#define __swizzle_addr_b(port)	(port)
-+#define __swizzle_addr_b(port)	((port) ^ 3)
- #define __swizzle_addr_w(port)	((port) ^ 2)
- #define __swizzle_addr_l(port)	(port)
- #define __swizzle_addr_q(port)	(port)
-@@ -20,6 +20,6 @@
- # define ioswabl(a, x)		(x)
- # define __mem_ioswabl(a, x)	cpu_to_le32(x)
- # define ioswabq(a, x)		(x)
--# define __mem_ioswabq(a, x)	cpu_to_le32(x)
-+# define __mem_ioswabq(a, x)	cpu_to_le64(x)
- 
- #endif /* __ASM_MACH_IP27_MANGLE_PORT_H */
-diff --git a/arch/mips/include/asm/sn/ioc3.h b/arch/mips/include/asm/sn/ioc3.h
-index 89938fdce8ef..ac6d7e6e31e0 100644
---- a/arch/mips/include/asm/sn/ioc3.h
-+++ b/arch/mips/include/asm/sn/ioc3.h
-@@ -10,35 +10,35 @@
- 
- /* serial port register map */
- struct ioc3_serialregs {
--	uint32_t	sscr;
--	uint32_t	stpir;
--	uint32_t	stcir;
--	uint32_t	srpir;
--	uint32_t	srcir;
--	uint32_t	srtr;
--	uint32_t	shadow;
-+	u32	sscr;
-+	u32	stpir;
-+	u32	stcir;
-+	u32	srpir;
-+	u32	srcir;
-+	u32	srtr;
-+	u32	shadow;
- };
- 
- /* SUPERIO uart register map */
- struct ioc3_uartregs {
-+	u8	iu_lcr;
- 	union {
--		char	rbr;	/* read only, DLAB == 0 */
--		char	thr;	/* write only, DLAB == 0 */
--		char	dll;	/* DLAB == 1 */
--	} u1;
-+		u8	iir;	/* read only */
-+		u8	fcr;	/* write only */
-+	};
- 	union {
--		char	ier;	/* DLAB == 0 */
--		char	dlm;	/* DLAB == 1 */
--	} u2;
-+		u8	ier;	/* DLAB == 0 */
-+		u8	dlm;	/* DLAB == 1 */
-+	};
- 	union {
--		char	iir;	/* read only */
--		char	fcr;	/* write only */
--	} u3;
--	char	iu_lcr;
--	char	iu_mcr;
--	char	iu_lsr;
--	char	iu_msr;
--	char	iu_scr;
-+		u8	rbr;	/* read only, DLAB == 0 */
-+		u8	thr;	/* write only, DLAB == 0 */
-+		u8	dll;	/* DLAB == 1 */
-+	} u1;
-+	u8	iu_scr;
-+	u8	iu_msr;
-+	u8	iu_lsr;
-+	u8	iu_mcr;
- };
- 
- #define iu_rbr u1.rbr
-@@ -50,122 +50,122 @@ struct ioc3_uartregs {
- #define iu_fcr u3.fcr
- 
- struct ioc3_sioregs {
--	char	fill[0x141];	/* starts at 0x141 */
-+	u8	fill[0x141];	/* starts at 0x141 */
- 
--	char	uartc;
--	char	kbdcg;
-+	u8	kbdcg;
-+	u8	uartc;
- 
--	char	fill0[0x150 - 0x142 - 1];
-+	u8	fill0[0x151 - 0x142 - 1];
- 
--	char	pp_data;
--	char	pp_dsr;
--	char	pp_dcr;
-+	u8	pp_dcr;
-+	u8	pp_dsr;
-+	u8	pp_data;
- 
--	char	fill1[0x158 - 0x152 - 1];
-+	u8	fill1[0x159 - 0x153 - 1];
- 
--	char	pp_fifa;
--	char	pp_cfgb;
--	char	pp_ecr;
-+	u8	pp_ecr;
-+	u8	pp_cfgb;
-+	u8	pp_fifa;
- 
--	char	fill2[0x168 - 0x15a - 1];
-+	u8	fill2[0x16a - 0x15b - 1];
- 
--	char	rtcad;
--	char	rtcdat;
-+	u8	rtcdat;
-+	u8	rtcad;
- 
--	char	fill3[0x170 - 0x169 - 1];
-+	u8	fill3[0x170 - 0x16b - 1];
- 
- 	struct ioc3_uartregs	uartb;	/* 0x20170  */
- 	struct ioc3_uartregs	uarta;	/* 0x20178  */
- };
- 
- struct ioc3_ethregs {
--	uint32_t	emcr;		/* 0x000f0  */
--	uint32_t	eisr;		/* 0x000f4  */
--	uint32_t	eier;		/* 0x000f8  */
--	uint32_t	ercsr;		/* 0x000fc  */
--	uint32_t	erbr_h;		/* 0x00100  */
--	uint32_t	erbr_l;		/* 0x00104  */
--	uint32_t	erbar;		/* 0x00108  */
--	uint32_t	ercir;		/* 0x0010c  */
--	uint32_t	erpir;		/* 0x00110  */
--	uint32_t	ertr;		/* 0x00114  */
--	uint32_t	etcsr;		/* 0x00118  */
--	uint32_t	ersr;		/* 0x0011c  */
--	uint32_t	etcdc;		/* 0x00120  */
--	uint32_t	ebir;		/* 0x00124  */
--	uint32_t	etbr_h;		/* 0x00128  */
--	uint32_t	etbr_l;		/* 0x0012c  */
--	uint32_t	etcir;		/* 0x00130  */
--	uint32_t	etpir;		/* 0x00134  */
--	uint32_t	emar_h;		/* 0x00138  */
--	uint32_t	emar_l;		/* 0x0013c  */
--	uint32_t	ehar_h;		/* 0x00140  */
--	uint32_t	ehar_l;		/* 0x00144  */
--	uint32_t	micr;		/* 0x00148  */
--	uint32_t	midr_r;		/* 0x0014c  */
--	uint32_t	midr_w;		/* 0x00150  */
-+	u32	emcr;		/* 0x000f0  */
-+	u32	eisr;		/* 0x000f4  */
-+	u32	eier;		/* 0x000f8  */
-+	u32	ercsr;		/* 0x000fc  */
-+	u32	erbr_h;		/* 0x00100  */
-+	u32	erbr_l;		/* 0x00104  */
-+	u32	erbar;		/* 0x00108  */
-+	u32	ercir;		/* 0x0010c  */
-+	u32	erpir;		/* 0x00110  */
-+	u32	ertr;		/* 0x00114  */
-+	u32	etcsr;		/* 0x00118  */
-+	u32	ersr;		/* 0x0011c  */
-+	u32	etcdc;		/* 0x00120  */
-+	u32	ebir;		/* 0x00124  */
-+	u32	etbr_h;		/* 0x00128  */
-+	u32	etbr_l;		/* 0x0012c  */
-+	u32	etcir;		/* 0x00130  */
-+	u32	etpir;		/* 0x00134  */
-+	u32	emar_h;		/* 0x00138  */
-+	u32	emar_l;		/* 0x0013c  */
-+	u32	ehar_h;		/* 0x00140  */
-+	u32	ehar_l;		/* 0x00144  */
-+	u32	micr;		/* 0x00148  */
-+	u32	midr_r;		/* 0x0014c  */
-+	u32	midr_w;		/* 0x00150  */
- };
- 
- struct ioc3_serioregs {
--	uint32_t	km_csr;		/* 0x0009c  */
--	uint32_t	k_rd;		/* 0x000a0  */
--	uint32_t	m_rd;		/* 0x000a4  */
--	uint32_t	k_wd;		/* 0x000a8  */
--	uint32_t	m_wd;		/* 0x000ac  */
-+	u32	km_csr;		/* 0x0009c  */
-+	u32	k_rd;		/* 0x000a0  */
-+	u32	m_rd;		/* 0x000a4  */
-+	u32	k_wd;		/* 0x000a8  */
-+	u32	m_wd;		/* 0x000ac  */
- };
- 
- /* Register layout of IOC3 in configuration space.  */
- struct ioc3 {
- 	/* PCI Config Space registers  */
--	uint32_t	pci_id;		/* 0x00000  */
--	uint32_t	pci_scr;	/* 0x00004  */
--	uint32_t	pci_rev;	/* 0x00008  */
--	uint32_t	pci_lat;	/* 0x0000c  */
--	uint32_t	pci_addr;	/* 0x00010  */
--	uint32_t	pci_err_addr_l;	/* 0x00014  */
--	uint32_t	pci_err_addr_h;	/* 0x00018  */
--
--	uint32_t	sio_ir;		/* 0x0001c  */
--	uint32_t	sio_ies;	/* 0x00020  */
--	uint32_t	sio_iec;	/* 0x00024  */
--	uint32_t	sio_cr;		/* 0x00028  */
--	uint32_t	int_out;	/* 0x0002c  */
--	uint32_t	mcr;		/* 0x00030  */
-+	u32	pci_id;		/* 0x00000  */
-+	u32	pci_scr;	/* 0x00004  */
-+	u32	pci_rev;	/* 0x00008  */
-+	u32	pci_lat;	/* 0x0000c  */
-+	u32	pci_addr;	/* 0x00010  */
-+	u32	pci_err_addr_l;	/* 0x00014  */
-+	u32	pci_err_addr_h;	/* 0x00018  */
++config SERIO_SGI_IOC3
++	tristate "SGI IOC3 PS/2 controller"
++	depends on SGI_MFD_IOC3
++	help
++	  Say Y here if you have an SGI Onyx2, SGI Octane or IOC3 PCI card
++	  and you want to attach and use a keyboard, mouse, or both.
 +
-+	u32	sio_ir;		/* 0x0001c  */
-+	u32	sio_ies;	/* 0x00020  */
-+	u32	sio_iec;	/* 0x00024  */
-+	u32	sio_cr;		/* 0x00028  */
-+	u32	int_out;	/* 0x0002c  */
-+	u32	mcr;		/* 0x00030  */
- 
- 	/* General Purpose I/O registers  */
--	uint32_t	gpcr_s;		/* 0x00034  */
--	uint32_t	gpcr_c;		/* 0x00038  */
--	uint32_t	gpdr;		/* 0x0003c  */
--	uint32_t	gppr[16];	/* 0x00040  */
-+	u32	gpcr_s;		/* 0x00034  */
-+	u32	gpcr_c;		/* 0x00038  */
-+	u32	gpdr;		/* 0x0003c  */
-+	u32	gppr[16];	/* 0x00040  */
- 
- 	/* Parallel Port Registers  */
--	uint32_t	ppbr_h_a;	/* 0x00080  */
--	uint32_t	ppbr_l_a;	/* 0x00084  */
--	uint32_t	ppcr_a;		/* 0x00088  */
--	uint32_t	ppcr;		/* 0x0008c  */
--	uint32_t	ppbr_h_b;	/* 0x00090  */
--	uint32_t	ppbr_l_b;	/* 0x00094  */
--	uint32_t	ppcr_b;		/* 0x00098  */
-+	u32	ppbr_h_a;	/* 0x00080  */
-+	u32	ppbr_l_a;	/* 0x00084  */
-+	u32	ppcr_a;		/* 0x00088  */
-+	u32	ppcr;		/* 0x0008c  */
-+	u32	ppbr_h_b;	/* 0x00090  */
-+	u32	ppbr_l_b;	/* 0x00094  */
-+	u32	ppcr_b;		/* 0x00098  */
- 
- 	/* Keyboard and Mouse Registers	 */
- 	struct ioc3_serioregs	serio;
- 
- 	/* Serial Port Registers  */
--	uint32_t	sbbr_h;		/* 0x000b0  */
--	uint32_t	sbbr_l;		/* 0x000b4  */
-+	u32	sbbr_h;		/* 0x000b0  */
-+	u32	sbbr_l;		/* 0x000b4  */
- 	struct ioc3_serialregs	port_a;
- 	struct ioc3_serialregs	port_b;
- 
- 	/* Ethernet Registers */
- 	struct ioc3_ethregs	eth;
--	uint32_t	pad1[(0x20000 - 0x00154) / 4];
-+	u32	pad1[(0x20000 - 0x00154) / 4];
- 
- 	/* SuperIO Registers  XXX */
- 	struct ioc3_sioregs	sregs;	/* 0x20000 */
--	uint32_t	pad2[(0x40000 - 0x20180) / 4];
-+	u32	pad2[(0x40000 - 0x20180) / 4];
- 
- 	/* SSRAM Diagnostic Access */
--	uint32_t	ssram[(0x80000 - 0x40000) / 4];
-+	u32	ssram[(0x80000 - 0x40000) / 4];
- 
- 	/* Bytebus device offsets
- 	   0x80000 -   Access to the generic devices selected with   DEV0
-@@ -598,10 +598,6 @@ struct ioc3_etxd {
- 
- #define MIDR_DATA_MASK		0x0000ffff
- 
--#if defined(CONFIG_SGI_IP27) || defined(CONFIG_SGI_IP30)
--extern int bridge_alloc_irq(struct pci_dev *dev);
--#endif
--
- /* subsystem IDs supplied by card detection in pci-xtalk-bridge */
- #define	IOC3_SUBSYS_IP27_BASEIO6G	0xc300
- #define	IOC3_SUBSYS_IP27_MIO		0xc301
-diff --git a/arch/mips/sgi-ip27/ip27-console.c b/arch/mips/sgi-ip27/ip27-console.c
-index 6bdb48d41276..5886bee89d06 100644
---- a/arch/mips/sgi-ip27/ip27-console.c
-+++ b/arch/mips/sgi-ip27/ip27-console.c
-@@ -35,6 +35,7 @@ void prom_putchar(char c)
- {
- 	struct ioc3_uartregs *uart = console_uart();
- 
--	while ((uart->iu_lsr & 0x20) == 0);
--	uart->iu_thr = c;
-+	while ((readb(&uart->iu_lsr) & 0x20) == 0)
-+		;
-+	writeb(c, &uart->iu_thr);
- }
-diff --git a/drivers/rtc/rtc-m48t35.c b/drivers/rtc/rtc-m48t35.c
-index d3a75d447fce..e8194f1f01a8 100644
---- a/drivers/rtc/rtc-m48t35.c
-+++ b/drivers/rtc/rtc-m48t35.c
-@@ -20,6 +20,16 @@
- 
- struct m48t35_rtc {
- 	u8	pad[0x7ff8];    /* starts at 0x7ff8 */
-+#ifdef CONFIG_SGI_IP27
-+	u8	hour;
-+	u8	min;
-+	u8	sec;
-+	u8	control;
-+	u8	year;
-+	u8	month;
-+	u8	date;
-+	u8	day;
-+#else
- 	u8	control;
- 	u8	sec;
- 	u8	min;
-@@ -28,6 +38,7 @@ struct m48t35_rtc {
- 	u8	date;
- 	u8	month;
- 	u8	year;
-+#endif
- };
- 
- #define M48T35_RTC_SET		0x80
-diff --git a/drivers/tty/serial/8250/8250_ioc3.c b/drivers/tty/serial/8250/8250_ioc3.c
-index 2be6ed2967e0..4c405f1b9c67 100644
---- a/drivers/tty/serial/8250/8250_ioc3.c
-+++ b/drivers/tty/serial/8250/8250_ioc3.c
-@@ -23,12 +23,12 @@ struct ioc3_8250_data {
- 
- static unsigned int ioc3_serial_in(struct uart_port *p, int offset)
- {
--	return readb(p->membase + offset);
-+	return readb(p->membase + (offset ^ 3));
- }
- 
- static void ioc3_serial_out(struct uart_port *p, int offset, int value)
- {
--	writeb(value, p->membase + offset);
-+	writeb(value, p->membase + (offset ^ 3));
- }
- 
- static int serial8250_ioc3_probe(struct platform_device *pdev)
++	  To compile this driver as a module, choose M here: the
++	  module will be called ioc3kbd.
++
+ config SERIO_LIBPS2
+ 	tristate "PS/2 driver library"
+ 	depends on SERIO_I8042 || SERIO_I8042=n
+diff --git a/drivers/input/serio/Makefile b/drivers/input/serio/Makefile
+index 67950a5ccb3f..6d97bad7b844 100644
+--- a/drivers/input/serio/Makefile
++++ b/drivers/input/serio/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_HIL_MLC)		+= hp_sdc_mlc.o hil_mlc.o
+ obj-$(CONFIG_SERIO_PCIPS2)	+= pcips2.o
+ obj-$(CONFIG_SERIO_PS2MULT)	+= ps2mult.o
+ obj-$(CONFIG_SERIO_MACEPS2)	+= maceps2.o
++obj-$(CONFIG_SERIO_SGI_IOC3)	+= ioc3kbd.o
+ obj-$(CONFIG_SERIO_LIBPS2)	+= libps2.o
+ obj-$(CONFIG_SERIO_RAW)		+= serio_raw.o
+ obj-$(CONFIG_SERIO_AMS_DELTA)	+= ams_delta_serio.o
+diff --git a/drivers/input/serio/ioc3kbd.c b/drivers/input/serio/ioc3kbd.c
+new file mode 100644
+index 000000000000..6840e3c23fed
+--- /dev/null
++++ b/drivers/input/serio/ioc3kbd.c
+@@ -0,0 +1,163 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * SGI IOC3 PS/2 controller driver for linux
++ *
++ * Copyright (C) 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
++ *
++ * Based on code Copyright (C) 2005 Stanislaw Skowronek <skylark@unaligned.org>
++ *               Copyright (C) 2009 Johannes Dickgreber <tanzy@gmx.de>
++ */
++
++#include <linux/delay.h>
++#include <linux/init.h>
++#include <linux/io.h>
++#include <linux/serio.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++
++#include <asm/sn/ioc3.h>
++
++struct ioc3kbd_data {
++	struct ioc3_serioregs __iomem *regs;
++	struct serio *kbd, *aux;
++	int irq;
++};
++
++static int ioc3kbd_write(struct serio *dev, u8 val)
++{
++	struct ioc3kbd_data *d = dev->port_data;
++	unsigned long timeout = 0;
++	u32 mask;
++
++	mask = (dev == d->aux) ? KM_CSR_M_WRT_PEND : KM_CSR_K_WRT_PEND;
++	while ((readl(&d->regs->km_csr) & mask) && (timeout < 1000)) {
++		udelay(100);
++		timeout++;
++	}
++
++	if (timeout >= 1000)
++		return -ETIMEDOUT;
++
++	writel(val, dev == d->aux ? &d->regs->m_wd : &d->regs->k_wd);
++
++	return 0;
++}
++
++static irqreturn_t ioc3kbd_intr(int itq, void *dev_id)
++{
++	struct ioc3kbd_data *d = dev_id;
++	u32 data_k, data_m;
++
++	data_k = readl(&d->regs->k_rd);
++	data_m = readl(&d->regs->m_rd);
++
++	if (data_k & KM_RD_VALID_0)
++		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_0_SHIFT) & 0xff,
++				0);
++	if (data_k & KM_RD_VALID_1)
++		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_1_SHIFT) & 0xff,
++				0);
++	if (data_k & KM_RD_VALID_2)
++		serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_2_SHIFT) & 0xff,
++				0);
++	if (data_m & KM_RD_VALID_0)
++		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_0_SHIFT) & 0xff,
++				0);
++	if (data_m & KM_RD_VALID_1)
++		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_1_SHIFT) & 0xff,
++				0);
++	if (data_m & KM_RD_VALID_2)
++		serio_interrupt(d->aux, (data_m >> KM_RD_DATA_2_SHIFT) & 0xff,
++				0);
++
++	return 0;
++}
++
++static int ioc3kbd_probe(struct platform_device *pdev)
++{
++	struct ioc3_serioregs __iomem *regs;
++	struct device *dev = &pdev->dev;
++	struct ioc3kbd_data *d;
++	struct serio *sk, *sa;
++	int irq, ret;
++
++	regs = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(regs))
++		return PTR_ERR(regs);
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return -ENXIO;
++
++	d = devm_kzalloc(&pdev->dev, sizeof(*d), GFP_KERNEL);
++	if (!d)
++		return -ENOMEM;
++
++	sk = kzalloc(sizeof(*sk), GFP_KERNEL);
++	if (!sk)
++		return -ENOMEM;
++
++	sa = kzalloc(sizeof(*sa), GFP_KERNEL);
++	if (!sa) {
++		kfree(sk);
++		return -ENOMEM;
++	}
++
++	sk->id.type = SERIO_8042;
++	sk->write = ioc3kbd_write;
++	snprintf(sk->name, sizeof(sk->name), "IOC3 keyboard %d", pdev->id);
++	snprintf(sk->phys, sizeof(sk->phys), "ioc3/serio%dkbd", pdev->id);
++	sk->port_data = d;
++	sk->dev.parent = &pdev->dev;
++
++	sa->id.type = SERIO_8042;
++	sa->write = ioc3kbd_write;
++	snprintf(sa->name, sizeof(sa->name), "IOC3 auxiliary %d", pdev->id);
++	snprintf(sa->phys, sizeof(sa->phys), "ioc3/serio%daux", pdev->id);
++	sa->port_data = d;
++	sa->dev.parent = dev;
++
++	d->regs = regs;
++	d->kbd = sk;
++	d->aux = sa;
++	d->irq = irq;
++
++	platform_set_drvdata(pdev, d);
++	serio_register_port(d->kbd);
++	serio_register_port(d->aux);
++
++	ret = devm_request_irq(&pdev->dev, irq, ioc3kbd_intr, IRQF_SHARED,
++			       "ioc3-kbd", d);
++	if (ret) {
++		dev_err(&pdev->dev, "could not request IRQ %d\n", irq);
++		serio_unregister_port(d->kbd);
++		serio_unregister_port(d->aux);
++		kfree(sk);
++		kfree(sa);
++		return ret;
++	}
++	return 0;
++}
++
++static int ioc3kbd_remove(struct platform_device *pdev)
++{
++	struct ioc3kbd_data *d = platform_get_drvdata(pdev);
++
++	devm_free_irq(&pdev->dev, d->irq, d);
++	serio_unregister_port(d->kbd);
++	serio_unregister_port(d->aux);
++	return 0;
++}
++
++static struct platform_driver ioc3kbd_driver = {
++	.probe          = ioc3kbd_probe,
++	.remove         = ioc3kbd_remove,
++	.driver = {
++		.name = "ioc3-kbd",
++	},
++};
++module_platform_driver(ioc3kbd_driver);
++
++MODULE_AUTHOR("Thomas Bogendoerfer <tbogendoerfer@suse.de>");
++MODULE_DESCRIPTION("SGI IOC3 serio driver");
++MODULE_LICENSE("GPL");
 -- 
 2.13.7
 
