@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3348882A5
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:36:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C256D882AB
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:36:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436781AbfHISgc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 14:36:32 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:38462 "EHLO
+        id S2436802AbfHISgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 14:36:43 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:38460 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2407418AbfHISgb (ORCPT
+        by vger.kernel.org with ESMTP id S2407409AbfHISgb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 14:36:31 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id E0B3CC0C9D
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id CF8B6C0BD1
         for <netdev@vger.kernel.org>; Fri,  9 Aug 2019 18:36:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1565375791; bh=WxITugwYKZ5PHSm1HF7I5A/rEoAQe/9PJ9Rc31CVYFo=;
+        t=1565375791; bh=vBbO8HiXMHwj0W0VE0sdFTjss3zidt5LHLvsNxDeXOI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=liOF/EMzOt8o++bQ0IeAD+lut7RGhyLNEix/QBM2NBjkRau/NcSIp5bZV57NH/WOK
-         FEHg11Ri5ko8LscT7mfxAwCuEkRzDyxwS72K28X5MW5REYkaeT8y44GW5bibCyERSH
-         bx6d8kRQBwkF3aMmERrAIe4HGSveddsc/wVJC3pFRXgPdPTswOhNZs6lGKKWH9xVxR
-         NpiSD/CcFftbX9D4AiO6atf3t9dN4KR1RERicxrblOTHQjoNI0VTXIthjHUhyXslzm
-         mCiw+OecG12wqUQqMRjdXlb82k18sJdENZXgPodb4drlQ37rtBzoRfp9QcJBZ8ne+B
-         WOPtEigZcd8ig==
+        b=X15Lwqty7Q6z2SzucY71vITSceyiLjNXPatuGZA5kPW2VkVWSuUbSccGjVnIhXV0F
+         BAN8SOR5kd4OYdIV6cPPPDXkRzckgYGteMp3QDe2wdJTdlD8AYuUB8h2OlC8NATh7E
+         HtoJD1DlCSPGT52QXod0cTxe5nueWJxTcupRpLr+cURcTAEA9WCOHzyMGnzH2dYLs6
+         JFQPVPqQEYFy9pX/BVF6NoITiYDDUTWe05rDk5BQPVqf27bJE6utW5vMlm2soOVqWA
+         jQ1ZD0F+k2R5LrlKqf09q9itDcoKvBOhmXkf8fADLYg5cUV6/jXS+Hsu0qKXupDOMc
+         FE0vGTk2ll+AA==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 87454A0079;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 8EAFBA007C;
         Fri,  9 Aug 2019 18:36:29 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
 Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Jose Abreu <Jose.Abreu@synopsys.com>
-Subject: [PATCH net-next 10/12] net: stmmac: xgmac: Add EEE support
-Date:   Fri,  9 Aug 2019 20:36:18 +0200
-Message-Id: <c4f9c2a899025cd8903b9031b2da001b06456a68.1565375521.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 11/12] net: stmmac: Add support for VLAN Insertion Offload
+Date:   Fri,  9 Aug 2019 20:36:19 +0200
+Message-Id: <001b762fc0f3655954d96bd13f24fc4c6e7ff723.1565375521.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1565375521.git.joabreu@synopsys.com>
 References: <cover.1565375521.git.joabreu@synopsys.com>
@@ -46,169 +46,370 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for EEE in XGMAC cores by implementing the necessary
-callbacks.
+Adds the logic to insert a given VLAN ID in a packet. This is offloaded
+to HW and its descriptor based. For now, only XGMAC implements the
+necessary callbacks.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     | 12 ++++
- .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 75 ++++++++++++++++++++--
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  1 +
- 3 files changed, 83 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/common.h       |  8 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     | 15 +++++++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 14 ++++++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_descs.c   | 35 +++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  2 +
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         | 10 +++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 52 +++++++++++++++++++++-
+ 7 files changed, 135 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/common.h b/drivers/net/ethernet/stmicro/stmmac/common.h
+index 1303ec81fd3d..49aa56ca09cc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/common.h
++++ b/drivers/net/ethernet/stmicro/stmmac/common.h
+@@ -358,6 +358,8 @@ struct dma_features {
+ 	unsigned int rssen;
+ 	unsigned int vlhash;
+ 	unsigned int sphen;
++	unsigned int vlins;
++	unsigned int dvlan;
+ };
+ 
+ /* GMAC TX FIFO is 8K, Rx FIFO is 16K */
+@@ -389,6 +391,12 @@ struct dma_features {
+ #define STMMAC_RSS_HASH_KEY_SIZE	40
+ #define STMMAC_RSS_MAX_TABLE_SIZE	256
+ 
++/* VLAN */
++#define STMMAC_VLAN_NONE	0x0
++#define STMMAC_VLAN_REMOVE	0x1
++#define STMMAC_VLAN_INSERT	0x2
++#define STMMAC_VLAN_REPLACE	0x3
++
+ extern const struct stmmac_desc_ops enh_desc_ops;
+ extern const struct stmmac_desc_ops ndesc_ops;
+ 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 3fb023953023..79c145ba25a8 100644
+index 79c145ba25a8..7357b8bdc128 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -71,6 +71,7 @@
- #define XGMAC_PSRQ(x)			GENMASK((x) * 8 + 7, (x) * 8)
- #define XGMAC_PSRQ_SHIFT(x)		((x) * 8)
- #define XGMAC_INT_STATUS		0x000000b0
-+#define XGMAC_LPIIS			BIT(5)
- #define XGMAC_PMTIS			BIT(4)
- #define XGMAC_INT_EN			0x000000b4
- #define XGMAC_TSIE			BIT(12)
-@@ -88,10 +89,21 @@
- #define XGMAC_RWKPKTEN			BIT(2)
- #define XGMAC_MGKPKTEN			BIT(1)
- #define XGMAC_PWRDWN			BIT(0)
-+#define XGMAC_LPI_CTRL			0x000000d0
-+#define XGMAC_TXCGE			BIT(21)
-+#define XGMAC_LPITXA			BIT(19)
-+#define XGMAC_PLS			BIT(17)
-+#define XGMAC_LPITXEN			BIT(16)
-+#define XGMAC_RLPIEX			BIT(3)
-+#define XGMAC_RLPIEN			BIT(2)
-+#define XGMAC_TLPIEX			BIT(1)
-+#define XGMAC_TLPIEN			BIT(0)
-+#define XGMAC_LPI_TIMER_CTRL		0x000000d4
- #define XGMAC_HW_FEATURE0		0x0000011c
- #define XGMAC_HWFEAT_SAVLANINS		BIT(27)
- #define XGMAC_HWFEAT_RXCOESEL		BIT(16)
- #define XGMAC_HWFEAT_TXCOESEL		BIT(14)
-+#define XGMAC_HWFEAT_EEESEL		BIT(13)
- #define XGMAC_HWFEAT_TSSEL		BIT(12)
- #define XGMAC_HWFEAT_AVSEL		BIT(11)
- #define XGMAC_HWFEAT_RAVSEL		BIT(10)
+@@ -63,6 +63,11 @@
+ #define XGMAC_VLAN_ETV			BIT(16)
+ #define XGMAC_VLAN_VID			GENMASK(15, 0)
+ #define XGMAC_VLAN_HASH_TABLE		0x00000058
++#define XGMAC_VLAN_INCL			0x00000060
++#define XGMAC_VLAN_VLTI			BIT(20)
++#define XGMAC_VLAN_CSVL			BIT(19)
++#define XGMAC_VLAN_VLC			GENMASK(17, 16)
++#define XGMAC_VLAN_VLC_SHIFT		16
+ #define XGMAC_RXQ_CTRL0			0x000000a0
+ #define XGMAC_RXQEN(x)			GENMASK((x) * 2 + 1, (x) * 2)
+ #define XGMAC_RXQEN_SHIFT(x)		((x) * 2)
+@@ -128,6 +133,7 @@
+ #define XGMAC_HWFEAT_RXQCNT		GENMASK(3, 0)
+ #define XGMAC_HW_FEATURE3		0x00000128
+ #define XGMAC_HWFEAT_ASP		GENMASK(15, 14)
++#define XGMAC_HWFEAT_DVLAN		BIT(13)
+ #define XGMAC_HWFEAT_FRPES		GENMASK(12, 11)
+ #define XGMAC_HWFEAT_FRPPB		GENMASK(10, 9)
+ #define XGMAC_HWFEAT_FRPSEL		BIT(3)
+@@ -337,10 +343,14 @@
+ #define XGMAC_REGSIZE			((0x0000317c + (0x80 * 15)) / 4)
+ 
+ /* Descriptors */
++#define XGMAC_TDES2_IVT			GENMASK(31, 16)
++#define XGMAC_TDES2_IVT_SHIFT		16
+ #define XGMAC_TDES2_IOC			BIT(31)
+ #define XGMAC_TDES2_TTSE		BIT(30)
+ #define XGMAC_TDES2_B2L			GENMASK(29, 16)
+ #define XGMAC_TDES2_B2L_SHIFT		16
++#define XGMAC_TDES2_VTIR		GENMASK(15, 14)
++#define XGMAC_TDES2_VTIR_SHIFT		14
+ #define XGMAC_TDES2_B1L			GENMASK(13, 0)
+ #define XGMAC_TDES3_OWN			BIT(31)
+ #define XGMAC_TDES3_CTXT		BIT(30)
+@@ -353,10 +363,15 @@
+ #define XGMAC_TDES3_SAIC_SHIFT		23
+ #define XGMAC_TDES3_THL			GENMASK(22, 19)
+ #define XGMAC_TDES3_THL_SHIFT		19
++#define XGMAC_TDES3_IVTIR		GENMASK(19, 18)
++#define XGMAC_TDES3_IVTIR_SHIFT		18
+ #define XGMAC_TDES3_TSE			BIT(18)
++#define XGMAC_TDES3_IVLTV		BIT(17)
+ #define XGMAC_TDES3_CIC			GENMASK(17, 16)
+ #define XGMAC_TDES3_CIC_SHIFT		16
+ #define XGMAC_TDES3_TPL			GENMASK(17, 0)
++#define XGMAC_TDES3_VLTV		BIT(16)
++#define XGMAC_TDES3_VT			GENMASK(15, 0)
+ #define XGMAC_TDES3_FL			GENMASK(14, 0)
+ #define XGMAC_RDES2_HL			GENMASK(9, 0)
+ #define XGMAC_RDES3_OWN			BIT(31)
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index 16e3a0a0c826..353dca543672 100644
+index 353dca543672..70476ea38fb9 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-@@ -253,6 +253,7 @@ static int dwxgmac2_host_irq_status(struct mac_device_info *hw,
- {
- 	void __iomem *ioaddr = hw->pcsr;
- 	u32 stat, en;
-+	int ret = 0;
+@@ -1157,6 +1157,19 @@ static void dwxgmac2_sarc_configure(void __iomem *ioaddr, int val)
+ 	writel(value, ioaddr + XGMAC_TX_CONFIG);
+ }
  
- 	en = readl(ioaddr + XGMAC_INT_EN);
- 	stat = readl(ioaddr + XGMAC_INT_STATUS);
-@@ -264,7 +265,24 @@ static int dwxgmac2_host_irq_status(struct mac_device_info *hw,
- 		readl(ioaddr + XGMAC_PMT);
- 	}
- 
--	return 0;
-+	if (stat & XGMAC_LPIIS) {
-+		u32 lpi = readl(ioaddr + XGMAC_LPI_CTRL);
++static void dwxgmac2_enable_vlan(struct mac_device_info *hw, u32 type)
++{
++	void __iomem *ioaddr = hw->pcsr;
++	u32 value;
 +
-+		if (lpi & XGMAC_TLPIEN) {
-+			ret |= CORE_IRQ_TX_PATH_IN_LPI_MODE;
-+			x->irq_tx_path_in_lpi_mode_n++;
-+		}
-+		if (lpi & XGMAC_TLPIEX) {
-+			ret |= CORE_IRQ_TX_PATH_EXIT_LPI_MODE;
-+			x->irq_tx_path_exit_lpi_mode_n++;
-+		}
-+		if (lpi & XGMAC_RLPIEN)
-+			x->irq_rx_path_in_lpi_mode_n++;
-+		if (lpi & XGMAC_RLPIEX)
-+			x->irq_rx_path_exit_lpi_mode_n++;
++	value = readl(ioaddr + XGMAC_VLAN_INCL);
++	value |= XGMAC_VLAN_VLTI;
++	value |= XGMAC_VLAN_CSVL; /* Only use SVLAN */
++	value &= ~XGMAC_VLAN_VLC;
++	value |= (type << XGMAC_VLAN_VLC_SHIFT) & XGMAC_VLAN_VLC;
++	writel(value, ioaddr + XGMAC_VLAN_INCL);
++}
++
+ const struct stmmac_ops dwxgmac210_ops = {
+ 	.core_init = dwxgmac2_core_init,
+ 	.set_mac = dwxgmac2_set_mac,
+@@ -1196,6 +1209,7 @@ const struct stmmac_ops dwxgmac210_ops = {
+ 	.get_mac_tx_timestamp = dwxgmac2_get_mac_tx_timestamp,
+ 	.flex_pps_config = dwxgmac2_flex_pps_config,
+ 	.sarc_configure = dwxgmac2_sarc_configure,
++	.enable_vlan = dwxgmac2_enable_vlan,
+ };
+ 
+ int dwxgmac2_setup(struct stmmac_priv *priv)
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
+index c51691f7c4c8..4cf3cc42bb60 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_descs.c
+@@ -306,6 +306,39 @@ static void dwxgmac2_set_sarc(struct dma_desc *p, u32 sarc_type)
+ 	p->des3 |= cpu_to_le32(sarc_type & XGMAC_TDES3_SAIC);
+ }
+ 
++static void dwxgmac2_set_vlan_tag(struct dma_desc *p, u16 tag, u16 inner_tag,
++				  u32 inner_type)
++{
++	p->des0 = 0;
++	p->des1 = 0;
++	p->des2 = 0;
++	p->des3 = 0;
++
++	/* Inner VLAN */
++	if (inner_type) {
++		u32 des = inner_tag << XGMAC_TDES2_IVT_SHIFT;
++
++		des &= XGMAC_TDES2_IVT;
++		p->des2 = cpu_to_le32(des);
++
++		des = inner_type << XGMAC_TDES3_IVTIR_SHIFT;
++		des &= XGMAC_TDES3_IVTIR;
++		p->des3 = cpu_to_le32(des | XGMAC_TDES3_IVLTV);
 +	}
 +
-+	return ret;
- }
- 
- static int dwxgmac2_host_mtl_irq_status(struct mac_device_info *hw, u32 chan)
-@@ -357,6 +375,53 @@ static void dwxgmac2_get_umac_addr(struct mac_device_info *hw,
- 	addr[5] = (hi_addr >> 8) & 0xff;
- }
- 
-+static void dwxgmac2_set_eee_mode(struct mac_device_info *hw,
-+				  bool en_tx_lpi_clockgating)
-+{
-+	void __iomem *ioaddr = hw->pcsr;
-+	u32 value;
++	/* Outer VLAN */
++	p->des3 |= cpu_to_le32(tag & XGMAC_TDES3_VT);
++	p->des3 |= cpu_to_le32(XGMAC_TDES3_VLTV);
 +
-+	value = readl(ioaddr + XGMAC_LPI_CTRL);
-+
-+	value |= XGMAC_LPITXEN | XGMAC_LPITXA;
-+	if (en_tx_lpi_clockgating)
-+		value |= XGMAC_TXCGE;
-+
-+	writel(value, ioaddr + XGMAC_LPI_CTRL);
++	p->des3 |= cpu_to_le32(XGMAC_TDES3_CTXT);
 +}
 +
-+static void dwxgmac2_reset_eee_mode(struct mac_device_info *hw)
++static void dwxgmac2_set_vlan(struct dma_desc *p, u32 type)
 +{
-+	void __iomem *ioaddr = hw->pcsr;
-+	u32 value;
-+
-+	value = readl(ioaddr + XGMAC_LPI_CTRL);
-+	value &= ~(XGMAC_LPITXEN | XGMAC_LPITXA | XGMAC_TXCGE);
-+	writel(value, ioaddr + XGMAC_LPI_CTRL);
++	type <<= XGMAC_TDES2_VTIR_SHIFT;
++	p->des2 |= cpu_to_le32(type & XGMAC_TDES2_VTIR);
 +}
 +
-+static void dwxgmac2_set_eee_pls(struct mac_device_info *hw, int link)
-+{
-+	void __iomem *ioaddr = hw->pcsr;
-+	u32 value;
-+
-+	value = readl(ioaddr + XGMAC_LPI_CTRL);
-+	if (link)
-+		value |= XGMAC_PLS;
-+	else
-+		value &= ~XGMAC_PLS;
-+	writel(value, ioaddr + XGMAC_LPI_CTRL);
-+}
-+
-+static void dwxgmac2_set_eee_timer(struct mac_device_info *hw, int ls, int tw)
-+{
-+	void __iomem *ioaddr = hw->pcsr;
-+	u32 value;
-+
-+	value = (tw & 0xffff) | ((ls & 0x3ff) << 16);
-+	writel(value, ioaddr + XGMAC_LPI_TIMER_CTRL);
-+}
-+
- static void dwxgmac2_set_mchash(void __iomem *ioaddr, u32 *mcfilterbits,
- 				int mcbitslog2)
- {
-@@ -1112,10 +1177,10 @@ const struct stmmac_ops dwxgmac210_ops = {
- 	.pmt = dwxgmac2_pmt,
- 	.set_umac_addr = dwxgmac2_set_umac_addr,
- 	.get_umac_addr = dwxgmac2_get_umac_addr,
--	.set_eee_mode = NULL,
--	.reset_eee_mode = NULL,
--	.set_eee_timer = NULL,
--	.set_eee_pls = NULL,
-+	.set_eee_mode = dwxgmac2_set_eee_mode,
-+	.reset_eee_mode = dwxgmac2_reset_eee_mode,
-+	.set_eee_timer = dwxgmac2_set_eee_timer,
-+	.set_eee_pls = dwxgmac2_set_eee_pls,
- 	.pcs_ctrl_ane = NULL,
- 	.pcs_rane = NULL,
- 	.pcs_get_adv_lp = NULL,
+ const struct stmmac_desc_ops dwxgmac210_desc_ops = {
+ 	.tx_status = dwxgmac2_get_tx_status,
+ 	.rx_status = dwxgmac2_get_rx_status,
+@@ -333,4 +366,6 @@ const struct stmmac_desc_ops dwxgmac210_desc_ops = {
+ 	.get_rx_header_len = dwxgmac2_get_rx_header_len,
+ 	.set_sec_addr = dwxgmac2_set_sec_addr,
+ 	.set_sarc = dwxgmac2_set_sarc,
++	.set_vlan_tag = dwxgmac2_set_vlan_tag,
++	.set_vlan = dwxgmac2_set_vlan,
+ };
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-index 42c13d144203..f2d5901fbaff 100644
+index f2d5901fbaff..64956465c030 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
-@@ -361,6 +361,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
+@@ -359,6 +359,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
+ 
+ 	/*  MAC HW feature 0 */
  	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE0);
++	dma_cap->vlins = (hw_cap & XGMAC_HWFEAT_SAVLANINS) >> 27;
  	dma_cap->rx_coe = (hw_cap & XGMAC_HWFEAT_RXCOESEL) >> 16;
  	dma_cap->tx_coe = (hw_cap & XGMAC_HWFEAT_TXCOESEL) >> 14;
-+	dma_cap->eee = (hw_cap & XGMAC_HWFEAT_EEESEL) >> 13;
- 	dma_cap->atime_stamp = (hw_cap & XGMAC_HWFEAT_TSSEL) >> 12;
- 	dma_cap->av = (hw_cap & XGMAC_HWFEAT_AVSEL) >> 11;
- 	dma_cap->av &= (hw_cap & XGMAC_HWFEAT_RAVSEL) >> 10;
+ 	dma_cap->eee = (hw_cap & XGMAC_HWFEAT_EEESEL) >> 13;
+@@ -413,6 +414,7 @@ static void dwxgmac2_get_hw_feature(void __iomem *ioaddr,
+ 	/* MAC HW feature 3 */
+ 	hw_cap = readl(ioaddr + XGMAC_HW_FEATURE3);
+ 	dma_cap->asp = (hw_cap & XGMAC_HWFEAT_ASP) >> 14;
++	dma_cap->dvlan = (hw_cap & XGMAC_HWFEAT_DVLAN) >> 13;
+ 	dma_cap->frpes = (hw_cap & XGMAC_HWFEAT_FRPES) >> 11;
+ 	dma_cap->frpbs = (hw_cap & XGMAC_HWFEAT_FRPPB) >> 9;
+ 	dma_cap->frpsel = (hw_cap & XGMAC_HWFEAT_FRPSEL) >> 3;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/hwif.h b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+index e54864cde01b..9435b312495d 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/hwif.h
++++ b/drivers/net/ethernet/stmicro/stmmac/hwif.h
+@@ -92,6 +92,9 @@ struct stmmac_desc_ops {
+ 	int (*get_rx_header_len)(struct dma_desc *p, unsigned int *len);
+ 	void (*set_sec_addr)(struct dma_desc *p, dma_addr_t addr);
+ 	void (*set_sarc)(struct dma_desc *p, u32 sarc_type);
++	void (*set_vlan_tag)(struct dma_desc *p, u16 tag, u16 inner_tag,
++			     u32 inner_type);
++	void (*set_vlan)(struct dma_desc *p, u32 type);
+ };
+ 
+ #define stmmac_init_rx_desc(__priv, __args...) \
+@@ -150,6 +153,10 @@ struct stmmac_desc_ops {
+ 	stmmac_do_void_callback(__priv, desc, set_sec_addr, __args)
+ #define stmmac_set_desc_sarc(__priv, __args...) \
+ 	stmmac_do_void_callback(__priv, desc, set_sarc, __args)
++#define stmmac_set_desc_vlan_tag(__priv, __args...) \
++	stmmac_do_void_callback(__priv, desc, set_vlan_tag, __args)
++#define stmmac_set_desc_vlan(__priv, __args...) \
++	stmmac_do_void_callback(__priv, desc, set_vlan, __args)
+ 
+ struct stmmac_dma_cfg;
+ struct dma_features;
+@@ -351,6 +358,7 @@ struct stmmac_ops {
+ 	/* VLAN */
+ 	void (*update_vlan_hash)(struct mac_device_info *hw, u32 hash,
+ 				 bool is_double);
++	void (*enable_vlan)(struct mac_device_info *hw, u32 type);
+ 	/* TX Timestamp */
+ 	int (*get_mac_tx_timestamp)(struct mac_device_info *hw, u64 *ts);
+ 	/* Source Address Insertion / Replacement */
+@@ -429,6 +437,8 @@ struct stmmac_ops {
+ 	stmmac_do_callback(__priv, mac, rss_configure, __args)
+ #define stmmac_update_vlan_hash(__priv, __args...) \
+ 	stmmac_do_void_callback(__priv, mac, update_vlan_hash, __args)
++#define stmmac_enable_vlan(__priv, __args...) \
++	stmmac_do_void_callback(__priv, mac, enable_vlan, __args)
+ #define stmmac_get_mac_tx_timestamp(__priv, __args...) \
+ 	stmmac_do_callback(__priv, mac, get_mac_tx_timestamp, __args)
+ #define stmmac_sarc_configure(__priv, __args...) \
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index a0c276ad5718..8275bd5ea5ed 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -2617,6 +2617,10 @@ static int stmmac_hw_setup(struct net_device *dev, bool init_ptp)
+ 			stmmac_enable_sph(priv, priv->ioaddr, 1, chan);
+ 	}
+ 
++	/* VLAN Tag Insertion */
++	if (priv->dma_cap.vlins)
++		stmmac_enable_vlan(priv, priv->hw, STMMAC_VLAN_INSERT);
++
+ 	/* Start the ball rolling... */
+ 	stmmac_start_all_dma(priv);
+ 
+@@ -2794,6 +2798,33 @@ static int stmmac_release(struct net_device *dev)
+ 	return 0;
+ }
+ 
++static bool stmmac_vlan_insert(struct stmmac_priv *priv, struct sk_buff *skb,
++			       struct stmmac_tx_queue *tx_q)
++{
++	u16 tag = 0x0, inner_tag = 0x0;
++	u32 inner_type = 0x0;
++	struct dma_desc *p;
++
++	if (!priv->dma_cap.vlins)
++		return false;
++	if (!skb_vlan_tag_present(skb))
++		return false;
++	if (skb->vlan_proto == htons(ETH_P_8021AD)) {
++		inner_tag = skb_vlan_tag_get(skb);
++		inner_type = STMMAC_VLAN_INSERT;
++	}
++
++	tag = skb_vlan_tag_get(skb);
++
++	p = tx_q->dma_tx + tx_q->cur_tx;
++	if (stmmac_set_desc_vlan_tag(priv, p, tag, inner_tag, inner_type))
++		return false;
++
++	stmmac_set_tx_owner(priv, p);
++	tx_q->cur_tx = STMMAC_GET_ENTRY(tx_q->cur_tx, DMA_TX_SIZE);
++	return true;
++}
++
+ /**
+  *  stmmac_tso_allocator - close entry point of the driver
+  *  @priv: driver private structure
+@@ -2873,12 +2904,13 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	int nfrags = skb_shinfo(skb)->nr_frags;
+ 	u32 queue = skb_get_queue_mapping(skb);
+-	unsigned int first_entry;
+ 	struct stmmac_tx_queue *tx_q;
++	unsigned int first_entry;
+ 	int tmp_pay_len = 0;
+ 	u32 pay_len, mss;
+ 	u8 proto_hdr_len;
+ 	dma_addr_t des;
++	bool has_vlan;
+ 	int i;
+ 
+ 	tx_q = &priv->tx_queue[queue];
+@@ -2920,12 +2952,18 @@ static netdev_tx_t stmmac_tso_xmit(struct sk_buff *skb, struct net_device *dev)
+ 			skb->data_len);
+ 	}
+ 
++	/* Check if VLAN can be inserted by HW */
++	has_vlan = stmmac_vlan_insert(priv, skb, tx_q);
++
+ 	first_entry = tx_q->cur_tx;
+ 	WARN_ON(tx_q->tx_skbuff[first_entry]);
+ 
+ 	desc = tx_q->dma_tx + first_entry;
+ 	first = desc;
+ 
++	if (has_vlan)
++		stmmac_set_desc_vlan(priv, first, STMMAC_VLAN_INSERT);
++
+ 	/* first descriptor: fill Headers on Buf1 */
+ 	des = dma_map_single(priv->device, skb->data, skb_headlen(skb),
+ 			     DMA_TO_DEVICE);
+@@ -3085,6 +3123,7 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+ 	unsigned int first_entry;
+ 	unsigned int enh_desc;
+ 	dma_addr_t des;
++	bool has_vlan;
+ 	int entry;
+ 
+ 	tx_q = &priv->tx_queue[queue];
+@@ -3110,6 +3149,9 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+ 		return NETDEV_TX_BUSY;
+ 	}
+ 
++	/* Check if VLAN can be inserted by HW */
++	has_vlan = stmmac_vlan_insert(priv, skb, tx_q);
++
+ 	entry = tx_q->cur_tx;
+ 	first_entry = entry;
+ 	WARN_ON(tx_q->tx_skbuff[first_entry]);
+@@ -3123,6 +3165,9 @@ static netdev_tx_t stmmac_xmit(struct sk_buff *skb, struct net_device *dev)
+ 
+ 	first = desc;
+ 
++	if (has_vlan)
++		stmmac_set_desc_vlan(priv, first, STMMAC_VLAN_INSERT);
++
+ 	enh_desc = priv->plat->enh_desc;
+ 	/* To program the descriptors according to the size of the frame */
+ 	if (enh_desc)
+@@ -4494,6 +4539,11 @@ int stmmac_dvr_probe(struct device *device,
+ 		ndev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
+ 		ndev->features |= NETIF_F_HW_VLAN_STAG_FILTER;
+ 	}
++	if (priv->dma_cap.vlins) {
++		ndev->features |= NETIF_F_HW_VLAN_CTAG_TX;
++		if (priv->dma_cap.dvlan)
++			ndev->features |= NETIF_F_HW_VLAN_STAG_TX;
++	}
+ #endif
+ 	priv->msg_enable = netif_msg_init(debug, default_msg_level);
+ 
 -- 
 2.7.4
 
