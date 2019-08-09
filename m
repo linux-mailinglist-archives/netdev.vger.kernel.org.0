@@ -2,94 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 905BA879ED
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:30:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE2A0879FA
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406765AbfHIMab (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 08:30:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57298 "EHLO mail.kernel.org"
+        id S2406875AbfHIMbW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 08:31:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57746 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726267AbfHIMaa (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 08:30:30 -0400
+        id S2406871AbfHIMbV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 08:31:21 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 73C3F208C3;
-        Fri,  9 Aug 2019 12:30:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5534421783;
+        Fri,  9 Aug 2019 12:31:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565353830;
-        bh=Bw7AdXnBl1lMBPJ0u0aAWoxjb3sn7FEDyZSxw+JKNz0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=fLBAtJE5sMOg/BJ8T7dpgn+IC5zXSrS/vtXGmNCl/cvj7plc2DFmD4lU/WKIONWo7
-         v3+pQo7wyAjIX+HXFYwS0GkqU9cIXV83wwKw4eRHXWLkWKgzMmrkXYpfzHsVnh473J
-         qtHXMHDgYDCGk2D4nt1g/2RkeIlxizqzjluik08U=
-Date:   Fri, 9 Aug 2019 14:30:27 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 00/17] Networking driver debugfs cleanups
-Message-ID: <20190809123027.GA26943@kroah.com>
-References: <20190806161128.31232-1-gregkh@linuxfoundation.org>
- <20190808.183756.2198405327467483431.davem@davemloft.net>
- <20190808.184237.1532563308186831482.davem@davemloft.net>
+        s=default; t=1565353879;
+        bh=3enpFlcg+od0VhdGqpUg5W9Rfao191T1BmMO7CVTl9k=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HPHCaDl5JO4/+CcP9G9ot7/Cuw/0PEv3dXeP+y9wXWJMQcy0Hkvdan+g1frTVBXs6
+         opdJTOXDmmx4DfsydebGdOAwvPXPJ76mesGfsUsJArWCiw2fGbAkSjnLjFO8LrpQ2T
+         qvagWbcpF+mKrfINJks5Ka4XgDEFEBVnCbkXNTiM=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     netdev@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: [PATCH v2 00/17] Networking driver debugfs cleanups
+Date:   Fri,  9 Aug 2019 14:30:51 +0200
+Message-Id: <20190809123108.27065-1-gregkh@linuxfoundation.org>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190808.184237.1532563308186831482.davem@davemloft.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 08, 2019 at 06:42:37PM -0700, David Miller wrote:
-> From: David Miller <davem@davemloft.net>
-> Date: Thu, 08 Aug 2019 18:37:56 -0700 (PDT)
-> 
-> > I applied this without patch #17 which you said you would respin in order
-> > to get rid of the now unused local variable.
-> 
-> Actually, there is a bunch of fallout still:
-> 
-> drivers/net/wimax/i2400m/debugfs.c: In function ‘i2400m_debugfs_add’:
-> drivers/net/wimax/i2400m/debugfs.c:192:17: warning: unused variable ‘dev’ [-Wunused-variable]
->   struct device *dev = i2400m_dev(i2400m);
->                  ^~~
-> drivers/net/wimax/i2400m/usb.c: In function ‘i2400mu_debugfs_add’:
-> drivers/net/wimax/i2400m/usb.c:375:17: warning: unused variable ‘fd’ [-Wunused-variable]
->   struct dentry *fd;
->                  ^~
-> drivers/net/wimax/i2400m/usb.c:373:17: warning: unused variable ‘dev’ [-Wunused-variable]
->   struct device *dev = &i2400mu->usb_iface->dev;
->                  ^~~
-> drivers/net/wimax/i2400m/usb.c:372:6: warning: unused variable ‘result’ [-Wunused-variable]
->   int result;
->       ^~~~~~
-> drivers/net/ethernet/intel/i40e/i40e_debugfs.c: In function ‘i40e_dbg_pf_init’:
-> drivers/net/ethernet/intel/i40e/i40e_debugfs.c:1736:23: warning: unused variable ‘dev’ [-Wunused-variable]
->   const struct device *dev = &pf->pdev->dev;
->                        ^~~
-> 
-> This is with:
-> 
-> [davem@localhost net-next]$ gcc --version
-> gcc (GCC) 8.3.1 20190223 (Red Hat 8.3.1-2)
-> Copyright (C) 2018 Free Software Foundation, Inc.
-> This is free software; see the source for copying conditions.  There is NO
-> warranty; not even for MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-> 
-> [davem@localhost net-next]$ 
-> 
-> So I'm reverting.
-> 
-> Please respin the series with this stuff fixed, thanks Greg.
+There is no need to test the result of any debugfs call anymore.  The
+debugfs core warns the user if something fails, and the return value of
+a debugfs call can always be fed back into another debugfs call with no
+problems.
 
-Ugh, that sucks, it looks like I never even built this series.  My
-apologies for wasting people's time.
+Also, debugfs is for debugging, so if there are problems with debugfs
+(i.e. the system is out of memory) the rest of the kernel should not
+change behavior, so testing for debugfs calls is pointless and not the
+goal of debugfs at all.
 
-Let me fix this all up, properly build it, and resend.
+This series cleans up a lot of networking drivers and some wimax code
+that was calling debugfs and trying to do something with the return
+value that it didn't need to.  Removing this logic makes the code
+smaller, easier to understand, and use less run-time memory in some
+cases, all good things.
+
+The series is against net-next, and have no dependancies between any of
+them if they want to go through any random tree/order.  Or, if wanted,
+I can take them through my driver-core tree where other debugfs cleanups
+are being slowly fed during major merge windows.
 
 thanks,
 
 greg k-h
+
+v2: fix up build warnings, it's as if I never even built these.  Ugh, so
+    sorry for wasting people's time with the v1 series.  I need to stop
+    relying on 0-day as it isn't working well anymore :(
+
+
+Greg Kroah-Hartman (17):
+  wimax: no need to check return value of debugfs_create functions
+  bonding: no need to print a message if debugfs_create_dir() fails
+  mlx5: no need to check return value of debugfs_create functions
+  xgbe: no need to check return value of debugfs_create functions
+  bnxt: no need to check return value of debugfs_create functions
+  cxgb4: no need to check return value of debugfs_create functions
+  hns3: no need to check return value of debugfs_create functions
+  nfp: no need to check return value of debugfs_create functions
+  stmmac: no need to check return value of debugfs_create functions
+  dpaa2: no need to check return value of debugfs_create functions
+  qca: no need to check return value of debugfs_create functions
+  skge: no need to check return value of debugfs_create functions
+  mvpp2: no need to check return value of debugfs_create functions
+  fm10k: no need to check return value of debugfs_create functions
+  i40e: no need to check return value of debugfs_create functions
+  ixgbe: no need to check return value of debugfs_create functions
+  ieee802154: no need to check return value of debugfs_create functions
+
+ drivers/net/bonding/bond_debugfs.c            |   5 -
+ drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c  | 107 ++++---------
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |   1 -
+ .../net/ethernet/broadcom/bnxt/bnxt_debugfs.c |  39 ++---
+ .../ethernet/chelsio/cxgb4/cxgb4_debugfs.c    |   5 +-
+ .../net/ethernet/chelsio/cxgb4/cxgb4_main.c   |   3 -
+ .../ethernet/chelsio/cxgb4vf/cxgb4vf_main.c   |  21 +--
+ .../freescale/dpaa2/dpaa2-eth-debugfs.c       |  54 +------
+ .../freescale/dpaa2/dpaa2-eth-debugfs.h       |   3 -
+ .../ethernet/hisilicon/hns3/hns3_debugfs.c    |  17 +-
+ .../net/ethernet/intel/fm10k/fm10k_debugfs.c  |   2 -
+ .../net/ethernet/intel/i40e/i40e_debugfs.c    |  22 +--
+ .../net/ethernet/intel/ixgbe/ixgbe_debugfs.c  |  22 +--
+ .../ethernet/marvell/mvpp2/mvpp2_debugfs.c    |  19 +--
+ drivers/net/ethernet/marvell/skge.c           |  39 ++---
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c |  51 +-----
+ .../net/ethernet/mellanox/mlx5/core/debugfs.c | 102 ++----------
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  |  11 +-
+ .../net/ethernet/mellanox/mlx5/core/lib/eq.h  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/main.c    |   7 +-
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |   2 +-
+ .../ethernet/netronome/nfp/nfp_net_debugfs.c  |  17 +-
+ drivers/net/ethernet/qualcomm/qca_debug.c     |  13 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |   2 -
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c |  52 +-----
+ drivers/net/ieee802154/adf7242.c              |  13 +-
+ drivers/net/ieee802154/at86rf230.c            |  20 +--
+ drivers/net/ieee802154/ca8210.c               |   9 +-
+ drivers/net/wimax/i2400m/debugfs.c            | 149 +++---------------
+ drivers/net/wimax/i2400m/driver.c             |   7 +-
+ drivers/net/wimax/i2400m/i2400m.h             |   7 +-
+ drivers/net/wimax/i2400m/usb.c                |  64 ++------
+ include/linux/mlx5/driver.h                   |  12 +-
+ include/linux/wimax/debug.h                   |  20 +--
+ net/wimax/debugfs.c                           |  42 +----
+ net/wimax/stack.c                             |  11 +-
+ net/wimax/wimax-internal.h                    |   7 +-
+ 37 files changed, 175 insertions(+), 804 deletions(-)
+
+-- 
+2.22.0
+
