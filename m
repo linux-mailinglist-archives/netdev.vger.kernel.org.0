@@ -2,176 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DBAFB882D5
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:45:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B29D1882D6
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:45:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436479AbfHISpg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 14:45:36 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:37751 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726558AbfHISpe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 14:45:34 -0400
-Received: by mail-wm1-f65.google.com with SMTP id z23so6453684wmf.2
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 11:45:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=iAl3FTn1nncAdom/v1tJNkBn6eoR882on+kp/bND09c=;
-        b=AlJeUGLguwZeqPoprt2rfp2u6brRW9nXLpw/mIuvSwcL2MueEsjlv3yG9kJn5eWNwV
-         LlAiW/fWZFxLXDNhZvUPJ/cGCUPAnhthe5gwZGD6V3KclQyXzHmvbaU/k2oaNCHfOP+x
-         vtMHX08y+xzISPIjF2n+xaDjzt3Xj0wVSGxPUoVv7aTNNj7wdN4dPZzSzlc1rGtb/nZj
-         pRO/yklE2TZEjabkaN+eo2j7R70mD/jN7W6rhaDY7z7iUVmZAePIVW5sdJ5neGSymB07
-         E5O4npMiRvoDBK3XUtmK4D1WbWAFyEil4VAJsflGxlzPMnhY8PMXyWgfzPNRlJ4MExTe
-         sMEQ==
+        id S2436493AbfHISp5 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 9 Aug 2019 14:45:57 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:35308 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726411AbfHISp5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 14:45:57 -0400
+Received: by mail-ed1-f65.google.com with SMTP id w20so95931290edd.2
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 11:45:56 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=iAl3FTn1nncAdom/v1tJNkBn6eoR882on+kp/bND09c=;
-        b=tm0BRtwFfnrKFtdOvEYfvju+nbyxviPOZsAC3G4DACgATPE7GBcnoCMdDbx4BbMQe7
-         t7pnqcAkWHODMfXcRQSXo/6zveMNA30VIkPm+R+0pLcz6mEpsGk+ZncWbboLH8kiFw/x
-         pYs3pfOVsFgQA11TD6HmOdwn1kgyRdBDoLuHk413ECGQnvgvtecBOcn2LBtRPKrXbhih
-         ZYkjOq4AmzgGzFi3KIK2zVIrzneduXz4HPBfQhTgmwJb+g+/pNT7quNrmYRJWJ+0y+oo
-         RBHEY5qMsD6Uda7l69z1yH1p9IkzSh2JCGgAPlaGF6ARD6RvFV8EHLNsV6aqRd4qXobs
-         ihyg==
-X-Gm-Message-State: APjAAAUtqSrejPIsUOXjQn9PNpFKGdtZf3lZqZPRKuYRJqei7++GSh5j
-        HpHNUaAAX8m3pbVe4xpuBA1W8dV+
-X-Google-Smtp-Source: APXvYqwHS09AUotk0ZYDKTyIxATvz6sHaINV5LPTR/XiyM8QMlgsJmyZzMlI8HOiVz+/mXLnJ9pzHw==
-X-Received: by 2002:a1c:407:: with SMTP id 7mr13105147wme.113.1565376332659;
-        Fri, 09 Aug 2019 11:45:32 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:2994:d24a:66a1:e0e5? (p200300EA8F2F32002994D24A66A1E0E5.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:2994:d24a:66a1:e0e5])
-        by smtp.googlemail.com with ESMTPSA id q20sm29239305wrc.79.2019.08.09.11.45.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 09 Aug 2019 11:45:32 -0700 (PDT)
-Subject: [PATCH net-next v2 4/4] net: phy: realtek: add support for the
- 2.5Gbps PHY in RTL8125
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <755b2bc9-22cb-f529-4188-0f4b6e48efbd@gmail.com>
-Message-ID: <49454e5b-465d-540e-cc01-07717a773e33@gmail.com>
-Date:   Fri, 9 Aug 2019 20:45:14 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=/z+ZqOKzdJHhy2EFeVYfuYX66TbJD6jqRIB4c/yziqU=;
+        b=QpXZ/b/iRlFjvokmJtWjl5h41DX+KWe98tEkGo6kaQZ7Q883xrit02tlX75XE1iiNM
+         xhgfPczwVJ3CgSMmkn0qKnb+A5Im2AWiO/GQkapUXAqTN1VgKHH40na6CUv9+Rof04/Q
+         sfFxeOFwTSNagIbkEFKJOrbjyeWOdoVVkWlVgJEfwZC53mqbXTplR/VcCmn1ErSKyI7i
+         ZOkGksUWTp1ArrByZOY7MrciVtF62MmSbyMDZ0iT1qCOwoSX3QRa+ayoVWM8CPdI1FZz
+         gKaLRdveg32fgGaJay2QdotgPypkEmUWJZ2HRiS+AfAOfczQpoTh9glAPUSYQ6COizax
+         Eevg==
+X-Gm-Message-State: APjAAAW8KkmwpOvjFufBPYkOKlg2mw4Pj5UCfHeCbNjJPTpAixyS6msG
+        pslitx2x/uqWZ65h47FuzV8/Zw==
+X-Google-Smtp-Source: APXvYqxBJB1yQDcQYuKOExnJSclr9oZCFafLdwKbIb58ypGMtsfuuB1zIw9uQPiuV3D61KVtZ6E0/g==
+X-Received: by 2002:a50:87d0:: with SMTP id 16mr23349559edz.133.1565376355479;
+        Fri, 09 Aug 2019 11:45:55 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id o1sm355472eji.19.2019.08.09.11.45.54
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Fri, 09 Aug 2019 11:45:54 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 2E3DD180BF7; Fri,  9 Aug 2019 20:45:54 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>,
+        Y Song <ys114321@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBl?= =?utf-8?B?bA==?= 
+        <bjorn.topel@gmail.com>, Yonghong Song <yhs@fb.com>,
+        brouer@redhat.com
+Subject: Re: [PATCH bpf-next v5 0/6] xdp: Add devmap_hash map type
+In-Reply-To: <20190808220516.1adeca9a@carbon>
+References: <156415721066.13581.737309854787645225.stgit@alrua-x1> <CAADnVQJpYeQ68V5BE2r3BhbraBh7G8dSd8zknFUJxtW4GwNkuA@mail.gmail.com> <87k1bnsbds.fsf@toke.dk> <CAH3MdRWk_bZVpBUZ8=xsMNw2hUwnQ3Yv-otu9M+7f1Cwr-t1UA@mail.gmail.com> <20190808220516.1adeca9a@carbon>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 09 Aug 2019 20:45:54 +0200
+Message-ID: <87a7ciqisd.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <755b2bc9-22cb-f529-4188-0f4b6e48efbd@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for the integrated 2.5Gbps PHY in Realtek RTL8125.
-Advertisement of 2.5Gbps mode is done via a vendor-specific register.
-Same applies to reading NBase-T link partner advertisement.
-Unfortunately this 2.5Gbps PHY shares the PHY ID with the integrated
-1Gbps PHY's in other Realtek network chips and so far no method is
-known to differentiate them. As a workaround use a dedicated fake PHY ID
-that is set by the network driver by intercepting the MDIO PHY ID read.
+Jesper Dangaard Brouer <brouer@redhat.com> writes:
 
-v2:
-- Create dedicated PHY driver and use a fake PHY ID that is injected by
-  the network driver. Suggested by Andrew Lunn.
+> On Thu, 8 Aug 2019 12:57:05 -0700
+> Y Song <ys114321@gmail.com> wrote:
+>
+>> On Thu, Aug 8, 2019 at 12:43 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>> >
+>> > Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>> >  
+>> > > On Fri, Jul 26, 2019 at 9:06 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:  
+>> > >>
+>> > >> This series adds a new map type, devmap_hash, that works like the existing
+>> > >> devmap type, but using a hash-based indexing scheme. This is useful for the use
+>> > >> case where a devmap is indexed by ifindex (for instance for use with the routing
+>> > >> table lookup helper). For this use case, the regular devmap needs to be sized
+>> > >> after the maximum ifindex number, not the number of devices in it. A hash-based
+>> > >> indexing scheme makes it possible to size the map after the number of devices it
+>> > >> should contain instead.
+>> > >>
+>> > >> This was previously part of my patch series that also turned the regular
+>> > >> bpf_redirect() helper into a map-based one; for this series I just pulled out
+>> > >> the patches that introduced the new map type.
+>> > >>
+>> > >> Changelog:
+>> > >>
+>> > >> v5:
+>> > >>
+>> > >> - Dynamically set the number of hash buckets by rounding up max_entries to the
+>> > >>   nearest power of two (mirroring the regular hashmap), as suggested by Jesper.  
+>> > >
+>> > > fyi I'm waiting for Jesper to review this new version.  
+>> >
+>> > Ping Jesper? :)  
+>> 
+>> Toke, the patch set has been merged to net-next.
+>> https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=d3406913561c322323ec2898cc58f55e79786be7
+>> 
+>
+> Yes, and I did review this... :-)
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/realtek.c | 62 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 62 insertions(+)
+Oops, my bad; seems I accidentally muted this thread and didn't see
+Jesper's review and Alexei's message about merging it. Sorry about
+that...
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index a669945eb..5b466e80d 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -39,6 +39,11 @@
- #define RTL8366RB_POWER_SAVE			0x15
- #define RTL8366RB_POWER_SAVE_ON			BIT(12)
- 
-+#define RTL_ADV_2500FULL			BIT(7)
-+#define RTL_LPADV_10000FULL			BIT(11)
-+#define RTL_LPADV_5000FULL			BIT(6)
-+#define RTL_LPADV_2500FULL			BIT(5)
-+
- MODULE_DESCRIPTION("Realtek PHY driver");
- MODULE_AUTHOR("Johnson Leung");
- MODULE_LICENSE("GPL");
-@@ -256,6 +261,53 @@ static int rtl8366rb_config_init(struct phy_device *phydev)
- 	return ret;
- }
- 
-+static int rtl8125_get_features(struct phy_device *phydev)
-+{
-+	linkmode_set_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
-+			 phydev->supported);
-+
-+	return genphy_read_abilities(phydev);
-+}
-+
-+static int rtl8125_config_aneg(struct phy_device *phydev)
-+{
-+	int ret = 0;
-+
-+	if (phydev->autoneg == AUTONEG_ENABLE) {
-+		u16 adv2500 = 0;
-+
-+		if (linkmode_test_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
-+				      phydev->advertising))
-+			adv2500 = RTL_ADV_2500FULL;
-+
-+		ret = phy_modify_paged_changed(phydev, 0xa5d, 0x12,
-+					       RTL_ADV_2500FULL, adv2500);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return __genphy_config_aneg(phydev, ret);
-+}
-+
-+static int rtl8125_read_status(struct phy_device *phydev)
-+{
-+	if (phydev->autoneg == AUTONEG_ENABLE) {
-+		int lpadv = phy_read_paged(phydev, 0xa5d, 0x13);
-+
-+		if (lpadv < 0)
-+			return lpadv;
-+
-+		linkmode_mod_bit(ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
-+			phydev->lp_advertising, lpadv & RTL_LPADV_10000FULL);
-+		linkmode_mod_bit(ETHTOOL_LINK_MODE_5000baseT_Full_BIT,
-+			phydev->lp_advertising, lpadv & RTL_LPADV_5000FULL);
-+		linkmode_mod_bit(ETHTOOL_LINK_MODE_2500baseT_Full_BIT,
-+			phydev->lp_advertising, lpadv & RTL_LPADV_2500FULL);
-+	}
-+
-+	return genphy_read_status(phydev);
-+}
-+
- static struct phy_driver realtek_drvs[] = {
- 	{
- 		PHY_ID_MATCH_EXACT(0x00008201),
-@@ -332,6 +384,16 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume		= genphy_resume,
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
-+	}, {
-+		PHY_ID_MATCH_EXACT(0x001cca50),
-+		.name		= "RTL8125 2.5Gbps internal",
-+		.get_features	= rtl8125_get_features,
-+		.config_aneg	= rtl8125_config_aneg,
-+		.read_status	= rtl8125_read_status,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
-+		.read_page	= rtl821x_read_page,
-+		.write_page	= rtl821x_write_page,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc961),
- 		.name		= "RTL8366RB Gigabit Ethernet",
--- 
-2.22.0
-
-
+-Toke
