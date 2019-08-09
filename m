@@ -2,91 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D8D4B88643
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 00:54:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6731D886D2
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 01:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726219AbfHIWyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 18:54:40 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49160 "EHLO vps0.lunn.ch"
+        id S1726475AbfHIXLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 19:11:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55258 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726022AbfHIWyk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 18:54:40 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=O2V/zfD8lGKgaXIk5ED+s485D/krj/OxHyJFSPZ8Jts=; b=xLf+9BHhjm10P8Ad1iJI2oIWG1
-        W7wZX/mnuiS7cWbUsrNB4iT6yUEWxdNBVDTYEkR1DdrRudOQxjv7SfoE+96j9g3E6piWtz/iNg4jn
-        Z2t3jjJwjTiSSzxpPNlaVPJTXMKF/WQKcNyhvZ76LqzQz+nMv0qHBu6gIBigWCFTLnLI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hwDmN-0004sx-EP; Sat, 10 Aug 2019 00:54:35 +0200
-Date:   Sat, 10 Aug 2019 00:54:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v2 4/4] net: phy: realtek: add support for the
- 2.5Gbps PHY in RTL8125
-Message-ID: <20190809225435.GE32706@lunn.ch>
-References: <755b2bc9-22cb-f529-4188-0f4b6e48efbd@gmail.com>
- <49454e5b-465d-540e-cc01-07717a773e33@gmail.com>
- <20190809191822.GZ27917@lunn.ch>
- <c8e2b3e7-1d0b-eba3-6a36-8808641f3031@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <c8e2b3e7-1d0b-eba3-6a36-8808641f3031@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726125AbfHIXLp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 19:11:45 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 308442086D;
+        Fri,  9 Aug 2019 23:11:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565392304;
+        bh=+aBbco4oASy821Kckd+3T6eOhVInP0auiGj+grXwjNo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=EhegFTq8eU9luJCzrS4BIs2MF0sjumDV2omQMVECWwZ7q0wqRkrpdxU85pZuzrnoK
+         G4/BXYHf6HDGz5P0gnGmKTerm2Ewh+vlrZU1SjjHNpjUqhEvWf9j84/OCVGzl443uV
+         cV7CS/lXj0PEYvv34m4DkMhxJf3FDs1htc2cmG08=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next] selftests: Fix detection of nettest command in fcnal-test
+Date:   Fri,  9 Aug 2019 16:13:38 -0700
+Message-Id: <20190809231338.29105-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 09, 2019 at 09:31:32PM +0200, Heiner Kallweit wrote:
-> On 09.08.2019 21:18, Andrew Lunn wrote:
-> >> +	}, {
-> >> +		PHY_ID_MATCH_EXACT(0x001cca50),
-> > 
-> > Hi Heiner
-> > 
-> Hi Andrew,
-> 
-> > With the Marvell driver, i looked at the range of IDs the PHYs where
-> > using. The switch, being MDIO based, also has ID values. The PHY range
-> > and the switch range are well separated, and it seems unlikely Marvell
-> > would reuse a switch ID in a PHY which was not compatible with the
-> > PHY.
-> > 
-> > Could you explain why you picked this value for the PHY? What makes
-> > you think it is not in use by another Realtek PHY? 
-> > 
-> 0x001cc800 being the Realtek OUI, I've seen only PHY's with ID
-> 0x001cc8XX and 0x001cc9XX so far. Realtek doesn't seem to have such
-> a clear separation between PHY and switch PHY ID's.
-> 
-> Example:
-> 0x001cc961 (RTL8366, switch)
-> 0x001cc916 (RTL8211F, PHY)
-> 
-> Last digit of the model is used as model number.
-> I did the same and used 5 as model number (from RTL8125).
-> Revision number is set to 0 because RTL8125 is brand-new.
-> 
-> I chose a PHY ID in 0x001ccaXX range because it isn't used by
-> Realtek AFAIK.
+From: David Ahern <dsahern@gmail.com>
 
-Hi Heiner
+Most of the tests run by fcnal-test.sh relies on the nettest command.
+Rather than trying to cover all of the individual tests, check for the
+binary only at the beginning.
 
-O.K.
+Also removes the need for log_error which is undefined.
 
-This should also be something which is internal. If Realtek do happen
-to use the ID, we can change both the MAC and the PHY to an new ID to
-avoid the collision.
+Fixes: 6f9d5cacfe07 ("selftests: Setup for functional tests for fib and socket lookups")
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ tools/testing/selftests/net/fcnal-test.sh | 38 +++++--------------------------
+ 1 file changed, 6 insertions(+), 32 deletions(-)
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+diff --git a/tools/testing/selftests/net/fcnal-test.sh b/tools/testing/selftests/net/fcnal-test.sh
+index bd6b564382ec..9fd3a0b97f0d 100755
+--- a/tools/testing/selftests/net/fcnal-test.sh
++++ b/tools/testing/selftests/net/fcnal-test.sh
+@@ -998,13 +998,6 @@ ipv4_tcp_vrf()
+ ipv4_tcp()
+ {
+ 	log_section "IPv4/TCP"
+-
+-	which nettest >/dev/null
+-	if [ $? -ne 0 ]; then
+-		log_error "nettest not found; skipping tests"
+-		return
+-	fi
+-
+ 	log_subsection "No VRF"
+ 	setup
+ 
+@@ -1375,12 +1368,6 @@ ipv4_udp_vrf()
+ 
+ ipv4_udp()
+ {
+-	which nettest >/dev/null
+-	if [ $? -ne 0 ]; then
+-		log_error "nettest not found; skipping tests"
+-		return
+-	fi
+-
+ 	log_section "IPv4/UDP"
+ 	log_subsection "No VRF"
+ 
+@@ -2314,13 +2301,6 @@ ipv6_tcp_vrf()
+ ipv6_tcp()
+ {
+ 	log_section "IPv6/TCP"
+-
+-	which nettest >/dev/null
+-	if [ $? -ne 0 ]; then
+-		log_error "nettest not found; skipping tests"
+-		return
+-	fi
+-
+ 	log_subsection "No VRF"
+ 	setup
+ 
+@@ -3156,12 +3136,6 @@ netfilter_icmp()
+ 
+ ipv4_netfilter()
+ {
+-	which nettest >/dev/null
+-	if [ $? -ne 0 ]; then
+-		log_error "nettest not found; skipping tests"
+-		return
+-	fi
+-
+ 	log_section "IPv4 Netfilter"
+ 	log_subsection "TCP reset"
+ 
+@@ -3219,12 +3193,6 @@ netfilter_icmp6()
+ 
+ ipv6_netfilter()
+ {
+-	which nettest >/dev/null
+-	if [ $? -ne 0 ]; then
+-		log_error "nettest not found; skipping tests"
+-		return
+-	fi
+-
+ 	log_section "IPv6 Netfilter"
+ 	log_subsection "TCP reset"
+ 
+@@ -3422,6 +3390,12 @@ elif [ "$TESTS" = "ipv6" ]; then
+ 	TESTS="$TESTS_IPV6"
+ fi
+ 
++which nettest >/dev/null
++if [ $? -ne 0 ]; then
++	echo "'nettest' command not found; skipping tests"
++	exit 0
++fi
++
+ declare -i nfail=0
+ declare -i nsuccess=0
+ 
+-- 
+2.11.0
 
-    Andrew
