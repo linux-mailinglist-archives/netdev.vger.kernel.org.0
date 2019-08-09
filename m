@@ -2,71 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E828848D
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 23:22:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C73108849D
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 23:26:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728184AbfHIVW1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 17:22:27 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:35653 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728044AbfHIVW0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 17:22:26 -0400
-Received: by mail-qt1-f195.google.com with SMTP id d23so97268630qto.2
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 14:22:26 -0700 (PDT)
+        id S1728167AbfHIV0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 17:26:39 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41200 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726263AbfHIV0i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 17:26:38 -0400
+Received: by mail-qk1-f194.google.com with SMTP id g17so2114201qkk.8
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 14:26:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=Ug4MTgi2ueZfqMA4+FWSQr133wSyuN+mgZsk4RxY5I8=;
-        b=T0xdr3m2vk1dRABuDHdagNOsvCUEuquJMDDxB4gyWa18mibI8q1Vl2M6UddZGZuoWW
-         bVUPPg4jkfLa01tuKqceOyPnbi9/T9qyxZo8eXdnZjta40CecwXDLsVLjSwlIwd8TnCx
-         aSKa6IzN3mnKHnng1qTOazZiG7hYxV8s5NDQ5gg57ii+DIvjBI4EAo8h2D1ctIrW7Ogy
-         wb3138VaA4Hi8b6nhh8BQ8xYtUBvPhH2REMBZQlFJw+frygxw/RvqwrnBeusxiEt/6gG
-         V0YnG6ULca5e8RNwu3ogTlbKFOwvOjbG6CzJrOvQ4VB0+sSAdwpat07fvTDXm//+YTms
-         RyAw==
+        bh=u1+ZHMwL7ktzjtiIpIrLhQZ44PIIFJNHWIzLepMnfpM=;
+        b=GpNKEfa78X950/Ovlu3fIkG+IpGx+n8vdx2z/QiMw5zHgAwYkSbAEx7PVe+Q+l7Pqg
+         t+tWOAVZxv0VKA9p7Iot8VtIC3zCOUV4kF2ix7Qic2AulWH6vwzbnYq4Hl5GgEs9DAcR
+         0VuC2kJxmvhqMVhp7DxzTQUrwLwEtJfCQLmGu0Pk0XAhEs8elmuGIF+OL1xsTxNfJhBK
+         r43TM1lHNsOoEf2XXvOtNfD6tbIfqdy04hPiaihLWby8oCGAhtijDq/NdAo2HAFV9muq
+         w2o91V8eMEmQS+ATrIy1P0DoFbiJT98bq+SlSV8u+O5uCduoC/Gfec6vzUP+lQxjHmVF
+         MIpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=Ug4MTgi2ueZfqMA4+FWSQr133wSyuN+mgZsk4RxY5I8=;
-        b=PLVjePRWwl4v3Sbe+JrrqpI6USJPcDInfvGE2NMnUudD83AmwTW2bN04h5/tI4s12y
-         DqXTkRhRS1o1+vgZRsyVlNNyRXaVCxqsw1Me3IBlEZoPTjxDsbRte32+6L3sFoNERpi3
-         PUcHmBa9Qe+0IKDMmhPVbkRpxnbe5LiuV0dTfF7Tsoq/Lff7fUvksGlvdJJP7n6dUyU6
-         DOCXub3HDQ5DViD3wmXx2KFz1KWJHm2pDRoUCn2UDTiU/M7RgOO0SoAQ0ZMIJ+khBYnr
-         8S7FWmw1yjv2Tp40zwAlSRp6NR9T8bt77zO5hfMrZcpQFf9s+C272uxl6qZM3rThflTs
-         Z6LQ==
-X-Gm-Message-State: APjAAAW9Rm37TqePajr4Dwju+8CuB7A5Io4oi/SAfJCXjC1QmWnyaQWV
-        2YaRxfcxSqnijMXe0FpgRki/qA==
-X-Google-Smtp-Source: APXvYqxHJ16TPbArOOObvex2qGMXiPYuuTyPvcouM0eg7EGKkUFhFNbpUw6MquRPUl6SIdbH5N+5zQ==
-X-Received: by 2002:ac8:252e:: with SMTP id 43mr19908152qtm.61.1565385745973;
-        Fri, 09 Aug 2019 14:22:25 -0700 (PDT)
+        bh=u1+ZHMwL7ktzjtiIpIrLhQZ44PIIFJNHWIzLepMnfpM=;
+        b=EgzV1fC67258yYJsJBgWqtpq6TWYWTxn9GI0eJp3RE+48jGfcN1btvQuuSyf0RDQ9S
+         Lp4BUDspmKAkn2l8kX+3G5n2QFTUKNT1j6MzCLjdIdXeKDFeYuikvONR7xupVUS9pLgZ
+         +L82ZJCCW7g2z2eKxIlSrwYKZ22BpitglS59TyGuKkootK9jvTdvs98zApRNg/1Ngn5G
+         XElqmBVDtn1s55uSlvY4ljvnqPsBVLINSNO7tw6DhLbIRUiW79AJ2zfLsR4+L41c0i+4
+         /6dugNzHfRmV58BlN+ODjtOscTFT+RK1O3XkXRVa9xqMJ6GNj/heVouEj2yW4iAZdnlI
+         5GQw==
+X-Gm-Message-State: APjAAAXpIaV/R831UtWb3DA9qPMwE2XKvg/3cSPr59EvCBW4Gbee7J1q
+        0wmkS+Dbpa3YqPCL0QSUxm2hNjAvihE=
+X-Google-Smtp-Source: APXvYqxzvd2znr2YTbcmNzNMfvj6Zg7h2kj0Ti1sWiXtuOpfYW72GUBha0dmWKkRMFnBQuya4IIPHA==
+X-Received: by 2002:a37:bd7:: with SMTP id 206mr20497203qkl.440.1565385997979;
+        Fri, 09 Aug 2019 14:26:37 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id p3sm63655473qta.12.2019.08.09.14.22.24
+        by smtp.gmail.com with ESMTPSA id b13sm58487111qtk.55.2019.08.09.14.26.37
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 14:22:25 -0700 (PDT)
-Date:   Fri, 9 Aug 2019 14:22:22 -0700
+        Fri, 09 Aug 2019 14:26:37 -0700 (PDT)
+Date:   Fri, 9 Aug 2019 14:26:35 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 7/9] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-ID: <20190809142222.4558691e@cakuba.netronome.com>
-In-Reply-To: <20190809103235.16338-8-tbogendoerfer@suse.de>
-References: <20190809103235.16338-1-tbogendoerfer@suse.de>
-        <20190809103235.16338-8-tbogendoerfer@suse.de>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com
+Subject: Re: [patch net-next] netdevsim: register couple of devlink params
+Message-ID: <20190809142635.52a6275d@cakuba.netronome.com>
+In-Reply-To: <20190809110512.31779-1-jiri@resnulli.us>
+References: <20190809110512.31779-1-jiri@resnulli.us>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -76,24 +61,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  9 Aug 2019 12:32:29 +0200, Thomas Bogendoerfer wrote:
-> SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> It also supports connecting a SuperIO chip for serial and parallel
-> interfaces. IOC3 is used inside various SGI systemboards and add-on
-> cards with different equipped external interfaces.
+On Fri,  9 Aug 2019 13:05:12 +0200, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
 > 
-> Support for ethernet and serial interfaces were implemented inside
-> the network driver. This patchset moves out the not network related
-> parts to a new MFD driver, which takes care of card detection,
-> setup of platform devices and interrupt distribution for the subdevices.
+> Register couple of devlink params, one generic, one driver-specific.
+> Make the values available over debugfs.
 > 
-> Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Example:
+> $ echo "111" > /sys/bus/netdevsim/new_device
+> $ devlink dev param
+> netdevsim/netdevsim111:
+>   name max_macs type generic
+>     values:
+>       cmode driverinit value 32
+>   name test1 type driver-specific
+>     values:
+>       cmode driverinit value true
+> $ cat /sys/kernel/debug/netdevsim/netdevsim111/max_macs
+> 32
+> $ cat /sys/kernel/debug/netdevsim/netdevsim111/test1
+> Y
+> $ devlink dev param set netdevsim/netdevsim111 name max_macs cmode driverinit value 16
+> $ devlink dev param set netdevsim/netdevsim111 name test1 cmode driverinit value false
+> $ devlink dev reload netdevsim/netdevsim111
+> $ cat /sys/kernel/debug/netdevsim/netdevsim111/max_macs
+> 16
+> $ cat /sys/kernel/debug/netdevsim/netdevsim111/test1
 > 
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 
-There are a lot of changes in the ethernet part which are not easy to
-explain by the introduction of the other MFD parts.. Could you possibly
-break this change up into smaller chunks?
+The netdevsim patch looks good, what's the plan for tests?
 
-Also please don't use stdint types in the kernel, please try checkpatch
-to catch coding style issues.
+We don't need much perhaps what you have in the commit message 
+as a script which can be run by automated bots would be sufficient?
