@@ -2,120 +2,244 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 68CF087808
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 12:58:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 30BCE8782C
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 13:05:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406365AbfHIK6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 06:58:07 -0400
-Received: from mail-ot1-f71.google.com ([209.85.210.71]:51786 "EHLO
-        mail-ot1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726152AbfHIK6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 06:58:07 -0400
-Received: by mail-ot1-f71.google.com with SMTP id h12so67893393otn.18
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 03:58:06 -0700 (PDT)
+        id S2406260AbfHILFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 07:05:17 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35757 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405954AbfHILFQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 07:05:16 -0400
+Received: by mail-wr1-f68.google.com with SMTP id k2so12004862wrq.2
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 04:05:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u/WqoW8pObnjtOoRl9ErmLFITB0o+RyIX2FMWykPUco=;
+        b=adDDzrEdH1ZNfIodFd0y2E9eC9SvyWgidjzBCj9Wx9yCVwgbnhFMkkp1DgLKjJ60Qc
+         MiwJTcq8bzQrWSJ0i/GutN3hA8NGuBZ48fr6W6qs8W8638UJNrjDaSCDYYhOqm3Mdy5P
+         hfrG56gmojkX88C5TePfaIadoEIn9fwb4Ys0fZ9dHFkxcg8aQE2RaqI1pkp/Twt4orHF
+         dCRHnVq2yY4NsjXpNTqneig2UnMWit2jI7NFPqdrevLCkKs3YzxH7ZUJVvo9ZnKoPdXp
+         XfBHrgyk8rEv8VSCp9QA694EcFg744Xt1wPXtBKO0QCV1ylki2K/Hyx2j6oZO3RNFJ15
+         Np2Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=mUAdjdWVqLEji+9QaZjr6SC7lAukAXPaOBa5eBib/zQ=;
-        b=RHLB3eflu30fWvSPZ/THJIyC28uuWcwydG7QajDePCNq8qLZAOoXZPe4gUYOfwEgwa
-         oIi50JK8S5YUE5PLe9z9J/gOMMoLELAYl1PRa+fpZBP6zAsKaKXvpEpD/ASl6j9jP71d
-         48oj9Hf7y2+p4iNA0CPMRyPMdjvJ7f63mYQ+AfWoJvo05q0AIjOkkjRe/bZVg1MvnTuD
-         J2n87yHyntZlW93kL6joIqsrIBqk63dDxpuVNjC1GN9vVCNbtQeEt66y7TrzB7r4hNpf
-         AJEPSHdy/s9t+NVLw3iq7H9nPEVXvGCJucYogdObJWZPWW+bwdB1fsXieXEy49edgxhi
-         lFhw==
-X-Gm-Message-State: APjAAAW0jBdQc6lpcSGTz7+EPkcY76Lbw948YS9bChJ/VtyILjxJ7j/R
-        DGi2Z75dnWug1JFzGIwzKxKa8HnIUUvxe0HQg7mJ1k92+d+v
-X-Google-Smtp-Source: APXvYqzfxc+WwHQY5PBUiXp07yIZY9T57CR+iHoYVMfbZymKTn0MCiZnMfMSJrsjUldT/7ClvmsuVvR5jWyz41ngOahYU63+uD9g
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=u/WqoW8pObnjtOoRl9ErmLFITB0o+RyIX2FMWykPUco=;
+        b=aWLUU1xpg+4W9hKy+UbOfB7gJt3CsT6DD5YNe4hQ8od8mCWDkvMV1UE1uADkz3TTp7
+         lZpWR4g0MMz0+gs18iGWGPdritClzjwkinVANwnBbJ6o+D1JkqtrUwcS1SSHiWHgJf42
+         Vf6V24qvOCODqwRsvZQEDJeIa5T855AlsfI5ZPpatPoYHq9d80PfOARNT8WY/ON0pvra
+         ZuELjMKPwrgMsEN6ot0DW5H9kHQVWflGqQjarKI4X7n/JGXM+PEXRf++9nz3uVNb72Do
+         euin0CZDJxONOpyJ9jdKmxRYOew804vRF+Z/Pg7mU7n5OZvyCEXhHCWA5EQ7x2gwOnfA
+         yMYw==
+X-Gm-Message-State: APjAAAWxvCzFumhTuAdlCNyYQg6TWhuYN9EXuWeIUCCoa8BS7fVbO5gW
+        7TlreJs6IGI/5zsMGodm4hF4Ik0VsDw=
+X-Google-Smtp-Source: APXvYqwoxmGl2bRjQxTcBUIIepjDM+eeL/Sf7fgKwZgdrmn1OcYm5QBI//GRYr9Ygcil5lrH1YPl2A==
+X-Received: by 2002:a5d:4d81:: with SMTP id b1mr24601007wru.27.1565348714067;
+        Fri, 09 Aug 2019 04:05:14 -0700 (PDT)
+Received: from localhost (jirka.pirko.cz. [84.16.102.26])
+        by smtp.gmail.com with ESMTPSA id f10sm85599582wrs.22.2019.08.09.04.05.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 09 Aug 2019 04:05:13 -0700 (PDT)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
+        mlxsw@mellanox.com
+Subject: [patch net-next] netdevsim: register couple of devlink params
+Date:   Fri,  9 Aug 2019 13:05:12 +0200
+Message-Id: <20190809110512.31779-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-Received: by 2002:a5d:924e:: with SMTP id e14mr19114492iol.215.1565348286229;
- Fri, 09 Aug 2019 03:58:06 -0700 (PDT)
-Date:   Fri, 09 Aug 2019 03:58:06 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000008cf14e058fad0c41@google.com>
-Subject: KASAN: null-ptr-deref Write in rxrpc_unuse_local
-From:   syzbot <syzbot+20dee719a2e090427b5f@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+From: Jiri Pirko <jiri@mellanox.com>
 
-syzbot found the following crash on:
+Register couple of devlink params, one generic, one driver-specific.
+Make the values available over debugfs.
 
-HEAD commit:    87b983f5 Add linux-next specific files for 20190809
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=143aecee600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=28eea330e11df0eb
-dashboard link: https://syzkaller.appspot.com/bug?extid=20dee719a2e090427b5f
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ceae36600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=10ebc40e600000
+Example:
+$ echo "111" > /sys/bus/netdevsim/new_device
+$ devlink dev param
+netdevsim/netdevsim111:
+  name max_macs type generic
+    values:
+      cmode driverinit value 32
+  name test1 type driver-specific
+    values:
+      cmode driverinit value true
+$ cat /sys/kernel/debug/netdevsim/netdevsim111/max_macs
+32
+$ cat /sys/kernel/debug/netdevsim/netdevsim111/test1
+Y
+$ devlink dev param set netdevsim/netdevsim111 name max_macs cmode driverinit value 16
+$ devlink dev param set netdevsim/netdevsim111 name test1 cmode driverinit value false
+$ devlink dev reload netdevsim/netdevsim111
+$ cat /sys/kernel/debug/netdevsim/netdevsim111/max_macs
+16
+$ cat /sys/kernel/debug/netdevsim/netdevsim111/test1
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+20dee719a2e090427b5f@syzkaller.appspotmail.com
-
-==================================================================
-BUG: KASAN: null-ptr-deref in atomic_sub_return  
-include/asm-generic/atomic-instrumented.h:159 [inline]
-BUG: KASAN: null-ptr-deref in atomic_dec_return  
-include/linux/atomic-fallback.h:455 [inline]
-BUG: KASAN: null-ptr-deref in rxrpc_unuse_local+0x23/0x70  
-net/rxrpc/local_object.c:405
-Write of size 4 at addr 0000000000000010 by task syz-executor725/10010
-
-CPU: 1 PID: 10010 Comm: syz-executor725 Not tainted 5.3.0-rc3-next-20190809  
-#63
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  __kasan_report.cold+0x5/0x36 mm/kasan/report.c:486
-  kasan_report+0x12/0x17 mm/kasan/common.c:610
-  check_memory_region_inline mm/kasan/generic.c:185 [inline]
-  check_memory_region+0x134/0x1a0 mm/kasan/generic.c:192
-  __kasan_check_write+0x14/0x20 mm/kasan/common.c:98
-  atomic_sub_return include/asm-generic/atomic-instrumented.h:159 [inline]
-  atomic_dec_return include/linux/atomic-fallback.h:455 [inline]
-  rxrpc_unuse_local+0x23/0x70 net/rxrpc/local_object.c:405
-  rxrpc_release_sock net/rxrpc/af_rxrpc.c:904 [inline]
-  rxrpc_release+0x47d/0x840 net/rxrpc/af_rxrpc.c:930
-  __sock_release+0xce/0x280 net/socket.c:590
-  sock_close+0x1e/0x30 net/socket.c:1268
-  __fput+0x2ff/0x890 fs/file_table.c:280
-  ____fput+0x16/0x20 fs/file_table.c:313
-  task_work_run+0x145/0x1c0 kernel/task_work.c:113
-  exit_task_work include/linux/task_work.h:22 [inline]
-  do_exit+0x92f/0x2e50 kernel/exit.c:879
-  do_group_exit+0x135/0x360 kernel/exit.c:983
-  __do_sys_exit_group kernel/exit.c:994 [inline]
-  __se_sys_exit_group kernel/exit.c:992 [inline]
-  __x64_sys_exit_group+0x44/0x50 kernel/exit.c:992
-  do_syscall_64+0xfa/0x760 arch/x86/entry/common.c:290
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x43ed68
-Code: Bad RIP value.
-RSP: 002b:00007ffc2b7b93f8 EFLAGS: 00000246 ORIG_RAX: 00000000000000e7
-RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 000000000043ed68
-RDX: 0000000000000000 RSI: 000000000000003c RDI: 0000000000000000
-RBP: 00000000004be568 R08: 00000000000000e7 R09: ffffffffffffffd0
-R10: 00000000ffffffff R11: 0000000000000246 R12: 0000000000000001
-R13: 00000000006d0180 R14: 0000000000000000 R15: 0000000000000000
-==================================================================
-
-
+Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/netdevsim/dev.c       | 72 ++++++++++++++++++++++++++++++-
+ drivers/net/netdevsim/netdevsim.h |  2 +
+ 2 files changed, 73 insertions(+), 1 deletion(-)
 
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-syzbot can test patches for this bug, for details see:
-https://goo.gl/tpsmEJ#testing-patches
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index 685dd21f5500..127aef85dc99 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -40,6 +40,10 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+ 		return PTR_ERR_OR_ZERO(nsim_dev->ports_ddir) ?: -EINVAL;
+ 	debugfs_create_bool("fw_update_status", 0600, nsim_dev->ddir,
+ 			    &nsim_dev->fw_update_status);
++	debugfs_create_u32("max_macs", 0600, nsim_dev->ddir,
++			   &nsim_dev->max_macs);
++	debugfs_create_bool("test1", 0600, nsim_dev->ddir,
++			    &nsim_dev->test1);
+ 	return 0;
+ }
+ 
+@@ -196,6 +200,54 @@ static int nsim_dev_resources_register(struct devlink *devlink)
+ 	return err;
+ }
+ 
++enum nsim_devlink_param_id {
++	NSIM_DEVLINK_PARAM_ID_BASE = DEVLINK_PARAM_GENERIC_ID_MAX,
++	NSIM_DEVLINK_PARAM_ID_TEST1,
++};
++
++static const struct devlink_param nsim_devlink_params[] = {
++	DEVLINK_PARAM_GENERIC(MAX_MACS,
++			      BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
++			      NULL, NULL, NULL),
++	DEVLINK_PARAM_DRIVER(NSIM_DEVLINK_PARAM_ID_TEST1,
++			     "test1", DEVLINK_PARAM_TYPE_BOOL,
++			     BIT(DEVLINK_PARAM_CMODE_DRIVERINIT),
++			     NULL, NULL, NULL),
++};
++
++static void nsim_devlink_set_params_init_values(struct nsim_dev *nsim_dev,
++						struct devlink *devlink)
++{
++	union devlink_param_value value;
++
++	value.vu32 = nsim_dev->max_macs;
++	devlink_param_driverinit_value_set(devlink,
++					   DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
++					   value);
++	value.vbool = nsim_dev->test1;
++	devlink_param_driverinit_value_set(devlink,
++					   NSIM_DEVLINK_PARAM_ID_TEST1,
++					   value);
++}
++
++static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
++{
++	struct nsim_dev *nsim_dev = devlink_priv(devlink);
++	union devlink_param_value saved_value;
++	int err;
++
++	err = devlink_param_driverinit_value_get(devlink,
++						 DEVLINK_PARAM_GENERIC_ID_MAX_MACS,
++						 &saved_value);
++	if (!err)
++		nsim_dev->max_macs = saved_value.vu32;
++	err = devlink_param_driverinit_value_get(devlink,
++						 NSIM_DEVLINK_PARAM_ID_TEST1,
++						 &saved_value);
++	if (!err)
++		nsim_dev->test1 = saved_value.vbool;
++}
++
+ static int nsim_dev_reload(struct devlink *devlink,
+ 			   struct netlink_ext_ack *extack)
+ {
+@@ -218,6 +270,7 @@ static int nsim_dev_reload(struct devlink *devlink,
+ 				return err;
+ 		}
+ 	}
++	nsim_devlink_param_load_driverinit_values(devlink);
+ 
+ 	return 0;
+ }
+@@ -267,6 +320,9 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
+ 	.flash_update = nsim_dev_flash_update,
+ };
+ 
++#define NSIM_DEV_MAX_MACS_DEFAULT 32
++#define NSIM_DEV_TEST1_DEFAULT true
++
+ static struct nsim_dev *
+ nsim_dev_create(struct net *net, struct nsim_bus_dev *nsim_bus_dev,
+ 		unsigned int port_count)
+@@ -286,6 +342,8 @@ nsim_dev_create(struct net *net, struct nsim_bus_dev *nsim_bus_dev,
+ 	INIT_LIST_HEAD(&nsim_dev->port_list);
+ 	mutex_init(&nsim_dev->port_list_lock);
+ 	nsim_dev->fw_update_status = true;
++	nsim_dev->max_macs = NSIM_DEV_MAX_MACS_DEFAULT;
++	nsim_dev->test1 = NSIM_DEV_TEST1_DEFAULT;
+ 
+ 	nsim_dev->fib_data = nsim_fib_create();
+ 	if (IS_ERR(nsim_dev->fib_data)) {
+@@ -301,18 +359,28 @@ nsim_dev_create(struct net *net, struct nsim_bus_dev *nsim_bus_dev,
+ 	if (err)
+ 		goto err_resources_unregister;
+ 
+-	err = nsim_dev_debugfs_init(nsim_dev);
++	err = devlink_params_register(devlink, nsim_devlink_params,
++				      ARRAY_SIZE(nsim_devlink_params));
+ 	if (err)
+ 		goto err_dl_unregister;
++	nsim_devlink_set_params_init_values(nsim_dev, devlink);
++
++	err = nsim_dev_debugfs_init(nsim_dev);
++	if (err)
++		goto err_params_unregister;
+ 
+ 	err = nsim_bpf_dev_init(nsim_dev);
+ 	if (err)
+ 		goto err_debugfs_exit;
+ 
++	devlink_params_publish(devlink);
+ 	return nsim_dev;
+ 
+ err_debugfs_exit:
+ 	nsim_dev_debugfs_exit(nsim_dev);
++err_params_unregister:
++	devlink_params_unregister(devlink, nsim_devlink_params,
++				  ARRAY_SIZE(nsim_devlink_params));
+ err_dl_unregister:
+ 	devlink_unregister(devlink);
+ err_resources_unregister:
+@@ -330,6 +398,8 @@ static void nsim_dev_destroy(struct nsim_dev *nsim_dev)
+ 
+ 	nsim_bpf_dev_exit(nsim_dev);
+ 	nsim_dev_debugfs_exit(nsim_dev);
++	devlink_params_unregister(devlink, nsim_devlink_params,
++				  ARRAY_SIZE(nsim_devlink_params));
+ 	devlink_unregister(devlink);
+ 	devlink_resources_unregister(devlink, NULL);
+ 	nsim_fib_destroy(nsim_dev->fib_data);
+diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
+index 9563acb61b03..ef879892dd6f 100644
+--- a/drivers/net/netdevsim/netdevsim.h
++++ b/drivers/net/netdevsim/netdevsim.h
+@@ -161,6 +161,8 @@ struct nsim_dev {
+ 	struct list_head port_list;
+ 	struct mutex port_list_lock; /* protects port list */
+ 	bool fw_update_status;
++	u32 max_macs;
++	bool test1;
+ };
+ 
+ int nsim_dev_init(void);
+-- 
+2.21.0
+
