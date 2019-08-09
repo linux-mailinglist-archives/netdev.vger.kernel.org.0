@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C823187A0A
+	by mail.lfdr.de (Postfix) with ESMTP id 59DCC87A09
 	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:31:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406928AbfHIMbm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 08:31:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58020 "EHLO mail.kernel.org"
+        id S2406635AbfHIMbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 08:31:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58072 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406913AbfHIMbg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 08:31:36 -0400
+        id S2405948AbfHIMbi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 08:31:38 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0530221783;
-        Fri,  9 Aug 2019 12:31:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9390F21783;
+        Fri,  9 Aug 2019 12:31:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565353895;
-        bh=eZCNw2T0pwR0XZKm3lCuhtzleU2BOFgFGsSlDmTtInU=;
+        s=default; t=1565353898;
+        bh=L2KXkheRoHKjYKV85GvatHU+MtUf78ksKzsQO2I9arA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JkqEldOOqnltERKMouxzoAJCjHtZuc/wQ5kEYLowhzonRDhEyhqXWAHB8hD+pWSuV
-         2ems3oesDVKMFDLUFTJ4ZkwR0wqE2cQjINHTqxcS/2RRsbMBVRNrnUtRRZbHf4tNe5
-         SLLyQievfVQNKWqZ+8HKU8fl3JFxxIE9vI46VjVE=
+        b=Aol/JY1p/cJuCmH7NCrufOwJ8wRP6jO4IcLrPra8RxN/gAL1Q4FCQ0nqSH4Epv1r6
+         AxwPKcVMhtzLPA9uDXeROcX7FzV7ruAWobz90F0A21Xl7OqRrF0MaWs8RHf8yoywlu
+         kOMcPIBD/8NXQsI9XOUwt+vMnwu8H0m9FvZX9DxE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     netdev@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
         intel-wired-lan@lists.osuosl.org
-Subject: [PATCH v2 15/17] i40e: no need to check return value of debugfs_create functions
-Date:   Fri,  9 Aug 2019 14:31:06 +0200
-Message-Id: <20190809123108.27065-16-gregkh@linuxfoundation.org>
+Subject: [PATCH v2 16/17] ixgbe: no need to check return value of debugfs_create functions
+Date:   Fri,  9 Aug 2019 14:31:07 +0200
+Message-Id: <20190809123108.27065-17-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190809123108.27065-1-gregkh@linuxfoundation.org>
 References: <20190809123108.27065-1-gregkh@linuxfoundation.org>
@@ -52,44 +52,47 @@ Cc: intel-wired-lan@lists.osuosl.org
 Cc: netdev@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../net/ethernet/intel/i40e/i40e_debugfs.c    | 22 ++++---------------
- 1 file changed, 4 insertions(+), 18 deletions(-)
+ .../net/ethernet/intel/ixgbe/ixgbe_debugfs.c  | 22 +++++--------------
+ 1 file changed, 5 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-index 55d20acfcf70..41232898d8ae 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_debugfs.c
-@@ -1732,29 +1732,15 @@ static const struct file_operations i40e_dbg_netdev_ops_fops = {
-  **/
- void i40e_dbg_pf_init(struct i40e_pf *pf)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_debugfs.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_debugfs.c
+index 50dfb02fa34c..171cdc552961 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_debugfs.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_debugfs.c
+@@ -190,22 +190,12 @@ static const struct file_operations ixgbe_dbg_netdev_ops_fops = {
+ void ixgbe_dbg_adapter_init(struct ixgbe_adapter *adapter)
  {
+ 	const char *name = pci_name(adapter->pdev);
 -	struct dentry *pfile;
- 	const char *name = pci_name(pf->pdev);
--	const struct device *dev = &pf->pdev->dev;
++
+ 	adapter->ixgbe_dbg_adapter = debugfs_create_dir(name, ixgbe_dbg_root);
+-	if (adapter->ixgbe_dbg_adapter) {
+-		pfile = debugfs_create_file("reg_ops", 0600,
+-					    adapter->ixgbe_dbg_adapter, adapter,
+-					    &ixgbe_dbg_reg_ops_fops);
+-		if (!pfile)
+-			e_dev_err("debugfs reg_ops for %s failed\n", name);
+-		pfile = debugfs_create_file("netdev_ops", 0600,
+-					    adapter->ixgbe_dbg_adapter, adapter,
+-					    &ixgbe_dbg_netdev_ops_fops);
+-		if (!pfile)
+-			e_dev_err("debugfs netdev_ops for %s failed\n", name);
+-	} else {
+-		e_dev_err("debugfs entry for %s failed\n", name);
+-	}
++	debugfs_create_file("reg_ops", 0600, adapter->ixgbe_dbg_adapter,
++			    adapter, &ixgbe_dbg_reg_ops_fops);
++	debugfs_create_file("netdev_ops", 0600, adapter->ixgbe_dbg_adapter,
++			    adapter, &ixgbe_dbg_netdev_ops_fops);
+ }
  
- 	pf->i40e_dbg_pf = debugfs_create_dir(name, i40e_dbg_root);
--	if (!pf->i40e_dbg_pf)
--		return;
--
--	pfile = debugfs_create_file("command", 0600, pf->i40e_dbg_pf, pf,
--				    &i40e_dbg_command_fops);
--	if (!pfile)
--		goto create_failed;
- 
--	pfile = debugfs_create_file("netdev_ops", 0600, pf->i40e_dbg_pf, pf,
--				    &i40e_dbg_netdev_ops_fops);
--	if (!pfile)
--		goto create_failed;
-+	debugfs_create_file("command", 0600, pf->i40e_dbg_pf, pf,
-+			    &i40e_dbg_command_fops);
- 
--	return;
--
--create_failed:
--	dev_info(dev, "debugfs dir/file for %s failed\n", name);
--	debugfs_remove_recursive(pf->i40e_dbg_pf);
-+	debugfs_create_file("netdev_ops", 0600, pf->i40e_dbg_pf, pf,
-+			    &i40e_dbg_netdev_ops_fops);
+ /**
+@@ -224,8 +214,6 @@ void ixgbe_dbg_adapter_exit(struct ixgbe_adapter *adapter)
+ void ixgbe_dbg_init(void)
+ {
+ 	ixgbe_dbg_root = debugfs_create_dir(ixgbe_driver_name, NULL);
+-	if (ixgbe_dbg_root == NULL)
+-		pr_err("init of debugfs failed\n");
  }
  
  /**
