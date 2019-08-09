@@ -2,154 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 83E8F87B99
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E4AD987C7B
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 16:19:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406562AbfHINot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 09:44:49 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42058 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726342AbfHINos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:44:48 -0400
-Received: by mail-pf1-f193.google.com with SMTP id q10so46078998pff.9
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:44:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=cuW7kmnkjezQ8aMd9rmD4VTFMgZO6FdDUXYwitNe1k8=;
-        b=vMdeXKEh7eFUUwZXTeO1KB3t0VYqnDsqK+Pe6NqWE1OkpDl66QSxelZSz3WvzqpJTI
-         lzI9NW3hFpD7FCKLKeyZSp9vveeBagM1OsgpVPuDMEwu+qf7X9NR6Zu/m2BBRrx90BgV
-         gcJk85qtmVkAmJUMHUn7lbeDAwl1oOmxx9IMsftUQ/XkpMYOML7igDGAPwGzVGMTC9FR
-         TqIUJ6F7sk0mluIAfi3FrW58zIj8vfEKrKBOuw/y12LIOcV3S55PWuu5vpu9m45xbuNV
-         oHhaGa7gGvU46H1K2qfUTbLHqJSJxoHwH2DcglgeZFx7FtT4NU5OSZLJKXfqlPTS77gu
-         a7tw==
+        id S2407087AbfHIOTC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 9 Aug 2019 10:19:02 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41937 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726342AbfHIOTB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 10:19:01 -0400
+Received: by mail-qk1-f194.google.com with SMTP id g17so1058726qkk.8;
+        Fri, 09 Aug 2019 07:19:00 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cuW7kmnkjezQ8aMd9rmD4VTFMgZO6FdDUXYwitNe1k8=;
-        b=Zq82kfeRtFVhcKQfA3K4avqcFH25pzZHWjliDdg66nOYfqzcfxxf5UoW8VnTuxdxtl
-         hdynOUOkfkD1QtSRd566NblwPe1VtIHAPM6cHGct8KzR0/P0aR+pcnTZIZREmVHOThR5
-         txqrWzdy6keePy/yiXgPy5UBRX2TXaKyK5UifpjHHEwogZFBrFZRmymsvEJyJ29uMiM9
-         YxOTUI28QKa7OemLHs/XVvZjDlJHROony31FDl7yqjQpZlxe42lFk7sC/aQMqWXrcK0s
-         8pWj00JcFHSq6OkqzHfLwTr6jmIkj9DJ80j+TosozE6MAlOJ02uOOCqQOCNR34BixaTC
-         a+5Q==
-X-Gm-Message-State: APjAAAVnJbs00dTdUMhg2+7Y4OruTkvhTNJTmZXqu9vAdrbx2oE8xTLc
-        anbX48h0vW47z+1adZTprNcSJg==
-X-Google-Smtp-Source: APXvYqzboj5qLeiqBXB007VpMJk0G9XY5d2C5KIpSxTqDgmDKjPfcxEEvfgm3VGFPm/6SzPcQqfycQ==
-X-Received: by 2002:a17:90a:8a15:: with SMTP id w21mr9575094pjn.134.1565358287738;
-        Fri, 09 Aug 2019 06:44:47 -0700 (PDT)
-Received: from leoy-ThinkPad-X240s (li456-16.members.linode.com. [50.116.10.16])
-        by smtp.gmail.com with ESMTPSA id y128sm119018995pgy.41.2019.08.09.06.44.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 09 Aug 2019 06:44:46 -0700 (PDT)
-Date:   Fri, 9 Aug 2019 21:44:31 +0800
-From:   Leo Yan <leo.yan@linaro.org>
-To:     Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
-Cc:     Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH] perf trace: Fix segmentation fault when access syscall
- info
-Message-ID: <20190809134431.GE8313@leoy-ThinkPad-X240s>
-References: <20190809104752.27338-1-leo.yan@linaro.org>
- <20190809132522.GB20899@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=TEfOzDxFX7gDpnqMzrlBGrH3Syt9gXqMdj4yqEybIZo=;
+        b=QXHfe+5F2OOhd2CElNQM4DMdlNJ4IJl8fINRHiW3jKlocffCMbvetrzZAqZj73zlmj
+         KWvFoVIYkOHvDj1DaYKbfsuCvroIUYFb3KL+M9mkFDlElbx/WQrXDrEmoD9TEU4aBY4V
+         KOYSTDW4jBYl1Q1ouhbunaHKhuxt1uFwhly4aynTDR3/pFoatrZAGcllqAX3imwjf7rg
+         Zvptpq+bditHfN3KQpZl7biqacUzCNzWVHXcWNc47zgDNuTW5Ddvc7FolbuGOSKoYWHe
+         U95f/JthiUb4jQ8Awib8m4ByohBD8ZbF9S/ymEA2OIxhbWwKX69SfaGeAtETxlf7AIPX
+         4bTg==
+X-Gm-Message-State: APjAAAULwbc9OKX1TGlOPd/2K493GXivn5Vz3PzAouoEWlMHdClUpahm
+        1/NNzHwi7xx3joyV/qXpaBZpTVA/KRvGrriqZOs=
+X-Google-Smtp-Source: APXvYqwdOIIhs7aYJbryOrEuz/1xQSAZBUfsTj7jxd0qGAmaTDwXDUSNUG1kGVNfZ5fjxOBFSW0skDDZmykp0YbSLSg=
+X-Received: by 2002:a37:984:: with SMTP id 126mr12380366qkj.3.1565360340175;
+ Fri, 09 Aug 2019 07:19:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190809132522.GB20899@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+References: <20190731195713.3150463-1-arnd@arndb.de> <20190731195713.3150463-6-arnd@arndb.de>
+ <CAMpxmJWFfT_vrDas2fzW5tnxskk9kmgHQpGnGQ-_C20UaS_jhA@mail.gmail.com>
+ <CAK8P3a3KpKvRKXY72toE_5eAp4ER_Mre0GX3guwGeQgsY2HX+g@mail.gmail.com> <CAMpxmJUdSnp0QNwWB0rJ1opFrYs9R2KSVS64Tz8X5GDYAJYLpg@mail.gmail.com>
+In-Reply-To: <CAMpxmJUdSnp0QNwWB0rJ1opFrYs9R2KSVS64Tz8X5GDYAJYLpg@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Fri, 9 Aug 2019 16:18:43 +0200
+Message-ID: <CAK8P3a1NT_yoP39y52oJTMsFCb96-bRyuMm=+5HPPsxyq0fJDA@mail.gmail.com>
+Subject: Re: [PATCH 05/14] gpio: lpc32xx: allow building on non-lpc32xx targets
+To:     Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc:     soc@kernel.org, arm-soc <linux-arm-kernel@lists.infradead.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Guenter Roeck <linux@roeck-us.net>,
+        linux-gpio <linux-gpio@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, linux-serial@vger.kernel.org,
+        USB list <linux-usb@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 09, 2019 at 10:25:22AM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Fri, Aug 09, 2019 at 06:47:52PM +0800, Leo Yan escreveu:
-> > 'perf trace' reports the segmentation fault as below on Arm64:
-> > 
-> >   # perf trace -e string -e augmented_raw_syscalls.c
-> >   LLVM: dumping tools/perf/examples/bpf/augmented_raw_syscalls.o
-> >   perf: Segmentation fault
-> >   Obtained 12 stack frames.
-> >   perf(sighandler_dump_stack+0x47) [0xaaaaac96ac87]
-> >   linux-vdso.so.1(+0x5b7) [0xffffadbeb5b7]
-> >   /lib/aarch64-linux-gnu/libc.so.6(strlen+0x10) [0xfffface7d5d0]
-> >   /lib/aarch64-linux-gnu/libc.so.6(_IO_vfprintf+0x1ac7) [0xfffface49f97]
-> >   /lib/aarch64-linux-gnu/libc.so.6(__vsnprintf_chk+0xc7) [0xffffacedfbe7]
-> >   perf(scnprintf+0x97) [0xaaaaac9ca3ff]
-> >   perf(+0x997bb) [0xaaaaac8e37bb]
-> >   perf(cmd_trace+0x28e7) [0xaaaaac8ec09f]
-> >   perf(+0xd4a13) [0xaaaaac91ea13]
-> >   perf(main+0x62f) [0xaaaaac8a147f]
-> >   /lib/aarch64-linux-gnu/libc.so.6(__libc_start_main+0xe3) [0xfffface22d23]
-> >   perf(+0x57723) [0xaaaaac8a1723]
-> >   Segmentation fault
-> > 
-> > This issue is introduced by commit 30a910d7d3e0 ("perf trace:
-> > Preallocate the syscall table"), it allocates trace->syscalls.table[]
-> > array and the element count is 'trace->sctbl->syscalls.nr_entries';
-> > but on Arm64, the system call number is not continuously used; e.g. the
-> > syscall maximum id is 436 but the real entries is only 281.  So the
-> > table is allocated with 'nr_entries' as the element count, but it
-> > accesses the table with the syscall id, which might be out of the bound
-> > of the array and cause the segmentation fault.
-> > 
-> > This patch allocates trace->syscalls.table[] with the element count is
-> > 'trace->sctbl->syscalls.max_id + 1', this allows any id to access the
-> > table without out of the bound.
-> 
-> Thanks a lot!
+On Mon, Aug 5, 2019 at 10:28 AM Bartosz Golaszewski
+<bgolaszewski@baylibre.com> wrote:
+>
+> pt., 2 sie 2019 o 13:20 Arnd Bergmann <arnd@arndb.de> napisał(a):
+> >
+> > On Fri, Aug 2, 2019 at 9:10 AM Bartosz Golaszewski
+> > <bgolaszewski@baylibre.com> wrote:
+> > > > -#include <mach/hardware.h>
+> > > > -#include <mach/platform.h>
+> > > > +#define _GPREG(x)                              (x)
+> > >
+> > > What purpose does this macro serve?
+> > >
+> > > >
+> > > >  #define LPC32XX_GPIO_P3_INP_STATE              _GPREG(0x000)
+> > > >  #define LPC32XX_GPIO_P3_OUTP_SET               _GPREG(0x004)
+> >
+> > In the existing code base, this macro converts a register offset to
+> > an __iomem pointer for a gpio register. I changed the definition of the
+> > macro here to keep the number of changes down, but I it's just
+> > as easy to remove it if you prefer.
+>
+> Could you just add a comment so that it's clear at first glance?
 
-You are welcome, Arnaldo.
+I ended up removing the macro. With the change to keep the reg_base as
+a struct member, this ends up being a relatively small change, and it's
+more straightforward that way.
 
-> My bad, that is why we have that max_id there, I forgot
-> about it and since I tested so far only on x86_64... applied to
-> perf/core, since it is only on:
-> 
-> [acme@quaco perf]$ git tag --contains 30a910d7d3e0
-> perf-core-for-mingo-5.4-20190729
-> [acme@quaco perf]$
+> > > > @@ -167,14 +166,26 @@ struct lpc32xx_gpio_chip {
+> > > >         struct gpio_regs        *gpio_grp;
+> > > >  };
+> > > >
+> > > > +void __iomem *gpio_reg_base;
+> > >
+> > > Any reason why this can't be made part of struct lpc32xx_gpio_chip?
+> >
+> > It could be, but it's the same for each instance, and not known until
+> > probe() time, so the same pointer would need to be copied into each
+> > instance that is otherwise read-only.
+> >
+> > Let me know if you'd prefer me to rework these two things or leave
+> > them as they are.
+>
+> I would prefer not to have global state in the driver, let's just
+> store the pointer in the data passed to gpiochip_add_data().
 
-Thanks!  Yes, I am working on perf/core branch and hit this issue.
+Ok, done.
 
-Just in case Ingo has not merged your PR, if could save your efforts
-it's quite fine for me to merge this change in your original patch.
-
-Thanks,
-Leo Yan
-
-> 
-> - Arnaldo
->  
-> > Fixes: 30a910d7d3e0 ("perf trace: Preallocate the syscall table")
-> > Signed-off-by: Leo Yan <leo.yan@linaro.org>
-> > ---
-> >  tools/perf/builtin-trace.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/tools/perf/builtin-trace.c b/tools/perf/builtin-trace.c
-> > index 75eb3811e942..d553d06a9aeb 100644
-> > --- a/tools/perf/builtin-trace.c
-> > +++ b/tools/perf/builtin-trace.c
-> > @@ -1492,7 +1492,7 @@ static int trace__read_syscall_info(struct trace *trace, int id)
-> >  	const char *name = syscalltbl__name(trace->sctbl, id);
-> >  
-> >  	if (trace->syscalls.table == NULL) {
-> > -		trace->syscalls.table = calloc(trace->sctbl->syscalls.nr_entries, sizeof(*sc));
-> > +		trace->syscalls.table = calloc(trace->sctbl->syscalls.max_id + 1, sizeof(*sc));
-> >  		if (trace->syscalls.table == NULL)
-> >  			return -ENOMEM;
-> >  	}
-> > -- 
-> > 2.17.1
-> 
-> -- 
-> 
-> - Arnaldo
+       Arnd
