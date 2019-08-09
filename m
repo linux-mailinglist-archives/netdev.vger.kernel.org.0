@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A23887B2F
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:33:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0924387B31
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 15:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407096AbfHINdQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 09:33:16 -0400
-Received: from mail-pg1-f179.google.com ([209.85.215.179]:44355 "EHLO
-        mail-pg1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406150AbfHINdP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:33:15 -0400
-Received: by mail-pg1-f179.google.com with SMTP id i18so45885529pgl.11
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:33:14 -0700 (PDT)
+        id S2407100AbfHINdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 09:33:18 -0400
+Received: from mail-pg1-f169.google.com ([209.85.215.169]:34529 "EHLO
+        mail-pg1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405928AbfHINdS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 09:33:18 -0400
+Received: by mail-pg1-f169.google.com with SMTP id n9so39661852pgc.1
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 06:33:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aeYIDCYizWFxh6gGgL45eDxaStQmV50vAqG513aqSM4=;
-        b=q4c76nkQlCRJvh8a0gRdlsbFOeenZqniXZD2Ye0DJS0XuE/rfK58N0Iyy6kZSX/usw
-         tRqvvfBphTZCABZaWxQscrnCIYql/a9ECT80X1O3d6pCfqd0bAoKbMqBTbNvR3R1evCi
-         iOfV8r1x8/atPcId9LLKZqjFIhKsYPpKYG5JpZ90pvbmjudgRuBv41d2HIDx9O35DA+e
-         Cv8o+UchLdVRtvcnbCgqsRt+TSr39wZhObCxDrYU+Vu/1JtFPd2Rv8Acvu0zT8ux2FbE
-         swRtBkyJnHD8O/2ND9RQKr0OKaE56lzNidfX27owgp06vwbL1Kv+L2+pdjgLenqxrKjH
-         KSkg==
+        bh=qLab/dzi1IiP5tJHqIV24vxngwjpLjGN2Bds0gCjb30=;
+        b=tAhfyyPNiNRZWS0mtTOZGG5nBy4cB7+DBcEBjDcvsK9sed5L39tzwoFWiwD9g1BBb3
+         jyhQBYN3mEldHM8MjKUwh51Cb1kTYiXIXqN0fheOJSQRc9Kd0i6308jAejATvsn6h9T9
+         ILZnIsPVdHyPuiFi+cI3yv8sacd30wiB0C2CT9NjlN3xYsSgaK7pGz7rnjUpraLU9grl
+         8CB3DGUpMYwTVtyJpz6UNc2+dWpdisFoJBPVmM2omdPZ/bQ1EKG862dBeEq4HlWslVjP
+         EIRJ93GyGNT00z0Yok0r68pkjQ7rTM5UUpZA/TTolmarn02R9N8Npn8jujVu3MtItDS1
+         KWrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aeYIDCYizWFxh6gGgL45eDxaStQmV50vAqG513aqSM4=;
-        b=fNttuq7vDtRY9rqSfKMEU0CiUuY3l1F7+Nfc0lIjA/v76ZxjHIMCAnnv80A+5veelV
-         rZJFKC3+t21npkrfZXrFL9zXxL9iFoGiYfY7gS6qpd5aLw/6Pzuef5pxeYATudKEJRLO
-         f3ZbfWg27RZcVR1sI0w6/w1wposGTmO+zsUkMb4Frhzviv/SGZA719QFgTiLRGYk/p/A
-         6L92jX0ZM9gGD3vUsN8RwUOFaRexOO1YLvEKPW6lXVhKi+f0l02dQ68llzWev5jXRkfD
-         ofI5JDV6wNDaLwH6o4Wh98nEBhS1z3E5xHWJprovc/5dmBBqyD3uKziGfQ2ZvgSaRu8J
-         4JUA==
-X-Gm-Message-State: APjAAAVD1vDB2IMn/Hml0viQKXJj70/QmgKqIgmvJ6gMDk1iFLtyS53a
-        j0d8c0f7lccpxpfUcfDZJw==
-X-Google-Smtp-Source: APXvYqzuLLBr1ygbm/Gzf6eZUTGRNQiFwz49N16UZD0vWFKw9qPOfUO4sEdYRhEfVcAFX8oPVQTSMg==
-X-Received: by 2002:a17:90a:8a17:: with SMTP id w23mr9238582pjn.139.1565357594466;
-        Fri, 09 Aug 2019 06:33:14 -0700 (PDT)
+        bh=qLab/dzi1IiP5tJHqIV24vxngwjpLjGN2Bds0gCjb30=;
+        b=m8OS3TbriHgLeivdCsEUbmK3KRjVbO2l6Ipdlyd93Wnu6eowNKCrQNAF2ZeRY4uAmT
+         lL473JaTQWguiaMWOITQqkfSJB1Hr1AhdP6EYX6MJRV7jYIkk7+wT2gIaefRCC3TbZJQ
+         cunPfLxh3yrdTi7kYqzfaxErE417KPVwACiacKsogJb3483oR6OQmlSMbzXDYx6kndUn
+         Wf9fVgKMPnuT2Bo08CYCHhT99VCyr8Us4xNCgmfSnKVIa5tNJmhKyR2Zk/kwc+Q3CULb
+         wQCqBX1gjI6EPjUtJ8Rmd6DwwetsUCMQGKO1Jo6n/NgjtGdsDVWGFf0KmC00LrGWmACK
+         WjvA==
+X-Gm-Message-State: APjAAAVQBGgUPGXoSusT/JMf2OYQbHWo6gUxGVCs343FjxMVz6QhrHiY
+        n5UxMgTmdswLpyBGggE9fw==
+X-Google-Smtp-Source: APXvYqxFj2fYfejkS8Y6Mpoba1Au1wq9fb32JfAoJwIZigvH4LFPhOxtFeJs/3I1NCu7Z4AhDoMsBw==
+X-Received: by 2002:a65:4489:: with SMTP id l9mr18005007pgq.207.1565357597567;
+        Fri, 09 Aug 2019 06:33:17 -0700 (PDT)
 Received: from localhost.localdomain ([110.35.161.54])
-        by smtp.gmail.com with ESMTPSA id f15sm7242912pje.17.2019.08.09.06.33.11
+        by smtp.gmail.com with ESMTPSA id f15sm7242912pje.17.2019.08.09.06.33.14
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 06:33:13 -0700 (PDT)
+        Fri, 09 Aug 2019 06:33:16 -0700 (PDT)
 From:   "Daniel T. Lee" <danieltimlee@gmail.com>
 To:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <ast@kernel.org>
 Cc:     netdev@vger.kernel.org
-Subject: [v4,3/4] tools: bpftool: add bash-completion for net attach/detach
-Date:   Fri,  9 Aug 2019 22:32:47 +0900
-Message-Id: <20190809133248.19788-4-danieltimlee@gmail.com>
+Subject: [v4,4/4] tools: bpftool: add documentation for net attach/detach
+Date:   Fri,  9 Aug 2019 22:32:48 +0900
+Message-Id: <20190809133248.19788-5-danieltimlee@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190809133248.19788-1-danieltimlee@gmail.com>
 References: <20190809133248.19788-1-danieltimlee@gmail.com>
@@ -61,121 +61,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds bash-completion for new "net attach/detach"
-subcommand for attaching XDP program on interface.
+Since, new sub-command 'net attach/detach' has been added for
+attaching XDP program on interface,
+this commit documents usage and sample output of `net attach/detach`.
 
 Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
 ---
- tools/bpf/bpftool/bash-completion/bpftool | 65 +++++++++++++++++++----
- 1 file changed, 55 insertions(+), 10 deletions(-)
+ .../bpf/bpftool/Documentation/bpftool-net.rst | 57 ++++++++++++++++++-
+ 1 file changed, 54 insertions(+), 3 deletions(-)
 
-diff --git a/tools/bpf/bpftool/bash-completion/bpftool b/tools/bpf/bpftool/bash-completion/bpftool
-index c8f42e1fcbc9..dbfcf50d8215 100644
---- a/tools/bpf/bpftool/bash-completion/bpftool
-+++ b/tools/bpf/bpftool/bash-completion/bpftool
-@@ -201,6 +201,10 @@ _bpftool()
-             _bpftool_get_prog_tags
-             return 0
-             ;;
-+        dev)
-+            _sysfs_get_netdevs
-+            return 0
-+            ;;
-         file|pinned)
-             _filedir
-             return 0
-@@ -399,10 +403,6 @@ _bpftool()
-                             _filedir
-                             return 0
-                             ;;
--                        dev)
--                            _sysfs_get_netdevs
--                            return 0
--                            ;;
-                         *)
-                             COMPREPLY=( $( compgen -W "map" -- "$cur" ) )
-                             _bpftool_once_attr 'type'
-@@ -498,10 +498,6 @@ _bpftool()
-                         key|value|flags|name|entries)
-                             return 0
-                             ;;
--                        dev)
--                            _sysfs_get_netdevs
--                            return 0
--                            ;;
-                         *)
-                             _bpftool_once_attr 'type'
-                             _bpftool_once_attr 'key'
-@@ -775,18 +771,67 @@ _bpftool()
-             esac
-             ;;
-         net)
-+            local PROG_TYPE='id pinned tag'
-+            local ATTACH_TYPES='xdp xdpgeneric xdpdrv xdpoffload'
-             case $command in
-+                show|list)
-+                    [[ $prev != "$command" ]] && return 0
-+                    COMPREPLY=( $( compgen -W 'dev' -- "$cur" ) )
-+                    return 0
-+                    ;;
-+                attach)
-+                    case $cword in
-+                        3)
-+                            COMPREPLY=( $( compgen -W "$ATTACH_TYPES" -- "$cur" ) )
-+                            return 0
-+                            ;;
-+                        4)
-+                            COMPREPLY=( $( compgen -W "$PROG_TYPE" -- "$cur" ) )
-+                            return 0
-+                            ;;
-+                        5)
-+                            case $prev in
-+                                id)
-+                                    _bpftool_get_prog_ids
-+                                    ;;
-+                                pinned)
-+                                    _filedir
-+                                    ;;
-+                            esac
-+                            return 0
-+                            ;;
-+                        6)
-+                            COMPREPLY=( $( compgen -W 'dev' -- "$cur" ) )
-+                            return 0
-+                            ;;
-+                        8)
-+                            _bpftool_once_attr 'overwrite'
-+                            return 0
-+                            ;;
-+                    esac
-+                    ;;
-+                detach)
-+                    case $cword in
-+                        3)
-+                            COMPREPLY=( $( compgen -W "$ATTACH_TYPES" -- "$cur" ) )
-+                            return 0
-+                            ;;
-+                        4)
-+                            COMPREPLY=( $( compgen -W 'dev' -- "$cur" ) )
-+                            return 0
-+                            ;;
-+                    esac
-+                    ;;
-                 *)
-                     [[ $prev == $object ]] && \
-                         COMPREPLY=( $( compgen -W 'help \
--                            show list' -- "$cur" ) )
-+                            show list attach detach' -- "$cur" ) )
-                     ;;
-             esac
-             ;;
-         feature)
-             case $command in
-                 probe)
--                    [[ $prev == "dev" ]] && _sysfs_get_netdevs && return 0
-                     [[ $prev == "prefix" ]] && return 0
-                     if _bpftool_search_list 'macros'; then
-                         COMPREPLY+=( $( compgen -W 'prefix' -- "$cur" ) )
+diff --git a/tools/bpf/bpftool/Documentation/bpftool-net.rst b/tools/bpf/bpftool/Documentation/bpftool-net.rst
+index d8e5237a2085..8651b00b81ea 100644
+--- a/tools/bpf/bpftool/Documentation/bpftool-net.rst
++++ b/tools/bpf/bpftool/Documentation/bpftool-net.rst
+@@ -15,17 +15,22 @@ SYNOPSIS
+ 	*OPTIONS* := { [{ **-j** | **--json** }] [{ **-p** | **--pretty** }] }
+ 
+ 	*COMMANDS* :=
+-	{ **show** | **list** } [ **dev** name ] | **help**
++	{ **show** | **list** | **attach** | **detach** | **help** }
+ 
+ NET COMMANDS
+ ============
+ 
+-|	**bpftool** **net { show | list } [ dev name ]**
++|	**bpftool** **net { show | list }** [ **dev** *NAME* ]
++|	**bpftool** **net attach** *ATTACH_TYPE* *PROG* **dev** *NAME* [ **overwrite** ]
++|	**bpftool** **net detach** *ATTACH_TYPE* **dev** *NAME*
+ |	**bpftool** **net help**
++|
++|	*PROG* := { **id** *PROG_ID* | **pinned** *FILE* | **tag** *PROG_TAG* }
++|	*ATTACH_TYPE* := { **xdp** | **xdpgeneric** | **xdpdrv** | **xdpoffload** }
+ 
+ DESCRIPTION
+ ===========
+-	**bpftool net { show | list } [ dev name ]**
++	**bpftool net { show | list }** [ **dev** *NAME* ]
+                   List bpf program attachments in the kernel networking subsystem.
+ 
+                   Currently, only device driver xdp attachments and tc filter
+@@ -47,6 +52,24 @@ DESCRIPTION
+                   all bpf programs attached to non clsact qdiscs, and finally all
+                   bpf programs attached to root and clsact qdisc.
+ 
++	**bpftool** **net attach** *ATTACH_TYPE* *PROG* **dev** *NAME* [ **overwrite** ]
++                  Attach bpf program *PROG* to network interface *NAME* with
++                  type specified by *ATTACH_TYPE*. Previously attached bpf program
++                  can be replaced by the command used with **overwrite** option.
++                  Currently, only XDP-related modes are supported for *ATTACH_TYPE*.
++
++                  *ATTACH_TYPE* can be of:
++                  **xdp** - try native XDP and fallback to generic XDP if NIC driver does not support it;
++                  **xdpgeneric** - Generic XDP. runs at generic XDP hook when packet already enters receive path as skb;
++                  **xdpdrv** - Native XDP. runs earliest point in driver's receive path;
++                  **xdpoffload** - Offload XDP. runs directly on NIC on each packet reception;
++
++	**bpftool** **net detach** *ATTACH_TYPE* **dev** *NAME*
++                  Detach bpf program attached to network interface *NAME* with
++                  type specified by *ATTACH_TYPE*. To detach bpf program, same
++                  *ATTACH_TYPE* previously used for attach must be specified.
++                  Currently, only XDP-related modes are supported for *ATTACH_TYPE*.
++
+ 	**bpftool net help**
+ 		  Print short help message.
+ 
+@@ -137,6 +160,34 @@ EXAMPLES
+         }
+     ]
+ 
++|
++| **# bpftool net attach xdpdrv id 16 dev enp6s0np0**
++| **# bpftool net**
++
++::
++
++      xdp:
++      enp6s0np0(4) driver id 16
++
++|
++| **# bpftool net attach xdpdrv id 16 dev enp6s0np0**
++| **# bpftool net attach xdpdrv id 20 dev enp6s0np0 overwrite**
++| **# bpftool net**
++
++::
++
++      xdp:
++      enp6s0np0(4) driver id 20
++
++|
++| **# bpftool net attach xdpdrv id 16 dev enp6s0np0**
++| **# bpftool net detach xdpdrv dev enp6s0np0**
++| **# bpftool net**
++
++::
++
++      xdp:
++
+ 
+ SEE ALSO
+ ========
 -- 
 2.20.1
 
