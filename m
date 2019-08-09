@@ -2,102 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4B7588530
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 23:45:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B50FD88545
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 23:48:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726475AbfHIVpN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 17:45:13 -0400
-Received: from mail-qt1-f180.google.com ([209.85.160.180]:42206 "EHLO
-        mail-qt1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726185AbfHIVpN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 17:45:13 -0400
-Received: by mail-qt1-f180.google.com with SMTP id t12so8685212qtp.9
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 14:45:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=oop+AI5c482oQpT0qZjGNJLdeB7Bty54SwaOuvEy/7A=;
-        b=nz+gw1pGviyEjsT2Pp5j981uYjbNd6UavWAXDhz/PuiAZHq9GJGHaBbO1heePqw+AR
-         HNJCZ6VL2HnI55H6MxWQqVsd+Psbngvg9NYV1OoZbnuqnCx1vcHpaCjnANx+693/lRjc
-         0le7B+qJzemNOswwLdV+WKkc1IJEAPRugHIxbvkF5JIlf5bT+/wZi70DvbqyTOLzzIk2
-         Um3EyNAbfQidxQoPPAa0DaNzEJqQy3BHV2ZlGYuuLZEVv22z93CTczeuJDHW0C3loRGJ
-         AIy7ykSlDTu0PGrt+kCxv9uVYeRjgX7qjuDWf/zgvoRGYoIhRcfbQyiROSZ9qDOc4VY8
-         fwxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=oop+AI5c482oQpT0qZjGNJLdeB7Bty54SwaOuvEy/7A=;
-        b=mvhrq4mKrV/oEDqfNnmD7XG2FF5KAqiZiMYgXcbWHgOueVE8Ise68CW+DvWgENORUU
-         qFsqxRbCf8SBGpgB79aHxgh0d17XHFf6WuWHJIlqRdCbwKo0Po9WMSMU28uv1+Ufw0S5
-         XkjwoPx+EgOsnXTaC2cLLvKIjmjY+rCXWCSmQEcRcmtDa43zZyc+Hog86O+yqo0f5HgH
-         6AVTDPv2BErnn/36EPwe2DUcIPGpbCJwxCjcUypN5g5SNwjORjDM207s16qpy5FI16k4
-         AVEDfqqoKC1ipz7gOsbTqn/Sy/IKV8EuA8aoCh9alMMQRNJ3o1Di2/DCZqEywNTTIe1f
-         W4rg==
-X-Gm-Message-State: APjAAAWZZ/D3fvQfahzYEjkjlUwB9F+I6D8Po0Zfscs0EmP/HBlWvrHf
-        Y2Zr7GFIBrh+RmhQ5bfujWn0iw==
-X-Google-Smtp-Source: APXvYqxUGt2HPpiDgUAoI+sRiwk39O6vocCatpWedFsSsf3coSkUqQ+u9Txx8WGk5TondZwj3pI26Q==
-X-Received: by 2002:a0c:895b:: with SMTP id 27mr19582421qvq.94.1565387112083;
-        Fri, 09 Aug 2019 14:45:12 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id t1sm7424600qkb.68.2019.08.09.14.45.11
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 14:45:11 -0700 (PDT)
-Date:   Fri, 9 Aug 2019 14:45:09 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     "Daniel T. Lee" <danieltimlee@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [v4,0/4] tools: bpftool: add net attach/detach command to
- attach XDP prog
-Message-ID: <20190809144509.066d16f8@cakuba.netronome.com>
-In-Reply-To: <20190809133248.19788-1-danieltimlee@gmail.com>
-References: <20190809133248.19788-1-danieltimlee@gmail.com>
-Organization: Netronome Systems, Ltd.
+        id S1729381AbfHIVrt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 17:47:49 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53960 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728576AbfHIVrt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 17:47:49 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0364FB2CD;
+        Fri,  9 Aug 2019 21:47:49 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D5BA060BF3;
+        Fri,  9 Aug 2019 21:47:47 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+ Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+ Kingdom.
+ Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix local refcounting
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     dhowells@redhat.com, jaltman@auristor.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Date:   Fri, 09 Aug 2019 22:47:47 +0100
+Message-ID: <156538726702.16201.13552536596121161945.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/unknown-version
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Fri, 09 Aug 2019 21:47:49 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri,  9 Aug 2019 22:32:44 +0900, Daniel T. Lee wrote:
-> Currently, bpftool net only supports dumping progs attached on the
-> interface. To attach XDP prog on interface, user must use other tool
-> (eg. iproute2). By this patch, with `bpftool net attach/detach`, user
-> can attach/detach XDP prog on interface.
-> 
->     # bpftool prog
->         16: xdp  name xdp_prog1  tag 539ec6ce11b52f98  gpl
->         loaded_at 2019-08-07T08:30:17+0900  uid 0
->         ...
->         20: xdp  name xdp_fwd_prog  tag b9cb69f121e4a274  gpl
->         loaded_at 2019-08-07T08:30:17+0900  uid 0
-> 
->     # bpftool net attach xdpdrv id 16 dev enp6s0np0
->     # bpftool net
->     xdp:
->         enp6s0np0(4) driver id 16
-> 
->     # bpftool net attach xdpdrv id 20 dev enp6s0np0 overwrite
->     # bpftool net
->     xdp:
->         enp6s0np0(4) driver id 20
-> 
->     # bpftool net detach xdpdrv dev enp6s0np0
->     # bpftool net
->     xdp:
-> 
-> 
-> While this patch only contains support for XDP, through `net
-> attach/detach`, bpftool can further support other prog attach types.
-> 
-> XDP attach/detach tested on Mellanox ConnectX-4 and Netronome Agilio.
+Fix rxrpc_unuse_local() to handle a NULL local pointer as it can be called
+on an unbound socket on which rx->local is not yet set.
 
-Looks good to me now*, thanks!
+The following reproduced (includes omitted):
 
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+	int main(void)
+	{
+		socket(AF_RXRPC, SOCK_DGRAM, AF_INET);
+		return 0;
+	}
 
-* apart from the entire duplication thing.
+causes the following oops to occur:
+
+	BUG: kernel NULL pointer dereference, address: 0000000000000010
+	...
+	RIP: 0010:rxrpc_unuse_local+0x8/0x1b
+	...
+	Call Trace:
+	 rxrpc_release+0x2b5/0x338
+	 __sock_release+0x37/0xa1
+	 sock_close+0x14/0x17
+	 __fput+0x115/0x1e9
+	 task_work_run+0x72/0x98
+	 do_exit+0x51b/0xa7a
+	 ? __context_tracking_exit+0x4e/0x10e
+	 do_group_exit+0xab/0xab
+	 __x64_sys_exit_group+0x14/0x17
+	 do_syscall_64+0x89/0x1d4
+	 entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Reported-by: syzbot+20dee719a2e090427b5f@syzkaller.appspotmail.com
+Fixes: 730c5fd42c1e ("rxrpc: Fix local endpoint refcounting")
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: Jeffrey Altman <jaltman@auristor.com>
+---
+
+ net/rxrpc/local_object.c |   12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
+index 9798159ee65f..c9db3e762d8d 100644
+--- a/net/rxrpc/local_object.c
++++ b/net/rxrpc/local_object.c
+@@ -402,11 +402,13 @@ void rxrpc_unuse_local(struct rxrpc_local *local)
+ {
+ 	unsigned int au;
+ 
+-	au = atomic_dec_return(&local->active_users);
+-	if (au == 0)
+-		rxrpc_queue_local(local);
+-	else
+-		rxrpc_put_local(local);
++	if (local) {
++		au = atomic_dec_return(&local->active_users);
++		if (au == 0)
++			rxrpc_queue_local(local);
++		else
++			rxrpc_put_local(local);
++	}
+ }
+ 
+ /*
+
