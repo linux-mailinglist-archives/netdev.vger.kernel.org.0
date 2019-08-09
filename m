@@ -2,40 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 536E2882AA
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:36:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA072882B1
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 20:36:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407508AbfHISgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 14:36:31 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.61.142]:38434 "EHLO
+        id S2407614AbfHISgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 14:36:52 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:38444 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2407139AbfHISgb (ORCPT
+        by vger.kernel.org with ESMTP id S1726377AbfHISgb (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 14:36:31 -0400
 Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 912B2C0AC6
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 988EBC0AEC
         for <netdev@vger.kernel.org>; Fri,  9 Aug 2019 18:36:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1565375790; bh=+e0fiLI+AKYkkenlc37cHx9dsfzGlUyTd7VjfeicYvg=;
+        t=1565375791; bh=4UZh+Cyl0srvQtfzzlzUDEg4L9VHXOhlwVWFHy4iSk8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=mQ4LYuwpLv4/DzFx/E7PX+H/A+chdcb3L2zjIvNQTBqWBA+Ye4f+e32J9dTegjmc8
-         otaBByT0eNfZSIoqP4CFwWhuamcvecx9eCgOud6JvxRKdto1UwS2slrUF2rz6+MPhN
-         QQ5DlfhFyxLTawc+AiIKLvwi9QEcuYpuV0TmCUf60XTTZAg8j8S6BH9FcqJHkfioRc
-         j+4cylNlK9iluDNcIDBabMcgqC3oBOraIa2fKt8yYtoQO0s/4/33evmWYJKutZLLu+
-         iBmXUt4jpj9Sg2jwk87ModOp3x6pGtEnnhrwNwoDApBmUipkueASgbQJo2/+LI4exC
-         +OW84yr6qh0bQ==
+        b=elZc5ohBHffPYSOhGQc0yR6vcR0ReJah837U3kh0sTrlc0ePcMj12r9Dxu5wbpvow
+         zFX9UPFhAr6cQhBYgUphL5JUeCBurDtey9pZ1nFCppQM1tCqPaeMfHqjga1ciZ1o6P
+         6VKk76RbjfjVKH2nwfaKmBClKlTNJhTmLP+DtTYr8rZ2kTv7ZlgVGs8iupVljoEdLD
+         akUzS+tojjf2hSxGqJ+pQFY9rlhAWT7iBUCOWfjT+f6hdvQHBD2kht6xCNPy2Tl5+6
+         CzhObCdAzvyHPw8z437nCTgsjxrFfwpzi+kxZA2vbbds6HbZd4Innbs1Ni+IFMKU8e
+         n6NqzJFhvSOLQ==
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 5927CA006D;
+        by mailhost.synopsys.com (Postfix) with ESMTP id 5EC2EA0070;
         Fri,  9 Aug 2019 18:36:29 +0000 (UTC)
 From:   Jose Abreu <Jose.Abreu@synopsys.com>
 To:     netdev@vger.kernel.org
 Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
         Jose Abreu <Jose.Abreu@synopsys.com>
-Subject: [PATCH net-next 06/12] net: stmmac: dwxgmac: Add Flexible PPS support
-Date:   Fri,  9 Aug 2019 20:36:14 +0200
-Message-Id: <32421099935c3e994d9a3d83ac97c3d868d7c73b.1565375521.git.joabreu@synopsys.com>
+Subject: [PATCH net-next 07/12] net: stmmac: Add ethtool register dump for XGMAC cores
+Date:   Fri,  9 Aug 2019 20:36:15 +0200
+Message-Id: <bc0da772e6949ebfa8727df29d42f7c92f7606b7.1565375521.git.joabreu@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1565375521.git.joabreu@synopsys.com>
 References: <cover.1565375521.git.joabreu@synopsys.com>
@@ -46,125 +46,157 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add the support for Flexible PPS in XGMAC cores.
+Add the ethtool interface to dump the register map in XGMAC cores.
 
 Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     | 19 ++++++++
- .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 56 ++++++++++++++++++++++
- 2 files changed, 75 insertions(+)
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  2 ++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 11 +++++++++-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c | 10 ++++++++-
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   | 24 ++++++++++++++++------
+ 4 files changed, 39 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-index 995d533b9316..dbac63972faf 100644
+index dbac63972faf..7fed3d2d4a95 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h
-@@ -149,6 +149,25 @@
- #define XGMAC_TXTIMESTAMP_NSEC		0x00000d30
- #define XGMAC_TXTSSTSLO			GENMASK(30, 0)
- #define XGMAC_TXTIMESTAMP_SEC		0x00000d34
-+#define XGMAC_PPS_CONTROL		0x00000d70
-+#define XGMAC_PPS_MAXIDX(x)		((((x) + 1) * 8) - 1)
-+#define XGMAC_PPS_MINIDX(x)		((x) * 8)
-+#define XGMAC_PPSx_MASK(x)		\
-+	GENMASK(XGMAC_PPS_MAXIDX(x), XGMAC_PPS_MINIDX(x))
-+#define XGMAC_TRGTMODSELx(x, val)	\
-+	GENMASK(XGMAC_PPS_MAXIDX(x) - 1, XGMAC_PPS_MAXIDX(x) - 2) & \
-+	((val) << (XGMAC_PPS_MAXIDX(x) - 2))
-+#define XGMAC_PPSCMDx(x, val)		\
-+	GENMASK(XGMAC_PPS_MINIDX(x) + 3, XGMAC_PPS_MINIDX(x)) & \
-+	((val) << XGMAC_PPS_MINIDX(x))
-+#define XGMAC_PPSCMD_START		0x2
-+#define XGMAC_PPSCMD_STOP		0x5
-+#define XGMAC_PPSEN0			BIT(4)
-+#define XGMAC_PPSx_TARGET_TIME_SEC(x)	(0x00000d80 + (x) * 0x10)
-+#define XGMAC_PPSx_TARGET_TIME_NSEC(x)	(0x00000d84 + (x) * 0x10)
-+#define XGMAC_TRGTBUSY0			BIT(31)
-+#define XGMAC_PPSx_INTERVAL(x)		(0x00000d88 + (x) * 0x10)
-+#define XGMAC_PPSx_WIDTH(x)		(0x00000d8c + (x) * 0x10)
+@@ -244,6 +244,7 @@
+ #define XGMAC_RXOVFIS			BIT(16)
+ #define XGMAC_ABPSIS			BIT(1)
+ #define XGMAC_TXUNFIS			BIT(0)
++#define XGMAC_MAC_REGSIZE		(XGMAC_MTL_QINT_STATUS(15) / 4)
  
- /* MTL Registers */
- #define XGMAC_MTL_OPMODE		0x00001000
+ /* DMA Registers */
+ #define XGMAC_DMA_MODE			0x00003000
+@@ -321,6 +322,7 @@
+ #define XGMAC_TBU			BIT(2)
+ #define XGMAC_TPS			BIT(1)
+ #define XGMAC_TI			BIT(0)
++#define XGMAC_REGSIZE			((0x0000317c + (0x80 * 15)) / 4)
+ 
+ /* Descriptors */
+ #define XGMAC_TDES2_IOC			BIT(31)
 diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-index 1161287d3a62..3708cdb16ff7 100644
+index 3708cdb16ff7..2093c996a090 100644
 --- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
 +++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
-@@ -8,6 +8,7 @@
- #include <linux/crc32.h>
- #include <linux/iopoll.h>
- #include "stmmac.h"
-+#include "stmmac_ptp.h"
- #include "dwxgmac2.h"
- 
- static void dwxgmac2_core_init(struct mac_device_info *hw,
-@@ -1018,6 +1019,60 @@ static int dwxgmac2_get_mac_tx_timestamp(struct mac_device_info *hw, u64 *ts)
- 	return -EBUSY;
+@@ -239,6 +239,15 @@ static void dwxgmac2_config_cbs(struct mac_device_info *hw,
+ 	writel(value, ioaddr + XGMAC_MTL_TCx_ETS_CONTROL(queue));
  }
  
-+static int dwxgmac2_flex_pps_config(void __iomem *ioaddr, int index,
-+				    struct stmmac_pps_cfg *cfg, bool enable,
-+				    u32 sub_second_inc, u32 systime_flags)
++static void dwxgmac2_dump_regs(struct mac_device_info *hw, u32 *reg_space)
 +{
-+	u32 tnsec = readl(ioaddr + XGMAC_PPSx_TARGET_TIME_NSEC(index));
-+	u32 val = readl(ioaddr + XGMAC_PPS_CONTROL);
-+	u64 period;
++	void __iomem *ioaddr = hw->pcsr;
++	int i;
 +
-+	if (!cfg->available)
-+		return -EINVAL;
-+	if (tnsec & XGMAC_TRGTBUSY0)
-+		return -EBUSY;
-+	if (!sub_second_inc || !systime_flags)
-+		return -EINVAL;
-+
-+	val &= ~XGMAC_PPSx_MASK(index);
-+
-+	if (!enable) {
-+		val |= XGMAC_PPSCMDx(index, XGMAC_PPSCMD_STOP);
-+		writel(val, ioaddr + XGMAC_PPS_CONTROL);
-+		return 0;
-+	}
-+
-+	val |= XGMAC_PPSCMDx(index, XGMAC_PPSCMD_START);
-+	val |= XGMAC_TRGTMODSELx(index, XGMAC_PPSCMD_START);
-+	val |= XGMAC_PPSEN0;
-+
-+	writel(cfg->start.tv_sec, ioaddr + XGMAC_PPSx_TARGET_TIME_SEC(index));
-+
-+	if (!(systime_flags & PTP_TCR_TSCTRLSSR))
-+		cfg->start.tv_nsec = (cfg->start.tv_nsec * 1000) / 465;
-+	writel(cfg->start.tv_nsec, ioaddr + XGMAC_PPSx_TARGET_TIME_NSEC(index));
-+
-+	period = cfg->period.tv_sec * 1000000000;
-+	period += cfg->period.tv_nsec;
-+
-+	do_div(period, sub_second_inc);
-+
-+	if (period <= 1)
-+		return -EINVAL;
-+
-+	writel(period - 1, ioaddr + XGMAC_PPSx_INTERVAL(index));
-+
-+	period >>= 1;
-+	if (period <= 1)
-+		return -EINVAL;
-+
-+	writel(period - 1, ioaddr + XGMAC_PPSx_WIDTH(index));
-+
-+	/* Finally, activate it */
-+	writel(val, ioaddr + XGMAC_PPS_CONTROL);
-+	return 0;
++	for (i = 0; i < XGMAC_MAC_REGSIZE; i++)
++		reg_space[i] = readl(ioaddr + i * 4);
 +}
 +
- const struct stmmac_ops dwxgmac210_ops = {
- 	.core_init = dwxgmac2_core_init,
- 	.set_mac = dwxgmac2_set_mac,
-@@ -1055,6 +1110,7 @@ const struct stmmac_ops dwxgmac210_ops = {
- 	.update_vlan_hash = dwxgmac2_update_vlan_hash,
- 	.rxp_config = dwxgmac3_rxp_config,
- 	.get_mac_tx_timestamp = dwxgmac2_get_mac_tx_timestamp,
-+	.flex_pps_config = dwxgmac2_flex_pps_config,
- };
+ static int dwxgmac2_host_irq_status(struct mac_device_info *hw,
+ 				    struct stmmac_extra_stats *x)
+ {
+@@ -1086,7 +1095,7 @@ const struct stmmac_ops dwxgmac210_ops = {
+ 	.set_mtl_tx_queue_weight = dwxgmac2_set_mtl_tx_queue_weight,
+ 	.map_mtl_to_dma = dwxgmac2_map_mtl_to_dma,
+ 	.config_cbs = dwxgmac2_config_cbs,
+-	.dump_regs = NULL,
++	.dump_regs = dwxgmac2_dump_regs,
+ 	.host_irq_status = dwxgmac2_host_irq_status,
+ 	.host_mtl_irq_status = dwxgmac2_host_mtl_irq_status,
+ 	.flow_ctrl = dwxgmac2_flow_ctrl,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+index 0f3de4895cf7..42c13d144203 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c
+@@ -128,6 +128,14 @@ static void dwxgmac2_dma_axi(void __iomem *ioaddr, struct stmmac_axi *axi)
+ 	writel(XGMAC_RDPS, ioaddr + XGMAC_RX_EDMA_CTRL);
+ }
  
- int dwxgmac2_setup(struct stmmac_priv *priv)
++static void dwxgmac2_dma_dump_regs(void __iomem *ioaddr, u32 *reg_space)
++{
++	int i;
++
++	for (i = (XGMAC_DMA_MODE / 4); i < XGMAC_REGSIZE; i++)
++		reg_space[i] = readl(ioaddr + i * 4);
++}
++
+ static void dwxgmac2_dma_rx_mode(void __iomem *ioaddr, int mode,
+ 				 u32 channel, int fifosz, u8 qmode)
+ {
+@@ -496,7 +504,7 @@ const struct stmmac_dma_ops dwxgmac210_dma_ops = {
+ 	.init_rx_chan = dwxgmac2_dma_init_rx_chan,
+ 	.init_tx_chan = dwxgmac2_dma_init_tx_chan,
+ 	.axi = dwxgmac2_dma_axi,
+-	.dump_regs = NULL,
++	.dump_regs = dwxgmac2_dma_dump_regs,
+ 	.dma_rx_mode = dwxgmac2_dma_rx_mode,
+ 	.dma_tx_mode = dwxgmac2_dma_tx_mode,
+ 	.enable_dma_irq = dwxgmac2_enable_dma_irq,
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+index eb784fdb6d32..8828a5481f61 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_ethtool.c
+@@ -18,10 +18,12 @@
+ 
+ #include "stmmac.h"
+ #include "dwmac_dma.h"
++#include "dwxgmac2.h"
+ 
+ #define REG_SPACE_SIZE	0x1060
+ #define MAC100_ETHTOOL_NAME	"st_mac100"
+ #define GMAC_ETHTOOL_NAME	"st_gmac"
++#define XGMAC_ETHTOOL_NAME	"st_xgmac"
+ 
+ #define ETHTOOL_DMA_OFFSET	55
+ 
+@@ -260,6 +262,8 @@ static void stmmac_ethtool_getdrvinfo(struct net_device *dev,
+ 
+ 	if (priv->plat->has_gmac || priv->plat->has_gmac4)
+ 		strlcpy(info->driver, GMAC_ETHTOOL_NAME, sizeof(info->driver));
++	else if (priv->plat->has_xgmac)
++		strlcpy(info->driver, XGMAC_ETHTOOL_NAME, sizeof(info->driver));
+ 	else
+ 		strlcpy(info->driver, MAC100_ETHTOOL_NAME,
+ 			sizeof(info->driver));
+@@ -405,23 +409,31 @@ static int stmmac_check_if_running(struct net_device *dev)
+ 
+ static int stmmac_ethtool_get_regs_len(struct net_device *dev)
+ {
++	struct stmmac_priv *priv = netdev_priv(dev);
++
++	if (priv->plat->has_xgmac)
++		return XGMAC_REGSIZE * 4;
+ 	return REG_SPACE_SIZE;
+ }
+ 
+ static void stmmac_ethtool_gregs(struct net_device *dev,
+ 			  struct ethtool_regs *regs, void *space)
+ {
+-	u32 *reg_space = (u32 *) space;
+-
+ 	struct stmmac_priv *priv = netdev_priv(dev);
++	int size = stmmac_ethtool_get_regs_len(dev);
++	u32 *reg_space = (u32 *) space;
+ 
+-	memset(reg_space, 0x0, REG_SPACE_SIZE);
++	memset(reg_space, 0x0, size);
+ 
+ 	stmmac_dump_mac_regs(priv, priv->hw, reg_space);
+ 	stmmac_dump_dma_regs(priv, priv->ioaddr, reg_space);
+-	/* Copy DMA registers to where ethtool expects them */
+-	memcpy(&reg_space[ETHTOOL_DMA_OFFSET], &reg_space[DMA_BUS_MODE / 4],
+-	       NUM_DWMAC1000_DMA_REGS * 4);
++
++	if (!priv->plat->has_xgmac) {
++		/* Copy DMA registers to where ethtool expects them */
++		memcpy(&reg_space[ETHTOOL_DMA_OFFSET],
++		       &reg_space[DMA_BUS_MODE / 4],
++		       NUM_DWMAC1000_DMA_REGS * 4);
++	}
+ }
+ 
+ static int stmmac_nway_reset(struct net_device *dev)
 -- 
 2.7.4
 
