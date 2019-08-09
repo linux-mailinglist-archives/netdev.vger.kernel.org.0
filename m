@@ -2,83 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE9FA88139
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 19:32:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F0248817D
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 19:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407373AbfHIRcU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 13:32:20 -0400
-Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:32856 "EHLO
-        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726157AbfHIRcS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 13:32:18 -0400
-X-Virus-Scanned: Proofpoint Essentials engine
-Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 914AD98007A;
-        Fri,  9 Aug 2019 17:32:11 +0000 (UTC)
-Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
- (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 9 Aug
- 2019 10:32:04 -0700
-Subject: Re: [PATCH v3 net-next 0/3] net: batched receive in GRO path
-To:     Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-CC:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        "Eric Dumazet" <eric.dumazet@gmail.com>,
-        "linux-net-drivers@solarflare.com" <linux-net-drivers@solarflare.com>
-References: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
- <AM0PR04MB4994C1A8F32FB6C9A7EE057E94D60@AM0PR04MB4994.eurprd04.prod.outlook.com>
-From:   Edward Cree <ecree@solarflare.com>
-Message-ID: <a6faf533-6dd3-d7d7-9464-1fe87d0ac7fc@solarflare.com>
-Date:   Fri, 9 Aug 2019 18:32:02 +0100
+        id S2407409AbfHIRoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 13:44:15 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:44484 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfHIRoO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 13:44:14 -0400
+Received: by mail-wr1-f67.google.com with SMTP id p17so98969613wrf.11
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 10:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iNEpzubpIu3EpPISc8upM7dKavfa8FGb9bw1r+crcp4=;
+        b=WyFoUYDBvfSqr5m0WLqALXBsXVxYq2imfYIx+mhzJVRD/4uvi6dXzqmdGSJlg8iix0
+         Um23uYmPnBBVE+YMoulD/yHlUI1VXOiNeegRBMjkj5k57na7rCE2RRFuhitjARREWQuX
+         02xqgb9s6PNLXWix/B9Cfg1PTOInzlSW6tn5StxldqPWZEl4u/xbvBvQFsd7UHaab9sM
+         3xXUBs2+yepK3BW9KQscHIRiy/fc5VH8jDCItOMNuUdDbbl2dEPRjNYUmnpz9wQBZenp
+         AmOOzYI8Jj8A4wHu43ORz7cjCLJ8aqBlwMCKyrdOCSrZ95Pl6pdVjW05t5prpxkQO5ud
+         X7bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iNEpzubpIu3EpPISc8upM7dKavfa8FGb9bw1r+crcp4=;
+        b=qWHy5NqTzFJc+bm6k74Rz8VYPIQ07RDfT5TXDf5nEbJ7x+tpty5byjixzdS8IeUdxL
+         z45o6q4hmySD440GPwjceQEqUi4dR9Pi3vDgMrI+vnhZ7WsozqJNWfPk7/zStt66HLXm
+         gWqbOuM/TOKRMCWIn1fB6YKz0nTmJFBtsdwgJsqOl+UyOa8+K5xMlGAOcBIcFHuuE8lj
+         oFzV+5scFBbe0U3BCx+Dk6YqtkhMfcuiJfjPjiNL6RaiMqoYlQdMacTnwnvEPPry8gVT
+         pOZ9i6b8c2ogPozjkkqZCaqPrxZXYJTT664XPiw5CTH62aBPffoPFdzhMSdyHhE0WXuJ
+         egfg==
+X-Gm-Message-State: APjAAAVQ7XrZD3kZAM5joblzbI+/zarSfKbmmzmQ7Qal8RsC6ZECx3r/
+        J/AAJnt8fOK5om+HNqbjvTMpfg==
+X-Google-Smtp-Source: APXvYqxJqhBXAPtjWv7mk/XnzCiwiZd7oM2DDJdsh6S4CUN5ESXb/PZCdLSZieUYd4lE63+TKOGaYg==
+X-Received: by 2002:adf:f68b:: with SMTP id v11mr24216006wrp.116.1565372652624;
+        Fri, 09 Aug 2019 10:44:12 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.186.47])
+        by smtp.gmail.com with ESMTPSA id r123sm7123090wme.7.2019.08.09.10.44.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 09 Aug 2019 10:44:11 -0700 (PDT)
+Subject: Re: [PATCH v3] tools: bpftool: fix reading from /proc/config.gz
+To:     Peter Wu <peter@lekensteyn.nl>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, Stanislav Fomichev <sdf@google.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+References: <20190809003911.7852-1-peter@lekensteyn.nl>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <4c366f69-2571-f1f8-52aa-16175ef45283@netronome.com>
+Date:   Fri, 9 Aug 2019 18:44:11 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <AM0PR04MB4994C1A8F32FB6C9A7EE057E94D60@AM0PR04MB4994.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Originating-IP: [10.17.20.203]
-X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24836.003
-X-TM-AS-Result: No-2.112500-4.000000-10
-X-TMASE-MatchedRID: scwq2vQP8OHmLzc6AOD8DfHkpkyUphL9+IfriO3cV8RE6qvV2uOcub8g
-        3TlUXOF7nbLB5zXDLB2q3CLfAyeEI2cPPLBO2A0bN19PjPJahlJ6i696PjRPiPkuQv9PIVnN10d
-        pxFjKl75/MmgtAHVjaLr7cyh+G7QMNO5dlFRJNAYr+fETfhSxIzYj3YEUmwiMYxGZfkM2VceUR6
-        6C6i5v8zNL/d/R0RZNNhTrvE0YItIrP1wc0Kr8faHXpVd0THLOfS0Ip2eEHnzWRN8STJpl3PoLR
-        4+zsDTt9VPDReA7LdprPSROiqR4dyNZ+CCPkCIO0HD7n31YzE6vuDUKMZ4pUhXduck8JbqKqE+b
-        /qlJMMZjEVwCkbftjhxxume6OboREoCMXu4zsQhR029mOM6P0LrcE8xytxC5d5hZXZFoB8PxWx9
-        3BSYyycC+ksT6a9fy
-X-TM-AS-User-Approved-Sender: No
-X-TM-AS-User-Blocked-Sender: No
-X-TMASE-Result: 10--2.112500-4.000000
-X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24836.003
-X-MDID: 1565371935-oWOmd0fVaxvo
+In-Reply-To: <20190809003911.7852-1-peter@lekensteyn.nl>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 09/08/2019 18:14, Ioana Ciocoi Radulescu wrote:
-> Hi Edward,
->
-> I'm probably missing a lot of context here, but is there a reason
-> this change targets only the napi_gro_frags() path and not the
-> napi_gro_receive() one?
-> I'm trying to understand what drivers that don't call napi_gro_frags()
-> should do in order to benefit from this batching feature.
-The sfc driver (which is what I have lots of hardware for, so I can
- test it) uses napi_gro_frags().
-It should be possible to do a similar patch to napi_gro_receive(),
- if someone wants to put in the effort of writing and testing it.
-However, there are many more callers, so more effort required to
- make sure none of them care whether the return value is GRO_DROP
- or GRO_NORMAL (since the listified version cannot give that
- indication).
-Also, the guidance from Eric is that drivers seeking high performance
- should use napi_gro_frags(), as this allows GRO to recycle the SKB.
+2019-08-09 01:39 UTC+0100 ~ Peter Wu <peter@lekensteyn.nl>
+> /proc/config has never existed as far as I can see, but /proc/config.gz
+> is present on Arch Linux. Add support for decompressing config.gz using
+> zlib which is a mandatory dependency of libelf. Replace existing stdio
+> functions with gzFile operations since the latter transparently handles
+> uncompressed and gzip-compressed files.
+> 
+> Cc: Quentin Monnet <quentin.monnet@netronome.com>
+> Signed-off-by: Peter Wu <peter@lekensteyn.nl>
+> ---
+>  v3: replace popen(gunzip) by linking directly to zlib. Reword commit
+>      message, remove "Fixes" line. (this patch)
+>  v2: fix style (reorder vars as reverse xmas tree, rename function,
+>      braces), fallback to /proc/config.gz if uname() fails.
+>      https://lkml.kernel.org/r/20190806010702.3303-1-peter@lekensteyn.nl
+>  v1: https://lkml.kernel.org/r/20190805001541.8096-1-peter@lekensteyn.nl
+> 
+> Hi,
+> 
+> Thanks to Jakub for observing that zlib is already used by libelf, this
+> simplifies the patch tremendously as the same API can be used for both
+> compressed and uncompressed files. No special case exists anymore for
+> fclose/pclose.
+> 
+> According to configure.ac in elfutils, zlib is mandatory, so I just
+> assume it to be available. For simplicity I also silently assume lines
+> to be less than 4096 characters. If that is not the case, then lines
+> will appear truncated, but that should not be an issue for the
+> CONFIG_xyz lines that we are scanning for.
+> 
+> Jakub requested the handle leak fix to be posted separately against the
+> bpf tree, but since the whole code is rewritten I am not sure if it is
+> worth it. It is an unusual edge case: /boot/config-$(uname -r) could be
+> opened, but starts with unexpected data.
+> 
+> Kind regards,
+> Peter
 
-All of this together means I don't plan to submit such a patch; I
- would however be happy to review a patch if someone else writes one.
+This version seems good to me, thanks!
 
-HTH,
--Ed
+Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
