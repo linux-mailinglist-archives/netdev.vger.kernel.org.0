@@ -2,55 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0EE86F6F
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 03:44:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC96186F72
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 03:50:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405226AbfHIBo4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 21:44:56 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:54380 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729419AbfHIBoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 8 Aug 2019 21:44:55 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 160E514384FE1;
-        Thu,  8 Aug 2019 18:44:55 -0700 (PDT)
-Date:   Thu, 08 Aug 2019 18:44:54 -0700 (PDT)
-Message-Id: <20190808.184454.1230954896965640540.davem@davemloft.net>
-To:     wenxu@ucloud.cn
-Cc:     jakub.kicinski@netronome.com, pablo@netfilter.org,
-        netfilter-devel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v7 0/6] flow_offload: add indr-block in
- nf_table_offload
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1565140434-8109-1-git-send-email-wenxu@ucloud.cn>
-References: <1565140434-8109-1-git-send-email-wenxu@ucloud.cn>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 08 Aug 2019 18:44:55 -0700 (PDT)
+        id S2405079AbfHIBuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 21:50:25 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:4204 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729419AbfHIBuZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 21:50:25 -0400
+Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 9BB5EBBDB859B5B143DA;
+        Fri,  9 Aug 2019 09:50:22 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS407-HUB.china.huawei.com
+ (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Fri, 9 Aug 2019
+ 09:50:14 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <jhs@mojatatu.com>,
+        <xiyou.wangcong@gmail.com>, <jiri@resnulli.us>,
+        <vinicius.gomes@intel.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2 net-next] taprio: remove unused variable 'entry_list_policy'
+Date:   Fri, 9 Aug 2019 09:49:23 +0800
+Message-ID: <20190809014923.69328-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+In-Reply-To: <20190808142623.69188-1-yuehaibing@huawei.com>
+References: <20190808142623.69188-1-yuehaibing@huawei.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu@ucloud.cn
-Date: Wed,  7 Aug 2019 09:13:48 +0800
+net/sched/sch_taprio.c:680:32: warning:
+ entry_list_policy defined but not used [-Wunused-const-variable=]
 
-> This series patch make nftables offload support the vlan and
-> tunnel device offload through indr-block architecture.
-> 
-> The first four patches mv tc indr block to flow offload and
-> rename to flow-indr-block.
-> Because the new flow-indr-block can't get the tcf_block
-> directly. The fifth patch provide a callback list to get 
-> flow_block of each subsystem immediately when the device
-> register and contain a block.
-> The last patch make nf_tables_offload support flow-indr-block.
-> 
-> This version add a mutex lock for add/del flow_indr_block_ing_cb
+One of the points of commit a3d43c0d56f1 ("taprio: Add support adding
+an admin schedule") is that it removes support (it now returns "not
+supported") for schedules using the TCA_TAPRIO_ATTR_SCHED_SINGLE_ENTRY
+attribute (which were never used), the parsing of those types of schedules
+was the only user of this policy. So removing this policy should be fine.
 
-Series applied, thank you.
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Suggested-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+v2: respin commit log using Vinicius's explanation.
+---
+ net/sched/sch_taprio.c | 4 ----
+ 1 file changed, 4 deletions(-)
+
+diff --git a/net/sched/sch_taprio.c b/net/sched/sch_taprio.c
+index c39db50..046fd2c 100644
+--- a/net/sched/sch_taprio.c
++++ b/net/sched/sch_taprio.c
+@@ -677,10 +677,6 @@ static const struct nla_policy entry_policy[TCA_TAPRIO_SCHED_ENTRY_MAX + 1] = {
+ 	[TCA_TAPRIO_SCHED_ENTRY_INTERVAL]  = { .type = NLA_U32 },
+ };
+ 
+-static const struct nla_policy entry_list_policy[TCA_TAPRIO_SCHED_MAX + 1] = {
+-	[TCA_TAPRIO_SCHED_ENTRY] = { .type = NLA_NESTED },
+-};
+-
+ static const struct nla_policy taprio_policy[TCA_TAPRIO_ATTR_MAX + 1] = {
+ 	[TCA_TAPRIO_ATTR_PRIOMAP]	       = {
+ 		.len = sizeof(struct tc_mqprio_qopt)
+-- 
+2.7.4
+
+
