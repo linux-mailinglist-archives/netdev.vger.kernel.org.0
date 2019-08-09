@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B0B86FA4
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 04:33:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D5EE86FA2
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 04:33:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405309AbfHICdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 8 Aug 2019 22:33:38 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:59000 "EHLO huawei.com"
+        id S1733258AbfHICdg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 8 Aug 2019 22:33:36 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:59028 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1732708AbfHICdh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 8 Aug 2019 22:33:37 -0400
+        id S2405094AbfHICdg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 8 Aug 2019 22:33:36 -0400
 Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 188FED2665E4EE2AB05C;
+        by Forcepoint Email with ESMTP id 2AA94CEA7D7FB814504F;
         Fri,  9 Aug 2019 10:33:32 +0800 (CST)
 Received: from localhost.localdomain (10.67.212.132) by
  DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
@@ -21,11 +21,11 @@ From:   Huazhong Tan <tanhuazhong@huawei.com>
 To:     <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <linuxarm@huawei.com>, Guangbin Huang <huangguangbin2@huawei.com>,
+        <linuxarm@huawei.com>, Yunsheng Lin <linyunsheng@huawei.com>,
         Huazhong Tan <tanhuazhong@huawei.com>
-Subject: [PATCH net-next 06/12] net: hns3: add DFX registers information for ethtool -d
-Date:   Fri, 9 Aug 2019 10:31:12 +0800
-Message-ID: <1565317878-31806-7-git-send-email-tanhuazhong@huawei.com>
+Subject: [PATCH net-next 07/12] net: hns3: add some statitics info to tx process
+Date:   Fri, 9 Aug 2019 10:31:13 +0800
+Message-ID: <1565317878-31806-8-git-send-email-tanhuazhong@huawei.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1565317878-31806-1-git-send-email-tanhuazhong@huawei.com>
 References: <1565317878-31806-1-git-send-email-tanhuazhong@huawei.com>
@@ -38,480 +38,199 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Guangbin Huang <huangguangbin2@huawei.com>
+From: Yunsheng Lin <linyunsheng@huawei.com>
 
-Now we can use ethtool -d command to dump some registers. However,
-these registers information is not enough to find out where the problem is.
+This patch adds tx_vlan_err, tx_l4_proto_err, tx_l2l3l4_err
+and tx_tso_err counter to tx process, in order to better
+debug the desc filling error.
 
-This patch adds DFX registers information after original registers
-when use ethtool -d commmand to dump registers. Also, using macro
-replaces some related magic number.
+This patch also adds a missing u64_stats_update_* around
+ring->stats.sw_err_cnt and adds hns3_rl_err to limit the
+error printing in the IO patch.
 
-Signed-off-by: Guangbin Huang <huangguangbin2@huawei.com>
+Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
 Reviewed-by: Peng Li <lipeng321@huawei.com>
 Signed-off-by: Huazhong Tan <tanhuazhong@huawei.com>
 ---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c |  12 +-
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 342 ++++++++++++++++++---
- .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    |   2 +
- 3 files changed, 301 insertions(+), 55 deletions(-)
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.c    | 58 ++++++++++++++++------
+ drivers/net/ethernet/hisilicon/hns3/hns3_enet.h    |  4 ++
+ drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c |  4 ++
+ 3 files changed, 52 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-index f16bfc6..933dec5 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_debugfs.c
-@@ -14,16 +14,8 @@ static int hclge_dbg_get_dfx_bd_num(struct hclge_dev *hdev, int offset)
- 	struct hclge_desc desc[4];
- 	int ret;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+index fd6a3d5..b2a668d 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+@@ -28,6 +28,12 @@
+ #define hns3_set_field(origin, shift, val)	((origin) |= ((val) << (shift)))
+ #define hns3_tx_bd_count(S)	DIV_ROUND_UP(S, HNS3_MAX_BD_SIZE)
  
--	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_DFX_BD_NUM, true);
--	desc[0].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
--	hclge_cmd_setup_basic_desc(&desc[1], HCLGE_OPC_DFX_BD_NUM, true);
--	desc[1].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
--	hclge_cmd_setup_basic_desc(&desc[2], HCLGE_OPC_DFX_BD_NUM, true);
--	desc[2].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
--	hclge_cmd_setup_basic_desc(&desc[3], HCLGE_OPC_DFX_BD_NUM, true);
--
--	ret = hclge_cmd_send(&hdev->hw, desc, 4);
--	if (ret != HCLGE_CMD_EXEC_SUCCESS) {
-+	ret = hclge_query_bd_num_cmd_send(hdev, desc);
-+	if (ret) {
- 		dev_err(&hdev->pdev->dev,
- 			"get dfx bdnum fail, status is %d.\n", ret);
- 		return ret;
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-index 381f195..7d7ab9e 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
-@@ -36,6 +36,20 @@
- 
- #define HCLGE_RESET_MAX_FAIL_CNT	5
- 
-+/* Get DFX BD number offset */
-+#define HCLGE_DFX_BIOS_BD_OFFSET        1
-+#define HCLGE_DFX_SSU_0_BD_OFFSET       2
-+#define HCLGE_DFX_SSU_1_BD_OFFSET       3
-+#define HCLGE_DFX_IGU_BD_OFFSET         4
-+#define HCLGE_DFX_RPU_0_BD_OFFSET       5
-+#define HCLGE_DFX_RPU_1_BD_OFFSET       6
-+#define HCLGE_DFX_NCSI_BD_OFFSET        7
-+#define HCLGE_DFX_RTC_BD_OFFSET         8
-+#define HCLGE_DFX_PPP_BD_OFFSET         9
-+#define HCLGE_DFX_RCB_BD_OFFSET         10
-+#define HCLGE_DFX_TQP_BD_OFFSET         11
-+#define HCLGE_DFX_SSU_2_BD_OFFSET       12
++#define hns3_rl_err(fmt, ...)						\
++	do {								\
++		if (net_ratelimit())					\
++			netdev_err(fmt, ##__VA_ARGS__);			\
++	} while (0)
 +
- static int hclge_set_mac_mtu(struct hclge_dev *hdev, int new_mps);
- static int hclge_init_vlan_config(struct hclge_dev *hdev);
- static void hclge_sync_vlan_filter(struct hclge_dev *hdev);
-@@ -317,6 +331,36 @@ static const u8 hclge_hash_key[] = {
- 	0x6A, 0x42, 0xB7, 0x3B, 0xBE, 0xAC, 0x01, 0xFA
+ static void hns3_clear_all_ring(struct hnae3_handle *h, bool force);
+ static void hns3_remove_hw_addr(struct net_device *netdev);
+ 
+@@ -1033,6 +1039,9 @@ static int hns3_fill_skb_desc(struct hns3_enet_ring *ring,
+ 
+ 	ret = hns3_handle_vtags(ring, skb);
+ 	if (unlikely(ret < 0)) {
++		u64_stats_update_begin(&ring->syncp);
++		ring->stats.tx_vlan_err++;
++		u64_stats_update_end(&ring->syncp);
+ 		return ret;
+ 	} else if (ret == HNS3_INNER_VLAN_TAG) {
+ 		inner_vtag = skb_vlan_tag_get(skb);
+@@ -1053,19 +1062,31 @@ static int hns3_fill_skb_desc(struct hns3_enet_ring *ring,
+ 		skb_reset_mac_len(skb);
+ 
+ 		ret = hns3_get_l4_protocol(skb, &ol4_proto, &il4_proto);
+-		if (unlikely(ret))
++		if (unlikely(ret)) {
++			u64_stats_update_begin(&ring->syncp);
++			ring->stats.tx_l4_proto_err++;
++			u64_stats_update_end(&ring->syncp);
+ 			return ret;
++		}
+ 
+ 		ret = hns3_set_l2l3l4(skb, ol4_proto, il4_proto,
+ 				      &type_cs_vlan_tso,
+ 				      &ol_type_vlan_len_msec);
+-		if (unlikely(ret))
++		if (unlikely(ret)) {
++			u64_stats_update_begin(&ring->syncp);
++			ring->stats.tx_l2l3l4_err++;
++			u64_stats_update_end(&ring->syncp);
+ 			return ret;
++		}
+ 
+ 		ret = hns3_set_tso(skb, &paylen, &mss,
+ 				   &type_cs_vlan_tso);
+-		if (unlikely(ret))
++		if (unlikely(ret)) {
++			u64_stats_update_begin(&ring->syncp);
++			ring->stats.tx_tso_err++;
++			u64_stats_update_end(&ring->syncp);
+ 			return ret;
++		}
+ 	}
+ 
+ 	/* Set txbd */
+@@ -1107,7 +1128,9 @@ static int hns3_fill_desc(struct hns3_enet_ring *ring, void *priv,
+ 	}
+ 
+ 	if (unlikely(dma_mapping_error(dev, dma))) {
++		u64_stats_update_begin(&ring->syncp);
+ 		ring->stats.sw_err_cnt++;
++		u64_stats_update_end(&ring->syncp);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -1330,9 +1353,7 @@ netdev_tx_t hns3_nic_net_xmit(struct sk_buff *skb, struct net_device *netdev)
+ 			u64_stats_update_end(&ring->syncp);
+ 		}
+ 
+-		if (net_ratelimit())
+-			netdev_err(netdev, "xmit error: %d!\n", buf_num);
+-
++		hns3_rl_err(netdev, "xmit error: %d!\n", buf_num);
+ 		goto out_err_tx_ok;
+ 	}
+ 
+@@ -1498,7 +1519,15 @@ static void hns3_nic_get_stats64(struct net_device *netdev,
+ 			tx_bytes += ring->stats.tx_bytes;
+ 			tx_pkts += ring->stats.tx_pkts;
+ 			tx_drop += ring->stats.sw_err_cnt;
++			tx_drop += ring->stats.tx_vlan_err;
++			tx_drop += ring->stats.tx_l4_proto_err;
++			tx_drop += ring->stats.tx_l2l3l4_err;
++			tx_drop += ring->stats.tx_tso_err;
+ 			tx_errors += ring->stats.sw_err_cnt;
++			tx_errors += ring->stats.tx_vlan_err;
++			tx_errors += ring->stats.tx_l4_proto_err;
++			tx_errors += ring->stats.tx_l2l3l4_err;
++			tx_errors += ring->stats.tx_tso_err;
+ 		} while (u64_stats_fetch_retry_irq(&ring->syncp, start));
+ 
+ 		/* fetch the rx stats */
+@@ -2382,8 +2411,9 @@ static void hns3_nic_alloc_rx_buffers(struct hns3_enet_ring *ring,
+ 				ring->stats.sw_err_cnt++;
+ 				u64_stats_update_end(&ring->syncp);
+ 
+-				netdev_err(ring->tqp->handle->kinfo.netdev,
+-					   "hnae reserve buffer map failed.\n");
++				hns3_rl_err(ring->tqp_vector->napi.dev,
++					    "alloc rx buffer failed: %d\n",
++					    ret);
+ 				break;
+ 			}
+ 			hns3_replace_buffer(ring, ring->next_to_use, &res_cbs);
+@@ -2468,9 +2498,9 @@ static int hns3_gro_complete(struct sk_buff *skb, u32 l234info)
+ 		th->check = ~tcp_v6_check(skb->len - depth, &iph->saddr,
+ 					  &iph->daddr, 0);
+ 	} else {
+-		netdev_err(skb->dev,
+-			   "Error: FW GRO supports only IPv4/IPv6, not 0x%04x, depth: %d\n",
+-			   be16_to_cpu(type), depth);
++		hns3_rl_err(skb->dev,
++			    "Error: FW GRO supports only IPv4/IPv6, not 0x%04x, depth: %d\n",
++			    be16_to_cpu(type), depth);
+ 		return -EFAULT;
+ 	}
+ 
+@@ -2612,7 +2642,7 @@ static int hns3_alloc_skb(struct hns3_enet_ring *ring, unsigned int length,
+ 	ring->skb = napi_alloc_skb(&ring->tqp_vector->napi, HNS3_RX_HEAD_SIZE);
+ 	skb = ring->skb;
+ 	if (unlikely(!skb)) {
+-		netdev_err(netdev, "alloc rx skb fail\n");
++		hns3_rl_err(netdev, "alloc rx skb fail\n");
+ 
+ 		u64_stats_update_begin(&ring->syncp);
+ 		ring->stats.sw_err_cnt++;
+@@ -2687,8 +2717,8 @@ static int hns3_add_frag(struct hns3_enet_ring *ring, struct hns3_desc *desc,
+ 			new_skb = napi_alloc_skb(&ring->tqp_vector->napi,
+ 						 HNS3_RX_HEAD_SIZE);
+ 			if (unlikely(!new_skb)) {
+-				netdev_err(ring->tqp->handle->kinfo.netdev,
+-					   "alloc rx skb frag fail\n");
++				hns3_rl_err(ring->tqp_vector->napi.dev,
++					    "alloc rx fraglist skb fail\n");
+ 				return -ENXIO;
+ 			}
+ 			ring->frag_num = 0;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+index 0a970f5..a76712c 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.h
+@@ -377,6 +377,10 @@ struct ring_stats {
+ 			u64 restart_queue;
+ 			u64 tx_busy;
+ 			u64 tx_copy;
++			u64 tx_vlan_err;
++			u64 tx_l4_proto_err;
++			u64 tx_l2l3l4_err;
++			u64 tx_tso_err;
+ 		};
+ 		struct {
+ 			u64 rx_pkts;
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+index 02f46c7..185ff32 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3_ethtool.c
+@@ -30,6 +30,10 @@ static const struct hns3_stats hns3_txq_stats[] = {
+ 	HNS3_TQP_STAT("wake", restart_queue),
+ 	HNS3_TQP_STAT("busy", tx_busy),
+ 	HNS3_TQP_STAT("copy", tx_copy),
++	HNS3_TQP_STAT("vlan_err", tx_vlan_err),
++	HNS3_TQP_STAT("l4_proto_err", tx_l4_proto_err),
++	HNS3_TQP_STAT("l2l3l4_err", tx_l2l3l4_err),
++	HNS3_TQP_STAT("tso_err", tx_tso_err),
  };
  
-+static const u32 hclge_dfx_bd_offset_list[] = {
-+	HCLGE_DFX_BIOS_BD_OFFSET,
-+	HCLGE_DFX_SSU_0_BD_OFFSET,
-+	HCLGE_DFX_SSU_1_BD_OFFSET,
-+	HCLGE_DFX_IGU_BD_OFFSET,
-+	HCLGE_DFX_RPU_0_BD_OFFSET,
-+	HCLGE_DFX_RPU_1_BD_OFFSET,
-+	HCLGE_DFX_NCSI_BD_OFFSET,
-+	HCLGE_DFX_RTC_BD_OFFSET,
-+	HCLGE_DFX_PPP_BD_OFFSET,
-+	HCLGE_DFX_RCB_BD_OFFSET,
-+	HCLGE_DFX_TQP_BD_OFFSET,
-+	HCLGE_DFX_SSU_2_BD_OFFSET
-+};
-+
-+static const enum hclge_opcode_type hclge_dfx_reg_opcode_list[] = {
-+	HCLGE_OPC_DFX_BIOS_COMMON_REG,
-+	HCLGE_OPC_DFX_SSU_REG_0,
-+	HCLGE_OPC_DFX_SSU_REG_1,
-+	HCLGE_OPC_DFX_IGU_EGU_REG,
-+	HCLGE_OPC_DFX_RPU_REG_0,
-+	HCLGE_OPC_DFX_RPU_REG_1,
-+	HCLGE_OPC_DFX_NCSI_REG,
-+	HCLGE_OPC_DFX_RTC_REG,
-+	HCLGE_OPC_DFX_PPP_REG,
-+	HCLGE_OPC_DFX_RCB_REG,
-+	HCLGE_OPC_DFX_TQP_REG,
-+	HCLGE_OPC_DFX_SSU_REG_2
-+};
-+
- static int hclge_mac_update_stats_defective(struct hclge_dev *hdev)
- {
- #define HCLGE_MAC_CMD_NUM 21
-@@ -9332,106 +9376,314 @@ static int hclge_get_64_bit_regs(struct hclge_dev *hdev, u32 regs_num,
- }
- 
- #define MAX_SEPARATE_NUM	4
--#define SEPARATOR_VALUE		0xFFFFFFFF
-+#define SEPARATOR_VALUE		0xFDFCFBFA
- #define REG_NUM_PER_LINE	4
- #define REG_LEN_PER_LINE	(REG_NUM_PER_LINE * sizeof(u32))
-+#define REG_SEPARATOR_LINE	1
-+#define REG_NUM_REMAIN_MASK	3
-+#define BD_LIST_MAX_NUM		30
- 
--static int hclge_get_regs_len(struct hnae3_handle *handle)
-+int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev, struct hclge_desc *desc)
- {
--	int cmdq_lines, common_lines, ring_lines, tqp_intr_lines;
--	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
--	struct hclge_vport *vport = hclge_get_vport(handle);
--	struct hclge_dev *hdev = vport->back;
--	u32 regs_num_32_bit, regs_num_64_bit;
-+	/*prepare 4 commands to query DFX BD number*/
-+	hclge_cmd_setup_basic_desc(&desc[0], HCLGE_OPC_DFX_BD_NUM, true);
-+	desc[0].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
-+	hclge_cmd_setup_basic_desc(&desc[1], HCLGE_OPC_DFX_BD_NUM, true);
-+	desc[1].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
-+	hclge_cmd_setup_basic_desc(&desc[2], HCLGE_OPC_DFX_BD_NUM, true);
-+	desc[2].flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
-+	hclge_cmd_setup_basic_desc(&desc[3], HCLGE_OPC_DFX_BD_NUM, true);
-+
-+	return hclge_cmd_send(&hdev->hw, desc, 4);
-+}
-+
-+static int hclge_get_dfx_reg_bd_num(struct hclge_dev *hdev,
-+				    int *bd_num_list,
-+				    u32 type_num)
-+{
-+#define HCLGE_DFX_REG_BD_NUM	4
-+
-+	u32 entries_per_desc, desc_index, index, offset, i;
-+	struct hclge_desc desc[HCLGE_DFX_REG_BD_NUM];
- 	int ret;
- 
--	ret = hclge_get_regs_num(hdev, &regs_num_32_bit, &regs_num_64_bit);
-+	ret = hclge_query_bd_num_cmd_send(hdev, desc);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
--			"Get register number failed, ret = %d.\n", ret);
--		return -EOPNOTSUPP;
-+			"Get dfx bd num fail, status is %d.\n", ret);
-+		return ret;
- 	}
- 
--	cmdq_lines = sizeof(cmdq_reg_addr_list) / REG_LEN_PER_LINE + 1;
--	common_lines = sizeof(common_reg_addr_list) / REG_LEN_PER_LINE + 1;
--	ring_lines = sizeof(ring_reg_addr_list) / REG_LEN_PER_LINE + 1;
--	tqp_intr_lines = sizeof(tqp_intr_reg_addr_list) / REG_LEN_PER_LINE + 1;
-+	entries_per_desc = ARRAY_SIZE(desc[0].data);
-+	for (i = 0; i < type_num; i++) {
-+		offset = hclge_dfx_bd_offset_list[i];
-+		index = offset % entries_per_desc;
-+		desc_index = offset / entries_per_desc;
-+		bd_num_list[i] = le32_to_cpu(desc[desc_index].data[index]);
-+	}
- 
--	return (cmdq_lines + common_lines + ring_lines * kinfo->num_tqps +
--		tqp_intr_lines * (hdev->num_msi_used - 1)) * REG_LEN_PER_LINE +
--		regs_num_32_bit * sizeof(u32) + regs_num_64_bit * sizeof(u64);
-+	return ret;
- }
- 
--static void hclge_get_regs(struct hnae3_handle *handle, u32 *version,
--			   void *data)
-+static int hclge_dfx_reg_cmd_send(struct hclge_dev *hdev,
-+				  struct hclge_desc *desc_src, int bd_num,
-+				  enum hclge_opcode_type cmd)
- {
--	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
--	struct hclge_vport *vport = hclge_get_vport(handle);
--	struct hclge_dev *hdev = vport->back;
--	u32 regs_num_32_bit, regs_num_64_bit;
--	int i, j, reg_um, separator_num;
-+	struct hclge_desc *desc = desc_src;
-+	int i, ret;
-+
-+	hclge_cmd_setup_basic_desc(desc, cmd, true);
-+	for (i = 0; i < bd_num - 1; i++) {
-+		desc->flag |= cpu_to_le16(HCLGE_CMD_FLAG_NEXT);
-+		desc++;
-+		hclge_cmd_setup_basic_desc(desc, cmd, true);
-+	}
-+
-+	desc = desc_src;
-+	ret = hclge_cmd_send(&hdev->hw, desc, bd_num);
-+	if (ret)
-+		dev_err(&hdev->pdev->dev,
-+			"Query dfx reg cmd(0x%x) send fail, status is %d.\n",
-+			cmd, ret);
-+
-+	return ret;
-+}
-+
-+static int hclge_dfx_reg_fetch_data(struct hclge_desc *desc_src, int bd_num,
-+				    void *data)
-+{
-+	int entries_per_desc, reg_num, separator_num, desc_index, index, i;
-+	struct hclge_desc *desc = desc_src;
- 	u32 *reg = data;
-+
-+	entries_per_desc = ARRAY_SIZE(desc->data);
-+	reg_num = entries_per_desc * bd_num;
-+	separator_num = REG_NUM_PER_LINE - (reg_num & REG_NUM_REMAIN_MASK);
-+	for (i = 0; i < reg_num; i++) {
-+		index = i % entries_per_desc;
-+		desc_index = i / entries_per_desc;
-+		*reg++ = le32_to_cpu(desc[desc_index].data[index]);
-+	}
-+	for (i = 0; i < separator_num; i++)
-+		*reg++ = SEPARATOR_VALUE;
-+
-+	return reg_num + separator_num;
-+}
-+
-+static int hclge_get_dfx_reg_len(struct hclge_dev *hdev, int *len)
-+{
-+	u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
-+	int data_len_per_desc, data_len, bd_num, i;
-+	int bd_num_list[BD_LIST_MAX_NUM];
- 	int ret;
- 
--	*version = hdev->fw_version;
-+	ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, dfx_reg_type_num);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"Get dfx reg bd num fail, status is %d.\n", ret);
-+		return ret;
-+	}
- 
--	ret = hclge_get_regs_num(hdev, &regs_num_32_bit, &regs_num_64_bit);
-+	data_len_per_desc = FIELD_SIZEOF(struct hclge_desc, data);
-+	*len = 0;
-+	for (i = 0; i < dfx_reg_type_num; i++) {
-+		bd_num = bd_num_list[i];
-+		data_len = data_len_per_desc * bd_num;
-+		*len += (data_len / REG_LEN_PER_LINE + 1) * REG_LEN_PER_LINE;
-+	}
-+
-+	return ret;
-+}
-+
-+static int hclge_get_dfx_reg(struct hclge_dev *hdev, void *data)
-+{
-+	u32 dfx_reg_type_num = ARRAY_SIZE(hclge_dfx_bd_offset_list);
-+	int bd_num, bd_num_max, buf_len, i;
-+	int bd_num_list[BD_LIST_MAX_NUM];
-+	struct hclge_desc *desc_src;
-+	u32 *reg = data;
-+	int ret;
-+
-+	ret = hclge_get_dfx_reg_bd_num(hdev, bd_num_list, dfx_reg_type_num);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
--			"Get register number failed, ret = %d.\n", ret);
--		return;
-+			"Get dfx reg bd num fail, status is %d.\n", ret);
-+		return ret;
-+	}
-+
-+	bd_num_max = bd_num_list[0];
-+	for (i = 1; i < dfx_reg_type_num; i++)
-+		bd_num_max = max_t(int, bd_num_max, bd_num_list[i]);
-+
-+	buf_len = sizeof(*desc_src) * bd_num_max;
-+	desc_src = kzalloc(buf_len, GFP_KERNEL);
-+	if (!desc_src) {
-+		dev_err(&hdev->pdev->dev, "%s kzalloc failed\n", __func__);
-+		return -ENOMEM;
- 	}
- 
-+	for (i = 0; i < dfx_reg_type_num; i++) {
-+		bd_num = bd_num_list[i];
-+		ret = hclge_dfx_reg_cmd_send(hdev, desc_src, bd_num,
-+					     hclge_dfx_reg_opcode_list[i]);
-+		if (ret) {
-+			dev_err(&hdev->pdev->dev,
-+				"Get dfx reg fail, status is %d.\n", ret);
-+			break;
-+		}
-+
-+		reg += hclge_dfx_reg_fetch_data(desc_src, bd_num, reg);
-+	}
-+
-+	kfree(desc_src);
-+	return ret;
-+}
-+
-+static int hclge_fetch_pf_reg(struct hclge_dev *hdev, void *data,
-+			      struct hnae3_knic_private_info *kinfo)
-+{
-+#define HCLGE_RING_REG_OFFSET		0x200
-+#define HCLGE_RING_INT_REG_OFFSET	0x4
-+
-+	int i, j, reg_num, separator_num;
-+	int data_num_sum;
-+	u32 *reg = data;
-+
- 	/* fetching per-PF registers valus from PF PCIe register space */
--	reg_um = sizeof(cmdq_reg_addr_list) / sizeof(u32);
--	separator_num = MAX_SEPARATE_NUM - reg_um % REG_NUM_PER_LINE;
--	for (i = 0; i < reg_um; i++)
-+	reg_num = ARRAY_SIZE(cmdq_reg_addr_list);
-+	separator_num = MAX_SEPARATE_NUM - (reg_num & REG_NUM_REMAIN_MASK);
-+	for (i = 0; i < reg_num; i++)
- 		*reg++ = hclge_read_dev(&hdev->hw, cmdq_reg_addr_list[i]);
- 	for (i = 0; i < separator_num; i++)
- 		*reg++ = SEPARATOR_VALUE;
-+	data_num_sum = reg_num + separator_num;
- 
--	reg_um = sizeof(common_reg_addr_list) / sizeof(u32);
--	separator_num = MAX_SEPARATE_NUM - reg_um % REG_NUM_PER_LINE;
--	for (i = 0; i < reg_um; i++)
-+	reg_num = ARRAY_SIZE(common_reg_addr_list);
-+	separator_num = MAX_SEPARATE_NUM - (reg_num & REG_NUM_REMAIN_MASK);
-+	for (i = 0; i < reg_num; i++)
- 		*reg++ = hclge_read_dev(&hdev->hw, common_reg_addr_list[i]);
- 	for (i = 0; i < separator_num; i++)
- 		*reg++ = SEPARATOR_VALUE;
-+	data_num_sum += reg_num + separator_num;
- 
--	reg_um = sizeof(ring_reg_addr_list) / sizeof(u32);
--	separator_num = MAX_SEPARATE_NUM - reg_um % REG_NUM_PER_LINE;
-+	reg_num = ARRAY_SIZE(ring_reg_addr_list);
-+	separator_num = MAX_SEPARATE_NUM - (reg_num & REG_NUM_REMAIN_MASK);
- 	for (j = 0; j < kinfo->num_tqps; j++) {
--		for (i = 0; i < reg_um; i++)
-+		for (i = 0; i < reg_num; i++)
- 			*reg++ = hclge_read_dev(&hdev->hw,
- 						ring_reg_addr_list[i] +
--						0x200 * j);
-+						HCLGE_RING_REG_OFFSET * j);
- 		for (i = 0; i < separator_num; i++)
- 			*reg++ = SEPARATOR_VALUE;
- 	}
-+	data_num_sum += (reg_num + separator_num) * kinfo->num_tqps;
- 
--	reg_um = sizeof(tqp_intr_reg_addr_list) / sizeof(u32);
--	separator_num = MAX_SEPARATE_NUM - reg_um % REG_NUM_PER_LINE;
-+	reg_num = ARRAY_SIZE(tqp_intr_reg_addr_list);
-+	separator_num = MAX_SEPARATE_NUM - (reg_num & REG_NUM_REMAIN_MASK);
- 	for (j = 0; j < hdev->num_msi_used - 1; j++) {
--		for (i = 0; i < reg_um; i++)
-+		for (i = 0; i < reg_num; i++)
- 			*reg++ = hclge_read_dev(&hdev->hw,
- 						tqp_intr_reg_addr_list[i] +
--						4 * j);
-+						HCLGE_RING_INT_REG_OFFSET * j);
- 		for (i = 0; i < separator_num; i++)
- 			*reg++ = SEPARATOR_VALUE;
- 	}
-+	data_num_sum += (reg_num + separator_num) * (hdev->num_msi_used - 1);
-+
-+	return data_num_sum;
-+}
-+
-+static int hclge_get_regs_len(struct hnae3_handle *handle)
-+{
-+	int cmdq_lines, common_lines, ring_lines, tqp_intr_lines;
-+	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
-+	struct hclge_vport *vport = hclge_get_vport(handle);
-+	struct hclge_dev *hdev = vport->back;
-+	int regs_num_32_bit, regs_num_64_bit, dfx_regs_len;
-+	int regs_lines_32_bit, regs_lines_64_bit;
-+	int ret;
-+
-+	ret = hclge_get_regs_num(hdev, &regs_num_32_bit, &regs_num_64_bit);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"Get register number failed, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	ret = hclge_get_dfx_reg_len(hdev, &dfx_regs_len);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"Get dfx reg len failed, ret = %d.\n", ret);
-+		return ret;
-+	}
-+
-+	cmdq_lines = sizeof(cmdq_reg_addr_list) / REG_LEN_PER_LINE +
-+		REG_SEPARATOR_LINE;
-+	common_lines = sizeof(common_reg_addr_list) / REG_LEN_PER_LINE +
-+		REG_SEPARATOR_LINE;
-+	ring_lines = sizeof(ring_reg_addr_list) / REG_LEN_PER_LINE +
-+		REG_SEPARATOR_LINE;
-+	tqp_intr_lines = sizeof(tqp_intr_reg_addr_list) / REG_LEN_PER_LINE +
-+		REG_SEPARATOR_LINE;
-+	regs_lines_32_bit = regs_num_32_bit * sizeof(u32) / REG_LEN_PER_LINE +
-+		REG_SEPARATOR_LINE;
-+	regs_lines_64_bit = regs_num_64_bit * sizeof(u64) / REG_LEN_PER_LINE +
-+		REG_SEPARATOR_LINE;
-+
-+	return (cmdq_lines + common_lines + ring_lines * kinfo->num_tqps +
-+		tqp_intr_lines * (hdev->num_msi_used - 1) + regs_lines_32_bit +
-+		regs_lines_64_bit) * REG_LEN_PER_LINE + dfx_regs_len;
-+}
-+
-+static void hclge_get_regs(struct hnae3_handle *handle, u32 *version,
-+			   void *data)
-+{
-+	struct hnae3_knic_private_info *kinfo = &handle->kinfo;
-+	struct hclge_vport *vport = hclge_get_vport(handle);
-+	struct hclge_dev *hdev = vport->back;
-+	u32 regs_num_32_bit, regs_num_64_bit;
-+	int i, reg_num, separator_num, ret;
-+	u32 *reg = data;
-+
-+	*version = hdev->fw_version;
-+
-+	ret = hclge_get_regs_num(hdev, &regs_num_32_bit, &regs_num_64_bit);
-+	if (ret) {
-+		dev_err(&hdev->pdev->dev,
-+			"Get register number failed, ret = %d.\n", ret);
-+		return;
-+	}
-+
-+	reg += hclge_fetch_pf_reg(hdev, reg, kinfo);
- 
--	/* fetching PF common registers values from firmware */
- 	ret = hclge_get_32_bit_regs(hdev, regs_num_32_bit, reg);
- 	if (ret) {
- 		dev_err(&hdev->pdev->dev,
- 			"Get 32 bit register failed, ret = %d.\n", ret);
- 		return;
- 	}
-+	reg_num = regs_num_32_bit;
-+	reg += reg_num;
-+	separator_num = MAX_SEPARATE_NUM - (reg_num & REG_NUM_REMAIN_MASK);
-+	for (i = 0; i < separator_num; i++)
-+		*reg++ = SEPARATOR_VALUE;
- 
--	reg += regs_num_32_bit;
- 	ret = hclge_get_64_bit_regs(hdev, regs_num_64_bit, reg);
--	if (ret)
-+	if (ret) {
- 		dev_err(&hdev->pdev->dev,
- 			"Get 64 bit register failed, ret = %d.\n", ret);
-+		return;
-+	}
-+	reg_num = regs_num_64_bit * 2;
-+	reg += reg_num;
-+	separator_num = MAX_SEPARATE_NUM - (reg_num & REG_NUM_REMAIN_MASK);
-+	for (i = 0; i < separator_num; i++)
-+		*reg++ = SEPARATOR_VALUE;
-+
-+	ret = hclge_get_dfx_reg(hdev, reg);
-+	if (ret)
-+		dev_err(&hdev->pdev->dev,
-+			"Get dfx register failed, ret = %d.\n", ret);
- }
- 
- static int hclge_set_led_status(struct hclge_dev *hdev, u8 locate_led_status)
-diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-index c9b9867f..f6d9b57 100644
---- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-+++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
-@@ -1029,4 +1029,6 @@ int hclge_push_vf_port_base_vlan_info(struct hclge_vport *vport, u8 vfid,
- 				      u16 state, u16 vlan_tag, u16 qos,
- 				      u16 vlan_proto);
- void hclge_task_schedule(struct hclge_dev *hdev, unsigned long delay_time);
-+int hclge_query_bd_num_cmd_send(struct hclge_dev *hdev,
-+				struct hclge_desc *desc);
- #endif
+ #define HNS3_TXQ_STATS_COUNT ARRAY_SIZE(hns3_txq_stats)
 -- 
 2.7.4
 
