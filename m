@@ -2,161 +2,275 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ABC8987A33
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:33:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1990C87A3C
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:35:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406799AbfHIMdM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 08:33:12 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:51970 "EHLO
+        id S2406374AbfHIMe6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 08:34:58 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:13330 "EHLO
         mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2406516AbfHIMdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 08:33:12 -0400
-Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x79CSKB8016853;
-        Fri, 9 Aug 2019 08:33:02 -0400
-Received: from nam04-sn1-obe.outbound.protection.outlook.com (mail-sn1nam04lp2058.outbound.protection.outlook.com [104.47.44.58])
-        by mx0b-00128a01.pphosted.com with ESMTP id 2u7wxfqd5f-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 09 Aug 2019 08:33:02 -0400
+        by vger.kernel.org with ESMTP id S1726091AbfHIMe6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 08:34:58 -0400
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x79CXElu018725;
+        Fri, 9 Aug 2019 08:34:49 -0400
+Received: from nam05-co1-obe.outbound.protection.outlook.com (mail-co1nam05lp2053.outbound.protection.outlook.com [104.47.48.53])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2u8bmpmxts-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 09 Aug 2019 08:34:49 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eT+W4+ImJuQN4hpg6G0qQ+y/YbNFRhOXzI7H9G9e09dilboKWrL9HTRFc6+9kQAwDms7UJRYTiSSo+TM8TRI2iqrRq9r7WEz+y0t7xzm8wl3jriwOV7/IckSg85LCL3Ox7TD2HUr0O6Ro3pQDvxxC3lKTtPwpMRXaJwk6otH9WaR83DvwXNVHWwubaJ3d+ggBInxq2oPvd8QyTQQ1LUQt8/oczDZ/MnD1EPug7LZvlRc1i+1hsdVC3Sfgsj4YPdYYYwW3cArznmdskPnTS0a2KgvHcHTRPahZ9rSLq+AdobMjgt19R6gbjt0bi/rEenkj4+RQdMEw4D5avuj2RXBfA==
+ b=SUwpuLlVH119gfMi9e7G5N2jjrewQc7tIQO4SdpTiP2xkJ7kAZRYfagSk+A/mQtpjGzFVTuaP1zNt1doorMXEM4mGDRDD9K+bi/4GoLdD/CugeZzLgUJ5kTmbNZVAQ8MUp3TFe7Syv1R0arb6Boy32ORuaLSLasjJlYVXqhDNIWivlU5zyK82Ac16vg42uIb1L4nq72GvSpMz3zyTNt9pJ8AMn7nKwM2zJrbFAEJCYJ1nMSXreOFk7C91f6lkpsdJ+AbN2B4gW+lbmdm53pnMQ7moRxbeCToBMgOCDU93pqcS+HdEhhXMoNI66o63RWxVpQVPD7rhI6bJv4EHG/rag==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+zcIaZ6+KFP8nEjThb0+lgzamIiLnYupVGY0V9OHkzg=;
- b=MCq3EGDxpl9oFapK9UDVaoh2XSQTJV0xohatVvzZyERWDCI7hDnFQmyM3oYBfx6plWXsNlKMZr5g4HI+rfbo0uh0ZpwI4driz50vGlqB60LRJgDwFlgUcjIcOEhs0MljpatBIaWFQf/69OaHUJBGxvvOmm0cqmK9iHnvWNf7kbKuaaBk6sx1wG3I5iFUlpT92AOX1xqRDq92mdFlF9dffr6Q+gOfrfamTPY7JOrq6kGZxyrb0yaOgZESyHs1F++ZtGUEBJklYV5Lq9J3MUlhZiEpzS23ryK1qVpI9RSH7l9WeyZRx6qzTWz9W5RfYwojJagiuZzg++zo+1G43Hp3Vg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 137.71.25.55) smtp.rcpttodomain=kernel.org smtp.mailfrom=analog.com;
- dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
- not signed); arc=none
+ bh=W3LAx8AQUMGFvtqGiGuvGxau2gcLE3qSe4pUOHxiId8=;
+ b=WPi9+P3o3DZXFi7FPF/FSW0Aprp9V9OShUSkLHLcxD85XSGa11RuTqa5Fv3uUVTcWs1V+/Ak+oet+t7qhvOOEoujqxJ7v4rA+0yLlpTqJ1h7jumX0coHWoajJ1OX+KhyDElcTVL3x4L4MG6S+Yowx0nFqeTFO4p/93HPT0pqpr4ZRlTY1Tp9N1fFsLrEBFpEy5EoSte65QseLMEoas9UOAR0yL1QRj9SCiUO2L8YnmM/aK396N9RSrlyP/HL4Fa8KzyiVr6uoS6dUeo8/2S/8soDb9G4jg+5eGQgH6yFPjlAijksl73Rc03ghN2Z3CwNnllcN7u0OndYkduk/PSC2A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+zcIaZ6+KFP8nEjThb0+lgzamIiLnYupVGY0V9OHkzg=;
- b=QZwdk3T/rt9NDoSPLfs6yN2GLt++76z06b0+HCemG2QQ7/WteTfRmka8B1m0VPPLCEZ5jkHWY3WKHwtvaH/R/emXDxVRwGDgE2RFHahodBGKveTK26+K9L3OoZPDpOQ23QHX4TMY522NxC269Cjo5qS9wI61juBJXys0uxb80DI=
-Received: from CY1PR03CA0021.namprd03.prod.outlook.com (2603:10b6:600::31) by
- DM6PR03MB5371.namprd03.prod.outlook.com (2603:10b6:5:24c::21) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.16; Fri, 9 Aug 2019 12:33:01 +0000
-Received: from BL2NAM02FT030.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::201) by CY1PR03CA0021.outlook.office365.com
- (2603:10b6:600::31) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.14 via Frontend
- Transport; Fri, 9 Aug 2019 12:33:00 +0000
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- BL2NAM02FT030.mail.protection.outlook.com (10.152.77.172) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2157.15
- via Frontend Transport; Fri, 9 Aug 2019 12:33:00 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x79CWvNT013132
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Fri, 9 Aug 2019 05:32:57 -0700
-Received: from NWD2MBX7.ad.analog.com ([fe80::190e:f9c1:9a22:9663]) by
- NWD2HUBCAS7.ad.analog.com ([fe80::595b:ced1:cc03:539d%12]) with mapi id
- 14.03.0415.000; Fri, 9 Aug 2019 08:33:00 -0400
-From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 00/15] net: phy: adin: add support for Analog Devices
- PHYs
-Thread-Topic: [PATCH v2 00/15] net: phy: adin: add support for Analog
- Devices PHYs
-Thread-Index: AQHVTeUQ6709knvDyk+00n5WA4151abx1E6AgAEwG4A=
-Date:   Fri, 9 Aug 2019 12:32:59 +0000
-Message-ID: <b5bce55e4c19e0cd0b848f14c413586ef5c53514.camel@analog.com>
-References: <20190808123026.17382-1-alexandru.ardelean@analog.com>
-         <20190808.112431.1358324079415442430.davem@davemloft.net>
-In-Reply-To: <20190808.112431.1358324079415442430.davem@davemloft.net>
-Accept-Language: en-US
+ bh=W3LAx8AQUMGFvtqGiGuvGxau2gcLE3qSe4pUOHxiId8=;
+ b=0uzMGH2DuomushXZeE8Pty3T6hTfZW4uAfSbolXwyccNjC2DBzGNGT9Cux0sgxqyH+ac1oEaxpKYHP5Ctxkz9uouXAv561AOBH4FYr9k6ZSmwrIaHjJF9UQM3lA9GcelcXr+KEdIxczC4KbqySvSB8bc1emBPNysgN2upskjLWE=
+Received: from BY5PR03MB4965.namprd03.prod.outlook.com (52.133.251.17) by
+ BY5PR03MB5014.namprd03.prod.outlook.com (52.133.248.214) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.14; Fri, 9 Aug 2019 12:34:47 +0000
+Received: from BY5PR03MB4965.namprd03.prod.outlook.com
+ ([fe80::a1ef:88a5:c1e5:a264]) by BY5PR03MB4965.namprd03.prod.outlook.com
+ ([fe80::a1ef:88a5:c1e5:a264%2]) with mapi id 15.20.2157.015; Fri, 9 Aug 2019
+ 12:34:47 +0000
+From:   "Hennerich, Michael" <Michael.Hennerich@analog.com>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Alexander Aring <alex.aring@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Harry Morris <h.morris@cascoda.com>,
+        "linux-wpan@vger.kernel.org" <linux-wpan@vger.kernel.org>,
+        Stefan Schmidt <stefan@datenfreihafen.org>
+Subject: RE: [PATCH v2 17/17] ieee802154: no need to check return value of
+ debugfs_create functions
+Thread-Topic: [PATCH v2 17/17] ieee802154: no need to check return value of
+ debugfs_create functions
+Thread-Index: AQHVTq5pqJtjSHKl4kG/jdRCATZhCabywA6A
+Date:   Fri, 9 Aug 2019 12:34:46 +0000
+Message-ID: <BY5PR03MB49656ECC2BAA0CB2B63E01F28ED60@BY5PR03MB4965.namprd03.prod.outlook.com>
+References: <20190809123108.27065-1-gregkh@linuxfoundation.org>
+ <20190809123108.27065-18-gregkh@linuxfoundation.org>
+In-Reply-To: <20190809123108.27065-18-gregkh@linuxfoundation.org>
+Accept-Language: de-DE, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-originating-ip: [10.48.65.113]
-x-adiroutedonprem: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9E4521D3B1665946A42C0E06EA68FCA8@analog.com>
-Content-Transfer-Encoding: base64
+x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcbWhlbm5lcmlc?=
+ =?us-ascii?Q?YXBwZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRi?=
+ =?us-ascii?Q?YTI5ZTM1Ylxtc2dzXG1zZy0xMGNiODEyYi1iYWEyLTExZTktOGY2My00ODg5?=
+ =?us-ascii?Q?ZTc3Y2RkZWZcYW1lLXRlc3RcMTBjYjgxMmQtYmFhMi0xMWU5LThmNjMtNDg4?=
+ =?us-ascii?Q?OWU3N2NkZGVmYm9keS50eHQiIHN6PSI1MjkyIiB0PSIxMzIwOTgyNzY4NTI4?=
+ =?us-ascii?Q?MjcyMTIiIGg9IlpuQlBJbkZqVmZTVnpEbENrN1JPOWlodVRqVT0iIGlkPSIi?=
+ =?us-ascii?Q?IGJsPSIwIiBibz0iMSIgY2k9ImNBQUFBRVJIVTFSU1JVRk5DZ1VBQUt3QkFB?=
+ =?us-ascii?Q?Qk1CRUhUcms3VkFhTFNyTnpURU12dW90S3MzTk1ReSs0Q0FBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFIQUFBQUE4QVFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFFQUFRQUJBQUFBTjlrNEN3QUFBQUFBQUFBQUFBQUFBSjRBQUFCaEFHUUFh?=
+ =?us-ascii?Q?UUJmQUhNQVpRQmpBSFVBY2dCbEFGOEFjQUJ5QUc4QWFnQmxBR01BZEFCekFG?=
+ =?us-ascii?Q?OEFkQUJwQUdVQWNnQXhBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUVBQUFBQUFBQUFBZ0FBQUFBQW5nQUFBR0VBWkFCcEFGOEFjd0JsQUdNQWRR?=
+ =?us-ascii?Q?QnlBR1VBWHdCd0FISUFid0JxQUdVQVl3QjBBSE1BWHdCMEFHa0FaUUJ5QURJ?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFBQ0FB?=
+ =?us-ascii?Q?QUFBQUE9Ii8+PC9tZXRhPg=3D=3D?=
+x-dg-rorf: 
+x-originating-ip: [137.71.226.54]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: eb5f31be-ba49-48b8-3766-08d71cc5f6c3
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:BY5PR03MB5014;
+x-ms-traffictypediagnostic: BY5PR03MB5014:
+x-microsoft-antispam-prvs: <BY5PR03MB50142D429426F0CB976836D68ED60@BY5PR03MB5014.namprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 01244308DF
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(136003)(39860400002)(376002)(346002)(396003)(366004)(189003)(199004)(13464003)(52536014)(2501003)(81166006)(53546011)(4326008)(6506007)(81156014)(446003)(11346002)(25786009)(3846002)(99286004)(5660300002)(14454004)(7696005)(2906002)(256004)(476003)(76176011)(486006)(6246003)(64756008)(66556008)(76116006)(102836004)(66476007)(66446008)(66946007)(186003)(8936002)(6116002)(6436002)(316002)(86362001)(33656002)(110136005)(478600001)(54906003)(74316002)(26005)(66066001)(71200400001)(305945005)(55016002)(9686003)(71190400001)(53936002)(8676002)(7736002)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:BY5PR03MB5014;H:BY5PR03MB4965.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: analog.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Vw2f23k2qewubw55gzuJjQ655SsyzLl4E14qUBzWDE92GVs902DY3bFR19zrmtz0rqcnUwU++0KW5/Y2ajyuSA9Fgqe59s7uVLlPjd98IjyYQoJ6bTP/XJfou1gxJEewmUzGYzpXlD51DOgFS4rjWhkEVPPSg9YRc+QRUAzSn9ECLNEme8ACHmdGdtEGuMPrvtZ3DSz417C2RQdKa61nn2uYs5UDxcPvDILzRPw3pWr4KltsAQGSQgINHfIQQXMOEbs+TmsRrTESg9RSScG3J0tKnto8V9GwK1wWJFPWKlQWLSLbldWeCRWEDQuEMY0kGHqIN9Mugrm8+E5s1GKDh4jKa9ho9DFhGLgLXFRLIthOCcLuabb79u83cwCCreTZuntYGW3O7AR2qMSD9j7zI+0W1livQLDZ90/CqHOogNo=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(39860400002)(376002)(346002)(396003)(2980300002)(189003)(199004)(50466002)(126002)(7696005)(47776003)(11346002)(2616005)(476003)(446003)(426003)(336012)(436003)(86362001)(486006)(5660300002)(2501003)(356004)(23676004)(102836004)(6246003)(4326008)(26005)(2486003)(229853002)(8936002)(76176011)(186003)(478600001)(118296001)(246002)(70586007)(70206006)(5640700003)(966005)(316002)(106002)(3846002)(6116002)(2906002)(36756003)(1730700003)(6916009)(8676002)(2351001)(6306002)(14454004)(54906003)(305945005)(7636002)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR03MB5371;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bb99609d-39ce-4ea3-9839-08d71cc5b755
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328)(7193020);SRVR:DM6PR03MB5371;
-X-MS-TrafficTypeDiagnostic: DM6PR03MB5371:
-X-MS-Exchange-PUrlCount: 2
-X-Microsoft-Antispam-PRVS: <DM6PR03MB5371A9CBE0702B236F40AD65F9D60@DM6PR03MB5371.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
-X-Forefront-PRVS: 01244308DF
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: 1UurWGloNHnYKArDW/3in0IMOFQKbwlI5YkwSjIQcT6cdMGt9faLUYfOkscfEHO4aAiTmiL+EH/3bb3xYi7R9N1f62iWPtg56aoAlS02YVtnSkcufxVoKmSErZFu+iAMEngQcdaAqqx0OzvijF01nQpvMC13jypDdHIqvUSwdt8L9uPRyUq+ch+Z26JEuFaLzmBXxGB/9MAlrU/c0cIuS5prARtPXm+jZR1gsmoZoTHNB6IfHRI1xotpY9Xdjirfq2DXGmhyECryq0U418lMw5b2aWPlvm8hv+Rhg+BGQUUGWCQ2cQCMqMr9WIejwz6x/l6VwDTvvU0yotAvvrCMrpL1qHMJ36UGrKtRo3s1X1pGIk8PdwrANcLSsN00DHCKHti+miawkFDBA+WkPpzvdvjxCe76ZeOp/ynU5/dS7s4=
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Aug 2019 12:33:00.5078
+X-MS-Exchange-CrossTenant-Network-Message-Id: eb5f31be-ba49-48b8-3766-08d71cc5f6c3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Aug 2019 12:34:46.8407
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb99609d-39ce-4ea3-9839-08d71cc5b755
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB5371
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: vrVdhd2CgI9Xaki+7eVqb0fdJx4lFQrqzUENV8laX9EJf4GOCJ7cunpzTPi4QDNKrkjAGauNh0y4w3mM1V9Z7xIsY0d/qXJWblN0nYkCW4A=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR03MB5014
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-09_03:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
  malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
  mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908090129
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908090130
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVGh1LCAyMDE5LTA4LTA4IGF0IDExOjI0IC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IFtFeHRlcm5hbF0NCj4gDQo+IEZyb206IEFsZXhhbmRydSBBcmRlbGVhbiA8YWxleGFuZHJ1LmFy
-ZGVsZWFuQGFuYWxvZy5jb20+DQo+IERhdGU6IFRodSwgOCBBdWcgMjAxOSAxNTozMDoxMSArMDMw
-MA0KPiANCj4gPiBUaGlzIGNoYW5nZXNldCBhZGRzIHN1cHBvcnQgZm9yIEFuYWxvZyBEZXZpY2Vz
-IEluZHVzdHJpYWwgRXRoZXJuZXQgUEhZcy4NCj4gPiBQYXJ0aWN1bGFybHkgdGhlIFBIWXMgdGhp
-cyBkcml2ZXIgYWRkcyBzdXBwb3J0IGZvcjoNCj4gPiAgKiBBRElOMTIwMCAtIFJvYnVzdCwgSW5k
-dXN0cmlhbCwgTG93IFBvd2VyIDEwLzEwMCBFdGhlcm5ldCBQSFkNCj4gPiAgKiBBRElOMTMwMCAt
-IFJvYnVzdCwgSW5kdXN0cmlhbCwgTG93IExhdGVuY3kgMTAvMTAwLzEwMDAgR2lnYWJpdA0KPiA+
-ICAgIEV0aGVybmV0IFBIWQ0KPiA+IA0KPiA+IFRoZSAyIGNoaXBzIGFyZSBwaW4gJiByZWdpc3Rl
-ciBjb21wYXRpYmxlIHdpdGggb25lIGFub3RoZXIuIFRoZSBtYWluDQo+ID4gZGlmZmVyZW5jZSBi
-ZWluZyB0aGF0IEFESU4xMjAwIGRvZXNuJ3Qgb3BlcmF0ZSBpbiBnaWdhYml0IG1vZGUuDQo+ID4g
-DQo+ID4gVGhlIGNoaXBzIGNhbiBiZSBvcGVyYXRlZCBieSB0aGUgR2VuZXJpYyBQSFkgZHJpdmVy
-IGFzIHdlbGwgdmlhIHRoZQ0KPiA+IHN0YW5kYXJkIElFRUUgUEhZIHJlZ2lzdGVycyAoMHgwMDAw
-IC0gMHgwMDBGKSB3aGljaCBhcmUgc3VwcG9ydGVkIGJ5IHRoZQ0KPiA+IGtlcm5lbCBhcyB3ZWxs
-LiBUaGlzIGFzc3VtZXMgdGhhdCBjb25maWd1cmF0aW9uIG9mIHRoZSBQSFkgaGFzIGJlZW4gZG9u
-ZQ0KPiA+IGNvbXBsZXRlbHkgaW4gSFcsIGFjY29yZGluZyB0byBzcGVjLCBpLmUuIG5vIGV4dHJh
-IFNXIGNvbmZpZ3VyYXRpb24NCj4gPiByZXF1aXJlZC4NCj4gPiANCj4gPiBUaGlzIGNoYW5nZXNl
-dCBhbHNvIGltcGxlbWVudHMgdGhlIGFiaWxpdHkgdG8gY29uZmlndXJlIHRoZSBjaGlwcyB2aWEg
-U1cNCj4gPiByZWdpc3RlcnMuDQo+ID4gDQo+ID4gRGF0YXNoZWV0czoNCj4gPiAgIGh0dHBzOi8v
-d3d3LmFuYWxvZy5jb20vbWVkaWEvZW4vdGVjaG5pY2FsLWRvY3VtZW50YXRpb24vZGF0YS1zaGVl
-dHMvQURJTjEzMDAucGRmDQo+ID4gICBodHRwczovL3d3dy5hbmFsb2cuY29tL21lZGlhL2VuL3Rl
-Y2huaWNhbC1kb2N1bWVudGF0aW9uL2RhdGEtc2hlZXRzL0FESU4xMjAwLnBkZg0KPiA+IA0KPiA+
-IFNpZ25lZC1vZmYtYnk6IEFsZXhhbmRydSBBcmRlbGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFu
-YWxvZy5jb20+DQo+IA0KPiBJIHRoaW5rLCBhdCBhIG1pbmltdW0sIHRoZSBjMjIgdnMuIGM0NSBp
-c3N1ZXMgbmVlZCB0byBiZSBkaXNjdXNzZWQgbW9yZQ0KPiBhbmQgZXZlbiBpZiBubyBjb2RlIGNo
-YW5nZXMgb2NjdXIgdGhlcmUgaXMgZGVmaW5pdGVseSBzb21lIGFkanVzdG1lbnRzDQo+IGFuZCBj
-bGFpcmlmaWNhdGlvbnMgdGhhdCBuZWVkIHRvIG9jY3VyIG9uIHRoaXMgaXNzdWUgaW4gdGhlIGNv
-bW1pdA0KPiBtZXNzYWdlcyBhbmQvb3IgZG9jdW1lbnRhdGlvbi4NCg0KSSBndWVzcyBJJ2xsIGRy
-b3AvZGVmZXIgc29tZSBvZiB0aGUgQzQ1IHN0dWZmIGZvciBub3cuDQpJIGRvbid0IGtub3cgaG93
-IGRlY2lzaW9ucyB3ZXJlIGRvbmUgd2hlbiB0aGUgY2hpcHMgd2VyZSBjcmVhdGVkLg0KSSBhbSB0
-b2xkIHRoYXQgQzQ1IHdvcmtzLCBidXQgSSBtYXkgbmVlZCB0byBmaW5kIG91dCBtb3JlIG9uIG15
-IGVuZCwgc2luY2UgSSBhbSBhbHNvIG5ldyB0by91bmNsZWFyIG9uIHNvbWUgaXRlbXMuDQoNCltN
-eSBwZXJzb25hbCBmZWVsaW5nIGFib3V0IHRoaXNdDQpJIHRoaW5rIHRoZXJlIGFyZSBzb21lIGNv
-bmZ1c2lvbnMgW2ludGVybmFsbHkgb24gb3VyIHNpZGVdIGFib3V0IHdoYXQgQzQ1IGlzIGFuZCBo
-b3cgaXQgc2hvdWxkIGJlIGRvbmUuDQpJIGd1ZXNzIGl0J3MgcGFydCBvZiBkZXZlbG9waW5nIGtu
-b3dsZWRnZS9za2lsbHMgZm9yIGRldmVsb3BpbmcgUEhZcyBhcyBhIGNvbXBhbnkuDQpUaGVyZSdz
-IHBsZW50eSBvZiBrbm93bGVkZ2UgZm9yIGhvdyB0byBkbyB0aGUgZWxlY3RyaWNhbCwgbG93LXBv
-d2VyLXN0dWZmLCBldGMsIGFuZCBldmVuIHRoZSBkYXRhc2hlZXQgc29tZXRpbWVzIGZlZWxzDQps
-aWtlIGl0J3MgZm9yIGFuIEFEQy9EQUMuDQpbTXkgcGVyc29uYWwgZmVlbGluZyBhYm91dCB0aGlz
-XQ0KDQpUaGFua3MNCkFsZXgNCg==
+
+
+> -----Original Message-----
+> From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Sent: Freitag, 9. August 2019 14:31
+> To: netdev@vger.kernel.org
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>; Hennerich, Michael
+> <Michael.Hennerich@analog.com>; Alexander Aring <alex.aring@gmail.com>;
+> David S. Miller <davem@davemloft.net>; Harry Morris
+> <h.morris@cascoda.com>; linux-wpan@vger.kernel.org; Stefan Schmidt
+> <stefan@datenfreihafen.org>
+> Subject: [PATCH v2 17/17] ieee802154: no need to check return value of
+> debugfs_create functions
+>=20
+> When calling debugfs functions, there is no need to ever check the return=
+ value.
+> The function can work or not, but the code logic should never do somethin=
+g
+> different based on this.
+>=20
+> Cc: Michael Hennerich <michael.hennerich@analog.com>
+> Cc: Alexander Aring <alex.aring@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Harry Morris <h.morris@cascoda.com>
+> Cc: linux-wpan@vger.kernel.org
+> Cc: netdev@vger.kernel.org
+> Acked-by: Stefan Schmidt <stefan@datenfreihafen.org>
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+
+Acked-by: Michael Hennerich <michael.hennerich@analog.com>
+
+> ---
+>  drivers/net/ieee802154/adf7242.c   | 13 +++----------
+>  drivers/net/ieee802154/at86rf230.c | 20 +++++---------------
+>  drivers/net/ieee802154/ca8210.c    |  9 +--------
+>  3 files changed, 9 insertions(+), 33 deletions(-)
+>=20
+> diff --git a/drivers/net/ieee802154/adf7242.c
+> b/drivers/net/ieee802154/adf7242.c
+> index c9392d70e639..5a37514e4234 100644
+> --- a/drivers/net/ieee802154/adf7242.c
+> +++ b/drivers/net/ieee802154/adf7242.c
+> @@ -1158,23 +1158,16 @@ static int adf7242_stats_show(struct seq_file
+> *file, void *offset)
+>  	return 0;
+>  }
+>=20
+> -static int adf7242_debugfs_init(struct adf7242_local *lp)
+> +static void adf7242_debugfs_init(struct adf7242_local *lp)
+>  {
+>  	char debugfs_dir_name[DNAME_INLINE_LEN + 1] =3D "adf7242-";
+> -	struct dentry *stats;
+>=20
+>  	strncat(debugfs_dir_name, dev_name(&lp->spi->dev),
+> DNAME_INLINE_LEN);
+>=20
+>  	lp->debugfs_root =3D debugfs_create_dir(debugfs_dir_name, NULL);
+> -	if (IS_ERR_OR_NULL(lp->debugfs_root))
+> -		return PTR_ERR_OR_ZERO(lp->debugfs_root);
+>=20
+> -	stats =3D debugfs_create_devm_seqfile(&lp->spi->dev, "status",
+> -					    lp->debugfs_root,
+> -					    adf7242_stats_show);
+> -	return PTR_ERR_OR_ZERO(stats);
+> -
+> -	return 0;
+> +	debugfs_create_devm_seqfile(&lp->spi->dev, "status", lp-
+> >debugfs_root,
+> +				    adf7242_stats_show);
+>  }
+>=20
+>  static const s32 adf7242_powers[] =3D {
+> diff --git a/drivers/net/ieee802154/at86rf230.c
+> b/drivers/net/ieee802154/at86rf230.c
+> index 595cf7e2a651..7d67f41387f5 100644
+> --- a/drivers/net/ieee802154/at86rf230.c
+> +++ b/drivers/net/ieee802154/at86rf230.c
+> @@ -1626,24 +1626,16 @@ static int at86rf230_stats_show(struct seq_file
+> *file, void *offset)  }  DEFINE_SHOW_ATTRIBUTE(at86rf230_stats);
+>=20
+> -static int at86rf230_debugfs_init(struct at86rf230_local *lp)
+> +static void at86rf230_debugfs_init(struct at86rf230_local *lp)
+>  {
+>  	char debugfs_dir_name[DNAME_INLINE_LEN + 1] =3D "at86rf230-";
+> -	struct dentry *stats;
+>=20
+>  	strncat(debugfs_dir_name, dev_name(&lp->spi->dev),
+> DNAME_INLINE_LEN);
+>=20
+>  	at86rf230_debugfs_root =3D debugfs_create_dir(debugfs_dir_name,
+> NULL);
+> -	if (!at86rf230_debugfs_root)
+> -		return -ENOMEM;
+> -
+> -	stats =3D debugfs_create_file("trac_stats", 0444,
+> -				    at86rf230_debugfs_root, lp,
+> -				    &at86rf230_stats_fops);
+> -	if (!stats)
+> -		return -ENOMEM;
+>=20
+> -	return 0;
+> +	debugfs_create_file("trac_stats", 0444, at86rf230_debugfs_root, lp,
+> +			    &at86rf230_stats_fops);
+>  }
+>=20
+>  static void at86rf230_debugfs_remove(void) @@ -1651,7 +1643,7 @@ static
+> void at86rf230_debugfs_remove(void)
+>  	debugfs_remove_recursive(at86rf230_debugfs_root);
+>  }
+>  #else
+> -static int at86rf230_debugfs_init(struct at86rf230_local *lp) { return 0=
+; }
+> +static void at86rf230_debugfs_init(struct at86rf230_local *lp) { }
+>  static void at86rf230_debugfs_remove(void) { }  #endif
+>=20
+> @@ -1751,9 +1743,7 @@ static int at86rf230_probe(struct spi_device *spi)
+>  	/* going into sleep by default */
+>  	at86rf230_sleep(lp);
+>=20
+> -	rc =3D at86rf230_debugfs_init(lp);
+> -	if (rc)
+> -		goto free_dev;
+> +	at86rf230_debugfs_init(lp);
+>=20
+>  	rc =3D ieee802154_register_hw(lp->hw);
+>  	if (rc)
+> diff --git a/drivers/net/ieee802154/ca8210.c
+> b/drivers/net/ieee802154/ca8210.c index b188fce3f641..11402dc347db
+> 100644
+> --- a/drivers/net/ieee802154/ca8210.c
+> +++ b/drivers/net/ieee802154/ca8210.c
+> @@ -3019,14 +3019,7 @@ static int ca8210_test_interface_init(struct
+> ca8210_priv *priv)
+>  		priv,
+>  		&test_int_fops
+>  	);
+> -	if (IS_ERR(test->ca8210_dfs_spi_int)) {
+> -		dev_err(
+> -			&priv->spi->dev,
+> -			"Error %ld when creating debugfs node\n",
+> -			PTR_ERR(test->ca8210_dfs_spi_int)
+> -		);
+> -		return PTR_ERR(test->ca8210_dfs_spi_int);
+> -	}
+> +
+>  	debugfs_create_symlink("ca8210", NULL, node_name);
+>  	init_waitqueue_head(&test->readq);
+>  	return kfifo_alloc(
+> --
+> 2.22.0
+
