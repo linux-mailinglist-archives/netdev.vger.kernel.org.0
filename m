@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 832CF87A23
-	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:32:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6771587A07
+	for <lists+netdev@lfdr.de>; Fri,  9 Aug 2019 14:31:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407006AbfHIMcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 08:32:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58630 "EHLO mail.kernel.org"
+        id S2406921AbfHIMbh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 08:31:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406993AbfHIMcF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 9 Aug 2019 08:32:05 -0400
+        id S2406877AbfHIMbb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 9 Aug 2019 08:31:31 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5FE0F21773;
-        Fri,  9 Aug 2019 12:32:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DC5E1217F4;
+        Fri,  9 Aug 2019 12:31:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565353923;
-        bh=k6+QiseGhJtm79dtjZq3LChMIoolh6iiDPijKOO1f/E=;
+        s=default; t=1565353890;
+        bh=PmCxEM3MCKxEhqxp1HHVGVpStkY9cpnBtSHfAIGmzvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OlNdrUH2zXvqrUpTKCETeLeflXE/qlE4DxoFXbi1+FofO/ZFesLCYDkN2ZL7UNMaD
-         YFIftxiK1imfuZTX+MJYFD/TD7u7pvC7XumDt/v9VWzDQIDcan9GDaayDJqOw9gaLq
-         3KQGS15Kgxd6aiHF7k+hyUkmTccaJmumlPp5Gf0k=
+        b=sNGnUK9q8JNcG1PKMak2HvTx6sqydKZzQ8Sij3zJLTWANRxF+FnA7xw12+14JNgF9
+         NjZRwJYJSnmUHoiGmaFaRw6aXfyT28cWJtmpheUK8LQvqj+iYcABkzOztCwMoF5+SF
+         3FW0Wt3FAq9lNjLn/72Pbxn+NVj2VnbXDg3KKtGY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     netdev@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
+        Michael Chan <michael.chan@broadcom.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH v2 04/17] xgbe: no need to check return value of debugfs_create functions
-Date:   Fri,  9 Aug 2019 14:30:55 +0200
-Message-Id: <20190809123108.27065-5-gregkh@linuxfoundation.org>
+Subject: [PATCH v2 05/17] bnxt: no need to check return value of debugfs_create functions
+Date:   Fri,  9 Aug 2019 14:30:56 +0200
+Message-Id: <20190809123108.27065-6-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190809123108.27065-1-gregkh@linuxfoundation.org>
 References: <20190809123108.27065-1-gregkh@linuxfoundation.org>
@@ -48,166 +48,97 @@ never do something different based on this.
 This cleans up a lot of unneeded code and logic around the debugfs
 files, making all of this much simpler and easier to understand.
 
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Michael Chan <michael.chan@broadcom.com>
 Cc: "David S. Miller" <davem@davemloft.net>
 Cc: netdev@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c | 107 ++++++-------------
- 1 file changed, 31 insertions(+), 76 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  1 -
+ .../net/ethernet/broadcom/bnxt/bnxt_debugfs.c | 39 ++++++-------------
+ 2 files changed, 11 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c b/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c
-index b91143947ed2..b0a6c96b6ef4 100644
---- a/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c
-+++ b/drivers/net/ethernet/amd/xgbe/xgbe-debugfs.c
-@@ -438,7 +438,6 @@ static const struct file_operations xi2c_reg_value_fops = {
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+index e3262089b751..1b1610d5b573 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
+@@ -1724,7 +1724,6 @@ struct bnxt {
+ 	u8			switch_id[8];
+ 	struct bnxt_tc_info	*tc_info;
+ 	struct dentry		*debugfs_pdev;
+-	struct dentry		*debugfs_dim;
+ 	struct device		*hwmon_dev;
+ };
  
- void xgbe_debugfs_init(struct xgbe_prv_data *pdata)
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_debugfs.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_debugfs.c
+index 61393f351a77..156c2404854f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_debugfs.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_debugfs.c
+@@ -61,45 +61,30 @@ static const struct file_operations debugfs_dim_fops = {
+ 	.read = debugfs_dim_read,
+ };
+ 
+-static struct dentry *debugfs_dim_ring_init(struct dim *dim, int ring_idx,
+-					    struct dentry *dd)
++static void debugfs_dim_ring_init(struct dim *dim, int ring_idx,
++				  struct dentry *dd)
  {
--	struct dentry *pfile;
- 	char *buf;
+ 	static char qname[16];
  
- 	/* Set defaults */
-@@ -451,88 +450,48 @@ void xgbe_debugfs_init(struct xgbe_prv_data *pdata)
- 		return;
+ 	snprintf(qname, 10, "%d", ring_idx);
+-	return debugfs_create_file(qname, 0600, dd,
+-				   dim, &debugfs_dim_fops);
++	debugfs_create_file(qname, 0600, dd, dim, &debugfs_dim_fops);
+ }
  
- 	pdata->xgbe_debugfs = debugfs_create_dir(buf, NULL);
--	if (!pdata->xgbe_debugfs) {
--		netdev_err(pdata->netdev, "debugfs_create_dir failed\n");
--		kfree(buf);
--		return;
--	}
- 
--	pfile = debugfs_create_file("xgmac_register", 0600,
--				    pdata->xgbe_debugfs, pdata,
--				    &xgmac_reg_addr_fops);
--	if (!pfile)
--		netdev_err(pdata->netdev, "debugfs_create_file failed\n");
-+	debugfs_create_file("xgmac_register", 0600, pdata->xgbe_debugfs, pdata,
-+			    &xgmac_reg_addr_fops);
- 
--	pfile = debugfs_create_file("xgmac_register_value", 0600,
--				    pdata->xgbe_debugfs, pdata,
--				    &xgmac_reg_value_fops);
--	if (!pfile)
--		netdev_err(pdata->netdev, "debugfs_create_file failed\n");
-+	debugfs_create_file("xgmac_register_value", 0600, pdata->xgbe_debugfs,
-+			    pdata, &xgmac_reg_value_fops);
- 
--	pfile = debugfs_create_file("xpcs_mmd", 0600,
--				    pdata->xgbe_debugfs, pdata,
--				    &xpcs_mmd_fops);
--	if (!pfile)
--		netdev_err(pdata->netdev, "debugfs_create_file failed\n");
-+	debugfs_create_file("xpcs_mmd", 0600, pdata->xgbe_debugfs, pdata,
-+			    &xpcs_mmd_fops);
- 
--	pfile = debugfs_create_file("xpcs_register", 0600,
--				    pdata->xgbe_debugfs, pdata,
--				    &xpcs_reg_addr_fops);
--	if (!pfile)
--		netdev_err(pdata->netdev, "debugfs_create_file failed\n");
-+	debugfs_create_file("xpcs_register", 0600, pdata->xgbe_debugfs, pdata,
-+			    &xpcs_reg_addr_fops);
- 
--	pfile = debugfs_create_file("xpcs_register_value", 0600,
--				    pdata->xgbe_debugfs, pdata,
--				    &xpcs_reg_value_fops);
--	if (!pfile)
--		netdev_err(pdata->netdev, "debugfs_create_file failed\n");
-+	debugfs_create_file("xpcs_register_value", 0600, pdata->xgbe_debugfs,
-+			    pdata, &xpcs_reg_value_fops);
- 
- 	if (pdata->xprop_regs) {
--		pfile = debugfs_create_file("xprop_register", 0600,
--					    pdata->xgbe_debugfs, pdata,
--					    &xprop_reg_addr_fops);
--		if (!pfile)
--			netdev_err(pdata->netdev,
--				   "debugfs_create_file failed\n");
--
--		pfile = debugfs_create_file("xprop_register_value", 0600,
--					    pdata->xgbe_debugfs, pdata,
--					    &xprop_reg_value_fops);
--		if (!pfile)
--			netdev_err(pdata->netdev,
--				   "debugfs_create_file failed\n");
-+		debugfs_create_file("xprop_register", 0600, pdata->xgbe_debugfs,
-+				    pdata, &xprop_reg_addr_fops);
-+
-+		debugfs_create_file("xprop_register_value", 0600,
-+				    pdata->xgbe_debugfs, pdata,
-+				    &xprop_reg_value_fops);
- 	}
- 
- 	if (pdata->xi2c_regs) {
--		pfile = debugfs_create_file("xi2c_register", 0600,
--					    pdata->xgbe_debugfs, pdata,
--					    &xi2c_reg_addr_fops);
--		if (!pfile)
--			netdev_err(pdata->netdev,
--				   "debugfs_create_file failed\n");
--
--		pfile = debugfs_create_file("xi2c_register_value", 0600,
--					    pdata->xgbe_debugfs, pdata,
--					    &xi2c_reg_value_fops);
--		if (!pfile)
--			netdev_err(pdata->netdev,
--				   "debugfs_create_file failed\n");
-+		debugfs_create_file("xi2c_register", 0600, pdata->xgbe_debugfs,
-+				    pdata, &xi2c_reg_addr_fops);
-+
-+		debugfs_create_file("xi2c_register_value", 0600,
-+				    pdata->xgbe_debugfs, pdata,
-+				    &xi2c_reg_value_fops);
- 	}
- 
- 	if (pdata->vdata->an_cdr_workaround) {
--		pfile = debugfs_create_bool("an_cdr_workaround", 0600,
--					    pdata->xgbe_debugfs,
--					    &pdata->debugfs_an_cdr_workaround);
--		if (!pfile)
--			netdev_err(pdata->netdev,
--				   "debugfs_create_bool failed\n");
--
--		pfile = debugfs_create_bool("an_cdr_track_early", 0600,
--					    pdata->xgbe_debugfs,
--					    &pdata->debugfs_an_cdr_track_early);
--		if (!pfile)
--			netdev_err(pdata->netdev,
--				   "debugfs_create_bool failed\n");
-+		debugfs_create_bool("an_cdr_workaround", 0600,
-+				    pdata->xgbe_debugfs,
-+				    &pdata->debugfs_an_cdr_workaround);
-+
-+		debugfs_create_bool("an_cdr_track_early", 0600,
-+				    pdata->xgbe_debugfs,
-+				    &pdata->debugfs_an_cdr_track_early);
- 	}
- 
- 	kfree(buf);
-@@ -546,7 +505,6 @@ void xgbe_debugfs_exit(struct xgbe_prv_data *pdata)
- 
- void xgbe_debugfs_rename(struct xgbe_prv_data *pdata)
+ void bnxt_debug_dev_init(struct bnxt *bp)
  {
--	struct dentry *pfile;
- 	char *buf;
+ 	const char *pname = pci_name(bp->pdev);
+-	struct dentry *pdevf;
++	struct dentry *dir;
+ 	int i;
  
- 	if (!pdata->xgbe_debugfs)
-@@ -559,11 +517,8 @@ void xgbe_debugfs_rename(struct xgbe_prv_data *pdata)
- 	if (!strcmp(pdata->xgbe_debugfs->d_name.name, buf))
- 		goto out;
+ 	bp->debugfs_pdev = debugfs_create_dir(pname, bnxt_debug_mnt);
+-	if (bp->debugfs_pdev) {
+-		pdevf = debugfs_create_dir("dim", bp->debugfs_pdev);
+-		if (!pdevf) {
+-			pr_err("failed to create debugfs entry %s/dim\n",
+-			       pname);
+-			return;
+-		}
+-		bp->debugfs_dim = pdevf;
+-		/* create files for each rx ring */
+-		for (i = 0; i < bp->cp_nr_rings; i++) {
+-			struct bnxt_cp_ring_info *cpr = &bp->bnapi[i]->cp_ring;
++	dir = debugfs_create_dir("dim", bp->debugfs_pdev);
  
--	pfile = debugfs_rename(pdata->xgbe_debugfs->d_parent,
--			       pdata->xgbe_debugfs,
--			       pdata->xgbe_debugfs->d_parent, buf);
--	if (!pfile)
--		netdev_err(pdata->netdev, "debugfs_rename failed\n");
-+	debugfs_rename(pdata->xgbe_debugfs->d_parent, pdata->xgbe_debugfs,
-+		       pdata->xgbe_debugfs->d_parent, buf);
+-			if (cpr && bp->bnapi[i]->rx_ring) {
+-				pdevf = debugfs_dim_ring_init(&cpr->dim, i,
+-							      bp->debugfs_dim);
+-				if (!pdevf)
+-					pr_err("failed to create debugfs entry %s/dim/%d\n",
+-					       pname, i);
+-			}
+-		}
+-	} else {
+-		pr_err("failed to create debugfs entry %s\n", pname);
++	/* create files for each rx ring */
++	for (i = 0; i < bp->cp_nr_rings; i++) {
++		struct bnxt_cp_ring_info *cpr = &bp->bnapi[i]->cp_ring;
++
++		if (cpr && bp->bnapi[i]->rx_ring)
++			debugfs_dim_ring_init(&cpr->dim, i, dir);
+ 	}
+ }
  
- out:
- 	kfree(buf);
+@@ -114,8 +99,6 @@ void bnxt_debug_dev_exit(struct bnxt *bp)
+ void bnxt_debug_init(void)
+ {
+ 	bnxt_debug_mnt = debugfs_create_dir("bnxt_en", NULL);
+-	if (!bnxt_debug_mnt)
+-		pr_err("failed to init bnxt_en debugfs\n");
+ }
+ 
+ void bnxt_debug_exit(void)
 -- 
 2.22.0
 
