@@ -2,77 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 404C3889D4
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 10:13:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3E20889D9
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 10:15:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbfHJINx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 04:13:53 -0400
-Received: from mail5.windriver.com ([192.103.53.11]:50146 "EHLO mail5.wrs.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725372AbfHJINx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Aug 2019 04:13:53 -0400
-Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
-        by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id x7A89qbk020525
-        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
-        Sat, 10 Aug 2019 01:10:03 -0700
-Received: from pek-lpg-core2.corp.ad.wrs.com (128.224.153.41) by
- ALA-HCA.corp.ad.wrs.com (147.11.189.40) with Microsoft SMTP Server id
- 14.3.468.0; Sat, 10 Aug 2019 01:09:41 -0700
-From:   <zhe.he@windriver.com>
-To:     <linux@armlinux.org.uk>, <ast@kernel.org>, <daniel@iogearbox.net>,
-        <kafai@fb.com>, <songliubraving@fb.com>, <yhs@fb.com>,
-        <matthias.schiffer@ew.tq-group.com>, <info@metux.net>,
-        <gregkh@linuxfoundation.org>, <tglx@linutronix.de>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <zhe.he@windriver.com>
-Subject: [PATCH] ARM: module: Avoid W and X mappings at the beginning
-Date:   Sat, 10 Aug 2019 16:09:35 +0800
-Message-ID: <1565424575-346010-1-git-send-email-zhe.he@windriver.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726145AbfHJIPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 04:15:41 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:41008 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725601AbfHJIPl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Aug 2019 04:15:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=l/8ZpdSjNJGlaMRnpgRX93SKgxcJOiB3tmAP4Xrhmq8=; b=gwp4ceQoYX55nhYbf83A4kSEa
+        aYGw/CmaBlPTk+bOPXYYuEsc3k7qy+jtCjB3ITwKDgZlaXjzhPxMZJQUDTBGzZjvUckXfTn4UtQTV
+        xLXADSc9dfUPJvZeXAiX+W1dlrb40e496u+BcCoRon5bxaDSOD3wAYQYqwNUUVb5r8ZG+yXqKHpA1
+        Xwp4T///NUInyMPkgCBRYjcvI5OLDYCBGHP9jj0HMgkxqtX9h8ZH8nwvvChqQ06Ks8rFCrJFYnW88
+        xqMPStWVoKzp/AJUDXTz61Nl0xufX4u2Vk5boeHYowDlusWWlTUprAJ09GTPQCGlorJXRbf+cKwRy
+        zuFu6rLPQ==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1hwMXM-0000C3-Qu; Sat, 10 Aug 2019 08:15:40 +0000
+Date:   Sat, 10 Aug 2019 01:15:40 -0700
+From:   Christoph Hellwig <hch@infradead.org>
+To:     egranata@chromium.org
+Cc:     linux-kernel@vger.kernel.org, mst@redhat.com, jasowang@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org, trivial@kernel.org, egranata@google.com
+Subject: Re: [PATCH] vhost: do not reference a file that does not exist
+Message-ID: <20190810081540.GA30426@infradead.org>
+References: <20190808005255.106299-1-egranata@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190808005255.106299-1-egranata@chromium.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: He Zhe <zhe.he@windriver.com>
+On Wed, Aug 07, 2019 at 05:52:55PM -0700, egranata@chromium.org wrote:
+> From: Enrico Granata <egranata@google.com>
+> 
+> lguest was removed from the mainline kernel in late 2017.
+> 
+> Signed-off-by: Enrico Granata <egranata@google.com>
 
-It is more secure to map module memory as not-execute at the beginning.
-Memory sections that need to be executable will be turned to executable
-later in complete_formation.
-
-This is a corresponding change for ARM to the following commit
-commit f2c65fb3221a ("x86/modules: Avoid breaking W^X while loading modules")
-
-Tested with test_bpf:
-test_bpf: Summary: 378 PASSED, 0 FAILED, [0/366 JIT'ed]
-
-Signed-off-by: He Zhe <zhe.he@windriver.com>
----
- arch/arm/kernel/module.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/kernel/module.c b/arch/arm/kernel/module.c
-index deef17f..197b3b9 100644
---- a/arch/arm/kernel/module.c
-+++ b/arch/arm/kernel/module.c
-@@ -45,12 +45,12 @@ void *module_alloc(unsigned long size)
- 		gfp_mask |= __GFP_NOWARN;
- 
- 	p = __vmalloc_node_range(size, 1, MODULES_VADDR, MODULES_END,
--				gfp_mask, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
-+				gfp_mask, PAGE_KERNEL, 0, NUMA_NO_NODE,
- 				__builtin_return_address(0));
- 	if (!IS_ENABLED(CONFIG_ARM_MODULE_PLTS) || p)
- 		return p;
- 	return __vmalloc_node_range(size, 1,  VMALLOC_START, VMALLOC_END,
--				GFP_KERNEL, PAGE_KERNEL_EXEC, 0, NUMA_NO_NODE,
-+				GFP_KERNEL, PAGE_KERNEL, 0, NUMA_NO_NODE,
- 				__builtin_return_address(0));
- }
- #endif
--- 
-2.7.4
-
+But this particular file even has an override in the script looking
+for dead references, which together with the content of the overal
+contents makes me thing the dangling reference is somewhat intentional.
