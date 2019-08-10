@@ -2,206 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1269A88C15
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 17:56:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9802D88C45
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 18:34:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726290AbfHJPzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 11:55:54 -0400
-Received: from conuserg-11.nifty.com ([210.131.2.78]:35857 "EHLO
-        conuserg-11.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726210AbfHJPzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Aug 2019 11:55:53 -0400
-Received: from grover.flets-west.jp (softbank126125143222.bbtec.net [126.125.143.222]) (authenticated)
-        by conuserg-11.nifty.com with ESMTP id x7AFrG96009713;
-        Sun, 11 Aug 2019 00:53:26 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-11.nifty.com x7AFrG96009713
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1565452407;
-        bh=jmtnAlp5r/W1VjpdNwYulBR6vPbBBKflh9Un7xceSbI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jzfo/uJj4NDRwhMy9Cn70CvntcZFbN6G6bFTZlu8kAYtHICAFeeYFz4NS04n8DNNu
-         rJ+kowmP2XYeu+aeeYvcbvpoU93G2NaNNmIQdsgic1q3dyblTr6LYyDVM8JOS8aexK
-         OXtIvT8XwRBsdpf3REmEBZLVzPtzIiUN62DPDzyt1hE6pDblo9pcPtgiUs9dt4uK20
-         ksK7dunb1OxclzbzrtP5gfNdMkNRoM6b2X0FU+5wybzF5Ah/xX55Iu0F5q9xojCLq6
-         wwHzoWU6Im4BsdX2MgcOgp/ik9Nl5yt/qWvcv4tUfk2by7i59R90blvFjyqWOJCxST
-         /kpvVLZUdCcPg==
-X-Nifty-SrcIP: [126.125.143.222]
-From:   Masahiro Yamada <yamada.masahiro@socionext.com>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Sam Ravnborg <sam@ravnborg.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Igor Russkikh <igor.russkikh@aquantia.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-Subject: [PATCH 11/11] treewide: remove dummy Makefiles for single targets
-Date:   Sun, 11 Aug 2019 00:53:07 +0900
-Message-Id: <20190810155307.29322-12-yamada.masahiro@socionext.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190810155307.29322-1-yamada.masahiro@socionext.com>
-References: <20190810155307.29322-1-yamada.masahiro@socionext.com>
+        id S1726321AbfHJQed (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 12:34:33 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:50070 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726048AbfHJQed (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Aug 2019 12:34:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=+XcaMz3hAkMIn2mjsZcblkOPoXKXhcojqLISCOkCUxQ=; b=vPI0sG28vl7QxUcf0hhxI0WYXF
+        zim5qzVIM0aXJoJCEWqSSxaNlAc9m/XlGqdfTW9uD5It+DeiZly+fvrlV7GmQjlmf5QQbIPBkCQpg
+        XqFPfJuRgd4rjaGcsiuBp1UNhlDWezw2Qq8qU/NcVjnL/x13S0w5DEMEW+GUALZAGv9M=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hwUJz-0008N0-GI; Sat, 10 Aug 2019 18:34:23 +0200
+Date:   Sat, 10 Aug 2019 18:34:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Antoine Tenart <antoine.tenart@bootlin.com>
+Cc:     davem@davemloft.net, sd@queasysnail.net, f.fainelli@gmail.com,
+        hkallweit1@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@bootlin.com,
+        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
+        camelia.groza@nxp.com, Simon.Edelhaus@aquantia.com
+Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
+ infrastructure
+Message-ID: <20190810163423.GA30120@lunn.ch>
+References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
+ <20190808140600.21477-7-antoine.tenart@bootlin.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190808140600.21477-7-antoine.tenart@bootlin.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that the single target build descends into sub-directories
-in the same ways as the normal build, these dummy Makefiles
-are not needed any more.
+On Thu, Aug 08, 2019 at 04:05:57PM +0200, Antoine Tenart wrote:
+> This patch introduces the MACsec hardware offloading infrastructure.
+> 
+> The main idea here is to re-use the logic and data structures of the
+> software MACsec implementation. This allows not to duplicate definitions
+> and structure storing the same kind of information. It also allows to
+> use a unified genlink interface for both MACsec implementations (so that
+> the same userspace tool, `ip macsec`, is used with the same arguments).
+> The MACsec offloading support cannot be disabled if an interface
+> supports it at the moment.
+> 
+> The MACsec configuration is passed to device drivers supporting it
+> through macsec_hw_offload() which is called from the MACsec genl
+> helpers. This function calls the macsec ops of PHY and Ethernet
+> drivers in two steps
 
-Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
----
+Hi Antoine, Igor
 
- drivers/net/ethernet/aquantia/atlantic/hw_atl/Makefile      | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/accel/Makefile      | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/diag/Makefile       | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/en/Makefile         | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile     | 1 -
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/Makefile   | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/fpga/Makefile       | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/ipoib/Makefile      | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/lib/Makefile        | 2 --
- drivers/net/ethernet/netronome/nfp/bpf/Makefile             | 2 --
- drivers/net/ethernet/netronome/nfp/flower/Makefile          | 2 --
- drivers/net/ethernet/netronome/nfp/nfpcore/Makefile         | 2 --
- drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000/Makefile | 2 --
- drivers/net/ethernet/netronome/nfp/nic/Makefile             | 2 --
- 14 files changed, 27 deletions(-)
- delete mode 100644 drivers/net/ethernet/aquantia/atlantic/hw_atl/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/accel/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/diag/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/fpga/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/ipoib/Makefile
- delete mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/Makefile
- delete mode 100644 drivers/net/ethernet/netronome/nfp/bpf/Makefile
- delete mode 100644 drivers/net/ethernet/netronome/nfp/flower/Makefile
- delete mode 100644 drivers/net/ethernet/netronome/nfp/nfpcore/Makefile
- delete mode 100644 drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000/Makefile
- delete mode 100644 drivers/net/ethernet/netronome/nfp/nic/Makefile
+It is great that you are thinking how a MAC driver would make use of
+this. But on the flip side, we don't usual add an API unless there is
+a user. And as far as i see, you only add a PHY level implementation,
+not a MAC level.
 
-diff --git a/drivers/net/ethernet/aquantia/atlantic/hw_atl/Makefile b/drivers/net/ethernet/aquantia/atlantic/hw_atl/Makefile
-deleted file mode 100644
-index 805fa28f391a..000000000000
---- a/drivers/net/ethernet/aquantia/atlantic/hw_atl/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--# kbuild requires Makefile in a directory to build individual objects
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/accel/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/accel/Makefile
-deleted file mode 100644
-index c78512eed8d7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/accel/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--subdir-ccflags-y += -I$(src)/..
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/diag/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/diag/Makefile
-deleted file mode 100644
-index c78512eed8d7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/diag/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--subdir-ccflags-y += -I$(src)/..
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/en/Makefile
-deleted file mode 100644
-index c78512eed8d7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--subdir-ccflags-y += -I$(src)/..
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile
-deleted file mode 100644
-index 5ee42991900a..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/Makefile
-+++ /dev/null
-@@ -1 +0,0 @@
--subdir-ccflags-y += -I$(src)/../..
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/Makefile
-deleted file mode 100644
-index c78512eed8d7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--subdir-ccflags-y += -I$(src)/..
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/fpga/Makefile
-deleted file mode 100644
-index c78512eed8d7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--subdir-ccflags-y += -I$(src)/..
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/ipoib/Makefile
-deleted file mode 100644
-index c78512eed8d7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/ipoib/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--subdir-ccflags-y += -I$(src)/..
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/lib/Makefile
-deleted file mode 100644
-index c78512eed8d7..000000000000
---- a/drivers/net/ethernet/mellanox/mlx5/core/lib/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0-only
--subdir-ccflags-y += -I$(src)/..
-diff --git a/drivers/net/ethernet/netronome/nfp/bpf/Makefile b/drivers/net/ethernet/netronome/nfp/bpf/Makefile
-deleted file mode 100644
-index 805fa28f391a..000000000000
---- a/drivers/net/ethernet/netronome/nfp/bpf/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--# kbuild requires Makefile in a directory to build individual objects
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/Makefile b/drivers/net/ethernet/netronome/nfp/flower/Makefile
-deleted file mode 100644
-index 805fa28f391a..000000000000
---- a/drivers/net/ethernet/netronome/nfp/flower/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--# kbuild requires Makefile in a directory to build individual objects
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/Makefile b/drivers/net/ethernet/netronome/nfp/nfpcore/Makefile
-deleted file mode 100644
-index 805fa28f391a..000000000000
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--# kbuild requires Makefile in a directory to build individual objects
-diff --git a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000/Makefile b/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000/Makefile
-deleted file mode 100644
-index 805fa28f391a..000000000000
---- a/drivers/net/ethernet/netronome/nfp/nfpcore/nfp6000/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--# kbuild requires Makefile in a directory to build individual objects
-diff --git a/drivers/net/ethernet/netronome/nfp/nic/Makefile b/drivers/net/ethernet/netronome/nfp/nic/Makefile
-deleted file mode 100644
-index 805fa28f391a..000000000000
---- a/drivers/net/ethernet/netronome/nfp/nic/Makefile
-+++ /dev/null
-@@ -1,2 +0,0 @@
--# SPDX-License-Identifier: GPL-2.0
--# kbuild requires Makefile in a directory to build individual objects
--- 
-2.17.1
+Igor, what is your interest here? I know the Aquantia PHY can do
+MACsec, but i guess you are more interested in the atlantic and AQC111
+MAC drivers which hide the PHY behind firmware rather than make use of
+the Linux aquantia PHY driver. Are you likely to be contributing a MAC
+driver level implementation of MACsec soon?
 
+Thanks
+       Andrew
