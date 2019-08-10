@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2C1C88A96
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 12:17:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 889A688A97
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 12:17:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726188AbfHJKRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 06:17:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57708 "EHLO mail.kernel.org"
+        id S1726205AbfHJKRt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 06:17:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725497AbfHJKRq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Aug 2019 06:17:46 -0400
+        id S1725497AbfHJKRs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Aug 2019 06:17:48 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A03C20B7C;
-        Sat, 10 Aug 2019 10:17:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8E53B217D7;
+        Sat, 10 Aug 2019 10:17:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565432265;
-        bh=eLl7AhIdm3vnbKUkQaLttAj1pwsihfL/bHzVwidLy7w=;
+        s=default; t=1565432268;
+        bh=YXredxS6VuGAA2GZ7NTzDgJWsoabv2GNy155CgHoO1I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fRA3Zwqy0ZEILFTHeGmP6Ow+qM6zyhmM4D9d/W3Z0Hr8SgGA6cpOks1+jAmUNjhKw
-         QTzWJPLz07/R6/Pvszs+V8vZNMNtK9IilVoZPduxA+RKyJr7bq0EueWMLmduMstPm6
-         cITEzrQzhaObQJIb+Fn+A2N7tYV+noiFHBD0XfkQ=
+        b=hH98xGBnl27ZXRs22LnHG0WQcXBdCuEvItPCW9veJcbrdWcgpocwW36NC5yiHIMLq
+         sfW56jluNuGDrNds8r8Cn6d0Mg2zm/6rZuvRyi486N0e5ZGbCEesBL4x60k83Q+yhN
+         Sg6iH46VCwhsaV9Z4T6L/pwCPqMeYTP5ZM/4TPxU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     netdev@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH v3 10/17] dpaa2: no need to check return value of debugfs_create functions
-Date:   Sat, 10 Aug 2019 12:17:25 +0200
-Message-Id: <20190810101732.26612-11-gregkh@linuxfoundation.org>
+        "David S. Miller" <davem@davemloft.net>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Michael Heimpold <michael.heimpold@i2se.com>,
+        Yangtao Li <tiny.windzz@gmail.com>
+Subject: [PATCH v3 11/17] qca: no need to check return value of debugfs_create functions
+Date:   Sat, 10 Aug 2019 12:17:26 +0200
+Message-Id: <20190810101732.26612-12-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190810101732.26612-1-gregkh@linuxfoundation.org>
 References: <20190810101732.26612-1-gregkh@linuxfoundation.org>
@@ -45,115 +47,41 @@ When calling debugfs functions, there is no need to ever check the
 return value.  The function can work or not, but the code logic should
 never do something different based on this.
 
-Because we don't care about the individual files, we can remove the
-stored dentry for the files, as they are not needed to be kept track of
-at all.
-
-Cc: Ioana Radulescu <ruxandra.radulescu@nxp.com>
 Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Michael Heimpold <michael.heimpold@i2se.com>
+Cc: Yangtao Li <tiny.windzz@gmail.com>
 Cc: netdev@vger.kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../freescale/dpaa2/dpaa2-eth-debugfs.c       | 54 +++----------------
- .../freescale/dpaa2/dpaa2-eth-debugfs.h       |  3 --
- 2 files changed, 7 insertions(+), 50 deletions(-)
+ drivers/net/ethernet/qualcomm/qca_debug.c | 13 +++----------
+ 1 file changed, 3 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-index a027f4a9d0cc..a9afe46b837f 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.c
-@@ -164,70 +164,30 @@ static const struct file_operations dpaa2_dbg_ch_ops = {
- 
- void dpaa2_dbg_add(struct dpaa2_eth_priv *priv)
+diff --git a/drivers/net/ethernet/qualcomm/qca_debug.c b/drivers/net/ethernet/qualcomm/qca_debug.c
+index bcb890b18a94..702aa217a27a 100644
+--- a/drivers/net/ethernet/qualcomm/qca_debug.c
++++ b/drivers/net/ethernet/qualcomm/qca_debug.c
+@@ -131,17 +131,10 @@ DEFINE_SHOW_ATTRIBUTE(qcaspi_info);
+ void
+ qcaspi_init_device_debugfs(struct qcaspi *qca)
  {
--	if (!dpaa2_dbg_root)
--		return;
-+	struct dentry *dir;
+-	struct dentry *device_root;
++	qca->device_root = debugfs_create_dir(dev_name(&qca->net_dev->dev),
++					      NULL);
  
- 	/* Create a directory for the interface */
--	priv->dbg.dir = debugfs_create_dir(priv->net_dev->name,
--					   dpaa2_dbg_root);
--	if (!priv->dbg.dir) {
--		netdev_err(priv->net_dev, "debugfs_create_dir() failed\n");
--		return;
--	}
-+	dir = debugfs_create_dir(priv->net_dev->name, dpaa2_dbg_root);
-+	priv->dbg.dir = dir;
- 
- 	/* per-cpu stats file */
--	priv->dbg.cpu_stats = debugfs_create_file("cpu_stats", 0444,
--						  priv->dbg.dir, priv,
--						  &dpaa2_dbg_cpu_ops);
--	if (!priv->dbg.cpu_stats) {
--		netdev_err(priv->net_dev, "debugfs_create_file() failed\n");
--		goto err_cpu_stats;
--	}
-+	debugfs_create_file("cpu_stats", 0444, dir, priv, &dpaa2_dbg_cpu_ops);
- 
- 	/* per-fq stats file */
--	priv->dbg.fq_stats = debugfs_create_file("fq_stats", 0444,
--						 priv->dbg.dir, priv,
--						 &dpaa2_dbg_fq_ops);
--	if (!priv->dbg.fq_stats) {
--		netdev_err(priv->net_dev, "debugfs_create_file() failed\n");
--		goto err_fq_stats;
--	}
-+	debugfs_create_file("fq_stats", 0444, dir, priv, &dpaa2_dbg_fq_ops);
- 
- 	/* per-fq stats file */
--	priv->dbg.ch_stats = debugfs_create_file("ch_stats", 0444,
--						 priv->dbg.dir, priv,
--						 &dpaa2_dbg_ch_ops);
--	if (!priv->dbg.fq_stats) {
--		netdev_err(priv->net_dev, "debugfs_create_file() failed\n");
--		goto err_ch_stats;
--	}
+-	device_root = debugfs_create_dir(dev_name(&qca->net_dev->dev), NULL);
+-	qca->device_root = device_root;
 -
--	return;
--
--err_ch_stats:
--	debugfs_remove(priv->dbg.fq_stats);
--err_fq_stats:
--	debugfs_remove(priv->dbg.cpu_stats);
--err_cpu_stats:
--	debugfs_remove(priv->dbg.dir);
-+	debugfs_create_file("ch_stats", 0444, dir, priv, &dpaa2_dbg_ch_ops);
- }
- 
- void dpaa2_dbg_remove(struct dpaa2_eth_priv *priv)
- {
--	debugfs_remove(priv->dbg.fq_stats);
--	debugfs_remove(priv->dbg.ch_stats);
--	debugfs_remove(priv->dbg.cpu_stats);
--	debugfs_remove(priv->dbg.dir);
-+	debugfs_remove_recursive(priv->dbg.dir);
- }
- 
- void dpaa2_eth_dbg_init(void)
- {
- 	dpaa2_dbg_root = debugfs_create_dir(DPAA2_ETH_DBG_ROOT, NULL);
--	if (!dpaa2_dbg_root) {
--		pr_err("DPAA2-ETH: debugfs create failed\n");
+-	if (IS_ERR(device_root) || !device_root) {
+-		pr_warn("failed to create debugfs directory for %s\n",
+-			dev_name(&qca->net_dev->dev));
 -		return;
 -	}
--
- 	pr_debug("DPAA2-ETH: debugfs created\n");
+-	debugfs_create_file("info", S_IFREG | 0444, device_root, qca,
++	debugfs_create_file("info", S_IFREG | 0444, qca->device_root, qca,
+ 			    &qcaspi_info_fops);
  }
  
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.h
-index 4f63de997a26..15598b28f03b 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.h
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth-debugfs.h
-@@ -11,9 +11,6 @@ struct dpaa2_eth_priv;
- 
- struct dpaa2_debugfs {
- 	struct dentry *dir;
--	struct dentry *fq_stats;
--	struct dentry *ch_stats;
--	struct dentry *cpu_stats;
- };
- 
- #ifdef CONFIG_DEBUG_FS
 -- 
 2.22.0
 
