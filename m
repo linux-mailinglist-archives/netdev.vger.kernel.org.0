@@ -2,47 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A70888918
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 09:22:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 320688891C
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 09:22:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726266AbfHJHWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 03:22:14 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:47002 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725888AbfHJHWN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Aug 2019 03:22:13 -0400
-Received: by mail-pg1-f196.google.com with SMTP id w3so9734763pgt.13
-        for <netdev@vger.kernel.org>; Sat, 10 Aug 2019 00:22:12 -0700 (PDT)
+        id S1726310AbfHJHWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 03:22:21 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33202 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725763AbfHJHWT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Aug 2019 03:22:19 -0400
+Received: by mail-pg1-f193.google.com with SMTP id n190so6130172pgn.0
+        for <netdev@vger.kernel.org>; Sat, 10 Aug 2019 00:22:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=SUoVe7v3rT/MuQ/nwpXN/VHHe+ExuqKtoNBajOsMZ6w=;
-        b=wQJH7ETUQf/Dh4ez18JN84T3l+cjXjy09Eucj14X0AHuvosMhmvOogUX+atkAp20mg
-         SmV0+RgkID9grGKgKmWpop/TOMD8i0v3r4+jQ9itYf1FiRZ28doVdPHOTRf6LYovTj4l
-         0qsL3fBBtjZJwSpnrTtiPbQLj/IHWXapZo1y4q03jxmYWnwZKDFcc+Gjbyixt23U8y+E
-         egXKOO7CqMkvduanDLWTKBdCTiTbpwSrLmRRSZnvzYkQsI2JOQ3bmQiMScqg41bMQ6To
-         +lCMPz4rEH2MSbhrKFvLRkW0JkDkbDpoR+eHWJQ0F0M+RxwMwE11pr3jKvrGCWplkSYQ
-         VPeA==
+        bh=910+jA2CCo8T9/juoYypHUZPc1nu2oE10wZ3w1PIFww=;
+        b=JUllOmyelcml2fbv0psniUaXJxuBW7cOyTv7VROwRN6J/dznwqPYuP79xNKOXex5//
+         wVfM8gpHaL5+zAlbF4R+IG9Ark3NBqFknH07y8vGIHiKWIhbzKBQujPL2gjym2yRi2bj
+         X/e7XrNBwyLTW/2/nE5oYWJQ40ZsnI25P9JKtkAWwX+FE+WIiJZKj5sND7eFLJOKFs5/
+         pbRT5Vi9fT42TiEouZee2mLn2OZBjeiaJAnz1Bf6Xi6BjNBjDt7DTumVnI4ocB/WdIhL
+         +y/ZClPgYqOXvTvq7N4lfI+VQ3Z1UFgEZJf/TXGBYMcO3chS2nOlHpcX/SGMzwtaOi6+
+         k1sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=SUoVe7v3rT/MuQ/nwpXN/VHHe+ExuqKtoNBajOsMZ6w=;
-        b=M2tNk+T0G7tR+COy4rDsImaus7JoATi++3kWsLNoMY0rFxcOgz5OHX3+XXX5F2WEPf
-         lbv6ikqZUv+dwbp78l4gSr2slehBGB8s3oFBXOQrm0gQj9jj6QgDZvJADtCQSbs+I3yJ
-         hKCvVlLxShHgPAD1Z12T0L4UhUAMAqzF8P+NJ09HVdBYtguczUTLXSmZ4spX5bgJO+VJ
-         8W1K6bW+tgk4J7LgKDcCXlIxOjz80wzFU85la2cfY5RTx/W75gw2frokKx+cajC6pvGJ
-         N8g+1Env6mZn8VnwNNssYcsbOi6MgLeSiIZ2yfHN1IKLsymdi14zWO85R5w/LnGrFMY6
-         p3Kw==
-X-Gm-Message-State: APjAAAWrrasNCzHDS15204JvWMW1z3YgXVahXhunT3xaBjVLh39qa1w/
-        mzCFoRU36QRlFqui8mR72en+mA==
-X-Google-Smtp-Source: APXvYqzxkyBjWeBhMgjcf0AF5nqX5W6XCYqkY4vXD020qE0nR/UE9vKOK8Vq3UHm4Jv8dakQKhuC1w==
-X-Received: by 2002:a63:124a:: with SMTP id 10mr20982007pgs.254.1565421732167;
-        Sat, 10 Aug 2019 00:22:12 -0700 (PDT)
+        bh=910+jA2CCo8T9/juoYypHUZPc1nu2oE10wZ3w1PIFww=;
+        b=UdBUCqyz7rZ9tEP+omPoAhXcqkmBTaJV0PhE14iP5kyoC12FixuBnbDw4M9FWkPjUU
+         1qhxWtkBr5njQDw8leTiEou3+F+c6z0URbXtNwKi6AYYZl22JnbN8wYXgQiHTH7t6SJV
+         orAoLSGsDq5VYmEAZL+YUfklYbggdrTWrJEy1yxAAD5q2txV1xK0hDdqlJDFm2RD5HyC
+         enaOwAVTDajgE/iLKohZvs5NcUvqWz0PpbtySgxUkbRbQNTqbu6xI8gVMMMIGQT29Xhd
+         XgYCZBCuj4OiFdQnhorJ4gUk1czAhFtfGiNcNhQYsPGCCJXUfroCF0AaAuKRYE2oPZKe
+         maVQ==
+X-Gm-Message-State: APjAAAUqwOXoDGywc8y8w0D6HA17on3t+DgV3W7awt/DMM9KV06EAPsw
+        0S1Kg2nJ4VLcJiwF0umvUBzi4A==
+X-Google-Smtp-Source: APXvYqzpjvY4BjDadYCMqHrv1MJzz0JDe+YRk/7XW3b9rbhquZ9IcNOaVCNZ1MOjgi3GDQDP+DHzFw==
+X-Received: by 2002:a62:174a:: with SMTP id 71mr26588503pfx.140.1565421738783;
+        Sat, 10 Aug 2019 00:22:18 -0700 (PDT)
 Received: from localhost.localdomain (li456-16.members.linode.com. [50.116.10.16])
-        by smtp.gmail.com with ESMTPSA id l17sm24872660pgj.44.2019.08.10.00.22.07
+        by smtp.gmail.com with ESMTPSA id l17sm24872660pgj.44.2019.08.10.00.22.12
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 10 Aug 2019 00:22:11 -0700 (PDT)
+        Sat, 10 Aug 2019 00:22:18 -0700 (PDT)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
@@ -63,10 +63,13 @@ To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
         Mathieu Poirier <mathieu.poirier@linaro.org>
-Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v4 1/2] perf machine: Support arch's specific kernel start address
-Date:   Sat, 10 Aug 2019 15:21:34 +0800
-Message-Id: <20190810072135.27072-2-leo.yan@linaro.org>
+Cc:     Leo Yan <leo.yan@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v4 2/2] perf machine: arm/arm64: Improve completeness for kernel address space
+Date:   Sat, 10 Aug 2019 15:21:35 +0800
+Message-Id: <20190810072135.27072-3-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190810072135.27072-1-leo.yan@linaro.org>
 References: <20190810072135.27072-1-leo.yan@linaro.org>
@@ -75,90 +78,226 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-machine__get_kernel_start() gives out the kernel start address; some
-architectures need to tweak the start address so that can reflect the
-kernel start address correctly.  This is not only for x86_64 arch, but
-it is also required by other architectures, e.g. arm/arm64 needs to
-tweak the kernel start address so can include the kernel memory regions
-which are used before the '_stext' symbol.
+Arm and arm64 architecture reserve some memory regions prior to the
+symbol '_stext' and these memory regions later will be used by device
+module and BPF jit.  The current code misses to consider these memory
+regions thus any address in the regions will be taken as user space
+mode, but perf cannot find the corresponding dso with the wrong CPU
+mode so we misses to generate samples for device module and BPF
+related trace data.
 
-This patch refactors machine__get_kernel_start() by adding a weak
-arch__fix_kernel_text_start(), any architecture can implement it to
-tweak its specific start address; this also allows the arch specific
-code to be placed into 'arch' folder.
+This patch parse the link scripts to get the memory size prior to start
+address and reduce this size from 'machine>->kernel_start', then can
+get a fixed up kernel start address which contain memory regions for
+device module and BPF.  Finally, machine__get_kernel_start() can reflect
+more complete kernel memory regions and perf can successfully generate
+samples.
 
+The reason for parsing the link scripts is Arm architecture changes text
+offset dependent on different platforms, which define multiple text
+offsets in $kernel/arch/arm/Makefile.  This offset is decided when build
+kernel and the final value is extended in the link script, so we can
+extract the used value from the link script.  We use the same way to
+parse arm64 link script as well.  If fail to find the link script, the
+pre start memory size is assumed as zero, in this case it has no any
+change caused with this patch.
+
+Below is detailed info for testing this patch:
+
+- Install or build LLVM/Clang;
+
+- Configure perf with ~/.perfconfig:
+
+  root@debian:~# cat ~/.perfconfig
+  # this file is auto-generated.
+  [llvm]
+          clang-path = /mnt/build/llvm-build/build/install/bin/clang
+          kbuild-dir = /mnt/linux-kernel/linux-cs-dev/
+          clang-opt = "-g"
+          dump-obj = true
+
+  [trace]
+          show_zeros = yes
+          show_duration = no
+          no_inherit = yes
+          show_timestamp = no
+          show_arg_names = no
+          args_alignment = 40
+          show_prefix = yes
+
+- Run 'perf trace' command with eBPF event:
+
+  root@debian:~# perf trace -e string \
+      -e $kernel/tools/perf/examples/bpf/augmented_raw_syscalls.c
+
+- Read eBPF program memory mapping in kernel:
+
+  root@debian:~# echo 1 > /proc/sys/net/core/bpf_jit_kallsyms
+  root@debian:~# cat /proc/kallsyms | grep -E "bpf_prog_.+_sys_[enter|exit]"
+  ffff00000008a0d0 t bpf_prog_e470211b846088d5_sys_enter  [bpf]
+  ffff00000008c6a4 t bpf_prog_29c7ae234d79bd5c_sys_exit   [bpf]
+
+- Launch any program which accesses file system frequently so can hit
+  the system calls trace flow with eBPF event;
+
+- Capture CoreSight trace data with filtering eBPF program:
+
+  root@debian:~# perf record -e cs_etm/@tmc_etr0/ \
+	--filter 'filter 0xffff00000008a0d0/0x800' -a sleep 5s
+
+- Decode the eBPF program symbol 'bpf_prog_f173133dc38ccf87_sys_enter':
+
+  root@debian:~# perf script -F,ip,sym
+  Frame deformatter: Found 4 FSYNCS
+                  0 [unknown]
+   ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a250 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a124 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a13c bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a180 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a190 bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a250 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a124 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a180 bpf_prog_e470211b846088d5_sys_enter
+   [...]
+
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Suzuki Poulouse <suzuki.poulose@arm.com>
+Cc: coresight@lists.linaro.org
+Cc: linux-arm-kernel@lists.infradead.org
 Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- tools/perf/arch/x86/util/machine.c | 10 ++++++++++
- tools/perf/util/machine.c          | 13 +++++++------
- tools/perf/util/machine.h          |  2 ++
- 3 files changed, 19 insertions(+), 6 deletions(-)
+ tools/perf/Makefile.config           | 22 ++++++++++++++++++++++
+ tools/perf/arch/arm/util/Build       |  2 ++
+ tools/perf/arch/arm/util/machine.c   | 17 +++++++++++++++++
+ tools/perf/arch/arm64/util/Build     |  1 +
+ tools/perf/arch/arm64/util/machine.c | 17 +++++++++++++++++
+ 5 files changed, 59 insertions(+)
+ create mode 100644 tools/perf/arch/arm/util/machine.c
+ create mode 100644 tools/perf/arch/arm64/util/machine.c
 
-diff --git a/tools/perf/arch/x86/util/machine.c b/tools/perf/arch/x86/util/machine.c
-index 1e9ec783b9a1..9f012131534a 100644
---- a/tools/perf/arch/x86/util/machine.c
-+++ b/tools/perf/arch/x86/util/machine.c
-@@ -101,4 +101,14 @@ int machine__create_extra_kernel_maps(struct machine *machine,
- 	return ret;
- }
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index e4988f49ea79..76e0ad0b4fd2 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -51,6 +51,17 @@ endif
+ ifeq ($(SRCARCH),arm)
+   NO_PERF_REGS := 0
+   LIBUNWIND_LIBS = -lunwind -lunwind-arm
++  PRE_START_SIZE := 0
++  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
++    # Extract info from lds:
++    #   . = ((0xC0000000)) + 0x00208000;
++    # PRE_START_SIZE := 0x00208000
++    PRE_START_SIZE := $(shell egrep ' \. \= \({2}0x[0-9a-fA-F]+\){2}' \
++      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
++      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
++      awk -F' ' '{printf "0x%x", $$2}' 2>/dev/null)
++  endif
++  CFLAGS += -DARM_PRE_START_SIZE=$(PRE_START_SIZE)
+ endif
  
+ ifeq ($(SRCARCH),arm64)
+@@ -58,6 +69,17 @@ ifeq ($(SRCARCH),arm64)
+   NO_SYSCALL_TABLE := 0
+   CFLAGS += -I$(OUTPUT)arch/arm64/include/generated
+   LIBUNWIND_LIBS = -lunwind -lunwind-aarch64
++  PRE_START_SIZE := 0
++  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
++    # Extract info from lds:
++    #  . = ((((((((0xffffffffffffffff)) - (((1)) << (48)) + 1) + (0)) + (0x08000000))) + (0x08000000))) + 0x00080000;
++    # PRE_START_SIZE := (0x08000000 + 0x08000000 + 0x00080000) = 0x10080000
++    PRE_START_SIZE := $(shell egrep ' \. \= \({8}0x[0-9a-fA-F]+\){2}' \
++      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
++      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
++      awk -F' ' '{printf "0x%x", $$6+$$7+$$8}' 2>/dev/null)
++  endif
++  CFLAGS += -DARM_PRE_START_SIZE=$(PRE_START_SIZE)
+ endif
+ 
+ ifeq ($(SRCARCH),csky)
+diff --git a/tools/perf/arch/arm/util/Build b/tools/perf/arch/arm/util/Build
+index 296f0eac5e18..efa6b768218a 100644
+--- a/tools/perf/arch/arm/util/Build
++++ b/tools/perf/arch/arm/util/Build
+@@ -1,3 +1,5 @@
++perf-y += machine.o
++
+ perf-$(CONFIG_DWARF) += dwarf-regs.o
+ 
+ perf-$(CONFIG_LOCAL_LIBUNWIND)    += unwind-libunwind.o
+diff --git a/tools/perf/arch/arm/util/machine.c b/tools/perf/arch/arm/util/machine.c
+new file mode 100644
+index 000000000000..db172894e4ea
+--- /dev/null
++++ b/tools/perf/arch/arm/util/machine.c
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/types.h>
++#include <linux/string.h>
++#include <stdlib.h>
++
++#include "../../util/machine.h"
++
 +void arch__fix_kernel_text_start(u64 *start)
 +{
 +	/*
-+	 * On x86_64, PTI entry trampolines are less than the
-+	 * start of kernel text, but still above 2^63. So leave
-+	 * kernel_start = 1ULL << 63 for x86_64.
++	 * On arm, the 16MB virtual memory space prior to 'kernel_start' is
++	 * allocated to device modules, a PMD table if CONFIG_HIGHMEM is
++	 * enabled and a PGD table.  To reflect the complete kernel address
++	 * space, compensate the pre-defined regions for kernel start address.
 +	 */
-+	*start = 1ULL << 63;
++	*start = *start - ARM_PRE_START_SIZE;
 +}
+diff --git a/tools/perf/arch/arm64/util/Build b/tools/perf/arch/arm64/util/Build
+index 3cde540d2fcf..8081fb8a7b3d 100644
+--- a/tools/perf/arch/arm64/util/Build
++++ b/tools/perf/arch/arm64/util/Build
+@@ -1,4 +1,5 @@
+ perf-y += header.o
++perf-y += machine.o
+ perf-y += sym-handling.o
+ perf-$(CONFIG_DWARF)     += dwarf-regs.o
+ perf-$(CONFIG_LOCAL_LIBUNWIND) += unwind-libunwind.o
+diff --git a/tools/perf/arch/arm64/util/machine.c b/tools/perf/arch/arm64/util/machine.c
+new file mode 100644
+index 000000000000..61058dca8c5a
+--- /dev/null
++++ b/tools/perf/arch/arm64/util/machine.c
+@@ -0,0 +1,17 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <linux/types.h>
++#include <linux/string.h>
++#include <stdlib.h>
 +
- #endif
-diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
-index f6ee7fbad3e4..603518835692 100644
---- a/tools/perf/util/machine.c
-+++ b/tools/perf/util/machine.c
-@@ -2671,6 +2671,10 @@ int machine__nr_cpus_avail(struct machine *machine)
- 	return machine ? perf_env__nr_cpus_avail(machine->env) : 0;
- }
- 
-+void __weak arch__fix_kernel_text_start(u64 *start __maybe_unused)
++#include "../../util/machine.h"
++
++void arch__fix_kernel_text_start(u64 *start)
 +{
++	/*
++	 * On arm64, the root PGD table, device module memory region and
++	 * BPF jit region are prior to 'kernel_start'.  To reflect the
++	 * complete kernel address space, compensate these pre-defined
++	 * regions for kernel start address.
++	 */
++	*start = *start - ARM_PRE_START_SIZE;
 +}
-+
- int machine__get_kernel_start(struct machine *machine)
- {
- 	struct map *map = machine__kernel_map(machine);
-@@ -2687,14 +2691,11 @@ int machine__get_kernel_start(struct machine *machine)
- 	machine->kernel_start = 1ULL << 63;
- 	if (map) {
- 		err = map__load(map);
--		/*
--		 * On x86_64, PTI entry trampolines are less than the
--		 * start of kernel text, but still above 2^63. So leave
--		 * kernel_start = 1ULL << 63 for x86_64.
--		 */
--		if (!err && !machine__is(machine, "x86_64"))
-+		if (!err)
- 			machine->kernel_start = map->start;
- 	}
-+
-+	arch__fix_kernel_text_start(&machine->kernel_start);
- 	return err;
- }
- 
-diff --git a/tools/perf/util/machine.h b/tools/perf/util/machine.h
-index ef803f08ae12..9cb459f4bfbc 100644
---- a/tools/perf/util/machine.h
-+++ b/tools/perf/util/machine.h
-@@ -278,6 +278,8 @@ void machine__get_kallsyms_filename(struct machine *machine, char *buf,
- int machine__create_extra_kernel_maps(struct machine *machine,
- 				      struct dso *kernel);
- 
-+void arch__fix_kernel_text_start(u64 *start);
-+
- /* Kernel-space maps for symbols that are outside the main kernel map and module maps */
- struct extra_kernel_map {
- 	u64 start;
 -- 
 2.17.1
 
