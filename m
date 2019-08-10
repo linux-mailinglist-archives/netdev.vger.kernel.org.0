@@ -2,50 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DCEB88735
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 02:19:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 112C288788
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 03:43:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729568AbfHJATH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 9 Aug 2019 20:19:07 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46583 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726053AbfHJATH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 20:19:07 -0400
-Received: by mail-qt1-f196.google.com with SMTP id j15so3952241qtl.13
-        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 17:19:06 -0700 (PDT)
+        id S1726997AbfHJBgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 9 Aug 2019 21:36:53 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:33108 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726896AbfHJBgx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 9 Aug 2019 21:36:53 -0400
+Received: by mail-qk1-f193.google.com with SMTP id r6so73173903qkc.0
+        for <netdev@vger.kernel.org>; Fri, 09 Aug 2019 18:36:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:subject:date:message-id:mime-version
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=BF5cp4kr1ESL5BF8pbX0cSzVctiqSse7JHu1NXfDoNo=;
-        b=f7hRKvBK/DREOEDmppaxEfXvnJsswpbeKNCSSaUZ0jtch3Zm4ahla/G+H8GHagw2IB
-         mVRaWdDsDk6aXdP4/1pwJMLmdt9G04+fVG2240cvD6FfyS2PzENlS8xgShC42mfkDXhs
-         8PA48dogNBHIqhXQ+GQcMJDUDy3BucxdWmRiQ=
+        bh=CFbHgjAPTaCA8MRNdseWob4LTLvhtIrIklCcJcw/pk8=;
+        b=EY5A0zyA4vXk3piWdL1z0Uge4aswOdzItK08lD0eUzgoKaSR2nOO81W63JH14WDp7d
+         1d0h+sC2g2jSNIJCjzRaA0vBqNgLgwpZfMH9ZM/RxFqDcXm/eNYFu3dtAULK+0YC7arU
+         0pVEoK+FFnNr2s3DNBhQ7rhtMt9V/UpJl3Vt8fuogMELvf7ImqAvcwKWohXOUeBD2aBU
+         tzxrLbGoxVHHjKJSLNS5ytWn/6AatZnKn5wWa+fywR5AKV0Cp/a31yS/8i1F3glulV1n
+         z1DfkX2UlIPGNRAA/HM6PQiIXptOovTNLXw7JYkidEHz8CbWpnllnWqSnldfhAcMjla6
+         GNyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=BF5cp4kr1ESL5BF8pbX0cSzVctiqSse7JHu1NXfDoNo=;
-        b=YT99zSw6DEFhnfM3GKZ8vG0+lljkcpyNw5jWYmh8PUirzMt9kmdOftEtz7X6mwG6kP
-         KWm/P++FAKPC8hRySGNcBedE4puVEhQJs0MBIJ6MAbTFMLtnDqQa7CzY4kBDz+rrRpBf
-         NkCRsJYSmz59T3uCY8yQdHFXtysiJiZ3nQqq9x35v6o+z3ne3c5wB9k/M+oKnxZnxOPu
-         I1uULFkk0ZRu7z/yolhDl1WyDIVe2guYktvAdfqJsL2KNAmYEiPvlRXptwJiRmnhYw60
-         f9rU3LultBAY8VhHe0VAEIpXDb/tsNSefQPLKlb9XFZJ4P0iqBL0hQZ1yXsaoCQVYs4p
-         QOhg==
-X-Gm-Message-State: APjAAAXlNEzWSWpcOy/0Z0ZVwiQBt9EcqFKtgUuA8IjTBjSvVrMDpzhv
-        A4oT/soELDoEoGOlVkgLw8n1+Syg0oU=
-X-Google-Smtp-Source: APXvYqyoP9IYeXuvN8Bl9qALDWhFm0wut1Uxg505r7LS4wYE+/IAD/nYiOOnoD4SEanp/Zkj5A9J9g==
-X-Received: by 2002:ad4:5367:: with SMTP id e7mr6305288qvv.5.1565396345837;
-        Fri, 09 Aug 2019 17:19:05 -0700 (PDT)
-Received: from robot.nc.rr.com (cpe-2606-A000-111D-8179-B743-207D-F4F9-B992.dyn6.twc.com. [2606:a000:111d:8179:b743:207d:f4f9:b992])
-        by smtp.googlemail.com with ESMTPSA id u16sm1230497qkj.107.2019.08.09.17.19.05
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 09 Aug 2019 17:19:05 -0700 (PDT)
-From:   Donald Sharp <sharpd@cumulusnetworks.com>
-To:     netdev@vger.kernel.org, dsahern@gmail.com
-Subject: [PATCH 2/2] ip nexthop: Allow flush|list operations to specify a specific protocol
-Date:   Fri,  9 Aug 2019 20:18:43 -0400
-Message-Id: <20190810001843.32068-3-sharpd@cumulusnetworks.com>
+        bh=CFbHgjAPTaCA8MRNdseWob4LTLvhtIrIklCcJcw/pk8=;
+        b=oOFz6pIkX2I3+AbY6C8jCcA5za4lyci7bjkgzzAYoCzgOi6zHEsua77nEbujTy5xpj
+         XebsQx8Zj6G1fG+h8+MpH2evX7V+x5F5+qyE+LjngXRGT6TF/72d8dEGvfas2M9CkYY+
+         bhFtylvOyVFAn5IMCTijBH8FUUeqRbPPERgwqFRnTAWLSeg8k8GXCvKrfYGZCgoLO/Hv
+         Tdx7tvS0qWZ9THpELKMQiJOGus1/B3H5Am+BRwP4gKI5iAHSULWuU8Pz1VpoZAQ4O+wJ
+         qHzokHTDDvoQnNlax1pEgSZf+pAC5w7O6WoSZwnuXnPrqIqv1S8VNQUErDOvOGL3Xhxz
+         6bcQ==
+X-Gm-Message-State: APjAAAW/txyui00hFGvvyTjNXLXGYgWiv6cmBG42oilmQbBvHdPqD6sL
+        ka39AC+Dn8rrcKOM6kfSnCRaXw==
+X-Google-Smtp-Source: APXvYqxa6vm3z6YZ/6Y7MVpa3qi9nc7Ok/s4tTJm3GedgYtvtMXc3u/dRbjVnUqP8u9o+jIlazE1FA==
+X-Received: by 2002:a37:9a4a:: with SMTP id c71mr21400038qke.258.1565401012457;
+        Fri, 09 Aug 2019 18:36:52 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id d9sm2812685qko.20.2019.08.09.18.36.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 09 Aug 2019 18:36:51 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, willemb@google.com, davejwatson@fb.com,
+        borisp@mellanox.com, aviadye@mellanox.com,
+        john.fastabend@gmail.com, daniel@iogearbox.net,
+        oss-drivers@netronome.com,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        syzbot+dcdc9deefaec44785f32@syzkaller.appspotmail.com
+Subject: [PATCH net] net/tls: swap sk_write_space on close
+Date:   Fri,  9 Aug 2019 18:36:23 -0700
+Message-Id: <20190810013623.14707-1-jakub.kicinski@netronome.com>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -54,70 +63,30 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the case where we have a large number of nexthops from a specific
-protocol, allow the flush and list operations to take a protocol
-to limit the commands scopes.
+Now that we swap the original proto and clear the ULP pointer
+on close we have to make sure no callback will try to access
+the freed state. sk_write_space is not part of sk_prot, remember
+to swap it.
 
-Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
+Reported-by: syzbot+dcdc9deefaec44785f32@syzkaller.appspotmail.com
+Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 ---
- ip/ipnexthop.c | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ net/tls/tls_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-index f35aab52..bc8ab431 100644
---- a/ip/ipnexthop.c
-+++ b/ip/ipnexthop.c
-@@ -19,6 +19,7 @@ static struct {
- 	unsigned int groups;
- 	unsigned int ifindex;
- 	unsigned int master;
-+	unsigned int proto;
- } filter;
- 
- enum {
-@@ -34,7 +35,7 @@ static void usage(void) __attribute__((noreturn));
- static void usage(void)
- {
- 	fprintf(stderr,
--		"Usage: ip nexthop { list | flush } SELECTOR\n"
-+		"Usage: ip nexthop { list | flush } [ protocol ID ] SELECTOR\n"
- 		"       ip nexthop { add | replace } id ID NH [ protocol ID ]\n"
- 		"       ip nexthop { get| del } id ID\n"
- 		"SELECTOR := [ id ID ] [ dev DEV ] [ vrf NAME ] [ master DEV ]\n"
-@@ -109,6 +110,9 @@ static int flush_nexthop(struct nlmsghdr *nlh, void *arg)
- 		return -1;
- 	}
- 
-+	if (filter.proto && nhm->nh_protocol != filter.proto)
-+		return 0;
-+
- 	parse_rtattr(tb, NHA_MAX, RTM_NHA(nhm), len);
- 	if (tb[NHA_ID])
- 		id = rta_getattr_u32(tb[NHA_ID]);
-@@ -213,6 +217,9 @@ int print_nexthop(struct nlmsghdr *n, void *arg)
- 		return -1;
- 	}
- 
-+	if (filter.proto && filter.proto != nhm->nh_protocol)
-+		return 0;
-+
- 	parse_rtattr(tb, NHA_MAX, RTM_NHA(nhm), len);
- 
- 	open_json_object(NULL);
-@@ -473,6 +480,13 @@ static int ipnh_list_flush(int argc, char **argv, int action)
- 			if (get_unsigned(&id, *argv, 0))
- 				invarg("invalid id value", *argv);
- 			return ipnh_get_id(id);
-+		} else if (!matches(*argv, "protocol")) {
-+			__u32 proto;
-+
-+			NEXT_ARG();
-+			if (get_unsigned(&proto, *argv, 0))
-+				invarg("invalid protocol value", *argv);
-+			filter.proto = proto;
- 		} else if (matches(*argv, "help") == 0) {
- 			usage();
- 		} else {
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 9cbbae606ced..ce6ef56a65ef 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -308,6 +308,7 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+ 	if (free_ctx)
+ 		icsk->icsk_ulp_data = NULL;
+ 	sk->sk_prot = ctx->sk_proto;
++	sk->sk_write_space = ctx->sk_write_space;
+ 	write_unlock_bh(&sk->sk_callback_lock);
+ 	release_sock(sk);
+ 	if (ctx->tx_conf == TLS_SW)
 -- 
 2.21.0
 
