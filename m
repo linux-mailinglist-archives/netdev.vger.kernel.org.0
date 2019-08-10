@@ -2,43 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B01188AA8
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 12:18:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A61088AA9
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 12:18:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbfHJKSX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 06:18:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58090 "EHLO mail.kernel.org"
+        id S1726452AbfHJKSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 06:18:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58132 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726440AbfHJKSV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Aug 2019 06:18:21 -0400
+        id S1726440AbfHJKSY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Aug 2019 06:18:24 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E94E120B7C;
-        Sat, 10 Aug 2019 10:18:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8E6EB217F4;
+        Sat, 10 Aug 2019 10:18:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565432301;
-        bh=I0RZLkp1YWdBHzfdokh+5YKBKnlBGlgiB6XeKkEvTdE=;
+        s=default; t=1565432304;
+        bh=rXWLDZzqIQg31I3qtJjIAc4ozyG8Smi324/RjUpFiYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cwa7kTXApyMysdriSDVjaCiqFWwKF6Fovl/kYqpOWKcIV/9nonptbZxWnf6qtgCDU
-         rTcS/Zn1+kmCQzdhylJtdEcCYKGhKYoG7mPA1V6hAm0mz3Gp4Dtdf5slk5+kShwfXE
-         FGS0Xib6RL+SorTRJ2vj4sZI6nBgoRE1efjTxJtQ=
+        b=MTrqeAlB7b7OUH1DLkOrbYEd6S94tBe5mu2OsX4kxUbmAVERZq/pquuNnfmGxXywa
+         jh5meLi7JXDLn6E+39XTUkm+sx7gcGj/2WJcO0t8OWEAbLkZ98lHhRZfB2tetXwttw
+         hFlIFRZ8HV0MJ5ghVobkI8GOdATbGFPmRrkM/dOU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     netdev@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Edwin Peer <edwin.peer@netronome.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        oss-drivers@netronome.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>
-Subject: [PATCH v3 08/17] nfp: no need to check return value of debugfs_create functions
-Date:   Sat, 10 Aug 2019 12:17:23 +0200
-Message-Id: <20190810101732.26612-9-gregkh@linuxfoundation.org>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com
+Subject: [PATCH v3 09/17] stmmac: no need to check return value of debugfs_create functions
+Date:   Sat, 10 Aug 2019 12:17:24 +0200
+Message-Id: <20190810101732.26612-10-gregkh@linuxfoundation.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190810101732.26612-1-gregkh@linuxfoundation.org>
 References: <20190810101732.26612-1-gregkh@linuxfoundation.org>
@@ -53,64 +49,130 @@ When calling debugfs functions, there is no need to ever check the
 return value.  The function can work or not, but the code logic should
 never do something different based on this.
 
+Because we don't care about the individual files, we can remove the
+stored dentry for the files, as they are not needed to be kept track of
+at all.
+
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
 Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jesper Dangaard Brouer <hawk@kernel.org>
-Cc: John Fastabend <john.fastabend@gmail.com>
-Cc: Edwin Peer <edwin.peer@netronome.com>
-Cc: Yangtao Li <tiny.windzz@gmail.com>
-Cc: Simon Horman <simon.horman@netronome.com>
-Cc: oss-drivers@netronome.com
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
 Cc: netdev@vger.kernel.org
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc: linux-stm32@st-md-mailman.stormreply.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- .../ethernet/netronome/nfp/nfp_net_debugfs.c    | 17 +----------------
- 1 file changed, 1 insertion(+), 16 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h  |  2 -
+ .../net/ethernet/stmicro/stmmac/stmmac_main.c | 52 +++----------------
+ 2 files changed, 8 insertions(+), 46 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c b/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c
-index ab7f2498e1c4..553c708694e8 100644
---- a/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c
-+++ b/drivers/net/ethernet/netronome/nfp/nfp_net_debugfs.c
-@@ -159,19 +159,13 @@ void nfp_net_debugfs_vnic_add(struct nfp_net *nn, struct dentry *ddir)
- 	else
- 		strcpy(name, "ctrl-vnic");
- 	nn->debugfs_dir = debugfs_create_dir(name, ddir);
--	if (IS_ERR_OR_NULL(nn->debugfs_dir))
--		return;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+index 4179559b11ad..80276587048a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
+@@ -196,8 +196,6 @@ struct stmmac_priv {
  
- 	/* Create queue debugging sub-tree */
- 	queues = debugfs_create_dir("queue", nn->debugfs_dir);
--	if (IS_ERR_OR_NULL(queues))
--		return;
+ #ifdef CONFIG_DEBUG_FS
+ 	struct dentry *dbgfs_dir;
+-	struct dentry *dbgfs_rings_status;
+-	struct dentry *dbgfs_dma_cap;
+ #endif
  
- 	rx = debugfs_create_dir("rx", queues);
- 	tx = debugfs_create_dir("tx", queues);
- 	xdp = debugfs_create_dir("xdp", queues);
--	if (IS_ERR_OR_NULL(rx) || IS_ERR_OR_NULL(tx) || IS_ERR_OR_NULL(xdp))
--		return;
+ 	unsigned long state;
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 2274bb58eefa..06a63df1c2c5 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -105,7 +105,7 @@ MODULE_PARM_DESC(chain_mode, "To use chain instead of ring mode");
+ static irqreturn_t stmmac_interrupt(int irq, void *dev_id);
  
- 	for (i = 0; i < min(nn->max_rx_rings, nn->max_r_vecs); i++) {
- 		sprintf(name, "%d", i);
-@@ -190,16 +184,7 @@ void nfp_net_debugfs_vnic_add(struct nfp_net *nn, struct dentry *ddir)
+ #ifdef CONFIG_DEBUG_FS
+-static int stmmac_init_fs(struct net_device *dev);
++static void stmmac_init_fs(struct net_device *dev);
+ static void stmmac_exit_fs(struct net_device *dev);
+ #endif
  
- struct dentry *nfp_net_debugfs_device_add(struct pci_dev *pdev)
+@@ -3988,45 +3988,20 @@ static int stmmac_dma_cap_show(struct seq_file *seq, void *v)
+ }
+ DEFINE_SHOW_ATTRIBUTE(stmmac_dma_cap);
+ 
+-static int stmmac_init_fs(struct net_device *dev)
++static void stmmac_init_fs(struct net_device *dev)
  {
--	struct dentry *dev_dir;
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 
+ 	/* Create per netdev entries */
+ 	priv->dbgfs_dir = debugfs_create_dir(dev->name, stmmac_fs_dir);
+ 
+-	if (!priv->dbgfs_dir || IS_ERR(priv->dbgfs_dir)) {
+-		netdev_err(priv->dev, "ERROR failed to create debugfs directory\n");
 -
--	if (IS_ERR_OR_NULL(nfp_dir))
--		return NULL;
+-		return -ENOMEM;
+-	}
 -
--	dev_dir = debugfs_create_dir(pci_name(pdev), nfp_dir);
--	if (IS_ERR_OR_NULL(dev_dir))
--		return NULL;
+ 	/* Entry to report DMA RX/TX rings */
+-	priv->dbgfs_rings_status =
+-		debugfs_create_file("descriptors_status", 0444,
+-				    priv->dbgfs_dir, dev,
+-				    &stmmac_rings_status_fops);
 -
--	return dev_dir;
-+	return debugfs_create_dir(pci_name(pdev), nfp_dir);
+-	if (!priv->dbgfs_rings_status || IS_ERR(priv->dbgfs_rings_status)) {
+-		netdev_err(priv->dev, "ERROR creating stmmac ring debugfs file\n");
+-		debugfs_remove_recursive(priv->dbgfs_dir);
+-
+-		return -ENOMEM;
+-	}
++	debugfs_create_file("descriptors_status", 0444, priv->dbgfs_dir, dev,
++			    &stmmac_rings_status_fops);
+ 
+ 	/* Entry to report the DMA HW features */
+-	priv->dbgfs_dma_cap = debugfs_create_file("dma_cap", 0444,
+-						  priv->dbgfs_dir,
+-						  dev, &stmmac_dma_cap_fops);
+-
+-	if (!priv->dbgfs_dma_cap || IS_ERR(priv->dbgfs_dma_cap)) {
+-		netdev_err(priv->dev, "ERROR creating stmmac MMC debugfs file\n");
+-		debugfs_remove_recursive(priv->dbgfs_dir);
+-
+-		return -ENOMEM;
+-	}
+-
+-	return 0;
++	debugfs_create_file("dma_cap", 0444, priv->dbgfs_dir, dev,
++			    &stmmac_dma_cap_fops);
  }
  
- void nfp_net_debugfs_dir_clean(struct dentry **dir)
+ static void stmmac_exit_fs(struct net_device *dev)
+@@ -4482,10 +4457,7 @@ int stmmac_dvr_probe(struct device *device,
+ 	}
+ 
+ #ifdef CONFIG_DEBUG_FS
+-	ret = stmmac_init_fs(ndev);
+-	if (ret < 0)
+-		netdev_warn(priv->dev, "%s: failed debugFS registration\n",
+-			    __func__);
++	stmmac_init_fs(ndev);
+ #endif
+ 
+ 	return ret;
+@@ -4731,16 +4703,8 @@ static int __init stmmac_init(void)
+ {
+ #ifdef CONFIG_DEBUG_FS
+ 	/* Create debugfs main directory if it doesn't exist yet */
+-	if (!stmmac_fs_dir) {
++	if (!stmmac_fs_dir)
+ 		stmmac_fs_dir = debugfs_create_dir(STMMAC_RESOURCE_NAME, NULL);
+-
+-		if (!stmmac_fs_dir || IS_ERR(stmmac_fs_dir)) {
+-			pr_err("ERROR %s, debugfs create directory failed\n",
+-			       STMMAC_RESOURCE_NAME);
+-
+-			return -ENOMEM;
+-		}
+-	}
+ #endif
+ 
+ 	return 0;
 -- 
 2.22.0
 
