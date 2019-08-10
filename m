@@ -2,102 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 64A3188AF6
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 13:13:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC05F88B49
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 14:18:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726147AbfHJLM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 07:12:57 -0400
-Received: from mout.gmx.net ([212.227.15.15]:58525 "EHLO mout.gmx.net"
+        id S1726246AbfHJMS3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 08:18:29 -0400
+Received: from mout.gmx.net ([212.227.15.18]:52629 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725858AbfHJLM4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Aug 2019 07:12:56 -0400
+        id S1725862AbfHJMS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Aug 2019 08:18:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1565435553;
-        bh=VYZbAjv0vWAfXOCBhNJs/6WPV7XCNfBYVLbv1rim6Lw=;
+        s=badeba3b8450; t=1565439477;
+        bh=NL9xpuLCPw2UG54ukrtShb+O4fzltpo4dN4xnfCDCyM=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
-        b=GwC+nAt3idEY5K745agHF8oZWlxlYBkSsl05yvl4kaWpRH2C0Xijv07yxngSpUtkJ
-         Mjz0vJQYVpYfVSxGGE560m9j82d8iNd3a8QVIDVtOYPmH0gfyEKX4/naObPQ323R2P
-         fZo5Y5ZLqxRZViLXZYcXxIyujui99xfgKrjRTc+U=
+        b=CdH0XEmIu0hzeCVHGf9Sekbf4nWTBdwvMV6lYwFcHuEf7w61qKOJN+x4p0XC4oEUh
+         o1ubxjlPWBDGW9lK0EUDbX/jLDrFAA7zreWIllgJjAcymt1t78Rv+SgZFb4aIc9kAF
+         XlvKDEg8c5qUSGG49ZUirQMtQ2XBHQHA0ZXFHUa4=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([109.90.233.87]) by mail.gmx.com (mrgmx003
- [212.227.17.190]) with ESMTPSA (Nemesis) id 0MFdDB-1i8lEK09Cf-00Ecay; Sat, 10
- Aug 2019 13:12:33 +0200
+Received: from longitude ([109.90.233.87]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1M9Wuk-1hzhZJ0nx6-005cHp; Sat, 10
+ Aug 2019 14:17:57 +0200
 From:   =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     netdev@vger.kernel.org
+To:     linux-doc@vger.kernel.org
 Cc:     =?UTF-8?q?Jonathan=20Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] net: nps_enet: Fix function names in doc comments
-Date:   Sat, 10 Aug 2019 13:11:56 +0200
-Message-Id: <20190810111159.3389-1-j.neuschaefer@gmx.net>
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] Documentation/networking/af_xdp: Inhibit reference to struct socket
+Date:   Sat, 10 Aug 2019 14:17:37 +0200
+Message-Id: <20190810121738.19587-1-j.neuschaefer@gmx.net>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:FevDCI+NuyDs/gMz/C8oKjv1ZEooXHIOuh9e8SvJQGrAvtFBJAc
- ymUajJD4xXJ40VIhqOXJsM2STUjX3HLmMVVqWRpBz2Mgj/EdsLHzeQ5qON8lRMicfjrob4y
- tjWv8PVskE/9uPqQjWNOTetJv6Z/3zKta8zLbIAStOYTHB/6J2jXsfh/UMI84HZBc5V1FYU
- ygWjBmGOGVg287v8T7XMQ==
+X-Provags-ID: V03:K1:cgePj4l+CjuwW5sL+l5xjBAo2oA6r0xqbKiNRsIcFbb/Me+bhcP
+ 3okZNFqCTQzPdqhA1VRGhKi7JyaYkSVm1/rWGrS8Sr0WzeTxenTfgx6hO6gFxbwvyKX+qoA
+ nJkpSeaoEiYXoXhGN0qmnMPVC71bFcTbvX/1+GvMCK8oARXi4O6agBDTPm2/6KNPvWOpCsk
+ +EX8gcUCw3RN8IIryApSg==
 X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:V4ee+rfTwRo=:HhmIFjBEOrV6Cu85ng/rYT
- /a5rgQYSGulVyG1v995bTQI280rbYUdOPPKoTqZwlNlcYCeU9xRlrF50bysFmicmb0R6CZ3JJ
- cPNPexLqOn5KOS1fb7r4cj3to+W8CzO03jgqoLWL32aXmMAm8cVrJd5YNaUpPd2fBAcAuWiVB
- ngCUkwhw5ptR7UhbnjSklJIAYbeb6b9g3FLn9MOt70p9IyBKPILTNIilkrH0zCuIRXjLCZhRp
- AtEUujerjE+skEhlSpX8UT/E8eDXKmnoTHAE6+M4D53I1tQTjx4c+68UlVoWxoF6R4TWlOTvy
- kXtmbD31Jg7h+iPrhNa9RvhV2XjmseVa4pVt+G4USwtpMHwo3RO2JG/l8JlctkYZIzkJl7+0p
- YKc3MYuc7JZa3kX1BLBeh86OuH+JIFCb+3yjQAqotAGh/sLmOHMxakTpl7NKsCCWdaHvBwoqg
- gAopK8/GIVmTaYimw0knB+pH9sw6Sld96WYiVEPPPyt5t8bvsuCdpJMamffOW9CA8W9gc/ZR1
- kbaFFg74FGqd1vgrESlbzu+/OVYk8ld75ZN6n8/Gd7qhUS9aHWDnZ2Nr2rvTrUsUBz/yhxOI+
- WdtictSlJ36avfhCGKVBSk97uEliCkZjb8pr115i2+zF136fyu0ovs6z8UToshIdT3If9PgAw
- SZxyKPN7+0WGiUnfAIqTQD0tkVxYq6/cRlM6krOrXQShmvns1P0brq28xryN9UZX+vqQVWhk6
- 7BLVSJ7dEs/gEqGi4fvax8yRUutvSFqx+3E/yBPqWCdqD51I3Y0F/3czxpi/rSovf8fCGRFtD
- GEva8RQR6n9gnweJFzXiVr/+/fhKRi8rHA1xRe0GMSbbqK0JR+w9ViCZ0S8BkjOoN6WGFu3SF
- sDl2gOB+z+2jiJPzQ6FCcZkWbVsDTpxFae+59jqnZnbqaSSoR0VXe53RKNOMVJ1OQqNO+pI08
- vVqfu6J0wlGdQewtGhArS1AJONq+tMkMrZlWRdawqzO1aQxCVpbBkbA0fREhqCgIenbRlFo2/
- MKGDoF7+tS6MauxKgD4xvlbuvWr3w+AVEvV2gLXTHAGBKh6gZkmzz+bvuLoY9+12NsznWaWvy
- /NbtiT2VsnMhC8fPiDmr5k3kLCTmTPRyGekgZDQ/shZmDvpPTWmFFFB71SJLN3C3Qzi21y2BK
- 7OQDM=
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mD4RS0ZWWFM=:zsgdsjRIOwcW3rld9Y+v/d
+ HEOmA4JSUMWkBK3ld9Ng2Jv1NrpAzmXwTj70+1lJYZod8ohd2/Zj6FWKjt7R5NNZyoiQ4YchW
+ KalfaK+NjUF4aIB+J47kMZY54V4sgZLFcsCOHvBEcHiOTl8zx3bPCDo2XrO3a+XRe/hSX6Z+f
+ EJDawmm1MM9U7T/F7rMXrJ/hAsAdymuYW27sNfHhDx/YbZuOJV/WdS0q20SSWLFNRO6qIPcrM
+ 80ako/3DCjjD993TK8rXOth2i6luMQzw5K4dwYkNz6QQ1zkspzok1uoVE00o1yvh/o8K3o3H9
+ JPNyKUKvBQy01lKoLy2GUVGK0h6IT+G+VvR5zvUfeu33YMef+afpyruIB3yT6ia6kIBqi8C2i
+ ku/Vz0S5FFWM5GkefyxmGJQB4R7EpNvfPL+Zgmehzf59Bf98KoV+leyStcEpfM+ckKOMjc0M0
+ qcQ0ZIjBDJr5s+25MiMVIT14EMQVi4M4Xe76SBOMcaRiwlFPHAzsPcSZ1Cr/bea5z992Uk+nJ
+ uEumN7DkLx3mthCiqjOmg8G6kwdgL16LrWk5gROTIo4AceS6+Ka1iEgq+h4CQElixlSE8ktMz
+ 8nDBYdGPKg3eG9JmMc9S5/+RJKKnVdr2Hnz8xUujpyjQfOBp0qtos+evgXwSqRwdk8Xj4Zhe8
+ p+EXlnZD0jYEIwSowH2mnvDiSBiEhLepcKIc6k3uYRJSAqZaKYH6LaO6Lpkfc/s3qJVgovuB9
+ exBngWYPzms1MgetLT7vJ3eBQJwib/ujfpYrBTo5LPvmigvMx07tpZZz+i8ZQilhvPm+ehRRZ
+ +MA7V9/EbSFBERnqhil7h3LrP6V9VmtDI41xCFDxLqkZUKLAdQafSInMDyjckKT/+e+ycxjgi
+ x9pq85R2tsfkYNQjBWPphyNkAtJm8PsF6Dn5aSmtC/BRHsRA0UsnFdFQi8e7mkfubhOEQ6vqR
+ LPthj0OK0NbqN3Zruv2i2KYymvzLy+eNeO3N3xMzKzLYaTEgDS4J/Vr70A6Y0BEdF2r75hNPx
+ gcns0DO3Ip0dxb3JYPTQD0v3x63ANrI1GcPxr1C2UvhsQnEbQGLTayEiJKjNTRGtSd28EY+2E
+ lukB0VFVn44wkM5+jmMWsQnb9QSC9qcDjd7Qn05swmuCGs2D5wc45KqPxqpijRvpsgvRFS86e
+ znFDk=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adjust the function names in two doc comments to match the corresponding
-functions.
+With the recent change to auto-detect function names, Sphinx parses
+socket() as a reference to the in-kernel definition of socket. It then
+decides that struct socket is a good match, which was obviously not
+intended in this case, because the text speaks about the syscall with
+the same name.
+
+Prevent socket() from being misinterpreted by wrapping it in ``inline
+literal`` quotes.
 
 Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
 =2D--
- drivers/net/ethernet/ezchip/nps_enet.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ Documentation/networking/af_xdp.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/ezchip/nps_enet.h b/drivers/net/ethernet=
-/ezchip/nps_enet.h
-index 133acca0bf31..092da2d90026 100644
-=2D-- a/drivers/net/ethernet/ezchip/nps_enet.h
-+++ b/drivers/net/ethernet/ezchip/nps_enet.h
-@@ -167,7 +167,7 @@ struct nps_enet_priv {
- };
+diff --git a/Documentation/networking/af_xdp.rst b/Documentation/networkin=
+g/af_xdp.rst
+index eeedc2e826aa..54f179ee6c33 100644
+=2D-- a/Documentation/networking/af_xdp.rst
++++ b/Documentation/networking/af_xdp.rst
+@@ -20,7 +20,7 @@ bpf_redirect_map() function. AF_XDP sockets enable the p=
+ossibility for
+ XDP programs to redirect frames to a memory buffer in a user-space
+ application.
 
- /**
-- * nps_reg_set - Sets ENET register with provided value.
-+ * nps_enet_reg_set - Sets ENET register with provided value.
-  * @priv:       Pointer to EZchip ENET private data structure.
-  * @reg:        Register offset from base address.
-  * @value:      Value to set in register.
-@@ -179,7 +179,7 @@ static inline void nps_enet_reg_set(struct nps_enet_pr=
-iv *priv,
- }
-
- /**
-- * nps_reg_get - Gets value of specified ENET register.
-+ * nps_enet_reg_get - Gets value of specified ENET register.
-  * @priv:       Pointer to EZchip ENET private data structure.
-  * @reg:        Register offset from base address.
-  *
+-An AF_XDP socket (XSK) is created with the normal socket()
++An AF_XDP socket (XSK) is created with the normal ``socket()``
+ syscall. Associated with each XSK are two rings: the RX ring and the
+ TX ring. A socket can receive packets on the RX ring and it can send
+ packets on the TX ring. These rings are registered and sized with the
 =2D-
 2.20.1
 
