@@ -2,46 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 441F888914
-	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 09:22:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A70888918
+	for <lists+netdev@lfdr.de>; Sat, 10 Aug 2019 09:22:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbfHJHWI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 03:22:08 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41474 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725468AbfHJHWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Aug 2019 03:22:07 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 196so37984pfz.8
-        for <netdev@vger.kernel.org>; Sat, 10 Aug 2019 00:22:07 -0700 (PDT)
+        id S1726266AbfHJHWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 03:22:14 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:47002 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725888AbfHJHWN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 10 Aug 2019 03:22:13 -0400
+Received: by mail-pg1-f196.google.com with SMTP id w3so9734763pgt.13
+        for <netdev@vger.kernel.org>; Sat, 10 Aug 2019 00:22:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=Kqvj5qJEEnuY9tHLIsHKAJCMxbCgSGhB0GQjUNBVzjU=;
-        b=pN/qlGpA8abF6Y2VoHoy92OQQq3CMSqbXoIdJstu1huvjtuHlzemsHlD29Ba4F4utO
-         +UeK5KoVrRu0etzH0vcO+0ApJqNcZj9rXGCkyt8spxUyMFRjwPpnBazmuhaFXTLalP6S
-         Lp3HrbOgwuVvifao/yYUZzeuG8ssfQguwrqXmPbyF6y2xGEq0hnw//LC8p68WagfSLKH
-         rsdDWlhVsgB+I7499JpZZuII9CApUi7KTaRS9kXf7Bz8QZGRH4mKTTx/dZ3qKUZRgIpX
-         as4l8zy4iN8rP05Li25xLA1FIzCeDmSr2Tads+zy6ie5E7UV6uHqoqqdm8w9xwu1etk3
-         he6w==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=SUoVe7v3rT/MuQ/nwpXN/VHHe+ExuqKtoNBajOsMZ6w=;
+        b=wQJH7ETUQf/Dh4ez18JN84T3l+cjXjy09Eucj14X0AHuvosMhmvOogUX+atkAp20mg
+         SmV0+RgkID9grGKgKmWpop/TOMD8i0v3r4+jQ9itYf1FiRZ28doVdPHOTRf6LYovTj4l
+         0qsL3fBBtjZJwSpnrTtiPbQLj/IHWXapZo1y4q03jxmYWnwZKDFcc+Gjbyixt23U8y+E
+         egXKOO7CqMkvduanDLWTKBdCTiTbpwSrLmRRSZnvzYkQsI2JOQ3bmQiMScqg41bMQ6To
+         +lCMPz4rEH2MSbhrKFvLRkW0JkDkbDpoR+eHWJQ0F0M+RxwMwE11pr3jKvrGCWplkSYQ
+         VPeA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Kqvj5qJEEnuY9tHLIsHKAJCMxbCgSGhB0GQjUNBVzjU=;
-        b=g6onOdoS8xUQeD3drnSAFsgjimfNQfchgzMDQUyVCvRdyuJSjzGl7VW9Sozj3EHT4q
-         9vQFuxQLgyo9MxGqWGV3v71O7zbfnQ3KmWEz0YIKP8ASYzyH0pz56ameEVnXiKzt+wqC
-         JKwGlrvkhI8yvnDGVr5JAe+oqy2/cHVeycDXAKXHYTFD4F+UL+IJGW45xHPsbnejRumg
-         uocf2aEdGoc9/d+iHThhYlvO4CvkgzLTcXt6G2GfbKhI6aK6TQabAspHUJqWKlk6bfd7
-         kHjiVdEegb39jHgpC18/KiZ8QsT4R4f5IFafz2qoonZ+qRebXjYgP/bIv4ib7nlL8rgB
-         6PcQ==
-X-Gm-Message-State: APjAAAUrM7mmrLvc7sRUwvVcsDv/AZDfAB89PINtAdagKqiIwJ+4LgoP
-        5vcBThONw8Ikt73xeWmsx09fHw==
-X-Google-Smtp-Source: APXvYqzWPFRraQJfw6z1Xg9lRpRTmgazGG+rZnbJsTWe4VcHA2vmbrAsasej8XE1f+jTi5V6mYDpug==
-X-Received: by 2002:a17:90a:9f0b:: with SMTP id n11mr12981206pjp.98.1565421726801;
-        Sat, 10 Aug 2019 00:22:06 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=SUoVe7v3rT/MuQ/nwpXN/VHHe+ExuqKtoNBajOsMZ6w=;
+        b=M2tNk+T0G7tR+COy4rDsImaus7JoATi++3kWsLNoMY0rFxcOgz5OHX3+XXX5F2WEPf
+         lbv6ikqZUv+dwbp78l4gSr2slehBGB8s3oFBXOQrm0gQj9jj6QgDZvJADtCQSbs+I3yJ
+         hKCvVlLxShHgPAD1Z12T0L4UhUAMAqzF8P+NJ09HVdBYtguczUTLXSmZ4spX5bgJO+VJ
+         8W1K6bW+tgk4J7LgKDcCXlIxOjz80wzFU85la2cfY5RTx/W75gw2frokKx+cajC6pvGJ
+         N8g+1Env6mZn8VnwNNssYcsbOi6MgLeSiIZ2yfHN1IKLsymdi14zWO85R5w/LnGrFMY6
+         p3Kw==
+X-Gm-Message-State: APjAAAWrrasNCzHDS15204JvWMW1z3YgXVahXhunT3xaBjVLh39qa1w/
+        mzCFoRU36QRlFqui8mR72en+mA==
+X-Google-Smtp-Source: APXvYqzxkyBjWeBhMgjcf0AF5nqX5W6XCYqkY4vXD020qE0nR/UE9vKOK8Vq3UHm4Jv8dakQKhuC1w==
+X-Received: by 2002:a63:124a:: with SMTP id 10mr20982007pgs.254.1565421732167;
+        Sat, 10 Aug 2019 00:22:12 -0700 (PDT)
 Received: from localhost.localdomain (li456-16.members.linode.com. [50.116.10.16])
-        by smtp.gmail.com with ESMTPSA id l17sm24872660pgj.44.2019.08.10.00.22.00
+        by smtp.gmail.com with ESMTPSA id l17sm24872660pgj.44.2019.08.10.00.22.07
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 10 Aug 2019 00:22:05 -0700 (PDT)
+        Sat, 10 Aug 2019 00:22:11 -0700 (PDT)
 From:   Leo Yan <leo.yan@linaro.org>
 To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         Alexander Shishkin <alexander.shishkin@linux.intel.com>,
@@ -63,58 +64,101 @@ To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
         bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
         Mathieu Poirier <mathieu.poirier@linaro.org>
 Cc:     Leo Yan <leo.yan@linaro.org>
-Subject: [PATCH v4 0/2] perf: arm/arm64: Improve completeness for kernel address space
-Date:   Sat, 10 Aug 2019 15:21:33 +0800
-Message-Id: <20190810072135.27072-1-leo.yan@linaro.org>
+Subject: [PATCH v4 1/2] perf machine: Support arch's specific kernel start address
+Date:   Sat, 10 Aug 2019 15:21:34 +0800
+Message-Id: <20190810072135.27072-2-leo.yan@linaro.org>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190810072135.27072-1-leo.yan@linaro.org>
+References: <20190810072135.27072-1-leo.yan@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch set is to improve completeness for kernel address space for
-arm/arm64; it adds architecture specific tweaking for the kernel start
-address, thus can include the memory regions which are prior to '_stext'
-symbol.  With this change, we can see the eBPF program can be parsed
-properly on arm64.
+machine__get_kernel_start() gives out the kernel start address; some
+architectures need to tweak the start address so that can reflect the
+kernel start address correctly.  This is not only for x86_64 arch, but
+it is also required by other architectures, e.g. arm/arm64 needs to
+tweak the kernel start address so can include the kernel memory regions
+which are used before the '_stext' symbol.
 
-This patch set is a following up version for the old patch "perf cs-etm:
-Improve completeness for kernel address space" [1]; the old patch was
-only to fix the issue for CoreSight ETM event; but the kernel address space
-issue is not only limited to CoreSight event, it should be a common issue
-for other events (e.g. PMU events), clock events for profiling eBPF
-program.  So this patch set tries to resolve it as a common issue for
-arm/arm64 archs.
+This patch refactors machine__get_kernel_start() by adding a weak
+arch__fix_kernel_text_start(), any architecture can implement it to
+tweak its specific start address; this also allows the arch specific
+code to be placed into 'arch' folder.
 
-When implemented related code, I tried to use the API
-machine__create_extra_kernel_maps(); but I found the 'perf script' tool
-directly calls machine__get_kernel_start() instead of running into
-the flow for machine__create_extra_kernel_maps(); this is the reason I
-don't use machine__create_extra_kernel_maps() for tweaking kernel start
-address and refactor machine__get_kernel_start() alternatively.
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
+---
+ tools/perf/arch/x86/util/machine.c | 10 ++++++++++
+ tools/perf/util/machine.c          | 13 +++++++------
+ tools/perf/util/machine.h          |  2 ++
+ 3 files changed, 19 insertions(+), 6 deletions(-)
 
-If there have better method to resolve this issue, any suggestions and
-comments are very welcome!
-
-[1] https://lkml.org/lkml/2019/6/19/1057
-
-
-Leo Yan (2):
-  perf machine: Support arch's specific kernel start address
-  perf machine: arm/arm64: Improve completeness for kernel address space
-
- tools/perf/Makefile.config           | 22 ++++++++++++++++++++++
- tools/perf/arch/arm/util/Build       |  2 ++
- tools/perf/arch/arm/util/machine.c   | 17 +++++++++++++++++
- tools/perf/arch/arm64/util/Build     |  1 +
- tools/perf/arch/arm64/util/machine.c | 17 +++++++++++++++++
- tools/perf/arch/x86/util/machine.c   | 10 ++++++++++
- tools/perf/util/machine.c            | 13 +++++++------
- tools/perf/util/machine.h            |  2 ++
- 8 files changed, 78 insertions(+), 6 deletions(-)
- create mode 100644 tools/perf/arch/arm/util/machine.c
- create mode 100644 tools/perf/arch/arm64/util/machine.c
-
+diff --git a/tools/perf/arch/x86/util/machine.c b/tools/perf/arch/x86/util/machine.c
+index 1e9ec783b9a1..9f012131534a 100644
+--- a/tools/perf/arch/x86/util/machine.c
++++ b/tools/perf/arch/x86/util/machine.c
+@@ -101,4 +101,14 @@ int machine__create_extra_kernel_maps(struct machine *machine,
+ 	return ret;
+ }
+ 
++void arch__fix_kernel_text_start(u64 *start)
++{
++	/*
++	 * On x86_64, PTI entry trampolines are less than the
++	 * start of kernel text, but still above 2^63. So leave
++	 * kernel_start = 1ULL << 63 for x86_64.
++	 */
++	*start = 1ULL << 63;
++}
++
+ #endif
+diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+index f6ee7fbad3e4..603518835692 100644
+--- a/tools/perf/util/machine.c
++++ b/tools/perf/util/machine.c
+@@ -2671,6 +2671,10 @@ int machine__nr_cpus_avail(struct machine *machine)
+ 	return machine ? perf_env__nr_cpus_avail(machine->env) : 0;
+ }
+ 
++void __weak arch__fix_kernel_text_start(u64 *start __maybe_unused)
++{
++}
++
+ int machine__get_kernel_start(struct machine *machine)
+ {
+ 	struct map *map = machine__kernel_map(machine);
+@@ -2687,14 +2691,11 @@ int machine__get_kernel_start(struct machine *machine)
+ 	machine->kernel_start = 1ULL << 63;
+ 	if (map) {
+ 		err = map__load(map);
+-		/*
+-		 * On x86_64, PTI entry trampolines are less than the
+-		 * start of kernel text, but still above 2^63. So leave
+-		 * kernel_start = 1ULL << 63 for x86_64.
+-		 */
+-		if (!err && !machine__is(machine, "x86_64"))
++		if (!err)
+ 			machine->kernel_start = map->start;
+ 	}
++
++	arch__fix_kernel_text_start(&machine->kernel_start);
+ 	return err;
+ }
+ 
+diff --git a/tools/perf/util/machine.h b/tools/perf/util/machine.h
+index ef803f08ae12..9cb459f4bfbc 100644
+--- a/tools/perf/util/machine.h
++++ b/tools/perf/util/machine.h
+@@ -278,6 +278,8 @@ void machine__get_kallsyms_filename(struct machine *machine, char *buf,
+ int machine__create_extra_kernel_maps(struct machine *machine,
+ 				      struct dso *kernel);
+ 
++void arch__fix_kernel_text_start(u64 *start);
++
+ /* Kernel-space maps for symbols that are outside the main kernel map and module maps */
+ struct extra_kernel_map {
+ 	u64 start;
 -- 
 2.17.1
 
