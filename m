@@ -2,87 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CC7A89023
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 09:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A8E89028
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 09:36:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbfHKHcS convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 11 Aug 2019 03:32:18 -0400
-Received: from mx2.suse.de ([195.135.220.15]:56438 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725810AbfHKHcS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Aug 2019 03:32:18 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id A6A50AD73;
-        Sun, 11 Aug 2019 07:32:15 +0000 (UTC)
-Date:   Sun, 11 Aug 2019 09:32:12 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 7/9] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-Id: <20190811093212.88635fb1a6c796a073ec71ff@suse.de>
-In-Reply-To: <20190809142222.4558691e@cakuba.netronome.com>
-References: <20190809103235.16338-1-tbogendoerfer@suse.de>
-        <20190809103235.16338-8-tbogendoerfer@suse.de>
-        <20190809142222.4558691e@cakuba.netronome.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        id S1726014AbfHKHgp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 03:36:45 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:43855 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725821AbfHKHgp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 03:36:45 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 5019F1942;
+        Sun, 11 Aug 2019 03:36:44 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sun, 11 Aug 2019 03:36:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:date:from
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=0DDFD1tzWtQHFOZzG
+        iKJnwmYq17I9yiZi9RhucjSB7Y=; b=UDPo2S21tf2licRT2Ey0Ka6vof7R5OuwN
+        jsMMB5sNSkWUwJGJiTs7uXWxL0VpJF7Amcp3qr3ZSmVR/bXd8c0vRD1Er3uHkdZH
+        biXvzTQR69usif8fVf7ZLlWpq+ipHMysogGyiqQYNKvRJrMLmhTBJkkYaeSNuknM
+        bjkLPPs/M02ovx/h2FHPVjDyB5wfH3RF1Q0MQ6sinRKTYO/+/PNs1bgKduqRdQvd
+        PSeiH0tfzJ+KVUarf80OYsMV32DWaiRPZtBzdpuwvuePhsCiDvV+FdCgzCTN5YDF
+        aPsP6Trtx2s2QqGKdQ/tkANtQwOg6a5pL1TqxywsPhTOXrHn8fzdg==
+X-ME-Sender: <xms:i8VPXRrcrX7vYkW_ybKUIdfzaDaWCZu5Qox2qdChP5uKRJBnrgfw-g>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddvuddgvdefucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecuffhomhgrihhnpehgihhthhhusgdrtghomhdpohiilhgrsghsrdhorh
+    hgnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhho
+    mhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:i8VPXSkY6StNtvomi6FUhSS1oRBu1i29TSsnD6rHClKccxqSJbhKZw>
+    <xmx:i8VPXaSSaiUunyQ_qMpjACEn2DDtKcnHzGtx94UmC3XAdsbSiIZszw>
+    <xmx:i8VPXQY4M3Zix1rdZULnAY3H1SRe2pu3Lpiqufq5goDl6dM0uWl9kQ>
+    <xmx:jMVPXdEg5SDI5jdGoPQR9hrStfhLsNJVoRrV0UGgCUU54xxPgM3bDw>
+Received: from splinter.mtl.com (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1156480061;
+        Sun, 11 Aug 2019 03:36:40 -0400 (EDT)
+From:   Ido Schimmel <idosch@idosch.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
+        toke@redhat.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
+        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: [PATCH net-next v2 00/10] drop_monitor: Capture dropped packets and metadata
+Date:   Sun, 11 Aug 2019 10:35:45 +0300
+Message-Id: <20190811073555.27068-1-idosch@idosch.org>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 9 Aug 2019 14:22:22 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+From: Ido Schimmel <idosch@mellanox.com>
 
-> On Fri,  9 Aug 2019 12:32:29 +0200, Thomas Bogendoerfer wrote:
-> > SGI IOC3 chip has integrated ethernet, keyboard and mouse interface.
-> > It also supports connecting a SuperIO chip for serial and parallel
-> > interfaces. IOC3 is used inside various SGI systemboards and add-on
-> > cards with different equipped external interfaces.
-> > 
-> > Support for ethernet and serial interfaces were implemented inside
-> > the network driver. This patchset moves out the not network related
-> > parts to a new MFD driver, which takes care of card detection,
-> > setup of platform devices and interrupt distribution for the subdevices.
-> > 
-> > Serial portion: Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > 
-> > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> 
-> There are a lot of changes in the ethernet part which are not easy to
-> explain by the introduction of the other MFD parts.. Could you possibly
-> break this change up into smaller chunks?
+So far drop monitor supported only one mode of operation in which a
+summary of recent packet drops is periodically sent to user space as a
+netlink event. The event only includes the drop location (program
+counter) and number of drops in the last interval.
 
-working on it
+While this mode of operation allows one to understand if the system is
+dropping packets, it is not sufficient if a more detailed analysis is
+required. Both the packet itself and related metadata are missing.
 
-> Also please don't use stdint types in the kernel, please try checkpatch
-> to catch coding style issues.
+This patchset extends drop monitor with another mode of operation where
+the packet - potentially truncated - and metadata (e.g., drop location,
+timestamp, netdev) are sent to user space as a netlink event. Thanks to
+the extensible nature of netlink, more metadata can be added in the
+future.
 
-my patch already reduces them and checkpatch only warns about usage of printk
-for the network part. Changing that to dev_warn/dev_err in the mfd patch didn't
-seem the right thing to do. As I'm splitting the conversion patch into a few
-steps I could also replace the printks.
+To avoid performing expensive operations in the context in which
+kfree_skb() is called, the dropped skbs are cloned and queued on per-CPU
+skb drop list. The list is then processed in process context (using a
+workqueue), where the netlink messages are allocated, prepared and
+finally sent to user space.
 
-Thomas.
+A follow-up patchset will integrate drop monitor with devlink and allow
+the latter to call into drop monitor to report hardware drops. In the
+future, XDP drops can be added as well, thereby making drop monitor the
+go-to netlink channel for diagnosing all packet drops.
+
+Example usage with patched dropwatch [1] can be found here [2]. Example
+dissection of drop monitor netlink events with patched wireshark [3] can
+be found here [4]. I will submit both changes upstream after the kernel
+changes are accepted. Another change worth making is adding a dropmon
+pseudo interface to libpcap, similar to the nflog interface [5]. This
+will allow users to specifically listen on dropmon traffic instead of
+capturing all netlink packets via the nlmon netdev.
+
+Patches #1-#5 prepare the code towards the actual changes in later
+patches.
+
+Patch #6 adds another mode of operation to drop monitor in which the
+dropped packet itself is notified to user space along with metadata.
+
+Patch #7 allows users to truncate reported packets to a specific length,
+in case only the headers are of interest. The original length of the
+packet is added as metadata to the netlink notification.
+
+Patch #8 allows user to query the current configuration of drop monitor
+(e.g., alert mode, truncation length).
+
+Patches #9-#10 allow users to tune the length of the per-CPU skb drop
+list according to their needs.
+
+Changes since v1 [6]:
+* Add skb protocol as metadata. This allows user space to correctly
+  dissect the packet instead of blindly assuming it is an Ethernet
+  packet
+
+Changes since RFC [7]:
+* Limit the length of the per-CPU skb drop list and make it configurable
+* Do not use the hysteresis timer in packet alert mode
+* Introduce alert mode operations in a separate patch and only then
+  introduce the new alert mode
+* Use 'skb->skb_iif' instead of 'skb->dev' because the latter is inside
+  a union with 'dev_scratch' and therefore not guaranteed to point to a
+  valid netdev
+* Return '-EBUSY' instead of '-EOPNOTSUPP' when trying to configure drop
+  monitor while it is monitoring
+* Did not change schedule_work() in favor of schedule_work_on() as I did
+  not observe a change in number of tail drops
+
+[1] https://github.com/idosch/dropwatch/tree/packet-mode
+[2] https://gist.github.com/idosch/3d524b887e16bc11b4b19e25c23dcc23#file-gistfile1-txt
+[3] https://github.com/idosch/wireshark/tree/drop-monitor-v2
+[4] https://gist.github.com/idosch/3d524b887e16bc11b4b19e25c23dcc23#file-gistfile2-txt
+[5] https://github.com/the-tcpdump-group/libpcap/blob/master/pcap-netfilter-linux.c
+[6] https://patchwork.ozlabs.org/cover/1143443/
+[7] https://patchwork.ozlabs.org/cover/1135226/
+
+Ido Schimmel (10):
+  drop_monitor: Split tracing enable / disable to different functions
+  drop_monitor: Initialize timer and work item upon tracing enable
+  drop_monitor: Reset per-CPU data before starting to trace
+  drop_monitor: Require CAP_NET_ADMIN for drop monitor configuration
+  drop_monitor: Add alert mode operations
+  drop_monitor: Add packet alert mode
+  drop_monitor: Allow truncation of dropped packets
+  drop_monitor: Add a command to query current configuration
+  drop_monitor: Make drop queue length configurable
+  drop_monitor: Expose tail drop counter
+
+ include/uapi/linux/net_dropmon.h |  51 +++
+ net/core/drop_monitor.c          | 599 +++++++++++++++++++++++++++++--
+ 2 files changed, 613 insertions(+), 37 deletions(-)
 
 -- 
-SUSE Linux GmbH
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+2.21.0
+
