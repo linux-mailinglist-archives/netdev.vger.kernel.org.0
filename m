@@ -2,105 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAD98918B
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 13:35:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EA48891DD
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 15:37:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbfHKLf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 07:35:27 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:41895 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfHKLf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 07:35:27 -0400
-Received: by mail-wr1-f66.google.com with SMTP id j16so1620209wrr.8
-        for <netdev@vger.kernel.org>; Sun, 11 Aug 2019 04:35:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=QMIuARm10JkhWQ14TW6KLz8Mt89/qAloGbfciO1m5Xw=;
-        b=VW1uweestFGOOOXV0fEQKUY7gzuOXfTysXARtcmWq8HZxy+tsGpmHTOAbi7czntKa2
-         QxCvipF2li+zAhkCz7FhbgdWjNLGsU8v6hMsQsSu1WsnhorpIerfqKPUJE3sxPuk/1IN
-         QAWqXr4+BjUL4Tc1wTKC58goPf3d6d4oexebizfV08s+gIJnABUl0MPIaOAds0xZAmiS
-         ywRdnLXNMwsSGOsy5lv+v0+QXoZ1bxTHMEPEDfcDdOEb3Ai0u/2iebKZfJYXi4Susej3
-         /+jrfV0yJKHStx1dszthxO+lfji2wevD+BU+MCNxUgMIZ53bQORlIVxMnSxtwpidUVSG
-         CuAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=QMIuARm10JkhWQ14TW6KLz8Mt89/qAloGbfciO1m5Xw=;
-        b=YCfqf6jJ3Y1mHnfZhEjSrbKGWpsibdt6pA4n14fRmWlbOiKtgUDYTviK5fC9rwgETs
-         itbJi3aXBDJ+pShD2ln9vEgomf4EHjPgmQCNj86wjuVnenCyfg4jzzpKbsMlEL+X3fzh
-         tOyto1+5yVg8dwBlEbTXg6a82vG5O69K8JrA4ECY+y/GN/uFBAdx2sQaHwl5F5E3pxo0
-         3KtLMup6L2HG3s+RSmoUVpfUcCutVLfXaHM2utqZPEjPNTsubqdpfe4y2XlpE9K9f7Ht
-         85NzDVcZNI/qKbKA12vwns/gjioEPln86tvzGE01sInTv35l12jSuvB+j1ufHVSVCR7o
-         Qbjg==
-X-Gm-Message-State: APjAAAX3zCRbHqnGmou0+p06cmjOGQYtTEktHfM5FtpgbmkWXRvNND1X
-        3nXEQBhEU9uU+TcJnjpJ4hk=
-X-Google-Smtp-Source: APXvYqwW/PT0PZe0fWaqSkDCECHcdMHhzGYJGbs4c7Dfo63p/Wi7NCreEr4eGdYfwlE0XW6Mi2OjOA==
-X-Received: by 2002:adf:e504:: with SMTP id j4mr34311321wrm.222.1565523324651;
-        Sun, 11 Aug 2019 04:35:24 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:d862:102b:b1a6:862d? (p200300EA8F2F3200D862102BB1A6862D.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:d862:102b:b1a6:862d])
-        by smtp.googlemail.com with ESMTPSA id u130sm22179937wmg.28.2019.08.11.04.35.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 11 Aug 2019 04:35:24 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 1/1] net: dsa: fix fixed-link port
- registration
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        id S1726457AbfHKNhP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 09:37:15 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:60978 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbfHKNhP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 09:37:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:To:From:Date:Reply-To:Cc:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=hLAgx8JYnhMOKraiq5vnyTU065BiPtmobxh1PiL6lCo=; b=DsY8cgoP3Zr8v7CIYT2P+2Uba
+        oCX8MUifxMincmBKGu20CPWHXdUnTdU6vTJNtdzn/K0vciZDziYcJlVcIuUKWNKaRC2jo5lDI9Yn6
+        fSABhtvHVoOtEYt5HMmMgmJufO8LjuFn6XCj940GKSBMaPj7hsffHVY5EntlZv5nBgKOqwoPsIQQZ
+        676Bsxhld2FDdyvOPGkKD3GdT5FViw4yHT5rrvxxiY8K3k0rC96UhwV1Zszj1+QD2PMVQsAogX5n9
+        ZPhgy33C5e+rTm6g0OhYC26oC1TqCaGW6ky9GfSC2J+RC17+t3T35jX5iMM0sFB/hztHzqH/feD63
+        3kXeDIi5A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:55318)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1hwo21-0005Sr-4x; Sun, 11 Aug 2019 14:37:09 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1hwo1z-0005cR-Ky; Sun, 11 Aug 2019 14:37:07 +0100
+Date:   Sun, 11 Aug 2019 14:37:07 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     linux-arm-kernel@lists.infradead.org,
+        Fabio Estevam <festevam@gmail.com>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20190811031857.2899-1-marek.behun@nic.cz>
- <20190811033910.GL30120@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <91cd70df-c856-4c7e-7ebb-c01519fb13d2@gmail.com>
-Date:   Sun, 11 Aug 2019 13:35:20 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [BUG] fec mdio times out under system stress
+Message-ID: <20190811133707.GC13294@shell.armlinux.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <20190811033910.GL30120@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 11.08.2019 05:39, Andrew Lunn wrote:
-> On Sun, Aug 11, 2019 at 05:18:57AM +0200, Marek Behún wrote:
->> Commit 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in
->> genphy_read_status") broke fixed link DSA port registration in
->> dsa_port_fixed_link_register_of: the genphy_read_status does not do what
->> it is supposed to and the following adjust_link is given wrong
->> parameters.
-> 
-> Hi Marek
-> 
-> Which parameters are incorrect?
-> 
-> In fixed_phy.c, __fixed_phy_register() there is:
-> 
->         /* propagate the fixed link values to struct phy_device */
->         phy->link = status->link;
->         if (status->link) {
->                 phy->speed = status->speed;
->                 phy->duplex = status->duplex;
->                 phy->pause = status->pause;
->                 phy->asym_pause = status->asym_pause;
->         }
-> 
-> Are we not initialising something? Or is the initialisation done here
-> getting reset sometime afterwards?
-> 
-In addition to Andrew's question:
-We talk about this DT config: armada-385-turris-omnia.dts ?
-Which kernel version are you using?
+Hi Fabio,
 
-> Thanks
-> 	Andrew
-> 
-Heiner
+When I woke up this morning, I found that one of the Hummingboards
+had gone offline (as in, lost network link) during the night.
+Investigating, I find that the system had gone into OOM, and at
+that time, triggered an unrelated:
+
+[4111697.698776] fec 2188000.ethernet eth0: MDIO read timeout
+[4111697.712996] MII_DATA: 0x6006796d
+[4111697.729415] MII_SPEED: 0x0000001a
+[4111697.745232] IEVENT: 0x00000000
+[4111697.745242] IMASK: 0x0a8000aa
+[4111698.002233] Atheros 8035 ethernet 2188000.ethernet-1:00: PHY state change RUNNING -> HALTED
+[4111698.009882] fec 2188000.ethernet eth0: Link is Down
+
+This is on a dual-core iMX6.
+
+It looks like the read actually completed (since MII_DATA contains
+the register data) but we somehow lost the interrupt (or maybe
+received the interrupt after wait_for_completion_timeout() timed
+out.)
+
+From what I can see, the OOM events happened on CPU1, CPU1 was
+allocated the FEC interrupt, and the PHY polling that suffered the
+MDIO timeout was on CPU0.
+
+Given that IEVENT is zero, it seems that CPU1 had read serviced the
+interrupt, but it is not clear how far through processing that it
+was - it may be that fec_enet_interrupt() had been delayed by the
+OOM condition.
+
+This seems rather fragile - as the system slowing down due to OOM
+triggers the network to completely collapse by phylib taking the
+PHY offline, making the system inaccessible except through the
+console.
+
+In my case, even serial console wasn't operational (except for
+magic sysrq).  Not sure what agetty was playing at... so the only
+way I could recover any information from the system was to connect
+the HDMI and plug in a USB keyboard.
+
+Any thoughts on how FEC MDIO accesses could be made more robust?
+
+Maybe phylib should retry a number of times - but with read-sensitive
+registers, if the read has already completed successfully, and its
+just a problem with the FEC MDIO hardware, that could cause issues.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
