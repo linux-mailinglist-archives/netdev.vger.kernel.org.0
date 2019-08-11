@@ -2,92 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B438289375
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 21:58:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C7D8489386
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 22:08:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726144AbfHKT6i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 15:58:38 -0400
-Received: from www62.your-server.de ([213.133.104.62]:38216 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725730AbfHKT6i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 15:58:38 -0400
-Received: from 231.45.193.178.dynamic.wline.res.cust.swisscom.ch ([178.193.45.231] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hwtz8-0007lw-DS; Sun, 11 Aug 2019 21:58:34 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     daniel@iogearbox.net, ast@kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: pull-request: bpf 2019-08-11
-Date:   Sun, 11 Aug 2019 21:58:34 +0200
-Message-Id: <20190811195834.3430-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25538/Sun Aug 11 10:18:30 2019)
+        id S1726164AbfHKUH4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 16:07:56 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:35369 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726011AbfHKUH4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 16:07:56 -0400
+Received: by mail-yw1-f66.google.com with SMTP id g19so37417940ywe.2;
+        Sun, 11 Aug 2019 13:07:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=I/wDFVoI+mYQ74OtLuR5i4v0k0nbe35K0FGp9EAyx0w=;
+        b=QNTQr+VwFl2Ybq+yC/8PuJKkQQABJ4CWTVef1WvyNJBX87PVz2WeEZCQhGDod1M/qe
+         JAG5soqsqjUTs3m93pQy5pbfL/TDz9CxSmk7wj6VfiXiYLOwZU1FIa7T0Ym0XIliTBb6
+         cLPoHbsMLHj7NaGSQ6n3ERG0vuZqWvrbcmkH4h4IH5eHT+13f7HRg9+ZZpnP6Mx8yrsH
+         yucSSQftFW+UnWDpgupONiQAFa6C0gOcZNmCiDkE2y7c5yoTuxf75G/QOBRy+wpMWbr6
+         sXm2Cn3TkEWIP5hnIFOPQuNiL737c7ogOSPDgXzrcj8k46Z9FMG7Gl03duHO3VUudMHt
+         5ACA==
+X-Gm-Message-State: APjAAAWKmwGajcHCKhuMbTApIJZw6UMoxaHNMVB+g94OVpgCBoYMOpeZ
+        Zod6rkVQztybK7X61McB6BI=
+X-Google-Smtp-Source: APXvYqyoSDYPWu4RUOvnDARGMo8pOuQZ3RGQOV1HGXtNwNsBcsmUEeugZgXKGibzzlthU+3xSqElvw==
+X-Received: by 2002:a0d:f0c7:: with SMTP id z190mr2409714ywe.317.1565554074798;
+        Sun, 11 Aug 2019 13:07:54 -0700 (PDT)
+Received: from localhost.localdomain (24-158-240-219.dhcp.smyr.ga.charter.com. [24.158.240.219])
+        by smtp.gmail.com with ESMTPSA id x138sm23418950ywg.4.2019.08.11.13.07.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 11 Aug 2019 13:07:54 -0700 (PDT)
+From:   Wenwen Wang <wenwen@cs.uga.edu>
+To:     Wenwen Wang <wenwen@cs.uga.edu>
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org (moderated list:INTEL ETHERNET DRIVERS),
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] net: ixgbe: fix memory leaks
+Date:   Sun, 11 Aug 2019 15:07:47 -0500
+Message-Id: <1565554067-4994-1-git-send-email-wenwen@cs.uga.edu>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David,
+In ixgbe_configure_clsu32(), 'jump', 'input', and 'mask' are allocated
+through kzalloc() respectively in a for loop body. Then,
+ixgbe_clsu32_build_input() is invoked to build the input. If this process
+fails, next iteration of the for loop will be executed. However, the
+allocated 'jump', 'input', and 'mask' are not deallocated on this execution
+path, leading to memory leaks.
 
-The following pull-request contains BPF updates for your *net* tree.
+Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+---
+ drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-The main changes are:
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+index cbaf712..6b7ea87 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
+@@ -9490,6 +9490,10 @@ static int ixgbe_configure_clsu32(struct ixgbe_adapter *adapter,
+ 				jump->mat = nexthdr[i].jump;
+ 				adapter->jump_tables[link_uhtid] = jump;
+ 				break;
++			} else {
++				kfree(mask);
++				kfree(input);
++				kfree(jump);
+ 			}
+ 		}
+ 		return 0;
+-- 
+2.7.4
 
-1) x64 JIT code generation fix for backward-jumps to 1st insn, from Alexei.
-
-2) Fix buggy multi-closing of BTF file descriptor in libbpf, from Andrii.
-
-3) Fix libbpf_num_possible_cpus() to make it thread safe, from Takshak.
-
-4) Fix bpftool to dump an error if pinning fails, from Jakub.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-----------------------------------------------------------------
-
-The following changes since commit 0a062ba725cdad3b167782179ee914a8402a0184:
-
-  Merge tag 'mlx5-fixes-2019-07-25' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2019-07-26 14:26:41 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 4f7aafd78aeaf18a4f6dea9415df60e745c9dfa7:
-
-  Merge branch 'bpf-bpftool-pinning-error-msg' (2019-08-09 17:38:53 +0200)
-
-----------------------------------------------------------------
-Alexei Starovoitov (2):
-      bpf: fix x64 JIT code generation for jmp to 1st insn
-      selftests/bpf: tests for jmp to 1st insn
-
-Andrii Nakryiko (2):
-      libbpf: fix erroneous multi-closing of BTF FD
-      libbpf: set BTF FD for prog only when there is supported .BTF.ext data
-
-Daniel Borkmann (1):
-      Merge branch 'bpf-bpftool-pinning-error-msg'
-
-Jakub Kicinski (2):
-      tools: bpftool: fix error message (prog -> object)
-      tools: bpftool: add error message on pin failure
-
-Takshak Chahande (1):
-      libbpf : make libbpf_num_possible_cpus function thread safe
-
- arch/x86/net/bpf_jit_comp.c                   |  9 ++++----
- tools/bpf/bpftool/common.c                    |  8 +++++--
- tools/lib/bpf/libbpf.c                        | 33 +++++++++++++++------------
- tools/testing/selftests/bpf/verifier/loops1.c | 28 +++++++++++++++++++++++
- 4 files changed, 57 insertions(+), 21 deletions(-)
