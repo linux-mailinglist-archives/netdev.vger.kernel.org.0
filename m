@@ -2,131 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7569489124
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 11:54:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B27C89128
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 11:56:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726062AbfHKJyP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 05:54:15 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:38242 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725810AbfHKJyP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 05:54:15 -0400
-Received: by mail-lf1-f65.google.com with SMTP id h28so72344320lfj.5
-        for <netdev@vger.kernel.org>; Sun, 11 Aug 2019 02:54:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bJxJ/Rcx445G5gR0Any2lfdbBuYg/GFRMolblJDSSfc=;
-        b=0UaURJCHb0V80q8PwAK9kK+H8qlj8Ag7QpKTpYzGH7YMmRz2EliC3GNbUn7ZRUUhb4
-         ZPCQ6zXDK9DEpbN9swLfBjPgdfihP5lKd6kH5qtByKvVEOfAYl3Bw1fddwVn9Y9GYDwE
-         tEbP7sytnGFjIHZsLy0V7+1OUN2O8D5mjhoHKxaR1wHneTATvxUwVWEST1V55NUnuL7G
-         xe4juuVUBm9+qICxaUx7d5L++QqcL6pLHGVhpx5kDuPO8dPFXd4PksY8p3jj3AOSdH9b
-         IJGo1cW36Y1qGyvRE+pS/IQYyNH6m88zMuJ2+nK1YHTBKQyq+rU1MkVSTktlkVbw82tr
-         h9yQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bJxJ/Rcx445G5gR0Any2lfdbBuYg/GFRMolblJDSSfc=;
-        b=AM+3AxjsO20etEECu/thn6SYgcbKaY+X/jcDm3OVKu0OCOmuILDM1RSxFp0HKItYpF
-         Rml1IC0sFy/gE/t77XteY+Oab/sEi1jjFhG5LTCCPy6HlnrTFyusKQwvL/tdzoftv7Nc
-         qTMo3hSdjGovp0B2rcX0fKBcnQySvcR0x/gEux049qSxHi60w+Lpdfjj4bgXz2D2acf7
-         xnS56NM3wdmEsiDTyjVq+zHRyKTxQIJxgsWTpsW7C51XDMJU85Xng+pR0Oacti5b+DzH
-         pboPsOrVPjPdILojocbvkM1l/CmbitU6gJvltSD73BBw64Brco8MCt/Bos++qDDwBLMO
-         lm0Q==
-X-Gm-Message-State: APjAAAXkvMQXQXYyMsQTR2ANg8Pkmy54W/N1DvHu77xC40zIT7nLjQX/
-        njWUNlpAX83D9ndMliHJ7XGlyQ==
-X-Google-Smtp-Source: APXvYqxpnVf303X7BpyiwbkHmn1o1XCHTjMEYIibIuhDI4VQak63YNkbiN64RK6wmvttC80cd9U41w==
-X-Received: by 2002:a19:c20b:: with SMTP id l11mr17361493lfc.106.1565517253143;
-        Sun, 11 Aug 2019 02:54:13 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:464e:4679:7d95:7170:9da8:af4f? ([2a00:1fa0:464e:4679:7d95:7170:9da8:af4f])
-        by smtp.gmail.com with ESMTPSA id o5sm392759lji.43.2019.08.11.02.54.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 11 Aug 2019 02:54:12 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 1/1] net: dsa: fix fixed-link port
- registration
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>,
-        netdev@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20190811031857.2899-1-marek.behun@nic.cz>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <fab0fac1-76b7-f365-ecf5-e7eb0f924fad@cogentembedded.com>
-Date:   Sun, 11 Aug 2019 12:54:05 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190811031857.2899-1-marek.behun@nic.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1726452AbfHKJ4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 05:56:05 -0400
+Received: from mail-eopbgr140057.outbound.protection.outlook.com ([40.107.14.57]:50760
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725900AbfHKJ4F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Aug 2019 05:56:05 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=NQtZkbdYptQtCagSdMzg5d3sbrKrdL6yvWVN6o1yFDftUUpOIASdRWBqNisVpL6KSPhjBojvbvGtEZcTqZWlUi2/yVTrTvaPJuovXkhx+Eyq+hmG81zTFN5rxlFre7nrgdoRSNCjQVr5XtevdphIPtaI+OscB181YFT9PjThGmmSLVhXzwqWvyW2pK+MLamH0BQQMQKZNIe2FGV3+bKQRDY9pLZEXhtkNtP35jLXzDH509NvEDLv8SJO7rq2coN5rnKLXDav32KIbuBb8Sd6F5FvVFgq1JsuSw9QuPbNgljn1pc1JmRSjXpMlQ8J1PXfRkV+mX1GSSTZ6/7MOOBqqA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LJtzcYhH8Dei1lvX5Lut2M+WOEfZoTyMfeC5WS3b/og=;
+ b=EDtNbfuKl4qdHOdDg5Zhgujc3AZ0u31pXf9CUeHptsJrb9abZAmfHe6sMLcAiCcjqRguTPQUnAkP7dGlQO6zXS2Icx616nyBcEX9aEpFNVpkb93hvKs4mlTpXNWaYkjOVueqayYioG1kcMQQBAtHVEOuKFRZlZG37d5cU9KGg/eYDvKFEIpOKhyZXV9zf08BjAB+eBZlpCTwXsvqFEhBcQS4z7DeG5KaGgQNI05slgQE35DRf367738YFVkTwSBJz2GGOR1l1Y5KDGE+jS89JtLmPT7byNATA3Pb5sIt29Jk087OGuMTg47P2O0ax0MjvEme09RThjxC1z6Ss614BQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=LJtzcYhH8Dei1lvX5Lut2M+WOEfZoTyMfeC5WS3b/og=;
+ b=Irf3nmJbp1R2uoOy+bKZC6gszk5O7YkJ8c5NFfYcA3K9n9GU8cqbAIunYGyULnuEa25vKiK4rR34HhA9wEI3ZFBYXHAimCn6Dr7oc92jQofiJMzsHNgSHA1xQ8rnUIUIcAyTU3QpM2JimwR5mHD6VWKMu2tfdanDpeTx25ZIK7c=
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com (10.171.188.155) by
+ AM4PR05MB3458.eurprd05.prod.outlook.com (10.170.125.151) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.14; Sun, 11 Aug 2019 09:55:58 +0000
+Received: from AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::a1bc:70:4ca9:49f6]) by AM4PR05MB3137.eurprd05.prod.outlook.com
+ ([fe80::a1bc:70:4ca9:49f6%7]) with mapi id 15.20.2157.022; Sun, 11 Aug 2019
+ 09:55:58 +0000
+From:   Leon Romanovsky <leonro@mellanox.com>
+To:     Masahiro Yamada <yamada.masahiro@socionext.com>
+CC:     "linux-kbuild@vger.kernel.org" <linux-kbuild@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Boris Pismenny <borisp@mellanox.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Igor Russkikh <igor.russkikh@aquantia.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "oss-drivers@netronome.com" <oss-drivers@netronome.com>
+Subject: Re: [PATCH 11/11] treewide: remove dummy Makefiles for single targets
+Thread-Topic: [PATCH 11/11] treewide: remove dummy Makefiles for single
+ targets
+Thread-Index: AQHVT5QeRE/eBhrx90G8ydJdkg0FfKb1tsaA
+Date:   Sun, 11 Aug 2019 09:55:58 +0000
+Message-ID: <20190811095555.GF28049@mtr-leonro.mtl.com>
+References: <20190810155307.29322-1-yamada.masahiro@socionext.com>
+ <20190810155307.29322-12-yamada.masahiro@socionext.com>
+In-Reply-To: <20190810155307.29322-12-yamada.masahiro@socionext.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR2PR09CA0020.eurprd09.prod.outlook.com
+ (2603:10a6:101:16::32) To AM4PR05MB3137.eurprd05.prod.outlook.com
+ (2603:10a6:205:8::27)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=leonro@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5a6960f3-1c5c-406b-f5ef-08d71e421c0e
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM4PR05MB3458;
+x-ms-traffictypediagnostic: AM4PR05MB3458:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM4PR05MB3458C667CF8B910D35D17B15B0D00@AM4PR05MB3458.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
+x-forefront-prvs: 0126A32F74
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39850400004)(376002)(366004)(396003)(136003)(346002)(199004)(189003)(6246003)(4326008)(8676002)(11346002)(6486002)(478600001)(446003)(81156014)(81166006)(229853002)(5660300002)(66066001)(316002)(8936002)(4744005)(14454004)(2906002)(54906003)(486006)(6436002)(1076003)(66446008)(64756008)(66556008)(66476007)(66946007)(476003)(3846002)(6506007)(386003)(7416002)(52116002)(9686003)(6512007)(6116002)(102836004)(6916009)(25786009)(86362001)(186003)(53936002)(99286004)(71190400001)(71200400001)(305945005)(76176011)(33656002)(7736002)(26005)(256004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3458;H:AM4PR05MB3137.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: C1hooVLEz9S7qgTUPP8Zlpw5FQtCLRbfPMo7YyXFLvvb9F073Xk/btf9azTdxldc8ZlWSJ2SUjuLi5/cnHManxEwIdITcihL6aove01RaWwQvatTerBqbYQ9Hk+QmuWHsLw0XBnsTxmdl9WQQZDwx7hBUbCkKfUZsaOR9e6U5ITrBqxsgzBXEzksUxER1HbFjQsrHLbgknODGGJ8kApjvFtT4J6sjT0aivxkmqj2kYbXKxZgmRGgncne3Ubb2XOu2jasWESfT8NkaHhj0sb130Ylcfz62iVUoCNdeFV8oUwv+qK8Z9WtoPB6s2Uvclyv/zgHEhaCbnBIFrToCIL2a+NGbHWQSjbcEZpFv5s8MRvmxV6PP2pntXa3z834xZizLkBZ0i8cgLbeqTrxjbVQ6a1/Iqji4xIJWljsKbFIPlk=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <D00E1D38B2CAF44D82BE59CBB71B2DAA@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a6960f3-1c5c-406b-f5ef-08d71e421c0e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 11 Aug 2019 09:55:58.6030
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: yes2R86qFUOXZKiZF1gnTM+fy5wNPsgym0WfQhcCmZeOuLNs2hUD2a4zvtZuE4yDFj8D2rpmIs9GKaNm+uhlew==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3458
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
-
-    Just noticed a comment typo...
-
-On 11.08.2019 6:18, Marek Behún wrote:
-
-> Commit 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in
-> genphy_read_status") broke fixed link DSA port registration in
-> dsa_port_fixed_link_register_of: the genphy_read_status does not do what
-> it is supposed to and the following adjust_link is given wrong
-> parameters.
-> 
-> This causes a regression on Turris Omnia, where the mvneta driver for
-> the interface connected to the switch reports crc errors, for some
-> reason.
-> 
-> I realize this fix is not ideal, something else could change in genphy
-> functions which could cause DSA fixed-link port to break again.
-> Hopefully DSA fixed-link port functionality will be converted to phylink
-> API soon.
-> 
-> Signed-off-by: Marek Behún <marek.behun@nic.cz>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-> Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: David S. Miller <davem@davemloft.net>
+On Sun, Aug 11, 2019 at 12:53:07AM +0900, Masahiro Yamada wrote:
+> Now that the single target build descends into sub-directories
+> in the same ways as the normal build, these dummy Makefiles
+> are not needed any more.
+>
+> Signed-off-by: Masahiro Yamada <yamada.masahiro@socionext.com>
 > ---
->   net/dsa/port.c | 11 +++++++++++
->   1 file changed, 11 insertions(+)
-> 
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index 363eab6df51b..c424ebb373e1 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -485,6 +485,17 @@ static int dsa_port_fixed_link_register_of(struct dsa_port *dp)
->   	phydev->interface = mode;
->   
->   	genphy_config_init(phydev);
-> +
-> +	/*
-> +	 * Commit 88d6272acaaa caused genphy_read_status not to do it's work if
-                                                                    ^^^^ its.
+>
 
-> +	 * autonegotiation is enabled and link status did not change. This is
-> +	 * the case for fixed_phy. By setting phydev->link = 0 before the call
-> +	 * to genphy_read_status we force it to read and fill in the parameters.
-> +	 *
-> +	 * Hopefully this dirty hack will be removed soon by converting DSA
-> +	 * fixed link ports to phylink API.
-> +	 */
-> +	phydev->link = 0;
->   	genphy_read_status(phydev);
->   
->   	if (ds->ops->adjust_link)
+It is hard to test/review/ack on this patch without seeing previous
+patches, especially patch #10 where you changed logic of single targets.
 
-MBR, Sergei
-
+Thanks
