@@ -2,74 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0276188F40
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 05:41:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7F788FF9
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 08:25:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726463AbfHKDjN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 23:39:13 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:50574 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726452AbfHKDjN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 10 Aug 2019 23:39:13 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=Qt2FNV2e4/IIcV70ca9p7gJxxULqDaxTENYQx7t8ZKE=; b=5GSH0R9zwc+/WLSBs5ceq9PD8B
-        NAzUJ7rBvDb7ZiPzGb3jnrZnNa1eueuuonDFY7gM8hjOI9jB19AwmDiQSaYCoX5fIWCyPVXlCt+Cb
-        2hZEIMMTUHVULQ4lRThlUHT+YvD2Wu2I61dB/gdA9RVNCQbzZviGYZnFFyBiohFYWwZQ=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hwehK-0002HG-PM; Sun, 11 Aug 2019 05:39:10 +0200
-Date:   Sun, 11 Aug 2019 05:39:10 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 1/1] net: dsa: fix fixed-link port
- registration
-Message-ID: <20190811033910.GL30120@lunn.ch>
-References: <20190811031857.2899-1-marek.behun@nic.cz>
+        id S1726383AbfHKGZz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 02:25:55 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:51314 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725826AbfHKGZy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 02:25:54 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1hwhIS-00073e-LD; Sun, 11 Aug 2019 08:25:40 +0200
+Message-ID: <f7de98001849bc98a0a084d2ffc369f4d9772d52.camel@sipsolutions.net>
+Subject: Re: [PATCH] `iwlist scan` fails with many networks available
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     James Nylen <jnylen@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date:   Sun, 11 Aug 2019 08:25:39 +0200
+In-Reply-To: <CABVa4NhutjvHPbyaxNeVpJjf-RMJdwEX-Yjk4bkqLC1DN3oXPA@mail.gmail.com> (sfid-20190811_040820_184767_595B1CDB)
+References: <CABVa4NgWMkJuyB1P5fwQEYHwqBRiySE+fGQpMKt8zbp+xJ8+rw@mail.gmail.com>
+         <CABVa4NhutjvHPbyaxNeVpJjf-RMJdwEX-Yjk4bkqLC1DN3oXPA@mail.gmail.com>
+         (sfid-20190811_040820_184767_595B1CDB)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190811031857.2899-1-marek.behun@nic.cz>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 11, 2019 at 05:18:57AM +0200, Marek Behún wrote:
-> Commit 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in
-> genphy_read_status") broke fixed link DSA port registration in
-> dsa_port_fixed_link_register_of: the genphy_read_status does not do what
-> it is supposed to and the following adjust_link is given wrong
-> parameters.
+On Sun, 2019-08-11 at 02:08 +0000, James Nylen wrote:
+> In 5.x it's still possible for `ieee80211_scan_results` (`iwlist
+> scan`) to fail when too many wireless networks are available.  This
+> code path is used by `wicd`.
+> 
+> Previously: https://lkml.org/lkml/2017/4/2/192
 
-Hi Marek
+This has been known for probably a decade or longer. I don't know why
+'wicd' still insists on using wext, unless it's no longer maintained at
+all. nl80211 doesn't have this problem at all, and I think gives more
+details about the networks found too.
 
-Which parameters are incorrect?
+> I've been applying this updated patch to my own kernels since 2017 with
+> no issues.  I am sure it is not the ideal way to solve this problem, but
+> I'm making my fix available in case it helps others.
 
-In fixed_phy.c, __fixed_phy_register() there is:
+I don't think silently dropping data is a good solution.
 
-        /* propagate the fixed link values to struct phy_device */
-        phy->link = status->link;
-        if (status->link) {
-                phy->speed = status->speed;
-                phy->duplex = status->duplex;
-                phy->pause = status->pause;
-                phy->asym_pause = status->asym_pause;
-        }
+I suppose we could consider applying a workaround like this if it has a
+condition checking that the buffer passed in is the maximum possible
+buffer (65535 bytes, due to iw_point::length being u16), but below that
+-E2BIG serves well-written implementations as an indicator that they
+need to retry with a bigger buffer.
 
-Are we not initialising something? Or is the initialisation done here
-getting reset sometime afterwards?
+> Please advise on next steps or if this is a dead end.
 
-Thanks
-	Andrew
+I think wireless extensions are in fact a dead end and all software
+(even 'wicd', which seems to be the lone holdout) should migrate to
+nl80211 instead.
+
+johannes
+
