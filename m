@@ -2,60 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD38189032
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 09:37:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 814F289041
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 09:51:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726551AbfHKHhL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 03:37:11 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:35185 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726538AbfHKHhJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 03:37:09 -0400
+        id S1726383AbfHKHv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 03:51:29 -0400
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:53549 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725810AbfHKHv2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 03:51:28 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id B47AA1A27;
-        Sun, 11 Aug 2019 03:37:08 -0400 (EDT)
+        by mailout.nyi.internal (Postfix) with ESMTP id 00E0020BA1;
+        Sun, 11 Aug 2019 03:51:27 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 11 Aug 2019 03:37:08 -0400
+  by compute3.internal (MEProxy); Sun, 11 Aug 2019 03:51:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=uwvlvV5FQAG49BkIn9cWQYDSu+azcJDpOVwCnA4iffc=; b=l/zO1CJk
-        dZipzv7ffSADbE1IgJgW79tBzyQ/Et7+uToPN6Px8EAHYcR0gRHPCK+8QepUs80h
-        almrXJ8O0VL9XM5cGsclys+Y5Mo5Te9Aw2f70KE9zxy8oBMKHGT5kWDHLDUFrz09
-        2Cmif0pE7ctDIR/5Ob8njRXJUotzNI6+3GPzJ6BGwk053hgt0bDde070F1EEquQr
-        pwPFysLq2E/zAsVIGen99MiOqxHGn1JpuFt5YnLIUrVuEcE6hLPY5A0PMc9RLk69
-        KT/XzQL/tyuYPuOra6OvdxwnbRRdaDopdkccqrEGR1tD75Ss0jZ9L7fA6eBVT9uh
-        wSOGyZEaN4nn8A==
-X-ME-Sender: <xms:pMVPXQuJGftOj4_S8Ms24iSP7JPqZy3CRdExHR97W1iGy0RvUTivNA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddvuddgvdefucetufdoteggodetrfdotf
+        :message-id:mime-version:subject:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=ctqK/Sary1SgUxE2r
+        WfVRidxMLhXESYfaGpSAhLiV6A=; b=HyfQk2P/lSDuzjVeO7XHdjNhUr29UIV2O
+        PBbvRoeJsE/8pUmV3Hf/y6E6HZS9qMaj9ddsWxk8totfCYc/2NVLv9YRRQ1K+l9a
+        lOii32OTrS0oZXDJCprkUby+LuXfv/SUovIKMTIg2aF6DL+GfoLXJIJ6Uz7tjUZ+
+        T2jneXosipJzbSRCTYduLE1NZI4J2jAN5/ReQ2X1EDg7oF3kYkyMOdewq8Ojskh0
+        /oLwPXCW/YdmhsHodlaqhi22cnWf13hbzG+/jODATuU7llXxg4ZIcHfIi2QINlVb
+        7nhut9qRBzbJuyoVn0RXshuimCECTvx4OdKFSgpNRUcbniCdbgKOQ==
+X-ME-Sender: <xms:_shPXQGuqZmkL4PPntDylw_afIE_kEDxEP673M4qFUOP--s_IdH-nA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddvuddgvdeiucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
-    hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeei
-X-ME-Proxy: <xmx:pMVPXV27UbteBadaBW5z-fBiueYihq_O_Kf33JsoG2oK-Rj2XKLgNQ>
-    <xmx:pMVPXX2KbIzSGQe3Xhwj3sIwIscuLRIz53IT6mLHZsjKo561__edoA>
-    <xmx:pMVPXYoWTf_wNUFFKKvl42rBxZDmZVuQT6xCOX-LXXbWj0eVU4E4cA>
-    <xmx:pMVPXZF7OlGDxv2A7OhCeSw-GQgiE0d0s6wRZ3PWZO7BkPe0EJCdkA>
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgggfestdekredtre
+    dttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiughoshgt
+    hhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpehmrg
+    hilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghrufhi
+    iigvpedt
+X-ME-Proxy: <xmx:_shPXbLnKCx7QhDweT5oPMN9bAvFB__1eOjcigapkDmZJFEIBxhZTw>
+    <xmx:_shPXb68ESA2akXQVh-HputdUXCSgKLBCNa7ENOPBj6jjvWTkAzUjA>
+    <xmx:_shPXTTbaSLq6de0aT64UnEC2Qpj_jkaI6Mgv446ax3NlP-NNQvyaA>
+    <xmx:_shPXbzRwtTlik3duUdYDbV31B3d-5SXANdPddAh3kJEMpYg_gTTBA>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1DD648005C;
-        Sun, 11 Aug 2019 03:37:05 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 3C46F80059;
+        Sun, 11 Aug 2019 03:51:25 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
-        toke@redhat.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
+Cc:     davem@davemloft.net, jiri@mellanox.com, petrm@mellanox.com,
+        richardcochran@gmail.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 10/10] drop_monitor: Expose tail drop counter
-Date:   Sun, 11 Aug 2019 10:35:55 +0300
-Message-Id: <20190811073555.27068-11-idosch@idosch.org>
+Subject: [PATCH net] mlxsw: spectrum_ptp: Keep unmatched entries in a linked list
+Date:   Sun, 11 Aug 2019 10:48:37 +0300
+Message-Id: <20190811074837.28216-1-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190811073555.27068-1-idosch@idosch.org>
-References: <20190811073555.27068-1-idosch@idosch.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -63,199 +57,286 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Petr Machata <petrm@mellanox.com>
 
-Previous patch made the length of the per-CPU skb drop list
-configurable. Expose a counter that shows how many packets could not be
-enqueued to this list.
+To identify timestamps for matching with their packets, Spectrum-1 uses a
+five-tuple of (port, direction, domain number, message type, sequence ID).
+If there are several clients from the same domain behind a single port
+sending Delay_Req's, the only thing differentiating these packets, as far
+as Spectrum-1 is concerned, is the sequence ID. Should sequence IDs between
+individual clients be similar, conflicts may arise. That is not a problem
+to hardware, which will simply deliver timestamps on a first comes, first
+served basis.
 
-This allows users determine the desired queue length.
+However the driver uses a simple hash table to store the unmatched pieces.
+When a new conflicting piece arrives, it pushes out the previously stored
+one, which if it is a packet, is delivered without timestamp. Later on as
+the corresponding timestamps arrive, the first one is mismatched to the
+second packet, and the second one is never matched and eventually is GCd.
 
+To correct this issue, instead of using a simple rhashtable, use rhltable
+to keep the unmatched entries.
+
+Previously, a found unmatched entry would always be removed from the hash
+table. That is not the case anymore--an incompatible entry is left in the
+hash table. Therefore removal from the hash table cannot be used to confirm
+the validity of the looked-up pointer, instead the lookup would simply need
+to be redone. Therefore move it inside the critical section. This
+simplifies a lot of the code.
+
+Fixes: 8748642751ed ("mlxsw: spectrum: PTP: Support SIOCGHWTSTAMP, SIOCSHWTSTAMP ioctls")
+Reported-by: Alex Veber <alexve@mellanox.com>
+Signed-off-by: Petr Machata <petrm@mellanox.com>
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- include/uapi/linux/net_dropmon.h |  10 +++
- net/core/drop_monitor.c          | 101 +++++++++++++++++++++++++++++++
- 2 files changed, 111 insertions(+)
+ .../ethernet/mellanox/mlxsw/spectrum_ptp.c    | 138 +++++++-----------
+ 1 file changed, 55 insertions(+), 83 deletions(-)
 
-diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 1d0bdb1ba954..405b31cbf723 100644
---- a/include/uapi/linux/net_dropmon.h
-+++ b/include/uapi/linux/net_dropmon.h
-@@ -56,6 +56,8 @@ enum {
- 	NET_DM_CMD_PACKET_ALERT,
- 	NET_DM_CMD_CONFIG_GET,
- 	NET_DM_CMD_CONFIG_NEW,
-+	NET_DM_CMD_STATS_GET,
-+	NET_DM_CMD_STATS_NEW,
- 	_NET_DM_CMD_MAX,
- };
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+index 63b07edd9d81..38bb1cfe4e8c 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ptp.c
+@@ -29,7 +29,7 @@
  
-@@ -80,6 +82,7 @@ enum net_dm_attr {
- 	NET_DM_ATTR_TRUNC_LEN,			/* u32 */
- 	NET_DM_ATTR_ORIG_LEN,			/* u32 */
- 	NET_DM_ATTR_QUEUE_LEN,			/* u32 */
-+	NET_DM_ATTR_STATS,			/* nested */
+ struct mlxsw_sp_ptp_state {
+ 	struct mlxsw_sp *mlxsw_sp;
+-	struct rhashtable unmatched_ht;
++	struct rhltable unmatched_ht;
+ 	spinlock_t unmatched_lock; /* protects the HT */
+ 	struct delayed_work ht_gc_dw;
+ 	u32 gc_cycle;
+@@ -45,7 +45,7 @@ struct mlxsw_sp1_ptp_key {
  
- 	__NET_DM_ATTR_MAX,
- 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
-@@ -103,4 +106,11 @@ enum {
- 	NET_DM_ATTR_PORT_MAX = __NET_DM_ATTR_PORT_MAX - 1
- };
- 
-+enum {
-+	NET_DM_ATTR_STATS_DROPPED,		/* u64 */
-+
-+	__NET_DM_ATTR_STATS_MAX,
-+	NET_DM_ATTR_STATS_MAX = __NET_DM_ATTR_STATS_MAX - 1
-+};
-+
- #endif
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index eb3c34d69ea9..39e094907391 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -51,12 +51,18 @@ static int trace_state = TRACE_OFF;
+ struct mlxsw_sp1_ptp_unmatched {
+ 	struct mlxsw_sp1_ptp_key key;
+-	struct rhash_head ht_node;
++	struct rhlist_head ht_node;
+ 	struct rcu_head rcu;
+ 	struct sk_buff *skb;
+ 	u64 timestamp;
+@@ -359,7 +359,7 @@ static int mlxsw_sp_ptp_parse(struct sk_buff *skb,
+ /* Returns NULL on successful insertion, a pointer on conflict, or an ERR_PTR on
+  * error.
   */
- static DEFINE_MUTEX(net_dm_mutex);
+-static struct mlxsw_sp1_ptp_unmatched *
++static int
+ mlxsw_sp1_ptp_unmatched_save(struct mlxsw_sp *mlxsw_sp,
+ 			     struct mlxsw_sp1_ptp_key key,
+ 			     struct sk_buff *skb,
+@@ -368,41 +368,51 @@ mlxsw_sp1_ptp_unmatched_save(struct mlxsw_sp *mlxsw_sp,
+ 	int cycles = MLXSW_SP1_PTP_HT_GC_TIMEOUT / MLXSW_SP1_PTP_HT_GC_INTERVAL;
+ 	struct mlxsw_sp_ptp_state *ptp_state = mlxsw_sp->ptp_state;
+ 	struct mlxsw_sp1_ptp_unmatched *unmatched;
+-	struct mlxsw_sp1_ptp_unmatched *conflict;
++	int err;
  
-+struct net_dm_stats {
-+	u64 dropped;
-+	struct u64_stats_sync syncp;
-+};
-+
- struct per_cpu_dm_data {
- 	spinlock_t		lock;	/* Protects 'skb' and 'send_timer' */
- 	struct sk_buff		*skb;
- 	struct sk_buff_head	drop_queue;
- 	struct work_struct	dm_alert_work;
- 	struct timer_list	send_timer;
-+	struct net_dm_stats	stats;
- };
- 
- struct dm_hw_stat_delta {
-@@ -300,6 +306,9 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
- 
- unlock_free:
- 	spin_unlock_irqrestore(&data->drop_queue.lock, flags);
-+	u64_stats_update_begin(&data->stats.syncp);
-+	data->stats.dropped++;
-+	u64_stats_update_end(&data->stats.syncp);
- 	consume_skb(nskb);
- }
- 
-@@ -732,6 +741,93 @@ static int net_dm_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
- 	return rc;
- }
- 
-+static void net_dm_stats_read(struct net_dm_stats *stats)
-+{
-+	int cpu;
-+
-+	memset(stats, 0, sizeof(*stats));
-+	for_each_possible_cpu(cpu) {
-+		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
-+		struct net_dm_stats *cpu_stats = &data->stats;
-+		unsigned int start;
-+		u64 dropped;
-+
-+		do {
-+			start = u64_stats_fetch_begin_irq(&cpu_stats->syncp);
-+			dropped = cpu_stats->dropped;
-+		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
-+
-+		stats->dropped += dropped;
-+	}
-+}
-+
-+static int net_dm_stats_put(struct sk_buff *msg)
-+{
-+	struct net_dm_stats stats;
-+	struct nlattr *attr;
-+
-+	net_dm_stats_read(&stats);
-+
-+	attr = nla_nest_start(msg, NET_DM_ATTR_STATS);
-+	if (!attr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
-+			      stats.dropped, NET_DM_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(msg, attr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(msg, attr);
-+	return -EMSGSIZE;
-+}
-+
-+static int net_dm_stats_fill(struct sk_buff *msg, struct genl_info *info)
-+{
-+	void *hdr;
-+	int rc;
-+
-+	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
-+			  &net_drop_monitor_family, 0, NET_DM_CMD_STATS_NEW);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	rc = net_dm_stats_put(msg);
-+	if (rc)
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+static int net_dm_cmd_stats_get(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct sk_buff *msg;
-+	int rc;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
+ 	unmatched = kzalloc(sizeof(*unmatched), GFP_ATOMIC);
+ 	if (!unmatched)
+-		return ERR_PTR(-ENOMEM);
 +		return -ENOMEM;
-+
-+	rc = net_dm_stats_fill(msg, info);
-+	if (rc)
-+		goto free_msg;
-+
-+	return genlmsg_reply(msg, info);
-+
-+free_msg:
-+	nlmsg_free(msg);
-+	return rc;
-+}
-+
- static int dropmon_net_event(struct notifier_block *ev_block,
- 			     unsigned long event, void *ptr)
- {
-@@ -799,6 +895,10 @@ static const struct genl_ops dropmon_ops[] = {
- 		.cmd = NET_DM_CMD_CONFIG_GET,
- 		.doit = net_dm_cmd_config_get,
- 	},
-+	{
-+		.cmd = NET_DM_CMD_STATS_GET,
-+		.doit = net_dm_cmd_stats_get,
-+	},
- };
  
- static int net_dm_nl_pre_doit(const struct genl_ops *ops,
-@@ -865,6 +965,7 @@ static int __init init_net_drop_monitor(void)
- 		data = &per_cpu(dm_cpu_data, cpu);
- 		spin_lock_init(&data->lock);
- 		skb_queue_head_init(&data->drop_queue);
-+		u64_stats_init(&data->stats.syncp);
+ 	unmatched->key = key;
+ 	unmatched->skb = skb;
+ 	unmatched->timestamp = timestamp;
+ 	unmatched->gc_cycle = mlxsw_sp->ptp_state->gc_cycle + cycles;
+ 
+-	conflict = rhashtable_lookup_get_insert_fast(&ptp_state->unmatched_ht,
+-					    &unmatched->ht_node,
+-					    mlxsw_sp1_ptp_unmatched_ht_params);
+-	if (conflict)
++	err = rhltable_insert(&ptp_state->unmatched_ht, &unmatched->ht_node,
++			      mlxsw_sp1_ptp_unmatched_ht_params);
++	if (err)
+ 		kfree(unmatched);
+ 
+-	return conflict;
++	return err;
+ }
+ 
+ static struct mlxsw_sp1_ptp_unmatched *
+ mlxsw_sp1_ptp_unmatched_lookup(struct mlxsw_sp *mlxsw_sp,
+-			       struct mlxsw_sp1_ptp_key key)
++			       struct mlxsw_sp1_ptp_key key, int *p_length)
+ {
+-	return rhashtable_lookup(&mlxsw_sp->ptp_state->unmatched_ht, &key,
+-				 mlxsw_sp1_ptp_unmatched_ht_params);
++	struct mlxsw_sp1_ptp_unmatched *unmatched, *last = NULL;
++	struct rhlist_head *tmp, *list;
++	int length = 0;
++
++	list = rhltable_lookup(&mlxsw_sp->ptp_state->unmatched_ht, &key,
++			       mlxsw_sp1_ptp_unmatched_ht_params);
++	rhl_for_each_entry_rcu(unmatched, tmp, list, ht_node) {
++		last = unmatched;
++		length++;
++	}
++
++	*p_length = length;
++	return last;
+ }
+ 
+ static int
+ mlxsw_sp1_ptp_unmatched_remove(struct mlxsw_sp *mlxsw_sp,
+ 			       struct mlxsw_sp1_ptp_unmatched *unmatched)
+ {
+-	return rhashtable_remove_fast(&mlxsw_sp->ptp_state->unmatched_ht,
+-				      &unmatched->ht_node,
+-				      mlxsw_sp1_ptp_unmatched_ht_params);
++	return rhltable_remove(&mlxsw_sp->ptp_state->unmatched_ht,
++			       &unmatched->ht_node,
++			       mlxsw_sp1_ptp_unmatched_ht_params);
+ }
+ 
+ /* This function is called in the following scenarios:
+@@ -489,75 +499,38 @@ static void mlxsw_sp1_ptp_got_piece(struct mlxsw_sp *mlxsw_sp,
+ 				    struct mlxsw_sp1_ptp_key key,
+ 				    struct sk_buff *skb, u64 timestamp)
+ {
+-	struct mlxsw_sp1_ptp_unmatched *unmatched, *conflict;
++	struct mlxsw_sp1_ptp_unmatched *unmatched;
++	int length;
+ 	int err;
+ 
+ 	rcu_read_lock();
+ 
+-	unmatched = mlxsw_sp1_ptp_unmatched_lookup(mlxsw_sp, key);
+-
+ 	spin_lock(&mlxsw_sp->ptp_state->unmatched_lock);
+ 
+-	if (unmatched) {
+-		/* There was an unmatched entry when we looked, but it may have
+-		 * been removed before we took the lock.
+-		 */
+-		err = mlxsw_sp1_ptp_unmatched_remove(mlxsw_sp, unmatched);
+-		if (err)
+-			unmatched = NULL;
+-	}
+-
+-	if (!unmatched) {
+-		/* We have no unmatched entry, but one may have been added after
+-		 * we looked, but before we took the lock.
+-		 */
+-		unmatched = mlxsw_sp1_ptp_unmatched_save(mlxsw_sp, key,
+-							 skb, timestamp);
+-		if (IS_ERR(unmatched)) {
+-			if (skb)
+-				mlxsw_sp1_ptp_packet_finish(mlxsw_sp, skb,
+-							    key.local_port,
+-							    key.ingress, NULL);
+-			unmatched = NULL;
+-		} else if (unmatched) {
+-			/* Save just told us, under lock, that the entry is
+-			 * there, so this has to work.
+-			 */
+-			err = mlxsw_sp1_ptp_unmatched_remove(mlxsw_sp,
+-							     unmatched);
+-			WARN_ON_ONCE(err);
+-		}
+-	}
+-
+-	/* If unmatched is non-NULL here, it comes either from the lookup, or
+-	 * from the save attempt above. In either case the entry was removed
+-	 * from the hash table. If unmatched is NULL, a new unmatched entry was
+-	 * added to the hash table, and there was no conflict.
+-	 */
+-
++	unmatched = mlxsw_sp1_ptp_unmatched_lookup(mlxsw_sp, key, &length);
+ 	if (skb && unmatched && unmatched->timestamp) {
+ 		unmatched->skb = skb;
+ 	} else if (timestamp && unmatched && unmatched->skb) {
+ 		unmatched->timestamp = timestamp;
+-	} else if (unmatched) {
+-		/* unmatched holds an older entry of the same type: either an
+-		 * skb if we are handling skb, or a timestamp if we are handling
+-		 * timestamp. We can't match that up, so save what we have.
++	} else {
++		/* Either there is no entry to match, or one that is there is
++		 * incompatible.
+ 		 */
+-		conflict = mlxsw_sp1_ptp_unmatched_save(mlxsw_sp, key,
+-							skb, timestamp);
+-		if (IS_ERR(conflict)) {
+-			if (skb)
+-				mlxsw_sp1_ptp_packet_finish(mlxsw_sp, skb,
+-							    key.local_port,
+-							    key.ingress, NULL);
+-		} else {
+-			/* Above, we removed an object with this key from the
+-			 * hash table, under lock, so conflict can not be a
+-			 * valid pointer.
+-			 */
+-			WARN_ON_ONCE(conflict);
+-		}
++		if (length < 100)
++			err = mlxsw_sp1_ptp_unmatched_save(mlxsw_sp, key,
++							   skb, timestamp);
++		else
++			err = -E2BIG;
++		if (err && skb)
++			mlxsw_sp1_ptp_packet_finish(mlxsw_sp, skb,
++						    key.local_port,
++						    key.ingress, NULL);
++		unmatched = NULL;
++	}
++
++	if (unmatched) {
++		err = mlxsw_sp1_ptp_unmatched_remove(mlxsw_sp, unmatched);
++		WARN_ON_ONCE(err);
  	}
  
- 	goto out;
+ 	spin_unlock(&mlxsw_sp->ptp_state->unmatched_lock);
+@@ -669,9 +642,8 @@ mlxsw_sp1_ptp_ht_gc_collect(struct mlxsw_sp_ptp_state *ptp_state,
+ 	local_bh_disable();
+ 
+ 	spin_lock(&ptp_state->unmatched_lock);
+-	err = rhashtable_remove_fast(&ptp_state->unmatched_ht,
+-				     &unmatched->ht_node,
+-				     mlxsw_sp1_ptp_unmatched_ht_params);
++	err = rhltable_remove(&ptp_state->unmatched_ht, &unmatched->ht_node,
++			      mlxsw_sp1_ptp_unmatched_ht_params);
+ 	spin_unlock(&ptp_state->unmatched_lock);
+ 
+ 	if (err)
+@@ -702,7 +674,7 @@ static void mlxsw_sp1_ptp_ht_gc(struct work_struct *work)
+ 	ptp_state = container_of(dwork, struct mlxsw_sp_ptp_state, ht_gc_dw);
+ 	gc_cycle = ptp_state->gc_cycle++;
+ 
+-	rhashtable_walk_enter(&ptp_state->unmatched_ht, &iter);
++	rhltable_walk_enter(&ptp_state->unmatched_ht, &iter);
+ 	rhashtable_walk_start(&iter);
+ 	while ((obj = rhashtable_walk_next(&iter))) {
+ 		if (IS_ERR(obj))
+@@ -855,8 +827,8 @@ struct mlxsw_sp_ptp_state *mlxsw_sp1_ptp_init(struct mlxsw_sp *mlxsw_sp)
+ 
+ 	spin_lock_init(&ptp_state->unmatched_lock);
+ 
+-	err = rhashtable_init(&ptp_state->unmatched_ht,
+-			      &mlxsw_sp1_ptp_unmatched_ht_params);
++	err = rhltable_init(&ptp_state->unmatched_ht,
++			    &mlxsw_sp1_ptp_unmatched_ht_params);
+ 	if (err)
+ 		goto err_hashtable_init;
+ 
+@@ -891,7 +863,7 @@ struct mlxsw_sp_ptp_state *mlxsw_sp1_ptp_init(struct mlxsw_sp *mlxsw_sp)
+ err_mtptpt1_set:
+ 	mlxsw_sp_ptp_mtptpt_set(mlxsw_sp, MLXSW_REG_MTPTPT_TRAP_ID_PTP0, 0);
+ err_mtptpt_set:
+-	rhashtable_destroy(&ptp_state->unmatched_ht);
++	rhltable_destroy(&ptp_state->unmatched_ht);
+ err_hashtable_init:
+ 	kfree(ptp_state);
+ 	return ERR_PTR(err);
+@@ -906,8 +878,8 @@ void mlxsw_sp1_ptp_fini(struct mlxsw_sp_ptp_state *ptp_state)
+ 	mlxsw_sp1_ptp_set_fifo_clr_on_trap(mlxsw_sp, false);
+ 	mlxsw_sp_ptp_mtptpt_set(mlxsw_sp, MLXSW_REG_MTPTPT_TRAP_ID_PTP1, 0);
+ 	mlxsw_sp_ptp_mtptpt_set(mlxsw_sp, MLXSW_REG_MTPTPT_TRAP_ID_PTP0, 0);
+-	rhashtable_free_and_destroy(&ptp_state->unmatched_ht,
+-				    &mlxsw_sp1_ptp_unmatched_free_fn, NULL);
++	rhltable_free_and_destroy(&ptp_state->unmatched_ht,
++				  &mlxsw_sp1_ptp_unmatched_free_fn, NULL);
+ 	kfree(ptp_state);
+ }
+ 
 -- 
 2.21.0
 
