@@ -2,126 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8682589188
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 13:33:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EBAD98918B
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 13:35:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726313AbfHKLdI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 07:33:08 -0400
-Received: from mout.gmx.net ([212.227.15.18]:53855 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725990AbfHKLdH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Aug 2019 07:33:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1565523160;
-        bh=5XNLSGLV/n8XATlDhvdkuJ0c9QjsZbpQ2b3uSxwJK6w=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=bYyr51s8eLybvh94uOtY1iy/RL+qrsRvhIqX/y4gU5zcOm4PQzksqf+zXKoslev7D
-         NP2u7cSloBXdFHSIX9LUiA3dVht1iTP26Jl9Oz+nmPJLrGqz5FoJT34A0i9VyyLL0D
-         oaUFb5e12LIj1zFqZYpF2oPRAO7y25HgbbTQcur0=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from longitude ([109.90.233.87]) by mail.gmx.com (mrgmx001
- [212.227.17.190]) with ESMTPSA (Nemesis) id 0MQ2Wx-1i0Kr52FzX-005KXD; Sun, 11
- Aug 2019 13:32:40 +0200
-Date:   Sun, 11 Aug 2019 13:32:25 +0200
-From:   Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     Jonathan =?utf-8?Q?Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
-        linux-doc@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Documentation/networking/af_xdp: Inhibit reference to
- struct socket
-Message-ID: <20190811113225.GD1966@latitude>
-References: <20190810121738.19587-1-j.neuschaefer@gmx.net>
- <20190810085821.11cee8b0@lwn.net>
+        id S1726466AbfHKLf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 07:35:27 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41895 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbfHKLf1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 07:35:27 -0400
+Received: by mail-wr1-f66.google.com with SMTP id j16so1620209wrr.8
+        for <netdev@vger.kernel.org>; Sun, 11 Aug 2019 04:35:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QMIuARm10JkhWQ14TW6KLz8Mt89/qAloGbfciO1m5Xw=;
+        b=VW1uweestFGOOOXV0fEQKUY7gzuOXfTysXARtcmWq8HZxy+tsGpmHTOAbi7czntKa2
+         QxCvipF2li+zAhkCz7FhbgdWjNLGsU8v6hMsQsSu1WsnhorpIerfqKPUJE3sxPuk/1IN
+         QAWqXr4+BjUL4Tc1wTKC58goPf3d6d4oexebizfV08s+gIJnABUl0MPIaOAds0xZAmiS
+         ywRdnLXNMwsSGOsy5lv+v0+QXoZ1bxTHMEPEDfcDdOEb3Ai0u/2iebKZfJYXi4Susej3
+         /+jrfV0yJKHStx1dszthxO+lfji2wevD+BU+MCNxUgMIZ53bQORlIVxMnSxtwpidUVSG
+         CuAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QMIuARm10JkhWQ14TW6KLz8Mt89/qAloGbfciO1m5Xw=;
+        b=YCfqf6jJ3Y1mHnfZhEjSrbKGWpsibdt6pA4n14fRmWlbOiKtgUDYTviK5fC9rwgETs
+         itbJi3aXBDJ+pShD2ln9vEgomf4EHjPgmQCNj86wjuVnenCyfg4jzzpKbsMlEL+X3fzh
+         tOyto1+5yVg8dwBlEbTXg6a82vG5O69K8JrA4ECY+y/GN/uFBAdx2sQaHwl5F5E3pxo0
+         3KtLMup6L2HG3s+RSmoUVpfUcCutVLfXaHM2utqZPEjPNTsubqdpfe4y2XlpE9K9f7Ht
+         85NzDVcZNI/qKbKA12vwns/gjioEPln86tvzGE01sInTv35l12jSuvB+j1ufHVSVCR7o
+         Qbjg==
+X-Gm-Message-State: APjAAAX3zCRbHqnGmou0+p06cmjOGQYtTEktHfM5FtpgbmkWXRvNND1X
+        3nXEQBhEU9uU+TcJnjpJ4hk=
+X-Google-Smtp-Source: APXvYqwW/PT0PZe0fWaqSkDCECHcdMHhzGYJGbs4c7Dfo63p/Wi7NCreEr4eGdYfwlE0XW6Mi2OjOA==
+X-Received: by 2002:adf:e504:: with SMTP id j4mr34311321wrm.222.1565523324651;
+        Sun, 11 Aug 2019 04:35:24 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:d862:102b:b1a6:862d? (p200300EA8F2F3200D862102BB1A6862D.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:d862:102b:b1a6:862d])
+        by smtp.googlemail.com with ESMTPSA id u130sm22179937wmg.28.2019.08.11.04.35.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 11 Aug 2019 04:35:24 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 1/1] net: dsa: fix fixed-link port
+ registration
+To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+References: <20190811031857.2899-1-marek.behun@nic.cz>
+ <20190811033910.GL30120@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <91cd70df-c856-4c7e-7ebb-c01519fb13d2@gmail.com>
+Date:   Sun, 11 Aug 2019 13:35:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3Pql8miugIZX0722"
-Content-Disposition: inline
-In-Reply-To: <20190810085821.11cee8b0@lwn.net>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Provags-ID: V03:K1:WSlMOTVkTIxgNdANUM34B9Gmw91nDYkQ4iCc+WK1bcjyk8C1UVC
- xd4RXLqrHapjXCexH+vQ3NdTtgk03TD0vuPZ+zgdyQKcB/OBs1TdT7T6e7GZs9RfH1BUjvU
- 5eUraiD5cWDMFKmPen2rgxYhu409cLv5Vh/xJr3Nbhx36lwNMVCPzEGVKzIdS2mOH4PxxOH
- Gu1usr2e7Hg9gQhtvvCpA==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:y64qkCK5mCY=:Ul8qM4rYjC/JIKtPh+C2QA
- O+NQ+dtV+T+uJHv+18CPWbiFdp5IvIJrqq6fEsC1/9rvOfRkPVTHlNy5+3hImBlfdj3tGASW8
- E9f8vcOr5XSqUf3uTwU993wHkK4hXX0yErTG18Yj3n1nc0h2vu6LBc6HGsDJm2YSl0XVm4sAs
- 6022eCI1cgEW9RH0v8t8CJkezSvr3GV0EgRTflBEFIVVmz9q1Y2ljSVGSeSCREXHJvemB2L3j
- ReTM+XO0LLZlM9vMVscZ63Rt+1uZYDVMqDyLYN9AXRa7uE+QdHpYlFGIVNMCABXUpoBCWiD1X
- GlFyqAr/1yOyfgDz/zbjAi0Y4wGO+J35M+dlDxt6kIPCMS/f8LyXpnRqu4Z1eKzOn6zw1fB9O
- /Psvu4iRxvr+HQ2n5EPbIj+ktG+It6+9O8vzdzj9d27Jhysy9ot3SNbZta0NiGbjsEHOodVqX
- Bq1BwSnK2sTgMTCAt/y/MvY0nDSyMQ3dOUwEYEWJk7y5/aTqD4R75QOrLQS0e5qlJmnwoMwRj
- +XRSU4ox8FyZMcL1f/3D1BFYNXr0BvlTHQgAwyxTS8UOIxnXVwoNVpzPmJ2npZGgbvzyPLNXw
- OwgK/F/13q9H1YKBzLUyK/4EUBB1Wybb44Eig2bK1XrEjXLWhdlsCCUoFvJjKonC6wQwRLPwx
- y8hGLVxZo7Po/KmLfrxNsSkZplVMK/5JcFP2KmHpTZ3Kt+89ZuE9XVJz9Gchtyova5jYMcOgv
- haCI5Qlc1+sTkqG81+pRSVtEt+LAG7j7SibahVhB+65QPdlIK87drPSmLJP6OFt0vZdJLqxBx
- sA1ozCd/ZGyIGGqHbyr8DrnjYVto5IIvltYEc7qMWNq7PD0xJvb4Kakd4i6Wfjjb9TRtvm6eV
- M03K7GPVhbmJFKL/DCQBRwaa7GU8Yc7eWBjeHe4svs3uJuM83FjEt5m7fHQAzwe2DL3TJNPHn
- n2vmD9BQgK45Z+2xVAU0mqlUmOaMBnQptu8bolR3EoqhyirC2Uo6P3DN58Vsz94zUGZyFsASX
- Bd/pRcUuJ8aWBDk5lQAfr46cLuIHrhEZDeSH/NOFy1UbJ7wZYB/1mE5UkA/OeDGPOchJaqxhR
- bTnOf675spHdrb7v6xdI7a6hpcU4oQ0mwv9aynbWG54b6EJT02E7gkc4Q==
+In-Reply-To: <20190811033910.GL30120@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 11.08.2019 05:39, Andrew Lunn wrote:
+> On Sun, Aug 11, 2019 at 05:18:57AM +0200, Marek Behún wrote:
+>> Commit 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in
+>> genphy_read_status") broke fixed link DSA port registration in
+>> dsa_port_fixed_link_register_of: the genphy_read_status does not do what
+>> it is supposed to and the following adjust_link is given wrong
+>> parameters.
+> 
+> Hi Marek
+> 
+> Which parameters are incorrect?
+> 
+> In fixed_phy.c, __fixed_phy_register() there is:
+> 
+>         /* propagate the fixed link values to struct phy_device */
+>         phy->link = status->link;
+>         if (status->link) {
+>                 phy->speed = status->speed;
+>                 phy->duplex = status->duplex;
+>                 phy->pause = status->pause;
+>                 phy->asym_pause = status->asym_pause;
+>         }
+> 
+> Are we not initialising something? Or is the initialisation done here
+> getting reset sometime afterwards?
+> 
+In addition to Andrew's question:
+We talk about this DT config: armada-385-turris-omnia.dts ?
+Which kernel version are you using?
 
---3Pql8miugIZX0722
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, Aug 10, 2019 at 08:58:21AM -0600, Jonathan Corbet wrote:
-> On Sat, 10 Aug 2019 14:17:37 +0200
-> Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net> wrote:
->=20
-> > With the recent change to auto-detect function names, Sphinx parses
-> > socket() as a reference to the in-kernel definition of socket. It then
-> > decides that struct socket is a good match, which was obviously not
-> > intended in this case, because the text speaks about the syscall with
-> > the same name.
-> >=20
-> > Prevent socket() from being misinterpreted by wrapping it in ``inline
-> > literal`` quotes.
-> >=20
-> > Signed-off-by: Jonathan Neusch=C3=A4fer <j.neuschaefer@gmx.net>
->=20
-> Thanks for looking at that.  The better fix, though, would be to add
-> socket() to the Skipfuncs array in Documentation/sphinx/automarkup.py.
-> Then it will do the right thing everywhere without the need to add markup
-> to the RST files.
-
-Alright, I'll do that for v2.
-
-
-Thanks,
-Jonathan Neusch=C3=A4fer
-
---3Pql8miugIZX0722
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEvHAHGBBjQPVy+qvDCDBEmo7zX9sFAl1P/IAACgkQCDBEmo7z
-X9sBYw//WDx7jJODlKacEnlPkuHTxAkanqNDkGnT1Ghh6pIMjM4kqaZSusMiTy77
-BCcw1O+iDfYLGZgBVuEeOZzaQtmKPGiaYvaOCGlEse5I/FR51qxXJmH6joU7ernN
-SktIdNBlV7GnisrZHoXvxVeBmnCtLUDX0mIdqstioLlkGNnu1zEduNhM+p/KkBzj
-iSxlNeQ/NEETCj2e4UHpLpYynix8j17T7X7uG/uO4b8gzoMBRe1bSOfKp45+AOoN
-0LwjbcS3rnsFqaYiP/7dJ8LaQUYCSWfUd4+f7yKgrvzA2cH3ObjYbDd8XeKHRm/R
-Gndzkxqm3SzxaUfAo8xYBqzD9tl/lfVVDYz0LUl1S+zMWAVK9v6rLXvdX7Ab7YRX
-dY3gRKCPYvL0jzyrLFHOZTBIlHqSHV9X/kECgVCS2ahOMIDx3ll8scb/Pw2XkM06
-bKQ/M/4SEaW4kxbhIj3H8y3lzngY46I5kFW/R64vhiH5KITQvqNd31V5ZUNzkdAT
-2+pQP1tBasxhur956ITqgW74t3KhwnqSTv8c7VS+VtmJQrB2QvXzaWT9RrodcrTo
-Tm5mWmfVBy8d0xfUu6RFNZN7SuQ2aUwb5WxDmzvNrB7FGD3vFpd42SJN2ub3qSDZ
-OeHDnYBFmcvbsYAi7JUi+Wg7yZzZoCeKsbKdgQdyxQG2UHYFpyg=
-=rjZu
------END PGP SIGNATURE-----
-
---3Pql8miugIZX0722--
+> Thanks
+> 	Andrew
+> 
+Heiner
