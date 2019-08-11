@@ -2,46 +2,46 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AA6C89030
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 09:37:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DAE389031
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 09:37:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfHKHhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 03:37:05 -0400
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:36061 "EHLO
+        id S1726543AbfHKHhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 03:37:09 -0400
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:42587 "EHLO
         new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726525AbfHKHhE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 03:37:04 -0400
+        by vger.kernel.org with ESMTP id S1726525AbfHKHhG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 03:37:06 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id AA6FA198D;
-        Sun, 11 Aug 2019 03:37:03 -0400 (EDT)
+        by mailnew.nyi.internal (Postfix) with ESMTP id 3D0A619D4;
+        Sun, 11 Aug 2019 03:37:06 -0400 (EDT)
 Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 11 Aug 2019 03:37:03 -0400
+  by compute3.internal (MEProxy); Sun, 11 Aug 2019 03:37:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=BIiJDGROt4GB/Ahp+vm95FtF+LH6JbWYhCgO9HogDD0=; b=odxWRgcM
-        hD3bo4zbyKC1uVFjGuIDj/2zFcrwmKAfcYUZ0DGxcmgruXuFbcUP0RA60UxXt+oq
-        k5EPANBp2YxWEBiPGIJPEp/0auFogPfUlViXt+d4kjMOZkTSA5ETK5nQA3XZt8pM
-        DZjv8MzNFIYUzz/LdGFRqP4d6q+BUo33pU2DAvtJTIOeUkh5mAVqmXpGuuuHXXN5
-        3NecluweyTkWRbH0q7O9yJO1nvRVM+PgjabWwQlxKJxzgZwhTFwk/AHN65xJjsbH
-        +T09PdwINwkvzNS9DDJ1wSZPlrUUKzWwyoWGNorc5/aflgrEgwc5adedx5/Ed/zl
-        GqZ6Y7NyjtmVUA==
-X-ME-Sender: <xms:n8VPXcjZfOsNRceMVJscIm-lqrGusE-OqP77ccAK1HVk01ddHzX1wQ>
+        fm3; bh=KeMmSMJ2Ur97KJDrgpX9Ylieso6JAuIlM6hhlFSh3Mk=; b=tsIk5o0y
+        5Bty2m0XWpaLB2/JETdsD733uSmJ7HWQEdKGShUNElNcK2Fn1vqUqdf8sUjn9fEB
+        lcryI14797fRI1wZTFveSCkeZ+r448cBI1ch0eAwBuIZh/jrm7gWhmtq0Rho0hdo
+        5c5GbkYVvDpf4EywiTjlXL033oNoRpEp+SdN+dcT0O22dOMshj6I04MDT+FbDBYT
+        SH8SU+p9sXfCLilLRf2WsTOQVTxoLQfY+dyp7S3CjTnFcJcNFvLZnYLUK/B4oOwo
+        XMSXDnRHdZnOS67+X1N6VyskQMyov68H0v7BHE1FSUaDD8TV9nzj7h6VjzAAeWJ1
+        Tww+kfraTnNijQ==
+X-ME-Sender: <xms:osVPXf0343Q8HIdolaF7tSmVrqNNK_lRdgskLO7nSs_HApPUottlxQ>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddvuddgvdefucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
     dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
     shgthhdrohhrgheqnecukfhppeduleefrdegjedrudeihedrvdehudenucfrrghrrghmpe
     hmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhushhtvghr
-    ufhiiigvpeeg
-X-ME-Proxy: <xmx:n8VPXWEh44uejbCxvOwCHeQit-rSzyixlZBmWviD9Wh17Sac7FzwuQ>
-    <xmx:n8VPXXAxprl4y8v7mHS1OKqM_2AW1Fzf5aoV-uCmDU4s5xzu6H6jSA>
-    <xmx:n8VPXa_yR2ItGnXulNaoy3rgtpNjRHt4dB9FQadYPCbs3_jN5rZLrw>
-    <xmx:n8VPXfQRTBMKQYJuWR5GGpifrr5SJe0m-szastK8bi_fbNVXFwoEgw>
+    ufhiiigvpeei
+X-ME-Proxy: <xmx:osVPXeyS93pqc6SS_wy_AG0ZDLNJ_bYnjjyyyFT92cLb8ar9wn-Odw>
+    <xmx:osVPXeFqripkKsaUINFhPOWQhLb2b7lL-rpnmgG_azoU7EqgQGEhhA>
+    <xmx:osVPXZYHA9g6xAdtg0hMR4UZhA0s3xVwgMXMCdxl8MYoAZ3lr5ARjQ>
+    <xmx:osVPXXqyH6cLsFHZtAZCxYIbAWOK0CYiXiVET-BD50T0fHfnEFB3Pw>
 Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 1D8898005C;
-        Sun, 11 Aug 2019 03:37:00 -0400 (EDT)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 9760D8005B;
+        Sun, 11 Aug 2019 03:37:03 -0400 (EDT)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
@@ -50,9 +50,9 @@ Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
         andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
         vivien.didelot@gmail.com, mlxsw@mellanox.com,
         Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 08/10] drop_monitor: Add a command to query current configuration
-Date:   Sun, 11 Aug 2019 10:35:53 +0300
-Message-Id: <20190811073555.27068-9-idosch@idosch.org>
+Subject: [PATCH net-next v2 09/10] drop_monitor: Make drop queue length configurable
+Date:   Sun, 11 Aug 2019 10:35:54 +0300
+Message-Id: <20190811073555.27068-10-idosch@idosch.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190811073555.27068-1-idosch@idosch.org>
 References: <20190811073555.27068-1-idosch@idosch.org>
@@ -65,96 +65,105 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ido Schimmel <idosch@mellanox.com>
 
-Users should be able to query the current configuration of drop monitor
-before they start using it. Add a command to query the existing
-configuration which currently consists of alert mode and packet
-truncation length.
+In packet alert mode, each CPU holds a list of dropped skbs that need to
+be processed in process context and sent to user space. To avoid
+exhausting the system's memory the maximum length of this queue is
+currently set to 1000.
+
+Allow users to tune the length of this queue according to their needs.
+The configured length is reported to user space when drop monitor
+configuration is queried.
 
 Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 ---
- include/uapi/linux/net_dropmon.h |  2 ++
- net/core/drop_monitor.c          | 48 ++++++++++++++++++++++++++++++++
- 2 files changed, 50 insertions(+)
+ include/uapi/linux/net_dropmon.h |  1 +
+ net/core/drop_monitor.c          | 19 ++++++++++++++++---
+ 2 files changed, 17 insertions(+), 3 deletions(-)
 
 diff --git a/include/uapi/linux/net_dropmon.h b/include/uapi/linux/net_dropmon.h
-index 5cd7eb1f66ba..3b765a8428b5 100644
+index 3b765a8428b5..1d0bdb1ba954 100644
 --- a/include/uapi/linux/net_dropmon.h
 +++ b/include/uapi/linux/net_dropmon.h
-@@ -54,6 +54,8 @@ enum {
- 	NET_DM_CMD_START,
- 	NET_DM_CMD_STOP,
- 	NET_DM_CMD_PACKET_ALERT,
-+	NET_DM_CMD_CONFIG_GET,
-+	NET_DM_CMD_CONFIG_NEW,
- 	_NET_DM_CMD_MAX,
- };
+@@ -79,6 +79,7 @@ enum net_dm_attr {
+ 	NET_DM_ATTR_PAD,
+ 	NET_DM_ATTR_TRUNC_LEN,			/* u32 */
+ 	NET_DM_ATTR_ORIG_LEN,			/* u32 */
++	NET_DM_ATTR_QUEUE_LEN,			/* u32 */
  
+ 	__NET_DM_ATTR_MAX,
+ 	NET_DM_ATTR_MAX = __NET_DM_ATTR_MAX - 1
 diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index 9f884adaa85f..135638474ab8 100644
+index 135638474ab8..eb3c34d69ea9 100644
 --- a/net/core/drop_monitor.c
 +++ b/net/core/drop_monitor.c
-@@ -676,6 +676,50 @@ static int net_dm_cmd_trace(struct sk_buff *skb,
- 	return -EOPNOTSUPP;
+@@ -78,6 +78,7 @@ static LIST_HEAD(hw_stats_list);
+ 
+ static enum net_dm_alert_mode net_dm_alert_mode = NET_DM_ALERT_MODE_SUMMARY;
+ static u32 net_dm_trunc_len;
++static u32 net_dm_queue_len = 1000;
+ 
+ struct net_dm_alert_ops {
+ 	void (*kfree_skb_probe)(void *ignore, struct sk_buff *skb,
+@@ -93,8 +94,6 @@ struct net_dm_skb_cb {
+ 
+ #define NET_DM_SKB_CB(__skb) ((struct net_dm_skb_cb *)&((__skb)->cb[0]))
+ 
+-#define NET_DM_QUEUE_LEN 1000
+-
+ static struct sk_buff *reset_per_cpu_data(struct per_cpu_dm_data *data)
+ {
+ 	size_t al;
+@@ -289,7 +288,7 @@ static void net_dm_packet_trace_kfree_skb_hit(void *ignore,
+ 	data = this_cpu_ptr(&dm_cpu_data);
+ 
+ 	spin_lock_irqsave(&data->drop_queue.lock, flags);
+-	if (skb_queue_len(&data->drop_queue) < NET_DM_QUEUE_LEN)
++	if (skb_queue_len(&data->drop_queue) < net_dm_queue_len)
+ 		__skb_queue_tail(&data->drop_queue, nskb);
+ 	else
+ 		goto unlock_free;
+@@ -643,6 +642,14 @@ static void net_dm_trunc_len_set(struct genl_info *info)
+ 	net_dm_trunc_len = nla_get_u32(info->attrs[NET_DM_ATTR_TRUNC_LEN]);
  }
  
-+static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
++static void net_dm_queue_len_set(struct genl_info *info)
 +{
-+	void *hdr;
++	if (!info->attrs[NET_DM_ATTR_QUEUE_LEN])
++		return;
 +
-+	hdr = genlmsg_put(msg, info->snd_portid, info->snd_seq,
-+			  &net_drop_monitor_family, 0, NET_DM_CMD_CONFIG_NEW);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	if (nla_put_u8(msg, NET_DM_ATTR_ALERT_MODE, net_dm_alert_mode))
-+		goto nla_put_failure;
-+
-+	if (nla_put_u32(msg, NET_DM_ATTR_TRUNC_LEN, net_dm_trunc_len))
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+	return -EMSGSIZE;
++	net_dm_queue_len = nla_get_u32(info->attrs[NET_DM_ATTR_QUEUE_LEN]);
 +}
 +
-+static int net_dm_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
-+{
-+	struct sk_buff *msg;
-+	int rc;
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	rc = net_dm_config_fill(msg, info);
-+	if (rc)
-+		goto free_msg;
-+
-+	return genlmsg_reply(msg, info);
-+
-+free_msg:
-+	nlmsg_free(msg);
-+	return rc;
-+}
-+
- static int dropmon_net_event(struct notifier_block *ev_block,
- 			     unsigned long event, void *ptr)
+ static int net_dm_cmd_config(struct sk_buff *skb,
+ 			struct genl_info *info)
  {
-@@ -738,6 +782,10 @@ static const struct genl_ops dropmon_ops[] = {
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
- 		.doit = net_dm_cmd_trace,
- 	},
-+	{
-+		.cmd = NET_DM_CMD_CONFIG_GET,
-+		.doit = net_dm_cmd_config_get,
-+	},
+@@ -660,6 +667,8 @@ static int net_dm_cmd_config(struct sk_buff *skb,
+ 
+ 	net_dm_trunc_len_set(info);
+ 
++	net_dm_queue_len_set(info);
++
+ 	return 0;
+ }
+ 
+@@ -691,6 +700,9 @@ static int net_dm_config_fill(struct sk_buff *msg, struct genl_info *info)
+ 	if (nla_put_u32(msg, NET_DM_ATTR_TRUNC_LEN, net_dm_trunc_len))
+ 		goto nla_put_failure;
+ 
++	if (nla_put_u32(msg, NET_DM_ATTR_QUEUE_LEN, net_dm_queue_len))
++		goto nla_put_failure;
++
+ 	genlmsg_end(msg, hdr);
+ 
+ 	return 0;
+@@ -763,6 +775,7 @@ static const struct nla_policy net_dm_nl_policy[NET_DM_ATTR_MAX + 1] = {
+ 	[NET_DM_ATTR_UNSPEC] = { .strict_start_type = NET_DM_ATTR_UNSPEC + 1 },
+ 	[NET_DM_ATTR_ALERT_MODE] = { .type = NLA_U8 },
+ 	[NET_DM_ATTR_TRUNC_LEN] = { .type = NLA_U32 },
++	[NET_DM_ATTR_QUEUE_LEN] = { .type = NLA_U32 },
  };
  
- static int net_dm_nl_pre_doit(const struct genl_ops *ops,
+ static const struct genl_ops dropmon_ops[] = {
 -- 
 2.21.0
 
