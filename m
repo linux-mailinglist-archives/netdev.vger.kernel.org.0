@@ -2,63 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5410D8925C
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 17:40:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EEBA8926E
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 18:03:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbfHKPkG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 11:40:06 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51224 "EHLO vps0.lunn.ch"
+        id S1726466AbfHKQDG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 12:03:06 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51272 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726424AbfHKPkG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Aug 2019 11:40:06 -0400
+        id S1726014AbfHKQDG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Aug 2019 12:03:06 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=8ozBoqtYYvBTfGwvlCc0YKD6CWnEH6JBg0zCA/A1o78=; b=xX1kmb1Fza1kvfDtj+3d2dZCTr
-        itkMDemvsldy/dV50rtbp8uIxtDHwNCeLk3j1Bhb8z9DdhtPpmp/2z6RVNPjhmJXcXTRdIldU9IGA
-        6TRF0kiiGKxLK5qyvS6m5YYDeiW/n+ndujRYS2UPoNNfdt+x2/ljpjozVO7yVwOEgVL8=;
+        bh=X8vY8SU32ylGHmsaMJSxRXMQ4AplM5ck8Z9fOiI/VVU=; b=he7g9m19SQBkXvaTUxHONOAJB9
+        SgctLxfkW1E3PRFxDIdwX02eIxoJHJygoovruMY/dLF6ZD3Aj7hWCzT4lm1NNQ1dO6IShokyz+3bp
+        82gI7kyReD7cZ5tdwPAljDzP41MQf+L0CF8mIetKufw2zYO66rGvxRzfHr8MaccsQHZY=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hwpwv-0003vB-Fz; Sun, 11 Aug 2019 17:40:01 +0200
-Date:   Sun, 11 Aug 2019 17:40:01 +0200
+        id 1hwqJE-00046n-BI; Sun, 11 Aug 2019 18:03:04 +0200
+Date:   Sun, 11 Aug 2019 18:03:04 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 2/2] net: fixed_phy: set is_gigabit_capable
- member when needed
-Message-ID: <20190811154001.GC14290@lunn.ch>
-References: <20190811150812.6780-1-marek.behun@nic.cz>
- <20190811150812.6780-2-marek.behun@nic.cz>
+        netdev <netdev@vger.kernel.org>,
+        Hubert Feurstein <h.feurstein@gmail.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [BUG] fec mdio times out under system stress
+Message-ID: <20190811160304.GD14290@lunn.ch>
+References: <20190811133707.GC13294@shell.armlinux.org.uk>
+ <CA+h21hqkVoQWRweKKCFdvLLOLyP4gEtXQvJ9CO_J7i+YQW+TWw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190811150812.6780-2-marek.behun@nic.cz>
+In-Reply-To: <CA+h21hqkVoQWRweKKCFdvLLOLyP4gEtXQvJ9CO_J7i+YQW+TWw@mail.gmail.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 11, 2019 at 05:08:12PM +0200, Marek Behún wrote:
-> The fixed_phy driver does not set the phydev->is_gigabit_capable member
-> when the fixed_phy is gigabit capable.
+> I think a better question is why is the FEC MDIO controller configured
+> to emit interrupts anyway (especially since the API built on top does
+> not benefit in any way from this)? Hubert (copied) sent an interesting
+> email very recently where he pointed out that this is one of the main
+> sources of jitter when reading the PTP clock on a Marvell switch
+> attached over MDIO.
 
-Neither does any other PHY driver. It should be possible to tell if a
-PHY supports 1G by looking at register values. If this does not work
-for fixed_link, it means we are missing something in the emulation.
-That is what we should be fixing.
+Hi Vladimir
 
-Also, this change has nothing to do the lp_advertise, what you
-previously said the problem was. At the moment, i don't get the
-feeling you have really dug all the way down and really understand the
-root causes.
+One reason is runtime power management.
 
-     Andrew
+For a write operation, you could set it going and return
+immediately. Many drivers do, and then when the next read/write
+operation comes along, they poll in a loop waiting for the device to
+go idle, if it was still busy from the last operation.
+
+However, FEC supports runtime PM. When an MDIO read/write call is
+made, it calls runtime PM functions to indicate the device is active.
+Once it has completed the MDIO transaction, it calls runtime PM
+functions to indicate the device is inactive. These transitions can
+cause clocks to be enabled/disabled. If we don't wait around for the
+operation to complete, the clock could be disabled too early, and bad
+things would happen.
+
+You could replace the interrupt with a sleeping poll, but my guess
+would be, that has more jitter than using an interrupt.
+
+      Andrew
