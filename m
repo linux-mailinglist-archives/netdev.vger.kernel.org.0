@@ -2,57 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4CC892B2
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 18:51:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 81926892B7
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 18:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726053AbfHKQvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 12:51:11 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:51350 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725870AbfHKQvL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Aug 2019 12:51:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=IJ/2YbIXEYc513IBNKIdIOt+IolKh9GpuJxI2GwtnRE=; b=wnar0mvST+7qIwCLfQmPjsqNz1
-        osKoKqNpjYe/GVLITgw+Rhb6lJXyTBpS7y96NHtceTUrfmrFI64go6YjR+p8upQDemsa8nbNJ27WJ
-        RgMUAmeU4kUmOciU3AwgNnqJYpUdSkFrIK0oSF94tUFpT+oRDOeKJ7ZD7NB7UohyTw1Y=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hwr3k-0004Jw-28; Sun, 11 Aug 2019 18:51:08 +0200
-Date:   Sun, 11 Aug 2019 18:51:08 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        id S1726164AbfHKQ7U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 12:59:20 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46122 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725730AbfHKQ7U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 12:59:20 -0400
+Received: by mail-wr1-f65.google.com with SMTP id z1so102632455wru.13
+        for <netdev@vger.kernel.org>; Sun, 11 Aug 2019 09:59:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=JQgghQU9nnUkMxvKl+XgiNbcsZD9Vp1jqvCo1m/DAu4=;
+        b=itzcY14opyvdIQM44HnWh4+ARHqnEvDIj7YRKoSfsvcfv+gHbsx9CtQEeSaW09PeIi
+         F48IdLfExZOB82hSzwOaJtbLq4Z5cuf/Iv4cUXBjU5eiW3OPTIH+wPTuwHj4eO38EE3P
+         FNede2YI1u3QEKBsku9cMKkOykeHHcTrkyKgmTgKT2JIQKR2RfrlUN5EoxSjkoUSAWnV
+         SExEdQ+UauCoDx62ODtZYoGbso5VgmvYqM71NLk6orwD2yJ87IRucBv8/9aOk1bvSmz6
+         wnyPhwgEZdAn4dxH+cG8rSxxu3E1wLTYXvHhdiYKdrlL0osr5cKcA82rCqN5homfsdqZ
+         nvjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=JQgghQU9nnUkMxvKl+XgiNbcsZD9Vp1jqvCo1m/DAu4=;
+        b=FDRh8MJsHZU16G3f424BAVoUE7dAnmXZcKwWN24hk9vokO94Ydq131uDSCC0F1bWwx
+         JyBMHvdAXxEL3qySL7d3MjF/ai6snq55PxIjsb66Er5gscnrycSGTBjftbl+lte10AlV
+         8rBH7xuMkB7i0tpYqNqTIPLU9LMp0jtusYzPFfodojJA52W6grldx5qRYevk/jMZoA3L
+         Js7RJ06kuIN8TauTR9eWgrGeEkJ7B74tNtuFa1zgQuZtkIoJTAppeQ1jxGkMRkzmL8QD
+         0Z9NhrjUo4X5AwoWZCbqzPBi7KPtOsgFR5XdZCfwtt8QAZTSZVf17wBvJ09QVIlksIAJ
+         YYmg==
+X-Gm-Message-State: APjAAAXxwxBvSzYyrENi6MjKHdSam2bhLI42tf26aeOiZe/iZTquhYve
+        O0prCVEZ19DwiqjPOEewfrg=
+X-Google-Smtp-Source: APXvYqyeHSx8z3AfZAIJYLB+mLriNgmaTBNROG+UMocFeoRgoPriawD/hUrJai8CHq+2wyKz8gqjQg==
+X-Received: by 2002:adf:fc51:: with SMTP id e17mr33113528wrs.348.1565542758552;
+        Sun, 11 Aug 2019 09:59:18 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:2c05:cd65:72fc:a240? (p200300EA8F2F32002C05CD6572FCA240.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:2c05:cd65:72fc:a240])
+        by smtp.googlemail.com with ESMTPSA id b2sm8407511wrf.94.2019.08.11.09.59.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 11 Aug 2019 09:59:17 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] net: fixed_phy: set is_gigabit_capable
+ member when needed
+To:     Marek Behun <marek.behun@nic.cz>, Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org,
         Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: fix RGMII-ID port setup
-Message-ID: <20190811165108.GG14290@lunn.ch>
 References: <20190811150812.6780-1-marek.behun@nic.cz>
- <20190811153153.GB14290@lunn.ch>
- <20190811181445.71048d2c@nic.cz>
+ <20190811150812.6780-2-marek.behun@nic.cz> <20190811154001.GC14290@lunn.ch>
+ <20190811180815.024870da@nic.cz>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <76dc0ce2-238b-b27a-fff5-5fd633518cc0@gmail.com>
+Date:   Sun, 11 Aug 2019 18:59:12 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190811181445.71048d2c@nic.cz>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <20190811180815.024870da@nic.cz>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> what if we added a phy_mode member to struct mv88e6xxx_port, and either
-> set it to PHY_INTERFACE_MODE_NA in mv88e6xxx_setup, or implemented
-> methods for converting the switch register values to
-> PHY_INTERFACE_MODE_* values.
+On 11.08.2019 18:08, Marek Behun wrote:
+> On Sun, 11 Aug 2019 17:40:01 +0200
+> Andrew Lunn <andrew@lunn.ch> wrote:
+> 
+>> On Sun, Aug 11, 2019 at 05:08:12PM +0200, Marek Behún wrote:
+>>> The fixed_phy driver does not set the phydev->is_gigabit_capable member
+>>> when the fixed_phy is gigabit capable.  
+>>
+>> Neither does any other PHY driver. It should be possible to tell if a
+>> PHY supports 1G by looking at register values. If this does not work
+>> for fixed_link, it means we are missing something in the emulation.
+>> That is what we should be fixing.
+>>
+>> Also, this change has nothing to do the lp_advertise, what you
+>> previously said the problem was. At the moment, i don't get the
+>> feeling you have really dug all the way down and really understand the
+>> root causes.
+>>
+>>      Andrew
+> 
+> Andrew,
+> is_gigabit_capable is otherwise set only in the phy_probe function.
+> This function is not called at all for the DSA cpu port fixed_link phy.
+> Why is that? But I guess it is not important anymore, if CPU and DSA
+> were converted to phylink in net-next. I shall test it and let you know.
+> In any case, sorry for the spam.
+> Marek
+> 
 
-We should read the switch registers. I think you can set the defaults
-using strapping pins. And in general, the driver always reads state
-from the hardware rather than caching it.
+A fixed phy should be bound to the genphy driver, but that happens later
+in phy_attach_direct(). Maybe the fixed phy device of a CPU port gets
+never attached to a net device? This would explain why phy_probe()
+doesn't get called.
+Following idea: We could swphy let return PHY ID 0xffffffff
+(instead of current value 0x00000000). Then the fixed phy device would
+be bound to the genphy driver immediately at device registration time.
+As a consequence phy_probe() would call genphy_read_abilities() that
+sets supported modes properly. This should allow to remove the manual
+adding of supported modes in dsa_port_fixed_link_register_of().
 
-     Andrew
+One more thing regarding genphy_read_abilities() and fixed phys in general:
+swphy sets bit BMSR_ESTATEN, then genphy_read_abilities() reads
+MII_ESTATUS to check if and which 1Gbps modes are supported.
+MII_ESTATUS however isn't defined in swphy. We're just fortunate
+that therefore the default value 0xffff is returned and both
+1Gbps modes seem to be supported.
+
+Last but not least I think the calls to genphy_config_init() and
+genphy_read_status() in dsa_port_fixed_link_register_of() are
+both not needed and could be removed.
+
+Heiner
