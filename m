@@ -2,63 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 995028928B
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 18:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C135F8929B
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 18:31:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725847AbfHKQVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 12:21:37 -0400
-Received: from mail.nic.cz ([217.31.204.67]:50782 "EHLO mail.nic.cz"
+        id S1725900AbfHKQbL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 11 Aug 2019 12:31:11 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:51310 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725730AbfHKQVh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 11 Aug 2019 12:21:37 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id C36E914093E;
-        Sun, 11 Aug 2019 18:21:35 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1565540495; bh=XjxcCoyM0l71Gmn2NY3/Q1Ou3Hi58e79S5FJPc9db9k=;
-        h=Date:From:To;
-        b=Jk3cABF2zunWFWda6It8GsKycLs4Rl4R3zBLkyDGfz8ARutHMtz8A6ufOsYUmGeO/
-         7/FxjD7cA7SkCOySv8gVyotdOSMq47hl65In6u+q1z+qLZmqhTzC2dk5HxV/LSlGQg
-         GFK31ZQebrdKCCmoU3ZvMsz4Q0BZfMvAGXmlUbCc=
-Date:   Sun, 11 Aug 2019 18:21:35 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
+        id S1725837AbfHKQbK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 11 Aug 2019 12:31:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=lozDe2KJhIZbEGQBfmlQNXhoJltngcT+6KrAJ7pHjU0=; b=y8xe1vCIbnoaJUi+9k8+FHNKe0
+        xmZz6pGIaArP2t6zvIo7fcabjWTH6JZVjl+a4OSS9SFMmgI57ryRebUmrEOHziyz+M6NYGxB9YNIC
+        om+/lQntAlqUi7jhH/OZdwGE9jqIeEPGGdSEOaPpvZ7q9hxv2FDk/OgDjDv0XaJ8UW5w=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hwqkN-0004Bz-Ao; Sun, 11 Aug 2019 18:31:07 +0200
+Date:   Sun, 11 Aug 2019 18:31:07 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Fabio Estevam <festevam@gmail.com>, netdev@vger.kernel.org,
         Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v2 1/1] net: dsa: fix fixed-link port
- registration
-Message-ID: <20190811182135.24e6c320@nic.cz>
-In-Reply-To: <CA+h21hoOZQ79rj0SLZGLnkSjrKD3aLNos0GcnRjre-Ls=Tq=4w@mail.gmail.com>
-References: <20190811031857.2899-1-marek.behun@nic.cz>
-        <20190811033910.GL30120@lunn.ch>
-        <91cd70df-c856-4c7e-7ebb-c01519fb13d2@gmail.com>
-        <20190811160404.06450685@nic.cz>
-        <CA+h21hoOZQ79rj0SLZGLnkSjrKD3aLNos0GcnRjre-Ls=Tq=4w@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [BUG] fec mdio times out under system stress
+Message-ID: <20190811163107.GE14290@lunn.ch>
+References: <20190811133707.GC13294@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
-        shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190811133707.GC13294@shell.armlinux.org.uk>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 11 Aug 2019 18:16:11 +0300
-Vladimir Oltean <olteanv@gmail.com> wrote:
+On Sun, Aug 11, 2019 at 02:37:07PM +0100, Russell King - ARM Linux admin wrote:
+> Hi Fabio,
+> 
+> When I woke up this morning, I found that one of the Hummingboards
+> had gone offline (as in, lost network link) during the night.
+> Investigating, I find that the system had gone into OOM, and at
+> that time, triggered an unrelated:
+> 
+> [4111697.698776] fec 2188000.ethernet eth0: MDIO read timeout
+> [4111697.712996] MII_DATA: 0x6006796d
+> [4111697.729415] MII_SPEED: 0x0000001a
+> [4111697.745232] IEVENT: 0x00000000
+> [4111697.745242] IMASK: 0x0a8000aa
+> [4111698.002233] Atheros 8035 ethernet 2188000.ethernet-1:00: PHY state change RUNNING -> HALTED
+> [4111698.009882] fec 2188000.ethernet eth0: Link is Down
+> 
+> This is on a dual-core iMX6.
+> 
+> It looks like the read actually completed (since MII_DATA contains
+> the register data) but we somehow lost the interrupt (or maybe
+> received the interrupt after wait_for_completion_timeout() timed
+> out.)
 
-> The DSA fixed-link port functionality *has* been converted to phylink.
-> See:
-> - https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=0e27921816ad9
-> - https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=7fb5a711545d7d25fe9726a9ad277474dd83bd06
->
+Hi Russell
 
-/o\ my bad. I did not realize that I was working on 5.2 :(. Sorry.
+The timeout is quite short,
+
+#define FEC_MII_TIMEOUT         30000 /* us */
+
+Looking at the Vybrid datasheet, there does not appear to be any way
+to determine if the hardware is busy other than waiting for the
+interrupt. There is no 'busy' bit which gets cleared on completion.
+
+So about the only option is to make the timeout bigger.
+
+   Andrew
