@@ -2,69 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E14DB88EF3
-	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 03:03:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2308688F04
+	for <lists+netdev@lfdr.de>; Sun, 11 Aug 2019 03:56:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfHKBDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 10 Aug 2019 21:03:14 -0400
-Received: from smtprelay0132.hostedemail.com ([216.40.44.132]:44163 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726292AbfHKBDO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 10 Aug 2019 21:03:14 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 5F5DA1822563C;
-        Sun, 11 Aug 2019 01:03:12 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::,RULES_HIT:41:355:379:599:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1539:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:2902:3138:3139:3140:3141:3142:3352:3622:3865:3867:4321:5007:9036:10004:10400:10848:11026:11232:11658:11914:12043:12296:12297:12438:12679:12740:12760:12895:13069:13311:13357:13439:14659:14721:21080:21627:30045:30054:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:25,LUA_SUMMARY:none
-X-HE-Tag: town85_38e2295c5af30
-X-Filterd-Recvd-Size: 2035
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf17.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 11 Aug 2019 01:03:10 +0000 (UTC)
-Message-ID: <67dd4fe22f197700a7bc3b663a63383ce51346df.camel@perches.com>
-Subject: Re: [PATCH] dpaa2-ethsw: move the DPAA2 Ethernet Switch driver out
- of staging
-From:   Joe Perches <joe@perches.com>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>, Andrew Lunn <andrew@lunn.ch>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-Date:   Sat, 10 Aug 2019 18:03:09 -0700
-In-Reply-To: <VI1PR0402MB2800FF2E5C4DE24B25E7D843E0D10@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-References: <1565366213-20063-1-git-send-email-ioana.ciornei@nxp.com>
-         <20190809190459.GW27917@lunn.ch>
-         <VI1PR0402MB2800FF2E5C4DE24B25E7D843E0D10@VI1PR0402MB2800.eurprd04.prod.outlook.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1726488AbfHKBwD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 10 Aug 2019 21:52:03 -0400
+Received: from mail.nic.cz ([217.31.204.67]:46654 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726014AbfHKBwD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 10 Aug 2019 21:52:03 -0400
+X-Greylist: delayed 310 seconds by postgrey-1.27 at vger.kernel.org; Sat, 10 Aug 2019 21:52:02 EDT
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id B8D82140BB3;
+        Sun, 11 Aug 2019 03:46:51 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1565488011; bh=KEbbsOrU5MGqPS0ubDZnkRkVsMzCyFpjRXVGNp18xso=;
+        h=From:To:Date;
+        b=biqI/GSpUxJPqjYGW4zNyiBe3sJynuYr6a9QUJpcV24KkCSvdVo+eC1WeMY7E3gmv
+         fWNEsVaZEpqH/5q/qZbRAdH2fFhr17Z0LqH0XorLWg+2Dh6qDRgtxss4sw/7vd4lj6
+         ARQ2hNNDiwULZX9Se2/jqu2ETDtM9Y0pv3pWvwSU=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+To:     netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: [PATCH net-next 1/1] net: dsa: fix fixed-link port registration
+Date:   Sun, 11 Aug 2019 03:46:50 +0200
+Message-Id: <20190811014650.28141-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2019-08-10 at 21:45 +0000, Ioana Ciornei wrote:
-> On 8/9/19 10:05 PM, Andrew Lunn wrote:
-[]
->  >> +static int
->  >> +ethsw_get_link_ksettings(struct net_device *netdev,
->  >> +			 struct ethtool_link_ksettings *link_ksettings)
->  >> +{
->  >> +	struct ethsw_port_priv *port_priv = netdev_priv(netdev);
->  >> +	struct dpsw_link_state state = {0};
->  >> +	int err = 0;
->  >> +
->  >> +	err = dpsw_if_get_link_state(port_priv->ethsw_data->mc_io, 0,
->  >> +				     port_priv->ethsw_data->dpsw_handle,
->  >> +				     port_priv->idx,
->  >> +				     &state);
->  >> +	if (err) {
->  >> +		netdev_err(netdev, "ERROR %d getting link state", err);
+Commit 88d6272acaaa ("net: phy: avoid unneeded MDIO reads in
+genphy_read_status") broke fixed link DSA port registration in
+dsa_port_fixed_link_register_of: the genphy_read_status does not do what
+it is supposed to and the following adjust_link is given wrong
+parameters.
 
-trivia:  Do please add terminating '\n's to all the formats.
+This causes a regression on Turris Omnia, where the mvneta driver for
+the interface connected to the switch reports crc errors, for some
+reason.
 
+I realize this fix is not ideal, something else could change in genphy
+functions which could cause DSA fixed-link port to break again.
+Hopefully DSA fixed-link port functionality will be converted to phylink
+API soon.
+
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
+Cc: Vivien Didelot <vivien.didelot@gmail.com>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: David S. Miller <davem@davemloft.net>
+---
+ net/dsa/port.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
+
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index 363eab6df51b..c424ebb373e1 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -485,6 +485,17 @@ static int dsa_port_fixed_link_register_of(struct dsa_port *dp)
+ 	phydev->interface = mode;
+ 
+ 	genphy_config_init(phydev);
++
++	/*
++	 * Commit 88d6272acaaa caused genphy_read_status not to do it's work if
++	 * autonegotiation is enabled and link status did not change. This is
++	 * the case for fixed_phy. By setting phydev->link = 0 before the call
++	 * to genphy_read_status we force it to read and fill in the parameters.
++	 *
++	 * Hopefully this dirty hack will be removed soon by converting DSA
++	 * fixed link ports to phylink API.
++	 */
++	phydev->link = 0;
+ 	genphy_read_status(phydev);
+ 
+ 	if (ds->ops->adjust_link)
+-- 
+2.21.0
 
