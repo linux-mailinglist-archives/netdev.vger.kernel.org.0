@@ -2,115 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CCC48A2C0
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 17:56:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CAA278A2D0
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 18:02:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726610AbfHLP4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 11:56:50 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39494 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726219AbfHLP4t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 11:56:49 -0400
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7CFugtk148600;
-        Mon, 12 Aug 2019 11:56:45 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2ub97363p2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Aug 2019 11:56:45 -0400
-Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7CFujNO148881;
-        Mon, 12 Aug 2019 11:56:45 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2ub97363kf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Aug 2019 11:56:45 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7CFtUxP006304;
-        Mon, 12 Aug 2019 15:56:40 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma01dal.us.ibm.com with ESMTP id 2u9nj6fwr7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Aug 2019 15:56:40 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7CFuekf36897112
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 12 Aug 2019 15:56:40 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 02EFDAC05B;
-        Mon, 12 Aug 2019 15:56:40 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B0A45AC059;
-        Mon, 12 Aug 2019 15:56:39 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.80.213.234])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 12 Aug 2019 15:56:39 +0000 (GMT)
-Subject: Re: [PATCHv2 net 0/2] Add netdev_level_ratelimited to avoid netdev
- msg flush
-To:     Hangbin Liu <liuhangbin@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, joe@perches.com
-References: <20190801090347.8258-1-liuhangbin@gmail.com>
- <20190809002941.15341-1-liuhangbin@gmail.com>
- <20190811.210820.1168889173898610979.davem@davemloft.net>
- <20190812073733.GV18865@dhcp-12-139.nay.redhat.com>
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-Message-ID: <9bb8e9af-4d9b-7c16-f58d-e299b1f30007@linux.ibm.com>
-Date:   Mon, 12 Aug 2019 10:56:39 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726500AbfHLQCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 12:02:06 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:43693 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726457AbfHLQCF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 12:02:05 -0400
+Received: by mail-ot1-f67.google.com with SMTP id e12so16417865otp.10
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 09:02:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TgnolfB/jUL83PgFIzu2F64d82Zph8SbM8CPOCJYrnw=;
+        b=dR0E6S4kcKA5DuzE8n0oLxk3UhtHE/48ZbN4JhygsywwVAmKb0+o1jCmNNMbQVwVQf
+         PJuolETN35EfAiQhOqmW6lDhFvAHvAW0/F5SEcfosiX8yTkIiMka+dulCF4CMvz7zFje
+         YMpFU3HwAKvJIG/zOMG8sZFasLm6y6YzIPeEQo77vsDMxTG7+gYMykb78ZmYjNqW84qV
+         8CJjUSZKmD1Tf5GTPPKlI8+Tg5bcL//cBReSMRrKdkt/CQkkY0NR49l3rgml6ls6AdKH
+         1/nmuBOFFC9slxQzzlwR5NkpGxnRYf05Cnws5+zfoFQS95/TFAA2g5eYV1Oh4Rrcg8NL
+         j5sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TgnolfB/jUL83PgFIzu2F64d82Zph8SbM8CPOCJYrnw=;
+        b=FirOnreL1OiKmw5mNu6EI8uDLdWql6o1CG93F+kWnCfx3GRiK6Vp/zCEnCnJqlt7i4
+         kuvuSYjj7PzLQjQMeB528fr1r/uCno375Q9K8Ek0y7lAXPE8GOier3J1W0984CSQbAQA
+         zJ5G7V7egYXaqTjk+KgDPwuauz7S+TjSIqTJuNEkkNCqfR8v91S34orfam/JMj7mboV9
+         p19ywzyd5MvzM6J8/Ty01AvCHGUTh989PzPmP/3VkGnH1M4qwmrKnG8JAi0pJMrzmN2W
+         GNfmgDTEL0Vi367iSUnpXT6/4wdZu98lRohp2nNGRGBTCWq6IDHjT5L0n6cDWs0+jr1u
+         Vglg==
+X-Gm-Message-State: APjAAAX/8Rjc3lyb3eQtxZnwp9Hh3oRPFCPdeNGxJIyYzHPDTU7HDev6
+        74ALazVT1gh3iffbh+d+ZM8=
+X-Google-Smtp-Source: APXvYqy/uPgeV5L2lCrQmPLUybbsdyP/JOYD+c/iFsnC3y3GgIVnVY04SfUit4bWcS2yIDOZD3Adgw==
+X-Received: by 2002:a5d:96d8:: with SMTP id r24mr35736994iol.269.1565625724604;
+        Mon, 12 Aug 2019 09:02:04 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:1567:1802:ced3:a7f1? ([2601:282:800:fd80:1567:1802:ced3:a7f1])
+        by smtp.googlemail.com with ESMTPSA id o3sm17277475ioo.74.2019.08.12.09.02.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Aug 2019 09:02:03 -0700 (PDT)
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
+References: <20190719110029.29466-1-jiri@resnulli.us>
+ <20190719110029.29466-4-jiri@resnulli.us>
+ <CAJieiUi+gKKc94bKfC-N5LBc=FdzGGo_8+x2oTstihFaUpkKSA@mail.gmail.com>
+ <20190809062558.GA2344@nanopsycho.orion>
+ <CAJieiUj7nzHdRUjBpnfL5bKPszJL0b_hKjxpjM0RGd9ocF3EoA@mail.gmail.com>
+ <5e7270a1-8de6-1563-4e42-df37da161b98@gmail.com>
+ <20190810063047.GC2344@nanopsycho.orion>
+ <b0a9ec0d-c00b-7aaf-46d4-c74d18498698@gmail.com>
+ <3b1e8952-e4c2-9be5-0b5c-d3ce4127cbe2@gmail.com>
+ <20190812083139.GA2428@nanopsycho>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b43ad33c-ea0c-f441-a550-be0b1d8ca4ef@gmail.com>
+Date:   Mon, 12 Aug 2019 10:01:59 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-In-Reply-To: <20190812073733.GV18865@dhcp-12-139.nay.redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190812083139.GA2428@nanopsycho>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-12_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908120177
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 8/12/19 2:37 AM, Hangbin Liu wrote:
-> On Sun, Aug 11, 2019 at 09:08:20PM -0700, David Miller wrote:
->> From: Hangbin Liu <liuhangbin@gmail.com>
->> Date: Fri,  9 Aug 2019 08:29:39 +0800
+On 8/12/19 2:31 AM, Jiri Pirko wrote:
+> Mon, Aug 12, 2019 at 03:37:26AM CEST, dsahern@gmail.com wrote:
+>> On 8/11/19 7:34 PM, David Ahern wrote:
+>>> On 8/10/19 12:30 AM, Jiri Pirko wrote:
+>>>> Could you please write me an example message of add/remove?
+>>>
+>>> altnames are for existing netdevs, yes? existing netdevs have an id and
+>>> a name - 2 existing references for identifying the existing netdev for
+>>> which an altname will be added. Even using the altname as the main
+>>> 'handle' for a setlink change, I see no reason why the GETLINK api can
+>>> not take an the IFLA_ALT_IFNAME and return the full details of the
+>>> device if the altname is unique.
+>>>
+>>> So, what do the new RTM commands give you that you can not do with
+>>> RTM_*LINK?
+>>>
 >>
->>> ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
->>> error when add more thann 256 memberships in one multicast group. I haven't
->>> found this issue on other driver. It looks like an ibm driver issue and need
->>> to be fixed separately.
->> You need to root cause and fix the reason this message appears so much.
 >>
->> Once I let you rate limit the message you will have zero incentive to
->> fix the real problem and fix it.
-> Sorry, I'm not familiar with ibmveth driver...
->
-> Hi Thomas,
->
-> Would you please help check why this issue happens
+>> To put this another way, the ALT_NAME is an attribute of an object - a
+>> LINK. It is *not* a separate object which requires its own set of
+>> commands for manipulating.
+> 
+> Okay, again, could you provide example of a message to add/remove
+> altname using existing setlink message? Thanks!
+> 
 
+Examples from your cover letter with updates
 
-Hi, thanks for reporting this. I was able to recreate this on my own 
-system. The virtual ethernet's multicast filter list size is limited, 
-and the driver will check that there is available space before adding 
-entries.  The problem is that the size is encoded as big endian, but the 
-driver does not convert it for little endian systems after retrieving it 
-from the device tree.  As a result the driver is requesting more than 
-the hypervisor can allow and getting this error in reply. I will submit 
-a patch to correct this soon.
+$ ip link set dummy0 altname someothername
+$ ip link set dummy0 altname someotherveryveryveryverylongname
 
-Thanks again,
+$ ip link set dummy0 del altname someothername
+$ ip link set dummy0 del altname someotherveryveryveryverylongname
 
-Tom
+This syntactic sugar to what is really happening:
 
-> Thanks
-> Hangbbin
->
+RTM_NEWLINK, dummy0, IFLA_ALT_IFNAME
+
+if you are allowing many alt names, then yes, you need a flag to say
+delete this specific one which is covered by Roopa's nested suggestion.
