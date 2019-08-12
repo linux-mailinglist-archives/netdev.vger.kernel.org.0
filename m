@@ -2,60 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C3E3A8A35C
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 18:30:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BDF378A3EB
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:02:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727038AbfHLQ3e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 12:29:34 -0400
-Received: from coyote.holtmann.net ([212.227.132.17]:47453 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbfHLQ3e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 12:29:34 -0400
-Received: from marcel-macbook.fritz.box (p4FEFC580.dip0.t-ipconnect.de [79.239.197.128])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 2CE6CCECF4;
-        Mon, 12 Aug 2019 18:38:14 +0200 (CEST)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [PATCH v5 18/29] compat_ioctl: move rfcomm handlers into driver
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20190730195819.901457-6-arnd@arndb.de>
-Date:   Mon, 12 Aug 2019 18:29:32 +0200
-Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <C12653E2-D2EB-423E-82BF-35C05CD1984D@holtmann.org>
-References: <20190730192552.4014288-1-arnd@arndb.de>
- <20190730195819.901457-1-arnd@arndb.de>
- <20190730195819.901457-6-arnd@arndb.de>
-To:     Arnd Bergmann <arnd@arndb.de>
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S1726560AbfHLRCM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 13:02:12 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:54438 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725843AbfHLRCM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:02:12 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 12 Aug 2019 20:02:10 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7CH2ATv013648;
+        Mon, 12 Aug 2019 20:02:10 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, Vlad Buslov <vladbu@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: [PATCH net-next] net: devlink: remove redundant rtnl lock assert
+Date:   Mon, 12 Aug 2019 20:02:02 +0300
+Message-Id: <20190812170202.32314-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Arnd,
+It is enough for caller of devlink_compat_switch_id_get() to hold the net
+device to guarantee that devlink port is not destroyed concurrently. Remove
+rtnl lock assertion and modify comment to warn user that they must hold
+either rtnl lock or reference to net device. This is necessary to
+accommodate future implementation of rtnl-unlocked TC offloads driver
+callbacks.
 
-> All these ioctl commands are compatible, so we can handle
-> them with a trivial wrapper in rfcomm/sock.c and remove
-> the listing in fs/compat_ioctl.c.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> fs/compat_ioctl.c           |  6 ------
-> net/bluetooth/rfcomm/sock.c | 14 ++++++++++++--
-> 2 files changed, 12 insertions(+), 8 deletions(-)
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
+---
+ net/core/devlink.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-I think it is best if this series is applied as a whole. So whoever takes it
-
-Acked-by: Marcel Holtmann <marcel@holtmann.org>
-
-Regards
-
-Marcel
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index e8f0b891f000..e98e7bd9740b 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -6938,11 +6938,10 @@ int devlink_compat_switch_id_get(struct net_device *dev,
+ {
+ 	struct devlink_port *devlink_port;
+ 
+-	/* RTNL mutex is held here which ensures that devlink_port
+-	 * instance cannot disappear in the middle. No need to take
++	/* Caller must hold RTNL mutex or reference to dev, which ensures that
++	 * devlink_port instance cannot disappear in the middle. No need to take
+ 	 * any devlink lock as only permanent values are accessed.
+ 	 */
+-	ASSERT_RTNL();
+ 	devlink_port = netdev_to_devlink_port(dev);
+ 	if (!devlink_port || !devlink_port->attrs.switch_port)
+ 		return -EOPNOTSUPP;
+-- 
+2.21.0
 
