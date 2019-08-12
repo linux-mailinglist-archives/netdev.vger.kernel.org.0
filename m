@@ -2,96 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E718D8A679
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 20:46:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4578A67D
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 20:47:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726821AbfHLSqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 14:46:07 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:27900 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726610AbfHLSqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 14:46:07 -0400
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7CHgH56138269;
-        Mon, 12 Aug 2019 13:43:13 -0400
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2ub9m0rk9q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Aug 2019 13:43:13 -0400
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7CHhD8C140639;
-        Mon, 12 Aug 2019 13:43:13 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2ub9m0rk91-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Aug 2019 13:43:12 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7CHPaJv022221;
-        Mon, 12 Aug 2019 17:43:12 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma01dal.us.ibm.com with ESMTP id 2u9nj6ge60-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 12 Aug 2019 17:43:11 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7CHhB2v43581894
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 12 Aug 2019 17:43:11 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 32A66112061;
-        Mon, 12 Aug 2019 17:43:11 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id C58D5112064;
-        Mon, 12 Aug 2019 17:43:10 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.80.213.234])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 12 Aug 2019 17:43:10 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     liuhangbin@gmail.com, davem@davemloft.net, joe@perches.com,
-        Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: [PATCH net] ibmveth: Convert multicast list size for little-endian systems
-Date:   Mon, 12 Aug 2019 12:43:06 -0500
-Message-Id: <1565631786-18860-1-git-send-email-tlfalcon@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-12_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908120194
+        id S1726655AbfHLSrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 14:47:51 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:38090 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726463AbfHLSru (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 14:47:50 -0400
+Received: by mail-wr1-f68.google.com with SMTP id g17so105472293wrr.5
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 11:47:49 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=zk3m6DEwienNmYLPinxx0X95P0qA87rPxS+hCeTBUXM=;
+        b=c/mw2Q5UptgOrvSDGC/AtRLzBaBYD7e1F1cfLVMqGzxQ09Zb0s8IzYtEU8yonxnehA
+         IWE99BmYMP3wYDaaxSUKCjbjzAAld1PHFeQomypc2i1qPhbeac98fQyaupqiVTH9/kdj
+         y6VziyXL4U3gP6q7+tM/EkLAM84bxsj/i5d536ZsuVeUpwk09DP8HHTVKVrN9QRWxgBh
+         Ax6nvuMOGC+I9QsTMiwwbok7041AfXCL73eGfk+RhFx+B5gnJ/0+Aeg92Dbq+b9bg0GQ
+         6wiSlEQZFNEwLy76NA48m/4/A4d/Q4HoM3HEZCoSs8pKW0h9wc1iBMcDe4RMCLvU30yN
+         JQ7w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=zk3m6DEwienNmYLPinxx0X95P0qA87rPxS+hCeTBUXM=;
+        b=mxlFPQef1VrYO+WLfRKnSeqndGkjj61R1e2NfZCaVnZQ3ejHJNcHIwfLOQxnvpdkJO
+         KT7zuf6m2vv1a4jUsI8WRh6EfjH43C5hWZ9OEgzE5K6tpxuR43AcynxpiMT+9tKu8cQX
+         xn4hBA4SztKGiWtJImjYSdpwO3nmdmdB0z/87GU0JpWV5KkAk2tmZc1luTu6iA66klcU
+         kQAU8U6DNSoGoTMAtVcK+apLCFGEjavMnqTXqhdyEVggmqMDRJc2MYHe10hV8acG/QQ9
+         +jhbojUIB0UpzZ1TMtFmcvCep+uOXR1xSKF9mCSjpUZGt9VW97Xyh5AdqEUXIVA9a/2C
+         gmkA==
+X-Gm-Message-State: APjAAAUQKe5XJWMJuAQTK7TopY4eXoJc2+ut4DuOaZfEg1bOSc8spuiX
+        +NtOGyPGv6AqQSl9fZrHvbk=
+X-Google-Smtp-Source: APXvYqxKuaGcTwidTPAP2q2t9N2ERmR87pYm2UgZkiZIxOeS6fzeshFPff+fOO3jaTKeybP4uqmjUg==
+X-Received: by 2002:adf:fe10:: with SMTP id n16mr42668081wrr.92.1565635668661;
+        Mon, 12 Aug 2019 11:47:48 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6? (p200300EA8F2F3200E9C14D4C1CCF09D6.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6])
+        by smtp.googlemail.com with ESMTPSA id j15sm6061092wrn.70.2019.08.12.11.47.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Aug 2019 11:47:48 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: fix sporadic transmit timeout issue
+Message-ID: <e343933b-1965-4617-3011-6290ed30d4ae@gmail.com>
+Date:   Mon, 12 Aug 2019 20:47:40 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ibm,mac-address-filters property defines the maximum number of
-addresses the hypervisor's multicast filter list can support. It is
-encoded as a big-endian integer in the OF device tree, but the virtual
-ethernet driver does not convert it for use by little-endian systems.
-As a result, the driver is not behaving as it should on affected systems
-when a large number of multicast addresses are assigned to the device.
+Holger reported sporadic transmit timeouts and it turned out that one
+path misses ringing the doorbell. Fix was suggested by Eric.
 
-Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+Fixes: ef14358546b1 ("r8169: make use of xmit_more")
+Suggested-by: Eric Dumazet <edumazet@google.com>
+Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/ibm/ibmveth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index d654c23..b50a6cf 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -1645,7 +1645,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 641a34942..448047a32 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5681,6 +5681,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+ 		 */
+ 		smp_wmb();
+ 		netif_stop_queue(dev);
++		door_bell = true;
+ 	}
  
- 	adapter->vdev = dev;
- 	adapter->netdev = netdev;
--	adapter->mcastFilterSize = *mcastFilterSize_p;
-+	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
- 	adapter->pool_config = 0;
- 
- 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
+ 	if (door_bell)
 -- 
-1.8.3.1
+2.22.0
 
