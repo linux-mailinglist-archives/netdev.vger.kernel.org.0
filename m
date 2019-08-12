@@ -2,135 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D0A9289D36
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 13:36:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A65F89D65
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 13:57:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728283AbfHLLgV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 07:36:21 -0400
-Received: from mail-pf1-f201.google.com ([209.85.210.201]:47447 "EHLO
-        mail-pf1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728063AbfHLLgU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 07:36:20 -0400
-Received: by mail-pf1-f201.google.com with SMTP id q12so6099181pfl.14
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 04:36:20 -0700 (PDT)
+        id S1728294AbfHLL5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 07:57:31 -0400
+Received: from mail-pf1-f202.google.com ([209.85.210.202]:36961 "EHLO
+        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728258AbfHLL5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 07:57:31 -0400
+Received: by mail-pf1-f202.google.com with SMTP id w30so2292372pfj.4
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 04:57:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:message-id:mime-version:subject:from:to:cc;
-        bh=dSATQ80Fzo36m5+MgjcLgrfpCX8doHYZ70664kHYZGw=;
-        b=FWc2rabivejtO+K4ZPgfqR+A9xlcA4GwqhRn6dceo7y4txWREwP7vYGQetb55i86N0
-         sSvjUr9Zqv6etQ1FufXgP35O6TzrpIBmQjwv+Vu+JYs40LpPrKcH+eGWIG52A1E7/TtO
-         4MjwQaR5uUmCffQZQ12EQc6J3+OPDDnAcgKFLeZQuYMaAy+SNrp4vaLM3wyt47ats4UA
-         APfjzTdYU2UWMEyfwfUrUZ2s7eBFLS/sUf9MJoKTBvJ2jrGsDqOwKTLezPGh8JKw4wBa
-         LX+HafgelnfDy8FeoQsU+L5+QYEREl+7l2Iro6QLD78ZSQWVBlXrZXR5v99XMG6PgcDs
-         Om+Q==
+        bh=UzSMxK+UAAOHFHbeOa3MB1gvBMsAZ0DjmysKjpRO2+k=;
+        b=RFUToEB4qiUGFiAiYYdwu9W+SndND11Ks8Aw2ur6sOTSfqaFY2wTEZwcG+PcBve5S0
+         IBuuh3hSEfSaHqi76ckfoseFmluMkkLxNul3+K/lwmp1CPl8n35WjsJgZNoQwBctq2Cd
+         aWzbuwXeyAKcq4axX3aEfi0nPXJRWFJ+Onp7fA7zGuhIHY5FVFlZyj8m1cm91GCWNVef
+         oZMCBpeO36hBq69eTr2HLP/UJAQi9hMAoaHmvdme41k6dZCob8DkdvGgoBk8tyk1CXMJ
+         TuiJa4Nw4usva+P/TRZ2bFYNYKDZCEsgcx7Giwf0MHPVySXhGBY7s7qTSa7zEb9j78SH
+         bIsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=dSATQ80Fzo36m5+MgjcLgrfpCX8doHYZ70664kHYZGw=;
-        b=U4UrZYazmHq6Zz8f4xzJPbOsLDcL9Evwhsc0/g8BujkZ5MhYMvtu5XVdfSpRyJNV1u
-         ytC8PiQ8kNBPx+b1AHKMquXLLfF2ofE0puhW5lkzE8ts7A+TlJJU/1px+yQ1gT1KiPcd
-         d5r2MbyNCWnT85LYAN0Q/9ypzKFN2Xv16CPpKIQJ3HGdGVDD7+/LHEtdJQIne3XcURn0
-         snB8zPCCFwlzl4Om/RlJ3lTWYYMNPIVWxYISBTDycl9xBHrdwQHmC0x6ABn++WNTkITO
-         DlgSTJMPJif0DfT7iVvUPoqpECkXueQxjZFnM//UXpcEegQqmYSurXsMtlr+jTvTDD6O
-         A/iA==
-X-Gm-Message-State: APjAAAXjb2U+cyvu+fhxqH56maxVxk04/InfxVg2BeYerlmmW2vTjXXb
-        5tRpZrwfYJm85lE7oNfOFTUjn3Vir3TohQ==
-X-Google-Smtp-Source: APXvYqyv355EKM/DuegaOD13GqqIIEBImOlm/JmueFvh2TYjzeLfMaM/l20zXRNrC2wFyHNReiNeRGhDRoza7A==
-X-Received: by 2002:a63:ec48:: with SMTP id r8mr28580707pgj.387.1565609779701;
- Mon, 12 Aug 2019 04:36:19 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 04:36:16 -0700
-Message-Id: <20190812113616.51725-1-edumazet@google.com>
+        bh=UzSMxK+UAAOHFHbeOa3MB1gvBMsAZ0DjmysKjpRO2+k=;
+        b=RduKhUVkKz0kh/eh64hemBysD1mlxUCx2Q48TK7XiFhhzDQ+ev5KMPMqMVBiNPEdO5
+         H2OM7p2VetLx1lEh6aW+DuzPhBYZZyN0o9T56aUT902gddGFmyLu+AtVa4doDMveqKcc
+         XrxavLp8kWW09CB12b6apqNQvuXF+EHkooJHuOVGDB21nNMuAovoH+5gXKBispql1KP7
+         XjaZyIV3hAUhcBgNHiRN1qa8RMEqajE3e1lQXSUl2T2r4R54cfon7xSnq+wyKL+l/xay
+         BAduT1mJb2su9TvQN/YdLvOMPrz4REQ3LemRJXmMqjOdZRoYGxAnUQ2rG4cXbTUR8Ino
+         VtbQ==
+X-Gm-Message-State: APjAAAXEnWNXcBbJo/b4UJl2diPTUTx/MXuVw2iHwiMdRsIkPSU31oMB
+        pvq2t4HtfsEhxzgoCaeReS8umtD0nM0Rcw==
+X-Google-Smtp-Source: APXvYqxPmTDa5NumJ3C4uq40TBkWSsGhiIPCoonuLQMkluDbNUvr5GFk9kGkAQ0EvMvg31sTRIY0IaEbSpDA2w==
+X-Received: by 2002:a63:df06:: with SMTP id u6mr28125304pgg.96.1565611050593;
+ Mon, 12 Aug 2019 04:57:30 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 04:57:27 -0700
+Message-Id: <20190812115727.72149-1-edumazet@google.com>
 Mime-Version: 1.0
 X-Mailer: git-send-email 2.23.0.rc1.153.gdeed80330f-goog
-Subject: [PATCH net] nexthop: use nlmsg_parse_deprecated()
+Subject: [PATCH net] batman-adv: fix uninit-value in batadv_netlink_get_ifindex()
 From:   Eric Dumazet <edumazet@google.com>
 To:     "David S . Miller" <davem@davemloft.net>
 Cc:     netdev <netdev@vger.kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Eric Dumazet <eric.dumazet@gmail.com>,
         syzbot <syzkaller@googlegroups.com>,
-        David Ahern <dsahern@gmail.com>
+        Marek Lindner <mareklindner@neomailbox.ch>,
+        Simon Wunderlich <sw@simonwunderlich.de>,
+        Antonio Quartulli <a@unstable.cc>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David missed that commit 8cb081746c03 ("netlink: make validation
-more configurable for future strictness") has renamed nlmsg_parse()
+batadv_netlink_get_ifindex() needs to make sure user passed
+a correct u32 attribute.
 
 syzbot reported :
-BUG: KMSAN: uninit-value in nh_valid_get_del_req+0x6f1/0x8c0 net/ipv4/nexthop.c:1510
-CPU: 0 PID: 11812 Comm: syz-executor444 Not tainted 5.3.0-rc3+ #17
+BUG: KMSAN: uninit-value in batadv_netlink_dump_hardif+0x70d/0x880 net/batman-adv/netlink.c:968
+CPU: 1 PID: 11705 Comm: syz-executor888 Not tainted 5.1.0+ #1
 Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
 Call Trace:
  __dump_stack lib/dump_stack.c:77 [inline]
  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
- kmsan_report+0x162/0x2d0 mm/kmsan/kmsan_report.c:109
- __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:294
- nh_valid_get_del_req+0x6f1/0x8c0 net/ipv4/nexthop.c:1510
- rtm_del_nexthop+0x1b1/0x610 net/ipv4/nexthop.c:1543
- rtnetlink_rcv_msg+0x115a/0x1580 net/core/rtnetlink.c:5223
- netlink_rcv_skb+0x431/0x620 net/netlink/af_netlink.c:2477
- rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5241
- netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
- netlink_unicast+0xf6c/0x1050 net/netlink/af_netlink.c:1328
- netlink_sendmsg+0x110f/0x1330 net/netlink/af_netlink.c:1917
- sock_sendmsg_nosec net/socket.c:637 [inline]
- sock_sendmsg net/socket.c:657 [inline]
- ___sys_sendmsg+0x14ff/0x1590 net/socket.c:2311
- __sys_sendmmsg+0x53a/0xae0 net/socket.c:2413
- __do_sys_sendmmsg net/socket.c:2442 [inline]
- __se_sys_sendmmsg+0xbd/0xe0 net/socket.c:2439
- __x64_sys_sendmmsg+0x56/0x70 net/socket.c:2439
- do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:297
+ kmsan_report+0x130/0x2a0 mm/kmsan/kmsan.c:622
+ __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:310
+ batadv_netlink_dump_hardif+0x70d/0x880 net/batman-adv/netlink.c:968
+ genl_lock_dumpit+0xc6/0x130 net/netlink/genetlink.c:482
+ netlink_dump+0xa84/0x1ab0 net/netlink/af_netlink.c:2253
+ __netlink_dump_start+0xa3a/0xb30 net/netlink/af_netlink.c:2361
+ genl_family_rcv_msg net/netlink/genetlink.c:550 [inline]
+ genl_rcv_msg+0xfc1/0x1a40 net/netlink/genetlink.c:627
+ netlink_rcv_skb+0x431/0x620 net/netlink/af_netlink.c:2486
+ genl_rcv+0x63/0x80 net/netlink/genetlink.c:638
+ netlink_unicast_kernel net/netlink/af_netlink.c:1311 [inline]
+ netlink_unicast+0xf3e/0x1020 net/netlink/af_netlink.c:1337
+ netlink_sendmsg+0x127e/0x12f0 net/netlink/af_netlink.c:1926
+ sock_sendmsg_nosec net/socket.c:651 [inline]
+ sock_sendmsg net/socket.c:661 [inline]
+ ___sys_sendmsg+0xcc6/0x1200 net/socket.c:2260
+ __sys_sendmsg net/socket.c:2298 [inline]
+ __do_sys_sendmsg net/socket.c:2307 [inline]
+ __se_sys_sendmsg+0x305/0x460 net/socket.c:2305
+ __x64_sys_sendmsg+0x4a/0x70 net/socket.c:2305
+ do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:291
  entry_SYSCALL_64_after_hwframe+0x63/0xe7
+RIP: 0033:0x440209
 
-Fixes: ab84be7e54fc ("net: Initial nexthop code")
+Fixes: b60620cf567b ("batman-adv: netlink: hardif query")
 Signed-off-by: Eric Dumazet <edumazet@google.com>
 Reported-by: syzbot <syzkaller@googlegroups.com>
-Cc: David Ahern <dsahern@gmail.com>
+Cc: Marek Lindner <mareklindner@neomailbox.ch>
+Cc: Simon Wunderlich <sw@simonwunderlich.de>
+Cc: Antonio Quartulli <a@unstable.cc>
 ---
- net/ipv4/nexthop.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ net/batman-adv/netlink.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 5fe5a3981d4316ad8d9dbf54f5d9017b89e24038..2672e1a7b544253f2d1d0aaffd2bab9db5d76b9f 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -1304,8 +1304,8 @@ static int rtm_to_nh_config(struct net *net, struct sk_buff *skb,
- 	struct nlattr *tb[NHA_MAX + 1];
- 	int err;
+diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
+index 6f08fd122a8ddea43600c856a6be171dc7625d9c..7e052d6f759b659dbee0edd7546c367cf14b8e9e 100644
+--- a/net/batman-adv/netlink.c
++++ b/net/batman-adv/netlink.c
+@@ -164,7 +164,7 @@ batadv_netlink_get_ifindex(const struct nlmsghdr *nlh, int attrtype)
+ {
+ 	struct nlattr *attr = nlmsg_find_attr(nlh, GENL_HDRLEN, attrtype);
  
--	err = nlmsg_parse(nlh, sizeof(*nhm), tb, NHA_MAX, rtm_nh_policy,
--			  extack);
-+	err = nlmsg_parse_deprecated(nlh, sizeof(*nhm), tb, NHA_MAX,
-+				     rtm_nh_policy, extack);
- 	if (err < 0)
- 		return err;
+-	return attr ? nla_get_u32(attr) : 0;
++	return (attr && nla_len(attr) == sizeof(u32)) ? nla_get_u32(attr) : 0;
+ }
  
-@@ -1488,8 +1488,8 @@ static int nh_valid_get_del_req(struct nlmsghdr *nlh, u32 *id,
- 	struct nlattr *tb[NHA_MAX + 1];
- 	int err, i;
- 
--	err = nlmsg_parse(nlh, sizeof(*nhm), tb, NHA_MAX, rtm_nh_policy,
--			  extack);
-+	err = nlmsg_parse_deprecated(nlh, sizeof(*nhm), tb, NHA_MAX,
-+				     rtm_nh_policy, extack);
- 	if (err < 0)
- 		return err;
- 
-@@ -1639,8 +1639,8 @@ static int nh_valid_dump_req(const struct nlmsghdr *nlh, int *dev_idx,
- 	int err, i;
- 	u32 idx;
- 
--	err = nlmsg_parse(nlh, sizeof(*nhm), tb, NHA_MAX, rtm_nh_policy,
--			  NULL);
-+	err = nlmsg_parse_deprecated(nlh, sizeof(*nhm), tb, NHA_MAX,
-+				     rtm_nh_policy, NULL);
- 	if (err < 0)
- 		return err;
- 
+ /**
 -- 
 2.23.0.rc1.153.gdeed80330f-goog
 
