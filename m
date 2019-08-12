@@ -2,157 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4300189B34
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 12:19:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80A2889B3D
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 12:20:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727781AbfHLKTH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 06:19:07 -0400
-Received: from mail-eopbgr720068.outbound.protection.outlook.com ([40.107.72.68]:46879
-        "EHLO NAM05-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727667AbfHLKTG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 06:19:06 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=OyTeOXMC4wT2pCDiHjlLOH8ms2h7M2RG5Ev61NWM6h/YjL9P06jJq4hgeLLYGMX0shNIWiwYHCKndW5jsA0OeUdh14NrIYSPTdpzQgK8ePH/1EmYba8Ut4nflhaLNkrYwuvbA/4oyXicH7FYOHDpV/UDbzbljFUD9rq4haZ9t/tByy3iKgf64u/Z2XbPf9KqWDMT8iuuK+VLJS94NlmJ4aYADUogR7C+uFSSz/qtw+CZzLo8k1eBwv9b3nInLgxYdgioucLGHFyizzwvzl9QXmRjlYAH8kJKwVDQxn0E9bXE+jWlU1frvcEUq9xeNIT2wS+68tm3k6aGFFBjKZhtWg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mZeetDjJfYeeqnZS8zVT2wy9I0PQ5l09By7R2fVwFHE=;
- b=XW/3pOdIOGpa6ud8FczcHDJH6dNFho2IkL4w0Wq5aMZjxvcQ6nvp07m47TzQ1MQOoQVXDTXbIC57GOpehvKWUNg5VhVC+AwA/up5GGz+RMIKEEa5Qqu/9gP8tZtcac+f+ffqgxVJBSJkEWJFKYMeq6/whK8eqf4k4um/WHdwNQsOhC0/UcyzAn0PFUh36i485nftdC/kBVMe21M06gYFy/lPhKtnKngVai7Yuj+KwfQfQRN3OYDiPu9P94DIOPvxXsqPLdn1r7iluLELygwr4kWEjZ9zbH6A2rpgD0uvUKqwccAlbl1JS3ZgD75IHv3YWfw8T+muyL9XVCwxUs7PqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.100) smtp.rcpttodomain=pengutronix.de smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=mZeetDjJfYeeqnZS8zVT2wy9I0PQ5l09By7R2fVwFHE=;
- b=On9vVJySpD5OQ7THkQHIxvPUzwsTnogQ8OuCP8mpoGo74xcbot2XkXAbVmgXg8Fazd5GcAc543WNRS8dWr6C6+m0LXG2PwGya9KSPYzCemKa7a+FKB0A8bTx3wtIGCvaCQ0n5rHaq/WRQqUfpYRwl3jwyF43qrP3VKv956G54Ms=
-Received: from BYAPR02CA0053.namprd02.prod.outlook.com (2603:10b6:a03:54::30)
- by SN4PR0201MB3631.namprd02.prod.outlook.com (2603:10b6:803:47::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.14; Mon, 12 Aug
- 2019 10:19:02 +0000
-Received: from SN1NAM02FT014.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::204) by BYAPR02CA0053.outlook.office365.com
- (2603:10b6:a03:54::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.14 via Frontend
- Transport; Mon, 12 Aug 2019 10:19:02 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.100)
- smtp.mailfrom=xilinx.com; pengutronix.de; dkim=none (message not signed)
- header.d=none;pengutronix.de; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.60.100 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.60.100; helo=xsj-pvapsmtpgw02;
-Received: from xsj-pvapsmtpgw02 (149.199.60.100) by
- SN1NAM02FT014.mail.protection.outlook.com (10.152.72.106) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2157.15
- via Frontend Transport; Mon, 12 Aug 2019 10:19:01 +0000
-Received: from unknown-38-66.xilinx.com ([149.199.38.66]:42417 helo=xsj-pvapsmtp01)
-        by xsj-pvapsmtpgw02 with esmtp (Exim 4.63)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1hx7Pp-0007UK-5O; Mon, 12 Aug 2019 03:19:01 -0700
-Received: from [127.0.0.1] (helo=localhost)
-        by xsj-pvapsmtp01 with smtp (Exim 4.63)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1hx7Pj-0007is-Uo; Mon, 12 Aug 2019 03:18:55 -0700
-Received: from xsj-pvapsmtp01 (xsj-pvapsmtp01.xilinx.com [149.199.38.66])
-        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x7CAIo2a008360;
-        Mon, 12 Aug 2019 03:18:51 -0700
-Received: from [172.30.17.116]
-        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-        (envelope-from <michals@xilinx.com>)
-        id 1hx7Pe-0007i2-Ig; Mon, 12 Aug 2019 03:18:50 -0700
-Subject: Re: [PATCH 0/5] can: xilinx_can: Bug fixes
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>,
-        wg@grandegger.com, davem@davemloft.net, michal.simek@xilinx.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <1565594914-18999-1-git-send-email-appana.durga.rao@xilinx.com>
- <7ecaa7df-3202-21d8-de93-5f6af3582964@pengutronix.de>
- <5571da8a-de1f-f420-f6b7-81c6d8932430@pengutronix.de>
-From:   Michal Simek <michal.simek@xilinx.com>
-Message-ID: <f0e3360d-7c9a-a455-f63c-7fb584dfad2f@xilinx.com>
-Date:   Mon, 12 Aug 2019 12:18:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727894AbfHLKUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 06:20:07 -0400
+Received: from mail-ot1-f71.google.com ([209.85.210.71]:55856 "EHLO
+        mail-ot1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727409AbfHLKUH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 06:20:07 -0400
+Received: by mail-ot1-f71.google.com with SMTP id p7so83510498otk.22
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 03:20:06 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=F+sCkwDa9f+RxfruDpYk266w8j1SjIK4Xb0PYHWArdY=;
+        b=Zn3w+1Gk1BkjPrUIxVXgymCqpi2sldlbugDQVWTorHPvvSuJPLjG5FGlCqgSBLMumh
+         i/d4ExqWKUDDxq9p22S4qu9mLF8I2INnUuwpdczimYwy+ulh4JNGzggFfh85NpFpTTFD
+         hEdfzjrd8LE1erYByMNbRfUOwWGBCDuRfVSGmyST9u1KHjFMnYmnU14zje5ApEGMP1ee
+         B3Uvj3aZmxZXiTWEtUgh6ebGyUA2eVOOkvoszLaPWdK9J5mHY5aFAWDoV6CNad2mzGHz
+         iZbyflEAi23izyPE+Zu4rpj4N27G9knYmMWcaCdGhhgHyxXxIB+EoFDKQpXPZFuLklSH
+         SWWw==
+X-Gm-Message-State: APjAAAX1Ulsb2ZDcCLiAW+eV/zZkjohBeToE9e9RbDeudAokqPUJ7iYN
+        EsCrdDpEp4A1lElifmsDHxPmcuUlYdkJZS6/sGPtp3nw4fv8
+X-Google-Smtp-Source: APXvYqylZCr71afqbkmSSEoG0bXp+Wqna6q1KYeqMuVdotyvmT64jqS7CvFtW+Sb2KKJRXvbqprM29x92pCgtQB9t92MfbiYnkEv
 MIME-Version: 1.0
-In-Reply-To: <5571da8a-de1f-f420-f6b7-81c6d8932430@pengutronix.de>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-RCIS-Action: ALLOW
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.100;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(376002)(396003)(136003)(346002)(2980300002)(199004)(189003)(6246003)(8676002)(426003)(11346002)(63266004)(478600001)(81156014)(81166006)(446003)(2616005)(5660300002)(47776003)(229853002)(65956001)(65806001)(64126003)(106002)(316002)(58126008)(8936002)(2906002)(4326008)(110136005)(36386004)(486006)(31686004)(44832011)(70206006)(70586007)(126002)(336012)(476003)(31696002)(52146003)(23676004)(2486003)(36756003)(53546011)(65826007)(186003)(6666004)(9786002)(50466002)(356004)(305945005)(230700001)(76176011)(26005)(5001870100001);DIR:OUT;SFP:1101;SCL:1;SRVR:SN4PR0201MB3631;H:xsj-pvapsmtpgw02;FPR:;SPF:Pass;LANG:en;PTR:xapps1.xilinx.com,unknown-60-100.xilinx.com;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 1226778f-1e31-4776-0c0f-08d71f0e7f15
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(4709080)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328);SRVR:SN4PR0201MB3631;
-X-MS-TrafficTypeDiagnostic: SN4PR0201MB3631:
-X-Microsoft-Antispam-PRVS: <SN4PR0201MB36315EA5B34C3A85A782DCB4C6D30@SN4PR0201MB3631.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 012792EC17
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: PgUyL6alUg6T/p9pX/lkGiosEVpWCIGjvlLs6tcJuwiKxh8u1yANG6eSW36kw65Qw/qvMbQlKQMAoooQt5yQN3tGqG3MG8vERgnYloDxn0lUz5MmOkqdUBKRGDS99PpxSGGugd9lpB+KXzE4I8qeQ3k/tPOcVuh+428jDQokc28P5Hkl1j6EMxoKnsJ+ciGeZHyA+m69XUbow8GQU+IshhqKGT2ySnjUICCSsYdBpEQgwamzkIkG94Y7BhBCI+tVSv7qK0msG5yh2ZNgBrupKLzMEgGPeCm4D0uElfQmZRT1GgbBHaxOwFBeoDsMND8/rBN+Kzac1V4e/vNg6n7F/g5C+L35ozIaTUCSJqR9U4REp/KawtJFu0cR8oL1nPXmuSo88GwO0eLGW58IlqEiublM30MzxlEK6p9uK3ZajWs=
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2019 10:19:01.5401
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1226778f-1e31-4776-0c0f-08d71f0e7f15
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.100];Helo=[xsj-pvapsmtpgw02]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR0201MB3631
+X-Received: by 2002:a5d:8f8a:: with SMTP id l10mr8658161iol.306.1565605206234;
+ Mon, 12 Aug 2019 03:20:06 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 03:20:06 -0700
+In-Reply-To: <000000000000492086058fad2979@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000002d1bcc058fe8deb8@google.com>
+Subject: Re: BUG: corrupted list in rxrpc_local_processor
+From:   syzbot <syzbot+193e29e9387ea5837f1d@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, dhowells@redhat.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12. 08. 19 11:10, Marc Kleine-Budde wrote:
-> On 8/12/19 11:05 AM, Marc Kleine-Budde wrote:
->> On 8/12/19 9:28 AM, Appana Durga Kedareswara rao wrote:
->>> This patch series fixes below issues
->>> --> Bugs in the driver w.r.to CANFD 2.0 IP support
->>> --> Defer the probe if clock is not found
->>>
->>> Appana Durga Kedareswara rao (3):
->>>   can: xilinx_can: Fix FSR register handling in the rx path
->>>   can: xilinx_can: Fix the data updation logic for CANFD FD frames
->>>   can: xilinx_can: Fix FSR register FL and RI mask values for canfd 2.0
->>>
->>> Srinivas Neeli (1):
->>>   can: xilinx_can: Fix the data phase btr1 calculation
->>>
->>> Venkatesh Yadav Abbarapu (1):
->>>   can: xilinx_can: defer the probe if clock is not found
->>
->> Please add your S-o-b to patches 4+5.
->>
->> As these all are bugfixes please add a reference to the commit it fixes:
->>
->>     Fixes: commitish ("description")
-> 
-> Add this to your ~/.gitconfig:
-> 
-> [alias]
->         lfixes = log --pretty=fixes
-> [pretty]
->         fixes = Fixes: %h (\"%s\")
+syzbot has found a reproducer for the following crash on:
 
-This is understandable and I have this in my .gitconfig for quite a long
-time. And this is just log
+HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=16fb7bc2600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=a4c9e9f08e9e8960
+dashboard link: https://syzkaller.appspot.com/bug?extid=193e29e9387ea5837f1d
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159d4eba600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ba194a600000
 
-> and then use $(git lfixes $commitish).
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+193e29e9387ea5837f1d@syzkaller.appspotmail.com
 
-But what do you mean by this? Are you able to add this to commit message
-just with sha1?
-
-Thanks,
-Michal
-
-
+IPv6: ADDRCONF(NETDEV_CHANGE): hsr_slave_1: link becomes ready
+list_del corruption. prev->next should be ffff8880996e84e0, but was  
+ffff8880996e8960
+------------[ cut here ]------------
+kernel BUG at lib/list_debug.c:51!
+invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+CPU: 1 PID: 17 Comm: kworker/1:0 Not tainted 5.3.0-rc3+ #159
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: krxrpcd rxrpc_local_processor
+RIP: 0010:__list_del_entry_valid.cold+0xf/0x4f lib/list_debug.c:51
+Code: e8 e9 03 1e fe 0f 0b 48 89 f1 48 c7 c7 80 25 c6 87 4c 89 e6 e8 d5 03  
+1e fe 0f 0b 4c 89 f6 48 c7 c7 20 27 c6 87 e8 c4 03 1e fe <0f> 0b 4c 89 ea  
+4c 89 f6 48 c7 c7 60 26 c6 87 e8 b0 03 1e fe 0f 0b
+RSP: 0018:ffff8880a9917cc0 EFLAGS: 00010286
+RAX: 0000000000000054 RBX: ffff8880996e84f8 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815c3b96 RDI: ffffed1015322f8a
+RBP: ffff8880a9917cd8 R08: 0000000000000054 R09: ffffed1015d260d1
+R10: ffffed1015d260d0 R11: ffff8880ae930687 R12: ffff88808f998638
+R13: ffff88808f998638 R14: ffff8880996e84e0 R15: ffff8880aa0a8500
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2648a08db8 CR3: 00000000981a9000 CR4: 00000000001406e0
+Call Trace:
+  __list_del_entry include/linux/list.h:131 [inline]
+  list_del_init include/linux/list.h:190 [inline]
+  rxrpc_local_destroyer net/rxrpc/local_object.c:429 [inline]
+  rxrpc_local_processor+0x251/0x830 net/rxrpc/local_object.c:465
+  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
+  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
+  kthread+0x361/0x430 kernel/kthread.c:255
+  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+Modules linked in:
+---[ end trace 4d70382ddfcfe2b8 ]---
+RIP: 0010:__list_del_entry_valid.cold+0xf/0x4f lib/list_debug.c:51
+Code: e8 e9 03 1e fe 0f 0b 48 89 f1 48 c7 c7 80 25 c6 87 4c 89 e6 e8 d5 03  
+1e fe 0f 0b 4c 89 f6 48 c7 c7 20 27 c6 87 e8 c4 03 1e fe <0f> 0b 4c 89 ea  
+4c 89 f6 48 c7 c7 60 26 c6 87 e8 b0 03 1e fe 0f 0b
+RSP: 0018:ffff8880a9917cc0 EFLAGS: 00010286
+RAX: 0000000000000054 RBX: ffff8880996e84f8 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: ffffffff815c3b96 RDI: ffffed1015322f8a
+RBP: ffff8880a9917cd8 R08: 0000000000000054 R09: ffffed1015d260d1
+R10: ffffed1015d260d0 R11: ffff8880ae930687 R12: ffff88808f998638
+R13: ffff88808f998638 R14: ffff8880996e84e0 R15: ffff8880aa0a8500
+FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007f2648a08db8 CR3: 00000000981a9000 CR4: 00000000001406e0
 
