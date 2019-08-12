@@ -2,123 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFEB389E87
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 14:38:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B63789EA9
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 14:44:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726550AbfHLMiY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 08:38:24 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:16306 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726219AbfHLMiX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 08:38:23 -0400
-Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa3.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: qeHIJH6EHjEsNOvppt64ZYRVNZHLue+Csqxq7CLc08gsB7wEXuBIr0wLlIAI2HGArPxDVoIEtF
- wv87dc+PiXCuNuBmCMtLmiQrod3ooIDFecpcmfjaVgKq5tlnjaNwuJQCIs2OGjWd8t+K+tqfNf
- f405KkypkgqAXB42v76YacqYWJAcxkzG4iOdi0x2iyTZNZSJOXnpqXVUXOaynpCJqjY3Zgeque
- /cyp0i9UmcPeOeKwSkbrFIQdqvZCW3uza4MT9lHcqVMkhFPl8tb0r1gOOiMQie88pybuiSa05H
- sYI=
-X-IronPort-AV: E=Sophos;i="5.64,377,1559545200"; 
-   d="scan'208";a="44819725"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Aug 2019 05:38:22 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 12 Aug 2019 05:38:22 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Mon, 12 Aug 2019 05:38:20 -0700
-Date:   Mon, 12 Aug 2019 14:38:21 +0200
-From:   "Allan W. Nielsen" <allan.nielsen@microchip.com>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>
-Subject: Re: [PATCH 2/3] ocelot_ace: fix ingress ports setting for rule
-Message-ID: <20190812123820.qjaclomo6bhpz5pg@lx-anielsen.microsemi.net>
-References: <20190812104827.5935-1-yangbo.lu@nxp.com>
- <20190812104827.5935-3-yangbo.lu@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20190812104827.5935-3-yangbo.lu@nxp.com>
-User-Agent: NeoMutt/20180716
+        id S1726752AbfHLMok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 08:44:40 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:39219 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726668AbfHLMok (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 08:44:40 -0400
+Received: by mail-lj1-f193.google.com with SMTP id x4so6021214ljj.6
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 05:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=CzrTbiHopzrJu+YLYHoIsujt53sT7XN4YE3jA26/XGg=;
+        b=CZL/I2MFhnHG7WsGfil0Lhj0/vUbG22b1Ey4JJ+4mOZyN1TTt0k7l4o5BUszI4UGSt
+         1n6tFYW9r96cIcKCqEuEC/X0AeIYX4H3btbse/XxA6HbmKV6iGxNC4/567RVUaDZR3nC
+         HaBGbThoAuqSmKQ7S0HRYvg4C1CynhZlxF5TTej5/B6iJps7QKNTM4USoP9kAw899Z8y
+         njUfwG3frFnuvYBLJG70NZ9gAM/sazFT3OtdhJd6YwKSg4tw6mibwBU/2nf6qJlB+PYs
+         nEdfm2RkSbLQDJX7Q+RXVjY0XgH2jzOz2zIp+b1IMwxFfO6/cYmvcAAZd1PeK0vVqpsO
+         voQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=CzrTbiHopzrJu+YLYHoIsujt53sT7XN4YE3jA26/XGg=;
+        b=V5QqxFbLLUJXIQVOc/OBMUlISht1w4MsZ3PkDyRuwfv1RhKWbO1qiTdLZ5rzuDoecK
+         KAAtRdMZ7FJU7HpIsSaJAS2ayh7gCSQhp4vlY+2osuO3N3aY/RJuLcQWZArQU7O6e8DV
+         J5t13bX2sHoQM0fLxeLr/Oz/gs4hXee0FXkw69ShKwMPrqlJiN3o+vISfAjKvH8PxaJO
+         /lFEYV7ZjyraVOLGcfRkR6qVXnrB2L/7BdEwyxN5Bx/Ri9rjM1c+n45EkKYhJ7iwW3vw
+         r4nHqryYEiwTRZ0W0wDEssXQxmWhfQ3ZEYN/VNXyFgLGtpLSo0J4md7l72Wfpu4ABMxw
+         UKaQ==
+X-Gm-Message-State: APjAAAVZUbwGdZ8WrTxIgW8Z58h3FBM8GhfQgfSa3qUbpbYwAdyKL6VN
+        kXyxYHhtjq46pvVFGwOAVrWWTA==
+X-Google-Smtp-Source: APXvYqwamKoAxWVn0ZtiV6XAfXemkV1C3L3E5zzwIiIeJc4CgQilmql9PxxJQosy2E9Ep5TEcoG4/g==
+X-Received: by 2002:a2e:1459:: with SMTP id 25mr18650455lju.153.1565613878719;
+        Mon, 12 Aug 2019 05:44:38 -0700 (PDT)
+Received: from localhost.localdomain (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
+        by smtp.gmail.com with ESMTPSA id y25sm23432747lja.45.2019.08.12.05.44.37
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 12 Aug 2019 05:44:38 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     bjorn.topel@intel.com, linux-mm@kvack.org
+Cc:     xdp-newbies@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, ast@kernel.org,
+        magnus.karlsson@intel.com,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [PATCH v2 bpf-next] mm: mmap: increase sockets maximum memory size pgoff for 32bits
+Date:   Mon, 12 Aug 2019 15:43:26 +0300
+Message-Id: <20190812124326.32146-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190812113429.2488-1-ivan.khoronzhuk@linaro.org>
+References: <20190812113429.2488-1-ivan.khoronzhuk@linaro.org>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 08/12/2019 18:48, Yangbo Lu wrote:
-> The ingress ports setting of rule should support covering all ports.
-> This patch is to use u16 ingress_port for ingress port mask setting
-> for ace rule. One bit corresponds one port.
-That is how the HW is working, and it would be nice if we could operate on a
-port masks/lists instead. But how can this be used?
+The AF_XDP sockets umem mapping interface uses XDP_UMEM_PGOFF_FILL_RING
+and XDP_UMEM_PGOFF_COMPLETION_RING offsets. The offsets seems like are
+established already and are part of configuration interface.
 
-Can you please explain how/when this will make a difference?
+But for 32-bit systems, while AF_XDP socket configuration, the values
+are to large to pass maximum allowed file size verification.
+The offsets can be tuned ofc, but instead of changing existent
+interface - extend max allowed file size for sockets.
 
-> Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> ---
->  drivers/net/ethernet/mscc/ocelot_ace.c    | 2 +-
->  drivers/net/ethernet/mscc/ocelot_ace.h    | 2 +-
->  drivers/net/ethernet/mscc/ocelot_flower.c | 2 +-
->  3 files changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
-> index 5580a58..91250f3 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_ace.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_ace.c
-> @@ -352,7 +352,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
->  	data.type = IS2_ACTION_TYPE_NORMAL;
->  
->  	VCAP_KEY_ANY_SET(PAG);
-> -	VCAP_KEY_SET(IGR_PORT_MASK, 0, ~BIT(ace->chip_port));
-> +	VCAP_KEY_SET(IGR_PORT_MASK, 0, ~ace->ingress_port);
->  	VCAP_KEY_BIT_SET(FIRST, OCELOT_VCAP_BIT_1);
->  	VCAP_KEY_BIT_SET(HOST_MATCH, OCELOT_VCAP_BIT_ANY);
->  	VCAP_KEY_BIT_SET(L2_MC, ace->dmac_mc);
-> diff --git a/drivers/net/ethernet/mscc/ocelot_ace.h b/drivers/net/ethernet/mscc/ocelot_ace.h
-> index ce72f02..0fe23e0 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_ace.h
-> +++ b/drivers/net/ethernet/mscc/ocelot_ace.h
-> @@ -193,7 +193,7 @@ struct ocelot_ace_rule {
->  
->  	enum ocelot_ace_action action;
->  	struct ocelot_ace_stats stats;
-> -	int chip_port;
-> +	u16 ingress_port;
->  
->  	enum ocelot_vcap_bit dmac_mc;
->  	enum ocelot_vcap_bit dmac_bc;
-> diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-> index 7c60e8c..bfddc50 100644
-> --- a/drivers/net/ethernet/mscc/ocelot_flower.c
-> +++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-> @@ -184,7 +184,7 @@ struct ocelot_ace_rule *ocelot_ace_rule_create(struct flow_cls_offload *f,
->  		return NULL;
->  
->  	rule->ocelot = block->port->ocelot;
-> -	rule->chip_port = block->port->chip_port;
-> +	rule->ingress_port = BIT(block->port->chip_port);
->  	return rule;
->  }
+Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+---
 
--- Allan
+Based on bpf-next/master
+
+v2..v1:
+	removed not necessarily #ifdev as ULL and UL for 64 has same size
+
+ mm/mmap.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/mm/mmap.c b/mm/mmap.c
+index 7e8c3e8ae75f..578f52812361 100644
+--- a/mm/mmap.c
++++ b/mm/mmap.c
+@@ -1358,6 +1358,9 @@ static inline u64 file_mmap_size_max(struct file *file, struct inode *inode)
+ 	if (S_ISBLK(inode->i_mode))
+ 		return MAX_LFS_FILESIZE;
+ 
++	if (S_ISSOCK(inode->i_mode))
++		return MAX_LFS_FILESIZE;
++
+ 	/* Special "we do even unsigned file positions" case */
+ 	if (file->f_mode & FMODE_UNSIGNED_OFFSET)
+ 		return 0;
+-- 
+2.17.1
+
