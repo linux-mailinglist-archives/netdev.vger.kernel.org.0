@@ -2,105 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EB072898CE
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 10:36:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 69257898E5
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 10:43:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727222AbfHLIgi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 04:36:38 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:56172 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727075AbfHLIgi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 04:36:38 -0400
-Received: by mail-wm1-f68.google.com with SMTP id f72so11331541wmf.5
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 01:36:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Vmjw61td7/exIS64/GdDB+llM7txyd59zWSFdqtiJsk=;
-        b=GA/wYuzoUrb9pHfYZoFmhqvn8JtTCUQBVMLeRJvL3QQjY+dXkiG//ezf+HDTrXeqn1
-         hTd9CkiRJPbfbbqtzE9jUINbIVQLaSCHsY24c7a4fnDDm2JenkIiJaJ/XosFiFkxPWRq
-         mhtGpyQzPbAEu2sQQ/DMH/UdNhbBVizTees+edLwnSdRpBoIh8J9UlwB4uhn0DzwXyZm
-         3FoYYoElhpfnK4hZ+6Ke01GMou95H/6918V+Du5R8+tmo4nR634WZAe7IEzgGMmjbedj
-         7GfuLB+e9NQB1TJ/v/4WuUzVqBx19nfQJzmOK06GPTXGjq2C1vrDZxu5BGbVqzd7idtv
-         Kzkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Vmjw61td7/exIS64/GdDB+llM7txyd59zWSFdqtiJsk=;
-        b=N/OSt0yafefQJNcmnMf819WwHxCeDrUtWsIqnMX+FoBaOWrFd8Dadwd0PlQEi6qNgC
-         YX7PLwb3dK7plISQ29QALKZaiQwEYiPglbISgtM4HV1yD+f3YIRSVGHlTWoTfkG/+Sik
-         yuMMaW0tS2N22g1472SVaSlCn1JdjmQxaT1zVyG6U6dVCfYBxtzCMoshQjZwGY+cU3XH
-         8BYeghOS5Lb9N5XiAjWb36OojAUFKkFTzlri+VPbtk64NvPLspxYNSD7NhRJzahHTfqZ
-         VmHM/DfvBP2kWTTMuie8Ltl2YKxUrEs0/ZTF5EYyIbjAoQprmgYvsl9hIcx7FAg37Fsc
-         Hcbg==
-X-Gm-Message-State: APjAAAUReAf8VJlvsT8M5rZGIID7jkI6E09nX+1OHoKxwbRvbEh6mui0
-        ojtH84sNEDQyopVZYHeHEcJZ2g==
-X-Google-Smtp-Source: APXvYqwJuar08TwHoOEqlv6xgNozcN/MNrOKJEDHalyEi7JuNqzIZZGxhGQJVDRqI/GTWfDeJhwn8g==
-X-Received: by 2002:a05:600c:2c9:: with SMTP id 9mr2593576wmn.79.1565598996245;
-        Mon, 12 Aug 2019 01:36:36 -0700 (PDT)
-Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id c8sm1382453wrn.50.2019.08.12.01.36.35
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 12 Aug 2019 01:36:35 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 10:36:35 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Miller <davem@davemloft.net>
-Cc:     dsahern@kernel.org, netdev@vger.kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH net] netdevsim: Restore per-network namespace accounting
- for fib entries
-Message-ID: <20190812083635.GB2428@nanopsycho>
-References: <20190806191517.8713-1-dsahern@kernel.org>
- <20190811.210218.1719186095860421886.davem@davemloft.net>
+        id S1727275AbfHLIm7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 04:42:59 -0400
+Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:44714 "EHLO
+        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727245AbfHLIm6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 04:42:58 -0400
+Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.89)
+        (envelope-from <fw@breakpoint.cc>)
+        id 1hx5up-0008K3-U1; Mon, 12 Aug 2019 10:42:55 +0200
+From:   Florian Westphal <fw@strlen.de>
+To:     steffen.klassert@secunet.com
+Cc:     <netdev@vger.kernel.org>, syzkaller-bugs@googlegroups.com,
+        Florian Westphal <fw@strlen.de>,
+        syzbot+8cc27ace5f6972910b31@syzkaller.appspotmail.com
+Subject: [PATCH ipsec] xfrm: policy: avoid warning splat when merging nodes
+Date:   Mon, 12 Aug 2019 10:32:13 +0200
+Message-Id: <20190812083213.5010-1-fw@strlen.de>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <000000000000a585f2058f9dc7b3@google.com>
+References: <000000000000a585f2058f9dc7b3@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190811.210218.1719186095860421886.davem@davemloft.net>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Aug 12, 2019 at 06:02:18AM CEST, davem@davemloft.net wrote:
->From: David Ahern <dsahern@kernel.org>
->Date: Tue,  6 Aug 2019 12:15:17 -0700
->
->> From: David Ahern <dsahern@gmail.com>
->> 
->> Prior to the commit in the fixes tag, the resource controller in netdevsim
->> tracked fib entries and rules per network namespace. Restore that behavior.
->> 
->> Fixes: 5fc494225c1e ("netdevsim: create devlink instance per netdevsim instance")
->> Signed-off-by: David Ahern <dsahern@gmail.com>
->
->Applied, thanks for bringing this to our attention and fixing it David.
->
->Jiri, I disagree you on every single possible level.
->
->If you didn't like how netdevsim worked in this area the opportunity to do
->something about it was way back when it went in.
+syzbot reported a splat:
+ xfrm_policy_inexact_list_reinsert+0x625/0x6e0 net/xfrm/xfrm_policy.c:877
+ CPU: 1 PID: 6756 Comm: syz-executor.1 Not tainted 5.3.0-rc2+ #57
+ Call Trace:
+  xfrm_policy_inexact_node_reinsert net/xfrm/xfrm_policy.c:922 [inline]
+  xfrm_policy_inexact_node_merge net/xfrm/xfrm_policy.c:958 [inline]
+  xfrm_policy_inexact_insert_node+0x537/0xb50 net/xfrm/xfrm_policy.c:1023
+  xfrm_policy_inexact_alloc_chain+0x62b/0xbd0 net/xfrm/xfrm_policy.c:1139
+  xfrm_policy_inexact_insert+0xe8/0x1540 net/xfrm/xfrm_policy.c:1182
+  xfrm_policy_insert+0xdf/0xce0 net/xfrm/xfrm_policy.c:1574
+  xfrm_add_policy+0x4cf/0x9b0 net/xfrm/xfrm_user.c:1670
+  xfrm_user_rcv_msg+0x46b/0x720 net/xfrm/xfrm_user.c:2676
+  netlink_rcv_skb+0x1f0/0x460 net/netlink/af_netlink.c:2477
+  xfrm_netlink_rcv+0x74/0x90 net/xfrm/xfrm_user.c:2684
+  netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+  netlink_unicast+0x809/0x9a0 net/netlink/af_netlink.c:1328
+  netlink_sendmsg+0xa70/0xd30 net/netlink/af_netlink.c:1917
+  sock_sendmsg_nosec net/socket.c:637 [inline]
+  sock_sendmsg net/socket.c:657 [inline]
 
-Yeah, I expressed my feelings back then. But that didn't help :(
+There is no reproducer, however, the warning can be reproduced
+by adding rules with ever smaller prefixes.
 
+The sanity check ("does the policy match the node") uses the prefix value
+of the node before its updated to the smaller value.
 
->
->No matter how completely busted or disagreeable an interface is, once we have
->committed it to a release (and in particular people are knowingly using and
->depending upon it) you cannot break it.
+To fix this, update the prefix earlier.  The bug has no impact on tree
+correctness, this is only to prevent a false warning.
 
-I understand it with real devices, but dummy testing device, who's
-purpose is just to test API. Why?
+Reported-by: syzbot+8cc27ace5f6972910b31@syzkaller.appspotmail.com
+Signed-off-by: Florian Westphal <fw@strlen.de>
+---
+ net/xfrm/xfrm_policy.c                     | 6 ++++--
+ tools/testing/selftests/net/xfrm_policy.sh | 7 +++++++
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-
->
->It doesn't matter how much you disagree with something, you cannot break it
->when it's out there and actively in use.
->
->Do you have any idea how much stuff I'd like to break because I think the
->design turned out to be completely wrong?  But I can't.
-
-Sure, me too :) But that is for real devices. That is a different story
-as I see it. Apparently, I'm wrong...
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 8ca637a72697..0fa7c5ce3b2c 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -912,6 +912,7 @@ static void xfrm_policy_inexact_node_reinsert(struct net *net,
+ 		} else if (delta > 0) {
+ 			p = &parent->rb_right;
+ 		} else {
++			bool same_prefixlen = node->prefixlen == n->prefixlen;
+ 			struct xfrm_policy *tmp;
+ 
+ 			hlist_for_each_entry(tmp, &n->hhead, bydst) {
+@@ -919,9 +920,11 @@ static void xfrm_policy_inexact_node_reinsert(struct net *net,
+ 				hlist_del_rcu(&tmp->bydst);
+ 			}
+ 
++			node->prefixlen = prefixlen;
++
+ 			xfrm_policy_inexact_list_reinsert(net, node, family);
+ 
+-			if (node->prefixlen == n->prefixlen) {
++			if (same_prefixlen) {
+ 				kfree_rcu(n, rcu);
+ 				return;
+ 			}
+@@ -929,7 +932,6 @@ static void xfrm_policy_inexact_node_reinsert(struct net *net,
+ 			rb_erase(*p, new);
+ 			kfree_rcu(n, rcu);
+ 			n = node;
+-			n->prefixlen = prefixlen;
+ 			goto restart;
+ 		}
+ 	}
+diff --git a/tools/testing/selftests/net/xfrm_policy.sh b/tools/testing/selftests/net/xfrm_policy.sh
+index 5445943bf07f..7a1bf94c5bd3 100755
+--- a/tools/testing/selftests/net/xfrm_policy.sh
++++ b/tools/testing/selftests/net/xfrm_policy.sh
+@@ -106,6 +106,13 @@ do_overlap()
+     #
+     # 10.0.0.0/24 and 10.0.1.0/24 nodes have been merged as 10.0.0.0/23.
+     ip -net $ns xfrm policy add src 10.1.0.0/24 dst 10.0.0.0/23 dir fwd priority 200 action block
++
++    # similar to above: add policies (with partially random address), with shrinking prefixes.
++    for p in 29 28 27;do
++      for k in $(seq 1 32); do
++       ip -net $ns xfrm policy add src 10.253.1.$((RANDOM%255))/$p dst 10.254.1.$((RANDOM%255))/$p dir fwd priority $((200+k)) action block 2>/dev/null
++      done
++    done
+ }
+ 
+ do_esp_policy_get_check() {
+-- 
+2.21.0
 
