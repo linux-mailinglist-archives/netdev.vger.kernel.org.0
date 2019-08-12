@@ -2,98 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA8848A579
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 20:14:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DA598A58C
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 20:20:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726537AbfHLSOy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 14:14:54 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:36640 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbfHLSOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 14:14:53 -0400
-Received: by mail-ot1-f68.google.com with SMTP id k18so30256380otr.3
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 11:14:53 -0700 (PDT)
+        id S1726500AbfHLSUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 14:20:55 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:54679 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbfHLSUy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 14:20:54 -0400
+Received: by mail-wm1-f66.google.com with SMTP id p74so430356wme.4
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 11:20:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=/Ig8V5oZNUYetyplWMD5Ehuw+FSL5uyd5457okFOL5M=;
-        b=ovFFWUf7AQNbja1xZvJdrdwYJ2CdH2aXpvdjm8qdcPIm+sgNdNMxWP+mhDhhb7rrny
-         VhzjvbGXjAsrpTeyhlzwBiJa7OMmsy4HDPrG4xNLqNH9M8XVX0/Qtyg7nuzeWHkiDCn/
-         +F6tWaCez4WB/fecG/VSjJuN4gdzdZcU6zaDd5aEu5kblEz0btV9KZ/ahERcRKnyMaT6
-         8FDdCd0brrCXqFYSldbaq6xzwwwRTXGIvuHxiupOWYRaHe8BMoMcgyy3dZyePtiszyQl
-         7GhmZErCaZLfn2OWmGYky5Vet7OD3LQe1jRjSpefNwSbdj3iraM0UTTN/swGUuqoFMXp
-         fXNA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=O3FFW8Ykfpml4RMlyDl4XtJ8oB/ZXya3IVcgmZOkWLA=;
+        b=QuZt9knar58hKfvwVoquCrrTrncr5GbQJdbGioKcSPsRRK+DdLaQZ57RA1wpekC7yU
+         6wfXTYelh4/cVctspiNU6WSod4+wnqZ8G+xtd6FwQIrwvi7pVou+rand4IwUfnvKQRYN
+         FN+UHSdIe/i4AENnAIoJfTfiePU852FJAerAEvfpEnjHOwiZ6Zc7ZX8OuPv00uyTeCA+
+         OLWpym9o4FzakfYZhLc1e14edsAfDjdwcAA1Ip9ATzGZY+ti8ybpRs11pkD9nDnC7vT5
+         qSoQJD0If5FY+IG1tmOxh3nsJvespP6dAmJWT9PFS22ZtENYvr++6HRkBcmgkPbZwI0O
+         CfUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=/Ig8V5oZNUYetyplWMD5Ehuw+FSL5uyd5457okFOL5M=;
-        b=EpSCxiJVfFgrXQFrACWyHx+qdl3m2HtxSC7tLNmIw64NeYdU44KUAFx1nlTdntHwVR
-         u2FNfzInn73UJMFcSADER7z3lB9veDgV/x+0301DtPKgbPwKj9eqKYbAExJ1WSG3jkvn
-         aEdR043LJG2ZtBX1QvFzUheWoQYYdL2fLKK9nUocwBUVClm0rJZ1nEnTOdo+ljllXX27
-         nz+4tYdWAItxAWbiAoxTvbBdxWUOFEElADF3Hya8fJ87tRBLXfhdIyk9jdHG9JA2IcdP
-         Kxej8z6i9r1deZ1aAzQgfW73guxQBTMyPslwMNfCI/u6HgNsFdqL1murHwDLM9XyN+iE
-         WhWA==
-X-Gm-Message-State: APjAAAVExyCneJGNSZOjJBIg5q2pZK6CiuivFzpbgOLh1HKOZHFaeE90
-        oevPVqLoXUA7fSFfbtGz+Si2zIQL
-X-Google-Smtp-Source: APXvYqwOtQXx4h27QXqRuYhj8M1gztWJuXaQnJnZQzqLZpb7WbdoURKTTmhlydoDRsoVXJ993V+J5g==
-X-Received: by 2002:a02:85c7:: with SMTP id d65mr39708993jai.8.1565633692567;
-        Mon, 12 Aug 2019 11:14:52 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:1567:1802:ced3:a7f1? ([2601:282:800:fd80:1567:1802:ced3:a7f1])
-        by smtp.googlemail.com with ESMTPSA id c13sm19083532iok.84.2019.08.12.11.14.51
+        bh=O3FFW8Ykfpml4RMlyDl4XtJ8oB/ZXya3IVcgmZOkWLA=;
+        b=CN6A0Mr6QASJs/is5bu9Rfv9vYtII/SV7DeAdqltl5d8gO30r2T65e/myxwmuszhFi
+         9ivijhLsvziXTScoCDZt0AhEghvdjefkwE+7KpjeMwuqGxxtML9ZOgZoE9i9qNaauVia
+         sH9hvTOaxbQOynJelJkVgALN6xuWSwRQwS0ZLKk143BhXFnU7G4mHAUOdOXQ/mQHuZVX
+         x7FIpiTbV6zuFOaWr5huIrIML+eo27qdTljYDzUrKXUGRA6Ch31B5Wduqyzzn4mAFrcK
+         y6tO1fSlzKTECNBPWcLU8+luWUlUAAeTywjBGCvIpst/MFpxB74YPw4DnIL5QweYMTWR
+         RA4g==
+X-Gm-Message-State: APjAAAUvYIpchF3/sf0EDA8PkAMh0T6p3bYJWeposjMI3TQ4QVV6jbmp
+        MYEAgLspCH3dyUp9Wa59JME=
+X-Google-Smtp-Source: APXvYqxFqJGjhKxPCuekfCqq/JUlFSW1BUAU0YgvcMHzY6X1sKJMdF/AbtKyaf5gyLXg2trmb7LwRA==
+X-Received: by 2002:a1c:18a:: with SMTP id 132mr618600wmb.15.1565634052924;
+        Mon, 12 Aug 2019 11:20:52 -0700 (PDT)
+Received: from [192.168.8.147] (239.169.185.81.rev.sfr.net. [81.185.169.239])
+        by smtp.gmail.com with ESMTPSA id a26sm218735wmg.45.2019.08.12.11.20.51
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Aug 2019 11:14:51 -0700 (PDT)
-Subject: Re: [PATCH 1/2] ip nexthop: Add space to display properly when
- showing a group
-To:     Donald Sharp <sharpd@cumulusnetworks.com>, netdev@vger.kernel.org
-References: <20190810001843.32068-2-sharpd@cumulusnetworks.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <b4180885-8181-a2ee-d333-73fc1d7a58db@gmail.com>
-Date:   Mon, 12 Aug 2019 12:14:48 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        Mon, 12 Aug 2019 11:20:52 -0700 (PDT)
+Subject: Re: [PATCH v3 net-next 0/3] net: batched receive in GRO path
+To:     Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        Edward Cree <ecree@solarflare.com>
+Cc:     David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "linux-net-drivers@solarflare.com" <linux-net-drivers@solarflare.com>
+References: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
+ <AM0PR04MB4994C1A8F32FB6C9A7EE057E94D60@AM0PR04MB4994.eurprd04.prod.outlook.com>
+ <a6faf533-6dd3-d7d7-9464-1fe87d0ac7fc@solarflare.com>
+ <AM0PR04MB4994A035C6121DC13C0EFBB194D30@AM0PR04MB4994.eurprd04.prod.outlook.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <a7456e50-13f1-7ffb-9913-cb7f9bc2312d@gmail.com>
+Date:   Mon, 12 Aug 2019 20:20:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190810001843.32068-2-sharpd@cumulusnetworks.com>
+In-Reply-To: <AM0PR04MB4994A035C6121DC13C0EFBB194D30@AM0PR04MB4994.eurprd04.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/9/19 6:18 PM, Donald Sharp wrote:
-> When displaying a nexthop group made up of other nexthops, the display
-> line shows this when you have additional data at the end:
-> 
-> id 42 group 43/44/45/46/47/48/49/50/51/52/53/54/55/56/57/58/59/60/61/62/63/64/65/66/67/68/69/70/71/72/73/74proto zebra
-> 
-> Modify code so that it shows:
-> 
-> id 42 group 43/44/45/46/47/48/49/50/51/52/53/54/55/56/57/58/59/60/61/62/63/64/65/66/67/68/69/70/71/72/73/74 proto zebra
-> 
-> Signed-off-by: Donald Sharp <sharpd@cumulusnetworks.com>
-> ---
->  ip/ipnexthop.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/ip/ipnexthop.c b/ip/ipnexthop.c
-> index 97f09e74..f35aab52 100644
-> --- a/ip/ipnexthop.c
-> +++ b/ip/ipnexthop.c
-> @@ -186,6 +186,7 @@ static void print_nh_group(FILE *fp, const struct rtattr *grps_attr)
->  
->  		close_json_object();
->  	}
-> +	print_string(PRINT_FP, NULL, "%s", " ");
->  	close_json_array(PRINT_JSON, NULL);
->  }
->  
-> 
 
-Looks right to me:
-Reviewed-by: David Ahern <dsahern@gmail.com>
 
-Stephen: this should go through your tree.
+On 8/12/19 7:51 PM, Ioana Ciocoi Radulescu wrote:
+>> -----Original Message-----
+>> From: Edward Cree <ecree@solarflare.com>
+>> Sent: Friday, August 9, 2019 8:32 PM
+>> To: Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
+>> Cc: David Miller <davem@davemloft.net>; netdev <netdev@vger.kernel.org>;
+>> Eric Dumazet <eric.dumazet@gmail.com>; linux-net-drivers@solarflare.com
+>> Subject: Re: [PATCH v3 net-next 0/3] net: batched receive in GRO path
+>>
+>> On 09/08/2019 18:14, Ioana Ciocoi Radulescu wrote:
+>>> Hi Edward,
+>>>
+>>> I'm probably missing a lot of context here, but is there a reason
+>>> this change targets only the napi_gro_frags() path and not the
+>>> napi_gro_receive() one?
+>>> I'm trying to understand what drivers that don't call napi_gro_frags()
+>>> should do in order to benefit from this batching feature.
+>> The sfc driver (which is what I have lots of hardware for, so I can
+>>  test it) uses napi_gro_frags().
+>> It should be possible to do a similar patch to napi_gro_receive(),
+>>  if someone wants to put in the effort of writing and testing it.
+> 
+> Rather tricky, since I'm not really familiar with GRO internals and
+> probably don't understand all the implications of such a change :-/
+> Any pointers to what I should pay attention to/sensitive areas that
+> need extra care?
+> 
+>> However, there are many more callers, so more effort required to
+>>  make sure none of them care whether the return value is GRO_DROP
+>>  or GRO_NORMAL (since the listified version cannot give that
+>>  indication).
+> 
+> At a quick glance, there's only one driver that looks at the return
+> value of napi_gro_receive (drivers/net/ethernet/socionext/netsec.c),
+> and it only updates interface stats based on it.
+> 
+>> Also, the guidance from Eric is that drivers seeking high performance
+>>  should use napi_gro_frags(), as this allows GRO to recycle the SKB.
+> 
+> But this guidance is for GRO-able frames only, right? If I try to use
+> napi_gro_frags() indiscriminately on the Rx path, I get a big
+> performance penalty in some cases - e.g. forwarding of non-TCP
+> single buffer frames.
+
+How big is big ?
+
+You can not win all the time.
+
+Some design (or optimizations) are for the most common case,
+they might hurt some other use cases.
+
+> 
+> On the other hand, Eric shot down my attempt to differentiate between
+> TCP and non-TCP frames inside the driver (see 
+> https://patchwork.ozlabs.org/patch/1135817/#2222236), so I'm not
+> really sure what's the recommended approach here?
+
+If GRO is not good enough for non-TCP buffer frames, please make the change in GRO,
+or document that disabling GRO might help some setups.
+
+We do not want each driver to implement their own logic that are a
+maintenance nightmare.
+
+GRO can aggregate non-TCP frames (say if you add any encapsulation over TCP),
+with a very significant gain, so detecting if an incoming frame is a 'TCP packet'
+in the driver would be a serious problem if the traffic is 100% SIT for example.
+
