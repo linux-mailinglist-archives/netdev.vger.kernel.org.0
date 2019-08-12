@@ -2,109 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 80A2889B3D
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 12:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FDBC89B72
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 12:26:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727894AbfHLKUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 06:20:07 -0400
-Received: from mail-ot1-f71.google.com ([209.85.210.71]:55856 "EHLO
-        mail-ot1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727409AbfHLKUH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 06:20:07 -0400
-Received: by mail-ot1-f71.google.com with SMTP id p7so83510498otk.22
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 03:20:06 -0700 (PDT)
+        id S1727828AbfHLK0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 06:26:36 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:34859 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727678AbfHLK0g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 06:26:36 -0400
+Received: by mail-wm1-f67.google.com with SMTP id l2so11287995wmg.0
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 03:26:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=rDB5BKki8yIs6XgzMfPhCXxTJG2SqJxjPTFmL72epn0=;
+        b=FdIUWMKjVhrglFeAbUe1JIoJs0PhUxrp3vzmvESFu0Tu8YQtbc9J/EJh7FDqPE4Icb
+         p6opQNJq12uJAo5+hT6HjUBIXuTyovBcpDjvpUSM++UsRlTiXeNTccn9/Ni9A2ZOBcJ2
+         2t5oSfa27NJ8jd2iZs3DUI8xSnhYvKuORAg/eyiDEk2NWGj87ER8xJgUIcuYmP3e3tNA
+         esJzCCk6S0F67iRlvSVLpgeIE93+N5+OP8uBSaomazX8mWUsNLMHPeoRDriWOFRxpUbb
+         dxHX4QY48XYqSS5mv2t0THtLNA5VKX6ca/r1MLmdanfYZTgvgS3Qi7Ee/3ArTUHyBMiy
+         gFbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=F+sCkwDa9f+RxfruDpYk266w8j1SjIK4Xb0PYHWArdY=;
-        b=Zn3w+1Gk1BkjPrUIxVXgymCqpi2sldlbugDQVWTorHPvvSuJPLjG5FGlCqgSBLMumh
-         i/d4ExqWKUDDxq9p22S4qu9mLF8I2INnUuwpdczimYwy+ulh4JNGzggFfh85NpFpTTFD
-         hEdfzjrd8LE1erYByMNbRfUOwWGBCDuRfVSGmyST9u1KHjFMnYmnU14zje5ApEGMP1ee
-         B3Uvj3aZmxZXiTWEtUgh6ebGyUA2eVOOkvoszLaPWdK9J5mHY5aFAWDoV6CNad2mzGHz
-         iZbyflEAi23izyPE+Zu4rpj4N27G9knYmMWcaCdGhhgHyxXxIB+EoFDKQpXPZFuLklSH
-         SWWw==
-X-Gm-Message-State: APjAAAX1Ulsb2ZDcCLiAW+eV/zZkjohBeToE9e9RbDeudAokqPUJ7iYN
-        EsCrdDpEp4A1lElifmsDHxPmcuUlYdkJZS6/sGPtp3nw4fv8
-X-Google-Smtp-Source: APXvYqylZCr71afqbkmSSEoG0bXp+Wqna6q1KYeqMuVdotyvmT64jqS7CvFtW+Sb2KKJRXvbqprM29x92pCgtQB9t92MfbiYnkEv
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=rDB5BKki8yIs6XgzMfPhCXxTJG2SqJxjPTFmL72epn0=;
+        b=JDcG4Wd+cMOl6u60jUG0RXQcZCHlPjMaBiSd6xr2hHDaMriTAx7M2pRQUCBiF4GLGk
+         qUrcWRBKX9L/9kzrRSOdwb1bORKRVVRoYQbdh6h4njKqJlib4UeZ+/6LvQX/CCQyoAWw
+         G/cFm+QFVUkVYngkqfrDeI/DG6GORcAMbNePRFD3BoHusX/M92N1oorn8VDLjicHYlRx
+         A3ZEiki7ubsTVMQnXiUZ4QsHmApZvMQUUy2sbISeUbfNR+dz1fhx4cXqW0vhReuyh4lG
+         T0x7FdPRKV5XmHm3EPUJw1BXWhEpHnMbymuzpAdvQ50yr81/548slWIJrcXIYFcLJ5JS
+         anaQ==
+X-Gm-Message-State: APjAAAW+Dpai58IjwBvuuwazZeY6AcY2ybPJL92e0IOL8bJ/ByFXY+fg
+        cHy3WGDHzQe7SOkAhvnAZeRsHw==
+X-Google-Smtp-Source: APXvYqwc8ukSsvrwQdh4Gd54LUo0ClrtTiyYtMf6fqeSrRRoGLLI/cWssn0Nbv9F1vmnjn1/+mIQ+A==
+X-Received: by 2002:a7b:c187:: with SMTP id y7mr7935915wmi.155.1565605594643;
+        Mon, 12 Aug 2019 03:26:34 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id x24sm15632848wmh.5.2019.08.12.03.26.34
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 12 Aug 2019 03:26:34 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 12:26:33 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, stephen@networkplumber.org,
+        dsahern@gmail.com, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH iproute2] tc: Fix block-handle support for filter
+ operations
+Message-ID: <20190812102633.GC2428@nanopsycho>
+References: <20190812101706.15778-1-idosch@idosch.org>
 MIME-Version: 1.0
-X-Received: by 2002:a5d:8f8a:: with SMTP id l10mr8658161iol.306.1565605206234;
- Mon, 12 Aug 2019 03:20:06 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 03:20:06 -0700
-In-Reply-To: <000000000000492086058fad2979@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002d1bcc058fe8deb8@google.com>
-Subject: Re: BUG: corrupted list in rxrpc_local_processor
-From:   syzbot <syzbot+193e29e9387ea5837f1d@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, dhowells@redhat.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190812101706.15778-1-idosch@idosch.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+Mon, Aug 12, 2019 at 12:17:06PM CEST, idosch@idosch.org wrote:
+>From: Ido Schimmel <idosch@mellanox.com>
+>
+>Commit e991c04d64c0 ("Revert "tc: Add batchsize feature for filter and
+>actions"") reverted more than it should and broke shared block
+>functionality. Fix this by restoring the original functionality.
+>
+>To reproduce:
+>
+># tc qdisc add dev swp1 ingress_block 10 ingress
+># tc filter add block 10 proto ip pref 1 flower \
+>	dst_ip 192.0.2.0/24 action drop
+>Unknown filter "block", hence option "10" is unparsable
+>
+>Fixes: e991c04d64c0 ("Revert "tc: Add batchsize feature for filter and actions"")
+>Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 
-HEAD commit:    125b7e09 net: tc35815: Explicitly check NET_IP_ALIGN is no..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=16fb7bc2600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=a4c9e9f08e9e8960
-dashboard link: https://syzkaller.appspot.com/bug?extid=193e29e9387ea5837f1d
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=159d4eba600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=16ba194a600000
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+193e29e9387ea5837f1d@syzkaller.appspotmail.com
-
-IPv6: ADDRCONF(NETDEV_CHANGE): hsr_slave_1: link becomes ready
-list_del corruption. prev->next should be ffff8880996e84e0, but was  
-ffff8880996e8960
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:51!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 17 Comm: kworker/1:0 Not tainted 5.3.0-rc3+ #159
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Workqueue: krxrpcd rxrpc_local_processor
-RIP: 0010:__list_del_entry_valid.cold+0xf/0x4f lib/list_debug.c:51
-Code: e8 e9 03 1e fe 0f 0b 48 89 f1 48 c7 c7 80 25 c6 87 4c 89 e6 e8 d5 03  
-1e fe 0f 0b 4c 89 f6 48 c7 c7 20 27 c6 87 e8 c4 03 1e fe <0f> 0b 4c 89 ea  
-4c 89 f6 48 c7 c7 60 26 c6 87 e8 b0 03 1e fe 0f 0b
-RSP: 0018:ffff8880a9917cc0 EFLAGS: 00010286
-RAX: 0000000000000054 RBX: ffff8880996e84f8 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815c3b96 RDI: ffffed1015322f8a
-RBP: ffff8880a9917cd8 R08: 0000000000000054 R09: ffffed1015d260d1
-R10: ffffed1015d260d0 R11: ffff8880ae930687 R12: ffff88808f998638
-R13: ffff88808f998638 R14: ffff8880996e84e0 R15: ffff8880aa0a8500
-FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f2648a08db8 CR3: 00000000981a9000 CR4: 00000000001406e0
-Call Trace:
-  __list_del_entry include/linux/list.h:131 [inline]
-  list_del_init include/linux/list.h:190 [inline]
-  rxrpc_local_destroyer net/rxrpc/local_object.c:429 [inline]
-  rxrpc_local_processor+0x251/0x830 net/rxrpc/local_object.c:465
-  process_one_work+0x9af/0x1740 kernel/workqueue.c:2269
-  worker_thread+0x98/0xe40 kernel/workqueue.c:2415
-  kthread+0x361/0x430 kernel/kthread.c:255
-  ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
-Modules linked in:
----[ end trace 4d70382ddfcfe2b8 ]---
-RIP: 0010:__list_del_entry_valid.cold+0xf/0x4f lib/list_debug.c:51
-Code: e8 e9 03 1e fe 0f 0b 48 89 f1 48 c7 c7 80 25 c6 87 4c 89 e6 e8 d5 03  
-1e fe 0f 0b 4c 89 f6 48 c7 c7 20 27 c6 87 e8 c4 03 1e fe <0f> 0b 4c 89 ea  
-4c 89 f6 48 c7 c7 60 26 c6 87 e8 b0 03 1e fe 0f 0b
-RSP: 0018:ffff8880a9917cc0 EFLAGS: 00010286
-RAX: 0000000000000054 RBX: ffff8880996e84f8 RCX: 0000000000000000
-RDX: 0000000000000000 RSI: ffffffff815c3b96 RDI: ffffed1015322f8a
-RBP: ffff8880a9917cd8 R08: 0000000000000054 R09: ffffed1015d260d1
-R10: ffffed1015d260d0 R11: ffff8880ae930687 R12: ffff88808f998638
-R13: ffff88808f998638 R14: ffff8880996e84e0 R15: ffff8880aa0a8500
-FS:  0000000000000000(0000) GS:ffff8880ae900000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f2648a08db8 CR3: 00000000981a9000 CR4: 00000000001406e0
-
+Thanks Ido!
