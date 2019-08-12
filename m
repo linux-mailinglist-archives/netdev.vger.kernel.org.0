@@ -2,72 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43EFF895DF
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 05:57:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3768B895E7
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 06:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbfHLD5U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 11 Aug 2019 23:57:20 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38170 "EHLO
+        id S1725838AbfHLECU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 00:02:20 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38256 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbfHLD5U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 11 Aug 2019 23:57:20 -0400
+        with ESMTP id S1725648AbfHLECT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 00:02:19 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id C49FF143BF5BC;
-        Sun, 11 Aug 2019 20:57:19 -0700 (PDT)
-Date:   Sun, 11 Aug 2019 20:57:19 -0700 (PDT)
-Message-Id: <20190811.205719.198343441735959015.davem@davemloft.net>
-To:     christophe.jaillet@wanadoo.fr
-Cc:     tglx@linutronix.de, gregkh@linuxfoundation.org,
-        colin.king@canonical.com, allison@lohutok.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH] nfc: st-nci: Fix an incorrect skb_buff size in
- 'st_nci_i2c_read()'
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2F826133F323A;
+        Sun, 11 Aug 2019 21:02:19 -0700 (PDT)
+Date:   Sun, 11 Aug 2019 21:02:18 -0700 (PDT)
+Message-Id: <20190811.210218.1719186095860421886.davem@davemloft.net>
+To:     dsahern@kernel.org
+Cc:     netdev@vger.kernel.org, jiri@resnulli.us, dsahern@gmail.com
+Subject: Re: [PATCH net] netdevsim: Restore per-network namespace
+ accounting for fib entries
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190806141640.13197-1-christophe.jaillet@wanadoo.fr>
-References: <20190806141640.13197-1-christophe.jaillet@wanadoo.fr>
+In-Reply-To: <20190806191517.8713-1-dsahern@kernel.org>
+References: <20190806191517.8713-1-dsahern@kernel.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 11 Aug 2019 20:57:20 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 11 Aug 2019 21:02:19 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Date: Tue,  6 Aug 2019 16:16:40 +0200
+From: David Ahern <dsahern@kernel.org>
+Date: Tue,  6 Aug 2019 12:15:17 -0700
 
-> In 'st_nci_i2c_read()', we allocate a sk_buff with a size of
-> ST_NCI_I2C_MIN_SIZE + len.
+> From: David Ahern <dsahern@gmail.com>
 > 
-> However, later on, we first 'skb_reserve()' ST_NCI_I2C_MIN_SIZE bytes, then
-> we 'skb_put()' ST_NCI_I2C_MIN_SIZE bytes.
-> Finally, if 'len' is not 0, we 'skb_put()' 'len' bytes.
+> Prior to the commit in the fixes tag, the resource controller in netdevsim
+> tracked fib entries and rules per network namespace. Restore that behavior.
 > 
-> So we use ST_NCI_I2C_MIN_SIZE*2 + len bytes.
-> 
-> This is incorrect and should already panic. I guess that it does not occur
-> because of extra memory allocated because of some rounding.
-> 
-> Fix it and allocate enough room for the 'skb_reserve()' and the 'skb_put()'
-> calls.
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> This patch is LIKELY INCORRECT. So think twice to what is the correct
-> solution before applying it.
-> Maybe the skb_reserve should be axed or some other sizes are incorrect.
-> There seems to be an issue, that's all I can say.
+> Fixes: 5fc494225c1e ("netdevsim: create devlink instance per netdevsim instance")
+> Signed-off-by: David Ahern <dsahern@gmail.com>
 
-The skb_reserve() should be removed, and the second memcpy() should remove
-the " + ST_NCI_I2C_MIN_SIZE".
+Applied, thanks for bringing this to our attention and fixing it David.
 
-This SKB just get sent down to ndlc_recv() so the content returned from I2C
-should places at skb->data to be processed.
+Jiri, I disagree you on every single possible level.
 
-Pretty clear this code was never tested.
+If you didn't like how netdevsim worked in this area the opportunity to do
+something about it was way back when it went in.
+
+No matter how completely busted or disagreeable an interface is, once we have
+committed it to a release (and in particular people are knowingly using and
+depending upon it) you cannot break it.
+
+It doesn't matter how much you disagree with something, you cannot break it
+when it's out there and actively in use.
+
+Do you have any idea how much stuff I'd like to break because I think the
+design turned out to be completely wrong?  But I can't.
