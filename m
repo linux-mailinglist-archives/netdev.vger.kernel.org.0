@@ -2,68 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 878388A6BA
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 21:01:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA7B8A6BF
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 21:02:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726595AbfHLTBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 15:01:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44948 "EHLO mail.kernel.org"
+        id S1726668AbfHLTCO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 15:02:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45222 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726510AbfHLTBb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 15:01:31 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726510AbfHLTCO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Aug 2019 15:02:14 -0400
+Received: from mail-qt1-f170.google.com (mail-qt1-f170.google.com [209.85.160.170])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 82EB320679;
-        Mon, 12 Aug 2019 19:01:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E2100206C1;
+        Mon, 12 Aug 2019 19:02:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565636491;
-        bh=Cs2oMB53k2wKFOnhQE2Y5U59oiCCpOdSLCO/UYkCXgI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=RGkzINWGORCuiHLQtyEKzlojXFUxhSn0iYYWnnbJzP8P914Z6srb0Tiy6Xwh9+8tF
-         0K/cr0Ni1p9QWLZ9rD6885rpwvMC7jNTGbdCmwX7F2b+8oL28AA5sIGs8Jlmi/b+EZ
-         3nyw6LcN3jQAUODuTnwIUkFHo2UVUSdIwdUbAVVc=
-Date:   Mon, 12 Aug 2019 21:01:28 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Nick Desaulniers <ndesaulniers@google.com>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Nathan Huckleberry <nhuck@google.com>
-Subject: Re: [PATCH v3 13/17] mvpp2: no need to check return value of
- debugfs_create functions
-Message-ID: <20190812190128.GB14905@kroah.com>
-References: <20190810101732.26612-1-gregkh@linuxfoundation.org>
- <20190810101732.26612-14-gregkh@linuxfoundation.org>
- <CAKwvOdnP4OU9g_ebjnT=r1WcGRvsFsgv3NbguhFKOtt8RWNHwA@mail.gmail.com>
+        s=default; t=1565636533;
+        bh=2Ey7LQhifd90JzjBnFtp3v8Cz42z64Zc1kv+o9XY4RE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Zj407EmjJWov9iMeVmEeLH4KOb2FOMBgAoYu5JPNAjtEbn3onHBeI//Md32KUGP5G
+         AxJVy1DBIaLI6QbMKpOFhbiQHlOqxN3DvmMeXjT4U9RJoipt0VSVJb//lCxuk5T/sy
+         uNhzF0S1UObgMhD7XvwZXIRMLGwK7ztlaNLFwIXQ=
+Received: by mail-qt1-f170.google.com with SMTP id t12so15333479qtp.9;
+        Mon, 12 Aug 2019 12:02:12 -0700 (PDT)
+X-Gm-Message-State: APjAAAVqN21+4ACIONmdvZ6QMJQhV0GcqyQS4EiXY0HlA6DiqEJJA67v
+        NMxHcR69dd+a9ylpWirD/dyx04esngfZeSfBig==
+X-Google-Smtp-Source: APXvYqwm4oyAxCrOUtCaP/9WaxP5YFDXwYDFJy+uHeBuYWFEg/iMIC/MWdeH5kfUWTc7vfc3VmRpQMaCqUlNSzOqFUA=
+X-Received: by 2002:ad4:4050:: with SMTP id r16mr6495889qvp.200.1565636532143;
+ Mon, 12 Aug 2019 12:02:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKwvOdnP4OU9g_ebjnT=r1WcGRvsFsgv3NbguhFKOtt8RWNHwA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190812112350.15242-1-alexandru.ardelean@analog.com> <20190812112350.15242-15-alexandru.ardelean@analog.com>
+In-Reply-To: <20190812112350.15242-15-alexandru.ardelean@analog.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 12 Aug 2019 13:02:00 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLYFiuD6G6jDTxSz0m9N3xBRRQTcAv0PUeza_kwTyuVOg@mail.gmail.com>
+Message-ID: <CAL_JsqLYFiuD6G6jDTxSz0m9N3xBRRQTcAv0PUeza_kwTyuVOg@mail.gmail.com>
+Subject: Re: [PATCH v4 14/14] dt-bindings: net: add bindings for ADIN PHY driver
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 12, 2019 at 10:55:51AM -0700, Nick Desaulniers wrote:
-> On Sat, Aug 10, 2019 at 3:17 AM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > When calling debugfs functions, there is no need to ever check the
-> > return value.  The function can work or not, but the code logic should
-> > never do something different based on this.
-> 
-> Maybe adding this recommendation to the comment block above the
-> definition of debugfs_create_dir() in fs/debugfs/inode.c would help
-> prevent this issue in the future?  What failure means, and how to
-> proceed can be tricky; more documentation can only help in this
-> regard.
+On Mon, Aug 12, 2019 at 5:24 AM Alexandru Ardelean
+<alexandru.ardelean@analog.com> wrote:
+>
+> This change adds bindings for the Analog Devices ADIN PHY driver, detailing
+> all the properties implemented by the driver.
+>
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> ---
+>  .../devicetree/bindings/net/adi,adin.yaml     | 73 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 74 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/adi,adin.yaml
 
-If it was there, would you have read it?  :)
-
-I'll add it to the list for when I revamp the debugfs documentation that
-is already in the kernel, that very few people actually read...
-
-thanks,
-
-greg k-h
+Reviewed-by: Rob Herring <robh@kernel.org>
