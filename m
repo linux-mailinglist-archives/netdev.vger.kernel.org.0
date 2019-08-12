@@ -2,102 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A7508A959
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 23:31:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B7E68A95B
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 23:32:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726885AbfHLVbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 17:31:35 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:37334 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726144AbfHLVbf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 17:31:35 -0400
-Received: by mail-wr1-f65.google.com with SMTP id z11so3925544wrt.4
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 14:31:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uvDclDPVZmwzB/B/xYypZolToawot09ez26hu2XcVu0=;
-        b=nK2prIcS985QqV36Tu2cq3NI8S0G0L9VXWE5lJ07xfywigjJjcSqVUVP4a56qK4xpe
-         axwEKeFiD8cp2umplIfRp+CIV1n0/dZqOU5G2w5b9XNpTnXmwu9Ou30RNz5IkvySkt+7
-         9oW7RulUbdtuMg43SvzooWHAofbf2wlaOLIxRSwi5UD9e8PpSih+LjeiQiJQSwPxfsqy
-         L8cUiD0slqgOvNNRZ7eqayiwp7ZERV+ZQxTIqVhbkqEvWwSFMw/sXbLayxvasC/oxQfm
-         G/h/P8oWr2B1RARj8jUunCAHSqZOKu3QiscMjiHgNIUgZ+MUmdEE/YfOKrbR8LIKAfot
-         QFBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uvDclDPVZmwzB/B/xYypZolToawot09ez26hu2XcVu0=;
-        b=d4kIXooMegNkPkWI5+vaF5qP67I94S50EIX2BlhnyoDuopgcbtv6Ao1m9ZdnbpP5TB
-         85efmPcApmfwyyXP2yf1ziqJGD5MZaT+Pn9FvBBHdpLXdrrWloWoUb7j0E7HBCe3zRXo
-         tXXUkO7qAmxbuBdnJs44PNWqM9E2awQt3p7duH0tH7jtoRFYyOI0n1s+7wRvd16c4U4K
-         g+YQZMmZhyZ+0Pvn7N2QuYIu+vEuBu+WjFjbK6rktZO9jLn+zNetT2QYIUAz7pxPaPxk
-         /cOCE1PjhhCWyOjmIgamuMDsGdayZDYp0rqk8rNocWldgbpjH8qvws21u9GBXkWY9uZl
-         a3EA==
-X-Gm-Message-State: APjAAAV+ngM+LJswVupWvUnQZQLTs43wZB/cRh8KWJik4Z+/HB8L4bsc
-        StxmjV2ajvkI1j9PNKziNAwb+gZs
-X-Google-Smtp-Source: APXvYqwU4gVBzv5KqEaCe3RxL2SKSZX2cUAZ2M0LdakB4yBAuWe0EQ4mm9qubWM1DK6Cw/2VpvZJhg==
-X-Received: by 2002:adf:de8e:: with SMTP id w14mr42450298wrl.79.1565645492557;
-        Mon, 12 Aug 2019 14:31:32 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6? (p200300EA8F2F3200E9C14D4C1CCF09D6.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6])
-        by smtp.googlemail.com with ESMTPSA id m7sm955236wmi.18.2019.08.12.14.31.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Aug 2019 14:31:31 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/3] net: phy: add __set_linkmode_max_speed
-To:     Andrew Lunn <andrew@lunn.ch>
+        id S1727144AbfHLVc2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 17:32:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:54564 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726144AbfHLVc2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Aug 2019 17:32:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=4dEqu1ylg8H5FaiIyy64LiGsCCfnlkBJ4J07GmJuJLg=; b=Qnkv/JNkar6HqaI2vZZohC0y9T
+        oi92XZ/zL5BoGzoAHXxy0Q/cyo6hJOl1RgaL6fuep47u1P8aPmtmgku/l0+yNH4+apB1tLdJkiEkL
+        ZM9WcMacIZUHPrOyJyu5MOWARG+/VEe5SLZRqNlgmFDh7a4KTlJHwQtSwG7thtkOaa4c=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hxHvV-0004UD-7Q; Mon, 12 Aug 2019 23:32:25 +0200
+Date:   Mon, 12 Aug 2019 23:32:25 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
 Cc:     Florian Fainelli <f.fainelli@gmail.com>,
         David Miller <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 2/3] net: phy: add __phy_speed_down and
+ phy_resolve_min_speed
+Message-ID: <20190812213225.GC15047@lunn.ch>
 References: <0799ec1f-307c-25ab-0259-b8239e4e04ba@gmail.com>
- <5067e168-7b49-7ba9-1f17-89d17509d423@gmail.com>
- <20190812212715.GB15047@lunn.ch>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <a33b460b-e6ad-6714-4f3a-b23abb215d94@gmail.com>
-Date:   Mon, 12 Aug 2019 23:31:28 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ <e499c226-7141-d5be-990c-b46b7dd048f8@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190812212715.GB15047@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <e499c226-7141-d5be-990c-b46b7dd048f8@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 12.08.2019 23:27, Andrew Lunn wrote:
-> On Mon, Aug 12, 2019 at 11:19:31PM +0200, Heiner Kallweit wrote:
->> We will need the functionality of __set_linkmode_max_speed also for
->> linkmode bitmaps other than phydev->supported. Therefore split it.
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/phy/phy-core.c | 10 ++++++++--
->>  1 file changed, 8 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
->> index 9ae3abb2d..de085f255 100644
->> --- a/drivers/net/phy/phy-core.c
->> +++ b/drivers/net/phy/phy-core.c
->> @@ -207,14 +207,15 @@ size_t phy_speeds(unsigned int *speeds, size_t size,
->>  	return count;
->>  }
->>  
->> -static int __set_phy_supported(struct phy_device *phydev, u32 max_speed)
->> +static int __set_linkmode_max_speed(struct phy_device *phydev, u32 max_speed,
->> +				    unsigned long *addr)
->>  {
-> 
-> Hi Heiner
-> 
-> It looks like phydev is an unused parameter. Maybe it should be
-> removed?
-> 
-Right, it can be removed. Thanks!
+> +int __phy_speed_down(struct phy_device *phydev)
+> +{
+> +	int min_common_speed = phy_resolve_min_speed(phydev, true);
+> +
+> +	if (min_common_speed == SPEED_UNKNOWN)
+> +		return -EINVAL;
+> +
+> +	return __set_linkmode_max_speed(phydev, min_common_speed,
+> +					phydev->advertising);
+> +}
+> +
+>  static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
+>  			     u16 regnum)
+>  {
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index 781f4810c..4be6d3b47 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -665,6 +665,7 @@ size_t phy_speeds(unsigned int *speeds, size_t size,
+>  		  unsigned long *mask);
+>  void of_set_phy_supported(struct phy_device *phydev);
+>  void of_set_phy_eee_broken(struct phy_device *phydev);
+> +int __phy_speed_down(struct phy_device *phydev);
 
-> 	Andrew
-> 
-Heiner
+It seems odd having a __ function exported. Can we find a better name
+for it, and drop the __?
+
+    Andrew
