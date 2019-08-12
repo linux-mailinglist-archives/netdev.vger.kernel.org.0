@@ -2,101 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7022E899CE
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 11:23:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CC1F89A2E
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 11:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727535AbfHLJXZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 05:23:25 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:40639 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727429AbfHLJXY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 05:23:24 -0400
-Received: by mail-lf1-f67.google.com with SMTP id b17so73757672lff.7
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 02:23:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=h/eO9z7ZUtRtxGDaZWfd3b9YhPpdN4udgv48/b95wLA=;
-        b=ACXgnmVAqGXCZ3zQfBhm0+YxChQPRjh8JLSMAsSNXo6mFuwhFEvzbJ1WG1egB6bTdS
-         BMKOJwnBekgVTSBrByCJroPpds7OmBLpf6D65zMMgPz3gdtHzRqfShftdpQF08lja6m6
-         CkNpJYy6DdIpsaJsxqxHb737uPZBHwR8FK75yGy0KuUEeBn9cYiX13pWTrKSrShrSi6H
-         ObJ+fExDNdRThn1ktJIZzMjKf2nb+AS2wLWOkp0TQda+r2NjBVodLEH6zszCmODCXbNE
-         D+UbWGkxB8Tz7fNLXC5riFLLEZgPqGgTghlOXH54Kdrveqts1l8zAoNSUt7bNDzaKhiZ
-         nK2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=h/eO9z7ZUtRtxGDaZWfd3b9YhPpdN4udgv48/b95wLA=;
-        b=DQ8pGho96to0PCC7chpe5FxdIxuQizUACFbO+u/6v+TRYar0urlhviNu/6gyxVhudS
-         1+ihRU8UPjTgveuQS6+F5TOk5ynG5UMr8RRpPCGiPzGxqooA+Cds2XtSnVvwZckQh4Os
-         m5msNu8lAlqAADR5cM9PBHRwZ0/0sUmBJmHZqLeWPUiTgpbqj7z+gUovaqNyvRagvAHc
-         +FxTWFj1lJANhbjNCBO+nlvdhfNz3IVGQiHGWCCLw2f3OTqKEs9AoCzVaNZe+RbM0Ryf
-         vW8Nveyta92GuoJy5L85e4Zk5pYZzU/w+tbet4jcSI5sxzu2aJKUb1l0CR2nDJCJjcJX
-         ORyA==
-X-Gm-Message-State: APjAAAVWfmjnpbRgnFvkGFj+7p3VL+VNNMzPxkfu96IwY76L/FwCOIh3
-        6roDv1QJlP/AnmlDXpYBVtFREw==
-X-Google-Smtp-Source: APXvYqztf5VYToiiPPUxUL1v26JDTCmqq/2vaS691jNACCTHX/WzNzQiCu1qVkmvSU8Iep7kzFypHw==
-X-Received: by 2002:a05:6512:48f:: with SMTP id v15mr19532306lfq.37.1565601801936;
-        Mon, 12 Aug 2019 02:23:21 -0700 (PDT)
-Received: from ?IPv6:2a00:1fa0:292:160c:a178:b4ac:b55d:ad7? ([2a00:1fa0:292:160c:a178:b4ac:b55d:ad7])
-        by smtp.gmail.com with ESMTPSA id d16sm2817717lfi.31.2019.08.12.02.23.20
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Aug 2019 02:23:21 -0700 (PDT)
-Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: fix RGMII-ID port setup
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <marek.behun@nic.cz>,
-        netdev@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20190811150812.6780-1-marek.behun@nic.cz>
-From:   Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
-Message-ID: <232f5c29-748f-1fd3-d9f5-1b13acab46d1@cogentembedded.com>
-Date:   Mon, 12 Aug 2019 12:23:16 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190811150812.6780-1-marek.behun@nic.cz>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        id S1727644AbfHLJod (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 05:44:33 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:35332 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727612AbfHLJoa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 05:44:30 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 7FC1DC21DB;
+        Mon, 12 Aug 2019 09:44:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1565603069; bh=NmX8XhNa7Yyj0AxzvLSwb00xjlHeMa4pt6SjJT15Duc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=lbK+nvM84AiTIyQALrUBPzY3qhpsKJeh7YtMIojwkkFDT10ox6TGJHtrqZHBnlqR+
+         r38hAbmG+8J82BfSoiqg0mFZtAYhoJ3l1wdMvaZpL2AOmKNB85rGrSd9yd2REBeF0h
+         p+gIiXLodAFmiwbjge1+XD4i/dKA6M9Bo+s3qTW1XDk1J8B2C9hzW/pjrakMqxNUCb
+         2rT9Ba+/5X87/g242ocQ9vNNF11/ZAoSFBsKbe+KzV+VzJtHmmHawB3VcnEXFAQiuJ
+         BeS4CVaoX+hk+GNRdJE7YuimD8HIV3EqpD4qWTDcK199FTtwicCDpLinI57PdNt32E
+         S9IeUC7gq473g==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 2E897A0057;
+        Mon, 12 Aug 2019 09:44:21 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 00/12] net: stmmac: Improvements for -next
+Date:   Mon, 12 Aug 2019 11:43:59 +0200
+Message-Id: <cover.1565602974.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Couple of improvements for -next tree. More info in commit logs.
 
-On 11.08.2019 18:08, Marek Behún wrote:
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
 
-> The mv88e6xxx_port_setup_mac looks if one of the {link, speed, duplex}
-> parameters is being changed from the current setting, and if not, does
-> not do anything. This test is wrong in some situations: this method also
-> has the mode argument, which can also be changed.
-> 
-> For example on Turris Omnia, the mode is PHY_INTERFACE_MODE_RGMII_ID,
-> which has to be set byt the ->port_set_rgmii_delay method. The test does
+Jose Abreu (12):
+  net: stmmac: Get correct timestamp values from XGMAC
+  net: stmmac: Prepare to add Split Header support
+  net: stmmac: xgmac: Correctly return that RX descriptor is not last
+    one
+  net: stmmac: Add Split Header support and enable it in XGMAC cores
+  net: stmmac: Add a counter for Split Header packets
+  net: stmmac: dwxgmac: Add Flexible PPS support
+  net: stmmac: Add ethtool register dump for XGMAC cores
+  net: stmmac: Add support for SA Insertion/Replacement in XGMAC cores
+  net: stmmac: selftests: Add tests for SA Insertion/Replacement
+  net: stmmac: xgmac: Add EEE support
+  net: stmmac: Add support for VLAN Insertion Offload
+  net: stmmac: selftests: Add selftest for VLAN TX Offload
 
-    s/byt/by/?
+ drivers/net/ethernet/stmicro/stmmac/common.h       |  10 +
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  56 ++++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 182 ++++++++++++-
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_descs.c   |  88 ++++++-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  31 ++-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  30 +++
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |  10 +
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |  25 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 287 ++++++++++++++++-----
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 194 +++++++++++++-
+ 10 files changed, 822 insertions(+), 91 deletions(-)
 
-> not look if mode is being changed (in fact there is currently no method
-> to determine port mode as phy_interface_t type).
-> 
-> The simplest solution seems to be to drop this test altogether and
-> simply do the setup when requested.
-> 
-> Signed-off-by: Marek Behún <marek.behun@nic.cz>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: Sebastian Reichel <sebastian.reichel@collabora.co.uk>
-> Cc: Vivien Didelot <vivien.didelot@gmail.com>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: David S. Miller <davem@davemloft.net>
-[...]
+-- 
+2.7.4
 
-MBR, Sergei
