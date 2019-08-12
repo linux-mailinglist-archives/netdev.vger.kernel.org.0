@@ -2,68 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F048AB2E
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 01:32:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00AE58AB36
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 01:33:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726604AbfHLXcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 19:32:45 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:44484 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbfHLXcp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 19:32:45 -0400
-Received: by mail-ot1-f65.google.com with SMTP id b7so115362831otl.11;
-        Mon, 12 Aug 2019 16:32:44 -0700 (PDT)
+        id S1726767AbfHLXdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 19:33:47 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:41614 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726557AbfHLXdo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 19:33:44 -0400
+Received: by mail-ot1-f67.google.com with SMTP id o101so12717454ota.8;
+        Mon, 12 Aug 2019 16:33:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=D0CFZ1Cw7EwOnNhmZTmtz0RRwtC+nMsalp8emT68oCM=;
-        b=cYI8SsS/7Csb9QVa3MwsIlYDs1YMwkPv0w1xRw8/mhMJzIo2enww07Xq/T65Tmp9Sx
-         HcY46zyeXsM08CqklfJdNtPKh8ai6KmAbF0DB4/uIDEEJZQM1Tabl1TpWg7Yv4vr9jOH
-         fQ/X8xdWTOc05D1em9h1VjwPDv8VeNULC3Xq/MiKWXYpPSCYCrbSj79nRI0GUnfXb5dl
-         MHPCefq0QGdEW2OcrBGzP9DNW/61kUze1iubBWwG/0mg6UGrlW7og5gjKFiZTtume5ZM
-         9sulW+dMmmbhKu6b3X1dvUZE4DKDIeW8dv6ZRkVN2B6JpDpkGGXxFgoWTPNjWeBvkrlg
-         LIdw==
-X-Gm-Message-State: APjAAAUCSDVtciZxoPX/KaTg6PRZUpnBp2Lt8uWdM+jpj0OP8S5f4aB7
-        +5SW9uhnZC+A6+ao4JKVXQ==
-X-Google-Smtp-Source: APXvYqzuSKoAknR+BRDTeNHhcu7ZdP4VSOsBy/9nJOzGbVO3/DHRkj6QLFRtQKk6Nhe72OKs0FOuOQ==
-X-Received: by 2002:a02:8663:: with SMTP id e90mr41002015jai.98.1565652763799;
-        Mon, 12 Aug 2019 16:32:43 -0700 (PDT)
+        bh=6bHPaRFqcGhFSYUdTz5B3aFVwCZHpxAG97JWTvxVzw4=;
+        b=Dt4VNuQsE7iqHQ+rSKX4IAS/PwY4dTYna9eBq7lpYUL9XMCgng0xuxq1N0LoFQB8XT
+         qPHtb5Smq6BIGciWsrTgmMaDGlJxXga7Zg+gKc3/nxG6nkC31F9AWMzP2OPkMtzgr7OH
+         zWyvVPL6d92QHrjo6fJ8lYwnItw6waORL82tp+GbtALITis+U1GZ+GW1EMVXaJdHVkLX
+         1I96KPqnkWZTS/o5TziMpBcvDxwSlDZCxeHCtczBtVDf5gTzauiMEN1h3pcnc+1uPrHO
+         4w75rbtvYegoqUUaJPHhKo/hF1rbWtCfI0roA1SF6LcPoKoxmmQaAFDa7hZmKxUvLpu/
+         GWJw==
+X-Gm-Message-State: APjAAAWfGx0k1HIuSMHGodwbmgerOB1KnVjbS4BZRcL65CCSqz00zqvv
+        SoTtolkyW+1YPyDZrv1Dpg==
+X-Google-Smtp-Source: APXvYqy3ZSrnRg/dFnQxSBrlzzSsTNYNgx3mdXJ+vCQqb4BGoMvGyIn1a5u5is1I31VBhSAA4zuGag==
+X-Received: by 2002:a02:1607:: with SMTP id a7mr1317294jaa.123.1565652822829;
+        Mon, 12 Aug 2019 16:33:42 -0700 (PDT)
 Received: from localhost ([64.188.179.254])
-        by smtp.gmail.com with ESMTPSA id d6sm22314934iod.17.2019.08.12.16.32.43
+        by smtp.gmail.com with ESMTPSA id e26sm84364347iod.10.2019.08.12.16.33.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 12 Aug 2019 16:32:43 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 17:32:42 -0600
+        Mon, 12 Aug 2019 16:33:42 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 17:33:41 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Yash Shah <yash.shah@sifive.com>
-Cc:     davem@davemloft.net, robh+dt@kernel.org, paul.walmsley@sifive.com,
-        netdev@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
-        mark.rutland@arm.com, palmer@sifive.com, aou@eecs.berkeley.edu,
+To:     Paul Walmsley <paul.walmsley@sifive.com>
+Cc:     Yash Shah <yash.shah@sifive.com>, davem@davemloft.net,
+        sagar.kadam@sifive.com, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, mark.rutland@arm.com,
+        palmer@sifive.com, aou@eecs.berkeley.edu,
         nicolas.ferre@microchip.com, ynezz@true.cz,
-        sachin.ghadi@sifive.com, Yash Shah <yash.shah@sifive.com>
-Subject: Re: [PATCH 1/3] macb: bindings doc: update sifive fu540-c000 binding
-Message-ID: <20190812233242.GA21855@bogus>
+        sachin.ghadi@sifive.com, andrew@lunn.ch
+Subject: Re: [PATCH 3/3] riscv: dts: Add DT node for SiFive FU540 Ethernet
+ controller driver
+Message-ID: <20190812233341.GA22016@bogus>
 References: <1563534631-15897-1-git-send-email-yash.shah@sifive.com>
+ <1563534631-15897-3-git-send-email-yash.shah@sifive.com>
+ <alpine.DEB.2.21.9999.1907221446340.5793@viisi.sifive.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1563534631-15897-1-git-send-email-yash.shah@sifive.com>
+In-Reply-To: <alpine.DEB.2.21.9999.1907221446340.5793@viisi.sifive.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 19 Jul 2019 16:40:29 +0530, Yash Shah wrote:
-> As per the discussion with Nicolas Ferre, rename the compatible property
-> to a more appropriate and specific string.
-> LINK: https://lkml.org/lkml/2019/7/17/200
+On Mon, Jul 22, 2019 at 02:48:40PM -0700, Paul Walmsley wrote:
+> On Fri, 19 Jul 2019, Yash Shah wrote:
 > 
-> Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> ---
->  Documentation/devicetree/bindings/net/macb.txt | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> > DT node for SiFive FU540-C000 GEMGXL Ethernet controller driver added
+> > 
+> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
 > 
+> Thanks, queuing this one for v5.3-rc with Andrew's suggested change to 
+> change phy1 to phy0.
+> 
+> Am assuming patches 1 and 2 will go in via -net.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+I don't think that has happened.
+
+Rob
