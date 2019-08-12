@@ -2,76 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F165E89EA7
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 14:44:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EF48589EB9
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 14:49:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbfHLMo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 08:44:28 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37611 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726481AbfHLMo2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 08:44:28 -0400
-Received: by mail-ot1-f66.google.com with SMTP id f17so22736575otq.4
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 05:44:27 -0700 (PDT)
+        id S1726674AbfHLMtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 08:49:21 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:41653 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726219AbfHLMtV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 08:49:21 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 196so2473073pfz.8;
+        Mon, 12 Aug 2019 05:49:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=ijiCz8JRyrYS1L1kjWrM7CUmUr5/E+RHKHVXUs+g29M=;
-        b=uhMW2JrWfe3RSn/i/WwVMXB4ATntdsWFd4YOAifaZMjDJE9USmWEF2inox1bOyRiTx
-         rVlcbC/reN0M41UsIH+5eRwgiQUVJdkXiXb+3apOKKIXdN7C0fEyviJ2reBXYljviN6y
-         47S9j1uClX65Hw7/gzUtAzEa9CTrfFkybqjXmtxKu6OhV8xL4HjbieMbf73TWlAddLqS
-         CqwI5MsT9rf2+JDYzofj48jLw0yIDvZFzJ6PH6XFo09NFwbb5SL0GF184dxHJ+BuVaAF
-         L+KyYX+byXr4Gd2tGI6T0Aa78lo3zJ4Ef7P7CtzGgWt/0PpzxDudno25eWgdRfH6AGET
-         pKgg==
+        h=from:to:cc:subject:date:message-id;
+        bh=wEbvzNsLC6y0503rph1qVfbXmE7y6KOKF1l8FURvlDQ=;
+        b=fFdkO6sL5obFm0xjRUyDod3iaIgtlVK7itJHHUPFlC940iXJlaxuLQzVSVeDpkRTdV
+         mQP6dvr20KUfxj2OldQRw3XKmrnHiSZUD8jwMHMwy9I3jIfciwnVtZ6BJlQI0uYqoJnl
+         eL5dONkxHSkLlM6XrPsveXNIqGn//Yt4BmdgSW2LmovJFijeq1d8aSDhB6JEpGzh7LRG
+         ZLr0xPFpI12rBYXY4EACQtCgSANgVuqF1kXK3izQc0HqykMgJOhE17e2d9Nrs9buItfw
+         fvilDXBkkJrgmP//10xDg/TF0X1IqZvv1stRx80RCo3LMcGfUFiM3MkvzjOk8Wxl5S+U
+         isag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ijiCz8JRyrYS1L1kjWrM7CUmUr5/E+RHKHVXUs+g29M=;
-        b=KPoWoGSEa5TfiVXEuRY4SZY68s5kzJMSjKriwXCoI8QZl5EuhokMIjelu27erKpbj8
-         TgENDet64IgZk8D76wBUd4StegSEEzqujbFk7A5jjt7+ZY1kIDdbW55LU1FQivQ9LVMu
-         66KBLzzb2yRh0B6WWzHGIFCNRKdsjRwb9fEcPwumRYk+veiEJ+XZYSFz90iDV+NdCHEB
-         bgB190NbvhCeXYLeKRjW/mYnzXIMnq/HXWEeodSotPmD5CPPqZ+qC68GU6nYLy+G3/It
-         r3PnkUJYvC53z+W7UrMwug+7FU5Byr38RpnnNE/aG0wRqjdboNMZEqUSjaP0MnRgJnZd
-         Gjdw==
-X-Gm-Message-State: APjAAAWO+psoZM1aZ7k0XhFjIbpG3DOYaOayV/ACzmepHXG+U4RGjoDZ
-        nbmvNMCyBTehc6SD9w2PpDc=
-X-Google-Smtp-Source: APXvYqwzdYRBtua1nENpbcwWp1wqOdjdjDx836PEAp/VhauZgmiJJR1xj4sCJs0coLUbU+V8tbzVJQ==
-X-Received: by 2002:a5e:881a:: with SMTP id l26mr33996834ioj.185.1565613867621;
-        Mon, 12 Aug 2019 05:44:27 -0700 (PDT)
-Received: from ?IPv6:2601:282:800:fd80:886:1872:8a8a:4ea0? ([2601:282:800:fd80:886:1872:8a8a:4ea0])
-        by smtp.googlemail.com with ESMTPSA id f9sm12196474ioc.47.2019.08.12.05.44.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=wEbvzNsLC6y0503rph1qVfbXmE7y6KOKF1l8FURvlDQ=;
+        b=s9yjJ464Ax4HcyVhxu/W6Nl5n2NF1QPklkr47vPrOvcHNoq2mpS1XW5kBE+VqO7jET
+         0RcLSar43Ryz4iXrkLVP+X/cMVMl3fFpS0i5M5NbOOESYMyhubdOuwzSbcBZAExR9xWd
+         RvW5X6+9D/5v/gtI0n9vxeJP2oFkbWKjpw6Pwdr4i5DEmQPNftYlUH+a7k8tU3Ftbwe+
+         r9A4iDTjMrgrLBLaanNDOVdl37+i+zCpUjjyGAt5jlIkTIS/ZZKeIPPp43OU1RJDFoMU
+         TccqNxIiTgPZejQOLXgywZ8ZCTi7nomhQyh8u9tmn2b4eFGMxgLOiqSvfKt+uEOz/50Y
+         kqLA==
+X-Gm-Message-State: APjAAAXHkOb+Y4mWOOONWETGpx/c2RaTe7aShdIj2VYfdrLxfuyPPzA0
+        e0fD/66q2N2h/bPE3GmI2X0rtKaM3rw=
+X-Google-Smtp-Source: APXvYqwODWRf37e6S0APoidGG1svBSDB1bGBTFUwtOaglcL1lEB9iRxh/CC/DZY2LGR1dT513lhvUQ==
+X-Received: by 2002:a63:553:: with SMTP id 80mr30829037pgf.280.1565614160209;
+        Mon, 12 Aug 2019 05:49:20 -0700 (PDT)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j187sm12054180pfg.178.2019.08.12.05.49.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Aug 2019 05:44:26 -0700 (PDT)
-Subject: Re: [PATCH net] nexthop: use nlmsg_parse_deprecated()
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-References: <20190812113616.51725-1-edumazet@google.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <6f8f2ba6-f1b4-1da1-69ef-8d757cb1bda8@gmail.com>
-Date:   Mon, 12 Aug 2019 06:44:21 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
-MIME-Version: 1.0
-In-Reply-To: <20190812113616.51725-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        Mon, 12 Aug 2019 05:49:19 -0700 (PDT)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     davem@davemloft.net,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: [PATCH net] sctp: fix the transport error_count check
+Date:   Mon, 12 Aug 2019 20:49:12 +0800
+Message-Id: <55b2fe3e5123958ccd7983e0892bc604aa717132.1565614152.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/12/19 5:36 AM, Eric Dumazet wrote:
-> David missed that commit 8cb081746c03 ("netlink: make validation
-> more configurable for future strictness") has renamed nlmsg_parse()
+As the annotation says in sctp_do_8_2_transport_strike():
 
-Thanks for the report, Eric. It is quite likely I overlooked something
-with that rename given the timing. However, the nexthop code being a new
-feature is expected to use all of the strict parsing and checking. I can
-take a look at this later today.
+  "If the transport error count is greater than the pf_retrans
+   threshold, and less than pathmaxrtx ..."
+
+It should be transport->error_count checked with pathmaxrxt,
+instead of asoc->pf_retrans.
+
+Fixes: 5aa93bcf66f4 ("sctp: Implement quick failover draft from tsvwg")
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/sctp/sm_sideeffect.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/sctp/sm_sideeffect.c b/net/sctp/sm_sideeffect.c
+index a554d6d..1cf5bb5 100644
+--- a/net/sctp/sm_sideeffect.c
++++ b/net/sctp/sm_sideeffect.c
+@@ -546,7 +546,7 @@ static void sctp_do_8_2_transport_strike(struct sctp_cmd_seq *commands,
+ 	 */
+ 	if (net->sctp.pf_enable &&
+ 	   (transport->state == SCTP_ACTIVE) &&
+-	   (asoc->pf_retrans < transport->pathmaxrxt) &&
++	   (transport->error_count < transport->pathmaxrxt) &&
+ 	   (transport->error_count > asoc->pf_retrans)) {
+ 
+ 		sctp_assoc_control_transport(asoc, transport,
+-- 
+2.1.0
+
