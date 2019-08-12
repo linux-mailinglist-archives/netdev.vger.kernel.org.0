@@ -2,166 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6772D8A4F7
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:56:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E09068A500
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:56:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbfHLR4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 13:56:05 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:43852 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726185AbfHLR4F (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:56:05 -0400
-Received: by mail-pf1-f196.google.com with SMTP id v12so2274606pfn.10
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 10:56:04 -0700 (PDT)
+        id S1726757AbfHLR42 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 13:56:28 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:35441 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726730AbfHLR40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:56:26 -0400
+Received: by mail-wr1-f65.google.com with SMTP id k2so19508012wrq.2;
+        Mon, 12 Aug 2019 10:56:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=kxHwheKBdbsdbbglkfDawW5E2I39A77wHuQOIwAfeTY=;
-        b=Ixs0O4IXRLYP8STI4hBYcImD13d+UfNgOx4So6Rf+15CxMGG1ZF2ooeg68lyQaoT5a
-         i2m+S2P8pxtc18es7Y4cwtoVCIojWlDQiBTdtbMF+rP3Cj5UpCvZqW+3ql4UjaO7YEW7
-         IbSHAUu1/0RgESLb9rG5Vhn7BiAoCzTJ73OabI/Lb6fkd/pk2wvG84ey0icVih2dzh9h
-         n7QvoYGeeg3pdJvUu17Il7st2S/rh4D2hwghwwFoAsJAfroyIiScz4DRhHSyykCVKZGZ
-         Kc3vu2zDZcK2h1LJV+t5hExv3DeIf9qivfr4Liqxe1NqieF/Yu7kduq21JMWFh5u21ty
-         YbWA==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Gl3MQ2tK3gT5Rkg1mXDEZb3rifYtV7MbGB7zqaaTNjM=;
+        b=KS2A7osSztDhQm7wnRwCJMQpkcZjvC7WtVcQmA9QJ27tlxwcDZYgTSw1t4Kmy8j/pK
+         WbFOPdHXiYMXJ5pB/etlWb0pFpI3tPwjoZAHt+lS6vI0Lq0xSR2OwSSP9mxf88J4Scte
+         IFNTqeeIsl5bRaYzTaetJFIHBau0cZ77B5L7EBrgh7pzpTK0v7BTMKJcAj3O8Su+74H2
+         vn1gyP+k5sRpSri/LcidBwVxQ74EWcqYiRDDGpYtQl/0i/SwR4dM17uc9gWIIDXQpGRt
+         t9SoPYYVfJoSsDnJK98cIo4DxBAlQ/hiFj2gGKqWYeufpnxjskvRVMmWCmbXvzGX7alm
+         jFyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=kxHwheKBdbsdbbglkfDawW5E2I39A77wHuQOIwAfeTY=;
-        b=bW56U8FxLU3EOMOHFBvd6fkYrlVXbTzwPuFwvKQwab4Z87ka0zi2OqX3uDqFx+SAVq
-         JYckA64mWXXPdjLjxze6YduTuwIf4AvIerfaGH1m+ic/aNSUWSu3HCUiM5tLjePrxeeE
-         PxC7WI6m8DKF7QhamRMt1/ZyJA2rbCGmApsWBdn1ZJPIVY6joE4xkxrjphN1YnBDoABy
-         KB8/cr6xTKEbJT4yjPmaXn1ASvSMw42B4DH+nkohgX/hc0PWOy9bhqi2TOtwvfQkcA9n
-         D2g624lhxICo3ly5DJZ0eeqgR9XpRJYT7tBnH3zgjG94z/EnAtLbvanttwUW6RV0Tlg1
-         YdAA==
-X-Gm-Message-State: APjAAAXYUFpziiEpcVtm5ZCdd2J1eOyizWHuoD7jsw/VM84PcZ4AtI90
-        K4/BXYYi6VGpvwLvd+LD6HT6vWIHpPvB27CbH5MPTg==
-X-Google-Smtp-Source: APXvYqxp+Gpy995KYtiSbRlKGeS6ZhsEYwM0zzW0uwVZomgwBvkQOHqIvIb7lZ9LFuJixOs5iD0b5tokFB/HZlZlx9k=
-X-Received: by 2002:a17:90a:bf02:: with SMTP id c2mr436839pjs.73.1565632562461;
- Mon, 12 Aug 2019 10:56:02 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Gl3MQ2tK3gT5Rkg1mXDEZb3rifYtV7MbGB7zqaaTNjM=;
+        b=aKZnKcxztTnnPJG3oSZ87uGEqPj75lONdvfvGdYXyXdH3AJ6njvU0AXIaBbMHuL1X+
+         IT4ZVtQ7WRlS/6OzX1YpAVHsjhxtsBuOavZwNanb24YDCo8Y/TUyIkyi73Eua9joW7wr
+         HL9ai8bTk8xJQi7KyGvg1S/SBy7n8R32yaGInsHWqwUIouPAZOJ/bvGozeywjqbgzc8t
+         Vtd/9Eb1L1xYaWLdRLrSIOGuy6vumVVoh2dlc1YMx0Cdqtcmjvx+Xhl8wRLg1NHWErBU
+         uSszlU5fLMslGi7A42aG2bCUlBHkhWS5l8ZvrC2gLZ6quW7DP+DCFaSUjPpP2rEvAJrW
+         lXTw==
+X-Gm-Message-State: APjAAAXt/DghgeT3ihphI0kr2r71fiSjJweEJ/twGSTPoPf3cHZJCX7p
+        KKDhf5TjnVF4rbxIhIzvOEND0TLv
+X-Google-Smtp-Source: APXvYqwCorf8OVy3FnwJDHRo5pDsoGs4Ka9e15CSz7OYly9qvMRE4aDMfgmsHeq9cvnU0KE3Inr4ug==
+X-Received: by 2002:a5d:528a:: with SMTP id c10mr8612833wrv.111.1565632584205;
+        Mon, 12 Aug 2019 10:56:24 -0700 (PDT)
+Received: from [192.168.8.147] (239.169.185.81.rev.sfr.net. [81.185.169.239])
+        by smtp.gmail.com with ESMTPSA id a11sm8258030wrx.59.2019.08.12.10.56.23
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Aug 2019 10:56:23 -0700 (PDT)
+Subject: Re: 5.3-rc3-ish VM crash: RIP: 0010:tcp_trim_head+0x20/0xe0
+To:     Sander Eikelenboom <linux@eikelenboom.it>,
+        netdev <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <27aebb57-0ca9-fba3-092f-39131ad2b648@eikelenboom.it>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <4d803565-b716-42ab-1db8-3dcade91e939@gmail.com>
+Date:   Mon, 12 Aug 2019 19:56:22 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20190810101732.26612-1-gregkh@linuxfoundation.org> <20190810101732.26612-14-gregkh@linuxfoundation.org>
-In-Reply-To: <20190810101732.26612-14-gregkh@linuxfoundation.org>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 12 Aug 2019 10:55:51 -0700
-Message-ID: <CAKwvOdnP4OU9g_ebjnT=r1WcGRvsFsgv3NbguhFKOtt8RWNHwA@mail.gmail.com>
-Subject: Re: [PATCH v3 13/17] mvpp2: no need to check return value of
- debugfs_create functions
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Nathan Huckleberry <nhuck@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <27aebb57-0ca9-fba3-092f-39131ad2b648@eikelenboom.it>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 10, 2019 at 3:17 AM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> When calling debugfs functions, there is no need to ever check the
-> return value.  The function can work or not, but the code logic should
-> never do something different based on this.
 
-Maybe adding this recommendation to the comment block above the
-definition of debugfs_create_dir() in fs/debugfs/inode.c would help
-prevent this issue in the future?  What failure means, and how to
-proceed can be tricky; more documentation can only help in this
-regard.
 
->
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>
-> Cc: Nick Desaulniers <ndesaulniers@google.com>
-> Cc: Nathan Huckleberry <nhuck@google.com>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> ---
->  .../ethernet/marvell/mvpp2/mvpp2_debugfs.c    | 19 +------------------
->  1 file changed, 1 insertion(+), 18 deletions(-)
->
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-> index 274fb07362cb..4a3baa7e0142 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
-> @@ -452,8 +452,6 @@ static int mvpp2_dbgfs_flow_port_init(struct dentry *parent,
->         struct dentry *port_dir;
->
->         port_dir = debugfs_create_dir(port->dev->name, parent);
-> -       if (IS_ERR(port_dir))
-> -               return PTR_ERR(port_dir);
->
->         port_entry = &port->priv->dbgfs_entries->port_flow_entries[port->id];
->
-> @@ -480,8 +478,6 @@ static int mvpp2_dbgfs_flow_entry_init(struct dentry *parent,
->         sprintf(flow_entry_name, "%02d", flow);
->
->         flow_entry_dir = debugfs_create_dir(flow_entry_name, parent);
-> -       if (!flow_entry_dir)
-> -               return -ENOMEM;
->
->         entry = &priv->dbgfs_entries->flow_entries[flow];
->
-> @@ -514,8 +510,6 @@ static int mvpp2_dbgfs_flow_init(struct dentry *parent, struct mvpp2 *priv)
->         int i, ret;
->
->         flow_dir = debugfs_create_dir("flows", parent);
-> -       if (!flow_dir)
-> -               return -ENOMEM;
->
->         for (i = 0; i < MVPP2_N_PRS_FLOWS; i++) {
->                 ret = mvpp2_dbgfs_flow_entry_init(flow_dir, priv, i);
-> @@ -539,8 +533,6 @@ static int mvpp2_dbgfs_prs_entry_init(struct dentry *parent,
->         sprintf(prs_entry_name, "%03d", tid);
->
->         prs_entry_dir = debugfs_create_dir(prs_entry_name, parent);
-> -       if (!prs_entry_dir)
-> -               return -ENOMEM;
->
->         entry = &priv->dbgfs_entries->prs_entries[tid];
->
-> @@ -578,8 +570,6 @@ static int mvpp2_dbgfs_prs_init(struct dentry *parent, struct mvpp2 *priv)
->         int i, ret;
->
->         prs_dir = debugfs_create_dir("parser", parent);
-> -       if (!prs_dir)
-> -               return -ENOMEM;
->
->         for (i = 0; i < MVPP2_PRS_TCAM_SRAM_SIZE; i++) {
->                 ret = mvpp2_dbgfs_prs_entry_init(prs_dir, priv, i);
-> @@ -688,8 +678,6 @@ static int mvpp2_dbgfs_port_init(struct dentry *parent,
->         struct dentry *port_dir;
->
->         port_dir = debugfs_create_dir(port->dev->name, parent);
-> -       if (IS_ERR(port_dir))
-> -               return PTR_ERR(port_dir);
->
->         debugfs_create_file("parser_entries", 0444, port_dir, port,
->                             &mvpp2_dbgfs_port_parser_fops);
-> @@ -716,15 +704,10 @@ void mvpp2_dbgfs_init(struct mvpp2 *priv, const char *name)
->         int ret, i;
->
->         mvpp2_root = debugfs_lookup(MVPP2_DRIVER_NAME, NULL);
-> -       if (!mvpp2_root) {
-> +       if (!mvpp2_root)
->                 mvpp2_root = debugfs_create_dir(MVPP2_DRIVER_NAME, NULL);
-> -               if (IS_ERR(mvpp2_root))
-> -                       return;
-> -       }
->
->         mvpp2_dir = debugfs_create_dir(name, mvpp2_root);
-> -       if (IS_ERR(mvpp2_dir))
-> -               return;
->
->         priv->dbgfs_dir = mvpp2_dir;
->         priv->dbgfs_entries = kzalloc(sizeof(*priv->dbgfs_entries), GFP_KERNEL);
+On 8/12/19 2:50 PM, Sander Eikelenboom wrote:
+> L.S.,
+> 
+> While testing a somewhere-after-5.3-rc3 kernel (which included the latest net merge (33920f1ec5bf47c5c0a1d2113989bdd9dfb3fae9),
+> one of my Xen VM's (which gets quite some network load) crashed.
+> See below for the stacktrace.
+> 
+> Unfortunately I haven't got a clear trigger, so bisection doesn't seem to be an option at the moment. 
+> I haven't encountered this on 5.2, so it seems to be an regression against 5.2.
+> 
+> Any ideas ?
+> 
 > --
-> 2.22.0
->
+> Sander
+> 
+> 
+> [16930.653595] general protection fault: 0000 [#1] SMP NOPTI
+> [16930.653624] CPU: 0 PID: 3275 Comm: rsync Not tainted 5.3.0-rc3-20190809-doflr+ #1
+> [16930.653657] RIP: 0010:tcp_trim_head+0x20/0xe0
+> [16930.653677] Code: 2e 0f 1f 84 00 00 00 00 00 90 41 54 41 89 d4 55 48 89 fd 53 48 89 f3 f6 46 7e 01 74 2f 8b 86 bc 00 00 00 48 03 86 c0 00 00 00 <8b> 40 20 66 83 f8 01 74 19 31 d2 31 f6 b9 20 0a 00 00 48 89 df e8
+> [16930.653741] RSP: 0000:ffffc90000003ad8 EFLAGS: 00010286
+> [16930.653762] RAX: fffe888005bf62c0 RBX: ffff8880115fb800 RCX: 000000008010000b
 
+crash in " mov    0x20(%rax),%eax"   and RAX=fffe888005bf62c0 (not a valid kernel address)
 
--- 
-Thanks,
-~Nick Desaulniers
+Look like one bit corruption maybe.
+
+Nothing comes to mind really between 5.2 and 53 that could explain this.
+
+> [16930.653791] RDX: 00000000000005a0 RSI: ffff8880115fb800 RDI: ffff888016b00880
+> [16930.653819] RBP: ffff888016b00880 R08: 0000000000000001 R09: 0000000000000000
+> [16930.653848] R10: ffff88800ae00800 R11: 00000000bfe632e6 R12: 00000000000005a0
+> [16930.653875] R13: 0000000000000001 R14: 00000000bfe62d46 R15: 0000000000000004
+> [16930.653913] FS:  00007fe71fe2cb80(0000) GS:ffff88801f200000(0000) knlGS:0000000000000000
+> [16930.653943] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [16930.653965] CR2: 000055de0f3e7000 CR3: 0000000011f32000 CR4: 00000000000006f0
+> [16930.653993] Call Trace:
+> [16930.654005]  <IRQ>
+> [16930.654018]  tcp_ack+0xbb0/0x1230
+> [16930.654033]  tcp_rcv_established+0x2e8/0x630
+> [16930.654053]  tcp_v4_do_rcv+0x129/0x1d0
+> [16930.654070]  tcp_v4_rcv+0xac9/0xcb0
+> [16930.654088]  ip_protocol_deliver_rcu+0x27/0x1b0
+> [16930.654109]  ip_local_deliver_finish+0x3f/0x50
+> [16930.654128]  ip_local_deliver+0x4d/0xe0
+> [16930.654145]  ? ip_protocol_deliver_rcu+0x1b0/0x1b0
+> [16930.654163]  ip_rcv+0x4c/0xd0
+> [16930.654179]  __netif_receive_skb_one_core+0x79/0x90
+> [16930.654200]  netif_receive_skb_internal+0x2a/0xa0
+> [16930.654219]  napi_gro_receive+0xe7/0x140
+> [16930.654237]  xennet_poll+0x9be/0xae0
+> [16930.654254]  net_rx_action+0x136/0x340
+> [16930.654271]  __do_softirq+0xdd/0x2cf
+> [16930.654287]  irq_exit+0x7a/0xa0
+> [16930.654304]  xen_evtchn_do_upcall+0x27/0x40
+> [16930.654320]  xen_hvm_callback_vector+0xf/0x20
+> [16930.654339]  </IRQ>
+> [16930.654349] RIP: 0033:0x55de0d87db99
+> [16930.654364] Code: 00 00 48 89 7c 24 f8 45 39 fe 45 0f 42 fe 44 89 7c 24 f4 eb 09 0f 1f 40 00 83 e9 01 74 3e 89 f2 48 63 f8 4c 01 d2 44 38 1c 3a <75> 25 44 38 6c 3a ff 75 1e 41 0f b6 3c 24 40 38 3a 75 14 41 0f b6
+> [16930.654432] RSP: 002b:00007ffd5531eec8 EFLAGS: 00000a87 ORIG_RAX: ffffffffffffff0c
+> [16930.655004] RAX: 0000000000000002 RBX: 000055de0f3e8e50 RCX: 000000000000007f
+> [16930.655034] RDX: 000055de0f3dc2d2 RSI: 0000000000003492 RDI: 0000000000000002
+> [16930.655062] RBP: 0000000000007fff R08: 00000000000080ea R09: 00000000000001f0
+> [16930.655089] R10: 000055de0f3d8e40 R11: 0000000000000094 R12: 000055de0f3e0f2a
+> [16930.655116] R13: 0000000000000010 R14: 0000000000007f16 R15: 0000000000000080
+> [16930.655144] Modules linked in:
+> [16930.655200] ---[ end trace 533367c95501b645 ]---
+> [16930.655223] RIP: 0010:tcp_trim_head+0x20/0xe0
+> [16930.655243] Code: 2e 0f 1f 84 00 00 00 00 00 90 41 54 41 89 d4 55 48 89 fd 53 48 89 f3 f6 46 7e 01 74 2f 8b 86 bc 00 00 00 48 03 86 c0 00 00 00 <8b> 40 20 66 83 f8 01 74 19 31 d2 31 f6 b9 20 0a 00 00 48 89 df e8
+> [16930.655312] RSP: 0000:ffffc90000003ad8 EFLAGS: 00010286
+> [16930.655331] RAX: fffe888005bf62c0 RBX: ffff8880115fb800 RCX: 000000008010000b
+> [16930.655360] RDX: 00000000000005a0 RSI: ffff8880115fb800 RDI: ffff888016b00880
+> [16930.655387] RBP: ffff888016b00880 R08: 0000000000000001 R09: 0000000000000000
+> [16930.655414] R10: ffff88800ae00800 R11: 00000000bfe632e6 R12: 00000000000005a0
+> [16930.655441] R13: 0000000000000001 R14: 00000000bfe62d46 R15: 0000000000000004
+> [16930.655475] FS:  00007fe71fe2cb80(0000) GS:ffff88801f200000(0000) knlGS:0000000000000000
+> [16930.655502] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [16930.655525] CR2: 000055de0f3e7000 CR3: 0000000011f32000 CR4: 00000000000006f0
+> [16930.655553] Kernel panic - not syncing: Fatal exception in interrupt
+> [16930.655789] Kernel Offset: disabled
+> 
