@@ -2,72 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7994A8A9EA
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 23:52:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 997CC8A9F1
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 23:52:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbfHLVw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 17:52:27 -0400
-Received: from mail-vs1-f73.google.com ([209.85.217.73]:45178 "EHLO
-        mail-vs1-f73.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727594AbfHLVw0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 17:52:26 -0400
-Received: by mail-vs1-f73.google.com with SMTP id v20so28211993vsi.12
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 14:52:26 -0700 (PDT)
+        id S1727936AbfHLVwk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 17:52:40 -0400
+Received: from mail-pg1-f202.google.com ([209.85.215.202]:52431 "EHLO
+        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727577AbfHLVwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 17:52:38 -0400
+Received: by mail-pg1-f202.google.com with SMTP id h3so65405393pgc.19
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 14:52:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=2AgXEJvicJBSy/SRKWnK2/gvt/mXyTWKNhSQOzYorzg=;
-        b=QD2Q9TVxotj25Bb1ouljTvMCvR83QJDYk2233b6aDf5UyAOc4+c3u0nYzqK2HiP9Jd
-         mWjfm3fF7X8BxISaaea7HPxbpoGJAkgRdVmpjYKrjmNuH3MarsX7MS4wsNBe6G8n6f36
-         n47LxqcnSGzw6RtyrzlLPb+EQoVzrvthsOmuGkhCqDIEAEO62T+Ih/9XGutE8xHgaxex
-         niw/b9YZcCQAxTuG+nGc6XTtMhuRJ36Q9JkIWVX4S93KEdLzIXq0UIzJZCfKPIBEyf5h
-         yv65GUdyh/ZiBeRFUstxqphaAC9yA1yaTYOoX+hpm1aZ4CwSO39oD+vxLn1QJTqzYfuB
-         H22A==
+        bh=nhdP3qLGadfkBXXgzu2XRajPFFK4fSn/Au7TvOHqv+g=;
+        b=l0vrvwIHmSzOktb7Rq3EdrK6pdsP3Ma3RCqx5BQ6NP0yweIZWAU2Q/lHhoKvWSxp6n
+         hb/8hiCQkymuV+MMOHey9h69MdrERLD0hZ/gfrxdEVFUhiSHtWnAoQhOg6NXS1/OG/rA
+         9o28P2Qois3wr22QlsgANra7Ffshp6GNOzF/SQl3ww6PwmpI9RZSp1Zd+eSsUyOy8Xh9
+         8/gU6pTbRK5x5aBYeVeLkGgRxNa6mKkBFuZUTSejia6ABf36q3l92lLkASTPqArWoGUx
+         FVz/lju2Dg6bsdjVY2St8Tc9hDr5mfAQ/LOxOKiurkoCnULUdwHJkriMSFsS0OH/LIWd
+         78Vg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=2AgXEJvicJBSy/SRKWnK2/gvt/mXyTWKNhSQOzYorzg=;
-        b=MLZqqOC5dqjCU/ay6Hk9qPnxAsP2NuM8dJN2WsikZPLv49AeNmF0EH7rDLswmckEAa
-         V7Es58n+G9wziTPFLMYGSXzghYI6w/PhEjibC1ZmtskHA6JyKZkDNMLSUZj6VFlesZnp
-         esOJzu0dcqzMhh1dy+WxwO3jDxYyonk6389pXsLzhQ9EZXvc4Q6B/wUGrwhofKy2LOVH
-         iFxBS97GLs+OuUI2O75aGNJA9wzfKTdCh/Isg0+IEBZ3BvMOaocBDSjyovKBlRZ2hxRe
-         DiZBooU3S+EIsJ30ZwR/ygdZpxlkm5aHrg7k9y6tXb73jP5l4bd9H/6n0rU4xYsBeH8W
-         AcYA==
-X-Gm-Message-State: APjAAAUFGTL1bB6wthJ6QrwnmMRc3NVj1ohPyJ2B/F7YYiTVd7850uBn
-        PgX0HvxwMK1lmXPb0JhjKLRmQaRIEsxVs3hldYQ=
-X-Google-Smtp-Source: APXvYqyYgGBEoezTTpIvU8mq/ZQBKS1RsoV2oTSHueva+H2OsTqtCQ71O4GdWT1QoPUyVfobIUtoTQjr5ewI4rtj4B0=
-X-Received: by 2002:a67:e447:: with SMTP id n7mr10737492vsm.115.1565646745461;
- Mon, 12 Aug 2019 14:52:25 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 14:50:43 -0700
+        bh=nhdP3qLGadfkBXXgzu2XRajPFFK4fSn/Au7TvOHqv+g=;
+        b=thw2V53ZUDkrfRvwIcwO9UjDt3ziLSuwutlzgbe1tc0WbOoEgSK2yHsSN0ZYgp8SSU
+         yBwt++isDeblV2d1wx8+V3edm/NJwF9jvn8bAOtcvRw4qfrcaoTwKaX1vnVbuf2Vfm16
+         s/ORaVoMYSC4WjiKtIRS/Bk6yWQOtRSjM9qPqiUmOrnN6et+hQWTq7uVWdjYSXtXVldp
+         jASL9cjJhByRhfnp4u5GGxI3t0kiTi21nLkjtkubc51/gvi/zE5nYo1DpN+vN+jIgtmr
+         OHyVk1oAJH+B3WIT9WTFEUjG7jMhjbhQvQGb4hGA7Oj5Th3fTOv28363jQTPm/lxuemf
+         ZjCg==
+X-Gm-Message-State: APjAAAXB1x3YQcn4/w9M3+Iq5uX4eK5NB2DVVz2Xp7wwjV612etEvUta
+        r6uTDiXelT5EIs4cj66npimVkqP1CY1J27Zf+xM=
+X-Google-Smtp-Source: APXvYqwjy4xajDSecFizcMZwjTAAh0pv2jT2DdR94TnRtiSiK/C8DMNalg6ERPgxV3Xo/RWyTVhpKrSzLDDIluqa8Bk=
+X-Received: by 2002:a65:6406:: with SMTP id a6mr26645041pgv.393.1565646757703;
+ Mon, 12 Aug 2019 14:52:37 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 14:50:44 -0700
 In-Reply-To: <20190812215052.71840-1-ndesaulniers@google.com>
-Message-Id: <20190812215052.71840-10-ndesaulniers@google.com>
+Message-Id: <20190812215052.71840-11-ndesaulniers@google.com>
 Mime-Version: 1.0
 References: <20190812215052.71840-1-ndesaulniers@google.com>
 X-Mailer: git-send-email 2.23.0.rc1.153.gdeed80330f-goog
-Subject: [PATCH 10/16] powerpc: prefer __section and __printf from compiler_attributes.h
+Subject: [PATCH 11/16] x86: prefer __section from compiler_attributes.h
 From:   Nick Desaulniers <ndesaulniers@google.com>
 To:     akpm@linux-foundation.org
 Cc:     sedat.dilek@gmail.com, jpoimboe@redhat.com, yhs@fb.com,
         miguel.ojeda.sandonis@gmail.com,
         clang-built-linux@googlegroups.com,
         Nick Desaulniers <ndesaulniers@google.com>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Geoff Levand <geoff@infradead.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>,
-        Allison Randal <allison@lohutok.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
+        Armijn Hemel <armijn@tjaldur.nl>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christophe Leroy <christophe.leroy@c-s.fr>,
-        Rob Herring <robh@kernel.org>, linuxppc-dev@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
+        Allison Randal <allison@lohutok.net>,
+        Juergen Gross <jgross@suse.com>,
+        Frederic Weisbecker <frederic@kernel.org>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Enrico Weigelt <info@metux.net>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Hannes Reinecke <hare@suse.com>,
+        Sean Christopherson <sean.j.christopherson@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Pu Wen <puwen@hygon.cn>, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -78,76 +83,96 @@ Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
 Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
 Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 ---
- arch/powerpc/boot/main.c         | 3 +--
- arch/powerpc/boot/ps3.c          | 6 ++----
- arch/powerpc/include/asm/cache.h | 2 +-
- arch/powerpc/kernel/btext.c      | 2 +-
- 4 files changed, 5 insertions(+), 8 deletions(-)
+ arch/x86/include/asm/cache.h       | 2 +-
+ arch/x86/include/asm/intel-mid.h   | 2 +-
+ arch/x86/include/asm/iommu_table.h | 5 ++---
+ arch/x86/include/asm/irqflags.h    | 2 +-
+ arch/x86/include/asm/mem_encrypt.h | 2 +-
+ arch/x86/kernel/cpu/cpu.h          | 3 +--
+ 6 files changed, 7 insertions(+), 9 deletions(-)
 
-diff --git a/arch/powerpc/boot/main.c b/arch/powerpc/boot/main.c
-index 102cc546444d..3ccc84e06fc4 100644
---- a/arch/powerpc/boot/main.c
-+++ b/arch/powerpc/boot/main.c
-@@ -150,8 +150,7 @@ static struct addr_range prep_initrd(struct addr_range vmlinux, void *chosen,
-  * edit the command line passed to vmlinux (by setting /chosen/bootargs).
-  * The buffer is put in it's own section so that tools may locate it easier.
-  */
--static char cmdline[BOOT_COMMAND_LINE_SIZE]
--	__attribute__((__section__("__builtin_cmdline")));
-+static char cmdline[BOOT_COMMAND_LINE_SIZE] __section(__builtin_cmdline);
+diff --git a/arch/x86/include/asm/cache.h b/arch/x86/include/asm/cache.h
+index abe08690a887..bb9f4bf4ec02 100644
+--- a/arch/x86/include/asm/cache.h
++++ b/arch/x86/include/asm/cache.h
+@@ -8,7 +8,7 @@
+ #define L1_CACHE_SHIFT	(CONFIG_X86_L1_CACHE_SHIFT)
+ #define L1_CACHE_BYTES	(1 << L1_CACHE_SHIFT)
  
- static void prep_cmdline(void *chosen)
- {
-diff --git a/arch/powerpc/boot/ps3.c b/arch/powerpc/boot/ps3.c
-index c52552a681c5..70b2ed82d2de 100644
---- a/arch/powerpc/boot/ps3.c
-+++ b/arch/powerpc/boot/ps3.c
-@@ -24,8 +24,7 @@ extern int lv1_get_repository_node_value(u64 in_1, u64 in_2, u64 in_3,
- #ifdef DEBUG
- #define DBG(fmt...) printf(fmt)
- #else
--static inline int __attribute__ ((format (printf, 1, 2))) DBG(
--	const char *fmt, ...) {return 0;}
-+static inline int __printf(1, 2) DBG(const char *fmt, ...) { return 0; }
- #endif
- 
- BSS_STACK(4096);
-@@ -35,8 +34,7 @@ BSS_STACK(4096);
-  * The buffer is put in it's own section so that tools may locate it easier.
-  */
- 
--static char cmdline[BOOT_COMMAND_LINE_SIZE]
--	__attribute__((__section__("__builtin_cmdline")));
-+static char cmdline[BOOT_COMMAND_LINE_SIZE] __section(__builtin_cmdline);
- 
- static void prep_cmdline(void *chosen)
- {
-diff --git a/arch/powerpc/include/asm/cache.h b/arch/powerpc/include/asm/cache.h
-index 45e3137ccd71..9114495855eb 100644
---- a/arch/powerpc/include/asm/cache.h
-+++ b/arch/powerpc/include/asm/cache.h
-@@ -91,7 +91,7 @@ static inline u32 l1_cache_bytes(void)
- 	isync
- 
- #else
 -#define __read_mostly __attribute__((__section__(".data..read_mostly")))
 +#define __read_mostly __section(.data..read_mostly)
  
- #ifdef CONFIG_PPC_BOOK3S_32
- extern long _get_L2CR(void);
-diff --git a/arch/powerpc/kernel/btext.c b/arch/powerpc/kernel/btext.c
-index 6dfceaa820e4..f57712a55815 100644
---- a/arch/powerpc/kernel/btext.c
-+++ b/arch/powerpc/kernel/btext.c
-@@ -26,7 +26,7 @@
- static void scrollscreen(void);
- #endif
+ #define INTERNODE_CACHE_SHIFT CONFIG_X86_INTERNODE_CACHE_SHIFT
+ #define INTERNODE_CACHE_BYTES (1 << INTERNODE_CACHE_SHIFT)
+diff --git a/arch/x86/include/asm/intel-mid.h b/arch/x86/include/asm/intel-mid.h
+index 8e5af119dc2d..f51f04aefe1b 100644
+--- a/arch/x86/include/asm/intel-mid.h
++++ b/arch/x86/include/asm/intel-mid.h
+@@ -43,7 +43,7 @@ struct devs_id {
  
--#define __force_data __attribute__((__section__(".data")))
-+#define __force_data __section(.data)
+ #define sfi_device(i)								\
+ 	static const struct devs_id *const __intel_mid_sfi_##i##_dev __used	\
+-	__attribute__((__section__(".x86_intel_mid_dev.init"))) = &i
++	__section(.x86_intel_mid_dev.init) = &i
  
- static int g_loc_X __force_data;
- static int g_loc_Y __force_data;
+ /**
+ * struct mid_sd_board_info - template for SD device creation
+diff --git a/arch/x86/include/asm/iommu_table.h b/arch/x86/include/asm/iommu_table.h
+index 1fb3fd1a83c2..7d190710eb92 100644
+--- a/arch/x86/include/asm/iommu_table.h
++++ b/arch/x86/include/asm/iommu_table.h
+@@ -50,9 +50,8 @@ struct iommu_table_entry {
+ 
+ #define __IOMMU_INIT(_detect, _depend, _early_init, _late_init, _finish)\
+ 	static const struct iommu_table_entry				\
+-		__iommu_entry_##_detect __used				\
+-	__attribute__ ((unused, __section__(".iommu_table"),		\
+-			aligned((sizeof(void *)))))	\
++		__iommu_entry_##_detect __used __section(.iommu_table)	\
++		__aligned((sizeof(void *)))				\
+ 	= {_detect, _depend, _early_init, _late_init,			\
+ 	   _finish ? IOMMU_FINISH_IF_DETECTED : 0}
+ /*
+diff --git a/arch/x86/include/asm/irqflags.h b/arch/x86/include/asm/irqflags.h
+index 8a0e56e1dcc9..68db90bca813 100644
+--- a/arch/x86/include/asm/irqflags.h
++++ b/arch/x86/include/asm/irqflags.h
+@@ -9,7 +9,7 @@
+ #include <asm/nospec-branch.h>
+ 
+ /* Provide __cpuidle; we can't safely include <linux/cpu.h> */
+-#define __cpuidle __attribute__((__section__(".cpuidle.text")))
++#define __cpuidle __section(.cpuidle.text)
+ 
+ /*
+  * Interrupt control:
+diff --git a/arch/x86/include/asm/mem_encrypt.h b/arch/x86/include/asm/mem_encrypt.h
+index 0c196c47d621..db2cd3709148 100644
+--- a/arch/x86/include/asm/mem_encrypt.h
++++ b/arch/x86/include/asm/mem_encrypt.h
+@@ -50,7 +50,7 @@ void __init mem_encrypt_free_decrypted_mem(void);
+ bool sme_active(void);
+ bool sev_active(void);
+ 
+-#define __bss_decrypted __attribute__((__section__(".bss..decrypted")))
++#define __bss_decrypted __section(.bss..decrypted)
+ 
+ #else	/* !CONFIG_AMD_MEM_ENCRYPT */
+ 
+diff --git a/arch/x86/kernel/cpu/cpu.h b/arch/x86/kernel/cpu/cpu.h
+index c0e2407abdd6..7ff9dc41a603 100644
+--- a/arch/x86/kernel/cpu/cpu.h
++++ b/arch/x86/kernel/cpu/cpu.h
+@@ -38,8 +38,7 @@ struct _tlb_table {
+ 
+ #define cpu_dev_register(cpu_devX) \
+ 	static const struct cpu_dev *const __cpu_dev_##cpu_devX __used \
+-	__attribute__((__section__(".x86_cpu_dev.init"))) = \
+-	&cpu_devX;
++	__section(.x86_cpu_dev.init) = &cpu_devX;
+ 
+ extern const struct cpu_dev *const __x86_cpu_dev_start[],
+ 			    *const __x86_cpu_dev_end[];
 -- 
 2.23.0.rc1.153.gdeed80330f-goog
 
