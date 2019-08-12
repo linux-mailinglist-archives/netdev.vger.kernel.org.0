@@ -2,119 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 00D4789A7A
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 11:52:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 776F289AB1
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 11:59:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727608AbfHLJw3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 05:52:29 -0400
-Received: from smtprelay08.ispgateway.de ([134.119.228.111]:33948 "EHLO
-        smtprelay08.ispgateway.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727425AbfHLJw2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 05:52:28 -0400
-X-Greylist: delayed 607 seconds by postgrey-1.27 at vger.kernel.org; Mon, 12 Aug 2019 05:52:27 EDT
-Received: from [79.249.13.39] (helo=C02YV1XMLVDM.Speedport_W_724V_01011603_06_003)
-        by smtprelay08.ispgateway.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-SHA256:128)
-        (Exim 4.92)
-        (envelope-from <marc@koderer.com>)
-        id 1hx6qF-0004O4-Qd; Mon, 12 Aug 2019 11:42:15 +0200
-From:   Marc Koderer <marc@koderer.com>
-To:     idryomov@gmail.com, jlayton@kernel.org, sage@redhat.com,
-        davem@davemloft.net
-Cc:     ceph-devel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Marc Koderer <marc@koderer.com>
-Subject: [PATCH] net/ceph replace ceph_kvmalloc with kvmalloc
-Date:   Mon, 12 Aug 2019 11:42:42 +0200
-Message-Id: <20190812094242.44735-1-marc@koderer.com>
-X-Mailer: git-send-email 2.22.0
+        id S1727591AbfHLJ7L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 05:59:11 -0400
+Received: from mail02.iobjects.de ([188.40.134.68]:37646 "EHLO
+        mail02.iobjects.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727323AbfHLJ7L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 05:59:11 -0400
+Received: from tux.wizards.de (p3EE2F275.dip0.t-ipconnect.de [62.226.242.117])
+        by mail02.iobjects.de (Postfix) with ESMTPSA id 03CB04169C25;
+        Mon, 12 Aug 2019 11:59:10 +0200 (CEST)
+Received: from [192.168.100.223] (ragnarok.applied-asynchrony.com [192.168.100.223])
+        by tux.wizards.de (Postfix) with ESMTP id B3ACB5D5BF5;
+        Mon, 12 Aug 2019 11:59:09 +0200 (CEST)
+Subject: Re: [PATCH net-next] r8169: make use of xmit_more
+From:   =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Sander Eikelenboom <linux@eikelenboom.it>
+References: <2950b2f7-7460-cce0-d964-ad654d897295@gmail.com>
+ <acd65426-0c7e-8c5f-a002-a36286f09122@applied-asynchrony.com>
+ <cfb9a1c7-57c8-db04-1081-ac1cb92bb447@applied-asynchrony.com>
+ <a19bb3de-a866-d342-7cca-020fef219d03@gmail.com>
+ <868a1f4c-5fba-c64b-ea31-30a3770e6a2f@applied-asynchrony.com>
+ <f08a3207-0930-4b71-16f1-81e352f87a9c@gmail.com>
+ <eecaaf82-e6cd-2b75-5756-006a70258a9f@applied-asynchrony.com>
+ <CANn89iKjPz5-EypQ9cb3LRsLJBy1Hr0vLoW6Sjd_Df082H1Yzw@mail.gmail.com>
+ <72a58a6b-974c-0feb-2fa4-c8a71c7eff7e@applied-asynchrony.com>
+Organization: Applied Asynchrony, Inc.
+Message-ID: <06438520-1902-bc7c-7bb2-015dfcdf5457@applied-asynchrony.com>
+Date:   Mon, 12 Aug 2019 11:59:09 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <72a58a6b-974c-0feb-2fa4-c8a71c7eff7e@applied-asynchrony.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-Df-Sender: bWFyY0Brb2RlcmVyLmNvbQ==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is nearly no difference between both implemenations.
-ceph_kvmalloc existed before kvmalloc which makes me think it's
-a leftover.
+On 8/9/19 10:52 AM, Holger Hoffstätte wrote:
+> On 8/9/19 10:25 AM, Eric Dumazet wrote:
+> (snip)
+>>>
+>>> So that didn't take long - got another timeout this morning during some
+>>> random light usage, despite sg/tso being disabled this time.
+>>> Again the only common element is the xmit_more patch. :(
+>>> Not sure whether you want to revert this right away or wait for 5.4-rc1
+>>> feedback. Maybe this too is chipset-specific?
+>>>
+>>>> Thanks a lot for the analysis and testing. Then I'll submit the disabling
+>>>> of SG on RTL8168evl (on your behalf), independent of whether it fixes
+>>>> the timeout issue.
+>>>
+>>> Got it, thanks!
+>>>
+>>> Holger
+>>
+>> I would try this fix maybe ?
+>>
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c
+>> b/drivers/net/ethernet/realtek/r8169_main.c
+>> index b2a275d8504cf099cff738f2f7554efa9658fe32..e77628813daba493ad50dab9ac1e3703e38b560c
+>> 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>> @@ -5691,6 +5691,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
+>>                   */
+>>                  smp_wmb();
+>>                  netif_stop_queue(dev);
+>> +               door_bell = true;
+>>          }
+>>
+>>          if (door_bell)
+>>
+> 
+> Thanks Eric, I'll give that a try and see how it fares over the next few days.
+> It suspiciously looks like it could help..
 
-Signed-off-by: Marc Koderer <marc@koderer.com>
----
- net/ceph/buffer.c      |  3 +--
- net/ceph/ceph_common.c | 11 -----------
- net/ceph/crypto.c      |  2 +-
- net/ceph/messenger.c   |  2 +-
- 4 files changed, 3 insertions(+), 15 deletions(-)
+Good news everyone!
 
-diff --git a/net/ceph/buffer.c b/net/ceph/buffer.c
-index 5622763ad402..6ca273d2246a 100644
---- a/net/ceph/buffer.c
-+++ b/net/ceph/buffer.c
-@@ -7,7 +7,6 @@
- 
- #include <linux/ceph/buffer.h>
- #include <linux/ceph/decode.h>
--#include <linux/ceph/libceph.h> /* for ceph_kvmalloc */
- 
- struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
- {
-@@ -17,7 +16,7 @@ struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
- 	if (!b)
- 		return NULL;
- 
--	b->vec.iov_base = ceph_kvmalloc(len, gfp);
-+	b->vec.iov_base = kvmalloc(len, gfp);
- 	if (!b->vec.iov_base) {
- 		kfree(b);
- 		return NULL;
-diff --git a/net/ceph/ceph_common.c b/net/ceph/ceph_common.c
-index 4eeea4d5c3ef..6c1769a815af 100644
---- a/net/ceph/ceph_common.c
-+++ b/net/ceph/ceph_common.c
-@@ -185,17 +185,6 @@ int ceph_compare_options(struct ceph_options *new_opt,
- }
- EXPORT_SYMBOL(ceph_compare_options);
- 
--void *ceph_kvmalloc(size_t size, gfp_t flags)
--{
--	if (size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
--		void *ptr = kmalloc(size, flags | __GFP_NOWARN);
--		if (ptr)
--			return ptr;
--	}
--
--	return __vmalloc(size, flags, PAGE_KERNEL);
--}
--
- 
- static int parse_fsid(const char *str, struct ceph_fsid *fsid)
- {
-diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
-index 5d6724cee38f..a9deead1e4ff 100644
---- a/net/ceph/crypto.c
-+++ b/net/ceph/crypto.c
-@@ -144,7 +144,7 @@ void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
- static const u8 *aes_iv = (u8 *)CEPH_AES_IV;
- 
- /*
-- * Should be used for buffers allocated with ceph_kvmalloc().
-+ * Should be used for buffers allocated with kvmalloc().
-  * Currently these are encrypt out-buffer (ceph_buffer) and decrypt
-  * in-buffer (msg front).
-  *
-diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
-index 962f521c863e..f1f2fcc6f780 100644
---- a/net/ceph/messenger.c
-+++ b/net/ceph/messenger.c
-@@ -3334,7 +3334,7 @@ struct ceph_msg *ceph_msg_new2(int type, int front_len, int max_data_items,
- 
- 	/* front */
- 	if (front_len) {
--		m->front.iov_base = ceph_kvmalloc(front_len, flags);
-+		m->front.iov_base = kvmalloc(front_len, flags);
- 		if (m->front.iov_base == NULL) {
- 			dout("ceph_msg_new can't allocate %d bytes\n",
- 			     front_len);
--- 
-2.22.0
+After three days non-stop action between two machines and hundreds of GBs
+pushed back and forth: not a single timeout or hiccup. Nice! \o/
+Eric, please send this as a proper patch for -next. Feel free to add my
+Tested-by.
 
+cheers
+Holger
