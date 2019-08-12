@@ -2,94 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED6D8A28E
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 17:44:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C1D8A293
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 17:46:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbfHLPoD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 11:44:03 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35332 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726484AbfHLPoD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 11:44:03 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B4C09305B886;
-        Mon, 12 Aug 2019 15:44:02 +0000 (UTC)
-Received: from linux-ws.nc.xsintricity.com (ovpn-112-57.rdu2.redhat.com [10.10.112.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 66F261FE;
-        Mon, 12 Aug 2019 15:44:01 +0000 (UTC)
-Message-ID: <dc88624d6632f23a1b0ca77f45ed21a20158d3e6.camel@redhat.com>
-Subject: Re: [PATCH rdma-next 0/4] Add XRQ and SRQ support to DEVX interface
-From:   Doug Ledford <dledford@redhat.com>
-To:     Leon Romanovsky <leonro@mellanox.com>,
-        Jason Gunthorpe <jgg@mellanox.com>
-Cc:     RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Edward Srouji <edwards@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Date:   Mon, 12 Aug 2019 11:43:58 -0400
-In-Reply-To: <20190808101059.GC28049@mtr-leonro.mtl.com>
-References: <20190808084358.29517-1-leon@kernel.org>
-         <20190808101059.GC28049@mtr-leonro.mtl.com>
-Organization: Red Hat, Inc.
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-0589yvTJSop36pjdLUYZ"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1726263AbfHLPqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 11:46:39 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:51296 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725648AbfHLPqi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 11:46:38 -0400
+Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7CFiYvx083677
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 11:46:37 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2ubb1781w2-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 11:46:37 -0400
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <gor@linux.ibm.com>;
+        Mon, 12 Aug 2019 16:46:35 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 12 Aug 2019 16:46:33 +0100
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7CFkWoI57082008
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 12 Aug 2019 15:46:32 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4CBC152052;
+        Mon, 12 Aug 2019 15:46:32 +0000 (GMT)
+Received: from localhost (unknown [9.152.212.191])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 18FBB5204F;
+        Mon, 12 Aug 2019 15:46:32 +0000 (GMT)
+Date:   Mon, 12 Aug 2019 17:46:30 +0200
+From:   Vasily Gorbik <gor@linux.ibm.com>
+To:     Ilya Leoshkevich <iii@linux.ibm.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        heiko.carstens@de.ibm.com
+Subject: Re: [PATCH bpf] s390/bpf: fix lcgr instruction encoding
+References: <20190812150332.98109-1-iii@linux.ibm.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Mon, 12 Aug 2019 15:44:02 +0000 (UTC)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190812150332.98109-1-iii@linux.ibm.com>
+X-TM-AS-GCONF: 00
+x-cbid: 19081215-0012-0000-0000-0000033DE566
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19081215-0013-0000-0000-00002177F1E1
+Message-Id: <your-ad-here.call-01565624790-ext-8747@work.hours>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-12_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908120175
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---=-0589yvTJSop36pjdLUYZ
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Thu, 2019-08-08 at 10:11 +0000, Leon Romanovsky wrote:
-> On Thu, Aug 08, 2019 at 11:43:54AM +0300, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@mellanox.com>
-> >=20
-> > Hi,
-> >=20
-> > This small series extends DEVX interface with SRQ and XRQ legacy
-> > commands.
->=20
-> Sorry for typo in cover letter, there is no SRQ here.
-
-Series looks fine to me.  Are you planning on the first two via mlx5-
-next and the remainder via RDMA tree?
-
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
-
---=-0589yvTJSop36pjdLUYZ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl1RiT4ACgkQuCajMw5X
-L90fDA/+KgZ6eeP3c/mtKZ7acgAl38DvSFLeRmCn+MzjvQ5Q8Mm6sLpxue/2jN1i
-bukPqJsboJuGoP8ncPwHzB7aa1hdXmY/36p7Pur+l6ha3LSKE3LYlmnwkxjKkvkR
-V0VXop1ocWJAq9TNXShWgN+DQPWpV3TO8TDhSsCl89pS7oke3i0tmkegzt9zTuqU
-ypRe7u+At0RMpYHmwEMJe/Y3k91ZBHWCQymySGo/vgnf62J1O+91gBaemBxDJuwh
-lz20BPyiVVTLmHqaMFImqLQ6VvYS4RuOYQql+rboxp1GRB3MbVJhgUrId2PaiGkJ
-+cLD954assIjGMl5VvfmCN9SFWQzyw6JNbsYXBvTHBJ5pyepDmj0Q+kNJankMOhF
-iJbhPG5jF/oab9Pv1jylQ198KT/eqn6rgwIF9/5bZUdkwtrIyFvRLY4zB89dJ4AX
-qZQFgKvd+12dmgP9ts/NUwiykvxAMrP3jzi2Y000eqd+ar4E5/6fHH9Q9/7jpoqJ
-6kVIy0Tm5sxEb8Q6gQIGJLPqUg8iW/uESQqZXJfYnWIQccr0RJ/3IfSDwnVK0Hsk
-4eRlQRyBaH0VqUS8WG75mPhvmbxJvgjZopE3jgpTSIeVnuJqHWnYWsWFn6lc5wLH
-W8qFEiyGO5uqYh38a3xESYMR+GmM3lHxHZq9wuFocJkgYugUCVE=
-=I+Eh
------END PGP SIGNATURE-----
-
---=-0589yvTJSop36pjdLUYZ--
+On Mon, Aug 12, 2019 at 05:03:32PM +0200, Ilya Leoshkevich wrote:
+> "masking, test in bounds 3" fails on s390, because
+> BPF_ALU64_IMM(BPF_NEG, BPF_REG_2, 0) ignores the top 32 bits of
+> BPF_REG_2. The reason is that JIT emits lcgfr instead of lcgr.
+> The associated comment indicates that the code was intended to emit lcgr
+> in the first place, it's just that the wrong opcode was used.
+> 
+> Fix by using the correct opcode.
+> 
+> Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+> ---
+>  arch/s390/net/bpf_jit_comp.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/arch/s390/net/bpf_jit_comp.c b/arch/s390/net/bpf_jit_comp.c
+> index e636728ab452..6299156f9738 100644
+> --- a/arch/s390/net/bpf_jit_comp.c
+> +++ b/arch/s390/net/bpf_jit_comp.c
+> @@ -863,7 +863,7 @@ static noinline int bpf_jit_insn(struct bpf_jit *jit, struct bpf_prog *fp, int i
+>  		break;
+>  	case BPF_ALU64 | BPF_NEG: /* dst = -dst */
+>  		/* lcgr %dst,%dst */
+> -		EMIT4(0xb9130000, dst_reg, dst_reg);
+> +		EMIT4(0xb9030000, dst_reg, dst_reg);
+>  		break;
+>  	/*
+>  	 * BPF_FROM_BE/LE
+> -- 
+> 2.21.0
+> 
+Please add
+Fixes: 054623105728 ("s390/bpf: Add s390x eBPF JIT compiler backend")
+or whatever it should be. With that:
+Acked-by: Vasily Gorbik <gor@linux.ibm.com>
 
