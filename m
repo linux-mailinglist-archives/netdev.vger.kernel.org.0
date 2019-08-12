@@ -2,94 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4D918A2AF
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 17:53:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9CCC48A2C0
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 17:56:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726587AbfHLPw4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 11:52:56 -0400
-Received: from mga06.intel.com ([134.134.136.31]:17537 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726219AbfHLPwz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 11:52:55 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Aug 2019 08:49:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,378,1559545200"; 
-   d="asc'?scan'208";a="200178298"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by fmsmga004.fm.intel.com with ESMTP; 12 Aug 2019 08:49:35 -0700
-Message-ID: <1ddf059408158e6a1819f222127b353476110ba4.camel@intel.com>
-Subject: Re: [PATCH v3 16/17] ixgbe: no need to check return value of
- debugfs_create functions
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Reply-To: jeffrey.t.kirsher@intel.com
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org
-Date:   Mon, 12 Aug 2019 08:49:35 -0700
-In-Reply-To: <20190810101732.26612-17-gregkh@linuxfoundation.org>
-References: <20190810101732.26612-1-gregkh@linuxfoundation.org>
-         <20190810101732.26612-17-gregkh@linuxfoundation.org>
-Organization: Intel
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-EOUtTASVq+viiz5NfBUM"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1726610AbfHLP4u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 11:56:50 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:39494 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726219AbfHLP4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 11:56:49 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7CFugtk148600;
+        Mon, 12 Aug 2019 11:56:45 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2ub97363p2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 12 Aug 2019 11:56:45 -0400
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7CFujNO148881;
+        Mon, 12 Aug 2019 11:56:45 -0400
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2ub97363kf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 12 Aug 2019 11:56:45 -0400
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7CFtUxP006304;
+        Mon, 12 Aug 2019 15:56:40 GMT
+Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
+        by ppma01dal.us.ibm.com with ESMTP id 2u9nj6fwr7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 12 Aug 2019 15:56:40 +0000
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7CFuekf36897112
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 12 Aug 2019 15:56:40 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 02EFDAC05B;
+        Mon, 12 Aug 2019 15:56:40 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B0A45AC059;
+        Mon, 12 Aug 2019 15:56:39 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.80.213.234])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Mon, 12 Aug 2019 15:56:39 +0000 (GMT)
+Subject: Re: [PATCHv2 net 0/2] Add netdev_level_ratelimited to avoid netdev
+ msg flush
+To:     Hangbin Liu <liuhangbin@gmail.com>,
+        David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, joe@perches.com
+References: <20190801090347.8258-1-liuhangbin@gmail.com>
+ <20190809002941.15341-1-liuhangbin@gmail.com>
+ <20190811.210820.1168889173898610979.davem@davemloft.net>
+ <20190812073733.GV18865@dhcp-12-139.nay.redhat.com>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Message-ID: <9bb8e9af-4d9b-7c16-f58d-e299b1f30007@linux.ibm.com>
+Date:   Mon, 12 Aug 2019 10:56:39 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190812073733.GV18865@dhcp-12-139.nay.redhat.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-12_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908120177
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-EOUtTASVq+viiz5NfBUM
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Sat, 2019-08-10 at 12:17 +0200, Greg Kroah-Hartman wrote:
-> When calling debugfs functions, there is no need to ever check the
-> return value.  The function can work or not, but the code logic
-> should
-> never do something different based on this.
->=20
-> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: intel-wired-lan@lists.osuosl.org
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-
-Acked-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-
-> ---
->  .../net/ethernet/intel/ixgbe/ixgbe_debugfs.c  | 22 +++++----------
-> ----
->  1 file changed, 5 insertions(+), 17 deletions(-)
+On 8/12/19 2:37 AM, Hangbin Liu wrote:
+> On Sun, Aug 11, 2019 at 09:08:20PM -0700, David Miller wrote:
+>> From: Hangbin Liu <liuhangbin@gmail.com>
+>> Date: Fri,  9 Aug 2019 08:29:39 +0800
+>>
+>>> ibmveth 30000003 env3: h_multicast_ctrl rc=4 when adding an entry to the filter table
+>>> error when add more thann 256 memberships in one multicast group. I haven't
+>>> found this issue on other driver. It looks like an ibm driver issue and need
+>>> to be fixed separately.
+>> You need to root cause and fix the reason this message appears so much.
+>>
+>> Once I let you rate limit the message you will have zero incentive to
+>> fix the real problem and fix it.
+> Sorry, I'm not familiar with ibmveth driver...
+>
+> Hi Thomas,
+>
+> Would you please help check why this issue happens
 
 
---=-EOUtTASVq+viiz5NfBUM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+Hi, thanks for reporting this. I was able to recreate this on my own 
+system. The virtual ethernet's multicast filter list size is limited, 
+and the driver will check that there is available space before adding 
+entries.  The problem is that the size is encoded as big endian, but the 
+driver does not convert it for little endian systems after retrieving it 
+from the device tree.  As a result the driver is requesting more than 
+the hypervisor can allow and getting this error in reply. I will submit 
+a patch to correct this soon.
 
------BEGIN PGP SIGNATURE-----
+Thanks again,
 
-iQIzBAABCAAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl1Rio8ACgkQ5W/vlVpL
-7c73CQ/+MRQwSGF5f4EP5Z5xB+mOP5Ik7hfozeweg8oRT1+81W3b6rUlHc7Lm/0p
-tMHpLpGkZj/+Mis6IF07QCWZCszCf6ViCt1TWBzF200tbbcXZGQMfy2jr0ng5/vH
-oftOvfvKR2UdzYwXNENsn6/unL4Drx7HM1Tfgd+qK1t1WpRWy4JS4p/6EP3gaqxy
-yyoLFK4g8gI9AQBokCH4QWgifONAoy9Uq5djlh3nl9p409M12Y2JN4Gb2cbzZ6Aw
-pxK6nEfz8FiwRIlNstL20Hb2GSb6yY14SnvQipGwfwJL/KOZB2HCsgo7rrjzTFPd
-KHUvFDN1uiX7A14j33Nyosr5J7cr13ZdgsSQf30rZQ7AWMRbqZVBIdgYUA6EGalT
-6r4cF2RwCHiVLxrVDXLilNIGJju0g2A6op6huTdYn6sSmnuN8rZstrgWWkKqUVWB
-VnhqVQNDJ/zD9J9PWKgyEqiWXvQf3MmfwCn2kefdxzB17Oliu5d14XAhqvjjW9pr
-cX2mX7HNATe+Fk1Q5zpOIULXxjnNSdv4kItuvZjiONZM7yoUMMHzajAckOj4HnDA
-+Q746vqjwwA77xOl+dVLiU7FIGOQ57nDaWRbyutxH9OkhQz1JI7Qht7uotwt68Sm
-BeQfnnVGK+at578k+vCoaAhWMAB+XNsKqyMyOWMkgd/wG+RCy0E=
-=mVRo
------END PGP SIGNATURE-----
+Tom
 
---=-EOUtTASVq+viiz5NfBUM--
-
+> Thanks
+> Hangbbin
+>
