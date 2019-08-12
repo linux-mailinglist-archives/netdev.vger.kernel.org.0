@@ -2,174 +2,166 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ACD898A4F0
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:52:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6772D8A4F7
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:56:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726549AbfHLRww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 13:52:52 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35965 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbfHLRwv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:52:51 -0400
-Received: by mail-pl1-f194.google.com with SMTP id g4so1681620plo.3
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 10:52:51 -0700 (PDT)
+        id S1726605AbfHLR4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 13:56:05 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:43852 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726185AbfHLR4F (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:56:05 -0400
+Received: by mail-pf1-f196.google.com with SMTP id v12so2274606pfn.10
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 10:56:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FDBHhm9o0hCKPWae4nXBJdHpjQnOdVxkg9O1sCwpT3c=;
-        b=f6bs+VkH6HmAmbfT0JcI9UiQX2Yy2ulAeH7sjJn9fNGaqzxmrnPUaLY9Sd/BZ/F3Fh
-         o+hCBJBSQCOW6UFH+Ch9gxkeaN31YSnXEh5GHcqIX3ngKsCMnXeyLr9dzuFGBlytvi1e
-         jvY+ARqwLpPAP0y3fZ6XR1/uT2hnENUYO0GlmqohQpVtGDr+qMAswuKr3YnJUekuDQzX
-         wZYmEIRqCETd5hMzowmN2snNJN6kRCXIJ6h41E/H22TYELKVI1biFKjikb0kxBF5u2Vw
-         CLk/M8GeNYoN6rxRJz99VnMVJHf8FKMhhr3ZpL0h6jhd6hXDRd+iBlEShFytZoq2cOoa
-         /f/g==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kxHwheKBdbsdbbglkfDawW5E2I39A77wHuQOIwAfeTY=;
+        b=Ixs0O4IXRLYP8STI4hBYcImD13d+UfNgOx4So6Rf+15CxMGG1ZF2ooeg68lyQaoT5a
+         i2m+S2P8pxtc18es7Y4cwtoVCIojWlDQiBTdtbMF+rP3Cj5UpCvZqW+3ql4UjaO7YEW7
+         IbSHAUu1/0RgESLb9rG5Vhn7BiAoCzTJ73OabI/Lb6fkd/pk2wvG84ey0icVih2dzh9h
+         n7QvoYGeeg3pdJvUu17Il7st2S/rh4D2hwghwwFoAsJAfroyIiScz4DRhHSyykCVKZGZ
+         Kc3vu2zDZcK2h1LJV+t5hExv3DeIf9qivfr4Liqxe1NqieF/Yu7kduq21JMWFh5u21ty
+         YbWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FDBHhm9o0hCKPWae4nXBJdHpjQnOdVxkg9O1sCwpT3c=;
-        b=qlc24DrXp+LkLPCa4R11qYOUHyZ1nDcVeiQ5XudXUN8gEyvtcZzvY4TWo++AqENEO2
-         mj5pLrMkUnlNXfyPzurIhs9awpqltDOo0YumNKlIac07h0l30CdpbJb4How3LPgfSgDO
-         yKwwa9V6yLS7sFJv2bWoYLejjj6P9+uhe0vsRH+fSCRSmOFBR+dylPII1EC3aOKyo+OM
-         rHDA/eu91aTMOlnnYkLc1+9tyGAP7gZGk2+E6zMhj0psraqAs0TduVifrkJ8g+bmE7Qh
-         gzM6eeUZ/bs/ZFs6bSdbmD0bKY+gr+eN+baNO7YCbWAx8ejLl7fC4sNxC+1MnImY64K1
-         V37g==
-X-Gm-Message-State: APjAAAXLV7kESLMq1key2MvAE08YsPGuohLNlE3JAd8dhNEEGQXPUn0v
-        4OCR42hyYbhSgXzPH4tjd3R4pQ==
-X-Google-Smtp-Source: APXvYqyLAo893vqHTfzBwG3ccLyA4X+EsqC2/4r6iU+AD+DOwYk6KGio6qLinnSkPUx3XIRRykfiWA==
-X-Received: by 2002:a17:902:be03:: with SMTP id r3mr34472025pls.156.1565632370710;
-        Mon, 12 Aug 2019 10:52:50 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id r6sm229803pjb.22.2019.08.12.10.52.49
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 12 Aug 2019 10:52:50 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 10:52:49 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-Subject: Re: [PATCH bpf-next v2 2/4] bpf: support cloning sk storage on
- accept()
-Message-ID: <20190812175249.GF2820@mini-arch>
-References: <20190809161038.186678-1-sdf@google.com>
- <20190809161038.186678-3-sdf@google.com>
- <db5ec323-1126-d461-bc65-27ccc1414589@iogearbox.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kxHwheKBdbsdbbglkfDawW5E2I39A77wHuQOIwAfeTY=;
+        b=bW56U8FxLU3EOMOHFBvd6fkYrlVXbTzwPuFwvKQwab4Z87ka0zi2OqX3uDqFx+SAVq
+         JYckA64mWXXPdjLjxze6YduTuwIf4AvIerfaGH1m+ic/aNSUWSu3HCUiM5tLjePrxeeE
+         PxC7WI6m8DKF7QhamRMt1/ZyJA2rbCGmApsWBdn1ZJPIVY6joE4xkxrjphN1YnBDoABy
+         KB8/cr6xTKEbJT4yjPmaXn1ASvSMw42B4DH+nkohgX/hc0PWOy9bhqi2TOtwvfQkcA9n
+         D2g624lhxICo3ly5DJZ0eeqgR9XpRJYT7tBnH3zgjG94z/EnAtLbvanttwUW6RV0Tlg1
+         YdAA==
+X-Gm-Message-State: APjAAAXYUFpziiEpcVtm5ZCdd2J1eOyizWHuoD7jsw/VM84PcZ4AtI90
+        K4/BXYYi6VGpvwLvd+LD6HT6vWIHpPvB27CbH5MPTg==
+X-Google-Smtp-Source: APXvYqxp+Gpy995KYtiSbRlKGeS6ZhsEYwM0zzW0uwVZomgwBvkQOHqIvIb7lZ9LFuJixOs5iD0b5tokFB/HZlZlx9k=
+X-Received: by 2002:a17:90a:bf02:: with SMTP id c2mr436839pjs.73.1565632562461;
+ Mon, 12 Aug 2019 10:56:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <db5ec323-1126-d461-bc65-27ccc1414589@iogearbox.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190810101732.26612-1-gregkh@linuxfoundation.org> <20190810101732.26612-14-gregkh@linuxfoundation.org>
+In-Reply-To: <20190810101732.26612-14-gregkh@linuxfoundation.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 12 Aug 2019 10:55:51 -0700
+Message-ID: <CAKwvOdnP4OU9g_ebjnT=r1WcGRvsFsgv3NbguhFKOtt8RWNHwA@mail.gmail.com>
+Subject: Re: [PATCH v3 13/17] mvpp2: no need to check return value of
+ debugfs_create functions
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Nathan Huckleberry <nhuck@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/12, Daniel Borkmann wrote:
-> On 8/9/19 6:10 PM, Stanislav Fomichev wrote:
-> > Add new helper bpf_sk_storage_clone which optionally clones sk storage
-> > and call it from sk_clone_lock.
-> > 
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Cc: Yonghong Song <yhs@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> [...]
-> > +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk)
-> > +{
-> > +	struct bpf_sk_storage *new_sk_storage = NULL;
-> > +	struct bpf_sk_storage *sk_storage;
-> > +	struct bpf_sk_storage_elem *selem;
-> > +	int ret;
-> > +
-> > +	RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
-> > +
-> > +	rcu_read_lock();
-> > +	sk_storage = rcu_dereference(sk->sk_bpf_storage);
-> > +
-> > +	if (!sk_storage || hlist_empty(&sk_storage->list))
-> > +		goto out;
-> > +
-> > +	hlist_for_each_entry_rcu(selem, &sk_storage->list, snode) {
-> > +		struct bpf_sk_storage_elem *copy_selem;
-> > +		struct bpf_sk_storage_map *smap;
-> > +		struct bpf_map *map;
-> > +		int refold;
-> > +
-> > +		smap = rcu_dereference(SDATA(selem)->smap);
-> > +		if (!(smap->map.map_flags & BPF_F_CLONE))
-> > +			continue;
-> > +
-> > +		map = bpf_map_inc_not_zero(&smap->map, false);
-> > +		if (IS_ERR(map))
-> > +			continue;
-> > +
-> > +		copy_selem = bpf_sk_storage_clone_elem(newsk, smap, selem);
-> > +		if (!copy_selem) {
-> > +			ret = -ENOMEM;
-> > +			bpf_map_put(map);
-> > +			goto err;
-> > +		}
-> > +
-> > +		if (new_sk_storage) {
-> > +			selem_link_map(smap, copy_selem);
-> > +			__selem_link_sk(new_sk_storage, copy_selem);
-> > +		} else {
-> > +			ret = sk_storage_alloc(newsk, smap, copy_selem);
-> > +			if (ret) {
-> > +				kfree(copy_selem);
-> > +				atomic_sub(smap->elem_size,
-> > +					   &newsk->sk_omem_alloc);
-> > +				bpf_map_put(map);
-> > +				goto err;
-> > +			}
-> > +
-> > +			new_sk_storage = rcu_dereference(copy_selem->sk_storage);
-> > +		}
-> > +		bpf_map_put(map);
-> 
-> The map get/put combination /under/ RCU read lock seems a bit odd to me, could
-> you exactly describe the race that this would be preventing?
-There is a race between sk storage release and sk storage clone.
-bpf_sk_storage_map_free uses synchronize_rcu to wait for all existing
-users to finish and the new ones are prevented via map's refcnt being
-zero; we need to do something like that for the clone.
-Martin suggested to use bpf_map_inc_not_zero/bpf_map_put.
-If I read everythin correctly, I think without map_inc/map_put we
-get the following race:
+On Sat, Aug 10, 2019 at 3:17 AM Greg Kroah-Hartman
+<gregkh@linuxfoundation.org> wrote:
+>
+> When calling debugfs functions, there is no need to ever check the
+> return value.  The function can work or not, but the code logic should
+> never do something different based on this.
 
-CPU0                                   CPU1
+Maybe adding this recommendation to the comment block above the
+definition of debugfs_create_dir() in fs/debugfs/inode.c would help
+prevent this issue in the future?  What failure means, and how to
+proceed can be tricky; more documentation can only help in this
+regard.
 
-bpf_map_put
-  bpf_sk_storage_map_free(smap)
-    synchronize_rcu
+>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Maxime Chevallier <maxime.chevallier@bootlin.com>
+> Cc: Nick Desaulniers <ndesaulniers@google.com>
+> Cc: Nathan Huckleberry <nhuck@google.com>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> ---
+>  .../ethernet/marvell/mvpp2/mvpp2_debugfs.c    | 19 +------------------
+>  1 file changed, 1 insertion(+), 18 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+> index 274fb07362cb..4a3baa7e0142 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_debugfs.c
+> @@ -452,8 +452,6 @@ static int mvpp2_dbgfs_flow_port_init(struct dentry *parent,
+>         struct dentry *port_dir;
+>
+>         port_dir = debugfs_create_dir(port->dev->name, parent);
+> -       if (IS_ERR(port_dir))
+> -               return PTR_ERR(port_dir);
+>
+>         port_entry = &port->priv->dbgfs_entries->port_flow_entries[port->id];
+>
+> @@ -480,8 +478,6 @@ static int mvpp2_dbgfs_flow_entry_init(struct dentry *parent,
+>         sprintf(flow_entry_name, "%02d", flow);
+>
+>         flow_entry_dir = debugfs_create_dir(flow_entry_name, parent);
+> -       if (!flow_entry_dir)
+> -               return -ENOMEM;
+>
+>         entry = &priv->dbgfs_entries->flow_entries[flow];
+>
+> @@ -514,8 +510,6 @@ static int mvpp2_dbgfs_flow_init(struct dentry *parent, struct mvpp2 *priv)
+>         int i, ret;
+>
+>         flow_dir = debugfs_create_dir("flows", parent);
+> -       if (!flow_dir)
+> -               return -ENOMEM;
+>
+>         for (i = 0; i < MVPP2_N_PRS_FLOWS; i++) {
+>                 ret = mvpp2_dbgfs_flow_entry_init(flow_dir, priv, i);
+> @@ -539,8 +533,6 @@ static int mvpp2_dbgfs_prs_entry_init(struct dentry *parent,
+>         sprintf(prs_entry_name, "%03d", tid);
+>
+>         prs_entry_dir = debugfs_create_dir(prs_entry_name, parent);
+> -       if (!prs_entry_dir)
+> -               return -ENOMEM;
+>
+>         entry = &priv->dbgfs_entries->prs_entries[tid];
+>
+> @@ -578,8 +570,6 @@ static int mvpp2_dbgfs_prs_init(struct dentry *parent, struct mvpp2 *priv)
+>         int i, ret;
+>
+>         prs_dir = debugfs_create_dir("parser", parent);
+> -       if (!prs_dir)
+> -               return -ENOMEM;
+>
+>         for (i = 0; i < MVPP2_PRS_TCAM_SRAM_SIZE; i++) {
+>                 ret = mvpp2_dbgfs_prs_entry_init(prs_dir, priv, i);
+> @@ -688,8 +678,6 @@ static int mvpp2_dbgfs_port_init(struct dentry *parent,
+>         struct dentry *port_dir;
+>
+>         port_dir = debugfs_create_dir(port->dev->name, parent);
+> -       if (IS_ERR(port_dir))
+> -               return PTR_ERR(port_dir);
+>
+>         debugfs_create_file("parser_entries", 0444, port_dir, port,
+>                             &mvpp2_dbgfs_port_parser_fops);
+> @@ -716,15 +704,10 @@ void mvpp2_dbgfs_init(struct mvpp2 *priv, const char *name)
+>         int ret, i;
+>
+>         mvpp2_root = debugfs_lookup(MVPP2_DRIVER_NAME, NULL);
+> -       if (!mvpp2_root) {
+> +       if (!mvpp2_root)
+>                 mvpp2_root = debugfs_create_dir(MVPP2_DRIVER_NAME, NULL);
+> -               if (IS_ERR(mvpp2_root))
+> -                       return;
+> -       }
+>
+>         mvpp2_dir = debugfs_create_dir(name, mvpp2_root);
+> -       if (IS_ERR(mvpp2_dir))
+> -               return;
+>
+>         priv->dbgfs_dir = mvpp2_dir;
+>         priv->dbgfs_entries = kzalloc(sizeof(*priv->dbgfs_entries), GFP_KERNEL);
+> --
+> 2.22.0
+>
 
-    // no more users via bpf or
-    // syscall, but clone
-    // can still happen
 
-    for each (bucket)
-      selem_unlink
-        selem_unlink_map(smap)
-
-        // adding anything at
-        // this point to the
-        // bucket will leak
-
-                                       rcu_read_lock
-                                       tcp_v4_rcv
-                                         tcp_v4_do_rcv
-                                           // sk is lockless TCP_LISTEN
-                                           tcp_v4_cookie_check
-                                             tcp_v4_syn_recv_sock
-                                               bpf_sk_storage_clone
-                                                 rcu_dereference(sk->sk_bpf_storage)
-                                                 selem_link_map(smap, copy)
-                                                 // adding new element to the
-                                                 // map -> leak
-                                       rcu_read_unlock
-
-      selem_unlink_sk
-       sk->sk_bpf_storage = NULL
-
-    synchronize_rcu
+-- 
+Thanks,
+~Nick Desaulniers
