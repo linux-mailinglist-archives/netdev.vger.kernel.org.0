@@ -2,113 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69D778A1FA
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 17:09:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25ACA8A20D
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 17:13:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbfHLPJx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 11:09:53 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:35344 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726791AbfHLPJx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 11:09:53 -0400
-Received: by mail-lj1-f195.google.com with SMTP id l14so8680162lje.2
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 08:09:51 -0700 (PDT)
+        id S1727159AbfHLPNu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 11:13:50 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:33841 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbfHLPNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 11:13:49 -0400
+Received: by mail-ed1-f65.google.com with SMTP id s49so69200968edb.1
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 08:13:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=cumulusnetworks.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=t1V8mqCBoCuSvxrNXOIb8cs51g3I5htO8SXqEzVW8X8=;
-        b=n1QSWsyssZRjTp5iO7oJPWuTI2ZaJpwixEgzfyflZDttCKEF+JE8H0vovRd8fEJy5F
-         l4mLA0x0c/Wl3Ri1chRWipsiac2k/g0407PeuzESEg686zlA0HQqAj3oNhQRsFeLx+Ca
-         L/C1qM0Ksb5EDsrdYkywNPfHZ4T4Zn7lCUNuLr5ZVagc2KqSBZOdkTqK7XFpCNq36tnv
-         xIjHOkC6kXyU/ri3rGDYAW/h/Eq+Rlkr4rqmVjleG/MmO6l4bleAXUr0Xhny40zkKT57
-         549CwiLTjT2Kph2g8sUmOtjgYBgNVlSBoGsTnDQ83BVHeqIdZHkMAq9naoYfMxoBzJgY
-         1WUA==
+        bh=CKB3sGidbJgJZu/E0EHqCnXjanWa5cL09qGmjTXzpeo=;
+        b=GujCiOSv1fiXS+dToclhLH2YDnvMchW7JEdLgC0OGcPXJZYI7G/OJOWal6oGnOTu7A
+         RLnIcY3ImVX+6XuhpK/n2BIUuehNYsrSomXg+8O6jlgR9yazTAsk7M8NotVfwwIKII2E
+         pJQWQZ8lH6gi46PnpAFh4ay2P/XkbfmExyA7I=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=t1V8mqCBoCuSvxrNXOIb8cs51g3I5htO8SXqEzVW8X8=;
-        b=BV1xubr+sNYYUOLi/Z/Z6p3u2WuLEq+WpJ8EEI/ZyYoQZFNwo8nhUg11RxtOsXaGlU
-         jyNkunSkAM85Wm9/C4jWPFR1mbIRwUywxyhLccJEN3CFwL3nGUe3Wrty+YaMZ3tdj/bT
-         DwoPXBnef4DbrsRuGeVx/kCYpIN4PB01csMYY/17wI0W3k+o5r2ZLTUfibgBbbY6rtI1
-         NP/yJ5W2uFD7ceE1pmsBLacSkKfe/3CWr0pDG5K4Sndc6DQlRalbCxDITcNhR9ekiBc1
-         epWb6mfHKlkhCaG6CMj6xlyrYXuV9YgeZqB10eIOm5cmZ+mzJF+P5XQ2nPoncW2lxpcv
-         q2rA==
-X-Gm-Message-State: APjAAAXV7EPWMvarZXGgQuTfxLW5IkdCr/oFPw7+iHr/0gxtaCpdvTXG
-        ciXB8me3siZYRiEDDMu4HsxXlBznpOBtylZT+hCMRIc7cQc=
-X-Google-Smtp-Source: APXvYqzZpoyvhmC+QB37WE13tQdqAWo1VGdA91KCXsz3B1pcZkpZeWArAHP4cRIYpkm3PmWGOaB9p0kbOy5ElWiOxqU=
-X-Received: by 2002:a2e:5dc6:: with SMTP id v67mr19358346lje.240.1565622590807;
- Mon, 12 Aug 2019 08:09:50 -0700 (PDT)
+        bh=CKB3sGidbJgJZu/E0EHqCnXjanWa5cL09qGmjTXzpeo=;
+        b=g8KZI3153+hxHmLRGWPUcur77r5a9lL4iDAXhreR4mhv34e99cF6VDXzuDZA+tn1v3
+         14dAIOvZwq4DB7NqoKfnJlt4bROS6LS90BtwWuCff6gGWz870bjXBsM0VLA6DqjtFEFX
+         8O7SzCEAp858PJBdMfGaG5gPsEXIagegmo3iDZiEJZysq09O8RTfAZQFl81DO37/alVc
+         P1KUrFj7Yv/DGiLTbke5A631G/BR71H6dtaeIcPqdtttlO4m4Qgl/lz+tgDvNuD3w7VR
+         GWm5y9axLmszUGzQeugNXjAyWaRSjNQ2ybIt9DzbN51y46koYgKHIHRtNT6VjkbNGh3H
+         AAlQ==
+X-Gm-Message-State: APjAAAWcvgfwdZoB7r9D/C5QsbiUCFnQ1fiTiQIkSrKoTQ+Jsi2ktni3
+        LDVjOGoqCVTvpXNFvW/idiZ2CRLiXbHJZefXVZkKng==
+X-Google-Smtp-Source: APXvYqy7nsLhmwZGRbHjhVbsXwdVJ9lN6FQhMfnEwjN0ovUWkiChNCT0r3EpMGvkyC4OGvewqq+s/AYtCAfP3WH220g=
+X-Received: by 2002:a50:f7c6:: with SMTP id i6mr23856666edn.281.1565622827938;
+ Mon, 12 Aug 2019 08:13:47 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190811133707.GC13294@shell.armlinux.org.uk>
-In-Reply-To: <20190811133707.GC13294@shell.armlinux.org.uk>
-From:   Fabio Estevam <festevam@gmail.com>
-Date:   Mon, 12 Aug 2019 12:10:21 -0300
-Message-ID: <CAOMZO5BeaNysZA2CWoXb5cbz_hKFZEyb0sDmsLxRQukziXoSxw@mail.gmail.com>
-Subject: Re: [BUG] fec mdio times out under system stress
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
-        <linux-arm-kernel@lists.infradead.org>,
-        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
+References: <20190719110029.29466-1-jiri@resnulli.us> <20190719110029.29466-4-jiri@resnulli.us>
+ <CAJieiUi+gKKc94bKfC-N5LBc=FdzGGo_8+x2oTstihFaUpkKSA@mail.gmail.com>
+ <20190809062558.GA2344@nanopsycho.orion> <CAJieiUj7nzHdRUjBpnfL5bKPszJL0b_hKjxpjM0RGd9ocF3EoA@mail.gmail.com>
+ <5e7270a1-8de6-1563-4e42-df37da161b98@gmail.com> <20190810063047.GC2344@nanopsycho.orion>
+ <b0a9ec0d-c00b-7aaf-46d4-c74d18498698@gmail.com> <3b1e8952-e4c2-9be5-0b5c-d3ce4127cbe2@gmail.com>
+ <20190812083139.GA2428@nanopsycho>
+In-Reply-To: <20190812083139.GA2428@nanopsycho>
+From:   Roopa Prabhu <roopa@cumulusnetworks.com>
+Date:   Mon, 12 Aug 2019 08:13:39 -0700
+Message-ID: <CAJieiUhqAvqvxDZk517hWQP4Tx3Hk2PT7Yjq6NSGk+pB_87q8A@mail.gmail.com>
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+On Mon, Aug 12, 2019 at 1:31 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>
+> Mon, Aug 12, 2019 at 03:37:26AM CEST, dsahern@gmail.com wrote:
+> >On 8/11/19 7:34 PM, David Ahern wrote:
+> >> On 8/10/19 12:30 AM, Jiri Pirko wrote:
+> >>> Could you please write me an example message of add/remove?
+> >>
+> >> altnames are for existing netdevs, yes? existing netdevs have an id and
+> >> a name - 2 existing references for identifying the existing netdev for
+> >> which an altname will be added. Even using the altname as the main
+> >> 'handle' for a setlink change, I see no reason why the GETLINK api can
+> >> not take an the IFLA_ALT_IFNAME and return the full details of the
+> >> device if the altname is unique.
+> >>
+> >> So, what do the new RTM commands give you that you can not do with
+> >> RTM_*LINK?
+> >>
+> >
+> >
+> >To put this another way, the ALT_NAME is an attribute of an object - a
+> >LINK. It is *not* a separate object which requires its own set of
+> >commands for manipulating.
+>
+> Okay, again, could you provide example of a message to add/remove
+> altname using existing setlink message? Thanks!
 
-On Sun, Aug 11, 2019 at 10:37 AM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> Hi Fabio,
->
-> When I woke up this morning, I found that one of the Hummingboards
-> had gone offline (as in, lost network link) during the night.
-> Investigating, I find that the system had gone into OOM, and at
-> that time, triggered an unrelated:
->
-> [4111697.698776] fec 2188000.ethernet eth0: MDIO read timeout
-> [4111697.712996] MII_DATA: 0x6006796d
-> [4111697.729415] MII_SPEED: 0x0000001a
-> [4111697.745232] IEVENT: 0x00000000
-> [4111697.745242] IMASK: 0x0a8000aa
-> [4111698.002233] Atheros 8035 ethernet 2188000.ethernet-1:00: PHY state change RUNNING -> HALTED
-> [4111698.009882] fec 2188000.ethernet eth0: Link is Down
->
-> This is on a dual-core iMX6.
->
-> It looks like the read actually completed (since MII_DATA contains
-> the register data) but we somehow lost the interrupt (or maybe
-> received the interrupt after wait_for_completion_timeout() timed
-> out.)
->
-> From what I can see, the OOM events happened on CPU1, CPU1 was
-> allocated the FEC interrupt, and the PHY polling that suffered the
-> MDIO timeout was on CPU0.
->
-> Given that IEVENT is zero, it seems that CPU1 had read serviced the
-> interrupt, but it is not clear how far through processing that it
-> was - it may be that fec_enet_interrupt() had been delayed by the
-> OOM condition.
->
-> This seems rather fragile - as the system slowing down due to OOM
-> triggers the network to completely collapse by phylib taking the
-> PHY offline, making the system inaccessible except through the
-> console.
->
-> In my case, even serial console wasn't operational (except for
-> magic sysrq).  Not sure what agetty was playing at... so the only
-> way I could recover any information from the system was to connect
-> the HDMI and plug in a USB keyboard.
->
-> Any thoughts on how FEC MDIO accesses could be made more robust?
+Will the below work ?... just throwing an example for discussion:
 
-Sorry for the delay. I am currently on vacation with limited e-mail access.
+make the name list a nested list
+IFLA_ALT_NAMES
+        IFLA_ALT_NAME_OP /* ADD or DEL used with setlink */
+        IFLA_ALT_NAME
+        IFLA_ALT_NAME_LIST
 
-I think it is worth trying Andrew's suggestion to increase FEC_MII_TIMEOUT.
+With RTM_NEWLINK  you can specify a list to set and unset
+With RTM_SETLINK  you can specify an individual name with a add or del op
 
-Thanks
+notifications will always be RTM_NEWLINK with the full list.
+
+The nested attribute can be structured differently.
+
+Only thing is i am worried about increasing the size of link dump and
+notification msgs.
+
+What is the limit on the number of names again ?
