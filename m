@@ -2,119 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E62948A429
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:19:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CBABF8A431
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:23:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727102AbfHLRTa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 13:19:30 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:45853 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726453AbfHLRT3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:19:29 -0400
-Received: by mail-pl1-f196.google.com with SMTP id y8so6016680plr.12
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 10:19:29 -0700 (PDT)
+        id S1726506AbfHLRXm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 13:23:42 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:45187 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726263AbfHLRXl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:23:41 -0400
+Received: by mail-ot1-f65.google.com with SMTP id m24so8757772otp.12
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 10:23:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=jQdWi79UOET3NcbXkAwjygJB1Ir2fsPCLcASHFDPOY4=;
-        b=c9m2bRW2HxuvJEovBcFUuEjhkoaeh3/hBEi96hf8jC4GhpACXRSOH0yNlpDL3OIUbE
-         vwQd9eJVNG/ktDg4zdgWQ3zTq12opNssQy/H8Pae3V5y22ELcxrwUYkuTDnzLK4GnXc/
-         PDJioUs8RXnlaFZFm6PkEx6IwDnD8BzaoJ0CI=
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=QEd19naA7Lac6lLabh5sakuOjFBxlQXqpe5RPnzJ/JQ=;
+        b=K1WuBJf9TKSrg5hA8590GkVUwrsJ/2o3YZjg5XF2sP3vsEbsNTgB2thvpqllDOcwtG
+         tq18jlwbCuWzQ4E3NN0Ib4KiWMZnJ/FKp1ixUSel3I0owCNx+a+6zUiXDNbK7EKbVsal
+         TYJTXsINUQlq8ivZzNKmRei6i+0WhF6zWkvJMHunCBeQcniYt+Q4dsu6Ltk05Ap+8RhO
+         4C60J27Y1vpA8cdwlkkymgDcWOFeWB24KEwnx/mFnvGDUcavr7ns8GDVS0vbGcuKLAIM
+         09EGiIq6EmI8fxG9uDk98ZZctxUY9F0oWXEbib58CkSh50XACqZGw7XM6zg3oU+/qy9o
+         Eelw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=jQdWi79UOET3NcbXkAwjygJB1Ir2fsPCLcASHFDPOY4=;
-        b=S9JqpLKIzB/j+qkC+bfH4ySrYFZf0F2+CwvCc69hSE+bPa2C7gUA1FFueqXZYGUgLk
-         FWbHU5oOSAd/BhzjyMFgf/UgAZj+zsePwUN30qOUyUEUmgBdpuy46SAzndrNG7PJSWpK
-         CMCDObJtyWmI5gw2rbs7GI5eMTkeFyc2FODdondy7xsVMOY7PgvrvPg+u065LzrvycMD
-         47bcAIGQEPWFjP/7zM+8ij2KtRaklLNk/9zg40qShMiTjDlPXB20qSm7NJ7SY+mJeX95
-         N7z8WXLizIaZPaCOra4os/KYxzXws7SWUydKxy49u42HGz5e4Z9EcbV0qCFdsN/dD8Rz
-         KVJA==
-X-Gm-Message-State: APjAAAWiiO838yTBYQszG4dqI0szJqQ0E9im++gzhbclnmUpw6e7lSKq
-        DMvphb85BxeMiksrKy+/5mIJoQ==
-X-Google-Smtp-Source: APXvYqy10JjsFB3axHFNMgROpGcmwPwO4mBb8G1S0iRV3C7gVjicasx85fhT3Py/5umslxym0I5lrg==
-X-Received: by 2002:a17:902:b698:: with SMTP id c24mr34036132pls.28.1565630369208;
-        Mon, 12 Aug 2019 10:19:29 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id e9sm161724pja.17.2019.08.12.10.19.27
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 12 Aug 2019 10:19:28 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 10:19:27 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        Patrick Bellasi <patrick.bellasi@arm.com>,
-        linux-sparse@vger.kernel.org, Mao Wenan <maowenan@huawei.com>,
-        davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Ingo Molnar <mingo@kernel.org>
-Subject: Re: [PATCH net-next] net: can: Fix compiling warning
-Message-ID: <201908121001.0AC0A90@keescook>
-References: <20190802033643.84243-1-maowenan@huawei.com>
- <0050efdb-af9f-49b9-8d83-f574b3d46a2e@hartkopp.net>
- <20190806135231.GJ1974@kadam>
- <6e1c5aa0-8ed3-eec3-a34d-867ea8f54e9d@hartkopp.net>
- <20190807105042.GK1974@kadam>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=QEd19naA7Lac6lLabh5sakuOjFBxlQXqpe5RPnzJ/JQ=;
+        b=pbKy+iVaF+z7AbczolffKDRLfcHiVwvNRWOaZ+RofpDSphSmkjkNlckBY7nvxyB4O0
+         hwI0s9a3I1I12zZ2QKVyeskKLMLP6ULYwHCvJDlh2SNPeNf4odauhjNQG+lu3S6l68RT
+         +6TVKTFrTpgNjtXEhqlTeYZ3rflqm/Mt3ZX/ebCyPOTLWuLgAQGQGAvTzSN0tWuIcPeS
+         zAgt7GeoR8+RNVl7Iz9UVKrMTqGdZQmUlrpwSQiVgBYQD4kY1KuCdB7UuNiOgUL++h2f
+         zt1Lmg4SalVYLMuZpg/LZ0zXLYAhUq23HjJEndX+SAn/iR1XmmrHbclxkGMhy1FlAXBJ
+         5dGw==
+X-Gm-Message-State: APjAAAXk6E1D4zQQ+MFHYOi37wyruYGxYGDnUobpfxpAfDUWO6oRGNGr
+        /UcGd11LzoGx1rr3iPEOF4Y=
+X-Google-Smtp-Source: APXvYqyriEirIpVROSgoZk/0qHmC/nng1tbKbeZwrqG/pu6Q0EgzLPpbcB8QdxXWLQKQTod8Mg540w==
+X-Received: by 2002:a5d:9dcb:: with SMTP id 11mr11203594ioo.116.1565630620878;
+        Mon, 12 Aug 2019 10:23:40 -0700 (PDT)
+Received: from ?IPv6:2601:282:800:fd80:1567:1802:ced3:a7f1? ([2601:282:800:fd80:1567:1802:ced3:a7f1])
+        by smtp.googlemail.com with ESMTPSA id p13sm18241145ioo.72.2019.08.12.10.23.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Aug 2019 10:23:40 -0700 (PDT)
+Subject: Re: [PATCH net] nexthop: use nlmsg_parse_deprecated()
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>,
+        Johannes Berg <johannes@sipsolutions.net>
+References: <20190812113616.51725-1-edumazet@google.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2edcb987-73df-f78a-62c0-61e59df19c74@gmail.com>
+Date:   Mon, 12 Aug 2019 11:23:35 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190807105042.GK1974@kadam>
+In-Reply-To: <20190812113616.51725-1-edumazet@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 01:50:42PM +0300, Dan Carpenter wrote:
-> On Tue, Aug 06, 2019 at 06:41:44PM +0200, Oliver Hartkopp wrote:
-> > I compiled the code (the original version), but I do not get that "Should it
-> > be static?" warning:
-> > 
-> > user@box:~/net-next$ make C=1
-> >   CALL    scripts/checksyscalls.sh
-> >   CALL    scripts/atomic/check-atomics.sh
-> >   DESCEND  objtool
-> >   CHK     include/generated/compile.h
-> >   CHECK   net/can/af_can.c
-> > ./include/linux/sched.h:609:43: error: bad integer constant expression
-> > ./include/linux/sched.h:609:73: error: invalid named zero-width bitfield
-> > `value'
-> > ./include/linux/sched.h:610:43: error: bad integer constant expression
-> > ./include/linux/sched.h:610:67: error: invalid named zero-width bitfield
-> > `bucket_id'
-> >   CC [M]  net/can/af_can.o
-> 
-> The sched.h errors suppress Sparse warnings so it's broken/useless now.
-> The code looks like this:
-> 
-> include/linux/sched.h
->    613  struct uclamp_se {
->    614          unsigned int value              : bits_per(SCHED_CAPACITY_SCALE);
->    615          unsigned int bucket_id          : bits_per(UCLAMP_BUCKETS);
->    616          unsigned int active             : 1;
->    617          unsigned int user_defined       : 1;
->    618  };
-> 
-> bits_per() is zero and Sparse doesn't like zero sized bitfields.
+On 8/12/19 5:36 AM, Eric Dumazet wrote:
+> David missed that commit 8cb081746c03 ("netlink: make validation
+> more configurable for future strictness") has renamed nlmsg_parse()
 
-I just noticed these sparse warnings too -- what's happening here? Are
-they _supposed_ to be 0-width fields? It doesn't look like it to me:
-
-CONFIG_UCLAMP_BUCKETS_COUNT=5
-...
-#define UCLAMP_BUCKETS CONFIG_UCLAMP_BUCKETS_COUNT
-...
-        unsigned int bucket_id          : bits_per(UCLAMP_BUCKETS);
-
-I would expect this to be 3 bits wide. ... Looks like gcc agrees:
-
-struct uclamp_se {
-    unsigned int               value:11;             /*     0: 0  4 */
-    unsigned int               bucket_id:3;          /*     0:11  4 */
-...
-
-So this is a sparse issue?
-
--- 
-Kees Cook
+I think the root cause is nlmsg_parse() calling __nla_parse and not
+__nlmsg_parse. Users of nlmsg_parse are missing the header validation.
