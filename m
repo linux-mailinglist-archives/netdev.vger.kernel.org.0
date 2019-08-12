@@ -2,140 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F08BE8A438
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:25:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 120F78A4DC
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:49:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727106AbfHLRZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 13:25:53 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:37278 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726453AbfHLRZx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:25:53 -0400
-Received: by mail-qk1-f194.google.com with SMTP id s14so7115835qkm.4;
-        Mon, 12 Aug 2019 10:25:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=h9Fd8ad52H/DXc3EHqrRcl7UWFQ+n2opqsuoNUk+fj4=;
-        b=gk6B7+x9JvpjciKJE8+BS6x1209RGxdCQ44W6xZlmXchN8q7r8y3dolOfjdqPhIoT5
-         ufjIpCSqId54VkRVRJ1HSMeNrF8rQD24rMQlXlrRQ3QNuuVpoSwneieUQnN1vnHjwEcS
-         sGSeY+aQxvuWkDll+X6gHoffejn6FFaeXJh81vlB7i5Bwt6k9VvfJNlPbhZP1Kr5n8DE
-         cpDrVb+oFXVs1lKnfiZbSDieh2bsDTOY/l+VtjLRwQS8wEzCZPb6iQtz/HyZFb4TfmhB
-         kwJeg0n5TfAW/6NhZ5qz0ODzo9frvlE3Vr3qf2qE6ug6C2dtrgRq436Gy8AKz4yokKo0
-         0HUg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=h9Fd8ad52H/DXc3EHqrRcl7UWFQ+n2opqsuoNUk+fj4=;
-        b=qU8ElZoI4SsW76qc153t9auAorP8IK3skAXw6X1UQkJbw3hZqbtY83qIZ9GDOc9bN5
-         q6lTf8G+lUbEtNUPpeYwjtUGHtZGZouQW3WehtQ6pmkJMrdr85Vc8IeoBsfFVOXU2D8a
-         L+1MOvCI/cvaMMiGaz/SHkq4TUl1cVXWGMryIOK/4Qiz1tqvAjHBirLKc6hDLhGibzFH
-         9Q5nJF1rrF+G2uHECa4P8naijkno9rENMcNghfcXjjQ0sIYs9zkpOt3U99YylTHz9NgZ
-         EIunyqqPqBY3DCQTDBaFGRkLRZz+kvFjkcXqLhQI9PXWE/rRczpXB16WFT6RLIiC73+e
-         AlWg==
-X-Gm-Message-State: APjAAAVD9uoZhizLFA+O1pkubzabhLFWUQkr6frK7aR0oLL8dJazLDFk
-        HeGkwldfJBIAvd7UtDfro9A6WblTEBLkBRLEOvsb9QuW9YY=
-X-Google-Smtp-Source: APXvYqwz9YRUN6iViaNMwZ7Dentim6bctiDMDgoDYqetEvemutV+2Q5yO0XBRlXmXNGSc+7j3MSoRmPkaV9WfUwtj1g=
-X-Received: by 2002:a37:f902:: with SMTP id l2mr2639584qkj.218.1565630751660;
- Mon, 12 Aug 2019 10:25:51 -0700 (PDT)
+        id S1726597AbfHLRtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 13:49:46 -0400
+Received: from smtprelay0243.hostedemail.com ([216.40.44.243]:38410 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726263AbfHLRtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:49:46 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id AD926180A7F94;
+        Mon, 12 Aug 2019 17:49:44 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3870:3871:3872:4250:4321:5007:7514:7903:8957:9010:9012:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12296:12297:12438:12555:12740:12760:12895:12986:13439:14096:14097:14181:14659:14721:21080:21324:21433:21451:21627:30034:30054:30080:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:24,LUA_SUMMARY:none
+X-HE-Tag: legs21_1a94506e05015
+X-Filterd-Recvd-Size: 3584
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf08.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 12 Aug 2019 17:49:42 +0000 (UTC)
+Message-ID: <93581c35c0a8c06434221e628153028105849064.camel@perches.com>
+Subject: Re: [PATCH net] ibmveth: Convert multicast list size for
+ little-endian systems
+From:   Joe Perches <joe@perches.com>
+To:     Thomas Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org
+Cc:     liuhangbin@gmail.com, davem@davemloft.net
+Date:   Mon, 12 Aug 2019 10:49:40 -0700
+In-Reply-To: <1565631786-18860-1-git-send-email-tlfalcon@linux.ibm.com>
+References: <1565631786-18860-1-git-send-email-tlfalcon@linux.ibm.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
 MIME-Version: 1.0
-References: <20190802081154.30962-1-bjorn.topel@gmail.com> <20190802081154.30962-2-bjorn.topel@gmail.com>
- <5ad56a5e-a189-3f56-c85c-24b6c300efd9@iogearbox.net>
-In-Reply-To: <5ad56a5e-a189-3f56-c85c-24b6c300efd9@iogearbox.net>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Mon, 12 Aug 2019 19:25:40 +0200
-Message-ID: <CAJ+HfNhO+xSs25aPat9WjC75W6_Kgfq=GU+YCEcoZw-GCjZdEg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 1/2] xsk: remove AF_XDP socket from map when
- the socket is released
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Bruce Richardson <bruce.richardson@intel.com>,
-        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Aug 2019 at 14:28, Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-[...]
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index 59b57d708697..c3447bad608a 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -362,6 +362,50 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
-> >       dev_put(dev);
-> >   }
-> >
-> > +static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
-> > +                                           struct xdp_sock ***map_entr=
-y)
-> > +{
-> > +     struct xsk_map *map =3D NULL;
-> > +     struct xsk_map_node *node;
-> > +
-> > +     *map_entry =3D NULL;
-> > +
-> > +     spin_lock_bh(&xs->map_list_lock);
-> > +     node =3D list_first_entry_or_null(&xs->map_list, struct xsk_map_n=
-ode,
-> > +                                     node);
-> > +     if (node) {
-> > +             WARN_ON(xsk_map_inc(node->map));
->
-> Can you elaborate on the refcount usage here and against what scenario it=
- is protecting?
->
+On Mon, 2019-08-12 at 12:43 -0500, Thomas Falcon wrote:
+> The ibm,mac-address-filters property defines the maximum number of
+> addresses the hypervisor's multicast filter list can support. It is
+> encoded as a big-endian integer in the OF device tree, but the virtual
+> ethernet driver does not convert it for use by little-endian systems.
+> As a result, the driver is not behaving as it should on affected systems
+> when a large number of multicast addresses are assigned to the device.
+> 
+> Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+> ---
+>  drivers/net/ethernet/ibm/ibmveth.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+> index d654c23..b50a6cf 100644
+> --- a/drivers/net/ethernet/ibm/ibmveth.c
+> +++ b/drivers/net/ethernet/ibm/ibmveth.c
+> @@ -1645,7 +1645,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+>  
+>  	adapter->vdev = dev;
+>  	adapter->netdev = netdev;
+> -	adapter->mcastFilterSize = *mcastFilterSize_p;
+> +	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
+>  	adapter->pool_config = 0;
+>  
+>  	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
 
-Thanks for having a look!
+Perhaps to keep sparse happy too: (untested)
+---
+ drivers/net/ethernet/ibm/ibmveth.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-First we access the map_list (under the lock) and pull out the map
-which we intend to clean. In order to clear the map entry, we need to
-a reference to the map. However, when the map_list_lock is released,
-there's a window where the map entry can be cleared and the map can be
-destroyed, and making the "map", which is used in
-xsk_delete_from_maps, stale. To guarantee existence the additional
-refinc is required. Makes sense?
-
-> Do we pretend it never fails on the bpf_map_inc() wrt the WARN_ON(),
-> why that (what makes it different from the xsk_map_node_alloc() inc
-> above where we do error out)?
-
-Hmm, given that we're in a cleanup (socket release), we can't really
-return any error. What would be a more robust way? Retrying? AFAIK the
-release ops return an int, but it's not checked/used.
-
-> > +             map =3D node->map;
-> > +             *map_entry =3D node->map_entry;
-> > +     }
-> > +     spin_unlock_bh(&xs->map_list_lock);
-> > +     return map;
-> > +}
-> > +
-> > +static void xsk_delete_from_maps(struct xdp_sock *xs)
-> > +{
-> > +     /* This function removes the current XDP socket from all the
-> > +      * maps it resides in. We need to take extra care here, due to
-> > +      * the two locks involved. Each map has a lock synchronizing
-> > +      * updates to the entries, and each socket has a lock that
-> > +      * synchronizes access to the list of maps (map_list). For
-> > +      * deadlock avoidance the locks need to be taken in the order
-> > +      * "map lock"->"socket map list lock". We start off by
-> > +      * accessing the socket map list, and take a reference to the
-> > +      * map to guarantee existence. Then we ask the map to remove
-> > +      * the socket, which tries to remove the socket from the
-> > +      * map. Note that there might be updates to the map between
-> > +      * xsk_get_map_list_entry() and xsk_map_try_sock_delete().
-> > +      */
-
-I tried to clarify here, but I obviously need to do a better job. :-)
+diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
+index d654c234aaf7..90539d7ce565 100644
+--- a/drivers/net/ethernet/ibm/ibmveth.c
++++ b/drivers/net/ethernet/ibm/ibmveth.c
+@@ -1605,7 +1605,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	struct net_device *netdev;
+ 	struct ibmveth_adapter *adapter;
+ 	unsigned char *mac_addr_p;
+-	unsigned int *mcastFilterSize_p;
++	__be32 *mcastFilterSize_p;
+ 	long ret;
+ 	unsigned long ret_attr;
+ 
+@@ -1627,7 +1627,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 		return -EINVAL;
+ 	}
+ 
+-	mcastFilterSize_p = (unsigned int *)vio_get_attribute(dev,
++	mcastFilterSize_p = (__be32 *)vio_get_attribute(dev,
+ 						VETH_MCAST_FILTER_SIZE, NULL);
+ 	if (!mcastFilterSize_p) {
+ 		dev_err(&dev->dev, "Can't find VETH_MCAST_FILTER_SIZE "
+@@ -1645,7 +1645,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 
+ 	adapter->vdev = dev;
+ 	adapter->netdev = netdev;
+-	adapter->mcastFilterSize = *mcastFilterSize_p;
++	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
+ 	adapter->pool_config = 0;
+ 
+ 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
 
 
-Bj=C3=B6rn
