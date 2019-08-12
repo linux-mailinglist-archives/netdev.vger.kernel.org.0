@@ -2,91 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A4578A67D
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 20:47:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 878388A6BA
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 21:01:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726655AbfHLSrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 14:47:51 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38090 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726463AbfHLSru (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 14:47:50 -0400
-Received: by mail-wr1-f68.google.com with SMTP id g17so105472293wrr.5
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 11:47:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=zk3m6DEwienNmYLPinxx0X95P0qA87rPxS+hCeTBUXM=;
-        b=c/mw2Q5UptgOrvSDGC/AtRLzBaBYD7e1F1cfLVMqGzxQ09Zb0s8IzYtEU8yonxnehA
-         IWE99BmYMP3wYDaaxSUKCjbjzAAld1PHFeQomypc2i1qPhbeac98fQyaupqiVTH9/kdj
-         y6VziyXL4U3gP6q7+tM/EkLAM84bxsj/i5d536ZsuVeUpwk09DP8HHTVKVrN9QRWxgBh
-         Ax6nvuMOGC+I9QsTMiwwbok7041AfXCL73eGfk+RhFx+B5gnJ/0+Aeg92Dbq+b9bg0GQ
-         6wiSlEQZFNEwLy76NA48m/4/A4d/Q4HoM3HEZCoSs8pKW0h9wc1iBMcDe4RMCLvU30yN
-         JQ7w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=zk3m6DEwienNmYLPinxx0X95P0qA87rPxS+hCeTBUXM=;
-        b=mxlFPQef1VrYO+WLfRKnSeqndGkjj61R1e2NfZCaVnZQ3ejHJNcHIwfLOQxnvpdkJO
-         KT7zuf6m2vv1a4jUsI8WRh6EfjH43C5hWZ9OEgzE5K6tpxuR43AcynxpiMT+9tKu8cQX
-         xn4hBA4SztKGiWtJImjYSdpwO3nmdmdB0z/87GU0JpWV5KkAk2tmZc1luTu6iA66klcU
-         kQAU8U6DNSoGoTMAtVcK+apLCFGEjavMnqTXqhdyEVggmqMDRJc2MYHe10hV8acG/QQ9
-         +jhbojUIB0UpzZ1TMtFmcvCep+uOXR1xSKF9mCSjpUZGt9VW97Xyh5AdqEUXIVA9a/2C
-         gmkA==
-X-Gm-Message-State: APjAAAUQKe5XJWMJuAQTK7TopY4eXoJc2+ut4DuOaZfEg1bOSc8spuiX
-        +NtOGyPGv6AqQSl9fZrHvbk=
-X-Google-Smtp-Source: APXvYqxKuaGcTwidTPAP2q2t9N2ERmR87pYm2UgZkiZIxOeS6fzeshFPff+fOO3jaTKeybP4uqmjUg==
-X-Received: by 2002:adf:fe10:: with SMTP id n16mr42668081wrr.92.1565635668661;
-        Mon, 12 Aug 2019 11:47:48 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6? (p200300EA8F2F3200E9C14D4C1CCF09D6.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6])
-        by smtp.googlemail.com with ESMTPSA id j15sm6061092wrn.70.2019.08.12.11.47.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Aug 2019 11:47:48 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        =?UTF-8?Q?Holger_Hoffst=c3=a4tte?= <holger@applied-asynchrony.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: fix sporadic transmit timeout issue
-Message-ID: <e343933b-1965-4617-3011-6290ed30d4ae@gmail.com>
-Date:   Mon, 12 Aug 2019 20:47:40 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726595AbfHLTBb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 15:01:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44948 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726510AbfHLTBb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Aug 2019 15:01:31 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 82EB320679;
+        Mon, 12 Aug 2019 19:01:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565636491;
+        bh=Cs2oMB53k2wKFOnhQE2Y5U59oiCCpOdSLCO/UYkCXgI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=RGkzINWGORCuiHLQtyEKzlojXFUxhSn0iYYWnnbJzP8P914Z6srb0Tiy6Xwh9+8tF
+         0K/cr0Ni1p9QWLZ9rD6885rpwvMC7jNTGbdCmwX7F2b+8oL28AA5sIGs8Jlmi/b+EZ
+         3nyw6LcN3jQAUODuTnwIUkFHo2UVUSdIwdUbAVVc=
+Date:   Mon, 12 Aug 2019 21:01:28 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Maxime Chevallier <maxime.chevallier@bootlin.com>,
+        Nathan Huckleberry <nhuck@google.com>
+Subject: Re: [PATCH v3 13/17] mvpp2: no need to check return value of
+ debugfs_create functions
+Message-ID: <20190812190128.GB14905@kroah.com>
+References: <20190810101732.26612-1-gregkh@linuxfoundation.org>
+ <20190810101732.26612-14-gregkh@linuxfoundation.org>
+ <CAKwvOdnP4OU9g_ebjnT=r1WcGRvsFsgv3NbguhFKOtt8RWNHwA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKwvOdnP4OU9g_ebjnT=r1WcGRvsFsgv3NbguhFKOtt8RWNHwA@mail.gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Holger reported sporadic transmit timeouts and it turned out that one
-path misses ringing the doorbell. Fix was suggested by Eric.
+On Mon, Aug 12, 2019 at 10:55:51AM -0700, Nick Desaulniers wrote:
+> On Sat, Aug 10, 2019 at 3:17 AM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+> >
+> > When calling debugfs functions, there is no need to ever check the
+> > return value.  The function can work or not, but the code logic should
+> > never do something different based on this.
+> 
+> Maybe adding this recommendation to the comment block above the
+> definition of debugfs_create_dir() in fs/debugfs/inode.c would help
+> prevent this issue in the future?  What failure means, and how to
+> proceed can be tricky; more documentation can only help in this
+> regard.
 
-Fixes: ef14358546b1 ("r8169: make use of xmit_more")
-Suggested-by: Eric Dumazet <edumazet@google.com>
-Tested-by: Holger Hoffstätte <holger@applied-asynchrony.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 1 +
- 1 file changed, 1 insertion(+)
+If it was there, would you have read it?  :)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 641a34942..448047a32 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -5681,6 +5681,7 @@ static netdev_tx_t rtl8169_start_xmit(struct sk_buff *skb,
- 		 */
- 		smp_wmb();
- 		netif_stop_queue(dev);
-+		door_bell = true;
- 	}
- 
- 	if (door_bell)
--- 
-2.22.0
+I'll add it to the list for when I revamp the debugfs documentation that
+is already in the kernel, that very few people actually read...
 
+thanks,
+
+greg k-h
