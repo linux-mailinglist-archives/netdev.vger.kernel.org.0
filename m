@@ -2,118 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 778BF8A7BC
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 22:02:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 06D568A7D3
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 22:05:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727245AbfHLUCN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 16:02:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60072 "EHLO mail.kernel.org"
+        id S1727435AbfHLUFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 16:05:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34674 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726910AbfHLUCM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 16:02:12 -0400
-Received: from localhost (c-73-15-1-175.hsd1.ca.comcast.net [73.15.1.175])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727429AbfHLUFH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Aug 2019 16:05:07 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6CED420673;
-        Mon, 12 Aug 2019 20:02:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AD87C20842;
+        Mon, 12 Aug 2019 20:05:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565640131;
-        bh=XdvvIJYUJVlgDyxok5KQg2gpuRjBgQIzCYbzQVDSk1I=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hU/H0VqTISpoUi0UEbQFGewVtTYazzFkRLBMe64dJ74DquAX2LzVUQXdZSb8tq/fU
-         +cpK4SJUz812RLvtIRXUzE1wEmVQLrj6RsuSLf+roVo1U8+ZIIWSpzOSCure3945LC
-         c5jzdT5KQeEjhEYIz6aSMYiuy592sCRhf0DpZS+4=
-Date:   Mon, 12 Aug 2019 15:02:08 -0500
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Denis Efremov <efremov@linux.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        netdev@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/7] PCI/net: Use PCI_STD_NUM_BARS in loops instead of
- PCI_STD_RESOURCE_END
-Message-ID: <20190812200208.GD11785@google.com>
-References: <20190811150802.2418-1-efremov@linux.com>
- <20190811150802.2418-5-efremov@linux.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190811150802.2418-5-efremov@linux.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        s=default; t=1565640306;
+        bh=eyLaSFVCxVoW8U0Xb7urrTyIoBIp2Zh94kJ73Jl00EA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=oeCqYQ1GmMEw9lrNxxRVq2d48wbunMreixLbyfnIgE/sq9ZtDN+4lkJK6wfPwXIpQ
+         UtwRrGU+w0DsAIdCUqmtqzKgiaVMNiOOdsffiY3GR3CZ6Nn4EZVB1phYG8DyvsoJAe
+         tukIH3nJ/1GJkLSTVXDLyiXo0Jr0PnYyaeXYb4LM=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, johannes.berg@intel.com,
+        edumazet@google.com, David Ahern <dsahern@gmail.com>
+Subject: [PATCH net] netlink: Fix nlmsg_parse as a wrapper for strict message parsing
+Date:   Mon, 12 Aug 2019 13:07:07 -0700
+Message-Id: <20190812200707.25587-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The subject can be simply:
+From: David Ahern <dsahern@gmail.com>
 
-  <prefix>: Loop using PCI_STD_NUM_BARS
+Eric reported a syzbot warning:
 
-to keep them a little shorter so "git log --online" doesn't wrap.
+BUG: KMSAN: uninit-value in nh_valid_get_del_req+0x6f1/0x8c0 net/ipv4/nexthop.c:1510
+CPU: 0 PID: 11812 Comm: syz-executor444 Not tainted 5.3.0-rc3+ #17
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+ kmsan_report+0x162/0x2d0 mm/kmsan/kmsan_report.c:109
+ __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:294
+ nh_valid_get_del_req+0x6f1/0x8c0 net/ipv4/nexthop.c:1510
+ rtm_del_nexthop+0x1b1/0x610 net/ipv4/nexthop.c:1543
+ rtnetlink_rcv_msg+0x115a/0x1580 net/core/rtnetlink.c:5223
+ netlink_rcv_skb+0x431/0x620 net/netlink/af_netlink.c:2477
+ rtnetlink_rcv+0x50/0x60 net/core/rtnetlink.c:5241
+ netlink_unicast_kernel net/netlink/af_netlink.c:1302 [inline]
+ netlink_unicast+0xf6c/0x1050 net/netlink/af_netlink.c:1328
+ netlink_sendmsg+0x110f/0x1330 net/netlink/af_netlink.c:1917
+ sock_sendmsg_nosec net/socket.c:637 [inline]
+ sock_sendmsg net/socket.c:657 [inline]
+ ___sys_sendmsg+0x14ff/0x1590 net/socket.c:2311
+ __sys_sendmmsg+0x53a/0xae0 net/socket.c:2413
+ __do_sys_sendmmsg net/socket.c:2442 [inline]
+ __se_sys_sendmmsg+0xbd/0xe0 net/socket.c:2439
+ __x64_sys_sendmmsg+0x56/0x70 net/socket.c:2439
+ do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:297
+ entry_SYSCALL_64_after_hwframe+0x63/0xe7
 
-On Sun, Aug 11, 2019 at 06:08:00PM +0300, Denis Efremov wrote:
-> This patch refactors the loop condition scheme from
-> 'i <= PCI_STD_RESOURCE_END' to 'i < PCI_STD_NUM_BARS'.
+The root cause is nlmsg_parse calling __nla_parse which means the
+header struct size is not checked.
 
-  Refactor loops to use 'i < PCI_STD_NUM_BARS' instead of 'i <=
-  PCI_STD_RESOURCE_END'.
+nlmsg_parse should be a wrapper around __nlmsg_parse with
+NL_VALIDATE_STRICT for the validate argument very much like
+nlmsg_parse_deprecated is for NL_VALIDATE_LIBERAL.
 
-See https://chris.beams.io/posts/git-commit/
+Fixes: 3de6440354465 ("netlink: re-add parse/validate functions in strict mode")
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ include/net/netlink.h | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 4 ++--
->  drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c   | 2 +-
->  2 files changed, 3 insertions(+), 3 deletions(-)
+diff --git a/include/net/netlink.h b/include/net/netlink.h
+index e4650e5b64a1..b140c8f1be22 100644
+--- a/include/net/netlink.h
++++ b/include/net/netlink.h
+@@ -684,9 +684,8 @@ static inline int nlmsg_parse(const struct nlmsghdr *nlh, int hdrlen,
+ 			      const struct nla_policy *policy,
+ 			      struct netlink_ext_ack *extack)
+ {
+-	return __nla_parse(tb, maxtype, nlmsg_attrdata(nlh, hdrlen),
+-			   nlmsg_attrlen(nlh, hdrlen), policy,
+-			   NL_VALIDATE_STRICT, extack);
++	return __nlmsg_parse(nlh, hdrlen, tb, maxtype, policy,
++			     NL_VALIDATE_STRICT, extack);
+ }
+ 
+ /**
+-- 
+2.11.0
 
-This patch touches two unrelated drivers and should be split up.
-When you do that, pay attention to the convention for commit log
-prefixes, e.g.,
-
-  $ git log --oneline drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-  37e9c087c814 stmmac: pci: Fix typo in IOT2000 comment
-  d4a62ea411f9 stmmac: pci: Use pci_dev_id() helper
-  e0c1d14a1a32 stmmac: pci: Adjust IOT2000 matching
-
-  $ git log --oneline drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c
-  ea8c1c642ea5 net: dwc-xlgmac: declaration of dual license in headers
-  65e0ace2c5cd net: dwc-xlgmac: Initial driver for DesignWare Enterprise Ethernet
-
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> index 86f9c07a38cf..cfe496cdd78b 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> @@ -258,7 +258,7 @@ static int stmmac_pci_probe(struct pci_dev *pdev,
->  	}
->  
->  	/* Get the base address of device */
-> -	for (i = 0; i <= PCI_STD_RESOURCE_END; i++) {
-> +	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
->  		if (pci_resource_len(pdev, i) == 0)
->  			continue;
->  		ret = pcim_iomap_regions(pdev, BIT(i), pci_name(pdev));
-> @@ -296,7 +296,7 @@ static void stmmac_pci_remove(struct pci_dev *pdev)
->  
->  	stmmac_dvr_remove(&pdev->dev);
->  
-> -	for (i = 0; i <= PCI_STD_RESOURCE_END; i++) {
-> +	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
->  		if (pci_resource_len(pdev, i) == 0)
->  			continue;
->  		pcim_iounmap_regions(pdev, BIT(i));
-> diff --git a/drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c b/drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c
-> index 386bafe74c3f..fa8604d7b797 100644
-> --- a/drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c
-> +++ b/drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c
-> @@ -34,7 +34,7 @@ static int xlgmac_probe(struct pci_dev *pcidev, const struct pci_device_id *id)
->  		return ret;
->  	}
->  
-> -	for (i = 0; i <= PCI_STD_RESOURCE_END; i++) {
-> +	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
->  		if (pci_resource_len(pcidev, i) == 0)
->  			continue;
->  		ret = pcim_iomap_regions(pcidev, BIT(i), XLGMAC_DRV_NAME);
-> -- 
-> 2.21.0
-> 
