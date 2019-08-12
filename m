@@ -2,62 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D68DF897F0
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 09:37:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5209D89816
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 09:46:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727018AbfHLHhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 03:37:24 -0400
-Received: from smtp1.goneo.de ([85.220.129.30]:55118 "EHLO smtp1.goneo.de"
+        id S1726590AbfHLHqY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 03:46:24 -0400
+Received: from mail5.windriver.com ([192.103.53.11]:45440 "EHLO mail5.wrs.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726304AbfHLHhY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 03:37:24 -0400
-X-Greylist: delayed 557 seconds by postgrey-1.27 at vger.kernel.org; Mon, 12 Aug 2019 03:37:23 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by smtp1.goneo.de (Postfix) with ESMTP id 0FFD123F037;
-        Mon, 12 Aug 2019 09:28:04 +0200 (CEST)
-X-Virus-Scanned: by goneo
-X-Spam-Flag: NO
-X-Spam-Score: -3.095
-X-Spam-Level: 
-X-Spam-Status: No, score=-3.095 tagged_above=-999 tests=[ALL_TRUSTED=-1,
-        AWL=-0.195, BAYES_00=-1.9] autolearn=ham
-Received: from smtp1.goneo.de ([127.0.0.1])
-        by localhost (smtp1.goneo.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id X6NG7wCyM0OW; Mon, 12 Aug 2019 09:28:03 +0200 (CEST)
-Received: from lem-wkst-02.lemonage (hq.lemonage.de [87.138.178.34])
-        by smtp1.goneo.de (Postfix) with ESMTPSA id E38F923FA49;
-        Mon, 12 Aug 2019 09:28:02 +0200 (CEST)
-Date:   Mon, 12 Aug 2019 09:40:49 +0200
-From:   Lars Poeschel <poeschel@lemonage.de>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     devicetree@vger.kernel.org, Samuel Ortiz <sameo@linux.intel.com>,
-        "open list:NFC SUBSYSTEM" <linux-wireless@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PING 2] [PATCH v5 1/7] nfc: pn533: i2c: "pn532" as dt
- compatible string
-Message-ID: <20190812074035.GA9797@lem-wkst-02.lemonage>
-References: <20190111161812.26325-1-poeschel@lemonage.de>
- <20190228104801.GA14788@lem-wkst-02.lemonage>
- <20190403094735.GA19351@lem-wkst-02.lemonage>
- <20190805124236.GG3574@localhost>
+        id S1726452AbfHLHqY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 12 Aug 2019 03:46:24 -0400
+Received: from ALA-HCA.corp.ad.wrs.com (ala-hca.corp.ad.wrs.com [147.11.189.40])
+        by mail5.wrs.com (8.15.2/8.15.2) with ESMTPS id x7C7heW5021295
+        (version=TLSv1 cipher=AES128-SHA bits=128 verify=FAIL);
+        Mon, 12 Aug 2019 00:44:42 -0700
+Received: from pek-yxue-d1.wrs.com (128.224.155.90) by ALA-HCA.corp.ad.wrs.com
+ (147.11.189.40) with Microsoft SMTP Server id 14.3.468.0; Mon, 12 Aug 2019
+ 00:44:25 -0700
+From:   Ying Xue <ying.xue@windriver.com>
+To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
+CC:     <jon.maloy@ericsson.com>, <hdanton@sina.com>,
+        <tipc-discussion@lists.sourceforge.net>,
+        <syzkaller-bugs@googlegroups.com>, <jakub.kicinski@netronome.com>
+Subject: [PATCH v2 1/3] tipc: fix memory leak issue
+Date:   Mon, 12 Aug 2019 15:32:40 +0800
+Message-ID: <1565595162-1383-2-git-send-email-ying.xue@windriver.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1565595162-1383-1-git-send-email-ying.xue@windriver.com>
+References: <1565595162-1383-1-git-send-email-ying.xue@windriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190805124236.GG3574@localhost>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 05, 2019 at 02:42:36PM +0200, Johan Hovold wrote:
-> You may want to resend this series to netdev now. David Miller will be
-> picking up NFC patches directly from there.
+syzbot found the following memory leak:
 
-Thank you very much for this information. Johannes Berg did reach out to
-me already.
-Rebase, test and resend is queued up for one of my next free timeslots.
+[   68.602482][ T7130] kmemleak: 2 new suspected memory leaks (see /sys/kernel/debug/kmemleak)
+BUG: memory leak
+unreferenced object 0xffff88810df83c00 (size 512):
+  comm "softirq", pid 0, jiffies 4294942354 (age 19.830s)
+  hex dump (first 32 bytes):
+    38 1a 0d 0f 81 88 ff ff 38 1a 0d 0f 81 88 ff ff  8.......8.......
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<000000009375ee42>] kmem_cache_alloc_node+0x153/0x2a0
+    [<000000004c563922>] __alloc_skb+0x6e/0x210
+    [<00000000ec87bfa1>] tipc_buf_acquire+0x2f/0x80
+    [<00000000d151ef84>] tipc_msg_create+0x37/0xe0
+    [<000000008bb437b0>] tipc_group_create_event+0xb3/0x1b0
+    [<00000000947b1d0f>] tipc_group_proto_rcv+0x569/0x640
+    [<00000000b75ab039>] tipc_sk_filter_rcv+0x9ac/0xf20
+    [<000000000dab7a6c>] tipc_sk_rcv+0x494/0x8a0
+    [<00000000023a7ddd>] tipc_node_xmit+0x196/0x1f0
+    [<00000000337dd9eb>] tipc_node_distr_xmit+0x7d/0x120
+    [<00000000b6375182>] tipc_group_delete+0xe6/0x130
+    [<000000000361ba2b>] tipc_sk_leave+0x57/0xb0
+    [<000000009df90505>] tipc_release+0x7b/0x5e0
+    [<000000009f3189da>] __sock_release+0x4b/0xe0
+    [<00000000d3568ee0>] sock_close+0x1b/0x30
+    [<00000000266a6215>] __fput+0xed/0x300
 
-Thanks again,
-Lars
+Reported-by: syzbot+78fbe679c8ca8d264a8d@syzkaller.appspotmail.com
+Signed-off-by: Hillf Danton <hdanton@sina.com>
+Signed-off-by: Ying Xue <ying.xue@windriver.com>
+---
+ net/tipc/node.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/net/tipc/node.c b/net/tipc/node.c
+index 7ca0190..d1852fc 100644
+--- a/net/tipc/node.c
++++ b/net/tipc/node.c
+@@ -1469,10 +1469,13 @@ int tipc_node_xmit(struct net *net, struct sk_buff_head *list,
+ 	spin_unlock_bh(&le->lock);
+ 	tipc_node_read_unlock(n);
+ 
+-	if (unlikely(rc == -ENOBUFS))
++	if (unlikely(rc == -ENOBUFS)) {
+ 		tipc_node_link_down(n, bearer_id, false);
+-	else
++		skb_queue_purge(list);
++		skb_queue_purge(&xmitq);
++	} else {
+ 		tipc_bearer_xmit(net, bearer_id, &xmitq, &le->maddr);
++	}
+ 
+ 	tipc_node_put(n);
+ 
+-- 
+2.7.4
+
