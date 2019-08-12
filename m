@@ -2,98 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75DDD8A771
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 21:44:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 073668A776
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 21:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726856AbfHLTot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 15:44:49 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37171 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726200AbfHLTos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 15:44:48 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 129so3299819pfa.4
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 12:44:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Mc+ooOriZxrn+zVpdJrGmoqNMJwCMvUNyGKlJFjL7O0=;
-        b=NVPrDBo2heIDC8AOLzTppEFDareWCpTcsdl2sYOf6R0o49V++GmlQwdqjqDWBdTYU7
-         VdYAuhFRTQOm/zrquLgNgzAtnCDmdO8w4rOwYN32bx4tbImZLfvR5ECZmnNw8Y1+XBKj
-         IExnvPh9Ax1YZrfBF/RAp1z09jquYc0FfADFFZoiDZAVMmYQxspy6E8jf9KbkXniOUh1
-         6n4r0cXAilp9j+ueGydI+dyyZHLUU0sP+wbw3aqD1dH/gd7VAylBfMWl9goid5qR1q/4
-         NgvI9dq91ShjXR52JYVFK9y7VIuRbZpp08lRof1OPPEUHDpPm1NxCv9XwXj3ZorvhvuX
-         kOGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Mc+ooOriZxrn+zVpdJrGmoqNMJwCMvUNyGKlJFjL7O0=;
-        b=cfju8FSyNn8ddO7i1eEcrbdFwYCkbSymC+GzwBKe8CZ/QdZI4jV+uNvTbutBvnntIl
-         e3c04WGomYspX6dfE0vJmtPc1aeH1aT5D6RPN/IXGnr9dAbLzpG9lKq4FawFGIaHgvHi
-         EK4jloZOnKgHVEAu3nm0IH3WaU36q5nnmBpnspRo83xq8B4U9ULy92O1Q2fnNFGrYf4P
-         VKyQM6oruifsFgilj+/eTu5B2kg2BQyb8SN6kwODsxWl2wQuPOvGcNKW1wRT2lsAnDf7
-         AAUQqWQU4erDb6WV32rQBI1BVZ+1pHU9T3Q0ZHV1Z+EFy0umtn70Gp/ggEcSgbxhxXfs
-         ILWw==
-X-Gm-Message-State: APjAAAV5lCH7/vqjDtwb2qnPKSa1IuQmRfVte/u/Jkp/0EObiSp8Xxmx
-        G/85PW29T82GSzJNLmYHCcAYdJZxFMOn+02mjnTV78i/NPg=
-X-Google-Smtp-Source: APXvYqz8QYl/ip+KVWNTz8Ikyi6QTXdurqTN/lY0Z5pNDGa7dj4PV45OTXxRIqbKA9MyduNHSeJMZRVxC3xuX0pGoTg=
-X-Received: by 2002:a17:90a:bf02:: with SMTP id c2mr829733pjs.73.1565639087670;
- Mon, 12 Aug 2019 12:44:47 -0700 (PDT)
+        id S1727013AbfHLTp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 15:45:58 -0400
+Received: from Galois.linutronix.de ([193.142.43.55]:60609 "EHLO
+        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726200AbfHLTp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 15:45:58 -0400
+Received: from p200300ddd71876867e7a91fffec98e25.dip0.t-ipconnect.de ([2003:dd:d718:7686:7e7a:91ff:fec9:8e25])
+        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
+        (Exim 4.80)
+        (envelope-from <tglx@linutronix.de>)
+        id 1hxGGH-0004oy-4v; Mon, 12 Aug 2019 21:45:45 +0200
+Date:   Mon, 12 Aug 2019 21:45:39 +0200 (CEST)
+From:   Thomas Gleixner <tglx@linutronix.de>
+To:     syzbot <syzbot+c4521ac872a4ccc3afec@syzkaller.appspotmail.com>
+cc:     alexander.h.duyck@intel.com, amritha.nambiar@intel.com,
+        andriy.shevchenko@linux.intel.com, avagin@gmail.com,
+        davem@davemloft.net, dmitry.torokhov@gmail.com, dvyukov@google.com,
+        eric.dumazet@gmail.com, f.fainelli@gmail.com,
+        gregkh@linuxfoundation.org, idosch@mellanox.com, jiri@mellanox.com,
+        kimbrownkd@gmail.com, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        tyhicks@canonical.com, wanghai26@huawei.com, yuehaibing@huawei.com
+Subject: Re: WARNING: ODEBUG bug in netdev_freemem (2)
+In-Reply-To: <000000000000ea2c30058f901624@google.com>
+Message-ID: <alpine.DEB.2.21.1908122143290.7324@nanos.tec.linutronix.de>
+References: <000000000000ea2c30058f901624@google.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-References: <20190810101732.26612-1-gregkh@linuxfoundation.org>
- <20190810101732.26612-14-gregkh@linuxfoundation.org> <CAKwvOdnP4OU9g_ebjnT=r1WcGRvsFsgv3NbguhFKOtt8RWNHwA@mail.gmail.com>
- <20190812190128.GB14905@kroah.com>
-In-Reply-To: <20190812190128.GB14905@kroah.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 12 Aug 2019 12:44:36 -0700
-Message-ID: <CAKwvOdkWzr5fu3v0KR2XXj0dqCZki=JOoMft9SMjs+XmZ8HpUg@mail.gmail.com>
-Subject: Re: [PATCH v3 13/17] mvpp2: no need to check return value of
- debugfs_create functions
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>,
-        Nathan Huckleberry <nhuck@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+X-Linutronix-Spam-Score: -1.0
+X-Linutronix-Spam-Level: -
+X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 12, 2019 at 12:01 PM Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
->
-> On Mon, Aug 12, 2019 at 10:55:51AM -0700, Nick Desaulniers wrote:
-> > On Sat, Aug 10, 2019 at 3:17 AM Greg Kroah-Hartman
-> > <gregkh@linuxfoundation.org> wrote:
-> > >
-> > > When calling debugfs functions, there is no need to ever check the
-> > > return value.  The function can work or not, but the code logic should
-> > > never do something different based on this.
-> >
-> > Maybe adding this recommendation to the comment block above the
-> > definition of debugfs_create_dir() in fs/debugfs/inode.c would help
-> > prevent this issue in the future?  What failure means, and how to
-> > proceed can be tricky; more documentation can only help in this
-> > regard.
->
-> If it was there, would you have read it?  :)
+On Wed, 7 Aug 2019, syzbot wrote:
 
-Absolutely; I went looking for it, which is why I haven't added my
-reviewed by tag, because it's not clear from the existing comment
-block how callers should handle the return value, particularly as you
-describe in this commit's commit message.
+> syzbot has found a reproducer for the following crash on:
+> 
+> HEAD commit:    13dfb3fa Merge git://git.kernel.org/pub/scm/linux/kernel/g..
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=1671e69a600000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=d4cf1ffb87d590d7
+> dashboard link: https://syzkaller.appspot.com/bug?extid=c4521ac872a4ccc3afec
+> compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=170542c2600000
 
->
-> I'll add it to the list for when I revamp the debugfs documentation that
-> is already in the kernel, that very few people actually read...
->
-> thanks,
->
-> greg k-h
+I can't reproduce that here. Can you please apply the patch from:
 
+  https://lore.kernel.org/lkml/alpine.DEB.2.21.1906241920540.32342@nanos.tec.linutronix.de
 
+and try to reproduce with that applied? That should give us more
+information about the actual delayed work.
 
--- 
 Thanks,
-~Nick Desaulniers
+
+	tglx
