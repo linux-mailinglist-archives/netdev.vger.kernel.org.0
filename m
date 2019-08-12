@@ -2,136 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B46738A936
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 23:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D98748A92E
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 23:20:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727414AbfHLVVI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 17:21:08 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35523 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726757AbfHLVVH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 17:21:07 -0400
-Received: by mail-wr1-f66.google.com with SMTP id k2so19999851wrq.2
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 14:21:06 -0700 (PDT)
+        id S1727145AbfHLVUR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 17:20:17 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:33072 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726805AbfHLVUQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 17:20:16 -0400
+Received: by mail-qt1-f193.google.com with SMTP id v38so11965970qtb.0
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 14:20:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=cJJV0FH7m9OIW7AuVAn2lW7AzIHc+YQte9YSVygxTuE=;
-        b=uT64xuvp02OCUwiqJd9/8G1OVl4sH94VvBxVTNF3aqaok/Jr0j7+YGZ+1AAhvCUaTV
-         lHDVHFL3dzQzmQl26J3GOxREcyGRTheg9femG9nGu3oPIkCyO1hwyXZw3AmD8Zg0lx/T
-         rgni2lWwMtkiDpPo69f77+hPFuLPoFnkoPxB4rXWRD/MtHVqJCSat/bOBMgzR3EkwBuj
-         U3cMmZ7hNQ7JMuzqDdHHNQoQykwu1QJeb0CkEU7Bfa/26Ri1ll+1lZsRUYdLm/dfZVDS
-         vuEoBgHoFkxpDtJNHlToMy6ZQkRqldxHT8E8VKM8aFtLPsHqchi9xGlfKIddLZtNsiZ0
-         7IBg==
+        d=linode-com.20150623.gappssmtp.com; s=20150623;
+        h=to:from:subject:message-id:date:user-agent:mime-version
+         :content-transfer-encoding:content-language;
+        bh=DQ4mMXTZgl1WVV5uHkxStemoDQNoVfeoGM36kj7uXFo=;
+        b=IudWYI67/pUsUBXltWcn/CyTVN0ZBzPivh9m8rJK910Q8dqV4hiUTW+a76lIMzvxtp
+         3kWu0rLwqT71P5syq6yOutngz+UBjbx4sRjfs/g6BjVldJtz73U5eK91Zh4RHXWRA8lO
+         CMy3vwVqtGQ2S0f01rO488qJ3BevZeLqjg2KlaC5ZixekRE4kkKSQYLscDLvaKFqUbar
+         SzFTNjbMfRuIP/aetd1hcs/MGna04omLLslGArlXoNVPM8mnLSKRDzoDtEO7ZMzU/zQJ
+         yFQfUdYmifAnWTdtaj3F4moa0wmwM0YJNrrnfu0RJ/mll0M86zMKpsKZtrV95z2LL87a
+         7K1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=cJJV0FH7m9OIW7AuVAn2lW7AzIHc+YQte9YSVygxTuE=;
-        b=aIv9NqQmRdmwJVVoPqjiD2eW+dCRW4hLF71DMI6LUxvxtI9wypFymsaXIrsvTkHUqi
-         6C5QftFvhJ6++3pTM/ga0xBYjb++fQe+kTNwBL9qlxDm75tGrOfdhS75HlbK52X+DNHE
-         HNIRs1U1a4hTSTTzW4GzNoCK3ZJnS0NvUjO8VfJT7XG2l9vdmghLj4BQdVEEd0wV2hIf
-         s4NxFYP3Q2ncrBBs+1gYA/vawBRf+6bWEwe8ihGls9Y68kd/03/i9Ith5Tpd3542DmVs
-         REb1HKMe9C6ZO0cI181jXXd/vvk2fjGOPuJ7YiI5ccYIzNfywXg/EE5+GziE//i0sROI
-         1S9A==
-X-Gm-Message-State: APjAAAUxs4sLByt2oC+CoKpbw58GoA62wFbZd68qxFD6/kPSswejTG66
-        95Lwf1ZM7G+bLqkNoXB2Iu3XqS9J
-X-Google-Smtp-Source: APXvYqy8Mi9BTh8ScD9FaAYh1SRd6NVyPktG+z6y6O/YfsfEEc4cse8URu2aw3WBtjsRJ+eQ01w+ew==
-X-Received: by 2002:adf:c7c7:: with SMTP id y7mr42012591wrg.44.1565644865387;
-        Mon, 12 Aug 2019 14:21:05 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6? (p200300EA8F2F3200E9C14D4C1CCF09D6.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:e9c1:4d4c:1ccf:9d6])
-        by smtp.googlemail.com with ESMTPSA id h12sm11820352wrq.73.2019.08.12.14.21.04
+        h=x-gm-message-state:to:from:subject:message-id:date:user-agent
+         :mime-version:content-transfer-encoding:content-language;
+        bh=DQ4mMXTZgl1WVV5uHkxStemoDQNoVfeoGM36kj7uXFo=;
+        b=Bv6V3ipFe7UUMr4KIZ+cjDnL5GHmMrILtUq9ABCBrbkRMY40L/ngBPPWQVLkfwoNzy
+         50uSVOvOa2NGYgmkbh8H0YzTL2D2llrCNo49cwzlbswFnsCOAEn5lULdcTOYY3OUO9Q9
+         CTz6QfsimFQDxzsljb7LpwExB1ZoeOAzLMo5YFVpyMrXznka2OhB5oejBTal6oYY8fZY
+         Fi/qFXnOhOl5edc/X+EVn2a+jfWUBD2wvr1WzOOuzi09y15OVMCDUKioTKS6BnOrsuC5
+         Jdos5tMXgFbCM5mLAIppiDEcPPufn4A4ZPyKiEc0DIddZvN8UQyroIA6SZDQZaevLR25
+         ncSg==
+X-Gm-Message-State: APjAAAVU6qMcxqomCUPwS14onfnVHsWyvQpv2r360hLMnbR5W767sEeO
+        ODGkP9ef7zyv7Af0ashLaWFYzomO2A3IQRdI1zd7aeF3dr44yXMD0+OvsZ2g4SwU0Xc1aJPESzK
+        2rt/4TOXznWYwUzKaLLkCx8jsxQwttIxW3WAxe6PlIUfW/h7QOn8/VpJoexH6BC1AZsEsAJ4=
+X-Google-Smtp-Source: APXvYqzQg1EVwkwsAsGkkXLFYR558dkrZLzS5slAy0MGKmAYlex62608UxTWNPThyWL0DheAA4d1DQ==
+X-Received: by 2002:ad4:438c:: with SMTP id s12mr9433165qvr.17.1565644815541;
+        Mon, 12 Aug 2019 14:20:15 -0700 (PDT)
+Received: from Todds-MacBook-Pro.local ([172.104.2.4])
+        by smtp.gmail.com with ESMTPSA id p38sm6226254qtc.76.2019.08.12.14.20.14
+        for <netdev@vger.kernel.org>
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 12 Aug 2019 14:21:04 -0700 (PDT)
-Subject: [PATCH net-next 2/3] net: phy: add __phy_speed_down and
- phy_resolve_min_speed
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <0799ec1f-307c-25ab-0259-b8239e4e04ba@gmail.com>
-Message-ID: <e499c226-7141-d5be-990c-b46b7dd048f8@gmail.com>
-Date:   Mon, 12 Aug 2019 23:20:07 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Mon, 12 Aug 2019 14:20:14 -0700 (PDT)
+To:     netdev@vger.kernel.org
+From:   Todd Seidelmann <tseidelmann@linode.com>
+Subject: [PATCH net] netfilter: ebtables: Fix argument order to ADD_COUNTER
+Message-ID: <00a6c489-dc5b-d66f-f06d-b8785acb50e7@linode.com>
+Date:   Mon, 12 Aug 2019 17:20:13 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <0799ec1f-307c-25ab-0259-b8239e4e04ba@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-__phy_speed_down provides most of the functionality for phy_speed_down.
-It makes use of new helper phy_resolve_min_speed that is based on the
-sorting of the settings[] array.
-In certain cases it may be helpful to be able to exclude legacy half
-duplex modes, therefore prepare phy_resolve_min_speed() for it.
+The ordering of arguments to the x_tables ADD_COUNTER macro
+appears to be wrong in ebtables (cf. ip_tables.c, ip6_tables.c,
+and arp_tables.c).
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+This causes data corruption in the ebtables userspace tools
+because they get incorrect packet & byte counts from the kernel.
 ---
- drivers/net/phy/phy-core.c | 29 +++++++++++++++++++++++++++++
- include/linux/phy.h        |  1 +
- 2 files changed, 30 insertions(+)
+  net/bridge/netfilter/ebtables.c | 8 ++++----
+  1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index de085f255..d7331875e 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -316,6 +316,35 @@ void phy_resolve_aneg_linkmode(struct phy_device *phydev)
- }
- EXPORT_SYMBOL_GPL(phy_resolve_aneg_linkmode);
- 
-+static int phy_resolve_min_speed(struct phy_device *phydev, bool fdx_only)
-+{
-+	__ETHTOOL_DECLARE_LINK_MODE_MASK(common);
-+	int i = ARRAY_SIZE(settings);
-+
-+	linkmode_and(common, phydev->lp_advertising, phydev->advertising);
-+
-+	while (i--) {
-+		if (test_bit(settings[i].bit, common)) {
-+			if (fdx_only && settings[i].duplex != DUPLEX_FULL)
-+				continue;
-+			return settings[i].speed;
-+		}
-+	}
-+
-+	return SPEED_UNKNOWN;
-+}
-+
-+int __phy_speed_down(struct phy_device *phydev)
-+{
-+	int min_common_speed = phy_resolve_min_speed(phydev, true);
-+
-+	if (min_common_speed == SPEED_UNKNOWN)
-+		return -EINVAL;
-+
-+	return __set_linkmode_max_speed(phydev, min_common_speed,
-+					phydev->advertising);
-+}
-+
- static void mmd_phy_indirect(struct mii_bus *bus, int phy_addr, int devad,
- 			     u16 regnum)
- {
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 781f4810c..4be6d3b47 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -665,6 +665,7 @@ size_t phy_speeds(unsigned int *speeds, size_t size,
- 		  unsigned long *mask);
- void of_set_phy_supported(struct phy_device *phydev);
- void of_set_phy_eee_broken(struct phy_device *phydev);
-+int __phy_speed_down(struct phy_device *phydev);
- 
- /**
-  * phy_is_started - Convenience function to check whether PHY is started
--- 
-2.22.0
+diff --git a/net/bridge/netfilter/ebtables.c 
+b/net/bridge/netfilter/ebtables.c
+index c8177a8..4096d8a 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -221,7 +221,7 @@ unsigned int ebt_do_table(struct sk_buff *skb,
+              return NF_DROP;
+          }
 
+-        ADD_COUNTER(*(counter_base + i), 1, skb->len);
++        ADD_COUNTER(*(counter_base + i), skb->len, 1);
+
+          /* these should only watch: not modify, nor tell us
+           * what to do with the packet
+@@ -959,8 +959,8 @@ static void get_counters(const struct ebt_counter 
+*oldcounters,
+              continue;
+          counter_base = COUNTER_BASE(oldcounters, nentries, cpu);
+          for (i = 0; i < nentries; i++)
+-            ADD_COUNTER(counters[i], counter_base[i].pcnt,
+-                    counter_base[i].bcnt);
++            ADD_COUNTER(counters[i], counter_base[i].bcnt,
++                    counter_base[i].pcnt);
+      }
+  }
+
+@@ -1280,7 +1280,7 @@ static int do_update_counters(struct net *net, 
+const char *name,
+
+      /* we add to the counters of the first cpu */
+      for (i = 0; i < num_counters; i++)
+-        ADD_COUNTER(t->private->counters[i], tmp[i].pcnt, tmp[i].bcnt);
++        ADD_COUNTER(t->private->counters[i], tmp[i].bcnt, tmp[i].pcnt);
+
+      write_unlock_bh(&t->lock);
+      ret = 0;
+--
+1.8.3.1
 
