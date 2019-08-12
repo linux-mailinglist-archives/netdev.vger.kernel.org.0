@@ -2,139 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EE9E89AE3
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 12:08:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DC79389ACD
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 12:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbfHLKHX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 06:07:23 -0400
-Received: from mail-eopbgr770049.outbound.protection.outlook.com ([40.107.77.49]:36686
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727849AbfHLKHW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 06:07:22 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eS8IJR/PneXuTKwgUHnQ8oYTDdsxut89qxHKYdzeCrXGTU+Au12UWLscd91tCHg3IPo5mbKTsOhmYLTnhV7eRR1ccl+R1A0B56O/oMkuPvvF223CUb84+HzWo0ILh4VzeFUvG7WXzxoVTI9X8Tfqaxpm7sJphM5NzjD7nVW0C1Zsp1wqQyE8whmudgPbsVhgoP/eqpkmlf0agxS/GHksHlpESVXx381ROnXEt4sRDdwvR5wWBaDfnYvcupvjo2180fK2L08ifN5B8Okx2KhRcD/0kCH6Be0FbSVgAH8W9XNjk9nZu/E45CBcFAdzXkbkaA2xwfgdI70GvwkjBehUhA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4m+yLKEkI4oPVpayp+PbSWXKsIToVkpx2IkvRadQkbU=;
- b=P5y0Y2J0Gk0bmA3RcOwLb4VKMK9zgVCjhTj25FGRj0L/lB16egooLjH8yVFdfqdcy9X+p9SIrr6FS110b25GbnTarYdiiB7VSJzgkmghFNdTH6BjMwGM28O+ezj8b6qLonF6OR7FUlqq5KE9dbVmpZYsHlosdvvUBE7nUZPQzyLqryHk9RJSfg5r88MgmFvmLYmvKNR3f+JyNqgDBSz9kzM+be2B8Y9F2j45QEPjHUJHcZOKEXRBhnz2FrPvc7Fvo4ojSzf3BIt7l0WtA0s468vMoSlGj/cEgIyJEPCO2lkPgHeqb6vAXOtZj/MdJMEAsZW5qPYFvZgk5KDVEp2uMQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.60.83) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
+        id S1727720AbfHLKGz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 06:06:55 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:38998 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727409AbfHLKGz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 06:06:55 -0400
+Received: by mail-ot1-f66.google.com with SMTP id r21so150764996otq.6;
+        Mon, 12 Aug 2019 03:06:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4m+yLKEkI4oPVpayp+PbSWXKsIToVkpx2IkvRadQkbU=;
- b=nuOdWvEasu2D4ZZNT0fZVnx/Tyum6gmLf9zLt6EjLcQZg/dK2h4gXfMQYelz9MaxIPuQ8Neh/M2un0m9Th76U98Al9ImCWm6du33cWTl+GooJ1gHBvb+sx9A698a3Y5t/x6iyeHS3CWOxAMcNADGHbviO4zuV6OfsS85TyApEqE=
-Received: from MWHPR02CA0017.namprd02.prod.outlook.com (2603:10b6:300:4b::27)
- by SN6PR02MB4829.namprd02.prod.outlook.com (2603:10b6:805:98::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.20; Mon, 12 Aug
- 2019 10:07:20 +0000
-Received: from CY1NAM02FT030.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::207) by MWHPR02CA0017.outlook.office365.com
- (2603:10b6:300:4b::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.14 via Frontend
- Transport; Mon, 12 Aug 2019 10:07:19 +0000
-Authentication-Results: spf=pass (sender IP is 149.199.60.83)
- smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.60.83 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.60.83; helo=xsj-pvapsmtpgw01;
-Received: from xsj-pvapsmtpgw01 (149.199.60.83) by
- CY1NAM02FT030.mail.protection.outlook.com (10.152.75.163) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2157.15
- via Frontend Transport; Mon, 12 Aug 2019 10:07:19 +0000
-Received: from unknown-38-66.xilinx.com ([149.199.38.66] helo=xsj-pvapsmtp01)
-        by xsj-pvapsmtpgw01 with esmtp (Exim 4.63)
-        (envelope-from <appana.durga.rao@xilinx.com>)
-        id 1hx7EU-0002PM-RG; Mon, 12 Aug 2019 03:07:18 -0700
-Received: from [127.0.0.1] (helo=localhost)
-        by xsj-pvapsmtp01 with smtp (Exim 4.63)
-        (envelope-from <appana.durga.rao@xilinx.com>)
-        id 1hx7EP-0004b3-Nb; Mon, 12 Aug 2019 03:07:13 -0700
-Received: from xsj-pvapsmtp01 (smtp-fallback.xilinx.com [149.199.38.66] (may be forged))
-        by xsj-smtp-dlp1.xlnx.xilinx.com (8.13.8/8.13.1) with ESMTP id x7CA75ju003860;
-        Mon, 12 Aug 2019 03:07:05 -0700
-Received: from [10.140.6.6] (helo=xhdappanad40.xilinx.com)
-        by xsj-pvapsmtp01 with esmtp (Exim 4.63)
-        (envelope-from <appana.durga.rao@xilinx.com>)
-        id 1hx7EG-0004OP-H8; Mon, 12 Aug 2019 03:07:04 -0700
-From:   Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-To:     wg@grandegger.com, mkl@pengutronix.de, davem@davemloft.net,
-        michal.simek@xilinx.com
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Srinivas Neeli <srinivas.neeli@xilinx.com>,
-        Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-Subject: [PATCH v2 5/5] can: xilinx_can: Fix the data phase btr1 calculation
-Date:   Mon, 12 Aug 2019 15:36:46 +0530
-Message-Id: <1565604406-4920-6-git-send-email-appana.durga.rao@xilinx.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1565604406-4920-1-git-send-email-appana.durga.rao@xilinx.com>
-References: <1565604406-4920-1-git-send-email-appana.durga.rao@xilinx.com>
-X-RCIS-Action: ALLOW
-X-TM-AS-Product-Ver: IMSS-7.1.0.1224-8.2.0.1013-23620.005
-X-TM-AS-User-Approved-Sender: Yes;Yes
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:149.199.60.83;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(4636009)(346002)(39860400002)(396003)(136003)(376002)(2980300002)(199004)(189003)(106002)(305945005)(70206006)(2616005)(476003)(36386004)(336012)(9786002)(11346002)(5660300002)(486006)(70586007)(8676002)(6666004)(356004)(81166006)(426003)(81156014)(4326008)(446003)(54906003)(126002)(7696005)(76176011)(107886003)(186003)(51416003)(2906002)(26005)(50466002)(6636002)(16586007)(8936002)(47776003)(63266004)(48376002)(50226002)(14444005)(316002)(478600001)(36756003)(42866002);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR02MB4829;H:xsj-pvapsmtpgw01;FPR:;SPF:Pass;LANG:en;PTR:unknown-60-83.xilinx.com;A:1;MX:1;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8nCPUFYSV3W2ZY/9ifJedm0QroBzrSP7heeMdjE0RYc=;
+        b=dUtQ31FuyY2lGlBy1y1AG4y7lkQyg7ft8JrEFprD4sPlp5AZvxcNbEfmxXBu/cQcnV
+         o/6S5ToiBsnRk2m7c2rYVo3Mx6LO20q4qXxSfMzmV36xwyLtb92p3crtdbN9w2rkfL43
+         ZSA1yR8NMWYNtBgKPex3VwSOWkuP9emYKXHLQ5P6tscw80wVV7D/fdjwmtMIhq1WqP9H
+         k3unDUqZENUGiurOH/iaTHrpZUh6nB4JHIR2W3Qxwmlp1bbIWJtszfXtedEo5R08z9th
+         EkaJ90LYXfqoRBSy2w0Po2NRFfNk9a+zezHKL1kKRwJX6R2jelWe/NuQi2qz2wIl+xU/
+         vNZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8nCPUFYSV3W2ZY/9ifJedm0QroBzrSP7heeMdjE0RYc=;
+        b=GI7aLP7S2mGV2YUdnxP0xgYnaQkDzfD1tC9PY8VfhkzzMYQq9Jbxbdhk9TgpujjLoZ
+         DFPe2xwXaNW2WFmOR+L67Kz5rd89hYVgef7HTTjHVwekhs6Oa4qKqaDlgb8r+BHxWgyM
+         zXBjhI/vcKbnbfJiUfNhOVV6WMpG2uQUlyzqqErWss+V3os8voTR5VUAWOaatXrWgkpp
+         yBFD895VbJIrwFAu+rytskENIv/iHo148h9UUGGig8aMCiRbPuo4a4I4OB2rrbLo8QEn
+         ESGD6ENJM6cvD2UoPLOCQy+LPz4IcVP8xZ2rLoJ0WRDI5zwrUvAwvqCcIK6osy7KorxR
+         +AnQ==
+X-Gm-Message-State: APjAAAVEUCKUzTxcUfLyC5G4vhca8ALH1oYr1nhRA6iNhwoleGj5D4pS
+        6q/Wq0w6ZXpNYgCXu69n21tu32HhQ7BiQN6czxY=
+X-Google-Smtp-Source: APXvYqxvqfA09aURLU8YM9tv/GT/gYr0AjzO6i/r2Gsv8wwZfS5HHnycPV8077bbQrYrQDoZ28O0i43Zg3+AJ/6SAy4=
+X-Received: by 2002:a5e:d817:: with SMTP id l23mr33366249iok.282.1565604413971;
+ Mon, 12 Aug 2019 03:06:53 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b8274914-a311-47ff-bc5f-08d71f0cdc9f
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(4709080)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328);SRVR:SN6PR02MB4829;
-X-MS-TrafficTypeDiagnostic: SN6PR02MB4829:
-X-Microsoft-Antispam-PRVS: <SN6PR02MB4829B16D1ADC1DDF7BDB3433DCD30@SN6PR02MB4829.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
-X-Forefront-PRVS: 012792EC17
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: NNEqc5HcNGfOm6Wi23MhfTNo9TaC5Rp188cmSfOImpEzSIiU5Gule7aD39v+8A5KrCfZWIpFOv8kxFjq0JJLuy4J9LTiQNvQkNfzOJCX0FzQWMPfpdo5j0ZJTnI5UJ8EnnZQbn7+ZrF4XlLIgcSe90JJeAqWfwxXsZ1w37L87WGsX8waP3ez8tORB8TWb4klF+zTuWpNPB54pfiNcexhofu5kY+LYLOvomACrQLQGlCzWKz0KfCswFH3wAZWUVuk8BVQZzZeOqUeoixex2nz9YY4DPr3vKKHOPj5cXBfEQFjItL86XPBXaQpX79MdziLWV9sd4Efn67bKFmRP3PDcysuH+Ldzk+uPQH1AMozj15KCmoERch1NUdOBudh3kw0lYBECaFADT8IJOJ1g/12T3i/8yK9j7hN6PJxmVeuFto=
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Aug 2019 10:07:19.3792
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b8274914-a311-47ff-bc5f-08d71f0cdc9f
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.60.83];Helo=[xsj-pvapsmtpgw01]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR02MB4829
+References: <20190812094242.44735-1-marc@koderer.com>
+In-Reply-To: <20190812094242.44735-1-marc@koderer.com>
+From:   Ilya Dryomov <idryomov@gmail.com>
+Date:   Mon, 12 Aug 2019 12:09:52 +0200
+Message-ID: <CAOi1vP_SDOKzh+oyhv8gKVZwdWNY8NpTZ+oM+xSn+k1KCnu_sg@mail.gmail.com>
+Subject: Re: [PATCH] net/ceph replace ceph_kvmalloc with kvmalloc
+To:     Marc Koderer <marc@koderer.com>
+Cc:     Jeff Layton <jlayton@kernel.org>, Sage Weil <sage@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ceph Development <ceph-devel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Srinivas Neeli <srinivas.neeli@xilinx.com>
+On Mon, Aug 12, 2019 at 11:42 AM Marc Koderer <marc@koderer.com> wrote:
+>
+> There is nearly no difference between both implemenations.
+> ceph_kvmalloc existed before kvmalloc which makes me think it's
+> a leftover.
+>
+> Signed-off-by: Marc Koderer <marc@koderer.com>
+> ---
+>  net/ceph/buffer.c      |  3 +--
+>  net/ceph/ceph_common.c | 11 -----------
+>  net/ceph/crypto.c      |  2 +-
+>  net/ceph/messenger.c   |  2 +-
+>  4 files changed, 3 insertions(+), 15 deletions(-)
+>
+> diff --git a/net/ceph/buffer.c b/net/ceph/buffer.c
+> index 5622763ad402..6ca273d2246a 100644
+> --- a/net/ceph/buffer.c
+> +++ b/net/ceph/buffer.c
+> @@ -7,7 +7,6 @@
+>
+>  #include <linux/ceph/buffer.h>
+>  #include <linux/ceph/decode.h>
+> -#include <linux/ceph/libceph.h> /* for ceph_kvmalloc */
+>
+>  struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
+>  {
+> @@ -17,7 +16,7 @@ struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
+>         if (!b)
+>                 return NULL;
+>
+> -       b->vec.iov_base = ceph_kvmalloc(len, gfp);
+> +       b->vec.iov_base = kvmalloc(len, gfp);
+>         if (!b->vec.iov_base) {
+>                 kfree(b);
+>                 return NULL;
+> diff --git a/net/ceph/ceph_common.c b/net/ceph/ceph_common.c
+> index 4eeea4d5c3ef..6c1769a815af 100644
+> --- a/net/ceph/ceph_common.c
+> +++ b/net/ceph/ceph_common.c
+> @@ -185,17 +185,6 @@ int ceph_compare_options(struct ceph_options *new_opt,
+>  }
+>  EXPORT_SYMBOL(ceph_compare_options);
+>
+> -void *ceph_kvmalloc(size_t size, gfp_t flags)
+> -{
+> -       if (size <= (PAGE_SIZE << PAGE_ALLOC_COSTLY_ORDER)) {
+> -               void *ptr = kmalloc(size, flags | __GFP_NOWARN);
+> -               if (ptr)
+> -                       return ptr;
+> -       }
+> -
+> -       return __vmalloc(size, flags, PAGE_KERNEL);
+> -}
+> -
+>
+>  static int parse_fsid(const char *str, struct ceph_fsid *fsid)
+>  {
+> diff --git a/net/ceph/crypto.c b/net/ceph/crypto.c
+> index 5d6724cee38f..a9deead1e4ff 100644
+> --- a/net/ceph/crypto.c
+> +++ b/net/ceph/crypto.c
+> @@ -144,7 +144,7 @@ void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
+>  static const u8 *aes_iv = (u8 *)CEPH_AES_IV;
+>
+>  /*
+> - * Should be used for buffers allocated with ceph_kvmalloc().
+> + * Should be used for buffers allocated with kvmalloc().
+>   * Currently these are encrypt out-buffer (ceph_buffer) and decrypt
+>   * in-buffer (msg front).
+>   *
+> diff --git a/net/ceph/messenger.c b/net/ceph/messenger.c
+> index 962f521c863e..f1f2fcc6f780 100644
+> --- a/net/ceph/messenger.c
+> +++ b/net/ceph/messenger.c
+> @@ -3334,7 +3334,7 @@ struct ceph_msg *ceph_msg_new2(int type, int front_len, int max_data_items,
+>
+>         /* front */
+>         if (front_len) {
+> -               m->front.iov_base = ceph_kvmalloc(front_len, flags);
+> +               m->front.iov_base = kvmalloc(front_len, flags);
+>                 if (m->front.iov_base == NULL) {
+>                         dout("ceph_msg_new can't allocate %d bytes\n",
+>                              front_len);
 
-While calculating bitrate for the data phase, the driver is using phase
-segment 1 of the arbitration phase instead of the data phase.
+Hi Marc,
 
-Fixes: c223da6 ("can: xilinx_can: Add support for CANFD FD frames")
-Signed-off-by: Appana Durga Kedareswara rao <appana.durga.rao@xilinx.com>
-Signed-off-by: Srinivas Neeli <srinivas.neeli@xilinx.com>
-Acked-by: Shubhrajyoti Datta <shubhrajyoti.datta@xilinx.com>
-Signed-off-by: Michal Simek <michal.simek@xilinx.com>
----
- drivers/net/can/xilinx_can.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I'm working on a patch for https://tracker.ceph.com/issues/40481 which
+changes ceph_kvmalloc() to properly deal with non-GFP_KERNEL contexts.
+We can't switch to kvmalloc() because it doesn't actually fall back to
+vmalloc() for GFP_NOFS or GFP_NOIO.
 
-diff --git a/drivers/net/can/xilinx_can.c b/drivers/net/can/xilinx_can.c
-index 4cb8c1c9..ab26691 100644
---- a/drivers/net/can/xilinx_can.c
-+++ b/drivers/net/can/xilinx_can.c
-@@ -425,7 +425,7 @@ static int xcan_set_bittiming(struct net_device *ndev)
- 		btr0 = dbt->brp - 1;
- 
- 		/* Setting Time Segment 1 in BTR Register */
--		btr1 = dbt->prop_seg + bt->phase_seg1 - 1;
-+		btr1 = dbt->prop_seg + dbt->phase_seg1 - 1;
- 
- 		/* Setting Time Segment 2 in BTR Register */
- 		btr1 |= (dbt->phase_seg2 - 1) << priv->devtype.btr_ts2_shift;
--- 
-2.7.4
+Thanks,
 
+                Ilya
