@@ -2,133 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 027178A4EE
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:52:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ACD898A4F0
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726749AbfHLRwK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 13:52:10 -0400
-Received: from mail-eopbgr80050.outbound.protection.outlook.com ([40.107.8.50]:36228
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726236AbfHLRwI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 13:52:08 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dBPQcRZ5u0aowtPWC0JHStmbUgKt1j3ScIYyBm2dHInFd0E0ZLAqJX+J6MA0W1uO/KoBJYScpQEYQHK928B62C85OjsU/Zj6ULyotE+RvsivnXQyODmYI5svZ+1P+IeembFE/kCzSNpkhsCBT5L8vs7+c1A9pNcKK3jSBRGTE/ZDwC5Ch8LuJz+NSjtY7feOjC5uqo8RBjEwcRX00RpXXBr/Ov0yo/nrrTE0vI70JwxBhcS6pMATOuFfULG9ag5GqcxWkNQ1RJyA23Oy0V4fRrkGMYC/KDTsWkU/+cjqTfXmLHp+MFeFZbH+9oVw7XD5ZkhBTXQ1bNA+bOfItphXAw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+LkCnz5oKhKk63GxKrz30qbpCDyS3CH3qv9Kl8Bjizo=;
- b=TELknicEGAUUprl6YlrB1TfV3q6dozXWQKBfXefHdYlUex/+HKt3QCNg1K0inmBbxyEujCUbEzlXgD25ZmPf7TBA/k5ftSvgs7+uHTgLse+IKxiISpycB/Y8Uw00a/e0ZJkFZ5ZkF2Y7yPWgiVXzUfjuEKkUCVyLP0ZgCw1O1q5gBSLVbteUCo0PTHfV9ayq0hRxkB0rLybn+uisSGSummj8RY21LqkJk+eOlgDghOdDsSPHjGjqoiCoHtAdYxhMOWa9RG7kPKH8MuNtwtdPK1D3XQMkhs1w6iO36+FJpKHNXcTmjY3oqUFNMf4Ww/85Ne5cS0kqT3AbyajkC1BBzw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+LkCnz5oKhKk63GxKrz30qbpCDyS3CH3qv9Kl8Bjizo=;
- b=W5QDXo05D4Mzxl7HA03EtCSvceoFJlZ8btkxAp3Zi1nu5BX/4mh9bXS+6ROV9IQ8fkQY/9mSZNRbnYohEx5nno7XAwi1HhYcw6UVBHJzigLso0yT7fPXuhDdjZ/V1pAntf9u/V/0wmXcOFozmuHisgbjDzzNfkZfuMRTj1PXlm8=
-Received: from AM0PR04MB4994.eurprd04.prod.outlook.com (20.176.215.215) by
- AM0PR04MB5124.eurprd04.prod.outlook.com (20.177.40.95) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.21; Mon, 12 Aug 2019 17:51:52 +0000
-Received: from AM0PR04MB4994.eurprd04.prod.outlook.com
- ([fe80::41a7:61ce:8705:d82d]) by AM0PR04MB4994.eurprd04.prod.outlook.com
- ([fe80::41a7:61ce:8705:d82d%2]) with mapi id 15.20.2157.022; Mon, 12 Aug 2019
- 17:51:52 +0000
-From:   Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>
-To:     Edward Cree <ecree@solarflare.com>
-CC:     David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "linux-net-drivers@solarflare.com" <linux-net-drivers@solarflare.com>
-Subject: RE: [PATCH v3 net-next 0/3] net: batched receive in GRO path
-Thread-Topic: [PATCH v3 net-next 0/3] net: batched receive in GRO path
-Thread-Index: AQHVTF4qlNUmbVhe8E+hjl7kqsPKZ6bzEZTwgAAGZQCABLYrQA==
-Date:   Mon, 12 Aug 2019 17:51:52 +0000
-Message-ID: <AM0PR04MB4994A035C6121DC13C0EFBB194D30@AM0PR04MB4994.eurprd04.prod.outlook.com>
-References: <c6e2474e-2c8a-5881-86bf-59c66bdfc34f@solarflare.com>
- <AM0PR04MB4994C1A8F32FB6C9A7EE057E94D60@AM0PR04MB4994.eurprd04.prod.outlook.com>
- <a6faf533-6dd3-d7d7-9464-1fe87d0ac7fc@solarflare.com>
-In-Reply-To: <a6faf533-6dd3-d7d7-9464-1fe87d0ac7fc@solarflare.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=ruxandra.radulescu@nxp.com; 
-x-originating-ip: [212.146.100.6]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 58458dfe-bc42-492f-6d6c-08d71f4dc1da
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM0PR04MB5124;
-x-ms-traffictypediagnostic: AM0PR04MB5124:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <AM0PR04MB51244EE0EE8BA4992E48893194D30@AM0PR04MB5124.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 012792EC17
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(366004)(39860400002)(136003)(376002)(189003)(199004)(13464003)(446003)(4326008)(86362001)(52536014)(102836004)(11346002)(99286004)(486006)(74316002)(6246003)(476003)(53936002)(305945005)(256004)(76176011)(14444005)(26005)(6506007)(53546011)(25786009)(7736002)(186003)(316002)(7696005)(81156014)(54906003)(8676002)(8936002)(6436002)(81166006)(66066001)(478600001)(76116006)(14454004)(6916009)(6116002)(229853002)(966005)(66446008)(33656002)(71200400001)(66556008)(55016002)(71190400001)(66476007)(64756008)(3846002)(6306002)(9686003)(5660300002)(66946007)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR04MB5124;H:AM0PR04MB4994.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 0Z2M+DnT3oBz/NgP0RAEf3KGchMcxwzQDDLnXI1AHohcfDU6efLzGwU+4X2OG4E6M++hfPrBYxGNVnro69SQBjWF0WF+l67sLoQe1iwbiATwX1eLCRfazsx4SxTUF3aUbue608k3f0bX0DyTHRKDQaVZ8ArSY5G8qI52XazeNHlijvSotFx517yFawKsHp9CFLU9oHIaePTIqYSecyuAJ3/3lhyKVpyf6vvJs2Rh/EAV0ibnxLedtKVVKo6A5SggKmIvBs+gZlKNzCiDsmHlrUCQM8QHUSFKp3iu4KbC9w2eBN6Rz5Z2cSCerg896fzdlQ3oOkVawfntao4RyWdR1ogH1OCLcCo8Cf2pqPfi13CTFy8kwym06FZDXLqMCOC42fYOj0kUeLDWKcQgcOSKcWZWOQkxwaZW9AjqO1PVcOo=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726549AbfHLRww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 13:52:52 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35965 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbfHLRwv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:52:51 -0400
+Received: by mail-pl1-f194.google.com with SMTP id g4so1681620plo.3
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 10:52:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=FDBHhm9o0hCKPWae4nXBJdHpjQnOdVxkg9O1sCwpT3c=;
+        b=f6bs+VkH6HmAmbfT0JcI9UiQX2Yy2ulAeH7sjJn9fNGaqzxmrnPUaLY9Sd/BZ/F3Fh
+         o+hCBJBSQCOW6UFH+Ch9gxkeaN31YSnXEh5GHcqIX3ngKsCMnXeyLr9dzuFGBlytvi1e
+         jvY+ARqwLpPAP0y3fZ6XR1/uT2hnENUYO0GlmqohQpVtGDr+qMAswuKr3YnJUekuDQzX
+         wZYmEIRqCETd5hMzowmN2snNJN6kRCXIJ6h41E/H22TYELKVI1biFKjikb0kxBF5u2Vw
+         CLk/M8GeNYoN6rxRJz99VnMVJHf8FKMhhr3ZpL0h6jhd6hXDRd+iBlEShFytZoq2cOoa
+         /f/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=FDBHhm9o0hCKPWae4nXBJdHpjQnOdVxkg9O1sCwpT3c=;
+        b=qlc24DrXp+LkLPCa4R11qYOUHyZ1nDcVeiQ5XudXUN8gEyvtcZzvY4TWo++AqENEO2
+         mj5pLrMkUnlNXfyPzurIhs9awpqltDOo0YumNKlIac07h0l30CdpbJb4How3LPgfSgDO
+         yKwwa9V6yLS7sFJv2bWoYLejjj6P9+uhe0vsRH+fSCRSmOFBR+dylPII1EC3aOKyo+OM
+         rHDA/eu91aTMOlnnYkLc1+9tyGAP7gZGk2+E6zMhj0psraqAs0TduVifrkJ8g+bmE7Qh
+         gzM6eeUZ/bs/ZFs6bSdbmD0bKY+gr+eN+baNO7YCbWAx8ejLl7fC4sNxC+1MnImY64K1
+         V37g==
+X-Gm-Message-State: APjAAAXLV7kESLMq1key2MvAE08YsPGuohLNlE3JAd8dhNEEGQXPUn0v
+        4OCR42hyYbhSgXzPH4tjd3R4pQ==
+X-Google-Smtp-Source: APXvYqyLAo893vqHTfzBwG3ccLyA4X+EsqC2/4r6iU+AD+DOwYk6KGio6qLinnSkPUx3XIRRykfiWA==
+X-Received: by 2002:a17:902:be03:: with SMTP id r3mr34472025pls.156.1565632370710;
+        Mon, 12 Aug 2019 10:52:50 -0700 (PDT)
+Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
+        by smtp.gmail.com with ESMTPSA id r6sm229803pjb.22.2019.08.12.10.52.49
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 12 Aug 2019 10:52:50 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 10:52:49 -0700
+From:   Stanislav Fomichev <sdf@fomichev.me>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
+        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
+Subject: Re: [PATCH bpf-next v2 2/4] bpf: support cloning sk storage on
+ accept()
+Message-ID: <20190812175249.GF2820@mini-arch>
+References: <20190809161038.186678-1-sdf@google.com>
+ <20190809161038.186678-3-sdf@google.com>
+ <db5ec323-1126-d461-bc65-27ccc1414589@iogearbox.net>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 58458dfe-bc42-492f-6d6c-08d71f4dc1da
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Aug 2019 17:51:52.1105
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: gpqaKfGw3p+ChH2J3tWPRULPmKvvQnaoDm9zqEe/56x08E+0lR5/yLQab4Ezcgmb3QpTjFxtGmUy5cYnXEzWpoykEBGd9FdQZDGMtm80mgs=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR04MB5124
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <db5ec323-1126-d461-bc65-27ccc1414589@iogearbox.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBFZHdhcmQgQ3JlZSA8ZWNyZWVA
-c29sYXJmbGFyZS5jb20+DQo+IFNlbnQ6IEZyaWRheSwgQXVndXN0IDksIDIwMTkgODozMiBQTQ0K
-PiBUbzogSW9hbmEgQ2lvY29pIFJhZHVsZXNjdSA8cnV4YW5kcmEucmFkdWxlc2N1QG54cC5jb20+
-DQo+IENjOiBEYXZpZCBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+OyBuZXRkZXYgPG5ldGRl
-dkB2Z2VyLmtlcm5lbC5vcmc+Ow0KPiBFcmljIER1bWF6ZXQgPGVyaWMuZHVtYXpldEBnbWFpbC5j
-b20+OyBsaW51eC1uZXQtZHJpdmVyc0Bzb2xhcmZsYXJlLmNvbQ0KPiBTdWJqZWN0OiBSZTogW1BB
-VENIIHYzIG5ldC1uZXh0IDAvM10gbmV0OiBiYXRjaGVkIHJlY2VpdmUgaW4gR1JPIHBhdGgNCj4g
-DQo+IE9uIDA5LzA4LzIwMTkgMTg6MTQsIElvYW5hIENpb2NvaSBSYWR1bGVzY3Ugd3JvdGU6DQo+
-ID4gSGkgRWR3YXJkLA0KPiA+DQo+ID4gSSdtIHByb2JhYmx5IG1pc3NpbmcgYSBsb3Qgb2YgY29u
-dGV4dCBoZXJlLCBidXQgaXMgdGhlcmUgYSByZWFzb24NCj4gPiB0aGlzIGNoYW5nZSB0YXJnZXRz
-IG9ubHkgdGhlIG5hcGlfZ3JvX2ZyYWdzKCkgcGF0aCBhbmQgbm90IHRoZQ0KPiA+IG5hcGlfZ3Jv
-X3JlY2VpdmUoKSBvbmU/DQo+ID4gSSdtIHRyeWluZyB0byB1bmRlcnN0YW5kIHdoYXQgZHJpdmVy
-cyB0aGF0IGRvbid0IGNhbGwgbmFwaV9ncm9fZnJhZ3MoKQ0KPiA+IHNob3VsZCBkbyBpbiBvcmRl
-ciB0byBiZW5lZml0IGZyb20gdGhpcyBiYXRjaGluZyBmZWF0dXJlLg0KPiBUaGUgc2ZjIGRyaXZl
-ciAod2hpY2ggaXMgd2hhdCBJIGhhdmUgbG90cyBvZiBoYXJkd2FyZSBmb3IsIHNvIEkgY2FuDQo+
-IMKgdGVzdCBpdCkgdXNlcyBuYXBpX2dyb19mcmFncygpLg0KPiBJdCBzaG91bGQgYmUgcG9zc2li
-bGUgdG8gZG8gYSBzaW1pbGFyIHBhdGNoIHRvIG5hcGlfZ3JvX3JlY2VpdmUoKSwNCj4gwqBpZiBz
-b21lb25lIHdhbnRzIHRvIHB1dCBpbiB0aGUgZWZmb3J0IG9mIHdyaXRpbmcgYW5kIHRlc3Rpbmcg
-aXQuDQoNClJhdGhlciB0cmlja3ksIHNpbmNlIEknbSBub3QgcmVhbGx5IGZhbWlsaWFyIHdpdGgg
-R1JPIGludGVybmFscyBhbmQNCnByb2JhYmx5IGRvbid0IHVuZGVyc3RhbmQgYWxsIHRoZSBpbXBs
-aWNhdGlvbnMgb2Ygc3VjaCBhIGNoYW5nZSA6LS8NCkFueSBwb2ludGVycyB0byB3aGF0IEkgc2hv
-dWxkIHBheSBhdHRlbnRpb24gdG8vc2Vuc2l0aXZlIGFyZWFzIHRoYXQNCm5lZWQgZXh0cmEgY2Fy
-ZT8NCg0KPiBIb3dldmVyLCB0aGVyZSBhcmUgbWFueSBtb3JlIGNhbGxlcnMsIHNvIG1vcmUgZWZm
-b3J0IHJlcXVpcmVkIHRvDQo+IMKgbWFrZSBzdXJlIG5vbmUgb2YgdGhlbSBjYXJlIHdoZXRoZXIg
-dGhlIHJldHVybiB2YWx1ZSBpcyBHUk9fRFJPUA0KPiDCoG9yIEdST19OT1JNQUwgKHNpbmNlIHRo
-ZSBsaXN0aWZpZWQgdmVyc2lvbiBjYW5ub3QgZ2l2ZSB0aGF0DQo+IMKgaW5kaWNhdGlvbikuDQoN
-CkF0IGEgcXVpY2sgZ2xhbmNlLCB0aGVyZSdzIG9ubHkgb25lIGRyaXZlciB0aGF0IGxvb2tzIGF0
-IHRoZSByZXR1cm4NCnZhbHVlIG9mIG5hcGlfZ3JvX3JlY2VpdmUgKGRyaXZlcnMvbmV0L2V0aGVy
-bmV0L3NvY2lvbmV4dC9uZXRzZWMuYyksDQphbmQgaXQgb25seSB1cGRhdGVzIGludGVyZmFjZSBz
-dGF0cyBiYXNlZCBvbiBpdC4NCg0KPiBBbHNvLCB0aGUgZ3VpZGFuY2UgZnJvbSBFcmljIGlzIHRo
-YXQgZHJpdmVycyBzZWVraW5nIGhpZ2ggcGVyZm9ybWFuY2UNCj4gwqBzaG91bGQgdXNlIG5hcGlf
-Z3JvX2ZyYWdzKCksIGFzIHRoaXMgYWxsb3dzIEdSTyB0byByZWN5Y2xlIHRoZSBTS0IuDQoNCkJ1
-dCB0aGlzIGd1aWRhbmNlIGlzIGZvciBHUk8tYWJsZSBmcmFtZXMgb25seSwgcmlnaHQ/IElmIEkg
-dHJ5IHRvIHVzZQ0KbmFwaV9ncm9fZnJhZ3MoKSBpbmRpc2NyaW1pbmF0ZWx5IG9uIHRoZSBSeCBw
-YXRoLCBJIGdldCBhIGJpZw0KcGVyZm9ybWFuY2UgcGVuYWx0eSBpbiBzb21lIGNhc2VzIC0gZS5n
-LiBmb3J3YXJkaW5nIG9mIG5vbi1UQ1ANCnNpbmdsZSBidWZmZXIgZnJhbWVzLg0KDQpPbiB0aGUg
-b3RoZXIgaGFuZCwgRXJpYyBzaG90IGRvd24gbXkgYXR0ZW1wdCB0byBkaWZmZXJlbnRpYXRlIGJl
-dHdlZW4NClRDUCBhbmQgbm9uLVRDUCBmcmFtZXMgaW5zaWRlIHRoZSBkcml2ZXIgKHNlZSANCmh0
-dHBzOi8vcGF0Y2h3b3JrLm96bGFicy5vcmcvcGF0Y2gvMTEzNTgxNy8jMjIyMjIzNiksIHNvIEkn
-bSBub3QNCnJlYWxseSBzdXJlIHdoYXQncyB0aGUgcmVjb21tZW5kZWQgYXBwcm9hY2ggaGVyZT8N
-Cg0KPiANCj4gQWxsIG9mIHRoaXMgdG9nZXRoZXIgbWVhbnMgSSBkb24ndCBwbGFuIHRvIHN1Ym1p
-dCBzdWNoIGEgcGF0Y2g7IEkNCj4gwqB3b3VsZCBob3dldmVyIGJlIGhhcHB5IHRvIHJldmlldyBh
-IHBhdGNoIGlmIHNvbWVvbmUgZWxzZSB3cml0ZXMgb25lLg0KDQpUaGFua3MgYSBsb3QgZm9yIHRo
-ZSBleHBsYW5hdGlvbnMhDQpJb2FuYQ0K
+On 08/12, Daniel Borkmann wrote:
+> On 8/9/19 6:10 PM, Stanislav Fomichev wrote:
+> > Add new helper bpf_sk_storage_clone which optionally clones sk storage
+> > and call it from sk_clone_lock.
+> > 
+> > Cc: Martin KaFai Lau <kafai@fb.com>
+> > Cc: Yonghong Song <yhs@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> [...]
+> > +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk)
+> > +{
+> > +	struct bpf_sk_storage *new_sk_storage = NULL;
+> > +	struct bpf_sk_storage *sk_storage;
+> > +	struct bpf_sk_storage_elem *selem;
+> > +	int ret;
+> > +
+> > +	RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
+> > +
+> > +	rcu_read_lock();
+> > +	sk_storage = rcu_dereference(sk->sk_bpf_storage);
+> > +
+> > +	if (!sk_storage || hlist_empty(&sk_storage->list))
+> > +		goto out;
+> > +
+> > +	hlist_for_each_entry_rcu(selem, &sk_storage->list, snode) {
+> > +		struct bpf_sk_storage_elem *copy_selem;
+> > +		struct bpf_sk_storage_map *smap;
+> > +		struct bpf_map *map;
+> > +		int refold;
+> > +
+> > +		smap = rcu_dereference(SDATA(selem)->smap);
+> > +		if (!(smap->map.map_flags & BPF_F_CLONE))
+> > +			continue;
+> > +
+> > +		map = bpf_map_inc_not_zero(&smap->map, false);
+> > +		if (IS_ERR(map))
+> > +			continue;
+> > +
+> > +		copy_selem = bpf_sk_storage_clone_elem(newsk, smap, selem);
+> > +		if (!copy_selem) {
+> > +			ret = -ENOMEM;
+> > +			bpf_map_put(map);
+> > +			goto err;
+> > +		}
+> > +
+> > +		if (new_sk_storage) {
+> > +			selem_link_map(smap, copy_selem);
+> > +			__selem_link_sk(new_sk_storage, copy_selem);
+> > +		} else {
+> > +			ret = sk_storage_alloc(newsk, smap, copy_selem);
+> > +			if (ret) {
+> > +				kfree(copy_selem);
+> > +				atomic_sub(smap->elem_size,
+> > +					   &newsk->sk_omem_alloc);
+> > +				bpf_map_put(map);
+> > +				goto err;
+> > +			}
+> > +
+> > +			new_sk_storage = rcu_dereference(copy_selem->sk_storage);
+> > +		}
+> > +		bpf_map_put(map);
+> 
+> The map get/put combination /under/ RCU read lock seems a bit odd to me, could
+> you exactly describe the race that this would be preventing?
+There is a race between sk storage release and sk storage clone.
+bpf_sk_storage_map_free uses synchronize_rcu to wait for all existing
+users to finish and the new ones are prevented via map's refcnt being
+zero; we need to do something like that for the clone.
+Martin suggested to use bpf_map_inc_not_zero/bpf_map_put.
+If I read everythin correctly, I think without map_inc/map_put we
+get the following race:
+
+CPU0                                   CPU1
+
+bpf_map_put
+  bpf_sk_storage_map_free(smap)
+    synchronize_rcu
+
+    // no more users via bpf or
+    // syscall, but clone
+    // can still happen
+
+    for each (bucket)
+      selem_unlink
+        selem_unlink_map(smap)
+
+        // adding anything at
+        // this point to the
+        // bucket will leak
+
+                                       rcu_read_lock
+                                       tcp_v4_rcv
+                                         tcp_v4_do_rcv
+                                           // sk is lockless TCP_LISTEN
+                                           tcp_v4_cookie_check
+                                             tcp_v4_syn_recv_sock
+                                               bpf_sk_storage_clone
+                                                 rcu_dereference(sk->sk_bpf_storage)
+                                                 selem_link_map(smap, copy)
+                                                 // adding new element to the
+                                                 // map -> leak
+                                       rcu_read_unlock
+
+      selem_unlink_sk
+       sk->sk_bpf_storage = NULL
+
+    synchronize_rcu
