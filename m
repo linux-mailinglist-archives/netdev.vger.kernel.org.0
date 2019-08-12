@@ -2,73 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D2E1A8AAEB
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 01:04:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A1B08AAF3
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 01:09:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726505AbfHLXEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 19:04:02 -0400
-Received: from scorn.kernelslacker.org ([45.56.101.199]:42532 "EHLO
-        scorn.kernelslacker.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726296AbfHLXEC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 19:04:02 -0400
-X-Greylist: delayed 2647 seconds by postgrey-1.27 at vger.kernel.org; Mon, 12 Aug 2019 19:04:02 EDT
-Received: from [2601:196:4600:6634:ae9e:17ff:feb7:72ca] (helo=wopr.kernelslacker.org)
-        by scorn.kernelslacker.org with esmtp (Exim 4.92)
-        (envelope-from <davej@codemonkey.org.uk>)
-        id 1hxIfS-000811-Pg; Mon, 12 Aug 2019 18:19:54 -0400
-Received: by wopr.kernelslacker.org (Postfix, from userid 1026)
-        id 5DADD560184; Mon, 12 Aug 2019 18:19:54 -0400 (EDT)
-Date:   Mon, 12 Aug 2019 18:19:54 -0400
-From:   Dave Jones <davej@codemonkey.org.uk>
-To:     Alexis Bauvin <abauvin@scaleway.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: tun: mark small packets as owned by the tap sock
-Message-ID: <20190812221954.GA13314@codemonkey.org.uk>
-References: <git-mailbomb-linux-master-4b663366246be1d1d4b1b8b01245b2e88ad9e706@kernel.org>
+        id S1726510AbfHLXI7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 19:08:59 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:34821 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726316AbfHLXI7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 19:08:59 -0400
+Received: by mail-wm1-f66.google.com with SMTP id l2so1080074wmg.0
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 16:08:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=W4XM1Cnxs/uiRXAVYOZTw4Gb7ujq35WkW+ksJnY1pqM=;
+        b=b9FQN8GpIFxf5DuCF+DyxbmN07aRPFuNL7xN5p1oGtfVsoYYezMWhcOMruaMvyfoRU
+         I6meXeDP85uVt5YRLoQucLm2OdV+oDjQpfULgCjewaS/dR3Bgp9VCUD9ObrIyNjdx5bZ
+         f5xUOt+c6j406yzoA+899eKL1uSextvzwptY5dPxNXHWm2qtgPJK1kway/VGU8Jka27e
+         Qfw7WiNAvds6bATfM1j1eqGelpiaAmVJPofrIKlpyvTOU+TDANCEkWlYOAGdY/lYFS4X
+         tz80ZlthKn6/bWrwm07Ke+292O5VGeCS8ZLwN9o0oAiw/FGGEaB3lgMTAzfiGfsitmI+
+         j9hg==
+X-Gm-Message-State: APjAAAWTmp1qv9D9sNdsfMTMys2hMvb1sYq03CRBwHVs3NIHAKYEzjpY
+        lSo4S4JB3o1bracpRXyBUgi4uQ==
+X-Google-Smtp-Source: APXvYqyQesMp73rJT2oDxBQMJ/27gUNRJyJIh/pouulRg4Bpgzi8jGDwspujf2Pgh+EGBR57zt24HQ==
+X-Received: by 2002:a1c:cc0d:: with SMTP id h13mr1232439wmb.119.1565651337706;
+        Mon, 12 Aug 2019 16:08:57 -0700 (PDT)
+Received: from linux.home (2a01cb0585290000c08fcfaf4969c46f.ipv6.abo.wanadoo.fr. [2a01:cb05:8529:0:c08f:cfaf:4969:c46f])
+        by smtp.gmail.com with ESMTPSA id w15sm870677wmi.19.2019.08.12.16.08.56
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 12 Aug 2019 16:08:57 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 01:08:55 +0200
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Stefano Brivio <sbrivio@redhat.com>
+Cc:     David Miller <davem@davemloft.net>, Hangbin Liu <haliu@redhat.com>,
+        Eric Dumazet <edumazet@google.com>,
+        Linus =?iso-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] ipv6: Fix return value of ipv6_mc_may_pull() for
+ malformed packets
+Message-ID: <20190812230855.GA22939@linux.home>
+References: <dc0d0b1bc3c67e2a1346b0dd1f68428eb956fbb7.1565649789.git.sbrivio@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <git-mailbomb-linux-master-4b663366246be1d1d4b1b8b01245b2e88ad9e706@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Spam-Note: SpamAssassin invocation failed
+In-Reply-To: <dc0d0b1bc3c67e2a1346b0dd1f68428eb956fbb7.1565649789.git.sbrivio@redhat.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 12:30:07AM +0000, Linux Kernel wrote:
- > Commit:     4b663366246be1d1d4b1b8b01245b2e88ad9e706
- > Parent:     16b2084a8afa1432d14ba72b7c97d7908e178178
- > Web:        https://git.kernel.org/torvalds/c/4b663366246be1d1d4b1b8b01245b2e88ad9e706
- > Author:     Alexis Bauvin <abauvin@scaleway.com>
- > AuthorDate: Tue Jul 23 16:23:01 2019 +0200
- > 
- >     tun: mark small packets as owned by the tap sock
- >     
- >     - v1 -> v2: Move skb_set_owner_w to __tun_build_skb to reduce patch size
- >     
- >     Small packets going out of a tap device go through an optimized code
- >     path that uses build_skb() rather than sock_alloc_send_pskb(). The
- >     latter calls skb_set_owner_w(), but the small packet code path does not.
- >     
- >     The net effect is that small packets are not owned by the userland
- >     application's socket (e.g. QEMU), while large packets are.
- >     This can be seen with a TCP session, where packets are not owned when
- >     the window size is small enough (around PAGE_SIZE), while they are once
- >     the window grows (note that this requires the host to support virtio
- >     tso for the guest to offload segmentation).
- >     All this leads to inconsistent behaviour in the kernel, especially on
- >     netfilter modules that uses sk->socket (e.g. xt_owner).
- >     
- >     Fixes: 66ccbc9c87c2 ("tap: use build_skb() for small packet")
- >     Signed-off-by: Alexis Bauvin <abauvin@scaleway.com>
- >     Acked-by: Jason Wang <jasowang@redhat.com>
+On Tue, Aug 13, 2019 at 12:46:01AM +0200, Stefano Brivio wrote:
+> Commit ba5ea614622d ("bridge: simplify ip_mc_check_igmp() and
+> ipv6_mc_check_mld() calls") replaces direct calls to pskb_may_pull()
+> in br_ipv6_multicast_mld2_report() with calls to ipv6_mc_may_pull(),
+> that returns -EINVAL on buffers too short to be valid IPv6 packets,
+> while maintaining the previous handling of the return code.
+> 
+> This leads to the direct opposite of the intended effect: if the
+> packet is malformed, -EINVAL evaluates as true, and we'll happily
+> proceed with the processing.
+> 
+> Return 0 if the packet is too short, in the same way as this was
+> fixed for IPv4 by commit 083b78a9ed64 ("ip: fix ip_mc_may_pull()
+> return value").
+> 
+> I don't have a reproducer for this, unlike the one referred to by
+> the IPv4 commit, but this is clearly broken.
+> 
+> Fixes: ba5ea614622d ("bridge: simplify ip_mc_check_igmp() and ipv6_mc_check_mld() calls")
+> Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> ---
+>  include/net/addrconf.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+> index becdad576859..3f62b347b04a 100644
+> --- a/include/net/addrconf.h
+> +++ b/include/net/addrconf.h
+> @@ -206,7 +206,7 @@ static inline int ipv6_mc_may_pull(struct sk_buff *skb,
+>  				   unsigned int len)
+>  {
+>  	if (skb_transport_offset(skb) + ipv6_transport_len(skb) < len)
+> -		return -EINVAL;
+> +		return 0;
+>  
+>  	return pskb_may_pull(skb, len);
+>  }
 
-This commit breaks ipv6 routing when I deployed on it a linode.
-It seems to work briefly after boot, and then silently all packets get
-dropped. (Presumably, it's dropping RA or ND packets)
-
-With this reverted, everything works as it did in rc3.
-
-	Dave
-
+Acked-by: Guillaume Nault <gnault@redhat.com>
