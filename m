@@ -2,75 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 197E889885
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 10:15:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D99F589894
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 10:17:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727137AbfHLIPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 04:15:07 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:38985 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727077AbfHLIPH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 04:15:07 -0400
-X-Originating-IP: 86.250.200.211
+        id S1727109AbfHLIRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 04:17:35 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:60661 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726996AbfHLIRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 04:17:35 -0400
 Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 740C8C0010;
-        Mon, 12 Aug 2019 08:15:02 +0000 (UTC)
-Date:   Mon, 12 Aug 2019 10:15:01 +0200
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id DCC74100002;
+        Mon, 12 Aug 2019 08:17:31 +0000 (UTC)
+Date:   Mon, 12 Aug 2019 10:17:31 +0200
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
-        sd@queasysnail.net, f.fainelli@gmail.com, hkallweit1@gmail.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, camelia.groza@nxp.com,
-        Simon.Edelhaus@aquantia.com
-Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
- infrastructure
-Message-ID: <20190812081501.GD3698@kwain>
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
+        Simon Edelhaus <Simon.Edelhaus@aquantia.com>,
+        Pavel Belous <Pavel.Belous@aquantia.com>
+Subject: Re: [PATCH net-next v2 2/9] net: macsec: move some definitions in a
+ dedicated header
+Message-ID: <20190812081731.GE3698@kwain>
 References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
- <20190808140600.21477-7-antoine.tenart@bootlin.com>
- <20190810163423.GA30120@lunn.ch>
+ <20190808140600.21477-3-antoine.tenart@bootlin.com>
+ <9f65de8e-bf62-f9b0-5aba-69c0f92df1ca@aquantia.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190810163423.GA30120@lunn.ch>
+In-Reply-To: <9f65de8e-bf62-f9b0-5aba-69c0f92df1ca@aquantia.com>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi Igor,
 
-On Sat, Aug 10, 2019 at 06:34:23PM +0200, Andrew Lunn wrote:
-> On Thu, Aug 08, 2019 at 04:05:57PM +0200, Antoine Tenart wrote:
-> > This patch introduces the MACsec hardware offloading infrastructure.
-> > 
-> > The main idea here is to re-use the logic and data structures of the
-> > software MACsec implementation. This allows not to duplicate definitions
-> > and structure storing the same kind of information. It also allows to
-> > use a unified genlink interface for both MACsec implementations (so that
-> > the same userspace tool, `ip macsec`, is used with the same arguments).
-> > The MACsec offloading support cannot be disabled if an interface
-> > supports it at the moment.
-> > 
-> > The MACsec configuration is passed to device drivers supporting it
-> > through macsec_hw_offload() which is called from the MACsec genl
-> > helpers. This function calls the macsec ops of PHY and Ethernet
-> > drivers in two steps
+On Sat, Aug 10, 2019 at 12:19:36PM +0000, Igor Russkikh wrote:
+> > +/**
+> > + * struct macsec_tx_sa - transmit secure association
+> > + * @active:
+> > + * @next_pn: packet number to use for the next packet
+> > + * @lock: protects next_pn manipulations
+> > + * @key: key structure
+> > + * @stats: per-SA stats
+> > + */
+> > +struct macsec_tx_sa {
+> > +	struct macsec_key key;
+> > +	spinlock_t lock;
+> > +	u32 next_pn;
+> > +	refcount_t refcnt;
+> > +	bool active;
+> > +	bool offloaded;
 > 
-> It is great that you are thinking how a MAC driver would make use of
-> this. But on the flip side, we don't usual add an API unless there is
-> a user. And as far as i see, you only add a PHY level implementation,
-> not a MAC level.
+> I don't see this `offloaded` field being used anywhere. Is this needed?
 
-That's right, and the only modification here is a simple patch adding
-the MACsec ops within struct net_device. I can remove it as we do not
-have providers as of now and it can be added easily later on.
+You're right it's not and was only used in previous versions of this
+patchset. I'll remove it.
 
-Thanks,
+Thanks for spotting this!
 Antoine
 
 -- 
