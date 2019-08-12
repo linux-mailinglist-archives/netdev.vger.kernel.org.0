@@ -2,47 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C552189642
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 06:26:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A87389643
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 06:27:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726200AbfHLE0C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 00:26:02 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38512 "EHLO
+        id S1725923AbfHLE1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 00:27:32 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38538 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725852AbfHLE0C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 00:26:02 -0400
+        with ESMTP id S1725852AbfHLE1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 00:27:32 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7A8A0145487BD;
-        Sun, 11 Aug 2019 21:26:01 -0700 (PDT)
-Date:   Sun, 11 Aug 2019 21:26:01 -0700 (PDT)
-Message-Id: <20190811.212601.616620268753444689.davem@davemloft.net>
-To:     hkallweit1@gmail.com
-Cc:     nic_swsd@realtek.com, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] r8169: inline rtl8169_free_rx_databuff
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4F8121409711C;
+        Sun, 11 Aug 2019 21:27:30 -0700 (PDT)
+Date:   Sun, 11 Aug 2019 21:27:29 -0700 (PDT)
+Message-Id: <20190811.212729.1591560042691137262.davem@davemloft.net>
+To:     vivien.didelot@gmail.com
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com, andrew@lunn.ch
+Subject: Re: [PATCH net-next 0/7] net: dsa: mv88e6xxx: prepare Wait Bit
+ operation
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <e0902cae-4557-dcda-9c96-ad19b3c05993@gmail.com>
-References: <e0902cae-4557-dcda-9c96-ad19b3c05993@gmail.com>
+In-Reply-To: <20190809224759.5743-1-vivien.didelot@gmail.com>
+References: <20190809224759.5743-1-vivien.didelot@gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 11 Aug 2019 21:26:01 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 11 Aug 2019 21:27:30 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Date: Fri, 9 Aug 2019 22:59:07 +0200
+From: Vivien Didelot <vivien.didelot@gmail.com>
+Date: Fri,  9 Aug 2019 18:47:52 -0400
 
-> rtl8169_free_rx_databuff is used in only one place, so let's inline it.
-> We can improve the loop because rtl8169_init_ring zero's RX_databuff
-> before calling rtl8169_rx_fill, and rtl8169_rx_fill fills
-> Rx_databuff starting from index 0.
+> The Remote Management Interface has its own implementation of a Wait
+> Bit operation, which requires a bit number and a value to wait for.
 > 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> In order to prepare the introduction of this implementation, rework the
+> code waiting for bits and masks in mv88e6xxx to match this signature.
+> 
+> This has the benefit to unify the implementation of wait routines while
+> removing obsolete wait and update functions and also reducing the code.
 
-Applied, thanks Heiner.
+Series applied, thanks.
