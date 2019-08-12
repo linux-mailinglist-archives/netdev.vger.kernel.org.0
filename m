@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 120F78A4DC
-	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:49:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19E538A4E1
+	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 19:50:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726597AbfHLRtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 13:49:46 -0400
-Received: from smtprelay0243.hostedemail.com ([216.40.44.243]:38410 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726263AbfHLRtq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:49:46 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay04.hostedemail.com (Postfix) with ESMTP id AD926180A7F94;
-        Mon, 12 Aug 2019 17:49:44 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:2393:2559:2562:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3870:3871:3872:4250:4321:5007:7514:7903:8957:9010:9012:10004:10400:10848:11026:11232:11473:11657:11658:11914:12043:12296:12297:12438:12555:12740:12760:12895:12986:13439:14096:14097:14181:14659:14721:21080:21324:21433:21451:21627:30034:30054:30080:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:24,LUA_SUMMARY:none
-X-HE-Tag: legs21_1a94506e05015
-X-Filterd-Recvd-Size: 3584
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf08.hostedemail.com (Postfix) with ESMTPA;
-        Mon, 12 Aug 2019 17:49:42 +0000 (UTC)
-Message-ID: <93581c35c0a8c06434221e628153028105849064.camel@perches.com>
-Subject: Re: [PATCH net] ibmveth: Convert multicast list size for
- little-endian systems
-From:   Joe Perches <joe@perches.com>
-To:     Thomas Falcon <tlfalcon@linux.ibm.com>, netdev@vger.kernel.org
-Cc:     liuhangbin@gmail.com, davem@davemloft.net
-Date:   Mon, 12 Aug 2019 10:49:40 -0700
-In-Reply-To: <1565631786-18860-1-git-send-email-tlfalcon@linux.ibm.com>
-References: <1565631786-18860-1-git-send-email-tlfalcon@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1726608AbfHLRuQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 13:50:16 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:60062 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726144AbfHLRuQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 13:50:16 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us3.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8F83D9C0076;
+        Mon, 12 Aug 2019 17:50:14 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 12 Aug
+ 2019 10:50:10 -0700
+Subject: Re: [PATCH net-next,v4 08/12] drivers: net: use flow block API
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     <netdev@vger.kernel.org>, <netfilter-devel@vger.kernel.org>
+References: <20190709205550.3160-1-pablo@netfilter.org>
+ <20190709205550.3160-9-pablo@netfilter.org>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <75eec70e-60de-e33b-aea0-be595ca625f4@solarflare.com>
+Date:   Mon, 12 Aug 2019 18:50:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190709205550.3160-9-pablo@netfilter.org>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24842.005
+X-TM-AS-Result: No-0.993700-4.000000-10
+X-TMASE-MatchedRID: QW5G6BKkLTobF9xF7zzuNfZvT2zYoYOwC/ExpXrHizz5+tteD5RzhStN
+        CiCLkU0TJftHdlOzjkcOIpipvOkpMUER5ddgnEDeEhGH3CRdKUVAFzNhpJiCT8z/SxKo9mJ4o0Y
+        GraGLZ0Aa8UlmHcpg1t/4YGzn++U+zJBXac24eqA3X0+M8lqGUkcA1Ouvduu8pMQg6AVyOoPd1F
+        DAxsDME+tWvgkKyZNdayY2loo5tnbQVcssd7FTbZzEHTUOuMX3j87/LK+2sqNYbPLopoBzQk8LY
+        U9lieOwS+zJJVnn4eeJIG0pP8yLBr9ZdlL8eonaC24oEZ6SpSmcfuxsiY4QFB95wdV9ZjUt9uda
+        0ooWZr9hagGHsao7Z/WLcUPINNeiIC4SJ9YmhCbcaWiMHkBBYh28oJMEFOA6JLiFWNslfOUeDBx
+        IY75OUYfMZMegLDIeGU0pKnas+RbnCJftFZkZizYJYNFU00e7YDttQUGqHZU=
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--0.993700-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24842.005
+X-MDID: 1565632215-XawhvHX2gFFa
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2019-08-12 at 12:43 -0500, Thomas Falcon wrote:
-> The ibm,mac-address-filters property defines the maximum number of
-> addresses the hypervisor's multicast filter list can support. It is
-> encoded as a big-endian integer in the OF device tree, but the virtual
-> ethernet driver does not convert it for use by little-endian systems.
-> As a result, the driver is not behaving as it should on affected systems
-> when a large number of multicast addresses are assigned to the device.
-> 
-> Reported-by: Hangbin Liu <liuhangbin@gmail.com>
-> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+On 09/07/2019 21:55, Pablo Neira Ayuso wrote:
+> This patch updates flow_block_cb_setup_simple() to use the flow block API.
+> Several drivers are also adjusted to use it.
+>
+> This patch introduces the per-driver list of flow blocks to account for
+> blocks that are already in use.
+>
+> Remove tc_block_offload alias.
+>
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 > ---
->  drivers/net/ethernet/ibm/ibmveth.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-> index d654c23..b50a6cf 100644
-> --- a/drivers/net/ethernet/ibm/ibmveth.c
-> +++ b/drivers/net/ethernet/ibm/ibmveth.c
-> @@ -1645,7 +1645,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
->  
->  	adapter->vdev = dev;
->  	adapter->netdev = netdev;
-> -	adapter->mcastFilterSize = *mcastFilterSize_p;
-> +	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
->  	adapter->pool_config = 0;
->  
->  	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
+> v4: fix typo in list in nfp driver - Jakub Kicinski.
+>     Move driver_list handling to the driver code, this list is transitional,
+>     until drivers are updated to support multiple subsystems. No more
+>     driver_list handling from core.
 
-Perhaps to keep sparse happy too: (untested)
----
- drivers/net/ethernet/ibm/ibmveth.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+Pablo, can you explain (because this commit message doesn't) why these per-
+ driver lists are needed, and what the information/state is that has module
+ (rather than, say, netdevice) scope?
 
-diff --git a/drivers/net/ethernet/ibm/ibmveth.c b/drivers/net/ethernet/ibm/ibmveth.c
-index d654c234aaf7..90539d7ce565 100644
---- a/drivers/net/ethernet/ibm/ibmveth.c
-+++ b/drivers/net/ethernet/ibm/ibmveth.c
-@@ -1605,7 +1605,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	struct net_device *netdev;
- 	struct ibmveth_adapter *adapter;
- 	unsigned char *mac_addr_p;
--	unsigned int *mcastFilterSize_p;
-+	__be32 *mcastFilterSize_p;
- 	long ret;
- 	unsigned long ret_attr;
- 
-@@ -1627,7 +1627,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 		return -EINVAL;
- 	}
- 
--	mcastFilterSize_p = (unsigned int *)vio_get_attribute(dev,
-+	mcastFilterSize_p = (__be32 *)vio_get_attribute(dev,
- 						VETH_MCAST_FILTER_SIZE, NULL);
- 	if (!mcastFilterSize_p) {
- 		dev_err(&dev->dev, "Can't find VETH_MCAST_FILTER_SIZE "
-@@ -1645,7 +1645,7 @@ static int ibmveth_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 
- 	adapter->vdev = dev;
- 	adapter->netdev = netdev;
--	adapter->mcastFilterSize = *mcastFilterSize_p;
-+	adapter->mcastFilterSize = be32_to_cpu(*mcastFilterSize_p);
- 	adapter->pool_config = 0;
- 
- 	netif_napi_add(netdev, &adapter->napi, ibmveth_poll, 16);
+AFAICT none of these drivers otherwise interacts with TC at a module level
+ (every block binding, callback etc. is associated with a single netdevice,
+ usually through a cb_priv = netdev_priv(net_dev)), so this looks very out
+ of place.
 
+(More questions likely to follow as I work my way through trying to re-
+ target my in-development driver to this new API.  Also if you have any
+ kind of design document explaining how it all fits together, that'd be
+ nice, because currently trying to figure it out is giving me a headache.)
 
+-Ed
