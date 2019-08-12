@@ -2,57 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC848AA18
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 00:00:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B6038AA39
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 00:13:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727127AbfHLWAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 18:00:18 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40926 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726527AbfHLWAS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 18:00:18 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id DE9C730FB8FC;
-        Mon, 12 Aug 2019 22:00:17 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B4826A225;
-        Mon, 12 Aug 2019 22:00:16 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <7e84e076-7096-028f-b49d-29160aea0831@I-love.SAKURA.ne.jp>
-References: <7e84e076-7096-028f-b49d-29160aea0831@I-love.SAKURA.ne.jp> <00000000000021eea2058feaaf82@google.com>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     dhowells@redhat.com,
-        syzbot <syzbot+cda1ac91660a61b51495@syzkaller.appspotmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        syzkaller-bugs@googlegroups.com, linux-afs@lists.infradead.org
-Subject: Re: WARNING in aa_sock_msg_perm
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <18090.1565647215.1@warthog.procyon.org.uk>
-Date:   Mon, 12 Aug 2019 23:00:15 +0100
-Message-ID: <18091.1565647215@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Mon, 12 Aug 2019 22:00:18 +0000 (UTC)
+        id S1726729AbfHLWNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 18:13:49 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:52246 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726602AbfHLWNt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 18:13:49 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id D331A1264D004;
+        Mon, 12 Aug 2019 15:13:47 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 15:13:44 -0700 (PDT)
+Message-Id: <20190812.151344.808737276838117231.davem@davemloft.net>
+To:     ndesaulniers@google.com
+Cc:     akpm@linux-foundation.org, sedat.dilek@gmail.com,
+        jpoimboe@redhat.com, yhs@fb.com, miguel.ojeda.sandonis@gmail.com,
+        clang-built-linux@googlegroups.com, ast@kernel.org,
+        daniel@iogearbox.net, kafai@fb.com, songliubraving@fb.com,
+        sparclinux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: Re: [PATCH 09/16] sparc: prefer __section from
+ compiler_attributes.h
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190812215052.71840-9-ndesaulniers@google.com>
+References: <20190812215052.71840-1-ndesaulniers@google.com>
+        <20190812215052.71840-9-ndesaulniers@google.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 12 Aug 2019 15:13:48 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp> wrote:
+From: Nick Desaulniers <ndesaulniers@google.com>
+Date: Mon, 12 Aug 2019 14:50:42 -0700
 
-> This is not AppArmor's bug. LSM modules expect that "struct socket" is not
-> NULL.  For some reason, peer->local->socket became NULL. Thus, suspecting
-> rxrpc's bug.
-> 
-> >  rxrpc_send_keepalive+0x1ff/0x940 net/rxrpc/output.c:656
+> Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 
-I agree.  There's a further refcounting bug in the local object handling, but
-it's proving annoyingly difficult to reliably reproduce.
-
-David
+Acked-by: David S. Miller <davem@davemloft.net>
