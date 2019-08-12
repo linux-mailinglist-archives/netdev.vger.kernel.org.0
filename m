@@ -2,29 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 417398A178
+	by mail.lfdr.de (Postfix) with ESMTP id AB0F48A179
 	for <lists+netdev@lfdr.de>; Mon, 12 Aug 2019 16:48:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726791AbfHLOrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726734AbfHLOrv (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 12 Aug 2019 10:47:51 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:46625 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726581AbfHLOrv (ORCPT
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:51149 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726516AbfHLOrv (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 10:47:51 -0400
+X-Originating-IP: 86.250.200.211
 Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
         (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 2617D100004;
-        Mon, 12 Aug 2019 14:47:48 +0000 (UTC)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 00706FF80F;
+        Mon, 12 Aug 2019 14:47:47 +0000 (UTC)
 From:   Antoine Tenart <antoine.tenart@bootlin.com>
 To:     davem@davemloft.net, richardcochran@gmail.com,
         alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com
 Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
         netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
         allan.nielsen@microchip.com, andrew@lunn.ch
-Subject: [PATCH net-next v6 0/6] net: mscc: PTP Hardware Clock (PHC) support
-Date:   Mon, 12 Aug 2019 16:45:31 +0200
-Message-Id: <20190812144537.14497-1-antoine.tenart@bootlin.com>
+Subject: [PATCH net-next v6 1/6] Documentation/bindings: net: ocelot: document the PTP bank
+Date:   Mon, 12 Aug 2019 16:45:32 +0200
+Message-Id: <20190812144537.14497-2-antoine.tenart@bootlin.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190812144537.14497-1-antoine.tenart@bootlin.com>
+References: <20190812144537.14497-1-antoine.tenart@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -32,64 +35,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+One additional register range needs to be described within the Ocelot
+device tree node: the PTP. This patch documents the binding needed to do
+so.
 
-This series introduces the PTP Hardware Clock (PHC) support to the Mscc
-Ocelot switch driver. In order to make use of this, a new register bank
-is added and described in the device tree, as well as a new interrupt.
-The use this bank and interrupt was made optional in the driver for dt
-compatibility reasons.
+Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+---
+ Documentation/devicetree/bindings/net/mscc-ocelot.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Thanks!
-Antoine
-
-Since v5:
-  - Made sure both the PTP interrupt and register bank were available to
-    enable supporting h/w timestamping.
-  - Added a check after a kzalloc.
-  - Add Reviewed-by tags from Andrew.
-
-Since v4:
-  - Added SKBTX_IN_PROGRESS.
-  - Fixed two xmas trees.
-  - Rework the loop condition in ocelot_ptp_rdy_irq_handler.
-
-Since v3:
-  - Fixed a spin_unlock_irqrestore issue.
-
-Since v2:
-  - Prevented from a possible infinite loop when reading the h/w
-    timestamps.
-  - s/GFP_KERNEL/GFP_ATOMIC/ in the Tx path.
-  - Set rx_filter to HWTSTAMP_FILTER_PTP_V2_EVENT at probe.
-  - Fixed s/w timestamping dependencies.
-  - Added Paul Burton's Acked-by on patches 2 and 4.
-
-Since v1:
-  - Used list_for_each_safe() in ocelot_deinit().
-  - Fixed a memory leak in ocelot_deinit() by calling
-    dev_kfree_skb_any().
-  - Fixed a locking issue in get_hwtimestamp().
-  - Handled the NULL case of ptp_clock_register().
-  - Added comments on optional dt properties.
-
-Antoine Tenart (6):
-  Documentation/bindings: net: ocelot: document the PTP bank
-  Documentation/bindings: net: ocelot: document the PTP ready IRQ
-  net: mscc: describe the PTP register range
-  net: mscc: improve the frame header parsing readability
-  net: mscc: remove the frame_info cpuq member
-  net: mscc: PTP Hardware Clock (PHC) support
-
- .../devicetree/bindings/net/mscc-ocelot.txt   |  20 +-
- drivers/net/ethernet/mscc/ocelot.c            | 401 +++++++++++++++++-
- drivers/net/ethernet/mscc/ocelot.h            |  49 ++-
- drivers/net/ethernet/mscc/ocelot_board.c      | 145 ++++++-
- drivers/net/ethernet/mscc/ocelot_ptp.h        |  41 ++
- drivers/net/ethernet/mscc/ocelot_regs.c       |  11 +
- 6 files changed, 633 insertions(+), 34 deletions(-)
- create mode 100644 drivers/net/ethernet/mscc/ocelot_ptp.h
-
+diff --git a/Documentation/devicetree/bindings/net/mscc-ocelot.txt b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
+index 9e5c17d426ce..4d05a3b0f786 100644
+--- a/Documentation/devicetree/bindings/net/mscc-ocelot.txt
++++ b/Documentation/devicetree/bindings/net/mscc-ocelot.txt
+@@ -12,6 +12,7 @@ Required properties:
+   - "sys"
+   - "rew"
+   - "qs"
++  - "ptp" (optional due to backward compatibility)
+   - "qsys"
+   - "ana"
+   - "portX" with X from 0 to the number of last port index available on that
+@@ -44,6 +45,7 @@ Example:
+ 		reg = <0x1010000 0x10000>,
+ 		      <0x1030000 0x10000>,
+ 		      <0x1080000 0x100>,
++		      <0x10e0000 0x10000>,
+ 		      <0x11e0000 0x100>,
+ 		      <0x11f0000 0x100>,
+ 		      <0x1200000 0x100>,
+@@ -57,9 +59,10 @@ Example:
+ 		      <0x1280000 0x100>,
+ 		      <0x1800000 0x80000>,
+ 		      <0x1880000 0x10000>;
+-		reg-names = "sys", "rew", "qs", "port0", "port1", "port2",
+-			    "port3", "port4", "port5", "port6", "port7",
+-			    "port8", "port9", "port10", "qsys", "ana";
++		reg-names = "sys", "rew", "qs", "ptp", "port0", "port1",
++			    "port2", "port3", "port4", "port5", "port6",
++			    "port7", "port8", "port9", "port10", "qsys",
++			    "ana";
+ 		interrupts = <21 22>;
+ 		interrupt-names = "xtr", "inj";
+ 
 -- 
 2.21.0
 
