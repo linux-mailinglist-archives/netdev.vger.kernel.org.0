@@ -2,78 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2DABE8B087
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 09:15:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C5D38B08A
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 09:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727452AbfHMHPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 03:15:43 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:46667 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726769AbfHMHPn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 03:15:43 -0400
-Received: by mail-qt1-f195.google.com with SMTP id j15so11799215qtl.13
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 00:15:42 -0700 (PDT)
+        id S1727497AbfHMHQS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 03:16:18 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:38966 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726282AbfHMHQS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 03:16:18 -0400
+Received: by mail-wm1-f68.google.com with SMTP id i63so492395wmg.4
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 00:16:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g8Vm8qKHn+LLHXv645mJ9CCM93oJwj4ds1tExL4TPwg=;
-        b=weur1ciJNB0c2Ydn/tXH5TbApVTHeLKgj3aUj2q6HtXboQPd5ONcqH8BGCKBDRDvYL
-         l4PpS131R7Z05t/6SzwRzdl98TXxhfxGBGOSKPvIW5g7hznSKr57yC1skkeWOdr6qCxQ
-         ZS26R6N+RJL0/H/WLBByq3BiBJ836eWUFAxrYCRbsO+h4iVBKAvvn95nCM0dpVViiaa/
-         Jcm5lzaKNFYgah/8x3RG3nq7pUcsOoBkNUQ+YVZTgUS/mENXA+CyGJl5ENdf9QZh5o6q
-         xAqMfHPrcSpfpdZfi8RX3+xC+I4EoFM+NLg9BOuAJGPn99iJt3V5gfzGbzUCr7c7IsvE
-         r9XA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=FTWV5t89sbEGbNN7khHORiFGsYj+vRxIrWHIraMW1EY=;
+        b=jrPUODNjV/7rMiGAIce+YS9eFYzpGOBwdDstbV4PzcfyGkl0tBNUkTBliTLmEOCli5
+         RSWobJVMF8DM7Q6mDka1/q8vq1eUpmTen+xHU6UfQbtWzDzF+2a3XxbnoUE9fOTf5WiX
+         33IYyjMUtjPm9RvtEKCkULOyo2eNMLTXSYDgyl0zbapNIuieKFvC/i6XHWmYDiAiYrSx
+         0F8yr5i3B6U3rL2vs+HivvXNe3ywn6CrwuL23/9DRJdSTSb0r4g2neh3+1BdI2zCE2XQ
+         8wdVddVYgVYz3GzFK7EvXTzckoP0AUaiFwxzdPLsK98DOkZn0KNQE28arOrBFWLxdU04
+         gSyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g8Vm8qKHn+LLHXv645mJ9CCM93oJwj4ds1tExL4TPwg=;
-        b=FAutBIXe/qWZc6DyTsRT3klPwlolNfA2H73Su3plLKIHXQPY4kkSQu1hc7FN/eoKlx
-         HuuVD00fua0EHKDOWN9kpKlRNIZl9I8qM0uFh2PNgK8iXa86svOmF7yUFs30T0oQy16O
-         Fg6I9Ctw9pg7Y/I2+FSun/MalXxmuSvAQEgPk9aWorBZvjTi1vyekvNG+CcWHT1lbmDj
-         dISf/CVpX5QmJlPW9r8bUc6QlVH+emnfjtGQM1EduZtJFaCyNC3+hpKvobOqpVzZzv/U
-         e7mX876APIqPh+zUmPv8P6NRmgf3xkrMm7t8BH0B4uD7f2WEEPvBCUdZlojS/tD4hj8v
-         O/hw==
-X-Gm-Message-State: APjAAAX+77L1itPPXhF2/04+t12cjKFvGdfTRc6kv/yNfl3TEp+5rk3w
-        JNZ+pSpErKHIJA0wqJdUgOf0v930rJiIVGc5U+CjqA==
-X-Google-Smtp-Source: APXvYqyu0kNB2r7jqKEB5vIzNuhGX7Fl1NvnQaovuv67dupIefbkK72n4H8JPszWbVJkp5kEWzuFvZtmL2YlF/ckPrI=
-X-Received: by 2002:a0c:c688:: with SMTP id d8mr32921143qvj.86.1565680542157;
- Tue, 13 Aug 2019 00:15:42 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=FTWV5t89sbEGbNN7khHORiFGsYj+vRxIrWHIraMW1EY=;
+        b=rgPuX9/LUCLuYPk66JLAbc9XaBvLXAH3BprMen0E/PF84UsLLm7v5AQ90J5y/moUg+
+         anHuBNP+xFOMpeypNybbpM2ouBl6zqRLEDfsDESV25wdCJxbl4noZVKrkZ67DYp4y6wD
+         kmsR6moZUaiXCKNuvS+ljuG3tcFgAqQ2n25MtV+9SrDPuydqhuD1RIf9V6mAbfD/MN9A
+         X7MtUDHZt74GB0hcWx1Mt060R5opWZquAAdYgil3ucPscfRVgbpU9dNon9KqVlw3JFtp
+         O1KDRz960gP2TFXe5tbmdahv00TN9QjQVVJyjDKjJJ+FgGCk44Trtp15JCH25IeD6OEv
+         o+wA==
+X-Gm-Message-State: APjAAAVUkQuUTBYxmur6lirPv7t1JvQc0Mqn+9PaazzR8oJcFYqoBtyd
+        YsE2ZxlVJHsjg2rtkdG57C1Yeg==
+X-Google-Smtp-Source: APXvYqyMiPUB0kAAJHexriU2cf+fHn3R71VZrQB7HILC1vHVDL0rCPeGdRpNp2jNeKO0fJQDoYCEqw==
+X-Received: by 2002:a05:600c:21c1:: with SMTP id x1mr1129423wmj.37.1565680576359;
+        Tue, 13 Aug 2019 00:16:16 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id q19sm503922wmc.41.2019.08.13.00.16.15
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 13 Aug 2019 00:16:15 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 09:16:15 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com
+Subject: Re: [patch net-next] netdevsim: implement support for devlink region
+ and snapshots
+Message-ID: <20190813071615.GM2428@nanopsycho>
+References: <20190812101620.7884-1-jiri@resnulli.us>
+ <20190812175859.3e0275e3@cakuba.netronome.com>
 MIME-Version: 1.0
-References: <20190805131452.13257-1-chiu@endlessm.com> <d0047834-957d-0cf3-5792-31faa5315ad1@gmail.com>
- <87wofibgk7.fsf@kamboji.qca.qualcomm.com> <a3ac212d-b976-fb16-227f-3246a317c4a2@gmail.com>
-In-Reply-To: <a3ac212d-b976-fb16-227f-3246a317c4a2@gmail.com>
-From:   Daniel Drake <drake@endlessm.com>
-Date:   Tue, 13 Aug 2019 15:15:31 +0800
-Message-ID: <CAD8Lp47x8HOtVFBtBcp2uu3_fMyteEma5+5wr-dObWTtC1Q0PA@mail.gmail.com>
-Subject: Re: [RFC PATCH v7] rtl8xxxu: Improve TX performance of RTL8723BU on
- rtl8xxxu driver
-To:     Jes Sorensen <jes.sorensen@gmail.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>, Chris Chiu <chiu@endlessm.com>,
-        David Miller <davem@davemloft.net>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        Linux Upstreaming Team <linux@endlessm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190812175859.3e0275e3@cakuba.netronome.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 12, 2019 at 11:21 PM Jes Sorensen <jes.sorensen@gmail.com> wrote:
-> On 8/12/19 10:32 AM, Kalle Valo wrote:
-> > This is marked as RFC so I'm not sure what's the plan. Should I apply
-> > this?
+Tue, Aug 13, 2019 at 02:58:59AM CEST, jakub.kicinski@netronome.com wrote:
+>On Mon, 12 Aug 2019 12:16:20 +0200, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@mellanox.com>
+>> 
+>> Implement dummy region of size 32K and allow user to create snapshots
+>> or random data using debugfs file trigger.
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 >
-> I think it's at a point where it's worth applying - I kinda wish I had
-> had time to test it, but I won't be near my stash of USB dongles for a
-> little while.
+>I'm nacking all the netdevsim patches unless the selftest 
+>is posted at the same time :/
+>
+>You're leaking those features one by one what if you get distracted 
+>and the tests never materialize :/
+>
+>This is all dead code.
 
-The last remaining reason it was RFC was pending feedback from Jes, to
-check that his earlier comments had been adequately addressed. So yes
-I think it's good to apply now.
+Okay, fair enough. Will add it now.
 
-Thanks,
-Daniel
+
+>
+>> diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+>> index 08ca59fc189b..e76ea6a3cb60 100644
+>> --- a/drivers/net/netdevsim/dev.c
+>> +++ b/drivers/net/netdevsim/dev.c
+>> @@ -27,6 +27,41 @@
+>>  
+>>  static struct dentry *nsim_dev_ddir;
+>>  
+>> +#define NSIM_DEV_DUMMY_REGION_SIZE (1024 * 32)
+>> +
+>> +static ssize_t nsim_dev_take_snapshot_write(struct file *file,
+>> +					    const char __user *data,
+>> +					    size_t count, loff_t *ppos)
+>> +{
+>> +	struct nsim_dev *nsim_dev = file->private_data;
+>> +	void *dummy_data;
+>> +	u32 id;
+>> +	int err;
+>> +
+>> +	dummy_data = kmalloc(NSIM_DEV_DUMMY_REGION_SIZE, GFP_KERNEL);
+>> +	if (!dummy_data) {
+>> +		pr_err("Failed to allocate memory for region snapshot\n");
+>> +		goto out;
+>> +	}
+>> +
+>> +	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
+>> +
+>> +	id = devlink_region_shapshot_id_get(priv_to_devlink(nsim_dev));
+>> +	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
+>> +					     dummy_data, id, kfree);
+>> +	if (err)
+>> +		pr_err("Failed to create region snapshot\n");
+>> +
+>> +out:
+>> +	return count;
+>
+>why not return an error?
+
+Okay.
+
+
+>
+>> +}
+>> +
+>> +static const struct file_operations nsim_dev_take_snapshot_fops = {
+>> +	.open = simple_open,
+>> +	.write = nsim_dev_take_snapshot_write,
+>> +	.llseek = generic_file_llseek,
+>> +};
+>> +
+>>  static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+>>  {
+>>  	char dev_ddir_name[16];
+>> @@ -44,6 +79,8 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
+>>  			   &nsim_dev->max_macs);
+>>  	debugfs_create_bool("test1", 0600, nsim_dev->ddir,
+>>  			    &nsim_dev->test1);
+>> +	debugfs_create_file("take_snapshot", 0200, nsim_dev->ddir, nsim_dev,
+>> +			    &nsim_dev_take_snapshot_fops);
+>>  	return 0;
+>>  }
+>>  
+>> @@ -248,6 +285,26 @@ static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
+>>  		nsim_dev->test1 = saved_value.vbool;
+>>  }
+>>  
+>> +#define NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX 16
+>> +
+>> +static int nsim_dev_dummy_region_init(struct nsim_dev *nsim_dev,
+>> +				      struct devlink *devlink)
+>> +{
+>> +	nsim_dev->dummy_region =
+>> +		devlink_region_create(devlink, "dummy",
+>> +				      NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX,
+>> +				      NSIM_DEV_DUMMY_REGION_SIZE);
+>> +	if (IS_ERR(nsim_dev->dummy_region))
+>> +		return PTR_ERR(nsim_dev->dummy_region);
+>> +
+>> +	return 0;
+>
+>PTR_ERR_OR_ZERO()
+
+Okay.
+
+
+>
+>> +}
+>> +
+>> +static void nsim_dev_dummy_region_exit(struct nsim_dev *nsim_dev)
+>> +{
+>> +	devlink_region_destroy(nsim_dev->dummy_region);
+>> +}
+>> +
+>>  static int nsim_dev_reload(struct devlink *devlink,
+>>  			   struct netlink_ext_ack *extack)
+>>  {
+>
