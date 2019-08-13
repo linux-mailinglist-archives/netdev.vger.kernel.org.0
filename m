@@ -2,121 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9D7B98C028
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:08:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E8218C05C
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:18:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728359AbfHMSI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:08:26 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39243 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726363AbfHMSI0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:08:26 -0400
-Received: by mail-qt1-f195.google.com with SMTP id l9so107208232qtu.6;
-        Tue, 13 Aug 2019 11:08:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SNZ+S1xTDsap5nSRhodL5I0JpQeKFOt/G+ST+kyDJlE=;
-        b=kXEYQNkgF9KWebqjvSmJl3h60JNSSa/IkU/BgziA4+7FAFpuU+8RtqJ/nU8IkD0E1B
-         GTBhBT4Kqc4vaewpvi4FWpN+L5Q21FNvVGzR5lCISYeRxMpAh0UdYtgPE98PXcXoGYhc
-         9zW5TzCRMXMYLWt9OmjVx6hTy/P8QcEJj7E8qv+0lpAV3ItmvprkiHwFY5boYXGMckKt
-         IQzB/Cww7uzhDnfGB6xt4iYfXdbMLkypqObcDstQBPEZp9paE5oxh0Kv8H2W4dpRHsKj
-         vkkSMFE9Bk2A/yAAw9aCIhSlmY2XeI635+MPXUmNHT3enuWeeCstMa+JuGNyIWlHh+ol
-         lFLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SNZ+S1xTDsap5nSRhodL5I0JpQeKFOt/G+ST+kyDJlE=;
-        b=V3/KeDPpYwoG5Zk5FqAshJV3vvM1/t2H5Xw0w6zT/kw2SgVelnyHvTk0sZQK3Kvh4Z
-         RqI/cOZNbJaqqRY3vvF5qnTurF7fh3bq0a6KXEUbX5V+24m2q8UM16a/PIdR7N04ozAU
-         DpofCFiyVpb4QIfne/VUVKr64mDCQ/OHTBNxEwPZ0r2Su9NSITdQ1FMETgiHDZzkjtXJ
-         sr5XKyR/3RLyUJt5Xpy4X43KU5A3+cBtKm5BwTrhRJpyXDE6OqNcZSGMQdcERRVfYdQ7
-         GefAiE+brI5pM6WyKLsGkHujuoq9/CvuXalaJ/qpJ7K3TruObB188+fWPMRlb/szuSjE
-         rC6g==
-X-Gm-Message-State: APjAAAWL9JPCjDUfIZKKCSEGuz60ELWeCquvmT2Sq9RI4hu3T1ChBfe+
-        38XJMKsJcQFkUsF+Kq9kThkVN6b7yc9U8LkGKjM=
-X-Google-Smtp-Source: APXvYqyEU6XpJs5xm2v1FGd6m+Cvuz5wuLZaHQnLCIBKJ1AuPYEoDBFQwkGyVwaRH66IocQRkHtrX47wBthCLmWO5kY=
-X-Received: by 2002:a0c:b243:: with SMTP id k3mr11381933qve.150.1565719705364;
- Tue, 13 Aug 2019 11:08:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190812183947.130889-1-andriin@fb.com> <c4103c58-941c-da3a-9abd-eecbcd256f1d@iogearbox.net>
-In-Reply-To: <c4103c58-941c-da3a-9abd-eecbcd256f1d@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 13 Aug 2019 11:08:14 -0700
-Message-ID: <CAEf4BzZr4FGfy+QpDQzVxMxCGWx5DYCcu9jsQJWK235+f3Oigg@mail.gmail.com>
-Subject: Re: [RESEND][PATCH v3 bpf-next] btf: expose BTF info through sysfs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1728583AbfHMSSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:18:48 -0400
+Received: from mout.gmx.net ([212.227.17.20]:59139 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727491AbfHMSSq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 14:18:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1565720284;
+        bh=Vq2Rwn6ZpDvdbJzC++Agdo9RfM34OqXBHgokRaHCjmc=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=WTj/ir7EWEPBhjOfci3nIob7y7Q1LoWiIMlCuv24p4jOapHe13C8kQP1MU3RQP9xU
+         vVQ+vqLusWjOoEXRPfVS9EXx7wyyJTTjfgTSEPwe9oZdokO58Uz1A2VYizXKlaN7Dg
+         x2cv1Dd1xOY0LA4dMH2gYzdZ2M9ztOBzoOuXZECc=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from localhost.localdomain ([37.4.249.106]) by mail.gmx.com
+ (mrgmx102 [212.227.17.168]) with ESMTPSA (Nemesis) id
+ 0MSY2q-1hpnKh3mBI-00Ragk; Tue, 13 Aug 2019 20:18:04 +0200
+From:   Stefan Wahren <wahrenst@gmx.net>
+To:     Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Stefan Wahren <wahrenst@gmx.net>
+Subject: [PATCH 1/3] nvmem: mxs-ocotp: update MODULE_AUTHOR() email address
+Date:   Tue, 13 Aug 2019 20:17:27 +0200
+Message-Id: <1565720249-6549-1-git-send-email-wahrenst@gmx.net>
+X-Mailer: git-send-email 2.7.4
+X-Provags-ID: V03:K1:ggoDPxD3GY7PepSw+ctdpLrl9Y0S1aRCjm4mFCxJFfmatdyhLMv
+ gQKCUttMR8MgugL3SYZ2iq96h7Lf+bYGIB4yBaRwN5Vk8ECnW/3ra/jpu88CzXnkGskboOV
+ tt1BYCRwY4h5TfJGVwZObZWKs/kHuVwwLogYL8GQRhwOnNMB7WBC2c04E8ZGgxUXDpSBYJE
+ inPKHKeIaVdlIIdO493Hw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:FquO+c5eQAc=:oWHph4cQRWLnygCC2s+DAJ
+ KzLKi4uLouuuF8GVsW+JuZf+JT8qOhhX+M8HHg4ISWTwTggQ/88i4v1z1L8rOqtpjr8FzQbqn
+ tVzN8dsDs0Qs0INEuJB9JoAjZZgABQJ/8GoLzf4fkrHSHchjM8tZscYGdedU5Hcz82pMq2x3B
+ LhnwImhLhZauw1zbCReTPhleCxPzUvHj7Slg4Jy8Hr03QA5s0W/YdOuU8xtVe5Y0EHxC7LsT7
+ Dn22kRzsngfOIV3iP93/WslGLrF57bApI+gdn9AlsKkaWWG8mMuD3Lu7HGumX1ld5zTgWhJc1
+ Ml/bU6gCCn3RaAz3tWW8UGL1qjNHfJRpLVA3Ig3vVsdQX2UKQFQK2jTWL80Qo+3JNq8HWAbDA
+ Ow9zEBqHmFVMn3k4x6DRCwL+kDFl+CZQKTjJ1Q085MPNb2Qrvu0/3u2MZEEADTdQpDIdmkT3I
+ eemDTG7WQOEaqgSxTJXGrrez3WVBTQzA/lbFulhiyM9uygyRxNx0L75EydKZB/qSwqjZKaS5z
+ JgSgoHIiUZeFPADSUKUNpoyhSHcZsJc6lIGRqbH4HfO7/SZzPc4d6KhPBdWgZtizGC+IQL3NO
+ yViNAEzK0E3o05spkTh6ShkHhlyXt1gGNePwvNo1Ie42g7VzJ0GmVaLpesQJJjYlRi013xGH/
+ uZ7PVe6J0JTGLL5yq8EyOkhn8A1dJxm13EUijNTtX8LT5lYCJ9yQaTcnE6OpkKQO4DzPDzqpC
+ QakBF27rkY1YIq0r1xBTS12aspTRWi2q7ac/0QZHYZypPKXU8Oyr5jAMDJw/o7rL4NrP3/3qR
+ vxaU+UMgImqd69i65UMH+jNhNXgsXWVGBV2J7HpEXN/oOI0kg8NeWCLWiX/UXFmRtLRQX43Ax
+ Vxz6RqcJvqQ6JtmBQycSd5/iplhipnsShUUbvTn0wM5ImSI8qSJ+83ksDxUw5p+cyQJbq8YQ1
+ SvG1+vMhd2hlk/LujgOnultEYTWu2V7UlrcdGYBOAsKmFC0C1SKDoIKV+FoKtcaNHsdSFoy3E
+ 2wqSi6pmgWoKFmF/UqpSLXe6ZbE0XaOweQ0V0CHPz+RRziCNhCeEzkxPjHBB5O4vt9v+TXJaA
+ AJZAdQDsOtgICLm8SCTzJimj0pkZVXbbQL077tNPeQ8zAomIyHyv0bs1tOY7lqrEahzfNvBSP
+ EAa1T7vDowUaDmVZ+SJ49fZkOmfm+aagWgAslo6bf+tAFP+g==
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 7:20 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 8/12/19 8:39 PM, Andrii Nakryiko wrote:
-> > Make .BTF section allocated and expose its contents through sysfs.
-> >
-> > /sys/kernel/btf directory is created to contain all the BTFs present
-> > inside kernel. Currently there is only kernel's main BTF, represented as
-> > /sys/kernel/btf/kernel file. Once kernel modules' BTFs are supported,
-> > each module will expose its BTF as /sys/kernel/btf/<module-name> file.
-> >
-> > Current approach relies on a few pieces coming together:
-> > 1. pahole is used to take almost final vmlinux image (modulo .BTF and
-> >     kallsyms) and generate .BTF section by converting DWARF info into
-> >     BTF. This section is not allocated and not mapped to any segment,
-> >     though, so is not yet accessible from inside kernel at runtime.
-> > 2. objcopy dumps .BTF contents into binary file and subsequently
-> >     convert binary file into linkable object file with automatically
-> >     generated symbols _binary__btf_kernel_bin_start and
-> >     _binary__btf_kernel_bin_end, pointing to start and end, respectively,
-> >     of BTF raw data.
-> > 3. final vmlinux image is generated by linking this object file (and
-> >     kallsyms, if necessary). sysfs_btf.c then creates
-> >     /sys/kernel/btf/kernel file and exposes embedded BTF contents through
-> >     it. This allows, e.g., libbpf and bpftool access BTF info at
-> >     well-known location, without resorting to searching for vmlinux image
-> >     on disk (location of which is not standardized and vmlinux image
-> >     might not be even available in some scenarios, e.g., inside qemu
-> >     during testing).
->
-> Small question: given modules will be covered later, would it not be more
-> obvious to name it /sys/kernel/btf/vmlinux instead?
+The email address listed in MODULE_AUTHOR() will be disabled in the
+near future. Replace it with my private one.
 
-vmlinux totally makes sense, not sure why I didn't think about that initially...
+Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+=2D--
+ drivers/nvmem/mxs-ocotp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I'll follow up with a rename.
+diff --git a/drivers/nvmem/mxs-ocotp.c b/drivers/nvmem/mxs-ocotp.c
+index c34d9fe..8e4898d 100644
+=2D-- a/drivers/nvmem/mxs-ocotp.c
++++ b/drivers/nvmem/mxs-ocotp.c
+@@ -200,6 +200,6 @@ static struct platform_driver mxs_ocotp_driver =3D {
+ };
 
->
-> > Alternative approach using .incbin assembler directive to embed BTF
-> > contents directly was attempted but didn't work, because sysfs_proc.o is
-> > not re-compiled during link-vmlinux.sh stage. This is required, though,
-> > to update embedded BTF data (initially empty data is embedded, then
-> > pahole generates BTF info and we need to regenerate sysfs_btf.o with
-> > updated contents, but it's too late at that point).
-> >
-> > If BTF couldn't be generated due to missing or too old pahole,
-> > sysfs_btf.c handles that gracefully by detecting that
-> > _binary__btf_kernel_bin_start (weak symbol) is 0 and not creating
-> > /sys/kernel/btf at all.
-> >
-> > v2->v3:
-> > - added Documentation/ABI/testing/sysfs-kernel-btf (Greg K-H);
-> > - created proper kobject (btf_kobj) for btf directory (Greg K-H);
-> > - undo v2 change of reusing vmlinux, as it causes extra kallsyms pass
-> >    due to initially missing  __binary__btf_kernel_bin_{start/end} symbols;
-> >
-> > v1->v2:
-> > - allow kallsyms stage to re-use vmlinux generated by gen_btf();
-> >
-> > Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
->
-> In any case, this is great progress, applied thanks!
+ module_platform_driver(mxs_ocotp_driver);
+-MODULE_AUTHOR("Stefan Wahren <stefan.wahren@i2se.com>");
++MODULE_AUTHOR("Stefan Wahren <wahrenst@gmx.net");
+ MODULE_DESCRIPTION("driver for OCOTP in i.MX23/i.MX28");
+ MODULE_LICENSE("GPL v2");
+=2D-
+2.7.4
+
