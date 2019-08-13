@@ -2,58 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BF318BD24
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 17:30:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7A68BD37
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 17:34:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728535AbfHMP3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 11:29:53 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:48158 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727869AbfHMP3x (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 11:29:53 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 60DCC30016E4;
-        Tue, 13 Aug 2019 15:29:53 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A83851001948;
-        Tue, 13 Aug 2019 15:29:51 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <CACT4Y+YVyaTrwpaZfpfi9LKA=5TOdKSL60pjAH04dMPNCZTMSQ@mail.gmail.com>
-References: <CACT4Y+YVyaTrwpaZfpfi9LKA=5TOdKSL60pjAH04dMPNCZTMSQ@mail.gmail.com> <0000000000004c2416058c594b30@google.com> <24282.1562074644@warthog.procyon.org.uk> <CACT4Y+YjdV8CqX5=PzKsHnLsJOzsydqiq3igYDm_=nSdmFo2YQ@mail.gmail.com> <20330.1564583454@warthog.procyon.org.uk> <CACT4Y+Y4cRgaRPJ_gz_53k85inDKq+X+bWmOTv1gPLo=Yod1=A@mail.gmail.com> <22318.1564586386@warthog.procyon.org.uk> <CACT4Y+bjLBwVK_6fz2H8fXm0baAVX+vRJ4UbVWG_7yNUO-SOUg@mail.gmail.com> <3135.1565706180@warthog.procyon.org.uk> <CACT4Y+YCB3o5Ps9RNq9KpMcmGCwBM4R9DeX67prQ9Q3UppGowQ@mail.gmail.com> <8013.1565708810@warthog.procyon.org.uk>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     dhowells@redhat.com,
-        syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        linux-afs@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: kernel BUG at net/rxrpc/local_object.c:LINE!
+        id S1729152AbfHMPeE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 11:34:04 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37426 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728226AbfHMPeE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 11:34:04 -0400
+Received: by mail-wr1-f68.google.com with SMTP id z11so6226657wrt.4
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 08:34:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1PVukblKVNEnDQumJvQmE/K48s1xxDSVgweBwewTpLM=;
+        b=lGday1J/7hcwWpSOk4oDaSvHh3V8zB1nTeTUxvlxOfmHxlA4pPyOOdxvY9YaPk1a7q
+         dUwrqgo37q7QtcmMaua8oslwKUR/jRitpLFX9GV5/7ufz2+jz/Mu/0Ihpi289Gu9B+UL
+         YuO+APyAnoKiXzsSPUvYRuFG8YmpAuHwbZ3hWTnRKxrFq+5E1HOHrQnOJwnlD3lY1hlO
+         v0y4N3s4zG3ILWRWah8e/C61ExsRE+v2gyvStDDNaZzzvqhFMWXAsf+qZ9xk8Z3sbxRG
+         hH/CLw/gKzRQiPGqbjMLaqWQ27Fa4QJIsirSMudBtOaO5pKZ9VGcQpjxDpL+UoILsvdN
+         xjTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1PVukblKVNEnDQumJvQmE/K48s1xxDSVgweBwewTpLM=;
+        b=El0oS2TVrfZLAE/Bat7JzOtbj+Rr2ECTuV1A1hu3bH/uIYymVaML2tbGDzsOBKwXWC
+         ESNQ4n9IucPx7ym2omhZisqL0/iOwDkKGWwTCu3m698y68310jI7zTqUTwAQWeG/Jrlu
+         IvbJkLlx3C9U5zalUIroMm0KmAYpf4lUGMe/ytzv5Xk0DfAlxbayeDEAp+x6iQNghdk4
+         HqbWotWuQZiIKqAeGwX8paM1KSqXpZYDFniZIoblntyF2gS1e19hnBf+h/Fkf9jR5PSw
+         udDRm9sc3F6YlhE68hhU3JIQ8mAWLvvdLCuv5UOsoRqm+Fw/Q/6WSZEMVohzwngNRnSn
+         VQKA==
+X-Gm-Message-State: APjAAAXJzibcmV0vjCzRiLye0GFrqmKm26ew18qiwkYwLtxbO6gI2Q/C
+        rYn5H/wvNdBNrEgPqUcy1YtNGA==
+X-Google-Smtp-Source: APXvYqxZAMJyp6Nr0/TlwCQGugrfW3sUzQzBKgulfQ9KEpORBjRJ18CiQ1Nn5oKOs3ojy8rI0pt91Q==
+X-Received: by 2002:a5d:5543:: with SMTP id g3mr1704826wrw.166.1565710442271;
+        Tue, 13 Aug 2019 08:34:02 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id g14sm18525749wrb.38.2019.08.13.08.34.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Aug 2019 08:34:01 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 17:34:01 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     David Miller <davem@davemloft.net>, dsahern@kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net] netdevsim: Restore per-network namespace accounting
+ for fib entries
+Message-ID: <20190813153401.GR2428@nanopsycho>
+References: <20190806191517.8713-1-dsahern@kernel.org>
+ <20190811.210218.1719186095860421886.davem@davemloft.net>
+ <20190812083635.GB2428@nanopsycho>
+ <20190812.082802.570039169834175740.davem@davemloft.net>
+ <20190813071445.GL2428@nanopsycho>
+ <9306e893-cd43-75a0-9a81-fd2ee0dd44c5@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <28571.1565710190.1@warthog.procyon.org.uk>
-Date:   Tue, 13 Aug 2019 16:29:50 +0100
-Message-ID: <28572.1565710190@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 13 Aug 2019 15:29:53 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <9306e893-cd43-75a0-9a81-fd2ee0dd44c5@gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dmitry Vyukov <dvyukov@google.com> wrote:
+Tue, Aug 13, 2019 at 04:41:18PM CEST, dsahern@gmail.com wrote:
+>On 8/13/19 1:14 AM, Jiri Pirko wrote:
+>> Mon, Aug 12, 2019 at 05:28:02PM CEST, davem@davemloft.net wrote:
+>>> From: Jiri Pirko <jiri@resnulli.us>
+>>> Date: Mon, 12 Aug 2019 10:36:35 +0200
+>>>
+>>>> I understand it with real devices, but dummy testing device, who's
+>>>> purpose is just to test API. Why?
+>>>
+>>> Because you'll break all of the wonderful testing infrastructure
+>>> people like David have created.
+>>  
+>> Are you referring to selftests? There is no such test there :(
+>
+>I  have one now and will be submitting it after net merges with net-next.
+>
+>> But if it would be, could implement the limitations
+>> properly (like using cgroups), change the tests and remove this
+>> code from netdevsim?
+>
+>The intent of this code and test is to have a s/w model similar to how
+>mlxsw works - responding to notifiers and deciding to reject a change.
+>You are currently adding (or trying to) more devlink based s/w tests, so
+>you must see the value of netdevsim as a source of testing.
 
-> It only collects console output. I don't know what is trace log. If
-> the trace log is not console output, then it won't.
+Sure I do. Not sure makes sence to repeat myself again, but why not:
+The way you use netdevsim with netnamespace limitation is nothing like
+it is done in hardware. Devlink resources should limit the resources of
+the device, not network namespace. You abused netdevsim and devlink for
+that. Not cool :(
 
-Assuming the system is still alive:
+To be in sync with mlxsw, netdevsim should track fibs added to the ports
+and apply the resource limitations to that. That is the correct
+behaviour. Exacly like mlxsw does.
 
-	cat /sys/kernel/debug/tracing/trace
+Frankly I don't really understand why you keep pushing your broken
+design. Why the limitation applied only for fibs related to netdevsim
+ports is not enough for testing??? Would that work for you? Please?
 
-David
+This is keeping me awake at night. Sigh :(
