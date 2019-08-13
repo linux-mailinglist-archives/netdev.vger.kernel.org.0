@@ -2,77 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C57028AC65
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 03:15:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68CE88AC66
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 03:16:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbfHMBPe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 21:15:34 -0400
-Received: from mga06.intel.com ([134.134.136.31]:62872 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726296AbfHMBPe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 21:15:34 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Aug 2019 18:15:08 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,379,1559545200"; 
-   d="scan'208";a="376136314"
-Received: from lkp-server01.sh.intel.com (HELO lkp-server01) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 12 Aug 2019 18:15:07 -0700
-Received: from kbuild by lkp-server01 with local (Exim 4.89)
-        (envelope-from <lkp@intel.com>)
-        id 1hxLP0-000Ian-KN; Tue, 13 Aug 2019 09:15:06 +0800
-Date:   Tue, 13 Aug 2019 09:14:18 +0800
-From:   kbuild test robot <lkp@intel.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     kbuild-all@01.org, netdev@vger.kernel.org, davem@davemloft.net,
-        jakub.kicinski@netronome.com, mlxsw@mellanox.com
-Subject: [PATCH] netdevsim: fix ptr_ret.cocci warnings
-Message-ID: <20190813011418.ucmjgfwvudwoyqwg@48261080c7f1>
-References: <20190812101620.7884-1-jiri@resnulli.us>
+        id S1726689AbfHMBQJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 21:16:09 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43923 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726296AbfHMBQJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 21:16:09 -0400
+Received: by mail-pf1-f193.google.com with SMTP id v12so2814907pfn.10
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 18:16:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1XI33rkuBq4SSZZi/Qw2STU224quSS0IKHB3YiAFlVg=;
+        b=HfA/hL/d1Ju5jkp+0mgvXl6VqrFL52oNP6kqLI2/mKmlTJRC5Xx7gji6YYUar2h8ns
+         gfR7m18ozyRlPr4icuisUgaoZ832XEis9v284nHFiTPcdCWYIKXAJbdwVjs84UG4ndyJ
+         xPVNXATdpLlMJLpT4jFSLmzacJCL41PA3LhT/gihy1vZ72iq/9CSas9e4jAB1Qgq5eAf
+         R29LlWmVhJrmitHra7mgtamVD2XFYr3bq7DTtPlV1nBcQYvNHd8fZ1S6UpoUMI7XnN/Q
+         z58hIRdr6RJ+CbhhLhoyeWNPXypq3kwEw0JmUGeDvWk2rSA53fFslttZTk96B/xUzNWy
+         tmvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1XI33rkuBq4SSZZi/Qw2STU224quSS0IKHB3YiAFlVg=;
+        b=jtF2v7YU2IFIcQqKVlff9pMcSqliK6iWaPR6onpRb+7Bt/DfY8aIW0E1Iir3aUOFDC
+         7e9N0EQFnkYLddLaraGw4rWwa23j/eBwohzUCDiPuGMq/3WWus6ov+KlgZyybVnV31ge
+         2LpwvnN3J75qLVkO2V2JNxCXb4V3TC8XaUnUEI2IN5axllnMeBb43cQjU01TzwYre8Vu
+         DrQWF0kIwIeOLGZqsQ7Wvn7ZD7wCIzWvAqROe84TEE1wNF2QWsvHCo7Uuh/EYxaFZbuK
+         FGbh52zsuqyQa5KObOxmwym9t0P0PdEb8ExlyE1NUETpPvlcPilO61+2aP/qFFi/6l7U
+         LTIg==
+X-Gm-Message-State: APjAAAXTXuEbx/lbHeyD0JJVq4sm2NA3cbU+xwWNPUAizTKGSObQBEjU
+        VYSe/ocgRqglcZSenuDls7vkfQ==
+X-Google-Smtp-Source: APXvYqwskHUDsHTWwsPH1u3J0t9gfpEW8LHJNlBX67K4anWCWjcz6sWiw+grYN5JvhHK6QBLTgzt4Q==
+X-Received: by 2002:aa7:81d9:: with SMTP id c25mr38969713pfn.255.1565658968837;
+        Mon, 12 Aug 2019 18:16:08 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id j12sm98552711pff.4.2019.08.12.18.16.08
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 12 Aug 2019 18:16:08 -0700 (PDT)
+Date:   Mon, 12 Aug 2019 18:16:01 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com, jiri@mellanox.com,
+        mlxsw@mellanox.com, Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH iproute2] tc: Fix block-handle support for filter
+ operations
+Message-ID: <20190812181601.6ac57847@hermes.lan>
+In-Reply-To: <20190812101706.15778-1-idosch@idosch.org>
+References: <20190812101706.15778-1-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190812101620.7884-1-jiri@resnulli.us>
-X-Patchwork-Hint: ignore
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: kbuild test robot <lkp@intel.com>
+On Mon, 12 Aug 2019 13:17:06 +0300
+Ido Schimmel <idosch@idosch.org> wrote:
 
-drivers/net/netdevsim/dev.c:297:1-3: WARNING: PTR_ERR_OR_ZERO can be used
+> From: Ido Schimmel <idosch@mellanox.com>
+> 
+> Commit e991c04d64c0 ("Revert "tc: Add batchsize feature for filter and
+> actions"") reverted more than it should and broke shared block
+> functionality. Fix this by restoring the original functionality.
+> 
+> To reproduce:
+> 
+> # tc qdisc add dev swp1 ingress_block 10 ingress
+> # tc filter add block 10 proto ip pref 1 flower \
+> 	dst_ip 192.0.2.0/24 action drop
+> Unknown filter "block", hence option "10" is unparsable
+> 
+> Fixes: e991c04d64c0 ("Revert "tc: Add batchsize feature for filter and actions"")
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
 
-
- Use PTR_ERR_OR_ZERO rather than if(IS_ERR(...)) + PTR_ERR
-
-Generated by: scripts/coccinelle/api/ptr_ret.cocci
-
-Fixes: e9cf98183f96 ("netdevsim: implement support for devlink region and snapshots")
-CC: Jiri Pirko <jiri@mellanox.com>
-Signed-off-by: kbuild test robot <lkp@intel.com>
----
-
-url:    https://github.com/0day-ci/linux/commits/Jiri-Pirko/netdevsim-implement-support-for-devlink-region-and-snapshots/20190813-002135
-
- dev.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
-
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -294,10 +294,7 @@ static int nsim_dev_dummy_region_init(st
- 		devlink_region_create(devlink, "dummy",
- 				      NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX,
- 				      NSIM_DEV_DUMMY_REGION_SIZE);
--	if (IS_ERR(nsim_dev->dummy_region))
--		return PTR_ERR(nsim_dev->dummy_region);
--
--	return 0;
-+	return PTR_ERR_OR_ZERO(nsim_dev->dummy_region);
- }
- 
- static void nsim_dev_dummy_region_exit(struct nsim_dev *nsim_dev)
+Applied
