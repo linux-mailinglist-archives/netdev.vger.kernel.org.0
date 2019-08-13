@@ -2,90 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF9CE8BACE
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 15:52:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 20B678BAF1
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 15:58:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729342AbfHMNwt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 09:52:49 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:34390 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729190AbfHMNwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 09:52:49 -0400
-Received: by mail-pg1-f193.google.com with SMTP id n9so45081284pgc.1
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 06:52:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ovjpjEPWfmUvAod/JC35mVWcJd1XFmKfCBJPpIAqywg=;
-        b=pRq0mDZULKRztISYp1SfbBxGzObaiE8imA9owDUVRWKGXQGBl0WAqvNHD8aN1dtn6Z
-         lGcUZO9KgBHb/A3UiBXu5E8KuPfTWh0WQSQYIibVLnNaDzYjYm98SQQ+PE38KOcNfjBL
-         1u+66REJrirqjrEm1O9wJTTucXReCIihn7l6KoyDALfkQRhzstaaYAObZXbVqg8yXhQY
-         GjadeSoaAQPeOXbQ8QNaXYJyYjq912GeddpY/onhtD8r5scYS6Mg6Sc87W3JkTqrZVsb
-         6A1HH59c7ddD504AsWxV44vVchJ7R0jbUV3flE77HnFAC4AcosS0toAeQtVaPyoCnk85
-         JHUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ovjpjEPWfmUvAod/JC35mVWcJd1XFmKfCBJPpIAqywg=;
-        b=pXP+TlkhJ6AjXW9g/yR6t7sdxaTt6j3ZSkmdBtXJkIyrBEa8vT24VZGftTzMwNBqtj
-         OcvgTmmHeOCL6r23PbIIjFopX3SMEB0vkD4S3Ol9AJWKOFKQ/gwXK9PM6ph+Rli99phi
-         RjqU6gsTmaX7yrK/pnjm9Xd22ihfocvDMWXddOmdG7Ppc1M72isfD7V9mehEMne2LeE/
-         TnkK0FC6yNoKfv6rG/h29ypU2tsnh0hkPgpiKaF/QEKPbWLaX4hJeEpXNzPBFpGjNvrD
-         vliTl+fzsUXPE04X/cWHA+f7G739v/kBwzYoCMKiXwlM60VOOmdRLLg1aKvOpwj8hwsN
-         IcCA==
-X-Gm-Message-State: APjAAAVeImRi9v1dKfFkjZIMuKXBOKhip60qTDScip90Rk3M6EDYzLY3
-        5xK4FPRDl3bH/8gzvalQhd6r1vAK66KcDA==
-X-Google-Smtp-Source: APXvYqzHVphhQ0eWY746zq1oOHSga6tavL3b6S6g1nSYkf1JpkZRloIjSxw0uV+o9OZ/5HwxZug1mw==
-X-Received: by 2002:a62:cdc3:: with SMTP id o186mr41422938pfg.168.1565704368076;
-        Tue, 13 Aug 2019 06:52:48 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t6sm34247035pgu.23.2019.08.13.06.52.45
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 06:52:47 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Madhu Challa <challa@noironetworks.com>,
-        David Ahern <dsahern@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jianlin Shi <jishi@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net] ipv6/addrconf: allow adding multicast addr if IFA_F_MCAUTOJOIN is set
-Date:   Tue, 13 Aug 2019 21:52:32 +0800
-Message-Id: <20190813135232.27146-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
+        id S1729342AbfHMN6o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 09:58:44 -0400
+Received: from smtp.codeaurora.org ([198.145.29.96]:52166 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727407AbfHMN6o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 09:58:44 -0400
+Received: by smtp.codeaurora.org (Postfix, from userid 1000)
+        id 7880F608FF; Tue, 13 Aug 2019 13:58:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1565704723;
+        bh=M8oAe1f6maG+IxzSwYrxoIVVdKazq93Sv32mx1kHDTk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=UnYXjBsohipGcIhOiU7MbVsbLEx9berNqc16y6AT7dc/+7gM6zxDlknkaGartFwBs
+         wTmVznRdzrY7vbtfaxJW34Ni3lRNUiHaW/8eEfkCugzi5yqEM6ZWHdysjhRjB3oQgt
+         VkLtVzoHaMUKupIMsrs2eneH48+uRPOHZlasrHwI=
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        pdx-caf-mail.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo@smtp.codeaurora.org)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id AA5A560734;
+        Tue, 13 Aug 2019 13:58:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
+        s=default; t=1565704722;
+        bh=M8oAe1f6maG+IxzSwYrxoIVVdKazq93Sv32mx1kHDTk=;
+        h=From:To:Cc:Subject:References:Date:In-Reply-To:From;
+        b=IaI8Q6n2wPeQJAHwk4P9fPwbfo0nHJdPoiRlNZit9WBgBvAj3zU2/5X/WCuv732RX
+         vZFSpNsdsZs39QlwnnytW2C2fIDI61aQ+3GkJUV7EJzbTGFvac0y/PwRTQQFfQ5+Jl
+         a0EinvMjNaLJuO2Kne/S5kgkz5Rrrf8sqfsWTFiY=
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AA5A560734
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Andrey Konovalov <andreyknvl@google.com>
+Cc:     Ganapathi Bhat <gbhat@marvell.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        syzbot <syzbot+dc4127f950da51639216@syzkaller.appspotmail.com>,
+        "amitkarwar\@gmail.com" <amitkarwar@gmail.com>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "huxinming820\@gmail.com" <huxinming820@gmail.com>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-usb\@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "nishants\@marvell.com" <nishants@marvell.com>,
+        "syzkaller-bugs\@googlegroups.com" <syzkaller-bugs@googlegroups.com>
+Subject: Re: [EXT] INFO: trying to register non-static key in del_timer_sync (2)
+References: <000000000000927a7b0586561537@google.com>
+        <MN2PR18MB263783F52CAD4A335FD8BB34A01A0@MN2PR18MB2637.namprd18.prod.outlook.com>
+        <CACT4Y+aQzBkAq86Hx4jNFnAUzjXnq8cS2NZKfeCaFrZa__g-cg@mail.gmail.com>
+        <MN2PR18MB26372D98386D79736A7947EEA0140@MN2PR18MB2637.namprd18.prod.outlook.com>
+        <MN2PR18MB263710E8F1F8FFA06B2EDB3CA0EC0@MN2PR18MB2637.namprd18.prod.outlook.com>
+        <CAAeHK+z8MBNikw_x50Crf8ZhOhcF=uvPHakvBx44K77xHRUNfg@mail.gmail.com>
+Date:   Tue, 13 Aug 2019 16:58:36 +0300
+In-Reply-To: <CAAeHK+z8MBNikw_x50Crf8ZhOhcF=uvPHakvBx44K77xHRUNfg@mail.gmail.com>
+        (Andrey Konovalov's message of "Tue, 13 Aug 2019 15:36:33 +0200")
+Message-ID: <87k1bhb20j.fsf@kamboji.qca.qualcomm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ip address autojoin is not working for IPv6 as ipv6_add_addr()
-will return -EADDRNOTAVAIL when adding a multicast address.
+Andrey Konovalov <andreyknvl@google.com> writes:
 
-Reported-by: Jianlin Shi <jishi@redhat.com>
-Fixes: 93a714d6b53d ("multicast: Extend ip address command to enable multicast group join/leave on")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/ipv6/addrconf.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+> On Wed, Jun 12, 2019 at 6:03 PM Ganapathi Bhat <gbhat@marvell.com> wrote:
+>>
+>> Hi Dmitry,
+>>
+>> We have a patch to fix this: https://patchwork.kernel.org/patch/10990275/
+>
+> Hi Ganapathi,
+>
+> Has this patch been accepted anywhere? This bug is still open on syzbot.
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index dc73888c7859..ced995f3fec4 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -1045,7 +1045,8 @@ ipv6_add_addr(struct inet6_dev *idev, struct ifa6_config *cfg,
- 	int err = 0;
- 
- 	if (addr_type == IPV6_ADDR_ANY ||
--	    addr_type & IPV6_ADDR_MULTICAST ||
-+	    (addr_type & IPV6_ADDR_MULTICAST &&
-+	     !(cfg->ifa_flags & IFA_F_MCAUTOJOIN)) ||
- 	    (!(idev->dev->flags & IFF_LOOPBACK) &&
- 	     !netif_is_l3_master(idev->dev) &&
- 	     addr_type & IPV6_ADDR_LOOPBACK))
+The patch is in "Changes Requested" state which means that the author is
+supposed to send a new version based on the review comments.
+
 -- 
-2.19.2
-
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
