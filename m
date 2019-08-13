@@ -2,106 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A565A8BFCD
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 19:42:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD66C8BFD4
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 19:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727942AbfHMRmY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 13:42:24 -0400
-Received: from smtp8.emailarray.com ([65.39.216.67]:29416 "EHLO
-        smtp8.emailarray.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727940AbfHMRmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 13:42:24 -0400
-Received: (qmail 31791 invoked by uid 89); 13 Aug 2019 17:42:23 -0000
-Received: from unknown (HELO ?172.20.41.143?) (amxlbW9uQGZsdWdzdmFtcC5jb21AMTk5LjIwMS42NC4xMzc=) (POLARISLOCAL)  
-  by smtp8.emailarray.com with (AES256-GCM-SHA384 encrypted) SMTP; 13 Aug 2019 17:42:23 -0000
-From:   "Jonathan Lemon" <jlemon@flugsvamp.com>
-To:     "Ivan Khoronzhuk" <ivan.khoronzhuk@linaro.org>
-Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/3] xdp: xdp_umem: replace kmap on vmap for umem
- map
-Date:   Tue, 13 Aug 2019 10:42:18 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <9F98648A-8654-4767-97B5-CF4BC939393C@flugsvamp.com>
-In-Reply-To: <20190813102318.5521-3-ivan.khoronzhuk@linaro.org>
-References: <20190813102318.5521-1-ivan.khoronzhuk@linaro.org>
- <20190813102318.5521-3-ivan.khoronzhuk@linaro.org>
+        id S1727491AbfHMRpP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 13:45:15 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21350 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726116AbfHMRpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 13:45:14 -0400
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7DHibZE004179
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 10:45:13 -0700
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2uc13v87s8-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 10:45:12 -0700
+Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 13 Aug 2019 10:45:10 -0700
+Received: by devvm1828.vll1.facebook.com (Postfix, from userid 172786)
+        id B183A1C5717D; Tue, 13 Aug 2019 10:45:09 -0700 (PDT)
+Smtp-Origin-Hostprefix: devvm
+From:   Jonathan Lemon <jonathan.lemon@gmail.com>
+Smtp-Origin-Hostname: devvm1828.vll1.facebook.com
+To:     <netdev@vger.kernel.org>, <davem@davemloft.net>
+CC:     <brouer@redhat.com>, <ilias.apalodimas@linaro.org>,
+        <saeedm@mellanox.com>, <ttoukan.linux@gmail.com>,
+        <kernel-team@fb.com>
+Smtp-Origin-Cluster: vll1c12
+Subject: [PATCH net-next] page_pool: fix logic in __page_pool_get_cached
+Date:   Tue, 13 Aug 2019 10:45:09 -0700
+Message-ID: <20190813174509.494723-1-jonathan.lemon@gmail.com>
+X-Mailer: git-send-email 2.17.1
+X-FB-Internal: Safe
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-13_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908130166
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+__page_pool_get_cached() will return NULL when the ring is
+empty, even if there are pages present in the lookaside cache.
 
+It is also possible to refill the cache, and then return a
+NULL page.
 
-On 13 Aug 2019, at 3:23, Ivan Khoronzhuk wrote:
+Restructure the logic so eliminate both cases.
 
-> For 64-bit there is no reason to use vmap/vunmap, so use page_address
-> as it was initially. For 32 bits, in some apps, like in samples
-> xdpsock_user.c when number of pgs in use is quite big, the kmap
-> memory can be not enough, despite on this, kmap looks like is
-> deprecated in such cases as it can block and should be used rather
-> for dynamic mm.
->
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Signed-off-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+---
+ net/core/page_pool.c | 39 ++++++++++++++++-----------------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
-Seems a bit overkill - if not high memory, kmap() falls back
-to just page_address(), unlike vmap().
+diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+index 68510eb869ea..de09a74a39a4 100644
+--- a/net/core/page_pool.c
++++ b/net/core/page_pool.c
+@@ -82,12 +82,9 @@ EXPORT_SYMBOL(page_pool_create);
+ static struct page *__page_pool_get_cached(struct page_pool *pool)
+ {
+ 	struct ptr_ring *r = &pool->ring;
++	bool refill = false;
+ 	struct page *page;
+ 
+-	/* Quicker fallback, avoid locks when ring is empty */
+-	if (__ptr_ring_empty(r))
+-		return NULL;
+-
+ 	/* Test for safe-context, caller should provide this guarantee */
+ 	if (likely(in_serving_softirq())) {
+ 		if (likely(pool->alloc.count)) {
+@@ -95,27 +92,23 @@ static struct page *__page_pool_get_cached(struct page_pool *pool)
+ 			page = pool->alloc.cache[--pool->alloc.count];
+ 			return page;
+ 		}
+-		/* Slower-path: Alloc array empty, time to refill
+-		 *
+-		 * Open-coded bulk ptr_ring consumer.
+-		 *
+-		 * Discussion: the ring consumer lock is not really
+-		 * needed due to the softirq/NAPI protection, but
+-		 * later need the ability to reclaim pages on the
+-		 * ring. Thus, keeping the locks.
+-		 */
+-		spin_lock(&r->consumer_lock);
+-		while ((page = __ptr_ring_consume(r))) {
+-			if (pool->alloc.count == PP_ALLOC_CACHE_REFILL)
+-				break;
+-			pool->alloc.cache[pool->alloc.count++] = page;
+-		}
+-		spin_unlock(&r->consumer_lock);
+-		return page;
++		refill = true;
+ 	}
+ 
+-	/* Slow-path: Get page from locked ring queue */
+-	page = ptr_ring_consume(&pool->ring);
++	/* Quicker fallback, avoid locks when ring is empty */
++	if (__ptr_ring_empty(r))
++		return NULL;
++
++	/* Slow-path: Get page from locked ring queue,
++	 * refill alloc array if requested.
++	 */
++	spin_lock(&r->consumer_lock);
++	page = __ptr_ring_consume(r);
++	if (refill)
++		pool->alloc.count = __ptr_ring_consume_batched(r,
++							pool->alloc.cache,
++							PP_ALLOC_CACHE_REFILL);
++	spin_unlock(&r->consumer_lock);
+ 	return page;
+ }
+ 
 -- 
-Jonathan
+2.17.1
 
-> ---
->  net/xdp/xdp_umem.c | 16 ++++++++++++----
->  1 file changed, 12 insertions(+), 4 deletions(-)
->
-> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-> index a0607969f8c0..907c9019fe21 100644
-> --- a/net/xdp/xdp_umem.c
-> +++ b/net/xdp/xdp_umem.c
-> @@ -14,7 +14,7 @@
->  #include <linux/netdevice.h>
->  #include <linux/rtnetlink.h>
->  #include <linux/idr.h>
-> -#include <linux/highmem.h>
-> +#include <linux/vmalloc.h>
->
->  #include "xdp_umem.h"
->  #include "xsk_queue.h"
-> @@ -167,10 +167,12 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
->
->  static void xdp_umem_unmap_pages(struct xdp_umem *umem)
->  {
-> +#if BITS_PER_LONG == 32
->  	unsigned int i;
->
->  	for (i = 0; i < umem->npgs; i++)
-> -		kunmap(umem->pgs[i]);
-> +		vunmap(umem->pages[i].addr);
-> +#endif
->  }
->
->  static void xdp_umem_unpin_pages(struct xdp_umem *umem)
-> @@ -378,8 +380,14 @@ static int xdp_umem_reg(struct xdp_umem *umem, 
-> struct xdp_umem_reg *mr)
->  		goto out_account;
->  	}
->
-> -	for (i = 0; i < umem->npgs; i++)
-> -		umem->pages[i].addr = kmap(umem->pgs[i]);
-> +	for (i = 0; i < umem->npgs; i++) {
-> +#if BITS_PER_LONG == 32
-> +		umem->pages[i].addr = vmap(&umem->pgs[i], 1, VM_MAP,
-> +					   PAGE_KERNEL);
-> +#else
-> +		umem->pages[i].addr = page_address(umem->pgs[i]);
-> +#endif
-> +	}
->
->  	return 0;
->
-> -- 
-> 2.17.1
