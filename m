@@ -2,165 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 50F378C35F
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 23:12:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 409F48C369
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 23:15:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726710AbfHMVM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 17:12:57 -0400
-Received: from www62.your-server.de ([213.133.104.62]:57198 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725923AbfHMVM4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 17:12:56 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hxe66-0004sM-VL; Tue, 13 Aug 2019 23:12:51 +0200
-Received: from [178.193.45.231] (helo=pc-63.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hxe66-0004wY-Q2; Tue, 13 Aug 2019 23:12:50 +0200
-Subject: Re: [PATCH bpf-next v2 2/4] bpf: support cloning sk storage on
- accept()
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
-        Martin KaFai Lau <kafai@fb.com>, Yonghong Song <yhs@fb.com>
-References: <20190809161038.186678-1-sdf@google.com>
- <20190809161038.186678-3-sdf@google.com>
- <db5ec323-1126-d461-bc65-27ccc1414589@iogearbox.net>
- <20190812175249.GF2820@mini-arch>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <2d24378a-73f4-bfa0-dc99-4a0ed761c797@iogearbox.net>
-Date:   Tue, 13 Aug 2019 23:12:50 +0200
+        id S1726601AbfHMVPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 17:15:35 -0400
+Received: from mga04.intel.com ([192.55.52.120]:64080 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726188AbfHMVPf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 17:15:35 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Aug 2019 14:15:34 -0700
+X-IronPort-AV: E=Sophos;i="5.64,382,1559545200"; 
+   d="scan'208";a="167178710"
+Received: from tsduncan-ubuntu.jf.intel.com (HELO [10.7.169.130]) ([10.7.169.130])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/AES256-SHA; 13 Aug 2019 14:15:34 -0700
+Subject: Re: [PATCH net-next] net/ncsi: allow to customize BMC MAC Address
+ offset
+To:     Ben Wei <benwei@fb.com>, Tao Ren <taoren@fb.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S.Miller" <davem@davemloft.net>,
+        William Kennington <wak@google.com>
+References: <20190807002118.164360-1-taoren@fb.com>
+ <20190807112518.644a21a2@cakuba.netronome.com>
+ <20190807184143.GE26047@lunn.ch>
+ <806a76a8-229a-7f24-33c7-2cf2094f3436@fb.com>
+ <20190808133209.GB32706@lunn.ch>
+ <77762b10-b8e7-b8a4-3fc0-e901707a1d54@fb.com>
+ <20190808211629.GQ27917@lunn.ch>
+ <ac22bbe0-36ca-b4b9-7ea7-7b1741c2070d@fb.com>
+ <20190808230312.GS27917@lunn.ch>
+ <f1519844-4e21-a9a4-1a69-60c37bd07f75@fb.com>
+ <10079A1AC4244A41BC7939A794B72C238FCE0E03@fmsmsx104.amr.corp.intel.com>
+ <bc9da695-3fd3-6643-8e06-562cc08fbc62@linux.intel.com>
+ <dc0382c9-7995-edf5-ee1c-508b0f759c3d@linux.intel.com>
+ <faa1b3c9-9ba3-0fff-e1d4-f6dddb60c52c@fb.com>
+ <CH2PR15MB3686B3A20A231FC111C42F40A3D20@CH2PR15MB3686.namprd15.prod.outlook.com>
+From:   Terry Duncan <terry.s.duncan@linux.intel.com>
+Message-ID: <39309d92-742b-ca5f-dea5-b93ad003119d@linux.intel.com>
+Date:   Tue, 13 Aug 2019 14:15:34 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190812175249.GF2820@mini-arch>
+In-Reply-To: <CH2PR15MB3686B3A20A231FC111C42F40A3D20@CH2PR15MB3686.namprd15.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25540/Tue Aug 13 10:16:47 2019)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/12/19 7:52 PM, Stanislav Fomichev wrote:
-> On 08/12, Daniel Borkmann wrote:
->> On 8/9/19 6:10 PM, Stanislav Fomichev wrote:
->>> Add new helper bpf_sk_storage_clone which optionally clones sk storage
->>> and call it from sk_clone_lock.
+On 8/13/19 12:52 PM, Ben Wei wrote:
+>> On 8/13/19 9:31 AM, Terry Duncan wrote:
+>>> Tao, in your new patch will it be possible to disable the setting of the BMC MAC?  I would like to be able to send NCSI_OEM_GET_MAC perhaps with netlink (TBD) to get the system address without it affecting the BMC address.
 >>>
->>> Cc: Martin KaFai Lau <kafai@fb.com>
->>> Cc: Yonghong Song <yhs@fb.com>
->>> Signed-off-by: Stanislav Fomichev <sdf@google.com>
->> [...]
->>> +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk)
->>> +{
->>> +	struct bpf_sk_storage *new_sk_storage = NULL;
->>> +	struct bpf_sk_storage *sk_storage;
->>> +	struct bpf_sk_storage_elem *selem;
->>> +	int ret;
->>> +
->>> +	RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
->>> +
->>> +	rcu_read_lock();
->>> +	sk_storage = rcu_dereference(sk->sk_bpf_storage);
->>> +
->>> +	if (!sk_storage || hlist_empty(&sk_storage->list))
->>> +		goto out;
->>> +
->>> +	hlist_for_each_entry_rcu(selem, &sk_storage->list, snode) {
->>> +		struct bpf_sk_storage_elem *copy_selem;
->>> +		struct bpf_sk_storage_map *smap;
->>> +		struct bpf_map *map;
->>> +		int refold;
->>> +
->>> +		smap = rcu_dereference(SDATA(selem)->smap);
->>> +		if (!(smap->map.map_flags & BPF_F_CLONE))
->>> +			continue;
->>> +
->>> +		map = bpf_map_inc_not_zero(&smap->map, false);
->>> +		if (IS_ERR(map))
->>> +			continue;
->>> +
->>> +		copy_selem = bpf_sk_storage_clone_elem(newsk, smap, selem);
->>> +		if (!copy_selem) {
->>> +			ret = -ENOMEM;
->>> +			bpf_map_put(map);
->>> +			goto err;
->>> +		}
->>> +
->>> +		if (new_sk_storage) {
->>> +			selem_link_map(smap, copy_selem);
->>> +			__selem_link_sk(new_sk_storage, copy_selem);
->>> +		} else {
->>> +			ret = sk_storage_alloc(newsk, smap, copy_selem);
->>> +			if (ret) {
->>> +				kfree(copy_selem);
->>> +				atomic_sub(smap->elem_size,
->>> +					   &newsk->sk_omem_alloc);
->>> +				bpf_map_put(map);
->>> +				goto err;
->>> +			}
->>> +
->>> +			new_sk_storage = rcu_dereference(copy_selem->sk_storage);
->>> +		}
->>> +		bpf_map_put(map);
+>>> I was about to send patches to add support for the Intel adapters when I saw this thread.
+>>> Thanks,
+>>> Terry
 >>
->> The map get/put combination /under/ RCU read lock seems a bit odd to me, could
->> you exactly describe the race that this would be preventing?
-> There is a race between sk storage release and sk storage clone.
-> bpf_sk_storage_map_free uses synchronize_rcu to wait for all existing
-> users to finish and the new ones are prevented via map's refcnt being
-> zero; we need to do something like that for the clone.
-> Martin suggested to use bpf_map_inc_not_zero/bpf_map_put.
-> If I read everythin correctly, I think without map_inc/map_put we
-> get the following race:
+> Hi Terry,
+> Do you plan to monitor and configure NIC through use space programs via netlink?  I'm curious if you have additional use cases.
+> I had planned to add some daemon in user space to monitor NIC through NC-SI, primarily to log AENs, check link status and retrieve NIC counters.
+> We can collaborate on these if they align with your needs as well.
 > 
-> CPU0                                   CPU1
+> Also about Intel NIC, do you not plan to derive system address from BMC MAC? Is the BMC MAC independent of system address?
 > 
-> bpf_map_put
->    bpf_sk_storage_map_free(smap)
->      synchronize_rcu
+> Thanks,
+> -Ben
 > 
->      // no more users via bpf or
->      // syscall, but clone
->      // can still happen
-> 
->      for each (bucket)
->        selem_unlink
->          selem_unlink_map(smap)
-> 
->          // adding anything at
->          // this point to the
->          // bucket will leak
-> 
->                                         rcu_read_lock
->                                         tcp_v4_rcv
->                                           tcp_v4_do_rcv
->                                             // sk is lockless TCP_LISTEN
->                                             tcp_v4_cookie_check
->                                               tcp_v4_syn_recv_sock
->                                                 bpf_sk_storage_clone
->                                                   rcu_dereference(sk->sk_bpf_storage)
->                                                   selem_link_map(smap, copy)
->                                                   // adding new element to the
->                                                   // map -> leak
->                                         rcu_read_unlock
-> 
->        selem_unlink_sk
->         sk->sk_bpf_storage = NULL
-> 
->      synchronize_rcu
-> 
+Hi Ben,
+Intel has in the past programmed BMC MACs with an offset from the system 
+MAC address of the first shared interface. We have found this approach 
+causes problems and adds complexity when system interfaces / OCP cards 
+are added or removed or disabled in BIOS. Our approach in OpenBMC is to 
+keep this simple - provide means for the BMC MAC addresses to be set in 
+manufacturing and persist them.
 
-Makes sense, thanks for clarifying. Perhaps a small comment on top of
-the bpf_map_inc_not_zero() would be great as well, so it's immediately
-clear also from this location when reading the code why this is done.
-
+We do also have some of the same use cases you mention.
 Thanks,
-Daniel
+Terry
