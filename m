@@ -2,87 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D961C8C24E
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 22:46:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BC438C259
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 22:54:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726496AbfHMUqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 16:46:40 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:34350 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725923AbfHMUqk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 16:46:40 -0400
-Received: by mail-pf1-f196.google.com with SMTP id b24so1761244pfp.1
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 13:46:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=lS7QbCBfWDAKJJ9AaXuhhnNJr4mtIGuJ160cegSICyM=;
-        b=XbX84biYjSyDgS6LxVzDQYkOcojz78WOlfZYnpj3lki92gGfubayTt/V04/ES1ESh4
-         5uieAy8/ybLD3n3wn8crXsm7826/o7NSknPmLlhmX9p+0FMDH8FnH3gjqF/T9l3XIcLo
-         XMWSGcF8jlWJ05xs7S21a08YMT1zxM1DYaoSI=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=lS7QbCBfWDAKJJ9AaXuhhnNJr4mtIGuJ160cegSICyM=;
-        b=QvPuIOlYrCMisdaJjhgMBrKxIKH71NlZUVyLkBIwkBjhIdtpxWe0D8AcY7xSJq00qB
-         9RoVIckhA0MWtfcXZi8z48BoO4oDnEEbMI1uPAZplx26Awknzm6GU09a1baKDTjiTYNo
-         8dfS5fN/30ou6qpSfl9ZqWwcL+KLx8JhDDh0/U7SiYFrDRzCU8F6UlFd3nYShiTkGJbk
-         dRMva94ddQgLN6sMXc64qjdp151cLp6/KX+eQnVo/IpY96GdL7Zie5JrQs194jUu7rWl
-         ZLsIGEsYsWeof8+/z0pR5CUIAb7XwdLZRj75T2IRFFeESkx/XICK1TJ/EK2pVUBoL6O3
-         zhrA==
-X-Gm-Message-State: APjAAAVKmLOIy5z+5e1TB3yeBV1aat4oJJDOFIyVVMFWxCcSXAqibD1x
-        iCe1UbpK5aL6I+EuGqrDqx4iCw==
-X-Google-Smtp-Source: APXvYqyZj8SFNh8W8z2W8pR3iGEVcZWS7eycNEWabRA94Sd257PTZI0RRr7/3l/UmxBxc/RfktxIOg==
-X-Received: by 2002:a62:38d7:: with SMTP id f206mr18947803pfa.102.1565729199815;
-        Tue, 13 Aug 2019 13:46:39 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
-        by smtp.gmail.com with ESMTPSA id e188sm70041869pfa.76.2019.08.13.13.46.38
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Aug 2019 13:46:38 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 13:46:34 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v6 4/4] net: phy: realtek: Add LED configuration support
- for RTL8211E
-Message-ID: <20190813204634.GR250418@google.com>
-References: <20190813191147.19936-1-mka@chromium.org>
- <20190813191147.19936-5-mka@chromium.org>
- <20190813201411.GL15047@lunn.ch>
+        id S1726188AbfHMUyi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 16:54:38 -0400
+Received: from mga02.intel.com ([134.134.136.20]:10802 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725903AbfHMUyi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 16:54:38 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Aug 2019 13:54:37 -0700
+X-IronPort-AV: E=Sophos;i="5.64,382,1559545200"; 
+   d="scan'208";a="167173049"
+Received: from tsduncan-ubuntu.jf.intel.com (HELO [10.7.169.130]) ([10.7.169.130])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/AES256-SHA; 13 Aug 2019 13:54:37 -0700
+Subject: Re: [PATCH net-next] net/ncsi: allow to customize BMC MAC Address
+ offset
+To:     Tao Ren <taoren@fb.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        Ben Wei <benwei@fb.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Samuel Mendoza-Jonas <sam@mendozajonas.com>,
+        "David S.Miller" <davem@davemloft.net>,
+        William Kennington <wak@google.com>
+References: <20190807002118.164360-1-taoren@fb.com>
+ <20190807112518.644a21a2@cakuba.netronome.com>
+ <20190807184143.GE26047@lunn.ch>
+ <806a76a8-229a-7f24-33c7-2cf2094f3436@fb.com>
+ <20190808133209.GB32706@lunn.ch>
+ <77762b10-b8e7-b8a4-3fc0-e901707a1d54@fb.com>
+ <20190808211629.GQ27917@lunn.ch>
+ <ac22bbe0-36ca-b4b9-7ea7-7b1741c2070d@fb.com>
+ <20190808230312.GS27917@lunn.ch>
+ <f1519844-4e21-a9a4-1a69-60c37bd07f75@fb.com>
+ <10079A1AC4244A41BC7939A794B72C238FCE0E03@fmsmsx104.amr.corp.intel.com>
+ <bc9da695-3fd3-6643-8e06-562cc08fbc62@linux.intel.com>
+ <dc0382c9-7995-edf5-ee1c-508b0f759c3d@linux.intel.com>
+ <faa1b3c9-9ba3-0fff-e1d4-f6dddb60c52c@fb.com>
+From:   Terry Duncan <terry.s.duncan@linux.intel.com>
+Message-ID: <33e3e783-fb93-e628-8baa-a8374540ea25@linux.intel.com>
+Date:   Tue, 13 Aug 2019 13:54:26 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190813201411.GL15047@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <faa1b3c9-9ba3-0fff-e1d4-f6dddb60c52c@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 10:14:11PM +0200, Andrew Lunn wrote:
-> > +static int rtl8211e_config_led(struct phy_device *phydev, int led,
-> > +			       struct phy_led_config *cfg)
-> > +{
-> > +	u16 lacr_bits = 0, lcr_bits = 0;
-> > +	int oldpage, ret;
-> > +
+
+On 8/13/19 11:28 AM, Tao Ren wrote:
+> On 8/13/19 9:31 AM, Terry Duncan wrote:
+>> Tao, in your new patch will it be possible to disable the setting of the BMC MAC?  I would like to be able to send NCSI_OEM_GET_MAC perhaps with netlink (TBD) to get the system address without it affecting the BMC address.
+>>
+>> I was about to send patches to add support for the Intel adapters when I saw this thread.
+>>
+>> Thanks,
+>>
+>> Terry
 > 
-> You should probably check that led is 0 or 1. 
+> Hi Terry,
+> 
+> Sounds like you are planning to configure BMC MAC address from user space via netlink? Ben Wei <benwei@fb.com> started a thread "Out-of-band NIC management" in openbmc community for NCSI management using netlink, and you may follow up with him for details.
+> 
+> I haven't decided what to do in my v2 patch: maybe using device tree, maybe moving the logic to uboot, and I'm also evaluating the netlink option. But it shouldn't impact your patch, because you can disable NCSI_OEM_GET_MAC option from your config file.
 
-Actually this PHY has up to 3 LEDs, but yes, good point to validate
-the parameter. I'll wait a day or two for if there is other feedback
-and send a new version with the check.
+Thanks Tao. I see now that disabling the NCSI_OEM_GET_MAC option will do 
+what I want.
 
-> Otherwise this looks good.
-
-Thanks for the reviews!
-
-Matthias
+Best,
+Terry
