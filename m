@@ -2,84 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E84E8B9D6
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 15:17:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EBD88B9FF
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 15:23:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728994AbfHMNRP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 09:17:15 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:56762 "EHLO vps0.lunn.ch"
+        id S1729054AbfHMNX0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 09:23:26 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:56790 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728796AbfHMNRP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 09:17:15 -0400
+        id S1728713AbfHMNX0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 09:23:26 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=lDlcKH+jpyMIdatKAOyBrbLs0vonOISA/RCsgldAZeo=; b=kokfadnCz4inebHrhjOWc3X1mw
-        75FZkVRIPPpya5H51KrVLEZSNkr2OAA1bWYBxgen/oHhROrMEZg5VZesVQreHFoCaZxFr8ahOWg5a
-        GCPrLUUE2cjokcuhlcN3XpnV+ZwG2LnbLX7XlELoHIev2CwhWUXMbDzPk9UlbqNG4fdE=;
+        bh=YCHZ3K8mmCIRGs587/Fkq0X6NLVBIcMaI9O+DVE1psw=; b=eF7GmDgMgA1p4uWVsKBK+77zei
+        /20hCu8XCVXTYsIyvLQB4DFzBsGSLw6smKcwkPPLoLGtvP7og8ewHSM9gALv5Vj8dueWVOceFKtpM
+        hxclsGJlT4iTIbCjon8EoDSkUDju6egUvcdVssu8Q5U5JzyeicnT5ThM9W5gRMd9aaWc=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1hxWfi-0001HZ-Ii; Tue, 13 Aug 2019 15:17:06 +0200
-Date:   Tue, 13 Aug 2019 15:17:06 +0200
+        id 1hxWll-0001Js-2X; Tue, 13 Aug 2019 15:23:21 +0200
+Date:   Tue, 13 Aug 2019 15:23:21 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Antoine Tenart <antoine.tenart@bootlin.com>
-Cc:     Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
-        Simon Edelhaus <Simon.Edelhaus@aquantia.com>,
-        Pavel Belous <Pavel.Belous@aquantia.com>
-Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
- infrastructure
-Message-ID: <20190813131706.GE15047@lunn.ch>
-References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
- <20190808140600.21477-7-antoine.tenart@bootlin.com>
- <e96fa4ae-1f2c-c1be-b2d8-060217d8e151@aquantia.com>
- <20190813085817.GA3200@kwain>
+To:     Harini Katakam <harinik@xilinx.com>
+Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        radhey.shyam.pandey@xilinx.com
+Subject: Re: [PATCH 2/2] net: gmii2rgmii: Switch priv field in mdio device
+ structure
+Message-ID: <20190813132321.GF15047@lunn.ch>
+References: <1564565779-29537-1-git-send-email-harini.katakam@xilinx.com>
+ <1564565779-29537-3-git-send-email-harini.katakam@xilinx.com>
+ <20190801040648.GJ2713@lunn.ch>
+ <CAFcVEC+DyVhLzbMdSDsadivbnZJxSEg-0kUF5_Q+mtSbBnmhSA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190813085817.GA3200@kwain>
+In-Reply-To: <CAFcVEC+DyVhLzbMdSDsadivbnZJxSEg-0kUF5_Q+mtSbBnmhSA@mail.gmail.com>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 10:58:17AM +0200, Antoine Tenart wrote:
-> I think this question is linked to the use of a MACsec virtual interface
-> when using h/w offloading. The starting point for me was that I wanted
-> to reuse the data structures and the API exposed to the userspace by the
-> s/w implementation of MACsec. I then had two choices: keeping the exact
-> same interface for the user (having a virtual MACsec interface), or
-> registering the MACsec genl ops onto the real net devices (and making
-> the s/w implementation a virtual net dev and a provider of the MACsec
-> "offloading" ops).
+On Tue, Aug 13, 2019 at 04:46:40PM +0530, Harini Katakam wrote:
+> Hi Andrew,
 > 
-> The advantages of the first option were that nearly all the logic of the
-> s/w implementation could be kept and especially that it would be
-> transparent for the user to use both implementations of MACsec.
+> On Thu, Aug 1, 2019 at 9:36 AM Andrew Lunn <andrew@lunn.ch> wrote:
+> >
+> > On Wed, Jul 31, 2019 at 03:06:19PM +0530, Harini Katakam wrote:
+> > > Use the priv field in mdio device structure instead of the one in
+> > > phy device structure. The phy device priv field may be used by the
+> > > external phy driver and should not be overwritten.
+> >
+> > Hi Harini
+> >
+> > I _think_ you could use dev_set_drvdata(&mdiodev->dev) in xgmiitorgmii_probe() and
+> > dev_get_drvdata(&phydev->mdiomdio.dev) in _read_status()
+> 
+> Thanks for the review. This works if I do:
+> dev_set_drvdata(&priv->phy_dev->mdio.dev->dev) in probe
+> and then
+> dev_get_drvdata(&phydev->mdio.dev) in _read_status()
+> 
+> i.e mdiodev in gmii2rgmii probe and priv->phy_dev->mdio are not the same.
+> 
+> If this is acceptable, I can send a v2.
 
-Hi Antoine
+Hi Harini
 
-We have always talked about offloading operations to the hardware,
-accelerating what the linux stack can do by making use of hardware
-accelerators. The basic user API should not change because of
-acceleration. Those are the general guidelines.
+I think this is better, making use of the central driver
+infrastructure, rather than inventing something new.
 
-It would however be interesting to get comments from those who did the
-software implementation and what they think of this architecture. I've
-no personal experience with MACSec, so it is hard for me to say if the
-current architecture makes sense when using accelerators.
+The kernel does have a few helper, spi_get_drvdata, pci_get_drvdata,
+hci_get_drvdata. So maybe had add phydev_get_drvdata(struct phy_device
+*phydev)?
 
-	Andrew
+	Thanks
+		Andrew
