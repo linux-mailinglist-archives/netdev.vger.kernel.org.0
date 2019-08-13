@@ -2,124 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3391B8B5ED
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 12:52:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AF588B5EF
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 12:52:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728272AbfHMKwF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 06:52:05 -0400
-Received: from mail-lf1-f41.google.com ([209.85.167.41]:32830 "EHLO
-        mail-lf1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726298AbfHMKwF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 06:52:05 -0400
-Received: by mail-lf1-f41.google.com with SMTP id x3so76538631lfc.0
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 03:52:03 -0700 (PDT)
+        id S1727948AbfHMKww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 06:52:52 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:37628 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbfHMKwv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 06:52:51 -0400
+Received: by mail-wr1-f65.google.com with SMTP id z11so5375251wrt.4
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 03:52:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sentorsecurity.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=HNvDgvMcDmrX2tbK/nIEsSfJzC2i72rPUeGszghmYCU=;
-        b=DjV8xxQBILq/S+DnM2IfloYpApSkYeTX6O4aEAOx8mz4dVYe8g4fhpGbjxXDjRkM28
-         9I8FwY6vm2b9umSn4om+ed21qURGhQ0/eITHf6idf//L60voRmaQNkD/PFLauAuMQd6S
-         xYstMzcM2yE0hFNqbfKGeJCnNn8ROxYwt8HEBps4jRzSG0wMmc4cVJQYldS9BgYiEufR
-         1rCeI6B0OJiHx+Q2eU9eveKIMf7L3w0WA4SzNeaYi0lRW8f713xbMEW9wrmn9SjypkJC
-         Pv0JsHuGlFrSGdliBZ8gjpiiT3e/GnPyrxJEcIEhEjiwTipjZ3qPVeSPKqSFQGErvh7S
-         GMQQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=PcvPryrYHXGhavo5LsKp80la0PxOXMaHQ3N9MrrJEzg=;
+        b=m37qZsz7v8FtyaWMuN7Lnx9JP1Gpi2+/fWLNB+tlq6D4Gppt8NlU2pa9rzdaAPhlqw
+         fjfFFXAoWQ5SXPosDc4uL55JumHPzBaYN8Mt1SiAVICpBMqRB/arbqAbSdSNhzAJsXLH
+         2YIDVbNSFpEJQt6+0nFRnOWs5Dudahclcxo+QCpwlsvER2nqFgD3eRR2gQ6saPkGYpUr
+         ZOq9V3807fIHO4hdvi+DjlEkNW8fX20nM57WLufs78+0xLw/SzFgev3M594ygFx0BX7c
+         Qf4YpO9+zboKaBBhIdfLbuSzIte/ZQoyw/cPvodkdPSbJi0boppvgei8FAHs+AI2NU7r
+         liXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=HNvDgvMcDmrX2tbK/nIEsSfJzC2i72rPUeGszghmYCU=;
-        b=W/5vZ9F7pOpY78xonPzPUxM4VPMIgwwPHkSwNKq1+3prE2pWBop3mSBu0yJ2iep3oT
-         hC2hhBvyIwS/JdNochbuvNGpeVa8pGQPIRmImj+RtIx6Zg9Z8LlhrcH55dku+sVXb5ZW
-         Rp/oXFGJGQyaH1Jf+Ko8G+AiTUjzGpfA4PAEtt7ZFF6+fTXLgUfSMLjJpLZE1F+LjJHl
-         AsNFkPdD/xrewPJJuhgKWt6lN5mxcT2Xtu8NVJ9UUX7Dpv+8as7GxPMILY1PUPBPHbUp
-         xkGuQk5VY8AL8MxVUVQRZpd3lIqdByDNNoY0ASMXaNtD0yxk/2dnToanbBDFPc7cl99m
-         WN+Q==
-X-Gm-Message-State: APjAAAX4fYLgD8trqJ+2X50/Gv/NwiRbbRc06HdEighIz765s9cS0UUv
-        od6vy216+J+Xv1UQTkSiD8cA+3I5+gPKSK0AgVVkSyXJjkM=
-X-Google-Smtp-Source: APXvYqweWMSvChtmUt1drTiW1h/sUSoEvY4082m2siIUyYi4ZtX5pcN3qvw2s2hURFpz8zEvs1WzbegCJ39e0XAMMz4=
-X-Received: by 2002:ac2:442d:: with SMTP id w13mr1359497lfl.184.1565693522815;
- Tue, 13 Aug 2019 03:52:02 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=PcvPryrYHXGhavo5LsKp80la0PxOXMaHQ3N9MrrJEzg=;
+        b=JahdEEHcuXALHskIAbBrcR87UbJ88/6Nd4TKsUbgOLA6yYmhiPeM8scjfTNA/gbhYX
+         yD93Xxwz6Y8mYaodETHPSKNVMbjmOo1h9gj5F0sDVO6JeZTLRORTrCHe3A7a3kpPu/2u
+         fp/0TDLjW/w8s3sO+ZpJVldiOgY9eNBBQFIXXm1Q5O7Ayj1Hd7m8XLyCxKaw1pGT8ggT
+         /k9LUv3knygfDu/TVcPYgesACKKhMvzzhN9VDdd3jbBktJe8MQZPDt2c4deRFYYn9OSp
+         WhUWCxOTL3TdWcItiuECzeqw20C3sz9V5WayxbIVFnfwKON6epEFDuNaBsyZVbDtEsPX
+         s7AQ==
+X-Gm-Message-State: APjAAAVXgH3A46MmS7Mv4uiTZKxXGtWe0PaPa8vbWRRxORnEfK3dl9Vp
+        Vx1D5bjnUzfCsPrMjS9g9trHxQ==
+X-Google-Smtp-Source: APXvYqxCskPQxt/C2ufusLnQ0Qt0oA1E1zjxBFHiy8eMT29LmX9gymj3iXLNc8MH5X4Z3U93n0Tw5g==
+X-Received: by 2002:a5d:62c1:: with SMTP id o1mr45859475wrv.293.1565693569861;
+        Tue, 13 Aug 2019 03:52:49 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id w5sm1261298wmm.43.2019.08.13.03.52.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Aug 2019 03:52:49 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 12:52:49 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH iproute2-next v2 4/4] devlink: Add man page for
+ devlink-trap
+Message-ID: <20190813105248.GQ2428@nanopsycho>
+References: <20190813083143.13509-1-idosch@idosch.org>
+ <20190813083143.13509-5-idosch@idosch.org>
+ <20190813102037.GP2428@nanopsycho>
+ <20190813103904.GA16305@splinter>
 MIME-Version: 1.0
-References: <CAAT+qEa6Yw-tf3L_R-phzSvLiGOdW9uLhFGNTz+i9eWhBT_+DA@mail.gmail.com>
-In-Reply-To: <CAAT+qEa6Yw-tf3L_R-phzSvLiGOdW9uLhFGNTz+i9eWhBT_+DA@mail.gmail.com>
-From:   Martin Olsson <martin.olsson+netdev@sentorsecurity.com>
-Date:   Tue, 13 Aug 2019 12:51:51 +0200
-Message-ID: <CAAT+qEbOx8Jh3aFS-e7U6FyHo03sdcY6UoeGzwYQbO6WRjc3PQ@mail.gmail.com>
-Subject: tc - mirred ingress not supported at the moment
-To:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190813103904.GA16305@splinter>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Two questions regarding tc-mirred:
+Tue, Aug 13, 2019 at 12:39:04PM CEST, idosch@idosch.org wrote:
+>On Tue, Aug 13, 2019 at 12:20:37PM +0200, Jiri Pirko wrote:
+>> Tue, Aug 13, 2019 at 10:31:43AM CEST, idosch@idosch.org wrote:
+>> >From: Ido Schimmel <idosch@mellanox.com>
+>> >
+>> >Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+>> >---
+>> > man/man8/devlink-monitor.8 |   3 +-
+>> > man/man8/devlink-trap.8    | 138 +++++++++++++++++++++++++++++++++++++
+>> > man/man8/devlink.8         |  11 ++-
+>> > 3 files changed, 150 insertions(+), 2 deletions(-)
+>> > create mode 100644 man/man8/devlink-trap.8
+>> >
+>> >diff --git a/man/man8/devlink-monitor.8 b/man/man8/devlink-monitor.8
+>> >index 13fe641dc8f5..fffab3a4ce88 100644
+>> >--- a/man/man8/devlink-monitor.8
+>> >+++ b/man/man8/devlink-monitor.8
+>> >@@ -21,7 +21,7 @@ command is the first in the command line and then the object list.
+>> > .I OBJECT-LIST
+>> > is the list of object types that we want to monitor.
+>> > It may contain
+>> >-.BR dev ", " port ".
+>> >+.BR dev ", " port ", " trap ", " trap-group .
+>> 
+>> Looks like "trap-group" is a leftover here, isn't it?
+>
+>You get events when traps and groups are created / destroyed. See below output
+>when creating a new netdevsim device:
 
-1)
-The manual ( https://www.linux.org/docs/man8/tc-mirred.html ) states:
+Ah! Makes sense. Thanks!
 
-  OPTIONS
-    ingress
-    egress
-      Specify the direction in which the packet shall appear on the
-destination interface.
-      Currently only egress is implemented.
-
-I verify to see if this is still true, and unfortunately it is:
-
-# tc filter add dev eno2 parent ffff: prio 999  protocol all matchall
-action mirred ingress redirect dev mon0
-mirred ingress not supported at the moment
-bad action parsing
-parse_action: bad value (5:mirred)!
-Illegal "action"
-
-Q1: Why was 'ingress' not implemented at the same time as 'egress'?
-
-
-
-2)
-Ok, so I have to use 'egress':
-# tc filter add dev eno2 parent ffff: prio 999  protocol all matchall
-action mirred egress redirect dev mon0
-
-Since the mirred action forces me to use 'egress' as the direction on
-the dest interface, all kinds of network statistics tools show
-incorrect counters. :-(
-eno2 is a pure sniffer interface (it is connected to the SPAN dest
-port of a switch).
-All packets (matchall) on eno2 are mirrored to mon0.
-
-# ip -s link show dev eno2
-    ...
-    ...
-    RX: bytes  packets  errors  dropped overrun mcast
-    13660757   16329    0       0       0       0
-    TX: bytes  packets  errors  dropped carrier collsns
-    0          0        0       0       0       0
-# ip -s link show dev mon0
-    ...
-    ...
-    RX: bytes  packets  errors  dropped overrun mcast
-    0          0        0       0       0       0
-    TX: bytes  packets  errors  dropped carrier collsns
-    13660757   16329    0       0       0       0
-
-eno2 and mon0 should be identical, but they are inverted.
-When I graph all interfaces of the machine, the traffic graph for
-'mon0' is incorrect since it shows 100% egress when the traffic really
-is ingress.
-
-As a human I can re-enterpret the mon0 graph when looking at it, but
-it is harder for automated tools to do the right thing without
-explicit node configuration/exceptions in the tool. This is annoying
-when you have tools that graph hundreds of different types of nodes
-with different kinds of interface types, and want all graphs to be
-visually simillar for easy comparison.
-Tool output that mon0 has sent 16329 packets is also plain wrong. It
-has really *received* these packets.
-
-Q2: So... Can the 'ingress' option please be implemented? (I'm no
-programmer, so unfortunetly I can't do it myself).
-
-/Martin
+>
+>$ devlink mon trap-group
+>[trap-group,new] netdevsim/netdevsim20: name l2_drops generic true
+>[trap-group,new] netdevsim/netdevsim20: name l3_drops generic true
+>[trap-group,new] netdevsim/netdevsim20: name buffer_drops generic true
+>
+>$ devlink mon trap
+>[trap,new] netdevsim/netdevsim10: name source_mac_is_multicast type drop generic true action drop group l2_drops
+>[trap,new] netdevsim/netdevsim10: name vlan_tag_mismatch type drop generic true action drop group l2_drops
+>[trap,new] netdevsim/netdevsim10: name ingress_vlan_filter type drop generic true action drop group l2_drops
+>[trap,new] netdevsim/netdevsim10: name ingress_spanning_tree_filter type drop generic true action drop group l2_drops
+>[trap,new] netdevsim/netdevsim10: name port_list_is_empty type drop generic true action drop group l2_drops
+>[trap,new] netdevsim/netdevsim10: name port_loopback_filter type drop generic true action drop group l2_drops
+>[trap,new] netdevsim/netdevsim10: name fid_miss type exception generic false action trap group l2_drops
+>[trap,new] netdevsim/netdevsim10: name blackhole_route type drop generic true action drop group l3_drops
+>[trap,new] netdevsim/netdevsim10: name ttl_value_is_too_small type exception generic true action trap group l3_drops
+>[trap,new] netdevsim/netdevsim10: name tail_drop type drop generic true action drop group buffer_drops
