@@ -2,144 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3E61C8C187
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 21:30:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 758E28C1AB
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 21:50:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726479AbfHMTa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 15:30:26 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:33465 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726313AbfHMTaZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 15:30:25 -0400
-Received: by mail-ot1-f68.google.com with SMTP id q20so23848122otl.0;
-        Tue, 13 Aug 2019 12:30:25 -0700 (PDT)
+        id S1726137AbfHMTum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 15:50:42 -0400
+Received: from mail-pl1-f170.google.com ([209.85.214.170]:34929 "EHLO
+        mail-pl1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbfHMTum (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 15:50:42 -0400
+Received: by mail-pl1-f170.google.com with SMTP id gn20so450949plb.2;
+        Tue, 13 Aug 2019 12:50:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=LkUkZZHHOpjUjyUqkx+tcRPy0nV/QGKvYnmWNcLuDl4=;
-        b=f9ZIYlS5lQQ52mdpooEjRmTvYZAKY8ghh1EQk6/OQkmluIyHtKO3bRWmKNMq4SEmrk
-         3S71XcA7F8B0+25/Aq9HBAcPzXB+1D1UPrN8Rp33Lx+thWM0T8Xn/sYjTVaEzn5dKBUW
-         TDnZMHRInPOADY6TvSWFBIGlP2R+9Z3ShTXQdfJZPFRCmVVV0FQLOKPm2/XiMT7r+qZQ
-         FUKBRle/vtx6o+R9X9l+CP1l61zyLm1QnlZIrhkDU0PSVvhIXruk5OWguyd0M38hyy2+
-         WYTM645MfdAhX8l2xh7nXdRW87U4LdeifspoJDdnKIalB+NXzxwPP852htL1kEdMvFKG
-         mWTg==
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6W/vfARMPR+NhYh4QIIExddFhcCqi3b0nbQB7f6xRo4=;
+        b=ZIMtldcixKmTkqZGeLPvYhHKaVOovc6tLCF/NHO+12g8/adT6f7+beFInH5jM5rP6R
+         JRSZ/gPblWkt1yq+0oG1SV9ECImLuSWAzGH7GX3HL0SFAQTx2EPrUOG8xS3fVMhLJqoT
+         JMcj+yHOx9lgQrukxZJPRGjkqoJvrSTWj2OS+T0Uye/W9iMWQ9PrBRDpKrZhVhCn7gwk
+         eTapXBeFIN8ThGQoCISZAU9QWx4izIU7+S+bv3D21JSW+gxerARfD+sQROULC5IWDZZg
+         yQl3wmp04LjjjQ+Timy9JUEJ9qA6PZefqxuwnMJj10PnMwfG3VkWQrqhkeT3zl3z+31R
+         ZBTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=LkUkZZHHOpjUjyUqkx+tcRPy0nV/QGKvYnmWNcLuDl4=;
-        b=XqYybT/1nWtS7bS9ldutbhmNeYr3UnXvb6Ub6QJZJWUPI7lwuHc3IaaTfAMYXaV7B3
-         8Kx3BHoMy7hJvgnouTMSEb1zDKHgLES9cPpGbZgex3QbMgDp5opOOaYq/dkdcW0cP5L8
-         bz6YPFCabgnDfx0tjOg6XMT1X9YTEwNM8iroGEZKSf9SJkHaRp1BaJLghaC3CL9bcKtt
-         mW2T63vieela2fiXZ15FIjOzU6r4+AoC5Gt4+Ie3wuIfkkefi+gpz1Zt1mTlbGFFzY5a
-         cYLHWZSAOjaHpLRgMZgUfBftWlp+eebbzB/Oi3yTnDU0y3HqkNh0Ig1KvfH2dcnyeQEq
-         HTBQ==
-X-Gm-Message-State: APjAAAWxf2Y34WGX74EGPRs9m86ePpWLdBeSot6b07Sl4jY/pGcgE9LF
-        XGKD1caTMrymPAhv5397AQs=
-X-Google-Smtp-Source: APXvYqx1uZGEU/FWdg1qWuUCtfHp2p88R4pDcIZNEXpcKK8j+wiJV4izI9Z8HxKohjgmzX3tRSOAag==
-X-Received: by 2002:a6b:fb10:: with SMTP id h16mr1126617iog.195.1565724624745;
-        Tue, 13 Aug 2019 12:30:24 -0700 (PDT)
-Received: from localhost ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id w17sm3247806ior.23.2019.08.13.12.30.22
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 12:30:24 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 12:30:17 -0700
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+dcdc9deefaec44785f32@syzkaller.appspotmail.com>,
-        aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
-        davejwatson@fb.com, davem@davemloft.net,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com, syzkaller-bugs@googlegroups.com,
-        willemb@google.com
-Message-ID: <5d530fc91c07a_74d72b1d12a065b810@john-XPS-13-9370.notmuch>
-In-Reply-To: <20190813115948.5f57b272@cakuba.netronome.com>
-References: <000000000000f5d619058faea744@google.com>
- <20190810135900.2820-1-hdanton@sina.com>
- <5d52f09299e91_40c72adb748b25c0d3@john-XPS-13-9370.notmuch>
- <20190813102705.1f312b67@cakuba.netronome.com>
- <5d5301a82578_268d2b12c8efa5b470@john-XPS-13-9370.notmuch>
- <20190813115948.5f57b272@cakuba.netronome.com>
-Subject: Re: general protection fault in tls_write_space
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=6W/vfARMPR+NhYh4QIIExddFhcCqi3b0nbQB7f6xRo4=;
+        b=AoJMWohnFPyr1pTlnD1JqZjuQs8z8U6FN+StubZfv0lSrnsItrvn8JSCtixAOS5qo8
+         uzm+cx8YcvufOlm68ktzEnRNVFs3IPi+E66zuPxKNZdCsThsELp3/KzJLCBBQnlHwLUC
+         SJZaZdirGJhC+O47YYZ5JOG1O1ftnkso0kurlCHYi6H47egB03yPV9CGVl3iNuHf/5yk
+         1pAlAojaRGKEv83hAOaAew1+U30dS+/cDOuJxQQiOnCyv0OqOgjum++UxOi0C5eMioFM
+         cb1jnnfXhrLo09K9k1hUipv7QUMV6HtpTtxLwYji6nd2aO5839PdSzPirHxZrd4/8JHU
+         B+AQ==
+X-Gm-Message-State: APjAAAUD45RnHcvGvMn8fb63pwEljC43fcjSB2QO0KKonGydNVDHehzf
+        W1kfHeoLdd+6AegB92Ouxgw=
+X-Google-Smtp-Source: APXvYqx31IfVs9OFARc2yDHqURnrSCVq6twCVN0+1PXuirggENOh2NglKwY60yUGcSAYM+dw6T30nQ==
+X-Received: by 2002:a17:902:7686:: with SMTP id m6mr39423124pll.239.1565725841254;
+        Tue, 13 Aug 2019 12:50:41 -0700 (PDT)
+Received: from [10.67.49.31] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id v21sm1137509pfe.131.2019.08.13.12.50.39
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 13 Aug 2019 12:50:40 -0700 (PDT)
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: drop adjust_link to enabled
+ phylink
+To:     Hubert Feurstein <h.feurstein@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+References: <20190731154239.19270-1-h.feurstein@gmail.com>
+ <20190804151013.GD6800@lunn.ch>
+ <CAFfN3gX6_dvAkRqRuXdR_+nfsFyBd2UNSzYo1H3am49xyb-hBQ@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
+ WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
+ pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
+ hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
+ OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
+ Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
+ oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
+ 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
+ BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
+ +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
+ FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
+ 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
+ vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
+ WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
+ HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
+ HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
+ Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
+ kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
+ aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
+ y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
+ X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
+ HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
+ YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
+ PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
+ UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
+ iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
+ WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
+ UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
+ sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
+ KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
+ t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
+ AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
+ RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
+ e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
+ UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
+ 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
+ V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
+ xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
+ dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
+ pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
+ caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
+ 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <8ff3aca2-860b-e027-990d-fb6bdb9389c6@gmail.com>
+Date:   Tue, 13 Aug 2019 12:50:38 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <CAFfN3gX6_dvAkRqRuXdR_+nfsFyBd2UNSzYo1H3am49xyb-hBQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski wrote:
-> On Tue, 13 Aug 2019 11:30:00 -0700, John Fastabend wrote:
-> > Jakub Kicinski wrote:
-> > > On Tue, 13 Aug 2019 10:17:06 -0700, John Fastabend wrote:  
-> > > > > Followup of commit 95fa145479fb
-> > > > > ("bpf: sockmap/tls, close can race with map free")
-> > > > > 
-> > > > > --- a/net/tls/tls_main.c
-> > > > > +++ b/net/tls/tls_main.c
-> > > > > @@ -308,6 +308,9 @@ static void tls_sk_proto_close(struct so
-> > > > >  	if (free_ctx)
-> > > > >  		icsk->icsk_ulp_data = NULL;
-> > > > >  	sk->sk_prot = ctx->sk_proto;
-> > > > > +	/* tls will go; restore sock callback before enabling bh */
-> > > > > +	if (sk->sk_write_space == tls_write_space)
-> > > > > +		sk->sk_write_space = ctx->sk_write_space;
-> > > > >  	write_unlock_bh(&sk->sk_callback_lock);
-> > > > >  	release_sock(sk);
-> > > > >  	if (ctx->tx_conf == TLS_SW)    
-> > > > 
-> > > > Hi Hillf,
-> > > > 
-> > > > We need this patch (although slightly updated for bpf tree) do
-> > > > you want to send it? Otherwise I can. We should only set this if
-> > > > TX path was enabled otherwise we null it. Checking against
-> > > > tls_write_space seems best to me as well.
-> > > > 
-> > > > Against bpf this patch should fix it.
-> > > > 
-> > > > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-> > > > index ce6ef56a65ef..43252a801c3f 100644
-> > > > --- a/net/tls/tls_main.c
-> > > > +++ b/net/tls/tls_main.c
-> > > > @@ -308,7 +308,8 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
-> > > >         if (free_ctx)
-> > > >                 icsk->icsk_ulp_data = NULL;
-> > > >         sk->sk_prot = ctx->sk_proto;
-> > > > -       sk->sk_write_space = ctx->sk_write_space;
-> > > > +       if (sk->sk_write_space == tls_write_space)
-> > > > +               sk->sk_write_space = ctx->sk_write_space;
-> > > >         write_unlock_bh(&sk->sk_callback_lock);
-> > > >         release_sock(sk);
-> > > >         if (ctx->tx_conf == TLS_SW)  
-> > > 
-> > > This is already in net since Friday:  
-> > 
-> > Don't we need to guard that with an
-> > 
-> >   if (sk->sk_write_space == tls_write_space)
-> > 
-> > or something similar? Where is ctx->sk_write_space set in the rx only
-> > case? In do_tls_setsockop_conf() we have this block
-> > 
-> > 	if (tx) {
-> > 		ctx->sk_write_space = sk->sk_write_space;
-> > 		sk->sk_write_space = tls_write_space;
-> > 	} else {
-> > 		sk->sk_socket->ops = &tls_sw_proto_ops;
-> > 	}
-> > 
-> > which makes me think ctx->sk_write_space may not be set correctly in
-> > all cases.
+On 8/5/19 1:49 AM, Hubert Feurstein wrote:
+> Hi Andrew,
 > 
-> Ah damn, you're right I remember looking at that but then I went down
-> the rabbit hole of trying to repro and forgot :/
-> 
-> Do you want to send an incremental change?
+> It looks like some work is still needed in b53_phylink_mac_config to
+> take over the
+> functionality of the current adjust_link implementation.
 
-Sure I'll send something out this afternoon.
-
+Indeed, I will look into it in the next few weeks.
+-- 
+Florian
