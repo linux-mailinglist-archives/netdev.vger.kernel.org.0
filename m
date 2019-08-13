@@ -2,95 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 226338AF37
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 08:08:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7F5128AF3B
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 08:08:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727409AbfHMGIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 02:08:02 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:46617 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbfHMGIB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 02:08:01 -0400
-Received: by mail-wr1-f67.google.com with SMTP id z1so106603272wru.13
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 23:07:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=mQsq4H+//b9wU+lb5DASh+OnezUpGbeyiGEone08Xms=;
-        b=AtVRwidAI8vkkcPj/fd5k/BtJSaToHD2uMnIOunh4RJIuhz9NFp9cM7OWGoYXszayv
-         7ffzjNjO2BelYXEGDGPC7lBNe3Zc5a6lh+NtI3VP2CQDkkmK3TTvDmECwehYxsLmDRlK
-         0HKmTyrDuFBj9OH3IrkQZf3KIy6W51zeR19S1P/TA+KgNvM0x/+bfbs7ieEkUDA5MORM
-         6zp6GYqYde5phbEdmFNkR3nc8mKoFCdqOTmiHjEGFJRDq/w/wYZ4L/jTccfT2aanZeau
-         fSEKli8CLWUgtErrwKzkuWT6DL+43FcTRUlHmSIqFrnfcPBX2N8ZRsvTtWUm6SBGeg7x
-         20Uw==
+        id S1727420AbfHMGIN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 02:08:13 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:33894 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725815AbfHMGIM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 02:08:12 -0400
+Received: by mail-lj1-f195.google.com with SMTP id x18so3994248ljh.1;
+        Mon, 12 Aug 2019 23:08:11 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mQsq4H+//b9wU+lb5DASh+OnezUpGbeyiGEone08Xms=;
-        b=OCU1OGMw5bXQVUvVDiN/JLkJjBbhxqrUJYoShTG1ahqjQMEEauobz0/8Lpi9mTjqnK
-         rqByRmeSvmwiop3+/IfX3fRniyD8FjFcYEYelBZI5XIT/6JkD6c0icybwOqTJuNoOlJ/
-         bckjBAopGO/Pv0BwUkHpiB4bV9oTs3h4dSuSZpoBSUSgBnE1qymrpgTLl3lHZUi2mFp/
-         CycvQpaeRt7YnxjtsBgvpOW4/UJpAA7Rx5HhtyXB5f91+SJp1vksbMwDBXSyIUyCmUTf
-         o5vF8UAgZoFCKNCwAKopI0cVfajKB3Tlkg8SQ0TZPABuq5QIAxH0mB55FzyXDZEGNhuu
-         bblw==
-X-Gm-Message-State: APjAAAVltMyTRNC8uPRn6zK+wEvsb7dHwUfke+B5riC4w07sM/eUToiY
-        0S3rAfR0qX+5k8Cw7Jk0ZXu74A==
-X-Google-Smtp-Source: APXvYqz6u4mrkkeQc6HdR0TKPPD6js8YGnR4RMeywLwwS9oVaL6tb4FsYQvqDVZq9006puwn9170mw==
-X-Received: by 2002:a5d:5183:: with SMTP id k3mr41283481wrv.270.1565676479110;
-        Mon, 12 Aug 2019 23:07:59 -0700 (PDT)
-Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id 39sm19180737wrc.45.2019.08.12.23.07.58
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 12 Aug 2019 23:07:58 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 08:07:58 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, stephen@networkplumber.org, mlxsw@mellanox.com
-Subject: Re: [patch net-next v3 0/3] net: devlink: Finish network namespace
- support
-Message-ID: <20190813060758.GD2428@nanopsycho>
-References: <20190812134751.30838-1-jiri@resnulli.us>
- <bfb879be-a232-0ef1-1c40-3a9c8bcba8f8@gmail.com>
- <20190812181100.1cfd8b9d@cakuba.netronome.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MDG29oqYq4nVVn3hrh+2fbdajMYYSsCGEYHbdqYGlcU=;
+        b=Fii6LhkROVK1fv2x+QlUx3ocjhOAx8AZABefif/L3FQ9Asa7zaM2/eFQbsl0CV1RNP
+         W6ziaaEUHX5Mz/rYkTNUlAwrL2urFru8WcBUVvocokGodkGVCIdHv2lzq8KnKt93PkvV
+         CNPCgnMu+OFJ+3DjeRNjB+S4J3My5Ebk+5YxHwiLHyqJlYvA97TzTd4NueUtxAX881v8
+         xh6AOYzd+llTO2B8wmqe7gO/3VRzxt86506nnnWMip5jA03Xoi3agPSHZn6YXBPvh/wp
+         F1sB0kOxAqkZlqDMk2eld+7dKhA1cr3HVoQUb71Wb2gTiuSUUgcX+wMrVzLBk7bjcNyF
+         auiQ==
+X-Gm-Message-State: APjAAAVAG3IE6rDdul9mgX1xRlLFqCqH33UtHCCHZeyHRtgQZ7NfN7IT
+        gAgLRQz7j1o7vdF6RLDS8P3v/XnK9Ng=
+X-Google-Smtp-Source: APXvYqwknx9v52tbRVWqkgQLlNMXeAKBWlf1KxDvXLFEh77Q/kJsDqd8VeP0tsogWsWN2uEhLh+ofg==
+X-Received: by 2002:a2e:7614:: with SMTP id r20mr21213708ljc.42.1565676490536;
+        Mon, 12 Aug 2019 23:08:10 -0700 (PDT)
+Received: from localhost.localdomain (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
+        by smtp.googlemail.com with ESMTPSA id 25sm5791605lft.71.2019.08.12.23.08.09
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Aug 2019 23:08:09 -0700 (PDT)
+From:   Denis Efremov <efremov@linux.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Denis Efremov <efremov@linux.com>, joe@perches.com,
+        Heiner Kallweit <hkallweit1@gmail.com>, nic_swsd@realtek.com,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: r8169: Update path to the driver
+Date:   Tue, 13 Aug 2019 09:07:59 +0300
+Message-Id: <20190813060759.14256-1-efremov@linux.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com>
+References: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190812181100.1cfd8b9d@cakuba.netronome.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 13, 2019 at 03:11:00AM CEST, jakub.kicinski@netronome.com wrote:
->On Mon, 12 Aug 2019 18:24:41 -0600, David Ahern wrote:
->> On 8/12/19 7:47 AM, Jiri Pirko wrote:
->> > From: Jiri Pirko <jiri@mellanox.com>
->> > 
->> > Devlink from the beginning counts with network namespaces, but the
->> > instances has been fixed to init_net. The first patch allows user
->> > to move existing devlink instances into namespaces:
->> > 
->> > $ devlink dev
->> > netdevsim/netdevsim1
->> > $ ip netns add ns1
->> > $ devlink dev set netdevsim/netdevsim1 netns ns1
->> > $ devlink -N ns1 dev
->> > netdevsim/netdevsim1
->> > 
->> > The last patch allows user to create new netdevsim instance directly
->> > inside network namespace of a caller.  
->> 
->> The namespace behavior seems odd to me. If devlink instance is created
->> in a namespace and never moved, it should die with the namespace. With
->> this patch set, devlink instance and its ports are moved to init_net on
->> namespace delete.
->
->If the devlink instance just disappeared - that'd be a very very strange
->thing. Only software objects disappear with the namespace. 
->Netdevices without ->rtnl_link_ops go back to init_net.
+Update MAINTAINERS record to reflect the filename change
+from r8169.c to r8169_main.c
 
-Agreed. It makes sense to be moved to init_net.
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: nic_swsd@realtek.com
+Cc: David S. Miller <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Fixes: 25e992a4603c ("r8169: rename r8169.c to r8169_main.c")
+Signed-off-by: Denis Efremov <efremov@linux.com>
+---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 99a7392ad6bc..25eb86f3261e 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -183,7 +183,7 @@ M:	Realtek linux nic maintainers <nic_swsd@realtek.com>
+ M:	Heiner Kallweit <hkallweit1@gmail.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+-F:	drivers/net/ethernet/realtek/r8169.c
++F:	drivers/net/ethernet/realtek/r8169_main.c
+ 
+ 8250/16?50 (AND CLONE UARTS) SERIAL DRIVER
+ M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+-- 
+2.21.0
+
