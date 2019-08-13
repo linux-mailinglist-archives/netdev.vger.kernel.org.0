@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 669808B815
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:08:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 25A3D8B817
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:08:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728058AbfHMMIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 08:08:06 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:40150 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728048AbfHMMIG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:08:06 -0400
-Received: by mail-pg1-f193.google.com with SMTP id w10so51161849pgj.7;
-        Tue, 13 Aug 2019 05:08:06 -0700 (PDT)
+        id S1728073AbfHMMIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 08:08:10 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:39545 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727466AbfHMMIJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:08:09 -0400
+Received: by mail-pf1-f193.google.com with SMTP id f17so47507320pfn.6;
+        Tue, 13 Aug 2019 05:08:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=nXUR57zVJA41KWE5xxjUW/MAhjVMNeKFhg9ej1hm1bs=;
-        b=Uf6l/F3NVUroJP3OXRhhfkGNulTyndljCHvP48oxq8LDMQQdYaUaXRwEgNhAdUGeE/
-         YOr3y8FhzS2wvmBLgxJWC34tnGJCs1VQT+gqb/vIVJjvsvgSwjAUip121HMfqfumNIqS
-         IQ8lv+oKOcFeUV+QlhMjO+IjdQ0HUQDtub8jG1XDdgJcU/GagR6LLgS3YaCU7zbD3Dpc
-         HtMzoLfFQGOuC5V0q6MHWzyXN6/r/Cj8bPKNFHiweiuZCZpV36ninJ9qMtPITL+j1eje
-         iJ/yzo8QaepWxnqqAgFR4fP8NRN5x9VbsdathQDbaNzGwNOXNdk8Vry3/xM/a+WdqEO9
-         Gvdg==
+        bh=f/dTb4ClZaN81sXe2USd7VA6EXdy1jkzbTVP88gvsZU=;
+        b=hs127bino+aRHv0nBLwWt+DG51I3QDsad9WxE1u2ABfBUc8amtsY19MCmUDSi0lMDn
+         wEYGySn1SCZmeAD3FCs5lYA1MIpTozTTkL2+0j3hAWtuTotw2DVyfixMtmr8hHvpVmRA
+         xLjG8jNRLiNUw5Jm48gnt8NRtBd/KX5LTZw9n4r9W9eIYEg+5zsP9/ShWNCDcsFXWHVK
+         ujVKmE2Dlavd1szTRYywb7yj/c/1/6GDR/mvbdtSrWYIEoHkxXPhyAZcVUzLkLqSPVo9
+         jGkKRKXolKBTo/Wi2FdFdzl6GPwCLZf6KnOzswP/F0qRFdVA5fdjnzdLeQvA0QpagOTK
+         FwhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=nXUR57zVJA41KWE5xxjUW/MAhjVMNeKFhg9ej1hm1bs=;
-        b=CRNhGGGexy9LTIeTkSPGY7vgfAqi8aq7kxMxMSJNMyEXxZfx4/kx3jfZi7iDPivcQ0
-         xHev1+gLkNDbA0hs6oya1Jh+dcfzFZK+a9enNYgS0gEI923YtEHwMPXv/Ji/4dNYfYWy
-         uG0FbcHZA8YCa8+3dRFDJmeUOO0eOrt0o3AImwHLs8L/hMYeXRtq0sBFrDGSorOr3rpJ
-         UNrNf2a4P7JBMoMrT5Bme4H2rLtvNDQiaPzQMQY92TpUS0igPhUFqHyJPf8gQIogUnIM
-         OF8FCAfSzDSlxIFMw+/QFTYnQ4W2ybbPeUninl85SVyNXLHllnh7qiVGCm1Q4VpsrNEi
-         tJnA==
-X-Gm-Message-State: APjAAAVRRVv97VxSZhG3ses2DyaQgU5jo2OMMIkdRBxQBtq9iEhxScDF
-        gvXzbL/1eat6RMFAVRdk3Iw=
-X-Google-Smtp-Source: APXvYqxRd3nWpYyebfDCvRyb7AAoz8fjwQm1zIf3xK9gPSpq3/SIl0QVgydDwowdOX05K8fTcKVEGA==
-X-Received: by 2002:a63:7d05:: with SMTP id y5mr12780591pgc.425.1565698085649;
-        Tue, 13 Aug 2019 05:08:05 -0700 (PDT)
+        bh=f/dTb4ClZaN81sXe2USd7VA6EXdy1jkzbTVP88gvsZU=;
+        b=k6M0AKyLh4DuAElwerxTVGTTdZwGrxXSi9uqqCgCY3GFEDU4FkHXfyRKjm7LzJq162
+         NlVic626TwdX/AaGZQUp4uhARWv0As1yu3f7v5FECmocHvFoWaGjFU11EV2JX981aKtE
+         DQDatJOOd81wyDrXIhGyPe40LrjKh6fypZT6/dilBZG4hk7C8uLqeIq0wsS5KeoT+uMx
+         irJzc+tws4TmWcMtQIdM4BrJ4EvqBJSt6QA/4o8svsCnq/gTqqoE19VIJ3Wb9bvgHpct
+         jrG/QsK+39mrEDcRO+bwNhg/T+mjM5xVrlZEB2voZPh/jcVPk9VP4hEzaamr/dBLbJhK
+         gZRg==
+X-Gm-Message-State: APjAAAXDSfCCHhkro7xpz/+G9Zu3Xpf4If0oBqnvqWZdxNpQ1QxaW4e+
+        OEqkMgwlnDR8Cgd26ICAo3Y=
+X-Google-Smtp-Source: APXvYqzVtckARatEy2C/6IfJsCE1AauFGEeu/iH3Zoi4a8JcHfi/0kIKIMZY0Giz/EW5ki6DGfUbSQ==
+X-Received: by 2002:a17:90a:256f:: with SMTP id j102mr2012310pje.14.1565698089340;
+        Tue, 13 Aug 2019 05:08:09 -0700 (PDT)
 Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.08.01
+        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.08.05
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 05:08:04 -0700 (PDT)
+        Tue, 13 Aug 2019 05:08:08 -0700 (PDT)
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -59,9 +59,9 @@ To:     Alexei Starovoitov <ast@kernel.org>,
 Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         William Tu <u9012063@gmail.com>
-Subject: [RFC PATCH bpf-next 12/14] bpf, selftest: Add test for xdp_flow
-Date:   Tue, 13 Aug 2019 21:05:56 +0900
-Message-Id: <20190813120558.6151-13-toshiaki.makita1@gmail.com>
+Subject: [RFC PATCH bpf-next 13/14] i40e: prefetch xdp->data before running XDP prog
+Date:   Tue, 13 Aug 2019 21:05:57 +0900
+Message-Id: <20190813120558.6151-14-toshiaki.makita1@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
 References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
@@ -72,136 +72,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Check if TC flower offloading to XDP works.
+XDP progs are likely to read/write xdp->data.
+This improves the performance of xdp_flow.
+This is included in this series just to demonstrate to what extent
+xdp_flow performance can increase.
 
 Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 ---
- tools/testing/selftests/bpf/Makefile         |   1 +
- tools/testing/selftests/bpf/test_xdp_flow.sh | 103 +++++++++++++++++++++++++++
- 2 files changed, 104 insertions(+)
- create mode 100755 tools/testing/selftests/bpf/test_xdp_flow.sh
+ drivers/net/ethernet/intel/i40e/i40e_txrx.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
-index 3bd0f4a..886702a 100644
---- a/tools/testing/selftests/bpf/Makefile
-+++ b/tools/testing/selftests/bpf/Makefile
-@@ -50,6 +50,7 @@ TEST_PROGS := test_kmod.sh \
- 	test_xdp_redirect.sh \
- 	test_xdp_meta.sh \
- 	test_xdp_veth.sh \
-+	test_xdp_flow.sh \
- 	test_offload.py \
- 	test_sock_addr.sh \
- 	test_tunnel.sh \
-diff --git a/tools/testing/selftests/bpf/test_xdp_flow.sh b/tools/testing/selftests/bpf/test_xdp_flow.sh
-new file mode 100755
-index 0000000..cb06f3e
---- /dev/null
-+++ b/tools/testing/selftests/bpf/test_xdp_flow.sh
-@@ -0,0 +1,103 @@
-+#!/bin/sh
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Create 2 namespaces with 2 veth peers, and
-+# forward packets in-between using xdp_flow
-+#
-+# NS1(veth11)        NS2(veth22)
-+#      |                  |
-+#      |                  |
-+#   (veth1)            (veth2)
-+#      ^                  ^
-+#      |     xdp_flow     |
-+#      --------------------
-+
-+# Kselftest framework requirement - SKIP code is 4.
-+ksft_skip=4
-+
-+TESTNAME=xdp_flow
-+
-+_cleanup()
-+{
-+	set +e
-+	ip link del veth1 2> /dev/null
-+	ip link del veth2 2> /dev/null
-+	ip netns del ns1 2> /dev/null
-+	ip netns del ns2 2> /dev/null
-+}
-+
-+cleanup_skip()
-+{
-+	echo "selftests: $TESTNAME [SKIP]"
-+	_cleanup
-+
-+	exit $ksft_skip
-+}
-+
-+cleanup()
-+{
-+	if [ "$?" = 0 ]; then
-+		echo "selftests: $TESTNAME [PASS]"
-+	else
-+		echo "selftests: $TESTNAME [FAILED]"
-+	fi
-+	_cleanup
-+}
-+
-+if [ $(id -u) -ne 0 ]; then
-+	echo "selftests: $TESTNAME [SKIP] Need root privileges"
-+	exit $ksft_skip
-+fi
-+
-+if ! ip link set dev lo xdp off > /dev/null 2>&1; then
-+	echo "selftests: $TESTNAME [SKIP] Could not run test without the ip xdp support"
-+	exit $ksft_skip
-+fi
-+
-+set -e
-+
-+trap cleanup_skip EXIT
-+
-+ip netns add ns1
-+ip netns add ns2
-+
-+ip link add veth1 type veth peer name veth11 netns ns1
-+ip link add veth2 type veth peer name veth22 netns ns2
-+
-+ip link set veth1 up
-+ip link set veth2 up
-+
-+ip -n ns1 addr add 10.1.1.11/24 dev veth11
-+ip -n ns2 addr add 10.1.1.22/24 dev veth22
-+
-+ip -n ns1 link set dev veth11 up
-+ip -n ns2 link set dev veth22 up
-+
-+ip -n ns1 link set dev veth11 xdp obj xdp_dummy.o sec xdp_dummy
-+ip -n ns2 link set dev veth22 xdp obj xdp_dummy.o sec xdp_dummy
-+
-+ethtool -K veth1 tc-offload-xdp on
-+ethtool -K veth2 tc-offload-xdp on
-+
-+trap cleanup EXIT
-+
-+# Adding clsact or ingress will trigger loading bpf prog in UMH
-+tc qdisc add dev veth1 clsact
-+tc qdisc add dev veth2 clsact
-+
-+# Adding filter will have UMH populate flow table map
-+# 'skip_sw' can be accepted only when 'tc-offload-xdp' is enabled on veth
-+tc filter add dev veth1 ingress protocol ip flower skip_sw \
-+	dst_ip 10.1.1.0/24 action mirred egress redirect dev veth2
-+tc filter add dev veth2 ingress protocol ip flower skip_sw \
-+	dst_ip 10.1.1.0/24 action mirred egress redirect dev veth1
-+
-+# ARP is not supported so don't add 'skip_sw'
-+tc filter add dev veth1 ingress protocol arp flower \
-+	arp_tip 10.1.1.0/24 action mirred egress redirect dev veth2
-+tc filter add dev veth2 ingress protocol arp flower \
-+	arp_sip 10.1.1.0/24 action mirred egress redirect dev veth1
-+
-+ip netns exec ns1 ping -c 1 -W 1 10.1.1.22
-+
-+exit 0
+diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+index f162252..ea775ae 100644
+--- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
++++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
+@@ -2207,6 +2207,7 @@ static struct sk_buff *i40e_run_xdp(struct i40e_ring *rx_ring,
+ 	if (!xdp_prog)
+ 		goto xdp_out;
+ 
++	prefetchw(xdp->data);
+ 	prefetchw(xdp->data_hard_start); /* xdp_frame write */
+ 
+ 	act = bpf_prog_run_xdp(xdp_prog, xdp);
 -- 
 1.8.3.1
 
