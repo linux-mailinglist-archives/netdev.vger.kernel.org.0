@@ -2,303 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 60D808BF7D
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 19:16:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AD238BF82
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 19:17:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726656AbfHMRQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 13:16:13 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:45165 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726137AbfHMRQN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 13:16:13 -0400
-Received: by mail-pl1-f193.google.com with SMTP id y8so7432424plr.12
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 10:16:12 -0700 (PDT)
+        id S1726323AbfHMRRR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 13:17:17 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:35547 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726029AbfHMRRR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 13:17:17 -0400
+Received: by mail-ot1-f67.google.com with SMTP id g17so24457126otl.2;
+        Tue, 13 Aug 2019 10:17:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FEfH6j8NvNEpjXm2CU4s0KlCALUxSnZClYA3AgIfqb4=;
-        b=uXVYDxZHqs+zQCwX6Ejlerpe7gac5nMgUSDCzK0ImdBor2No46R70Y5w7fnhA/6jha
-         QdOqrm9iEEFmQSkBry8eSdfBrFF8diOmWVsoFvsGYr4TIAOBQQGpOLEXHDtQh08xTCLw
-         +t5gUoddaLhaUL6wLhnY3WcRM9UWdwBUdvoZiOaNfjmk0tyx+6n0M7GPiUtbRc8hAyxI
-         zaQgbS2XbNvhB64Ai4T6QKRMpIuxYcv6QWJzA8dDgBsG9AQcu6j8LfcJRJi2Se6d2uz+
-         /GED7HbO2nGqOO/KzdOauvkm+fW4Omo2YSyhkg+tjanirV6HSWZvaYWrM3mqK9zs+B+P
-         9GWA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=NGLe9R6TH0gA90LodsbIsArKREL2u+B16+/2nJh97c0=;
+        b=gJBMgCy7nt3IeZMNu2hBgVLvhtgwuryD2slw94jAVFQLR855zVUPI3SVTD8vdegQq3
+         lJASni0EAd20uPZVN+s8xhTXSXySFAeklSClTk9oIfAwS+KhP7ak88rCFMtgkoavI9JV
+         G/rU/KBnKpnYWUZkyEK/tzlbMYFUXZwilL9E40y9EXjIeTNsPMI3TCf2RkIdvzDxxDpO
+         yIC69Ng2VVeEd2BqIpIxeGIfyKk/gTWJiVANzgTe9e0Vh2V9zH9vlwRuwEWCzBo/Pr33
+         hamiGZWdiYbSb0hdRKsnI66yLBLExsWnPZRpLIfcUc3X8HMmG63rBnta3X5UqGwwgm8U
+         tciA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FEfH6j8NvNEpjXm2CU4s0KlCALUxSnZClYA3AgIfqb4=;
-        b=VqQ09gTFqsoD5FYwGnsKH4xPS/EkyWP+52a/yGIqCEdDEEjl+d/m+DHSu9efbdVUSA
-         zaI/jUNLc6NXUG9b8ul74RhN8Ld2id5JB3kiy6AZH21zGoDG1mEhCpafHZ09JgignvLc
-         LQh+SCejR5HuWbn660JojZG8p3PLGhTtCRZL14iz//a5YJqPisZ8GHyemxpqFnxoDlJA
-         yuQaXr+PRH1fxxc7IJXqb3QFV2M0xCjOwWPm7L3f2mcn9q2X9JFPQhMefYE1c6C+oJHo
-         kIZx8oRq+eP2dOJT9FXj5IhDH+S77qgDWyT7gbZz5SqHZqxaGNzHLiU6rKfm0+baioqM
-         ld7Q==
-X-Gm-Message-State: APjAAAWkMulvuvkYPYIZQeNYgx6sdcIuIxNSonDPjLRW0LOIZVSMPGY/
-        2AaX1qoBhSCB+Vak2P7CcDtMWg==
-X-Google-Smtp-Source: APXvYqwxzzMQM2aB6Vm4Y+iIDsE/IDkkghW628nLd54LO6KgiFA7PIJXC7cW5PBft0WFcSuKMSfDxw==
-X-Received: by 2002:a17:902:8489:: with SMTP id c9mr39245819plo.327.1565716572187;
-        Tue, 13 Aug 2019 10:16:12 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id a15sm152112751pfg.102.2019.08.13.10.16.11
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=NGLe9R6TH0gA90LodsbIsArKREL2u+B16+/2nJh97c0=;
+        b=HzOSfrpRb7imUkLPozFA4cluauHUBP0aJPxjyUqoPCUYcxUoCej6pVC4+/yLozWEBw
+         YgU7b+X+9kIPj85jTgHQ7zL7mJka/uqv6IZyB6QcE58ROou2t1y2sDUPk5h8JWI7jnM0
+         lxlKU1MVVCWhg28K+Ze2YWYaHBoujkLOITCT9nMspaqDWyLCl3peBzzMh/Z2yXMwLo8U
+         Ge8I73zpFYENpkN/47vl6hcwUANvsLYxl7m3PtruxPwYQV+C0+n4D+jIKVk/CdO6JFyC
+         nATFfY+DmOVRMQ3FfQcYplErRgyPzGC3eWdaZYp08/lJn0ON+nEZ3Ta0xSAl2G30Y2i+
+         LpKQ==
+X-Gm-Message-State: APjAAAX8fEcUk1eZ9s7513Y0R33rapdkjh2KMLhKRl7M3U0nMhwPBCpH
+        rTw3JYpmnDtqDnqsavmX+YI=
+X-Google-Smtp-Source: APXvYqy1K9u54o25aGY1RYmHvPMcG4xIhnKq66m5aq1oMVKhWqOfdXnCWA7rxZGNCZ9U3vrrmsIXBg==
+X-Received: by 2002:a6b:5a0b:: with SMTP id o11mr3445697iob.98.1565716635498;
+        Tue, 13 Aug 2019 10:17:15 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id v10sm101031303iob.43.2019.08.13.10.17.13
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 10:16:11 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 10:16:10 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        Martin Lau <kafai@fb.com>
-Subject: Re: [PATCH bpf-next v3 2/4] bpf: support cloning sk storage on
- accept()
-Message-ID: <20190813171610.GH2820@mini-arch>
-References: <20190813162630.124544-1-sdf@google.com>
- <20190813162630.124544-3-sdf@google.com>
- <173b3736-97af-cad5-9432-8e6422a89d05@fb.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <173b3736-97af-cad5-9432-8e6422a89d05@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+        Tue, 13 Aug 2019 10:17:14 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 10:17:06 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+dcdc9deefaec44785f32@syzkaller.appspotmail.com>
+Cc:     aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
+        davejwatson@fb.com, davem@davemloft.net,
+        jakub.kicinski@netronome.com, john.fastabend@gmail.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, syzkaller-bugs@googlegroups.com,
+        willemb@google.com
+Message-ID: <5d52f09299e91_40c72adb748b25c0d3@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190810135900.2820-1-hdanton@sina.com>
+References: <000000000000f5d619058faea744@google.com>
+ <20190810135900.2820-1-hdanton@sina.com>
+Subject: Re: general protection fault in tls_write_space
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/13, Yonghong Song wrote:
+Hillf Danton wrote:
 > 
-> 
-> On 8/13/19 9:26 AM, Stanislav Fomichev wrote:
-> > Add new helper bpf_sk_storage_clone which optionally clones sk storage
-> > and call it from sk_clone_lock.
+> On Sat, 10 Aug 2019 01:23:06 -0700
 > > 
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Cc: Yonghong Song <yhs@fb.com>
-> > Acked-by: Yonghong Song <yhs@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >   include/net/bpf_sk_storage.h |  10 ++++
-> >   include/uapi/linux/bpf.h     |   3 +
-> >   net/core/bpf_sk_storage.c    | 103 ++++++++++++++++++++++++++++++++++-
-> >   net/core/sock.c              |   9 ++-
-> >   4 files changed, 119 insertions(+), 6 deletions(-)
+> > syzbot has found a reproducer for the following crash on:
 > > 
-> > diff --git a/include/net/bpf_sk_storage.h b/include/net/bpf_sk_storage.h
-> > index b9dcb02e756b..8e4f831d2e52 100644
-> > --- a/include/net/bpf_sk_storage.h
-> > +++ b/include/net/bpf_sk_storage.h
-> > @@ -10,4 +10,14 @@ void bpf_sk_storage_free(struct sock *sk);
-> >   extern const struct bpf_func_proto bpf_sk_storage_get_proto;
-> >   extern const struct bpf_func_proto bpf_sk_storage_delete_proto;
-> >   
-> > +#ifdef CONFIG_BPF_SYSCALL
-> > +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk);
-> > +#else
-> > +static inline int bpf_sk_storage_clone(const struct sock *sk,
-> > +				       struct sock *newsk)
-> > +{
-> > +	return 0;
-> > +}
-> > +#endif
-> > +
-> >   #endif /* _BPF_SK_STORAGE_H */
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 4393bd4b2419..0ef594ac3899 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -337,6 +337,9 @@ enum bpf_attach_type {
-> >   #define BPF_F_RDONLY_PROG	(1U << 7)
-> >   #define BPF_F_WRONLY_PROG	(1U << 8)
-> >   
-> > +/* Clone map from listener for newly accepted socket */
-> > +#define BPF_F_CLONE		(1U << 9)
-> > +
-> >   /* flags for BPF_PROG_QUERY */
-> >   #define BPF_F_QUERY_EFFECTIVE	(1U << 0)
-> >   
-> > diff --git a/net/core/bpf_sk_storage.c b/net/core/bpf_sk_storage.c
-> > index 94c7f77ecb6b..1bc7de7e18ba 100644
-> > --- a/net/core/bpf_sk_storage.c
-> > +++ b/net/core/bpf_sk_storage.c
-> > @@ -12,6 +12,9 @@
-> >   
-> >   static atomic_t cache_idx;
-> >   
-> > +#define SK_STORAGE_CREATE_FLAG_MASK					\
-> > +	(BPF_F_NO_PREALLOC | BPF_F_CLONE)
-> > +
-> >   struct bucket {
-> >   	struct hlist_head list;
-> >   	raw_spinlock_t lock;
-> > @@ -209,7 +212,6 @@ static void selem_unlink_sk(struct bpf_sk_storage_elem *selem)
-> >   		kfree_rcu(sk_storage, rcu);
-> >   }
-> >   
-> > -/* sk_storage->lock must be held and sk_storage->list cannot be empty */
-> >   static void __selem_link_sk(struct bpf_sk_storage *sk_storage,
-> >   			    struct bpf_sk_storage_elem *selem)
-> >   {
-> > @@ -509,7 +511,7 @@ static int sk_storage_delete(struct sock *sk, struct bpf_map *map)
-> >   	return 0;
-> >   }
-> >   
-> > -/* Called by __sk_destruct() */
-> > +/* Called by __sk_destruct() & bpf_sk_storage_clone() */
-> >   void bpf_sk_storage_free(struct sock *sk)
-> >   {
-> >   	struct bpf_sk_storage_elem *selem;
-> > @@ -557,6 +559,11 @@ static void bpf_sk_storage_map_free(struct bpf_map *map)
-> >   
-> >   	smap = (struct bpf_sk_storage_map *)map;
-> >   
-> > +	/* Note that this map might be concurrently cloned from
-> > +	 * bpf_sk_storage_clone. Wait for any existing bpf_sk_storage_clone
-> > +	 * RCU read section to finish before proceeding. New RCU
-> > +	 * read sections should be prevented via bpf_map_inc_not_zero.
-> > +	 */
-> >   	synchronize_rcu();
-> >   
-> >   	/* bpf prog and the userspace can no longer access this map
-> > @@ -601,7 +608,9 @@ static void bpf_sk_storage_map_free(struct bpf_map *map)
-> >   
-> >   static int bpf_sk_storage_map_alloc_check(union bpf_attr *attr)
-> >   {
-> > -	if (attr->map_flags != BPF_F_NO_PREALLOC || attr->max_entries ||
-> > +	if (attr->map_flags & ~SK_STORAGE_CREATE_FLAG_MASK ||
-> > +	    !(attr->map_flags & BPF_F_NO_PREALLOC) ||
-> > +	    attr->max_entries ||
-> >   	    attr->key_size != sizeof(int) || !attr->value_size ||
-> >   	    /* Enforce BTF for userspace sk dumping */
-> >   	    !attr->btf_key_type_id || !attr->btf_value_type_id)
-> > @@ -739,6 +748,94 @@ static int bpf_fd_sk_storage_delete_elem(struct bpf_map *map, void *key)
-> >   	return err;
-> >   }
-> >   
-> > +static struct bpf_sk_storage_elem *
-> > +bpf_sk_storage_clone_elem(struct sock *newsk,
-> > +			  struct bpf_sk_storage_map *smap,
-> > +			  struct bpf_sk_storage_elem *selem)
-> > +{
-> > +	struct bpf_sk_storage_elem *copy_selem;
-> > +
-> > +	copy_selem = selem_alloc(smap, newsk, NULL, true);
-> > +	if (!copy_selem)
-> > +		return NULL;
-> > +
-> > +	if (map_value_has_spin_lock(&smap->map))
-> > +		copy_map_value_locked(&smap->map, SDATA(copy_selem)->data,
-> > +				      SDATA(selem)->data, true);
-> > +	else
-> > +		copy_map_value(&smap->map, SDATA(copy_selem)->data,
-> > +			       SDATA(selem)->data);
-> > +
-> > +	return copy_selem;
-> > +}
-> > +
-> > +int bpf_sk_storage_clone(const struct sock *sk, struct sock *newsk)
-> > +{
-> > +	struct bpf_sk_storage *new_sk_storage = NULL;
-> > +	struct bpf_sk_storage *sk_storage;
-> > +	struct bpf_sk_storage_elem *selem;
-> > +	int ret;
-> > +
-> > +	RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
-> > +
-> > +	rcu_read_lock();
-> > +	sk_storage = rcu_dereference(sk->sk_bpf_storage);
-> > +
-> > +	if (!sk_storage || hlist_empty(&sk_storage->list))
-> > +		goto out;
-> > +
-> > +	hlist_for_each_entry_rcu(selem, &sk_storage->list, snode) {
-> > +		struct bpf_sk_storage_elem *copy_selem;
-> > +		struct bpf_sk_storage_map *smap;
-> > +		struct bpf_map *map;
-> > +
-> > +		smap = rcu_dereference(SDATA(selem)->smap);
-> > +		if (!(smap->map.map_flags & BPF_F_CLONE))
-> > +			continue;
-> > +
-> > +		map = bpf_map_inc_not_zero(&smap->map, false);
-> > +		if (IS_ERR(map))
-> > +			continue;
-> > +
-> > +		copy_selem = bpf_sk_storage_clone_elem(newsk, smap, selem);
-> > +		if (!copy_selem) {
-> > +			ret = -ENOMEM;
-> > +			bpf_map_put(map);
-> > +			goto err;
-> > +		}
-> > +
-> > +		if (new_sk_storage) {
-> > +			selem_link_map(smap, copy_selem);
-> > +			__selem_link_sk(new_sk_storage, copy_selem);
-> > +		} else {
-> > +			ret = sk_storage_alloc(newsk, smap, copy_selem);
-> > +			if (ret) {
-> > +				kfree(copy_selem);
-> > +				atomic_sub(smap->elem_size,
-> > +					   &newsk->sk_omem_alloc);
-> > +				bpf_map_put(map);
-> > +				goto err;
-> > +			}
-> > +
-> > +			new_sk_storage = rcu_dereference(copy_selem->sk_storage);
-> > +		}
-> > +		bpf_map_put(map);
-> > +	}
-> > +
-> > +out:
-> > +	rcu_read_unlock();
-> > +	return 0;
-> > +
-> > +err:
-> > +	rcu_read_unlock();
-> > +
-> > +	/* Don't free anything explicitly here, caller is responsible to
-> > +	 * call bpf_sk_storage_free in case of an error.
-> > +	 */
-> > +
-> > +	return ret;
+> > HEAD commit:    ca497fb6 taprio: remove unused variable 'entry_list_policy'
+> > git tree:       net-next
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=109f3802600000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=d4cf1ffb87d590d7
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=dcdc9deefaec44785f32
+> > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11c78cd2600000
+> > 
+> > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > Reported-by: syzbot+dcdc9deefaec44785f32@syzkaller.appspotmail.com
+> > 
+> > kasan: CONFIG_KASAN_INLINE enabled
+> > kasan: GPF could be caused by NULL-ptr deref or user memory access
+> > general protection fault: 0000 [#1] PREEMPT SMP KASAN
+> > CPU: 0 PID: 9 Comm: ksoftirqd/0 Not tainted 5.3.0-rc3+ #125
+> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+> > Google 01/01/2011
+> > RIP: 0010:tls_write_space+0x51/0x170 net/tls/tls_main.c:239
+> > Code: c1 ea 03 80 3c 02 00 0f 85 26 01 00 00 49 8b 9c 24 b0 06 00 00 48 b8  
+> > 00 00 00 00 00 fc ff df 48 8d 7b 6a 48 89 fa 48 c1 ea 03 <0f> b6 04 02 48  
+> > 89 fa 83 e2 07 38 d0 7f 08 84 c0 0f 85 df 00 00 00
+> > RSP: 0018:ffff8880a98b74c8 EFLAGS: 00010202
+> > RAX: dffffc0000000000 RBX: 0000000000000000 RCX: ffffffff860a27a2
+> > RDX: 000000000000000d RSI: ffffffff862c86c1 RDI: 000000000000006a
+> > RBP: ffff8880a98b74e0 R08: ffff8880a98a2240 R09: fffffbfff167c289
+> > R10: fffffbfff167c288 R11: ffffffff8b3e1447 R12: ffff8880a4de41c0
+> > R13: ffff8880a4de45b8 R14: 000000000000000a R15: 0000000000000000
+> > FS:  0000000000000000(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > CR2: 0000000000000000 CR3: 000000008c9d1000 CR4: 00000000001406f0
+> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> > Call Trace:
+> >   tcp_new_space net/ipv4/tcp_input.c:5151 [inline]
+> >   tcp_check_space+0x191/0x760 net/ipv4/tcp_input.c:5162
+> >   tcp_data_snd_check net/ipv4/tcp_input.c:5172 [inline]
+> >   tcp_rcv_state_process+0xe24/0x4e48 net/ipv4/tcp_input.c:6303
+> >   tcp_v6_do_rcv+0x7d7/0x12c0 net/ipv6/tcp_ipv6.c:1381
+> >   tcp_v6_rcv+0x31f1/0x3500 net/ipv6/tcp_ipv6.c:1588
+> >   ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
+> >   ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
+> >   NF_HOOK include/linux/netfilter.h:305 [inline]
+> >   NF_HOOK include/linux/netfilter.h:299 [inline]
+> >   ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
+> >   dst_input include/net/dst.h:442 [inline]
+> >   ip6_rcv_finish+0x1de/0x2f0 net/ipv6/ip6_input.c:76
+> >   NF_HOOK include/linux/netfilter.h:305 [inline]
+> >   NF_HOOK include/linux/netfilter.h:299 [inline]
+> >   ipv6_rcv+0x10e/0x420 net/ipv6/ip6_input.c:272
+> >   __netif_receive_skb_one_core+0x113/0x1a0 net/core/dev.c:5006
+> >   __netif_receive_skb+0x2c/0x1d0 net/core/dev.c:5120
+> >   process_backlog+0x206/0x750 net/core/dev.c:5951
+> >   napi_poll net/core/dev.c:6388 [inline]
+> >   net_rx_action+0x4d6/0x1080 net/core/dev.c:6456
+> >   __do_softirq+0x262/0x98c kernel/softirq.c:292
+> >   run_ksoftirqd kernel/softirq.c:603 [inline]
+> >   run_ksoftirqd+0x8e/0x110 kernel/softirq.c:595
+> >   smpboot_thread_fn+0x6a3/0xa40 kernel/smpboot.c:165
+> >   kthread+0x361/0x430 kernel/kthread.c:255
+> >   ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:352
+> > Modules linked in:
+> > ---[ end trace c21a83505707bb9d ]---
 > 
-> A nit.
-> If you set ret = 0 initially, you do not need the above two 
-> rcu_read_unlock(). One "return ret" should be enough.
-> The comment can be changed to
-> 	/* In case of an error, ... */
-I thought about it, but decided to keep them separate because of
-this comment. OTOH, adding "In case of an error," might help with
-that. Can do another respin once Martin gets to review this
-version (don't want to spam).
+> Followup of commit 95fa145479fb
+> ("bpf: sockmap/tls, close can race with map free")
+> 
+> --- a/net/tls/tls_main.c
+> +++ b/net/tls/tls_main.c
+> @@ -308,6 +308,9 @@ static void tls_sk_proto_close(struct so
+>  	if (free_ctx)
+>  		icsk->icsk_ulp_data = NULL;
+>  	sk->sk_prot = ctx->sk_proto;
+> +	/* tls will go; restore sock callback before enabling bh */
+> +	if (sk->sk_write_space == tls_write_space)
+> +		sk->sk_write_space = ctx->sk_write_space;
+>  	write_unlock_bh(&sk->sk_callback_lock);
+>  	release_sock(sk);
+>  	if (ctx->tx_conf == TLS_SW)
 
-> > +}
-> > +
-> >   BPF_CALL_4(bpf_sk_storage_get, struct bpf_map *, map, struct sock *, sk,
-> >   	   void *, value, u64, flags)
-> >   {
-> > diff --git a/net/core/sock.c b/net/core/sock.c
-> > index d57b0cc995a0..f5e801a9cea4 100644
-> > --- a/net/core/sock.c
-> > +++ b/net/core/sock.c
-> > @@ -1851,9 +1851,12 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
-> >   			goto out;
-> >   		}
-> >   		RCU_INIT_POINTER(newsk->sk_reuseport_cb, NULL);
-> > -#ifdef CONFIG_BPF_SYSCALL
-> > -		RCU_INIT_POINTER(newsk->sk_bpf_storage, NULL);
-> > -#endif
-> > +
-> > +		if (bpf_sk_storage_clone(sk, newsk)) {
-> > +			sk_free_unlock_clone(newsk);
-> > +			newsk = NULL;
-> > +			goto out;
-> > +		}
-> >   
-> >   		newsk->sk_err	   = 0;
-> >   		newsk->sk_err_soft = 0;
-> > 
+Hi Hillf,
+
+We need this patch (although slightly updated for bpf tree) do
+you want to send it? Otherwise I can. We should only set this if
+TX path was enabled otherwise we null it. Checking against
+tls_write_space seems best to me as well.
+
+Against bpf this patch should fix it.
+
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index ce6ef56a65ef..43252a801c3f 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -308,7 +308,8 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+        if (free_ctx)
+                icsk->icsk_ulp_data = NULL;
+        sk->sk_prot = ctx->sk_proto;
+-       sk->sk_write_space = ctx->sk_write_space;
++       if (sk->sk_write_space == tls_write_space)
++               sk->sk_write_space = ctx->sk_write_space;
+        write_unlock_bh(&sk->sk_callback_lock);
+        release_sock(sk);
+        if (ctx->tx_conf == TLS_SW)
