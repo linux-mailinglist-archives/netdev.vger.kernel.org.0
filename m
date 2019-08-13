@@ -2,92 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1E2E8B6E8
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 13:31:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 659A48B71A
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 13:37:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbfHMLbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 07:31:38 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35535 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725981AbfHMLbi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 07:31:38 -0400
-Received: by mail-wr1-f68.google.com with SMTP id k2so21570599wrq.2
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 04:31:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=LUxcWLUDMBz/XKmA82va/FLMHDJ/PRSCJnNzZIS25ZU=;
-        b=nsJn0o3oseWJ4dd0p0+9ZsQ0/FWkf1jH/wSlXxjFL8VktHQhb3+Nz/HJ/+ymSZ5hDY
-         4fwsAaC6oijBws1+ASYvHKCKBAC6xVDEBtRxJhFWmwc8YRRtDSja/bRTm6PBckg9m7UX
-         ElrTI/vBEeV0WT7/7feuqdj2EpDGW4t++WtbJSf7XD5cOZvoZaQAnsIdNTeL1GwMHeul
-         cn0L5626CcEnT2JPxKU8lyf+dbtxhBApCy3vTFXnbGieJmEyN5E/KmWdZVaSGZyMH+cF
-         nVbAvDlDiXed7xCTAAKfvNBhH8U9txUNrjayqqNZAzbjfF6M7I01GaneNgV+CPd1y2sO
-         ioiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=LUxcWLUDMBz/XKmA82va/FLMHDJ/PRSCJnNzZIS25ZU=;
-        b=pXBbbUQd+L798Hob5MNGa4uA80Ce9dTZM1o7afSWq1ScQ2vaI7ndsd26txJKCxxjBN
-         I8QhoP7C+O/w9ImR7pn8nllZavzFgfR9RtMYRwgCq7AZig37Kh9S6Mc5DZMABYaf1/qA
-         KS9R8nKcw3kPluobiNwgIyrLtyfdN6NiDWpbpZ7kqGJbOj10L45d8lBGdsEbOK0dtil7
-         0F9HHI2zSvUXw24k6pa96H4Y/2dC3C9NZxU0NWYYtPHdLBha4uftIbecFAUnItiQS5WF
-         4U1dm1C8OwiHiW8Qj03qKrevkuOBZ8P2AnEjkaA3Ftbe/b6Z7LuzJsoHy4AbBPw84Rjb
-         J9ww==
-X-Gm-Message-State: APjAAAWiB84i8KNdiBsInc11iNb1WjcJg52kGc00uVQq950nOn867sQJ
-        XoR0QcGbHzQ1Oks1KWynxs8=
-X-Google-Smtp-Source: APXvYqygjEjmThA2z9tkfuAJrBnEwD7vxcFKsatNUxGcx8Yp0l7KVEuqZsmsO54ptiTwC4sx0SyKKQ==
-X-Received: by 2002:a5d:424d:: with SMTP id s13mr27160439wrr.178.1565695896112;
-        Tue, 13 Aug 2019 04:31:36 -0700 (PDT)
-Received: from [192.168.8.147] (64.161.185.81.rev.sfr.net. [81.185.161.64])
-        by smtp.gmail.com with ESMTPSA id k124sm2731847wmk.47.2019.08.13.04.31.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Aug 2019 04:31:35 -0700 (PDT)
-Subject: Re: [PATCH net] netlink: Fix nlmsg_parse as a wrapper for strict
- message parsing
-To:     David Ahern <dsahern@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, johannes.berg@intel.com,
-        edumazet@google.com, David Ahern <dsahern@gmail.com>
-References: <20190812200707.25587-1-dsahern@kernel.org>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <dec209a4-b72a-86c3-d8d5-a080e1249886@gmail.com>
-Date:   Tue, 13 Aug 2019 13:31:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727558AbfHMLg7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 07:36:59 -0400
+Received: from kadath.azazel.net ([81.187.231.250]:60518 "EHLO
+        kadath.azazel.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725981AbfHMLg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 07:36:58 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=azazel.net;
+         s=20190108; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=lXORjW+EvERLqzo6SjmX1Ws1O3ILhH8iZsNJou9jpik=; b=sYeZ7bztCLU1VNvu8eU4lJaUsB
+        eL8d2nHGJMYek9v4OYQq8rsgDiWQuQGfOSq8nrNfot6tLCvqfqQpEwKE+wpxnY5hukI3ZioUSF4Cx
+        vH10nTG6L5bk3Ze8lRr6Bcty2/Lz33e12BUOqjFNmiFr5+3N3js9USTrejEjgwOKyyIDP6AiCLHVS
+        HYdBdGsMS2JN0sj05OYmKeKeSkR2QNdiYDNQ8IBj54TJ0NMxpihBsRFnMR0jlx5esthXi7gW96lU+
+        dtXxLhjfeRCFgC5iEjpJ8iMoUCoXWr+pHo57xy+yyBKBnUj/Yb2x5vKnLidBgg9ScJ/90q/gpNS7Y
+        MWVCXQrg==;
+Received: from pnakotus.dreamlands.azazel.net ([2001:8b0:fb7d:d6d7:208:9bff:febe:32] helo=azazel.net)
+        by kadath.azazel.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <jeremy@azazel.net>)
+        id 1hxV6n-0006G1-4R; Tue, 13 Aug 2019 12:36:57 +0100
+Date:   Tue, 13 Aug 2019 12:36:57 +0100
+From:   Jeremy Sowden <jeremy@azazel.net>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     Netfilter Devel <netfilter-devel@vger.kernel.org>,
+        Net Dev <netdev@vger.kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: [PATCH net-next v1 0/8] netfilter: header compilation fixes
+Message-ID: <20190813113657.GB4840@azazel.net>
+References: <20190722201615.GE23346@azazel.net>
+ <20190807141705.4864-1-jeremy@azazel.net>
+ <20190813095529.aisgjjwl6rzt5xeh@salvia>
+ <20190813100424.GA4840@azazel.net>
+ <20190813101403.ly5z5q6xvyno3xdd@salvia>
 MIME-Version: 1.0
-In-Reply-To: <20190812200707.25587-1-dsahern@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="gj572EiMnwbLXET9"
+Content-Disposition: inline
+In-Reply-To: <20190813101403.ly5z5q6xvyno3xdd@salvia>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:8b0:fb7d:d6d7:208:9bff:febe:32
+X-SA-Exim-Mail-From: jeremy@azazel.net
+X-SA-Exim-Scanned: No (on kadath.azazel.net); SAEximRunCond expanded to false
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+--gj572EiMnwbLXET9
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 8/12/19 10:07 PM, David Ahern wrote:
-> From: David Ahern <dsahern@gmail.com>
-> 
-> Eric reported a syzbot warning:
-> 
-> 
-> The root cause is nlmsg_parse calling __nla_parse which means the
-> header struct size is not checked.
-> 
-> nlmsg_parse should be a wrapper around __nlmsg_parse with
-> NL_VALIDATE_STRICT for the validate argument very much like
-> nlmsg_parse_deprecated is for NL_VALIDATE_LIBERAL.
-> 
-> Fixes: 3de6440354465 ("netlink: re-add parse/validate functions in strict mode")
-> Reported-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: syzbot <syzkaller@googlegroups.com>
-> Signed-off-by: David Ahern <dsahern@gmail.com>
-> ---
+On 2019-08-13, at 12:14:03 +0200, Pablo Neira Ayuso wrote:
+> On Tue, Aug 13, 2019 at 11:04:24AM +0100, Jeremy Sowden wrote:
+> > On 2019-08-13, at 11:55:29 +0200, Pablo Neira Ayuso wrote:
+> > > Would you mind if - before pushing this out - I do this string
+> > > replacement for the patch subject?
+> > >
+> > > s/added/add
+> > > s/removed/remove
+> > > s/inlined/inline
+> > >
+> > > I was told present tense is preferred for description. Otherwise, I'll
+> > > leave them as is.
+> >
+> > I adopted past tenses because at the point at which one is reading
+> > the description of a commit, one is usually reading about old
+> > behaviour and what has been done to change it.  However, I wasn't
+> > aware that there was a preference and I am happy to switch to the
+> > present tense instead, so by all means feel free to change them.
+>
+> This is not in the Documentation tree, or I could not find this in a
+> quick git grep:
+>
+> https://kernelnewbies.org/PatchPhilosophy
+>
+> "In patch descriptions and in the subject, it is common and preferable
+> to use present-tense, imperative language. Write as if you are telling
+> git what to do with your patch."
+>
+> I remember though that maintainers have been asking for this in the
+> past.
 
-Reviewed-by: Eric Dumazet <edumazet@google.com>
+Thanks for the pointer.
 
-Thanks !
+J.
 
+--gj572EiMnwbLXET9
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEZ8d+2N/NBLDbUxIF0Z7UzfnX9sMFAl1SoNUACgkQ0Z7UzfnX
+9sME5A/9EloKPh1FzFH1mpNfCz5dYSuzZRlCVkSQ9L+MB+ys221pxeswOeGQ77aM
+S3XGyTirwyRquakbz+bqvEN+ZurS59nUyG4jdyFu7qAJB8V3DQUWwH+m7PdXvGwR
+BP/KAl+QiKQkDfHzuzNHd3AcCZGVHXmw2sWcqzG4RYSu+e9S7fsa1k2N+C0b/MjP
+Tv28b7yQjD+GcM94CeTpR61Gt3RcyBk72+dxH8eym6ZEk6LtD7KgzX3iJW7XIpqO
+ePxwmEDGl5r40p2TCVj6H293vPCgXAUod7oFtgNY+xfmL7N/bbFIBFnNqMU+XIQb
+5ompei+eKH4GIasrvr/mdyRug80uoO1xp8cAeA7sSaJpuNkkT24xSANeejaqpM5D
+0WXVbt0OmUzC2tZFw0olCWDtqNpyoyLXCX7acVXFKvOsYadi9FPoZQmbFroj31Ju
+3y9cckpzyP5bnONbHfcajKeZu8xznprD4l006KCbEaz2nIbCwsdT0vdboqHERkH/
+0/Sa2uQP7ZaeZ0eUEA10cg2QvAZDMavrfD/qghFxnbPhmMuF8azDF4krwIxu6LtH
+8glVhNGC8BnQNJTGSGc17UNv/n/V5rTisGwwxAFuCZwPVUEkNndSg4t2TKm/xEuo
+s8jKSplCH/yAUNzCRe3XQyyc8MF95rzeRxGIzCNPISicixmLink=
+=4z5Y
+-----END PGP SIGNATURE-----
+
+--gj572EiMnwbLXET9--
