@@ -2,313 +2,426 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5A5B8C4AA
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 01:11:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B9E628C4B1
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 01:16:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726457AbfHMXLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 19:11:54 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:61992 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726316AbfHMXLy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 19:11:54 -0400
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.27/8.16.0.27) with SMTP id x7DN9EpU030106;
-        Tue, 13 Aug 2019 16:11:48 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=1a+B0oU6P6+SP+/ozgaaLlIjRzKeXuVtrJ1lABwrN5Y=;
- b=iYO6Z116zrpI5m/7RmmHH4Yai0ahZGGIWvsbBgFcH7+B4KYqTjnGPnkT5TCKPXs1zuAi
- csK2RbnicwZRwcFHitZ+0l2sCV4PCQURYmA+ajPGTAmYHFp40PbEsiuUM9LWpOfDlcbJ
- SjOPQ77nMBt6AZLIiaagkh7iXYFfh+P102o= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by m0089730.ppops.net with ESMTP id 2uc2tg11ps-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 13 Aug 2019 16:11:48 -0700
-Received: from prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) by
- prn-hub04.TheFacebook.com (2620:10d:c081:35::128) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 13 Aug 2019 16:11:17 -0700
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-mbx08.TheFacebook.com (2620:10d:c081:6::22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 13 Aug 2019 16:11:16 -0700
-Received: from NAM01-BN3-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 13 Aug 2019 16:11:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gai74s429JCz42mzm+PnahwLSZmJ2aAFJNKlXlTseKl3EE1oecrtlqIH/TYhfFPpee54vNnE4I4MUzVSrLDQ/myd5aU1SGpOgcq9YoZOXePN4icKaa72J9dKCCjzV+1WlPna6SvTyvz/YN6M2tC3ekDVqQXCj/FpZc4iWpWlUoMRkddu7418tQ1OibP7RYqRoKJTYMJBibvuPtOC+29NkD7+gxiLjk60y9ChOTPK4wTV9N8CxlvFn0zy8VYq6tdpmtMvwrAx6JUboRWGKo2yyHkHIyTL77OapCgAOj8TpfXAQmPPD9XR0EeWofLbq1Xu4R+71O3S9ASHmnjPNGLvKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1a+B0oU6P6+SP+/ozgaaLlIjRzKeXuVtrJ1lABwrN5Y=;
- b=RKVteRysn2Jckr9DS9wh7KKEcYzusE/krOOaUMDooWxFgShfeRTZoJdhgzwX4r5swQh4hs73CC36Go0ytUpEg8kdqdBdGgDy6rhUJZVlKnk0S83L4salD3H1JfeTEXGHnwrQxmsnhyUPmQRQ3k97prazPl5t93+3ShjMQGRyG0XYiZkP/DM07bATDmRQ5a/8IAGG8nCUS3do9yPxF3Cxt38kCGd9x5bZg5Kn1/jsJZ+fFPnCIqXdIaDEPBxaPVL9X5/Jce/qDOZ8MzLwcIkhDry+H74AvN7++Bocizm3uNZRUNI/c80vAmlDjzYxvpAPYR3DkjxurdjG9byF2oFltw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1a+B0oU6P6+SP+/ozgaaLlIjRzKeXuVtrJ1lABwrN5Y=;
- b=fas6g5Wg/2+oKMllpyVqShQy+1gEuCOC8LP/zk4PnW7qvRZlQVu12ggHKBVUNnhP7uaQMbsdV+FgSJaSwUsLiwC4xC691ba1DOZRD0oSm2puseKPCdnx0rKgmNjYQ7VyX43RN3gs0any2/xmAIwEmzdxnuOs9D6NZuhGJXqpTJE=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
- BYAPR15MB2871.namprd15.prod.outlook.com (20.178.206.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.18; Tue, 13 Aug 2019 23:11:14 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978%5]) with mapi id 15.20.2157.020; Tue, 13 Aug 2019
- 23:11:14 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Carlos Neira <cneirabustos@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next V9 1/3] bpf: new helper to obtain namespace data
- from current task
-Thread-Topic: [PATCH bpf-next V9 1/3] bpf: new helper to obtain namespace data
- from current task
-Thread-Index: AQHVUgen0TRJjFwMbUCsjzJfHVP59ab5tLuA
-Date:   Tue, 13 Aug 2019 23:11:14 +0000
-Message-ID: <13b7f81f-83b6-07c9-4864-b49749cbf7d9@fb.com>
-References: <20190813184747.12225-1-cneirabustos@gmail.com>
- <20190813184747.12225-2-cneirabustos@gmail.com>
-In-Reply-To: <20190813184747.12225-2-cneirabustos@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR2201CA0060.namprd22.prod.outlook.com
- (2603:10b6:301:16::34) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:10e::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::3:f941]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c289d9f3-1746-4319-05da-08d7204389a5
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2871;
-x-ms-traffictypediagnostic: BYAPR15MB2871:
-x-microsoft-antispam-prvs: <BYAPR15MB287168D5512A0DD3D724BC24D3D20@BYAPR15MB2871.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 01283822F8
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(396003)(136003)(346002)(39860400002)(376002)(199004)(52314003)(189003)(71200400001)(2906002)(54906003)(256004)(14454004)(486006)(46003)(446003)(11346002)(6512007)(2616005)(476003)(14444005)(478600001)(99286004)(5660300002)(6116002)(25786009)(4326008)(66556008)(31686004)(81156014)(6246003)(2501003)(71190400001)(53936002)(86362001)(316002)(6436002)(8676002)(81166006)(6486002)(110136005)(53546011)(6506007)(52116002)(76176011)(386003)(7736002)(305945005)(66946007)(66446008)(8936002)(102836004)(66476007)(229853002)(64756008)(36756003)(31696002)(186003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2871;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 30XfmFkTAFiYdXSQslQv/Pxf33DiiZFEoNuUfdbgxcL87fGwBDINOOgOPYkw605PIyrISyhWQHuG39G2n28O2lHWktUdaot8jtcVkb7+cX0WEj0iaPz0M3eb9B0NaqxzwosTye1SLoGNQMBTVq8TSv76+PJ05l/L0UccMU+nx5Z6Fr8ajgLGfkgJ/A+qLajj6pRZQdmYfDhhbBKuVxJlG89k7fcAakihuXBL+QNGrXrGKrNhGXj/liq44+av4jMw59MuvwclEEC0Dvd9KR9Z+pVled6XhERybVHJtq2ruzpBMCxPmJA4AMa4JZ6etxQHozXDhX7WqhOVM+tP6vXxy40Jv9DPCJ+lrameipeP0lVeAZdiXK5qHsa9pvcEuyC6h2fEC5UI5aFchjjn6W9lGCpPd60DhgLnXOJE6Wyuv24=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <427EDE6E74BE6641A33D85AF4D90138F@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726365AbfHMXQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 19:16:51 -0400
+Received: from www62.your-server.de ([213.133.104.62]:42510 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726116AbfHMXQv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 19:16:51 -0400
+Received: from 231.45.193.178.dynamic.wline.res.cust.swisscom.ch ([178.193.45.231] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hxg1v-0007sL-QJ; Wed, 14 Aug 2019 01:16:39 +0200
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     davem@davemloft.net, jakub.kicinski@netronome.com
+Cc:     daniel@iogearbox.net, ast@kernel.org, andrii.nakryiko@gmail.com,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: pull-request: bpf-next 2019-08-14
+Date:   Wed, 14 Aug 2019 01:16:39 +0200
+Message-Id: <20190813231639.29891-1-daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: c289d9f3-1746-4319-05da-08d7204389a5
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2019 23:11:14.4333
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: zPV4hgd/OWoQfl8kdsnIhGWjMzZTddzwzKh6GiicMF+8oYGARPn9n3tj3Rk4b66x
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2871
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-13_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908130218
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25540/Tue Aug 13 10:16:47 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDgvMTMvMTkgMTE6NDcgQU0sIENhcmxvcyBOZWlyYSB3cm90ZToNCj4gRnJvbTogQ2Fy
-bG9zIDxjbmVpcmFidXN0b3NAZ21haWwuY29tPg0KPiANCj4gTmV3IGJwZiBoZWxwZXIgYnBmX2dl
-dF9jdXJyZW50X3BpZG5zX2luZm8uDQo+IFRoaXMgaGVscGVyIG9idGFpbnMgdGhlIGFjdGl2ZSBu
-YW1lc3BhY2UgZnJvbSBjdXJyZW50IGFuZCByZXR1cm5zDQo+IHBpZCwgdGdpZCwgZGV2aWNlIGFu
-ZCBuYW1lc3BhY2UgaWQgYXMgc2VlbiBmcm9tIHRoYXQgbmFtZXNwYWNlLA0KPiBhbGxvd2luZyB0
-byBpbnN0cnVtZW50IGEgcHJvY2VzcyBpbnNpZGUgYSBjb250YWluZXIuDQo+IA0KPiBTaWduZWQt
-b2ZmLWJ5OiBDYXJsb3MgTmVpcmEgPGNuZWlyYWJ1c3Rvc0BnbWFpbC5jb20+DQo+IC0tLQ0KPiAg
-IGZzL2ludGVybmFsLmggICAgICAgICAgICB8ICAyIC0tDQo+ICAgZnMvbmFtZWkuYyAgICAgICAg
-ICAgICAgIHwgIDEgLQ0KPiAgIGluY2x1ZGUvbGludXgvYnBmLmggICAgICB8ICAxICsNCj4gICBp
-bmNsdWRlL2xpbnV4L25hbWVpLmggICAgfCAgNCArKysNCj4gICBpbmNsdWRlL3VhcGkvbGludXgv
-YnBmLmggfCAzMSArKysrKysrKysrKysrKysrKysrKysrLQ0KPiAgIGtlcm5lbC9icGYvY29yZS5j
-ICAgICAgICB8ICAxICsNCj4gICBrZXJuZWwvYnBmL2hlbHBlcnMuYyAgICAgfCA2NCArKysrKysr
-KysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysNCj4gICBrZXJuZWwvdHJh
-Y2UvYnBmX3RyYWNlLmMgfCAgMiArKw0KPiAgIDggZmlsZXMgY2hhbmdlZCwgMTAyIGluc2VydGlv
-bnMoKyksIDQgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZnMvaW50ZXJuYWwuaCBi
-L2ZzL2ludGVybmFsLmgNCj4gaW5kZXggMzE1ZmNkOGQyMzdjLi42NjQ3ZTE1ZGQ0MTkgMTAwNjQ0
-DQo+IC0tLSBhL2ZzL2ludGVybmFsLmgNCj4gKysrIGIvZnMvaW50ZXJuYWwuaA0KPiBAQCAtNTks
-OCArNTksNiBAQCBleHRlcm4gaW50IGZpbmlzaF9jbGVhbl9jb250ZXh0KHN0cnVjdCBmc19jb250
-ZXh0ICpmYyk7DQo+ICAgLyoNCj4gICAgKiBuYW1laS5jDQo+ICAgICovDQo+IC1leHRlcm4gaW50
-IGZpbGVuYW1lX2xvb2t1cChpbnQgZGZkLCBzdHJ1Y3QgZmlsZW5hbWUgKm5hbWUsIHVuc2lnbmVk
-IGZsYWdzLA0KPiAtCQkJICAgc3RydWN0IHBhdGggKnBhdGgsIHN0cnVjdCBwYXRoICpyb290KTsN
-Cj4gICBleHRlcm4gaW50IHVzZXJfcGF0aF9tb3VudHBvaW50X2F0KGludCwgY29uc3QgY2hhciBf
-X3VzZXIgKiwgdW5zaWduZWQgaW50LCBzdHJ1Y3QgcGF0aCAqKTsNCj4gICBleHRlcm4gaW50IHZm
-c19wYXRoX2xvb2t1cChzdHJ1Y3QgZGVudHJ5ICosIHN0cnVjdCB2ZnNtb3VudCAqLA0KPiAgIAkJ
-CSAgIGNvbnN0IGNoYXIgKiwgdW5zaWduZWQgaW50LCBzdHJ1Y3QgcGF0aCAqKTsNCj4gZGlmZiAt
-LWdpdCBhL2ZzL25hbWVpLmMgYi9mcy9uYW1laS5jDQo+IGluZGV4IDIwOWM1MWE1MjI2Yy4uYTg5
-ZmM3MmE0YTEwIDEwMDY0NA0KPiAtLS0gYS9mcy9uYW1laS5jDQo+ICsrKyBiL2ZzL25hbWVpLmMN
-Cj4gQEAgLTE5LDcgKzE5LDYgQEANCj4gICAjaW5jbHVkZSA8bGludXgvZXhwb3J0Lmg+DQo+ICAg
-I2luY2x1ZGUgPGxpbnV4L2tlcm5lbC5oPg0KPiAgICNpbmNsdWRlIDxsaW51eC9zbGFiLmg+DQo+
-IC0jaW5jbHVkZSA8bGludXgvZnMuaD4NCj4gICAjaW5jbHVkZSA8bGludXgvbmFtZWkuaD4NCj4g
-ICAjaW5jbHVkZSA8bGludXgvcGFnZW1hcC5oPg0KPiAgICNpbmNsdWRlIDxsaW51eC9mc25vdGlm
-eS5oPg0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9icGYuaCBiL2luY2x1ZGUvbGludXgv
-YnBmLmgNCj4gaW5kZXggZjlhNTA2MTQ3YzhhLi5lNGFkZjVlMDVhZmQgMTAwNjQ0DQo+IC0tLSBh
-L2luY2x1ZGUvbGludXgvYnBmLmgNCj4gKysrIGIvaW5jbHVkZS9saW51eC9icGYuaA0KPiBAQCAt
-MTA1MCw2ICsxMDUwLDcgQEAgZXh0ZXJuIGNvbnN0IHN0cnVjdCBicGZfZnVuY19wcm90byBicGZf
-Z2V0X2xvY2FsX3N0b3JhZ2VfcHJvdG87DQo+ICAgZXh0ZXJuIGNvbnN0IHN0cnVjdCBicGZfZnVu
-Y19wcm90byBicGZfc3RydG9sX3Byb3RvOw0KPiAgIGV4dGVybiBjb25zdCBzdHJ1Y3QgYnBmX2Z1
-bmNfcHJvdG8gYnBmX3N0cnRvdWxfcHJvdG87DQo+ICAgZXh0ZXJuIGNvbnN0IHN0cnVjdCBicGZf
-ZnVuY19wcm90byBicGZfdGNwX3NvY2tfcHJvdG87DQo+ICtleHRlcm4gY29uc3Qgc3RydWN0IGJw
-Zl9mdW5jX3Byb3RvIGJwZl9nZXRfY3VycmVudF9waWRuc19pbmZvX3Byb3RvOw0KPiAgIA0KPiAg
-IC8qIFNoYXJlZCBoZWxwZXJzIGFtb25nIGNCUEYgYW5kIGVCUEYuICovDQo+ICAgdm9pZCBicGZf
-dXNlcl9ybmRfaW5pdF9vbmNlKHZvaWQpOw0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9u
-YW1laS5oIGIvaW5jbHVkZS9saW51eC9uYW1laS5oDQo+IGluZGV4IDkxMzhiNDQ3MWRiZi4uYjQ1
-YzhiNmY3Y2I0IDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRlL2xpbnV4L25hbWVpLmgNCj4gKysrIGIv
-aW5jbHVkZS9saW51eC9uYW1laS5oDQo+IEBAIC02LDYgKzYsNyBAQA0KPiAgICNpbmNsdWRlIDxs
-aW51eC9wYXRoLmg+DQo+ICAgI2luY2x1ZGUgPGxpbnV4L2ZjbnRsLmg+DQo+ICAgI2luY2x1ZGUg
-PGxpbnV4L2Vycm5vLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvZnMuaD4NCj4gICANCj4gICBlbnVt
-IHsgTUFYX05FU1RFRF9MSU5LUyA9IDggfTsNCj4gICANCj4gQEAgLTk3LDYgKzk4LDkgQEAgZXh0
-ZXJuIHZvaWQgdW5sb2NrX3JlbmFtZShzdHJ1Y3QgZGVudHJ5ICosIHN0cnVjdCBkZW50cnkgKik7
-DQo+ICAgDQo+ICAgZXh0ZXJuIHZvaWQgbmRfanVtcF9saW5rKHN0cnVjdCBwYXRoICpwYXRoKTsN
-Cj4gICANCj4gK2V4dGVybiBpbnQgZmlsZW5hbWVfbG9va3VwKGludCBkZmQsIHN0cnVjdCBmaWxl
-bmFtZSAqbmFtZSwgdW5zaWduZWQgZmxhZ3MsDQo+ICsJCQkgICBzdHJ1Y3QgcGF0aCAqcGF0aCwg
-c3RydWN0IHBhdGggKnJvb3QpOw0KPiArDQo+ICAgc3RhdGljIGlubGluZSB2b2lkIG5kX3Rlcm1p
-bmF0ZV9saW5rKHZvaWQgKm5hbWUsIHNpemVfdCBsZW4sIHNpemVfdCBtYXhsZW4pDQo+ICAgew0K
-PiAgIAkoKGNoYXIgKikgbmFtZSlbbWluKGxlbiwgbWF4bGVuKV0gPSAnXDAnOw0KPiBkaWZmIC0t
-Z2l0IGEvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oIGIvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5o
-DQo+IGluZGV4IDQzOTNiZDRiMjQxOS4uZGIyNDE4NTdlYzE1IDEwMDY0NA0KPiAtLS0gYS9pbmNs
-dWRlL3VhcGkvbGludXgvYnBmLmgNCj4gKysrIGIvaW5jbHVkZS91YXBpL2xpbnV4L2JwZi5oDQo+
-IEBAIC0yNzQxLDYgKzI3NDEsMjggQEAgdW5pb24gYnBmX2F0dHIgew0KPiAgICAqCQkqKi1FT1BO
-T1RTVVBQKioga2VybmVsIGNvbmZpZ3VyYXRpb24gZG9lcyBub3QgZW5hYmxlIFNZTiBjb29raWVz
-DQo+ICAgICoNCj4gICAgKgkJKiotRVBST1RPTk9TVVBQT1JUKiogSVAgcGFja2V0IHZlcnNpb24g
-aXMgbm90IDQgb3IgNg0KPiArICoNCj4gKyAqIGludCBicGZfZ2V0X2N1cnJlbnRfcGlkbnNfaW5m
-byhzdHJ1Y3QgYnBmX3BpZG5zX2luZm8gKnBpZG5zLCB1MzIgc2l6ZV9vZl9waWRucykNCj4gKyAq
-CURlc2NyaXB0aW9uDQo+ICsgKgkJQ29waWVzIGludG8gKnBpZG5zKiBwaWQsIG5hbWVzcGFjZSBp
-ZCBhbmQgdGdpZCBhcyBzZWVuIGJ5IHRoZQ0KPiArICoJCWN1cnJlbnQgbmFtZXNwYWNlIGFuZCBh
-bHNvIGRldmljZSBmcm9tIC9wcm9jL3NlbGYvbnMvcGlkLg0KPiArICoJCSpzaXplX29mX3BpZG5z
-KiBtdXN0IGJlIHRoZSBzaXplIG9mICpwaWRucyoNCj4gKyAqDQo+ICsgKgkJVGhpcyBoZWxwZXIg
-aXMgdXNlZCB3aGVuIHBpZCBmaWx0ZXJpbmcgaXMgbmVlZGVkIGluc2lkZSBhDQo+ICsgKgkJY29u
-dGFpbmVyIGFzIGJwZl9nZXRfY3VycmVudF90Z2lkKCkgaGVscGVyIHJldHVybnMgYWx3YXlzIHRo
-ZQ0KPiArICoJCXBpZCBpZCBhcyBzZWVuIGJ5IHRoZSByb290IG5hbWVzcGFjZS4NCj4gKyAqCVJl
-dHVybg0KPiArICoJCTAgb24gc3VjY2Vzcw0KPiArICoNCj4gKyAqCQkqKi1FSU5WQUwqKiBpZiAq
-c2l6ZV9vZl9waWRucyogaXMgbm90IHZhbGlkIG9yIHVuYWJsZSB0byBnZXQgbnMsIHBpZA0KPiAr
-ICoJCW9yIHRnaWQgb2YgdGhlIGN1cnJlbnQgdGFzay4NCj4gKyAqDQo+ICsgKgkJKiotRUNISUxE
-KiogaWYgL3Byb2Mvc2VsZi9ucy9waWQgZG9lcyBub3QgZXhpc3RzLg0KPiArICoNCj4gKyAqCQkq
-Ki1FTk9URElSKiogaWYgL3Byb2Mvc2VsZi9ucyBkb2VzIG5vdCBleGlzdHMuDQo+ICsgKg0KPiAr
-ICoJCSoqLUVOT01FTSoqICBpZiBhbGxvY2F0aW9uIGZhaWxzLg0KPiArICoNCj4gICAgKi8NCj4g
-ICAjZGVmaW5lIF9fQlBGX0ZVTkNfTUFQUEVSKEZOKQkJXA0KPiAgIAlGTih1bnNwZWMpLAkJCVwN
-Cj4gQEAgLTI4NTMsNyArMjg3NSw4IEBAIHVuaW9uIGJwZl9hdHRyIHsNCj4gICAJRk4oc2tfc3Rv
-cmFnZV9nZXQpLAkJXA0KPiAgIAlGTihza19zdG9yYWdlX2RlbGV0ZSksCQlcDQo+ICAgCUZOKHNl
-bmRfc2lnbmFsKSwJCVwNCj4gLQlGTih0Y3BfZ2VuX3N5bmNvb2tpZSksDQo+ICsJRk4odGNwX2dl
-bl9zeW5jb29raWUpLAkJXA0KPiArCUZOKGdldF9jdXJyZW50X3BpZG5zX2luZm8pLA0KPiAgIA0K
-PiAgIC8qIGludGVnZXIgdmFsdWUgaW4gJ2ltbScgZmllbGQgb2YgQlBGX0NBTEwgaW5zdHJ1Y3Rp
-b24gc2VsZWN0cyB3aGljaCBoZWxwZXINCj4gICAgKiBmdW5jdGlvbiBlQlBGIHByb2dyYW0gaW50
-ZW5kcyB0byBjYWxsDQo+IEBAIC0zNjA0LDQgKzM2MjcsMTAgQEAgc3RydWN0IGJwZl9zb2Nrb3B0
-IHsNCj4gICAJX19zMzIJcmV0dmFsOw0KPiAgIH07DQo+ICAgDQo+ICtzdHJ1Y3QgYnBmX3BpZG5z
-X2luZm8gew0KPiArCV9fdTMyIGRldjsNCj4gKwlfX3UzMiBuc2lkOw0KPiArCV9fdTMyIHRnaWQ7
-DQo+ICsJX191MzIgcGlkOw0KPiArfTsNCj4gICAjZW5kaWYgLyogX1VBUElfX0xJTlVYX0JQRl9I
-X18gKi8NCj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9icGYvY29yZS5jIGIva2VybmVsL2JwZi9jb3Jl
-LmMNCj4gaW5kZXggODE5MWE3ZGIyNzc3Li4zMTU5ZjJhMDE4OGMgMTAwNjQ0DQo+IC0tLSBhL2tl
-cm5lbC9icGYvY29yZS5jDQo+ICsrKyBiL2tlcm5lbC9icGYvY29yZS5jDQo+IEBAIC0yMDM4LDYg
-KzIwMzgsNyBAQCBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gYnBmX2dldF9jdXJyZW50X3Vp
-ZF9naWRfcHJvdG8gX193ZWFrOw0KPiAgIGNvbnN0IHN0cnVjdCBicGZfZnVuY19wcm90byBicGZf
-Z2V0X2N1cnJlbnRfY29tbV9wcm90byBfX3dlYWs7DQo+ICAgY29uc3Qgc3RydWN0IGJwZl9mdW5j
-X3Byb3RvIGJwZl9nZXRfY3VycmVudF9jZ3JvdXBfaWRfcHJvdG8gX193ZWFrOw0KPiAgIGNvbnN0
-IHN0cnVjdCBicGZfZnVuY19wcm90byBicGZfZ2V0X2xvY2FsX3N0b3JhZ2VfcHJvdG8gX193ZWFr
-Ow0KPiArY29uc3Qgc3RydWN0IGJwZl9mdW5jX3Byb3RvIGJwZl9nZXRfY3VycmVudF9waWRuc19p
-bmZvIF9fd2VhazsNCj4gICANCj4gICBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gKiBfX3dl
-YWsgYnBmX2dldF90cmFjZV9wcmludGtfcHJvdG8odm9pZCkNCj4gICB7DQo+IGRpZmYgLS1naXQg
-YS9rZXJuZWwvYnBmL2hlbHBlcnMuYyBiL2tlcm5lbC9icGYvaGVscGVycy5jDQo+IGluZGV4IDVl
-Mjg3MTg5MjhjYS4uNDFmYmYxZjI4YTQ4IDEwMDY0NA0KPiAtLS0gYS9rZXJuZWwvYnBmL2hlbHBl
-cnMuYw0KPiArKysgYi9rZXJuZWwvYnBmL2hlbHBlcnMuYw0KPiBAQCAtMTEsNiArMTEsMTIgQEAN
-Cj4gICAjaW5jbHVkZSA8bGludXgvdWlkZ2lkLmg+DQo+ICAgI2luY2x1ZGUgPGxpbnV4L2ZpbHRl
-ci5oPg0KPiAgICNpbmNsdWRlIDxsaW51eC9jdHlwZS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L3Bp
-ZF9uYW1lc3BhY2UuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9tYWpvci5oPg0KPiArI2luY2x1ZGUg
-PGxpbnV4L3N0YXQuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9uYW1laS5oPg0KPiArI2luY2x1ZGUg
-PGxpbnV4L3ZlcnNpb24uaD4NCj4gKw0KPiAgIA0KPiAgICNpbmNsdWRlICIuLi8uLi9saWIva3N0
-cnRveC5oIg0KPiAgIA0KPiBAQCAtMzEyLDYgKzMxOCw2NCBAQCB2b2lkIGNvcHlfbWFwX3ZhbHVl
-X2xvY2tlZChzdHJ1Y3QgYnBmX21hcCAqbWFwLCB2b2lkICpkc3QsIHZvaWQgKnNyYywNCj4gICAJ
-cHJlZW1wdF9lbmFibGUoKTsNCj4gICB9DQo+ICAgDQo+ICtCUEZfQ0FMTF8yKGJwZl9nZXRfY3Vy
-cmVudF9waWRuc19pbmZvLCBzdHJ1Y3QgYnBmX3BpZG5zX2luZm8gKiwgcGlkbnNfaW5mbywgdTMy
-LA0KPiArCSBzaXplKQ0KPiArew0KPiArCWNvbnN0IGNoYXIgKnBpZG5zX3BhdGggPSAiL3Byb2Mv
-c2VsZi9ucy9waWQiOw0KPiArCXN0cnVjdCBwaWRfbmFtZXNwYWNlICpwaWRucyA9IE5VTEw7DQo+
-ICsJc3RydWN0IGZpbGVuYW1lICp0bXAgPSBOVUxMOw0KPiArCXN0cnVjdCBpbm9kZSAqaW5vZGU7
-DQo+ICsJc3RydWN0IHBhdGgga3A7DQo+ICsJcGlkX3QgdGdpZCA9IDA7DQo+ICsJcGlkX3QgcGlk
-ID0gMDsNCj4gKwlpbnQgcmV0Ow0KPiArCWludCBsZW47DQoNCkkgYW0gcnVubmluZyB5b3VyIHNh
-bXBsZSBwcm9ncmFtIGFuZCBnZXQgdGhlIGZvbGxvd2luZyBrZXJuZWwgYnVnOg0KDQouLi4NClsg
-ICAyNi40MTQ4MjVdIEJVRzogc2xlZXBpbmcgZnVuY3Rpb24gY2FsbGVkIGZyb20gaW52YWxpZCBj
-b250ZXh0IGF0IA0KL2RhdGEvdXNlcnMveWhzL3dvcmsvbmV0LW5leHQvZnMNCi9kY2FjaGUuYzo4
-NDMNClsgICAyNi40MTYzMTRdIGluX2F0b21pYygpOiAxLCBpcnFzX2Rpc2FibGVkKCk6IDAsIHBp
-ZDogMTkxMSwgbmFtZTogcGluZw0KWyAgIDI2LjQxNzE4OV0gQ1BVOiAwIFBJRDogMTkxMSBDb21t
-OiBwaW5nIFRhaW50ZWQ6IEcgICAgICAgIFcgDQo1LjMuMC1yYzErICMyODANClsgICAyNi40MTgx
-ODJdIEhhcmR3YXJlIG5hbWU6IFFFTVUgU3RhbmRhcmQgUEMgKGk0NDBGWCArIFBJSVgsIDE5OTYp
-LCANCkJJT1MgMS45LjMtMS5lbDcuY2VudG9zIDA0LzAxLzINCjAxNA0KWyAgIDI2LjQxOTM5M10g
-Q2FsbCBUcmFjZToNClsgICAyNi40MTk2OTddICA8SVJRPg0KWyAgIDI2LjQxOTk2MF0gIGR1bXBf
-c3RhY2srMHg0Ni8weDViDQpbICAgMjYuNDIwNDM0XSAgX19fbWlnaHRfc2xlZXArMHhlNC8weDEx
-MA0KWyAgIDI2LjQyMDg5NF0gIGRwdXQrMHgyYS8weDIwMA0KWyAgIDI2LjQyMTI2NV0gIHdhbGtf
-Y29tcG9uZW50KzB4MTBjLzB4MjgwDQpbICAgMjYuNDIxNzczXSAgbGlua19wYXRoX3dhbGsrMHgz
-MjcvMHg1NjANClsgICAyNi40MjIyODBdICA/IHByb2NfbnNfZGlyX3JlYWRkaXIrMHgxYTAvMHgx
-YTANClsgICAyNi40MjI4NDhdICA/IHBhdGhfaW5pdCsweDIzMi8weDMzMA0KWyAgIDI2LjQyMzM2
-NF0gIHBhdGhfbG9va3VwYXQrMHg4OC8weDIwMA0KWyAgIDI2LjQyMzgwOF0gID8gc2VsaW51eF9w
-YXJzZV9za2IuY29uc3Rwcm9wLjY5KzB4MTI0LzB4NDMwDQpbICAgMjYuNDI0NTIxXSAgZmlsZW5h
-bWVfbG9va3VwKzB4YWYvMHgxOTANClsgICAyNi40MjUwMzFdICA/IHNpbXBsZV9hdHRyX3JlbGVh
-c2UrMHgyMC8weDIwDQpbICAgMjYuNDI1NTYwXSAgYnBmX2dldF9jdXJyZW50X3BpZG5zX2luZm8r
-MHhmYS8weDE5MA0KWyAgIDI2LjQyNjE2OF0gIGJwZl9wcm9nXzgzNjI3MTU0Y2VmZWQ1OTYrMHhl
-NjYvMHgxMDAwDQpbICAgMjYuNDI2Nzc5XSAgdHJhY2VfY2FsbF9icGYrMHhiNS8weDE2MA0KWyAg
-IDI2LjQyNzMxN10gID8gX19uZXRpZl9yZWNlaXZlX3NrYl9jb3JlKzB4MS8weGJiMA0KWyAgIDI2
-LjQyNzkyOV0gID8gX19uZXRpZl9yZWNlaXZlX3NrYl9jb3JlKzB4MS8weGJiMA0KWyAgIDI2LjQy
-ODQ5Nl0gIGtwcm9iZV9wZXJmX2Z1bmMrMHg0ZC8weDI4MA0KWyAgIDI2LjQyODk4Nl0gID8gdHJh
-Y2luZ19yZWNvcmRfdGFza2luZm9fc2tpcCsweDFhLzB4MzANClsgICAyNi40Mjk1ODRdICA/IHRy
-YWNpbmdfcmVjb3JkX3Rhc2tpbmZvKzB4ZS8weDgwDQpbICAgMjYuNDMwMTUyXSAgPyB0dHd1X2Rv
-X3dha2V1cC5pc3JhLjExNCsweGNmLzB4ZjANClsgICAyNi40MzA3MzddICA/IF9fbmV0aWZfcmVj
-ZWl2ZV9za2JfY29yZSsweDEvMHhiYjANClsgICAyNi40MzEzMzRdICA/IF9fbmV0aWZfcmVjZWl2
-ZV9za2JfY29yZSsweDUvMHhiYjANClsgICAyNi40MzE5MzBdICBrcHJvYmVfZnRyYWNlX2hhbmRs
-ZXIrMHg5MC8weGYwDQpbICAgMjYuNDMyNDk1XSAgZnRyYWNlX29wc19hc3Npc3RfZnVuYysweDYz
-LzB4MTAwDQpbICAgMjYuNDMzMDYwXSAgMHhmZmZmZmZmZmMwMzE4MGJmDQpbICAgMjYuNDMzNDcx
-XSAgPyBfX25ldGlmX3JlY2VpdmVfc2tiX2NvcmUrMHgxLzB4YmIwDQouLi4NCg0KVG8gcHJldmVu
-dCB3ZSBhcmUgcnVubmluZyBpbiBhcmJpdHJhcnkgdGFzayAoZS5nLiwgaWRsZSB0YXNrKQ0KY29u
-dGV4dCB3aGljaCBtYXkgaW50cm9kdWNlIHNsZWVwaW5nIGlzc3VlcywgdGhlIGZvbGxvd2luZw0K
-cHJvYmFibHkgYXBwcm9wcmlhdGU6DQoNCiAgICAgICAgaWYgKGluX25taSgpIHx8IGluX3NvZnRp
-cnEoKSkNCiAgICAgICAgICAgICAgICByZXR1cm4gLUVQRVJNOw0KDQpBbnl3YXksIGlmIGluIG5t
-aSBvciBzb2Z0aXJxLCB0aGUgbmFtZXNwYWNlIGFuZCBwaWQvdGdpZA0Kd2UgZ2V0IG1heSBiZSBq
-dXN0IGFjY2lkZW50YWxseSBhc3NvY2lhdGVkIHdpdGggdGhlIGJwZiBydW5uaW5nDQpjb250ZXh0
-LCBidXQgaXQgY291bGQgYmUgaW4gYSBkaWZmZXJlbnQgY29udGV4dC4gU28gc3VjaCBpbmZvDQpp
-cyBub3QgcmVsaWFibGUgYW55IHdheS4NCg0KPiArDQo+ICsJaWYgKHVubGlrZWx5KHNpemUgIT0g
-c2l6ZW9mKHN0cnVjdCBicGZfcGlkbnNfaW5mbykpKQ0KPiArCQlyZXR1cm4gLUVJTlZBTDsNCj4g
-KwlwaWRucyA9IHRhc2tfYWN0aXZlX3BpZF9ucyhjdXJyZW50KTsNCj4gKwlpZiAodW5saWtlbHko
-IXBpZG5zKSkNCj4gKwkJZ290byBjbGVhcjsNCj4gKwlwaWRuc19pbmZvLT5uc2lkID0gIHBpZG5z
-LT5ucy5pbnVtOw0KPiArCXBpZCA9IHRhc2tfcGlkX25yX25zKGN1cnJlbnQsIHBpZG5zKTsNCj4g
-KwlpZiAodW5saWtlbHkoIXBpZCkpDQo+ICsJCWdvdG8gY2xlYXI7DQo+ICsJdGdpZCA9IHRhc2tf
-dGdpZF9ucl9ucyhjdXJyZW50LCBwaWRucyk7DQo+ICsJaWYgKHVubGlrZWx5KCF0Z2lkKSkNCj4g
-KwkJZ290byBjbGVhcjsNCj4gKwlwaWRuc19pbmZvLT50Z2lkID0gKHUzMikgdGdpZDsNCj4gKwlw
-aWRuc19pbmZvLT5waWQgPSAodTMyKSBwaWQ7DQo+ICsJdG1wID0ga21lbV9jYWNoZV9hbGxvYyhu
-YW1lc19jYWNoZXAsIEdGUF9BVE9NSUMpOw0KPiArCWlmICh1bmxpa2VseSghdG1wKSkgew0KPiAr
-CQltZW1zZXQoKHZvaWQgKilwaWRuc19pbmZvLCAwLCAoc2l6ZV90KSBzaXplKTsNCj4gKwkJcmV0
-dXJuIC1FTk9NRU07DQo+ICsJfQ0KPiArCWxlbiA9IHN0cmxlbihwaWRuc19wYXRoKSArIDE7DQo+
-ICsJbWVtY3B5KChjaGFyICopdG1wLT5uYW1lLCBwaWRuc19wYXRoLCBsZW4pOw0KPiArCXRtcC0+
-dXB0ciA9IE5VTEw7DQo+ICsJdG1wLT5hbmFtZSA9IE5VTEw7DQo+ICsJdG1wLT5yZWZjbnQgPSAx
-Ow0KPiArCXJldCA9IGZpbGVuYW1lX2xvb2t1cChBVF9GRENXRCwgdG1wLCAwLCAma3AsIE5VTEwp
-Ow0KPiArCWlmIChyZXQpIHsNCj4gKwkJbWVtc2V0KCh2b2lkICopcGlkbnNfaW5mbywgMCwgKHNp
-emVfdCkgc2l6ZSk7DQo+ICsJCXJldHVybiByZXQ7DQo+ICsJfQ0KPiArCWlub2RlID0gZF9iYWNr
-aW5nX2lub2RlKGtwLmRlbnRyeSk7DQo+ICsJcGlkbnNfaW5mby0+ZGV2ID0gaW5vZGUtPmlfc2It
-PnNfZGV2Ow0KPiArCXJldHVybiAwOw0KPiArY2xlYXI6DQo+ICsJbWVtc2V0KCh2b2lkICopcGlk
-bnNfaW5mbywgMCwgKHNpemVfdCkgc2l6ZSk7DQo+ICsJcmV0dXJuIC1FSU5WQUw7DQo+ICt9DQo+
-ICsNCj4gK2NvbnN0IHN0cnVjdCBicGZfZnVuY19wcm90byBicGZfZ2V0X2N1cnJlbnRfcGlkbnNf
-aW5mb19wcm90byA9IHsNCj4gKwkuZnVuYwkJPSBicGZfZ2V0X2N1cnJlbnRfcGlkbnNfaW5mbywN
-Cj4gKwkuZ3BsX29ubHkJPSBmYWxzZSwNCj4gKwkucmV0X3R5cGUJPSBSRVRfSU5URUdFUiwNCj4g
-KwkuYXJnMV90eXBlCT0gQVJHX1BUUl9UT19VTklOSVRfTUVNLA0KPiArCS5hcmcyX3R5cGUJPSBB
-UkdfQ09OU1RfU0laRSwNCj4gK307DQo+ICsNCj4gICAjaWZkZWYgQ09ORklHX0NHUk9VUFMNCj4g
-ICBCUEZfQ0FMTF8wKGJwZl9nZXRfY3VycmVudF9jZ3JvdXBfaWQpDQo+ICAgew0KPiBkaWZmIC0t
-Z2l0IGEva2VybmVsL3RyYWNlL2JwZl90cmFjZS5jIGIva2VybmVsL3RyYWNlL2JwZl90cmFjZS5j
-DQo+IGluZGV4IGNhMTI1NWQxNDU3Ni4uNWUxZGMyMjc2NWE1IDEwMDY0NA0KPiAtLS0gYS9rZXJu
-ZWwvdHJhY2UvYnBmX3RyYWNlLmMNCj4gKysrIGIva2VybmVsL3RyYWNlL2JwZl90cmFjZS5jDQo+
-IEBAIC03MDksNiArNzA5LDggQEAgdHJhY2luZ19mdW5jX3Byb3RvKGVudW0gYnBmX2Z1bmNfaWQg
-ZnVuY19pZCwgY29uc3Qgc3RydWN0IGJwZl9wcm9nICpwcm9nKQ0KPiAgICNlbmRpZg0KPiAgIAlj
-YXNlIEJQRl9GVU5DX3NlbmRfc2lnbmFsOg0KPiAgIAkJcmV0dXJuICZicGZfc2VuZF9zaWduYWxf
-cHJvdG87DQo+ICsJY2FzZSBCUEZfRlVOQ19nZXRfY3VycmVudF9waWRuc19pbmZvOg0KPiArCQly
-ZXR1cm4gJmJwZl9nZXRfY3VycmVudF9waWRuc19pbmZvX3Byb3RvOw0KPiAgIAlkZWZhdWx0Og0K
-PiAgIAkJcmV0dXJuIE5VTEw7DQo+ICAgCX0NCj4gDQo=
+Hi David, hi Jakub,
+
+The following pull-request contains BPF updates for your *net-next* tree.
+
+There is a small merge conflict in libbpf (Cc Andrii so he's in the loop
+as well):
+
+        for (i = 1; i <= btf__get_nr_types(btf); i++) {
+                t = (struct btf_type *)btf__type_by_id(btf, i);
+
+                if (!has_datasec && btf_is_var(t)) {
+                        /* replace VAR with INT */
+                        t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
+  <<<<<<< HEAD
+                        /*
+                         * using size = 1 is the safest choice, 4 will be too
+                         * big and cause kernel BTF validation failure if
+                         * original variable took less than 4 bytes
+                         */
+                        t->size = 1;
+                        *(int *)(t+1) = BTF_INT_ENC(0, 0, 8);
+                } else if (!has_datasec && kind == BTF_KIND_DATASEC) {
+  =======
+                        t->size = sizeof(int);
+                        *(int *)(t + 1) = BTF_INT_ENC(0, 0, 32);
+                } else if (!has_datasec && btf_is_datasec(t)) {
+  >>>>>>> 72ef80b5ee131e96172f19e74b4f98fa3404efe8
+                        /* replace DATASEC with STRUCT */
+
+Conflict is between the two commits 1d4126c4e119 ("libbpf: sanitize VAR to
+conservative 1-byte INT") and b03bc6853c0e ("libbpf: convert libbpf code to
+use new btf helpers"), so we need to pick the sanitation fixup as well as
+use the new btf_is_datasec() helper and the whitespace cleanup. Looks like
+the following:
+
+  [...]
+                if (!has_datasec && btf_is_var(t)) {
+                        /* replace VAR with INT */
+                        t->info = BTF_INFO_ENC(BTF_KIND_INT, 0, 0);
+                        /*
+                         * using size = 1 is the safest choice, 4 will be too
+                         * big and cause kernel BTF validation failure if
+                         * original variable took less than 4 bytes
+                         */
+                        t->size = 1;
+                        *(int *)(t + 1) = BTF_INT_ENC(0, 0, 8);
+                } else if (!has_datasec && btf_is_datasec(t)) {
+                        /* replace DATASEC with STRUCT */
+  [...]
+
+The main changes are:
+
+1) Addition of core parts of compile once - run everywhere (co-re) effort,
+   that is, relocation of fields offsets in libbpf as well as exposure of
+   kernel's own BTF via sysfs and loading through libbpf, from Andrii.
+
+   More info on co-re: http://vger.kernel.org/bpfconf2019.html#session-2
+   and http://vger.kernel.org/lpc-bpf2018.html#session-2
+
+2) Enable passing input flags to the BPF flow dissector to customize parsing
+   and allowing it to stop early similar to the C based one, from Stanislav.
+
+3) Add a BPF helper function that allows generating SYN cookies from XDP and
+   tc BPF, from Petar.
+
+4) Add devmap hash-based map type for more flexibility in device lookup for
+   redirects, from Toke.
+
+5) Improvements to XDP forwarding sample code now utilizing recently enabled
+   devmap lookups, from Jesper.
+
+6) Add support for reporting the effective cgroup progs in bpftool, from Jakub
+   and Takshak.
+
+7) Fix reading kernel config from bpftool via /proc/config.gz, from Peter.
+
+8) Fix AF_XDP umem pages mapping for 32 bit architectures, from Ivan.
+
+9) Follow-up to add two more BPF loop tests for the selftest suite, from Alexei.
+
+10) Add perf event output helper also for other skb-based program types, from Allan.
+
+11) Fix a co-re related compilation error in selftests, from Yonghong.
+
+Please consider pulling these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git
+
+Thanks a lot!
+
+----------------------------------------------------------------
+
+The following changes since commit 3e3bb69589e482e0783f28d4cd1d8e56fda0bcbb:
+
+  tc-testing: added tdc tests for [b|p]fifo qdisc (2019-07-23 14:08:15 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git 
+
+for you to fetch changes up to 72ef80b5ee131e96172f19e74b4f98fa3404efe8:
+
+  Merge branch 'bpf-libbpf-read-sysfs-btf' (2019-08-13 23:19:42 +0200)
+
+----------------------------------------------------------------
+Alexei Starovoitov (10):
+      Merge branch 'convert-tests-to-libbpf'
+      Merge branch 'flow_dissector-input-flags'
+      Merge branch 'revamp-test_progs'
+      Merge branch 'devmap_hash'
+      Merge branch 'gen-syn-cookie'
+      Merge branch 'setsockopt-extra-mem'
+      selftests/bpf: add loop test 4
+      selftests/bpf: add loop test 5
+      Merge branch 'test_progs-stdio'
+      Merge branch 'compile-once-run-everywhere'
+
+Allan Zhang (2):
+      bpf: Allow bpf_skb_event_output for a few prog types
+      selftests/bpf: Add selftests for bpf_perf_event_output
+
+Andrii Nakryiko (33):
+      libbpf: provide more helpful message on uninitialized global var
+      selftests/bpf: convert test_get_stack_raw_tp to perf_buffer API
+      selftests/bpf: switch test_tcpnotify to perf_buffer API
+      samples/bpf: convert xdp_sample_pkts_user to perf_buffer API
+      samples/bpf: switch trace_output sample to perf_buffer API
+      selftests/bpf: remove perf buffer helpers
+      selftests/bpf: prevent headers to be compiled as C code
+      selftests/bpf: revamp test_progs to allow more control
+      selftests/bpf: add test selectors by number and name to test_progs
+      libbpf: return previous print callback from libbpf_set_print
+      selftest/bpf: centralize libbpf logging management for test_progs
+      selftests/bpf: abstract away test log output
+      selftests/bpf: add sub-tests support for test_progs
+      selftests/bpf: convert bpf_verif_scale.c to sub-tests API
+      selftests/bpf: convert send_signal.c to use subtests
+      selftests/bpf: fix clearing buffered output between tests/subtests
+      libbpf: add helpers for working with BTF types
+      libbpf: convert libbpf code to use new btf helpers
+      libbpf: add .BTF.ext offset relocation section loading
+      libbpf: implement BPF CO-RE offset relocation algorithm
+      selftests/bpf: add BPF_CORE_READ relocatable read macro
+      selftests/bpf: add CO-RE relocs testing setup
+      selftests/bpf: add CO-RE relocs struct flavors tests
+      selftests/bpf: add CO-RE relocs nesting tests
+      selftests/bpf: add CO-RE relocs array tests
+      selftests/bpf: add CO-RE relocs enum/ptr/func_proto tests
+      selftests/bpf: add CO-RE relocs modifiers/typedef tests
+      selftests/bpf: add CO-RE relocs ptr-as-array tests
+      selftests/bpf: add CO-RE relocs ints tests
+      selftests/bpf: add CO-RE relocs misc tests
+      btf: expose BTF info through sysfs
+      btf: rename /sys/kernel/btf/kernel into /sys/kernel/btf/vmlinux
+      libbpf: attempt to load kernel BTF from sysfs first
+
+Daniel Borkmann (2):
+      Merge branch 'bpf-xdp-fwd-sample-improvements'
+      Merge branch 'bpf-libbpf-read-sysfs-btf'
+
+Ivan Khoronzhuk (1):
+      xdp: xdp_umem: fix umem pages mapping for 32bits systems
+
+Jakub Kicinski (1):
+      tools: bpftool: add support for reporting the effective cgroup progs
+
+Jesper Dangaard Brouer (3):
+      samples/bpf: xdp_fwd rename devmap name to be xdp_tx_ports
+      samples/bpf: make xdp_fwd more practically usable via devmap lookup
+      samples/bpf: xdp_fwd explain bpf_fib_lookup return codes
+
+Petar Penkov (7):
+      tcp: tcp_syn_flood_action read port from socket
+      tcp: add skb-less helpers to retrieve SYN cookie
+      bpf: add bpf_tcp_gen_syncookie helper
+      bpf: sync bpf.h to tools/
+      selftests/bpf: bpf_tcp_gen_syncookie->bpf_helpers
+      selftests/bpf: add test for bpf_tcp_gen_syncookie
+      selftests/bpf: fix race in flow dissector tests
+
+Peter Wu (2):
+      tools: bpftool: fix reading from /proc/config.gz
+      tools: bpftool: add feature check for zlib
+
+Stanislav Fomichev (12):
+      bpf/flow_dissector: pass input flags to BPF flow dissector program
+      bpf/flow_dissector: document flags
+      bpf/flow_dissector: support flags in BPF_PROG_TEST_RUN
+      tools/bpf: sync bpf_flow_keys flags
+      selftests/bpf: support BPF_FLOW_DISSECTOR_F_PARSE_1ST_FRAG
+      bpf/flow_dissector: support ipv6 flow_label and BPF_FLOW_DISSECTOR_F_STOP_AT_FLOW_LABEL
+      selftests/bpf: support BPF_FLOW_DISSECTOR_F_STOP_AT_ENCAP
+      bpf: always allocate at least 16 bytes for setsockopt hook
+      selftests/bpf: extend sockopt_sk selftest with TCP_CONGESTION use case
+      selftests/bpf: test_progs: switch to open_memstream
+      selftests/bpf: test_progs: test__printf -> printf
+      selftests/bpf: test_progs: drop extra trailing tab
+
+Toke Høiland-Jørgensen (6):
+      include/bpf.h: Remove map_insert_ctx() stubs
+      xdp: Refactor devmap allocation code for reuse
+      xdp: Add devmap_hash map type for looking up devices by hashed index
+      tools/include/uapi: Add devmap_hash BPF map type
+      tools/libbpf_probes: Add new devmap_hash type
+      tools: Add definitions for devmap_hash map type
+
+Yonghong Song (1):
+      tools/bpf: fix core_reloc.c compilation error
+
+ Documentation/ABI/testing/sysfs-kernel-btf         |   17 +
+ Documentation/bpf/prog_flow_dissector.rst          |   18 +
+ include/linux/bpf.h                                |   11 +-
+ include/linux/bpf_types.h                          |    1 +
+ include/linux/skbuff.h                             |    2 +-
+ include/net/tcp.h                                  |   10 +
+ include/trace/events/xdp.h                         |    3 +-
+ include/uapi/linux/bpf.h                           |   37 +-
+ kernel/bpf/Makefile                                |    3 +
+ kernel/bpf/cgroup.c                                |   17 +-
+ kernel/bpf/devmap.c                                |  332 ++++++-
+ kernel/bpf/sysfs_btf.c                             |   51 +
+ kernel/bpf/verifier.c                              |    2 +
+ net/bpf/test_run.c                                 |   39 +-
+ net/core/filter.c                                  |   88 +-
+ net/core/flow_dissector.c                          |   21 +-
+ net/ipv4/tcp_input.c                               |   81 +-
+ net/ipv4/tcp_ipv4.c                                |   15 +
+ net/ipv6/tcp_ipv6.c                                |   15 +
+ net/xdp/xdp_umem.c                                 |   12 +-
+ samples/bpf/trace_output_user.c                    |   43 +-
+ samples/bpf/xdp_fwd_kern.c                         |   39 +-
+ samples/bpf/xdp_fwd_user.c                         |   35 +-
+ samples/bpf/xdp_sample_pkts_user.c                 |   61 +-
+ scripts/link-vmlinux.sh                            |   52 +-
+ tools/bpf/bpftool/Documentation/bpftool-cgroup.rst |   16 +-
+ tools/bpf/bpftool/Documentation/bpftool-map.rst    |    2 +-
+ tools/bpf/bpftool/Makefile                         |   13 +-
+ tools/bpf/bpftool/bash-completion/bpftool          |   19 +-
+ tools/bpf/bpftool/cgroup.c                         |   83 +-
+ tools/bpf/bpftool/feature.c                        |  105 +-
+ tools/bpf/bpftool/map.c                            |    3 +-
+ tools/include/uapi/linux/bpf.h                     |   44 +-
+ tools/lib/bpf/btf.c                                |  250 +++--
+ tools/lib/bpf/btf.h                                |  182 ++++
+ tools/lib/bpf/btf_dump.c                           |  138 +--
+ tools/lib/bpf/libbpf.c                             | 1009 +++++++++++++++++++-
+ tools/lib/bpf/libbpf.h                             |    3 +-
+ tools/lib/bpf/libbpf_internal.h                    |  105 ++
+ tools/lib/bpf/libbpf_probes.c                      |    1 +
+ tools/testing/selftests/bpf/Makefile               |   14 +-
+ tools/testing/selftests/bpf/bpf_helpers.h          |   23 +
+ .../testing/selftests/bpf/prog_tests/bpf_obj_id.c  |    6 +-
+ .../selftests/bpf/prog_tests/bpf_verif_scale.c     |   92 +-
+ .../testing/selftests/bpf/prog_tests/core_reloc.c  |  385 ++++++++
+ .../selftests/bpf/prog_tests/flow_dissector.c      |  265 ++++-
+ .../selftests/bpf/prog_tests/get_stack_raw_tp.c    |   82 +-
+ .../selftests/bpf/prog_tests/reference_tracking.c  |   15 +-
+ .../testing/selftests/bpf/prog_tests/send_signal.c |   15 +-
+ .../selftests/bpf/prog_tests/xdp_noinline.c        |    3 +-
+ tools/testing/selftests/bpf/progs/bpf_flow.c       |   60 +-
+ .../selftests/bpf/progs/btf__core_reloc_arrays.c   |    3 +
+ .../progs/btf__core_reloc_arrays___diff_arr_dim.c  |    3 +
+ .../btf__core_reloc_arrays___diff_arr_val_sz.c     |    3 +
+ .../progs/btf__core_reloc_arrays___err_non_array.c |    3 +
+ .../btf__core_reloc_arrays___err_too_shallow.c     |    3 +
+ .../progs/btf__core_reloc_arrays___err_too_small.c |    3 +
+ .../btf__core_reloc_arrays___err_wrong_val_type1.c |    3 +
+ .../btf__core_reloc_arrays___err_wrong_val_type2.c |    3 +
+ .../selftests/bpf/progs/btf__core_reloc_flavors.c  |    3 +
+ .../btf__core_reloc_flavors__err_wrong_name.c      |    3 +
+ .../selftests/bpf/progs/btf__core_reloc_ints.c     |    3 +
+ .../bpf/progs/btf__core_reloc_ints___bool.c        |    3 +
+ .../progs/btf__core_reloc_ints___err_bitfield.c    |    3 +
+ .../progs/btf__core_reloc_ints___err_wrong_sz_16.c |    3 +
+ .../progs/btf__core_reloc_ints___err_wrong_sz_32.c |    3 +
+ .../progs/btf__core_reloc_ints___err_wrong_sz_64.c |    3 +
+ .../progs/btf__core_reloc_ints___err_wrong_sz_8.c  |    3 +
+ .../progs/btf__core_reloc_ints___reverse_sign.c    |    3 +
+ .../selftests/bpf/progs/btf__core_reloc_misc.c     |    5 +
+ .../selftests/bpf/progs/btf__core_reloc_mods.c     |    3 +
+ .../bpf/progs/btf__core_reloc_mods___mod_swap.c    |    3 +
+ .../bpf/progs/btf__core_reloc_mods___typedefs.c    |    3 +
+ .../selftests/bpf/progs/btf__core_reloc_nesting.c  |    3 +
+ .../progs/btf__core_reloc_nesting___anon_embed.c   |    3 +
+ .../btf__core_reloc_nesting___dup_compat_types.c   |    5 +
+ ...btf__core_reloc_nesting___err_array_container.c |    3 +
+ .../btf__core_reloc_nesting___err_array_field.c    |    3 +
+ ...__core_reloc_nesting___err_dup_incompat_types.c |    4 +
+ ...f__core_reloc_nesting___err_missing_container.c |    3 +
+ .../btf__core_reloc_nesting___err_missing_field.c  |    3 +
+ ..._core_reloc_nesting___err_nonstruct_container.c |    3 +
+ ...__core_reloc_nesting___err_partial_match_dups.c |    4 +
+ .../progs/btf__core_reloc_nesting___err_too_deep.c |    3 +
+ .../btf__core_reloc_nesting___extra_nesting.c      |    3 +
+ .../btf__core_reloc_nesting___struct_union_mixup.c |    3 +
+ .../bpf/progs/btf__core_reloc_primitives.c         |    3 +
+ .../btf__core_reloc_primitives___diff_enum_def.c   |    3 +
+ .../btf__core_reloc_primitives___diff_func_proto.c |    3 +
+ .../btf__core_reloc_primitives___diff_ptr_type.c   |    3 +
+ .../btf__core_reloc_primitives___err_non_enum.c    |    3 +
+ .../btf__core_reloc_primitives___err_non_int.c     |    3 +
+ .../btf__core_reloc_primitives___err_non_ptr.c     |    3 +
+ .../bpf/progs/btf__core_reloc_ptr_as_arr.c         |    3 +
+ .../progs/btf__core_reloc_ptr_as_arr___diff_sz.c   |    3 +
+ .../testing/selftests/bpf/progs/core_reloc_types.h |  667 +++++++++++++
+ tools/testing/selftests/bpf/progs/loop4.c          |   18 +
+ tools/testing/selftests/bpf/progs/loop5.c          |   32 +
+ tools/testing/selftests/bpf/progs/sockopt_sk.c     |   22 +
+ .../selftests/bpf/progs/test_core_reloc_arrays.c   |   55 ++
+ .../selftests/bpf/progs/test_core_reloc_flavors.c  |   62 ++
+ .../selftests/bpf/progs/test_core_reloc_ints.c     |   44 +
+ .../selftests/bpf/progs/test_core_reloc_kernel.c   |   36 +
+ .../selftests/bpf/progs/test_core_reloc_misc.c     |   57 ++
+ .../selftests/bpf/progs/test_core_reloc_mods.c     |   62 ++
+ .../selftests/bpf/progs/test_core_reloc_nesting.c  |   46 +
+ .../bpf/progs/test_core_reloc_primitives.c         |   43 +
+ .../bpf/progs/test_core_reloc_ptr_as_arr.c         |   30 +
+ .../selftests/bpf/progs/test_get_stack_rawtp.c     |    2 +-
+ .../bpf/progs/test_tcp_check_syncookie_kern.c      |   48 +-
+ tools/testing/selftests/bpf/test_maps.c            |   16 +
+ tools/testing/selftests/bpf/test_progs.c           |  374 +++++++-
+ tools/testing/selftests/bpf/test_progs.h           |   40 +-
+ tools/testing/selftests/bpf/test_sockopt_sk.c      |   25 +
+ .../selftests/bpf/test_tcp_check_syncookie.sh      |    3 +
+ .../selftests/bpf/test_tcp_check_syncookie_user.c  |   61 +-
+ tools/testing/selftests/bpf/test_tcpnotify_user.c  |   90 +-
+ tools/testing/selftests/bpf/test_verifier.c        |   12 +-
+ tools/testing/selftests/bpf/trace_helpers.c        |  125 ---
+ tools/testing/selftests/bpf/trace_helpers.h        |    9 -
+ .../testing/selftests/bpf/verifier/event_output.c  |   94 ++
+ 121 files changed, 5229 insertions(+), 920 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-kernel-btf
+ create mode 100644 kernel/bpf/sysfs_btf.c
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/core_reloc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_dim.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___diff_arr_val_sz.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_non_array.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_shallow.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_too_small.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type1.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_arrays___err_wrong_val_type2.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_flavors__err_wrong_name.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___bool.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_bitfield.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_16.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_32.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_64.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___err_wrong_sz_8.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ints___reverse_sign.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_misc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___mod_swap.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_mods___typedefs.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___anon_embed.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___dup_compat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_array_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_dup_incompat_types.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_missing_field.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_nonstruct_container.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_partial_match_dups.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___err_too_deep.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___extra_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_nesting___struct_union_mixup.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_enum_def.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_func_proto.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___diff_ptr_type.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_enum.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_int.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_primitives___err_non_ptr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr.c
+ create mode 100644 tools/testing/selftests/bpf/progs/btf__core_reloc_ptr_as_arr___diff_sz.c
+ create mode 100644 tools/testing/selftests/bpf/progs/core_reloc_types.h
+ create mode 100644 tools/testing/selftests/bpf/progs/loop4.c
+ create mode 100644 tools/testing/selftests/bpf/progs/loop5.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_arrays.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_flavors.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ints.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_kernel.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_misc.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_mods.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_nesting.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_primitives.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_core_reloc_ptr_as_arr.c
+ create mode 100644 tools/testing/selftests/bpf/verifier/event_output.c
