@@ -2,94 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B1318C01E
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:06:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D7B98C028
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:08:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728282AbfHMSGc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:06:32 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33976 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727491AbfHMSGb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:06:31 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n9so45436493pgc.1;
-        Tue, 13 Aug 2019 11:06:31 -0700 (PDT)
+        id S1728359AbfHMSI0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:08:26 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39243 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726363AbfHMSI0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:08:26 -0400
+Received: by mail-qt1-f195.google.com with SMTP id l9so107208232qtu.6;
+        Tue, 13 Aug 2019 11:08:25 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kFehO82jdCviGuf5R66JFrCXPio1ptY0lQw9PECP1l0=;
-        b=DdrOiE/3bDKX6HraMJ2Su2YgXpBCfapfPisGFr8ZTZrUBOvQxyrizpUgjvGLH3bg2Y
-         IGe20CEw3E8B6sues1yt8n+KKd8KYVB1IrC1K880wvZo3uGgl7jwo+hOpTCUtAMCM6YW
-         Ohowm/FbaEW7yanjt8wQ2DoAAYlLZ4NeVkDnQn/RmSVBfeTGlz4/3BzxL4poDZIwZYCh
-         6ekG9u6FkLIyM2P4kiGoSsylL3yrkJaPE0acjr6lDgZQOanlHaY89SRj1SpeReJTI6R5
-         +/C7BOoHkwd3BodDiDNy6quyCVA2N7fj5uqgzjtEhY68JDBXnwGNPsw1Qttkio3vpa96
-         fCgA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SNZ+S1xTDsap5nSRhodL5I0JpQeKFOt/G+ST+kyDJlE=;
+        b=kXEYQNkgF9KWebqjvSmJl3h60JNSSa/IkU/BgziA4+7FAFpuU+8RtqJ/nU8IkD0E1B
+         GTBhBT4Kqc4vaewpvi4FWpN+L5Q21FNvVGzR5lCISYeRxMpAh0UdYtgPE98PXcXoGYhc
+         9zW5TzCRMXMYLWt9OmjVx6hTy/P8QcEJj7E8qv+0lpAV3ItmvprkiHwFY5boYXGMckKt
+         IQzB/Cww7uzhDnfGB6xt4iYfXdbMLkypqObcDstQBPEZp9paE5oxh0Kv8H2W4dpRHsKj
+         vkkSMFE9Bk2A/yAAw9aCIhSlmY2XeI635+MPXUmNHT3enuWeeCstMa+JuGNyIWlHh+ol
+         lFLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kFehO82jdCviGuf5R66JFrCXPio1ptY0lQw9PECP1l0=;
-        b=P6Xw+9hmSQerntKAcTLqpuc8Da42kaFh6jUHDntTjyNSgjucgwr/EsZUd6suH3cxzY
-         gMFaFu+X6Rt1AB6S9jtmwEQZHFLj8Tc+f3vuT/p8qR6TdLQcF83vsprMzvcBK9TnzcFe
-         ZJCbbjABcceSREPx9cDmX1a7mhwwtf9TVDCSrt5YADoOSaHZa+QWaVomYXAoAGHcz5iT
-         zJklfrKavZ5fOdCcKySKXu2CkFTV3lzx7KKsW5nWR2BHWcjM/Sg/M6dcEeY5oco3njji
-         35HIHUkjusSoS5RyumWmHXih3i7ny1NDxSOQSNu3BT/kqpiw2SsEj6+VPpmOxvRmENyx
-         VCPg==
-X-Gm-Message-State: APjAAAU2N6615WqTIzBL1yf3C8exIV7R1HKBuOE+b0Jiblapd+u+oGqy
-        cTBNR2ijRl5c4G3sszbVm1o=
-X-Google-Smtp-Source: APXvYqyErYOUyieMcTl9zfTAjH4jfmnWT0Gp0FeXitOmr+LhRTnH2/Xo4/eAA+Re/FnrarLOrwtQyA==
-X-Received: by 2002:a65:64c5:: with SMTP id t5mr36518218pgv.168.1565719591093;
-        Tue, 13 Aug 2019 11:06:31 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id 65sm112487304pff.148.2019.08.13.11.06.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Aug 2019 11:06:30 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 11:06:28 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc:     netdev@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H . Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        linux-kernel@vger.kernel.org,
-        "Christopher S . Hall" <christopher.s.hall@intel.com>
-Subject: Re: [RFC PATCH 4/5] PTP: Add flag for non-periodic output
-Message-ID: <20190813180628.GA4069@localhost>
-References: <20190716072038.8408-1-felipe.balbi@linux.intel.com>
- <20190716072038.8408-5-felipe.balbi@linux.intel.com>
- <20190716163927.GA2125@localhost>
- <87k1ch2m1i.fsf@linux.intel.com>
- <20190717173645.GD1464@localhost>
- <87ftn3iuqp.fsf@linux.intel.com>
- <20190718164121.GB1533@localhost>
- <87tvalxzzi.fsf@gmail.com>
- <20190813174821.GC3207@localhost>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SNZ+S1xTDsap5nSRhodL5I0JpQeKFOt/G+ST+kyDJlE=;
+        b=V3/KeDPpYwoG5Zk5FqAshJV3vvM1/t2H5Xw0w6zT/kw2SgVelnyHvTk0sZQK3Kvh4Z
+         RqI/cOZNbJaqqRY3vvF5qnTurF7fh3bq0a6KXEUbX5V+24m2q8UM16a/PIdR7N04ozAU
+         DpofCFiyVpb4QIfne/VUVKr64mDCQ/OHTBNxEwPZ0r2Su9NSITdQ1FMETgiHDZzkjtXJ
+         sr5XKyR/3RLyUJt5Xpy4X43KU5A3+cBtKm5BwTrhRJpyXDE6OqNcZSGMQdcERRVfYdQ7
+         GefAiE+brI5pM6WyKLsGkHujuoq9/CvuXalaJ/qpJ7K3TruObB188+fWPMRlb/szuSjE
+         rC6g==
+X-Gm-Message-State: APjAAAWL9JPCjDUfIZKKCSEGuz60ELWeCquvmT2Sq9RI4hu3T1ChBfe+
+        38XJMKsJcQFkUsF+Kq9kThkVN6b7yc9U8LkGKjM=
+X-Google-Smtp-Source: APXvYqyEU6XpJs5xm2v1FGd6m+Cvuz5wuLZaHQnLCIBKJ1AuPYEoDBFQwkGyVwaRH66IocQRkHtrX47wBthCLmWO5kY=
+X-Received: by 2002:a0c:b243:: with SMTP id k3mr11381933qve.150.1565719705364;
+ Tue, 13 Aug 2019 11:08:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190813174821.GC3207@localhost>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190812183947.130889-1-andriin@fb.com> <c4103c58-941c-da3a-9abd-eecbcd256f1d@iogearbox.net>
+In-Reply-To: <c4103c58-941c-da3a-9abd-eecbcd256f1d@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 13 Aug 2019 11:08:14 -0700
+Message-ID: <CAEf4BzZr4FGfy+QpDQzVxMxCGWx5DYCcu9jsQJWK235+f3Oigg@mail.gmail.com>
+Subject: Re: [RESEND][PATCH v3 bpf-next] btf: expose BTF info through sysfs
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 10:48:21AM -0700, Richard Cochran wrote:
-> > +		if (copy_from_user(&req.extts, (void __user *)arg,
-> > +				   sizeof(req.extts))) {
-> > +			err = -EFAULT;
-> > +			break;
-> > +		}
-> > +		if (req.extts.flags || req.extts.rsv[0]
-> > +				|| req.extts.rsv[1]) {
-> > +			err = -EINVAL;
-> 
-> Since the code is mostly the same as in the PTP_EXTTS_REQUEST case,
-> maybe just double up the case statements (like in the other) and add
-> an extra test for (cmd == PTP_EXTTS_REQUEST2) for this if-block.
+On Tue, Aug 13, 2019 at 7:20 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 8/12/19 8:39 PM, Andrii Nakryiko wrote:
+> > Make .BTF section allocated and expose its contents through sysfs.
+> >
+> > /sys/kernel/btf directory is created to contain all the BTFs present
+> > inside kernel. Currently there is only kernel's main BTF, represented as
+> > /sys/kernel/btf/kernel file. Once kernel modules' BTFs are supported,
+> > each module will expose its BTF as /sys/kernel/btf/<module-name> file.
+> >
+> > Current approach relies on a few pieces coming together:
+> > 1. pahole is used to take almost final vmlinux image (modulo .BTF and
+> >     kallsyms) and generate .BTF section by converting DWARF info into
+> >     BTF. This section is not allocated and not mapped to any segment,
+> >     though, so is not yet accessible from inside kernel at runtime.
+> > 2. objcopy dumps .BTF contents into binary file and subsequently
+> >     convert binary file into linkable object file with automatically
+> >     generated symbols _binary__btf_kernel_bin_start and
+> >     _binary__btf_kernel_bin_end, pointing to start and end, respectively,
+> >     of BTF raw data.
+> > 3. final vmlinux image is generated by linking this object file (and
+> >     kallsyms, if necessary). sysfs_btf.c then creates
+> >     /sys/kernel/btf/kernel file and exposes embedded BTF contents through
+> >     it. This allows, e.g., libbpf and bpftool access BTF info at
+> >     well-known location, without resorting to searching for vmlinux image
+> >     on disk (location of which is not standardized and vmlinux image
+> >     might not be even available in some scenarios, e.g., inside qemu
+> >     during testing).
+>
+> Small question: given modules will be covered later, would it not be more
+> obvious to name it /sys/kernel/btf/vmlinux instead?
 
-Thinking about the drivers, in the case of the legacy ioctls, let's
-also be sure to clear the flags and reserved fields before passing
-them to the drivers.
+vmlinux totally makes sense, not sure why I didn't think about that initially...
 
-Thanks,
-Richard
+I'll follow up with a rename.
+
+>
+> > Alternative approach using .incbin assembler directive to embed BTF
+> > contents directly was attempted but didn't work, because sysfs_proc.o is
+> > not re-compiled during link-vmlinux.sh stage. This is required, though,
+> > to update embedded BTF data (initially empty data is embedded, then
+> > pahole generates BTF info and we need to regenerate sysfs_btf.o with
+> > updated contents, but it's too late at that point).
+> >
+> > If BTF couldn't be generated due to missing or too old pahole,
+> > sysfs_btf.c handles that gracefully by detecting that
+> > _binary__btf_kernel_bin_start (weak symbol) is 0 and not creating
+> > /sys/kernel/btf at all.
+> >
+> > v2->v3:
+> > - added Documentation/ABI/testing/sysfs-kernel-btf (Greg K-H);
+> > - created proper kobject (btf_kobj) for btf directory (Greg K-H);
+> > - undo v2 change of reusing vmlinux, as it causes extra kallsyms pass
+> >    due to initially missing  __binary__btf_kernel_bin_{start/end} symbols;
+> >
+> > v1->v2:
+> > - allow kallsyms stage to re-use vmlinux generated by gen_btf();
+> >
+> > Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> > Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+>
+> In any case, this is great progress, applied thanks!
