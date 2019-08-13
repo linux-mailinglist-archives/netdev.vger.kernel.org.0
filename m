@@ -2,108 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A3348BE88
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 18:28:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E32988BE8C
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 18:28:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbfHMQ2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 12:28:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:60446 "EHLO mx1.redhat.com"
+        id S1728337AbfHMQ2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 12:28:31 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57428 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727504AbfHMQ2F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 12:28:05 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id CC9DC285AE;
-        Tue, 13 Aug 2019 16:28:04 +0000 (UTC)
-Received: from linux-ws.nc.xsintricity.com (ovpn-112-57.rdu2.redhat.com [10.10.112.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6E981271A5;
-        Tue, 13 Aug 2019 16:28:03 +0000 (UTC)
-Message-ID: <be3410bb2bfe134255363ccd8018320e8be3b322.camel@redhat.com>
-Subject: Re: [PATCH rdma-next 0/4] Add XRQ and SRQ support to DEVX interface
-From:   Doug Ledford <dledford@redhat.com>
-To:     Leon Romanovsky <leonro@mellanox.com>
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Edward Srouji <edwards@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        Yishai Hadas <yishaih@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Date:   Tue, 13 Aug 2019 12:28:00 -0400
-In-Reply-To: <20190813100642.GE29138@mtr-leonro.mtl.com>
-References: <20190808084358.29517-1-leon@kernel.org>
-         <20190808101059.GC28049@mtr-leonro.mtl.com>
-         <dc88624d6632f23a1b0ca77f45ed21a20158d3e6.camel@redhat.com>
-         <20190813100642.GE29138@mtr-leonro.mtl.com>
-Organization: Red Hat, Inc.
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-uf6bWHzlaDJ7aNElxbKY"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1726802AbfHMQ2a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 12:28:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=34xmiKyA+S2CnLiX+X01d9OYLI0FKAIfY0fTPpCykWA=; b=M2pxP3v7ZshqK85Je7x+dbWUDm
+        gxNV75ZSQPGztbD8bG/EuMu4F6qG1HNmClshOwJSKUmqZ9lVWwKr3K8h3H7oKKfiL6eLI7swNXFmw
+        fbzWY3nPFC6F4wOZU30iLPbeK924YNUsZUNg8vXkGzm5H5jrkH3+uobUJbxuVN3aa1VU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hxZep-0002tK-VK; Tue, 13 Aug 2019 18:28:23 +0200
+Date:   Tue, 13 Aug 2019 18:28:23 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
+Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "sd@queasysnail.net" <sd@queasysnail.net>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
+        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
+        Simon Edelhaus <Simon.Edelhaus@aquantia.com>,
+        Pavel Belous <Pavel.Belous@aquantia.com>
+Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
+ infrastructure
+Message-ID: <20190813162823.GH15047@lunn.ch>
+References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
+ <20190808140600.21477-7-antoine.tenart@bootlin.com>
+ <e96fa4ae-1f2c-c1be-b2d8-060217d8e151@aquantia.com>
+ <20190813085817.GA3200@kwain>
+ <20190813131706.GE15047@lunn.ch>
+ <2e3c2307-d414-a531-26cb-064e05fa01fc@aquantia.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.30]); Tue, 13 Aug 2019 16:28:04 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <2e3c2307-d414-a531-26cb-064e05fa01fc@aquantia.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+> 1) With current implementation it's impossible to install SW macsec engine onto
+> the device which supports HW offload. That could be a strong limitation in
+> cases when user sees HW macsec offload is broken or work differently, and he/she
+> wants to replace it with SW one.
+> MACSec is a complex feature, and it may happen something is missing in HW.
+> Trivial example is 256bit encryption, which is not always a musthave in HW
+> implementations.
 
---=-uf6bWHzlaDJ7aNElxbKY
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Ideally, we want the driver to return EOPNOTSUPP if it does not
+support something and the software implement should be used.
 
-On Tue, 2019-08-13 at 10:06 +0000, Leon Romanovsky wrote:
-> On Mon, Aug 12, 2019 at 11:43:58AM -0400, Doug Ledford wrote:
-> > On Thu, 2019-08-08 at 10:11 +0000, Leon Romanovsky wrote:
-> > > On Thu, Aug 08, 2019 at 11:43:54AM +0300, Leon Romanovsky wrote:
-> > > > From: Leon Romanovsky <leonro@mellanox.com>
-> > > >=20
-> > > > Hi,
-> > > >=20
-> > > > This small series extends DEVX interface with SRQ and XRQ legacy
-> > > > commands.
-> > >=20
-> > > Sorry for typo in cover letter, there is no SRQ here.
-> >=20
-> > Series looks fine to me.  Are you planning on the first two via
-> > mlx5-
-> > next and the remainder via RDMA tree?
-> >=20
->=20
-> Thanks, applied to mlx5-next
->=20
-> b1635ee6120c net/mlx5: Add XRQ legacy commands opcodes
-> 647d58a989b3 net/mlx5: Use debug message instead of warn
+If the offload is broken, we want a bug report! And if it works
+differently, it suggests there is also a bug we need to fix, or the
+standard is ambiguous.
 
-Merged mlx5-next, then applied remaining two patches to for-next.=20
-Thanks.
+It would also be nice to add extra information to the netlink API to
+indicate if HW or SW is being used. In other places where we offload
+to accelerators we have such additional information.
 
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
-
---=-uf6bWHzlaDJ7aNElxbKY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl1S5RAACgkQuCajMw5X
-L90egA/9Hketfl8VboKjsO8/wx3gylKGv8qI3dwEB74YEnZWcVd1oyAgIopLB2vF
-mgudk2PLDpBrbZPBBsk/x9dZmVQ5VZLF1lUnkWuiryK4uZRBivvF659/7nPCF3OR
-7GkDyaUy9CfpYUVWRIt6GWOicsSBb6feBjSdkStm4IucSk/rYCYU8dM2DJM3i1Ii
-KS23KJS/bLD3y12fLueI+Q4IB3FD57jg8UagRRB2NfzGIsQr/qJ7M8rFaYxI3wXj
-UJbQZCsi/OSALkgv8DPxXVfHZBTMXEJXLa+feuI8M/P/KebJ0aci5xVUcZuMEWrp
-Q+CxCUvkYGiizMSCjChW6MeXIsLfEqnjHSFwt0yoOSB7vkpqzKzFgGt96oqWwl2R
-DbeYM1M5hEy+4eoDMvvk0txKOMLW9qWycGa6U7wLzMr43pvOh8vGLGuN2r0Bk1DR
-kIn6KZg9OBmGIbdoiaIpdjNmEKui1Y74DLOs1DfeFivMwUYsLWSE3mKbxz0ZMgif
-YNanjhvgchF+pjnZdJOxiAX5Dq73clODCuXy6No8C3hhX3XD6v8hu0tLDCQshDRH
-315yNJ5X0cLxjh5zRGJ+lKYYLSVMhILgvsTFCqE3DR4XGXSqt6Kw8b3jpW0aO9Fd
-QxCSSKn/jxj/w3Q9EOpTEE+JsazasKgK8llfCymjNBlkVwxHDDk=
-=ZAEY
------END PGP SIGNATURE-----
-
---=-uf6bWHzlaDJ7aNElxbKY--
-
+   Andrew
