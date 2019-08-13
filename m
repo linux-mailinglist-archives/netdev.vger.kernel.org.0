@@ -2,95 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D11D98B462
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 11:40:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10A498B4AD
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 11:55:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727890AbfHMJkn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 05:40:43 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50236 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727038AbfHMJki (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 05:40:38 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v15so875430wml.0
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 02:40:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=t6fEiZ4sytTb7mfNqU+GHgkx4N2cyC0uVxBfUPG4iKY=;
-        b=ZvsLh64Nk3rAwaI66fNByKOuqlUAVATJ7Anm+IGbigwF8Q1o/w3VJaWo75OL9J4RRh
-         P6MM9VWap5aQfI/N7Lx2+MPdZtbDCPIaa38ij3O+dLMzs1uq4WksSPOpkiqrGPZURKOw
-         F9ySGABl4fJIkLR2xFs7vzM02DlcYhTIt+TzjRUa9xYdL1zKROAHi2grMg0I75OWzLFr
-         dNy0bYJ1bjGDxrwJnHYFPYYpdH9lagy5q2wRtvnRF6Vu6oz+I/mHuHZFELJiQ2Sm7GuK
-         YRLTo+KSwWDHBc4xeE4N5MDdSOEMhHG+XEenWOrsZXIIrZFvWTBFsPxKm2ppGMuAc3HW
-         6jiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t6fEiZ4sytTb7mfNqU+GHgkx4N2cyC0uVxBfUPG4iKY=;
-        b=FmK+OP0InlLulQj9Odoj4FEoaqNW1YJB98k8n2z2RqoBfdXmPVm4RzOEjxe6Xr+34n
-         AJBmErZeMhC5F+vltuZCqPWDjzm9yvernH0JGZz3TouFrYPKatLeD/6hrvhocSq6KCfP
-         EMtmPmxjINHTOWIdvpT0VnGztonZU8KHb1QnHvOcoYxcAma4OkaUW78n7eIIey5LORJF
-         OKFmdRm/OQ4ijP6NGZrfncBDtCRPqSNBsQo7Z4ORk90oJ6DVdSmA4U1vFEH6CbolxLL+
-         t7MSbCOK+e/c1Sd2qLfdV0YSa33TK9K6DCZ7Oej4V4Ju0FWvVWhctJgXKCNNgl7fnCLc
-         Vaow==
-X-Gm-Message-State: APjAAAVA++C8NwBGJTfIFJrojL8XJqi5ks5kkB7PrLIxNt9DQw5/2QDV
-        bqydrn8sUMT4Q02nRY8YrSqnDg==
-X-Google-Smtp-Source: APXvYqxtZp5y+W/eo8hxCFccDh9B73EN2zN9q/ucA2LVNH+5drh1g1mUkC7z2xIrJUpFbM+AMvB0iA==
-X-Received: by 2002:a1c:9a4b:: with SMTP id c72mr2089507wme.102.1565689236579;
-        Tue, 13 Aug 2019 02:40:36 -0700 (PDT)
-Received: from [192.168.86.34] (cpc89974-aztw32-2-0-cust43.18-1.cable.virginm.net. [86.30.250.44])
-        by smtp.googlemail.com with ESMTPSA id f12sm122487785wrg.5.2019.08.13.02.40.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Aug 2019 02:40:35 -0700 (PDT)
-Subject: Re: [PATCH v4 3/9] nvmem: core: add nvmem_device_find
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-References: <20190809103235.16338-1-tbogendoerfer@suse.de>
- <20190809103235.16338-4-tbogendoerfer@suse.de>
-From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Message-ID: <8d18de64-9234-fcba-aa3d-b46789eb62a5@linaro.org>
-Date:   Tue, 13 Aug 2019 10:40:34 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1727818AbfHMJzf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 05:55:35 -0400
+Received: from correo.us.es ([193.147.175.20]:34454 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728322AbfHMJzf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 05:55:35 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id DA4EBFC5E0
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 11:55:32 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id CAEC8DA7B9
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 11:55:32 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id C08EEDA730; Tue, 13 Aug 2019 11:55:32 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C1C29D190F;
+        Tue, 13 Aug 2019 11:55:30 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 13 Aug 2019 11:55:30 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [31.4.218.116])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 95C3D4265A2F;
+        Tue, 13 Aug 2019 11:55:30 +0200 (CEST)
+Date:   Tue, 13 Aug 2019 11:55:29 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Jeremy Sowden <jeremy@azazel.net>
+Cc:     Netfilter Devel <netfilter-devel@vger.kernel.org>,
+        Net Dev <netdev@vger.kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>
+Subject: Re: [PATCH net-next v1 0/8] netfilter: header compilation fixes
+Message-ID: <20190813095529.aisgjjwl6rzt5xeh@salvia>
+References: <20190722201615.GE23346@azazel.net>
+ <20190807141705.4864-1-jeremy@azazel.net>
 MIME-Version: 1.0
-In-Reply-To: <20190809103235.16338-4-tbogendoerfer@suse.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190807141705.4864-1-jeremy@azazel.net>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 09/08/2019 11:32, Thomas Bogendoerfer wrote:
-> nvmem_device_find provides a way to search for nvmem devices with
-> the help of a match function simlair to bus_find_device.
+On Wed, Aug 07, 2019 at 03:16:57PM +0100, Jeremy Sowden wrote:
+> A number of netfilter header files are on the header-test blacklist
+> becuse they cannot be compiled stand-alone.   There are two main reasons
+> for this: missing inclusions of other headers, and missing conditionals
+> checking for CONFIG_* symbols.
 > 
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> ---
->   drivers/nvmem/core.c           | 62 ++++++++++++++++++++++--------------------
->   include/linux/nvmem-consumer.h |  9 ++++++
->   2 files changed, 41 insertions(+), 30 deletions(-)
+> The first six of these patches rectify these omissions, the seventh
+> removes some unnecessary "#ifdef __KERNEL__" checks, and the last
+> removes all the NF headers from the blacklist.
+> 
+> I've cc'ed Masahiro Yamada because the last patch removes 74 lines from
+> include/Kbuild and may conflict with his kbuild tree.
 
-Have you considered using nvmem_register_notifier() ?
+Series applied, one comment below.
 
+> Jeremy Sowden (8):
+>   netfilter: inlined four headers files into another one.
+>   netfilter: added missing includes to a number of header-files.
+>   netfilter: added missing IS_ENABLED(CONFIG_BRIDGE_NETFILTER) checks to
+>     header-file.
+>   netfilter: added missing IS_ENABLED(CONFIG_NF_TABLES) check to
+>     header-file.
+>   netfilter: added missing IS_ENABLED(CONFIG_NF_CONNTRACK) checks to
+>     some header-files.
+>   netfilter: added missing IS_ENABLED(CONFIG_NETFILTER) checks to some
+>     header-files.
+>   netfilter: removed "#ifdef __KERNEL__" guards from some headers.
+>   kbuild: removed all netfilter headers from header-test blacklist.
 
---srini
+Would you mind if - before pushing this out - I do this string
+replacement for the patch subject?
+
+s/added/add
+s/removed/remove
+s/inlined/inline
+
+I was told present tense is preferred for description. Otherwise, I'll
+leave them as is.
+
+Thanks.
