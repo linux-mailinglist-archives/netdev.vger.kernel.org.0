@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 513CD8C41B
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 00:09:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 460818C419
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 00:09:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727176AbfHMWJ3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 18:09:29 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:58922 "EHLO
+        id S1727061AbfHMWJX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 18:09:23 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:58692 "EHLO
         userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726260AbfHMWJ3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 18:09:29 -0400
+        with ESMTP id S1726260AbfHMWJW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 18:09:22 -0400
 Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7DM9HqV083248;
-        Tue, 13 Aug 2019 22:09:27 GMT
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7DM9Kns083285;
+        Tue, 13 Aug 2019 22:09:20 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
  references : from : message-id : date : mime-version : in-reply-to :
  content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=tC9u5qJHtFhf0lf45slTxk0dLmE4KSIP48d+58wN1PU=;
- b=DsIlBPFyyWXprO8BtTWEsXPr8jc/BxbWqPbJrLy79dGVohHITpDgeVBXgTLPZeFuUqOj
- 7XzNDVgkLL5uX/eVG7q73sWz2zpE3wbKxp5XlcOGj1qjowcSkHHiwskpcYdIrTdOewhe
- 7kvJuTZ3C6uCQ/e4wjohU5sDMw10Wz7SrgBLQVuWidob5UCB5j6cRusIHe6XGnU9dwWD
- zOP2sfTaVaPoGRWRgtVHekIKv72wUA1QSfok9wO3EWkGkNmfXIRPB+RyPI6z4E40eoNh
- MNK4kCPaAF7QqZFdckJbU1VUKxU+fGm3lNCOjEW6DC7Fpf5AXSX1JPIIIJUA1k20jrvr PQ== 
+ bh=E5n9qqcxNJyeJ5Ga7pq0bv2ywnLC/5EpwlymN9lg0E4=;
+ b=rhbpASWL0VjnkvkQju+VnzVEyryf5zeZ/PW4FvilL761DwyEaOoBf7mgA0EATDEOj6jS
+ Iq7CNsjUz4a6N4rM0lmSF2jzhvZT8n+YgS4+28A593TWLmBoE2PP9uCZnuvKoeOpZ0Es
+ wjVynHV19gLRomLCJSmR5n7KagNONCKwerupSWllVjyx6iOMDnOBfwgWsTNKkhWpO9Qb
+ /dogdZFvk0MCfX7U3y1YwqOxt/xlo4yIwaQ7alRCD1QKXgeK4PJw7lV1WT01pNcyxW6A
+ oSkPLyG+Yl7rc8H5ADzK73Du/9rp0qX3P/6LxgdrBZHxjsK13R/Fgc3xMQm1T6ZBNwkR aA== 
 Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 2u9nbth3jb-1
+        by userp2130.oracle.com with ESMTP id 2u9nbth3h9-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 13 Aug 2019 22:09:26 +0000
+        Tue, 13 Aug 2019 22:09:20 +0000
 Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7DM9HYn169467;
-        Tue, 13 Aug 2019 22:09:26 GMT
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7DM9GqX169365;
+        Tue, 13 Aug 2019 22:09:19 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 2ubwrrv8e7-1
+        by userp3020.oracle.com with ESMTP id 2ubwrrv89s-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 13 Aug 2019 22:09:26 +0000
+        Tue, 13 Aug 2019 22:09:19 +0000
 Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7DM9QfS170572;
-        Tue, 13 Aug 2019 22:09:26 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by userp3020.oracle.com with ESMTP id 2ubwrrv8ct-1
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7DM9ITQ169631;
+        Tue, 13 Aug 2019 22:09:18 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 2ubwrrv868-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 13 Aug 2019 22:09:26 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7DM8imr029957;
-        Tue, 13 Aug 2019 22:08:44 GMT
+        Tue, 13 Aug 2019 22:09:18 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7DM97b6011462;
+        Tue, 13 Aug 2019 22:09:07 GMT
 Received: from [10.209.243.59] (/10.209.243.59)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 13 Aug 2019 15:08:44 -0700
-Subject: Re: [PATCH net-next 3/5] RDS: don't use GFP_ATOMIC for sk_alloc in
- rds_create
+        with ESMTP ; Tue, 13 Aug 2019 15:09:07 -0700
+Subject: Re: [PATCH net-next 4/5] net/rds: Add a few missing rds_stat_names
+ entries
 To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
 Cc:     David Miller <davem@davemloft.net>
-References: <14aa4df7-3b7d-157d-1e9a-9c49ff5feb3b@oracle.com>
+References: <9a93fcf5-720c-a771-0329-312a1499eda1@oracle.com>
 From:   santosh.shilimkar@oracle.com
 Organization: Oracle Corporation
-Message-ID: <2d29482f-4263-2106-5faa-c60e36b181fc@oracle.com>
-Date:   Tue, 13 Aug 2019 15:08:44 -0700
+Message-ID: <58326c0a-71cc-0e18-13ae-b47b369162e8@oracle.com>
+Date:   Tue, 13 Aug 2019 15:09:06 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
  Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <14aa4df7-3b7d-157d-1e9a-9c49ff5feb3b@oracle.com>
+In-Reply-To: <9a93fcf5-720c-a771-0329-312a1499eda1@oracle.com>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -76,12 +76,20 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 8/13/19 11:21 AM, Gerd Rausch wrote:
-> From: Chris Mason <chris.mason@oracle.com>
-> Date: Fri, 3 Feb 2012 11:08:51 -0500
+> Date: Thu, 11 Jul 2019 12:15:50 -0700
 > 
-> Signed-off-by: Chris Mason <chris.mason@oracle.com>
-> Signed-off-by: Bang Nguyen <bang.nguyen@oracle.com>
+> In a previous commit, fields were added to "struct rds_statistics"
+> but array "rds_stat_names" was not updated accordingly.
+> 
+> Please note the inconsistent naming of the string representations
+> that is done in the name of compatibility
+> with the Oracle internal code-base.
+> 
+> s_recv_bytes_added_to_socket     -> "recv_bytes_added_to_sock"
+> s_recv_bytes_removed_from_socket -> "recv_bytes_freed_fromsock"
+> 
+> Fixes: 192a798f5299 ("RDS: add stat for socket recv memory usage")
 > Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
-> Signed-off-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
-> ---Acked-by: Santosh Shilimkar<santosh.shilimkar@oracle.com>
+> ---
+Acked-by: Santosh Shilimkar<santosh.shilimkar@oracle.com>
 
