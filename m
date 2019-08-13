@@ -2,68 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFAB78BD54
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 17:38:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59EA8BD75
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 17:44:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729440AbfHMPi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 11:38:27 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57238 "EHLO vps0.lunn.ch"
+        id S1727577AbfHMPoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 11:44:19 -0400
+Received: from mail.nic.cz ([217.31.204.67]:46102 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728535AbfHMPi1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 11:38:27 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=BJYOCOgG3vSFD6B2/NaAeHaq/xMvIZnICqXhFcn1r2g=; b=SrBu8AYaayxZtoAvX73LOWV53W
-        T30rx8Yp718aJXL83KUA1lrCEW1ZrAbyOCuuhybNrVEaIkILwcAOzqx69S859eUT3ouinPFsNGR77
-        A7UlK8svth/iQczY5jhEFoTPqXqCITyi7pPix70VltvRCfq9gnp4Iq7SS8pNZMUXIovY=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hxYsO-0002VJ-T4; Tue, 13 Aug 2019 17:38:20 +0200
-Date:   Tue, 13 Aug 2019 17:38:20 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Harini Katakam <harinik@xilinx.com>
-Cc:     Harini Katakam <harini.katakam@xilinx.com>,
+        id S1727502AbfHMPoS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 11:44:18 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTPSA id 3998B140AE0;
+        Tue, 13 Aug 2019 17:44:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1565711057; bh=LU9UkiNLrL+a9D+idc7IQ86LF+mUCzXynwlTRQrOPO0=;
+        h=Date:From:To;
+        b=BALiV59MQMTP56Yv95IStCpXVP8sLRl/sZDh/pcjFM4u31qY2mXOdBoryo8l5NoCo
+         eVfey93Aud6Miqh63XZ3/6//3rjVU3HvD5ExYik7gQqU7Jo61gXFYWDUCb4Kgz7hHD
+         CpedYyh6uBveR3S2c96ihFJYPm7kyvJ7f8LRRkUc=
+Date:   Tue, 13 Aug 2019 17:44:16 +0200
+From:   Marek =?ISO-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Sebastian Reichel <sebastian.reichel@collabora.co.uk>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Michal Simek <michal.simek@xilinx.com>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        radhey.shyam.pandey@xilinx.com
-Subject: Re: [PATCH 2/2] net: gmii2rgmii: Switch priv field in mdio device
- structure
-Message-ID: <20190813153820.GY14290@lunn.ch>
-References: <1564565779-29537-1-git-send-email-harini.katakam@xilinx.com>
- <1564565779-29537-3-git-send-email-harini.katakam@xilinx.com>
- <20190801040648.GJ2713@lunn.ch>
- <CAFcVEC+DyVhLzbMdSDsadivbnZJxSEg-0kUF5_Q+mtSbBnmhSA@mail.gmail.com>
- <20190813132321.GF15047@lunn.ch>
- <CAFcVECKipjD9atgEJSf8j78q_1aOAX77nD6vVeytZ-M00qBt6A@mail.gmail.com>
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: fix RGMII-ID port
+ setup
+Message-ID: <20190813174416.5c57b08f@dellmb.labs.office.nic.cz>
+In-Reply-To: <20190811165108.GG14290@lunn.ch>
+References: <20190811150812.6780-1-marek.behun@nic.cz>
+        <20190811153153.GB14290@lunn.ch>
+        <20190811181445.71048d2c@nic.cz>
+        <20190811165108.GG14290@lunn.ch>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFcVECKipjD9atgEJSf8j78q_1aOAX77nD6vVeytZ-M00qBt6A@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > The kernel does have a few helper, spi_get_drvdata, pci_get_drvdata,
-> > hci_get_drvdata. So maybe had add phydev_get_drvdata(struct phy_device
-> > *phydev)?
-> 
-> Maybe phydev_mdio_get_drvdata? Because the driver data member available is
-> phydev->mdio.dev.driver_data.
+Hi Andrew,
 
-I still prefer phydev_get_drvdata(). It fits with the X_get_drvdata()
-pattern, where X is the type of parameter passed to the call, spi,
-pci, hci.
+> We should read the switch registers. I think you can set the defaults
+> using strapping pins. And in general, the driver always reads state
+> from the hardware rather than caching it.
 
-We can also add mdiodev_get_drvdata(mdiodev). A few DSA drivers could
-use that.
+hmm. The cmode is cached for each port, though. For example
+mv88e6390x_port_set_cmode compares the new requested value with the
+cached one and doesn't do anything if they are equal.
 
-   Andrew
+If mv88e6xxx_port_setup_mac can be called once per second by phylink as
+you say, do we really want to read the value via MDIO every time? We
+already have cmode cached (read from registers at mv88e6xxx_setup, and
+then changed when cmode change is requested). From cmode we can already
+differentiate mode in the terms of phy_interface_t, unless it is RGMII,
+in which case we would have to read RX/TX timing.
+
+Marek
