@@ -2,148 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4D518C083
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:22:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 626B18C086
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:24:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728708AbfHMSWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:22:04 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:34418 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725923AbfHMSWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:22:03 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7DI905g088246;
-        Tue, 13 Aug 2019 18:22:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : subject : to :
- cc : message-id : date : mime-version : content-type :
- content-transfer-encoding; s=corp-2019-08-05;
- bh=qt62rX0U1Kdy3YTjwSb31/PYv3lT70DbEEcqVenwSYI=;
- b=IpnpnjM8rFOLJdX/NM9idQWpKW/Xq6TPr2G/8meZCJvPKYeaU21gNLeHh4ybaOAGTq5V
- VZfLX/z+QeeebjXytaujoh2Tipechi4NDoYfoZWTLSgOJMTdNqBAelr7NK2DjORPPChY
- TaJGdL+fNs/1h0llxCUpafgoYcUPz7dolFbbU9+2i+KsrwNWe7rR18sDdYo7V2GdwX6l
- CF+DW2wgc7MZFBMNYl9E5cDpkWH9ffo2iR0n9iCJ93DWIUwAra1Ixo7I6pBdJwgzm+N0
- p+xkl/V9qySouKINnT/xY2PYon49vLSFCFxQislo/7po+SqWP5TG/q5mt4Fodfs1QB4n QA== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2120.oracle.com with ESMTP id 2u9pjqfxar-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 13 Aug 2019 18:22:00 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7DID8oU087626;
-        Tue, 13 Aug 2019 18:21:59 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3030.oracle.com with ESMTP id 2ubwrga7jb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 13 Aug 2019 18:21:59 +0000
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7DILxvf111676;
-        Tue, 13 Aug 2019 18:21:59 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3030.oracle.com with ESMTP id 2ubwrga7gv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 13 Aug 2019 18:21:59 +0000
-Received: from abhmp0007.oracle.com (abhmp0007.oracle.com [141.146.116.13])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7DILvZG011602;
-        Tue, 13 Aug 2019 18:21:57 GMT
-Received: from [10.211.54.53] (/10.211.54.53)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 13 Aug 2019 11:21:57 -0700
-From:   Gerd Rausch <gerd.rausch@oracle.com>
-Subject: [PATCH net-next 5/5] rds: check for excessive looping in
- rds_send_xmit
-To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com
-Cc:     David Miller <davem@davemloft.net>
-Message-ID: <333232d5-311d-ba38-c906-540ef792ab77@oracle.com>
-Date:   Tue, 13 Aug 2019 11:21:55 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728363AbfHMSYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:24:11 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:34990 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbfHMSYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:24:11 -0400
+Received: by mail-qk1-f193.google.com with SMTP id r21so80497190qke.2
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 11:24:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pW2w8jvV1TCKffO1TzkH103ny5W9s8goXKo5RIMP0kA=;
+        b=FBQB+z5AdKy7X71VAKQuRw6VKen8WG9fyDMwpZFvdS/ITDz1SW4SzeV1MQdanCcAry
+         JCGWDrhLBhU+WnI+LCNf4o4w3CJaD0SpuZ1chLQum1aHA3JVWYqeRFkXSkmqClgTxOHc
+         kW+yo4/1kC8E/gVvOp50LS4eF7Xy2RuKRYSp7zpbpgopBVpgOZTG3z21IcUD7HLT8mIb
+         AlN3m4AXdei0A7d7GesUVhKbsLYKeXhM3JPmQO8lgiQc+ggHrzaHZr2mL4424O8BH8CY
+         VEY+YuQMnOLsxq90nQvRNO8sWe7kO/nVV4lNHl/SpWTmpEtIOq4voBvwMN0O/MLTVqO4
+         JoWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pW2w8jvV1TCKffO1TzkH103ny5W9s8goXKo5RIMP0kA=;
+        b=KBAqoIAXc/YZ+yggHywkUr28aZW2xO7blxeEdD8Kp6lqEco8qdj1TtaW+Ju9HwWHpV
+         goHX4fIXc+D1tDltt3TrBc5Qa0uBloHNddcCFVBs1f/+vHGhhDElC9cw9xppn9S3Druf
+         +EKZxa/VYUyt5YeZO/WMYEEB9/ydaP8Yf52pNJSYGRdztUpanlMYezBDjRUQCal0+j8U
+         szUXNSQHP/wYV9/IloDodYwLfbaqV8SDryufkmQEHzdyHuj3n05PZ9OMvXCcR1zszIpb
+         LRopVNAXQnIOSPKM/uSiS87yipSF+BRrvpBd9XafLbptZwtbxpRHxmE5x+o04ujOaQQ/
+         YP6A==
+X-Gm-Message-State: APjAAAVL84V0nSevb2gPRfVPvNo7MlysRC5sbL1YfdkeAcIq/CNH0LVP
+        Pa8DN822320p9vtI0x+KLaBkUikFqaHWRFaXShs=
+X-Google-Smtp-Source: APXvYqyQtXMSMOcRY68dQVIuH0RVfvXYN0y2MKuvi+9ncn8TrSIS8pdgAt4WV0h4tjqwaJF4PgfKyHpc0BAFz8tzeIQ=
+X-Received: by 2002:a37:9b48:: with SMTP id d69mr36350852qke.449.1565720650191;
+ Tue, 13 Aug 2019 11:24:10 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=windows-1252
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9348 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908130171
+References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com> <20190813122420.GB9349@krava>
+In-Reply-To: <20190813122420.GB9349@krava>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 13 Aug 2019 11:23:59 -0700
+Message-ID: <CAEf4BzbG29eAL7gUV+Vyrrft4u4Ss8ZBC6RMixJL_CYOTQ+F2w@mail.gmail.com>
+Subject: Re: libbpf distro packaging
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Julia Kartseva <hex@fb.com>,
+        "labbott@redhat.com" <labbott@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Andy Grover <andy.grover@oracle.com>
-Date: Thu, 13 Jan 2011 11:40:31 -0800
+On Tue, Aug 13, 2019 at 5:26 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Mon, Aug 12, 2019 at 07:04:12PM +0000, Julia Kartseva wrote:
+> > I would like to bring up libbpf publishing discussion started at [1].
+> > The present state of things is that libbpf is built from kernel tree, e.g. [2]
+> > For Debian and [3] for Fedora whereas the better way would be having a
+> > package built from github mirror. The advantages of the latter:
+> > - Consistent, ABI matching versioning across distros
+> > - The mirror has integration tests
+> > - No need in kernel tree to build a package
+> > - Changes can be merged directly to github w/o waiting them to be merged
+> > through bpf-next -> net-next -> main
+> > There is a PR introducing a libbpf.spec which can be used as a starting point: [4]
+> > Any comments regarding the spec itself can be posted there.
+> > In the future it may be used as a source of truth.
+> > Please consider switching libbpf packaging to the github mirror instead
+> > of the kernel tree.
+> > Thanks
+> >
+> > [1] https://lists.iovisor.org/g/iovisor-dev/message/1521
+> > [2] https://packages.debian.org/sid/libbpf4.19
+> > [3] http://rpmfind.net/linux/RPM/fedora/devel/rawhide/x86_64/l/libbpf-5.3.0-0.rc2.git0.1.fc31.x86_64.html
+> > [4] https://github.com/libbpf/libbpf/pull/64
+>
+> hi,
+> Fedora has libbpf as kernel-tools subpackage, so I think
+> we'd need to create new package and deprecate the current
+>
+> but I like the ABI stability by using github .. how's actually
+> the sync (in both directions) with kernel sources going on?
 
-Original commit from 2011 updated to include a change by
-Yuval Shaia <yuval.shaia@oracle.com>
-that adds a new statistic counter "send_stuck_rm"
-to capture the messages looping exessively
-in the send path.
+Sync is always in one direction, from kernel sources into Github repo.
+Right now it's triggered by a human (usually me), but we are using a
+script that automates entire process (see
+https://github.com/libbpf/libbpf/blob/master/scripts/sync-kernel.sh).
+It cherry-pick relevant commits from kernel, transforms them to match
+Github's file layout and re-applies those changes to Github repo.
 
-Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
----
- net/rds/rds.h   |  2 +-
- net/rds/send.c  | 12 ++++++++++++
- net/rds/stats.c |  1 +
- 3 files changed, 14 insertions(+), 1 deletion(-)
+There is never a sync from Github back to kernel, but Github repo
+contains some extra stuff that's not in kernel. E.g., the script I
+mentioned, plus Github's Makefile is different, because it can't rely
+on kernel's kbuild setup.
 
-diff --git a/net/rds/rds.h b/net/rds/rds.h
-index f0066d168499..ad605fd61655 100644
---- a/net/rds/rds.h
-+++ b/net/rds/rds.h
-@@ -717,7 +717,7 @@ struct rds_statistics {
- 	uint64_t	s_cong_send_blocked;
- 	uint64_t	s_recv_bytes_added_to_socket;
- 	uint64_t	s_recv_bytes_removed_from_socket;
--
-+	uint64_t	s_send_stuck_rm;
- };
- 
- /* af_rds.c */
-diff --git a/net/rds/send.c b/net/rds/send.c
-index 031b1e97a466..9ce552abf9e9 100644
---- a/net/rds/send.c
-+++ b/net/rds/send.c
-@@ -145,6 +145,7 @@ int rds_send_xmit(struct rds_conn_path *cp)
- 	LIST_HEAD(to_be_dropped);
- 	int batch_count;
- 	unsigned long send_gen = 0;
-+	int same_rm = 0;
- 
- restart:
- 	batch_count = 0;
-@@ -200,6 +201,17 @@ int rds_send_xmit(struct rds_conn_path *cp)
- 
- 		rm = cp->cp_xmit_rm;
- 
-+		if (!rm) {
-+			same_rm = 0;
-+		} else {
-+			same_rm++;
-+			if (same_rm >= 4096) {
-+				rds_stats_inc(s_send_stuck_rm);
-+				ret = -EAGAIN;
-+				break;
-+			}
-+		}
-+
- 		/*
- 		 * If between sending messages, we can send a pending congestion
- 		 * map update.
-diff --git a/net/rds/stats.c b/net/rds/stats.c
-index 6bbab4d74c4f..9e87da43c004 100644
---- a/net/rds/stats.c
-+++ b/net/rds/stats.c
-@@ -78,6 +78,7 @@ static const char *const rds_stat_names[] = {
- 	"cong_send_blocked",
- 	"recv_bytes_added_to_sock",
- 	"recv_bytes_freed_fromsock",
-+	"send_stuck_rm",
- };
- 
- void rds_stats_info_copy(struct rds_info_iterator *iter,
--- 
-2.22.0
-
+>
+> thanks,
+> jirka
