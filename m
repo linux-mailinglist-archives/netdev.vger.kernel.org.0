@@ -2,138 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9500F8B819
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:08:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 152BF8B836
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:18:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728089AbfHMMIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 08:08:14 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39454 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727466AbfHMMIN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:08:13 -0400
-Received: by mail-pg1-f195.google.com with SMTP id u17so51159362pgi.6;
-        Tue, 13 Aug 2019 05:08:13 -0700 (PDT)
+        id S1727039AbfHMMSo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 08:18:44 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:44908 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725953AbfHMMSn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:18:43 -0400
+Received: by mail-lj1-f195.google.com with SMTP id e24so4644891ljg.11;
+        Tue, 13 Aug 2019 05:18:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sqLnhHvWb1pYJOG96mznxLtUFrCsozUxEBwFZR41qYU=;
-        b=R5fPH5jpnlpW2LB0OvQ/09A/ukgivy7W++yiMxJNSrRxSrJDkYNr9XuZ92zwB/NZ4+
-         1V1jnzLoQy9E0/3LLbwuHpf94+TPvFrWnMSLY+C+2kfJtTQVX0FslsPaKx40MXPh/Rf1
-         VcXisdzkaCJc2/EvgCdwMgNUot4ttsaSuKJb72w+9UG0oRg8pb5QRa7J5Ku/D0qvHasf
-         jVOrYo7JwYLG1SCfekONJjdbbfEcEmWsbDgZsv7k9WkudousIbd9mLuTowndMC1vpZDn
-         swqfOl6SlZfwDFX8nMqS/tSH8/jtnXWPCyG+N3ZI5kBz1u6wXxv4ERo4RTHd9/U0aAd4
-         djbw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=EwRADUNHlV0hzZS2IA/cFhoIZjTzHWLRtc/+sGAjaKM=;
+        b=eDk+RTLYTyJMlsI9BG6oP2X7Hi94flcZoDIK+V4Q7kF9ndeHX3QBB6aV1R7lO2/WW4
+         OzvrU6etE726bc4etGX6++8NGavax+jUpSx92NDtziRydVNpzo8Ltd2Vl5zfkw+8ZN/V
+         nSiSDBqopWGns/uGfkd7vcCgO0VJQw6lIRVLH4cxW4qdIJO+V6sP0KMw5KnaBd7oglFq
+         uPeX5m295MIyMUU41O5iWRC3q7CfmuU84K4bPAlfCQ9RUXW/6aCk47a6S360b2WK1bVC
+         iMu5LMTAVlGBBjVIo7eyWOjll/TXSGaTpE+nYOllbB/fbzsZNgqmx0E+THxBgbTiIWbb
+         vmvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sqLnhHvWb1pYJOG96mznxLtUFrCsozUxEBwFZR41qYU=;
-        b=nPBGkPat7pmuq9u1dSKU+J7EIpJ70DEvy1KtiWMi9KYJujESehJM1bKSvsVc4NwcNQ
-         m4V/omG8uBWyEQ/TCtVbWGdw2w1KX88Gm67Sb10KnMwLZbRKQx302CR72A8rA8ngEwXD
-         yVuW0jZCPzDzY3nc1VnRC8wjPamRbxlcTM+wGwze3XQF58ldzr2xx2YFYI5PtcVehjGg
-         eJUi2zGBG22l5v8BdZcTBOJNARBTbsVZnKWKg3F6018hVg37aVMgHU52wSR32IUOtCBq
-         xEW44VuYxi4uJ6/F/vrTjf68qrhGA29v7W69UVRwb/sXPHdddYhZM6URbKgpROAEmLF/
-         dDew==
-X-Gm-Message-State: APjAAAXGBAr1Ejo00pPDLr6qz0SewxsRKNRLFvsQccVGEz0GhFao5p3D
-        BfpPt3jXqCBWjuJ12+PWNlo=
-X-Google-Smtp-Source: APXvYqzOLBIpKruIrN+pdC6zB0JrdgpaIcYhgQwPP0Ok4ayQ9LQDTomDipedDKnF0CfXNsMaCp8Tqw==
-X-Received: by 2002:a62:1808:: with SMTP id 8mr14528787pfy.177.1565698092949;
-        Tue, 13 Aug 2019 05:08:12 -0700 (PDT)
-Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.08.09
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 05:08:12 -0700 (PDT)
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=EwRADUNHlV0hzZS2IA/cFhoIZjTzHWLRtc/+sGAjaKM=;
+        b=SYdRUYbBqhXup88Inc6E/ZN8HdetAmhltktErqMNLomcP2kCm+R5lwCel6cL3EZKzU
+         3JQotqRPBiGUaIS/Efi4pw5Gk2nvKBz3EsGIdeHQEKRUgzJNG9t8gM/xzlPHUmCee6qS
+         vqKprdYpJiIWdO0nHnzRwOsinEGrIhK2bS//mPVNRE9Lmb6CiLYkztzZEZUfJLS9BtJo
+         6dkQoNCsls0N2Z+4egTv8qLDCuKbKWaXkP7eVkiqBzqYb0+7aYHEHrhFnZcmeCYBZMfi
+         3h2iWwQNGAW86eYRXk+7WDQXKes1KXV6shqG5XzuuaB926pf6T67Y0Z6ihSDGb5Bfm16
+         a4kA==
+X-Gm-Message-State: APjAAAU/QaTjeL8vfWL/mN1SaKqYlK9V0qBAhCrpjCAcCqcr5OauKPKZ
+        ArsFq+0lHHZWni4BcYeul0AW+EUdKdQF6cZfMQw=
+X-Google-Smtp-Source: APXvYqw/g8TAHECe0mEWinPLFKHmJ8aTwE13PdcEf5w7U2Bx3J+3lTikvc4HgNgrelET/KNasdqFnFuEyZvcqi5Q25k=
+X-Received: by 2002:a05:651c:ca:: with SMTP id 10mr5387061ljr.144.1565698721734;
+ Tue, 13 Aug 2019 05:18:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190812215052.71840-1-ndesaulniers@google.com> <20190812215052.71840-17-ndesaulniers@google.com>
+In-Reply-To: <20190812215052.71840-17-ndesaulniers@google.com>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 13 Aug 2019 14:18:30 +0200
+Message-ID: <CANiq72kbFDPO0V12AQkvNJn4eX3j2TH4RiNwuB=a520aSmvfKQ@mail.gmail.com>
+Subject: Re: [PATCH 00/16] treewide: prefer __section from compiler_attributes.h
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, yhs@fb.com,
+        clang-built-linux@googlegroups.com,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        William Tu <u9012063@gmail.com>
-Subject: [RFC PATCH bpf-next 14/14] bpf, hashtab: Compare keys in long
-Date:   Tue, 13 Aug 2019 21:05:58 +0900
-Message-Id: <20190813120558.6151-15-toshiaki.makita1@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
-References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Song Liu <songliubraving@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-memcmp() is generally slow. Compare keys in long if possible.
-This improves xdp_flow performance.
-This is included in this series just to demonstrate to what extent
-xdp_flow performance can increase.
+On Mon, Aug 12, 2019 at 11:53 PM Nick Desaulniers
+<ndesaulniers@google.com> wrote:
+>
+> GCC unescapes escaped string section names while Clang does not. Because
+> __section uses the `#` stringification operator for the section name, it
+> doesn't need to be escaped.
 
-Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
----
- kernel/bpf/hashtab.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+Thanks a lot Nick, this takes a weight off my mind. One __attribute__
+less to go.
 
-diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
-index 22066a6..8b5ffd4 100644
---- a/kernel/bpf/hashtab.c
-+++ b/kernel/bpf/hashtab.c
-@@ -417,6 +417,29 @@ static inline struct hlist_nulls_head *select_bucket(struct bpf_htab *htab, u32
- 	return &__select_bucket(htab, hash)->head;
- }
- 
-+/* key1 must be aligned to sizeof long */
-+static bool key_equal(void *key1, void *key2, u32 size)
-+{
-+	/* Check for key1 */
-+	BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct htab_elem, key),
-+				 sizeof(long)));
-+
-+	if (IS_ALIGNED((unsigned long)key2 | (unsigned long)size,
-+		       sizeof(long))) {
-+		unsigned long *lkey1, *lkey2;
-+
-+		for (lkey1 = key1, lkey2 = key2; size > 0;
-+		     lkey1++, lkey2++, size -= sizeof(long)) {
-+			if (*lkey1 != *lkey2)
-+				return false;
-+		}
-+
-+		return true;
-+	}
-+
-+	return !memcmp(key1, key2, size);
-+}
-+
- /* this lookup function can only be called with bucket lock taken */
- static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash,
- 					 void *key, u32 key_size)
-@@ -425,7 +448,7 @@ static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash
- 	struct htab_elem *l;
- 
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
--		if (l->hash == hash && !memcmp(&l->key, key, key_size))
-+		if (l->hash == hash && key_equal(&l->key, key, key_size))
- 			return l;
- 
- 	return NULL;
-@@ -444,7 +467,7 @@ static struct htab_elem *lookup_nulls_elem_raw(struct hlist_nulls_head *head,
- 
- again:
- 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
--		if (l->hash == hash && !memcmp(&l->key, key, key_size))
-+		if (l->hash == hash && key_equal(&l->key, key, key_size))
- 			return l;
- 
- 	if (unlikely(get_nulls_value(n) != (hash & (n_buckets - 1))))
--- 
-1.8.3.1
+I guess I can take the series myself, since the changes are not that
+big to other parts of the kernel as long as I get Acks; and anyway I
+plan to do other attributes over time.
 
+Cheers,
+Miguel
