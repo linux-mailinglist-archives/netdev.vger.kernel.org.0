@@ -2,149 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 282238BBF8
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 16:48:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 840508BC6F
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 17:06:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729789AbfHMOst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 10:48:49 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50529 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726637AbfHMOss (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 10:48:48 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v15so1794891wml.0
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 07:48:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=1qxrTzlHF4iwE40HMkbzdeG0tmiBjic5rWp5kswtBtA=;
-        b=c4C8l+AIjIibfmXNLBONPd8Jz1kYm0GUGmRFWJRuBkCh/5SbVStHFjtBurDvrlx69i
-         0sOobyepbVD8LQ3GHShj9rlDjjEzjFXuQKJtwNdAUgnYuoFXJasQKT5whe1GhQRAAuyW
-         WRhcpoE9oiOn7VXv77oXO9PjFt/qDDQYb7iYQ4XoFJEcTC1GMrLkHHlHBVJQD4zvamsm
-         GFm4LDm49RW3TBmT8qDhlDjPb4tHfUY+Gkz08pMzEIIx1Q5WTZ2yW+mIRyhsDVNy3AXd
-         iJEUZDw83D6dhN7atOVkTQlA+pm0ezz1mDJBToTPPVzIOiLXYx0Qrw8sD6DqOkxTk2HD
-         /GCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=1qxrTzlHF4iwE40HMkbzdeG0tmiBjic5rWp5kswtBtA=;
-        b=t2c+qnquDxGqXqPqZUJQmwTYr+qz4KqQ/LGTPJBmIO+YQOn11Vs3xhyEfHwE9JjykV
-         3gQGiIFwf4O5X4uoyVI5ewVcQzUqt9IB5i+ebi+mGfbnjXmW5Nxd29Iz5HRgfDvVVCTu
-         KBy34p63nr1tbscxc1udn+b+1irn76yf/t9t6bHcJY0AJmBFFV1D+6Ll3qybNvgQtW2+
-         C2sMgAIaL4nKvdzfW8dhTCYmeYE2E9I0Rc5iNSlq9j6uUZln1JXq5xGdngBmRII1/2gb
-         lG9B1vel/wMOnHDKK905FDwm0j6wSS/dAoTFMGjfw3MpXnjXlPLqnkuOwxCyh1EJAbne
-         W/cg==
-X-Gm-Message-State: APjAAAVtfv2UG4WUbwmRatKzDS6DMnhCLmZL4LgFT498KFOTMIEwJsw6
-        ie6SiWokCKcrspFuVy1snKwViDN6kdE=
-X-Google-Smtp-Source: APXvYqxGNYdDjed1Z9IRb1uzRRYgb28bh+pvc9vLPDOhi+dyqfGPXdH7E9+X9S7UaPGJKL1aw7XqLg==
-X-Received: by 2002:a1c:2582:: with SMTP id l124mr3731752wml.153.1565707726184;
-        Tue, 13 Aug 2019 07:48:46 -0700 (PDT)
-Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id l9sm1329039wmh.36.2019.08.13.07.48.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Aug 2019 07:48:45 -0700 (PDT)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
-        mlxsw@mellanox.com
-Subject: [patch net-next v2 2/2] selftests: netdevsim: add devlink regions tests
-Date:   Tue, 13 Aug 2019 16:48:43 +0200
-Message-Id: <20190813144843.28466-3-jiri@resnulli.us>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190813144843.28466-1-jiri@resnulli.us>
-References: <20190813144843.28466-1-jiri@resnulli.us>
+        id S1729878AbfHMPGy convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Aug 2019 11:06:54 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:60566 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726637AbfHMPGx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 11:06:53 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3893830EA1BA;
+        Tue, 13 Aug 2019 15:06:53 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 8F79580FD6;
+        Tue, 13 Aug 2019 15:06:51 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <CACT4Y+YCB3o5Ps9RNq9KpMcmGCwBM4R9DeX67prQ9Q3UppGowQ@mail.gmail.com>
+References: <CACT4Y+YCB3o5Ps9RNq9KpMcmGCwBM4R9DeX67prQ9Q3UppGowQ@mail.gmail.com> <0000000000004c2416058c594b30@google.com> <24282.1562074644@warthog.procyon.org.uk> <CACT4Y+YjdV8CqX5=PzKsHnLsJOzsydqiq3igYDm_=nSdmFo2YQ@mail.gmail.com> <20330.1564583454@warthog.procyon.org.uk> <CACT4Y+Y4cRgaRPJ_gz_53k85inDKq+X+bWmOTv1gPLo=Yod1=A@mail.gmail.com> <22318.1564586386@warthog.procyon.org.uk> <CACT4Y+bjLBwVK_6fz2H8fXm0baAVX+vRJ4UbVWG_7yNUO-SOUg@mail.gmail.com> <3135.1565706180@warthog.procyon.org.uk>
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     dhowells@redhat.com,
+        syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>,
+        Eric Biggers <ebiggers@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        linux-afs@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Subject: Re: kernel BUG at net/rxrpc/local_object.c:LINE!
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <8012.1565708810.1@warthog.procyon.org.uk>
+Content-Transfer-Encoding: 8BIT
+Date:   Tue, 13 Aug 2019 16:06:50 +0100
+Message-ID: <8013.1565708810@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Tue, 13 Aug 2019 15:06:53 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@mellanox.com>
+Dmitry Vyukov <dvyukov@google.com> wrote:
 
-Test netdevsim devlink region implementation.
+> > I meant that I don't know how to turn a tracepoint on from inside the kernel.
+> 
+> This /sys/kernel/debug/tracing/events/rxrpc/rxrpc_local/enable in:
+>         echo 1 > /sys/kernel/debug/tracing/events/rxrpc/rxrpc_local/enable
+> should map to some global variable, right? If so, it should be
+> possible to initialize that var to 1 statically. Or that won't work
+> for some reason?
 
-Signed-off-by: Jiri Pirko <jiri@mellanox.com>
----
-v1->v2:
-- new patch
----
- .../drivers/net/netdevsim/devlink.sh          | 54 ++++++++++++++++++-
- 1 file changed, 53 insertions(+), 1 deletion(-)
+As I understand it, it's all hidden inside of tracing macros and ftrace
+infrastructure and involves runtime patching the code to enable tracepoints
+(they're effectively NOP'ed out when not in use).
 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-index 858ebdc8d8a3..b77fdd046bea 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
-@@ -3,7 +3,7 @@
- 
- lib_dir=$(dirname $0)/../../../net/forwarding
- 
--ALL_TESTS="fw_flash_test params_test"
-+ALL_TESTS="fw_flash_test params_test regions_test"
- NUM_NETIFS=0
- source $lib_dir/lib.sh
- 
-@@ -90,6 +90,58 @@ params_test()
- 	log_test "params test"
- }
- 
-+check_region_size()
-+{
-+	local name=$1
-+	local size
-+
-+	size=$(devlink region show $DL_HANDLE/$name -j | jq -e -r '.[][].size')
-+	check_err $? "Failed to get $name region size"
-+	[ $size -eq 32768 ]
-+	check_err $? "Invalid $name region size"
-+}
-+
-+check_region_snapshot_count()
-+{
-+	local name=$1
-+	local phase_name=$2
-+	local expected_count=$3
-+	local count
-+
-+	count=$(devlink region show $DL_HANDLE/$name -j | jq -e -r '.[][].snapshot | length')
-+	[ $count -eq $expected_count ]
-+	check_err $? "Unexpected $phase_name snapshot count"
-+}
-+
-+regions_test()
-+{
-+	RET=0
-+
-+	local count
-+
-+	check_region_size dummy
-+	check_region_snapshot_count dummy initial 0
-+
-+	echo ""> $DEBUGFS_DIR/take_snapshot
-+	check_err $? "Failed to take first dummy region snapshot"
-+	check_region_snapshot_count dummy post-first-snapshot 1
-+
-+	echo ""> $DEBUGFS_DIR/take_snapshot
-+	check_err $? "Failed to take second dummy region snapshot"
-+	check_region_snapshot_count dummy post-second-snapshot 2
-+
-+	echo ""> $DEBUGFS_DIR/take_snapshot
-+	check_err $? "Failed to take third dummy region snapshot"
-+	check_region_snapshot_count dummy post-third-snapshot 3
-+
-+	devlink region del $DL_HANDLE/dummy snapshot 1
-+	check_err $? "Failed to delete first dummy region snapshot"
-+
-+	check_region_snapshot_count dummy post-first-delete 2
-+
-+	log_test "regions test"
-+}
-+
- setup_prepare()
- {
- 	modprobe netdevsim
--- 
-2.21.0
+So, no, it's not that simple.
 
+I asked Steven and he says:
+
+	trace_set_clr_event("sched", "sched_switch", 1);
+
+is the same as
+
+	echo 1 > events/sched/sched_switch/enable
+
+So it can be done.  Will syzbot actually collect the trace log?
+
+David
