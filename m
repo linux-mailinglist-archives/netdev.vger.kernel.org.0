@@ -2,100 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04FC28C0EF
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:42:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA5E8C0F9
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:45:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727605AbfHMSmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:42:51 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:43423 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726062AbfHMSmv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:42:51 -0400
-Received: by mail-oi1-f196.google.com with SMTP id y8so74461oih.10
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 11:42:50 -0700 (PDT)
+        id S1726298AbfHMSpp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:45:45 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:38610 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726137AbfHMSpp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:45:45 -0400
+Received: by mail-qk1-f193.google.com with SMTP id u190so16837697qkh.5;
+        Tue, 13 Aug 2019 11:45:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sifive.com; s=google;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :user-agent:mime-version;
-        bh=JfFAdKP3yDSu1gNfDNgmsT7umfmkTpl2VNpXjzZ5xck=;
-        b=N5dR9jNnD0q+2lM6s+HP+eZYAg/eqdrBMuFa2aoycdfaRp6hPQ1r76mAmPA9WFtf7C
-         FVeX+9/vZLw/7uirWJK+AMswAYg5iSsrWBzwhZ4s75HM7IYVi9rVMfsEPAc//XbVAaf8
-         P+WZF4jW40HC3uAhSCjjp8x12iASCNKu2FLcEddXa+v0wRmGNBiT4Sh5rBulRPTEAKgS
-         OT58hSyX4FcyWN4oSmNp1Xcj6hswmOkgsLDGI00QZZwejiOS88qkfT3ZbtrOht9xzGsb
-         oBPcCqBkBH0qCvKOOP9lwPWh1OaVSmOI5pQh3+qYcbI7MV9MqxOih+k0PxzZ249JIrDh
-         +tHg==
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wOy1h5ypsK1MExivCi3vV6BFbrdCnWfnZrHhJLCH+7o=;
+        b=p5w5BeYYlqO0STZ372a7Qi/yy7sD52ImEMD1NOeNjtRcoLYEeY5IYLxj97NVfQcuH/
+         2i/7FrmjHBbh1q4yFvSclp6cUaM1acU4grBRPFk7V+B9Di7zC8kHsfxAN5FGJbRuVa0t
+         TuVvynDDjWTJgK7vS/6i5GQer9/SnGtp/jCPdaKdT9Ww/C+xWPabmZqhS3uvmPJgFNqy
+         lrATCDUoCEjk+EfIbx0ND3jgCwclUre2qW/OKGnV/3QNKtM+d1pymhq3whNXH7koba6H
+         iPfwXZ8Z6OhkHIwuH44iHZxt30c6WYX1n3tqNkS71DVq89FSdRWWi9QxFEdsUAl522n+
+         SeMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:user-agent:mime-version;
-        bh=JfFAdKP3yDSu1gNfDNgmsT7umfmkTpl2VNpXjzZ5xck=;
-        b=Zvok0TTN+NEuQs4VKneERzxyqopYFbgwBRwpuDbyZm1m1y9+Usx1qkPR0rfGEGBAo2
-         Wqn/BbJHpGR6k2aqDKUVeEoCLA9AOVyK6OdJIZflwFPJrfKW7mtMkSImz10/xs23Qsyg
-         5WhxEYlrJ7B0ZxDSJia5MceOuFSgn4RlvbTAERatm14oEC2tgJvEfl9XTFNuofbjIh7D
-         mpr3tsZ/IiLdPzNj34rWZ9sFn/8ja38FChMMOzbsEsyG1SnAyidGDS9NNJpShMC81HMX
-         NcVUPpB1s6R5l5UudloZfD4jnj2oi0SmqseqwIPa1XbHkvIbNjjXv6VDHAyMtjrt+jsZ
-         KJEQ==
-X-Gm-Message-State: APjAAAW7uPbbkJSEiF9OMIUzrdAIIH9AbLB56GibTus0o85rpXnzedOB
-        4mW4r4y7b5gavfB6Axp8dcyp0w==
-X-Google-Smtp-Source: APXvYqyXdgJEdteZbftC+TJcIScPp+GF+ZzWtMuBywPHiEKat1r09dmv1SgHAm3azSTaqEwZv0TuMA==
-X-Received: by 2002:a02:9644:: with SMTP id c62mr39674483jai.45.1565721770066;
-        Tue, 13 Aug 2019 11:42:50 -0700 (PDT)
-Received: from localhost (c-73-95-159-87.hsd1.co.comcast.net. [73.95.159.87])
-        by smtp.gmail.com with ESMTPSA id v10sm101180934iob.43.2019.08.13.11.42.49
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wOy1h5ypsK1MExivCi3vV6BFbrdCnWfnZrHhJLCH+7o=;
+        b=UvpiXnM2uf263cSgQbE0JuZMjhqS5cup22Mg4ojrofjGMyQSxTUc2YecIHUmrKw7F3
+         BtwQ0tGqhl9rtz7n2VK4nw9Re/rDa1W5hnsqtY3h9xAR6EqkV7dtVLpGocI/JRJOBUKo
+         2j9xPxMJzkzZdID14RXFwwpehivOhwg+G/M+QwOKfHh06+7H4a6l1soC6cpTeBK45liy
+         yd2PHiTZhS653fwi4FqRg+REzqbYzx+BuOKxMjhYha+vIGpbIKOEb3ds8UseklVekRMF
+         EfPtG7xzaI09ZawKkuKyow+n2GvCebL9nRPK91aeFvKM8B9HOS8yiqo97Js0shJq+++l
+         KiPQ==
+X-Gm-Message-State: APjAAAX78IVEj/wzN8lijq/By2Oe2bjMs1vhTIvs3JRY126BJ8LnW9jb
+        YnX9iXOHAhRzZWUhX53MHcg=
+X-Google-Smtp-Source: APXvYqzVDThd4a1JfpocyPdfspr9KbnY9zUdQ5ghiW1aUCTUb1BoSOzw2kCY/CDiQv6TaOKJxs0HOg==
+X-Received: by 2002:a37:9307:: with SMTP id v7mr27590476qkd.495.1565721943743;
+        Tue, 13 Aug 2019 11:45:43 -0700 (PDT)
+Received: from quaco.ghostprotocols.net (179-240-139-44.3g.claro.net.br. [179.240.139.44])
+        by smtp.gmail.com with ESMTPSA id l63sm47559772qkb.124.2019.08.13.11.45.41
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 11:42:49 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 11:42:49 -0700 (PDT)
-From:   Paul Walmsley <paul.walmsley@sifive.com>
-X-X-Sender: paulw@viisi.sifive.com
-To:     Nicolas Ferre <Nicolas.Ferre@microchip.com>,
-        David Miller <davem@davemloft.net>
-cc:     Yash Shah <yash.shah@sifive.com>, Rob Herring <robh+dt@kernel.org>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv@lists.infradead.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        =?ISO-8859-15?Q?Petr_=A6tetiar?= <ynezz@true.cz>,
-        Sachin Ghadi <sachin.ghadi@sifive.com>
-Subject: Re: [PATCH 2/3] macb: Update compatibility string for SiFive
- FU540-C000
-In-Reply-To: <CAJ2_jOEHoh+D76VpAoVq3XnpAZEQxdQtaVX5eiKw5X4r+ypKVw@mail.gmail.com>
-Message-ID: <alpine.DEB.2.21.9999.1908131142150.5033@viisi.sifive.com>
-References: <1563534631-15897-1-git-send-email-yash.shah@sifive.com> <1563534631-15897-2-git-send-email-yash.shah@sifive.com> <4075b955-a187-6fd7-a2e6-deb82b5d4fb6@microchip.com> <CAJ2_jOEHoh+D76VpAoVq3XnpAZEQxdQtaVX5eiKw5X4r+ypKVw@mail.gmail.com>
-User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
+        Tue, 13 Aug 2019 11:45:43 -0700 (PDT)
+From:   Arnaldo Carvalho de Melo <arnaldo.melo@gmail.com>
+X-Google-Original-From: Arnaldo Carvalho de Melo <acme@kernel.org>
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 9D0B744639; Tue, 13 Aug 2019 15:45:36 -0300 (-03)
+Date:   Tue, 13 Aug 2019 15:45:36 -0300
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>
+Subject: Re: [RESEND][PATCH v3 bpf-next] btf: expose BTF info through sysfs
+Message-ID: <20190813184536.GJ9280@kernel.org>
+References: <20190812183947.130889-1-andriin@fb.com>
+ <c4103c58-941c-da3a-9abd-eecbcd256f1d@iogearbox.net>
+ <CAEf4BzZr4FGfy+QpDQzVxMxCGWx5DYCcu9jsQJWK235+f3Oigg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZr4FGfy+QpDQzVxMxCGWx5DYCcu9jsQJWK235+f3Oigg@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dave, Nicolas,
+Em Tue, Aug 13, 2019 at 11:08:14AM -0700, Andrii Nakryiko escreveu:
+> On Tue, Aug 13, 2019 at 7:20 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+> > On 8/12/19 8:39 PM, Andrii Nakryiko wrote:
+> > > 3. final vmlinux image is generated by linking this object file (and
+> > >     kallsyms, if necessary). sysfs_btf.c then creates
+> > >     /sys/kernel/btf/kernel file and exposes embedded BTF contents through
+> > >     it. This allows, e.g., libbpf and bpftool access BTF info at
+> > >     well-known location, without resorting to searching for vmlinux image
+> > >     on disk (location of which is not standardized and vmlinux image
+> > >     might not be even available in some scenarios, e.g., inside qemu
+> > >     during testing).
 
-On Mon, 22 Jul 2019, Yash Shah wrote:
+> > Small question: given modules will be covered later, would it not be more
+> > obvious to name it /sys/kernel/btf/vmlinux instead?
+ 
+> vmlinux totally makes sense, not sure why I didn't think about that initially...
 
-> On Fri, Jul 19, 2019 at 5:36 PM <Nicolas.Ferre@microchip.com> wrote:
-> >
-> > On 19/07/2019 at 13:10, Yash Shah wrote:
-> > > Update the compatibility string for SiFive FU540-C000 as per the new
-> > > string updated in the binding doc.
-> > > Reference: https://lkml.org/lkml/2019/7/17/200
-> >
-> > Maybe referring to lore.kernel.org is better:
-> > https://lore.kernel.org/netdev/CAJ2_jOFEVZQat0Yprg4hem4jRrqkB72FKSeQj4p8P5KA-+rgww@mail.gmail.com/
-> 
-> Sure. Will keep that in mind for future reference.
-> 
-> >
-> > > Signed-off-by: Yash Shah <yash.shah@sifive.com>
-> >
-> > Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
-> 
-> Thanks.
+Agreed :-)
+ 
+> I'll follow up with a rename.
 
-Am assuming you'll pick this up for the -net tree for v5.4-rc1 or earlier.
-If not, please let us know.
-
-
-- Paul
+Great.
+ 
+ - Arnaldo
