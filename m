@@ -2,79 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E32988BE8C
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 18:28:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC77C8BE97
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 18:30:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728337AbfHMQ2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 12:28:31 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57428 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726802AbfHMQ2a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 12:28:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=34xmiKyA+S2CnLiX+X01d9OYLI0FKAIfY0fTPpCykWA=; b=M2pxP3v7ZshqK85Je7x+dbWUDm
-        gxNV75ZSQPGztbD8bG/EuMu4F6qG1HNmClshOwJSKUmqZ9lVWwKr3K8h3H7oKKfiL6eLI7swNXFmw
-        fbzWY3nPFC6F4wOZU30iLPbeK924YNUsZUNg8vXkGzm5H5jrkH3+uobUJbxuVN3aa1VU=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hxZep-0002tK-VK; Tue, 13 Aug 2019 18:28:23 +0200
-Date:   Tue, 13 Aug 2019 18:28:23 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "sd@queasysnail.net" <sd@queasysnail.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
-        Simon Edelhaus <Simon.Edelhaus@aquantia.com>,
-        Pavel Belous <Pavel.Belous@aquantia.com>
-Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
- infrastructure
-Message-ID: <20190813162823.GH15047@lunn.ch>
-References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
- <20190808140600.21477-7-antoine.tenart@bootlin.com>
- <e96fa4ae-1f2c-c1be-b2d8-060217d8e151@aquantia.com>
- <20190813085817.GA3200@kwain>
- <20190813131706.GE15047@lunn.ch>
- <2e3c2307-d414-a531-26cb-064e05fa01fc@aquantia.com>
+        id S1727263AbfHMQaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 12:30:02 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33812 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726975AbfHMQaC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 12:30:02 -0400
+Received: by mail-qt1-f195.google.com with SMTP id q4so9772240qtp.1;
+        Tue, 13 Aug 2019 09:30:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=/VHUk0Na3pabcbPoafogmgyB5m9h0GsXcPdzV1TbskI=;
+        b=i4VALp7bojpdMy3xzDOAj1vDaX53UAuKE36tCCVJN2dlvDCrdxLIlJWn65bn0FD5bf
+         0eWaHfDB6Oteq+8jm1+ZonbboEWaI1RBmtiFWT0J+YWQY4wqtLDwN7hWK+/KugvvtKD2
+         BhbLRluehQbaiBCsDsizrKzfZC4YPeHU8bKs/1LKhpp2urMcpmQ4ARS+Xpgu91vbzi2O
+         9Uv0L2xic9+2FB466SuKoFecJlvsogUulOy1nyCAKTiODUyUuImyaj0PbjRlGxU/ppLu
+         hCBtp1fvl3EnBKe5tJvBzcaBnsiAYNhp/SYfttsq4mwKnk9y0WdyfgV9YKGI4mKPKGtm
+         QtTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=/VHUk0Na3pabcbPoafogmgyB5m9h0GsXcPdzV1TbskI=;
+        b=aaKVJk2grHdDpDMBwTq5VlLS86eF7qZm0uBEBqLQeGYkFug9yOHKqA1oFwlJJxteoT
+         g2rImKA79Rjnk9x5V3RlmQg0b32KM/jgwdyok41Ei3JNnUWnJ3iRMOu9tO9crXqzw9KA
+         MpW8trNfOhDnV5zl2Sr5EDdbQIl8uqgqELj+g7IsJw1fi8+0j4wn4ksfwFemg8KMdOIO
+         aA4Fvt77T/HI3tKWFZJ59z9DBza0/fD485X1QtiWukg0K9iJ27zOMd53JFLBpX6NwkEK
+         bHRrwwwkL6DEgUbewB5tRoLQmnuwmKP1eGeRIrC8sE5d1ZuwdHJV2lZi1TI1o8g/WL9N
+         uotg==
+X-Gm-Message-State: APjAAAWXi/4St6QXvHprKNtS3jaob8HHaIu57QHUvSaDZ2mhGJ/Iy3FJ
+        /wMIHA+QcTv46su+j1q08nOShg35
+X-Google-Smtp-Source: APXvYqzkPAnxQdHjNRPxh4eRNT0pIuYBxvpCbb2CQNMV9PuPG0gIJD+EqFjwl3ZBn6f9YTIAFpxveA==
+X-Received: by 2002:ac8:6146:: with SMTP id d6mr13084893qtm.36.1565713801506;
+        Tue, 13 Aug 2019 09:30:01 -0700 (PDT)
+Received: from localhost.localdomain ([2001:1284:f016:1583:6f3d:1442:4bd6:4652])
+        by smtp.gmail.com with ESMTPSA id g28sm5372051qte.46.2019.08.13.09.30.00
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 13 Aug 2019 09:30:00 -0700 (PDT)
+Received: by localhost.localdomain (Postfix, from userid 1000)
+        id 83F7AC1628; Tue, 13 Aug 2019 13:29:58 -0300 (-03)
+Date:   Tue, 13 Aug 2019 13:29:58 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     zhengbin <zhengbin13@huawei.com>
+Cc:     vyasevich@gmail.com, nhorman@tuxdriver.com, davem@davemloft.net,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        yi.zhang@huawei.com
+Subject: Re: [PATCH] sctp: fix memleak in sctp_send_reset_streams
+Message-ID: <20190813162958.GB2870@localhost.localdomain>
+References: <1565705150-17242-1-git-send-email-zhengbin13@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <2e3c2307-d414-a531-26cb-064e05fa01fc@aquantia.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <1565705150-17242-1-git-send-email-zhengbin13@huawei.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> 1) With current implementation it's impossible to install SW macsec engine onto
-> the device which supports HW offload. That could be a strong limitation in
-> cases when user sees HW macsec offload is broken or work differently, and he/she
-> wants to replace it with SW one.
-> MACSec is a complex feature, and it may happen something is missing in HW.
-> Trivial example is 256bit encryption, which is not always a musthave in HW
-> implementations.
+On Tue, Aug 13, 2019 at 10:05:50PM +0800, zhengbin wrote:
+> If the stream outq is not empty, need to kfree nstr_list.
+> 
+> Fixes: d570a59c5b5f ("sctp: only allow the out stream reset when the stream outq is empty")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: zhengbin <zhengbin13@huawei.com>
 
-Ideally, we want the driver to return EOPNOTSUPP if it does not
-support something and the software implement should be used.
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-If the offload is broken, we want a bug report! And if it works
-differently, it suggests there is also a bug we need to fix, or the
-standard is ambiguous.
-
-It would also be nice to add extra information to the netlink API to
-indicate if HW or SW is being used. In other places where we offload
-to accelerators we have such additional information.
-
-   Andrew
+> ---
+>  net/sctp/stream.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/net/sctp/stream.c b/net/sctp/stream.c
+> index 2594660..e83cdaa 100644
+> --- a/net/sctp/stream.c
+> +++ b/net/sctp/stream.c
+> @@ -316,6 +316,7 @@ int sctp_send_reset_streams(struct sctp_association *asoc,
+>  		nstr_list[i] = htons(str_list[i]);
+> 
+>  	if (out && !sctp_stream_outq_is_empty(stream, str_nums, nstr_list)) {
+> +		kfree(nstr_list);
+>  		retval = -EAGAIN;
+>  		goto out;
+>  	}
+> --
+> 2.7.4
+> 
