@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AAF8F8B808
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:07:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C29118B80A
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:07:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727965AbfHMMHo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 08:07:44 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:36289 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725953AbfHMMHo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:07:44 -0400
-Received: by mail-pf1-f196.google.com with SMTP id w2so682030pfi.3;
-        Tue, 13 Aug 2019 05:07:43 -0700 (PDT)
+        id S1727981AbfHMMHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 08:07:47 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36292 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727425AbfHMMHr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:07:47 -0400
+Received: by mail-pf1-f194.google.com with SMTP id w2so682105pfi.3;
+        Tue, 13 Aug 2019 05:07:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=h5aBwQYBhYYm8ip0wUptHajj4CQWnHke2rSosOEwaMg=;
-        b=LyKc1qJyP7aBy9ENhdsWpGjI2HOcy3pcqIEEWKujnzVqlBZDtYedPalwj85b5Qrv1m
-         qzwpKe5d9nGe6YsGqw1QkOc3qHsQn8YGu+PlE9ag2vnbIlJ2m8LT1NEne8vcQtZvhkOc
-         c3Ieqnre2ZI78uluTMHInv0Z5LBj3y1rmEBY+TcZ78XkfBm9cztL6P+hHq4KtS8mSfoj
-         4e62M/XBNTuJNhF47ZB8Stlf0llvwAsr9mKOnem258LD33m8MLYd4onC9XxJISJUPSA3
-         kth54A06Ke657YptEzerQJql2/+WYwmPGIObZbq+/rUr7/iuNjKJtLmuzGjIniCayYsv
-         xmPw==
+        bh=+Tz0gD0fN7lfmTT1cRoBEztbwc847PpvO+BtdiAc5R4=;
+        b=JJtdbqzIrih7fa4JRsBVVyxVOEnZ3DyPngz9UVsOCZJ38FixdPTVmUZg3eCP0v4N1E
+         hNGvQLslDDYp7h1Q16+29vYhyajzDLoI9VUk8z5PqMhErmfxYJoa+qClLslydPeMzL+U
+         CzZI50WDwBTp7smvz10g8EsxH/4cLOrxPsHY9+1VGSzf2YFxjbJK6yMv89R0CSoB5Hwz
+         3plDLQ63RnklQ0+DYDVRV/poQhPaRetH45wD5VHJvQhXJCFBCKaQeHTUOG87RKgCWhpr
+         3AyBHqPBOlREUUFxcR4fTAkCLAqHCZv+/W62a5xaJYUnP7N85A2gL1TkEK82ac7sm+pA
+         whwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=h5aBwQYBhYYm8ip0wUptHajj4CQWnHke2rSosOEwaMg=;
-        b=Zhsj/tPfKEWUG1nW/q0VKa8WBrO8lXmnPR39mx7N0NQvud0vsZVI4KbWTs/ZfXrR0o
-         7hLMWUu67nA0SRuwkfhnsRTmD3RoFDo4nDeDcXN4lOc6CTgZNmtR0Mm22vrO3SeQF7Sr
-         D3jKuJkicMqGFdgJMG/6UTM0OTgtjeM1rymL4tSblXbAdLI1Xp9KecArq/ENjq5dmFmD
-         4RTUzyLay/Gjxc6VsJRW95Q5Q/P34gOKeJTZt7cX2rKVxSNJfs7Nz/Lh9s2dt3ppvFxB
-         GSF6ky0ZSFapi1vQoyjowNvcZd/MMt7L+vbkygEEm72G7eF8lvQyw7e+tazCm39SvftA
-         GEyw==
-X-Gm-Message-State: APjAAAVZ3SqrD739KPwa81USpyQ7/Ow2CSazK2u9ZhzdrKsGd+tdampt
-        KjvpYvZvcMrTs5pBxSrMEWguGxHc
-X-Google-Smtp-Source: APXvYqyPIHQSnx5i/Di00DhakF4CYHHke4RyPIm1iMnNzmdo33J8VdvjcUgp7B2Kyd1d2eyGIjzOvg==
-X-Received: by 2002:aa7:8a92:: with SMTP id a18mr41198769pfc.216.1565698062776;
-        Tue, 13 Aug 2019 05:07:42 -0700 (PDT)
+        bh=+Tz0gD0fN7lfmTT1cRoBEztbwc847PpvO+BtdiAc5R4=;
+        b=Wq2LTmZAvsXhpCkmSZU9yq5zviykeiKZx5MIHlsXdp4SfCZlJGmgfqiUQeYcG7bs/W
+         z/1RANZXUo4DdAOmPCg7FGblUzBtiMTJSBr3eNbI4Ie/YsWspbRpjPNqXBaxn2hL1VWA
+         DNdMER7hUcrknxz04OvzO7M258mUpnGhKg54RZ8hh16FIW0w/jBwd35ybKg0YDCUSDuH
+         +qxrJWkOHDoIoXnYvgMhsl/m9daoozMup/uBuEihaXfFuNe0+KDx1nidVd3OPwGiZmXc
+         aKdPAhQaSXQYfHH85IqkFzkpG+qSAFygsvXs7C7s7yDDnFQR3Mroup8iPNMABMraAhkn
+         jLbw==
+X-Gm-Message-State: APjAAAXskI0ZBLk3zqwSAw+Dcm02Xjj4WB/mMryBB52sc/nQr+Ivil+N
+        gzTK2WHCHbq/XzD9DYijGd0=
+X-Google-Smtp-Source: APXvYqzxwC8wkT3Grx8FcmM4fmbExdjgF3kr4WneNDMq64CsoUQnIMaXuLdAeiyLz9q+nm4Qqo+dTQ==
+X-Received: by 2002:a63:4a20:: with SMTP id x32mr25886128pga.357.1565698066473;
+        Tue, 13 Aug 2019 05:07:46 -0700 (PDT)
 Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.07.39
+        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.07.42
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 05:07:42 -0700 (PDT)
+        Tue, 13 Aug 2019 05:07:45 -0700 (PDT)
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -59,9 +59,9 @@ To:     Alexei Starovoitov <ast@kernel.org>,
 Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         William Tu <u9012063@gmail.com>
-Subject: [RFC PATCH bpf-next 06/14] xdp_flow: Add flow entry insertion/deletion logic in UMH
-Date:   Tue, 13 Aug 2019 21:05:50 +0900
-Message-Id: <20190813120558.6151-7-toshiaki.makita1@gmail.com>
+Subject: [RFC PATCH bpf-next 07/14] xdp_flow: Add flow handling and basic actions in bpf prog
+Date:   Tue, 13 Aug 2019 21:05:51 +0900
+Message-Id: <20190813120558.6151-8-toshiaki.makita1@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
 References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
@@ -72,558 +72,336 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This logic will be used when xdp_flow kmod requests flow
-insertion/deleteion.
-
-On insertion, find a free entry and populate it, then update next index
-pointer of its previous entry. On deletion, set the next index pointer
-of the prev entry to the next index of the entry to be deleted.
+BPF prog for XDP parses the packet and extracts the flow key. Then find
+an entry from flow tables.
+Only "accept" and "drop" actions are implemented at this point.
 
 Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 ---
- net/xdp_flow/umh_bpf.h      |  15 ++
- net/xdp_flow/xdp_flow_umh.c | 470 +++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 483 insertions(+), 2 deletions(-)
+ net/xdp_flow/xdp_flow_kern_bpf.c | 297 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 296 insertions(+), 1 deletion(-)
 
-diff --git a/net/xdp_flow/umh_bpf.h b/net/xdp_flow/umh_bpf.h
-index b4fe0c6..4e4633f 100644
---- a/net/xdp_flow/umh_bpf.h
-+++ b/net/xdp_flow/umh_bpf.h
-@@ -15,4 +15,19 @@ struct xdp_flow_mask_entry {
- 	int next;
+diff --git a/net/xdp_flow/xdp_flow_kern_bpf.c b/net/xdp_flow/xdp_flow_kern_bpf.c
+index c101156..ceb8a92 100644
+--- a/net/xdp_flow/xdp_flow_kern_bpf.c
++++ b/net/xdp_flow/xdp_flow_kern_bpf.c
+@@ -1,9 +1,27 @@
+ // SPDX-License-Identifier: GPL-2.0
+ #define KBUILD_MODNAME "foo"
+ #include <uapi/linux/bpf.h>
++#include <linux/in.h>
++#include <linux/if_ether.h>
++#include <linux/if_packet.h>
++#include <linux/if_vlan.h>
++#include <linux/ip.h>
++#include <linux/ipv6.h>
++#include <net/ipv6.h>
++#include <net/dsfield.h>
+ #include <bpf_helpers.h>
+ #include "umh_bpf.h"
+ 
++/* Used when the action only modifies the packet */
++#define _XDP_CONTINUE -1
++
++struct bpf_map_def SEC("maps") debug_stats = {
++	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
++	.key_size = sizeof(u32),
++	.value_size = sizeof(long),
++	.max_entries = 256,
++};
++
+ struct bpf_map_def SEC("maps") flow_masks_head = {
+ 	.type = BPF_MAP_TYPE_ARRAY,
+ 	.key_size = sizeof(u32),
+@@ -25,10 +43,287 @@ struct bpf_map_def SEC("maps") flow_tables = {
+ 	.max_entries = MAX_FLOW_MASKS,
  };
  
-+static inline bool flow_equal(const struct xdp_flow_key *key1,
-+			      const struct xdp_flow_key *key2)
++static inline void account_debug(int idx)
 +{
-+	long *lkey1 = (long *)key1;
-+	long *lkey2 = (long *)key2;
++	long *cnt;
++
++	cnt = bpf_map_lookup_elem(&debug_stats, &idx);
++	if (cnt)
++		*cnt += 1;
++}
++
++static inline void account_action(int act)
++{
++	account_debug(act + 1);
++}
++
++static inline int action_accept(void)
++{
++	account_action(XDP_FLOW_ACTION_ACCEPT);
++	return XDP_PASS;
++}
++
++static inline int action_drop(void)
++{
++	account_action(XDP_FLOW_ACTION_DROP);
++	return XDP_DROP;
++}
++
++static inline int action_redirect(struct xdp_flow_action *action)
++{
++	account_action(XDP_FLOW_ACTION_REDIRECT);
++
++	// TODO: implement this
++	return XDP_ABORTED;
++}
++
++static inline int action_vlan_push(struct xdp_md *ctx,
++				   struct xdp_flow_action *action)
++{
++	account_action(XDP_FLOW_ACTION_VLAN_PUSH);
++
++	// TODO: implement this
++	return XDP_ABORTED;
++}
++
++static inline int action_vlan_pop(struct xdp_md *ctx,
++				  struct xdp_flow_action *action)
++{
++	account_action(XDP_FLOW_ACTION_VLAN_POP);
++
++	// TODO: implement this
++	return XDP_ABORTED;
++}
++
++static inline int action_vlan_mangle(struct xdp_md *ctx,
++				     struct xdp_flow_action *action)
++{
++	account_action(XDP_FLOW_ACTION_VLAN_MANGLE);
++
++	// TODO: implement this
++	return XDP_ABORTED;
++}
++
++static inline int action_mangle(struct xdp_md *ctx,
++				struct xdp_flow_action *action)
++{
++	account_action(XDP_FLOW_ACTION_MANGLE);
++
++	// TODO: implement this
++	return XDP_ABORTED;
++}
++
++static inline int action_csum(struct xdp_md *ctx,
++			      struct xdp_flow_action *action)
++{
++	account_action(XDP_FLOW_ACTION_CSUM);
++
++	// TODO: implement this
++	return XDP_ABORTED;
++}
++
++static inline void __ether_addr_copy(u8 *dst, const u8 *src)
++{
++	u16 *a = (u16 *)dst;
++	const u16 *b = (const u16 *)src;
++
++	a[0] = b[0];
++	a[1] = b[1];
++	a[2] = b[2];
++}
++
++static inline int parse_ipv4(void *data, u64 *nh_off, void *data_end,
++			     struct xdp_flow_key *key)
++{
++	struct iphdr *iph = data + *nh_off;
++
++	if (iph + 1 > data_end)
++		return -1;
++
++	key->ipv4.src = iph->saddr;
++	key->ipv4.dst = iph->daddr;
++	key->ip.ttl = iph->ttl;
++	key->ip.tos = iph->tos;
++	*nh_off += iph->ihl * 4;
++
++	return iph->protocol;
++}
++
++static inline int parse_ipv6(void *data, u64 *nh_off, void *data_end,
++			     struct xdp_flow_key *key)
++{
++	struct ipv6hdr *ip6h = data + *nh_off;
++
++	if (ip6h + 1 > data_end)
++		return -1;
++
++	key->ipv6.src = ip6h->saddr;
++	key->ipv6.dst = ip6h->daddr;
++	key->ip.ttl = ip6h->hop_limit;
++	key->ip.tos = ipv6_get_dsfield(ip6h);
++	*nh_off += sizeof(*ip6h);
++
++	if (ip6h->nexthdr == NEXTHDR_HOP ||
++	    ip6h->nexthdr == NEXTHDR_ROUTING ||
++	    ip6h->nexthdr == NEXTHDR_FRAGMENT ||
++	    ip6h->nexthdr == NEXTHDR_AUTH ||
++	    ip6h->nexthdr == NEXTHDR_NONE ||
++	    ip6h->nexthdr == NEXTHDR_DEST)
++		return 0;
++
++	return ip6h->nexthdr;
++}
++
++#define for_each_flow_mask(entry, head, idx, cnt) \
++	for (entry = bpf_map_lookup_elem(&flow_masks, (head)), \
++	     idx = *(head), cnt = 0; \
++	     entry != NULL && cnt < MAX_FLOW_MASKS; \
++	     idx = entry->next, \
++	     entry = bpf_map_lookup_elem(&flow_masks, &idx), cnt++)
++
++static inline void flow_mask(struct xdp_flow_key *mkey,
++			     const struct xdp_flow_key *key,
++			     const struct xdp_flow_key *mask)
++{
++	long *lmkey = (long *)mkey;
++	long *lmask = (long *)mask;
++	long *lkey = (long *)key;
 +	int i;
 +
-+	for (i = 0; i < sizeof(*key1); i += sizeof(long)) {
-+		if (*lkey1++ != *lkey2++)
-+			return false;
-+	}
-+
-+	return true;
++	for (i = 0; i < sizeof(*mkey); i += sizeof(long))
++		*lmkey++ = *lkey++ & *lmask++;
 +}
 +
- #endif
-diff --git a/net/xdp_flow/xdp_flow_umh.c b/net/xdp_flow/xdp_flow_umh.c
-index e35666a..9a4769b 100644
---- a/net/xdp_flow/xdp_flow_umh.c
-+++ b/net/xdp_flow/xdp_flow_umh.c
-@@ -19,6 +19,8 @@
- extern char xdp_flow_bpf_end;
- int progfile_fd;
- 
-+#define zalloc(size) calloc(1, (size))
-+
- /* FIXME: syslog is used for easy debugging. As writing /dev/log can be stuck
-  * due to reader side, should use another log mechanism like kmsg.
-  */
-@@ -38,6 +40,8 @@ struct netdev_info {
- 	struct netdev_info_key key;
- 	struct hlist_node node;
- 	struct bpf_object *obj;
-+	int free_slot_top;
-+	int free_slots[MAX_FLOW_MASKS];
- };
- 
- DEFINE_HASHTABLE(netdev_info_table, 16);
-@@ -268,6 +272,57 @@ static struct netdev_info *get_netdev_info(const struct mbox_request *req)
- 	return netdev_info;
- }
- 
-+static void init_flow_masks_free_slot(struct netdev_info *netdev_info)
-+{
-+	int i;
-+
-+	for (i = 0; i < MAX_FLOW_MASKS; i++)
-+		netdev_info->free_slots[MAX_FLOW_MASKS - 1 - i] = i;
-+	netdev_info->free_slot_top = MAX_FLOW_MASKS - 1;
-+}
-+
-+static int get_flow_masks_free_slot(const struct netdev_info *netdev_info)
-+{
-+	if (netdev_info->free_slot_top < 0)
-+		return -ENOBUFS;
-+
-+	return netdev_info->free_slots[netdev_info->free_slot_top];
-+}
-+
-+static int add_flow_masks_free_slot(struct netdev_info *netdev_info, int slot)
-+{
-+	if (unlikely(netdev_info->free_slot_top >= MAX_FLOW_MASKS - 1)) {
-+		pr_warn("BUG: free_slot overflow: top=%d, slot=%d\n",
-+			netdev_info->free_slot_top, slot);
-+		return -EOVERFLOW;
-+	}
-+
-+	netdev_info->free_slots[++netdev_info->free_slot_top] = slot;
-+
-+	return 0;
-+}
-+
-+static void delete_flow_masks_free_slot(struct netdev_info *netdev_info,
-+					int slot)
-+{
-+	int top_slot;
-+
-+	if (unlikely(netdev_info->free_slot_top < 0)) {
-+		pr_warn("BUG: free_slot underflow: top=%d, slot=%d\n",
-+			netdev_info->free_slot_top, slot);
-+		return;
-+	}
-+
-+	top_slot = netdev_info->free_slots[netdev_info->free_slot_top];
-+	if (unlikely(top_slot != slot)) {
-+		pr_warn("BUG: inconsistent free_slot top: top_slot=%d, slot=%d\n",
-+			top_slot, slot);
-+		return;
-+	}
-+
-+	netdev_info->free_slot_top--;
-+}
-+
- static int handle_load(const struct mbox_request *req, __u32 *prog_id)
+ SEC("xdp_flow")
+ int xdp_flow_prog(struct xdp_md *ctx)
  {
- 	struct netdev_info *netdev_info;
-@@ -291,6 +346,8 @@ static int handle_load(const struct mbox_request *req, __u32 *prog_id)
- 	}
- 	netdev_info->key.ifindex = key.ifindex;
- 
-+	init_flow_masks_free_slot(netdev_info);
+-	return XDP_PASS;
++	void *data_end = (void *)(long)ctx->data_end;
++	struct xdp_flow_actions *actions = NULL;
++	void *data = (void *)(long)ctx->data;
++	int cnt, idx, action_idx, zero = 0;
++	struct xdp_flow_mask_entry *entry;
++	struct ethhdr *eth = data;
++	struct xdp_flow_key key;
++	int rc = XDP_DROP;
++	long *value;
++	u16 h_proto;
++	u32 ipproto;
++	u64 nh_off;
++	int *head;
 +
- 	prog_fd = load_bpf(req->ifindex, &netdev_info->obj);
- 	if (prog_fd < 0) {
- 		err = prog_fd;
-@@ -331,14 +388,423 @@ static int handle_unload(const struct mbox_request *req)
- 	return 0;
++	account_debug(0);
++
++	nh_off = sizeof(*eth);
++	if (data + nh_off > data_end)
++		return XDP_DROP;
++
++	__builtin_memset(&key, 0, sizeof(key));
++	h_proto = eth->h_proto;
++	__ether_addr_copy(key.eth.dst, eth->h_dest);
++	__ether_addr_copy(key.eth.src, eth->h_source);
++
++	if (eth_type_vlan(h_proto)) {
++		struct vlan_hdr *vhdr;
++
++		vhdr = data + nh_off;
++		nh_off += sizeof(*vhdr);
++		if (data + nh_off > data_end)
++			return XDP_DROP;
++		key.vlan.tpid = h_proto;
++		key.vlan.tci = vhdr->h_vlan_TCI;
++		h_proto = vhdr->h_vlan_encapsulated_proto;
++	}
++	key.eth.type = h_proto;
++
++	if (h_proto == htons(ETH_P_IP))
++		ipproto = parse_ipv4(data, &nh_off, data_end, &key);
++	else if (h_proto == htons(ETH_P_IPV6))
++		ipproto = parse_ipv6(data, &nh_off, data_end, &key);
++	else
++		ipproto = 0;
++	if (ipproto < 0)
++		return XDP_DROP;
++	key.ip.proto = ipproto;
++
++	if (ipproto == IPPROTO_TCP) {
++		struct tcphdr *th = data + nh_off;
++
++		if (th + 1 > data_end)
++			return XDP_DROP;
++
++		key.l4port.src = th->source;
++		key.l4port.dst = th->dest;
++		key.tcp.flags = (*(__be16 *)&tcp_flag_word(th) & htons(0x0FFF));
++	} else if (ipproto == IPPROTO_UDP) {
++		struct udphdr *uh = data + nh_off;
++
++		if (uh + 1 > data_end)
++			return XDP_DROP;
++
++		key.l4port.src = uh->source;
++		key.l4port.dst = uh->dest;
++	}
++
++	head = bpf_map_lookup_elem(&flow_masks_head, &zero);
++	if (!head)
++		return XDP_PASS;
++
++	for_each_flow_mask(entry, head, idx, cnt) {
++		struct xdp_flow_key mkey;
++		void *flow_table;
++
++		flow_table = bpf_map_lookup_elem(&flow_tables, &idx);
++		if (!flow_table)
++			return XDP_ABORTED;
++
++		flow_mask(&mkey, &key, &entry->mask);
++		actions = bpf_map_lookup_elem(flow_table, &mkey);
++		if (actions)
++			break;
++	}
++
++	if (!actions)
++		return XDP_PASS;
++
++	for (action_idx = 0;
++	     action_idx < actions->num_actions &&
++	     action_idx < MAX_XDP_FLOW_ACTIONS;
++	     action_idx++) {
++		struct xdp_flow_action *action;
++		int act;
++
++		action = &actions->actions[action_idx];
++
++		switch (action->id) {
++		case XDP_FLOW_ACTION_ACCEPT:
++			return action_accept();
++		case XDP_FLOW_ACTION_DROP:
++			return action_drop();
++		case XDP_FLOW_ACTION_REDIRECT:
++			return action_redirect(action);
++		case XDP_FLOW_ACTION_VLAN_PUSH:
++			act = action_vlan_push(ctx, action);
++			break;
++		case XDP_FLOW_ACTION_VLAN_POP:
++			act = action_vlan_pop(ctx, action);
++			break;
++		case XDP_FLOW_ACTION_VLAN_MANGLE:
++			act = action_vlan_mangle(ctx, action);
++			break;
++		case XDP_FLOW_ACTION_MANGLE:
++			act = action_mangle(ctx, action);
++			break;
++		case XDP_FLOW_ACTION_CSUM:
++			act = action_csum(ctx, action);
++			break;
++		default:
++			return XDP_ABORTED;
++		}
++		if (act != _XDP_CONTINUE)
++			return act;
++	}
++
++	return XDP_ABORTED;
  }
  
-+static int get_table_fd(const struct netdev_info *netdev_info,
-+			const char *table_name)
-+{
-+	char errbuf[ERRBUF_SIZE];
-+	struct bpf_map *map;
-+	int map_fd;
-+	int err;
-+
-+	map = bpf_object__find_map_by_name(netdev_info->obj, table_name);
-+	if (!map) {
-+		pr_err("BUG: %s map not found.\n", table_name);
-+		return -ENOENT;
-+	}
-+
-+	map_fd = bpf_map__fd(map);
-+	if (map_fd < 0) {
-+		err = libbpf_err(map_fd, errbuf);
-+		pr_err("Invalid map fd: %s\n", errbuf);
-+		return err;
-+	}
-+
-+	return map_fd;
-+}
-+
-+static int get_flow_masks_head_fd(const struct netdev_info *netdev_info)
-+{
-+	return get_table_fd(netdev_info, "flow_masks_head");
-+}
-+
-+static int get_flow_masks_head(int head_fd, int *head)
-+{
-+	int err, zero = 0;
-+
-+	if (bpf_map_lookup_elem(head_fd, &zero, head)) {
-+		err = -errno;
-+		pr_err("Cannot get flow_masks_head: %s\n", strerror(errno));
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int update_flow_masks_head(int head_fd, int head)
-+{
-+	int err, zero = 0;
-+
-+	if (bpf_map_update_elem(head_fd, &zero, &head, 0)) {
-+		err = -errno;
-+		pr_err("Cannot update flow_masks_head: %s\n", strerror(errno));
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int get_flow_masks_fd(const struct netdev_info *netdev_info)
-+{
-+	return get_table_fd(netdev_info, "flow_masks");
-+}
-+
-+static int get_flow_tables_fd(const struct netdev_info *netdev_info)
-+{
-+	return get_table_fd(netdev_info, "flow_tables");
-+}
-+
-+static int __flow_table_insert_elem(int flow_table_fd,
-+				    const struct xdp_flow *flow)
-+{
-+	int err = 0;
-+
-+	if (bpf_map_update_elem(flow_table_fd, &flow->key, &flow->actions, 0)) {
-+		err = -errno;
-+		pr_err("Cannot insert flow entry: %s\n",
-+		       strerror(errno));
-+	}
-+
-+	return err;
-+}
-+
-+static void __flow_table_delete_elem(int flow_table_fd,
-+				     const struct xdp_flow *flow)
-+{
-+	bpf_map_delete_elem(flow_table_fd, &flow->key);
-+}
-+
-+static int flow_table_insert_elem(struct netdev_info *netdev_info,
-+				  const struct xdp_flow *flow)
-+{
-+	int masks_fd, head_fd, flow_tables_fd, flow_table_fd, free_slot, head;
-+	struct xdp_flow_mask_entry *entry, *pentry;
-+	int err, cnt, idx, pidx;
-+
-+	masks_fd = get_flow_masks_fd(netdev_info);
-+	if (masks_fd < 0)
-+		return masks_fd;
-+
-+	head_fd = get_flow_masks_head_fd(netdev_info);
-+	if (head_fd < 0)
-+		return head_fd;
-+
-+	err = get_flow_masks_head(head_fd, &head);
-+	if (err)
-+		return err;
-+
-+	flow_tables_fd = get_flow_tables_fd(netdev_info);
-+	if (flow_tables_fd < 0)
-+		return flow_tables_fd;
-+
-+	entry = zalloc(sizeof(*entry));
-+	if (!entry) {
-+		pr_err("Memory allocation for flow_masks entry failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	pentry = zalloc(sizeof(*pentry));
-+	if (!pentry) {
-+		flow_table_fd = -ENOMEM;
-+		pr_err("Memory allocation for flow_masks prev entry failed\n");
-+		goto err_entry;
-+	}
-+
-+	idx = head;
-+	for (cnt = 0; cnt < MAX_FLOW_MASKS; cnt++) {
-+		if (idx == FLOW_MASKS_TAIL)
-+			break;
-+
-+		if (bpf_map_lookup_elem(masks_fd, &idx, entry)) {
-+			err = -errno;
-+			pr_err("Cannot lookup flow_masks: %s\n",
-+			       strerror(errno));
-+			goto err;
-+		}
-+
-+		if (entry->priority == flow->priority &&
-+		    flow_equal(&entry->mask, &flow->mask)) {
-+			__u32 id;
-+
-+			if (bpf_map_lookup_elem(flow_tables_fd, &idx, &id)) {
-+				err = -errno;
-+				pr_err("Cannot lookup flow_tables: %s\n",
-+				       strerror(errno));
-+				goto err;
-+			}
-+
-+			flow_table_fd = bpf_map_get_fd_by_id(id);
-+			if (flow_table_fd < 0) {
-+				err = -errno;
-+				pr_err("Cannot get flow_table fd by id: %s\n",
-+				       strerror(errno));
-+				goto err;
-+			}
-+
-+			err = __flow_table_insert_elem(flow_table_fd, flow);
-+			if (err)
-+				goto out;
-+
-+			entry->count++;
-+			if (bpf_map_update_elem(masks_fd, &idx, entry, 0)) {
-+				err = -errno;
-+				pr_err("Cannot update flow_masks count: %s\n",
-+				       strerror(errno));
-+				__flow_table_delete_elem(flow_table_fd, flow);
-+				goto out;
-+			}
-+
-+			goto out;
-+		}
-+
-+		if (entry->priority > flow->priority)
-+			break;
-+
-+		*pentry = *entry;
-+		pidx = idx;
-+		idx = entry->next;
-+	}
-+
-+	if (unlikely(cnt == MAX_FLOW_MASKS && idx != FLOW_MASKS_TAIL)) {
-+		err = -EINVAL;
-+		pr_err("Cannot lookup flow_masks: Broken flow_masks list\n");
-+		goto out;
-+	}
-+
-+	/* Flow mask was not found. Create a new one */
-+
-+	free_slot = get_flow_masks_free_slot(netdev_info);
-+	if (free_slot < 0) {
-+		err = free_slot;
-+		goto err;
-+	}
-+
-+	entry->mask = flow->mask;
-+	entry->priority = flow->priority;
-+	entry->count = 1;
-+	entry->next = idx;
-+	if (bpf_map_update_elem(masks_fd, &free_slot, entry, 0)) {
-+		err = -errno;
-+		pr_err("Cannot update flow_masks: %s\n", strerror(errno));
-+		goto err;
-+	}
-+
-+	flow_table_fd = bpf_create_map(BPF_MAP_TYPE_HASH,
-+				       sizeof(struct xdp_flow_key),
-+				       sizeof(struct xdp_flow_actions),
-+				       MAX_FLOWS, 0);
-+	if (flow_table_fd < 0) {
-+		err = -errno;
-+		pr_err("map creation for flow_table failed: %s\n",
-+		       strerror(errno));
-+		goto err;
-+	}
-+
-+	err = __flow_table_insert_elem(flow_table_fd, flow);
-+	if (err)
-+		goto out;
-+
-+	if (bpf_map_update_elem(flow_tables_fd, &free_slot, &flow_table_fd, 0)) {
-+		err = -errno;
-+		pr_err("Failed to insert flow_table into flow_tables: %s\n",
-+		       strerror(errno));
-+		goto out;
-+	}
-+
-+	if (cnt == 0) {
-+		err = update_flow_masks_head(head_fd, free_slot);
-+		if (err)
-+			goto err_flow_table;
-+	} else {
-+		pentry->next = free_slot;
-+		/* This effectively only updates one byte of entry->next */
-+		if (bpf_map_update_elem(masks_fd, &pidx, pentry, 0)) {
-+			err = -errno;
-+			pr_err("Cannot update flow_masks prev entry: %s\n",
-+			       strerror(errno));
-+			goto err_flow_table;
-+		}
-+	}
-+	delete_flow_masks_free_slot(netdev_info, free_slot);
-+out:
-+	close(flow_table_fd);
-+err:
-+	free(pentry);
-+err_entry:
-+	free(entry);
-+
-+	return err;
-+
-+err_flow_table:
-+	bpf_map_delete_elem(flow_tables_fd, &free_slot);
-+
-+	goto out;
-+}
-+
-+static int flow_table_delete_elem(struct netdev_info *netdev_info,
-+				  const struct xdp_flow *flow)
-+{
-+	int masks_fd, head_fd, flow_tables_fd, flow_table_fd, head;
-+	struct xdp_flow_mask_entry *entry, *pentry;
-+	int err, cnt, idx, pidx;
-+	__u32 id;
-+
-+	masks_fd = get_flow_masks_fd(netdev_info);
-+	if (masks_fd < 0)
-+		return masks_fd;
-+
-+	head_fd = get_flow_masks_head_fd(netdev_info);
-+	if (head_fd < 0)
-+		return head_fd;
-+
-+	err = get_flow_masks_head(head_fd, &head);
-+	if (err)
-+		return err;
-+
-+	flow_tables_fd = get_flow_tables_fd(netdev_info);
-+	if (flow_tables_fd < 0)
-+		return flow_tables_fd;
-+
-+	entry = zalloc(sizeof(*entry));
-+	if (!entry) {
-+		pr_err("Memory allocation for flow_masks entry failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	pentry = zalloc(sizeof(*pentry));
-+	if (!pentry) {
-+		err = -ENOMEM;
-+		pr_err("Memory allocation for flow_masks prev entry failed\n");
-+		goto err_pentry;
-+	}
-+
-+	idx = head;
-+	for (cnt = 0; cnt < MAX_FLOW_MASKS; cnt++) {
-+		if (idx == FLOW_MASKS_TAIL) {
-+			err = -ENOENT;
-+			pr_err("Cannot lookup flow_masks: %s\n",
-+			       strerror(-err));
-+			goto out;
-+		}
-+
-+		if (bpf_map_lookup_elem(masks_fd, &idx, entry)) {
-+			err = -errno;
-+			pr_err("Cannot lookup flow_masks: %s\n",
-+			       strerror(errno));
-+			goto out;
-+		}
-+
-+		if (entry->priority > flow->priority) {
-+			err = -ENOENT;
-+			pr_err("Cannot lookup flow_masks: %s\n",
-+			       strerror(-err));
-+			goto out;
-+		}
-+
-+		if (entry->priority == flow->priority &&
-+		    flow_equal(&entry->mask, &flow->mask))
-+			break;
-+
-+		*pentry = *entry;
-+		pidx = idx;
-+		idx = entry->next;
-+	}
-+
-+	if (unlikely(cnt == MAX_FLOW_MASKS)) {
-+		err = -ENOENT;
-+		pr_err("Cannot lookup flow_masks: Broken flow_masks list\n");
-+		goto out;
-+	}
-+
-+	if (bpf_map_lookup_elem(flow_tables_fd, &idx, &id)) {
-+		err = -errno;
-+		pr_err("Cannot lookup flow_tables: %s\n",
-+		       strerror(errno));
-+		goto out;
-+	}
-+
-+	flow_table_fd = bpf_map_get_fd_by_id(id);
-+	if (flow_table_fd < 0) {
-+		err = -errno;
-+		pr_err("Cannot get flow_table fd by id: %s\n",
-+		       strerror(errno));
-+		goto out;
-+	}
-+
-+	__flow_table_delete_elem(flow_table_fd, flow);
-+	close(flow_table_fd);
-+
-+	if (--entry->count > 0) {
-+		if (bpf_map_update_elem(masks_fd, &idx, entry, 0)) {
-+			err = -errno;
-+			pr_err("Cannot update flow_masks count: %s\n",
-+			       strerror(errno));
-+		}
-+
-+		goto out;
-+	}
-+
-+	if (unlikely(entry->count < 0)) {
-+		pr_warn("flow_masks has negative count: %d\n",
-+			entry->count);
-+	}
-+
-+	if (cnt == 0) {
-+		err = update_flow_masks_head(head_fd, entry->next);
-+		if (err)
-+			goto out;
-+	} else {
-+		pentry->next = entry->next;
-+		/* This effectively only updates one byte of entry->next */
-+		if (bpf_map_update_elem(masks_fd, &pidx, pentry, 0)) {
-+			err = -errno;
-+			pr_err("Cannot update flow_masks prev entry: %s\n",
-+			       strerror(errno));
-+			goto out;
-+		}
-+	}
-+
-+	bpf_map_delete_elem(flow_tables_fd, &idx);
-+	err = add_flow_masks_free_slot(netdev_info, idx);
-+	if (err)
-+		pr_err("Cannot add flow_masks free slot: %s\n", strerror(-err));
-+out:
-+	free(pentry);
-+err_pentry:
-+	free(entry);
-+
-+	return err;
-+}
-+
- static int handle_replace(struct mbox_request *req)
- {
--	return -EOPNOTSUPP;
-+	struct netdev_info *netdev_info;
-+	int err;
-+
-+	netdev_info = get_netdev_info(req);
-+	if (IS_ERR(netdev_info))
-+		return PTR_ERR(netdev_info);
-+
-+	err = flow_table_insert_elem(netdev_info, &req->flow);
-+	if (err)
-+		return err;
-+
-+	return 0;
- }
- 
- static int handle_delete(const struct mbox_request *req)
- {
--	return -EOPNOTSUPP;
-+	struct netdev_info *netdev_info;
-+	int err;
-+
-+	netdev_info = get_netdev_info(req);
-+	if (IS_ERR(netdev_info))
-+		return PTR_ERR(netdev_info);
-+
-+	err = flow_table_delete_elem(netdev_info, &req->flow);
-+	if (err)
-+		return err;
-+
-+	return 0;
- }
- 
- static void loop(void)
+ char _license[] SEC("license") = "GPL";
 -- 
 1.8.3.1
 
