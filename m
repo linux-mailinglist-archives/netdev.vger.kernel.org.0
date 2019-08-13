@@ -2,117 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 753168AFF0
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 08:30:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5D1DC8B024
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 08:51:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726814AbfHMGaO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 02:30:14 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:7489 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725820AbfHMGaO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 02:30:14 -0400
-Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa5.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa5.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: d+zlcMohyc6auW+Oa5nID1KDUrmEIHfhndwLCvOA4lZq5xbmzCsJ5GEDi+Ogl8jytPcgMWP52j
- MBToU6kqhfmiPrt5AEYu8Lsu7/Yc23mwuplF8WZWFHoZ9BSper0AoAnJYHwfjJdQ0WwdBsyD9u
- a2IP4KZONIxM2a18ebBwYAUAtcQfqy0HBMBQE9GawOB8xWGMWTkIVhHGnZglOlVwAHlJnfQ+nr
- LGK95o25G4UW185V65sNdOh1PJzR1U6brV99CUgFs3QAwKxwh8wfi2xKQbV+b4OzDrIqyBnssr
- tgs=
-X-IronPort-AV: E=Sophos;i="5.64,380,1559545200"; 
-   d="scan'208";a="43372776"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Aug 2019 23:30:14 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Mon, 12 Aug 2019 23:30:13 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Mon, 12 Aug 2019 23:30:13 -0700
-Date:   Tue, 13 Aug 2019 08:30:12 +0200
-From:   "Allan W . Nielsen" <allan.nielsen@microchip.com>
-To:     Yangbo Lu <yangbo.lu@nxp.com>
-CC:     <netdev@vger.kernel.org>, "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "Microchip Linux Driver Support" <UNGLinuxDriver@microchip.com>
-Subject: Re: [v2, 3/4] ocelot_ace: fix action of trap
-Message-ID: <20190813063011.7pwlzm7mtzlqwwkx@lx-anielsen.microsemi.net>
-References: <20190813025214.18601-1-yangbo.lu@nxp.com>
- <20190813025214.18601-4-yangbo.lu@nxp.com>
- <20190813061651.7gtbum4wsaw5dahg@lx-anielsen.microsemi.net>
+        id S1726808AbfHMGvn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 02:51:43 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:51599 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725820AbfHMGvn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 02:51:43 -0400
+Received: by mail-wm1-f66.google.com with SMTP id 207so437580wma.1
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 23:51:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Sb+nqAbv6l3B7SSlSdTqHeOswJDlv5Uimvb8N21jcTU=;
+        b=zSvjzMnKJuq5IGhcrBxUOI37Apq6J0igO0iouimJT61Jx2Vpjqpn2cOa3ijaDihvwo
+         nb8LjcXA7MGe7SY6B2zEzSzt8+r8r9sYdcxkXEz0T+hdjKcMIr4FqyUJBrOZgelcS3kb
+         M8/ZxTQg7U1hh+ibsNbipdwipfs79Gv2bQeDuaBrdTwDV6AciXsFa7VClq6/yt+YVEdf
+         WZ2oAgBxM+wm8A7k07Q0D6UMBPeFVc113dUKgAG796W2NF6wTIQSuBIcq9Y2ut6fHp/x
+         3f7IPwENseUwtpRj/lKILhYNflWQV3vfvpEgjOlMKmbsLywEoEs/igbXfqotXvWWg7hw
+         KC1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Sb+nqAbv6l3B7SSlSdTqHeOswJDlv5Uimvb8N21jcTU=;
+        b=QX4WzuU9Heh7u4uUOtX+gFy5kk8kdfdoQXLCeaWwSfv2JeFeE3ZtJHBCacPiAepHnQ
+         ZrMuWp8k+KDSH4Ab8FIKh46Gpuh3dFsp8jlf02D08zQS7ECqQQWj6vnUkNYJz8T9fE5w
+         krvJ4YOEsrsakGeX3n2vxoiqNgIgSMnC/eay6VQt+nDHqNv1LtIbcFj84h4Hhxky4ZE4
+         2OQW9yilv1s8kDhFhdFyT6rATXlve/WNCc90miQ0TrDqqjFk9zfRexDemeQY7JXnsMmP
+         SHnuSJ0TUksAOQQVVbQx5Z1m1rUTw9GwDk3xpjjjiWS1FXQ8G/tXyu+EnoHl8NOPOWVs
+         lJ1Q==
+X-Gm-Message-State: APjAAAUkXSNhAGosijzIxQNbKfXbXBE81UE5E7TPACYBQe6BlswdwKmv
+        kVzEus5VJSzmVNe9RzzSZg9KVg==
+X-Google-Smtp-Source: APXvYqx5NCGdOPSkax1fRkCCdJNf/+cqGNfYZ3peCc5Ks+UpcNDvxd1/VLeJ0TQuKCJLSOxLH0I53w==
+X-Received: by 2002:a1c:39c5:: with SMTP id g188mr1192131wma.167.1565679101396;
+        Mon, 12 Aug 2019 23:51:41 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id f70sm562760wme.22.2019.08.12.23.51.40
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Mon, 12 Aug 2019 23:51:40 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 08:51:40 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Roopa Prabhu <roopa@cumulusnetworks.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>, dcbw@redhat.com,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>, parav@mellanox.com,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        mlxsw <mlxsw@mellanox.com>
+Subject: Re: [patch net-next rfc 3/7] net: rtnetlink: add commands to add and
+ delete alternative ifnames
+Message-ID: <20190813065140.GH2428@nanopsycho>
+References: <20190719110029.29466-4-jiri@resnulli.us>
+ <CAJieiUi+gKKc94bKfC-N5LBc=FdzGGo_8+x2oTstihFaUpkKSA@mail.gmail.com>
+ <20190809062558.GA2344@nanopsycho.orion>
+ <CAJieiUj7nzHdRUjBpnfL5bKPszJL0b_hKjxpjM0RGd9ocF3EoA@mail.gmail.com>
+ <5e7270a1-8de6-1563-4e42-df37da161b98@gmail.com>
+ <20190810063047.GC2344@nanopsycho.orion>
+ <b0a9ec0d-c00b-7aaf-46d4-c74d18498698@gmail.com>
+ <3b1e8952-e4c2-9be5-0b5c-d3ce4127cbe2@gmail.com>
+ <20190812083139.GA2428@nanopsycho>
+ <CAJieiUhqAvqvxDZk517hWQP4Tx3Hk2PT7Yjq6NSGk+pB_87q8A@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190813061651.7gtbum4wsaw5dahg@lx-anielsen.microsemi.net>
-User-Agent: NeoMutt/20180716
+In-Reply-To: <CAJieiUhqAvqvxDZk517hWQP4Tx3Hk2PT7Yjq6NSGk+pB_87q8A@mail.gmail.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 08/13/2019 08:16, Allan W . Nielsen wrote:
-> The 08/13/2019 10:52, Yangbo Lu wrote:
-> > The trap action should be copying the frame to CPU and
-> > dropping it for forwarding, but current setting was just
-> > copying frame to CPU.
-> > 
-> > Signed-off-by: Yangbo Lu <yangbo.lu@nxp.com>
-> > ---
-> > Changes for v2:
-> > 	- None.
-> > ---
-> >  drivers/net/ethernet/mscc/ocelot_ace.c | 6 +++---
-> >  1 file changed, 3 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_ace.c b/drivers/net/ethernet/mscc/ocelot_ace.c
-> > index 91250f3..59ad590 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_ace.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_ace.c
-> > @@ -317,9 +317,9 @@ static void is2_action_set(struct vcap_data *data,
-> >  		break;
-> >  	case OCELOT_ACL_ACTION_TRAP:
-> >  		VCAP_ACT_SET(PORT_MASK, 0x0);
-> > -		VCAP_ACT_SET(MASK_MODE, 0x0);
-> > -		VCAP_ACT_SET(POLICE_ENA, 0x0);
-> > -		VCAP_ACT_SET(POLICE_IDX, 0x0);
-> > +		VCAP_ACT_SET(MASK_MODE, 0x1);
-> > +		VCAP_ACT_SET(POLICE_ENA, 0x1);
-> > +		VCAP_ACT_SET(POLICE_IDX, OCELOT_POLICER_DISCARD);
-> >  		VCAP_ACT_SET(CPU_QU_NUM, 0x0);
-> >  		VCAP_ACT_SET(CPU_COPY_ENA, 0x1);
-> >  		break;
-> 
-> This is still wrong, please see the comments provided the first time you
-> submitted this.
-> 
-> /Allan
+Mon, Aug 12, 2019 at 05:13:39PM CEST, roopa@cumulusnetworks.com wrote:
+>On Mon, Aug 12, 2019 at 1:31 AM Jiri Pirko <jiri@resnulli.us> wrote:
+>>
+>> Mon, Aug 12, 2019 at 03:37:26AM CEST, dsahern@gmail.com wrote:
+>> >On 8/11/19 7:34 PM, David Ahern wrote:
+>> >> On 8/10/19 12:30 AM, Jiri Pirko wrote:
+>> >>> Could you please write me an example message of add/remove?
+>> >>
+>> >> altnames are for existing netdevs, yes? existing netdevs have an id and
+>> >> a name - 2 existing references for identifying the existing netdev for
+>> >> which an altname will be added. Even using the altname as the main
+>> >> 'handle' for a setlink change, I see no reason why the GETLINK api can
+>> >> not take an the IFLA_ALT_IFNAME and return the full details of the
+>> >> device if the altname is unique.
+>> >>
+>> >> So, what do the new RTM commands give you that you can not do with
+>> >> RTM_*LINK?
+>> >>
+>> >
+>> >
+>> >To put this another way, the ALT_NAME is an attribute of an object - a
+>> >LINK. It is *not* a separate object which requires its own set of
+>> >commands for manipulating.
+>>
+>> Okay, again, could you provide example of a message to add/remove
+>> altname using existing setlink message? Thanks!
+>
+>Will the below work ?... just throwing an example for discussion:
+>
+>make the name list a nested list
+>IFLA_ALT_NAMES
+>        IFLA_ALT_NAME_OP /* ADD or DEL used with setlink */
 
-I believe this will make it work - but I have not tested it:
+This is exacly what I tried to avoid. Providing an OP within a message
+is weird. So I wanted to do it rather in the way similar to NEIGH for
+example, where you have new/del commands.
 
- 	case OCELOT_ACL_ACTION_TRAP:
- 		VCAP_ACT_SET(PORT_MASK, 0x0);
--		VCAP_ACT_SET(MASK_MODE, 0x0);
-+		VCAP_ACT_SET(MASK_MODE, 0x1);
- 		VCAP_ACT_SET(CPU_QU_NUM, 0x0);
- 		VCAP_ACT_SET(CPU_COPY_ENA, 0x1);
- 		break;
 
--- 
-/Allan
+>        IFLA_ALT_NAME
+>        IFLA_ALT_NAME_LIST
+>
+>With RTM_NEWLINK  you can specify a list to set and unset
+>With RTM_SETLINK  you can specify an individual name with a add or del op
+>
+>notifications will always be RTM_NEWLINK with the full list.
+>
+>The nested attribute can be structured differently.
+>
+>Only thing is i am worried about increasing the size of link dump and
+>notification msgs.
+>
+>What is the limit on the number of names again ?
+
+No limit.
