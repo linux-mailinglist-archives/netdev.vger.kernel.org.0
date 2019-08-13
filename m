@@ -2,66 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7221A8BB61
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 16:23:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A17C8BB68
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 16:24:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729553AbfHMOXD convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 13 Aug 2019 10:23:03 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:33934 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729151AbfHMOXD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 10:23:03 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1133C3064FD4;
-        Tue, 13 Aug 2019 14:23:03 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4365360852;
-        Tue, 13 Aug 2019 14:23:01 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <CACT4Y+bjLBwVK_6fz2H8fXm0baAVX+vRJ4UbVWG_7yNUO-SOUg@mail.gmail.com>
-References: <CACT4Y+bjLBwVK_6fz2H8fXm0baAVX+vRJ4UbVWG_7yNUO-SOUg@mail.gmail.com> <0000000000004c2416058c594b30@google.com> <24282.1562074644@warthog.procyon.org.uk> <CACT4Y+YjdV8CqX5=PzKsHnLsJOzsydqiq3igYDm_=nSdmFo2YQ@mail.gmail.com> <20330.1564583454@warthog.procyon.org.uk> <CACT4Y+Y4cRgaRPJ_gz_53k85inDKq+X+bWmOTv1gPLo=Yod1=A@mail.gmail.com> <22318.1564586386@warthog.procyon.org.uk>
-To:     Dmitry Vyukov <dvyukov@google.com>
-Cc:     dhowells@redhat.com,
-        syzbot <syzbot+1e0edc4b8b7494c28450@syzkaller.appspotmail.com>,
-        Eric Biggers <ebiggers@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        linux-afs@lists.infradead.org, LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Subject: Re: kernel BUG at net/rxrpc/local_object.c:LINE!
+        id S1729508AbfHMOYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 10:24:21 -0400
+Received: from www62.your-server.de ([213.133.104.62]:48794 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727462AbfHMOYV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 10:24:21 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hxXii-0005Zr-LU; Tue, 13 Aug 2019 16:24:16 +0200
+Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hxXii-000M2R-CM; Tue, 13 Aug 2019 16:24:16 +0200
+Subject: Re: [PATCH] tools: bpftool: add feature check for zlib
+To:     Peter Wu <peter@lekensteyn.nl>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Alexei Starovoitov <ast@kernel.org>, netdev@vger.kernel.org,
+        Quentin Monnet <quentin.monnet@netronome.com>
+References: <20190813003833.22042-1-peter@lekensteyn.nl>
+ <20190813003833.22042-2-peter@lekensteyn.nl>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <396943ae-e99e-d544-bcbb-50cc89dd55ec@iogearbox.net>
+Date:   Tue, 13 Aug 2019 16:24:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <3134.1565706180.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: 8BIT
-Date:   Tue, 13 Aug 2019 15:23:00 +0100
-Message-ID: <3135.1565706180@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 13 Aug 2019 14:23:03 +0000 (UTC)
+In-Reply-To: <20190813003833.22042-2-peter@lekensteyn.nl>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25540/Tue Aug 13 10:16:47 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dmitry Vyukov <dvyukov@google.com> wrote:
-
-> > > Please send a patch for testing that enables this tracing
-> > > unconditionally. This should have the same effect. There is no way to
-> > > hook into a middle of the automated process and arbitrary tune things.
-> >
-> > I don't know how to do that off hand.  Do you have an example?
+On 8/13/19 2:38 AM, Peter Wu wrote:
+> bpftool requires libelf, and zlib for decompressing /proc/config.gz.
+> zlib is a transitive dependency via libelf, and became mandatory since
+> elfutils 0.165 (Jan 2016). The feature check of libelf is already done
+> in the elfdep target of tools/lib/bpf/Makefile, pulled in by bpftool via
+> a dependency on libbpf.a. Add a similar feature check for zlib.
 > 
-> Few messages above I asked it to test:
-> https://groups.google.com/d/msg/syzkaller-bugs/gEnZkmEWf1s/r2_X_KVQAQAJ
-> 
-> Basically, git repo + branch + patch. Here are the docs:
-> https://github.com/google/syzkaller/blob/master/docs/syzbot.md#testing-patches
+> Suggested-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Signed-off-by: Peter Wu <peter@lekensteyn.nl>
 
-I meant that I don't know how to turn a tracepoint on from inside the kernel.
-
-David
+Applied, thanks!
