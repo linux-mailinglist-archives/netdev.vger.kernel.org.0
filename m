@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25A3D8B817
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:08:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9500F8B819
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:08:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728073AbfHMMIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 08:08:10 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:39545 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727466AbfHMMIJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:08:09 -0400
-Received: by mail-pf1-f193.google.com with SMTP id f17so47507320pfn.6;
-        Tue, 13 Aug 2019 05:08:09 -0700 (PDT)
+        id S1728089AbfHMMIO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 08:08:14 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:39454 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727466AbfHMMIN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:08:13 -0400
+Received: by mail-pg1-f195.google.com with SMTP id u17so51159362pgi.6;
+        Tue, 13 Aug 2019 05:08:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=f/dTb4ClZaN81sXe2USd7VA6EXdy1jkzbTVP88gvsZU=;
-        b=hs127bino+aRHv0nBLwWt+DG51I3QDsad9WxE1u2ABfBUc8amtsY19MCmUDSi0lMDn
-         wEYGySn1SCZmeAD3FCs5lYA1MIpTozTTkL2+0j3hAWtuTotw2DVyfixMtmr8hHvpVmRA
-         xLjG8jNRLiNUw5Jm48gnt8NRtBd/KX5LTZw9n4r9W9eIYEg+5zsP9/ShWNCDcsFXWHVK
-         ujVKmE2Dlavd1szTRYywb7yj/c/1/6GDR/mvbdtSrWYIEoHkxXPhyAZcVUzLkLqSPVo9
-         jGkKRKXolKBTo/Wi2FdFdzl6GPwCLZf6KnOzswP/F0qRFdVA5fdjnzdLeQvA0QpagOTK
-         FwhA==
+        bh=sqLnhHvWb1pYJOG96mznxLtUFrCsozUxEBwFZR41qYU=;
+        b=R5fPH5jpnlpW2LB0OvQ/09A/ukgivy7W++yiMxJNSrRxSrJDkYNr9XuZ92zwB/NZ4+
+         1V1jnzLoQy9E0/3LLbwuHpf94+TPvFrWnMSLY+C+2kfJtTQVX0FslsPaKx40MXPh/Rf1
+         VcXisdzkaCJc2/EvgCdwMgNUot4ttsaSuKJb72w+9UG0oRg8pb5QRa7J5Ku/D0qvHasf
+         jVOrYo7JwYLG1SCfekONJjdbbfEcEmWsbDgZsv7k9WkudousIbd9mLuTowndMC1vpZDn
+         swqfOl6SlZfwDFX8nMqS/tSH8/jtnXWPCyG+N3ZI5kBz1u6wXxv4ERo4RTHd9/U0aAd4
+         djbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=f/dTb4ClZaN81sXe2USd7VA6EXdy1jkzbTVP88gvsZU=;
-        b=k6M0AKyLh4DuAElwerxTVGTTdZwGrxXSi9uqqCgCY3GFEDU4FkHXfyRKjm7LzJq162
-         NlVic626TwdX/AaGZQUp4uhARWv0As1yu3f7v5FECmocHvFoWaGjFU11EV2JX981aKtE
-         DQDatJOOd81wyDrXIhGyPe40LrjKh6fypZT6/dilBZG4hk7C8uLqeIq0wsS5KeoT+uMx
-         irJzc+tws4TmWcMtQIdM4BrJ4EvqBJSt6QA/4o8svsCnq/gTqqoE19VIJ3Wb9bvgHpct
-         jrG/QsK+39mrEDcRO+bwNhg/T+mjM5xVrlZEB2voZPh/jcVPk9VP4hEzaamr/dBLbJhK
-         gZRg==
-X-Gm-Message-State: APjAAAXDSfCCHhkro7xpz/+G9Zu3Xpf4If0oBqnvqWZdxNpQ1QxaW4e+
-        OEqkMgwlnDR8Cgd26ICAo3Y=
-X-Google-Smtp-Source: APXvYqzVtckARatEy2C/6IfJsCE1AauFGEeu/iH3Zoi4a8JcHfi/0kIKIMZY0Giz/EW5ki6DGfUbSQ==
-X-Received: by 2002:a17:90a:256f:: with SMTP id j102mr2012310pje.14.1565698089340;
-        Tue, 13 Aug 2019 05:08:09 -0700 (PDT)
+        bh=sqLnhHvWb1pYJOG96mznxLtUFrCsozUxEBwFZR41qYU=;
+        b=nPBGkPat7pmuq9u1dSKU+J7EIpJ70DEvy1KtiWMi9KYJujESehJM1bKSvsVc4NwcNQ
+         m4V/omG8uBWyEQ/TCtVbWGdw2w1KX88Gm67Sb10KnMwLZbRKQx302CR72A8rA8ngEwXD
+         yVuW0jZCPzDzY3nc1VnRC8wjPamRbxlcTM+wGwze3XQF58ldzr2xx2YFYI5PtcVehjGg
+         eJUi2zGBG22l5v8BdZcTBOJNARBTbsVZnKWKg3F6018hVg37aVMgHU52wSR32IUOtCBq
+         xEW44VuYxi4uJ6/F/vrTjf68qrhGA29v7W69UVRwb/sXPHdddYhZM6URbKgpROAEmLF/
+         dDew==
+X-Gm-Message-State: APjAAAXGBAr1Ejo00pPDLr6qz0SewxsRKNRLFvsQccVGEz0GhFao5p3D
+        BfpPt3jXqCBWjuJ12+PWNlo=
+X-Google-Smtp-Source: APXvYqzOLBIpKruIrN+pdC6zB0JrdgpaIcYhgQwPP0Ok4ayQ9LQDTomDipedDKnF0CfXNsMaCp8Tqw==
+X-Received: by 2002:a62:1808:: with SMTP id 8mr14528787pfy.177.1565698092949;
+        Tue, 13 Aug 2019 05:08:12 -0700 (PDT)
 Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.08.05
+        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.08.09
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 05:08:08 -0700 (PDT)
+        Tue, 13 Aug 2019 05:08:12 -0700 (PDT)
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -59,9 +59,9 @@ To:     Alexei Starovoitov <ast@kernel.org>,
 Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         William Tu <u9012063@gmail.com>
-Subject: [RFC PATCH bpf-next 13/14] i40e: prefetch xdp->data before running XDP prog
-Date:   Tue, 13 Aug 2019 21:05:57 +0900
-Message-Id: <20190813120558.6151-14-toshiaki.makita1@gmail.com>
+Subject: [RFC PATCH bpf-next 14/14] bpf, hashtab: Compare keys in long
+Date:   Tue, 13 Aug 2019 21:05:58 +0900
+Message-Id: <20190813120558.6151-15-toshiaki.makita1@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
 References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
@@ -72,28 +72,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP progs are likely to read/write xdp->data.
-This improves the performance of xdp_flow.
+memcmp() is generally slow. Compare keys in long if possible.
+This improves xdp_flow performance.
 This is included in this series just to demonstrate to what extent
 xdp_flow performance can increase.
 
 Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_txrx.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/bpf/hashtab.c | 27 +++++++++++++++++++++++++--
+ 1 file changed, 25 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_txrx.c b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-index f162252..ea775ae 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_txrx.c
-@@ -2207,6 +2207,7 @@ static struct sk_buff *i40e_run_xdp(struct i40e_ring *rx_ring,
- 	if (!xdp_prog)
- 		goto xdp_out;
+diff --git a/kernel/bpf/hashtab.c b/kernel/bpf/hashtab.c
+index 22066a6..8b5ffd4 100644
+--- a/kernel/bpf/hashtab.c
++++ b/kernel/bpf/hashtab.c
+@@ -417,6 +417,29 @@ static inline struct hlist_nulls_head *select_bucket(struct bpf_htab *htab, u32
+ 	return &__select_bucket(htab, hash)->head;
+ }
  
-+	prefetchw(xdp->data);
- 	prefetchw(xdp->data_hard_start); /* xdp_frame write */
++/* key1 must be aligned to sizeof long */
++static bool key_equal(void *key1, void *key2, u32 size)
++{
++	/* Check for key1 */
++	BUILD_BUG_ON(!IS_ALIGNED(offsetof(struct htab_elem, key),
++				 sizeof(long)));
++
++	if (IS_ALIGNED((unsigned long)key2 | (unsigned long)size,
++		       sizeof(long))) {
++		unsigned long *lkey1, *lkey2;
++
++		for (lkey1 = key1, lkey2 = key2; size > 0;
++		     lkey1++, lkey2++, size -= sizeof(long)) {
++			if (*lkey1 != *lkey2)
++				return false;
++		}
++
++		return true;
++	}
++
++	return !memcmp(key1, key2, size);
++}
++
+ /* this lookup function can only be called with bucket lock taken */
+ static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash,
+ 					 void *key, u32 key_size)
+@@ -425,7 +448,7 @@ static struct htab_elem *lookup_elem_raw(struct hlist_nulls_head *head, u32 hash
+ 	struct htab_elem *l;
  
- 	act = bpf_prog_run_xdp(xdp_prog, xdp);
+ 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
+-		if (l->hash == hash && !memcmp(&l->key, key, key_size))
++		if (l->hash == hash && key_equal(&l->key, key, key_size))
+ 			return l;
+ 
+ 	return NULL;
+@@ -444,7 +467,7 @@ static struct htab_elem *lookup_nulls_elem_raw(struct hlist_nulls_head *head,
+ 
+ again:
+ 	hlist_nulls_for_each_entry_rcu(l, n, head, hash_node)
+-		if (l->hash == hash && !memcmp(&l->key, key, key_size))
++		if (l->hash == hash && key_equal(&l->key, key, key_size))
+ 			return l;
+ 
+ 	if (unlikely(get_nulls_value(n) != (hash & (n_buckets - 1))))
 -- 
 1.8.3.1
 
