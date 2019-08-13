@@ -2,80 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E348A8B083
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 09:14:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DABE8B087
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 09:15:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727362AbfHMHOv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 03:14:51 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:52370 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726986AbfHMHOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 03:14:50 -0400
-Received: by mail-wm1-f67.google.com with SMTP id o4so350560wmh.2
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 00:14:47 -0700 (PDT)
+        id S1727452AbfHMHPn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 03:15:43 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46667 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726769AbfHMHPn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 03:15:43 -0400
+Received: by mail-qt1-f195.google.com with SMTP id j15so11799215qtl.13
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 00:15:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9u8NDCl3d4hiqlfgCDxCc1GG+tnwPWuKGTzzdb2v0wI=;
-        b=nGpfbgNCNSnAHuafWLl5F1pzE2KKGZjuVOG/GHTbGdpe88c/zXd+tFjI2+DQnHMDWu
-         tez6phCx8M1jbfVgxxmjmJCXI/wxTRJWMWAaVR6BIhuEs0eaPPRvDH3HGa9aYMEbBA0p
-         exXN/Ux7gaOWmHItSWsJDdo2msFZBavPwGMbpFm75c15izCeM96Fv/Gk+Z0dVeHe7oQX
-         CIsh4hnlyhqoeceiFzjhcSbaV/6Brer80cMo2ftbuvQ3VtVFfnO9+JAvq6UElqHu0Rcm
-         MPWCQLq6wIS2wy1rlZOsY29+zUj59mS2M+HTlIrrLtszyyrrSQULzQE0rDG+Oh7YpMyk
-         hrVA==
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=g8Vm8qKHn+LLHXv645mJ9CCM93oJwj4ds1tExL4TPwg=;
+        b=weur1ciJNB0c2Ydn/tXH5TbApVTHeLKgj3aUj2q6HtXboQPd5ONcqH8BGCKBDRDvYL
+         l4PpS131R7Z05t/6SzwRzdl98TXxhfxGBGOSKPvIW5g7hznSKr57yC1skkeWOdr6qCxQ
+         ZS26R6N+RJL0/H/WLBByq3BiBJ836eWUFAxrYCRbsO+h4iVBKAvvn95nCM0dpVViiaa/
+         Jcm5lzaKNFYgah/8x3RG3nq7pUcsOoBkNUQ+YVZTgUS/mENXA+CyGJl5ENdf9QZh5o6q
+         xAqMfHPrcSpfpdZfi8RX3+xC+I4EoFM+NLg9BOuAJGPn99iJt3V5gfzGbzUCr7c7IsvE
+         r9XA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9u8NDCl3d4hiqlfgCDxCc1GG+tnwPWuKGTzzdb2v0wI=;
-        b=sdt3ci2gggeYBOwhKfdh06kzVmdvyN4b8fRyaVWjcJ6RBNngMyg2B3KXsjf/BOFlgN
-         b4J9a8kAQvFFvMQtyXYwRVtzHViX3eENA8PVNkER6HblLbocxH1k73g5+kKrixJifbIY
-         oQ8RtpWY1+PB+8tbEqFFJ+0w61iUmZKPU3REFBeNJfjM/30fR7vRmPZTw9h8+b8INlvc
-         js8gIba3SlK5bJqfadECTRpopmmOcZjssLePGDXesA4HNdfdyyRiOVVXjYjSqjr5jCYV
-         gR9gh5bIx+O6tO9yClBZZgLY2uLL66D1b7W8FiE3OrIbkQ8SKVt8kyKMl52Egp9zE+/X
-         rxBQ==
-X-Gm-Message-State: APjAAAXa9PSPLiS+pV0vSifNJ1mY05cynf+1nv1bkDPwCDGlEttj+RcM
-        xP6xuqn6yz2tQ9Qu+0ipOEDHIrc8tfI=
-X-Google-Smtp-Source: APXvYqx3C33CTlEyp5/Q1PM58vRo5DgKJiSL5bJVGQsDZDbeiZ3ufkXiF1CxUnv2BPGjofW8YhFYkw==
-X-Received: by 2002:a1c:4383:: with SMTP id q125mr1435554wma.16.1565680486621;
-        Tue, 13 Aug 2019 00:14:46 -0700 (PDT)
-Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id a84sm666859wmf.29.2019.08.13.00.14.46
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 00:14:46 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 09:14:45 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     David Miller <davem@davemloft.net>
-Cc:     dsahern@kernel.org, netdev@vger.kernel.org, dsahern@gmail.com
-Subject: Re: [PATCH net] netdevsim: Restore per-network namespace accounting
- for fib entries
-Message-ID: <20190813071445.GL2428@nanopsycho>
-References: <20190806191517.8713-1-dsahern@kernel.org>
- <20190811.210218.1719186095860421886.davem@davemloft.net>
- <20190812083635.GB2428@nanopsycho>
- <20190812.082802.570039169834175740.davem@davemloft.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=g8Vm8qKHn+LLHXv645mJ9CCM93oJwj4ds1tExL4TPwg=;
+        b=FAutBIXe/qWZc6DyTsRT3klPwlolNfA2H73Su3plLKIHXQPY4kkSQu1hc7FN/eoKlx
+         HuuVD00fua0EHKDOWN9kpKlRNIZl9I8qM0uFh2PNgK8iXa86svOmF7yUFs30T0oQy16O
+         Fg6I9Ctw9pg7Y/I2+FSun/MalXxmuSvAQEgPk9aWorBZvjTi1vyekvNG+CcWHT1lbmDj
+         dISf/CVpX5QmJlPW9r8bUc6QlVH+emnfjtGQM1EduZtJFaCyNC3+hpKvobOqpVzZzv/U
+         e7mX876APIqPh+zUmPv8P6NRmgf3xkrMm7t8BH0B4uD7f2WEEPvBCUdZlojS/tD4hj8v
+         O/hw==
+X-Gm-Message-State: APjAAAX+77L1itPPXhF2/04+t12cjKFvGdfTRc6kv/yNfl3TEp+5rk3w
+        JNZ+pSpErKHIJA0wqJdUgOf0v930rJiIVGc5U+CjqA==
+X-Google-Smtp-Source: APXvYqyu0kNB2r7jqKEB5vIzNuhGX7Fl1NvnQaovuv67dupIefbkK72n4H8JPszWbVJkp5kEWzuFvZtmL2YlF/ckPrI=
+X-Received: by 2002:a0c:c688:: with SMTP id d8mr32921143qvj.86.1565680542157;
+ Tue, 13 Aug 2019 00:15:42 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190812.082802.570039169834175740.davem@davemloft.net>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <20190805131452.13257-1-chiu@endlessm.com> <d0047834-957d-0cf3-5792-31faa5315ad1@gmail.com>
+ <87wofibgk7.fsf@kamboji.qca.qualcomm.com> <a3ac212d-b976-fb16-227f-3246a317c4a2@gmail.com>
+In-Reply-To: <a3ac212d-b976-fb16-227f-3246a317c4a2@gmail.com>
+From:   Daniel Drake <drake@endlessm.com>
+Date:   Tue, 13 Aug 2019 15:15:31 +0800
+Message-ID: <CAD8Lp47x8HOtVFBtBcp2uu3_fMyteEma5+5wr-dObWTtC1Q0PA@mail.gmail.com>
+Subject: Re: [RFC PATCH v7] rtl8xxxu: Improve TX performance of RTL8723BU on
+ rtl8xxxu driver
+To:     Jes Sorensen <jes.sorensen@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>, Chris Chiu <chiu@endlessm.com>,
+        David Miller <davem@davemloft.net>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Linux Upstreaming Team <linux@endlessm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Aug 12, 2019 at 05:28:02PM CEST, davem@davemloft.net wrote:
->From: Jiri Pirko <jiri@resnulli.us>
->Date: Mon, 12 Aug 2019 10:36:35 +0200
+On Mon, Aug 12, 2019 at 11:21 PM Jes Sorensen <jes.sorensen@gmail.com> wrote:
+> On 8/12/19 10:32 AM, Kalle Valo wrote:
+> > This is marked as RFC so I'm not sure what's the plan. Should I apply
+> > this?
 >
->> I understand it with real devices, but dummy testing device, who's
->> purpose is just to test API. Why?
->
->Because you'll break all of the wonderful testing infrastructure
->people like David have created.
- 
-Are you referring to selftests? There is no such test there :(
-But if it would be, could implement the limitations
-properly (like using cgroups), change the tests and remove this
-code from netdevsim?
+> I think it's at a point where it's worth applying - I kinda wish I had
+> had time to test it, but I won't be near my stash of USB dongles for a
+> little while.
+
+The last remaining reason it was RFC was pending feedback from Jes, to
+check that his earlier comments had been adequately addressed. So yes
+I think it's good to apply now.
+
+Thanks,
+Daniel
