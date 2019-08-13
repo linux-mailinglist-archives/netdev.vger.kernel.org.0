@@ -2,126 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32E458C492
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 01:02:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66C9A8C4A0
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 01:06:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727469AbfHMXCT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 19:02:19 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:36443 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726155AbfHMXCT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 19:02:19 -0400
-Received: by mail-wm1-f66.google.com with SMTP id g67so2821377wme.1
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 16:02:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=GRAf1XBzSU7k1psNlRTXRx6YaYS8Dp13kO8Sy6Twlf0=;
-        b=UvvrUcyo2qST/GUA3N+BfDqq0Wmv4bElaCnZVzE+LUQyfs6HjdFIceOwl7giryjscJ
-         Q5GWp4WIbz4vWRQ7oeNjh7r5GDaq3Kkg+nycYaujHukrJe+rAWFg+5X+lFYUi6fahq8p
-         TwAca1EqxGefNjtZU0ZOq73YMjRfHxr+10FaHztVw0moQjD7yDXzugmsMYGrlOEZW8aY
-         q0wrTYoH4cWywOPCjiD6B3Cyo5Fv3M92QBanbrCjJ1LrLAsbgujIIxmvSh1MwrWGnsju
-         MdNn7FmH78eIUi/0SOtMc25vWrckBiqdv/CFLkobvLBXsxyuGDMSXeF+GwsC1Olm+zwv
-         II8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=GRAf1XBzSU7k1psNlRTXRx6YaYS8Dp13kO8Sy6Twlf0=;
-        b=EWdbSnN7GQs6HgnYFW+HPd0aE3PNIhFav3ZX1bFyWaNo4oZKG9QPBIFDOemlkW4tPk
-         Fxkq7Z7IxNXxpfMxgQtr+oTmlLch29fe/Dxp0Apj/m29QIHXUraQRZwPQUKWWMaYiGgA
-         tX13PV2a3OaiT5RLKhJu18Lp1awvRjjggDTblRwlKFMoTlgZUtdK56jqpPA9JDDaNqFO
-         ojllkcClAE+jbXsARuRGVyEwc0Wy05/pRRnFI3l5spC+e/vpQTR9UtAk6zsooSsHu/+L
-         G42i/UUcJ9y1nmUI8MDjm9Anr6L+XOPuGEBvkk3Y301PQcRtviOSFEna5n+ILg92ciEg
-         f0pA==
-X-Gm-Message-State: APjAAAURQaT6NC3qI0YsAtSn3ZtTCgzxjuZmObkg6BQqfd27DK57kCyh
-        wvm+tUE2tOs3BeKTEgIeCPonCTZE
-X-Google-Smtp-Source: APXvYqzCk2mh0WzZ5NStujD9TiJpjN3Mml2KnZ+IAxaVyFJq/NiHe9ElwUlTLLUMCLGjyNugSJgKhA==
-X-Received: by 2002:a7b:c649:: with SMTP id q9mr4934878wmk.108.1565737336592;
-        Tue, 13 Aug 2019 16:02:16 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:e1e2:64b7:ee24:2d4a? (p200300EA8F2F3200E1E264B7EE242D4A.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:e1e2:64b7:ee24:2d4a])
-        by smtp.googlemail.com with ESMTPSA id f70sm4153177wme.22.2019.08.13.16.02.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Aug 2019 16:02:15 -0700 (PDT)
-Subject: Re: [PATCH RFC 2/4] net: phy: allow to bind genphy driver at probe
- time
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Marek Behun <marek.behun@nic.cz>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <ac3471d5-deb7-b711-6e74-23f59914758a@gmail.com>
- <b066560d-2cc3-2ea5-5233-e63a612c5aa1@gmail.com>
- <010ae64f-7e48-5e1e-2928-af3c4364f6e3@gmail.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <7225e653-6f93-63fc-8d61-a712318d1949@gmail.com>
-Date:   Wed, 14 Aug 2019 01:02:10 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1727513AbfHMXGO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 19:06:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34206 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727425AbfHMXGO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 19:06:14 -0400
+Received: from mail-wm1-f48.google.com (mail-wm1-f48.google.com [209.85.128.48])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6DE13208C2
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 23:06:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565737573;
+        bh=UYu26GUQAaKNlccIn4jPZ2pz2hbDX6W5aP6WZ+L37CI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=y0d/aeA/oHe7Ek9Oh0h0yfiYACeb5Phg6xTSU1ohEkYF/bR32GSZS2EapOSxaweNi
+         UusU+zxqOPAy6AcE5QacsqFQf8lH8PQZ4g28vhaMjjn//bb9r20NBhrO/DVTjsMK3B
+         H6NHRXiaNrBdqOT8uleZa79VQrgww+EOSzM7Tnus=
+Received: by mail-wm1-f48.google.com with SMTP id z23so2821822wmf.2
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 16:06:13 -0700 (PDT)
+X-Gm-Message-State: APjAAAV0EMf4uEYGQyXHdXJWjImc/W9oEarlh3yuX49wyJWwW0CJeVWk
+        jeLd1rSMiE3xPBzrI5jII/BqGPX5ojTng4hwp4+dYA==
+X-Google-Smtp-Source: APXvYqzgctiSJ0eW17obIPLwzTtaflh0LjZKHtQoMzK/pi06oFlrGOU2Do83ItsTLqtVbfPkz5Pqf+2slTU2GsNMazE=
+X-Received: by 2002:a7b:c4d2:: with SMTP id g18mr5105868wmk.79.1565737571802;
+ Tue, 13 Aug 2019 16:06:11 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <010ae64f-7e48-5e1e-2928-af3c4364f6e3@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <5A2FCD7E-7F54-41E5-BFAE-BB9494E74F2D@fb.com> <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com>
+ <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
+ <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
+ <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com> <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
+ <20190805192122.laxcaz75k4vxdspn@ast-mbp> <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
+ <20190806011134.p5baub5l3t5fkmou@ast-mbp> <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+ <20190813215823.3sfbakzzjjykyng2@ast-mbp>
+In-Reply-To: <20190813215823.3sfbakzzjjykyng2@ast-mbp>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Tue, 13 Aug 2019 16:06:00 -0700
+X-Gmail-Original-Message-ID: <CALCETrVT-dDXQGukGs5S1DkzvQv9_e=axzr_GyEd2c4T4z8Qng@mail.gmail.com>
+Message-ID: <CALCETrVT-dDXQGukGs5S1DkzvQv9_e=axzr_GyEd2c4T4z8Qng@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14.08.2019 00:53, Florian Fainelli wrote:
-> On 8/13/19 2:25 PM, Heiner Kallweit wrote:
->> In cases like a fixed phy that is never attached to a net_device we
->> may want to bind the genphy driver at probe time. Setting a PHY ID of
->> 0xffffffff to bind the genphy driver would fail due to a check in
->> get_phy_device(). Therefore let's change the PHY ID the genphy driver
->> binds to to 0xfffffffe. This still shouldn't match any real PHY,
->> and it will pass the check in get_phy_devcie().
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->> ---
->>  drivers/net/phy/phy_device.c | 3 +--
->>  include/linux/phy.h          | 4 ++++
->>  2 files changed, 5 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
->> index 163295dbc..54f80af31 100644
->> --- a/drivers/net/phy/phy_device.c
->> +++ b/drivers/net/phy/phy_device.c
->> @@ -2388,8 +2388,7 @@ void phy_drivers_unregister(struct phy_driver *drv, int n)
->>  EXPORT_SYMBOL(phy_drivers_unregister);
->>  
->>  static struct phy_driver genphy_driver = {
->> -	.phy_id		= 0xffffffff,
->> -	.phy_id_mask	= 0xffffffff,
->> +	PHY_ID_MATCH_EXACT(GENPHY_ID),
->>  	.name		= "Generic PHY",
->>  	.soft_reset	= genphy_no_soft_reset,
->>  	.get_features	= genphy_read_abilities,
->> diff --git a/include/linux/phy.h b/include/linux/phy.h
->> index 5ac7d2137..3b07bce78 100644
->> --- a/include/linux/phy.h
->> +++ b/include/linux/phy.h
->> @@ -37,6 +37,10 @@
->>  #define PHY_1000BT_FEATURES	(SUPPORTED_1000baseT_Half | \
->>  				 SUPPORTED_1000baseT_Full)
->>  
->> +#define GENPHY_ID_HIGH		0xffffU
->> +#define GENPHY_ID_LOW		0xfffeU
->> +#define GENPHY_ID		((GENPHY_ID_HIGH << 16) | GENPHY_ID_LOW)
-> 
-> This is a possible user ABI change here, if there is anything that
-> relies on reading 0xffff_ffff as a valid PHY OUI, you would be breaking
-> it. We might as well try to assign ourselves a specific PHY OUI, very
-> much like the Linux USB hubs show up with a Linux Foundation vendor ID.
-> 
+On Tue, Aug 13, 2019 at 2:58 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Aug 06, 2019 at 10:24:25PM -0700, Andy Lutomirski wrote:
+> > >
+> > > Inside containers and inside nested containers we need to start processes
+> > > that will use bpf. All of the processes are trusted.
+> >
+> > Trusted by whom?  In a non-nested container, the container manager
+> > *might* be trusted by the outside world.  In a *nested* container,
+> > unless the inner container management is controlled from outside the
+> > outer container, it's not trusted.  I don't know much about how
+> > Facebook's containers work, but the LXC/LXD/Podman world is moving
+> > very strongly toward user namespaces and maximally-untrusted
+> > containers, and I think bpf() should work in that context.
+>
+> agree that containers (namespaces) reduce amount of trust necessary
+> for apps to run, but the end goal is not security though.
+> Linux has become a single user system.
+> If user can ssh into the host they can become root.
+> If arbitrary code can run on the host it will be break out of any sandbox.
 
-I see the point. However in get_phy_device() we have the following check
-that should cause a PHY with ID 0xffff_ffff to be ignored. Therefore
-I doubt there's any such PHY ID in use.
+I would argue that this is a reasonable assumption to make if you're
+designing a system using Linux, but it's not a valid assumption to
+make as kernel developers.  Otherwise we should just give everyone
+CAP_SYS_ADMIN and call it a day.  There really is a difference between
+root and non-root.
 
-	/* If the phy_id is mostly Fs, there is no device there */
-	if ((phy_id & 0x1fffffff) == 0x1fffffff)
-		return ERR_PTR(-ENODEV);
+> Containers are not providing the level of security that is enough
+> to run arbitrary code. VMs can do it better, but cpu bugs don't make it easy.
+> Containers are used to make production systems safer.
+> Some people call it more 'secure', but it's clearly not secure for
+> arbitrary code and that is what kernel.unprivileged_bpf_disabled allows.
+> When we say 'unprivileged bpf' we really mean arbitrary malicious bpf program.
+> It's been a constant source of pain. The constant blinding, randomization,
+> verifier speculative analysis, all spectre v1, v2, v4 mitigations
+> are simply not worth it. It's a lot of complex kernel code without users.
 
-Heiner
+Seccomp really will want eBPF some day, and it should work without
+privilege.  Maybe it should be a restricted subset of eBPF, and
+Spectre will always be an issue until dramatically better hardware
+shows up, but I think people will want the ability for regular
+programs to load eBPF seccomp programs.
+
+> Hence I prefer this /dev/bpf mechanism to be as simple a possible.
+> The applications that will use it are going to be just as trusted as systemd.
+
+I still don't understand your systemd example.  systemd --users is not
+trusted systemwide in any respect.  The main PID 1 systemd is root.
+No matter how you dice it, granting a user systemd instance extra bpf
+access is tantamount to granting the user extra bpf access in general.
+
+It sounds to me like you're thinking of eBPF as a feature a bit like
+unprivileged user namespaces: *in principle*, it's supposed to be safe
+to give any unprivileged process the ability to use it, and you
+consider security flaws in it to be bugs worth fixing.  But you think
+it's a large attack surface and that most unprivileged programs
+shouldn't be allowed to use it.  Is that reasonable?
+
+
+>
+> > > To solve your concern of bypassing all capable checks...
+> > > How about we do /dev/bpf/full_verifier first?
+> > > It will replace capable() checks in the verifier only.
+> >
+> > I'm not convinced that "in the verifier" is the right distinction.
+> > Telling administrators that some setting lets certain users bypass
+> > bpf() verifier checks doesn't have a clear enough meaning.
+>
+> linux is a single user system. there are no administrators any more.
+> No doubt, folks will disagree, but that game is over.
+> At least on bpf side it's done.
+>
+> > I propose,
+> > instead, that the current capable() checks be divided into three
+> > categories:
+>
+> I don't see a use case for these categories.
+> All bpf programs extend the kernel in some way.
+> The kernel vs user is one category.
+> Conceptually CAP_BPF is enough. It would be similar to CAP_NET_ADMIN.
+> When application has CAP_NET_ADMIN it covers all of networking knobs.
+> There is no use case that would warrant fine grain CAP_ROUTE_ADMIN,
+> CAP_ETHTOOL_ADMIN, CAP_ETH0_ADMIN, etc.
+> Similarly CAP_BPF as the only knob is enough.
+> The only disadvantage of CAP_BPF is that it's not possible to
+> pass it from one systemd-like daemon to another systemd-like daemon.
+> Hence /dev/bpf idea and passing file descriptor.
+>
+> > This type of thing actually fits quite nicely into an idea I've been
+> > thinking about for a while called "implicit rights". In very brief
+> > summary, there would be objects called /dev/rights/xyz, where xyz is
+> > the same of a "right".  If there is a readable object of the right
+> > type at the literal path "/dev/rights/xyz", then you have right xyz.
+> > There's a bit more flexibility on top of this.  BPF could use
+> > /dev/rights/bpf/maptypes/lpm and
+> > /dev/rights/bpf/verifier/bounded_loops, for example.  Other non-BPF
+> > use cases include a biggie:
+> > /dev/rights/namespace/create_unprivileged_userns.
+> > /dev/rights/bind_port/80 would be nice, too.
+>
+> The concept of "implicit rights" is very nice and I'm sure it will
+> be a good fit somewhere, but I don't see why use it in bpf space.
+> There is no use case for fine grain partition of bpf features.
+>
