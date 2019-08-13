@@ -2,184 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 59F618C1B3
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 21:54:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E5468C1B6
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 21:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726594AbfHMTx7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 15:53:59 -0400
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:57863 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725944AbfHMTx7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 15:53:59 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1EF1721FB5;
-        Tue, 13 Aug 2019 15:53:58 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 13 Aug 2019 15:53:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=AjyaD9
-        EaWr7+k2rMNmtVc8SYcylCMiShMYzcNxDKPPk=; b=CQHzng+CS9hN2WujJxOdzX
-        Db3THBL3nIUBJJ5ddDfw1KqdH8Nyw5+Ig2W8f8wHMMyT5QZW8CsI/ouoP8PED0RF
-        xs6vflNuu9enm56PpsotaOKuQf4B/LwoJCi8R3MFe9ms3gE9vTci/rX0R6FQaT8n
-        iZBy5JRsSoPycvHKSPHRCOvJWRodt7aNa6S9WJyR7jMWCG3ZKNcWEOF3PKMSIM6X
-        m93gIlEq0Os+ZMzaGvUpd1xEeV27c6utOUvM1f7RlWCOhIAZH7A8RYLVSG8V8gB7
-        gSmcO40Ktksbhsz6r75X/ZzY0Xy8ua67j0txTXEkYisVxwJW0zIBS8HHA5kj7IIg
-        ==
-X-ME-Sender: <xms:VRVTXQGzBCBcZO_leUqjpMMZTAUAc2rxX6JEeN4krQ6VIkrJ2ETNEA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddviedgudefkecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
-    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
-    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepje
-    ejrddufeekrddvgeelrddvtdelnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgt
-    hhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:VRVTXT3FemhQJlQq2IGPjkDUrT6LTCC-PWYt7jeavAUCSFp0zMfwwA>
-    <xmx:VRVTXXFm3MkMdYOhIL3u21tJw5SzRTiHTFcOZzBNFqw5mAVHapvgTA>
-    <xmx:VRVTXUzreYAlqdfZtv1Zsq7qovRNH-FyGg9Rjp0P69wbJOrx55gF3g>
-    <xmx:VhVTXXU0e_MhLCd5NTNbIUzC2Yssz8z8CRowkvD-HwIKxP2aCHcRVg>
-Received: from localhost (unknown [77.138.249.209])
-        by mail.messagingengine.com (Postfix) with ESMTPA id E2AB0380087;
-        Tue, 13 Aug 2019 15:53:56 -0400 (EDT)
-Date:   Tue, 13 Aug 2019 22:53:41 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Patrick Ruddy <pruddy@vyatta.att-mail.com>
-Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, linus.luessing@c0d3.blue
-Subject: Re: [PATCH net-next] mcast: ensure L-L IPv6 packets are accepted by
- bridge
-Message-ID: <20190813195341.GA27005@splinter>
-References: <20190813141804.20515-1-pruddy@vyatta.att-mail.com>
+        id S1726672AbfHMTyk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 15:54:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:58128 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725923AbfHMTyj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 15:54:39 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=eCtVIbBq+z3k7xDHRnLS/xAv9L0Z1B/uFTCv0oXtN/Q=; b=gb/tU24ga3nKXREajEae0az41D
+        wb2iiie007qNzSr1q3RZ2kIRd0a2zHLG6Zuv9krR0roFf6RG6bh/VHkVJ2xzRkOBuutE7MOxI70Sk
+        06/BAcrs5Bm63v8pHhO1syf0UnLdY9akZlzg6nVRTylZ8B9LISvBtt/OQSkmWJKPsJaE=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hxcsI-00049m-Ct; Tue, 13 Aug 2019 21:54:30 +0200
+Date:   Tue, 13 Aug 2019 21:54:30 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Matthias Kaehlcke <mka@chromium.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v6 1/4] dt-bindings: net: phy: Add subnode for LED
+ configuration
+Message-ID: <20190813195430.GI15047@lunn.ch>
+References: <20190813191147.19936-1-mka@chromium.org>
+ <20190813191147.19936-2-mka@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190813141804.20515-1-pruddy@vyatta.att-mail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190813191147.19936-2-mka@chromium.org>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+ Bridge maintainers, Linus
-
-On Tue, Aug 13, 2019 at 03:18:04PM +0100, Patrick Ruddy wrote:
-> At present only all-nodes IPv6 multicast packets are accepted by
-> a bridge interface that is not in multicast router mode. Since
-> other protocols can be running in the absense of multicast
-> forwarding e.g. OSPFv3 IPv6 ND. Change the test to allow
-> all of the FFx2::/16 range to be accepted when not in multicast
-> router mode. This aligns the code with IPv4 link-local reception
-> and RFC4291
-
-Can you please quote the relevant part from RFC 4291?
-
+On Tue, Aug 13, 2019 at 12:11:44PM -0700, Matthias Kaehlcke wrote:
+> The LED behavior of some Ethernet PHYs is configurable. Add an
+> optional 'leds' subnode with a child node for each LED to be
+> configured. The binding aims to be compatible with the common
+> LED binding (see devicetree/bindings/leds/common.txt).
 > 
-> Signed-off-by: Patrick Ruddy <pruddy@vyatta.att-mail.com>
-> ---
->  include/net/addrconf.h    | 15 +++++++++++++++
->  net/bridge/br_multicast.c |  2 +-
->  2 files changed, 16 insertions(+), 1 deletion(-)
+> A LED can be configured to be:
 > 
-> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-> index becdad576859..05b42867e969 100644
-> --- a/include/net/addrconf.h
-> +++ b/include/net/addrconf.h
-> @@ -434,6 +434,21 @@ static inline void addrconf_addr_solict_mult(const struct in6_addr *addr,
->  		      htonl(0xFF000000) | addr->s6_addr32[3]);
->  }
->  
-> +/*
-> + *      link local multicast address range ffx2::/16 rfc4291
-> + */
-> +static inline bool ipv6_addr_is_ll_mcast(const struct in6_addr *addr)
-> +{
-> +#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
-> +	__be64 *p = (__be64 *)addr;
-> +	return ((p[0] & cpu_to_be64(0xff0f000000000000UL))
-> +		^ cpu_to_be64(0xff02000000000000UL)) == 0UL;
-> +#else
-> +	return ((addr->s6_addr32[0] & htonl(0xff0f0000)) ^
-> +		htonl(0xff020000)) == 0;
-> +#endif
-> +}
-> +
->  static inline bool ipv6_addr_is_ll_all_nodes(const struct in6_addr *addr)
->  {
->  #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
-> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-> index 9b379e110129..ed3957381fa2 100644
-> --- a/net/bridge/br_multicast.c
-> +++ b/net/bridge/br_multicast.c
-> @@ -1664,7 +1664,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
->  	err = ipv6_mc_check_mld(skb);
->  
->  	if (err == -ENOMSG) {
-> -		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
-> +		if (!ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
->  			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+> - 'on' when a link is active, some PHYs allow configuration for
+>   certain link speeds
+>   speeds
+> - 'off'
+> - blink on RX/TX activity, some PHYs allow configuration for
+>   certain link speeds
+> 
+> For the configuration to be effective it needs to be supported by
+> the hardware and the corresponding PHY driver.
+> 
+> Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 
-IIUC, you want IPv6 link-local packets to be locally received, but this
-also changes how these packets are flooded. RFC 4541 says that packets
-addressed to the all hosts address are a special case and should be
-forwarded to all ports:
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-"In IPv6, the data forwarding rules are more straight forward because MLD is
-mandated for addresses with scope 2 (link-scope) or greater. The only exception
-is the address FF02::1 which is the all hosts link-scope address for which MLD
-messages are never sent. Packets with the all hosts link-scope address should
-be forwarded on all ports."
-
-Maybe you want something like:
-
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 09b1dd8cd853..9f312a73f61c 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -132,7 +132,8 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
- 		    br_multicast_querier_exists(br, eth_hdr(skb))) {
- 			if ((mdst && mdst->host_joined) ||
--			    br_multicast_is_router(br)) {
-+			    br_multicast_is_router(br) ||
-+			    BR_INPUT_SKB_CB_LOCAL_RECEIVE(skb)) {
- 				local_rcv = true;
- 				br->dev->stats.multicast++;
- 			}
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 9b379e110129..f03cecf6174e 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1667,6 +1667,9 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
- 		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
- 			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
- 
-+		if (ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
-+			BR_INPUT_SKB_CB(skb)->local_receive = 1;
-+
- 		if (ipv6_addr_is_all_snoopers(&ipv6_hdr(skb)->daddr)) {
- 			err = br_ip6_multicast_mrd_rcv(br, port, skb);
- 
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index b7a4942ff1b3..d76394ca4059 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -426,6 +426,7 @@ struct br_input_skb_cb {
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
- 	u8 igmp;
- 	u8 mrouters_only:1;
-+	u8 local_receive:1;
- #endif
- 	u8 proxyarp_replied:1;
- 	u8 src_port_isolated:1;
-@@ -445,8 +446,10 @@ struct br_input_skb_cb {
- 
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
- # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(BR_INPUT_SKB_CB(__skb)->mrouters_only)
-+# define BR_INPUT_SKB_CB_LOCAL_RECEIVE(__skb)	(BR_INPUT_SKB_CB(__skb)->local_receive)
- #else
- # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(0)
-+# define BR_INPUT_SKB_CB_LOCAL_RECEIVE(__skb)	(0)
- #endif
- 
- #define br_printk(level, br, format, args...)	\
+    Andrew
