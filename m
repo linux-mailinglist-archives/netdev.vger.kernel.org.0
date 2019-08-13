@@ -2,115 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1C88C08D
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:27:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A6258C0DA
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:39:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbfHMS1G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:27:06 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:36829 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727844AbfHMS1G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:27:06 -0400
-Received: by mail-qk1-f193.google.com with SMTP id d23so5639474qko.3
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 11:27:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+Sww9Wrsj6KP79vUI7zopze9rLndXMZqDqkJW7tIg3g=;
-        b=qt3xeYl8g4DcplB+QNDD3BsiozTUWn4onMUx8G6Z80oIeB7jK4sg5mJjx1eQ2b7WIp
-         tfA5vEcew+ayjbMkf0aMmZr/uX8LrZ65IultXatmbv13PwAtL3sSuyRN+o/IB0doZ4ko
-         +bpOfsPy+25sQWUPaUSGtTwmyZmD4fY9hcu9mAQWHRSslGABPJvGDv5wqkFBze3NtRf+
-         BpIjj9RMkwdka+gfEo+jFeR/m0h7vNKZbelnRfI678BIarIN9yoKjH8r8VW01CG+CIRY
-         IhmTspJq0MqdAeIGZj7LHf982SP5rePa2gPivDPfclF78/vQhDx1LsBlIirhx4EPlPuD
-         NXfw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+Sww9Wrsj6KP79vUI7zopze9rLndXMZqDqkJW7tIg3g=;
-        b=XpQ6j0enL9CaZzFL+qMQqDDGJM46opGjEgWK0JruJkzyOdPFgEpWYMe1JZxlUYuLhl
-         +xYBbHOjLgIt8z4xguG3AqjaecgylD7E2YpPfMhFAiZfaMAKBC7JsquNjpgsxCmhWeVu
-         fEavUJg+FxlaxkT8RnxyrYnlVX/XhRrUky/l1whxnUF1+U7itn7Casl7HJH9QIKuEVWe
-         nyDs/i7u37jfFx8PIfSCE6JmQrnPgTXSvKn55ezREEfBgeMEEQiqTuH8ITbrl93xDKRJ
-         9xdF6Lp6nOlGtS2GT87Yn1siF/JhiMlieT6ZoWtqYeFrDPa5H3ZvxMI0NU64r6z5sN6p
-         414w==
-X-Gm-Message-State: APjAAAVxJl7nrcOciHvjdd0bfGYrrlSj4DjyQKhj16AtCrXsyyj9agh8
-        FpRNTuQs8aOVXwcOBB4x6LqHikPACuXlBuu0QLE=
-X-Google-Smtp-Source: APXvYqyix0gKTjfklVhsJ9zPuSRr67DZRRIU/EwrYnmRELXOppu81KpkKb6FTKiDoqZhjhzCgEavtb5jF5QPugY8sQM=
-X-Received: by 2002:a37:660d:: with SMTP id a13mr35521332qkc.36.1565720825213;
- Tue, 13 Aug 2019 11:27:05 -0700 (PDT)
+        id S1726899AbfHMSjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:39:40 -0400
+Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:26658 "EHLO
+        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726427AbfHMSjk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:39:40 -0400
+X-Greylist: delayed 15674 seconds by postgrey-1.27 at vger.kernel.org; Tue, 13 Aug 2019 14:39:39 EDT
+Received: from pps.filterd (m0048589.ppops.net [127.0.0.1])
+        by m0048589.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x7DEHu2p018882
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 10:18:25 -0400
+Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
+        by m0048589.ppops.net-00191d01. with ESMTP id 2ubuw0w332-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 10:18:24 -0400
+Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
+        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIKmr009971
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:21 -0500
+Received: from zlp30495.vci.att.com (zlp30495.vci.att.com [135.46.181.158])
+        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIGZX009782
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:16 -0500
+Received: from zlp30495.vci.att.com (zlp30495.vci.att.com [127.0.0.1])
+        by zlp30495.vci.att.com (Service) with ESMTP id 4FCF2400A0A7
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 14:18:16 +0000 (GMT)
+Received: from clpi183.sldc.sbc.com (unknown [135.41.1.46])
+        by zlp30495.vci.att.com (Service) with ESMTP id 3365F400A0A6
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 14:18:16 +0000 (GMT)
+Received: from sldc.sbc.com (localhost [127.0.0.1])
+        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIGNY030158
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:16 -0500
+Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
+        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIB3s029785
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:12 -0500
+Received: from pruddy-Precision-7520.edi.vyatta.net (unknown [10.156.17.46])
+        by mail.eng.vyatta.net (Postfix) with ESMTPA id 13FD93601AB
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 07:18:10 -0700 (PDT)
+From:   Patrick Ruddy <pruddy@vyatta.att-mail.com>
+To:     netdev@vger.kernel.org
+Subject: [PATCH net-next] mcast: ensure L-L IPv6 packets are accepted by bridge
+Date:   Tue, 13 Aug 2019 15:18:04 +0100
+Message-Id: <20190813141804.20515-1-pruddy@vyatta.att-mail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com> <20190813122420.GB9349@krava>
- <eb5cf65a-1aa0-fde4-e726-41a736cb7314@iogearbox.net>
-In-Reply-To: <eb5cf65a-1aa0-fde4-e726-41a736cb7314@iogearbox.net>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 13 Aug 2019 11:26:54 -0700
-Message-ID: <CAEf4BzYyj=j=EfkD1jtJm=0fDv+3nYJuDpbaaSumkX-fP7A_fg@mail.gmail.com>
-Subject: Re: libbpf distro packaging
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Julia Kartseva <hex@fb.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-13_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
+ priorityscore=1501 malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0
+ spamscore=0 clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908130151
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 7:14 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 8/13/19 2:24 PM, Jiri Olsa wrote:
-> > On Mon, Aug 12, 2019 at 07:04:12PM +0000, Julia Kartseva wrote:
-> >> I would like to bring up libbpf publishing discussion started at [1].
-> >> The present state of things is that libbpf is built from kernel tree, e.g. [2]
-> >> For Debian and [3] for Fedora whereas the better way would be having a
-> >> package built from github mirror. The advantages of the latter:
-> >> - Consistent, ABI matching versioning across distros
-> >> - The mirror has integration tests
-> >> - No need in kernel tree to build a package
-> >> - Changes can be merged directly to github w/o waiting them to be merged
-> >> through bpf-next -> net-next -> main
-> >> There is a PR introducing a libbpf.spec which can be used as a starting point: [4]
-> >> Any comments regarding the spec itself can be posted there.
-> >> In the future it may be used as a source of truth.
-> >> Please consider switching libbpf packaging to the github mirror instead
-> >> of the kernel tree.
-> >> Thanks
-> >>
-> >> [1] https://lists.iovisor.org/g/iovisor-dev/message/1521
-> >> [2] https://packages.debian.org/sid/libbpf4.19
-> >> [3] http://rpmfind.net/linux/RPM/fedora/devel/rawhide/x86_64/l/libbpf-5.3.0-0.rc2.git0.1.fc31.x86_64.html
-> >> [4] https://github.com/libbpf/libbpf/pull/64
-> >
-> > hi,
-> > Fedora has libbpf as kernel-tools subpackage, so I think
-> > we'd need to create new package and deprecate the current
-> >
-> > but I like the ABI stability by using github .. how's actually
-> > the sync (in both directions) with kernel sources going on?
->
-> The upstream kernel's tools/lib/bpf/ is always source of truth. Meaning, changes need
-> to make it upstream first and they are later synced into the GH stand-alone repo.
+At present only all-nodes IPv6 multicast packets are accepted by
+a bridge interface that is not in multicast router mode. Since
+other protocols can be running in the absense of multicast
+forwarding e.g. OSPFv3 IPv6 ND. Change the test to allow
+all of the FFx2::/16 range to be accepted when not in multicast
+router mode. This aligns the code with IPv4 link-local reception
+and RFC4291
 
-As I mentioned in reply to Jiri, kernel's tools/lib/bpf are the source
-of truth for the sources of libbpf itself, but Github has some extra
-stuff necessary to make libbpf work/build in isolation from kernel.
-Plus some administrative stuff (e.g., sync script).
+Signed-off-by: Patrick Ruddy <pruddy@vyatta.att-mail.com>
+---
+ include/net/addrconf.h    | 15 +++++++++++++++
+ net/bridge/br_multicast.c |  2 +-
+ 2 files changed, 16 insertions(+), 1 deletion(-)
 
-So if this spec is geared towards Github layout and for use with
-Github projection of libbpf, maybe it makes more sense to keep it in
-Github only? Is that spec going to be useful in kernel sources? Or
-will it just create more confusion on why it's there?
+diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+index becdad576859..05b42867e969 100644
+--- a/include/net/addrconf.h
++++ b/include/net/addrconf.h
+@@ -434,6 +434,21 @@ static inline void addrconf_addr_solict_mult(const struct in6_addr *addr,
+ 		      htonl(0xFF000000) | addr->s6_addr32[3]);
+ }
+ 
++/*
++ *      link local multicast address range ffx2::/16 rfc4291
++ */
++static inline bool ipv6_addr_is_ll_mcast(const struct in6_addr *addr)
++{
++#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
++	__be64 *p = (__be64 *)addr;
++	return ((p[0] & cpu_to_be64(0xff0f000000000000UL))
++		^ cpu_to_be64(0xff02000000000000UL)) == 0UL;
++#else
++	return ((addr->s6_addr32[0] & htonl(0xff0f0000)) ^
++		htonl(0xff020000)) == 0;
++#endif
++}
++
+ static inline bool ipv6_addr_is_ll_all_nodes(const struct in6_addr *addr)
+ {
+ #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 9b379e110129..ed3957381fa2 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -1664,7 +1664,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+ 	err = ipv6_mc_check_mld(skb);
+ 
+ 	if (err == -ENOMSG) {
+-		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
++		if (!ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
+ 			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+ 
+ 		if (ipv6_addr_is_all_snoopers(&ipv6_hdr(skb)->daddr)) {
+-- 
+2.20.1
 
-Plus it will make it easier to synchronize version bumping/tagging of
-new release on Github.
-
->
-> Thanks,
-> Daniel
