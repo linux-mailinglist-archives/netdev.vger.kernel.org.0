@@ -2,170 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0CD558B1EC
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 10:00:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C4C28B1F3
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 10:03:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727494AbfHMIAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 04:00:32 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:33171 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727263AbfHMIAc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 04:00:32 -0400
-Received: from bigeasy by Galois.linutronix.de with local (Exim 4.80)
-        (envelope-from <bigeasy@linutronix.de>)
-        id 1hxRjF-0007Bi-Cp; Tue, 13 Aug 2019 10:00:25 +0200
-Date:   Tue, 13 Aug 2019 10:00:25 +0200
-From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Chevallier <maxime.chevallier@bootlin.com>
-Subject: [PATCH net-next] net/mvpp2: Replace tasklet with softirq hrtimer
-Message-ID: <20190813080025.2j3cj6gfyzzxek7x@linutronix.de>
+        id S1727703AbfHMIDH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 04:03:07 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:39067 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbfHMIDG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 04:03:06 -0400
+Received: by mail-ot1-f65.google.com with SMTP id b1so1071664otp.6;
+        Tue, 13 Aug 2019 01:03:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xpTjmXViSqIki2Cb2qHpkfQ62APVJj7AGYZMRIsoCJ8=;
+        b=AYFA0Q48dX8onM7zG1H8BuQOm2zh/w79ApEK6ezu93//mTeriuACrbmOrAUH4FTlRE
+         grdX+HbfBfjYQM3DPrOGRw5HZpIEFcrBB4mLP0Jn2ue/W+RdzBXlYtDl8eajDOiUjZzl
+         S2BStp2whwPW/DdQ4FqQUVOn+d5agQUeEAKJdzy9A53jzAmj72y2/7DlBvubA+K6cLUV
+         W30iWaGSFvtDIrjrU7ZmVTy19Evq518Xe1klm+es+rjpGJYW2VXkgFkqPCQOBJFJlWAY
+         +IgfLW8ged01WvOmEibmynVe5lN8t6yD1am79qSRamNXI0x6/2qQBD0WzzuN/iPgWlhf
+         QPSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xpTjmXViSqIki2Cb2qHpkfQ62APVJj7AGYZMRIsoCJ8=;
+        b=KjApIHuXb/AyCeiXN7/OxPhmZPuJfOXgl/QQS3ci5G9FkSsfCGaFH/N1KkzCr2suv8
+         1G7/jRWHeJ/zsKMizL57W22co+gXyZqcPWVz1ytk3uox1pr6amNUpK9VDmPjVafKYpFY
+         1/gWyBnRrpm6ctMLcPa0GJ/yOBfLptue0KJM6vVedtHoV38gIi/EIQjLtYAytEb+bRQd
+         ZjHS51IV0/u/t9zfBjff5ERM1fG5A9EZyWdHkio8FFWi1edfh6xrKs64c0x61dh2jBKz
+         I1aBPE33YzaqrBZjrExts6GBU3JU2N5ftqGGgWdhFaCMK3S3aU4UnNsUwcu6wmFFG7Zl
+         R+tA==
+X-Gm-Message-State: APjAAAXEPlNfB2L3JnG1z3l6QuxwWzdw+ft9/lCYbPufyPLlw+POepSz
+        44INt5VNEkhm9xTSQpl9Z+Pb/HDaM7jCS4q/wxc=
+X-Google-Smtp-Source: APXvYqzzSJbUR/V1lvk2p/n+pBFYlV3r4RaXqZ8riQxviItgG2T6vtN6lVbqJgCVjr/mfYonAVDHl6acFGgXOfajAzU=
+X-Received: by 2002:aca:fcc4:: with SMTP id a187mr619358oii.126.1565683385526;
+ Tue, 13 Aug 2019 01:03:05 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+References: <20190812113429.2488-1-ivan.khoronzhuk@linaro.org> <20190812124326.32146-1-ivan.khoronzhuk@linaro.org>
+In-Reply-To: <20190812124326.32146-1-ivan.khoronzhuk@linaro.org>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Tue, 13 Aug 2019 10:02:54 +0200
+Message-ID: <CAJ8uoz0bBhdQSocQz8Y9tvrGCsCE9TDf3m1u6=sL4Eo5tZ17YQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next] mm: mmap: increase sockets maximum memory
+ size pgoff for 32bits
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        linux-mm@kvack.org, Xdp <xdp-newbies@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, Alexei Starovoitov <ast@kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Thomas Gleixner <tglx@linutronix.de>
+On Mon, Aug 12, 2019 at 2:45 PM Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
+>
+> The AF_XDP sockets umem mapping interface uses XDP_UMEM_PGOFF_FILL_RING
+> and XDP_UMEM_PGOFF_COMPLETION_RING offsets. The offsets seems like are
+> established already and are part of configuration interface.
+>
+> But for 32-bit systems, while AF_XDP socket configuration, the values
+> are to large to pass maximum allowed file size verification.
+> The offsets can be tuned ofc, but instead of changing existent
+> interface - extend max allowed file size for sockets.
 
-The tx_done_tasklet tasklet is used in invoke the hrtimer
-(mvpp2_hr_timer_cb) in softirq context. This can be also achieved without
-the tasklet but with HRTIMER_MODE_SOFT as hrtimer mode.
+Can you use mmap2() instead that takes a larger offset (2^44) even on
+32-bit systems?
 
-Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
-Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h    |  3 +-
- .../net/ethernet/marvell/mvpp2/mvpp2_main.c   | 58 +++++++------------
- 2 files changed, 23 insertions(+), 38 deletions(-)
+/Magnus
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 4d9564ba68f69..ee3bab508ee8c 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -829,9 +829,8 @@ struct mvpp2_pcpu_stats {
- /* Per-CPU port control */
- struct mvpp2_port_pcpu {
- 	struct hrtimer tx_done_timer;
-+	struct net_device *dev;
- 	bool timer_scheduled;
--	/* Tasklet for egress finalization */
--	struct tasklet_struct tx_done_tasklet;
- };
- 
- struct mvpp2_queue_vector {
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 74fd9e1718654..12e799e99803c 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -2651,31 +2651,21 @@ static irqreturn_t mvpp2_link_status_isr(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static void mvpp2_timer_set(struct mvpp2_port_pcpu *port_pcpu)
--{
--	ktime_t interval;
--
--	if (!port_pcpu->timer_scheduled) {
--		port_pcpu->timer_scheduled = true;
--		interval = MVPP2_TXDONE_HRTIMER_PERIOD_NS;
--		hrtimer_start(&port_pcpu->tx_done_timer, interval,
--			      HRTIMER_MODE_REL_PINNED);
--	}
--}
--
--static void mvpp2_tx_proc_cb(unsigned long data)
-+static enum hrtimer_restart mvpp2_hr_timer_cb(struct hrtimer *timer)
- {
--	struct net_device *dev = (struct net_device *)data;
--	struct mvpp2_port *port = netdev_priv(dev);
-+	struct net_device *dev;
-+	struct mvpp2_port *port;
- 	struct mvpp2_port_pcpu *port_pcpu;
- 	unsigned int tx_todo, cause;
- 
--	port_pcpu = per_cpu_ptr(port->pcpu,
--				mvpp2_cpu_to_thread(port->priv, smp_processor_id()));
-+	port_pcpu = container_of(timer, struct mvpp2_port_pcpu, tx_done_timer);
-+	dev = port_pcpu->dev;
- 
- 	if (!netif_running(dev))
--		return;
-+		return HRTIMER_NORESTART;
-+
- 	port_pcpu->timer_scheduled = false;
-+	port = netdev_priv(dev);
- 
- 	/* Process all the Tx queues */
- 	cause = (1 << port->ntxqs) - 1;
-@@ -2683,18 +2673,13 @@ static void mvpp2_tx_proc_cb(unsigned long data)
- 				mvpp2_cpu_to_thread(port->priv, smp_processor_id()));
- 
- 	/* Set the timer in case not all the packets were processed */
--	if (tx_todo)
--		mvpp2_timer_set(port_pcpu);
--}
--
--static enum hrtimer_restart mvpp2_hr_timer_cb(struct hrtimer *timer)
--{
--	struct mvpp2_port_pcpu *port_pcpu = container_of(timer,
--							 struct mvpp2_port_pcpu,
--							 tx_done_timer);
--
--	tasklet_schedule(&port_pcpu->tx_done_tasklet);
-+	if (tx_todo && !port_pcpu->timer_scheduled) {
-+		port_pcpu->timer_scheduled = true;
-+		hrtimer_forward_now(&port_pcpu->tx_done_timer,
-+				    MVPP2_TXDONE_HRTIMER_PERIOD_NS);
- 
-+		return HRTIMER_RESTART;
-+	}
- 	return HRTIMER_NORESTART;
- }
- 
-@@ -3182,7 +3167,12 @@ static netdev_tx_t mvpp2_tx(struct sk_buff *skb, struct net_device *dev)
- 	    txq_pcpu->count > 0) {
- 		struct mvpp2_port_pcpu *port_pcpu = per_cpu_ptr(port->pcpu, thread);
- 
--		mvpp2_timer_set(port_pcpu);
-+		if (!port_pcpu->timer_scheduled) {
-+			port_pcpu->timer_scheduled = true;
-+			hrtimer_start(&port_pcpu->tx_done_timer,
-+				      MVPP2_TXDONE_HRTIMER_PERIOD_NS,
-+				      HRTIMER_MODE_REL_PINNED_SOFT);
-+		}
- 	}
- 
- 	if (test_bit(thread, &port->priv->lock_map))
-@@ -3619,7 +3609,6 @@ static int mvpp2_stop(struct net_device *dev)
- 
- 			hrtimer_cancel(&port_pcpu->tx_done_timer);
- 			port_pcpu->timer_scheduled = false;
--			tasklet_kill(&port_pcpu->tx_done_tasklet);
- 		}
- 	}
- 	mvpp2_cleanup_rxqs(port);
-@@ -5183,13 +5172,10 @@ static int mvpp2_port_probe(struct platform_device *pdev,
- 			port_pcpu = per_cpu_ptr(port->pcpu, thread);
- 
- 			hrtimer_init(&port_pcpu->tx_done_timer, CLOCK_MONOTONIC,
--				     HRTIMER_MODE_REL_PINNED);
-+				     HRTIMER_MODE_REL_PINNED_SOFT);
- 			port_pcpu->tx_done_timer.function = mvpp2_hr_timer_cb;
- 			port_pcpu->timer_scheduled = false;
--
--			tasklet_init(&port_pcpu->tx_done_tasklet,
--				     mvpp2_tx_proc_cb,
--				     (unsigned long)dev);
-+			port_pcpu->dev = dev;
- 		}
- 	}
- 
--- 
-2.23.0.rc1
-
+> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> ---
+>
+> Based on bpf-next/master
+>
+> v2..v1:
+>         removed not necessarily #ifdev as ULL and UL for 64 has same size
+>
+>  mm/mmap.c | 3 +++
+>  1 file changed, 3 insertions(+)
+>
+> diff --git a/mm/mmap.c b/mm/mmap.c
+> index 7e8c3e8ae75f..578f52812361 100644
+> --- a/mm/mmap.c
+> +++ b/mm/mmap.c
+> @@ -1358,6 +1358,9 @@ static inline u64 file_mmap_size_max(struct file *file, struct inode *inode)
+>         if (S_ISBLK(inode->i_mode))
+>                 return MAX_LFS_FILESIZE;
+>
+> +       if (S_ISSOCK(inode->i_mode))
+> +               return MAX_LFS_FILESIZE;
+> +
+>         /* Special "we do even unsigned file positions" case */
+>         if (file->f_mode & FMODE_UNSIGNED_OFFSET)
+>                 return 0;
+> --
+> 2.17.1
+>
