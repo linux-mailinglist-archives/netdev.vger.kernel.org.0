@@ -2,148 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03B618BF6B
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 19:10:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B173A8BF78
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 19:12:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726993AbfHMRKv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 13:10:51 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:5880 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726654AbfHMRKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 13:10:50 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7DH7I0W115113
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 13:10:48 -0400
-Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2uc0rv1kbg-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 13:10:48 -0400
-Received: from localhost
-        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <naveen.n.rao@linux.vnet.ibm.com>;
-        Tue, 13 Aug 2019 18:10:46 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Tue, 13 Aug 2019 18:10:41 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7DHAeM240304730
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 13 Aug 2019 17:10:40 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7C435A404D;
-        Tue, 13 Aug 2019 17:10:40 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 9251FA405B;
-        Tue, 13 Aug 2019 17:10:38 +0000 (GMT)
-Received: from naverao1-tp.ibmuc.com (unknown [9.85.107.69])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 13 Aug 2019 17:10:38 +0000 (GMT)
-From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiong Wang <jiong.wang@netronome.com>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>, <bpf@vger.kernel.org>,
-        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [RFC PATCH] bpf: handle 32-bit zext during constant blinding
-Date:   Tue, 13 Aug 2019 22:40:18 +0530
-X-Mailer: git-send-email 2.22.0
+        id S1727425AbfHMRMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 13:12:47 -0400
+Received: from mail.nic.cz ([217.31.204.67]:47138 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726179AbfHMRMq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 13:12:46 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id D4AC6140C5A;
+        Tue, 13 Aug 2019 19:12:43 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1565716363; bh=YDsA7IBMOOr5MndGIwQIzNWef6QB8w9qITeTSZfNhcI=;
+        h=From:To:Date;
+        b=X4fpRY2GMFkcIsMU5wYVT4pK3SFrIzejtGYnjjCjC73jN6Drs+qwNMsUjf3Ya3toW
+         eNTICouGjadkY43vGw+/hJHhSLmYkVazA07pBEPUz9l1vvsdR8bUBeUkC8G475AyBX
+         +m9uO7/QLsEourvl2ypFzFYWcG5P6dgv3wxr+eqE=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH net-next] net: dsa: mv88e6xxx: check for mode change in port_setup_mac
+Date:   Tue, 13 Aug 2019 19:12:43 +0200
+Message-Id: <20190813171243.27898-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19081317-4275-0000-0000-000003589A30
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19081317-4276-0000-0000-0000386AAAB6
-Message-Id: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-13_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=821 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908130164
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT,
+        URIBL_BLOCKED shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since BPF constant blinding is performed after the verifier pass, there
-are certain ALU32 instructions inserted which don't have a corresponding
-zext instruction inserted after. This is causing a kernel oops on
-powerpc and can be reproduced by running 'test_cgroup_storage' with
-bpf_jit_harden=2.
+The mv88e6xxx_port_setup_mac checks if the requested MAC settings are
+different from the current ones, and if not, does nothing (since chaning
+them requires putting the link down).
 
-Fix this by emitting BPF_ZEXT during constant blinding if
-prog->aux->verifier_zext is set.
+In this check it only looks if the triplet [link, speed, duplex] is
+being changed.
 
-Fixes: a4b1d3c1ddf6cb ("bpf: verifier: insert zero extension according to analysis result")
-Reported-by: Michael Ellerman <mpe@ellerman.id.au>
-Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+This patch adds support to also check if the mode parameter (of type
+phy_interface_t) is requested to be changed. The current mode is
+computed by the ->port_link_state() method, and if it is different from
+PHY_INTERFACE_MODE_NA, we check for equality with the requested mode.
+
+In the implementations of the mv88e6250_port_link_state() method we set
+the current mode to PHY_INTERFACE_MODE_NA - so the code does not check
+for mode change on 6250.
+
+In the mv88e6352_port_link_state() method, we use the cached cmode of
+the port to determine the mode as phy_interface_t (and if it is not
+enough, eg. for RGMII, we also look at the port control register for
+RX/TX timings).
+
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
 ---
-This approach (the location where zext is being introduced below, in 
-particular) works for powerpc, but I am not entirely sure if this is 
-sufficient for other architectures as well. This is broken on v5.3-rc4.
+ drivers/net/dsa/mv88e6xxx/chip.c |  4 +++-
+ drivers/net/dsa/mv88e6xxx/port.c | 40 +++++++++++++++++++++++++++++++-
+ drivers/net/dsa/mv88e6xxx/port.h |  1 +
+ 3 files changed, 43 insertions(+), 2 deletions(-)
 
-- Naveen
-
-
- kernel/bpf/core.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
-
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 8191a7db2777..d84146e6fd9e 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -890,7 +890,8 @@ int bpf_jit_get_func_addr(const struct bpf_prog *prog,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 818a83eb2dcb..9b3ad22a5b98 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -417,7 +417,9 @@ int mv88e6xxx_port_setup_mac(struct mv88e6xxx_chip *chip, int port, int link,
+ 	 */
+ 	if (state.link == link &&
+ 	    state.speed == speed &&
+-	    state.duplex == duplex)
++	    state.duplex == duplex &&
++	    (state.interface == mode ||
++	     state.interface == PHY_INTERFACE_MODE_NA))
+ 		return 0;
  
- static int bpf_jit_blind_insn(const struct bpf_insn *from,
- 			      const struct bpf_insn *aux,
--			      struct bpf_insn *to_buff)
-+			      struct bpf_insn *to_buff,
-+			      bool emit_zext)
+ 	/* Port's MAC control must not be changed unless the link is down */
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 04309ef0a1cc..304e5b118b08 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -590,6 +590,7 @@ int mv88e6250_port_link_state(struct mv88e6xxx_chip *chip, int port,
+ 	state->link = !!(reg & MV88E6250_PORT_STS_LINK);
+ 	state->an_enabled = 1;
+ 	state->an_complete = state->link;
++	state->interface = PHY_INTERFACE_MODE_NA;
+ 
+ 	return 0;
+ }
+@@ -598,12 +599,49 @@ int mv88e6352_port_link_state(struct mv88e6xxx_chip *chip, int port,
+ 			      struct phylink_link_state *state)
  {
- 	struct bpf_insn *to = to_buff;
- 	u32 imm_rnd = get_random_int();
-@@ -939,6 +940,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
- 		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
- 		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
- 		*to++ = BPF_ALU32_REG(from->code, from->dst_reg, BPF_REG_AX);
-+		if (emit_zext)
-+			*to++ = BPF_ZEXT_REG(from->dst_reg);
- 		break;
+ 	int err;
+-	u16 reg;
++	u16 reg, mac;
  
- 	case BPF_ALU64 | BPF_ADD | BPF_K:
-@@ -992,6 +995,10 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
- 			off -= 2;
- 		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
- 		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
-+		if (emit_zext) {
-+			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
-+			off--;
-+		}
- 		*to++ = BPF_JMP32_REG(from->code, from->dst_reg, BPF_REG_AX,
- 				      off);
- 		break;
-@@ -1005,6 +1012,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
- 	case 0: /* Part 2 of BPF_LD | BPF_IMM | BPF_DW. */
- 		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ aux[0].imm);
- 		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
-+		if (emit_zext)
-+			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
- 		*to++ = BPF_ALU64_REG(BPF_OR,  aux[0].dst_reg, BPF_REG_AX);
- 		break;
+ 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_STS, &reg);
+ 	if (err)
+ 		return err;
  
-@@ -1088,7 +1097,8 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
- 		    insn[1].code == 0)
- 			memcpy(aux, insn, sizeof(aux));
- 
--		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff);
-+		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff,
-+						clone->aux->verifier_zext);
- 		if (!rewritten)
- 			continue;
- 
++	switch (chip->ports[port].cmode) {
++	case MV88E6XXX_PORT_STS_CMODE_RGMII:
++		err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_MAC_CTL,
++					  &mac);
++		if (err)
++			return err;
++
++		if ((mac & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_RXCLK) &&
++		    (mac & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_TXCLK))
++			state->interface = PHY_INTERFACE_MODE_RGMII_ID;
++		else if (mac & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_RXCLK)
++			state->interface = PHY_INTERFACE_MODE_RGMII_RXID;
++		else if (mac & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_TXCLK)
++			state->interface = PHY_INTERFACE_MODE_RGMII_TXID;
++		else
++			state->interface = PHY_INTERFACE_MODE_RGMII;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++		state->interface = PHY_INTERFACE_MODE_1000BASEX;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_SGMII:
++		state->interface = PHY_INTERFACE_MODE_SGMII;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
++		state->interface = PHY_INTERFACE_MODE_2500BASEX;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_XAUI:
++		state->interface = PHY_INTERFACE_MODE_XAUI;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
++		state->interface = PHY_INTERFACE_MODE_RXAUI;
++		break;
++	default:
++		/* we do not support other cmode values here */
++		state->interface = PHY_INTERFACE_MODE_NA;
++	}
++
+ 	switch (reg & MV88E6XXX_PORT_STS_SPEED_MASK) {
+ 	case MV88E6XXX_PORT_STS_SPEED_10:
+ 		state->speed = SPEED_10;
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index ceec771f8bfc..1abf5ea033e2 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -42,6 +42,7 @@
+ #define MV88E6XXX_PORT_STS_TX_PAUSED		0x0020
+ #define MV88E6XXX_PORT_STS_FLOW_CTL		0x0010
+ #define MV88E6XXX_PORT_STS_CMODE_MASK		0x000f
++#define MV88E6XXX_PORT_STS_CMODE_RGMII		0x0007
+ #define MV88E6XXX_PORT_STS_CMODE_100BASE_X	0x0008
+ #define MV88E6XXX_PORT_STS_CMODE_1000BASE_X	0x0009
+ #define MV88E6XXX_PORT_STS_CMODE_SGMII		0x000a
 -- 
-2.22.0
+2.21.0
 
