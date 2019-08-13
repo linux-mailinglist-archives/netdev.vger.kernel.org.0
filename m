@@ -2,76 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E8FD8B87C
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:24:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9C99D8B8A6
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:36:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbfHMMYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 08:24:23 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57210 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726974AbfHMMYX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 08:24:23 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id D54C2C03D478;
-        Tue, 13 Aug 2019 12:24:22 +0000 (UTC)
-Received: from krava (unknown [10.43.17.33])
-        by smtp.corp.redhat.com (Postfix) with SMTP id E6F2010013A1;
-        Tue, 13 Aug 2019 12:24:20 +0000 (UTC)
-Date:   Tue, 13 Aug 2019 14:24:20 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Julia Kartseva <hex@fb.com>
-Cc:     "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>
-Subject: Re: libbpf distro packaging
-Message-ID: <20190813122420.GB9349@krava>
-References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com>
+        id S1728205AbfHMMgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 08:36:20 -0400
+Received: from mail-lj1-f193.google.com ([209.85.208.193]:42688 "EHLO
+        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726453AbfHMMgT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:36:19 -0400
+Received: by mail-lj1-f193.google.com with SMTP id 15so9619515ljr.9;
+        Tue, 13 Aug 2019 05:36:17 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/4zbvSpEn2DpmCJ6tMtDBdGBohm95LMSJu2Rb3mH21k=;
+        b=lrApJRtm6GOhWs3fCFPJSlcSNogP0GznPdE24vcG3Z/F5ysBIyHK4jr3TmLyVAenyu
+         h+reeHqoCtu5DnUOonZfy2rp0wqpy0QvIWd1egLjw9T+fHOo9bX4D5YJplkiBANlzg+Z
+         YxoJvdWuGbwSks5nTFsOOCwSZvZqkTUwflPOvOlwIZSX4gGr1CPhFztABch0yEq1LGEz
+         niMncc0gUHJSPmGlCnp7eYd+vKKI1m13mmcPqKSQd33YlT2b2H8DFXOYUkcC6lFgsZvv
+         RCcC5ce0ZlXrJuUsDAAaXHftEs3Uc66lwJtN2oFXfWLTEOEySRPJVNo9EtMHQqBQljfF
+         I95w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/4zbvSpEn2DpmCJ6tMtDBdGBohm95LMSJu2Rb3mH21k=;
+        b=ombUIQlKZI4sna0UtPXjiTZdDEAjW09UgskoowRxZu6uQxgnjy0Or9pBdvwUOHwk5C
+         I1qGrcmx4z/wr1bRHgnJBdXj8C2u7dBkgnBOme5FKqsMI1U/Gb8cz9fdqOBCQWazB0s7
+         Oir1/T7cJwCnIKCzYWuFZcDB6IQJ8bfPzPnkYge9zt4x9qXNfnVTLVhETB9dNNmS+Qm1
+         i8HReInxcLZ1xzp6o2kbMv77R+bdZ1I9GDYs/4jxQ8LvH4gqun31BF1XL1+Y6saZHoKv
+         NVgCQuz0CRtId328AIkm/KT2+YFbYp0ZM24JRz2DMqGYCHKaiWPqRX2Caz6ccQAdWINH
+         7Nlw==
+X-Gm-Message-State: APjAAAUw0jGg8zSE+jLTDdABOj1U86GKjU0iDWivaBZyygEJFY4oI3cz
+        TDMhrET9Ik98e8WBwRYofDL+83XFhwRl+lqkZPI=
+X-Google-Smtp-Source: APXvYqw9QQj9Ti8WKyo8gjlKSpGsqLRG2B9QmRI3Fs3vQL04NHHaPG06xFKmK+ZntPzsDk7jUfioPFAqkeTU3Op2eJs=
+X-Received: by 2002:a2e:3a13:: with SMTP id h19mr21421766lja.220.1565699777265;
+ Tue, 13 Aug 2019 05:36:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Tue, 13 Aug 2019 12:24:22 +0000 (UTC)
+References: <20190812215052.71840-1-ndesaulniers@google.com>
+ <20190812215052.71840-12-ndesaulniers@google.com> <20190813082744.xmzmm4j675rqiz47@willie-the-truck>
+In-Reply-To: <20190813082744.xmzmm4j675rqiz47@willie-the-truck>
+From:   Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Date:   Tue, 13 Aug 2019 14:36:06 +0200
+Message-ID: <CANiq72mAfJ23PyWzZAELgbKQDCX2nvY0z+dmOMe14qz=wa6eFg@mail.gmail.com>
+Subject: Re: [PATCH 12/16] arm64: prefer __section from compiler_attributes.h
+To:     Will Deacon <will@kernel.org>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>, yhs@fb.com,
+        clang-built-linux@googlegroups.com,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Enrico Weigelt <info@metux.net>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 12, 2019 at 07:04:12PM +0000, Julia Kartseva wrote:
-> I would like to bring up libbpf publishing discussion started at [1].
-> The present state of things is that libbpf is built from kernel tree, e.g. [2]
-> For Debian and [3] for Fedora whereas the better way would be having a
-> package built from github mirror. The advantages of the latter:
-> - Consistent, ABI matching versioning across distros
-> - The mirror has integration tests
-> - No need in kernel tree to build a package
-> - Changes can be merged directly to github w/o waiting them to be merged
-> through bpf-next -> net-next -> main
-> There is a PR introducing a libbpf.spec which can be used as a starting point: [4]
-> Any comments regarding the spec itself can be posted there.
-> In the future it may be used as a source of truth.
-> Please consider switching libbpf packaging to the github mirror instead
-> of the kernel tree.
-> Thanks
-> 
-> [1] https://lists.iovisor.org/g/iovisor-dev/message/1521
-> [2] https://packages.debian.org/sid/libbpf4.19
-> [3] http://rpmfind.net/linux/RPM/fedora/devel/rawhide/x86_64/l/libbpf-5.3.0-0.rc2.git0.1.fc31.x86_64.html
-> [4] https://github.com/libbpf/libbpf/pull/64
+On Tue, Aug 13, 2019 at 10:27 AM Will Deacon <will@kernel.org> wrote:
+>
+> Hi Nick,
+>
+> On Mon, Aug 12, 2019 at 02:50:45PM -0700, Nick Desaulniers wrote:
+> > GCC unescapes escaped string section names while Clang does not. Because
+> > __section uses the `#` stringification operator for the section name, it
+> > doesn't need to be escaped.
+> >
+> > This antipattern was found with:
+> > $ grep -e __section\(\" -e __section__\(\" -r
+> >
+> > Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> > ---
+> >  arch/arm64/include/asm/cache.h     | 2 +-
+> >  arch/arm64/kernel/smp_spin_table.c | 2 +-
+> >  2 files changed, 2 insertions(+), 2 deletions(-)
+>
+> Does this fix a build issue, or is it just cosmetic or do we end up with
+> duplicate sections or something else?
 
-hi,
-Fedora has libbpf as kernel-tools subpackage, so I think
-we'd need to create new package and deprecate the current
+This should be cosmetic -- basically we are trying to move all users
+of current available __attribute__s in compiler_attributes.h to the
+__attr forms. I am also adding (slowly) new attributes that are
+already used but we don't have them yet in __attr form.
 
-but I like the ABI stability by using github .. how's actually
-the sync (in both directions) with kernel sources going on?
+> Happy to route it via arm64, just having trouble working out whether it's
+> 5.3 material!
 
-thanks,
-jirka
+As you prefer! Those that are not taken by a maintainer I will pick up
+and send via compiler-attributes.
+
+I would go for 5.4, since there is no particular rush anyway.
+
+Cheers,
+Miguel
