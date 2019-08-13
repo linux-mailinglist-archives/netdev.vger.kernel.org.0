@@ -2,320 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3CB6E8C4EB
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 01:51:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D0148C4EE
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 01:55:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbfHMXvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 19:51:24 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:3134 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726116AbfHMXvY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 19:51:24 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7DNn6oU028641;
-        Tue, 13 Aug 2019 16:51:17 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=+PNL/0Ha8072PxsM4+QrQ/vv2NDudhwILsaeExnQk2s=;
- b=QwPV9084Vn4O/SeGN4/SBwolKpSNqC+fngRB0CUbWX278/0OFupB0jOwXAVO9xxC8ruX
- 6H+3G2gUme0G2MZDP39Bk5HmCvP+RNXfvMp112isCWClzAuowCZQLXaCCM5R8/9WycR2
- gQ47gMdfhCnqh12zFr8DjxUh/x71ZcXiFKA= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uc1d81kbj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 13 Aug 2019 16:51:16 -0700
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Tue, 13 Aug 2019 16:51:15 -0700
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Tue, 13 Aug 2019 16:51:15 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZLPspjPIceEsGH/6rz9syKGc+G6VNUteVnMg1bnXW+emSQO/ze3yGwNoswYQMv+//xfap5NRnwQ65BWBi6/RRDz7YnBLQDZv6yBVKPNyh6ykOYveCiT7XgL9OLR5D0vPEVcJeLZ8lOv+1KBT6g8ydyMOfa+hYZzQkATQgf5ZpNLNWXwFMfkEMbrH9tA67mR5PUq0mfPe4WAFe+Tcq16KDFcnxJ0wke5/jg6LUkbXHW05fG3wQ+uROtSbOet1JMww7dFIqpjSLUNO6FZnLJ4KURI8vSB04+BK4LGdk9ex67dG+sQZ4awopurlAZKTXuGCoNmXh7GCM3+M3FzNOInHYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+PNL/0Ha8072PxsM4+QrQ/vv2NDudhwILsaeExnQk2s=;
- b=IJng+6g3tpz83y3dAITwSMpzhaBxQfobYz1J8CEbIHLkwEn613RUrRTbsDxlN1gqU8zkGL9qGnrezI/AbTGnQy3P9H7PTGl23D/8dIWMhMhc+CTiQNmbcULtJRtyRZff15YjJcQro8N4N7cVqEU1eo0I3DR4d/jsT1Th/2+v3SOpZ60O345AoRTWrE4o/IfUg3Pj1iwgrWx1+0Qa1mkP2WlOxpKUP6Erbxktl74s9zrVACHRITEOqICkjj50lII34NmcQYTK12YLQNwAnMjTHOnu3E3UIVVjTGBAAa72slctWxZZwUtSSqUjLGHB7uzfpRIUhBw7kOZj/RBys6SZEQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
- smtp.mailfrom=fb.com;dmarc=pass action=none header.from=fb.com;dkim=pass
- header.d=fb.com;arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+PNL/0Ha8072PxsM4+QrQ/vv2NDudhwILsaeExnQk2s=;
- b=KJkFP5CwlalPCaHG5YjrTwFYBw3dW0767nUfu2r6203pcffG8tIrXTVcdxfBl595a9OB6MdiRvf8RqD8ainTY9zGhR08KX/hE2ksh+atuTMVPNIKdpy2O0xjDS7Dhkrr6DDKZENnUFL4lGkkgVgD35TCnpmyJ35jToiqhZrSNgk=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
- BYAPR15MB2885.namprd15.prod.outlook.com (20.178.206.204) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2136.16; Tue, 13 Aug 2019 23:51:14 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978%5]) with mapi id 15.20.2157.020; Tue, 13 Aug 2019
- 23:51:14 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Carlos Neira <cneirabustos@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [Potential Spoof] Re: [PATCH bpf-next V9 1/3] bpf: new helper to
- obtain namespace data from current task
-Thread-Topic: [Potential Spoof] Re: [PATCH bpf-next V9 1/3] bpf: new helper to
- obtain namespace data from current task
-Thread-Index: AQHVUgen0TRJjFwMbUCsjzJfHVP59ab5P2KAgACAhoA=
-Date:   Tue, 13 Aug 2019 23:51:14 +0000
-Message-ID: <35fb9291-9603-038a-17e3-7faeb52e6085@fb.com>
-References: <20190813184747.12225-1-cneirabustos@gmail.com>
- <20190813184747.12225-2-cneirabustos@gmail.com>
- <13b7f81f-83b6-07c9-4864-b49749cbf7d9@fb.com>
-In-Reply-To: <13b7f81f-83b6-07c9-4864-b49749cbf7d9@fb.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO2PR07CA0054.namprd07.prod.outlook.com (2603:10b6:100::22)
- To BYAPR15MB3384.namprd15.prod.outlook.com (2603:10b6:a03:10e::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::3:f941]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d4329545-0ab9-499b-bc5b-08d72049204b
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2885;
-x-ms-traffictypediagnostic: BYAPR15MB2885:
-x-microsoft-antispam-prvs: <BYAPR15MB28857E85BA030982F15F2CE0D3D20@BYAPR15MB2885.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 01283822F8
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(346002)(366004)(396003)(39860400002)(52314003)(189003)(199004)(2906002)(486006)(6512007)(14454004)(31686004)(30864003)(6246003)(446003)(46003)(305945005)(11346002)(7736002)(52116002)(8676002)(99286004)(2616005)(5660300002)(54906003)(476003)(316002)(81156014)(110136005)(71200400001)(71190400001)(53936002)(81166006)(53546011)(186003)(102836004)(66446008)(64756008)(66946007)(6506007)(386003)(66556008)(8936002)(6436002)(2501003)(36756003)(6116002)(4326008)(25786009)(6486002)(86362001)(14444005)(256004)(76176011)(31696002)(229853002)(478600001)(66476007);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2885;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: cs9xg1m4NSJTHgf0nDYpmnCvcaNksxZdY1roXBfNdHuNpJveKvLJrbCnvgkfbPqX+Yn8RHgFoRb7v9C1dRoUO8Kf9mk/HQtG222ZRM5790Kix/+MJ9kcL0NSSg5FEJkOk7q9NqYgRX9DKv0QXo8k+k5QoU50q9XniW36VSpeqOYFzOxu/sbsbEPvaRkTUk+MzF93R6djukMRS/D8tMUmmWYVUpiSMIqapuKgwFm5JtlB4t+rQLMlRRcS6D9MgPNGmFXLpCeGwOO/Wv61If6EnS0d0fEuFrpPfYrhd+jJXcb2V3D9sBuAXDAMjmtbXFntsKza/EP8ygoWHfaDyvVOZAegHFAvTlndSx5Y6RVA/rcJOcA5+cxGAZS3FJ5QGq+p2sbeb1opVjQQLHQJooafM2Us2L1Yzft0KKOMKCNo/6M=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <2FAE37C642AF8B478039A59B6F30933F@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726712AbfHMXzs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 19:55:48 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:41354 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726007AbfHMXzs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 19:55:48 -0400
+Received: by mail-lf1-f68.google.com with SMTP id 62so73120231lfa.8
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 16:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4iXU/C6pf33HCDPo5fhQcIUwnsXXu+ebTLB7mLl7XAU=;
+        b=capqvQSQUWEFarfxrjzUrvlZ3naU8oioqXJFwhmOKaDTouKRjwxZVeQf74qzhHAcxd
+         PJmQ6DRoCG+e5SpDr+lh6TtLegRb5WhRYyR+/yVwzHCSbONDkfJ1cIjQtpeeJwKX69KU
+         Egp1aTZu9Olp5pivKcnvO29OGARppJkibzMX4=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4iXU/C6pf33HCDPo5fhQcIUwnsXXu+ebTLB7mLl7XAU=;
+        b=qnk2U7UWeDPB/Wh2pX7bBRezhk+EsmMVRyTxMUqPlOuf7UHyWc8N9VJuJ3237C697R
+         7oTP89+geNobU/Cb+8tbrEj03/rHXjQEsurWWhgtcb63srn7AAfMI7CUoP6402NDPi1t
+         6uZBbqRCSzSfHb17nq0wCgCLeHMd5m4R4pED8qrmlFU+vZt0fClc4sLN//ozNFjWcXXh
+         211adbiPgEIXH8Otik2oEuhZNVAIg8ROCEW407/qN4YJUteO7Gq1zt4HGGKMhflJAGoN
+         4+npl0h/EWTohrtVfqsxM0XxyPx1Cz4PDAp2+cNLnDn2ee0q4d5NdbS6Xf5KsQA0lvFd
+         dsbg==
+X-Gm-Message-State: APjAAAVd+gV1Iiq60n3SkFjoezLYxGyj8mBxNQq7e8YCirY6yThPghZo
+        ASQMCEkbIl6w2SY9tuUks3glsw==
+X-Google-Smtp-Source: APXvYqx/IFiDpfI6aidJrTW/pTh+u8hjepBLmdTTDNTDv1YxJ3zQA/eqND2jDJ5H1A4igOFJ9vXPKA==
+X-Received: by 2002:ac2:5314:: with SMTP id c20mr23748162lfh.1.1565740545844;
+        Tue, 13 Aug 2019 16:55:45 -0700 (PDT)
+Received: from [192.168.0.104] ([79.134.174.40])
+        by smtp.googlemail.com with ESMTPSA id j17sm3054469lfh.9.2019.08.13.16.55.44
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 13 Aug 2019 16:55:45 -0700 (PDT)
+Subject: Re: [PATCH net-next] mcast: ensure L-L IPv6 packets are accepted by
+ bridge
+To:     Ido Schimmel <idosch@idosch.org>,
+        Patrick Ruddy <pruddy@vyatta.att-mail.com>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        linus.luessing@c0d3.blue
+References: <20190813141804.20515-1-pruddy@vyatta.att-mail.com>
+ <20190813195341.GA27005@splinter>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <43ed59db-9228-9132-b9a5-31c8d1e8e9e9@cumulusnetworks.com>
+Date:   Wed, 14 Aug 2019 02:55:42 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: d4329545-0ab9-499b-bc5b-08d72049204b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2019 23:51:14.4939
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZyEgc7HbugIS4YSHXQgat4xYWyyIbGZi10NLca4tNo/jFRCmQ/AgmK5la9TsKB5B
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2885
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-13_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908130226
-X-FB-Internal: deliver
+In-Reply-To: <20190813195341.GA27005@splinter>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDgvMTMvMTkgNDoxMSBQTSwgWW9uZ2hvbmcgU29uZyB3cm90ZToNCj4gDQo+IA0KPiBP
-biA4LzEzLzE5IDExOjQ3IEFNLCBDYXJsb3MgTmVpcmEgd3JvdGU6DQo+PiBGcm9tOiBDYXJsb3Mg
-PGNuZWlyYWJ1c3Rvc0BnbWFpbC5jb20+DQo+Pg0KPj4gTmV3IGJwZiBoZWxwZXIgYnBmX2dldF9j
-dXJyZW50X3BpZG5zX2luZm8uDQo+PiBUaGlzIGhlbHBlciBvYnRhaW5zIHRoZSBhY3RpdmUgbmFt
-ZXNwYWNlIGZyb20gY3VycmVudCBhbmQgcmV0dXJucw0KPj4gcGlkLCB0Z2lkLCBkZXZpY2UgYW5k
-IG5hbWVzcGFjZSBpZCBhcyBzZWVuIGZyb20gdGhhdCBuYW1lc3BhY2UsDQo+PiBhbGxvd2luZyB0
-byBpbnN0cnVtZW50IGEgcHJvY2VzcyBpbnNpZGUgYSBjb250YWluZXIuDQo+Pg0KPj4gU2lnbmVk
-LW9mZi1ieTogQ2FybG9zIE5laXJhIDxjbmVpcmFidXN0b3NAZ21haWwuY29tPg0KPj4gLS0tDQo+
-PiAgICBmcy9pbnRlcm5hbC5oICAgICAgICAgICAgfCAgMiAtLQ0KPj4gICAgZnMvbmFtZWkuYyAg
-ICAgICAgICAgICAgIHwgIDEgLQ0KPj4gICAgaW5jbHVkZS9saW51eC9icGYuaCAgICAgIHwgIDEg
-Kw0KPj4gICAgaW5jbHVkZS9saW51eC9uYW1laS5oICAgIHwgIDQgKysrDQo+PiAgICBpbmNsdWRl
-L3VhcGkvbGludXgvYnBmLmggfCAzMSArKysrKysrKysrKysrKysrKysrKysrLQ0KPj4gICAga2Vy
-bmVsL2JwZi9jb3JlLmMgICAgICAgIHwgIDEgKw0KPj4gICAga2VybmVsL2JwZi9oZWxwZXJzLmMg
-ICAgIHwgNjQgKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysrKysr
-DQo+PiAgICBrZXJuZWwvdHJhY2UvYnBmX3RyYWNlLmMgfCAgMiArKw0KPj4gICAgOCBmaWxlcyBj
-aGFuZ2VkLCAxMDIgaW5zZXJ0aW9ucygrKSwgNCBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0t
-Z2l0IGEvZnMvaW50ZXJuYWwuaCBiL2ZzL2ludGVybmFsLmgNCj4+IGluZGV4IDMxNWZjZDhkMjM3
-Yy4uNjY0N2UxNWRkNDE5IDEwMDY0NA0KPj4gLS0tIGEvZnMvaW50ZXJuYWwuaA0KPj4gKysrIGIv
-ZnMvaW50ZXJuYWwuaA0KPj4gQEAgLTU5LDggKzU5LDYgQEAgZXh0ZXJuIGludCBmaW5pc2hfY2xl
-YW5fY29udGV4dChzdHJ1Y3QgZnNfY29udGV4dCAqZmMpOw0KPj4gICAgLyoNCj4+ICAgICAqIG5h
-bWVpLmMNCj4+ICAgICAqLw0KPj4gLWV4dGVybiBpbnQgZmlsZW5hbWVfbG9va3VwKGludCBkZmQs
-IHN0cnVjdCBmaWxlbmFtZSAqbmFtZSwgdW5zaWduZWQgZmxhZ3MsDQo+PiAtCQkJICAgc3RydWN0
-IHBhdGggKnBhdGgsIHN0cnVjdCBwYXRoICpyb290KTsNCj4+ICAgIGV4dGVybiBpbnQgdXNlcl9w
-YXRoX21vdW50cG9pbnRfYXQoaW50LCBjb25zdCBjaGFyIF9fdXNlciAqLCB1bnNpZ25lZCBpbnQs
-IHN0cnVjdCBwYXRoICopOw0KPj4gICAgZXh0ZXJuIGludCB2ZnNfcGF0aF9sb29rdXAoc3RydWN0
-IGRlbnRyeSAqLCBzdHJ1Y3QgdmZzbW91bnQgKiwNCj4+ICAgIAkJCSAgIGNvbnN0IGNoYXIgKiwg
-dW5zaWduZWQgaW50LCBzdHJ1Y3QgcGF0aCAqKTsNCj4+IGRpZmYgLS1naXQgYS9mcy9uYW1laS5j
-IGIvZnMvbmFtZWkuYw0KPj4gaW5kZXggMjA5YzUxYTUyMjZjLi5hODlmYzcyYTRhMTAgMTAwNjQ0
-DQo+PiAtLS0gYS9mcy9uYW1laS5jDQo+PiArKysgYi9mcy9uYW1laS5jDQo+PiBAQCAtMTksNyAr
-MTksNiBAQA0KPj4gICAgI2luY2x1ZGUgPGxpbnV4L2V4cG9ydC5oPg0KPj4gICAgI2luY2x1ZGUg
-PGxpbnV4L2tlcm5lbC5oPg0KPj4gICAgI2luY2x1ZGUgPGxpbnV4L3NsYWIuaD4NCj4+IC0jaW5j
-bHVkZSA8bGludXgvZnMuaD4NCj4+ICAgICNpbmNsdWRlIDxsaW51eC9uYW1laS5oPg0KPj4gICAg
-I2luY2x1ZGUgPGxpbnV4L3BhZ2VtYXAuaD4NCj4+ICAgICNpbmNsdWRlIDxsaW51eC9mc25vdGlm
-eS5oPg0KPj4gZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvYnBmLmggYi9pbmNsdWRlL2xpbnV4
-L2JwZi5oDQo+PiBpbmRleCBmOWE1MDYxNDdjOGEuLmU0YWRmNWUwNWFmZCAxMDA2NDQNCj4+IC0t
-LSBhL2luY2x1ZGUvbGludXgvYnBmLmgNCj4+ICsrKyBiL2luY2x1ZGUvbGludXgvYnBmLmgNCj4+
-IEBAIC0xMDUwLDYgKzEwNTAsNyBAQCBleHRlcm4gY29uc3Qgc3RydWN0IGJwZl9mdW5jX3Byb3Rv
-IGJwZl9nZXRfbG9jYWxfc3RvcmFnZV9wcm90bzsNCj4+ICAgIGV4dGVybiBjb25zdCBzdHJ1Y3Qg
-YnBmX2Z1bmNfcHJvdG8gYnBmX3N0cnRvbF9wcm90bzsNCj4+ICAgIGV4dGVybiBjb25zdCBzdHJ1
-Y3QgYnBmX2Z1bmNfcHJvdG8gYnBmX3N0cnRvdWxfcHJvdG87DQo+PiAgICBleHRlcm4gY29uc3Qg
-c3RydWN0IGJwZl9mdW5jX3Byb3RvIGJwZl90Y3Bfc29ja19wcm90bzsNCj4+ICtleHRlcm4gY29u
-c3Qgc3RydWN0IGJwZl9mdW5jX3Byb3RvIGJwZl9nZXRfY3VycmVudF9waWRuc19pbmZvX3Byb3Rv
-Ow0KPj4gICAgDQo+PiAgICAvKiBTaGFyZWQgaGVscGVycyBhbW9uZyBjQlBGIGFuZCBlQlBGLiAq
-Lw0KPj4gICAgdm9pZCBicGZfdXNlcl9ybmRfaW5pdF9vbmNlKHZvaWQpOw0KPj4gZGlmZiAtLWdp
-dCBhL2luY2x1ZGUvbGludXgvbmFtZWkuaCBiL2luY2x1ZGUvbGludXgvbmFtZWkuaA0KPj4gaW5k
-ZXggOTEzOGI0NDcxZGJmLi5iNDVjOGI2ZjdjYjQgMTAwNjQ0DQo+PiAtLS0gYS9pbmNsdWRlL2xp
-bnV4L25hbWVpLmgNCj4+ICsrKyBiL2luY2x1ZGUvbGludXgvbmFtZWkuaA0KPj4gQEAgLTYsNiAr
-Niw3IEBADQo+PiAgICAjaW5jbHVkZSA8bGludXgvcGF0aC5oPg0KPj4gICAgI2luY2x1ZGUgPGxp
-bnV4L2ZjbnRsLmg+DQo+PiAgICAjaW5jbHVkZSA8bGludXgvZXJybm8uaD4NCj4+ICsjaW5jbHVk
-ZSA8bGludXgvZnMuaD4NCj4+ICAgIA0KPj4gICAgZW51bSB7IE1BWF9ORVNURURfTElOS1MgPSA4
-IH07DQo+PiAgICANCj4+IEBAIC05Nyw2ICs5OCw5IEBAIGV4dGVybiB2b2lkIHVubG9ja19yZW5h
-bWUoc3RydWN0IGRlbnRyeSAqLCBzdHJ1Y3QgZGVudHJ5ICopOw0KPj4gICAgDQo+PiAgICBleHRl
-cm4gdm9pZCBuZF9qdW1wX2xpbmsoc3RydWN0IHBhdGggKnBhdGgpOw0KPj4gICAgDQo+PiArZXh0
-ZXJuIGludCBmaWxlbmFtZV9sb29rdXAoaW50IGRmZCwgc3RydWN0IGZpbGVuYW1lICpuYW1lLCB1
-bnNpZ25lZCBmbGFncywNCj4+ICsJCQkgICBzdHJ1Y3QgcGF0aCAqcGF0aCwgc3RydWN0IHBhdGgg
-KnJvb3QpOw0KPj4gKw0KPj4gICAgc3RhdGljIGlubGluZSB2b2lkIG5kX3Rlcm1pbmF0ZV9saW5r
-KHZvaWQgKm5hbWUsIHNpemVfdCBsZW4sIHNpemVfdCBtYXhsZW4pDQo+PiAgICB7DQo+PiAgICAJ
-KChjaGFyICopIG5hbWUpW21pbihsZW4sIG1heGxlbildID0gJ1wwJzsNCj4+IGRpZmYgLS1naXQg
-YS9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmggYi9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmgNCj4+
-IGluZGV4IDQzOTNiZDRiMjQxOS4uZGIyNDE4NTdlYzE1IDEwMDY0NA0KPj4gLS0tIGEvaW5jbHVk
-ZS91YXBpL2xpbnV4L2JwZi5oDQo+PiArKysgYi9pbmNsdWRlL3VhcGkvbGludXgvYnBmLmgNCj4+
-IEBAIC0yNzQxLDYgKzI3NDEsMjggQEAgdW5pb24gYnBmX2F0dHIgew0KPj4gICAgICoJCSoqLUVP
-UE5PVFNVUFAqKiBrZXJuZWwgY29uZmlndXJhdGlvbiBkb2VzIG5vdCBlbmFibGUgU1lOIGNvb2tp
-ZXMNCj4+ICAgICAqDQo+PiAgICAgKgkJKiotRVBST1RPTk9TVVBQT1JUKiogSVAgcGFja2V0IHZl
-cnNpb24gaXMgbm90IDQgb3IgNg0KPj4gKyAqDQo+PiArICogaW50IGJwZl9nZXRfY3VycmVudF9w
-aWRuc19pbmZvKHN0cnVjdCBicGZfcGlkbnNfaW5mbyAqcGlkbnMsIHUzMiBzaXplX29mX3BpZG5z
-KQ0KPj4gKyAqCURlc2NyaXB0aW9uDQo+PiArICoJCUNvcGllcyBpbnRvICpwaWRucyogcGlkLCBu
-YW1lc3BhY2UgaWQgYW5kIHRnaWQgYXMgc2VlbiBieSB0aGUNCj4+ICsgKgkJY3VycmVudCBuYW1l
-c3BhY2UgYW5kIGFsc28gZGV2aWNlIGZyb20gL3Byb2Mvc2VsZi9ucy9waWQuDQo+PiArICoJCSpz
-aXplX29mX3BpZG5zKiBtdXN0IGJlIHRoZSBzaXplIG9mICpwaWRucyoNCj4+ICsgKg0KPj4gKyAq
-CQlUaGlzIGhlbHBlciBpcyB1c2VkIHdoZW4gcGlkIGZpbHRlcmluZyBpcyBuZWVkZWQgaW5zaWRl
-IGENCj4+ICsgKgkJY29udGFpbmVyIGFzIGJwZl9nZXRfY3VycmVudF90Z2lkKCkgaGVscGVyIHJl
-dHVybnMgYWx3YXlzIHRoZQ0KPj4gKyAqCQlwaWQgaWQgYXMgc2VlbiBieSB0aGUgcm9vdCBuYW1l
-c3BhY2UuDQo+PiArICoJUmV0dXJuDQo+PiArICoJCTAgb24gc3VjY2Vzcw0KPj4gKyAqDQo+PiAr
-ICoJCSoqLUVJTlZBTCoqIGlmICpzaXplX29mX3BpZG5zKiBpcyBub3QgdmFsaWQgb3IgdW5hYmxl
-IHRvIGdldCBucywgcGlkDQo+PiArICoJCW9yIHRnaWQgb2YgdGhlIGN1cnJlbnQgdGFzay4NCj4+
-ICsgKg0KPj4gKyAqCQkqKi1FQ0hJTEQqKiBpZiAvcHJvYy9zZWxmL25zL3BpZCBkb2VzIG5vdCBl
-eGlzdHMuDQo+PiArICoNCj4+ICsgKgkJKiotRU5PVERJUioqIGlmIC9wcm9jL3NlbGYvbnMgZG9l
-cyBub3QgZXhpc3RzLg0KPj4gKyAqDQo+PiArICoJCSoqLUVOT01FTSoqICBpZiBhbGxvY2F0aW9u
-IGZhaWxzLg0KPj4gKyAqDQo+PiAgICAgKi8NCj4+ICAgICNkZWZpbmUgX19CUEZfRlVOQ19NQVBQ
-RVIoRk4pCQlcDQo+PiAgICAJRk4odW5zcGVjKSwJCQlcDQo+PiBAQCAtMjg1Myw3ICsyODc1LDgg
-QEAgdW5pb24gYnBmX2F0dHIgew0KPj4gICAgCUZOKHNrX3N0b3JhZ2VfZ2V0KSwJCVwNCj4+ICAg
-IAlGTihza19zdG9yYWdlX2RlbGV0ZSksCQlcDQo+PiAgICAJRk4oc2VuZF9zaWduYWwpLAkJXA0K
-Pj4gLQlGTih0Y3BfZ2VuX3N5bmNvb2tpZSksDQo+PiArCUZOKHRjcF9nZW5fc3luY29va2llKSwJ
-CVwNCj4+ICsJRk4oZ2V0X2N1cnJlbnRfcGlkbnNfaW5mbyksDQo+PiAgICANCj4+ICAgIC8qIGlu
-dGVnZXIgdmFsdWUgaW4gJ2ltbScgZmllbGQgb2YgQlBGX0NBTEwgaW5zdHJ1Y3Rpb24gc2VsZWN0
-cyB3aGljaCBoZWxwZXINCj4+ICAgICAqIGZ1bmN0aW9uIGVCUEYgcHJvZ3JhbSBpbnRlbmRzIHRv
-IGNhbGwNCj4+IEBAIC0zNjA0LDQgKzM2MjcsMTAgQEAgc3RydWN0IGJwZl9zb2Nrb3B0IHsNCj4+
-ICAgIAlfX3MzMglyZXR2YWw7DQo+PiAgICB9Ow0KPj4gICAgDQo+PiArc3RydWN0IGJwZl9waWRu
-c19pbmZvIHsNCj4+ICsJX191MzIgZGV2Ow0KPj4gKwlfX3UzMiBuc2lkOw0KPj4gKwlfX3UzMiB0
-Z2lkOw0KPj4gKwlfX3UzMiBwaWQ7DQo+PiArfTsNCj4+ICAgICNlbmRpZiAvKiBfVUFQSV9fTElO
-VVhfQlBGX0hfXyAqLw0KPj4gZGlmZiAtLWdpdCBhL2tlcm5lbC9icGYvY29yZS5jIGIva2VybmVs
-L2JwZi9jb3JlLmMNCj4+IGluZGV4IDgxOTFhN2RiMjc3Ny4uMzE1OWYyYTAxODhjIDEwMDY0NA0K
-Pj4gLS0tIGEva2VybmVsL2JwZi9jb3JlLmMNCj4+ICsrKyBiL2tlcm5lbC9icGYvY29yZS5jDQo+
-PiBAQCAtMjAzOCw2ICsyMDM4LDcgQEAgY29uc3Qgc3RydWN0IGJwZl9mdW5jX3Byb3RvIGJwZl9n
-ZXRfY3VycmVudF91aWRfZ2lkX3Byb3RvIF9fd2VhazsNCj4+ICAgIGNvbnN0IHN0cnVjdCBicGZf
-ZnVuY19wcm90byBicGZfZ2V0X2N1cnJlbnRfY29tbV9wcm90byBfX3dlYWs7DQo+PiAgICBjb25z
-dCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gYnBmX2dldF9jdXJyZW50X2Nncm91cF9pZF9wcm90byBf
-X3dlYWs7DQo+PiAgICBjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gYnBmX2dldF9sb2NhbF9z
-dG9yYWdlX3Byb3RvIF9fd2VhazsNCj4+ICtjb25zdCBzdHJ1Y3QgYnBmX2Z1bmNfcHJvdG8gYnBm
-X2dldF9jdXJyZW50X3BpZG5zX2luZm8gX193ZWFrOw0KPj4gICAgDQo+PiAgICBjb25zdCBzdHJ1
-Y3QgYnBmX2Z1bmNfcHJvdG8gKiBfX3dlYWsgYnBmX2dldF90cmFjZV9wcmludGtfcHJvdG8odm9p
-ZCkNCj4+ICAgIHsNCj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvYnBmL2hlbHBlcnMuYyBiL2tlcm5l
-bC9icGYvaGVscGVycy5jDQo+PiBpbmRleCA1ZTI4NzE4OTI4Y2EuLjQxZmJmMWYyOGE0OCAxMDA2
-NDQNCj4+IC0tLSBhL2tlcm5lbC9icGYvaGVscGVycy5jDQo+PiArKysgYi9rZXJuZWwvYnBmL2hl
-bHBlcnMuYw0KPj4gQEAgLTExLDYgKzExLDEyIEBADQo+PiAgICAjaW5jbHVkZSA8bGludXgvdWlk
-Z2lkLmg+DQo+PiAgICAjaW5jbHVkZSA8bGludXgvZmlsdGVyLmg+DQo+PiAgICAjaW5jbHVkZSA8
-bGludXgvY3R5cGUuaD4NCj4+ICsjaW5jbHVkZSA8bGludXgvcGlkX25hbWVzcGFjZS5oPg0KPj4g
-KyNpbmNsdWRlIDxsaW51eC9tYWpvci5oPg0KPj4gKyNpbmNsdWRlIDxsaW51eC9zdGF0Lmg+DQo+
-PiArI2luY2x1ZGUgPGxpbnV4L25hbWVpLmg+DQo+PiArI2luY2x1ZGUgPGxpbnV4L3ZlcnNpb24u
-aD4NCj4+ICsNCj4+ICAgIA0KPj4gICAgI2luY2x1ZGUgIi4uLy4uL2xpYi9rc3RydG94LmgiDQo+
-PiAgICANCj4+IEBAIC0zMTIsNiArMzE4LDY0IEBAIHZvaWQgY29weV9tYXBfdmFsdWVfbG9ja2Vk
-KHN0cnVjdCBicGZfbWFwICptYXAsIHZvaWQgKmRzdCwgdm9pZCAqc3JjLA0KPj4gICAgCXByZWVt
-cHRfZW5hYmxlKCk7DQo+PiAgICB9DQo+PiAgICANCj4+ICtCUEZfQ0FMTF8yKGJwZl9nZXRfY3Vy
-cmVudF9waWRuc19pbmZvLCBzdHJ1Y3QgYnBmX3BpZG5zX2luZm8gKiwgcGlkbnNfaW5mbywgdTMy
-LA0KPj4gKwkgc2l6ZSkNCj4+ICt7DQo+PiArCWNvbnN0IGNoYXIgKnBpZG5zX3BhdGggPSAiL3By
-b2Mvc2VsZi9ucy9waWQiOw0KPj4gKwlzdHJ1Y3QgcGlkX25hbWVzcGFjZSAqcGlkbnMgPSBOVUxM
-Ow0KPj4gKwlzdHJ1Y3QgZmlsZW5hbWUgKnRtcCA9IE5VTEw7DQo+PiArCXN0cnVjdCBpbm9kZSAq
-aW5vZGU7DQo+PiArCXN0cnVjdCBwYXRoIGtwOw0KPj4gKwlwaWRfdCB0Z2lkID0gMDsNCj4+ICsJ
-cGlkX3QgcGlkID0gMDsNCj4+ICsJaW50IHJldDsNCj4+ICsJaW50IGxlbjsNCj4gDQo+IEkgYW0g
-cnVubmluZyB5b3VyIHNhbXBsZSBwcm9ncmFtIGFuZCBnZXQgdGhlIGZvbGxvd2luZyBrZXJuZWwg
-YnVnOg0KPiANCj4gLi4uDQo+IFsgICAyNi40MTQ4MjVdIEJVRzogc2xlZXBpbmcgZnVuY3Rpb24g
-Y2FsbGVkIGZyb20gaW52YWxpZCBjb250ZXh0IGF0DQo+IC9kYXRhL3VzZXJzL3locy93b3JrL25l
-dC1uZXh0L2ZzDQo+IC9kY2FjaGUuYzo4NDMNCj4gWyAgIDI2LjQxNjMxNF0gaW5fYXRvbWljKCk6
-IDEsIGlycXNfZGlzYWJsZWQoKTogMCwgcGlkOiAxOTExLCBuYW1lOiBwaW5nDQo+IFsgICAyNi40
-MTcxODldIENQVTogMCBQSUQ6IDE5MTEgQ29tbTogcGluZyBUYWludGVkOiBHICAgICAgICBXDQo+
-IDUuMy4wLXJjMSsgIzI4MA0KPiBbICAgMjYuNDE4MTgyXSBIYXJkd2FyZSBuYW1lOiBRRU1VIFN0
-YW5kYXJkIFBDIChpNDQwRlggKyBQSUlYLCAxOTk2KSwNCj4gQklPUyAxLjkuMy0xLmVsNy5jZW50
-b3MgMDQvMDEvMg0KPiAwMTQNCj4gWyAgIDI2LjQxOTM5M10gQ2FsbCBUcmFjZToNCj4gWyAgIDI2
-LjQxOTY5N10gIDxJUlE+DQo+IFsgICAyNi40MTk5NjBdICBkdW1wX3N0YWNrKzB4NDYvMHg1Yg0K
-PiBbICAgMjYuNDIwNDM0XSAgX19fbWlnaHRfc2xlZXArMHhlNC8weDExMA0KPiBbICAgMjYuNDIw
-ODk0XSAgZHB1dCsweDJhLzB4MjAwDQo+IFsgICAyNi40MjEyNjVdICB3YWxrX2NvbXBvbmVudCsw
-eDEwYy8weDI4MA0KPiBbICAgMjYuNDIxNzczXSAgbGlua19wYXRoX3dhbGsrMHgzMjcvMHg1NjAN
-Cj4gWyAgIDI2LjQyMjI4MF0gID8gcHJvY19uc19kaXJfcmVhZGRpcisweDFhMC8weDFhMA0KPiBb
-ICAgMjYuNDIyODQ4XSAgPyBwYXRoX2luaXQrMHgyMzIvMHgzMzANCj4gWyAgIDI2LjQyMzM2NF0g
-IHBhdGhfbG9va3VwYXQrMHg4OC8weDIwMA0KPiBbICAgMjYuNDIzODA4XSAgPyBzZWxpbnV4X3Bh
-cnNlX3NrYi5jb25zdHByb3AuNjkrMHgxMjQvMHg0MzANCj4gWyAgIDI2LjQyNDUyMV0gIGZpbGVu
-YW1lX2xvb2t1cCsweGFmLzB4MTkwDQo+IFsgICAyNi40MjUwMzFdICA/IHNpbXBsZV9hdHRyX3Jl
-bGVhc2UrMHgyMC8weDIwDQo+IFsgICAyNi40MjU1NjBdICBicGZfZ2V0X2N1cnJlbnRfcGlkbnNf
-aW5mbysweGZhLzB4MTkwDQo+IFsgICAyNi40MjYxNjhdICBicGZfcHJvZ184MzYyNzE1NGNlZmVk
-NTk2KzB4ZTY2LzB4MTAwMA0KPiBbICAgMjYuNDI2Nzc5XSAgdHJhY2VfY2FsbF9icGYrMHhiNS8w
-eDE2MA0KPiBbICAgMjYuNDI3MzE3XSAgPyBfX25ldGlmX3JlY2VpdmVfc2tiX2NvcmUrMHgxLzB4
-YmIwDQo+IFsgICAyNi40Mjc5MjldICA/IF9fbmV0aWZfcmVjZWl2ZV9za2JfY29yZSsweDEvMHhi
-YjANCj4gWyAgIDI2LjQyODQ5Nl0gIGtwcm9iZV9wZXJmX2Z1bmMrMHg0ZC8weDI4MA0KPiBbICAg
-MjYuNDI4OTg2XSAgPyB0cmFjaW5nX3JlY29yZF90YXNraW5mb19za2lwKzB4MWEvMHgzMA0KPiBb
-ICAgMjYuNDI5NTg0XSAgPyB0cmFjaW5nX3JlY29yZF90YXNraW5mbysweGUvMHg4MA0KPiBbICAg
-MjYuNDMwMTUyXSAgPyB0dHd1X2RvX3dha2V1cC5pc3JhLjExNCsweGNmLzB4ZjANCj4gWyAgIDI2
-LjQzMDczN10gID8gX19uZXRpZl9yZWNlaXZlX3NrYl9jb3JlKzB4MS8weGJiMA0KPiBbICAgMjYu
-NDMxMzM0XSAgPyBfX25ldGlmX3JlY2VpdmVfc2tiX2NvcmUrMHg1LzB4YmIwDQo+IFsgICAyNi40
-MzE5MzBdICBrcHJvYmVfZnRyYWNlX2hhbmRsZXIrMHg5MC8weGYwDQo+IFsgICAyNi40MzI0OTVd
-ICBmdHJhY2Vfb3BzX2Fzc2lzdF9mdW5jKzB4NjMvMHgxMDANCj4gWyAgIDI2LjQzMzA2MF0gIDB4
-ZmZmZmZmZmZjMDMxODBiZg0KPiBbICAgMjYuNDMzNDcxXSAgPyBfX25ldGlmX3JlY2VpdmVfc2ti
-X2NvcmUrMHgxLzB4YmIwDQo+IC4uLg0KPiANCj4gVG8gcHJldmVudCB3ZSBhcmUgcnVubmluZyBp
-biBhcmJpdHJhcnkgdGFzayAoZS5nLiwgaWRsZSB0YXNrKQ0KPiBjb250ZXh0IHdoaWNoIG1heSBp
-bnRyb2R1Y2Ugc2xlZXBpbmcgaXNzdWVzLCB0aGUgZm9sbG93aW5nDQo+IHByb2JhYmx5IGFwcHJv
-cHJpYXRlOg0KPiANCj4gICAgICAgICAgaWYgKGluX25taSgpIHx8IGluX3NvZnRpcnEoKSkNCj4g
-ICAgICAgICAgICAgICAgICByZXR1cm4gLUVQRVJNOw0KDQpBIGJldHRlciBjb25kaXRpb24gaXMg
-KGZyb20gaGVscGVyIGJwZl9wcm9iZV93cml0ZV91c2VyKCkpOg0KICAgICAgICAgaWYgKHVubGlr
-ZWx5KGluX2ludGVycnVwdCgpIHx8DQogICAgICAgICAgICAgICAgICAgICAgY3VycmVudC0+Zmxh
-Z3MgJiAoUEZfS1RIUkVBRCB8IFBGX0VYSVRJTkcpKSkNCiAgICAgICAgICAgICAgICAgcmV0dXJu
-IC1FUEVSTTsNCg0KPiANCj4gQW55d2F5LCBpZiBpbiBubWkgb3Igc29mdGlycSwgdGhlIG5hbWVz
-cGFjZSBhbmQgcGlkL3RnaWQNCj4gd2UgZ2V0IG1heSBiZSBqdXN0IGFjY2lkZW50YWxseSBhc3Nv
-Y2lhdGVkIHdpdGggdGhlIGJwZiBydW5uaW5nDQo+IGNvbnRleHQsIGJ1dCBpdCBjb3VsZCBiZSBp
-biBhIGRpZmZlcmVudCBjb250ZXh0LiBTbyBzdWNoIGluZm8NCj4gaXMgbm90IHJlbGlhYmxlIGFu
-eSB3YXkuDQo+IA0KPj4gKw0KPj4gKwlpZiAodW5saWtlbHkoc2l6ZSAhPSBzaXplb2Yoc3RydWN0
-IGJwZl9waWRuc19pbmZvKSkpDQo+PiArCQlyZXR1cm4gLUVJTlZBTDsNCj4+ICsJcGlkbnMgPSB0
-YXNrX2FjdGl2ZV9waWRfbnMoY3VycmVudCk7DQo+PiArCWlmICh1bmxpa2VseSghcGlkbnMpKQ0K
-Pj4gKwkJZ290byBjbGVhcjsNCj4+ICsJcGlkbnNfaW5mby0+bnNpZCA9ICBwaWRucy0+bnMuaW51
-bTsNCj4+ICsJcGlkID0gdGFza19waWRfbnJfbnMoY3VycmVudCwgcGlkbnMpOw0KPj4gKwlpZiAo
-dW5saWtlbHkoIXBpZCkpDQo+PiArCQlnb3RvIGNsZWFyOw0KPj4gKwl0Z2lkID0gdGFza190Z2lk
-X25yX25zKGN1cnJlbnQsIHBpZG5zKTsNCj4+ICsJaWYgKHVubGlrZWx5KCF0Z2lkKSkNCj4+ICsJ
-CWdvdG8gY2xlYXI7DQo+PiArCXBpZG5zX2luZm8tPnRnaWQgPSAodTMyKSB0Z2lkOw0KPj4gKwlw
-aWRuc19pbmZvLT5waWQgPSAodTMyKSBwaWQ7DQo+PiArCXRtcCA9IGttZW1fY2FjaGVfYWxsb2Mo
-bmFtZXNfY2FjaGVwLCBHRlBfQVRPTUlDKTsNCj4+ICsJaWYgKHVubGlrZWx5KCF0bXApKSB7DQo+
-PiArCQltZW1zZXQoKHZvaWQgKilwaWRuc19pbmZvLCAwLCAoc2l6ZV90KSBzaXplKTsNCj4+ICsJ
-CXJldHVybiAtRU5PTUVNOw0KPj4gKwl9DQo+PiArCWxlbiA9IHN0cmxlbihwaWRuc19wYXRoKSAr
-IDE7DQo+PiArCW1lbWNweSgoY2hhciAqKXRtcC0+bmFtZSwgcGlkbnNfcGF0aCwgbGVuKTsNCj4+
-ICsJdG1wLT51cHRyID0gTlVMTDsNCj4+ICsJdG1wLT5hbmFtZSA9IE5VTEw7DQo+PiArCXRtcC0+
-cmVmY250ID0gMTsNCj4+ICsJcmV0ID0gZmlsZW5hbWVfbG9va3VwKEFUX0ZEQ1dELCB0bXAsIDAs
-ICZrcCwgTlVMTCk7DQo+PiArCWlmIChyZXQpIHsNCj4+ICsJCW1lbXNldCgodm9pZCAqKXBpZG5z
-X2luZm8sIDAsIChzaXplX3QpIHNpemUpOw0KPj4gKwkJcmV0dXJuIHJldDsNCj4+ICsJfQ0KPj4g
-Kwlpbm9kZSA9IGRfYmFja2luZ19pbm9kZShrcC5kZW50cnkpOw0KPj4gKwlwaWRuc19pbmZvLT5k
-ZXYgPSBpbm9kZS0+aV9zYi0+c19kZXY7DQo+PiArCXJldHVybiAwOw0KPj4gK2NsZWFyOg0KPj4g
-KwltZW1zZXQoKHZvaWQgKilwaWRuc19pbmZvLCAwLCAoc2l6ZV90KSBzaXplKTsNCj4+ICsJcmV0
-dXJuIC1FSU5WQUw7DQo+PiArfQ0KPj4gKw0KPj4gK2NvbnN0IHN0cnVjdCBicGZfZnVuY19wcm90
-byBicGZfZ2V0X2N1cnJlbnRfcGlkbnNfaW5mb19wcm90byA9IHsNCj4+ICsJLmZ1bmMJCT0gYnBm
-X2dldF9jdXJyZW50X3BpZG5zX2luZm8sDQo+PiArCS5ncGxfb25seQk9IGZhbHNlLA0KPj4gKwku
-cmV0X3R5cGUJPSBSRVRfSU5URUdFUiwNCj4+ICsJLmFyZzFfdHlwZQk9IEFSR19QVFJfVE9fVU5J
-TklUX01FTSwNCj4+ICsJLmFyZzJfdHlwZQk9IEFSR19DT05TVF9TSVpFLA0KPj4gK307DQo+PiAr
-DQo+PiAgICAjaWZkZWYgQ09ORklHX0NHUk9VUFMNCj4+ICAgIEJQRl9DQUxMXzAoYnBmX2dldF9j
-dXJyZW50X2Nncm91cF9pZCkNCj4+ICAgIHsNCj4+IGRpZmYgLS1naXQgYS9rZXJuZWwvdHJhY2Uv
-YnBmX3RyYWNlLmMgYi9rZXJuZWwvdHJhY2UvYnBmX3RyYWNlLmMNCj4+IGluZGV4IGNhMTI1NWQx
-NDU3Ni4uNWUxZGMyMjc2NWE1IDEwMDY0NA0KPj4gLS0tIGEva2VybmVsL3RyYWNlL2JwZl90cmFj
-ZS5jDQo+PiArKysgYi9rZXJuZWwvdHJhY2UvYnBmX3RyYWNlLmMNCj4+IEBAIC03MDksNiArNzA5
-LDggQEAgdHJhY2luZ19mdW5jX3Byb3RvKGVudW0gYnBmX2Z1bmNfaWQgZnVuY19pZCwgY29uc3Qg
-c3RydWN0IGJwZl9wcm9nICpwcm9nKQ0KPj4gICAgI2VuZGlmDQo+PiAgICAJY2FzZSBCUEZfRlVO
-Q19zZW5kX3NpZ25hbDoNCj4+ICAgIAkJcmV0dXJuICZicGZfc2VuZF9zaWduYWxfcHJvdG87DQo+
-PiArCWNhc2UgQlBGX0ZVTkNfZ2V0X2N1cnJlbnRfcGlkbnNfaW5mbzoNCj4+ICsJCXJldHVybiAm
-YnBmX2dldF9jdXJyZW50X3BpZG5zX2luZm9fcHJvdG87DQo+PiAgICAJZGVmYXVsdDoNCj4+ICAg
-IAkJcmV0dXJuIE5VTEw7DQo+PiAgICAJfQ0KPj4NCg==
+On 8/13/19 10:53 PM, Ido Schimmel wrote:
+> + Bridge maintainers, Linus
+> 
+
+Good catch Ido, thanks!
+First I'd say the subject needs to reflect that this is a bridge change
+better, please rearrange it like so - bridge: mcast: ...
+More below,
+
+> On Tue, Aug 13, 2019 at 03:18:04PM +0100, Patrick Ruddy wrote:
+>> At present only all-nodes IPv6 multicast packets are accepted by
+>> a bridge interface that is not in multicast router mode. Since
+>> other protocols can be running in the absense of multicast
+>> forwarding e.g. OSPFv3 IPv6 ND. Change the test to allow
+>> all of the FFx2::/16 range to be accepted when not in multicast
+>> router mode. This aligns the code with IPv4 link-local reception
+>> and RFC4291
+> 
+> Can you please quote the relevant part from RFC 4291?
+>
+>>
+>> Signed-off-by: Patrick Ruddy <pruddy@vyatta.att-mail.com>
+>> ---
+>>  include/net/addrconf.h    | 15 +++++++++++++++
+>>  net/bridge/br_multicast.c |  2 +-
+>>  2 files changed, 16 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+>> index becdad576859..05b42867e969 100644
+>> --- a/include/net/addrconf.h
+>> +++ b/include/net/addrconf.h
+>> @@ -434,6 +434,21 @@ static inline void addrconf_addr_solict_mult(const struct in6_addr *addr,
+>>  		      htonl(0xFF000000) | addr->s6_addr32[3]);
+>>  }
+>>  
+>> +/*
+>> + *      link local multicast address range ffx2::/16 rfc4291
+>> + */
+>> +static inline bool ipv6_addr_is_ll_mcast(const struct in6_addr *addr)
+>> +{
+>> +#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+>> +	__be64 *p = (__be64 *)addr;
+>> +	return ((p[0] & cpu_to_be64(0xff0f000000000000UL))
+>> +		^ cpu_to_be64(0xff02000000000000UL)) == 0UL;
+>> +#else
+>> +	return ((addr->s6_addr32[0] & htonl(0xff0f0000)) ^
+>> +		htonl(0xff020000)) == 0;
+>> +#endif
+>> +}
+>> +
+>>  static inline bool ipv6_addr_is_ll_all_nodes(const struct in6_addr *addr)
+>>  {
+>>  #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+>> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+>> index 9b379e110129..ed3957381fa2 100644
+>> --- a/net/bridge/br_multicast.c
+>> +++ b/net/bridge/br_multicast.c
+>> @@ -1664,7 +1664,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+>>  	err = ipv6_mc_check_mld(skb);
+>>  
+>>  	if (err == -ENOMSG) {
+>> -		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
+>> +		if (!ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
+>>  			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+> 
+> IIUC, you want IPv6 link-local packets to be locally received, but this
+> also changes how these packets are flooded. RFC 4541 says that packets
+
+Indeed, we'll start flooding them all, not just the all hosts address.
+If that is at all required it'll definitely have to be optional.
+
+> addressed to the all hosts address are a special case and should be
+> forwarded to all ports:
+> 
+> "In IPv6, the data forwarding rules are more straight forward because MLD is
+> mandated for addresses with scope 2 (link-scope) or greater. The only exception
+> is the address FF02::1 which is the all hosts link-scope address for which MLD
+> messages are never sent. Packets with the all hosts link-scope address should
+> be forwarded on all ports."
+>
+
+I wonder what is the problem for the host to join such group on behalf of the bridge ?
+Then you'll receive the traffic at least locally and the RFC says it itself - MLD is mandated
+for the other link-local addresses.
+It's very late here and maybe I'm missing something.. :)
+ 
+> Maybe you want something like:
+> 
+
+I think we can do without the new field, either pass local_rcv into br_multicast_rcv() or
+set it based on return value. The extra test will have to remain unfortunately, but we
+can reduce the tests by one if carefully done.
+
+> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+> index 09b1dd8cd853..9f312a73f61c 100644
+> --- a/net/bridge/br_input.c
+> +++ b/net/bridge/br_input.c
+> @@ -132,7 +132,8 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>  		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
+>  		    br_multicast_querier_exists(br, eth_hdr(skb))) {
+>  			if ((mdst && mdst->host_joined) ||
+> -			    br_multicast_is_router(br)) {
+> +			    br_multicast_is_router(br) ||
+> +			    BR_INPUT_SKB_CB_LOCAL_RECEIVE(skb)) {
+>  				local_rcv = true;
+>  				br->dev->stats.multicast++;
+>  			}
+> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+> index 9b379e110129..f03cecf6174e 100644
+> --- a/net/bridge/br_multicast.c
+> +++ b/net/bridge/br_multicast.c
+> @@ -1667,6 +1667,9 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+>  		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
+>  			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+>  
+> +		if (ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
+> +			BR_INPUT_SKB_CB(skb)->local_receive = 1;
+> +
+>  		if (ipv6_addr_is_all_snoopers(&ipv6_hdr(skb)->daddr)) {
+>  			err = br_ip6_multicast_mrd_rcv(br, port, skb);
+>  
+> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+> index b7a4942ff1b3..d76394ca4059 100644
+> --- a/net/bridge/br_private.h
+> +++ b/net/bridge/br_private.h
+> @@ -426,6 +426,7 @@ struct br_input_skb_cb {
+>  #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+>  	u8 igmp;
+>  	u8 mrouters_only:1;
+> +	u8 local_receive:1;
+>  #endif
+>  	u8 proxyarp_replied:1;
+>  	u8 src_port_isolated:1;
+> @@ -445,8 +446,10 @@ struct br_input_skb_cb {
+>  
+>  #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+>  # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(BR_INPUT_SKB_CB(__skb)->mrouters_only)
+> +# define BR_INPUT_SKB_CB_LOCAL_RECEIVE(__skb)	(BR_INPUT_SKB_CB(__skb)->local_receive)
+>  #else
+>  # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(0)
+> +# define BR_INPUT_SKB_CB_LOCAL_RECEIVE(__skb)	(0)
+>  #endif
+>  
+>  #define br_printk(level, br, format, args...)	\
+> 
+
