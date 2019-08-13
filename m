@@ -2,171 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E43578C0A0
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:33:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AE8C48C0BD
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:37:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726490AbfHMSdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:33:22 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:34103 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726267AbfHMSdV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:33:21 -0400
-Received: by mail-pf1-f193.google.com with SMTP id b24so1571953pfp.1;
-        Tue, 13 Aug 2019 11:33:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=w11YVFyoLhs+BNlDPKgWqoZJ95LEfsQBBxyoZnnFeNE=;
-        b=JXS1wIa7Asipg0jcfsj8uWKX+etctXxHpwJRJbAFNgqXrt3eObuuXS66gp5hdjk69D
-         osQZW+muNqqcBsj2hwEsdy/Nic3Wk+eBkWjETfGIxD4ovlMjcFYwsHFw63/lv6h4Hcd2
-         Fhepa7HRvjRjKwsWNYs9tx2jo3v02jq68xR6Z0krWE4Qk3zyelI6wT/5jyvpKPJHok4Y
-         Yk6ZMgkNKtK7qdbqgXAKWfhvCGhCxXl5QTBVxc+6O9ntTBXoUMD7Plf4DlDxz9rWzXh6
-         7RXgatQ/ExkJUVo62PW+mZ2UBlG7plWd91mSpeGLnnRWi6NuCjZcMW2oPvyCx1J1nhva
-         3zdg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=w11YVFyoLhs+BNlDPKgWqoZJ95LEfsQBBxyoZnnFeNE=;
-        b=gOIGgU21W6vSk4LlkPaO7JRZNG2p+y+uAFMk5RM2/mcH/ns6QwNsRe8+ovEkDc/PXn
-         YiPmfO69HSf2FheC+PwkPeFJ6a+FhDXfj4/IyaGl0eqG1M8lSPvjRagbSa7mOAqlDrlN
-         jBRDbPjFaP8MuHH+fwJ2qgo96H2RFw7mKZSmDGGgIrPqJjjUSVzpiOv9bP5NYpx5OXKb
-         UVlSEKKrlSw+X4KmMb0xmRGLkFav0De4MlIAVCN0Ymx4gvQR/+YAMnMAY6FMoQdIuskK
-         BjVeR8rrBeqRO/m3RQu4F7XTjlGtsFaAnc6jyHuZA1+mzQ0MomwV01c1tF0IR4kyv8Cc
-         Bimw==
-X-Gm-Message-State: APjAAAVpH0lmqpQt3u1081voDHR59yMZee490dfGC8HTRFPbJtXUxIR1
-        ZOqkskxz2P1tOf1yPVqh63w=
-X-Google-Smtp-Source: APXvYqwAT2LtSdQBLIiqXEDE3epqcWCW/8drmQhiid5gI8BRWCHDuOAagb4aRZijqrEwz/mqbNSDIA==
-X-Received: by 2002:a65:43c2:: with SMTP id n2mr35769951pgp.110.1565721200412;
-        Tue, 13 Aug 2019 11:33:20 -0700 (PDT)
-Received: from [172.20.41.143] ([2620:10d:c090:200::3:ec2a])
-        by smtp.gmail.com with ESMTPSA id b68sm134603729pfb.149.2019.08.13.11.33.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Aug 2019 11:33:19 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Ivan Khoronzhuk" <ivan.khoronzhuk@linaro.org>
-Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH bpf-next 2/3] xdp: xdp_umem: replace kmap on vmap for umem
- map
-Date:   Tue, 13 Aug 2019 11:33:18 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <BC98A490-2892-452B-AC3E-C9B9F9BA121C@gmail.com>
-In-Reply-To: <20190813183023.GA2856@khorivan>
-References: <20190813102318.5521-1-ivan.khoronzhuk@linaro.org>
- <20190813102318.5521-3-ivan.khoronzhuk@linaro.org>
- <9F98648A-8654-4767-97B5-CF4BC939393C@flugsvamp.com>
- <20190813183023.GA2856@khorivan>
+        id S1727546AbfHMShT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:37:19 -0400
+Received: from correo.us.es ([193.147.175.20]:58742 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726298AbfHMShT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 14:37:19 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id AFAA7B6322
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 20:37:14 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id A2638519F7
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 20:37:14 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 980E6512D2; Tue, 13 Aug 2019 20:37:14 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 76A11DA72F;
+        Tue, 13 Aug 2019 20:37:12 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 13 Aug 2019 20:37:12 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from salvia.here (unknown [31.4.218.116])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id 2C46B4265A2F;
+        Tue, 13 Aug 2019 20:37:12 +0200 (CEST)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 00/17] Netfilter/IPVS updates for net-next
+Date:   Tue, 13 Aug 2019 20:36:44 +0200
+Message-Id: <20190813183701.4002-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 13 Aug 2019, at 11:30, Ivan Khoronzhuk wrote:
+Hi,
 
-> On Tue, Aug 13, 2019 at 10:42:18AM -0700, Jonathan Lemon wrote:
->>
->>
->> On 13 Aug 2019, at 3:23, Ivan Khoronzhuk wrote:
->>
->>> For 64-bit there is no reason to use vmap/vunmap, so use 
->>> page_address
->>> as it was initially. For 32 bits, in some apps, like in samples
->>> xdpsock_user.c when number of pgs in use is quite big, the kmap
->>> memory can be not enough, despite on this, kmap looks like is
->>> deprecated in such cases as it can block and should be used rather
->>> for dynamic mm.
->>>
->>> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->>
->> Seems a bit overkill - if not high memory, kmap() falls back
->> to just page_address(), unlike vmap().
->
->> -- Jonathan
->
-> So, as kmap has limitation... if I correctly understood, you propose
-> to avoid macros and do smth like kmap:
->
-> 	void *addr;
-> 	if (!PageHighMem(&umem->pgs[i]))
-> 		addr =  page_address(page);
-> 	else
-> 		addr = vmap(&umem->pgs[i], 1, VM_MAP, PAGE_KERNEL);
->
-> 	umem->pages[i].addr = addr;
->
-> and while unmap
->
-> 	if (!PageHighMem(&umem->pgs[i]))
-> 		vunmap(umem->pages[i].addr);
->
-> I can try it, and add this in v2 if no objection.
+The following patchset contains Netfilter/IPVS updates for net-next:
 
-Seems like a reasonable compromise to me.
--- 
-Jonathan
+1) Rename mss field to mss_option field in synproxy, from Fernando Mancera.
 
+2) Use SYSCTL_{ZERO,ONE} definitions in conntrack, from Matteo Croce.
 
->
->>
->>> ---
->>> net/xdp/xdp_umem.c | 16 ++++++++++++----
->>> 1 file changed, 12 insertions(+), 4 deletions(-)
->>>
->>> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
->>> index a0607969f8c0..907c9019fe21 100644
->>> --- a/net/xdp/xdp_umem.c
->>> +++ b/net/xdp/xdp_umem.c
->>> @@ -14,7 +14,7 @@
->>> #include <linux/netdevice.h>
->>> #include <linux/rtnetlink.h>
->>> #include <linux/idr.h>
->>> -#include <linux/highmem.h>
->>> +#include <linux/vmalloc.h>
->>>
->>> #include "xdp_umem.h"
->>> #include "xsk_queue.h"
->>> @@ -167,10 +167,12 @@ void xdp_umem_clear_dev(struct xdp_umem *umem)
->>>
->>> static void xdp_umem_unmap_pages(struct xdp_umem *umem)
->>> {
->>> +#if BITS_PER_LONG == 32
->>> 	unsigned int i;
->>>
->>> 	for (i = 0; i < umem->npgs; i++)
->>> -		kunmap(umem->pgs[i]);
->>> +		vunmap(umem->pages[i].addr);
->>> +#endif
->>> }
->>>
->>> static void xdp_umem_unpin_pages(struct xdp_umem *umem)
->>> @@ -378,8 +380,14 @@ static int xdp_umem_reg(struct xdp_umem *umem, 
->>> struct xdp_umem_reg *mr)
->>> 		goto out_account;
->>> 	}
->>>
->>> -	for (i = 0; i < umem->npgs; i++)
->>> -		umem->pages[i].addr = kmap(umem->pgs[i]);
->>> +	for (i = 0; i < umem->npgs; i++) {
->>> +#if BITS_PER_LONG == 32
->>> +		umem->pages[i].addr = vmap(&umem->pgs[i], 1, VM_MAP,
->>> +					   PAGE_KERNEL);
->>> +#else
->>> +		umem->pages[i].addr = page_address(umem->pgs[i]);
->>> +#endif
->>> +	}
->>>
->>> 	return 0;
->>>
->>> -- 
->>> 2.17.1
->
-> -- 
-> Regards,
-> Ivan Khoronzhuk
+3) More strict validation of IPVS sysctl values, from Junwei Hu.
+
+4) Remove unnecessary spaces after on the right hand side of assignments,
+   from yangxingwu.
+
+5) Add offload support for bitwise operation.
+
+6) Extend the nft_offload_reg structure to store immediate date.
+
+7) Collapse several ip_set header files into ip_set.h, from
+   Jeremy Sowden.
+
+8) Make netfilter headers compile with CONFIG_KERNEL_HEADER_TEST=y,
+   from Jeremy Sowden.
+
+9) Fix several sparse warnings due to missing prototypes, from
+   Valdis Kletnieks.
+
+10) Use static lock initialiser to ensure connlabel spinlock is
+    initialized on boot time to fix sched/act_ct.c, patch
+    from Florian Westphal.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 4de97b0c86fcf9a225dff465f1614c834c2eeea6:
+
+  Merge branch 'enetc-PCIe-MDIO' (2019-08-02 18:22:18 -0700)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 105333435b4f3b21ffc325f32fae17719310db64:
+
+  netfilter: connlabels: prefer static lock initialiser (2019-08-13 12:15:45 +0200)
+
+----------------------------------------------------------------
+Fernando Fernandez Mancera (1):
+      netfilter: synproxy: rename mss synproxy_options field
+
+Florian Westphal (1):
+      netfilter: connlabels: prefer static lock initialiser
+
+Jeremy Sowden (8):
+      netfilter: inline four headers files into another one.
+      netfilter: add missing includes to a number of header-files.
+      netfilter: add missing IS_ENABLED(CONFIG_BRIDGE_NETFILTER) checks to header-file.
+      netfilter: add missing IS_ENABLED(CONFIG_NF_TABLES) check to header-file.
+      netfilter: add missing IS_ENABLED(CONFIG_NF_CONNTRACK) checks to some header-files.
+      netfilter: add missing IS_ENABLED(CONFIG_NETFILTER) checks to some header-files.
+      netfilter: remove "#ifdef __KERNEL__" guards from some headers.
+      kbuild: remove all netfilter headers from header-test blacklist.
+
+Junwei Hu (1):
+      ipvs: Improve robustness to the ipvs sysctl
+
+Matteo Croce (1):
+      netfilter: conntrack: use shared sysctl constants
+
+Pablo Neira Ayuso (2):
+      netfilter: nft_bitwise: add offload support
+      netfilter: nf_tables: store data in offload context registers
+
+Valdis Kletnieks (2):
+      netfilter: nf_tables: add missing prototypes.
+      netfilter: nf_nat_proto: make tables static
+
+yangxingwu (1):
+      netfilter: remove unnecessary spaces
+
+ include/Kbuild                                   |  74 -------
+ include/linux/netfilter/ipset/ip_set.h           | 238 ++++++++++++++++++++++-
+ include/linux/netfilter/ipset/ip_set_comment.h   |  73 -------
+ include/linux/netfilter/ipset/ip_set_counter.h   |  84 --------
+ include/linux/netfilter/ipset/ip_set_getport.h   |   4 +
+ include/linux/netfilter/ipset/ip_set_skbinfo.h   |  42 ----
+ include/linux/netfilter/ipset/ip_set_timeout.h   |  77 --------
+ include/linux/netfilter/nf_conntrack_amanda.h    |   4 +
+ include/linux/netfilter/nf_conntrack_dccp.h      |   3 -
+ include/linux/netfilter/nf_conntrack_ftp.h       |   8 +-
+ include/linux/netfilter/nf_conntrack_h323.h      |  11 +-
+ include/linux/netfilter/nf_conntrack_h323_asn1.h |   2 +
+ include/linux/netfilter/nf_conntrack_irc.h       |   5 +-
+ include/linux/netfilter/nf_conntrack_pptp.h      |  12 +-
+ include/linux/netfilter/nf_conntrack_proto_gre.h |   2 -
+ include/linux/netfilter/nf_conntrack_sane.h      |   4 -
+ include/linux/netfilter/nf_conntrack_sip.h       |   6 +-
+ include/linux/netfilter/nf_conntrack_snmp.h      |   3 +
+ include/linux/netfilter/nf_conntrack_tftp.h      |   5 +
+ include/linux/netfilter/x_tables.h               |   6 +
+ include/linux/netfilter_arp/arp_tables.h         |   2 +
+ include/linux/netfilter_bridge/ebtables.h        |   2 +
+ include/linux/netfilter_ipv4/ip_tables.h         |   4 +
+ include/linux/netfilter_ipv6/ip6_tables.h        |   2 +
+ include/net/netfilter/br_netfilter.h             |  12 ++
+ include/net/netfilter/ipv4/nf_dup_ipv4.h         |   3 +
+ include/net/netfilter/ipv6/nf_defrag_ipv6.h      |   4 +-
+ include/net/netfilter/ipv6/nf_dup_ipv6.h         |   2 +
+ include/net/netfilter/nf_conntrack.h             |  10 +
+ include/net/netfilter/nf_conntrack_acct.h        |  13 ++
+ include/net/netfilter/nf_conntrack_bridge.h      |   6 +
+ include/net/netfilter/nf_conntrack_core.h        |   3 +
+ include/net/netfilter/nf_conntrack_count.h       |   3 +
+ include/net/netfilter/nf_conntrack_l4proto.h     |   4 +
+ include/net/netfilter/nf_conntrack_synproxy.h    |   2 +-
+ include/net/netfilter/nf_conntrack_timestamp.h   |   6 +
+ include/net/netfilter/nf_conntrack_tuple.h       |   2 +
+ include/net/netfilter/nf_dup_netdev.h            |   2 +
+ include/net/netfilter/nf_flow_table.h            |   5 +
+ include/net/netfilter/nf_nat.h                   |   4 +
+ include/net/netfilter/nf_nat_helper.h            |   4 +-
+ include/net/netfilter/nf_nat_redirect.h          |   3 +
+ include/net/netfilter/nf_queue.h                 |   7 +
+ include/net/netfilter/nf_reject.h                |   3 +
+ include/net/netfilter/nf_synproxy.h              |   4 +
+ include/net/netfilter/nf_tables.h                |  12 ++
+ include/net/netfilter/nf_tables_ipv6.h           |   1 +
+ include/net/netfilter/nf_tables_offload.h        |   1 +
+ include/net/netfilter/nft_fib.h                  |   2 +
+ include/net/netfilter/nft_meta.h                 |   2 +
+ include/net/netfilter/nft_reject.h               |   5 +
+ include/uapi/linux/netfilter/xt_policy.h         |   1 +
+ net/ipv4/netfilter/ipt_SYNPROXY.c                |   4 +-
+ net/ipv6/netfilter/ip6t_SYNPROXY.c               |   4 +-
+ net/netfilter/ipset/ip_set_hash_gen.h            |   4 +-
+ net/netfilter/ipset/ip_set_list_set.c            |   2 +-
+ net/netfilter/ipvs/ip_vs_core.c                  |   2 +-
+ net/netfilter/ipvs/ip_vs_ctl.c                   |  69 +++----
+ net/netfilter/ipvs/ip_vs_mh.c                    |   4 +-
+ net/netfilter/ipvs/ip_vs_proto_tcp.c             |   2 +-
+ net/netfilter/nf_conntrack_ftp.c                 |   2 +-
+ net/netfilter/nf_conntrack_labels.c              |   3 +-
+ net/netfilter/nf_conntrack_proto_tcp.c           |   2 +-
+ net/netfilter/nf_conntrack_standalone.c          |  34 ++--
+ net/netfilter/nf_nat_proto.c                     |   4 +-
+ net/netfilter/nf_synproxy_core.c                 |   8 +-
+ net/netfilter/nfnetlink_log.c                    |   4 +-
+ net/netfilter/nfnetlink_queue.c                  |   4 +-
+ net/netfilter/nft_bitwise.c                      |  19 ++
+ net/netfilter/nft_immediate.c                    |  24 ++-
+ net/netfilter/nft_set_bitmap.c                   |   2 +-
+ net/netfilter/nft_set_hash.c                     |   2 +-
+ net/netfilter/nft_set_rbtree.c                   |   2 +-
+ net/netfilter/nft_synproxy.c                     |   4 +-
+ net/netfilter/xt_IDLETIMER.c                     |   2 +-
+ net/netfilter/xt_set.c                           |   1 -
+ 76 files changed, 527 insertions(+), 480 deletions(-)
+ delete mode 100644 include/linux/netfilter/ipset/ip_set_comment.h
+ delete mode 100644 include/linux/netfilter/ipset/ip_set_counter.h
+ delete mode 100644 include/linux/netfilter/ipset/ip_set_skbinfo.h
+ delete mode 100644 include/linux/netfilter/ipset/ip_set_timeout.h
+
