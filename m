@@ -2,79 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A96188C247
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 22:45:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D961C8C24E
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 22:46:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726155AbfHMUpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 16:45:05 -0400
-Received: from mail.nic.cz ([217.31.204.67]:49050 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726007AbfHMUpF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 16:45:05 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 74FD8140C54;
-        Tue, 13 Aug 2019 22:45:03 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1565729103; bh=xlg+VDxUwopGuCsrQrjcS7+TKSmPoCBEYspk4L9l9bs=;
-        h=Date:From:To;
-        b=r1AfBDs+sVnWnAcvqA6NctP7v+W/kOxtF2zrd1xa/UVreazG/c9Ar2XlUGUDFoI12
-         bZKS8c1Xd4Ef6PFOB4LXhS6l0IiwnvbDpCNDyuwYIiT2ZioSv+yJ+ZSvdWZkHepcVN
-         cjw63MmpCKcNCz/lcPYYRegXQ6WAX+T3CF33JYPc=
-Date:   Tue, 13 Aug 2019 22:45:02 +0200
-From:   Marek Behun <marek.behun@nic.cz>
+        id S1726496AbfHMUqk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 16:46:40 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34350 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725923AbfHMUqk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 16:46:40 -0400
+Received: by mail-pf1-f196.google.com with SMTP id b24so1761244pfp.1
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 13:46:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lS7QbCBfWDAKJJ9AaXuhhnNJr4mtIGuJ160cegSICyM=;
+        b=XbX84biYjSyDgS6LxVzDQYkOcojz78WOlfZYnpj3lki92gGfubayTt/V04/ES1ESh4
+         5uieAy8/ybLD3n3wn8crXsm7826/o7NSknPmLlhmX9p+0FMDH8FnH3gjqF/T9l3XIcLo
+         XMWSGcF8jlWJ05xs7S21a08YMT1zxM1DYaoSI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lS7QbCBfWDAKJJ9AaXuhhnNJr4mtIGuJ160cegSICyM=;
+        b=QvPuIOlYrCMisdaJjhgMBrKxIKH71NlZUVyLkBIwkBjhIdtpxWe0D8AcY7xSJq00qB
+         9RoVIckhA0MWtfcXZi8z48BoO4oDnEEbMI1uPAZplx26Awknzm6GU09a1baKDTjiTYNo
+         8dfS5fN/30ou6qpSfl9ZqWwcL+KLx8JhDDh0/U7SiYFrDRzCU8F6UlFd3nYShiTkGJbk
+         dRMva94ddQgLN6sMXc64qjdp151cLp6/KX+eQnVo/IpY96GdL7Zie5JrQs194jUu7rWl
+         ZLsIGEsYsWeof8+/z0pR5CUIAb7XwdLZRj75T2IRFFeESkx/XICK1TJ/EK2pVUBoL6O3
+         zhrA==
+X-Gm-Message-State: APjAAAVKmLOIy5z+5e1TB3yeBV1aat4oJJDOFIyVVMFWxCcSXAqibD1x
+        iCe1UbpK5aL6I+EuGqrDqx4iCw==
+X-Google-Smtp-Source: APXvYqyZj8SFNh8W8z2W8pR3iGEVcZWS7eycNEWabRA94Sd257PTZI0RRr7/3l/UmxBxc/RfktxIOg==
+X-Received: by 2002:a62:38d7:: with SMTP id f206mr18947803pfa.102.1565729199815;
+        Tue, 13 Aug 2019 13:46:39 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id e188sm70041869pfa.76.2019.08.13.13.46.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 13 Aug 2019 13:46:38 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 13:46:34 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
 To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next] net: dsa: mv88e6xxx: check for mode change in
- port_setup_mac
-Message-ID: <20190813224502.5a083d77@nic.cz>
-In-Reply-To: <20190813203234.GO15047@lunn.ch>
-References: <20190813171243.27898-1-marek.behun@nic.cz>
-        <20190813203234.GO15047@lunn.ch>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v6 4/4] net: phy: realtek: Add LED configuration support
+ for RTL8211E
+Message-ID: <20190813204634.GR250418@google.com>
+References: <20190813191147.19936-1-mka@chromium.org>
+ <20190813191147.19936-5-mka@chromium.org>
+ <20190813201411.GL15047@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT,
-        URIBL_BLOCKED shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190813201411.GL15047@lunn.ch>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Aug 2019 22:32:34 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+On Tue, Aug 13, 2019 at 10:14:11PM +0200, Andrew Lunn wrote:
+> > +static int rtl8211e_config_led(struct phy_device *phydev, int led,
+> > +			       struct phy_led_config *cfg)
+> > +{
+> > +	u16 lacr_bits = 0, lcr_bits = 0;
+> > +	int oldpage, ret;
+> > +
+> 
+> You should probably check that led is 0 or 1. 
 
-> On Tue, Aug 13, 2019 at 07:12:43PM +0200, Marek Beh=C3=BAn wrote:
-> > @@ -598,12 +599,49 @@ int mv88e6352_port_link_state(struct mv88e6xxx_ch=
-ip *chip, int port,
-> >  			      struct phylink_link_state *state)
-> >  {
-> >  	int err;
-> > -	u16 reg;
-> > +	u16 reg, mac;
-> > =20
-> >  	err =3D mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_STS, &reg);
-> >  	if (err)
-> >  		return err;
->=20
-> Hi Marek
->=20
-> It seems a bit off putting this block of code here, after reading
-> MV88E6XXX_PORT_STS but before using the value. You don't need STS to
-> determine the interface mode.
->=20
-> If you keep the code together, you can then reuse reg, rather than add
-> mac.
->=20
-> Apart from that, this looks O.K.
->=20
->       Andrew
+Actually this PHY has up to 3 LEDs, but yes, good point to validate
+the parameter. I'll wait a day or two for if there is other feedback
+and send a new version with the check.
 
-Hi Andrew,
-you are right, I shall rewrite this.
-Thank you.
-Marek
+> Otherwise this looks good.
+
+Thanks for the reviews!
+
+Matthias
