@@ -2,103 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA6428C0D3
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:38:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E4A58C0E7
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:42:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728757AbfHMSi1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:38:27 -0400
-Received: from correo.us.es ([193.147.175.20]:59064 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726094AbfHMSiZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 14:38:25 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id CF4B8B6327
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 20:38:21 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C0A021150DE
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 20:38:21 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id B60F31150D8; Tue, 13 Aug 2019 20:38:21 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B7CD2512D2;
-        Tue, 13 Aug 2019 20:38:19 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 13 Aug 2019 20:38:19 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [31.4.218.116])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 724D64265A2F;
-        Tue, 13 Aug 2019 20:38:19 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 17/17] netfilter: connlabels: prefer static lock initialiser
-Date:   Tue, 13 Aug 2019 20:38:09 +0200
-Message-Id: <20190813183809.4081-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190813183809.4081-1-pablo@netfilter.org>
-References: <20190813183809.4081-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726490AbfHMSlz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:41:55 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:43014 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726094AbfHMSlz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:41:55 -0400
+Received: by mail-ot1-f65.google.com with SMTP id e12so32114777otp.10
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 11:41:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sifive.com; s=google;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=fX5yjg/2zdiBezYuZ3iR/R/lX21Xnc3q+P+SkpxJPD4=;
+        b=K0rfqc3MV9Ye1zNkcmZD56MLVzb20dfzFqvgae3GxR9n6zhp27voJQiAVbAkg7OMeq
+         LOcTLMBRl/l1QO63J21y5UKSmHMIKItMSLpFLi5AobisxH8lGcy2xucbFyt2CHTTF13D
+         LUIiB23JFws4kF0EgcyUj0Slm3cBtfaH4aosnUw58T1crgUCCkQac8s3oGE8Gpz/C13b
+         G3+LRxwQlKxKbFG6OmQezQCg00OWxBRIi0dgwos5zcqkBF3l+a7GsrvPIfZSzHRJMd35
+         4fty1YV/Y9SKrq1rgwPNXBRB7uobNf4vms7SfnK3T6B7j+k61AfuaKLk33gI1JHicpK4
+         HFVQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=fX5yjg/2zdiBezYuZ3iR/R/lX21Xnc3q+P+SkpxJPD4=;
+        b=eorZ6IMFbT9ALS7/SbimOhBRVIw24H2to4roxOOjei2eCSb+bqhLkaugHnTu6l9ZUx
+         M8SDF/45qrpKKY2thRnzv9TzQSeQgauIh7CxBA1zVIu4Rl1UlAsVQfmUOOB82TTuOg2j
+         KLPOzsDhEkYeXFd3bE4PdIadvFx3tEzHAT7ZT6LYgw9GYQuFwoWxyxqI2lTHsdCoYtME
+         O1bNfh6iAngXNwzFWYB4ppwcoULJmlIhzX/LLbxw6QlzSow8y0d6UCVuy0XTiu1XAL73
+         SsMNXcjeu6gN69XJbHDuRpjhlRn/CH8x1EX7N1nJufPrUPuO8sKDhU7E3MrlBe+WccEP
+         N+0Q==
+X-Gm-Message-State: APjAAAX30Fv+5QJaIq7gSZNJbZ9r9dBRsVxeoxgrrmpLeiloF+ub2Yjq
+        AZxvcNeZjy2/GELAbTJbWch0vQ==
+X-Google-Smtp-Source: APXvYqwqPZ5UQlBLYUIPuJNViu7vjL/d8NYkDxT9b3OHqwWDHdjO/dJHLuKBdIt2gWRUxAIpGp0PIA==
+X-Received: by 2002:a6b:6a01:: with SMTP id x1mr4841202iog.77.1565721714779;
+        Tue, 13 Aug 2019 11:41:54 -0700 (PDT)
+Received: from localhost (c-73-95-159-87.hsd1.co.comcast.net. [73.95.159.87])
+        by smtp.gmail.com with ESMTPSA id e17sm21413438ioh.0.2019.08.13.11.41.54
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 13 Aug 2019 11:41:54 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 11:41:53 -0700 (PDT)
+From:   Paul Walmsley <paul.walmsley@sifive.com>
+X-X-Sender: paulw@viisi.sifive.com
+To:     davem@davemloft.net, nicolas.ferre@microchip.com
+cc:     Rob Herring <robh@kernel.org>, Yash Shah <yash.shah@sifive.com>,
+        robh+dt@kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, mark.rutland@arm.com,
+        palmer@sifive.com, aou@eecs.berkeley.edu, ynezz@true.cz,
+        sachin.ghadi@sifive.com
+Subject: Re: [PATCH 1/3] macb: bindings doc: update sifive fu540-c000
+ binding
+In-Reply-To: <20190812233242.GA21855@bogus>
+Message-ID: <alpine.DEB.2.21.9999.1908131140230.5033@viisi.sifive.com>
+References: <1563534631-15897-1-git-send-email-yash.shah@sifive.com> <20190812233242.GA21855@bogus>
+User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+Nicolas, Dave,
 
-seen during boot:
-BUG: spinlock bad magic on CPU#2, swapper/0/1
- lock: nf_connlabels_lock+0x0/0x60, .magic: 00000000, .owner: <none>/-1, .owner_cpu: 0
-Call Trace:
- do_raw_spin_lock+0x14e/0x1b0
- nf_connlabels_get+0x15/0x40
- ct_init_net+0xc4/0x270
- ops_init+0x56/0x1c0
- register_pernet_operations+0x1c8/0x350
- register_pernet_subsys+0x1f/0x40
- tcf_register_action+0x7c/0x1a0
- do_one_initcall+0x13d/0x2d9
+On Mon, 12 Aug 2019, Rob Herring wrote:
 
-Problem is that ct action init function can run before
-connlabels_init().  Lock has not been initialised yet.
+> On Fri, 19 Jul 2019 16:40:29 +0530, Yash Shah wrote:
+> > As per the discussion with Nicolas Ferre, rename the compatible property
+> > to a more appropriate and specific string.
+> > LINK: https://lkml.org/lkml/2019/7/17/200
+> > 
+> > Signed-off-by: Yash Shah <yash.shah@sifive.com>
+> > ---
+> >  Documentation/devicetree/bindings/net/macb.txt | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-Fix it by using a static initialiser.
-
-Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_conntrack_labels.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
-
-diff --git a/net/netfilter/nf_conntrack_labels.c b/net/netfilter/nf_conntrack_labels.c
-index 74b8113f7aeb..d1c6b2a2e7bd 100644
---- a/net/netfilter/nf_conntrack_labels.c
-+++ b/net/netfilter/nf_conntrack_labels.c
-@@ -11,7 +11,7 @@
- #include <net/netfilter/nf_conntrack_ecache.h>
- #include <net/netfilter/nf_conntrack_labels.h>
- 
--static spinlock_t nf_connlabels_lock;
-+static __read_mostly DEFINE_SPINLOCK(nf_connlabels_lock);
- 
- static int replace_u32(u32 *address, u32 mask, u32 new)
- {
-@@ -89,7 +89,6 @@ int nf_conntrack_labels_init(void)
- {
- 	BUILD_BUG_ON(NF_CT_LABELS_MAX_SIZE / sizeof(long) >= U8_MAX);
- 
--	spin_lock_init(&nf_connlabels_lock);
- 	return nf_ct_extend_register(&labels_extend);
- }
- 
--- 
-2.11.0
+Am assuming you'll pick this up for the -net tree for v5.4-rc1 or earlier.  
+If not, please let us know.
 
 
+- Paul
