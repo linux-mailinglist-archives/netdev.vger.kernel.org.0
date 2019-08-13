@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C29118B80A
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:07:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1DE7D8B80C
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 14:07:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727981AbfHMMHr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 08:07:47 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:36292 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727425AbfHMMHr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:07:47 -0400
-Received: by mail-pf1-f194.google.com with SMTP id w2so682105pfi.3;
-        Tue, 13 Aug 2019 05:07:46 -0700 (PDT)
+        id S1727995AbfHMMHv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 08:07:51 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:32951 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727425AbfHMMHv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 08:07:51 -0400
+Received: by mail-pg1-f195.google.com with SMTP id n190so10351841pgn.0;
+        Tue, 13 Aug 2019 05:07:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+Tz0gD0fN7lfmTT1cRoBEztbwc847PpvO+BtdiAc5R4=;
-        b=JJtdbqzIrih7fa4JRsBVVyxVOEnZ3DyPngz9UVsOCZJ38FixdPTVmUZg3eCP0v4N1E
-         hNGvQLslDDYp7h1Q16+29vYhyajzDLoI9VUk8z5PqMhErmfxYJoa+qClLslydPeMzL+U
-         CzZI50WDwBTp7smvz10g8EsxH/4cLOrxPsHY9+1VGSzf2YFxjbJK6yMv89R0CSoB5Hwz
-         3plDLQ63RnklQ0+DYDVRV/poQhPaRetH45wD5VHJvQhXJCFBCKaQeHTUOG87RKgCWhpr
-         3AyBHqPBOlREUUFxcR4fTAkCLAqHCZv+/W62a5xaJYUnP7N85A2gL1TkEK82ac7sm+pA
-         whwQ==
+        bh=TZkJV6sDt2PGGk4lDoLb18E0qN5uD7qf4OWOBYTWxJo=;
+        b=eh9JUsLYnROz/ziqwHGkkG0/lBGISitAGttCNaZL0Ohxlqm6D3h/K2yzjBi6+KMLqx
+         Jc+XbnTwk6HmpODz32leCcB0sqqhy9VFPMAHCjHGoBBsdANuuMXS9XzwrdPzdAUqmy2T
+         3WgaFdqQyM51Qre+/YsaAYT+Wx9oyo7k4C4A1E6DXDYZIrogonxdI8kYl/5+AF77XyZG
+         AlxI0Y1r32FxqHJJL7r4ZSihis7sqJHCezzIiLzrqrpDzQmnIKfk4azbq3WWJZ76gOvT
+         Cr8beFMzaZxgVuRUNWN/v8eGuiub1XsZuLsDtf9SQxxXc3B5pBuPsDGxAQqvDDWI2RoG
+         7WMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+Tz0gD0fN7lfmTT1cRoBEztbwc847PpvO+BtdiAc5R4=;
-        b=Wq2LTmZAvsXhpCkmSZU9yq5zviykeiKZx5MIHlsXdp4SfCZlJGmgfqiUQeYcG7bs/W
-         z/1RANZXUo4DdAOmPCg7FGblUzBtiMTJSBr3eNbI4Ie/YsWspbRpjPNqXBaxn2hL1VWA
-         DNdMER7hUcrknxz04OvzO7M258mUpnGhKg54RZ8hh16FIW0w/jBwd35ybKg0YDCUSDuH
-         +qxrJWkOHDoIoXnYvgMhsl/m9daoozMup/uBuEihaXfFuNe0+KDx1nidVd3OPwGiZmXc
-         aKdPAhQaSXQYfHH85IqkFzkpG+qSAFygsvXs7C7s7yDDnFQR3Mroup8iPNMABMraAhkn
-         jLbw==
-X-Gm-Message-State: APjAAAXskI0ZBLk3zqwSAw+Dcm02Xjj4WB/mMryBB52sc/nQr+Ivil+N
-        gzTK2WHCHbq/XzD9DYijGd0=
-X-Google-Smtp-Source: APXvYqzxwC8wkT3Grx8FcmM4fmbExdjgF3kr4WneNDMq64CsoUQnIMaXuLdAeiyLz9q+nm4Qqo+dTQ==
-X-Received: by 2002:a63:4a20:: with SMTP id x32mr25886128pga.357.1565698066473;
-        Tue, 13 Aug 2019 05:07:46 -0700 (PDT)
+        bh=TZkJV6sDt2PGGk4lDoLb18E0qN5uD7qf4OWOBYTWxJo=;
+        b=sUGSTnbihJNzwvIbKRaXv+Ok71wSqilA9UJ89b/oH6JtlmKnFb3SnIOz9KeOCQ5pSy
+         eKRHwx8t7UdqAH1X9TdP/sHczLc+iflwiVoopWxmAt/YKeZ3BvWS5QXXHVOYH/4SJh3O
+         leDuM56YvnClKs2i8qsTIU4VFHi2dQq9jxEb5l3Qpsz6MNGsBKml2IiW00p/SUkkzDap
+         CtUGPlmTin45G6FVHTXz6m5k6b9yRyfaJqmm1DwSE0Ntu0FJ5T6NER3BETtvWdEa0ENe
+         ccyktK2qIXdigaqiLHZp2OE14tKG80MsgKkX6Tg0jiuqM546Ib5UJ+pg3aVjka9HlA4A
+         fjLQ==
+X-Gm-Message-State: APjAAAWLuI5SQqJ15AJ5DmBfDZDcNnUqwiW2armX/UW1Mj83tCs5WOe1
+        a1Nj9zcsHh/PeeW4S6fUu76azXq1
+X-Google-Smtp-Source: APXvYqwPB2b7TjAbWVfEWXftR6YR8tilpJQtS+MKbETkJQgA3p7aadPNPk+bER7YfeoDE9iLUMTTlg==
+X-Received: by 2002:aa7:8f29:: with SMTP id y9mr10828587pfr.27.1565698070196;
+        Tue, 13 Aug 2019 05:07:50 -0700 (PDT)
 Received: from z400-fedora29.kern.oss.ntt.co.jp ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.07.42
+        by smtp.gmail.com with ESMTPSA id o9sm73251099pgv.19.2019.08.13.05.07.46
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 05:07:45 -0700 (PDT)
+        Tue, 13 Aug 2019 05:07:49 -0700 (PDT)
 From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
 To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
@@ -59,9 +59,9 @@ To:     Alexei Starovoitov <ast@kernel.org>,
 Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
         netdev@vger.kernel.org, bpf@vger.kernel.org,
         William Tu <u9012063@gmail.com>
-Subject: [RFC PATCH bpf-next 07/14] xdp_flow: Add flow handling and basic actions in bpf prog
-Date:   Tue, 13 Aug 2019 21:05:51 +0900
-Message-Id: <20190813120558.6151-8-toshiaki.makita1@gmail.com>
+Subject: [RFC PATCH bpf-next 08/14] xdp_flow: Implement flow replacement/deletion logic in xdp_flow kmod
+Date:   Tue, 13 Aug 2019 21:05:52 +0900
+Message-Id: <20190813120558.6151-9-toshiaki.makita1@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
 References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
@@ -72,336 +72,404 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF prog for XDP parses the packet and extracts the flow key. Then find
-an entry from flow tables.
-Only "accept" and "drop" actions are implemented at this point.
+As struct flow_rule has descrete storages for flow_dissector and
+key/mask containers, we need to serialize them in some way to pass them
+to UMH.
+
+Convert flow_rule into flow key form used in xdp_flow bpf prog and
+pass it.
 
 Signed-off-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 ---
- net/xdp_flow/xdp_flow_kern_bpf.c | 297 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 296 insertions(+), 1 deletion(-)
+ net/xdp_flow/xdp_flow_kern_mod.c | 334 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 331 insertions(+), 3 deletions(-)
 
-diff --git a/net/xdp_flow/xdp_flow_kern_bpf.c b/net/xdp_flow/xdp_flow_kern_bpf.c
-index c101156..ceb8a92 100644
---- a/net/xdp_flow/xdp_flow_kern_bpf.c
-+++ b/net/xdp_flow/xdp_flow_kern_bpf.c
-@@ -1,9 +1,27 @@
- // SPDX-License-Identifier: GPL-2.0
- #define KBUILD_MODNAME "foo"
- #include <uapi/linux/bpf.h>
-+#include <linux/in.h>
-+#include <linux/if_ether.h>
-+#include <linux/if_packet.h>
-+#include <linux/if_vlan.h>
-+#include <linux/ip.h>
-+#include <linux/ipv6.h>
-+#include <net/ipv6.h>
-+#include <net/dsfield.h>
- #include <bpf_helpers.h>
- #include "umh_bpf.h"
+diff --git a/net/xdp_flow/xdp_flow_kern_mod.c b/net/xdp_flow/xdp_flow_kern_mod.c
+index 9cf527d..fe925db 100644
+--- a/net/xdp_flow/xdp_flow_kern_mod.c
++++ b/net/xdp_flow/xdp_flow_kern_mod.c
+@@ -3,13 +3,266 @@
+ #include <linux/module.h>
+ #include <linux/umh.h>
+ #include <linux/sched/signal.h>
++#include <linux/rhashtable.h>
+ #include <net/pkt_cls.h>
+ #include <net/flow_offload_xdp.h>
+ #include "msgfmt.h"
  
-+/* Used when the action only modifies the packet */
-+#define _XDP_CONTINUE -1
-+
-+struct bpf_map_def SEC("maps") debug_stats = {
-+	.type = BPF_MAP_TYPE_PERCPU_ARRAY,
-+	.key_size = sizeof(u32),
-+	.value_size = sizeof(long),
-+	.max_entries = 256,
++struct xdp_flow_rule {
++	struct rhash_head ht_node;
++	unsigned long cookie;
++	struct xdp_flow_key key;
++	struct xdp_flow_key mask;
 +};
 +
- struct bpf_map_def SEC("maps") flow_masks_head = {
- 	.type = BPF_MAP_TYPE_ARRAY,
- 	.key_size = sizeof(u32),
-@@ -25,10 +43,287 @@ struct bpf_map_def SEC("maps") flow_tables = {
- 	.max_entries = MAX_FLOW_MASKS,
- };
++static const struct rhashtable_params rules_params = {
++	.key_len = sizeof(unsigned long),
++	.key_offset = offsetof(struct xdp_flow_rule, cookie),
++	.head_offset = offsetof(struct xdp_flow_rule, ht_node),
++	.automatic_shrinking = true,
++};
++
++static struct rhashtable rules;
++
+ extern char xdp_flow_umh_start;
+ extern char xdp_flow_umh_end;
  
-+static inline void account_debug(int idx)
++static int xdp_flow_parse_actions(struct xdp_flow_actions *actions,
++				  struct flow_action *flow_action,
++				  struct netlink_ext_ack *extack)
 +{
-+	long *cnt;
-+
-+	cnt = bpf_map_lookup_elem(&debug_stats, &idx);
-+	if (cnt)
-+		*cnt += 1;
-+}
-+
-+static inline void account_action(int act)
-+{
-+	account_debug(act + 1);
-+}
-+
-+static inline int action_accept(void)
-+{
-+	account_action(XDP_FLOW_ACTION_ACCEPT);
-+	return XDP_PASS;
-+}
-+
-+static inline int action_drop(void)
-+{
-+	account_action(XDP_FLOW_ACTION_DROP);
-+	return XDP_DROP;
-+}
-+
-+static inline int action_redirect(struct xdp_flow_action *action)
-+{
-+	account_action(XDP_FLOW_ACTION_REDIRECT);
-+
-+	// TODO: implement this
-+	return XDP_ABORTED;
-+}
-+
-+static inline int action_vlan_push(struct xdp_md *ctx,
-+				   struct xdp_flow_action *action)
-+{
-+	account_action(XDP_FLOW_ACTION_VLAN_PUSH);
-+
-+	// TODO: implement this
-+	return XDP_ABORTED;
-+}
-+
-+static inline int action_vlan_pop(struct xdp_md *ctx,
-+				  struct xdp_flow_action *action)
-+{
-+	account_action(XDP_FLOW_ACTION_VLAN_POP);
-+
-+	// TODO: implement this
-+	return XDP_ABORTED;
-+}
-+
-+static inline int action_vlan_mangle(struct xdp_md *ctx,
-+				     struct xdp_flow_action *action)
-+{
-+	account_action(XDP_FLOW_ACTION_VLAN_MANGLE);
-+
-+	// TODO: implement this
-+	return XDP_ABORTED;
-+}
-+
-+static inline int action_mangle(struct xdp_md *ctx,
-+				struct xdp_flow_action *action)
-+{
-+	account_action(XDP_FLOW_ACTION_MANGLE);
-+
-+	// TODO: implement this
-+	return XDP_ABORTED;
-+}
-+
-+static inline int action_csum(struct xdp_md *ctx,
-+			      struct xdp_flow_action *action)
-+{
-+	account_action(XDP_FLOW_ACTION_CSUM);
-+
-+	// TODO: implement this
-+	return XDP_ABORTED;
-+}
-+
-+static inline void __ether_addr_copy(u8 *dst, const u8 *src)
-+{
-+	u16 *a = (u16 *)dst;
-+	const u16 *b = (const u16 *)src;
-+
-+	a[0] = b[0];
-+	a[1] = b[1];
-+	a[2] = b[2];
-+}
-+
-+static inline int parse_ipv4(void *data, u64 *nh_off, void *data_end,
-+			     struct xdp_flow_key *key)
-+{
-+	struct iphdr *iph = data + *nh_off;
-+
-+	if (iph + 1 > data_end)
-+		return -1;
-+
-+	key->ipv4.src = iph->saddr;
-+	key->ipv4.dst = iph->daddr;
-+	key->ip.ttl = iph->ttl;
-+	key->ip.tos = iph->tos;
-+	*nh_off += iph->ihl * 4;
-+
-+	return iph->protocol;
-+}
-+
-+static inline int parse_ipv6(void *data, u64 *nh_off, void *data_end,
-+			     struct xdp_flow_key *key)
-+{
-+	struct ipv6hdr *ip6h = data + *nh_off;
-+
-+	if (ip6h + 1 > data_end)
-+		return -1;
-+
-+	key->ipv6.src = ip6h->saddr;
-+	key->ipv6.dst = ip6h->daddr;
-+	key->ip.ttl = ip6h->hop_limit;
-+	key->ip.tos = ipv6_get_dsfield(ip6h);
-+	*nh_off += sizeof(*ip6h);
-+
-+	if (ip6h->nexthdr == NEXTHDR_HOP ||
-+	    ip6h->nexthdr == NEXTHDR_ROUTING ||
-+	    ip6h->nexthdr == NEXTHDR_FRAGMENT ||
-+	    ip6h->nexthdr == NEXTHDR_AUTH ||
-+	    ip6h->nexthdr == NEXTHDR_NONE ||
-+	    ip6h->nexthdr == NEXTHDR_DEST)
-+		return 0;
-+
-+	return ip6h->nexthdr;
-+}
-+
-+#define for_each_flow_mask(entry, head, idx, cnt) \
-+	for (entry = bpf_map_lookup_elem(&flow_masks, (head)), \
-+	     idx = *(head), cnt = 0; \
-+	     entry != NULL && cnt < MAX_FLOW_MASKS; \
-+	     idx = entry->next, \
-+	     entry = bpf_map_lookup_elem(&flow_masks, &idx), cnt++)
-+
-+static inline void flow_mask(struct xdp_flow_key *mkey,
-+			     const struct xdp_flow_key *key,
-+			     const struct xdp_flow_key *mask)
-+{
-+	long *lmkey = (long *)mkey;
-+	long *lmask = (long *)mask;
-+	long *lkey = (long *)key;
++	const struct flow_action_entry *act;
 +	int i;
 +
-+	for (i = 0; i < sizeof(*mkey); i += sizeof(long))
-+		*lmkey++ = *lkey++ & *lmask++;
++	if (!flow_action_has_entries(flow_action))
++		return 0;
++
++	if (flow_action->num_entries > MAX_XDP_FLOW_ACTIONS)
++		return -ENOBUFS;
++
++	flow_action_for_each(i, act, flow_action) {
++		struct xdp_flow_action *action = &actions->actions[i];
++
++		switch (act->id) {
++		case FLOW_ACTION_ACCEPT:
++			action->id = XDP_FLOW_ACTION_ACCEPT;
++			break;
++		case FLOW_ACTION_DROP:
++			action->id = XDP_FLOW_ACTION_DROP;
++			break;
++		case FLOW_ACTION_REDIRECT:
++		case FLOW_ACTION_VLAN_PUSH:
++		case FLOW_ACTION_VLAN_POP:
++		case FLOW_ACTION_VLAN_MANGLE:
++		case FLOW_ACTION_MANGLE:
++		case FLOW_ACTION_CSUM:
++			/* TODO: implement these */
++			/* fall through */
++		default:
++			NL_SET_ERR_MSG_MOD(extack, "Unsupported action");
++			return -EOPNOTSUPP;
++		}
++	}
++	actions->num_actions = flow_action->num_entries;
++
++	return 0;
 +}
 +
- SEC("xdp_flow")
- int xdp_flow_prog(struct xdp_md *ctx)
- {
--	return XDP_PASS;
-+	void *data_end = (void *)(long)ctx->data_end;
-+	struct xdp_flow_actions *actions = NULL;
-+	void *data = (void *)(long)ctx->data;
-+	int cnt, idx, action_idx, zero = 0;
-+	struct xdp_flow_mask_entry *entry;
-+	struct ethhdr *eth = data;
-+	struct xdp_flow_key key;
-+	int rc = XDP_DROP;
-+	long *value;
-+	u16 h_proto;
-+	u32 ipproto;
-+	u64 nh_off;
-+	int *head;
++static int xdp_flow_parse_ports(struct xdp_flow_key *key,
++				struct xdp_flow_key *mask,
++				struct flow_cls_offload *f, u8 ip_proto)
++{
++	const struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_match_ports match;
 +
-+	account_debug(0);
++	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_PORTS))
++		return 0;
 +
-+	nh_off = sizeof(*eth);
-+	if (data + nh_off > data_end)
-+		return XDP_DROP;
-+
-+	__builtin_memset(&key, 0, sizeof(key));
-+	h_proto = eth->h_proto;
-+	__ether_addr_copy(key.eth.dst, eth->h_dest);
-+	__ether_addr_copy(key.eth.src, eth->h_source);
-+
-+	if (eth_type_vlan(h_proto)) {
-+		struct vlan_hdr *vhdr;
-+
-+		vhdr = data + nh_off;
-+		nh_off += sizeof(*vhdr);
-+		if (data + nh_off > data_end)
-+			return XDP_DROP;
-+		key.vlan.tpid = h_proto;
-+		key.vlan.tci = vhdr->h_vlan_TCI;
-+		h_proto = vhdr->h_vlan_encapsulated_proto;
-+	}
-+	key.eth.type = h_proto;
-+
-+	if (h_proto == htons(ETH_P_IP))
-+		ipproto = parse_ipv4(data, &nh_off, data_end, &key);
-+	else if (h_proto == htons(ETH_P_IPV6))
-+		ipproto = parse_ipv6(data, &nh_off, data_end, &key);
-+	else
-+		ipproto = 0;
-+	if (ipproto < 0)
-+		return XDP_DROP;
-+	key.ip.proto = ipproto;
-+
-+	if (ipproto == IPPROTO_TCP) {
-+		struct tcphdr *th = data + nh_off;
-+
-+		if (th + 1 > data_end)
-+			return XDP_DROP;
-+
-+		key.l4port.src = th->source;
-+		key.l4port.dst = th->dest;
-+		key.tcp.flags = (*(__be16 *)&tcp_flag_word(th) & htons(0x0FFF));
-+	} else if (ipproto == IPPROTO_UDP) {
-+		struct udphdr *uh = data + nh_off;
-+
-+		if (uh + 1 > data_end)
-+			return XDP_DROP;
-+
-+		key.l4port.src = uh->source;
-+		key.l4port.dst = uh->dest;
++	if (ip_proto != IPPROTO_TCP && ip_proto != IPPROTO_UDP) {
++		NL_SET_ERR_MSG_MOD(f->common.extack,
++				   "Only UDP and TCP keys are supported");
++		return -EINVAL;
 +	}
 +
-+	head = bpf_map_lookup_elem(&flow_masks_head, &zero);
-+	if (!head)
-+		return XDP_PASS;
++	flow_rule_match_ports(rule, &match);
 +
-+	for_each_flow_mask(entry, head, idx, cnt) {
-+		struct xdp_flow_key mkey;
-+		void *flow_table;
++	key->l4port.src = match.key->src;
++	mask->l4port.src = match.mask->src;
++	key->l4port.dst = match.key->dst;
++	mask->l4port.dst = match.mask->dst;
 +
-+		flow_table = bpf_map_lookup_elem(&flow_tables, &idx);
-+		if (!flow_table)
-+			return XDP_ABORTED;
++	return 0;
++}
 +
-+		flow_mask(&mkey, &key, &entry->mask);
-+		actions = bpf_map_lookup_elem(flow_table, &mkey);
-+		if (actions)
-+			break;
++static int xdp_flow_parse_tcp(struct xdp_flow_key *key,
++			      struct xdp_flow_key *mask,
++			      struct flow_cls_offload *f, u8 ip_proto)
++{
++	const struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_match_tcp match;
++
++	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_TCP))
++		return 0;
++
++	if (ip_proto != IPPROTO_TCP) {
++		NL_SET_ERR_MSG_MOD(f->common.extack,
++				   "TCP keys supported only for TCP");
++		return -EINVAL;
 +	}
 +
-+	if (!actions)
-+		return XDP_PASS;
++	flow_rule_match_tcp(rule, &match);
 +
-+	for (action_idx = 0;
-+	     action_idx < actions->num_actions &&
-+	     action_idx < MAX_XDP_FLOW_ACTIONS;
-+	     action_idx++) {
-+		struct xdp_flow_action *action;
-+		int act;
++	key->tcp.flags = match.key->flags;
++	mask->tcp.flags = match.mask->flags;
 +
-+		action = &actions->actions[action_idx];
++	return 0;
++}
 +
-+		switch (action->id) {
-+		case XDP_FLOW_ACTION_ACCEPT:
-+			return action_accept();
-+		case XDP_FLOW_ACTION_DROP:
-+			return action_drop();
-+		case XDP_FLOW_ACTION_REDIRECT:
-+			return action_redirect(action);
-+		case XDP_FLOW_ACTION_VLAN_PUSH:
-+			act = action_vlan_push(ctx, action);
-+			break;
-+		case XDP_FLOW_ACTION_VLAN_POP:
-+			act = action_vlan_pop(ctx, action);
-+			break;
-+		case XDP_FLOW_ACTION_VLAN_MANGLE:
-+			act = action_vlan_mangle(ctx, action);
-+			break;
-+		case XDP_FLOW_ACTION_MANGLE:
-+			act = action_mangle(ctx, action);
-+			break;
-+		case XDP_FLOW_ACTION_CSUM:
-+			act = action_csum(ctx, action);
-+			break;
-+		default:
-+			return XDP_ABORTED;
++static int xdp_flow_parse_ip(struct xdp_flow_key *key,
++			     struct xdp_flow_key *mask,
++			     struct flow_cls_offload *f, __be16 n_proto)
++{
++	const struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_match_ip match;
++
++	if (!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_IP))
++		return 0;
++
++	if (n_proto != htons(ETH_P_IP) && n_proto != htons(ETH_P_IPV6)) {
++		NL_SET_ERR_MSG_MOD(f->common.extack,
++				   "IP keys supported only for IPv4/6");
++		return -EINVAL;
++	}
++
++	flow_rule_match_ip(rule, &match);
++
++	key->ip.ttl = match.key->ttl;
++	mask->ip.ttl = match.mask->ttl;
++	key->ip.tos = match.key->tos;
++	mask->ip.tos = match.mask->tos;
++
++	return 0;
++}
++
++static int xdp_flow_parse(struct xdp_flow_key *key, struct xdp_flow_key *mask,
++			  struct xdp_flow_actions *actions,
++			  struct flow_cls_offload *f)
++{
++	struct flow_rule *rule = flow_cls_offload_flow_rule(f);
++	struct flow_dissector *dissector = rule->match.dissector;
++	__be16 n_proto = 0, n_proto_mask = 0;
++	u16 addr_type = 0;
++	u8 ip_proto = 0;
++	int err;
++
++	if (dissector->used_keys &
++	    ~(BIT(FLOW_DISSECTOR_KEY_CONTROL) |
++	      BIT(FLOW_DISSECTOR_KEY_BASIC) |
++	      BIT(FLOW_DISSECTOR_KEY_ETH_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_IPV4_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_IPV6_ADDRS) |
++	      BIT(FLOW_DISSECTOR_KEY_PORTS) |
++	      BIT(FLOW_DISSECTOR_KEY_TCP) |
++	      BIT(FLOW_DISSECTOR_KEY_IP) |
++	      BIT(FLOW_DISSECTOR_KEY_VLAN))) {
++		NL_SET_ERR_MSG_MOD(f->common.extack, "Unsupported key");
++		return -EOPNOTSUPP;
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CONTROL)) {
++		struct flow_match_control match;
++
++		flow_rule_match_control(rule, &match);
++		addr_type = match.key->addr_type;
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_BASIC)) {
++		struct flow_match_basic match;
++
++		flow_rule_match_basic(rule, &match);
++
++		n_proto = match.key->n_proto;
++		n_proto_mask = match.mask->n_proto;
++		if (n_proto == htons(ETH_P_ALL)) {
++			n_proto = 0;
++			n_proto_mask = 0;
 +		}
-+		if (act != _XDP_CONTINUE)
-+			return act;
++
++		key->eth.type = n_proto;
++		mask->eth.type = n_proto_mask;
++
++		if (match.mask->ip_proto) {
++			ip_proto = match.key->ip_proto;
++			key->ip.proto = ip_proto;
++			mask->ip.proto = match.mask->ip_proto;
++		}
 +	}
 +
-+	return XDP_ABORTED;
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ETH_ADDRS)) {
++		struct flow_match_eth_addrs match;
++
++		flow_rule_match_eth_addrs(rule, &match);
++
++		ether_addr_copy(key->eth.dst, match.key->dst);
++		ether_addr_copy(mask->eth.dst, match.mask->dst);
++		ether_addr_copy(key->eth.src, match.key->src);
++		ether_addr_copy(mask->eth.src, match.mask->src);
++	}
++
++	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)) {
++		struct flow_match_vlan match;
++
++		flow_rule_match_vlan(rule, &match);
++
++		key->vlan.tpid = match.key->vlan_tpid;
++		mask->vlan.tpid = match.mask->vlan_tpid;
++		key->vlan.tci = htons(match.key->vlan_id |
++				      (match.key->vlan_priority <<
++				       VLAN_PRIO_SHIFT));
++		mask->vlan.tci = htons(match.mask->vlan_id |
++				       (match.mask->vlan_priority <<
++					VLAN_PRIO_SHIFT));
++	}
++
++	if (addr_type == FLOW_DISSECTOR_KEY_IPV4_ADDRS) {
++		struct flow_match_ipv4_addrs match;
++
++		flow_rule_match_ipv4_addrs(rule, &match);
++
++		key->ipv4.src = match.key->src;
++		mask->ipv4.src = match.mask->src;
++		key->ipv4.dst = match.key->dst;
++		mask->ipv4.dst = match.mask->dst;
++	}
++
++	if (addr_type == FLOW_DISSECTOR_KEY_IPV6_ADDRS) {
++		struct flow_match_ipv6_addrs match;
++
++		flow_rule_match_ipv6_addrs(rule, &match);
++
++		key->ipv6.src = match.key->src;
++		mask->ipv6.src = match.mask->src;
++		key->ipv6.dst = match.key->dst;
++		mask->ipv6.dst = match.mask->dst;
++	}
++
++	err = xdp_flow_parse_ports(key, mask, f, ip_proto);
++	if (err)
++		return err;
++	err = xdp_flow_parse_tcp(key, mask, f, ip_proto);
++	if (err)
++		return err;
++
++	err = xdp_flow_parse_ip(key, mask, f, n_proto);
++	if (err)
++		return err;
++
++	// TODO: encapsulation related tasks
++
++	return xdp_flow_parse_actions(actions, &rule->action,
++					   f->common.extack);
++}
++
+ static void shutdown_umh(void)
+ {
+ 	struct task_struct *tsk;
+@@ -60,12 +313,78 @@ static int transact_umh(struct mbox_request *req, u32 *id)
+ 
+ static int xdp_flow_replace(struct net_device *dev, struct flow_cls_offload *f)
+ {
+-	return -EOPNOTSUPP;
++	struct xdp_flow_rule *rule;
++	struct mbox_request *req;
++	int err;
++
++	req = kzalloc(sizeof(*req), GFP_KERNEL);
++	if (!req)
++		return -ENOMEM;
++
++	rule = kzalloc(sizeof(*rule), GFP_KERNEL);
++	if (!rule) {
++		err = -ENOMEM;
++		goto out;
++	}
++
++	req->flow.priority = f->common.prio >> 16;
++	err = xdp_flow_parse(&req->flow.key, &req->flow.mask,
++			     &req->flow.actions, f);
++	if (err)
++		goto err_parse;
++
++	rule->cookie = f->cookie;
++	rule->key = req->flow.key;
++	rule->mask = req->flow.mask;
++	err = rhashtable_insert_fast(&rules, &rule->ht_node, rules_params);
++	if (err)
++		goto err_parse;
++
++	req->cmd = XDP_FLOW_CMD_REPLACE;
++	req->ifindex = dev->ifindex;
++	err = transact_umh(req, NULL);
++	if (err)
++		goto err_umh;
++out:
++	kfree(req);
++
++	return err;
++err_umh:
++	rhashtable_remove_fast(&rules, &rule->ht_node, rules_params);
++err_parse:
++	kfree(rule);
++	goto out;
  }
  
- char _license[] SEC("license") = "GPL";
+ int xdp_flow_destroy(struct net_device *dev, struct flow_cls_offload *f)
+ {
+-	return -EOPNOTSUPP;
++	struct mbox_request *req;
++	struct xdp_flow_rule *rule;
++	int err;
++
++	rule = rhashtable_lookup_fast(&rules, &f->cookie, rules_params);
++	if (!rule)
++		return 0;
++
++	req = kzalloc(sizeof(*req), GFP_KERNEL);
++	if (!req)
++		return -ENOMEM;
++
++	req->flow.priority = f->common.prio >> 16;
++	req->flow.key = rule->key;
++	req->flow.mask = rule->mask;
++	req->cmd = XDP_FLOW_CMD_DELETE;
++	req->ifindex = dev->ifindex;
++	err = transact_umh(req, NULL);
++
++	kfree(req);
++
++	if (!err) {
++		rhashtable_remove_fast(&rules, &rule->ht_node, rules_params);
++		kfree(rule);
++	}
++
++	return err;
+ }
+ 
+ static int xdp_flow_setup_flower(struct net_device *dev,
+@@ -267,7 +586,11 @@ static int start_umh(void)
+ 
+ static int __init load_umh(void)
+ {
+-	int err = 0;
++	int err;
++
++	err = rhashtable_init(&rules, &rules_params);
++	if (err)
++		return err;
+ 
+ 	mutex_lock(&xdp_flow_ops.lock);
+ 	if (!xdp_flow_ops.stop) {
+@@ -283,8 +606,12 @@ static int __init load_umh(void)
+ 	xdp_flow_ops.setup = &xdp_flow_setup;
+ 	xdp_flow_ops.start = &start_umh;
+ 	xdp_flow_ops.module = THIS_MODULE;
++
++	mutex_unlock(&xdp_flow_ops.lock);
++	return 0;
+ err:
+ 	mutex_unlock(&xdp_flow_ops.lock);
++	rhashtable_destroy(&rules);
+ 	return err;
+ }
+ 
+@@ -297,6 +624,7 @@ static void __exit fini_umh(void)
+ 	xdp_flow_ops.setup = NULL;
+ 	xdp_flow_ops.setup_cb = NULL;
+ 	mutex_unlock(&xdp_flow_ops.lock);
++	rhashtable_destroy(&rules);
+ }
+ module_init(load_umh);
+ module_exit(fini_umh);
 -- 
 1.8.3.1
 
