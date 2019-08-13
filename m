@@ -2,76 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C922C8B3F6
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 11:19:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F48A8B400
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 11:21:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727670AbfHMJTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 05:19:02 -0400
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:39429 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726811AbfHMJTC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 05:19:02 -0400
-Received: by mail-yb1-f193.google.com with SMTP id s142so9802871ybc.6;
-        Tue, 13 Aug 2019 02:19:01 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=kUBanlA+OewYHu2v1NZSgckcWYzqv9IZZgRNtPfde/g=;
-        b=d+Zq0j1xk01kcL7JLQQuf0rcJykzM1Q2WReVxSSIHTiaLwmA69IiDa4OBVM5trnh2D
-         hf0kPgOyIGaKv3sWT/Zp4Q+/A4Z+peAcFUd47w3k24QFrxmf/syBkDBlGueCzXXJYpgm
-         dtFVneZatUc0O9hTLSQmYHiDdkrUdX3tSlJ6U0ef9J5qDJq68YEjTS2WTDUx/FciHtMm
-         B57umdMpZJxLssyFzWP8cx9zxcTfkwZIrrAIMeDL+a8ZcrlcYMzeJU1WFPxC+dZKK4hL
-         PnkjAKoSCeItbQ0VJZ4PsD7J8f3/aE5JZCYPfs0uPwvC/VK/3bR1mGbWPDbduWJgFYR6
-         5cwA==
-X-Gm-Message-State: APjAAAVpLKnBOgYmxjsAGLdAZUt9VIh/lFym6j8eu+a9P7bdi6yXEEz7
-        cztX7St53spLXDzHfDPiX2Y=
-X-Google-Smtp-Source: APXvYqyoHIMWWV/Nk16YmgaFnSRnrejnpcOOOW4NSBuQgxkJI14N5BkT7qkjQjzx+L8npD+m4oT1oQ==
-X-Received: by 2002:a5b:d52:: with SMTP id f18mr9448758ybr.516.1565687941169;
-        Tue, 13 Aug 2019 02:19:01 -0700 (PDT)
-Received: from localhost.localdomain (24-158-240-219.dhcp.smyr.ga.charter.com. [24.158.240.219])
-        by smtp.gmail.com with ESMTPSA id r19sm27423518ywa.109.2019.08.13.02.18.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 13 Aug 2019 02:18:59 -0700 (PDT)
-From:   Wenwen Wang <wenwen@cs.uga.edu>
-To:     Wenwen Wang <wenwen@cs.uga.edu>
-Cc:     Vishal Kulkarni <vishal@chelsio.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev@vger.kernel.org (open list:CXGB4 ETHERNET DRIVER (CXGB4)),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] cxgb4: fix a memory leak bug
-Date:   Tue, 13 Aug 2019 04:18:52 -0500
-Message-Id: <1565687932-2870-1-git-send-email-wenwen@cs.uga.edu>
-X-Mailer: git-send-email 2.7.4
+        id S1727549AbfHMJVy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 05:21:54 -0400
+Received: from mout.kundenserver.de ([212.227.17.24]:47625 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727144AbfHMJVy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 05:21:54 -0400
+Received: from [192.168.178.60] ([109.104.47.130]) by mrelayeu.kundenserver.de
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1MAfMc-1i8Vbm2JWi-00B39M; Tue, 13 Aug 2019 11:21:46 +0200
+Subject: Re: [PATCH v3 11/17] qca: no need to check return value of
+ debugfs_create functions
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Michael Heimpold <michael.heimpold@i2se.com>,
+        Yangtao Li <tiny.windzz@gmail.com>
+References: <20190810101732.26612-1-gregkh@linuxfoundation.org>
+ <20190810101732.26612-12-gregkh@linuxfoundation.org>
+From:   Stefan Wahren <stefan.wahren@i2se.com>
+Message-ID: <3f49f1c9-9d54-65cb-2462-6e46d0784d4d@i2se.com>
+Date:   Tue, 13 Aug 2019 11:21:45 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190810101732.26612-12-gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Provags-ID: V03:K1:1MBg/14MfcbF6b/rZtS1vD/cI2XkGFBs54v/YFWqEhtdS/WHF1P
+ LOf1d3j4dMBZYAg7u04DsA9cqmfkW6LSLIdDuI9ke7HurmWyQGJg9OewufAu4H02Smm/dq0
+ h3BZPcIrbyVXcTjFnbL3z2F4+QS21C5/prQHWBW1DR+FrnKy//a4GqXdDEndS8swl3upQby
+ sWsqy89ECgaMrP0/pA80Q==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Uaz6vXKfqcw=:iUR7OVZrJNGojv+M3F1uJ0
+ kOJUPL1kqurTmtU28j3x4a+PoEA+F6qUKEm3Zm9BR+fZ7YlwMHPWKxUtUc0LoOCLOPAhV9ZYs
+ J4oaCkFtFt1LVKQ4mBCyL5kkCGsSWBugI0tvRCbxx+tgx/beTwNJX2HDVTnDCsbCMIzoyhu7/
+ j7mvxLGobw6qPgNe8cOyyAaDQIDes+ZnRLKVbIHFEjND41qk5NVDvU8OLWn22qqtpmnPtkXIC
+ hv/Wovgwr3lEPOP9pXcNb37Ha5RdYfQuYy2f8RXhCc/CtXIB0RM4KTCMoVC6naBNm2ojhtpoM
+ iPyQ9npr0feWA99NtZoYdeQPZkcR1IktVbYUVCRMokuaCt1+bNJbxtxJEo0khX7kHAR11aV2F
+ XEgtePXSwHwKE8UP62kyj7nsuIRw7nm5mMYoV2op772LxZSmxG5uxvkR/lYMP6OYQwom1l1fs
+ HiyBl5NZ5sHafR41rLMK1v0wPtW83LlLiY1yJfdtWDZfremLcvY/y6ZkUU8FnMYtgFEDCe6t8
+ HLiM6cthVJ78fisk+YCSCY9UYvh/XCeLQvKPSznM+SaajSg+q9Brnl0BrUHiNsxaBk6FQlChB
+ bxiUxdJO5J8Fkkuum7+Zlf2fwkgrYudwwH/9YDaQixyxraT4TVWF/KscknKlBym5NBnVye5pj
+ 7OG6fko3TTTcSPsPDt70q4P7EA8cUJhNBi7gb1/hUsQc7Y3OqQ7YTg8lijyeba6/aCV1qEJ7O
+ 0EDDjZ2RyKrVAUO2+BU6MRqueEQHPEgv9q72IMTCThK5+4tTBKBCk42hQrg=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In blocked_fl_write(), 't' is not deallocated if bitmap_parse_user() fails,
-leading to a memory leak bug. To fix this issue, free t before returning
-the error.
+On 10.08.19 12:17, Greg Kroah-Hartman wrote:
+> When calling debugfs functions, there is no need to ever check the
+> return value.  The function can work or not, but the code logic should
+> never do something different based on this.
+>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Stefan Wahren <stefan.wahren@i2se.com>
+> Cc: Michael Heimpold <michael.heimpold@i2se.com>
+> Cc: Yangtao Li <tiny.windzz@gmail.com>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
----
- drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-index 0295903..d692251 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_debugfs.c
-@@ -3236,8 +3236,10 @@ static ssize_t blocked_fl_write(struct file *filp, const char __user *ubuf,
- 		return -ENOMEM;
- 
- 	err = bitmap_parse_user(ubuf, count, t, adap->sge.egr_sz);
--	if (err)
-+	if (err) {
-+		kvfree(t);
- 		return err;
-+	}
- 
- 	bitmap_copy(adap->sge.blocked_fl, t, adap->sge.egr_sz);
- 	kvfree(t);
--- 
-2.7.4
+Acked-by: Stefan Wahren <stefan.wahren@i2se.com>
 
