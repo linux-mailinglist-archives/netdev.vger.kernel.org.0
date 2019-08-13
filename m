@@ -2,153 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0C798ACBE
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 04:36:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B71DD8ACC9
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 04:42:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726498AbfHMCgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 22:36:44 -0400
-Received: from mail-eopbgr60054.outbound.protection.outlook.com ([40.107.6.54]:55429
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726236AbfHMCgn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 12 Aug 2019 22:36:43 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iJe/LI9uDlmqCfbkvN4zTx/LGacJRV9apZCI+EeEEfRw+VG4FsjE3dNlCJqpJkxpNS+2Y/Qi1bDd6GxrniS9VU/NMPkk7FLUxdPhl4dKuUdFgytsDRaXbPTWNcsBOxBcj4v0XKt1fK12W27RERlYtlnh1OEsZUVkRbtOawLfK9xXBevkbtLZacPr3m5X0wjQ11OQVDAWfN8MJmjgvZVRjtAb2dXQWKLfZLC2FFRrN6HSjpHcNMKzUoTJR1gdYFHGQIFJiWZfoH7CqJjn5ElM9MVl+7X+i5cKqM6XAbnZpUM4icXHthXf6gzb3PmuxtBPWM/V4FSH0Gwhxsrva3hfOw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PUcxA6nJxYu8KiQkh5l87JnGqxnizREdoJqrnV8rDpA=;
- b=gDK0x33DUalhKAoWr60VlALR/Q5k/L1kVMPGFw6aFSiqOHEbaKTaZd3OV4B3CdnaTIuKmIXQ56ctW9A2qg+IEeavOzc3rs35znkKAp30FLwes+2D2HsDw5mJSM7kmuDpfAJy0+cq/FmVIiJtEPYbn3StRA/+BA0sStNcPBJxIZX5xJrbjuD8ZwHfw4JWguefsHmg7Gb886K1jZx2Lg2iITETcTjEyAeudpmezynZReaCGyFOt4Pd1XBMbBLta//JGXouAr6y0JrFi9arzkYeedQp6Nv7fGMBogMAauHXT/M5ywYRwKM8kq37NW87qrHD1MHnTLFYqY5hV8TyLAuHOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PUcxA6nJxYu8KiQkh5l87JnGqxnizREdoJqrnV8rDpA=;
- b=hnC/6nnvdiXolx3YqBj1ZO9XGi2e7MCzBGlMnyhZDqJ14ugOHivSnKA/6fsKWY11KhRJp44MUwoniOGL1Rzty3rw+y/wQIky7OINROX0qWcXqyY817ndthw4E7cfe3IEiB/eRxRPMUbZ0bJ/9GqaO+8gWOqKbahIcq1QNMCfOpg=
-Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com (10.169.132.138) by
- VI1PR0401MB2639.eurprd04.prod.outlook.com (10.168.66.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.15; Tue, 13 Aug 2019 02:36:38 +0000
-Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com
- ([fe80::2072:e49f:a84a:8f37]) by VI1PR0401MB2237.eurprd04.prod.outlook.com
- ([fe80::2072:e49f:a84a:8f37%11]) with mapi id 15.20.2157.022; Tue, 13 Aug
- 2019 02:36:38 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     "Allan W. Nielsen" <allan.nielsen@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: RE: [PATCH 2/3] ocelot_ace: fix ingress ports setting for rule
-Thread-Topic: [PATCH 2/3] ocelot_ace: fix ingress ports setting for rule
-Thread-Index: AQHVUPsbL+NfI2eZKkyNF9uBx3208qb3c6+AgADnD5A=
-Date:   Tue, 13 Aug 2019 02:36:38 +0000
-Message-ID: <VI1PR0401MB2237D0E4A3664DC9A9106457F8D20@VI1PR0401MB2237.eurprd04.prod.outlook.com>
-References: <20190812104827.5935-1-yangbo.lu@nxp.com>
- <20190812104827.5935-3-yangbo.lu@nxp.com>
- <20190812123820.qjaclomo6bhpz5pg@lx-anielsen.microsemi.net>
-In-Reply-To: <20190812123820.qjaclomo6bhpz5pg@lx-anielsen.microsemi.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yangbo.lu@nxp.com; 
-x-originating-ip: [92.121.36.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2d3ddf0a-f492-4d88-ad6c-08d71f971107
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0401MB2639;
-x-ms-traffictypediagnostic: VI1PR0401MB2639:
-x-microsoft-antispam-prvs: <VI1PR0401MB2639B7C68809093F8C148E1CF8D20@VI1PR0401MB2639.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 01283822F8
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(346002)(396003)(39860400002)(136003)(53754006)(13464003)(199004)(189003)(229853002)(486006)(476003)(256004)(66556008)(66476007)(6436002)(66066001)(6916009)(5660300002)(14454004)(8936002)(54906003)(446003)(64756008)(11346002)(66446008)(478600001)(71190400001)(71200400001)(53546011)(76116006)(316002)(81166006)(8676002)(7696005)(3846002)(2906002)(6246003)(66946007)(4326008)(53936002)(76176011)(55016002)(6506007)(86362001)(33656002)(81156014)(9686003)(102836004)(52536014)(25786009)(305945005)(186003)(26005)(7736002)(6116002)(99286004)(74316002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0401MB2639;H:VI1PR0401MB2237.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: yVnRaCNqzHxqkVniQgZGP85KDayk8f9KmzP/ocQfnR6n8o0G+2yc0HaCyhfCtyNdD87grMCNxdfDy37V+MHEm/BJod9rbcIsSJw3Zr2/w8mIy/ig7ZRv6r6xqV9BGBePK1TTLLYinmCDrQR1RxNajFeHMHWsQyTrrdullCLKbusCN/oRuyi32KGzzZ0A203YOVtLL3ThxH3GTDxqJDu5Mwdw7gGdG3j/vTBpeLGIEyvhDAj0gTba2ttc6BHX4SkkNtF2my3/Q/P3wjtTae5NE2YUbi0evbelnudDefcn1Cwhr4pDwrroAGChOj2AsVelVHDlSjiLWVgkLNPgZDn6PRf5mCIXIDqlga/lckFHqf4cHquf/rVP89dXuEn+7xMVtxYR+UdhPJWeqrlr5FfzlOUJa8dK41Q+Xv9irA9JV20=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726558AbfHMCmX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 22:42:23 -0400
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:44347 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726537AbfHMCmW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 22:42:22 -0400
+Received: by mail-yw1-f66.google.com with SMTP id l79so39341685ywe.11
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 19:42:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IPUWVHthnvZ2Aa3gXm+SlWUUkEqb2RS+oSN06nGB0PM=;
+        b=HqmJhntPxRImmUeccfUVRAjrIveNApPi+v1dGe0ANQ3OZj/IqaCFadusUaL6n4iiHc
+         6Hri03pP+IrBJQHyUR6Xpj7HQNXzcXj5muRugLBsCFsVbaYlmr+WpiLziPZYBWXefGjx
+         aoxpVCIdVxLWyxPQci43piYKvYlYMnK1Vdad6PyTpU+pqbr3ZXBxhWRa1Ld2vywzI/1F
+         spqTphqCb/hoBHuFNTCxfY72wjuqn12wQti9KBZ0975LW+ZtJvgYjkYYDhufpxlYHsFo
+         qBqdy+a6NtVI3Ch+iKIYbta9R6AKAKJBKCuk/YYpqktowPG2bErOXqI5zjeWX4UyZFfg
+         YN/w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IPUWVHthnvZ2Aa3gXm+SlWUUkEqb2RS+oSN06nGB0PM=;
+        b=Zk1qAOFvWSrebEGBC2ss7OsUHWOKH6yCjQ8iAEVHT9j5oO/lgc7m8nWtYxuT/BGHM6
+         x1v9mT/4ptWdMIlqUzdxNSai+PBeNckNLuL4aEiGjZXUHH/SAGLWNWn50SLq42d1CF7z
+         DKG8qVl0Vt8Lm2sRdpQIQHHt7pSOxl0/Cby1VD99eKVj9GRaDkuwiwOaui80V5lHryQE
+         RK3/Qhs6TMh3VnAQumTnz8cHct59M50w5AI2/4s9lM8dS2NbB926beGa2nv2YBNxSoco
+         aNJ1YGWniOpSCC8hHATWqWekT/yRm4aUS9K8rBVjM7UDBzW7u2o+TEe7yMZhJ5EuyHmV
+         gX+A==
+X-Gm-Message-State: APjAAAWqMkaPjZ2bzHSwPZr3+kvzjQB3DPjd5mz4+YgaCAlfmWL6MTJ+
+        IJRz8j+lRMFzdLWDNvS9NNycBEy+gSUp83UblHZ5KLxkNg==
+X-Google-Smtp-Source: APXvYqxtk4CHuFVJ7LaNdyntWASH0VdNSr03HLxcofdnCth1/7iiZeX561j6NApgsBiVJBQuz88p0b5qiiR9IEbB7YU=
+X-Received: by 2002:a81:de4e:: with SMTP id o14mr6788182ywl.369.1565664141479;
+ Mon, 12 Aug 2019 19:42:21 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2d3ddf0a-f492-4d88-ad6c-08d71f971107
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Aug 2019 02:36:38.1143
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: XCUQ6yZJxIseQlsdHpO1ZugImNBVqlxhckPkgEPeOHzJycyzMJwugIYG0/g+5k1QagYoRcPFCIv06QmqLULTEA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2639
+References: <20190809133248.19788-1-danieltimlee@gmail.com>
+ <20190809133248.19788-2-danieltimlee@gmail.com> <CAH3MdRVJ5Z8FVF8XW8Ha-MwRAnO2mbmMDFb_s3cPswqq7MfsMQ@mail.gmail.com>
+In-Reply-To: <CAH3MdRVJ5Z8FVF8XW8Ha-MwRAnO2mbmMDFb_s3cPswqq7MfsMQ@mail.gmail.com>
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+Date:   Tue, 13 Aug 2019 11:42:10 +0900
+Message-ID: <CAEKGpzisX_AP=WULuLjvN1buHmjsut9nLghhfONFnnaDQeE5Fw@mail.gmail.com>
+Subject: Re: [v4,1/4] tools: bpftool: add net attach command to attach XDP on interface
+To:     Y Song <ys114321@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgQWxsYW4sDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQWxsYW4g
-Vy4gTmllbHNlbiA8YWxsYW4ubmllbHNlbkBtaWNyb2NoaXAuY29tPg0KPiBTZW50OiBNb25kYXks
-IEF1Z3VzdCAxMiwgMjAxOSA4OjM4IFBNDQo+IFRvOiBZLmIuIEx1IDx5YW5nYm8ubHVAbnhwLmNv
-bT4NCj4gQ2M6IG5ldGRldkB2Z2VyLmtlcm5lbC5vcmc7IERhdmlkIFMgLiBNaWxsZXIgPGRhdmVt
-QGRhdmVtbG9mdC5uZXQ+Ow0KPiBBbGV4YW5kcmUgQmVsbG9uaSA8YWxleGFuZHJlLmJlbGxvbmlA
-Ym9vdGxpbi5jb20+OyBNaWNyb2NoaXAgTGludXggRHJpdmVyDQo+IFN1cHBvcnQgPFVOR0xpbnV4
-RHJpdmVyQG1pY3JvY2hpcC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMi8zXSBvY2Vsb3Rf
-YWNlOiBmaXggaW5ncmVzcyBwb3J0cyBzZXR0aW5nIGZvciBydWxlDQo+IA0KPiBUaGUgMDgvMTIv
-MjAxOSAxODo0OCwgWWFuZ2JvIEx1IHdyb3RlOg0KPiA+IFRoZSBpbmdyZXNzIHBvcnRzIHNldHRp
-bmcgb2YgcnVsZSBzaG91bGQgc3VwcG9ydCBjb3ZlcmluZyBhbGwgcG9ydHMuDQo+ID4gVGhpcyBw
-YXRjaCBpcyB0byB1c2UgdTE2IGluZ3Jlc3NfcG9ydCBmb3IgaW5ncmVzcyBwb3J0IG1hc2sgc2V0
-dGluZw0KPiA+IGZvciBhY2UgcnVsZS4gT25lIGJpdCBjb3JyZXNwb25kcyBvbmUgcG9ydC4NCj4g
-VGhhdCBpcyBob3cgdGhlIEhXIGlzIHdvcmtpbmcsIGFuZCBpdCB3b3VsZCBiZSBuaWNlIGlmIHdl
-IGNvdWxkIG9wZXJhdGUgb24gYQ0KPiBwb3J0IG1hc2tzL2xpc3RzIGluc3RlYWQuIEJ1dCBob3cg
-Y2FuIHRoaXMgYmUgdXNlZD8NCg0KW1kuYi4gTHVdIFdpbGwgdGhlIGNoYW5nZXMgYWZmZWN0IGFu
-eXRoaW5nPyBDdXJyZW50IHVzYWdlIGluIG9jZWxvdF9mbG93ZXIuYyB3aWxsIGJlIGNvbnZlcnRl
-ZCBhcyBiZWxvdy4NCg0KLSAgICAgICBydWxlLT5jaGlwX3BvcnQgPSBibG9jay0+cG9ydC0+Y2hp
-cF9wb3J0Ow0KKyAgICAgICBydWxlLT5pbmdyZXNzX3BvcnQgPSBCSVQoYmxvY2stPnBvcnQtPmNo
-aXBfcG9ydCk7DQoNCg0KPiANCj4gQ2FuIHlvdSBwbGVhc2UgZXhwbGFpbiBob3cvd2hlbiB0aGlz
-IHdpbGwgbWFrZSBhIGRpZmZlcmVuY2U/DQoNCltZLmIuIEx1XSBBY3R1YWxseSBJIGhhdmUgYW5v
-dGhlciBpbnRlcm5hbCBwYXRjaCBiYXNlZCBvbiB0aGlzIHBhdGNoLXNldCBmb3Igc2V0dGluZyBy
-dWxlIG9mIHRyYXBwaW5nIElFRUUgMTU4OCBQVFAgRXRoZXJuZXQgZnJhbWVzLg0KRm9yIHN1Y2gg
-cnVsZSB3aGljaCBzaG91bGQgYmUgYXBwbGllZCBvbiBzZXZlcmFsIGluZ3Jlc3MgcG9ydHMsIHdl
-IGNhbiBzZXQgaXQgb25jZSB3aGVuIG9jZWxvdCBpbml0aWFsaXphdGlvbiBJIHRoaW5rLg0KDQpU
-aGUgaW50ZXJuYWwgcGF0Y2ggSSBtZW50aW9uZWQgaXMgZm9yIGZlbGl4IHdoaWNoIGhhZCBkaWZm
-ZXJlbnQgcG9ydHMgbnVtYmVyIChWQ0FQX1BPUlRfQ05UKS4gU28gSSBoYWRuJ3Qgc2VudCBpdCBv
-dXQuDQpMZXQgbWUganVzdCBzZW5kIHYyIHBhdGNoLXNldCB3aXRoIHRoZSBwYXRjaCBkcm9wcGlu
-ZyBWQ0FQX1BPUlRfQ05UIGNoYW5nZXMgZm9yIHlvdXIgcmV2aWV3aW5nLg0KUGxlYXNlIGZlZWwg
-ZnJlZSB0byBwcm92aWRlIHN1Z2dlc3Rpb24uDQoNClRoYW5rcyBhIGxvdDopDQo+IA0KPiA+IFNp
-Z25lZC1vZmYtYnk6IFlhbmdibyBMdSA8eWFuZ2JvLmx1QG54cC5jb20+DQo+ID4gLS0tDQo+ID4g
-IGRyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X2FjZS5jICAgIHwgMiArLQ0KPiA+ICBk
-cml2ZXJzL25ldC9ldGhlcm5ldC9tc2NjL29jZWxvdF9hY2UuaCAgICB8IDIgKy0NCj4gPiAgZHJp
-dmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3RfZmxvd2VyLmMgfCAyICstDQo+ID4gIDMgZmls
-ZXMgY2hhbmdlZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlm
-ZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X2FjZS5jDQo+ID4gYi9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tc2NjL29jZWxvdF9hY2UuYw0KPiA+IGluZGV4IDU1ODBhNTgu
-LjkxMjUwZjMgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vs
-b3RfYWNlLmMNCj4gPiArKysgYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9tc2NjL29jZWxvdF9hY2Uu
-Yw0KPiA+IEBAIC0zNTIsNyArMzUyLDcgQEAgc3RhdGljIHZvaWQgaXMyX2VudHJ5X3NldChzdHJ1
-Y3Qgb2NlbG90ICpvY2Vsb3QsIGludCBpeCwNCj4gPiAgCWRhdGEudHlwZSA9IElTMl9BQ1RJT05f
-VFlQRV9OT1JNQUw7DQo+ID4NCj4gPiAgCVZDQVBfS0VZX0FOWV9TRVQoUEFHKTsNCj4gPiAtCVZD
-QVBfS0VZX1NFVChJR1JfUE9SVF9NQVNLLCAwLCB+QklUKGFjZS0+Y2hpcF9wb3J0KSk7DQo+ID4g
-KwlWQ0FQX0tFWV9TRVQoSUdSX1BPUlRfTUFTSywgMCwgfmFjZS0+aW5ncmVzc19wb3J0KTsNCj4g
-PiAgCVZDQVBfS0VZX0JJVF9TRVQoRklSU1QsIE9DRUxPVF9WQ0FQX0JJVF8xKTsNCj4gPiAgCVZD
-QVBfS0VZX0JJVF9TRVQoSE9TVF9NQVRDSCwgT0NFTE9UX1ZDQVBfQklUX0FOWSk7DQo+ID4gIAlW
-Q0FQX0tFWV9CSVRfU0VUKEwyX01DLCBhY2UtPmRtYWNfbWMpOyBkaWZmIC0tZ2l0DQo+ID4gYS9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tc2NjL29jZWxvdF9hY2UuaA0KPiA+IGIvZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbXNjYy9vY2Vsb3RfYWNlLmgNCj4gPiBpbmRleCBjZTcyZjAyLi4wZmUyM2UwIDEw
-MDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X2FjZS5oDQo+
-ID4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3RfYWNlLmgNCj4gPiBAQCAt
-MTkzLDcgKzE5Myw3IEBAIHN0cnVjdCBvY2Vsb3RfYWNlX3J1bGUgew0KPiA+DQo+ID4gIAllbnVt
-IG9jZWxvdF9hY2VfYWN0aW9uIGFjdGlvbjsNCj4gPiAgCXN0cnVjdCBvY2Vsb3RfYWNlX3N0YXRz
-IHN0YXRzOw0KPiA+IC0JaW50IGNoaXBfcG9ydDsNCj4gPiArCXUxNiBpbmdyZXNzX3BvcnQ7DQo+
-ID4NCj4gPiAgCWVudW0gb2NlbG90X3ZjYXBfYml0IGRtYWNfbWM7DQo+ID4gIAllbnVtIG9jZWxv
-dF92Y2FwX2JpdCBkbWFjX2JjOw0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5l
-dC9tc2NjL29jZWxvdF9mbG93ZXIuYw0KPiA+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9v
-Y2Vsb3RfZmxvd2VyLmMNCj4gPiBpbmRleCA3YzYwZThjLi5iZmRkYzUwIDEwMDY0NA0KPiA+IC0t
-LSBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X2Zsb3dlci5jDQo+ID4gKysrIGIv
-ZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3RfZmxvd2VyLmMNCj4gPiBAQCAtMTg0LDcg
-KzE4NCw3IEBAIHN0cnVjdCBvY2Vsb3RfYWNlX3J1bGUNCj4gKm9jZWxvdF9hY2VfcnVsZV9jcmVh
-dGUoc3RydWN0IGZsb3dfY2xzX29mZmxvYWQgKmYsDQo+ID4gIAkJcmV0dXJuIE5VTEw7DQo+ID4N
-Cj4gPiAgCXJ1bGUtPm9jZWxvdCA9IGJsb2NrLT5wb3J0LT5vY2Vsb3Q7DQo+ID4gLQlydWxlLT5j
-aGlwX3BvcnQgPSBibG9jay0+cG9ydC0+Y2hpcF9wb3J0Ow0KPiA+ICsJcnVsZS0+aW5ncmVzc19w
-b3J0ID0gQklUKGJsb2NrLT5wb3J0LT5jaGlwX3BvcnQpOw0KPiA+ICAJcmV0dXJuIHJ1bGU7DQo+
-ID4gIH0NCj4gDQo+IC0tIEFsbGFuDQo=
+On Mon, Aug 12, 2019 at 9:27 AM Y Song <ys114321@gmail.com> wrote:
+>
+> On Fri, Aug 9, 2019 at 6:35 AM Daniel T. Lee <danieltimlee@gmail.com> wrote:
+> >
+> > By this commit, using `bpftool net attach`, user can attach XDP prog on
+> > interface. New type of enum 'net_attach_type' has been made, as stated at
+> > cover-letter, the meaning of 'attach' is, prog will be attached on interface.
+> >
+> > With 'overwrite' option at argument, attached XDP program could be replaced.
+> > Added new helper 'net_parse_dev' to parse the network device at argument.
+> >
+> > BPF prog will be attached through libbpf 'bpf_set_link_xdp_fd'.
+> >
+> > Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+> > ---
+> >  tools/bpf/bpftool/net.c | 136 +++++++++++++++++++++++++++++++++++++---
+> >  1 file changed, 129 insertions(+), 7 deletions(-)
+> >
+> > diff --git a/tools/bpf/bpftool/net.c b/tools/bpf/bpftool/net.c
+> > index 67e99c56bc88..74cc346c36cd 100644
+> > --- a/tools/bpf/bpftool/net.c
+> > +++ b/tools/bpf/bpftool/net.c
+> > @@ -55,6 +55,35 @@ struct bpf_attach_info {
+> >         __u32 flow_dissector_id;
+> >  };
+> >
+> > +enum net_attach_type {
+> > +       NET_ATTACH_TYPE_XDP,
+> > +       NET_ATTACH_TYPE_XDP_GENERIC,
+> > +       NET_ATTACH_TYPE_XDP_DRIVER,
+> > +       NET_ATTACH_TYPE_XDP_OFFLOAD,
+> > +};
+> > +
+> > +static const char * const attach_type_strings[] = {
+> > +       [NET_ATTACH_TYPE_XDP]           = "xdp",
+> > +       [NET_ATTACH_TYPE_XDP_GENERIC]   = "xdpgeneric",
+> > +       [NET_ATTACH_TYPE_XDP_DRIVER]    = "xdpdrv",
+> > +       [NET_ATTACH_TYPE_XDP_OFFLOAD]   = "xdpoffload",
+> > +};
+> > +
+> > +const size_t net_attach_type_size = ARRAY_SIZE(attach_type_strings);
+> > +
+> > +static enum net_attach_type parse_attach_type(const char *str)
+> > +{
+> > +       enum net_attach_type type;
+> > +
+> > +       for (type = 0; type < net_attach_type_size; type++) {
+> > +               if (attach_type_strings[type] &&
+> > +                   is_prefix(str, attach_type_strings[type]))
+> > +                       return type;
+> > +       }
+> > +
+> > +       return net_attach_type_size;
+> > +}
+> > +
+> >  static int dump_link_nlmsg(void *cookie, void *msg, struct nlattr **tb)
+> >  {
+> >         struct bpf_netdev_t *netinfo = cookie;
+> > @@ -223,6 +252,97 @@ static int query_flow_dissector(struct bpf_attach_info *attach_info)
+> >         return 0;
+> >  }
+> >
+> > +static int net_parse_dev(int *argc, char ***argv)
+> > +{
+> > +       int ifindex;
+> > +
+> > +       if (is_prefix(**argv, "dev")) {
+> > +               NEXT_ARGP();
+> > +
+> > +               ifindex = if_nametoindex(**argv);
+> > +               if (!ifindex)
+> > +                       p_err("invalid devname %s", **argv);
+> > +
+> > +               NEXT_ARGP();
+> > +       } else {
+> > +               p_err("expected 'dev', got: '%s'?", **argv);
+> > +               return -1;
+> > +       }
+> > +
+> > +       return ifindex;
+> > +}
+> > +
+> > +static int do_attach_detach_xdp(int progfd, enum net_attach_type attach_type,
+> > +                               int ifindex, bool overwrite)
+> > +{
+> > +       __u32 flags = 0;
+> > +
+> > +       if (!overwrite)
+> > +               flags = XDP_FLAGS_UPDATE_IF_NOEXIST;
+> > +       if (attach_type == NET_ATTACH_TYPE_XDP_GENERIC)
+> > +               flags |= XDP_FLAGS_SKB_MODE;
+> > +       if (attach_type == NET_ATTACH_TYPE_XDP_DRIVER)
+> > +               flags |= XDP_FLAGS_DRV_MODE;
+> > +       if (attach_type == NET_ATTACH_TYPE_XDP_OFFLOAD)
+> > +               flags |= XDP_FLAGS_HW_MODE;
+> > +
+> > +       return bpf_set_link_xdp_fd(ifindex, progfd, flags);
+> > +}
+> > +
+> > +static int do_attach(int argc, char **argv)
+> > +{
+> > +       enum net_attach_type attach_type;
+> > +       int progfd, ifindex, err = 0;
+> > +       bool overwrite = false;
+> > +
+> > +       /* parse attach args */
+> > +       if (!REQ_ARGS(5))
+> > +               return -EINVAL;
+> > +
+> > +       attach_type = parse_attach_type(*argv);
+> > +       if (attach_type == net_attach_type_size) {
+> > +               p_err("invalid net attach/detach type: %s", *argv);
+> > +               return -EINVAL;
+> > +       }
+> > +       NEXT_ARG();
+> > +
+> > +       progfd = prog_parse_fd(&argc, &argv);
+> > +       if (progfd < 0)
+> > +               return -EINVAL;
+> > +
+> > +       ifindex = net_parse_dev(&argc, &argv);
+> > +       if (ifindex < 1) {
+> > +               close(progfd);
+> > +               return -EINVAL;
+> > +       }
+> > +
+> > +       if (argc) {
+> > +               if (is_prefix(*argv, "overwrite")) {
+> > +                       overwrite = true;
+> > +               } else {
+> > +                       p_err("expected 'overwrite', got: '%s'?", *argv);
+> > +                       close(progfd);
+> > +                       return -EINVAL;
+> > +               }
+> > +       }
+> > +
+> > +       /* attach xdp prog */
+> > +       if (is_prefix("xdp", attach_type_strings[attach_type]))
+> > +               err = do_attach_detach_xdp(progfd, attach_type, ifindex,
+> > +                                          overwrite);
+> > +
+> > +       if (err < 0) {
+> > +               p_err("interface %s attach failed: %s",
+> > +                     attach_type_strings[attach_type], strerror(errno));
+> > +               return err;
+> > +       }
+>
+> I tried the below example,
+>
+> -bash-4.4$ sudo ./bpftool net attach x pinned /sys/fs/bpf/xdp_example
+> dev v1
+> -bash-4.4$ sudo ./bpftool net attach x pinned /sys/fs/bpf/xdp_example dev v1
+> Kernel error message: XDP program already attached
+> Error: interface xdp attach failed: Success
+> -bash-4.4$
+>
+> It printed out "Success" as errno here is 0.
+> The errno is encoded in variable err. Function bpf_set_link_xdp_fd()
+> uses netlink interface to do setting. The syscall may be find (errno = 0)
+> but the netlink msg may contain error code, which is returned with err.
+>
+> So the above strerror(errno) should be strerror(-err).
+> libbpf API libbpf_strerror_r() accepts positive or negative err code which
+> you could use as well here.
+>
+> With this issue fixed. You can add:
+> Acked-by: Yonghong Song <yhs@fb.com>
+>
+
+I didn't realize it would return 0 as 'errno'.
+Thanks for letting me know.
+I'll update to next patch.
+
+Thank you for taking your time for the review.
+
+> > +
+> > +       if (json_output)
+> > +               jsonw_null(json_wtr);
+> > +
+> > +       return 0;
+> > +}
+> > +
+> [...]
