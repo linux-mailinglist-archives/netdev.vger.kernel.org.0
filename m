@@ -2,118 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A6258C0DA
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:39:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EAEE38C093
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 20:30:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726899AbfHMSjk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 14:39:40 -0400
-Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:26658 "EHLO
-        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726427AbfHMSjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:39:40 -0400
-X-Greylist: delayed 15674 seconds by postgrey-1.27 at vger.kernel.org; Tue, 13 Aug 2019 14:39:39 EDT
-Received: from pps.filterd (m0048589.ppops.net [127.0.0.1])
-        by m0048589.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x7DEHu2p018882
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 10:18:25 -0400
-Received: from tlpd255.enaf.dadc.sbc.com (sbcsmtp3.sbc.com [144.160.112.28])
-        by m0048589.ppops.net-00191d01. with ESMTP id 2ubuw0w332-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 10:18:24 -0400
-Received: from enaf.dadc.sbc.com (localhost [127.0.0.1])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIKmr009971
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:21 -0500
-Received: from zlp30495.vci.att.com (zlp30495.vci.att.com [135.46.181.158])
-        by tlpd255.enaf.dadc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIGZX009782
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO)
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:16 -0500
-Received: from zlp30495.vci.att.com (zlp30495.vci.att.com [127.0.0.1])
-        by zlp30495.vci.att.com (Service) with ESMTP id 4FCF2400A0A7
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 14:18:16 +0000 (GMT)
-Received: from clpi183.sldc.sbc.com (unknown [135.41.1.46])
-        by zlp30495.vci.att.com (Service) with ESMTP id 3365F400A0A6
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 14:18:16 +0000 (GMT)
-Received: from sldc.sbc.com (localhost [127.0.0.1])
-        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIGNY030158
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:16 -0500
-Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
-        by clpi183.sldc.sbc.com (8.14.5/8.14.5) with ESMTP id x7DEIB3s029785
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 09:18:12 -0500
-Received: from pruddy-Precision-7520.edi.vyatta.net (unknown [10.156.17.46])
-        by mail.eng.vyatta.net (Postfix) with ESMTPA id 13FD93601AB
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 07:18:10 -0700 (PDT)
-From:   Patrick Ruddy <pruddy@vyatta.att-mail.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCH net-next] mcast: ensure L-L IPv6 packets are accepted by bridge
-Date:   Tue, 13 Aug 2019 15:18:04 +0100
-Message-Id: <20190813141804.20515-1-pruddy@vyatta.att-mail.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-13_05:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
- priorityscore=1501 malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908130151
+        id S1728562AbfHMSaI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 14:30:08 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:36846 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728433AbfHMSaH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 14:30:07 -0400
+Received: by mail-ot1-f65.google.com with SMTP id k18so44168191otr.3;
+        Tue, 13 Aug 2019 11:30:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=xYr3qwvR0G9d1flmc14vpOBBlilcrrIu468KDrr2XHQ=;
+        b=QI5bK8/eet4TBpDuU0lZi/msYy53LqfP7K1xLN3L6OP/ASss2EGtHLRDczEOyapwTL
+         +tUkiFfPYjViS/NC4as9wVkxGJPMD6+NauR7ra5L9/G8wsNTjfBJEPOTlkaEU/A+VoXi
+         1cg/RH/hM8x1G35aqSIq0VurvcriiDDnxDFUR2VZb9DswJnEobz2lPxcX2RNl3AqTv75
+         z8LFP6CjFhtknWJ/XUjspx6Sn3xHZ7ulHMhaPaaiSfso3Uwk3qSOJzy5AmO6TSmN7wAb
+         6DXAefjUa4k26yCMiSOTQ0xTxxWSpZgyG3On3ePJhYWK97Vy7WwYjxidzeRq6JonNQ1X
+         L3ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=xYr3qwvR0G9d1flmc14vpOBBlilcrrIu468KDrr2XHQ=;
+        b=tLlQ2JfmXKLRM1BMwHVe6yjocuOwO+q9qYWCsOk6FNGrjzUdEoDwdqAOWUkB43SVXR
+         Lmim8D1hgnMnaB9h7KD9XhQdI8mqDw9gN4iJ9bzkQYS+D/RVRjPp63lNXNDxUrEpGbzo
+         zeNRJQtn9kRwYuiWKx5Qdo+ziGkPOeW/9tGHmUXO2CkRTfWjCtuL+eTDWH0ac/ZrHi19
+         R1l7v0ZbwLYZdWne4yaIPCL2u13+8tnsgj+t15bJdWBG6mfoNlIG5soafp5GHSY2b4/S
+         w8xbCRlzsHQEg2U944KMRDv/ljsZnw46n5pzB+kFN8lC/MfoY0lF9SSy/YfOXKS3y3fA
+         ubAw==
+X-Gm-Message-State: APjAAAWvT4GY9xCYOalmDjDrBownaGYtajh8/5KXQKAz087tHIQwxSX6
+        jogTlBIP2GfOFnZoY8WiMoU=
+X-Google-Smtp-Source: APXvYqxP/aFWNNueAjq4+kTAeWaefJRH8kwpW9GRpVXfKHy9xCCn3AurjdyUEzt4Jl+MAqnYPwsSlw==
+X-Received: by 2002:a6b:6516:: with SMTP id z22mr40554668iob.7.1565721006799;
+        Tue, 13 Aug 2019 11:30:06 -0700 (PDT)
+Received: from localhost ([184.63.162.180])
+        by smtp.gmail.com with ESMTPSA id p12sm2849404ioh.72.2019.08.13.11.30.05
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 13 Aug 2019 11:30:06 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 11:30:00 -0700
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     Hillf Danton <hdanton@sina.com>,
+        syzbot <syzbot+dcdc9deefaec44785f32@syzkaller.appspotmail.com>,
+        aviadye@mellanox.com, borisp@mellanox.com, daniel@iogearbox.net,
+        davejwatson@fb.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, syzkaller-bugs@googlegroups.com,
+        willemb@google.com
+Message-ID: <5d5301a82578_268d2b12c8efa5b470@john-XPS-13-9370.notmuch>
+In-Reply-To: <20190813102705.1f312b67@cakuba.netronome.com>
+References: <000000000000f5d619058faea744@google.com>
+ <20190810135900.2820-1-hdanton@sina.com>
+ <5d52f09299e91_40c72adb748b25c0d3@john-XPS-13-9370.notmuch>
+ <20190813102705.1f312b67@cakuba.netronome.com>
+Subject: Re: general protection fault in tls_write_space
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At present only all-nodes IPv6 multicast packets are accepted by
-a bridge interface that is not in multicast router mode. Since
-other protocols can be running in the absense of multicast
-forwarding e.g. OSPFv3 IPv6 ND. Change the test to allow
-all of the FFx2::/16 range to be accepted when not in multicast
-router mode. This aligns the code with IPv4 link-local reception
-and RFC4291
+Jakub Kicinski wrote:
+> On Tue, 13 Aug 2019 10:17:06 -0700, John Fastabend wrote:
+> > > Followup of commit 95fa145479fb
+> > > ("bpf: sockmap/tls, close can race with map free")
+> > > 
+> > > --- a/net/tls/tls_main.c
+> > > +++ b/net/tls/tls_main.c
+> > > @@ -308,6 +308,9 @@ static void tls_sk_proto_close(struct so
+> > >  	if (free_ctx)
+> > >  		icsk->icsk_ulp_data = NULL;
+> > >  	sk->sk_prot = ctx->sk_proto;
+> > > +	/* tls will go; restore sock callback before enabling bh */
+> > > +	if (sk->sk_write_space == tls_write_space)
+> > > +		sk->sk_write_space = ctx->sk_write_space;
+> > >  	write_unlock_bh(&sk->sk_callback_lock);
+> > >  	release_sock(sk);
+> > >  	if (ctx->tx_conf == TLS_SW)  
+> > 
+> > Hi Hillf,
+> > 
+> > We need this patch (although slightly updated for bpf tree) do
+> > you want to send it? Otherwise I can. We should only set this if
+> > TX path was enabled otherwise we null it. Checking against
+> > tls_write_space seems best to me as well.
+> > 
+> > Against bpf this patch should fix it.
+> > 
+> > diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> > index ce6ef56a65ef..43252a801c3f 100644
+> > --- a/net/tls/tls_main.c
+> > +++ b/net/tls/tls_main.c
+> > @@ -308,7 +308,8 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+> >         if (free_ctx)
+> >                 icsk->icsk_ulp_data = NULL;
+> >         sk->sk_prot = ctx->sk_proto;
+> > -       sk->sk_write_space = ctx->sk_write_space;
+> > +       if (sk->sk_write_space == tls_write_space)
+> > +               sk->sk_write_space = ctx->sk_write_space;
+> >         write_unlock_bh(&sk->sk_callback_lock);
+> >         release_sock(sk);
+> >         if (ctx->tx_conf == TLS_SW)
+> 
+> This is already in net since Friday:
 
-Signed-off-by: Patrick Ruddy <pruddy@vyatta.att-mail.com>
----
- include/net/addrconf.h    | 15 +++++++++++++++
- net/bridge/br_multicast.c |  2 +-
- 2 files changed, 16 insertions(+), 1 deletion(-)
+Don't we need to guard that with an
 
-diff --git a/include/net/addrconf.h b/include/net/addrconf.h
-index becdad576859..05b42867e969 100644
---- a/include/net/addrconf.h
-+++ b/include/net/addrconf.h
-@@ -434,6 +434,21 @@ static inline void addrconf_addr_solict_mult(const struct in6_addr *addr,
- 		      htonl(0xFF000000) | addr->s6_addr32[3]);
- }
- 
-+/*
-+ *      link local multicast address range ffx2::/16 rfc4291
-+ */
-+static inline bool ipv6_addr_is_ll_mcast(const struct in6_addr *addr)
-+{
-+#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
-+	__be64 *p = (__be64 *)addr;
-+	return ((p[0] & cpu_to_be64(0xff0f000000000000UL))
-+		^ cpu_to_be64(0xff02000000000000UL)) == 0UL;
-+#else
-+	return ((addr->s6_addr32[0] & htonl(0xff0f0000)) ^
-+		htonl(0xff020000)) == 0;
-+#endif
-+}
-+
- static inline bool ipv6_addr_is_ll_all_nodes(const struct in6_addr *addr)
- {
- #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 9b379e110129..ed3957381fa2 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1664,7 +1664,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
- 	err = ipv6_mc_check_mld(skb);
- 
- 	if (err == -ENOMSG) {
--		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
-+		if (!ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
- 			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
- 
- 		if (ipv6_addr_is_all_snoopers(&ipv6_hdr(skb)->daddr)) {
--- 
-2.20.1
+  if (sk->sk_write_space == tls_write_space)
+
+or something similar? Where is ctx->sk_write_space set in the rx only
+case? In do_tls_setsockop_conf() we have this block
+
+	if (tx) {
+		ctx->sk_write_space = sk->sk_write_space;
+		sk->sk_write_space = tls_write_space;
+	} else {
+		sk->sk_socket->ops = &tls_sw_proto_ops;
+	}
+
+which makes me think ctx->sk_write_space may not be set correctly in
+all cases.
+
+Thanks.
+
+> 
+> commit 57c722e932cfb82e9820bbaae1b1f7222ea97b52
+> Author: Jakub Kicinski <jakub.kicinski@netronome.com>
+> Date:   Fri Aug 9 18:36:23 2019 -0700
+> 
+>     net/tls: swap sk_write_space on close
+>     
+>     Now that we swap the original proto and clear the ULP pointer
+>     on close we have to make sure no callback will try to access
+>     the freed state. sk_write_space is not part of sk_prot, remember
+>     to swap it.
+>     
+>     Reported-by: syzbot+dcdc9deefaec44785f32@syzkaller.appspotmail.com
+>     Fixes: 95fa145479fb ("bpf: sockmap/tls, close can race with map free")
+>     Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+>     Signed-off-by: David S. Miller <davem@davemloft.net>
+> 
+> diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+> index 9cbbae606ced..ce6ef56a65ef 100644
+> --- a/net/tls/tls_main.c
+> +++ b/net/tls/tls_main.c
+> @@ -308,6 +308,7 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+>         if (free_ctx)
+>                 icsk->icsk_ulp_data = NULL;
+>         sk->sk_prot = ctx->sk_proto;
+> +       sk->sk_write_space = ctx->sk_write_space;
+>         write_unlock_bh(&sk->sk_callback_lock);
+>         release_sock(sk);
+>         if (ctx->tx_conf == TLS_SW)
 
