@@ -2,92 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 561678B1B8
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 09:56:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 80F5D8B1C5
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 09:57:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728201AbfHMH4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 03:56:38 -0400
-Received: from new2-smtp.messagingengine.com ([66.111.4.224]:39225 "EHLO
-        new2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727129AbfHMH4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 03:56:36 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 31EF11C82;
-        Tue, 13 Aug 2019 03:56:36 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 13 Aug 2019 03:56:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm3; bh=8KtP9h71YYQWCyuCRZs0dvnAhsmoc1EEgrrHB1ntmHA=; b=ziB1DRyI
-        A8lgLTIJcUWQk/zx7/KN2dI8TxYIkBsgXDDsgnlZIDiQOxH5Gwpbhx2qLIaSrvA7
-        64eTJSwq+NrYfae9GT5CvFqM9irk07QYq2XW1sMmS8sfqAh3KfXoz52AWa9OqT38
-        3LlMiGFVvgTGLadBU9rTIyo/A9mJRurUetnqcvxwm9rmaufz95Laza1e02ZyQ8cA
-        8NGB8voa8e99WcHD6H5lISNO7j2ysvvCb3cyFvjDqGys/fldlhIPm2c+UjEsgo/f
-        gVnzRVs0fTQiuX4kWvi7DPF6iBonBXgAecZXPoc1M0mKmj/f82a5AtfR3a6HgL5z
-        xoKylMBQExRqGw==
-X-ME-Sender: <xms:M21SXXYk0sK31K3H-YLoMQwgX30o5PuNOHl_M2X2JtW3JGb4JJRg-g>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddvhedguddviecutefuodetggdotefrod
-    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
-    necuuegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtke
-    ertdertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihgu
-    ohhstghhrdhorhhgqeenucfkphepudelfedrgeejrdduieehrddvhedunecurfgrrhgrmh
-    epmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhgnecuvehluhhsthgv
-    rhfuihiivgepfe
-X-ME-Proxy: <xmx:NG1SXbGa0sFX-lLOMQ2y9rDuirlOrVAEQ_O9M-7dJy5AG-6NfwcJjw>
-    <xmx:NG1SXXfz21nf59zzuRCQGoyKy9f6x71nL3nIYS4QRd7_kJKshNOvSg>
-    <xmx:NG1SXSEAU1GTBDp3T8uf4Rs6wGaDGaQ3Yk5sMQbtUnBvPvOMNgySmw>
-    <xmx:NG1SXZ6j3_tVgqG23PG4GlHRQJAptoqbj7Lbx4_MmjX4GX-pYt4Wjw>
-Received: from splinter.mtl.com (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3DACB8005B;
-        Tue, 13 Aug 2019 03:56:32 -0400 (EDT)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, nhorman@tuxdriver.com, jiri@mellanox.com,
-        toke@redhat.com, dsahern@gmail.com, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, jakub.kicinski@netronome.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: [PATCH net-next v2 14/14] Documentation: Add a section for devlink-trap testing
-Date:   Tue, 13 Aug 2019 10:54:00 +0300
-Message-Id: <20190813075400.11841-15-idosch@idosch.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190813075400.11841-1-idosch@idosch.org>
-References: <20190813075400.11841-1-idosch@idosch.org>
+        id S1727818AbfHMH5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 03:57:38 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:45641 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726551AbfHMH5h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 03:57:37 -0400
+Received: by mail-qk1-f195.google.com with SMTP id m2so5128643qki.12;
+        Tue, 13 Aug 2019 00:57:36 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ajCXkLrc00rBA8ZUOVEgUaqN7M+DNR8LSQCK9+5f2+g=;
+        b=hR+W5SmZI7SOo4BGVPvIZJQxosWsVYirJtPWKqtwYUG4h951MUobU8A1IHUGe5qzao
+         TtBr/p8Vxy/lFiVmXGpiO5WBm9R51Xr5vthjncjDN/KKXlFmWgnFqZ65m0OAyiXtfElZ
+         S01PGGYrZpuQGqKrLZjUqz0Cuaezj6p/oemrkWZ/CFVWL9LDRx4WCoEiJAbOsMgdThK5
+         pTJksOW3/Wr0V/4IgjzceOz+3Ja3Uu7gbOzZsQc7cww6PUuOZb+yxyfGnQM/hj2ZCEsr
+         dG6uBKfeTPfR1sdzFe7Laj17gw9ztsrmbJDJQVTdqEy0Yco6QuRQiN8WV/xkJgzI5kZ3
+         BgnA==
+X-Gm-Message-State: APjAAAUJKhd+IZvDnXoyjnHErtGyZP31WaDrwgE5/ua5ZdHOnT0QZRoU
+        /f64Z+ixBn77xHjrSk3J4cN8pPVZl2sSLyG2qvo=
+X-Google-Smtp-Source: APXvYqyIdILv2tk5XVUYMgnMBZrQuAyYo/zEfj71JpNLscoa1cfLXGZuogSNmLMW/R63aVun8nd4KC2DKl1/nuu3cXA=
+X-Received: by 2002:a37:76c5:: with SMTP id r188mr32664415qkc.394.1565683056420;
+ Tue, 13 Aug 2019 00:57:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190812215052.71840-1-ndesaulniers@google.com> <20190812215052.71840-13-ndesaulniers@google.com>
+In-Reply-To: <20190812215052.71840-13-ndesaulniers@google.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Tue, 13 Aug 2019 09:57:20 +0200
+Message-ID: <CAK8P3a2fSKT7AJXwfKQOJ5N3=NtwMOCw_5tuD+oOsmh2g-Kokw@mail.gmail.com>
+Subject: Re: [PATCH 13/16] include/asm-generic: prefer __section from compiler_attributes.h
+To:     Nick Desaulniers <ndesaulniers@google.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, sedat.dilek@gmail.com,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Yonghong Song <yhs@fb.com>,
+        Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        linux-arch <linux-arch@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+On Mon, Aug 12, 2019 at 11:52 PM 'Nick Desaulniers' via Clang Built
+Linux <clang-built-linux@googlegroups.com> wrote:
+>
+> Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
----
- Documentation/networking/devlink-trap.rst | 9 +++++++++
- 1 file changed, 9 insertions(+)
+The patch looks fine, but it looks like you forgot to add a description.
 
-diff --git a/Documentation/networking/devlink-trap.rst b/Documentation/networking/devlink-trap.rst
-index fe4f6e149623..7b07442b3ec3 100644
---- a/Documentation/networking/devlink-trap.rst
-+++ b/Documentation/networking/devlink-trap.rst
-@@ -196,3 +196,12 @@ narrow. The description of these groups must be added to the following table:
-    * - ``buffer_drops``
-      - Contains packet traps for packets that were dropped by the device due to
-        an enqueue decision
-+
-+Testing
-+=======
-+
-+See ``tools/testing/selftests/net/devlink_trap.sh`` for a test covering the
-+core infrastructure. Test cases should be added for any new functionality.
-+
-+Device drivers should focus their tests on device-specific functionality, such
-+as the triggering of supported packet traps.
--- 
-2.21.0
-
+       Arnd
