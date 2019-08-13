@@ -2,86 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E99868AFB9
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 08:14:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CF8A8AFBE
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 08:14:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727533AbfHMGN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 02:13:58 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:36414 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727160AbfHMGN6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 02:13:58 -0400
-Received: by mail-wm1-f66.google.com with SMTP id g67so370454wme.1
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 23:13:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=kzWfvmT3z7QW0DJzR/OgLY8B+FWqiZaJCvoLWA3Xqjc=;
-        b=BER4lNMvdWj194yOwZ3udjh1L2X3bmuftAKjDG8p8lFVR0BSQQXdAXv22QOoKGJI0A
-         CCBCV4TJKD5GumQ7lq5KfeGQ1vq+5TEXMbnnT1srZuY3BCC/sLTLdm6pk28xxTQyVquV
-         +Otzjbybh1hes7GMIhYvCmE7Ev5tQU1KIUJ+IHi69IR0weqyxFdXX9iKFw5wLvOFJXXN
-         lmBpI4UAKrcnt7H9I61YgETG+tmDOCVLicYTaqxDdJyvT/2pcnTMfoCMsP5GiuYN3Mdc
-         M1iiMJj5N5ChG2eq8SaYW/29MDq0E8DTT/vO1NzvYLlNyF2MD20+XQwI8qDUN4+VdpBK
-         xubQ==
+        id S1727579AbfHMGOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 02:14:50 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35923 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726769AbfHMGOu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 02:14:50 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r3so12881794wrt.3;
+        Mon, 12 Aug 2019 23:14:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=kzWfvmT3z7QW0DJzR/OgLY8B+FWqiZaJCvoLWA3Xqjc=;
-        b=og3LUWM1CPQhaUXGb5rNvv+ydCOmm8W66AvNomrB40m2kwiPOeWHeyt/B0KzrAfvEW
-         l6EfXYuOxt45hZwg3LVX+CA1r2AYlGj312GHqIorhTC6h/FVSOOSPCNQUcWK4OSqRmEW
-         FleKlCF6UZnU+/wWPy6F+BypJ+ZDo1BLvhuoSD/M4OECfn4mfkeHZE2JHVCQtNB6o232
-         juSOO1tpOaHSQ8jvvHYgGKvDQRwQeYvF95kc1ot4+BEwga8wRIKMPhgdNjfq3x+zudfJ
-         aXI4/3q3kweQtdnE1SGlEs+LdriPExU6g0x4RCApT+Ha3Tij2NWtK3GFsu7Dn9PAwYDt
-         zH8w==
-X-Gm-Message-State: APjAAAV0TbGMIn8fHJI19Qp4hFRpMREEV0QSJAlnzxK7K76fZTasDYzK
-        DtWgSqtFU5/wNGmmDZ5Kkr8qHL+Ubeg=
-X-Google-Smtp-Source: APXvYqzZq/WBeLVmFdgxhYMgPylYRtiPKF25agbohk0XQVhCxEGS/Y5PXNkQeCFr2xwj41BRIr+deg==
-X-Received: by 2002:a7b:c019:: with SMTP id c25mr1030460wmb.98.1565676836542;
-        Mon, 12 Aug 2019 23:13:56 -0700 (PDT)
-Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id t63sm456396wmt.6.2019.08.12.23.13.56
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Mon, 12 Aug 2019 23:13:56 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 08:13:55 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        stephen@networkplumber.org, dsahern@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v3 1/3] net: devlink: allow to change namespaces
-Message-ID: <20190813061355.GF2428@nanopsycho>
-References: <20190812134751.30838-1-jiri@resnulli.us>
- <20190812134751.30838-2-jiri@resnulli.us>
- <20190812182122.5bc71d30@cakuba.netronome.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fOymHFFg/Qx1w7bntMrnDlbWlBs3n8KAqHgdURM4Ltc=;
+        b=dbzA0RPpB90WO9U4XXVDIE4fOqe78WOM/Umq/pRjaT3IcKx25UUsh/8YYWmy7+1lTH
+         qmGU+XckfI1fzIfXmpyVVrQejgV74/tKxbv8QuGW2mC42mRFiFhyMTmcEPR7M9e7Jb1W
+         AB/zYFiJftkgnEZwjoD7p90tUswbje1KEXJULR9PaK/FO0jBxSiNvXQ9xANjlfr7um8j
+         xNq7LHOzEYomEj/JKM8VncalmDHirwGLo6ZWsU+17/nNeetdQ+CNy5ypKD8w1Tmljr0B
+         TKsYjj7LmrhmPgoD/KQG3Ebk7UmuMtTPS8sxN0K57jGDO9JJUPHJAagwNEn+RDb70NbI
+         EOIw==
+X-Gm-Message-State: APjAAAXggEe3KOXtZgBwVrB/HIlJCNNTkRS/x/wFYHoVbsxAq3qPHXYT
+        j3Iz6TPDaeWjBi0oAITN+1JMgKle9zA=
+X-Google-Smtp-Source: APXvYqymp3uVKPuQ8o0VJI/eQpac92CVm88YLhik5MEZRtL1n660rv7DAXBxBLyE/M7CILXNGgQy0Q==
+X-Received: by 2002:adf:f286:: with SMTP id k6mr45478806wro.320.1565676887975;
+        Mon, 12 Aug 2019 23:14:47 -0700 (PDT)
+Received: from localhost.localdomain (broadband-188-32-48-208.ip.moscow.rt.ru. [188.32.48.208])
+        by smtp.googlemail.com with ESMTPSA id o126sm676773wmo.1.2019.08.12.23.14.45
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Aug 2019 23:14:47 -0700 (PDT)
+From:   Denis Efremov <efremov@linux.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Denis Efremov <efremov@linux.com>, joe@perches.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: PHY LIBRARY: Remove sysfs-bus-mdio record
+Date:   Tue, 13 Aug 2019 09:14:39 +0300
+Message-Id: <20190813061439.17529-1-efremov@linux.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com>
+References: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190812182122.5bc71d30@cakuba.netronome.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tue, Aug 13, 2019 at 03:21:22AM CEST, jakub.kicinski@netronome.com wrote:
->On Mon, 12 Aug 2019 15:47:49 +0200, Jiri Pirko wrote:
->> @@ -6953,9 +7089,33 @@ int devlink_compat_switch_id_get(struct net_device *dev,
->>  	return 0;
->>  }
->>  
->> +static void __net_exit devlink_pernet_exit(struct net *net)
->> +{
->> +	struct devlink *devlink;
->> +
->> +	mutex_lock(&devlink_mutex);
->> +	list_for_each_entry(devlink, &devlink_list, list)
->> +		if (net_eq(devlink_net(devlink), net))
->> +			devlink_netns_change(devlink, &init_net);
->> +	mutex_unlock(&devlink_mutex);
->> +}
->
->Just to be sure - this will not cause any locking issues?
->Usually the locking order goes devlink -> rtnl
+Update MAINTAINERS to reflect that sysfs-bus-mdio documentation
+was removed.
 
-rtnl is not taken. Do I miss something?
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: David S. Miller <davem@davemloft.net>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: netdev@vger.kernel.org
+Fixes: a6cd0d2d493a ("Documentation: net-sysfs: Remove duplicate PHY device documentation")
+Signed-off-by: Denis Efremov <efremov@linux.com>
+---
+ MAINTAINERS | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2776e0797ae3..ab870920ea82 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6065,7 +6065,6 @@ M:	Florian Fainelli <f.fainelli@gmail.com>
+ M:	Heiner Kallweit <hkallweit1@gmail.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/ABI/testing/sysfs-bus-mdio
+ F:	Documentation/devicetree/bindings/net/ethernet-phy.yaml
+ F:	Documentation/devicetree/bindings/net/mdio*
+ F:	Documentation/networking/phy.rst
+-- 
+2.21.0
+
