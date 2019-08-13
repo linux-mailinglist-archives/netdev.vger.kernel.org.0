@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 28A488BBF9
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 16:48:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 282238BBF8
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 16:48:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729795AbfHMOsu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 10:48:50 -0400
-Received: from mail-wm1-f48.google.com ([209.85.128.48]:51675 "EHLO
-        mail-wm1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729506AbfHMOss (ORCPT
+        id S1729789AbfHMOst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 10:48:49 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:50529 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726637AbfHMOss (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 10:48:48 -0400
-Received: by mail-wm1-f48.google.com with SMTP id 207so1790826wma.1
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 07:48:46 -0700 (PDT)
+Received: by mail-wm1-f65.google.com with SMTP id v15so1794891wml.0
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 07:48:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TNQdUyf7dGZDLwhoFTzq/Vze7EZXO2Vomec1wEHF2cU=;
-        b=c9Zifw4+eRIWrBd35Qf42RqQQa+sEH1XX6o09lmF1ZD1Nz3EdXEILqperju1zt14bP
-         BRrLFgbbBteztnPZjMBidz69jwQsHx2q/2f2HY/W33kvNp3/7GnoiShZIqM6CIquJltj
-         xjrwyPHPc1NoZUKpM7DxmJVmsfVCyif5xqzwjqYWBJizJSxPp3o7EAbcxTEKrylwbfRK
-         MbC2v9dfUmQf7LhzI+0RSzVXv4Tj1FfECdtRe7cqPaafC4NGeHNS5pO3tIJrY7P+tyJO
-         5O1W240SvA0DCVV3CFr4FAaM5PLLCVHXm9FRnr58ySIzmvojBWU9aDZxJLIbTm7fDfwR
-         hEjw==
+        bh=1qxrTzlHF4iwE40HMkbzdeG0tmiBjic5rWp5kswtBtA=;
+        b=c4C8l+AIjIibfmXNLBONPd8Jz1kYm0GUGmRFWJRuBkCh/5SbVStHFjtBurDvrlx69i
+         0sOobyepbVD8LQ3GHShj9rlDjjEzjFXuQKJtwNdAUgnYuoFXJasQKT5whe1GhQRAAuyW
+         WRhcpoE9oiOn7VXv77oXO9PjFt/qDDQYb7iYQ4XoFJEcTC1GMrLkHHlHBVJQD4zvamsm
+         GFm4LDm49RW3TBmT8qDhlDjPb4tHfUY+Gkz08pMzEIIx1Q5WTZ2yW+mIRyhsDVNy3AXd
+         iJEUZDw83D6dhN7atOVkTQlA+pm0ezz1mDJBToTPPVzIOiLXYx0Qrw8sD6DqOkxTk2HD
+         /GCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TNQdUyf7dGZDLwhoFTzq/Vze7EZXO2Vomec1wEHF2cU=;
-        b=Ua+b6ca8Z6Bz8SgpID+LJ5L7O0kEGoBREGEPMLt/OfF/LYLlTIsJUHIdktTl5kf99W
-         NYfmF8nRmsEpDBe1sT/ZPh0AR3ZbfApinZ2L617Xh+dNuM5+L+tnI50a+jgJkCpGe5mq
-         hqmHr8ZUysBszYLgDzdyIAIkd8GImWxSpZENZK2b+hAN/xGrVZNSt/horkKeHLzAJlK3
-         89QlaiDbGjQqYaqlH7RwHn1j89N51kYphYhnr1HY//E4yeV684n1Xso25goG+EuxXiK+
-         BNE7zZimdCSNio2OdE6aHcJJrrrGzb9cHYbH+xr+B/WF9pe3y8Yf6pKEmZuzecoYSB4M
-         3Uwg==
-X-Gm-Message-State: APjAAAWbtQgQ61zA7Y6zb/T3nOolpGxtvVTzQYl3osUn14c6N65m7snz
-        cu2bBDuVmnVAN3ekHax10+q9NxfpSBM=
-X-Google-Smtp-Source: APXvYqylVjkGd8nNyOKFexXtFKfAdBnwNckfaWnOQE5Q/4/AmLOhhvtuf7+DY0UWj71aHP9k5GHWnA==
-X-Received: by 2002:a1c:1ac2:: with SMTP id a185mr3600976wma.96.1565707725305;
-        Tue, 13 Aug 2019 07:48:45 -0700 (PDT)
+        bh=1qxrTzlHF4iwE40HMkbzdeG0tmiBjic5rWp5kswtBtA=;
+        b=t2c+qnquDxGqXqPqZUJQmwTYr+qz4KqQ/LGTPJBmIO+YQOn11Vs3xhyEfHwE9JjykV
+         3gQGiIFwf4O5X4uoyVI5ewVcQzUqt9IB5i+ebi+mGfbnjXmW5Nxd29Iz5HRgfDvVVCTu
+         KBy34p63nr1tbscxc1udn+b+1irn76yf/t9t6bHcJY0AJmBFFV1D+6Ll3qybNvgQtW2+
+         C2sMgAIaL4nKvdzfW8dhTCYmeYE2E9I0Rc5iNSlq9j6uUZln1JXq5xGdngBmRII1/2gb
+         lG9B1vel/wMOnHDKK905FDwm0j6wSS/dAoTFMGjfw3MpXnjXlPLqnkuOwxCyh1EJAbne
+         W/cg==
+X-Gm-Message-State: APjAAAVtfv2UG4WUbwmRatKzDS6DMnhCLmZL4LgFT498KFOTMIEwJsw6
+        ie6SiWokCKcrspFuVy1snKwViDN6kdE=
+X-Google-Smtp-Source: APXvYqxGNYdDjed1Z9IRb1uzRRYgb28bh+pvc9vLPDOhi+dyqfGPXdH7E9+X9S7UaPGJKL1aw7XqLg==
+X-Received: by 2002:a1c:2582:: with SMTP id l124mr3731752wml.153.1565707726184;
+        Tue, 13 Aug 2019 07:48:46 -0700 (PDT)
 Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
-        by smtp.gmail.com with ESMTPSA id d20sm1220852wmb.24.2019.08.13.07.48.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        by smtp.gmail.com with ESMTPSA id l9sm1329039wmh.36.2019.08.13.07.48.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
         Tue, 13 Aug 2019 07:48:45 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         mlxsw@mellanox.com
-Subject: [patch net-next v2 1/2] netdevsim: implement support for devlink region and snapshots
-Date:   Tue, 13 Aug 2019 16:48:42 +0200
-Message-Id: <20190813144843.28466-2-jiri@resnulli.us>
+Subject: [patch net-next v2 2/2] selftests: netdevsim: add devlink regions tests
+Date:   Tue, 13 Aug 2019 16:48:43 +0200
+Message-Id: <20190813144843.28466-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190813144843.28466-1-jiri@resnulli.us>
 References: <20190813144843.28466-1-jiri@resnulli.us>
@@ -63,142 +63,88 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Implement dummy region of size 32K and allow user to create snapshots
-or random data using debugfs file trigger.
+Test netdevsim devlink region implementation.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
- drivers/net/netdevsim/dev.c       | 66 ++++++++++++++++++++++++++++++-
- drivers/net/netdevsim/netdevsim.h |  1 +
- 2 files changed, 66 insertions(+), 1 deletion(-)
+v1->v2:
+- new patch
+---
+ .../drivers/net/netdevsim/devlink.sh          | 54 ++++++++++++++++++-
+ 1 file changed, 53 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 127aef85dc99..8485dd805f7c 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -27,6 +27,41 @@
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+index 858ebdc8d8a3..b77fdd046bea 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+@@ -3,7 +3,7 @@
  
- static struct dentry *nsim_dev_ddir;
+ lib_dir=$(dirname $0)/../../../net/forwarding
  
-+#define NSIM_DEV_DUMMY_REGION_SIZE (1024 * 32)
-+
-+static ssize_t nsim_dev_take_snapshot_write(struct file *file,
-+					    const char __user *data,
-+					    size_t count, loff_t *ppos)
-+{
-+	struct nsim_dev *nsim_dev = file->private_data;
-+	void *dummy_data;
-+	u32 id;
-+	int err;
-+
-+	dummy_data = kmalloc(NSIM_DEV_DUMMY_REGION_SIZE, GFP_KERNEL);
-+	if (!dummy_data) {
-+		pr_err("Failed to allocate memory for region snapshot\n");
-+		goto out;
-+	}
-+
-+	get_random_bytes(dummy_data, NSIM_DEV_DUMMY_REGION_SIZE);
-+
-+	id = devlink_region_shapshot_id_get(priv_to_devlink(nsim_dev));
-+	err = devlink_region_snapshot_create(nsim_dev->dummy_region,
-+					     dummy_data, id, kfree);
-+	if (err)
-+		pr_err("Failed to create region snapshot\n");
-+
-+out:
-+	return count;
-+}
-+
-+static const struct file_operations nsim_dev_take_snapshot_fops = {
-+	.open = simple_open,
-+	.write = nsim_dev_take_snapshot_write,
-+	.llseek = generic_file_llseek,
-+};
-+
- static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- {
- 	char dev_ddir_name[16];
-@@ -44,6 +79,8 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- 			   &nsim_dev->max_macs);
- 	debugfs_create_bool("test1", 0600, nsim_dev->ddir,
- 			    &nsim_dev->test1);
-+	debugfs_create_file("take_snapshot", 0200, nsim_dev->ddir, nsim_dev,
-+			    &nsim_dev_take_snapshot_fops);
- 	return 0;
+-ALL_TESTS="fw_flash_test params_test"
++ALL_TESTS="fw_flash_test params_test regions_test"
+ NUM_NETIFS=0
+ source $lib_dir/lib.sh
+ 
+@@ -90,6 +90,58 @@ params_test()
+ 	log_test "params test"
  }
  
-@@ -248,6 +285,26 @@ static void nsim_devlink_param_load_driverinit_values(struct devlink *devlink)
- 		nsim_dev->test1 = saved_value.vbool;
- }
- 
-+#define NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX 16
-+
-+static int nsim_dev_dummy_region_init(struct nsim_dev *nsim_dev,
-+				      struct devlink *devlink)
++check_region_size()
 +{
-+	nsim_dev->dummy_region =
-+		devlink_region_create(devlink, "dummy",
-+				      NSIM_DEV_DUMMY_REGION_SNAPSHOT_MAX,
-+				      NSIM_DEV_DUMMY_REGION_SIZE);
-+	if (IS_ERR(nsim_dev->dummy_region))
-+		return PTR_ERR(nsim_dev->dummy_region);
++	local name=$1
++	local size
 +
-+	return 0;
++	size=$(devlink region show $DL_HANDLE/$name -j | jq -e -r '.[][].size')
++	check_err $? "Failed to get $name region size"
++	[ $size -eq 32768 ]
++	check_err $? "Invalid $name region size"
 +}
 +
-+static void nsim_dev_dummy_region_exit(struct nsim_dev *nsim_dev)
++check_region_snapshot_count()
 +{
-+	devlink_region_destroy(nsim_dev->dummy_region);
++	local name=$1
++	local phase_name=$2
++	local expected_count=$3
++	local count
++
++	count=$(devlink region show $DL_HANDLE/$name -j | jq -e -r '.[][].snapshot | length')
++	[ $count -eq $expected_count ]
++	check_err $? "Unexpected $phase_name snapshot count"
 +}
 +
- static int nsim_dev_reload(struct devlink *devlink,
- 			   struct netlink_ext_ack *extack)
++regions_test()
++{
++	RET=0
++
++	local count
++
++	check_region_size dummy
++	check_region_snapshot_count dummy initial 0
++
++	echo ""> $DEBUGFS_DIR/take_snapshot
++	check_err $? "Failed to take first dummy region snapshot"
++	check_region_snapshot_count dummy post-first-snapshot 1
++
++	echo ""> $DEBUGFS_DIR/take_snapshot
++	check_err $? "Failed to take second dummy region snapshot"
++	check_region_snapshot_count dummy post-second-snapshot 2
++
++	echo ""> $DEBUGFS_DIR/take_snapshot
++	check_err $? "Failed to take third dummy region snapshot"
++	check_region_snapshot_count dummy post-third-snapshot 3
++
++	devlink region del $DL_HANDLE/dummy snapshot 1
++	check_err $? "Failed to delete first dummy region snapshot"
++
++	check_region_snapshot_count dummy post-first-delete 2
++
++	log_test "regions test"
++}
++
+ setup_prepare()
  {
-@@ -365,10 +422,14 @@ nsim_dev_create(struct net *net, struct nsim_bus_dev *nsim_bus_dev,
- 		goto err_dl_unregister;
- 	nsim_devlink_set_params_init_values(nsim_dev, devlink);
- 
--	err = nsim_dev_debugfs_init(nsim_dev);
-+	err = nsim_dev_dummy_region_init(nsim_dev, devlink);
- 	if (err)
- 		goto err_params_unregister;
- 
-+	err = nsim_dev_debugfs_init(nsim_dev);
-+	if (err)
-+		goto err_dummy_region_exit;
-+
- 	err = nsim_bpf_dev_init(nsim_dev);
- 	if (err)
- 		goto err_debugfs_exit;
-@@ -378,6 +439,8 @@ nsim_dev_create(struct net *net, struct nsim_bus_dev *nsim_bus_dev,
- 
- err_debugfs_exit:
- 	nsim_dev_debugfs_exit(nsim_dev);
-+err_dummy_region_exit:
-+	nsim_dev_dummy_region_exit(nsim_dev);
- err_params_unregister:
- 	devlink_params_unregister(devlink, nsim_devlink_params,
- 				  ARRAY_SIZE(nsim_devlink_params));
-@@ -398,6 +461,7 @@ static void nsim_dev_destroy(struct nsim_dev *nsim_dev)
- 
- 	nsim_bpf_dev_exit(nsim_dev);
- 	nsim_dev_debugfs_exit(nsim_dev);
-+	nsim_dev_dummy_region_exit(nsim_dev);
- 	devlink_params_unregister(devlink, nsim_devlink_params,
- 				  ARRAY_SIZE(nsim_devlink_params));
- 	devlink_unregister(devlink);
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index ef879892dd6f..521802d429a0 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -163,6 +163,7 @@ struct nsim_dev {
- 	bool fw_update_status;
- 	u32 max_macs;
- 	bool test1;
-+	struct devlink_region *dummy_region;
- };
- 
- int nsim_dev_init(void);
+ 	modprobe netdevsim
 -- 
 2.21.0
 
