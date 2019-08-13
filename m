@@ -2,116 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 817AE8B56D
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 12:23:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F06C8B5C5
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 12:39:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728932AbfHMKXx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 06:23:53 -0400
-Received: from mail-lf1-f49.google.com ([209.85.167.49]:35944 "EHLO
-        mail-lf1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728912AbfHMKXw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 06:23:52 -0400
-Received: by mail-lf1-f49.google.com with SMTP id j17so22364720lfp.3
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 03:23:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=mFrYdNufqJMBiXr6Fl+Xru3C6SYEreBVGiSnrc3weyc=;
-        b=Y0RUcptj1nphOy9DUsYSiUGS5oC8t0JnfW7QiIiMtYxxcHAAIyv1N4Upb4ezqwLOrZ
-         wuZg6ub802synfGnhYu7FTj6Q+z0l0UrajtxxBKWSW8G7D+qPTE7qJu0MjppbAHzzLYm
-         0aOOHQIFsG4z6eviJ8yb8Cqdyw0y4/2IaU/kCNA0Qu0+tbdQv0fRSnCnCPEJJRJ6eat8
-         WZgcxw37voDsQAoCE3tGerY8pE+0S3QnAax+CxfMuNScM6koos5vYuslETUmiTFak7pq
-         p1gRy0yl2o4tUwFoqJ8fYbKrrGXdLOK5OILS8ajqrmb8qo+wJlZYxAc/vIIwa6vYzrYR
-         bYLw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=mFrYdNufqJMBiXr6Fl+Xru3C6SYEreBVGiSnrc3weyc=;
-        b=YFM56VvxGGkZ1KN70ALTuJZsX6dHS6QpFMlVIJ63LBWenDda+LvNaLCI285Dz2cVB2
-         /d4zAfn6tIb/2U8vc7ZKdKpVphyk1rclCN7XVKsyVUNlK6wjky2sZu9AIMZEfDHZThhO
-         snx/bzLjAC/C00otnqmaaRAlQUR+aI8Jp91ozIxqDpoQy0M7ZYWzeycifL1VppI06fau
-         xV2sRGZePBziKSGQW/u3A3bO2bL2kU+H+b21F8iZqYNkcK2EtmD5+AYfIX5OO9C7V934
-         bChYgi4+Pdb4Y8NrR7CMvomtsp8o7GadX0NWsm/V9nhGccASUXzyx+XBrJuv5EGBgaNt
-         cEog==
-X-Gm-Message-State: APjAAAXwt4OOGfrIt8p1s8LammNESlbl+hpUjXznfI4nCD6p/JMYNV9H
-        AjyiO1ccTHCp/kgaYmXa/xfVnQ==
-X-Google-Smtp-Source: APXvYqx5ubYdC+pwKtPbpWBtsKuHRSKAFyFuYvHkqHK34jLbYYqbtI1zkcH1ZbBt1JQOtwq91dYtuA==
-X-Received: by 2002:a19:6041:: with SMTP id p1mr22325227lfk.6.1565691829914;
-        Tue, 13 Aug 2019 03:23:49 -0700 (PDT)
-Received: from localhost.localdomain (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id e87sm24796942ljf.54.2019.08.13.03.23.48
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 03:23:49 -0700 (PDT)
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com
-Cc:     davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Subject: [PATCH bpf-next 3/3] samples: bpf: syscal_nrs: use mmap2 if defined
-Date:   Tue, 13 Aug 2019 13:23:18 +0300
-Message-Id: <20190813102318.5521-4-ivan.khoronzhuk@linaro.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190813102318.5521-1-ivan.khoronzhuk@linaro.org>
-References: <20190813102318.5521-1-ivan.khoronzhuk@linaro.org>
+        id S1727974AbfHMKjJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 06:39:09 -0400
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:38803 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726298AbfHMKjJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 06:39:09 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id DF27B21903;
+        Tue, 13 Aug 2019 06:39:07 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 13 Aug 2019 06:39:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=vSADTg
+        YYe70qQvEnQ/VEVEtV1pTHyHREzF3WFn0leMM=; b=Fh2KgJcI+WG2SuFuUFfZme
+        DGYQHHjsRtCY4/hJ85HC9KScbN4+RIViEOXU3XFA2govgGqsO1cCFuJSFlwoI2UE
+        H6MtIQdzjh+CWil5b5FcSeUjs1xXQyl5OTRzD3nTJoY5fi4M+rSI6itPyCEi6tCt
+        F15rVZ1TcbXKrENo59IyX0ab/e5BTXMkL7/n+C3ulDQsJFuf85kIvLOQg0IOMXZ6
+        2VWUMRy4eIfefkLr0yuVPOXbsVVRvXh0q5nGnm9bcgadIZ6WWH6zUwR6lGmiUi16
+        fuOcCddk1VXuCI3YPQTUzZCUBDcm0ywineMAwfQ37CiiIvtHecfOMpsabSxfVJQg
+        ==
+X-ME-Sender: <xms:S5NSXeMlocT34LgiKCWWWf4Lu9njqeq0id5wJznknF9ZOYANZZTsMA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddruddviedgvdejucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:S5NSXVuvE-WPysq5vrVVWc7no_GkwVGnf7qvkLkmrst7s1TGVME6OQ>
+    <xmx:S5NSXT-LcBVtipqanC6PM4BlcwZyeKXPB9nnf30fuVnjF_gZDKWAig>
+    <xmx:S5NSXRF7NKCrrpXKjCHd79iVV50H1sstTvfYhgkP-C4RXX2y11NiDw>
+    <xmx:S5NSXTJDBeuNu77109i3EXujA3ANF7EQyQYLgpJB_wGV0ATmsTEIHw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id B920380065;
+        Tue, 13 Aug 2019 06:39:06 -0400 (EDT)
+Date:   Tue, 13 Aug 2019 13:39:04 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, dsahern@gmail.com,
+        stephen@networkplumber.org, jiri@mellanox.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH iproute2-next v2 4/4] devlink: Add man page for
+ devlink-trap
+Message-ID: <20190813103904.GA16305@splinter>
+References: <20190813083143.13509-1-idosch@idosch.org>
+ <20190813083143.13509-5-idosch@idosch.org>
+ <20190813102037.GP2428@nanopsycho>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190813102037.GP2428@nanopsycho>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For arm32 xdp sockets mmap2 is preferred, so use it if it's defined.
+On Tue, Aug 13, 2019 at 12:20:37PM +0200, Jiri Pirko wrote:
+> Tue, Aug 13, 2019 at 10:31:43AM CEST, idosch@idosch.org wrote:
+> >From: Ido Schimmel <idosch@mellanox.com>
+> >
+> >Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> >---
+> > man/man8/devlink-monitor.8 |   3 +-
+> > man/man8/devlink-trap.8    | 138 +++++++++++++++++++++++++++++++++++++
+> > man/man8/devlink.8         |  11 ++-
+> > 3 files changed, 150 insertions(+), 2 deletions(-)
+> > create mode 100644 man/man8/devlink-trap.8
+> >
+> >diff --git a/man/man8/devlink-monitor.8 b/man/man8/devlink-monitor.8
+> >index 13fe641dc8f5..fffab3a4ce88 100644
+> >--- a/man/man8/devlink-monitor.8
+> >+++ b/man/man8/devlink-monitor.8
+> >@@ -21,7 +21,7 @@ command is the first in the command line and then the object list.
+> > .I OBJECT-LIST
+> > is the list of object types that we want to monitor.
+> > It may contain
+> >-.BR dev ", " port ".
+> >+.BR dev ", " port ", " trap ", " trap-group .
+> 
+> Looks like "trap-group" is a leftover here, isn't it?
 
-Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
----
- samples/bpf/syscall_nrs.c  |  5 +++++
- samples/bpf/tracex5_kern.c | 11 +++++++++++
- 2 files changed, 16 insertions(+)
+You get events when traps and groups are created / destroyed. See below output
+when creating a new netdevsim device:
 
-diff --git a/samples/bpf/syscall_nrs.c b/samples/bpf/syscall_nrs.c
-index 516e255cbe8f..2dec94238350 100644
---- a/samples/bpf/syscall_nrs.c
-+++ b/samples/bpf/syscall_nrs.c
-@@ -9,5 +9,10 @@ void syscall_defines(void)
- 	COMMENT("Linux system call numbers.");
- 	SYSNR(__NR_write);
- 	SYSNR(__NR_read);
-+#ifdef __NR_mmap2
-+	SYSNR(__NR_mmap2);
-+#else
- 	SYSNR(__NR_mmap);
-+#endif
-+
- }
-diff --git a/samples/bpf/tracex5_kern.c b/samples/bpf/tracex5_kern.c
-index f57f4e1ea1ec..300350ad299a 100644
---- a/samples/bpf/tracex5_kern.c
-+++ b/samples/bpf/tracex5_kern.c
-@@ -68,12 +68,23 @@ PROG(SYS__NR_read)(struct pt_regs *ctx)
- 	return 0;
- }
- 
-+#ifdef __NR_mmap2
-+PROG(SYS__NR_mmap2)(struct pt_regs *ctx)
-+{
-+	char fmt[] = "mmap2\n";
-+
-+	bpf_trace_printk(fmt, sizeof(fmt));
-+	return 0;
-+}
-+#else
- PROG(SYS__NR_mmap)(struct pt_regs *ctx)
- {
- 	char fmt[] = "mmap\n";
-+
- 	bpf_trace_printk(fmt, sizeof(fmt));
- 	return 0;
- }
-+#endif
- 
- char _license[] SEC("license") = "GPL";
- u32 _version SEC("version") = LINUX_VERSION_CODE;
--- 
-2.17.1
+$ devlink mon trap-group
+[trap-group,new] netdevsim/netdevsim20: name l2_drops generic true
+[trap-group,new] netdevsim/netdevsim20: name l3_drops generic true
+[trap-group,new] netdevsim/netdevsim20: name buffer_drops generic true
 
+$ devlink mon trap
+[trap,new] netdevsim/netdevsim10: name source_mac_is_multicast type drop generic true action drop group l2_drops
+[trap,new] netdevsim/netdevsim10: name vlan_tag_mismatch type drop generic true action drop group l2_drops
+[trap,new] netdevsim/netdevsim10: name ingress_vlan_filter type drop generic true action drop group l2_drops
+[trap,new] netdevsim/netdevsim10: name ingress_spanning_tree_filter type drop generic true action drop group l2_drops
+[trap,new] netdevsim/netdevsim10: name port_list_is_empty type drop generic true action drop group l2_drops
+[trap,new] netdevsim/netdevsim10: name port_loopback_filter type drop generic true action drop group l2_drops
+[trap,new] netdevsim/netdevsim10: name fid_miss type exception generic false action trap group l2_drops
+[trap,new] netdevsim/netdevsim10: name blackhole_route type drop generic true action drop group l3_drops
+[trap,new] netdevsim/netdevsim10: name ttl_value_is_too_small type exception generic true action trap group l3_drops
+[trap,new] netdevsim/netdevsim10: name tail_drop type drop generic true action drop group buffer_drops
