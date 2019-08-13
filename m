@@ -2,83 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A09B8AC6D
-	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 03:21:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C169F8AC7B
+	for <lists+netdev@lfdr.de>; Tue, 13 Aug 2019 03:47:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726505AbfHMBVh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 12 Aug 2019 21:21:37 -0400
-Received: from mail-ua1-f52.google.com ([209.85.222.52]:42440 "EHLO
-        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbfHMBVh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 21:21:37 -0400
-Received: by mail-ua1-f52.google.com with SMTP id a97so40895575uaa.9
-        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 18:21:36 -0700 (PDT)
+        id S1726488AbfHMBrB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 12 Aug 2019 21:47:01 -0400
+Received: from mail-pg1-f170.google.com ([209.85.215.170]:35919 "EHLO
+        mail-pg1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726236AbfHMBrB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 12 Aug 2019 21:47:01 -0400
+Received: by mail-pg1-f170.google.com with SMTP id l21so50387451pgm.3
+        for <netdev@vger.kernel.org>; Mon, 12 Aug 2019 18:47:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=UGP4+hKyNcO1H3itt8gKieN60MFhNC0psdPAjNhEJro=;
-        b=PGuAmJL+GLcC7UQp/B7vowzsHgQGgfve+bITEc4T02CHPEpXUMGIIt9fQSLuYW3bIv
-         2F0C/Bw39QOwdNdZ6uPEmFqplWZly7WX/3+TmNalv22cXTWMg/yJ7TJDAwVHssuKJD7N
-         o2R22qBY8LahgSRl38U56sgLc9DCr1PHIPxJK7JytrRM7n9/IVnVmU3r49QJX7vMPNxe
-         eMbStsK0F8c7BuuIUJHjwIBx9hDWAeRY+2hfZOCLk9Govk9aKd5EEhfTXs9UM+7Pprvq
-         qfhxw5f4gaXSnpKbfOWpaXyvvwQLkpplDAhkUnluCL9MYGpsYhS+ejfKeU11Q3OlkEty
-         Bjxw==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/aDKnOlx6ymWiySXM9BZIDKTmyNf0lDhH5ZraDlh70Y=;
+        b=hVLHHtgzkSkGfs3UEHQ/sREPyZRPftGk8mBy28Y0hBCLz3VRjiz85FE51Yns83EaNC
+         Lso3U3G6DNPbuWr0QUhifisjP1AdMtMXmXYqtYvC8DQAqWDvOj8Sjlxf1FPutOvyfQfm
+         7Z95V62qYs7eL2o4BiofamArlXHkAY+GOLK+A1NkXWjKXItKCVab4M50shmSyiONiGI5
+         PWuMf+PtPK14Iqy8NGKBhmVX6SRGW7A+dmReqTyfTEdO66QEP5Yb6d3onSkAR91N/U4K
+         ZkXR8UVuBazf8sQ/2a9oTwko4UfZ1iQctwgNQrzXCzskNAuN/3AEuM+Zkytl0CEyzpnX
+         M2bA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=UGP4+hKyNcO1H3itt8gKieN60MFhNC0psdPAjNhEJro=;
-        b=IEz6GL2CPVVihjUVDLxtnXMZwglRtrY+1qf0TVptmWZ2KC/ciftoOLjwQx2mSnMDU7
-         zo73Xn61HCf0IsPk4k6AWWMQADUwyEI4mPfFlRGj2y0xUMKLU2jzICsgqfdON1AWrQ4w
-         wtzZdEv/omb8cxHfw3pen25McXjc4UKeHyOffKyxUJvzdAe+IBAk8Wiwryh9K3Kb3whA
-         97dHTcpyqg0ljo+CykE0VOCoy3NPGiAF+Xzh6kAaeZL/xKpQzN4vwy7/vYXStt716F+h
-         MKYgwFCniAz7y1tm3orHfPKN3TSx3jb+eiI0Ei8DLbm7iplnrs/lpVZJpK900NJROxG5
-         PBjA==
-X-Gm-Message-State: APjAAAUetrsK7UrrNZElqiL8GHGuaMif/7AEjD/PnZjc4qngMKdk7OT0
-        ritOpqcFJl9Ncd9ofF+yLIPd7w==
-X-Google-Smtp-Source: APXvYqz0hAEjYO8E2J7zkZADTay+fEBfZUea1AQko4APoo/vLvoZXDZbG6Zso3hJfTnD0qT9WlcX9g==
-X-Received: by 2002:ab0:740e:: with SMTP id r14mr22693066uap.108.1565659293653;
-        Mon, 12 Aug 2019 18:21:33 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id u5sm104388270uah.0.2019.08.12.18.21.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 12 Aug 2019 18:21:33 -0700 (PDT)
-Date:   Mon, 12 Aug 2019 18:21:22 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        stephen@networkplumber.org, dsahern@gmail.com, mlxsw@mellanox.com
-Subject: Re: [patch net-next v3 1/3] net: devlink: allow to change
- namespaces
-Message-ID: <20190812182122.5bc71d30@cakuba.netronome.com>
-In-Reply-To: <20190812134751.30838-2-jiri@resnulli.us>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/aDKnOlx6ymWiySXM9BZIDKTmyNf0lDhH5ZraDlh70Y=;
+        b=dhd++lfyAyY20+EeGyOT6nmVqGfBujpzebhk7x2d9XRBkGjgpUffIxTOcfhcCMVw0a
+         BShE8UEa7qFpblVNY0rSUNVgsn9etyziYXi3Z814aC4V6yhQZtt5LtKFP2fUWMdZ2/h7
+         SOinUd7qWLId9+bax/d/kTle0f0LEmF6/y78E6UURkL09dgphNJ7K841lDGJYnY2l1dv
+         dnvDsJlq2dTo0/um3Nl8GKvGIJ7BaNsBAkGuzeYJ0UJJEkDNKmTA/4c2wzV6okuFY48P
+         YZopgpRXIRQ61pqYu+AmwXwuon2Tk+vHQrxnNXJY/NU55UpDbWZ0luM0uiESKLuA+ifq
+         0qZg==
+X-Gm-Message-State: APjAAAVvoON3nChNofCIIHmJ8MfSC0EV7Fha7WslHqa6HiaRn55W8Dbr
+        aYqIvRV/fOeES9qx6EDDLHPeDOQT
+X-Google-Smtp-Source: APXvYqxkNiV/hOTBHNi1z2v+lUbZJsKBilTHro3vC0DCRIHksW3DQaVpD7kMC5pAz3aqHkK+iMq9IQ==
+X-Received: by 2002:a63:290:: with SMTP id 138mr29930978pgc.402.1565660820777;
+        Mon, 12 Aug 2019 18:47:00 -0700 (PDT)
+Received: from [172.27.227.188] ([216.129.126.118])
+        by smtp.googlemail.com with ESMTPSA id fa14sm854076pjb.12.2019.08.12.18.46.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 12 Aug 2019 18:46:59 -0700 (PDT)
+Subject: Re: [patch net-next v3 0/3] net: devlink: Finish network namespace
+ support
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, stephen@networkplumber.org, mlxsw@mellanox.com
 References: <20190812134751.30838-1-jiri@resnulli.us>
-        <20190812134751.30838-2-jiri@resnulli.us>
-Organization: Netronome Systems, Ltd.
+ <bfb879be-a232-0ef1-1c40-3a9c8bcba8f8@gmail.com>
+ <20190812181100.1cfd8b9d@cakuba.netronome.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a9fa6f7f-7981-6077-106d-fa2abfc7397c@gmail.com>
+Date:   Mon, 12 Aug 2019 19:46:57 -0600
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190812181100.1cfd8b9d@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 12 Aug 2019 15:47:49 +0200, Jiri Pirko wrote:
-> @@ -6953,9 +7089,33 @@ int devlink_compat_switch_id_get(struct net_device *dev,
->  	return 0;
->  }
->  
-> +static void __net_exit devlink_pernet_exit(struct net *net)
-> +{
-> +	struct devlink *devlink;
-> +
-> +	mutex_lock(&devlink_mutex);
-> +	list_for_each_entry(devlink, &devlink_list, list)
-> +		if (net_eq(devlink_net(devlink), net))
-> +			devlink_netns_change(devlink, &init_net);
-> +	mutex_unlock(&devlink_mutex);
-> +}
+On 8/12/19 7:11 PM, Jakub Kicinski wrote:
+> If the devlink instance just disappeared - that'd be a very very strange
+> thing. Only software objects disappear with the namespace. 
+> Netdevices without ->rtnl_link_ops go back to init_net.
 
-Just to be sure - this will not cause any locking issues?
-Usually the locking order goes devlink -> rtnl
+netdevsim still has rtnl_link_ops:
+
+static struct rtnl_link_ops nsim_link_ops __read_mostly = {
+        .kind           = DRV_NAME,
+        .validate       = nsim_validate,
+};
