@@ -2,103 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6ED68D78F
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 18:01:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8A188D7C5
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 18:14:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbfHNQBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 12:01:52 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:43241 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfHNQBw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 12:01:52 -0400
-Received: by mail-lf1-f66.google.com with SMTP id c19so79733027lfm.10
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 09:01:50 -0700 (PDT)
+        id S1727111AbfHNQOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 12:14:33 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:33297 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725828AbfHNQOc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 12:14:32 -0400
+Received: by mail-pg1-f193.google.com with SMTP id n190so12507317pgn.0
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 09:14:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=4wY0puZ76rUC3DSckf3mPRYmF7SPUJuOAo8CaB7ZdL0=;
-        b=ek6qJHh8grpDMf9DPB7XyzKQm9N39M5jVmFc2DDmCOdXTzqoHVHoDqoDk1YCR2lIOn
-         oAbO+mrAMtobesvvsCq+HgShDk7X2zlvDeGqfsqa/NjjwWGs33Qrni2SlvGQSGrbholN
-         0HekEIdqh5fmessXGirxHkOVY6vFbk6n+jk3o=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5Dnb90Yh0Yi30CzUGA3KdLPS3QiA0QRvGarN3Ikt9O4=;
+        b=jW9oo4hxVTILyxJZgMuRelT53ATRRwVGPuc0oUtx36nKFg8s4eDwHDND8we6VD2k38
+         BGE51MZ+oncWz2Nx1r2lJB7aug8s60QZQ1mCqgxiAkfv0ftxWvz6v6sKl4/ZrpgPbxPx
+         VIjG0apa89g9Od/kRkLpVhtAE3g18//kAHBPp7YyFOb4A5B8GxTZd0dzZrQaOFdh13pN
+         4r1TzuElLU3olkvSvlSVGjOSOBLGml8DKu2jiQ8ToA2nU4DxtntiWqXcoDjHKG1efq60
+         xlIOIg6wQ5327RVgDFB2OArWpDcSNlUXpuOzh3O6rzXBcXEhlOL10103+k+iDb2cYZMK
+         9DvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4wY0puZ76rUC3DSckf3mPRYmF7SPUJuOAo8CaB7ZdL0=;
-        b=HonSXLGkPRbhA31LBFExvCJTjMj71Dxbrxdstm5CR28NBBlyRr6a+R2qqchbvHzKC1
-         vR3M7JH3wpN9gwsuacBH4FwLZVCWH59nIXRJNC79FHWEmse8T4zxcA8dwoz4T2TKARED
-         SvRtcyrbAHMGQzIzuiWrOmbuGNj9XrOnI8blNSH59K1m5YbfeB7dF7augZNzzd4r75yG
-         CJoVVRT670hDs473qu198yjExX194nMJC7esCaC/s2igccGUxo+n6bTFNvC/1btw9wYa
-         wh3O2HZbaMrY3YsWqu1wvTks8jjTkiZYeHkSY1tw83SxghFIG5NBGus7TE9UoWId2D8V
-         OKCw==
-X-Gm-Message-State: APjAAAUoeuzloZKVNxgpZd7soVS4+iI/TY5a4gwPO4wRFkttwsvX2mnO
-        vqCLbMLpFurx9UpBwDwbeJsHDA==
-X-Google-Smtp-Source: APXvYqyv81KLI7ZWHf2QoqI2EfwO+kAHqEMEoi7E++qLvVKglA5H9Nc2crBymRrmxmBPyCCMzJsP0A==
-X-Received: by 2002:ac2:5104:: with SMTP id q4mr98702lfb.56.1565798509937;
-        Wed, 14 Aug 2019 09:01:49 -0700 (PDT)
-Received: from [192.168.0.104] ([79.134.174.40])
-        by smtp.googlemail.com with ESMTPSA id d3sm3205lfj.15.2019.08.14.09.01.47
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 14 Aug 2019 09:01:49 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/4] net: bridge: mdb: allow dump/add/del of
- host-joined entries
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org
-References: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <81258876-5f03-002c-5aa8-2d6d00e6d99e@cumulusnetworks.com>
-Date:   Wed, 14 Aug 2019 19:01:41 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5Dnb90Yh0Yi30CzUGA3KdLPS3QiA0QRvGarN3Ikt9O4=;
+        b=ZjtwBLT2zo8Fo6Dlukf6vKBMeFuqPCS0IWoxgSAExslj+JwlGRDH9anblyD7A2Osal
+         TaSbcw9cj2jhewBs+V3xZvHn+ZK74cAdPp9Xcb7Ze9yWwwZ40vK90QDjupnmubVe3cZV
+         4yVVh2knodWbWk020SiyMB2TKBedD0lzpgB0A766RMXHGmV6sXG5l5pMLhIAjyZDgiD2
+         EmxBzaMPaIEnf6yeNPcHS0llV3tDWBlVDbvjtxw6l3ABoiLiK91c98jATRmFz81VWwUe
+         HlJAQyAcQop/DeYKxTGpIOEV5VMtjqFMxrnb/NS8dYPAdWVHf2QmwXGsNwxrJArGyqNG
+         fcNg==
+X-Gm-Message-State: APjAAAV6jhKBb0gODmYtlxv0wGSa014gmyyLUqZQq4tUxmkoeljAMxle
+        s6XcLb0inPiXHtuxj7KvCcjihg==
+X-Google-Smtp-Source: APXvYqy1XQBB/YWB0o8lIKbgs6//PHjeKByn+iEcC/Pw1rqEm7h757DkL2YO7Uqi/Ug1i3OyJRMy5A==
+X-Received: by 2002:a65:6108:: with SMTP id z8mr39395563pgu.289.1565799271931;
+        Wed, 14 Aug 2019 09:14:31 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id j6sm270788pfa.141.2019.08.14.09.14.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Aug 2019 09:14:31 -0700 (PDT)
+Date:   Wed, 14 Aug 2019 09:14:29 -0700
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Martin Olsson <martin.olsson+netdev@sentorsecurity.com>
+Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: tc - mirred ingress not supported at the moment
+Message-ID: <20190814091429.5a364c51@hermes.lan>
+In-Reply-To: <CAAT+qEbDAuQWGZa5BQYMZfBRQM+mDS=CMb9GTPz6Nxz_WD0M8Q@mail.gmail.com>
+References: <CAAT+qEa6Yw-tf3L_R-phzSvLiGOdW9uLhFGNTz+i9eWhBT_+DA@mail.gmail.com>
+        <CAAT+qEbOx8Jh3aFS-e7U6FyHo03sdcY6UoeGzwYQbO6WRjc3PQ@mail.gmail.com>
+        <CAM_iQpW-kTV1ZL-OnS2TNVcso1NbiiPn0eUz=7f5uTpFucz7sw@mail.gmail.com>
+        <CAAT+qEYG5=5ny+t0VcqiYjDUQLrcj9sBR=2w-fdsE7Jjf4xOkQ@mail.gmail.com>
+        <CAAT+qEbDAuQWGZa5BQYMZfBRQM+mDS=CMb9GTPz6Nxz_WD0M8Q@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/14/19 5:40 PM, Nikolay Aleksandrov wrote:
-> Hi,
-> This set makes the bridge dump host-joined mdb entries, they should be
-> treated as normal entries since they take a slot and are aging out.
-> We already have notifications for them but we couldn't dump them until
-> now so they remained hidden. We dump them similar to how they're
-> notified, in order to keep user-space compatibility with the dumped
-> objects (e.g. iproute2 dumps mdbs in a format which can be fed into
-> add/del commands) we allow host-joined groups also to be added/deleted via
-> mdb commands. That can later be used for L2 mcast MAC manipulation as
-> was recently discussed. Note that iproute2 changes are not necessary,
-> this set will work with the current user-space mdb code.
-> 
-> Patch 01 - a trivial comment move
-> Patch 02 - factors out the mdb filling code so it can be
->            re-used for the host-joined entries
-> Patch 03 - dumps host-joined entries
-> Patch 04 - allows manipulation of host-joined entries via standard mdb
->            calls
-> 
-> Thanks,
->  Nik
-> 
-> Nikolay Aleksandrov (4):
->   net: bridge: mdb: move vlan comments
->   net: bridge: mdb: factor out mdb filling
->   net: bridge: mdb: dump host-joined entries as well
->   net: bridge: mdb: allow add/delete for host-joined groups
-> 
->  net/bridge/br_mdb.c       | 171 +++++++++++++++++++++++++-------------
->  net/bridge/br_multicast.c |  24 ++++--
->  net/bridge/br_private.h   |   2 +
->  3 files changed, 133 insertions(+), 64 deletions(-)
-> 
+On Wed, 14 Aug 2019 11:25:25 +0200
+Martin Olsson <martin.olsson+netdev@sentorsecurity.com> wrote:
 
-Self-NAK
-There's a double notification sent for manual add/del of host groups.
-It's a trivial fix, I'll spin v2 later after running more tests.
+> Hi Cong!
+> 
+> Ah sorry.
+> Already implemented. Great!
+> 
+> Hmmm. Then why don't the manual at
+> https://www.linux.org/docs/man8/tc-mirred.html to reflect the changes?
+> That was the place I checked to see if ingress was still not implemented.
+> In the commit you point at, the sentence "Currently only egress is
+> implemented" has been removed.
 
+The man pages on linux.org are not controlled by kernel/iproute developers.
+Not sure who builds/owns these and don't care.
+
+
+> Question:
+> Is there any form of performance penalty if I send the mirrored
+> traffic to the ingress queue of the destination interface rather than
+> to the egress queue?
+> I mean, in the kernel there is the possibility to perform far more
+> actions on the ingress queue than on the egress, but if I leave both
+> queues at their defaults, will mirrored packets to ingress use more
+> CPU cycles than to the egress destination, or are they more or less
+> identical?
+> 
+> 
+> Question 2:
+> Given the commit
+> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=5eca0a3701223619a513c7209f7d9335ca1b4cfa,
+> how can I see in what kernel version it was added?
+
+Look at the tags
+
+$ git tag --contains 5eca0a3701223619a513c7209f7d9335ca1b4cfa 
+v4.10.0
+v4.11.0
+v4.12.0
+v4.13.0
+v4.14.0
+v4.14.1
+v4.15.0
+v4.16.0
+v4.17.0
+v4.18.0
+v4.19.0
+v4.20.0
+v5.0.0
+v5.1.0
+v5.2.0
+
+https://stackoverflow.com/questions/27886537/how-to-find-out-which-releases-contain-a-given-git-commit
