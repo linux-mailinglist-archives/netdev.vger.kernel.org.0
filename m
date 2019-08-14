@@ -2,145 +2,204 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 472C08CF61
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 11:25:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F8DC8CF67
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 11:26:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbfHNJZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 05:25:39 -0400
-Received: from mail-lf1-f43.google.com ([209.85.167.43]:44177 "EHLO
-        mail-lf1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726383AbfHNJZi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 05:25:38 -0400
-Received: by mail-lf1-f43.google.com with SMTP id v16so7120274lfg.11
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 02:25:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=sentorsecurity.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pZ4G9V/bxMjiKlcxVSDzmNEaY7yeTRFh5KrhMcKms5o=;
-        b=nJmcaRfbrJUNFA40pjHugOmstYy/yRi4GPcU8GookaXNTuA68eEiFuIsqE203DEKmi
-         IXQrU8YnboF4RUu77c58qiyIaYF1FdCXzv6l5tPXh9X35vBzQ3JGcy6wp4Z0cuCJbYAE
-         7Yiq2fekZoP/pKgjIxRu8/jSZ2/zyZGhRxiU2JxD0psHOcM3u+o4/UHzpq9g/p4U3wkz
-         +md4AQg07G8zvzJEXEA9Xb30cK0hKl2/r6JqqDpZodIc6XR+jYsUq5vD2BzoXBE0kcKX
-         C8aMynbRisyKrc776l8zOifps6fJJoWBcll9iE+0rf76ZkVq+ohBdpf/paTpnDDTixtj
-         r7sA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pZ4G9V/bxMjiKlcxVSDzmNEaY7yeTRFh5KrhMcKms5o=;
-        b=lCUhZ9rcI/mEwxTHqDk8RdA9BHafMOIZKZV7jMwGtWaY0ohLCbrO81EMG7cdAqc+/I
-         Vb7PjrUpUb08so3m76rB3IAJWXibvfClUwOwDmjsLz73+5DW2Jjsp2Pp0kE9wWzxCkgT
-         UPRzYdc35Qyzccex96zPkAHyEnFGN+DTqlV2NcM1ZrEhxDkw+f0XgLULm8OyF8y+zE/D
-         QlbQ5SDflDwr5RSi+E7EoTO51rYLW3ZFbl57+Dk84nCXmdyVKE+qxJGdinawYGRv2KbK
-         3Au0Q/fWJ1W+lGT1sQrFLoTcnzs6FUDZmlUyc48QPxoMqNtn1wvjphlqH1FC7iabZSjk
-         Y6lA==
-X-Gm-Message-State: APjAAAUMj2JEN73XcKq+qF6MxXm6XJKA5T+FmEj0s8GiMocvNsmnxC3t
-        Si7L8ocVP1k283sv+MPwMHp/l0R69e+BO0SZIRgxMw==
-X-Google-Smtp-Source: APXvYqwJ2se7EGENjR+qFe1aubUjU+qKU6vyG8cQxzFUMilhKUWBRerwARSih7TMvzDN0kqrr63pwNXbY7ZqRU/UQ4Y=
-X-Received: by 2002:ac2:4d02:: with SMTP id r2mr24465959lfi.138.1565774737031;
- Wed, 14 Aug 2019 02:25:37 -0700 (PDT)
+        id S1726998AbfHNJ0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 05:26:24 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:33346 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725928AbfHNJ0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 05:26:24 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id 30B115FA49;
+        Wed, 14 Aug 2019 11:26:22 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="FCW1o57/";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id F3C5A1D6F475;
+        Wed, 14 Aug 2019 11:26:21 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com F3C5A1D6F475
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1565774782;
+        bh=3q426un0gISmLfXN0uWMxNzgRrhcurIB/xDHYXFpo4Q=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FCW1o57/r09K2Ap/lcGfI0LnufPMC1XNE4Yl9DFVJ8gGILsIjk5yXEiHf7n8wrqRB
+         sEXM+q1zopHa7IZc3iK3CrYZC6Tfwc4ZsYxNwVbVPHRX5xj009mjI2GpQ8BJvswbDG
+         8Ru5t2fNaxKN4BSY+CpcRPL+bm7MD6WfRIs8izFoYgVk23ZiFmjwj0agLmtLA4Na+c
+         WFtZpEJRR7BZeTo1QkoBxCOWRQUWo5wcbjlcWSGpklcYGHmW1LgZs+XbEQk8NhHgXq
+         Lpzlf9Jgd6cutlQfgVLO3twOFqUC7T6k0ABvgDXUYHm1bqu5szoFpxEsdi4m6Il8Ik
+         8uvR+4eSDzzSg==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Wed, 14 Aug 2019 09:26:21 +0000
+Date:   Wed, 14 Aug 2019 09:26:21 +0000
+Message-ID: <20190814092621.Horde.epvj8zK96-aCiV70YB5Q7II@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Stefan Roese <sr@denx.de>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        Felix Fietkau <nbd@openwrt.org>,
+        John Crispin <john@phrozen.org>,
+        Daniel Golle <daniel@makrotopia.org>
+Subject: Re: [PATCH] net: ethernet: mediatek: Add MT7628/88 SoC support
+References: <20190717125345.Horde.JcDE_nBChPFDDjEgIRfPSl3@www.vdorst.com>
+ <a92d7207-80b2-e88d-d869-64c9758ef1da@denx.de>
+In-Reply-To: <a92d7207-80b2-e88d-d869-64c9758ef1da@denx.de>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-References: <CAAT+qEa6Yw-tf3L_R-phzSvLiGOdW9uLhFGNTz+i9eWhBT_+DA@mail.gmail.com>
- <CAAT+qEbOx8Jh3aFS-e7U6FyHo03sdcY6UoeGzwYQbO6WRjc3PQ@mail.gmail.com>
- <CAM_iQpW-kTV1ZL-OnS2TNVcso1NbiiPn0eUz=7f5uTpFucz7sw@mail.gmail.com> <CAAT+qEYG5=5ny+t0VcqiYjDUQLrcj9sBR=2w-fdsE7Jjf4xOkQ@mail.gmail.com>
-In-Reply-To: <CAAT+qEYG5=5ny+t0VcqiYjDUQLrcj9sBR=2w-fdsE7Jjf4xOkQ@mail.gmail.com>
-From:   Martin Olsson <martin.olsson+netdev@sentorsecurity.com>
-Date:   Wed, 14 Aug 2019 11:25:25 +0200
-Message-ID: <CAAT+qEbDAuQWGZa5BQYMZfBRQM+mDS=CMb9GTPz6Nxz_WD0M8Q@mail.gmail.com>
-Subject: tc - mirred ingress not supported at the moment
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Cong!
+Hi Stefan,
 
-Ah sorry.
-Already implemented. Great!
+Quoting Stefan Roese <sr@denx.de>:
 
-Hmmm. Then why don't the manual at
-https://www.linux.org/docs/man8/tc-mirred.html to reflect the changes?
-That was the place I checked to see if ingress was still not implemented.
-In the commit you point at, the sentence "Currently only egress is
-implemented" has been removed.
+> Hi Rene,
+>
+> On 17.07.19 14:53, René van Dorst wrote:
+>
+> <snip>
+>
+>>> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>>> @@ -39,7 +39,8 @@
+>>>  				 NETIF_F_SG | NETIF_F_TSO | \
+>>>  				 NETIF_F_TSO6 | \
+>>>  				 NETIF_F_IPV6_CSUM)
+>>> -#define NEXT_RX_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
+>>> +#define MTK_HW_FEATURES_MT7628	(NETIF_F_SG | NETIF_F_RXCSUM)
+>>> +#define NEXT_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
+>>>
+>>>  #define MTK_MAX_RX_RING_NUM	4
+>>>  #define MTK_HW_LRO_DMA_SIZE	8
+>>> @@ -118,6 +119,7 @@
+>>>  /* PDMA Global Configuration Register */
+>>>  #define MTK_PDMA_GLO_CFG	0xa04
+>>>  #define MTK_MULTI_EN		BIT(10)
+>>> +#define MTK_PDMA_SIZE_8DWORDS	(1 << 4)
+>>>
+>>>  /* PDMA Reset Index Register */
+>>>  #define MTK_PDMA_RST_IDX	0xa08
+>>> @@ -276,11 +278,18 @@
+>>>  #define TX_DMA_OWNER_CPU	BIT(31)
+>>>  #define TX_DMA_LS0		BIT(30)
+>>>  #define TX_DMA_PLEN0(_x)	(((_x) & MTK_TX_DMA_BUF_LEN) << 16)
+>>> +#define TX_DMA_PLEN1(_x)	((_x) & MTK_TX_DMA_BUF_LEN)
+>>>  #define TX_DMA_SWC		BIT(14)
+>>>  #define TX_DMA_SDL(_x)		(((_x) & 0x3fff) << 16)
+>>>
+>>> +/* PDMA on MT7628 */
+>>> +#define TX_DMA_DONE		BIT(31)
+>>> +#define TX_DMA_LS1		BIT(14)
+>>> +#define TX_DMA_DESP2_DEF	(TX_DMA_LS0 | TX_DMA_DONE)
+>>> +
+>>>  /* QDMA descriptor rxd2 */
+>>>  #define RX_DMA_DONE		BIT(31)
+>>> +#define RX_DMA_LSO		BIT(30)
+>>>  #define RX_DMA_PLEN0(_x)	(((_x) & 0x3fff) << 16)
+>>>  #define RX_DMA_GET_PLEN0(_x)	(((_x) >> 16) & 0x3fff)
+>>>
+>>> @@ -289,6 +298,7 @@
+>>>
+>>>  /* QDMA descriptor rxd4 */
+>>>  #define RX_DMA_L4_VALID		BIT(24)
+>>> +#define RX_DMA_L4_VALID_PDMA	BIT(30)		/* when PDMA is used */
+>>>  #define RX_DMA_FPORT_SHIFT	19
+>>>  #define RX_DMA_FPORT_MASK	0x7
+>>>
+>>> @@ -412,6 +422,19 @@
+>>>  #define CO_QPHY_SEL            BIT(0)
+>>>  #define GEPHY_MAC_SEL          BIT(1)
+>>>
+>>> +/* MT7628/88 specific stuff */
+>>> +#define MT7628_PDMA_OFFSET	0x0800
+>>> +#define MT7628_SDM_OFFSET	0x0c00
+>>> +
+>>> +#define MT7628_TX_BASE_PTR0	(MT7628_PDMA_OFFSET + 0x00)
+>>> +#define MT7628_TX_MAX_CNT0	(MT7628_PDMA_OFFSET + 0x04)
+>>> +#define MT7628_TX_CTX_IDX0	(MT7628_PDMA_OFFSET + 0x08)
+>>> +#define MT7628_TX_DTX_IDX0	(MT7628_PDMA_OFFSET + 0x0c)
+>>> +#define MT7628_PST_DTX_IDX0	BIT(0)
+>>> +
+>>> +#define MT7628_SDM_MAC_ADRL	(MT7628_SDM_OFFSET + 0x0c)
+>>> +#define MT7628_SDM_MAC_ADRH	(MT7628_SDM_OFFSET + 0x10)
+>>> +
+>>>  struct mtk_rx_dma {
+>>>  	unsigned int rxd1;
+>>>  	unsigned int rxd2;
+>>> @@ -509,6 +532,7 @@ enum mtk_clks_map {
+>>>  				 BIT(MTK_CLK_SGMII_CK) | \
+>>>  				 BIT(MTK_CLK_ETH2PLL))
+>>>  #define MT7621_CLKS_BITMAP	(0)
+>>> +#define MT7628_CLKS_BITMAP	(0)
+>>>  #define MT7629_CLKS_BITMAP	(BIT(MTK_CLK_ETHIF) | BIT(MTK_CLK_ESW) |  \
+>>>  				 BIT(MTK_CLK_GP0) | BIT(MTK_CLK_GP1) | \
+>>>  				 BIT(MTK_CLK_GP2) | BIT(MTK_CLK_FE) | \
+>>> @@ -563,6 +587,10 @@ struct mtk_tx_ring {
+>>>  	struct mtk_tx_dma *last_free;
+>>>  	u16 thresh;
+>>>  	atomic_t free_count;
+>>> +	int dma_size;
+>>> +	struct mtk_tx_dma *dma_pdma;	/* For MT7628/88 PDMA handling */
+>>> +	dma_addr_t phys_pdma;
+>>> +	int cpu_idx;
+>>>  };
+>>>
+>>>  /* PDMA rx ring mode */
+>>> @@ -604,6 +632,7 @@ enum mkt_eth_capabilities {
+>>>  	MTK_HWLRO_BIT,
+>>>  	MTK_SHARED_INT_BIT,
+>>>  	MTK_TRGMII_MT7621_CLK_BIT,
+>>> +	MTK_SOC_MT7628,
+>>
+>> This should be MTK_SOC_MT7628_BIT, this only defines the bit number!
+>>
+>> and futher on #define MTK_SOC_MT7628 BIT(MTK_SOC_MT7628_BIT)
+>
+> Okay, thanks.
+>
+>> Based on this commit [0], MT7621 also needs the PDMA for the RX path.
+>> I know that is not your issue but I think it is better to add a extra
+>> capability bit for the PDMA bits so it can also be used on other socs.
+>
+> Yes, MT7621 also uses PDMA for RX. The code for RX is pretty much
+> shared (re-used), with slight changes for the MT7628/88 to work
+> correctly on this SoC.
+>
+> I'll work on a capability bit for PDMA vs QDMA on TX though. This
+> might make things a little more transparent.
+
+Great, Thanks for addressing this issue.
+
+I hope we can collaborate to also support mt76x8 in my PHYLINK patches [0][1].
+I am close to posting V2 of the patches but I am currently waiting on some
+fiber modules to test the changes better.
+
+Greats,
+
+René
+
+[0] https://patchwork.ozlabs.org/patch/1136551/
+[1] https://patchwork.ozlabs.org/patch/1136519/
+
+>
+>> Greats,
+>>
+>> René
+>>
+>> [0] https://lkml.org/lkml/2018/3/14/1038
+>
+> Thanks,
+> Stefan
 
 
-Question:
-Is there any form of performance penalty if I send the mirrored
-traffic to the ingress queue of the destination interface rather than
-to the egress queue?
-I mean, in the kernel there is the possibility to perform far more
-actions on the ingress queue than on the egress, but if I leave both
-queues at their defaults, will mirrored packets to ingress use more
-CPU cycles than to the egress destination, or are they more or less
-identical?
 
-
-Question 2:
-Given the commit
-https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=5eca0a3701223619a513c7209f7d9335ca1b4cfa,
-how can I see in what kernel version it was added?
-
-/Martin
-
-
-Den tis 13 aug. 2019 kl 18:47 skrev Cong Wang <xiyou.wangcong@gmail.com>:
->
-> On Tue, Aug 13, 2019 at 4:05 AM Martin Olsson
-> <martin.olsson+netdev@sentorsecurity.com> wrote:
-> > Q1: Why was 'ingress' not implemented at the same time as 'egress'?
->
-> Because you are using an old iproute2.
->
-> ingress support is added by:
-> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=5eca0a3701223619a513c7209f7d9335ca1b4cfa
->
->
-> > 2)
-> > Ok, so I have to use 'egress':
-> > # tc filter add dev eno2 parent ffff: prio 999  protocol all matchall
-> > action mirred egress redirect dev mon0
->
->
-> So you redirect packets from eno2's ingress to mon0's egress.
->
->
-> >
-> > Since the mirred action forces me to use 'egress' as the direction on
-> > the dest interface, all kinds of network statistics tools show
-> > incorrect counters. :-(
-> > eno2 is a pure sniffer interface (it is connected to the SPAN dest
-> > port of a switch).
-> > All packets (matchall) on eno2 are mirrored to mon0.
-> >
-> > # ip -s link show dev eno2
-> >     ...
-> >     ...
-> >     RX: bytes  packets  errors  dropped overrun mcast
-> >     13660757   16329    0       0       0       0
-> >     TX: bytes  packets  errors  dropped carrier collsns
-> >     0          0        0       0       0       0
-> > # ip -s link show dev mon0
-> >     ...
-> >     ...
-> >     RX: bytes  packets  errors  dropped overrun mcast
-> >     0          0        0       0       0       0
-> >     TX: bytes  packets  errors  dropped carrier collsns
-> >     13660757   16329    0       0       0       0
-> >
-> > eno2 and mon0 should be identical, but they are inverted.
->
-> Yes, this behavior is correct. The keyword "egress" in your cmdline
-> already says so.
->
-> >
-> > Q2: So... Can the 'ingress' option please be implemented? (I'm no
-> > programmer, so unfortunetly I can't do it myself).
->
-> It is completed, you need to update your iproute2 and kernel.
->
-> Thanks.
