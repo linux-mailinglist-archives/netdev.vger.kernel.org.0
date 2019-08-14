@@ -2,172 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8F4A8E13F
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 01:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 685E98E149
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 01:35:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729574AbfHNXdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 19:33:42 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:39361 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728370AbfHNXdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 19:33:42 -0400
-Received: by mail-pl1-f195.google.com with SMTP id z3so310134pln.6;
-        Wed, 14 Aug 2019 16:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=64YfvXkywFPm4ZCDH4Fs38E0TxCDMFv/QZ/yXhaRRg4=;
-        b=UG9NeAbiYSVNURFY+JehQV9hg9+mjf3EwuyoyPZ36gfjXx4/NkDW1cRGhBQx4CGVUA
-         qjSzPtNklsZ4xk800TG66QV7/JuiaraofYRu7ZnOirM0IjuvehMLEMF7ISNAqI7JpybR
-         q2CBWG/X0uZP9Y+VrPIQk1xarSpG1JXofPoj3zbOiwKHikWSKmVpkUzhU77fEIewftvz
-         CY0VFN366abCqK3sQTjK/Q5Dk8wi6lVlfePG+AH2KW0+r4eDnRX9aaVKxL+Tf+BcXf4h
-         vx+F4YpLbhXHlkMyVFvR98/igIivtWuPn5idjmfWf6rVKRy+G45zpR0gIKtN8kw8IUa4
-         KOVQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=64YfvXkywFPm4ZCDH4Fs38E0TxCDMFv/QZ/yXhaRRg4=;
-        b=J0wr8ajk+Nw/DzgFRam9krRH7sITZskFewxQQ49No/8tiAcf3RZxLOWYc+tcj7TKMO
-         2b4IbjX/DXBfk3DRpwTPEImXbloLzGIQM1F1tER/bMAeAHzF5oPnXqB9oh6KStr55s9l
-         M3abYpS6H2NCXcCsPgufpSkpaRLfUTei/FmZnc6G2IbIL0rga2ctDPqtdRUz2oTLt2mz
-         7gQxNChYSyD/mleAK9ewN4JzGyci8iHf2W939XcoEpBt/btcI8VKkIbRah0AW1Sv+/Nt
-         rIgF2dDiW5R0AAbICu6Q8S23eE7nB+cPas7up5AkGQyblDduWfUX0azMKEdo0POm83AC
-         EkHA==
-X-Gm-Message-State: APjAAAWP1gDg6p3x4+huDpH/sfsIVpjzsxK513/811UFSHkLQRzQe/uP
-        47dM1BlyeOOnc4a0n5TZF88=
-X-Google-Smtp-Source: APXvYqxjcW3PLBW7DtqzQYovP9O02ccLCvToCZEM0WdTU7mTjM7fpQdxXi2d10oAzZzXC8NodVAUig==
-X-Received: by 2002:a17:902:b605:: with SMTP id b5mr1720031pls.103.1565825620989;
-        Wed, 14 Aug 2019 16:33:40 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::d35d])
-        by smtp.gmail.com with ESMTPSA id q13sm994117pfl.124.2019.08.14.16.33.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 16:33:40 -0700 (PDT)
-Date:   Wed, 14 Aug 2019 16:33:38 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-Message-ID: <20190814233335.37t4zfsiswrpd4d6@ast-mbp.dhcp.thefacebook.com>
-References: <20190805192122.laxcaz75k4vxdspn@ast-mbp>
- <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
- <20190806011134.p5baub5l3t5fkmou@ast-mbp>
- <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
- <20190813215823.3sfbakzzjjykyng2@ast-mbp>
- <CALCETrVT-dDXQGukGs5S1DkzvQv9_e=axzr_GyEd2c4T4z8Qng@mail.gmail.com>
- <20190814005737.4qg6wh4a53vmso2v@ast-mbp>
- <CALCETrUkqUprujww26VxHwkdXQ3DWJH8nnL2VBYpK2EU0oX_YA@mail.gmail.com>
- <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
- <AD211133-EA60-4B91-AB1B-201713F50AB2@amacapital.net>
+        id S1729694AbfHNXfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 19:35:07 -0400
+Received: from mail-eopbgr680093.outbound.protection.outlook.com ([40.107.68.93]:9607
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728370AbfHNXfF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 19:35:05 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jk4NXvyk+9uFwd5YqH+xAmlndETwt5ieVVTOivhu+AUo/VPGycB7nmvAwM8kW8XoJvwDXkYY8RYULTARfz4ce6v+P2p9EDOsUk4SeVsznF6s+fEJf2Hwzoy9M1kh9B6lNY5CnGRwZGCyY0V9WX13vBtOs4VQX2hKj7LVcL5NGWriXo3IhPc1OVlXcDBr6BUYOV84b3vjnpNb2qR+SpzHlaRtu1RB5QGO5agRxMuWFknBQzPdhujUmILwewjEDfLA14H2Eb4zkTCN8d84hOiy5JqOuw2HhNEYEbJlH07KUOWWYHAqgsUWlWT7xGXhevJvrpQ/o/yCkgFOe3Mej39hLw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ei2NFcOpGtqljrDaJt0OO380rgYpQcVwC9XcHbw3+bw=;
+ b=S1KMUcrOzrCNDRVsRJSvcPtPwP9wP6Pu9PgqFn93GullWOI7mYSmC53Rc1YfdLZu0kbqMbP+uzi09PGz26JaWw5dfNqgnn8v5AxscZk7662cBUH2McSYMpwG29CGpPX31pPE3EisGQcEm2n4MTx9uXm3dCsSj2wvFW7DDswUTW8LR21Mkr8FxDViLwjKyT6Nbg3tHFnH2x6ic1PBeUk7tpsisrNhRwkxbDiqbSfJz9clh9nWR7H3IRBopQ7aJbPEtBMLm9tIvKdOkbSeFpOOzXTSkx5bTSrNeKtGYUWPmrlH9sk3+tRMQk5X4Zssrvo/XvOG4YHRAcwPj35cXwy28A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 160.33.194.228) smtp.rcpttodomain=linaro.org smtp.mailfrom=sony.com;
+ dmarc=bestguesspass action=none header.from=sony.com; dkim=none (message not
+ signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Sony.onmicrosoft.com;
+ s=selector2-Sony-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ei2NFcOpGtqljrDaJt0OO380rgYpQcVwC9XcHbw3+bw=;
+ b=J2CDkJc1ImAEJLt6oNw2K23Gy/fkOdH1lU2Qdcb+TY6tcYCP0vRbdnUVzl5DH8jRnd81GshI0rn1tytMKjMDEm6hDRuzNigP/Ou3tfgyEl+s65JUGe5HYKG96yIIA8+xD/PQ9fDG6yNY78L/MUCuvZlV4+v4t3VsW/6QD8NkYIk=
+Received: from CY4PR13CA0082.namprd13.prod.outlook.com (2603:10b6:903:152::20)
+ by BN6PR13MB1425.namprd13.prod.outlook.com (2603:10b6:404:115::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2178.13; Wed, 14 Aug
+ 2019 23:35:00 +0000
+Received: from CY1NAM02FT025.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::201) by CY4PR13CA0082.outlook.office365.com
+ (2603:10b6:903:152::20) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2199.6 via Frontend
+ Transport; Wed, 14 Aug 2019 23:34:59 +0000
+Authentication-Results: spf=pass (sender IP is 160.33.194.228)
+ smtp.mailfrom=sony.com; linaro.org; dkim=none (message not signed)
+ header.d=none;linaro.org; dmarc=bestguesspass action=none
+ header.from=sony.com;
+Received-SPF: Pass (protection.outlook.com: domain of sony.com designates
+ 160.33.194.228 as permitted sender) receiver=protection.outlook.com;
+ client-ip=160.33.194.228; helo=usculsndmail01v.am.sony.com;
+Received: from usculsndmail01v.am.sony.com (160.33.194.228) by
+ CY1NAM02FT025.mail.protection.outlook.com (10.152.75.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.20.2178.16 via Frontend Transport; Wed, 14 Aug 2019 23:34:59 +0000
+Received: from usculsndmail14v.am.sony.com (usculsndmail14v.am.sony.com [146.215.230.105])
+        by usculsndmail01v.am.sony.com (Sentrion-MTA-4.3.2/Sentrion-MTA-4.3.2) with ESMTP id x7ENYwim005831;
+        Wed, 14 Aug 2019 23:34:58 GMT
+Received: from USCULXHUB06V.am.sony.com (usculxhub06v.am.sony.com [146.215.231.44])
+        by usculsndmail14v.am.sony.com (Sentrion-MTA-4.3.2/Sentrion-MTA-4.3.2) with ESMTP id x7ENYvge010838;
+        Wed, 14 Aug 2019 23:34:57 GMT
+Received: from USCULXMSG01.am.sony.com ([fe80::b09d:6cb6:665e:d1b5]) by
+ USCULXHUB06V.am.sony.com ([146.215.231.44]) with mapi id 14.03.0439.000; Wed,
+ 14 Aug 2019 19:34:57 -0400
+From:   <Tim.Bird@sony.com>
+To:     <anders.roxell@linaro.org>, <davem@davemloft.net>,
+        <shuah@kernel.org>
+CC:     <netdev@vger.kernel.org>, <linux-kselftest@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH] selftests: net: tcp_fastopen_backup_key.sh: fix
+ shellcheck issue
+Thread-Topic: [PATCH] selftests: net: tcp_fastopen_backup_key.sh: fix
+ shellcheck issue
+Thread-Index: AQHVUupYcm8KhbZuh0SIGrwn5rxmsKb7SY0Q
+Date:   Wed, 14 Aug 2019 23:34:54 +0000
+Message-ID: <ECADFF3FD767C149AD96A924E7EA6EAF977A2939@USCULXMSG01.am.sony.com>
+References: <20190814214948.5571-1-anders.roxell@linaro.org>
+In-Reply-To: <20190814214948.5571-1-anders.roxell@linaro.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [146.215.231.6]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <AD211133-EA60-4B91-AB1B-201713F50AB2@amacapital.net>
-User-Agent: NeoMutt/20180223
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:160.33.194.228;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10019020)(39860400002)(346002)(136003)(396003)(376002)(2980300002)(13464003)(189003)(199004)(6116002)(2201001)(3846002)(246002)(8936002)(50466002)(8746002)(7696005)(55846006)(86362001)(110136005)(2906002)(76176011)(8676002)(316002)(23726003)(2876002)(229853002)(4326008)(70586007)(70206006)(55016002)(6246003)(478600001)(336012)(5660300002)(102836004)(186003)(26005)(46406003)(486006)(54906003)(426003)(126002)(446003)(476003)(33656002)(47776003)(97756001)(11346002)(356004)(14444005)(6666004)(7736002)(305945005)(37786003)(106002)(66066001)(5001870100001);DIR:OUT;SFP:1102;SCL:1;SRVR:BN6PR13MB1425;H:usculsndmail01v.am.sony.com;FPR:;SPF:Pass;LANG:en;PTR:mail.sonyusa.com,mail01.sonyusa.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cf735421-9bf3-4002-0afe-08d7211005cd
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328)(7193020);SRVR:BN6PR13MB1425;
+X-MS-TrafficTypeDiagnostic: BN6PR13MB1425:
+X-Microsoft-Antispam-PRVS: <BN6PR13MB1425C2FB125CEB0DC32F6BE7FDAD0@BN6PR13MB1425.namprd13.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Forefront-PRVS: 01294F875B
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: zUQQKXLzFlfEFk8jARByTq9Ddchlta2iD2qJf0PFlfEjacHsWCGfRyQ/HfaCS164Y3N/2A05EmBNYmBtbQdd5vxe3hGC3V9SrRwJlNKi8FfAKlXcWLdZkP6s+qn4k46rUUqEwB8qJCtD5Rn/UlsXlDINnPTFqC9ZEpyr3sVZpf41NpEsOCoAt+q8BPn5vWFXX2w4NlXc9uQKrgRL/X/JTO3d1/+npIkUYeC6LUBKMLoZkFlA0DclaPxYuNwJKfXEwlpsSPPkIjm0u5eYtN9ha7JoyGcTX+QkAlQXQgLUxjepHMtKj7QEwSB8A0bccbreEMOXqvY1ulWYvrcA97UGX4IJPvcgRl4V3yHfsLbPZi5qUKgHlgun0bzjDpamul4JWC1OtWTtrixyU8z+Htm1M6G6vPhw1fNL/I3KVqewMLc=
+X-OriginatorOrg: sony.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2019 23:34:59.2379
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cf735421-9bf3-4002-0afe-08d7211005cd
+X-MS-Exchange-CrossTenant-Id: 66c65d8a-9158-4521-a2d8-664963db48e4
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=66c65d8a-9158-4521-a2d8-664963db48e4;Ip=[160.33.194.228];Helo=[usculsndmail01v.am.sony.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR13MB1425
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 03:30:51PM -0700, Andy Lutomirski wrote:
-> 
-> 
-> > On Aug 14, 2019, at 3:05 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > 
-> >> On Wed, Aug 14, 2019 at 10:51:23AM -0700, Andy Lutomirski wrote:
-> >> 
-> >> If eBPF is genuinely not usable by programs that are not fully trusted
-> >> by the admin, then no kernel changes at all are needed.  Programs that
-> >> want to reduce their own privileges can easily fork() a privileged
-> >> subprocess or run a little helper to which they delegate BPF
-> >> operations.  This is far more flexible than anything that will ever be
-> >> in the kernel because it allows the helper to verify that the rest of
-> >> the program is doing exactly what it's supposed to and restrict eBPF
-> >> operations to exactly the subset that is needed.  So a container
-> >> manager or network manager that drops some provilege could have a
-> >> little bpf-helper that manages its BPF XDP, firewalling, etc
-> >> configuration.  The two processes would talk over a socketpair.
-> > 
-> > there were three projects that tried to delegate bpf operations.
-> > All of them failed.
-> > bpf operational workflow is much more complex than you're imagining.
-> > fork() also doesn't work for all cases.
-> > I gave this example before: consider multiple systemd-like deamons
-> > that need to do bpf operations that want to pass this 'bpf capability'
-> > to other deamons written by other teams. Some of them will start
-> > non-root, but still need to do bpf. They will be rpm installed
-> > and live upgraded while running.
-> > We considered to make systemd such centralized bpf delegation
-> > authority too. It didn't work. bpf in kernel grows quickly.
-> > libbpf part grows independently. llvm keeps evolving.
-> > All of them are being changed while system overall has to stay
-> > operational. Centralized approach breaks apart.
-> > 
-> >> The interesting cases you're talking about really *do* involved
-> >> unprivileged or less privileged eBPF, though.  Let's see:
-> >> 
-> >> systemd --user: systemd --user *is not privileged at all*.  There's no
-> >> issue of reducing privilege, since systemd --user doesn't have any
-> >> privilege to begin with.  But systemd supports some eBPF features, and
-> >> presumably it would like to support them in the systemd --user case.
-> >> This is unprivileged eBPF.
-> > 
-> > Let's disambiguate the terminology.
-> > This /dev/bpf patch set started as describing the feature as 'unprivileged bpf'.
-> > I think that was a mistake.
-> > Let's call systemd-like deamon usage of bpf 'less privileged bpf'.
-> > This is not unprivileged.
-> > 'unprivileged bpf' is what sysctl kernel.unprivileged_bpf_disabled controls.
-> > 
-> > There is a huge difference between the two.
-> > I'm against extending 'unprivileged bpf' even a bit more than what it is
-> > today for many reasons mentioned earlier.
-> > The /dev/bpf is about 'less privileged'.
-> > Less privileged than root. We need to split part of full root capability
-> > into bpf capability. So that most of the root can be dropped.
-> > This is very similar to what cap_net_admin does.
-> > cap_net_amdin can bring down eth0 which is just as bad as crashing the box.
-> > cap_net_admin is very much privileged. Just 'less privileged' than root.
-> > Same thing for cap_bpf.
-> 
-> The new pseudo-capability in this patch set is absurdly broad. I’ve proposed some finer-grained divisions in this thread. Do you have comments on them?
 
-Initially I agreed that it's probably too broad, but then realized
-that they're perfect as-is. There is no need to partition further.
 
-> > May be we should do both cap_bpf and /dev/bpf to make it clear that
-> > this is the same thing. Two interfaces to achieve the same result.
-> 
-> What for?  If there’s a CAP_BPF, then why do you want /dev/bpf? Especially if you define it to do the same thing.
+> -----Original Message-----
+> From: Anders Roxell
+>=20
+> When running tcp_fastopen_backup_key.sh the following issue was seen in
+> a busybox environment.
+> ./tcp_fastopen_backup_key.sh: line 33: [: -ne: unary operator expected
+>=20
+> Shellcheck showed the following issue.
+> $ shellcheck tools/testing/selftests/net/tcp_fastopen_backup_key.sh
+>=20
+> In tools/testing/selftests/net/tcp_fastopen_backup_key.sh line 33:
+>         if [ $val -ne 0 ]; then
+>              ^-- SC2086: Double quote to prevent globbing and word splitt=
+ing.
+>=20
+> Rework to add double quotes around the variable 'val' that shellcheck
+> recommends.
+>=20
+> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+> ---
+>  tools/testing/selftests/net/tcp_fastopen_backup_key.sh | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/tools/testing/selftests/net/tcp_fastopen_backup_key.sh
+> b/tools/testing/selftests/net/tcp_fastopen_backup_key.sh
+> index 41476399e184..ba5ec3eb314e 100755
+> --- a/tools/testing/selftests/net/tcp_fastopen_backup_key.sh
+> +++ b/tools/testing/selftests/net/tcp_fastopen_backup_key.sh
+> @@ -30,7 +30,7 @@ do_test() {
+>  	ip netns exec "${NETNS}" ./tcp_fastopen_backup_key "$1"
+>  	val=3D$(ip netns exec "${NETNS}" nstat -az | \
+>  		grep TcpExtTCPFastOpenPassiveFail | awk '{print $2}')
+> -	if [ $val -ne 0 ]; then
+> +	if [ "$val" -ne 0 ]; then
 
-Indeed, ambient capabilities should work for all cases.
+Did you test this in the failing environment?
 
-> No, I’m not.  I have no objection at all if you try to come up with a clear definition of what the capability checks do and what it means to grant a new permission to a task.  Changing *all* of the capable checks is needlessly broad.
+With a busybox shell, I get:
+ $ [ "" -ne 0 ]
+sh: bad number
 
-There are not that many bits left. I prefer to consume single CAP_BPF bit.
-All capable(CAP_SYS_ADMIN) checks in kernel/bpf/ will become CAP_BPF.
-This is no-brainer.
+You might need to explicitly check for empty string here, or switch to a st=
+ring comparison instead:
+if [ "$val" !=3D 0 ]; then
 
-The only question is whether few cases of CAP_NET_ADMIN in kernel/bpf/
-should be extended to CAP_BPF or not.
-imo devmap and xskmap can stay CAP_NET_ADMIN,
-but cgroup bpf attach/detach should be either CAP_NET_ADMIN or CAP_BPF.
-Initially cgroup-bpf hooks were limited to networking.
-It's no longer the case. Requiring NET_ADMIN there make little sense now.
+   -- Tim
+
+>  		echo "FAIL: TcpExtTCPFastOpenPassiveFail non-zero"
+>  		return 1
+>  	fi
+> --
+> 2.20.1
 
