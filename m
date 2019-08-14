@@ -2,65 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CB87B8DC38
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:48:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C3688DC41
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:49:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728849AbfHNRsv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 13:48:51 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39783 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728651AbfHNRsu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:48:50 -0400
-Received: by mail-pf1-f194.google.com with SMTP id f17so50010729pfn.6;
-        Wed, 14 Aug 2019 10:48:50 -0700 (PDT)
+        id S1728883AbfHNRtk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 13:49:40 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37050 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728219AbfHNRtj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:49:39 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 129so7094523pfa.4;
+        Wed, 14 Aug 2019 10:49:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JjXmk7pXQOMLxZgpEYBzHbDbsBvtUuW4FzkivJFUtz8=;
-        b=lBMuvLlEHpvux9PAgI79qF01xOk4oEUbokALibaKFb7HhKQ4EWeBTFX5OCP87/aDdW
-         8C2gRUf3C55DbxRUaCVtUyD3Ef6+liZAlojYpZ4QYU61T+dovMJjTXfvQ0xEnVLQ0Vkp
-         9OHc7G/ZqpLHCfsSY7kf1yiQIx+CUCFuZp6AhqF6BHOv6iY6bA9/WBucvS0/W41k3VMp
-         Kz+gTjbCp+GWraGRDpa8x8gKKm0GXrB6euT3wQhX1F4v1OWI3Qc2yg+dIh8ozcizn6O+
-         FXpSn4hXahzFA7FsKtvg8iPRsHj8SdgehRGFjr+MMqVnLvNXcLB/DVLbj+DEiCDJMn/J
-         CZsg==
+        bh=polbAliNun9QdIzqZGyPgJpDTQQfZuizGyPW1Qhvc5s=;
+        b=LaKDsTvgihEKNjw4bt5zJVzofPKhzwzlJ9som/wZ7oS4O+Ohvp93iUee85ZshVGdKt
+         8e/GP7XZpFl9MJSWPKjhrHSsiAGYxdb9mGAazfPW9SG2fsetu4cUV/ziqnnO0cg2LAGl
+         vJfq3+pL2+icqLDJV5VgINPUBGKM8XLrcelrJgnuTaix91mZ38sSAyevelC3Gn7M7Bm/
+         Gt2IrbrL5+anIX1ekV4F77gWS4ivGd5E3/BfbHfRzZ5DkJb2EkNs+/2wNZT/QZvC0N2U
+         jitJvkbLExn3PcRx9TrFBzJqeylXTMKGC+MEBv6zkQC3D4sF7O1I+r52NmXjsEAjCysR
+         o7pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=JjXmk7pXQOMLxZgpEYBzHbDbsBvtUuW4FzkivJFUtz8=;
-        b=BRwJJ89VgaZjxvRlvEAc8vmNw+eq4gL7AINonMn8c34MMb/UgEGe6mAaH4JWP+lgTV
-         whnPJis1bz20hqV+l0rkrNIxsDjBvWXm7u14OvKtMBhZ1hM11RFCKfbpAamzeHQWb2Yl
-         AnU7tND82fqtSro3ZRCEhRIq2k+5hIOzSqyRgtFrIA+I2E8ShKRaa+RRPyN9r2RXQqmA
-         ehT8HTqLy+D4ASISQIIhFr9l5RNiW/R0ejvLj9Ayn5N2c20EAj6TZYjeX4FQ9MDwkeC4
-         MSy8Z7h0NTYmvEwv8G8pz9bTfMGSi/3UrS+20WQqHsej2ZKglqU6UppRQpnwG8+crY30
-         nbrQ==
-X-Gm-Message-State: APjAAAWf+pXlDl+NPD07qGnGUmjdo5CdWFoG8Zm+mlz7eR1Ft4Tj+rXi
-        Dzux32OYQF06dQf+yRA3KmQ=
-X-Google-Smtp-Source: APXvYqzfkLeKkyjIgLIPq570di138yN6m5FnJNr/6PfkVy4YtQvKN3AUSGHwtl9ryfes2NifRmMbJA==
-X-Received: by 2002:a63:9e56:: with SMTP id r22mr294495pgo.221.1565804929926;
-        Wed, 14 Aug 2019 10:48:49 -0700 (PDT)
+        bh=polbAliNun9QdIzqZGyPgJpDTQQfZuizGyPW1Qhvc5s=;
+        b=S3UcwBXrMjezGjWhkalJzdSPJSpQKSiXhbbZJNW6Wl3hrQqsvugJ+WUwFFQaLN3mMA
+         CsqgxzKoiMNDP9ZScPnioL7GRd7JjBU7Qfgy8ecBjjXR8M2HSObhVqAdtg7gg+ROl73F
+         //sP4vsfReYRyqIhPjfHaJRhySvrH007SHTkQ8JoRkdnyJwiKXGC1Zx/UMXZWohaDEv5
+         RaJJj+AiWsVuCOoY/TPBO8usPdL8Iq6/8DtD6lisbMZMKmTyzW0qpCS6g/tM3bS6Kklz
+         RYQD7nOBnZjgF7WnXvY756Koi3Qg4CdMMRuQK07AuZRucm1U+1PZXX6TmUFspIY3vjQf
+         RRRA==
+X-Gm-Message-State: APjAAAVh1f7m8Rk6PMY+vA5UjSXrH1Q4PPH9j7J/OHF60PyMSeREM7S0
+        lCz2e6JEsYJNX0aCelX4zhI=
+X-Google-Smtp-Source: APXvYqwgFXmxttQFX0GjRAMZC8I7f+mxUrhOF4jKhcs2MDOOksRm5PoqTETD62tejsAHLur6UfDtxw==
+X-Received: by 2002:a17:90a:eb05:: with SMTP id j5mr891060pjz.102.1565804979039;
+        Wed, 14 Aug 2019 10:49:39 -0700 (PDT)
 Received: from [10.69.78.41] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id b14sm428475pfo.15.2019.08.14.10.48.48
+        by smtp.gmail.com with ESMTPSA id a5sm434562pjs.31.2019.08.14.10.49.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 10:48:49 -0700 (PDT)
-Subject: Re: [PATCH v4 03/14] net: phy: adin: add support for interrupts
+        Wed, 14 Aug 2019 10:49:38 -0700 (PDT)
+Subject: Re: [PATCH v4 04/14] net: phy: adin: add {write,read}_mmd hooks
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
         hkallweit1@gmail.com, andrew@lunn.ch
 References: <20190812112350.15242-1-alexandru.ardelean@analog.com>
- <20190812112350.15242-4-alexandru.ardelean@analog.com>
+ <20190812112350.15242-5-alexandru.ardelean@analog.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <a888c1d9-4f5d-c3fa-4526-94586fd9e242@gmail.com>
-Date:   Wed, 14 Aug 2019 10:48:47 -0700
+Message-ID: <31a0cd12-8a0e-5c50-6cc4-043cb8950352@gmail.com>
+Date:   Wed, 14 Aug 2019 10:49:32 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190812112350.15242-4-alexandru.ardelean@analog.com>
+In-Reply-To: <20190812112350.15242-5-alexandru.ardelean@analog.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,9 +72,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 8/12/2019 4:23 AM, Alexandru Ardelean wrote:
-> This change hooks link-status-change interrupts to phylib.
+> Both ADIN1200 & ADIN1300 support Clause 45 access for some registers.
+> The Extended Management Interface (EMI) registers are accessible via both
+> Clause 45 (at register MDIO_MMD_VEND1) and using Clause 22.
 > 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> The Clause 22 access for MMD regs differs from the standard one defined by
+> 802.3. The ADIN PHYs  use registers ExtRegPtr (0x0010) and ExtRegData
+> (0x0011) to access Clause 45 & EMI registers.
+> 
+> The indirect access is done via the following mechanism (for both R/W):
+> 1. Write the address of the register in the ExtRegPtr
+> 2. Read/write the value of the register via reg ExtRegData
+> 
+> This mechanism is needed to manage configuration of chip settings and to
+> access EEE registers via Clause 22.
+> 
+> Since Clause 45 access will likely never be used, it is not implemented via
+> this hook.
+> 
 > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
