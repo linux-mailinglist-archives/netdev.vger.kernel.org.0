@@ -2,106 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF4668D78B
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:59:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6ED68D78F
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 18:01:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728169AbfHNP7H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 11:59:07 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56018 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725828AbfHNP7H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 11:59:07 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 1F1E3317529A;
-        Wed, 14 Aug 2019 15:59:07 +0000 (UTC)
-Received: from linux-ws.nc.xsintricity.com (ovpn-112-57.rdu2.redhat.com [10.10.112.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id EBD70891D6;
-        Wed, 14 Aug 2019 15:59:05 +0000 (UTC)
-Message-ID: <be26c48a5a749a80d7c5fdb6cb92b5c9dbf6b535.camel@redhat.com>
-Subject: Re: [PATCH net-next 0/5] net/rds: Fixes from internal Oracle repo
-From:   Doug Ledford <dledford@redhat.com>
-To:     Gerd Rausch <gerd.rausch@oracle.com>,
-        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com
-Cc:     David Miller <davem@davemloft.net>
-Date:   Wed, 14 Aug 2019 11:59:03 -0400
-In-Reply-To: <0b05ed75-6772-e339-11e6-1fb5714981c0@oracle.com>
-References: <0b05ed75-6772-e339-11e6-1fb5714981c0@oracle.com>
-Organization: Red Hat, Inc.
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-8bJiVdzuohwfTvtBBxY5"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1726704AbfHNQBw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 12:01:52 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:43241 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfHNQBw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 12:01:52 -0400
+Received: by mail-lf1-f66.google.com with SMTP id c19so79733027lfm.10
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 09:01:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4wY0puZ76rUC3DSckf3mPRYmF7SPUJuOAo8CaB7ZdL0=;
+        b=ek6qJHh8grpDMf9DPB7XyzKQm9N39M5jVmFc2DDmCOdXTzqoHVHoDqoDk1YCR2lIOn
+         oAbO+mrAMtobesvvsCq+HgShDk7X2zlvDeGqfsqa/NjjwWGs33Qrni2SlvGQSGrbholN
+         0HekEIdqh5fmessXGirxHkOVY6vFbk6n+jk3o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4wY0puZ76rUC3DSckf3mPRYmF7SPUJuOAo8CaB7ZdL0=;
+        b=HonSXLGkPRbhA31LBFExvCJTjMj71Dxbrxdstm5CR28NBBlyRr6a+R2qqchbvHzKC1
+         vR3M7JH3wpN9gwsuacBH4FwLZVCWH59nIXRJNC79FHWEmse8T4zxcA8dwoz4T2TKARED
+         SvRtcyrbAHMGQzIzuiWrOmbuGNj9XrOnI8blNSH59K1m5YbfeB7dF7augZNzzd4r75yG
+         CJoVVRT670hDs473qu198yjExX194nMJC7esCaC/s2igccGUxo+n6bTFNvC/1btw9wYa
+         wh3O2HZbaMrY3YsWqu1wvTks8jjTkiZYeHkSY1tw83SxghFIG5NBGus7TE9UoWId2D8V
+         OKCw==
+X-Gm-Message-State: APjAAAUoeuzloZKVNxgpZd7soVS4+iI/TY5a4gwPO4wRFkttwsvX2mnO
+        vqCLbMLpFurx9UpBwDwbeJsHDA==
+X-Google-Smtp-Source: APXvYqyv81KLI7ZWHf2QoqI2EfwO+kAHqEMEoi7E++qLvVKglA5H9Nc2crBymRrmxmBPyCCMzJsP0A==
+X-Received: by 2002:ac2:5104:: with SMTP id q4mr98702lfb.56.1565798509937;
+        Wed, 14 Aug 2019 09:01:49 -0700 (PDT)
+Received: from [192.168.0.104] ([79.134.174.40])
+        by smtp.googlemail.com with ESMTPSA id d3sm3205lfj.15.2019.08.14.09.01.47
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Aug 2019 09:01:49 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/4] net: bridge: mdb: allow dump/add/del of
+ host-joined entries
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
+        bridge@lists.linux-foundation.org
+References: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <81258876-5f03-002c-5aa8-2d6d00e6d99e@cumulusnetworks.com>
+Date:   Wed, 14 Aug 2019 19:01:41 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Wed, 14 Aug 2019 15:59:07 +0000 (UTC)
+In-Reply-To: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/14/19 5:40 PM, Nikolay Aleksandrov wrote:
+> Hi,
+> This set makes the bridge dump host-joined mdb entries, they should be
+> treated as normal entries since they take a slot and are aging out.
+> We already have notifications for them but we couldn't dump them until
+> now so they remained hidden. We dump them similar to how they're
+> notified, in order to keep user-space compatibility with the dumped
+> objects (e.g. iproute2 dumps mdbs in a format which can be fed into
+> add/del commands) we allow host-joined groups also to be added/deleted via
+> mdb commands. That can later be used for L2 mcast MAC manipulation as
+> was recently discussed. Note that iproute2 changes are not necessary,
+> this set will work with the current user-space mdb code.
+> 
+> Patch 01 - a trivial comment move
+> Patch 02 - factors out the mdb filling code so it can be
+>            re-used for the host-joined entries
+> Patch 03 - dumps host-joined entries
+> Patch 04 - allows manipulation of host-joined entries via standard mdb
+>            calls
+> 
+> Thanks,
+>  Nik
+> 
+> Nikolay Aleksandrov (4):
+>   net: bridge: mdb: move vlan comments
+>   net: bridge: mdb: factor out mdb filling
+>   net: bridge: mdb: dump host-joined entries as well
+>   net: bridge: mdb: allow add/delete for host-joined groups
+> 
+>  net/bridge/br_mdb.c       | 171 +++++++++++++++++++++++++-------------
+>  net/bridge/br_multicast.c |  24 ++++--
+>  net/bridge/br_private.h   |   2 +
+>  3 files changed, 133 insertions(+), 64 deletions(-)
+> 
 
---=-8bJiVdzuohwfTvtBBxY5
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-
-On Tue, 2019-08-13 at 11:20 -0700, Gerd Rausch wrote:
-> This is the first set of (mostly old) patches from our internal
-> repository
-> in an effort to synchronize what Oracle had been using internally
-> with what is shipped with the Linux kernel.
->=20
-> Andy Grover (2):
->   RDS: Re-add pf/sol access via sysctl
->   rds: check for excessive looping in rds_send_xmit
->=20
-> Chris Mason (2):
->   RDS: limit the number of times we loop in rds_send_xmit
->   RDS: don't use GFP_ATOMIC for sk_alloc in rds_create
->=20
-> Gerd Rausch (1):
->   net/rds: Add a few missing rds_stat_names entries
->=20
->  net/rds/af_rds.c  |  2 +-
->  net/rds/ib_recv.c | 12 +++++++++++-
->  net/rds/rds.h     |  2 +-
->  net/rds/send.c    | 12 ++++++++++++
->  net/rds/stats.c   |  3 +++
->  net/rds/sysctl.c  | 21 +++++++++++++++++++++
->  6 files changed, 49 insertions(+), 3 deletions(-)
->=20
-
-That first patch looks like a total bogon to me, but the remaining four
-look fine.
-
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
-
---=-8bJiVdzuohwfTvtBBxY5
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl1UL8cACgkQuCajMw5X
-L92TTBAAlMy+mBp99ewXwbOtTsVjlA2Os65s44sVpe3kVyqmXD+pllwe7WkU62Ql
-rLHzi3acwxncvS+b9lI2GjbS4ZglgCSimg/iTdSgnMgjH33xjJw4y9oh2S3x2Jcc
-BDyCykpPKxFNHPJWUrS0HG/hUOYDyWs7stZztTItQ5WipUje3HpejvJ61XO1bIun
-g4EGP1sfATZ5Z6M1IJmXi6gmF5JBDe7UgAD/H6mA0v0kcLwXkp8KPfKvCeDuQYZn
-Cp0DILQLnpKwE3PVBsua6WWqT2huiex6wOtq3zyfWfR3SniTyNwJDC0UaA9Nhcpf
-iEGKwAwIMoSH2w4F4Uz0Wz/X6pfqnYaXhDylzmnoYyTMAoDzR/74RgYJX5ms2z5L
-+3Tzs0R4RIhkciYqJntIHkaZt49RTTxCgd9qquUg1cjmpvSEHDDLeNjsXsOInV1z
-7a+CvOY3qwLJrVUMTT89TWg8G6U5wYXCVCGz04nuyOpD6+bW/oBNz8IB0qApfiWd
-wd9rj52rj0Bpt32Bk8luAIqeyAM/vvuQJj1duoRZgRY7aI7IKE+UkQVHU30wPwGU
-SKgDkVs/Q8OqcrgwqRvbQnoY7BI8OT0o+V2SG+x5Z80e6gb0sNxEIluhXf5DTLYb
-1gFpGooral6YHpPKPQ42A0pbray65PzF9J+BOdLQUtWnHl+VIW0=
-=xMH5
------END PGP SIGNATURE-----
-
---=-8bJiVdzuohwfTvtBBxY5--
+Self-NAK
+There's a double notification sent for manual add/del of host groups.
+It's a trivial fix, I'll spin v2 later after running more tests.
 
