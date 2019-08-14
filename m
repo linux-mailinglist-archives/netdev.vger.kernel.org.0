@@ -2,86 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48EDB8D3FF
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 14:58:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E59568D43B
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 15:08:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727941AbfHNM6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 08:58:30 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:43826 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727474AbfHNM63 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 08:58:29 -0400
-Received: by mail-wr1-f66.google.com with SMTP id y8so5054869wrn.10;
-        Wed, 14 Aug 2019 05:58:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sKNecaG9uJ6OOz0KBdXfDcOGxAObXFQzYaSa9S2/+74=;
-        b=P7FxR8JDgfx+GgLDPh3O/Hl411Ibb71G7/EJYj4PvZSrvxSfb7RYg3F6dfdftZLQy9
-         MHFqjnhEs9rfe6oVn7FDpmVQSYnGOPFHRoKfY15Y13Oi5XqqQ0iSXCoBCy5O+BIEzyg7
-         5DYAMl3GKmgxd2Zvv5YT8KdvNmYPMssbo7TVbO/Ml+ToWXWieqfw1HzsS8aULo4D2xQl
-         +HiH8Q58/YN7BCPsGhWD9RaQZoNUlhnkri/bv/gDLjrbTKyZvSRvxwHd5Uwwq4oo/RMu
-         IPgZgAiyZZcn30ZCp/Tg2bC5Xk1o9+6ToP5Pdixau/t6DrkNGzq0M0Ic+Zb5MDr5aS4A
-         cJjw==
-X-Gm-Message-State: APjAAAX+W0uMdOPD8BflMej5kAdlCIFo2wMysbo4dIMu06Bri2gYh2rs
-        qLhNXtU07Uq/Sp87WLdniic=
-X-Google-Smtp-Source: APXvYqxhM9476qaxGNT9qSQ8wXfkeXu1K37RaE1WScWDGKyW9FuchX8TJhOtx6AwF5sKc9TsM59trg==
-X-Received: by 2002:adf:dd88:: with SMTP id x8mr45113464wrl.331.1565787507561;
-        Wed, 14 Aug 2019 05:58:27 -0700 (PDT)
-Received: from green.intra.ispras.ru (bran.ispras.ru. [83.149.199.196])
-        by smtp.googlemail.com with ESMTPSA id q20sm68659440wrc.79.2019.08.14.05.58.26
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 14 Aug 2019 05:58:27 -0700 (PDT)
-From:   Denis Efremov <efremov@linux.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>
-Cc:     Denis Efremov <efremov@linux.com>, joe@perches.com,
-        linux-kernel@vger.kernel.org,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH] MAINTAINERS: PHY LIBRARY: Update files in the record
-Date:   Wed, 14 Aug 2019 15:58:00 +0300
-Message-Id: <20190814125800.23729-1-efremov@linux.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <039d86b5-6897-0176-bf15-6f58e9d26b89@gmail.com>
-References: <039d86b5-6897-0176-bf15-6f58e9d26b89@gmail.com>
+        id S1727558AbfHNNI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 09:08:58 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:33924 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725800AbfHNNI6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 09:08:58 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id DF9A65FA49;
+        Wed, 14 Aug 2019 15:08:56 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="oSpMeUu1";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id 958251D70740;
+        Wed, 14 Aug 2019 15:08:56 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 958251D70740
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1565788136;
+        bh=rCkI1Ci3GvdZbWGszkVHAA9IspgxN9Ks7fBmasSUZus=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=oSpMeUu1TDmNTautXoqLW1xI80hWC7AEBfpNIdM0Or1pj6/oBgxHh/uIWoeEJrjQh
+         Cgl8lECyruHdQJGjvHrdm+rlO2mH9QsxXJ5Bm/1BcDcupE7zat5dptZ04yLzWa8hUI
+         BT8Xyw/qnKOfJAtCL6RX94kIlKjUS/lt2UE3ONShdpA1QI5W+Glk9Sj5rj+RZUmYUV
+         qgZFLjCmaILM+lwMk2JLlCNxRWF6DlQgjnmX9ZZhQwFD/NIj1l5MUlZB418Y9pLIBO
+         lkpa8+7Yv52eFP6Antx0KaPpDHEh7F2skK9fuIcKipttXTuY660EFF1CmFnAP37zn2
+         aHknJEmHKT7XA==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Wed, 14 Aug 2019 13:08:56 +0000
+Date:   Wed, 14 Aug 2019 13:08:56 +0000
+Message-ID: <20190814130856.Horde.wzHL8_VRawJ8NIIk--BD18e@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Stefan Roese <sr@denx.de>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        John Crispin <john@phrozen.org>,
+        Daniel Golle <daniel@makrotopia.org>
+Subject: Re: [PATCH] net: ethernet: mediatek: Add MT7628/88 SoC support
+References: <20190717125345.Horde.JcDE_nBChPFDDjEgIRfPSl3@www.vdorst.com>
+ <a92d7207-80b2-e88d-d869-64c9758ef1da@denx.de>
+ <20190814092621.Horde.epvj8zK96-aCiV70YB5Q7II@www.vdorst.com>
+ <3ff9a0fc-f5ff-3798-4409-ed5b900e0b05@denx.de>
+In-Reply-To: <3ff9a0fc-f5ff-3798-4409-ed5b900e0b05@denx.de>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update MAINTAINERS to reflect that sysfs-bus-mdio was removed in
-commit a6cd0d2d493a ("Documentation: net-sysfs: Remove duplicate
-PHY device documentation") and sysfs-class-net-phydev was added in
-commit 86f22d04dfb5 ("net: sysfs: Document PHY device sysfs
-attributes").
+Hi Stefan,
 
-Cc: Florian Fainelli <f.fainelli@gmail.com>
-Cc: Andrew Lunn <andrew@lunn.ch>
-Cc: Heiner Kallweit <hkallweit1@gmail.com>
-Cc: David S. Miller <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
-Signed-off-by: Denis Efremov <efremov@linux.com>
----
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Quoting Stefan Roese <sr@denx.de>:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7e944baeca75..168e5121578e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6065,7 +6065,7 @@ M:	Florian Fainelli <f.fainelli@gmail.com>
- M:	Heiner Kallweit <hkallweit1@gmail.com>
- L:	netdev@vger.kernel.org
- S:	Maintained
--F:	Documentation/ABI/testing/sysfs-bus-mdio
-+F:	Documentation/ABI/testing/sysfs-class-net-phydev
- F:	Documentation/devicetree/bindings/net/ethernet-phy.yaml
- F:	Documentation/devicetree/bindings/net/mdio*
- F:	Documentation/networking/phy.rst
--- 
-2.21.0
+> Hi Rene,
+>
+> On 14.08.19 11:26, René van Dorst wrote:
+
+<snip>
+
+>> Great, Thanks for addressing this issue.
+>>
+>> I hope we can collaborate to also support mt76x8 in my PHYLINK  
+>> patches [0][1].
+>> I am close to posting V2 of the patches but I am currently waiting on some
+>> fiber modules to test the changes better.
+>
+> I do have a "hackish" DSA driver for the integrated switch (ESW) in my
+> tree. If time permits, I'll work on upstreaming this one as well. And
+> yes, hopefully we can collaborate on your PHYLINK work too.
+
+It is not only the switch driver but also the Mediatek ethernet driver that is
+converted to PHYLINK. So we have a conflict in each others work.
+
+I don't no what the right way is to go but I was thinking about 2 options
+
+1. Lets say your work goes in first. I rebase my patches on your changes.
+    We collaborate to create an extra PHYLINK patch ontop of my work  
+for your SOC.
+2. My patches goes in first and you adapt your patches to that.
+
+What do you think?
+
+I have latest changes here [0].
+
+Also my modules did arrive so I can test my changes.
+
+> Thanks,
+> Stefan
+
+Greats,
+
+René
+
+[0]  
+https://github.com/vDorst/linux-1/commits/net-next-phylink-upstream-mediatek
 
