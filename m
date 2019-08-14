@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 681508C870
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:31:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C4A7B8C874
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:31:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729131AbfHNCQi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:16:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48056 "EHLO mail.kernel.org"
+        id S1729154AbfHNCQl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:16:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48096 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729124AbfHNCQh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:16:37 -0400
+        id S1729137AbfHNCQk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:16:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 14A4120842;
-        Wed, 14 Aug 2019 02:16:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 97A932084D;
+        Wed, 14 Aug 2019 02:16:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748997;
-        bh=8kno17t5G0+IQF9Amfj1SsO5zRRh4PZmqZoEBgEN3Kk=;
+        s=default; t=1565748999;
+        bh=qm6rrJmrotYL5exLF43f2RMGib1S8clCSmkKGZ4zQns=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nS2m4kpzNg5LVHSVLMZO0eMzn2WPV6jj4YfsgXA5WDPGALL9ESBfOBpEoUiRck6py
-         JCMNvSYJCmURYvjqItTrEJli1Tr25oNpWwMBHVjTVIdGNEH5i9N5f3VOow+Y33MYT4
-         c7IZlIAadnVfFP6aHFeEdJpHv5m+aCiHNoe6PaCI=
+        b=XBbM3wtA51zoM2AFexKsnS1+osDsCVnDJniGM8s8BsZ/gK1PztfFTx73MC9vXOX4p
+         YT+Qk3zzbbbNrk2cCBswDJCknF52cngGihJo1oeirLVVNpFLqB5QFfTbeJ1jsCSGLT
+         dx6T/of2CrVFpuv/2FbPGpIGSwy7aX1W8iITGA5U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefano Brivio <sbrivio@redhat.com>, Chen Yi <yiche@redhat.com>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
+Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Shijie Luo <luoshijie1@huawei.com>,
         Sasha Levin <sashal@kernel.org>,
         netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 26/68] netfilter: ipset: Copy the right MAC address in bitmap:ip,mac and hash:ip,mac sets
-Date:   Tue, 13 Aug 2019 22:15:04 -0400
-Message-Id: <20190814021548.16001-26-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 27/68] netfilter: ipset: Fix rename concurrency with listing
+Date:   Tue, 13 Aug 2019 22:15:05 -0400
+Message-Id: <20190814021548.16001-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021548.16001-1-sashal@kernel.org>
 References: <20190814021548.16001-1-sashal@kernel.org>
@@ -45,86 +45,38 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefano Brivio <sbrivio@redhat.com>
+From: Jozsef Kadlecsik <kadlec@netfilter.org>
 
-[ Upstream commit 1b4a75108d5bc153daf965d334e77e8e94534f96 ]
+[ Upstream commit 6c1f7e2c1b96ab9b09ac97c4df2bd9dc327206f6 ]
 
-In commit 8cc4ccf58379 ("ipset: Allow matching on destination MAC address
-for mac and ipmac sets"), ipset.git commit 1543514c46a7, I added to the
-KADT functions for sets matching on MAC addreses the copy of source or
-destination MAC address depending on the configured match.
+Shijie Luo reported that when stress-testing ipset with multiple concurrent
+create, rename, flush, list, destroy commands, it can result
 
-This was done correctly for hash:mac, but for hash:ip,mac and
-bitmap:ip,mac, copying and pasting the same code block presents an
-obvious problem: in these two set types, the MAC address is the second
-dimension, not the first one, and we are actually selecting the MAC
-address depending on whether the first dimension (IP address) specifies
-source or destination.
+ipset <version>: Broken LIST kernel message: missing DATA part!
 
-Fix this by checking for the IPSET_DIM_TWO_SRC flag in option flags.
+error messages and broken list results. The problem was the rename operation
+was not properly handled with respect of listing. The patch fixes the issue.
 
-This way, mixing source and destination matches for the two dimensions
-of ip,mac set types works as expected. With this setup:
-
-  ip netns add A
-  ip link add veth1 type veth peer name veth2 netns A
-  ip addr add 192.0.2.1/24 dev veth1
-  ip -net A addr add 192.0.2.2/24 dev veth2
-  ip link set veth1 up
-  ip -net A link set veth2 up
-
-  dst=$(ip netns exec A cat /sys/class/net/veth2/address)
-
-  ip netns exec A ipset create test_bitmap bitmap:ip,mac range 192.0.0.0/16
-  ip netns exec A ipset add test_bitmap 192.0.2.1,${dst}
-  ip netns exec A iptables -A INPUT -m set ! --match-set test_bitmap src,dst -j DROP
-
-  ip netns exec A ipset create test_hash hash:ip,mac
-  ip netns exec A ipset add test_hash 192.0.2.1,${dst}
-  ip netns exec A iptables -A INPUT -m set ! --match-set test_hash src,dst -j DROP
-
-ipset correctly matches a test packet:
-
-  # ping -c1 192.0.2.2 >/dev/null
-  # echo $?
-  0
-
-Reported-by: Chen Yi <yiche@redhat.com>
-Fixes: 8cc4ccf58379 ("ipset: Allow matching on destination MAC address for mac and ipmac sets")
-Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Reported-by: Shijie Luo <luoshijie1@huawei.com>
 Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipset/ip_set_bitmap_ipmac.c | 2 +-
- net/netfilter/ipset/ip_set_hash_ipmac.c   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ net/netfilter/ipset/ip_set_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/netfilter/ipset/ip_set_bitmap_ipmac.c b/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-index 13ade5782847b..4f01321e793ce 100644
---- a/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-+++ b/net/netfilter/ipset/ip_set_bitmap_ipmac.c
-@@ -230,7 +230,7 @@ bitmap_ipmac_kadt(struct ip_set *set, const struct sk_buff *skb,
+diff --git a/net/netfilter/ipset/ip_set_core.c b/net/netfilter/ipset/ip_set_core.c
+index 1577f2f76060d..e2538c5786714 100644
+--- a/net/netfilter/ipset/ip_set_core.c
++++ b/net/netfilter/ipset/ip_set_core.c
+@@ -1157,7 +1157,7 @@ static int ip_set_rename(struct net *net, struct sock *ctnl,
+ 		return -ENOENT;
  
- 	e.id = ip_to_id(map, ip);
- 
--	if (opt->flags & IPSET_DIM_ONE_SRC)
-+	if (opt->flags & IPSET_DIM_TWO_SRC)
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_source);
- 	else
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_dest);
-diff --git a/net/netfilter/ipset/ip_set_hash_ipmac.c b/net/netfilter/ipset/ip_set_hash_ipmac.c
-index 75c21c8b76514..16ec822e40447 100644
---- a/net/netfilter/ipset/ip_set_hash_ipmac.c
-+++ b/net/netfilter/ipset/ip_set_hash_ipmac.c
-@@ -99,7 +99,7 @@ hash_ipmac4_kadt(struct ip_set *set, const struct sk_buff *skb,
- 	    (skb_mac_header(skb) + ETH_HLEN) > skb->data)
- 		return -EINVAL;
- 
--	if (opt->flags & IPSET_DIM_ONE_SRC)
-+	if (opt->flags & IPSET_DIM_TWO_SRC)
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_source);
- 	else
- 		ether_addr_copy(e.ether, eth_hdr(skb)->h_dest);
+ 	write_lock_bh(&ip_set_ref_lock);
+-	if (set->ref != 0) {
++	if (set->ref != 0 || set->ref_netlink != 0) {
+ 		ret = -IPSET_ERR_REFERENCED;
+ 		goto out;
+ 	}
 -- 
 2.20.1
 
