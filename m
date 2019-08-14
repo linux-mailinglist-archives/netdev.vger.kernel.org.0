@@ -2,150 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C728B8D893
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 18:58:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 984258D8A1
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 18:59:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728370AbfHNQ6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 12:58:21 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38857 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726585AbfHNQ6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 12:58:20 -0400
-Received: by mail-wr1-f68.google.com with SMTP id g17so111782666wrr.5
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 09:58:18 -0700 (PDT)
+        id S1728487AbfHNQ7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 12:59:08 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34643 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfHNQ7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 12:59:08 -0400
+Received: by mail-lf1-f65.google.com with SMTP id b29so72594725lfq.1
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 09:59:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=94qi0i9wBA5DYd5XMVim9uyna7dsuiw3nV7+hfCH08M=;
-        b=O6OVJ1/Z8PacSBuOXM6NReNYTh3LAnLQApOzHv/7Xrd4vxzwNtxFP6Hw/yFTlZ/+Cv
-         d/6+GaR95bYRKLPOWMBq0UINZeNeRu6jvCFdGIxRbN+LCQQqq3ULxlnVIriVbAKhnUwb
-         HWJW/YIYLLPcqmJ0mtIx/1/S9l+Bc9dSm9WFAJtu4n3sX66FVpiuHvrcytHgHbx/peZk
-         du8DKfWk0ZRfAe9f1DdG3RNWeDDTnuRlMTYQkRwC/o7sB4RTejCxY3HJmKe580jC5Co6
-         vz98lXcxKNTkouLFyBkpEiKgpzRuHDZjkkv7NzmI3MEt59UI2l6x/nYXj+b0VWIa5S9L
-         wixw==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=VGdioYFZQ1Fks4VK1hOXuOtR5kZxo6UuT8R67fuGKm4=;
+        b=gGknORqE3jxueXwmM5EeG+nRTzy9mTMsGDvQa58wcGCyUVosolpQHXyzFEImqwUxw6
+         bokhsRNaor6MJTj/dNDJ5xAsEBDYF6ZYRLjePkf9BMqDk5+z8vVH2nRe7EWfrjfC+eFO
+         MT75L4GV0/BjB4KiChN+s1kTokHcm0zYs+r8M=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=94qi0i9wBA5DYd5XMVim9uyna7dsuiw3nV7+hfCH08M=;
-        b=bMENC/d55XS4I4DTk6dDXQtQVWXAMqqt5y+bTLe8/5gYTZtE31vUPmMhqI3zBAAXVW
-         wv3oSRmVuBc4cQ9wcQ/cnsWap01s2RP4hoZTtYX+JOPhcP/gA1SiXgLM3VqiPGQ6Pglk
-         4UpDUiHHwb6d6IKx7fZ04WMJNKixjvp60S5cXecQn0Y5izssa58Jv8Uix69LYJI+1zWC
-         hCpTYMHVeslngqMBGKHSeyCuyP6tqdCC+wtFtf1jN9sDz+J+OwTceCnZYrYXoG8dM4Ll
-         mTtwSjPDMHpylCpfNsQrjU4aS/qD7mkEA+hLmU5ASeWQuycwspCCgyer0dTyc3/u6Pid
-         adDg==
-X-Gm-Message-State: APjAAAUvPWguggN0SRBFGnwiwiE3srUU8ZKK5XF72LvzjvS/g/9LSaKn
-        eH3h35BTz1Olzk5rXaw0WD3QUg==
-X-Google-Smtp-Source: APXvYqzwzNqD8OLCYjITRZ+m37rKXydlSMjvCnjT/PwHrs47dvOOa7S0hsKypoEjvGWEte1H3egnPg==
-X-Received: by 2002:a5d:4f8e:: with SMTP id d14mr745122wru.207.1565801898127;
-        Wed, 14 Aug 2019 09:58:18 -0700 (PDT)
-Received: from [172.20.1.254] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id f23sm139852wmj.37.2019.08.14.09.58.17
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 09:58:17 -0700 (PDT)
-To:     Edward Cree <ecree@solarflare.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, oss-drivers@netronome.com
-References: <20190813130921.10704-1-quentin.monnet@netronome.com>
- <20190814015149.b4pmubo3s4ou5yek@ast-mbp>
- <ab11a9f2-0fbd-d35f-fee1-784554a2705a@netronome.com>
- <bdb4b47b-25fa-eb96-aa8d-dd4f4b012277@solarflare.com>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- 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
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Subject: Re: [RFC bpf-next 0/3] tools: bpftool: add subcommand to count map
- entries
-Message-ID: <18f887ec-99fd-20ae-f5d6-a1f4117b2d77@netronome.com>
-Date:   Wed, 14 Aug 2019 17:58:17 +0100
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=VGdioYFZQ1Fks4VK1hOXuOtR5kZxo6UuT8R67fuGKm4=;
+        b=HSySsMxWPAvNL8YTs3uhY8tJnje+FPLsm9vbFD4O/XrQ55E/hcXUx0qON+qAs8SNAG
+         WqhIcz5VtqUR/ptEHaa3SdXMwHcykTbntsWBziOO9e2qCIb6f/poDlp9oRYpJhTY3vRf
+         ippPjVnk89Ydrph+pPc1taawJ/XOnQCn17UkQSPSBYL6DspgBmsAHDodbSQN3xNJT2pX
+         8qoSZj5g89q1HyPKOKBwRcwYv1sV/6PKf26ynXA7v2/oQrj1v4psDeqT08wE7TLqPYg0
+         2iz6I0/CygUgF+oOJjkFSJFWON8Ex9b1mzG3f40k9t+6jt+VxOIvttPIIEx2nPIjCQha
+         ntRg==
+X-Gm-Message-State: APjAAAV7JAscqqGvyX52sfqGK3DqGDErpS6vERPEBj7gWTuk2DEbUOex
+        JEpbp2IaLGd2O+RmLfmlENXwB6k+nLE=
+X-Google-Smtp-Source: APXvYqxWkLsVKeKtSgMGc791uOYhCpFEAwWRZixyfOdLeCnQhadg/whu9e7AFTLlgolqHEcd9y0izw==
+X-Received: by 2002:a19:c213:: with SMTP id l19mr190450lfc.83.1565801945712;
+        Wed, 14 Aug 2019 09:59:05 -0700 (PDT)
+Received: from [192.168.0.104] ([79.134.174.40])
+        by smtp.googlemail.com with ESMTPSA id t137sm20803lff.78.2019.08.14.09.59.04
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 14 Aug 2019 09:59:05 -0700 (PDT)
+Subject: Re: [PATCH net-next] mcast: ensure L-L IPv6 packets are accepted by
+ bridge
+To:     pruddy@vyatta.att-mail.com, Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, roopa@cumulusnetworks.com,
+        linus.luessing@c0d3.blue
+References: <20190813141804.20515-1-pruddy@vyatta.att-mail.com>
+ <20190813195341.GA27005@splinter>
+ <43ed59db-9228-9132-b9a5-31c8d1e8e9e9@cumulusnetworks.com>
+ <620d3cfbe58e3ae87ef1d5e7f2aa1588cac3e64a.camel@vyatta.att-mail.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <9b921135-3447-15b1-8241-3f10693b6e85@cumulusnetworks.com>
+Date:   Wed, 14 Aug 2019 19:58:57 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <bdb4b47b-25fa-eb96-aa8d-dd4f4b012277@solarflare.com>
+In-Reply-To: <620d3cfbe58e3ae87ef1d5e7f2aa1588cac3e64a.camel@vyatta.att-mail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-08-14 17:45 UTC+0100 ~ Edward Cree <ecree@solarflare.com>
-> On 14/08/2019 10:42, Quentin Monnet wrote:
->> 2019-08-13 18:51 UTC-0700 ~ Alexei Starovoitov
->> <alexei.starovoitov@gmail.com>
->>> The same can be achieved by 'bpftool map dump|grep key|wc -l', no?
->> To some extent (with subtleties for some other map types); and we use a
->> similar command line as a workaround for now. But because of the rate of
->> inserts/deletes in the map, the process often reports a number higher
->> than the max number of entries (we observed up to ~750k when max_entries
->> is 500k), even is the map is only half-full on average during the count.
->> On the worst case (though not frequent), an entry is deleted just before
->> we get the next key from it, and iteration starts all over again. This
->> is not reliable to determine how much space is left in the map.
+On 8/14/19 7:40 PM, Patrick Ruddy wrote:
+> Thanks both for the quick replies, answers inline...
+> 
+> On Wed, 2019-08-14 at 02:55 +0300, Nikolay Aleksandrov wrote:
+>> On 8/13/19 10:53 PM, Ido Schimmel wrote:
+>>> + Bridge maintainers, Linus
+>>>
 >>
->> I cannot see a solution that would provide a more accurate count from
->> user space, when the map is under pressure?
-> This might be a really dumb suggestion, but: you're wanting to collect a
->  summary statistic over an in-kernel data structure in a single syscall,
->  because making a series of syscalls to examine every entry is slow and
->  racy.  Isn't that exactly a job for an in-kernel virtual machine, and
->  could you not supply an eBPF program which the kernel runs on each entry
->  in the map, thus supporting people who want to calculate something else
->  (mean, min and max, whatever) instead of count?
+>> Good catch Ido, thanks!
+>> First I'd say the subject needs to reflect that this is a bridge change
+>> better, please rearrange it like so - bridge: mcast: ...
+>> More below,
+>>
+>>> On Tue, Aug 13, 2019 at 03:18:04PM +0100, Patrick Ruddy wrote:
+>>>> At present only all-nodes IPv6 multicast packets are accepted by
+>>>> a bridge interface that is not in multicast router mode. Since
+>>>> other protocols can be running in the absense of multicast
+>>>> forwarding e.g. OSPFv3 IPv6 ND. Change the test to allow
+>>>> all of the FFx2::/16 range to be accepted when not in multicast
+>>>> router mode. This aligns the code with IPv4 link-local reception
+>>>> and RFC4291
+>>>
+>>> Can you please quote the relevant part from RFC 4291?
+>>>
+>>>> Signed-off-by: Patrick Ruddy <pruddy@vyatta.att-mail.com>
+>>>> ---
+>>>>  include/net/addrconf.h    | 15 +++++++++++++++
+>>>>  net/bridge/br_multicast.c |  2 +-
+>>>>  2 files changed, 16 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/include/net/addrconf.h b/include/net/addrconf.h
+>>>> index becdad576859..05b42867e969 100644
+>>>> --- a/include/net/addrconf.h
+>>>> +++ b/include/net/addrconf.h
+>>>> @@ -434,6 +434,21 @@ static inline void addrconf_addr_solict_mult(const struct in6_addr *addr,
+>>>>  		      htonl(0xFF000000) | addr->s6_addr32[3]);
+>>>>  }
+>>>>  
+>>>> +/*
+>>>> + *      link local multicast address range ffx2::/16 rfc4291
+>>>> + */
+>>>> +static inline bool ipv6_addr_is_ll_mcast(const struct in6_addr *addr)
+>>>> +{
+>>>> +#if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+>>>> +	__be64 *p = (__be64 *)addr;
+>>>> +	return ((p[0] & cpu_to_be64(0xff0f000000000000UL))
+>>>> +		^ cpu_to_be64(0xff02000000000000UL)) == 0UL;
+>>>> +#else
+>>>> +	return ((addr->s6_addr32[0] & htonl(0xff0f0000)) ^
+>>>> +		htonl(0xff020000)) == 0;
+>>>> +#endif
+>>>> +}
+>>>> +
+>>>>  static inline bool ipv6_addr_is_ll_all_nodes(const struct in6_addr *addr)
+>>>>  {
+>>>>  #if defined(CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS) && BITS_PER_LONG == 64
+>>>> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+>>>> index 9b379e110129..ed3957381fa2 100644
+>>>> --- a/net/bridge/br_multicast.c
+>>>> +++ b/net/bridge/br_multicast.c
+>>>> @@ -1664,7 +1664,7 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+>>>>  	err = ipv6_mc_check_mld(skb);
+>>>>  
+>>>>  	if (err == -ENOMSG) {
+>>>> -		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
+>>>> +		if (!ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
+>>>>  			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+>>>
+>>> IIUC, you want IPv6 link-local packets to be locally received, but this
+>>> also changes how these packets are flooded. RFC 4541 says that packets
+>>
+>> Indeed, we'll start flooding them all, not just the all hosts address.
+>> If that is at all required it'll definitely have to be optional.
+>>
+>>> addressed to the all hosts address are a special case and should be
+>>> forwarded to all ports:
+>>>
+>>> "In IPv6, the data forwarding rules are more straight forward because MLD is
+>>> mandated for addresses with scope 2 (link-scope) or greater. The only exception
+>>> is the address FF02::1 which is the all hosts link-scope address for which MLD
+>>> messages are never sent. Packets with the all hosts link-scope address should
+>>> be forwarded on all ports."
+>>>
+>>
+>> I wonder what is the problem for the host to join such group on behalf of the bridge ?
+>> Then you'll receive the traffic at least locally and the RFC says it itself - MLD is mandated
+>> for the other link-local addresses.
+>> It's very late here and maybe I'm missing something.. :)
+>>
+> The group is being joined by MLD at the L3 level but the packets are
+> not being passed up to the l3 interface becasue there is a MLD querier
+> on the network
 > 
 
-Hi Edward, I like the approach, thanks for the suggestion.
+That shouldn't matter if the host has joined the group, there is a specific
+check for that. If the host has joined the group and we have an mdst then
+we'll hit this code:
+                mdst = br_mdb_get(br, skb, vid);
+                if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
+                    br_multicast_querier_exists(br, eth_hdr(skb))) {
+                        if ((mdst && mdst->host_joined) ||
+                            br_multicast_is_router(br)) {
+                                local_rcv = true;
+                                br->dev->stats.multicast++;
+                        }
+                        mcast_hit = true;
+                } else {
 
-But I did not mention that we were using offloaded maps: Tracing the
-kernel would probably work for programs running on the host, but this is
-not a solution we could extend to hardware offload.
+local_rcv become true and the packet is passed up, so what is the problem ?
+Have you missed to refresh the group and it has expired in the bridge perhaps ?
 
-Best regards,
-Quentin
+
+> snippet from /proc/net/igmp6
+> ...
+> 40   sw1             ff0200000000000000000001ff008700     1 00000004 0
+> 40   sw1             ff020000000000000000000000000002     1 00000004 0
+> 40   sw1             ff020000000000000000000000000001     1 0000000C 0
+> 40   sw1             ff010000000000000000000000000001     1 00000008 0
+> 41   lo1             ff020000000000000000000000000001     1 0000000C 0
+> 41   lo1             ff010000000000000000000000000001     1 00000008 0
+> 42   sw1.1           ff020000000000000000000000000006     1 00000004 0
+> 42   sw1.1           ff020000000000000000000000000005     1 00000004 0
+> 42   sw1.1           ff0200000000000000000001ff000000     2 00000004 0
+> 42   sw1.1           ff0200000000000000000001ff008700     1 00000004 0
+> 42   sw1.1           ff0200000000000000000001ff000099     1 00000004 0
+> 42   sw1.1           ff020000000000000000000000000002     1 00000004 0
+> 42   sw1.1           ff020000000000000000000000000001     1 0000000C 0
+> 42   sw1.1           ff010000000000000000000000000001     1 00000008 0
+> ...
+> 
+> the bridge is sw1 and the l3 intervace is sw1.1
+> 
+> Ido is correct about the flooding - I will update the patch with the
+> comments and reissue.
+> 
+> Thanks again
+> 
+> -pr
+>>  
+>>> Maybe you want something like:
+>>>
+>>
+>> I think we can do without the new field, either pass local_rcv into br_multicast_rcv() or
+>> set it based on return value. The extra test will have to remain unfortunately, but we
+>> can reduce the tests by one if carefully done.
+>>
+>>> diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
+>>> index 09b1dd8cd853..9f312a73f61c 100644
+>>> --- a/net/bridge/br_input.c
+>>> +++ b/net/bridge/br_input.c
+>>> @@ -132,7 +132,8 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
+>>>  		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
+>>>  		    br_multicast_querier_exists(br, eth_hdr(skb))) {
+>>>  			if ((mdst && mdst->host_joined) ||
+>>> -			    br_multicast_is_router(br)) {
+>>> +			    br_multicast_is_router(br) ||
+>>> +			    BR_INPUT_SKB_CB_LOCAL_RECEIVE(skb)) {
+>>>  				local_rcv = true;
+>>>  				br->dev->stats.multicast++;
+>>>  			}
+>>> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+>>> index 9b379e110129..f03cecf6174e 100644
+>>> --- a/net/bridge/br_multicast.c
+>>> +++ b/net/bridge/br_multicast.c
+>>> @@ -1667,6 +1667,9 @@ static int br_multicast_ipv6_rcv(struct net_bridge *br,
+>>>  		if (!ipv6_addr_is_ll_all_nodes(&ipv6_hdr(skb)->daddr))
+>>>  			BR_INPUT_SKB_CB(skb)->mrouters_only = 1;
+>>>  
+>>> +		if (ipv6_addr_is_ll_mcast(&ipv6_hdr(skb)->daddr))
+>>> +			BR_INPUT_SKB_CB(skb)->local_receive = 1;
+>>> +
+>>>  		if (ipv6_addr_is_all_snoopers(&ipv6_hdr(skb)->daddr)) {
+>>>  			err = br_ip6_multicast_mrd_rcv(br, port, skb);
+>>>  
+>>> diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
+>>> index b7a4942ff1b3..d76394ca4059 100644
+>>> --- a/net/bridge/br_private.h
+>>> +++ b/net/bridge/br_private.h
+>>> @@ -426,6 +426,7 @@ struct br_input_skb_cb {
+>>>  #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+>>>  	u8 igmp;
+>>>  	u8 mrouters_only:1;
+>>> +	u8 local_receive:1;
+>>>  #endif
+>>>  	u8 proxyarp_replied:1;
+>>>  	u8 src_port_isolated:1;
+>>> @@ -445,8 +446,10 @@ struct br_input_skb_cb {
+>>>  
+>>>  #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+>>>  # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(BR_INPUT_SKB_CB(__skb)->mrouters_only)
+>>> +# define BR_INPUT_SKB_CB_LOCAL_RECEIVE(__skb)	(BR_INPUT_SKB_CB(__skb)->local_receive)
+>>>  #else
+>>>  # define BR_INPUT_SKB_CB_MROUTERS_ONLY(__skb)	(0)
+>>> +# define BR_INPUT_SKB_CB_LOCAL_RECEIVE(__skb)	(0)
+>>>  #endif
+>>>  
+>>>  #define br_printk(level, br, format, args...)	\
+>>>
+> 
+
