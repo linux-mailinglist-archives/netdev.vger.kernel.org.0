@@ -2,49 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 137C78D265
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 13:40:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427448D271
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 13:46:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727880AbfHNLkQ convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Aug 2019 07:40:16 -0400
-Received: from mx2.suse.de ([195.135.220.15]:41962 "EHLO mx1.suse.de"
+        id S1727266AbfHNLqT convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 14 Aug 2019 07:46:19 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43796 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727083AbfHNLkP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 07:40:15 -0400
+        id S1725800AbfHNLqS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 07:46:18 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E115BAE5C;
-        Wed, 14 Aug 2019 11:40:13 +0000 (UTC)
-Date:   Wed, 14 Aug 2019 13:40:12 +0200
+        by mx1.suse.de (Postfix) with ESMTP id EFF61AF5B;
+        Wed, 14 Aug 2019 11:46:16 +0000 (UTC)
+Date:   Wed, 14 Aug 2019 13:46:16 +0200
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Philippe =?ISO-8859-1?Q?Mathieu-Daud=E9?= <f4bug@amsat.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Ralf Baechle <ralf@linux-mips.org>,
+To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
         Paul Burton <paul.burton@mips.com>,
         James Hogan <jhogan@kernel.org>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Lee Jones <lee.jones@linaro.org>,
         "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Alessandro Zummo <a.zummo@towertech.it>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Slaby <jslaby@suse.com>,
         Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-input <linux-input@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
-        <linux-rtc@vger.kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>
-Subject: Re: [PATCH v4 8/9] MIPS: SGI-IP27: fix readb/writeb addressing
-Message-Id: <20190814134012.0a1793598a478b55f6361924@suse.de>
-In-Reply-To: <90129235-58c2-aeed-a9d3-96f4a8f45709@amsat.org>
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-serial@vger.kernel.org
+Subject: Re: [PATCH v4 3/9] nvmem: core: add nvmem_device_find
+Message-Id: <20190814134616.b4dab3c0aa6ac913d78edb6a@suse.de>
+In-Reply-To: <8d18de64-9234-fcba-aa3d-b46789eb62a5@linaro.org>
 References: <20190809103235.16338-1-tbogendoerfer@suse.de>
-        <20190809103235.16338-9-tbogendoerfer@suse.de>
-        <CAHp75Vd_083R9sRsspVuJ3ZMTxpVR79PF5Lg-bpnMxRfN+b7wA@mail.gmail.com>
-        <20190811072907.GA1416@kroah.com>
-        <90129235-58c2-aeed-a9d3-96f4a8f45709@amsat.org>
+        <20190809103235.16338-4-tbogendoerfer@suse.de>
+        <8d18de64-9234-fcba-aa3d-b46789eb62a5@linaro.org>
 X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
 Mime-Version: 1.0
 Content-Type: text/plain; charset=ISO-8859-1
@@ -54,53 +47,29 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Aug 2019 10:47:13 +0200
-Philippe Mathieu-Daudé <f4bug@amsat.org> wrote:
+On Tue, 13 Aug 2019 10:40:34 +0100
+Srinivas Kandagatla <srinivas.kandagatla@linaro.org> wrote:
 
-> Hi Thomas,
 > 
-> On 8/11/19 9:29 AM, Greg Kroah-Hartman wrote:
-> > On Sat, Aug 10, 2019 at 04:22:23PM +0300, Andy Shevchenko wrote:
-> >> On Fri, Aug 9, 2019 at 1:34 PM Thomas Bogendoerfer
-> >> <tbogendoerfer@suse.de> wrote:
-> >>>
-> >>> Our chosen byte swapping, which is what firmware already uses, is to
-> >>> do readl/writel by normal lw/sw intructions (data invariance). This
-> >>> also means we need to mangle addresses for u8 and u16 accesses. The
-> >>> mangling for 16bit has been done aready, but 8bit one was missing.
-> >>> Correcting this causes different addresses for accesses to the
-> >>> SuperIO and local bus of the IOC3 chip. This is fixed by changing
-> >>> byte order in ioc3 and m48rtc_rtc structs.
-> >>
-> >>>  /* serial port register map */
-> >>>  struct ioc3_serialregs {
-> >>> -       uint32_t        sscr;
-> >>> -       uint32_t        stpir;
-> >>> -       uint32_t        stcir;
-> >>> -       uint32_t        srpir;
-> >>> -       uint32_t        srcir;
-> >>> -       uint32_t        srtr;
-> >>> -       uint32_t        shadow;
-> >>> +       u32     sscr;
-> >>> +       u32     stpir;
-> >>> +       u32     stcir;
-> >>> +       u32     srpir;
-> >>> +       u32     srcir;
-> >>> +       u32     srtr;
-> >>> +       u32     shadow;
-> >>>  };
-> >>
-> >> Isn't it a churn? AFAIU kernel documentation the uint32_t is okay to
-> >> use, just be consistent inside one module / driver.
-> >> Am I mistaken?
+> 
+> On 09/08/2019 11:32, Thomas Bogendoerfer wrote:
+> > nvmem_device_find provides a way to search for nvmem devices with
+> > the help of a match function simlair to bus_find_device.
 > > 
-> > No, but really it uint* shouldn't be used anywhere in the kernel source
-> > as it does not make sense.
+> > Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> > ---
+> >   drivers/nvmem/core.c           | 62 ++++++++++++++++++++++--------------------
+> >   include/linux/nvmem-consumer.h |  9 ++++++
+> >   2 files changed, 41 insertions(+), 30 deletions(-)
 > 
-> If you respin your series, please send this cleanup as a separate patch.
+> Have you considered using nvmem_register_notifier() ?
 
-no need for an extra patch. I realized that patch 7 in this series introduces
-all of these uint32_t. So i already fixed it there.
+yes, that was the first idea. But then I realized I need to build up
+a private database of information already present in nvmem bus. So I
+looked for a way to retrieve it from there. Unfortunately I couldn't
+use bus_find_device directly, because nvmem_bus_type and struct nvmem_device
+is hidden. So I refactured the lookup code and added a more universal
+lookup function, which fits my needs and should be usable for more.
 
 Thomas.
 
