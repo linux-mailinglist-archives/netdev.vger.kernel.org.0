@@ -2,105 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E22258CF54
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 11:25:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 472C08CF61
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 11:25:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727194AbfHNJY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 05:24:58 -0400
-Received: from correo.us.es ([193.147.175.20]:42634 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727080AbfHNJY5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 05:24:57 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 00082C40EA
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 11:24:54 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id E407F1150CE
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 11:24:54 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id D9CDD7E064; Wed, 14 Aug 2019 11:24:54 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id D97D345F;
-        Wed, 14 Aug 2019 11:24:52 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 14 Aug 2019 11:24:52 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.here (unknown [31.4.218.116])
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id 967A44265A2F;
-        Wed, 14 Aug 2019 11:24:52 +0200 (CEST)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 7/7] netfilter: nft_flow_offload: skip tcp rst and fin packets
-Date:   Wed, 14 Aug 2019 11:24:40 +0200
-Message-Id: <20190814092440.20087-8-pablo@netfilter.org>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190814092440.20087-1-pablo@netfilter.org>
-References: <20190814092440.20087-1-pablo@netfilter.org>
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1726571AbfHNJZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 05:25:39 -0400
+Received: from mail-lf1-f43.google.com ([209.85.167.43]:44177 "EHLO
+        mail-lf1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726383AbfHNJZi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 05:25:38 -0400
+Received: by mail-lf1-f43.google.com with SMTP id v16so7120274lfg.11
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 02:25:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=sentorsecurity.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pZ4G9V/bxMjiKlcxVSDzmNEaY7yeTRFh5KrhMcKms5o=;
+        b=nJmcaRfbrJUNFA40pjHugOmstYy/yRi4GPcU8GookaXNTuA68eEiFuIsqE203DEKmi
+         IXQrU8YnboF4RUu77c58qiyIaYF1FdCXzv6l5tPXh9X35vBzQ3JGcy6wp4Z0cuCJbYAE
+         7Yiq2fekZoP/pKgjIxRu8/jSZ2/zyZGhRxiU2JxD0psHOcM3u+o4/UHzpq9g/p4U3wkz
+         +md4AQg07G8zvzJEXEA9Xb30cK0hKl2/r6JqqDpZodIc6XR+jYsUq5vD2BzoXBE0kcKX
+         C8aMynbRisyKrc776l8zOifps6fJJoWBcll9iE+0rf76ZkVq+ohBdpf/paTpnDDTixtj
+         r7sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pZ4G9V/bxMjiKlcxVSDzmNEaY7yeTRFh5KrhMcKms5o=;
+        b=lCUhZ9rcI/mEwxTHqDk8RdA9BHafMOIZKZV7jMwGtWaY0ohLCbrO81EMG7cdAqc+/I
+         Vb7PjrUpUb08so3m76rB3IAJWXibvfClUwOwDmjsLz73+5DW2Jjsp2Pp0kE9wWzxCkgT
+         UPRzYdc35Qyzccex96zPkAHyEnFGN+DTqlV2NcM1ZrEhxDkw+f0XgLULm8OyF8y+zE/D
+         QlbQ5SDflDwr5RSi+E7EoTO51rYLW3ZFbl57+Dk84nCXmdyVKE+qxJGdinawYGRv2KbK
+         3Au0Q/fWJ1W+lGT1sQrFLoTcnzs6FUDZmlUyc48QPxoMqNtn1wvjphlqH1FC7iabZSjk
+         Y6lA==
+X-Gm-Message-State: APjAAAUMj2JEN73XcKq+qF6MxXm6XJKA5T+FmEj0s8GiMocvNsmnxC3t
+        Si7L8ocVP1k283sv+MPwMHp/l0R69e+BO0SZIRgxMw==
+X-Google-Smtp-Source: APXvYqwJ2se7EGENjR+qFe1aubUjU+qKU6vyG8cQxzFUMilhKUWBRerwARSih7TMvzDN0kqrr63pwNXbY7ZqRU/UQ4Y=
+X-Received: by 2002:ac2:4d02:: with SMTP id r2mr24465959lfi.138.1565774737031;
+ Wed, 14 Aug 2019 02:25:37 -0700 (PDT)
+MIME-Version: 1.0
+References: <CAAT+qEa6Yw-tf3L_R-phzSvLiGOdW9uLhFGNTz+i9eWhBT_+DA@mail.gmail.com>
+ <CAAT+qEbOx8Jh3aFS-e7U6FyHo03sdcY6UoeGzwYQbO6WRjc3PQ@mail.gmail.com>
+ <CAM_iQpW-kTV1ZL-OnS2TNVcso1NbiiPn0eUz=7f5uTpFucz7sw@mail.gmail.com> <CAAT+qEYG5=5ny+t0VcqiYjDUQLrcj9sBR=2w-fdsE7Jjf4xOkQ@mail.gmail.com>
+In-Reply-To: <CAAT+qEYG5=5ny+t0VcqiYjDUQLrcj9sBR=2w-fdsE7Jjf4xOkQ@mail.gmail.com>
+From:   Martin Olsson <martin.olsson+netdev@sentorsecurity.com>
+Date:   Wed, 14 Aug 2019 11:25:25 +0200
+Message-ID: <CAAT+qEbDAuQWGZa5BQYMZfBRQM+mDS=CMb9GTPz6Nxz_WD0M8Q@mail.gmail.com>
+Subject: tc - mirred ingress not supported at the moment
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP rst and fin packets do not qualify to place a flow into the
-flowtable. Most likely there will be no more packets after connection
-closure. Without this patch, this flow entry expires and connection
-tracking picks up the entry in ESTABLISHED state using the fixup
-timeout, which makes this look inconsistent to the user for a connection
-that is actually already closed.
+Hi Cong!
 
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_flow_offload.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+Ah sorry.
+Already implemented. Great!
 
-diff --git a/net/netfilter/nft_flow_offload.c b/net/netfilter/nft_flow_offload.c
-index aa5f571d4361..060a4ed46d5e 100644
---- a/net/netfilter/nft_flow_offload.c
-+++ b/net/netfilter/nft_flow_offload.c
-@@ -72,11 +72,11 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- {
- 	struct nft_flow_offload *priv = nft_expr_priv(expr);
- 	struct nf_flowtable *flowtable = &priv->flowtable->data;
-+	struct tcphdr _tcph, *tcph = NULL;
- 	enum ip_conntrack_info ctinfo;
- 	struct nf_flow_route route;
- 	struct flow_offload *flow;
- 	enum ip_conntrack_dir dir;
--	bool is_tcp = false;
- 	struct nf_conn *ct;
- 	int ret;
- 
-@@ -89,7 +89,10 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- 
- 	switch (ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.dst.protonum) {
- 	case IPPROTO_TCP:
--		is_tcp = true;
-+		tcph = skb_header_pointer(pkt->skb, pkt->xt.thoff,
-+					  sizeof(_tcph), &_tcph);
-+		if (unlikely(!tcph || tcph->fin || tcph->rst))
-+			goto out;
- 		break;
- 	case IPPROTO_UDP:
- 		break;
-@@ -115,7 +118,7 @@ static void nft_flow_offload_eval(const struct nft_expr *expr,
- 	if (!flow)
- 		goto err_flow_alloc;
- 
--	if (is_tcp) {
-+	if (tcph) {
- 		ct->proto.tcp.seen[0].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
- 		ct->proto.tcp.seen[1].flags |= IP_CT_TCP_FLAG_BE_LIBERAL;
- 	}
--- 
-2.11.0
+Hmmm. Then why don't the manual at
+https://www.linux.org/docs/man8/tc-mirred.html to reflect the changes?
+That was the place I checked to see if ingress was still not implemented.
+In the commit you point at, the sentence "Currently only egress is
+implemented" has been removed.
 
 
+Question:
+Is there any form of performance penalty if I send the mirrored
+traffic to the ingress queue of the destination interface rather than
+to the egress queue?
+I mean, in the kernel there is the possibility to perform far more
+actions on the ingress queue than on the egress, but if I leave both
+queues at their defaults, will mirrored packets to ingress use more
+CPU cycles than to the egress destination, or are they more or less
+identical?
+
+
+Question 2:
+Given the commit
+https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=5eca0a3701223619a513c7209f7d9335ca1b4cfa,
+how can I see in what kernel version it was added?
+
+/Martin
+
+
+Den tis 13 aug. 2019 kl 18:47 skrev Cong Wang <xiyou.wangcong@gmail.com>:
+>
+> On Tue, Aug 13, 2019 at 4:05 AM Martin Olsson
+> <martin.olsson+netdev@sentorsecurity.com> wrote:
+> > Q1: Why was 'ingress' not implemented at the same time as 'egress'?
+>
+> Because you are using an old iproute2.
+>
+> ingress support is added by:
+> https://git.kernel.org/pub/scm/network/iproute2/iproute2.git/commit/?id=5eca0a3701223619a513c7209f7d9335ca1b4cfa
+>
+>
+> > 2)
+> > Ok, so I have to use 'egress':
+> > # tc filter add dev eno2 parent ffff: prio 999  protocol all matchall
+> > action mirred egress redirect dev mon0
+>
+>
+> So you redirect packets from eno2's ingress to mon0's egress.
+>
+>
+> >
+> > Since the mirred action forces me to use 'egress' as the direction on
+> > the dest interface, all kinds of network statistics tools show
+> > incorrect counters. :-(
+> > eno2 is a pure sniffer interface (it is connected to the SPAN dest
+> > port of a switch).
+> > All packets (matchall) on eno2 are mirrored to mon0.
+> >
+> > # ip -s link show dev eno2
+> >     ...
+> >     ...
+> >     RX: bytes  packets  errors  dropped overrun mcast
+> >     13660757   16329    0       0       0       0
+> >     TX: bytes  packets  errors  dropped carrier collsns
+> >     0          0        0       0       0       0
+> > # ip -s link show dev mon0
+> >     ...
+> >     ...
+> >     RX: bytes  packets  errors  dropped overrun mcast
+> >     0          0        0       0       0       0
+> >     TX: bytes  packets  errors  dropped carrier collsns
+> >     13660757   16329    0       0       0       0
+> >
+> > eno2 and mon0 should be identical, but they are inverted.
+>
+> Yes, this behavior is correct. The keyword "egress" in your cmdline
+> already says so.
+>
+> >
+> > Q2: So... Can the 'ingress' option please be implemented? (I'm no
+> > programmer, so unfortunetly I can't do it myself).
+>
+> It is completed, you need to update your iproute2 and kernel.
+>
+> Thanks.
