@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CA8D78C5FD
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:12:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 376C48C600
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:12:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727727AbfHNCLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:11:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44082 "EHLO mail.kernel.org"
+        id S1727778AbfHNCMB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:12:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44172 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727703AbfHNCLv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:11:51 -0400
+        id S1727760AbfHNCMA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:12:00 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1CC6A21744;
-        Wed, 14 Aug 2019 02:11:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8DB1420842;
+        Wed, 14 Aug 2019 02:11:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748710;
-        bh=YarHGKtBIijyaqXlWcY8Btnh31GnzALr+t2++I5/OJ4=;
+        s=default; t=1565748719;
+        bh=LzR96rWoY7MYu8XFodcA+gwbxghs1JHcR9sMScmctoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LMftjXHlxL/Yp6N7ugK/rh/OvgyaD/6CDfc3ct1xnLr3fkwpS28k49c2Ab4EPyyFS
-         aE6+VYEFOUAdQdxwIUKMSjmDyeX2MrYuBD9jL8CcupftDyY2EyVt1KD7yMkWYeUko7
-         JeMM9uSQOIghEPYJsy31Rr4c9qHjLTauq6z4hkGI=
+        b=JA6Oa0EbwAE9Ivy1U5txJjotK5mTKoh30iBP+ODiVrXsyi94SVVnwwfL/PdMwwiGp
+         vS93fzIwoH3QnEoeL67QG7p74hi2kthNQbbFmM86mVGa2p+fiODiMltwFR4htuMxaZ
+         si4vG3VsnFgVq5usHgyv4qzCMf0jysUvBwOUW7Xg=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eric Dumazet <edumazet@google.com>,
-        syzbot <syzkaller@googlegroups.com>,
+Cc:     Ilya Maximets <i.maximets@samsung.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
         bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 034/123] bpf: fix access to skb_shared_info->gso_segs
-Date:   Tue, 13 Aug 2019 22:09:18 -0400
-Message-Id: <20190814021047.14828-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 036/123] libbpf: fix using uninitialized ioctl results
+Date:   Tue, 13 Aug 2019 22:09:20 -0400
+Message-Id: <20190814021047.14828-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -45,67 +46,78 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+From: Ilya Maximets <i.maximets@samsung.com>
 
-[ Upstream commit 06a22d897d82f12776d44dbf0850f5895469cb2a ]
+[ Upstream commit decb705e01a5d325c9876b9674043cde4b54f0db ]
 
-It is possible we reach bpf_convert_ctx_access() with
-si->dst_reg == si->src_reg
+'channels.max_combined' initialized only on ioctl success and
+errno is only valid on ioctl failure.
 
-Therefore, we need to load BPF_REG_AX before eventually
-mangling si->src_reg.
+The code doesn't produce any runtime issues, but makes memory
+sanitizers angry:
 
-syzbot generated this x86 code :
-   3:   55                      push   %rbp
-   4:   48 89 e5                mov    %rsp,%rbp
-   7:   48 81 ec 00 00 00 00    sub    $0x0,%rsp // Might be avoided ?
-   e:   53                      push   %rbx
-   f:   41 55                   push   %r13
-  11:   41 56                   push   %r14
-  13:   41 57                   push   %r15
-  15:   6a 00                   pushq  $0x0
-  17:   31 c0                   xor    %eax,%eax
-  19:   48 8b bf c0 00 00 00    mov    0xc0(%rdi),%rdi
-  20:   44 8b 97 bc 00 00 00    mov    0xbc(%rdi),%r10d
-  27:   4c 01 d7                add    %r10,%rdi
-  2a:   48 0f b7 7f 06          movzwq 0x6(%rdi),%rdi // Crash
-  2f:   5b                      pop    %rbx
-  30:   41 5f                   pop    %r15
-  32:   41 5e                   pop    %r14
-  34:   41 5d                   pop    %r13
-  36:   5b                      pop    %rbx
-  37:   c9                      leaveq
-  38:   c3                      retq
+ Conditional jump or move depends on uninitialised value(s)
+    at 0x55C056F: xsk_get_max_queues (xsk.c:336)
+    by 0x55C05B2: xsk_create_bpf_maps (xsk.c:354)
+    by 0x55C089F: xsk_setup_xdp_prog (xsk.c:447)
+    by 0x55C0E57: xsk_socket__create (xsk.c:601)
+  Uninitialised value was created by a stack allocation
+    at 0x55C04CD: xsk_get_max_queues (xsk.c:318)
 
-Fixes: d9ff286a0f59 ("bpf: allow BPF programs access skb_shared_info->gso_segs field")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
+Additionally fixed warning on uninitialized bytes in ioctl arguments:
+
+ Syscall param ioctl(SIOCETHTOOL) points to uninitialised byte(s)
+    at 0x648D45B: ioctl (in /usr/lib64/libc-2.28.so)
+    by 0x55C0546: xsk_get_max_queues (xsk.c:330)
+    by 0x55C05B2: xsk_create_bpf_maps (xsk.c:354)
+    by 0x55C089F: xsk_setup_xdp_prog (xsk.c:447)
+    by 0x55C0E57: xsk_socket__create (xsk.c:601)
+  Address 0x1ffefff378 is on thread 1's stack
+  in frame #1, created by xsk_get_max_queues (xsk.c:318)
+  Uninitialised value was created by a stack allocation
+    at 0x55C04CD: xsk_get_max_queues (xsk.c:318)
+
+CC: Magnus Karlsson <magnus.karlsson@intel.com>
+Fixes: 1cad07884239 ("libbpf: add support for using AF_XDP sockets")
+Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ tools/lib/bpf/xsk.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index f681fb772940c..534c310bb0893 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7325,12 +7325,12 @@ static u32 bpf_convert_ctx_access(enum bpf_access_type type,
- 	case offsetof(struct __sk_buff, gso_segs):
- 		/* si->dst_reg = skb_shinfo(SKB); */
- #ifdef NET_SKBUFF_DATA_USES_OFFSET
--		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, head),
--				      si->dst_reg, si->src_reg,
--				      offsetof(struct sk_buff, head));
- 		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, end),
- 				      BPF_REG_AX, si->src_reg,
- 				      offsetof(struct sk_buff, end));
-+		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, head),
-+				      si->dst_reg, si->src_reg,
-+				      offsetof(struct sk_buff, head));
- 		*insn++ = BPF_ALU64_REG(BPF_ADD, si->dst_reg, BPF_REG_AX);
- #else
- 		*insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, end),
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index ca272c5b67f47..8e03b65830da0 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -327,15 +327,14 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 
+ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ {
+-	struct ethtool_channels channels;
+-	struct ifreq ifr;
++	struct ethtool_channels channels = { .cmd = ETHTOOL_GCHANNELS };
++	struct ifreq ifr = {};
+ 	int fd, err, ret;
+ 
+ 	fd = socket(AF_INET, SOCK_DGRAM, 0);
+ 	if (fd < 0)
+ 		return -errno;
+ 
+-	channels.cmd = ETHTOOL_GCHANNELS;
+ 	ifr.ifr_data = (void *)&channels;
+ 	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
+ 	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+@@ -345,7 +344,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ 		goto out;
+ 	}
+ 
+-	if (channels.max_combined == 0 || errno == EOPNOTSUPP)
++	if (err || channels.max_combined == 0)
+ 		/* If the device says it has no channels, then all traffic
+ 		 * is sent to a single stream, so max queues = 1.
+ 		 */
 -- 
 2.20.1
 
