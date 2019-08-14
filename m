@@ -2,35 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CDDA78C861
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:31:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1956F8C85B
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729217AbfHNCQx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:16:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48208 "EHLO mail.kernel.org"
+        id S1729250AbfHNCQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:16:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729174AbfHNCQt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:16:49 -0400
+        id S1729230AbfHNCQz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:16:55 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 50CBF2084D;
-        Wed, 14 Aug 2019 02:16:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8CC00216F4;
+        Wed, 14 Aug 2019 02:16:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565749008;
-        bh=74kf31WKB8TAzNkFDtwz19nehlsq6lwa1J68G1k6gpA=;
+        s=default; t=1565749014;
+        bh=eDIjUeLpecjzz80joUlEhc7fZX/UocoNem/siJ3IjAg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CGhjkweVp9giWDSYcRZSuiCbMzWEvbyhAF/VFWlGfB75ciDwvy+aDWAT8VXS0Vcws
-         vwVgARLIICR71QomNrVFoiNudqc2VlICYLBon4pnhWlizmUHCuxZzX0NZNY5p1cuOE
-         rHqYDZqE38N3rv5Ml26VoT1U1Jhh2nVp2gMe8VvU=
+        b=PbjIF5pjZwMC2RAzD4MrxYIxNPDcd90+kMn+xUEgqY3L8ZEyQEULompkIPGkNSTA3
+         2gejsP85dG9NnpN0OrFp7ZjTbSGlIxIbN+lA4NNiSFE8iXVkY+1M3BPgf1bBH9p1RY
+         ypDgp21mBynpOXE0IVFKjGW+sSLwBQ9w0kwp68Jk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
+Cc:     Denis Kirjanov <kda@linux-powerpc.org>,
+        syzbot+3499a83b2d062ae409d4@syzkaller.appspotmail.com,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 33/68] net: phy: phy_led_triggers: Fix a possible null-pointer dereference in phy_led_trigger_change_speed()
-Date:   Tue, 13 Aug 2019 22:15:11 -0400
-Message-Id: <20190814021548.16001-33-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 36/68] net: usb: pegasus: fix improper read if get_registers() fail
+Date:   Tue, 13 Aug 2019 22:15:14 -0400
+Message-Id: <20190814021548.16001-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021548.16001-1-sashal@kernel.org>
 References: <20190814021548.16001-1-sashal@kernel.org>
@@ -43,47 +45,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Denis Kirjanov <kda@linux-powerpc.org>
 
-[ Upstream commit 271da132e29b5341c31eca6ba6a72ea1302ebac8 ]
+[ Upstream commit 224c04973db1125fcebefffd86115f99f50f8277 ]
 
-In phy_led_trigger_change_speed(), there is an if statement on line 48
-to check whether phy->last_triggered is NULL:
-    if (!phy->last_triggered)
+get_registers() may fail with -ENOMEM and in this
+case we can read a garbage from the status variable tmp.
 
-When phy->last_triggered is NULL, it is used on line 52:
-    led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
-
-Thus, a possible null-pointer dereference may occur.
-
-To fix this bug, led_trigger_event(&phy->last_triggered->trigger,
-LED_OFF) is called when phy->last_triggered is not NULL.
-
-This bug is found by a static analysis tool STCheck written by
-the OSLAB group in Tsinghua University.
-
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
+Reported-by: syzbot+3499a83b2d062ae409d4@syzkaller.appspotmail.com
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy_led_triggers.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/usb/pegasus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy_led_triggers.c b/drivers/net/phy/phy_led_triggers.c
-index 491efc1bf5c48..7278eca70f9f3 100644
---- a/drivers/net/phy/phy_led_triggers.c
-+++ b/drivers/net/phy/phy_led_triggers.c
-@@ -58,8 +58,9 @@ void phy_led_trigger_change_speed(struct phy_device *phy)
- 		if (!phy->last_triggered)
- 			led_trigger_event(&phy->led_link_trigger->trigger,
- 					  LED_FULL);
-+		else
-+			led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
+diff --git a/drivers/net/usb/pegasus.c b/drivers/net/usb/pegasus.c
+index f4247b275e090..b7a0df95d4b0f 100644
+--- a/drivers/net/usb/pegasus.c
++++ b/drivers/net/usb/pegasus.c
+@@ -285,7 +285,7 @@ static void mdio_write(struct net_device *dev, int phy_id, int loc, int val)
+ static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
+ {
+ 	int i;
+-	__u8 tmp;
++	__u8 tmp = 0;
+ 	__le16 retdatai;
+ 	int ret;
  
--		led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
- 		led_trigger_event(&plt->trigger, LED_FULL);
- 		phy->last_triggered = plt;
- 	}
 -- 
 2.20.1
 
