@@ -2,82 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7E6C58DAF8
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:22:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 84D248DAEA
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:21:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729918AbfHNRV6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 13:21:58 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:46664 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730290AbfHNRJL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:09:11 -0400
-Received: by mail-pl1-f194.google.com with SMTP id c2so50944042plz.13
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 10:09:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=lPLXl6ahFajDI4RssiQDOHsleZtuIM2FB5N6VA3cEUo=;
-        b=Djbnnd7vbghILih+I9mpcGyerXkfamBWR1T9XnV4I/U3+CRNHEQgWMIdwp1jji7lEm
-         xAXzkJ6FXjN9+4EYiKHiKqZ9PrvnWYb6EwUtbu7ow7bJcsvUH4y8bDX4NqE37k6apDsP
-         1gRb/JDaqRkVJHcR3zLukzmyAlKA5PCtPiTfOK7Q/sOgvZawPeeadc7Jbeb4lv3AVVkt
-         yRQabXmdVuKpyD6i88Id0IBm2EagSlSx+uFlPqKGrwYeFCeDy6dk6OvePjZy7qkOciij
-         gTWrcLqnecJKFsENbO6a7StLjwNDUXR9iw3x/FLOfRy4IsCjG2dZ5a/B2HIvkSWHYHKr
-         s4Tg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=lPLXl6ahFajDI4RssiQDOHsleZtuIM2FB5N6VA3cEUo=;
-        b=tuX//U0m6bJDCk18o5r/gIEK/5pe7gno2DwzH86ME4qQa/c4P88Xl+KSJ3/H25Hsi0
-         gblTdj0SM/+p/cX9DhtdiuCPQA3phX7eo8PDChQD0mBWwKZYoMnu0djeZGRW0j1FEbvH
-         oeK14KN17U8CyorQddbBIhExK7M8M31plKY+9fGpciEdUz7vUPbSZ1z/jTvZOMho2ixj
-         t9+8xoJ8IhhcGUfjQ7f+CuIKCih96mlfTHOWjFlUqSQ/j8dKoukwpUD2mWKu71DM9HD/
-         qVGOgb2HVOfqL/GUmgg+RvYZ9sh1SNoumbsY7cJWWvRPYXISe3Jh4vfoe2aj+plaiLZ6
-         ATPA==
-X-Gm-Message-State: APjAAAXLcTiARW+xNGLjn7qfqnZUzv/p6mPKuv8/x3QzRc1DdI5uC7UL
-        8i9FQDzOgZxwXT1Vuug1EyFvDg==
-X-Google-Smtp-Source: APXvYqz0N3TJhHHWF5BDDnnzVsMKuHFz6u1d69WgGCmwCCNSXQGc6c16Ba5wt8RDmWzR/oTGmcbbow==
-X-Received: by 2002:a17:902:8302:: with SMTP id bd2mr416843plb.9.1565802550782;
-        Wed, 14 Aug 2019 10:09:10 -0700 (PDT)
-Received: from cakuba.netronome.com (c-71-204-185-212.hsd1.ca.comcast.net. [71.204.185.212])
-        by smtp.gmail.com with ESMTPSA id b24sm401115pfd.91.2019.08.14.10.09.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2019 10:09:10 -0700 (PDT)
-Date:   Wed, 14 Aug 2019 10:08:58 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     davem@davemloft.net, ying.xue@windriver.com,
-        netdev@vger.kernel.org, andreyknvl@google.com
-Subject: Re: [net PATCH] net: tls, fix sk_write_space NULL write when tx
- disabled
-Message-ID: <20190814100858.448b83d5@cakuba.netronome.com>
-In-Reply-To: <156576071416.1402.5907777786031481705.stgit@ubuntu3-kvm1>
-References: <156576071416.1402.5907777786031481705.stgit@ubuntu3-kvm1>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1730099AbfHNRVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 13:21:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60438 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730393AbfHNRJv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 13:09:51 -0400
+Received: from kenny.it.cumulusnetworks.com. (fw.cumulusnetworks.com [216.129.126.126])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AD4E72084D;
+        Wed, 14 Aug 2019 17:09:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565802590;
+        bh=1pS0y7l4ZwDyoC2vK2GRS+Mr7Teh4kKSBAc4Hhow+00=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DOasNQPt51sCvvvvSuuGXcX5it6eWu9hWQ8UFYibKY3wOoxklDOBgcm+Noq5TrRR+
+         jAxNeqvpucg+UGyZCMBDUmOac2c1YnMzdz6/xKInhrXixkD+YKVhV2bsBv3Z+JxBvf
+         /+wx6rhWvcZLTfYdAh6Z2EXuW/N6OeSB4ppBGkNc=
+From:   David Ahern <dsahern@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, dan.carpenter@oracle.com,
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next] selftests: Fix get_ifidx and callers in nettest.c
+Date:   Wed, 14 Aug 2019 10:11:51 -0700
+Message-Id: <20190814171151.27739-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Aug 2019 05:31:54 +0000, John Fastabend wrote:
-> The ctx->sk_write_space pointer is only set when TLS tx mode is enabled.
-> When running without TX mode its a null pointer but we still set the
-> sk sk_write_space pointer on close().
-> 
-> Fix the close path to only overwrite sk->sk_write_space when the current
-> pointer is to the tls_write_space function indicating the tls module should
-> clean it up properly as well.
-> 
-> Reported-by: Hillf Danton <hdanton@sina.com>
-> Cc: Ying Xue <ying.xue@windriver.com>
-> Cc: Andrey Konovalov <andreyknvl@google.com>
-> Fixes: 57c722e932cfb ("net/tls: swap sk_write_space on close")
-> Signed-off-by: John Fastabend <john.fastabend@gmail.com>
+From: David Ahern <dsahern@gmail.com>
 
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Dan reported:
 
-Thanks!
+    The patch acda655fefae: "selftests: Add nettest" from Aug 1, 2019,
+    leads to the following static checker warning:
+
+            ./tools/testing/selftests/net/nettest.c:1690 main()
+            warn: unsigned 'tmp' is never less than zero.
+
+    ./tools/testing/selftests/net/nettest.c
+      1680                  case '1':
+      1681                          args.has_expected_raddr = 1;
+      1682                          if (convert_addr(&args, optarg,
+      1683                                           ADDR_TYPE_EXPECTED_REMOTE))
+      1684                                  return 1;
+      1685
+      1686                          break;
+      1687                  case '2':
+      1688                          if (str_to_uint(optarg, 0, 0x7ffffff, &tmp) != 0) {
+      1689                                  tmp = get_ifidx(optarg);
+      1690                                  if (tmp < 0) {
+
+    "tmp" is unsigned so it can't be negative.  Also all the callers assume
+    that get_ifidx() returns negatives on error but it looks like it really
+    returns zero on error so it's a bit unclear to me.
+
+Update get_ifidx to return -1 on errors and cleanup callers of it.
+
+Fixes: acda655fefae ("selftests: Add nettest")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ tools/testing/selftests/net/nettest.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
+index 83515e5ea4dc..c08f4db8330d 100644
+--- a/tools/testing/selftests/net/nettest.c
++++ b/tools/testing/selftests/net/nettest.c
+@@ -266,7 +266,7 @@ static int get_ifidx(const char *ifname)
+ 	int sd, rc;
+ 
+ 	if (!ifname || *ifname == '\0')
+-		return 0;
++		return -1;
+ 
+ 	memset(&ifdata, 0, sizeof(ifdata));
+ 
+@@ -275,14 +275,14 @@ static int get_ifidx(const char *ifname)
+ 	sd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
+ 	if (sd < 0) {
+ 		log_err_errno("socket failed");
+-		return 0;
++		return -1;
+ 	}
+ 
+ 	rc = ioctl(sd, SIOCGIFINDEX, (char *)&ifdata);
+ 	close(sd);
+ 	if (rc != 0) {
+ 		log_err_errno("ioctl(SIOCGIFINDEX) failed");
+-		return 0;
++		return -1;
+ 	}
+ 
+ 	return ifdata.ifr_ifindex;
+@@ -419,20 +419,20 @@ static int set_multicast_if(int sd, int ifindex)
+ 	return rc;
+ }
+ 
+-static int set_membership(int sd, uint32_t grp, uint32_t addr, const char *dev)
++static int set_membership(int sd, uint32_t grp, uint32_t addr, int ifindex)
+ {
+ 	uint32_t if_addr = addr;
+ 	struct ip_mreqn mreq;
+ 	int rc;
+ 
+-	if (addr == htonl(INADDR_ANY) && !dev) {
++	if (addr == htonl(INADDR_ANY) && !ifindex) {
+ 		log_error("Either local address or device needs to be given for multicast membership\n");
+ 		return -1;
+ 	}
+ 
+ 	mreq.imr_multiaddr.s_addr = grp;
+ 	mreq.imr_address.s_addr = if_addr;
+-	mreq.imr_ifindex = dev ? get_ifidx(dev) : 0;
++	mreq.imr_ifindex = ifindex;
+ 
+ 	rc = setsockopt(sd, IPPROTO_IP, IP_ADD_MEMBERSHIP, &mreq, sizeof(mreq));
+ 	if (rc < 0) {
+@@ -1048,7 +1048,7 @@ static int msock_init(struct sock_args *args, int server)
+ 
+ 	if (server &&
+ 	    set_membership(sd, args->grp.s_addr,
+-			   args->local_addr.in.s_addr, args->dev))
++			   args->local_addr.in.s_addr, args->ifindex))
+ 		goto out_err;
+ 
+ 	return sd;
+@@ -1685,15 +1685,16 @@ int main(int argc, char *argv[])
+ 
+ 			break;
+ 		case '2':
+-			if (str_to_uint(optarg, 0, 0x7ffffff, &tmp) != 0) {
+-				tmp = get_ifidx(optarg);
+-				if (tmp < 0) {
++			if (str_to_uint(optarg, 0, INT_MAX, &tmp) == 0) {
++				args.expected_ifindex = (int)tmp;
++			} else {
++				args.expected_ifindex = get_ifidx(optarg);
++				if (args.expected_ifindex < 0) {
+ 					fprintf(stderr,
+-						"Invalid device index\n");
++						"Invalid expected device\n");
+ 					return 1;
+ 				}
+ 			}
+-			args.expected_ifindex = (int)tmp;
+ 			break;
+ 		case 'q':
+ 			quiet = 1;
+-- 
+2.11.0
+
