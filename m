@@ -2,204 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F8DC8CF67
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 11:26:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC1E78CFDD
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 11:42:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726998AbfHNJ0Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 05:26:24 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:33346 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725928AbfHNJ0Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 05:26:24 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 30B115FA49;
-        Wed, 14 Aug 2019 11:26:22 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="FCW1o57/";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id F3C5A1D6F475;
-        Wed, 14 Aug 2019 11:26:21 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com F3C5A1D6F475
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1565774782;
-        bh=3q426un0gISmLfXN0uWMxNzgRrhcurIB/xDHYXFpo4Q=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=FCW1o57/r09K2Ap/lcGfI0LnufPMC1XNE4Yl9DFVJ8gGILsIjk5yXEiHf7n8wrqRB
-         sEXM+q1zopHa7IZc3iK3CrYZC6Tfwc4ZsYxNwVbVPHRX5xj009mjI2GpQ8BJvswbDG
-         8Ru5t2fNaxKN4BSY+CpcRPL+bm7MD6WfRIs8izFoYgVk23ZiFmjwj0agLmtLA4Na+c
-         WFtZpEJRR7BZeTo1QkoBxCOWRQUWo5wcbjlcWSGpklcYGHmW1LgZs+XbEQk8NhHgXq
-         Lpzlf9Jgd6cutlQfgVLO3twOFqUC7T6k0ABvgDXUYHm1bqu5szoFpxEsdi4m6Il8Ik
-         8uvR+4eSDzzSg==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Wed, 14 Aug 2019 09:26:21 +0000
-Date:   Wed, 14 Aug 2019 09:26:21 +0000
-Message-ID: <20190814092621.Horde.epvj8zK96-aCiV70YB5Q7II@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Stefan Roese <sr@denx.de>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        Felix Fietkau <nbd@openwrt.org>,
-        John Crispin <john@phrozen.org>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: Re: [PATCH] net: ethernet: mediatek: Add MT7628/88 SoC support
-References: <20190717125345.Horde.JcDE_nBChPFDDjEgIRfPSl3@www.vdorst.com>
- <a92d7207-80b2-e88d-d869-64c9758ef1da@denx.de>
-In-Reply-To: <a92d7207-80b2-e88d-d869-64c9758ef1da@denx.de>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1726365AbfHNJmK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 05:42:10 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:33789 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726121AbfHNJmJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 05:42:09 -0400
+Received: by mail-wm1-f68.google.com with SMTP id p77so2926603wme.0
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 02:42:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=1LMH6SXIr4y3OeSCEhgpBBRnkoJ/iF4yug5E7qmIcM8=;
+        b=jST2oyZPt+7cx/dNQMmIPRJPW2b32lQYuArGcEStiShyulRW7nzit2GlkN4YiVDWUZ
+         K79InC5iHoQ3i0U78JaVoNfTnFTLZOXpUm4QhIRIU03783sY5rQHrnZI+liDJujnA8Xf
+         t4zVNdSe/cpQa0lTMKuz3+0mdg9VhkUzZWLQ6jDPyjxwF1bYqL/1oOFiGKMCF0/Smgze
+         kv33fTJP88SLvQ5ILXf7W4ns48zrZUd5dTktZdQ5FBjNDNIc8L5i2ZC3mSLiBjYXGnl8
+         E6nLtFyNejUGLezcFxTqeGO3bcOTg0v5S+MSwhy5SxLicjTh2+mrEnLIzvjEuBM5lXqQ
+         fouQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=1LMH6SXIr4y3OeSCEhgpBBRnkoJ/iF4yug5E7qmIcM8=;
+        b=ZHKFJt7rNQipodvHolg+i96C3boYxI0y5OiKU7TApCj3hqF4zGDCmICNaDq3UcNRYf
+         GZSOWY9O+oIVsmrPI6JnEfTfioHsJCH1gqmDTWJDqjFAC6ukPO6HTett8rqEex/GZeF2
+         Q076HvohXx5Aq4/y1MAdITpBXm4wGRPo4ksmiSSRN4VDc+oJhqqmGlwX4HPxPaqRkDdj
+         iWyGbCIE2jPYV77S1T90EWlB9px3EYLbbtNVqMDeQ09m0LoQQkXuOuecoESN5UDZ8I3y
+         PjA27gWerYMn3fLF/VbSRYAiOYP/dvhXAJBtHxUQ81cTJwfjCE29TJH+jX8hMoRXeZU+
+         6Org==
+X-Gm-Message-State: APjAAAWyeWlTFCjqaW+A6XtIzyLTo1oKygt3nUQogSm9BseO0qpWgPDI
+        dNQK9JX+9vNEsldzUm3ZWo6mOw==
+X-Google-Smtp-Source: APXvYqyDVzXUdyxfSnR9BJByvI9Q1QgjkoDw6pcuxy8rnNIvCq+9Wg7Rl6NMWxRDI5v54rSTR+aQJA==
+X-Received: by 2002:a1c:7e85:: with SMTP id z127mr7646079wmc.95.1565775726660;
+        Wed, 14 Aug 2019 02:42:06 -0700 (PDT)
+Received: from [172.20.1.254] ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id v10sm2817439wmc.11.2019.08.14.02.42.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Aug 2019 02:42:06 -0700 (PDT)
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com
+References: <20190813130921.10704-1-quentin.monnet@netronome.com>
+ <20190814015149.b4pmubo3s4ou5yek@ast-mbp>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
+ mQINBFnqRlsBEADfkCdH/bkkfjbglpUeGssNbYr/TD4aopXiDZ0dL2EwafFImsGOWmCIIva2
+ MofTQHQ0tFbwY3Ir74exzU9X0aUqrtHirQHLkKeMwExgDxJYysYsZGfM5WfW7j8X4aVwYtfs
+ AVRXxAOy6/bw1Mccq8ZMTYKhdCgS3BfC7qK+VYC4bhM2AOWxSQWlH5WKQaRbqGOVLyq8Jlxk
+ 2FGLThUsPRlXKz4nl+GabKCX6x3rioSuNoHoWdoPDKsRgYGbP9LKRRQy3ZeJha4x+apy8rAM
+ jcGHppIrciyfH38+LdV1FVi6sCx8sRKX++ypQc3fa6O7d7mKLr6uy16xS9U7zauLu1FYLy2U
+ N/F1c4F+bOlPMndxEzNc/XqMOM9JZu1XLluqbi2C6JWGy0IYfoyirddKpwzEtKIwiDBI08JJ
+ Cv4jtTWKeX8pjTmstay0yWbe0sTINPh+iDw+ybMwgXhr4A/jZ1wcKmPCFOpb7U3JYC+ysD6m
+ 6+O/eOs21wVag/LnnMuOKHZa2oNsi6Zl0Cs6C7Vve87jtj+3xgeZ8NLvYyWrQhIHRu1tUeuf
+ T8qdexDphTguMGJbA8iOrncHXjpxWhMWykIyN4TYrNwnyhqP9UgqRPLwJt5qB1FVfjfAlaPV
+ sfsxuOEwvuIt19B/3pAP0nbevNymR3QpMPRl4m3zXCy+KPaSSQARAQABtC1RdWVudGluIE1v
+ bm5ldCA8cXVlbnRpbi5tb25uZXRAbmV0cm9ub21lLmNvbT6JAj0EEwEIACcFAlnqRlsCGyMF
+ CQlmAYAFCwkIBwIGFQgJCgsCBBYCAwECHgECF4AACgkQNvcEyYwwfB7tChAAqFWG30+DG3Sx
+ B7lfPaqs47oW98s5tTMprA+0QMqUX2lzHX7xWb5v8qCpuujdiII6RU0ZhwNKh/SMJ7rbYlxK
+ qCOw54kMI+IU7UtWCej+Ps3LKyG54L5HkBpbdM8BLJJXZvnMqfNWx9tMISHkd/LwogvCMZrP
+ TAFkPf286tZCIz0EtGY/v6YANpEXXrCzboWEiIccXRmbgBF4VK/frSveuS7OHKCu66VVbK7h
+ kyTgBsbfyQi7R0Z6w6sgy+boe7E71DmCnBn57py5OocViHEXRgO/SR7uUK3lZZ5zy3+rWpX5
+ nCCo0C1qZFxp65TWU6s8Xt0Jq+Fs7Kg/drI7b5/Z+TqJiZVrTfwTflqPRmiuJ8lPd+dvuflY
+ JH0ftAWmN3sT7cTYH54+HBIo1vm5UDvKWatTNBmkwPh6d3cZGALZvwL6lo0KQHXZhCVdljdQ
+ rwWdE25aCQkhKyaCFFuxr3moFR0KKLQxNykrVTJIRuBS8sCyxvWcZYB8tA5gQ/DqNKBdDrT8
+ F9z2QvNE5LGhWDGddEU4nynm2bZXHYVs2uZfbdZpSY31cwVS/Arz13Dq+McMdeqC9J2wVcyL
+ DJPLwAg18Dr5bwA8SXgILp0QcYWtdTVPl+0s82h+ckfYPOmkOLMgRmkbtqPhAD95vRD7wMnm
+ ilTVmCi6+ND98YblbzL64YG5Ag0EWepGWwEQAM45/7CeXSDAnk5UMXPVqIxF8yCRzVe+UE0R
+ QQsdNwBIVdpXvLxkVwmeu1I4aVvNt3Hp2eiZJjVndIzKtVEoyi5nMvgwMVs8ZKCgWuwYwBzU
+ Vs9eKABnT0WilzH3gA5t9LuumekaZS7z8IfeBlZkGXEiaugnSAESkytBvHRRlQ8b1qnXha3g
+ XtxyEqobKO2+dI0hq0CyUnGXT40Pe2woVPm50qD4HYZKzF5ltkl/PgRNHo4gfGq9D7dW2OlL
+ 5I9qp+zNYj1G1e/ytPWuFzYJVT30MvaKwaNdurBiLc9VlWXbp53R95elThbrhEfUqWbAZH7b
+ ALWfAotD07AN1msGFCES7Zes2AfAHESI8UhVPfJcwLPlz/Rz7/K6zj5U6WvH6aj4OddQFvN/
+ icvzlXna5HljDZ+kRkVtn+9zrTMEmgay8SDtWliyR8i7fvnHTLny5tRnE5lMNPRxO7wBwIWX
+ TVCoBnnI62tnFdTDnZ6C3rOxVF6FxUJUAcn+cImb7Vs7M5uv8GufnXNUlsvsNS6kFTO8eOjh
+ 4fe5IYLzvX9uHeYkkjCNVeUH5NUsk4NGOhAeCS6gkLRA/3u507UqCPFvVXJYLSjifnr92irt
+ 0hXm89Ms5fyYeXppnO3l+UMKLkFUTu6T1BrDbZSiHXQoqrvU9b1mWF0CBM6aAYFGeDdIVe4x
+ ABEBAAGJAiUEGAEIAA8FAlnqRlsCGwwFCQlmAYAACgkQNvcEyYwwfB4QwhAAqBTOgI9k8MoM
+ gVA9SZj92vYet9gWOVa2Inj/HEjz37tztnywYVKRCRfCTG5VNRv1LOiCP1kIl/+crVHm8g78
+ iYc5GgBKj9O9RvDm43NTDrH2uzz3n66SRJhXOHgcvaNE5ViOMABU+/pzlg34L/m4LA8SfwUG
+ ducP39DPbF4J0OqpDmmAWNYyHh/aWf/hRBFkyM2VuizN9cOS641jrhTO/HlfTlYjIb4Ccu9Y
+ S24xLj3kkhbFVnOUZh8celJ31T9GwCK69DXNwlDZdri4Bh0N8DtRfrhkHj9JRBAun5mdwF4m
+ yLTMSs4Jwa7MaIwwb1h3d75Ws7oAmv7y0+RgZXbAk2XN32VM7emkKoPgOx6Q5o8giPRX8mpc
+ PiYojrO4B4vaeKAmsmVer/Sb5y9EoD7+D7WygJu2bDrqOm7U7vOQybzZPBLqXYxl/F5vOobC
+ 5rQZgudR5bI8uQM0DpYb+Pwk3bMEUZQ4t497aq2vyMLRi483eqT0eG1QBE4O8dFNYdK5XUIz
+ oHhplrRgXwPBSOkMMlLKu+FJsmYVFeLAJ81sfmFuTTliRb3Fl2Q27cEr7kNKlsz/t6vLSEN2
+ j8x+tWD8x53SEOSn94g2AyJA9Txh2xBhWGuZ9CpBuXjtPrnRSd8xdrw36AL53goTt/NiLHUd
+ RHhSHGnKaQ6MfrTge5Q0h5A=
+Subject: Re: [RFC bpf-next 0/3] tools: bpftool: add subcommand to count map
+ entries
+Message-ID: <ab11a9f2-0fbd-d35f-fee1-784554a2705a@netronome.com>
+Date:   Wed, 14 Aug 2019 10:42:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Disposition: inline
+In-Reply-To: <20190814015149.b4pmubo3s4ou5yek@ast-mbp>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
-
-Quoting Stefan Roese <sr@denx.de>:
-
-> Hi Rene,
->
-> On 17.07.19 14:53, René van Dorst wrote:
->
-> <snip>
->
->>> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
->>> @@ -39,7 +39,8 @@
->>>  				 NETIF_F_SG | NETIF_F_TSO | \
->>>  				 NETIF_F_TSO6 | \
->>>  				 NETIF_F_IPV6_CSUM)
->>> -#define NEXT_RX_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
->>> +#define MTK_HW_FEATURES_MT7628	(NETIF_F_SG | NETIF_F_RXCSUM)
->>> +#define NEXT_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
->>>
->>>  #define MTK_MAX_RX_RING_NUM	4
->>>  #define MTK_HW_LRO_DMA_SIZE	8
->>> @@ -118,6 +119,7 @@
->>>  /* PDMA Global Configuration Register */
->>>  #define MTK_PDMA_GLO_CFG	0xa04
->>>  #define MTK_MULTI_EN		BIT(10)
->>> +#define MTK_PDMA_SIZE_8DWORDS	(1 << 4)
->>>
->>>  /* PDMA Reset Index Register */
->>>  #define MTK_PDMA_RST_IDX	0xa08
->>> @@ -276,11 +278,18 @@
->>>  #define TX_DMA_OWNER_CPU	BIT(31)
->>>  #define TX_DMA_LS0		BIT(30)
->>>  #define TX_DMA_PLEN0(_x)	(((_x) & MTK_TX_DMA_BUF_LEN) << 16)
->>> +#define TX_DMA_PLEN1(_x)	((_x) & MTK_TX_DMA_BUF_LEN)
->>>  #define TX_DMA_SWC		BIT(14)
->>>  #define TX_DMA_SDL(_x)		(((_x) & 0x3fff) << 16)
->>>
->>> +/* PDMA on MT7628 */
->>> +#define TX_DMA_DONE		BIT(31)
->>> +#define TX_DMA_LS1		BIT(14)
->>> +#define TX_DMA_DESP2_DEF	(TX_DMA_LS0 | TX_DMA_DONE)
->>> +
->>>  /* QDMA descriptor rxd2 */
->>>  #define RX_DMA_DONE		BIT(31)
->>> +#define RX_DMA_LSO		BIT(30)
->>>  #define RX_DMA_PLEN0(_x)	(((_x) & 0x3fff) << 16)
->>>  #define RX_DMA_GET_PLEN0(_x)	(((_x) >> 16) & 0x3fff)
->>>
->>> @@ -289,6 +298,7 @@
->>>
->>>  /* QDMA descriptor rxd4 */
->>>  #define RX_DMA_L4_VALID		BIT(24)
->>> +#define RX_DMA_L4_VALID_PDMA	BIT(30)		/* when PDMA is used */
->>>  #define RX_DMA_FPORT_SHIFT	19
->>>  #define RX_DMA_FPORT_MASK	0x7
->>>
->>> @@ -412,6 +422,19 @@
->>>  #define CO_QPHY_SEL            BIT(0)
->>>  #define GEPHY_MAC_SEL          BIT(1)
->>>
->>> +/* MT7628/88 specific stuff */
->>> +#define MT7628_PDMA_OFFSET	0x0800
->>> +#define MT7628_SDM_OFFSET	0x0c00
->>> +
->>> +#define MT7628_TX_BASE_PTR0	(MT7628_PDMA_OFFSET + 0x00)
->>> +#define MT7628_TX_MAX_CNT0	(MT7628_PDMA_OFFSET + 0x04)
->>> +#define MT7628_TX_CTX_IDX0	(MT7628_PDMA_OFFSET + 0x08)
->>> +#define MT7628_TX_DTX_IDX0	(MT7628_PDMA_OFFSET + 0x0c)
->>> +#define MT7628_PST_DTX_IDX0	BIT(0)
->>> +
->>> +#define MT7628_SDM_MAC_ADRL	(MT7628_SDM_OFFSET + 0x0c)
->>> +#define MT7628_SDM_MAC_ADRH	(MT7628_SDM_OFFSET + 0x10)
->>> +
->>>  struct mtk_rx_dma {
->>>  	unsigned int rxd1;
->>>  	unsigned int rxd2;
->>> @@ -509,6 +532,7 @@ enum mtk_clks_map {
->>>  				 BIT(MTK_CLK_SGMII_CK) | \
->>>  				 BIT(MTK_CLK_ETH2PLL))
->>>  #define MT7621_CLKS_BITMAP	(0)
->>> +#define MT7628_CLKS_BITMAP	(0)
->>>  #define MT7629_CLKS_BITMAP	(BIT(MTK_CLK_ETHIF) | BIT(MTK_CLK_ESW) |  \
->>>  				 BIT(MTK_CLK_GP0) | BIT(MTK_CLK_GP1) | \
->>>  				 BIT(MTK_CLK_GP2) | BIT(MTK_CLK_FE) | \
->>> @@ -563,6 +587,10 @@ struct mtk_tx_ring {
->>>  	struct mtk_tx_dma *last_free;
->>>  	u16 thresh;
->>>  	atomic_t free_count;
->>> +	int dma_size;
->>> +	struct mtk_tx_dma *dma_pdma;	/* For MT7628/88 PDMA handling */
->>> +	dma_addr_t phys_pdma;
->>> +	int cpu_idx;
->>>  };
->>>
->>>  /* PDMA rx ring mode */
->>> @@ -604,6 +632,7 @@ enum mkt_eth_capabilities {
->>>  	MTK_HWLRO_BIT,
->>>  	MTK_SHARED_INT_BIT,
->>>  	MTK_TRGMII_MT7621_CLK_BIT,
->>> +	MTK_SOC_MT7628,
+2019-08-13 18:51 UTC-0700 ~ Alexei Starovoitov
+<alexei.starovoitov@gmail.com>
+> On Tue, Aug 13, 2019 at 02:09:18PM +0100, Quentin Monnet wrote:
+>> This series adds a "bpftool map count" subcommand to count the number of
+>> entries present in a BPF map. This results from a customer request for a
+>> tool to count the number of entries in BPF maps used in production (for
+>> example, to know how many free entries are left in a given map).
 >>
->> This should be MTK_SOC_MT7628_BIT, this only defines the bit number!
+>> The first two commits actually contain some clean-up in preparation for the
+>> new subcommand.
 >>
->> and futher on #define MTK_SOC_MT7628 BIT(MTK_SOC_MT7628_BIT)
->
-> Okay, thanks.
->
->> Based on this commit [0], MT7621 also needs the PDMA for the RX path.
->> I know that is not your issue but I think it is better to add a extra
->> capability bit for the PDMA bits so it can also be used on other socs.
->
-> Yes, MT7621 also uses PDMA for RX. The code for RX is pretty much
-> shared (re-used), with slight changes for the MT7628/88 to work
-> correctly on this SoC.
->
-> I'll work on a capability bit for PDMA vs QDMA on TX though. This
-> might make things a little more transparent.
-
-Great, Thanks for addressing this issue.
-
-I hope we can collaborate to also support mt76x8 in my PHYLINK patches [0][1].
-I am close to posting V2 of the patches but I am currently waiting on some
-fiber modules to test the changes better.
-
-Greats,
-
-René
-
-[0] https://patchwork.ozlabs.org/patch/1136551/
-[1] https://patchwork.ozlabs.org/patch/1136519/
-
->
->> Greats,
+>> The third commit adds the new subcommand. Because what data should count as
+>> an entry is not entirely clear for all map types, we actually dump several
+>> counters, and leave it to the users to interpret the values.
 >>
->> René
+>> Sending as a RFC because I'm looking for feedback on the approach. Is
+>> printing several values the good thing to do? Also, note that some map
+>> types such as queue/stack maps do not support any type of counting, this
+>> would need to be implemented in the kernel I believe.
 >>
->> [0] https://lkml.org/lkml/2018/3/14/1038
->
-> Thanks,
-> Stefan
+>> More generally, we have a use case where (hash) maps are under pressure
+>> (many additions/deletions from the BPF program), and counting the entries
+>> by iterating other the different keys is not at all reliable. Would that
+>> make sense to add a new bpf() subcommand to count the entries on the kernel
+>> side instead of cycling over the entries in bpftool? If so, we would need
+>> to agree on what makes an entry for each kind of map.
+> 
+> I don't mind new bpftool sub-command, but against adding kernel interface.
+> Can you elaborate what is the actual use case?
 
+Hi Alexei, thanks for your feedback.
 
+The use case is a network processing application (close to a NAT), where
+a hash map is used to keep track of flows, many of them being
+short-lived. The BPF program spends a good chunk of time adding and
+deleting entries to/from the map. The overall size (number of entries)
+increases slowly, and when it grows past a certain threshold some action
+must be taken (some flows are deleted from user space, possibly copied
+to another map or whatever) to ensure we still have some room for new
+incoming flows.
 
+> The same can be achieved by 'bpftool map dump|grep key|wc -l', no?
+
+To some extent (with subtleties for some other map types); and we use a
+similar command line as a workaround for now. But because of the rate of
+inserts/deletes in the map, the process often reports a number higher
+than the max number of entries (we observed up to ~750k when max_entries
+is 500k), even is the map is only half-full on average during the count.
+On the worst case (though not frequent), an entry is deleted just before
+we get the next key from it, and iteration starts all over again. This
+is not reliable to determine how much space is left in the map.
+
+I cannot see a solution that would provide a more accurate count from
+user space, when the map is under pressure?
+
+> 
+>> Note that we are also facing similar issues for purging map from their
+>> entries (deleting all entries at once). We can iterate on the keys and
+>> delete elements one by one, but this is very inefficient when entries are
+>> being added/removed in parallel from the BPF program, and having another
+>> dedicated command accessible from the bpf() system call might help here as
+>> well.
+> 
+> I think that fits into the batch processing of map commands discussion.
+> 
+
+This is also what we do at the moment, but we hit similar limitations
+when iterating over the keys.
+
+Thanks,
+Quentin
