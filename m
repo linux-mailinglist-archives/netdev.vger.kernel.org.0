@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 374448C609
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:12:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 879218C60C
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:12:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727839AbfHNCMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:12:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44298 "EHLO mail.kernel.org"
+        id S1727862AbfHNCM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:12:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727157AbfHNCMG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:12:06 -0400
+        id S1727049AbfHNCMZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:12:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A98C420844;
-        Wed, 14 Aug 2019 02:12:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B143E208C2;
+        Wed, 14 Aug 2019 02:12:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748725;
-        bh=j1sGOzYFZNk0FSQxOU7lnbmPxSt71M1MHXcXeBV2zEY=;
+        s=default; t=1565748744;
+        bh=yzdK0cpATKfDgE266QK3LkS15A5pMnjiRaPV3/oLKK0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PYInPa4bT0sovoOvWEBWCFDWpqwniNYDZkytUo/i+ojPH4hUU+aWsCUiZQl6nJSma
-         S65JHQyPfATOSHXrCoVVU9FSy/cJnfm8DwHYCsPyT4kxy/frL0x4ZfSJFNjfUGc7bs
-         T0yF1uarbfFM9XrPPnLfmMWmNZmDzdnWuG41M/4g=
+        b=HIs12VncSQZzDwaziPUuf8ieOi2wuBWDLiq6XiNX8+AM+c4IAQi9vhD5IuQmokLC7
+         pjPcKcvXfZgGCubr2yWiGIveKGITN4CJI7vj50JELfypyJQannTHRtaaoJxcoWAmau
+         5evEpKglcvt91d/AnMr6IbeMYG2+qDxvzX6mWyiY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 039/123] can: gw: Fix error path of cgw_module_init
-Date:   Tue, 13 Aug 2019 22:09:23 -0400
-Message-Id: <20190814021047.14828-39-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andriin@fb.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Song Liu <songliubraving@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 042/123] libbpf: silence GCC8 warning about string truncation
+Date:   Tue, 13 Aug 2019 22:09:26 -0400
+Message-Id: <20190814021047.14828-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -45,92 +46,56 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Andrii Nakryiko <andriin@fb.com>
 
-[ Upstream commit b7a14297f102b6e2ce6f16feffebbb9bde1e9b55 ]
+[ Upstream commit cb8ffde5694ae5fffb456eae932aac442aa3a207 ]
 
-This patch add error path for cgw_module_init to avoid possible crash if
-some error occurs.
+Despite a proper NULL-termination after strncpy(..., ..., IFNAMSIZ - 1),
+GCC8 still complains about *expected* string truncation:
 
-Fixes: c1aabdf379bc ("can-gw: add netlink based CAN routing")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-Acked-by: Oliver Hartkopp <socketcan@hartkopp.net>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+  xsk.c:330:2: error: 'strncpy' output may be truncated copying 15 bytes
+  from a string of length 15 [-Werror=stringop-truncation]
+    strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
+
+This patch gets rid of the issue altogether by using memcpy instead.
+There is no performance regression, as strncpy will still copy and fill
+all of the bytes anyway.
+
+v1->v2:
+- rebase against bpf tree.
+
+Cc: Magnus Karlsson <magnus.karlsson@intel.com>
+Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Acked-by: Song Liu <songliubraving@fb.com>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/can/gw.c | 48 +++++++++++++++++++++++++++++++++---------------
- 1 file changed, 33 insertions(+), 15 deletions(-)
+ tools/lib/bpf/xsk.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/can/gw.c b/net/can/gw.c
-index 5275ddf580bc7..72711053ebe66 100644
---- a/net/can/gw.c
-+++ b/net/can/gw.c
-@@ -1046,32 +1046,50 @@ static __init int cgw_module_init(void)
- 	pr_info("can: netlink gateway (rev " CAN_GW_VERSION ") max_hops=%d\n",
- 		max_hops);
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index 8e03b65830da0..fa948c5445ecf 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -336,7 +336,7 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ 		return -errno;
  
--	register_pernet_subsys(&cangw_pernet_ops);
-+	ret = register_pernet_subsys(&cangw_pernet_ops);
-+	if (ret)
-+		return ret;
-+
-+	ret = -ENOMEM;
- 	cgw_cache = kmem_cache_create("can_gw", sizeof(struct cgw_job),
- 				      0, 0, NULL);
--
- 	if (!cgw_cache)
--		return -ENOMEM;
-+		goto out_cache_create;
+ 	ifr.ifr_data = (void *)&channels;
+-	strncpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
++	memcpy(ifr.ifr_name, xsk->ifname, IFNAMSIZ - 1);
+ 	ifr.ifr_name[IFNAMSIZ - 1] = '\0';
+ 	err = ioctl(fd, SIOCETHTOOL, &ifr);
+ 	if (err && errno != EOPNOTSUPP) {
+@@ -561,7 +561,7 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr, const char *ifname,
+ 		err = -errno;
+ 		goto out_socket;
+ 	}
+-	strncpy(xsk->ifname, ifname, IFNAMSIZ - 1);
++	memcpy(xsk->ifname, ifname, IFNAMSIZ - 1);
+ 	xsk->ifname[IFNAMSIZ - 1] = '\0';
  
- 	/* set notifier */
- 	notifier.notifier_call = cgw_notifier;
--	register_netdevice_notifier(&notifier);
-+	ret = register_netdevice_notifier(&notifier);
-+	if (ret)
-+		goto out_register_notifier;
- 
- 	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_GETROUTE,
- 				   NULL, cgw_dump_jobs, 0);
--	if (ret) {
--		unregister_netdevice_notifier(&notifier);
--		kmem_cache_destroy(cgw_cache);
--		return -ENOBUFS;
--	}
--
--	/* Only the first call to rtnl_register_module can fail */
--	rtnl_register_module(THIS_MODULE, PF_CAN, RTM_NEWROUTE,
--			     cgw_create_job, NULL, 0);
--	rtnl_register_module(THIS_MODULE, PF_CAN, RTM_DELROUTE,
--			     cgw_remove_job, NULL, 0);
-+	if (ret)
-+		goto out_rtnl_register1;
-+
-+	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_NEWROUTE,
-+				   cgw_create_job, NULL, 0);
-+	if (ret)
-+		goto out_rtnl_register2;
-+	ret = rtnl_register_module(THIS_MODULE, PF_CAN, RTM_DELROUTE,
-+				   cgw_remove_job, NULL, 0);
-+	if (ret)
-+		goto out_rtnl_register3;
- 
- 	return 0;
-+
-+out_rtnl_register3:
-+	rtnl_unregister(PF_CAN, RTM_NEWROUTE);
-+out_rtnl_register2:
-+	rtnl_unregister(PF_CAN, RTM_GETROUTE);
-+out_rtnl_register1:
-+	unregister_netdevice_notifier(&notifier);
-+out_register_notifier:
-+	kmem_cache_destroy(cgw_cache);
-+out_cache_create:
-+	unregister_pernet_subsys(&cangw_pernet_ops);
-+
-+	return ret;
- }
- 
- static __exit void cgw_module_exit(void)
+ 	err = xsk_set_xdp_socket_config(&xsk->config, usr_config);
 -- 
 2.20.1
 
