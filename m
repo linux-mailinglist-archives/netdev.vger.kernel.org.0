@@ -2,54 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FD128D65E
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FCC68D65F
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:40:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727736AbfHNOkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 10:40:35 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:50936 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726166AbfHNOke (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:40:34 -0400
-Received: by mail-wm1-f68.google.com with SMTP id v15so4826501wml.0
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 07:40:33 -0700 (PDT)
+        id S1727948AbfHNOkh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 10:40:37 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41300 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726166AbfHNOkg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:40:36 -0400
+Received: by mail-wr1-f65.google.com with SMTP id j16so9073816wrr.8
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 07:40:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MHZKJD3O96CYycYAww/OgcUVDON2lbDy33AAvVQm3jI=;
-        b=NldIB9N9PO1nliz1xNKKn/2NA1LHMamHG/sVz+FBW6flX38Ti9erpdA39bqvIAhaaW
-         DuP5LYLzNtdaPR3X6q3oWpJaGqIihzMqJh2NAjmwVmfM6tOKwgiQRlmoawQejARS0/Rt
-         jTPH+TV7U693szIuaT+lDyi89FKjdcodYZVMI=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zLOU89kM0wwKVTB1UPD2cV0f8y3hOpOztYSgdhvell4=;
+        b=W0v/34bb+R0t8/FtoFPWcg9lKzEZGSjF6tCn9906Wc61iSdL28yBtox3OkBC+wSXTH
+         oj1SJwR12w6ETdbPkfkYI1GAeFWW7I+dkbPxi8tSOoUWLB0I2CVzpMMzhp6dCqu6wd/W
+         sh68A4Ceq5sIZsCVdKaTXDVWv6EHamHivP4IM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MHZKJD3O96CYycYAww/OgcUVDON2lbDy33AAvVQm3jI=;
-        b=cqc1qml5STU/AAoaFZADuUm9EEBg+3qbdDOHxPVV1JrJNyO3mrHYqx2RfQIKg3zDzU
-         LXaNQR4vropx2EHR9QPNc2By2Nh2qP1niQjbH0nFGDQqxwAtrWBGtY8ucrTQwEYjS96A
-         mZv0tdAyvv2UlIQ3cH/T0HuFABTaU4ZC7WuZkSYz8DjE3/ORxahiZTHY+Zx3Cz0UqfLx
-         0S4Fkua+rWDsSK9LV0P4dAi8ITsvreQAYj9R5ynx/m/FqXeGavm/MbpaQx1utQg0HYW1
-         yFcBQ1/iO0EpVHhKYSACX8lH9fB5dadYv8dO1uxuoeAVjvZK6CzbL4YdIeRvzoel1zVu
-         eWjA==
-X-Gm-Message-State: APjAAAV8L/JBzj+e9vNHRFlnWmGEdmb9NYy2rQdOPOGzE4C/JPTaHC9Z
-        86vo1sLJCPY5HbR22Y4OJ3ZoJaXE5bg=
-X-Google-Smtp-Source: APXvYqxuxacPXxY2kwnWoW7pIax7IPnwnDm71EHQV5QsniPNYeKCwOPX2FVU9xWiO15yMmupQeoyyg==
-X-Received: by 2002:a1c:4d0c:: with SMTP id o12mr9176595wmh.62.1565793632453;
-        Wed, 14 Aug 2019 07:40:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zLOU89kM0wwKVTB1UPD2cV0f8y3hOpOztYSgdhvell4=;
+        b=j364BkyXvm8wbs9oR/i92yz7bC27D2dbYCQJYf6Cj2Zo0Ck3L+VN1e1iGznEjSgqFG
+         Ogn1EmC4YO9PWuOwzsHcYyHUB4sRG0CJ4OJOyELvmZGioh1t4nUGCKzzkc/d5Amrhu4l
+         2oD/P1cKVS9ymEbdfviXGPR2tGRmE+5rbXc6bmOd4hWUZn2Qc3OwLdPTnddLwXTi0bS+
+         opcjthOUJzWbzi1IoVWmUnwuWGjR8K4/jR4tRvD54JLUVaxI9RDw/9y5s4QknsikiofO
+         zfys73B6GCWM589wfEL20zgljeYGq2S7q8IIb9OVIP2MmaETIbtfdK11LgcuscodVpzl
+         F5LQ==
+X-Gm-Message-State: APjAAAW75vRpaHe7yjUwjQKdZYP4lms7oFY4QXp/MGAslreo6cklDPQd
+        wj7jEr3ezsHx3WfltHE23zCpxu0qHK0=
+X-Google-Smtp-Source: APXvYqy8Xl/Z2si/En5X1hbO2uIR0lFOIogMZBQbk31axfaX8gxzCfh6JidruDKx8vIhNlosak7B5g==
+X-Received: by 2002:a5d:470c:: with SMTP id y12mr42605wrq.136.1565793634446;
+        Wed, 14 Aug 2019 07:40:34 -0700 (PDT)
 Received: from wrk.www.tendawifi.com ([79.134.174.40])
-        by smtp.gmail.com with ESMTPSA id o8sm3383874wma.1.2019.08.14.07.40.31
+        by smtp.gmail.com with ESMTPSA id o8sm3383874wma.1.2019.08.14.07.40.32
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 14 Aug 2019 07:40:31 -0700 (PDT)
+        Wed, 14 Aug 2019 07:40:33 -0700 (PDT)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next 0/4] net: bridge: mdb: allow dump/add/del of host-joined entries
-Date:   Wed, 14 Aug 2019 17:40:20 +0300
-Message-Id: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next 1/4] net: bridge: mdb: move vlan comments
+Date:   Wed, 14 Aug 2019 17:40:21 +0300
+Message-Id: <20190814144024.9710-2-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
+References: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -57,39 +59,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-This set makes the bridge dump host-joined mdb entries, they should be
-treated as normal entries since they take a slot and are aging out.
-We already have notifications for them but we couldn't dump them until
-now so they remained hidden. We dump them similar to how they're
-notified, in order to keep user-space compatibility with the dumped
-objects (e.g. iproute2 dumps mdbs in a format which can be fed into
-add/del commands) we allow host-joined groups also to be added/deleted via
-mdb commands. That can later be used for L2 mcast MAC manipulation as
-was recently discussed. Note that iproute2 changes are not necessary,
-this set will work with the current user-space mdb code.
+Trivial patch to move the vlan comments in their proper places above the
+vid 0 checks.
 
-Patch 01 - a trivial comment move
-Patch 02 - factors out the mdb filling code so it can be
-           re-used for the host-joined entries
-Patch 03 - dumps host-joined entries
-Patch 04 - allows manipulation of host-joined entries via standard mdb
-           calls
+Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+---
+ net/bridge/br_mdb.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Thanks,
- Nik
-
-Nikolay Aleksandrov (4):
-  net: bridge: mdb: move vlan comments
-  net: bridge: mdb: factor out mdb filling
-  net: bridge: mdb: dump host-joined entries as well
-  net: bridge: mdb: allow add/delete for host-joined groups
-
- net/bridge/br_mdb.c       | 171 +++++++++++++++++++++++++-------------
- net/bridge/br_multicast.c |  24 ++++--
- net/bridge/br_private.h   |   2 +
- 3 files changed, 133 insertions(+), 64 deletions(-)
-
+diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
+index 428af1abf8cc..ee6208c6d946 100644
+--- a/net/bridge/br_mdb.c
++++ b/net/bridge/br_mdb.c
+@@ -653,9 +653,6 @@ static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
+ 	br = netdev_priv(dev);
+ 
+-	/* If vlan filtering is enabled and VLAN is not specified
+-	 * install mdb entry on all vlans configured on the port.
+-	 */
+ 	pdev = __dev_get_by_index(net, entry->ifindex);
+ 	if (!pdev)
+ 		return -ENODEV;
+@@ -665,6 +662,9 @@ static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -EINVAL;
+ 
+ 	vg = nbp_vlan_group(p);
++	/* If vlan filtering is enabled and VLAN is not specified
++	 * install mdb entry on all vlans configured on the port.
++	 */
+ 	if (br_vlan_enabled(br->dev) && vg && entry->vid == 0) {
+ 		list_for_each_entry(v, &vg->vlan_list, vlist) {
+ 			entry->vid = v->vid;
+@@ -745,9 +745,6 @@ static int br_mdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 
+ 	br = netdev_priv(dev);
+ 
+-	/* If vlan filtering is enabled and VLAN is not specified
+-	 * delete mdb entry on all vlans configured on the port.
+-	 */
+ 	pdev = __dev_get_by_index(net, entry->ifindex);
+ 	if (!pdev)
+ 		return -ENODEV;
+@@ -757,6 +754,9 @@ static int br_mdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		return -EINVAL;
+ 
+ 	vg = nbp_vlan_group(p);
++	/* If vlan filtering is enabled and VLAN is not specified
++	 * delete mdb entry on all vlans configured on the port.
++	 */
+ 	if (br_vlan_enabled(br->dev) && vg && entry->vid == 0) {
+ 		list_for_each_entry(v, &vg->vlan_list, vlist) {
+ 			entry->vid = v->vid;
 -- 
 2.21.0
 
