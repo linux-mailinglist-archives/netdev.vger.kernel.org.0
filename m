@@ -2,38 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C1C218C672
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:16:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F27F8C681
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:16:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728224AbfHNCPc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:15:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46274 "EHLO mail.kernel.org"
+        id S1728947AbfHNCQL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:16:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47678 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728697AbfHNCOU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:14:20 -0400
+        id S1728937AbfHNCQI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:16:08 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B320820842;
-        Wed, 14 Aug 2019 02:14:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 11D7A208C2;
+        Wed, 14 Aug 2019 02:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748859;
-        bh=a72eEVjili8R0wTI5puqmGThY4U1MPw6IwZ7TiQItF8=;
+        s=default; t=1565748967;
+        bh=KbEKVT02qESa8FCLgt3PGP+TDpILOUbdE9UvKXRpwT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ET0e+UMMZRb+Uh2GOhC511CxVZlr3/UAakG3ds3G0MTVPuU0W+PWW30GQ9a4Pz6wg
-         TqaZJ8gGyrGrg5rq13Ss1EOPcnBKyUMV+CUmTkEzg387uTP2hdyTDS4T7W2CQvjTRE
-         ya8j9yUNTsyJd/ekHUtMa27vg7RAHLtwxSRxi3O4=
+        b=kHqy2PKxqLoZfP3j6ZgCLNPfGQ2iZIgQx63Z5ydgru5wx1Auv84p0HK0BpSdtUrTK
+         OaZR/GTXvnYCAGK1H5wLQbApz1hMaG6jWPcnDFAvl5RhXc/KQ/G+lqKSC2YqePYLvi
+         l3+BPgsyuahTI8TK6UfvBteGs1Crbae9+uuj0eyw=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>,
+Cc:     Ido Schimmel <idosch@mellanox.com>,
+        Stephen Suryaputra <ssuryaextr@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 108/123] net: hisilicon: Fix dma_map_single failed on arm64
-Date:   Tue, 13 Aug 2019 22:10:32 -0400
-Message-Id: <20190814021047.14828-108-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 11/68] selftests: forwarding: gre_multipath: Enable IPv4 forwarding
+Date:   Tue, 13 Aug 2019 22:14:49 -0400
+Message-Id: <20190814021548.16001-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
-References: <20190814021047.14828-1-sashal@kernel.org>
+In-Reply-To: <20190814021548.16001-1-sashal@kernel.org>
+References: <20190814021548.16001-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -43,107 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+From: Ido Schimmel <idosch@mellanox.com>
 
-[ Upstream commit 96a50c0d907ac8f5c3d6b051031a19eb8a2b53e3 ]
+[ Upstream commit efa7b79f675da0efafe3f32ba0d6efe916cf4867 ]
 
-On the arm64 platform, executing "ifconfig eth0 up" will fail,
-returning "ifconfig: SIOCSIFFLAGS: Input/output error."
+The test did not enable IPv4 forwarding during its setup phase, which
+causes the test to fail on machines where IPv4 forwarding is disabled.
 
-ndev->dev is not initialized, dma_map_single->get_dma_ops->
-dummy_dma_ops->__dummy_map_page will return DMA_ERROR_CODE
-directly, so when we use dma_map_single, the first parameter
-is to use the device of platform_device.
-
-Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+Fixes: 54818c4c4b93 ("selftests: forwarding: Test multipath tunneling")
+Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+Reported-by: Stephen Suryaputra <ssuryaextr@gmail.com>
+Tested-by: Stephen Suryaputra <ssuryaextr@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hip04_eth.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
+ tools/testing/selftests/net/forwarding/gre_multipath.sh | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-index ee6da8d66cd31..51cf6b0db904b 100644
---- a/drivers/net/ethernet/hisilicon/hip04_eth.c
-+++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-@@ -153,6 +153,7 @@ struct hip04_priv {
- 	unsigned int reg_inten;
+diff --git a/tools/testing/selftests/net/forwarding/gre_multipath.sh b/tools/testing/selftests/net/forwarding/gre_multipath.sh
+index cca2baa03fb81..37d7297e1cf8a 100755
+--- a/tools/testing/selftests/net/forwarding/gre_multipath.sh
++++ b/tools/testing/selftests/net/forwarding/gre_multipath.sh
+@@ -187,12 +187,16 @@ setup_prepare()
+ 	sw1_create
+ 	sw2_create
+ 	h2_create
++
++	forwarding_enable
+ }
  
- 	struct napi_struct napi;
-+	struct device *dev;
- 	struct net_device *ndev;
+ cleanup()
+ {
+ 	pre_cleanup
  
- 	struct tx_desc *tx_desc;
-@@ -383,7 +384,7 @@ static int hip04_tx_reclaim(struct net_device *ndev, bool force)
- 		}
- 
- 		if (priv->tx_phys[tx_tail]) {
--			dma_unmap_single(&ndev->dev, priv->tx_phys[tx_tail],
-+			dma_unmap_single(priv->dev, priv->tx_phys[tx_tail],
- 					 priv->tx_skb[tx_tail]->len,
- 					 DMA_TO_DEVICE);
- 			priv->tx_phys[tx_tail] = 0;
-@@ -434,8 +435,8 @@ hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 		return NETDEV_TX_BUSY;
- 	}
- 
--	phys = dma_map_single(&ndev->dev, skb->data, skb->len, DMA_TO_DEVICE);
--	if (dma_mapping_error(&ndev->dev, phys)) {
-+	phys = dma_map_single(priv->dev, skb->data, skb->len, DMA_TO_DEVICE);
-+	if (dma_mapping_error(priv->dev, phys)) {
- 		dev_kfree_skb(skb);
- 		return NETDEV_TX_OK;
- 	}
-@@ -505,7 +506,7 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
- 			goto refill;
- 		}
- 
--		dma_unmap_single(&ndev->dev, priv->rx_phys[priv->rx_head],
-+		dma_unmap_single(priv->dev, priv->rx_phys[priv->rx_head],
- 				 RX_BUF_SIZE, DMA_FROM_DEVICE);
- 		priv->rx_phys[priv->rx_head] = 0;
- 
-@@ -534,9 +535,9 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
- 		buf = netdev_alloc_frag(priv->rx_buf_size);
- 		if (!buf)
- 			goto done;
--		phys = dma_map_single(&ndev->dev, buf,
-+		phys = dma_map_single(priv->dev, buf,
- 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
--		if (dma_mapping_error(&ndev->dev, phys))
-+		if (dma_mapping_error(priv->dev, phys))
- 			goto done;
- 		priv->rx_buf[priv->rx_head] = buf;
- 		priv->rx_phys[priv->rx_head] = phys;
-@@ -639,9 +640,9 @@ static int hip04_mac_open(struct net_device *ndev)
- 	for (i = 0; i < RX_DESC_NUM; i++) {
- 		dma_addr_t phys;
- 
--		phys = dma_map_single(&ndev->dev, priv->rx_buf[i],
-+		phys = dma_map_single(priv->dev, priv->rx_buf[i],
- 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
--		if (dma_mapping_error(&ndev->dev, phys))
-+		if (dma_mapping_error(priv->dev, phys))
- 			return -EIO;
- 
- 		priv->rx_phys[i] = phys;
-@@ -675,7 +676,7 @@ static int hip04_mac_stop(struct net_device *ndev)
- 
- 	for (i = 0; i < RX_DESC_NUM; i++) {
- 		if (priv->rx_phys[i]) {
--			dma_unmap_single(&ndev->dev, priv->rx_phys[i],
-+			dma_unmap_single(priv->dev, priv->rx_phys[i],
- 					 RX_BUF_SIZE, DMA_FROM_DEVICE);
- 			priv->rx_phys[i] = 0;
- 		}
-@@ -819,6 +820,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	priv = netdev_priv(ndev);
-+	priv->dev = d;
- 	priv->ndev = ndev;
- 	platform_set_drvdata(pdev, ndev);
- 	SET_NETDEV_DEV(ndev, &pdev->dev);
++	forwarding_restore
++
+ 	h2_destroy
+ 	sw2_destroy
+ 	sw1_destroy
 -- 
 2.20.1
 
