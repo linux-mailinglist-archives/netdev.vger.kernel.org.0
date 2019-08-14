@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 13F9D8D682
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:48:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B3CB18D68B
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:49:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727671AbfHNOsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 10:48:31 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:43772 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725955AbfHNOsa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:48:30 -0400
-Received: by mail-pf1-f193.google.com with SMTP id v12so5920248pfn.10;
-        Wed, 14 Aug 2019 07:48:30 -0700 (PDT)
+        id S1728116AbfHNOtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 10:49:10 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37306 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725955AbfHNOtK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:49:10 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 129so6797783pfa.4;
+        Wed, 14 Aug 2019 07:49:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=S0PKkzS+u3LtwRK0AR6XUJMj1yqa0xdQ2uanteb5fC0=;
-        b=sQM4VfFLvn25TVYXiWOtcjotvAhyTEXVeLfR5u3JjOMA2hJ54Q09fdaIrSCoqwh+LA
-         07piD3dPQQshVizY5Lon6hvSoABAGnKmiYEIGja0QpGMwN08qZY/i6nPqUTLUDxOGB0S
-         GYNZqYuLrPpQKIkDkzQF6EHQRq2TUm9LQzh3n+MmBo3A4H1w8z/yMgmZHdx+k5AXu71W
-         dEN9ewXfAUXiBZSu4rACdoWk+PXdVU1B3y8yvPYSrfu+p2PrRwabYkDNp7aPs71JDXG8
-         qZjPizmt7qjQxj/6oAmQdDu1p/U6kwQmnYOJd5yh1GrCLH7IGR+ef+nafNiDPdOyB1hw
-         55aw==
+        bh=2hx+tTqvJK8Pz3h0BtvO/SZZI9UW7Kk8eC6c3WGNqRg=;
+        b=mziiyfuE6w44lXE9EfZ/VTNnPnhIOldk/th2YGGwoFRsUBtecQe8M7+/hgaKMW65RH
+         SaQnBBCZgW+2TdoMt3ATR4qJD+zp907Wd/EgaKlvZR0DPuG1ALrMiWycnkfPSZyySzcs
+         D0OF0jSYL/6pDvhuUSuy0yfR9QxAtgLOyu+0Tl9N8+GjZVVecHwjoTXB1zQiXL+soY9L
+         cfdkUOVhIf2khZYx5QohGV6aZWuUeb3NU68AhwZYYD/rGWd67RqRs90ONHRe3iWNYq65
+         dZ26dS8ZKEQ88X2EHoOHkayFUhaLZij5G/RmQQO2M4An8w0RBWVTWwIfrQLiFC4GdjWc
+         BHYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=S0PKkzS+u3LtwRK0AR6XUJMj1yqa0xdQ2uanteb5fC0=;
-        b=gjQm/gu/Pkelf9pXa2mndd0lWngKmK7KbAcTeZd+D56S2Prg9pmbH/0jYE4Ss2yqYi
-         T8XLNsjDuAfTYN4rSrXiT2a/DHnDam+sZprL03cGm8SDNWk8+b3Rp4+DgvtS8WRaF/wE
-         ptZJW1h4SJqwtK8p1th/Wqi7g7YIEs9vbPKBiJgJx6Vc6x6PSXBHs1UoEqAYq4GgVKJ+
-         t+V20JdeCzebjNzqpG4f1aOlQkIBBX254kjSHtzTCooxrsCKMq51DTCcNYa9LJGFr/+z
-         uESo7h2n/Zc1ycMvnLVQ4sttNXPTaQTdJeM22EIKBgPKgUFpqWKDfU9+V57TYqLN02gS
-         PJDg==
-X-Gm-Message-State: APjAAAXy496Rm7bxWnTfPn+fZIClWpC/81yjlxOIVY4sHrIHZ7z3o+92
-        IbUgyJApWSAAvAVpdW/uvq0=
-X-Google-Smtp-Source: APXvYqwru1vkZWwlBfz7B/06Y+bnrjh88s8RNYiJ5/2hO9wsYeiA2OtcSsBxgwgVwGCzTrUoKgi32Q==
-X-Received: by 2002:a63:6ec1:: with SMTP id j184mr18477470pgc.232.1565794110139;
-        Wed, 14 Aug 2019 07:48:30 -0700 (PDT)
+        bh=2hx+tTqvJK8Pz3h0BtvO/SZZI9UW7Kk8eC6c3WGNqRg=;
+        b=NY+ySvpKROXIqyYeq5OaGOXcxWWy5WQBnZrNmbG/I2T6q9X2y4BGqRhA/2qHlqEpbI
+         CZewB9er4SnhhfAK6gL/1helez/AhptzBWzUlW+yNDnx+nwjIABd7U0j9JeArFDuahVL
+         z3rEk8Go0G56tfMTq9FfiTGDxVM5Qm5/04kL0QYrkoBYFK/ElwHWaceuh8LfGu1cBOBO
+         YDGhgfFl07rmr5ww63//9u/1XZujPYlpNcqiEkOYeIJi6G1Gh5ph8+NxvFfuUoKtITCg
+         8qjvAFZD3qgLhG/zd7vk7bcPiv6L9+fUnCLSoHVEeLn+JLRS/4S9tIbWqBFXbS/3DKCV
+         aNWQ==
+X-Gm-Message-State: APjAAAUDxVRzCjBa88Dhd2t5ID6l3uZbOOS5Me6JQnBQBOJTOwpPI/rH
+        9vU2P4g0o41RGAu26EL0BiU=
+X-Google-Smtp-Source: APXvYqyBWvJa15pge6AkdaHrHw/Wbcpbnns9XmwG1c9sS4MMupQ5S4mwoeWZ5x3VALxbOt4Vk1OfDg==
+X-Received: by 2002:a17:90a:c086:: with SMTP id o6mr185669pjs.2.1565794149710;
+        Wed, 14 Aug 2019 07:49:09 -0700 (PDT)
 Received: from [172.26.122.72] ([2620:10d:c090:180::6327])
-        by smtp.gmail.com with ESMTPSA id 124sm5861pfw.142.2019.08.14.07.48.28
+        by smtp.gmail.com with ESMTPSA id l26sm142758532pgb.90.2019.08.14.07.49.08
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 07:48:29 -0700 (PDT)
+        Wed, 14 Aug 2019 07:49:09 -0700 (PDT)
 From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
 To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
 Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
@@ -55,16 +55,16 @@ Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
         ilias.apalodimas@linaro.org, kiran.patil@intel.com,
         axboe@kernel.dk, maciej.fijalkowski@intel.com,
         maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH bpf-next v4 3/8] i40e: add support for AF_XDP need_wakeup
- feature
-Date:   Wed, 14 Aug 2019 07:48:28 -0700
+Subject: Re: [PATCH bpf-next v4 5/8] libbpf: add support for need_wakeup flag
+ in AF_XDP part
+Date:   Wed, 14 Aug 2019 07:49:07 -0700
 X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <3B2C7C21-4AAC-4126-A31D-58A61D941709@gmail.com>
-In-Reply-To: <1565767643-4908-4-git-send-email-magnus.karlsson@intel.com>
+Message-ID: <CF4AFFE2-D7F3-4C2E-BD31-42441B553EC5@gmail.com>
+In-Reply-To: <1565767643-4908-6-git-send-email-magnus.karlsson@intel.com>
 References: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
- <1565767643-4908-4-git-send-email-magnus.karlsson@intel.com>
+ <1565767643-4908-6-git-send-email-magnus.karlsson@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -74,39 +74,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On 14 Aug 2019, at 0:27, Magnus Karlsson wrote:
 
-> This patch adds support for the need_wakeup feature of AF_XDP. If the
-> application has told the kernel that it might sleep using the new bind
-> flag XDP_USE_NEED_WAKEUP, the driver will then set this flag if it has
-> no more buffers on the NIC Rx ring and yield to the application. For
-> Tx, it will set the flag if it has no outstanding Tx completion
-> interrupts and return to the application.
+> This commit adds support for the new need_wakeup flag in AF_XDP. The
+> xsk_socket__create function is updated to handle this and a new
+> function is introduced called xsk_ring_prod__needs_wakeup(). This
+> function can be used by the application to check if Rx and/or Tx
+> processing needs to be explicitly woken up.
 >
 > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> ---
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->
-> diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c 
-> b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> index d0ff5d8..42c9012 100644
-> --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> @@ -626,6 +626,15 @@ int i40e_clean_rx_irq_zc(struct i40e_ring 
-> *rx_ring, int budget)
->
->  	i40e_finalize_xdp_rx(rx_ring, xdp_xmit);
->  	i40e_update_rx_stats(rx_ring, total_rx_bytes, total_rx_packets);
-> +
-> +	if (xsk_umem_uses_need_wakeup(rx_ring->xsk_umem)) {
-> +		if (failure || rx_ring->next_to_clean == rx_ring->next_to_use)
-> +			xsk_set_rx_need_wakeup(rx_ring->xsk_umem);
-> +		else
-> +			xsk_clear_rx_need_wakeup(rx_ring->xsk_umem);
-> +
-> +		return (int)total_rx_packets;
-> +	}
->  	return failure ? budget : (int)total_rx_packets;
 
-Can you elaborate why we're not returning the total budget on failure
-for the wakeup case?
-
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
