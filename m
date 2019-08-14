@@ -2,141 +2,371 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC77F8C54E
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 02:55:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EA5E8C550
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 02:56:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726689AbfHNAzU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 20:55:20 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:37972 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726533AbfHNAzU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 20:55:20 -0400
-Received: by mail-oi1-f194.google.com with SMTP id p124so1403137oig.5;
-        Tue, 13 Aug 2019 17:55:19 -0700 (PDT)
+        id S1726859AbfHNA4N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 20:56:13 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:38870 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726843AbfHNA4M (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 20:56:12 -0400
+Received: by mail-qk1-f194.google.com with SMTP id u190so17625717qkh.5;
+        Tue, 13 Aug 2019 17:56:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TzI0gSb7rJXa/BKT12Ial8juO7dQU9ekRifeKQmv/cM=;
-        b=jDWjnoiZpQcd7voqhsAfX3I2PEuBH5mGtM5Dfk15jsAAoZW1h2rRy7mdu8hhFSitPJ
-         XZMopbINqOiexBqLrxw+UeA6SiJ8CcDj56bsypdLunBXYya7RpUvZWjuvRocxhafWWWH
-         S7XOk72ZJeI6iSn0/KScFKGr0Yb51q+dNfB+iekAvpAIJ1XL7oNbKsJythCrChXBajBN
-         GnNiqMMg86qqzljq3or04AGBp2dt7uMjZhQOFxAy9GSmOFrkDrJvseObhk3jr+WvYd3u
-         LOgWCSVGpdl2NEg+IEK9L6H2HWzUV6Q1rTEWci/SPC+umbNm8WdTEH4NbuvTOBctYEdw
-         aU4g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=wSVU7X6FDHSzGui+U01+dU0a8uqfo3Om7EwOJxgXvjg=;
+        b=cO5oYCHY9B8BqdUuyrs3V4uWB1YQIukhe0i/njLz/v710Oy0eocp/HCBcGjgvTVaHC
+         KAG1pXoukRPfjgoKzBzshesRlXH2Oxva9veb/H6Z+JjNis7EIT/pvmjr1ri+2t6JqgdE
+         spUqAO3k47MSnBPZ0dajVm8D5UGuVHHLbnOZpo53UY9ifiYVhOFFnlqpgXV9/8uw48RR
+         MJW82Ji+jI4/hiUosUfhy/YXZv4uzo9rDo/0P9hxQpxC+Pzoe6o8uMBCWxnkrSgLxVSU
+         D3pakX1a3xwniOXop4Lp3XTGNx2SINVSFFUBwMyq4dARRNPH1KWlWxM0q3E4lhrx39G9
+         JBEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=TzI0gSb7rJXa/BKT12Ial8juO7dQU9ekRifeKQmv/cM=;
-        b=NiUx+YmtNQ6Rr5s4YVQ8V/T9IGxRXh/dkv2UFOGIEL+/U2hNrGxPlwri9NsBnU8nqN
-         X1BRziPOUdqvZ/ZlDEldh5u8xhEeFEzRtcNpgAhzWzxpp8fVfUEaVqTruRrYwZRxCHmD
-         3uox9lBtHYZJYNW5rOhgtl/riyp6Vheb1yCaxBEFYhSl/0UUEd1SGXPgI1aObicqzJHN
-         Z7BNY5rute6CX+YdV2InfN7qsYxgf748v+q4pjcZSqu1e4Z51TCyeonx01kCM6D9BcOo
-         cpGJtuKiQ41YnhTUFsZEDL5zt3IrcCdQNXw8XOEIIB6hn8GVEiAGOCHoNpQuMbJL61aY
-         qn+w==
-X-Gm-Message-State: APjAAAXh09Ro7FCemknMvce9Of9aJQ2t1aYsHyT28vORAmtJtHvGjLxh
-        6DltLP6QRI0VyLk41Wn9CoF6jNQu
-X-Google-Smtp-Source: APXvYqxYApAqA+wZWpbbRKHrwCHXJNmACq+YPrn6AyG/uMjGejETRJGly/YGP0suscmRYHbN4lanfw==
-X-Received: by 2002:aca:b104:: with SMTP id a4mr3211624oif.90.1565744118410;
-        Tue, 13 Aug 2019 17:55:18 -0700 (PDT)
-Received: from [192.168.1.2] (ip68-111-84-250.oc.oc.cox.net. [68.111.84.250])
-        by smtp.googlemail.com with ESMTPSA id 94sm3990025oty.44.2019.08.13.17.55.16
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Aug 2019 17:55:17 -0700 (PDT)
-Subject: Re: [PATCH] MAINTAINERS: PHY LIBRARY: Remove sysfs-bus-mdio record
-To:     Denis Efremov <efremov@linux.com>, linux-kernel@vger.kernel.org
-Cc:     joe@perches.com, "David S . Miller" <davem@davemloft.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-References: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com>
- <20190813061439.17529-1-efremov@linux.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- a9BQwACgnzGuH1BVeT2J0Ra+ZYgkx7DaPR0=
-Message-ID: <039d86b5-6897-0176-bf15-6f58e9d26b89@gmail.com>
-Date:   Tue, 13 Aug 2019 17:55:15 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=wSVU7X6FDHSzGui+U01+dU0a8uqfo3Om7EwOJxgXvjg=;
+        b=m/uRyUzkSZUCg+c7xRsvzB841zI/J4vJtvp5FyymkFVGXgJRGs4cQGRbomj8jwZMA7
+         WPBJutCUmhdKQPNmmeh235PM8tY96O9kIH8EmDeM0ASh518bGf1qvYaBvfz6Itghy21b
+         ftGfdJnwVFvSHHMWBayJjZuloEDjoBZrM8iDXxMZYShHim6uzDwD40oru6CvegPSc3ax
+         ZcksIFzd27kaKk3ttW7dSJtb6y79lqnpDsyxtuCBiv3jaIQ9/tH+27AWR+3ZA0GUa9IR
+         oV60jQzJPlnaJaJwaiX8CXc8nZQ1unju+SGDuMV/82fHwZVj113/J/4Iq2Wbqvj46nY6
+         SCcA==
+X-Gm-Message-State: APjAAAW2XoEGkxUSO1C4AOFU716jDsZo/Bg92K9BMT3umpTehgES40Bi
+        LGY3s3cEUKrlEawadcRUc4s=
+X-Google-Smtp-Source: APXvYqwAXDoEai916wiIMXb+JdOnBMkZJH+sp6XQPnTBVLnrmCO6hNgNnvZXwq+7V7jz8t4Kxt0YHw==
+X-Received: by 2002:a37:83c4:: with SMTP id f187mr35101968qkd.380.1565744171141;
+        Tue, 13 Aug 2019 17:56:11 -0700 (PDT)
+Received: from dev00 ([190.162.109.53])
+        by smtp.gmail.com with ESMTPSA id k25sm61524808qta.78.2019.08.13.17.56.09
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 13 Aug 2019 17:56:10 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 20:56:06 -0400
+From:   Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+To:     Yonghong Song <yhs@fb.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next V9 1/3] bpf: new helper to obtain namespace data
+ from current task
+Message-ID: <20190814005604.yeqb45uv2fc3anab@dev00>
+References: <20190813184747.12225-1-cneirabustos@gmail.com>
+ <20190813184747.12225-2-cneirabustos@gmail.com>
+ <13b7f81f-83b6-07c9-4864-b49749cbf7d9@fb.com>
 MIME-Version: 1.0
-In-Reply-To: <20190813061439.17529-1-efremov@linux.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13b7f81f-83b6-07c9-4864-b49749cbf7d9@fb.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Le 8/12/19 à 11:14 PM, Denis Efremov a écrit :
-> Update MAINTAINERS to reflect that sysfs-bus-mdio documentation
-> was removed.
+On Tue, Aug 13, 2019 at 11:11:14PM +0000, Yonghong Song wrote:
 > 
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: Andrew Lunn <andrew@lunn.ch>
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: netdev@vger.kernel.org
-> Fixes: a6cd0d2d493a ("Documentation: net-sysfs: Remove duplicate PHY device documentation")
-> Signed-off-by: Denis Efremov <efremov@linux.com>
+> 
+> On 8/13/19 11:47 AM, Carlos Neira wrote:
+> > From: Carlos <cneirabustos@gmail.com>
+> > 
+> > New bpf helper bpf_get_current_pidns_info.
+> > This helper obtains the active namespace from current and returns
+> > pid, tgid, device and namespace id as seen from that namespace,
+> > allowing to instrument a process inside a container.
+> > 
+> > Signed-off-by: Carlos Neira <cneirabustos@gmail.com>
+> > ---
+> >   fs/internal.h            |  2 --
+> >   fs/namei.c               |  1 -
+> >   include/linux/bpf.h      |  1 +
+> >   include/linux/namei.h    |  4 +++
+> >   include/uapi/linux/bpf.h | 31 ++++++++++++++++++++++-
+> >   kernel/bpf/core.c        |  1 +
+> >   kernel/bpf/helpers.c     | 64 ++++++++++++++++++++++++++++++++++++++++++++++++
+> >   kernel/trace/bpf_trace.c |  2 ++
+> >   8 files changed, 102 insertions(+), 4 deletions(-)
+> > 
+> > diff --git a/fs/internal.h b/fs/internal.h
+> > index 315fcd8d237c..6647e15dd419 100644
+> > --- a/fs/internal.h
+> > +++ b/fs/internal.h
+> > @@ -59,8 +59,6 @@ extern int finish_clean_context(struct fs_context *fc);
+> >   /*
+> >    * namei.c
+> >    */
+> > -extern int filename_lookup(int dfd, struct filename *name, unsigned flags,
+> > -			   struct path *path, struct path *root);
+> >   extern int user_path_mountpoint_at(int, const char __user *, unsigned int, struct path *);
+> >   extern int vfs_path_lookup(struct dentry *, struct vfsmount *,
+> >   			   const char *, unsigned int, struct path *);
+> > diff --git a/fs/namei.c b/fs/namei.c
+> > index 209c51a5226c..a89fc72a4a10 100644
+> > --- a/fs/namei.c
+> > +++ b/fs/namei.c
+> > @@ -19,7 +19,6 @@
+> >   #include <linux/export.h>
+> >   #include <linux/kernel.h>
+> >   #include <linux/slab.h>
+> > -#include <linux/fs.h>
+> >   #include <linux/namei.h>
+> >   #include <linux/pagemap.h>
+> >   #include <linux/fsnotify.h>
+> > diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> > index f9a506147c8a..e4adf5e05afd 100644
+> > --- a/include/linux/bpf.h
+> > +++ b/include/linux/bpf.h
+> > @@ -1050,6 +1050,7 @@ extern const struct bpf_func_proto bpf_get_local_storage_proto;
+> >   extern const struct bpf_func_proto bpf_strtol_proto;
+> >   extern const struct bpf_func_proto bpf_strtoul_proto;
+> >   extern const struct bpf_func_proto bpf_tcp_sock_proto;
+> > +extern const struct bpf_func_proto bpf_get_current_pidns_info_proto;
+> >   
+> >   /* Shared helpers among cBPF and eBPF. */
+> >   void bpf_user_rnd_init_once(void);
+> > diff --git a/include/linux/namei.h b/include/linux/namei.h
+> > index 9138b4471dbf..b45c8b6f7cb4 100644
+> > --- a/include/linux/namei.h
+> > +++ b/include/linux/namei.h
+> > @@ -6,6 +6,7 @@
+> >   #include <linux/path.h>
+> >   #include <linux/fcntl.h>
+> >   #include <linux/errno.h>
+> > +#include <linux/fs.h>
+> >   
+> >   enum { MAX_NESTED_LINKS = 8 };
+> >   
+> > @@ -97,6 +98,9 @@ extern void unlock_rename(struct dentry *, struct dentry *);
+> >   
+> >   extern void nd_jump_link(struct path *path);
+> >   
+> > +extern int filename_lookup(int dfd, struct filename *name, unsigned flags,
+> > +			   struct path *path, struct path *root);
+> > +
+> >   static inline void nd_terminate_link(void *name, size_t len, size_t maxlen)
+> >   {
+> >   	((char *) name)[min(len, maxlen)] = '\0';
+> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> > index 4393bd4b2419..db241857ec15 100644
+> > --- a/include/uapi/linux/bpf.h
+> > +++ b/include/uapi/linux/bpf.h
+> > @@ -2741,6 +2741,28 @@ union bpf_attr {
+> >    *		**-EOPNOTSUPP** kernel configuration does not enable SYN cookies
+> >    *
+> >    *		**-EPROTONOSUPPORT** IP packet version is not 4 or 6
+> > + *
+> > + * int bpf_get_current_pidns_info(struct bpf_pidns_info *pidns, u32 size_of_pidns)
+> > + *	Description
+> > + *		Copies into *pidns* pid, namespace id and tgid as seen by the
+> > + *		current namespace and also device from /proc/self/ns/pid.
+> > + *		*size_of_pidns* must be the size of *pidns*
+> > + *
+> > + *		This helper is used when pid filtering is needed inside a
+> > + *		container as bpf_get_current_tgid() helper returns always the
+> > + *		pid id as seen by the root namespace.
+> > + *	Return
+> > + *		0 on success
+> > + *
+> > + *		**-EINVAL** if *size_of_pidns* is not valid or unable to get ns, pid
+> > + *		or tgid of the current task.
+> > + *
+> > + *		**-ECHILD** if /proc/self/ns/pid does not exists.
+> > + *
+> > + *		**-ENOTDIR** if /proc/self/ns does not exists.
+> > + *
+> > + *		**-ENOMEM**  if allocation fails.
+> > + *
+> >    */
+> >   #define __BPF_FUNC_MAPPER(FN)		\
+> >   	FN(unspec),			\
+> > @@ -2853,7 +2875,8 @@ union bpf_attr {
+> >   	FN(sk_storage_get),		\
+> >   	FN(sk_storage_delete),		\
+> >   	FN(send_signal),		\
+> > -	FN(tcp_gen_syncookie),
+> > +	FN(tcp_gen_syncookie),		\
+> > +	FN(get_current_pidns_info),
+> >   
+> >   /* integer value in 'imm' field of BPF_CALL instruction selects which helper
+> >    * function eBPF program intends to call
+> > @@ -3604,4 +3627,10 @@ struct bpf_sockopt {
+> >   	__s32	retval;
+> >   };
+> >   
+> > +struct bpf_pidns_info {
+> > +	__u32 dev;
+> > +	__u32 nsid;
+> > +	__u32 tgid;
+> > +	__u32 pid;
+> > +};
+> >   #endif /* _UAPI__LINUX_BPF_H__ */
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index 8191a7db2777..3159f2a0188c 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -2038,6 +2038,7 @@ const struct bpf_func_proto bpf_get_current_uid_gid_proto __weak;
+> >   const struct bpf_func_proto bpf_get_current_comm_proto __weak;
+> >   const struct bpf_func_proto bpf_get_current_cgroup_id_proto __weak;
+> >   const struct bpf_func_proto bpf_get_local_storage_proto __weak;
+> > +const struct bpf_func_proto bpf_get_current_pidns_info __weak;
+> >   
+> >   const struct bpf_func_proto * __weak bpf_get_trace_printk_proto(void)
+> >   {
+> > diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+> > index 5e28718928ca..41fbf1f28a48 100644
+> > --- a/kernel/bpf/helpers.c
+> > +++ b/kernel/bpf/helpers.c
+> > @@ -11,6 +11,12 @@
+> >   #include <linux/uidgid.h>
+> >   #include <linux/filter.h>
+> >   #include <linux/ctype.h>
+> > +#include <linux/pid_namespace.h>
+> > +#include <linux/major.h>
+> > +#include <linux/stat.h>
+> > +#include <linux/namei.h>
+> > +#include <linux/version.h>
+> > +
+> >   
+> >   #include "../../lib/kstrtox.h"
+> >   
+> > @@ -312,6 +318,64 @@ void copy_map_value_locked(struct bpf_map *map, void *dst, void *src,
+> >   	preempt_enable();
+> >   }
+> >   
+> > +BPF_CALL_2(bpf_get_current_pidns_info, struct bpf_pidns_info *, pidns_info, u32,
+> > +	 size)
+> > +{
+> > +	const char *pidns_path = "/proc/self/ns/pid";
+> > +	struct pid_namespace *pidns = NULL;
+> > +	struct filename *tmp = NULL;
+> > +	struct inode *inode;
+> > +	struct path kp;
+> > +	pid_t tgid = 0;
+> > +	pid_t pid = 0;
+> > +	int ret;
+> > +	int len;
+> 
 
-Not sure if this really deserves a Fixes tag; but thanks for catching
-that, a maybe more appropriate change would be to list
-Documentation/ABI/testing/sysfs-class-net-phydev instead.
--- 
-Florian
+Thank you very much for catching this!. 
+Could you share how to replicate this bug?.
+
+> I am running your sample program and get the following kernel bug:
+> 
+> ...
+> [   26.414825] BUG: sleeping function called from invalid context at 
+> /data/users/yhs/work/net-next/fs
+> /dcache.c:843
+> [   26.416314] in_atomic(): 1, irqs_disabled(): 0, pid: 1911, name: ping
+> [   26.417189] CPU: 0 PID: 1911 Comm: ping Tainted: G        W 
+> 5.3.0-rc1+ #280
+> [   26.418182] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), 
+> BIOS 1.9.3-1.el7.centos 04/01/2
+> 014
+> [   26.419393] Call Trace:
+> [   26.419697]  <IRQ>
+> [   26.419960]  dump_stack+0x46/0x5b
+> [   26.420434]  ___might_sleep+0xe4/0x110
+> [   26.420894]  dput+0x2a/0x200
+> [   26.421265]  walk_component+0x10c/0x280
+> [   26.421773]  link_path_walk+0x327/0x560
+> [   26.422280]  ? proc_ns_dir_readdir+0x1a0/0x1a0
+> [   26.422848]  ? path_init+0x232/0x330
+> [   26.423364]  path_lookupat+0x88/0x200
+> [   26.423808]  ? selinux_parse_skb.constprop.69+0x124/0x430
+> [   26.424521]  filename_lookup+0xaf/0x190
+> [   26.425031]  ? simple_attr_release+0x20/0x20
+> [   26.425560]  bpf_get_current_pidns_info+0xfa/0x190
+> [   26.426168]  bpf_prog_83627154cefed596+0xe66/0x1000
+> [   26.426779]  trace_call_bpf+0xb5/0x160
+> [   26.427317]  ? __netif_receive_skb_core+0x1/0xbb0
+> [   26.427929]  ? __netif_receive_skb_core+0x1/0xbb0
+> [   26.428496]  kprobe_perf_func+0x4d/0x280
+> [   26.428986]  ? tracing_record_taskinfo_skip+0x1a/0x30
+> [   26.429584]  ? tracing_record_taskinfo+0xe/0x80
+> [   26.430152]  ? ttwu_do_wakeup.isra.114+0xcf/0xf0
+> [   26.430737]  ? __netif_receive_skb_core+0x1/0xbb0
+> [   26.431334]  ? __netif_receive_skb_core+0x5/0xbb0
+> [   26.431930]  kprobe_ftrace_handler+0x90/0xf0
+> [   26.432495]  ftrace_ops_assist_func+0x63/0x100
+> [   26.433060]  0xffffffffc03180bf
+> [   26.433471]  ? __netif_receive_skb_core+0x1/0xbb0
+> ...
+> 
+> To prevent we are running in arbitrary task (e.g., idle task)
+> context which may introduce sleeping issues, the following
+> probably appropriate:
+> 
+>         if (in_nmi() || in_softirq())
+>                 return -EPERM;
+> 
+> Anyway, if in nmi or softirq, the namespace and pid/tgid
+> we get may be just accidentally associated with the bpf running
+> context, but it could be in a different context. So such info
+> is not reliable any way.
+> 
+> > +
+> > +	if (unlikely(size != sizeof(struct bpf_pidns_info)))
+> > +		return -EINVAL;
+> > +	pidns = task_active_pid_ns(current);
+> > +	if (unlikely(!pidns))
+> > +		goto clear;
+> > +	pidns_info->nsid =  pidns->ns.inum;
+> > +	pid = task_pid_nr_ns(current, pidns);
+> > +	if (unlikely(!pid))
+> > +		goto clear;
+> > +	tgid = task_tgid_nr_ns(current, pidns);
+> > +	if (unlikely(!tgid))
+> > +		goto clear;
+> > +	pidns_info->tgid = (u32) tgid;
+> > +	pidns_info->pid = (u32) pid;
+> > +	tmp = kmem_cache_alloc(names_cachep, GFP_ATOMIC);
+> > +	if (unlikely(!tmp)) {
+> > +		memset((void *)pidns_info, 0, (size_t) size);
+> > +		return -ENOMEM;
+> > +	}
+> > +	len = strlen(pidns_path) + 1;
+> > +	memcpy((char *)tmp->name, pidns_path, len);
+> > +	tmp->uptr = NULL;
+> > +	tmp->aname = NULL;
+> > +	tmp->refcnt = 1;
+> > +	ret = filename_lookup(AT_FDCWD, tmp, 0, &kp, NULL);
+> > +	if (ret) {
+> > +		memset((void *)pidns_info, 0, (size_t) size);
+> > +		return ret;
+> > +	}
+> > +	inode = d_backing_inode(kp.dentry);
+> > +	pidns_info->dev = inode->i_sb->s_dev;
+> > +	return 0;
+> > +clear:
+> > +	memset((void *)pidns_info, 0, (size_t) size);
+> > +	return -EINVAL;
+> > +}
+> > +
+> > +const struct bpf_func_proto bpf_get_current_pidns_info_proto = {
+> > +	.func		= bpf_get_current_pidns_info,
+> > +	.gpl_only	= false,
+> > +	.ret_type	= RET_INTEGER,
+> > +	.arg1_type	= ARG_PTR_TO_UNINIT_MEM,
+> > +	.arg2_type	= ARG_CONST_SIZE,
+> > +};
+> > +
+> >   #ifdef CONFIG_CGROUPS
+> >   BPF_CALL_0(bpf_get_current_cgroup_id)
+> >   {
+> > diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+> > index ca1255d14576..5e1dc22765a5 100644
+> > --- a/kernel/trace/bpf_trace.c
+> > +++ b/kernel/trace/bpf_trace.c
+> > @@ -709,6 +709,8 @@ tracing_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
+> >   #endif
+> >   	case BPF_FUNC_send_signal:
+> >   		return &bpf_send_signal_proto;
+> > +	case BPF_FUNC_get_current_pidns_info:
+> > +		return &bpf_get_current_pidns_info_proto;
+> >   	default:
+> >   		return NULL;
+> >   	}
+> > 
