@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ED838CF53
+	by mail.lfdr.de (Postfix) with ESMTP id 0507D8CF52
 	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 11:25:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbfHNJY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726852AbfHNJY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 14 Aug 2019 05:24:56 -0400
-Received: from correo.us.es ([193.147.175.20]:42598 "EHLO mail.us.es"
+Received: from correo.us.es ([193.147.175.20]:42602 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726826AbfHNJYx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 05:24:53 -0400
+        id S1726865AbfHNJYy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 05:24:54 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 33972C40EA
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 11:24:51 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 05884C40EB
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 11:24:52 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 21B6C1150DF
+        by antivirus1-rhel7.int (Postfix) with ESMTP id E8F4A115107
         for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 11:24:51 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 173061150DD; Wed, 14 Aug 2019 11:24:51 +0200 (CEST)
+        id DE980115104; Wed, 14 Aug 2019 11:24:51 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0A2D0DA704;
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C767BDA730;
         Wed, 14 Aug 2019 11:24:49 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
@@ -32,15 +32,15 @@ Received: from 192.168.1.97 (192.168.1.97)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
 Received: from salvia.here (unknown [31.4.218.116])
         (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPA id B43BC4265A2F;
-        Wed, 14 Aug 2019 11:24:48 +0200 (CEST)
+        by entrada.int (Postfix) with ESMTPA id 7E56A4265A2F;
+        Wed, 14 Aug 2019 11:24:49 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
 To:     netfilter-devel@vger.kernel.org
 Cc:     davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH 2/7] netfilter: nf_flow_table: fix offload for flows that are subject to xfrm
-Date:   Wed, 14 Aug 2019 11:24:35 +0200
-Message-Id: <20190814092440.20087-3-pablo@netfilter.org>
+Subject: [PATCH 3/7] netfilter: nf_tables: use-after-free in failing rule with bound set
+Date:   Wed, 14 Aug 2019 11:24:36 +0200
+Message-Id: <20190814092440.20087-4-pablo@netfilter.org>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20190814092440.20087-1-pablo@netfilter.org>
 References: <20190814092440.20087-1-pablo@netfilter.org>
@@ -50,111 +50,138 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Florian Westphal <fw@strlen.de>
+If a rule that has already a bound anonymous set fails to be added, the
+preparation phase releases the rule and the bound set. However, the
+transaction object from the abort path still has a reference to the set
+object that is stale, leading to a use-after-free when checking for the
+set->bound field. Add a new field to the transaction that specifies if
+the set is bound, so the abort path can skip releasing it since the rule
+command owns it and it takes care of releasing it. After this update,
+the set->bound field is removed.
 
-This makes the previously added 'encap test' pass.
-Because its possible that the xfrm dst entry becomes stale while such
-a flow is offloaded, we need to call dst_check() -- the notifier that
-handles this for non-tunneled traffic isn't sufficient, because SA or
-or policies might have changed.
+[   24.649883] Unable to handle kernel paging request at virtual address 0000000000040434
+[   24.657858] Mem abort info:
+[   24.660686]   ESR = 0x96000004
+[   24.663769]   Exception class = DABT (current EL), IL = 32 bits
+[   24.669725]   SET = 0, FnV = 0
+[   24.672804]   EA = 0, S1PTW = 0
+[   24.675975] Data abort info:
+[   24.678880]   ISV = 0, ISS = 0x00000004
+[   24.682743]   CM = 0, WnR = 0
+[   24.685723] user pgtable: 4k pages, 48-bit VAs, pgdp=0000000428952000
+[   24.692207] [0000000000040434] pgd=0000000000000000
+[   24.697119] Internal error: Oops: 96000004 [#1] SMP
+[...]
+[   24.889414] Call trace:
+[   24.891870]  __nf_tables_abort+0x3f0/0x7a0
+[   24.895984]  nf_tables_abort+0x20/0x40
+[   24.899750]  nfnetlink_rcv_batch+0x17c/0x588
+[   24.904037]  nfnetlink_rcv+0x13c/0x190
+[   24.907803]  netlink_unicast+0x18c/0x208
+[   24.911742]  netlink_sendmsg+0x1b0/0x350
+[   24.915682]  sock_sendmsg+0x4c/0x68
+[   24.919185]  ___sys_sendmsg+0x288/0x2c8
+[   24.923037]  __sys_sendmsg+0x7c/0xd0
+[   24.926628]  __arm64_sys_sendmsg+0x2c/0x38
+[   24.930744]  el0_svc_common.constprop.0+0x94/0x158
+[   24.935556]  el0_svc_handler+0x34/0x90
+[   24.939322]  el0_svc+0x8/0xc
+[   24.942216] Code: 37280300 f9404023 91014262 aa1703e0 (f9401863)
+[   24.948336] ---[ end trace cebbb9dcbed3b56f ]---
 
-If dst becomes stale the flow offload entry will be tagged for teardown
-and packets will be passed to 'classic' forwarding path.
-
-Removing the entry right away is problematic, as this would
-introduce a race condition with the gc worker.
-
-In case flow is long-lived, it could eventually be offloaded again
-once the gc worker removes the entry from the flow table.
-
-Signed-off-by: Florian Westphal <fw@strlen.de>
+Fixes: f6ac85858976 ("netfilter: nf_tables: unbind set in rule from commit path")
 Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 ---
- net/netfilter/nf_flow_table_ip.c | 43 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+ include/net/netfilter/nf_tables.h |  9 +++++++--
+ net/netfilter/nf_tables_api.c     | 15 ++++++++++-----
+ 2 files changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/net/netfilter/nf_flow_table_ip.c b/net/netfilter/nf_flow_table_ip.c
-index cdfc33517e85..d68c801dd614 100644
---- a/net/netfilter/nf_flow_table_ip.c
-+++ b/net/netfilter/nf_flow_table_ip.c
-@@ -214,6 +214,25 @@ static bool nf_flow_exceeds_mtu(const struct sk_buff *skb, unsigned int mtu)
- 	return true;
- }
+diff --git a/include/net/netfilter/nf_tables.h b/include/net/netfilter/nf_tables.h
+index 9b624566b82d..475d6f28ca67 100644
+--- a/include/net/netfilter/nf_tables.h
++++ b/include/net/netfilter/nf_tables.h
+@@ -421,8 +421,7 @@ struct nft_set {
+ 	unsigned char			*udata;
+ 	/* runtime data below here */
+ 	const struct nft_set_ops	*ops ____cacheline_aligned;
+-	u16				flags:13,
+-					bound:1,
++	u16				flags:14,
+ 					genmask:2;
+ 	u8				klen;
+ 	u8				dlen;
+@@ -1348,12 +1347,15 @@ struct nft_trans_rule {
+ struct nft_trans_set {
+ 	struct nft_set			*set;
+ 	u32				set_id;
++	bool				bound;
+ };
  
-+static int nf_flow_offload_dst_check(struct dst_entry *dst)
-+{
-+	if (unlikely(dst_xfrm(dst)))
-+		return dst_check(dst, 0) ? 0 : -1;
-+
-+	return 0;
-+}
-+
-+static unsigned int nf_flow_xmit_xfrm(struct sk_buff *skb,
-+				      const struct nf_hook_state *state,
-+				      struct dst_entry *dst)
-+{
-+	skb_orphan(skb);
-+	skb_dst_set_noref(skb, dst);
-+	skb->tstamp = 0;
-+	dst_output(state->net, state->sk, skb);
-+	return NF_STOLEN;
-+}
-+
- unsigned int
- nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 			const struct nf_hook_state *state)
-@@ -254,6 +273,11 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 	if (nf_flow_state_check(flow, ip_hdr(skb)->protocol, skb, thoff))
- 		return NF_ACCEPT;
+ #define nft_trans_set(trans)	\
+ 	(((struct nft_trans_set *)trans->data)->set)
+ #define nft_trans_set_id(trans)	\
+ 	(((struct nft_trans_set *)trans->data)->set_id)
++#define nft_trans_set_bound(trans)	\
++	(((struct nft_trans_set *)trans->data)->bound)
  
-+	if (nf_flow_offload_dst_check(&rt->dst)) {
-+		flow_offload_teardown(flow);
-+		return NF_ACCEPT;
-+	}
-+
- 	if (nf_flow_nat_ip(flow, skb, thoff, dir) < 0)
- 		return NF_DROP;
+ struct nft_trans_chain {
+ 	bool				update;
+@@ -1384,12 +1386,15 @@ struct nft_trans_table {
+ struct nft_trans_elem {
+ 	struct nft_set			*set;
+ 	struct nft_set_elem		elem;
++	bool				bound;
+ };
  
-@@ -261,6 +285,13 @@ nf_flow_offload_ip_hook(void *priv, struct sk_buff *skb,
- 	iph = ip_hdr(skb);
- 	ip_decrease_ttl(iph);
+ #define nft_trans_elem_set(trans)	\
+ 	(((struct nft_trans_elem *)trans->data)->set)
+ #define nft_trans_elem(trans)	\
+ 	(((struct nft_trans_elem *)trans->data)->elem)
++#define nft_trans_elem_set_bound(trans)	\
++	(((struct nft_trans_elem *)trans->data)->bound)
  
-+	if (unlikely(dst_xfrm(&rt->dst))) {
-+		memset(skb->cb, 0, sizeof(struct inet_skb_parm));
-+		IPCB(skb)->iif = skb->dev->ifindex;
-+		IPCB(skb)->flags = IPSKB_FORWARDED;
-+		return nf_flow_xmit_xfrm(skb, state, &rt->dst);
-+	}
-+
- 	skb->dev = outdev;
- 	nexthop = rt_nexthop(rt, flow->tuplehash[!dir].tuple.src_v4.s_addr);
- 	skb_dst_set_noref(skb, &rt->dst);
-@@ -467,6 +498,11 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
- 				sizeof(*ip6h)))
- 		return NF_ACCEPT;
+ struct nft_trans_obj {
+ 	struct nft_object		*obj;
+diff --git a/net/netfilter/nf_tables_api.c b/net/netfilter/nf_tables_api.c
+index 605a7cfe7ca7..88abbddf8967 100644
+--- a/net/netfilter/nf_tables_api.c
++++ b/net/netfilter/nf_tables_api.c
+@@ -138,9 +138,14 @@ static void nft_set_trans_bind(const struct nft_ctx *ctx, struct nft_set *set)
+ 		return;
  
-+	if (nf_flow_offload_dst_check(&rt->dst)) {
-+		flow_offload_teardown(flow);
-+		return NF_ACCEPT;
-+	}
-+
- 	if (skb_try_make_writable(skb, sizeof(*ip6h)))
- 		return NF_DROP;
- 
-@@ -477,6 +513,13 @@ nf_flow_offload_ipv6_hook(void *priv, struct sk_buff *skb,
- 	ip6h = ipv6_hdr(skb);
- 	ip6h->hop_limit--;
- 
-+	if (unlikely(dst_xfrm(&rt->dst))) {
-+		memset(skb->cb, 0, sizeof(struct inet6_skb_parm));
-+		IP6CB(skb)->iif = skb->dev->ifindex;
-+		IP6CB(skb)->flags = IP6SKB_FORWARDED;
-+		return nf_flow_xmit_xfrm(skb, state, &rt->dst);
-+	}
-+
- 	skb->dev = outdev;
- 	nexthop = rt6_nexthop(rt, &flow->tuplehash[!dir].tuple.src_v6);
- 	skb_dst_set_noref(skb, &rt->dst);
+ 	list_for_each_entry_reverse(trans, &net->nft.commit_list, list) {
+-		if (trans->msg_type == NFT_MSG_NEWSET &&
+-		    nft_trans_set(trans) == set) {
+-			set->bound = true;
++		switch (trans->msg_type) {
++		case NFT_MSG_NEWSET:
++			if (nft_trans_set(trans) == set)
++				nft_trans_set_bound(trans) = true;
++			break;
++		case NFT_MSG_NEWSETELEM:
++			if (nft_trans_elem_set(trans) == set)
++				nft_trans_elem_set_bound(trans) = true;
+ 			break;
+ 		}
+ 	}
+@@ -6906,7 +6911,7 @@ static int __nf_tables_abort(struct net *net)
+ 			break;
+ 		case NFT_MSG_NEWSET:
+ 			trans->ctx.table->use--;
+-			if (nft_trans_set(trans)->bound) {
++			if (nft_trans_set_bound(trans)) {
+ 				nft_trans_destroy(trans);
+ 				break;
+ 			}
+@@ -6918,7 +6923,7 @@ static int __nf_tables_abort(struct net *net)
+ 			nft_trans_destroy(trans);
+ 			break;
+ 		case NFT_MSG_NEWSETELEM:
+-			if (nft_trans_elem_set(trans)->bound) {
++			if (nft_trans_elem_set_bound(trans)) {
+ 				nft_trans_destroy(trans);
+ 				break;
+ 			}
 -- 
 2.11.0
 
