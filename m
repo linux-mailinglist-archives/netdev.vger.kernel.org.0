@@ -2,129 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 61B0C8D6C8
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:00:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C56E8D6CB
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:01:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727958AbfHNPAC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 11:00:02 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:44713 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727425AbfHNPAC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 11:00:02 -0400
-Received: by mail-ot1-f66.google.com with SMTP id w4so7968454ote.11;
-        Wed, 14 Aug 2019 08:00:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=mqYnljBZWJ9CSU4xNm5KnWlCC0kHqslp4DIAsr09jT0=;
-        b=Bp4LLyGrIdsRWVPZEAy7Y88iJcA2V/WKLgjXRWhwwUTTWTT2rfBu1i/Eavvr4H5HFY
-         20G1Jy8DOxPO6vZhyRvw9P1FlsZd7DDLIjjOQwkDQmd9QBIIhqc3TSYtRTTUo5NCWQrj
-         BgHJOfuP5CX7WE3i4vK68LjoxvpYacbchTVSUhxmuyc4p6NOsd46SwTZ74+z9na2GzpN
-         YT6gpQt1ldXvTZV637WBhNsWz8YWU2cOrb1u9z/VXhnHCBhOiJzdCr+LgxcOnzV3wmkI
-         kfRMHDPEopjCFpxIJjDd9v2vURHny479/bqtgKH7LKGe50SbmwOKcBVgxXRQxuNCCVCj
-         8a+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mqYnljBZWJ9CSU4xNm5KnWlCC0kHqslp4DIAsr09jT0=;
-        b=UApbIJpyfHaTnIJiepNHMDWdWxwZXl1ZMseJLGwq7ZIKbCk3rsQxfXhAeDxu8dQX2j
-         KxrP5v14uLZgJOSW3gCKfi53rwrHHB+bnGGg/sk6r3C0fmT3sJkX3/W7+8hP9jXJZXOx
-         DoQytWTLq/B2IXL5VKurXjRwY+iXdsTXGBxdv/bsO9IJUNUTYtpe3UKjqINm8PvmkAOb
-         ru4FOcurphsuRYztuJwBVbzO2skJV3MC1ii/7CjfkM8ZRbPqyY6XnGeNNoWcLig50Rf0
-         BK1F32G8sMJEM+vpIalHZjDfYBAV0ESeJB4XjgnizqAr/NaKJ10J5NzfUHsY8JKD6tIr
-         ydag==
-X-Gm-Message-State: APjAAAVe8h0FvaS7zsHvntjABkC7srG+uf/RaOkf92JGa1m9wvH9MoDt
-        OnQQwXpcHvzSWy/yJYWqzFz3jKDrQtgnTl5H4KM=
-X-Google-Smtp-Source: APXvYqyzISvYx9KXXQMPCWFPWDem0P2xD3aWYJvKHkMRJW+c9ClkjsSF8s7cuJgUoPd67VAQ1gn/OKcDsOQskRjX7kY=
-X-Received: by 2002:a9d:5e19:: with SMTP id d25mr4093379oti.192.1565794801058;
- Wed, 14 Aug 2019 08:00:01 -0700 (PDT)
+        id S1727425AbfHNPBr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 11:01:47 -0400
+Received: from de-out1.bosch-org.com ([139.15.230.186]:57302 "EHLO
+        de-out1.bosch-org.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725828AbfHNPBr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 11:01:47 -0400
+Received: from si0vm1947.rbesz01.com (unknown [139.15.230.188])
+        by fe0vms0187.rbdmz01.com (Postfix) with ESMTPS id 467t8S6s0yz1XLDR1;
+        Wed, 14 Aug 2019 17:01:44 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=escrypt.com;
+        s=key1-intmail; t=1565794905;
+        bh=tr1+zuR17b0O+ok/Vwxp++E35xoAd0xPOQql34gtAW8=; l=10;
+        h=From:Subject:From:Reply-To:Sender;
+        b=vnBMzSqpHfVIih4mg50ewOvQ7HHp+rj6Ie26N+7nJNgB8i+K+sg633vwz7Nks454R
+         r+VIGb9drj6+FqUX+loq1qzViwkgC/icpSBfGNzRWTqR24bDmSAMnNh8X7ZwwIaY8D
+         n0XVQiZ1dW3EaOErq1LEtciccnl2HusEDIlpz93g=
+Received: from fe0vm1741.rbesz01.com (unknown [10.58.172.176])
+        by si0vm1947.rbesz01.com (Postfix) with ESMTPS id 467t8S6Wgkz6CjQSZ;
+        Wed, 14 Aug 2019 17:01:44 +0200 (CEST)
+X-AuditID: 0a3aad15-9a9ff70000002236-31-5d542258c0c2
+Received: from fe0vm1652.rbesz01.com ( [10.58.173.29])
+        (using TLS with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client did not present a certificate)
+        by fe0vm1741.rbesz01.com (SMG Outbound) with SMTP id 38.FB.08758.852245D5; Wed, 14 Aug 2019 17:01:44 +0200 (CEST)
+Received: from FE-MBX2039.de.bosch.com (fe-mbx2039.de.bosch.com [10.3.231.49])
+        by fe0vm1652.rbesz01.com (Postfix) with ESMTPS id 467t8S4ng5zB0M;
+        Wed, 14 Aug 2019 17:01:44 +0200 (CEST)
+Received: from FE-MBX2038.de.bosch.com (10.3.231.48) by
+ FE-MBX2039.de.bosch.com (10.3.231.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Wed, 14 Aug 2019 17:01:44 +0200
+Received: from FE-MBX2038.de.bosch.com ([fe80::12c:f84b:4fd6:38c2]) by
+ FE-MBX2038.de.bosch.com ([fe80::12c:f84b:4fd6:38c2%2]) with mapi id
+ 15.01.1713.008; Wed, 14 Aug 2019 17:01:44 +0200
+From:   "FIXED-TERM Buecheler Konstantin (ETAS-SEC/ECT-Mu)" 
+        <fixed-term.Konstantin.Buecheler@escrypt.com>
+To:     "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Dan Murphy <dmurphy@ti.com>
+Subject: can: tcan4x5x: spi bits_per_word issue on Raspberry PI
+Thread-Topic: tcan4x5x: spi bits_per_word issue on Raspberry PI
+Thread-Index: AdVShK+Dlg6CyEY5S5W9jARFpSiyrAAKzACw
+Date:   Wed, 14 Aug 2019 15:01:44 +0000
+Message-ID: <3f71bdff8f4f4fe19ad9a09be89bc73d@escrypt.com>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.23.200.63]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
- <1565767643-4908-4-git-send-email-magnus.karlsson@intel.com> <3B2C7C21-4AAC-4126-A31D-58A61D941709@gmail.com>
-In-Reply-To: <3B2C7C21-4AAC-4126-A31D-58A61D941709@gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 14 Aug 2019 16:59:49 +0200
-Message-ID: <CAJ8uoz0Tnb=i-LkGqLU87be9BuYqxmu2pN1Mte0UEWA2+f8bTQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v4 3/8] i40e: add support for AF_XDP need_wakeup feature
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        bpf <bpf@vger.kernel.org>, bruce.richardson@intel.com,
-        ciara.loftus@intel.com,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Ye Xiaolong <xiaolong.ye@intel.com>,
-        "Zhang, Qi Z" <qi.z.zhang@intel.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        Kevin Laatz <kevin.laatz@intel.com>,
-        ilias.apalodimas@linaro.org, Kiran <kiran.patil@intel.com>,
-        axboe@kernel.dk,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmrmkOLIzCtJLcpLzFFi42LhslorqxuhFBJr8KnJ0KL79BZWi1XfpzJb
+        HFsg5sDscfzGdiaPz5vkApiiuGxSUnMyy1KL9O0SuDI6fj1lLWjirvjT3cnWwHieo4uRk0NC
+        wETi04Wn7F2MXBxCAjOYJCZ1rmeDcHYzSmzpvMQK4bxllOi6OpMRpEVIYB+jxKF1ziA2m0Cm
+        xMTNE5hAbBGBAokJr6azgNjMAvISN+Z/AKsXFrCXWDfjFAtEjb3E1cY77BC2kcTzKyfAelkE
+        VCX2PbgLVsMrYCXRtvIxWA2jgKzEhg3nmSFmiktsevadFeJsAYkleyDiEgKiEi8f/4OKK0i8
+        O7wL6gYdiQW7P7FB2NoSyxa+ZoaYLyhxcuYTlgmMorOQjJ2FpGUWkpZZSFoWMLKsYhRNSzUo
+        yzU0NzHUK0pKLa4yMNRLzs/dxAiJGNEdjB9eph1iZOJgPMRoysGkJMpbPjU4VogvKT+lMiOx
+        OCO+qDQntVhJinerrEWskDBcuLg0KTezuDgzP+8QowQHs5II74SLQbFCvCmJlVWpRfkQbYcY
+        pTlYlMR50zn8Y4QE0hNLUrNTUwtSi2Cy1hwcShK8vxRCYoUEi1LTUyvSMnNKYNJKsryMDAwM
+        QmLIMsjWMnFwHmI05uAB2q2uCDSCt7ggMbc4Mx2qXRKiXQgmitB6itGfY8LLuYuYOQ4enQck
+        n4JIIZa8/LxUKXFeZWmgWQIgXRmleXDXSMnwqi8FelAUSQJh4ivGG4wcjErCvBvEgJp5gKkf
+        4Q4J3u2goBOECiI0GS0B6hFYzSExr6lI4s7nIywSTeu/skhMXTmbTeLem14eiRdnTvBIdCz6
+        yiNxo20jn8SNV8f5JV78u8wvce/aE36JSd+f8ktc2bpFQOLM3/PCEh1bTopJvJj3WUpi6+8n
+        chJrXt6Ul/ix5oW8xPtlyxUlvjbMUJHo3t+vKfHqfq+2xL9lx3QkXpz4rSux7U+LnsSKCz16
+        EvPe/TCQmLGj20iic886I4n9vf3GEhv/LzV+BQxjJmAYv7kRCArjksQSLGEMFUV4TqqBkUW2
+        ZeZTjgLdMlffT4wB06a/ttvw7s9ste6GmZ9FrLmtDnDfZYyIZAzVUKg3n7htZoukxdGPmze7
+        vd9jGZZoacJ+Omlq68SO9mP6F23kbO6utPfU/FZgqfBZ875mSdzuSHWlaYsfH/OMfLZ8VmPg
+        nGlsV/fODQ7l/tqdcXjiDif9cnm+2y2HlViKMxINtZiLihMBaFYbzZYEAAA=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 4:48 PM Jonathan Lemon <jonathan.lemon@gmail.com> wrote:
->
->
->
-> On 14 Aug 2019, at 0:27, Magnus Karlsson wrote:
->
-> > This patch adds support for the need_wakeup feature of AF_XDP. If the
-> > application has told the kernel that it might sleep using the new bind
-> > flag XDP_USE_NEED_WAKEUP, the driver will then set this flag if it has
-> > no more buffers on the NIC Rx ring and yield to the application. For
-> > Tx, it will set the flag if it has no outstanding Tx completion
-> > interrupts and return to the application.
-> >
-> > Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> > ---
-> >  drivers/net/ethernet/intel/i40e/i40e_xsk.c | 18 ++++++++++++++++++
-> >  1 file changed, 18 insertions(+)
-> >
-> > diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > index d0ff5d8..42c9012 100644
-> > --- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > +++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-> > @@ -626,6 +626,15 @@ int i40e_clean_rx_irq_zc(struct i40e_ring
-> > *rx_ring, int budget)
-> >
-> >       i40e_finalize_xdp_rx(rx_ring, xdp_xmit);
-> >       i40e_update_rx_stats(rx_ring, total_rx_bytes, total_rx_packets);
-> > +
-> > +     if (xsk_umem_uses_need_wakeup(rx_ring->xsk_umem)) {
-> > +             if (failure || rx_ring->next_to_clean == rx_ring->next_to_use)
-> > +                     xsk_set_rx_need_wakeup(rx_ring->xsk_umem);
-> > +             else
-> > +                     xsk_clear_rx_need_wakeup(rx_ring->xsk_umem);
-> > +
-> > +             return (int)total_rx_packets;
-> > +     }
-> >       return failure ? budget : (int)total_rx_packets;
->
-> Can you elaborate why we're not returning the total budget on failure
-> for the wakeup case?
+> Hi all,
+>=20
+> I am trying to use a tcan4550 together with a Raspberry PI 3 B. I am usin=
+g the
+> tcan4x5x driver from net-next.
+> I always get the following error during startup.
+> 	tcan4x5x spi0.0: Probe failed, err=3D-22
+> 	tcan4x5x: probe of spi0.0 failed with error -22
+>=20
+> I realized that this happens because the Raspberry PI does only support 8=
+/9 bit
+> words. https://elinux.org/index.php?title=3DRPi_SPI#Supported_bits_per_wo=
+rd
+> In the driver it is set to 32.
+> 	spi->bits_per_word =3D 32;
+>=20
+> Setting this to 8 does not help of course since the tcan chip expects a m=
+ultiple of
+> 32 per spi transaction.
+> I don't know if this is a Raspberry Pi specific problem or if there are m=
+ore devices
+> with this hardware limitation.
+>=20
+> Does anyone have a workaround for that?
 
-In the non need_wakeup case (the old behavior), when allocation fails
-from the fill queue we want to retry right away basically busy
-spinning on the fill queue until we find at least one entry and then
-go on processing packets. Works well when the app and the driver are
-on different cores, but a lousy strategy when they execute on the same
-core. That is why in the need_wakeup feature case, we do not return
-the total budget if there is a failure. We will just come back at a
-later point in time from a syscall since the need_wakeup flag will
-have been set and check the fill queue again. We do not want a
-busy-spinning behavior in this case.
+It seems to be enough to just change the bits_per_word value to 8
 
-Thanks: Magnus
+>=20
+> If this a common issue it might be a good idea to patch the driver. I wil=
+l check if I
+> can find proper a way to do so.
+>=20
+> Regards,
+> Konstantin
+
+Now I have another really confusing problem. Anything I write to SPI is wri=
+tten little endian. The tcan chip expects big endian.=20
+Anything I read from SPI is treated as little endian but is big endian. Doe=
+s anyone know why this happens?=20
+Is there a flag or something I can set for the SPI device/wire to fix this?
+
+Regards,
+Konstantin
