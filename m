@@ -2,101 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 93EEE8D2B5
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 14:06:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 057888D2C5
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 14:13:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbfHNMGd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 08:06:33 -0400
-Received: from ns.omicron.at ([212.183.10.25]:50962 "EHLO ns.omicron.at"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726121AbfHNMGd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 08:06:33 -0400
-X-Greylist: delayed 341 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Aug 2019 08:06:31 EDT
-Received: from MGW02-ATKLA.omicron.at ([172.25.62.35])
-        by ns.omicron.at (8.15.2/8.15.2) with ESMTPS id x7EC0xog008592
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 14:00:59 +0200
-DKIM-Filter: OpenDKIM Filter v2.11.0 ns.omicron.at x7EC0xog008592
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=omicronenergy.com;
-        s=default; t=1565784059;
-        bh=hvJjyGDbLwQ/MBXPFq7wvY87wg5nsLk7BNsIoy2YOZk=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References:From;
-        b=UAtGOLrqRu0Ho3CrHK9fjKTdUkPAZjBst/hoJFX/fYcI8Ple3ao198jijlieLSmSb
-         DKf0BHKnJtvoLc21Q9vnie3MD4YrRkhmEYX4sKRwta5UoYV00PrWWEDsKKEmG4Ehh7
-         tCwGi8A3RrqG/msItJqAtDGxhMrWMq4jhxiYU+no=
-Received: from MGW02-ATKLA.omicron.at (localhost [127.0.0.1])
-        by MGW02-ATKLA.omicron.at (Postfix) with ESMTP id 24B3DA0054
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 14:00:59 +0200 (CEST)
-Received: from MGW01-ATKLA.omicron.at (unknown [172.25.62.34])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by MGW02-ATKLA.omicron.at (Postfix) with ESMTPS id 22D41A0068
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 14:00:59 +0200 (CEST)
-Received: from EXC04-ATKLA.omicron.at ([172.22.100.189])
-        by MGW01-ATKLA.omicron.at  with ESMTP id x7EC0xFH001055-x7EC0xFJ001055
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=CAFAIL);
-        Wed, 14 Aug 2019 14:00:59 +0200
-Received: from manrud11.omicron.at (172.22.24.34) by EXC04-ATKLA.omicron.at
- (172.22.100.189) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Wed, 14 Aug
- 2019 14:00:57 +0200
-From:   Manfred Rudigier <manfred.rudigier@omicronenergy.com>
-To:     <davem@davemloft.net>
-CC:     <jeffrey.t.kirsher@intel.com>, <carolyn.wyborny@intel.com>,
-        <todd.fujinaka@intel.com>, <netdev@vger.kernel.org>,
-        Manfred Rudigier <manfred.rudigier@omicronenergy.com>
-Subject: [PATCH net 2/2] igb: Fix constant media auto sense switching when no cable is connected.
-Date:   Wed, 14 Aug 2019 13:59:09 +0200
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190814115909.20839-1-manfred.rudigier@omicronenergy.com>
-References: <20190814115909.20839-1-manfred.rudigier@omicronenergy.com>
+        id S1726865AbfHNMNX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 08:13:23 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:43097 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726365AbfHNMNX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 08:13:23 -0400
+Received: by mail-lj1-f196.google.com with SMTP id h15so10894288ljg.10;
+        Wed, 14 Aug 2019 05:13:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AcS5UBa0BogcF4iUmQclBkrtQ1rhpBtpwE+q05zZVvU=;
+        b=V0BCLnGUBQvAlr2/IFEVlZFtQmgiy6w8CIbKo2gbn/6iQPEHv3Gp5TyduEI/tYKTMe
+         BedWCUwVxaqQtj2bJdS8Rcfj5iR04geMsVLrE0N0NmwqZEqU1vASzcsEPpQ5jGXRE0Zo
+         3iSAXHQ90pG0V5ysgRuLlbxf/T7+MfMcp5XIDGTN/tlFlouvQa7sQMqVgA+a8FlGSI4Q
+         VahEFIAD8q/DKgZvvp1bg7VDxYGUKDcdwftFagxl9H3n1mgiBacGLTmSKLTvy8DRpY0U
+         r1Q2unMnOjJZl7xgBGRMdy6ursMoMrtqtpd4135axtx9Nu0EDibVLaMRBkTzLFoTXvgo
+         24QQ==
+X-Gm-Message-State: APjAAAVSIx68ad7OlBK9/4I//2T9FAG/NdVTnCEkKIBu1Ue2UeFHasOo
+        9P3A7+V+8BVMkzyd3fh9tok=
+X-Google-Smtp-Source: APXvYqwB9fQ19P8V9McPgt33u/p/nPZieoPujMbKWlxdihamW+E8FRN7gisHPSCnzQXj/MsrftMu8A==
+X-Received: by 2002:a2e:534e:: with SMTP id t14mr5208262ljd.218.1565784801763;
+        Wed, 14 Aug 2019 05:13:21 -0700 (PDT)
+Received: from green.intra.ispras.ru (bran.ispras.ru. [83.149.199.196])
+        by smtp.googlemail.com with ESMTPSA id p21sm20128771lfc.41.2019.08.14.05.13.20
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 14 Aug 2019 05:13:20 -0700 (PDT)
+From:   Denis Efremov <efremov@linux.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Denis Efremov <efremov@linux.com>, joe@perches.com,
+        linux-kernel@vger.kernel.org, nic_swsd@realtek.com,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH] MAINTAINERS: r8169: Update path to the driver
+Date:   Wed, 14 Aug 2019 15:12:09 +0300
+Message-Id: <20190814121209.3364-1-efremov@linux.com>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <69fac52e-8464-ea87-e2e5-422ae36a92c8@gmail.com>
+References: <69fac52e-8464-ea87-e2e5-422ae36a92c8@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.22.24.34]
-X-ClientProxiedBy: EXC04-ATKLA.omicron.at (172.22.100.189) To
- EXC04-ATKLA.omicron.at (172.22.100.189)
-Message-ID: <d3d16e6d-fa28-4842-b353-405ea432fd37@EXC04-ATKLA.omicron.at>
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At least on the i350 there is an annoying behavior that is maybe also
-present on 82580 devices, but was probably not noticed yet as MAS is not
-widely used.
+Update MAINTAINERS record to reflect the filename change.
+The file was moved in commit 25e992a4603c ("r8169: rename
+r8169.c to r8169_main.c")
 
-If no cable is connected on both fiber/copper ports the media auto sense
-code will constantly swap between them as part of the watchdog task and
-produce many unnecessary kernel log messages.
-
-The swap code responsible for this behavior (switching to fiber) should
-not be executed if the current media type is copper and there is no signa=
-l
-detected on the fiber port. In this case we can safely wait until the
-AUTOSENSE_EN bit is cleared.
-
-Signed-off-by: Manfred Rudigier <manfred.rudigier@omicronenergy.com>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: nic_swsd@realtek.com
+Cc: David S. Miller <davem@davemloft.net>
+Cc: netdev@vger.kernel.org
+Signed-off-by: Denis Efremov <efremov@linux.com>
 ---
- drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethe=
-rnet/intel/igb/igb_main.c
-index 95fc1a178ff3..891cd072d4dd 100644
---- a/drivers/net/ethernet/intel/igb/igb_main.c
-+++ b/drivers/net/ethernet/intel/igb/igb_main.c
-@@ -2064,7 +2064,8 @@ static void igb_check_swap_media(struct igb_adapter=
- *adapter)
- 	if ((hw->phy.media_type =3D=3D e1000_media_type_copper) &&
- 	    (!(connsw & E1000_CONNSW_AUTOSENSE_EN))) {
- 		swap_now =3D true;
--	} else if (!(connsw & E1000_CONNSW_SERDESD)) {
-+	} else if ((hw->phy.media_type !=3D e1000_media_type_copper) &&
-+	    !(connsw & E1000_CONNSW_SERDESD)) {
- 		/* copper signal takes time to appear */
- 		if (adapter->copper_tries < 4) {
- 			adapter->copper_tries++;
---=20
-2.22.0
+diff --git a/MAINTAINERS b/MAINTAINERS
+index a43a1f0be49f..905efeda56fb 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -183,7 +183,7 @@ M:	Realtek linux nic maintainers <nic_swsd@realtek.com>
+ M:	Heiner Kallweit <hkallweit1@gmail.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
+-F:	drivers/net/ethernet/realtek/r8169.c
++F:	drivers/net/ethernet/realtek/r8169*
+ 
+ 8250/16?50 (AND CLONE UARTS) SERIAL DRIVER
+ M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+-- 
+2.21.0
 
