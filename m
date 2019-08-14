@@ -2,161 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A8A2A8D141
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 12:48:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 538558D149
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 12:50:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727651AbfHNKsK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 06:48:10 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44242 "EHLO mx1.redhat.com"
+        id S1727678AbfHNKs2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 06:48:28 -0400
+Received: from mx2.mailbox.org ([80.241.60.215]:36262 "EHLO mx2.mailbox.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727465AbfHNKsH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 06:48:07 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1726126AbfHNKs2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 06:48:28 -0400
+Received: from smtp2.mailbox.org (smtp2.mailbox.org [IPv6:2001:67c:2050:105:465:1:2:0])
+        (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2FBE6302C066;
-        Wed, 14 Aug 2019 10:48:07 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2C39D1001B35;
-        Wed, 14 Aug 2019 10:48:06 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
- Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
- Kingdom.
- Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net 2/2] rxrpc: Fix read-after-free in rxrpc_queue_local()
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 14 Aug 2019 11:48:05 +0100
-Message-ID: <156577968542.1405.1844096159304543778.stgit@warthog.procyon.org.uk>
-In-Reply-To: <156577967167.1405.3581547705200268244.stgit@warthog.procyon.org.uk>
-References: <156577967167.1405.3581547705200268244.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/unknown-version
+        by mx2.mailbox.org (Postfix) with ESMTPS id 8C767A20D0;
+        Wed, 14 Aug 2019 12:48:26 +0200 (CEST)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp2.mailbox.org ([80.241.60.241])
+        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
+        with ESMTP id 6kZURAApPW-Z; Wed, 14 Aug 2019 12:48:21 +0200 (CEST)
+Subject: Re: [PATCH] net: ethernet: mediatek: Add MT7628/88 SoC support
+To:     =?UTF-8?Q?Ren=c3=a9_van_Dorst?= <opensource@vdorst.com>
+Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        Sean Wang <sean.wang@mediatek.com>,
+        John Crispin <john@phrozen.org>,
+        Daniel Golle <daniel@makrotopia.org>
+References: <20190717125345.Horde.JcDE_nBChPFDDjEgIRfPSl3@www.vdorst.com>
+ <a92d7207-80b2-e88d-d869-64c9758ef1da@denx.de>
+ <20190814092621.Horde.epvj8zK96-aCiV70YB5Q7II@www.vdorst.com>
+From:   Stefan Roese <sr@denx.de>
+Message-ID: <3ff9a0fc-f5ff-3798-4409-ed5b900e0b05@denx.de>
+Date:   Wed, 14 Aug 2019 12:48:20 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Wed, 14 Aug 2019 10:48:07 +0000 (UTC)
+In-Reply-To: <20190814092621.Horde.epvj8zK96-aCiV70YB5Q7II@www.vdorst.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rxrpc_queue_local() attempts to queue the local endpoint it is given and
-then, if successful, prints a trace line.  The trace line includes the
-current usage count - but we're not allowed to look at the local endpoint
-at this point as we passed our ref on it to the workqueue.
+Hi Rene,
 
-Fix this by reading the usage count before queuing the work item.
+On 14.08.19 11:26, René van Dorst wrote:
+> Hi Stefan,
+> 
+> Quoting Stefan Roese <sr@denx.de>:
+> 
+>> Hi Rene,
+>>
+>> On 17.07.19 14:53, René van Dorst wrote:
+>>
+>> <snip>
+>>
+>>>> +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
+>>>> @@ -39,7 +39,8 @@
+>>>>   				 NETIF_F_SG | NETIF_F_TSO | \
+>>>>   				 NETIF_F_TSO6 | \
+>>>>   				 NETIF_F_IPV6_CSUM)
+>>>> -#define NEXT_RX_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
+>>>> +#define MTK_HW_FEATURES_MT7628	(NETIF_F_SG | NETIF_F_RXCSUM)
+>>>> +#define NEXT_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
+>>>>
+>>>>   #define MTK_MAX_RX_RING_NUM	4
+>>>>   #define MTK_HW_LRO_DMA_SIZE	8
+>>>> @@ -118,6 +119,7 @@
+>>>>   /* PDMA Global Configuration Register */
+>>>>   #define MTK_PDMA_GLO_CFG	0xa04
+>>>>   #define MTK_MULTI_EN		BIT(10)
+>>>> +#define MTK_PDMA_SIZE_8DWORDS	(1 << 4)
+>>>>
+>>>>   /* PDMA Reset Index Register */
+>>>>   #define MTK_PDMA_RST_IDX	0xa08
+>>>> @@ -276,11 +278,18 @@
+>>>>   #define TX_DMA_OWNER_CPU	BIT(31)
+>>>>   #define TX_DMA_LS0		BIT(30)
+>>>>   #define TX_DMA_PLEN0(_x)	(((_x) & MTK_TX_DMA_BUF_LEN) << 16)
+>>>> +#define TX_DMA_PLEN1(_x)	((_x) & MTK_TX_DMA_BUF_LEN)
+>>>>   #define TX_DMA_SWC		BIT(14)
+>>>>   #define TX_DMA_SDL(_x)		(((_x) & 0x3fff) << 16)
+>>>>
+>>>> +/* PDMA on MT7628 */
+>>>> +#define TX_DMA_DONE		BIT(31)
+>>>> +#define TX_DMA_LS1		BIT(14)
+>>>> +#define TX_DMA_DESP2_DEF	(TX_DMA_LS0 | TX_DMA_DONE)
+>>>> +
+>>>>   /* QDMA descriptor rxd2 */
+>>>>   #define RX_DMA_DONE		BIT(31)
+>>>> +#define RX_DMA_LSO		BIT(30)
+>>>>   #define RX_DMA_PLEN0(_x)	(((_x) & 0x3fff) << 16)
+>>>>   #define RX_DMA_GET_PLEN0(_x)	(((_x) >> 16) & 0x3fff)
+>>>>
+>>>> @@ -289,6 +298,7 @@
+>>>>
+>>>>   /* QDMA descriptor rxd4 */
+>>>>   #define RX_DMA_L4_VALID		BIT(24)
+>>>> +#define RX_DMA_L4_VALID_PDMA	BIT(30)		/* when PDMA is used */
+>>>>   #define RX_DMA_FPORT_SHIFT	19
+>>>>   #define RX_DMA_FPORT_MASK	0x7
+>>>>
+>>>> @@ -412,6 +422,19 @@
+>>>>   #define CO_QPHY_SEL            BIT(0)
+>>>>   #define GEPHY_MAC_SEL          BIT(1)
+>>>>
+>>>> +/* MT7628/88 specific stuff */
+>>>> +#define MT7628_PDMA_OFFSET	0x0800
+>>>> +#define MT7628_SDM_OFFSET	0x0c00
+>>>> +
+>>>> +#define MT7628_TX_BASE_PTR0	(MT7628_PDMA_OFFSET + 0x00)
+>>>> +#define MT7628_TX_MAX_CNT0	(MT7628_PDMA_OFFSET + 0x04)
+>>>> +#define MT7628_TX_CTX_IDX0	(MT7628_PDMA_OFFSET + 0x08)
+>>>> +#define MT7628_TX_DTX_IDX0	(MT7628_PDMA_OFFSET + 0x0c)
+>>>> +#define MT7628_PST_DTX_IDX0	BIT(0)
+>>>> +
+>>>> +#define MT7628_SDM_MAC_ADRL	(MT7628_SDM_OFFSET + 0x0c)
+>>>> +#define MT7628_SDM_MAC_ADRH	(MT7628_SDM_OFFSET + 0x10)
+>>>> +
+>>>>   struct mtk_rx_dma {
+>>>>   	unsigned int rxd1;
+>>>>   	unsigned int rxd2;
+>>>> @@ -509,6 +532,7 @@ enum mtk_clks_map {
+>>>>   				 BIT(MTK_CLK_SGMII_CK) | \
+>>>>   				 BIT(MTK_CLK_ETH2PLL))
+>>>>   #define MT7621_CLKS_BITMAP	(0)
+>>>> +#define MT7628_CLKS_BITMAP	(0)
+>>>>   #define MT7629_CLKS_BITMAP	(BIT(MTK_CLK_ETHIF) | BIT(MTK_CLK_ESW) |  \
+>>>>   				 BIT(MTK_CLK_GP0) | BIT(MTK_CLK_GP1) | \
+>>>>   				 BIT(MTK_CLK_GP2) | BIT(MTK_CLK_FE) | \
+>>>> @@ -563,6 +587,10 @@ struct mtk_tx_ring {
+>>>>   	struct mtk_tx_dma *last_free;
+>>>>   	u16 thresh;
+>>>>   	atomic_t free_count;
+>>>> +	int dma_size;
+>>>> +	struct mtk_tx_dma *dma_pdma;	/* For MT7628/88 PDMA handling */
+>>>> +	dma_addr_t phys_pdma;
+>>>> +	int cpu_idx;
+>>>>   };
+>>>>
+>>>>   /* PDMA rx ring mode */
+>>>> @@ -604,6 +632,7 @@ enum mkt_eth_capabilities {
+>>>>   	MTK_HWLRO_BIT,
+>>>>   	MTK_SHARED_INT_BIT,
+>>>>   	MTK_TRGMII_MT7621_CLK_BIT,
+>>>> +	MTK_SOC_MT7628,
+>>>
+>>> This should be MTK_SOC_MT7628_BIT, this only defines the bit number!
+>>>
+>>> and futher on #define MTK_SOC_MT7628 BIT(MTK_SOC_MT7628_BIT)
+>>
+>> Okay, thanks.
+>>
+>>> Based on this commit [0], MT7621 also needs the PDMA for the RX path.
+>>> I know that is not your issue but I think it is better to add a extra
+>>> capability bit for the PDMA bits so it can also be used on other socs.
+>>
+>> Yes, MT7621 also uses PDMA for RX. The code for RX is pretty much
+>> shared (re-used), with slight changes for the MT7628/88 to work
+>> correctly on this SoC.
+>>
+>> I'll work on a capability bit for PDMA vs QDMA on TX though. This
+>> might make things a little more transparent.
+> 
+> Great, Thanks for addressing this issue.
+> 
+> I hope we can collaborate to also support mt76x8 in my PHYLINK patches [0][1].
+> I am close to posting V2 of the patches but I am currently waiting on some
+> fiber modules to test the changes better.
 
-Also fix the reading of local->debug_id for trace lines, which must be done
-with the same consideration as reading the usage count.
+I do have a "hackish" DSA driver for the integrated switch (ESW) in my
+tree. If time permits, I'll work on upstreaming this one as well. And
+yes, hopefully we can collaborate on your PHYLINK work too.
 
-Fixes: 09d2bf595db4 ("rxrpc: Add a tracepoint to track rxrpc_local refcounting")
-Reported-by: syzbot+78e71c5bab4f76a6a719@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
----
-
- include/trace/events/rxrpc.h |    6 +++---
- net/rxrpc/local_object.c     |   19 ++++++++++---------
- 2 files changed, 13 insertions(+), 12 deletions(-)
-
-diff --git a/include/trace/events/rxrpc.h b/include/trace/events/rxrpc.h
-index cc1d060cbf13..fa06b528c73c 100644
---- a/include/trace/events/rxrpc.h
-+++ b/include/trace/events/rxrpc.h
-@@ -498,10 +498,10 @@ rxrpc_tx_points;
- #define E_(a, b)	{ a, b }
- 
- TRACE_EVENT(rxrpc_local,
--	    TP_PROTO(struct rxrpc_local *local, enum rxrpc_local_trace op,
-+	    TP_PROTO(unsigned int local_debug_id, enum rxrpc_local_trace op,
- 		     int usage, const void *where),
- 
--	    TP_ARGS(local, op, usage, where),
-+	    TP_ARGS(local_debug_id, op, usage, where),
- 
- 	    TP_STRUCT__entry(
- 		    __field(unsigned int,	local		)
-@@ -511,7 +511,7 @@ TRACE_EVENT(rxrpc_local,
- 			     ),
- 
- 	    TP_fast_assign(
--		    __entry->local = local->debug_id;
-+		    __entry->local = local_debug_id;
- 		    __entry->op = op;
- 		    __entry->usage = usage;
- 		    __entry->where = where;
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index c45765b7263e..72a6e12a9304 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -93,7 +93,7 @@ static struct rxrpc_local *rxrpc_alloc_local(struct rxrpc_net *rxnet,
- 		local->debug_id = atomic_inc_return(&rxrpc_debug_id);
- 		memcpy(&local->srx, srx, sizeof(*srx));
- 		local->srx.srx_service = 0;
--		trace_rxrpc_local(local, rxrpc_local_new, 1, NULL);
-+		trace_rxrpc_local(local->debug_id, rxrpc_local_new, 1, NULL);
- 	}
- 
- 	_leave(" = %p", local);
-@@ -321,7 +321,7 @@ struct rxrpc_local *rxrpc_get_local(struct rxrpc_local *local)
- 	int n;
- 
- 	n = atomic_inc_return(&local->usage);
--	trace_rxrpc_local(local, rxrpc_local_got, n, here);
-+	trace_rxrpc_local(local->debug_id, rxrpc_local_got, n, here);
- 	return local;
- }
- 
-@@ -335,7 +335,8 @@ struct rxrpc_local *rxrpc_get_local_maybe(struct rxrpc_local *local)
- 	if (local) {
- 		int n = atomic_fetch_add_unless(&local->usage, 1, 0);
- 		if (n > 0)
--			trace_rxrpc_local(local, rxrpc_local_got, n + 1, here);
-+			trace_rxrpc_local(local->debug_id, rxrpc_local_got,
-+					  n + 1, here);
- 		else
- 			local = NULL;
- 	}
-@@ -343,16 +344,16 @@ struct rxrpc_local *rxrpc_get_local_maybe(struct rxrpc_local *local)
- }
- 
- /*
-- * Queue a local endpoint unless it has become unreferenced and pass the
-- * caller's reference to the work item.
-+ * Queue a local endpoint and pass the caller's reference to the work item.
-  */
- void rxrpc_queue_local(struct rxrpc_local *local)
- {
- 	const void *here = __builtin_return_address(0);
-+	unsigned int debug_id = local->debug_id;
-+	int n = atomic_read(&local->usage);
- 
- 	if (rxrpc_queue_work(&local->processor))
--		trace_rxrpc_local(local, rxrpc_local_queued,
--				  atomic_read(&local->usage), here);
-+		trace_rxrpc_local(debug_id, rxrpc_local_queued, n, here);
- 	else
- 		rxrpc_put_local(local);
- }
-@@ -367,7 +368,7 @@ void rxrpc_put_local(struct rxrpc_local *local)
- 
- 	if (local) {
- 		n = atomic_dec_return(&local->usage);
--		trace_rxrpc_local(local, rxrpc_local_put, n, here);
-+		trace_rxrpc_local(local->debug_id, rxrpc_local_put, n, here);
- 
- 		if (n == 0)
- 			call_rcu(&local->rcu, rxrpc_local_rcu);
-@@ -456,7 +457,7 @@ static void rxrpc_local_processor(struct work_struct *work)
- 		container_of(work, struct rxrpc_local, processor);
- 	bool again;
- 
--	trace_rxrpc_local(local, rxrpc_local_processing,
-+	trace_rxrpc_local(local->debug_id, rxrpc_local_processing,
- 			  atomic_read(&local->usage), NULL);
- 
- 	do {
-
+Thanks,
+Stefan
