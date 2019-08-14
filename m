@@ -2,35 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDE888C8F1
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:35:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5C1A8C8BB
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:33:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728503AbfHNCfM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:35:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45664 "EHLO mail.kernel.org"
+        id S1729095AbfHNCdh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:33:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728362AbfHNCNj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:13:39 -0400
+        id S1727354AbfHNCOM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:14:12 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 436442084F;
-        Wed, 14 Aug 2019 02:13:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C0D48208C2;
+        Wed, 14 Aug 2019 02:14:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748819;
-        bh=tT82xRkihxHI2sedOcvsSUDg84D0mqteRBZHZJaYlo0=;
+        s=default; t=1565748852;
+        bh=Fg9qBlNYXCEIfp3RG9RBM6a9WLIy4JmQQ2janLyud6o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DSEp/C9L1JxgyuMmUwJu4ZsxitCE6y4h84BllAnFfTP6s/purZuozOTF8f0gVt1Vh
-         hzmGHl3D5IUAeAnRPhvBWmWDzmonX3OHpH4+yEooOkXUr7JKISTx1dJOqXwyIy2FJH
-         FDjwypHw/9sltl65QEYqEtTm0uYcCA23Q/ScMLOg=
+        b=ZAUzxsary2LwTzeK+6zPCIbyrGQCjcRuDbAl6d14LSX92ycvZsm5hFAtrshafFT/t
+         /L4D+rIxboaTJrgRBWFSNP6XDOEd5DkaEjxiQRezr7o1es3DW2cVoGxOvEVq3yuPU8
+         R0u9g9sOGyUvSaIVGX73D90fFfyCa/xIzLyLzYYY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     YueHaibing <yuehaibing@huawei.com>, Hulk Robot <hulkci@huawei.com>,
+Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
+        Jose Abreu <joabreu@synopsys.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 079/123] enetc: Select PHYLIB while CONFIG_FSL_ENETC_VF is set
-Date:   Tue, 13 Aug 2019 22:10:03 -0400
-Message-Id: <20190814021047.14828-79-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 103/123] net: stmmac: Fix issues when number of Queues >= 4
+Date:   Tue, 13 Aug 2019 22:10:27 -0400
+Message-Id: <20190814021047.14828-103-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -43,43 +44,67 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: YueHaibing <yuehaibing@huawei.com>
+From: Jose Abreu <Jose.Abreu@synopsys.com>
 
-[ Upstream commit 2802d2cf24b1ca7ea4c54dde266ded6a16020eb5 ]
+[ Upstream commit e8df7e8c233a18d2704e37ecff47583b494789d3 ]
 
-Like FSL_ENETC, when CONFIG_FSL_ENETC_VF is set,
-we should select PHYLIB, otherwise building still fails:
+When queues >= 4 we use different registers but we were not subtracting
+the offset of 4. Fix this.
 
-drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_open':
-enetc.c:(.text+0x2744): undefined reference to `phy_start'
-enetc.c:(.text+0x282c): undefined reference to `phy_disconnect'
-drivers/net/ethernet/freescale/enetc/enetc.o: In function `enetc_close':
-enetc.c:(.text+0x28f8): undefined reference to `phy_stop'
-enetc.c:(.text+0x2904): undefined reference to `phy_disconnect'
-drivers/net/ethernet/freescale/enetc/enetc_ethtool.o:(.rodata+0x3f8): undefined reference to `phy_ethtool_get_link_ksettings'
-drivers/net/ethernet/freescale/enetc/enetc_ethtool.o:(.rodata+0x400): undefined reference to `phy_ethtool_set_link_ksettings'
+Found out by Coverity.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: d4fd0404c1c9 ("enetc: Introduce basic PF and VF ENETC ethernet drivers")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: Jose Abreu <joabreu@synopsys.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/enetc/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c   | 4 ++++
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c | 4 ++++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/enetc/Kconfig b/drivers/net/ethernet/freescale/enetc/Kconfig
-index 8ac109e73a7bb..a268e74b1834e 100644
---- a/drivers/net/ethernet/freescale/enetc/Kconfig
-+++ b/drivers/net/ethernet/freescale/enetc/Kconfig
-@@ -13,6 +13,7 @@ config FSL_ENETC
- config FSL_ENETC_VF
- 	tristate "ENETC VF driver"
- 	depends on PCI && PCI_MSI && (ARCH_LAYERSCAPE || COMPILE_TEST)
-+	select PHYLIB
- 	help
- 	  This driver supports NXP ENETC gigabit ethernet controller PCIe
- 	  virtual function (VF) devices enabled by the ENETC PF driver.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+index e3850938cf2f3..d7bf0ad954b8c 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_core.c
+@@ -85,6 +85,8 @@ static void dwmac4_rx_queue_priority(struct mac_device_info *hw,
+ 	u32 value;
+ 
+ 	base_register = (queue < 4) ? GMAC_RXQ_CTRL2 : GMAC_RXQ_CTRL3;
++	if (queue >= 4)
++		queue -= 4;
+ 
+ 	value = readl(ioaddr + base_register);
+ 
+@@ -102,6 +104,8 @@ static void dwmac4_tx_queue_priority(struct mac_device_info *hw,
+ 	u32 value;
+ 
+ 	base_register = (queue < 4) ? GMAC_TXQ_PRTY_MAP0 : GMAC_TXQ_PRTY_MAP1;
++	if (queue >= 4)
++		queue -= 4;
+ 
+ 	value = readl(ioaddr + base_register);
+ 
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+index 64b8cb88ea45d..d4bd99770f5d1 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwxgmac2_core.c
+@@ -106,6 +106,8 @@ static void dwxgmac2_rx_queue_prio(struct mac_device_info *hw, u32 prio,
+ 	u32 value, reg;
+ 
+ 	reg = (queue < 4) ? XGMAC_RXQ_CTRL2 : XGMAC_RXQ_CTRL3;
++	if (queue >= 4)
++		queue -= 4;
+ 
+ 	value = readl(ioaddr + reg);
+ 	value &= ~XGMAC_PSRQ(queue);
+@@ -169,6 +171,8 @@ static void dwxgmac2_map_mtl_to_dma(struct mac_device_info *hw, u32 queue,
+ 	u32 value, reg;
+ 
+ 	reg = (queue < 4) ? XGMAC_MTL_RXQ_DMA_MAP0 : XGMAC_MTL_RXQ_DMA_MAP1;
++	if (queue >= 4)
++		queue -= 4;
+ 
+ 	value = readl(ioaddr + reg);
+ 	value &= ~XGMAC_QxMDMACH(queue);
 -- 
 2.20.1
 
