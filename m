@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EC478C915
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:36:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 660638C908
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:36:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729377AbfHNCgH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:36:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45356 "EHLO mail.kernel.org"
+        id S1728249AbfHNCft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:35:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727496AbfHNCNU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:13:20 -0400
+        id S1728236AbfHNCNW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:13:22 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8DA0C20874;
-        Wed, 14 Aug 2019 02:13:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 910BD2133F;
+        Wed, 14 Aug 2019 02:13:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748800;
-        bh=+swnYQtTC60El5g8koEpcOiNRFLnXArpyw2F+nuZu3Y=;
+        s=default; t=1565748801;
+        bh=+U60twviNfO6eXyzcfXAa1yYbK17knaDCcj3fyQ0ht8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rXWFLat5rBP9+jQ5cX3NQX0267Zl6V2vVfIVX+K0Wl5kYLtAkJvS3e5qENYlI95t2
-         NBXYGbz6GXQuO9vhIEOpGbOc72m5pJPGv01fG7bKkHibzIgt8b6m9KHXP07B4S1eiN
-         E0Ljk6jN8C5IXgYD6Q09nyJCDC6aT5WA4UfEAZCc=
+        b=Dg4E8OsSvhAYMH15AxbsPLEE4ni/vn+rcZJo8qAVnyZxcJjrCxgq4mxWE7lLtibof
+         A3rEBLhbbD5VrTFY+5/tvyjZ+4TH9rg43QhOGh+3z8HVICbyqhN06zFTmvVo966N66
+         tF7aXPWhWK2sc4dPwlg6tUnA5xMycoLvd3lZLa/8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>,
+Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 069/123] isdn: hfcsusb: Fix mISDN driver crash caused by transfer buffer on the stack
-Date:   Tue, 13 Aug 2019 22:09:53 -0400
-Message-Id: <20190814021047.14828-69-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 070/123] net: phy: phy_led_triggers: Fix a possible null-pointer dereference in phy_led_trigger_change_speed()
+Date:   Tue, 13 Aug 2019 22:09:54 -0400
+Message-Id: <20190814021047.14828-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -43,85 +43,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+From: Jia-Ju Bai <baijiaju1990@gmail.com>
 
-[ Upstream commit d8a1de3d5bb881507602bc02e004904828f88711 ]
+[ Upstream commit 271da132e29b5341c31eca6ba6a72ea1302ebac8 ]
 
-Since linux 4.9 it is not possible to use buffers on the stack for DMA transfers.
+In phy_led_trigger_change_speed(), there is an if statement on line 48
+to check whether phy->last_triggered is NULL:
+    if (!phy->last_triggered)
 
-During usb probe the driver crashes with "transfer buffer is on stack" message.
+When phy->last_triggered is NULL, it is used on line 52:
+    led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
 
-This fix k-allocates a buffer to be used on "read_reg_atomic", which is a macro
-that calls "usb_control_msg" under the hood.
+Thus, a possible null-pointer dereference may occur.
 
-Kernel 4.19 backtrace:
+To fix this bug, led_trigger_event(&phy->last_triggered->trigger,
+LED_OFF) is called when phy->last_triggered is not NULL.
 
-usb_hcd_submit_urb+0x3e5/0x900
-? sched_clock+0x9/0x10
-? log_store+0x203/0x270
-? get_random_u32+0x6f/0x90
-? cache_alloc_refill+0x784/0x8a0
-usb_submit_urb+0x3b4/0x550
-usb_start_wait_urb+0x4e/0xd0
-usb_control_msg+0xb8/0x120
-hfcsusb_probe+0x6bc/0xb40 [hfcsusb]
-usb_probe_interface+0xc2/0x260
-really_probe+0x176/0x280
-driver_probe_device+0x49/0x130
-__driver_attach+0xa9/0xb0
-? driver_probe_device+0x130/0x130
-bus_for_each_dev+0x5a/0x90
-driver_attach+0x14/0x20
-? driver_probe_device+0x130/0x130
-bus_add_driver+0x157/0x1e0
-driver_register+0x51/0xe0
-usb_register_driver+0x5d/0x120
-? 0xf81ed000
-hfcsusb_drv_init+0x17/0x1000 [hfcsusb]
-do_one_initcall+0x44/0x190
-? free_unref_page_commit+0x6a/0xd0
-do_init_module+0x46/0x1c0
-load_module+0x1dc1/0x2400
-sys_init_module+0xed/0x120
-do_fast_syscall_32+0x7a/0x200
-entry_SYSENTER_32+0x6b/0xbe
+This bug is found by a static analysis tool STCheck written by
+the OSLAB group in Tsinghua University.
 
-Signed-off-by: Juliana Rodrigueiro <juliana.rodrigueiro@intra2net.com>
+Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/isdn/hardware/mISDN/hfcsusb.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/phy/phy_led_triggers.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/isdn/hardware/mISDN/hfcsusb.c b/drivers/isdn/hardware/mISDN/hfcsusb.c
-index 8fb7c5dea07fc..008a74a1ed444 100644
---- a/drivers/isdn/hardware/mISDN/hfcsusb.c
-+++ b/drivers/isdn/hardware/mISDN/hfcsusb.c
-@@ -1693,13 +1693,23 @@ hfcsusb_stop_endpoint(struct hfcsusb *hw, int channel)
- static int
- setup_hfcsusb(struct hfcsusb *hw)
- {
-+	void *dmabuf = kmalloc(sizeof(u_char), GFP_KERNEL);
- 	u_char b;
-+	int ret;
+diff --git a/drivers/net/phy/phy_led_triggers.c b/drivers/net/phy/phy_led_triggers.c
+index b86a4b2116f81..59a94e07e7c55 100644
+--- a/drivers/net/phy/phy_led_triggers.c
++++ b/drivers/net/phy/phy_led_triggers.c
+@@ -48,8 +48,9 @@ void phy_led_trigger_change_speed(struct phy_device *phy)
+ 		if (!phy->last_triggered)
+ 			led_trigger_event(&phy->led_link_trigger->trigger,
+ 					  LED_FULL);
++		else
++			led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
  
- 	if (debug & DBG_HFC_CALL_TRACE)
- 		printk(KERN_DEBUG "%s: %s\n", hw->name, __func__);
- 
-+	if (!dmabuf)
-+		return -ENOMEM;
-+
-+	ret = read_reg_atomic(hw, HFCUSB_CHIP_ID, dmabuf);
-+
-+	memcpy(&b, dmabuf, sizeof(u_char));
-+	kfree(dmabuf);
-+
- 	/* check the chip id */
--	if (read_reg_atomic(hw, HFCUSB_CHIP_ID, &b) != 1) {
-+	if (ret != 1) {
- 		printk(KERN_DEBUG "%s: %s: cannot read chip id\n",
- 		       hw->name, __func__);
- 		return 1;
+-		led_trigger_event(&phy->last_triggered->trigger, LED_OFF);
+ 		led_trigger_event(&plt->trigger, LED_FULL);
+ 		phy->last_triggered = plt;
+ 	}
 -- 
 2.20.1
 
