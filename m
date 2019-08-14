@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D351E8CCC2
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:28:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 11DC48CCC4
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:28:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727571AbfHNH2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 03:28:18 -0400
-Received: from mga17.intel.com ([192.55.52.151]:57258 "EHLO mga17.intel.com"
+        id S1727584AbfHNH2Y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 03:28:24 -0400
+Received: from mga06.intel.com ([134.134.136.31]:60179 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726880AbfHNH2S (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 03:28:18 -0400
+        id S1726818AbfHNH2Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 03:28:24 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Aug 2019 00:28:17 -0700
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Aug 2019 00:28:24 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,384,1559545200"; 
-   d="scan'208";a="327923042"
+   d="scan'208";a="327923067"
 Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.52.109])
-  by orsmga004.jf.intel.com with ESMTP; 14 Aug 2019 00:28:11 -0700
+  by orsmga004.jf.intel.com with ESMTP; 14 Aug 2019 00:28:18 -0700
 From:   Magnus Karlsson <magnus.karlsson@intel.com>
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com,
@@ -32,9 +32,9 @@ Cc:     bpf@vger.kernel.org, bruce.richardson@intel.com,
         kiran.patil@intel.com, axboe@kernel.dk,
         maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
         intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next v4 3/8] i40e: add support for AF_XDP need_wakeup feature
-Date:   Wed, 14 Aug 2019 09:27:18 +0200
-Message-Id: <1565767643-4908-4-git-send-email-magnus.karlsson@intel.com>
+Subject: [PATCH bpf-next v4 4/8] ixgbe: add support for AF_XDP need_wakeup feature
+Date:   Wed, 14 Aug 2019 09:27:19 +0200
+Message-Id: <1565767643-4908-5-git-send-email-magnus.karlsson@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
 References: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
@@ -52,18 +52,17 @@ interrupts and return to the application.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_xsk.c | 18 ++++++++++++++++++
+ drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 18 ++++++++++++++++++
  1 file changed, 18 insertions(+)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index d0ff5d8..42c9012 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -626,6 +626,15 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget)
+diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+index e598af9..9a28d98 100644
+--- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
++++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
+@@ -547,6 +547,14 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
+ 	q_vector->rx.total_packets += total_rx_packets;
+ 	q_vector->rx.total_bytes += total_rx_bytes;
  
- 	i40e_finalize_xdp_rx(rx_ring, xdp_xmit);
- 	i40e_update_rx_stats(rx_ring, total_rx_bytes, total_rx_packets);
-+
 +	if (xsk_umem_uses_need_wakeup(rx_ring->xsk_umem)) {
 +		if (failure || rx_ring->next_to_clean == rx_ring->next_to_use)
 +			xsk_set_rx_need_wakeup(rx_ring->xsk_umem);
@@ -75,19 +74,19 @@ index d0ff5d8..42c9012 100644
  	return failure ? budget : (int)total_rx_packets;
  }
  
-@@ -681,6 +690,8 @@ static bool i40e_xmit_zc(struct i40e_ring *xdp_ring, unsigned int budget)
- 		i40e_xdp_ring_update_tail(xdp_ring);
- 
+@@ -615,6 +623,8 @@ static bool ixgbe_xmit_zc(struct ixgbe_ring *xdp_ring, unsigned int budget)
+ 	if (tx_desc) {
+ 		ixgbe_xdp_ring_update_tail(xdp_ring);
  		xsk_umem_consume_tx_done(xdp_ring->xsk_umem);
 +		if (xsk_umem_uses_need_wakeup(xdp_ring->xsk_umem))
 +			xsk_clear_tx_need_wakeup(xdp_ring->xsk_umem);
  	}
  
  	return !!budget && work_done;
-@@ -759,6 +770,13 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
- 	i40e_update_tx_stats(tx_ring, completed_frames, total_bytes);
+@@ -688,7 +698,15 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
+ 	if (xsk_frames)
+ 		xsk_umem_complete_tx(umem, xsk_frames);
  
- out_xmit:
 +	if (xsk_umem_uses_need_wakeup(tx_ring->xsk_umem)) {
 +		if (tx_ring->next_to_clean == tx_ring->next_to_use)
 +			xsk_set_tx_need_wakeup(tx_ring->xsk_umem);
@@ -95,9 +94,11 @@ index d0ff5d8..42c9012 100644
 +			xsk_clear_tx_need_wakeup(tx_ring->xsk_umem);
 +	}
 +
- 	xmit_done = i40e_xmit_zc(tx_ring, budget);
+ 	xmit_done = ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
++
+ 	return budget > 0 && xmit_done;
+ }
  
- 	return work_done && xmit_done;
 -- 
 2.7.4
 
