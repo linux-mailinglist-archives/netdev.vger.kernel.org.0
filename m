@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D998C8C93A
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:37:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47CD38C92E
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:37:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727994AbfHNCMn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:12:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44808 "EHLO mail.kernel.org"
+        id S1728014AbfHNCMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:12:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727979AbfHNCMl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:12:41 -0400
+        id S1727983AbfHNCMm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:12:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4A9EE20842;
-        Wed, 14 Aug 2019 02:12:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5BECF208C2;
+        Wed, 14 Aug 2019 02:12:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748760;
-        bh=rL229EiVdHJ9uYzZvBHPwLKzwBdqrgjYJeNuBTGV+qM=;
+        s=default; t=1565748761;
+        bh=nTNEIx10Vjh03n0qsD4zI8XKLpPpJTX9LKmOJDGNKXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Koda1McQTgvN4XPgkgczWZXqKlzx1fddw9Z6rvnnw3wJmdIu/v9gJdj1Rzg73QxE+
-         H7GmJ0iKdcKYJknIfo+Qq4pyf39LL7YyhJa6ZiZTNsZY6bzGYUdos7KukRlbPY+SJ8
-         rw7vgH284iYN+1aibSS71ruwTnnZIdGpb0xLaEvI=
+        b=QvnsTDVYAsQQdesJ68BLAXMMR1KEFfw+ezqTU/Mw7OEJLZH7X46v7oga/qpgnD3iB
+         7l4LDa0BcoLiThmA9GEpnfk0CTjh+ifvvxlrd70EmIZOv95oLIySfBJHHIYRGoZDiG
+         vK+nSKTVea9BiNh2s2LEFn+52bpk5Szy8Jl9XfXA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 053/123] mac80211_hwsim: Fix possible null-pointer dereferences in hwsim_dump_radio_nl()
-Date:   Tue, 13 Aug 2019 22:09:37 -0400
-Message-Id: <20190814021047.14828-53-sashal@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 054/123] net: stmmac: manage errors returned by of_get_mac_address()
+Date:   Tue, 13 Aug 2019 22:09:38 -0400
+Message-Id: <20190814021047.14828-54-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -44,50 +44,49 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit b55f3b841099e641bdb2701d361a4c304e2dbd6f ]
+[ Upstream commit 195b2919ccd7ffcaf6b6bbcb39444a53ab8308c7 ]
 
-In hwsim_dump_radio_nl(), when genlmsg_put() on line 3617 fails, hdr is
-assigned to NULL. Then hdr is used on lines 3622 and 3623:
-    genl_dump_check_consistent(cb, hdr);
-    genlmsg_end(skb, hdr);
+Commit d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
+added support for reading the MAC address from an nvmem-cell. This
+required changing the logic to return an error pointer upon failure.
 
-Thus, possible null-pointer dereferences may occur.
+If stmmac is loaded before the nvmem provider driver then
+of_get_mac_address() return an error pointer with -EPROBE_DEFER.
 
-To fix these bugs, hdr is used here when it is not NULL.
+Propagate this error so the stmmac driver will be probed again after the
+nvmem provider driver is loaded.
+Default to a random generated MAC address in case of any other error,
+instead of using the error pointer as MAC address.
 
-This bug is found by a static analysis tool STCheck written by us.
-
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20190729082332.28895-1-baijiaju1990@gmail.com
-[put braces on all branches]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 1c699a9fa8661..faec05ab42754 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -3615,10 +3615,12 @@ static int hwsim_dump_radio_nl(struct sk_buff *skb,
- 		hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid,
- 				  cb->nlh->nlmsg_seq, &hwsim_genl_family,
- 				  NLM_F_MULTI, HWSIM_CMD_GET_RADIO);
--		if (!hdr)
-+		if (hdr) {
-+			genl_dump_check_consistent(cb, hdr);
-+			genlmsg_end(skb, hdr);
-+		} else {
- 			res = -EMSGSIZE;
--		genl_dump_check_consistent(cb, hdr);
--		genlmsg_end(skb, hdr);
-+		}
- 	}
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+index 0f0f4b31eb7ec..9b5218a8c15bc 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
+@@ -385,6 +385,13 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
+ 		return ERR_PTR(-ENOMEM);
  
- done:
+ 	*mac = of_get_mac_address(np);
++	if (IS_ERR(*mac)) {
++		if (PTR_ERR(*mac) == -EPROBE_DEFER)
++			return ERR_CAST(*mac);
++
++		*mac = NULL;
++	}
++
+ 	plat->interface = of_get_phy_mode(np);
+ 
+ 	/* Get max speed of operation from device tree */
 -- 
 2.20.1
 
