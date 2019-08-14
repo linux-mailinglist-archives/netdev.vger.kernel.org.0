@@ -2,177 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 03C2E8E121
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 01:15:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DB3A8E12C
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 01:17:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729434AbfHNXPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 19:15:08 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37254 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726490AbfHNXPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 19:15:08 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 129so287498pfa.4;
-        Wed, 14 Aug 2019 16:15:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=o67DhSDRgbswj21UglkRVro2MWwGEaqu1vVOhssAaMU=;
-        b=VUmWiTkHBHj+x+Zv0VlyA0EtZQoYfePcfuCebB+IUM5k8jUDo9/sNdQWpF9KrNiMSB
-         PhKew6Ixa5dsgndpPA3IaNW1gxXRz3boASWhF7nhm7z56RFgOU+s1xnA4Ll2fQtKilbu
-         NGyZDMyCY7zo66PxtMCbgmoARua1NLJats5a527c71pjEl8PnBN1nZ3XmkevumGq1yoW
-         5ZQArjTvEZgSVs3OlWwUkp9nSCir1QBAd2DzIHP1UyiP0A8oz7jhdDWTymhvYP3XI7Yh
-         zCI0oD5TQW+1XpV0YA2J0eRy820rCPkdiPP1WiH1P8Dzqd3MBavWQ//O1Oy0V4dWsO27
-         E6WQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=o67DhSDRgbswj21UglkRVro2MWwGEaqu1vVOhssAaMU=;
-        b=s4jBiLyUVny5g79+LocJYx0CeX9NTUs6kzPXuakMTlsSwArv/oVekA10DekIxOhVeH
-         ECgcuvPi+aidFkg7ZZzSIp9jHjf8sse9d23cFZUu0mRG4bG/Vth4ZQZDP9yjfBqoegSY
-         4qsKIiOXRC2Sh4kY/yr2qQv/B5k2VLoaJlduH6hSQc7w/jN2Y9M3EY7mak8XOqPWr8HT
-         +jn7DD7CLrtkbO9/Wu0T5G2xEmoH4cjC8LlXoC5nCB3I7pTastRzX5GotlcdXLueDcwt
-         8i8eiaYQRHM7ztsUT6y9k7JnkkNQgWpL2eBEfTJx8usXRvFXHaM1L5O2t2Qx+vAOz85X
-         MTCw==
-X-Gm-Message-State: APjAAAUbDKhJDe3sFpg3QCv5afFNmkkStn0QyX5/1gYZgPuYiA+F3NLh
-        dtmtGm1EYxqOiAoguM/QNVg=
-X-Google-Smtp-Source: APXvYqylYlIFzbbguUB4NjvJ44kXGrZpaKaBuRcPG8RVCt3xuQFHrnB9apI1Fot7CmBKStyMDNIGBw==
-X-Received: by 2002:a17:90a:c24e:: with SMTP id d14mr282997pjx.129.1565824507180;
-        Wed, 14 Aug 2019 16:15:07 -0700 (PDT)
-Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m7sm975523pfb.99.2019.08.14.16.15.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 16:15:05 -0700 (PDT)
-Subject: Re: [PATCH net-next v2 5/9] net: phy: add MACsec ops in phy_device
-To:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
-        sd@queasysnail.net, andrew@lunn.ch, hkallweit1@gmail.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, camelia.groza@nxp.com,
-        Simon.Edelhaus@aquantia.com
-References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
- <20190808140600.21477-6-antoine.tenart@bootlin.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1521a28b-a0af-b3fb-d1bf-af82ec2f3d47@gmail.com>
-Date:   Wed, 14 Aug 2019 16:15:03 -0700
+        id S1729082AbfHNXRa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 19:17:30 -0400
+Received: from www62.your-server.de ([213.133.104.62]:60330 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726619AbfHNXRa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 19:17:30 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hy2WE-0002TG-BV; Thu, 15 Aug 2019 01:17:26 +0200
+Received: from [178.193.45.231] (helo=pc-63.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1hy2WE-000CWU-3l; Thu, 15 Aug 2019 01:17:26 +0200
+Subject: Re: [PATCH bpf-next v4 1/2] xsk: remove AF_XDP socket from map when
+ the socket is released
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Netdev <netdev@vger.kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        Bruce Richardson <bruce.richardson@intel.com>,
+        Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>
+References: <20190802081154.30962-1-bjorn.topel@gmail.com>
+ <20190802081154.30962-2-bjorn.topel@gmail.com>
+ <5ad56a5e-a189-3f56-c85c-24b6c300efd9@iogearbox.net>
+ <CAJ+HfNhO+xSs25aPat9WjC75W6_Kgfq=GU+YCEcoZw-GCjZdEg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <5ce25e5b-a07a-31d8-4141-c6bd250bba0e@iogearbox.net>
+Date:   Thu, 15 Aug 2019 01:17:25 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190808140600.21477-6-antoine.tenart@bootlin.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAJ+HfNhO+xSs25aPat9WjC75W6_Kgfq=GU+YCEcoZw-GCjZdEg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25541/Wed Aug 14 10:26:08 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/8/19 7:05 AM, Antoine Tenart wrote:
-> This patch adds a reference to MACsec ops in the phy_device, to allow
-> PHYs to support offloading MACsec operations. The phydev lock will be
-> held while calling those helpers.
+On 8/12/19 7:25 PM, Björn Töpel wrote:
+> On Mon, 12 Aug 2019 at 14:28, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>
+> [...]
+>>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+>>> index 59b57d708697..c3447bad608a 100644
+>>> --- a/net/xdp/xsk.c
+>>> +++ b/net/xdp/xsk.c
+>>> @@ -362,6 +362,50 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
+>>>        dev_put(dev);
+>>>    }
+>>>
+>>> +static struct xsk_map *xsk_get_map_list_entry(struct xdp_sock *xs,
+>>> +                                           struct xdp_sock ***map_entry)
+>>> +{
+>>> +     struct xsk_map *map = NULL;
+>>> +     struct xsk_map_node *node;
+>>> +
+>>> +     *map_entry = NULL;
+>>> +
+>>> +     spin_lock_bh(&xs->map_list_lock);
+>>> +     node = list_first_entry_or_null(&xs->map_list, struct xsk_map_node,
+>>> +                                     node);
+>>> +     if (node) {
+>>> +             WARN_ON(xsk_map_inc(node->map));
+>>
+>> Can you elaborate on the refcount usage here and against what scenario it is protecting?
 > 
-> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
-> ---
->  include/linux/phy.h | 10 ++++++++++
->  1 file changed, 10 insertions(+)
+> Thanks for having a look!
 > 
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 462b90b73f93..6947a19587e4 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -22,6 +22,10 @@
->  #include <linux/workqueue.h>
->  #include <linux/mod_devicetable.h>
->  
-> +#ifdef CONFIG_MACSEC
-> +#include <net/macsec.h>
-> +#endif
+> First we access the map_list (under the lock) and pull out the map
+> which we intend to clean. In order to clear the map entry, we need to
+> a reference to the map. However, when the map_list_lock is released,
+> there's a window where the map entry can be cleared and the map can be
+> destroyed, and making the "map", which is used in
+> xsk_delete_from_maps, stale. To guarantee existence the additional
+> refinc is required. Makes sense?
 
-#if IS_ENABLED(CONFIG_MACSEC)
+Seems reasonable to me, and inc as opposed to inc_not_zero is also fine
+here since at this point in time we're still holding one reference to
+the map. But I think there's a catch with the current code that still
+needs fixing:
 
-> +
->  #include <linux/atomic.h>
->  
->  #define PHY_DEFAULT_FEATURES	(SUPPORTED_Autoneg | \
-> @@ -345,6 +349,7 @@ struct phy_c45_device_ids {
->   * attached_dev: The attached enet driver's device instance ptr
->   * adjust_link: Callback for the enet controller to respond to
->   * changes in the link state.
-> + * macsec_ops: MACsec offloading ops.
->   *
->   * speed, duplex, pause, supported, advertising, lp_advertising,
->   * and autoneg are used like in mii_if_info
-> @@ -438,6 +443,11 @@ struct phy_device {
->  
->  	void (*phy_link_change)(struct phy_device *, bool up, bool do_carrier);
->  	void (*adjust_link)(struct net_device *dev);
-> +
-> +#if defined(CONFIG_MACSEC)
-> +	/* MACsec management functions */
-> +	const struct macsec_ops *macsec_ops;
-> +#endif
+Imagine you do a xsk_map_update_elem() where we have a situation where
+xs == old_xs. There, we first do the xsk_map_sock_add() to add the new
+xsk map node at the tail of the socket's xs->map_list. We do the xchg()
+and then xsk_map_sock_delete() for old_xs which then walks xs->map_list
+again and purges all entries including the just newly created one. This
+means we'll end up with an xs socket at the given map slot, but the xs
+socket has empty xs->map_list. This means we could release the xs sock
+and the xsk_delete_from_maps() won't need to clean up anything anymore
+but yet the xs is still in the map slot, so if you redirect to that
+socket, it would be use-after-free, no?
 
-#if IS_ENABLED(CONFIG_MACSEC)
+>> Do we pretend it never fails on the bpf_map_inc() wrt the WARN_ON(),
+>> why that (what makes it different from the xsk_map_node_alloc() inc
+>> above where we do error out)?
+> 
+> Hmm, given that we're in a cleanup (socket release), we can't really
+> return any error. What would be a more robust way? Retrying? AFAIK the
+> release ops return an int, but it's not checked/used.
+> 
+>>> +             map = node->map;
+>>> +             *map_entry = node->map_entry;
+>>> +     }
+>>> +     spin_unlock_bh(&xs->map_list_lock);
+>>> +     return map;
+>>> +}
+>>> +
+>>> +static void xsk_delete_from_maps(struct xdp_sock *xs)
+>>> +{
+>>> +     /* This function removes the current XDP socket from all the
+>>> +      * maps it resides in. We need to take extra care here, due to
+>>> +      * the two locks involved. Each map has a lock synchronizing
+>>> +      * updates to the entries, and each socket has a lock that
+>>> +      * synchronizes access to the list of maps (map_list). For
+>>> +      * deadlock avoidance the locks need to be taken in the order
+>>> +      * "map lock"->"socket map list lock". We start off by
+>>> +      * accessing the socket map list, and take a reference to the
+>>> +      * map to guarantee existence. Then we ask the map to remove
+>>> +      * the socket, which tries to remove the socket from the
+>>> +      * map. Note that there might be updates to the map between
+>>> +      * xsk_get_map_list_entry() and xsk_map_try_sock_delete().
+>>> +      */
+> 
+> I tried to clarify here, but I obviously need to do a better job. :-)
+> 
+> 
+> Björn
+> 
 
-likewise.
--- 
-Florian
