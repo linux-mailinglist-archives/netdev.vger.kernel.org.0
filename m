@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 32A9D8DB70
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:25:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E76F8DB6E
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:25:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729197AbfHNRZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 13:25:24 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:38666 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729529AbfHNRFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:05:52 -0400
-Received: by mail-wr1-f65.google.com with SMTP id g17so111805639wrr.5
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 10:05:51 -0700 (PDT)
+        id S1729224AbfHNRZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 13:25:19 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35837 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728233AbfHNRFy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:05:54 -0400
+Received: by mail-wr1-f67.google.com with SMTP id k2so25954600wrq.2
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 10:05:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=cumulusnetworks.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=zLOU89kM0wwKVTB1UPD2cV0f8y3hOpOztYSgdhvell4=;
-        b=XHMQDr806G3D5l5dlL1zKIeSGUZWTlyoNf8Gxg0UBdT/WlTMtIwX4sa7r5FPvGGNnP
-         lNt7wIN+05DNeoQDkQPUoDkDRgRodpRR7R6Yn34Jtd8HSdKW5FX9ciTU+BZasKxmrWpR
-         gUu5kHK9ALQ6JZ5XSZPFycIK6Tc0aDnNfnNZU=
+        bh=EW+6AvSLzUYJxeji2mVd2Q1VYO3NHO/LYR1JxyZ6kvU=;
+        b=dmKb3kfxlKpnOlbOaUMS+UvF7ZhUO6ktsQf2dIiVWKWc9BLm8htymdit42bT1D05kx
+         2E4tq6d9Z2IFDj0WYIPISEIWdIjua2fSJe6eENI2f1bhT2lZ8mkesYta7dZlESl/TH03
+         oxSuUuhB4eb7LLrLfhRuq7oVQSO6H3Z5Uj3VU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=zLOU89kM0wwKVTB1UPD2cV0f8y3hOpOztYSgdhvell4=;
-        b=TVNroAiY59AnlOcFAz4nJGuewgqPCPMuCpQF9MXjWQwDE96JrLgTCVCrxG8twyZT2r
-         KU08iScRSHDG2Q+DBQP4kysLV/Sre/w5IA0gkrrU73u7IVTeVj4ywxN5TVuPPvgrgbqa
-         lq0HQaLbRsiCIEH4TxWE2oM8A0Nb5LNJQTd0Q1kY8jQdAqjR3I6zL4ErC6Bim7yLMbgQ
-         vTtaZ1U1rPoW+KalUIm+lJCs4VJOJ/QFAs0bKceLoNqIgonOd2Yh9ygj+selG2jr1FjT
-         RlZHRoQQxsXg0Ii0lq1wJgP5wrjYv8H2kwVY6K9RCbhFxX7rwexyQfj0ryegofWuSglM
-         EbmA==
-X-Gm-Message-State: APjAAAUGZkSj2GwObMA3BnhITC2Zye/XoMW5fngvEumqU5XLutPR20Wy
-        P8CdDQzo2eu3N9LVRRlOAo1ZcJKLsww=
-X-Google-Smtp-Source: APXvYqzXTjGDoczmBrIS4Ptf9d6eU4NIc9IATDaUEwIffzi78EuiZw6ZXHuDjQUv3/BikGetwa+PBQ==
-X-Received: by 2002:adf:8bd8:: with SMTP id w24mr764204wra.273.1565802350269;
-        Wed, 14 Aug 2019 10:05:50 -0700 (PDT)
+        bh=EW+6AvSLzUYJxeji2mVd2Q1VYO3NHO/LYR1JxyZ6kvU=;
+        b=uISdPJAiSHO+Xz9+PPSz5HqrRBZL+FFf9CGdpMCNKGXQFcDhcnR3j1RrLZK1fwaGQe
+         ctfGhusrTUsuiNLb1bFaxFAPlUWTxf6oxBkd9q0m4wpihGtP0AmXqE2aK2AtrmehVqbr
+         /fSU0G7rEDBpHKgWLUEYS57KsosO1WcBHjkCM+gFpteU31pyjlQpKjyVy8dPvYTSN2bb
+         TqJWQhH0/W84CIzhmwQd3XKfFZlP/TJM8jpD/Xgs+DzGz4MRVfITruVdgLEGtlHb/BeI
+         MO4bCQcNQfZQ5UUw+w7sDsAlSmJqSzgcRojPO22+5olI1dDBWb9FWcKRKOeM33z/S1nm
+         NV0g==
+X-Gm-Message-State: APjAAAUZbT0rLA2110y0XsT3v/aEx/0+uTHYQJnxiCpz3WenCuDEcyHE
+        pw3Y+3Nq00BW6UeiPOaxfOerpAEZPGY=
+X-Google-Smtp-Source: APXvYqxnkiYP2C5jQf45QWuJlhB5z0fdTi6RfRm7cYpMWylggm7SGmag8r6tE24PsLjHm2s/3wvkgg==
+X-Received: by 2002:adf:f18c:: with SMTP id h12mr743001wro.47.1565802351521;
+        Wed, 14 Aug 2019 10:05:51 -0700 (PDT)
 Received: from wrk.www.tendawifi.com ([79.134.174.40])
-        by smtp.gmail.com with ESMTPSA id c6sm332311wma.25.2019.08.14.10.05.48
+        by smtp.gmail.com with ESMTPSA id c6sm332311wma.25.2019.08.14.10.05.50
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 14 Aug 2019 10:05:49 -0700 (PDT)
+        Wed, 14 Aug 2019 10:05:51 -0700 (PDT)
 From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
         bridge@lists.linux-foundation.org,
         Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next v2 1/4] net: bridge: mdb: move vlan comments
-Date:   Wed, 14 Aug 2019 20:04:58 +0300
-Message-Id: <20190814170501.1808-2-nikolay@cumulusnetworks.com>
+Subject: [PATCH net-next v2 2/4] net: bridge: mdb: factor out mdb filling
+Date:   Wed, 14 Aug 2019 20:04:59 +0300
+Message-Id: <20190814170501.1808-3-nikolay@cumulusnetworks.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190814170501.1808-1-nikolay@cumulusnetworks.com>
 References: <81258876-5f03-002c-5aa8-2d6d00e6d99e@cumulusnetworks.com>
@@ -60,58 +60,112 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Trivial patch to move the vlan comments in their proper places above the
-vid 0 checks.
+We have to factor out the mdb fill portion in order to re-use it later for
+the bridge mdb entries. No functional changes intended.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
 ---
- net/bridge/br_mdb.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ net/bridge/br_mdb.c | 68 ++++++++++++++++++++++++---------------------
+ 1 file changed, 37 insertions(+), 31 deletions(-)
 
 diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index 428af1abf8cc..ee6208c6d946 100644
+index ee6208c6d946..77730983097e 100644
 --- a/net/bridge/br_mdb.c
 +++ b/net/bridge/br_mdb.c
-@@ -653,9 +653,6 @@ static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh,
+@@ -77,6 +77,40 @@ static void __mdb_entry_to_br_ip(struct br_mdb_entry *entry, struct br_ip *ip)
+ #endif
+ }
  
- 	br = netdev_priv(dev);
++static int __mdb_fill_info(struct sk_buff *skb,
++			   struct net_bridge_port_group *p)
++{
++	struct nlattr *nest_ent;
++	struct br_mdb_entry e;
++
++	memset(&e, 0, sizeof(e));
++	__mdb_entry_fill_flags(&e, p->flags);
++	e.ifindex = p->port->dev->ifindex;
++	e.vid = p->addr.vid;
++	if (p->addr.proto == htons(ETH_P_IP))
++		e.addr.u.ip4 = p->addr.u.ip4;
++#if IS_ENABLED(CONFIG_IPV6)
++	if (p->addr.proto == htons(ETH_P_IPV6))
++		e.addr.u.ip6 = p->addr.u.ip6;
++#endif
++	e.addr.proto = p->addr.proto;
++	nest_ent = nla_nest_start_noflag(skb,
++					 MDBA_MDB_ENTRY_INFO);
++	if (!nest_ent)
++		return -EMSGSIZE;
++
++	if (nla_put_nohdr(skb, sizeof(e), &e) ||
++	    nla_put_u32(skb,
++			MDBA_MDB_EATTR_TIMER,
++			br_timer_value(&p->timer))) {
++		nla_nest_cancel(skb, nest_ent);
++		return -EMSGSIZE;
++	}
++	nla_nest_end(skb, nest_ent);
++
++	return 0;
++}
++
+ static int br_mdb_fill_info(struct sk_buff *skb, struct netlink_callback *cb,
+ 			    struct net_device *dev)
+ {
+@@ -95,7 +129,6 @@ static int br_mdb_fill_info(struct sk_buff *skb, struct netlink_callback *cb,
+ 	hlist_for_each_entry_rcu(mp, &br->mdb_list, mdb_node) {
+ 		struct net_bridge_port_group *p;
+ 		struct net_bridge_port_group __rcu **pp;
+-		struct net_bridge_port *port;
  
--	/* If vlan filtering is enabled and VLAN is not specified
--	 * install mdb entry on all vlans configured on the port.
--	 */
- 	pdev = __dev_get_by_index(net, entry->ifindex);
- 	if (!pdev)
- 		return -ENODEV;
-@@ -665,6 +662,9 @@ static int br_mdb_add(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		return -EINVAL;
+ 		if (idx < s_idx)
+ 			goto skip;
+@@ -108,41 +141,14 @@ static int br_mdb_fill_info(struct sk_buff *skb, struct netlink_callback *cb,
  
- 	vg = nbp_vlan_group(p);
-+	/* If vlan filtering is enabled and VLAN is not specified
-+	 * install mdb entry on all vlans configured on the port.
-+	 */
- 	if (br_vlan_enabled(br->dev) && vg && entry->vid == 0) {
- 		list_for_each_entry(v, &vg->vlan_list, vlist) {
- 			entry->vid = v->vid;
-@@ -745,9 +745,6 @@ static int br_mdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 		for (pp = &mp->ports; (p = rcu_dereference(*pp)) != NULL;
+ 		      pp = &p->next) {
+-			struct nlattr *nest_ent;
+-			struct br_mdb_entry e;
+-
+-			port = p->port;
+-			if (!port)
++			if (!p->port)
+ 				continue;
  
- 	br = netdev_priv(dev);
- 
--	/* If vlan filtering is enabled and VLAN is not specified
--	 * delete mdb entry on all vlans configured on the port.
--	 */
- 	pdev = __dev_get_by_index(net, entry->ifindex);
- 	if (!pdev)
- 		return -ENODEV;
-@@ -757,6 +754,9 @@ static int br_mdb_del(struct sk_buff *skb, struct nlmsghdr *nlh,
- 		return -EINVAL;
- 
- 	vg = nbp_vlan_group(p);
-+	/* If vlan filtering is enabled and VLAN is not specified
-+	 * delete mdb entry on all vlans configured on the port.
-+	 */
- 	if (br_vlan_enabled(br->dev) && vg && entry->vid == 0) {
- 		list_for_each_entry(v, &vg->vlan_list, vlist) {
- 			entry->vid = v->vid;
+-			memset(&e, 0, sizeof(e));
+-			e.ifindex = port->dev->ifindex;
+-			e.vid = p->addr.vid;
+-			__mdb_entry_fill_flags(&e, p->flags);
+-			if (p->addr.proto == htons(ETH_P_IP))
+-				e.addr.u.ip4 = p->addr.u.ip4;
+-#if IS_ENABLED(CONFIG_IPV6)
+-			if (p->addr.proto == htons(ETH_P_IPV6))
+-				e.addr.u.ip6 = p->addr.u.ip6;
+-#endif
+-			e.addr.proto = p->addr.proto;
+-			nest_ent = nla_nest_start_noflag(skb,
+-							 MDBA_MDB_ENTRY_INFO);
+-			if (!nest_ent) {
+-				nla_nest_cancel(skb, nest2);
+-				err = -EMSGSIZE;
+-				goto out;
+-			}
+-			if (nla_put_nohdr(skb, sizeof(e), &e) ||
+-			    nla_put_u32(skb,
+-					MDBA_MDB_EATTR_TIMER,
+-					br_timer_value(&p->timer))) {
+-				nla_nest_cancel(skb, nest_ent);
++			err = __mdb_fill_info(skb, p);
++			if (err) {
+ 				nla_nest_cancel(skb, nest2);
+-				err = -EMSGSIZE;
+ 				goto out;
+ 			}
+-			nla_nest_end(skb, nest_ent);
+ 		}
+ 		nla_nest_end(skb, nest2);
+ skip:
 -- 
 2.21.0
 
