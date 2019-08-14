@@ -2,160 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CEFFE8CD28
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3763F8CD2A
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:47:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725905AbfHNHrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 03:47:08 -0400
-Received: from mail-wr1-f49.google.com ([209.85.221.49]:38924 "EHLO
-        mail-wr1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725280AbfHNHrH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 03:47:07 -0400
-Received: by mail-wr1-f49.google.com with SMTP id t16so20017972wra.6
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 00:47:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=DUCn7Q2k9HfOuG0h+AfyXxYDildCLAizJGKD46uq95I=;
-        b=t2cnJ2BATTjPv+gwc6a1PMOeoB4zyh+gsDdUH8bEJ/YzEb0gWAgftTMSnxGd4foZez
-         N/qndoP5fGbl0NYl7oUf2Ke3Eu/clRbAVukK3J07m9vGDD6Y+kzNxlXzOL7bdAo6X/qD
-         i0aaysuOjwaCPo5r78p23z9hnT6MmlzoWvyw1t1HnL7DAThuP/Ve/vb6zGUkGLXXeEka
-         v4PA7fifoWdLrZYd3g8eCOQDKYTjFZvdwOHY1GQLOQsSefv0bwN8Dg/mmgsiVqO6Ftzi
-         Fmg6SHtChwi1wcWAXXwNq6o37x3XO5cnc6qG6Ek3AI/WEgQTKwixBmSc3VP6gbfivkd+
-         zkug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=DUCn7Q2k9HfOuG0h+AfyXxYDildCLAizJGKD46uq95I=;
-        b=BMXdyjpQiaq6AxskOGFxwXNy96PjhJo7qFRYrTo99jDPfaV/vib4z/ggKdiDlIwazn
-         s1lkvOML3YTMrP3snnWt4hMDrBx+fctNtOVit2bMzL4ezBNI5tuNi0A0uR7pQYH/aqKr
-         AvSeTwqKQND1A32vzy6w3mR515YQq/Fa5FH099xMAOJsNdsW4zUeDY95tsihKvh+sNy+
-         a/P8Fx4yBHfMArxmgkhLqlMvQUsoPzV7QQoAtDW3bjM68g7D1lP9zMyjCtSNX6klpCJW
-         bCuY9sAFRncCh6GwicHFuRPLTxoJhsClHGXQSzs/H23QKuA0bBQ5TzCo4G/tmfQGj83E
-         I8yQ==
-X-Gm-Message-State: APjAAAV0rp1903x22eNVjPLUyIzYfxC/09DQ7n+4bmIo0VI33xGJ8PLX
-        9P7C8dCbW/KwS+llKQzHgbkxHg==
-X-Google-Smtp-Source: APXvYqzoWcTyAcpxSIXHANzMuJtNEuMXNInXE08axTD4bwKdU7LiyRGDJRMyjIuhGtvD05XI9VSiBA==
-X-Received: by 2002:adf:f991:: with SMTP id f17mr22900826wrr.233.1565768826072;
-        Wed, 14 Aug 2019 00:47:06 -0700 (PDT)
-Received: from localhost ([195.146.112.228])
-        by smtp.gmail.com with ESMTPSA id g7sm6763263wmg.8.2019.08.14.00.47.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2019 00:47:05 -0700 (PDT)
-Date:   Wed, 14 Aug 2019 09:47:04 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com
-Subject: Re: [patch net-next] selftests: netdevsim: add devlink params tests
-Message-ID: <20190814074704.GA2580@nanopsycho.mediaserver.passengera.com>
-References: <20190813130446.25712-1-jiri@resnulli.us>
- <20190813154108.30509472@cakuba.netronome.com>
+        id S1726610AbfHNHrR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 03:47:17 -0400
+Received: from mga09.intel.com ([134.134.136.24]:30572 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725280AbfHNHrR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 03:47:17 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Aug 2019 00:47:16 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,384,1559545200"; 
+   d="scan'208";a="188041233"
+Received: from pipin.fi.intel.com ([10.237.72.175])
+  by orsmga002.jf.intel.com with ESMTP; 14 Aug 2019 00:47:14 -0700
+From:   Felipe Balbi <felipe.balbi@linux.intel.com>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Felipe Balbi <felipe.balbi@linux.intel.com>
+Subject: [PATCH 1/2] PTP: introduce new versions of IOCTLs
+Date:   Wed, 14 Aug 2019 10:47:11 +0300
+Message-Id: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190813154108.30509472@cakuba.netronome.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Aug 14, 2019 at 12:41:08AM CEST, jakub.kicinski@netronome.com wrote:
->On Tue, 13 Aug 2019 15:04:46 +0200, Jiri Pirko wrote:
->> From: Jiri Pirko <jiri@mellanox.com>
->> 
->> Test recently added netdevsim devlink param implementation.
->> 
->> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
->
->Thanks for the test, but it doesn't pass here:
->
->TEST: fw flash test                                                 [ OK ]
->TEST: params test                                                   [FAIL]
->	Failed to get test1 param value
+The current version of the IOCTL have a small problem which prevents us
+from extending the API by making use of reserved fields. In these new
+IOCTLs, we are now making sure that flags and rsv fields are zero which
+will allow us to extend the API in the future.
 
-Interesting. Fors for me correctly. When I run it manually, I get this:
-bash-5.0# devlink dev param show netdevsim/netdevsim11 name test1 -j | jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
-true
-bash-5.0# echo $?
-0
-bash-5.0# devlink dev param set netdevsim/netdevsim11 name test1 cmode driverinit value false
-bash-5.0# devlink dev param show netdevsim/netdevsim11 name test1 -j | jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
-false
-bash-5.0# echo $?
-0
+Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+---
+ drivers/ptp/ptp_chardev.c      | 58 ++++++++++++++++++++++++++++++++--
+ include/uapi/linux/ptp_clock.h | 12 +++++++
+ 2 files changed, 68 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+index 18ffe449efdf..204212fc3f8c 100644
+--- a/drivers/ptp/ptp_chardev.c
++++ b/drivers/ptp/ptp_chardev.c
+@@ -123,9 +123,11 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 	struct timespec64 ts;
+ 	int enable, err = 0;
+ 
++	memset(&req, 0, sizeof(req));
+ 	switch (cmd) {
+ 
+ 	case PTP_CLOCK_GETCAPS:
++	case PTP_CLOCK_GETCAPS2:
+ 		memset(&caps, 0, sizeof(caps));
+ 		caps.max_adj = ptp->info->max_adj;
+ 		caps.n_alarm = ptp->info->n_alarm;
+@@ -139,11 +141,22 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_EXTTS_REQUEST:
++	case PTP_EXTTS_REQUEST2:
+ 		if (copy_from_user(&req.extts, (void __user *)arg,
+ 				   sizeof(req.extts))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if ((req.extts.flags || req.extts.rsv[0] || req.extts.rsv[1])
++			&& cmd == PTP_EXTTS_REQUEST2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_EXTTS_REQUEST) {
++			req.extts.flags = 0;
++			req.extts.rsv[0] = 0;
++			req.extts.rsv[1] = 0;
++		}
++			
+ 		if (req.extts.index >= ops->n_ext_ts) {
+ 			err = -EINVAL;
+ 			break;
+@@ -154,11 +167,24 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_PEROUT_REQUEST:
++	case PTP_PEROUT_REQUEST2:
+ 		if (copy_from_user(&req.perout, (void __user *)arg,
+ 				   sizeof(req.perout))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if ((req.perout.flags || req.perout.rsv[0] || req.perout.rsv[1]
++				|| req.perout.rsv[2] || req.perout.rsv[3])
++			&& cmd == PTP_PEROUT_REQUEST2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_PEROUT_REQUEST) {
++			req.perout.flags = 0;
++			req.perout.rsv[0] = 0;
++			req.perout.rsv[1] = 0;
++			req.perout.rsv[2] = 0;
++			req.perout.rsv[3] = 0;
++		}
+ 		if (req.perout.index >= ops->n_per_out) {
+ 			err = -EINVAL;
+ 			break;
+@@ -169,6 +195,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_ENABLE_PPS:
++	case PTP_ENABLE_PPS2:
+ 		if (!capable(CAP_SYS_TIME))
+ 			return -EPERM;
+ 		req.type = PTP_CLK_REQ_PPS;
+@@ -177,6 +204,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_SYS_OFFSET_PRECISE:
++	case PTP_SYS_OFFSET_PRECISE2:
+ 		if (!ptp->info->getcrosststamp) {
+ 			err = -EOPNOTSUPP;
+ 			break;
+@@ -201,6 +229,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_SYS_OFFSET_EXTENDED:
++	case PTP_SYS_OFFSET_EXTENDED2:
+ 		if (!ptp->info->gettimex64) {
+ 			err = -EOPNOTSUPP;
+ 			break;
+@@ -232,6 +261,7 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 		break;
+ 
+ 	case PTP_SYS_OFFSET:
++	case PTP_SYS_OFFSET2:
+ 		sysoff = memdup_user((void __user *)arg, sizeof(*sysoff));
+ 		if (IS_ERR(sysoff)) {
+ 			err = PTR_ERR(sysoff);
+@@ -265,11 +295,23 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 			err = -EFAULT;
+ 		break;
+ 
+-	case PTP_PIN_GETFUNC:
++	case PTP_PIN_GETFUNC2:
+ 		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if ((pd.rsv[0] || pd.rsv[1] || pd.rsv[2]
++				|| pd.rsv[3] || pd.rsv[4])
++			&& cmd == PTP_PIN_GETFUNC2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_PIN_GETFUNC) {
++			pd.rsv[0] = 0;
++			pd.rsv[1] = 0;
++			pd.rsv[2] = 0;
++			pd.rsv[3] = 0;
++			pd.rsv[4] = 0;
++		}
+ 		pin_index = pd.index;
+ 		if (pin_index >= ops->n_pins) {
+ 			err = -EINVAL;
+@@ -284,11 +326,23 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+ 			err = -EFAULT;
+ 		break;
+ 
+-	case PTP_PIN_SETFUNC:
++	case PTP_PIN_SETFUNC2:
+ 		if (copy_from_user(&pd, (void __user *)arg, sizeof(pd))) {
+ 			err = -EFAULT;
+ 			break;
+ 		}
++		if ((pd.rsv[0] || pd.rsv[1] || pd.rsv[2]
++				|| pd.rsv[3] || pd.rsv[4])
++			&& cmd == PTP_PIN_SETFUNC2) {
++			err = -EINVAL;
++			break;
++		} else if (cmd == PTP_PIN_SETFUNC) {
++			pd.rsv[0] = 0;
++			pd.rsv[1] = 0;
++			pd.rsv[2] = 0;
++			pd.rsv[3] = 0;
++			pd.rsv[4] = 0;
++		}
+ 		pin_index = pd.index;
+ 		if (pin_index >= ops->n_pins) {
+ 			err = -EINVAL;
+diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
+index 1bc794ad957a..039cd62ec706 100644
+--- a/include/uapi/linux/ptp_clock.h
++++ b/include/uapi/linux/ptp_clock.h
+@@ -149,6 +149,18 @@ struct ptp_pin_desc {
+ #define PTP_SYS_OFFSET_EXTENDED \
+ 	_IOWR(PTP_CLK_MAGIC, 9, struct ptp_sys_offset_extended)
+ 
++#define PTP_CLOCK_GETCAPS2  _IOR(PTP_CLK_MAGIC, 10, struct ptp_clock_caps)
++#define PTP_EXTTS_REQUEST2  _IOW(PTP_CLK_MAGIC, 11, struct ptp_extts_request)
++#define PTP_PEROUT_REQUEST2 _IOW(PTP_CLK_MAGIC, 12, struct ptp_perout_request)
++#define PTP_ENABLE_PPS2     _IOW(PTP_CLK_MAGIC, 13, int)
++#define PTP_SYS_OFFSET2     _IOW(PTP_CLK_MAGIC, 14, struct ptp_sys_offset)
++#define PTP_PIN_GETFUNC2    _IOWR(PTP_CLK_MAGIC, 15, struct ptp_pin_desc)
++#define PTP_PIN_SETFUNC2    _IOW(PTP_CLK_MAGIC, 16, struct ptp_pin_desc)
++#define PTP_SYS_OFFSET_PRECISE2 \
++	_IOWR(PTP_CLK_MAGIC, 17, struct ptp_sys_offset_precise)
++#define PTP_SYS_OFFSET_EXTENDED2 \
++	_IOWR(PTP_CLK_MAGIC, 18, struct ptp_sys_offset_extended)
++
+ struct ptp_extts_event {
+ 	struct ptp_clock_time t; /* Time event occured. */
+ 	unsigned int index;      /* Which channel produced the event. */
+-- 
+2.22.0
 
-
-
->
->> diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
->> index 9d8baf5d14b3..858ebdc8d8a3 100755
->> --- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
->> +++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
->> @@ -3,7 +3,7 @@
->>  
->>  lib_dir=$(dirname $0)/../../../net/forwarding
->>  
->> -ALL_TESTS="fw_flash_test"
->> +ALL_TESTS="fw_flash_test params_test"
->>  NUM_NETIFS=0
->>  source $lib_dir/lib.sh
->>  
->> @@ -30,6 +30,66 @@ fw_flash_test()
->>  	log_test "fw flash test"
->>  }
->>  
->> +param_get()
->> +{
->> +	local name=$1
->> +
->> +	devlink dev param show $DL_HANDLE name $name -j | \
->> +		jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
->
->                   ^^
->
->The -e makes jq set exit code to 1 when test1 param is false.
->
->Quoting the man page:
->
->       ·   -e / --exit-status:
->
->           Sets the exit status of jq to 0 if the last output values
->           was neither false nor null, 1 if the last output value was
->           either false or  null,  or  4  if  no valid  result  was
->           ever produced. Normally jq exits with 2 if there was any
->           usage problem or system error, 3 if there was a jq program
->           compile error, or 0 if the jq program ran.
->
->Without the -e all is well:
-
-Not really, for non-existent param the return value would be wrong:
-bash-5.0# devlink dev param show netdevsim/netdevsim11 name test2 -j | jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
-devlink answers: Invalid argument
-bash-5.0# echo $?
-4
-bash-5.0# devlink dev param show netdevsim/netdevsim11 name test2 -j | jq -r '.[][][].values[] | select(.cmode == "driverinit").value'
-devlink answers: Invalid argument
-bash-5.0# echo $?
-0
-
-The return value is 0 like everyone is fine. You probably have a
-different jq version (1.6). Looks like I need to use the same
-workaround I have in tools/testing/selftests/net/forwarding/tc_common.sh.
-I thought that -e would avoid that.
-
-
-
->
-># ./devlink.sh 
->TEST: fw flash test                                                 [ OK ]
->TEST: params test                                                   [ OK ]
->
->> +}
->> +
