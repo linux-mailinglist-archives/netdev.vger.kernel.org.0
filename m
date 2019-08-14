@@ -2,48 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 402E88DC02
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:37:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 679CF8DC04
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:38:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728487AbfHNRhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 13:37:55 -0400
-Received: from mail-pf1-f202.google.com ([209.85.210.202]:49780 "EHLO
-        mail-pf1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728219AbfHNRhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:37:55 -0400
-Received: by mail-pf1-f202.google.com with SMTP id s10so5315281pfd.16
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 10:37:55 -0700 (PDT)
+        id S1728562AbfHNRh6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 13:37:58 -0400
+Received: from mail-qt1-f201.google.com ([209.85.160.201]:43842 "EHLO
+        mail-qt1-f201.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728520AbfHNRh6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:37:58 -0400
+Received: by mail-qt1-f201.google.com with SMTP id p56so9793289qtb.10
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 10:37:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=kS4HFtdoUVzLJNg9knOvao1cqPc/u1eyKiHYUxjODT4=;
-        b=LhUmTwT5OxGnPet+OShHkEeLVjxxoFPUoy7M1+hZO7Kv1j+ZtQPHVj+liSSH1aCXKn
-         cKvbDohuHrot1lp/OdEYaVrb90KzKyhAsJ59QOjgjVr147svzOPzI+lnWH7BfAjO4qUc
-         NqOfPWULkbofqDklbEly6cgRQbXvfm87vtZdbD0vLL2ObGZpJ+UGLbdjXo0QKCCjd8Ie
-         dKcqtBEwNWlQQy8mnuGdf0OfrzSZX5xte0g0bZJETNeRLvHnXaFWSSTDoNmRu8c0pNa7
-         7G72MbnMlJz+T5yb8fLaAUi6h2Gdkd/01PMw8VyOUMVOmX77R1XvE7TeiCCQRHa6Th/J
-         VA5A==
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=AJSXkIdAVH1oaTxBLhQrKqbmftfzMmTC+dK8Oqetgno=;
+        b=gWD4LQo02Rl1oO95HM3VIMxCmviZpwWy2/z7MX+XEJbBpGlneWo4vAmHB/d5S2Eoxn
+         ueEusHgNpYPcSc6BvpuXDL36hDpPZxA4Op2hDVt0RjKuLbPTuvo5XJnHDJvIqGuPjF7J
+         cTmP6L+Kmr7OthlmlMfcqZogyduQvvMStEUahLxl70sCRwJH3fxrjJCxmqSXYeewRCHB
+         eSlYT3I8wB/Am3RWsI3aNCo995kfjlQyCe/VO/kYJqFFQeYI4ICQDS5u++8CJPTxHc3v
+         mwnk0BCYqBYsx0gRTkJUPPFKZglRcyuDZGolgxq674x9g6qhEF9frlm8ztIg2GC2dtfT
+         rpLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=kS4HFtdoUVzLJNg9knOvao1cqPc/u1eyKiHYUxjODT4=;
-        b=byCeo5ZO06np7pifPg9pAk5/cvnIH4HvpQYnlrBKjlvbyKfEHUsmNSzjl9pZVmeBNB
-         JJSS/kaIfdt+TjcAUR4L7rW04Rjy4sRbhty5lrz2K6hWAvcSFIa11zdBHgACcV8ilz1r
-         lJPq7PkwLnVfbo/W64QmzLp3YTsKY20YF2CL9cTUqIJY6egOmcaj3wzpQrWLi37UqaHx
-         CZA0T+YlMtOfu7XyXlIqBfGySpXeXN2TgwSBTU7YYojumxx8AnHHLOBnh5Bd2W6kyMLl
-         UtWp9Lq3wNNLFsbkTSNzXbGSUj7j3onNFBLyg1Geo52ZZ0zVIBMG698lY3ROgk9FGC2F
-         eaQA==
-X-Gm-Message-State: APjAAAWbeu2Vw94TSWAo7AjRQy6miGTAq10NIojKyd13Z5HbMIg9KWND
-        6GWsgII7HO1XKZdy7qHiKc8R2UkT2xQeS/Y2QnReWlA16o0fsVNSLGMGiVKyBcYvw34rDrHAyJz
-        XNaWHBZOHGgz8cGUj0jhy58FSItXr1ae3zEch+DLDx8GD6kv955JFmg==
-X-Google-Smtp-Source: APXvYqy/QCkwe3BXL4AXbk1zRnEO7bfhhJgRgZB82zOeaWwYMR4fWrE+i4W8+ii+MursSPLmIQWeW84=
-X-Received: by 2002:a63:5754:: with SMTP id h20mr257145pgm.195.1565804274166;
- Wed, 14 Aug 2019 10:37:54 -0700 (PDT)
-Date:   Wed, 14 Aug 2019 10:37:47 -0700
-Message-Id: <20190814173751.31806-1-sdf@google.com>
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=AJSXkIdAVH1oaTxBLhQrKqbmftfzMmTC+dK8Oqetgno=;
+        b=Nlol9vbCeU8uo06fzqY7owI+sw2tBGaMpYuY7+CU9Yj0yK2oeihbepARorPStribIF
+         PJL/u6uJawjBGWMWTciZnBhi4dx5DCvrxkojWBXSIJRIMZZNUvVMT3dBUEb77h51uHeR
+         gL6IzCvy2I58h+6fqtQ5ERfXSFZWdFC2qHItF0u3yp4ccVDILoeb2woIFhdBRyWkBZao
+         VtmI3ZogXy31zrKLvb6j88QFbHS34HABp81PnLOK5PDD3vssafOs5E5Q0MsU5mgwHfoT
+         cTwjpJsSOIFMlnTrl1yRIm0fYSh2pqblUB4eN0fpWQ3YN89Ia7HfjjTneuYbE4cL1INO
+         +Agw==
+X-Gm-Message-State: APjAAAU2eHZNz6DWK52pKc5LZ+O+A9TNwbyLmct6tKxRh7ypP7Kn4Xhn
+        sKSMgzbqFq/J0jiXiLURs1O2+IPI/ofhwZNZjVzGEWvrLiXW5sFDVTDKaUHHNQQ09n+bK/6R8DD
+        P2WbvrXwdJZw2o27sXpDSlIu4fYu3Fzc+3zhuPO5DuRAASIw5fKf/kQ==
+X-Google-Smtp-Source: APXvYqzI633zXBTyAMNZ8L6CuGXCE7Cfa6sHI4mPchxTrzKnXdkKMvhTHcr7OTkgZadJR7J65DkHHyw=
+X-Received: by 2002:ae9:f804:: with SMTP id x4mr584188qkh.178.1565804277231;
+ Wed, 14 Aug 2019 10:37:57 -0700 (PDT)
+Date:   Wed, 14 Aug 2019 10:37:48 -0700
+In-Reply-To: <20190814173751.31806-1-sdf@google.com>
+Message-Id: <20190814173751.31806-2-sdf@google.com>
 Mime-Version: 1.0
+References: <20190814173751.31806-1-sdf@google.com>
 X-Mailer: git-send-email 2.23.0.rc1.153.gdeed80330f-goog
-Subject: [PATCH bpf-next v4 0/4] bpf: support cloning sk storage on accept()
+Subject: [PATCH bpf-next v4 1/4] bpf: export bpf_map_inc_not_zero
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
@@ -55,68 +59,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently there is no way to propagate sk storage from the listener
-socket to a newly accepted one. Consider the following use case:
-
-        fd = socket();
-        setsockopt(fd, SOL_IP, IP_TOS,...);
-        /* ^^^ setsockopt BPF program triggers here and saves something
-         * into sk storage of the listener.
-         */
-        listen(fd, ...);
-        while (client = accept(fd)) {
-                /* At this point all association between listener
-                 * socket and newly accepted one is gone. New
-                 * socket will not have any sk storage attached.
-                 */
-        }
-
-Let's add new BPF_F_CLONE flag that can be specified when creating
-a socket storage map. This new flag indicates that map contents
-should be cloned when the socket is cloned.
-
-v4:
-* drop 'goto err' in bpf_sk_storage_clone (Yonghong Song)
-* add comment about race with bpf_sk_storage_map_free to the
-  bpf_sk_storage_clone side as well (Daniel Borkmann)
-
-v3:
-* make sure BPF_F_NO_PREALLOC is always present when creating
-  a map (Martin KaFai Lau)
-* don't call bpf_sk_storage_free explicitly, rely on
-  sk_free_unlock_clone to do the cleanup (Martin KaFai Lau)
-
-v2:
-* remove spinlocks around selem_link_map/sk (Martin KaFai Lau)
-* BPF_F_CLONE on a map, not selem (Martin KaFai Lau)
-* hold a map while cloning (Martin KaFai Lau)
-* use BTF maps in selftests (Yonghong Song)
-* do proper cleanup selftests; don't call close(-1) (Yonghong Song)
-* export bpf_map_inc_not_zero
+Rename existing bpf_map_inc_not_zero to __bpf_map_inc_not_zero to
+indicate that it's caller's responsibility to do proper locking.
+Create and export bpf_map_inc_not_zero wrapper that properly
+locks map_idr_lock. Will be used in the next commit to
+hold a map while cloning a socket.
 
 Cc: Martin KaFai Lau <kafai@fb.com>
 Cc: Yonghong Song <yhs@fb.com>
+Acked-by: Martin KaFai Lau <kafai@fb.com>
+Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
+---
+ include/linux/bpf.h  |  2 ++
+ kernel/bpf/syscall.c | 16 +++++++++++++---
+ 2 files changed, 15 insertions(+), 3 deletions(-)
 
-Stanislav Fomichev (4):
-  bpf: export bpf_map_inc_not_zero
-  bpf: support cloning sk storage on accept()
-  bpf: sync bpf.h to tools/
-  selftests/bpf: add sockopt clone/inheritance test
-
- include/linux/bpf.h                           |   2 +
- include/net/bpf_sk_storage.h                  |  10 +
- include/uapi/linux/bpf.h                      |   3 +
- kernel/bpf/syscall.c                          |  16 +-
- net/core/bpf_sk_storage.c                     | 104 ++++++-
- net/core/sock.c                               |   9 +-
- tools/include/uapi/linux/bpf.h                |   3 +
- tools/testing/selftests/bpf/.gitignore        |   1 +
- tools/testing/selftests/bpf/Makefile          |   3 +-
- .../selftests/bpf/progs/sockopt_inherit.c     |  97 +++++++
- .../selftests/bpf/test_sockopt_inherit.c      | 253 ++++++++++++++++++
- 11 files changed, 491 insertions(+), 10 deletions(-)
- create mode 100644 tools/testing/selftests/bpf/progs/sockopt_inherit.c
- create mode 100644 tools/testing/selftests/bpf/test_sockopt_inherit.c
-
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index f9a506147c8a..15ae49862b82 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -647,6 +647,8 @@ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock);
+ struct bpf_map *bpf_map_get_with_uref(u32 ufd);
+ struct bpf_map *__bpf_map_get(struct fd f);
+ struct bpf_map * __must_check bpf_map_inc(struct bpf_map *map, bool uref);
++struct bpf_map * __must_check bpf_map_inc_not_zero(struct bpf_map *map,
++						   bool uref);
+ void bpf_map_put_with_uref(struct bpf_map *map);
+ void bpf_map_put(struct bpf_map *map);
+ int bpf_map_charge_memlock(struct bpf_map *map, u32 pages);
+diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+index 5d141f16f6fa..cf8052b016e7 100644
+--- a/kernel/bpf/syscall.c
++++ b/kernel/bpf/syscall.c
+@@ -683,8 +683,8 @@ struct bpf_map *bpf_map_get_with_uref(u32 ufd)
+ }
+ 
+ /* map_idr_lock should have been held */
+-static struct bpf_map *bpf_map_inc_not_zero(struct bpf_map *map,
+-					    bool uref)
++static struct bpf_map *__bpf_map_inc_not_zero(struct bpf_map *map,
++					      bool uref)
+ {
+ 	int refold;
+ 
+@@ -704,6 +704,16 @@ static struct bpf_map *bpf_map_inc_not_zero(struct bpf_map *map,
+ 	return map;
+ }
+ 
++struct bpf_map *bpf_map_inc_not_zero(struct bpf_map *map, bool uref)
++{
++	spin_lock_bh(&map_idr_lock);
++	map = __bpf_map_inc_not_zero(map, uref);
++	spin_unlock_bh(&map_idr_lock);
++
++	return map;
++}
++EXPORT_SYMBOL_GPL(bpf_map_inc_not_zero);
++
+ int __weak bpf_stackmap_copy(struct bpf_map *map, void *key, void *value)
+ {
+ 	return -ENOTSUPP;
+@@ -2177,7 +2187,7 @@ static int bpf_map_get_fd_by_id(const union bpf_attr *attr)
+ 	spin_lock_bh(&map_idr_lock);
+ 	map = idr_find(&map_idr, id);
+ 	if (map)
+-		map = bpf_map_inc_not_zero(map, true);
++		map = __bpf_map_inc_not_zero(map, true);
+ 	else
+ 		map = ERR_PTR(-ENOENT);
+ 	spin_unlock_bh(&map_idr_lock);
 -- 
 2.23.0.rc1.153.gdeed80330f-goog
+
