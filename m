@@ -2,119 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 903E88DE2A
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 21:57:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 352018DE36
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 22:01:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728958AbfHNT5M (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 15:57:12 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:26178 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726865AbfHNT5M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 15:57:12 -0400
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7EJq99L132881
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 15:57:11 -0400
-Received: from e13.ny.us.ibm.com (e13.ny.us.ibm.com [129.33.205.203])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2ucqhak4dh-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 15:57:10 -0400
-Received: from localhost
-        by e13.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <tlfalcon@linux.ibm.com>;
-        Wed, 14 Aug 2019 20:57:10 +0100
-Received: from b01cxnp22036.gho.pok.ibm.com (9.57.198.26)
-        by e13.ny.us.ibm.com (146.89.104.200) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 14 Aug 2019 20:57:08 +0100
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7EJv7an14484332
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 14 Aug 2019 19:57:07 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4EB4D12405B;
-        Wed, 14 Aug 2019 19:57:07 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 1533312405E;
-        Wed, 14 Aug 2019 19:57:07 +0000 (GMT)
-Received: from oc7186267434.ibm.com (unknown [9.41.178.211])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 14 Aug 2019 19:57:06 +0000 (GMT)
-From:   Thomas Falcon <tlfalcon@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Thomas Falcon <tlfalcon@linux.ibm.com>
-Subject: [PATCH net] ibmvnic: Unmap DMA address of TX descriptor buffers after use
-Date:   Wed, 14 Aug 2019 14:57:05 -0500
-X-Mailer: git-send-email 1.8.3.1
-X-TM-AS-GCONF: 00
-x-cbid: 19081419-0064-0000-0000-00000408A385
-X-IBM-SpamModules-Scores: 
-X-IBM-SpamModules-Versions: BY=3.00011590; HX=3.00000242; KW=3.00000007;
- PH=3.00000004; SC=3.00000287; SDB=6.01246834; UDB=6.00657998; IPR=6.01028341;
- MB=3.00028175; MTD=3.00000008; XFM=3.00000015; UTC=2019-08-14 19:57:09
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19081419-0065-0000-0000-00003EAB70B7
-Message-Id: <1565812625-24364-1-git-send-email-tlfalcon@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-14_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=657 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908140179
+        id S1728473AbfHNUBo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 16:01:44 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40951 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727273AbfHNUBo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 16:01:44 -0400
+Received: by mail-qt1-f193.google.com with SMTP id e8so11001721qtp.7;
+        Wed, 14 Aug 2019 13:01:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4KIMRxunohGVaj1oN9ljWqHEJ5I8LMKtQPOUCL1+qHg=;
+        b=oEgtun6ir7wdddSXlyiWXZzECbDTsDWNoce4YTt449zLgl4Hq/A+0T0oRiaUI1WVlO
+         PY6uZvOxlFOAQAHZzanlERxjl4Ylc3iZx5dyGb5c2dx1oMgsSEPRb/sRlcbgNDWdNPks
+         pp2xZix9zPfamlTc7a8UuhsYmI0bffO9oF48ehyYx9UpUrzWtDxkNsMwwnJyT+wZnue+
+         HlkbBnBv86kBr3wKOEo4LoPyGHfRBOX7s4zHft8Wbfe/lN4Ie4MM49Hq426BTCjmN8gD
+         q/F0OWPYc6CgjQuMC8jl4VNnXMlSKYZ/tMKlhsfLxEhwcm2TpcqL5BLVsbTeU0BEtmfy
+         0iGw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4KIMRxunohGVaj1oN9ljWqHEJ5I8LMKtQPOUCL1+qHg=;
+        b=gDtpnklA+nKf6Ke43mkToBqP0TMdyaptQUFwaG6qzTSTQsiZU7ch/ZOxlrXAO7y6Wv
+         tvD9Pr76trP+sPNnwfa7OBVFIEGhIFZCmqDDeCwqGiFQPVNwGP8NNmaS2eQ1fI7ADyF6
+         abg+StPxik8Um7Q46kvxYYHSZix5WGjAIg8ld3OsOIBbKyS2R1hktHParVvp5w/UpCic
+         FZwuEj9FgBw+C3PnX4uOg6r3FBWlXfHW08jloFXba3eLGR13fB2H3ofsntDS1Rcp2Ooj
+         xDM/aGMXse5XxPmIFq3TyECRroLLUI7YEp7mtxI4CP2vY/568OtK2utj6mxMK4Z0yRlx
+         4nxA==
+X-Gm-Message-State: APjAAAUP0MzXHlZvhBcI+Fjas974oCf8FSuLaduQY8yMsB7k0ysp9ZKg
+        mpR1naKtxOb/ct+WtZBfZH29SA2ADbxIo70guq0=
+X-Google-Smtp-Source: APXvYqyv/cNihGFd2UWJXz9JUVv0ohy3x0srCgxalK3mkE9fsS+NVyC0yMAZzhZJKPFhGaf4o67Kb0Zy7Byj3s2KXr4=
+X-Received: by 2002:aed:26c2:: with SMTP id q60mr931189qtd.59.1565812902590;
+ Wed, 14 Aug 2019 13:01:42 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190814164742.208909-1-sdf@google.com> <20190814164742.208909-3-sdf@google.com>
+ <CAEf4BzZR12JgbSvBqS7LMZjLcsneVDfFL9XyZdi3gtneyA9X9g@mail.gmail.com>
+ <CAEf4BzaE-KiW1Xt049A4s25YiaLeTH3yhgahwLUdpXNjF1sVpA@mail.gmail.com> <20190814195330.GL2820@mini-arch>
+In-Reply-To: <20190814195330.GL2820@mini-arch>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 14 Aug 2019 13:01:31 -0700
+Message-ID: <CAEf4BzaEJcTKV6s8cVinpJcBStvs2LAJ+obNjevw54EOQq1QdQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/4] selftests/bpf: test_progs: test__skip
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There's no need to wait until a completion is received to unmap
-TX descriptor buffers that have been passed to the hypervisor.
-Instead unmap it when the hypervisor call has completed. This patch
-avoids the possibility that a buffer will not be unmapped because
-a TX completion is lost or mishandled.
+On Wed, Aug 14, 2019 at 12:53 PM Stanislav Fomichev <sdf@fomichev.me> wrote:
+>
+> On 08/14, Andrii Nakryiko wrote:
+> > On Wed, Aug 14, 2019 at 12:22 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > On Wed, Aug 14, 2019 at 9:48 AM Stanislav Fomichev <sdf@google.com> wrote:
+> > > >
+> > > > Export test__skip() to indicate skipped tests and use it in
+> > > > test_send_signal_nmi().
+> > > >
+> > > > Cc: Andrii Nakryiko <andriin@fb.com>
+> > > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > > > ---
+> > >
+> > > For completeness, we should probably also support test__skip_subtest()
+> > > eventually, but it's fine until we don't have a use case.
+> >
+> > Hm.. so I think we don't need separate test__skip_subtest().
+> > test__skip() should skip either test or sub-test, depending on which
+> > context we are running in. So maybe just make sure this is handled
+> > correctly?
+> Do we care if it's a test or a subtest skip? My motivation was to
+> have a counter that can be examined to make sure we have a full test
+> coverage, so when people run the tests they can be sure that nothing
+> is skipped due to missing config or something else.
 
-Reported-by: Abdul Haleem <abdhalee@linux.vnet.ibm.com>
-Tested-by: Devesh K. Singh <devesh_singh@in.ibm.com>
-Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+I think we do. We might convert, e.g., test_btf to be one big test
+with lots of sub-tests. Some of those might be legitimately skipped.
+Having just "1 test skipped" message is not helpful, when there are
+170 sub-tests that were not.
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 81a05ea38237..07efa2b40003 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1568,6 +1568,8 @@ static netdev_tx_t ibmvnic_xmit(struct sk_buff *skb, struct net_device *netdev)
- 		lpar_rc = send_subcrq_indirect(adapter, handle_array[queue_num],
- 					       (u64)tx_buff->indir_dma,
- 					       (u64)num_entries);
-+		dma_unmap_single(dev, tx_buff->indir_dma,
-+				 sizeof(tx_buff->indir_arr), DMA_TO_DEVICE);
- 	} else {
- 		tx_buff->num_entries = num_entries;
- 		lpar_rc = send_subcrq(adapter, handle_array[queue_num],
-@@ -2788,7 +2790,6 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
- 	union sub_crq *next;
- 	int index;
- 	int i, j;
--	u8 *first;
- 
- restart_loop:
- 	while (pending_scrq(adapter, scrq)) {
-@@ -2818,14 +2819,6 @@ static int ibmvnic_complete_tx(struct ibmvnic_adapter *adapter,
- 
- 				txbuff->data_dma[j] = 0;
- 			}
--			/* if sub_crq was sent indirectly */
--			first = &txbuff->indir_arr[0].generic.first;
--			if (*first == IBMVNIC_CRQ_CMD) {
--				dma_unmap_single(dev, txbuff->indir_dma,
--						 sizeof(txbuff->indir_arr),
--						 DMA_TO_DEVICE);
--				*first = 0;
--			}
- 
- 			if (txbuff->last_frag) {
- 				dev_kfree_skb_any(txbuff->skb);
--- 
-2.16.4
+>
+> Let me know if you see a value in highlighting test vs subtest skip.
+>
+> Other related question is: should we do verbose output in case
+> of a skip? Right now we don't do it.
 
+It might be useful, I guess, especially if it's not too common. But
+Alexei is way more picky about stuff like that, so I'd defer to him. I
+have no problem with a clean "SKIPPED: <test>/<subtest> (maybe some
+reason for skipping here)" message.
+
+>
+> > >
+> > > Acked-by: Andrii Nakryiko <andriin@fb.com>
+> > >
+> > > >  tools/testing/selftests/bpf/prog_tests/send_signal.c | 1 +
+> > > >  tools/testing/selftests/bpf/test_progs.c             | 9 +++++++--
+> > > >  tools/testing/selftests/bpf/test_progs.h             | 2 ++
+> > > >  3 files changed, 10 insertions(+), 2 deletions(-)
+> > > >
+> > > > diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+> > > > index 1575f0a1f586..40c2c5efdd3e 100644
+> > > > --- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
+> > > > +++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+> > > > @@ -204,6 +204,7 @@ static int test_send_signal_nmi(void)
+> > > >                 if (errno == ENOENT) {
+> > > >                         printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n",
+> > > >                                __func__);
+> > > > +                       test__skip();
+> > > >                         return 0;
+> > > >                 }
+> > > >                 /* Let the test fail with a more informative message */
+> > > > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
+> > > > index 1a7a2a0c0a11..1993f2ce0d23 100644
+> > > > --- a/tools/testing/selftests/bpf/test_progs.c
+> > > > +++ b/tools/testing/selftests/bpf/test_progs.c
+> > > > @@ -121,6 +121,11 @@ void test__force_log() {
+> > > >         env.test->force_log = true;
+> > > >  }
+> > > >
+> > > > +void test__skip(void)
+> > > > +{
+> > > > +       env.skip_cnt++;
+> > > > +}
+> > > > +
+> > > >  struct ipv4_packet pkt_v4 = {
+> > > >         .eth.h_proto = __bpf_constant_htons(ETH_P_IP),
+> > > >         .iph.ihl = 5,
+> > > > @@ -535,8 +540,8 @@ int main(int argc, char **argv)
+> > > >                         test->test_name);
+> > > >         }
+> > > >         stdio_restore();
+> > > > -       printf("Summary: %d/%d PASSED, %d FAILED\n",
+> > > > -              env.succ_cnt, env.sub_succ_cnt, env.fail_cnt);
+> > > > +       printf("Summary: %d/%d PASSED, %d SKIPPED, %d FAILED\n",
+> >
+> > So because some sub-tests might be skipped, while others will be
+> > running, let's keep output consistent with SUCCESS and use
+> > <test>/<subtests> format for SKIPPED as well?
+> >
+> > > > +              env.succ_cnt, env.sub_succ_cnt, env.skip_cnt, env.fail_cnt);
+> > > >
+> > > >         free(env.test_selector.num_set);
+> > > >         free(env.subtest_selector.num_set);
+> > > > diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
+> > > > index 37d427f5a1e5..9defd35cb6c0 100644
+> > > > --- a/tools/testing/selftests/bpf/test_progs.h
+> > > > +++ b/tools/testing/selftests/bpf/test_progs.h
+> > > > @@ -64,6 +64,7 @@ struct test_env {
+> > > >         int succ_cnt; /* successful tests */
+> > > >         int sub_succ_cnt; /* successful sub-tests */
+> > > >         int fail_cnt; /* total failed tests + sub-tests */
+> > > > +       int skip_cnt; /* skipped tests */
+> > > >  };
+> > > >
+> > > >  extern int error_cnt;
+> > > > @@ -72,6 +73,7 @@ extern struct test_env env;
+> > > >
+> > > >  extern void test__force_log();
+> > > >  extern bool test__start_subtest(const char *name);
+> > > > +extern void test__skip(void);
+> > > >
+> > > >  #define MAGIC_BYTES 123
+> > > >
+> > > > --
+> > > > 2.23.0.rc1.153.gdeed80330f-goog
+> > > >
