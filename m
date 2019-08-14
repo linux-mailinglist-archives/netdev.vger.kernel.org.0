@@ -2,72 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0184D8DFFF
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 23:37:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B2CA8E00E
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 23:43:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728370AbfHNVhq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 17:37:46 -0400
-Received: from correo.us.es ([193.147.175.20]:46818 "EHLO mail.us.es"
+        id S1728979AbfHNVny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 17:43:54 -0400
+Received: from correo.us.es ([193.147.175.20]:47246 "EHLO mail.us.es"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728320AbfHNVhp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 17:37:45 -0400
+        id S1728370AbfHNVny (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 17:43:54 -0400
 Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 48A72C414A
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 23:37:43 +0200 (CEST)
+        by mail.us.es (Postfix) with ESMTP id 16B00C4140
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 23:43:52 +0200 (CEST)
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 39E556DC67
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 23:37:43 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 08599DA72F
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 23:43:52 +0200 (CEST)
 Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 249CC8E69F; Wed, 14 Aug 2019 23:37:43 +0200 (CEST)
+        id F2196A58A; Wed, 14 Aug 2019 23:43:51 +0200 (CEST)
 X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
 X-Spam-Level: 
 X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
         SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
 Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 06DF4DA704;
-        Wed, 14 Aug 2019 23:37:41 +0200 (CEST)
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 051EEDA72F;
+        Wed, 14 Aug 2019 23:43:50 +0200 (CEST)
 Received: from 192.168.1.97 (192.168.1.97)
  by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 14 Aug 2019 23:37:41 +0200 (CEST)
+ Wed, 14 Aug 2019 23:43:50 +0200 (CEST)
 X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (sys.soleta.eu [212.170.55.40])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id CE5724265A2F;
-        Wed, 14 Aug 2019 23:37:40 +0200 (CEST)
-Date:   Wed, 14 Aug 2019 23:37:41 +0200
+Received: from salvia.here (sys.soleta.eu [212.170.55.40])
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPA id CBDF44265A2F;
+        Wed, 14 Aug 2019 23:43:49 +0200 (CEST)
 X-SMTPAUTHUS: auth mail.us.es
 From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        kbuild test robot <lkp@intel.com>
-Subject: Re: [PATCH] netfilter: nft_bitwise: Adjust parentheses to fix memcmp
- size argument
-Message-ID: <20190814213741.ptoel7373xqwzlj5@salvia>
-References: <20190814165809.46421-1-natechancellor@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190814165809.46421-1-natechancellor@gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH 0/2] Netfilter updates for net-next
+Date:   Wed, 14 Aug 2019 23:43:45 +0200
+Message-Id: <20190814214347.4940-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.11.0
 X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 09:58:09AM -0700, Nathan Chancellor wrote:
-> clang warns:
-> 
-> net/netfilter/nft_bitwise.c:138:50: error: size argument in 'memcmp'
-> call is a comparison [-Werror,-Wmemsize-comparison]
->         if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
->                                       ~~~~~~~~~~~~~~~~~~^~
+Hi,
 
-Applied, thanks.
+The following patchset contains Netfilter updates for net-next.
+This round addresses fallout from previous pull request:
+
+1) Remove #warning from ipt_LOG.h and ip6t_LOG.h headers,
+   from Jeremy Sowden.
+
+2) Incorrect parens in memcmp() in nft_bitwise, from Nathan Chancellor.
+
+You can pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git
+
+Thanks.
+
+----------------------------------------------------------------
+
+The following changes since commit 5181b473d64ee278f24035ce335b89ddc4520fc0:
+
+  net: phy: realtek: add NBase-T PHY auto-detection (2019-08-14 13:26:08 -0400)
+
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf-next.git HEAD
+
+for you to fetch changes up to 83c156d3ecc0121d27dc2b7f34e829b265c70c4f:
+
+  netfilter: nft_bitwise: Adjust parentheses to fix memcmp size argument (2019-08-14 23:36:45 +0200)
+
+----------------------------------------------------------------
+Jeremy Sowden (1):
+      netfilter: remove deprecation warnings from uapi headers.
+
+Nathan Chancellor (1):
+      netfilter: nft_bitwise: Adjust parentheses to fix memcmp size argument
+
+ include/uapi/linux/netfilter_ipv4/ipt_LOG.h  | 2 --
+ include/uapi/linux/netfilter_ipv6/ip6t_LOG.h | 2 --
+ net/netfilter/nft_bitwise.c                  | 4 ++--
+ 3 files changed, 2 insertions(+), 6 deletions(-)
