@@ -2,36 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 440298C624
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:13:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40C638C644
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:14:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728211AbfHNCNM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:13:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45204 "EHLO mail.kernel.org"
+        id S1727140AbfHNCON (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:14:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46162 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728177AbfHNCNK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:13:10 -0400
+        id S1728653AbfHNCOM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:14:12 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B15E020842;
-        Wed, 14 Aug 2019 02:13:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE0B520874;
+        Wed, 14 Aug 2019 02:14:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748788;
-        bh=WQN/2CG7EqwekK1fcgDFFFV37yfP91JJmvNcjKYLxrA=;
+        s=default; t=1565748851;
+        bh=B+IPkXxshQqbOeMagZZ5V+KJPiLO1RLJXzGs+eQk/Vw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=o6L7SEAot05d9kGRJFMCckW3C85p0JrWwpWbuNWRDrUUwRUcwJbasbSwKfc8I/x+S
-         45YfhuhuVR0QTOHx+6SY2zdMQvHexPKRETIKylIRiOMlXqEXMjlgnVT9geqH6EMtRZ
-         lV7arqPruRw4zkW8NYEQHdF2PJ8Xgfbbk/SmGSXA=
+        b=Wigm5IDd3iC5fFpiHmWDpkOOivHE4ADdy64WflXQdAMcOvSG4oLzwpU6w5zGSrTVI
+         Ht9nyT8SQ/SJnonZmFnY9CA6Wt3N6Reu8nUOkPT/yTi/CCEFlfuLC+DhR7HLo73aLL
+         rqRkpGsE1iOFmFmuMAuhj/2MD/kmDhdP2X1rhQzM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 065/123] iwlwifi: fix locking in delayed GTK setting
-Date:   Tue, 13 Aug 2019 22:09:49 -0400
-Message-Id: <20190814021047.14828-65-sashal@kernel.org>
+Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 102/123] net: cxgb3_main: Fix a resource leak in a error path in 'init_one()'
+Date:   Tue, 13 Aug 2019 22:10:26 -0400
+Message-Id: <20190814021047.14828-102-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -44,100 +43,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-[ Upstream commit 6569e7d36773956298ec1d5f4e6a2487913d2752 ]
+[ Upstream commit debea2cd3193ac868289e8893c3a719c265b0612 ]
 
-This code clearly never could have worked, since it locks
-while already locked. Add an unlocked __iwl_mvm_mac_set_key()
-variant that doesn't do locking to fix that.
+A call to 'kfree_skb()' is missing in the error handling path of
+'init_one()'.
+This is already present in 'remove_one()' but is missing here.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c | 39 ++++++++++++-------
- 1 file changed, 26 insertions(+), 13 deletions(-)
+ drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 964c7baabede3..edffae3741e00 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -207,11 +207,11 @@ static const struct cfg80211_pmsr_capabilities iwl_mvm_pmsr_capa = {
- 	},
- };
- 
--static int iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
--			       enum set_key_cmd cmd,
--			       struct ieee80211_vif *vif,
--			       struct ieee80211_sta *sta,
--			       struct ieee80211_key_conf *key);
-+static int __iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
-+				 enum set_key_cmd cmd,
-+				 struct ieee80211_vif *vif,
-+				 struct ieee80211_sta *sta,
-+				 struct ieee80211_key_conf *key);
- 
- void iwl_mvm_ref(struct iwl_mvm *mvm, enum iwl_mvm_ref_type ref_type)
- {
-@@ -2725,7 +2725,7 @@ static int iwl_mvm_start_ap_ibss(struct ieee80211_hw *hw,
- 
- 		mvmvif->ap_early_keys[i] = NULL;
- 
--		ret = iwl_mvm_mac_set_key(hw, SET_KEY, vif, NULL, key);
-+		ret = __iwl_mvm_mac_set_key(hw, SET_KEY, vif, NULL, key);
- 		if (ret)
- 			goto out_quota_failed;
- 	}
-@@ -3493,11 +3493,11 @@ static int iwl_mvm_mac_sched_scan_stop(struct ieee80211_hw *hw,
- 	return ret;
- }
- 
--static int iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
--			       enum set_key_cmd cmd,
--			       struct ieee80211_vif *vif,
--			       struct ieee80211_sta *sta,
--			       struct ieee80211_key_conf *key)
-+static int __iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
-+				 enum set_key_cmd cmd,
-+				 struct ieee80211_vif *vif,
-+				 struct ieee80211_sta *sta,
-+				 struct ieee80211_key_conf *key)
- {
- 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
- 	struct iwl_mvm *mvm = IWL_MAC80211_GET_MVM(hw);
-@@ -3552,8 +3552,6 @@ static int iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
- 			return -EOPNOTSUPP;
+diff --git a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+index 1e82b9efe4471..58f89f6a040fe 100644
+--- a/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
++++ b/drivers/net/ethernet/chelsio/cxgb3/cxgb3_main.c
+@@ -3269,7 +3269,7 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 	if (!adapter->regs) {
+ 		dev_err(&pdev->dev, "cannot map device registers\n");
+ 		err = -ENOMEM;
+-		goto out_free_adapter;
++		goto out_free_adapter_nofail;
  	}
  
--	mutex_lock(&mvm->mutex);
--
- 	switch (cmd) {
- 	case SET_KEY:
- 		if ((vif->type == NL80211_IFTYPE_ADHOC ||
-@@ -3699,7 +3697,22 @@ static int iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
- 		ret = -EINVAL;
- 	}
+ 	adapter->pdev = pdev;
+@@ -3397,6 +3397,9 @@ static int init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+ 		if (adapter->port[i])
+ 			free_netdev(adapter->port[i]);
  
-+	return ret;
-+}
++out_free_adapter_nofail:
++	kfree_skb(adapter->nofail_skb);
 +
-+static int iwl_mvm_mac_set_key(struct ieee80211_hw *hw,
-+			       enum set_key_cmd cmd,
-+			       struct ieee80211_vif *vif,
-+			       struct ieee80211_sta *sta,
-+			       struct ieee80211_key_conf *key)
-+{
-+	struct iwl_mvm *mvm = IWL_MAC80211_GET_MVM(hw);
-+	int ret;
-+
-+	mutex_lock(&mvm->mutex);
-+	ret = __iwl_mvm_mac_set_key(hw, cmd, vif, sta, key);
- 	mutex_unlock(&mvm->mutex);
-+
- 	return ret;
- }
+ out_free_adapter:
+ 	kfree(adapter);
  
 -- 
 2.20.1
