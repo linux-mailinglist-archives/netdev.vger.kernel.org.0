@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 47CD38C92E
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 72D3A8C937
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:37:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728014AbfHNCMp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:12:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44820 "EHLO mail.kernel.org"
+        id S1728340AbfHNChb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:37:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44852 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727983AbfHNCMm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:12:42 -0400
+        id S1728002AbfHNCMo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:12:44 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5BECF208C2;
-        Wed, 14 Aug 2019 02:12:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9194620842;
+        Wed, 14 Aug 2019 02:12:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748761;
-        bh=nTNEIx10Vjh03n0qsD4zI8XKLpPpJTX9LKmOJDGNKXo=;
+        s=default; t=1565748763;
+        bh=A4y1ARP/e8BbnlPNPU2pwntKCCChXAtXGo+CGADsbV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QvnsTDVYAsQQdesJ68BLAXMMR1KEFfw+ezqTU/Mw7OEJLZH7X46v7oga/qpgnD3iB
-         7l4LDa0BcoLiThmA9GEpnfk0CTjh+ifvvxlrd70EmIZOv95oLIySfBJHHIYRGoZDiG
-         vK+nSKTVea9BiNh2s2LEFn+52bpk5Szy8Jl9XfXA=
+        b=hdovAA/itkTWZxWQCPYFDuXETfTU6cPhdCVX4O5DidU6rrIB1e2C7HHg+jIww5827
+         7aaYJK9uRrC52w0LZW0JRiwaoYHrL7pwwDmo102UCpvMFEvMBSUgCWQFt4U3LSSqPL
+         OznNCav7okOeQXqrqCCZ6WCrWohOXi//z7HOi77k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 054/123] net: stmmac: manage errors returned by of_get_mac_address()
-Date:   Tue, 13 Aug 2019 22:09:38 -0400
-Message-Id: <20190814021047.14828-54-sashal@kernel.org>
+Cc:     Stefano Brivio <sbrivio@redhat.com>, Chen Yi <yiche@redhat.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 055/123] netfilter: ipset: Actually allow destination MAC address for hash:ip,mac sets too
+Date:   Tue, 13 Aug 2019 22:09:39 -0400
+Message-Id: <20190814021047.14828-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -44,49 +45,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+From: Stefano Brivio <sbrivio@redhat.com>
 
-[ Upstream commit 195b2919ccd7ffcaf6b6bbcb39444a53ab8308c7 ]
+[ Upstream commit b89d15480d0cacacae1a0fe0b3da01b529f2914f ]
 
-Commit d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
-added support for reading the MAC address from an nvmem-cell. This
-required changing the logic to return an error pointer upon failure.
+In commit 8cc4ccf58379 ("ipset: Allow matching on destination MAC address
+for mac and ipmac sets"), ipset.git commit 1543514c46a7, I removed the
+KADT check that prevents matching on destination MAC addresses for
+hash:mac sets, but forgot to remove the same check for hash:ip,mac set.
 
-If stmmac is loaded before the nvmem provider driver then
-of_get_mac_address() return an error pointer with -EPROBE_DEFER.
+Drop this check: functionality is now commented in man pages and there's
+no reason to restrict to source MAC address matching anymore.
 
-Propagate this error so the stmmac driver will be probed again after the
-nvmem provider driver is loaded.
-Default to a random generated MAC address in case of any other error,
-instead of using the error pointer as MAC address.
-
-Fixes: d01f449c008a ("of_net: add NVMEM support to of_get_mac_address")
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Chen Yi <yiche@redhat.com>
+Fixes: 8cc4ccf58379 ("ipset: Allow matching on destination MAC address for mac and ipmac sets")
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ net/netfilter/ipset/ip_set_hash_ipmac.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-index 0f0f4b31eb7ec..9b5218a8c15bc 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_platform.c
-@@ -385,6 +385,13 @@ stmmac_probe_config_dt(struct platform_device *pdev, const char **mac)
- 		return ERR_PTR(-ENOMEM);
+diff --git a/net/netfilter/ipset/ip_set_hash_ipmac.c b/net/netfilter/ipset/ip_set_hash_ipmac.c
+index faf59b6a998fe..eb14434083203 100644
+--- a/net/netfilter/ipset/ip_set_hash_ipmac.c
++++ b/net/netfilter/ipset/ip_set_hash_ipmac.c
+@@ -89,10 +89,6 @@ hash_ipmac4_kadt(struct ip_set *set, const struct sk_buff *skb,
+ 	struct hash_ipmac4_elem e = { .ip = 0, { .foo[0] = 0, .foo[1] = 0 } };
+ 	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, set);
  
- 	*mac = of_get_mac_address(np);
-+	if (IS_ERR(*mac)) {
-+		if (PTR_ERR(*mac) == -EPROBE_DEFER)
-+			return ERR_CAST(*mac);
-+
-+		*mac = NULL;
-+	}
-+
- 	plat->interface = of_get_phy_mode(np);
- 
- 	/* Get max speed of operation from device tree */
+-	 /* MAC can be src only */
+-	if (!(opt->flags & IPSET_DIM_TWO_SRC))
+-		return 0;
+-
+ 	if (skb_mac_header(skb) < skb->head ||
+ 	    (skb_mac_header(skb) + ETH_HLEN) > skb->data)
+ 		return -EINVAL;
 -- 
 2.20.1
 
