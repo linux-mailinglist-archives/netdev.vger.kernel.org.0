@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 920E88C5F1
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:11:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C8ED98C5F7
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:11:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727477AbfHNCL3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:11:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43658 "EHLO mail.kernel.org"
+        id S1727635AbfHNCLm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:11:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43906 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727427AbfHNCL0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:11:26 -0400
+        id S1727611AbfHNCLk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:11:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 687BF20843;
-        Wed, 14 Aug 2019 02:11:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 29EDA2084F;
+        Wed, 14 Aug 2019 02:11:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748685;
-        bh=6FhRZtXSpJc/zn/HxIqcub7tqXgLzqXCTfx7VUmNxXY=;
+        s=default; t=1565748700;
+        bh=4qtCsYDP8EcYw/4S8oVyDACI3iiwfVy6SHThIaMn1IU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kOWSjBC/R11qW8zhxb2ckepapAfjrf3KtTNXU8fewQS9zTVNNvQ8zMo+yMuTMdNeT
-         NKbtgsY3ODbTbsppbb338gtKY9YXCe/XK8DGybqFA4j7Y38vE6i4x6zU6skzkGG6rn
-         SiPgIyO1bWo8AXb3WSKcdXgcILeH1SY+eIRCQf30=
+        b=nyOm1O4VQo9nQ2SE1FGfjP0uDYH3PvmsTuM8SR9g8QWgLVIy1FM9Z8mDUiFMHEWGB
+         FD99Kx54KyAd+SqRjL/JJGbqaGfFbEKGdumncCcnRGckEjmcmF3AvTj6jkR/hQvRWB
+         NXLX5CuuO0RzAl9HvS8ya0ipbV91/n5ufToDp5Ac=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wenwen Wang <wenwen@cs.uga.edu>, Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
+Cc:     Ilya Leoshkevich <iii@linux.ibm.com>, Andrey Ignatov <rdna@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 021/123] netfilter: ebtables: fix a memory leak bug in compat
-Date:   Tue, 13 Aug 2019 22:09:05 -0400
-Message-Id: <20190814021047.14828-21-sashal@kernel.org>
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.2 028/123] selftests/bpf: fix sendmsg6_prog on s390
+Date:   Tue, 13 Aug 2019 22:09:12 -0400
+Message-Id: <20190814021047.14828-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
 References: <20190814021047.14828-1-sashal@kernel.org>
@@ -45,44 +45,40 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Wenwen Wang <wenwen@cs.uga.edu>
+From: Ilya Leoshkevich <iii@linux.ibm.com>
 
-[ Upstream commit 15a78ba1844a8e052c1226f930133de4cef4e7ad ]
+[ Upstream commit c8eee4135a456bc031d67cadc454e76880d1afd8 ]
 
-In compat_do_replace(), a temporary buffer is allocated through vmalloc()
-to hold entries copied from the user space. The buffer address is firstly
-saved to 'newinfo->entries', and later on assigned to 'entries_tmp'. Then
-the entries in this temporary buffer is copied to the internal kernel
-structure through compat_copy_entries(). If this copy process fails,
-compat_do_replace() should be terminated. However, the allocated temporary
-buffer is not freed on this path, leading to a memory leak.
+"sendmsg6: rewrite IP & port (C)" fails on s390, because the code in
+sendmsg_v6_prog() assumes that (ctx->user_ip6[0] & 0xFFFF) refers to
+leading IPv6 address digits, which is not the case on big-endian
+machines.
 
-To fix the bug, free the buffer before returning from compat_do_replace().
+Since checking bitwise operations doesn't seem to be the point of the
+test, replace two short comparisons with a single int comparison.
 
-Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
-Reviewed-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+Signed-off-by: Ilya Leoshkevich <iii@linux.ibm.com>
+Acked-by: Andrey Ignatov <rdna@fb.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bridge/netfilter/ebtables.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/progs/sendmsg6_prog.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
-index 963dfdc148272..fd84b48e48b57 100644
---- a/net/bridge/netfilter/ebtables.c
-+++ b/net/bridge/netfilter/ebtables.c
-@@ -2261,8 +2261,10 @@ static int compat_do_replace(struct net *net, void __user *user,
- 	state.buf_kern_len = size64;
+diff --git a/tools/testing/selftests/bpf/progs/sendmsg6_prog.c b/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
+index 5aeaa284fc474..a680628204108 100644
+--- a/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
++++ b/tools/testing/selftests/bpf/progs/sendmsg6_prog.c
+@@ -41,8 +41,7 @@ int sendmsg_v6_prog(struct bpf_sock_addr *ctx)
+ 	}
  
- 	ret = compat_copy_entries(entries_tmp, tmp.entries_size, &state);
--	if (WARN_ON(ret < 0))
-+	if (WARN_ON(ret < 0)) {
-+		vfree(entries_tmp);
- 		goto out_unlock;
-+	}
- 
- 	vfree(entries_tmp);
- 	tmp.entries_size = size64;
+ 	/* Rewrite destination. */
+-	if ((ctx->user_ip6[0] & 0xFFFF) == bpf_htons(0xFACE) &&
+-	     ctx->user_ip6[0] >> 16 == bpf_htons(0xB00C)) {
++	if (ctx->user_ip6[0] == bpf_htonl(0xFACEB00C)) {
+ 		ctx->user_ip6[0] = bpf_htonl(DST_REWRITE_IP6_0);
+ 		ctx->user_ip6[1] = bpf_htonl(DST_REWRITE_IP6_1);
+ 		ctx->user_ip6[2] = bpf_htonl(DST_REWRITE_IP6_2);
 -- 
 2.20.1
 
