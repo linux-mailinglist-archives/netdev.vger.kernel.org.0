@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD4548C893
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:32:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDE578C889
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:32:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728968AbfHNCQM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:16:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47734 "EHLO mail.kernel.org"
+        id S1728984AbfHNCQR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:16:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47780 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728946AbfHNCQL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:16:11 -0400
+        id S1728096AbfHNCQP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:16:15 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A4BA2085A;
-        Wed, 14 Aug 2019 02:16:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 708472085A;
+        Wed, 14 Aug 2019 02:16:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748970;
-        bh=ME8uYdcbeBKsE0Xjdsl7NR7jCQx95cYJx8uo04L6Xko=;
+        s=default; t=1565748974;
+        bh=iMt6Qn1efyK3QfEFLC8bvF9ax3KIPLQSkSGy+fdIcK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t2xqkumMe4vZkg1ymKD5tm6HvWmtc8Z6wRWf9U2SzHjR8yP51ScNsZSrPKlAjPLcs
-         wx0XTw1K8pOF/jBpr8soI1xAowjgArT7MxTvDfV+M51QgdSVIKSB3l9c+ZmWdO8WU2
-         kNBONykCQxTiU90koaxzqg+sctV/miZo1zvAoR8g=
+        b=A8TF35UCV+tMt+eaRto3zDOl//y/nMBRXf046ymziFcQW1T2PlQy2y/tVuvjAwIb9
+         4pelmqTN3LkGyqNeperqVcJ2+QxI8e7VHPG0pYp8YHSm3CYN1HWEpmCv/4iLMvewBC
+         qVtPOhyIBTBVWPiRwAM0U8sLjoHfgPWfSTSr+5to=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ido Schimmel <idosch@mellanox.com>,
-        Stephen Suryaputra <ssuryaextr@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 12/68] selftests: forwarding: gre_multipath: Fix flower filters
-Date:   Tue, 13 Aug 2019 22:14:50 -0400
-Message-Id: <20190814021548.16001-12-sashal@kernel.org>
+Cc:     Weitao Hou <houweitaoo@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 14/68] can: mcp251x: add error check when wq alloc failed
+Date:   Tue, 13 Aug 2019 22:14:52 -0400
+Message-Id: <20190814021548.16001-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021548.16001-1-sashal@kernel.org>
 References: <20190814021548.16001-1-sashal@kernel.org>
@@ -45,91 +46,105 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ido Schimmel <idosch@mellanox.com>
+From: Weitao Hou <houweitaoo@gmail.com>
 
-[ Upstream commit 1be79d89b7ae96e004911bd228ce8c2b5cc6415f ]
+[ Upstream commit 375f755899b8fc21196197e02aab26257df26e85 ]
 
-The TC filters used in the test do not work with veth devices because the
-outer Ethertype is 802.1Q and not IPv4. The test passes with mlxsw
-netdevs since the hardware always looks at "The first Ethertype that
-does not point to either: VLAN, CNTAG or configurable Ethertype".
+add error check when workqueue alloc failed, and remove redundant code
+to make it clear.
 
-Fix this by matching on the VLAN ID instead, but on the ingress side.
-The reason why this is not performed at egress is explained in the
-commit cited below.
-
-Fixes: 541ad323db3a ("selftests: forwarding: gre_multipath: Update next-hop statistics match criteria")
-Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-Reported-by: Stephen Suryaputra <ssuryaextr@gmail.com>
-Tested-by: Stephen Suryaputra <ssuryaextr@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: e0000163e30e ("can: Driver for the Microchip MCP251x SPI CAN controllers")
+Signed-off-by: Weitao Hou <houweitaoo@gmail.com>
+Acked-by: Willem de Bruijn <willemb@google.com>
+Tested-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/net/forwarding/gre_multipath.sh | 24 +++++++++----------
- 1 file changed, 12 insertions(+), 12 deletions(-)
+ drivers/net/can/spi/mcp251x.c | 49 ++++++++++++++++-------------------
+ 1 file changed, 22 insertions(+), 27 deletions(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/gre_multipath.sh b/tools/testing/selftests/net/forwarding/gre_multipath.sh
-index 37d7297e1cf8a..a8d8e8b3dc819 100755
---- a/tools/testing/selftests/net/forwarding/gre_multipath.sh
-+++ b/tools/testing/selftests/net/forwarding/gre_multipath.sh
-@@ -93,18 +93,10 @@ sw1_create()
- 	ip route add vrf v$ol1 192.0.2.16/28 \
- 	   nexthop dev g1a \
- 	   nexthop dev g1b
--
--	tc qdisc add dev $ul1 clsact
--	tc filter add dev $ul1 egress pref 111 prot ipv4 \
--	   flower dst_ip 192.0.2.66 action pass
--	tc filter add dev $ul1 egress pref 222 prot ipv4 \
--	   flower dst_ip 192.0.2.82 action pass
+diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+index da64e71a62ee2..fccb6bf21fada 100644
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -678,17 +678,6 @@ static int mcp251x_power_enable(struct regulator *reg, int enable)
+ 		return regulator_disable(reg);
  }
  
- sw1_destroy()
- {
--	tc qdisc del dev $ul1 clsact
+-static void mcp251x_open_clean(struct net_device *net)
+-{
+-	struct mcp251x_priv *priv = netdev_priv(net);
+-	struct spi_device *spi = priv->spi;
 -
- 	ip route del vrf v$ol1 192.0.2.16/28
- 
- 	ip route del vrf v$ol1 192.0.2.82/32 via 192.0.2.146
-@@ -139,10 +131,18 @@ sw2_create()
- 	ip route add vrf v$ol2 192.0.2.0/28 \
- 	   nexthop dev g2a \
- 	   nexthop dev g2b
-+
-+	tc qdisc add dev $ul2 clsact
-+	tc filter add dev $ul2 ingress pref 111 prot 802.1Q \
-+	   flower vlan_id 111 action pass
-+	tc filter add dev $ul2 ingress pref 222 prot 802.1Q \
-+	   flower vlan_id 222 action pass
- }
- 
- sw2_destroy()
+-	free_irq(spi->irq, priv);
+-	mcp251x_hw_sleep(spi);
+-	mcp251x_power_enable(priv->transceiver, 0);
+-	close_candev(net);
+-}
+-
+ static int mcp251x_stop(struct net_device *net)
  {
-+	tc qdisc del dev $ul2 clsact
+ 	struct mcp251x_priv *priv = netdev_priv(net);
+@@ -954,37 +943,43 @@ static int mcp251x_open(struct net_device *net)
+ 				   flags | IRQF_ONESHOT, DEVICE_NAME, priv);
+ 	if (ret) {
+ 		dev_err(&spi->dev, "failed to acquire irq %d\n", spi->irq);
+-		mcp251x_power_enable(priv->transceiver, 0);
+-		close_candev(net);
+-		goto open_unlock;
++		goto out_close;
+ 	}
+ 
+ 	priv->wq = alloc_workqueue("mcp251x_wq", WQ_FREEZABLE | WQ_MEM_RECLAIM,
+ 				   0);
++	if (!priv->wq) {
++		ret = -ENOMEM;
++		goto out_clean;
++	}
+ 	INIT_WORK(&priv->tx_work, mcp251x_tx_work_handler);
+ 	INIT_WORK(&priv->restart_work, mcp251x_restart_work_handler);
+ 
+ 	ret = mcp251x_hw_reset(spi);
+-	if (ret) {
+-		mcp251x_open_clean(net);
+-		goto open_unlock;
+-	}
++	if (ret)
++		goto out_free_wq;
+ 	ret = mcp251x_setup(net, spi);
+-	if (ret) {
+-		mcp251x_open_clean(net);
+-		goto open_unlock;
+-	}
++	if (ret)
++		goto out_free_wq;
+ 	ret = mcp251x_set_normal_mode(spi);
+-	if (ret) {
+-		mcp251x_open_clean(net);
+-		goto open_unlock;
+-	}
++	if (ret)
++		goto out_free_wq;
+ 
+ 	can_led_event(net, CAN_LED_EVENT_OPEN);
+ 
+ 	netif_wake_queue(net);
++	mutex_unlock(&priv->mcp_lock);
+ 
+-open_unlock:
++	return 0;
 +
- 	ip route del vrf v$ol2 192.0.2.0/28
- 
- 	ip route del vrf v$ol2 192.0.2.81/32 via 192.0.2.145
-@@ -215,15 +215,15 @@ multipath4_test()
- 	   nexthop dev g1a weight $weight1 \
- 	   nexthop dev g1b weight $weight2
- 
--	local t0_111=$(tc_rule_stats_get $ul1 111 egress)
--	local t0_222=$(tc_rule_stats_get $ul1 222 egress)
-+	local t0_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t0_222=$(tc_rule_stats_get $ul2 222 ingress)
- 
- 	ip vrf exec v$h1 \
- 	   $MZ $h1 -q -p 64 -A 192.0.2.1 -B 192.0.2.18 \
- 	       -d 1msec -t udp "sp=1024,dp=0-32768"
- 
--	local t1_111=$(tc_rule_stats_get $ul1 111 egress)
--	local t1_222=$(tc_rule_stats_get $ul1 222 egress)
-+	local t1_111=$(tc_rule_stats_get $ul2 111 ingress)
-+	local t1_222=$(tc_rule_stats_get $ul2 222 ingress)
- 
- 	local d111=$((t1_111 - t0_111))
- 	local d222=$((t1_222 - t0_222))
++out_free_wq:
++	destroy_workqueue(priv->wq);
++out_clean:
++	free_irq(spi->irq, priv);
++	mcp251x_hw_sleep(spi);
++out_close:
++	mcp251x_power_enable(priv->transceiver, 0);
++	close_candev(net);
+ 	mutex_unlock(&priv->mcp_lock);
+ 	return ret;
+ }
 -- 
 2.20.1
 
