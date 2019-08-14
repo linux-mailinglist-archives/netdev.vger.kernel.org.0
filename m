@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B7028CAA7
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 07:32:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 412458CB7C
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 07:59:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727151AbfHNFcI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 01:32:08 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:45875 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725263AbfHNFcH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 01:32:07 -0400
-Received: by mail-oi1-f195.google.com with SMTP id m206so71239182oib.12
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 22:32:07 -0700 (PDT)
+        id S1727099AbfHNF7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 01:59:41 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43571 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725263AbfHNF7k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 01:59:40 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y8so3948986wrn.10
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 22:59:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:date:message-id:user-agent:mime-version
-         :content-transfer-encoding;
-        bh=rLEmw0nAL2pXqAMUzCvVEHpZZJWNT3ynrIheggGh5IY=;
-        b=OMSkxSnRXKGC5OicX05KCRK1u9pT7Mk35wydyuHcu+82gfOJiXj+ft4YFR2BS418dp
-         E+oSLYADjfBcpNg5PSP1OPG0KsOGENOjtu9/bBKow3n9SjW0Ogn2pW8gchGh6+AdAAuw
-         iOxGMZfoGPNj7UerQM1sz+SG3zdHfKZI+Cxx0G7LyUaOFCxMUaAR0VRnHw5QG1tUBu4u
-         6Iy4mRN1pKuGMHG6wGBhdjTFNXsdaaIIx2ACJVAC5KSo1WdJAj46H3xheO5xoq+WwudD
-         8aEcXTVhDzG+FkO7GZZY/D22F1iaGGCYqmLLN8Hr5H0WVQ+pq69S3XDx37zQFjGfA7Im
-         NEXw==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=UzHE6Nq21WslpH6dbZt50zJyG00AQbKoTsQ1AHR4hEs=;
+        b=vZWSQ4SGzvh9l1M7W6v5IizAOosYjglzKC4oX/cuagbwD9Dusgqi71memi83ovdxB+
+         RS/RjUG1E6Rsgs1k7I3LQoj21h/DrDUmU0YNy/2ZPZE8Cph2BIM8B5DxRrNNj8A69wzj
+         QUQLuzM6RXIv9i+h2lH677/kzs5ttrSGPaE/jmp+6A3hAp20OP2SjWCND047iguDSSOr
+         qLFOnp7QTvFbjKhS6LHuPmbI10m+GXFW3NHXUN5EEQ2sw/wussvVEYTRutd/8cYXA5X2
+         GN8pqHy52dx8aVj5Nhzv1x//GCgsGNQZRcwoTSbHItCMuZOihYX3t+UjsvaAvY3flbEn
+         H+DQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:date:message-id:user-agent
-         :mime-version:content-transfer-encoding;
-        bh=rLEmw0nAL2pXqAMUzCvVEHpZZJWNT3ynrIheggGh5IY=;
-        b=sS25Q96sHWNO/HtJjEDiqfIEy7lrnWGkQFUeNmP0TrulyVjfkT4BV0hCagPQghA3gA
-         xb9PBcrvQKttuJsYL7zm9sb3XretTEmsth0FjI2vufJH5p+HabdatLPGvfKwiuQqoqCH
-         VmwdecrUJGta3ydvOWBfD/dOx++UqRxzeNnFkhIyxYJg6wGRkgdFvALGwnCdfNJ/aeRr
-         yv7EdUeaCPYCm39fYC8kDoBi7RAFaQP3ezGzbleBcxizNs3zDE8vlXbC1xxdeU3AkTTP
-         ABU+RSq5HaLoedNzo/XLjS7dFd7nSvgzexgoFwG5wFj2nj8IYJNoMixrWyZixgnl1Fu6
-         CLtA==
-X-Gm-Message-State: APjAAAVykg8FifAloaURdnIc67DthcR2TzRiWSAEOCwRflWcG2RMjgAY
-        hluf9Dz/QMLIurN0F/77l0Y=
-X-Google-Smtp-Source: APXvYqyk9LsSpzDnEqKkVlc7O4J7D1YVNM8ZUB7IX0uoKBu+N1DR2bQhHmMwF/UCDeZRDUqsMlyWXQ==
-X-Received: by 2002:a02:c487:: with SMTP id t7mr1492533jam.99.1565760727079;
-        Tue, 13 Aug 2019 22:32:07 -0700 (PDT)
-Received: from [127.0.1.1] ([184.63.162.180])
-        by smtp.gmail.com with ESMTPSA id i4sm134396625iog.31.2019.08.13.22.32.00
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=UzHE6Nq21WslpH6dbZt50zJyG00AQbKoTsQ1AHR4hEs=;
+        b=JO1nEVgZm/qgnejYwG+ZiHtkj8oVNtKrPis8+GeRt7YSJkWXiIr/y07T+aNsJpJLFg
+         oQ8JFNRH1YTLaWGA3z5prD7M4aGzt6VoL5WGLx9jnNjQbSs3kxwSUgYE8g+KA4rXZJK3
+         JPKR1EHegIJ8zmvVAw9ZsXaJaKESWpxkTAEcIZC56TCxt7IQ1GsQShSduLSdBP5fqlA9
+         uQD2WbfHNGs2fGyMrcq+KpsSJ3RafcCd+njL0jq47K/TiU5ktUsq7hMtfw7nD1yIj2/t
+         stLWA7EhN1JWbT8/sAQbZLD3z0qj0BT4eOOFzVSwxWlD50xZe9dRwpooG8LfQ/S6lsBI
+         r6VQ==
+X-Gm-Message-State: APjAAAX30lXMk6PSaFeG4pVlOqz3LqV58ACPUqt+0QRfTZEydOEXWRb1
+        ZWZ0iXhKlENhW5JKOFvCVzAjFA==
+X-Google-Smtp-Source: APXvYqwd3K70jb2YRjFwUgXbUSKVdipdRdti4wr3V+zyJa2X6x1n7HOxKerGK/3l1byyjy1AMJdFBw==
+X-Received: by 2002:adf:f7cd:: with SMTP id a13mr27719969wrq.165.1565762378860;
+        Tue, 13 Aug 2019 22:59:38 -0700 (PDT)
+Received: from localhost (ip-78-45-163-186.net.upcbroadband.cz. [78.45.163.186])
+        by smtp.gmail.com with ESMTPSA id 2sm2919240wmz.16.2019.08.13.22.59.38
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 13 Aug 2019 22:32:06 -0700 (PDT)
-Subject: [net PATCH] net: tls, fix sk_write_space NULL write when tx disabled
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     jakub.kicinski@netronome.com, davem@davemloft.net
-Cc:     ying.xue@windriver.com, netdev@vger.kernel.org,
-        john.fastabend@gmail.com, andreyknvl@google.com
-Date:   Wed, 14 Aug 2019 05:31:54 +0000
-Message-ID: <156576071416.1402.5907777786031481705.stgit@ubuntu3-kvm1>
-User-Agent: StGit/0.17.1-dirty
+        Tue, 13 Aug 2019 22:59:38 -0700 (PDT)
+Date:   Wed, 14 Aug 2019 07:59:37 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 1/2] netdevsim: implement support for devlink
+ region and snapshots
+Message-ID: <20190814055937.GT2428@nanopsycho>
+References: <20190813144843.28466-1-jiri@resnulli.us>
+ <20190813144843.28466-2-jiri@resnulli.us>
+ <20190813150829.1012188c@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190813150829.1012188c@cakuba.netronome.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ctx->sk_write_space pointer is only set when TLS tx mode is enabled.
-When running without TX mode its a null pointer but we still set the
-sk sk_write_space pointer on close().
+Wed, Aug 14, 2019 at 12:08:29AM CEST, jakub.kicinski@netronome.com wrote:
+>On Tue, 13 Aug 2019 16:48:42 +0200, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@mellanox.com>
+>> 
+>> Implement dummy region of size 32K and allow user to create snapshots
+>> or random data using debugfs file trigger.
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+>
+>Hmm.. did you send the right version?
 
-Fix the close path to only overwrite sk->sk_write_space when the current
-pointer is to the tls_write_space function indicating the tls module should
-clean it up properly as well.
-
-Reported-by: Hillf Danton <hdanton@sina.com>
-Cc: Ying Xue <ying.xue@windriver.com>
-Cc: Andrey Konovalov <andreyknvl@google.com>
-Fixes: 57c722e932cfb ("net/tls: swap sk_write_space on close")
-Signed-off-by: John Fastabend <john.fastabend@gmail.com>
----
- net/tls/tls_main.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index ce6ef56a65ef..43252a801c3f 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -308,7 +308,8 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
- 	if (free_ctx)
- 		icsk->icsk_ulp_data = NULL;
- 	sk->sk_prot = ctx->sk_proto;
--	sk->sk_write_space = ctx->sk_write_space;
-+	if (sk->sk_write_space == tls_write_space)
-+		sk->sk_write_space = ctx->sk_write_space;
- 	write_unlock_bh(&sk->sk_callback_lock);
- 	release_sock(sk);
- 	if (ctx->tx_conf == TLS_SW)
-
+You are right. I apologize.
