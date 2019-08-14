@@ -2,147 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 059C18C59D
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 03:44:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2102E8C59F
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 03:45:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbfHNBou (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 21:44:50 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:39102 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726007AbfHNBot (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 21:44:49 -0400
-Received: by mail-pl1-f193.google.com with SMTP id z3so3209399pln.6;
-        Tue, 13 Aug 2019 18:44:49 -0700 (PDT)
+        id S1726007AbfHNBpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 21:45:04 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:44174 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726855AbfHNBpD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 21:45:03 -0400
+Received: by mail-qt1-f195.google.com with SMTP id 44so77457732qtg.11
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 18:45:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vUNwl5nx1kBf+zxIr2kgBV9jHfRhHo+6UnxNpoEu764=;
-        b=AVBe50IFJz86bR0eOTvWOyPW5fz1PmgbTerz+kF/Nh0qS7pqsv0hkI26iL6zP56rrG
-         reQ1Ax16tgmoqu20fqjGQZ024lTYCQpKUcohQcmcsWuA8/va2lK160FbL+kQdAfzUzKK
-         vzY2aIm27fizlsxK9SPWz4fgWBgs8Ys3TRGSPnWFG0yrH8En6pkx1t+DCB45L08LzvWb
-         Y45t4+jN3riAZymu5JCH+ASCbl75w1i8O8irQ3u8nHf8CrDWcxmAXMTb+hgt21xBvolj
-         E4ZywMkP2F9yg/bJSa/Xxo0CM1N3IwBOZUAGrd7RVr5cY8kOnyzsgdJgR0FYP/qW6QzE
-         diKw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=TaeTgbEgKeuniyhRwODvYXoOfpd7liiFN1SmAcX8His=;
+        b=D5MI5hS3Z1Jgemg4DrYqGP17fMcHm0JpxwJcpNvoWNsj9m55kKOhGNz7Ta26mGwbzK
+         TDVNht+PlBGpX4kqCxct5XbJEvEw9LSvyjNG2LRVYHr2UTeggtsx6y/4RBCKuCpNtF2U
+         RXRknaznhjOiORNj8Wi96Qtaim/55hfk5lf4n+HjxI0nsI04U863RMOEW/EnK1H+11mt
+         ABIdwf6vbmUkMW4Gfaowf51vrgv3RkqSNpPoliP/NqjpKufiphtFymGJ1x2uH540o0Cw
+         eNBd7C43j8TKQqqcFbb517ucRt5YGX+hhmUOcMDHJtu0EuP3XPFHBNyaUMx8v0z4sxU7
+         +tDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vUNwl5nx1kBf+zxIr2kgBV9jHfRhHo+6UnxNpoEu764=;
-        b=db1xcidcPSCjgflQGfCTyvFeH6spSHS7RnZUCzEhhf0hLV6U0HlsuwTb3hxbV0X7LL
-         TYtV9VOth1Fd2XWK3dfqWsaAsSDRXwHNQdvmv0SMATGNEBv3vXCtOerncfvddLyoPnmH
-         D6q6wmrfhoHRpgwqR6DTXU/LNmnGQj/hXuxjYooJXKsmo0QqlJL5+cm8xCDQJ8i4SWRK
-         Y6g+5Av2A/tQKEylKErFnX1RxyENUBne6D/HjUmQgnZtr576hczKP+f+pB7sYoFOX/AZ
-         gC5xjv2wmNqi5j7MBhH3H33zf9WH1H6sJk2OdzIaYoE467Tv+smrp0o+4H/VYWb9uI1U
-         7ASQ==
-X-Gm-Message-State: APjAAAWhldC//yLujaLs/yy7cCeVHamdvEGAJ7U2Ypp1g+FJBJPb+RFE
-        Csxx1ZEP6dYZEbcNeIzT5VI=
-X-Google-Smtp-Source: APXvYqxP54S0k5F4xY9PPfUNJPXk2Tf+eUtv7hY7EZRTsRWPfiNKA2vpZI3cLL4pQBWulbor0xffRw==
-X-Received: by 2002:a17:902:1122:: with SMTP id d31mr35217050pla.254.1565747089009;
-        Tue, 13 Aug 2019 18:44:49 -0700 (PDT)
-Received: from ast-mbp ([2620:10d:c090:200::3:8a34])
-        by smtp.gmail.com with ESMTPSA id 4sm1762511pfn.118.2019.08.13.18.44.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 13 Aug 2019 18:44:48 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 18:44:46 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>
-Subject: Re: [RFC PATCH bpf-next 00/14] xdp_flow: Flow offload to XDP
-Message-ID: <20190814014445.3dnduyrass5jycr5@ast-mbp>
-References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=TaeTgbEgKeuniyhRwODvYXoOfpd7liiFN1SmAcX8His=;
+        b=FtZ4AkkGUk0PUrg5AQ/0cNSp2vrMOG6x5v+KDTH7jxfEoE4jlLc7bkhzgIAWhNHJTp
+         FlkdvHkjkj/mcWbyK32IsumQ5+CJmQ+g9n5jOzsUukVgl56ztnBiKkjFE89E5Ztsn7y6
+         aAooCsnzr18zmXARiKO1XugBPJVMZhLKbN7ISPyjEkGjn/Zbd+lERlS0wqHEUunzLb9K
+         Y5YQLQocyHKmnieIz1016iLjAoOarM1LYTEY+gAqeuaDbLYcWYv5lbqEkiDFOLQHhHrf
+         A86qJwUWLpkO5kz4WFWBmdsHRADnT9R5j/peW49W+SCcAYz6G8pesZwxL1wWl+Hd32VN
+         GsVg==
+X-Gm-Message-State: APjAAAXBmjdu9J38sdbBNRzbq1weAC4AFWgtgoqotf+gL6GXxIwL34Sm
+        mUi+bioljAs/pXsZn9pQPlduvg==
+X-Google-Smtp-Source: APXvYqzbhn8NqzEGJVbU57O7LKKv9OdJArZr/SzVPFpL91z597fJFlJVlO75QdF3OHLAsBg++MaU8A==
+X-Received: by 2002:ac8:22b9:: with SMTP id f54mr10674838qta.45.1565747102917;
+        Tue, 13 Aug 2019 18:45:02 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id z2sm12025172qtq.7.2019.08.13.18.45.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Aug 2019 18:45:02 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 18:44:50 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH 00/17] Netfilter/IPVS updates for net-next
+Message-ID: <20190813184450.3e818068@cakuba.netronome.com>
+In-Reply-To: <20190813183701.4002-1-pablo@netfilter.org>
+References: <20190813183701.4002-1-pablo@netfilter.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 09:05:44PM +0900, Toshiaki Makita wrote:
-> This is a rough PoC for an idea to offload TC flower to XDP.
-...
->  xdp_flow  TC        ovs kmod
->  --------  --------  --------
->  4.0 Mpps  1.1 Mpps  1.1 Mpps
-
-Is xdp_flow limited to 4 Mpps due to veth or something else?
-
+On Tue, 13 Aug 2019 20:36:44 +0200, Pablo Neira Ayuso wrote:
+> Hi,
 > 
-> So xdp_flow drop rate is roughly 4x faster than software TC or ovs kmod.
+> The following patchset contains Netfilter/IPVS updates for net-next:
 > 
-> OTOH the time to add a flow increases with xdp_flow.
+> 1) Rename mss field to mss_option field in synproxy, from Fernando Mancera.
 > 
-> ping latency of first packet when veth1 does XDP_PASS instead of DROP:
+> 2) Use SYSCTL_{ZERO,ONE} definitions in conntrack, from Matteo Croce.
 > 
->  xdp_flow  TC        ovs kmod
->  --------  --------  --------
->  25ms      12ms      0.6ms
+> 3) More strict validation of IPVS sysctl values, from Junwei Hu.
 > 
-> xdp_flow does a lot of work to emulate TC behavior including UMH
-> transaction and multiple bpf map update from UMH which I think increases
-> the latency.
-
-make sense, but why vanilla TC is so slow ?
-
-> * Implementation
+> 4) Remove unnecessary spaces after on the right hand side of assignments,
+>    from yangxingwu.
 > 
-> xdp_flow makes use of UMH to load an eBPF program for XDP, similar to
-> bpfilter. The difference is that xdp_flow does not generate the eBPF
-> program dynamically but a prebuilt program is embedded in UMH. This is
-> mainly because flow insertion is considerably frequent. If we generate
-> and load an eBPF program on each insertion of a flow, the latency of the
-> first packet of ping in above test will incease, which I want to avoid.
-
-I think UMH approach is a good fit for this.
-Clearly the same algorithm can be done as kernel code or kernel module, but
-bpfilter-like UMH is a safer approach.
-
-> - patch 9
->  Add tc-offload-xdp netdev feature and hooks to call xdp_flow kmod in
->  TC flower offload code.
-
-The hook into UMH from TC looks simple. Do you expect the same interface to be
-reused from OVS ?
-
-> * About alternative userland (ovs-vswitchd etc.) implementation
+> 5) Add offload support for bitwise operation.
 > 
-> Maybe a similar logic can be implemented in ovs-vswitchd offload
-> mechanism, instead of adding code to kernel. I just thought offloading
-> TC is more generic and allows wider usage with direct TC command.
+> 6) Extend the nft_offload_reg structure to store immediate date.
 > 
-> For example, considering that OVS inserts a flow to kernel only when
-> flow miss happens in kernel, we can in advance add offloaded flows via
-> tc filter to avoid flow insertion latency for certain sensitive flows.
-> TC flower usage without using OVS is also possible.
+> 7) Collapse several ip_set header files into ip_set.h, from
+>    Jeremy Sowden.
 > 
-> Also as written above nftables can be offloaded to XDP with this
-> mechanism as well.
+> 8) Make netfilter headers compile with CONFIG_KERNEL_HEADER_TEST=y,
+>    from Jeremy Sowden.
+> 
+> 9) Fix several sparse warnings due to missing prototypes, from
+>    Valdis Kletnieks.
+> 
+> 10) Use static lock initialiser to ensure connlabel spinlock is
+>     initialized on boot time to fix sched/act_ct.c, patch
+>     from Florian Westphal.
 
-Makes sense to me.
-
->   bpf, hashtab: Compare keys in long
-
-3Mpps vs 4Mpps just from this patch ?
-or combined with i40 prefech patch ?
-
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c  |    1 +
-
-Could you share "perf report" for just hash tab optimization
-and for i40 ?
-I haven't seen memcmp to be bottle neck in hash tab.
-What is the the of the key?
-
+Pulled, thanks.
