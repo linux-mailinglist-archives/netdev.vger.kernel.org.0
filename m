@@ -2,175 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D498DE19
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 21:53:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6B918DE1E
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 21:54:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729096AbfHNTxd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 15:53:33 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:33531 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729085AbfHNTxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 15:53:33 -0400
-Received: by mail-pf1-f194.google.com with SMTP id g2so54206735pfq.0
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 12:53:32 -0700 (PDT)
+        id S1729112AbfHNTya (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 15:54:30 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34018 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729103AbfHNTya (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 15:54:30 -0400
+Received: by mail-lf1-f65.google.com with SMTP id b29so155838lfq.1
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 12:54:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Jx3amStwB4QfqqQkZamh2kN6JcE3PreZlBl3m7u/deU=;
-        b=mJlkjDLOzIG41n8cuil3j+i/C9zIPcJ3DiOzxT9KEYpljxdwm2d8ApUxWPqJHrk9SB
-         r5ca/VVKU3t44Lva8FT+QS/spLO6jR16jqgYN2/CyNt/2+HYS4tPC4nK2UoAVbuFTs6x
-         +abPllu4MDnOb352WDvRFKAazsZvMD+f/cdP/Dn2d7SN+vbEKT/axyYia785vdFdNfjL
-         NU+bx3tgMID0dn1F7i77PXNsHtQ/b4rxixUYSSCkq5sTapYMpe7cX1dtOtvM8mKm9nBK
-         +4KPFOZeAFogZYat6vsfpgxQbHXtrEzK/PyifQafOi1B7cPtOlym9mQmuX2wEQD+uwBz
-         iLkg==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=6B5UcJxV8QUT2xZ6Wa6Deh/vIXzkPqawf+42QwI2RC0=;
+        b=h/LWBAideIyWkQIHvw7Vk8BDQBK/M5Ru0Gm3t/olYp7yNDj2TeNTmGb9zj3tZRkinY
+         2TzhRI1wLoyjlhDns56KUyEChBmejXT2sgXyacwfOToRDuuzOGJlrxtekZfNJ6znK984
+         in75QtKmUK+5nZAxmKhUY0PNaFLDV2os3JVGjHD1UqLDolbkhDU/I/Wm002eo+aQ8rv+
+         IwW/BIj9B4UBo9+9wl9WPgPUBsH7MBzTQNQR5ff94ND2W38pWe+YSq3oVag0+f6Bgo9Y
+         uVPI0WepFap79C0GLvO3CC0C/eWw5v1mb/lVPgNhjrv8kWaYg/NwiKMK84Q1f+n9ZQnk
+         lyDg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Jx3amStwB4QfqqQkZamh2kN6JcE3PreZlBl3m7u/deU=;
-        b=bPYZvl44f9AfVoEYR5tkbmDophHC3DvLfOrRnhyHGrshiSymY1pOE+HbqwEJbe88Uy
-         SFnidPQnrv/6TCJ4jdD7pXk+AWfofg04zSeU6OkZYYKAYVHB7BWy3UM+x0Vg8sOVbNmH
-         7Kc2r9zqUX4/5FUu1OMB/o2SJHdWD3HLFk7PDMXK7vpjf1OcwgdnAucoo5jZ1GzkxeKx
-         nptmwn1Wd0VYoRxKG828y+aCeyws99yYhAeTloINOjs66aVQ6kfGp4J10irdsp5pSTlD
-         JkxrGuoMcquWglDIzIyeJLyZyrAdyalfmbSy+xkqsRrIwv45mAlz0+T6zsd51QwWxqHK
-         XcEg==
-X-Gm-Message-State: APjAAAX3QqkWaRSuFeX1k4KGqx+68r1q87Txe5Mp8JmdJ+Z772t2Qqcf
-        E8bpeyN9L1srf13xrzFa3HBlnixy58E=
-X-Google-Smtp-Source: APXvYqwVmvfo17Hs+IYsNTDotjWYch+HkkSpDL45Xn7AJ80WOm8TSqTyuQvNX/MWawjhEoJnKmEsGQ==
-X-Received: by 2002:a63:2b0c:: with SMTP id r12mr705585pgr.206.1565812412044;
-        Wed, 14 Aug 2019 12:53:32 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id z6sm518126pgk.18.2019.08.14.12.53.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2019 12:53:31 -0700 (PDT)
-Date:   Wed, 14 Aug 2019 12:53:30 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=6B5UcJxV8QUT2xZ6Wa6Deh/vIXzkPqawf+42QwI2RC0=;
+        b=Fuex1DU6lef/K2Zo3RJ0gNvQSlvzyjfgxcRYSDuLEy+FgbNaUqjDYRF3rkTu575rtE
+         WEroOyrwr9tGSIl9KNO5dL8qCZwR2TCHyT6R6PdBI3ORsdvFDpw1WJjVwP11FuAmMh07
+         +3pMg8N+zRI1nDofqdMAY1gKB6GX3KpBSKd4jst+vtfPdrKDDdO/eX1DaopYVUXPmoWc
+         9NmJum7/FR3gs/FsF3DM4sWGRPlL8tpOi94q8F0l53phs4c13BKuVLZr64SXEIPu6HRm
+         gVQ4t1wFvyvLCLxc5UdJB2ii2+n/JENZJ0aqeJrlQIZb8sfOQJouE4r/+srAbAtLpEi0
+         gjjw==
+X-Gm-Message-State: APjAAAXs1rSiW7OaOFDDS2Wt9KB7U0r7mRw/PQnIGkQqh0CMTiBVrTVc
+        lHxr3euZ8X+QC3hg4l2ohdfdHQ==
+X-Google-Smtp-Source: APXvYqz3BVlBA6rFpKdvAjbcFzp/DKKxSJ2xn1Xflg5G44k0mxsQduF2H0waaUdaf8jvYeDtdwVOdQ==
+X-Received: by 2002:a19:2d15:: with SMTP id k21mr551454lfj.188.1565812468085;
+        Wed, 14 Aug 2019 12:54:28 -0700 (PDT)
+Received: from khorivan (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
+        by smtp.gmail.com with ESMTPSA id e11sm103604ljo.19.2019.08.14.12.54.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 14 Aug 2019 12:54:27 -0700 (PDT)
+Date:   Wed, 14 Aug 2019 22:54:25 +0300
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next 2/4] selftests/bpf: test_progs: test__skip
-Message-ID: <20190814195330.GL2820@mini-arch>
-References: <20190814164742.208909-1-sdf@google.com>
- <20190814164742.208909-3-sdf@google.com>
- <CAEf4BzZR12JgbSvBqS7LMZjLcsneVDfFL9XyZdi3gtneyA9X9g@mail.gmail.com>
- <CAEf4BzaE-KiW1Xt049A4s25YiaLeTH3yhgahwLUdpXNjF1sVpA@mail.gmail.com>
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 1/3] libbpf: add asm/unistd.h to xsk to get
+ __NR_mmap2
+Message-ID: <20190814195423.GE4142@khorivan>
+Mail-Followup-To: =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20190813102318.5521-1-ivan.khoronzhuk@linaro.org>
+ <20190813102318.5521-2-ivan.khoronzhuk@linaro.org>
+ <CAEf4BzZ2y_DmTXkVqFh6Hdcquo6UvntvCygw5h5WwrWYXRRg_g@mail.gmail.com>
+ <20190814092403.GA4142@khorivan>
+ <20190814115659.GC4142@khorivan>
+ <CAJ+HfNiqu7WEoBFnfK3znU4tVyAmpPVabTjTSKH1ZVo2W1rrXg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <CAEf4BzaE-KiW1Xt049A4s25YiaLeTH3yhgahwLUdpXNjF1sVpA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJ+HfNiqu7WEoBFnfK3znU4tVyAmpPVabTjTSKH1ZVo2W1rrXg@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/14, Andrii Nakryiko wrote:
-> On Wed, Aug 14, 2019 at 12:22 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> >
-> > On Wed, Aug 14, 2019 at 9:48 AM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > Export test__skip() to indicate skipped tests and use it in
-> > > test_send_signal_nmi().
-> > >
-> > > Cc: Andrii Nakryiko <andriin@fb.com>
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> >
-> > For completeness, we should probably also support test__skip_subtest()
-> > eventually, but it's fine until we don't have a use case.
-> 
-> Hm.. so I think we don't need separate test__skip_subtest().
-> test__skip() should skip either test or sub-test, depending on which
-> context we are running in. So maybe just make sure this is handled
-> correctly?
-Do we care if it's a test or a subtest skip? My motivation was to
-have a counter that can be examined to make sure we have a full test
-coverage, so when people run the tests they can be sure that nothing
-is skipped due to missing config or something else.
+On Wed, Aug 14, 2019 at 03:32:24PM +0200, Björn Töpel wrote:
+>On Wed, 14 Aug 2019 at 13:57, Ivan Khoronzhuk
+><ivan.khoronzhuk@linaro.org> wrote:
+>>
+>> On Wed, Aug 14, 2019 at 12:24:05PM +0300, Ivan Khoronzhuk wrote:
+>> >On Tue, Aug 13, 2019 at 04:38:13PM -0700, Andrii Nakryiko wrote:
+>> >
+>> >Hi, Andrii
+>> >
+>> >>On Tue, Aug 13, 2019 at 3:24 AM Ivan Khoronzhuk
+>> >><ivan.khoronzhuk@linaro.org> wrote:
+>> >>>
+>> >>>That's needed to get __NR_mmap2 when mmap2 syscall is used.
+>> >>>
+>> >>>Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+>> >>>---
+>> >>> tools/lib/bpf/xsk.c | 1 +
+>> >>> 1 file changed, 1 insertion(+)
+>> >>>
+>> >>>diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+>> >>>index 5007b5d4fd2c..f2fc40f9804c 100644
+>> >>>--- a/tools/lib/bpf/xsk.c
+>> >>>+++ b/tools/lib/bpf/xsk.c
+>> >>>@@ -12,6 +12,7 @@
+>> >>> #include <stdlib.h>
+>> >>> #include <string.h>
+>> >>> #include <unistd.h>
+>> >>>+#include <asm/unistd.h>
+>> >>
+>> >>asm/unistd.h is not present in Github libbpf projection. Is there any
+>> >
+>> >Look on includes from
+>> >tools/lib/bpf/libpf.c
+>> >tools/lib/bpf/bpf.c
+>> >
+>> >That's how it's done... Copping headers to arch/arm will not
+>> >solve this, it includes both of them anyway, and anyway it needs
+>> >asm/unistd.h inclusion here, only because xsk.c needs __NR_*
+>> >
+>> >
+>>
+>> There is one more radical solution for this I can send, but I'm not sure how it
+>> can impact on other syscals/arches...
+>>
+>> Looks like:
+>>
+>>
+>> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+>> index 9312066a1ae3..8b2f8ff7ce44 100644
+>> --- a/tools/lib/bpf/Makefile
+>> +++ b/tools/lib/bpf/Makefile
+>> @@ -113,6 +113,7 @@ override CFLAGS += -Werror -Wall
+>>  override CFLAGS += -fPIC
+>>  override CFLAGS += $(INCLUDES)
+>>  override CFLAGS += -fvisibility=hidden
+>> +override CFLAGS += -D_FILE_OFFSET_BITS=64
+>>
+>
+>Hmm, isn't this glibc-ism? Does is it work for, say, musl or bionic?
+>
+>If this is portable, and works on 32-, and 64-bit archs, I'm happy
+>with the patch. :-)
 
-Let me know if you see a value in highlighting test vs subtest skip.
+https://users.suse.com/~aj/linux_lfs.html
 
-Other related question is: should we do verbose output in case
-of a skip? Right now we don't do it.
+BIONIС
+======
+https://android.googlesource.com/platform/bionic
+So, LFS is in bionic since Fri Feb 6 22:28:49 2015
+68dc20d41193831a94df04b994ff2f601dd38d10
+Author: Elliott Hughes <enh@google.com>
+Implement _FILE_OFFSET_BITS (mostly)
 
-> >
-> > Acked-by: Andrii Nakryiko <andriin@fb.com>
-> >
-> > >  tools/testing/selftests/bpf/prog_tests/send_signal.c | 1 +
-> > >  tools/testing/selftests/bpf/test_progs.c             | 9 +++++++--
-> > >  tools/testing/selftests/bpf/test_progs.h             | 2 ++
-> > >  3 files changed, 10 insertions(+), 2 deletions(-)
-> > >
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-> > > index 1575f0a1f586..40c2c5efdd3e 100644
-> > > --- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
-> > > @@ -204,6 +204,7 @@ static int test_send_signal_nmi(void)
-> > >                 if (errno == ENOENT) {
-> > >                         printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n",
-> > >                                __func__);
-> > > +                       test__skip();
-> > >                         return 0;
-> > >                 }
-> > >                 /* Let the test fail with a more informative message */
-> > > diff --git a/tools/testing/selftests/bpf/test_progs.c b/tools/testing/selftests/bpf/test_progs.c
-> > > index 1a7a2a0c0a11..1993f2ce0d23 100644
-> > > --- a/tools/testing/selftests/bpf/test_progs.c
-> > > +++ b/tools/testing/selftests/bpf/test_progs.c
-> > > @@ -121,6 +121,11 @@ void test__force_log() {
-> > >         env.test->force_log = true;
-> > >  }
-> > >
-> > > +void test__skip(void)
-> > > +{
-> > > +       env.skip_cnt++;
-> > > +}
-> > > +
-> > >  struct ipv4_packet pkt_v4 = {
-> > >         .eth.h_proto = __bpf_constant_htons(ETH_P_IP),
-> > >         .iph.ihl = 5,
-> > > @@ -535,8 +540,8 @@ int main(int argc, char **argv)
-> > >                         test->test_name);
-> > >         }
-> > >         stdio_restore();
-> > > -       printf("Summary: %d/%d PASSED, %d FAILED\n",
-> > > -              env.succ_cnt, env.sub_succ_cnt, env.fail_cnt);
-> > > +       printf("Summary: %d/%d PASSED, %d SKIPPED, %d FAILED\n",
-> 
-> So because some sub-tests might be skipped, while others will be
-> running, let's keep output consistent with SUCCESS and use
-> <test>/<subtests> format for SKIPPED as well?
-> 
-> > > +              env.succ_cnt, env.sub_succ_cnt, env.skip_cnt, env.fail_cnt);
-> > >
-> > >         free(env.test_selector.num_set);
-> > >         free(env.subtest_selector.num_set);
-> > > diff --git a/tools/testing/selftests/bpf/test_progs.h b/tools/testing/selftests/bpf/test_progs.h
-> > > index 37d427f5a1e5..9defd35cb6c0 100644
-> > > --- a/tools/testing/selftests/bpf/test_progs.h
-> > > +++ b/tools/testing/selftests/bpf/test_progs.h
-> > > @@ -64,6 +64,7 @@ struct test_env {
-> > >         int succ_cnt; /* successful tests */
-> > >         int sub_succ_cnt; /* successful sub-tests */
-> > >         int fail_cnt; /* total failed tests + sub-tests */
-> > > +       int skip_cnt; /* skipped tests */
-> > >  };
-> > >
-> > >  extern int error_cnt;
-> > > @@ -72,6 +73,7 @@ extern struct test_env env;
-> > >
-> > >  extern void test__force_log();
-> > >  extern bool test__start_subtest(const char *name);
-> > > +extern void test__skip(void);
-> > >
-> > >  #define MAGIC_BYTES 123
-> > >
-> > > --
-> > > 2.23.0.rc1.153.gdeed80330f-goog
-> > >
+
+MUSL
+====
+I took here: git@github.com:kraj/musl.git
+With musl situation is a little different, seems like, it provides
+64bit off_t by default
+
+
+#if defined(_LARGEFILE64_SOURCE) || defined(_GNU_SOURCE)
+#define lseek64 lseek
+#define pread64 pread
+#define pwrite64 pwrite
+#define truncate64 truncate
+#define ftruncate64 ftruncate
+#define lockf64 lockf
+#define off64_t off_t
+#endif
+
+and
+
+/* If _GNU_SOURCE was defined by the user, turn on all the other features.  */
+#ifdef _GNU_SOURCE
+# undef  _ISOC95_SOURCE
+# define _ISOC95_SOURCE	1
+# undef  _ISOC99_SOURCE
+# define _ISOC99_SOURCE	1
+# undef  _ISOC11_SOURCE
+# define _ISOC11_SOURCE	1
+# undef  _POSIX_SOURCE
+# define _POSIX_SOURCE	1
+# undef  _POSIX_C_SOURCE
+# define _POSIX_C_SOURCE	200809L
+# undef  _XOPEN_SOURCE
+# define _XOPEN_SOURCE	700
+# undef  _XOPEN_SOURCE_EXTENDED
+# define _XOPEN_SOURCE_EXTENDED	1
+# undef	 _LARGEFILE64_SOURCE
+# define _LARGEFILE64_SOURCE	1
+# undef  _DEFAULT_SOURCE
+# define _DEFAULT_SOURCE	1
+# undef  _ATFILE_SOURCE
+# define _ATFILE_SOURCE	1
+#endif
+
+So shouldn't be issuse.
+
+64 ARCHES
+=========
+Should also work, if grep on _FILE_OFFSET_BITS tool:
+
+./lib/api/Makefile:CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
+./lib/subcmd/Makefile:CFLAGS += -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D_GNU_SOURCE
+
+So, it's used already and no problems.
+But here one moment, _LARGEFILE64_SOURCE is also defined, probably for MUSL 
+(despite it's defined anyway) just to be sure.
+
+So, in Makefile, for sure, will be:
+
+override CFLAGS += -D_FILE_OFFSET_BITS=64
+verride CFLAGS += -D_LARGEFILE64_SOURCE
+
+-- 
+Regards,
+Ivan Khoronzhuk
