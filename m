@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B8788CCBE
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:28:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 505BF8CCC0
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:28:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727516AbfHNH2F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 03:28:05 -0400
-Received: from mga17.intel.com ([192.55.52.151]:57242 "EHLO mga17.intel.com"
+        id S1727562AbfHNH2M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 03:28:12 -0400
+Received: from mga04.intel.com ([192.55.52.120]:44480 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726880AbfHNH2F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 03:28:05 -0400
+        id S1726880AbfHNH2M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 03:28:12 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
 Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Aug 2019 00:28:04 -0700
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Aug 2019 00:28:11 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,384,1559545200"; 
-   d="scan'208";a="327922995"
+   d="scan'208";a="327923029"
 Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.52.109])
-  by orsmga004.jf.intel.com with ESMTP; 14 Aug 2019 00:27:57 -0700
+  by orsmga004.jf.intel.com with ESMTP; 14 Aug 2019 00:28:04 -0700
 From:   Magnus Karlsson <magnus.karlsson@intel.com>
 To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
         daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com,
@@ -32,9 +32,9 @@ Cc:     bpf@vger.kernel.org, bruce.richardson@intel.com,
         kiran.patil@intel.com, axboe@kernel.dk,
         maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
         intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next v4 1/8] xsk: replace ndo_xsk_async_xmit with ndo_xsk_wakeup
-Date:   Wed, 14 Aug 2019 09:27:16 +0200
-Message-Id: <1565767643-4908-2-git-send-email-magnus.karlsson@intel.com>
+Subject: [PATCH bpf-next v4 2/8] xsk: add support for need_wakeup flag in AF_XDP rings
+Date:   Wed, 14 Aug 2019 09:27:17 +0200
+Message-Id: <1565767643-4908-3-git-send-email-magnus.karlsson@intel.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
 References: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
@@ -43,262 +43,421 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit replaces ndo_xsk_async_xmit with ndo_xsk_wakeup. This new
-ndo provides the same functionality as before but with the addition of
-a new flags field that is used to specifiy if Rx, Tx or both should be
-woken up. The previous ndo only woke up Tx, as implied by the
-name. The i40e and ixgbe drivers (which are all the supported ones)
-are updated with this new interface.
+This commit adds support for a new flag called need_wakeup in the
+AF_XDP Tx and fill rings. When this flag is set, it means that the
+application has to explicitly wake up the kernel Rx (for the bit in
+the fill ring) or kernel Tx (for bit in the Tx ring) processing by
+issuing a syscall. Poll() can wake up both depending on the flags
+submitted and sendto() will wake up tx processing only.
 
-This new ndo will be used by the new need_wakeup functionality of XDP
-sockets that need to be able to wake up both Rx and Tx driver
-processing.
+The main reason for introducing this new flag is to be able to
+efficiently support the case when application and driver is executing
+on the same core. Previously, the driver was just busy-spinning on the
+fill ring if it ran out of buffers in the HW and there were none on
+the fill ring. This approach works when the application is running on
+another core as it can replenish the fill ring while the driver is
+busy-spinning. Though, this is a lousy approach if both of them are
+running on the same core as the probability of the fill ring getting
+more entries when the driver is busy-spinning is zero. With this new
+feature the driver now sets the need_wakeup flag and returns to the
+application. The application can then replenish the fill queue and
+then explicitly wake up the Rx processing in the kernel using the
+syscall poll(). For Tx, the flag is only set to one if the driver has
+no outstanding Tx completion interrupts. If it has some, the flag is
+zero as it will be woken up by a completion interrupt anyway.
+
+As a nice side effect, this new flag also improves the performance of
+the case where application and driver are running on two different
+cores as it reduces the number of syscalls to the kernel. The kernel
+tells user space if it needs to be woken up by a syscall, and this
+eliminates many of the syscalls.
+
+This flag needs some simple driver support. If the driver does not
+support this, the Rx flag is always zero and the Tx flag is always
+one. This makes any application relying on this feature default to the
+old behaviour of not requiring any syscalls in the Rx path and always
+having to call sendto() in the Tx path.
+
+For backwards compatibility reasons, this feature has to be explicitly
+turned on using a new bind flag (XDP_USE_NEED_WAKEUP). I recommend
+that you always turn it on as it so far always have had a positive
+performance impact.
+
+The name and inspiration of the flag has been taken from io_uring by
+Jens Axboe. Details about this feature in io_uring can be found in
+http://kernel.dk/io_uring.pdf, section 8.3.
 
 Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
 ---
- drivers/net/ethernet/intel/i40e/i40e_main.c          |  5 +++--
- drivers/net/ethernet/intel/i40e/i40e_xsk.c           |  7 ++++---
- drivers/net/ethernet/intel/i40e/i40e_xsk.h           |  2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_main.c        |  5 +++--
- drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h |  2 +-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c         |  4 ++--
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c  |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h  |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c    |  2 +-
- include/linux/netdevice.h                            | 14 ++++++++++++--
- net/xdp/xdp_umem.c                                   |  3 +--
- net/xdp/xsk.c                                        |  3 ++-
- 12 files changed, 32 insertions(+), 19 deletions(-)
+ include/net/xdp_sock.h      |  33 +++++++++-
+ include/uapi/linux/if_xdp.h |  13 ++++
+ net/xdp/xdp_umem.c          |   9 +++
+ net/xdp/xsk.c               | 146 ++++++++++++++++++++++++++++++++++++++------
+ net/xdp/xsk.h               |  13 ++++
+ net/xdp/xsk_queue.h         |   1 +
+ 6 files changed, 195 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_main.c b/drivers/net/ethernet/intel/i40e/i40e_main.c
-index 6d456e5..a75c66c 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_main.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_main.c
-@@ -12570,7 +12570,8 @@ static int i40e_xdp_setup(struct i40e_vsi *vsi,
- 	if (need_reset && prog)
- 		for (i = 0; i < vsi->num_queue_pairs; i++)
- 			if (vsi->xdp_rings[i]->xsk_umem)
--				(void)i40e_xsk_async_xmit(vsi->netdev, i);
-+				(void)i40e_xsk_wakeup(vsi->netdev, i,
-+						      XDP_WAKEUP_RX);
- 
- 	return 0;
- }
-@@ -12892,7 +12893,7 @@ static const struct net_device_ops i40e_netdev_ops = {
- 	.ndo_bridge_setlink	= i40e_ndo_bridge_setlink,
- 	.ndo_bpf		= i40e_xdp,
- 	.ndo_xdp_xmit		= i40e_xdp_xmit,
--	.ndo_xsk_async_xmit	= i40e_xsk_async_xmit,
-+	.ndo_xsk_wakeup	        = i40e_xsk_wakeup,
- 	.ndo_dfwd_add_station	= i40e_fwd_add,
- 	.ndo_dfwd_del_station	= i40e_fwd_del,
- };
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.c b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-index 32bad01..d0ff5d8 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.c
-@@ -116,7 +116,7 @@ static int i40e_xsk_umem_enable(struct i40e_vsi *vsi, struct xdp_umem *umem,
- 			return err;
- 
- 		/* Kick start the NAPI context so that receiving will start */
--		err = i40e_xsk_async_xmit(vsi->netdev, qid);
-+		err = i40e_xsk_wakeup(vsi->netdev, qid, XDP_WAKEUP_RX);
- 		if (err)
- 			return err;
- 	}
-@@ -765,13 +765,14 @@ bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
- }
- 
- /**
-- * i40e_xsk_async_xmit - Implements the ndo_xsk_async_xmit
-+ * i40e_xsk_wakeup - Implements the ndo_xsk_wakeup
-  * @dev: the netdevice
-  * @queue_id: queue id to wake up
-+ * @flags: ignored in our case since we have Rx and Tx in the same NAPI.
-  *
-  * Returns <0 for errors, 0 otherwise.
-  **/
--int i40e_xsk_async_xmit(struct net_device *dev, u32 queue_id)
-+int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags)
- {
- 	struct i40e_netdev_priv *np = netdev_priv(dev);
- 	struct i40e_vsi *vsi = np->vsi;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_xsk.h b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
-index 8cc0a2e..9ed59c1 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_xsk.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_xsk.h
-@@ -18,6 +18,6 @@ int i40e_clean_rx_irq_zc(struct i40e_ring *rx_ring, int budget);
- 
- bool i40e_clean_xdp_tx_irq(struct i40e_vsi *vsi,
- 			   struct i40e_ring *tx_ring, int napi_budget);
--int i40e_xsk_async_xmit(struct net_device *dev, u32 queue_id);
-+int i40e_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
- 
- #endif /* _I40E_XSK_H_ */
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-index dc7b128..05729b4 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_main.c
-@@ -10263,7 +10263,8 @@ static int ixgbe_xdp_setup(struct net_device *dev, struct bpf_prog *prog)
- 	if (need_reset && prog)
- 		for (i = 0; i < adapter->num_rx_queues; i++)
- 			if (adapter->xdp_ring[i]->xsk_umem)
--				(void)ixgbe_xsk_async_xmit(adapter->netdev, i);
-+				(void)ixgbe_xsk_wakeup(adapter->netdev, i,
-+						       XDP_WAKEUP_RX);
- 
- 	return 0;
- }
-@@ -10382,7 +10383,7 @@ static const struct net_device_ops ixgbe_netdev_ops = {
- 	.ndo_features_check	= ixgbe_features_check,
- 	.ndo_bpf		= ixgbe_xdp,
- 	.ndo_xdp_xmit		= ixgbe_xdp_xmit,
--	.ndo_xsk_async_xmit	= ixgbe_xsk_async_xmit,
-+	.ndo_xsk_wakeup         = ixgbe_xsk_wakeup,
+diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
+index 69796d2..6aebea2 100644
+--- a/include/net/xdp_sock.h
++++ b/include/net/xdp_sock.h
+@@ -27,6 +27,9 @@ struct xdp_umem_fq_reuse {
+ 	u64 handles[];
  };
  
- static void ixgbe_disable_txr_hw(struct ixgbe_adapter *adapter,
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
-index d93a690..6d01700 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_txrx_common.h
-@@ -42,7 +42,7 @@ int ixgbe_clean_rx_irq_zc(struct ixgbe_q_vector *q_vector,
- void ixgbe_xsk_clean_rx_ring(struct ixgbe_ring *rx_ring);
- bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
- 			    struct ixgbe_ring *tx_ring, int napi_budget);
--int ixgbe_xsk_async_xmit(struct net_device *dev, u32 queue_id);
-+int ixgbe_xsk_wakeup(struct net_device *dev, u32 queue_id, u32 flags);
- void ixgbe_xsk_clean_tx_ring(struct ixgbe_ring *tx_ring);
- 
- #endif /* #define _IXGBE_TXRX_COMMON_H_ */
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 6b60955..e598af9 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -100,7 +100,7 @@ static int ixgbe_xsk_umem_enable(struct ixgbe_adapter *adapter,
- 		ixgbe_txrx_ring_enable(adapter, qid);
- 
- 		/* Kick start the NAPI context so that receiving will start */
--		err = ixgbe_xsk_async_xmit(adapter->netdev, qid);
-+		err = ixgbe_xsk_wakeup(adapter->netdev, qid, XDP_WAKEUP_RX);
- 		if (err)
- 			return err;
- 	}
-@@ -692,7 +692,7 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
- 	return budget > 0 && xmit_done;
- }
- 
--int ixgbe_xsk_async_xmit(struct net_device *dev, u32 qid)
-+int ixgbe_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
- {
- 	struct ixgbe_adapter *adapter = netdev_priv(dev);
- 	struct ixgbe_ring *ring;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-index 35e188cf..9704634 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.c
-@@ -7,7 +7,7 @@
- #include "en/params.h"
- #include <net/xdp_sock.h>
- 
--int mlx5e_xsk_async_xmit(struct net_device *dev, u32 qid)
-+int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags)
- {
- 	struct mlx5e_priv *priv = netdev_priv(dev);
- 	struct mlx5e_params *params = &priv->channels.params;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-index 7add18b..9c50515 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-@@ -8,7 +8,7 @@
- 
- /* TX data path */
- 
--int mlx5e_xsk_async_xmit(struct net_device *dev, u32 qid);
-+int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags);
- 
- bool mlx5e_xsk_tx(struct mlx5e_xdpsq *sq, unsigned int budget);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index 9a2fcef..9df7e5c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -4540,7 +4540,7 @@ const struct net_device_ops mlx5e_netdev_ops = {
- 	.ndo_tx_timeout          = mlx5e_tx_timeout,
- 	.ndo_bpf		 = mlx5e_xdp,
- 	.ndo_xdp_xmit            = mlx5e_xdp_xmit,
--	.ndo_xsk_async_xmit      = mlx5e_xsk_async_xmit,
-+	.ndo_xsk_wakeup          = mlx5e_xsk_wakeup,
- #ifdef CONFIG_MLX5_EN_ARFS
- 	.ndo_rx_flow_steer	 = mlx5e_rx_flow_steer,
- #endif
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 55ac223..0ef0570 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -901,6 +901,10 @@ struct netdev_bpf {
- 	};
- };
- 
-+/* Flags for ndo_xsk_wakeup. */
-+#define XDP_WAKEUP_RX (1 << 0)
-+#define XDP_WAKEUP_TX (1 << 1)
++/* Flags for the umem flags field. */
++#define XDP_UMEM_USES_NEED_WAKEUP (1 << 0)
 +
- #ifdef CONFIG_XFRM_OFFLOAD
- struct xfrmdev_ops {
- 	int	(*xdo_dev_state_add) (struct xfrm_state *x);
-@@ -1227,6 +1231,12 @@ struct tlsdev_ops;
-  *	that got dropped are freed/returned via xdp_return_frame().
-  *	Returns negative number, means general error invoking ndo, meaning
-  *	no frames were xmit'ed and core-caller will free all frames.
-+ * int (*ndo_xsk_wakeup)(struct net_device *dev, u32 queue_id, u32 flags);
-+ *      This function is used to wake up the softirq, ksoftirqd or kthread
-+ *	responsible for sending and/or receiving packets on a specific
-+ *	queue id bound to an AF_XDP socket. The flags field specifies if
-+ *	only RX, only Tx, or both should be woken up using the flags
-+ *	XDP_WAKEUP_RX and XDP_WAKEUP_TX.
-  * struct devlink_port *(*ndo_get_devlink_port)(struct net_device *dev);
-  *	Get devlink port instance associated with a given netdev.
-  *	Called with a reference on the netdevice and devlink locks only,
-@@ -1426,8 +1436,8 @@ struct net_device_ops {
- 	int			(*ndo_xdp_xmit)(struct net_device *dev, int n,
- 						struct xdp_frame **xdp,
- 						u32 flags);
--	int			(*ndo_xsk_async_xmit)(struct net_device *dev,
--						      u32 queue_id);
-+	int			(*ndo_xsk_wakeup)(struct net_device *dev,
-+						  u32 queue_id, u32 flags);
- 	struct devlink_port *	(*ndo_get_devlink_port)(struct net_device *dev);
+ struct xdp_umem {
+ 	struct xsk_queue *fq;
+ 	struct xsk_queue *cq;
+@@ -41,10 +44,12 @@ struct xdp_umem {
+ 	struct work_struct work;
+ 	struct page **pgs;
+ 	u32 npgs;
++	u16 queue_id;
++	u8 need_wakeup;
++	u8 flags;
+ 	int id;
+ 	struct net_device *dev;
+ 	struct xdp_umem_fq_reuse *fq_reuse;
+-	u16 queue_id;
+ 	bool zc;
+ 	spinlock_t xsk_list_lock;
+ 	struct list_head xsk_list;
+@@ -95,6 +100,11 @@ struct xdp_umem_fq_reuse *xsk_reuseq_swap(struct xdp_umem *umem,
+ 					  struct xdp_umem_fq_reuse *newq);
+ void xsk_reuseq_free(struct xdp_umem_fq_reuse *rq);
+ struct xdp_umem *xdp_get_umem_from_qid(struct net_device *dev, u16 queue_id);
++void xsk_set_rx_need_wakeup(struct xdp_umem *umem);
++void xsk_set_tx_need_wakeup(struct xdp_umem *umem);
++void xsk_clear_rx_need_wakeup(struct xdp_umem *umem);
++void xsk_clear_tx_need_wakeup(struct xdp_umem *umem);
++bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem);
+ 
+ static inline char *xdp_umem_get_data(struct xdp_umem *umem, u64 addr)
+ {
+@@ -241,6 +251,27 @@ static inline void xsk_umem_fq_reuse(struct xdp_umem *umem, u64 addr)
+ {
+ }
+ 
++static inline void xsk_set_rx_need_wakeup(struct xdp_umem *umem)
++{
++}
++
++static inline void xsk_set_tx_need_wakeup(struct xdp_umem *umem)
++{
++}
++
++static inline void xsk_clear_rx_need_wakeup(struct xdp_umem *umem)
++{
++}
++
++static inline void xsk_clear_tx_need_wakeup(struct xdp_umem *umem)
++{
++}
++
++static inline bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem)
++{
++	return false;
++}
++
+ #endif /* CONFIG_XDP_SOCKETS */
+ 
+ #endif /* _LINUX_XDP_SOCK_H */
+diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
+index faaa5ca..62b80d5 100644
+--- a/include/uapi/linux/if_xdp.h
++++ b/include/uapi/linux/if_xdp.h
+@@ -16,6 +16,15 @@
+ #define XDP_SHARED_UMEM	(1 << 0)
+ #define XDP_COPY	(1 << 1) /* Force copy-mode */
+ #define XDP_ZEROCOPY	(1 << 2) /* Force zero-copy mode */
++/* If this option is set, the driver might go sleep and in that case
++ * the XDP_RING_NEED_WAKEUP flag in the fill and/or Tx rings will be
++ * set. If it is set, the application need to explicitly wake up the
++ * driver with a poll() (Rx and Tx) or sendto() (Tx only). If you are
++ * running the driver and the application on the same core, you should
++ * use this option so that the kernel will yield to the user space
++ * application.
++ */
++#define XDP_USE_NEED_WAKEUP (1 << 3)
+ 
+ struct sockaddr_xdp {
+ 	__u16 sxdp_family;
+@@ -25,10 +34,14 @@ struct sockaddr_xdp {
+ 	__u32 sxdp_shared_umem_fd;
  };
  
++/* XDP_RING flags */
++#define XDP_RING_NEED_WAKEUP (1 << 0)
++
+ struct xdp_ring_offset {
+ 	__u64 producer;
+ 	__u64 consumer;
+ 	__u64 desc;
++	__u64 flags;
+ };
+ 
+ struct xdp_mmap_offsets {
 diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-index a060796..6e2d4da 100644
+index 6e2d4da..cda6feb 100644
 --- a/net/xdp/xdp_umem.c
 +++ b/net/xdp/xdp_umem.c
-@@ -112,8 +112,7 @@ int xdp_umem_assign_dev(struct xdp_umem *umem, struct net_device *dev,
- 		/* For copy-mode, we are done. */
- 		return 0;
+@@ -106,6 +106,15 @@ int xdp_umem_assign_dev(struct xdp_umem *umem, struct net_device *dev,
+ 	umem->dev = dev;
+ 	umem->queue_id = queue_id;
  
--	if (!dev->netdev_ops->ndo_bpf ||
--	    !dev->netdev_ops->ndo_xsk_async_xmit) {
-+	if (!dev->netdev_ops->ndo_bpf || !dev->netdev_ops->ndo_xsk_wakeup) {
- 		err = -EOPNOTSUPP;
- 		goto err_unreg_umem;
- 	}
++	if (flags & XDP_USE_NEED_WAKEUP) {
++		umem->flags |= XDP_UMEM_USES_NEED_WAKEUP;
++		/* Tx needs to be explicitly woken up the first time.
++		 * Also for supporting drivers that do not implement this
++		 * feature. They will always have to call sendto().
++		 */
++		xsk_set_tx_need_wakeup(umem);
++	}
++
+ 	dev_hold(dev);
+ 
+ 	if (force_copy)
 diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 59b57d7..1fe40a9 100644
+index 1fe40a9..9f900b5 100644
 --- a/net/xdp/xsk.c
 +++ b/net/xdp/xsk.c
-@@ -212,7 +212,8 @@ static int xsk_zc_xmit(struct sock *sk)
- 	struct xdp_sock *xs = xdp_sk(sk);
- 	struct net_device *dev = xs->dev;
+@@ -55,6 +55,66 @@ void xsk_umem_discard_addr(struct xdp_umem *umem)
+ }
+ EXPORT_SYMBOL(xsk_umem_discard_addr);
  
--	return dev->netdev_ops->ndo_xsk_async_xmit(dev, xs->queue_id);
-+	return dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id,
-+					       XDP_WAKEUP_TX);
++void xsk_set_rx_need_wakeup(struct xdp_umem *umem)
++{
++	if (umem->need_wakeup & XDP_WAKEUP_RX)
++		return;
++
++	umem->fq->ring->flags |= XDP_RING_NEED_WAKEUP;
++	umem->need_wakeup |= XDP_WAKEUP_RX;
++}
++EXPORT_SYMBOL(xsk_set_rx_need_wakeup);
++
++void xsk_set_tx_need_wakeup(struct xdp_umem *umem)
++{
++	struct xdp_sock *xs;
++
++	if (umem->need_wakeup & XDP_WAKEUP_TX)
++		return;
++
++	rcu_read_lock();
++	list_for_each_entry_rcu(xs, &umem->xsk_list, list) {
++		xs->tx->ring->flags |= XDP_RING_NEED_WAKEUP;
++	}
++	rcu_read_unlock();
++
++	umem->need_wakeup |= XDP_WAKEUP_TX;
++}
++EXPORT_SYMBOL(xsk_set_tx_need_wakeup);
++
++void xsk_clear_rx_need_wakeup(struct xdp_umem *umem)
++{
++	if (!(umem->need_wakeup & XDP_WAKEUP_RX))
++		return;
++
++	umem->fq->ring->flags &= ~XDP_RING_NEED_WAKEUP;
++	umem->need_wakeup &= ~XDP_WAKEUP_RX;
++}
++EXPORT_SYMBOL(xsk_clear_rx_need_wakeup);
++
++void xsk_clear_tx_need_wakeup(struct xdp_umem *umem)
++{
++	struct xdp_sock *xs;
++
++	if (!(umem->need_wakeup & XDP_WAKEUP_TX))
++		return;
++
++	rcu_read_lock();
++	list_for_each_entry_rcu(xs, &umem->xsk_list, list) {
++		xs->tx->ring->flags &= ~XDP_RING_NEED_WAKEUP;
++	}
++	rcu_read_unlock();
++
++	umem->need_wakeup &= ~XDP_WAKEUP_TX;
++}
++EXPORT_SYMBOL(xsk_clear_tx_need_wakeup);
++
++bool xsk_umem_uses_need_wakeup(struct xdp_umem *umem)
++{
++	return umem->flags & XDP_UMEM_USES_NEED_WAKEUP;
++}
++EXPORT_SYMBOL(xsk_umem_uses_need_wakeup);
++
+ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
+ {
+ 	void *to_buf, *from_buf;
+@@ -320,6 +380,12 @@ static unsigned int xsk_poll(struct file *file, struct socket *sock,
+ 	unsigned int mask = datagram_poll(file, sock, wait);
+ 	struct sock *sk = sock->sk;
+ 	struct xdp_sock *xs = xdp_sk(sk);
++	struct net_device *dev = xs->dev;
++	struct xdp_umem *umem = xs->umem;
++
++	if (umem->need_wakeup)
++		dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id,
++						umem->need_wakeup);
+ 
+ 	if (xs->rx && !xskq_empty_desc(xs->rx))
+ 		mask |= POLLIN | POLLRDNORM;
+@@ -428,7 +494,8 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+ 		return -EINVAL;
+ 
+ 	flags = sxdp->sxdp_flags;
+-	if (flags & ~(XDP_SHARED_UMEM | XDP_COPY | XDP_ZEROCOPY))
++	if (flags & ~(XDP_SHARED_UMEM | XDP_COPY | XDP_ZEROCOPY |
++		      XDP_USE_NEED_WAKEUP))
+ 		return -EINVAL;
+ 
+ 	rtnl_lock();
+@@ -455,7 +522,8 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
+ 		struct xdp_sock *umem_xs;
+ 		struct socket *sock;
+ 
+-		if ((flags & XDP_COPY) || (flags & XDP_ZEROCOPY)) {
++		if ((flags & XDP_COPY) || (flags & XDP_ZEROCOPY) ||
++		    (flags & XDP_USE_NEED_WAKEUP)) {
+ 			/* Cannot specify flags for shared sockets. */
+ 			err = -EINVAL;
+ 			goto out_unlock;
+@@ -550,6 +618,9 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
+ 		}
+ 		q = (optname == XDP_TX_RING) ? &xs->tx : &xs->rx;
+ 		err = xsk_init_queue(entries, q, false);
++		if (!err && optname == XDP_TX_RING)
++			/* Tx needs to be explicitly woken up the first time */
++			xs->tx->ring->flags |= XDP_RING_NEED_WAKEUP;
+ 		mutex_unlock(&xs->mutex);
+ 		return err;
+ 	}
+@@ -611,6 +682,20 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
+ 	return -ENOPROTOOPT;
  }
  
- static void xsk_destruct_skb(struct sk_buff *skb)
++static void xsk_enter_rxtx_offsets(struct xdp_ring_offset_v1 *ring)
++{
++	ring->producer = offsetof(struct xdp_rxtx_ring, ptrs.producer);
++	ring->consumer = offsetof(struct xdp_rxtx_ring, ptrs.consumer);
++	ring->desc = offsetof(struct xdp_rxtx_ring, desc);
++}
++
++static void xsk_enter_umem_offsets(struct xdp_ring_offset_v1 *ring)
++{
++	ring->producer = offsetof(struct xdp_umem_ring, ptrs.producer);
++	ring->consumer = offsetof(struct xdp_umem_ring, ptrs.consumer);
++	ring->desc = offsetof(struct xdp_umem_ring, desc);
++}
++
+ static int xsk_getsockopt(struct socket *sock, int level, int optname,
+ 			  char __user *optval, int __user *optlen)
+ {
+@@ -650,26 +735,49 @@ static int xsk_getsockopt(struct socket *sock, int level, int optname,
+ 	case XDP_MMAP_OFFSETS:
+ 	{
+ 		struct xdp_mmap_offsets off;
++		struct xdp_mmap_offsets_v1 off_v1;
++		bool flags_supported = true;
++		void *to_copy;
+ 
+-		if (len < sizeof(off))
++		if (len < sizeof(off_v1))
+ 			return -EINVAL;
++		else if (len < sizeof(off))
++			flags_supported = false;
++
++		if (flags_supported) {
++			/* xdp_ring_offset is identical to xdp_ring_offset_v1
++			 * except for the flags field added to the end.
++			 */
++			xsk_enter_rxtx_offsets((struct xdp_ring_offset_v1 *)
++					       &off.rx);
++			xsk_enter_rxtx_offsets((struct xdp_ring_offset_v1 *)
++					       &off.tx);
++			xsk_enter_umem_offsets((struct xdp_ring_offset_v1 *)
++					       &off.fr);
++			xsk_enter_umem_offsets((struct xdp_ring_offset_v1 *)
++					       &off.cr);
++			off.rx.flags = offsetof(struct xdp_rxtx_ring,
++						ptrs.flags);
++			off.tx.flags = offsetof(struct xdp_rxtx_ring,
++						ptrs.flags);
++			off.fr.flags = offsetof(struct xdp_umem_ring,
++						ptrs.flags);
++			off.cr.flags = offsetof(struct xdp_umem_ring,
++						ptrs.flags);
++
++			len = sizeof(off);
++			to_copy = &off;
++		} else {
++			xsk_enter_rxtx_offsets(&off_v1.rx);
++			xsk_enter_rxtx_offsets(&off_v1.tx);
++			xsk_enter_umem_offsets(&off_v1.fr);
++			xsk_enter_umem_offsets(&off_v1.cr);
++
++			len = sizeof(off_v1);
++			to_copy = &off_v1;
++		}
+ 
+-		off.rx.producer = offsetof(struct xdp_rxtx_ring, ptrs.producer);
+-		off.rx.consumer = offsetof(struct xdp_rxtx_ring, ptrs.consumer);
+-		off.rx.desc	= offsetof(struct xdp_rxtx_ring, desc);
+-		off.tx.producer = offsetof(struct xdp_rxtx_ring, ptrs.producer);
+-		off.tx.consumer = offsetof(struct xdp_rxtx_ring, ptrs.consumer);
+-		off.tx.desc	= offsetof(struct xdp_rxtx_ring, desc);
+-
+-		off.fr.producer = offsetof(struct xdp_umem_ring, ptrs.producer);
+-		off.fr.consumer = offsetof(struct xdp_umem_ring, ptrs.consumer);
+-		off.fr.desc	= offsetof(struct xdp_umem_ring, desc);
+-		off.cr.producer = offsetof(struct xdp_umem_ring, ptrs.producer);
+-		off.cr.consumer = offsetof(struct xdp_umem_ring, ptrs.consumer);
+-		off.cr.desc	= offsetof(struct xdp_umem_ring, desc);
+-
+-		len = sizeof(off);
+-		if (copy_to_user(optval, &off, len))
++		if (copy_to_user(optval, to_copy, len))
+ 			return -EFAULT;
+ 		if (put_user(len, optlen))
+ 			return -EFAULT;
+diff --git a/net/xdp/xsk.h b/net/xdp/xsk.h
+index ba81206..4cfd106 100644
+--- a/net/xdp/xsk.h
++++ b/net/xdp/xsk.h
+@@ -4,6 +4,19 @@
+ #ifndef XSK_H_
+ #define XSK_H_
+ 
++struct xdp_ring_offset_v1 {
++	__u64 producer;
++	__u64 consumer;
++	__u64 desc;
++};
++
++struct xdp_mmap_offsets_v1 {
++	struct xdp_ring_offset_v1 rx;
++	struct xdp_ring_offset_v1 tx;
++	struct xdp_ring_offset_v1 fr;
++	struct xdp_ring_offset_v1 cr;
++};
++
+ static inline struct xdp_sock *xdp_sk(struct sock *sk)
+ {
+ 	return (struct xdp_sock *)sk;
+diff --git a/net/xdp/xsk_queue.h b/net/xdp/xsk_queue.h
+index 909c516..dd9e985 100644
+--- a/net/xdp/xsk_queue.h
++++ b/net/xdp/xsk_queue.h
+@@ -16,6 +16,7 @@
+ struct xdp_ring {
+ 	u32 producer ____cacheline_aligned_in_smp;
+ 	u32 consumer ____cacheline_aligned_in_smp;
++	u32 flags;
+ };
+ 
+ /* Used for the RX and TX queues for packets */
 -- 
 2.7.4
 
