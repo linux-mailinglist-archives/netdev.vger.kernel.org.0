@@ -2,177 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D3C8D775
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:52:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC4838D772
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727791AbfHNPv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 11:51:59 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:38290 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726047AbfHNPv6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 11:51:58 -0400
-Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7EFhx6e016551;
-        Wed, 14 Aug 2019 08:51:32 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : subject :
- date : message-id : references : in-reply-to : content-type : content-id :
- content-transfer-encoding : mime-version; s=facebook;
- bh=x2t0o6e+bQHxHobP3O+blO6xm2f45Cp4VlCF0GVAMoE=;
- b=BPH1yosozlAzg3BUG1LFKTnjlnZ90l7+Y4ZDTf1aUv0UwW62PvlF+KZI76ntQEUQPoxi
- qSa5S++Ie3GxHvEdjTgR7lZyNR2iVLwzYhHZtq8KOe7cP52Ffa+DtEUVoT/J54X8h2Zd
- jYGPBaEgr7v9Vb5YyzmS2HbqaZWMXTIv0Vc= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ucjbarux9-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 14 Aug 2019 08:51:32 -0700
-Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
- prn-hub03.TheFacebook.com (2620:10d:c081:35::127) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Wed, 14 Aug 2019 08:51:30 -0700
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Wed, 14 Aug 2019 08:51:30 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y1u3FTNpKBM8e44SA/wXFpPRxCERDsy75ah6y8itCt+u951FwtHgkE48/qNGin9WhjnJu8AL8CnUx/t+hxVZULL7qq5czDYIWkyWX6XUvU9NNo/gIgQY/s/B5zISyNuqjxMIw4eY8DdnWsMyNro+5OIKk9w3n2U7edV3hPsd7mhoodOYV+3o55SktYXxzRLaPy9FKd4Zv9sgua8ekJ98kQy81VCLkD7UUKTBG3Abk6zJ8mAr6YgTXj4F+rAVP3niVewjOYfVhHXQ4AaXfQIWZ4vZN9claDQfEkNPFLapdbVrNjrbt+YInDfo3b9/zljkfhlm+skb+nkcK5fzeAIU2w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2t0o6e+bQHxHobP3O+blO6xm2f45Cp4VlCF0GVAMoE=;
- b=XpwmxQ+o4WQpUQCU1LlTzPQOl92ZNlQBi/zTFWgHfytRjiEUd6q9MIxPBZ2c5oFP+1kyQw+LTQUdMgRpPNaCn0wG/KdBZYqadVNO4u1mbZMqYcvqRssgk7x9tN+V069FV2VupeId261BwRCH7N7Yb3kpd3x0tF/2WQcgltaidn+vYTIsgMpl+ed58rHulGnf7bq8lOyanYAeUasChdVLJma3LEalp57/9ttPDeI2NbQqDU2xNdQl+4pH0h/7QebTlZoHwLcGgPflHD7TX/S8MuQxVPwJqIgJZgzMeg2Q3aZJAp7VLjQkhSV8xJAdhDshv5lBmyW8OOELgiKcXdU6Qw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2t0o6e+bQHxHobP3O+blO6xm2f45Cp4VlCF0GVAMoE=;
- b=Ts62owqy6AgPI0cToy9mdAuYzDo0QLiLHUo0IhepBbWPCAlDhJxchi98Vc2CK41i5tgH3K7/rzHkxL1H14AoRICZy9jaO9wM9uLX0uMzJHIyktFq+L4FKA5k8QOEMTBY43PGFAimv8BSdIfIti3tZ4aSjyxQL8jOf13aLj1wDws=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
- BYAPR15MB2712.namprd15.prod.outlook.com (20.179.157.29) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.20; Wed, 14 Aug 2019 15:51:29 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978%5]) with mapi id 15.20.2157.022; Wed, 14 Aug 2019
- 15:51:29 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Jesper Dangaard Brouer" <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH bpf-next 1/3] libbpf: add asm/unistd.h to xsk to get
- __NR_mmap2
-Thread-Topic: [PATCH bpf-next 1/3] libbpf: add asm/unistd.h to xsk to get
- __NR_mmap2
-Thread-Index: AQHVUoIEKyrT2yAIekOTwiyoLftnBKb6yzyA
-Date:   Wed, 14 Aug 2019 15:51:28 +0000
-Message-ID: <f7be2fe9-cc06-ba99-dc78-f9296bcb4f20@fb.com>
-References: <20190813102318.5521-1-ivan.khoronzhuk@linaro.org>
- <20190813102318.5521-2-ivan.khoronzhuk@linaro.org>
- <CAEf4BzZ2y_DmTXkVqFh6Hdcquo6UvntvCygw5h5WwrWYXRRg_g@mail.gmail.com>
- <20190814092403.GA4142@khorivan>
-In-Reply-To: <20190814092403.GA4142@khorivan>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO1PR15CA0086.namprd15.prod.outlook.com
- (2603:10b6:101:20::30) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:10e::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:b5df]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a90710aa-416f-4189-70d5-08d720cf4522
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2712;
-x-ms-traffictypediagnostic: BYAPR15MB2712:
-x-ms-exchange-purlcount: 2
-x-microsoft-antispam-prvs: <BYAPR15MB2712F92564B6B1CCE220C4AFD3AD0@BYAPR15MB2712.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1751;
-x-forefront-prvs: 01294F875B
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(39860400002)(136003)(396003)(366004)(376002)(346002)(52314003)(199004)(189003)(6116002)(31686004)(36756003)(966005)(110136005)(486006)(8936002)(64756008)(2616005)(31696002)(14454004)(66446008)(66556008)(11346002)(66476007)(446003)(66946007)(478600001)(316002)(53936002)(2906002)(52116002)(386003)(86362001)(53546011)(6506007)(99286004)(76176011)(476003)(25786009)(229853002)(46003)(6512007)(5660300002)(6306002)(6486002)(256004)(6436002)(186003)(102836004)(2501003)(6246003)(81156014)(8676002)(71190400001)(81166006)(7416002)(71200400001)(7736002)(305945005)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2712;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ID/v7/cZoyX4/Eq77+hps1JsktovpvzY9leitgBjeA9PwTYnfqGIz6ZZZeDLAc9rCOKmgv5u5x/cEtQ1mqAvFkpqZV/s4u3DbjJw2vCcBKNvg2d2WzFex8u7+nEYIsNCU5C8Q2lP/pUVJbug61OcrRoKqFeaDofll2oRc4zwoaNDcNlCmy0b6hP06GgLBvwZEg9oizv6B7lv+5YltJgRgphw/0Yhoez+RMjibRTXu3ysUsq2R41NCDQwdOJRRBnChuutET6Xk/gyHrzIYZmOXFVuq76KPyGXNAD2uhNPAF2nEOMkpsR6bmI05vivHPMrK6tHPWbW8IOfsE7zN7oJBfltS8V6DtCtIjISYH3pTN2jHulO+2mSH85nZfcMdM++4vsYN/5Mw0/MwkOG8/pYCBkoV433gjMpNQ3y4NryDe8=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <DB1DF4AD137DE34B9D5F98B17E637118@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726704AbfHNPvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 11:51:40 -0400
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:39019 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfHNPvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 11:51:39 -0400
+X-Originating-IP: 209.85.222.41
+Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com [209.85.222.41])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 23C7D1C0003
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 15:51:36 +0000 (UTC)
+Received: by mail-ua1-f41.google.com with SMTP id g11so16177991uak.0
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 08:51:36 -0700 (PDT)
+X-Gm-Message-State: APjAAAVfLmq6S0il6FAqymy/UlaqWiKb6pg7e4jjOOUZJdNx5hC7yaE+
+        BmrFfl8o3sv80w8FwmxrsLMmVkkkX6AZPRvBeLA=
+X-Google-Smtp-Source: APXvYqwE0rg/wmwIlC6hBhzAD6znflLVuMBp5kRLEcJ8XVQwFjeiE4xmm3PmC7oinHjtGfxuZIIiG4NPgJd3XJnojPo=
+X-Received: by 2002:ab0:699a:: with SMTP id t26mr341374uaq.70.1565797895779;
+ Wed, 14 Aug 2019 08:51:35 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: a90710aa-416f-4189-70d5-08d720cf4522
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Aug 2019 15:51:28.9316
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: TjUMGeMes2Qg9X5WDAzSHKCU9N6I1txJ/aT1/Hr6pxIdLH0io3RuLw2Lq9P4Jk0I
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2712
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-14_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908140153
-X-FB-Internal: deliver
+References: <1565179722-22488-1-git-send-email-paulb@mellanox.com>
+ <CAOrHB_DhfiQy8RwTiwgn9ZXgsd5j2f0ynZPUP4wf-xzhjwo8kg@mail.gmail.com>
+ <b5342e56-4baa-97ab-8694-2f48d012afca@mellanox.com> <CAOrHB_CDrau-jLycRYxRkn1tEXVrRhoSYSd8sAcGPiZ-bp+FEg@mail.gmail.com>
+ <68e7a65c-162a-8bc5-4d80-f4f245944b9c@mellanox.com>
+In-Reply-To: <68e7a65c-162a-8bc5-4d80-f4f245944b9c@mellanox.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Wed, 14 Aug 2019 08:53:07 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_Cn0Stx+Bc=Kvg55ZrOVNJhkn3Fz9rFjUNVOs8oRTgB9w@mail.gmail.com>
+Message-ID: <CAOrHB_Cn0Stx+Bc=Kvg55ZrOVNJhkn3Fz9rFjUNVOs8oRTgB9w@mail.gmail.com>
+Subject: Re: [PATCH net-next] net: openvswitch: Set OvS recirc_id from tc
+ chain index
+To:     Paul Blakey <paulb@mellanox.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Justin Pettit <jpettit@nicira.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDgvMTQvMTkgMjoyNCBBTSwgSXZhbiBLaG9yb256aHVrIHdyb3RlOg0KPiBPbiBUdWUs
-IEF1ZyAxMywgMjAxOSBhdCAwNDozODoxM1BNIC0wNzAwLCBBbmRyaWkgTmFrcnlpa28gd3JvdGU6
-DQo+IA0KPiBIaSwgQW5kcmlpDQo+IA0KPj4gT24gVHVlLCBBdWcgMTMsIDIwMTkgYXQgMzoyNCBB
-TSBJdmFuIEtob3JvbnpodWsNCj4+IDxpdmFuLmtob3JvbnpodWtAbGluYXJvLm9yZz4gd3JvdGU6
-DQo+Pj4NCj4+PiBUaGF0J3MgbmVlZGVkIHRvIGdldCBfX05SX21tYXAyIHdoZW4gbW1hcDIgc3lz
-Y2FsbCBpcyB1c2VkLg0KPj4+DQo+Pj4gU2lnbmVkLW9mZi1ieTogSXZhbiBLaG9yb256aHVrIDxp
-dmFuLmtob3JvbnpodWtAbGluYXJvLm9yZz4NCj4+PiAtLS0NCj4+PiDCoHRvb2xzL2xpYi9icGYv
-eHNrLmMgfCAxICsNCj4+PiDCoDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQ0KPj4+DQo+
-Pj4gZGlmZiAtLWdpdCBhL3Rvb2xzL2xpYi9icGYveHNrLmMgYi90b29scy9saWIvYnBmL3hzay5j
-DQo+Pj4gaW5kZXggNTAwN2I1ZDRmZDJjLi5mMmZjNDBmOTgwNGMgMTAwNjQ0DQo+Pj4gLS0tIGEv
-dG9vbHMvbGliL2JwZi94c2suYw0KPj4+ICsrKyBiL3Rvb2xzL2xpYi9icGYveHNrLmMNCj4+PiBA
-QCAtMTIsNiArMTIsNyBAQA0KPj4+IMKgI2luY2x1ZGUgPHN0ZGxpYi5oPg0KPj4+IMKgI2luY2x1
-ZGUgPHN0cmluZy5oPg0KPj4+IMKgI2luY2x1ZGUgPHVuaXN0ZC5oPg0KPj4+ICsjaW5jbHVkZSA8
-YXNtL3VuaXN0ZC5oPg0KPj4NCj4+IGFzbS91bmlzdGQuaCBpcyBub3QgcHJlc2VudCBpbiBHaXRo
-dWIgbGliYnBmIHByb2plY3Rpb24uIElzIHRoZXJlIGFueQ0KPiANCj4gTG9vayBvbiBpbmNsdWRl
-cyBmcm9tDQo+IHRvb2xzL2xpYi9icGYvbGlicGYuYw0KPiB0b29scy9saWIvYnBmL2JwZi5jDQo+
-IA0KPiBUaGF0J3MgaG93IGl0J3MgZG9uZS4uLiBDb3BwaW5nIGhlYWRlcnMgdG8gYXJjaC9hcm0g
-d2lsbCBub3QNCj4gc29sdmUgdGhpcywgaXQgaW5jbHVkZXMgYm90aCBvZiB0aGVtIGFueXdheSwg
-YW5kIGFueXdheSBpdCBuZWVkcw0KPiBhc20vdW5pc3RkLmggaW5jbHVzaW9uIGhlcmUsIG9ubHkg
-YmVjYXVzZSB4c2suYyBuZWVkcyBfX05SXyoNCj4gDQo+IA0KPj4gd2F5IHRvIGF2b2lkIGluY2x1
-ZGluZyB0aGlzIGhlYWRlcj8gR2VuZXJhbGx5LCBsaWJicGYgY2FuJ3QgZWFzaWx5IHVzZQ0KPj4g
-YWxsIG9mIGtlcm5lbCBoZWFkZXJzLCB3ZSBuZWVkIHRvIHJlLWltcGxlbWVudGVkIGFsbCB0aGUg
-ZXh0cmEgdXNlZA0KPj4gc3R1ZmYgZm9yIEdpdGh1YiB2ZXJzaW9uIG9mIGxpYmJwZiwgc28gd2Ug
-dHJ5IHRvIG1pbmltaXplIHVzYWdlIG9mIG5ldw0KPj4gaGVhZGVycyB0aGF0IGFyZSBub3QganVz
-dCBwbGFpbiB1YXBpIGhlYWRlcnMgZnJvbSBpbmNsdWRlL3VhcGkuDQo+IA0KPiBZZXMgSSBrbm93
-LCBpdCdzIGZhciBhd2F5IGZyb20gcmVhbCBudW1iZXIgb2YgY2hhbmdlcyBuZWVkZWQuDQo+IEkg
-ZmFjZWQgZW5vdWdoIGFib3V0IHRoaXMgYWxyZWFkeSBhbmQga2VybmVsIGhlYWRlcnMsIGVzcGVj
-aWFsbHkNCj4gZm9yIGFybTMyIGl0J3MgYSBiaXQgZGVjZW5jeSBwcm9ibGVtLiBCdXQgdGhpcyBw
-YXRjaCBpdCdzIHBhcnQgb2YNCj4gbm9ybWFsIG9uZS4gSSBoYXZlIGNvdXBsZSBpc3N1ZXMgZGVz
-cGl0ZSB0aGlzIG5vcm1hbGx5IGZpeGVkIG1tYXAyDQo+IHRoYXQgaXMgdGhlIHNhbWUgZXZlbiBp
-ZiB1YXBpIGluY2x1ZGVzIGFyZSBjb3BwaWVkIHRvIHRvb2xzL2FyY2gvYXJtLg0KPiANCj4gSW4g
-Y29udGludWF0aW9uIG9mIGtlcm5lbCBoZWFkZXJzIGluY2x1c2lvbiBhbmQgYXJtIGJ1aWxkOg0K
-PiANCj4gRm9yIGluc3RhbmNlLCB3aGF0IGFib3V0IHRoaXMgcm91Z2ggImtlcm5lbCBoZWFkZXJz
-IiBoYWNrOg0KPiBodHRwczovL2dpdGh1Yi5jb20vaWtob3JuL2FmX3hkcF9zdHVmZi9jb21taXQv
-YWE2NDVjY2NhNGQ4NDRmNDA0ZWMzYzJiMjc0MDJkNGQ3ODQ4ZDFiNSANCg0KVGhlICIuc3ludGF4
-IHVuaWZpZWQiIGlzIG1lbnRpb25lZCBhIGNvdXBsZSBvZiB0aW1lcw0KaW4gYmNjIG1haWxpbmcg
-bGlzdCBhcyB3ZWxsLiBsbHZtIGJwZiBiYWNrZW5kIG1pZ2h0DQpiZSBhYmxlIHRvIHNvbHZlIGl0
-LiBJIGhhdmUgbm90IGxvb2tlZCBhdCB0aGUgZGV0YWlscyB0aG91Z2guDQoNCj4gDQo+IG9yIHRo
-aXMgb25lIHJlbGF0ZWQgZm9yIGFybTMyIG9ubHk6DQo+IGh0dHBzOi8vZ2l0aHViLmNvbS9pa2hv
-cm4vYWZfeGRwX3N0dWZmL2NvbW1pdC8yYzZjNmQ1Mzg2MDVhYWMzOTYwMGRjYjNjOWI2NmRlMTFj
-NzBiOTYzIA0KDQpUaGlzIG1heSBub3Qgd29yayBpZiBicGYgcHJvZ3JhbSB0cmllcyB0byBoYW5k
-bGUga2VybmVsIGhlYWRlcnMuDQpicGYgcHJvZ3JhbSBtYXkgZ2V0IHdyb25nIGxheW91dC4NCg0K
-QW55d2F5LCB0aGUgYWJvdmUgdHdvIGNvbW1lbnRzIGFyZSBpcnJlbGV2YW50IHRvIHRoaXMgcGF0
-Y2ggc2V0DQphbmQgaWYgbmVlZGVkIHNob3VsZCBiZSBkaXNjdXNzZWQgc2VwYXJhdGVseS4NCg0K
-PiANCj4gDQo+IEkgaGF2ZSBtb3JlLi4uDQo+IA0KPj4NCj4+PiDCoCNpbmNsdWRlIDxhcnBhL2lu
-ZXQuaD4NCj4+PiDCoCNpbmNsdWRlIDxhc20vYmFycmllci5oPg0KPj4+IMKgI2luY2x1ZGUgPGxp
-bnV4L2NvbXBpbGVyLmg+DQo+Pj4gLS0gDQo+Pj4gMi4xNy4xDQo+Pj4NCj4gDQo=
+On Tue, Aug 13, 2019 at 1:29 AM Paul Blakey <paulb@mellanox.com> wrote:
+>
+>
+> On 8/12/2019 7:18 PM, Pravin Shelar wrote:
+> > On Sun, Aug 11, 2019 at 3:46 AM Paul Blakey <paulb@mellanox.com> wrote:
+> >>
+> >> On 8/8/2019 11:53 PM, Pravin Shelar wrote:
+> >>> On Wed, Aug 7, 2019 at 5:08 AM Paul Blakey <paulb@mellanox.com> wrote:
+> >>>> Offloaded OvS datapath rules are translated one to one to tc rules,
+> >>>> for example the following simplified OvS rule:
+> >>>>
+> >>>> recirc_id(0),in_port(dev1),eth_type(0x0800),ct_state(-trk) actions:ct(),recirc(2)
+> >>>>
+> >>>> Will be translated to the following tc rule:
+> >>>>
+> >>>> $ tc filter add dev dev1 ingress \
+> >>>>               prio 1 chain 0 proto ip \
+> >>>>                   flower tcp ct_state -trk \
+> >>>>                   action ct pipe \
+> >>>>                   action goto chain 2
+> >>>>
+> >>>> Received packets will first travel though tc, and if they aren't stolen
+> >>>> by it, like in the above rule, they will continue to OvS datapath.
+> >>>> Since we already did some actions (action ct in this case) which might
+> >>>> modify the packets, and updated action stats, we would like to continue
+> >>>> the proccessing with the correct recirc_id in OvS (here recirc_id(2))
+> >>>> where we left off.
+> >>>>
+> >>>> To support this, introduce a new skb extension for tc, which
+> >>>> will be used for translating tc chain to ovs recirc_id to
+> >>>> handle these miss cases. Last tc chain index will be set
+> >>>> by tc goto chain action and read by OvS datapath.
+> >>>>
+> >>>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
+> >>>> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> >>>> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> >>>> ---
+> >>>>    include/linux/skbuff.h    | 13 +++++++++++++
+> >>>>    include/net/sch_generic.h |  5 ++++-
+> >>>>    net/core/skbuff.c         |  6 ++++++
+> >>>>    net/openvswitch/flow.c    |  9 +++++++++
+> >>>>    net/sched/Kconfig         | 13 +++++++++++++
+> >>>>    net/sched/act_api.c       |  1 +
+> >>>>    net/sched/cls_api.c       | 12 ++++++++++++
+> >>>>    7 files changed, 58 insertions(+), 1 deletion(-)
+> >>>>
+> >>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> >>>> index 3aef8d8..fb2a792 100644
+> >>>> --- a/include/linux/skbuff.h
+> >>>> +++ b/include/linux/skbuff.h
+> >>>> @@ -279,6 +279,16 @@ struct nf_bridge_info {
+> >>>>    };
+> >>>>    #endif
+> >>>>
+> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+> >>>> +/* Chain in tc_skb_ext will be used to share the tc chain with
+> >>>> + * ovs recirc_id. It will be set to the current chain by tc
+> >>>> + * and read by ovs to recirc_id.
+> >>>> + */
+> >>>> +struct tc_skb_ext {
+> >>>> +       __u32 chain;
+> >>>> +};
+> >>>> +#endif
+> >>>> +
+> >>>>    struct sk_buff_head {
+> >>>>           /* These two members must be first. */
+> >>>>           struct sk_buff  *next;
+> >>>> @@ -4050,6 +4060,9 @@ enum skb_ext_id {
+> >>>>    #ifdef CONFIG_XFRM
+> >>>>           SKB_EXT_SEC_PATH,
+> >>>>    #endif
+> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+> >>>> +       TC_SKB_EXT,
+> >>>> +#endif
+> >>>>           SKB_EXT_NUM, /* must be last */
+> >>>>    };
+> >>>>
+> >>>> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+> >>>> index 6b6b012..871feea 100644
+> >>>> --- a/include/net/sch_generic.h
+> >>>> +++ b/include/net/sch_generic.h
+> >>>> @@ -275,7 +275,10 @@ struct tcf_result {
+> >>>>                           unsigned long   class;
+> >>>>                           u32             classid;
+> >>>>                   };
+> >>>> -               const struct tcf_proto *goto_tp;
+> >>>> +               struct {
+> >>>> +                       const struct tcf_proto *goto_tp;
+> >>>> +                       u32 goto_index;
+> >>>> +               };
+> >>>>
+> >>>>                   /* used in the skb_tc_reinsert function */
+> >>>>                   struct {
+> >>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> >>>> index ea8e8d3..2b40b5a 100644
+> >>>> --- a/net/core/skbuff.c
+> >>>> +++ b/net/core/skbuff.c
+> >>>> @@ -4087,6 +4087,9 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
+> >>>>    #ifdef CONFIG_XFRM
+> >>>>           [SKB_EXT_SEC_PATH] = SKB_EXT_CHUNKSIZEOF(struct sec_path),
+> >>>>    #endif
+> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+> >>>> +       [TC_SKB_EXT] = SKB_EXT_CHUNKSIZEOF(struct tc_skb_ext),
+> >>>> +#endif
+> >>>>    };
+> >>>>
+> >>>>    static __always_inline unsigned int skb_ext_total_length(void)
+> >>>> @@ -4098,6 +4101,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
+> >>>>    #ifdef CONFIG_XFRM
+> >>>>                   skb_ext_type_len[SKB_EXT_SEC_PATH] +
+> >>>>    #endif
+> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+> >>>> +               skb_ext_type_len[TC_SKB_EXT] +
+> >>>> +#endif
+> >>>>                   0;
+> >>>>    }
+> >>>>
+> >>>> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+> >>>> index bc89e16..0287ead 100644
+> >>>> --- a/net/openvswitch/flow.c
+> >>>> +++ b/net/openvswitch/flow.c
+> >>>> @@ -816,6 +816,9 @@ static int key_extract_mac_proto(struct sk_buff *skb)
+> >>>>    int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+> >>>>                            struct sk_buff *skb, struct sw_flow_key *key)
+> >>>>    {
+> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+> >>>> +       struct tc_skb_ext *tc_ext;
+> >>>> +#endif
+> >>>>           int res, err;
+> >>>>
+> >>>>           /* Extract metadata from packet. */
+> >>>> @@ -848,7 +851,13 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+> >>>>           if (res < 0)
+> >>>>                   return res;
+> >>>>           key->mac_proto = res;
+> >>>> +
+> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+> >>>> +       tc_ext = skb_ext_find(skb, TC_SKB_EXT);
+> >>>> +       key->recirc_id = tc_ext ? tc_ext->chain : 0;
+> >>>> +#else
+> >>>>           key->recirc_id = 0;
+> >>>> +#endif
+> >>>>
+> >>> Most of cases the config would be turned on, so the ifdef is not that
+> >>> useful. Can you add static key to avoid searching the skb-ext in non
+> >>> offload cases.
+> >> Hi,
+> >>
+> >> What do you mean by a static key?
+> >>
+> > https://www.kernel.org/doc/Documentation/static-keys.txt
+> >
+> > Static key can be enabled when a flow is added to the tc filter.
+>
+> Hi and thanks for the feedback,
+>
+> The skb_ext_find() just checks a single bit on the
+> skb->active_extensions, and if so returns an offset. Do you think it
+> will impact performance much?
+>
+I do not see much down side of adding static key here.
+
+>
+> But to your suggestion, do you mean that the first tc goto action
+> instance with the relevant ifdef (CONFIG_NET_TC_SKB_EXT) it will enable
+> the OvS static key that guards this skb_ext_find()?
+>
+> I guess calling it in tcf_action_set_ctrlact() if goto_chain != 0.
+>
+> This will expose some OvS helper function (or static key) to
+> net/sched/act_api.c right?
+
+Right, The patch adds this dependency anyways, so this symbol
+definition in OVS would make it explicit to user.
