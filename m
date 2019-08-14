@@ -2,110 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 258E18D750
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:40:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BD618D754
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:41:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727222AbfHNPkE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 11:40:04 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35703 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfHNPkD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 11:40:03 -0400
-Received: by mail-pl1-f193.google.com with SMTP id gn20so1601011plb.2;
-        Wed, 14 Aug 2019 08:40:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=/MNhvAe1aUSGuYylMPVo6sUzj61ox1fF3EFAj+VYkMo=;
-        b=RTcAgzOBu9fZXX4Ano/BuBGNV9xA+PIWZUvaDNY43N9xOFCR37ysTZrbfZFggwngoa
-         S24BEiBpnmNhnaCuAfNnn5r6x6yx2SHICBVgr5kv5RF/w9fcpp4J8KpOqdUeK/UR3w5r
-         +5davpJUkfXIDzKCsiFCZrtpQK2PfRobxT+fMtXDvdUbiRjOrjuxHLiQEdo/cROqMXcr
-         KODkVVQ+IpGR2PmjDgawXSq/j+w1BocGIZIzYLZPqwRvbJn6NEWhChoDcLDu+mu8+V7B
-         Yeh9fNIKgy9Ci4XzFW2wzE+8pNW+TO0+cPMaEbEBoJhrhQr3G/W17xXFewtHY1tddlfn
-         DuDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=/MNhvAe1aUSGuYylMPVo6sUzj61ox1fF3EFAj+VYkMo=;
-        b=sp831+Dk8yZkKvC+WsSMh9iGZGLQWYO2AruC1S91wcq7ks/M5KzEq1w5I16rZywwYk
-         Fd0xJsO07sVH3zANa6BrFYV76/zv6eFdl8r7WSL5mXEM6sjN/qRLZapHXumbv+4HZSaK
-         CG0ZxXEOQUw087/RFuZZi8heCAy9OK2y0lTeapsbgyzLDsmlW8Lkp8uGTgElMIcfyNxE
-         0y2vOEGL3RvDM7jOr1SYnxSex4t4t2vSrlsbghlS3zp+dH5Mkf7QQDDoFG/WFXb47Eq4
-         TdkJPzscw6tqrmj9KVfHc5lLM3atCG1et12+0yqeh1inq0caFqnWCIz8VApbxkyGa/Fl
-         8D0w==
-X-Gm-Message-State: APjAAAUMWqoC1ACtU9hU1BaQqwr3WgZzAqo5HSCw+fCnBAFb1TwqeSXR
-        2Uph+PqNY9CVu1KbN8z+tQ8=
-X-Google-Smtp-Source: APXvYqzJYRF+TFURVDpwNn2tIkwnGmrjFdJ1DkgdL+dqaDtOskq6PID6zwDlUObcq/nHZq601qKdQQ==
-X-Received: by 2002:a17:902:e38b:: with SMTP id ch11mr25057plb.275.1565797202982;
-        Wed, 14 Aug 2019 08:40:02 -0700 (PDT)
-Received: from [172.26.122.72] ([2620:10d:c090:180::6327])
-        by smtp.gmail.com with ESMTPSA id t4sm145873pfq.153.2019.08.14.08.40.01
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 08:40:02 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
-Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, brouer@redhat.com, maximmi@mellanox.com,
-        bpf@vger.kernel.org, bruce.richardson@intel.com,
-        ciara.loftus@intel.com, jakub.kicinski@netronome.com,
-        xiaolong.ye@intel.com, qi.z.zhang@intel.com,
-        sridhar.samudrala@intel.com, kevin.laatz@intel.com,
-        ilias.apalodimas@linaro.org, kiran.patil@intel.com,
-        axboe@kernel.dk, maciej.fijalkowski@intel.com,
-        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
-Subject: Re: [PATCH bpf-next v4 8/8] net/mlx5e: Add AF_XDP need_wakeup support
-Date:   Wed, 14 Aug 2019 08:40:00 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <FA76BD00-F81D-453D-AB70-BDE6A4E0950E@gmail.com>
-In-Reply-To: <1565767643-4908-9-git-send-email-magnus.karlsson@intel.com>
-References: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
- <1565767643-4908-9-git-send-email-magnus.karlsson@intel.com>
+        id S1728262AbfHNPla (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 11:41:30 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:43348 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728188AbfHNPl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 11:41:27 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7EFVtMH130677
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 11:41:26 -0400
+Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2uckr1bynx-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 11:41:26 -0400
+Received: from localhost
+        by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <tlfalcon@linux.ibm.com>;
+        Wed, 14 Aug 2019 16:41:25 +0100
+Received: from b01cxnp23034.gho.pok.ibm.com (9.57.198.29)
+        by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 14 Aug 2019 16:41:22 +0100
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7EFfLKJ35652050
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 14 Aug 2019 15:41:21 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 1E9E6AC060;
+        Wed, 14 Aug 2019 15:41:21 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id AA26AAC059;
+        Wed, 14 Aug 2019 15:41:20 +0000 (GMT)
+Received: from oc7186267434.ibm.com (unknown [9.41.178.211])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 14 Aug 2019 15:41:20 +0000 (GMT)
+Subject: Re: [PATCH net v2] ibmveth: Convert multicast list size for
+ little-endian system
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, liuhangbin@gmail.com, davem@davemloft.net,
+        joe@perches.com
+References: <1565644386-22284-1-git-send-email-tlfalcon@linux.ibm.com>
+ <20190813194037.464bea2c@cakuba.netronome.com>
+From:   Thomas Falcon <tlfalcon@linux.ibm.com>
+Date:   Wed, 14 Aug 2019 10:41:20 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20190813194037.464bea2c@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+x-cbid: 19081415-0072-0000-0000-00000452AAD9
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011590; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000287; SDB=6.01246749; UDB=6.00657947; IPR=6.01028256;
+ MB=3.00028173; MTD=3.00000008; XFM=3.00000015; UTC=2019-08-14 15:41:23
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19081415-0073-0000-0000-00004CC3BF59
+Message-Id: <a496c317-264a-ee1a-238a-4043eb4fcb3e@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-14_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908140153
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14 Aug 2019, at 0:27, Magnus Karlsson wrote:
 
-> From: Maxim Mikityanskiy <maximmi@mellanox.com>
->
-> This commit adds support for the new need_wakeup feature of AF_XDP. The
-> applications can opt-in by using the XDP_USE_NEED_WAKEUP bind() flag.
-> When this feature is enabled, some behavior changes:
->
-> RX side: If the Fill Ring is empty, instead of busy-polling, set the
-> flag to tell the application to kick the driver when it refills the Fill
-> Ring.
->
-> TX side: If there are pending completions or packets queued for
-> transmission, set the flag to tell the application that it can skip the
-> sendto() syscall and save time.
->
-> The performance testing was performed on a machine with the following
-> configuration:
->
-> - 24 cores of Intel Xeon E5-2620 v3 @ 2.40 GHz
-> - Mellanox ConnectX-5 Ex with 100 Gbit/s link
->
-> The results with retpoline disabled:
->
->        | without need_wakeup  | with need_wakeup     |
->        |----------------------|----------------------|
->        | one core | two cores | one core | two cores |
-> -------|----------|-----------|----------|-----------|
-> txonly | 20.1     | 33.5      | 29.0     | 34.2      |
-> rxdrop | 0.065    | 14.1      | 12.0     | 14.1      |
-> l2fwd  | 0.032    | 7.3       | 6.6      | 7.2       |
->
-> "One core" means the application and NAPI run on the same core. "Two
-> cores" means they are pinned to different cores.
->
-> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-> Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-> Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
+On 8/13/19 9:43 PM, Jakub Kicinski wrote:
+> On Mon, 12 Aug 2019 16:13:06 -0500, Thomas Falcon wrote:
+>> The ibm,mac-address-filters property defines the maximum number of
+>> addresses the hypervisor's multicast filter list can support. It is
+>> encoded as a big-endian integer in the OF device tree, but the virtual
+>> ethernet driver does not convert it for use by little-endian systems.
+>> As a result, the driver is not behaving as it should on affected systems
+>> when a large number of multicast addresses are assigned to the device.
+>>
+>> Reported-by: Hangbin Liu <liuhangbin@gmail.com>
+>> Signed-off-by: Thomas Falcon <tlfalcon@linux.ibm.com>
+> Okay, applied, but:
 
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Thanks!
+
+...
+
+> ibmveth_init_link_settings() is part of your net-next patch which
+> you're respining, so I had to apply manually. Please double check your
+> patches apply cleanly to the designated tree.
+
+Sorry about that, I thought I fixed that but maybe I got patches mixed 
+up somehow.  Thanks again.
+
+Tom
+
