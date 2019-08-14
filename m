@@ -2,95 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2102E8C59F
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 03:45:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4728C5AF
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 03:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726007AbfHNBpE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 21:45:04 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:44174 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726855AbfHNBpD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 21:45:03 -0400
-Received: by mail-qt1-f195.google.com with SMTP id 44so77457732qtg.11
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 18:45:03 -0700 (PDT)
+        id S1727021AbfHNBvx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 21:51:53 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:34059 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726825AbfHNBvx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 21:51:53 -0400
+Received: by mail-pl1-f193.google.com with SMTP id i2so50071939plt.1;
+        Tue, 13 Aug 2019 18:51:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=TaeTgbEgKeuniyhRwODvYXoOfpd7liiFN1SmAcX8His=;
-        b=D5MI5hS3Z1Jgemg4DrYqGP17fMcHm0JpxwJcpNvoWNsj9m55kKOhGNz7Ta26mGwbzK
-         TDVNht+PlBGpX4kqCxct5XbJEvEw9LSvyjNG2LRVYHr2UTeggtsx6y/4RBCKuCpNtF2U
-         RXRknaznhjOiORNj8Wi96Qtaim/55hfk5lf4n+HjxI0nsI04U863RMOEW/EnK1H+11mt
-         ABIdwf6vbmUkMW4Gfaowf51vrgv3RkqSNpPoliP/NqjpKufiphtFymGJ1x2uH540o0Cw
-         eNBd7C43j8TKQqqcFbb517ucRt5YGX+hhmUOcMDHJtu0EuP3XPFHBNyaUMx8v0z4sxU7
-         +tDA==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=Lp7W6yUkEuFiW/WJUDPMwQwcRO85PXGwYwhO+f6+kU0=;
+        b=b9nj8loOV7wYJhqW2MQYQYfsfUy66sVheULhrOwofd433JBeEN+i8V5W38V2Md+T14
+         XOlaurr+1zpfMOivdbdbi0NINzZzqZ8P/1GOWTuoVTFix4GOfqRgabe90fiUkiX0gzxq
+         auSvK9u2uKOKLCHRQkIHRg6z8QCjlPcKR6sKLsP4KQv7ECPT39vLXeU9pvNg4gTYgZR1
+         oNjsR1RqX2HJXAQg47RtcggmNrxgFz+7alZYVO8rsfvKSCTpX6faJl8MfqkEEwrcLe44
+         cHxfbjEhtE5fIrJJCkvdg097X8zirBV7W0R4bsKNMAM33+gq+1Kx65A+bA52+MUSyAAS
+         uUCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=TaeTgbEgKeuniyhRwODvYXoOfpd7liiFN1SmAcX8His=;
-        b=FtZ4AkkGUk0PUrg5AQ/0cNSp2vrMOG6x5v+KDTH7jxfEoE4jlLc7bkhzgIAWhNHJTp
-         FlkdvHkjkj/mcWbyK32IsumQ5+CJmQ+g9n5jOzsUukVgl56ztnBiKkjFE89E5Ztsn7y6
-         aAooCsnzr18zmXARiKO1XugBPJVMZhLKbN7ISPyjEkGjn/Zbd+lERlS0wqHEUunzLb9K
-         Y5YQLQocyHKmnieIz1016iLjAoOarM1LYTEY+gAqeuaDbLYcWYv5lbqEkiDFOLQHhHrf
-         A86qJwUWLpkO5kz4WFWBmdsHRADnT9R5j/peW49W+SCcAYz6G8pesZwxL1wWl+Hd32VN
-         GsVg==
-X-Gm-Message-State: APjAAAXBmjdu9J38sdbBNRzbq1weAC4AFWgtgoqotf+gL6GXxIwL34Sm
-        mUi+bioljAs/pXsZn9pQPlduvg==
-X-Google-Smtp-Source: APXvYqzbhn8NqzEGJVbU57O7LKKv9OdJArZr/SzVPFpL91z597fJFlJVlO75QdF3OHLAsBg++MaU8A==
-X-Received: by 2002:ac8:22b9:: with SMTP id f54mr10674838qta.45.1565747102917;
-        Tue, 13 Aug 2019 18:45:02 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z2sm12025172qtq.7.2019.08.13.18.45.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 13 Aug 2019 18:45:02 -0700 (PDT)
-Date:   Tue, 13 Aug 2019 18:44:50 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH 00/17] Netfilter/IPVS updates for net-next
-Message-ID: <20190813184450.3e818068@cakuba.netronome.com>
-In-Reply-To: <20190813183701.4002-1-pablo@netfilter.org>
-References: <20190813183701.4002-1-pablo@netfilter.org>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Lp7W6yUkEuFiW/WJUDPMwQwcRO85PXGwYwhO+f6+kU0=;
+        b=B6erfSupiUkJCgLO7MAdev16XUn0LpnIobO72LD6RVqn7WP/TlvLPD8Mlf8DvqnODI
+         VygHJlDYvIZghiZSDacl33ksg3mO0vDiXM+tRYOI95M5Rxra8egiBskAeOV/gqDqKdeb
+         mcz4X0tH2LJlOMXb3q0vNqa5KSFYoZCQ0XDs8WahyxiGEM1o3N4keidpzUPZ/qpchAWi
+         A6uBi7xmO1NXGft/6Pob6zBIq1jN9Y8HFM5sddMEXVcnO9jUQUhE504p7GswYizxkuHX
+         oPrUvLlsK30LLK/8c07zMcxE6LUfk6gVqye109HR1gu+zN1bvb3Br1+NxUwRI2M1K4QC
+         UqIQ==
+X-Gm-Message-State: APjAAAWNM6rPcnGWoR8FzqVzxdXE0TYA05DAH16l7b3VIV/9hTiZfSzO
+        K1b5ryUCs9hEXcFpNG1Te+0=
+X-Google-Smtp-Source: APXvYqyswiRVE+m4G3bq/gAgAZJdSiwO9Y1gh8SDM6KfnFG0Vtc0vem6hmYmvDsidO+dlppXRg0hwA==
+X-Received: by 2002:a17:902:7797:: with SMTP id o23mr9324583pll.102.1565747512814;
+        Tue, 13 Aug 2019 18:51:52 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::3:8a34])
+        by smtp.gmail.com with ESMTPSA id ce7sm3006639pjb.16.2019.08.13.18.51.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 13 Aug 2019 18:51:52 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 18:51:51 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com
+Subject: Re: [RFC bpf-next 0/3] tools: bpftool: add subcommand to count map
+ entries
+Message-ID: <20190814015149.b4pmubo3s4ou5yek@ast-mbp>
+References: <20190813130921.10704-1-quentin.monnet@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190813130921.10704-1-quentin.monnet@netronome.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Aug 2019 20:36:44 +0200, Pablo Neira Ayuso wrote:
-> Hi,
+On Tue, Aug 13, 2019 at 02:09:18PM +0100, Quentin Monnet wrote:
+> This series adds a "bpftool map count" subcommand to count the number of
+> entries present in a BPF map. This results from a customer request for a
+> tool to count the number of entries in BPF maps used in production (for
+> example, to know how many free entries are left in a given map).
 > 
-> The following patchset contains Netfilter/IPVS updates for net-next:
+> The first two commits actually contain some clean-up in preparation for the
+> new subcommand.
 > 
-> 1) Rename mss field to mss_option field in synproxy, from Fernando Mancera.
+> The third commit adds the new subcommand. Because what data should count as
+> an entry is not entirely clear for all map types, we actually dump several
+> counters, and leave it to the users to interpret the values.
 > 
-> 2) Use SYSCTL_{ZERO,ONE} definitions in conntrack, from Matteo Croce.
+> Sending as a RFC because I'm looking for feedback on the approach. Is
+> printing several values the good thing to do? Also, note that some map
+> types such as queue/stack maps do not support any type of counting, this
+> would need to be implemented in the kernel I believe.
 > 
-> 3) More strict validation of IPVS sysctl values, from Junwei Hu.
-> 
-> 4) Remove unnecessary spaces after on the right hand side of assignments,
->    from yangxingwu.
-> 
-> 5) Add offload support for bitwise operation.
-> 
-> 6) Extend the nft_offload_reg structure to store immediate date.
-> 
-> 7) Collapse several ip_set header files into ip_set.h, from
->    Jeremy Sowden.
-> 
-> 8) Make netfilter headers compile with CONFIG_KERNEL_HEADER_TEST=y,
->    from Jeremy Sowden.
-> 
-> 9) Fix several sparse warnings due to missing prototypes, from
->    Valdis Kletnieks.
-> 
-> 10) Use static lock initialiser to ensure connlabel spinlock is
->     initialized on boot time to fix sched/act_ct.c, patch
->     from Florian Westphal.
+> More generally, we have a use case where (hash) maps are under pressure
+> (many additions/deletions from the BPF program), and counting the entries
+> by iterating other the different keys is not at all reliable. Would that
+> make sense to add a new bpf() subcommand to count the entries on the kernel
+> side instead of cycling over the entries in bpftool? If so, we would need
+> to agree on what makes an entry for each kind of map.
 
-Pulled, thanks.
+I don't mind new bpftool sub-command, but against adding kernel interface.
+Can you elaborate what is the actual use case?
+The same can be achieved by 'bpftool map dump|grep key|wc -l', no?
+
+> Note that we are also facing similar issues for purging map from their
+> entries (deleting all entries at once). We can iterate on the keys and
+> delete elements one by one, but this is very inefficient when entries are
+> being added/removed in parallel from the BPF program, and having another
+> dedicated command accessible from the bpf() system call might help here as
+> well.
+
+I think that fits into the batch processing of map commands discussion.
+
