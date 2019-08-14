@@ -2,37 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B8A98C73B
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:22:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D4558C736
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:22:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729532AbfHNCWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:22:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49720 "EHLO mail.kernel.org"
+        id S1728700AbfHNCWJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:22:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49768 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728682AbfHNCSr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:18:47 -0400
+        id S1728697AbfHNCSv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:18:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E19C720989;
-        Wed, 14 Aug 2019 02:18:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7096A2084D;
+        Wed, 14 Aug 2019 02:18:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565749126;
-        bh=ofRR4q194vxRJTR0/BHAGC0G9PhdVmLLiofeg9bAwpo=;
+        s=default; t=1565749130;
+        bh=p0XxJE8N7o7zXXXAIMl9GnwO25oAM1lDCY+x/eI0iIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eYTzak1qDEwoHFf1CzRU3tMVCmH0RhC4VdhqmUUmxb196iFXqsMHQFHGwXwj1hIqb
-         2umkWIDbP3cgZ0CISEPPs9Y2DKZK7u3JcwSmsHYxDNxQEWu+ZaWi4lDNcciI+kizQj
-         QJ45//GlwrFrk1ZIU4Nc/cdNMs4xDZqu+GGcCPeo=
+        b=A1Ll8n7dVYc5bFUIJ7hAzwkR03+BQ6oqNo9vfz3AXQkGcVBdp4iyewVJ6ZqFV7rqH
+         80HcYeJ9MHMCuX7t3ktuk7ifI2gXM+ERnP9B3j77mRZW/h3zQTYuIeUKxCpWMKRq8V
+         lfyrShoQ13bRiT5HYyJiKUH1GsMvWW7Hen7ygY6s=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Willem de Bruijn <willemb@google.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 08/44] can: dev: call netif_carrier_off() in register_candev()
-Date:   Tue, 13 Aug 2019 22:17:57 -0400
-Message-Id: <20190814021834.16662-8-sashal@kernel.org>
+Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 10/44] st21nfca_connectivity_event_received: null check the allocation
+Date:   Tue, 13 Aug 2019 22:17:59 -0400
+Message-Id: <20190814021834.16662-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021834.16662-1-sashal@kernel.org>
 References: <20190814021834.16662-1-sashal@kernel.org>
@@ -45,38 +43,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+From: Navid Emamdoost <navid.emamdoost@gmail.com>
 
-[ Upstream commit c63845609c4700488e5eacd6ab4d06d5d420e5ef ]
+[ Upstream commit 9891d06836e67324c9e9c4675ed90fc8b8110034 ]
 
-CONFIG_CAN_LEDS is deprecated. When trying to use the generic netdev
-trigger as suggested, there's a small inconsistency with the link
-property: The LED is on initially, stays on when the device is brought
-up, and then turns off (as expected) when the device is brought down.
+devm_kzalloc may fail and return null. So the null check is needed.
 
-Make sure the LED always reflects the state of the CAN device.
-
-Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Acked-by: Willem de Bruijn <willemb@google.com>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/dev.c | 2 ++
+ drivers/nfc/st21nfca/se.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
-index 7d61d8801220e..d92113db4fb97 100644
---- a/drivers/net/can/dev.c
-+++ b/drivers/net/can/dev.c
-@@ -1217,6 +1217,8 @@ int register_candev(struct net_device *dev)
- 		return -EINVAL;
+diff --git a/drivers/nfc/st21nfca/se.c b/drivers/nfc/st21nfca/se.c
+index 3a98563d4a121..eac608a457f03 100644
+--- a/drivers/nfc/st21nfca/se.c
++++ b/drivers/nfc/st21nfca/se.c
+@@ -326,6 +326,8 @@ int st21nfca_connectivity_event_received(struct nfc_hci_dev *hdev, u8 host,
  
- 	dev->rtnl_link_ops = &can_link_ops;
-+	netif_carrier_off(dev);
-+
- 	return register_netdev(dev);
- }
- EXPORT_SYMBOL_GPL(register_candev);
+ 		transaction = (struct nfc_evt_transaction *)devm_kzalloc(dev,
+ 						   skb->len - 2, GFP_KERNEL);
++		if (!transaction)
++			return -ENOMEM;
+ 
+ 		transaction->aid_len = skb->data[1];
+ 		memcpy(transaction->aid, &skb->data[2],
 -- 
 2.20.1
 
