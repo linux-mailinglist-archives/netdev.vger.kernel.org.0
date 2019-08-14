@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1345B8C7BD
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:26:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E91148C7BE
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:26:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729544AbfHNC0d (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:26:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54608 "EHLO mail.kernel.org"
+        id S1730377AbfHNC0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:26:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730346AbfHNC0c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:26:32 -0400
+        id S1730358AbfHNC0e (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:26:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A2F3D2084F;
-        Wed, 14 Aug 2019 02:26:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AB4802085A;
+        Wed, 14 Aug 2019 02:26:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565749592;
-        bh=XIMbWmjJXQxXDoJhhtWkwzSm6UKZgYJvl1yBWhhTcs8=;
+        s=default; t=1565749593;
+        bh=bd40qJ2GqjHwd/osCB2lwuTAZFiQmoUtCGFVxU6QKkc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m9ZfpxeqHW8Adw0Eg4B/LkRrdo+iFmx0Os/P0WKjjOXLSF3O7tIqjdRxhkScLKOKE
-         lgQZy1jKlsZsrWfmYE/WY7lMGwkMgyJpr6VUynYeg7jBKnTULo+n1+rFkVFsctAE7h
-         JKddvKsnW5mHHx/UVJ63OQqsxWn81pQ/anAaT0hI=
+        b=IymtBuTQlqd4BCxvmQ3hk2UOhzPsBeYJXm0D9S8R5egDsYBdG6uUdQcphkBNIOE13
+         OaZ+9uODrYT8tq5AD6kMxfeiKu9oqOAcpb0gxYVUTQcpX1Hwx0Zgb1PTlcBVHMu+3A
+         ur80DHLsUt2CgUj+ftIcfMf8KhWQDC6OrlS8kBoc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 25/28] net: hisilicon: fix hip04-xmit never return TX_BUSY
-Date:   Tue, 13 Aug 2019 22:25:47 -0400
-Message-Id: <20190814022550.17463-25-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 26/28] net: hisilicon: Fix dma_map_single failed on arm64
+Date:   Tue, 13 Aug 2019 22:25:48 -0400
+Message-Id: <20190814022550.17463-26-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814022550.17463-1-sashal@kernel.org>
 References: <20190814022550.17463-1-sashal@kernel.org>
@@ -45,39 +45,105 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 
-[ Upstream commit f2243b82785942be519016067ee6c55a063bbfe2 ]
+[ Upstream commit 96a50c0d907ac8f5c3d6b051031a19eb8a2b53e3 ]
 
-TX_DESC_NUM is 256, in tx_count, the maximum value of
-mod(TX_DESC_NUM - 1) is 254, the variable "count" in
-the hip04_mac_start_xmit function is never equal to
-(TX_DESC_NUM - 1), so hip04_mac_start_xmit never
-return NETDEV_TX_BUSY.
+On the arm64 platform, executing "ifconfig eth0 up" will fail,
+returning "ifconfig: SIOCSIFFLAGS: Input/output error."
 
-tx_count is modified to mod(TX_DESC_NUM) so that
-the maximum value of tx_count can reach
-(TX_DESC_NUM - 1), then hip04_mac_start_xmit can reurn
-NETDEV_TX_BUSY.
+ndev->dev is not initialized, dma_map_single->get_dma_ops->
+dummy_dma_ops->__dummy_map_page will return DMA_ERROR_CODE
+directly, so when we use dma_map_single, the first parameter
+is to use the device of platform_device.
 
 Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/hisilicon/hip04_eth.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/hisilicon/hip04_eth.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-index fdf8a477bec9c..a88d233df4e82 100644
+index a88d233df4e82..def831c89d354 100644
 --- a/drivers/net/ethernet/hisilicon/hip04_eth.c
 +++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-@@ -185,7 +185,7 @@ struct hip04_priv {
+@@ -157,6 +157,7 @@ struct hip04_priv {
+ 	unsigned int reg_inten;
  
- static inline unsigned int tx_count(unsigned int head, unsigned int tail)
- {
--	return (head - tail) % (TX_DESC_NUM - 1);
-+	return (head - tail) % TX_DESC_NUM;
- }
+ 	struct napi_struct napi;
++	struct device *dev;
+ 	struct net_device *ndev;
  
- static void hip04_config_port(struct net_device *ndev, u32 speed, u32 duplex)
+ 	struct tx_desc *tx_desc;
+@@ -387,7 +388,7 @@ static int hip04_tx_reclaim(struct net_device *ndev, bool force)
+ 		}
+ 
+ 		if (priv->tx_phys[tx_tail]) {
+-			dma_unmap_single(&ndev->dev, priv->tx_phys[tx_tail],
++			dma_unmap_single(priv->dev, priv->tx_phys[tx_tail],
+ 					 priv->tx_skb[tx_tail]->len,
+ 					 DMA_TO_DEVICE);
+ 			priv->tx_phys[tx_tail] = 0;
+@@ -437,8 +438,8 @@ static int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 		return NETDEV_TX_BUSY;
+ 	}
+ 
+-	phys = dma_map_single(&ndev->dev, skb->data, skb->len, DMA_TO_DEVICE);
+-	if (dma_mapping_error(&ndev->dev, phys)) {
++	phys = dma_map_single(priv->dev, skb->data, skb->len, DMA_TO_DEVICE);
++	if (dma_mapping_error(priv->dev, phys)) {
+ 		dev_kfree_skb(skb);
+ 		return NETDEV_TX_OK;
+ 	}
+@@ -506,7 +507,7 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
+ 		if (unlikely(!skb))
+ 			net_dbg_ratelimited("build_skb failed\n");
+ 
+-		dma_unmap_single(&ndev->dev, priv->rx_phys[priv->rx_head],
++		dma_unmap_single(priv->dev, priv->rx_phys[priv->rx_head],
+ 				 RX_BUF_SIZE, DMA_FROM_DEVICE);
+ 		priv->rx_phys[priv->rx_head] = 0;
+ 
+@@ -534,9 +535,9 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
+ 		buf = netdev_alloc_frag(priv->rx_buf_size);
+ 		if (!buf)
+ 			goto done;
+-		phys = dma_map_single(&ndev->dev, buf,
++		phys = dma_map_single(priv->dev, buf,
+ 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
+-		if (dma_mapping_error(&ndev->dev, phys))
++		if (dma_mapping_error(priv->dev, phys))
+ 			goto done;
+ 		priv->rx_buf[priv->rx_head] = buf;
+ 		priv->rx_phys[priv->rx_head] = phys;
+@@ -639,9 +640,9 @@ static int hip04_mac_open(struct net_device *ndev)
+ 	for (i = 0; i < RX_DESC_NUM; i++) {
+ 		dma_addr_t phys;
+ 
+-		phys = dma_map_single(&ndev->dev, priv->rx_buf[i],
++		phys = dma_map_single(priv->dev, priv->rx_buf[i],
+ 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
+-		if (dma_mapping_error(&ndev->dev, phys))
++		if (dma_mapping_error(priv->dev, phys))
+ 			return -EIO;
+ 
+ 		priv->rx_phys[i] = phys;
+@@ -675,7 +676,7 @@ static int hip04_mac_stop(struct net_device *ndev)
+ 
+ 	for (i = 0; i < RX_DESC_NUM; i++) {
+ 		if (priv->rx_phys[i]) {
+-			dma_unmap_single(&ndev->dev, priv->rx_phys[i],
++			dma_unmap_single(priv->dev, priv->rx_phys[i],
+ 					 RX_BUF_SIZE, DMA_FROM_DEVICE);
+ 			priv->rx_phys[i] = 0;
+ 		}
+@@ -826,6 +827,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	priv = netdev_priv(ndev);
++	priv->dev = d;
+ 	priv->ndev = ndev;
+ 	platform_set_drvdata(pdev, ndev);
+ 
 -- 
 2.20.1
 
