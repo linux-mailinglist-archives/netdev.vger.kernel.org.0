@@ -2,299 +2,282 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF48D8D6B6
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:55:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 16EF68D6BC
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:57:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727909AbfHNOzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 10:55:54 -0400
-Received: from sesbmg23.ericsson.net ([193.180.251.37]:63255 "EHLO
-        sesbmg23.ericsson.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726619AbfHNOzy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:55:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; d=ericsson.com; s=mailgw201801; c=relaxed/relaxed;
-        q=dns/txt; i=@ericsson.com; t=1565794549; x=1568386549;
-        h=From:Sender:Reply-To:Subject:Date:Message-ID:To:CC:MIME-Version:Content-Type:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=tE4jXGoolxxZG68iO4b5Ylcl6BlZL/b752Of/CzDD9A=;
-        b=RdDan8qM/1yIzFpAu8WD1z98sYELbVV4Ij6wKEGE5qxdO3YL13JAWg55k/rIzyyO
-        IKj7gUoYeqcfNiro4zNiixVMzC6l8RT2V12oYfQHSPxCqTSoAhsgOpZmblY+R/PA
-        a38YqqHW1EvVIpFZen+kW28s+9KuNEb40e6obD7v4OA=;
-X-AuditID: c1b4fb25-399ff700000029f0-b9-5d5420f5ab11
-Received: from ESESSMB502.ericsson.se (Unknown_Domain [153.88.183.120])
-        by sesbmg23.ericsson.net (Symantec Mail Security) with SMTP id 48.DC.10736.5F0245D5; Wed, 14 Aug 2019 16:55:49 +0200 (CEST)
-Received: from ESESBMR503.ericsson.se (153.88.183.135) by
- ESESSMB502.ericsson.se (153.88.183.163) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Wed, 14 Aug 2019 16:55:49 +0200
-Received: from ESESBMB502.ericsson.se (153.88.183.169) by
- ESESBMR503.ericsson.se (153.88.183.135) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1713.5; Wed, 14 Aug 2019 16:55:49 +0200
-Received: from tipsy.lab.linux.ericsson.se (153.88.183.153) by
- smtp.internal.ericsson.com (153.88.183.185) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Wed, 14 Aug 2019 16:55:48 +0200
-From:   Jon Maloy <jon.maloy@ericsson.com>
-To:     <davem@davemloft.net>, <netdev@vger.kernel.org>
-CC:     <tung.q.nguyen@dektech.com.au>, <hoang.h.le@dektech.com.au>,
-        <jon.maloy@ericsson.com>, <lxin@redhat.com>, <shuali@redhat.com>,
-        <ying.xue@windriver.com>, <edumazet@google.com>,
-        <tipc-discussion@lists.sourceforge.net>
-Subject: [net-next  1/1] tipc: clean up skb list lock handling on send path
-Date:   Wed, 14 Aug 2019 16:55:48 +0200
-Message-ID: <1565794548-15425-1-git-send-email-jon.maloy@ericsson.com>
-X-Mailer: git-send-email 2.1.4
+        id S1727937AbfHNO5t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 10:57:49 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58960 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726931AbfHNO5t (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 10:57:49 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 6B1FC91779;
+        Wed, 14 Aug 2019 14:57:48 +0000 (UTC)
+Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CC12260852;
+        Wed, 14 Aug 2019 14:57:47 +0000 (UTC)
+Date:   Wed, 14 Aug 2019 08:57:46 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "cjia@nvidia.com" <cjia@nvidia.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+Message-ID: <20190814085746.26b5f2a3@x1.home>
+In-Reply-To: <AM0PR05MB48666CCDFE985A25F42A0259D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190802065905.45239-1-parav@mellanox.com>
+        <20190808141255.45236-1-parav@mellanox.com>
+        <20190808170247.1fc2c4c4@x1.home>
+        <77ffb1f8-e050-fdf5-e306-0a81614f7a88@nvidia.com>
+        <AM0PR05MB4866993536C0C8ACEA2F92DBD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190813085246.1d642ae5@x1.home>
+        <AM0PR05MB48663579A340E6597B3D01BCD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190813111149.027c6a3c@x1.home>
+        <AM0PR05MB4866D40F8EBB382C78193C91D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190814100135.1f60aa42.cohuck@redhat.com>
+        <AM0PR05MB4866ABFDDD9DDCBC01F6CA90D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190814150911.296da78c.cohuck@redhat.com>
+        <AM0PR05MB48666CCDFE985A25F42A0259D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Red Hat
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFnrPLMWRmVeSWpSXmKPExsUyM2J7he5XhZBYg0fT1SzmnG9hsXh67BG7
-        xdtXs9gtll95w2JxbIGYxdR1K5kttpzPsrjSfpbd4vH168wOnB5bVt5k8nh3hc1jwaZSj90L
-        PjN5vN93lc3j8yY5j/VbtjIFsEdx2aSk5mSWpRbp2yVwZWw8tJy1YKVjxZLrF1kbGA+bdjFy
-        ckgImEjMXvyRqYuRi0NI4CijxKxfC9ghnG+MEu+enmaBc5qbHzBDOBcYJXaeX88I0s8moCHx
-        cloHmC0iYCzxamUn2CxmgYeMEv/f3WQCSQgLeEt8vfgXrIhFQFXi0eGvLCA2r4CbxKl/W1kg
-        DpGTOH/8JzNEXFDi5MwnYHFmAU2J1u2/2SFseYnmrbPBaoQElCXmfpjGNIFRYBaSlllIWmYh
-        aVnAyLyKUbQ4tTgpN93IWC+1KDO5uDg/Ty8vtWQTIzAaDm75rbqD8fIbx0OMAhyMSjy8a7aK
-        xwqxJpYVV+YeYpTgYFYS4ZU8JxIrxJuSWFmVWpQfX1Sak1p8iFGag0VJnHe9978YIYH0xJLU
-        7NTUgtQimCwTB6dUA2NadsjpIPUTxaqsrVb154yXVE5WmZZwmi/sxS2b0pVJW8O9hdZdfL4u
-        Pmn61XVLPNN40o8d+CKzyTP48zG/+mXxq5+Uhs/jSznpxHzp0rwJqorbtHu0PGOvKhcv219Y
-        EHqEt137cZfw3ksFetespH375AzEztx8ULNG9KoV5xOnmQf5AyqXJyixFGckGmoxFxUnAgA+
-        LVU5ggIAAA==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.28]); Wed, 14 Aug 2019 14:57:48 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The policy for handling the skb list locks on the send and receive paths
-is simple.
+On Wed, 14 Aug 2019 13:45:49 +0000
+Parav Pandit <parav@mellanox.com> wrote:
 
-- On the send path we never need to grab the lock on the 'xmitq' list
-  when the destination is an exernal node.
+> > -----Original Message-----
+> > From: Cornelia Huck <cohuck@redhat.com>
+> > Sent: Wednesday, August 14, 2019 6:39 PM
+> > To: Parav Pandit <parav@mellanox.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>; Kirti Wankhede
+> > <kwankhede@nvidia.com>; kvm@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; cjia@nvidia.com; Jiri Pirko <jiri@mellanox.com>;
+> > netdev@vger.kernel.org
+> > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+> > 
+> > On Wed, 14 Aug 2019 12:27:01 +0000
+> > Parav Pandit <parav@mellanox.com> wrote:
+> >   
+> > > + Jiri, + netdev
+> > > To get perspective on the ndo->phys_port_name for the representor netdev  
+> > of mdev.  
+> > >
+> > > Hi Cornelia,
+> > >  
+> > > > -----Original Message-----
+> > > > From: Cornelia Huck <cohuck@redhat.com>
+> > > > Sent: Wednesday, August 14, 2019 1:32 PM
+> > > > To: Parav Pandit <parav@mellanox.com>
+> > > > Cc: Alex Williamson <alex.williamson@redhat.com>; Kirti Wankhede
+> > > > <kwankhede@nvidia.com>; kvm@vger.kernel.org; linux-
+> > > > kernel@vger.kernel.org; cjia@nvidia.com
+> > > > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+> > > >
+> > > > On Wed, 14 Aug 2019 05:54:36 +0000
+> > > > Parav Pandit <parav@mellanox.com> wrote:
+> > > >  
+> > > > > > > I get that part. I prefer to remove the UUID itself from the
+> > > > > > > structure and therefore removing this API makes lot more sense?  
+> > > > > >
+> > > > > > Mdev and support tools around mdev are based on UUIDs because
+> > > > > > it's  
+> > > > defined  
+> > > > > > in the documentation.  
+> > > > > When we introduce newer device naming scheme, it will update the  
+> > > > documentation also.  
+> > > > > May be that is the time to move to .rst format too.  
+> > > >
+> > > > You are aware that there are existing tools that expect a uuid
+> > > > naming scheme, right?
+> > > >  
+> > > Yes, Alex mentioned too.
+> > > The good tool that I am aware of is [1], which is 4 months old. Not sure if it is  
+> > part of any distros yet.  
+> > >
+> > > README also says, that it is in 'early in development. So we have scope to  
+> > improve it for non UUID names, but lets discuss that more below.
+> > 
+> > The up-to-date reference for mdevctl is
+> > https://github.com/mdevctl/mdevctl. There is currently an effort to get this
+> > packaged in Fedora.
+> >   
+> Awesome.
+> 
+> > >  
+> > > > >  
+> > > > > > I don't think it's as simple as saying "voila, UUID dependencies
+> > > > > > are removed, users are free to use arbitrary strings".  We'd
+> > > > > > need to create some kind of naming policy, what characters are
+> > > > > > allows so that we can potentially expand the creation parameters
+> > > > > > as has been proposed a couple times, how do we deal with
+> > > > > > collisions and races, and why should we make such a change when
+> > > > > > a UUID is a perfectly reasonable devices name.  Thanks,
+> > > > > >  
+> > > > > Sure, we should define a policy on device naming to be more relaxed.
+> > > > > We have enough examples in-kernel.
+> > > > > Few that I am aware of are netdev (vxlan, macvlan, ipvlan, lot
+> > > > > more), rdma  
+> > > > etc which has arbitrary device names and ID based device names.  
+> > > > >
+> > > > > Collisions and race is already taken care today in the mdev core.
+> > > > > Same  
+> > > > unique device names continue.
+> > > >
+> > > > I'm still completely missing a rationale _why_ uuids are supposedly
+> > > > bad/restricting/etc.  
+> > > There is nothing bad about uuid based naming.
+> > > Its just too long name to derive phys_port_name of a netdev.
+> > > In details below.
+> > >
+> > > For a given mdev of networking type, we would like to have
+> > > (a) representor netdevice [2]
+> > > (b) associated devlink port [3]
+> > >
+> > > Currently these representor netdevice exist only for the PCIe SR-IOV VFs.
+> > > It is further getting extended for mdev without SR-IOV.
+> > >
+> > > Each of the devlink port is attached to representor netdevice [4].
+> > >
+> > > This netdevice phys_port_name should be a unique derived from some  
+> > property of mdev.  
+> > > Udev/systemd uses phys_port_name to derive unique representor netdev  
+> > name.  
+> > > This netdev name is further use by orchestration and switching software in  
+> > user space.  
+> > > One such distro supported switching software is ovs [4], which relies on the  
+> > persistent device name of the representor netdevice.
+> > 
+> > Ok, let me rephrase this to check that I understand this correctly. I'm not sure
+> > about some of the terms you use here (even after looking at the linked
+> > doc/code), but that's probably still ok.
+> > 
+> > We want to derive an unique (and probably persistent?) netdev name so that
+> > userspace can refer to a representor netdevice. Makes sense.
+> > For generating that name, udev uses the phys_port_name (which represents
+> > the devlink port, IIUC). Also makes sense.
+> >   
+> You understood it correctly.
+> 
+> > >
+> > > phys_port_name has limitation to be only 15 characters long.
+> > > UUID doesn't fit in phys_port_name.  
+> > 
+> > Understood. But why do we need to derive the phys_port_name from the mdev
+> > device name? This netdevice use case seems to be just one use case for using
+> > mdev devices? If this is a specialized mdev type for this setup, why not just
+> > expose a shorter identifier via an extra attribute?
+> >   
+> Representor netdev, represents mdev's switch port (like PCI SRIOV VF's switch port).
+> So user must be able to relate this two objects in similar manner as SRIOV VFs.
+> Phys_port_name is derived from the PCI PF and VF numbering scheme.
+> Similarly mdev's such port should be derived from mdev's id/name/attribute.
+> 
+> > > Longer UUID names are creating snow ball effect, not just in networking stack  
+> > but many user space tools too.
+> > 
+> > This snowball effect mainly comes from the device name -> phys_port_name
+> > setup, IIUC.
+> >   
+> Right.
+> 
+> > > (as opposed to recently introduced mdevctl, are they more mdev tools
+> > > which has dependency on UUID name?)  
+> > 
+> > I am aware that people have written scripts etc. to manage their mdevs.
+> > Given that the mdev infrastructure has been around for quite some time, I'd
+> > say the chance of some of those scripts relying on uuid names is non-zero.
+> >   
+> Ok. but those scripts have never managed networking devices.
+> So those scripts won't break because they will always create mdev devices using UUID.
+> When they use these new networking devices, they need more things than their scripts.
+> So user space upgrade for such mixed mode case is reasonable.
 
-- On the receive path we always need to grab the lock on the 'inputq'
-  list, irrespective of source node.
+Tools like mdevctl are agnostic of the type of mdev device they're
+managing, it shouldn't matter than they've never managed a networking
+mdev previously, it follows the standards of mdev management.
 
-However, when transmitting node local messages those will eventually
-end up on the receive path of a local socket, meaning that the argument
-'xmitq' in tipc_node_xmit() will become the 'ínputq' argument in  the
-function tipc_sk_rcv(). This has been handled by always initializing
-the spinlock of the 'xmitq' list at message creation, just in case it
-may end up on the receive path later, and despite knowing that the lock
-in most cases never will be used.
+> > >
+> > > Instead of mdev subsystem creating such effect, one option we are  
+> > considering is to have shorter mdev names.  
+> > > (Similar to netdev, rdma, nvme devices).
+> > > Such as mdev1, mdev2000 etc.
 
-This approach is inaccurate and confusing, and has also concealed the
-fact that the stated 'no lock grabbing' policy for the send path is
-violated in some cases.
+Note that these are kernel generated names, as are the other examples.
+In the case of mdev, the user is providing the UUID, which becomes the
+device name.  When a user writes to the create attribute, there needs
+to be determinism that the user can identify the device they created vs
+another that may have been created concurrently.  I don't see that we
+can put users in the path of managing device instance numbers.
 
-We now clean up this by never initializing the lock at message creation,
-instead doing this at the moment we find that the message actually will
-enter the receive path. At the same time we fix the four locations
-where we incorrectly access the spinlock on the send/error path.
+> > > Second option I was considering is to have an optional alias for UUID based  
+> > mdev.  
+> > > This name alias is given at time of mdev creation.
+> > > Devlink port's phys_port_name is derived out of this shorter mdev name  
+> > alias. 
+> > > This way, mdev remains to be UUID based with optional extension.
+> > > However, I prefer first option to relax mdev naming scheme.  
+> > 
+> > Actually, I think that second option makes much more sense, as you avoid
+> > potentially breaking existing tooling.  
+> Let's first understand of what exactly will break with existing tool
+> if they see non_uuid based device.
 
-This patch also reverts commit d12cffe9329f ("tipc: ensure head->lock
-is initialised") which has now become redundant.
+Do we really want a mixed namespace of device names, some UUID, some...
+something else?  That seems like a mess.
 
-CC: Eric Dumazet <edumazet@google.com>
-Reported-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-Acked-by: Ying Xue <ying.xue@windriver.com>
-Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
----
- net/tipc/bcast.c      | 10 +++++-----
- net/tipc/link.c       |  4 ++--
- net/tipc/name_distr.c |  2 +-
- net/tipc/node.c       |  7 ++++---
- net/tipc/socket.c     | 14 +++++++-------
- 5 files changed, 19 insertions(+), 18 deletions(-)
+> Existing tooling continue to work with UUID devices.
+> Do you have example of what can break if they see non_uuid based
+> device name? I think you are clear, but to be sure, UUID based
+> creation will continue to be there. Optionally mdev will be created
+> with alpha-numeric string, if we don't it as additional attribute.
 
-diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
-index 34f3e56..6ef1abd 100644
---- a/net/tipc/bcast.c
-+++ b/net/tipc/bcast.c
-@@ -185,7 +185,7 @@ static void tipc_bcbase_xmit(struct net *net, struct sk_buff_head *xmitq)
- 	}
- 
- 	/* We have to transmit across all bearers */
--	skb_queue_head_init(&_xmitq);
-+	__skb_queue_head_init(&_xmitq);
- 	for (bearer_id = 0; bearer_id < MAX_BEARERS; bearer_id++) {
- 		if (!bb->dests[bearer_id])
- 			continue;
-@@ -256,7 +256,7 @@ static int tipc_bcast_xmit(struct net *net, struct sk_buff_head *pkts,
- 	struct sk_buff_head xmitq;
- 	int rc = 0;
- 
--	skb_queue_head_init(&xmitq);
-+	__skb_queue_head_init(&xmitq);
- 	tipc_bcast_lock(net);
- 	if (tipc_link_bc_peers(l))
- 		rc = tipc_link_xmit(l, pkts, &xmitq);
-@@ -286,7 +286,7 @@ static int tipc_rcast_xmit(struct net *net, struct sk_buff_head *pkts,
- 	u32 dnode, selector;
- 
- 	selector = msg_link_selector(buf_msg(skb_peek(pkts)));
--	skb_queue_head_init(&_pkts);
-+	__skb_queue_head_init(&_pkts);
- 
- 	list_for_each_entry_safe(dst, tmp, &dests->list, list) {
- 		dnode = dst->node;
-@@ -344,7 +344,7 @@ static int tipc_mcast_send_sync(struct net *net, struct sk_buff *skb,
- 	msg_set_size(_hdr, MCAST_H_SIZE);
- 	msg_set_is_rcast(_hdr, !msg_is_rcast(hdr));
- 
--	skb_queue_head_init(&tmpq);
-+	__skb_queue_head_init(&tmpq);
- 	__skb_queue_tail(&tmpq, _skb);
- 	if (method->rcast)
- 		tipc_bcast_xmit(net, &tmpq, cong_link_cnt);
-@@ -378,7 +378,7 @@ int tipc_mcast_xmit(struct net *net, struct sk_buff_head *pkts,
- 	int rc = 0;
- 
- 	skb_queue_head_init(&inputq);
--	skb_queue_head_init(&localq);
-+	__skb_queue_head_init(&localq);
- 
- 	/* Clone packets before they are consumed by next call */
- 	if (dests->local && !tipc_msg_reassemble(pkts, &localq)) {
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index dd3155b..ba057a9 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -959,7 +959,7 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_buff_head *list,
- 		pr_warn("Too large msg, purging xmit list %d %d %d %d %d!\n",
- 			skb_queue_len(list), msg_user(hdr),
- 			msg_type(hdr), msg_size(hdr), mtu);
--		skb_queue_purge(list);
-+		__skb_queue_purge(list);
- 		return -EMSGSIZE;
- 	}
- 
-@@ -988,7 +988,7 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_buff_head *list,
- 		if (likely(skb_queue_len(transmq) < maxwin)) {
- 			_skb = skb_clone(skb, GFP_ATOMIC);
- 			if (!_skb) {
--				skb_queue_purge(list);
-+				__skb_queue_purge(list);
- 				return -ENOBUFS;
- 			}
- 			__skb_dequeue(list);
-diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-index 44abc8e..61219f0 100644
---- a/net/tipc/name_distr.c
-+++ b/net/tipc/name_distr.c
-@@ -190,7 +190,7 @@ void tipc_named_node_up(struct net *net, u32 dnode)
- 	struct name_table *nt = tipc_name_table(net);
- 	struct sk_buff_head head;
- 
--	skb_queue_head_init(&head);
-+	__skb_queue_head_init(&head);
- 
- 	read_lock_bh(&nt->cluster_scope_lock);
- 	named_distribute(net, &head, dnode, &nt->cluster_scope);
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 1bdcf0f..c8f6177 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1444,13 +1444,14 @@ int tipc_node_xmit(struct net *net, struct sk_buff_head *list,
- 
- 	if (in_own_node(net, dnode)) {
- 		tipc_loopback_trace(net, list);
-+		spin_lock_init(&list->lock);
- 		tipc_sk_rcv(net, list);
- 		return 0;
- 	}
- 
- 	n = tipc_node_find(net, dnode);
- 	if (unlikely(!n)) {
--		skb_queue_purge(list);
-+		__skb_queue_purge(list);
- 		return -EHOSTUNREACH;
- 	}
- 
-@@ -1459,7 +1460,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_head *list,
- 	if (unlikely(bearer_id == INVALID_BEARER_ID)) {
- 		tipc_node_read_unlock(n);
- 		tipc_node_put(n);
--		skb_queue_purge(list);
-+		__skb_queue_purge(list);
- 		return -EHOSTUNREACH;
- 	}
- 
-@@ -1491,7 +1492,7 @@ int tipc_node_xmit_skb(struct net *net, struct sk_buff *skb, u32 dnode,
- {
- 	struct sk_buff_head head;
- 
--	skb_queue_head_init(&head);
-+	__skb_queue_head_init(&head);
- 	__skb_queue_tail(&head, skb);
- 	tipc_node_xmit(net, &head, dnode, selector);
- 	return 0;
-diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-index 83ae41d..3b9f8cc 100644
---- a/net/tipc/socket.c
-+++ b/net/tipc/socket.c
-@@ -809,7 +809,7 @@ static int tipc_sendmcast(struct  socket *sock, struct tipc_name_seq *seq,
- 	msg_set_nameupper(hdr, seq->upper);
- 
- 	/* Build message as chain of buffers */
--	skb_queue_head_init(&pkts);
-+	__skb_queue_head_init(&pkts);
- 	rc = tipc_msg_build(hdr, msg, 0, dlen, mtu, &pkts);
- 
- 	/* Send message if build was successful */
-@@ -853,7 +853,7 @@ static int tipc_send_group_msg(struct net *net, struct tipc_sock *tsk,
- 	msg_set_grp_bc_seqno(hdr, bc_snd_nxt);
- 
- 	/* Build message as chain of buffers */
--	skb_queue_head_init(&pkts);
-+	__skb_queue_head_init(&pkts);
- 	mtu = tipc_node_get_mtu(net, dnode, tsk->portid);
- 	rc = tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
- 	if (unlikely(rc != dlen))
-@@ -1058,7 +1058,7 @@ static int tipc_send_group_bcast(struct socket *sock, struct msghdr *m,
- 	msg_set_grp_bc_ack_req(hdr, ack);
- 
- 	/* Build message as chain of buffers */
--	skb_queue_head_init(&pkts);
-+	__skb_queue_head_init(&pkts);
- 	rc = tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
- 	if (unlikely(rc != dlen))
- 		return rc;
-@@ -1387,7 +1387,7 @@ static int __tipc_sendmsg(struct socket *sock, struct msghdr *m, size_t dlen)
- 	if (unlikely(rc))
- 		return rc;
- 
--	skb_queue_head_init(&pkts);
-+	__skb_queue_head_init(&pkts);
- 	mtu = tipc_node_get_mtu(net, dnode, tsk->portid);
- 	rc = tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
- 	if (unlikely(rc != dlen))
-@@ -1445,7 +1445,7 @@ static int __tipc_sendstream(struct socket *sock, struct msghdr *m, size_t dlen)
- 	int send, sent = 0;
- 	int rc = 0;
- 
--	skb_queue_head_init(&pkts);
-+	__skb_queue_head_init(&pkts);
- 
- 	if (unlikely(dlen > INT_MAX))
- 		return -EMSGSIZE;
-@@ -1805,7 +1805,7 @@ static int tipc_recvmsg(struct socket *sock, struct msghdr *m,
- 
- 	/* Send group flow control advertisement when applicable */
- 	if (tsk->group && msg_in_group(hdr) && !grp_evt) {
--		skb_queue_head_init(&xmitq);
-+		__skb_queue_head_init(&xmitq);
- 		tipc_group_update_rcv_win(tsk->group, tsk_blocks(hlen + dlen),
- 					  msg_orignode(hdr), msg_origport(hdr),
- 					  &xmitq);
-@@ -2674,7 +2674,7 @@ static void tipc_sk_timeout(struct timer_list *t)
- 	struct sk_buff_head list;
- 	int rc = 0;
- 
--	skb_queue_head_init(&list);
-+	__skb_queue_head_init(&list);
- 	bh_lock_sock(sk);
- 
- 	/* Try again later if socket is busy */
--- 
-2.1.4
+I'm not onboard with a UUID being just one of the possible naming
+strings via which we can create mdev devices.  I think that becomes
+untenable for userspace.  I don't think a sufficient argument has been
+made against the alias approach, which seems to keep the UUID as a
+canonical name, providing a consistent namespace, augmented with user
+or kernel provided short alias.  Thanks,
+
+Alex
+
+> > >  
+> > > > We want to uniquely identify a device, across different types of
+> > > > vendor drivers. An uuid is a unique identifier and even a
+> > > > well-defined one. Tools (e.g. mdevctl) are relying on it for
+> > > > mdev devices  
+> > today.  
+> > > >
+> > > > What is the problem you're trying to solve?  
+> > > Unique device naming is still achieved without UUID scheme by
+> > > various  
+> > subsystems in kernel using alpha-numeric string.  
+> > > Having such string based continue to provide unique names.
+> > >
+> > > I hope I described the problem and two solutions above.
+> > >
+> > > [1] https://github.com/awilliam/mdevctl
+> > > [2]
+> > > https://elixir.bootlin.com/linux/v5.3-rc4/source/drivers/net/ethernet/
+> > > mellanox/mlx5/core/en_rep.c [3]
+> > > http://man7.org/linux/man-pages/man8/devlink-port.8.html
+> > > [4]
+> > > https://elixir.bootlin.com/linux/v5.3-rc4/source/net/core/devlink.c#L6
+> > > 921
+> > > [5] https://www.openvswitch.org/
+> > >  
+> 
 
