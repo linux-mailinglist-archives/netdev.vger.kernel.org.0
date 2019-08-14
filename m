@@ -2,205 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5CFB58CCCD
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:28:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D39888CCEC
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:34:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727651AbfHNH2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 03:28:52 -0400
-Received: from mga11.intel.com ([192.55.52.93]:54619 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727644AbfHNH2v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 03:28:51 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Aug 2019 00:28:51 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,384,1559545200"; 
-   d="scan'208";a="327923132"
-Received: from mkarlsso-mobl.ger.corp.intel.com (HELO localhost.localdomain) ([10.252.52.109])
-  by orsmga004.jf.intel.com with ESMTP; 14 Aug 2019 00:28:44 -0700
-From:   Magnus Karlsson <magnus.karlsson@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com, ast@kernel.org,
-        daniel@iogearbox.net, netdev@vger.kernel.org, brouer@redhat.com,
-        maximmi@mellanox.com
-Cc:     bpf@vger.kernel.org, bruce.richardson@intel.com,
-        ciara.loftus@intel.com, jakub.kicinski@netronome.com,
-        xiaolong.ye@intel.com, qi.z.zhang@intel.com,
-        sridhar.samudrala@intel.com, kevin.laatz@intel.com,
-        ilias.apalodimas@linaro.org, jonathan.lemon@gmail.com,
-        kiran.patil@intel.com, axboe@kernel.dk,
-        maciej.fijalkowski@intel.com, maciejromanfijalkowski@gmail.com,
-        intel-wired-lan@lists.osuosl.org
-Subject: [PATCH bpf-next v4 8/8] net/mlx5e: Add AF_XDP need_wakeup support
-Date:   Wed, 14 Aug 2019 09:27:23 +0200
-Message-Id: <1565767643-4908-9-git-send-email-magnus.karlsson@intel.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
-References: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
+        id S1727309AbfHNHeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 03:34:03 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40594 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726373AbfHNHeD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 03:34:03 -0400
+Received: by mail-pg1-f194.google.com with SMTP id w10so52644234pgj.7;
+        Wed, 14 Aug 2019 00:34:02 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=qj5NILBPQh83BqkK6h+f4owNb7XWASz2eTmp6F/uJQ8=;
+        b=U3aervMuhZRPBiAbRA7MZaiEejdwE17EU1cNUFF89p1mndJcYy9Us5cIQnCPhqYBbr
+         /Tb7kNFHUen0Uay9owGgWm9TawgJXc45ZVnUyMnu8QO+0ulO+7zsptkmMIJ1OP0F1UOH
+         2+cUW7P6IIgkXnws3M1KZ/RmoNCSTDoN15+5aa845N7X0XtNFo1dbn/C+b+Drv4q7M7u
+         QV2WAzGk5y/TYXznKbw33OXDBiVgI3m95tldpddxptJWPF9haMzgYihjQLS+rUHeQsSE
+         VP4tVtAb2RtRLQCFYss8L/brLm7k4Vyh3QXQmcenwyyA7r8+T9ku1jU8dRH6s/OrAPzu
+         FGXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=qj5NILBPQh83BqkK6h+f4owNb7XWASz2eTmp6F/uJQ8=;
+        b=qIz2z2vP8p2BFliIXmOLNsyKfjYf2Gw1tY+hvB0l7Gg7sUE8QHoY0oHsxLI3xxh+MN
+         D/EOeQtiUSTwDKDGf8o8i8FEjDHhLGBaq7mBFiwRN9TBYg/mk+0vVOvwSBIquFrG3xJG
+         R+GfsBHWnt284RSJsmpi6Ray8ejwWmKcRgY5qmQWlX/VjCc1rvdvI3NT7lk1M7VB1dWB
+         Ei+H/RJWuZf7EWZvq6Dyp/4YMg6SMm18IgW9/5VlzpwUsZQR+Q/OJMfZSK766sdolGam
+         jYXOk8GIuJ6OxE9o8wHFswgx3NTjW5FUTVJrdMXn315eVtz+RrDqDpgLv0jZUHgs5rYD
+         PLYw==
+X-Gm-Message-State: APjAAAVqeTPQBlYQsuDsfcmst4uFRiPGM8E/ElThdSNObxVQ8ydOkcY9
+        SaE5YHlUkIyLAoDWHk8Fd10=
+X-Google-Smtp-Source: APXvYqwUMQ5RskXWhEzNCQJucQGnSFaIJogIkSamtFEOdbfCbfls9UxnnvURXeEH2y+HKD6ZPwLRcg==
+X-Received: by 2002:aa7:914e:: with SMTP id 14mr44853503pfi.136.1565768042412;
+        Wed, 14 Aug 2019 00:34:02 -0700 (PDT)
+Received: from [172.20.20.103] ([222.151.198.97])
+        by smtp.gmail.com with ESMTPSA id l1sm158014289pfl.9.2019.08.14.00.33.58
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Aug 2019 00:34:01 -0700 (PDT)
+Subject: Re: [RFC PATCH bpf-next 00/14] xdp_flow: Flow offload to XDP
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>
+References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
+ <20190814014445.3dnduyrass5jycr5@ast-mbp>
+From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
+Message-ID: <f6160572-8fa8-0199-8d81-6159dd4cd5ff@gmail.com>
+Date:   Wed, 14 Aug 2019 16:33:56 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <20190814014445.3dnduyrass5jycr5@ast-mbp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+Hi Alexei, thank you for taking a look!
 
-This commit adds support for the new need_wakeup feature of AF_XDP. The
-applications can opt-in by using the XDP_USE_NEED_WAKEUP bind() flag.
-When this feature is enabled, some behavior changes:
+On 2019/08/14 10:44, Alexei Starovoitov wrote:
+> On Tue, Aug 13, 2019 at 09:05:44PM +0900, Toshiaki Makita wrote:
+>> This is a rough PoC for an idea to offload TC flower to XDP.
+> ...
+>>   xdp_flow  TC        ovs kmod
+>>   --------  --------  --------
+>>   4.0 Mpps  1.1 Mpps  1.1 Mpps
+> 
+> Is xdp_flow limited to 4 Mpps due to veth or something else?
 
-RX side: If the Fill Ring is empty, instead of busy-polling, set the
-flag to tell the application to kick the driver when it refills the Fill
-Ring.
+Looking at perf, accumulation of each layer's overhead resulted in the number.
+With XDP prog which only redirects packets and does not touch the data,
+the drop rate is 10 Mpps. In this case the main overhead is XDP's redirect processing
+and handling of 2 XDP progs (in veth and i40e).
+In the xdp_flow test the overhead additionally includes flow key parse in XDP prog
+and hash table lookup (including jhash calculation) which resulted in 4 Mpps.
 
-TX side: If there are pending completions or packets queued for
-transmission, set the flag to tell the application that it can skip the
-sendto() syscall and save time.
+>> So xdp_flow drop rate is roughly 4x faster than software TC or ovs kmod.
+>>
+>> OTOH the time to add a flow increases with xdp_flow.
+>>
+>> ping latency of first packet when veth1 does XDP_PASS instead of DROP:
+>>
+>>   xdp_flow  TC        ovs kmod
+>>   --------  --------  --------
+>>   25ms      12ms      0.6ms
+>>
+>> xdp_flow does a lot of work to emulate TC behavior including UMH
+>> transaction and multiple bpf map update from UMH which I think increases
+>> the latency.
+> 
+> make sense, but why vanilla TC is so slow ?
 
-The performance testing was performed on a machine with the following
-configuration:
+No ideas. At least TC requires additional syscall to insert a flow compared to ovs kmod,
+but 12 ms looks too long for that.
 
-- 24 cores of Intel Xeon E5-2620 v3 @ 2.40 GHz
-- Mellanox ConnectX-5 Ex with 100 Gbit/s link
+>> * Implementation
+>>
+>> xdp_flow makes use of UMH to load an eBPF program for XDP, similar to
+>> bpfilter. The difference is that xdp_flow does not generate the eBPF
+>> program dynamically but a prebuilt program is embedded in UMH. This is
+>> mainly because flow insertion is considerably frequent. If we generate
+>> and load an eBPF program on each insertion of a flow, the latency of the
+>> first packet of ping in above test will incease, which I want to avoid.
+> 
+> I think UMH approach is a good fit for this.
+> Clearly the same algorithm can be done as kernel code or kernel module, but
+> bpfilter-like UMH is a safer approach.
+> 
+>> - patch 9
+>>   Add tc-offload-xdp netdev feature and hooks to call xdp_flow kmod in
+>>   TC flower offload code.
+> 
+> The hook into UMH from TC looks simple. Do you expect the same interface to be
+> reused from OVS ?
 
-The results with retpoline disabled:
+Do you mean openvswitch kernel module by OVS?
+If so, no, at this point. TC hook is simple because I reused flow offload mechanism.
+OVS kmod does not have offload interface and ovs-vswitchd is using TC for offload.
+I wanted to reuse this mechanism for offloading to XDP, so using TC.
 
-       | without need_wakeup  | with need_wakeup     |
-       |----------------------|----------------------|
-       | one core | two cores | one core | two cores |
--------|----------|-----------|----------|-----------|
-txonly | 20.1     | 33.5      | 29.0     | 34.2      |
-rxdrop | 0.065    | 14.1      | 12.0     | 14.1      |
-l2fwd  | 0.032    | 7.3       | 6.6      | 7.2       |
+>> * About alternative userland (ovs-vswitchd etc.) implementation
+>>
+>> Maybe a similar logic can be implemented in ovs-vswitchd offload
+>> mechanism, instead of adding code to kernel. I just thought offloading
+>> TC is more generic and allows wider usage with direct TC command.
+>>
+>> For example, considering that OVS inserts a flow to kernel only when
+>> flow miss happens in kernel, we can in advance add offloaded flows via
+>> tc filter to avoid flow insertion latency for certain sensitive flows.
+>> TC flower usage without using OVS is also possible.
+>>
+>> Also as written above nftables can be offloaded to XDP with this
+>> mechanism as well.
+> 
+> Makes sense to me.
+> 
+>>    bpf, hashtab: Compare keys in long
+> 
+> 3Mpps vs 4Mpps just from this patch ?
+> or combined with i40 prefech patch ?
 
-"One core" means the application and NAPI run on the same core. "Two
-cores" means they are pinned to different cores.
+Combined.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-Reviewed-by: Saeed Mahameed <saeedm@mellanox.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h | 14 ++++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h | 12 ++++++++++++
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c     |  7 +++++--
- drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c   | 20 +++++++++++++++++---
- 4 files changed, 48 insertions(+), 5 deletions(-)
+>>   drivers/net/ethernet/intel/i40e/i40e_txrx.c  |    1 +
+> 
+> Could you share "perf report" for just hash tab optimization
+> and for i40 ?
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-index 307b923..cab0e93 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
-@@ -5,6 +5,7 @@
- #define __MLX5_EN_XSK_RX_H__
- 
- #include "en.h"
-+#include <net/xdp_sock.h>
- 
- /* RX data path */
- 
-@@ -24,4 +25,17 @@ struct sk_buff *mlx5e_xsk_skb_from_cqe_linear(struct mlx5e_rq *rq,
- 					      struct mlx5e_wqe_frag_info *wi,
- 					      u32 cqe_bcnt);
- 
-+static inline bool mlx5e_xsk_update_rx_wakeup(struct mlx5e_rq *rq, bool alloc_err)
-+{
-+	if (!xsk_umem_uses_need_wakeup(rq->umem))
-+		return alloc_err;
-+
-+	if (unlikely(alloc_err))
-+		xsk_set_rx_need_wakeup(rq->umem);
-+	else
-+		xsk_clear_rx_need_wakeup(rq->umem);
-+
-+	return false;
-+}
-+
- #endif /* __MLX5_EN_XSK_RX_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-index 9c50515..79b487d 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/tx.h
-@@ -5,6 +5,7 @@
- #define __MLX5_EN_XSK_TX_H__
- 
- #include "en.h"
-+#include <net/xdp_sock.h>
- 
- /* TX data path */
- 
-@@ -12,4 +13,15 @@ int mlx5e_xsk_wakeup(struct net_device *dev, u32 qid, u32 flags);
- 
- bool mlx5e_xsk_tx(struct mlx5e_xdpsq *sq, unsigned int budget);
- 
-+static inline void mlx5e_xsk_update_tx_wakeup(struct mlx5e_xdpsq *sq)
-+{
-+	if (!xsk_umem_uses_need_wakeup(sq->umem))
-+		return;
-+
-+	if (sq->pc != sq->cc)
-+		xsk_clear_tx_need_wakeup(sq->umem);
-+	else
-+		xsk_set_tx_need_wakeup(sq->umem);
-+}
-+
- #endif /* __MLX5_EN_XSK_TX_H__ */
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 60570b4..fae0694 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -692,8 +692,11 @@ bool mlx5e_post_rx_mpwqes(struct mlx5e_rq *rq)
- 	rq->mpwqe.umr_in_progress += rq->mpwqe.umr_last_bulk;
- 	rq->mpwqe.actual_wq_head   = head;
- 
--	/* If XSK Fill Ring doesn't have enough frames, busy poll by
--	 * rescheduling the NAPI poll.
-+	/* If XSK Fill Ring doesn't have enough frames, report the error, so
-+	 * that one of the actions can be performed:
-+	 * 1. If need_wakeup is used, signal that the application has to kick
-+	 * the driver when it refills the Fill Ring.
-+	 * 2. Otherwise, busy poll by rescheduling the NAPI poll.
- 	 */
- 	if (unlikely(alloc_err == -ENOMEM && rq->umem))
- 		return true;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-index 6d16dee..257a7c9 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_txrx.c
-@@ -33,6 +33,7 @@
- #include <linux/irq.h>
- #include "en.h"
- #include "en/xdp.h"
-+#include "en/xsk/rx.h"
- #include "en/xsk/tx.h"
- 
- static inline bool mlx5e_channel_no_affinity_change(struct mlx5e_channel *c)
-@@ -83,10 +84,23 @@ void mlx5e_trigger_irq(struct mlx5e_icosq *sq)
- 
- static bool mlx5e_napi_xsk_post(struct mlx5e_xdpsq *xsksq, struct mlx5e_rq *xskrq)
- {
--	bool busy_xsk = false;
--
-+	bool busy_xsk = false, xsk_rx_alloc_err;
-+
-+	/* Handle the race between the application querying need_wakeup and the
-+	 * driver setting it:
-+	 * 1. Update need_wakeup both before and after the TX. If it goes to
-+	 * "yes", it can only happen with the first update.
-+	 * 2. If the application queried need_wakeup before we set it, the
-+	 * packets will be transmitted anyway, even w/o a wakeup.
-+	 * 3. Give a chance to clear need_wakeup after new packets were queued
-+	 * for TX.
-+	 */
-+	mlx5e_xsk_update_tx_wakeup(xsksq);
- 	busy_xsk |= mlx5e_xsk_tx(xsksq, MLX5E_TX_XSK_POLL_BUDGET);
--	busy_xsk |= xskrq->post_wqes(xskrq);
-+	mlx5e_xsk_update_tx_wakeup(xsksq);
-+
-+	xsk_rx_alloc_err = xskrq->post_wqes(xskrq);
-+	busy_xsk |= mlx5e_xsk_update_rx_wakeup(xskrq, xsk_rx_alloc_err);
- 
- 	return busy_xsk;
- }
--- 
-2.7.4
+Sure, I'll get some more data and post them.
 
+> I haven't seen memcmp to be bottle neck in hash tab.
+> What is the the of the key?
+
+typo of "size of the key"? IIRC 64 bytes.
+
+Toshiaki Makita
