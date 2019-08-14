@@ -2,173 +2,177 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D1408E0B0
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 00:30:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03C2E8E121
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 01:15:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728262AbfHNWay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 18:30:54 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:41988 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728757AbfHNWay (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 18:30:54 -0400
-Received: by mail-pf1-f195.google.com with SMTP id i30so208665pfk.9
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 15:30:54 -0700 (PDT)
+        id S1729434AbfHNXPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 19:15:08 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:37254 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726490AbfHNXPI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 19:15:08 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 129so287498pfa.4;
+        Wed, 14 Aug 2019 16:15:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=yFT0DexMwrpcpBksqM27vWgfwGLdGdnJxoa44QNbmXc=;
-        b=mdyzDvu42tTkOsWy6oTPXu18OkStVhbhSoIT/SQap4fGl7XOdtBH5ZFB0bHDYa1y/z
-         nIG/PUjvCypqMuWoHSfsttI9fau5EVlapKeEuOV2JM9Xu7BhrYnpIqEeq9aUx5/xcZv8
-         mEi6tWij5/6vd9gQGKGUeUwwC7mnS84sZfs6oiOuZx90z/9scFOevardh43fJcAjndhO
-         7XbOPsnwVlU9htX6OWr4qG5AYWLTeQjQeYSRqO1jVj5ihkf/BawHcc1xYEe1FGXuxL2y
-         L2Zc2Lh1QA2T7+ehxuiCBbV/8RfmubBfWt8kIW5Kkl4xy5rSfi3onKqL1VkYlha0+6h9
-         qNQg==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=o67DhSDRgbswj21UglkRVro2MWwGEaqu1vVOhssAaMU=;
+        b=VUmWiTkHBHj+x+Zv0VlyA0EtZQoYfePcfuCebB+IUM5k8jUDo9/sNdQWpF9KrNiMSB
+         PhKew6Ixa5dsgndpPA3IaNW1gxXRz3boASWhF7nhm7z56RFgOU+s1xnA4Ll2fQtKilbu
+         NGyZDMyCY7zo66PxtMCbgmoARua1NLJats5a527c71pjEl8PnBN1nZ3XmkevumGq1yoW
+         5ZQArjTvEZgSVs3OlWwUkp9nSCir1QBAd2DzIHP1UyiP0A8oz7jhdDWTymhvYP3XI7Yh
+         zCI0oD5TQW+1XpV0YA2J0eRy820rCPkdiPP1WiH1P8Dzqd3MBavWQ//O1Oy0V4dWsO27
+         E6WQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=yFT0DexMwrpcpBksqM27vWgfwGLdGdnJxoa44QNbmXc=;
-        b=GVcoNladGYnO50fNWuXmTfIOn9pyhd4pDjP06P1uJjBwkdB1lQPQtM+eopCrlH8aPc
-         cQLJdCsPPAoeD5u4+wjLZrNlknuUxZWyy25XtUlSSvicwbs+ntV0iuPsVkdIvWU34qFa
-         dHsx3EMKKXtNqv1SzJeJnB74ZqAQbIJJ6cVRukBs4K9ZMvIpkx2Djg1sJJAp3vAy0Gj3
-         IkW7YiHpCMUrgOIVtF7Pj85QIbxpvEJpbVL5aq147ubksuv33M7rOGAqUeGZqN+K7kEk
-         fa1lJY8PRAsWIEEsoXjDYizOwgQf5YCCW47iJxDs5dWO4uD7zVrszpQluX4boO1ae47w
-         dcWQ==
-X-Gm-Message-State: APjAAAVoEpXFlJn1FPXO7Iv4Lu9rWwK9ReRCeeSHB6Cri0BvNg5YsVk4
-        Ei497VxHTuEt1zxSLv2S8j533eqyZsA=
-X-Google-Smtp-Source: APXvYqzJ31qf7hxB+vYykfcoT3+2aPYGmhoqmEYaHxavvuZTHNyJQKWgpyrk5FWfjptWB1rUiqJeVg==
-X-Received: by 2002:a63:5d54:: with SMTP id o20mr1120079pgm.413.1565821853550;
-        Wed, 14 Aug 2019 15:30:53 -0700 (PDT)
-Received: from ?IPv6:2600:1010:b04e:b450:9121:34aa:70f4:e97c? ([2600:1010:b04e:b450:9121:34aa:70f4:e97c])
-        by smtp.gmail.com with ESMTPSA id 4sm917288pfc.92.2019.08.14.15.30.52
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=o67DhSDRgbswj21UglkRVro2MWwGEaqu1vVOhssAaMU=;
+        b=s4jBiLyUVny5g79+LocJYx0CeX9NTUs6kzPXuakMTlsSwArv/oVekA10DekIxOhVeH
+         ECgcuvPi+aidFkg7ZZzSIp9jHjf8sse9d23cFZUu0mRG4bG/Vth4ZQZDP9yjfBqoegSY
+         4qsKIiOXRC2Sh4kY/yr2qQv/B5k2VLoaJlduH6hSQc7w/jN2Y9M3EY7mak8XOqPWr8HT
+         +jn7DD7CLrtkbO9/Wu0T5G2xEmoH4cjC8LlXoC5nCB3I7pTastRzX5GotlcdXLueDcwt
+         8i8eiaYQRHM7ztsUT6y9k7JnkkNQgWpL2eBEfTJx8usXRvFXHaM1L5O2t2Qx+vAOz85X
+         MTCw==
+X-Gm-Message-State: APjAAAUbDKhJDe3sFpg3QCv5afFNmkkStn0QyX5/1gYZgPuYiA+F3NLh
+        dtmtGm1EYxqOiAoguM/QNVg=
+X-Google-Smtp-Source: APXvYqylYlIFzbbguUB4NjvJ44kXGrZpaKaBuRcPG8RVCt3xuQFHrnB9apI1Fot7CmBKStyMDNIGBw==
+X-Received: by 2002:a17:90a:c24e:: with SMTP id d14mr282997pjx.129.1565824507180;
+        Wed, 14 Aug 2019 16:15:07 -0700 (PDT)
+Received: from [10.67.49.31] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m7sm975523pfb.99.2019.08.14.16.15.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 15:30:52 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-From:   Andy Lutomirski <luto@amacapital.net>
-X-Mailer: iPhone Mail (16G77)
-In-Reply-To: <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
-Date:   Wed, 14 Aug 2019 15:30:51 -0700
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <AD211133-EA60-4B91-AB1B-201713F50AB2@amacapital.net>
-References: <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com> <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com> <20190805192122.laxcaz75k4vxdspn@ast-mbp> <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com> <20190806011134.p5baub5l3t5fkmou@ast-mbp> <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com> <20190813215823.3sfbakzzjjykyng2@ast-mbp> <CALCETrVT-dDXQGukGs5S1DkzvQv9_e=axzr_GyEd2c4T4z8Qng@mail.gmail.com> <20190814005737.4qg6wh4a53vmso2v@ast-mbp> <CALCETrUkqUprujww26VxHwkdXQ3DWJH8nnL2VBYpK2EU0oX_YA@mail.gmail.com> <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+        Wed, 14 Aug 2019 16:15:05 -0700 (PDT)
+Subject: Re: [PATCH net-next v2 5/9] net: phy: add MACsec ops in phy_device
+To:     Antoine Tenart <antoine.tenart@bootlin.com>, davem@davemloft.net,
+        sd@queasysnail.net, andrew@lunn.ch, hkallweit1@gmail.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        thomas.petazzoni@bootlin.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com, camelia.groza@nxp.com,
+        Simon.Edelhaus@aquantia.com
+References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
+ <20190808140600.21477-6-antoine.tenart@bootlin.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <1521a28b-a0af-b3fb-d1bf-af82ec2f3d47@gmail.com>
+Date:   Wed, 14 Aug 2019 16:15:03 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190808140600.21477-6-antoine.tenart@bootlin.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 8/8/19 7:05 AM, Antoine Tenart wrote:
+> This patch adds a reference to MACsec ops in the phy_device, to allow
+> PHYs to support offloading MACsec operations. The phydev lock will be
+> held while calling those helpers.
+> 
+> Signed-off-by: Antoine Tenart <antoine.tenart@bootlin.com>
+> ---
+>  include/linux/phy.h | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/include/linux/phy.h b/include/linux/phy.h
+> index 462b90b73f93..6947a19587e4 100644
+> --- a/include/linux/phy.h
+> +++ b/include/linux/phy.h
+> @@ -22,6 +22,10 @@
+>  #include <linux/workqueue.h>
+>  #include <linux/mod_devicetable.h>
+>  
+> +#ifdef CONFIG_MACSEC
+> +#include <net/macsec.h>
+> +#endif
 
+#if IS_ENABLED(CONFIG_MACSEC)
 
-> On Aug 14, 2019, at 3:05 PM, Alexei Starovoitov <alexei.starovoitov@gmail.=
-com> wrote:
->=20
->> On Wed, Aug 14, 2019 at 10:51:23AM -0700, Andy Lutomirski wrote:
->>=20
->> If eBPF is genuinely not usable by programs that are not fully trusted
->> by the admin, then no kernel changes at all are needed.  Programs that
->> want to reduce their own privileges can easily fork() a privileged
->> subprocess or run a little helper to which they delegate BPF
->> operations.  This is far more flexible than anything that will ever be
->> in the kernel because it allows the helper to verify that the rest of
->> the program is doing exactly what it's supposed to and restrict eBPF
->> operations to exactly the subset that is needed.  So a container
->> manager or network manager that drops some provilege could have a
->> little bpf-helper that manages its BPF XDP, firewalling, etc
->> configuration.  The two processes would talk over a socketpair.
->=20
-> there were three projects that tried to delegate bpf operations.
-> All of them failed.
-> bpf operational workflow is much more complex than you're imagining.
-> fork() also doesn't work for all cases.
-> I gave this example before: consider multiple systemd-like deamons
-> that need to do bpf operations that want to pass this 'bpf capability'
-> to other deamons written by other teams. Some of them will start
-> non-root, but still need to do bpf. They will be rpm installed
-> and live upgraded while running.
-> We considered to make systemd such centralized bpf delegation
-> authority too. It didn't work. bpf in kernel grows quickly.
-> libbpf part grows independently. llvm keeps evolving.
-> All of them are being changed while system overall has to stay
-> operational. Centralized approach breaks apart.
->=20
->> The interesting cases you're talking about really *do* involved
->> unprivileged or less privileged eBPF, though.  Let's see:
->>=20
->> systemd --user: systemd --user *is not privileged at all*.  There's no
->> issue of reducing privilege, since systemd --user doesn't have any
->> privilege to begin with.  But systemd supports some eBPF features, and
->> presumably it would like to support them in the systemd --user case.
->> This is unprivileged eBPF.
->=20
-> Let's disambiguate the terminology.
-> This /dev/bpf patch set started as describing the feature as 'unprivileged=
- bpf'.
-> I think that was a mistake.
-> Let's call systemd-like deamon usage of bpf 'less privileged bpf'.
-> This is not unprivileged.
-> 'unprivileged bpf' is what sysctl kernel.unprivileged_bpf_disabled control=
-s.
->=20
-> There is a huge difference between the two.
-> I'm against extending 'unprivileged bpf' even a bit more than what it is
-> today for many reasons mentioned earlier.
-> The /dev/bpf is about 'less privileged'.
-> Less privileged than root. We need to split part of full root capability
-> into bpf capability. So that most of the root can be dropped.
-> This is very similar to what cap_net_admin does.
-> cap_net_amdin can bring down eth0 which is just as bad as crashing the box=
-.
-> cap_net_admin is very much privileged. Just 'less privileged' than root.
-> Same thing for cap_bpf.
+> +
+>  #include <linux/atomic.h>
+>  
+>  #define PHY_DEFAULT_FEATURES	(SUPPORTED_Autoneg | \
+> @@ -345,6 +349,7 @@ struct phy_c45_device_ids {
+>   * attached_dev: The attached enet driver's device instance ptr
+>   * adjust_link: Callback for the enet controller to respond to
+>   * changes in the link state.
+> + * macsec_ops: MACsec offloading ops.
+>   *
+>   * speed, duplex, pause, supported, advertising, lp_advertising,
+>   * and autoneg are used like in mii_if_info
+> @@ -438,6 +443,11 @@ struct phy_device {
+>  
+>  	void (*phy_link_change)(struct phy_device *, bool up, bool do_carrier);
+>  	void (*adjust_link)(struct net_device *dev);
+> +
+> +#if defined(CONFIG_MACSEC)
+> +	/* MACsec management functions */
+> +	const struct macsec_ops *macsec_ops;
+> +#endif
 
-The new pseudo-capability in this patch set is absurdly broad. I=E2=80=99ve p=
-roposed some finer-grained divisions in this thread. Do you have comments on=
- them?
+#if IS_ENABLED(CONFIG_MACSEC)
 
->=20
-> May be we should do both cap_bpf and /dev/bpf to make it clear that
-> this is the same thing. Two interfaces to achieve the same result.
-
-What for?  If there=E2=80=99s a CAP_BPF, then why do you want /dev/bpf? Espe=
-cially if you define it to do the same thing.
-
->=20
->> Seccomp.  Seccomp already uses cBPF, which is a form of BPF although
->> it doesn't involve the bpf() syscall.  There are some seccomp
->> proposals in the works that will want some stuff from eBPF.  In
->=20
-> I'm afraid these proposals won't go anywhere.
-
-Can you explain why?
-
->=20
->> So it's a bit of a chicken-and-egg situation.  There aren't major
->> unprivileged eBPF users because the kernel support isn't there.
->=20
-> As I said before there are zero known use cases of 'unprivileged bpf'.
->=20
-> If I understand you correctly you're refusing to accept that
-> 'less privileged bpf' is a valid use case while pushing for extending
-> scope of 'unprivileged'.
-
-No, I=E2=80=99m not.  I have no objection at all if you try to come up with a=
- clear definition of what the capability checks do and what it means to gran=
-t a new permission to a task.  Changing *all* of the capable checks is needl=
-essly broad.=
+likewise.
+-- 
+Florian
