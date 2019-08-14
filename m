@@ -2,298 +2,248 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A81F8D47F
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 15:20:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 829E98D4C1
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 15:32:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728049AbfHNNUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 09:20:24 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40682 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726263AbfHNNUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 09:20:23 -0400
-Received: by mail-wr1-f67.google.com with SMTP id c3so2814303wrd.7;
-        Wed, 14 Aug 2019 06:20:20 -0700 (PDT)
+        id S1727980AbfHNNci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 09:32:38 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46179 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726525AbfHNNch (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 09:32:37 -0400
+Received: by mail-qt1-f195.google.com with SMTP id j15so16491973qtl.13;
+        Wed, 14 Aug 2019 06:32:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5907J95qWoLJJAA1lrle4n+n+JLaMq9U4FEtPQp3pMA=;
-        b=ql9QSH5FhXZyRIdBtvWaeuIRc7qRxTT/qZ+JAQG945r/3234BBZ50gvSCAxGZDWAkZ
-         fthWDInI6zqlCyW+vlG+ezMSNcaTbAu/Eb6JoWZeAkjtVdMx0p4x8bpEJ5ZiBl6dXC7Q
-         fHQQ8OGRYuukco20Zj0l2lyqNG3wg0byvl79S+fm2+X+EcWYllxvBJ/AUhm4hZn+9goP
-         Q4qaA36O0CoAL8SJm7IcMJqdY4q+PD3gUye5fpjokjOp98FKOqvwbRHzrxkYXPOJ76GY
-         m2Z/K/AWRw0ru2pySLtOFWF1Ia9nKadiaHReJygrTjgi1pT5tuq+EQFson/8k5hJT8sI
-         XS5g==
+         :content-transfer-encoding;
+        bh=JuExSWsBtfAM5/29pBQpPsbNhQp3pZxTJtDhhkS2oNE=;
+        b=nQgN303e8SJv5otTtuvGf/lH9GHy1WKTL2cScOMOG3BhpfoAKksBRYdw9d9WLmX+eg
+         XQegHTCfaaTCB1g3zN0h9BZ2gLV0VvwgMUpKtzvjUT/zhSK4oImrXu4/nhgwO48TGu8R
+         zJBv5BqYRytIN4OOA0Ao+V42xj571m9Zi0RGZradkKB7dlRiwf2fMRCQkrPMZf+LmHMz
+         z0SXpNQXqaGWGUmYpC0kAcmpbPUOqZvP3Z+uFMdmFMf2ZQKMnEvw9o0ZlTXrSvba+Q+2
+         gb5PZlyQZRFvaABgy6BSV+OYmDk2OiFhQlk5FsPAaxGc0gqF5wWXoQrLOVtgpGF8XlFt
+         hbSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5907J95qWoLJJAA1lrle4n+n+JLaMq9U4FEtPQp3pMA=;
-        b=GbWEZEVziWwVwzHdm5MP1tN9G1/IcrfOGE7OrTNOHEthljHtQgW1Ofxp22/a1t6LjI
-         k4EhkUG2yTP8MBizR2hwlC/mO9dLzhvPr61XhMYENAHvjXO7v6vo6xS4MbcRJHdsfRb9
-         SOLvjXs2Uaz4Iv2BUy4r/gFu5uVmXP3ywakBNoPAuh86bkbN3xIO/+kNhtH+Pd4iIIuA
-         xQwaYDoaZDBxNYw6NczaCfzyyRNn0mqwm5QC+gvcjWKFwzZFIy1H2L1AQI0nLTUZoM+x
-         Q9h06WFiKljOCr+hs9ZWSZBokQvoxXiOsv2CWIcbbyi0dsdXbZaflJTOwqkZTFPiIEFe
-         NqWA==
-X-Gm-Message-State: APjAAAU4dNFrknAG3dwt1OxAIIBmhu5J1+RfBuxGWNfB+2EHn66N4cFC
-        sLrlSWAAt/56kiWGrNfHQ3jhwJLgRdR57Ic+E9w=
-X-Google-Smtp-Source: APXvYqzIbbGwC0dKbbnnkR3gQ4fzUrPZlBBlDmcLc6ksAiuUPbYb+ipMDTi49nvmKdt3ouESKaYsHfPJvUkvI8EIGRM=
-X-Received: by 2002:adf:e782:: with SMTP id n2mr24698878wrm.1.1565788819460;
- Wed, 14 Aug 2019 06:20:19 -0700 (PDT)
+         :message-id:subject:to:content-transfer-encoding;
+        bh=JuExSWsBtfAM5/29pBQpPsbNhQp3pZxTJtDhhkS2oNE=;
+        b=S9hzZYbTe5bBTJ20a/2Ha9hW5h0kfKs+CT4CVnDe4M+QLb0cA0kCVGph1PAgNW94qa
+         m1/7RFuBpW/27Fwr417hlJxKz5D2MNYekkkQkJLu0JzdRcl0qNfkHitlqwdfw0PT/guM
+         V1j6bx9OGECxalASxyhtneitRH7fFP8sGGOCNq09iFUZxq51C7aFEpXMzlg+P5Nma8xa
+         kJyiJca6A72ECrls/WReB9/JBhSgAFqKjkZ9VGYN9UtDvhJwLnqAoENtFHCf61r3y1XM
+         QOBEDQWHA7dJeB22Eoc9J53c4cfqxvhVRapBjS3jHWcaIC/BEKpsBF+mPTx8Qni2jpsZ
+         x08Q==
+X-Gm-Message-State: APjAAAU9pWBwyZ3opzht6weQxOBRKVW7L0aUQ4wAGp4oVwHE5Rw6OayV
+        vPnRvEUvauDNEb7Fo2vOzZF0wxP49Iz8Z2r/qxTDb7C0
+X-Google-Smtp-Source: APXvYqwftTZEQiFz68w3xUjf6UBOlrVY9j2B4qm77zeGbcpioedpyueIrbxwowjWeL+ozjGXmQcm4DOImaUs5M0EExo=
+X-Received: by 2002:a0c:f643:: with SMTP id s3mr2535550qvm.79.1565789556060;
+ Wed, 14 Aug 2019 06:32:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190809103235.16338-1-tbogendoerfer@suse.de> <20190809103235.16338-10-tbogendoerfer@suse.de>
-In-Reply-To: <20190809103235.16338-10-tbogendoerfer@suse.de>
-From:   Jonas Gorski <jonas.gorski@gmail.com>
-Date:   Wed, 14 Aug 2019 15:20:14 +0200
-Message-ID: <CAOiHx=kuQtOuNfsJ+fDrps+hbrbp5cPujmQpi8Vfy+0qeP8dtA@mail.gmail.com>
-Subject: Re: [PATCH v4 9/9] Input: add IOC3 serio driver
-To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
+References: <20190813102318.5521-1-ivan.khoronzhuk@linaro.org>
+ <20190813102318.5521-2-ivan.khoronzhuk@linaro.org> <CAEf4BzZ2y_DmTXkVqFh6Hdcquo6UvntvCygw5h5WwrWYXRRg_g@mail.gmail.com>
+ <20190814092403.GA4142@khorivan> <20190814115659.GC4142@khorivan>
+In-Reply-To: <20190814115659.GC4142@khorivan>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 14 Aug 2019 15:32:24 +0200
+Message-ID: <CAJ+HfNiqu7WEoBFnfK3znU4tVyAmpPVabTjTSKH1ZVo2W1rrXg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/3] libbpf: add asm/unistd.h to xsk to get __NR_mmap2
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        Network Development <netdev@vger.kernel.org>,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Xdp <xdp-newbies@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-On Fri, 9 Aug 2019 at 12:33, Thomas Bogendoerfer <tbogendoerfer@suse.de> wrote:
+On Wed, 14 Aug 2019 at 13:57, Ivan Khoronzhuk
+<ivan.khoronzhuk@linaro.org> wrote:
 >
-> This patch adds a platform driver for supporting keyboard and mouse
-> interface of SGI IOC3 chips.
+> On Wed, Aug 14, 2019 at 12:24:05PM +0300, Ivan Khoronzhuk wrote:
+> >On Tue, Aug 13, 2019 at 04:38:13PM -0700, Andrii Nakryiko wrote:
+> >
+> >Hi, Andrii
+> >
+> >>On Tue, Aug 13, 2019 at 3:24 AM Ivan Khoronzhuk
+> >><ivan.khoronzhuk@linaro.org> wrote:
+> >>>
+> >>>That's needed to get __NR_mmap2 when mmap2 syscall is used.
+> >>>
+> >>>Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+> >>>---
+> >>> tools/lib/bpf/xsk.c | 1 +
+> >>> 1 file changed, 1 insertion(+)
+> >>>
+> >>>diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> >>>index 5007b5d4fd2c..f2fc40f9804c 100644
+> >>>--- a/tools/lib/bpf/xsk.c
+> >>>+++ b/tools/lib/bpf/xsk.c
+> >>>@@ -12,6 +12,7 @@
+> >>> #include <stdlib.h>
+> >>> #include <string.h>
+> >>> #include <unistd.h>
+> >>>+#include <asm/unistd.h>
+> >>
+> >>asm/unistd.h is not present in Github libbpf projection. Is there any
+> >
+> >Look on includes from
+> >tools/lib/bpf/libpf.c
+> >tools/lib/bpf/bpf.c
+> >
+> >That's how it's done... Copping headers to arch/arm will not
+> >solve this, it includes both of them anyway, and anyway it needs
+> >asm/unistd.h inclusion here, only because xsk.c needs __NR_*
+> >
+> >
 >
-> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> ---
->  drivers/input/serio/Kconfig   |  10 +++
->  drivers/input/serio/Makefile  |   1 +
->  drivers/input/serio/ioc3kbd.c | 163 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 174 insertions(+)
->  create mode 100644 drivers/input/serio/ioc3kbd.c
+> There is one more radical solution for this I can send, but I'm not sure =
+how it
+> can impact on other syscals/arches...
 >
-> diff --git a/drivers/input/serio/Kconfig b/drivers/input/serio/Kconfig
-> index f3e18f8ef9ca..373a1646019e 100644
-> --- a/drivers/input/serio/Kconfig
-> +++ b/drivers/input/serio/Kconfig
-> @@ -165,6 +165,16 @@ config SERIO_MACEPS2
->           To compile this driver as a module, choose M here: the
->           module will be called maceps2.
+> Looks like:
 >
-> +config SERIO_SGI_IOC3
-> +       tristate "SGI IOC3 PS/2 controller"
-> +       depends on SGI_MFD_IOC3
-> +       help
-> +         Say Y here if you have an SGI Onyx2, SGI Octane or IOC3 PCI card
-> +         and you want to attach and use a keyboard, mouse, or both.
-> +
-> +         To compile this driver as a module, choose M here: the
-> +         module will be called ioc3kbd.
-> +
->  config SERIO_LIBPS2
->         tristate "PS/2 driver library"
->         depends on SERIO_I8042 || SERIO_I8042=n
-> diff --git a/drivers/input/serio/Makefile b/drivers/input/serio/Makefile
-> index 67950a5ccb3f..6d97bad7b844 100644
-> --- a/drivers/input/serio/Makefile
-> +++ b/drivers/input/serio/Makefile
-> @@ -20,6 +20,7 @@ obj-$(CONFIG_HIL_MLC)         += hp_sdc_mlc.o hil_mlc.o
->  obj-$(CONFIG_SERIO_PCIPS2)     += pcips2.o
->  obj-$(CONFIG_SERIO_PS2MULT)    += ps2mult.o
->  obj-$(CONFIG_SERIO_MACEPS2)    += maceps2.o
-> +obj-$(CONFIG_SERIO_SGI_IOC3)   += ioc3kbd.o
->  obj-$(CONFIG_SERIO_LIBPS2)     += libps2.o
->  obj-$(CONFIG_SERIO_RAW)                += serio_raw.o
->  obj-$(CONFIG_SERIO_AMS_DELTA)  += ams_delta_serio.o
-> diff --git a/drivers/input/serio/ioc3kbd.c b/drivers/input/serio/ioc3kbd.c
-> new file mode 100644
-> index 000000000000..6840e3c23fed
-> --- /dev/null
-> +++ b/drivers/input/serio/ioc3kbd.c
-> @@ -0,0 +1,163 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * SGI IOC3 PS/2 controller driver for linux
-> + *
-> + * Copyright (C) 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> + *
-> + * Based on code Copyright (C) 2005 Stanislaw Skowronek <skylark@unaligned.org>
-> + *               Copyright (C) 2009 Johannes Dickgreber <tanzy@gmx.de>
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/init.h>
-> +#include <linux/io.h>
-> +#include <linux/serio.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +
-> +#include <asm/sn/ioc3.h>
-> +
-> +struct ioc3kbd_data {
-> +       struct ioc3_serioregs __iomem *regs;
-> +       struct serio *kbd, *aux;
-> +       int irq;
-> +};
-> +
-> +static int ioc3kbd_write(struct serio *dev, u8 val)
-> +{
-> +       struct ioc3kbd_data *d = dev->port_data;
-> +       unsigned long timeout = 0;
-> +       u32 mask;
-> +
-> +       mask = (dev == d->aux) ? KM_CSR_M_WRT_PEND : KM_CSR_K_WRT_PEND;
-> +       while ((readl(&d->regs->km_csr) & mask) && (timeout < 1000)) {
-> +               udelay(100);
-> +               timeout++;
-> +       }
-> +
-> +       if (timeout >= 1000)
-> +               return -ETIMEDOUT;
-> +
-> +       writel(val, dev == d->aux ? &d->regs->m_wd : &d->regs->k_wd);
-> +
-> +       return 0;
-> +}
-> +
-> +static irqreturn_t ioc3kbd_intr(int itq, void *dev_id)
-> +{
-> +       struct ioc3kbd_data *d = dev_id;
-> +       u32 data_k, data_m;
-> +
-> +       data_k = readl(&d->regs->k_rd);
-> +       data_m = readl(&d->regs->m_rd);
-> +
-> +       if (data_k & KM_RD_VALID_0)
-> +               serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_0_SHIFT) & 0xff,
-> +                               0);
-> +       if (data_k & KM_RD_VALID_1)
-> +               serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_1_SHIFT) & 0xff,
-> +                               0);
-> +       if (data_k & KM_RD_VALID_2)
-> +               serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_2_SHIFT) & 0xff,
-> +                               0);
-> +       if (data_m & KM_RD_VALID_0)
-> +               serio_interrupt(d->aux, (data_m >> KM_RD_DATA_0_SHIFT) & 0xff,
-> +                               0);
-> +       if (data_m & KM_RD_VALID_1)
-> +               serio_interrupt(d->aux, (data_m >> KM_RD_DATA_1_SHIFT) & 0xff,
-> +                               0);
-> +       if (data_m & KM_RD_VALID_2)
-> +               serio_interrupt(d->aux, (data_m >> KM_RD_DATA_2_SHIFT) & 0xff,
-> +                               0);
-> +
-> +       return 0;
-> +}
-> +
-> +static int ioc3kbd_probe(struct platform_device *pdev)
-> +{
-> +       struct ioc3_serioregs __iomem *regs;
-> +       struct device *dev = &pdev->dev;
-> +       struct ioc3kbd_data *d;
-> +       struct serio *sk, *sa;
-> +       int irq, ret;
-> +
-> +       regs = devm_platform_ioremap_resource(pdev, 0);
-> +       if (IS_ERR(regs))
-> +               return PTR_ERR(regs);
-> +
-> +       irq = platform_get_irq(pdev, 0);
-> +       if (irq < 0)
-> +               return -ENXIO;
-> +
-> +       d = devm_kzalloc(&pdev->dev, sizeof(*d), GFP_KERNEL);
+>
+> diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
+> index 9312066a1ae3..8b2f8ff7ce44 100644
+> --- a/tools/lib/bpf/Makefile
+> +++ b/tools/lib/bpf/Makefile
+> @@ -113,6 +113,7 @@ override CFLAGS +=3D -Werror -Wall
+>  override CFLAGS +=3D -fPIC
+>  override CFLAGS +=3D $(INCLUDES)
+>  override CFLAGS +=3D -fvisibility=3Dhidden
+> +override CFLAGS +=3D -D_FILE_OFFSET_BITS=3D64
+>
 
-&pdev->dev => dev
+Hmm, isn't this glibc-ism? Does is it work for, say, musl or bionic?
 
-> +       if (!d)
-> +               return -ENOMEM;
-> +
-> +       sk = kzalloc(sizeof(*sk), GFP_KERNEL);
-
-any reason not to devm_kzalloc this as well? Then you won't need to
-manually free it in the error cases.
-
-> +       if (!sk)
-> +               return -ENOMEM;
-> +
-> +       sa = kzalloc(sizeof(*sa), GFP_KERNEL);
-
-same here.
-
-> +       if (!sa) {
-> +               kfree(sk);
-> +               return -ENOMEM;
-> +       }
-> +
-> +       sk->id.type = SERIO_8042;
-> +       sk->write = ioc3kbd_write;
-> +       snprintf(sk->name, sizeof(sk->name), "IOC3 keyboard %d", pdev->id);
-> +       snprintf(sk->phys, sizeof(sk->phys), "ioc3/serio%dkbd", pdev->id);
-> +       sk->port_data = d;
-> +       sk->dev.parent = &pdev->dev;
-
-&pdev->dev => dev
-
-> +
-> +       sa->id.type = SERIO_8042;
-> +       sa->write = ioc3kbd_write;
-> +       snprintf(sa->name, sizeof(sa->name), "IOC3 auxiliary %d", pdev->id);
-> +       snprintf(sa->phys, sizeof(sa->phys), "ioc3/serio%daux", pdev->id);
-> +       sa->port_data = d;
-> +       sa->dev.parent = dev;
-> +
-> +       d->regs = regs;
-> +       d->kbd = sk;
-> +       d->aux = sa;
-> +       d->irq = irq;
-> +
-> +       platform_set_drvdata(pdev, d);
-> +       serio_register_port(d->kbd);
-> +       serio_register_port(d->aux);
-> +
-> +       ret = devm_request_irq(&pdev->dev, irq, ioc3kbd_intr, IRQF_SHARED,
-> +                              "ioc3-kbd", d);
-> +       if (ret) {
-> +               dev_err(&pdev->dev, "could not request IRQ %d\n", irq);
-> +               serio_unregister_port(d->kbd);
-> +               serio_unregister_port(d->aux);
-> +               kfree(sk);
-> +               kfree(sa);
-> +               return ret;
-> +       }
-> +       return 0;
-> +}
-> +
-> +static int ioc3kbd_remove(struct platform_device *pdev)
-> +{
-> +       struct ioc3kbd_data *d = platform_get_drvdata(pdev);
-> +
-> +       devm_free_irq(&pdev->dev, d->irq, d);
-> +       serio_unregister_port(d->kbd);
-> +       serio_unregister_port(d->aux);
-> +       return 0;
-> +}
-
-and on that topic, won't you need to kfree d->kbd and d->aux here?
-Unless you devm_kzalloc'd them.
-
-Alternatively you could also just embed the two serio structs into
-ioc3kbd_data, then you only need one allocation instead of three.
+If this is portable, and works on 32-, and 64-bit archs, I'm happy
+with the patch. :-)
 
 
-Regards
+Bj=C3=B6rn
 
-Jonas
+>  ifeq ($(VERBOSE),1)
+>    Q =3D
+> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+> index f2fc40f9804c..ff2d03b8380d 100644
+> --- a/tools/lib/bpf/xsk.c
+> +++ b/tools/lib/bpf/xsk.c
+> @@ -75,23 +75,6 @@ struct xsk_nl_info {
+>         int fd;
+>  };
+>
+> -/* For 32-bit systems, we need to use mmap2 as the offsets are 64-bit.
+> - * Unfortunately, it is not part of glibc.
+> - */
+> -static inline void *xsk_mmap(void *addr, size_t length, int prot, int fl=
+ags,
+> -                            int fd, __u64 offset)
+> -{
+> -#ifdef __NR_mmap2
+> -       unsigned int page_shift =3D __builtin_ffs(getpagesize()) - 1;
+> -       long ret =3D syscall(__NR_mmap2, addr, length, prot, flags, fd,
+> -                          (off_t)(offset >> page_shift));
+> -
+> -       return (void *)ret;
+> -#else
+> -       return mmap(addr, length, prot, flags, fd, offset);
+> -#endif
+> -}
+> -
+>  int xsk_umem__fd(const struct xsk_umem *umem)
+>  {
+>         return umem ? umem->fd : -EINVAL;
+> @@ -211,10 +194,9 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, voi=
+d *umem_area, __u64 size,
+>                 goto out_socket;
+>         }
+>
+> -       map =3D xsk_mmap(NULL, off.fr.desc +
+> -                      umem->config.fill_size * sizeof(__u64),
+> -                      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+> -                      umem->fd, XDP_UMEM_PGOFF_FILL_RING);
+> +       map =3D mmap(NULL, off.fr.desc + umem->config.fill_size * sizeof(=
+__u64),
+> +                  PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, ume=
+m->fd,
+> +                  XDP_UMEM_PGOFF_FILL_RING);
+>         if (map =3D=3D MAP_FAILED) {
+>                 err =3D -errno;
+>                 goto out_socket;
+> @@ -228,10 +210,9 @@ int xsk_umem__create(struct xsk_umem **umem_ptr, voi=
+d *umem_area, __u64 size,
+>         fill->ring =3D map + off.fr.desc;
+>         fill->cached_cons =3D umem->config.fill_size;
+>
+> -       map =3D xsk_mmap(NULL,
+> -                      off.cr.desc + umem->config.comp_size * sizeof(__u6=
+4),
+> -                      PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE,
+> -                      umem->fd, XDP_UMEM_PGOFF_COMPLETION_RING);
+> +       map =3D mmap(NULL, off.cr.desc + umem->config.comp_size * sizeof(=
+__u64),
+> +                  PROT_READ | PROT_WRITE, MAP_SHARED | MAP_POPULATE, ume=
+m->fd,
+> +                  XDP_UMEM_PGOFF_COMPLETION_RING);
+>         if (map =3D=3D MAP_FAILED) {
+>                 err =3D -errno;
+>                 goto out_mmap;
+> @@ -552,11 +533,10 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr,=
+ const char *ifname,
+>         }
+>
+>         if (rx) {
+> -               rx_map =3D xsk_mmap(NULL, off.rx.desc +
+> -                                 xsk->config.rx_size * sizeof(struct xdp=
+_desc),
+> -                                 PROT_READ | PROT_WRITE,
+> -                                 MAP_SHARED | MAP_POPULATE,
+> -                                 xsk->fd, XDP_PGOFF_RX_RING);
+> +               rx_map =3D mmap(NULL, off.rx.desc +
+> +                             xsk->config.rx_size * sizeof(struct xdp_des=
+c),
+> +                             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_PO=
+PULATE,
+> +                             xsk->fd, XDP_PGOFF_RX_RING);
+>                 if (rx_map =3D=3D MAP_FAILED) {
+>                         err =3D -errno;
+>                         goto out_socket;
+> @@ -571,11 +551,10 @@ int xsk_socket__create(struct xsk_socket **xsk_ptr,=
+ const char *ifname,
+>         xsk->rx =3D rx;
+>
+>         if (tx) {
+> -               tx_map =3D xsk_mmap(NULL, off.tx.desc +
+> -                                 xsk->config.tx_size * sizeof(struct xdp=
+_desc),
+> -                                 PROT_READ | PROT_WRITE,
+> -                                 MAP_SHARED | MAP_POPULATE,
+> -                                 xsk->fd, XDP_PGOFF_TX_RING);
+> +               tx_map =3D mmap(NULL, off.tx.desc +
+> +                             xsk->config.tx_size * sizeof(struct xdp_des=
+c),
+> +                             PROT_READ | PROT_WRITE, MAP_SHARED | MAP_PO=
+PULATE,
+> +                             xsk->fd, XDP_PGOFF_TX_RING);
+>                 if (tx_map =3D=3D MAP_FAILED) {
+>                         err =3D -errno;
+>                         goto out_mmap_rx;
+>
+>
+> If maintainers are ready to accept this I can send.
+> What do you say?
+>
+> --
+> Regards,
+> Ivan Khoronzhuk
