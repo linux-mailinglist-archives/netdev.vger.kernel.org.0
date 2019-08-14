@@ -2,81 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2B248DF67
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 22:55:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD5E48DF4F
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 22:51:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729743AbfHNUzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 16:55:04 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:47591 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726505AbfHNUzD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 16:55:03 -0400
-Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
- 1N7gfa-1iKZYU3lUA-014jrh; Wed, 14 Aug 2019 22:54:45 +0200
-From:   Arnd Bergmann <arnd@arndb.de>
-To:     linux-kernel@vger.kernel.org, viro@zeniv.linux.org.uk,
-        linux-fsdevel@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Mario Schuknecht <m.schuknecht@dresearch.de>,
-        Steffen Sledz <sledz@dresearch.de>,
-        Willem de Bruijn <willemb@google.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Deepa Dinamani <deepa.kernel@gmail.com>, netdev@vger.kernel.org
-Subject: [PATCH v5 09/18] compat_ioctl: handle SIOCOUTQNSD
-Date:   Wed, 14 Aug 2019 22:49:21 +0200
-Message-Id: <20190814205245.121691-4-arnd@arndb.de>
-X-Mailer: git-send-email 2.20.0
-In-Reply-To: <20190814204259.120942-1-arnd@arndb.de>
-References: <20190814204259.120942-1-arnd@arndb.de>
+        id S1729707AbfHNUvj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 16:51:39 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:44298 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728777AbfHNUvj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 16:51:39 -0400
+Received: by mail-pl1-f194.google.com with SMTP id t14so125698plr.11
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 13:51:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=MEnN9cIkoprgGXZCvLAId1lzXJ/S4r3niCBe1YQXTy0=;
+        b=MdZWJqAHrl9ARqMkSb5qxqaRLJdN45KgdIAXDLXqxXmoWALiG20tiCPDJTFneqJC3D
+         4nZdXoZUhxtl8fW3Gk0ibOEA8zsFCiiaUn3xdMkKnD6d79wGv54d2vFvywhfi4jrYhzV
+         GqX5cK3hLDRZuIy+2XR2/QhY7zOe7wKBMeKqMUkQm5/33U2EyVJdyPfzAIk1LLOpIyZf
+         +EqsIZ7GPmrc+xk5UeOnh9E3HblpEkLPMrKcO6duTldugFeZIEK8pafLtMTgNEwhXgWv
+         maXLm1Ues0xmhCEbt0bpqBYpiBsBIKFHiDMuCeudyt7RxNpKkcZ2c9XBzAQkTpv/L3po
+         UPsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=MEnN9cIkoprgGXZCvLAId1lzXJ/S4r3niCBe1YQXTy0=;
+        b=QXTlA6WzHJC2z9oTcD8mCLUvSrmX/TadqlvNDlIprHjJk8nN3bfP8S35KTkNrgb5kt
+         fCrrSQDDa8rUuk6mUpulP3SAUDPKY5gpexMf+1esTEbjHEg9mr1KyoYkYK9doKq97G6o
+         /VOkbejr2M1v2Wyws+YRqy4cACdA2rIOmjiExiNz9tYmYz1+jO+rp4ia+nbfnJEousuG
+         phmcswmwqJrIPQZJnE+E7grtkB0jmwIoQ35IRKfgtqPS2Gc3lnaqJSjqpagf29Jeq+9U
+         C+ouYRGQj/7syP1E35VZL2qg3uumphW4gZiVIGTAiM0dHP8dfoKfHSck8eyKwAxt9osh
+         EvAA==
+X-Gm-Message-State: APjAAAXXWgROFe0LCjH8icI+orkvtnUg1RcOwtaHfm0CTpiOzuOX/9RL
+        MLeWwPMs5ZjRCoWNLrtV05BexcHl9R61ptO+txgixktD
+X-Google-Smtp-Source: APXvYqyWimjHWiPhdHszTv+d5Dv/M7Uq7RTTuk3UxMJ/Z6q/WbBkJnME9bJnCmWIXkJkMXewIWxLvAMGfUCdCTrOX5s=
+X-Received: by 2002:a17:902:7286:: with SMTP id d6mr1186743pll.61.1565815898371;
+ Wed, 14 Aug 2019 13:51:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:PR2kN+3b7Ibxtnk41q7Nxz/FfJzjWkTqKtlwh7QP5DaHQ4nbRYc
- NiBXcxAA5hJaBn1P+Fpve4A5y3aKag9gv5v2r7+a/cpLhPgwYCDqwREb86JtUgNOePqKqwO
- 9PFoe0Dmlm8ahvvWkFp4laELhzMZjpcMcXd+WxVvuyWNmbvw5Mmsj2C7vmluBXGG9G9Xb6L
- o1ewHcZ3o87tDYhM10iqw==
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:U+fzLfynvBw=:1jD0thGH+ZMq+c9jiboTLb
- BlplpqEkAj9npkOADezy/rfKW9RRddQR26ODkc5xHQZIs+Fy0kZq/ZLe432CGs3a0VwRwnjx0
- VqDkkvkoEfFlpRC01EB5r/i9jDrEx9sixAHF6qNWlJh6EiYP9fUhr0F9RPRlDma5rD4DtKIE/
- zPwg9l0mNNBuBAy+Q9qQ8AjM94seaols/Y18YZg8U3H2zUdxYQqv6NJ+4S34APo/xl2l4KYTU
- 5NjF2m4BbUz4WuY4WqrjJGsRc7Tu/Hzozj+8ggRZT5Fsy6cZZDd7l9hPYC2yltVnLFvfrcmuy
- fsU4VHZree9L45yKMAcpb3ij45dL0r1b9Ue24Z7F1wvJI4BrgJp9ENvacPx1nUmqg59tQCQ9s
- caHyYBeDSE0S3u4xboxsO3AkS3QomjAMQlKGMRL//NGUbIK51oqEqa8VT/259Qi1QjeqVmRHn
- UWRFw4Sp0v5tDl5CQhLG7/fVT2oOR6/ydrhssMiE02yfoUHC+PPGXVoBEK3dDKJ2T4jOOcv36
- FtQzODhYoF073qsHUsHjrxo5L58edg/7a38nDUNPJqnuRlN9Suu40Rg4GvjaI/ESf7bx3vbPn
- ht3BaBZYhM3ojviYfFnuYvIVLEv/UPJBQfZ+gopabMNu30gaxLDURPasEZVGqA0YaxbBU880j
- vShZr4VPbPVQiHAGupjPf/3hXFS9ObrabfhHuLICA954HFV3rj5R8i0WLntB+FAhW+GBiDuM7
- GHEUzvsNfRmYXh5/TzEkUp2uWojN4dFfly316Y5bcuOxOLAKUH4miD+ftlu/PGboQVXU4WsV7
- uIQbo6ccew25RiZi9c12pCLbuULQg==
+References: <CAAT+qEa6Yw-tf3L_R-phzSvLiGOdW9uLhFGNTz+i9eWhBT_+DA@mail.gmail.com>
+ <CAAT+qEbOx8Jh3aFS-e7U6FyHo03sdcY6UoeGzwYQbO6WRjc3PQ@mail.gmail.com>
+ <CAM_iQpW-kTV1ZL-OnS2TNVcso1NbiiPn0eUz=7f5uTpFucz7sw@mail.gmail.com> <CAAT+qEYG5=5ny+t0VcqiYjDUQLrcj9sBR=2w-fdsE7Jjf4xOkQ@mail.gmail.com>
+In-Reply-To: <CAAT+qEYG5=5ny+t0VcqiYjDUQLrcj9sBR=2w-fdsE7Jjf4xOkQ@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 14 Aug 2019 13:51:27 -0700
+Message-ID: <CAM_iQpXNVgpi0+4BHw6zDN3z=dRpERqr6+ohjytf=zKoLd+CLg@mail.gmail.com>
+Subject: Re: tc - mirred ingress not supported at the moment
+To:     Martin Olsson <martin.olsson+netdev@sentorsecurity.com>
+Cc:     netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Unlike the normal SIOCOUTQ, SIOCOUTQNSD was never handled in compat
-mode. Add it to the common socket compat handler along with similar
-ones.
+On Wed, Aug 14, 2019 at 2:02 AM Martin Olsson
+<martin.olsson+netdev@sentorsecurity.com> wrote:
+>
+> Hi Cong!
+>
+> Ah sorry.
+> Already implemented. Great!
+>
+> Hmmm. Then why don't the manual at https://www.linux.org/docs/man8/tc-mir=
+red.html to reflect the changes?
+> That was the place I checked to see if ingress was still not implemented.
+> In the commit you point at, the sentence "Currently only egress is implem=
+ented" has been removed.
 
-Fixes: 2f4e1b397097 ("tcp: ioctl type SIOCOUTQNSD returns amount of data not sent")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- net/socket.c | 1 +
- 1 file changed, 1 insertion(+)
 
-diff --git a/net/socket.c b/net/socket.c
-index 6a9ab7a8b1d2..a60f48ab2130 100644
---- a/net/socket.c
-+++ b/net/socket.c
-@@ -3452,6 +3452,7 @@ static int compat_sock_ioctl_trans(struct file *file, struct socket *sock,
- 	case SIOCSARP:
- 	case SIOCGARP:
- 	case SIOCDARP:
-+	case SIOCOUTQNSD:
- 	case SIOCATMARK:
- 		return sock_do_ioctl(net, sock, cmd, arg);
- 	}
--- 
-2.20.0
+This means that website is out-of-date, not sync'ed with latest man pages.
 
+
+>
+>
+> Question:
+> Is there any form of performance penalty if I send the mirrored traffic t=
+o the ingress queue of the destination interface rather than to the egress =
+queue?
+> I mean, in the kernel there is the possibility to perform far more action=
+s on the ingress queue than on the egress, but if I leave both queues at th=
+eir defaults, will mirrored packets to ingress use more CPU cycles than to =
+the egress destination, or are they more or less identical?
+>
+
+Hard to say without measurement. There is no queue on ingress
+side, by the way, so it could be faster than egress, regarding to
+lock contentions on queues.
+
+>
+> Question 2:
+> Given the commit https://git.kernel.org/pub/scm/network/iproute2/iproute2=
+.git/commit/?id=3D5eca0a3701223619a513c7209f7d9335ca1b4cfa, how can I see i=
+n what kernel version it was added?
+>
+
+The kernel commit is:
+
+commit 53592b3640019f2834701093e38272fdfd367ad8
+Author: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Date:   Thu Oct 13 09:06:44 2016 +0300
+
+    net/sched: act_mirred: Implement ingress actions
+
+which is merged in 4.10.
+
+Thanks.
