@@ -2,226 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CC4838D772
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:51:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57B448D782
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 17:57:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbfHNPvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 11:51:40 -0400
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:39019 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfHNPvj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 11:51:39 -0400
-X-Originating-IP: 209.85.222.41
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com [209.85.222.41])
-        (Authenticated sender: pshelar@ovn.org)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 23C7D1C0003
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 15:51:36 +0000 (UTC)
-Received: by mail-ua1-f41.google.com with SMTP id g11so16177991uak.0
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 08:51:36 -0700 (PDT)
-X-Gm-Message-State: APjAAAVfLmq6S0il6FAqymy/UlaqWiKb6pg7e4jjOOUZJdNx5hC7yaE+
-        BmrFfl8o3sv80w8FwmxrsLMmVkkkX6AZPRvBeLA=
-X-Google-Smtp-Source: APXvYqwE0rg/wmwIlC6hBhzAD6znflLVuMBp5kRLEcJ8XVQwFjeiE4xmm3PmC7oinHjtGfxuZIIiG4NPgJd3XJnojPo=
-X-Received: by 2002:ab0:699a:: with SMTP id t26mr341374uaq.70.1565797895779;
- Wed, 14 Aug 2019 08:51:35 -0700 (PDT)
+        id S1727110AbfHNP5C (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 11:57:02 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53482 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726509AbfHNP5B (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 11:57:01 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7B34413A82;
+        Wed, 14 Aug 2019 15:57:01 +0000 (UTC)
+Received: from linux-ws.nc.xsintricity.com (ovpn-112-57.rdu2.redhat.com [10.10.112.57])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 18AB781E27;
+        Wed, 14 Aug 2019 15:56:59 +0000 (UTC)
+Message-ID: <53b40b359d18dd73a6cf264aa8013d33547b593f.camel@redhat.com>
+Subject: Re: [PATCH net-next 1/5] RDS: Re-add pf/sol access via sysctl
+From:   Doug Ledford <dledford@redhat.com>
+To:     Gerd Rausch <gerd.rausch@oracle.com>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Cc:     David Miller <davem@davemloft.net>
+Date:   Wed, 14 Aug 2019 11:56:57 -0400
+In-Reply-To: <e0397d30-7405-a7af-286c-fe76887caf0a@oracle.com>
+References: <e0397d30-7405-a7af-286c-fe76887caf0a@oracle.com>
+Organization: Red Hat, Inc.
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-uUWdoCCJ1ECep/mp9jWF"
+User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
 MIME-Version: 1.0
-References: <1565179722-22488-1-git-send-email-paulb@mellanox.com>
- <CAOrHB_DhfiQy8RwTiwgn9ZXgsd5j2f0ynZPUP4wf-xzhjwo8kg@mail.gmail.com>
- <b5342e56-4baa-97ab-8694-2f48d012afca@mellanox.com> <CAOrHB_CDrau-jLycRYxRkn1tEXVrRhoSYSd8sAcGPiZ-bp+FEg@mail.gmail.com>
- <68e7a65c-162a-8bc5-4d80-f4f245944b9c@mellanox.com>
-In-Reply-To: <68e7a65c-162a-8bc5-4d80-f4f245944b9c@mellanox.com>
-From:   Pravin Shelar <pshelar@ovn.org>
-Date:   Wed, 14 Aug 2019 08:53:07 -0700
-X-Gmail-Original-Message-ID: <CAOrHB_Cn0Stx+Bc=Kvg55ZrOVNJhkn3Fz9rFjUNVOs8oRTgB9w@mail.gmail.com>
-Message-ID: <CAOrHB_Cn0Stx+Bc=Kvg55ZrOVNJhkn3Fz9rFjUNVOs8oRTgB9w@mail.gmail.com>
-Subject: Re: [PATCH net-next] net: openvswitch: Set OvS recirc_id from tc
- chain index
-To:     Paul Blakey <paulb@mellanox.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Justin Pettit <jpettit@nicira.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Wed, 14 Aug 2019 15:57:01 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 1:29 AM Paul Blakey <paulb@mellanox.com> wrote:
->
->
-> On 8/12/2019 7:18 PM, Pravin Shelar wrote:
-> > On Sun, Aug 11, 2019 at 3:46 AM Paul Blakey <paulb@mellanox.com> wrote:
-> >>
-> >> On 8/8/2019 11:53 PM, Pravin Shelar wrote:
-> >>> On Wed, Aug 7, 2019 at 5:08 AM Paul Blakey <paulb@mellanox.com> wrote:
-> >>>> Offloaded OvS datapath rules are translated one to one to tc rules,
-> >>>> for example the following simplified OvS rule:
-> >>>>
-> >>>> recirc_id(0),in_port(dev1),eth_type(0x0800),ct_state(-trk) actions:ct(),recirc(2)
-> >>>>
-> >>>> Will be translated to the following tc rule:
-> >>>>
-> >>>> $ tc filter add dev dev1 ingress \
-> >>>>               prio 1 chain 0 proto ip \
-> >>>>                   flower tcp ct_state -trk \
-> >>>>                   action ct pipe \
-> >>>>                   action goto chain 2
-> >>>>
-> >>>> Received packets will first travel though tc, and if they aren't stolen
-> >>>> by it, like in the above rule, they will continue to OvS datapath.
-> >>>> Since we already did some actions (action ct in this case) which might
-> >>>> modify the packets, and updated action stats, we would like to continue
-> >>>> the proccessing with the correct recirc_id in OvS (here recirc_id(2))
-> >>>> where we left off.
-> >>>>
-> >>>> To support this, introduce a new skb extension for tc, which
-> >>>> will be used for translating tc chain to ovs recirc_id to
-> >>>> handle these miss cases. Last tc chain index will be set
-> >>>> by tc goto chain action and read by OvS datapath.
-> >>>>
-> >>>> Signed-off-by: Paul Blakey <paulb@mellanox.com>
-> >>>> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-> >>>> Acked-by: Jiri Pirko <jiri@mellanox.com>
-> >>>> ---
-> >>>>    include/linux/skbuff.h    | 13 +++++++++++++
-> >>>>    include/net/sch_generic.h |  5 ++++-
-> >>>>    net/core/skbuff.c         |  6 ++++++
-> >>>>    net/openvswitch/flow.c    |  9 +++++++++
-> >>>>    net/sched/Kconfig         | 13 +++++++++++++
-> >>>>    net/sched/act_api.c       |  1 +
-> >>>>    net/sched/cls_api.c       | 12 ++++++++++++
-> >>>>    7 files changed, 58 insertions(+), 1 deletion(-)
-> >>>>
-> >>>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> >>>> index 3aef8d8..fb2a792 100644
-> >>>> --- a/include/linux/skbuff.h
-> >>>> +++ b/include/linux/skbuff.h
-> >>>> @@ -279,6 +279,16 @@ struct nf_bridge_info {
-> >>>>    };
-> >>>>    #endif
-> >>>>
-> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> >>>> +/* Chain in tc_skb_ext will be used to share the tc chain with
-> >>>> + * ovs recirc_id. It will be set to the current chain by tc
-> >>>> + * and read by ovs to recirc_id.
-> >>>> + */
-> >>>> +struct tc_skb_ext {
-> >>>> +       __u32 chain;
-> >>>> +};
-> >>>> +#endif
-> >>>> +
-> >>>>    struct sk_buff_head {
-> >>>>           /* These two members must be first. */
-> >>>>           struct sk_buff  *next;
-> >>>> @@ -4050,6 +4060,9 @@ enum skb_ext_id {
-> >>>>    #ifdef CONFIG_XFRM
-> >>>>           SKB_EXT_SEC_PATH,
-> >>>>    #endif
-> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> >>>> +       TC_SKB_EXT,
-> >>>> +#endif
-> >>>>           SKB_EXT_NUM, /* must be last */
-> >>>>    };
-> >>>>
-> >>>> diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-> >>>> index 6b6b012..871feea 100644
-> >>>> --- a/include/net/sch_generic.h
-> >>>> +++ b/include/net/sch_generic.h
-> >>>> @@ -275,7 +275,10 @@ struct tcf_result {
-> >>>>                           unsigned long   class;
-> >>>>                           u32             classid;
-> >>>>                   };
-> >>>> -               const struct tcf_proto *goto_tp;
-> >>>> +               struct {
-> >>>> +                       const struct tcf_proto *goto_tp;
-> >>>> +                       u32 goto_index;
-> >>>> +               };
-> >>>>
-> >>>>                   /* used in the skb_tc_reinsert function */
-> >>>>                   struct {
-> >>>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> >>>> index ea8e8d3..2b40b5a 100644
-> >>>> --- a/net/core/skbuff.c
-> >>>> +++ b/net/core/skbuff.c
-> >>>> @@ -4087,6 +4087,9 @@ int skb_gro_receive(struct sk_buff *p, struct sk_buff *skb)
-> >>>>    #ifdef CONFIG_XFRM
-> >>>>           [SKB_EXT_SEC_PATH] = SKB_EXT_CHUNKSIZEOF(struct sec_path),
-> >>>>    #endif
-> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> >>>> +       [TC_SKB_EXT] = SKB_EXT_CHUNKSIZEOF(struct tc_skb_ext),
-> >>>> +#endif
-> >>>>    };
-> >>>>
-> >>>>    static __always_inline unsigned int skb_ext_total_length(void)
-> >>>> @@ -4098,6 +4101,9 @@ static __always_inline unsigned int skb_ext_total_length(void)
-> >>>>    #ifdef CONFIG_XFRM
-> >>>>                   skb_ext_type_len[SKB_EXT_SEC_PATH] +
-> >>>>    #endif
-> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> >>>> +               skb_ext_type_len[TC_SKB_EXT] +
-> >>>> +#endif
-> >>>>                   0;
-> >>>>    }
-> >>>>
-> >>>> diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-> >>>> index bc89e16..0287ead 100644
-> >>>> --- a/net/openvswitch/flow.c
-> >>>> +++ b/net/openvswitch/flow.c
-> >>>> @@ -816,6 +816,9 @@ static int key_extract_mac_proto(struct sk_buff *skb)
-> >>>>    int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
-> >>>>                            struct sk_buff *skb, struct sw_flow_key *key)
-> >>>>    {
-> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> >>>> +       struct tc_skb_ext *tc_ext;
-> >>>> +#endif
-> >>>>           int res, err;
-> >>>>
-> >>>>           /* Extract metadata from packet. */
-> >>>> @@ -848,7 +851,13 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
-> >>>>           if (res < 0)
-> >>>>                   return res;
-> >>>>           key->mac_proto = res;
-> >>>> +
-> >>>> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> >>>> +       tc_ext = skb_ext_find(skb, TC_SKB_EXT);
-> >>>> +       key->recirc_id = tc_ext ? tc_ext->chain : 0;
-> >>>> +#else
-> >>>>           key->recirc_id = 0;
-> >>>> +#endif
-> >>>>
-> >>> Most of cases the config would be turned on, so the ifdef is not that
-> >>> useful. Can you add static key to avoid searching the skb-ext in non
-> >>> offload cases.
-> >> Hi,
-> >>
-> >> What do you mean by a static key?
-> >>
-> > https://www.kernel.org/doc/Documentation/static-keys.txt
-> >
-> > Static key can be enabled when a flow is added to the tc filter.
->
-> Hi and thanks for the feedback,
->
-> The skb_ext_find() just checks a single bit on the
-> skb->active_extensions, and if so returns an offset. Do you think it
-> will impact performance much?
->
-I do not see much down side of adding static key here.
 
->
-> But to your suggestion, do you mean that the first tc goto action
-> instance with the relevant ifdef (CONFIG_NET_TC_SKB_EXT) it will enable
-> the OvS static key that guards this skb_ext_find()?
->
-> I guess calling it in tcf_action_set_ctrlact() if goto_chain != 0.
->
-> This will expose some OvS helper function (or static key) to
-> net/sched/act_api.c right?
+--=-uUWdoCCJ1ECep/mp9jWF
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Right, The patch adds this dependency anyways, so this symbol
-definition in OVS would make it explicit to user.
+On Tue, 2019-08-13 at 11:20 -0700, Gerd Rausch wrote:
+> From: Andy Grover <andy.grover@oracle.com>
+> Date: Tue, 24 Nov 2009 15:35:51 -0800
+>=20
+> Although RDS has an official PF_RDS value now, existing software
+> expects to look for rds sysctls to determine it. We need to maintain
+> these for now, for backwards compatibility.
+>=20
+> Signed-off-by: Andy Grover <andy.grover@oracle.com>
+> Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+> ---
+>  net/rds/sysctl.c | 21 +++++++++++++++++++++
+>  1 file changed, 21 insertions(+)
+>=20
+> diff --git a/net/rds/sysctl.c b/net/rds/sysctl.c
+> index e381bbcd9cc1..9760292a0af4 100644
+> --- a/net/rds/sysctl.c
+> +++ b/net/rds/sysctl.c
+> @@ -49,6 +49,13 @@ unsigned int  rds_sysctl_max_unacked_bytes =3D (16 <<
+> 20);
+> =20
+>  unsigned int rds_sysctl_ping_enable =3D 1;
+> =20
+> +/*
+> + * We have official values, but must maintain the sysctl interface
+> for existing
+> + * software that expects to find these values here.
+> + */
+> +static int rds_sysctl_pf_rds =3D PF_RDS;
+> +static int rds_sysctl_sol_rds =3D SOL_RDS;
+> +
+>  static struct ctl_table rds_sysctl_rds_table[] =3D {
+>  	{
+>  		.procname       =3D "reconnect_min_delay_ms",
+> @@ -68,6 +75,20 @@ static struct ctl_table rds_sysctl_rds_table[] =3D {
+>  		.extra1		=3D &rds_sysctl_reconnect_min_jiffies,
+>  		.extra2		=3D &rds_sysctl_reconnect_max,
+>  	},
+> +	{
+> +		.procname       =3D "pf_rds",
+> +		.data		=3D &rds_sysctl_pf_rds,
+> +		.maxlen         =3D sizeof(int),
+> +		.mode           =3D 0444,
+> +		.proc_handler   =3D &proc_dointvec,
+> +	},
+> +	{
+> +		.procname       =3D "sol_rds",
+> +		.data		=3D &rds_sysctl_sol_rds,
+> +		.maxlen         =3D sizeof(int),
+> +		.mode           =3D 0444,
+> +		.proc_handler   =3D &proc_dointvec,
+> +	},
+>  	{
+>  		.procname	=3D "max_unacked_packets",
+>  		.data		=3D &rds_sysctl_max_unacked_packets,
+
+Good Lord...RDS was taken into the kernel in Feb of 2009, so over 10
+years ago.  The patch to put PF_RDS/AF_RDS/SOL_RDS was taken into
+include/linux/socket.h Feb 26, 2009.  The RDS ports were allocated by
+IANA on Feb 27 and May 20, 2009.  And you *still* have software that
+needs this?  The only software that has ever used RDS was Oracle
+software.  I would have expected you guys to update your source code to
+do the right thing long before now.  In fact, I would expect you were
+ready to retire all of the legacy software that needs this by now.  As
+of today, does your current build of Oracle software still require this,
+or have you at least fixed it up in your modern builds?
+
+--=20
+Doug Ledford <dledford@redhat.com>
+    GPG KeyID: B826A3330E572FDD
+    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
+
+--=-uUWdoCCJ1ECep/mp9jWF
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl1UL0kACgkQuCajMw5X
+L93ophAAw3TK/JcdYvqs2yP2wP8HKL87nzD18xu3M6UeWfUQkZtW1u9Ag5zFGbf1
+L3Z437/z8FJZldEUawZnA+3kecrYE/Ln03+WFQ51K00TVpJ8VJ8p1rwNESsYZT+C
+gYVW5vCOZ+Ko9bbGXiugT8Kho1WbHvpJTXqgO5Uc3aZH/hvemCrwYXns8wbdIVvs
+3Y/HA7NmlTbECHpdauo0YEcAAsDeqIJjFJJImnjkW4AJo+HJPZZDibhmwf0pNU/Q
+8MVOd/5KvnTR7Cf0X+2hjW7XjCsfyelrCo1GCsUuJm85ji02zgAM/INwJXFxjd9M
+s3XfBuWW+QawUzwocGkDECCMv0fA25CSZAy5jwoe2wbMnApQmI/c2eiTxs9ZbX4p
+1nbA0FKCezS4CUmFe8umM+1au9El2HYa/puob7E5YzXezkz9QRdvK36xAtO4Si2z
+KzwFY0pZuHDzk5uvLbNSbqGNMx3EP2JPpZyN0WpT+Ll8MizAw1/MiT4V5On1Kt74
+Gh9CCl3WT+d4WrTw6apwPRDrzAsVcrEgV/leF2n+YTVmTNiIJOgfg3s1xx1ccDn3
+qna9Eqg1kJ2XZ1tmBsRd/b3Dmn25JRt2dOasGTIUYttXwUXWjbaMOs5SS4WlG5sc
+tAZLJECY2e7jADI5CQgp59DpJWN+N1o73YYWOJywYXI69jWjg90=
+=25/J
+-----END PGP SIGNATURE-----
+
+--=-uUWdoCCJ1ECep/mp9jWF--
+
