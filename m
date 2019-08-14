@@ -2,66 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A0E9A8DC63
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:53:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F13928DC6A
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 19:54:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728891AbfHNRxF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 13:53:05 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34384 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728188AbfHNRxE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:53:04 -0400
-Received: by mail-pl1-f195.google.com with SMTP id i2so51047963plt.1;
-        Wed, 14 Aug 2019 10:53:04 -0700 (PDT)
+        id S1728774AbfHNRy2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 13:54:28 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:39487 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727791AbfHNRy2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 13:54:28 -0400
+Received: by mail-pg1-f193.google.com with SMTP id u17so53452174pgi.6;
+        Wed, 14 Aug 2019 10:54:28 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=8iaIY5u6ArQsWMUMgAKvaicK4w7/20OGfodEGmYtcUE=;
-        b=gMLz/CMJHxHnu9kURNWBHopTjtSGFQkI0UvIZEhG10utbfLh0zkvsGOqxU7JWPeE0O
-         xK9PsjzElrAvEuywaUaulrnl1mJVQ2sr/aoAAJnKqg20lw/TFcHYkiTRjxVQGISwVOVj
-         cwEmkM1Be9Mgm1pTHnmScBxX8Vj/rP4bpepVjtvIkYoEupRqylv8G2e8BNjQ3lL/CYpQ
-         obbyf3z4iaGanKXbDCrcuBmQ85L6jyVTNPC3MWlhBEynTxXdaywg+Im+E1Z+xr+ji/Vx
-         dnvvpAU4PsOI8aaOKarAdTQxh7doNq7/DK6rAP3tkm9XGJsjK2c2B8fmC77TrbKYu6KW
-         A7dA==
+        bh=bykeZE8BCmNlHEXlGnRvq6Ot00PEYW0pXG06m1NWsOU=;
+        b=K+aDcvpRMOpF3igF4pjSYIveLHcc1KXkwSCoadQIX2DFaKEWMI+vfJB79daC4MNQSC
+         ISvZrp/x+f+vACHHpVepn4vDTFSfoHeTQ+TggXZGjGRyUaafguPpzppVzOHgQbWGhixU
+         vxNP/YLtjeXvHh2o+aNMjClL/9/B/MaZbP1fYrVU1cmYyYX+1OvC254YtYaCRQGIf/bS
+         Yvj3NieVka4nvTAlGWiJ6NuIbYP2l68c2HMaUR4H6mvUYGfrCGVK3qWCiTBen6iK14Pk
+         pIw+sfUkw2hNlQlo2P8LCdGtzP00S4e0DTBVW5cimvcJp/hSaKKaEmEWBExLQ7giPGOX
+         K4HQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
          :date:user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=8iaIY5u6ArQsWMUMgAKvaicK4w7/20OGfodEGmYtcUE=;
-        b=qY1XrvCXdTwQO8DayCTxdVR0cEIbV8MQtNDfX5QSscalM1Ash2Enw7ZfgqrzBcUs1o
-         nPUgg+ywdmUKu7cUBf1sx2p51NZCBE4grI7ymD4lGQQf7UbOPmXo+P0kUv+WYAbLEmrL
-         w8NMRNjrMxnfRS8j/kRdl5cDsDE3m+2tq/1zRKQ37BFmbsaqewZykpzhMZoCyIj0Pt90
-         ijCg6SmNem5ITGgcnbzK+MDaQ7CWQ/OpN/7iAUAFXT5XVBnjzmC6NAcF57KMQcS7lVHU
-         gl5Xlht8OGZNuufRtVok3PNO8tLIGFqYcfeQFA13XlN9xTL1xPaRdyc1ihfK00o6RJ3p
-         lGSw==
-X-Gm-Message-State: APjAAAWEa6aC04I8rnJsSqMS4yRdDnr25qO4890N7sbSapKgtEIRRXeO
-        g/iko59pRkLE5yy4O99R8OQ=
-X-Google-Smtp-Source: APXvYqw5LTP7Fy7PGJx5niJbiwCJNXnJ2iWZFQ1B7+V3zYYIX8nPxCRjG4cQ8wcnSNqzcjWQd8/vvg==
-X-Received: by 2002:a17:902:9a8d:: with SMTP id w13mr537132plp.157.1565805184076;
-        Wed, 14 Aug 2019 10:53:04 -0700 (PDT)
+        bh=bykeZE8BCmNlHEXlGnRvq6Ot00PEYW0pXG06m1NWsOU=;
+        b=Fp4objBNQI5W0miRgQfXzQ0DgqRvmeZtpEY1AiykFpUwOQltAIOdK8lJkO811Xr5zC
+         RtAYS4FpX9ALTfdRwqyLBQUJXq03QVTY2jQGZvye3BQzlbhjlWNwc8gwZhK+hzd8D+x2
+         waaoTbA8y9uEJsRt4RRPH3R7Me/WiTFF1zyjQi6AAb/whWlxib3mK+1Om/ZBRY9jwRK2
+         sRUHuPFEnRmjlyBvy1BkLqkawpx6b1SlmSZJOG2aR1JDposMIy2ccaz5S9+UfWvQdDZG
+         ttRIGul1UremOPkkR5LwG/e2qTfqe/Amde3J7mzDC1uXd/mh6IVV0gOMRMOhEIS/Cfpm
+         lSyQ==
+X-Gm-Message-State: APjAAAV4MyzpY8RqCA5RC1yS62OdvF3J7C0kyDhPqQH/2W6FYnV6zENA
+        QHUH7zbhDgDdr4/oemycq/M=
+X-Google-Smtp-Source: APXvYqwXaYv0laiV+LZv75ifYnMcC/YgpdEKv2m4f4Bvfmdjtb/GHTNV5jNZRKv4rKl2eWg6mfSvfA==
+X-Received: by 2002:a17:90a:a00d:: with SMTP id q13mr878315pjp.80.1565805267599;
+        Wed, 14 Aug 2019 10:54:27 -0700 (PDT)
 Received: from [10.69.78.41] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id u128sm448046pfu.48.2019.08.14.10.53.02
+        by smtp.gmail.com with ESMTPSA id a26sm416425pff.174.2019.08.14.10.54.26
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 10:53:03 -0700 (PDT)
-Subject: Re: [PATCH v4 07/14] net: phy: adin: make RMII fifo depth
- configurable
+        Wed, 14 Aug 2019 10:54:26 -0700 (PDT)
+Subject: Re: [PATCH v4 08/14] net: phy: adin: add support MDI/MDIX/Auto-MDI
+ selection
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
         netdev@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     davem@davemloft.net, robh+dt@kernel.org, mark.rutland@arm.com,
         hkallweit1@gmail.com, andrew@lunn.ch
 References: <20190812112350.15242-1-alexandru.ardelean@analog.com>
- <20190812112350.15242-8-alexandru.ardelean@analog.com>
+ <20190812112350.15242-9-alexandru.ardelean@analog.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
-Message-ID: <653e9be4-dde0-4d50-b2d1-fc7b5c5118b9@gmail.com>
-Date:   Wed, 14 Aug 2019 10:53:01 -0700
+Message-ID: <ff2c2af9-fc13-e10a-896c-3ede55346203@gmail.com>
+Date:   Wed, 14 Aug 2019 10:54:25 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190812112350.15242-8-alexandru.ardelean@analog.com>
+In-Reply-To: <20190812112350.15242-9-alexandru.ardelean@analog.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -73,10 +73,36 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 8/12/2019 4:23 AM, Alexandru Ardelean wrote:
-> The FIFO depth can be configured for the RMII mode. This change adds
-> support for doing this via device-tree (or ACPI).
+> The ADIN PHYs support automatic MDI/MDIX negotiation. By default this is
+> disabled, so this is enabled at `config_init`.
 > 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> This is controlled via the PHY Control 1 register.
+> The supported modes are:
+>   1. Manual MDI
+>   2. Manual MDIX
+>   3. Auto MDIX - prefer MDIX
+>   4. Auto MDIX - prefer MDI
+> 
+> The phydev mdix & mdix_ctrl fields include modes 3 & 4 into a single
+> auto-mode. So, the default mode this driver enables is 4 when Auto-MDI mode
+> is used.
+> 
+> When detecting MDI/MDIX mode, a combination of the PHY Control 1 register
+> and PHY Status 1 register is used to determine the correct MDI/MDIX mode.
+> 
+> If Auto-MDI mode is not set, then the manual MDI/MDIX mode is returned.
+> If Auto-MDI mode is set, then MDIX mode is returned differs from the
+> preferred MDI/MDIX mode.
+> This covers all cases where:
+>   1. MDI preferred  & Pair01Swapped   == MDIX
+>   2. MDIX preferred & Pair01Swapped   == MDI
+>   3. MDI preferred  & ! Pair01Swapped == MDIX
+>   4. MDIX preferred & ! Pair01Swapped == MDI
+> 
+> The preferred MDI/MDIX mode is not configured via SW, but can be configured
+> via HW pins. Note that the `Pair01Swapped` is the Green-Yellow physical
+> pairs.
+> 
 > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
