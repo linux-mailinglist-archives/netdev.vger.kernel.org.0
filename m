@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E82018C86F
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:31:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 180348C869
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:31:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729112AbfHNCQf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:16:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47976 "EHLO mail.kernel.org"
+        id S1729105AbfHNCQe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:16:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47988 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729082AbfHNCQb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:16:31 -0400
+        id S1729049AbfHNCQe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:16:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE6C3216F4;
-        Wed, 14 Aug 2019 02:16:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 397EB20842;
+        Wed, 14 Aug 2019 02:16:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748990;
-        bh=Z0iMMtFHe2A9hRTgv11UFMxnhmvJT9XmKwh+/FvW8LI=;
+        s=default; t=1565748993;
+        bh=16fTqFdG9M6Y56zMIAUmBN+BNC2ON1gMz7VKsrMtRFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=w6Dk/G8kANoLUyNxocEfK9S3Adq2jyV9+d1Vds8UP3hByB3FVVx739/jkVwtZBYB8
-         pAarpM7Vkn0gDIySwo21ZmbdO7qbyKkWxbW+nglJtv8wtIjyHP0OrA7Up+ewfUF+Y3
-         XK/9T2OUJTnd4L7GYZXgcenOqRTHDrcx1eELvDGY=
+        b=zSMojvRxRzjlwegu/CrV+ZVsJJZlBUv3H67pOhq7TknSUYr/ZWShXfWaSzp/LB2RG
+         7fkB4Yi3a9RPR3PKv+qtOh99Fbg1o3VqOclR8sjHIGcVtQoqFxMx5SwJNEqGigbd4n
+         3GkuWBx7xRNHoSnhBjkgKGWTpmuvEMCN72wUTwVQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jia-Ju Bai <baijiaju1990@gmail.com>,
-        Johannes Berg <johannes.berg@intel.com>,
+Cc:     Stefano Brivio <sbrivio@redhat.com>, Chen Yi <yiche@redhat.com>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
         Sasha Levin <sashal@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 24/68] mac80211_hwsim: Fix possible null-pointer dereferences in hwsim_dump_radio_nl()
-Date:   Tue, 13 Aug 2019 22:15:02 -0400
-Message-Id: <20190814021548.16001-24-sashal@kernel.org>
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 25/68] netfilter: ipset: Actually allow destination MAC address for hash:ip,mac sets too
+Date:   Tue, 13 Aug 2019 22:15:03 -0400
+Message-Id: <20190814021548.16001-25-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190814021548.16001-1-sashal@kernel.org>
 References: <20190814021548.16001-1-sashal@kernel.org>
@@ -44,50 +45,42 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jia-Ju Bai <baijiaju1990@gmail.com>
+From: Stefano Brivio <sbrivio@redhat.com>
 
-[ Upstream commit b55f3b841099e641bdb2701d361a4c304e2dbd6f ]
+[ Upstream commit b89d15480d0cacacae1a0fe0b3da01b529f2914f ]
 
-In hwsim_dump_radio_nl(), when genlmsg_put() on line 3617 fails, hdr is
-assigned to NULL. Then hdr is used on lines 3622 and 3623:
-    genl_dump_check_consistent(cb, hdr);
-    genlmsg_end(skb, hdr);
+In commit 8cc4ccf58379 ("ipset: Allow matching on destination MAC address
+for mac and ipmac sets"), ipset.git commit 1543514c46a7, I removed the
+KADT check that prevents matching on destination MAC addresses for
+hash:mac sets, but forgot to remove the same check for hash:ip,mac set.
 
-Thus, possible null-pointer dereferences may occur.
+Drop this check: functionality is now commented in man pages and there's
+no reason to restrict to source MAC address matching anymore.
 
-To fix these bugs, hdr is used here when it is not NULL.
-
-This bug is found by a static analysis tool STCheck written by us.
-
-Signed-off-by: Jia-Ju Bai <baijiaju1990@gmail.com>
-Link: https://lore.kernel.org/r/20190729082332.28895-1-baijiaju1990@gmail.com
-[put braces on all branches]
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Reported-by: Chen Yi <yiche@redhat.com>
+Fixes: 8cc4ccf58379 ("ipset: Allow matching on destination MAC address for mac and ipmac sets")
+Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+Signed-off-by: Jozsef Kadlecsik <kadlec@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mac80211_hwsim.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ net/netfilter/ipset/ip_set_hash_ipmac.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/wireless/mac80211_hwsim.c b/drivers/net/wireless/mac80211_hwsim.c
-index 7cd428c0af433..ce2dd06af62e8 100644
---- a/drivers/net/wireless/mac80211_hwsim.c
-+++ b/drivers/net/wireless/mac80211_hwsim.c
-@@ -3502,10 +3502,12 @@ static int hwsim_dump_radio_nl(struct sk_buff *skb,
- 		hdr = genlmsg_put(skb, NETLINK_CB(cb->skb).portid,
- 				  cb->nlh->nlmsg_seq, &hwsim_genl_family,
- 				  NLM_F_MULTI, HWSIM_CMD_GET_RADIO);
--		if (!hdr)
-+		if (hdr) {
-+			genl_dump_check_consistent(cb, hdr);
-+			genlmsg_end(skb, hdr);
-+		} else {
- 			res = -EMSGSIZE;
--		genl_dump_check_consistent(cb, hdr);
--		genlmsg_end(skb, hdr);
-+		}
- 	}
+diff --git a/net/netfilter/ipset/ip_set_hash_ipmac.c b/net/netfilter/ipset/ip_set_hash_ipmac.c
+index fd87de3ed55b3..75c21c8b76514 100644
+--- a/net/netfilter/ipset/ip_set_hash_ipmac.c
++++ b/net/netfilter/ipset/ip_set_hash_ipmac.c
+@@ -95,10 +95,6 @@ hash_ipmac4_kadt(struct ip_set *set, const struct sk_buff *skb,
+ 	struct hash_ipmac4_elem e = { .ip = 0, { .foo[0] = 0, .foo[1] = 0 } };
+ 	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, set);
  
- done:
+-	 /* MAC can be src only */
+-	if (!(opt->flags & IPSET_DIM_TWO_SRC))
+-		return 0;
+-
+ 	if (skb_mac_header(skb) < skb->head ||
+ 	    (skb_mac_header(skb) + ETH_HLEN) > skb->data)
+ 		return -EINVAL;
 -- 
 2.20.1
 
