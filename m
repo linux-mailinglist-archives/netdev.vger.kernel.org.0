@@ -2,86 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B8BDC8E08A
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 00:15:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFFE58E096
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 00:18:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726166AbfHNWPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 18:15:18 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44665 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727937AbfHNWPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 18:15:17 -0400
-Received: by mail-qt1-f196.google.com with SMTP id 44so335401qtg.11
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 15:15:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to;
-        bh=p6m83mGjllDiHyeRTSS1oVMHX5M/xE6ILn6PPhzsgs4=;
-        b=jyDSpx/rFZ2TZ+aLM2gbcbCOgiVu7IVUDH4F6Wk2wTKJD7pFgLwlSzMnEexe032Tkq
-         wZRuyibxCPK8OfzJFzsLJSu32G4eAmMl2y27B0pz9S8eePf04dnS0GuiQU0jlXY9oBqA
-         lSrVYKKlKPuz6KSorOoonvy9rUvnC2N+zg4sts2V8EQ2D8swBe3i1uX867DO/XEHyYCY
-         YwYRFVnyaBuinsOK+O4fHXm6dwfmFzU9BXZif0uqcGdRqYfAGMs+SKExxNkgi6h3Sxu7
-         RU9bvV0CYeDOIgTuBt2s8ORTuSe9GCzIt5t8fCAoaN16Sh7StkzFpTKK3JuR2fYu3Ykl
-         raSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to;
-        bh=p6m83mGjllDiHyeRTSS1oVMHX5M/xE6ILn6PPhzsgs4=;
-        b=aub/MomJT0JxWY2JBfAvrEQNYYFS0fB6lBa2PABaQbI0J6xWr17nGpcKongykjaMxp
-         44NouB8d4LYTjN2Q1yZxWa4OFUCE/rtwa7j1XVrIgJcNJX3MZsaQgsFIJIqJAKDGO3pA
-         x9j/Oc17KeelIWvohhkFzGVfjxWZO4+dx5VnuzIXO88afPMoPQzSxP8xMLx/RpJRIo3e
-         QYlrscP5h4j0V164vNPb3l9u94G8Bbb60bUXOAjBAsGYL3LzAGvhW6t5DlakeYcHuX+M
-         Z9dYJiQ1vAiQRfIiawlVQFr0JuepyfxlUvOGedM59Q18gE3gF8eoNSmV/RgoDYnFoNoi
-         ovBw==
-X-Gm-Message-State: APjAAAUPutmDsTEAorbc/nk312cPqPMm9djw7yfGv45Vv9f/8jBoJPW9
-        yxLFFMxEr0VBZ18qxYHMfrBhpmf5dYvQE2qb3cU=
-X-Google-Smtp-Source: APXvYqzI0OiQ+/NhhS7bJLRX40geaA1JtnyD+6n1zXz6j4vt3odMDQkXK+JXIpEZgjctjxK0SIfE8phgUio7eLceYK8=
-X-Received: by 2002:ac8:2512:: with SMTP id 18mr1366258qtm.382.1565820916786;
- Wed, 14 Aug 2019 15:15:16 -0700 (PDT)
-MIME-Version: 1.0
-Received: by 2002:aed:3544:0:0:0:0:0 with HTTP; Wed, 14 Aug 2019 15:15:16
- -0700 (PDT)
-Reply-To: Katerinejones19@gmail.com
-From:   "MS. MARYANNA B. THOMASON" <westernunion.benin982@gmail.com>
-Date:   Wed, 14 Aug 2019 23:15:16 +0100
-Message-ID: <CAP=nHBLzv9qXQozosWLA4x1VggcMR4ofoWZ+Awhj-t+9gdZ5Fg@mail.gmail.com>
-Subject: TODAY, Wed, Aug 14, 2019 I AM READY FOR COMING TO YOUR ADDRESS WITH
- THIS ATM CARD
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+        id S1729836AbfHNWSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 18:18:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59726 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726221AbfHNWSI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 18:18:08 -0400
+Received: from localhost.localdomain (c-73-223-200-170.hsd1.ca.comcast.net [73.223.200.170])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4107D20665;
+        Wed, 14 Aug 2019 22:18:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565821086;
+        bh=k8sF9ByxTFJt+xPpPS1ClUhI3arOUct3oMxaqPHO3MI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=S/1z63Ov8CQ7Ns/DVtHuelIHzOPS4/tww77AgTZI+v2U7sLvnbEEPlv9WPhG4y32H
+         Ky5oGomVEEFvzPSSqxC0WdbhxRINJl5SXaHNr/fe/MyCpOGumxN+7Nu+yIVU/PM4I1
+         D0rTreqznnzPWBSf5XSM5YiCaXthUF0BkjISpeJc=
+Date:   Wed, 14 Aug 2019 15:18:05 -0700
+From:   Andrew Morton <akpm@linux-foundation.org>
+To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Cc:     bjorn.topel@intel.com, linux-mm@kvack.org,
+        xdp-newbies@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, ast@kernel.org,
+        magnus.karlsson@intel.com
+Subject: Re: [PATCH v2 bpf-next] mm: mmap: increase sockets maximum memory
+ size pgoff for 32bits
+Message-Id: <20190814151805.bbff7b08f3a4119750b3e9fd@linux-foundation.org>
+In-Reply-To: <20190814150934.GD4142@khorivan>
+References: <20190812113429.2488-1-ivan.khoronzhuk@linaro.org>
+        <20190812124326.32146-1-ivan.khoronzhuk@linaro.org>
+        <20190812141924.32136e040904d0c5a819dcb1@linux-foundation.org>
+        <20190814150934.GD4142@khorivan>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-ATTN DEAR PARCEL BENEFICIARY.
+On Wed, 14 Aug 2019 18:09:36 +0300 Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
 
-I AM CATHY JONES,DIPLOMATIC AGENT ASIGNED ON THE DELIVERY OF YOUR ATM
-CARD THROUGH MS. MARYANNA B. THOMASON, DHL MANAGEMENT DIRECTOR NEW
-YORK.
-TODAY, Wed, Aug 14, 2019 I AM READY FOR COMING TO YOUR ADDRESS WITH
-THIS ATM CARD, So before i deliver I want you to send me.
-official diplomatic agent delivery fee sum of $150.00 us
- only. I am here at JFK Airport,Florida. USA
+> On Mon, Aug 12, 2019 at 02:19:24PM -0700, Andrew Morton wrote:
+> 
+> Hi, Andrew
+> 
+> >On Mon, 12 Aug 2019 15:43:26 +0300 Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
+> >
+> >> The AF_XDP sockets umem mapping interface uses XDP_UMEM_PGOFF_FILL_RING
+> >> and XDP_UMEM_PGOFF_COMPLETION_RING offsets. The offsets seems like are
+> >> established already and are part of configuration interface.
+> >>
+> >> But for 32-bit systems, while AF_XDP socket configuration, the values
+> >> are to large to pass maximum allowed file size verification.
+> >> The offsets can be tuned ofc, but instead of changing existent
+> >> interface - extend max allowed file size for sockets.
+> >
+> >
+> >What are the implications of this?  That all code in the kernel which
+> >handles mapped sockets needs to be audited (and tested) for correctly
+> >handling mappings larger than 4G on 32-bit machines?  Has that been
+> 
+> That's to allow only offset to be passed, mapping length is less than 4Gb.
+> I have verified all list of mmap for sockets and all of them contain dummy
+> cb sock_no_mmap() except the following:
+> 
+> xsk_mmap()
+> tcp_mmap()
+> packet_mmap()
+> 
+> xsk_mmap() - it's what this fix is needed for.
+> tcp_mmap() - doesn't have obvious issues with pgoff - no any references on it.
+> packet_mmap() - return -EINVAL if it's even set.
 
-SEND THIS FEE BY WESTERN UNION OR MONEY WITH RECEIVER'S NAME AND ADDRESS BELOW.
+Great, thanks.
 
-RECEIVER'S NAME-----------------ERROL PRINGLE
-ADDRESS----------------3500 OLD DENTON RD APT 208; CARROLLTON, TEXAS 75007
-COUNTRY----------------USA
-AMOUNT--------------------$150.00 ONLY
-TEST QUESTION----------------WHO IS THE CREATOR
-ANSWER------------------GOD
- meanwhile this $150.00 is required by the Custom Service,USA Homeland
-Security,for protection of your delivery, it will make the ATM CARD
-and funds worth $15.8MILLION US DOLLARS secure, Beleiev me, this is my
-word, remark my word,you will receive your delivery from me, Mrs.
-Cathy Jones once you send this only $150.00 today.
-I WAIT ON YOUR PAYMENT CONFIRMATION, ONCE I GOT YOUR PAYMENT, I WILL
-FINALLY ARRIVE TO YOUR NEAREST ADDRESS. today
-THANKS AND MAY GOD BLESS  YOU
-CATHY JONES,DIPLOMATIC AGENT
-EMAIL; katerinejones19@gmail.com
-CALL OR TEXT ME, DIPLOMATIC AGENT MS. CATHY JONES
-Phone Number; (408) 650-6103,
+> 
+> >done?  Are we confident that we aren't introducing user-visible buggy
+> >behaviour into unsuspecting legacy code?
+> >
+> >Also...  what are the user-visible runtime effects of this change?
+> >Please send along a paragraph which explains this, for the changelog.
+> >Does this patch fix some user-visible problem?  If so, should be code
+> >be backported into -stable kernels?
+> It should go to linux-next, no one has been using it till this patch
+> with 32 bits as w/o this fix af_xdp sockets can't be used at all.
+> It unblocks af_xdp socket usage for 32bit systems.
+> 
+> 
+> That's example of potential next commit message:
+> Subject: mm: mmap: increase sockets maximum memory size pgoff for 32bits
+> 
+> The AF_XDP sockets umem mapping interface uses XDP_UMEM_PGOFF_FILL_RING
+> and XDP_UMEM_PGOFF_COMPLETION_RING offsets.  These offsets are established
+> already and are part of the configuration interface.
+> 
+> But for 32-bit systems, using AF_XDP socket configuration, these values
+> are too large to pass the maximum allowed file size verification.  The
+> offsets can be tuned off, but instead of changing the existing interface,
+> let's extend the max allowed file size for sockets.
+> 
+> No one has been using it till this patch with 32 bits as w/o this fix
+> af_xdp sockets can't be used at all, so it unblocks af_xdp socket usage
+> for 32bit systems.
+> 
+> All list of mmap cbs for sockets were verified on side effects and
+> all of them contain dummy cb - sock_no_mmap() at this moment, except the
+> following:
+> 
+> xsk_mmap() - it's what this fix is needed for.
+> tcp_mmap() - doesn't have obvious issues with pgoff - no any references on it.
+> packet_mmap() - return -EINVAL if it's even set.
+>
+> ...
+>
+> Is it ok to be replicated in PATCH v2 or this explanation is enough here
+> to use v1?
+
+I have replaced the changlog in my tree with the above, thanks.
+
