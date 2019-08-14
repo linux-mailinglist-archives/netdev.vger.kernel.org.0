@@ -2,128 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CFFE58E096
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 00:18:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55DEB8E09E
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 00:20:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729836AbfHNWSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 18:18:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59726 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726221AbfHNWSI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 18:18:08 -0400
-Received: from localhost.localdomain (c-73-223-200-170.hsd1.ca.comcast.net [73.223.200.170])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4107D20665;
-        Wed, 14 Aug 2019 22:18:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565821086;
-        bh=k8sF9ByxTFJt+xPpPS1ClUhI3arOUct3oMxaqPHO3MI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=S/1z63Ov8CQ7Ns/DVtHuelIHzOPS4/tww77AgTZI+v2U7sLvnbEEPlv9WPhG4y32H
-         Ky5oGomVEEFvzPSSqxC0WdbhxRINJl5SXaHNr/fe/MyCpOGumxN+7Nu+yIVU/PM4I1
-         D0rTreqznnzPWBSf5XSM5YiCaXthUF0BkjISpeJc=
-Date:   Wed, 14 Aug 2019 15:18:05 -0700
-From:   Andrew Morton <akpm@linux-foundation.org>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-Cc:     bjorn.topel@intel.com, linux-mm@kvack.org,
-        xdp-newbies@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org, ast@kernel.org,
-        magnus.karlsson@intel.com
-Subject: Re: [PATCH v2 bpf-next] mm: mmap: increase sockets maximum memory
- size pgoff for 32bits
-Message-Id: <20190814151805.bbff7b08f3a4119750b3e9fd@linux-foundation.org>
-In-Reply-To: <20190814150934.GD4142@khorivan>
-References: <20190812113429.2488-1-ivan.khoronzhuk@linaro.org>
-        <20190812124326.32146-1-ivan.khoronzhuk@linaro.org>
-        <20190812141924.32136e040904d0c5a819dcb1@linux-foundation.org>
-        <20190814150934.GD4142@khorivan>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-pc-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1728849AbfHNWUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 18:20:46 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:40038 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728503AbfHNWUp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 18:20:45 -0400
+Received: by mail-pl1-f194.google.com with SMTP id a93so234495pla.7
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 15:20:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3k2w+T8PpskZpxccjtIiizfMIZhjmdjjp0d3COyTRJs=;
+        b=bIzCRgoqfzNuUan1EfvB7NRSozZHajM22ukZLoilzYM9sYiJ7YkDvmA7Uj+9V3whQX
+         tVwoUOufC9BTkAMrQC/rHvkb/exsHErFgJVr/8W7KT829V0wEHH9QAxZdmZ/ErITekS6
+         xrKE/Bq6vysHbTrERMP3oECXC0pPuqF/A4lnVBELZNj6IgYErrd6+O2HP/vitjEgPg/G
+         Vo3XjVH1cvHMNyp/jwUDdyb50ZiaJxDo6aTcH/2RYATRNkXzQBQZglJb7q5MJyn2amFZ
+         e2uUqZNKxy7OtuBUudolHQGGHryuTumSWmufu1hM+Awk5W4Y9ddcKD4aXMaQEHtNXxkv
+         B8Lw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3k2w+T8PpskZpxccjtIiizfMIZhjmdjjp0d3COyTRJs=;
+        b=dJlpsZiJNSgvi0ZuDdy/L3IRH4BWOGdlMHB/EmtN788hmBtkf7LatOtPjT9mvFj7iZ
+         oQK2/egFDCU2JmEd0IgQLMP2+akNMlT8EY7mBG2Tr5sCm45445urhQpJgfZG8wddR/7A
+         fHzclBT0LENlC4z+M7RYc6XlWlf6Eqj6f5nQiNVw99Yu/9czMQMamGdXnZXnrSqYD2ru
+         a4zs7iLj8DykrVJAaDyzNHqYj4unot5dFL93uxjj24Z/JxZlNO7j5Qh7FyOrYO7kadC0
+         ZE4fDXD3XL4DTJ4+IPXne0XKB5mnwyZ7DdLoogwl3x5z3EWBvErVbl09LN8bcTIYd4tz
+         ZoQQ==
+X-Gm-Message-State: APjAAAXcqGBMsScWNolhMUYRoFLgFfhYZSNcf/4OEBwC4lgwNsMlOln4
+        jr489zCt3Dg+WyOCyRRn/NbTY4dwmD60A2RSayR7PQ==
+X-Google-Smtp-Source: APXvYqxHrSJ2tRfUqC4Ul74AEgggKrkSwf6kd2vyhl5jNkzvxCgzLD0h2XP16ofmSNmQ6rstXRsNaFKQHmMH2KlVrOE=
+X-Received: by 2002:a17:902:a9c3:: with SMTP id b3mr1454831plr.179.1565821244245;
+ Wed, 14 Aug 2019 15:20:44 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190812215052.71840-1-ndesaulniers@google.com>
+ <20190812215052.71840-12-ndesaulniers@google.com> <20190813082744.xmzmm4j675rqiz47@willie-the-truck>
+ <CANiq72mAfJ23PyWzZAELgbKQDCX2nvY0z+dmOMe14qz=wa6eFg@mail.gmail.com> <20190813170829.c3lryb6va3eopxd7@willie-the-truck>
+In-Reply-To: <20190813170829.c3lryb6va3eopxd7@willie-the-truck>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Wed, 14 Aug 2019 15:20:33 -0700
+Message-ID: <CAKwvOdk4hca8WzWzhcPEvxXnJVLbXGnhBdDZbeL_W_H91Ttjqw@mail.gmail.com>
+Subject: Re: [PATCH 12/16] arm64: prefer __section from compiler_attributes.h
+To:     Will Deacon <will@kernel.org>,
+        Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        Sedat Dilek <sedat.dilek@gmail.com>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Yonghong Song <yhs@fb.com>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Andrey Konovalov <andreyknvl@google.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Enrico Weigelt <info@metux.net>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Aug 2019 18:09:36 +0300 Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
-
-> On Mon, Aug 12, 2019 at 02:19:24PM -0700, Andrew Morton wrote:
-> 
-> Hi, Andrew
-> 
-> >On Mon, 12 Aug 2019 15:43:26 +0300 Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org> wrote:
-> >
-> >> The AF_XDP sockets umem mapping interface uses XDP_UMEM_PGOFF_FILL_RING
-> >> and XDP_UMEM_PGOFF_COMPLETION_RING offsets. The offsets seems like are
-> >> established already and are part of configuration interface.
-> >>
-> >> But for 32-bit systems, while AF_XDP socket configuration, the values
-> >> are to large to pass maximum allowed file size verification.
-> >> The offsets can be tuned ofc, but instead of changing existent
-> >> interface - extend max allowed file size for sockets.
-> >
-> >
-> >What are the implications of this?  That all code in the kernel which
-> >handles mapped sockets needs to be audited (and tested) for correctly
-> >handling mappings larger than 4G on 32-bit machines?  Has that been
-> 
-> That's to allow only offset to be passed, mapping length is less than 4Gb.
-> I have verified all list of mmap for sockets and all of them contain dummy
-> cb sock_no_mmap() except the following:
-> 
-> xsk_mmap()
-> tcp_mmap()
-> packet_mmap()
-> 
-> xsk_mmap() - it's what this fix is needed for.
-> tcp_mmap() - doesn't have obvious issues with pgoff - no any references on it.
-> packet_mmap() - return -EINVAL if it's even set.
-
-Great, thanks.
-
-> 
-> >done?  Are we confident that we aren't introducing user-visible buggy
-> >behaviour into unsuspecting legacy code?
-> >
-> >Also...  what are the user-visible runtime effects of this change?
-> >Please send along a paragraph which explains this, for the changelog.
-> >Does this patch fix some user-visible problem?  If so, should be code
-> >be backported into -stable kernels?
-> It should go to linux-next, no one has been using it till this patch
-> with 32 bits as w/o this fix af_xdp sockets can't be used at all.
-> It unblocks af_xdp socket usage for 32bit systems.
-> 
-> 
-> That's example of potential next commit message:
-> Subject: mm: mmap: increase sockets maximum memory size pgoff for 32bits
-> 
-> The AF_XDP sockets umem mapping interface uses XDP_UMEM_PGOFF_FILL_RING
-> and XDP_UMEM_PGOFF_COMPLETION_RING offsets.  These offsets are established
-> already and are part of the configuration interface.
-> 
-> But for 32-bit systems, using AF_XDP socket configuration, these values
-> are too large to pass the maximum allowed file size verification.  The
-> offsets can be tuned off, but instead of changing the existing interface,
-> let's extend the max allowed file size for sockets.
-> 
-> No one has been using it till this patch with 32 bits as w/o this fix
-> af_xdp sockets can't be used at all, so it unblocks af_xdp socket usage
-> for 32bit systems.
-> 
-> All list of mmap cbs for sockets were verified on side effects and
-> all of them contain dummy cb - sock_no_mmap() at this moment, except the
-> following:
-> 
-> xsk_mmap() - it's what this fix is needed for.
-> tcp_mmap() - doesn't have obvious issues with pgoff - no any references on it.
-> packet_mmap() - return -EINVAL if it's even set.
+On Tue, Aug 13, 2019 at 10:08 AM Will Deacon <will@kernel.org> wrote:
 >
-> ...
->
-> Is it ok to be replicated in PATCH v2 or this explanation is enough here
-> to use v1?
+> On Tue, Aug 13, 2019 at 02:36:06PM +0200, Miguel Ojeda wrote:
+> > On Tue, Aug 13, 2019 at 10:27 AM Will Deacon <will@kernel.org> wrote:
+> > > On Mon, Aug 12, 2019 at 02:50:45PM -0700, Nick Desaulniers wrote:
+> > > > GCC unescapes escaped string section names while Clang does not. Because
+> > > > __section uses the `#` stringification operator for the section name, it
+> > > > doesn't need to be escaped.
+> > > >
+> > > > This antipattern was found with:
+> > > > $ grep -e __section\(\" -e __section__\(\" -r
+> > > >
+> > > > Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > > > Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > > > Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+> > > > ---
+> > > >  arch/arm64/include/asm/cache.h     | 2 +-
+> > > >  arch/arm64/kernel/smp_spin_table.c | 2 +-
+> > > >  2 files changed, 2 insertions(+), 2 deletions(-)
+> > >
+> > > Does this fix a build issue, or is it just cosmetic or do we end up with
+> > > duplicate sections or something else?
+> >
+> > This should be cosmetic -- basically we are trying to move all users
+> > of current available __attribute__s in compiler_attributes.h to the
+> > __attr forms. I am also adding (slowly) new attributes that are
+> > already used but we don't have them yet in __attr form.
 
-I have replaced the changlog in my tree with the above, thanks.
+This lone patch of the series is just cosmetic, but patch 14/16 fixes
+a real boot issue:
+https://github.com/ClangBuiltLinux/linux/issues/619
+Miguel, I'd like to get that one landed ASAP; the rest are just for consistency.
 
+> >
+> > > Happy to route it via arm64, just having trouble working out whether it's
+> > > 5.3 material!
+
+Thanks!
+https://git.kernel.org/pub/scm/linux/kernel/git/arm64/linux.git/commit/?h=for-next/core&id=80d838122643a09a9f99824adea4b4261e4451e6
+
+> >
+> > As you prefer! Those that are not taken by a maintainer I will pick up
+> > and send via compiler-attributes.
+
+Miguel, how do you want to take the rest of these patches? Will picked
+up the arm64 one, I think the SuperH one got picked up.  There was
+feedback to add more info to individual commits' commit messages.
+
+I kept these tree wide changes separate to improve the likelihood that
+they'd backport to stable cleanly, but could always squash if you'd
+prefer to have 1 patch instead of a series.  Just let me know.
+-- 
+Thanks,
+~Nick Desaulniers
