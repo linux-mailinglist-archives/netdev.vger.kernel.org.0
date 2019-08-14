@@ -2,148 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 369D08C6F9
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:21:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C3ABF8C747
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:22:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728457AbfHNCUN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:20:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729758AbfHNCTc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:19:32 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9C44A20843;
-        Wed, 14 Aug 2019 02:19:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565749171;
-        bh=AIUaCxOwkGSbsq2amNqngxAUJmcJeKMBuosjmYGa65Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KZyqqGejVUsGp4huk4vd61uq30hovbZKwiw6VOQ9/xMiur+YYg91j7DjrIFxdRcHJ
-         4JKtQWlSqbQ9IooQ89mpN9RpI91baKerGm5xejLBNKj2+65m1mxhisyrpLYHdpIugh
-         W1WsDafqgqGra+/7CJ86A2UHiYopQ9WFnkWAtUnY=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiangfeng Xiao <xiaojiangfeng@huawei.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 36/44] net: hisilicon: Fix dma_map_single failed on arm64
-Date:   Tue, 13 Aug 2019 22:18:25 -0400
-Message-Id: <20190814021834.16662-36-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190814021834.16662-1-sashal@kernel.org>
-References: <20190814021834.16662-1-sashal@kernel.org>
+        id S1728735AbfHNCWo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:22:44 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:33347 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727502AbfHNCWn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 13 Aug 2019 22:22:43 -0400
+Received: by mail-qk1-f195.google.com with SMTP id r6so81454943qkc.0
+        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 19:22:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=z1eNV6kRCzjclc6p+n7qpH0nJ+blIHE4Jms78lo7Re4=;
+        b=ou9O1za94vicEYB5evBo3UGV5saKNYRbZSsRVGq6D2EpRS0DwNXfkWc6jEQ2L4tawm
+         zQdiL/XTVR+8c/cwmqUM9fxzuUvx02QgWlBoaoyCzFYW/VcX0oIcMuS/b0LnDB6elmqa
+         7r3ummaYadPsvZzLthbsNM00rd5eC3dm5to0YTmhC+i/Dlr6ezytarZHo12jyLiSaCry
+         42/cNmBTj/q0YKJZZOyRQj6gAA28TEwMa3Ou7CjBvXGGUTIwOyP6tVmZSclpubxU9Qf0
+         of2kFiUa78ZzdreMXMRQWX6iIjbgSH6YHnyVFupzNK92LKD1VYMODkhx9yVKK5/ImLqu
+         IoHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=z1eNV6kRCzjclc6p+n7qpH0nJ+blIHE4Jms78lo7Re4=;
+        b=rcDyyOfneXuI+cqBULy4HJEU1noXCstVOqyNT+1eod9ydqf+Ump6fWWZsTUM804KrQ
+         prJ9Sf46CredN2CqspFglMHSIdztkrRQaiwdMe4ctOdJgPeaLM/tjT6ZKwU66Qa+xnpE
+         pbdHcJNquery2o40obomk+NWrE+dQzBNQMuBCo+f+TaUZRPI8Bi+va0PKkYQBaG4JmGk
+         /VkSnEKd2tmd4pH3k3+Q33K63OY41E4LkEYHGUhgjnskKo6kqT+4MJT/icGviH02mfXw
+         MV7ohaW29gxDfrN82Di2dOrheiGoVlt8ZG80OrFsn93nDxRblV54py3Jr+0VJRvP6tTn
+         bFpw==
+X-Gm-Message-State: APjAAAUtmuA/nUsuUcd11pKLuD318IamJesW/KuMBQ+rUxYTemBWMrs1
+        M55JvlrfD8rVevmVe6ZfwELD4zCzpwM=
+X-Google-Smtp-Source: APXvYqw0u5+lfp003OXOsEyxTpKYyl1yKl8dMHO04YmDmzxc/hSH6xhiXI5iZa614R2wxXofIM5pNA==
+X-Received: by 2002:a05:620a:70f:: with SMTP id 15mr35954437qkc.171.1565749362808;
+        Tue, 13 Aug 2019 19:22:42 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id f7sm3258038qtj.16.2019.08.13.19.22.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 13 Aug 2019 19:22:42 -0700 (PDT)
+Date:   Tue, 13 Aug 2019 19:22:32 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, davem@davemloft.net,
+        Neil Horman <nhorman@tuxdriver.com>
+Subject: Re: [PATCH net] sctp: fix the transport error_count check
+Message-ID: <20190813192232.02f49f1f@cakuba.netronome.com>
+In-Reply-To: <20190813162734.GA2870@localhost.localdomain>
+References: <55b2fe3e5123958ccd7983e0892bc604aa717132.1565614152.git.lucien.xin@gmail.com>
+        <20190813162734.GA2870@localhost.localdomain>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
+On Tue, 13 Aug 2019 13:27:34 -0300, Marcelo Ricardo Leitner wrote:
+> On Mon, Aug 12, 2019 at 08:49:12PM +0800, Xin Long wrote:
+> > As the annotation says in sctp_do_8_2_transport_strike():
+> > 
+> >   "If the transport error count is greater than the pf_retrans
+> >    threshold, and less than pathmaxrtx ..."
+> > 
+> > It should be transport->error_count checked with pathmaxrxt,
+> > instead of asoc->pf_retrans.
+> > 
+> > Fixes: 5aa93bcf66f4 ("sctp: Implement quick failover draft from tsvwg")
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>  
+> 
+> Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-[ Upstream commit 96a50c0d907ac8f5c3d6b051031a19eb8a2b53e3 ]
+Applied.
 
-On the arm64 platform, executing "ifconfig eth0 up" will fail,
-returning "ifconfig: SIOCSIFFLAGS: Input/output error."
+> Dave, please consider this one for stable. Thanks.
 
-ndev->dev is not initialized, dma_map_single->get_dma_ops->
-dummy_dma_ops->__dummy_map_page will return DMA_ERROR_CODE
-directly, so when we use dma_map_single, the first parameter
-is to use the device of platform_device.
-
-Signed-off-by: Jiangfeng Xiao <xiaojiangfeng@huawei.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/hisilicon/hip04_eth.c | 20 +++++++++++---------
- 1 file changed, 11 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/hisilicon/hip04_eth.c b/drivers/net/ethernet/hisilicon/hip04_eth.c
-index b04fb82d7fa3e..1bfe9544b3c10 100644
---- a/drivers/net/ethernet/hisilicon/hip04_eth.c
-+++ b/drivers/net/ethernet/hisilicon/hip04_eth.c
-@@ -157,6 +157,7 @@ struct hip04_priv {
- 	unsigned int reg_inten;
- 
- 	struct napi_struct napi;
-+	struct device *dev;
- 	struct net_device *ndev;
- 
- 	struct tx_desc *tx_desc;
-@@ -387,7 +388,7 @@ static int hip04_tx_reclaim(struct net_device *ndev, bool force)
- 		}
- 
- 		if (priv->tx_phys[tx_tail]) {
--			dma_unmap_single(&ndev->dev, priv->tx_phys[tx_tail],
-+			dma_unmap_single(priv->dev, priv->tx_phys[tx_tail],
- 					 priv->tx_skb[tx_tail]->len,
- 					 DMA_TO_DEVICE);
- 			priv->tx_phys[tx_tail] = 0;
-@@ -437,8 +438,8 @@ static int hip04_mac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
- 		return NETDEV_TX_BUSY;
- 	}
- 
--	phys = dma_map_single(&ndev->dev, skb->data, skb->len, DMA_TO_DEVICE);
--	if (dma_mapping_error(&ndev->dev, phys)) {
-+	phys = dma_map_single(priv->dev, skb->data, skb->len, DMA_TO_DEVICE);
-+	if (dma_mapping_error(priv->dev, phys)) {
- 		dev_kfree_skb(skb);
- 		return NETDEV_TX_OK;
- 	}
-@@ -508,7 +509,7 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
- 			goto refill;
- 		}
- 
--		dma_unmap_single(&ndev->dev, priv->rx_phys[priv->rx_head],
-+		dma_unmap_single(priv->dev, priv->rx_phys[priv->rx_head],
- 				 RX_BUF_SIZE, DMA_FROM_DEVICE);
- 		priv->rx_phys[priv->rx_head] = 0;
- 
-@@ -537,9 +538,9 @@ static int hip04_rx_poll(struct napi_struct *napi, int budget)
- 		buf = netdev_alloc_frag(priv->rx_buf_size);
- 		if (!buf)
- 			goto done;
--		phys = dma_map_single(&ndev->dev, buf,
-+		phys = dma_map_single(priv->dev, buf,
- 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
--		if (dma_mapping_error(&ndev->dev, phys))
-+		if (dma_mapping_error(priv->dev, phys))
- 			goto done;
- 		priv->rx_buf[priv->rx_head] = buf;
- 		priv->rx_phys[priv->rx_head] = phys;
-@@ -642,9 +643,9 @@ static int hip04_mac_open(struct net_device *ndev)
- 	for (i = 0; i < RX_DESC_NUM; i++) {
- 		dma_addr_t phys;
- 
--		phys = dma_map_single(&ndev->dev, priv->rx_buf[i],
-+		phys = dma_map_single(priv->dev, priv->rx_buf[i],
- 				      RX_BUF_SIZE, DMA_FROM_DEVICE);
--		if (dma_mapping_error(&ndev->dev, phys))
-+		if (dma_mapping_error(priv->dev, phys))
- 			return -EIO;
- 
- 		priv->rx_phys[i] = phys;
-@@ -678,7 +679,7 @@ static int hip04_mac_stop(struct net_device *ndev)
- 
- 	for (i = 0; i < RX_DESC_NUM; i++) {
- 		if (priv->rx_phys[i]) {
--			dma_unmap_single(&ndev->dev, priv->rx_phys[i],
-+			dma_unmap_single(priv->dev, priv->rx_phys[i],
- 					 RX_BUF_SIZE, DMA_FROM_DEVICE);
- 			priv->rx_phys[i] = 0;
- 		}
-@@ -822,6 +823,7 @@ static int hip04_mac_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	priv = netdev_priv(ndev);
-+	priv->dev = d;
- 	priv->ndev = ndev;
- 	platform_set_drvdata(pdev, ndev);
- 	SET_NETDEV_DEV(ndev, &pdev->dev);
--- 
-2.20.1
-
+Ack.
