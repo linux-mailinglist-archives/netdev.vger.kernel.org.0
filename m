@@ -2,157 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A1C98CA90
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 07:11:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E93058CA92
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 07:15:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727124AbfHNFLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 01:11:04 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:19114 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726924AbfHNFLE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 01:11:04 -0400
-Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7E58KBa012618
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 22:11:02 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=facebook;
- bh=PXystzO/kZEqQF6FSRiFXrOHiGiTDwiZzXAc9ixfEyA=;
- b=iYkj1Pz7ZBsM0Qrbl8O4ZTHL/bZBHepexIh0H7/qUXnxZecibZOhCG2AAe9eM0xVCG19
- wVEDQBlnozuXUt2BumK8OTdsKISDvvfnrpEmlsAxABal/QXQ+6Kl/foVUvpb8QyMoolw
- jN3aM6CiiFxLlMSMgpYi5udcSoKA7yoGvbg= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uc5m6s9b7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 13 Aug 2019 22:11:02 -0700
-Received: from mx-out.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 13 Aug 2019 22:11:01 -0700
-Received: by dev101.prn2.facebook.com (Postfix, from userid 137359)
-        id BC402861698; Tue, 13 Aug 2019 22:11:00 -0700 (PDT)
-Smtp-Origin-Hostprefix: dev
-From:   Andrii Nakryiko <andriin@fb.com>
-Smtp-Origin-Hostname: dev101.prn2.facebook.com
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
-        <daniel@iogearbox.net>
-CC:     <andrii.nakryiko@gmail.com>, <kernel-team@fb.com>,
-        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>
-Smtp-Origin-Cluster: prn2c23
-Subject: [PATCH v2 bpf-next] libbpf: make libbpf.map source of truth for libbpf version
-Date:   Tue, 13 Aug 2019 22:10:54 -0700
-Message-ID: <20190814051054.2250063-1-andriin@fb.com>
-X-Mailer: git-send-email 2.17.1
-X-FB-Internal: Safe
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-14_02:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=9 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908140048
-X-FB-Internal: deliver
+        id S1727195AbfHNFO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 01:14:56 -0400
+Received: from mail-yb1-f194.google.com ([209.85.219.194]:37629 "EHLO
+        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726888AbfHNFO4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 01:14:56 -0400
+Received: by mail-yb1-f194.google.com with SMTP id t5so7330080ybt.4;
+        Tue, 13 Aug 2019 22:14:55 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=lD7K7srnZm3/fJdQ4MMUb4Yt0W08MUzcITPyxwLfAmA=;
+        b=F/2y41XZ9wTXeFlGtw9NZKW9mcDwUSKNEY4So/EHnzZXTmpvq5UBcLxYXEooiufna+
+         VUUKZaqnbwCQ4HUsw+0ssTAAwiqVDL3XOizKNuW8RuqV95IrEqmLnyND1ClfhBP5ECC6
+         hqBMkW8ys7zXKeTCVXO/Zbt8FBgBa0mHztSQbEUz7q84EDUgvaH99ysA0fBgo1FLq4QU
+         U3C93pogha4C78ySDpd7e4qOQeo+ATb/IM4jxdR6paFAkn2Y6Y+AyWTIdwSZbBa24lay
+         LrnAFTTxMFTDcQzQ56myfZVsSXiev9FySbHDVytXzqJHREHP1zxW6dTdJ/q/7u7SrTxG
+         dnIA==
+X-Gm-Message-State: APjAAAXcGCp9yUCtJcfU1cTcDYweyVO9BP7XHV1FhH1ygAt/BlemwPl+
+        uVHTdvqLRkBRtPvI4I6+MMB6eyZuKij8Tg==
+X-Google-Smtp-Source: APXvYqzT8hE17MvfcP5XewY94v3FyRcPTNoIlWorGPihtOeX+s/REcCAdX4DnuyIGSuxwUxOY6zUkQ==
+X-Received: by 2002:a25:9345:: with SMTP id g5mr1981247ybo.394.1565759695426;
+        Tue, 13 Aug 2019 22:14:55 -0700 (PDT)
+Received: from localhost.localdomain (24-158-240-219.dhcp.smyr.ga.charter.com. [24.158.240.219])
+        by smtp.gmail.com with ESMTPSA id z6sm25581704ywg.40.2019.08.13.22.14.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 13 Aug 2019 22:14:54 -0700 (PDT)
+From:   Wenwen Wang <wenwen@cs.uga.edu>
+To:     Wenwen Wang <wenwen@cs.uga.edu>
+Cc:     Derek Chickles <dchickles@marvell.com>,
+        Satanand Burla <sburla@marvell.com>,
+        Felix Manlunas <fmanlunas@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org (open list:CAVIUM LIQUIDIO NETWORK DRIVER),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] liquidio: add cleanup in octeon_setup_iq()
+Date:   Wed, 14 Aug 2019 00:14:49 -0500
+Message-Id: <1565759689-5941-1-git-send-email-wenwen@cs.uga.edu>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently libbpf version is specified in 2 places: libbpf.map and
-Makefile. They easily get out of sync and it's very easy to update one,
-but forget to update another one. In addition, Github projection of
-libbpf has to maintain its own version which has to be remembered to be
-kept in sync manually, which is very error-prone approach.
+If oct->fn_list.enable_io_queues() fails, no cleanup is executed, leading
+to memory/resource leaks. To fix this issue, invoke
+octeon_delete_instr_queue() before returning from the function.
 
-This patch makes libbpf.map a source of truth for libbpf version and
-uses shell invocation to parse out correct full and major libbpf version
-to use during build. Now we need to make sure that once new release
-cycle starts, we need to add (initially) empty section to libbpf.map
-with correct latest version.
-
-This also will make it possible to keep Github projection consistent
-with kernel sources version of libbpf by adopting similar parsing of
-version from libbpf.map.
-
-v1->v2:
-- eager version vars evaluation (Jakub);
-- simplified version regex (Andrey);
-
-Cc: Andrey Ignatov <rdna@fb.com>
-Signed-off-by: Andrii Nakryiko <andriin@fb.com>
+Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
 ---
- tools/lib/bpf/Makefile   | 20 ++++++++------------
- tools/lib/bpf/libbpf.map |  3 +++
- 2 files changed, 11 insertions(+), 12 deletions(-)
+ drivers/net/ethernet/cavium/liquidio/request_manager.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/tools/lib/bpf/Makefile b/tools/lib/bpf/Makefile
-index 9312066a1ae3..c27ad04e6acf 100644
---- a/tools/lib/bpf/Makefile
-+++ b/tools/lib/bpf/Makefile
-@@ -1,9 +1,10 @@
- # SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
- # Most of this file is copied from tools/lib/traceevent/Makefile
+diff --git a/drivers/net/ethernet/cavium/liquidio/request_manager.c b/drivers/net/ethernet/cavium/liquidio/request_manager.c
+index 0322241..6dd65f9 100644
+--- a/drivers/net/ethernet/cavium/liquidio/request_manager.c
++++ b/drivers/net/ethernet/cavium/liquidio/request_manager.c
+@@ -237,8 +237,10 @@ int octeon_setup_iq(struct octeon_device *oct,
+ 	}
  
--BPF_VERSION = 0
--BPF_PATCHLEVEL = 0
--BPF_EXTRAVERSION = 4
-+LIBBPF_VERSION := $(shell \
-+	grep -E '^LIBBPF_([0-9.]+)' libbpf.map | \
-+	tail -n1 | cut -d'_' -f2 | cut -d' ' -f1)
-+LIBBPF_MAJOR_VERSION := $(firstword $(subst ., ,$(LIBBPF_VERSION)))
+ 	oct->num_iqs++;
+-	if (oct->fn_list.enable_io_queues(oct))
++	if (oct->fn_list.enable_io_queues(oct)) {
++		octeon_delete_instr_queue(oct, iq_no);
+ 		return 1;
++	}
  
- MAKEFLAGS += --no-print-directory
- 
-@@ -79,15 +80,9 @@ export prefix libdir src obj
- libdir_SQ = $(subst ','\'',$(libdir))
- libdir_relative_SQ = $(subst ','\'',$(libdir_relative))
- 
--VERSION		= $(BPF_VERSION)
--PATCHLEVEL	= $(BPF_PATCHLEVEL)
--EXTRAVERSION	= $(BPF_EXTRAVERSION)
--
- OBJ		= $@
- N		=
- 
--LIBBPF_VERSION	= $(BPF_VERSION).$(BPF_PATCHLEVEL).$(BPF_EXTRAVERSION)
--
- LIB_TARGET	= libbpf.a libbpf.so.$(LIBBPF_VERSION)
- LIB_FILE	= libbpf.a libbpf.so*
- PC_FILE		= libbpf.pc
-@@ -178,10 +173,10 @@ $(BPF_IN): force elfdep bpfdep
- $(OUTPUT)libbpf.so: $(OUTPUT)libbpf.so.$(LIBBPF_VERSION)
- 
- $(OUTPUT)libbpf.so.$(LIBBPF_VERSION): $(BPF_IN)
--	$(QUIET_LINK)$(CC) --shared -Wl,-soname,libbpf.so.$(VERSION) \
-+	$(QUIET_LINK)$(CC) --shared -Wl,-soname,libbpf.so.$(LIBBPF_MAJOR_VERSION) \
- 				    -Wl,--version-script=$(VERSION_SCRIPT) $^ -lelf -o $@
- 	@ln -sf $(@F) $(OUTPUT)libbpf.so
--	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(VERSION)
-+	@ln -sf $(@F) $(OUTPUT)libbpf.so.$(LIBBPF_MAJOR_VERSION)
- 
- $(OUTPUT)libbpf.a: $(BPF_IN)
- 	$(QUIET_LINK)$(RM) $@; $(AR) rcs $@ $^
-@@ -257,7 +252,8 @@ config-clean:
- 
- clean:
- 	$(call QUIET_CLEAN, libbpf) $(RM) $(TARGETS) $(CXX_TEST_TARGET) \
--		*.o *~ *.a *.so *.so.$(VERSION) .*.d .*.cmd *.pc LIBBPF-CFLAGS
-+		*.o *~ *.a *.so *.so.$(LIBBPF_MAJOR_VERSION) .*.d .*.cmd \
-+		*.pc LIBBPF-CFLAGS
- 	$(call QUIET_CLEAN, core-gen) $(RM) $(OUTPUT)FEATURE-DUMP.libbpf
- 
- 
-diff --git a/tools/lib/bpf/libbpf.map b/tools/lib/bpf/libbpf.map
-index f9d316e873d8..4e72df8e98ba 100644
---- a/tools/lib/bpf/libbpf.map
-+++ b/tools/lib/bpf/libbpf.map
-@@ -184,3 +184,6 @@ LIBBPF_0.0.4 {
- 		perf_buffer__new_raw;
- 		perf_buffer__poll;
- } LIBBPF_0.0.3;
-+
-+LIBBPF_0.0.5 {
-+} LIBBPF_0.0.4;
+ 	return 0;
+ }
 -- 
-2.17.1
+2.7.4
 
