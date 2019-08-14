@@ -2,93 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C24918DD00
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 20:31:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 366928DD0B
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 20:35:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728367AbfHNSbx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 14:31:53 -0400
-Received: from mail.aperture-lab.de ([138.201.29.205]:50512 "EHLO
-        mail.aperture-lab.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726522AbfHNSbx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 14:31:53 -0400
-X-Greylist: delayed 343 seconds by postgrey-1.27 at vger.kernel.org; Wed, 14 Aug 2019 14:31:51 EDT
-Date:   Wed, 14 Aug 2019 20:26:04 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue; s=2018;
-        t=1565807167;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7nyPcyqyP1juKKcIR2Q9YuG+lYaGhTARXGVglzh/Y5Q=;
-        b=PGbW1DmxbCzsmxwfYv6xF/QbmNKC7wyjcAH6jiVLh2j6fajxyxXV/bvn0hzrWP9ibZw/ug
-        wnbIVjh6kO4a6wtaC1BZpgGnuBKchM08EKHpo1geUzSGWGsYYhGVAo+CZNQwFhvjXs87cb
-        BBeNi+rBDahfxeHSnw2UiOuU3sRWBlnnEu+GQcAgCWg/0/XuKqCRLX8PgwGx2zsGko6UoO
-        XC80W34IlpfE2usj1CMTIf6VgCPZBBqcybDV4slqLXK8DNBTbipBoScC4QFdc85XsjIiLy
-        mMv+NTydzt6jcl+ioTuTADysxJb/dnCONEvS5y45M+9+ibeHvX5Qwz4Fg7g+Wg==
-From:   Linus =?utf-8?Q?L=C3=BCssing?= <linus.luessing@c0d3.blue>
-To:     David Miller <davem@davemloft.net>
-Cc:     bridge@lists.linux-foundation.org, sbrivio@redhat.com,
-        gnault@redhat.com, haliu@redhat.com, edumazet@google.com,
+        id S1728927AbfHNSd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 14:33:57 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43984 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726522AbfHNSd5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 14:33:57 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y8so17426wrn.10;
+        Wed, 14 Aug 2019 11:33:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=y+U2P77L5yF3rgxH6FgzV86C/p2e7T5M7nztZM7FoNA=;
+        b=GNSNKHY4zlXwjJmo8GGkNFDOKzfrG/bQ/NfZfGL2Ss4sCbVZlBpMpyLo/vQYhrC4Yl
+         6uf+pD0n3YbxhPrLR0cjUZzZhWcdbxGu3wTPx+3qzGKXW7g0of+8cbaEK2HeKfnhfKrk
+         GHsSTW1JUg6CIIaNrt2h/7TGsWZadezEv98TbcgIpSofwDMbDQvsCQgqlE9l+jL7o/1Y
+         102Wqp165KiFejssUf4Ppk8aXprgHen9aBn8dXhIXtZLBsiYeCLAeajqCUhyWwaWYOBx
+         RikW9DUaM/3+YPPg7j5F0qm/hYA19558nyKUcTBdCTjUyIIjwCWCnDFYct6vwLJInT43
+         LSbA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=y+U2P77L5yF3rgxH6FgzV86C/p2e7T5M7nztZM7FoNA=;
+        b=M6mDGwnXAO6Scgr/asT5AA3DC5gp4keY8mBJnRFiOgQLq/GmDsXRlSZ8F1Sxxj/Hd1
+         kS9nB9mWImTrsyT5r13ZPXH/gZfZK5+oMxEAcbfpQqqBFOn5EHua702EOKuqwIFtnNRk
+         4edkqiPG/LrXXJ6Ovdfrts2ZXhggx5TtdIY2Pw8SWFyHNmhfCkMKk/8GCcsc4SVKeAyq
+         2oUT7k0w9LI5mA8wrWU1IanqEBDOPqiP59eSnWFqZd7z5Gp5rLVMc0TcxFJ591omqn40
+         2/LMUK/rjkAaBIIlfeL3BMLFjMOTz8+PNbJlik0KxIsqHhfmQo4tDKNYw5POyYJajY7q
+         wRuQ==
+X-Gm-Message-State: APjAAAXUY5DNNAD3WUbtbtLXuLj6xXyElwzfFdlZYSuFQ26fXJnNDeBR
+        H1aY+rIOPMS9ek7E3PvVgna1dvVB
+X-Google-Smtp-Source: APXvYqweTB2T6SpZJVzamx/JzBXYuLVcM/CWoxcHkdiddFthlEGPTteWPA8k8w75i7seeSHcSIBkZw==
+X-Received: by 2002:a05:6000:1284:: with SMTP id f4mr1226050wrx.89.1565807635304;
+        Wed, 14 Aug 2019 11:33:55 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:5905:9c04:aa53:7427? (p200300EA8F2F320059059C04AA537427.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:5905:9c04:aa53:7427])
+        by smtp.googlemail.com with ESMTPSA id r11sm375854wrt.84.2019.08.14.11.33.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Aug 2019 11:33:54 -0700 (PDT)
+Subject: Re: [PATCH] MAINTAINERS: r8169: Update path to the driver
+To:     Denis Efremov <efremov@linux.com>
+Cc:     joe@perches.com, linux-kernel@vger.kernel.org,
+        nic_swsd@realtek.com, "David S . Miller" <davem@davemloft.net>,
         netdev@vger.kernel.org
-Subject: Re: [PATCH net] ipv6: Fix return value of ipv6_mc_may_pull() for
- malformed packets
-Message-ID: <20190814182604.GD2431@otheros>
-References: <dc0d0b1bc3c67e2a1346b0dd1f68428eb956fbb7.1565649789.git.sbrivio@redhat.com>
- <20190814.125858.37782529545578263.davem@davemloft.net>
+References: <69fac52e-8464-ea87-e2e5-422ae36a92c8@gmail.com>
+ <20190814121209.3364-1-efremov@linux.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <7110b633-fd6b-68cf-2ade-81ccf30beb77@gmail.com>
+Date:   Wed, 14 Aug 2019 20:33:47 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190814121209.3364-1-efremov@linux.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190814.125858.37782529545578263.davem@davemloft.net>
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=c0d3.blue;
-        s=2018; t=1565807167;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7nyPcyqyP1juKKcIR2Q9YuG+lYaGhTARXGVglzh/Y5Q=;
-        b=uDIVkXrgRpouFUngVd4C2nCWWFUIXK3NYhgt5j86GuWq1Rf76Jd4KPZHDN0zqM+7dV6IBz
-        XNHK5/Uxqswbj5632RMtmWD/L8210i6P+4p41jAL3ZIsmDDnOcEosocyx3tgLAkNQqfCbk
-        1GxMKZmLTzESQdtxSg7BkwcmgBBJeoyEOO4Nyce3c41rSKBHYAjMH0qW97R0lVHhYmO30l
-        1PfDKsehPCWDjTbJ2MMIkbP3e/N2pCnxCAd3wZRQpQGeGHcNLuvPgcCO5HtNbLwZHYfgQ4
-        1u420PqV85YYB1GfYMM3HIL/QnMvFXoGiK/Zr6Q2F8XfDLqHsBPnAy8kQtjW2Q==
-ARC-Seal: i=1; s=2018; d=c0d3.blue; t=1565807167; a=rsa-sha256; cv=none;
-        b=enHP1R8Q2q6zHICqT2mBNg82Id9fdD6P+2VX3zOVOPO0M9LXPGixPR6+wV/s61T2zfAzzr
-        Prcc8IpF1Zzr83ipw4AZcuarvAeSuCNA7aD+oVq+QH42O2w29TGJKh6D6hOfeJeYgZaBa9
-        IoHv55QLpDTPYaV2/aLwMECB6sAYZNAtgKZ7+DGpawyNI/sRAHdmkrLyKxhjHD+3gmLbjJ
-        73bnCgqiZ6Y7QARt02FBA2uALe1j8qvUXKyDyeMlGAws8Gpx87K7DfJANKaQ4n6KoWNsbY
-        xj6iXu0zbOD3wnOJk/32N+UoSSP/WYj9aKx06uq0Ltpx19dQ4rznrnArncZSGg==
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
-Authentication-Results: ORIGINATING;
-        auth=pass smtp.auth=linus.luessing@c0d3.blue smtp.mailfrom=linus.luessing@c0d3.blue
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 12:58:58PM -0400, David Miller wrote:
-> From: Stefano Brivio <sbrivio@redhat.com>
-> Date: Tue, 13 Aug 2019 00:46:01 +0200
+On 14.08.2019 14:12, Denis Efremov wrote:
+> Update MAINTAINERS record to reflect the filename change.
+> The file was moved in commit 25e992a4603c ("r8169: rename
+> r8169.c to r8169_main.c")
 > 
-> > Commit ba5ea614622d ("bridge: simplify ip_mc_check_igmp() and
-> > ipv6_mc_check_mld() calls") replaces direct calls to pskb_may_pull()
-> > in br_ipv6_multicast_mld2_report() with calls to ipv6_mc_may_pull(),
-> > that returns -EINVAL on buffers too short to be valid IPv6 packets,
-> > while maintaining the previous handling of the return code.
-> > 
-> > This leads to the direct opposite of the intended effect: if the
-> > packet is malformed, -EINVAL evaluates as true, and we'll happily
-> > proceed with the processing.
-> > 
-> > Return 0 if the packet is too short, in the same way as this was
-> > fixed for IPv4 by commit 083b78a9ed64 ("ip: fix ip_mc_may_pull()
-> > return value").
-> > 
-> > I don't have a reproducer for this, unlike the one referred to by
-> > the IPv4 commit, but this is clearly broken.
-> > 
-> > Fixes: ba5ea614622d ("bridge: simplify ip_mc_check_igmp() and ipv6_mc_check_mld() calls")
-> > Signed-off-by: Stefano Brivio <sbrivio@redhat.com>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: nic_swsd@realtek.com
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+> ---
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Applied and queued up for -stable.
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index a43a1f0be49f..905efeda56fb 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -183,7 +183,7 @@ M:	Realtek linux nic maintainers <nic_swsd@realtek.com>
+>  M:	Heiner Kallweit <hkallweit1@gmail.com>
+>  L:	netdev@vger.kernel.org
+>  S:	Maintained
+> -F:	drivers/net/ethernet/realtek/r8169.c
+> +F:	drivers/net/ethernet/realtek/r8169*
+>  
+>  8250/16?50 (AND CLONE UARTS) SERIAL DRIVER
+>  M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> 
+For net-next.
+Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Urgh, sorry... and thanks for the fix(es), absolutely right...
