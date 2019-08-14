@@ -2,161 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54D508D661
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:40:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A15C38D65D
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:40:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728037AbfHNOkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 10:40:41 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:39584 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726166AbfHNOkj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:40:39 -0400
-Received: by mail-wm1-f67.google.com with SMTP id i63so4687494wmg.4
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 07:40:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WcjxfoHTef+rzVi2MznJlfR9cVOKNUDGmg2Wkh7C8H8=;
-        b=FDirRc2XnSa0S/1kGuimrluLWRBl+cDepl6ix4Cgi96B+akIPlCSnj6QQyt+OsuL5L
-         gA3so4X77//RvTemkbRiYDtL1csmuN7fwYCe0zWgieSAzzpzioEa2uC0H69d4sSNmNwf
-         qzBURWc19LfsbwapUFOgm/vbodtsldqgQIeB4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WcjxfoHTef+rzVi2MznJlfR9cVOKNUDGmg2Wkh7C8H8=;
-        b=oq2+90ABFpkT5jhqyHrkK9oq36UlHPhUxkiMaZ+mrDngOILA3lBiVFi7WTLBoBC+Sm
-         oDiVDCdJZjy1BBOnQMxcE1qE1G3qoK9Rnfh+8vp3zf3blX87nJmDxGtzIiB7VtjiibZ7
-         rVMDUlRsEKGRjA5p7KY/pbm+p2rhAyUQ+Gf19Ys/fzYP9z1JK5TFTzNvPmUEkr7xqcoO
-         QAiVxNsxmqVH7vvyGbyBU1DZ2RVLCypyIeLc4TbymZW/T73HPiHzHwhuNcurSAqjCNHz
-         EHlr8JrhTv45Dezd55k7SbhfNzquqlhfMMIPoQ2X1kmZDMOH4HUxXXgS2NE6od5EHH31
-         hSiA==
-X-Gm-Message-State: APjAAAUZa9+Zs1RR2DwEnl7NkSAiRsXqHDmhmqgcrwx7DHOKNBX74OeV
-        7XA62/XU8VEgzwb/GkGqx3uqoHdgftg=
-X-Google-Smtp-Source: APXvYqxUHKLeRt9TqdIqrdTbwAR2FFm+fcFvmQEL9EWa6UxzIMA9NDs0r98WrLmLa4h4zPiZjvoi+g==
-X-Received: by 2002:a7b:c118:: with SMTP id w24mr9135454wmi.100.1565793637570;
-        Wed, 14 Aug 2019 07:40:37 -0700 (PDT)
-Received: from wrk.www.tendawifi.com ([79.134.174.40])
-        by smtp.gmail.com with ESMTPSA id o8sm3383874wma.1.2019.08.14.07.40.36
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 14 Aug 2019 07:40:37 -0700 (PDT)
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+        id S1726865AbfHNOk2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 10:40:28 -0400
+Received: from mail.nic.cz ([217.31.204.67]:34400 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726166AbfHNOk1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 10:40:27 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id E277C140C21;
+        Wed, 14 Aug 2019 16:40:24 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1565793625; bh=G2EktcNdGCBJMQovRAGgYcpgI0JS0bMZ6vHXLejS0Pk=;
+        h=From:To:Date;
+        b=G2cs5DtmBpWP28O2C741wZnqRgKeMADCdkUPKmKIf3rlp2zl7E6/dTbBLNyJK711i
+         p0ZzPLjs9sr3Yilj5gnWKsw7FTl0vFrnNQMRSM2vOCUaQU8uriTEEwmfSxo8eb4KQ5
+         1VXzpjZ1N3qqJgNeUvD4MivWGtcBh2ZHZdFUfAa8=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, roopa@cumulusnetworks.com,
-        bridge@lists.linux-foundation.org,
-        Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Subject: [PATCH net-next 3/4] net: bridge: mdb: dump host-joined entries as well
-Date:   Wed, 14 Aug 2019 17:40:23 +0300
-Message-Id: <20190814144024.9710-4-nikolay@cumulusnetworks.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH net-next v2] net: dsa: mv88e6xxx: check for mode change in port_setup_mac
+Date:   Wed, 14 Aug 2019 16:40:24 +0200
+Message-Id: <20190814144024.27975-1-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
-References: <20190814144024.9710-1-nikolay@cumulusnetworks.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we dump only the port mdb entries but we can have host-joined
-entries on the bridge itself and they should be treated as normal temp
-mdbs, they're already notified:
-$ bridge monitor all
-[MDB]dev br0 port br0 grp ff02::8 temp
+The mv88e6xxx_port_setup_mac checks if the requested MAC settings are
+different from the current ones, and if not, does nothing (since chaning
+them requires putting the link down).
 
-The group will not be shown in the bridge mdb output, but it takes 1 slot
-and it's timing out. If it's only host-joined then the mdb show output
-can even be empty.
+In this check it only looks if the triplet [link, speed, duplex] is
+being changed.
 
-After this patch we show the host-joined groups:
-$ bridge mdb show
-dev br0 port br0 grp ff02::8 temp
+This patch adds support to also check if the mode parameter (of type
+phy_interface_t) is requested to be changed. The current mode is
+computed by the ->port_link_state() method, and if it is different from
+PHY_INTERFACE_MODE_NA, we check for equality with the requested mode.
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+In the implementations of the mv88e6250_port_link_state() method we set
+the current mode to PHY_INTERFACE_MODE_NA - so the code does not check
+for mode change on 6250.
+
+In the mv88e6352_port_link_state() method, we use the cached cmode of
+the port to determine the mode as phy_interface_t (and if it is not
+enough, eg. for RGMII, we also look at the port control register for
+RX/TX timings).
+
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
 ---
- net/bridge/br_mdb.c | 41 +++++++++++++++++++++++++++++++----------
- 1 file changed, 31 insertions(+), 10 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c |  4 +++-
+ drivers/net/dsa/mv88e6xxx/port.c | 38 ++++++++++++++++++++++++++++++++
+ drivers/net/dsa/mv88e6xxx/port.h |  1 +
+ 3 files changed, 42 insertions(+), 1 deletion(-)
 
-diff --git a/net/bridge/br_mdb.c b/net/bridge/br_mdb.c
-index 77730983097e..985273425117 100644
---- a/net/bridge/br_mdb.c
-+++ b/net/bridge/br_mdb.c
-@@ -78,22 +78,35 @@ static void __mdb_entry_to_br_ip(struct br_mdb_entry *entry, struct br_ip *ip)
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 818a83eb2dcb..9b3ad22a5b98 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -417,7 +417,9 @@ int mv88e6xxx_port_setup_mac(struct mv88e6xxx_chip *chip, int port, int link,
+ 	 */
+ 	if (state.link == link &&
+ 	    state.speed == speed &&
+-	    state.duplex == duplex)
++	    state.duplex == duplex &&
++	    (state.interface == mode ||
++	     state.interface == PHY_INTERFACE_MODE_NA))
+ 		return 0;
+ 
+ 	/* Port's MAC control must not be changed unless the link is down */
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 04309ef0a1cc..c95cdb73e5a2 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -590,6 +590,7 @@ int mv88e6250_port_link_state(struct mv88e6xxx_chip *chip, int port,
+ 	state->link = !!(reg & MV88E6250_PORT_STS_LINK);
+ 	state->an_enabled = 1;
+ 	state->an_complete = state->link;
++	state->interface = PHY_INTERFACE_MODE_NA;
+ 
+ 	return 0;
  }
+@@ -600,6 +601,43 @@ int mv88e6352_port_link_state(struct mv88e6xxx_chip *chip, int port,
+ 	int err;
+ 	u16 reg;
  
- static int __mdb_fill_info(struct sk_buff *skb,
-+			   struct net_bridge_mdb_entry *mp,
- 			   struct net_bridge_port_group *p)
- {
-+	struct timer_list *mtimer;
- 	struct nlattr *nest_ent;
- 	struct br_mdb_entry e;
-+	u8 flags = 0;
-+	int ifindex;
- 
- 	memset(&e, 0, sizeof(e));
--	__mdb_entry_fill_flags(&e, p->flags);
--	e.ifindex = p->port->dev->ifindex;
--	e.vid = p->addr.vid;
--	if (p->addr.proto == htons(ETH_P_IP))
--		e.addr.u.ip4 = p->addr.u.ip4;
-+	if (p) {
-+		ifindex = p->port->dev->ifindex;
-+		mtimer = &p->timer;
-+		flags = p->flags;
-+	} else {
-+		ifindex = mp->br->dev->ifindex;
-+		mtimer = &mp->timer;
++	switch (chip->ports[port].cmode) {
++	case MV88E6XXX_PORT_STS_CMODE_RGMII:
++		err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_MAC_CTL,
++					  &reg);
++		if (err)
++			return err;
++
++		if ((reg & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_RXCLK) &&
++		    (reg & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_TXCLK))
++			state->interface = PHY_INTERFACE_MODE_RGMII_ID;
++		else if (reg & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_RXCLK)
++			state->interface = PHY_INTERFACE_MODE_RGMII_RXID;
++		else if (reg & MV88E6XXX_PORT_MAC_CTL_RGMII_DELAY_TXCLK)
++			state->interface = PHY_INTERFACE_MODE_RGMII_TXID;
++		else
++			state->interface = PHY_INTERFACE_MODE_RGMII;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++		state->interface = PHY_INTERFACE_MODE_1000BASEX;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_SGMII:
++		state->interface = PHY_INTERFACE_MODE_SGMII;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
++		state->interface = PHY_INTERFACE_MODE_2500BASEX;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_XAUI:
++		state->interface = PHY_INTERFACE_MODE_XAUI;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
++		state->interface = PHY_INTERFACE_MODE_RXAUI;
++		break;
++	default:
++		/* we do not support other cmode values here */
++		state->interface = PHY_INTERFACE_MODE_NA;
 +	}
 +
-+	__mdb_entry_fill_flags(&e, flags);
-+	e.ifindex = ifindex;
-+	e.vid = mp->addr.vid;
-+	if (mp->addr.proto == htons(ETH_P_IP))
-+		e.addr.u.ip4 = mp->addr.u.ip4;
- #if IS_ENABLED(CONFIG_IPV6)
--	if (p->addr.proto == htons(ETH_P_IPV6))
--		e.addr.u.ip6 = p->addr.u.ip6;
-+	if (mp->addr.proto == htons(ETH_P_IPV6))
-+		e.addr.u.ip6 = mp->addr.u.ip6;
- #endif
--	e.addr.proto = p->addr.proto;
-+	e.addr.proto = mp->addr.proto;
- 	nest_ent = nla_nest_start_noflag(skb,
- 					 MDBA_MDB_ENTRY_INFO);
- 	if (!nest_ent)
-@@ -102,7 +115,7 @@ static int __mdb_fill_info(struct sk_buff *skb,
- 	if (nla_put_nohdr(skb, sizeof(e), &e) ||
- 	    nla_put_u32(skb,
- 			MDBA_MDB_EATTR_TIMER,
--			br_timer_value(&p->timer))) {
-+			br_timer_value(mtimer))) {
- 		nla_nest_cancel(skb, nest_ent);
- 		return -EMSGSIZE;
- 	}
-@@ -139,12 +152,20 @@ static int br_mdb_fill_info(struct sk_buff *skb, struct netlink_callback *cb,
- 			break;
- 		}
- 
-+		if (mp->host_joined) {
-+			err = __mdb_fill_info(skb, mp, NULL);
-+			if (err) {
-+				nla_nest_cancel(skb, nest2);
-+				break;
-+			}
-+		}
-+
- 		for (pp = &mp->ports; (p = rcu_dereference(*pp)) != NULL;
- 		      pp = &p->next) {
- 			if (!p->port)
- 				continue;
- 
--			err = __mdb_fill_info(skb, p);
-+			err = __mdb_fill_info(skb, mp, p);
- 			if (err) {
- 				nla_nest_cancel(skb, nest2);
- 				goto out;
+ 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_STS, &reg);
+ 	if (err)
+ 		return err;
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index ceec771f8bfc..1abf5ea033e2 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -42,6 +42,7 @@
+ #define MV88E6XXX_PORT_STS_TX_PAUSED		0x0020
+ #define MV88E6XXX_PORT_STS_FLOW_CTL		0x0010
+ #define MV88E6XXX_PORT_STS_CMODE_MASK		0x000f
++#define MV88E6XXX_PORT_STS_CMODE_RGMII		0x0007
+ #define MV88E6XXX_PORT_STS_CMODE_100BASE_X	0x0008
+ #define MV88E6XXX_PORT_STS_CMODE_1000BASE_X	0x0009
+ #define MV88E6XXX_PORT_STS_CMODE_SGMII		0x000a
 -- 
 2.21.0
 
