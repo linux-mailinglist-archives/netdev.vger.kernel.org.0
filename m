@@ -2,109 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E59568D43B
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 15:08:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FE238D43E
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 15:09:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727558AbfHNNI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 09:08:58 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:33924 "EHLO mx.0dd.nl"
+        id S1727848AbfHNNJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 09:09:16 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:36986 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725800AbfHNNI6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 09:08:58 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725800AbfHNNJQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 14 Aug 2019 09:09:16 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id DF9A65FA49;
-        Wed, 14 Aug 2019 15:08:56 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="oSpMeUu1";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 958251D70740;
-        Wed, 14 Aug 2019 15:08:56 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 958251D70740
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1565788136;
-        bh=rCkI1Ci3GvdZbWGszkVHAA9IspgxN9Ks7fBmasSUZus=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oSpMeUu1TDmNTautXoqLW1xI80hWC7AEBfpNIdM0Or1pj6/oBgxHh/uIWoeEJrjQh
-         Cgl8lECyruHdQJGjvHrdm+rlO2mH9QsxXJ5Bm/1BcDcupE7zat5dptZ04yLzWa8hUI
-         BT8Xyw/qnKOfJAtCL6RX94kIlKjUS/lt2UE3ONShdpA1QI5W+Glk9Sj5rj+RZUmYUV
-         qgZFLjCmaILM+lwMk2JLlCNxRWF6DlQgjnmX9ZZhQwFD/NIj1l5MUlZB418Y9pLIBO
-         lkpa8+7Yv52eFP6Antx0KaPpDHEh7F2skK9fuIcKipttXTuY660EFF1CmFnAP37zn2
-         aHknJEmHKT7XA==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Wed, 14 Aug 2019 13:08:56 +0000
-Date:   Wed, 14 Aug 2019 13:08:56 +0000
-Message-ID: <20190814130856.Horde.wzHL8_VRawJ8NIIk--BD18e@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Stefan Roese <sr@denx.de>
-Cc:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        Sean Wang <sean.wang@mediatek.com>,
-        John Crispin <john@phrozen.org>,
-        Daniel Golle <daniel@makrotopia.org>
-Subject: Re: [PATCH] net: ethernet: mediatek: Add MT7628/88 SoC support
-References: <20190717125345.Horde.JcDE_nBChPFDDjEgIRfPSl3@www.vdorst.com>
- <a92d7207-80b2-e88d-d869-64c9758ef1da@denx.de>
- <20190814092621.Horde.epvj8zK96-aCiV70YB5Q7II@www.vdorst.com>
- <3ff9a0fc-f5ff-3798-4409-ed5b900e0b05@denx.de>
-In-Reply-To: <3ff9a0fc-f5ff-3798-4409-ed5b900e0b05@denx.de>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        by mx1.redhat.com (Postfix) with ESMTPS id 700243BEA7;
+        Wed, 14 Aug 2019 13:09:15 +0000 (UTC)
+Received: from gondolin (dhcp-192-232.str.redhat.com [10.33.192.232])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BE3278386E;
+        Wed, 14 Aug 2019 13:09:13 +0000 (UTC)
+Date:   Wed, 14 Aug 2019 15:09:11 +0200
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Kirti Wankhede <kwankhede@nvidia.com>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "cjia@nvidia.com" <cjia@nvidia.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+Message-ID: <20190814150911.296da78c.cohuck@redhat.com>
+In-Reply-To: <AM0PR05MB4866ABFDDD9DDCBC01F6CA90D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+References: <20190802065905.45239-1-parav@mellanox.com>
+        <20190808141255.45236-1-parav@mellanox.com>
+        <20190808170247.1fc2c4c4@x1.home>
+        <77ffb1f8-e050-fdf5-e306-0a81614f7a88@nvidia.com>
+        <AM0PR05MB4866993536C0C8ACEA2F92DBD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190813085246.1d642ae5@x1.home>
+        <AM0PR05MB48663579A340E6597B3D01BCD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190813111149.027c6a3c@x1.home>
+        <AM0PR05MB4866D40F8EBB382C78193C91D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+        <20190814100135.1f60aa42.cohuck@redhat.com>
+        <AM0PR05MB4866ABFDDD9DDCBC01F6CA90D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Red Hat GmbH
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Wed, 14 Aug 2019 13:09:15 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Stefan,
+On Wed, 14 Aug 2019 12:27:01 +0000
+Parav Pandit <parav@mellanox.com> wrote:
 
-Quoting Stefan Roese <sr@denx.de>:
+> + Jiri, + netdev 
+> To get perspective on the ndo->phys_port_name for the representor netdev of mdev.
+> 
+> Hi Cornelia,
+> 
+> > -----Original Message-----
+> > From: Cornelia Huck <cohuck@redhat.com>
+> > Sent: Wednesday, August 14, 2019 1:32 PM
+> > To: Parav Pandit <parav@mellanox.com>
+> > Cc: Alex Williamson <alex.williamson@redhat.com>; Kirti Wankhede
+> > <kwankhede@nvidia.com>; kvm@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; cjia@nvidia.com
+> > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+> > 
+> > On Wed, 14 Aug 2019 05:54:36 +0000
+> > Parav Pandit <parav@mellanox.com> wrote:
+> >   
+> > > > > I get that part. I prefer to remove the UUID itself from the
+> > > > > structure and therefore removing this API makes lot more sense?  
+> > > >
+> > > > Mdev and support tools around mdev are based on UUIDs because it's  
+> > defined  
+> > > > in the documentation.  
+> > > When we introduce newer device naming scheme, it will update the  
+> > documentation also.  
+> > > May be that is the time to move to .rst format too.  
+> > 
+> > You are aware that there are existing tools that expect a uuid naming scheme,
+> > right?
+> >   
+> Yes, Alex mentioned too.
+> The good tool that I am aware of is [1], which is 4 months old. Not sure if it is part of any distros yet.
+> 
+> README also says, that it is in 'early in development. So we have scope to improve it for non UUID names, but lets discuss that more below.
 
-> Hi Rene,
->
-> On 14.08.19 11:26, René van Dorst wrote:
+The up-to-date reference for mdevctl is
+https://github.com/mdevctl/mdevctl. There is currently an effort to get
+this packaged in Fedora.
 
-<snip>
+> 
+> > >  
+> > > > I don't think it's as simple as saying "voila, UUID dependencies are
+> > > > removed, users are free to use arbitrary strings".  We'd need to
+> > > > create some kind of naming policy, what characters are allows so
+> > > > that we can potentially expand the creation parameters as has been
+> > > > proposed a couple times, how do we deal with collisions and races,
+> > > > and why should we make such a change when a UUID is a perfectly
+> > > > reasonable devices name.  Thanks,
+> > > >  
+> > > Sure, we should define a policy on device naming to be more relaxed.
+> > > We have enough examples in-kernel.
+> > > Few that I am aware of are netdev (vxlan, macvlan, ipvlan, lot more), rdma  
+> > etc which has arbitrary device names and ID based device names.  
+> > >
+> > > Collisions and race is already taken care today in the mdev core. Same  
+> > unique device names continue.
+> > 
+> > I'm still completely missing a rationale _why_ uuids are supposedly
+> > bad/restricting/etc.  
+> There is nothing bad about uuid based naming.
+> Its just too long name to derive phys_port_name of a netdev.
+> In details below.
+> 
+> For a given mdev of networking type, we would like to have 
+> (a) representor netdevice [2] 
+> (b) associated devlink port [3]
+> 
+> Currently these representor netdevice exist only for the PCIe SR-IOV VFs.
+> It is further getting extended for mdev without SR-IOV.
+> 
+> Each of the devlink port is attached to representor netdevice [4].
+> 
+> This netdevice phys_port_name should be a unique derived from some property of mdev.
+> Udev/systemd uses phys_port_name to derive unique representor netdev name.
+> This netdev name is further use by orchestration and switching software in user space.
+> One such distro supported switching software is ovs [4], which relies on the persistent device name of the representor netdevice.
 
->> Great, Thanks for addressing this issue.
->>
->> I hope we can collaborate to also support mt76x8 in my PHYLINK  
->> patches [0][1].
->> I am close to posting V2 of the patches but I am currently waiting on some
->> fiber modules to test the changes better.
->
-> I do have a "hackish" DSA driver for the integrated switch (ESW) in my
-> tree. If time permits, I'll work on upstreaming this one as well. And
-> yes, hopefully we can collaborate on your PHYLINK work too.
+Ok, let me rephrase this to check that I understand this correctly. I'm
+not sure about some of the terms you use here (even after looking at
+the linked doc/code), but that's probably still ok.
 
-It is not only the switch driver but also the Mediatek ethernet driver that is
-converted to PHYLINK. So we have a conflict in each others work.
+We want to derive an unique (and probably persistent?) netdev name so
+that userspace can refer to a representor netdevice. Makes sense.
+For generating that name, udev uses the phys_port_name (which
+represents the devlink port, IIUC). Also makes sense.
 
-I don't no what the right way is to go but I was thinking about 2 options
+> 
+> phys_port_name has limitation to be only 15 characters long.
+> UUID doesn't fit in phys_port_name.
 
-1. Lets say your work goes in first. I rebase my patches on your changes.
-    We collaborate to create an extra PHYLINK patch ontop of my work  
-for your SOC.
-2. My patches goes in first and you adapt your patches to that.
+Understood. But why do we need to derive the phys_port_name from the
+mdev device name? This netdevice use case seems to be just one use case
+for using mdev devices? If this is a specialized mdev type for this
+setup, why not just expose a shorter identifier via an extra attribute?
 
-What do you think?
+> Longer UUID names are creating snow ball effect, not just in networking stack but many user space tools too.
 
-I have latest changes here [0].
+This snowball effect mainly comes from the device name ->
+phys_port_name setup, IIUC.
 
-Also my modules did arrive so I can test my changes.
+> (as opposed to recently introduced mdevctl, are they more mdev tools which has dependency on UUID name?)
 
-> Thanks,
-> Stefan
+I am aware that people have written scripts etc. to manage their mdevs.
+Given that the mdev infrastructure has been around for quite some time,
+I'd say the chance of some of those scripts relying on uuid names is
+non-zero.
 
-Greats,
+> 
+> Instead of mdev subsystem creating such effect, one option we are considering is to have shorter mdev names.
+> (Similar to netdev, rdma, nvme devices).
+> Such as mdev1, mdev2000 etc.
+> 
+> Second option I was considering is to have an optional alias for UUID based mdev.
+> This name alias is given at time of mdev creation.
+> Devlink port's phys_port_name is derived out of this shorter mdev name alias.
+> This way, mdev remains to be UUID based with optional extension.
+> However, I prefer first option to relax mdev naming scheme.
 
-René
+Actually, I think that second option makes much more sense, as you
+avoid potentially breaking existing tooling.
 
-[0]  
-https://github.com/vDorst/linux-1/commits/net-next-phylink-upstream-mediatek
+> 
+> > We want to uniquely identify a device, across different
+> > types of vendor drivers. An uuid is a unique identifier and even a well-defined
+> > one. Tools (e.g. mdevctl) are relying on it for mdev devices today.
+> > 
+> > What is the problem you're trying to solve?  
+> Unique device naming is still achieved without UUID scheme by various subsystems in kernel using alpha-numeric string.
+> Having such string based continue to provide unique names.
+> 
+> I hope I described the problem and two solutions above.
+> 
+> [1] https://github.com/awilliam/mdevctl
+> [2] https://elixir.bootlin.com/linux/v5.3-rc4/source/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
+> [3] http://man7.org/linux/man-pages/man8/devlink-port.8.html
+> [4] https://elixir.bootlin.com/linux/v5.3-rc4/source/net/core/devlink.c#L6921
+> [5] https://www.openvswitch.org/
+> 
 
