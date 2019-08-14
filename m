@@ -2,197 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7FE238D43E
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 15:09:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A81F8D47F
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 15:20:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727848AbfHNNJQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 09:09:16 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:36986 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725800AbfHNNJQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 09:09:16 -0400
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 700243BEA7;
-        Wed, 14 Aug 2019 13:09:15 +0000 (UTC)
-Received: from gondolin (dhcp-192-232.str.redhat.com [10.33.192.232])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BE3278386E;
-        Wed, 14 Aug 2019 13:09:13 +0000 (UTC)
-Date:   Wed, 14 Aug 2019 15:09:11 +0200
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "cjia@nvidia.com" <cjia@nvidia.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Message-ID: <20190814150911.296da78c.cohuck@redhat.com>
-In-Reply-To: <AM0PR05MB4866ABFDDD9DDCBC01F6CA90D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190802065905.45239-1-parav@mellanox.com>
-        <20190808141255.45236-1-parav@mellanox.com>
-        <20190808170247.1fc2c4c4@x1.home>
-        <77ffb1f8-e050-fdf5-e306-0a81614f7a88@nvidia.com>
-        <AM0PR05MB4866993536C0C8ACEA2F92DBD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190813085246.1d642ae5@x1.home>
-        <AM0PR05MB48663579A340E6597B3D01BCD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190813111149.027c6a3c@x1.home>
-        <AM0PR05MB4866D40F8EBB382C78193C91D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190814100135.1f60aa42.cohuck@redhat.com>
-        <AM0PR05MB4866ABFDDD9DDCBC01F6CA90D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Red Hat GmbH
+        id S1728049AbfHNNUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 09:20:24 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40682 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726263AbfHNNUX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 09:20:23 -0400
+Received: by mail-wr1-f67.google.com with SMTP id c3so2814303wrd.7;
+        Wed, 14 Aug 2019 06:20:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5907J95qWoLJJAA1lrle4n+n+JLaMq9U4FEtPQp3pMA=;
+        b=ql9QSH5FhXZyRIdBtvWaeuIRc7qRxTT/qZ+JAQG945r/3234BBZ50gvSCAxGZDWAkZ
+         fthWDInI6zqlCyW+vlG+ezMSNcaTbAu/Eb6JoWZeAkjtVdMx0p4x8bpEJ5ZiBl6dXC7Q
+         fHQQ8OGRYuukco20Zj0l2lyqNG3wg0byvl79S+fm2+X+EcWYllxvBJ/AUhm4hZn+9goP
+         Q4qaA36O0CoAL8SJm7IcMJqdY4q+PD3gUye5fpjokjOp98FKOqvwbRHzrxkYXPOJ76GY
+         m2Z/K/AWRw0ru2pySLtOFWF1Ia9nKadiaHReJygrTjgi1pT5tuq+EQFson/8k5hJT8sI
+         XS5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5907J95qWoLJJAA1lrle4n+n+JLaMq9U4FEtPQp3pMA=;
+        b=GbWEZEVziWwVwzHdm5MP1tN9G1/IcrfOGE7OrTNOHEthljHtQgW1Ofxp22/a1t6LjI
+         k4EhkUG2yTP8MBizR2hwlC/mO9dLzhvPr61XhMYENAHvjXO7v6vo6xS4MbcRJHdsfRb9
+         SOLvjXs2Uaz4Iv2BUy4r/gFu5uVmXP3ywakBNoPAuh86bkbN3xIO/+kNhtH+Pd4iIIuA
+         xQwaYDoaZDBxNYw6NczaCfzyyRNn0mqwm5QC+gvcjWKFwzZFIy1H2L1AQI0nLTUZoM+x
+         Q9h06WFiKljOCr+hs9ZWSZBokQvoxXiOsv2CWIcbbyi0dsdXbZaflJTOwqkZTFPiIEFe
+         NqWA==
+X-Gm-Message-State: APjAAAU4dNFrknAG3dwt1OxAIIBmhu5J1+RfBuxGWNfB+2EHn66N4cFC
+        sLrlSWAAt/56kiWGrNfHQ3jhwJLgRdR57Ic+E9w=
+X-Google-Smtp-Source: APXvYqzIbbGwC0dKbbnnkR3gQ4fzUrPZlBBlDmcLc6ksAiuUPbYb+ipMDTi49nvmKdt3ouESKaYsHfPJvUkvI8EIGRM=
+X-Received: by 2002:adf:e782:: with SMTP id n2mr24698878wrm.1.1565788819460;
+ Wed, 14 Aug 2019 06:20:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Wed, 14 Aug 2019 13:09:15 +0000 (UTC)
+References: <20190809103235.16338-1-tbogendoerfer@suse.de> <20190809103235.16338-10-tbogendoerfer@suse.de>
+In-Reply-To: <20190809103235.16338-10-tbogendoerfer@suse.de>
+From:   Jonas Gorski <jonas.gorski@gmail.com>
+Date:   Wed, 14 Aug 2019 15:20:14 +0200
+Message-ID: <CAOiHx=kuQtOuNfsJ+fDrps+hbrbp5cPujmQpi8Vfy+0qeP8dtA@mail.gmail.com>
+Subject: Re: [PATCH v4 9/9] Input: add IOC3 serio driver
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
+        Network Development <netdev@vger.kernel.org>,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 14 Aug 2019 12:27:01 +0000
-Parav Pandit <parav@mellanox.com> wrote:
+Hi,
 
-> + Jiri, + netdev 
-> To get perspective on the ndo->phys_port_name for the representor netdev of mdev.
-> 
-> Hi Cornelia,
-> 
-> > -----Original Message-----
-> > From: Cornelia Huck <cohuck@redhat.com>
-> > Sent: Wednesday, August 14, 2019 1:32 PM
-> > To: Parav Pandit <parav@mellanox.com>
-> > Cc: Alex Williamson <alex.williamson@redhat.com>; Kirti Wankhede
-> > <kwankhede@nvidia.com>; kvm@vger.kernel.org; linux-
-> > kernel@vger.kernel.org; cjia@nvidia.com
-> > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > 
-> > On Wed, 14 Aug 2019 05:54:36 +0000
-> > Parav Pandit <parav@mellanox.com> wrote:
-> >   
-> > > > > I get that part. I prefer to remove the UUID itself from the
-> > > > > structure and therefore removing this API makes lot more sense?  
-> > > >
-> > > > Mdev and support tools around mdev are based on UUIDs because it's  
-> > defined  
-> > > > in the documentation.  
-> > > When we introduce newer device naming scheme, it will update the  
-> > documentation also.  
-> > > May be that is the time to move to .rst format too.  
-> > 
-> > You are aware that there are existing tools that expect a uuid naming scheme,
-> > right?
-> >   
-> Yes, Alex mentioned too.
-> The good tool that I am aware of is [1], which is 4 months old. Not sure if it is part of any distros yet.
-> 
-> README also says, that it is in 'early in development. So we have scope to improve it for non UUID names, but lets discuss that more below.
+On Fri, 9 Aug 2019 at 12:33, Thomas Bogendoerfer <tbogendoerfer@suse.de> wrote:
+>
+> This patch adds a platform driver for supporting keyboard and mouse
+> interface of SGI IOC3 chips.
+>
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> ---
+>  drivers/input/serio/Kconfig   |  10 +++
+>  drivers/input/serio/Makefile  |   1 +
+>  drivers/input/serio/ioc3kbd.c | 163 ++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 174 insertions(+)
+>  create mode 100644 drivers/input/serio/ioc3kbd.c
+>
+> diff --git a/drivers/input/serio/Kconfig b/drivers/input/serio/Kconfig
+> index f3e18f8ef9ca..373a1646019e 100644
+> --- a/drivers/input/serio/Kconfig
+> +++ b/drivers/input/serio/Kconfig
+> @@ -165,6 +165,16 @@ config SERIO_MACEPS2
+>           To compile this driver as a module, choose M here: the
+>           module will be called maceps2.
+>
+> +config SERIO_SGI_IOC3
+> +       tristate "SGI IOC3 PS/2 controller"
+> +       depends on SGI_MFD_IOC3
+> +       help
+> +         Say Y here if you have an SGI Onyx2, SGI Octane or IOC3 PCI card
+> +         and you want to attach and use a keyboard, mouse, or both.
+> +
+> +         To compile this driver as a module, choose M here: the
+> +         module will be called ioc3kbd.
+> +
+>  config SERIO_LIBPS2
+>         tristate "PS/2 driver library"
+>         depends on SERIO_I8042 || SERIO_I8042=n
+> diff --git a/drivers/input/serio/Makefile b/drivers/input/serio/Makefile
+> index 67950a5ccb3f..6d97bad7b844 100644
+> --- a/drivers/input/serio/Makefile
+> +++ b/drivers/input/serio/Makefile
+> @@ -20,6 +20,7 @@ obj-$(CONFIG_HIL_MLC)         += hp_sdc_mlc.o hil_mlc.o
+>  obj-$(CONFIG_SERIO_PCIPS2)     += pcips2.o
+>  obj-$(CONFIG_SERIO_PS2MULT)    += ps2mult.o
+>  obj-$(CONFIG_SERIO_MACEPS2)    += maceps2.o
+> +obj-$(CONFIG_SERIO_SGI_IOC3)   += ioc3kbd.o
+>  obj-$(CONFIG_SERIO_LIBPS2)     += libps2.o
+>  obj-$(CONFIG_SERIO_RAW)                += serio_raw.o
+>  obj-$(CONFIG_SERIO_AMS_DELTA)  += ams_delta_serio.o
+> diff --git a/drivers/input/serio/ioc3kbd.c b/drivers/input/serio/ioc3kbd.c
+> new file mode 100644
+> index 000000000000..6840e3c23fed
+> --- /dev/null
+> +++ b/drivers/input/serio/ioc3kbd.c
+> @@ -0,0 +1,163 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * SGI IOC3 PS/2 controller driver for linux
+> + *
+> + * Copyright (C) 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> + *
+> + * Based on code Copyright (C) 2005 Stanislaw Skowronek <skylark@unaligned.org>
+> + *               Copyright (C) 2009 Johannes Dickgreber <tanzy@gmx.de>
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/init.h>
+> +#include <linux/io.h>
+> +#include <linux/serio.h>
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include <asm/sn/ioc3.h>
+> +
+> +struct ioc3kbd_data {
+> +       struct ioc3_serioregs __iomem *regs;
+> +       struct serio *kbd, *aux;
+> +       int irq;
+> +};
+> +
+> +static int ioc3kbd_write(struct serio *dev, u8 val)
+> +{
+> +       struct ioc3kbd_data *d = dev->port_data;
+> +       unsigned long timeout = 0;
+> +       u32 mask;
+> +
+> +       mask = (dev == d->aux) ? KM_CSR_M_WRT_PEND : KM_CSR_K_WRT_PEND;
+> +       while ((readl(&d->regs->km_csr) & mask) && (timeout < 1000)) {
+> +               udelay(100);
+> +               timeout++;
+> +       }
+> +
+> +       if (timeout >= 1000)
+> +               return -ETIMEDOUT;
+> +
+> +       writel(val, dev == d->aux ? &d->regs->m_wd : &d->regs->k_wd);
+> +
+> +       return 0;
+> +}
+> +
+> +static irqreturn_t ioc3kbd_intr(int itq, void *dev_id)
+> +{
+> +       struct ioc3kbd_data *d = dev_id;
+> +       u32 data_k, data_m;
+> +
+> +       data_k = readl(&d->regs->k_rd);
+> +       data_m = readl(&d->regs->m_rd);
+> +
+> +       if (data_k & KM_RD_VALID_0)
+> +               serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_0_SHIFT) & 0xff,
+> +                               0);
+> +       if (data_k & KM_RD_VALID_1)
+> +               serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_1_SHIFT) & 0xff,
+> +                               0);
+> +       if (data_k & KM_RD_VALID_2)
+> +               serio_interrupt(d->kbd, (data_k >> KM_RD_DATA_2_SHIFT) & 0xff,
+> +                               0);
+> +       if (data_m & KM_RD_VALID_0)
+> +               serio_interrupt(d->aux, (data_m >> KM_RD_DATA_0_SHIFT) & 0xff,
+> +                               0);
+> +       if (data_m & KM_RD_VALID_1)
+> +               serio_interrupt(d->aux, (data_m >> KM_RD_DATA_1_SHIFT) & 0xff,
+> +                               0);
+> +       if (data_m & KM_RD_VALID_2)
+> +               serio_interrupt(d->aux, (data_m >> KM_RD_DATA_2_SHIFT) & 0xff,
+> +                               0);
+> +
+> +       return 0;
+> +}
+> +
+> +static int ioc3kbd_probe(struct platform_device *pdev)
+> +{
+> +       struct ioc3_serioregs __iomem *regs;
+> +       struct device *dev = &pdev->dev;
+> +       struct ioc3kbd_data *d;
+> +       struct serio *sk, *sa;
+> +       int irq, ret;
+> +
+> +       regs = devm_platform_ioremap_resource(pdev, 0);
+> +       if (IS_ERR(regs))
+> +               return PTR_ERR(regs);
+> +
+> +       irq = platform_get_irq(pdev, 0);
+> +       if (irq < 0)
+> +               return -ENXIO;
+> +
+> +       d = devm_kzalloc(&pdev->dev, sizeof(*d), GFP_KERNEL);
 
-The up-to-date reference for mdevctl is
-https://github.com/mdevctl/mdevctl. There is currently an effort to get
-this packaged in Fedora.
+&pdev->dev => dev
 
-> 
-> > >  
-> > > > I don't think it's as simple as saying "voila, UUID dependencies are
-> > > > removed, users are free to use arbitrary strings".  We'd need to
-> > > > create some kind of naming policy, what characters are allows so
-> > > > that we can potentially expand the creation parameters as has been
-> > > > proposed a couple times, how do we deal with collisions and races,
-> > > > and why should we make such a change when a UUID is a perfectly
-> > > > reasonable devices name.  Thanks,
-> > > >  
-> > > Sure, we should define a policy on device naming to be more relaxed.
-> > > We have enough examples in-kernel.
-> > > Few that I am aware of are netdev (vxlan, macvlan, ipvlan, lot more), rdma  
-> > etc which has arbitrary device names and ID based device names.  
-> > >
-> > > Collisions and race is already taken care today in the mdev core. Same  
-> > unique device names continue.
-> > 
-> > I'm still completely missing a rationale _why_ uuids are supposedly
-> > bad/restricting/etc.  
-> There is nothing bad about uuid based naming.
-> Its just too long name to derive phys_port_name of a netdev.
-> In details below.
-> 
-> For a given mdev of networking type, we would like to have 
-> (a) representor netdevice [2] 
-> (b) associated devlink port [3]
-> 
-> Currently these representor netdevice exist only for the PCIe SR-IOV VFs.
-> It is further getting extended for mdev without SR-IOV.
-> 
-> Each of the devlink port is attached to representor netdevice [4].
-> 
-> This netdevice phys_port_name should be a unique derived from some property of mdev.
-> Udev/systemd uses phys_port_name to derive unique representor netdev name.
-> This netdev name is further use by orchestration and switching software in user space.
-> One such distro supported switching software is ovs [4], which relies on the persistent device name of the representor netdevice.
+> +       if (!d)
+> +               return -ENOMEM;
+> +
+> +       sk = kzalloc(sizeof(*sk), GFP_KERNEL);
 
-Ok, let me rephrase this to check that I understand this correctly. I'm
-not sure about some of the terms you use here (even after looking at
-the linked doc/code), but that's probably still ok.
+any reason not to devm_kzalloc this as well? Then you won't need to
+manually free it in the error cases.
 
-We want to derive an unique (and probably persistent?) netdev name so
-that userspace can refer to a representor netdevice. Makes sense.
-For generating that name, udev uses the phys_port_name (which
-represents the devlink port, IIUC). Also makes sense.
+> +       if (!sk)
+> +               return -ENOMEM;
+> +
+> +       sa = kzalloc(sizeof(*sa), GFP_KERNEL);
 
-> 
-> phys_port_name has limitation to be only 15 characters long.
-> UUID doesn't fit in phys_port_name.
+same here.
 
-Understood. But why do we need to derive the phys_port_name from the
-mdev device name? This netdevice use case seems to be just one use case
-for using mdev devices? If this is a specialized mdev type for this
-setup, why not just expose a shorter identifier via an extra attribute?
+> +       if (!sa) {
+> +               kfree(sk);
+> +               return -ENOMEM;
+> +       }
+> +
+> +       sk->id.type = SERIO_8042;
+> +       sk->write = ioc3kbd_write;
+> +       snprintf(sk->name, sizeof(sk->name), "IOC3 keyboard %d", pdev->id);
+> +       snprintf(sk->phys, sizeof(sk->phys), "ioc3/serio%dkbd", pdev->id);
+> +       sk->port_data = d;
+> +       sk->dev.parent = &pdev->dev;
 
-> Longer UUID names are creating snow ball effect, not just in networking stack but many user space tools too.
+&pdev->dev => dev
 
-This snowball effect mainly comes from the device name ->
-phys_port_name setup, IIUC.
+> +
+> +       sa->id.type = SERIO_8042;
+> +       sa->write = ioc3kbd_write;
+> +       snprintf(sa->name, sizeof(sa->name), "IOC3 auxiliary %d", pdev->id);
+> +       snprintf(sa->phys, sizeof(sa->phys), "ioc3/serio%daux", pdev->id);
+> +       sa->port_data = d;
+> +       sa->dev.parent = dev;
+> +
+> +       d->regs = regs;
+> +       d->kbd = sk;
+> +       d->aux = sa;
+> +       d->irq = irq;
+> +
+> +       platform_set_drvdata(pdev, d);
+> +       serio_register_port(d->kbd);
+> +       serio_register_port(d->aux);
+> +
+> +       ret = devm_request_irq(&pdev->dev, irq, ioc3kbd_intr, IRQF_SHARED,
+> +                              "ioc3-kbd", d);
+> +       if (ret) {
+> +               dev_err(&pdev->dev, "could not request IRQ %d\n", irq);
+> +               serio_unregister_port(d->kbd);
+> +               serio_unregister_port(d->aux);
+> +               kfree(sk);
+> +               kfree(sa);
+> +               return ret;
+> +       }
+> +       return 0;
+> +}
+> +
+> +static int ioc3kbd_remove(struct platform_device *pdev)
+> +{
+> +       struct ioc3kbd_data *d = platform_get_drvdata(pdev);
+> +
+> +       devm_free_irq(&pdev->dev, d->irq, d);
+> +       serio_unregister_port(d->kbd);
+> +       serio_unregister_port(d->aux);
+> +       return 0;
+> +}
 
-> (as opposed to recently introduced mdevctl, are they more mdev tools which has dependency on UUID name?)
+and on that topic, won't you need to kfree d->kbd and d->aux here?
+Unless you devm_kzalloc'd them.
 
-I am aware that people have written scripts etc. to manage their mdevs.
-Given that the mdev infrastructure has been around for quite some time,
-I'd say the chance of some of those scripts relying on uuid names is
-non-zero.
+Alternatively you could also just embed the two serio structs into
+ioc3kbd_data, then you only need one allocation instead of three.
 
-> 
-> Instead of mdev subsystem creating such effect, one option we are considering is to have shorter mdev names.
-> (Similar to netdev, rdma, nvme devices).
-> Such as mdev1, mdev2000 etc.
-> 
-> Second option I was considering is to have an optional alias for UUID based mdev.
-> This name alias is given at time of mdev creation.
-> Devlink port's phys_port_name is derived out of this shorter mdev name alias.
-> This way, mdev remains to be UUID based with optional extension.
-> However, I prefer first option to relax mdev naming scheme.
 
-Actually, I think that second option makes much more sense, as you
-avoid potentially breaking existing tooling.
+Regards
 
-> 
-> > We want to uniquely identify a device, across different
-> > types of vendor drivers. An uuid is a unique identifier and even a well-defined
-> > one. Tools (e.g. mdevctl) are relying on it for mdev devices today.
-> > 
-> > What is the problem you're trying to solve?  
-> Unique device naming is still achieved without UUID scheme by various subsystems in kernel using alpha-numeric string.
-> Having such string based continue to provide unique names.
-> 
-> I hope I described the problem and two solutions above.
-> 
-> [1] https://github.com/awilliam/mdevctl
-> [2] https://elixir.bootlin.com/linux/v5.3-rc4/source/drivers/net/ethernet/mellanox/mlx5/core/en_rep.c
-> [3] http://man7.org/linux/man-pages/man8/devlink-port.8.html
-> [4] https://elixir.bootlin.com/linux/v5.3-rc4/source/net/core/devlink.c#L6921
-> [5] https://www.openvswitch.org/
-> 
-
+Jonas
