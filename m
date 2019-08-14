@@ -2,176 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D39888CCEC
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:34:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CEFFE8CD28
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 09:47:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727309AbfHNHeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 03:34:03 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:40594 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726373AbfHNHeD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 03:34:03 -0400
-Received: by mail-pg1-f194.google.com with SMTP id w10so52644234pgj.7;
-        Wed, 14 Aug 2019 00:34:02 -0700 (PDT)
+        id S1725905AbfHNHrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 03:47:08 -0400
+Received: from mail-wr1-f49.google.com ([209.85.221.49]:38924 "EHLO
+        mail-wr1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725280AbfHNHrH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 03:47:07 -0400
+Received: by mail-wr1-f49.google.com with SMTP id t16so20017972wra.6
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 00:47:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=qj5NILBPQh83BqkK6h+f4owNb7XWASz2eTmp6F/uJQ8=;
-        b=U3aervMuhZRPBiAbRA7MZaiEejdwE17EU1cNUFF89p1mndJcYy9Us5cIQnCPhqYBbr
-         /Tb7kNFHUen0Uay9owGgWm9TawgJXc45ZVnUyMnu8QO+0ulO+7zsptkmMIJ1OP0F1UOH
-         2+cUW7P6IIgkXnws3M1KZ/RmoNCSTDoN15+5aa845N7X0XtNFo1dbn/C+b+Drv4q7M7u
-         QV2WAzGk5y/TYXznKbw33OXDBiVgI3m95tldpddxptJWPF9haMzgYihjQLS+rUHeQsSE
-         VP4tVtAb2RtRLQCFYss8L/brLm7k4Vyh3QXQmcenwyyA7r8+T9ku1jU8dRH6s/OrAPzu
-         FGXg==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=DUCn7Q2k9HfOuG0h+AfyXxYDildCLAizJGKD46uq95I=;
+        b=t2cnJ2BATTjPv+gwc6a1PMOeoB4zyh+gsDdUH8bEJ/YzEb0gWAgftTMSnxGd4foZez
+         N/qndoP5fGbl0NYl7oUf2Ke3Eu/clRbAVukK3J07m9vGDD6Y+kzNxlXzOL7bdAo6X/qD
+         i0aaysuOjwaCPo5r78p23z9hnT6MmlzoWvyw1t1HnL7DAThuP/Ve/vb6zGUkGLXXeEka
+         v4PA7fifoWdLrZYd3g8eCOQDKYTjFZvdwOHY1GQLOQsSefv0bwN8Dg/mmgsiVqO6Ftzi
+         Fmg6SHtChwi1wcWAXXwNq6o37x3XO5cnc6qG6Ek3AI/WEgQTKwixBmSc3VP6gbfivkd+
+         zkug==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=qj5NILBPQh83BqkK6h+f4owNb7XWASz2eTmp6F/uJQ8=;
-        b=qIz2z2vP8p2BFliIXmOLNsyKfjYf2Gw1tY+hvB0l7Gg7sUE8QHoY0oHsxLI3xxh+MN
-         D/EOeQtiUSTwDKDGf8o8i8FEjDHhLGBaq7mBFiwRN9TBYg/mk+0vVOvwSBIquFrG3xJG
-         R+GfsBHWnt284RSJsmpi6Ray8ejwWmKcRgY5qmQWlX/VjCc1rvdvI3NT7lk1M7VB1dWB
-         Ei+H/RJWuZf7EWZvq6Dyp/4YMg6SMm18IgW9/5VlzpwUsZQR+Q/OJMfZSK766sdolGam
-         jYXOk8GIuJ6OxE9o8wHFswgx3NTjW5FUTVJrdMXn315eVtz+RrDqDpgLv0jZUHgs5rYD
-         PLYw==
-X-Gm-Message-State: APjAAAVqeTPQBlYQsuDsfcmst4uFRiPGM8E/ElThdSNObxVQ8ydOkcY9
-        SaE5YHlUkIyLAoDWHk8Fd10=
-X-Google-Smtp-Source: APXvYqwUMQ5RskXWhEzNCQJucQGnSFaIJogIkSamtFEOdbfCbfls9UxnnvURXeEH2y+HKD6ZPwLRcg==
-X-Received: by 2002:aa7:914e:: with SMTP id 14mr44853503pfi.136.1565768042412;
-        Wed, 14 Aug 2019 00:34:02 -0700 (PDT)
-Received: from [172.20.20.103] ([222.151.198.97])
-        by smtp.gmail.com with ESMTPSA id l1sm158014289pfl.9.2019.08.14.00.33.58
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 00:34:01 -0700 (PDT)
-Subject: Re: [RFC PATCH bpf-next 00/14] xdp_flow: Flow offload to XDP
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>
-References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
- <20190814014445.3dnduyrass5jycr5@ast-mbp>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <f6160572-8fa8-0199-8d81-6159dd4cd5ff@gmail.com>
-Date:   Wed, 14 Aug 2019 16:33:56 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=DUCn7Q2k9HfOuG0h+AfyXxYDildCLAizJGKD46uq95I=;
+        b=BMXdyjpQiaq6AxskOGFxwXNy96PjhJo7qFRYrTo99jDPfaV/vib4z/ggKdiDlIwazn
+         s1lkvOML3YTMrP3snnWt4hMDrBx+fctNtOVit2bMzL4ezBNI5tuNi0A0uR7pQYH/aqKr
+         AvSeTwqKQND1A32vzy6w3mR515YQq/Fa5FH099xMAOJsNdsW4zUeDY95tsihKvh+sNy+
+         a/P8Fx4yBHfMArxmgkhLqlMvQUsoPzV7QQoAtDW3bjM68g7D1lP9zMyjCtSNX6klpCJW
+         bCuY9sAFRncCh6GwicHFuRPLTxoJhsClHGXQSzs/H23QKuA0bBQ5TzCo4G/tmfQGj83E
+         I8yQ==
+X-Gm-Message-State: APjAAAV0rp1903x22eNVjPLUyIzYfxC/09DQ7n+4bmIo0VI33xGJ8PLX
+        9P7C8dCbW/KwS+llKQzHgbkxHg==
+X-Google-Smtp-Source: APXvYqzoWcTyAcpxSIXHANzMuJtNEuMXNInXE08axTD4bwKdU7LiyRGDJRMyjIuhGtvD05XI9VSiBA==
+X-Received: by 2002:adf:f991:: with SMTP id f17mr22900826wrr.233.1565768826072;
+        Wed, 14 Aug 2019 00:47:06 -0700 (PDT)
+Received: from localhost ([195.146.112.228])
+        by smtp.gmail.com with ESMTPSA id g7sm6763263wmg.8.2019.08.14.00.47.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Aug 2019 00:47:05 -0700 (PDT)
+Date:   Wed, 14 Aug 2019 09:47:04 +0200
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com
+Subject: Re: [patch net-next] selftests: netdevsim: add devlink params tests
+Message-ID: <20190814074704.GA2580@nanopsycho.mediaserver.passengera.com>
+References: <20190813130446.25712-1-jiri@resnulli.us>
+ <20190813154108.30509472@cakuba.netronome.com>
 MIME-Version: 1.0
-In-Reply-To: <20190814014445.3dnduyrass5jycr5@ast-mbp>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190813154108.30509472@cakuba.netronome.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alexei, thank you for taking a look!
+Wed, Aug 14, 2019 at 12:41:08AM CEST, jakub.kicinski@netronome.com wrote:
+>On Tue, 13 Aug 2019 15:04:46 +0200, Jiri Pirko wrote:
+>> From: Jiri Pirko <jiri@mellanox.com>
+>> 
+>> Test recently added netdevsim devlink param implementation.
+>> 
+>> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+>
+>Thanks for the test, but it doesn't pass here:
+>
+>TEST: fw flash test                                                 [ OK ]
+>TEST: params test                                                   [FAIL]
+>	Failed to get test1 param value
 
-On 2019/08/14 10:44, Alexei Starovoitov wrote:
-> On Tue, Aug 13, 2019 at 09:05:44PM +0900, Toshiaki Makita wrote:
->> This is a rough PoC for an idea to offload TC flower to XDP.
-> ...
->>   xdp_flow  TC        ovs kmod
->>   --------  --------  --------
->>   4.0 Mpps  1.1 Mpps  1.1 Mpps
-> 
-> Is xdp_flow limited to 4 Mpps due to veth or something else?
+Interesting. Fors for me correctly. When I run it manually, I get this:
+bash-5.0# devlink dev param show netdevsim/netdevsim11 name test1 -j | jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
+true
+bash-5.0# echo $?
+0
+bash-5.0# devlink dev param set netdevsim/netdevsim11 name test1 cmode driverinit value false
+bash-5.0# devlink dev param show netdevsim/netdevsim11 name test1 -j | jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
+false
+bash-5.0# echo $?
+0
 
-Looking at perf, accumulation of each layer's overhead resulted in the number.
-With XDP prog which only redirects packets and does not touch the data,
-the drop rate is 10 Mpps. In this case the main overhead is XDP's redirect processing
-and handling of 2 XDP progs (in veth and i40e).
-In the xdp_flow test the overhead additionally includes flow key parse in XDP prog
-and hash table lookup (including jhash calculation) which resulted in 4 Mpps.
 
->> So xdp_flow drop rate is roughly 4x faster than software TC or ovs kmod.
->>
->> OTOH the time to add a flow increases with xdp_flow.
->>
->> ping latency of first packet when veth1 does XDP_PASS instead of DROP:
->>
->>   xdp_flow  TC        ovs kmod
->>   --------  --------  --------
->>   25ms      12ms      0.6ms
->>
->> xdp_flow does a lot of work to emulate TC behavior including UMH
->> transaction and multiple bpf map update from UMH which I think increases
->> the latency.
-> 
-> make sense, but why vanilla TC is so slow ?
 
-No ideas. At least TC requires additional syscall to insert a flow compared to ovs kmod,
-but 12 ms looks too long for that.
 
->> * Implementation
->>
->> xdp_flow makes use of UMH to load an eBPF program for XDP, similar to
->> bpfilter. The difference is that xdp_flow does not generate the eBPF
->> program dynamically but a prebuilt program is embedded in UMH. This is
->> mainly because flow insertion is considerably frequent. If we generate
->> and load an eBPF program on each insertion of a flow, the latency of the
->> first packet of ping in above test will incease, which I want to avoid.
-> 
-> I think UMH approach is a good fit for this.
-> Clearly the same algorithm can be done as kernel code or kernel module, but
-> bpfilter-like UMH is a safer approach.
-> 
->> - patch 9
->>   Add tc-offload-xdp netdev feature and hooks to call xdp_flow kmod in
->>   TC flower offload code.
-> 
-> The hook into UMH from TC looks simple. Do you expect the same interface to be
-> reused from OVS ?
+>
+>> diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+>> index 9d8baf5d14b3..858ebdc8d8a3 100755
+>> --- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+>> +++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+>> @@ -3,7 +3,7 @@
+>>  
+>>  lib_dir=$(dirname $0)/../../../net/forwarding
+>>  
+>> -ALL_TESTS="fw_flash_test"
+>> +ALL_TESTS="fw_flash_test params_test"
+>>  NUM_NETIFS=0
+>>  source $lib_dir/lib.sh
+>>  
+>> @@ -30,6 +30,66 @@ fw_flash_test()
+>>  	log_test "fw flash test"
+>>  }
+>>  
+>> +param_get()
+>> +{
+>> +	local name=$1
+>> +
+>> +	devlink dev param show $DL_HANDLE name $name -j | \
+>> +		jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
+>
+>                   ^^
+>
+>The -e makes jq set exit code to 1 when test1 param is false.
+>
+>Quoting the man page:
+>
+>       ·   -e / --exit-status:
+>
+>           Sets the exit status of jq to 0 if the last output values
+>           was neither false nor null, 1 if the last output value was
+>           either false or  null,  or  4  if  no valid  result  was
+>           ever produced. Normally jq exits with 2 if there was any
+>           usage problem or system error, 3 if there was a jq program
+>           compile error, or 0 if the jq program ran.
+>
+>Without the -e all is well:
 
-Do you mean openvswitch kernel module by OVS?
-If so, no, at this point. TC hook is simple because I reused flow offload mechanism.
-OVS kmod does not have offload interface and ovs-vswitchd is using TC for offload.
-I wanted to reuse this mechanism for offloading to XDP, so using TC.
+Not really, for non-existent param the return value would be wrong:
+bash-5.0# devlink dev param show netdevsim/netdevsim11 name test2 -j | jq -e -r '.[][][].values[] | select(.cmode == "driverinit").value'
+devlink answers: Invalid argument
+bash-5.0# echo $?
+4
+bash-5.0# devlink dev param show netdevsim/netdevsim11 name test2 -j | jq -r '.[][][].values[] | select(.cmode == "driverinit").value'
+devlink answers: Invalid argument
+bash-5.0# echo $?
+0
 
->> * About alternative userland (ovs-vswitchd etc.) implementation
->>
->> Maybe a similar logic can be implemented in ovs-vswitchd offload
->> mechanism, instead of adding code to kernel. I just thought offloading
->> TC is more generic and allows wider usage with direct TC command.
->>
->> For example, considering that OVS inserts a flow to kernel only when
->> flow miss happens in kernel, we can in advance add offloaded flows via
->> tc filter to avoid flow insertion latency for certain sensitive flows.
->> TC flower usage without using OVS is also possible.
->>
->> Also as written above nftables can be offloaded to XDP with this
->> mechanism as well.
-> 
-> Makes sense to me.
-> 
->>    bpf, hashtab: Compare keys in long
-> 
-> 3Mpps vs 4Mpps just from this patch ?
-> or combined with i40 prefech patch ?
+The return value is 0 like everyone is fine. You probably have a
+different jq version (1.6). Looks like I need to use the same
+workaround I have in tools/testing/selftests/net/forwarding/tc_common.sh.
+I thought that -e would avoid that.
 
-Combined.
 
->>   drivers/net/ethernet/intel/i40e/i40e_txrx.c  |    1 +
-> 
-> Could you share "perf report" for just hash tab optimization
-> and for i40 ?
 
-Sure, I'll get some more data and post them.
-
-> I haven't seen memcmp to be bottle neck in hash tab.
-> What is the the of the key?
-
-typo of "size of the key"? IIRC 64 bytes.
-
-Toshiaki Makita
+>
+># ./devlink.sh 
+>TEST: fw flash test                                                 [ OK ]
+>TEST: params test                                                   [ OK ]
+>
+>> +}
+>> +
