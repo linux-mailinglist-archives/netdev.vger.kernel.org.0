@@ -2,115 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 010018D897
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 18:58:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C728B8D893
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 18:58:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728400AbfHNQ6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 12:58:36 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:39807 "EHLO
+        id S1728370AbfHNQ6V (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 12:58:21 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:38857 "EHLO
         mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727975AbfHNQ6f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 12:58:35 -0400
-Received: by mail-wr1-f68.google.com with SMTP id t16so21659983wra.6;
-        Wed, 14 Aug 2019 09:58:33 -0700 (PDT)
+        with ESMTP id S1726585AbfHNQ6U (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 12:58:20 -0400
+Received: by mail-wr1-f68.google.com with SMTP id g17so111782666wrr.5
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 09:58:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=uMo+P0KZM2egL/LGoSsPpOMP32NasvU+xJ/Ms0bauJU=;
-        b=pcczEiMYrynw454fsutGrSy2jvAne2yK5XfdfVtCUtZutyT2BZa447bEoLq4ShC9E5
-         dYLYtjmJSzSB5puRBFx33qbe/5b+BbgeBS+NhsuqdjwbKbo0dIVpJO8WfsVk7B8b/1Pn
-         2USNqz6kfkw3hFaNZuByTSg5IVedcGxUSNELoIiNQl3j8odW6E/Y1XfPEhtqV0Z0rXSK
-         m5+sL5pNokcTI9YFzt+wdOMN4rrNPavW5LGN8uXlgKHrLuvoPJ2+U/9EPKCrP0cSKQ4Y
-         K75Vum8fNJdX2nyUGrTsojq9hVZB0SU4w49BZe1Rdx3shNquZs+jYwvfUaicxB+8Riv4
-         W9Cg==
+        bh=94qi0i9wBA5DYd5XMVim9uyna7dsuiw3nV7+hfCH08M=;
+        b=O6OVJ1/Z8PacSBuOXM6NReNYTh3LAnLQApOzHv/7Xrd4vxzwNtxFP6Hw/yFTlZ/+Cv
+         d/6+GaR95bYRKLPOWMBq0UINZeNeRu6jvCFdGIxRbN+LCQQqq3ULxlnVIriVbAKhnUwb
+         HWJW/YIYLLPcqmJ0mtIx/1/S9l+Bc9dSm9WFAJtu4n3sX66FVpiuHvrcytHgHbx/peZk
+         du8DKfWk0ZRfAe9f1DdG3RNWeDDTnuRlMTYQkRwC/o7sB4RTejCxY3HJmKe580jC5Co6
+         vz98lXcxKNTkouLFyBkpEiKgpzRuHDZjkkv7NzmI3MEt59UI2l6x/nYXj+b0VWIa5S9L
+         wixw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=uMo+P0KZM2egL/LGoSsPpOMP32NasvU+xJ/Ms0bauJU=;
-        b=AhODqpTDxJWEApxaK9ADEfRztqQTE3Z7ErF998cZn6iMgtn9j6Bqa9F+JHlw1O2HzH
-         90ypM7x5EYZmPyxAMI+k/ydNfyb/axyKkbpeYnILiLR+MBjXBIHZrcmMALpaO2M7qmLV
-         fgLxufivYLvgbfJNr2rXk2RxD2SaroRO6lzpToqhv1XRhYeZWyZDaMe/X/oYQgZnVg3Q
-         Pi6O8idOg/DEyknXfjlw2DQrdy/rQkSESB7skdovjixdrthYB+l1VQYURVuIDYKomWKT
-         UZ8gd0kev4edV72iDUava2M+EmdwIqnkPqYY7m87R6PWVkBwczs5yEpkNHkJf0LafTQh
-         DSEA==
-X-Gm-Message-State: APjAAAXrAL56Gamz4hAoi23wbNTnNMKINr9g6ueUJQaZD+/OUFhAxq0B
-        9Gyymn0h7CnX2aKX+mt2dik=
-X-Google-Smtp-Source: APXvYqxnX8CX/gnf086yLPjIcV4cmRsYgIggWs2IzqxLcAsdnnicLgd4impOxxIxX6VObIPKga7LfA==
-X-Received: by 2002:adf:dfc4:: with SMTP id q4mr776013wrn.54.1565801912364;
-        Wed, 14 Aug 2019 09:58:32 -0700 (PDT)
-Received: from localhost.localdomain ([2a01:4f8:222:2f1b::2])
-        by smtp.gmail.com with ESMTPSA id g12sm532151wrv.9.2019.08.14.09.58.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2019 09:58:31 -0700 (PDT)
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        kbuild test robot <lkp@intel.com>
-Subject: [PATCH] netfilter: nft_bitwise: Adjust parentheses to fix memcmp size argument
-Date:   Wed, 14 Aug 2019 09:58:09 -0700
-Message-Id: <20190814165809.46421-1-natechancellor@gmail.com>
-X-Mailer: git-send-email 2.23.0.rc2
+        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=94qi0i9wBA5DYd5XMVim9uyna7dsuiw3nV7+hfCH08M=;
+        b=bMENC/d55XS4I4DTk6dDXQtQVWXAMqqt5y+bTLe8/5gYTZtE31vUPmMhqI3zBAAXVW
+         wv3oSRmVuBc4cQ9wcQ/cnsWap01s2RP4hoZTtYX+JOPhcP/gA1SiXgLM3VqiPGQ6Pglk
+         4UpDUiHHwb6d6IKx7fZ04WMJNKixjvp60S5cXecQn0Y5izssa58Jv8Uix69LYJI+1zWC
+         hCpTYMHVeslngqMBGKHSeyCuyP6tqdCC+wtFtf1jN9sDz+J+OwTceCnZYrYXoG8dM4Ll
+         mTtwSjPDMHpylCpfNsQrjU4aS/qD7mkEA+hLmU5ASeWQuycwspCCgyer0dTyc3/u6Pid
+         adDg==
+X-Gm-Message-State: APjAAAUvPWguggN0SRBFGnwiwiE3srUU8ZKK5XF72LvzjvS/g/9LSaKn
+        eH3h35BTz1Olzk5rXaw0WD3QUg==
+X-Google-Smtp-Source: APXvYqzwzNqD8OLCYjITRZ+m37rKXydlSMjvCnjT/PwHrs47dvOOa7S0hsKypoEjvGWEte1H3egnPg==
+X-Received: by 2002:a5d:4f8e:: with SMTP id d14mr745122wru.207.1565801898127;
+        Wed, 14 Aug 2019 09:58:18 -0700 (PDT)
+Received: from [172.20.1.254] ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id f23sm139852wmj.37.2019.08.14.09.58.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Aug 2019 09:58:17 -0700 (PDT)
+To:     Edward Cree <ecree@solarflare.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, oss-drivers@netronome.com
+References: <20190813130921.10704-1-quentin.monnet@netronome.com>
+ <20190814015149.b4pmubo3s4ou5yek@ast-mbp>
+ <ab11a9f2-0fbd-d35f-fee1-784554a2705a@netronome.com>
+ <bdb4b47b-25fa-eb96-aa8d-dd4f4b012277@solarflare.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
+ 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
+ RHhSHGnKaQ6MfrTge5Q0h5A=
+Subject: Re: [RFC bpf-next 0/3] tools: bpftool: add subcommand to count map
+ entries
+Message-ID: <18f887ec-99fd-20ae-f5d6-a1f4117b2d77@netronome.com>
+Date:   Wed, 14 Aug 2019 17:58:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Patchwork-Bot: notify
+In-Reply-To: <bdb4b47b-25fa-eb96-aa8d-dd4f4b012277@solarflare.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-clang warns:
+2019-08-14 17:45 UTC+0100 ~ Edward Cree <ecree@solarflare.com>
+> On 14/08/2019 10:42, Quentin Monnet wrote:
+>> 2019-08-13 18:51 UTC-0700 ~ Alexei Starovoitov
+>> <alexei.starovoitov@gmail.com>
+>>> The same can be achieved by 'bpftool map dump|grep key|wc -l', no?
+>> To some extent (with subtleties for some other map types); and we use a
+>> similar command line as a workaround for now. But because of the rate of
+>> inserts/deletes in the map, the process often reports a number higher
+>> than the max number of entries (we observed up to ~750k when max_entries
+>> is 500k), even is the map is only half-full on average during the count.
+>> On the worst case (though not frequent), an entry is deleted just before
+>> we get the next key from it, and iteration starts all over again. This
+>> is not reliable to determine how much space is left in the map.
+>>
+>> I cannot see a solution that would provide a more accurate count from
+>> user space, when the map is under pressure?
+> This might be a really dumb suggestion, but: you're wanting to collect a
+>  summary statistic over an in-kernel data structure in a single syscall,
+>  because making a series of syscalls to examine every entry is slow and
+>  racy.  Isn't that exactly a job for an in-kernel virtual machine, and
+>  could you not supply an eBPF program which the kernel runs on each entry
+>  in the map, thus supporting people who want to calculate something else
+>  (mean, min and max, whatever) instead of count?
+> 
 
-net/netfilter/nft_bitwise.c:138:50: error: size argument in 'memcmp'
-call is a comparison [-Werror,-Wmemsize-comparison]
-        if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
-                                      ~~~~~~~~~~~~~~~~~~^~
-net/netfilter/nft_bitwise.c:138:6: note: did you mean to compare the
-result of 'memcmp' instead?
-        if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
-            ^
-                                                       )
-net/netfilter/nft_bitwise.c:138:32: note: explicitly cast the argument
-to size_t to silence this warning
-        if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
-                                      ^
-                                      (size_t)(
-1 error generated.
+Hi Edward, I like the approach, thanks for the suggestion.
 
-Adjust the parentheses so that the result of the sizeof is used for the
-size argument in memcmp, rather than the result of the comparison (which
-would always be true because sizeof is a non-zero number).
+But I did not mention that we were using offloaded maps: Tracing the
+kernel would probably work for programs running on the host, but this is
+not a solution we could extend to hardware offload.
 
-Fixes: bd8699e9e292 ("netfilter: nft_bitwise: add offload support")
-Link: https://github.com/ClangBuiltLinux/linux/issues/638
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
----
- net/netfilter/nft_bitwise.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/net/netfilter/nft_bitwise.c b/net/netfilter/nft_bitwise.c
-index 1f04ed5c518c..974300178fa9 100644
---- a/net/netfilter/nft_bitwise.c
-+++ b/net/netfilter/nft_bitwise.c
-@@ -135,8 +135,8 @@ static int nft_bitwise_offload(struct nft_offload_ctx *ctx,
- {
- 	const struct nft_bitwise *priv = nft_expr_priv(expr);
- 
--	if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
--	    priv->sreg != priv->dreg))
-+	if (memcmp(&priv->xor, &zero, sizeof(priv->xor)) ||
-+	    priv->sreg != priv->dreg)
- 		return -EOPNOTSUPP;
- 
- 	memcpy(&ctx->regs[priv->dreg].mask, &priv->mask, sizeof(priv->mask));
--- 
-2.23.0.rc2
-
+Best regards,
+Quentin
