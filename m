@@ -2,107 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D5098D66A
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:41:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C2118D678
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 16:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726585AbfHNOlh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 10:41:37 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:39198 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726157AbfHNOlh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:41:37 -0400
-Received: by mail-qk1-f193.google.com with SMTP id 125so9669957qkl.6
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 07:41:36 -0700 (PDT)
+        id S1727815AbfHNOqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 10:46:54 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:45864 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726166AbfHNOqy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 10:46:54 -0400
+Received: by mail-pl1-f195.google.com with SMTP id y8so8691629plr.12;
+        Wed, 14 Aug 2019 07:46:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=wuELjlzk0W97on7ppjrVzsjRvp67peBZ1mBSicXJi+s=;
-        b=dvhgdzV2fXm8SD8NEIlAG1bkBfXR/PV9D6iB725DTFxqBBFW1N15u5P1ZfyIdAJTiI
-         B5CyM53w8f+QjSK6ayq0a92LFPbj13/i4ReJ4L4vMdRjlrmTIfeDhHK3MFAXam7b1qHv
-         VYRT0K01nA8ceU+voZ3+R04zNIHuSaEOEUthnhIaFcRgMi4T/bmRVF4h0B3zgAWuVhMT
-         FQ1MAcNXbEAQ36l959ZgRxd4LlMJ0KQYz44KmTzg1cgR19F+e040nw/F2Mmk+lEu6Jo/
-         Gaym2mxodguaFqHdlcV05Z1CYhuouWBejZyV7CEQJF9aPuZY8NcWaok4dRr4o6KcRa3Z
-         0gBQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=C/HgJ25I8tvmndBMxmt0bsyVpd8eQwU8Ds2rcKgpH0A=;
+        b=WmL5SRmgyiAJGWNX7EFDS09vb/9Sw0UJhDeQvMha5yx82xeHQ1DuGA1Mpxvow+8BIr
+         ESWZSjU32fPL9qL5WnPqX4CYmDklf1CWa2v+ROYcDeD7jqEySczangrQW9Db+Eqi29cG
+         NhrqVX2SiDBSJ09jCyPeiN4wnsJddTVVRqtko+QrGKZ5lAJn1w8yiK261kgyXiL92sSZ
+         QDeGxk9y66uO+hYxqkbLjSsWLOcOoClNghJ2/b2kdzJueyLZT4UEPTOUhIpBqYgvX1cO
+         hEUxyxlNS41Tbd/0gJh+bmhKXUx/iuCtP9sAjbdj/vFIb0JiCR1Sx7BY94DHAGjZDJB9
+         9yAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=wuELjlzk0W97on7ppjrVzsjRvp67peBZ1mBSicXJi+s=;
-        b=g8AEdiL79p3/xfEPK2Xu3qAvc9g21y/CoMJJuUH0i3MZMQ4gJrYT/i7iKErPL01xuS
-         WIfpP4Lzy6w/7yUsKNZNk0yzmTBD5ewLozjg1s3NCPxi5IDwfBE0MwJfxGuYEOUJEZ3r
-         p4tedEiMneHAedNsettR7Mjiq19mUD+TOfuo2U52ctENGVP3uImX9MmYQ8bgzezpd/uq
-         dJw3OQxDIgxeZ9/z+kghMz37V/IZB67nu/figO7CXjtUR/voDMJE+dmR1Kxkn/aayktZ
-         Lj0ee4VCZb5j4X7mOl0YCv7s/rwjbFxtIZt30X1FujXjwGRA2FKqFBmQJmj39Qle/XVc
-         KXFw==
-X-Gm-Message-State: APjAAAUkQoPALV2Lh4rjpO+ZQBG/jUxGNj7fBxkXCbKOubUOW38oWTU2
-        YtKp875UE+pTYoIU+JvUr+7VQp2j
-X-Google-Smtp-Source: APXvYqwhfRN/HAkCiX/fGLnouYU9IZtajSjxtdxkyW0lfk1n/vnP5gruNm8JXlRRqQYoYJPSjEgXEw==
-X-Received: by 2002:a37:680e:: with SMTP id d14mr38938770qkc.207.1565793696023;
-        Wed, 14 Aug 2019 07:41:36 -0700 (PDT)
-Received: from localhost.localdomain ([177.220.172.117])
-        by smtp.gmail.com with ESMTPSA id b1sm23535668qkk.8.2019.08.14.07.41.34
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 14 Aug 2019 07:41:35 -0700 (PDT)
-Received: by localhost.localdomain (Postfix, from userid 1000)
-        id CAE49C0A43; Wed, 14 Aug 2019 11:41:32 -0300 (-03)
-Date:   Wed, 14 Aug 2019 11:41:32 -0300
-From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
-To:     Bernd <ecki@zusammenkunft.net>
-Cc:     Neal Cardwell <ncardwell@google.com>,
-        netdev <netdev@vger.kernel.org>, edumazet@google.com
-Subject: Re: [PATCH net 2/4] tcp: tcp_fragment() should apply sane memory
- limits
-Message-ID: <20190814144132.GA2869@localhost.localdomain>
-References: <CABOR3+yUiu1BzCojFQFADUKc5BT2-Ew_j7KFNpjP8WoMYZ+SMA@mail.gmail.com>
- <CADVnQy=dvmksVaDu61+w-qtv2g_iNbWPFgbSJDtx9QaasmHonw@mail.gmail.com>
- <CABOR3+zQ0yfbcon6bv5TXrrAomoWLxy101iEXqBycDTrhytDiA@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=C/HgJ25I8tvmndBMxmt0bsyVpd8eQwU8Ds2rcKgpH0A=;
+        b=Mzh1qaSDqL7H/ulmkTO85rSpyqqo8pmnLODt2VpW35op/9ozban4V+5u0dTsHEb89j
+         a20xN0XO3VnziVW47nHOM9RIC70VC4ed75YAmUn34aSDMLsxWb2pzbvTu1hJcJoxCXZm
+         0EMLq1lf0pRz2N6htLaNmPutG5Crs4fE4nZg72eOrzrTdOOx+iLtEHHr078jcZXUxHgX
+         5VIXjPwYGby0uPUHmrPQqSjIDsIJS9LNb12e9rjLSTdCKYjoBpH/M1welwQQJxMIAgnM
+         eUE1llSWuU9OkdXkd5LJwhfrfcmrg9QjiQKBd/noHGnC84IRRMkrfj5Cj4oMdygXCdJK
+         8Mvw==
+X-Gm-Message-State: APjAAAWAj+4LSAqUykc3KX1GfNtHzKAYaPRjrByzHNKjWtvPs/kGnyYs
+        OnvtZMRPz2fDn5Ku0A6cNKM=
+X-Google-Smtp-Source: APXvYqx9YQ3vULbpEAfo+40fOeew9EainU/7et4KrcvMAtFqeVFsUnahNHvaHlQCPCSfHa/6pVZgXQ==
+X-Received: by 2002:a17:902:9698:: with SMTP id n24mr2908901plp.14.1565794013396;
+        Wed, 14 Aug 2019 07:46:53 -0700 (PDT)
+Received: from [172.26.122.72] ([2620:10d:c090:180::6327])
+        by smtp.gmail.com with ESMTPSA id l4sm23278pff.50.2019.08.14.07.46.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 14 Aug 2019 07:46:52 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Magnus Karlsson" <magnus.karlsson@intel.com>
+Cc:     bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
+        netdev@vger.kernel.org, brouer@redhat.com, maximmi@mellanox.com,
+        bpf@vger.kernel.org, bruce.richardson@intel.com,
+        ciara.loftus@intel.com, jakub.kicinski@netronome.com,
+        xiaolong.ye@intel.com, qi.z.zhang@intel.com,
+        sridhar.samudrala@intel.com, kevin.laatz@intel.com,
+        ilias.apalodimas@linaro.org, kiran.patil@intel.com,
+        axboe@kernel.dk, maciej.fijalkowski@intel.com,
+        maciejromanfijalkowski@gmail.com, intel-wired-lan@lists.osuosl.org
+Subject: Re: [PATCH bpf-next v4 1/8] xsk: replace ndo_xsk_async_xmit with
+ ndo_xsk_wakeup
+Date:   Wed, 14 Aug 2019 07:46:51 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <B49497F3-8DD7-4C24-B7EE-CBF3488A913C@gmail.com>
+In-Reply-To: <1565767643-4908-2-git-send-email-magnus.karlsson@intel.com>
+References: <1565767643-4908-1-git-send-email-magnus.karlsson@intel.com>
+ <1565767643-4908-2-git-send-email-magnus.karlsson@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CABOR3+zQ0yfbcon6bv5TXrrAomoWLxy101iEXqBycDTrhytDiA@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 02, 2019 at 09:58:12PM +0200, Bernd wrote:
-> 2019-08-02 21:14 GMT+02:00, Neal Cardwell <ncardwell@google.com>:
-> > What's the exact kernel version you are using?
-> 
-> It is the RHEL errata kernel 3.10.0-957.21.3.el7 (rhsa-2019:1481), i
-> need to check if there is a newer one.
 
-FWIW, this one doesn't have the patch below.
 
-  Marcelo
+On 14 Aug 2019, at 0:27, Magnus Karlsson wrote:
 
-> 
-> > Eric submitted a patch recently that may address your issue:
-> >    tcp: be more careful in tcp_fragment()
-> >
-> > https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git/commit/?id=b617158dc096709d8600c53b6052144d12b89fab
-> >
-> > Would you be able to test your workload with that commit
-> > cherry-picked, and see if the issue still occurs?
-> 
-> It only happens on a customer system in production up to now, so most
-> likely not.
-> 
-> > That commit was targeted to many stable releases, so you may be able
-> > to pick up that fix from a stable branch.
-> 
-> The only thing which is a bit strange, this is a Java client, and I am
-> pretty sure we don’t set a small SO_SNDBUF, if anything it is
-> increased (I need to verify that).
-> 
-> Not to worry, I guess I can now with your helpful pointer sort that
-> out with Redhat.
-> 
-> gruss
-> Bernd
-> 
+> This commit replaces ndo_xsk_async_xmit with ndo_xsk_wakeup. This new
+> ndo provides the same functionality as before but with the addition of
+> a new flags field that is used to specifiy if Rx, Tx or both should be
+> woken up. The previous ndo only woke up Tx, as implied by the
+> name. The i40e and ixgbe drivers (which are all the supported ones)
+> are updated with this new interface.
+>
+> This new ndo will be used by the new need_wakeup functionality of XDP
+> sockets that need to be able to wake up both Rx and Tx driver
+> processing.
+>
+> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
+
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
