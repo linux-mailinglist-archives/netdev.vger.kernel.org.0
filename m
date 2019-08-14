@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC65F8C8AE
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60EB68C8A9
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 04:33:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728680AbfHNCOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 13 Aug 2019 22:14:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46192 "EHLO mail.kernel.org"
+        id S1729100AbfHNCdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 13 Aug 2019 22:33:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47524 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728667AbfHNCOO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:14:14 -0400
+        id S1728870AbfHNCQA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:16:00 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D69CC2133F;
-        Wed, 14 Aug 2019 02:14:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 81C19208C2;
+        Wed, 14 Aug 2019 02:15:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748853;
-        bh=aZ38rz6VCA8Q/RCMofW28uLSJZbLCjFdNmOmpsDIwmk=;
+        s=default; t=1565748959;
+        bh=gdO0swjJ28YedzX8e/R8tHVRo8A3I/mriBHldzkfYHw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PemHWOWOQAfcq5l2Uu2GYun3fpyI87IeZcSB5CZJ5Xe3HMpP6RWyvhr6B6QY3urdQ
-         G7JaTz4bE8vS50Td3/PikLK4fL0TjN86ZdU9GpNGNnGb9ZyqtS4vj7e+Wg5Tihvvkl
-         ZEENFkTfR52TkxNQCQrvJOnrej4hZQaWYuBna3dk=
+        b=d6D8oDpe23vVAuT9Szms9YuWC4wtk5BVQV85XXYv2alYB177Ln9uIH9qd3/QWAF4n
+         KcC3xGQluijYJx3gSXRJ9KLp3zTkAg5qRv4izp902KkLZmBebmarYDff1PgbmwK170
+         r84QLbIPk5urQsW5HOgDUfKuXSIdIU8LRkO0e/BM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jose Abreu <Jose.Abreu@synopsys.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 104/123] net: stmmac: tc: Do not return a fragment entry
-Date:   Tue, 13 Aug 2019 22:10:28 -0400
-Message-Id: <20190814021047.14828-104-sashal@kernel.org>
+Cc:     Wenwen Wang <wenwen@cs.uga.edu>, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Sasha Levin <sashal@kernel.org>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 06/68] netfilter: ebtables: fix a memory leak bug in compat
+Date:   Tue, 13 Aug 2019 22:14:44 -0400
+Message-Id: <20190814021548.16001-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
-References: <20190814021047.14828-1-sashal@kernel.org>
+In-Reply-To: <20190814021548.16001-1-sashal@kernel.org>
+References: <20190814021548.16001-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,33 +45,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jose Abreu <Jose.Abreu@synopsys.com>
+From: Wenwen Wang <wenwen@cs.uga.edu>
 
-[ Upstream commit 4a6a1385a4db5f42258a40fcd497cbfd22075968 ]
+[ Upstream commit 15a78ba1844a8e052c1226f930133de4cef4e7ad ]
 
-Do not try to return a fragment entry from TC list. Otherwise we may not
-clean properly allocated entries.
+In compat_do_replace(), a temporary buffer is allocated through vmalloc()
+to hold entries copied from the user space. The buffer address is firstly
+saved to 'newinfo->entries', and later on assigned to 'entries_tmp'. Then
+the entries in this temporary buffer is copied to the internal kernel
+structure through compat_copy_entries(). If this copy process fails,
+compat_do_replace() should be terminated. However, the allocated temporary
+buffer is not freed on this path, leading to a memory leak.
 
-Signed-off-by: Jose Abreu <joabreu@synopsys.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+To fix the bug, free the buffer before returning from compat_do_replace().
+
+Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+Reviewed-by: Florian Westphal <fw@strlen.de>
+Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/bridge/netfilter/ebtables.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-index 58ea18af9813a..37c0bc699cd9c 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c
-@@ -37,7 +37,7 @@ static struct stmmac_tc_entry *tc_find_entry(struct stmmac_priv *priv,
- 		entry = &priv->tc_entries[i];
- 		if (!entry->in_use && !first && free)
- 			first = entry;
--		if (entry->handle == loc && !free)
-+		if ((entry->handle == loc) && !free && !entry->is_frag)
- 			dup = entry;
- 	}
+diff --git a/net/bridge/netfilter/ebtables.c b/net/bridge/netfilter/ebtables.c
+index 0bb4d712b80cb..57856f8bc22dd 100644
+--- a/net/bridge/netfilter/ebtables.c
++++ b/net/bridge/netfilter/ebtables.c
+@@ -2268,8 +2268,10 @@ static int compat_do_replace(struct net *net, void __user *user,
+ 	state.buf_kern_len = size64;
  
+ 	ret = compat_copy_entries(entries_tmp, tmp.entries_size, &state);
+-	if (WARN_ON(ret < 0))
++	if (WARN_ON(ret < 0)) {
++		vfree(entries_tmp);
+ 		goto out_unlock;
++	}
+ 
+ 	vfree(entries_tmp);
+ 	tmp.entries_size = size64;
 -- 
 2.20.1
 
