@@ -2,99 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 366928DD0B
-	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 20:35:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3ED88DD11
+	for <lists+netdev@lfdr.de>; Wed, 14 Aug 2019 20:36:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728927AbfHNSd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 14:33:57 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:43984 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726522AbfHNSd5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 14:33:57 -0400
-Received: by mail-wr1-f67.google.com with SMTP id y8so17426wrn.10;
-        Wed, 14 Aug 2019 11:33:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=y+U2P77L5yF3rgxH6FgzV86C/p2e7T5M7nztZM7FoNA=;
-        b=GNSNKHY4zlXwjJmo8GGkNFDOKzfrG/bQ/NfZfGL2Ss4sCbVZlBpMpyLo/vQYhrC4Yl
-         6uf+pD0n3YbxhPrLR0cjUZzZhWcdbxGu3wTPx+3qzGKXW7g0of+8cbaEK2HeKfnhfKrk
-         GHsSTW1JUg6CIIaNrt2h/7TGsWZadezEv98TbcgIpSofwDMbDQvsCQgqlE9l+jL7o/1Y
-         102Wqp165KiFejssUf4Ppk8aXprgHen9aBn8dXhIXtZLBsiYeCLAeajqCUhyWwaWYOBx
-         RikW9DUaM/3+YPPg7j5F0qm/hYA19558nyKUcTBdCTjUyIIjwCWCnDFYct6vwLJInT43
-         LSbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=y+U2P77L5yF3rgxH6FgzV86C/p2e7T5M7nztZM7FoNA=;
-        b=M6mDGwnXAO6Scgr/asT5AA3DC5gp4keY8mBJnRFiOgQLq/GmDsXRlSZ8F1Sxxj/Hd1
-         kS9nB9mWImTrsyT5r13ZPXH/gZfZK5+oMxEAcbfpQqqBFOn5EHua702EOKuqwIFtnNRk
-         4edkqiPG/LrXXJ6Ovdfrts2ZXhggx5TtdIY2Pw8SWFyHNmhfCkMKk/8GCcsc4SVKeAyq
-         2oUT7k0w9LI5mA8wrWU1IanqEBDOPqiP59eSnWFqZd7z5Gp5rLVMc0TcxFJ591omqn40
-         2/LMUK/rjkAaBIIlfeL3BMLFjMOTz8+PNbJlik0KxIsqHhfmQo4tDKNYw5POyYJajY7q
-         wRuQ==
-X-Gm-Message-State: APjAAAXUY5DNNAD3WUbtbtLXuLj6xXyElwzfFdlZYSuFQ26fXJnNDeBR
-        H1aY+rIOPMS9ek7E3PvVgna1dvVB
-X-Google-Smtp-Source: APXvYqweTB2T6SpZJVzamx/JzBXYuLVcM/CWoxcHkdiddFthlEGPTteWPA8k8w75i7seeSHcSIBkZw==
-X-Received: by 2002:a05:6000:1284:: with SMTP id f4mr1226050wrx.89.1565807635304;
-        Wed, 14 Aug 2019 11:33:55 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:5905:9c04:aa53:7427? (p200300EA8F2F320059059C04AA537427.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:5905:9c04:aa53:7427])
-        by smtp.googlemail.com with ESMTPSA id r11sm375854wrt.84.2019.08.14.11.33.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 11:33:54 -0700 (PDT)
-Subject: Re: [PATCH] MAINTAINERS: r8169: Update path to the driver
-To:     Denis Efremov <efremov@linux.com>
-Cc:     joe@perches.com, linux-kernel@vger.kernel.org,
-        nic_swsd@realtek.com, "David S . Miller" <davem@davemloft.net>,
-        netdev@vger.kernel.org
-References: <69fac52e-8464-ea87-e2e5-422ae36a92c8@gmail.com>
- <20190814121209.3364-1-efremov@linux.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <7110b633-fd6b-68cf-2ade-81ccf30beb77@gmail.com>
-Date:   Wed, 14 Aug 2019 20:33:47 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1728517AbfHNSge (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 14:36:34 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:54698 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726522AbfHNSge (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 14:36:34 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7EIXlOw123962;
+        Wed, 14 Aug 2019 18:36:22 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=4Y1mWa41W8MAbuvf3jyIICFRukEh8sKLbs5WZwCpIAM=;
+ b=ep6XTPSG2lbyMrLycc9I0gSGvsUGOUOF2KTQu1pZQvrqJ24AGKzG9HFGf34S9SNGEjMt
+ Ah6DMPEQD9P6wQ6Dwr3lRvSdTpa2wk19YUQJCagVtneDVB3op9vFhJsIdN0lyrYj5AHA
+ apBtmR4bJZDsqVrOJBcU3TzfzVNygWGqnRQrRRkslSG3aVuTaqpfi5ZY3jNE/w6FjmL5
+ BZRM3/nbkgXPcZl3vSo2RI7hKE38RCu6wNUvpyD6FXNrZdeiUOjYa33SWl39/f4LCwS3
+ QPPOvbYlAHcWZfN49FRVfU2N4PZ7De5ZSM0iL3tTO+ZfcnsxK9E3Ysgcmk/zAlWCAacn 6g== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 2u9nbtpmay-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 14 Aug 2019 18:36:22 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7EIXQIX040889;
+        Wed, 14 Aug 2019 18:36:22 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 2ucmwhr7af-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 14 Aug 2019 18:36:21 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7EIaL43047625;
+        Wed, 14 Aug 2019 18:36:21 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userp3030.oracle.com with ESMTP id 2ucmwhr7a5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 14 Aug 2019 18:36:21 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7EIaK2U019077;
+        Wed, 14 Aug 2019 18:36:20 GMT
+Received: from [10.209.243.59] (/10.209.243.59)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 14 Aug 2019 11:36:20 -0700
+Subject: Re: [PATCH net-next 1/5] RDS: Re-add pf/sol access via sysctl
+To:     David Miller <davem@davemloft.net>
+Cc:     dledford@redhat.com, gerd.rausch@oracle.com,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+References: <e0397d30-7405-a7af-286c-fe76887caf0a@oracle.com>
+ <53b40b359d18dd73a6cf264aa8013d33547b593f.camel@redhat.com>
+ <a7d09f3a-d01e-7cdb-98ec-8165b6312ffe@oracle.com>
+ <20190814.142112.1080694155114782651.davem@davemloft.net>
+From:   santosh.shilimkar@oracle.com
+Organization: Oracle Corporation
+Message-ID: <53a6feaf-b48e-aadf-1bd7-4c82ddc36d1e@oracle.com>
+Date:   Wed, 14 Aug 2019 11:36:19 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190814121209.3364-1-efremov@linux.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20190814.142112.1080694155114782651.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9349 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908140164
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 14.08.2019 14:12, Denis Efremov wrote:
-> Update MAINTAINERS record to reflect the filename change.
-> The file was moved in commit 25e992a4603c ("r8169: rename
-> r8169.c to r8169_main.c")
+On 8/14/19 11:21 AM, David Miller wrote:
+> From: santosh.shilimkar@oracle.com
+> Date: Wed, 14 Aug 2019 11:01:36 -0700
 > 
-> Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> Cc: nic_swsd@realtek.com
-> Cc: David S. Miller <davem@davemloft.net>
-> Cc: netdev@vger.kernel.org
-> Signed-off-by: Denis Efremov <efremov@linux.com>
-> ---
->  MAINTAINERS | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>> Some of the application software was released before 2009 and ended up
+>> using these proc entries from downstream kernel. The newer lib/app
+>> using RDS don't use these. Unfortunately lot of customer still use
+>> Oracle 9, 10, 11 which were released before 2007 and run these apps
+>> on modern kernels.
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index a43a1f0be49f..905efeda56fb 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -183,7 +183,7 @@ M:	Realtek linux nic maintainers <nic_swsd@realtek.com>
->  M:	Heiner Kallweit <hkallweit1@gmail.com>
->  L:	netdev@vger.kernel.org
->  S:	Maintained
-> -F:	drivers/net/ethernet/realtek/r8169.c
-> +F:	drivers/net/ethernet/realtek/r8169*
->  
->  8250/16?50 (AND CLONE UARTS) SERIAL DRIVER
->  M:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> So those apps are using proc entries that were never upstream...
+>
+> Sorry, this is completely and utterly inappropriate.
 > 
-For net-next.
-Reviewed-by: Heiner Kallweit <hkallweit1@gmail.com>
+Agree. Unfortunately one of the legacy application library didn't
+get upgraded even after the ports were registered with IANA.
+Oracle 11 is still very active release and hence this patch.
+
+It is fine to drop $subject patch from this series.
+
+Regards,
+Santosh
+
+
 
