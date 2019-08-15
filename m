@@ -2,194 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A4FFF8E5E1
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 10:00:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BB7C08E63E
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 10:26:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730798AbfHOIAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 04:00:42 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:56946 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725961AbfHOIAm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 04:00:42 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 151B2D47EAAAADA985B0;
-        Thu, 15 Aug 2019 16:00:31 +0800 (CST)
-Received: from huawei.com (10.175.101.78) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Thu, 15 Aug 2019
- 16:00:23 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <jasowang@redhat.com>, <xiyou.wangcong@gmail.com>,
-        <davem@davemloft.net>, <yangyingliang@huawei.com>
-Subject: [PATCH] tun: fix use-after-free when register netdev failed
-Date:   Thu, 15 Aug 2019 16:18:42 +0800
-Message-ID: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
-X-Mailer: git-send-email 1.8.3
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.78]
-X-CFilter-Loop: Reflected
+        id S1730960AbfHOIZr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 04:25:47 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:38290 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730261AbfHOIZr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 04:25:47 -0400
+Received: by mail-pg1-f196.google.com with SMTP id e11so1014153pga.5
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 01:25:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=30cHDPSODRjzx60oee0Lo4biVeqVEQUgsOye86CZdQ0=;
+        b=ujE9YZn8x6/VcmU/0Z+b4S3X6Cc16ZsAIPvkqSVtQwq16OT9HflIeTaqoSW2FR/Ke7
+         pu0uhXzPhdpX9DiT3XQgShPJlpuqBxJdNZs8Aaj4cB7dfExAZzxyM39q8LLWdC+UpKOz
+         k90c82vCno8LxDjEONoJFd2bg3U4bdlt53Fjr9zXU3s7TlwjqTN4SbME2Rzl7e8n0ylT
+         gi2S+9nTPjn00Unn9INJNJx7m+ofE0Y8KoJqrT5whrrkCi72chH938iGwKZsohAywF77
+         TKe7KYSqgpYalJHvwHRD5S4s2yVrMCYUwk9A3QGiG047eiYL1AX6eLc0rqvqgn2Wj0MD
+         qFjA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=30cHDPSODRjzx60oee0Lo4biVeqVEQUgsOye86CZdQ0=;
+        b=BssnZcbyIQqPMkLgsPZeZUHvHTeJGonqaikYP1749kYYoLKMTt69AObMq7dmwhei39
+         uvfdBSFqtGKjUoQh3+CA/AUdLh1U9tEqn9qVozD9KgbcbkU2lqNc/DRSHbTAzj5nPIHj
+         sKpCP0bUHasRzh6SkKidNiMeCaLDRQQt8zFMmRBmyPKiPtRMUI+F6dQkZ4yiaaHhzSbU
+         hZUHkiKrDPvTLwofrpngc39Ml1g4fGAEa1CTlnPnEr9caMSJbzl80GNwsKt/BCEZFvYb
+         cAKLDEB9PNVg8hpeAPdUl+L0kqozEF0ZzutCjpWChZPVPATuS3epPZX4Rkshin3SrRXf
+         Qmww==
+X-Gm-Message-State: APjAAAV6etxSSfGWzAfpccltmAYy5nWjxJ+QRHzPTvOl8WVNAhdT0PMo
+        MWefMiGymOfCuKOgIrPbBH7T2A==
+X-Google-Smtp-Source: APXvYqwjBEsniOi5hJVUrh23+U47HSZ1lTJaoKAz8PwNLCTH7NTTuxiXAdNbrYWwQMmDwCRhuMpAuQ==
+X-Received: by 2002:aa7:87d5:: with SMTP id i21mr4259475pfo.70.1565857546207;
+        Thu, 15 Aug 2019 01:25:46 -0700 (PDT)
+Received: from localhost.localdomain (li456-16.members.linode.com. [50.116.10.16])
+        by smtp.gmail.com with ESMTPSA id e6sm2399223pfl.37.2019.08.15.01.25.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2019 01:25:45 -0700 (PDT)
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Cc:     Leo Yan <leo.yan@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v5] perf machine: arm/arm64: Improve completeness for kernel address space
+Date:   Thu, 15 Aug 2019 16:25:21 +0800
+Message-Id: <20190815082521.16885-1-leo.yan@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a UAF repport in tun driver when doing fuzzy test:
+Arm and arm64 architecture reserve some memory regions prior to the
+symbol '_stext' and these memory regions later will be used by device
+module and BPF jit.  The current code misses to consider these memory
+regions thus any address in the regions will be taken as user space
+mode, but perf cannot find the corresponding dso with the wrong CPU
+mode so we misses to generate samples for device module and BPF
+related trace data.
 
-[  466.269490] ==================================================================
-[  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
-[  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
-[  466.271810]
-[  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
-[  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[  466.271838] Call Trace:
-[  466.271858]  dump_stack+0xca/0x13e
-[  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271890]  print_address_description+0x79/0x440
-[  466.271906]  ? vprintk_func+0x5e/0xf0
-[  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271935]  __kasan_report+0x15c/0x1df
-[  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271976]  kasan_report+0xe/0x20
-[  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
-[  466.272013]  do_iter_readv_writev+0x4b7/0x740
-[  466.272032]  ? default_llseek+0x2d0/0x2d0
-[  466.272072]  do_iter_read+0x1c5/0x5e0
-[  466.272110]  vfs_readv+0x108/0x180
-[  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
-[  466.299020]  ? fsnotify+0x888/0xd50
-[  466.299040]  ? __fsnotify_parent+0xd0/0x350
-[  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
-[  466.304548]  ? vfs_write+0x264/0x510
-[  466.304569]  ? ksys_write+0x101/0x210
-[  466.304591]  ? do_preadv+0x116/0x1a0
-[  466.304609]  do_preadv+0x116/0x1a0
-[  466.309829]  do_syscall_64+0xc8/0x600
-[  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.309861] RIP: 0033:0x4560f9
-[  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-[  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
-[  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
-[  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
-[  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
-[  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
-[  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
-[  466.323057]
-[  466.323064] Allocated by task 2605:
-[  466.335165]  save_stack+0x19/0x80
-[  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
-[  466.337755]  kmem_cache_alloc+0xe8/0x320
-[  466.339050]  getname_flags+0xca/0x560
-[  466.340229]  user_path_at_empty+0x2c/0x50
-[  466.341508]  vfs_statx+0xe6/0x190
-[  466.342619]  __do_sys_newstat+0x81/0x100
-[  466.343908]  do_syscall_64+0xc8/0x600
-[  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.347034]
-[  466.347517] Freed by task 2605:
-[  466.348471]  save_stack+0x19/0x80
-[  466.349476]  __kasan_slab_free+0x12e/0x180
-[  466.350726]  kmem_cache_free+0xc8/0x430
-[  466.351874]  putname+0xe2/0x120
-[  466.352921]  filename_lookup+0x257/0x3e0
-[  466.354319]  vfs_statx+0xe6/0x190
-[  466.355498]  __do_sys_newstat+0x81/0x100
-[  466.356889]  do_syscall_64+0xc8/0x600
-[  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.359567]
-[  466.360050] The buggy address belongs to the object at ffff888372139100
-[  466.360050]  which belongs to the cache names_cache of size 4096
-[  466.363735] The buggy address is located 336 bytes inside of
-[  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
-[  466.367179] The buggy address belongs to the page:
-[  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
-[  466.371582] flags: 0x2fffff80010200(slab|head)
-[  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
-[  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
-[  466.377778] page dumped because: kasan: bad access detected
-[  466.379730]
-[  466.380288] Memory state around the buggy address:
-[  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.388257]                                                  ^
-[  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.394667] ==================================================================
+This patch parse the link scripts to get the memory size prior to start
+address and reduce this size from 'machine>->kernel_start', then can
+get a fixed up kernel start address which contain memory regions for
+device module and BPF.  Finally, machine__get_kernel_start() can reflect
+more complete kernel memory regions and perf can successfully generate
+samples.
 
-tun_chr_read_iter() accessed the memory which freed by free_netdev()
-called by tun_set_iff():
+The reason for parsing the link scripts is Arm architecture changes text
+offset dependent on different platforms, which define multiple text
+offsets in $kernel/arch/arm/Makefile.  This offset is decided when build
+kernel and the final value is extended in the link script, so we can
+extract the used value from the link script.  We use the same way to
+parse arm64 link script as well.  If fail to find the link script, the
+pre start memory size is assumed as zero, in this case it has no any
+change caused with this patch.
 
-	CPUA				CPUB
-    tun_set_iff()
-      alloc_netdev_mqs()
-      tun_attach()
-				    tun_chr_read_iter()
-				      tun_get()
-      register_netdevice()
-      tun_detach_all()
-        synchronize_net()
-				      tun_do_read()
-				        tun_ring_recv()
-				          schedule()
-      free_netdev()
-				      tun_put() <-- UAF
+Below is detailed info for testing this patch:
 
-Set a new bit in tun->flag if register_netdevice() successed,
-without this bit, tun_get() returns NULL to avoid using a
-freed tun pointer.
+- Install or build LLVM/Clang;
 
-Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+- Configure perf with ~/.perfconfig:
+
+  root@debian:~# cat ~/.perfconfig
+  # this file is auto-generated.
+  [llvm]
+          clang-path = /mnt/build/llvm-build/build/install/bin/clang
+          kbuild-dir = /mnt/linux-kernel/linux-cs-dev/
+          clang-opt = "-g"
+          dump-obj = true
+
+  [trace]
+          show_zeros = yes
+          show_duration = no
+          no_inherit = yes
+          show_timestamp = no
+          show_arg_names = no
+          args_alignment = 40
+          show_prefix = yes
+
+- Run 'perf trace' command with eBPF event:
+
+  root@debian:~# perf trace -e string \
+      -e $kernel/tools/perf/examples/bpf/augmented_raw_syscalls.c
+
+- Read eBPF program memory mapping in kernel:
+
+  root@debian:~# echo 1 > /proc/sys/net/core/bpf_jit_kallsyms
+  root@debian:~# cat /proc/kallsyms | grep -E "bpf_prog_.+_sys_[enter|exit]"
+  ffff00000008a0d0 t bpf_prog_e470211b846088d5_sys_enter  [bpf]
+  ffff00000008c6a4 t bpf_prog_29c7ae234d79bd5c_sys_exit   [bpf]
+
+- Launch any program which accesses file system frequently so can hit
+  the system calls trace flow with eBPF event;
+
+- Capture CoreSight trace data with filtering eBPF program:
+
+  root@debian:~# perf record -e cs_etm/@tmc_etr0/ \
+	--filter 'filter 0xffff00000008a0d0/0x800' -a sleep 5s
+
+- Decode the eBPF program symbol 'bpf_prog_f173133dc38ccf87_sys_enter':
+
+  root@debian:~# perf script -F,ip,sym
+  Frame deformatter: Found 4 FSYNCS
+                  0 [unknown]
+   ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a250 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a124 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a13c bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a180 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a190 bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+   ffff00000008a250 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a124 bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+                  0 [unknown]
+   ffff00000008a180 bpf_prog_e470211b846088d5_sys_enter
+   [...]
+
+Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Suzuki Poulouse <suzuki.poulose@arm.com>
+Cc: Adrian Hunter <adrian.hunter@intel.com>
+Cc: coresight@lists.linaro.org
+Cc: linux-arm-kernel@lists.infradead.org
+Signed-off-by: Leo Yan <leo.yan@linaro.org>
 ---
- drivers/net/tun.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ tools/perf/Makefile.config | 22 ++++++++++++++++++++++
+ tools/perf/util/machine.c  | 15 ++++++++++++++-
+ 2 files changed, 36 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index db16d7a13e00..cbd60c276c40 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -115,6 +115,7 @@ do {								\
- /* High bits in flags field are unused. */
- #define TUN_VNET_LE     0x80000000
- #define TUN_VNET_BE     0x40000000
-+#define TUN_DEV_REGISTERED	0x20000000
+diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+index e4988f49ea79..d7ff839d8b20 100644
+--- a/tools/perf/Makefile.config
++++ b/tools/perf/Makefile.config
+@@ -48,9 +48,20 @@ ifeq ($(SRCARCH),x86)
+   NO_PERF_REGS := 0
+ endif
  
- #define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | \
- 		      IFF_MULTI_QUEUE | IFF_NAPI | IFF_NAPI_FRAGS)
-@@ -719,8 +720,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
- 			netif_carrier_off(tun->dev);
++ARM_PRE_START_SIZE := 0
++
+ ifeq ($(SRCARCH),arm)
+   NO_PERF_REGS := 0
+   LIBUNWIND_LIBS = -lunwind -lunwind-arm
++  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
++    # Extract info from lds:
++    #   . = ((0xC0000000)) + 0x00208000;
++    # ARM_PRE_START_SIZE := 0x00208000
++    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({2}0x[0-9a-fA-F]+\){2}' \
++      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
++      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
++      awk -F' ' '{printf "0x%x", $$2}' 2>/dev/null)
++  endif
+ endif
  
- 			if (!(tun->flags & IFF_PERSIST) &&
--			    tun->dev->reg_state == NETREG_REGISTERED)
-+			    tun->dev->reg_state == NETREG_REGISTERED) {
- 				unregister_netdevice(tun->dev);
-+				tun->flags &= ~TUN_DEV_REGISTERED;
-+			}
- 		}
- 		if (tun)
- 			xdp_rxq_info_unreg(&tfile->xdp_rxq);
-@@ -884,8 +887,10 @@ static struct tun_struct *tun_get(struct tun_file *tfile)
+ ifeq ($(SRCARCH),arm64)
+@@ -58,8 +69,19 @@ ifeq ($(SRCARCH),arm64)
+   NO_SYSCALL_TABLE := 0
+   CFLAGS += -I$(OUTPUT)arch/arm64/include/generated
+   LIBUNWIND_LIBS = -lunwind -lunwind-aarch64
++  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
++    # Extract info from lds:
++    #  . = ((((((((0xffffffffffffffff)) - (((1)) << (48)) + 1) + (0)) + (0x08000000))) + (0x08000000))) + 0x00080000;
++    # ARM_PRE_START_SIZE := (0x08000000 + 0x08000000 + 0x00080000) = 0x10080000
++    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({8}0x[0-9a-fA-F]+\){2}' \
++      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
++      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
++      awk -F' ' '{printf "0x%x", $$6+$$7+$$8}' 2>/dev/null)
++  endif
+ endif
  
- 	rcu_read_lock();
- 	tun = rcu_dereference(tfile->tun);
--	if (tun)
-+	if (tun && (tun->flags & TUN_DEV_REGISTERED))
- 		dev_hold(tun->dev);
-+	else
-+		tun = NULL;
- 	rcu_read_unlock();
- 
- 	return tun;
-@@ -2836,6 +2841,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 		err = register_netdevice(tun->dev);
- 		if (err < 0)
- 			goto err_detach;
-+		tun->flags |= TUN_DEV_REGISTERED;
++CFLAGS += -DARM_PRE_START_SIZE=$(ARM_PRE_START_SIZE)
++
+ ifeq ($(SRCARCH),csky)
+   NO_PERF_REGS := 0
+ endif
+diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+index f6ee7fbad3e4..e993f891bb82 100644
+--- a/tools/perf/util/machine.c
++++ b/tools/perf/util/machine.c
+@@ -2687,13 +2687,26 @@ int machine__get_kernel_start(struct machine *machine)
+ 	machine->kernel_start = 1ULL << 63;
+ 	if (map) {
+ 		err = map__load(map);
++		if (err)
++			return err;
++
+ 		/*
+ 		 * On x86_64, PTI entry trampolines are less than the
+ 		 * start of kernel text, but still above 2^63. So leave
+ 		 * kernel_start = 1ULL << 63 for x86_64.
+ 		 */
+-		if (!err && !machine__is(machine, "x86_64"))
++		if (!machine__is(machine, "x86_64"))
+ 			machine->kernel_start = map->start;
++
++		/*
++		 * On arm/arm64, the kernel uses some memory regions which are
++		 * prior to '_stext' symbol; to reflect the complete kernel
++		 * address space, compensate these pre-defined regions for
++		 * kernel start address.
++		 */
++		if (!strcmp(perf_env__arch(machine->env), "arm") ||
++		    !strcmp(perf_env__arch(machine->env), "arm64"))
++			machine->kernel_start -= ARM_PRE_START_SIZE;
  	}
- 
- 	netif_carrier_on(tun->dev);
+ 	return err;
+ }
 -- 
 2.17.1
 
