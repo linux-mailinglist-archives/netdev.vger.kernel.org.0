@@ -2,165 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 070D68F334
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 20:23:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6978B8F370
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 20:32:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732860AbfHOSXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 14:23:19 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:42423 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729565AbfHOSXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 14:23:19 -0400
-Received: by mail-pf1-f195.google.com with SMTP id i30so1719828pfk.9;
-        Thu, 15 Aug 2019 11:23:19 -0700 (PDT)
+        id S1732187AbfHOScU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 14:32:20 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:39759 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729204AbfHOScT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 14:32:19 -0400
+Received: by mail-oi1-f195.google.com with SMTP id 16so2950593oiq.6;
+        Thu, 15 Aug 2019 11:32:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=l7ROvwBmxyo8/D3YRRi0Igp8QJbgJTkQ4GmMpySCWJw=;
-        b=hpm1cOi18/fG/NCX5oXTspgxisZB91yz5SIdJ02JxUbw/62uEAeqLtdoNBJRGFRYor
-         ku4lr4oiVTFODDWfudvhhBIsqWBYHYhtAYHiIbHlaozuOtyg8o37i7DC3tbD9CqxD/L3
-         EiuCHQFVoeGVDJM7/BE+PACPExAbF8lHmZSJwKPR0gfBMNEuiUSJbFUa2oeQxzgSQ7eP
-         m1R2fLOQgmv8QSFPhFGQSroZ7hJSVKP7ZlzcGJ2yjezmqxkXcuIEymlzQOS8tWg5ydKj
-         yO6j+6roOJEInH2iZSpMzcpS/5RbOah+Czx0HKl1aveFzlklWDiIqZWIAgIkIXVzxbQ8
-         4LCg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zr7m4pwTZtuvjpeiIC/jYJKmr4TJLJV4XhMln9ZPv+4=;
+        b=QhoIDVYdejOyWyiUAfCz1XWolONEWbCa4OOpGFtUQnKIGhnLyEC0/WGR5DefUSe1mR
+         i3zN3r2Q/fvJSZDwrKzaRdvzv43fsSPU0X21BNHiS2Yqh+NKiqKBv6Ii+RH2I3llRllE
+         byC/IWheGYP6LEWHOEThfHTWTKIJJf+uR547l94H3w3AmvHSXHgGTk25MdOCZrvH2vOm
+         xHVEnRuf1yAPoEGvBmZTWcabaDcqGkwohIXbc60Uis39tG3aq01SVHfE16g3nGRTQp5j
+         fFt/E1AjMR0bRMXf2g86K2ujhMJd+JgLRDunGS64polTLVj9Z+V7jNNFV0rN5tUK+OI4
+         jJgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=l7ROvwBmxyo8/D3YRRi0Igp8QJbgJTkQ4GmMpySCWJw=;
-        b=GCA3ZlxFfZDSv4qwTZAmLH2KtB0Wjv8xcQgZ/UtNbAD4uDEV11do9ZaOt2yNABbJZh
-         KM+OWkqtHp0OzglYhspJiS83v4jJSypgnCV4A1tZXiHnUBSsOlmdCpQz+Aa32Law7X5J
-         u9NwwGejZS+xEEFdPPuqwDUWPmKZAAD5PqqXT+HfP59c0SOAT7XiZ/XPz0MmtYriGLgk
-         zA6JvkppDV83wJZf4LVjddjN2+CeKiO1BfAPbjpdrEVrTjKwduNr5E1OA29jXMkPq+Lw
-         Qeik3Nk9b46Ml57KFoFZQROYn3B5yKC5MaynrD2LhPZz6nwu4lt3F8fRqHdrNt74hTMM
-         ctuw==
-X-Gm-Message-State: APjAAAU8QwL/cINb/PvAB/+CG5+nyiL0J4uBfgHYsasFTBySgxydI5GE
-        GV+tTFoXsqBQOqwKKTm0E+M=
-X-Google-Smtp-Source: APXvYqwgna4XblK6OdGHyhlLPS69ayd9Afhl6vvTAwfLAjyGRADSZs4VsLbGeinUJvzxhf9FCCdshw==
-X-Received: by 2002:a63:5550:: with SMTP id f16mr4717026pgm.426.1565893398599;
-        Thu, 15 Aug 2019 11:23:18 -0700 (PDT)
-Received: from [172.20.53.208] ([2620:10d:c090:200::3:fd5d])
-        by smtp.gmail.com with ESMTPSA id ay7sm1948348pjb.4.2019.08.15.11.23.17
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=zr7m4pwTZtuvjpeiIC/jYJKmr4TJLJV4XhMln9ZPv+4=;
+        b=mRk2Py5RXG0x+J5XW4uglBrbSbg6w7YZi9/0oskyu+QClR6NckM6uY+xh2RN9tNWJ4
+         DaHoU2lYVR26VuTzaL3knj6gqIip/Xh0/rpMTlLomiNGSAbRQrdl0GndLZrfb/7UJvjt
+         6Cy3GdAJnMlFfikMepXq8IQFDANqXU2nL2r/sE5OW/bHhBLLZmRvcfLq/Q1hd//5y9Fy
+         0T98Y2UP4Fah1loE5P+WsmiTQzjfrJq8IPrZNP3N4tmWg3IHTaW3gQFlLXEqvBIPnr6n
+         jXfeSnyPNYa/VGlxxC/2wzZbQ2V86zsROBQaS4TnCvqq7b/DkVq5UkPGy6iAaKYqAt8Y
+         MPVg==
+X-Gm-Message-State: APjAAAWM64D/q3FyD9DFamwKmlbXeV5/T+islOhyNL3i9ObIGMKzjwhz
+        LQKUOHVK54i4UoyKlXNPT+Jvu0NiI5Q=
+X-Google-Smtp-Source: APXvYqyUNRL91dzBCJhtveiCufmLdZI/X5yNhmzj2dzOWTVqlPUlee32crL4pNFIQyUM9g4pdq2Yow==
+X-Received: by 2002:a05:6808:49a:: with SMTP id z26mr2630733oid.177.1565893938759;
+        Thu, 15 Aug 2019 11:32:18 -0700 (PDT)
+Received: from [10.15.211.16] ([74.51.240.241])
+        by smtp.gmail.com with ESMTPSA id t81sm686205oie.48.2019.08.15.11.32.17
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 11:23:17 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Ivan Khoronzhuk" <ivan.khoronzhuk@linaro.org>
-Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yhs@fb.com, andrii.nakryiko@gmail.com
-Subject: Re: [PATCH bpf-next v2 2/3] xdp: xdp_umem: replace kmap on vmap for
- umem map
-Date:   Thu, 15 Aug 2019 11:23:16 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <5B58D364-609F-498E-B7DF-4457D454A14D@gmail.com>
-In-Reply-To: <20190815121356.8848-3-ivan.khoronzhuk@linaro.org>
-References: <20190815121356.8848-1-ivan.khoronzhuk@linaro.org>
- <20190815121356.8848-3-ivan.khoronzhuk@linaro.org>
+        Thu, 15 Aug 2019 11:32:18 -0700 (PDT)
+Subject: Re: [PATCH 00/14] ARM: move lpc32xx and dove to multiplatform
+To:     Arnd Bergmann <arnd@arndb.de>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     SoC Team <soc@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Gregory Clement <gregory.clement@bootlin.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jason Cooper <jason@lakedaemon.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
+        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
+References: <20190731195713.3150463-1-arnd@arndb.de>
+ <20190731225303.GC1330@shell.armlinux.org.uk>
+ <CAK8P3a1Lgbz9RwVaOgNq=--gwvEG70tUi67XwsswjgnXAX6EhA@mail.gmail.com>
+ <CAK8P3a0=GrjM_HOBgqy5V3pOsA6w1EDOtEQO9dZG2Cw+-2niaw@mail.gmail.com>
+From:   Sylvain Lemieux <slemieux.tyco@gmail.com>
+Message-ID: <b43c3d60-b675-442c-c549-25530cfbffe3@gmail.com>
+Date:   Thu, 15 Aug 2019 14:32:15 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+In-Reply-To: <CAK8P3a0=GrjM_HOBgqy5V3pOsA6w1EDOtEQO9dZG2Cw+-2niaw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15 Aug 2019, at 5:13, Ivan Khoronzhuk wrote:
+Hi Arnd,
 
-> For 64-bit there is no reason to use vmap/vunmap, so use page_address
-> as it was initially. For 32 bits, in some apps, like in samples
-> xdpsock_user.c when number of pgs in use is quite big, the kmap
-> memory can be not enough, despite on this, kmap looks like is
-> deprecated in such cases as it can block and should be used rather
-> for dynamic mm.
->
-> Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-> ---
->  net/xdp/xdp_umem.c | 36 ++++++++++++++++++++++++++++++------
->  1 file changed, 30 insertions(+), 6 deletions(-)
->
-> diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
-> index a0607969f8c0..d740c4f8810c 100644
-> --- a/net/xdp/xdp_umem.c
-> +++ b/net/xdp/xdp_umem.c
-> @@ -14,7 +14,7 @@
->  #include <linux/netdevice.h>
->  #include <linux/rtnetlink.h>
->  #include <linux/idr.h>
-> -#include <linux/highmem.h>
-> +#include <linux/vmalloc.h>
->
->  #include "xdp_umem.h"
->  #include "xsk_queue.h"
-> @@ -170,7 +170,30 @@ static void xdp_umem_unmap_pages(struct xdp_umem 
-> *umem)
->  	unsigned int i;
->
->  	for (i = 0; i < umem->npgs; i++)
-> -		kunmap(umem->pgs[i]);
-> +		if (PageHighMem(umem->pgs[i]))
-> +			vunmap(umem->pages[i].addr);
-> +}
-> +
-> +static int xdp_umem_map_pages(struct xdp_umem *umem)
-> +{
-> +	unsigned int i;
-> +	void *addr;
-> +
-> +	for (i = 0; i < umem->npgs; i++) {
-> +		if (PageHighMem(umem->pgs[i]))
-> +			addr = vmap(&umem->pgs[i], 1, VM_MAP, PAGE_KERNEL);
-> +		else
-> +			addr = page_address(umem->pgs[i]);
-> +
-> +		if (!addr) {
-> +			xdp_umem_unmap_pages(umem);
-> +			return -ENOMEM;
-> +		}
-> +
-> +		umem->pages[i].addr = addr;
-> +	}
-> +
-> +	return 0;
->  }
+On 8/15/19 9:11 AM, Arnd Bergmann wrote:
+> On Thu, Aug 1, 2019 at 9:33 AM Arnd Bergmann <arnd@arndb.de> wrote:
+>>
+>> On Thu, Aug 1, 2019 at 12:53 AM Russell King - ARM Linux admin
+>> <linux@armlinux.org.uk> wrote:
+>>>
+>>> On Wed, Jul 31, 2019 at 09:56:42PM +0200, Arnd Bergmann wrote:
+>>>> For dove, the patches are basically what I had proposed back in
+>>>> 2015 when all other ARMv6/ARMv7 machines became part of a single
+>>>> kernel build. I don't know what the state is mach-dove support is,
+>>>> compared to the DT based support in mach-mvebu for the same
+>>>> hardware. If they are functionally the same, we could also just
+>>>> remove mach-dove rather than applying my patches.
+>>>
+>>> Well, the good news is that I'm down to a small board support file
+>>> for the Dove Cubox now - but the bad news is, that there's still a
+>>> board support file necessary to support everything the Dove SoC has
+>>> to offer.
+>>>
+>>> Even for a DT based Dove Cubox, I'm still using mach-dove, but it
+>>> may be possible to drop most of mach-dove now.  Without spending a
+>>> lot of time digging through it, it's impossible to really know.
+>>
+>> Ok, so we won't remove it then, but I'd like to merge my patches to
+>> at least get away from the special case of requiring a separate kernel
+>> image for it.
+>>
+>> Can you try if applying patches 12 and 14 from my series causes
+>> problems for you? (it may be easier to apply the entire set
+>> or pull from [1] to avoid rebase conflicts).
+> 
+> I applied patches 12 and 13 into the soc tree now. There are some
+> other pending multiplatform conversions (iop32x, ep93xx, lpc32xx,
+> omap1), but it looks like none of those will be complete for 5.4.
 
-You'll want a __xdp_umem_unmap_pages() helper here that takes an
-count of the number of pages to unmap, so it can be called from
-xdp_umem_unmap_pages() in the normal case, and xdp_umem_map_pages()
-in the error case.  Otherwise the error case ends up calling
-PageHighMem on a null page.
--- 
-Jonathan
-
->  static void xdp_umem_unpin_pages(struct xdp_umem *umem)
-> @@ -312,7 +335,7 @@ static int xdp_umem_reg(struct xdp_umem *umem, 
-> struct xdp_umem_reg *mr)
->  	u32 chunk_size = mr->chunk_size, headroom = mr->headroom;
->  	unsigned int chunks, chunks_per_page;
->  	u64 addr = mr->addr, size = mr->len;
-> -	int size_chk, err, i;
-> +	int size_chk, err;
->
->  	if (chunk_size < XDP_UMEM_MIN_CHUNK_SIZE || chunk_size > PAGE_SIZE) 
-> {
->  		/* Strictly speaking we could support this, if:
-> @@ -378,10 +401,11 @@ static int xdp_umem_reg(struct xdp_umem *umem, 
-> struct xdp_umem_reg *mr)
->  		goto out_account;
->  	}
->
-> -	for (i = 0; i < umem->npgs; i++)
-> -		umem->pages[i].addr = kmap(umem->pgs[i]);
-> +	err = xdp_umem_map_pages(umem);
-> +	if (!err)
-> +		return 0;
->
-> -	return 0;
-> +	kfree(umem->pages);
->
->  out_account:
->  	xdp_umem_unaccount_pages(umem);
-> -- 
-> 2.17.1
+I think the patchset (v2) for the LPC32xx is ready for 5.4
+([PATCH v2 00/13] v2: ARM: move lpc32xx to multiplatform)
+ >
+> I now expect that we can get most of the preparation into 5.4,
+> and maybe move them all over together in 5.5 after some more
+> testing. If someone finds a problem with the one of the
+> preparation steps, that we can revert the individual patches
+> more easily.
+> 
+>        Arnd
+> 
+Sylvain
