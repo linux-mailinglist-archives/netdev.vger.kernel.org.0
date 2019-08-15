@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC8DD8E812
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:22:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F5D28E82A
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:26:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731255AbfHOJWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 05:22:30 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:60966 "EHLO mx1.redhat.com"
+        id S1731364AbfHOJZ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 05:25:59 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:60402 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730204AbfHOJW3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 05:22:29 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        id S1730939AbfHOJZ6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 05:25:58 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id AD9573082135;
-        Thu, 15 Aug 2019 09:22:28 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0459C307D96D;
+        Thu, 15 Aug 2019 09:25:58 +0000 (UTC)
 Received: from [10.72.12.184] (ovpn-12-184.pek2.redhat.com [10.72.12.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BC5C35D9DC;
-        Thu, 15 Aug 2019 09:22:15 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CEDED95A46;
+        Thu, 15 Aug 2019 09:25:47 +0000 (UTC)
 Subject: Re: [PATCH] virtio-net: lower min ring num_free for efficiency
 To:     =?UTF-8?B?5YaJIGppYW5n?= <jiangkidd@hotmail.com>,
         "mst@redhat.com" <mst@redhat.com>
@@ -44,8 +44,8 @@ References: <BYAPR14MB3205E4E194942B0A1A91A222A6AD0@BYAPR14MB3205.namprd14.prod.
  <38df7fdd-bd6a-cc82-534d-d7cbf3f1933c@redhat.com>
  <BYAPR14MB320512CCA27487548DDAA57FA6AC0@BYAPR14MB3205.namprd14.prod.outlook.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <e1ae87d7-546a-d8fb-8d76-97d44bfa3a13@redhat.com>
-Date:   Thu, 15 Aug 2019 17:22:13 +0800
+Message-ID: <92f7955b-1b5a-84cb-895b-8d47044d7f03@redhat.com>
+Date:   Thu, 15 Aug 2019 17:25:42 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
@@ -53,8 +53,8 @@ In-Reply-To: <BYAPR14MB320512CCA27487548DDAA57FA6AC0@BYAPR14MB3205.namprd14.prod
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Thu, 15 Aug 2019 09:22:28 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Thu, 15 Aug 2019 09:25:58 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -271,6 +271,13 @@ On 2019/8/15 下午4:36, 冉 jiang wrote:
 >
 >
 > Test setup: iperf3 to generate packets to guest (total 30mins, pps 400k)
+
+
+Please also note that type of packets e.g TCP or UDP.
+
+Thanks
+
+
 >
 > avg packets drop before: 2842
 >
@@ -280,10 +287,4 @@ On 2019/8/15 下午4:36, 冉 jiang wrote:
 > Just let me know if it looks good enough. Thx.
 >
 > Jiang
-
-
-Looks good, please post a V2 and include the above result in the commit log.
-
-Thanks
-
 >
