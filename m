@@ -2,62 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D9838EE7C
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 16:42:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6FA38EE7E
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 16:42:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731422AbfHOOmM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 10:42:12 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:56794 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729838AbfHOOmL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 10:42:11 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FEVVud083322;
-        Thu, 15 Aug 2019 14:42:08 GMT
+        id S1731950AbfHOOmV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 10:42:21 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:41890 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729838AbfHOOmV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 10:42:21 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FEVZld117883;
+        Thu, 15 Aug 2019 14:42:17 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : subject : to :
  cc : references : message-id : date : mime-version : in-reply-to :
  content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=QT5Yxfk+gctT48VVnsY//GunQu36dRLAVKJgR21/6w0=;
- b=GFQiDVNHvCCVUb0BlrTTb7eoAuYmG6KS415E0wRBNvxMolmodIrrG+Buj7IEfC1lZwRd
- ww3PlDmlC1bKkPAnnb+QCeKhcV+IYRDWSqY8ZKXFPbKlRrtMQOjhXs8gyn3z2f8v/xHD
- erO3q917mUigRs5jNtzlLLicyTSZTNIrWmw6Zrw5VmBB0H0dx5W1GriYUmbTK/1DQdgL
- DCXeXo4MjDyzX+vE3G+BExSshOVfgww2DWx9ToUfS/1dZCEqqLdSryVJmeIzaWPGLGy+
- wu2EEp7A1BqfsvZ68tEdif3CWMA8zh3na1MK9qALyXXETwBnS3GhMm5jP/j3h69njSoh RQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 2u9nbtu4h2-1
+ bh=wvi3w8wMmoMmInDDg0H/0r2Cykpu1RjZFZEfBbBEMF4=;
+ b=UFl8GqtMcqCPNbfCKIezqnJXoPQSbXU4W3M5f+CQSLTU8HxLSkFO1FFOW+J41m3mYXBs
+ TaqR8sllJwP5b/3Jum6Pbf7rnafM3HwnVYcbL6ceI20yQfPRNJJ3k1ZSYIVpH95++nol
+ OsyYElx6z8YnGrSUBUyRKlITi3jICrbIyyEV4gbsi4Gg5YWYtBdKUMacy52iTHX6Twhu
+ scEAHSDZ6CwQHNkgQESkLhCJHU1X5uDsfAcdcBRvX0711ggsARxbg+CBXtg22PsyZiwF
+ RZrIxQ0s8XxpBs92kD4FQSTUy25r6aRp521bu3XD+s1qJBRYkI1BPLGcIcNXP9hB5fz8 Yg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2120.oracle.com with ESMTP id 2u9nvpk7nd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 14:42:08 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FEXcH9172427;
-        Thu, 15 Aug 2019 14:42:08 GMT
+        Thu, 15 Aug 2019 14:42:17 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FEWrg5044684;
+        Thu, 15 Aug 2019 14:42:16 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 2ucgf130tn-1
+        by aserp3030.oracle.com with ESMTP id 2ucs881cjq-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Aug 2019 14:42:08 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7FEfrob194638;
-        Thu, 15 Aug 2019 14:42:08 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3020.oracle.com with ESMTP id 2ucgf130t0-1
+        Thu, 15 Aug 2019 14:42:16 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7FEeRMW062176;
+        Thu, 15 Aug 2019 14:42:15 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 2ucs881cja-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 14:42:08 +0000
-Received: from abhmp0016.oracle.com (abhmp0016.oracle.com [141.146.116.22])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7FEg7bE003046;
-        Thu, 15 Aug 2019 14:42:07 GMT
+        Thu, 15 Aug 2019 14:42:15 +0000
+Received: from abhmp0001.oracle.com (abhmp0001.oracle.com [141.146.116.7])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7FEgEla026959;
+        Thu, 15 Aug 2019 14:42:14 GMT
 Received: from [10.159.252.166] (/10.159.252.166)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 15 Aug 2019 07:42:06 -0700
+        with ESMTP ; Thu, 15 Aug 2019 07:42:13 -0700
 From:   Gerd Rausch <gerd.rausch@oracle.com>
-Subject: [PATCH net-next v2 1/4] RDS: limit the number of times we loop in
- rds_send_xmit
+Subject: [PATCH net-next v2 2/4] RDS: don't use GFP_ATOMIC for sk_alloc in
+ rds_create
 To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
         netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         rds-devel@oss.oracle.com
 Cc:     David Miller <davem@davemloft.net>
 References: <20190814.212525.326606319186601317.davem@davemloft.net>
  <cover.1565879451.git.gerd.rausch@oracle.com>
-Message-ID: <90b76f24-d799-5362-df53-19102d781e3e@oracle.com>
-Date:   Thu, 15 Aug 2019 07:42:03 -0700
+Message-ID: <31c65073-0a9a-28b5-eb73-4ec784b0393e@oracle.com>
+Date:   Thu, 15 Aug 2019 07:42:10 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
@@ -77,67 +77,29 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Chris Mason <chris.mason@oracle.com>
-Date: Fri, 3 Feb 2012 11:07:54 -0500
+Date: Fri, 3 Feb 2012 11:08:51 -0500
 
-This will kick the RDS worker thread if we have been looping
-too long.
-
-Original commit from 2012 updated to include a change by
-Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
-that triggers "must_wake" if "rds_ib_recv_refill_one" fails.
-
+Signed-off-by: Chris Mason <chris.mason@oracle.com>
+Signed-off-by: Bang Nguyen <bang.nguyen@oracle.com>
 Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+Signed-off-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
 ---
- net/rds/ib_recv.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ net/rds/af_rds.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/rds/ib_recv.c b/net/rds/ib_recv.c
-index 3cae88cbdaa0..1a8a4a760b84 100644
---- a/net/rds/ib_recv.c
-+++ b/net/rds/ib_recv.c
-@@ -385,6 +385,7 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill, gfp_t gfp)
- 	unsigned int posted = 0;
- 	int ret = 0;
- 	bool can_wait = !!(gfp & __GFP_DIRECT_RECLAIM);
-+	bool must_wake = false;
- 	u32 pos;
+diff --git a/net/rds/af_rds.c b/net/rds/af_rds.c
+index 2b969f99ef13..7228892046cf 100644
+--- a/net/rds/af_rds.c
++++ b/net/rds/af_rds.c
+@@ -705,7 +705,7 @@ static int rds_create(struct net *net, struct socket *sock, int protocol,
+ 	if (sock->type != SOCK_SEQPACKET || protocol)
+ 		return -ESOCKTNOSUPPORT;
  
- 	/* the goal here is to just make sure that someone, somewhere
-@@ -405,6 +406,7 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill, gfp_t gfp)
- 		recv = &ic->i_recvs[pos];
- 		ret = rds_ib_recv_refill_one(conn, recv, gfp);
- 		if (ret) {
-+			must_wake = true;
- 			break;
- 		}
+-	sk = sk_alloc(net, AF_RDS, GFP_ATOMIC, &rds_proto, kern);
++	sk = sk_alloc(net, AF_RDS, GFP_KERNEL, &rds_proto, kern);
+ 	if (!sk)
+ 		return -ENOMEM;
  
-@@ -423,6 +425,11 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill, gfp_t gfp)
- 		}
- 
- 		posted++;
-+
-+		if ((posted > 128 && need_resched()) || posted > 8192) {
-+			must_wake = true;
-+			break;
-+		}
- 	}
- 
- 	/* We're doing flow control - update the window. */
-@@ -445,10 +452,13 @@ void rds_ib_recv_refill(struct rds_connection *conn, int prefill, gfp_t gfp)
- 	 * if we should requeue.
- 	 */
- 	if (rds_conn_up(conn) &&
--	    ((can_wait && rds_ib_ring_low(&ic->i_recv_ring)) ||
-+	    (must_wake ||
-+	    (can_wait && rds_ib_ring_low(&ic->i_recv_ring)) ||
- 	    rds_ib_ring_empty(&ic->i_recv_ring))) {
- 		queue_delayed_work(rds_wq, &conn->c_recv_w, 1);
- 	}
-+	if (can_wait)
-+		cond_resched();
- }
- 
- /*
 -- 
 2.22.1
 
