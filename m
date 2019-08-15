@@ -2,118 +2,194 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 55B4B8E5E0
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 10:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A4FFF8E5E1
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 10:00:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730793AbfHOIAd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 04:00:33 -0400
-Received: from mail-eopbgr40064.outbound.protection.outlook.com ([40.107.4.64]:11267
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        id S1730798AbfHOIAm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 04:00:42 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:56946 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725961AbfHOIAd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 04:00:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eYmB8UYZMASrB55ihiTWJ0bHP90xiNB3okfwAqmM1lQjmUMFU3A0GR8HogzFh3IMk8KCUpNMTM6ours8+/Nmn56FPscUsTb+x+SK6Ez7fnljTVt8s6Y/vgwotp8UxmhRj/S4AHtzZagyduv6gcUhlj0fhJy2yx41XbTeCsvR06IikaQ9LpkKZKQX33TKzgxbmN4ws9m92euSyeX7KfytnZrPHUK19AJFP+ykr9mIcQ26eUYjFj/k4z/CKLDdUGiAAIDObtWE5b9sT2PyNhorRVmn07gLkHCrMp3fyvZVrtBm1DHQeYAAQCukoBk7vmhLuO1IrSAWsSG1fQ4z2s5SLA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4G5i1cpIpfu5x2OPiNfjWpcqyYa/iTlOtscahFnIZdI=;
- b=VB7syjYKRbKHwRdOqGVhknVrfO3blq8ro0bAma5f27Li8QuPDtXZRLfcXDU7x4ninyjnLaa1g475JEInuYjz45FctAjJoP/vxnj4jf3J5P2jSzfqjlNReHG13A92JfP2kSsgHsZ8qfNP8g/BZrHNTakG3dyWtSeo8H0c8NGaEkgAPweCcY95FY6oZXj7l1U3Ps1u45y2F1Zg4SJH1xEkA1kgzKFUWIf+byAMDUiCqM2tXU/XcusqORIPjampObVd0wfeA3LF/oE6xeLT5+ssWbw7oI2Cgbiqkni0ocBWTNmD2nwnrd5Fu3RRVQZyTT0jgmn8LbuhOeMoVDoy1i8BVA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4G5i1cpIpfu5x2OPiNfjWpcqyYa/iTlOtscahFnIZdI=;
- b=TunQRR/mEoPQrF7nuYMy7W6av1DsNpqM76hhIvsvvc6h3ZT3TkgY2E9UJqKpEQ743HNg5/AK6vdpPfrMniHOqmXcnWtuwI9mx2WzhMIOxZssPBm9BbV3kzJc7IaZUpt+QuS3OKIKw9VWgmqkWCNYuZGRI/gsaApxbnpfl4qNfgs=
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
- DB7PR04MB4633.eurprd04.prod.outlook.com (52.135.138.155) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.16; Thu, 15 Aug 2019 08:00:26 +0000
-Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::c8ca:1c9c:6c3:fb6f]) by DB7PR04MB4618.eurprd04.prod.outlook.com
- ([fe80::c8ca:1c9c:6c3:fb6f%4]) with mapi id 15.20.2157.022; Thu, 15 Aug 2019
- 08:00:26 +0000
-From:   Joakim Zhang <qiangqing.zhang@nxp.com>
-To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-CC:     "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stefan@agner.ch" <stefan@agner.ch>,
-        dl-linux-imx <linux-imx@nxp.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>
-Subject: [PATCH] can: flexcan: disable completely the ECC mechanism
-Thread-Topic: [PATCH] can: flexcan: disable completely the ECC mechanism
-Thread-Index: AQHVUz9/01sBiEcbCkCiA+eVKuzQmw==
-Date:   Thu, 15 Aug 2019 08:00:26 +0000
-Message-ID: <20190815075806.23212-1-qiangqing.zhang@nxp.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.17.1
-x-clientproxiedby: SG2PR04CA0132.apcprd04.prod.outlook.com
- (2603:1096:3:16::16) To DB7PR04MB4618.eurprd04.prod.outlook.com
- (2603:10a6:5:38::23)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=qiangqing.zhang@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [119.31.174.71]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 426b27fb-3b78-435d-7dcb-08d72156a1ae
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB7PR04MB4633;
-x-ms-traffictypediagnostic: DB7PR04MB4633:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB7PR04MB463338C1848C8DE40A8A5997E6AC0@DB7PR04MB4633.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 01304918F3
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(136003)(39860400002)(376002)(346002)(189003)(199004)(486006)(99286004)(71190400001)(71200400001)(50226002)(25786009)(66066001)(6436002)(6116002)(3846002)(6486002)(305945005)(256004)(14444005)(2616005)(476003)(478600001)(2501003)(4326008)(66946007)(66446008)(64756008)(66556008)(66476007)(54906003)(186003)(110136005)(4744005)(316002)(81156014)(52116002)(5660300002)(81166006)(36756003)(8936002)(1076003)(26005)(53936002)(8676002)(7736002)(2906002)(102836004)(14454004)(386003)(6506007)(86362001)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4633;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 1mYpnUTyXmjZuLS+4zlfQzQw/5+KvfQk8Jsn9oxhmPKZaRc0fcDhnYSX/2vUu1l7D5OU1L/LY8avWLF7QyvyLKuLwG4e4QyrbdiIX95TkeKd+E7QNejTRXeGBkajZunumpjnRqZgjyYqvNt2+dihzACszVv+0WzzxU028Uo4taO+EIeGeIIOvYgdKI/d97zSqJjlK52zJo9NaF1RWwTkuMqn1h5nAom4SwzqPdmsOOXnvHR1Kj5xkbRD+0smoEIYjZbD3aZ4XD4IdV1Db0cSTyf3hA4XiVeU3z3lTk6jxCGWVpEeIgMuXziVKKscuAwrBn883jSBF4MDrlmGG/c13UFQO3cgbFRJbaUGRkp+DaVFG7UIM3qvSW53D26+lw7jRxyiHcKtbzm8PzIUmI0+i6oVTtdcGvzu9Lprg+WoUJE=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1725961AbfHOIAm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 04:00:42 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 151B2D47EAAAADA985B0;
+        Thu, 15 Aug 2019 16:00:31 +0800 (CST)
+Received: from huawei.com (10.175.101.78) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Thu, 15 Aug 2019
+ 16:00:23 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <jasowang@redhat.com>, <xiyou.wangcong@gmail.com>,
+        <davem@davemloft.net>, <yangyingliang@huawei.com>
+Subject: [PATCH] tun: fix use-after-free when register netdev failed
+Date:   Thu, 15 Aug 2019 16:18:42 +0800
+Message-ID: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
+X-Mailer: git-send-email 1.8.3
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 426b27fb-3b78-435d-7dcb-08d72156a1ae
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2019 08:00:26.3003
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: y4xIPRR2QzbOj4vDy6CFREXV2N/ukW3PDdItEx9YXGcVqV5XZcdfQyWtyb3xtrxls6nWiPS5ykQhEdtkbxEwWA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4633
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.78]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ECC(memory error detection and correction) mechanism can be
-activated or not, controlled by the ECCDIS bit in CAN_MECR. When
-disabled, updates on indications and reporting registers are stopped.
-So if want to disable ECC completely, had better assert ECCDIS bit,
-not just mask the related interrupts.
+I got a UAF repport in tun driver when doing fuzzy test:
 
-Fixes:cdce844865be("can: flexcan: add vf610 support for FlexCAN")
-Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+[  466.269490] ==================================================================
+[  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
+[  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
+[  466.271810]
+[  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
+[  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+[  466.271838] Call Trace:
+[  466.271858]  dump_stack+0xca/0x13e
+[  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
+[  466.271890]  print_address_description+0x79/0x440
+[  466.271906]  ? vprintk_func+0x5e/0xf0
+[  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
+[  466.271935]  __kasan_report+0x15c/0x1df
+[  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
+[  466.271976]  kasan_report+0xe/0x20
+[  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
+[  466.272013]  do_iter_readv_writev+0x4b7/0x740
+[  466.272032]  ? default_llseek+0x2d0/0x2d0
+[  466.272072]  do_iter_read+0x1c5/0x5e0
+[  466.272110]  vfs_readv+0x108/0x180
+[  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
+[  466.299020]  ? fsnotify+0x888/0xd50
+[  466.299040]  ? __fsnotify_parent+0xd0/0x350
+[  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
+[  466.304548]  ? vfs_write+0x264/0x510
+[  466.304569]  ? ksys_write+0x101/0x210
+[  466.304591]  ? do_preadv+0x116/0x1a0
+[  466.304609]  do_preadv+0x116/0x1a0
+[  466.309829]  do_syscall_64+0xc8/0x600
+[  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  466.309861] RIP: 0033:0x4560f9
+[  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+[  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
+[  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
+[  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
+[  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
+[  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
+[  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
+[  466.323057]
+[  466.323064] Allocated by task 2605:
+[  466.335165]  save_stack+0x19/0x80
+[  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
+[  466.337755]  kmem_cache_alloc+0xe8/0x320
+[  466.339050]  getname_flags+0xca/0x560
+[  466.340229]  user_path_at_empty+0x2c/0x50
+[  466.341508]  vfs_statx+0xe6/0x190
+[  466.342619]  __do_sys_newstat+0x81/0x100
+[  466.343908]  do_syscall_64+0xc8/0x600
+[  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  466.347034]
+[  466.347517] Freed by task 2605:
+[  466.348471]  save_stack+0x19/0x80
+[  466.349476]  __kasan_slab_free+0x12e/0x180
+[  466.350726]  kmem_cache_free+0xc8/0x430
+[  466.351874]  putname+0xe2/0x120
+[  466.352921]  filename_lookup+0x257/0x3e0
+[  466.354319]  vfs_statx+0xe6/0x190
+[  466.355498]  __do_sys_newstat+0x81/0x100
+[  466.356889]  do_syscall_64+0xc8/0x600
+[  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  466.359567]
+[  466.360050] The buggy address belongs to the object at ffff888372139100
+[  466.360050]  which belongs to the cache names_cache of size 4096
+[  466.363735] The buggy address is located 336 bytes inside of
+[  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
+[  466.367179] The buggy address belongs to the page:
+[  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
+[  466.371582] flags: 0x2fffff80010200(slab|head)
+[  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
+[  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
+[  466.377778] page dumped because: kasan: bad access detected
+[  466.379730]
+[  466.380288] Memory state around the buggy address:
+[  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.388257]                                                  ^
+[  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.394667] ==================================================================
+
+tun_chr_read_iter() accessed the memory which freed by free_netdev()
+called by tun_set_iff():
+
+	CPUA				CPUB
+    tun_set_iff()
+      alloc_netdev_mqs()
+      tun_attach()
+				    tun_chr_read_iter()
+				      tun_get()
+      register_netdevice()
+      tun_detach_all()
+        synchronize_net()
+				      tun_do_read()
+				        tun_ring_recv()
+				          schedule()
+      free_netdev()
+				      tun_put() <-- UAF
+
+Set a new bit in tun->flag if register_netdevice() successed,
+without this bit, tun_get() returns NULL to avoid using a
+freed tun pointer.
+
+Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 ---
- drivers/net/can/flexcan.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/tun.c | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index def8cbbc04e8..6a48333b40c7 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -1428,6 +1428,7 @@ static int flexcan_chip_start(struct net_device *dev)
- 		reg_mecr =3D priv->read(&regs->mecr);
- 		reg_mecr &=3D ~FLEXCAN_MECR_ECRWRDIS;
- 		priv->write(reg_mecr, &regs->mecr);
-+		reg_mecr |=3D FLEXCAN_MECR_ECCDIS;
- 		reg_mecr &=3D ~(FLEXCAN_MECR_NCEFAFRZ | FLEXCAN_MECR_HANCEI_MSK |
- 			      FLEXCAN_MECR_FANCEI_MSK);
- 		priv->write(reg_mecr, &regs->mecr);
---=20
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index db16d7a13e00..cbd60c276c40 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -115,6 +115,7 @@ do {								\
+ /* High bits in flags field are unused. */
+ #define TUN_VNET_LE     0x80000000
+ #define TUN_VNET_BE     0x40000000
++#define TUN_DEV_REGISTERED	0x20000000
+ 
+ #define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | \
+ 		      IFF_MULTI_QUEUE | IFF_NAPI | IFF_NAPI_FRAGS)
+@@ -719,8 +720,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+ 			netif_carrier_off(tun->dev);
+ 
+ 			if (!(tun->flags & IFF_PERSIST) &&
+-			    tun->dev->reg_state == NETREG_REGISTERED)
++			    tun->dev->reg_state == NETREG_REGISTERED) {
+ 				unregister_netdevice(tun->dev);
++				tun->flags &= ~TUN_DEV_REGISTERED;
++			}
+ 		}
+ 		if (tun)
+ 			xdp_rxq_info_unreg(&tfile->xdp_rxq);
+@@ -884,8 +887,10 @@ static struct tun_struct *tun_get(struct tun_file *tfile)
+ 
+ 	rcu_read_lock();
+ 	tun = rcu_dereference(tfile->tun);
+-	if (tun)
++	if (tun && (tun->flags & TUN_DEV_REGISTERED))
+ 		dev_hold(tun->dev);
++	else
++		tun = NULL;
+ 	rcu_read_unlock();
+ 
+ 	return tun;
+@@ -2836,6 +2841,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 		err = register_netdevice(tun->dev);
+ 		if (err < 0)
+ 			goto err_detach;
++		tun->flags |= TUN_DEV_REGISTERED;
+ 	}
+ 
+ 	netif_carrier_on(tun->dev);
+-- 
 2.17.1
 
