@@ -2,190 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9625B8E1DB
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 02:36:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C967A8E1EE
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 02:42:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728922AbfHOAgJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 20:36:09 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33297 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726490AbfHOAgI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 20:36:08 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n190so485575pgn.0;
-        Wed, 14 Aug 2019 17:36:08 -0700 (PDT)
+        id S1727722AbfHOAmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 20:42:46 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:39026 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727217AbfHOAmp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 20:42:45 -0400
+Received: by mail-qt1-f195.google.com with SMTP id l9so724308qtu.6
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 17:42:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=Ox1a+VYIewcAFQ4OELZh4Q4lPxZBMpjjQSeyyCBfAt4=;
-        b=A1xFdzx3J2IXK/YfLZxOnTYElXzObtSe6u3KhDmJDc8TgZ+VnTSTh61oqnbyUPy+Cy
-         lxSU8sPqGQaTsvXMI7wtAtOB0Sn7PAYrUgHtwso47YnJSvKoYnyTdq2J7aRGfMDrhUwt
-         ImQ/5f0aeYBF4P9VrX74i1K2sPgmIeb/CqsgC8xCwJymBWzn5SaBCFA5Xqoow6Q9Px/z
-         7VG1XvyMm7L+ucKqVH8FYqLJg8hrjQOj/q0H8rmCSewXpul7vGKTXAEljSgTiEBnQtfW
-         Jo3QDU/1IYquFf5cC+pqFebJOJauI0Ht+0cbnfwUOrUqas8HYYfE2/Jqz1Ey34hVxPz7
-         gB6w==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=2/N4xAxWdCvqHXbe1CHu7m3d9HrUf2QSlKw+m5imRp0=;
+        b=Xug12OyaaXvOmrV8hiETTQ9lRrclPx9Qkbv0WqkKq4DXb4tmfm/nt0ALhFuTBwR+WR
+         IHJoVlUM/xcCMiRk0+J4PznkpbSrrecjVLH57SioHBIZPbGdpqcY+hzSJDXb+FWyBtRs
+         oFnWvXW5UpA3gc5vh+fk+qtzR3UJUYY8t+420mwJfARoaaoh30GtKhycJjCY3MFBozhZ
+         XtuPzXG+H4rMAAW9HNIuKZM7PF5fzZtysBAfHAmGDAsKdaIaJlzS7FK1LghimS/LS3V+
+         8rKDKg82L+NZzkRLWmi/2C3h44cr2DpTlWnz32PJU+zm8wKYLNRQ1NB70FkRABj7aSpJ
+         nRgg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=Ox1a+VYIewcAFQ4OELZh4Q4lPxZBMpjjQSeyyCBfAt4=;
-        b=koMb44YADjpgWsgj8LCkZ271dQv4xFUZBYWoA6nu98MKPxnUUMFg8Vl2Zv4kW9hiMj
-         7p1oLu9epoy6n9b5HJTberjrBuGSWmS5oWz9IbIELruLI9wWrdo8BdVEqfUMqZ/Vkwn7
-         HMUhazGKAXlKS1XSoDuwzOls73yokMNbqOi+5X7bkflaOXwyn/Q9tWJXZ33eqcLu7VDX
-         LLmq5dbqLd/QsNEsHh7Gjx7tNeL1yHcS+50KlmbV+5Pao9SiTOlV0qAkJwssDZ0U+Ek3
-         7tE7bYPy3XUa9rt+9M9lYiIjiaZYtlEuZvSTcnqtyWzjD7aihuiktR6Nfh3wXa3DNL8m
-         nqAA==
-X-Gm-Message-State: APjAAAWOEOJeoIOGfO5eqLmvxj7QUUdVdfSADrpGcR2TtbmUsvI62Vxx
-        kZF/Zpq5VrL5MloYipA8vZkxTEb/
-X-Google-Smtp-Source: APXvYqzyqVrWOuZQ7tt8Apmsd9fEcv9DPHmv1boZGITqn9Jjg9JKSj2CKRgIubY7ay+Lz4swzKpT4A==
-X-Received: by 2002:a62:8281:: with SMTP id w123mr2742961pfd.36.1565829367438;
-        Wed, 14 Aug 2019 17:36:07 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::d35d])
-        by smtp.gmail.com with ESMTPSA id g19sm1117977pfh.27.2019.08.14.17.36.05
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 14 Aug 2019 17:36:06 -0700 (PDT)
-Date:   Wed, 14 Aug 2019 17:36:04 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Andy Lutomirski <luto@amacapital.net>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-Message-ID: <20190815003602.yp3udcr5mtgw6qrv@ast-mbp.dhcp.thefacebook.com>
-References: <20190806011134.p5baub5l3t5fkmou@ast-mbp>
- <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
- <20190813215823.3sfbakzzjjykyng2@ast-mbp>
- <CALCETrVT-dDXQGukGs5S1DkzvQv9_e=axzr_GyEd2c4T4z8Qng@mail.gmail.com>
- <20190814005737.4qg6wh4a53vmso2v@ast-mbp>
- <CALCETrUkqUprujww26VxHwkdXQ3DWJH8nnL2VBYpK2EU0oX_YA@mail.gmail.com>
- <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
- <AD211133-EA60-4B91-AB1B-201713F50AB2@amacapital.net>
- <20190814233335.37t4zfsiswrpd4d6@ast-mbp.dhcp.thefacebook.com>
- <317422C3-ACE3-42A7-A287-7B8FEE12E33A@amacapital.net>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=2/N4xAxWdCvqHXbe1CHu7m3d9HrUf2QSlKw+m5imRp0=;
+        b=iy7cjFDM0H6aZJ6rExGmHUFzGFBBzhH2uAJYtaZS+WBptlQrGHaPagFGRg7IVWo8E/
+         S45BFL1ABuRSB9rxTyCn/SYOIN1U2JIATlVLxoROpexG8l/XtzY+jYhl29K/4CEo1qzV
+         68KMgQD5435gTn8rWMQij6XLMCBDcj1ozPkflOgFbiQi+DrKv+epqQhqqZ4mfowvmFgV
+         pj4XWmvgDUl9Pw5cc6//+1OlniypMMZ30BuFUEHfVEkYmHyOmorThqNv1zAZMatNzhrK
+         FbHUtYDh32L1hCuCmuWY4ICL2IccfWe2AP/4QntZrqQLhxAKbT6IuYJtHNLeEUYXvyLJ
+         0n/A==
+X-Gm-Message-State: APjAAAXlWVuZTcTO4g2CWgY74LbbG4WGs07IjtlM+Ggl6qwGqYbDLDnU
+        pmIUdVm7sFoxJmrS0UDbv2XOEQ==
+X-Google-Smtp-Source: APXvYqzUt+ujgHZADKwhTTBEUmmvX/7+EyeBuOhC5BpGdiGU7vISHVIPbG9zBq81lN2+M7G9NjFbzw==
+X-Received: by 2002:a0c:bec5:: with SMTP id f5mr1670787qvj.54.1565829764479;
+        Wed, 14 Aug 2019 17:42:44 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id g207sm665775qke.11.2019.08.14.17.42.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Aug 2019 17:42:44 -0700 (PDT)
+Date:   Wed, 14 Aug 2019 17:42:29 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
+        jiri@mellanox.com, toke@redhat.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v2 13/14] selftests: devlink_trap: Add test
+ cases for devlink-trap
+Message-ID: <20190814174229.1ab4fd1b@cakuba.netronome.com>
+In-Reply-To: <20190813075400.11841-14-idosch@idosch.org>
+References: <20190813075400.11841-1-idosch@idosch.org>
+        <20190813075400.11841-14-idosch@idosch.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <317422C3-ACE3-42A7-A287-7B8FEE12E33A@amacapital.net>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 04:59:18PM -0700, Andy Lutomirski wrote:
+On Tue, 13 Aug 2019 10:53:59 +0300, Ido Schimmel wrote:
+> From: Ido Schimmel <idosch@mellanox.com>
 > 
+> Add test cases for devlink-trap on top of the netdevsim implementation.
 > 
-> > On Aug 14, 2019, at 4:33 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> > 
-> >> On Wed, Aug 14, 2019 at 03:30:51PM -0700, Andy Lutomirski wrote:
-> >> 
-> >> 
-> >>>> On Aug 14, 2019, at 3:05 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
-> >>>> 
-> >>>> On Wed, Aug 14, 2019 at 10:51:23AM -0700, Andy Lutomirski wrote:
-> >>>> 
-> >>>> If eBPF is genuinely not usable by programs that are not fully trusted
-> >>>> by the admin, then no kernel changes at all are needed.  Programs that
-> >>>> want to reduce their own privileges can easily fork() a privileged
-> >>>> subprocess or run a little helper to which they delegate BPF
-> >>>> operations.  This is far more flexible than anything that will ever be
-> >>>> in the kernel because it allows the helper to verify that the rest of
-> >>>> the program is doing exactly what it's supposed to and restrict eBPF
-> >>>> operations to exactly the subset that is needed.  So a container
-> >>>> manager or network manager that drops some provilege could have a
-> >>>> little bpf-helper that manages its BPF XDP, firewalling, etc
-> >>>> configuration.  The two processes would talk over a socketpair.
-> >>> 
-> >>> there were three projects that tried to delegate bpf operations.
-> >>> All of them failed.
-> >>> bpf operational workflow is much more complex than you're imagining.
-> >>> fork() also doesn't work for all cases.
-> >>> I gave this example before: consider multiple systemd-like deamons
-> >>> that need to do bpf operations that want to pass this 'bpf capability'
-> >>> to other deamons written by other teams. Some of them will start
-> >>> non-root, but still need to do bpf. They will be rpm installed
-> >>> and live upgraded while running.
-> >>> We considered to make systemd such centralized bpf delegation
-> >>> authority too. It didn't work. bpf in kernel grows quickly.
-> >>> libbpf part grows independently. llvm keeps evolving.
-> >>> All of them are being changed while system overall has to stay
-> >>> operational. Centralized approach breaks apart.
-> >>> 
-> >>>> The interesting cases you're talking about really *do* involved
-> >>>> unprivileged or less privileged eBPF, though.  Let's see:
-> >>>> 
-> >>>> systemd --user: systemd --user *is not privileged at all*.  There's no
-> >>>> issue of reducing privilege, since systemd --user doesn't have any
-> >>>> privilege to begin with.  But systemd supports some eBPF features, and
-> >>>> presumably it would like to support them in the systemd --user case.
-> >>>> This is unprivileged eBPF.
-> >>> 
-> >>> Let's disambiguate the terminology.
-> >>> This /dev/bpf patch set started as describing the feature as 'unprivileged bpf'.
-> >>> I think that was a mistake.
-> >>> Let's call systemd-like deamon usage of bpf 'less privileged bpf'.
-> >>> This is not unprivileged.
-> >>> 'unprivileged bpf' is what sysctl kernel.unprivileged_bpf_disabled controls.
-> >>> 
-> >>> There is a huge difference between the two.
-> >>> I'm against extending 'unprivileged bpf' even a bit more than what it is
-> >>> today for many reasons mentioned earlier.
-> >>> The /dev/bpf is about 'less privileged'.
-> >>> Less privileged than root. We need to split part of full root capability
-> >>> into bpf capability. So that most of the root can be dropped.
-> >>> This is very similar to what cap_net_admin does.
-> >>> cap_net_amdin can bring down eth0 which is just as bad as crashing the box.
-> >>> cap_net_admin is very much privileged. Just 'less privileged' than root.
-> >>> Same thing for cap_bpf.
-> >> 
-> >> The new pseudo-capability in this patch set is absurdly broad. I’ve proposed some finer-grained divisions in this thread. Do you have comments on them?
-> > 
-> > Initially I agreed that it's probably too broad, but then realized
-> > that they're perfect as-is. There is no need to partition further.
-> > 
-> >>> May be we should do both cap_bpf and /dev/bpf to make it clear that
-> >>> this is the same thing. Two interfaces to achieve the same result.
-> >> 
-> >> What for?  If there’s a CAP_BPF, then why do you want /dev/bpf? Especially if you define it to do the same thing.
-> > 
-> > Indeed, ambient capabilities should work for all cases.
-> > 
-> >> No, I’m not.  I have no objection at all if you try to come up with a clear definition of what the capability checks do and what it means to grant a new permission to a task.  Changing *all* of the capable checks is needlessly broad.
-> > 
-> > There are not that many bits left. I prefer to consume single CAP_BPF bit.
-> > All capable(CAP_SYS_ADMIN) checks in kernel/bpf/ will become CAP_BPF.
-> > This is no-brainer.
-> > 
-> > The only question is whether few cases of CAP_NET_ADMIN in kernel/bpf/
-> > should be extended to CAP_BPF or not.
-> > imo devmap and xskmap can stay CAP_NET_ADMIN,
-> > but cgroup bpf attach/detach should be either CAP_NET_ADMIN or CAP_BPF.
-> > Initially cgroup-bpf hooks were limited to networking.
-> > It's no longer the case. Requiring NET_ADMIN there make little sense now.
-> > 
+> The tests focus on the devlink-trap core infrastructure and user space
+> API. They test both good and bad flows and also dismantle of the netdev
+> and devlink device used to report trapped packets.
 > 
-> Cgroup bpf attach/detach, with the current API, gives very strong control over the whole system, and it will just get stronger as bpf gains features. Making it CAP_BPF means that you will never have the ability to make CAP_BPF safe to give to anything other than an extremely highly trusted process.  Unsafe pointers are similar. 
+> This allows device drivers to focus their tests on device-specific
+> functionality.
+> 
+> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> Acked-by: Jiri Pirko <jiri@mellanox.com>
 
-'never to less trusted process' ? why do you think so?
-I don't see a problem adding /dev/bpf/foo in the future and make things
-more granular. There is no such use case today. Hence I don't want to
-spend time and design something without clear use case in mind.
+Thanks for the test!
 
-> Do new programs really need the by_id calls? 
+Should it perhaps live in:
+tools/testing/selftests/drivers/net/netdevsim/
+?
 
-yes. Lorenz gave an example earlier. map-in-map returns map_id.
-To operate on that map by_id is needed.
+That's where Jiri puts his devlink tests..
 
+Also the test seems to require netdevsim to be loaded, otherwise:
+# ./devlink_trap.sh 
+SKIP: No netdevsim support
+
+Is that expected?
