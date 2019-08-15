@@ -2,63 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C967A8E1EE
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 02:42:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 365798E245
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 03:16:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727722AbfHOAmq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 20:42:46 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39026 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727217AbfHOAmp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 20:42:45 -0400
-Received: by mail-qt1-f195.google.com with SMTP id l9so724308qtu.6
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 17:42:45 -0700 (PDT)
+        id S1729161AbfHOBJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 14 Aug 2019 21:09:14 -0400
+Received: from mail-qk1-f182.google.com ([209.85.222.182]:34868 "EHLO
+        mail-qk1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726865AbfHOBJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 14 Aug 2019 21:09:14 -0400
+Received: by mail-qk1-f182.google.com with SMTP id r21so729150qke.2
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 18:09:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=2/N4xAxWdCvqHXbe1CHu7m3d9HrUf2QSlKw+m5imRp0=;
-        b=Xug12OyaaXvOmrV8hiETTQ9lRrclPx9Qkbv0WqkKq4DXb4tmfm/nt0ALhFuTBwR+WR
-         IHJoVlUM/xcCMiRk0+J4PznkpbSrrecjVLH57SioHBIZPbGdpqcY+hzSJDXb+FWyBtRs
-         oFnWvXW5UpA3gc5vh+fk+qtzR3UJUYY8t+420mwJfARoaaoh30GtKhycJjCY3MFBozhZ
-         XtuPzXG+H4rMAAW9HNIuKZM7PF5fzZtysBAfHAmGDAsKdaIaJlzS7FK1LghimS/LS3V+
-         8rKDKg82L+NZzkRLWmi/2C3h44cr2DpTlWnz32PJU+zm8wKYLNRQ1NB70FkRABj7aSpJ
-         nRgg==
+        bh=HKynoRmPX6ZL88F0cyoA30v0kWsjvw8QA4wbesxm00w=;
+        b=YnsamKwNbeYwKsv5qsBgrttkE5UZGhGZxJSbs9VSycHnfsVWXevfAZng4VdX6Lc3iD
+         p2eBKU0L1P1/Oe61li5su36/vwvDxuKEbSAgNBsDZXxLc1PCKT6NUdE7MAoVrFe68eQZ
+         7BRh+XZpXujldThtJmZrergBZMh/nWXS6HTjmsJ7ztsSZbQo76iOA2vAKZwYW9msGj3r
+         BGEYglMmY+GSGjLsO8+3v8FTkBELZOAFi+FOS0qP/4IVlvum+glDkVnqSyfz3PNJVh8+
+         74LEnkucsg64Pu5bJ/yhpIxBU7u4IGfG220yxds19UQPrr9iDY51y7vd8u9YLJ+JWbGs
+         VlzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=2/N4xAxWdCvqHXbe1CHu7m3d9HrUf2QSlKw+m5imRp0=;
-        b=iy7cjFDM0H6aZJ6rExGmHUFzGFBBzhH2uAJYtaZS+WBptlQrGHaPagFGRg7IVWo8E/
-         S45BFL1ABuRSB9rxTyCn/SYOIN1U2JIATlVLxoROpexG8l/XtzY+jYhl29K/4CEo1qzV
-         68KMgQD5435gTn8rWMQij6XLMCBDcj1ozPkflOgFbiQi+DrKv+epqQhqqZ4mfowvmFgV
-         pj4XWmvgDUl9Pw5cc6//+1OlniypMMZ30BuFUEHfVEkYmHyOmorThqNv1zAZMatNzhrK
-         FbHUtYDh32L1hCuCmuWY4ICL2IccfWe2AP/4QntZrqQLhxAKbT6IuYJtHNLeEUYXvyLJ
-         0n/A==
-X-Gm-Message-State: APjAAAXlWVuZTcTO4g2CWgY74LbbG4WGs07IjtlM+Ggl6qwGqYbDLDnU
-        pmIUdVm7sFoxJmrS0UDbv2XOEQ==
-X-Google-Smtp-Source: APXvYqzUt+ujgHZADKwhTTBEUmmvX/7+EyeBuOhC5BpGdiGU7vISHVIPbG9zBq81lN2+M7G9NjFbzw==
-X-Received: by 2002:a0c:bec5:: with SMTP id f5mr1670787qvj.54.1565829764479;
-        Wed, 14 Aug 2019 17:42:44 -0700 (PDT)
+        bh=HKynoRmPX6ZL88F0cyoA30v0kWsjvw8QA4wbesxm00w=;
+        b=O6cB95zLscpuMNYLUci5kIcQsRKhbA93M52OhCh+K9xWCQUvZGkj1nM+gtz4hfXUCs
+         rZAO46BKlk8q9pLHOUPggB9e8iEloLrQiyL5g9psIuMNicm/Mt6fY+JxyAzSXDL5ZdE+
+         XCxY/c9UpZU9NdmR5657MV25Kmndx2ntEW8eWBnOn1OsN+WG2aygRjGYcFqOu+UpN6cb
+         nGlhvW2nsDEad7SJYbGsgOaiTo+mk6Jmsej3T4QmlvNdivqyuukv+OeaVtadTONqOSn2
+         VRxDA2NAzCgjWIaFUKkL+HLKyD92bfMR1JiDdvq26+Mt/hFTqwpckurVf5YS6hvp7bva
+         PtLg==
+X-Gm-Message-State: APjAAAWoLabMbzUoZKbpxgi6tYWN8d4Y24bFdl4gMQyHOcGnlMQ9/X4s
+        KCQuIgO0/nJboPvKzJr6ZI724Q==
+X-Google-Smtp-Source: APXvYqxk9WbZ4gb21CetMFS9RfP0VJgNSNt9UGYEUzdYtQ1e3oaRQI5K6pVufHdK6U+HEB/xjG9b8A==
+X-Received: by 2002:a37:4d4c:: with SMTP id a73mr1996721qkb.66.1565831353505;
+        Wed, 14 Aug 2019 18:09:13 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id g207sm665775qke.11.2019.08.14.17.42.42
+        by smtp.gmail.com with ESMTPSA id a135sm713015qkg.72.2019.08.14.18.09.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2019 17:42:44 -0700 (PDT)
-Date:   Wed, 14 Aug 2019 17:42:29 -0700
+        Wed, 14 Aug 2019 18:09:13 -0700 (PDT)
+Date:   Wed, 14 Aug 2019 18:09:00 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        jiri@mellanox.com, toke@redhat.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2 13/14] selftests: devlink_trap: Add test
- cases for devlink-trap
-Message-ID: <20190814174229.1ab4fd1b@cakuba.netronome.com>
-In-Reply-To: <20190813075400.11841-14-idosch@idosch.org>
-References: <20190813075400.11841-1-idosch@idosch.org>
-        <20190813075400.11841-14-idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, mlxsw@mellanox.com
+Subject: Re: [patch net-next v2 2/2] selftests: netdevsim: add devlink
+ params tests
+Message-ID: <20190814180900.71712d88@cakuba.netronome.com>
+In-Reply-To: <20190814152604.6385-3-jiri@resnulli.us>
+References: <20190814152604.6385-1-jiri@resnulli.us>
+        <20190814152604.6385-3-jiri@resnulli.us>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -68,31 +63,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 13 Aug 2019 10:53:59 +0300, Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@mellanox.com>
+On Wed, 14 Aug 2019 17:26:04 +0200, Jiri Pirko wrote:
+> From: Jiri Pirko <jiri@mellanox.com>
 > 
-> Add test cases for devlink-trap on top of the netdevsim implementation.
+> Test recently added netdevsim devlink param implementation.
 > 
-> The tests focus on the devlink-trap core infrastructure and user space
-> API. They test both good and bad flows and also dismantle of the netdev
-> and devlink device used to report trapped packets.
-> 
-> This allows device drivers to focus their tests on device-specific
-> functionality.
-> 
-> Signed-off-by: Ido Schimmel <idosch@mellanox.com>
-> Acked-by: Jiri Pirko <jiri@mellanox.com>
+> Signed-off-by: Jiri Pirko <jiri@mellanox.com>
+> ---
+> v1->v2:
+> -using cmd_jq helper
 
-Thanks for the test!
+Still failing here :(
 
-Should it perhaps live in:
-tools/testing/selftests/drivers/net/netdevsim/
-?
+# ./devlink.sh 
+TEST: fw flash test                                                 [ OK ]
+TEST: params test                                                   [FAIL]
+	Failed to get test1 param value
+TEST: regions test                                                  [ OK ]
 
-That's where Jiri puts his devlink tests..
+# jq --version
+jq-1.5-1-a5b5cbe
+# echo '{ "a" : false }' | jq -e -r '.[]'
+false
+# echo $?
+1
 
-Also the test seems to require netdevsim to be loaded, otherwise:
-# ./devlink_trap.sh 
-SKIP: No netdevsim support
+On another machine:
 
-Is that expected?
+$ echo '{ "a" : false }' | jq -e -r '.[]'
+false
+$ echo $?
+1
+
+Did you mean to drop the -e ?
