@@ -2,196 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C85148EA95
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 13:47:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5451A8EAA7
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 13:49:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731062AbfHOLrL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 07:47:11 -0400
-Received: from mga01.intel.com ([192.55.52.88]:55622 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726317AbfHOLrL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 07:47:11 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Aug 2019 04:47:10 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,389,1559545200"; 
-   d="scan'208";a="184600470"
-Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.122]) ([10.237.72.122])
-  by FMSMGA003.fm.intel.com with ESMTP; 15 Aug 2019 04:47:06 -0700
-Subject: Re: [PATCH v5] perf machine: arm/arm64: Improve completeness for
- kernel address space
-To:     Leo Yan <leo.yan@linaro.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Suzuki Poulouse <suzuki.poulose@arm.com>,
-        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org
-References: <20190815082521.16885-1-leo.yan@linaro.org>
- <d874e6b3-c115-6c8c-bb12-160cfd600505@intel.com>
- <20190815113242.GA28881@leoy-ThinkPad-X240s>
-From:   Adrian Hunter <adrian.hunter@intel.com>
-Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
- Business Identity Code: 0357606 - 4, Domiciled in Helsinki
-Message-ID: <e0919e39-7607-815b-3a12-96f098e45a5f@intel.com>
-Date:   Thu, 15 Aug 2019 14:45:57 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1731176AbfHOLtm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 07:49:42 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:36179 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726120AbfHOLtm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 07:49:42 -0400
+Received: by mail-lf1-f66.google.com with SMTP id j17so1466623lfp.3;
+        Thu, 15 Aug 2019 04:49:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=da+ygSzukrNTt7CGugFq0tsNtlCIMnjE6GGsWB9xJ48=;
+        b=ULWFQbqb1jbpzVx+1aLPerK7pAznx9oux6NqXOgUTj05CMUhf8UL09aHq9SUcWDH/7
+         fyCQ66Retm6BKIWATv00gcnUqdxgOleDl/caNdRtpM8RzM3OAugjZqZ2AT2UZFikpEOZ
+         FfMICKSudqW8XxfCzNRiokJv2XTqFKmjJQV5ahj623DbEE+qOdWUfj9Ss01DYwVPqHHB
+         w8rQFgGO7PNV+j4Hg3iXGjFAfqVd8LlIAY9RfW2i7fWU3djm7ML9135c2G4Sr+swCDY5
+         YA7BiGmlSTYKvThf2p1orKZaTVbZ5G5eE3/uY9YJ9E6Umhf8TF1QvSmsDrA79GjuUy6O
+         ycsQ==
+X-Gm-Message-State: APjAAAXN7GRptNQy4CCeuZlogHCPZDwGZC3i++/iSquLxY4VvfE8raF3
+        CXAghbZgL5boHQLNmc5JB9iOEVgY+4A=
+X-Google-Smtp-Source: APXvYqwVRvo82H3BRDmNsGrNxpyaMFmyB/UEZpBGmA5KjqUAE8xtXTFBPIRocM+Bmgd6DVngJfyaJg==
+X-Received: by 2002:ac2:484e:: with SMTP id 14mr2182257lfy.50.1565869780030;
+        Thu, 15 Aug 2019 04:49:40 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id f1sm442019ljf.53.2019.08.15.04.49.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 15 Aug 2019 04:49:38 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92)
+        (envelope-from <johan@kernel.org>)
+        id 1hyEGD-0003qP-7m; Thu, 15 Aug 2019 13:49:41 +0200
+Date:   Thu, 15 Aug 2019 13:49:41 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Bob Ham <bob.ham@puri.sm>
+Cc:     Johan Hovold <johan@kernel.org>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>, kernel@puri.sm,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
+Message-ID: <20190815114941.GE32300@localhost>
+References: <20190724145227.27169-1-angus@akkea.ca>
+ <20190724145227.27169-2-angus@akkea.ca>
+ <20190805114711.GF3574@localhost>
+ <5fb96703-b174-eef1-5ad1-693e2bbce32f@puri.sm>
 MIME-Version: 1.0
-In-Reply-To: <20190815113242.GA28881@leoy-ThinkPad-X240s>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="SLDf9lqlvOQaIe6s"
+Content-Disposition: inline
+In-Reply-To: <5fb96703-b174-eef1-5ad1-693e2bbce32f@puri.sm>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15/08/19 2:32 PM, Leo Yan wrote:
-> Hi Adrian,
-> 
-> On Thu, Aug 15, 2019 at 11:54:54AM +0300, Adrian Hunter wrote:
-> 
-> [...]
-> 
->>> diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
->>> index e4988f49ea79..d7ff839d8b20 100644
->>> --- a/tools/perf/Makefile.config
->>> +++ b/tools/perf/Makefile.config
->>> @@ -48,9 +48,20 @@ ifeq ($(SRCARCH),x86)
->>>    NO_PERF_REGS := 0
->>>  endif
->>>  
->>> +ARM_PRE_START_SIZE := 0
->>> +
->>>  ifeq ($(SRCARCH),arm)
->>>    NO_PERF_REGS := 0
->>>    LIBUNWIND_LIBS = -lunwind -lunwind-arm
->>> +  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
->>> +    # Extract info from lds:
->>> +    #   . = ((0xC0000000)) + 0x00208000;
->>> +    # ARM_PRE_START_SIZE := 0x00208000
->>> +    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({2}0x[0-9a-fA-F]+\){2}' \
->>> +      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
->>> +      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
->>> +      awk -F' ' '{printf "0x%x", $$2}' 2>/dev/null)
->>> +  endif
->>>  endif
->>>  
->>>  ifeq ($(SRCARCH),arm64)
->>> @@ -58,8 +69,19 @@ ifeq ($(SRCARCH),arm64)
->>>    NO_SYSCALL_TABLE := 0
->>>    CFLAGS += -I$(OUTPUT)arch/arm64/include/generated
->>>    LIBUNWIND_LIBS = -lunwind -lunwind-aarch64
->>> +  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
->>> +    # Extract info from lds:
->>> +    #  . = ((((((((0xffffffffffffffff)) - (((1)) << (48)) + 1) + (0)) + (0x08000000))) + (0x08000000))) + 0x00080000;
->>> +    # ARM_PRE_START_SIZE := (0x08000000 + 0x08000000 + 0x00080000) = 0x10080000
->>> +    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({8}0x[0-9a-fA-F]+\){2}' \
->>> +      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
->>> +      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
->>> +      awk -F' ' '{printf "0x%x", $$6+$$7+$$8}' 2>/dev/null)
->>> +  endif
->>
->> So, that is not going to work if you take a perf.data file to a non-arm machine?
-> 
-> Yeah, this patch will only allow perf to work correctly when perf
-> run natively on arm/arm64, so it can resolve partial of the issue.
-> 
->> How come you cannot use kallsyms to get the information?
-> 
-> Thanks for pointing out this.  Sorry I skipped your comment "I don't
-> know how you intend to calculate ARM_PRE_START_SIZE" when you reviewed
-> the patch v3, I should use that chance to elaborate the detailed idea
-> and so can get more feedback/guidance before procceed.
-> 
-> Actually, I have considered to use kallsyms when worked on the previous
-> patch set.
-> 
-> As mentioned in patch set v4's cover letter, I tried to implement
-> machine__create_extra_kernel_maps() for arm/arm64, the purpose is to
-> parse kallsyms so can find more kernel maps and thus also can fixup
-> the kernel start address.  But I found the 'perf script' tool directly
-> calls machine__get_kernel_start() instead of running into the flow for
-> machine__create_extra_kernel_maps();
 
-Doesn't it just need to loop through each kernel map to find the lowest
-start address?
+--SLDf9lqlvOQaIe6s
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->                                      so I finally gave up to use
-> machine__create_extra_kernel_maps() for tweaking kernel start address
-> and went back to use this patch's approach by parsing lds files.
-> 
-> So for next step, I want to get some guidances:
-> 
-> - One method is to add a new weak function, e.g.
->   arch__fix_kernel_text_start(), then every arch can implement its own
->   function to fixup the kernel start address;
-> 
->   For arm/arm64, can use kallsyms to find the symbols with least
->   address and fixup for kernel start address.
-> 
-> - Another method is to directly parse kallsyms in the function
->   machine__get_kernel_start(), thus the change can be used for all
->   archs;
-> 
-> Seems to me the second method is to address this issue as a common
-> issue crossing all archs.  But not sure if this is the requirement for
-> all archs or just this is only required for arm/arm64.  Please let me
-> know what's your preference or other thoughts.  Thanks a lot!
-> 
-> Leo.
-> 
->>>  endif
->>>  
->>> +CFLAGS += -DARM_PRE_START_SIZE=$(ARM_PRE_START_SIZE)
->>> +
->>>  ifeq ($(SRCARCH),csky)
->>>    NO_PERF_REGS := 0
->>>  endif
->>> diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
->>> index f6ee7fbad3e4..e993f891bb82 100644
->>> --- a/tools/perf/util/machine.c
->>> +++ b/tools/perf/util/machine.c
->>> @@ -2687,13 +2687,26 @@ int machine__get_kernel_start(struct machine *machine)
->>>  	machine->kernel_start = 1ULL << 63;
->>>  	if (map) {
->>>  		err = map__load(map);
->>> +		if (err)
->>> +			return err;
->>> +
->>>  		/*
->>>  		 * On x86_64, PTI entry trampolines are less than the
->>>  		 * start of kernel text, but still above 2^63. So leave
->>>  		 * kernel_start = 1ULL << 63 for x86_64.
->>>  		 */
->>> -		if (!err && !machine__is(machine, "x86_64"))
->>> +		if (!machine__is(machine, "x86_64"))
->>>  			machine->kernel_start = map->start;
->>> +
->>> +		/*
->>> +		 * On arm/arm64, the kernel uses some memory regions which are
->>> +		 * prior to '_stext' symbol; to reflect the complete kernel
->>> +		 * address space, compensate these pre-defined regions for
->>> +		 * kernel start address.
->>> +		 */
->>> +		if (!strcmp(perf_env__arch(machine->env), "arm") ||
->>> +		    !strcmp(perf_env__arch(machine->env), "arm64"))
->>> +			machine->kernel_start -= ARM_PRE_START_SIZE;
->>>  	}
->>>  	return err;
->>>  }
->>>
->>
-> 
+On Mon, Aug 05, 2019 at 03:44:30PM +0100, Bob Ham wrote:
+> On 05/08/2019 12:47, Johan Hovold wrote:
+> > On Wed, Jul 24, 2019 at 07:52:26AM -0700, Angus Ainslie (Purism) wrote:
+> >> From: Bob Ham <bob.ham@puri.sm>
+> >>
+> >> Add a VID:PID for the BroadModi BM818 M.2 card
+> >=20
+> > Would you mind posting the output of usb-devices (or lsusb -v) for this
+> > device?
+>=20
+> T:  Bus=3D01 Lev=3D03 Prnt=3D40 Port=3D03 Cnt=3D01 Dev#=3D 44 Spd=3D480 M=
+xCh=3D 0
+> D:  Ver=3D 2.00 Cls=3D00(>ifc ) Sub=3D00 Prot=3D00 MxPS=3D64 #Cfgs=3D  1
+> P:  Vendor=3D2020 ProdID=3D2060 Rev=3D00.00
+> S:  Manufacturer=3DQualcomm, Incorporated
+> S:  Product=3DQualcomm CDMA Technologies MSM
+> C:  #Ifs=3D 5 Cfg#=3D 1 Atr=3De0 MxPwr=3D500mA
+> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
+> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dfe Prot=3Dff Drive=
+r=3D(none)
+> I:  If#=3D0x4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Drive=
+r=3D(none)
 
+I amended the commit message with the above, switched to
+USB_DEVICE_INTERFACE_CLASS(), fixed the comment and moved the entry
+to the other 0x2020 entries before applying.
+
+Johan
+
+--SLDf9lqlvOQaIe6s
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQQHbPq+cpGvN/peuzMLxc3C7H1lCAUCXVVGxwAKCRALxc3C7H1l
+CKpnAQC3uoOsq0K+HH2WaIfb4ig3RUodqYlqy2HQxZE7oJQGSgD8DeS8+HJ5TqIG
+LVM+pr2Voun/2PPKZJrh+e9HoeiGZAo=
+=nOST
+-----END PGP SIGNATURE-----
+
+--SLDf9lqlvOQaIe6s--
