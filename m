@@ -2,72 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 212DA8F11F
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:46:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B1A858F122
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:46:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729798AbfHOQqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 12:46:13 -0400
-Received: from foss.arm.com ([217.140.110.172]:46646 "EHLO foss.arm.com"
+        id S1729898AbfHOQqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 12:46:39 -0400
+Received: from mga12.intel.com ([192.55.52.136]:55171 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726099AbfHOQqN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 12:46:13 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 61DE0360;
-        Thu, 15 Aug 2019 09:46:12 -0700 (PDT)
-Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 444BB3F706;
-        Thu, 15 Aug 2019 09:46:11 -0700 (PDT)
-Date:   Thu, 15 Aug 2019 17:46:09 +0100
-From:   Will Deacon <will.deacon@arm.com>
-To:     Zhangshaokun <zhangshaokun@hisilicon.com>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
-        ilias.apalodimas@linaro.org,
-        "huanglingyan (A)" <huanglingyan2@huawei.com>, steve.capper@arm.com
-Subject: Re: [PATCH] arm64: do_csum: implement accelerated scalar version
-Message-ID: <20190815164609.GI2015@fuggles.cambridge.arm.com>
-References: <20190218230842.11448-1-ard.biesheuvel@linaro.org>
- <d7a16ebd-073f-f50e-9651-68606d10b01c@hisilicon.com>
- <20190412095243.GA27193@fuggles.cambridge.arm.com>
- <41b30c72-c1c5-14b2-b2e1-3507d552830d@arm.com>
- <20190515094704.GC24357@fuggles.cambridge.arm.com>
- <440eb674-0e59-a97e-4a90-0026e2327069@hisilicon.com>
+        id S1726099AbfHOQqj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 12:46:39 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Aug 2019 09:46:36 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,389,1559545200"; 
+   d="scan'208";a="260867787"
+Received: from unknown (HELO [10.241.228.234]) ([10.241.228.234])
+  by orsmga001.jf.intel.com with ESMTP; 15 Aug 2019 09:46:35 -0700
+Subject: Re: [PATCH bpf-next 0/5] Add support for SKIP_BPF flag for AF_XDP
+ sockets
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        maciej.fijalkowski@intel.com, tom.herbert@intel.com
+References: <1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com>
+ <bebfb097-5357-91d8-ebc7-2f8ede392ad7@intel.com>
+From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+Message-ID: <cc3a09eb-bcb8-a6e1-7175-77bddaf10c11@intel.com>
+Date:   Thu, 15 Aug 2019 09:46:35 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <440eb674-0e59-a97e-4a90-0026e2327069@hisilicon.com>
-User-Agent: Mutt/1.11.1+86 (6f28e57d73f2) ()
+In-Reply-To: <bebfb097-5357-91d8-ebc7-2f8ede392ad7@intel.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, May 16, 2019 at 11:14:35AM +0800, Zhangshaokun wrote:
-> On 2019/5/15 17:47, Will Deacon wrote:
-> > On Mon, Apr 15, 2019 at 07:18:22PM +0100, Robin Murphy wrote:
-> >> On 12/04/2019 10:52, Will Deacon wrote:
-> >>> I'm waiting for Robin to come back with numbers for a C implementation.
-> >>>
-> >>> Robin -- did you get anywhere with that?
-> >>
-> >> Still not what I would call finished, but where I've got so far (besides an
-> >> increasingly elaborate test rig) is as below - it still wants some unrolling
-> >> in the middle to really fly (and actual testing on BE), but the worst-case
-> >> performance already equals or just beats this asm version on Cortex-A53 with
-> >> GCC 7 (by virtue of being alignment-insensitive and branchless except for
-> >> the loop). Unfortunately, the advantage of C code being instrumentable does
-> >> also come around to bite me...
-> > 
-> > Is there any interest from anybody in spinning a proper patch out of this?
-> > Shaokun?
+On 8/15/2019 5:51 AM, Björn Töpel wrote:
+> On 2019-08-15 05:46, Sridhar Samudrala wrote:
+>> This patch series introduces XDP_SKIP_BPF flag that can be specified
+>> during the bind() call of an AF_XDP socket to skip calling the BPF
+>> program in the receive path and pass the buffer directly to the socket.
+>>
+>> When a single AF_XDP socket is associated with a queue and a HW
+>> filter is used to redirect the packets and the app is interested in
+>> receiving all the packets on that queue, we don't need an additional
+>> BPF program to do further filtering or lookup/redirect to a socket.
+>>
+>> Here are some performance numbers collected on
+>>    - 2 socket 28 core Intel(R) Xeon(R) Platinum 8180 CPU @ 2.50GHz
+>>    - Intel 40Gb Ethernet NIC (i40e)
+>>
+>> All tests use 2 cores and the results are in Mpps.
+>>
+>> turbo on (default)
+>> ---------------------------------------------
+>>                        no-skip-bpf    skip-bpf
+>> ---------------------------------------------
+>> rxdrop zerocopy           21.9         38.5
+>> l2fwd  zerocopy           17.0         20.5
+>> rxdrop copy               11.1         13.3
+>> l2fwd  copy                1.9          2.0
+>>
+>> no turbo :  echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
+>> ---------------------------------------------
+>>                        no-skip-bpf    skip-bpf
+>> ---------------------------------------------
+>> rxdrop zerocopy           15.4         29.0
+>> l2fwd  zerocopy           11.8         18.2
+>> rxdrop copy                8.2         10.5
+>> l2fwd  copy                1.7          1.7
+>> ---------------------------------------------
+>>
 > 
-> HiSilicon's Kunpeng920(Hi1620) benefits from do_csum optimization, if Ard and
-> Robin are ok, Lingyan or I can try to do it.
-> Of course, if any guy posts the patch, we are happy to test it.
-> Any will be ok.
+> This work is somewhat similar to the XDP_ATTACH work [1]. Avoiding the
+> retpoline in the XDP program call is a nice performance boost! I like
+> the numbers! :-) I also like the idea of adding a flag that just does
+> what most AF_XDP Rx users want -- just getting all packets of a
+> certain queue into the XDP sockets.
+> 
+> In addition to Toke's mail, I have some more concerns with the series:
+> 
+> * AFAIU the SKIP_BPF only works for zero-copy enabled sockets. IMO, it
+>    should work for all modes (including XDP_SKB).
 
-I don't mind who posts it, but Robin is super busy with SMMU stuff at the
-moment so it probably makes more sense for you or Lingyan to do it.
+This patch enables SKIP_BPF for AF_XDP sockets where an XDP program is 
+attached at driver level (both zerocopy and copy modes)
+I tried a quick hack to see the perf benefit with generic XDP mode, but 
+i didn't see any significant improvement in performance in that 
+scenario. so i didn't include that mode.
 
-Will
+> 
+> * In order to work, a user still needs an XDP program running. That's
+>    clunky. I'd like the behavior that if no XDP program is attached,
+>    and the option is set, the packets for a that queue end up in the
+>    socket. If there's an XDP program attached, the program has
+>    precedence.
+
+I think this would require more changes in the drivers to take XDP 
+datapath even when there is no XDP program loaded.
+
+> 
+> * It requires changes in all drivers. Not nice, and scales badly. Try
+>    making it generic (xdp_do_redirect/xdp_flush), so it Just Works for
+>    all XDP capable drivers.
+
+I tried to make this as generic as possible and make the changes to the 
+driver very minimal, but could not find a way to avoid any changes at 
+all to the driver. xdp_do_direct() gets called based after the call to 
+bpf_prog_run_xdp() in the drivers.
+
+> 
+> Thanks for working on this!
+> 
+> 
+> Björn
+> 
+> [1] 
+> https://lore.kernel.org/netdev/20181207114431.18038-1-bjorn.topel@gmail.com/ 
+> 
+> 
+> 
+>> Sridhar Samudrala (5):
+>>    xsk: Convert bool 'zc' field in struct xdp_umem to a u32 bitmap
+>>    xsk: Introduce XDP_SKIP_BPF bind option
+>>    i40e: Enable XDP_SKIP_BPF option for AF_XDP sockets
+>>    ixgbe: Enable XDP_SKIP_BPF option for AF_XDP sockets
+>>    xdpsock_user: Add skip_bpf option
+>>
+>>   drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 22 +++++++++-
+>>   drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  6 +++
+>>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 20 ++++++++-
+>>   drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 16 ++++++-
+>>   include/net/xdp_sock.h                        | 21 ++++++++-
+>>   include/uapi/linux/if_xdp.h                   |  1 +
+>>   include/uapi/linux/xdp_diag.h                 |  1 +
+>>   net/xdp/xdp_umem.c                            |  9 ++--
+>>   net/xdp/xsk.c                                 | 43 ++++++++++++++++---
+>>   net/xdp/xsk_diag.c                            |  5 ++-
+>>   samples/bpf/xdpsock_user.c                    |  8 ++++
+>>   11 files changed, 135 insertions(+), 17 deletions(-)
+>>
