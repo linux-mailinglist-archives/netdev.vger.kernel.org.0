@@ -2,155 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 946F38F22E
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 19:29:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C66F8F237
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 19:30:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730503AbfHOR3C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 13:29:02 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37772 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726203AbfHOR3C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 13:29:02 -0400
-Received: by mail-pg1-f193.google.com with SMTP id d1so989421pgp.4;
-        Thu, 15 Aug 2019 10:29:01 -0700 (PDT)
+        id S1730560AbfHORaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 13:30:39 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:45232 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726545AbfHORaj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 13:30:39 -0400
+Received: by mail-qk1-f195.google.com with SMTP id m2so2419573qki.12
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 10:30:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=FKRKDbU9S4M5oykmChG6j3tcdYNbDh8DcchmeEeC/cM=;
-        b=gFc99nv7p3ZVWxUmr/LNI6Qe2AMMWiYtv3qR70vS6g9di4iWwJE70RltZUXZXx4EY/
-         YK0FTCBv4ybf6DyPHtg2wkFOb8D/OecQxRRr6c/JdJWrZXMh3gOKb/fUq4vhVtWmic06
-         s4/WXyczXn1rcG2w5O+0NJqf/IhuKo9ILKiLt4/gGcuyYGQz+H2iuCUuaDxvRXlu9HFe
-         0/Nnp1KjEgs3Tfim6WPCh9PxjzN0oxdZWShrgigBs3HTPGtJaLzgco+XegfIz6V195e7
-         2lNFPG7RStnIZiwDYPlLsWh1FCfWommugB0DbnWYNarIjsLCAJolZZ2FfXHUvSXS+kZD
-         08nA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=kTXwh3ITHtbuzL/JpnSHLuhe4DA+bICqQKV7LfiAy7M=;
+        b=Zd5hGD+L09TBXib4aG8KMAx4pu4d0xdhyVaeyRrIovmsgBWBsssft6eQ9eeddRvKQV
+         PJqceHEJUiJW2SstS3zHM3ntdFxCoEFvlHQA9YPKzcjWAvmf2TcupYGGQ7O8tkKhbtZn
+         uqqtHRPpqN9AfB8Ni3Iul/AT5Ilm+MJY/LB8uwYXpa5ML+PrSCErbIAIC1bfBl6Z1JcS
+         UPmKC+wFJy7l47dZX7gDuJE8yEi/W+Mh1653bQ+i6ySzBZxZkeKNCKgYGR6ZglrceBkr
+         S/cAvqa2HtEOJZiTb3p0gfR+uMv/JvSwiPx9JobGHaO7SQExdDpwscdt/Kz5CTieL2Ft
+         OB9w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=FKRKDbU9S4M5oykmChG6j3tcdYNbDh8DcchmeEeC/cM=;
-        b=Q0Z1t+OOuL1PdQZ8SOD/zlzdv/f2a2OH9fvIbbVe6+vHTpgkuzjXeN3UybS2HZw753
-         SJUuRs42o2NWZtjwYmaTn0etSqwhU8aVoy16NEUjR86LtFHuW+asGbdLozyJEHIz4lpR
-         lZHad3ADTNo+wM2U1LBijCBfs5HB4mWuD3wuUoyeC06JdBPH0KJKs+amC76FdbjfNhgq
-         HpPlTlYaOKetyF56bq4mIUjo0+SGkyyWZuF15bga01qc7gfFfFxkZT5UzHmI2GyGcPU+
-         quQ9Mo8VOeSWTemcRoOLKvONbIbRWKi01wnnTUHaRhUMlqptwCrkNpHAzyAEhk+7CYx9
-         6qwQ==
-X-Gm-Message-State: APjAAAULOdwxE8Z4rfX/E5iaNQ7Kltn//KlwSpOzXxZgobNaazDrGZ+7
-        BarYdDtNhZ5+pRfrHjqgK14=
-X-Google-Smtp-Source: APXvYqwu7xZzO2Wk+NqvTdSS/nAjz6TALfbZn2ytrJWT5JTYy0nYbx3JzfquRelt3ZoUGhJ+qHAVCQ==
-X-Received: by 2002:a17:90a:b30e:: with SMTP id d14mr3104375pjr.26.1565890140860;
-        Thu, 15 Aug 2019 10:29:00 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::e9c1])
-        by smtp.gmail.com with ESMTPSA id g2sm4919678pfq.88.2019.08.15.10.28.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 10:28:59 -0700 (PDT)
-Date:   Thu, 15 Aug 2019 10:28:58 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Jordan Glover <Golden_Miller83@protonmail.ch>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=kTXwh3ITHtbuzL/JpnSHLuhe4DA+bICqQKV7LfiAy7M=;
+        b=h37mOBwXkGj480+EggNAq4YwybWoczHPVhk3WDKn2C4o0Hgi1URArWExqQpkalOKqb
+         Y9FKkuBRCXWLS5WxWlAmG8kyAfXBTqIkP7fzCnVr/nobg5ILch999gRmukFXMxdNaHSz
+         5GOKmiRib5HWMvDt0qZBxv1SJYzVsfn+uzyUFrREDJY/hJJmksqhf5EhgyvAj0VF3GRV
+         mJTyvxrzFUESINCPvOKapa77xez5PVZYxHY0knj+blgjVsJY4GpX0fUGQ1d7283jlVtf
+         RMNV+hcMVQ7vqk5UagTG9Pp1hmhISpsn0QAo4S4z+V/auV6RDBt8A2ui4emb40/qm4j/
+         yLuQ==
+X-Gm-Message-State: APjAAAXA4n3YYsi9FYCzV+QnecpaDqAEkeOyGOR/F7A8YTBh9sD9d1uO
+        Y/mcTEiCSXDIyoWNr2AxhZqjpA==
+X-Google-Smtp-Source: APXvYqwO1aQB1OxnAqtkNli05DpdgUH1L8j8p1pJtfd09Aqg+Y+EpJghSL2tuW6JKyhSqv5Lg3icrQ==
+X-Received: by 2002:a37:9802:: with SMTP id a2mr5166879qke.346.1565890238320;
+        Thu, 15 Aug 2019 10:30:38 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s184sm1783093qkf.73.2019.08.15.10.30.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2019 10:30:38 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 10:30:23 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-Message-ID: <20190815172856.yoqvgu2yfrgbkowu@ast-mbp.dhcp.thefacebook.com>
-References: <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
- <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
- <20190806011134.p5baub5l3t5fkmou@ast-mbp>
- <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
- <20190813215823.3sfbakzzjjykyng2@ast-mbp>
- <CALCETrVT-dDXQGukGs5S1DkzvQv9_e=axzr_GyEd2c4T4z8Qng@mail.gmail.com>
- <20190814005737.4qg6wh4a53vmso2v@ast-mbp>
- <CALCETrUkqUprujww26VxHwkdXQ3DWJH8nnL2VBYpK2EU0oX_YA@mail.gmail.com>
- <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
- <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch>
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH bpf] tools: bpftool: close prog FD before exit on
+ showing a single program
+Message-ID: <20190815103023.0bd2c210@cakuba.netronome.com>
+In-Reply-To: <CAEf4BzbL3K5XWSyY6BxrVeF3+3qomsYbXh67yzjyy7ApsosVBw@mail.gmail.com>
+References: <20190815142223.2203-1-quentin.monnet@netronome.com>
+        <CAEf4BzbL3K5XWSyY6BxrVeF3+3qomsYbXh67yzjyy7ApsosVBw@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 11:24:54AM +0000, Jordan Glover wrote:
-> On Wednesday, August 14, 2019 10:05 PM, Alexei Starovoitov <alexei.starovoitov@gmail.com> wrote:
+On Thu, 15 Aug 2019 10:09:38 -0700, Andrii Nakryiko wrote:
+> On Thu, Aug 15, 2019 at 7:24 AM Quentin Monnet wrote:
+> > When showing metadata about a single program by invoking
+> > "bpftool prog show PROG", the file descriptor referring to the program
+> > is not closed before returning from the function. Let's close it.
+> >
+> > Fixes: 71bb428fe2c1 ("tools: bpf: add bpftool")
+> > Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+> > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > ---
+> >  tools/bpf/bpftool/prog.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> > index 66f04a4846a5..43fdbbfe41bb 100644
+> > --- a/tools/bpf/bpftool/prog.c
+> > +++ b/tools/bpf/bpftool/prog.c
+> > @@ -363,7 +363,9 @@ static int do_show(int argc, char **argv)
+> >                 if (fd < 0)
+> >                         return -1;
+> >
+> > -               return show_prog(fd);
+> > +               err = show_prog(fd);
+> > +               close(fd);
+> > +               return err;  
 > 
-> > On Wed, Aug 14, 2019 at 10:51:23AM -0700, Andy Lutomirski wrote:
-> >
-> > > If eBPF is genuinely not usable by programs that are not fully trusted
-> > > by the admin, then no kernel changes at all are needed. Programs that
-> > > want to reduce their own privileges can easily fork() a privileged
-> > > subprocess or run a little helper to which they delegate BPF
-> > > operations. This is far more flexible than anything that will ever be
-> > > in the kernel because it allows the helper to verify that the rest of
-> > > the program is doing exactly what it's supposed to and restrict eBPF
-> > > operations to exactly the subset that is needed. So a container
-> > > manager or network manager that drops some provilege could have a
-> > > little bpf-helper that manages its BPF XDP, firewalling, etc
-> > > configuration. The two processes would talk over a socketpair.
-> >
-> > there were three projects that tried to delegate bpf operations.
-> > All of them failed.
-> > bpf operational workflow is much more complex than you're imagining.
-> > fork() also doesn't work for all cases.
-> > I gave this example before: consider multiple systemd-like deamons
-> > that need to do bpf operations that want to pass this 'bpf capability'
-> > to other deamons written by other teams. Some of them will start
-> > non-root, but still need to do bpf. They will be rpm installed
-> > and live upgraded while running.
-> > We considered to make systemd such centralized bpf delegation
-> > authority too. It didn't work. bpf in kernel grows quickly.
-> > libbpf part grows independently. llvm keeps evolving.
-> > All of them are being changed while system overall has to stay
-> > operational. Centralized approach breaks apart.
-> >
-> > > The interesting cases you're talking about really do involved
-> > > unprivileged or less privileged eBPF, though. Let's see:
-> > > systemd --user: systemd --user is not privileged at all. There's no
-> > > issue of reducing privilege, since systemd --user doesn't have any
-> > > privilege to begin with. But systemd supports some eBPF features, and
-> > > presumably it would like to support them in the systemd --user case.
-> > > This is unprivileged eBPF.
-> >
-> > Let's disambiguate the terminology.
-> > This /dev/bpf patch set started as describing the feature as 'unprivileged bpf'.
-> > I think that was a mistake.
-> > Let's call systemd-like deamon usage of bpf 'less privileged bpf'.
-> > This is not unprivileged.
-> > 'unprivileged bpf' is what sysctl kernel.unprivileged_bpf_disabled controls.
-> >
-> > There is a huge difference between the two.
-> > I'm against extending 'unprivileged bpf' even a bit more than what it is
-> > today for many reasons mentioned earlier.
-> > The /dev/bpf is about 'less privileged'.
-> > Less privileged than root. We need to split part of full root capability
-> > into bpf capability. So that most of the root can be dropped.
-> > This is very similar to what cap_net_admin does.
-> > cap_net_amdin can bring down eth0 which is just as bad as crashing the box.
-> > cap_net_admin is very much privileged. Just 'less privileged' than root.
-> > Same thing for cap_bpf.
-> >
-> > May be we should do both cap_bpf and /dev/bpf to make it clear that
-> > this is the same thing. Two interfaces to achieve the same result.
-> >
-> 
-> systemd --user processes aren't "less privileged". The are COMPLETELY unprivileged.
-> Granting them cap_bpf is the same as granting it to every other unprivileged user
-> process. Also unprivileged user process can start systemd --user process with any
-> command they like.
+> There is a similar problem few lines above for special case of argc ==
+> 2, which you didn't fix.
 
-systemd itself is trusted. It's the same binary whether it runs as pid=1
-or as pid=123. One of the use cases is to make IPAddressDeny= work with --user.
-Subset of that feature already works with AmbientCapabilities=CAP_NET_ADMIN.
-CAP_BPF is a natural step in the same direction.
+This is the special argc == 2 case.
 
+> Would it be better to make show_prog(fd) close provided fd instead or
+> is it used in some other context where FD should live longer (I
+> haven't checked, sorry)?
+
+I think it used to close that's how the bug crept in. Other than the bug
+it's fine the way it is.
