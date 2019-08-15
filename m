@@ -2,54 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 71F7E8F77D
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 01:15:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45BF28F788
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 01:20:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387676AbfHOXPb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 19:15:31 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:35946 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731810AbfHOXPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 19:15:31 -0400
-Received: by mail-ed1-f65.google.com with SMTP id p28so3598622edi.3;
-        Thu, 15 Aug 2019 16:15:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YlE34G3kQuj5+jZiXSzKZatzaIh4Rjcw5uEtH8Rdjw8=;
-        b=EvL+/9N4p0XYQftxPqT0s9XdqZOyuE8dOtYuXcJr6sLGobcsg5w4gvlYQy6NiQSaFJ
-         QOAqlgk2ULc3zt+jFSpmJSjQ1FjoKJ9TMx98Nmzsvqt7Cm8jcE5Oe4oK3Q3UceGQPMtp
-         iVeOCqTFGG2/rAAlQqhih70qqdoRRjb5TwBy2+mp7ipBoALI4K41Sc/6W1aslujvAHHk
-         J5Ha5ofdDQoKUTrUmEHhszsPE+12BltSTXjqZMnKXX4932qA0bjMxRbrfZYBLRzFhSNc
-         7PpHJ4GkN4nmivbwcXfU3HRhrlqbrcHJqG/sH3h0FSI81gGCHC1fpXHu7JaanncWnFc+
-         /6NQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YlE34G3kQuj5+jZiXSzKZatzaIh4Rjcw5uEtH8Rdjw8=;
-        b=p/COxgRm4wqRIpbz2RW3nlWWpCDxsSD79KvcgqPXuPWxwDMW4q+kDp2ZeQp5ZBP2UT
-         rpnEnwc4XvWAfxX3YoYLZQYtDOgLMbvUJYTyOJJgxcmWzX037OTpQ1IcS4a8JDRDrzmT
-         UL06WhrZCdMDmj9ZNqInHvPAHJztG0UNXSYGGW/ti4vWXIEqyQHGQryFKiwPjPqAWoiL
-         ErGPb9NgB97AmJpLKZL63VKWTsggjbSWTiPN2sfv7zAz4RRb/P7Lff8VMuuMtgApi9WY
-         x25PosGvPnyn00y3UQ5SL2Ocsv9HZ/nuKNfG/oiqucEsUE2KpcpMPjcPCkd005O6PJ/z
-         o8zg==
-X-Gm-Message-State: APjAAAXhih0O4QrsHoIJ54unxBfx50arJyXnPenzQ0jveJ9TYVFC+6iA
-        Kgg5UUZT3yksZHb/KDGmhPG/UFGfl6qxqM68ID8=
-X-Google-Smtp-Source: APXvYqzw+DZxHwd3wNMl4NNcAjzsJb9REBjS4vWovXXMjsQRNlm3q1k7UDM0FSvjnDDNbxz/SQPEqezh9O7ktLNu1IM=
-X-Received: by 2002:a05:6402:1285:: with SMTP id w5mr8106386edv.36.1565910928546;
- Thu, 15 Aug 2019 16:15:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190811234016.3674056-1-taoren@fb.com> <fee3faa1-2de1-b480-983e-07f4587f2f79@fb.com>
-In-Reply-To: <fee3faa1-2de1-b480-983e-07f4587f2f79@fb.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 16 Aug 2019 02:15:17 +0300
-Message-ID: <CA+h21hr-uiCAQTXerg8ScKhnVhT15pM70m_Jw_f=gZrt1DCRkw@mail.gmail.com>
-Subject: Re: [PATCH net-next v7 3/3] net: phy: broadcom: add 1000Base-X
- support for BCM54616S
-To:     Tao Ren <taoren@fb.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        id S2387720AbfHOXUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 19:20:19 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:7160 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731922AbfHOXUS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 19:20:18 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7FNK4M1022921;
+        Thu, 15 Aug 2019 16:20:09 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=HXL8Amq4HIBrgJm+yjAOcskRNrxOUrE00wAmAadIaIg=;
+ b=X/azAbIjWLRdFLoG+jGkO+BJll99TYi7LHQuFH5JDF2NO3OdLU5dwoXb3lhSJuHCump3
+ X23rvIB4Ur0DwIeybZvlrzE3Fm5gG62EEGdbLJeozupkibfnVBYq8FOOoolS3rExIGi6
+ kO84tP5TrTUUSnyK2JQGzafmWkHlKuou/oc= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2udemsrmq7-6
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Thu, 15 Aug 2019 16:20:08 -0700
+Received: from ash-exhub201.TheFacebook.com (2620:10d:c0a8:83::7) by
+ ash-exhub104.TheFacebook.com (2620:10d:c0a8:82::d) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 15 Aug 2019 16:19:49 -0700
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.101) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 15 Aug 2019 16:19:49 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dzPU2NreAiNVNAfAjZggew7ezLFr34oEt0AllAihR76Ii47aVIyQ/fKIPXgeErRE5UbEreO50mhY1hvQ8NeVkkNNvqaLxsGt7dIO3BJ9ZL+7MobHAB9x1fI/0GzQ5XdICoqLejT6GnIkALqvETvwNe5g1vunsmcByZ+HUjeTud8m+ohacaAQ8APyH8tb5aCtbxlqDqHIA/bDPj9zWFPCBITXQWxWzYtKx8XzV5FQJHwLst1K4h0UdexBI/17NodaiReqAqem9w9B8woei99C3hYjXRLN5N23fVl2YONNl4LmYQJbz5oTcOZx6MyZcMRW6CZkNyvTo+2L8zU1Azb+Gw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HXL8Amq4HIBrgJm+yjAOcskRNrxOUrE00wAmAadIaIg=;
+ b=hcqomFymrKgEDTudPuP5PMrLgxBsjF7T9U47J7E7mR1NhMs5U5k/uXZcW88XMpCHI1Cqm17B3/pN7sYT3JmYC8cVXLVCXQ5sjw7QGx026Zy44N+W7H/gXtw9O9v83UzcVEmkTZGcgaUTzzFsJeqdyUpIdWWXT+BmpyABkRej6x858lGaJ4DwHxP9lXEEGg22UiurONiQmbVAlgYb9WmBRatNrPdtFCkza8K86Q+hujp8yEs5PdPt/uUKEwAT+7XwTADXIGJJByHUqP5DabHbyfrwZP81bhA0fiIZUFNRBqvXgxBYP5pd5pG/ZrLMsRc0qad01M9AhzVKZ+NeybKW2Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HXL8Amq4HIBrgJm+yjAOcskRNrxOUrE00wAmAadIaIg=;
+ b=JS7mDC559VaBTALJ4bOaOXtlE4NhHNj69Cfx/4OAFs3IE1ScAJuw5WJY5rWodaSPLQpG7a423RUN9pGMzEAeluU9vGLYikorjIppore+9B/43G0IJP1ccHb9E/1eKAUjZIEkzZsvtq070Yxt6Cu4zITzImY01VtBnTeu5zBCypI=
+Received: from MWHPR15MB1216.namprd15.prod.outlook.com (10.175.2.17) by
+ MWHPR15MB1856.namprd15.prod.outlook.com (10.174.255.12) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Thu, 15 Aug 2019 23:19:30 +0000
+Received: from MWHPR15MB1216.namprd15.prod.outlook.com
+ ([fe80::2971:619a:860e:b6cc]) by MWHPR15MB1216.namprd15.prod.outlook.com
+ ([fe80::2971:619a:860e:b6cc%2]) with mapi id 15.20.2157.022; Thu, 15 Aug 2019
+ 23:19:30 +0000
+From:   Tao Ren <taoren@fb.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+CC:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
@@ -58,199 +67,92 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH net-next v7 3/3] net: phy: broadcom: add 1000Base-X
+ support for BCM54616S
+Thread-Topic: [PATCH net-next v7 3/3] net: phy: broadcom: add 1000Base-X
+ support for BCM54616S
+Thread-Index: AQHVUJ5qOj7KTUEtsUuopmpFoA8EiKb8Z2AAgAB1/ICAAAEqgA==
+Date:   Thu, 15 Aug 2019 23:19:29 +0000
+Message-ID: <d481e56e-cf6d-ffd2-e6c5-71e0c29ac8b7@fb.com>
+References: <20190811234016.3674056-1-taoren@fb.com>
+ <fee3faa1-2de1-b480-983e-07f4587f2f79@fb.com>
+ <CA+h21hr-uiCAQTXerg8ScKhnVhT15pM70m_Jw_f=gZrt1DCRkw@mail.gmail.com>
+In-Reply-To: <CA+h21hr-uiCAQTXerg8ScKhnVhT15pM70m_Jw_f=gZrt1DCRkw@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: BYAPR07CA0069.namprd07.prod.outlook.com
+ (2603:10b6:a03:60::46) To MWHPR15MB1216.namprd15.prod.outlook.com
+ (2603:10b6:320:22::17)
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::3:70f6]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 2cb6e340-e5a3-4abb-c46c-08d721d705ef
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1856;
+x-ms-traffictypediagnostic: MWHPR15MB1856:
+x-microsoft-antispam-prvs: <MWHPR15MB18566722AD8C0A28480D5C65B2AC0@MWHPR15MB1856.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 01304918F3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(366004)(376002)(396003)(136003)(39860400002)(346002)(189003)(199004)(486006)(25786009)(81156014)(6116002)(6486002)(66946007)(446003)(86362001)(81166006)(7416002)(476003)(2616005)(66446008)(64756008)(66556008)(66476007)(53546011)(6506007)(386003)(6436002)(11346002)(99286004)(1411001)(6916009)(52116002)(76176011)(305945005)(5660300002)(7736002)(6246003)(4326008)(102836004)(2906002)(36756003)(229853002)(71190400001)(58126008)(8936002)(6512007)(71200400001)(54906003)(31686004)(14454004)(53936002)(316002)(31696002)(65956001)(186003)(256004)(64126003)(65806001)(65826007)(46003)(478600001)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1856;H:MWHPR15MB1216.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: JpSN2EhXYlp0IZoouEFqhAzwRPrYnjGTQCXy0AH5z0Soz8g3eEU694W6g1BeKj17r1vi5SLc7hichJYuYbFsw6vkeNar5eHnWrO9/ByIc1fNtWghEsg2Dtf8H+x6fF7SGYy+CRTV45soPcVy2vqVzvG/03YedBWuFOEdcfiTXQ1CS3lHL07Bi49NIEAqT9h5wMv3kXrjmUAMQnR26tYNuSXIjsDv1utaPH9S4TvmQ/fIHxYMW8Arfob3lUrK///Pyq8s4VpuUXYLdPcARA1kyvhvX/CY2rHIu3Lr5jBSHv/wYIz+E0cuutzLNfFzAxXps6AD34Y0oYKBKXgLF+fKyEb02VozLx6qp70GXSUUdVGG0I0O09FJfGFbz9shm1QalfK1eLlPPch5SPiQnBU65ue9gXUcQLXcq+qqxbUDqOg=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <19C99019696A7E4DA76E3696B2A9CCB3@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2cb6e340-e5a3-4abb-c46c-08d721d705ef
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2019 23:19:29.9878
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0gSbmeQYNb+Necv7/A9nDfYdukhmSgkcZi1n7GZUUYzxhqDuT9DQNd021Q1glZmq
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1856
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-15_10:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=653 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908150223
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Tao,
-
-On Fri, 16 Aug 2019 at 02:13, Tao Ren <taoren@fb.com> wrote:
->
-> Hi Andrew / Florian / Heiner / Vladimir,
->
-> Any further suggestions on the patch series?
->
->
-> Thanks,
->
-> Tao
->
-> On 8/11/19 4:40 PM, Tao Ren wrote:
-> > The BCM54616S PHY cannot work properly in RGMII->1000Base-X mode, mainly
-> > because genphy functions are designed for copper links, and 1000Base-X
-> > (clause 37) auto negotiation needs to be handled differently.
-> >
-> > This patch enables 1000Base-X support for BCM54616S by customizing 3
-> > driver callbacks, and it's verified to be working on Facebook CMM BMC
-> > platform (RGMII->1000Base-KX):
-> >
-> >   - probe: probe callback detects PHY's operation mode based on
-> >     INTERF_SEL[1:0] pins and 1000X/100FX selection bit in SerDES 100-FX
-> >     Control register.
-> >
-> >   - config_aneg: calls genphy_c37_config_aneg when the PHY is running in
-> >     1000Base-X mode; otherwise, genphy_config_aneg will be called.
-> >
-> >   - read_status: calls genphy_c37_read_status when the PHY is running in
-> >     1000Base-X mode; otherwise, genphy_read_status will be called.
-> >
-> > Note: BCM54616S PHY can also be configured in RGMII->100Base-FX mode, and
-> > 100Base-FX support is not available as of now.
-> >
-> > Signed-off-by: Tao Ren <taoren@fb.com>
-> > ---
-
-The patchset looks good to me. However I am not a maintainer.
-If it helps,
-
-Acked-by: Vladimir Oltean <olteanv@gmail.com>
-
-> >  Changes in v7:
-> >   - Add comment "BCM54616S 100Base-FX is not supported".
-> >  Changes in v6:
-> >   - nothing changed.
-> >  Changes in v5:
-> >   - include Heiner's patch "net: phy: add support for clause 37
-> >     auto-negotiation" into the series.
-> >   - use genphy_c37_config_aneg and genphy_c37_read_status in BCM54616S
-> >     PHY driver's callback when the PHY is running in 1000Base-X mode.
-> >  Changes in v4:
-> >   - add bcm54616s_config_aneg_1000bx() to deal with auto negotiation in
-> >     1000Base-X mode.
-> >  Changes in v3:
-> >   - rename bcm5482_read_status to bcm54xx_read_status so the callback can
-> >     be shared by BCM5482 and BCM54616S.
-> >  Changes in v2:
-> >   - Auto-detect PHY operation mode instead of passing DT node.
-> >   - move PHY mode auto-detect logic from config_init to probe callback.
-> >   - only set speed (not including duplex) in read_status callback.
-> >   - update patch description with more background to avoid confusion.
-> >   - patch #1 in the series ("net: phy: broadcom: set features explicitly
-> >     for BCM54616") is dropped.
-> >
-> >  drivers/net/phy/broadcom.c | 57 +++++++++++++++++++++++++++++++++++---
-> >  include/linux/brcmphy.h    | 10 +++++--
-> >  2 files changed, 61 insertions(+), 6 deletions(-)
-> >
-> > diff --git a/drivers/net/phy/broadcom.c b/drivers/net/phy/broadcom.c
-> > index 937d0059e8ac..5fd9293513d8 100644
-> > --- a/drivers/net/phy/broadcom.c
-> > +++ b/drivers/net/phy/broadcom.c
-> > @@ -383,9 +383,9 @@ static int bcm5482_config_init(struct phy_device *phydev)
-> >               /*
-> >                * Select 1000BASE-X register set (primary SerDes)
-> >                */
-> > -             reg = bcm_phy_read_shadow(phydev, BCM5482_SHD_MODE);
-> > -             bcm_phy_write_shadow(phydev, BCM5482_SHD_MODE,
-> > -                                  reg | BCM5482_SHD_MODE_1000BX);
-> > +             reg = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
-> > +             bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE,
-> > +                                  reg | BCM54XX_SHD_MODE_1000BX);
-> >
-> >               /*
-> >                * LED1=ACTIVITYLED, LED3=LINKSPD[2]
-> > @@ -451,12 +451,47 @@ static int bcm5481_config_aneg(struct phy_device *phydev)
-> >       return ret;
-> >  }
-> >
-> > +static int bcm54616s_probe(struct phy_device *phydev)
-> > +{
-> > +     int val, intf_sel;
-> > +
-> > +     val = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
-> > +     if (val < 0)
-> > +             return val;
-> > +
-> > +     /* The PHY is strapped in RGMII-fiber mode when INTERF_SEL[1:0]
-> > +      * is 01b, and the link between PHY and its link partner can be
-> > +      * either 1000Base-X or 100Base-FX.
-> > +      * RGMII-1000Base-X is properly supported, but RGMII-100Base-FX
-> > +      * support is still missing as of now.
-> > +      */
-> > +     intf_sel = (val & BCM54XX_SHD_INTF_SEL_MASK) >> 1;
-> > +     if (intf_sel == 1) {
-> > +             val = bcm_phy_read_shadow(phydev, BCM54616S_SHD_100FX_CTRL);
-> > +             if (val < 0)
-> > +                     return val;
-> > +
-> > +             /* Bit 0 of the SerDes 100-FX Control register, when set
-> > +              * to 1, sets the MII/RGMII -> 100BASE-FX configuration.
-> > +              * When this bit is set to 0, it sets the GMII/RGMII ->
-> > +              * 1000BASE-X configuration.
-> > +              */
-> > +             if (!(val & BCM54616S_100FX_MODE))
-> > +                     phydev->dev_flags |= PHY_BCM_FLAGS_MODE_1000BX;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
-> > +
-> >  static int bcm54616s_config_aneg(struct phy_device *phydev)
-> >  {
-> >       int ret;
-> >
-> >       /* Aneg firsly. */
-> > -     ret = genphy_config_aneg(phydev);
-> > +     if (phydev->dev_flags & PHY_BCM_FLAGS_MODE_1000BX)
-> > +             ret = genphy_c37_config_aneg(phydev);
-> > +     else
-> > +             ret = genphy_config_aneg(phydev);
-> >
-> >       /* Then we can set up the delay. */
-> >       bcm54xx_config_clock_delay(phydev);
-> > @@ -464,6 +499,18 @@ static int bcm54616s_config_aneg(struct phy_device *phydev)
-> >       return ret;
-> >  }
-> >
-> > +static int bcm54616s_read_status(struct phy_device *phydev)
-> > +{
-> > +     int err;
-> > +
-> > +     if (phydev->dev_flags & PHY_BCM_FLAGS_MODE_1000BX)
-> > +             err = genphy_c37_read_status(phydev);
-> > +     else
-> > +             err = genphy_read_status(phydev);
-> > +
-> > +     return err;
-> > +}
-> > +
-> >  static int brcm_phy_setbits(struct phy_device *phydev, int reg, int set)
-> >  {
-> >       int val;
-> > @@ -655,6 +702,8 @@ static struct phy_driver broadcom_drivers[] = {
-> >       .config_aneg    = bcm54616s_config_aneg,
-> >       .ack_interrupt  = bcm_phy_ack_intr,
-> >       .config_intr    = bcm_phy_config_intr,
-> > +     .read_status    = bcm54616s_read_status,
-> > +     .probe          = bcm54616s_probe,
-> >  }, {
-> >       .phy_id         = PHY_ID_BCM5464,
-> >       .phy_id_mask    = 0xfffffff0,
-> > diff --git a/include/linux/brcmphy.h b/include/linux/brcmphy.h
-> > index 6db2d9a6e503..b475e7f20d28 100644
-> > --- a/include/linux/brcmphy.h
-> > +++ b/include/linux/brcmphy.h
-> > @@ -200,9 +200,15 @@
-> >  #define BCM5482_SHD_SSD              0x14    /* 10100: Secondary SerDes control */
-> >  #define BCM5482_SHD_SSD_LEDM 0x0008  /* SSD LED Mode enable */
-> >  #define BCM5482_SHD_SSD_EN   0x0001  /* SSD enable */
-> > -#define BCM5482_SHD_MODE     0x1f    /* 11111: Mode Control Register */
-> > -#define BCM5482_SHD_MODE_1000BX      0x0001  /* Enable 1000BASE-X registers */
-> >
-> > +/* 10011: SerDes 100-FX Control Register */
-> > +#define BCM54616S_SHD_100FX_CTRL     0x13
-> > +#define      BCM54616S_100FX_MODE            BIT(0)  /* 100-FX SerDes Enable */
-> > +
-> > +/* 11111: Mode Control Register */
-> > +#define BCM54XX_SHD_MODE             0x1f
-> > +#define BCM54XX_SHD_INTF_SEL_MASK    GENMASK(2, 1)   /* INTERF_SEL[1:0] */
-> > +#define BCM54XX_SHD_MODE_1000BX              BIT(0)  /* Enable 1000-X registers */
-> >
-> >  /*
-> >   * EXPANSION SHADOW ACCESS REGISTERS.  (PHY REG 0x15, 0x16, and 0x17)
-> >
-
-Regards,
--Vladimir
+T24gOC8xNS8xOSA0OjE1IFBNLCBWbGFkaW1pciBPbHRlYW4gd3JvdGU6DQo+IEhpIFRhbywNCj4g
+DQo+IE9uIEZyaSwgMTYgQXVnIDIwMTkgYXQgMDI6MTMsIFRhbyBSZW4gPHRhb3JlbkBmYi5jb20+
+IHdyb3RlOg0KPj4NCj4+IEhpIEFuZHJldyAvIEZsb3JpYW4gLyBIZWluZXIgLyBWbGFkaW1pciwN
+Cj4+DQo+PiBBbnkgZnVydGhlciBzdWdnZXN0aW9ucyBvbiB0aGUgcGF0Y2ggc2VyaWVzPw0KPj4N
+Cj4+DQo+PiBUaGFua3MsDQo+Pg0KPj4gVGFvDQo+Pg0KPj4gT24gOC8xMS8xOSA0OjQwIFBNLCBU
+YW8gUmVuIHdyb3RlOg0KPj4+IFRoZSBCQ001NDYxNlMgUEhZIGNhbm5vdCB3b3JrIHByb3Blcmx5
+IGluIFJHTUlJLT4xMDAwQmFzZS1YIG1vZGUsIG1haW5seQ0KPj4+IGJlY2F1c2UgZ2VucGh5IGZ1
+bmN0aW9ucyBhcmUgZGVzaWduZWQgZm9yIGNvcHBlciBsaW5rcywgYW5kIDEwMDBCYXNlLVgNCj4+
+PiAoY2xhdXNlIDM3KSBhdXRvIG5lZ290aWF0aW9uIG5lZWRzIHRvIGJlIGhhbmRsZWQgZGlmZmVy
+ZW50bHkuDQo+Pj4NCj4+PiBUaGlzIHBhdGNoIGVuYWJsZXMgMTAwMEJhc2UtWCBzdXBwb3J0IGZv
+ciBCQ001NDYxNlMgYnkgY3VzdG9taXppbmcgMw0KPj4+IGRyaXZlciBjYWxsYmFja3MsIGFuZCBp
+dCdzIHZlcmlmaWVkIHRvIGJlIHdvcmtpbmcgb24gRmFjZWJvb2sgQ01NIEJNQw0KPj4+IHBsYXRm
+b3JtIChSR01JSS0+MTAwMEJhc2UtS1gpOg0KPj4+DQo+Pj4gICAtIHByb2JlOiBwcm9iZSBjYWxs
+YmFjayBkZXRlY3RzIFBIWSdzIG9wZXJhdGlvbiBtb2RlIGJhc2VkIG9uDQo+Pj4gICAgIElOVEVS
+Rl9TRUxbMTowXSBwaW5zIGFuZCAxMDAwWC8xMDBGWCBzZWxlY3Rpb24gYml0IGluIFNlckRFUyAx
+MDAtRlgNCj4+PiAgICAgQ29udHJvbCByZWdpc3Rlci4NCj4+Pg0KPj4+ICAgLSBjb25maWdfYW5l
+ZzogY2FsbHMgZ2VucGh5X2MzN19jb25maWdfYW5lZyB3aGVuIHRoZSBQSFkgaXMgcnVubmluZyBp
+bg0KPj4+ICAgICAxMDAwQmFzZS1YIG1vZGU7IG90aGVyd2lzZSwgZ2VucGh5X2NvbmZpZ19hbmVn
+IHdpbGwgYmUgY2FsbGVkLg0KPj4+DQo+Pj4gICAtIHJlYWRfc3RhdHVzOiBjYWxscyBnZW5waHlf
+YzM3X3JlYWRfc3RhdHVzIHdoZW4gdGhlIFBIWSBpcyBydW5uaW5nIGluDQo+Pj4gICAgIDEwMDBC
+YXNlLVggbW9kZTsgb3RoZXJ3aXNlLCBnZW5waHlfcmVhZF9zdGF0dXMgd2lsbCBiZSBjYWxsZWQu
+DQo+Pj4NCj4+PiBOb3RlOiBCQ001NDYxNlMgUEhZIGNhbiBhbHNvIGJlIGNvbmZpZ3VyZWQgaW4g
+UkdNSUktPjEwMEJhc2UtRlggbW9kZSwgYW5kDQo+Pj4gMTAwQmFzZS1GWCBzdXBwb3J0IGlzIG5v
+dCBhdmFpbGFibGUgYXMgb2Ygbm93Lg0KPj4+DQo+Pj4gU2lnbmVkLW9mZi1ieTogVGFvIFJlbiA8
+dGFvcmVuQGZiLmNvbT4NCj4+PiAtLS0NCj4gDQo+IFRoZSBwYXRjaHNldCBsb29rcyBnb29kIHRv
+IG1lLiBIb3dldmVyIEkgYW0gbm90IGEgbWFpbnRhaW5lci4NCj4gSWYgaXQgaGVscHMsDQo+IA0K
+PiBBY2tlZC1ieTogVmxhZGltaXIgT2x0ZWFuIDxvbHRlYW52QGdtYWlsLmNvbT4NCg0KVGhhbmsg
+eW91IFZsYWRpbWlyIQ0KDQoNCkNoZWVycywNCg0KVGFvDQo=
