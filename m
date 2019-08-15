@@ -2,58 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 474548EF9B
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 17:43:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D32EB8EF9A
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 17:43:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730803AbfHOPne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1730775AbfHOPne (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Thu, 15 Aug 2019 11:43:34 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35100 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729975AbfHOPne (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 11:43:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=v+vEKpkiTrCRCviBkUT/dy67Acr/g1WViBiOURM2aww=; b=z2WIMJFqszQsU/fKTOspR+opOn
-        Mons+XbPSrrbrm5uyuKnlDCNbIqOzrPDuDiSqAPeYucUo+2MuLFuwV+K8dh/nx9PppS3/dQRBWWib
-        jgSwWVM7WahCIIv1c5Y5ewyY4ZImkf7BUWjdy39Ij45pgBswPfbw+Q08ql4Nto7ua+1s=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hyHuR-0001Zg-Rw; Thu, 15 Aug 2019 17:43:27 +0200
-Date:   Thu, 15 Aug 2019 17:43:27 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Christian Herber <christian.herber@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
-Message-ID: <20190815154327.GD15291@lunn.ch>
-References: <20190815153209.21529-1-christian.herber@nxp.com>
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:47019 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730754AbfHOPnd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 11:43:33 -0400
+Received: by mail-pg1-f196.google.com with SMTP id m3so856107pgv.13
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 08:43:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9HCbTE9E3+dXR5PaAmg1/nd6e97REt+InnYZP6O2Ma0=;
+        b=KY9AH0rHketUSx4vEjMtuv89Rr2Lyibezia3bmj58A5oQx7DfAGUlmwOTl4FayqYXY
+         R2SBvVWYaMldM/ZxXf0OHRx20KgiblShaAFsprU7KTB+NknBRcWVpKFa6LB/BFpj5a/q
+         UOO911LaYtqqOsQWfP5bkdTt7eoCreNv7TM53uCYCfofokpd1GFiILfAuvSgl3MPJ1Yk
+         CMIRKUgglLyEQiUjheYFtSPBPIWBI4FxsLKXp9C01x9sOLW9h8WPtD84LYh9//BdVhRe
+         /MXj9EB9KB/BKnH1kKCxQmM9+lnd+FCkHoEA/i+P0PW3VzHz9zXnZpU7Uhw/7zJ9Q07p
+         B2nQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9HCbTE9E3+dXR5PaAmg1/nd6e97REt+InnYZP6O2Ma0=;
+        b=s0GlcvfOL/ShFBqXhbRFjUkz8q0bhTeGO4D31J/2+hRkBFmDIrRUrzGxHSXVksXcHT
+         6ZW+ENUEkGLP3PdpbVHYrzpdw8bVHfR70y2Xh1UUQHxOUmDFVexMdQ6qJWnMaouW89h1
+         ZMrTPFV+ImhzLWK6uFG1W7U8JcVTpqcUqPrA82WPrRGBBTi0nJRi2MtsQn3YCbQ2gKDZ
+         vva+Nh+yETNezXG17x3N+zNFLdK9aTrO6LXg1JXDDi1QQzJoz+S6/3S2ltjz5mTQrf31
+         KjcDJ1pgA5xm/2B6/ioak3KDglV7H7L8wyUTPsruU2sN5xkJYy12vd4yEwhUSDS459K3
+         PDZg==
+X-Gm-Message-State: APjAAAVJen4FeXxhlmU6ozUUn8ZI4IRB/qnCjHpxNs3m3MCFO3sqOho0
+        h9cGio2wqq3Kkxq9bD61PneehRQH
+X-Google-Smtp-Source: APXvYqzGq1+fCV5yRDiYmLPX/8weSuRDTkbdT+uRMeq+0hpTQ1rk2MoVojK6/LLpqx3Vay27T3W3eg==
+X-Received: by 2002:a63:b102:: with SMTP id r2mr3933421pgf.370.1565883812516;
+        Thu, 15 Aug 2019 08:43:32 -0700 (PDT)
+Received: from [10.230.28.130] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id h17sm3193440pfo.24.2019.08.15.08.43.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 15 Aug 2019 08:43:31 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/2] r8169: use the generic EEE management
+ functions
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <4a6878bf-344e-2df5-df00-b80c7c0982d1@gmail.com>
+ <c5a137b1-d9d3-070c-55a1-938d6b77bdbc@gmail.com>
+ <20190815123558.GA31172@lunn.ch>
+ <bfd67eb3-0da7-b8a5-928a-a66802185b68@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Message-ID: <24146e48-c498-d13a-8c12-76519455d0d4@gmail.com>
+Date:   Thu, 15 Aug 2019 08:43:30 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190815153209.21529-1-christian.herber@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <bfd67eb3-0da7-b8a5-928a-a66802185b68@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 03:32:27PM +0000, Christian Herber wrote:
-> This patch adds basic support for BASE-T1 PHYs in the framework.
-> BASE-T1 PHYs main area of application are automotive and industrial.
-> BASE-T1 is standardized in IEEE 802.3, namely
-> - IEEE 802.3bw: 100BASE-T1
-> - IEEE 802.3bp 1000BASE-T1
-> - IEEE 802.3cg: 10BASE-T1L and 10BASE-T1S
 
-Hi Christian
 
-Please make sure you Cc: the PHY subsystem maintainers.
+On 8/15/2019 6:02 AM, Heiner Kallweit wrote:
+> On 15.08.2019 14:35, Andrew Lunn wrote:
+>> On Thu, Aug 15, 2019 at 11:47:33AM +0200, Heiner Kallweit wrote:
+>>> Now that the Realtek PHY driver maps the vendor-specific EEE registers
+>>> to the standard MMD registers, we can remove all special handling and
+>>> use the generic functions phy_ethtool_get/set_eee.
+>>
+>> Hi Heiner
+>>
+> Hi Andrew,
+> 
+>> I think you should also add a call the phy_init_eee()?
+>>
+> I think it's not strictly needed. And few things regarding
+> phy_init_eee are not fully clear to me:
+> 
+> - When is it supposed to be called? Before each call to
+>   phy_ethtool_set_eee? Or once in the drivers init path?
+> 
+> - The name is a little bit misleading as it's mainly a
+>   validity check. An actual "init" is done only if
+>   parameter clk_stop_enable is set.
+> 
+> - It returns -EPROTONOSUPPORT if at least one link partner
+>   doesn't advertise EEE for current speed/duplex. To me this
+>   seems to be too restrictive. Example:
+>   We're at 1Gbps/full and link partner advertises EEE for
+>   100Mbps only. Then phy_init_eee returns -EPROTONOSUPPORT.
+>   This keeps me from controlling 100Mbps EEE advertisement.  
 
-       Andrew
+That function needs a complete rework, it does not say what its name
+implies, and there is an assumption that you have already locally
+advertised EEE for it to work properly, that does not make any sense
+since the whole purpose is to see whether EEE can/will be active with
+the link partner (that's how I read it at least).
+
+Regarding whether the clock stop enable can be turned on or off is also
+a bit suspicious, because a MAC driver does not know whether the PHY
+supports doing that, I had started something in that area years ago:
+
+https://github.com/ffainelli/linux/commits/phy-eee-tx-clk
+-- 
+Florian
