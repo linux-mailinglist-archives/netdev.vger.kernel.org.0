@@ -2,139 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A9708E7EE
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:17:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D16328E80D
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:21:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731096AbfHOJRC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 05:17:02 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34279 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731089AbfHOJRC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 05:17:02 -0400
-Received: by mail-wr1-f68.google.com with SMTP id s18so859866wrn.1
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 02:17:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9S1Fl2pCCtOhtdw8xvtiYq606p0vdg/15a2bhEpk7PQ=;
-        b=BRk7jAs5X88e09hrMxEnVgz10hV/2AKHV2GlQERJAeP5K594b7mzPeWH+PrTJtufrE
-         cKaiERYImkkwPOK0XixGD/eYZrcjupXvlrEC3vS1KAEfPvwdjh0ipJ5A+G6hGgLxTXt2
-         oyJkcXFzOJP3txFz9QbLnwIda48pJ0GDodI1vpkYISfJYDKiG/u15xOAo6cNTxwTu+bV
-         QWKs4bgH37ghxBwETCE7vZopswxRSrp8tUFgfxQORoccAcA6//Ao/iSxVUVggt/Y5p+c
-         yaW3mEsXiw2m/hTA1UdqdqcH/X3SDzwfAwLAH2dSIsTQ0HaF3JlQum80zy3/kb7nnXt1
-         /3Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9S1Fl2pCCtOhtdw8xvtiYq606p0vdg/15a2bhEpk7PQ=;
-        b=C52lhX6FBUyXznY2oea2rk+5EgfKcdAhNNYNCZz2zR+q3aP47BZcX5tJYITnsOgm0a
-         sa4o0MdJJFy/5kyH7p9tpjzwWbsKcNl+Rs1dzwDXE5PG32B8qTJ6IPkqPIVtffCzS9yE
-         O//uoO657/zZ+IB0EWc+vwpePXB7i7JztUFKfcs4Ifych1SX3Vi+EzHE1LC4nNW9KNN7
-         3v/Sg1vkyWXCiCkFhVkLWXMM4GNE/KeZxwv1WDAu4uJk7z19jIMIrWkBE4pMt14VUT24
-         uecTWoM7MAFfW6HemR/G2SzQT/Y7eDFwuhYEEhSySxJpbeOz8XLHXJ3I/HceGcdVDTy4
-         VeZA==
-X-Gm-Message-State: APjAAAUUeeumxo5mjq20EvgOdXMWVCmctx0PZgJRJhMnCvoY6LSTrDU1
-        3AS3GYuccUz0DXKf30otlb8=
-X-Google-Smtp-Source: APXvYqzRmLWUpa+tnZkUFcC8sQ07cc3uuvIIVNGKgge9t3tpJia1Opx5u10HqU2NVOVHeTx8JC8MWQ==
-X-Received: by 2002:adf:f0ce:: with SMTP id x14mr4361080wro.31.1565860620729;
-        Thu, 15 Aug 2019 02:17:00 -0700 (PDT)
-Received: from [192.168.8.147] (178.161.185.81.rev.sfr.net. [81.185.161.178])
-        by smtp.gmail.com with ESMTPSA id x13sm817240wmj.12.2019.08.15.02.16.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 02:16:59 -0700 (PDT)
-Subject: Re: [PATCH net] tunnel: fix dev null pointer dereference when send
- pkg larger than mtu in collect_md mode
-To:     Hangbin Liu <liuhangbin@gmail.com>, netdev@vger.kernel.org
-Cc:     Stefano Brivio <sbrivio@redhat.com>, wenxu <wenxu@ucloud.cn>,
-        Alexei Starovoitov <ast@fb.com>,
-        "David S . Miller" <davem@davemloft.net>
-References: <20190815060904.19426-1-liuhangbin@gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <cb5b5d82-1239-34a9-23f5-1894a2ec92a2@gmail.com>
-Date:   Thu, 15 Aug 2019 11:16:58 +0200
+        id S1731237AbfHOJVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 05:21:33 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35534 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730212AbfHOJVc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 05:21:32 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 16A535AFE9;
+        Thu, 15 Aug 2019 09:21:32 +0000 (UTC)
+Received: from [10.72.12.184] (ovpn-12-184.pek2.redhat.com [10.72.12.184])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 46E1F95A4F;
+        Thu, 15 Aug 2019 09:21:29 +0000 (UTC)
+Subject: Re: [PATCH] tun: fix use-after-free when register netdev failed
+To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
+Cc:     xiyou.wangcong@gmail.com, davem@davemloft.net
+References: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <f9dd102e-e3b4-6522-6094-63aa31b890ea@redhat.com>
+Date:   Thu, 15 Aug 2019 17:21:27 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190815060904.19426-1-liuhangbin@gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Thu, 15 Aug 2019 09:21:32 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
+On 2019/8/15 下午4:18, Yang Yingliang wrote:
+> I got a UAF repport in tun driver when doing fuzzy test:
+>
+> [  466.269490] ==================================================================
+> [  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
+> [  466.271810]
+> [  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
+> [  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+> [  466.271838] Call Trace:
+> [  466.271858]  dump_stack+0xca/0x13e
+> [  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271890]  print_address_description+0x79/0x440
+> [  466.271906]  ? vprintk_func+0x5e/0xf0
+> [  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271935]  __kasan_report+0x15c/0x1df
+> [  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271976]  kasan_report+0xe/0x20
+> [  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
+> [  466.272013]  do_iter_readv_writev+0x4b7/0x740
+> [  466.272032]  ? default_llseek+0x2d0/0x2d0
+> [  466.272072]  do_iter_read+0x1c5/0x5e0
+> [  466.272110]  vfs_readv+0x108/0x180
+> [  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
+> [  466.299020]  ? fsnotify+0x888/0xd50
+> [  466.299040]  ? __fsnotify_parent+0xd0/0x350
+> [  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
+> [  466.304548]  ? vfs_write+0x264/0x510
+> [  466.304569]  ? ksys_write+0x101/0x210
+> [  466.304591]  ? do_preadv+0x116/0x1a0
+> [  466.304609]  do_preadv+0x116/0x1a0
+> [  466.309829]  do_syscall_64+0xc8/0x600
+> [  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [  466.309861] RIP: 0033:0x4560f9
+> [  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> [  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
+> [  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
+> [  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
+> [  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
+> [  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
+> [  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
+> [  466.323057]
+> [  466.323064] Allocated by task 2605:
+> [  466.335165]  save_stack+0x19/0x80
+> [  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
+> [  466.337755]  kmem_cache_alloc+0xe8/0x320
+> [  466.339050]  getname_flags+0xca/0x560
+> [  466.340229]  user_path_at_empty+0x2c/0x50
+> [  466.341508]  vfs_statx+0xe6/0x190
+> [  466.342619]  __do_sys_newstat+0x81/0x100
+> [  466.343908]  do_syscall_64+0xc8/0x600
+> [  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [  466.347034]
+> [  466.347517] Freed by task 2605:
+> [  466.348471]  save_stack+0x19/0x80
+> [  466.349476]  __kasan_slab_free+0x12e/0x180
+> [  466.350726]  kmem_cache_free+0xc8/0x430
+> [  466.351874]  putname+0xe2/0x120
+> [  466.352921]  filename_lookup+0x257/0x3e0
+> [  466.354319]  vfs_statx+0xe6/0x190
+> [  466.355498]  __do_sys_newstat+0x81/0x100
+> [  466.356889]  do_syscall_64+0xc8/0x600
+> [  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [  466.359567]
+> [  466.360050] The buggy address belongs to the object at ffff888372139100
+> [  466.360050]  which belongs to the cache names_cache of size 4096
+> [  466.363735] The buggy address is located 336 bytes inside of
+> [  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
+> [  466.367179] The buggy address belongs to the page:
+> [  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
+> [  466.371582] flags: 0x2fffff80010200(slab|head)
+> [  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
+> [  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
+> [  466.377778] page dumped because: kasan: bad access detected
+> [  466.379730]
+> [  466.380288] Memory state around the buggy address:
+> [  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.388257]                                                  ^
+> [  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.394667] ==================================================================
+>
+> tun_chr_read_iter() accessed the memory which freed by free_netdev()
+> called by tun_set_iff():
+>
+> 	CPUA				CPUB
+>      tun_set_iff()
+>        alloc_netdev_mqs()
+>        tun_attach()
+> 				    tun_chr_read_iter()
+> 				      tun_get()
+>        register_netdevice()
+>        tun_detach_all()
+>          synchronize_net()
+> 				      tun_do_read()
+> 				        tun_ring_recv()
+> 				          schedule()
+>        free_netdev()
+> 				      tun_put() <-- UAF
+>
+> Set a new bit in tun->flag if register_netdevice() successed,
+> without this bit, tun_get() returns NULL to avoid using a
+> freed tun pointer.
 
-On 8/15/19 8:09 AM, Hangbin Liu wrote:
-> When we send a packet larger than PMTU, we need to reply with
-> icmp_send(ICMP_FRAG_NEEDED) or icmpv6_send(ICMPV6_PKT_TOOBIG).
-> 
-> But in collect_md mode, kernel will crash while accessing the dst dev
-> as __metadata_dst_init() init dst->dev to NULL by default. Here is what
-> the code path looks like, for GRE:
-> 
-> - ip6gre_tunnel_xmit
->   - ip6gre_xmit_ipv4
->     - __gre6_xmit
->       - ip6_tnl_xmit
->         - if skb->len - t->tun_hlen - eth_hlen > mtu; return -EMSGSIZE
->     - icmp_send
->       - net = dev_net(rt->dst.dev); <-- here
->   - ip6gre_xmit_ipv6
->     - __gre6_xmit
->       - ip6_tnl_xmit
->         - if skb->len - t->tun_hlen - eth_hlen > mtu; return -EMSGSIZE
->     - icmpv6_send
->       ...
->       - decode_session4
->         - oif = skb_dst(skb)->dev->ifindex; <-- here
->       - decode_session6
->         - oif = skb_dst(skb)->dev->ifindex; <-- here
-> 
-> Fix it by updating the dst dev if not set.
-> 
-> The reproducer is easy:
-> 
-> ovs-vsctl add-br br0
-> ip link set br0 up
-> ovs-vsctl add-port br0 gre0 -- \
-> 	  set interface gre0 type=gre options:remote_ip=$dst_addr
-> ip link set gre0 up
-> ip addr add ${local_gre6}/64 dev br0
-> ping6 $remote_gre6 -s 1500
-> 
-> Fixes: c8b34e680a09 ("ip_tunnel: Add tnl_update_pmtu in ip_md_tunnel_xmit")
-> Fixes: 8d79266bc48c ("ip6_tunnel: add collect_md mode to IPv6 tunnels")
-> Reviewed-by: Stefano Brivio <sbrivio@redhat.com>
-> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+
+Good catch.
+
+Some comments inline.
+
+
+>
+> Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
 > ---
->  net/ipv4/ip_tunnel.c  |  3 +++
->  net/ipv6/ip6_tunnel.c | 13 +++++++++----
->  2 files changed, 12 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
-> index 38c02bb62e2c..c6713c7287df 100644
-> --- a/net/ipv4/ip_tunnel.c
-> +++ b/net/ipv4/ip_tunnel.c
-> @@ -597,6 +597,9 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
->  		goto tx_error;
->  	}
->  
-> +	if (skb_dst(skb) && !skb_dst(skb)->dev)
-> +		skb_dst(skb)->dev = rt->dst.dev;
-> +
+>   drivers/net/tun.c | 10 ++++++++--
+>   1 file changed, 8 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index db16d7a13e00..cbd60c276c40 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -115,6 +115,7 @@ do {								\
+>   /* High bits in flags field are unused. */
+>   #define TUN_VNET_LE     0x80000000
+>   #define TUN_VNET_BE     0x40000000
+> +#define TUN_DEV_REGISTERED	0x20000000
+>   
+>   #define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | \
+>   		      IFF_MULTI_QUEUE | IFF_NAPI | IFF_NAPI_FRAGS)
+> @@ -719,8 +720,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+>   			netif_carrier_off(tun->dev);
+>   
+>   			if (!(tun->flags & IFF_PERSIST) &&
+> -			    tun->dev->reg_state == NETREG_REGISTERED)
+> +			    tun->dev->reg_state == NETREG_REGISTERED) {
+>   				unregister_netdevice(tun->dev);
+> +				tun->flags &= ~TUN_DEV_REGISTERED;
+> +			}
+>   		}
+>   		if (tun)
+>   			xdp_rxq_info_unreg(&tfile->xdp_rxq);
+> @@ -884,8 +887,10 @@ static struct tun_struct *tun_get(struct tun_file *tfile)
+>   
+>   	rcu_read_lock();
+>   	tun = rcu_dereference(tfile->tun);
+> -	if (tun)
+> +	if (tun && (tun->flags & TUN_DEV_REGISTERED))
+>   		dev_hold(tun->dev);
+> +	else
+> +		tun = NULL;
+>   	rcu_read_unlock();
+>   
+>   	return tun;
+> @@ -2836,6 +2841,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+>   		err = register_netdevice(tun->dev);
+>   		if (err < 0)
+>   			goto err_detach;
+> +		tun->flags |= TUN_DEV_REGISTERED;
+>   	}
+>   
+>   	netif_carrier_on(tun->dev);
 
 
-IMO this looks wrong.
-This dst seems shared. 
-Once set, we will reuse the same dev ?
+This looks just a duplicated of netdev->state? However it lacks 
+sufficient synchronization like barriers or locks. How about:
 
-If intended, why not doing this in __metadata_dst_init() instead of in the fast path ?
+- call tun_set_real_num_queues() before register_netdevice() this can 
+have the same result as what  eb0fb363f920 did.
+- move tun_attach() after register_netdevice() this makes sure we won't 
+publish tfile->tun until we are sure at least one refcnt is held by 
+register_netdevice()?
 
->  	if (key->tun_flags & TUNNEL_DONT_FRAGMENT)
->  		df = htons(IP_DF);
->  	if (tnl_update_pmtu(dev, skb, rt, df, inner_iph, tunnel_hlen,
+Thanks
+
