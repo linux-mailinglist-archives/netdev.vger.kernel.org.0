@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C63A78F043
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:16:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 450728F046
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728128AbfHOQQv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 12:16:51 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:52596 "EHLO
+        id S1729507AbfHOQRT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 12:17:19 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:53238 "EHLO
         userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726008AbfHOQQv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 12:16:51 -0400
+        with ESMTP id S1726008AbfHOQRT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 12:17:19 -0400
 Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FGDWRd184373;
-        Thu, 15 Aug 2019 16:16:44 GMT
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FGDkNH184539;
+        Thu, 15 Aug 2019 16:17:17 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
  references : from : message-id : date : mime-version : in-reply-to :
  content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=OkMXRsF4mDAdzvH3/kAdilVCSMv7mJzK/Hgh4U/ioh8=;
- b=m1sZIs7rgOtalL9bfFLc1vfI0QG9a5gASpiMaB6NDKsFEmxm0O6atb26quTMmySJltV5
- Yy0+50mRrrjAk1y1k+6MKGfc1dlWOARnkIEyDLyT6DxWANuLcfnmO2+wjHEIAU69zXg9
- iU+8Jrvm0iwUb9I+LEJ6ytSBEXXFjco1254HRiorgLSdYxqm0FDMNWQQYNXG+09J1LiI
- l7Sn7shn+tFGO7/dwi+q9dKuNQijCzsSP9BpOaaTnvKiQYndEbHNQrVf1LycXYvAYwaP
- MMLafAXP8i4CWi8rehhSppUBZWzF94MunfCTV0ABlCYzeEWiIKrl68w9s+iEkwb8TDN5 XA== 
+ bh=NOjRQtueLH+wB0SDJFQ328snNDvG5UALfu5tJlXrNJs=;
+ b=RpQ4hzLEqE1RKInxgTXM3z/jq4zF3bE6rhfeI1gtZnl7qlT1s6NhMuRzmmG5XhyV4onX
+ EuRx55dTyaZcNtydZnd/Qzuz7+xl0Fbuq68+o/yhwaZYqHxDuGT9bH6y++1G16Oj82ij
+ s51Uvsq3fKvRdfDdX6ajStDeKgh1xx853tvzyOe8h90pDA0m8yCbERu40TEHxt7Tc99e
+ 809wCFWzG4XZ6JLJUyfhgCQ2rmaTO1vPK00FWTgH+lxBu+rkmCwSynlMk838vO89avde
+ 5zZpMm4rAkEkIqtAMDS6vjwizoKZPx7G1lxiIZ7Ru0UpQ9VvgjTmIMA4v3whBb/RPbEv rA== 
 Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 2u9pjqugfh-1
+        by userp2120.oracle.com with ESMTP id 2u9pjqugkn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 16:16:44 +0000
+        Thu, 15 Aug 2019 16:17:17 +0000
 Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FGDDvZ094667;
-        Thu, 15 Aug 2019 16:16:43 GMT
+        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FGDCoC094472;
+        Thu, 15 Aug 2019 16:17:17 GMT
 Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 2ucgf16rbj-1
+        by userp3020.oracle.com with ESMTP id 2ucgf16s59-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Aug 2019 16:16:43 +0000
+        Thu, 15 Aug 2019 16:17:17 +0000
 Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7FGDUBA096548;
-        Thu, 15 Aug 2019 16:16:43 GMT
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7FGF9aA103708;
+        Thu, 15 Aug 2019 16:17:16 GMT
 Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3020.oracle.com with ESMTP id 2ucgf16raf-1
+        by userp3020.oracle.com with ESMTP id 2ucgf16s4w-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 16:16:43 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7FGGgZf016397;
-        Thu, 15 Aug 2019 16:16:42 GMT
+        Thu, 15 Aug 2019 16:17:16 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7FGHGwc016818;
+        Thu, 15 Aug 2019 16:17:16 GMT
 Received: from [10.159.249.63] (/10.159.249.63)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 15 Aug 2019 09:16:42 -0700
-Subject: Re: [PATCH net-next v2 1/4] RDS: limit the number of times we loop in
- rds_send_xmit
+        with ESMTP ; Thu, 15 Aug 2019 09:17:15 -0700
+Subject: Re: [PATCH net-next v2 2/4] RDS: don't use GFP_ATOMIC for sk_alloc in
+ rds_create
 To:     Gerd Rausch <gerd.rausch@oracle.com>, netdev@vger.kernel.org,
         linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
 Cc:     David Miller <davem@davemloft.net>
 References: <20190814.212525.326606319186601317.davem@davemloft.net>
  <cover.1565879451.git.gerd.rausch@oracle.com>
- <90b76f24-d799-5362-df53-19102d781e3e@oracle.com>
+ <31c65073-0a9a-28b5-eb73-4ec784b0393e@oracle.com>
 From:   santosh.shilimkar@oracle.com
 Organization: Oracle Corporation
-Message-ID: <60c48651-a910-ad82-f8f5-1af188f43009@oracle.com>
-Date:   Thu, 15 Aug 2019 09:16:39 -0700
+Message-ID: <349c267f-e610-e8b8-22c1-d98fcbf26c86@oracle.com>
+Date:   Thu, 15 Aug 2019 09:17:14 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
  Gecko/20100101 Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <90b76f24-d799-5362-df53-19102d781e3e@oracle.com>
+In-Reply-To: <31c65073-0a9a-28b5-eb73-4ec784b0393e@oracle.com>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -79,17 +79,11 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On 8/15/19 7:42 AM, Gerd Rausch wrote:
 > From: Chris Mason <chris.mason@oracle.com>
-> Date: Fri, 3 Feb 2012 11:07:54 -0500
+> Date: Fri, 3 Feb 2012 11:08:51 -0500
 > 
-> This will kick the RDS worker thread if we have been looping
-> too long.
-> 
-> Original commit from 2012 updated to include a change by
-> Venkat Venkatsubra <venkat.x.venkatsubra@oracle.com>
-> that triggers "must_wake" if "rds_ib_recv_refill_one" fails.
-> 
+> Signed-off-by: Chris Mason <chris.mason@oracle.com>
+> Signed-off-by: Bang Nguyen <bang.nguyen@oracle.com>
 > Signed-off-by: Gerd Rausch <gerd.rausch@oracle.com>
+> Signed-off-by: Somasundaram Krishnasamy <somasundaram.krishnasamy@oracle.com>
 > ---
-Thought I acked V1 series.
-
 Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
