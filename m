@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E2F488ED27
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 15:42:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51CF48ED28
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 15:42:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732431AbfHONmf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 09:42:35 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33807 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732423AbfHONme (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 09:42:34 -0400
-Received: by mail-wm1-f67.google.com with SMTP id e8so1054086wme.1
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 06:42:33 -0700 (PDT)
+        id S1732434AbfHONmg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 09:42:36 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34823 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729918AbfHONmf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 09:42:35 -0400
+Received: by mail-wr1-f67.google.com with SMTP id k2so2278218wrq.2
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 06:42:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=tAzzVVZmRA3f54OeTuZNMQXmuAAjzsltCYmnHv7IDZ4=;
-        b=0c4cHB+F+/gaiTXpQIIAL0QCvUWtCwEpFzlZmS0NuKY7LZi+RXb3Ylps75k6IDLTAe
-         x0an6hOZs42/UA2dTC4f6A+aL5Pbt50+ONE5pBYBHdpf4I4JkGIMeaZlBcRlVS23D61W
-         cLAisd5NMQycAWdceHMCGJ6VwiAHAjVvdGxeMc7FQqocxX24/Xy/2aJFFXqz6HEMPYrN
-         A9igG1lwX6jgSYpovMwmOKn/FKBN48XC7OJhmJQkO9uFBfaA3x1RXLbd1lw+UKbrB6MH
-         bdwq/0BDOs1mAwgvstcl4nbOXMlrc4OoDlHrJIezUM1/SNUKauuSSb6P5jOoUsvVsUIt
-         VQaw==
+        bh=oxRwEXAVstWIzVhCtKLI+uJftYF7Jca1fTx4xr/sTgc=;
+        b=WUIMRYGw2cOYGt85UafqO7fuoGqoRNwEjz/vu11H7b9o5MRdn/qD4WodXBoErYpZaS
+         G5v47wpmHg/D8rliMjBo/y0qaTm2h4TKiUE1Pvho4ool2ZZB/RLuidCkiTiIpxv7dcPV
+         ZWeuc2usD8O0WoTT28iBAmqK6+42mLwK6w24PnteM/SSi6jo3B80QVS87xMhn/tC07Wi
+         22D4dKxd4PVKj7MOODP8vSjyOnP8GpVfgs5GiM+8Jrs4dHaprXYMa263Rr6jt21ohTie
+         RY3Qx0152dQqRopFhQCZP/XT3fbbI/naPewiaomixkShdGSKINI9D8wJ2//QmUp1cVgX
+         puWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=tAzzVVZmRA3f54OeTuZNMQXmuAAjzsltCYmnHv7IDZ4=;
-        b=sQBpD1/ZMpv8T5Kyam51OTtBGPvQmbVMap4KDbEv3BJezNeFG+Df6fs44T5pW2pgU4
-         gpFiLtEFHpPDVVwASHJDJwp1pzcbkQFQkKCJKoE1m7nCKjflC2AZ3T+QzKXB1yYNeuOP
-         muH73g+DrTHCv6zehP2joZNPcIIyI6bF+ng466jVrTD+XeHhYLhaTr42YAwGxiSGiBXs
-         FbajABo19VIB9X6KMQIr5eh4ftzfRjufdgpFJ4chlf4a54QiuoGp19vIldYuZL6z7dzj
-         8WICq/wZ0SexBzYf6HC9cvh/PrigINAdxgUtNyFAOgaTIwhOUnKkWN4qg92Z3c90AsZR
-         D6qA==
-X-Gm-Message-State: APjAAAW3mLzWDn0GFZxxwiYuLKwCEDVWD7dejYMza9AZY2dxBXSFUwAr
-        6Sw+X7fM4uG06xlPrxqr87aUOoAYVUo=
-X-Google-Smtp-Source: APXvYqxC2qlgMXT/fQSb0jFbwo7a4oShkewCAuafP+72klwI7OM42p3/jMN/RBhpCOkpPemFlyY02g==
-X-Received: by 2002:a05:600c:21d3:: with SMTP id x19mr2802791wmj.45.1565876552219;
-        Thu, 15 Aug 2019 06:42:32 -0700 (PDT)
+        bh=oxRwEXAVstWIzVhCtKLI+uJftYF7Jca1fTx4xr/sTgc=;
+        b=PuIC206OFrkLfDsVFJzfzieK8p8J8QkIgNFXqBBXoAaZJjuzb9WubQqFJrcug5RWek
+         Nph1xPsIIvRu7N2MIOm2px1wk2QH6xP8GKbyoGpJXFgftVcdtp4igkYYSbp6DO58wsla
+         4/mxybd4ceca/bf5XF3W+aen0FQ6l4X6+IkZpxFB/dZFRMFZlVj4LvSgQr4dYQHA1Ayt
+         MEQYmfIzbWL1JPdBEV2poqhWCdUZWCCmviXFg1iLjsYOi3eHi3AA5Q2hbS7anOaLPWsK
+         r3XJCOxRH6ePuEkzFX4CMTYxqA4/HMWaANwLHHdK2Bhze0IJP+TqOe6hU8ebL0Kv4WBB
+         5BMQ==
+X-Gm-Message-State: APjAAAXa0/be9q00plRvluoRzx+QtA+r8JbFeYzw4AHIR99pE112R3B7
+        ApCXuq1prvElh5FeIG9NZoY9YJSZ3r8=
+X-Google-Smtp-Source: APXvYqw+w3OrX09N9xbBe5z/073oJ4w5VhPVHr4HWkTEffNe1oV9SRtynTmS50X/rO2UsXpahetASg==
+X-Received: by 2002:adf:ffc2:: with SMTP id x2mr1743346wrs.338.1565876553230;
+        Thu, 15 Aug 2019 06:42:33 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id x6sm1377849wmf.6.2019.08.15.06.42.31
+        by smtp.gmail.com with ESMTPSA id h2sm1196198wmb.28.2019.08.15.06.42.32
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 15 Aug 2019 06:42:31 -0700 (PDT)
+        Thu, 15 Aug 2019 06:42:32 -0700 (PDT)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, jakub.kicinski@netronome.com,
         mlxsw@mellanox.com
-Subject: [patch net-next v3 1/2] selftests: net: push jq workaround into separate helper
-Date:   Thu, 15 Aug 2019 15:42:28 +0200
-Message-Id: <20190815134229.8884-2-jiri@resnulli.us>
+Subject: [patch net-next v3 2/2] selftests: netdevsim: add devlink params tests
+Date:   Thu, 15 Aug 2019 15:42:29 +0200
+Message-Id: <20190815134229.8884-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190815134229.8884-1-jiri@resnulli.us>
 References: <20190815134229.8884-1-jiri@resnulli.us>
@@ -63,77 +63,96 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@mellanox.com>
 
-Push the jq return value workaround code into a separate helper so it
-could be used by the rest of the code.
+Test recently added netdevsim devlink param implementation.
 
 Signed-off-by: Jiri Pirko <jiri@mellanox.com>
 ---
-v2->v3:
--remove -e jq option and rather check for empty output and return error
 v1->v2:
--new patch
+-using cmd_jq helper
 ---
- tools/testing/selftests/net/forwarding/lib.sh | 19 +++++++++++++++++++
- .../selftests/net/forwarding/tc_common.sh     | 17 ++++-------------
- 2 files changed, 23 insertions(+), 13 deletions(-)
+ .../drivers/net/netdevsim/devlink.sh          | 62 ++++++++++++++++++-
+ 1 file changed, 61 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/forwarding/lib.sh b/tools/testing/selftests/net/forwarding/lib.sh
-index 9385dc971269..85c587a03c8a 100644
---- a/tools/testing/selftests/net/forwarding/lib.sh
-+++ b/tools/testing/selftests/net/forwarding/lib.sh
-@@ -250,6 +250,25 @@ setup_wait()
- 	sleep $WAIT_TIME
+diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+index 9d8baf5d14b3..6828e9404460 100755
+--- a/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
++++ b/tools/testing/selftests/drivers/net/netdevsim/devlink.sh
+@@ -3,7 +3,7 @@
+ 
+ lib_dir=$(dirname $0)/../../../net/forwarding
+ 
+-ALL_TESTS="fw_flash_test"
++ALL_TESTS="fw_flash_test params_test"
+ NUM_NETIFS=0
+ source $lib_dir/lib.sh
+ 
+@@ -30,6 +30,66 @@ fw_flash_test()
+ 	log_test "fw flash test"
  }
  
-+cmd_jq()
++param_get()
 +{
-+	local cmd=$1
-+	local jq_exp=$2
-+	local ret
-+	local output
++	local name=$1
 +
-+	output="$($cmd)"
-+	# it the command fails, return error right away
-+	ret=$?
-+	if [[ $ret -ne 0 ]]; then
-+		return $ret
-+	fi
-+	output=$(echo $output | jq -r "$jq_exp")
-+	echo $output
-+	# return success only in case of non-empty output
-+	[ ! -z "$output" ]
++	cmd_jq "devlink dev param show $DL_HANDLE name $name -j" \
++	       '.[][][].values[] | select(.cmode == "driverinit").value'
 +}
 +
- lldpad_app_wait_set()
++param_set()
++{
++	local name=$1
++	local value=$2
++
++	devlink dev param set $DL_HANDLE name $name cmode driverinit value $value
++}
++
++check_value()
++{
++	local name=$1
++	local phase_name=$2
++	local expected_param_value=$3
++	local expected_debugfs_value=$4
++	local value
++
++	value=$(param_get $name)
++	check_err $? "Failed to get $name param value"
++	[ "$value" == "$expected_param_value" ]
++	check_err $? "Unexpected $phase_name $name param value"
++	value=$(<$DEBUGFS_DIR/$name)
++	check_err $? "Failed to get $name debugfs value"
++	[ "$value" == "$expected_debugfs_value" ]
++	check_err $? "Unexpected $phase_name $name debugfs value"
++}
++
++params_test()
++{
++	RET=0
++
++	local max_macs
++	local test1
++
++	check_value max_macs initial 32 32
++	check_value test1 initial true Y
++
++	param_set max_macs 16
++	check_err $? "Failed to set max_macs param value"
++	param_set test1 false
++	check_err $? "Failed to set test1 param value"
++
++	check_value max_macs post-set 16 32
++	check_value test1 post-set false Y
++
++	devlink dev reload $DL_HANDLE
++
++	check_value max_macs post-reload 16 16
++	check_value test1 post-reload false N
++
++	log_test "params test"
++}
++
+ setup_prepare()
  {
- 	local dev=$1; shift
-diff --git a/tools/testing/selftests/net/forwarding/tc_common.sh b/tools/testing/selftests/net/forwarding/tc_common.sh
-index 9d3b64a2a264..315e934358d4 100644
---- a/tools/testing/selftests/net/forwarding/tc_common.sh
-+++ b/tools/testing/selftests/net/forwarding/tc_common.sh
-@@ -8,18 +8,9 @@ tc_check_packets()
- 	local id=$1
- 	local handle=$2
- 	local count=$3
--	local ret
- 
--	output="$(tc -j -s filter show $id)"
--	# workaround the jq bug which causes jq to return 0 in case input is ""
--	ret=$?
--	if [[ $ret -ne 0 ]]; then
--		return $ret
--	fi
--	echo $output | \
--		jq -e ".[] \
--		| select(.options.handle == $handle) \
--		| select(.options.actions[0].stats.packets == $count)" \
--		&> /dev/null
--	return $?
-+	cmd_jq "tc -j -s filter show $id" \
-+	       ".[] | select(.options.handle == $handle) | \
-+	              select(.options.actions[0].stats.packets == $count)" \
-+	       &> /dev/null
- }
+ 	modprobe netdevsim
 -- 
 2.21.0
 
