@@ -2,238 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 783B18E873
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:39:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 013EB8E874
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:39:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731489AbfHOJjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 05:39:00 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:40300 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731289AbfHOJi7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 05:38:59 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7F9cp0N081368;
-        Thu, 15 Aug 2019 09:38:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id; s=corp-2019-08-05;
- bh=NiOQItys2rGPcm2AIh3NktxbZ2EbUmPGL3w8EK/wUgs=;
- b=EmtE9xsNhHnJbFONNrkEuyy4CGKNEgNAGEb0mOfKCsEXc7d/5LP12wYiRHRJyFRUjIMh
- DyTJjsJERFCm9gDYUh15IvBC3HIsZHjDNJuvfKrwO8a5eaoS5MWQ4obttIV4ccmEllHp
- z22jH1sbxpHuxGsKGNP2SOYmW1qZoLLMWhnKqiAuq2wfgVF7atff7+iuACdK9NybxnFz
- VMsyRcbwASflPb+MlzlL/LIO842aZF2FiBzo1FTXFuFDjwEV3G8WOAwZbGCYoX7uhqdH
- TzitoD5uV7QuXNYO/XtOwjAQsK6AaMGdnPmsa01jtiJnWujiXkQ26hQ5dsr8JAAAY6/l kg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 2u9nvpj2q8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 09:38:51 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7F9XnZL179389;
-        Thu, 15 Aug 2019 09:36:50 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 2ucpys6s3w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Aug 2019 09:36:50 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7F9aoY3184855;
-        Thu, 15 Aug 2019 09:36:50 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by aserp3020.oracle.com with ESMTP id 2ucpys6s3n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 09:36:50 +0000
-Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7F9anA0014551;
-        Thu, 15 Aug 2019 09:36:49 GMT
-Received: from ca-dev40.us.oracle.com (/10.129.135.27)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 15 Aug 2019 02:36:48 -0700
-From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-To:     netdev@vger.kernel.org
-Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net,
-        rds-devel@oss.oracle.com
-Subject: [PATCH net-next] net/rds: Add RDS6_INFO_SOCKETS and RDS6_INFO_RECV_MESSAGES options
-Date:   Thu, 15 Aug 2019 02:36:43 -0700
-Message-Id: <1565861803-31268-1-git-send-email-ka-cheong.poon@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9349 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908150102
+        id S1731480AbfHOJi6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 05:38:58 -0400
+Received: from mail-eopbgr770110.outbound.protection.outlook.com ([40.107.77.110]:64227
+        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725875AbfHOJi6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 05:38:58 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=UxhqGsLwI7df5YtyeVhWiMnamH0T3N779R6wtHuwjYfeuY/72pdzsyzz7HgbHJNIoTFaYnswbp/5Kw0lmxquRaYPDWF7u8UPpBmqBuzWmM2VdRiyLaOmqlXC5bjCZZ0TJ9I1/LDIuNi1cmWcgIWAOq8S0gJdyGM/RQfzL5WCqohN+c6H4cyKRMIedtBldD9jOKrreoarDk2QnqohkeJipYXGlFMq30F/VaBqpXb8Tr6I/ui0gNvQ4zgr22FpbVMMECNzMv/mJp2uEYYoBuByCSDbll4qIgdtnWdb8Ook+p5x2xILnefvsqGBFhN0q3GXwa18xOwf/2bdXSXh+GcmhQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K9PoXqHtp0Kpdy3U9XMa0oxY1rMTU4wvyjRjsyM10OU=;
+ b=n40wxfIJmzfg4o/9lYQUVBJrAUuCgSddgWVzGQFNRoDgDcK2fUoNooM8Ch4jOG1pldi7TRacGZprqad6j/MpkGlhltOsMWdLOdy26WcfIFK3czTkznlNz0HVgSikYECPvZNS4iCtewKMIHOW1zwgCnCD78/OHj9T7zqSx8ZFQS0UCho47GlA6DPuEY9fM9WQDAoIo4d1EXLj47J0o0KJmKx0YHSHbRoY16++/YBBH4mZ9r/4vFY1jyZQN8B108KnCYq8o3bkurdHPRlNypd4pQamsYElPLo1LU2AJrlWjB8kKxg8njpVrcV54B2+FRzy9WPS376q9OwmXt/MHPgFbQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=wavecomp.com; dmarc=pass action=none header.from=mips.com;
+ dkim=pass header.d=mips.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=wavecomp.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=K9PoXqHtp0Kpdy3U9XMa0oxY1rMTU4wvyjRjsyM10OU=;
+ b=jBzxjXO9tWlYpgjwbxqPfYQMa6LSqZpiXBzausWT8h1FPuIPy2LxXG/RWGCJ9HcXI+4TwFOyXBvgPskZHbJDn7SnRx7zzHJF1uIJ7BH5EVJ5hV6AuILr+BIUhZeOdev0cCkxh4YoKbBH7Y584TExf3tvODbVW2F1S7idDDa4BR0=
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com (10.172.60.12) by
+ MWHPR2201MB1327.namprd22.prod.outlook.com (10.172.62.12) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Thu, 15 Aug 2019 09:38:55 +0000
+Received: from MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::f566:bf1f:dcd:862c]) by MWHPR2201MB1277.namprd22.prod.outlook.com
+ ([fe80::f566:bf1f:dcd:862c%10]) with mapi id 15.20.2157.022; Thu, 15 Aug 2019
+ 09:38:55 +0000
+From:   Paul Burton <paul.burton@mips.com>
+To:     Nick Desaulniers <ndesaulniers@google.com>
+CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "sedat.dilek@gmail.com" <sedat.dilek@gmail.com>,
+        "jpoimboe@redhat.com" <jpoimboe@redhat.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "miguel.ojeda.sandonis@gmail.com" <miguel.ojeda.sandonis@gmail.com>,
+        "clang-built-linux@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        James Hogan <jhogan@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        "linux-mips@vger.kernel.org" <linux-mips@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH 08/16] mips: prefer __section from compiler_attributes.h
+Thread-Topic: [PATCH 08/16] mips: prefer __section from compiler_attributes.h
+Thread-Index: AQHVU01ByaP1AV05REaF4uuS4im7OQ==
+Date:   Thu, 15 Aug 2019 09:38:54 +0000
+Message-ID: <20190815093848.tremcmaftzspuzzj@pburton-laptop>
+References: <20190812215052.71840-1-ndesaulniers@google.com>
+ <20190812215052.71840-8-ndesaulniers@google.com>
+In-Reply-To: <20190812215052.71840-8-ndesaulniers@google.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0077.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:8::17) To MWHPR2201MB1277.namprd22.prod.outlook.com
+ (2603:10b6:301:18::12)
+user-agent: NeoMutt/20180716
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=pburton@wavecomp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2a02:c7f:5e65:9900:4e8f:fd55:165f:4d31]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4ed70961-ed87-4089-25a7-08d72164638e
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR2201MB1327;
+x-ms-traffictypediagnostic: MWHPR2201MB1327:
+x-microsoft-antispam-prvs: <MWHPR2201MB13272BD527981FF6608AA35BC1AC0@MWHPR2201MB1327.namprd22.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4714;
+x-forefront-prvs: 01304918F3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(7916004)(136003)(346002)(39850400004)(376002)(366004)(396003)(199004)(189003)(14444005)(71190400001)(71200400001)(14454004)(54906003)(58126008)(256004)(76176011)(6246003)(53936002)(52116002)(4326008)(99286004)(8936002)(478600001)(316002)(25786009)(81166006)(81156014)(8676002)(33716001)(6916009)(305945005)(7736002)(7416002)(6436002)(9686003)(6512007)(6486002)(3716004)(6116002)(2906002)(5660300002)(229853002)(64756008)(66446008)(66946007)(66476007)(66556008)(42882007)(46003)(102836004)(6506007)(386003)(186003)(11346002)(44832011)(486006)(476003)(1076003)(446003);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR2201MB1327;H:MWHPR2201MB1277.namprd22.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: wavecomp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: SAu1mhQkxjxv1NLJhEf1dcfUEMopaiEUp0eEhEnX1MW1FNAAE6IEvSF5fQ+PQe8Jp0FOLQEyVz0VPFO0lOY+5DofBMmGWMMdp9Q212vunQxp17klqvnWv5qPzmYoZkdvJdt7iha7UCDJfVOebZQqJ2xj/tiQEeLWxAz1Yo6C0W9nZj2pDoY9Z/7je8uLs1yMwg6tuSF0CkkKpzwtwk20r3llG0/M2z7Ap/OYcSCSQ1cBB7C9fLGfPp+3XhzkMcJO0qoZfQPVruSo8OWa8SyUlWLpkaVlC+6XmRMC5OXGTtDE8uADtmrLH1E+rqeStXvk40WJdpi51M1h3KPHD8jR2XTqXSiWRyl1Ym7DqvEsKUdhvZZW90jtDLL9KRLKhKCwIat5ztsVzE5PIM2kyxZDc/0t6Ne74j8Sdt3uREW7KC8=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <A55F7F2516A3ED47888C59738C16F661@namprd22.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: mips.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4ed70961-ed87-4089-25a7-08d72164638e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2019 09:38:54.9129
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 463607d3-1db3-40a0-8a29-970c56230104
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: /fXB8XM2ZVQ4VJIQuZ9fq7ko798Chgbx5r2vgQwkZOkbkgg1sGtZDxpxDrW49hRkivlJGXSPxJwBHyNs96cVZw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR2201MB1327
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support of the socket options RDS6_INFO_SOCKETS and
-RDS6_INFO_RECV_MESSAGES which update the RDS_INFO_SOCKETS and
-RDS_INFO_RECV_MESSAGES options respectively.  The old options work
-for IPv4 sockets only.
+Hi Nick,
 
-Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
----
- net/rds/af_rds.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 90 insertions(+), 3 deletions(-)
+On Mon, Aug 12, 2019 at 02:50:41PM -0700, Nick Desaulniers wrote:
+> Reported-by: Sedat Dilek <sedat.dilek@gmail.com>
+> Suggested-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
 
-diff --git a/net/rds/af_rds.c b/net/rds/af_rds.c
-index 2b969f9..e7b082a 100644
---- a/net/rds/af_rds.c
-+++ b/net/rds/af_rds.c
-@@ -1,5 +1,5 @@
- /*
-- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
-+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
-  *
-  * This software is available to you under a choice of one of two
-  * licenses.  You may choose to be licensed under the terms of the GNU
-@@ -741,6 +741,10 @@ static void rds_sock_inc_info(struct socket *sock, unsigned int len,
- 	spin_lock_bh(&rds_sock_lock);
- 
- 	list_for_each_entry(rs, &rds_sock_list, rs_item) {
-+		/* This option only supports IPv4 sockets. */
-+		if (!ipv6_addr_v4mapped(&rs->rs_bound_addr))
-+			continue;
-+
- 		read_lock(&rs->rs_recv_lock);
- 
- 		/* XXX too lazy to maintain counts.. */
-@@ -762,21 +766,60 @@ static void rds_sock_inc_info(struct socket *sock, unsigned int len,
- 	lens->each = sizeof(struct rds_info_message);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+static void rds6_sock_inc_info(struct socket *sock, unsigned int len,
-+			       struct rds_info_iterator *iter,
-+			       struct rds_info_lengths *lens)
-+{
-+	struct rds_incoming *inc;
-+	unsigned int total = 0;
-+	struct rds_sock *rs;
-+
-+	len /= sizeof(struct rds6_info_message);
-+
-+	spin_lock_bh(&rds_sock_lock);
-+
-+	list_for_each_entry(rs, &rds_sock_list, rs_item) {
-+		read_lock(&rs->rs_recv_lock);
-+
-+		list_for_each_entry(inc, &rs->rs_recv_queue, i_item) {
-+			total++;
-+			if (total <= len)
-+				rds6_inc_info_copy(inc, iter, &inc->i_saddr,
-+						   &rs->rs_bound_addr, 1);
-+		}
-+
-+		read_unlock(&rs->rs_recv_lock);
-+	}
-+
-+	spin_unlock_bh(&rds_sock_lock);
-+
-+	lens->nr = total;
-+	lens->each = sizeof(struct rds6_info_message);
-+}
-+#endif
-+
- static void rds_sock_info(struct socket *sock, unsigned int len,
- 			  struct rds_info_iterator *iter,
- 			  struct rds_info_lengths *lens)
- {
- 	struct rds_info_socket sinfo;
-+	unsigned int cnt = 0;
- 	struct rds_sock *rs;
- 
- 	len /= sizeof(struct rds_info_socket);
- 
- 	spin_lock_bh(&rds_sock_lock);
- 
--	if (len < rds_sock_count)
-+	if (len < rds_sock_count) {
-+		cnt = rds_sock_count;
- 		goto out;
-+	}
- 
- 	list_for_each_entry(rs, &rds_sock_list, rs_item) {
-+		/* This option only supports IPv4 sockets. */
-+		if (!ipv6_addr_v4mapped(&rs->rs_bound_addr))
-+			continue;
- 		sinfo.sndbuf = rds_sk_sndbuf(rs);
- 		sinfo.rcvbuf = rds_sk_rcvbuf(rs);
- 		sinfo.bound_addr = rs->rs_bound_addr_v4;
-@@ -786,15 +829,51 @@ static void rds_sock_info(struct socket *sock, unsigned int len,
- 		sinfo.inum = sock_i_ino(rds_rs_to_sk(rs));
- 
- 		rds_info_copy(iter, &sinfo, sizeof(sinfo));
-+		cnt++;
- 	}
- 
- out:
--	lens->nr = rds_sock_count;
-+	lens->nr = cnt;
- 	lens->each = sizeof(struct rds_info_socket);
- 
- 	spin_unlock_bh(&rds_sock_lock);
- }
- 
-+#if IS_ENABLED(CONFIG_IPV6)
-+static void rds6_sock_info(struct socket *sock, unsigned int len,
-+			   struct rds_info_iterator *iter,
-+			   struct rds_info_lengths *lens)
-+{
-+	struct rds6_info_socket sinfo6;
-+	struct rds_sock *rs;
-+
-+	len /= sizeof(struct rds6_info_socket);
-+
-+	spin_lock_bh(&rds_sock_lock);
-+
-+	if (len < rds_sock_count)
-+		goto out;
-+
-+	list_for_each_entry(rs, &rds_sock_list, rs_item) {
-+		sinfo6.sndbuf = rds_sk_sndbuf(rs);
-+		sinfo6.rcvbuf = rds_sk_rcvbuf(rs);
-+		sinfo6.bound_addr = rs->rs_bound_addr;
-+		sinfo6.connected_addr = rs->rs_conn_addr;
-+		sinfo6.bound_port = rs->rs_bound_port;
-+		sinfo6.connected_port = rs->rs_conn_port;
-+		sinfo6.inum = sock_i_ino(rds_rs_to_sk(rs));
-+
-+		rds_info_copy(iter, &sinfo6, sizeof(sinfo6));
-+	}
-+
-+ out:
-+	lens->nr = rds_sock_count;
-+	lens->each = sizeof(struct rds6_info_socket);
-+
-+	spin_unlock_bh(&rds_sock_lock);
-+}
-+#endif
-+
- static void rds_exit(void)
- {
- 	sock_unregister(rds_family_ops.family);
-@@ -808,6 +887,10 @@ static void rds_exit(void)
- 	rds_bind_lock_destroy();
- 	rds_info_deregister_func(RDS_INFO_SOCKETS, rds_sock_info);
- 	rds_info_deregister_func(RDS_INFO_RECV_MESSAGES, rds_sock_inc_info);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	rds_info_deregister_func(RDS6_INFO_SOCKETS, rds6_sock_info);
-+	rds_info_deregister_func(RDS6_INFO_RECV_MESSAGES, rds6_sock_inc_info);
-+#endif
- }
- module_exit(rds_exit);
- 
-@@ -845,6 +928,10 @@ static int rds_init(void)
- 
- 	rds_info_register_func(RDS_INFO_SOCKETS, rds_sock_info);
- 	rds_info_register_func(RDS_INFO_RECV_MESSAGES, rds_sock_inc_info);
-+#if IS_ENABLED(CONFIG_IPV6)
-+	rds_info_register_func(RDS6_INFO_SOCKETS, rds6_sock_info);
-+	rds_info_register_func(RDS6_INFO_RECV_MESSAGES, rds6_sock_inc_info);
-+#endif
- 
- 	goto out;
- 
--- 
-1.8.3.1
+It would be good to add a commit message, even if it's just a line
+repeating the subject & preferably describing the motivation.
 
+> ---
+>  arch/mips/include/asm/cache.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/arch/mips/include/asm/cache.h b/arch/mips/include/asm/cache.=
+h
+> index 8b14c2706aa5..af2d943580ee 100644
+> --- a/arch/mips/include/asm/cache.h
+> +++ b/arch/mips/include/asm/cache.h
+> @@ -14,6 +14,6 @@
+>  #define L1_CACHE_SHIFT		CONFIG_MIPS_L1_CACHE_SHIFT
+>  #define L1_CACHE_BYTES		(1 << L1_CACHE_SHIFT)
+> =20
+> -#define __read_mostly __attribute__((__section__(".data..read_mostly")))
+> +#define __read_mostly __section(.data..read_mostly)
+> =20
+>  #endif /* _ASM_CACHE_H */
+> --=20
+> 2.23.0.rc1.153.gdeed80330f-goog
+
+I'm not copied on the rest of the series so I'm not sure what your
+expectations are about where this should be applied. Let me know if
+you'd prefer this to go through mips-next, otherwise:
+
+    Acked-by: Paul Burton <paul.burton@mips.com>
+
+Thanks,
+    Paul
