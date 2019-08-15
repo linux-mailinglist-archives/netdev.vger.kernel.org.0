@@ -2,172 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3BE8E85D
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:35:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 783B18E873
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:39:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730811AbfHOJf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 05:35:27 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42710 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730213AbfHOJf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 05:35:27 -0400
-Received: by mail-wr1-f65.google.com with SMTP id b16so1648992wrq.9
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 02:35:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=d5q7TWUpqsGm62p1Q7uz62qxO+UQ8ow0BrjLgb4A15Q=;
-        b=kkroIqSmOC7WM2JhZuOzedVYJ+qkBs/c1bvB2miszqAqgk1nIu1AKigaW2Yrr8f+Rk
-         /0XjR8GMqSvxTkwfqdB8gLBfl9WWfOCCjUf/D2FLRrVAw8HYRgHBZuOGj99zLH6MmtRO
-         8oxzc4tZLf/rFWBF6I2C59Ve/GrMtN0pInkp3qvigbbJzHu0FHEujaML8991u2V9uCHc
-         ihX/rmCpKmUIrgqgwyjafsyuJ9INIgudgI11imhaLehGYsG5aSZRyyzDv5Efy26s7Vju
-         IDi5rx2TPOYC1ZKdhYKpL4K3axs3J167jA/FWNN0BvGSCbB4YoZKxrWeSyF1luDtdI0g
-         zv7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d5q7TWUpqsGm62p1Q7uz62qxO+UQ8ow0BrjLgb4A15Q=;
-        b=WweMU0anaQiwDRlkA8B7jGUdtjIGEOEEoPCcJhKbsClnlw117pjpJrXSyU7QQN9vOU
-         oOG+afPYSf2smrDvAXWqSVrQps0uJuiywsq43Lxk8tVCucOoCpFzwv9cMXoLqSqEmRSn
-         qUHLaP8+xPQb2qFwxVjq24iOGfyRCmRm3PBmNZXhPnmpBflC9WbCbnm1UqO7hSEVpcE8
-         Ix2zywEqnJs7EHn2FI/yDpV/Ju1e7gm0/x+N3y15f3aDz+XubjaBcljiEz8kQmKO2K9C
-         tcBcefIu2AvDwSgD0oTWl0ifTtQFmRuqeNsXV69MiNNzNuQgljwkVpOByf1q+IGQTFAT
-         MIZA==
-X-Gm-Message-State: APjAAAUsJX1spHkK6770FpgiAXCRap5UllvSYnTq3QC6pbApWRmKCvR5
-        BiK80Thd2N33K4uMQFUMYHu5Ih3p
-X-Google-Smtp-Source: APXvYqw3+IPWbRn8hqfA8m0kowzl+vApPVwjWSN7I6SUn+YjR7xjsI0T6BVw7nQ6rAehQBJ+kcVpbw==
-X-Received: by 2002:adf:ff8e:: with SMTP id j14mr4480362wrr.141.1565861724523;
-        Thu, 15 Aug 2019 02:35:24 -0700 (PDT)
-Received: from [192.168.8.147] (178.161.185.81.rev.sfr.net. [81.185.161.178])
-        by smtp.gmail.com with ESMTPSA id h97sm6408845wrh.74.2019.08.15.02.35.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 02:35:23 -0700 (PDT)
-Subject: Re: [PATCH] tun: fix use-after-free when register netdev failed
-To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
-Cc:     jasowang@redhat.com, xiyou.wangcong@gmail.com, davem@davemloft.net
-References: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <a6f519cf-95ed-02de-d432-363610e4c332@gmail.com>
-Date:   Thu, 15 Aug 2019 11:35:21 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S1731489AbfHOJjA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 05:39:00 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:40300 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731289AbfHOJi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 05:38:59 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7F9cp0N081368;
+        Thu, 15 Aug 2019 09:38:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2019-08-05;
+ bh=NiOQItys2rGPcm2AIh3NktxbZ2EbUmPGL3w8EK/wUgs=;
+ b=EmtE9xsNhHnJbFONNrkEuyy4CGKNEgNAGEb0mOfKCsEXc7d/5LP12wYiRHRJyFRUjIMh
+ DyTJjsJERFCm9gDYUh15IvBC3HIsZHjDNJuvfKrwO8a5eaoS5MWQ4obttIV4ccmEllHp
+ z22jH1sbxpHuxGsKGNP2SOYmW1qZoLLMWhnKqiAuq2wfgVF7atff7+iuACdK9NybxnFz
+ VMsyRcbwASflPb+MlzlL/LIO842aZF2FiBzo1FTXFuFDjwEV3G8WOAwZbGCYoX7uhqdH
+ TzitoD5uV7QuXNYO/XtOwjAQsK6AaMGdnPmsa01jtiJnWujiXkQ26hQ5dsr8JAAAY6/l kg== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2u9nvpj2q8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 15 Aug 2019 09:38:51 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7F9XnZL179389;
+        Thu, 15 Aug 2019 09:36:50 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3020.oracle.com with ESMTP id 2ucpys6s3w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 15 Aug 2019 09:36:50 +0000
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7F9aoY3184855;
+        Thu, 15 Aug 2019 09:36:50 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by aserp3020.oracle.com with ESMTP id 2ucpys6s3n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 15 Aug 2019 09:36:50 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7F9anA0014551;
+        Thu, 15 Aug 2019 09:36:49 GMT
+Received: from ca-dev40.us.oracle.com (/10.129.135.27)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 15 Aug 2019 02:36:48 -0700
+From:   Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+To:     netdev@vger.kernel.org
+Cc:     santosh.shilimkar@oracle.com, davem@davemloft.net,
+        rds-devel@oss.oracle.com
+Subject: [PATCH net-next] net/rds: Add RDS6_INFO_SOCKETS and RDS6_INFO_RECV_MESSAGES options
+Date:   Thu, 15 Aug 2019 02:36:43 -0700
+Message-Id: <1565861803-31268-1-git-send-email-ka-cheong.poon@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9349 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908150102
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Add support of the socket options RDS6_INFO_SOCKETS and
+RDS6_INFO_RECV_MESSAGES which update the RDS_INFO_SOCKETS and
+RDS_INFO_RECV_MESSAGES options respectively.  The old options work
+for IPv4 sockets only.
 
+Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+---
+ net/rds/af_rds.c | 93 ++++++++++++++++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 90 insertions(+), 3 deletions(-)
 
-On 8/15/19 10:18 AM, Yang Yingliang wrote:
-> I got a UAF repport in tun driver when doing fuzzy test:
-> 
->
-> [  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
-> [  466.371582] flags: 0x2fffff80010200(slab|head)
-> [  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
-> [  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
-> [  466.377778] page dumped because: kasan: bad access detected
-> [  466.379730]
-> [  466.380288] Memory state around the buggy address:
-> [  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.388257]                                                  ^
-> [  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.394667] ==================================================================
-> 
-> tun_chr_read_iter() accessed the memory which freed by free_netdev()
-> called by tun_set_iff():
-> 
-> 	CPUA				CPUB
->     tun_set_iff()
->       alloc_netdev_mqs()
->       tun_attach()
-> 				    tun_chr_read_iter()
-> 				      tun_get()
->       register_netdevice()
->       tun_detach_all()
->         synchronize_net()
-> 				      tun_do_read()
-> 				        tun_ring_recv()
-> 				          schedule()
->       free_netdev()
-> 				      tun_put() <-- UAF
-
-UAF on what exactly ? The dev_hold() should prevent the free_netdev().
-
-> 
-> Set a new bit in tun->flag if register_netdevice() successed,
-> without this bit, tun_get() returns NULL to avoid using a
-> freed tun pointer.
-> 
-> Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->  drivers/net/tun.c | 10 ++++++++--
->  1 file changed, 8 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index db16d7a13e00..cbd60c276c40 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -115,6 +115,7 @@ do {								\
->  /* High bits in flags field are unused. */
->  #define TUN_VNET_LE     0x80000000
->  #define TUN_VNET_BE     0x40000000
-> +#define TUN_DEV_REGISTERED	0x20000000
->  
->  #define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | \
->  		      IFF_MULTI_QUEUE | IFF_NAPI | IFF_NAPI_FRAGS)
-> @@ -719,8 +720,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
->  			netif_carrier_off(tun->dev);
->  
->  			if (!(tun->flags & IFF_PERSIST) &&
-> -			    tun->dev->reg_state == NETREG_REGISTERED)
-> +			    tun->dev->reg_state == NETREG_REGISTERED) {
->  				unregister_netdevice(tun->dev);
-> +				tun->flags &= ~TUN_DEV_REGISTERED;
-
-Isn't this done too late ?
-
-> +			}
->  		}
->  		if (tun)
->  			xdp_rxq_info_unreg(&tfile->xdp_rxq);
-> @@ -884,8 +887,10 @@ static struct tun_struct *tun_get(struct tun_file *tfile)
->  
->  	rcu_read_lock();
->  	tun = rcu_dereference(tfile->tun);
-> -	if (tun)
-> +	if (tun && (tun->flags & TUN_DEV_REGISTERED))
->  		dev_hold(tun->dev);
-> +	else
-> +		tun = NULL;
->  	rcu_read_unlock();
->  
->  	return tun;
-> @@ -2836,6 +2841,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
->  		err = register_netdevice(tun->dev);
->  		if (err < 0)
->  			goto err_detach;
-> +		tun->flags |= TUN_DEV_REGISTERED;
->  	}
->  
->  	netif_carrier_on(tun->dev);
-> 
-
-
-So tun_get() will return NULL as long as  tun_set_iff() (TUNSETIFF ioctl()) has not yet been called ?
-
-This could break some applications, since tun_get() is used from poll() and other syscalls.
+diff --git a/net/rds/af_rds.c b/net/rds/af_rds.c
+index 2b969f9..e7b082a 100644
+--- a/net/rds/af_rds.c
++++ b/net/rds/af_rds.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2006, 2018 Oracle and/or its affiliates. All rights reserved.
++ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+  *
+  * This software is available to you under a choice of one of two
+  * licenses.  You may choose to be licensed under the terms of the GNU
+@@ -741,6 +741,10 @@ static void rds_sock_inc_info(struct socket *sock, unsigned int len,
+ 	spin_lock_bh(&rds_sock_lock);
+ 
+ 	list_for_each_entry(rs, &rds_sock_list, rs_item) {
++		/* This option only supports IPv4 sockets. */
++		if (!ipv6_addr_v4mapped(&rs->rs_bound_addr))
++			continue;
++
+ 		read_lock(&rs->rs_recv_lock);
+ 
+ 		/* XXX too lazy to maintain counts.. */
+@@ -762,21 +766,60 @@ static void rds_sock_inc_info(struct socket *sock, unsigned int len,
+ 	lens->each = sizeof(struct rds_info_message);
+ }
+ 
++#if IS_ENABLED(CONFIG_IPV6)
++static void rds6_sock_inc_info(struct socket *sock, unsigned int len,
++			       struct rds_info_iterator *iter,
++			       struct rds_info_lengths *lens)
++{
++	struct rds_incoming *inc;
++	unsigned int total = 0;
++	struct rds_sock *rs;
++
++	len /= sizeof(struct rds6_info_message);
++
++	spin_lock_bh(&rds_sock_lock);
++
++	list_for_each_entry(rs, &rds_sock_list, rs_item) {
++		read_lock(&rs->rs_recv_lock);
++
++		list_for_each_entry(inc, &rs->rs_recv_queue, i_item) {
++			total++;
++			if (total <= len)
++				rds6_inc_info_copy(inc, iter, &inc->i_saddr,
++						   &rs->rs_bound_addr, 1);
++		}
++
++		read_unlock(&rs->rs_recv_lock);
++	}
++
++	spin_unlock_bh(&rds_sock_lock);
++
++	lens->nr = total;
++	lens->each = sizeof(struct rds6_info_message);
++}
++#endif
++
+ static void rds_sock_info(struct socket *sock, unsigned int len,
+ 			  struct rds_info_iterator *iter,
+ 			  struct rds_info_lengths *lens)
+ {
+ 	struct rds_info_socket sinfo;
++	unsigned int cnt = 0;
+ 	struct rds_sock *rs;
+ 
+ 	len /= sizeof(struct rds_info_socket);
+ 
+ 	spin_lock_bh(&rds_sock_lock);
+ 
+-	if (len < rds_sock_count)
++	if (len < rds_sock_count) {
++		cnt = rds_sock_count;
+ 		goto out;
++	}
+ 
+ 	list_for_each_entry(rs, &rds_sock_list, rs_item) {
++		/* This option only supports IPv4 sockets. */
++		if (!ipv6_addr_v4mapped(&rs->rs_bound_addr))
++			continue;
+ 		sinfo.sndbuf = rds_sk_sndbuf(rs);
+ 		sinfo.rcvbuf = rds_sk_rcvbuf(rs);
+ 		sinfo.bound_addr = rs->rs_bound_addr_v4;
+@@ -786,15 +829,51 @@ static void rds_sock_info(struct socket *sock, unsigned int len,
+ 		sinfo.inum = sock_i_ino(rds_rs_to_sk(rs));
+ 
+ 		rds_info_copy(iter, &sinfo, sizeof(sinfo));
++		cnt++;
+ 	}
+ 
+ out:
+-	lens->nr = rds_sock_count;
++	lens->nr = cnt;
+ 	lens->each = sizeof(struct rds_info_socket);
+ 
+ 	spin_unlock_bh(&rds_sock_lock);
+ }
+ 
++#if IS_ENABLED(CONFIG_IPV6)
++static void rds6_sock_info(struct socket *sock, unsigned int len,
++			   struct rds_info_iterator *iter,
++			   struct rds_info_lengths *lens)
++{
++	struct rds6_info_socket sinfo6;
++	struct rds_sock *rs;
++
++	len /= sizeof(struct rds6_info_socket);
++
++	spin_lock_bh(&rds_sock_lock);
++
++	if (len < rds_sock_count)
++		goto out;
++
++	list_for_each_entry(rs, &rds_sock_list, rs_item) {
++		sinfo6.sndbuf = rds_sk_sndbuf(rs);
++		sinfo6.rcvbuf = rds_sk_rcvbuf(rs);
++		sinfo6.bound_addr = rs->rs_bound_addr;
++		sinfo6.connected_addr = rs->rs_conn_addr;
++		sinfo6.bound_port = rs->rs_bound_port;
++		sinfo6.connected_port = rs->rs_conn_port;
++		sinfo6.inum = sock_i_ino(rds_rs_to_sk(rs));
++
++		rds_info_copy(iter, &sinfo6, sizeof(sinfo6));
++	}
++
++ out:
++	lens->nr = rds_sock_count;
++	lens->each = sizeof(struct rds6_info_socket);
++
++	spin_unlock_bh(&rds_sock_lock);
++}
++#endif
++
+ static void rds_exit(void)
+ {
+ 	sock_unregister(rds_family_ops.family);
+@@ -808,6 +887,10 @@ static void rds_exit(void)
+ 	rds_bind_lock_destroy();
+ 	rds_info_deregister_func(RDS_INFO_SOCKETS, rds_sock_info);
+ 	rds_info_deregister_func(RDS_INFO_RECV_MESSAGES, rds_sock_inc_info);
++#if IS_ENABLED(CONFIG_IPV6)
++	rds_info_deregister_func(RDS6_INFO_SOCKETS, rds6_sock_info);
++	rds_info_deregister_func(RDS6_INFO_RECV_MESSAGES, rds6_sock_inc_info);
++#endif
+ }
+ module_exit(rds_exit);
+ 
+@@ -845,6 +928,10 @@ static int rds_init(void)
+ 
+ 	rds_info_register_func(RDS_INFO_SOCKETS, rds_sock_info);
+ 	rds_info_register_func(RDS_INFO_RECV_MESSAGES, rds_sock_inc_info);
++#if IS_ENABLED(CONFIG_IPV6)
++	rds_info_register_func(RDS6_INFO_SOCKETS, rds6_sock_info);
++	rds_info_register_func(RDS6_INFO_RECV_MESSAGES, rds6_sock_inc_info);
++#endif
+ 
+ 	goto out;
+ 
+-- 
+1.8.3.1
 
