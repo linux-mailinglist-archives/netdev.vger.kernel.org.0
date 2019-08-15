@@ -2,129 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 751558EF39
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 17:21:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E11298EF5B
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 17:32:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728781AbfHOPVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 11:21:03 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:32796 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728728AbfHOPVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 11:21:03 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n190so1446735pgn.0
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 08:21:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=gWCpJv0MdsDcCjYfH3QHT9RFuWsfjx5IZK9e9mVsAXA=;
-        b=YoynTap7BbTEYNR98yeMXMzDCfOXQqvgHIvw9T4f5smrgxjtf6N2/WreLJ60l+vU8n
-         sQRM31Vvc9uMxiWvB7x0jIAhk3t5WryONIJ8hhIjS3dLDVABCIZzRE+TXCzCiZjfaGuG
-         f1jJN3z+bCNepyPs3HAWSeBLbaPAolhXY+2s/SjPXh3pZmoAX7dKANCwBtAQ3iQ2sDKb
-         ltS7eqL83EnQjGI7hoUZx+ELNE9WJZT48PAtQx+EQRhCdrwPvkO/1LYmAayjIzWxCk15
-         4gi+1qPX5o4KCrVHoRblzeR0s13OMlq9rqGOKoUHeTH6R88neSEhC2M8lFhg4fMh0CXI
-         x/Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=gWCpJv0MdsDcCjYfH3QHT9RFuWsfjx5IZK9e9mVsAXA=;
-        b=KCAmmddoqgAYA1Snh8Iq73QVeNg2s014OOU2/MoCACCehz3I6nojGRD5GruK9lfMZ0
-         hB2nahe/2dkP/bfvrHf5mAtiR6MmYQTbfyjDbhxmxn+OzJxx2ZPEeZk/wCYxBQjx2ffN
-         /Ns7LlI/wTofwCwRm7Ex1I3x23wcfW/iOER2fhUrr99hIQ0k18JRoVHdHKNDltSLU1hc
-         KdckEugBECS/okv0CBc8DozlsTadq8P8+76SP+XjM5NpEpZwNevBp3r3/+PF2RpLUad0
-         0Fl/Me1Y5tvEoXEhqo4DRFc4k6qra/LRFrfuQ+vFL0t/6Uh0KQrQoV5riL9zkGnbEDts
-         4mlA==
-X-Gm-Message-State: APjAAAUN78A9ePYGxe18LNBZWeT0spKz+LlcPPRwCvEjtzV/TF/XcGyg
-        pr8vQ19w/REJcvDD81P2rLP26w==
-X-Google-Smtp-Source: APXvYqw55yeAxnoRONyct3JREtm0sRJmsrCOOytkTUf8aXAzcDNBNx85nZ3TKKmLqMaScwLjx2UGkg==
-X-Received: by 2002:aa7:8f2e:: with SMTP id y14mr5970297pfr.113.1565882462524;
-        Thu, 15 Aug 2019 08:21:02 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id r75sm3268036pfc.18.2019.08.15.08.21.01
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 15 Aug 2019 08:21:01 -0700 (PDT)
-Date:   Thu, 15 Aug 2019 08:21:00 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>
-Subject: Re: [RFC PATCH bpf-next 00/14] xdp_flow: Flow offload to XDP
-Message-ID: <20190815152100.GN2820@mini-arch>
-References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
- <20190814170715.GJ2820@mini-arch>
- <14c4a876-6f5d-4750-cbe4-19622f64975b@gmail.com>
+        id S1729807AbfHOPcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 11:32:31 -0400
+Received: from mail-eopbgr20044.outbound.protection.outlook.com ([40.107.2.44]:11366
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729736AbfHOPca (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 11:32:30 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OUUgdS8FlX/B/Pup/rvqxvLlMBI2TeI5jHTszpp+uDB6G5RNTyq21kSGVb57w0lWr1G/ly7A8NQn3G9NuVd9eyj0PPW91/dJidube+/WlhQKn4ftStVYEsi86zjjD6OWhUD7cU3SBmVCmEDHsUz4YkCu1P4nY6R19LRdRewkCqkPOlrXeseE45/Er+a4FJUmDZPTQpP3oo5JknCEfRlkb8ag4rlIHTALdIR1R+lE79SPraq0gqyziXZXXuYcQkgBiBG6NB1JmVeedYFw1zUMMfNHFt3qO/86JjrzG0PwJIjgLGSonoWfDm4RdnO8BjXcU5iLPNFR8PDeXlULHLduHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qDuuMbftz1X1zRQHW8/QaEwdrBAGYrjg+GUTaek3Pgw=;
+ b=XL8X+aZ0ZSdIdxLfbY/VWzOdNaOrmB5QmLcHa7dq0wUV56EcvgXHY4YtqkLpSt5JiFALJe6h+mKR7j3dEMfBpfSknF7KqB0PL+1MnRzu5xJe6FtA0DUCVdAGFdLcuNRpZzukIqNZVp/JGzKCxDK+geOmJC74oJGI0bCUXt3QXXYYLIz6kmHbaWftYIVgmunjvIh75NWUVjh7m7iEuLbHYSL/m0pNIOU2+M2G/afqYPzdERXb8Tu3uBIglqZQ2cHrvW8lfMroMHVttNIuWplygsEKKEHToTtwAjtNeH0TUBD3exXzeABQSLk2x5la54b3E+5mAmMdhU+5DUg9Otq7Rw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qDuuMbftz1X1zRQHW8/QaEwdrBAGYrjg+GUTaek3Pgw=;
+ b=a+0Mzgg6nD2LaV8Lbem0K0Q6Bq/E2VsvbcdOTpBk3s7TgadxZPkXFGTaVLVCArgc/6g+vXZrnGBfQt9054Zu/2QTcWjkLwNaICtwe0cp/iPnACkQ1/vwKNnKey74UyeoxNkctFmb6c62kWVtZ2K3vlZGA0cbQbZWF3Flq5PhemU=
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com (52.133.29.29) by
+ AM6PR0402MB3624.eurprd04.prod.outlook.com (52.133.18.10) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.18; Thu, 15 Aug 2019 15:32:27 +0000
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc]) by AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc%5]) with mapi id 15.20.2157.022; Thu, 15 Aug 2019
+ 15:32:27 +0000
+From:   Christian Herber <christian.herber@nxp.com>
+To:     "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Christian Herber <christian.herber@nxp.com>
+Subject: [PATCH net-next 0/1] Add BASE-T1 PHY support
+Thread-Topic: [PATCH net-next 0/1] Add BASE-T1 PHY support
+Thread-Index: AQHVU36kB16+P8dNcke+XhJhYYGD7g==
+Date:   Thu, 15 Aug 2019 15:32:27 +0000
+Message-ID: <20190815153209.21529-1-christian.herber@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: AM0PR0102CA0030.eurprd01.prod.exchangelabs.com
+ (2603:10a6:208:14::43) To AM6PR0402MB3798.eurprd04.prod.outlook.com
+ (2603:10a6:209:1a::29)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=christian.herber@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [217.111.68.82]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 116d2be0-c80e-4615-111a-08d72195c745
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR0402MB3624;
+x-ms-traffictypediagnostic: AM6PR0402MB3624:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM6PR0402MB3624267286879D07E247938986AC0@AM6PR0402MB3624.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 01304918F3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(396003)(136003)(39860400002)(376002)(199004)(189003)(8676002)(5640700003)(36756003)(2616005)(476003)(8936002)(50226002)(14454004)(54906003)(316002)(7736002)(5660300002)(2351001)(66066001)(478600001)(3846002)(6116002)(2906002)(81166006)(81156014)(71190400001)(71200400001)(1730700003)(2501003)(6512007)(1076003)(6486002)(44832011)(66556008)(64756008)(66446008)(66476007)(66946007)(53936002)(256004)(486006)(305945005)(6916009)(52116002)(6436002)(86362001)(55236004)(25786009)(6506007)(386003)(26005)(102836004)(99286004)(186003)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR0402MB3624;H:AM6PR0402MB3798.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: nBnNlVu6frfDOC5MnziWX7f7MmXAI0n5Nrp6pX2gxSkxKxvndW46pDc3fcE0N45FXrXn3gcPE4NtXPp1jyn1QlvW7oMyFp2cD94gqWFPN1zbkaNJLVVU+qHIuoLcQNta0Nv/DSfcAWSJt6w61XTVG/lFF9NCiHPbR9yUxagNGfkKo0Jv81Dl6mWYsNRn1VjqVAtQY6WADoo/yQT8j1Am7xf15aNbGMNh1grbxye2s3uNwYvsIiq+c+Jn8aDn3/nU+phL0x0BVxHqXCxvUBMqkeoei+txvdr8YdmWczr4/7BqATQN2gSZL8re1sK38/lDGxqIFtt2t4UsqezTRniUpvWKFPiIgHV0tCzWhqHHG/nNyuw120X/TydZ+wPjI1Dlefs+0620NtIV8xmsLklCQgJuvehFkFcnl5cyBpXP9qA=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <49EE277D8854E045988BD790B4FD4B3C@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <14c4a876-6f5d-4750-cbe4-19622f64975b@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 116d2be0-c80e-4615-111a-08d72195c745
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2019 15:32:27.4160
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: E+IUpS+rNMizkWdLz4fJn/LsIUsyZIwgHIbFNwYYxe9ZGKwcSpRFUDuzhHpiKN2/OJLCE85OmGFD1CL90w0+Zx083xcTdl5wjpmOvzuGxXg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3624
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/15, Toshiaki Makita wrote:
-> On 2019/08/15 2:07, Stanislav Fomichev wrote:
-> > On 08/13, Toshiaki Makita wrote:
-> > > * Implementation
-> > > 
-> > > xdp_flow makes use of UMH to load an eBPF program for XDP, similar to
-> > > bpfilter. The difference is that xdp_flow does not generate the eBPF
-> > > program dynamically but a prebuilt program is embedded in UMH. This is
-> > > mainly because flow insertion is considerably frequent. If we generate
-> > > and load an eBPF program on each insertion of a flow, the latency of the
-> > > first packet of ping in above test will incease, which I want to avoid.
-> > Can this be instead implemented with a new hook that will be called
-> > for TC events? This hook can write to perf event buffer and control
-> > plane will insert/remove/modify flow tables in the BPF maps (contol
-> > plane will also install xdp program).
-> > 
-> > Why do we need UMH? What am I missing?
-> 
-> So you suggest doing everything in xdp_flow kmod?
-You probably don't even need xdp_flow kmod. Add new tc "offload" mode
-(bypass) that dumps every command via netlink (or calls the BPF hook
-where you can dump it into perf event buffer) and then read that info
-from userspace and install xdp programs and modify flow tables.
-I don't think you need any kernel changes besides that stream
-of data from the kernel about qdisc/tc flow creation/removal/etc.
+This patch adds basic support for BASE-T1 PHYs in the framework.
+BASE-T1 PHYs main area of application are automotive and industrial.
+BASE-T1 is standardized in IEEE 802.3, namely
+- IEEE 802.3bw: 100BASE-T1
+- IEEE 802.3bp 1000BASE-T1
+- IEEE 802.3cg: 10BASE-T1L and 10BASE-T1S
 
-But, I haven't looked at the series deeply, so I might be missing
-something :-)
+There are no products which contain BASE-T1 and consumer type PHYs like
+1000BASE-T. However, devices exist which combine 100BASE-T1 and 1000BASE-T1
+PHYs with auto-negotiation.
 
-> I also thought about that. There are two phases so let's think about them separately.
-> 
-> 1) TC block (qdisc) creation / eBPF load
-> 
-> I saw eBPF maintainers repeatedly saying eBPF program loading needs to be
-> done from userland, not from kernel, to run the verifier for safety.
-> However xdp_flow eBPF program is prebuilt and embedded in kernel so we may
-> allow such programs to be loaded from kernel? I currently don't have the will
-> to make such an API as loading can be done with current UMH mechanism.
-> 
-> 2) flow insertion / eBPF map update
-> 
-> Not sure if this needs to be done from userland. One concern is that eBPF maps can
-> be modified by unrelated processes and we need to handle all unexpected state of maps.
-> Such handling tends to be difficult and may cause unexpected kernel behavior.
-> OTOH updating maps from kmod may reduces the latency of flow insertion drastically.
-Latency from the moment I type 'tc filter add ...' to the moment the rule
-is installed into the maps? Does it really matter?
+The intention of this patch is to make use of the existing Clause 45 functi=
+ons.
+BASE-T1 adds some additional registers e.g. for aneg control, which follow =
+a
+similiar register layout as the existing devices. The bits which are used i=
+n
+BASE-T1 specific registers are the same as in basic registers, thus the
+existing functions can be resued, with get_aneg_ctrl() selecting the correc=
+t
+register address.
 
-Do I understand correctly that both of those events (qdisc creation and
-flow insertion) are triggered from tcf_block_offload_cmd (or similar)?
+The current version of ethtool has been prepared for 100/1000BASE-T1 and wo=
+rks
+with this patch. 10BASE-T1 needs to be added to ethtool.
 
-> Alexei, Daniel, what do you think?
-> 
-> Toshiaki Makita
+Christian Herber (1):
+  Added BASE-T1 PHY support to PHY Subsystem
+
+ drivers/net/phy/phy-c45.c    | 113 +++++++++++++++++++++++++++++++----
+ drivers/net/phy/phy-core.c   |   4 +-
+ include/uapi/linux/ethtool.h |   2 +
+ include/uapi/linux/mdio.h    |  21 +++++++
+ 4 files changed, 129 insertions(+), 11 deletions(-)
+
+--=20
+2.17.1
+
