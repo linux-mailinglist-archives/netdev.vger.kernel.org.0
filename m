@@ -2,114 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45C8D8E464
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 07:13:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 702248E49F
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 07:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730236AbfHOFLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 01:11:43 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35922 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730169AbfHOFLn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 01:11:43 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 008DB2A09A0;
-        Thu, 15 Aug 2019 05:11:43 +0000 (UTC)
-Received: from [10.72.12.184] (ovpn-12-184.pek2.redhat.com [10.72.12.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C39CA5D6A5;
-        Thu, 15 Aug 2019 05:11:41 +0000 (UTC)
-Subject: Re: tun: mark small packets as owned by the tap sock
-To:     Dave Jones <davej@codemonkey.org.uk>
-Cc:     Alexis Bauvin <abauvin@scaleway.com>, netdev@vger.kernel.org
-References: <git-mailbomb-linux-master-4b663366246be1d1d4b1b8b01245b2e88ad9e706@kernel.org>
- <20190812221954.GA13314@codemonkey.org.uk>
- <6b16739e-ab96-9c93-9636-5b80b81c2b20@redhat.com>
- <20190813140025.GA17823@codemonkey.org.uk>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <b89eae9f-edae-0efd-109f-3b7849baa8ed@redhat.com>
-Date:   Thu, 15 Aug 2019 13:11:39 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1730064AbfHOFxN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 01:53:13 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:41022 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729988AbfHOFxN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 01:53:13 -0400
+Received: by mail-pl1-f193.google.com with SMTP id m9so703690pls.8;
+        Wed, 14 Aug 2019 22:53:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w0ATp9HjlGiuVTip9k9ZfspyBy/UaIsWwJV5MOixgE8=;
+        b=fX1/htU1s96plQYNCEo4OqSD/SE0mV4DdErSm71213t9UmkDOx5Zz8OrvJy0lQCXNw
+         Lq/kbSknEt97lp5tKdS11C9VlsVCxKoea9MA6Uq6wBy2f9KcBFB8wKF71m7KwQgxcr7m
+         4TNl6cA1K1KdPIk8bhMEAsq8rDd+9MVe6TJg7569LOuSC9yNsltHIeCheYmsI07nDcFT
+         hDe+nHbMwx1lSiH1wa/ngTouF1Oau8501pjU+2D0QrolnMMuM5oDajmaAn04OX/xgGLx
+         5KU950Icz0rC4AetnFhySxU5nssCdye0rd/rggAucQOmBcjW0EYHSyiIDxdfLiu7J1DO
+         ao3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=w0ATp9HjlGiuVTip9k9ZfspyBy/UaIsWwJV5MOixgE8=;
+        b=skaHA/wavy87an3peGo2BpPJ1SsRhCD4XY1PWEHttU34KK8gUmcp/TucezTxDU10iK
+         t61YfooNR7u9WdVS1HMGx6uOKqhNFmDlpjuxh6Xa0Nj5HYBKpjYdUdk0A8DG7YrzJcnb
+         3v77Na4LHMvjt1K7Pa+lPwx6aAUWQbHp6untSZJdonnMhfX3rRLIkYvaS8Kn41QrkUY1
+         exwKs40b6T2vs6a6Ijtzz1uWvyqm1MnrYpRSY4iunAN7vjeEJCAu3AZkIcfBcWIkGLTV
+         6veAPFw4Wpo9P/eJISrQYlpSyaL3c+BUugwQ+cjYAaJSOc4ZTnApDAgzT4VOdsW+P4kN
+         vJRQ==
+X-Gm-Message-State: APjAAAWf24lZHenqsF/aw0DimmcOeqE/TVXLoY4SsGFpkD1nNNqez2S/
+        /EE3zf/Kc5Ar64xo9TosBbI=
+X-Google-Smtp-Source: APXvYqzEcC0Qfmgo4HlDcGAv8vuyzzfy2uV07QqVEUqvGtbsmugCbp2dQUrhlxBgibCRD+8HF2WC2w==
+X-Received: by 2002:a17:902:8ecc:: with SMTP id x12mr536040plo.258.1565848392301;
+        Wed, 14 Aug 2019 22:53:12 -0700 (PDT)
+Received: from localhost.localdomain ([110.225.3.176])
+        by smtp.gmail.com with ESMTPSA id 65sm1841483pff.148.2019.08.14.22.53.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 14 Aug 2019 22:53:11 -0700 (PDT)
+From:   Nishka Dasgupta <nishkadg.linux@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Nishka Dasgupta <nishkadg.linux@gmail.com>
+Subject: [PATCH] Bluetooth: 6lowpan: Make variable header_ops constant
+Date:   Thu, 15 Aug 2019 11:22:55 +0530
+Message-Id: <20190815055255.1153-1-nishkadg.linux@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-In-Reply-To: <20190813140025.GA17823@codemonkey.org.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 15 Aug 2019 05:11:43 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Static variable header_ops, of type header_ops, is used only once, when
+it is assigned to field header_ops of a variable having type net_device.
+This corresponding field is declared as const in the definition of
+net_device. Hence make header_ops constant as well to protect it from
+unnecessary modification.
+Issue found with Coccinelle.
 
-On 2019/8/13 下午10:00, Dave Jones wrote:
-> On Tue, Aug 13, 2019 at 04:33:59PM +0800, Jason Wang wrote:
->   >
->   > On 2019/8/13 上午6:19, Dave Jones wrote:
->   > > On Wed, Aug 07, 2019 at 12:30:07AM +0000, Linux Kernel wrote:
->   > >   > Commit:     4b663366246be1d1d4b1b8b01245b2e88ad9e706
->   > >   > Parent:     16b2084a8afa1432d14ba72b7c97d7908e178178
->   > >   > Web:        https://git.kernel.org/torvalds/c/4b663366246be1d1d4b1b8b01245b2e88ad9e706
->   > >   > Author:     Alexis Bauvin <abauvin@scaleway.com>
->   > >   > AuthorDate: Tue Jul 23 16:23:01 2019 +0200
->   > >   >
->   > >   >     tun: mark small packets as owned by the tap sock
->   > >   >
->   > >   >     - v1 -> v2: Move skb_set_owner_w to __tun_build_skb to reduce patch size
->   > >
->   > > This commit breaks ipv6 routing when I deployed on it a linode.
->   > > It seems to work briefly after boot, and then silently all packets get
->   > > dropped. (Presumably, it's dropping RA or ND packets)
->   > >
->   > > With this reverted, everything works as it did in rc3.
->   > >
->   > Two questions:
->   >
->   > - Are you using XDP for TUN?
->
-> not knowingly.
-> $ grep XDP .config
-> # CONFIG_XDP_SOCKETS is not set
->
-> What's configured on the hypervisor side I have no idea.
+Signed-off-by: Nishka Dasgupta <nishkadg.linux@gmail.com>
+---
+ net/bluetooth/6lowpan.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/net/bluetooth/6lowpan.c b/net/bluetooth/6lowpan.c
+index 9d41de1ec90f..bb55d92691b0 100644
+--- a/net/bluetooth/6lowpan.c
++++ b/net/bluetooth/6lowpan.c
+@@ -583,7 +583,7 @@ static const struct net_device_ops netdev_ops = {
+ 	.ndo_start_xmit		= bt_xmit,
+ };
+ 
+-static struct header_ops header_ops = {
++static const struct header_ops header_ops = {
+ 	.create	= header_create,
+ };
+ 
+-- 
+2.19.1
 
-Ok, please tell me more about your setups:
-
-- Are you using TUN in host or guest?
-
-- Are you using it for VM or VPN(tunneling)?
-
-- Where did the packet get dropped?
-
-
->
->   > - Does it work before 66ccbc9c87c2?
->
-> that's been around since 4.14-rc1, and at one point it ran whatever was
-> in debian9 (4.9).  I don't recall it ever not working, so I'd say yes.
->
-> I can build a 4.13 if it'll prove something, but it'll take me a while.
-> (This is my primary MX, so it's dropping email while it's on the broken
->   kernel, so I need to plan some time to be around to babysit it)
-
-
-If possible please try that.
-
-
->
->   > If yes, could you show us the result of net_dropmonitor?
->
-> where do I get that?  It doesn't seem packaged for debian.
->
-> 	Dave
-
-
-It's part of perf-script(1). You can simply start it through perf script 
-record net_dropmonitor.
-
-Thanks
-
->
