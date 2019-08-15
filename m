@@ -2,97 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF4878F3D6
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 20:46:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 57A1A8F3DC
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 20:47:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731885AbfHOSqH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 14:46:07 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:51770 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728579AbfHOSqH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 14:46:07 -0400
-Received: by mail-wm1-f65.google.com with SMTP id 207so2082084wma.1
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 11:46:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=tL/ePi9i7krJpLCHqo/FD7iuSf+sPcaN03XV3p51j0U=;
-        b=WGiuvllZnbGFdBo36yZaCkFStgFBgGQ/4E6uMubO/kzXijDDZNKQQmkxjtktOhukSL
-         v4JMxvJwsiKMoJrRJMsKfKZWKjC59SrbvWOMWHb0FcI1+biWFfsYW1JbzNg6WCcutH/Q
-         I09s94UJr7SHT3WF2QAiAfePe82hVChLMW+Owipg00c3TanxRFaqRr9i/LsdMR1m+e0L
-         rWorSm6bFQUc/fk11EoVS41o1Pnrdbup28PzgzyQq46YQrrQr4R+wnsKDzyWYK5jm1ks
-         QwdSSNLch265eGdMAXmjPn6yx146InCNdcUED/eIDtWzcyrzXaW/cZq/omFph+M4VmSj
-         IwhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=tL/ePi9i7krJpLCHqo/FD7iuSf+sPcaN03XV3p51j0U=;
-        b=X7HIDNTAIjLuCAhunA9P5Ct9JvVzeC/ZrSX14VGYbYdXSymBVVUnhIYgxusd1bUMsf
-         DUMMoZtsHlnnXXDuRgMxtqTenE6IenXGmrXs4nlqHOcjEgSkucgHBm79m1c8H2CdvhTI
-         m6Ns6U9FHcfqDrCwXWOyPYxENDBb0kLmIPogbnxVjLu/ce1HLgP5f2d/4qTTn5mK2iip
-         7phGL2sXpkrpB7oPkOOUeoy8ubPR294z2/bborXurOFS4r3D1xPhgFWJXHYDYnh4R6U1
-         xn+2WkcmNK/59wOnMcymZju0n5McEtv8XOyeckqJ0y48p8JLfISvHKoIrD6pkxbZODAW
-         4okA==
-X-Gm-Message-State: APjAAAVR77fkg0cTJfvYIN1vWVld2ZO1J5lQHN8E+NpatDi88q7Jio8n
-        BuLn1ORCthvHe8WQ3J4l5H/7zvKH
-X-Google-Smtp-Source: APXvYqwjSmsZ28pJ4x2Maj+c1g8qpgNOodhMFiM6xE/rQQzxJpoWmEEQvgG0CzS18KmkiBVdyxHAaQ==
-X-Received: by 2002:a1c:c542:: with SMTP id v63mr3933637wmf.97.1565894764681;
-        Thu, 15 Aug 2019 11:46:04 -0700 (PDT)
-Received: from [192.168.8.147] (171.170.185.81.rev.sfr.net. [81.185.170.171])
-        by smtp.gmail.com with ESMTPSA id e11sm8380058wrc.4.2019.08.15.11.46.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 11:46:03 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/3] tcp: ulp: add functions to dump ulp-specific
- information
-To:     Davide Caratti <dcaratti@redhat.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Dave Watson <davejwatson@fb.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-References: <cover.1565882584.git.dcaratti@redhat.com>
- <f9b5663d28547b0d1c187d874c7b5e5ece8fe8fa.1565882584.git.dcaratti@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <228db5cc-9b10-521f-9031-e0f86f5ded3e@gmail.com>
-Date:   Thu, 15 Aug 2019 20:46:01 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <f9b5663d28547b0d1c187d874c7b5e5ece8fe8fa.1565882584.git.dcaratti@redhat.com>
-Content-Type: text/plain; charset=utf-8
+        id S1731965AbfHOSrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 14:47:08 -0400
+Received: from mail-eopbgr00074.outbound.protection.outlook.com ([40.107.0.74]:55213
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729121AbfHOSrI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 14:47:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QX0Ky3irKula4OaeTigy97QKqR4yyH864KkamXJMV/xEsKgqIAMgoU/VudAZUUtgk7Rkh9619C4lA+dUzNITXY4LMXfQooNyI6fZmupIS8FM2nYNpjU8Og7ougBxxcfh9+d2CTQ9iwoBL6+E/ASdfR1e13ODGolBeIchl8CclQ90fqU+btvD9oOhqgDQtDqsKZhdUNW74qxj76wdp+oi71yyM6j4JsXAc853bnlGbpnGKlNSs3tUjrqBGBRBbsmHOgozAfNWvpCm4ccZBeKyVHnx8B9RntbiHgVSEKfA5tRtQBkZRCLlp31MxaMHZtcVL+d9BxDEM8r/bNw3h+sMCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vUxboLCDeH3dQduME/Q69VXddCz7CNB7vGiKtF182qg=;
+ b=AA2uRYib4CWnu57Gs2kfbbHUWl+S6dJFRC0D4W+H+jWNWkYYJ1O+7YrsyDWP1LK9z5tMlq4b1XMEUIOqbCD4TLwCgNcth9u60uOVGZ9QTKioA7xv38XBFEItItc77smjSMW39uhvQUsVlKcE6xflHF5ee7PNFdv4uMA0ZEC6lQDTFMCDQpaejU51AlvDhT28CRYI5iYDVhkFnnkkEtY0h0HJfGO3IYytBytz8LEfdmUn9/cj7XMSaljGVCe+nWt/1g16GPqZIiOB5MxvDLoCVdjbJlx9idDpcxlwM1jwSAGuqXoWI6LV2MTc/Joqvf4dAATSMzUseoMCBovKXTJVZA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=vUxboLCDeH3dQduME/Q69VXddCz7CNB7vGiKtF182qg=;
+ b=Ino4atOlkF6bWscaKSoFAGjpdk3sySeCxbdbA5yy5ZNWk0e/bw51EqjQOLiP4TRRS3Q/DcSGVIxnbZSeUKUDi2JWNqDuqgkZD3NIWhoXhFuKSaiemY8XuJNNXpVK8S3BFXQGNphPmPEjYj+d29aWnxWgXdKi/Df7zzYwIcF11A8=
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
+ DB6PR0501MB2663.eurprd05.prod.outlook.com (10.172.225.148) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.18; Thu, 15 Aug 2019 18:47:04 +0000
+Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
+ ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2178.016; Thu, 15 Aug 2019
+ 18:47:04 +0000
+From:   Saeed Mahameed <saeedm@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Saeed Mahameed <saeedm@mellanox.com>
+Subject: [pull request][net 0/2] Mellanox, mlx5 fixes 2019-08-15
+Thread-Topic: [pull request][net 0/2] Mellanox, mlx5 fixes 2019-08-15
+Thread-Index: AQHVU5nUnRNL5auv00yrZCrEOzwd0A==
+Date:   Thu, 15 Aug 2019 18:47:04 +0000
+Message-ID: <20190815184639.8206-1-saeedm@mellanox.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.21.0
+x-originating-ip: [209.116.155.178]
+x-clientproxiedby: BYAPR04CA0032.namprd04.prod.outlook.com
+ (2603:10b6:a03:40::45) To DB6PR0501MB2759.eurprd05.prod.outlook.com
+ (2603:10a6:4:84::7)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=saeedm@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: bdf186f1-499b-42a3-cbf9-08d721b0f72f
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2663;
+x-ms-traffictypediagnostic: DB6PR0501MB2663:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB6PR0501MB2663F52B4EDFFCB8AE15367CBEAC0@DB6PR0501MB2663.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
+x-forefront-prvs: 01304918F3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(136003)(346002)(39860400002)(366004)(376002)(189003)(199004)(53936002)(52116002)(26005)(107886003)(6916009)(386003)(102836004)(476003)(36756003)(478600001)(8676002)(14454004)(66066001)(81156014)(2616005)(81166006)(6506007)(486006)(50226002)(4326008)(1076003)(6486002)(6436002)(5660300002)(71190400001)(64756008)(6116002)(66946007)(2906002)(3846002)(71200400001)(305945005)(54906003)(66556008)(316002)(186003)(256004)(25786009)(7736002)(66446008)(66476007)(86362001)(99286004)(8936002)(6512007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2663;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: kdgpAXfMTtoYRXUgtzeqXklocwrnLu1D8CYga3sTJHhKFgpXOfolEoHNjCsoBfArXULjS/AI0N8Weg/J9TYthnvdFLM1GWYkIXMU1Oot+os1ohRb64HWL0OWYi3aCvA503f9H9OjpotEiN1cuYPc1TvGABIkc+mcKrH4uuWfvLXdgs1sBGNmcZmoWiAp2K7C5+PHeu/JQJz3eLXSLQo1Rmsv8z797rFa/g5tBkFygZ5YeLZ1i5tjtUDar/aMTxaxcXzKSKX/mkRpZR5vU/ikUZWmx2RvYWqcxLe0rUyVq/s4YB2tSu5sRWPsnUnCBFZemvEdvmsGgMo3IrekmHpkrxlZSEx2GDl3eebIco2sMbsLAr8FWO997FL52NSY+nBKXF5g8o8gKjN+72y43d6G0ZUvzveSJb7A+Zw/gxzsd24=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: bdf186f1-499b-42a3-cbf9-08d721b0f72f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2019 18:47:04.6187
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: c+3DGVpYcO7wPbF23K/v5J1IfI4UbLwCXFDj0fF1NNJJJsX6nzU7f21cYs3FGXhVqjiIEr70lSFExGyrdXmSRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2663
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Dave,
 
+This series introduces two fixes to mlx5 driver.
 
-On 8/15/19 6:00 PM, Davide Caratti wrote:
+1) Eran fixes a compatibility issue with ethtool flash.
+2) Maxim fixes a race in XSK wakeup flow.
 
->  
-> +	if (net_admin) {
-> +		const struct tcp_ulp_ops *ulp_ops;
-> +
-> +		rcu_read_lock();
-> +		ulp_ops = icsk->icsk_ulp_ops;
-> +		if (ulp_ops)
-> +			err = tcp_diag_put_ulp(skb, sk, ulp_ops);
-> +		rcu_read_unlock();
-> +		if (err)
-> +			return err;
-> +	}
->  	return 0;
+Please pull and let me know if there is any problem.
 
+Thanks,
+Saeed.
 
-Why is rcu_read_lock() and rcu_read_unlock() used at all ?
+---
+The following changes since commit 2aafdf5a5786ebbd8ccfe132ed6267c6962c5c3c=
+:
 
-icsk->icsk_ulp_ops does not seem to be rcu protected ?
+  selftests: net: tcp_fastopen_backup_key.sh: fix shellcheck issue (2019-08=
+-15 11:34:32 -0700)
 
-If this was, then an rcu_dereference() would be appropriate.
+are available in the Git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-f=
+ixes-2019-08-15
+
+for you to fetch changes up to f43d48d10a42787c1de1d3facd7db210c91db1da:
+
+  net/mlx5e: Fix compatibility issue with ethtool flash device (2019-08-15 =
+11:43:57 -0700)
+
+----------------------------------------------------------------
+mlx5-fixes-2019-08-15
+
+----------------------------------------------------------------
+Eran Ben Elisha (1):
+      net/mlx5e: Fix compatibility issue with ethtool flash device
+
+Maxim Mikityanskiy (1):
+      net/mlx5e: Fix a race with XSKICOSQ in XSK wakeup flow
+
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  2 ++
+ .../net/ethernet/mellanox/mlx5/core/en/xsk/setup.c |  3 ++
+ .../net/ethernet/mellanox/mlx5/core/en_ethtool.c   | 35 ++++++++++++++++++=
+++++
+ .../ethernet/mellanox/mlx5/core/ipoib/ethtool.c    |  9 ++++++
+ 4 files changed, 49 insertions(+)
