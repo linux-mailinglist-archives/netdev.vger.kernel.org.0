@@ -2,197 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 348C78EE44
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 16:32:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 889288EE71
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 16:40:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732966AbfHOOcn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 10:32:43 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37883 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732958AbfHOOck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 10:32:40 -0400
-Received: by mail-wr1-f67.google.com with SMTP id z11so2416364wrt.4
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 07:32:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=klej20LM50rl+qegl25ThpIduG7ubdFrTIw/Elq2Oyk=;
-        b=ZmpLee+MpsIvwrI81gSC97WwtSwmglFRgAnR53OEOPTIM7/tGVwNzCUqW0EpCz7zCl
-         nSp7J9zX5N6QYUBVade+gQUtTr76yPVmJrkOP6fbrjC8jDz/wnckOKG7atAdCO2NhQZI
-         F/wup5rR8QZZ8U32G6dILI4JyV5P1ATplET25i3PZMZhaw5wnKBhFRDvvAYF6PH7ETja
-         1jUkLhXCs/iQRYqLmxUShrskQZU8h1N360msgzQt9DP9U/grRFS5MrMYVD4JXbT1DtmM
-         IpemRMWBOi61793/oigcAAWQgHnZQy/lz3BSm0Fa6oHt0Jymj5qU61aLQ+wMtcPLz8oC
-         jMDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=klej20LM50rl+qegl25ThpIduG7ubdFrTIw/Elq2Oyk=;
-        b=iE6GvuYthLndJEf1MQR6lwhU5FvEX9WVT/CD6B7sN+pfhErecbaOA0w3g8pjb/4D1h
-         dXPlHv2p/d/kN+M4eJ0/AdDrJg1Ed3AHg0IgDjeWaHsjSWwb1R1tx/Q5a1mX+Q7OSHdh
-         4yp8O58vgIHy380xrKhCFCOHXbLWQK/RkA/OaWB2CmuGzZr8wEXONXUBHd3em2N5Ke0n
-         QP6Cll/IrkVSnn95SQnrLOk/ahbHKm450lZe/QWOror+RCp9BLz6cFLYnfJSP7apImm9
-         df57m+5fml2IWZ6BVaoyyYK+3XhWdaXX6sT9i/YPdjTkgpWbdf1OXxQitjFwRji2wQ3j
-         l8/Q==
-X-Gm-Message-State: APjAAAVWWphMi0M/J2aua6NnHTpulQQVqE11kwF4pCx0cugRkzS08iac
-        tY4lplS2vxBLDM8och6V3X5iBw==
-X-Google-Smtp-Source: APXvYqxIBOQL+nrXAbciTgQQN+SrA6sh71SeVePn3YZ9iwT/G69fL834Z5AjxMuTvBATZtBtSF+u0g==
-X-Received: by 2002:adf:fdcc:: with SMTP id i12mr6065639wrs.88.1565879558327;
-        Thu, 15 Aug 2019 07:32:38 -0700 (PDT)
-Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id a19sm8857463wra.2.2019.08.15.07.32.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Aug 2019 07:32:35 -0700 (PDT)
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH bpf 6/6] tools: bpftool: move "__printf()" attributes to header file
-Date:   Thu, 15 Aug 2019 15:32:20 +0100
-Message-Id: <20190815143220.4199-7-quentin.monnet@netronome.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190815143220.4199-1-quentin.monnet@netronome.com>
-References: <20190815143220.4199-1-quentin.monnet@netronome.com>
+        id S1731760AbfHOOki (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 10:40:38 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:59616 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729820AbfHOOkh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 10:40:37 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FEWUDD095032;
+        Thu, 15 Aug 2019 14:40:28 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : subject : to :
+ cc : references : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=u7iCHZBLlf374ODvm9c4+zyfb5Zw9jRZAYXzhXJte0o=;
+ b=IOVeWPe/Mh1ML5aYfxxVjXJ15xcOK75ZHk9c01IFzCOlTRwxxhF1e2//uGi4m3VYp2Ds
+ LBUUF7v0jYZqrTjpjHrowiahJ8h51e5cj7X3gROAyWYVEZ962PrWSWXcQqjKu35B8bMk
+ Vm9IQTnXjlM8UW4X0mdVg69MO1ESCU5yCWelPed11G24PMNgbogMfWbGjkqRb5QZ3Ohx
+ QbcwuI2kZGG8uCftzx1Y26goYErF14LF4RGU3YfdoNji0o19eVy/GNlh/8H1MLO+owG3
+ s0y/KROhNamIWIqjmr3JB8OYBo7XPRo06CqashZpZ02CBEUzQNQknPyIt+16h9bpjhvG ww== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2u9pjqtyq6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 15 Aug 2019 14:40:28 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FEWrgl044605;
+        Thu, 15 Aug 2019 14:40:27 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2ucs881b3b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 15 Aug 2019 14:40:27 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7FEeRMS062176;
+        Thu, 15 Aug 2019 14:40:27 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 2ucs881b36-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 15 Aug 2019 14:40:27 +0000
+Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7FEePl3025898;
+        Thu, 15 Aug 2019 14:40:25 GMT
+Received: from [10.159.252.166] (/10.159.252.166)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 15 Aug 2019 07:40:25 -0700
+From:   Gerd Rausch <gerd.rausch@oracle.com>
+Subject: [PATCH net-next v2 0/4] net/rds: Fixes from internal Oracle repo
+To:     Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        rds-devel@oss.oracle.com
+Cc:     David Miller <davem@davemloft.net>
+References: <20190814.212525.326606319186601317.davem@davemloft.net>
+Message-ID: <ee77e550-2231-be7f-861f-31d609631e9f@oracle.com>
+Date:   Thu, 15 Aug 2019 07:40:22 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190814.212525.326606319186601317.davem@davemloft.net>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9350 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908150148
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some functions in bpftool have a "__printf()" format attributes to tell
-the compiler they should expect printf()-like arguments. But because
-these attributes are not used for the function prototypes in the header
-files, the compiler does not run the checks everywhere the functions are
-used, and some mistakes on format string and corresponding arguments
-slipped in over time.
+This is the first set of (mostly old) patches from our internal repository
+in an effort to synchronize what Oracle had been using internally
+with what is shipped with the Linux kernel.
 
-Let's move the __printf() attributes to the correct places.
+Andy Grover (1):
+  rds: check for excessive looping in rds_send_xmit
 
-Note: We add guards around the definition of GCC_VERSION in
-tools/include/linux/compiler-gcc.h to prevent a conflict in jit_disasm.c
-on GCC_VERSION from headers pulled via libbfd.
+Chris Mason (2):
+  RDS: limit the number of times we loop in rds_send_xmit
+  RDS: don't use GFP_ATOMIC for sk_alloc in rds_create
 
-Fixes: c101189bc968 ("tools: bpftool: fix -Wmissing declaration warnings")
-Reported-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- tools/bpf/bpftool/common.c         | 4 ++--
- tools/bpf/bpftool/json_writer.c    | 6 ++----
- tools/bpf/bpftool/json_writer.h    | 6 ++++--
- tools/bpf/bpftool/main.h           | 4 ++--
- tools/include/linux/compiler-gcc.h | 2 ++
- 5 files changed, 12 insertions(+), 10 deletions(-)
+Gerd Rausch (1):
+  net/rds: Add a few missing rds_stat_names entries
 
-diff --git a/tools/bpf/bpftool/common.c b/tools/bpf/bpftool/common.c
-index 6a71324be628..88264abaa738 100644
---- a/tools/bpf/bpftool/common.c
-+++ b/tools/bpf/bpftool/common.c
-@@ -29,7 +29,7 @@
- #define BPF_FS_MAGIC		0xcafe4a11
- #endif
- 
--void __printf(1, 2) p_err(const char *fmt, ...)
-+void p_err(const char *fmt, ...)
- {
- 	va_list ap;
- 
-@@ -47,7 +47,7 @@ void __printf(1, 2) p_err(const char *fmt, ...)
- 	va_end(ap);
- }
- 
--void __printf(1, 2) p_info(const char *fmt, ...)
-+void p_info(const char *fmt, ...)
- {
- 	va_list ap;
- 
-diff --git a/tools/bpf/bpftool/json_writer.c b/tools/bpf/bpftool/json_writer.c
-index 6046dcab51cc..86501cd3c763 100644
---- a/tools/bpf/bpftool/json_writer.c
-+++ b/tools/bpf/bpftool/json_writer.c
-@@ -15,7 +15,6 @@
- #include <malloc.h>
- #include <inttypes.h>
- #include <stdint.h>
--#include <linux/compiler.h>
- 
- #include "json_writer.h"
- 
-@@ -153,8 +152,7 @@ void jsonw_name(json_writer_t *self, const char *name)
- 		putc(' ', self->out);
- }
- 
--void __printf(2, 0)
--jsonw_vprintf_enquote(json_writer_t *self, const char *fmt, va_list ap)
-+void jsonw_vprintf_enquote(json_writer_t *self, const char *fmt, va_list ap)
- {
- 	jsonw_eor(self);
- 	putc('"', self->out);
-@@ -162,7 +160,7 @@ jsonw_vprintf_enquote(json_writer_t *self, const char *fmt, va_list ap)
- 	putc('"', self->out);
- }
- 
--void __printf(2, 3) jsonw_printf(json_writer_t *self, const char *fmt, ...)
-+void jsonw_printf(json_writer_t *self, const char *fmt, ...)
- {
- 	va_list ap;
- 
-diff --git a/tools/bpf/bpftool/json_writer.h b/tools/bpf/bpftool/json_writer.h
-index cb9a1993681c..35cf1f00f96c 100644
---- a/tools/bpf/bpftool/json_writer.h
-+++ b/tools/bpf/bpftool/json_writer.h
-@@ -14,6 +14,7 @@
- #include <stdbool.h>
- #include <stdint.h>
- #include <stdarg.h>
-+#include <linux/compiler.h>
- 
- /* Opaque class structure */
- typedef struct json_writer json_writer_t;
-@@ -30,8 +31,9 @@ void jsonw_pretty(json_writer_t *self, bool on);
- void jsonw_name(json_writer_t *self, const char *name);
- 
- /* Add value  */
--void jsonw_vprintf_enquote(json_writer_t *self, const char *fmt, va_list ap);
--void jsonw_printf(json_writer_t *self, const char *fmt, ...);
-+void __printf(2, 0) jsonw_vprintf_enquote(json_writer_t *self, const char *fmt,
-+					  va_list ap);
-+void __printf(2, 3) jsonw_printf(json_writer_t *self, const char *fmt, ...);
- void jsonw_string(json_writer_t *self, const char *value);
- void jsonw_bool(json_writer_t *self, bool value);
- void jsonw_float(json_writer_t *self, double number);
-diff --git a/tools/bpf/bpftool/main.h b/tools/bpf/bpftool/main.h
-index 7031a4bf87a0..af9ad56c303a 100644
---- a/tools/bpf/bpftool/main.h
-+++ b/tools/bpf/bpftool/main.h
-@@ -98,8 +98,8 @@ extern int bpf_flags;
- extern struct pinned_obj_table prog_table;
- extern struct pinned_obj_table map_table;
- 
--void p_err(const char *fmt, ...);
--void p_info(const char *fmt, ...);
-+void __printf(1, 2) p_err(const char *fmt, ...);
-+void __printf(1, 2) p_info(const char *fmt, ...);
- 
- bool is_prefix(const char *pfx, const char *str);
- int detect_common_prefix(const char *arg, ...);
-diff --git a/tools/include/linux/compiler-gcc.h b/tools/include/linux/compiler-gcc.h
-index 0d35f18006a1..95c072b70d0e 100644
---- a/tools/include/linux/compiler-gcc.h
-+++ b/tools/include/linux/compiler-gcc.h
-@@ -6,9 +6,11 @@
- /*
-  * Common definitions for all gcc versions go here.
-  */
-+#ifndef GCC_VERSION
- #define GCC_VERSION (__GNUC__ * 10000		\
- 		     + __GNUC_MINOR__ * 100	\
- 		     + __GNUC_PATCHLEVEL__)
-+#endif
- 
- #if GCC_VERSION >= 70000 && !defined(__CHECKER__)
- # define __fallthrough __attribute__ ((fallthrough))
+ net/rds/af_rds.c  |  2 +-
+ net/rds/ib_recv.c | 12 +++++++++++-
+ net/rds/rds.h     |  2 +-
+ net/rds/send.c    | 12 ++++++++++++
+ net/rds/stats.c   |  3 +++
+ 5 files changed, 28 insertions(+), 3 deletions(-)
+
 -- 
-2.17.1
 
+Changes in submitted patch v2:
+* Dropped the controversial "sysctl" patch:
+  https://lore.kernel.org/netdev/20190814.142112.1080694155114782651.davem@davemloft.net/
