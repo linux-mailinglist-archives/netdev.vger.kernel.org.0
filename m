@@ -2,105 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D596F8EB68
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 14:21:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9658EB87
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 14:28:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731027AbfHOMVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 08:21:44 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:42451 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730944AbfHOMVn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 08:21:43 -0400
-Received: by mail-wr1-f68.google.com with SMTP id b16so2036823wrq.9
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 05:21:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=H8lQFNOctMLfg/aMOx4+XSt/QV1NvhlIY0S5WInNiuY=;
-        b=BupCF6QgaLCLSwO4W/AQU5KWL4BTUivs2VeKPJkdku4lLCbUkPF2xYw91qdynvNJ+V
-         1bxMqR3iTLT1a26gt7+tDY7dAq8ve54R4iGCctKQU+QBG/ORsmwpyyxsChW7l/GM7TEV
-         u5Uyc67r61YBxsbE/WfeHUMXWLwLS0BM7uShcgG8fZ31uZhRIl2L6g7oFS5AFarBrl2h
-         MRF7Wh43VHVvGyGYzBjNCz4gU5G1Jjp91Pi7dgWPulYwtNOdDXneiJm8i31EwU3PeMfR
-         qkeO2p2SfEo1s06PfUr/NJisTcm/UGXEoqrE+Vr8A/LD73Ci1NeFw/bJtkbIXYfMXWZx
-         hqfA==
+        id S1731716AbfHOM2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 08:28:30 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:35448 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730442AbfHOM23 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 08:28:29 -0400
+Received: by mail-lj1-f195.google.com with SMTP id l14so2092031lje.2;
+        Thu, 15 Aug 2019 05:28:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=H8lQFNOctMLfg/aMOx4+XSt/QV1NvhlIY0S5WInNiuY=;
-        b=lSgprzk7g1vcQo/IDw2brWrfKCJ1ovyju56hZ4LvIbY26f3Q0asrzzSb9Z0FSyg9nR
-         xIQfiWjPeNZRJq+fkYk1CdkjxyviEaRwyGFYwVpdDM7AgBfPsNb73P0D3j/36pjJSyeo
-         xgyCL+ZckpmT5Ul4xbkyR7LEASs+4qrcNQW/yUSLmp77uOuy1vFk19ihVVnPpY2k+WOR
-         JwSLFuuZcbT+CnnGdmHpF1T5GYl7Oqb/pDvNuqzul1KCa3WoFRZ4d8vCvvCkSozqYXLK
-         i22/KU616XDGk7jpyUfzSLLDOkpnFTinBgnsyOVucxEugVohVym9EXo/DLFfQQZ7T73P
-         qUaQ==
-X-Gm-Message-State: APjAAAWL+qszs12A0aZMNd3jwsgHxCQm6mqgGK4v3D++6sXlSlypAoTl
-        BadwfrfBC1Ek0XKNb4dW02c/WEH0
-X-Google-Smtp-Source: APXvYqwfx2kxwUs3ckkVFrqwnvV47NiyvFLLvzPxgTy7mDfqrvX1UT7Z8BEJ0GoCtN0HJcWz6+/Ong==
-X-Received: by 2002:adf:facc:: with SMTP id a12mr3924396wrs.205.1565871701112;
-        Thu, 15 Aug 2019 05:21:41 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:b8fa:18d8:f880:513c? (p200300EA8F2F3200B8FA18D8F880513C.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:b8fa:18d8:f880:513c])
-        by smtp.googlemail.com with ESMTPSA id z8sm3190946wru.13.2019.08.15.05.21.40
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Mb4ocEB+lsd45gaEhTMvtmBFBk0APZUkoufygZBEO2s=;
+        b=CefZpXqVriZZkYRxzlA2O7WQWGOa/kkSwGpZzYpg/3QQnGaPVAX7Gq1XQ3zzg3/dGs
+         8/NGY0DaJp794pr8uk1Xk8jTToiE6tImTrclf1CMb8VE2gTkLlnCLrnHdZW28ygCkRJ6
+         1JAWErd1gWYQtvWqjyUis0jdUg2evgZhcIn781ZIvBEqDlRq6ZmqdMb9AYUM9dSZXH3R
+         /Dldh6aSdBlKOgHQOFoL4KbAlOEgRdtFMmnFuK+My38ePnWITfg1lkyoY1OblkF2xbB4
+         UoknhPd0uil6RSlmPoMhNxj+QRzBzALkpbZx68LEg4w+g8iWQxxSGqRgSfEgcAJtFbGO
+         q8Cw==
+X-Gm-Message-State: APjAAAU7/hlt23qOaml0Ild/P6JZ3l7SaRLm05e+o8gC9aZs4yeGsSFK
+        AIV+goaRFrN48/Ff4OxWFyPH80Vp5Kg=
+X-Google-Smtp-Source: APXvYqw49OLUyyAs3EPjQSiKfrOy5OikLFbWfbi5PwR9AsLgEKr3K14x84YAdTBo8glkPtNbj5nTEg==
+X-Received: by 2002:a2e:995a:: with SMTP id r26mr2550133ljj.107.1565872107347;
+        Thu, 15 Aug 2019 05:28:27 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id s21sm465306ljm.28.2019.08.15.05.28.25
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 05:21:40 -0700 (PDT)
-To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] r8169: sync EEE handling for RTL8168h with vendor
- driver
-Message-ID: <79a1db61-3aab-065b-9e18-0094c5023300@gmail.com>
-Date:   Thu, 15 Aug 2019 14:21:30 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 15 Aug 2019 05:28:26 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92)
+        (envelope-from <johan@kernel.org>)
+        id 1hyErj-0005zs-VM; Thu, 15 Aug 2019 14:28:28 +0200
+Date:   Thu, 15 Aug 2019 14:28:27 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Bob Ham <bob.ham@puri.sm>
+Cc:     Johan Hovold <johan@kernel.org>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>, kernel@puri.sm,
+        =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] usb: serial: option: Add the BroadMobi BM818 card
+Message-ID: <20190815122827.GF32300@localhost>
+References: <20190724145227.27169-1-angus@akkea.ca>
+ <20190724145227.27169-2-angus@akkea.ca>
+ <20190805114711.GF3574@localhost>
+ <5fb96703-b174-eef1-5ad1-693e2bbce32f@puri.sm>
+ <20190815114941.GE32300@localhost>
+ <57190963-22e2-cb89-bfd0-502f135237c3@puri.sm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="IrhDeMKUP4DT/M7F"
+Content-Disposition: inline
+In-Reply-To: <57190963-22e2-cb89-bfd0-502f135237c3@puri.sm>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sync EEE init for RTL8168h with vendor driver and add two writes to
-vendor-specific registers.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/ethernet/realtek/r8169_main.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+--IrhDeMKUP4DT/M7F
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index c9550b4f9..910944120 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2216,6 +2216,16 @@ static void rtl8168g_config_eee_phy(struct rtl8169_private *tp)
- 	phy_modify_paged(tp->phydev, 0x0a43, 0x11, 0, BIT(4));
- }
- 
-+static void rtl8168h_config_eee_phy(struct rtl8169_private *tp)
-+{
-+	struct phy_device *phydev = tp->phydev;
-+
-+	rtl8168g_config_eee_phy(tp);
-+
-+	phy_modify_paged(phydev, 0xa4a, 0x11, 0x0000, 0x0200);
-+	phy_modify_paged(phydev, 0xa42, 0x14, 0x0000, 0x0080);
-+}
-+
- static void rtl8169s_hw_phy_config(struct rtl8169_private *tp)
- {
- 	static const struct phy_reg phy_reg_init[] = {
-@@ -3283,7 +3293,7 @@ static void rtl8168h_1_hw_phy_config(struct rtl8169_private *tp)
- 	phy_modify_paged(tp->phydev, 0x0a44, 0x11, BIT(7), 0);
- 
- 	rtl8168g_disable_aldps(tp);
--	rtl8168g_config_eee_phy(tp);
-+	rtl8168h_config_eee_phy(tp);
- 	rtl_enable_eee(tp);
- }
- 
--- 
-2.22.1
+On Thu, Aug 15, 2019 at 01:19:19PM +0100, Bob Ham wrote:
+> On 15/08/2019 12:49, Johan Hovold wrote:
+> > On Mon, Aug 05, 2019 at 03:44:30PM +0100, Bob Ham wrote:
+> >> On 05/08/2019 12:47, Johan Hovold wrote:
+> >>> On Wed, Jul 24, 2019 at 07:52:26AM -0700, Angus Ainslie (Purism) wrot=
+e:
+> >>>> From: Bob Ham <bob.ham@puri.sm>
+> >>>>
+> >>>> Add a VID:PID for the BroadModi BM818 M.2 card
+> >>>
+> >>> Would you mind posting the output of usb-devices (or lsusb -v) for th=
+is
+> >>> device?
+> >>
+> >> T:  Bus=3D01 Lev=3D03 Prnt=3D40 Port=3D03 Cnt=3D01 Dev#=3D 44 Spd=3D48=
+0 MxCh=3D 0
+> >> D:  Ver=3D 2.00 Cls=3D00(>ifc ) Sub=3D00 Prot=3D00 MxPS=3D64 #Cfgs=3D =
+ 1
+> >> P:  Vendor=3D2020 ProdID=3D2060 Rev=3D00.00
+> >> S:  Manufacturer=3DQualcomm, Incorporated
+> >> S:  Product=3DQualcomm CDMA Technologies MSM
+> >> C:  #Ifs=3D 5 Cfg#=3D 1 Atr=3De0 MxPwr=3D500mA
+> >> I:  If#=3D0x0 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Dr=
+iver=3D(none)
+> >> I:  If#=3D0x1 Alt=3D 0 #EPs=3D 2 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Dr=
+iver=3D(none)
+> >> I:  If#=3D0x2 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Dr=
+iver=3D(none)
+> >> I:  If#=3D0x3 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dfe Prot=3Dff Dr=
+iver=3D(none)
+> >> I:  If#=3D0x4 Alt=3D 0 #EPs=3D 3 Cls=3Dff(vend.) Sub=3Dff Prot=3Dff Dr=
+iver=3D(none)
+> >=20
+> > I amended the commit message with the above, switched to
+> > USB_DEVICE_INTERFACE_CLASS(), fixed the comment and moved the entry
+> > to the other 0x2020 entries before applying.
+>=20
+> Sorry I should probably have mentioned this before but Angus has been on
+> vacation, hence the silence on the other matters.  Regardless, thanks.
 
+Ok, no worries.
+
+Johan
+
+--IrhDeMKUP4DT/M7F
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQQHbPq+cpGvN/peuzMLxc3C7H1lCAUCXVVP6AAKCRALxc3C7H1l
+CMo1APwMD0VfWrh3KkuyCmDvAanF6P1fbGAWJQAoA/T7CeleCgEA8vDvNG7aMnDc
+2kbrNPQBZPa2HBekhnq5EmNdcyDUwAQ=
+=Mz5X
+-----END PGP SIGNATURE-----
+
+--IrhDeMKUP4DT/M7F--
