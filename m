@@ -2,113 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBC548E4E6
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 08:27:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A18D8E4E7
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 08:28:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730401AbfHOG1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 02:27:51 -0400
-Received: from new4-smtp.messagingengine.com ([66.111.4.230]:59215 "EHLO
-        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729796AbfHOG1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 02:27:50 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 10FC63718;
-        Thu, 15 Aug 2019 02:27:50 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Thu, 15 Aug 2019 02:27:50 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=5oocgb
-        On3iCaI+ipewfyoDU3IkkWOZRHTKssoosqJK0=; b=wWg2QRsQkqUhfezSQxIJ4l
-        w/Xeb7xntKGI07xAuhYJda58iQl5g79MC5uY1OR8ncqCZy6ewsg1a94SGyeULEB0
-        MTc+QAxmPVLrx0unAS6idNKOuGuHzI+7w5yMySwIpbwrbPMFWSNASApllagjOmqe
-        WgFthhwrPetahr21E+d4BcXZrbviaXHcOu/Y1RV2Tlqfi9Wdtv1ynLAsl71LLRVb
-        lOZKIaO9qQ1aSvECXFDqcQUQpvg7aimfjhOZjXMD0HA4kY6LBpoMW/KDJCuJwJeC
-        eMYABXzt0HZwXQrbqx7EnRTHxSm4fTxIfErF+ZEua4GO8DmmDQn30E5qNuUXEKsA
-        ==
-X-ME-Sender: <xms:Y_tUXZF8NjvpzRzau7DjjtlI_LHSwqiDa1B4TrxqszhWs8SYgepLRg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeftddgjeekucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
-    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:Y_tUXbsn5xlJHKm6K5xMbOV_Ieq71mjjlNK9GyX28TTPIMgtsPFSqg>
-    <xmx:Y_tUXSdkhFgQ7eoAARu5B_NC1TEtyuv67Tl639iVolais0IBUcA5Fw>
-    <xmx:Y_tUXZkXDlyiTSC0kvSyp3DsZduBRcd6_q86ZRbWiIFxPUlk7ghWgw>
-    <xmx:ZvtUXVydE9cprn6AaDGsZCpHZ49Oo8FRqOJZX-pBNuVTe-G0weTMZQ>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 3E649380076;
-        Thu, 15 Aug 2019 02:27:47 -0400 (EDT)
-Date:   Thu, 15 Aug 2019 09:27:45 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
-        jiri@mellanox.com, toke@redhat.com, dsahern@gmail.com,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
-        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
-        vivien.didelot@gmail.com, mlxsw@mellanox.com,
-        Ido Schimmel <idosch@mellanox.com>
-Subject: Re: [PATCH net-next v2 11/14] netdevsim: Add devlink-trap support
-Message-ID: <20190815062745.GA12222@splinter>
-References: <20190813075400.11841-1-idosch@idosch.org>
- <20190813075400.11841-12-idosch@idosch.org>
- <20190814165957.0e626f57@cakuba.netronome.com>
+        id S1730401AbfHOG2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 02:28:51 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:34101 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729796AbfHOG2v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 02:28:51 -0400
+Received: by mail-pf1-f195.google.com with SMTP id b24so898271pfp.1
+        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 23:28:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rW27JgmRAd7uJ6fOqaefRHRk/SuuuN3zVWcMlhtpIEY=;
+        b=J+LcPcJ6WrIBVt+bVSF7CQ/P/X9pqwvaIe/FMufZrm8bco0+2HzRRPIzEBa0v1M0D2
+         hzP0ytkNJWstALpUdZtcFFsXNeV29z/uLqN04NzahU3zf5j77lkCKL2w8pPrXRGrjcOw
+         fUURFvk1sfEcVyw6Y+VaEbPm8p75iBb4IImEFk48ciD1f6WUYqbOqcNzMuPz45R3s++c
+         PtRtYcxYxJgFbV5/izSDF0AqRXMsRascXlAmYl+xxkeXwm0lHjqAMzj//a2OwH04HGRe
+         AXFfiVeJk+YSyAxcLE5mZqDzpjrd9Pl6RLfHKfxJQzBpTNaYk6NrC9iaaJbhCZULBA3/
+         k1dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rW27JgmRAd7uJ6fOqaefRHRk/SuuuN3zVWcMlhtpIEY=;
+        b=kj9Hxc0tzGFprICdT9gI6WlWR9agW1Hexz8caUVsVXBAlXerKjSCRgoEFd9UbaBnBG
+         1z1dI1q10iSrpPkGejJ5Z+IZdSNZK93Gtl8/23OJHUVYLnZvtbV3nE1UloSryOtHlvGh
+         UzDpMoDoPQvysdAuhg5TuGrrzsARG6KYRLOvfvsIyBmpcAc/ZmD/FhJqwwg8CYjIwoit
+         WK8fQnDksbTf8ShTGIepBYeBkSWch3Uh7Ak2M8rhxcfWCrR63xxtI1dy6QDjiFr1tUM9
+         A0LAS+M+SRDOhHlb7Hypscg5S2sWH0dtxnS3u7Isrk7zNFATTyB/2OmC8B0UQTKKQIR1
+         268Q==
+X-Gm-Message-State: APjAAAWT9H/XIeyJXZTffBr+GCPWdp4KMLW683xalNhRWxaK5m+V+FAg
+        gaLygAmtaHrJBXx1It5Fo3XHBj+E
+X-Google-Smtp-Source: APXvYqw9hl782bd5l1XuXlL8K/+ZkC5zZFQmdc8YOXCZrJWAOpN9wqKYvzZV61W701bUOjqblFfAlw==
+X-Received: by 2002:a63:e807:: with SMTP id s7mr2289922pgh.194.1565850530797;
+        Wed, 14 Aug 2019 23:28:50 -0700 (PDT)
+Received: from localhost.localdomain ([110.225.3.176])
+        by smtp.gmail.com with ESMTPSA id dw7sm535629pjb.21.2019.08.14.23.28.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 14 Aug 2019 23:28:50 -0700 (PDT)
+From:   Nishka Dasgupta <nishkadg.linux@gmail.com>
+To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Cc:     Nishka Dasgupta <nishkadg.linux@gmail.com>
+Subject: [PATCH] net: hns: hns_enet: Add of_node_put in hns_nic_dev_probe()
+Date:   Thu, 15 Aug 2019 11:58:37 +0530
+Message-Id: <20190815062837.6015-1-nishkadg.linux@gmail.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190814165957.0e626f57@cakuba.netronome.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 04:59:57PM -0700, Jakub Kicinski wrote:
-> On Tue, 13 Aug 2019 10:53:57 +0300, Ido Schimmel wrote:
-> > diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-> > index 08ca59fc189b..2758d95c8d18 100644
-> > --- a/drivers/net/netdevsim/dev.c
-> > +++ b/drivers/net/netdevsim/dev.c
-> > @@ -17,11 +17,21 @@
-> >  
-> >  #include <linux/debugfs.h>
-> >  #include <linux/device.h>
-> > +#include <linux/etherdevice.h>
-> > +#include <linux/inet.h>
-> > +#include <linux/jiffies.h>
-> > +#include <linux/kernel.h>
-> >  #include <linux/list.h>
-> >  #include <linux/mutex.h>
-> >  #include <linux/random.h>
-> > +#include <linux/workqueue.h>
-> > +#include <linux/random.h>
-> >  #include <linux/rtnetlink.h>
-> >  #include <net/devlink.h>
-> > +#include <net/ip.h>
-> > +#include <uapi/linux/devlink.h>
-> > +#include <uapi/linux/ip.h>
-> > +#include <uapi/linux/udp.h>
-> 
-> Please keep includes ordered alphabetically. You're adding
-> linux/random.h second time.
+The local variable ae_node in function hns_nic_dev_probe takes the
+return value of of_parse_phandle, which gets a node but does not put it.
+This may cause a memory leak. Hence put ae_node after the last time it
+is invoked.
+Issue found with Coccinelle.
 
-Will fix.
+Signed-off-by: Nishka Dasgupta <nishkadg.linux@gmail.com>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 
-> >  #include "netdevsim.h"
-> 
-> > +static void nsim_dev_trap_report(struct nsim_dev_port *nsim_dev_port)
-> > +{
-> > +	struct nsim_dev *nsim_dev = nsim_dev_port->ns->nsim_dev;
-> > +	struct nsim_trap_data *nsim_trap_data = nsim_dev->trap_data;
-> > +	struct devlink *devlink = priv_to_devlink(nsim_dev);
-> > +	int i;
-> 
-> reverse christmas tree, please
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index 2235dd55fab2..b26e84929e1e 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -2309,6 +2309,7 @@ static int hns_nic_dev_probe(struct platform_device *pdev)
+ 			goto out_read_prop_fail;
+ 		}
+ 		priv->fwnode = &ae_node->fwnode;
++		of_node_put(ae_node);
+ 	} else if (is_acpi_node(dev->fwnode)) {
+ 		struct fwnode_reference_args args;
+ 
+-- 
+2.19.1
 
-Likewise.
-
-Thanks!
