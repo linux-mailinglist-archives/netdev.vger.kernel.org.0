@@ -2,125 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 911608F503
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 21:46:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF76A8F513
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 21:46:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731769AbfHOTq0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 15:46:26 -0400
-Received: from mail-eopbgr70050.outbound.protection.outlook.com ([40.107.7.50]:51424
-        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730512AbfHOTqY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 15:46:24 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ofCeXoeV225OZKwvfv1I6oO/ZfVfo6gkcnR1Zjg9g0Yl0Ov6bCrTRcOGIcmQ7TyptLO64Hkajb4IPMClV4ww76nnNvFlS5G1PT/ZH48XuBdMk0URPwPzqnadX+KAX8iQPDHIP87QNvT6BH2KH2L2OA6U5lmMHjfuMtjbklV9ddpFdb+uWrEyS+ot7q1ZDW3et1DuPODM5CIHBIvJ2hH83WPqeTv/5HM0SCRWtJLt1QZ5+JOPK7WqPUDos0LBVRoqaJ1lpMXVED774ZG5VxsKUyngtHaCRfZPr5EsfpQo5MxLaYiwJ5mMXmngac1cuRYKRvAcMS8eozoqUgfl0dHMMg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CidwOrsOu+w6kLp8klJ1vS5Hc5Tw22ZxCTZ0akY4lD0=;
- b=RX3x3nnyBn7c8gHSjvStmHgy0vhmR+e4tZFwqMHWY0ZCw4p239iXTbUR2FD6Ck5GP+56DDAoDKBFXW7cWcku0aTTgObKZKEvnrrxZ+OdnUWfE+VKY8YDv5xvKm97DUUAKoS3Su6V/QaILXvhfdeKnYbwp2WqQoATnzzacQAlPohetxbSHSLkmTApS9C+cc5eFt4qZf0qDVVm3hGf1tn45hnowUz5KpcpFyDNU2miAmvnhzctatz3od/qwMzyoIubXUlnhNftbNi5c6cNicbsUbalVGkkZVYH8GNUik96ntxwgTS8EFTWluz2DZO1SGn4M+twvLVkuMb70gOMz9qKVw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CidwOrsOu+w6kLp8klJ1vS5Hc5Tw22ZxCTZ0akY4lD0=;
- b=MTa9ShUtBM0r07LeLgqLvt73Gf9gJ/Z+fZmH0wKCtAF5rIEIVeO9d7bf2v5bE47SGBzN2ujR2yNmEeThJdhTsWYWeers3fTClTLzUUMGQbTVgGHdW1bKlF0M9I8FNNY61LCWtA8nbZi1Q3+bbakcZy0oBA4I20JGrgOBupcYfL0=
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com (10.172.227.7) by
- DB6PR0501MB2693.eurprd05.prod.outlook.com (10.172.226.151) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.20; Thu, 15 Aug 2019 19:46:18 +0000
-Received: from DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2]) by DB6PR0501MB2759.eurprd05.prod.outlook.com
- ([fe80::3c28:c77d:55b0:15b2%5]) with mapi id 15.20.2178.016; Thu, 15 Aug 2019
- 19:46:18 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Tariq Toukan <tariqt@mellanox.com>
-Subject: [PATCH mlx5-next 5/5] net/mlx5: Add lag_tx_port_affinity capability
- bit
-Thread-Topic: [PATCH mlx5-next 5/5] net/mlx5: Add lag_tx_port_affinity
- capability bit
-Thread-Index: AQHVU6IZ2DBFYXeURUSMsyX/55btkg==
-Date:   Thu, 15 Aug 2019 19:46:16 +0000
-Message-ID: <20190815194543.14369-6-saeedm@mellanox.com>
-References: <20190815194543.14369-1-saeedm@mellanox.com>
-In-Reply-To: <20190815194543.14369-1-saeedm@mellanox.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-mailer: git-send-email 2.21.0
-x-originating-ip: [209.116.155.178]
-x-clientproxiedby: BYAPR03CA0031.namprd03.prod.outlook.com
- (2603:10b6:a02:a8::44) To DB6PR0501MB2759.eurprd05.prod.outlook.com
- (2603:10a6:4:84::7)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6a2567fd-fc9d-4e9e-c6bb-08d721b93c34
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0501MB2693;
-x-ms-traffictypediagnostic: DB6PR0501MB2693:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0501MB269373C08E11B23AB6639ECBBEAC0@DB6PR0501MB2693.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1013;
-x-forefront-prvs: 01304918F3
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(346002)(366004)(136003)(396003)(376002)(199004)(189003)(478600001)(64756008)(6506007)(186003)(102836004)(476003)(66556008)(26005)(14454004)(66446008)(86362001)(2906002)(25786009)(66476007)(66946007)(3846002)(4326008)(6486002)(6116002)(6636002)(76176011)(386003)(450100002)(53936002)(66066001)(107886003)(5660300002)(1076003)(71190400001)(8676002)(71200400001)(256004)(486006)(4744005)(54906003)(81156014)(8936002)(6512007)(14444005)(99286004)(36756003)(305945005)(50226002)(52116002)(316002)(6436002)(110136005)(11346002)(446003)(7736002)(2616005)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0501MB2693;H:DB6PR0501MB2759.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: HJzQDcNwWWb4lWvT2D4ceunkAURdWuuWmydLQ5lC7Qf/vp8LssCaRNl8o1/sWGu2h9Ssm60B1JjRdokgQiov4eOaXVIJdpq7m2I0PpbcgG1E+TafHbumJzJ4sXniSKx3vql3VchU/wNK1PVm+aH7c0mamSo5PoiOUeZiYWnDJGedKLxV7kjZIEiXgqw2lBfjBWJVdK4RfVJtw4BteFTvPKyhGCy2YtC6UQRGgpbMQj5dW6uEEhpKVyW+1CBQrXznFcqgicqNUG4SbHQocX5GQGt2C1L05V3/VLpygxDP539mCUIhfboAOWJsYmVASzHp4Dnd2PYydaJh88DpPMlLPf9w/LQ3Y7t1mGQ+x2uxVgWMqCd8DGLj9DRL6dllO6u4yjUTSi/rEMno9UztirfPBrmsZuUeUM9LFZVeKsfC8/U=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1733211AbfHOTqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 15:46:45 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:43585 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733205AbfHOTqo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 15:46:44 -0400
+Received: by mail-pf1-f193.google.com with SMTP id v12so1825599pfn.10
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 12:46:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=q9R0vNoUpwKLeu2pnfmt46PqrXtqSmivMtowXnYTOZo=;
+        b=H0/RvPSUgkXdfxxI3i5LVxFFjGoQjDU4tEClLQbXRTozuKmyG66rsuwuaQhm6opn8L
+         YfqvyrmFeGimX21lZuHDTTWFEXr8ocu9gR3Jv1WZm6e9nsPzXLaQIup05uukgtM8RKDj
+         XddoB41uZ7kY/ujqgXTjaa5ORKT5c/3HP1uYM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=q9R0vNoUpwKLeu2pnfmt46PqrXtqSmivMtowXnYTOZo=;
+        b=MYGKAGFoqHrCi5vViQJZxqmeO+IrfSBsep43rARxi2cATyVBx7qj0/lpx7SN86Koj1
+         JMXUiDOQ9vRJMDgfRXDiMlw6n3CfvaolnKe4TFmzUxHu5sevrTmqa6YaQWQW/QYDjuG/
+         Mn27RwP5CUA2YPE+64uku/Mxn7pFE1J6AQOpSx4o5QJK6KK2bTM0Ltqr5POh8JG6eldO
+         RIKP0DV8ipTHkPdAXXIpcMBWuZIiRkuNkWjgY44sGjSq+7T/X67ed1rXla32nfmRsb7D
+         faMz0QOBI1FUxYn1f73+etuRjjqHMTeieGTlnz0jvxoozqNbVR8AtjVV5ZyAi4K8gDqH
+         +eAg==
+X-Gm-Message-State: APjAAAV/zLvhFdHDWkpc121dQOYNlNfrpUTmb1cypmBAmzQLJgZZTJ1Z
+        o0Ttf6YLeqxurySynWF92ASAYw==
+X-Google-Smtp-Source: APXvYqwkdKiJuv/6WIKEpcaHaZ22PyLLwMhSfjqdJkm4PMqDnc+jsZVtxZmMArS1ytN4WQAQBH5eLg==
+X-Received: by 2002:a63:a302:: with SMTP id s2mr4777940pge.125.1565898403670;
+        Thu, 15 Aug 2019 12:46:43 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id y8sm4327185pfr.140.2019.08.15.12.46.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 15 Aug 2019 12:46:42 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 12:46:41 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Message-ID: <201908151203.FE87970@keescook>
+References: <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com>
+ <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
+ <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
+ <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
+ <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
+ <20190805192122.laxcaz75k4vxdspn@ast-mbp>
+ <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
+ <20190806011134.p5baub5l3t5fkmou@ast-mbp>
+ <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+ <20190813215823.3sfbakzzjjykyng2@ast-mbp>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6a2567fd-fc9d-4e9e-c6bb-08d721b93c34
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Aug 2019 19:46:16.1841
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: IiEly1amo/XRudzrQNeMexLoF9jOay2G/NpDQDLTHCvr/AmuPWO/5V0Kk7LcrYfTGHaay86LARh3BRXc22JLUw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0501MB2693
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190813215823.3sfbakzzjjykyng2@ast-mbp>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Maxim Mikityanskiy <maximmi@mellanox.com>
+On Tue, Aug 13, 2019 at 02:58:25PM -0700, Alexei Starovoitov wrote:
+> agree that containers (namespaces) reduce amount of trust necessary
+> for apps to run, but the end goal is not security though.
 
-Add the lag_tx_port_affinity HCA capability bit that indicates that
-setting port affinity of TISes is supported.
+Unsurprisingly, I totally disagree: this is the very definition of
+improved "security": reduced attack surface, confined trust, etc.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
-Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
----
- include/linux/mlx5/mlx5_ifc.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+> Linux has become a single user system.
 
-diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
-index 2837fe4d8901..1e55cf73e88c 100644
---- a/include/linux/mlx5/mlx5_ifc.h
-+++ b/include/linux/mlx5/mlx5_ifc.h
-@@ -1249,7 +1249,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
- 	u8         reserved_at_263[0x8];
- 	u8         log_bf_reg_size[0x5];
-=20
--	u8         reserved_at_270[0xb];
-+	u8         reserved_at_270[0x8];
-+	u8         lag_tx_port_affinity[0x1];
-+	u8         reserved_at_279[0x2];
- 	u8         lag_master[0x1];
- 	u8         num_lag_ports[0x4];
-=20
---=20
-2.21.0
+I hope this is just hyperbole, because it's not true in reality. I agree
+that the vast majority of Linux devices are single-user-at-a-time
+systems now (rather than the "shell servers" of yore), but the system
+still has to be expected to confine users from each other, root, and the
+hardware. Switching users on Chrome OS or a distro laptop, etc is still
+very much expected to _mean_ something.
 
+> If user can ssh into the host they can become root.
+> If arbitrary code can run on the host it will be break out of any sandbox.
+> Containers are not providing the level of security that is enough
+> to run arbitrary code. VMs can do it better, but cpu bugs don't make it easy.
+
+I'm not sure why you draw the line for VMs -- they're just as buggy
+as anything else. Regardless, I reject this line of thinking: yes,
+all software is buggy, but that isn't a reason to give up. In fact,
+we should be trying very hard to create safe code (*insert arguments
+for sane languages and toolchains here*).
+
+If you look at software safety as a binary, you will always be
+disappointed. If you look at it as it manifests in the real world,
+then there is some perspective to be had. Reachability of flaws becomes
+a major factor; exploit chain length becomes a factor. There are very
+real impacts to be had from security hardening, sandboxing, etc. Of
+course nothing is perfect, but the current state of the world isn't
+as you describe. (And I say this with the knowledge of how long
+the lifetime of bugs are in the kernel.)
+
+> Containers are used to make production systems safer.
+
+Yes.
+
+> Some people call it more 'secure', but it's clearly not secure for
+> arbitrary code
+
+Perhaps it's just a language issue. "More secure" and "safer" mean
+mostly the same thing to me. I tend to think "safer" is actually
+a superset that includes things that wreck the user experience but
+aren't actually in the privilege manipulation realm. In the traditional
+"security" triad of confidentiality, integrity, and availability, I tend
+to weigh availability less highly, but a bug that stops someone from
+doing their work but doesn't wreck data, let them switch users, etc,
+is still considered a "security" issue by many folks. The fewer bugs
+someone is exposed to improves their security, safety, whatever. The
+easiest way to do that is confinement and its associated attack surface
+reduction. tl;dr: security and safety are very use-case-specific
+continuum, not a binary state.
+
+> When we say 'unprivileged bpf' we really mean arbitrary malicious bpf program.
+> It's been a constant source of pain. The constant blinding, randomization,
+> verifier speculative analysis, all spectre v1, v2, v4 mitigations
+> are simply not worth it. It's a lot of complex kernel code without users.
+> There is not a single use case to allow arbitrary malicious bpf
+> program to be loaded and executed.
+
+The world isn't binary (safe code/malicious code), and we need to build
+systems that can be used safely even when things go wrong. Yes, probably
+no one has a system that _intentionally_ feeds eBPF into the kernel from
+a web form. But there is probably someone who does it unintentionally,
+or has a user login exposed on a system where unpriv BPF is enabled. The
+point is to create primitives as safely as possible so when things DO
+go wrong, they fail safe instead of making things worse.
+
+I'm all for a "less privileged than root" API for eBPF, but I get worried
+when I see "security" being treated as a binary state. Especially when
+it is considered an always-failed state. :)
+
+-- 
+Kees Cook
