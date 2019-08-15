@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A001B8F003
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:03:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B0B8F006
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:03:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730433AbfHOQDB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 12:03:01 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39920 "EHLO mx1.redhat.com"
+        id S1730548AbfHOQDE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 12:03:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:41974 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726008AbfHOQDB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 12:03:01 -0400
+        id S1730462AbfHOQDD (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 12:03:03 -0400
 Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id A137B8E37A;
-        Thu, 15 Aug 2019 16:03:00 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id 4F439302C093;
+        Thu, 15 Aug 2019 16:03:03 +0000 (UTC)
 Received: from mob-31-157-107-94.net.vodafone.it.com (ovpn-204-48.brq.redhat.com [10.40.204.48])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 65914841E0;
-        Thu, 15 Aug 2019 16:02:58 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 147373796;
+        Thu, 15 Aug 2019 16:03:00 +0000 (UTC)
 From:   Davide Caratti <dcaratti@redhat.com>
 To:     Boris Pismenny <borisp@mellanox.com>,
         Jakub Kicinski <jakub.kicinski@netronome.com>,
@@ -26,167 +26,180 @@ To:     Boris Pismenny <borisp@mellanox.com>,
         Dave Watson <davejwatson@fb.com>,
         Aviad Yehezkel <aviadye@mellanox.com>,
         "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH net-next 2/3] tcp: ulp: add functions to dump ulp-specific information
-Date:   Thu, 15 Aug 2019 18:00:43 +0200
-Message-Id: <f9b5663d28547b0d1c187d874c7b5e5ece8fe8fa.1565882584.git.dcaratti@redhat.com>
+Subject: [PATCH net-next 3/3] net: tls: export protocol version, cipher, tx_conf/rx_conf to socket diag
+Date:   Thu, 15 Aug 2019 18:00:44 +0200
+Message-Id: <cffb40d931e16f6aa55e604407239a9e00b8a6ef.1565882584.git.dcaratti@redhat.com>
 In-Reply-To: <cover.1565882584.git.dcaratti@redhat.com>
 References: <cover.1565882584.git.dcaratti@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Thu, 15 Aug 2019 16:03:00 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Thu, 15 Aug 2019 16:03:03 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-currently, only getsockopt(TCP_ULP) can be invoked to know if a ULP is on
-top of a TCP socket. Extend idiag_get_aux() and idiag_get_aux_size(),
-introduced by commit b37e88407c1d ("inet_diag: allow protocols to provide
-additional data"), to report the ULP name and other information that can
-be made available by the ULP through optional functions.
-
-Users having CAP_NET_ADMIN privileges will then be able to retrieve this
-information through inet_diag_handler, if they specify INET_DIAG_INFO in
-the request.
+When an application configures kernel TLS on top of a TCP socket, it's
+now possible for inet_diag_handler() to collect information regarding the
+protocol version, the cipher type and TX / RX configuration, in case
+INET_DIAG_INFO is requested.
 
 Signed-off-by: Davide Caratti <dcaratti@redhat.com>
 ---
- include/net/tcp.h              |  3 ++
- include/uapi/linux/inet_diag.h |  8 +++++
- net/ipv4/tcp_diag.c            | 56 +++++++++++++++++++++++++++++++++-
- 3 files changed, 66 insertions(+), 1 deletion(-)
+ include/net/tls.h              | 19 ++++++++++++
+ include/uapi/linux/inet_diag.h |  1 +
+ include/uapi/linux/tls.h       | 15 +++++++++
+ net/tls/tls_main.c             | 56 ++++++++++++++++++++++++++++++++++
+ 4 files changed, 91 insertions(+)
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 77fe87f7a992..c9a3f9688223 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2122,6 +2122,9 @@ struct tcp_ulp_ops {
- 	void (*update)(struct sock *sk, struct proto *p);
- 	/* cleanup ulp */
- 	void (*release)(struct sock *sk);
-+	/* diagnostic */
-+	int (*get_info)(const struct sock *sk, struct sk_buff *skb);
-+	size_t (*get_info_size)(const struct sock *sk);
+diff --git a/include/net/tls.h b/include/net/tls.h
+index 4997742475cd..990f1d9182a3 100644
+--- a/include/net/tls.h
++++ b/include/net/tls.h
+@@ -431,6 +431,25 @@ static inline bool is_tx_ready(struct tls_sw_context_tx *ctx)
+ 	return READ_ONCE(rec->tx_ready);
+ }
  
- 	char		name[TCP_ULP_NAME_MAX];
- 	struct module	*owner;
++static inline u16 tls_user_config(struct tls_context *ctx, bool tx)
++{
++	u16 config = tx ? ctx->tx_conf : ctx->rx_conf;
++
++	switch (config) {
++	case TLS_BASE:
++		return TLS_CONF_BASE;
++	case TLS_SW:
++		return TLS_CONF_SW;
++#ifdef CONFIG_TLS_DEVICE
++	case TLS_HW:
++		return TLS_CONF_HW;
++#endif
++	case TLS_HW_RECORD:
++		return TLS_CONF_HW_RECORD;
++	}
++	return 0;
++}
++
+ struct sk_buff *
+ tls_validate_xmit_skb(struct sock *sk, struct net_device *dev,
+ 		      struct sk_buff *skb);
 diff --git a/include/uapi/linux/inet_diag.h b/include/uapi/linux/inet_diag.h
-index e8baca85bac6..e2c6273274f3 100644
+index e2c6273274f3..a1ff345b3f33 100644
 --- a/include/uapi/linux/inet_diag.h
 +++ b/include/uapi/linux/inet_diag.h
-@@ -153,11 +153,19 @@ enum {
- 	INET_DIAG_BBRINFO,	/* request as INET_DIAG_VEGASINFO */
- 	INET_DIAG_CLASS_ID,	/* request as INET_DIAG_TCLASS */
- 	INET_DIAG_MD5SIG,
-+	INET_DIAG_ULP_INFO,
- 	__INET_DIAG_MAX,
+@@ -162,6 +162,7 @@ enum {
+ enum {
+ 	INET_ULP_INFO_UNSPEC,
+ 	INET_ULP_INFO_NAME,
++	INET_ULP_INFO_TLS,
+ 	__INET_ULP_INFO_MAX,
+ };
+ #define INET_ULP_INFO_MAX (__INET_ULP_INFO_MAX - 1)
+diff --git a/include/uapi/linux/tls.h b/include/uapi/linux/tls.h
+index 5b9c26753e46..bcd2869ed472 100644
+--- a/include/uapi/linux/tls.h
++++ b/include/uapi/linux/tls.h
+@@ -109,4 +109,19 @@ struct tls12_crypto_info_aes_ccm_128 {
+ 	unsigned char rec_seq[TLS_CIPHER_AES_CCM_128_REC_SEQ_SIZE];
  };
  
- #define INET_DIAG_MAX (__INET_DIAG_MAX - 1)
- 
 +enum {
-+	INET_ULP_INFO_UNSPEC,
-+	INET_ULP_INFO_NAME,
-+	__INET_ULP_INFO_MAX,
++	TLS_INFO_UNSPEC,
++	TLS_INFO_VERSION,
++	TLS_INFO_CIPHER,
++	TLS_INFO_TXCONF,
++	TLS_INFO_RXCONF,
++	__TLS_INFO_MAX,
 +};
-+#define INET_ULP_INFO_MAX (__INET_ULP_INFO_MAX - 1)
++#define TLS_INFO_MAX (__TLS_INFO_MAX - 1)
 +
- /* INET_DIAG_MEM */
++#define TLS_CONF_BASE 1
++#define TLS_CONF_SW 2
++#define TLS_CONF_HW 3
++#define TLS_CONF_HW_RECORD 4
++
+ #endif /* _UAPI_LINUX_TLS_H */
+diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
+index 04829bef514c..957d937c72d2 100644
+--- a/net/tls/tls_main.c
++++ b/net/tls/tls_main.c
+@@ -39,6 +39,7 @@
+ #include <linux/netdevice.h>
+ #include <linux/sched/signal.h>
+ #include <linux/inetdevice.h>
++#include <linux/inet_diag.h>
  
- struct inet_diag_meminfo {
-diff --git a/net/ipv4/tcp_diag.c b/net/ipv4/tcp_diag.c
-index a3a386236d93..1cec262ac8eb 100644
---- a/net/ipv4/tcp_diag.c
-+++ b/net/ipv4/tcp_diag.c
-@@ -81,13 +81,42 @@ static int tcp_diag_put_md5sig(struct sk_buff *skb,
+ #include <net/tls.h>
+ 
+@@ -838,6 +839,59 @@ static void tls_update(struct sock *sk, struct proto *p)
+ 	}
  }
- #endif
  
-+static int tcp_diag_put_ulp(struct sk_buff *skb, struct sock *sk,
-+			    const struct tcp_ulp_ops *ulp_ops)
++static int tls_get_info(const struct sock *sk, struct sk_buff *skb)
 +{
-+	struct nlattr *nest;
++	struct tls_context *ctx = tls_get_ctx(sk);
++	u16 version, cipher_type;
++	struct nlattr *start;
 +	int err;
 +
-+	nest = nla_nest_start_noflag(skb, INET_DIAG_ULP_INFO);
-+	if (!nest)
++	start = nla_nest_start_noflag(skb, INET_ULP_INFO_TLS);
++	if (!start)
 +		return -EMSGSIZE;
 +
-+	err = nla_put_string(skb, INET_ULP_INFO_NAME, ulp_ops->name);
++	version = ctx->prot_info.version;
++	if (version) {
++		err = nla_put_u16(skb, TLS_INFO_VERSION, version);
++		if (err)
++			goto nla_failure;
++	}
++	cipher_type = ctx->prot_info.cipher_type;
++	if (cipher_type) {
++		err = nla_put_u16(skb, TLS_INFO_CIPHER, cipher_type);
++		if (err)
++			goto nla_failure;
++	}
++	err = nla_put_u16(skb, TLS_INFO_TXCONF, tls_user_config(ctx, true));
 +	if (err)
 +		goto nla_failure;
 +
-+	if (ulp_ops->get_info)
-+		err = ulp_ops->get_info(sk, skb);
++	err = nla_put_u16(skb, TLS_INFO_RXCONF, tls_user_config(ctx, false));
 +	if (err)
 +		goto nla_failure;
 +
-+	nla_nest_end(skb, nest);
++	nla_nest_end(skb, start);
 +	return 0;
 +
 +nla_failure:
-+	nla_nest_cancel(skb, nest);
++	nla_nest_cancel(skb, start);
 +	return err;
 +}
 +
- static int tcp_diag_get_aux(struct sock *sk, bool net_admin,
- 			    struct sk_buff *skb)
++static size_t tls_get_info_size(const struct sock *sk)
++{
++	size_t size = 0;
++
++	size += nla_total_size(0) +		/* INET_ULP_INFO_TLS */
++		nla_total_size(sizeof(u16)) +	/* TLS_INFO_VERSION */
++		nla_total_size(sizeof(u16)) +	/* TLS_INFO_CIPHER */
++		nla_total_size(sizeof(u16)) +	/* TLS_INFO_RXCONF */
++		nla_total_size(sizeof(u16)) +	/* TLS_INFO_TXCONF */
++		0;
++
++	return size;
++}
++
+ void tls_register_device(struct tls_device *device)
  {
-+	struct inet_connection_sock *icsk = inet_csk(sk);
-+	int err = 0;
-+
- #ifdef CONFIG_TCP_MD5SIG
- 	if (net_admin) {
- 		struct tcp_md5sig_info *md5sig;
--		int err = 0;
+ 	spin_lock_bh(&device_spinlock);
+@@ -859,6 +913,8 @@ static struct tcp_ulp_ops tcp_tls_ulp_ops __read_mostly = {
+ 	.owner			= THIS_MODULE,
+ 	.init			= tls_init,
+ 	.update			= tls_update,
++	.get_info		= tls_get_info,
++	.get_info_size		= tls_get_info_size,
+ };
  
- 		rcu_read_lock();
- 		md5sig = rcu_dereference(tcp_sk(sk)->md5sig_info);
-@@ -99,11 +128,23 @@ static int tcp_diag_get_aux(struct sock *sk, bool net_admin,
- 	}
- #endif
- 
-+	if (net_admin) {
-+		const struct tcp_ulp_ops *ulp_ops;
-+
-+		rcu_read_lock();
-+		ulp_ops = icsk->icsk_ulp_ops;
-+		if (ulp_ops)
-+			err = tcp_diag_put_ulp(skb, sk, ulp_ops);
-+		rcu_read_unlock();
-+		if (err)
-+			return err;
-+	}
- 	return 0;
- }
- 
- static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
- {
-+	struct inet_connection_sock *icsk = inet_csk(sk);
- 	size_t size = 0;
- 
- #ifdef CONFIG_TCP_MD5SIG
-@@ -124,6 +165,19 @@ static size_t tcp_diag_get_aux_size(struct sock *sk, bool net_admin)
- 	}
- #endif
- 
-+	if (net_admin) {
-+		const struct tcp_ulp_ops *ulp_ops;
-+
-+		rcu_read_lock();
-+		ulp_ops = icsk->icsk_ulp_ops;
-+		if (ulp_ops) {
-+			size += nla_total_size(0) +
-+				nla_total_size(TCP_ULP_NAME_MAX);
-+			if (ulp_ops->get_info_size)
-+				size += ulp_ops->get_info_size(sk);
-+		}
-+		rcu_read_unlock();
-+	}
- 	return size;
- }
- 
+ static int __init tls_register(void)
 -- 
 2.20.1
 
