@@ -2,151 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D947D8EB4C
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 14:16:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E07478EB43
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 14:15:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731809AbfHOMOe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 08:14:34 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35047 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731775AbfHOMOb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 08:14:31 -0400
-Received: by mail-wm1-f65.google.com with SMTP id l2so1088628wmg.0
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 05:14:30 -0700 (PDT)
+        id S1731762AbfHOMO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 08:14:28 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:36778 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726098AbfHOMO2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 08:14:28 -0400
+Received: by mail-lf1-f68.google.com with SMTP id j17so1510040lfp.3
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 05:14:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=TkCpQzt0O3mAU4bSRFh9V9Ndb1XFdaaoT4NDtQM1d/Y=;
-        b=k/UO0KmRhx5ZUzKaLJEFscFrqjYBm3taa1v8//uvW15TfBenL95b9qBKiNpj+6Chsa
-         f6MD9YZcerfideRPen/MPfxSpgYqcyVaRuIlVe5S6Rf4nZIC9daWf4+fKcUGanfjvtB7
-         QJR/L7EtExYaBEOff4V1XcwZ5x4u92qPx4TnfTrWIOz3dUfqmE81xsjCfNdmT9KVWZlY
-         AWh7msYEvyyKGXCmirZvmGofFU4dRhEJZcaoepLZpQbfp+b6DWq/gXiecUFhy+l1IMq6
-         gL7E3jff9/CFWOK8YX7VK3TMo6PzDOUNI/9cEUJXS4WPy2id38AKyagcnkPlq0ET3qBs
-         SgAA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=3641LUEd2HTKkMH20tZOF7R9VgBmsqyi1CgXFKzq1iI=;
+        b=E7+mvnclwFQf1QTthc7TSa/woOJoODcphCGG4gThBjwyHFGxAUTVQ4sb+1zeH7XAgR
+         3FqMc8iSzjNFsAAdzrjtfoiBkOg/gEVnjyoY/SOVVODua0fGf8hW6Cr117wxwFMrqZ/b
+         yIROJrH+8HVfZuM40aSRHgfr0opGr1qfNM0K5PU6rUugeE4uvycQzeRb9jpxT3cQVR/a
+         SkCzl4Rg5V4UaCcHmir+8BjwdByEIdm94fQzCkW6JdVryww/Wi8owh5FRSS/K55R3uJI
+         ZjPnmbjs7VAESgtQ+iocnno+9xe6FPUw0DPiyXJQstYgmEzaqJ7h1GBV6gBxRTbyprgp
+         jF/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TkCpQzt0O3mAU4bSRFh9V9Ndb1XFdaaoT4NDtQM1d/Y=;
-        b=BCc7pgqzxXYL/zxh8e3q7II+IuGnj0UetXMj2+LD9nuEnWwKVzXBPNEFEvDUDP0akZ
-         CZDG9jYv5GziD6PkYmiQBFEPCQM1OCE5SAaM3C9+czpk8Hq5Nk2WUfoVZ69Jw5Y/JPCW
-         DJUfs3RE5OaVxTiqPk9AvMIzj+0A0SwoQXwgNDPRU8iZ7ZroKIWJEDsseFseSsNYn/M7
-         EQ7/Tduhmlf3VJBlYZzDlNv9ZZpmgM5n4YExNtEXL8FTI1h/pwmiXnU8JbAfBmsnzyIJ
-         B6CkRCirrMKWi4zALWDzqs9w4Wrmx7e7O2D4ii01UEg83GrLtBIg5XXbQpQ0MN8QJ+rX
-         tDtQ==
-X-Gm-Message-State: APjAAAWnZgdLvJzCn8IKWsTW0sBCvvEv11Ef9lckovZPOJoiFDRttPIM
-        iB5hnh7Re6swZCUQujh7O+ns9grf
-X-Google-Smtp-Source: APXvYqzGfeqzJJoplUlHuGZ7KWcFX5SUAYF1tywu/FIraZ4nn3U9Dq/+kQ77HL22v/PP6FuNzKReSw==
-X-Received: by 2002:a1c:b6d4:: with SMTP id g203mr2497944wmf.100.1565871269206;
-        Thu, 15 Aug 2019 05:14:29 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:b8fa:18d8:f880:513c? (p200300EA8F2F3200B8FA18D8F880513C.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:b8fa:18d8:f880:513c])
-        by smtp.googlemail.com with ESMTPSA id g12sm2661241wrv.9.2019.08.15.05.14.28
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 05:14:28 -0700 (PDT)
-Subject: [PATCH net-next v2 1/2] net: phy: realtek: add support for EEE
- registers on integrated PHY's
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <88a71ee7-a17d-ac9c-c998-d0ea35e5c566@gmail.com>
-Message-ID: <b9d96a3b-8301-fb4f-c7f5-911c964c15cf@gmail.com>
-Date:   Thu, 15 Aug 2019 14:12:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <88a71ee7-a17d-ac9c-c998-d0ea35e5c566@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=3641LUEd2HTKkMH20tZOF7R9VgBmsqyi1CgXFKzq1iI=;
+        b=inoMotZKSdTzG5JfJxSR7PFBs44o2W0wbG9mmGs7P4df6IG1/4ZeR7WCCDRA6JYJxR
+         6G4+BC7zU9WzkVYuilF/EVYYhQZWEbxjsWhKL3ICLRIA2TGGWtrYfZyXqJ/jTogZdGz1
+         M7zw3PrSXSPo2Rsr+SFdm1txiMQlWgFWhuxWeYB+4l94psxZBzjovEg8EgK1LvGat+gU
+         exoCZCV85ILhRwUmyO9AxDUlrk/STXtXleJoPX0gdv1O1j0yRzSI9l7CDSa+PcnOo1IU
+         A7Yw9wafvlbSinsZ0lRqc8Xh07Gzo7nGcSflYhTKWHh9ylv13Jt7RelEAxU7x+DapZlB
+         RXnA==
+X-Gm-Message-State: APjAAAXACDBSFbfy/qUqT9wRGCPMlQ9Q5ZUO+YMKXYI+nYI+6xO+mdQ5
+        Ra0MfcYOYt8HBInUwJqXgsLaAA==
+X-Google-Smtp-Source: APXvYqwc1fHMTfO4vUn3h27ylZ766i4Vt8r1xGmqoV11zEwrHFD04iCc59LCx2NOik+HmR7nluXWxA==
+X-Received: by 2002:ac2:4242:: with SMTP id m2mr2186751lfl.121.1565871266139;
+        Thu, 15 Aug 2019 05:14:26 -0700 (PDT)
+Received: from localhost.localdomain (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
+        by smtp.gmail.com with ESMTPSA id q25sm462060ljg.30.2019.08.15.05.14.24
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 15 Aug 2019 05:14:25 -0700 (PDT)
+From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+To:     magnus.karlsson@intel.com, bjorn.topel@intel.com
+Cc:     davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        jakub.kicinski@netronome.com, daniel@iogearbox.net,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jlemon@flugsvamp.com, yhs@fb.com, andrii.nakryiko@gmail.com,
+        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
+Subject: [PATCH bpf-next v2 0/3] xdpsock: allow mmap2 usage for 32bits
+Date:   Thu, 15 Aug 2019 15:13:53 +0300
+Message-Id: <20190815121356.8848-1-ivan.khoronzhuk@linaro.org>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-EEE-related registers on newer integrated PHY's have the standard
-layout, but are accessible not via MMD but via vendor-specific
-registers. Emulating the standard MMD registers allows to use the
-generic functions for EEE control.
+This patchset contains several improvements for af_xdp socket umem
+mappings for 32bit systems. Also, there is one more patch outside of
+this series that on linux-next tree and related to mmap2 af_xdp umem
+offsets: "mm: mmap: increase sockets maximum memory size pgoff for 32bits"
+https://lkml.org/lkml/2019/8/12/549
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/realtek.c | 43 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 43 insertions(+)
+Based on bpf-next/master
 
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index c49a1fb13..2635ad1ff 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -266,6 +266,45 @@ static int rtl8366rb_config_init(struct phy_device *phydev)
- 	return ret;
- }
- 
-+static int rtlgen_read_mmd(struct phy_device *phydev, int devnum, u16 regnum)
-+{
-+	int ret;
-+
-+	if (devnum == MDIO_MMD_PCS && regnum == MDIO_PCS_EEE_ABLE) {
-+		rtl821x_write_page(phydev, 0xa5c);
-+		ret = __phy_read(phydev, 0x12);
-+		rtl821x_write_page(phydev, 0);
-+	} else if (devnum == MDIO_MMD_AN && regnum == MDIO_AN_EEE_ADV) {
-+		rtl821x_write_page(phydev, 0xa5d);
-+		ret = __phy_read(phydev, 0x10);
-+		rtl821x_write_page(phydev, 0);
-+	} else if (devnum == MDIO_MMD_AN && regnum == MDIO_AN_EEE_LPABLE) {
-+		rtl821x_write_page(phydev, 0xa5d);
-+		ret = __phy_read(phydev, 0x11);
-+		rtl821x_write_page(phydev, 0);
-+	} else {
-+		ret = -EOPNOTSUPP;
-+	}
-+
-+	return ret;
-+}
-+
-+static int rtlgen_write_mmd(struct phy_device *phydev, int devnum, u16 regnum,
-+			    u16 val)
-+{
-+	int ret;
-+
-+	if (devnum == MDIO_MMD_AN && regnum == MDIO_AN_EEE_ADV) {
-+		rtl821x_write_page(phydev, 0xa5d);
-+		ret = __phy_write(phydev, 0x10, val);
-+		rtl821x_write_page(phydev, 0);
-+	} else {
-+		ret = -EOPNOTSUPP;
-+	}
-+
-+	return ret;
-+}
-+
- static int rtl8125_get_features(struct phy_device *phydev)
- {
- 	int val;
-@@ -422,6 +461,8 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume		= genphy_resume,
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
-+		.read_mmd	= rtlgen_read_mmd,
-+		.write_mmd	= rtlgen_write_mmd,
- 	}, {
- 		.name		= "RTL8125 2.5Gbps internal",
- 		.match_phy_device = rtl8125_match_phy_device,
-@@ -432,6 +473,8 @@ static struct phy_driver realtek_drvs[] = {
- 		.resume		= genphy_resume,
- 		.read_page	= rtl821x_read_page,
- 		.write_page	= rtl821x_write_page,
-+		.read_mmd	= rtlgen_read_mmd,
-+		.write_mmd	= rtlgen_write_mmd,
- 	}, {
- 		PHY_ID_MATCH_EXACT(0x001cc961),
- 		.name		= "RTL8366RB Gigabit Ethernet",
+Prev: https://lkml.org/lkml/2019/8/13/437
+
+v2..v1:
+	- replaced "libbpf: add asm/unistd.h to xsk to get __NR_mmap2" on
+	 "libbpf: use LFS (_FILE_OFFSET_BITS) instead of direct mmap2
+	 syscall"
+	- use vmap along with page_address to avoid overkill
+	- define mmap syscall trace5 for mmap if defined
+
+Ivan Khoronzhuk (3):
+  libbpf: use LFS (_FILE_OFFSET_BITS) instead of direct mmap2 syscall
+  xdp: xdp_umem: replace kmap on vmap for umem map
+  samples: bpf: syscal_nrs: use mmap2 if defined
+
+ net/xdp/xdp_umem.c         | 36 +++++++++++++++++++++++-----
+ samples/bpf/syscall_nrs.c  |  6 +++++
+ samples/bpf/tracex5_kern.c | 13 ++++++++++
+ tools/lib/bpf/Makefile     |  1 +
+ tools/lib/bpf/xsk.c        | 49 +++++++++++---------------------------
+ 5 files changed, 64 insertions(+), 41 deletions(-)
+
 -- 
-2.22.1
-
-
+2.17.1
 
