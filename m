@@ -2,643 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 260738F6AB
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 23:53:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EB9B8F6AF
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 23:53:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732091AbfHOVxG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 17:53:06 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:40038 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732011AbfHOVxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 17:53:06 -0400
-Received: by mail-io1-f72.google.com with SMTP id v16so1070866ioh.7
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 14:53:05 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=gv4WmbpCPYcVZfny0Gcre9BQo416G2abzQHUktwoccE=;
-        b=lqJowhjkqxOdYD1emUVUDY03aQWrmfhToqIgh2YEbCdfKAZGA1I2J4sIBzP6fl+hxE
-         bpo+RNk8gbOqe+MzgKcJDyWKsPUUW2o8T2gpskKm8nkNrMyFTAdLw/c8NXg3nGGjY3hi
-         mO1pHSQUDX39w8f72iR6GNuMwIEe+IvZVm/7LDoUx69mNcQS1Iq20s6BysaYg716IYY4
-         HooOZoHs2vPbWlub+dltvq+VnxkJ5ZykLOjdud5XIA7+JZxeitXv77kGX6jp4+2gnPFn
-         tJTFMeirlinbldSN3mQ9fHSkuF7koj9mzHmJRbQc0Wc29PlqR5Ge0qFcTs0P+MZSs2PJ
-         0o6A==
-X-Gm-Message-State: APjAAAUTdJv8GCD9fCqR0MSTpdvfPZd3nbvo5qwvfgqaSGu39FJOCXIn
-        rGoFIyh7KrLKbYiB713498sQtRzS05eTTyDjQBUMQHzPyHBI
-X-Google-Smtp-Source: APXvYqy9q88JB5/m0kuwZAZBWfWOy+o1HaMgJ8z3XVDjEsW++I6AeeSyIASXxhnQOTP9MDYC4RuFlem0tUpLXl7rDo9q5M5akOfg
+        id S1733061AbfHOVxP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 17:53:15 -0400
+Received: from ozlabs.org ([203.11.71.1]:40125 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732464AbfHOVxP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 17:53:15 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 468gDn3Zxtz9sN1;
+        Fri, 16 Aug 2019 07:53:13 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1565905993;
+        bh=UBvGR4rOMFCFjVgG/YgM8FmvoChkQdaLmgyvyVyoskA=;
+        h=Date:From:To:Cc:Subject:From;
+        b=f0U1z3JQ3ZU6WVrrtD62YcCQx8bFN1cRg303GsD3LnILDZxCadRIKIht7YD1LoUSE
+         TZ+s2D8UN20yFgiqMDFg1H1kZ/jRQdfEP92fsQKxS9CAT8IXqDD+H9z3+96kiXd9Ws
+         4XtvRL+irGkFSSjRdM0bVQC3zSCE2dFtp0E2aubYcBnPL8xuIPceA45vdZ9k8fluKL
+         yxdMKlwKVJOfuZPdVXXEWWjSm1tGBNCOYy31Ljr18V2td7iXq8TFZ4T/7Xdn2sUcSG
+         0+eQ+154QASeYypsWNAcbz93una7iJziHtgYm58kwyOlT9e25qJ0b0bBWv5en11NOg
+         7SoGSdjncmCyA==
+Date:   Fri, 16 Aug 2019 07:53:12 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>
+Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andy Grover <andy.grover@oracle.com>,
+        Gerd Rausch <gerd.rausch@oracle.com>,
+        Chris Mason <chris.mason@oracle.com>
+Subject: linux-next: Signed-off-by missing for commits in the net-next tree
+Message-ID: <20190816075312.64959223@canb.auug.org.au>
 MIME-Version: 1.0
-X-Received: by 2002:a02:b609:: with SMTP id h9mr7220153jam.36.1565905984874;
- Thu, 15 Aug 2019 14:53:04 -0700 (PDT)
-Date:   Thu, 15 Aug 2019 14:53:04 -0700
-In-Reply-To: <000000000000a7f012058a0c7a65@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000faf6c205902ee533@google.com>
-Subject: Re: memory leak in nr_loopback_queue
-From:   syzbot <syzbot+470d1a4a7b7a7c225881@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-hams@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        ralf@linux-mips.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+Content-Type: multipart/signed; boundary="Sig_/D6wGvOdsRiAA4rF/zP2nzLE";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+--Sig_/D6wGvOdsRiAA4rF/zP2nzLE
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-HEAD commit:    41de5963 Merge tag 'Wimplicit-fallthrough-5.3-rc5' of git:..
-git tree:       upstream
-console output: https://syzkaller.appspot.com/x/log.txt?x=12408f1c600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=6c5e70dcab57c6af
-dashboard link: https://syzkaller.appspot.com/bug?extid=470d1a4a7b7a7c225881
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=164de5ee600000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1114f222600000
+Hi all,
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+470d1a4a7b7a7c225881@syzkaller.appspotmail.com
+Commits
 
-executing program
-executing program
-executing program
-executing program
-executing program
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 50.960s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+  11740ef44829 ("rds: check for excessive looping in rds_send_xmit")
+  65dedd7fe1f2 ("RDS: limit the number of times we loop in rds_send_xmit")
 
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 50.960s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+are missing a Signed-off-by from their authors.
 
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.030s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+--=20
+Cheers,
+Stephen Rothwell
 
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.030s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+--Sig_/D6wGvOdsRiAA4rF/zP2nzLE
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.100s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+-----BEGIN PGP SIGNATURE-----
 
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.100s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1V1EgACgkQAVBC80lX
+0Gw2Pgf+KLafuIEpBk4kwXQqoj4exbNOWc0HrZOKEgPfVElGiQRpWuF6XH6KnoWO
+MF4FZez6xrMIZ40/YHhWKimd1sd27bdoFS3lvfbECbo08H7QSFS27oTsOvNetS90
+OzQ8DErPn6+jskgrcAW45EKAgiF1Nu17ApJf3Gy9vnVJB0Yo6SY36q/w2DtqrXq/
+beWnF8zSNrkGSlgx2OrmfBP5ABCyFBxwaKYBuBvAyfFsmUm+d3WL67ZzOexIooAP
+RuSEUCUqG63k+3Kkaffrdty5XduKx/bFGpuW0ANVPDf/DXS1VMJ8NLKlQw4exWWA
+TXFBdAKyvo2Z9ho2kapQRykLW2NKmg==
+=QES6
+-----END PGP SIGNATURE-----
 
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.160s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.160s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.240s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.240s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.300s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.300s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.370s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.370s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff888116c16b00 (size 224):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.430s)
-   hex dump (first 32 bytes):
-     d0 38 61 0c 81 88 ff ff d0 38 61 0c 81 88 ff ff  .8a......8a.....
-     00 00 00 00 00 00 00 00 00 98 95 0b 81 88 ff ff  ................
-   backtrace:
-     [<00000000e2ee4d2c>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<00000000e2ee4d2c>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<00000000e2ee4d2c>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<00000000e2ee4d2c>] kmem_cache_alloc_node+0x163/0x2f0 mm/slab.c:3574
-     [<0000000082f0e53e>] __alloc_skb+0x6e/0x210 net/core/skbuff.c:197
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-BUG: memory leak
-unreferenced object 0xffff88810de28200 (size 512):
-   comm "syz-executor241", pid 7513, jiffies 4295078074 (age 51.430s)
-   hex dump (first 32 bytes):
-     bb bb bb 00 00 00 60 bb bb bb 01 00 00 61 10 01  ......`......a..
-     9c 00 00 01 04 bb bb bb 00 00 00 60 bb bb bb 00  ...........`....
-   backtrace:
-     [<000000006183266a>] kmemleak_alloc_recursive  
-include/linux/kmemleak.h:43 [inline]
-     [<000000006183266a>] slab_post_alloc_hook mm/slab.h:522 [inline]
-     [<000000006183266a>] slab_alloc_node mm/slab.c:3262 [inline]
-     [<000000006183266a>] kmem_cache_alloc_node_trace+0x161/0x2f0  
-mm/slab.c:3592
-     [<00000000425795e2>] __do_kmalloc_node mm/slab.c:3614 [inline]
-     [<00000000425795e2>] __kmalloc_node_track_caller+0x38/0x50  
-mm/slab.c:3629
-     [<00000000e438b171>] __kmalloc_reserve.isra.0+0x40/0xb0  
-net/core/skbuff.c:141
-     [<000000005727e112>] __alloc_skb+0xa0/0x210 net/core/skbuff.c:209
-     [<00000000b73f5aed>] alloc_skb include/linux/skbuff.h:1055 [inline]
-     [<00000000b73f5aed>] nr_loopback_queue+0x26/0xc0  
-net/netrom/nr_loopback.c:34
-     [<00000000e8738211>] nr_route_frame+0x2d1/0x340  
-net/netrom/nr_route.c:772
-     [<00000000f3c3ea99>] nr_transmit_buffer+0x86/0xc0  
-net/netrom/nr_out.c:209
-     [<00000000aa3080e2>] nr_write_internal+0x133/0x2e0  
-net/netrom/nr_subr.c:205
-     [<00000000d4e53049>] nr_establish_data_link+0x2d/0x60  
-net/netrom/nr_out.c:227
-     [<000000008eb58c4a>] nr_connect+0x13b/0x490 net/netrom/af_netrom.c:713
-     [<00000000d6b40196>] __sys_connect+0x11d/0x170 net/socket.c:1828
-     [<0000000059057e91>] __do_sys_connect net/socket.c:1839 [inline]
-     [<0000000059057e91>] __se_sys_connect net/socket.c:1836 [inline]
-     [<0000000059057e91>] __x64_sys_connect+0x1e/0x30 net/socket.c:1836
-     [<0000000068560e8c>] do_syscall_64+0x76/0x1a0  
-arch/x86/entry/common.c:296
-     [<000000009035e9ed>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-
+--Sig_/D6wGvOdsRiAA4rF/zP2nzLE--
