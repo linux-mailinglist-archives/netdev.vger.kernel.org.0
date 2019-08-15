@@ -2,164 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 465188F7A5
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 01:37:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEA08F7B8
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 01:46:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726385AbfHOXgx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 19:36:53 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:34959 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725440AbfHOXgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 19:36:53 -0400
-Received: by mail-pl1-f194.google.com with SMTP id gn20so1666786plb.2;
-        Thu, 15 Aug 2019 16:36:52 -0700 (PDT)
+        id S1726502AbfHOXq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 19:46:27 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44058 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726481AbfHOXq0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 19:46:26 -0400
+Received: by mail-pg1-f196.google.com with SMTP id i18so1987189pgl.11;
+        Thu, 15 Aug 2019 16:46:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ItxQVkyoKBqZ2cSuaxThUtQAf/xYN33RqQLhEkNeQuY=;
-        b=NsKOuhlCcEMFLPbPa1xA0fEzGl25E5j6kt0vw+E5fHt3CU/YkUd568TupE86WZCw+8
-         aR1D3rvtuVoQBRkj3vuzL3S/dhkAU1I5w8sonJkztne+frhBeU63cgqdJK3KQX7AGZt1
-         vfEMbUTlbkdpcwppKErNeDWUR6VH6of50/Y9qvVirchabBh4P3lxP9Hms5utLFjyzP5N
-         9F4knCOtHEJN9cKXIu2LBdCPNjDnrUH9V54fjRqAJCcJRsSkF8f3OpbaSC9pQZZCY41A
-         t9Hz+lgefZ3xfINyNora6DshMH156wAfRK4L2E2LR+UymfBc1oGcjoulMex8fnA3koVF
-         K7Rw==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8GUnlQq7sKH6YO7Fvf/HTqB1Q4SkgeH4IDU1h+ExxLo=;
+        b=Mmtmm8Q4VIDJLlr/kOqAqoc75h4zD4kQQ9Jq94zavSTSqU99jrSLGMrOAhR+ROBUaz
+         CKmJ4V78qEuQ9PHcL9oAcsbps7lQSJePMtEdJgEKgnxkF6ueXF41q/RnB3vkyNnhpVYy
+         8BcZk30FFwPzrd6EyN25ylaSDPK2aG9KGLlVe4bWu8FqJFiKUUC6bIs0EO0lRKj94LLd
+         NCZe0CF2ZTGQ+E8Lg66xwcIzUnL2lQbnEWjZDwb1bbtTgwQk7ztOMfCVBHAOrr0PAasv
+         slYhUCBvN6ugr4BGQWg8i/PfzwqlEeZhCzrrybwVywjw5Y39cGiSm3wgE86TPBZRk29j
+         HNTQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=ItxQVkyoKBqZ2cSuaxThUtQAf/xYN33RqQLhEkNeQuY=;
-        b=dtpB7EbaBTzpOMpAe/Sl3K4gXbRLeeOrganrp9sUuc5gOF/nEPQs6PzzBqY9TtZr8M
-         d7jIYIEDaE8ZTR0TMsa85tYdEvJkfo4N5I/ntWyHEao9f10MWljsQXeU69aJGw3fv/HI
-         3yRLdMX+hxf2no2mMQl/IHLgksZoaf8mYbB4LfKf839c+oGW/qINJMnA29mi7mMlKiKt
-         pBdkd9mlcqMnNNZqwSrbtqwsn1XuNvXmNlZFhWTfznk0wP8xjv4xk2gfAPPAg/6tXg0q
-         8fwneyZmQNTeyTAQ+zHshGtD7imSB4XCQZnZJ2wQpTr78JeKIQOfKk/t1jEXiRTsxwZX
-         NDYg==
-X-Gm-Message-State: APjAAAWefPT77gluS41xEDrlcfeDjhJMKQCgw5FiWd84TvISX8tLVNqT
-        uGn7LggI6PNrcXXRBNC9doA=
-X-Google-Smtp-Source: APXvYqzJeh/sfsZ3Kx0kl+5LYPHmANwVXNyBTfmDpHkwFJa1MfK7qGH+J5n5dNjFFBSyfkPP6YjxPQ==
-X-Received: by 2002:a17:902:2be6:: with SMTP id l93mr6651121plb.0.1565912212360;
-        Thu, 15 Aug 2019 16:36:52 -0700 (PDT)
-Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id x25sm4323825pfa.90.2019.08.15.16.36.50
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8GUnlQq7sKH6YO7Fvf/HTqB1Q4SkgeH4IDU1h+ExxLo=;
+        b=VNzPJHheDJPIHFviPtmG8GSjIcB6uHF5OWRh/YF/F6vBJw7p1cshrPQnS4mxsagkZp
+         T1aAR+j8gdFpk8kUd7/X7b/A1+esq1O0a3Q40rD+sp4lfa6+7ob5c120hglz+DaBJemh
+         6bdM8jGhGA6orZ4kZMxaZ4LFGsUKCEzqs3u64ORi1VWepCPvgcu7k04Mw40EQSY5CiVJ
+         itHPTWpZS4rgSLOUpvI7np22ZOlBHaN2fzYmtReSmsKxd+OtLvmEZiFcO/0d9c/N6VLu
+         AuP0siVwtUGG7wprT0jpVb+l/UP0c2prpSUMpSSdvQHDWtOeOMPWydK0gc4yjBfj1rSG
+         oKOQ==
+X-Gm-Message-State: APjAAAXO/frmsSXoBi91xJ1VHcl1Z59Kw9UwGB27ts6pC/9pauTS7TZs
+        ScB2hNU0WT/EURUIwUJI7LU=
+X-Google-Smtp-Source: APXvYqw+TyRqIJqEz0VpP1OYRH6xNFHUFVDLVyRM4LnSjcrFeFYcOG7soz0M8pT0kPEDicuBpjgn7w==
+X-Received: by 2002:a63:36cc:: with SMTP id d195mr5308624pga.157.1565912785467;
+        Thu, 15 Aug 2019 16:46:25 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::e9c1])
+        by smtp.gmail.com with ESMTPSA id k25sm3465076pgt.53.2019.08.15.16.46.24
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 15 Aug 2019 16:36:51 -0700 (PDT)
-Subject: Re: [PATCH net-next v7 3/3] net: phy: broadcom: add 1000Base-X
- support for BCM54616S
-To:     Tao Ren <taoren@fb.com>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Arun Parameswaran <arun.parameswaran@broadcom.com>,
-        Justin Chen <justinpopo6@gmail.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, openbmc@lists.ozlabs.org
-References: <20190811234016.3674056-1-taoren@fb.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <d45d609b-60ea-760d-31f4-51afa379c55a@gmail.com>
-Date:   Thu, 15 Aug 2019 16:36:50 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Thu, 15 Aug 2019 16:46:24 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 16:46:23 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Kees Cook <keescook@chromium.org>
+Cc:     Andy Lutomirski <luto@kernel.org>,
+        Song Liu <songliubraving@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Message-ID: <20190815234622.t65oxm5mtfzy6fhg@ast-mbp.dhcp.thefacebook.com>
+References: <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
+ <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
+ <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
+ <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
+ <20190805192122.laxcaz75k4vxdspn@ast-mbp>
+ <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
+ <20190806011134.p5baub5l3t5fkmou@ast-mbp>
+ <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+ <20190813215823.3sfbakzzjjykyng2@ast-mbp>
+ <201908151203.FE87970@keescook>
 MIME-Version: 1.0
-In-Reply-To: <20190811234016.3674056-1-taoren@fb.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <201908151203.FE87970@keescook>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/11/19 4:40 PM, Tao Ren wrote:
-> The BCM54616S PHY cannot work properly in RGMII->1000Base-X mode, mainly
-> because genphy functions are designed for copper links, and 1000Base-X
-> (clause 37) auto negotiation needs to be handled differently.
+On Thu, Aug 15, 2019 at 12:46:41PM -0700, Kees Cook wrote:
+> On Tue, Aug 13, 2019 at 02:58:25PM -0700, Alexei Starovoitov wrote:
+> > agree that containers (namespaces) reduce amount of trust necessary
+> > for apps to run, but the end goal is not security though.
 > 
-> This patch enables 1000Base-X support for BCM54616S by customizing 3
-> driver callbacks, and it's verified to be working on Facebook CMM BMC
-> platform (RGMII->1000Base-KX):
-> 
->   - probe: probe callback detects PHY's operation mode based on
->     INTERF_SEL[1:0] pins and 1000X/100FX selection bit in SerDES 100-FX
->     Control register.
-> 
->   - config_aneg: calls genphy_c37_config_aneg when the PHY is running in
->     1000Base-X mode; otherwise, genphy_config_aneg will be called.
-> 
->   - read_status: calls genphy_c37_read_status when the PHY is running in
->     1000Base-X mode; otherwise, genphy_read_status will be called.
-> 
-> Note: BCM54616S PHY can also be configured in RGMII->100Base-FX mode, and
-> 100Base-FX support is not available as of now.
-> 
-> Signed-off-by: Tao Ren <taoren@fb.com>
+> Unsurprisingly, I totally disagree: this is the very definition of
+> improved "security": reduced attack surface, confined trust, etc.
 
-> -		reg = bcm_phy_read_shadow(phydev, BCM5482_SHD_MODE);
-> -		bcm_phy_write_shadow(phydev, BCM5482_SHD_MODE,
-> -				     reg | BCM5482_SHD_MODE_1000BX);
-> +		reg = bcm_phy_read_shadow(phydev, BCM54XX_SHD_MODE);
-> +		bcm_phy_write_shadow(phydev, BCM54XX_SHD_MODE,
-> +				     reg | BCM54XX_SHD_MODE_1000BX);
+there are different ways to define the meaning of the word "security".
+Of course containers reduce attack surface, etc.
+The 'attack surface' as a mitigation from malicious users is not always the goal
+of running containers. Ask yourself why containers are used in the datacenters
+where only root can ssh into a server, only signed packages can
+ever be installed, no browsers running, and no remote code is ever downloaded?
 
-This could have been a separate patch, but this looks reasonable to me
-and this is correct with the datasheet, thanks Tao.
+> > Linux has become a single user system.
+> 
+> I hope this is just hyperbole, because it's not true in reality. I agree
+> that the vast majority of Linux devices are single-user-at-a-time
+> systems now (rather than the "shell servers" of yore), but the system
+> still has to be expected to confine users from each other, root, and the
+> hardware. Switching users on Chrome OS or a distro laptop, etc is still
+> very much expected to _mean_ something.
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+of course.
+
+> 
+> > If user can ssh into the host they can become root.
+> > If arbitrary code can run on the host it will be break out of any sandbox.
+> > Containers are not providing the level of security that is enough
+> > to run arbitrary code. VMs can do it better, but cpu bugs don't make it easy.
+> 
+> I'm not sure why you draw the line for VMs -- they're just as buggy
+> as anything else. Regardless, I reject this line of thinking: yes,
+> all software is buggy, but that isn't a reason to give up.
+
+hmm. are you saying you want kernel community to work towards
+making containers (namespaces) being able to run arbitrary code
+downloaded from the internet?
+In other words the problems solved by user space sandboxing, gvisor, etc
+should be solved by the kernel?
+I really don't think it's a good idea.
+
+> If you look at software safety as a binary, you will always be
+> disappointed. If you look at it as it manifests in the real world,
+> then there is some perspective to be had. Reachability of flaws becomes
+> a major factor; exploit chain length becomes a factor. There are very
+> real impacts to be had from security hardening, sandboxing, etc. Of
+> course nothing is perfect, but the current state of the world isn't
+> as you describe. (And I say this with the knowledge of how long
+> the lifetime of bugs are in the kernel.)
+
+No arguing here. Security today is mainly the number of layers.
+Hardening at all levels, sanboxing do help.
+namespaces is one of the layers provided by the kernel.
+The point that the kernel did its job already.
+All other security layers are in user space.
+Looking for bugs at every layer is still must have.
+In the kernel, systemd, qemu, OS, browsers, etc.
+Containers provide one level of security. VMs have another.
+
+> > Some people call it more 'secure', but it's clearly not secure for
+> > arbitrary code
+> 
+> Perhaps it's just a language issue. "More secure" and "safer" mean
+> mostly the same thing to me. I tend to think "safer" is actually
+> a superset that includes things that wreck the user experience but
+> aren't actually in the privilege manipulation realm. In the traditional
+> "security" triad of confidentiality, integrity, and availability, I tend
+> to weigh availability less highly, but a bug that stops someone from
+> doing their work but doesn't wreck data, let them switch users, etc,
+> is still considered a "security" issue by many folks. The fewer bugs
+> someone is exposed to improves their security, safety, whatever. The
+> easiest way to do that is confinement and its associated attack surface
+> reduction. tl;dr: security and safety are very use-case-specific
+> continuum, not a binary state.
+
+yep
+
+> 
+> > When we say 'unprivileged bpf' we really mean arbitrary malicious bpf program.
+> > It's been a constant source of pain. The constant blinding, randomization,
+> > verifier speculative analysis, all spectre v1, v2, v4 mitigations
+> > are simply not worth it. It's a lot of complex kernel code without users.
+> > There is not a single use case to allow arbitrary malicious bpf
+> > program to be loaded and executed.
+> 
+> The world isn't binary (safe code/malicious code), and we need to build
+> systems that can be used safely even when things go wrong. Yes, probably
+> no one has a system that _intentionally_ feeds eBPF into the kernel from
+> a web form. But there is probably someone who does it unintentionally,
+> or has a user login exposed on a system where unpriv BPF is enabled. The
+> point is to create primitives as safely as possible so when things DO
+> go wrong, they fail safe instead of making things worse.
+> 
+> I'm all for a "less privileged than root" API for eBPF, but I get worried
+> when I see "security" being treated as a binary state. Especially when
+> it is considered an always-failed state. :)
+
+'security as always failed state' ? hmm.
+not sure where this impression came from.
+One of the goals here is to do sysctl kernel.unprivileged_bpf_disabled=1
+which will make the system overall _more_ secure.
+I hope we can agree on that.
+
