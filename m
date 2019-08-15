@@ -2,87 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 833738F2C1
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 20:05:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 056E68F2C3
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 20:05:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732000AbfHOSFJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 14:05:09 -0400
-Received: from mail-yb1-f196.google.com ([209.85.219.196]:41783 "EHLO
-        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729736AbfHOSFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 14:05:09 -0400
-Received: by mail-yb1-f196.google.com with SMTP id n7so1104876ybd.8;
-        Thu, 15 Aug 2019 11:05:08 -0700 (PDT)
+        id S1732432AbfHOSF2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 14:05:28 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:41921 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729736AbfHOSF2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 14:05:28 -0400
+Received: by mail-qt1-f195.google.com with SMTP id i4so3240494qtj.8;
+        Thu, 15 Aug 2019 11:05:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u7J0oaml77bBsKK8rhxbM+6py5+jCmDZlL+IozJTtog=;
+        b=nwZWaF24+bdl8a13Qrv0akLGWqPbJQzzEBHatbFcDx1adZihWU9BNhQ57UYQsxx/C4
+         wd5h9NhJfZuTRvFSykKCxW7Wvi9Ar/888jBUmxnqQTUjXsfFei5ktW5kyaovaYYT8Rs4
+         Hm7DUchj0rcJV48SST9vVDoAc5kgNnfvcHRCyALwOkl2V/HaAoamJn2mEmfU7S1A+IS1
+         5Opc1crkwgnGti29MCILAxm2UflV/EAGM2Hqw1Ef5b8a4Sf0pu53Bjf6r1TlaGdvuIkU
+         mHvDj/2MFFKUhkPYZvqzb/x2Vn9M+z80IjFx+V2GrExrc6hDCOhC60IXNUKuzZYc1Iou
+         hx/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=+7ik1RvxnhAES3NBX5CO26tA3ZEBBHVVi3bXNL+10EQ=;
-        b=WyAGvjil3rCmLR0WeJIzoS5cwWA7hEydGBlQUJlUZ47usGLvAUKbqxmmgufy07cl7e
-         X9n+SbRn/opzmbXSmfIRooVd5YFEtWQQj3ctXpOIU2OIxJ26AJLYxonqkmmTYL76AHdN
-         4XKT4mIs8ZA2ifn+wdnR2tK3exU5pzbdLKipgM6u5KQANa4GwnHEWYZX0AnZpOpyYjJi
-         d31tYmGsHIFV3ol/wbV+q6tNJ5WWtRUoZbHpJemmWiuGbVopdP5ANorWy1MPdjjCdV9U
-         JWfXGNscZmSHsPbtB3wwKFfbWqgr0rVyhu8fsii++PcUziW64MbGB6W7EzxfYCTC3Em+
-         KVQA==
-X-Gm-Message-State: APjAAAWwCmuHrVi9t+G5spTXXQ+8uWdnyEOTvC/ZNGclfZG0WeNjUPE+
-        wCtBf7C3c6kwcmBCJn4pWtk=
-X-Google-Smtp-Source: APXvYqzjeg/tMSF/9JfD1evzrNm/IdG2loRQLts4Qfq74BWA3UBsM3cxG5PNeC3VMJZAoFoly/wVDg==
-X-Received: by 2002:a5b:307:: with SMTP id j7mr4426281ybp.316.1565892308230;
-        Thu, 15 Aug 2019 11:05:08 -0700 (PDT)
-Received: from localhost.localdomain (24-158-240-219.dhcp.smyr.ga.charter.com. [24.158.240.219])
-        by smtp.gmail.com with ESMTPSA id v68sm745113ywe.23.2019.08.15.11.05.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 15 Aug 2019 11:05:07 -0700 (PDT)
-From:   Wenwen Wang <wenwen@cs.uga.edu>
-To:     Wenwen Wang <wenwen@cs.uga.edu>
-Cc:     Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        linux-wimax@intel.com (supporter:INTEL WIRELESS WIMAX CONNECTION 2400),
-        "David S. Miller" <davem@davemloft.net>,
-        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] wimax/i2400m: fix a memory leak bug
-Date:   Thu, 15 Aug 2019 13:05:01 -0500
-Message-Id: <1565892301-2812-1-git-send-email-wenwen@cs.uga.edu>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u7J0oaml77bBsKK8rhxbM+6py5+jCmDZlL+IozJTtog=;
+        b=LwzceI9sjlrwx4vkvjf9LStl/XE649h7k3qeqhtvMdqDSwiXhv6ERP1Bs4oUNHT91D
+         38U7Um9lWLuMIcnKTdIPtSOy5tq9PvNphQGaHxLyg39sYb9tulpEKM6ncwOPDIlEITuV
+         WlBzbtoVlsyKJjvKMCz0VpGohRHplfuul/Ho8q+7cp+++I0V0MdVeSSFOxHv8NxSyhhM
+         h11h3J3k9PbrPFlgmiXuRReY+NiH08l2nTmC6gNMuqroUz8nfYntad2Eg7Qq/kkevTld
+         KCO4HvwvpWfuCpGxaXof+w9GeXuLq2gKHdXJ5PcFAdmtpMttkbF2jt/Jm6C3D10AOwCS
+         PTFw==
+X-Gm-Message-State: APjAAAV4w0ef42/o76Z1BsEr3qAGwFXezTeOJAZaFpiF/AunLlU+hm6W
+        fMxOWWxFupOWGVB6U/ZkikaS69anUkcHvyvboco=
+X-Google-Smtp-Source: APXvYqzQFFbFfc98z5tdh1HtY5Ut24xB9f8fRFJaQeG9ZryPC3/JaSmPsFpf1PC0iLgoj9IuMXIeKAwRB6tiniB5bBc=
+X-Received: by 2002:aed:26c2:: with SMTP id q60mr4937669qtd.59.1565892327482;
+ Thu, 15 Aug 2019 11:05:27 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190815142223.2203-1-quentin.monnet@netronome.com>
+ <CAEf4BzbL3K5XWSyY6BxrVeF3+3qomsYbXh67yzjyy7ApsosVBw@mail.gmail.com> <20190815103023.0bd2c210@cakuba.netronome.com>
+In-Reply-To: <20190815103023.0bd2c210@cakuba.netronome.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 15 Aug 2019 11:05:16 -0700
+Message-ID: <CAEf4BzYL-pJ79nKywsAH1b2S-EP_4SUZY5jS2wzYJ32pywsyrw@mail.gmail.com>
+Subject: Re: [PATCH bpf] tools: bpftool: close prog FD before exit on showing
+ a single program
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In i2400m_barker_db_init(), 'options_orig' is allocated through kstrdup()
-to hold the original command line options. Then, the options are parsed.
-However, if an error occurs during the parsing process, 'options_orig' is
-not deallocated, leading to a memory leak bug. To fix this issue, free
-'options_orig' before returning the error.
+On Thu, Aug 15, 2019 at 10:30 AM Jakub Kicinski
+<jakub.kicinski@netronome.com> wrote:
+>
+> On Thu, 15 Aug 2019 10:09:38 -0700, Andrii Nakryiko wrote:
+> > On Thu, Aug 15, 2019 at 7:24 AM Quentin Monnet wrote:
+> > > When showing metadata about a single program by invoking
+> > > "bpftool prog show PROG", the file descriptor referring to the program
+> > > is not closed before returning from the function. Let's close it.
+> > >
+> > > Fixes: 71bb428fe2c1 ("tools: bpf: add bpftool")
+> > > Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
+> > > Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > > ---
+> > >  tools/bpf/bpftool/prog.c | 4 +++-
+> > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/tools/bpf/bpftool/prog.c b/tools/bpf/bpftool/prog.c
+> > > index 66f04a4846a5..43fdbbfe41bb 100644
+> > > --- a/tools/bpf/bpftool/prog.c
+> > > +++ b/tools/bpf/bpftool/prog.c
+> > > @@ -363,7 +363,9 @@ static int do_show(int argc, char **argv)
+> > >                 if (fd < 0)
+> > >                         return -1;
+> > >
+> > > -               return show_prog(fd);
+> > > +               err = show_prog(fd);
+> > > +               close(fd);
+> > > +               return err;
+> >
+> > There is a similar problem few lines above for special case of argc ==
+> > 2, which you didn't fix.
+>
+> This is the special argc == 2 case.
 
-Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
----
- drivers/net/wimax/i2400m/fw.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Yep, you are right, the other one already does this.
 
-diff --git a/drivers/net/wimax/i2400m/fw.c b/drivers/net/wimax/i2400m/fw.c
-index e9fc168..6b36f6d 100644
---- a/drivers/net/wimax/i2400m/fw.c
-+++ b/drivers/net/wimax/i2400m/fw.c
-@@ -342,6 +342,7 @@ int i2400m_barker_db_init(const char *_options)
- 				       "a 32-bit number\n",
- 				       __func__, token);
- 				result = -EINVAL;
-+				kfree(options_orig);
- 				goto error_parse;
- 			}
- 			if (barker == 0) {
-@@ -350,8 +351,10 @@ int i2400m_barker_db_init(const char *_options)
- 				continue;
- 			}
- 			result = i2400m_barker_db_add(barker);
--			if (result < 0)
-+			if (result < 0) {
-+				kfree(options_orig);
- 				goto error_add;
-+			}
- 		}
- 		kfree(options_orig);
- 	}
--- 
-2.7.4
+>
+> > Would it be better to make show_prog(fd) close provided fd instead or
+> > is it used in some other context where FD should live longer (I
+> > haven't checked, sorry)?
+>
+> I think it used to close that's how the bug crept in. Other than the bug
+> it's fine the way it is.
 
+So are you saying that show_prog() should or should not close FD?
