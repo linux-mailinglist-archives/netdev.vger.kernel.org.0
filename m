@@ -2,219 +2,288 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D16328E80D
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:21:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC8DD8E812
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 11:22:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731237AbfHOJVd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 05:21:33 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:35534 "EHLO mx1.redhat.com"
+        id S1731255AbfHOJWa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 05:22:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:60966 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730212AbfHOJVc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 05:21:32 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        id S1730204AbfHOJW3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 05:22:29 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 16A535AFE9;
-        Thu, 15 Aug 2019 09:21:32 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id AD9573082135;
+        Thu, 15 Aug 2019 09:22:28 +0000 (UTC)
 Received: from [10.72.12.184] (ovpn-12-184.pek2.redhat.com [10.72.12.184])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 46E1F95A4F;
-        Thu, 15 Aug 2019 09:21:29 +0000 (UTC)
-Subject: Re: [PATCH] tun: fix use-after-free when register netdev failed
-To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
-Cc:     xiyou.wangcong@gmail.com, davem@davemloft.net
-References: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BC5C35D9DC;
+        Thu, 15 Aug 2019 09:22:15 +0000 (UTC)
+Subject: Re: [PATCH] virtio-net: lower min ring num_free for efficiency
+To:     =?UTF-8?B?5YaJIGppYW5n?= <jiangkidd@hotmail.com>,
+        "mst@redhat.com" <mst@redhat.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
+        "hawk@kernel.org" <hawk@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kafai@fb.com" <kafai@fb.com>,
+        "songliubraving@fb.com" <songliubraving@fb.com>,
+        "yhs@fb.com" <yhs@fb.com>,
+        "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "jiangran.jr@alibaba-inc.com" <jiangran.jr@alibaba-inc.com>
+References: <BYAPR14MB3205E4E194942B0A1A91A222A6AD0@BYAPR14MB3205.namprd14.prod.outlook.com>
+ <f61d9621-cc33-44a2-f297-43f8af8d759b@redhat.com>
+ <BYAPR14MB3205B734E554EACEEE337ADDA6AC0@BYAPR14MB3205.namprd14.prod.outlook.com>
+ <38df7fdd-bd6a-cc82-534d-d7cbf3f1933c@redhat.com>
+ <BYAPR14MB320512CCA27487548DDAA57FA6AC0@BYAPR14MB3205.namprd14.prod.outlook.com>
 From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <f9dd102e-e3b4-6522-6094-63aa31b890ea@redhat.com>
-Date:   Thu, 15 Aug 2019 17:21:27 +0800
+Message-ID: <e1ae87d7-546a-d8fb-8d76-97d44bfa3a13@redhat.com>
+Date:   Thu, 15 Aug 2019 17:22:13 +0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <1565857122-24660-1-git-send-email-yangyingliang@huawei.com>
+In-Reply-To: <BYAPR14MB320512CCA27487548DDAA57FA6AC0@BYAPR14MB3205.namprd14.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.39]); Thu, 15 Aug 2019 09:21:32 +0000 (UTC)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.42]); Thu, 15 Aug 2019 09:22:28 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-On 2019/8/15 下午4:18, Yang Yingliang wrote:
-> I got a UAF repport in tun driver when doing fuzzy test:
+On 2019/8/15 下午4:36, 冉 jiang wrote:
+> On 2019/8/15 11:17, Jason Wang wrote:
+>> On 2019/8/15 上午11:11, 冉 jiang wrote:
+>>> On 2019/8/15 11:01, Jason Wang wrote:
+>>>> On 2019/8/14 上午10:06, ? jiang wrote:
+>>>>> This change lowers ring buffer reclaim threshold from 1/2*queue to
+>>>>> budget
+>>>>> for better performance. According to our test with qemu + dpdk, packet
+>>>>> dropping happens when the guest is not able to provide free buffer in
+>>>>> avail ring timely with default 1/2*queue. The value in the patch has
+>>>>> been
+>>>>> tested and does show better performance.
+>>>> Please add your tests setup and result here.
+>>>>
+>>>> Thanks
+>>>>
+>>>>
+>>>>> Signed-off-by: jiangkidd <jiangkidd@hotmail.com>
+>>>>> ---
+>>>>>     drivers/net/virtio_net.c | 2 +-
+>>>>>     1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>>
+>>>>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>>>>> index 0d4115c9e20b..bc08be7925eb 100644
+>>>>> --- a/drivers/net/virtio_net.c
+>>>>> +++ b/drivers/net/virtio_net.c
+>>>>> @@ -1331,7 +1331,7 @@ static int virtnet_receive(struct receive_queue
+>>>>> *rq, int budget,
+>>>>>             }
+>>>>>         }
+>>>>>     -    if (rq->vq->num_free > virtqueue_get_vring_size(rq->vq) / 2) {
+>>>>> +    if (rq->vq->num_free > min((unsigned int)budget,
+>>>>> virtqueue_get_vring_size(rq->vq)) / 2) {
+>>>>>             if (!try_fill_recv(vi, rq, GFP_ATOMIC))
+>>>>>                 schedule_delayed_work(&vi->refill, 0);
+>>>>>         }
+>>> Sure, here are the details:
+>>
+>> Thanks for the details, but I meant it's better if you could summarize
+>> you test result in the commit log in a compact way.
+>>
+>> Btw, some comments, see below:
+>>
+>>
+>>>
+>>> Test setup & result:
+>>>
+>>> ----------------------------------------------------
+>>>
+>>> Below is the snippet from our test result. Test1 was done with default
+>>> driver with the value of 1/2 * queue, while test2 is with my patch. We
+>>> can see average
+>>> drop packets do decrease a lot in test2.
+>>>
+>>> test1Time    avgDropPackets    test2Time    avgDropPackets pps
+>>>
+>>> 16:21.0    12.295    56:50.4    0 300k
+>>> 17:19.1    15.244    56:50.4    0    300k
+>>> 18:17.5    18.789    56:50.4    0    300k
+>>> 19:15.1    14.208    56:50.4    0    300k
+>>> 20:13.2    20.818    56:50.4    0.267    300k
+>>> 21:11.2    12.397    56:50.4    0    300k
+>>> 22:09.3    12.599    56:50.4    0    300k
+>>> 23:07.3    15.531    57:48.4    0    300k
+>>> 24:05.5    13.664    58:46.5    0    300k
+>>> 25:03.7    13.158    59:44.5    4.73    300k
+>>> 26:01.1    2.486    00:42.6    0    300k
+>>> 26:59.1    11.241    01:40.6    0    300k
+>>> 27:57.2    20.521    02:38.6    0    300k
+>>> 28:55.2    30.094    03:36.7    0    300k
+>>> 29:53.3    16.828    04:34.7    0.963    300k
+>>> 30:51.3    46.916    05:32.8    0    400k
+>>> 31:49.3    56.214    05:32.8    0    400k
+>>> 32:47.3    58.69    05:32.8    0    400k
+>>> 33:45.3    61.486    05:32.8    0    400k
+>>> 34:43.3    72.175    05:32.8    0.598    400k
+>>> 35:41.3    56.699    05:32.8    0    400k
+>>> 36:39.3    61.071    05:32.8    0    400k
+>>> 37:37.3    43.355    06:30.8    0    400k
+>>> 38:35.4    44.644    06:30.8    0    400k
+>>> 39:33.4    72.336    06:30.8    0    400k
+>>> 40:31.4    70.676    06:30.8    0    400k
+>>> 41:29.4    108.009    06:30.8    0    400k
+>>> 42:27.4    65.216    06:30.8    0    400k
+>>
+>> Why there're difference in test time? Could you summarize them like:
+>>
+>> Test setup: e.g testpmd or pktgen to generate packets to guest
+>>
+>> avg packets drop before: XXX
+>>
+>> avg packets drop after: YYY(-ZZZ%)
+>>
+>> Thanks
+>>
+>>
+>>>
+>>> Data to prove why the patch helps:
+>>>
+>>> ----------------------------------------------------
+>>>
+>>> We did have completed several rounds of test with setting the value to
+>>> budget (64 as the default value). It does improve a lot with pps is
+>>> below 400pps for a single stream. We are confident that it runs out
+>>> of free
+>>> buffer in avail ring when packet dropping happens with below systemtap:
+>>>
+>>> Just a snippet:
+>>>
+>>> probe module("virtio_ring").function("virtqueue_get_buf")
+>>> {
+>>>         x = (@cast($_vq, "vring_virtqueue")->vring->used->idx)-
+>>> (@cast($_vq, "vring_virtqueue")->last_used_idx) ---> we use this one
+>>> to verify if the queue is full, which means guest is not able to take
+>>> buffer from the queue timely
+>>>
+>>>         if (x<0 && (x+65535)<4096)
+>>>             x = x+65535
+>>>
+>>>         if((x==1024) && @cast($_vq, "vring_virtqueue")->vq->callback ==
+>>> callback_addr)
+>>>             netrxcount[x] <<< gettimeofday_s()
+>>> }
+>>>
+>>>
+>>> probe module("virtio_ring").function("virtqueue_add_inbuf")
+>>> {
+>>>         y = (@cast($vq, "vring_virtqueue")->vring->avail->idx)-
+>>> (@cast($vq, "vring_virtqueue")->vring->used->idx) ---> we use this one
+>>> to verify if we run out of free buffer in avail ring
+>>>         if (y<0 && (y+65535)<4096)
+>>>             y = y+65535
+>>>
+>>>         if(@2=="debugon")
+>>>         {
+>>>             if(y==0 && @cast($vq, "vring_virtqueue")->vq->callback ==
+>>> callback_addr)
+>>>             {
+>>>                 netrxfreecount[y] <<< gettimeofday_s()
+>>>
+>>>                 printf("no avail ring left seen, printing most recent 5
+>>> num free, vq: %lx, current index: %d\n", $vq, recentfreecount)
+>>>                 for(i=recentfreecount; i!=((recentfreecount+4) % 5);
+>>> i=((i+1) % 5))
+>>>                 {
+>>>                     printf("index: %d, num free: %d\n", i,
+>>> recentfree[$vq,
+>>> i])
+>>>                 }
+>>>
+>>>                 printf("index: %d, num free: %d\n", i, recentfree[$vq,
+>>> i])
+>>>                 //exit()
+>>>             }
+>>>         }
+>>> }
+>>>
+>>>
+>>> probe
+>>> module("virtio_net").statement("virtnet_receive@drivers/net/virtio_net.c:732")
+>>>
+>>>
+>>> {
+>>>         recentfreecount++
+>>>         recentfreecount = recentfreecount % 5
+>>>         recentfree[$rq->vq, recentfreecount] = $rq->vq->num_free --->
+>>> record the num_free for the last 5 calls to virtnet_receive, so we can
+>>> see if lowering the bar helps.
+>>> }
+>>>
+>>>
+>>> Here is the result:
+>>>
+>>> no avail ring left seen, printing most recent 5 num free, vq:
+>>> ffff9c13c1200000, current index: 1
+>>> index: 1, num free: 561
+>>> index: 2, num free: 305
+>>> index: 3, num free: 369
+>>> index: 4, num free: 433
+>>> index: 0, num free: 497
+>>> no avail ring left seen, printing most recent 5 num free, vq:
+>>> ffff9c13c1200000, current index: 1
+>>> index: 1, num free: 543
+>>> index: 2, num free: 463
+>>> index: 3, num free: 469
+>>> index: 4, num free: 476
+>>> index: 0, num free: 479
+>>> no avail ring left seen, printing most recent 5 num free, vq:
+>>> ffff9c13c1200000, current index: 2
+>>> index: 2, num free: 555
+>>> index: 3, num free: 414
+>>> index: 4, num free: 420
+>>> index: 0, num free: 427
+>>> index: 1, num free: 491
+>>>
+>>> We can see in the last 4 calls to virtnet_receive before we run out
+>>> of free buffer and start to relaim, num_free is quite high. So if we
+>>> can do the reclaim earlier, it will certainly help.
+>>>
+>>> Jiang
+>>
+>> Right, but I think there's no need to put those thing in the commit log.
+>>
+>> Thanks
+>>
+>>
+> Sure, here is the info:
 >
-> [  466.269490] ==================================================================
-> [  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
-> [  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
-> [  466.271810]
-> [  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
-> [  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-> [  466.271838] Call Trace:
-> [  466.271858]  dump_stack+0xca/0x13e
-> [  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
-> [  466.271890]  print_address_description+0x79/0x440
-> [  466.271906]  ? vprintk_func+0x5e/0xf0
-> [  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
-> [  466.271935]  __kasan_report+0x15c/0x1df
-> [  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
-> [  466.271976]  kasan_report+0xe/0x20
-> [  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
-> [  466.272013]  do_iter_readv_writev+0x4b7/0x740
-> [  466.272032]  ? default_llseek+0x2d0/0x2d0
-> [  466.272072]  do_iter_read+0x1c5/0x5e0
-> [  466.272110]  vfs_readv+0x108/0x180
-> [  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
-> [  466.299020]  ? fsnotify+0x888/0xd50
-> [  466.299040]  ? __fsnotify_parent+0xd0/0x350
-> [  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
-> [  466.304548]  ? vfs_write+0x264/0x510
-> [  466.304569]  ? ksys_write+0x101/0x210
-> [  466.304591]  ? do_preadv+0x116/0x1a0
-> [  466.304609]  do_preadv+0x116/0x1a0
-> [  466.309829]  do_syscall_64+0xc8/0x600
-> [  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> [  466.309861] RIP: 0033:0x4560f9
-> [  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-> [  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
-> [  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
-> [  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
-> [  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
-> [  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
-> [  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
-> [  466.323057]
-> [  466.323064] Allocated by task 2605:
-> [  466.335165]  save_stack+0x19/0x80
-> [  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
-> [  466.337755]  kmem_cache_alloc+0xe8/0x320
-> [  466.339050]  getname_flags+0xca/0x560
-> [  466.340229]  user_path_at_empty+0x2c/0x50
-> [  466.341508]  vfs_statx+0xe6/0x190
-> [  466.342619]  __do_sys_newstat+0x81/0x100
-> [  466.343908]  do_syscall_64+0xc8/0x600
-> [  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> [  466.347034]
-> [  466.347517] Freed by task 2605:
-> [  466.348471]  save_stack+0x19/0x80
-> [  466.349476]  __kasan_slab_free+0x12e/0x180
-> [  466.350726]  kmem_cache_free+0xc8/0x430
-> [  466.351874]  putname+0xe2/0x120
-> [  466.352921]  filename_lookup+0x257/0x3e0
-> [  466.354319]  vfs_statx+0xe6/0x190
-> [  466.355498]  __do_sys_newstat+0x81/0x100
-> [  466.356889]  do_syscall_64+0xc8/0x600
-> [  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> [  466.359567]
-> [  466.360050] The buggy address belongs to the object at ffff888372139100
-> [  466.360050]  which belongs to the cache names_cache of size 4096
-> [  466.363735] The buggy address is located 336 bytes inside of
-> [  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
-> [  466.367179] The buggy address belongs to the page:
-> [  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
-> [  466.371582] flags: 0x2fffff80010200(slab|head)
-> [  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
-> [  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
-> [  466.377778] page dumped because: kasan: bad access detected
-> [  466.379730]
-> [  466.380288] Memory state around the buggy address:
-> [  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.388257]                                                  ^
-> [  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-> [  466.394667] ==================================================================
 >
-> tun_chr_read_iter() accessed the memory which freed by free_netdev()
-> called by tun_set_iff():
+> Test setup: iperf3 to generate packets to guest (total 30mins, pps 400k)
 >
-> 	CPUA				CPUB
->      tun_set_iff()
->        alloc_netdev_mqs()
->        tun_attach()
-> 				    tun_chr_read_iter()
-> 				      tun_get()
->        register_netdevice()
->        tun_detach_all()
->          synchronize_net()
-> 				      tun_do_read()
-> 				        tun_ring_recv()
-> 				          schedule()
->        free_netdev()
-> 				      tun_put() <-- UAF
+> avg packets drop before: 2842
 >
-> Set a new bit in tun->flag if register_netdevice() successed,
-> without this bit, tun_get() returns NULL to avoid using a
-> freed tun pointer.
-
-
-Good catch.
-
-Some comments inline.
-
-
+> avg packets drop after: 360(-87.3%)
 >
-> Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-> ---
->   drivers/net/tun.c | 10 ++++++++--
->   1 file changed, 8 insertions(+), 2 deletions(-)
 >
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index db16d7a13e00..cbd60c276c40 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -115,6 +115,7 @@ do {								\
->   /* High bits in flags field are unused. */
->   #define TUN_VNET_LE     0x80000000
->   #define TUN_VNET_BE     0x40000000
-> +#define TUN_DEV_REGISTERED	0x20000000
->   
->   #define TUN_FEATURES (IFF_NO_PI | IFF_ONE_QUEUE | IFF_VNET_HDR | \
->   		      IFF_MULTI_QUEUE | IFF_NAPI | IFF_NAPI_FRAGS)
-> @@ -719,8 +720,10 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
->   			netif_carrier_off(tun->dev);
->   
->   			if (!(tun->flags & IFF_PERSIST) &&
-> -			    tun->dev->reg_state == NETREG_REGISTERED)
-> +			    tun->dev->reg_state == NETREG_REGISTERED) {
->   				unregister_netdevice(tun->dev);
-> +				tun->flags &= ~TUN_DEV_REGISTERED;
-> +			}
->   		}
->   		if (tun)
->   			xdp_rxq_info_unreg(&tfile->xdp_rxq);
-> @@ -884,8 +887,10 @@ static struct tun_struct *tun_get(struct tun_file *tfile)
->   
->   	rcu_read_lock();
->   	tun = rcu_dereference(tfile->tun);
-> -	if (tun)
-> +	if (tun && (tun->flags & TUN_DEV_REGISTERED))
->   		dev_hold(tun->dev);
-> +	else
-> +		tun = NULL;
->   	rcu_read_unlock();
->   
->   	return tun;
-> @@ -2836,6 +2841,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
->   		err = register_netdevice(tun->dev);
->   		if (err < 0)
->   			goto err_detach;
-> +		tun->flags |= TUN_DEV_REGISTERED;
->   	}
->   
->   	netif_carrier_on(tun->dev);
+> Just let me know if it looks good enough. Thx.
+>
+> Jiang
 
 
-This looks just a duplicated of netdev->state? However it lacks 
-sufficient synchronization like barriers or locks. How about:
-
-- call tun_set_real_num_queues() before register_netdevice() this can 
-have the same result as what  eb0fb363f920 did.
-- move tun_attach() after register_netdevice() this makes sure we won't 
-publish tfile->tun until we are sure at least one refcnt is held by 
-register_netdevice()?
+Looks good, please post a V2 and include the above result in the commit log.
 
 Thanks
 
+>
