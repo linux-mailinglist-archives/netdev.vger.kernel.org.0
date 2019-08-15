@@ -2,85 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0D718E350
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 05:46:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45C8D8E464
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 07:13:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729818AbfHODq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 14 Aug 2019 23:46:29 -0400
-Received: from mga04.intel.com ([192.55.52.120]:56749 "EHLO mga04.intel.com"
+        id S1730236AbfHOFLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 01:11:43 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:35922 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729479AbfHODqY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 14 Aug 2019 23:46:24 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 14 Aug 2019 20:46:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,387,1559545200"; 
-   d="scan'208";a="352124063"
-Received: from arch-p28.jf.intel.com ([10.166.187.31])
-  by orsmga005.jf.intel.com with ESMTP; 14 Aug 2019 20:46:23 -0700
-From:   Sridhar Samudrala <sridhar.samudrala@intel.com>
-To:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        sridhar.samudrala@intel.com, intel-wired-lan@lists.osuosl.org,
-        maciej.fijalkowski@intel.com, tom.herbert@intel.com
-Subject: [PATCH bpf-next 5/5] xdpsock_user: Add skip_bpf option
-Date:   Wed, 14 Aug 2019 20:46:23 -0700
-Message-Id: <1565840783-8269-6-git-send-email-sridhar.samudrala@intel.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com>
-References: <1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com>
+        id S1730169AbfHOFLn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 01:11:43 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 008DB2A09A0;
+        Thu, 15 Aug 2019 05:11:43 +0000 (UTC)
+Received: from [10.72.12.184] (ovpn-12-184.pek2.redhat.com [10.72.12.184])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C39CA5D6A5;
+        Thu, 15 Aug 2019 05:11:41 +0000 (UTC)
+Subject: Re: tun: mark small packets as owned by the tap sock
+To:     Dave Jones <davej@codemonkey.org.uk>
+Cc:     Alexis Bauvin <abauvin@scaleway.com>, netdev@vger.kernel.org
+References: <git-mailbomb-linux-master-4b663366246be1d1d4b1b8b01245b2e88ad9e706@kernel.org>
+ <20190812221954.GA13314@codemonkey.org.uk>
+ <6b16739e-ab96-9c93-9636-5b80b81c2b20@redhat.com>
+ <20190813140025.GA17823@codemonkey.org.uk>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b89eae9f-edae-0efd-109f-3b7849baa8ed@redhat.com>
+Date:   Thu, 15 Aug 2019 13:11:39 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190813140025.GA17823@codemonkey.org.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.38]); Thu, 15 Aug 2019 05:11:43 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Signed-off-by: Sridhar Samudrala <sridhar.samudrala@intel.com>
----
- samples/bpf/xdpsock_user.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
 
-diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
-index 93eaaf7239b2..509fc6a18af9 100644
---- a/samples/bpf/xdpsock_user.c
-+++ b/samples/bpf/xdpsock_user.c
-@@ -123,6 +123,9 @@ static void print_benchmark(bool running)
- 	if (opt_poll)
- 		printf("poll() ");
- 
-+	if (opt_xdp_bind_flags & XDP_SKIP_BPF)
-+		printf("skip-bpf ");
-+
- 	if (running) {
- 		printf("running...");
- 		fflush(stdout);
-@@ -352,6 +355,7 @@ static struct option long_options[] = {
- 	{"zero-copy", no_argument, 0, 'z'},
- 	{"copy", no_argument, 0, 'c'},
- 	{"frame-size", required_argument, 0, 'f'},
-+	{"skip-bpf", no_argument, 0, 's'},
- 	{0, 0, 0, 0}
- };
- 
-@@ -372,6 +376,7 @@ static void usage(const char *prog)
- 		"  -z, --zero-copy      Force zero-copy mode.\n"
- 		"  -c, --copy           Force copy mode.\n"
- 		"  -f, --frame-size=n   Set the frame size (must be a power of two, default is %d).\n"
-+		"  -s, --skip-bpf       Skip running bpf program.\n"
- 		"\n";
- 	fprintf(stderr, str, prog, XSK_UMEM__DEFAULT_FRAME_SIZE);
- 	exit(EXIT_FAILURE);
-@@ -430,6 +435,9 @@ static void parse_command_line(int argc, char **argv)
- 		case 'f':
- 			opt_xsk_frame_size = atoi(optarg);
- 			break;
-+		case 's':
-+			opt_xdp_bind_flags |= XDP_SKIP_BPF;
-+			break;
- 		default:
- 			usage(basename(argv[0]));
- 		}
--- 
-2.20.1
+On 2019/8/13 下午10:00, Dave Jones wrote:
+> On Tue, Aug 13, 2019 at 04:33:59PM +0800, Jason Wang wrote:
+>   >
+>   > On 2019/8/13 上午6:19, Dave Jones wrote:
+>   > > On Wed, Aug 07, 2019 at 12:30:07AM +0000, Linux Kernel wrote:
+>   > >   > Commit:     4b663366246be1d1d4b1b8b01245b2e88ad9e706
+>   > >   > Parent:     16b2084a8afa1432d14ba72b7c97d7908e178178
+>   > >   > Web:        https://git.kernel.org/torvalds/c/4b663366246be1d1d4b1b8b01245b2e88ad9e706
+>   > >   > Author:     Alexis Bauvin <abauvin@scaleway.com>
+>   > >   > AuthorDate: Tue Jul 23 16:23:01 2019 +0200
+>   > >   >
+>   > >   >     tun: mark small packets as owned by the tap sock
+>   > >   >
+>   > >   >     - v1 -> v2: Move skb_set_owner_w to __tun_build_skb to reduce patch size
+>   > >
+>   > > This commit breaks ipv6 routing when I deployed on it a linode.
+>   > > It seems to work briefly after boot, and then silently all packets get
+>   > > dropped. (Presumably, it's dropping RA or ND packets)
+>   > >
+>   > > With this reverted, everything works as it did in rc3.
+>   > >
+>   > Two questions:
+>   >
+>   > - Are you using XDP for TUN?
+>
+> not knowingly.
+> $ grep XDP .config
+> # CONFIG_XDP_SOCKETS is not set
+>
+> What's configured on the hypervisor side I have no idea.
 
+
+Ok, please tell me more about your setups:
+
+- Are you using TUN in host or guest?
+
+- Are you using it for VM or VPN(tunneling)?
+
+- Where did the packet get dropped?
+
+
+>
+>   > - Does it work before 66ccbc9c87c2?
+>
+> that's been around since 4.14-rc1, and at one point it ran whatever was
+> in debian9 (4.9).  I don't recall it ever not working, so I'd say yes.
+>
+> I can build a 4.13 if it'll prove something, but it'll take me a while.
+> (This is my primary MX, so it's dropping email while it's on the broken
+>   kernel, so I need to plan some time to be around to babysit it)
+
+
+If possible please try that.
+
+
+>
+>   > If yes, could you show us the result of net_dropmonitor?
+>
+> where do I get that?  It doesn't seem packaged for debian.
+>
+> 	Dave
+
+
+It's part of perf-script(1). You can simply start it through perf script 
+record net_dropmonitor.
+
+Thanks
+
+>
