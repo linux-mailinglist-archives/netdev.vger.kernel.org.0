@@ -2,149 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B1A858F122
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:46:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 867DE8F18E
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 19:06:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729898AbfHOQqj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 12:46:39 -0400
-Received: from mga12.intel.com ([192.55.52.136]:55171 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726099AbfHOQqj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 12:46:39 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Aug 2019 09:46:36 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,389,1559545200"; 
-   d="scan'208";a="260867787"
-Received: from unknown (HELO [10.241.228.234]) ([10.241.228.234])
-  by orsmga001.jf.intel.com with ESMTP; 15 Aug 2019 09:46:35 -0700
-Subject: Re: [PATCH bpf-next 0/5] Add support for SKIP_BPF flag for AF_XDP
- sockets
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        maciej.fijalkowski@intel.com, tom.herbert@intel.com
-References: <1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com>
- <bebfb097-5357-91d8-ebc7-2f8ede392ad7@intel.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <cc3a09eb-bcb8-a6e1-7175-77bddaf10c11@intel.com>
-Date:   Thu, 15 Aug 2019 09:46:35 -0700
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1731265AbfHORGT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 13:06:19 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:41972 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729157AbfHORGT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 13:06:19 -0400
+Received: by mail-qk1-f194.google.com with SMTP id g17so2370981qkk.8;
+        Thu, 15 Aug 2019 10:06:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4N9MtH/WdRi43/ziOEzMDfGNy3m5GNX/ZdJvM/Fbxqw=;
+        b=CeSNajaHYbJHumzokzP6HZNN1rxoBs08JYStzZCWJHiYBy/rjtYBmMuLEG4s0Wr27s
+         bjaNsLxm1lN3526MdAeh6fKTmAn6zrxWWlWi6lGAdFtaeVo+PxKF2e0dRf+AavqLtayj
+         0eIc3k2umw6zU6Xi/+Aha+4b2SZHAC/og/bZGQCBUCv4oBdqKpnMSjqKd4fM9kC/o3wI
+         j+MP105USswGKSX5Z/qzUxOqlG3eQTBcMlmxnju0/8NIZcyO/9rh9FbW8OeAR59jIZkt
+         e9icjtgCJ1LfBXmULz26PvzTrupkC9gBDBkfBI0Xye+CcPe31CJztoMaIusvhOIf5hkV
+         rjNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4N9MtH/WdRi43/ziOEzMDfGNy3m5GNX/ZdJvM/Fbxqw=;
+        b=XH36wfv3F7BjC8ESauYtd9M4XZKMskh/brW4+GGG0EfQupia/HvtliJLMoPmvsCs/t
+         PHeMrCNCjfGqA7c/pm1olOaX0YkD7ns9dR9ZF6TGmd6oo9wDLSBds01MR9CIhXXFz/V9
+         bvC/tWQPfwngxXuB/C9Z9PMi1Bhz6WtXGRCdP8j6thilnEkhyQL02fKdlz6k1rufWkl8
+         S660rJuPTwlKUMFGRzQMJgzLykBKPkZAQrQH2knylxxSTdHe+Rvi5cMaQtk35yKraWop
+         qo+oGpgiQ4veX9Q2gH76xCDNfID0qNPQWLKzbDxMwqZHeeEA6rewawqbqtt9iS+z8iUO
+         K1Ng==
+X-Gm-Message-State: APjAAAW8vzX7s71HBZ1zXFKiUQ6AMtsuaEg7WG5B1QPOGIyjA+QxAWC6
+        G8gEeEYRmoPFCSotGzQpWK4ZKRcWy2pd83KCuMY=
+X-Google-Smtp-Source: APXvYqzmtLBc/bRpSaWadCZ/ja0P8I4aHKSuJ4fE7ULSbQyfdKl9xgoD10QFKxfjiFI3dzuSA137hRS8d5tsH9MnCrg=
+X-Received: by 2002:a05:620a:745:: with SMTP id i5mr4944922qki.39.1565888778036;
+ Thu, 15 Aug 2019 10:06:18 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <bebfb097-5357-91d8-ebc7-2f8ede392ad7@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20190815142432.101401-1-weiyongjun1@huawei.com>
+In-Reply-To: <20190815142432.101401-1-weiyongjun1@huawei.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 15 Aug 2019 10:06:07 -0700
+Message-ID: <CAEf4Bzb8JMnLXVpgF3PcZbZz8zRCX6HNWbsnfJkankjqX3rzRg@mail.gmail.com>
+Subject: Re: [PATCH -next] btf: fix return value check in btf_vmlinux_init()
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/15/2019 5:51 AM, Björn Töpel wrote:
-> On 2019-08-15 05:46, Sridhar Samudrala wrote:
->> This patch series introduces XDP_SKIP_BPF flag that can be specified
->> during the bind() call of an AF_XDP socket to skip calling the BPF
->> program in the receive path and pass the buffer directly to the socket.
->>
->> When a single AF_XDP socket is associated with a queue and a HW
->> filter is used to redirect the packets and the app is interested in
->> receiving all the packets on that queue, we don't need an additional
->> BPF program to do further filtering or lookup/redirect to a socket.
->>
->> Here are some performance numbers collected on
->>    - 2 socket 28 core Intel(R) Xeon(R) Platinum 8180 CPU @ 2.50GHz
->>    - Intel 40Gb Ethernet NIC (i40e)
->>
->> All tests use 2 cores and the results are in Mpps.
->>
->> turbo on (default)
->> ---------------------------------------------
->>                        no-skip-bpf    skip-bpf
->> ---------------------------------------------
->> rxdrop zerocopy           21.9         38.5
->> l2fwd  zerocopy           17.0         20.5
->> rxdrop copy               11.1         13.3
->> l2fwd  copy                1.9          2.0
->>
->> no turbo :  echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
->> ---------------------------------------------
->>                        no-skip-bpf    skip-bpf
->> ---------------------------------------------
->> rxdrop zerocopy           15.4         29.0
->> l2fwd  zerocopy           11.8         18.2
->> rxdrop copy                8.2         10.5
->> l2fwd  copy                1.7          1.7
->> ---------------------------------------------
->>
-> 
-> This work is somewhat similar to the XDP_ATTACH work [1]. Avoiding the
-> retpoline in the XDP program call is a nice performance boost! I like
-> the numbers! :-) I also like the idea of adding a flag that just does
-> what most AF_XDP Rx users want -- just getting all packets of a
-> certain queue into the XDP sockets.
-> 
-> In addition to Toke's mail, I have some more concerns with the series:
-> 
-> * AFAIU the SKIP_BPF only works for zero-copy enabled sockets. IMO, it
->    should work for all modes (including XDP_SKB).
+On Thu, Aug 15, 2019 at 7:21 AM Wei Yongjun <weiyongjun1@huawei.com> wrote:
+>
+> In case of error, the function kobject_create_and_add() returns NULL
+> pointer not ERR_PTR(). The IS_ERR() test in the return value check
+> should be replaced with NULL test.
+>
+> Fixes: 341dfcf8d78e ("btf: expose BTF info through sysfs")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> ---
 
-This patch enables SKIP_BPF for AF_XDP sockets where an XDP program is 
-attached at driver level (both zerocopy and copy modes)
-I tried a quick hack to see the perf benefit with generic XDP mode, but 
-i didn't see any significant improvement in performance in that 
-scenario. so i didn't include that mode.
 
-> 
-> * In order to work, a user still needs an XDP program running. That's
->    clunky. I'd like the behavior that if no XDP program is attached,
->    and the option is set, the packets for a that queue end up in the
->    socket. If there's an XDP program attached, the program has
->    precedence.
+Argh... Thanks for the fix! Fix the comment below addressed:
 
-I think this would require more changes in the drivers to take XDP 
-datapath even when there is no XDP program loaded.
+Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-> 
-> * It requires changes in all drivers. Not nice, and scales badly. Try
->    making it generic (xdp_do_redirect/xdp_flush), so it Just Works for
->    all XDP capable drivers.
+>  kernel/bpf/sysfs_btf.c | 7 ++-----
+>  1 file changed, 2 insertions(+), 5 deletions(-)
+>
+> diff --git a/kernel/bpf/sysfs_btf.c b/kernel/bpf/sysfs_btf.c
+> index 4659349fc795..be5557deb958 100644
+> --- a/kernel/bpf/sysfs_btf.c
+> +++ b/kernel/bpf/sysfs_btf.c
+> @@ -30,16 +30,13 @@ static struct kobject *btf_kobj;
+>
+>  static int __init btf_vmlinux_init(void)
+>  {
+> -       int err;
+> -
+>         if (!_binary__btf_vmlinux_bin_start)
+>                 return 0;
+>
+>         btf_kobj = kobject_create_and_add("btf", kernel_kobj);
+> -       if (IS_ERR(btf_kobj)) {
+> -               err = PTR_ERR(btf_kobj);
+> +       if (!btf_kobj) {
+>                 btf_kobj = NULL;
 
-I tried to make this as generic as possible and make the changes to the 
-driver very minimal, but could not find a way to avoid any changes at 
-all to the driver. xdp_do_direct() gets called based after the call to 
-bpf_prog_run_xdp() in the drivers.
+This is now not necessary, please drop (and don't forget to remove {}
+for this single-line if afterwards).
 
-> 
-> Thanks for working on this!
-> 
-> 
-> Björn
-> 
-> [1] 
-> https://lore.kernel.org/netdev/20181207114431.18038-1-bjorn.topel@gmail.com/ 
-> 
-> 
-> 
->> Sridhar Samudrala (5):
->>    xsk: Convert bool 'zc' field in struct xdp_umem to a u32 bitmap
->>    xsk: Introduce XDP_SKIP_BPF bind option
->>    i40e: Enable XDP_SKIP_BPF option for AF_XDP sockets
->>    ixgbe: Enable XDP_SKIP_BPF option for AF_XDP sockets
->>    xdpsock_user: Add skip_bpf option
->>
->>   drivers/net/ethernet/intel/i40e/i40e_txrx.c   | 22 +++++++++-
->>   drivers/net/ethernet/intel/i40e/i40e_xsk.c    |  6 +++
->>   drivers/net/ethernet/intel/ixgbe/ixgbe_main.c | 20 ++++++++-
->>   drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c  | 16 ++++++-
->>   include/net/xdp_sock.h                        | 21 ++++++++-
->>   include/uapi/linux/if_xdp.h                   |  1 +
->>   include/uapi/linux/xdp_diag.h                 |  1 +
->>   net/xdp/xdp_umem.c                            |  9 ++--
->>   net/xdp/xsk.c                                 | 43 ++++++++++++++++---
->>   net/xdp/xsk_diag.c                            |  5 ++-
->>   samples/bpf/xdpsock_user.c                    |  8 ++++
->>   11 files changed, 135 insertions(+), 17 deletions(-)
->>
+> -               return err;
+> +               return -ENOMEM;
+>         }
+>
+>         bin_attr_btf_vmlinux.size = _binary__btf_vmlinux_bin_end -
+>
+>
+>
