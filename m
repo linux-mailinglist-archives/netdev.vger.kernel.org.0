@@ -2,105 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FDA18F086
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B6BF8F0A8
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:34:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731591AbfHOQ0B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 12:26:01 -0400
-Received: from mga11.intel.com ([192.55.52.93]:18625 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731640AbfHOQZ7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 12:25:59 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Aug 2019 09:25:58 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,389,1559545200"; 
-   d="scan'208";a="260862741"
-Received: from unknown (HELO [10.241.228.234]) ([10.241.228.234])
-  by orsmga001.jf.intel.com with ESMTP; 15 Aug 2019 09:25:57 -0700
-Subject: Re: [PATCH bpf-next 0/5] Add support for SKIP_BPF flag for AF_XDP
- sockets
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        intel-wired-lan@lists.osuosl.org, maciej.fijalkowski@intel.com,
-        tom.herbert@intel.com
-References: <1565840783-8269-1-git-send-email-sridhar.samudrala@intel.com>
- <87ftm2adi2.fsf@toke.dk>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <b9423054-247e-8b57-ea59-42368f60ea1e@intel.com>
-Date:   Thu, 15 Aug 2019 09:25:57 -0700
+        id S1731854AbfHOQeU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 12:34:20 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33394 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730156AbfHOQeT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 12:34:19 -0400
+Received: by mail-wr1-f67.google.com with SMTP id u16so2783696wrr.0;
+        Thu, 15 Aug 2019 09:34:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=pTn+NtsTL+V0D+GdWsANpO5LDlMDujGKQnBTFznYvrg=;
+        b=b0I5b9umvFU/dTbkGZ8lpI4IO0BntAfcK/I9nuYpwuBM+8XbOgALyBm+ZWw4KA8Rpq
+         5QjqOnGNaJK6h456JXrc9md8wR77ry1v2+nExuB1/of/Cx6VQTNlp3zqUydXrs595iLN
+         xi5g99hILsigrn9aspf7eQbiNtWPbG3/EiHghM18mEQ2KHNbqW5o0b8YGihRneXoAX1x
+         CZGuMee8ohk2PO5cChypZvO4/JWYSUCII8yJCbl1gNJFDyTXDAQ8qKIzq9hW7w2ZpoOq
+         veLzzO3eA0lFHqAH2iGJPr8p7wHKS9A17modOPj5hy8g31swF7edmPtCA2tm+NsPkqeN
+         nzZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=pTn+NtsTL+V0D+GdWsANpO5LDlMDujGKQnBTFznYvrg=;
+        b=AHqeCZKgBRsoEAs4kxiOI0EoDhnUw+SSXjunR+OwNfRbSOsuepmp3l8Eil8AtN85dL
+         /QD76zKWlTkPw81YLpxwGfFjkoXYBomFVlAbq+w0YiNyUWohMv4dMWJT6Axk5Hxi9s4F
+         5frhXVOsQluMS+ZLl0fJbNnDuo+Iqws7b+Ea7TXI6BMUKv8v5F6ZMOtAzXTQ88ryPfez
+         D23cSEvK4Qx6xHk3f/cj1YxePklYjTC7KEijDPFo+CE275h1sKzDvbIsdYs27hqqyAeG
+         ZkNTxnxLTL2Y9fA8KHSUix2TMcM39OJUFEXVhBZICG9wZmtJg0/tZEksgSheNf6rnb+v
+         4UNQ==
+X-Gm-Message-State: APjAAAUwN8x9o0b4EVJ2LN83mgEZZey2soZRlLxbG13afrFJSMtmI9sW
+        ZKbVVr+pqsgBj6xh56jBNzk=
+X-Google-Smtp-Source: APXvYqwOrCQJCIbbsm7t9XfeonICJnDff2rMsiIMCZSORG7Bv+ZFuT2VYG1FcFnDQtFQ42EJPkFZjA==
+X-Received: by 2002:adf:b64e:: with SMTP id i14mr6486128wre.248.1565886857510;
+        Thu, 15 Aug 2019 09:34:17 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:c0f5:392f:547b:417a? (p200300EA8F2F3200C0F5392F547B417A.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:c0f5:392f:547b:417a])
+        by smtp.googlemail.com with ESMTPSA id g14sm5756141wrb.38.2019.08.15.09.34.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 15 Aug 2019 09:34:16 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/1] Added BASE-T1 PHY support to PHY Subsystem
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Christian Herber <christian.herber@nxp.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>
+References: <20190815153209.21529-1-christian.herber@nxp.com>
+ <20190815153209.21529-2-christian.herber@nxp.com>
+ <20190815155613.GE15291@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <2ca68436-8e49-b0b2-2460-4fcac3094b09@gmail.com>
+Date:   Thu, 15 Aug 2019 18:34:11 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <87ftm2adi2.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20190815155613.GE15291@lunn.ch>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 8/15/2019 4:12 AM, Toke Høiland-Jørgensen wrote:
-> Sridhar Samudrala <sridhar.samudrala@intel.com> writes:
-> 
->> This patch series introduces XDP_SKIP_BPF flag that can be specified
->> during the bind() call of an AF_XDP socket to skip calling the BPF
->> program in the receive path and pass the buffer directly to the socket.
+On 15.08.2019 17:56, Andrew Lunn wrote:
+> On Thu, Aug 15, 2019 at 03:32:29PM +0000, Christian Herber wrote:
+>> BASE-T1 is a category of Ethernet PHYs.
+>> They use a single copper pair for transmission.
+>> This patch add basic support for this category of PHYs.
+>> It coveres the discovery of abilities and basic configuration.
+>> It includes setting fixed speed and enabling auto-negotiation.
+>> BASE-T1 devices should always Clause-45 managed.
+>> Therefore, this patch extends phy-c45.c.
+>> While for some functions like auto-neogtiation different registers are
+>> used, the layout of these registers is the same for the used fields.
+>> Thus, much of the logic of basic Clause-45 devices can be reused.
 >>
->> When a single AF_XDP socket is associated with a queue and a HW
->> filter is used to redirect the packets and the app is interested in
->> receiving all the packets on that queue, we don't need an additional
->> BPF program to do further filtering or lookup/redirect to a socket.
+>> Signed-off-by: Christian Herber <christian.herber@nxp.com>
+>> ---
+>>  drivers/net/phy/phy-c45.c    | 113 +++++++++++++++++++++++++++++++----
+>>  drivers/net/phy/phy-core.c   |   4 +-
+>>  include/uapi/linux/ethtool.h |   2 +
+>>  include/uapi/linux/mdio.h    |  21 +++++++
+>>  4 files changed, 129 insertions(+), 11 deletions(-)
 >>
->> Here are some performance numbers collected on
->>    - 2 socket 28 core Intel(R) Xeon(R) Platinum 8180 CPU @ 2.50GHz
->>    - Intel 40Gb Ethernet NIC (i40e)
->>
->> All tests use 2 cores and the results are in Mpps.
->>
->> turbo on (default)
->> ---------------------------------------------	
->>                        no-skip-bpf    skip-bpf
->> ---------------------------------------------	
->> rxdrop zerocopy           21.9         38.5
->> l2fwd  zerocopy           17.0         20.5
->> rxdrop copy               11.1         13.3
->> l2fwd  copy                1.9          2.0
->>
->> no turbo :  echo 1 > /sys/devices/system/cpu/intel_pstate/no_turbo
->> ---------------------------------------------	
->>                        no-skip-bpf    skip-bpf
->> ---------------------------------------------	
->> rxdrop zerocopy           15.4         29.0
->> l2fwd  zerocopy           11.8         18.2
->> rxdrop copy                8.2         10.5
->> l2fwd  copy                1.7          1.7
->> ---------------------------------------------
+>> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+>> index b9d4145781ca..9ff0b8c785de 100644
+>> --- a/drivers/net/phy/phy-c45.c
+>> +++ b/drivers/net/phy/phy-c45.c
+>> @@ -8,13 +8,23 @@
+>>  #include <linux/mii.h>
+>>  #include <linux/phy.h>
+>>  
+>> +#define IS_100BASET1(phy) (linkmode_test_bit( \
+>> +			   ETHTOOL_LINK_MODE_100baseT1_Full_BIT, \
+>> +			   (phy)->supported))
+>> +#define IS_1000BASET1(phy) (linkmode_test_bit( \
+>> +			    ETHTOOL_LINK_MODE_1000baseT1_Full_BIT, \
+>> +			    (phy)->supported))
 > 
-> You're getting this performance boost by adding more code in the fast
-> path for every XDP program; so what's the performance impact of that for
-> cases where we do run an eBPF program?
-
-The no-skip-bpf results are pretty close to what i see before the 
-patches are applied. As umem is cached in rx_ring for zerocopy the 
-overhead is much smaller compared to the copy scenario where i am 
-currently calling xdp_get_umem_from_qid().
-
+> Hi Christian
 > 
-> Also, this is basically a special-casing of a particular deployment
-> scenario. Without a way to control RX queue assignment and traffic
-> steering, you're basically hard-coding a particular app's takeover of
-> the network interface; I'm not sure that is such a good idea...
-
-Yes. This is mainly targeted for application that create 1 AF_XDP socket 
-per RX queue and can use a HW filter (via ethtool or TC flower) to 
-redirect the packets to a queue or a group of queues.
-
+> We already have the flag phydev->is_gigabit_capable. Maybe add a flag
+> phydev->is_t1_capable
 > 
-> -Toke
+>> +
+>> +static u32 get_aneg_ctrl(struct phy_device *phydev);
+>> +static u32 get_aneg_stat(struct phy_device *phydev);
 > 
+> No forward declarations please. Put the code in the right order so
+> they are not needed.
+> 
+> Thanks
+> 
+>      Andrew
+> 
+
+For whatever reason I don't have the original mail in my netdev inbox (yet).
+
++	if (IS_100BASET1(phydev) || IS_1000BASET1(phydev))
++		ctrl = MDIO_AN_BT1_CTRL;
+
+Code like this could be problematic once a PHY supports one of the T1 modes
+AND normal modes. Then normal modes would be unusable.
+
+I think this scenario isn't completely hypothetical. See the Aquantia
+AQCS109 that supports normal modes and (proprietary) 1000Base-T2.
+
+Maybe we need separate versions of the generic functions for T1.
+Then it would be up to the PHY driver to decide when to use which
+version.
+
+Heiner
