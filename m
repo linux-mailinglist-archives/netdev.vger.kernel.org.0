@@ -2,86 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8139E8F0B9
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:38:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 212DA8F11F
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:46:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731447AbfHOQij (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 12:38:39 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:54196 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728348AbfHOQii (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 12:38:38 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FGYag6007046;
-        Thu, 15 Aug 2019 16:38:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=0WCFUo3AR9Tm+mLXAt+TpV1+0IOiB3yIuOuzXyKfhz0=;
- b=P4uNTkvKt44rIhabEsPl7GnVx+oC3f9RMFq3kRZUm3R5AIr1qiPE3ali0qLU2IvTMKrm
- YJ8+GDQU9WwKN2cgEaRzp1G7DzaFdYr7LEcmvCtaW6r1pv2hfE+fXdF6BpwrgL1M+wJM
- cGfDqF5a4dLD8CSFqunAz3HaKHzkT2u4qyoECOEZmvpEh4Pcl+j5UEtMDBKydSk9ZZmK
- GmLxwxoEB7xko+2fLsPE0yBHxT1X75cQdJjZyscqHuX6OwQxXytT1J6FE93+lC8XiTj5
- AQBOqhtuSGr8UbDg0GZnKwEJLEGNePiH2lZIBHYUqfj9dhwN6/v9ZI/qWcAnOawh5/A8 9A== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by userp2120.oracle.com with ESMTP id 2u9pjqum47-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 16:38:36 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7FGXqXk171679;
-        Thu, 15 Aug 2019 16:36:35 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 2ucpyshau1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 15 Aug 2019 16:36:35 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7FGY509173824;
-        Thu, 15 Aug 2019 16:36:35 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 2ucpyshatm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 15 Aug 2019 16:36:35 +0000
-Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7FGaZKe006130;
-        Thu, 15 Aug 2019 16:36:35 GMT
-Received: from [10.159.249.63] (/10.159.249.63)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 15 Aug 2019 09:36:34 -0700
-Subject: Re: [PATCH net-next] net/rds: Add RDS6_INFO_SOCKETS and
- RDS6_INFO_RECV_MESSAGES options
-To:     Ka-Cheong Poon <ka-cheong.poon@oracle.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, rds-devel@oss.oracle.com
-References: <1565861803-31268-1-git-send-email-ka-cheong.poon@oracle.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <977a6d5b-53e4-87ec-8e5c-57646037e298@oracle.com>
-Date:   Thu, 15 Aug 2019 09:36:33 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        id S1729798AbfHOQqN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 12:46:13 -0400
+Received: from foss.arm.com ([217.140.110.172]:46646 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726099AbfHOQqN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 12:46:13 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 61DE0360;
+        Thu, 15 Aug 2019 09:46:12 -0700 (PDT)
+Received: from fuggles.cambridge.arm.com (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 444BB3F706;
+        Thu, 15 Aug 2019 09:46:11 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 17:46:09 +0100
+From:   Will Deacon <will.deacon@arm.com>
+To:     Zhangshaokun <zhangshaokun@hisilicon.com>
+Cc:     Robin Murphy <robin.murphy@arm.com>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, netdev@vger.kernel.org,
+        ilias.apalodimas@linaro.org,
+        "huanglingyan (A)" <huanglingyan2@huawei.com>, steve.capper@arm.com
+Subject: Re: [PATCH] arm64: do_csum: implement accelerated scalar version
+Message-ID: <20190815164609.GI2015@fuggles.cambridge.arm.com>
+References: <20190218230842.11448-1-ard.biesheuvel@linaro.org>
+ <d7a16ebd-073f-f50e-9651-68606d10b01c@hisilicon.com>
+ <20190412095243.GA27193@fuggles.cambridge.arm.com>
+ <41b30c72-c1c5-14b2-b2e1-3507d552830d@arm.com>
+ <20190515094704.GC24357@fuggles.cambridge.arm.com>
+ <440eb674-0e59-a97e-4a90-0026e2327069@hisilicon.com>
 MIME-Version: 1.0
-In-Reply-To: <1565861803-31268-1-git-send-email-ka-cheong.poon@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9350 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908150161
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <440eb674-0e59-a97e-4a90-0026e2327069@hisilicon.com>
+User-Agent: Mutt/1.11.1+86 (6f28e57d73f2) ()
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/15/19 2:36 AM, Ka-Cheong Poon wrote:
-> Add support of the socket options RDS6_INFO_SOCKETS and
-> RDS6_INFO_RECV_MESSAGES which update the RDS_INFO_SOCKETS and
-> RDS_INFO_RECV_MESSAGES options respectively.  The old options work
-> for IPv4 sockets only.
+On Thu, May 16, 2019 at 11:14:35AM +0800, Zhangshaokun wrote:
+> On 2019/5/15 17:47, Will Deacon wrote:
+> > On Mon, Apr 15, 2019 at 07:18:22PM +0100, Robin Murphy wrote:
+> >> On 12/04/2019 10:52, Will Deacon wrote:
+> >>> I'm waiting for Robin to come back with numbers for a C implementation.
+> >>>
+> >>> Robin -- did you get anywhere with that?
+> >>
+> >> Still not what I would call finished, but where I've got so far (besides an
+> >> increasingly elaborate test rig) is as below - it still wants some unrolling
+> >> in the middle to really fly (and actual testing on BE), but the worst-case
+> >> performance already equals or just beats this asm version on Cortex-A53 with
+> >> GCC 7 (by virtue of being alignment-insensitive and branchless except for
+> >> the loop). Unfortunately, the advantage of C code being instrumentable does
+> >> also come around to bite me...
+> > 
+> > Is there any interest from anybody in spinning a proper patch out of this?
+> > Shaokun?
 > 
-> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
-> ---
-Thanks Ka-Cheong for getting this one out on list.
+> HiSilicon's Kunpeng920(Hi1620) benefits from do_csum optimization, if Ard and
+> Robin are ok, Lingyan or I can try to do it.
+> Of course, if any guy posts the patch, we are happy to test it.
+> Any will be ok.
 
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+I don't mind who posts it, but Robin is super busy with SMMU stuff at the
+moment so it probably makes more sense for you or Lingyan to do it.
+
+Will
