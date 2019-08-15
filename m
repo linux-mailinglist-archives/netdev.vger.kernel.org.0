@@ -2,137 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 70C258EA28
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 13:25:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AF1348EA53
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 13:32:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726120AbfHOLZF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 07:25:05 -0400
-Received: from mail-40135.protonmail.ch ([185.70.40.135]:11257 "EHLO
-        mail-40135.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725875AbfHOLZF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 07:25:05 -0400
-Date:   Thu, 15 Aug 2019 11:24:54 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=protonmail.ch;
-        s=default; t=1565868301;
-        bh=iAtcP7FshA2GtR0+YOCUr2f4BggVvEAXCTScdeBsrvc=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:
-         Feedback-ID:From;
-        b=EX6yYuIfxAu8/7RblrN9Ataw3CyhPC60P1i7RpPAEYWwjtvTkeyKzrxBDSxkEMVOG
-         g4O0QTbSKL4QqMjkJ4VwK83123YG5yl6bLkCnl11spEFo/UPte1Ra0fB2js6OCTVSV
-         FUWHQkrJiPxFCzWcSRaGfPcn9vJfbOV2+kiQ/Q2I=
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-From:   Jordan Glover <Golden_Miller83@protonmail.ch>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        id S1731176AbfHOLcw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 07:32:52 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:33554 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730944AbfHOLcw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 07:32:52 -0400
+Received: by mail-pf1-f193.google.com with SMTP id g2so1231762pfq.0
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 04:32:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=6yyNNZcoZXd04iOxCA2uv7QHQpYeH3o1GL76tGnvZsI=;
+        b=BdQMSyc7Ew3WW/RLs9+hxDLI4sxwJvXm8pIJM78jiMehrBRUjW+8VSjLqWzqtwoFZn
+         Esj/v9R8BWdvpkoa0amEwj8W1IG3tgXWbyiYUqEDHkDvdarSI3uAogTd25i00Umn2DZ1
+         tAYIG0r3PM5WaOf2/6Ix2ZU83b83MImN/bJKcbbhVVegy3Gict/B0VTDGpmXW3KWqB45
+         9UdCJi9C/lodmvIaiSLzOI1jNmnfOHHv3bOAJX82boWFEJ3aK0+YhKCbrllvi5V7jVWk
+         EcDaBlgsSE3R+QchaiNUDjooXbQNZO4O1md6PP5OlqJncyCrfx5nWsYX3yIK1xVHj4cE
+         xZoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=6yyNNZcoZXd04iOxCA2uv7QHQpYeH3o1GL76tGnvZsI=;
+        b=Qw6izSaIbNZVv4oxeMYwWOAkxtH8kEmz1FFgobZfEL2pSJT7baLhRyBtruyFgYK11r
+         SYUIxvWKetqvOYW1IXdQfqClz06XwAAGG+/zJ8PwTTmtlnQzzK8ssNbfmweXcg9wdROi
+         7uzhPrjMeeyoAJul9JNIna1Wk9W/HHXdJmBpcCUMV0aXdshiSDsHBAMDBZTEtTk+UGuc
+         g981+E5l92M+/hre5vXCOCrjwF8y9UEf9ZzVDwyXA8Pz/b9pYshK+U+kztAS5wnbS2M6
+         5BWKBJEtXxADBBzA0Zc97k7yIOrbWdjZrnMZAnlrqudZ52MoEg6wocfEP3bQJu7E3bBE
+         iPYA==
+X-Gm-Message-State: APjAAAUalDivDYi8afNEalfZXdZkYk7n8W5q9nYkDC2387v6WQmxHeIj
+        SQRbOuHn63kIqHeDbtwgmoR3jA==
+X-Google-Smtp-Source: APXvYqwgHmgCJuJEfgUj6l4fxv/gOjQK+RkzIq0qwwxYOQmPh1Tiut8Hgxg0E93Jt/4ki2OwB4k+8A==
+X-Received: by 2002:a17:90a:bc06:: with SMTP id w6mr1878592pjr.130.1565868771311;
+        Thu, 15 Aug 2019 04:32:51 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (li456-16.members.linode.com. [50.116.10.16])
+        by smtp.gmail.com with ESMTPSA id t6sm1190242pjy.18.2019.08.15.04.32.45
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 15 Aug 2019 04:32:50 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 19:32:42 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Adrian Hunter <adrian.hunter@intel.com>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Reply-To: Jordan Glover <Golden_Miller83@protonmail.ch>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-Message-ID: <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch>
-In-Reply-To: <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
-References: <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
- <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
- <20190806011134.p5baub5l3t5fkmou@ast-mbp>
- <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
- <20190813215823.3sfbakzzjjykyng2@ast-mbp>
- <CALCETrVT-dDXQGukGs5S1DkzvQv9_e=axzr_GyEd2c4T4z8Qng@mail.gmail.com>
- <20190814005737.4qg6wh4a53vmso2v@ast-mbp>
- <CALCETrUkqUprujww26VxHwkdXQ3DWJH8nnL2VBYpK2EU0oX_YA@mail.gmail.com>
- <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
-Feedback-ID: QEdvdaLhFJaqnofhWA-dldGwsuoeDdDw7vz0UPs8r8sanA3bIt8zJdf4aDqYKSy4gJuZ0WvFYJtvq21y6ge_uQ==:Ext:ProtonMail
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5] perf machine: arm/arm64: Improve completeness for
+ kernel address space
+Message-ID: <20190815113242.GA28881@leoy-ThinkPad-X240s>
+References: <20190815082521.16885-1-leo.yan@linaro.org>
+ <d874e6b3-c115-6c8c-bb12-160cfd600505@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-0.7 required=7.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,FREEMAIL_ENVFROM_END_DIGIT,
-        FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT autolearn=no
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d874e6b3-c115-6c8c-bb12-160cfd600505@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday, August 14, 2019 10:05 PM, Alexei Starovoitov <alexei.starovoi=
-tov@gmail.com> wrote:
+Hi Adrian,
 
-> On Wed, Aug 14, 2019 at 10:51:23AM -0700, Andy Lutomirski wrote:
->
-> > If eBPF is genuinely not usable by programs that are not fully trusted
-> > by the admin, then no kernel changes at all are needed. Programs that
-> > want to reduce their own privileges can easily fork() a privileged
-> > subprocess or run a little helper to which they delegate BPF
-> > operations. This is far more flexible than anything that will ever be
-> > in the kernel because it allows the helper to verify that the rest of
-> > the program is doing exactly what it's supposed to and restrict eBPF
-> > operations to exactly the subset that is needed. So a container
-> > manager or network manager that drops some provilege could have a
-> > little bpf-helper that manages its BPF XDP, firewalling, etc
-> > configuration. The two processes would talk over a socketpair.
->
-> there were three projects that tried to delegate bpf operations.
-> All of them failed.
-> bpf operational workflow is much more complex than you're imagining.
-> fork() also doesn't work for all cases.
-> I gave this example before: consider multiple systemd-like deamons
-> that need to do bpf operations that want to pass this 'bpf capability'
-> to other deamons written by other teams. Some of them will start
-> non-root, but still need to do bpf. They will be rpm installed
-> and live upgraded while running.
-> We considered to make systemd such centralized bpf delegation
-> authority too. It didn't work. bpf in kernel grows quickly.
-> libbpf part grows independently. llvm keeps evolving.
-> All of them are being changed while system overall has to stay
-> operational. Centralized approach breaks apart.
->
-> > The interesting cases you're talking about really do involved
-> > unprivileged or less privileged eBPF, though. Let's see:
-> > systemd --user: systemd --user is not privileged at all. There's no
-> > issue of reducing privilege, since systemd --user doesn't have any
-> > privilege to begin with. But systemd supports some eBPF features, and
-> > presumably it would like to support them in the systemd --user case.
-> > This is unprivileged eBPF.
->
-> Let's disambiguate the terminology.
-> This /dev/bpf patch set started as describing the feature as 'unprivilege=
-d bpf'.
-> I think that was a mistake.
-> Let's call systemd-like deamon usage of bpf 'less privileged bpf'.
-> This is not unprivileged.
-> 'unprivileged bpf' is what sysctl kernel.unprivileged_bpf_disabled contro=
-ls.
->
-> There is a huge difference between the two.
-> I'm against extending 'unprivileged bpf' even a bit more than what it is
-> today for many reasons mentioned earlier.
-> The /dev/bpf is about 'less privileged'.
-> Less privileged than root. We need to split part of full root capability
-> into bpf capability. So that most of the root can be dropped.
-> This is very similar to what cap_net_admin does.
-> cap_net_amdin can bring down eth0 which is just as bad as crashing the bo=
-x.
-> cap_net_admin is very much privileged. Just 'less privileged' than root.
-> Same thing for cap_bpf.
->
-> May be we should do both cap_bpf and /dev/bpf to make it clear that
-> this is the same thing. Two interfaces to achieve the same result.
->
+On Thu, Aug 15, 2019 at 11:54:54AM +0300, Adrian Hunter wrote:
 
-systemd --user processes aren't "less privileged". The are COMPLETELY unpri=
-vileged.
-Granting them cap_bpf is the same as granting it to every other unprivilege=
-d user
-process. Also unprivileged user process can start systemd --user process wi=
-th any
-command they like.
+[...]
 
-Jordan
+> > diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+> > index e4988f49ea79..d7ff839d8b20 100644
+> > --- a/tools/perf/Makefile.config
+> > +++ b/tools/perf/Makefile.config
+> > @@ -48,9 +48,20 @@ ifeq ($(SRCARCH),x86)
+> >    NO_PERF_REGS := 0
+> >  endif
+> >  
+> > +ARM_PRE_START_SIZE := 0
+> > +
+> >  ifeq ($(SRCARCH),arm)
+> >    NO_PERF_REGS := 0
+> >    LIBUNWIND_LIBS = -lunwind -lunwind-arm
+> > +  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
+> > +    # Extract info from lds:
+> > +    #   . = ((0xC0000000)) + 0x00208000;
+> > +    # ARM_PRE_START_SIZE := 0x00208000
+> > +    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({2}0x[0-9a-fA-F]+\){2}' \
+> > +      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
+> > +      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
+> > +      awk -F' ' '{printf "0x%x", $$2}' 2>/dev/null)
+> > +  endif
+> >  endif
+> >  
+> >  ifeq ($(SRCARCH),arm64)
+> > @@ -58,8 +69,19 @@ ifeq ($(SRCARCH),arm64)
+> >    NO_SYSCALL_TABLE := 0
+> >    CFLAGS += -I$(OUTPUT)arch/arm64/include/generated
+> >    LIBUNWIND_LIBS = -lunwind -lunwind-aarch64
+> > +  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
+> > +    # Extract info from lds:
+> > +    #  . = ((((((((0xffffffffffffffff)) - (((1)) << (48)) + 1) + (0)) + (0x08000000))) + (0x08000000))) + 0x00080000;
+> > +    # ARM_PRE_START_SIZE := (0x08000000 + 0x08000000 + 0x00080000) = 0x10080000
+> > +    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({8}0x[0-9a-fA-F]+\){2}' \
+> > +      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
+> > +      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
+> > +      awk -F' ' '{printf "0x%x", $$6+$$7+$$8}' 2>/dev/null)
+> > +  endif
+> 
+> So, that is not going to work if you take a perf.data file to a non-arm machine?
+
+Yeah, this patch will only allow perf to work correctly when perf
+run natively on arm/arm64, so it can resolve partial of the issue.
+
+> How come you cannot use kallsyms to get the information?
+
+Thanks for pointing out this.  Sorry I skipped your comment "I don't
+know how you intend to calculate ARM_PRE_START_SIZE" when you reviewed
+the patch v3, I should use that chance to elaborate the detailed idea
+and so can get more feedback/guidance before procceed.
+
+Actually, I have considered to use kallsyms when worked on the previous
+patch set.
+
+As mentioned in patch set v4's cover letter, I tried to implement
+machine__create_extra_kernel_maps() for arm/arm64, the purpose is to
+parse kallsyms so can find more kernel maps and thus also can fixup
+the kernel start address.  But I found the 'perf script' tool directly
+calls machine__get_kernel_start() instead of running into the flow for
+machine__create_extra_kernel_maps(); so I finally gave up to use
+machine__create_extra_kernel_maps() for tweaking kernel start address
+and went back to use this patch's approach by parsing lds files.
+
+So for next step, I want to get some guidances:
+
+- One method is to add a new weak function, e.g.
+  arch__fix_kernel_text_start(), then every arch can implement its own
+  function to fixup the kernel start address;
+
+  For arm/arm64, can use kallsyms to find the symbols with least
+  address and fixup for kernel start address.
+
+- Another method is to directly parse kallsyms in the function
+  machine__get_kernel_start(), thus the change can be used for all
+  archs;
+
+Seems to me the second method is to address this issue as a common
+issue crossing all archs.  But not sure if this is the requirement for
+all archs or just this is only required for arm/arm64.  Please let me
+know what's your preference or other thoughts.  Thanks a lot!
+
+Leo.
+
+> >  endif
+> >  
+> > +CFLAGS += -DARM_PRE_START_SIZE=$(ARM_PRE_START_SIZE)
+> > +
+> >  ifeq ($(SRCARCH),csky)
+> >    NO_PERF_REGS := 0
+> >  endif
+> > diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+> > index f6ee7fbad3e4..e993f891bb82 100644
+> > --- a/tools/perf/util/machine.c
+> > +++ b/tools/perf/util/machine.c
+> > @@ -2687,13 +2687,26 @@ int machine__get_kernel_start(struct machine *machine)
+> >  	machine->kernel_start = 1ULL << 63;
+> >  	if (map) {
+> >  		err = map__load(map);
+> > +		if (err)
+> > +			return err;
+> > +
+> >  		/*
+> >  		 * On x86_64, PTI entry trampolines are less than the
+> >  		 * start of kernel text, but still above 2^63. So leave
+> >  		 * kernel_start = 1ULL << 63 for x86_64.
+> >  		 */
+> > -		if (!err && !machine__is(machine, "x86_64"))
+> > +		if (!machine__is(machine, "x86_64"))
+> >  			machine->kernel_start = map->start;
+> > +
+> > +		/*
+> > +		 * On arm/arm64, the kernel uses some memory regions which are
+> > +		 * prior to '_stext' symbol; to reflect the complete kernel
+> > +		 * address space, compensate these pre-defined regions for
+> > +		 * kernel start address.
+> > +		 */
+> > +		if (!strcmp(perf_env__arch(machine->env), "arm") ||
+> > +		    !strcmp(perf_env__arch(machine->env), "arm64"))
+> > +			machine->kernel_start -= ARM_PRE_START_SIZE;
+> >  	}
+> >  	return err;
+> >  }
+> > 
+> 
