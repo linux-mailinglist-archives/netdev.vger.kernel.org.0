@@ -2,162 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E4E98F454
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 21:19:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E27758F46C
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 21:22:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731973AbfHOTTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 15:19:44 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:47042 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731405AbfHOTTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 15:19:43 -0400
-Received: by mail-lj1-f194.google.com with SMTP id f9so3148130ljc.13
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 12:19:41 -0700 (PDT)
+        id S1732313AbfHOTWt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 15:22:49 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:37433 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732675AbfHOTWs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 15:22:48 -0400
+Received: by mail-qt1-f196.google.com with SMTP id y26so3536163qto.4
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 12:22:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NlktoYn7GnTL4hkv6fSDP6jxnFjODJIzhQlYIZg0bd4=;
-        b=zzAlynUlgH4+MpPOfOGtgNMRwPO9tIdY8wRShreA86Rcm9/7IFvuxexRtod4QEP/Bp
-         sLRcgzClT+ibagHjOgfPZuYWt7DYsM/Zf+6xtzSyIhMWJ86DbS5j9QME74ROJlEY021S
-         9ggqchyWDKwqYdP7WSeOepcHDpOtmetmrLFPEBkKaVUnKDu0x15Z0XZ74NOQVP0semMX
-         ObxZJUDlBib6mrqTxp1Tg8dEs7KxmPPR2pVmURGfWjLHjY0+thU2HVhRBgB7emeyxsbp
-         eZCxEOClxXGDGMHyKZdtjxS1sRMunzwWOlIQ2HJ1B3gnU0C6JOzatDild3hGQ4XSgdwy
-         JMgg==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=LlT4pUqJ1pdZQp31Z6TlgIrwFLzT6r/hfcXvC21i00M=;
+        b=v3t2zkOZDoOfbaW3AV33GOl6aMHaGfNUUk1WeSNH5QlbZ72fZfbxobmeB7qSEA811S
+         jHmiiNGVkYQsTKj5/fGs/rnkTyECZFRh/TEk1nz5tEepEp2tXuu9yk/nD40Wjcwvpvf1
+         s0IETaxLoAs89QrXdcnloX2vNCJkTHUrWEQTlqbybOT017Rzyc9CKROA2lxjIIZu03pr
+         e8AZo/KNIZlGRbg1LezbQgHyjRjIOH7GjdwwXxXz+c+wrT7C38vrNNABwBfhZ1nMdzqk
+         eiFuoTpYd6wEScBQjDqPB0YueRvgVE4vDaKOtWfBognzhYvHCJRWIsu6k8QYDvga9JXQ
+         je1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to:user-agent;
-        bh=NlktoYn7GnTL4hkv6fSDP6jxnFjODJIzhQlYIZg0bd4=;
-        b=QV1Bt3S3Y/mY1JZArY6G0y8TV1CitM9Tx6yVHgVcWwYCBGPPiqyOHC5rEmQ3g4tRD/
-         /Ttf8Tq0cQMexNOoVZsSAObW5WYXQOzTXhy1lWOsCYUa/UVUT98kqy6GoYVkI3zE+IoT
-         uQwSvtb74aAK9xB5NBViwmEGbT3acN03DnAWiS40VYCm6+XXgq5N2Y6mdO1rY8oOkOMQ
-         7dl/y0SaD8eRXHzBwYGLieT4YUi+gzZX1faDSIr2C30z9JUFwSB99s0ey7VQHlPmO+4a
-         m1ASke2SvsTtR9K2obsVCfnukF3cIhJUnhNl0L76Uivv4DDIHImK/QO+N6BcOCPaTqQz
-         Pcng==
-X-Gm-Message-State: APjAAAXMDi25EB4OwD4Nx5c5v3KD3wzYqxJekFqxRuPLe/RfBzA+rLCI
-        qr7xXeEWk0cJZWtMa0FByhofYw==
-X-Google-Smtp-Source: APXvYqycN5rMbTje+rC1m6zgeRUvUyN3KKS8p+Tml9G5gJbp+bE3P5wUL9Bg8nVCsjBr2Do9LNSWAQ==
-X-Received: by 2002:a2e:82c7:: with SMTP id n7mr2384989ljh.131.1565896780983;
-        Thu, 15 Aug 2019 12:19:40 -0700 (PDT)
-Received: from khorivan (168-200-94-178.pool.ukrtel.net. [178.94.200.168])
-        by smtp.gmail.com with ESMTPSA id a15sm577425lfl.44.2019.08.15.12.19.39
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 15 Aug 2019 12:19:40 -0700 (PDT)
-Date:   Thu, 15 Aug 2019 22:19:38 +0300
-From:   Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yhs@fb.com, andrii.nakryiko@gmail.com
-Subject: Re: [PATCH bpf-next v2 2/3] xdp: xdp_umem: replace kmap on vmap for
- umem map
-Message-ID: <20190815191456.GA11699@khorivan>
-Mail-Followup-To: Jonathan Lemon <jonathan.lemon@gmail.com>,
-        magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        xdp-newbies@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yhs@fb.com, andrii.nakryiko@gmail.com
-References: <20190815121356.8848-1-ivan.khoronzhuk@linaro.org>
- <20190815121356.8848-3-ivan.khoronzhuk@linaro.org>
- <5B58D364-609F-498E-B7DF-4457D454A14D@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=LlT4pUqJ1pdZQp31Z6TlgIrwFLzT6r/hfcXvC21i00M=;
+        b=bJHgzHaaVMhijgNfcvk2XE3K5aimjpkMVncw4ExPyZcb8dM40Me9Iz5hSWJcu/izCQ
+         OrYBl2xgWc8XwJCk1ehXdJPv2ejPoFnSgsaioMfObBjNcknvipo7PEtiOBKIpmSibS35
+         jPd/OoQnwm5lkFBCbJYDonr08IELFWndollh0lxoK0oxNlojRotiRqEWRWVpLKChlMta
+         v0kXowsGcL/dguYMfpjug1Dodx+Zqo2wzfZPGZClFdDPNK9q9rmQNR3JisQf4mHX7bi+
+         bOjfGWPj/qYbO7zlJV++/yBKun6hHoZ3+9YeCWJRd4993bw8FxLMU8iHAtaX9VldfHQt
+         7/Qw==
+X-Gm-Message-State: APjAAAU/M2PYyILGTwYkFR9eIQzUzKL7pDivbUqffVYiIB0uJ7KfO8b9
+        6lPJYk2rYDOJlgQX7aMoCozpWw==
+X-Google-Smtp-Source: APXvYqzoEaFWpei7IEEEbSmc388lyR9cT7nk5mEzKHJji4TlUy8IYaWEGh7Cy0Kg7ErZT9D3dnr22A==
+X-Received: by 2002:ac8:75d9:: with SMTP id z25mr5333522qtq.207.1565896967699;
+        Thu, 15 Aug 2019 12:22:47 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id t2sm1678382qtq.73.2019.08.15.12.22.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2019 12:22:47 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 12:22:32 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Stanislav Fomichev <sdf@fomichev.me>
+Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>
+Subject: Re: [RFC PATCH bpf-next 00/14] xdp_flow: Flow offload to XDP
+Message-ID: <20190815122232.4b1fa01c@cakuba.netronome.com>
+In-Reply-To: <20190815152100.GN2820@mini-arch>
+References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
+        <20190814170715.GJ2820@mini-arch>
+        <14c4a876-6f5d-4750-cbe4-19622f64975b@gmail.com>
+        <20190815152100.GN2820@mini-arch>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <5B58D364-609F-498E-B7DF-4457D454A14D@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 11:23:16AM -0700, Jonathan Lemon wrote:
->On 15 Aug 2019, at 5:13, Ivan Khoronzhuk wrote:
->
->>For 64-bit there is no reason to use vmap/vunmap, so use page_address
->>as it was initially. For 32 bits, in some apps, like in samples
->>xdpsock_user.c when number of pgs in use is quite big, the kmap
->>memory can be not enough, despite on this, kmap looks like is
->>deprecated in such cases as it can block and should be used rather
->>for dynamic mm.
->>
->>Signed-off-by: Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>
->>---
->> net/xdp/xdp_umem.c | 36 ++++++++++++++++++++++++++++++------
->> 1 file changed, 30 insertions(+), 6 deletions(-)
->>
->>diff --git a/net/xdp/xdp_umem.c b/net/xdp/xdp_umem.c
->>index a0607969f8c0..d740c4f8810c 100644
->>--- a/net/xdp/xdp_umem.c
->>+++ b/net/xdp/xdp_umem.c
->>@@ -14,7 +14,7 @@
->> #include <linux/netdevice.h>
->> #include <linux/rtnetlink.h>
->> #include <linux/idr.h>
->>-#include <linux/highmem.h>
->>+#include <linux/vmalloc.h>
->>
->> #include "xdp_umem.h"
->> #include "xsk_queue.h"
->>@@ -170,7 +170,30 @@ static void xdp_umem_unmap_pages(struct 
->>xdp_umem *umem)
->> 	unsigned int i;
->>
->> 	for (i = 0; i < umem->npgs; i++)
->>-		kunmap(umem->pgs[i]);
->>+		if (PageHighMem(umem->pgs[i]))
->>+			vunmap(umem->pages[i].addr);
->>+}
->>+
->>+static int xdp_umem_map_pages(struct xdp_umem *umem)
->>+{
->>+	unsigned int i;
->>+	void *addr;
->>+
->>+	for (i = 0; i < umem->npgs; i++) {
->>+		if (PageHighMem(umem->pgs[i]))
->>+			addr = vmap(&umem->pgs[i], 1, VM_MAP, PAGE_KERNEL);
->>+		else
->>+			addr = page_address(umem->pgs[i]);
->>+
->>+		if (!addr) {
->>+			xdp_umem_unmap_pages(umem);
->>+			return -ENOMEM;
->>+		}
->>+
->>+		umem->pages[i].addr = addr;
->>+	}
->>+
->>+	return 0;
->> }
->
->You'll want a __xdp_umem_unmap_pages() helper here that takes an
->count of the number of pages to unmap, so it can be called from
->xdp_umem_unmap_pages() in the normal case, and xdp_umem_map_pages()
->in the error case.  Otherwise the error case ends up calling
->PageHighMem on a null page.
->-- 
->Jonathan
+On Thu, 15 Aug 2019 08:21:00 -0700, Stanislav Fomichev wrote:
+> On 08/15, Toshiaki Makita wrote:
+> > On 2019/08/15 2:07, Stanislav Fomichev wrote:  
+> > > On 08/13, Toshiaki Makita wrote:  
+> > > > * Implementation
+> > > > 
+> > > > xdp_flow makes use of UMH to load an eBPF program for XDP, similar to
+> > > > bpfilter. The difference is that xdp_flow does not generate the eBPF
+> > > > program dynamically but a prebuilt program is embedded in UMH. This is
+> > > > mainly because flow insertion is considerably frequent. If we generate
+> > > > and load an eBPF program on each insertion of a flow, the latency of the
+> > > > first packet of ping in above test will incease, which I want to avoid.  
+> > > Can this be instead implemented with a new hook that will be called
+> > > for TC events? This hook can write to perf event buffer and control
+> > > plane will insert/remove/modify flow tables in the BPF maps (contol
+> > > plane will also install xdp program).
+> > > 
+> > > Why do we need UMH? What am I missing?  
+> > 
+> > So you suggest doing everything in xdp_flow kmod?  
+> You probably don't even need xdp_flow kmod. Add new tc "offload" mode
+> (bypass) that dumps every command via netlink (or calls the BPF hook
+> where you can dump it into perf event buffer) and then read that info
+> from userspace and install xdp programs and modify flow tables.
+> I don't think you need any kernel changes besides that stream
+> of data from the kernel about qdisc/tc flow creation/removal/etc.
 
-Do you mean null address?
-If so, then vunmap do nothing if it's null, and addr is null if it's not
-assigned... and it's not assigned w/o correct mapping...
+There's a certain allure in bringing the in-kernel BPF translation
+infrastructure forward. OTOH from system architecture perspective IMHO
+it does seem like a task best handed in user space. bpfilter can replace
+iptables completely, here we're looking at an acceleration relatively
+loosely coupled with flower.
 
-If you mean null page, then it is not possible after all they are
-pinned above, here: xdp_umem_pin_pages(), thus assigned.
+FWIW Quentin spent some time working on a universal flow rule to BPF
+translation library:
 
-Or I missed smth?
+https://github.com/Netronome/libkefir
 
-Despite of this, seems like here should be one more patch, adding unpinning page
-in error path, but this not related to this change. Will do this in follow up
-fix patch, if no objection to my explanation, ofc.
+A lot remains to be done there, but flower front end is one of the
+targets. A library can be tuned for any application, without a
+dependency on flower uAPI.
 
--- 
-Regards,
-Ivan Khoronzhuk
+> But, I haven't looked at the series deeply, so I might be missing
+> something :-)
+
+I don't think you are :)
