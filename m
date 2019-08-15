@@ -2,94 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 136278EFD6
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 17:56:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 49E838F001
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 18:02:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728886AbfHOP4R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 11:56:17 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:35168 "EHLO vps0.lunn.ch"
+        id S1729998AbfHOQCz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 12:02:55 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:33440 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728808AbfHOP4Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 11:56:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=ov7dPyabCyiRcxel7x3yzFfHip1TotcljD9mwn6rrvQ=; b=pjoQK+i9+56Wg2QY0g85OQTTFN
-        Twouk/kyM8bguCSsUW8j/Ns7mmDT804se1M7CBUDk2PZ73nQR7Tpf+5AzCzDRJUP2k3o5LQ6/PKZU
-        cyPloMbVJbU0yNQfwWiRUK8IOLyuTcZ9s1S1tdj2W0feZborseTtmMyAfgFkO+ZHdI5o=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hyI6n-0001fl-5z; Thu, 15 Aug 2019 17:56:13 +0200
-Date:   Thu, 15 Aug 2019 17:56:13 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Christian Herber <christian.herber@nxp.com>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/1] Added BASE-T1 PHY support to PHY Subsystem
-Message-ID: <20190815155613.GE15291@lunn.ch>
-References: <20190815153209.21529-1-christian.herber@nxp.com>
- <20190815153209.21529-2-christian.herber@nxp.com>
+        id S1726616AbfHOQCz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 12:02:55 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 3DF1630253A9;
+        Thu, 15 Aug 2019 16:02:55 +0000 (UTC)
+Received: from mob-31-157-107-94.net.vodafone.it.com (ovpn-204-48.brq.redhat.com [10.40.204.48])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id BCF673796;
+        Thu, 15 Aug 2019 16:02:52 +0000 (UTC)
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Boris Pismenny <borisp@mellanox.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Dave Watson <davejwatson@fb.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: [PATCH net-next 0/3] net: tls: add socket diag
+Date:   Thu, 15 Aug 2019 18:00:41 +0200
+Message-Id: <cover.1565882584.git.dcaratti@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190815153209.21529-2-christian.herber@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Thu, 15 Aug 2019 16:02:55 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 03:32:29PM +0000, Christian Herber wrote:
-> BASE-T1 is a category of Ethernet PHYs.
-> They use a single copper pair for transmission.
-> This patch add basic support for this category of PHYs.
-> It coveres the discovery of abilities and basic configuration.
-> It includes setting fixed speed and enabling auto-negotiation.
-> BASE-T1 devices should always Clause-45 managed.
-> Therefore, this patch extends phy-c45.c.
-> While for some functions like auto-neogtiation different registers are
-> used, the layout of these registers is the same for the used fields.
-> Thus, much of the logic of basic Clause-45 devices can be reused.
-> 
-> Signed-off-by: Christian Herber <christian.herber@nxp.com>
-> ---
->  drivers/net/phy/phy-c45.c    | 113 +++++++++++++++++++++++++++++++----
->  drivers/net/phy/phy-core.c   |   4 +-
->  include/uapi/linux/ethtool.h |   2 +
->  include/uapi/linux/mdio.h    |  21 +++++++
->  4 files changed, 129 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
-> index b9d4145781ca..9ff0b8c785de 100644
-> --- a/drivers/net/phy/phy-c45.c
-> +++ b/drivers/net/phy/phy-c45.c
-> @@ -8,13 +8,23 @@
->  #include <linux/mii.h>
->  #include <linux/phy.h>
->  
-> +#define IS_100BASET1(phy) (linkmode_test_bit( \
-> +			   ETHTOOL_LINK_MODE_100baseT1_Full_BIT, \
-> +			   (phy)->supported))
-> +#define IS_1000BASET1(phy) (linkmode_test_bit( \
-> +			    ETHTOOL_LINK_MODE_1000baseT1_Full_BIT, \
-> +			    (phy)->supported))
+The current kernel does not provide any diagnostic tool, except
+getsockopt(TCP_ULP), to know more about TCP sockets that have an upper
+layer protocol (ULP) on top of them. This series extends the set of
+information exported by INET_DIAG_INFO, to include data that are specific
+to the ULP (and that might be meaningful for debug/testing purposes).
 
-Hi Christian
+patch 1/3 ensures that the control plane reads/updates ULP specific data
+using RCU.
 
-We already have the flag phydev->is_gigabit_capable. Maybe add a flag
-phydev->is_t1_capable
+patch 2/3 extends INET_DIAG_INFO and allows knowing the ULP name for
+each TCP socket that has done setsockopt(TCP_ULP) successfully.
 
-> +
-> +static u32 get_aneg_ctrl(struct phy_device *phydev);
-> +static u32 get_aneg_stat(struct phy_device *phydev);
+patch 3/3 extends kTLS to let programs like 'ss' know the protocol
+version and the cipher in use.
 
-No forward declarations please. Put the code in the right order so
-they are not needed.
+Changes since RFC:
+- some coding style fixes, thanks to Jakub Kicinski
+- add X_UNSPEC as lowest value of uAPI enums, thanks to Jakub Kicinski
+- fix assignment of struct nlattr *start, thanks to Jakub Kicinski
+- let tls dump RXCONF and TXCONF, suggested by Jakub Kicinski
+- don't dump anything if TLS version or cipher are 0 (but still return a
+  constant size in get_aux_size()), thanks to Boris Pismenny
+- constify first argument of get_info() and get_size()
+- use RCU to access access ulp_ops, like it's done for ca_ops
+- add patch 1/3, from Jakub Kicinski
 
-Thanks
+Davide Caratti (2):
+  tcp: ulp: add functions to dump ulp-specific information
+  net: tls: export protocol version, cipher, tx_conf/rx_conf to socket
+    diag
 
-     Andrew
+Jakub Kicinski (1):
+  net/tls: use RCU protection on icsk->icsk_ulp_data
+
+ include/net/inet_connection_sock.h |  2 +-
+ include/net/tcp.h                  |  3 ++
+ include/net/tls.h                  | 28 +++++++++-
+ include/uapi/linux/inet_diag.h     |  9 ++++
+ include/uapi/linux/tls.h           | 15 ++++++
+ net/core/sock_map.c                |  2 +-
+ net/ipv4/tcp_diag.c                | 56 ++++++++++++++++++-
+ net/tls/tls_device.c               |  2 +-
+ net/tls/tls_main.c                 | 87 +++++++++++++++++++++++++++---
+ 9 files changed, 191 insertions(+), 13 deletions(-)
+
+-- 
+2.20.1
+
