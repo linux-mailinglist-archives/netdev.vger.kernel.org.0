@@ -2,103 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3611A8EC76
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 15:11:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A02D58ECFD
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 15:37:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732165AbfHONLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 09:11:43 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:37150 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731282AbfHONLn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 09:11:43 -0400
-Received: by mail-qt1-f195.google.com with SMTP id y26so2251139qto.4;
-        Thu, 15 Aug 2019 06:11:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Oj5UE2LGVcMS9SysCoBFopHSBvRpgrX1g7nT1W4Cv9s=;
-        b=HmHrpfoylIv+xenX+ud7+vckyYDAz7lESPt20PyQy2YEInPQleZa1NVmH0x4CfYiBJ
-         JXW7Hl0Ra0lW+jouPOonVpIg8RvjwGgENSVMn351rtO0nD5SsJqrsAcNSeWu/VqzrnXX
-         ElBk6PwCa12NBNyZiaKQECiegQ1dDbulhdA4XZJd5ElX8WlaW43i0ZjbuGEgorzggdZx
-         HVgsGhDqkmwVpcvSSntpkMagxMhhIhJoaq6e81Vz+jeRtwMYoJ4Fn2FVvVcNIZ03ySAT
-         fwdWqTd3IjVxa/LeZgJVcrxfao45oXHsYq3Tv5zKnSQWED52q9jBCcbzyManuc5vU6tk
-         2s/Q==
-X-Gm-Message-State: APjAAAWHpTUJLk1TW3XlkPOlsBoewZwdFvYWLwRVRkD4eOrfOI8oLzgj
-        vn+GtPPpgIXLfr246yq4GX/Sw/QE7ADJfz7Te4k=
-X-Google-Smtp-Source: APXvYqxABsAyr+BlU4FYBzPP5E1lu5hNr5RQd0ASTCcdU5s/TSRX7ngTvmZ5zwiRax3ZP5e4wh7pQOi1eFXPhhKeyw0=
-X-Received: by 2002:ad4:53cb:: with SMTP id k11mr3085440qvv.93.1565874701634;
- Thu, 15 Aug 2019 06:11:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190731195713.3150463-1-arnd@arndb.de> <20190731225303.GC1330@shell.armlinux.org.uk>
- <CAK8P3a1Lgbz9RwVaOgNq=--gwvEG70tUi67XwsswjgnXAX6EhA@mail.gmail.com>
-In-Reply-To: <CAK8P3a1Lgbz9RwVaOgNq=--gwvEG70tUi67XwsswjgnXAX6EhA@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 15 Aug 2019 15:11:25 +0200
-Message-ID: <CAK8P3a0=GrjM_HOBgqy5V3pOsA6w1EDOtEQO9dZG2Cw+-2niaw@mail.gmail.com>
-Subject: Re: [PATCH 00/14] ARM: move lpc32xx and dove to multiplatform
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     SoC Team <soc@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jason Cooper <jason@lakedaemon.net>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Guenter Roeck <linux@roeck-us.net>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        linux-serial@vger.kernel.org, USB list <linux-usb@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>
+        id S1732267AbfHONhK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 09:37:10 -0400
+Received: from mx0a-00191d01.pphosted.com ([67.231.149.140]:53076 "EHLO
+        mx0a-00191d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727160AbfHONhK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 09:37:10 -0400
+Received: from pps.filterd (m0049297.ppops.net [127.0.0.1])
+        by m0049297.ppops.net-00191d01. (8.16.0.27/8.16.0.27) with SMTP id x7FDZbRS014283;
+        Thu, 15 Aug 2019 09:36:58 -0400
+Received: from alpi155.enaf.aldc.att.com (sbcsmtp7.sbc.com [144.160.229.24])
+        by m0049297.ppops.net-00191d01. with ESMTP id 2ud68qb775-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 15 Aug 2019 09:36:57 -0400
+Received: from enaf.aldc.att.com (localhost [127.0.0.1])
+        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x7FDau76004618;
+        Thu, 15 Aug 2019 09:36:56 -0400
+Received: from zlp27127.vci.att.com (zlp27127.vci.att.com [135.66.87.31])
+        by alpi155.enaf.aldc.att.com (8.14.5/8.14.5) with ESMTP id x7FDaorv004516
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
+        Thu, 15 Aug 2019 09:36:50 -0400
+Received: from zlp27127.vci.att.com (zlp27127.vci.att.com [127.0.0.1])
+        by zlp27127.vci.att.com (Service) with ESMTP id 83886400A0AA;
+        Thu, 15 Aug 2019 13:36:50 +0000 (GMT)
+Received: from mlpi432.sfdc.sbc.com (unknown [144.151.223.11])
+        by zlp27127.vci.att.com (Service) with ESMTP id 6D490400A0A2;
+        Thu, 15 Aug 2019 13:36:50 +0000 (GMT)
+Received: from sfdc.sbc.com (localhost [127.0.0.1])
+        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x7FDaoAI031260;
+        Thu, 15 Aug 2019 09:36:50 -0400
+Received: from mail.eng.vyatta.net (mail.eng.vyatta.net [10.156.50.82])
+        by mlpi432.sfdc.sbc.com (8.14.5/8.14.5) with ESMTP id x7FDag8n031062;
+        Thu, 15 Aug 2019 09:36:43 -0400
+Received: from pruddy-Precision-7520 (unknown [10.156.30.225])
+        by mail.eng.vyatta.net (Postfix) with ESMTPA id 09477360471;
+        Thu, 15 Aug 2019 06:36:40 -0700 (PDT)
+Message-ID: <45a527bf8946b52abb939fbdf844c98ac3ee7c0f.camel@vyatta.att-mail.com>
+Subject: Re: [PATCH net-next] mcast: ensure L-L IPv6 packets are accepted by
+ bridge
+From:   Patrick Ruddy <pruddy@vyatta.att-mail.com>
+Reply-To: pruddy@vyatta.att-mail.com
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        Linus =?ISO-8859-1?Q?L=FCssing?= <linus.luessing@c0d3.blue>
+Cc:     bridge@lists.linux-foundation.org,
+        Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org,
+        roopa@cumulusnetworks.com
+Date:   Thu, 15 Aug 2019 14:36:39 +0100
+In-Reply-To: <d0be5038-e76f-d21b-a034-e450cbb3010e@cumulusnetworks.com>
+References: <20190813141804.20515-1-pruddy@vyatta.att-mail.com>
+         <20190813195341.GA27005@splinter>
+         <43ed59db-9228-9132-b9a5-31c8d1e8e9e9@cumulusnetworks.com>
+         <620d3cfbe58e3ae87ef1d5e7f2aa1588cac3e64a.camel@vyatta.att-mail.com>
+         <20190814201138.GE2431@otheros>
+         <d0be5038-e76f-d21b-a034-e450cbb3010e@cumulusnetworks.com>
+Organization: Vyatta
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.32.1-2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-15_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_policy_notspam policy=outbound_policy score=0
+ priorityscore=1501 malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0
+ spamscore=0 clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908150144
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 1, 2019 at 9:33 AM Arnd Bergmann <arnd@arndb.de> wrote:
->
-> On Thu, Aug 1, 2019 at 12:53 AM Russell King - ARM Linux admin
-> <linux@armlinux.org.uk> wrote:
-> >
-> > On Wed, Jul 31, 2019 at 09:56:42PM +0200, Arnd Bergmann wrote:
-> > > For dove, the patches are basically what I had proposed back in
-> > > 2015 when all other ARMv6/ARMv7 machines became part of a single
-> > > kernel build. I don't know what the state is mach-dove support is,
-> > > compared to the DT based support in mach-mvebu for the same
-> > > hardware. If they are functionally the same, we could also just
-> > > remove mach-dove rather than applying my patches.
-> >
-> > Well, the good news is that I'm down to a small board support file
-> > for the Dove Cubox now - but the bad news is, that there's still a
-> > board support file necessary to support everything the Dove SoC has
-> > to offer.
-> >
-> > Even for a DT based Dove Cubox, I'm still using mach-dove, but it
-> > may be possible to drop most of mach-dove now.  Without spending a
-> > lot of time digging through it, it's impossible to really know.
->
-> Ok, so we won't remove it then, but I'd like to merge my patches to
-> at least get away from the special case of requiring a separate kernel
-> image for it.
->
-> Can you try if applying patches 12 and 14 from my series causes
-> problems for you? (it may be easier to apply the entire set
-> or pull from [1] to avoid rebase conflicts).
+On Wed, 2019-08-14 at 23:34 +0300, Nikolay Aleksandrov wrote:
+> On 8/14/19 11:11 PM, Linus Lüssing wrote:
+> > On Wed, Aug 14, 2019 at 05:40:58PM +0100, Patrick Ruddy wrote:
+> > > The group is being joined by MLD at the L3 level but the packets are
+> > > not being passed up to the l3 interface becasue there is a MLD querier
+> > > on the network
+> > > 
+> > > snippet from /proc/net/igmp6
+> > > ...
+> > > 40   sw1             ff0200000000000000000001ff008700     1 00000004 0
+> > > 40   sw1             ff020000000000000000000000000002     1 00000004 0
+> > > 40   sw1             ff020000000000000000000000000001     1 0000000C 0
+> > > 40   sw1             ff010000000000000000000000000001     1 00000008 0
+> > > 41   lo1             ff020000000000000000000000000001     1 0000000C 0
+> > > 41   lo1             ff010000000000000000000000000001     1 00000008 0
+> > > 42   sw1.1           ff020000000000000000000000000006     1 00000004 0
+> > > 42   sw1.1           ff020000000000000000000000000005     1 00000004 0
+> > > 42   sw1.1           ff0200000000000000000001ff000000     2 00000004 0
+> > > 42   sw1.1           ff0200000000000000000001ff008700     1 00000004 0
+> > > 42   sw1.1           ff0200000000000000000001ff000099     1 00000004 0
+> > > 42   sw1.1           ff020000000000000000000000000002     1 00000004 0
+> > > 42   sw1.1           ff020000000000000000000000000001     1 0000000C 0
+> > > 42   sw1.1           ff010000000000000000000000000001     1 00000008 0
+> > > ...
+> > > 
+> > > the bridge is sw1 and the l3 intervace is sw1.1
+> > 
+> > What kind of interface is sw1.1 exactly? Is it a VLAN or a VRF
+> > interface? Something else?
+> > 
+> +1
+> 
+> > Could you also post the output of bridge mdb show?
+> > 
+> > Regards, Linus
+> > 
+> > 
+> > PS: Also please include the bridge mailinglist in the future.
+> > 
+> 
+> Note that if you'd like to debug a host joined group currently bridge mdb show
+> will not dump it and if the group is host-joined only it
+> can even be empty. You can use my latest set (not applied yet):
+> https://urldefense.proofpoint.com/v2/url?u=http-3A__patchwork.ozlabs.org_project_netdev_list_-3Fseries-3D125169&d=DwIDaQ&c=LFYZ-o9_HUMeMTSQicvjIg&r=au3D9TlUU6OvFpWOU9cuIHeNeV2fw-AOF1ZqCRqsILc&m=KsdarH0MAMMoKZ4PuvHrEC57uEluTGK-XSL4uUxu9MY&s=jyoK6VVmFh1KpKZirrtUYwq9nLy8fz-GigFFLjaLsoE&e=
+> 
+> Alternatively you could monitor the mdb events, it will show up there even
+> today without any changes (bridge monitor mdb) and you can check if it's
+> getting deleted.
+> 
+> Cheers,
+>  Nik
 
-I applied patches 12 and 13 into the soc tree now. There are some
-other pending multiplatform conversions (iop32x, ep93xx, lpc32xx,
-omap1), but it looks like none of those will be complete for 5.4.
+The sw1.1 interface is a .1q vlan
 
-I now expect that we can get most of the preparation into 5.4,
-and maybe move them all over together in 5.5 after some more
-testing. If someone finds a problem with the one of the
-preparation steps, that we can revert the individual patches
-more easily.
+The output of "bridge monitor mdb" is empty
 
-      Arnd
+I can see the incoming query and the outging report on tshark:
+29002 72654.887739 fe80::4041:1ff:fe00:101 → ff02::1      ICMPv6 94
+Multicast Listener Query
+29003 72655.502035 fe80::eac5:7aff:fe00:8700 → ff02::16     ICMPv6 194
+Multicast Listener Report Message v2
+
+debugging shows that bridge code sees the incoming query but not the
+outgoing report.
+
+Thanks for all the pointers - I will pursue what is happening.
+
+-pr 
+
