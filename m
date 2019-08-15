@@ -2,59 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D528EBC7
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 14:43:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5560C8EBCE
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 14:45:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731901AbfHOMnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 08:43:00 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:48218 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725977AbfHOMnA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 15 Aug 2019 08:43:00 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id BE4A41A418727BA19300;
-        Thu, 15 Aug 2019 20:42:58 +0800 (CST)
-Received: from localhost.localdomain (10.67.212.75) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 15 Aug 2019 20:42:57 +0800
-From:   Yunsheng Lin <linyunsheng@huawei.com>
-To:     <hawk@kernel.org>, <ilias.apalodimas@linaro.org>,
-        <davem@davemloft.net>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] page_pool: remove unnecessary variable init
-Date:   Thu, 15 Aug 2019 20:41:00 +0800
-Message-ID: <1565872860-63524-1-git-send-email-linyunsheng@huawei.com>
-X-Mailer: git-send-email 2.8.1
+        id S1729818AbfHOMpZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 08:45:25 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:34662 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725977AbfHOMpZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 08:45:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=YYoqAA0uIaNmoYfsiwLP7TTtO68hYhG/0e1ZHTk7VVA=; b=eTmBLlxHB5ZP18pluk44nS+dTo
+        3YG9kRLC3/k0lxCDEFGkmqfREwINBvmV6BK7gnJCM7Lc6Dc6YQyaLINzMqrYMic5GH07SwteOQnuM
+        elqNhV0KZHdoJnBLFZWCSZScHgy9Wpwq2TRK17BpxQYPG2M5uwq0CkvQidYMN+p3JoG4=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hyF86-0008Lz-1c; Thu, 15 Aug 2019 14:45:22 +0200
+Date:   Thu, 15 Aug 2019 14:45:22 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Y.b. Lu" <yangbo.lu@nxp.com>
+Cc:     "Allan W . Nielsen" <allan.nielsen@microchip.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [v2, 4/4] ocelot: add VCAP IS2 rule to trap PTP Ethernet frames
+Message-ID: <20190815124522.GC31172@lunn.ch>
+References: <20190813025214.18601-1-yangbo.lu@nxp.com>
+ <20190813025214.18601-5-yangbo.lu@nxp.com>
+ <20190813062525.5bgdzjc6kw5hqdxk@lx-anielsen.microsemi.net>
+ <VI1PR0401MB2237E0F32D6CC719682E8C1AF8AD0@VI1PR0401MB2237.eurprd04.prod.outlook.com>
+ <20190814091645.dwo7c36xan2ttln2@lx-anielsen.microsemi.net>
+ <VI1PR0401MB2237B2ABB288FE12072C64D1F8AC0@VI1PR0401MB2237.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.212.75]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <VI1PR0401MB2237B2ABB288FE12072C64D1F8AC0@VI1PR0401MB2237.eurprd04.prod.outlook.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove variable initializations in functions that
-are followed by assignments before use
+> [Y.b. Lu] Actually I couldn’t find reasons why make some ports PTP
+> unaware, if there is software stack for PTP aware...
 
-Signed-off-by: Yunsheng Lin <linyunsheng@huawei.com>
----
- net/core/page_pool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Maybe because i have not yet done
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index 3272dc7..31187ff 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -61,7 +61,7 @@ static int page_pool_init(struct page_pool *pool,
- struct page_pool *page_pool_create(const struct page_pool_params *params)
- {
- 	struct page_pool *pool;
--	int err = 0;
-+	int err;
- 
- 	pool = kzalloc_node(sizeof(*pool), GFP_KERNEL, params->nid);
- 	if (!pool)
--- 
-2.8.1
+apt-get install linuxptp
+$EDITOR /etc/defaults/ptp4l
+systemctl restart ptp4l
 
+Just because it exists does not mean it is installed.
+
+     Andrew
