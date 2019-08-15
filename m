@@ -2,161 +2,251 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ADC468E770
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 10:52:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 485DE8E781
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 10:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730122AbfHOIwZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 04:52:25 -0400
-Received: from www62.your-server.de ([213.133.104.62]:39516 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726027AbfHOIwZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 04:52:25 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hyBUW-0002oE-KV; Thu, 15 Aug 2019 10:52:16 +0200
-Received: from [178.193.45.231] (helo=pc-63.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1hyBUW-0009OD-DW; Thu, 15 Aug 2019 10:52:16 +0200
-Subject: Re: WARNING in is_bpf_text_address
-To:     Hillf Danton <hdanton@sina.com>,
-        syzbot <syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com>
-Cc:     "ast@kernel.org" <ast@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "bvanassche@acm.org" <bvanassche@acm.org>,
-        "dvyukov@google.com" <dvyukov@google.com>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "johannes.berg@intel.com" <johannes.berg@intel.com>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "longman@redhat.com" <longman@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "syzkaller-bugs@googlegroups.com" <syzkaller-bugs@googlegroups.com>,
-        will@kernel.org
-References: <20190811083658.10748-1-hdanton@sina.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <d76d7a63-7854-e92d-30cb-52546d333ffe@iogearbox.net>
-Date:   Thu, 15 Aug 2019 10:52:15 +0200
+        id S1730621AbfHOI4J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 04:56:09 -0400
+Received: from mga17.intel.com ([192.55.52.151]:16269 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726366AbfHOI4J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 04:56:09 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Aug 2019 01:56:08 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,388,1559545200"; 
+   d="scan'208";a="181821709"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.122]) ([10.237.72.122])
+  by orsmga006.jf.intel.com with ESMTP; 15 Aug 2019 01:56:03 -0700
+Subject: Re: [PATCH v5] perf machine: arm/arm64: Improve completeness for
+ kernel address space
+To:     Leo Yan <leo.yan@linaro.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com
+Cc:     Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org
+References: <20190815082521.16885-1-leo.yan@linaro.org>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Message-ID: <d874e6b3-c115-6c8c-bb12-160cfd600505@intel.com>
+Date:   Thu, 15 Aug 2019 11:54:54 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190811083658.10748-1-hdanton@sina.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20190815082521.16885-1-leo.yan@linaro.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25542/Thu Aug 15 10:25:56 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/11/19 10:36 AM, Hillf Danton wrote:
-> On Sun, 11 Aug 2019 08:24:09 +0800
->>
->> syzbot has found a reproducer for the following crash on:
->>
->> HEAD commit:    451577f3 Merge tag 'kbuild-fixes-v5.3-3' of git://git.kern..
->> git tree:       upstream
->> console output: https://syzkaller.appspot.com/x/log.txt?x=120850a6600000
->> kernel config:  https://syzkaller.appspot.com/x/.config?x=2031e7d221391b8a
->> dashboard link: https://syzkaller.appspot.com/bug?extid=bd3bba6ff3fcea7a6ec6
->> compiler:       clang version 9.0.0 (/home/glider/llvm/clang 80fee25776c2fb61e74c1ecb1a523375c2500b69)
->> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=130ffe4a600000
->> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17137d2c600000
->>
->> The bug was bisected to:
->>
->> commit a0b0fd53e1e67639b303b15939b9c653dbe7a8c4
->> Author: Bart Van Assche <bvanassche@acm.org>
->> Date:   Thu Feb 14 23:00:46 2019 +0000
->>
->>       locking/lockdep: Free lock classes that are no longer in use
-
-Hey Bart, don't think it's related in any way to your commit. I'll allocate some
-time on working on this issue today, thanks!
-
->> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=152f6a9da00000
->> final crash:    https://syzkaller.appspot.com/x/report.txt?x=172f6a9da00000
->> console output: https://syzkaller.appspot.com/x/log.txt?x=132f6a9da00000
->>
->> IMPORTANT: if you fix the bug, please add the following tag to the commit:
->> Reported-by: syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com
->> Fixes: a0b0fd53e1e6 ("locking/lockdep: Free lock classes that are no longer in use")
->>
->> WARNING: CPU: 0 PID: 9604 at kernel/bpf/core.c:851 bpf_jit_free+0x1a8/0x1f0
->> Kernel panic - not syncing: panic_on_warn set ...
->> CPU: 0 PID: 9604 Comm: kworker/0:5 Not tainted 5.3.0-rc3+ #71
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
->> Google 01/01/2011
->> Workqueue: events bpf_prog_free_deferred
->> Call Trace:
->>    __dump_stack lib/dump_stack.c:77 [inline]
->>    dump_stack+0x1d8/0x2f8 lib/dump_stack.c:113
->>    panic+0x25c/0x799 kernel/panic.c:219
->>    __warn+0x22f/0x230 kernel/panic.c:576
->>    report_bug+0x190/0x290 lib/bug.c:186
->> BUG: unable to handle page fault for address: fffffbfff4001000
->> #PF: supervisor read access in kernel mode
->> #PF: error_code(0x0000) - not-present page
->> PGD 21ffee067 P4D 21ffee067 PUD 21ffed067 PMD 936de067 PTE 0
->> Oops: 0000 [#1] PREEMPT SMP KASAN
->> CPU: 0 PID: 9604 Comm: kworker/0:5 Not tainted 5.3.0-rc3+ #71
->> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
->> Google 01/01/2011
->> Workqueue: events bpf_prog_free_deferred
->> RIP: 0010:bpf_get_prog_addr_region kernel/bpf/core.c:537 [inline]
->> RIP: 0010:bpf_tree_comp kernel/bpf/core.c:600 [inline]
->> RIP: 0010:__lt_find include/linux/rbtree_latch.h:115 [inline]
->> RIP: 0010:latch_tree_find include/linux/rbtree_latch.h:208 [inline]
->> RIP: 0010:bpf_prog_kallsyms_find kernel/bpf/core.c:674 [inline]
->> RIP: 0010:is_bpf_text_address+0x201/0x3b0 kernel/bpf/core.c:709
->> Code: 85 c4 f5 ff 4d 39 f4 76 10 e8 7b c2 f5 ff 49 83 c7 10 eb 46 0f 1f 44
->> 00 00 4c 89 e0 48 c1 e8 03 48 b9 00 00 00 00 00 fc ff df <0f> b6 04 08 84
->> c0 75 7d 41 8b 1c 24 48 c1 e3 0c 4c 01 e3 48 89 df
->> RSP: 0018:ffff888097eff828 EFLAGS: 00010806
->> RAX: 1ffffffff4001000 RBX: 0000000000000001 RCX: dffffc0000000000
->> RDX: ffff88809f1e0280 RSI: ffffffffff7a5520 RDI: ffffffffa0008000
->> RBP: ffff888097eff860 R08: ffffffff817dc73b R09: 0000000000000001
->> R10: fffffbfff117be6d R11: 0000000000000000 R12: ffffffffa0008000
->> R13: 0000000000000000 R14: ffffffffff7a5520 R15: ffff88809a46b2f8
->> FS:  0000000000000000(0000) GS:ffff8880aea00000(0000) knlGS:0000000000000000
->> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->> CR2: fffffbfff4001000 CR3: 0000000095d73000 CR4: 00000000001406f0
->> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->> Call Trace:
-> [pruned]
+On 15/08/19 11:25 AM, Leo Yan wrote:
+> Arm and arm64 architecture reserve some memory regions prior to the
+> symbol '_stext' and these memory regions later will be used by device
+> module and BPF jit.  The current code misses to consider these memory
+> regions thus any address in the regions will be taken as user space
+> mode, but perf cannot find the corresponding dso with the wrong CPU
+> mode so we misses to generate samples for device module and BPF
+> related trace data.
 > 
-> Pair bpf_prog_kallsyms_del_all() with bpf_prog_free() to silence
-> WARNING at kernel/bpf/core.c:851, see __bpf_prog_release() in
-> net/core/filter.c for why.
+> This patch parse the link scripts to get the memory size prior to start
+> address and reduce this size from 'machine>->kernel_start', then can
+> get a fixed up kernel start address which contain memory regions for
+> device module and BPF.  Finally, machine__get_kernel_start() can reflect
+> more complete kernel memory regions and perf can successfully generate
+> samples.
 > 
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -1987,6 +1987,7 @@ void bpf_prog_free(struct bpf_prog *fp)
->   {
->   	struct bpf_prog_aux *aux = fp->aux;
->   
-> +	bpf_prog_kallsyms_del_all(fp);
->   	INIT_WORK(&aux->work, bpf_prog_free_deferred);
->   	schedule_work(&aux->work);
->   }
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -1328,7 +1328,6 @@ static void __bpf_prog_put(struct bpf_pr
->   		perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_UNLOAD, 0);
->   		/* bpf_prog_free_id() must be called first */
->   		bpf_prog_free_id(prog, do_idr_lock);
-> -		bpf_prog_kallsyms_del_all(prog);
->   		btf_put(prog->aux->btf);
->   		kvfree(prog->aux->func_info);
->   		bpf_prog_free_linfo(prog);
-> --
+> The reason for parsing the link scripts is Arm architecture changes text
+> offset dependent on different platforms, which define multiple text
+> offsets in $kernel/arch/arm/Makefile.  This offset is decided when build
+> kernel and the final value is extended in the link script, so we can
+> extract the used value from the link script.  We use the same way to
+> parse arm64 link script as well.  If fail to find the link script, the
+> pre start memory size is assumed as zero, in this case it has no any
+> change caused with this patch.
+> 
+> Below is detailed info for testing this patch:
+> 
+> - Install or build LLVM/Clang;
+> 
+> - Configure perf with ~/.perfconfig:
+> 
+>   root@debian:~# cat ~/.perfconfig
+>   # this file is auto-generated.
+>   [llvm]
+>           clang-path = /mnt/build/llvm-build/build/install/bin/clang
+>           kbuild-dir = /mnt/linux-kernel/linux-cs-dev/
+>           clang-opt = "-g"
+>           dump-obj = true
+> 
+>   [trace]
+>           show_zeros = yes
+>           show_duration = no
+>           no_inherit = yes
+>           show_timestamp = no
+>           show_arg_names = no
+>           args_alignment = 40
+>           show_prefix = yes
+> 
+> - Run 'perf trace' command with eBPF event:
+> 
+>   root@debian:~# perf trace -e string \
+>       -e $kernel/tools/perf/examples/bpf/augmented_raw_syscalls.c
+> 
+> - Read eBPF program memory mapping in kernel:
+> 
+>   root@debian:~# echo 1 > /proc/sys/net/core/bpf_jit_kallsyms
+>   root@debian:~# cat /proc/kallsyms | grep -E "bpf_prog_.+_sys_[enter|exit]"
+>   ffff00000008a0d0 t bpf_prog_e470211b846088d5_sys_enter  [bpf]
+>   ffff00000008c6a4 t bpf_prog_29c7ae234d79bd5c_sys_exit   [bpf]
+> 
+> - Launch any program which accesses file system frequently so can hit
+>   the system calls trace flow with eBPF event;
+> 
+> - Capture CoreSight trace data with filtering eBPF program:
+> 
+>   root@debian:~# perf record -e cs_etm/@tmc_etr0/ \
+> 	--filter 'filter 0xffff00000008a0d0/0x800' -a sleep 5s
+> 
+> - Decode the eBPF program symbol 'bpf_prog_f173133dc38ccf87_sys_enter':
+> 
+>   root@debian:~# perf script -F,ip,sym
+>   Frame deformatter: Found 4 FSYNCS
+>                   0 [unknown]
+>    ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+>    ffff00000008a250 bpf_prog_e470211b846088d5_sys_enter
+>                   0 [unknown]
+>    ffff00000008a124 bpf_prog_e470211b846088d5_sys_enter
+>                   0 [unknown]
+>    ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+>    ffff00000008a13c bpf_prog_e470211b846088d5_sys_enter
+>    ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+>                   0 [unknown]
+>    ffff00000008a180 bpf_prog_e470211b846088d5_sys_enter
+>                   0 [unknown]
+>    ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+>    ffff00000008a190 bpf_prog_e470211b846088d5_sys_enter
+>    ffff00000008a1ac bpf_prog_e470211b846088d5_sys_enter
+>    ffff00000008a250 bpf_prog_e470211b846088d5_sys_enter
+>                   0 [unknown]
+>    ffff00000008a124 bpf_prog_e470211b846088d5_sys_enter
+>                   0 [unknown]
+>    ffff00000008a14c bpf_prog_e470211b846088d5_sys_enter
+>                   0 [unknown]
+>    ffff00000008a180 bpf_prog_e470211b846088d5_sys_enter
+>    [...]
+> 
+> Cc: Mathieu Poirier <mathieu.poirier@linaro.org>
+> Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+> Cc: Jiri Olsa <jolsa@redhat.com>
+> Cc: Namhyung Kim <namhyung@kernel.org>
+> Cc: Peter Zijlstra <peterz@infradead.org>
+> Cc: Suzuki Poulouse <suzuki.poulose@arm.com>
+> Cc: Adrian Hunter <adrian.hunter@intel.com>
+> Cc: coresight@lists.linaro.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> ---
+>  tools/perf/Makefile.config | 22 ++++++++++++++++++++++
+>  tools/perf/util/machine.c  | 15 ++++++++++++++-
+>  2 files changed, 36 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/perf/Makefile.config b/tools/perf/Makefile.config
+> index e4988f49ea79..d7ff839d8b20 100644
+> --- a/tools/perf/Makefile.config
+> +++ b/tools/perf/Makefile.config
+> @@ -48,9 +48,20 @@ ifeq ($(SRCARCH),x86)
+>    NO_PERF_REGS := 0
+>  endif
+>  
+> +ARM_PRE_START_SIZE := 0
+> +
+>  ifeq ($(SRCARCH),arm)
+>    NO_PERF_REGS := 0
+>    LIBUNWIND_LIBS = -lunwind -lunwind-arm
+> +  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
+> +    # Extract info from lds:
+> +    #   . = ((0xC0000000)) + 0x00208000;
+> +    # ARM_PRE_START_SIZE := 0x00208000
+> +    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({2}0x[0-9a-fA-F]+\){2}' \
+> +      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
+> +      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
+> +      awk -F' ' '{printf "0x%x", $$2}' 2>/dev/null)
+> +  endif
+>  endif
+>  
+>  ifeq ($(SRCARCH),arm64)
+> @@ -58,8 +69,19 @@ ifeq ($(SRCARCH),arm64)
+>    NO_SYSCALL_TABLE := 0
+>    CFLAGS += -I$(OUTPUT)arch/arm64/include/generated
+>    LIBUNWIND_LIBS = -lunwind -lunwind-aarch64
+> +  ifneq ($(wildcard $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds),)
+> +    # Extract info from lds:
+> +    #  . = ((((((((0xffffffffffffffff)) - (((1)) << (48)) + 1) + (0)) + (0x08000000))) + (0x08000000))) + 0x00080000;
+> +    # ARM_PRE_START_SIZE := (0x08000000 + 0x08000000 + 0x00080000) = 0x10080000
+> +    ARM_PRE_START_SIZE := $(shell egrep ' \. \= \({8}0x[0-9a-fA-F]+\){2}' \
+> +      $(srctree)/arch/$(SRCARCH)/kernel/vmlinux.lds | \
+> +      sed -e 's/[(|)|.|=|+|<|;|-]//g' -e 's/ \+/ /g' -e 's/^[ \t]*//' | \
+> +      awk -F' ' '{printf "0x%x", $$6+$$7+$$8}' 2>/dev/null)
+> +  endif
+
+So, that is not going to work if you take a perf.data file to a non-arm machine?
+
+How come you cannot use kallsyms to get the information?
+
+>  endif
+>  
+> +CFLAGS += -DARM_PRE_START_SIZE=$(ARM_PRE_START_SIZE)
+> +
+>  ifeq ($(SRCARCH),csky)
+>    NO_PERF_REGS := 0
+>  endif
+> diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+> index f6ee7fbad3e4..e993f891bb82 100644
+> --- a/tools/perf/util/machine.c
+> +++ b/tools/perf/util/machine.c
+> @@ -2687,13 +2687,26 @@ int machine__get_kernel_start(struct machine *machine)
+>  	machine->kernel_start = 1ULL << 63;
+>  	if (map) {
+>  		err = map__load(map);
+> +		if (err)
+> +			return err;
+> +
+>  		/*
+>  		 * On x86_64, PTI entry trampolines are less than the
+>  		 * start of kernel text, but still above 2^63. So leave
+>  		 * kernel_start = 1ULL << 63 for x86_64.
+>  		 */
+> -		if (!err && !machine__is(machine, "x86_64"))
+> +		if (!machine__is(machine, "x86_64"))
+>  			machine->kernel_start = map->start;
+> +
+> +		/*
+> +		 * On arm/arm64, the kernel uses some memory regions which are
+> +		 * prior to '_stext' symbol; to reflect the complete kernel
+> +		 * address space, compensate these pre-defined regions for
+> +		 * kernel start address.
+> +		 */
+> +		if (!strcmp(perf_env__arch(machine->env), "arm") ||
+> +		    !strcmp(perf_env__arch(machine->env), "arm64"))
+> +			machine->kernel_start -= ARM_PRE_START_SIZE;
+>  	}
+>  	return err;
+>  }
 > 
 
