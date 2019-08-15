@@ -2,86 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A18D8E4E7
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 08:28:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEB248E4EC
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 08:34:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730401AbfHOG2v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 02:28:51 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:34101 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729796AbfHOG2v (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 02:28:51 -0400
-Received: by mail-pf1-f195.google.com with SMTP id b24so898271pfp.1
-        for <netdev@vger.kernel.org>; Wed, 14 Aug 2019 23:28:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rW27JgmRAd7uJ6fOqaefRHRk/SuuuN3zVWcMlhtpIEY=;
-        b=J+LcPcJ6WrIBVt+bVSF7CQ/P/X9pqwvaIe/FMufZrm8bco0+2HzRRPIzEBa0v1M0D2
-         hzP0ytkNJWstALpUdZtcFFsXNeV29z/uLqN04NzahU3zf5j77lkCKL2w8pPrXRGrjcOw
-         fUURFvk1sfEcVyw6Y+VaEbPm8p75iBb4IImEFk48ciD1f6WUYqbOqcNzMuPz45R3s++c
-         PtRtYcxYxJgFbV5/izSDF0AqRXMsRascXlAmYl+xxkeXwm0lHjqAMzj//a2OwH04HGRe
-         AXFfiVeJk+YSyAxcLE5mZqDzpjrd9Pl6RLfHKfxJQzBpTNaYk6NrC9iaaJbhCZULBA3/
-         k1dQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rW27JgmRAd7uJ6fOqaefRHRk/SuuuN3zVWcMlhtpIEY=;
-        b=kj9Hxc0tzGFprICdT9gI6WlWR9agW1Hexz8caUVsVXBAlXerKjSCRgoEFd9UbaBnBG
-         1z1dI1q10iSrpPkGejJ5Z+IZdSNZK93Gtl8/23OJHUVYLnZvtbV3nE1UloSryOtHlvGh
-         UzDpMoDoPQvysdAuhg5TuGrrzsARG6KYRLOvfvsIyBmpcAc/ZmD/FhJqwwg8CYjIwoit
-         WK8fQnDksbTf8ShTGIepBYeBkSWch3Uh7Ak2M8rhxcfWCrR63xxtI1dy6QDjiFr1tUM9
-         A0LAS+M+SRDOhHlb7Hypscg5S2sWH0dtxnS3u7Isrk7zNFATTyB/2OmC8B0UQTKKQIR1
-         268Q==
-X-Gm-Message-State: APjAAAWT9H/XIeyJXZTffBr+GCPWdp4KMLW683xalNhRWxaK5m+V+FAg
-        gaLygAmtaHrJBXx1It5Fo3XHBj+E
-X-Google-Smtp-Source: APXvYqw9hl782bd5l1XuXlL8K/+ZkC5zZFQmdc8YOXCZrJWAOpN9wqKYvzZV61W701bUOjqblFfAlw==
-X-Received: by 2002:a63:e807:: with SMTP id s7mr2289922pgh.194.1565850530797;
-        Wed, 14 Aug 2019 23:28:50 -0700 (PDT)
-Received: from localhost.localdomain ([110.225.3.176])
-        by smtp.gmail.com with ESMTPSA id dw7sm535629pjb.21.2019.08.14.23.28.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 14 Aug 2019 23:28:50 -0700 (PDT)
-From:   Nishka Dasgupta <nishkadg.linux@gmail.com>
-To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Cc:     Nishka Dasgupta <nishkadg.linux@gmail.com>
-Subject: [PATCH] net: hns: hns_enet: Add of_node_put in hns_nic_dev_probe()
-Date:   Thu, 15 Aug 2019 11:58:37 +0530
-Message-Id: <20190815062837.6015-1-nishkadg.linux@gmail.com>
-X-Mailer: git-send-email 2.19.1
+        id S1730405AbfHOGeL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 02:34:11 -0400
+Received: from new4-smtp.messagingengine.com ([66.111.4.230]:59197 "EHLO
+        new4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730317AbfHOGeK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 02:34:10 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 6F4743388;
+        Thu, 15 Aug 2019 02:34:09 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 15 Aug 2019 02:34:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=QC24EC
+        KPUrZPJ/qHruIRrpiPoSoBJgNwc4JceP+DXM4=; b=o49fefrYbANoTYHNtDtMSX
+        MCgkCAfPBJVHVsRtofW/K/PgINU8L87LIUuor89F6tFS/CiK01mxD/F0G7xy6C7z
+        u1VeFoX2N8XK0yMT2etJuMSR8V+wErfiDT2fwakjsbMGoA0DV+0S9h1HsY4pgZl+
+        bn3EohXZppXnqvgF7a1ciYgjPT80UoRfmZV1hBBpDy3W5Fla3Z8lrBc9JH8E+HBY
+        /Z4CVyDCj9WuCm4DM5fH1jSDveTlxIOUO+I0S87dl/ztrvZyNGE01p9595NrlelG
+        aJzjXv6B4J0G7MOT7VQ7i3KiZHO9DT6NL9MNU6/FUh0TVHAt0FOtShX4cAreTgfA
+        ==
+X-ME-Sender: <xms:3_xUXWscQj3aUoL91sulWd2EHsGXt4qe1Ot_pdjpoquGnSKgbov2BA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeftddgjeelucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
+    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
+    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
+X-ME-Proxy: <xmx:3_xUXeg8x6fUqk5mhk6WwmHN95wVrkrkEqs5DHWhxJIc3i0RWK5ALQ>
+    <xmx:3_xUXcY2iyKvucMkV1PZg1RcJeCJAt4DcCIMF4_3rJIVBHdYflJ-xA>
+    <xmx:3_xUXdatBtQ3ovTaYy1QdixKX9qpJBgum4xwzeCpi2F7Y2MiyEJX9Q>
+    <xmx:4fxUXbDpkC1GZq1880JsWqbyu12DGTEoVc3sSUaTt8g4zFcrwcvdsA>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 53D1780060;
+        Thu, 15 Aug 2019 02:34:07 -0400 (EDT)
+Date:   Thu, 15 Aug 2019 09:34:05 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, nhorman@tuxdriver.com,
+        jiri@mellanox.com, toke@redhat.com, dsahern@gmail.com,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        andy@greyhouse.net, f.fainelli@gmail.com, andrew@lunn.ch,
+        vivien.didelot@gmail.com, mlxsw@mellanox.com,
+        Ido Schimmel <idosch@mellanox.com>
+Subject: Re: [PATCH net-next v2 13/14] selftests: devlink_trap: Add test
+ cases for devlink-trap
+Message-ID: <20190815063405.GB12222@splinter>
+References: <20190813075400.11841-1-idosch@idosch.org>
+ <20190813075400.11841-14-idosch@idosch.org>
+ <20190814174229.1ab4fd1b@cakuba.netronome.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190814174229.1ab4fd1b@cakuba.netronome.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The local variable ae_node in function hns_nic_dev_probe takes the
-return value of of_parse_phandle, which gets a node but does not put it.
-This may cause a memory leak. Hence put ae_node after the last time it
-is invoked.
-Issue found with Coccinelle.
+On Wed, Aug 14, 2019 at 05:42:29PM -0700, Jakub Kicinski wrote:
+> On Tue, 13 Aug 2019 10:53:59 +0300, Ido Schimmel wrote:
+> > From: Ido Schimmel <idosch@mellanox.com>
+> > 
+> > Add test cases for devlink-trap on top of the netdevsim implementation.
+> > 
+> > The tests focus on the devlink-trap core infrastructure and user space
+> > API. They test both good and bad flows and also dismantle of the netdev
+> > and devlink device used to report trapped packets.
+> > 
+> > This allows device drivers to focus their tests on device-specific
+> > functionality.
+> > 
+> > Signed-off-by: Ido Schimmel <idosch@mellanox.com>
+> > Acked-by: Jiri Pirko <jiri@mellanox.com>
+> 
+> Thanks for the test!
+> 
+> Should it perhaps live in:
+> tools/testing/selftests/drivers/net/netdevsim/
+> ?
+> 
+> That's where Jiri puts his devlink tests..
 
-Signed-off-by: Nishka Dasgupta <nishkadg.linux@gmail.com>
----
- drivers/net/ethernet/hisilicon/hns/hns_enet.c | 1 +
- 1 file changed, 1 insertion(+)
+Yea, good point. Will move it there.
 
-diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-index 2235dd55fab2..b26e84929e1e 100644
---- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-+++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
-@@ -2309,6 +2309,7 @@ static int hns_nic_dev_probe(struct platform_device *pdev)
- 			goto out_read_prop_fail;
- 		}
- 		priv->fwnode = &ae_node->fwnode;
-+		of_node_put(ae_node);
- 	} else if (is_acpi_node(dev->fwnode)) {
- 		struct fwnode_reference_args args;
- 
--- 
-2.19.1
+> 
+> Also the test seems to require netdevsim to be loaded, otherwise:
+> # ./devlink_trap.sh 
+> SKIP: No netdevsim support
+> 
+> Is that expected?
 
+No, my bad. I need to change the check to see if netdevsim is loaded and
+otherwise load the module.
+
+Thanks!
