@@ -2,83 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 233148F598
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 22:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC6228F5B9
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 22:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730734AbfHOUQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 16:16:46 -0400
-Received: from mail-qt1-f173.google.com ([209.85.160.173]:44141 "EHLO
-        mail-qt1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726370AbfHOUQq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 16:16:46 -0400
-Received: by mail-qt1-f173.google.com with SMTP id 44so3671232qtg.11;
-        Thu, 15 Aug 2019 13:16:45 -0700 (PDT)
+        id S1731957AbfHOU0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 16:26:05 -0400
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:42495 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731850AbfHOU0E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 16:26:04 -0400
+Received: by mail-lf1-f68.google.com with SMTP id s19so2494112lfb.9
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 13:26:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7KRPwJULNqRo6IzIC4npJ99jz76FoEXrOgj5D0TU8bk=;
-        b=PBrPCafUUXdBgtBzuQ+kIjJ1IM3yqR+ueS+ncvaazBBTkEKSeyVTLmkoCMw6WmfTmb
-         ah7drTBJYxwiuQVcue3hOQC4JsncaKfA2JHeyGk3tNQ8+UqKZXTYIYihq8MoHNzvBJC8
-         Ftwr4t+ZoodrgnDQ9C2UidnrdVUyUazd6BSyR3Tv+8WXXPH4Ri40/M8qk1zX7WqtDvBZ
-         KIExAb0oHMv7JiXbLscBZoVUSow0NCcxgfdazPnG3fC1H/9vKRKAv8mN4mTv1wuShySR
-         DOKwSnqxtQNuWdpZ6Jo3XGZeZKFvjiJt36De1HXHaxayJgbnKhxZZ8l2kTA+dTx85Dpv
-         aD9Q==
+        bh=OMu2C04ftY81TYFCnc8lXX04zGDDGOcRI0zFGGiMOC0=;
+        b=lKumc5s3VZUto1TE0iTCoHL9TAw+ySrWt4qf38RzqlZOcyiAiHQ3yabZ1IX6Mb/ilK
+         vdH98kxp4z3xxBRqOFO8Ligh5CG7U1ddsStwqBCkgBoU+bv4ICOpIWoQMyOEo5D1l7A/
+         wdiZ49xHK3w2p3ZZSJivn2hJZ/j+dfn10VKHg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7KRPwJULNqRo6IzIC4npJ99jz76FoEXrOgj5D0TU8bk=;
-        b=n6vGxahmcma8HHuuQXmfFrFiMPSixsr9bp3oPO0gb/fz3lqL0QbXnLIsO/O+NsMY0x
-         mZdTHDENLRJ8vpVFOEAXPjvzPs7pwzkA22m1ewuq3sEINj/SerzN5wWicEUisTFMme06
-         6YCAQubFtKQ4LZUVb5xgBrLSa09M5AYNGfog6ZC7GOlGDE1p6MPOya5JaHE+bIL+Uai/
-         1yCgaYrZuaYonwujV6kVzXlvRNjcerNfJZsVn4JKDHY13LLFPB2XqMl2/y58kIpmv7EF
-         H8ErvksRPiVk+K+APNgYC8zaxRidQx8eH47LvjHF2GzlKgkh6MoAkb/bjxR3hYInfiSZ
-         Otww==
-X-Gm-Message-State: APjAAAXKWSJuz9sxO9YsTokBJhArPADkaqik8ySOUKIBV5hXQ6PPyYWA
-        N+hFmRPa1P2h2LJfpG7Vy6ejuV4d3kKNKgpeKwLwVG5Hl+z5pQ==
-X-Google-Smtp-Source: APXvYqx3Qbr72U7R2/nBNOwPfWyZERng1bgg0cBzJ5TaX2uRmGv3EGFj9lnmH1A8aW0/tQbqfnounvVqgHnyR1Za+d8=
-X-Received: by 2002:ac8:43d1:: with SMTP id w17mr4020208qtn.171.1565900204855;
- Thu, 15 Aug 2019 13:16:44 -0700 (PDT)
+        bh=OMu2C04ftY81TYFCnc8lXX04zGDDGOcRI0zFGGiMOC0=;
+        b=a3A6sJahPHsl+UR5R8wha8tLB/UGGFQGbE+Um/R+WA6sXFZxdQP+CKopM5AbWFa4vE
+         +PVzuxpru+Zrq21q0Hoxfh+eC6nPbaErrNz98/7/yP/PB7xLGruvtoWowJtwvFHxmuEL
+         u9Pmn7xIoEHimgTVze+Bka2+vpjqq2xtd4geNwW/5kdelOGSGjXbXGouSOdksiZRTOZC
+         wA/Y45tvRKTUnWVh9RptXI4rzJ+Y9HNR/BL6zDTNS4cFIRDq75l1f+ptYUAaGM6xwPty
+         RQYMlqQZGADyK4K5NDYz8jo1Xx0A55j1+yfADfbp45Gyg8I9z2mxsP9gpEiNU5e444rh
+         aWqA==
+X-Gm-Message-State: APjAAAWGs2vbuTciwCLsIuUg5Q42wziaLmIRhA/ZbHpgsPyNoJ//klUb
+        hVveOCCmRKdKdICFedRBc45SiRgC3Hc=
+X-Google-Smtp-Source: APXvYqxt2C0RoQVaecUT/R7fWEgvTL5K1i/gbr9BgH4YwmDUNsl1tLw1JJRzMQkTdxlFdd/s8o53gw==
+X-Received: by 2002:ac2:5ec3:: with SMTP id d3mr3237740lfq.44.1565900761578;
+        Thu, 15 Aug 2019 13:26:01 -0700 (PDT)
+Received: from mail-lf1-f47.google.com (mail-lf1-f47.google.com. [209.85.167.47])
+        by smtp.gmail.com with ESMTPSA id y66sm646227lje.61.2019.08.15.13.25.58
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 15 Aug 2019 13:25:58 -0700 (PDT)
+Received: by mail-lf1-f47.google.com with SMTP id s19so2493979lfb.9
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 13:25:58 -0700 (PDT)
+X-Received: by 2002:a19:ed11:: with SMTP id y17mr3283567lfy.141.1565900757828;
+ Thu, 15 Aug 2019 13:25:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190815142223.2203-1-quentin.monnet@netronome.com>
- <CAEf4BzbL3K5XWSyY6BxrVeF3+3qomsYbXh67yzjyy7ApsosVBw@mail.gmail.com>
- <20190815103023.0bd2c210@cakuba.netronome.com> <CAEf4BzYL-pJ79nKywsAH1b2S-EP_4SUZY5jS2wzYJ32pywsyrw@mail.gmail.com>
- <20190815110917.657de4e3@cakuba.netronome.com>
-In-Reply-To: <20190815110917.657de4e3@cakuba.netronome.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 15 Aug 2019 13:16:33 -0700
-Message-ID: <CAEf4Bza4W11KQKdUocJA-KoyQHbDimSLnKUJ6RajrkBJ-kB2Pg@mail.gmail.com>
-Subject: Re: [PATCH bpf] tools: bpftool: close prog FD before exit on showing
- a single program
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        oss-drivers@netronome.com
+References: <20190709161550.GA8703@infradead.org> <20190710083825.7115-1-jian-hong@endlessm.com>
+In-Reply-To: <20190710083825.7115-1-jian-hong@endlessm.com>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Thu, 15 Aug 2019 13:25:46 -0700
+X-Gmail-Original-Message-ID: <CA+ASDXOgCHzAfyQDAGhkFZMO4UaXfrnpkN9a95jzfQY_L+EbAg@mail.gmail.com>
+Message-ID: <CA+ASDXOgCHzAfyQDAGhkFZMO4UaXfrnpkN9a95jzfQY_L+EbAg@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] rtw88: pci: Rearrange the memory usage for skb in
+ RX ISR
+To:     Jian-Hong Pan <jian-hong@endlessm.com>
+Cc:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        David Laight <David.Laight@aculab.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        linux@endlessm.com, Daniel Drake <drake@endlessm.com>,
+        stable <stable@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 11:09 AM Jakub Kicinski
-<jakub.kicinski@netronome.com> wrote:
->
-> On Thu, 15 Aug 2019 11:05:16 -0700, Andrii Nakryiko wrote:
-> > > > Would it be better to make show_prog(fd) close provided fd instead or
-> > > > is it used in some other context where FD should live longer (I
-> > > > haven't checked, sorry)?
-> > >
-> > > I think it used to close that's how the bug crept in. Other than the bug
-> > > it's fine the way it is.
-> >
-> > So are you saying that show_prog() should or should not close FD?
->
-> Yup, it we'd have to rename it to indicate it closes the fd, and it's
-> only called in two places. Not worth the churn.
+Hi all,
 
-OK, I'm fine with that.
+I realize this already is merged, and it had some previous review
+comments that led to the decisions in this patch, but I'd still like
+to ask here, where I think I'm reaching the relevant parties:
 
-Acked-by: Andrii Nakryiko <andriin@fb.com>
+On Wed, Jul 10, 2019 at 1:43 AM Jian-Hong Pan <jian-hong@endlessm.com> wrote:
+...
+> This patch allocates a new, data-sized skb first in RX ISR. After
+> copying the data in, we pass it to the upper layers. However, if skb
+> allocation fails, we effectively drop the frame. In both cases, the
+> original, full size ring skb is reused.
+>
+> In addition, by fixing the kernel crash, the RX routine should now
+> generally behave better under low memory conditions.
+>
+> Buglink: https://bugzilla.kernel.org/show_bug.cgi?id=204053
+> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+> Cc: <stable@vger.kernel.org>
+> ---
+> v2:
+>  - Allocate new data-sized skb and put data into it, then pass it to
+>    mac80211. Reuse the original skb in RX ring by DMA sync.
+
+Is it really wise to force an extra memcpy() for *every* delivery?
+Isn't there some other strategy that could be used to properly handle
+low-memory scenarios while still passing the original buffer up to
+higher layers most of the time? Or is it really so bad to keep
+re-allocating RTK_PCI_RX_BUF_SIZE (>8KB) of contiguous memory, to
+re-fill the RX ring? And if that is so bad, can we reduce the
+requirement for contiguous memory instead? (e.g., keep with smaller
+buffers, and perform aggregation / scatter-gather only for frames that
+are really larger?)
+
+Anyway, that's mostly a long-term thought, as this patch is good for
+fixing the important memory errors, even if it's not necessarily the
+ideal solution.
+
+Regards,
+Brian
