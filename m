@@ -2,154 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DF76A8F513
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 21:46:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 075278F520
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 21:50:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733211AbfHOTqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 15:46:45 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:43585 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733205AbfHOTqo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 15:46:44 -0400
-Received: by mail-pf1-f193.google.com with SMTP id v12so1825599pfn.10
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 12:46:44 -0700 (PDT)
+        id S1731868AbfHOTt7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 15:49:59 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:43415 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730491AbfHOTt7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 15:49:59 -0400
+Received: by mail-pg1-f196.google.com with SMTP id k3so1734125pgb.10
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 12:49:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=q9R0vNoUpwKLeu2pnfmt46PqrXtqSmivMtowXnYTOZo=;
-        b=H0/RvPSUgkXdfxxI3i5LVxFFjGoQjDU4tEClLQbXRTozuKmyG66rsuwuaQhm6opn8L
-         YfqvyrmFeGimX21lZuHDTTWFEXr8ocu9gR3Jv1WZm6e9nsPzXLaQIup05uukgtM8RKDj
-         XddoB41uZ7kY/ujqgXTjaa5ORKT5c/3HP1uYM=
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i8QNU1xl04T+eOac39szO+SgsFkNj86PfWbsgoUUQqw=;
+        b=e9M2SaNIXYR6XcfY3RLTqG0HHbVEGkpyzc5nTnS0eKWOnOjkpK4GtjZlC7gRWczlp2
+         +oPjZGhoRIaqaQ+FYUh8MUebmdf+tuMiWppaRvwvKDsJlKxZfwyvv7osADxxtshYKC+Z
+         LxFY3qQY919qYB0X4KMP9d2wQxo1QuiXxhMhkusj0xUqQLxBcrLU3WmD83UgLS1RMRHt
+         zudxe3siKyWZPwcJ1j8IMzMPdCvnBZ6ViUoj4+5HHkFLJFwLlQbBeslIjled5cge5Im9
+         xEjfAW8psFL4PAdkEO88OcjBngI5YXNeaDpALmCTGNGgwHJTcSKAPWoEqrH/E9hqaWot
+         NPww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=q9R0vNoUpwKLeu2pnfmt46PqrXtqSmivMtowXnYTOZo=;
-        b=MYGKAGFoqHrCi5vViQJZxqmeO+IrfSBsep43rARxi2cATyVBx7qj0/lpx7SN86Koj1
-         JMXUiDOQ9vRJMDgfRXDiMlw6n3CfvaolnKe4TFmzUxHu5sevrTmqa6YaQWQW/QYDjuG/
-         Mn27RwP5CUA2YPE+64uku/Mxn7pFE1J6AQOpSx4o5QJK6KK2bTM0Ltqr5POh8JG6eldO
-         RIKP0DV8ipTHkPdAXXIpcMBWuZIiRkuNkWjgY44sGjSq+7T/X67ed1rXla32nfmRsb7D
-         faMz0QOBI1FUxYn1f73+etuRjjqHMTeieGTlnz0jvxoozqNbVR8AtjVV5ZyAi4K8gDqH
-         +eAg==
-X-Gm-Message-State: APjAAAV/zLvhFdHDWkpc121dQOYNlNfrpUTmb1cypmBAmzQLJgZZTJ1Z
-        o0Ttf6YLeqxurySynWF92ASAYw==
-X-Google-Smtp-Source: APXvYqwkdKiJuv/6WIKEpcaHaZ22PyLLwMhSfjqdJkm4PMqDnc+jsZVtxZmMArS1ytN4WQAQBH5eLg==
-X-Received: by 2002:a63:a302:: with SMTP id s2mr4777940pge.125.1565898403670;
-        Thu, 15 Aug 2019 12:46:43 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id y8sm4327185pfr.140.2019.08.15.12.46.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 15 Aug 2019 12:46:42 -0700 (PDT)
-Date:   Thu, 15 Aug 2019 12:46:41 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-Message-ID: <201908151203.FE87970@keescook>
-References: <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com>
- <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
- <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
- <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
- <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
- <20190805192122.laxcaz75k4vxdspn@ast-mbp>
- <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
- <20190806011134.p5baub5l3t5fkmou@ast-mbp>
- <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
- <20190813215823.3sfbakzzjjykyng2@ast-mbp>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=i8QNU1xl04T+eOac39szO+SgsFkNj86PfWbsgoUUQqw=;
+        b=jOZmFreDx/zMjPS4BqTvUXz9COFOJ7XyLo65qimioUO0UxADmx5WXzJQyD3NZRVuff
+         ms20AnR0l2EE6jVlusqkyE8E6y2ZG+gL40YNsst/04dmLAL8Nn1s1O+8iRlDpmcKZV1e
+         ihvGPdbJ1yVIKTx2GjqtYkZdtnKSH7jfmm+3hJ0pJrgxSjEFyTGyKr1W9fnjBvTgRyxJ
+         AtWQn/qG4kgFnuiuFf6TE4xCIiAmYBz6OMFTS/hMrDhcCxPsvp0f7gsfDAWGiUcLJTgW
+         iD+Upcoy1/7s3/nP67h8qb5Bxe+Fy/urExlVWhHv/tC2+uBmthRye4tbT7xLQOVuW0PN
+         QYjw==
+X-Gm-Message-State: APjAAAUo5qcNdnCPDWkkAx6OCH/M99PIpFuIU1wstKC3o5eH8PQYH3jI
+        aJfo59tu6dvl9NtNFjD/eVS/T7iVX6I=
+X-Google-Smtp-Source: APXvYqwKyteM4FepQ56JgJZuAv4ZeIHQ2/r90hW/5R6+Q82ON62UQXjFhc5HMZWy5/qDOrgnJj1HcQ==
+X-Received: by 2002:aa7:8edd:: with SMTP id b29mr7256801pfr.173.1565898598669;
+        Thu, 15 Aug 2019 12:49:58 -0700 (PDT)
+Received: from hermes.lan (204-195-22-127.wavecable.com. [204.195.22.127])
+        by smtp.gmail.com with ESMTPSA id s20sm3438600pfe.169.2019.08.15.12.49.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2019 12:49:57 -0700 (PDT)
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     yuehaibing@huawei.com
+Cc:     netdev@vger.kernel.org,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: [PATCH] net: cavium: fix driver name
+Date:   Thu, 15 Aug 2019 12:49:49 -0700
+Message-Id: <20190815194949.10630-1-stephen@networkplumber.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190813215823.3sfbakzzjjykyng2@ast-mbp>
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 13, 2019 at 02:58:25PM -0700, Alexei Starovoitov wrote:
-> agree that containers (namespaces) reduce amount of trust necessary
-> for apps to run, but the end goal is not security though.
+The driver name gets exposed in sysfs under /sys/bus/pci/drivers
+so it should look like other devices. Change it to be common
+format (instead of "Cavium PTP").
 
-Unsurprisingly, I totally disagree: this is the very definition of
-improved "security": reduced attack surface, confined trust, etc.
+This is a trivial fix that was observed by accident because
+Debian kernels were building this driver into kernel (bug).
 
-> Linux has become a single user system.
+Signed-off-by: Stephen Hemminger <stephen@networkplumber.org>
+---
+ drivers/net/ethernet/cavium/common/cavium_ptp.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I hope this is just hyperbole, because it's not true in reality. I agree
-that the vast majority of Linux devices are single-user-at-a-time
-systems now (rather than the "shell servers" of yore), but the system
-still has to be expected to confine users from each other, root, and the
-hardware. Switching users on Chrome OS or a distro laptop, etc is still
-very much expected to _mean_ something.
-
-> If user can ssh into the host they can become root.
-> If arbitrary code can run on the host it will be break out of any sandbox.
-> Containers are not providing the level of security that is enough
-> to run arbitrary code. VMs can do it better, but cpu bugs don't make it easy.
-
-I'm not sure why you draw the line for VMs -- they're just as buggy
-as anything else. Regardless, I reject this line of thinking: yes,
-all software is buggy, but that isn't a reason to give up. In fact,
-we should be trying very hard to create safe code (*insert arguments
-for sane languages and toolchains here*).
-
-If you look at software safety as a binary, you will always be
-disappointed. If you look at it as it manifests in the real world,
-then there is some perspective to be had. Reachability of flaws becomes
-a major factor; exploit chain length becomes a factor. There are very
-real impacts to be had from security hardening, sandboxing, etc. Of
-course nothing is perfect, but the current state of the world isn't
-as you describe. (And I say this with the knowledge of how long
-the lifetime of bugs are in the kernel.)
-
-> Containers are used to make production systems safer.
-
-Yes.
-
-> Some people call it more 'secure', but it's clearly not secure for
-> arbitrary code
-
-Perhaps it's just a language issue. "More secure" and "safer" mean
-mostly the same thing to me. I tend to think "safer" is actually
-a superset that includes things that wreck the user experience but
-aren't actually in the privilege manipulation realm. In the traditional
-"security" triad of confidentiality, integrity, and availability, I tend
-to weigh availability less highly, but a bug that stops someone from
-doing their work but doesn't wreck data, let them switch users, etc,
-is still considered a "security" issue by many folks. The fewer bugs
-someone is exposed to improves their security, safety, whatever. The
-easiest way to do that is confinement and its associated attack surface
-reduction. tl;dr: security and safety are very use-case-specific
-continuum, not a binary state.
-
-> When we say 'unprivileged bpf' we really mean arbitrary malicious bpf program.
-> It's been a constant source of pain. The constant blinding, randomization,
-> verifier speculative analysis, all spectre v1, v2, v4 mitigations
-> are simply not worth it. It's a lot of complex kernel code without users.
-> There is not a single use case to allow arbitrary malicious bpf
-> program to be loaded and executed.
-
-The world isn't binary (safe code/malicious code), and we need to build
-systems that can be used safely even when things go wrong. Yes, probably
-no one has a system that _intentionally_ feeds eBPF into the kernel from
-a web form. But there is probably someone who does it unintentionally,
-or has a user login exposed on a system where unpriv BPF is enabled. The
-point is to create primitives as safely as possible so when things DO
-go wrong, they fail safe instead of making things worse.
-
-I'm all for a "less privileged than root" API for eBPF, but I get worried
-when I see "security" being treated as a binary state. Especially when
-it is considered an always-failed state. :)
-
+diff --git a/drivers/net/ethernet/cavium/common/cavium_ptp.c b/drivers/net/ethernet/cavium/common/cavium_ptp.c
+index 73632b843749..b821c9e1604c 100644
+--- a/drivers/net/ethernet/cavium/common/cavium_ptp.c
++++ b/drivers/net/ethernet/cavium/common/cavium_ptp.c
+@@ -10,7 +10,7 @@
+ 
+ #include "cavium_ptp.h"
+ 
+-#define DRV_NAME	"Cavium PTP Driver"
++#define DRV_NAME "cavium_ptp"
+ 
+ #define PCI_DEVICE_ID_CAVIUM_PTP	0xA00C
+ #define PCI_DEVICE_ID_CAVIUM_RST	0xA00E
 -- 
-Kees Cook
+2.20.1
+
