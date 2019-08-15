@@ -2,99 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A7D08E511
-	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 08:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D0198E5C3
+	for <lists+netdev@lfdr.de>; Thu, 15 Aug 2019 09:51:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730466AbfHOG4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 02:56:22 -0400
-Received: from smtprelay0219.hostedemail.com ([216.40.44.219]:46145 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726098AbfHOG4W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 02:56:22 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay03.hostedemail.com (Postfix) with ESMTP id 381FB8368EFC;
-        Thu, 15 Aug 2019 06:56:20 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::::::::::::::,RULES_HIT:41:355:379:599:800:960:967:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1542:1593:1594:1711:1730:1747:1777:1792:1801:2393:2525:2559:2563:2682:2685:2828:2859:2902:2933:2937:2939:2942:2945:2947:2951:2954:3022:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3873:3874:3934:3936:3938:3941:3944:3947:3950:3953:3956:3959:4321:4605:5007:7514:8603:8660:8957:9025:9149:10004:10400:10848:11026:11232:11658:11914:12043:12048:12296:12297:12740:12760:12895:13018:13019:13148:13230:13255:13439:14181:14659:14721:21080:21451:21627:21939:30012:30034:30054:30064:30091,0,RBL:error,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:27,LUA_SUMMARY:none
-X-HE-Tag: shirt04_19e6b128f1714
-X-Filterd-Recvd-Size: 3207
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Thu, 15 Aug 2019 06:56:17 +0000 (UTC)
-Message-ID: <9973b4a89e54296a6a033c790fc0837397a14a5d.camel@perches.com>
-Subject: Re: [PATCH] netfilter: nft_bitwise: Adjust parentheses to fix
- memcmp size argument
-From:   Joe Perches <joe@perches.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        kbuild test robot <lkp@intel.com>
-Date:   Wed, 14 Aug 2019 23:56:16 -0700
-In-Reply-To: <20190814165809.46421-1-natechancellor@gmail.com>
-References: <20190814165809.46421-1-natechancellor@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.5-0ubuntu0.18.10.1 
+        id S1730615AbfHOHvv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 03:51:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43132 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726443AbfHOHvu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 03:51:50 -0400
+Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F9F92084D;
+        Thu, 15 Aug 2019 07:51:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565855509;
+        bh=OcToxkMk9gwSDl2BUebvNxigaLKXvR3X1ectJPWkRLE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ikYTm+Z+svls9M/L1vwCDEPOjor7PIuUJlBIMrqGDy5t9DD6cJBn+9lPsrRj4k/0A
+         YcWUquzHr2EfuIY9gSs9nyeux6mM5QAff0gLwWAHzYsYRDmxc9IYZ1sVFcTHXC8uDK
+         fRos8pRMya5Flsy5VvWWyluoO24ZWhf9SFNYxVZc=
+Date:   Thu, 15 Aug 2019 08:51:42 +0100
+From:   Will Deacon <will@kernel.org>
+To:     syzbot <syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com>,
+        bvanassche@acm.org
+Cc:     akpm@linux-foundation.org, ast@kernel.org, bpf@vger.kernel.org,
+        bvanassche@acm.org, daniel@iogearbox.net, davem@davemloft.net,
+        dvyukov@google.com, hawk@kernel.org, hdanton@sina.com,
+        jakub.kicinski@netronome.com, johannes.berg@intel.com,
+        johannes@sipsolutions.net, john.fastabend@gmail.com, kafai@fb.com,
+        linux-kernel@vger.kernel.org, longman@redhat.com, mingo@kernel.org,
+        netdev@vger.kernel.org, paulmck@linux.vnet.ibm.com,
+        peterz@infradead.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de, tj@kernel.org,
+        torvalds@linux-foundation.org, will.deacon@arm.com,
+        xdp-newbies@vger.kernel.org, yhs@fb.com
+Subject: Re: WARNING in is_bpf_text_address
+Message-ID: <20190815075142.vuza32plqtiuhixx@willie-the-truck>
+References: <00000000000000ac4f058bd50039@google.com>
+ <000000000000e56cb0058fcc6c28@google.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000e56cb0058fcc6c28@google.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-08-14 at 09:58 -0700, Nathan Chancellor wrote:
-> clang warns:
+Hi Bart,
+
+On Sat, Aug 10, 2019 at 05:24:06PM -0700, syzbot wrote:
+> syzbot has found a reproducer for the following crash on:
 > 
-> net/netfilter/nft_bitwise.c:138:50: error: size argument in 'memcmp'
-> call is a comparison [-Werror,-Wmemsize-comparison]
->         if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
->                                       ~~~~~~~~~~~~~~~~~~^~
-> net/netfilter/nft_bitwise.c:138:6: note: did you mean to compare the
-> result of 'memcmp' instead?
->         if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
->             ^
->                                                        )
-> net/netfilter/nft_bitwise.c:138:32: note: explicitly cast the argument
-> to size_t to silence this warning
->         if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
->                                       ^
->                                       (size_t)(
-> 1 error generated.
+> HEAD commit:    451577f3 Merge tag 'kbuild-fixes-v5.3-3' of git://git.kern..
+> git tree:       upstream
+> console output: https://syzkaller.appspot.com/x/log.txt?x=120850a6600000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=2031e7d221391b8a
+> dashboard link: https://syzkaller.appspot.com/bug?extid=bd3bba6ff3fcea7a6ec6
+> compiler:       clang version 9.0.0 (/home/glider/llvm/clang
+> 80fee25776c2fb61e74c1ecb1a523375c2500b69)
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=130ffe4a600000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17137d2c600000
 > 
-> Adjust the parentheses so that the result of the sizeof is used for the
-> size argument in memcmp, rather than the result of the comparison (which
-> would always be true because sizeof is a non-zero number).
+> The bug was bisected to:
 > 
-> Fixes: bd8699e9e292 ("netfilter: nft_bitwise: add offload support")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/638
-> Reported-by: kbuild test robot <lkp@intel.com>
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> ---
->  net/netfilter/nft_bitwise.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> commit a0b0fd53e1e67639b303b15939b9c653dbe7a8c4
+> Author: Bart Van Assche <bvanassche@acm.org>
+> Date:   Thu Feb 14 23:00:46 2019 +0000
 > 
-> diff --git a/net/netfilter/nft_bitwise.c b/net/netfilter/nft_bitwise.c
-[]
-> @@ -135,8 +135,8 @@ static int nft_bitwise_offload(struct nft_offload_ctx *ctx,
->  {
->  	const struct nft_bitwise *priv = nft_expr_priv(expr);
->  
-> -	if (memcmp(&priv->xor, &zero, sizeof(priv->xor) ||
-> -	    priv->sreg != priv->dreg))
-> +	if (memcmp(&priv->xor, &zero, sizeof(priv->xor)) ||
-> +	    priv->sreg != priv->dreg)
+>     locking/lockdep: Free lock classes that are no longer in use
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=152f6a9da00000
+> final crash:    https://syzkaller.appspot.com/x/report.txt?x=172f6a9da00000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=132f6a9da00000
 
-This code should use memchr_inv and not compare against a
-static uninitialized struct.
+I know you don't think much to these reports, but please could you have a
+look (even if it's just to declare it a false positive)?
 
-Perhaps linux should introduce and use memcchr like bsd. 
-or just add something like #define memcchr memchr_inv
+Cheers,
 
-
-
-
+Will
