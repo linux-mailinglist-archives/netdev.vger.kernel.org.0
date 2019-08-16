@@ -2,175 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8298B8FB28
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 08:37:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD03A8FB36
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 08:40:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbfHPGht (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 02:37:49 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:34657 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbfHPGhs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 02:37:48 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1hyVrt-0006RV-Io; Fri, 16 Aug 2019 08:37:45 +0200
-Received: from [IPv6:2001:67c:670:202:595f:209f:a34b:fbc1] (unknown [IPv6:2001:67c:670:202:595f:209f:a34b:fbc1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 905E24463ED;
-        Fri, 16 Aug 2019 06:37:42 +0000 (UTC)
-Subject: Re: [PATCH] can: flexcan: disable completely the ECC mechanism
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "stefan@agner.ch" <stefan@agner.ch>,
-        dl-linux-imx <linux-imx@nxp.com>
-References: <20190815075806.23212-1-qiangqing.zhang@nxp.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <18178f51-2a64-0401-839c-36f774a22fbe@pengutronix.de>
-Date:   Fri, 16 Aug 2019 08:37:30 +0200
+        id S1726924AbfHPGkA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 02:40:00 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:45087 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725897AbfHPGj7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 02:39:59 -0400
+Received: by mail-wr1-f66.google.com with SMTP id q12so477479wrj.12;
+        Thu, 15 Aug 2019 23:39:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=5CiCivYuLKVWcTvhyXRHZSRzZ+pFRBC2NZeakCldL+o=;
+        b=BNyCP1TO3qjPbK5rP9vIaHG8bXEJrTnMwc2yeOZxIcv/p0DrAl6K0DMQvWGoLArbzC
+         mQC7LUTTKemH6cvncmuqk9381Xuy1e4RZLqGH67YfB4EOh4EYk4sF5R7b2+V09DDjSyr
+         IN0ntVFz18ofbM2seF0IQ5OXDMZ0r+17FPSf4DHu7ZmiGTcteoBO8e+JaHeZdm+vNwek
+         6FMLXr0rtwp2D7sJkbsjm8v3JB2KJxgoSt5M9Q07dtykb7V6KYUeNTTDhOXRWKAa2mtn
+         BxWt7/wvlDjSLCoHQeAJLty5vrNdHvDeH9NIG8luAiEyO1c+BJU8am6vL+cBl/SWPBRX
+         lwLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=5CiCivYuLKVWcTvhyXRHZSRzZ+pFRBC2NZeakCldL+o=;
+        b=ZWA5NtgNDxDuTWurBjGB5E+vJftoWjnPSsW7gNiuLgdFthbDb1mx/Lup1365+E4Tv5
+         GKwXgCMQSStKkK2pnIxqOwbK0G/TcHbi8m8zfqRx2QfMAh2H9axLQYNsZZpA4e+4Ok9X
+         RRA2RrJjfYHACMSM4782FEtORFskRNY/jcRLTZj2u232QQsOewjt/epcqB1ciJFgy+bK
+         tCUlrMyu6+KQSEKeNnrHxmp5ugndZ6ZSeyFCdtaWZlcX4P3LKWwGe+RITUYs9YDgXH0w
+         Cy4tLR14CtymksAMkQIETkXNML1fSbp7eK7KKCSYrKwjC3Z5G3S8fDV9yFBNQQxwy7Ei
+         OovA==
+X-Gm-Message-State: APjAAAUjSU/6Yv5nn0vJZhOoRCVgDHJmHGp7HFK+uTy+vWfHaT6H/WjS
+        0NREcFtNPlmcy+oWMs18/ZtuYkjn
+X-Google-Smtp-Source: APXvYqzu5S4jP1HucZDHre6xJ2x0X8lPA3VySpIREgwplU+EW/f3cCL3cxMcL864x1snQikP1wEkSA==
+X-Received: by 2002:adf:f14f:: with SMTP id y15mr8733609wro.28.1565937597703;
+        Thu, 15 Aug 2019 23:39:57 -0700 (PDT)
+Received: from [192.168.8.147] (187.170.185.81.rev.sfr.net. [81.185.170.187])
+        by smtp.gmail.com with ESMTPSA id o8sm5576893wma.1.2019.08.15.23.39.56
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 15 Aug 2019 23:39:56 -0700 (PDT)
+Subject: Re: [PATCH net-next] r8152: divide the tx and rx bottom functions
+To:     Hayes Wang <hayeswang@realtek.com>, netdev@vger.kernel.org
+Cc:     nic_swsd@realtek.com, linux-kernel@vger.kernel.org
+References: <1394712342-15778-301-Taiwan-albertk@realtek.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <9749764d-7815-b673-0fc4-22475601efec@gmail.com>
+Date:   Fri, 16 Aug 2019 08:39:54 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190815075806.23212-1-qiangqing.zhang@nxp.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="18E0YIb4pnwpQXeRnATY6Y4QMQXHx0j2X"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+In-Reply-To: <1394712342-15778-301-Taiwan-albertk@realtek.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---18E0YIb4pnwpQXeRnATY6Y4QMQXHx0j2X
-Content-Type: multipart/mixed; boundary="A3iWmuuPEigh9yYBMKcMtGNdLf2iiSztH";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: "wg@grandegger.com" <wg@grandegger.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- "stefan@agner.ch" <stefan@agner.ch>, dl-linux-imx <linux-imx@nxp.com>
-Message-ID: <18178f51-2a64-0401-839c-36f774a22fbe@pengutronix.de>
-Subject: Re: [PATCH] can: flexcan: disable completely the ECC mechanism
-References: <20190815075806.23212-1-qiangqing.zhang@nxp.com>
-In-Reply-To: <20190815075806.23212-1-qiangqing.zhang@nxp.com>
-
---A3iWmuuPEigh9yYBMKcMtGNdLf2iiSztH
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 8/15/19 10:00 AM, Joakim Zhang wrote:
-> The ECC(memory error detection and correction) mechanism can be
-> activated or not, controlled by the ECCDIS bit in CAN_MECR. When
-> disabled, updates on indications and reporting registers are stopped.
-> So if want to disable ECC completely, had better assert ECCDIS bit,
-> not just mask the related interrupts.
->=20
-> Fixes:cdce844865be("can: flexcan: add vf610 support for FlexCAN")
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-
-Added to can.
-
-tnx
-Marc
-
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
 
 
---A3iWmuuPEigh9yYBMKcMtGNdLf2iiSztH--
+On 8/14/19 10:30 AM, Hayes Wang wrote:
+> Move the tx bottom function from NAPI to a new tasklet. Then, for
+> multi-cores, the bottom functions of tx and rx may be run at same
+> time with different cores. This is used to improve performance.
+> 
+>  
 
---18E0YIb4pnwpQXeRnATY6Y4QMQXHx0j2X
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+tasklet and NAPI are scheduled on the same core (the current
+cpu calling napi_schedule() or tasklet_schedule())
 
------BEGIN PGP SIGNATURE-----
+I would rather not add this dubious tasklet, and instead try to understand
+what is wrong in this driver ;)
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl1WTyoACgkQWsYho5Hk
-nSBqagf/XyBojzLJrtEUEfjyQK6/rbTt8TNegezyPeZcsxzB8G2VCrBXVpUoRtWq
-eOOo2vmFhSa+65hr0vDzDsWqRdSC8ce9RiSsV+D+DZP7ejWDYigaW5CrIVF3lx1u
-59SgXR5O2x7ZEye3e3X+jyax6Un28qH+v0BuUlcfrLuBzDQ8hvOQ+e1mvGH0csNM
-NJaZ9Zg/iyFQyyVC9Ae7emdZmMJUmCpoDc2e9srGiP60Tcv4fwKnTrdCMUEFMcbk
-GrTOihO+X2CP/ZHxQbUlsi8YB8tbTNV61ywtw1TCddtv/vAMLdyFJTcR2eP7VdE7
-vJ4ZMMVWXPxCcmoB5lkRPbBAhpZjYQ==
-=y+VK
------END PGP SIGNATURE-----
+The various napi_schedule() calls are suspect IMO.
 
---18E0YIb4pnwpQXeRnATY6Y4QMQXHx0j2X--
+Also rtl8152_start_xmit() uses skb_queue_tail(&tp->tx_queue, skb);
+
+But I see nothing really kicking the transmit if tx_free is empty ?
+
+tx_bottom() is only called from bottom_half() (called from r8152_poll())
+
+
