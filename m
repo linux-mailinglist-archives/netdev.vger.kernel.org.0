@@ -2,87 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC338FA5C
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 07:23:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D7CCF8FA60
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 07:24:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726277AbfHPFX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 01:23:27 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:39669 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbfHPFX1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 01:23:27 -0400
-Received: by mail-qk1-f196.google.com with SMTP id 125so3795098qkl.6;
-        Thu, 15 Aug 2019 22:23:27 -0700 (PDT)
+        id S1726571AbfHPFYr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 01:24:47 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:34090 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726141AbfHPFYq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 01:24:46 -0400
+Received: by mail-lf1-f66.google.com with SMTP id b29so3242610lfq.1;
+        Thu, 15 Aug 2019 22:24:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=uHyOSrsLg+OpTAnL/CHZKBv938Zif7lAbBDshh9pX/c=;
-        b=lYK9LS3N7wVCkLjV2IsreoUe7z+fSQ9B/mQ08Q3vfdBmDbtZUiYi0wa6QMOZSXWJGI
-         RB2Lc+mK0FrrdoMlT6ptkYsIjxwwNCbc16b4K6kKgiytfPkhEWKpzljzg4L0JYplp0Ao
-         ETAEXJjEe2KA+kSlN9b10R5CNaKIivxG4iAKKQfotYPv0bLjPoAZgxVklWZ3e98qNmra
-         SEWCCfTaEBlGNusKq86KxYTZEzcSGJbLJTPhL0WNeO9RMXJ2Q7gue0fCSusiCBvug4q4
-         uMNs2Lp3LJtq5jf6jR4TwpZ5exqo1S7by7/bal6Mhlx8nOUvgj/a8+RS1ptYVSHDrofR
-         4law==
+        bh=rpfB3Q5jcM+4sbz0QcY5vnHo3c0rHRb/VWMYMI6DOqw=;
+        b=O9aQa6vXGh2JKZ24LO62tv8KbvE4fTqMX9XH6D43Rb8tNNl+oQffVUylgUyoFxV6iK
+         wRDllUngoU8SZ5L241dO79srqiUQfHd7B3kF9WDgdAq9r1b8/bQKtK5TKmjB+5pICfjb
+         nUULr2chxztm8lG2h1jcq9NhgiVBJwUUfkvnsY+Lyn8vixlxOlQLTBNidLFWD0qvlOc/
+         /vnDY8kfViPf1MhDSzvKou3Xx/A+MmT5UG8fT95l1zaRgj64hh86sLUlzgn6j58FWBYn
+         DhitkqsF8nyJwkWi3QUICn2c1+ErEzlvlmXTkW3hJUz7bVqKws7jrheXHqKZOrmRVc72
+         r4lw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=uHyOSrsLg+OpTAnL/CHZKBv938Zif7lAbBDshh9pX/c=;
-        b=AGE64x333SK+w483f4/+Jj8LNUuUfGP80yr0WxdHsp6lERYUZnNeSW3AB3+AnGTHgb
-         BONk7edO18+NFMGV/V8DnCEYadPH8MXs1t5d1JkNHwdxoVh8q6qKQe602it7Vknsu2WI
-         bLL48m+IpSdI9UzKnMIChpqElhrMA1HT6om0152jXSEj+256jukmouwDOExYhVvFPcfu
-         bVmSLb7NHiBjHlcI4RVaVrZsAzKYB+bvnoa2etkUVoeMl6iK5H1hoPWxidQjY97M5Jkc
-         p9bR8aHGhHDEyFdYc6W46XR6y9KU087Cj2abkabyBeCGGSsnVfSryEifQhaD1xss3PEk
-         Wpqg==
-X-Gm-Message-State: APjAAAWhYq1feGVWXgenVaXxX7vKWpBFRJkGGKYBhdUAanfo/ywWjtxW
-        4hZj6nugtm8PFVFDnA3IlLcsMIZy1tRVh9BcFvQ=
-X-Google-Smtp-Source: APXvYqxvHQeKguD98k0XdADD/VXzOjaffIHkuxcXXYHy0FpA90De4BOpFPS7MfUZZ1XksLjDU+lcQvwf79yN3UzAR8E=
-X-Received: by 2002:a37:9b48:: with SMTP id d69mr7465606qke.449.1565933006557;
- Thu, 15 Aug 2019 22:23:26 -0700 (PDT)
+        bh=rpfB3Q5jcM+4sbz0QcY5vnHo3c0rHRb/VWMYMI6DOqw=;
+        b=gfZbjI9KjNlFqfKLliXHle1bQowkjOgNQRdeTkeRIE4kRYrDoqab3fMHInEQ3Z/mnV
+         80NYdHy2RUdpJFjtJeXLrYdRaKsQIJHEBwvii3pva+ojy+q99BhAcV0aEdMDf4VuNHL8
+         nHx6TsUlZyF00+RT2+4wS/IpOva+Udlgli1td8X7ezZdF6I+1XX0Btgzhk/lfxz0ghlf
+         TaWSkZTzZenXzJxMq4Nte3Y56vQxe+PsPM38rNaH1Wfi3Dpr2BOlCcXLnQuMmKE6BXNl
+         hPXZRG8UqrJyIyaZP6bDjdrU/wK15rHz4Suw7oofUiuflWVoHbldNmWHbr31MnLRrDnm
+         VsvQ==
+X-Gm-Message-State: APjAAAVMyUhzAPGcbGhXLtbXWIVkLaQDmnd41428CQA8nQSCw2pGEpFr
+        x38G/c/AwTl7hiMxsZrSOQfB2aSL74oBvmjN/lM=
+X-Google-Smtp-Source: APXvYqzn5i/+XEV2n+C529s0+kZBTANKIa5O2lpzrVhd6ZBs+0aYkWQrlmxhSKaa3+GkHOpVNGLsPqrjrWTygNCsqYg=
+X-Received: by 2002:a19:ca4b:: with SMTP id h11mr3994625lfj.162.1565933084391;
+ Thu, 15 Aug 2019 22:24:44 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190814164742.208909-1-sdf@google.com> <20190814164742.208909-3-sdf@google.com>
- <CAEf4BzZR12JgbSvBqS7LMZjLcsneVDfFL9XyZdi3gtneyA9X9g@mail.gmail.com>
- <CAEf4BzaE-KiW1Xt049A4s25YiaLeTH3yhgahwLUdpXNjF1sVpA@mail.gmail.com>
- <20190814195330.GL2820@mini-arch> <CAEf4BzaEJcTKV6s8cVinpJcBStvs2LAJ+obNjevw54EOQq1QdQ@mail.gmail.com>
- <CAADnVQ+Bz6R17bassdr3xOR7rhbuw-HbdXYu-hHkxE8S2WiNrA@mail.gmail.com>
-In-Reply-To: <CAADnVQ+Bz6R17bassdr3xOR7rhbuw-HbdXYu-hHkxE8S2WiNrA@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 15 Aug 2019 22:23:15 -0700
-Message-ID: <CAEf4BzbA_GtJSSxtVKLL+x3hScSw6zVy2cKPgBcYCa1eisr28g@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/4] selftests/bpf: test_progs: test__skip
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Stanislav Fomichev <sdf@fomichev.me>,
-        Stanislav Fomichev <sdf@google.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <20190815142432.101401-1-weiyongjun1@huawei.com> <20190816024044.139761-1-weiyongjun1@huawei.com>
+In-Reply-To: <20190816024044.139761-1-weiyongjun1@huawei.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 15 Aug 2019 22:24:33 -0700
+Message-ID: <CAADnVQK_NTZVXosgLDBg-in+HBDaK5d24heaR0HSkEw2L0g=6w@mail.gmail.com>
+Subject: Re: [PATCH -next v2] btf: fix return value check in btf_vmlinux_init()
+To:     Wei Yongjun <weiyongjun1@huawei.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-janitors@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 10:16 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+On Thu, Aug 15, 2019 at 7:36 PM Wei Yongjun <weiyongjun1@huawei.com> wrote:
 >
-> On Wed, Aug 14, 2019 at 1:01 PM Andrii Nakryiko
-> <andrii.nakryiko@gmail.com> wrote:
-> > >
-> > > Let me know if you see a value in highlighting test vs subtest skip.
-> > >
-> > > Other related question is: should we do verbose output in case
-> > > of a skip? Right now we don't do it.
-> >
-> > It might be useful, I guess, especially if it's not too common. But
-> > Alexei is way more picky about stuff like that, so I'd defer to him. I
-> > have no problem with a clean "SKIPPED: <test>/<subtest> (maybe some
-> > reason for skipping here)" message.
+> In case of error, the function kobject_create_and_add() returns NULL
+> pointer not ERR_PTR(). The IS_ERR() test in the return value check
+> should be replaced with NULL test.
 >
-> Since test_progs prints single number for FAILED tests then single number
-> for SKIPPED tests is fine as well.
+> Fixes: 341dfcf8d78e ("btf: expose BTF info through sysfs")
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+> Acked-by: Andrii Nakryiko <andriin@fb.com>
 
-I'm fine with single number, but it should count number of subtests
-skipped, if there are subtests within test, same as for FAILED.
+Applied. Thanks.
+
+Please spell out [PATCH v2 bpf-next] in the subject next time.
