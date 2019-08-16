@@ -2,81 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E55190B03
+	by mail.lfdr.de (Postfix) with ESMTP id D7F9E90B04
 	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 00:33:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727788AbfHPWdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 18:33:49 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:39291 "EHLO
+        id S1727828AbfHPWdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 18:33:50 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:36552 "EHLO
         mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727761AbfHPWdt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 18:33:49 -0400
-Received: by mail-pf1-f196.google.com with SMTP id f17so3821285pfn.6
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 15:33:49 -0700 (PDT)
+        with ESMTP id S1727761AbfHPWdu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 18:33:50 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w2so3835352pfi.3
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 15:33:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=QPYILOFs5ohOW11t+QO0qTp5ELoXk0f0kit83RbgVc8=;
-        b=L1KJGRPH76rCfNF9UnLQSBo55RIZNUDvH5K5nFO/fgALt1S6R89irC5bsdAcVJLLSZ
-         ZQDpke8tDqUEWY0adoc2y3GXOJI/LaXcxAKD7q4u7mW7L1ZYpHI7ZTdkTImq93ZEN34s
-         o3V7+0panmloMEmoZujx9qKLBm8DRrIFsf3Qs=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=rxL5y7YaD04cP670iBmD2nywSIyet51sHNRpYeZgX2o=;
+        b=SROrdmfr2Ihn29YGmK+k9cngP7EyaQA5/AuWDRLgJjPxDd7cTLBkZm2haIO/KIgshA
+         RB49i2lbcaitS2Oa8nh+8sdPYGrFCMMueAhX3RbgGzmGj/Seihf7EgKAFiL/mPpbwXHF
+         zV5SV/+LSQ1qlAlZaHiOLR9FQJaqEkrdja65w=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=QPYILOFs5ohOW11t+QO0qTp5ELoXk0f0kit83RbgVc8=;
-        b=gX/a4ZcDqBFPoE1jKcqMPgioD6ZoXX7p43pusLNKTzrh6fzCte5sfwnN0KxP4AXgs0
-         S07lCgR/DFoS54Eui072lMW2PZCLh7Ieixg7uzu7Mt/Dblx8jvb1fPTXWM2JqyarEvPA
-         0kbsNe2GFI6o5Wv5xLB8wRWRZ+77VHUTRgEv+Kp/UP+AfRZgbuHFY/Z+47ayImuISOh/
-         XoQyZ/bThHxC/F4ZnIOjym3OqllYfHWI7E6o6c+pHsZIBUmOavXfNfVx29CPcNH8H3Nd
-         yYR/LJ7Gc3jMBPON/+ebgKe1VgUdUn1h41p0b2XUK8PzcwoGrebn4ct0fVmtHz/HzYGQ
-         Ojdw==
-X-Gm-Message-State: APjAAAUgahR03UgYYjn70EU8AOCooY5N3PYpEeOG91+2iajtCuqxHBEg
-        IDxLqTJXFHh9HDaEVKX/PXnJ4g==
-X-Google-Smtp-Source: APXvYqx9Gv/xOt68Z+in/L8XUtQXLULUNtzfAp/idQKEjYTgW1zU82r6DQf87opYvLzt8zbXOWyZjw==
-X-Received: by 2002:a63:de07:: with SMTP id f7mr9853409pgg.213.1565994828757;
-        Fri, 16 Aug 2019 15:33:48 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=rxL5y7YaD04cP670iBmD2nywSIyet51sHNRpYeZgX2o=;
+        b=Zqs/3lAwbWC+fgB6Es3/QEjnaZiMMwHU4sTp6SqJwzxLGLL1/buqaUhgt7oK2HVhsg
+         1vhLIGR3zME8XHOA3vCsCfug6BlYrTqCvsGKBICxMBlVwLXiJm41fVFz7YAy6N7Zd+y1
+         q4PVN1sEVDtxyAZn9Qe6C+8LlhrVb1snYtCW9Fz+/jRKqXk87ToNEDWjcsDTermBTkxz
+         JlrW/ljCf+JrrEk5Tnka4me9g5kwuzapKPn83mNdIy5Rgiqj8tGJu8PEQmMjmXq/JjpX
+         Eo1wfZgvzhofYMHNuZjmRc82W1EOBhJdpzOgZNn8fuaA7h1DUCq9t1PsP/eNF+8wZDzw
+         jFcA==
+X-Gm-Message-State: APjAAAV6iVGyz7rmmf8gsGtv+G9e3rdPdv0tgVcUmjR9TcaDzSMm+nZF
+        DMfhtgicD93aGOSi3POOAAhtKFs5j/M=
+X-Google-Smtp-Source: APXvYqzUdEDkQWWFWOaxeDod2X+7b8JfDmw0oVWwCfr8UH+31rmADGagYJTJwRXayBYGMi3t7wLJKQ==
+X-Received: by 2002:a05:6a00:c7:: with SMTP id e7mr12988578pfj.52.1565994829619;
+        Fri, 16 Aug 2019 15:33:49 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id o35sm5728404pgm.29.2019.08.16.15.33.47
+        by smtp.gmail.com with ESMTPSA id o35sm5728404pgm.29.2019.08.16.15.33.48
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 15:33:48 -0700 (PDT)
+        Fri, 16 Aug 2019 15:33:49 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org
-Subject: [PATCH net 0/6] bnxt_en: Bug fixes.
-Date:   Fri, 16 Aug 2019 18:33:31 -0400
-Message-Id: <1565994817-6328-1-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net 1/6] bnxt_en: Fix VNIC clearing logic for 57500 chips.
+Date:   Fri, 16 Aug 2019 18:33:32 -0400
+Message-Id: <1565994817-6328-2-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1565994817-6328-1-git-send-email-michael.chan@broadcom.com>
+References: <1565994817-6328-1-git-send-email-michael.chan@broadcom.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2 Bug fixes related to 57500 shutdown sequence and doorbell sequence,
-2 TC Flower bug fixes related to the setting of the flow direction,
-1 NVRAM update bug fix, and a minor fix to suppress an unnecessary
-error message.  Please queue for -stable as well.  Thanks.
+During device shutdown, the VNIC clearing sequence needs to be modified
+to free the VNIC first before freeing the RSS contexts.  The current
+code is doing the reverse and we can get mis-directed RX completions
+to CP ring ID 0 when the RSS contexts are freed and zeroed.  These
+mis-directed packets may cause the driver to crash.  The clearing
+of RSS contexts is not required with the new sequence.
 
-Michael Chan (2):
-  bnxt_en: Fix VNIC clearing logic for 57500 chips.
-  bnxt_en: Improve RX doorbell sequence.
+Refactor the VNCI clearing logic into a new function bnxt_clear_vnic()
+and do the chip specific VNIC clearing sequence.
 
-Somnath Kotur (1):
-  bnxt_en: Fix to include flow direction in L2 key
+Fixes: 7b3af4f75b81 ("bnxt_en: Add RSS support for 57500 chips.")
+Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+---
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-Vasundhara Volam (2):
-  bnxt_en: Fix handling FRAG_ERR when NVM_INSTALL_UPDATE cmd fails
-  bnxt_en: Suppress HWRM errors for HWRM_NVM_GET_VARIABLE command
-
-Venkat Duvvuru (1):
-  bnxt_en: Use correct src_fid to determine direction of the flow
-
- drivers/net/ethernet/broadcom/bnxt/bnxt.c         | 36 ++++++++++++++++-------
- drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c |  9 ++++--
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 12 ++++----
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c      |  8 ++---
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h      |  2 +-
- 5 files changed, 40 insertions(+), 27 deletions(-)
-
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+index 7070349..1ef224f 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+@@ -7016,19 +7016,29 @@ static void bnxt_hwrm_clear_vnic_rss(struct bnxt *bp)
+ 		bnxt_hwrm_vnic_set_rss(bp, i, false);
+ }
+ 
+-static void bnxt_hwrm_resource_free(struct bnxt *bp, bool close_path,
+-				    bool irq_re_init)
++static void bnxt_clear_vnic(struct bnxt *bp)
+ {
+-	if (bp->vnic_info) {
+-		bnxt_hwrm_clear_vnic_filter(bp);
++	if (!bp->vnic_info)
++		return;
++
++	bnxt_hwrm_clear_vnic_filter(bp);
++	if (!(bp->flags & BNXT_FLAG_CHIP_P5)) {
+ 		/* clear all RSS setting before free vnic ctx */
+ 		bnxt_hwrm_clear_vnic_rss(bp);
+ 		bnxt_hwrm_vnic_ctx_free(bp);
+-		/* before free the vnic, undo the vnic tpa settings */
+-		if (bp->flags & BNXT_FLAG_TPA)
+-			bnxt_set_tpa(bp, false);
+-		bnxt_hwrm_vnic_free(bp);
+ 	}
++	/* before free the vnic, undo the vnic tpa settings */
++	if (bp->flags & BNXT_FLAG_TPA)
++		bnxt_set_tpa(bp, false);
++	bnxt_hwrm_vnic_free(bp);
++	if (bp->flags & BNXT_FLAG_CHIP_P5)
++		bnxt_hwrm_vnic_ctx_free(bp);
++}
++
++static void bnxt_hwrm_resource_free(struct bnxt *bp, bool close_path,
++				    bool irq_re_init)
++{
++	bnxt_clear_vnic(bp);
+ 	bnxt_hwrm_ring_free(bp, close_path);
+ 	bnxt_hwrm_ring_grp_free(bp);
+ 	if (irq_re_init) {
 -- 
 2.5.1
 
