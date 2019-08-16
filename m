@@ -2,114 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BB3D909D7
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 22:59:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CF0D90A0C
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 23:11:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727675AbfHPU7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 16:59:39 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:45242 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727548AbfHPU7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 16:59:39 -0400
-Received: by mail-wr1-f68.google.com with SMTP id q12so2721382wrj.12;
-        Fri, 16 Aug 2019 13:59:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=fF23+eeI8IwqTgiv4la+N5iJcg94TGRZOaJt6jU0zYo=;
-        b=UqAgh1kdtKJ99eTg1a0x/izcunJ++rokRIH2L1KbGWWMFK/9a0OMSfu7C8oSNEI45V
-         sCc0zBqLNk3yhtcbG+fN7QRCZvzjMcIBXYKouGYMWpwaDVZogEI76BUzyUkckvFD2Ho3
-         ZSnMWCr9ye+c6MDPS4HVQO1q0u/G5UmPqvznPI4lj4l0KHAdzQ2kuEbauBsirUvGDVpg
-         Zgj8lksCC2+cI+CCcs7iXhKA7po5lt/D0GPoIoG7vFaCJvIlA7XAhVP2hv4cVseDqMYu
-         bZaifm20rPtUK1ydAOn88TBi9bhgcyJShe83IcvUOD13JWloz39zqZMeUaxyNRINm3pW
-         h/pw==
+        id S1727805AbfHPVLp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 17:11:45 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:33835 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727748AbfHPVLo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 17:11:44 -0400
+Received: by mail-oi1-f193.google.com with SMTP id l12so5813460oil.1;
+        Fri, 16 Aug 2019 14:11:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=fF23+eeI8IwqTgiv4la+N5iJcg94TGRZOaJt6jU0zYo=;
-        b=KU73MGG17jmyBrlykYntpdxMDAXxMORDk7DEKkPKXy1oBgslMHKqUeYT+Y8yjE6xsH
-         LuLn6feI/aX05rUpRu2aZh/qlInEJfF3tqMjg8GTO6NHnjLbYoXBTYOfgBISTs7asDaP
-         tOWqOuqUOcTd4jJBBberzHnc+kkSDXnv11VefpANQoyg2RwIH1+OHHKT1lv6BppAwIlm
-         wfVVbEfTMXZtiX/0ekoOzvRnR39+M+E7ODnPo+xHAKFqDEWPto2U9M/tsDrFwLngxezh
-         PxsR8bApzTuNw4hlCce4m71o9NF/ywKNrPseXjwVOc9K82NHHvoCkyIbtjtVM8boCka/
-         OcAA==
-X-Gm-Message-State: APjAAAXmskIKkpMQYwGYnrRziKmQqksKLCnis4j7fGlRYgK/lu1YweAj
-        E+VMZZ6l6m/syQ6GrCEzaxRPeb0l
-X-Google-Smtp-Source: APXvYqyc6ut71s8E9UUeQKX7vw5SXrA/4uOVU/fOnefl2URT4r2l3XtaA+gDA5Y2O5ZYEeC2HhCyRg==
-X-Received: by 2002:adf:fd8b:: with SMTP id d11mr12233594wrr.300.1565989176963;
-        Fri, 16 Aug 2019 13:59:36 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:4112:e131:7f21:ec09? (p200300EA8F2F32004112E1317F21EC09.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:4112:e131:7f21:ec09])
-        by smtp.googlemail.com with ESMTPSA id s19sm5193349wrb.94.2019.08.16.13.59.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 13:59:36 -0700 (PDT)
-Subject: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
-To:     Christian Herber <christian.herber@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20190815153209.21529-1-christian.herber@nxp.com>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <8c15b855-6947-9930-c3df-71a64fbff33b@gmail.com>
-Date:   Fri, 16 Aug 2019 22:59:29 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=0gC4sb2j3RWTm9xjuIK9kqivJqH0u782yHSmQQjFy/g=;
+        b=ZcN4oCeWfbQ8IuIbiJvX+uHyg1YUAnJlV3kFmXAKGTavk+exyLe7ff2VjFiXkDTygM
+         ifb682dWQdfQ1icKhTm6rP2nA8+yruA3hhwkUI1r9EeANqdGB32E8Tl46oSQ+BgdG6lh
+         FN0MhfYbVuM/65A+FVlc2KZclUUt9M2r/XsMFGouGqBpyO1m2bstqJsvz5VuWOh9qt+i
+         HnhcBiB9nQGEQ8qFWOIoSfFxfsLrMGS2Z4+bjkz3NIFTpjnSzbPM8TVgXs4fYEhcBMrs
+         sZKepC884dLnmUSSbvGTLcxU33HfYcbVNJOuvgS5ojY2wJrJqQqaJzJAl/IC8K9kXo+w
+         Pd2g==
+X-Gm-Message-State: APjAAAV/6MYS2rOa4vYc0l337p3Sha7zEzSK+ZcSoa9mJYbeT2/7XP2X
+        5ozNB/uLMnKzxPgDbaYKmA==
+X-Google-Smtp-Source: APXvYqxVNGZP55OO2DAvkxQON330c/WkMGGQCA7UZMyjdZKYVNzMAVMjLidQg+yRLMzc0LHLCzRN0Q==
+X-Received: by 2002:aca:5106:: with SMTP id f6mr6355037oib.69.1565989903418;
+        Fri, 16 Aug 2019 14:11:43 -0700 (PDT)
+Received: from localhost (ip-173-126-47-137.ftwttx.spcsdns.net. [173.126.47.137])
+        by smtp.gmail.com with ESMTPSA id z26sm1648410oih.16.2019.08.16.14.11.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Aug 2019 14:11:42 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 16:11:41 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ath10k@lists.infradead.org, stable@vger.kernel.org
+Subject: Re: [PATCH] ath10k: Fix HOST capability QMI incompatibility
+Message-ID: <20190816211141.GA4468@bogus>
+References: <20190725063108.15790-1-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20190815153209.21529-1-christian.herber@nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190725063108.15790-1-bjorn.andersson@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 15.08.2019 17:32, Christian Herber wrote:
-> This patch adds basic support for BASE-T1 PHYs in the framework.
-> BASE-T1 PHYs main area of application are automotive and industrial.
-> BASE-T1 is standardized in IEEE 802.3, namely
-> - IEEE 802.3bw: 100BASE-T1
-> - IEEE 802.3bp 1000BASE-T1
-> - IEEE 802.3cg: 10BASE-T1L and 10BASE-T1S
+On Wed, Jul 24, 2019 at 11:31:08PM -0700, Bjorn Andersson wrote:
+> The introduction of 768ec4c012ac ("ath10k: update HOST capability QMI
+> message") served the purpose of supporting the new and extended HOST
+> capability QMI message.
 > 
-> There are no products which contain BASE-T1 and consumer type PHYs like
-> 1000BASE-T. However, devices exist which combine 100BASE-T1 and 1000BASE-T1
-> PHYs with auto-negotiation.
+> But while the new message adds a slew of optional members it changes the
+> data type of the "daemon_support" member, which means that older
+> versions of the firmware will fail to decode the incoming request
+> message.
+> 
+> There is no way to detect this breakage from Linux and there's no way to
+> recover from sending the wrong message (i.e. we can't just try one
+> format and then fallback to the other), so a quirk is introduced in
+> DeviceTree to indicate to the driver that the firmware requires the 8bit
+> version of this message.
+> 
+> Cc: stable@vger.kernel.org
+> Fixes: 768ec4c012ac ("ath10k: update HOST capability qmi message")
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  .../bindings/net/wireless/qcom,ath10k.txt     |  6 +++++
 
-Is this meant in a way that *currently* there are no PHY's combining Base-T1
-with normal Base-T modes? Or are there reasons why this isn't possible in
-general? I'm asking because we have PHY's combining copper and fiber, and e.g.
-the mentioned Aquantia PHY that combines NBase-T with 1000Base-T2.
+Acked-by: Rob Herring <robh@kernel.org>
 
-> 
-> The intention of this patch is to make use of the existing Clause 45 functions.
-> BASE-T1 adds some additional registers e.g. for aneg control, which follow a
-> similiar register layout as the existing devices. The bits which are used in
-> BASE-T1 specific registers are the same as in basic registers, thus the
-> existing functions can be resued, with get_aneg_ctrl() selecting the correct
-> register address.
-> 
-If Base-T1 can't be combined with other modes then at a first glance I see no
-benefit in defining new registers e.g. for aneg control, and the standard ones
-are unused. Why not using the standard registers? Can you shed some light on that?
-
-Are the new registers internally shadowed to the standard location?
-That's something I've seen on other PHY's: one register appears in different
-places in different devices.
-
-> The current version of ethtool has been prepared for 100/1000BASE-T1 and works
-> with this patch. 10BASE-T1 needs to be added to ethtool.
-> 
-> Christian Herber (1):
->   Added BASE-T1 PHY support to PHY Subsystem
-> 
->  drivers/net/phy/phy-c45.c    | 113 +++++++++++++++++++++++++++++++----
->  drivers/net/phy/phy-core.c   |   4 +-
->  include/uapi/linux/ethtool.h |   2 +
->  include/uapi/linux/mdio.h    |  21 +++++++
->  4 files changed, 129 insertions(+), 11 deletions(-)
-> 
-
-Heiner
+>  drivers/net/wireless/ath/ath10k/qmi.c         | 13 ++++++++---
+>  .../net/wireless/ath/ath10k/qmi_wlfw_v01.c    | 22 +++++++++++++++++++
+>  .../net/wireless/ath/ath10k/qmi_wlfw_v01.h    |  1 +
+>  drivers/net/wireless/ath/ath10k/snoc.c        | 11 ++++++++++
+>  drivers/net/wireless/ath/ath10k/snoc.h        |  1 +
+>  6 files changed, 51 insertions(+), 3 deletions(-)
