@@ -2,95 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F08090474
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 17:14:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 18B1090482
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 17:17:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727523AbfHPPOQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 11:14:16 -0400
-Received: from elvis.franken.de ([193.175.24.41]:35094 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727388AbfHPPOP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 11:14:15 -0400
-X-Greylist: delayed 2654 seconds by postgrey-1.27 at vger.kernel.org; Fri, 16 Aug 2019 11:14:14 EDT
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1hydEn-0007f5-00; Fri, 16 Aug 2019 16:29:53 +0200
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 00486C25F1; Fri, 16 Aug 2019 16:09:42 +0200 (CEST)
-Date:   Fri, 16 Aug 2019 16:09:42 +0200
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Cc:     Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-mips@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org,
-        netdev@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-serial@vger.kernel.org
-Subject: Re: [PATCH v4 3/9] nvmem: core: add nvmem_device_find
-Message-ID: <20190816140942.GA15050@alpha.franken.de>
-References: <20190809103235.16338-1-tbogendoerfer@suse.de>
- <20190809103235.16338-4-tbogendoerfer@suse.de>
- <8d18de64-9234-fcba-aa3d-b46789eb62a5@linaro.org>
- <20190814134616.b4dab3c0aa6ac913d78edb6a@suse.de>
- <31d680ee-ddb3-8536-c915-576222d263e1@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <31d680ee-ddb3-8536-c915-576222d263e1@linaro.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1727456AbfHPPRI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 11:17:08 -0400
+Received: from kirsty.vergenet.net ([202.4.237.240]:57508 "EHLO
+        kirsty.vergenet.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727354AbfHPPRI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 11:17:08 -0400
+Received: from reginn.horms.nl (watermunt.horms.nl [80.127.179.77])
+        by kirsty.vergenet.net (Postfix) with ESMTPA id 6603025BDF3;
+        Sat, 17 Aug 2019 01:17:06 +1000 (AEST)
+Received: by reginn.horms.nl (Postfix, from userid 7100)
+        id 63C8E94057D; Fri, 16 Aug 2019 17:17:04 +0200 (CEST)
+From:   Simon Horman <horms+renesas@verge.net.au>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] ravb: Fix use-after-free ravb_tstamp_skb
+Date:   Fri, 16 Aug 2019 17:17:02 +0200
+Message-Id: <20190816151702.2677-1-horms+renesas@verge.net.au>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 01:52:49PM +0100, Srinivas Kandagatla wrote:
-> On 14/08/2019 12:46, Thomas Bogendoerfer wrote:
-> >On Tue, 13 Aug 2019 10:40:34 +0100
-> >Srinivas Kandagatla <srinivas.kandagatla@linaro.org> wrote:
-> >>On 09/08/2019 11:32, Thomas Bogendoerfer wrote:
-> >>>nvmem_device_find provides a way to search for nvmem devices with
-> >>>the help of a match function simlair to bus_find_device.
-> >>>
-> >>>Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> >>>---
-> >>>   drivers/nvmem/core.c           | 62 ++++++++++++++++++++++--------------------
-> >>>   include/linux/nvmem-consumer.h |  9 ++++++
-> >>>   2 files changed, 41 insertions(+), 30 deletions(-)
-> >>
-> >>Have you considered using nvmem_register_notifier() ?
-> >
-> >yes, that was the first idea. But then I realized I need to build up
-> >a private database of information already present in nvmem bus. So I
-> >looked for a way to retrieve it from there. Unfortunately I couldn't
-> >use bus_find_device directly, because nvmem_bus_type and struct nvmem_device
-> >is hidden. So I refactured the lookup code and added a more universal
-> >lookup function, which fits my needs and should be usable for more.
-> I see your point.
-> 
-> overall the patch as it is look good, but recently we added more generic
-> lookups for DT node, looks like part of your patch is un-doing generic
-> device name lookup.
-> 
-> DT node match lookup is in https://git.kernel.org/pub/scm/linux/kernel/git/gregkh/driver-core.git/log/?h=generic_lookup_helpers
+From: Tho Vu <tho.vu.wh@rvc.renesas.com>
 
-these patches are not in Linus tree, yet. I guess they will show up
-in 5.4. No idea how to deal with it right now, do you ?
+When a Tx timestamp is requested, a pointer to the skb is stored in the
+ravb_tstamp_skb struct. This was done without an skb_get. There exists
+the possibility that the skb could be freed by ravb_tx_free (when
+ravb_tx_free is called from ravb_start_xmit) before the timestamp was
+processed, leading to a use-after-free bug.
 
-> Other missing bit is adding this api to documentation in
-> ./Documentation/driver-api/nvmem.rst
+Use skb_get when filling a ravb_tstamp_skb struct, and add appropriate
+frees/consumes when a ravb_tstamp_skb struct is freed.
 
-ok, will do.
+Fixes: c156633f1353 ("Renesas Ethernet AVB driver proper")
+Signed-off-by: Tho Vu <tho.vu.wh@rvc.renesas.com>
+Signed-off-by: Kazuya Mizuguchi <kazuya.mizuguchi.ks@renesas.com>
+Signed-off-by: Simon Horman <horms+renesas@verge.net.au>
+---
+As this is an old bug I am submitting a fix against net-next rather than
+net: I do not see any urgency here. I am however, happy for it to be
+applied against net instead.
+---
+ drivers/net/ethernet/renesas/ravb_main.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Thomas.
-
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index ef8f08931fe8..6cacd5e893ac 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Renesas Ethernet AVB device driver
+  *
+- * Copyright (C) 2014-2015 Renesas Electronics Corporation
++ * Copyright (C) 2014-2019 Renesas Electronics Corporation
+  * Copyright (C) 2015 Renesas Solutions Corp.
+  * Copyright (C) 2015-2016 Cogent Embedded, Inc. <source@cogentembedded.com>
+  *
+@@ -513,7 +513,10 @@ static void ravb_get_tx_tstamp(struct net_device *ndev)
+ 			kfree(ts_skb);
+ 			if (tag == tfa_tag) {
+ 				skb_tstamp_tx(skb, &shhwtstamps);
++				dev_consume_skb_any(skb);
+ 				break;
++			} else {
++				dev_kfree_skb_any(skb);
+ 			}
+ 		}
+ 		ravb_modify(ndev, TCCR, TCCR_TFR, TCCR_TFR);
+@@ -1564,7 +1567,7 @@ static netdev_tx_t ravb_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+ 			}
+ 			goto unmap;
+ 		}
+-		ts_skb->skb = skb;
++		ts_skb->skb = skb_get(skb);
+ 		ts_skb->tag = priv->ts_skb_tag++;
+ 		priv->ts_skb_tag &= 0x3ff;
+ 		list_add_tail(&ts_skb->list, &priv->ts_skb_list);
+@@ -1693,6 +1696,7 @@ static int ravb_close(struct net_device *ndev)
+ 	/* Clear the timestamp list */
+ 	list_for_each_entry_safe(ts_skb, ts_skb2, &priv->ts_skb_list, list) {
+ 		list_del(&ts_skb->list);
++		kfree_skb(ts_skb->skb);
+ 		kfree(ts_skb);
+ 	}
+ 
 -- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+2.11.0
+
