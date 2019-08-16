@@ -2,264 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 970B290027
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 12:42:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62EEB9003E
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 12:51:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726947AbfHPKm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 06:42:26 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:42720 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726565AbfHPKm0 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 06:42:26 -0400
-Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 8438E11D49484912D9A1;
-        Fri, 16 Aug 2019 18:42:14 +0800 (CST)
-Received: from huawei.com (10.175.101.78) by DGGEMS410-HUB.china.huawei.com
- (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Fri, 16 Aug 2019
- 18:42:08 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <jasowang@redhat.com>, <eric.dumazet@gmail.com>,
-        <xiyou.wangcong@gmail.com>, <davem@davemloft.net>,
-        <yangyingliang@huawei.com>, <weiyongjun1@huawei.com>
-Subject: [PATCH v2] tun: fix use-after-free when register netdev failed
-Date:   Fri, 16 Aug 2019 19:00:24 +0800
-Message-ID: <1565953224-104941-1-git-send-email-yangyingliang@huawei.com>
-X-Mailer: git-send-email 1.8.3
+        id S1727127AbfHPKvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 06:51:32 -0400
+Received: from foss.arm.com ([217.140.110.172]:54910 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725897AbfHPKvc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 06:51:32 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4E9B28;
+        Fri, 16 Aug 2019 03:51:30 -0700 (PDT)
+Received: from localhost (unknown [10.37.6.20])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1F1073F706;
+        Fri, 16 Aug 2019 03:51:30 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 11:51:28 +0100
+From:   Andrew Murray <andrew.murray@arm.com>
+To:     Denis Efremov <efremov@linux.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org,
+        linux-pci@vger.kernel.org, Sebastian Ott <sebott@linux.ibm.com>,
+        Gerald Schaefer <gerald.schaefer@de.ibm.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Peter Jones <pjones@redhat.com>,
+        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>, kvm@vger.kernel.org,
+        linux-fbdev@vger.kernel.org, netdev@vger.kernel.org,
+        x86@kernel.org, linux-s390@vger.kernel.org
+Subject: Re: [PATCH v2 00/10] Add definition for the number of standard PCI
+ BARs
+Message-ID: <20190816105128.GD14111@e119886-lin.cambridge.arm.com>
+References: <20190816092437.31846-1-efremov@linux.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.78]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190816092437.31846-1-efremov@linux.com>
+User-Agent: Mutt/1.10.1+81 (426a6c1) (2018-08-26)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a UAF repport in tun driver when doing fuzzy test:
+On Fri, Aug 16, 2019 at 12:24:27PM +0300, Denis Efremov wrote:
+> Code that iterates over all standard PCI BARs typically uses
+> PCI_STD_RESOURCE_END, but this is error-prone because it requires
+> "i <= PCI_STD_RESOURCE_END" rather than something like
+> "i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
+> way PCI_SRIOV_NUM_BARS is used. There is already the definition
+> PCI_BAR_COUNT for s390 only. Thus, this patchset introduces it globally.
+> 
+> Changes in v2:
+>   - Reverse checks in pci_iomap_range,pci_iomap_wc_range.
+>   - Refactor loops in vfio_pci to keep PCI_STD_RESOURCES.
+>   - Add 2 new patches to replace the magic constant with new define.
+>   - Split net patch in v1 to separate stmmac and dwc-xlgmac patches.
+> 
+> Denis Efremov (10):
+>   PCI: Add define for the number of standard PCI BARs
+>   s390/pci: Loop using PCI_STD_NUM_BARS
+>   x86/PCI: Loop using PCI_STD_NUM_BARS
+>   stmmac: pci: Loop using PCI_STD_NUM_BARS
+>   net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
+>   rapidio/tsi721: Loop using PCI_STD_NUM_BARS
+>   efifb: Loop using PCI_STD_NUM_BARS
+>   vfio_pci: Loop using PCI_STD_NUM_BARS
+>   PCI: hv: Use PCI_STD_NUM_BARS
+>   PCI: Use PCI_STD_NUM_BARS
+> 
+>  arch/s390/include/asm/pci.h                      |  5 +----
+>  arch/s390/include/asm/pci_clp.h                  |  6 +++---
+>  arch/s390/pci/pci.c                              | 16 ++++++++--------
+>  arch/s390/pci/pci_clp.c                          |  6 +++---
+>  arch/x86/pci/common.c                            |  2 +-
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  4 ++--
+>  drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c   |  2 +-
+>  drivers/pci/controller/pci-hyperv.c              | 10 +++++-----
+>  drivers/pci/pci.c                                | 11 ++++++-----
+>  drivers/pci/quirks.c                             |  4 ++--
+>  drivers/rapidio/devices/tsi721.c                 |  2 +-
+>  drivers/vfio/pci/vfio_pci.c                      | 11 +++++++----
+>  drivers/vfio/pci/vfio_pci_config.c               | 10 ++++++----
+>  drivers/vfio/pci/vfio_pci_private.h              |  4 ++--
+>  drivers/video/fbdev/efifb.c                      |  2 +-
+>  include/linux/pci.h                              |  2 +-
+>  include/uapi/linux/pci_regs.h                    |  1 +
+>  17 files changed, 51 insertions(+), 47 deletions(-)
 
-[  466.269490] ==================================================================
-[  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
-[  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
-[  466.271810]
-[  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
-[  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[  466.271838] Call Trace:
-[  466.271858]  dump_stack+0xca/0x13e
-[  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271890]  print_address_description+0x79/0x440
-[  466.271906]  ? vprintk_func+0x5e/0xf0
-[  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271935]  __kasan_report+0x15c/0x1df
-[  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271976]  kasan_report+0xe/0x20
-[  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
-[  466.272013]  do_iter_readv_writev+0x4b7/0x740
-[  466.272032]  ? default_llseek+0x2d0/0x2d0
-[  466.272072]  do_iter_read+0x1c5/0x5e0
-[  466.272110]  vfs_readv+0x108/0x180
-[  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
-[  466.299020]  ? fsnotify+0x888/0xd50
-[  466.299040]  ? __fsnotify_parent+0xd0/0x350
-[  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
-[  466.304548]  ? vfs_write+0x264/0x510
-[  466.304569]  ? ksys_write+0x101/0x210
-[  466.304591]  ? do_preadv+0x116/0x1a0
-[  466.304609]  do_preadv+0x116/0x1a0
-[  466.309829]  do_syscall_64+0xc8/0x600
-[  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.309861] RIP: 0033:0x4560f9
-[  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-[  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
-[  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
-[  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
-[  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
-[  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
-[  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
-[  466.323057]
-[  466.323064] Allocated by task 2605:
-[  466.335165]  save_stack+0x19/0x80
-[  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
-[  466.337755]  kmem_cache_alloc+0xe8/0x320
-[  466.339050]  getname_flags+0xca/0x560
-[  466.340229]  user_path_at_empty+0x2c/0x50
-[  466.341508]  vfs_statx+0xe6/0x190
-[  466.342619]  __do_sys_newstat+0x81/0x100
-[  466.343908]  do_syscall_64+0xc8/0x600
-[  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.347034]
-[  466.347517] Freed by task 2605:
-[  466.348471]  save_stack+0x19/0x80
-[  466.349476]  __kasan_slab_free+0x12e/0x180
-[  466.350726]  kmem_cache_free+0xc8/0x430
-[  466.351874]  putname+0xe2/0x120
-[  466.352921]  filename_lookup+0x257/0x3e0
-[  466.354319]  vfs_statx+0xe6/0x190
-[  466.355498]  __do_sys_newstat+0x81/0x100
-[  466.356889]  do_syscall_64+0xc8/0x600
-[  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.359567]
-[  466.360050] The buggy address belongs to the object at ffff888372139100
-[  466.360050]  which belongs to the cache names_cache of size 4096
-[  466.363735] The buggy address is located 336 bytes inside of
-[  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
-[  466.367179] The buggy address belongs to the page:
-[  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
-[  466.371582] flags: 0x2fffff80010200(slab|head)
-[  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
-[  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
-[  466.377778] page dumped because: kasan: bad access detected
-[  466.379730]
-[  466.380288] Memory state around the buggy address:
-[  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.388257]                                                  ^
-[  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.394667] ==================================================================
+I've come across a few more places where this change can be made. There
+may be multiple instances in the same file, but only the first is shown
+below:
 
-tun_chr_read_iter() accessed the memory which freed by free_netdev()
-called by tun_set_iff():
+drivers/misc/pci_endpoint_test.c:       for (bar = BAR_0; bar <= BAR_5; bar++) {
+drivers/net/ethernet/intel/e1000/e1000_main.c:          for (i = BAR_1; i <= BAR_5; i++) {
+drivers/net/ethernet/intel/ixgb/ixgb_main.c:    for (i = BAR_1; i <= BAR_5; i++) {
+drivers/pci/controller/dwc/pci-dra7xx.c:        for (bar = BAR_0; bar <= BAR_5; bar++)
+drivers/pci/controller/dwc/pci-layerscape-ep.c: for (bar = BAR_0; bar <= BAR_5; bar++)
+drivers/pci/controller/dwc/pcie-artpec6.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
+drivers/pci/controller/dwc/pcie-designware-plat.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
+drivers/pci/endpoint/functions/pci-epf-test.c:  for (bar = BAR_0; bar <= BAR_5; bar++) {
+include/linux/pci-epc.h:        u64     bar_fixed_size[BAR_5 + 1];
+drivers/scsi/pm8001/pm8001_hwi.c:       for (bar = 0; bar < 6; bar++) {
+drivers/scsi/pm8001/pm8001_init.c:      for (bar = 0; bar < 6; bar++) {
+drivers/ata/sata_nv.c:  for (bar = 0; bar < 6; bar++)
+drivers/video/fbdev/core/fbmem.c:       for (idx = 0, bar = 0; bar < PCI_ROM_RESOURCE; bar++) {
+drivers/staging/gasket/gasket_core.c:   for (i = 0; i < GASKET_NUM_BARS; i++) {
+drivers/tty/serial/8250/8250_pci.c:     for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) { <-----------
 
-        CPUA                                     CPUB
-    tun_set_iff()
-      alloc_netdev_mqs()
-      tun_attach()
-                                            tun_chr_read_iter()
-                                              tun_get()
-      register_netdevice() <-- inject error
-      tun_detach_all()
-        synchronize_net()
-                                              tun_do_read()
-                                                tun_ring_recv()
-                                                  schedule()
-      free_netdev()
-        netdev_freemem()
-                                              tun_put()
-                                                dev_put() <-- UAF
+It looks like BARs are often iterated with PCI_NUM_BAR_RESOURCES, there
+are a load of these too found with:
 
-Move tun_set_real_num_queues() out of tun_attach() and call it
-before register_netdevice() in tun_set_iff().
+git grep PCI_ROM_RESOURCE | grep "< "
 
-Call tun_attach() after register_netdevice() to make sure tfile->tun
-is not published until the netdevice is registered. So the read/write
-thread can not use the tun pointer that may freed by free_netdev().
-(The tun and dev pointer are allocated by alloc_netdev_mqs(), they can
-be freed by netdev_freemem().)
+I'm happy to share patches if preferred.
 
----
-Changes in v2:
- - add a param in tun_set_real_num_queues()
- - move tun_set_real_num_queues() out of tun_attach()
- - call tun_set_real_num_queues() before register_netdevice()
- - call tun_attach() after register_netdevice()
----
+Thanks,
 
-Cc: Yang Yingliang <yangyingliang@huawei.com>
-Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Suggested-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/tun.c | 38 +++++++++++++++++++++-----------------
- 1 file changed, 21 insertions(+), 17 deletions(-)
+Andrew Murray
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index db16d7a13e00..a19f864c5f8d 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -626,10 +626,11 @@ static inline bool tun_not_capable(struct tun_struct *tun)
- 		!ns_capable(net->user_ns, CAP_NET_ADMIN);
- }
- 
--static void tun_set_real_num_queues(struct tun_struct *tun)
-+static void tun_set_real_num_queues(struct tun_struct *tun,
-+				    unsigned int numqueues)
- {
--	netif_set_real_num_tx_queues(tun->dev, tun->numqueues);
--	netif_set_real_num_rx_queues(tun->dev, tun->numqueues);
-+	netif_set_real_num_tx_queues(tun->dev, numqueues);
-+	netif_set_real_num_rx_queues(tun->dev, numqueues);
- }
- 
- static void tun_disable_queue(struct tun_struct *tun, struct tun_file *tfile)
-@@ -708,7 +709,7 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
- 		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
- 		/* Drop read queue */
- 		tun_queue_purge(tfile);
--		tun_set_real_num_queues(tun);
-+		tun_set_real_num_queues(tun, tun->numqueues);
- 	} else if (tfile->detached && clean) {
- 		tun = tun_enable_queue(tfile);
- 		sock_put(&tfile->sk);
-@@ -873,7 +874,6 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
- 	rcu_assign_pointer(tfile->tun, tun);
- 	rcu_assign_pointer(tun->tfiles[tun->numqueues], tfile);
- 	tun->numqueues++;
--	tun_set_real_num_queues(tun);
- out:
- 	return err;
- }
-@@ -2734,6 +2734,8 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 		if (err < 0)
- 			return err;
- 
-+		tun_set_real_num_queues(tun, tun->numqueues);
-+
- 		if (tun->flags & IFF_MULTI_QUEUE &&
- 		    (tun->numqueues + tun->numdisabled > 1)) {
- 			/* One or more queue has already been attached, no need
-@@ -2828,14 +2830,18 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 			      (ifr->ifr_flags & TUN_FEATURES);
- 
- 		INIT_LIST_HEAD(&tun->disabled);
--		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
--				 ifr->ifr_flags & IFF_NAPI_FRAGS);
--		if (err < 0)
--			goto err_free_flow;
-+
-+		tun_set_real_num_queues(tun, tun->numqueues + 1);
- 
- 		err = register_netdevice(tun->dev);
- 		if (err < 0)
--			goto err_detach;
-+			/* register_netdevice() already called tun_free_netdev() */
-+			goto err_free_dev;
-+
-+		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
-+				 ifr->ifr_flags & IFF_NAPI_FRAGS);
-+		if (err < 0)
-+			goto err_unregister;
- 	}
- 
- 	netif_carrier_on(tun->dev);
-@@ -2851,14 +2857,10 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 	strcpy(ifr->ifr_name, tun->dev->name);
- 	return 0;
- 
--err_detach:
--	tun_detach_all(dev);
--	/* register_netdevice() already called tun_free_netdev() */
--	goto err_free_dev;
-+err_unregister:
-+	unregister_netdevice(dev);
-+	return err;
- 
--err_free_flow:
--	tun_flow_uninit(tun);
--	security_tun_dev_free_security(tun->security);
- err_free_stat:
- 	free_percpu(tun->pcpu_stats);
- err_free_dev:
-@@ -2979,6 +2981,8 @@ static int tun_set_queue(struct file *file, struct ifreq *ifr)
- 			goto unlock;
- 		ret = tun_attach(tun, file, false, tun->flags & IFF_NAPI,
- 				 tun->flags & IFF_NAPI_FRAGS);
-+		if (!ret)
-+			tun_set_real_num_queues(tun, tun->numqueues);
- 	} else if (ifr->ifr_flags & IFF_DETACH_QUEUE) {
- 		tun = rtnl_dereference(tfile->tun);
- 		if (!tun || !(tun->flags & IFF_MULTI_QUEUE) || tfile->detached)
--- 
-2.17.1
-
+> 
+> -- 
+> 2.21.0
+> 
