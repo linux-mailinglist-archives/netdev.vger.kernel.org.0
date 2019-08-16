@@ -2,171 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C59F90765
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 20:01:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 608999076E
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 20:03:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727493AbfHPSBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 14:01:24 -0400
-Received: from mga09.intel.com ([134.134.136.24]:25703 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727067AbfHPSBY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 14:01:24 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Aug 2019 11:01:23 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,394,1559545200"; 
-   d="p7s'?scan'208";a="201608953"
-Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
-  by fmsmga004.fm.intel.com with ESMTP; 16 Aug 2019 11:01:23 -0700
-Received: from orsmsx123.amr.corp.intel.com (10.22.240.116) by
- ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Fri, 16 Aug 2019 11:01:22 -0700
-Received: from orsmsx116.amr.corp.intel.com ([169.254.7.85]) by
- ORSMSX123.amr.corp.intel.com ([169.254.1.245]) with mapi id 14.03.0439.000;
- Fri, 16 Aug 2019 11:01:22 -0700
-From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
-To:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
-CC:     "nhorman@redhat.com" <nhorman@redhat.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
-        "Bowers, AndrewX" <andrewx.bowers@intel.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "sassmann@redhat.com" <sassmann@redhat.com>,
-        "Tieman, Henry W" <henry.w.tieman@intel.com>
-Subject: Re: [net-next 01/15] ice: Implement ethtool ops for channels
-Thread-Topic: [net-next 01/15] ice: Implement ethtool ops for channels
-Thread-Index: AQHVTuC3HE5wxf7L2Uqpc1QipS81DKbzxq4AgARQHgCAAHolAIAF/9yA
-Date:   Fri, 16 Aug 2019 18:01:22 +0000
-Message-ID: <86c85e1835764d7b147567e907681d74d315babc.camel@intel.com>
-References: <20190809183139.30871-1-jeffrey.t.kirsher@intel.com>
-         <20190809183139.30871-2-jeffrey.t.kirsher@intel.com>
-         <20190809141518.55fe7f8a@cakuba.netronome.com>
-         <8a72e5d0ee26743dc5a896a426a55e6e9660f4d2.camel@intel.com>
-         <20190812152416.35f98091@cakuba.netronome.com>
-In-Reply-To: <20190812152416.35f98091@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.166.244.155]
-Content-Type: multipart/signed; micalg=sha-1;
-        protocol="application/x-pkcs7-signature"; boundary="=-ealUzZJMVdrrT//P3mZq"
+        id S1727574AbfHPSDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 14:03:30 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:46428 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727451AbfHPSDa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 14:03:30 -0400
+Received: by mail-pg1-f193.google.com with SMTP id m3so2709949pgv.13
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 11:03:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=3Kz/XOyz7LZ0pcUiL3uYqVXSGf72BjYZb+6cd6xy5cA=;
+        b=VssH97Aa1l5+/qAKrdEV2xBU0FSV5oqLPtio7jR0gHpBsIjF0+Xds6ulGNhQ+VtpCc
+         GuSSVmASgP4mwjk/Dd15Ke1AV9sY9OfFoEZsM1OIBajZMouxpYfTS5KVNqifD1GnQhD7
+         8AexrzxK9CwKKJFLhRi5ftO60HJrpUyGh/Z3c=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3Kz/XOyz7LZ0pcUiL3uYqVXSGf72BjYZb+6cd6xy5cA=;
+        b=VDh0+SM7eYXWbEIRb23t4EXSD9xSmWkv4D9HGkxGKTg9TI9c19QUo5Ub8r4e5xWJGZ
+         PZwLHTyADp3bX7SmUVoza5qFRMIdFjxJIjCIHpWoMoCLDVFLZgc2lg9ziFT0jJ1imRXf
+         2zgB4nrvaItqpv5/97spVtHBFSVSQ/WItaYlXT94ZjhnBJ/M5NSLL83ApV5HL75Pl8yC
+         +2PJsZakwa92IW+xaBzVVRoR5SvNkLcuWzoKudq3EGYmrjp0nqlveLNS7aMicBB0n7+W
+         8ASonTu1gMHzgJpLwPSZK70Adgd7ro+MFrETKkLybe2E3l0zXJU1r7yyiT1CJF/KLYqv
+         xatQ==
+X-Gm-Message-State: APjAAAVXKznspaC2B3FiHMmj7zoHSu8c0vsqVfjOu+AKOX1Hr2s7yUbr
+        uvfBtNY7ed0nX2zJ9pGVILl4Pw==
+X-Google-Smtp-Source: APXvYqxSlv62Xa3cqpk6BDBCnRroF7ZbQBXX0NszVmMx/QCm1xioP5tJe2sDAo/jhKWeeJwvhj+jJQ==
+X-Received: by 2002:a17:90a:17e2:: with SMTP id q89mr8579319pja.8.1565978609675;
+        Fri, 16 Aug 2019 11:03:29 -0700 (PDT)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id j10sm6515262pfn.188.2019.08.16.11.03.28
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 16 Aug 2019 11:03:28 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 11:03:27 -0700
+From:   Kees Cook <keescook@chromium.org>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: linux-next: manual merge of the net-next tree with the kbuild
+ tree
+Message-ID: <201908161101.31674596CC@keescook>
+References: <20190816124143.2640218a@canb.auug.org.au>
+ <CAEf4BzY9dDZF-DBDmuQQz0Rcx3DNGvQn_GLr0Uar1PAbAf2iig@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzY9dDZF-DBDmuQQz0Rcx3DNGvQn_GLr0Uar1PAbAf2iig@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-ealUzZJMVdrrT//P3mZq
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Thu, Aug 15, 2019 at 10:21:29PM -0700, Andrii Nakryiko wrote:
+> On Thu, Aug 15, 2019 at 7:42 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+> >
+> > Hi all,
+> >
+> > Today's linux-next merge of the net-next tree got a conflict in:
+> >
+> >   scripts/link-vmlinux.sh
+> >
+> > between commit:
+> >
+> >   e167191e4a8a ("kbuild: Parameterize kallsyms generation and correct reporting")
+> >
+> > from the kbuild tree and commits:
+> >
+> >   341dfcf8d78e ("btf: expose BTF info through sysfs")
+> >   7fd785685e22 ("btf: rename /sys/kernel/btf/kernel into /sys/kernel/btf/vmlinux")
+> >
+> > from the net-next tree.
+> >
+> > I fixed it up (I think - see below) and can carry the fix as necessary.
+> 
+> Thanks, Stephen! Looks good except one minor issue below.
+> 
+> > This is now fixed as far as linux-next is concerned, but any non trivial
+> > conflicts should be mentioned to your upstream maintainer when your tree
+> > is submitted for merging.  You may also want to consider cooperating
+> > with the maintainer of the conflicting tree to minimise any particularly
+> > complex conflicts.
+> >
+> > --
+> > Cheers,
+> > Stephen Rothwell
+> >
+> > diff --cc scripts/link-vmlinux.sh
+> > index 2438a9faf3f1,c31193340108..000000000000
+> > --- a/scripts/link-vmlinux.sh
+> > +++ b/scripts/link-vmlinux.sh
+> > @@@ -56,11 -56,10 +56,11 @@@ modpost_link(
+> >   }
+> >
+> >   # Link of vmlinux
+> > - # ${1} - optional extra .o files
+> > - # ${2} - output file
+> > + # ${1} - output file
+> > + # ${@:2} - optional extra .o files
+> >   vmlinux_link()
+> >   {
+> >  +      info LD ${2}
+> 
+> This needs to be ${1}.
+> 
+> >         local lds="${objtree}/${KBUILD_LDS}"
+> >         local objects
+> >
+> > @@@ -139,18 -149,6 +150,18 @@@ kallsyms(
+> >         ${CC} ${aflags} -c -o ${2} ${afile}
+> >   }
+> >
+> >  +# Perform one step in kallsyms generation, including temporary linking of
+> >  +# vmlinux.
+> >  +kallsyms_step()
+> >  +{
+> >  +      kallsymso_prev=${kallsymso}
+> >  +      kallsymso=.tmp_kallsyms${1}.o
+> >  +      kallsyms_vmlinux=.tmp_vmlinux${1}
+> >  +
+> > -       vmlinux_link "${kallsymso_prev}" ${kallsyms_vmlinux}
+> > ++      vmlinux_link ${kallsyms_vmlinux} "${kallsymso_prev}" ${btf_vmlinux_bin_o}
 
-On Mon, 2019-08-12 at 15:24 -0700, Jakub Kicinski wrote:
-> On Mon, 12 Aug 2019 15:07:09 +0000, Nguyen, Anthony L wrote:
-> > On Fri, 2019-08-09 at 14:15 -0700, Jakub Kicinski wrote:
-> > > On Fri,  9 Aug 2019 11:31:25 -0700, Jeff Kirsher wrote: =20
-> > > > From: Henry Tieman <henry.w.tieman@intel.com>
-> > > >=20
-> > > > Add code to query and set the number of queues on the primary
-> > > > VSI for a PF. This is accessed from the 'ethtool -l' and
-> > > > 'ethtool
-> > > > -L'
-> > > > commands, respectively.
-> > > >=20
-> > > > Signed-off-by: Henry Tieman <henry.w.tieman@intel.com>
-> > > > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
-> > > > Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-> > > > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com> =20
-> > >=20
-> > > If you're using the same IRQ vector for RX and TX queue the
-> > > channel
-> > > counts as combined. Looks like you are counting RX and TX
-> > > separately
-> > > here. That's incorrect. =20
-> >=20
-> > Hi Jakub,
-> >=20
-> > The ice driver can support asymmetric queues.  We report these
-> > seperately, as opposed to combined, so that the user can specify a
-> > different number of Rx and Tx queues.
->=20
-> If you have 20 IRQ vectors, 10 TX queues and 20 RX queues, the first
-> 10
-> RX queues share a IRQ vector with TX queues the ethool API counts
-> them
-> as 10 combined and 10 rx-only.=20
->=20
-> 10 tx-only and 20 rx-only would require 30 IRQ vectors.
+Good cleanup on the "optional .o files" reordering! With your ordering
+change, I think the ""s around ${kallsymso_prev} here are no longer needed
+(which makes it read a bit more nicely).
 
-Thanks for the feedback Jakub.  We are looking into this.
+> >  +      kallsyms ${kallsyms_vmlinux} ${kallsymso}
+> >  +}
+> >  +
+> >   # Create map file with all symbols from ${1}
+> >   # See mksymap for additional details
+> >   mksysmap()
+> > @@@ -228,8 -227,14 +240,15 @@@ ${MAKE} -f "${srctree}/scripts/Makefile
+> >   info MODINFO modules.builtin.modinfo
+> >   ${OBJCOPY} -j .modinfo -O binary vmlinux.o modules.builtin.modinfo
+> >
+> > + btf_vmlinux_bin_o=""
+> > + if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
+> > +       if gen_btf .tmp_vmlinux.btf .btf.vmlinux.bin.o ; then
+> > +               btf_vmlinux_bin_o=.btf.vmlinux.bin.o
+> > +       fi
+> > + fi
+> > +
+> >   kallsymso=""
+> >  +kallsymso_prev=""
+> >   kallsyms_vmlinux=""
+> >   if [ -n "${CONFIG_KALLSYMS}" ]; then
+> >
+> > @@@ -268,11 -285,8 +287,7 @@@
+> >         fi
+> >   fi
+> >
+> > - vmlinux_link "${kallsymso}" vmlinux
+> > -
+> > - if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
+> > -       gen_btf vmlinux
+> > - fi
+> >  -info LD vmlinux
+> > + vmlinux_link vmlinux "${kallsymso}" "${btf_vmlinux_bin_o}"
 
--Tony
+And, I think, also not here for either trailing argument.
 
---=-ealUzZJMVdrrT//P3mZq
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
+> >
+> >   if [ -n "${CONFIG_BUILDTIME_EXTABLE_SORT}" ]; then
+> >         info SORTEX vmlinux
 
-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
-UDSWFPJn1IonMumCuP0DYWGYiGS8dKTJMMh2WA2XVewXVn0JQTWQDpckAOkmi+A0RwpZzYJ0Y3gT
-AgMBAAGjggI2MIICMjAdBgNVHQ4EFgQUydTU8+nnPeJE0ndEkV7rlhV6p30wHwYDVR0jBBgwFoAU
-HmkqtNwo/kcYTiELP7ysES/wmPUwZQYDVR0fBF4wXDBaoFigVoZUaHR0cDovL3d3dy5pbnRlbC5j
-b20vcmVwb3NpdG9yeS9DUkwvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENB
-JTIwNEEuY3JsMIGeBggrBgEFBQcBAQSBkTCBjjBpBggrBgEFBQcwAoZdaHR0cDovL3d3dy5pbnRl
-bC5jb20vcmVwb3NpdG9yeS9jZXJ0aWZpY2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIw
-SXNzdWluZyUyMENBJTIwNEEuY3J0MCEGCCsGAQUFBzABhhVodHRwOi8vb2NzcC5pbnRlbC5jb20w
-CwYDVR0PBAQDAgeAMDwGCSsGAQQBgjcVBwQvMC0GJSsGAQQBgjcVCIbDjHWEmeVRg/2BKIWOn1OC
-kcAJZ4HevTmV8EMCAWQCAQkwHwYDVR0lBBgwFgYIKwYBBQUHAwQGCisGAQQBgjcKAwwwKQYJKwYB
-BAGCNxUKBBwwGjAKBggrBgEFBQcDBDAMBgorBgEEAYI3CgMMMFEGA1UdEQRKMEigKgYKKwYBBAGC
-NxQCA6AcDBphbnRob255Lmwubmd1eWVuQGludGVsLmNvbYEaYW50aG9ueS5sLm5ndXllbkBpbnRl
-bC5jb20wDQYJKoZIhvcNAQEFBQADggEBALLF5b7PLd6kEWuQRkEq6eZpohKWRkfC9DyLiwS+HaeH
-9euNcIqpV4xrMXM6mPqs3AHRb9ibqUPo3wQMtHph35RRsmY7ENk9FxF/W8Ov5ZVPyW0rFiRsnr1C
-QVc08YqXp1dlbQGf8nvJn8ryCwjNpw0CTQcGHXrL/YnboLu8+R9RdBue/HIlP4g0pyAC/8YOie04
-PVo4flU2CGMYilm1euQ6OV8WRA2CKgvRVp/DZEzTqnmDvy12efG74bmMzXAvDv2I53TR5ltDpx5X
-B8uO1XlhOrj+Z3mSi85eblWWhJlq6+TQH/hZWSiyZH2lo3J49oHClTlk86GUEIUp/sf5v5cxggIX
-MIICEwIBATCBkDB5MQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFDASBgNVBAcTC1NhbnRhIENs
-YXJhMRowGAYDVQQKExFJbnRlbCBDb3Jwb3JhdGlvbjErMCkGA1UEAxMiSW50ZWwgRXh0ZXJuYWwg
-QmFzaWMgSXNzdWluZyBDQSA0QQITMwAA0J5PWjT/SLEH2wAAAADQnjAJBgUrDgMCGgUAoF0wGAYJ
-KoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwODE2MTgwMTE5WjAjBgkq
-hkiG9w0BCQQxFgQULfdcDjecdftgimycPJeRdkD+MUIwDQYJKoZIhvcNAQEBBQAEggEALdCA+FRs
-vzhNsc81ulI2nPvNI6KBvVYF7DyHbGqfb9+XI2YVf8NxdX+TkKqgU8gKT6dzbq4eSs8KQLj4qncE
-RgkqpSLcKofic7MyiV9eJwYpSo4fkW3lf1SP8u45dbF7ey3f4kvVO9NFIDnFMLDzXAgf3ivJVJgi
-qkuLY+TMMv6ozA9vi8BFSO/MhASifSAPe6peJ4Zdp56lHPCwrNkz7vcNYRu7h8rw5zOKhP+SBvrT
-UJk5p0+7gfndzGW8V85OYG3+tjD+YvHQde/hVWLT/mPPXCPlUxr7eaJTi4QeqEQj9os15ta3zdSr
-Tv2FILTAeAZ4yNVuupR5wHZrpONVOAAAAAAAAA==
+-Kees
 
-
---=-ealUzZJMVdrrT//P3mZq--
+-- 
+Kees Cook
