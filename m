@@ -2,53 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36777901B4
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 14:35:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52698901BF
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 14:38:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727365AbfHPMfn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 08:35:43 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:44504 "EHLO
+        id S1727243AbfHPMh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 08:37:59 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:42013 "EHLO
         mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726981AbfHPMfn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 08:35:43 -0400
-Received: by mail-ed1-f65.google.com with SMTP id a21so4970466edt.11;
-        Fri, 16 Aug 2019 05:35:42 -0700 (PDT)
+        with ESMTP id S1726981AbfHPMh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 08:37:59 -0400
+Received: by mail-ed1-f65.google.com with SMTP id m44so4983686edd.9;
+        Fri, 16 Aug 2019 05:37:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aopwDoWmGMmSqryhB3TtenNCf2ffEFD0Q7hDjwb+d9I=;
-        b=oc2RnDRwEX58ApA+IPs6AwXrLlraAXBAFiBhEQkR+vMPPswi1KHmrlIBZ5Bus3GaRw
-         r1ns5pZmPWiH8Zi7nKaAxvFaqXEg/X3sDuQxV0Unv3vy99d91StdatATDuTdNglRPS2o
-         wMHYLzG8UM/JFAOLZPdOY6zF/7wB28SJ1vfwdWWISoDrDIyzPaEvN0Q9mpx5VQoNd6vO
-         i0uhO1UaGn6aN7C6JNnbAr3KqEWZSCV6ISCtxjMUdrEWS1d3skivNbhtg03EYSI2+XiZ
-         +Kbbfyxkl+wulZeoRq6lgzDOztsy7OUxxuYTwH0tPcGBlsg1kxmlvTYcSrwtAYQM/9A+
-         npXA==
+        bh=aT3jGG1YNcHwcyTnJmTqzndCbFRkZE1GryxTRKjRC44=;
+        b=MGnpH0iy4SRhnjY6YG8W5zBbE7lgLdoyttUmgLOZTBEBWklUL5cQb9AObOdrzee672
+         ZU4SlhvmtdSCTSPf/kbR0aGWiGVfaDpPtmUa74uoNY7uG2oaMjFoRZoQ2AOLvglt0pTn
+         FnysPTSP5rK4ha6EBjtuOYC6Q95z3+0421sMFtgvrvPfkMtP1jvqar0KwjUQhxjqhf1c
+         JSU2V0SwYNWueQghJ/E64nFSlPWRi2uP/kWhrQv2JttVzLlAHZXnUj112tvn2HeRNzIx
+         +GkTnP3Cz9JBFX8p03C4R4fwlK+AYQyqTekm72wbTk5IlHsjzjImBvOizlzgIFnanSXS
+         jhJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aopwDoWmGMmSqryhB3TtenNCf2ffEFD0Q7hDjwb+d9I=;
-        b=WOh06djX87coaYfp2CWX2bXUbHk6cAdbAP352QwmsxNlXWoz93BJ3a0QrNm3IYXaFr
-         0r+KfCHOJRgnuE62mwrZs9YZNgBIpTKogS+TQOTQ8glmz7XM0SrkyCso7pJx8UBnVq/h
-         HzhoYq/e/Ytzv0+R2uCt/oUuh+mzUKTg9gm61pxrdo9uvQefj/Zu78mhG+d3cwsb+/yH
-         7AxGZQAw3sBwWqT6DwmzZfbXDSfaPKYaP0YnpqXosayGCTBK8Sv+4et2zl4zCBDQpwEH
-         9xwAUN8m3RSv4de9u75cWPcrn0GULLkdQFBC7nTGjzfDFga7suG8yyQy171uth4WeoHt
-         vmDw==
-X-Gm-Message-State: APjAAAWxsPJHXcwwOn2Jc50UYIgZ2wkPeHE+lryCMEycuz7NR53tEIcf
-        ITGaRQNmn+7qpYkL8SSf1OdzXw+alkRosVKplNU=
-X-Google-Smtp-Source: APXvYqzyOHKvO7geFWMkb7zQnrojx1lyottfgcoRJmX6ObUBtlXG9tt7k03kTrXvbgOEQXFoU+9TxH5OeO+SRL7oAnY=
-X-Received: by 2002:a17:907:2069:: with SMTP id qp9mr8954773ejb.90.1565958941334;
- Fri, 16 Aug 2019 05:35:41 -0700 (PDT)
+        bh=aT3jGG1YNcHwcyTnJmTqzndCbFRkZE1GryxTRKjRC44=;
+        b=hbhynUZew2vzQkkhVMK4B2kKIrhjpkFb2dOkf4IX/9X8rdOPWMYWJHAZ127SxUSNDw
+         LGjIaJ15LCeSSmQ2zbuf8DpM0TU2TToguJBlpLHVO1aX9Zfo3QcNyMxUekQP4ebo9zbH
+         EoyL/BrkAon5Hf5wHrA5y32i7Cvx65L2FCUiddgzz2p7Q6wsmMzIk1uqvePPUHM7VnO2
+         uHO9FKfeUw6kYfiF4JgRUB75/nOGS2K+gV2h56WzmE1H9dW/hev+AgWcgcYYbNQn2eWi
+         yBuxt9kq7+rKYwZadMhC/S9GRX7GfBBhmfuKGHFyzbJN2bgio/lCPKriiyuUpOnngjLt
+         Ojuw==
+X-Gm-Message-State: APjAAAXm9aTVy400SK3cOkwOyBkHhzkMFaowihFV8Ufd08w3EkjjsVaC
+        sns+V+aG8L6sy2O+SVkVq+VP8nyiuFLVDQbgoOI=
+X-Google-Smtp-Source: APXvYqweKlLMG8XDoYHQkkr7XvayGS1UCf+qnxoZiAw/uATvp93SN67Fb5wnSisUWCgZi4Y0a8g8WQ9K6lARrMTUtkw=
+X-Received: by 2002:a17:906:d298:: with SMTP id ay24mr9162561ejb.230.1565959077466;
+ Fri, 16 Aug 2019 05:37:57 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190816004449.10100-1-olteanv@gmail.com> <20190816004449.10100-4-olteanv@gmail.com>
- <20190816121837.GD4039@sirena.co.uk>
-In-Reply-To: <20190816121837.GD4039@sirena.co.uk>
+References: <20190816004449.10100-1-olteanv@gmail.com> <20190816004449.10100-5-olteanv@gmail.com>
+ <20190816122103.GE4039@sirena.co.uk>
+In-Reply-To: <20190816122103.GE4039@sirena.co.uk>
 From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 16 Aug 2019 15:35:30 +0300
-Message-ID: <CA+h21hqatTeS2shV9QSiPzkjSeNj2Z4SOTrycffDjRHj=9s=nQ@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 03/11] spi: Add a PTP system timestamp to the
- transfer structure
+Date:   Fri, 16 Aug 2019 15:37:46 +0300
+Message-ID: <CA+h21hoP3t6j2mTd2BLwizqbFap+9Z2vdxQ4ahHS3-7Vr31Lxw@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 04/11] spi: spi-fsl-dspi: Cosmetic cleanup
 To:     Mark Brown <broonie@kernel.org>
 Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
         Richard Cochran <richardcochran@gmail.com>,
@@ -63,40 +62,28 @@ X-Mailing-List: netdev@vger.kernel.org
 
 Hi Mark,
 
-On Fri, 16 Aug 2019 at 15:18, Mark Brown <broonie@kernel.org> wrote:
+On Fri, 16 Aug 2019 at 15:21, Mark Brown <broonie@kernel.org> wrote:
 >
-> On Fri, Aug 16, 2019 at 03:44:41AM +0300, Vladimir Oltean wrote:
+> On Fri, Aug 16, 2019 at 03:44:42AM +0300, Vladimir Oltean wrote:
+> > This patch addresses some cosmetic issues:
+> > - Alignment
+> > - Typos
+> > - (Non-)use of BIT() and GENMASK() macros
+> > - Unused definitions
+> > - Unused includes
+> > - Abuse of ternary operator in detriment of readability
+> > - Reduce indentation level
 >
-> > @@ -842,6 +843,9 @@ struct spi_transfer {
-> >
-> >       u32             effective_speed_hz;
-> >
-> > +     struct ptp_system_timestamp *ptp_sts;
-> > +     unsigned int    ptp_sts_word_offset;
-> > +
->
-> You've not documented these fields at all so it's not clear what the
-> intended usage is.
+> This is difficult to review since there's a bunch of largely unrelated
+> changes all munged into one patch.  It'd be better to split this up so
+> each change makes one kind of fix, and better to do this separately to
+> the rest of the series.  In particular having alignment changes along
+> with other changes hurts reviewability as it's less immediately clear
+> what's a like for liken substitution.
 
-Thanks for looking into this.
-Indeed I didn't document them as the patch is part of a RFC and I
-thought the purpose was more clear from the context (cover letter
-etc).
-If I do ever send a patchset for submission I will document the newly
-introduced fields properly.
-So let me clarify:
-The SPI slave device driver is populating these fields to indicate to
-the controller driver that it wants word number @ptp_sts_word_offset
-from the tx buffer snapshotted. The controller driver is supposed to
-put the snapshot into the @ptp_sts field, which is a pointer to a
-memory location under the control of the SPI slave device driver.
-It is ok if the ptp_sts pointer is NULL (no need to check), because
-the API for taking snapshots already checks for that.
-At the moment there is yet no proposed mechanism for the SPI slave
-driver to ensure that the controller will really act upon this
-request. That would be really nice to have, since some SPI slave
-devices are time-sensitive and warning early is a good way to prevent
-unnecessary troubleshooting.
+Yes, the diff of this patch looks relatively bad. But I don't know if
+splitting it in more patches isn't in fact going to pollute the git
+history, so I can just as well drop it.
 
 Regards,
 -Vladimir
