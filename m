@@ -2,62 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 31B639066B
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 19:05:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5029190674
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 19:08:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727200AbfHPRFX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 13:05:23 -0400
-Received: from mail.nic.cz ([217.31.204.67]:33740 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726447AbfHPRFW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 13:05:22 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 394B9140CDF;
-        Fri, 16 Aug 2019 19:05:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1565975121; bh=x8L86W80XXo3KBte8Ib77YU49u6r2jeJ7zT2GiMxzlE=;
-        h=Date:From:To;
-        b=LjjpsjqMwAmnEG3qD6ftr5Di8Fwn29BhCn1shkVqfIu1iDTe1HSRLOwiI+vb+oxJa
-         fHQMNad2yX9IrnHawUnIfYwDPS/ataHMR9C2TRUYf0nssKCjerTwWKy05CSwpUDdNI
-         B73a7v3xIU3tnVhAMnE+PI97w456HtQgwVsXV/mY=
-Date:   Fri, 16 Aug 2019 19:05:20 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Subject: Re: [PATCH RFC net-next 3/3] net: dsa: mv88e6xxx: setup SERDES irq
- also for CPU/DSA ports
-Message-ID: <20190816190520.57958fde@nic.cz>
-In-Reply-To: <20190816122552.GC629@t480s.localdomain>
-References: <20190816150834.26939-1-marek.behun@nic.cz>
-        <20190816150834.26939-4-marek.behun@nic.cz>
-        <20190816122552.GC629@t480s.localdomain>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727347AbfHPRIa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 13:08:30 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37865 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726469AbfHPRI3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 13:08:29 -0400
+Received: by mail-pl1-f194.google.com with SMTP id bj8so2691286plb.4;
+        Fri, 16 Aug 2019 10:08:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VztW51XA4vx8PX2Mz/t0kTb9/SRjKZo7CzRhZxpblX0=;
+        b=bouj+2M9urBXvFJ5K/O+dTYmgXzSr+S/Ik2NQmrSHdA+X8BQNiSjgUoZxa8GiMPriu
+         CBgo/N1EhJx+V94t9m/R1qSNOn+eEi+t6k9/pADkP6PE+aKyKatcgNzMhmnPTWidKCFZ
+         WgFq87i27xHJ/ELaXrcmM62qmDTxZMDFsPbY/FB26AvFcPIA9dlLpTyFb9jA0G9FBXb0
+         v2+j5KYKykm3C47py0M1pPrqmWk+dQNT96uUiOKVqkh5h+xFS5xsJ5HouGhvEsDZghJ3
+         PmKgk6Q7KAzZZKhwsXtHTZTSpYi/LgjowIIr2qxwlsKOIuOPpkPm6Mr1bEnviZjUJyU1
+         l2UQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VztW51XA4vx8PX2Mz/t0kTb9/SRjKZo7CzRhZxpblX0=;
+        b=Q4Q4pxH9BHOo5oxqV/4+sM52fH7+M3inmeMYZkxalzTTCesVV+evmCXjkeMTX9hJJw
+         zaaJI1Qa3tcBBWY0OBZAz/jFhTr+HaUMG3GIPbBgSC+/p7ry1K8L64HW+Jf6b1dQA/eY
+         EYmuZaWrro1Ela2VaROi9MWLiANJmXx/7+4ZFU8hWogndemzQMhP/vQWvuqV+KM5NAAa
+         J7Zf8H1oFeBb8ATHXq+iAWyMuXb1u9n8JLiAgEM2PA+4OmHVGDa68CcKOzqJckvcNi34
+         HSezN2R7qNeaxcCitSsEq9aWwD/zwEvQu9o6Tq92HOeTu5cBf6VyUowPl0TQqgcmL3eV
+         zpFg==
+X-Gm-Message-State: APjAAAXX2hF+6kdE5rGpNtbM1+6E4hI/0oLGOiSWusobwpV5Rdkwe5Xb
+        0mR4hTQzisMKFPW9tsbl2JWubab+
+X-Google-Smtp-Source: APXvYqwIeDQKZJbyVJjTXgFuAPjG2NNPGJortHgJf9lEnuPVu86cfNOCfw67hVgMbc52foDzfAWGPw==
+X-Received: by 2002:a17:902:1107:: with SMTP id d7mr10149403pla.184.1565975308839;
+        Fri, 16 Aug 2019 10:08:28 -0700 (PDT)
+Received: from ppenkov.svl.corp.google.com ([2620:15c:2c4:201:7bd4:4f27:abe4:d695])
+        by smtp.gmail.com with ESMTPSA id e13sm7194113pff.181.2019.08.16.10.08.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Aug 2019 10:08:28 -0700 (PDT)
+From:   Petar Penkov <ppenkov.kernel@gmail.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        sdf@google.com, Petar Penkov <ppenkov@google.com>
+Subject: [bpf-next,v2] selftests/bpf: fix race in test_tcp_rtt test
+Date:   Fri, 16 Aug 2019 10:08:25 -0700
+Message-Id: <20190816170825.22500-1-ppenkov.kernel@gmail.com>
+X-Mailer: git-send-email 2.23.0.rc1.153.gdeed80330f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
-        shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Aug 2019 12:25:52 -0400
-Vivien Didelot <vivien.didelot@gmail.com> wrote:
+From: Petar Penkov <ppenkov@google.com>
 
-> So now we have mv88e6xxx_setup_port() and mv88e6xxx_port_setup(), which both
-> setup a port, differently, at different time. This is definitely error prone.
+There is a race in this test between receiving the ACK for the
+single-byte packet sent in the test, and reading the values from the
+map.
 
-Hmm. I don't know how much of mv88e6xxx_setup_port() could be moved to
-this new port_setup(), since there are other setup functions called in
-mv88e6xxx_setup() that can possibly depend on what was done by
-mv88e6xxx_setup_port().
+This patch fixes this by having the client wait until there are no more
+unacknowledged packets.
 
-Maybe the new DSA operations should be called .after_setup()
-and .before_teardown(), and be called just once for the whole switch,
-not for each port?
+Before:
+for i in {1..1000}; do ../net/in_netns.sh ./test_tcp_rtt; \
+done | grep -c PASSED
+< trimmed error messages >
+993
+
+After:
+for i in {1..10000}; do ../net/in_netns.sh ./test_tcp_rtt; \
+done | grep -c PASSED
+10000
+
+Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
+Signed-off-by: Petar Penkov <ppenkov@google.com>
+---
+ tools/testing/selftests/bpf/test_tcp_rtt.c | 31 ++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+
+diff --git a/tools/testing/selftests/bpf/test_tcp_rtt.c b/tools/testing/selftests/bpf/test_tcp_rtt.c
+index 90c3862f74a8..93916a69823e 100644
+--- a/tools/testing/selftests/bpf/test_tcp_rtt.c
++++ b/tools/testing/selftests/bpf/test_tcp_rtt.c
+@@ -6,6 +6,7 @@
+ #include <sys/types.h>
+ #include <sys/socket.h>
+ #include <netinet/in.h>
++#include <netinet/tcp.h>
+ #include <pthread.h>
+ 
+ #include <linux/filter.h>
+@@ -34,6 +35,30 @@ static void send_byte(int fd)
+ 		error(1, errno, "Failed to send single byte");
+ }
+ 
++static int wait_for_ack(int fd, int retries)
++{
++	struct tcp_info info;
++	socklen_t optlen;
++	int i, err;
++
++	for (i = 0; i < retries; i++) {
++		optlen = sizeof(info);
++		err = getsockopt(fd, SOL_TCP, TCP_INFO, &info, &optlen);
++		if (err < 0) {
++			log_err("Failed to lookup TCP stats");
++			return err;
++		}
++
++		if (info.tcpi_unacked == 0)
++			return 0;
++
++		usleep(10);
++	}
++
++	log_err("Did not receive ACK");
++	return -1;
++}
++
+ static int verify_sk(int map_fd, int client_fd, const char *msg, __u32 invoked,
+ 		     __u32 dsack_dups, __u32 delivered, __u32 delivered_ce,
+ 		     __u32 icsk_retransmits)
+@@ -149,6 +174,11 @@ static int run_test(int cgroup_fd, int server_fd)
+ 			 /*icsk_retransmits=*/0);
+ 
+ 	send_byte(client_fd);
++	if (wait_for_ack(client_fd, 100) < 0) {
++		err = -1;
++		goto close_client_fd;
++	}
++
+ 
+ 	err += verify_sk(map_fd, client_fd, "first payload byte",
+ 			 /*invoked=*/2,
+@@ -157,6 +187,7 @@ static int run_test(int cgroup_fd, int server_fd)
+ 			 /*delivered_ce=*/0,
+ 			 /*icsk_retransmits=*/0);
+ 
++close_client_fd:
+ 	close(client_fd);
+ 
+ close_bpf_object:
+-- 
+2.23.0.rc1.153.gdeed80330f-goog
+
