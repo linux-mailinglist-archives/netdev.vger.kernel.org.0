@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 669448FBA5
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 09:05:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0AA068FBB0
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 09:07:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbfHPHFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 03:05:43 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:47643 "EHLO
+        id S1727052AbfHPHG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 03:06:26 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:52901 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726826AbfHPHFn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 03:05:43 -0400
+        with ESMTP id S1725945AbfHPHG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 03:06:26 -0400
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1hyWIu-0001D4-7p; Fri, 16 Aug 2019 09:05:40 +0200
+        id 1hyWJY-0001KP-Lx; Fri, 16 Aug 2019 09:06:20 +0200
 Received: from [IPv6:2001:67c:670:202:595f:209f:a34b:fbc1] (unknown [IPv6:2001:67c:670:202:595f:209f:a34b:fbc1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
          client-signature RSA-PSS (4096 bits))
         (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
         (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id C1900446431;
-        Fri, 16 Aug 2019 07:05:38 +0000 (UTC)
-Subject: Re: [PATCH] can: flexcan: add LPSR mode support for i.MX7D
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
-        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc:     "wg@grandegger.com" <wg@grandegger.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>
-References: <20190731055401.15454-1-qiangqing.zhang@nxp.com>
- <DB7PR04MB46188FBD9DC87E620BBA8838E6AF0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 1BB8A446436;
+        Fri, 16 Aug 2019 07:06:18 +0000 (UTC)
+Subject: Re: [PATCH] can: rcar_can: Remove unused platform data support
+To:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        linux-can@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        netdev@vger.kernel.org
+References: <20190814092221.12959-1-geert+renesas@glider.be>
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 Openpgp: preference=signencrypt
 Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
@@ -94,15 +95,15 @@ Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
  WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
  lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
  QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
-Message-ID: <178c2330-4cfe-291f-e197-9e2a37eae0a2@pengutronix.de>
-Date:   Fri, 16 Aug 2019 09:05:35 +0200
+Message-ID: <20456e4e-e56c-7e7e-c390-e959d0ef50d0@pengutronix.de>
+Date:   Fri, 16 Aug 2019 09:06:15 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <DB7PR04MB46188FBD9DC87E620BBA8838E6AF0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+In-Reply-To: <20190814092221.12959-1-geert+renesas@glider.be>
 Content-Type: multipart/signed; micalg=pgp-sha512;
  protocol="application/pgp-signature";
- boundary="bahI60woumcNtj1gTunoTKySd4hm6kU5O"
+ boundary="AdrRRVl7yIBdNyNfHGtSq1Oj7rO0sdXKi"
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
 X-SA-Exim-Mail-From: mkl@pengutronix.de
 X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
@@ -113,32 +114,39 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---bahI60woumcNtj1gTunoTKySd4hm6kU5O
-Content-Type: multipart/mixed; boundary="PTeKaFu7fmTU9pbrmVVzS2wYwTbQy6jaU";
+--AdrRRVl7yIBdNyNfHGtSq1Oj7rO0sdXKi
+Content-Type: multipart/mixed; boundary="S6sBI0XHi3tQ8SIYfRXrgceCgNgXSB2w0";
  protected-headers="v1"
 From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Joakim Zhang <qiangqing.zhang@nxp.com>,
- "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
-Cc: "wg@grandegger.com" <wg@grandegger.com>,
- "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
- dl-linux-imx <linux-imx@nxp.com>
-Message-ID: <178c2330-4cfe-291f-e197-9e2a37eae0a2@pengutronix.de>
-Subject: Re: [PATCH] can: flexcan: add LPSR mode support for i.MX7D
-References: <20190731055401.15454-1-qiangqing.zhang@nxp.com>
- <DB7PR04MB46188FBD9DC87E620BBA8838E6AF0@DB7PR04MB4618.eurprd04.prod.outlook.com>
-In-Reply-To: <DB7PR04MB46188FBD9DC87E620BBA8838E6AF0@DB7PR04MB4618.eurprd04.prod.outlook.com>
+To: Geert Uytterhoeven <geert+renesas@glider.be>,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ Sergei Shtylyov <sergei.shtylyov@cogentembedded.com>
+Cc: "David S . Miller" <davem@davemloft.net>,
+ Wolfram Sang <wsa+renesas@sang-engineering.com>, linux-can@vger.kernel.org,
+ linux-renesas-soc@vger.kernel.org, netdev@vger.kernel.org
+Message-ID: <20456e4e-e56c-7e7e-c390-e959d0ef50d0@pengutronix.de>
+Subject: Re: [PATCH] can: rcar_can: Remove unused platform data support
+References: <20190814092221.12959-1-geert+renesas@glider.be>
+In-Reply-To: <20190814092221.12959-1-geert+renesas@glider.be>
 
---PTeKaFu7fmTU9pbrmVVzS2wYwTbQy6jaU
+--S6sBI0XHi3tQ8SIYfRXrgceCgNgXSB2w0
 Content-Type: text/plain; charset=utf-8
 Content-Language: de-DE
 Content-Transfer-Encoding: quoted-printable
 
-On 8/16/19 8:47 AM, Joakim Zhang wrote:
-> Kindly Ping...
+On 8/14/19 11:22 AM, Geert Uytterhoeven wrote:
+> All R-Car platforms use DT for describing CAN controllers.
+> R-Car CAN platform data support was never used in any upstream kernel.
+>=20
+> Move the Clock Select Register settings enum into the driver, and remov=
+e
+> platform data support and the corresponding header file.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-Can you please rebase both PM related patches to linux-can/testing and
-post them in a series.
+Applied to can-next-testing.
 
+tnx,
 Marc
 
 --=20
@@ -148,23 +156,23 @@ Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
 Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
 
 
---PTeKaFu7fmTU9pbrmVVzS2wYwTbQy6jaU--
+--S6sBI0XHi3tQ8SIYfRXrgceCgNgXSB2w0--
 
---bahI60woumcNtj1gTunoTKySd4hm6kU5O
+--AdrRRVl7yIBdNyNfHGtSq1Oj7rO0sdXKi
 Content-Type: application/pgp-signature; name="signature.asc"
 Content-Description: OpenPGP digital signature
 Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl1WVb8ACgkQWsYho5Hk
-nSBj+wgAtXLkQ1U5A6klPwjyHo2Pj3pN1s+00aybSD6ue5rNyD1cdH7BcYSSK0aQ
-0dSfzAcHOmftmbAQfb1wrY6b0jrNKesPjZm0Og7Y5v0RDyqhUit5kr3pyrPo0t/n
-s0z62IauKMl7tNa06zBmvTkwj2PvB9ohNJQB2Id5tn5pDjhQf6lc0qcHpYsDuoYh
-FQllKtW0WN+BV/UIU4xKRYyxJ4G9/O2JfqJA6iRUiUv6N4TreuAbUBZJaumMhtmO
-n3in5ze6gSzC+Q3rxeYTGLXtX+z4lJ5VOkfKCkPyQnLpKB1TiimcLY0VWbm1fp3A
-MPyxHpQ4Ahg7RidPgcXdJowVRMhstQ==
-=IeZO
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl1WVecACgkQWsYho5Hk
+nSDU5ggAgyN9BwVFh/xMh10s6ONd5da1RQxGFEF3oehwPxxMasBRfiGMYeUecz84
+E4hNoKapYtG78o7FiR7sL0YWJU6WP6lrAF7U04rByw/vJjlokd+kskkxd5niYhCf
+G/xbSe1+xSSfzbEGzgQ8hh5IvEqvm2G16V3wRyqO8ET59A9FXCUilhcFwlHAqvnV
+cX0nP0IA+yf6c7nGczCUS8QyaJymmKkBu15wmXieDrsh8Gj7oKoDuxHXV86/OHPX
+1hfzRSBWK5zb9hX9U7AP6vSUpRTV3tphtAPx/nBzxOHuVwP29Wl0qLMAQgbRVGl4
+T+2ZafWFCUKjp82Wr6HH1nzcaKkJ/Q==
+=hKXp
 -----END PGP SIGNATURE-----
 
---bahI60woumcNtj1gTunoTKySd4hm6kU5O--
+--AdrRRVl7yIBdNyNfHGtSq1Oj7rO0sdXKi--
