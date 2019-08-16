@@ -2,168 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AEB89045B
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 17:07:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C98E9045F
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 17:08:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727457AbfHPPHB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 11:07:01 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57854 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727347AbfHPPHB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 11:07:01 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 16 Aug 2019 18:06:58 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7GF6wV3027769;
-        Fri, 16 Aug 2019 18:06:58 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
+        id S1727525AbfHPPIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 11:08:44 -0400
+Received: from mail.nic.cz ([217.31.204.67]:32850 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727245AbfHPPIl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 11:08:41 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id 948DC140C8F;
+        Fri, 16 Aug 2019 17:08:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1565968118; bh=ltTcSgxde7BWnfxdV9fBtHAqygIMAqiHT4sxlBSwc0g=;
+        h=From:To:Date;
+        b=PQ6ZyMpBPcdTVTJXdQcXMn3+KsoKUswnRG8LvUyKmYB64rWBET2EvV3SWxeZJjuGw
+         F5Seu0C1HNVCfdTELwKp8aF1SLNK4QMybRHK9mDpEbI4QMgw7+5MteFWhjJGwN5Ivl
+         czWAijbB9iZtSJGmQO5mYBHGoNJ+s1+j25RSnUbY=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, wenxu@ucloud.cn, pablo@netfilter.org,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net-next] net: flow_offload: convert block_ing_cb_list to regular list type
-Date:   Fri, 16 Aug 2019 18:06:54 +0300
-Message-Id: <20190816150654.22106-1-vladbu@mellanox.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH RFC net-next 0/3] mv88e6xxx: setting 2500base-x mode for CPU/DSA port in dts
+Date:   Fri, 16 Aug 2019 17:08:31 +0200
+Message-Id: <20190816150834.26939-1-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RCU list block_ing_cb_list is protected by rcu read lock in
-flow_block_ing_cmd() and with flow_indr_block_ing_cb_lock mutex in all
-functions that use it. However, flow_block_ing_cmd() needs to call blocking
-functions while iterating block_ing_cb_list which leads to following
-suspicious RCU usage warning:
+Hello,
 
-[  401.510948] =============================
-[  401.510952] WARNING: suspicious RCU usage
-[  401.510993] 5.3.0-rc3+ #589 Not tainted
-[  401.510996] -----------------------------
-[  401.511001] include/linux/rcupdate.h:265 Illegal context switch in RCU read-side critical section!
-[  401.511004]
-               other info that might help us debug this:
+I am preparing device tree for Turris Mox, and am encountering the
+question of how to properly tell in DTS that a specific port is
+connected to the cpu via 2500base-x mode.
 
-[  401.511008]
-               rcu_scheduler_active = 2, debug_locks = 1
-[  401.511012] 7 locks held by test-ecmp-add-v/7576:
-[  401.511015]  #0: 00000000081d71a5 (sb_writers#4){.+.+}, at: vfs_write+0x166/0x1d0
-[  401.511037]  #1: 000000002bd338c3 (&of->mutex){+.+.}, at: kernfs_fop_write+0xef/0x1b0
-[  401.511051]  #2: 00000000c921c634 (kn->count#317){.+.+}, at: kernfs_fop_write+0xf7/0x1b0
-[  401.511062]  #3: 00000000a19cdd56 (&dev->mutex){....}, at: sriov_numvfs_store+0x6b/0x130
-[  401.511079]  #4: 000000005425fa52 (pernet_ops_rwsem){++++}, at: unregister_netdevice_notifier+0x30/0x140
-[  401.511092]  #5: 00000000c5822793 (rtnl_mutex){+.+.}, at: unregister_netdevice_notifier+0x35/0x140
-[  401.511101]  #6: 00000000c2f3507e (rcu_read_lock){....}, at: flow_block_ing_cmd+0x5/0x130
-[  401.511115]
-               stack backtrace:
-[  401.511121] CPU: 21 PID: 7576 Comm: test-ecmp-add-v Not tainted 5.3.0-rc3+ #589
-[  401.511124] Hardware name: Supermicro SYS-2028TP-DECR/X10DRT-P, BIOS 2.0b 03/30/2017
-[  401.511127] Call Trace:
-[  401.511138]  dump_stack+0x85/0xc0
-[  401.511146]  ___might_sleep+0x100/0x180
-[  401.511154]  __mutex_lock+0x5b/0x960
-[  401.511162]  ? find_held_lock+0x2b/0x80
-[  401.511173]  ? __tcf_get_next_chain+0x1d/0xb0
-[  401.511179]  ? mark_held_locks+0x49/0x70
-[  401.511194]  ? __tcf_get_next_chain+0x1d/0xb0
-[  401.511198]  __tcf_get_next_chain+0x1d/0xb0
-[  401.511251]  ? uplink_rep_async_event+0x70/0x70 [mlx5_core]
-[  401.511261]  tcf_block_playback_offloads+0x39/0x160
-[  401.511276]  tcf_block_setup+0x1b0/0x240
-[  401.511312]  ? mlx5e_rep_indr_setup_tc_cb+0xca/0x290 [mlx5_core]
-[  401.511347]  ? mlx5e_rep_indr_tc_block_unbind+0x50/0x50 [mlx5_core]
-[  401.511359]  tc_indr_block_get_and_ing_cmd+0x11b/0x1e0
-[  401.511404]  ? mlx5e_rep_indr_tc_block_unbind+0x50/0x50 [mlx5_core]
-[  401.511414]  flow_block_ing_cmd+0x7e/0x130
-[  401.511453]  ? mlx5e_rep_indr_tc_block_unbind+0x50/0x50 [mlx5_core]
-[  401.511462]  __flow_indr_block_cb_unregister+0x7f/0xf0
-[  401.511502]  mlx5e_nic_rep_netdevice_event+0x75/0xb0 [mlx5_core]
-[  401.511513]  unregister_netdevice_notifier+0xe9/0x140
-[  401.511554]  mlx5e_cleanup_rep_tx+0x6f/0xe0 [mlx5_core]
-[  401.511597]  mlx5e_detach_netdev+0x4b/0x60 [mlx5_core]
-[  401.511637]  mlx5e_vport_rep_unload+0x71/0xc0 [mlx5_core]
-[  401.511679]  esw_offloads_disable+0x5b/0x90 [mlx5_core]
-[  401.511724]  mlx5_eswitch_disable.cold+0xdf/0x176 [mlx5_core]
-[  401.511759]  mlx5_device_disable_sriov+0xab/0xb0 [mlx5_core]
-[  401.511794]  mlx5_core_sriov_configure+0xaf/0xd0 [mlx5_core]
-[  401.511805]  sriov_numvfs_store+0xf8/0x130
-[  401.511817]  kernfs_fop_write+0x122/0x1b0
-[  401.511826]  vfs_write+0xdb/0x1d0
-[  401.511835]  ksys_write+0x65/0xe0
-[  401.511847]  do_syscall_64+0x5c/0xb0
-[  401.511857]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  401.511862] RIP: 0033:0x7fad892d30f8
-[  401.511868] Code: 89 02 48 c7 c0 ff ff ff ff eb bb 0f 1f 80 00 00 00 00 f3 0f 1e fa 48 8d 05 25 96 0d 00 8b 00 85 c0 75 17 b8 01 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 60 c3 0f 1f 80 00 00 00 00 48 83
- ec 28 48 89
-[  401.511871] RSP: 002b:00007ffca2a9fad8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-[  401.511875] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fad892d30f8
-[  401.511878] RDX: 0000000000000002 RSI: 000055afeb072a90 RDI: 0000000000000001
-[  401.511881] RBP: 000055afeb072a90 R08: 00000000ffffffff R09: 000000000000000a
-[  401.511884] R10: 000055afeb058710 R11: 0000000000000246 R12: 0000000000000002
-[  401.511887] R13: 00007fad893a8780 R14: 0000000000000002 R15: 00007fad893a3740
+CPU port is connected to eth1. In eth1, I simply have
+  &eth1 {
+    phy-mode = "2500base-x";
+    managed = "in-band-status";
+  };
 
-To fix the described incorrect RCU usage, convert block_ing_cb_list from
-RCU list to regular list and protect it with flow_indr_block_ing_cb_lock
-mutex in flow_block_ing_cmd().
+This does not work for the CPU/DSA ports though, because of how phylink
+and mv88e6xxx operate. CPU/DSA ports SERDES is enabled from
+mv88e6xxx_setup(). SERDES irq is not enabled for there ports. Enabling
+SERDES irq for there ports cannot be done from mv88e6xxx_setup(),
+because the IRQ may fire immediately after enablement, and the phylink
+structures do not exist yet for there ports (they are create by DSA only
+after the .setup() method is called).
 
-Fixes: 1150ab0f1b33 ("flow_offload: support get multi-subsystem block")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- net/core/flow_offload.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+One way to make it work is to use fixed-link for there ports, with
+speed = <2500>. But looking at the mv88e6xxx driver I discovered that
+this works only because we are lucky (or because of my commit
+65b034cf5c176, whatever you prefer. But when I was sending that
+patch, fixed-link was not needed for the switch to work):
+  - when first the mv88e6xxx_port_setup_mac is called from
+    mv88e6xxx_setup_port, it is called with SPEED_MAX. The
+    ->port_max_speed_mode() method is called to determine cmode for
+    this port, which is 2500basex
+  - afterwards, mv88e6xxx_port_setup_mac is called with parameters
+    speed=2500 and mode=PHY_INTERFACE_MODE_NA. Because of commit
+    65b034cf5c176, cmode is not set to something else
 
-diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-index 64c3d4d72b9c..cf52d9c422fa 100644
---- a/net/core/flow_offload.c
-+++ b/net/core/flow_offload.c
-@@ -391,6 +391,8 @@ static void flow_indr_block_cb_del(struct flow_indr_block_cb *indr_block_cb)
- 	kfree(indr_block_cb);
- }
- 
-+static DEFINE_MUTEX(flow_indr_block_ing_cb_lock);
-+
- static void flow_block_ing_cmd(struct net_device *dev,
- 			       flow_indr_block_bind_cb_t *cb,
- 			       void *cb_priv,
-@@ -398,11 +400,11 @@ static void flow_block_ing_cmd(struct net_device *dev,
- {
- 	struct flow_indr_block_ing_entry *entry;
- 
--	rcu_read_lock();
--	list_for_each_entry_rcu(entry, &block_ing_cb_list, list) {
-+	mutex_lock(&flow_indr_block_ing_cb_lock);
-+	list_for_each_entry(entry, &block_ing_cb_list, list) {
- 		entry->cb(dev, cb, cb_priv, command);
- 	}
--	rcu_read_unlock();
-+	mutex_unlock(&flow_indr_block_ing_cb_lock);
- }
- 
- int __flow_indr_block_cb_register(struct net_device *dev, void *cb_priv,
-@@ -497,11 +499,10 @@ void flow_indr_block_call(struct net_device *dev,
- }
- EXPORT_SYMBOL_GPL(flow_indr_block_call);
- 
--static DEFINE_MUTEX(flow_indr_block_ing_cb_lock);
- void flow_indr_add_block_ing_cb(struct flow_indr_block_ing_entry *entry)
- {
- 	mutex_lock(&flow_indr_block_ing_cb_lock);
--	list_add_tail_rcu(&entry->list, &block_ing_cb_list);
-+	list_add_tail(&entry->list, &block_ing_cb_list);
- 	mutex_unlock(&flow_indr_block_ing_cb_lock);
- }
- EXPORT_SYMBOL_GPL(flow_indr_add_block_ing_cb);
-@@ -509,7 +510,7 @@ EXPORT_SYMBOL_GPL(flow_indr_add_block_ing_cb);
- void flow_indr_del_block_ing_cb(struct flow_indr_block_ing_entry *entry)
- {
- 	mutex_lock(&flow_indr_block_ing_cb_lock);
--	list_del_rcu(&entry->list);
-+	list_del(&entry->list);
- 	mutex_unlock(&flow_indr_block_ing_cb_lock);
- }
- EXPORT_SYMBOL_GPL(flow_indr_del_block_ing_cb);
+I think that the correct way to do this would be for CPU/DSA port nodes
+to have the same setting in dts as the eth node (eg 2500base-x/inband).
+
+For this to work, the mv88e6390_serdes_irq_link_sgmii has to be able
+to determine between 2500base-x vs 1000base-x modes. This is done by
+the first patch.
+
+The second patch adds two new methods into the DSA operations structure,
+.port_setup() and .port_teardown(). The .port_setup is called from
+dsa_port_setup() after the port is registered and phylink structure
+already exists, and .port_teardown() is called from dsa_port_teardown()
+before the port is unregistered.
+
+The third patch then utilizes these new methods to enable/disable
+SERDESes and ther IRQs for CPU/DSA ports.
+
+Please comment on this new code, whether it is acceptable to have these
+new methods, if they should be called differently, and so on.
+
+Thank you.
+
+Marek
+
+Marek Behún (3):
+  net: dsa: mv88e6xxx: support 2500base-x in SGMII IRQ handler
+  net: dsa: add port_setup/port_teardown methods to DSA ops
+  net: dsa: mv88e6xxx: setup SERDES irq also for CPU/DSA ports
+
+ drivers/net/dsa/mv88e6xxx/chip.c   | 54 ++++++++++++++++++++++++------
+ drivers/net/dsa/mv88e6xxx/serdes.c |  6 +++-
+ include/net/dsa.h                  |  2 ++
+ net/dsa/dsa2.c                     | 10 +++++-
+ 4 files changed, 60 insertions(+), 12 deletions(-)
+
 -- 
 2.21.0
 
