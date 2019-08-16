@@ -2,65 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2659097C
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 22:32:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BB3D909D7
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 22:59:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727654AbfHPUcl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 16:32:41 -0400
-Received: from mail-wr1-f47.google.com ([209.85.221.47]:34898 "EHLO
-        mail-wr1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727613AbfHPUck (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 16:32:40 -0400
-Received: by mail-wr1-f47.google.com with SMTP id k2so2690185wrq.2
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 13:32:38 -0700 (PDT)
+        id S1727675AbfHPU7j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 16:59:39 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:45242 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727548AbfHPU7j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 16:59:39 -0400
+Received: by mail-wr1-f68.google.com with SMTP id q12so2721382wrj.12;
+        Fri, 16 Aug 2019 13:59:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
+        h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2mx9+lMjWlDBJoaKKItBGduSQiKJLy0OqvNV+u7gJVo=;
-        b=t7+fzq1L9xHD7bUCZ2AX6xvXFGTs4mIrL0yG57pxQA4WQwa6AP7SF1s4nLVW00zseR
-         kgDtLgAm3OjfYz7ibBZdA+qqiG4AVbRF2uQC0Pjr5Mzyb5gqvDaTkgBuvu7xx1VP7Xpk
-         gifvoLx2mKPXdA92QhIRuBS/nb7BSUTvvxbRTMDditE7YvlYWN2hx5YDMbEGsv9vpPIw
-         hoZxSnNvNIUwS6JldXljosGwu02P5mslm1oAMm5wrO9hBdUwBtlMYYh9Ld+M/FTd13ky
-         Sgqw/6uri/dfkjMPon/AuItkL0/IUtiTM4+NdLTNtva7BtY4NIXEjbNVdNxKk8KMGVzl
-         7G0A==
+        bh=fF23+eeI8IwqTgiv4la+N5iJcg94TGRZOaJt6jU0zYo=;
+        b=UqAgh1kdtKJ99eTg1a0x/izcunJ++rokRIH2L1KbGWWMFK/9a0OMSfu7C8oSNEI45V
+         sCc0zBqLNk3yhtcbG+fN7QRCZvzjMcIBXYKouGYMWpwaDVZogEI76BUzyUkckvFD2Ho3
+         ZSnMWCr9ye+c6MDPS4HVQO1q0u/G5UmPqvznPI4lj4l0KHAdzQ2kuEbauBsirUvGDVpg
+         Zgj8lksCC2+cI+CCcs7iXhKA7po5lt/D0GPoIoG7vFaCJvIlA7XAhVP2hv4cVseDqMYu
+         bZaifm20rPtUK1ydAOn88TBi9bhgcyJShe83IcvUOD13JWloz39zqZMeUaxyNRINm3pW
+         h/pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=2mx9+lMjWlDBJoaKKItBGduSQiKJLy0OqvNV+u7gJVo=;
-        b=WOCkKr3fhuBV76WRVoTOwdFS0tY6U3AoJl/BmoiE1fUrVWMCv5HaW29kKckBjiBn5Q
-         OKts/2WBhMDMawLtvoL6sABfLse0JUWfnskea5Dr0dSO+pxWavc4n3hVZZTQ/sipUti/
-         7kG8LidPYuQYdCBbaRF1sUNmHPEjEXPdMCyPdEA8GuEJps8+zqL+r32M+unR/44sCpox
-         1vP2BXqw/60mO4Vhh1wXHHWVjsCgjmz2WjY8Z2IoD+gH3pKE0LUIGktrfxQ0wsY6AgLX
-         7XnqlM1IaqpxasfuGvEjVkiMTh3iDdomhSP/ijChgpIz7uQ/Wue9EvWqIEoZY48v3B12
-         CGzw==
-X-Gm-Message-State: APjAAAU/gyFprcfb9+unhqtxdxSCswk4WzIc46ChcRNQmOhpiGceavxi
-        k10tLjRlhvW0T2kDPJU9d8c=
-X-Google-Smtp-Source: APXvYqxG65IYpoM1P7kDNVmZsnLwm7l5pbnGfBY5HWJ7PvBsDfsQ0vI/ZG2Zy3jBrjaLR6DoWgEhMg==
-X-Received: by 2002:adf:eccb:: with SMTP id s11mr12654945wro.351.1565987558024;
-        Fri, 16 Aug 2019 13:32:38 -0700 (PDT)
+        bh=fF23+eeI8IwqTgiv4la+N5iJcg94TGRZOaJt6jU0zYo=;
+        b=KU73MGG17jmyBrlykYntpdxMDAXxMORDk7DEKkPKXy1oBgslMHKqUeYT+Y8yjE6xsH
+         LuLn6feI/aX05rUpRu2aZh/qlInEJfF3tqMjg8GTO6NHnjLbYoXBTYOfgBISTs7asDaP
+         tOWqOuqUOcTd4jJBBberzHnc+kkSDXnv11VefpANQoyg2RwIH1+OHHKT1lv6BppAwIlm
+         wfVVbEfTMXZtiX/0ekoOzvRnR39+M+E7ODnPo+xHAKFqDEWPto2U9M/tsDrFwLngxezh
+         PxsR8bApzTuNw4hlCce4m71o9NF/ywKNrPseXjwVOc9K82NHHvoCkyIbtjtVM8boCka/
+         OcAA==
+X-Gm-Message-State: APjAAAXmskIKkpMQYwGYnrRziKmQqksKLCnis4j7fGlRYgK/lu1YweAj
+        E+VMZZ6l6m/syQ6GrCEzaxRPeb0l
+X-Google-Smtp-Source: APXvYqyc6ut71s8E9UUeQKX7vw5SXrA/4uOVU/fOnefl2URT4r2l3XtaA+gDA5Y2O5ZYEeC2HhCyRg==
+X-Received: by 2002:adf:fd8b:: with SMTP id d11mr12233594wrr.300.1565989176963;
+        Fri, 16 Aug 2019 13:59:36 -0700 (PDT)
 Received: from ?IPv6:2003:ea:8f2f:3200:4112:e131:7f21:ec09? (p200300EA8F2F32004112E1317F21EC09.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:4112:e131:7f21:ec09])
-        by smtp.googlemail.com with ESMTPSA id t63sm5004055wmt.6.2019.08.16.13.32.37
+        by smtp.googlemail.com with ESMTPSA id s19sm5193349wrb.94.2019.08.16.13.59.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 13:32:37 -0700 (PDT)
-Subject: [PATCH net-next v2 3/3] net: phy: remove genphy_config_init
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>
+        Fri, 16 Aug 2019 13:59:36 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
+To:     Christian Herber <christian.herber@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>
-References: <62de47ba-0624-28c0-56a1-e2fc39a36061@gmail.com>
-Message-ID: <6c657d36-97e5-0feb-ddf2-a59e4c38c437@gmail.com>
-Date:   Fri, 16 Aug 2019 22:32:19 +0200
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190815153209.21529-1-christian.herber@nxp.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <8c15b855-6947-9930-c3df-71a64fbff33b@gmail.com>
+Date:   Fri, 16 Aug 2019 22:59:29 +0200
 User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <62de47ba-0624-28c0-56a1-e2fc39a36061@gmail.com>
+In-Reply-To: <20190815153209.21529-1-christian.herber@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -69,89 +66,50 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that all users have been removed we can remove genphy_config_init.
+On 15.08.2019 17:32, Christian Herber wrote:
+> This patch adds basic support for BASE-T1 PHYs in the framework.
+> BASE-T1 PHYs main area of application are automotive and industrial.
+> BASE-T1 is standardized in IEEE 802.3, namely
+> - IEEE 802.3bw: 100BASE-T1
+> - IEEE 802.3bp 1000BASE-T1
+> - IEEE 802.3cg: 10BASE-T1L and 10BASE-T1S
+> 
+> There are no products which contain BASE-T1 and consumer type PHYs like
+> 1000BASE-T. However, devices exist which combine 100BASE-T1 and 1000BASE-T1
+> PHYs with auto-negotiation.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
----
- drivers/net/phy/phy_device.c | 51 ------------------------------------
- include/linux/phy.h          |  1 -
- 2 files changed, 52 deletions(-)
+Is this meant in a way that *currently* there are no PHY's combining Base-T1
+with normal Base-T modes? Or are there reasons why this isn't possible in
+general? I'm asking because we have PHY's combining copper and fiber, and e.g.
+the mentioned Aquantia PHY that combines NBase-T with 1000Base-T2.
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 9c546bae9..d5db7604d 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -1885,57 +1885,6 @@ int genphy_soft_reset(struct phy_device *phydev)
- }
- EXPORT_SYMBOL(genphy_soft_reset);
- 
--int genphy_config_init(struct phy_device *phydev)
--{
--	int val;
--	__ETHTOOL_DECLARE_LINK_MODE_MASK(features) = { 0, };
--
--	linkmode_set_bit_array(phy_basic_ports_array,
--			       ARRAY_SIZE(phy_basic_ports_array),
--			       features);
--	linkmode_set_bit(ETHTOOL_LINK_MODE_Pause_BIT, features);
--	linkmode_set_bit(ETHTOOL_LINK_MODE_Asym_Pause_BIT, features);
--
--	/* Do we support autonegotiation? */
--	val = phy_read(phydev, MII_BMSR);
--	if (val < 0)
--		return val;
--
--	if (val & BMSR_ANEGCAPABLE)
--		linkmode_set_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, features);
--
--	if (val & BMSR_100FULL)
--		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT, features);
--	if (val & BMSR_100HALF)
--		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Half_BIT, features);
--	if (val & BMSR_10FULL)
--		linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT, features);
--	if (val & BMSR_10HALF)
--		linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Half_BIT, features);
--
--	if (val & BMSR_ESTATEN) {
--		val = phy_read(phydev, MII_ESTATUS);
--		if (val < 0)
--			return val;
--
--		if (val & ESTATUS_1000_TFULL)
--			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Full_BIT,
--					 features);
--		if (val & ESTATUS_1000_THALF)
--			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseT_Half_BIT,
--					 features);
--		if (val & ESTATUS_1000_XFULL)
--			linkmode_set_bit(ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
--					 features);
--	}
--
--	linkmode_and(phydev->supported, phydev->supported, features);
--	linkmode_and(phydev->advertising, phydev->advertising, features);
--
--	return 0;
--}
--EXPORT_SYMBOL(genphy_config_init);
--
- /**
-  * genphy_read_abilities - read PHY abilities from Clause 22 registers
-  * @phydev: target phy_device struct
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 5ac7d2137..d26779f1f 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -1069,7 +1069,6 @@ void phy_attached_print(struct phy_device *phydev, const char *fmt, ...)
- void phy_attached_info(struct phy_device *phydev);
- 
- /* Clause 22 PHY */
--int genphy_config_init(struct phy_device *phydev);
- int genphy_read_abilities(struct phy_device *phydev);
- int genphy_setup_forced(struct phy_device *phydev);
- int genphy_restart_aneg(struct phy_device *phydev);
--- 
-2.22.1
+> 
+> The intention of this patch is to make use of the existing Clause 45 functions.
+> BASE-T1 adds some additional registers e.g. for aneg control, which follow a
+> similiar register layout as the existing devices. The bits which are used in
+> BASE-T1 specific registers are the same as in basic registers, thus the
+> existing functions can be resued, with get_aneg_ctrl() selecting the correct
+> register address.
+> 
+If Base-T1 can't be combined with other modes then at a first glance I see no
+benefit in defining new registers e.g. for aneg control, and the standard ones
+are unused. Why not using the standard registers? Can you shed some light on that?
 
+Are the new registers internally shadowed to the standard location?
+That's something I've seen on other PHY's: one register appears in different
+places in different devices.
 
+> The current version of ethtool has been prepared for 100/1000BASE-T1 and works
+> with this patch. 10BASE-T1 needs to be added to ethtool.
+> 
+> Christian Herber (1):
+>   Added BASE-T1 PHY support to PHY Subsystem
+> 
+>  drivers/net/phy/phy-c45.c    | 113 +++++++++++++++++++++++++++++++----
+>  drivers/net/phy/phy-core.c   |   4 +-
+>  include/uapi/linux/ethtool.h |   2 +
+>  include/uapi/linux/mdio.h    |  21 +++++++
+>  4 files changed, 129 insertions(+), 11 deletions(-)
+> 
+
+Heiner
