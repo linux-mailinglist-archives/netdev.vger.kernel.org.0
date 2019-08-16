@@ -2,72 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4F2290288
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:11:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB48F90287
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:11:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727470AbfHPNLE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 09:11:04 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:31834 "EHLO
+        id S1727456AbfHPNLD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 09:11:03 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:32370 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727424AbfHPNK7 (ORCPT
+        by vger.kernel.org with ESMTP id S1727433AbfHPNK7 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 09:10:59 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7GD7mgn030041;
-        Fri, 16 Aug 2019 09:10:51 -0400
-Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2051.outbound.protection.outlook.com [104.47.36.51])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2udk94974s-1
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7GD7kdA030348;
+        Fri, 16 Aug 2019 09:10:53 -0400
+Received: from nam03-dm3-obe.outbound.protection.outlook.com (mail-dm3nam03lp2055.outbound.protection.outlook.com [104.47.41.55])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2ud8vhapmh-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 16 Aug 2019 09:10:51 -0400
+        Fri, 16 Aug 2019 09:10:53 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jpCy9kLTj2DLMi3CT+dQeIluX/yWudeAulToJb3B+yRK3/cIt2tWq3wMYKyh5IKGqbWeUF0ZUTk7waXNojumfjAdNcFj4MQMXXvJYZLLH/nhXxPv+p175orTO7Lo7YAAk0XzvL7REqL8JNHXWRH0szazBqo5N64VzxU9N9Vh7iOPxpHcyH4eD6b6mYmLAst7WV5l22ZYV2ZrVI3OeIC1xByCm6JCZbMC8I3IrtPKg74yCIZ86gdtA7QyFJg3z94ZPQ5stHCPjqUmZ4Bkk9vXi6jwl9N70z35KEVOtb1MrGC2Ne461roCGu51UUQ0HVetpiozVqWmYZbgNJMqAXhlXw==
+ b=iTpsc3vqBAOmN1laHdyaqt3w+sIZcdmOuL2lwIsqCKZ8vEQLpyaqpuh3vZBqYrTsvb3bejZTuaTubikx2t++/inQIzVrhXhBqshnJ+qO5Ld/MgQkth+rnvcyvYgEnCmc2EMJ65ikW0MowadLy0ZGV80xS4r0DqVEMl8cIFObP6AH7/KAQifuk30Y1HZFE7VkjVStEg3RflB8YCyWCbYmQ2d0m4eo3GUEry4VzTmhceL9liQuhJMubCNh3xYIFHIF2D/T5xk7yuwiGsw6pBiTJkK7oZjx9myhiceC6eRLwkpq0liyXgM+PtzIMpc6jRmNVEVqorqmdXd24Xg61/1Tng==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nH2ffxl08ZpxfsL8yOMDwFfzHw7mZsLWAD6V2dqcHW0=;
- b=ADakaEg64TVbOb9mtbpcYj+lOWHN47EJfbGEq2g776/3R0KqBhaR+ROu5xJdsGrAQJs4UCiXP+h/tRSIslxnpIcG7tWRXfUdT+mfkCschfb0SQ5FG3jkiMkR19BIIwN/IQwtukIaej3UTPDhRqmpwiRwTP0AkE9Smw3JTBMYH1lcnl94FG4lPbf+uU3//bdFPUyJzqj7/6hpuDRYx5C2Body3nmI6yu9eeOYuEbp78W7oiBzvW0j51MtO2lWbO++fbcu9QJkDjIzYmOb7e9ponuzmy2Hs8ApwRZGQ1Y+BkcJC9rc4kJZaqjy0L5r6G6/DCZP1FD975hCVCxT3gq1Sw==
+ bh=1ijQbwNPrMEWo7roF+BYvwtPs1w7q9amw7Z/6Ex/jH8=;
+ b=Ok2ZZvLG/2rsoo5MqmaHvpF1pukxeCVVEQFK8RSIf6UuXZtS2Q8HLV8dDQQz3UDz+8TogQ0eNCEf0ri43PCDx6aOm1z0HtjEQT/v1CD6Hq66rIFBxZzHrG2kldqVaHvmtpkHtAmTffAN4lnWwY4X3lM+lNigeMINlKtXYnp/hQboqmK9MVMMQQRHnOOB60OuIth1CPeGiupG2TE8awBImXfKGIQfI21w0kT37Za3ivHiD2WFFia66L/CbM3QDSQx0vPYVznW0YHgt67kLKFbqHeC3+5BbfvJ6bvCyElKCQJRdIGGSlNKBZoxQzCSsjcRtC/eYYXzo2ujCZ+E5TRz2w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 137.71.25.57) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
+ 137.71.25.57) smtp.rcpttodomain=davemloft.net smtp.mailfrom=analog.com;
  dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
  not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=nH2ffxl08ZpxfsL8yOMDwFfzHw7mZsLWAD6V2dqcHW0=;
- b=0cOhf7pl+8F/QlII2wZnWvK7sVftYscvbQeBjaIZhSNxwXpPcimTwgV9yTXJqd5KGT9pa1bodLrEQ5VVHxCWA/7hEQ3yPkB4Le1VL5gRAonzV/AvZShhE8WWvArvSyazZ5xwlT2aJpoDOeF7BE5lMWrj/SazKzdE3vO8R7G0ZNQ=
-Received: from BN3PR03CA0084.namprd03.prod.outlook.com
- (2a01:111:e400:7a4d::44) by SN2PR03MB2238.namprd03.prod.outlook.com
- (2603:10b6:804:d::7) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2178.16; Fri, 16 Aug
- 2019 13:10:49 +0000
-Received: from SN1NAM02FT021.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::203) by BN3PR03CA0084.outlook.office365.com
- (2a01:111:e400:7a4d::44) with Microsoft SMTP Server (version=TLS1_2,
+ bh=1ijQbwNPrMEWo7roF+BYvwtPs1w7q9amw7Z/6Ex/jH8=;
+ b=l0LHgkk7IM667Ge2ZsQ6O77lIyWvignu1KSCS7LfBYWpmIIEZeRbnb2rfWi2nZMdwnVODg/LS+fdVvR77WMFhnRFqQdTyfCARCugJz4J2u66bKTve9jcons/oN2h4l50PbSMKCdtGDXIIftNv5IXgOj9hivEu0rIYnSwtiBWJ6A=
+Received: from MWHPR03CA0060.namprd03.prod.outlook.com (2603:10b6:301:3b::49)
+ by MWHPR03MB2607.namprd03.prod.outlook.com (2603:10b6:300:47::11) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.15; Fri, 16 Aug
+ 2019 13:10:51 +0000
+Received: from CY1NAM02FT015.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::201) by MWHPR03CA0060.outlook.office365.com
+ (2603:10b6:301:3b::49) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2178.16 via Frontend
- Transport; Fri, 16 Aug 2019 13:10:48 +0000
+ Transport; Fri, 16 Aug 2019 13:10:51 +0000
 Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.57 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
 Received: from nwd2mta2.analog.com (137.71.25.57) by
- SN1NAM02FT021.mail.protection.outlook.com (10.152.72.144) with Microsoft SMTP
+ CY1NAM02FT015.mail.protection.outlook.com (10.152.75.146) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2178.16
- via Frontend Transport; Fri, 16 Aug 2019 13:10:48 +0000
+ via Frontend Transport; Fri, 16 Aug 2019 13:10:50 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x7GDAli7007944
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x7GDAncb007951
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Fri, 16 Aug 2019 06:10:47 -0700
+        Fri, 16 Aug 2019 06:10:49 -0700
 Received: from saturn.ad.analog.com (10.48.65.113) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Fri, 16 Aug 2019 09:10:47 -0400
+ 14.3.408.0; Fri, 16 Aug 2019 09:10:49 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <davem@davemloft.net>, <robh+dt@kernel.org>,
         <mark.rutland@arm.com>, <f.fainelli@gmail.com>,
         <hkallweit1@gmail.com>, <andrew@lunn.ch>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v5 12/13] net: phy: adin: add ethtool get_stats support
-Date:   Fri, 16 Aug 2019 16:10:10 +0300
-Message-ID: <20190816131011.23264-13-alexandru.ardelean@analog.com>
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 13/13] dt-bindings: net: add bindings for ADIN PHY driver
+Date:   Fri, 16 Aug 2019 16:10:11 +0300
+Message-ID: <20190816131011.23264-14-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190816131011.23264-1-alexandru.ardelean@analog.com>
 References: <20190816131011.23264-1-alexandru.ardelean@analog.com>
@@ -77,24 +78,25 @@ Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(396003)(136003)(346002)(376002)(2980300002)(189003)(199004)(107886003)(2870700001)(70586007)(5660300002)(70206006)(186003)(426003)(4326008)(356004)(2906002)(6666004)(126002)(478600001)(476003)(446003)(2616005)(486006)(1076003)(44832011)(11346002)(110136005)(316002)(26005)(106002)(54906003)(336012)(36756003)(305945005)(51416003)(7636002)(48376002)(50466002)(2201001)(76176011)(8676002)(8936002)(14444005)(246002)(47776003)(7696005)(50226002)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:SN2PR03MB2238;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(39860400002)(396003)(376002)(346002)(2980300002)(199004)(189003)(110136005)(966005)(54906003)(2616005)(106002)(486006)(36756003)(2201001)(8936002)(14444005)(126002)(476003)(316002)(50226002)(5660300002)(47776003)(70586007)(2870700001)(11346002)(44832011)(50466002)(48376002)(478600001)(76176011)(51416003)(246002)(7696005)(7636002)(426003)(446003)(4326008)(356004)(336012)(2906002)(6306002)(6666004)(8676002)(1076003)(186003)(26005)(53376002)(70206006)(86362001)(305945005)(7416002);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR03MB2607;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 15ea2209-f9ff-4647-ecca-08d7224b2826
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:SN2PR03MB2238;
-X-MS-TrafficTypeDiagnostic: SN2PR03MB2238:
-X-Microsoft-Antispam-PRVS: <SN2PR03MB2238E64BDFB94D23F5EEAFABF9AF0@SN2PR03MB2238.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Office365-Filtering-Correlation-Id: 68e1720b-36d9-4658-f15e-08d7224b2988
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:MWHPR03MB2607;
+X-MS-TrafficTypeDiagnostic: MWHPR03MB2607:
+X-MS-Exchange-PUrlCount: 3
+X-Microsoft-Antispam-PRVS: <MWHPR03MB2607CF375B0CB23AEC7F3681F9AF0@MWHPR03MB2607.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4714;
 X-Forefront-PRVS: 0131D22242
 X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: yl/eIWwqykQ58Ti2yKaBt19WiNCXnqpLZpgdtUSxNDANJyvAwIZvzr6LpFDLiq6S4dOZLOwpwOHqw9m5YrfJ5edXH4Q0Vkoee8qLfU04eShsp5n7l44J7YOJRbgT+Kq7ndpR5YmrElNkULN9TjT17U2meS9hujgcGt1xDCmtTcWlB6Z7hQcEJT8zgaaL7wfeevT/B02j9HRQpvFnrakL1OexZ9STxS/+iFzP651WdsfDkC40Vj4KHSB1yUMOZmcebp7K1nqyhLmH3I6+fOmBYml1vlKhXf/d/44GmlzrAFUytPfJMlwcj+g2jZV+akHerZO7rtv5kce0TKcDRAUgMQX1gVrepE1LOtAp2NZDrRCQjVpdhXOAzdBHpLBBmR0sA8pJHhiklpVl6xQZPCGWFuxB86edwqTc88e/gc24tk8=
+X-Microsoft-Antispam-Message-Info: nkt6qp4B/pQuTEvnu9jIQKcMC6h8R3TfmTyIVK/8ukCWpFxR6HYwL9wIfSqHleK8AEezW6Nk2GLmpPxHN518O07NG7g3Q8vrtddZ9Qoe2kiZ27S6Bi4YK46v9eBOs4jcTrCCuXiUYLpRFIipjk1lDLteqDo6xZTEaYkWnCDvfvn86oUIx0bk3ZNWr+JIhGypy6b8Xfhnl/admd+5vDxHM4KjX1SJgfltNfmTI7/c/NxjV/dr09wmkdm6Z2DZYR0XQJem1VRFHBqssVCrqgEaHmDsrxy4UvMEhyq5WbyQVNitPNrFNCq3NrYOe2HvvDFInBRhotrRRzRg1y1o7szUXXYd1hFclISqtnvzs5xkhPTFEROsct6B3OZiG8fpcfQilyChzbuCShGji0pwlRpE95wGRpw3NqXJtX2x6skOS3Y=
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2019 13:10:48.2771
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2019 13:10:50.5061
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 15ea2209-f9ff-4647-ecca-08d7224b2826
+X-MS-Exchange-CrossTenant-Network-Message-Id: 68e1720b-36d9-4658-f15e-08d7224b2988
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN2PR03MB2238
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR03MB2607
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-16_06:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
@@ -107,200 +109,109 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change implements retrieving all the error counters from the PHY.
+This change adds bindings for the Analog Devices ADIN PHY driver, detailing
+all the properties implemented by the driver.
 
-The counters require that the RxErrCnt register (0x0014) be read first,
-after which copies of the counters are latched into the registers. This
-ensures that all registers read after RxErrCnt are synchronized at the
-moment that they are read.
-
-The counter values need to be accumulated by the driver, as each time that
-RxErrCnt is read, the values that are latched are the ones that have
-incremented from the last read.
-
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/net/phy/adin.c | 128 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 128 insertions(+)
+ .../devicetree/bindings/net/adi,adin.yaml     | 73 +++++++++++++++++++
+ MAINTAINERS                                   |  1 +
+ 2 files changed, 74 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/net/adi,adin.yaml
 
-diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-index 131b577a17e5..ac79e16cd7f1 100644
---- a/drivers/net/phy/adin.c
-+++ b/drivers/net/phy/adin.c
-@@ -24,6 +24,8 @@
- #define   ADIN1300_AUTO_MDI_EN			BIT(10)
- #define   ADIN1300_MAN_MDIX_EN			BIT(9)
+diff --git a/Documentation/devicetree/bindings/net/adi,adin.yaml b/Documentation/devicetree/bindings/net/adi,adin.yaml
+new file mode 100644
+index 000000000000..69375cb28e92
+--- /dev/null
++++ b/Documentation/devicetree/bindings/net/adi,adin.yaml
+@@ -0,0 +1,73 @@
++# SPDX-License-Identifier: GPL-2.0+
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/net/adi,adin.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices ADIN1200/ADIN1300 PHY
++
++maintainers:
++  - Alexandru Ardelean <alexandru.ardelean@analog.com>
++
++description: |
++  Bindings for Analog Devices Industrial Ethernet PHYs
++
++allOf:
++  - $ref: ethernet-phy.yaml#
++
++properties:
++  adi,rx-internal-delay-ps:
++    description: |
++      RGMII RX Clock Delay used only when PHY operates in RGMII mode with
++      internal delay (phy-mode is 'rgmii-id' or 'rgmii-rxid') in pico-seconds.
++    enum: [ 1600, 1800, 2000, 2200, 2400 ]
++    default: 2000
++
++  adi,tx-internal-delay-ps:
++    description: |
++      RGMII TX Clock Delay used only when PHY operates in RGMII mode with
++      internal delay (phy-mode is 'rgmii-id' or 'rgmii-txid') in pico-seconds.
++    enum: [ 1600, 1800, 2000, 2200, 2400 ]
++    default: 2000
++
++  adi,fifo-depth-bits:
++    description: |
++      When operating in RMII mode, this option configures the FIFO depth.
++    enum: [ 4, 8, 12, 16, 20, 24 ]
++    default: 8
++
++  adi,disable-energy-detect:
++    description: |
++      Disables Energy Detect Powerdown Mode (default disabled, i.e energy detect
++      is enabled if this property is unspecified)
++    type: boolean
++
++examples:
++  - |
++    ethernet {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        phy-mode = "rgmii-id";
++
++        ethernet-phy@0 {
++            reg = <0>;
++
++            adi,rx-internal-delay-ps = <1800>;
++            adi,tx-internal-delay-ps = <2200>;
++        };
++    };
++  - |
++    ethernet {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        phy-mode = "rmii";
++
++        ethernet-phy@1 {
++            reg = <1>;
++
++            adi,fifo-depth-bits = <16>;
++            adi,disable-energy-detect;
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e8aa8a667864..fd9ab61c2670 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -944,6 +944,7 @@ L:	netdev@vger.kernel.org
+ W:	http://ez.analog.com/community/linux-device-drivers
+ S:	Supported
+ F:	drivers/net/phy/adin.c
++F:	Documentation/devicetree/bindings/net/adi,adin.yaml
  
-+#define ADIN1300_RX_ERR_CNT			0x0014
-+
- #define ADIN1300_PHY_CTRL2			0x0016
- #define   ADIN1300_DOWNSPEED_AN_100_EN		BIT(11)
- #define   ADIN1300_DOWNSPEED_AN_10_EN		BIT(10)
-@@ -146,6 +148,33 @@ static struct adin_clause45_mmd_map adin_clause45_mmd_map[] = {
- 	{ MDIO_MMD_PCS, MDIO_PCS_EEE_WK_ERR,	ADIN1300_LPI_WAKE_ERR_CNT_REG },
- };
- 
-+struct adin_hw_stat {
-+	const char *string;
-+	u16 reg1;
-+	u16 reg2;
-+};
-+
-+static struct adin_hw_stat adin_hw_stats[] = {
-+	{ "total_frames_checked_count",		0x940A, 0x940B }, /* hi + lo */
-+	{ "length_error_frames_count",		0x940C },
-+	{ "alignment_error_frames_count",	0x940D },
-+	{ "symbol_error_count",			0x940E },
-+	{ "oversized_frames_count",		0x940F },
-+	{ "undersized_frames_count",		0x9410 },
-+	{ "odd_nibble_frames_count",		0x9411 },
-+	{ "odd_preamble_packet_count",		0x9412 },
-+	{ "dribble_bits_frames_count",		0x9413 },
-+	{ "false_carrier_events_count",		0x9414 },
-+};
-+
-+/**
-+ * struct adin_priv - ADIN PHY driver private data
-+ * stats		statistic counters for the PHY
-+ */
-+struct adin_priv {
-+	u64			stats[ARRAY_SIZE(adin_hw_stats)];
-+};
-+
- static int adin_lookup_reg_value(const struct adin_cfg_reg_map *tbl, int cfg)
- {
- 	size_t i;
-@@ -548,10 +577,102 @@ static int adin_soft_reset(struct phy_device *phydev)
- 	return rc < 0 ? rc : 0;
- }
- 
-+static int adin_get_sset_count(struct phy_device *phydev)
-+{
-+	return ARRAY_SIZE(adin_hw_stats);
-+}
-+
-+static void adin_get_strings(struct phy_device *phydev, u8 *data)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(adin_hw_stats); i++) {
-+		strlcpy(&data[i * ETH_GSTRING_LEN],
-+			adin_hw_stats[i].string, ETH_GSTRING_LEN);
-+	}
-+}
-+
-+static int adin_read_mmd_stat_regs(struct phy_device *phydev,
-+				   struct adin_hw_stat *stat,
-+				   u32 *val)
-+{
-+	int ret;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, stat->reg1);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val = (ret & 0xffff);
-+
-+	if (stat->reg2 == 0)
-+		return 0;
-+
-+	ret = phy_read_mmd(phydev, MDIO_MMD_VEND1, stat->reg2);
-+	if (ret < 0)
-+		return ret;
-+
-+	*val <<= 16;
-+	*val |= (ret & 0xffff);
-+
-+	return 0;
-+}
-+
-+static u64 adin_get_stat(struct phy_device *phydev, int i)
-+{
-+	struct adin_hw_stat *stat = &adin_hw_stats[i];
-+	struct adin_priv *priv = phydev->priv;
-+	u32 val;
-+	int ret;
-+
-+	if (stat->reg1 > 0x1f) {
-+		ret = adin_read_mmd_stat_regs(phydev, stat, &val);
-+		if (ret < 0)
-+			return (u64)(~0);
-+	} else {
-+		ret = phy_read(phydev, stat->reg1);
-+		if (ret < 0)
-+			return (u64)(~0);
-+		val = (ret & 0xffff);
-+	}
-+
-+	priv->stats[i] += val;
-+
-+	return priv->stats[i];
-+}
-+
-+static void adin_get_stats(struct phy_device *phydev,
-+			   struct ethtool_stats *stats, u64 *data)
-+{
-+	int i, rc;
-+
-+	/* latch copies of all the frame-checker counters */
-+	rc = phy_read(phydev, ADIN1300_RX_ERR_CNT);
-+	if (rc < 0)
-+		return;
-+
-+	for (i = 0; i < ARRAY_SIZE(adin_hw_stats); i++)
-+		data[i] = adin_get_stat(phydev, i);
-+}
-+
-+static int adin_probe(struct phy_device *phydev)
-+{
-+	struct device *dev = &phydev->mdio.dev;
-+	struct adin_priv *priv;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	phydev->priv = priv;
-+
-+	return 0;
-+}
-+
- static struct phy_driver adin_driver[] = {
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1200),
- 		.name		= "ADIN1200",
-+		.probe		= adin_probe,
- 		.config_init	= adin_config_init,
- 		.soft_reset	= adin_soft_reset,
- 		.config_aneg	= adin_config_aneg,
-@@ -560,6 +681,9 @@ static struct phy_driver adin_driver[] = {
- 		.set_tunable	= adin_set_tunable,
- 		.ack_interrupt	= adin_phy_ack_intr,
- 		.config_intr	= adin_phy_config_intr,
-+		.get_sset_count	= adin_get_sset_count,
-+		.get_strings	= adin_get_strings,
-+		.get_stats	= adin_get_stats,
- 		.resume		= genphy_resume,
- 		.suspend	= genphy_suspend,
- 		.read_mmd	= adin_read_mmd,
-@@ -568,6 +692,7 @@ static struct phy_driver adin_driver[] = {
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1300),
- 		.name		= "ADIN1300",
-+		.probe		= adin_probe,
- 		.config_init	= adin_config_init,
- 		.soft_reset	= adin_soft_reset,
- 		.config_aneg	= adin_config_aneg,
-@@ -576,6 +701,9 @@ static struct phy_driver adin_driver[] = {
- 		.set_tunable	= adin_set_tunable,
- 		.ack_interrupt	= adin_phy_ack_intr,
- 		.config_intr	= adin_phy_config_intr,
-+		.get_sset_count	= adin_get_sset_count,
-+		.get_strings	= adin_get_strings,
-+		.get_stats	= adin_get_stats,
- 		.resume		= genphy_resume,
- 		.suspend	= genphy_suspend,
- 		.read_mmd	= adin_read_mmd,
+ ANALOG DEVICES INC ADIS DRIVER LIBRARY
+ M:	Alexandru Ardelean <alexandru.ardelean@analog.com>
 -- 
 2.20.1
 
