@@ -2,147 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 269C1908ED
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 21:50:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36A6A908FA
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 21:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727588AbfHPTuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 15:50:20 -0400
-Received: from mail-eopbgr770125.outbound.protection.outlook.com ([40.107.77.125]:52228
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726527AbfHPTuT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 15:50:19 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=G1mrgfPN8o45FnWENs6ZohNG24LGKWSKhqnmlu/dBoWtqYmeaxTR0y/j6ztEa7ZkFtwM5ddkh7o3v5ffl3QVtECMdCoPHNO0C6ute2cgYolUAIz7bs3Ra8zX8kih/CV25QgeBKsmNkpYUbysWzSyYsc7m/lwYMSu2yCA5bqzjlL1bI/DgMTi+InPmlU0HN7Ki2N7aFPROrYk+Uokv/95cityY+dpAcC8z+V/ISd1PkenoMbcVx0v46rGFURTDc2ANyqO08n/m0h5hCe3DQpbc5Ef2p3e4JmX4941hp3Qo7sJOFyoAzghrsQzG+fvmnLjKqz661zsqz8Whn+ic1alwQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=58kkHVL5V4CvxRA55qNjAaYGeC1v9AXbqb5e6cYC+/g=;
- b=cB8OhtEwwMUTvA0ect9cnco2A/14PGwU1kh1PIEa5LbK9yfT6CHPRz26Hid1UJ7g6frNzMVsx/J4wRyHwMPKQawAYwK4yoWvnLQUeJXt/2vvEmFF71Kjf4lRT/wMEjx4q4WJ6Ow79uqXnVEerCgn8VCAoRVzYD5Vu2EY0wK+iKX85D3YY6gY37hsxXuiJGt3C0dcqvtCPoAXfxqVE8Cl6gCLHFPgziZM0hxe3HvFTcvMjHbW5KXy1DOpSHd8Ayam2/4MAYFtXIL1O2AV429hKfPViGSKu6pQybFAB1Ethm0/9/4YWI6+yqhKQt5IufSbye4rM8heOzUKyaDT8Ta2Cg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=58kkHVL5V4CvxRA55qNjAaYGeC1v9AXbqb5e6cYC+/g=;
- b=XG/Cp0fezyen0G9uQkOozuTC8303NOz8c7Mso0yvkfH6vQATagq4eJKkTJVct+LovyZSbhzziAiFk9jAfxEVlZ6meta4YhNiJ6oOMu9hDVGii5bG7XuVlk8Vf16p/yVl+r6tMcoFyX+LrqSjFL+EP+nz582Kj/5AJuJNfaOUEHk=
-Received: from DM6PR21MB1337.namprd21.prod.outlook.com (20.179.53.80) by
- DM6PR21MB1417.namprd21.prod.outlook.com (20.180.21.19) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.2; Fri, 16 Aug 2019 19:50:14 +0000
-Received: from DM6PR21MB1337.namprd21.prod.outlook.com
- ([fe80::28a1:fa7:2ff:108b]) by DM6PR21MB1337.namprd21.prod.outlook.com
- ([fe80::28a1:fa7:2ff:108b%5]) with mapi id 15.20.2199.007; Fri, 16 Aug 2019
- 19:50:13 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     vkuznets <vkuznets@redhat.com>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "saeedm@mellanox.com" <saeedm@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
-        "eranbe@mellanox.com" <eranbe@mellanox.com>,
-        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH net-next, 2/6] PCI: hv: Add a Hyper-V PCI mini driver for
- software backchannel interface
-Thread-Topic: [PATCH net-next, 2/6] PCI: hv: Add a Hyper-V PCI mini driver for
- software backchannel interface
-Thread-Index: AQHVUtO4i0f5rhE14EmISE1mYwr8y6b9tkuAgAAliYCAABphgIAAO6cw
-Date:   Fri, 16 Aug 2019 19:50:13 +0000
-Message-ID: <DM6PR21MB1337F60380AA39A65FB83225CAAF0@DM6PR21MB1337.namprd21.prod.outlook.com>
-References: <1565809632-39138-1-git-send-email-haiyangz@microsoft.com>
- <1565809632-39138-3-git-send-email-haiyangz@microsoft.com>
- <878srt8fd8.fsf@vitty.brq.redhat.com>
- <DM6PR21MB13375FA0BA0220A91EF448E1CAAF0@DM6PR21MB1337.namprd21.prod.outlook.com>
- <871rxl84ry.fsf@vitty.brq.redhat.com>
-In-Reply-To: <871rxl84ry.fsf@vitty.brq.redhat.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=True;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Owner=haiyangz@microsoft.com;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2019-08-16T19:50:12.3000511Z;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=General;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=209d26bc-6f1d-42b0-a79e-e7ec32f2d7c5;
- MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Extended_MSFT_Method=Automatic
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=haiyangz@microsoft.com; 
-x-originating-ip: [96.61.92.94]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b6f933bb-f89d-4a2b-76f1-08d72282f46f
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600158)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DM6PR21MB1417;
-x-ms-traffictypediagnostic: DM6PR21MB1417:|DM6PR21MB1417:
-x-ms-exchange-transport-forked: True
-x-ld-processed: 72f988bf-86f1-41af-91ab-2d7cd011db47,ExtAddr
-x-microsoft-antispam-prvs: <DM6PR21MB1417DF72F9A6640CA19B2528CAAF0@DM6PR21MB1417.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0131D22242
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(376002)(366004)(39860400002)(396003)(346002)(136003)(13464003)(189003)(199004)(2906002)(4326008)(7696005)(478600001)(6246003)(8936002)(76116006)(53546011)(3846002)(53936002)(6436002)(9686003)(81166006)(10290500003)(81156014)(186003)(52536014)(8990500004)(71200400001)(54906003)(316002)(6916009)(66066001)(25786009)(6116002)(55016002)(66476007)(7416002)(102836004)(71190400001)(99286004)(11346002)(8676002)(76176011)(66446008)(22452003)(64756008)(14454004)(486006)(229853002)(7736002)(33656002)(10090500001)(74316002)(66556008)(446003)(5660300002)(86362001)(66946007)(476003)(6506007)(26005)(256004)(305945005);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1417;H:DM6PR21MB1337.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: microsoft.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: o/+5iKdXPHGLN1nTujdKKs06bN2r9ndTS6L5JLZeKal1sQbIP+kYW7b+0QFIhG+Ea6P0Rppz6rOuqqQafVoLd3Yi9SW7aBXU1sM+i0XHJeefOYJReg0ZDu1QxIQVqEzv98t4C+WkmM7IitpCwGzFDEGVwCZ17UgRVGBEDpI4UWNN5T9ZfwrxDuPZYwevGVtqbeNBus5g1msiHOc0ExYzmEgekqO0e7oTXif++7hBagne0vbUK1Mf8g5PZMn3BCBFaskAm7BhbNtQhhbJwRo/2pHj7o4xMIlTk4f6LtEGMzxQTIiw9X3Rp3faquhs0DaflEzSGn0kRB2NZTH6VT/BdjX3jvVn5c5twRV9tRBO/vHA1nlSZ1HjjHM98EWUQSy57uvlVXO60TD1roNNgvMGscV+5w3E3ranWLG0McmBVUI=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727612AbfHPTwj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 15:52:39 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41255 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726527AbfHPTwi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 15:52:38 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 196so3623812pfz.8;
+        Fri, 16 Aug 2019 12:52:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=BsYRIWt7zgiLsYRkEbHKo3EPHhpbpjVq3H8U3w5nr8I=;
+        b=XPVLpvmSGjDqAepn2Df5xVHA1UUZ9+xOQU2OlgeKUqfIGCBsbEfEy0Zoey7BlQkrxP
+         CzJXdnPEYwh8oebCjhRRR7HCTZnGEE/rOqVAagxXSISdJUy9W2MAf4If6WWkvEXkWCck
+         ymVDHu84P27/6BDid5eyjZWLIk1gQ5WPwy9I5RyJBIK246xZ618VNNL3GdJOSnqdYHm5
+         A/pw57bMUosyPVDSBFrYOCmrjtNnAjQHTNuxW+kKH6AWLQA3ltn1bCzgczbPe12pBTtr
+         oDlKuKhKPMj6G8jOkS8idVDtPeThndVdW6O22sVbM1HXETi2nYA1wdK1SSZEQqVP8yF0
+         k5Pg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=BsYRIWt7zgiLsYRkEbHKo3EPHhpbpjVq3H8U3w5nr8I=;
+        b=VivxObsxO+OiYsZnoyaPOf4+ZDrsGmewuMtBAgBcmzm8WuAQvrXZ7R7HbgPAA15MPd
+         NV0pquuUeNatDoB7hr7yWvYgog77O15k9QIdz+NqwP4CWaUSU2Eu25J0fMgzfqhaNnHk
+         J9N4u4U/Stmpgnsc+TjkXS7DFVu9WUwbiDoZWU22drFwUToheiuiV6FX/G69VAsY8qqK
+         ZxICcVsZtK8lYfwNrhpPqWfM4lN8FwLMug/gEoxKCQozlfaRFJ+2cYbMKc6R0uNomJrS
+         wpBT+q42FloP3B5lMXC6r5GsJ57HprRiKVk5T+UFG9gbybiCYhU4ieEIjzQlXrWkFX6y
+         ck4A==
+X-Gm-Message-State: APjAAAWLV/otEumKgGyn8Mk1UpwP+fJR5mAt/g58jKTTBELd718tywW/
+        PUIUspcMuF4m/dka1V4QRMY=
+X-Google-Smtp-Source: APXvYqzrd7QyPzjL0x3MzSJ9v0FfGA12R+uv7HUBgJeM5ogLLZzOB/z+CjGaACxHJtQGH1TFe78JVA==
+X-Received: by 2002:aa7:9799:: with SMTP id o25mr12431962pfp.74.1565985157546;
+        Fri, 16 Aug 2019 12:52:37 -0700 (PDT)
+Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:200::2:79ad])
+        by smtp.gmail.com with ESMTPSA id 97sm6005173pjz.12.2019.08.16.12.52.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 16 Aug 2019 12:52:36 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 12:52:35 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Jordan Glover <Golden_Miller83@protonmail.ch>
+Cc:     Thomas Gleixner <tglx@linutronix.de>,
+        Andy Lutomirski <luto@kernel.org>,
+        Daniel Colascione <dancol@google.com>,
+        Song Liu <songliubraving@fb.com>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Message-ID: <20190816195233.vzqqbqrivnooohq6@ast-mbp.dhcp.thefacebook.com>
+References: <20190806011134.p5baub5l3t5fkmou@ast-mbp>
+ <CALCETrUkqUprujww26VxHwkdXQ3DWJH8nnL2VBYpK2EU0oX_YA@mail.gmail.com>
+ <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
+ <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch>
+ <20190815172856.yoqvgu2yfrgbkowu@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrUv+g+cb79FJ1S4XuV0K=kowFkPXpzoC99svoOfs4-Kvg@mail.gmail.com>
+ <20190815230808.2o2qe7a72cwdce2m@ast-mbp.dhcp.thefacebook.com>
+ <fkD3fs46a1YnR4lh0tEG-g3tDnDcyZuzji7bAUR9wujPLLl75ZhI8Yk-H1jZpSugO7qChVeCwxAMmxLdeoF2QFS3ZzuYlh7zmeZOmhDJxww=@protonmail.ch>
+ <alpine.DEB.2.21.1908161158490.1873@nanos.tec.linutronix.de>
+ <lGGTLXBsX3V6p1Z4TkdzAjxbNywaPS2HwX5WLleAkmXNcnKjTPpWnP6DnceSsy8NKt5NBRBbuoAb0woKTcDhJXVoFb7Ygk3Skfj8j6rVfMQ=@protonmail.ch>
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b6f933bb-f89d-4a2b-76f1-08d72282f46f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2019 19:50:13.7157
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: VxDOOaVAVF9VY142Je+vczZbiU6u3Ug1eZe+6z67Ks5p2Ncjo9ObNoupeWnvSl3nyc5UiHN1TxqsnnjuKBTDjA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1417
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <lGGTLXBsX3V6p1Z4TkdzAjxbNywaPS2HwX5WLleAkmXNcnKjTPpWnP6DnceSsy8NKt5NBRBbuoAb0woKTcDhJXVoFb7Ygk3Skfj8j6rVfMQ=@protonmail.ch>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Sent: Friday, August 16, 2019 12:16 PM
-> To: Haiyang Zhang <haiyangz@microsoft.com>
-> Cc: KY Srinivasan <kys@microsoft.com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; linux-kernel@vger.kernel.org;
-> sashal@kernel.org; davem@davemloft.net; saeedm@mellanox.com;
-> leon@kernel.org; eranbe@mellanox.com; lorenzo.pieralisi@arm.com;
-> bhelgaas@google.com; linux-pci@vger.kernel.org; linux-
-> hyperv@vger.kernel.org; netdev@vger.kernel.org
-> Subject: RE: [PATCH net-next, 2/6] PCI: hv: Add a Hyper-V PCI mini driver=
- for
-> software backchannel interface
->=20
-> Haiyang Zhang <haiyangz@microsoft.com> writes:
->=20
+On Fri, Aug 16, 2019 at 11:33:57AM +0000, Jordan Glover wrote:
+> On Friday, August 16, 2019 9:59 AM, Thomas Gleixner <tglx@linutronix.de> wrote:
+> 
+> > On Fri, 16 Aug 2019, Jordan Glover wrote:
 > >
-> > The pci_hyperv can only be loaded on VMs on Hyper-V and Azure. Other
-> > drivers like MLX5e will have symbolic dependency of pci_hyperv if they
-> > use functions exported by pci_hyperv. This dependency will cause other
-> > drivers fail to load on other platforms, like VMs on KVM. So we
-> > created this mini driver, which can be loaded on any platforms to
-> > provide the symbolic dependency.
->=20
-> (/me wondering is there a nicer way around this, by using __weak or
-> something like that...)
->=20
-> In case this stub is the best solution I'd suggest to rename it to someth=
-ing like
-> PCI_HYPERV_INTERFACE to make it clear it is not a separate driver (_MINI
-> makes me think so).
+> > > "systemd --user" service? Trying to do so will fail with:
+> > > "Failed to apply ambient capabilities (before UID change): Operation not permitted"
+> > > I think it's crucial to clear that point to avoid confusion in this discussion
+> > > where people are talking about different things.
+> > > On the other hand running "systemd --system" service with:
+> > > User=nobody
+> > > AmbientCapabilities=CAP_NET_ADMIN
+> > > is perfectly legit and clears some security concerns as only privileged user
+> > > can start such service.
+> >
+> > While we are at it, can we please stop looking at this from a systemd only
+> > perspective. There is a world outside of systemd.
+> >
+> > Thanks,
+> >
+> > tglx
+> 
+> If you define:
+> 
+> "systemd --user" == unprivileged process started by unprivileged user
+> "systemd --system" == process started by privileged user but run as another
+> user which keeps some of parent user privileges and drops others
+> 
+> you can get rid of "systemd" from the equation.
+> 
+> "systemd --user" was the example provided by Alexei when asked about the usecase
+> but his description didn't match what it does so it's not obvious what the real
+> usecase is. I'm sure there can be many more examples and systemd isn't important
+> here in particular beside to understand this specific example.
 
-Thanks! I will consider those options.
+It's both of the above when 'systemd' is not taken literally.
+To earlier Thomas's point: the use case is not only about systemd.
+There are other containers management systems.
+I've used 'systemd-like' terminology as an attempt to explain that such
+daemons are trusted signed binaries that can be run as pid=1.
+Sometimes it's the later:
+"process started by privileged user but run as another user which keeps
+some of parent user privileges and drops others".
+Sometimes capability delegation to another container management daemon
+is too cumbersome, so it's easier to use suid bit on that other daemon.
+So it will become like the former:
+"sort-of unprivileged process started by unprivileged user."
+where daemon has suid and drops most of the capabilities as it starts.
+Let's not focus on the model being good or bad security wise.
+The point that those are the use cases that folks are thinking about.
+That secondary daemon can be full root just fine.
+All outer and inner daemons can be root.
+These daemons need to drop privileges to make the system safer ==
+less prone to corruption due to bugs in themselves. Not necessary security bugs.
+
