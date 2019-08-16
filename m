@@ -2,43 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DAEA8F9A8
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 06:17:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 821F08F9AD
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 06:18:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726371AbfHPERo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 00:17:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58072 "EHLO mail.kernel.org"
+        id S1726487AbfHPESn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 00:18:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58270 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725897AbfHPERo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 00:17:44 -0400
+        id S1726442AbfHPESm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 00:18:42 -0400
 Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D3E32089E;
-        Fri, 16 Aug 2019 04:17:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0DE9E206C2;
+        Fri, 16 Aug 2019 04:18:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565929062;
-        bh=KYggdZKTQhxo4mb/TpGgNFnb1ZKhLbE8Lv0eb5oYZHc=;
+        s=default; t=1565929121;
+        bh=MydB4XC4uGl4LGn19qSjbTVdWnys21WMSc8tlQjVMPQ=;
         h=Date:From:To:Cc:Subject:From;
-        b=CNUuS57m8qR9bcPLyGv0IChQJFq86b55QOc9ff5dfhXHt1uaYVZ2O1sU4NbVVzQOK
-         BwzLIEBxNqtXuAs6VCbG+/B6U+pLZVYC7GfN8NgiG2J0Amo62/vBFrhKJkNGmhyhce
-         VVefDC8k1VAdxRHCSh70sY/9yWxrsxZE7ODdnEU4=
-Date:   Thu, 15 Aug 2019 21:17:41 -0700
+        b=RELSb4jPkizEkZ3eDcPHFOTYY/TsVzs5iq/De/jyuJe/zRdgfgwkhEiZ5Sc7GRVxy
+         9ODTT88+cxAY2rDsyq0zfMraXJ8DPbwi+FmAVQ9QhUVsdhp8+upBtiyjPAUX18Trpg
+         0USwKVE3QLILdKorlnxgdJpJA6lnSaz6QbaF5gyw=
+Date:   Thu, 15 Aug 2019 21:18:39 -0700
 From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, syzkaller-bugs@googlegroups.com
-Subject: Reminder: 8 active syzbot reports in "net/bpf" subsystem
-Message-ID: <20190816041741.GB12185@sol.localdomain>
-Mail-Followup-To: netdev@vger.kernel.org, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+To:     netdev@vger.kernel.org, Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        Dave Watson <davejwatson@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, syzkaller-bugs@googlegroups.com
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vakul Garg <vakul.garg@nxp.com>
+Cc:     syzkaller-bugs@googlegroups.com
+Subject: Reminder: 6 active syzbot reports in "net/tls" subsystem
+Message-ID: <20190816041839.GC12185@sol.localdomain>
+Mail-Followup-To: netdev@vger.kernel.org,
+        Boris Pismenny <borisp@mellanox.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        Dave Watson <davejwatson@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vakul Garg <vakul.garg@nxp.com>, syzkaller-bugs@googlegroups.com
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
@@ -53,198 +59,171 @@ X-Mailing-List: netdev@vger.kernel.org
 to make it better, or if you want it re-generated with the latest status.]
 
 Of the distinct crashes that syzbot has seen in the last week, I've manually
-marked 8 of them as possibly being bugs in the "net/bpf" subsystem.  I've listed
+marked 6 of them as possibly being bugs in the "net/tls" subsystem.  I've listed
 these bug reports below.
 
-Of these 8 reports, 1 was bisected to a commit from the following person:
+Of these 6 reports, 3 were bisected to commits from the following people:
 
-	Alexei Starovoitov <ast@kernel.org>
+	Vakul Garg <vakul.garg@nxp.com>
+	Dave Watson <davejwatson@fb.com>
 
-I've manually checked that this bisection result looks plausible.
+I've manually checked that these bisection results look plausible.
 
 If you believe a bug report is no longer valid, please close it by sending a
 '#syz fix', '#syz dup', or '#syz invalid' command in reply to the original
 thread, as explained at https://goo.gl/tpsmEJ#status
 
-If you believe I misattributed a bug report to the "net/bpf" subsystem, please
+If you believe I misattributed a bug report to the "net/tls" subsystem, please
 let me know and (if possible) forward it to the correct place.
 
-Note: in total, I've actually assigned 42 open syzbot reports to this subsystem.
-But to help focus people's efforts, I've only listed the 8 that have
+Note: in total, I've actually assigned 27 open syzbot reports to this subsystem.
+But to help focus people's efforts, I've only listed the 6 that have
 (re-)occurred in the last week.  Let me know if you want the full list.
 
 Here are the bug reports:
 
 --------------------------------------------------------------------------------
-Title:              WARNING in bpf_jit_free
+Title:              kernel BUG at include/linux/scatterlist.h:LINE!
 Last occurred:      0 days ago
-Reported:           395 days ago
+Reported:           85 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=d04f9c2ec11ab2678f7427795ff5170cb9eb2220
-Original thread:    https://lore.kernel.org/lkml/000000000000e92d1805711f5552@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=effb623cefb879664122cc47df3af728957eb279
+Original thread:    https://lore.kernel.org/lkml/000000000000f41cd905897c075e@google.com/T/#u
 
 This bug has a C reproducer.
 
-syzbot has bisected this bug, but I think the bisection result is incorrect.
+This bug was bisected to:
 
-The original thread for this bug received 5 replies; the last was 65 days ago.
+		commit f295b3ae9f5927e084bd5decdff82390e3471801
+		Author: Vakul Garg <vakul.garg@nxp.com>
+		Date:   Wed Mar 20 02:03:36 2019 +0000
+
+		  net/tls: Add support of AES128-CCM based ciphers
+
+The original thread for this bug has received 1 reply, 66 days ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+2ff1e7cb738fd3c41113@syzkaller.appspotmail.com
+    Reported-by: syzbot+df0d4ec12332661dd1f9@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000e92d1805711f5552@google.com
+https://lore.kernel.org/r/000000000000f41cd905897c075e@google.com
 
 --------------------------------------------------------------------------------
-Title:              WARNING: kernel stack frame pointer has bad value (2)
-Last occurred:      1 day ago
-Reported:           395 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=02a32f98a4e3b5a2ed6929aabdd28dd1618b9c03
-Original thread:    https://lore.kernel.org/lkml/0000000000000956640571197f98@google.com/T/#u
+Title:              kernel BUG at ./include/linux/scatterlist.h:LINE!
+Last occurred:      6 days ago
+Reported:           56 days ago
+Branches:           Mainline
+Dashboard link:     https://syzkaller.appspot.com/bug?id=3008161aab5958fe4125a4cae3e4b7ad3ea50a26
+Original thread:    https://lore.kernel.org/lkml/000000000000417551058bc0bef9@google.com/T/#u
 
 This bug has a C reproducer.
 
-The original thread for this bug received 1 reply, 395 days ago.
+This bug was bisected to:
+
+		commit f295b3ae9f5927e084bd5decdff82390e3471801
+		Author: Vakul Garg <vakul.garg@nxp.com>
+		Date:   Wed Mar 20 02:03:36 2019 +0000
+
+		  net/tls: Add support of AES128-CCM based ciphers
+
+No one has replied to the original thread for this bug yet.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+903cdd6bce9a6eb832a4@syzkaller.appspotmail.com
+    Reported-by: syzbot+ef0daa6ce95facb233c1@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/0000000000000956640571197f98@google.com
+https://lore.kernel.org/r/000000000000417551058bc0bef9@google.com
 
 --------------------------------------------------------------------------------
-Title:              BUG: unable to handle kernel paging request in bpf_prog_kallsyms_add
+Title:              INFO: task hung in tls_sw_release_resources_tx
 Last occurred:      0 days ago
-Reported:           339 days ago
+Reported:           0 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=97f89d84d528e4f5150dcfbdeb97347bc8471e96
-Original thread:    https://lore.kernel.org/lkml/0000000000009417ef0575802d44@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=845e2a9172ab3afe80b95af12014c65930a053d5
+Original thread:    https://lore.kernel.org/lkml/000000000000523ea3059025b11d@google.com/T/#u
 
-This bug has a syzkaller reproducer only.
+This bug has a C reproducer.
 
-The original thread for this bug received 2 replies; the last was 164 days ago.
+This bug was bisected to:
+
+		commit 130b392c6cd6b2aed1b7eb32253d4920babb4891
+		Author: Dave Watson <davejwatson@fb.com>
+		Date:   Wed Jan 30 21:58:31 2019 +0000
+
+		  net: tls: Add tls 1.3 support
+
+The original thread for this bug has received 1 reply, 3 hours ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+c827a78260579449ad39@syzkaller.appspotmail.com
+    Reported-by: syzbot+6a9ff159672dfbb41c95@syzkaller.appspotmail.com
+
+If you send any email or patch for this bug, please reply to the original
+thread, which had activity only 3 hours ago.  For the git send-email command to
+use, or tips on how to reply if the thread isn't in your mailbox, see the "Reply
+instructions" at https://lore.kernel.org/r/000000000000523ea3059025b11d@google.com
+
+--------------------------------------------------------------------------------
+Title:              KMSAN: uninit-value in gf128mul_4k_lle (3)
+Last occurred:      0 days ago
+Reported:           265 days ago
+Branches:           https://github.com/google/kmsan.git master
+Dashboard link:     https://syzkaller.appspot.com/bug?id=a01db4c67933e9e4be8e721a8ee15a9530f1ac04
+Original thread:    https://lore.kernel.org/lkml/000000000000bf2457057b5ccda3@google.com/T/#u
+
+This bug has a C reproducer.
+
+The original thread for this bug received 2 replies; the last was 260 days ago.
+
+If you fix this bug, please add the following tag to the commit:
+    Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/0000000000009417ef0575802d44@google.com
+https://lore.kernel.org/r/000000000000bf2457057b5ccda3@google.com
 
 --------------------------------------------------------------------------------
-Title:              WARNING in bpf_prog_kallsyms_find
-Last occurred:      0 days ago
-Reported:           100 days ago
+Title:              INFO: task hung in __flush_work
+Last occurred:      7 days ago
+Reported:           180 days ago
 Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=40b0c218e639f1d882b86abff2549cfe11c5101e
-Original thread:    https://lore.kernel.org/lkml/000000000000a8fa360588580820@google.com/T/#u
+Dashboard link:     https://syzkaller.appspot.com/bug?id=9613d8dffb5c6cc39da8ec290cb8f3eb62bdf21f
+Original thread:    https://lore.kernel.org/lkml/0000000000008f9c780581fd7417@google.com/T/#u
 
 This bug has a C reproducer.
 
 No one replied to the original thread for this bug.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+89d1ce6e80218a6192d8@syzkaller.appspotmail.com
+    Reported-by: syzbot+aa0b64a57e300a1c6bcc@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000a8fa360588580820@google.com
+https://lore.kernel.org/r/0000000000008f9c780581fd7417@google.com
 
 --------------------------------------------------------------------------------
-Title:              KASAN: use-after-free Read in sk_psock_unlink
-Last occurred:      5 days ago
-Reported:           293 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=d691981726208716cc7aec231fb915e27763d662
-Original thread:    https://lore.kernel.org/lkml/000000000000fd342e05791cc86f@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-syzbot has bisected this bug, but I think the bisection result is incorrect.
-
-The original thread for this bug received 1 reply, 85 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+3acd9f67a6a15766686e@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000fd342e05791cc86f@google.com
-
---------------------------------------------------------------------------------
-Title:              KASAN: slab-out-of-bounds Read in do_jit
-Last occurred:      0 days ago
-Reported:           23 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=3aacade388873fa82bd6d2efb6aaa9ab85964020
-Original thread:    https://lore.kernel.org/lkml/000000000000a6ab6b058e5b899b@google.com/T/#u
+Title:              KMSAN: uninit-value in aesti_encrypt
+Last occurred:      1 day ago
+Reported:           49 days ago
+Branches:           https://github.com/google/kmsan.git master
+Dashboard link:     https://syzkaller.appspot.com/bug?id=9e9babd01df34db0c4d4dbde8ca57a0380e6db0b
+Original thread:    https://lore.kernel.org/lkml/000000000000a97a15058c50c52e@google.com/T/#u
 
 This bug has a C reproducer.
 
-This bug was bisected to:
-
-		commit 2589726d12a1b12eaaa93c7f1ea64287e383c7a5
-		Author: Alexei Starovoitov <ast@kernel.org>
-		Date:   Sat Jun 15 19:12:20 2019 +0000
-
-		  bpf: introduce bounded loops
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6b40f58c6d280fa23b40@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000a6ab6b058e5b899b@google.com
-
---------------------------------------------------------------------------------
-Title:              WARNING in is_bpf_text_address
-Last occurred:      0 days ago
-Reported:           55 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=2386340f7a641010bb1e17228d1e9319592c01ba
-Original thread:    https://lore.kernel.org/lkml/00000000000000ac4f058bd50039@google.com/T/#u
-
-This bug has a C reproducer.
-
-The original thread for this bug has received 5 replies; the last was 2 hours
+The original thread for this bug has received 4 replies; the last was 43 days
 ago.
 
 If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please reply to the original
-thread, which had activity only 2 hours ago.  For the git send-email command to
-use, or tips on how to reply if the thread isn't in your mailbox, see the "Reply
-instructions" at https://lore.kernel.org/r/00000000000000ac4f058bd50039@google.com
-
---------------------------------------------------------------------------------
-Title:              memory leak in sock_hash_update_common
-Last occurred:      7 days ago
-Reported:           85 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=9992588b3bbe2617f62f41b1162af9fc8ea4829c
-Original thread:    https://lore.kernel.org/lkml/000000000000fa662405897c0774@google.com/T/#u
-
-This bug has a syzkaller reproducer only.
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+30c7a1fc662026545124@syzkaller.appspotmail.com
+    Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
 
 If you send any email or patch for this bug, please consider replying to the
 original thread.  For the git send-email command to use, or tips on how to reply
 if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000fa662405897c0774@google.com
+https://lore.kernel.org/r/000000000000a97a15058c50c52e@google.com
 
