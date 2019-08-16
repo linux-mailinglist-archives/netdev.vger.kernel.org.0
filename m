@@ -2,127 +2,222 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 593468F7E9
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 02:11:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B97068F808
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 02:45:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbfHPALF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 20:11:05 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:41691 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfHPALF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 20:11:05 -0400
-Received: by mail-io1-f72.google.com with SMTP id r6so1423742iog.8
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 17:11:04 -0700 (PDT)
+        id S1726279AbfHPApH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 20:45:07 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36669 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725440AbfHPApG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 20:45:06 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r3so3815717wrt.3;
+        Thu, 15 Aug 2019 17:45:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=rbuD1ITMQowPfFNy/cz6ZWEZo9wp5kQvo/8Ha0+7Sw0=;
+        b=KoIGwtqSONyt/euNw1uixWESnZaGCmWm/lPK/i0C8IZVD3CPAnvDBL/6CB5FmMjAYu
+         vXmDD7/8n/kik5niERUvOdCLaYkp2OOiOwqHNauc5OwZ3otOlusNYzSpFogJ5sbWvDZq
+         vOAebT8H5RnlbxtPCfIwW8ePueK0QMJ3ZUoZXqRRmDbtczLXEx2kmthKbSinJTE5Sx7m
+         rcJLtPF5SP5PdhNKppJOSjOrZu9MqLEjYrGiDWqgCrMa+MSrPiQfmkNT/zB4U8Xx2d5f
+         9U/e4wOZ4ZTctr9lye5gPb6gMV8QNGgnBsa56W+ttPGNF3ePSXrwuwfE/93Mtm6GgLro
+         PPIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=7aNOMcysliVqYix28FIAFaamW29TY9E/DIOR9SA9tVo=;
-        b=RUlXjuXgW8NjKuklz3t+aDAUSNfGUMPaZWWYKg6OkV3ZdpEU+MiHd/ejnRyDBP5Ggu
-         B8PXvkysziyPqB1TyVnrA39QX8mOQZn2Askeox7g4rUVCsXSSslCLkhWZ9RyerGvH1gV
-         E5NRhIZcA/VGrnuVN46iv3O6Q7900002cI+uII1Ta8ycocLvPJYxS94ujnpDC5iNte+9
-         8kyC1dMCL2vcQhydsyVfenpvXx5Grnae/KC1jAPhWVAswHo0CVFkf3eypvPwNI+8M5ZM
-         F0igsOE8YVMfvDM3h7ENnjr8w7NmdaLgN4qRZ3xBlHJq7XBv/6BffCk9Th/wbIq3X+Ac
-         zUZg==
-X-Gm-Message-State: APjAAAUYZxBy/bLp6yKlmKHlTFRpUKoCKRvQz1R4My/wuVAIX4NRS2oW
-        tBVjufdmXuLW/uyE+H5IS31wLheCo6tvFI4a6nQjziRhf6kg
-X-Google-Smtp-Source: APXvYqz6bK5qk2bfTYB+nezTUfiQuXS7EZc0ZX1tjIAMdih8Y/x52ZzN3gyLpTW7T4oU0FyX39wPb3Le2RuodI3clWkblgMnCRcS
-MIME-Version: 1.0
-X-Received: by 2002:a02:4e43:: with SMTP id r64mr7978873jaa.34.1565914264167;
- Thu, 15 Aug 2019 17:11:04 -0700 (PDT)
-Date:   Thu, 15 Aug 2019 17:11:04 -0700
-In-Reply-To: <000000000000ab6f84056c786b93@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <00000000000076ecf3059030d3f1@google.com>
-Subject: Re: WARNING in tracepoint_probe_register_prio (3)
-From:   syzbot <syzbot+774fddf07b7ab29a1e55@syzkaller.appspotmail.com>
-To:     ard.biesheuvel@linaro.org, gregkh@linuxfoundation.org,
-        gustavo@embeddedor.com, jeyu@kernel.org,
-        linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
-        mingo@kernel.org, netdev@vger.kernel.org, paulmck@linux.ibm.com,
-        paulmck@linux.vnet.ibm.com, rostedt@goodmis.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=rbuD1ITMQowPfFNy/cz6ZWEZo9wp5kQvo/8Ha0+7Sw0=;
+        b=EvlvFSsas/twA/CUKsST+Lv0StqmXdclLiNnZIskkLSQFOlRWr9WpbdRNXgyduCLYC
+         7f6eTrgecKx7T/M6Qez0XDDIwdzmxd9iqFXn+vjZyd80jis/OhGbYgS0xV/uWIDDEKVz
+         JQ0n2YAiGH/X7MsFtzw9qPl6gArxEc2pF/drkXSpFA6OgFdUi53bOihY57Rvs2eLV0Dg
+         3Pb1bs1IxhsaLG7720f+4bJmKFhnp2AaN0kuj0UEyAZZ6MnIkSjbQsksSrghINGmuASz
+         DcZHlrEZnZApqTwAxYZzVmQhFkFV3WqnpsMtpXoMxuVtbpN/pKe/n2e2CxRfm03P7I1Z
+         vvsA==
+X-Gm-Message-State: APjAAAWUSjVj9FLDHCLAdRbYn+b2zbLHoKfAZjIkvZO0nY9Dfum50h4D
+        QEYdnt0mqCv4YreItm6tObs=
+X-Google-Smtp-Source: APXvYqw+m4qujCWvnCkbg+dJtdcpDWUdjveoYnwwtMUdBeZT72ICgohVT0jsGMzEPqqFppAAxacMmA==
+X-Received: by 2002:a5d:4250:: with SMTP id s16mr7676053wrr.318.1565916302158;
+        Thu, 15 Aug 2019 17:45:02 -0700 (PDT)
+Received: from localhost.localdomain ([188.25.91.80])
+        by smtp.gmail.com with ESMTPSA id k124sm6451204wmk.47.2019.08.15.17.45.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2019 17:45:01 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     h.feurstein@gmail.com, mlichvar@redhat.com,
+        richardcochran@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com,
+        broonie@kernel.org
+Cc:     linux-spi@vger.kernel.org, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: [RFC PATCH net-next 00/11] Deterministic SPI latency on NXP
+Date:   Fri, 16 Aug 2019 03:44:38 +0300
+Message-Id: <20190816004449.10100-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has found a reproducer for the following crash on:
+Continuing the discussion created by Hubert Feurstein around the
+mv88e6xxx driver for MDIO-controlled switches
+(https://lkml.org/lkml/2019/8/2/1364), this patchset takes a similar
+approach for the NXP LS1021A-TSN board, which has a SPI-controlled DSA
+switch (SJA1105).
 
-HEAD commit:    ecb9f80d net/mvpp2: Replace tasklet with softirq hrtimer
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=115730ac600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=d4cf1ffb87d590d7
-dashboard link: https://syzkaller.appspot.com/bug?extid=774fddf07b7ab29a1e55
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11b02a22600000
+The patchset is motivated by some experiments done with a logic
+analyzer, trying to understand the source of latency (and especially of
+the jitter). SJA1105 SPI messages for reading the PTP clock are 12 bytes
+in length: 4 for the SPI header and 8 for the timestamp. When looking at
+the messages with a scope, there's jitter basically everywhere: between
+bits of a frame and between frames in a transfer. The inter-bit jitter
+is hardware and impacts us to a lesser extend (is smaller and caused by
+the PVT stability of the oscillators, PLLs, etc). We will focus on the
+latency between consecutive SPI frames within a 12-byte transfer.
 
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+774fddf07b7ab29a1e55@syzkaller.appspotmail.com
+As a preface, revisions of the DSPI controller IP are integrated in many
+Freescale/NXP devices. As a result, the driver has 3 modes of operation:
+- TCFQ (Transfer Complete Flag mode): The controller signals software
+  that data has been sent/received after each individual word.
+- EOQ (End of Queue mode): The driver can implement batching by making
+  use of the controller's 4-word deep FIFO.
+- DMA (Direct Memory Access mode): The SPI controller's FIFO is no
+  longer in direct interaction with the driver, but is used to trigger
+  the RX and TX channels of the eDMA module on the SoC.
 
-WARNING: CPU: 0 PID: 8824 at kernel/tracepoint.c:243 tracepoint_add_func  
-kernel/tracepoint.c:243 [inline]
-WARNING: CPU: 0 PID: 8824 at kernel/tracepoint.c:243  
-tracepoint_probe_register_prio+0x216/0x790 kernel/tracepoint.c:315
-Kernel panic - not syncing: panic_on_warn set ...
-CPU: 0 PID: 8824 Comm: syz-executor.4 Not tainted 5.3.0-rc3+ #133
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-Call Trace:
-  __dump_stack lib/dump_stack.c:77 [inline]
-  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
-  panic+0x2dc/0x755 kernel/panic.c:219
-  __warn.cold+0x20/0x4c kernel/panic.c:576
-  report_bug+0x263/0x2b0 lib/bug.c:186
-  fixup_bug arch/x86/kernel/traps.c:179 [inline]
-  fixup_bug arch/x86/kernel/traps.c:174 [inline]
-  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
-  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
-  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1028
-RIP: 0010:tracepoint_add_func kernel/tracepoint.c:243 [inline]
-RIP: 0010:tracepoint_probe_register_prio+0x216/0x790 kernel/tracepoint.c:315
-Code: 48 89 f8 48 c1 e8 03 80 3c 08 00 0f 85 bf 04 00 00 48 8b 45 b8 49 3b  
-45 08 0f 85 21 ff ff ff 41 bd ef ff ff ff e8 aa 8c fe ff <0f> 0b e8 a3 8c  
-fe ff 48 c7 c7 20 44 de 88 e8 d7 1d ca 05 44 89 e8
-RSP: 0018:ffff88807b5a7498 EFLAGS: 00010293
-RAX: ffff8880a87a85c0 RBX: ffffffff89a1eb00 RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: ffffffff8173fcd6 RDI: ffff88808afc4698
-RBP: ffff88807b5a74f0 R08: ffff8880a87a85c0 R09: fffffbfff11bc885
-R10: ffff88807b5a7488 R11: ffffffff88de4427 R12: ffff88808afc4690
-R13: 00000000ffffffef R14: 00000000ffffffff R15: ffffffff8177f710
-  tracepoint_probe_register+0x2b/0x40 kernel/tracepoint.c:335
-  register_trace_sched_wakeup include/trace/events/sched.h:96 [inline]
-  tracing_sched_register kernel/trace/trace_sched_switch.c:54 [inline]
-  tracing_start_sched_switch+0xa8/0x190 kernel/trace/trace_sched_switch.c:106
-  tracing_start_cmdline_record+0x13/0x20  
-kernel/trace/trace_sched_switch.c:131
-  trace_printk_init_buffers kernel/trace/trace.c:3050 [inline]
-  trace_printk_init_buffers.cold+0xdf/0xe9 kernel/trace/trace.c:3013
-  bpf_get_trace_printk_proto+0xe/0x20 kernel/trace/bpf_trace.c:338
-  cgroup_base_func_proto kernel/bpf/cgroup.c:799 [inline]
-  cgroup_base_func_proto.isra.0+0x10e/0x120 kernel/bpf/cgroup.c:776
-  cg_sockopt_func_proto+0x53/0x70 kernel/bpf/cgroup.c:1411
-  check_helper_call+0x141/0x32f0 kernel/bpf/verifier.c:3950
-  do_check+0x6213/0x89f0 kernel/bpf/verifier.c:7707
-  bpf_check+0x6f99/0x9948 kernel/bpf/verifier.c:9294
-  bpf_prog_load+0xe68/0x1670 kernel/bpf/syscall.c:1698
-  __do_sys_bpf+0xc43/0x3460 kernel/bpf/syscall.c:2849
-  __se_sys_bpf kernel/bpf/syscall.c:2808 [inline]
-  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2808
-  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x459829
-Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
-48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
-ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
-RSP: 002b:00007fc4bf1dec78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
-RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459829
-RDX: 0000000000000070 RSI: 0000000020000180 RDI: 0000000000000005
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000246 R12: 00007fc4bf1df6d4
-R13: 00000000004bfc7c R14: 00000000004d1938 R15: 00000000ffffffff
-Kernel Offset: disabled
-Rebooting in 86400 seconds..
+In LS1021A, the driver works in the least efficient mode of the 3
+(TCFQ). There is a well-known errata that the DSPI controller is broken
+in conjunction with the eDMA module. As for the EOQ mode, I have tried
+unsuccessfully for a few days to make use of the 4 entry FIFO, and the
+hardware simply fails to reliably acknowledge the transmission when the
+FIFO gets full. So it looks like we're stuck with the TCFQ mode.
+
+The problem with phc2sys on the LS1021A-TSN board is that in order for
+the gettime64() call to complete on the sja1105, the system has to
+service 12 IRQs. Intuitively that is excessive and is the main source of
+jitter, but let's not get ahead of ourselves.
+
+An outline of the experiments that were done (unless otherwise
+mentioned, all of these ran for 120 seconds):
+
+A. First I have measured the (poor) performance of phc2sys under current
+   conditions. (DSPI driver in IRQ mode, no PTP system timestamping)
+
+   offset: min -53310 max 16107 mean -1737.18 std dev 11444.3
+   delay: min 163680 max 237360 mean 201149 std dev 22446.6
+   lost servo lock 1 times
+
+B. I switched the .gettime64 callback to .gettimex64, snapshotting the
+   PTP system timestamp within the sja1105 driver.
+
+   offset: min -48923 max 64217 mean -904.137 std dev 17358.1
+   delay: min 149600 max 203840 mean 169045 std dev 17993.3
+   lost servo lock 8 times
+
+C. I patched "struct spi_transfer" to contain the PTP system timestamp,
+   and from the sja1105 driver, I passed this structure to be
+   snapshotted by the SPI controller's driver (spi-fsl-dspi). This is
+   the "transfer-level" snapshot.
+
+   offset: min -64979 max 38979 mean -416.197 std dev 15367.9
+   delay: min 125120 max 168320 mean 150286 std dev 17675.3
+   lost servo lock 10 times
+
+D. I changed the placement of the transfer snapshotting within the DSPI
+   driver, from "transfer-level" to "byte-level".
+
+   offset: min -9021 max 7149 mean -0.418803 std dev 3529.81
+   delay: min 7840 max 23920 mean 14493.7 std dev 5982.17
+   lost servo lock 0 times
+
+E. I moved the DSPI driver to poll mode. I went back to collecting the
+   PTP system timestamps from the sja1105 driver (same as B).
+
+   offset: min -4199 max 46643 mean 418.214 std dev 4554.01
+   delay: min 84000 max 194000 mean 99463.2 std dev 12936.5
+   lost servo lock 1 times
+
+F. Transfer-level snapshotting in the DSPI driver (same as C), but in
+   poll mode.
+
+   offset: min -24244 max 1115 mean -230.478 std dev 2297.28
+   delay: min 69440 max 119040 mean 70312.9 std dev 8065.34
+   lost servo lock 1 times
+
+G. Byte-level snapshotting (same as D) but in poll mode.
+
+   offset: min -314 max 288 mean -2.48718 std dev 118.045
+   delay: min 4880 max 6000 mean 5118.63 std dev 507.258
+   lost servo lock 0 times
+
+   This seemed suspiciously good to me, so I let it run for longer
+   (58 minutes):
+
+   offset: min -26251 max 16416 mean -21.8672 std dev 863.416
+   delay: min 4720 max 57280 mean 5182.49 std dev 1607.19
+   lost servo lock 3 times
+
+H. Transfer-level snapshotting (same as F), but with IRQs disabled.
+   This ran for 86 minutes.
+
+   offset: min -1927 max 1843 mean -0.209203 std dev 529.398
+   delay: min 85440 max 93680 mean 88245 std dev 1454.71
+   lost servo lock 0 times
+
+I. Byte-level snapshotting (same as G), but with IRQs disabled.
+   This ran for 102 minutes.
+
+   offset: min -378 max 381 mean -0.0083089 std dev 101.495
+   delay: min 4720 max 5920 mean 5129.38 std dev 154.899
+   lost servo lock 0 times
+
+As a result, this patchset proposes the implementation of scenario I.
+The others were done through temporary patches which are not presented
+here due to the difficulty of presenting a coherent git history without
+resorting to reverts etc. The gist of each experiment should be clear
+though.
+
+The raw data is available for dissection at
+https://drive.google.com/open?id=1r9raU9ZeqOqkqts6Lb-ISf5ubLDLP3wk.
+The logic analyzer captures can be opened with a free-as-in-beer program
+provided by Saleae: https://www.saleae.com/downloads/.
+
+In the capture data one can find the MOSI, SCK SPI signals, as well as a
+debug GPIO which was toggled at the same time as the PTP system
+timestamp was taken, to give the viewer an impression of what the
+software is capturing compared to the actual timing of the SPI transfer.
+
+Attached are also some close-up screenshots of transfers where there is
+a clear and huge delay in-between frames of the same 12-byte SPI
+transfer. As it turns out, these were all caused by the CPU getting
+interrupted by some other IRQ. Approaches H and I are the only ones that
+get rid of these glitches. In theory, the byte-level snapshotting should
+be less vulnerable to an IRQ interrupting the SPI transfer (because the
+time window is much smaller) but as the 58 minutes experiment shows, it
+is not immune.
+
+Vladimir Oltean (11):
+  net: dsa: sja1105: Add a debugging GPIO for monitoring SPI latency
+  net: dsa: sja1105: Implement the .gettimex64 system call for PTP
+  spi: Add a PTP system timestamp to the transfer structure
+  spi: spi-fsl-dspi: Cosmetic cleanup
+  spi: spi-fsl-dspi: Use poll mode in case the platform IRQ is missing
+  spi: spi-fsl-dspi: Implement the PTP system timestamping
+  spi: spi-fsl-dspi: Add a debugging GPIO for monitoring latency
+  spi: spi-fsl-dspi: Disable interrupts and preemption during poll mode
+    transfer
+  ARM: dts: ls1021a-tsn: Add debugging GPIOs for the SJA1105 and DSPI
+    drivers
+  ARM: dts: ls1021a-tsn: Use the DSPI controller in poll mode
+  ARM: dts: ls1021a-tsn: Reduce the SJA1105 SPI frequency for debug
+
+ arch/arm/boot/dts/ls1021a-tsn.dts      |   8 +-
+ drivers/net/dsa/sja1105/sja1105.h      |   8 +-
+ drivers/net/dsa/sja1105/sja1105_main.c |  15 +-
+ drivers/net/dsa/sja1105/sja1105_ptp.c  |  23 +-
+ drivers/net/dsa/sja1105/sja1105_spi.c  |  34 +-
+ drivers/spi/spi-fsl-dspi.c             | 518 ++++++++++++++-----------
+ include/linux/spi/spi.h                |   4 +
+ 7 files changed, 365 insertions(+), 245 deletions(-)
+
+-- 
+2.17.1
 
