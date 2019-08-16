@@ -2,100 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 05B5E9072B
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 19:45:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5FB09073C
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 19:51:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727513AbfHPRpU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 13:45:20 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39633 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727486AbfHPRpT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 13:45:19 -0400
-Received: by mail-pl1-f196.google.com with SMTP id z3so2735582pln.6;
-        Fri, 16 Aug 2019 10:45:19 -0700 (PDT)
+        id S1727341AbfHPRvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 13:51:21 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:34273 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726824AbfHPRvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 13:51:21 -0400
+Received: by mail-qk1-f196.google.com with SMTP id m10so5462579qkk.1
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 10:51:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RyCXVhRN+ce8wTQS17+Ol/8skNZ2vgCgTWCjwmTFLGM=;
-        b=dc+uFNYUI5lcwQJgLQMs1y4B8iUf6H+6kx3JMIVyf3nUO/7W+6YbukJIvtuXg4dgD8
-         sMAa4o6wjL5QkbYthTKS2+TjEWtLxXzkk5Tqn4mnaT4wUkDOTjjOpS2TAoSjJeLjaBiA
-         QJ5v3Xh/oJkro4YN8vKN/aASH/bKNWvzZ2PLZ5/gmKMjapQ9PT12q3TtepGRz0wYUCip
-         WosCcYiaViTuDmvekvY0eJ+BJPKAoRocbjnj9uOMMn4G3Ayk1ULae9fLZFNEjLAB75RL
-         2D9nAhTc9AzNR0B0YspUhkFpVI3LhUEhlTO6mM4WHdCKXoqvk+3wnFUWswwmb1Qw/RKr
-         uY6g==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=00A8PXEYv7SUacKbSulI1YeAv3mHRh4MRNuFBd4Lqhg=;
+        b=YnLbpEqYx0ynG2uh8mLmOVvnxMZfZ8rpx6Q7q2bxKKMooHdqKYmusCXJqCApNGpjhk
+         29xkZsTQW/oA6JmFNF5M6/fVAVL1wDnRlyNaNkfQvjR4steNF4ZI2Tirnkd35YYitk3D
+         UKQPSmBOzsMC/D7QhwiayrioKPVQwY/OvH5UohORrdgtMRe13y/p5lTaeB3ADRRMkrc8
+         xamb86Zw3lIdk5d6qo+E8c7EqO9JovAcxzHhDF4vDGoZ1A5v/wFqZZM8RZfmj9veIz7m
+         y5J2EMcwNMrPYu+OICgocF+1neFeDPsGC71sXPHJQj2D9ft2KtReyCUlt8gG1SILBbQE
+         6ewQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RyCXVhRN+ce8wTQS17+Ol/8skNZ2vgCgTWCjwmTFLGM=;
-        b=CfTSYXJgeb6MCprqFa4lCPBgTdyp8o3IRbUE7KITQuyT6dkFUohtJl0LQfTwJI4qJ6
-         rzYBEdF7Kj9IBTLIs+TyOqYNPWXAqWixc5fZnCfNvbLlG2ELuHZxrrMJFgCYdx5Lnu4I
-         7A16bR8MGgNQMUkfq5y7u/WK9Th+PwCSLOz/6OFvtigdoRVp2VNZtWZ+fQojpbdjKyW7
-         pYKMQEZXGHVnK9GTX2NgQeDg9quU7CmoVbn70ZXcMZaWLihhi6TEzIRx3JjPjTuBT4Gg
-         W/GEtNWohHOwL3y5xAdLD6/QuKPOe8HcmEJ1tH2yUWRHZBwA6xRYdx2AZh6+cyvCNkKq
-         9l+A==
-X-Gm-Message-State: APjAAAXY+5NBFH8z69w61uvcpJrYQN4GGmsVFjbp4roo5V4BwwRX0rNN
-        rY7tMRtT5RtKi2JfTIQcRo1qXKjkbH+KOkN4bJKgDA==
-X-Google-Smtp-Source: APXvYqw8xOpt4KdjG/NA/xWzu6Qn+d25WhlD671OL0tFrbTkmVj/CgAzSbdLTMHFFNusj8zIv4XiYN1tkSp2JuMET/c=
-X-Received: by 2002:a17:902:7286:: with SMTP id d6mr10489652pll.61.1565977519072;
- Fri, 16 Aug 2019 10:45:19 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=00A8PXEYv7SUacKbSulI1YeAv3mHRh4MRNuFBd4Lqhg=;
+        b=oisc53AQlF3HNh3mHnusLYWa4BKRj8S999EWCxdh+tCmL44y/Zi+9tzFgz7q6UCZGn
+         m+895XQMoyRDr+TUJ1E81atRpr9tR4YL+iQhaPozLfVHXBGXglwbPVSe3BkkKuGAcNzG
+         rJnVFYet9iBZF5rCYBN55GZwU8l/tvOfkfdlmjsxHU9jHVC+ioNU81OE/t5t0N0BfILS
+         eSieDpMRKrKz9ON+xYSEcjlUH73s44nhN4PLEEfWs0e2Vo9X6mkIVgHF2BwEACoVZuF5
+         Ga31iEFEUv96sxflcNVFkJeh7VaQjkiMIoV5CC4cIw76QofoelOqNCW6FwIrYk8wcrU6
+         AmIw==
+X-Gm-Message-State: APjAAAXivwCWryygUaLgkEkoqDc5Xy/3L2J4W2FymtTxGRlZtrYwHbCJ
+        dSJhfpXxjzSB7REl8WPqdUcWuw==
+X-Google-Smtp-Source: APXvYqyPIeZSUubbpYkFjBLDGn+v8lJZHS00aMD48SIQJFOIfWzk7KWnK9Bg89RW/sYe3fvJKmWtVQ==
+X-Received: by 2002:a37:aa88:: with SMTP id t130mr10257725qke.12.1565977880069;
+        Fri, 16 Aug 2019 10:51:20 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id k16sm3243369qki.119.2019.08.16.10.51.19
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Aug 2019 10:51:19 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 10:51:02 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Quentin Monnet <quentin.monnet@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
+Subject: Re: [PATCH bpf 0/6] tools: bpftool: fix printf()-like functions
+Message-ID: <20190816105102.3a5623b1@cakuba.netronome.com>
+In-Reply-To: <CAADnVQLPg8jEsUbKOxzQc5Q1BKrB=urSWiniGwsJhcm=UM7oKA@mail.gmail.com>
+References: <20190815143220.4199-1-quentin.monnet@netronome.com>
+        <CAADnVQKpPaZ3wJJwSn=JPML9pWzwy_8G9c0H=ToaaxZEJ8isnQ@mail.gmail.com>
+        <10602447-213f-fce5-54c7-7952eb3e8712@netronome.com>
+        <CAADnVQLPg8jEsUbKOxzQc5Q1BKrB=urSWiniGwsJhcm=UM7oKA@mail.gmail.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
-In-Reply-To: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Fri, 16 Aug 2019 10:45:07 -0700
-Message-ID: <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
-Subject: Re: Unable to create htb tc classes more than 64K
-To:     Akshat Kakkar <akshat.1984@gmail.com>
-Cc:     NetFilter <netfilter-devel@vger.kernel.org>,
-        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 16, 2019 at 5:49 AM Akshat Kakkar <akshat.1984@gmail.com> wrote:
->
-> I want to have around 1 Million htb tc classes.
-> The simple structure of htb tc class, allow having only 64K classes at once.
+On Fri, 16 Aug 2019 10:11:12 -0700, Alexei Starovoitov wrote:
+> On Fri, Aug 16, 2019 at 9:41 AM Quentin Monnet wrote:
+> > 2019-08-15 22:08 UTC-0700 ~ Alexei Starovoitov
+> > <alexei.starovoitov@gmail.com>  
+> > > On Thu, Aug 15, 2019 at 7:32 AM Quentin Monnet
+> > > <quentin.monnet@netronome.com> wrote:  
+> > >>
+> > >> Hi,
+> > >> Because the "__printf()" attributes were used only where the functions are
+> > >> implemented, and not in header files, the checks have not been enforced on
+> > >> all the calls to printf()-like functions, and a number of errors slipped in
+> > >> bpftool over time.
+> > >>
+> > >> This set cleans up such errors, and then moves the "__printf()" attributes
+> > >> to header files, so that the checks are performed at all locations.  
+> > >
+> > > Applied. Thanks
+> > >  
+> >
+> > Thanks Alexei!
+> >
+> > I noticed the set was applied to the bpf-next tree, and not bpf. Just
+> > checking if this is intentional?  
+> 
+> Yes. I don't see the _fix_ part in there.
 
-This is probably due the limit of class ID which is 16bit for minor.
+Mm.. these are not critical indeed, but patches 1 and 3 do fix a crash.
+Perhaps those should had been a series on their own. 
 
+We'll recalibrate :)
 
-> But, it is possible to make it more hierarchical using hierarchy of
-> qdisc and classes.
-> For this I tried something like this
->
-> tc qdisc add dev eno2 root handle 100: htb
-> tc class add dev eno2 parent 100: classid 100:1 htb rate 100Mbps
-> tc class add dev eno2 parent 100: classid 100:2 htb rate 100Mbps
->
-> tc qdisc add dev eno2 parent 100:1 handle 1: htb
-> tc class add dev eno2 parent 1: classid 1:10 htb rate 100kbps
-> tc class add dev eno2 parent 1: classid 1:20 htb rate 300kbps
->
-> tc qdisc add dev eno2 parent 100:2 handle 2: htb
-> tc class add dev eno2 parent 2: classid 2:10 htb rate 100kbps
-> tc class add dev eno2 parent 2: classid 2:20 htb rate 300kbps
->
-> What I want is something like:
-> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> 0x00000001 fw flowid 1:10
-> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> 0x00000002 fw flowid 1:20
-> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> 0x00000003 fw flowid 2:10
-> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
-> 0x00000004 fw flowid 2:20
->
-> But I am unable to shape my traffic by any of 1:10, 1:20, 2:10 or 2:20.
->
-> Can you please suggest, where is it going wrong?
-> Is it not possible altogether?
+> Looks like cleanup to me.
+> I've also considered to push
+> commit d34b044038bf ("tools: bpftool: close prog FD before exit on
+> showing a single program")
+> to bpf-next as well.
+> That fd leak didn't feel that necessary to push to bpf tree
+> and risk merge conflicts... but I pushed it to bpf at the end.
 
-The filter could only filter for classes on the same level, you are
-trying to filter for the children classes, which doesn't work.
-
-Thanks.
