@@ -2,164 +2,264 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B52779002A
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 12:45:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 970B290027
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 12:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbfHPKoz convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Aug 2019 06:44:55 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:50081 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726804AbfHPKoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 06:44:55 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7GAiiEL013279, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS12.realtek.com.tw[172.21.6.16])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7GAiiEL013279
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Fri, 16 Aug 2019 18:44:44 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS12.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Fri, 16 Aug
- 2019 18:44:43 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     Jian-Hong Pan <jian-hong@endlessm.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>
-Subject: RE: [PATCH v2] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
-Thread-Topic: [PATCH v2] rtw88: pci: Move a mass of jobs in hw IRQ to soft
- IRQ
-Thread-Index: AQHVVBrblzqZYqIEtECYjaK+MuuQN6b9lGGg
-Date:   Fri, 16 Aug 2019 10:44:42 +0000
-Message-ID: <F7CD281DE3E379468C6D07993EA72F84D18932B7@RTITMBSVM04.realtek.com.tw>
-References: <CAPpJ_edibR0bxO0Pg=NAaRU8fGYheyN8NTv-gVyTDCJhE-iG5Q@mail.gmail.com>
- <20190816100903.7549-1-jian-hong@endlessm.com>
-In-Reply-To: <20190816100903.7549-1-jian-hong@endlessm.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.183]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726947AbfHPKm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 06:42:26 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:42720 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726565AbfHPKm0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 06:42:26 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 8438E11D49484912D9A1;
+        Fri, 16 Aug 2019 18:42:14 +0800 (CST)
+Received: from huawei.com (10.175.101.78) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Fri, 16 Aug 2019
+ 18:42:08 +0800
+From:   Yang Yingliang <yangyingliang@huawei.com>
+To:     <netdev@vger.kernel.org>
+CC:     <jasowang@redhat.com>, <eric.dumazet@gmail.com>,
+        <xiyou.wangcong@gmail.com>, <davem@davemloft.net>,
+        <yangyingliang@huawei.com>, <weiyongjun1@huawei.com>
+Subject: [PATCH v2] tun: fix use-after-free when register netdev failed
+Date:   Fri, 16 Aug 2019 19:00:24 +0800
+Message-ID: <1565953224-104941-1-git-send-email-yangyingliang@huawei.com>
+X-Mailer: git-send-email 1.8.3
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.175.101.78]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> From: Jian-Hong Pan
-> 
-> There is a mass of jobs between spin lock and unlock in the hardware
-> IRQ which will occupy much time originally. To make system work more
-> efficiently, this patch moves the jobs to the soft IRQ (bottom half) to
-> reduce the time in hardware IRQ.
-> 
-> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
-> ---
-> v2:
->  Change the spin_lock_irqsave/unlock_irqrestore to spin_lock/unlock in
->  rtw_pci_interrupt_handler. Because the interrupts are already disabled
->  in the hardware interrupt handler.
-> 
->  drivers/net/wireless/realtek/rtw88/pci.c | 33 +++++++++++++++++++-----
->  1 file changed, 27 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c
-> b/drivers/net/wireless/realtek/rtw88/pci.c
-> index 00ef229552d5..0740140d7e46 100644
-> --- a/drivers/net/wireless/realtek/rtw88/pci.c
-> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
-> @@ -866,12 +866,28 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq,
-> void *dev)
->  {
->  	struct rtw_dev *rtwdev = dev;
->  	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
-> -	u32 irq_status[4];
-> 
->  	spin_lock(&rtwpci->irq_lock);
->  	if (!rtwpci->irq_enabled)
->  		goto out;
-> 
-> +	/* disable RTW PCI interrupt to avoid more interrupts before the end of
-> +	 * thread function
-> +	 */
-> +	rtw_pci_disable_interrupt(rtwdev, rtwpci);
+I got a UAF repport in tun driver when doing fuzzy test:
 
-So basically it's to prevent back-to-back interrupts.
+[  466.269490] ==================================================================
+[  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
+[  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
+[  466.271810]
+[  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
+[  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+[  466.271838] Call Trace:
+[  466.271858]  dump_stack+0xca/0x13e
+[  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
+[  466.271890]  print_address_description+0x79/0x440
+[  466.271906]  ? vprintk_func+0x5e/0xf0
+[  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
+[  466.271935]  __kasan_report+0x15c/0x1df
+[  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
+[  466.271976]  kasan_report+0xe/0x20
+[  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
+[  466.272013]  do_iter_readv_writev+0x4b7/0x740
+[  466.272032]  ? default_llseek+0x2d0/0x2d0
+[  466.272072]  do_iter_read+0x1c5/0x5e0
+[  466.272110]  vfs_readv+0x108/0x180
+[  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
+[  466.299020]  ? fsnotify+0x888/0xd50
+[  466.299040]  ? __fsnotify_parent+0xd0/0x350
+[  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
+[  466.304548]  ? vfs_write+0x264/0x510
+[  466.304569]  ? ksys_write+0x101/0x210
+[  466.304591]  ? do_preadv+0x116/0x1a0
+[  466.304609]  do_preadv+0x116/0x1a0
+[  466.309829]  do_syscall_64+0xc8/0x600
+[  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  466.309861] RIP: 0033:0x4560f9
+[  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+[  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
+[  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
+[  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
+[  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
+[  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
+[  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
+[  466.323057]
+[  466.323064] Allocated by task 2605:
+[  466.335165]  save_stack+0x19/0x80
+[  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
+[  466.337755]  kmem_cache_alloc+0xe8/0x320
+[  466.339050]  getname_flags+0xca/0x560
+[  466.340229]  user_path_at_empty+0x2c/0x50
+[  466.341508]  vfs_statx+0xe6/0x190
+[  466.342619]  __do_sys_newstat+0x81/0x100
+[  466.343908]  do_syscall_64+0xc8/0x600
+[  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  466.347034]
+[  466.347517] Freed by task 2605:
+[  466.348471]  save_stack+0x19/0x80
+[  466.349476]  __kasan_slab_free+0x12e/0x180
+[  466.350726]  kmem_cache_free+0xc8/0x430
+[  466.351874]  putname+0xe2/0x120
+[  466.352921]  filename_lookup+0x257/0x3e0
+[  466.354319]  vfs_statx+0xe6/0x190
+[  466.355498]  __do_sys_newstat+0x81/0x100
+[  466.356889]  do_syscall_64+0xc8/0x600
+[  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+[  466.359567]
+[  466.360050] The buggy address belongs to the object at ffff888372139100
+[  466.360050]  which belongs to the cache names_cache of size 4096
+[  466.363735] The buggy address is located 336 bytes inside of
+[  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
+[  466.367179] The buggy address belongs to the page:
+[  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
+[  466.371582] flags: 0x2fffff80010200(slab|head)
+[  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
+[  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
+[  466.377778] page dumped because: kasan: bad access detected
+[  466.379730]
+[  466.380288] Memory state around the buggy address:
+[  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.388257]                                                  ^
+[  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+[  466.394667] ==================================================================
 
-Nothing wrong about it, I just wondering why we don't like
-back-to-back interrupts. Does it means that those interrupts
-fired between irq_handler and threadfin would increase
-much more time to consume them.
+tun_chr_read_iter() accessed the memory which freed by free_netdev()
+called by tun_set_iff():
 
-> +out:
-> +	spin_unlock(&rtwpci->irq_lock);
-> +
-> +	return IRQ_WAKE_THREAD;
-> +}
-> +
-> +static irqreturn_t rtw_pci_interrupt_threadfn(int irq, void *dev)
-> +{
-> +	struct rtw_dev *rtwdev = dev;
-> +	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
-> +	unsigned long flags;
-> +	u32 irq_status[4];
-> +
->  	rtw_pci_irq_recognized(rtwdev, rtwpci, irq_status);
-> 
->  	if (irq_status[0] & IMR_MGNTDOK)
-> @@ -891,8 +907,11 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq,
-> void *dev)
->  	if (irq_status[0] & IMR_ROK)
->  		rtw_pci_rx_isr(rtwdev, rtwpci, RTW_RX_QUEUE_MPDU);
-> 
-> -out:
-> -	spin_unlock(&rtwpci->irq_lock);
-> +	/* all of the jobs for this interrupt have been done */
-> +	spin_lock_irqsave(&rtwpci->irq_lock, flags);
+        CPUA                                     CPUB
+    tun_set_iff()
+      alloc_netdev_mqs()
+      tun_attach()
+                                            tun_chr_read_iter()
+                                              tun_get()
+      register_netdevice() <-- inject error
+      tun_detach_all()
+        synchronize_net()
+                                              tun_do_read()
+                                                tun_ring_recv()
+                                                  schedule()
+      free_netdev()
+        netdev_freemem()
+                                              tun_put()
+                                                dev_put() <-- UAF
 
-I suggest to protect the ISRs. Because next patches will require
-to check if the TX DMA path is empty. This means I will also add
-this rtwpci->irq_lock to the TX path, and check if the skb_queue
-does not have any pending SKBs not DMAed successfully.
+Move tun_set_real_num_queues() out of tun_attach() and call it
+before register_netdevice() in tun_set_iff().
 
-> +	if (rtw_flag_check(rtwdev, RTW_FLAG_RUNNING))
+Call tun_attach() after register_netdevice() to make sure tfile->tun
+is not published until the netdevice is registered. So the read/write
+thread can not use the tun pointer that may freed by free_netdev().
+(The tun and dev pointer are allocated by alloc_netdev_mqs(), they can
+be freed by netdev_freemem().)
 
-Why check the flag here? Is there any racing or something?
-Otherwise it looks to break the symmetry.
+---
+Changes in v2:
+ - add a param in tun_set_real_num_queues()
+ - move tun_set_real_num_queues() out of tun_attach()
+ - call tun_set_real_num_queues() before register_netdevice()
+ - call tun_attach() after register_netdevice()
+---
 
-> +		rtw_pci_enable_interrupt(rtwdev, rtwpci);
-> +	spin_unlock_irqrestore(&rtwpci->irq_lock, flags);
-> 
->  	return IRQ_HANDLED;
->  }
-> @@ -1152,8 +1171,10 @@ static int rtw_pci_probe(struct pci_dev *pdev,
->  		goto err_destroy_pci;
->  	}
-> 
-> -	ret = request_irq(pdev->irq, &rtw_pci_interrupt_handler,
-> -			  IRQF_SHARED, KBUILD_MODNAME, rtwdev);
-> +	ret = devm_request_threaded_irq(rtwdev->dev, pdev->irq,
-> +					rtw_pci_interrupt_handler,
-> +					rtw_pci_interrupt_threadfn,
-> +					IRQF_SHARED, KBUILD_MODNAME, rtwdev);
->  	if (ret) {
->  		ieee80211_unregister_hw(hw);
->  		goto err_destroy_pci;
-> @@ -1192,7 +1213,7 @@ static void rtw_pci_remove(struct pci_dev *pdev)
->  	rtw_pci_disable_interrupt(rtwdev, rtwpci);
->  	rtw_pci_destroy(rtwdev, pdev);
->  	rtw_pci_declaim(rtwdev, pdev);
-> -	free_irq(rtwpci->pdev->irq, rtwdev);
-> +	devm_free_irq(rtwdev->dev, rtwpci->pdev->irq, rtwdev);
->  	rtw_core_deinit(rtwdev);
->  	ieee80211_free_hw(hw);
->  }
-> --
-> 2.20.1
+Cc: Yang Yingliang <yangyingliang@huawei.com>
+Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Suggested-by: Jason Wang <jasowang@redhat.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+---
+ drivers/net/tun.c | 38 +++++++++++++++++++++-----------------
+ 1 file changed, 21 insertions(+), 17 deletions(-)
 
-Yan-Hsuan
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index db16d7a13e00..a19f864c5f8d 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -626,10 +626,11 @@ static inline bool tun_not_capable(struct tun_struct *tun)
+ 		!ns_capable(net->user_ns, CAP_NET_ADMIN);
+ }
+ 
+-static void tun_set_real_num_queues(struct tun_struct *tun)
++static void tun_set_real_num_queues(struct tun_struct *tun,
++				    unsigned int numqueues)
+ {
+-	netif_set_real_num_tx_queues(tun->dev, tun->numqueues);
+-	netif_set_real_num_rx_queues(tun->dev, tun->numqueues);
++	netif_set_real_num_tx_queues(tun->dev, numqueues);
++	netif_set_real_num_rx_queues(tun->dev, numqueues);
+ }
+ 
+ static void tun_disable_queue(struct tun_struct *tun, struct tun_file *tfile)
+@@ -708,7 +709,7 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+ 		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
+ 		/* Drop read queue */
+ 		tun_queue_purge(tfile);
+-		tun_set_real_num_queues(tun);
++		tun_set_real_num_queues(tun, tun->numqueues);
+ 	} else if (tfile->detached && clean) {
+ 		tun = tun_enable_queue(tfile);
+ 		sock_put(&tfile->sk);
+@@ -873,7 +874,6 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
+ 	rcu_assign_pointer(tfile->tun, tun);
+ 	rcu_assign_pointer(tun->tfiles[tun->numqueues], tfile);
+ 	tun->numqueues++;
+-	tun_set_real_num_queues(tun);
+ out:
+ 	return err;
+ }
+@@ -2734,6 +2734,8 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 		if (err < 0)
+ 			return err;
+ 
++		tun_set_real_num_queues(tun, tun->numqueues);
++
+ 		if (tun->flags & IFF_MULTI_QUEUE &&
+ 		    (tun->numqueues + tun->numdisabled > 1)) {
+ 			/* One or more queue has already been attached, no need
+@@ -2828,14 +2830,18 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 			      (ifr->ifr_flags & TUN_FEATURES);
+ 
+ 		INIT_LIST_HEAD(&tun->disabled);
+-		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
+-				 ifr->ifr_flags & IFF_NAPI_FRAGS);
+-		if (err < 0)
+-			goto err_free_flow;
++
++		tun_set_real_num_queues(tun, tun->numqueues + 1);
+ 
+ 		err = register_netdevice(tun->dev);
+ 		if (err < 0)
+-			goto err_detach;
++			/* register_netdevice() already called tun_free_netdev() */
++			goto err_free_dev;
++
++		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
++				 ifr->ifr_flags & IFF_NAPI_FRAGS);
++		if (err < 0)
++			goto err_unregister;
+ 	}
+ 
+ 	netif_carrier_on(tun->dev);
+@@ -2851,14 +2857,10 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+ 	strcpy(ifr->ifr_name, tun->dev->name);
+ 	return 0;
+ 
+-err_detach:
+-	tun_detach_all(dev);
+-	/* register_netdevice() already called tun_free_netdev() */
+-	goto err_free_dev;
++err_unregister:
++	unregister_netdevice(dev);
++	return err;
+ 
+-err_free_flow:
+-	tun_flow_uninit(tun);
+-	security_tun_dev_free_security(tun->security);
+ err_free_stat:
+ 	free_percpu(tun->pcpu_stats);
+ err_free_dev:
+@@ -2979,6 +2981,8 @@ static int tun_set_queue(struct file *file, struct ifreq *ifr)
+ 			goto unlock;
+ 		ret = tun_attach(tun, file, false, tun->flags & IFF_NAPI,
+ 				 tun->flags & IFF_NAPI_FRAGS);
++		if (!ret)
++			tun_set_real_num_queues(tun, tun->numqueues);
+ 	} else if (ifr->ifr_flags & IFF_DETACH_QUEUE) {
+ 		tun = rtnl_dereference(tfile->tun);
+ 		if (!tun || !(tun->flags & IFF_MULTI_QUEUE) || tfile->detached)
+-- 
+2.17.1
 
