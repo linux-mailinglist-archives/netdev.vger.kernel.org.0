@@ -2,90 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D95A98FD7A
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 10:15:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B1058FD9A
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 10:19:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbfHPIPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 04:15:41 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:34660 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725945AbfHPIPk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 04:15:40 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id E5605258566DB8E4E9ED;
-        Fri, 16 Aug 2019 16:15:33 +0800 (CST)
-Received: from [127.0.0.1] (10.74.221.148) by DGGEMS402-HUB.china.huawei.com
- (10.3.19.202) with Microsoft SMTP Server id 14.3.439.0; Fri, 16 Aug 2019
- 16:15:25 +0800
-Subject: Re: [PATCH] arm64: do_csum: implement accelerated scalar version
-To:     Will Deacon <will.deacon@arm.com>
-References: <20190218230842.11448-1-ard.biesheuvel@linaro.org>
- <d7a16ebd-073f-f50e-9651-68606d10b01c@hisilicon.com>
- <20190412095243.GA27193@fuggles.cambridge.arm.com>
- <41b30c72-c1c5-14b2-b2e1-3507d552830d@arm.com>
- <20190515094704.GC24357@fuggles.cambridge.arm.com>
- <440eb674-0e59-a97e-4a90-0026e2327069@hisilicon.com>
- <20190815164609.GI2015@fuggles.cambridge.arm.com>
-CC:     Robin Murphy <robin.murphy@arm.com>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        <linux-arm-kernel@lists.infradead.org>, <netdev@vger.kernel.org>,
-        <ilias.apalodimas@linaro.org>,
-        "huanglingyan (A)" <huanglingyan2@huawei.com>,
-        <steve.capper@arm.com>
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-Message-ID: <37fbc2a3-069d-9f75-f3d0-3eda2efa5c9b@hisilicon.com>
-Date:   Fri, 16 Aug 2019 16:15:25 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.1.1
+        id S1726983AbfHPITi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 04:19:38 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:37770 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726575AbfHPITh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 04:19:37 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z11so726734wrt.4;
+        Fri, 16 Aug 2019 01:19:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Ih81cmjP0TC8sbhrB1z4mmZ7XiZ/5cGAXydJGdybczA=;
+        b=Oh3cq/rHUzrBEdvWDyyFt4lkYBIvp+bttTvqetWMAWHLDk27z1aiLJTkRxQk6Ljdf1
+         ClmDxc+7ndRFnTdkLESApMPsBMZ76HPcTMYzKLDC+EFj6M53fUkbsQmRdqdSgZWTkypO
+         D+TLLgoEWO6OWHkEiOqmKbBwxlLKzDnLU0h6gdpYzfRpQ7ajuz9+65lqHBLHOy8YUnos
+         v1FuXUMnNA1dQKQf0bFPf2I6lr22dWOdYUMScV+ClLIA204YeP8daFLWIp5S293H4wRw
+         xVxtBJrjFqrHtc4rJzkh0t5aTtfSVrjzE+FYU4JnA30pdvZOcb/jUdl1zrk+TwBtP05N
+         Rjag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ih81cmjP0TC8sbhrB1z4mmZ7XiZ/5cGAXydJGdybczA=;
+        b=ouq5BPVADzNsBsdTFom7IucFQVgTvxcfGIFzQor21U8WmI1wOwVIrQluWCIFYJFYHN
+         RMCnzAQnT/gPHrzJ8a38IDe2NakLyteuytZNAbExRtMHYDAkjmcr8pRxXgfisZ65A52u
+         +NL6TrkK53HWaOTQu5KCk/+B1qU61JJOXM1Ll5VHDsNQLkI42UpJ5HlC+Wt2BOguugOD
+         QUaj/3cpcFmOLI609g8T5f1Z/S8ABZ2PvsxAhYxcVTJu9HpTzLGkG0OaBKhoiAkLHQbw
+         Oa1ELAHEYbGsj/GV0ZWLmbAPI32Eh/R/W8Un3uoE1e2JG5bo9CI6hkWGN9sgEGuCEjA7
+         fwRA==
+X-Gm-Message-State: APjAAAW64gd0Mq8N9EQ0uRznIi0S1yb9y7FX/3C+WvBSVF2xP6DfoUhK
+        nV87/xOVupB2t/AAP3UgpFd3tRiW
+X-Google-Smtp-Source: APXvYqxqGnWs+sGNRtQVxsclqeR5R2BGunevD+LeIHpgnoJFi3Pkom2JraUkBslO/eu3Hvtgmne7wQ==
+X-Received: by 2002:a5d:4b41:: with SMTP id w1mr8605097wrs.23.1565943575268;
+        Fri, 16 Aug 2019 01:19:35 -0700 (PDT)
+Received: from [192.168.8.147] (187.170.185.81.rev.sfr.net. [81.185.170.187])
+        by smtp.gmail.com with ESMTPSA id s64sm7336977wmf.16.2019.08.16.01.19.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 16 Aug 2019 01:19:34 -0700 (PDT)
+Subject: Re: [PATCH net-next] r8152: divide the tx and rx bottom functions
+To:     Hayes Wang <hayeswang@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <1394712342-15778-301-Taiwan-albertk@realtek.com>
+ <9749764d-7815-b673-0fc4-22475601efec@gmail.com>
+ <0835B3720019904CB8F7AA43166CEEB2F18D470D@RTITMBSVM03.realtek.com.tw>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <68015004-fb60-f6c6-05b0-610466223cf5@gmail.com>
+Date:   Fri, 16 Aug 2019 10:19:33 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-In-Reply-To: <20190815164609.GI2015@fuggles.cambridge.arm.com>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <0835B3720019904CB8F7AA43166CEEB2F18D470D@RTITMBSVM03.realtek.com.tw>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.74.221.148]
-X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Will,
 
-On 2019/8/16 0:46, Will Deacon wrote:
-> On Thu, May 16, 2019 at 11:14:35AM +0800, Zhangshaokun wrote:
->> On 2019/5/15 17:47, Will Deacon wrote:
->>> On Mon, Apr 15, 2019 at 07:18:22PM +0100, Robin Murphy wrote:
->>>> On 12/04/2019 10:52, Will Deacon wrote:
->>>>> I'm waiting for Robin to come back with numbers for a C implementation.
->>>>>
->>>>> Robin -- did you get anywhere with that?
->>>>
->>>> Still not what I would call finished, but where I've got so far (besides an
->>>> increasingly elaborate test rig) is as below - it still wants some unrolling
->>>> in the middle to really fly (and actual testing on BE), but the worst-case
->>>> performance already equals or just beats this asm version on Cortex-A53 with
->>>> GCC 7 (by virtue of being alignment-insensitive and branchless except for
->>>> the loop). Unfortunately, the advantage of C code being instrumentable does
->>>> also come around to bite me...
->>>
->>> Is there any interest from anybody in spinning a proper patch out of this?
->>> Shaokun?
+
+On 8/16/19 10:10 AM, Hayes Wang wrote:
+> Eric Dumazet [mailto:eric.dumazet@gmail.com]
+>> Sent: Friday, August 16, 2019 2:40 PM
+> [...]
+>> tasklet and NAPI are scheduled on the same core (the current
+>> cpu calling napi_schedule() or tasklet_schedule())
 >>
->> HiSilicon's Kunpeng920(Hi1620) benefits from do_csum optimization, if Ard and
->> Robin are ok, Lingyan or I can try to do it.
->> Of course, if any guy posts the patch, we are happy to test it.
->> Any will be ok.
+>> I would rather not add this dubious tasklet, and instead try to understand
+>> what is wrong in this driver ;)
+>>
+>> The various napi_schedule() calls are suspect IMO.
 > 
-> I don't mind who posts it, but Robin is super busy with SMMU stuff at the
-> moment so it probably makes more sense for you or Lingyan to do it.
+> The original method as following.
+> 
+> static int r8152_poll(struct napi_struct *napi, int budget)
+> {
+> 	struct r8152 *tp = container_of(napi, struct r8152, napi);
+> 	int work_done;
+> 
+> 	work_done = rx_bottom(tp, budget); <-- RX
+> 	bottom_half(tp); <-- Tx (tx_bottom)
+> 	[...]
+> 
+> The rx_bottom and tx_bottom would only be called in r8152_poll.
+> That is, tx_bottom wouldn't be run unless rx_bottom is finished.
+> And, rx_bottom would be called if tx_bottom is running.
+> 
+> If the traffic is busy. rx_bottom or tx_bottom may take a lot
+> of time to deal with the packets. And the one would increase
+> the latency time for the other one.
+> 
+> Therefore, when I separate the tx_bottom and rx_bottom to
+> different tasklet and napi, the callback functions of tx and
+> rx may schedule the tasklet and napi to different cpu. Then,
+> the rx_bottom and tx_bottom may be run at the same time.
 
-Thanks for restarting this topic, I or Lingyan will do it soon.
 
-Thanks,
-Shaokun
+Your patch makes absolutely no guarantee of doing what you
+want, I am afraid.
 
 > 
-> Will
+> Take our arm platform for example. There are five cpus to
+> handle the interrupt of USB host controller. When the rx is
+> completed, cpu #1 may handle the interrupt and napi would
+> be scheduled. When the tx is finished, cpu #2 may handle
+> the interrupt and the tasklet is scheduled. Then, napi is
+> run on cpu #1, and tasklet is run on cpu #2.
 > 
-> .
+>> Also rtl8152_start_xmit() uses skb_queue_tail(&tp->tx_queue, skb);
+>>
+>> But I see nothing really kicking the transmit if tx_free is empty ?
 > 
+> Tx callback function "write_bulk_callback" would deal with it.
+> The callback function would check if there are packets waiting
+> to be sent.
 
+Which callback ?
+
+After an idle period (no activity, no prior packets being tx-completed ...),
+a packet is sent by the upper stack, enters the ndo_start_xmit() of a network driver.
+
+This driver ndo_start_xmit() simply adds an skb to a local list, and returns.
+
+Where/how is scheduled this callback ?
+
+Some kind of timer ?
+An (unrelated) incoming packet ?
+
+> 
+> 
+> Best Regards,
+> Hayes
+> 
+> 
