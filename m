@@ -2,106 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FB148F96C
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 05:24:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 40EF38F984
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 05:43:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbfHPDYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 23:24:30 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:41029 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726487AbfHPDY3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 23:24:29 -0400
-Received: by mail-pl1-f195.google.com with SMTP id m9so1854123pls.8
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 20:24:29 -0700 (PDT)
+        id S1726533AbfHPDnO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 23:43:14 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42394 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726139AbfHPDnO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 23:43:14 -0400
+Received: by mail-qt1-f193.google.com with SMTP id t12so4732966qtp.9;
+        Thu, 15 Aug 2019 20:43:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=cN+7rGP0xjUhYzQcCZSy/Mfo1mEBhFYPPci5RZZdT5I=;
-        b=ASUjGWynpDIvUt4hrSrdD8SxCP2cQbR7KGEbUgdIiBdgR36JmBmdGJuflluHQEKh/3
-         NNQ3mm5ZJO0OZjzeNn78QgzgY+sc6p1JfK1/58uEp5yj+IL41exXeZdetXFDmHAEw9Hw
-         2RXi0qoqvKQSGiNnancVMx42lC0LXNhKlurbBVIYb6+aVDsiQgr9L8ky5AzeLe0gYI6K
-         pUADaSoy7+cC+kck/HRlT3J00SMxpci8oZpXX4Vr9J3xOSAZNdgQVqoEQmyOW3dvIjax
-         Rm0GTUnScOmGiIes5u+lC2T8jGT6nhajnaB/wpa+pQVJy2UaNhyEB7hD6D00ERszwwLu
-         JnCw==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=lwXp6Bc3lcXhB5CSaFKjX7zLyM40avBB8IHrFVa8wRU=;
+        b=VO3UJfaa0JeTNzqLdcFqVVioqFhBHxOo0QJ8q4ySHZYFzuZD2TR9J82hv3/qZWZ8Zj
+         Qcd8gsnJSfEgMHiM2hcO8pgrgQbIIbjK2hnsRjRjyAudmowclxRzROQ7lh2B/CPyDLjI
+         UzDJ7DouMLPPJEWCRIH1IUlbZSWqRKjJZaUbDuywZNglIA8XvOKKLglF0sQyWSC3rGXO
+         qcjf++LjVQ72/QJJEG57apa5HNM3m8c6QKehp9P4IenAKi6Yf+4755GZTZ3ajVlWA9O9
+         vMRijIyOX84kwC6HYAJBkhNwtyQpeZypWbAK2DyI6nuom4p0Kl/5Rt/1lbudmeyNkQ2b
+         CoEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=cN+7rGP0xjUhYzQcCZSy/Mfo1mEBhFYPPci5RZZdT5I=;
-        b=o4qIwCMIGhdAnrN4/8BuwFloUHSwsIXXKiRBWO8QbEc8j1zlWC0SRSFSVT2v7Y8XcH
-         OAyUKVRG9EgKSDuUA1GTVO5Iy/HVVzeXdHQuxa3sCZ1ygHnZqfhpt2lnjkiPOyzGsoUc
-         9WKrv0wFdpVcWXpcn5iVjEYGAwXFby8f7bwNrMWyhEBHjhPLWvCoftDy4MVIQ7iExcXE
-         2K7mU4D4Q8BX32T5Jx8jIm5cyHyYik44+q8PuVJzyJj7+PQqH3WtEky6MhXdsi8xPTXS
-         iuMskrt/YqUnD41I1ffz2MsZxnPLtj5uwAyaaNd9pxoatKdEvUAiW9qTtkw/XgmetqbC
-         PNgA==
-X-Gm-Message-State: APjAAAVjBY8e+EGGHUDSQftu7TXDCdh2/gwARo5zgGzpONcQEVE0FsIk
-        XFQX0wicGVclNKM3uYgNRo0=
-X-Google-Smtp-Source: APXvYqx6KqQrpywOD61GVBN8ca8dFdIH5FSkXKtzDV2Or1o+3OoREPcz4Vwp27yWu9ZMzw3xWdvnvQ==
-X-Received: by 2002:a17:902:d890:: with SMTP id b16mr7073537plz.315.1565925869335;
-        Thu, 15 Aug 2019 20:24:29 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id u24sm3495750pgk.31.2019.08.15.20.24.26
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=lwXp6Bc3lcXhB5CSaFKjX7zLyM40avBB8IHrFVa8wRU=;
+        b=cKS4At1T+WTbVdCgviO1RA6yGES14a75rhSvttnaZ1kBfZHzIzhEr+BkKfbAcHBa7Q
+         NGvJo0eSK7BBRj8SkFvg4T3m19yN2viaYA769R3eTFaFhBvaEgNBKBJ5ik5tZDDVQINw
+         Pma82uNoCTBZS9Kw9AxuRqUMJ2X8i3jM+omHlOE2HufXY2scaIRwbZLpseaarez4XukG
+         573I1zC51uHHMrlqRyYk59h+63mb/1ug2DvB7tR7ht8r3z0lMfM5br2wNVMEgMK63mwL
+         Zga6gXGZG0PnV0TGVytOTHjydY0i2M8ooE5uSzJNkLzFnd7csPfGan4JoWOB/ZJ/8wrQ
+         Z4Ww==
+X-Gm-Message-State: APjAAAUBjBf9kTy00Dm84/NKfkemoWAldu5QLjdXhRzhrMylp/5BptsW
+        AL8KPyxzJgRZjGA+b3yS7nAiYKYKb50=
+X-Google-Smtp-Source: APXvYqwVrkRy1tWB81NfjQaahNLWNGwMtD2aG+xFgZ4Hqp397TBinlizQ9StfPT1AaSgj898xl1Zew==
+X-Received: by 2002:ac8:4118:: with SMTP id q24mr161656qtl.274.1565926993490;
+        Thu, 15 Aug 2019 20:43:13 -0700 (PDT)
+Received: from localhost.localdomain ([189.63.142.156])
+        by smtp.gmail.com with ESMTPSA id l18sm2229601qtp.64.2019.08.15.20.43.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Aug 2019 20:24:28 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 11:24:18 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     netdev@vger.kernel.org, Stefano Brivio <sbrivio@redhat.com>,
-        wenxu <wenxu@ucloud.cn>, Alexei Starovoitov <ast@fb.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] tunnel: fix dev null pointer dereference when send
- pkg larger than mtu in collect_md mode
-Message-ID: <20190816032418.GX18865@dhcp-12-139.nay.redhat.com>
-References: <20190815060904.19426-1-liuhangbin@gmail.com>
- <cb5b5d82-1239-34a9-23f5-1894a2ec92a2@gmail.com>
+        Thu, 15 Aug 2019 20:43:12 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 00:43:07 -0300
+From:   Ricardo Biehl Pasquali <pasqualirb@gmail.com>
+To:     "Michael Kerrisk (man-pages)" <mtk.manpages@gmail.com>,
+        jacob.e.keller@intel.com
+Cc:     linux-man@vger.kernel.org, netdev@vger.kernel.org,
+        stefan.puiu@gmail.com, corbet@lwn.net, davem@davemloft.net
+Subject: Re: [PATCH v2] socket.7: Add description of SO_SELECT_ERR_QUEUE
+Message-ID: <20190816034307.GA17503@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <cb5b5d82-1239-34a9-23f5-1894a2ec92a2@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f053fe2c-20e5-4754-8b13-89cddfbfb52d@gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Eric,
+TL;DR: This email proposes a description of the socket
+option SO_SELECT_ERR_QUEUE taking into account the change
+in wake up behavior when errors are enqueued introduced by
+the commit 6e5d58fdc9bedd0255a8 ("skbuff: Fix not waking
+applications when errors are enqueued") in Linux 4.16.
 
-Thanks for the review.
-On Thu, Aug 15, 2019 at 11:16:58AM +0200, Eric Dumazet wrote:
-> > diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
-> > index 38c02bb62e2c..c6713c7287df 100644
-> > --- a/net/ipv4/ip_tunnel.c
-> > +++ b/net/ipv4/ip_tunnel.c
-> > @@ -597,6 +597,9 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
-> >  		goto tx_error;
-> >  	}
-> >  
-> > +	if (skb_dst(skb) && !skb_dst(skb)->dev)
-> > +		skb_dst(skb)->dev = rt->dst.dev;
-> > +
+On Mon, Jul 29, 2019 at 08:51:42PM +0200, Michael Kerrisk (man-pages) wrote:
+> Sorry -- I've not had a lot of cycles to spare for man-pages of late.
+
+Hi. No problem, I've just wondering whether you were
+receiving the messages.
+
+> Thanks for the patch. But your text doesn't quite capture the idea
+> in this commit message:
 > 
+> commit 7d4c04fc170087119727119074e72445f2bb192b
+> Author: Keller, Jacob E <jacob.e.keller@intel.com>
+> Date:   Thu Mar 28 11:19:25 2013 +0000
+
+It definitely does not.
+
+Initially, despite the description of the commit and the
+name of the option, I was investigating only the poll() case
+as this was what I was working on.
+
+Sorry.
+
+Now I investigated the behavior of select() and poll(). I've
+updated a test code that I wrote some time ago.
+
+See <https://github.com/pasqualirb/poll_select_test>.
+
+I've also written a Behavior section in README which I did
+not include here.
+
+> What would you think of something like this:
+>        SO_SELECT_ERR_QUEUE (since Linux 3.10)
+>               When this option is set on a socket, an error condition  on
+>               a socket causes notification not only via the exceptfds set
+>               of select(2).  Similarly, poll(2) also  returns  a  POLLPRI
+>               whenever an POLLERR event is returned.
 > 
-> IMO this looks wrong.
-> This dst seems shared. 
-
-If the dst is shared, it may cause some problem. Could you point me where the
-dst may be shared possibly?
-
-> Once set, we will reuse the same dev ?
-
-If yes, how about just set the skb dst to rt->dst, as the
-iptunnel_xmit would do later.
-
-skb_dst_drop(skb);
-skb_dst_set(skb, &rt->dst);
-
-or do you have any other idea?
+>               Background:  this  option  was  added  when waking up on an
+>               error condition occurred occured only via the  readfds  and
+>               writefds  sets of select(2).  The option was added to allow
+>               monitoring for error conditions via the exceptfds  argument
+>               without simultaneously having to receive notifications (via
+>               readfds) for regular data that can be read from the socket.
+>               After changes in Linux 4.16, in Linux 4.16, the use of this
+>               flag to achieve the desired notifications is no longer nec‐
+>               essary.  This option is nevertheless retained for backwards
+>               compatibility.
 > 
-> If intended, why not doing this in __metadata_dst_init() instead of in the fast path ?
+> ?
 
-I'm afraid we couldn't do this, I didn't find a way to init dev in
-__metadata_dst_init(). Do you?
+I think the part "causes notification not only via the
+exeptfds set" implies that the option causes notification
+in other sets besides exceptfds. However, the option causes
+notification in exceptfds (before Linux 4.16).
 
-Thanks
-Hangbin
+In "Background", before Linux 4.16, "waking up" happened
+also in exeptfds (see 'Internal details' section), although
+select() did not return.
+
+A description covering poll() and select() cases plus wake
+up behavior might be:
+
+  When this option is set on a socket and an error condition
+  triggers wake up (see Background below), an exeptional
+  condition (POLLPRI of poll(2); exeptfds of select(2)) is
+  returned if user requested it.
+
+  Background:
+
+  Before Linux 4.16, an error condition triggers wake up only
+  if user requested POLLIN or POLLPRI (i.e. any of readfds,
+  writefds or exeptfds of select(2)). However, for an error
+  condition to be returned to the user instead of sleeping
+  again in the kernel, POLLERR (i.e. readfds or writefds of
+  select(2)) must also have been requested (implicit in
+  poll(2)). The option eliminates this need in select(2) by
+  returning POLLPRI (i.e. exeptfds) if user requested it.
+
+  Since Linux 4.16, an error condition triggers wake up only
+  if user requested POLLERR (i.e. readfds or writefds of
+  select(2)). Wake up is not triggered when requesting only
+  exeptfds, although returning on it occurs if the error
+  condition was generated before calling select(2).
+
+  // Linux 4.16 commit 6e5d58fdc9bedd0255a8 ("skbuff: Fix not
+  // waking applications when errors are enqueued")
+
+Another description, focusing on select(), might be:
+
+  Before Linux 4.16, when this option is set on a socket and
+  an error condition occurs, select(2) returns on exeptfds if
+  user requested it. It is already returned on readfds and
+  writefds. Since Linux 4.16, when the option is set, an error
+  condition does not return via exeptfds anymore unless it
+  occurred before calling select(2).
+
+  For poll(2), regardless of the kernel version, the option
+  causes POLLPRI to be added when POLLERR is returned.
+
+  The option does not affect wake up, it affects only whether
+  select(2) returns. The wake up behavior is affected in Linux
+  4.16. Before this release, waking up on an error condition
+  required requesting POLLIN or POLLPRI. However, for an error
+  condition to be returned to the user instead of sleeping
+  again in the kernel, POLLERR must also be requested. Since
+  Linux 4.16, waking up requires requesting only POLLERR.
+
+I have been rewriting this multiple times in the past two
+weeks, and I still think it is not clear/simple enough.
+
+What do you think? Please comment your understanding and
+your ideas.
+
+Internal details
+================
+
+The commit 6e5d58fdc9bedd0255a8 ("skbuff: Fix not waking
+applications when errors are enqueued") introduced in Linux
+4.16, changed the function that triggered the wake up. The
+function sk_data_ready() (sock_def_readable()), which wakes
+up the task if POLLIN or POLLPRI is requested, was replaced
+by sk_error_report() (sock_queue_err_skb()), which wakes up
+the task only if POLLERR is requested.
+
+With the option (SO_SELECT_ERR_QUEUE) set, requesting only
+exeptfds (POLLPRI) does not intersect the trigger events
+anymore, so the task is not woken. However, if POLLERR is
+triggered __before__ calling select(), select() __will__
+return because availability of events is checked before
+sleep.
+
+In select(), POLLPRI is always requested [1]. POLLERR is
+requested by readfds and writefds [2]. POLLIN and POLLHUP
+by readfds [2]. POLLOUT by writefds [2].
+
+In poll(), user freely requests events, but POLLERR and
+POLLHUP are always requested [3].
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/stable/
+    linux.git/tree/fs/select.c?id=6e5d58fdc9bedd0255a8#n443
+
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/stable/
+    linux.git/tree/fs/select.c?id=6e5d58fdc9bedd0255a8#n435
+
+[3] https://git.kernel.org/pub/scm/linux/kernel/git/stable/
+    linux.git/tree/fs/select.c?id=6e5d58fdc9bedd0255a8#n820
+
+	pasquali
