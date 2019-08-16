@@ -2,134 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 771A68FBE8
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 09:15:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AF638FCD3
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 09:54:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727160AbfHPHPi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 03:15:38 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40614 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726482AbfHPHPi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 03:15:38 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E8556308AA12;
-        Fri, 16 Aug 2019 07:15:37 +0000 (UTC)
-Received: from ceranb.redhat.com (ovpn-204-190.brq.redhat.com [10.40.204.190])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id A230E19C6A;
-        Fri, 16 Aug 2019 07:15:36 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     sathya.perla@broadcom.com, poros@redhat.com,
-        sriharsha.basavapatna@broadcom.com
-Subject: [PATCH] be2net: eliminate enable field from be_aic_obj
-Date:   Fri, 16 Aug 2019 09:15:35 +0200
-Message-Id: <20190816071535.28349-1-ivecera@redhat.com>
+        id S1726740AbfHPHyf convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 16 Aug 2019 03:54:35 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:40218 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726622AbfHPHye (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 03:54:34 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7G7sNNx016892, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7G7sNNx016892
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Fri, 16 Aug 2019 15:54:24 +0800
+Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
+ RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Fri, 16 Aug
+ 2019 15:54:23 +0800
+From:   Tony Chuang <yhchuang@realtek.com>
+To:     Jian-Hong Pan <jian-hong@endlessm.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@endlessm.com" <linux@endlessm.com>
+Subject: RE: [PATCH] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
+Thread-Topic: [PATCH] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
+Thread-Index: AQHVU/x2Dr02g4Mib0ipy5Mk0nEf5ab9Zdpg
+Date:   Fri, 16 Aug 2019 07:54:22 +0000
+Message-ID: <F7CD281DE3E379468C6D07993EA72F84D18929BF@RTITMBSVM04.realtek.com.tw>
+References: <20190816063109.4699-1-jian-hong@endlessm.com>
+In-Reply-To: <20190816063109.4699-1-jian-hong@endlessm.com>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.68.183]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.41]); Fri, 16 Aug 2019 07:15:37 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Adaptive coalescing is managed per adapter not per event queue so it
-does not needed to store 'enable' flag for each event queue.
+> From: Jian-Hong Pan [mailto:jian-hong@endlessm.com]
+> 
+> There is a mass of jobs between spin lock and unlock in the hardware
+> IRQ which will occupy much time originally. To make system work more
+> efficiently, this patch moves the jobs to the soft IRQ (bottom half) to
+> reduce the time in hardware IRQ.
+> 
+> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+> ---
+>  drivers/net/wireless/realtek/rtw88/pci.c | 36 +++++++++++++++++++-----
+>  1 file changed, 29 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c
+> b/drivers/net/wireless/realtek/rtw88/pci.c
+> index 00ef229552d5..355606b167c6 100644
+> --- a/drivers/net/wireless/realtek/rtw88/pci.c
+> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
+> @@ -866,12 +866,29 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq,
+> void *dev)
+>  {
+>  	struct rtw_dev *rtwdev = dev;
+>  	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+> -	u32 irq_status[4];
+> +	unsigned long flags;
+> 
+> -	spin_lock(&rtwpci->irq_lock);
+> +	spin_lock_irqsave(&rtwpci->irq_lock, flags);
+>  	if (!rtwpci->irq_enabled)
+>  		goto out;
+> 
+> +	/* disable RTW PCI interrupt to avoid more interrupts before the end of
+> +	 * thread function
+> +	 */
+> +	rtw_pci_disable_interrupt(rtwdev, rtwpci);
+> +out:
+> +	spin_unlock_irqrestore(&rtwpci->irq_lock, flags);
+> +
+> +	return IRQ_WAKE_THREAD;
+> +}
+> +
+> +static irqreturn_t rtw_pci_interrupt_threadfn(int irq, void *dev)
+> +{
+> +	struct rtw_dev *rtwdev = dev;
+> +	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+> +	unsigned long flags;
+> +	u32 irq_status[4];
+> +
+>  	rtw_pci_irq_recognized(rtwdev, rtwpci, irq_status);
+> 
+>  	if (irq_status[0] & IMR_MGNTDOK)
+> @@ -891,8 +908,11 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq,
+> void *dev)
+>  	if (irq_status[0] & IMR_ROK)
+>  		rtw_pci_rx_isr(rtwdev, rtwpci, RTW_RX_QUEUE_MPDU);
+> 
+> -out:
+> -	spin_unlock(&rtwpci->irq_lock);
+> +	/* all of the jobs for this interrupt have been done */
+> +	spin_lock_irqsave(&rtwpci->irq_lock, flags);
 
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- drivers/net/ethernet/emulex/benet/be.h         | 2 +-
- drivers/net/ethernet/emulex/benet/be_ethtool.c | 7 ++++---
- drivers/net/ethernet/emulex/benet/be_main.c    | 7 ++++---
- 3 files changed, 9 insertions(+), 7 deletions(-)
+Shouldn't we protect the ISRs above?
 
-diff --git a/drivers/net/ethernet/emulex/benet/be.h b/drivers/net/ethernet/emulex/benet/be.h
-index f287b5da5546..cf3e6f2892ff 100644
---- a/drivers/net/ethernet/emulex/benet/be.h
-+++ b/drivers/net/ethernet/emulex/benet/be.h
-@@ -192,7 +192,6 @@ struct be_eq_obj {
- } ____cacheline_aligned_in_smp;
- 
- struct be_aic_obj {		/* Adaptive interrupt coalescing (AIC) info */
--	bool enable;
- 	u32 min_eqd;		/* in usecs */
- 	u32 max_eqd;		/* in usecs */
- 	u32 prev_eqd;		/* in usecs */
-@@ -589,6 +588,7 @@ struct be_adapter {
- 
- 	struct be_drv_stats drv_stats;
- 	struct be_aic_obj aic_obj[MAX_EVT_QS];
-+	bool aic_enabled;
- 	u8 vlan_prio_bmap;	/* Available Priority BitMap */
- 	u16 recommended_prio_bits;/* Recommended Priority bits in vlan tag */
- 	struct be_dma_mem rx_filter; /* Cmd DMA mem for rx-filter */
-diff --git a/drivers/net/ethernet/emulex/benet/be_ethtool.c b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-index 492f8769ac12..5bb5abf99588 100644
---- a/drivers/net/ethernet/emulex/benet/be_ethtool.c
-+++ b/drivers/net/ethernet/emulex/benet/be_ethtool.c
-@@ -329,8 +329,8 @@ static int be_get_coalesce(struct net_device *netdev,
- 	et->tx_coalesce_usecs_high = aic->max_eqd;
- 	et->tx_coalesce_usecs_low = aic->min_eqd;
- 
--	et->use_adaptive_rx_coalesce = aic->enable;
--	et->use_adaptive_tx_coalesce = aic->enable;
-+	et->use_adaptive_rx_coalesce = adapter->aic_enabled;
-+	et->use_adaptive_tx_coalesce = adapter->aic_enabled;
- 
- 	return 0;
- }
-@@ -346,8 +346,9 @@ static int be_set_coalesce(struct net_device *netdev,
- 	struct be_eq_obj *eqo;
- 	int i;
- 
-+	adapter->aic_enabled = et->use_adaptive_rx_coalesce;
-+
- 	for_all_evt_queues(adapter, eqo, i) {
--		aic->enable = et->use_adaptive_rx_coalesce;
- 		aic->max_eqd = min(et->rx_coalesce_usecs_high, BE_MAX_EQD);
- 		aic->min_eqd = min(et->rx_coalesce_usecs_low, aic->max_eqd);
- 		aic->et_eqd = min(et->rx_coalesce_usecs, aic->max_eqd);
-diff --git a/drivers/net/ethernet/emulex/benet/be_main.c b/drivers/net/ethernet/emulex/benet/be_main.c
-index 314e9868b861..39eb7d525043 100644
---- a/drivers/net/ethernet/emulex/benet/be_main.c
-+++ b/drivers/net/ethernet/emulex/benet/be_main.c
-@@ -2147,7 +2147,7 @@ static int be_get_new_eqd(struct be_eq_obj *eqo)
- 	int i;
- 
- 	aic = &adapter->aic_obj[eqo->idx];
--	if (!aic->enable) {
-+	if (!adapter->aic_enabled) {
- 		if (aic->jiffies)
- 			aic->jiffies = 0;
- 		eqd = aic->et_eqd;
-@@ -2204,7 +2204,7 @@ static u32 be_get_eq_delay_mult_enc(struct be_eq_obj *eqo)
- 	int eqd;
- 	u32 mult_enc;
- 
--	if (!aic->enable)
-+	if (!adapter->aic_enabled)
- 		return 0;
- 
- 	if (jiffies_to_msecs(now - aic->jiffies) < 1)
-@@ -2959,6 +2959,8 @@ static int be_evt_queues_create(struct be_adapter *adapter)
- 				    max(adapter->cfg_num_rx_irqs,
- 					adapter->cfg_num_tx_irqs));
- 
-+	adapter->aic_enabled = true;
-+
- 	for_all_evt_queues(adapter, eqo, i) {
- 		int numa_node = dev_to_node(&adapter->pdev->dev);
- 
-@@ -2966,7 +2968,6 @@ static int be_evt_queues_create(struct be_adapter *adapter)
- 		eqo->adapter = adapter;
- 		eqo->idx = i;
- 		aic->max_eqd = BE_MAX_EQD;
--		aic->enable = true;
- 
- 		eq = &eqo->q;
- 		rc = be_queue_alloc(adapter, eq, EVNT_Q_LEN,
--- 
-2.21.0
+This patch could actually reduce the time of IRQ.
+But I think I need to further test it with PCI MSI interrupt.
+https://patchwork.kernel.org/patch/11081539/
 
+Maybe we could drop the "rtw_pci_[enable/disable]_interrupt" when MSI
+Is enabled with this patch.
+
+> +	if (rtw_flag_check(rtwdev, RTW_FLAG_RUNNING))
+> +		rtw_pci_enable_interrupt(rtwdev, rtwpci);
+> +	spin_unlock_irqrestore(&rtwpci->irq_lock, flags);
+> 
+>  	return IRQ_HANDLED;
+>  }
+> @@ -1152,8 +1172,10 @@ static int rtw_pci_probe(struct pci_dev *pdev,
+>  		goto err_destroy_pci;
+>  	}
+> 
+> -	ret = request_irq(pdev->irq, &rtw_pci_interrupt_handler,
+> -			  IRQF_SHARED, KBUILD_MODNAME, rtwdev);
+> +	ret = devm_request_threaded_irq(rtwdev->dev, pdev->irq,
+> +					rtw_pci_interrupt_handler,
+> +					rtw_pci_interrupt_threadfn,
+> +					IRQF_SHARED, KBUILD_MODNAME, rtwdev);
+>  	if (ret) {
+>  		ieee80211_unregister_hw(hw);
+>  		goto err_destroy_pci;
+> @@ -1192,7 +1214,7 @@ static void rtw_pci_remove(struct pci_dev *pdev)
+>  	rtw_pci_disable_interrupt(rtwdev, rtwpci);
+>  	rtw_pci_destroy(rtwdev, pdev);
+>  	rtw_pci_declaim(rtwdev, pdev);
+> -	free_irq(rtwpci->pdev->irq, rtwdev);
+> +	devm_free_irq(rtwdev->dev, rtwpci->pdev->irq, rtwdev);
+>  	rtw_core_deinit(rtwdev);
+>  	ieee80211_free_hw(hw);
+>  }
+> --
+> 2.20.1
+
+Yan-Hsuan
