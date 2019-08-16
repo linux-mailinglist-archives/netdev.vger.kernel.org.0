@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 090BC90282
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:10:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 66C899028F
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:11:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727359AbfHPNKu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 09:10:50 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:61428 "EHLO
-        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727289AbfHPNKs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 09:10:48 -0400
-Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7GD7nfs020795;
-        Fri, 16 Aug 2019 09:10:41 -0400
-Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2057.outbound.protection.outlook.com [104.47.37.57])
-        by mx0b-00128a01.pphosted.com with ESMTP id 2udu300ay8-1
+        id S1727418AbfHPNK5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 09:10:57 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:25094 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727377AbfHPNKy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 09:10:54 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7GD7ocq030372;
+        Fri, 16 Aug 2019 09:10:45 -0400
+Received: from nam04-co1-obe.outbound.protection.outlook.com (mail-co1nam04lp2050.outbound.protection.outlook.com [104.47.45.50])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2ud8vhapm5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 16 Aug 2019 09:10:41 -0400
+        Fri, 16 Aug 2019 09:10:44 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iJxhm+SlXrfxhse+S84fuHJnx5VdUh1Gtk7HOivotpq7ZkM2gvamXzVCnrtzAOGsK9YTFdVySisz1Oj3Xt7FiEvVGmjNbW9E1aUI2/CHxoiVZwAbOzQ4k6d4YGEiN8LxA+rlCaFbUhqT3kfbjgqthWRvSkXTTOySJCZl12UzQqFgQtKRCfhS1/EanjMAu0iLNMnAjiJkjcDl1vQr6LL6SKAsu8x6NQkBVI7ufrZ3ybYfypELb6MP7QgbOFh0tNpr6bl3bYtdgibz/pTitRyZKxVHYEHVhOIXtCBM2glwPMX6plvYVho2kkp9OtKh6oZQzgsaEmXPyYwfcw6TufTfFw==
+ b=UKyc6xp5UxmQY//oJ2vOaO8WgknNUmzTtE7WO7dgvjzFBJfHF+a0dyC9cv5oP3qjVsJCgH7/LoP1t6V2yRbKKUm+U3C00F324TenQruFjvi8+cO4F5PzYshnOw8FpoYFpm9z7dQl4uQ8oGUSc6Jr/g4nkXhXu1vEAxvFzQi5WgbVM4yUJ1gcr78mxDmZKBe/qy/4JJqWsVml0fMO/vsvdCXR4VazJXc3UCTwIwUaab4QnX/O1y77UBoG8ReR4EjdorD0NMbggdXRMVsWuk1FiwrFRuNCzx0rEhPMYLeuNpKq1sCkWlhu/HpDcihzqbppto0bY9y2vZSdFbwU+k7cpg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OI8CrJEgouP1A1JQL3YtGjCiLXI5NYSTvF/5MH0a704=;
- b=frCaiNVtPjcagD1o5OAgWP2RFbYmnhmy9D6GMz/Y28XIU2Gc4hSUIFLVlUO9p1XlzDvVGM5T8OrJkFv9xsTxbh0RtIOEZq6LyZVAz1Jwtje1Tkg9zW/Cb8njAOUu/Tg6QQ7OsiXTGWuXuSzUe1/sQgxaLULbXA8z1pAIu6oM0wgEnloRJhdsH1MU8CqjYHe3Qvs/1HlajJ7272bDz9Fi8CU2n8BpNsYoC+kEYReei/Lri0fNSLbBI0qeYZTd3A75DOPhmtfdyd+ZDYSg3UITWMx3aM7kvdWLp/F6QrX2g403h/Y3OFUvrvvf3ti6gzfuWGt8WbsIgGmpi7CZt9tSbg==
+ bh=g87kDXsHbBQu6WJQMwq96CSMq+40xamfTGzlaat/FMA=;
+ b=WZO4N+5SLH5aqOXLqHrf+c5WP4xdnccHiqVtU7FfctlW1vClsAP/ABadagitfB1VfFy+vgH8moip45W0eY4cfDqfdouCbm0SDBA5Wdw1bV/Ed+pXD1KnfTw2TS8rIkL2O24nMlM4TOcpAa606rZmLhRbdFaXjKp8JR8ZljrAuQzkEVlSUzAGYCPig5p3v2sz83zrPdxbb1YhEpM0G8nfU4dMFgGjp/HqsxgBJ0Ff98e1mAHqk9GAiwLQxTfxyhxEVUFUri9Y3m0I0LSprotOrH4LseAVDqIhnp5yH5Ozy/uxCyfCbA7j/aGHF0BW3Td7e+LDGBDu2uqRDhzV1HFBZw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  137.71.25.57) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
  dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
@@ -32,32 +32,32 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OI8CrJEgouP1A1JQL3YtGjCiLXI5NYSTvF/5MH0a704=;
- b=p7zfPeZSgOZc1NcT8Ec2/84t2MSqahWsiFpQvIPDHPYtGWGiasGywhe80LISgN2mWQNm/B0ktxGgnXNXl8nzIWcZZV/f0o8Dd8WLGOLoYAAygEOo7FjsloQvG9eTB8m4BiwVorPl5rBPt7PZbYLbh8h4dH3tvZdSZGDgvQ0l/cg=
-Received: from BN3PR03CA0095.namprd03.prod.outlook.com (2603:10b6:400:4::13)
- by BYAPR03MB4662.namprd03.prod.outlook.com (2603:10b6:a03:12f::11) with
+ bh=g87kDXsHbBQu6WJQMwq96CSMq+40xamfTGzlaat/FMA=;
+ b=QRHr5n4JLBwuNuUXeaO4mHcoPBxKnLhBLf6nWH/ujjCBdQEe6bZm12Wvyd0rVNzqnRJk/D46sqb5JWq02lC/HHtAA4ldHmk0U3TrlkXwiHxfl87fTlM3HaZRxRzB06QfZHrI4c2aWHJaA2jy7+JRo0VZK5EflGWNqwLVFctGam4=
+Received: from BY5PR03CA0013.namprd03.prod.outlook.com (2603:10b6:a03:1e0::23)
+ by CY4PR03MB2726.namprd03.prod.outlook.com (2603:10b6:903:70::22) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2178.16; Fri, 16 Aug
- 2019 13:10:40 +0000
-Received: from BL2NAM02FT029.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::209) by BN3PR03CA0095.outlook.office365.com
- (2603:10b6:400:4::13) with Microsoft SMTP Server (version=TLS1_2,
+ 2019 13:10:43 +0000
+Received: from SN1NAM02FT005.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::201) by BY5PR03CA0013.outlook.office365.com
+ (2603:10b6:a03:1e0::23) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2178.16 via Frontend
- Transport; Fri, 16 Aug 2019 13:10:39 +0000
+ Transport; Fri, 16 Aug 2019 13:10:42 +0000
 Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.57 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
 Received: from nwd2mta2.analog.com (137.71.25.57) by
- BL2NAM02FT029.mail.protection.outlook.com (10.152.77.100) with Microsoft SMTP
+ SN1NAM02FT005.mail.protection.outlook.com (10.152.72.117) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2178.16
- via Frontend Transport; Fri, 16 Aug 2019 13:10:39 +0000
+ via Frontend Transport; Fri, 16 Aug 2019 13:10:42 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x7GDAdEK007911
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x7GDAfaB007922
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Fri, 16 Aug 2019 06:10:39 -0700
+        Fri, 16 Aug 2019 06:10:41 -0700
 Received: from saturn.ad.analog.com (10.48.65.113) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Fri, 16 Aug 2019 09:10:39 -0400
+ 14.3.408.0; Fri, 16 Aug 2019 09:10:40 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
@@ -65,9 +65,9 @@ CC:     <davem@davemloft.net>, <robh+dt@kernel.org>,
         <mark.rutland@arm.com>, <f.fainelli@gmail.com>,
         <hkallweit1@gmail.com>, <andrew@lunn.ch>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v5 08/13] net: phy: adin: add support MDI/MDIX/Auto-MDI selection
-Date:   Fri, 16 Aug 2019 16:10:06 +0300
-Message-ID: <20190816131011.23264-9-alexandru.ardelean@analog.com>
+Subject: [PATCH v5 09/13] net: phy: adin: add EEE translation layer from Clause 45 to Clause 22
+Date:   Fri, 16 Aug 2019 16:10:07 +0300
+Message-ID: <20190816131011.23264-10-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190816131011.23264-1-alexandru.ardelean@analog.com>
 References: <20190816131011.23264-1-alexandru.ardelean@analog.com>
@@ -77,233 +77,162 @@ Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(346002)(376002)(396003)(39860400002)(2980300002)(189003)(199004)(1076003)(14444005)(356004)(6666004)(107886003)(2201001)(4326008)(2906002)(86362001)(36756003)(2870700001)(50466002)(48376002)(8936002)(106002)(47776003)(50226002)(8676002)(51416003)(70206006)(44832011)(246002)(70586007)(305945005)(7636002)(7696005)(2616005)(486006)(126002)(5660300002)(478600001)(476003)(316002)(336012)(11346002)(26005)(110136005)(426003)(54906003)(446003)(76176011)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:BYAPR03MB4662;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(39860400002)(376002)(346002)(396003)(2980300002)(199004)(189003)(8676002)(50226002)(5660300002)(70206006)(70586007)(8936002)(50466002)(2870700001)(1076003)(26005)(186003)(4326008)(110136005)(316002)(54906003)(106002)(426003)(44832011)(305945005)(2201001)(356004)(446003)(476003)(126002)(486006)(107886003)(2616005)(336012)(11346002)(7636002)(6666004)(86362001)(246002)(478600001)(76176011)(7696005)(47776003)(51416003)(48376002)(2906002)(36756003)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR03MB2726;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 4069b8d1-28ed-42f7-6166-08d7224b22d0
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:BYAPR03MB4662;
-X-MS-TrafficTypeDiagnostic: BYAPR03MB4662:
-X-Microsoft-Antispam-PRVS: <BYAPR03MB46623546BB7E9B6EBE6BFA52F9AF0@BYAPR03MB4662.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Office365-Filtering-Correlation-Id: 4315ade2-ca17-4bc8-3c0a-08d7224b247e
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(4709080)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328);SRVR:CY4PR03MB2726;
+X-MS-TrafficTypeDiagnostic: CY4PR03MB2726:
+X-Microsoft-Antispam-PRVS: <CY4PR03MB2726EBBB6EEB1B0571722026F9AF0@CY4PR03MB2726.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:4941;
 X-Forefront-PRVS: 0131D22242
 X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: Q182EmokodbG5xAYVoFHWUWBDEaNnjFSjjWdymDhrHzdl0SNa7B3CnHJf0Te0DC9bnW/OtGqKeSzRmJGxKVp6alH7dKsTEGYnlk6GL9OSSwxmdjqDpMknUyDlmFXPflNlJs8j74mpLpoiB25tdvQUAmdZ/UQQI0f0mQVaDUwcjbsf4zbKGv9A5ojXPYnkxJkpMpiu7luIO9UE/t+i0P12UxVuuGhijtSMdO7diA1874mqH5MWrDW2oRWXJ3P/gWiH2ijhKxVgm1eLxtNzfNk2jzYr4iBWl4eQ7Hfl1qbycGlYTFA7w3NsYmsxQMLq6mFdRuoLQrD8Bec9k92R+GaTqCLn95Gf/7yifxQkv6/Gxuo3Qce4yWx3pPQsNskdxXU4H++tigVI/gaMP1E5UQ+LrKbkvZrtmjWbJd2c8+M0nw=
+X-Microsoft-Antispam-Message-Info: LCt6/xdLRk/Vug2blEC9eMn3rp9rH9GYz5swBnpK66QB7opNvbxYIYh4Fe8+7ThePoBQMshDr09zZTGgIpodk0YNyboA7jV6PTSsOmyUOfvhoNa+bLgmj0uEuGHyKT26T0eGgChahPtRd/c+E8tIgkqDhMlP41BbKsNGaqSlghYtkABvNZpJ4+48E0EyEA9PwNTBrSWkSm3KhhEPpz56yDLLYt3xOnA/L/HJ3DvMqlFUSF9pJlhSreg+0drQTpbxtkqqvo38xdfhZybeKJtoVlpEJ6OQHQn3qkNAPbJ1eYy/gaqfSJaiND05STzYO9OS4lZcveFy52y/1OAhWXz5v/ra+LQdPXAJPK53KMlt67EYgJ3KIW21fzk1SQjk00sOl6hUVxQo7kUZq7inEK8tkkQEbErpz+NfCPyeztvR0OY=
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2019 13:10:39.7167
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Aug 2019 13:10:42.1064
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4069b8d1-28ed-42f7-6166-08d7224b22d0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4315ade2-ca17-4bc8-3c0a-08d7224b247e
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR03MB4662
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR03MB2726
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-16_06:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
  malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
  clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ mlxlogscore=854 adultscore=0 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.0.1-1906280000 definitions=main-1908160136
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The ADIN PHYs support automatic MDI/MDIX negotiation. By default this is
-disabled, so this is enabled at `config_init`.
+The ADIN1200 & ADIN1300 PHYs support EEE by using standard Clause 45 access
+to access MMD registers for EEE.
 
-This is controlled via the PHY Control 1 register.
-The supported modes are:
-  1. Manual MDI
-  2. Manual MDIX
-  3. Auto MDIX - prefer MDIX
-  4. Auto MDIX - prefer MDI
+The EEE register addresses (when using Clause 22) are available at
+different addresses (than Clause 45), and since accessing these regs (via
+Clause 22) needs a special mechanism, a translation table is required to
+convert these addresses.
 
-The phydev mdix & mdix_ctrl fields include modes 3 & 4 into a single
-auto-mode. So, the default mode this driver enables is 4 when Auto-MDI mode
-is used.
-
-When detecting MDI/MDIX mode, a combination of the PHY Control 1 register
-and PHY Status 1 register is used to determine the correct MDI/MDIX mode.
-
-If Auto-MDI mode is not set, then the manual MDI/MDIX mode is returned.
-If Auto-MDI mode is set, then MDIX mode is returned differs from the
-preferred MDI/MDIX mode.
-This covers all cases where:
-  1. MDI preferred  & Pair01Swapped   == MDIX
-  2. MDIX preferred & Pair01Swapped   == MDI
-  3. MDI preferred  & ! Pair01Swapped == MDIX
-  4. MDIX preferred & ! Pair01Swapped == MDI
-
-The preferred MDI/MDIX mode is not configured via SW, but can be configured
-via HW pins. Note that the `Pair01Swapped` is the Green-Yellow physical
-pairs.
+For Clause 45, this is not needed since the driver will likely never use
+this access mode.
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/net/phy/adin.c | 117 +++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 113 insertions(+), 4 deletions(-)
+ drivers/net/phy/adin.c | 68 ++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 66 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/net/phy/adin.c b/drivers/net/phy/adin.c
-index 4ca685780622..51c0d17577de 100644
+index 51c0d17577de..131b7f85ae32 100644
 --- a/drivers/net/phy/adin.c
 +++ b/drivers/net/phy/adin.c
-@@ -19,6 +19,10 @@
- #define ADIN1300_MII_EXT_REG_PTR		0x0010
- #define ADIN1300_MII_EXT_REG_DATA		0x0011
+@@ -40,6 +40,16 @@
+ #define ADIN1300_PHY_STATUS1			0x001a
+ #define   ADIN1300_PAIR_01_SWAP			BIT(11)
  
-+#define ADIN1300_PHY_CTRL1			0x0012
-+#define   ADIN1300_AUTO_MDI_EN			BIT(10)
-+#define   ADIN1300_MAN_MDIX_EN			BIT(9)
-+
- #define ADIN1300_INT_MASK_REG			0x0018
- #define   ADIN1300_INT_MDIO_SYNC_EN		BIT(9)
- #define   ADIN1300_INT_ANEG_STAT_CHNG_EN	BIT(8)
-@@ -33,6 +37,9 @@
- 	(ADIN1300_INT_LINK_STAT_CHNG_EN | ADIN1300_INT_HW_IRQ_EN)
- #define ADIN1300_INT_STATUS_REG			0x0019
- 
-+#define ADIN1300_PHY_STATUS1			0x001a
-+#define   ADIN1300_PAIR_01_SWAP			BIT(11)
++/* EEE register addresses, accessible via Clause 22 access using
++ * ADIN1300_MII_EXT_REG_PTR & ADIN1300_MII_EXT_REG_DATA.
++ * The bit-fields are the same as specified by IEEE for EEE.
++ */
++#define ADIN1300_EEE_CAP_REG			0x8000
++#define ADIN1300_EEE_ADV_REG			0x8001
++#define ADIN1300_EEE_LPABLE_REG			0x8002
++#define ADIN1300_CLOCK_STOP_REG			0x9400
++#define ADIN1300_LPI_WAKE_ERR_CNT_REG		0xa000
 +
  #define ADIN1300_GE_RGMII_CFG_REG		0xff23
  #define   ADIN1300_GE_RGMII_RX_MSK		GENMASK(8, 6)
  #define   ADIN1300_GE_RGMII_RX_SEL(x)		\
-@@ -206,6 +213,8 @@ static int adin_config_init(struct phy_device *phydev)
- {
- 	int rc;
+@@ -101,6 +111,26 @@ static const struct adin_cfg_reg_map adin_rmii_fifo_depths[] = {
+ 	{ },
+ };
  
-+	phydev->mdix_ctrl = ETH_TP_MDI_AUTO;
++/**
++ * struct adin_clause45_mmd_map - map to convert Clause 45 regs to Clause 22
++ * @devad		device address used in Clause 45 access
++ * @cl45_regnum		register address defined by Clause 45
++ * @adin_regnum		equivalent register address accessible via Clause 22
++ */
++struct adin_clause45_mmd_map {
++	int devad;
++	u16 cl45_regnum;
++	u16 adin_regnum;
++};
 +
- 	rc = genphy_config_init(phydev);
- 	if (rc < 0)
- 		return rc;
-@@ -269,13 +278,113 @@ static int adin_write_mmd(struct phy_device *phydev, int devad, u16 regnum,
- 	return __mdiobus_write(bus, phy_addr, ADIN1300_MII_EXT_REG_DATA, val);
++static struct adin_clause45_mmd_map adin_clause45_mmd_map[] = {
++	{ MDIO_MMD_PCS,	MDIO_PCS_EEE_ABLE,	ADIN1300_EEE_CAP_REG },
++	{ MDIO_MMD_AN,	MDIO_AN_EEE_LPABLE,	ADIN1300_EEE_LPABLE_REG },
++	{ MDIO_MMD_AN,	MDIO_AN_EEE_ADV,	ADIN1300_EEE_ADV_REG },
++	{ MDIO_MMD_PCS,	MDIO_CTRL1,		ADIN1300_CLOCK_STOP_REG },
++	{ MDIO_MMD_PCS, MDIO_PCS_EEE_WK_ERR,	ADIN1300_LPI_WAKE_ERR_CNT_REG },
++};
++
+ static int adin_lookup_reg_value(const struct adin_cfg_reg_map *tbl, int cfg)
+ {
+ 	size_t i;
+@@ -251,13 +281,41 @@ static int adin_phy_config_intr(struct phy_device *phydev)
+ 			      ADIN1300_INT_MASK_EN);
  }
  
-+static int adin_config_mdix(struct phy_device *phydev)
++static int adin_cl45_to_adin_reg(struct phy_device *phydev, int devad,
++				 u16 cl45_regnum)
 +{
-+	bool auto_en, mdix_en;
-+	int reg;
++	struct adin_clause45_mmd_map *m;
++	int i;
 +
-+	mdix_en = false;
-+	auto_en = false;
-+	switch (phydev->mdix_ctrl) {
-+	case ETH_TP_MDI:
-+		break;
-+	case ETH_TP_MDI_X:
-+		mdix_en = true;
-+		break;
-+	case ETH_TP_MDI_AUTO:
-+		auto_en = true;
-+		break;
-+	default:
-+		return -EINVAL;
++	if (devad == MDIO_MMD_VEND1)
++		return cl45_regnum;
++
++	for (i = 0; i < ARRAY_SIZE(adin_clause45_mmd_map); i++) {
++		m = &adin_clause45_mmd_map[i];
++		if (m->devad == devad && m->cl45_regnum == cl45_regnum)
++			return m->adin_regnum;
 +	}
 +
-+	reg = phy_read(phydev, ADIN1300_PHY_CTRL1);
-+	if (reg < 0)
-+		return reg;
++	phydev_err(phydev,
++		   "No translation available for devad: %d reg: %04x\n",
++		   devad, cl45_regnum);
 +
-+	if (mdix_en)
-+		reg |= ADIN1300_MAN_MDIX_EN;
-+	else
-+		reg &= ~ADIN1300_MAN_MDIX_EN;
-+
-+	if (auto_en)
-+		reg |= ADIN1300_AUTO_MDI_EN;
-+	else
-+		reg &= ~ADIN1300_AUTO_MDI_EN;
-+
-+	return phy_write(phydev, ADIN1300_PHY_CTRL1, reg);
++	return -EINVAL;
 +}
 +
-+static int adin_config_aneg(struct phy_device *phydev)
-+{
-+	int ret;
+ static int adin_read_mmd(struct phy_device *phydev, int devad, u16 regnum)
+ {
+ 	struct mii_bus *bus = phydev->mdio.bus;
+ 	int phy_addr = phydev->mdio.addr;
++	int adin_regnum;
+ 	int err;
+ 
+-	err = __mdiobus_write(bus, phy_addr, ADIN1300_MII_EXT_REG_PTR, regnum);
++	adin_regnum = adin_cl45_to_adin_reg(phydev, devad, regnum);
++	if (adin_regnum < 0)
++		return adin_regnum;
 +
-+	ret = adin_config_mdix(phydev);
-+	if (ret)
-+		return ret;
++	err = __mdiobus_write(bus, phy_addr, ADIN1300_MII_EXT_REG_PTR,
++			      adin_regnum);
+ 	if (err)
+ 		return err;
+ 
+@@ -269,9 +327,15 @@ static int adin_write_mmd(struct phy_device *phydev, int devad, u16 regnum,
+ {
+ 	struct mii_bus *bus = phydev->mdio.bus;
+ 	int phy_addr = phydev->mdio.addr;
++	int adin_regnum;
+ 	int err;
+ 
+-	err = __mdiobus_write(bus, phy_addr, ADIN1300_MII_EXT_REG_PTR, regnum);
++	adin_regnum = adin_cl45_to_adin_reg(phydev, devad, regnum);
++	if (adin_regnum < 0)
++		return adin_regnum;
 +
-+	return genphy_config_aneg(phydev);
-+}
-+
-+static int adin_mdix_update(struct phy_device *phydev)
-+{
-+	bool auto_en, mdix_en;
-+	bool swapped;
-+	int reg;
-+
-+	reg = phy_read(phydev, ADIN1300_PHY_CTRL1);
-+	if (reg < 0)
-+		return reg;
-+
-+	auto_en = !!(reg & ADIN1300_AUTO_MDI_EN);
-+	mdix_en = !!(reg & ADIN1300_MAN_MDIX_EN);
-+
-+	/* If MDI/MDIX is forced, just read it from the control reg */
-+	if (!auto_en) {
-+		if (mdix_en)
-+			phydev->mdix = ETH_TP_MDI_X;
-+		else
-+			phydev->mdix = ETH_TP_MDI;
-+		return 0;
-+	}
-+
-+	/**
-+	 * Otherwise, we need to deduce it from the PHY status2 reg.
-+	 * When Auto-MDI is enabled, the ADIN1300_MAN_MDIX_EN bit implies
-+	 * a preference for MDIX when it is set.
-+	 */
-+	reg = phy_read(phydev, ADIN1300_PHY_STATUS1);
-+	if (reg < 0)
-+		return reg;
-+
-+	swapped = !!(reg & ADIN1300_PAIR_01_SWAP);
-+
-+	if (mdix_en != swapped)
-+		phydev->mdix = ETH_TP_MDI_X;
-+	else
-+		phydev->mdix = ETH_TP_MDI;
-+
-+	return 0;
-+}
-+
-+static int adin_read_status(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	ret = adin_mdix_update(phydev);
-+	if (ret < 0)
-+		return ret;
-+
-+	return genphy_read_status(phydev);
-+}
-+
- static struct phy_driver adin_driver[] = {
- 	{
- 		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1200),
- 		.name		= "ADIN1200",
- 		.config_init	= adin_config_init,
--		.config_aneg	= genphy_config_aneg,
--		.read_status	= genphy_read_status,
-+		.config_aneg	= adin_config_aneg,
-+		.read_status	= adin_read_status,
- 		.ack_interrupt	= adin_phy_ack_intr,
- 		.config_intr	= adin_phy_config_intr,
- 		.resume		= genphy_resume,
-@@ -287,8 +396,8 @@ static struct phy_driver adin_driver[] = {
- 		PHY_ID_MATCH_MODEL(PHY_ID_ADIN1300),
- 		.name		= "ADIN1300",
- 		.config_init	= adin_config_init,
--		.config_aneg	= genphy_config_aneg,
--		.read_status	= genphy_read_status,
-+		.config_aneg	= adin_config_aneg,
-+		.read_status	= adin_read_status,
- 		.ack_interrupt	= adin_phy_ack_intr,
- 		.config_intr	= adin_phy_config_intr,
- 		.resume		= genphy_resume,
++	err = __mdiobus_write(bus, phy_addr, ADIN1300_MII_EXT_REG_PTR,
++			      adin_regnum);
+ 	if (err)
+ 		return err;
+ 
 -- 
 2.20.1
 
