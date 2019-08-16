@@ -2,63 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D9A905E1
+	by mail.lfdr.de (Postfix) with ESMTP id 9756B905E2
 	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:33:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726807AbfHPQcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 12:32:19 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36859 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725971AbfHPQcT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:32:19 -0400
-Received: by mail-wr1-f66.google.com with SMTP id r3so2117006wrt.3;
-        Fri, 16 Aug 2019 09:32:17 -0700 (PDT)
+        id S1727200AbfHPQc0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 12:32:26 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35851 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725971AbfHPQc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:32:26 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r3so2117358wrt.3;
+        Fri, 16 Aug 2019 09:32:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J314qdUvz12V6d3QViRALM7rawvrwtwSfJHkRDPm5Hw=;
-        b=bFlPjlEbw16qXErPnq5piBe7z3XTDmnzeoiTTCa7lc/N9m/opz9lUSrcjavE9JorkZ
-         ogHzZOEyqVTNQ29Wfj+KQ6HXetYWVNw44ukOtf2YM7iaRbDHWQuamn2ZiJe2ZBRWjPGg
-         /V1Lk3DwUZUEFaUQfPny1AKHESiMWuA1DRdKdh1evm8msptix+KZXlHrnKOXSsk5a5iU
-         MpVlOZY5tzglGEYHY7nDPG8rzcRAiO7fks7ZhcMR7gCSiAlnMd0N4DBpZAhazBgCpv/u
-         pGdfGTgQLCiNJ3PskruNkCZmVRO75aVGcqnyorAWE/4WGX3IkgAR76HI5gwQqZJx4sz2
-         Ob7Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=uQYPrIW+PkLuxFJC+jWmtXibV5EXo8mo5nblOSBDmH4=;
+        b=MwIuGcM1odQG1PF5fwughPKy1YHKEbeFTkVwVDUfyas7hUvbF5oOzs6wNEp6mF8ge+
+         SZGT4+kLtWp985Vpq6Pnikt/fI3yWR6Bx80e7zUK+uudipNBUVtxemBkM/xz0+OO+4Kt
+         jYuC8NTDaFt7iPKlQ34OwqheiltzoJdcWMoTsvMgNx/sp4AHwUf+marsg5xoMw9rz4k9
+         J58we2AFaglDdYZysx0L4BGZyFYdYre7U8I0qlgqtsKYEy7/ONg5IOcCcwiJlj4C6Gel
+         z7mjJzoIAL2iqqKXZb7aRdB6yOmGnyNqBPwy2SPfq6sMI5R60oVdHiKCe5SO38iUGntC
+         YORA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=J314qdUvz12V6d3QViRALM7rawvrwtwSfJHkRDPm5Hw=;
-        b=ogxq41SWjEuwW/SS3SQTojLB2WFJhKjjpGkChtSwT3TrhV2kgfKXarW1mAgH8eGQYL
-         ydfGN9kp/An8hM7gKS54xDgPAiPeGOOb18fijuo2JLP3IUUQ1jQbrCG7+2KYTgpW5w08
-         9H1LIdD1PiGiuWQh0PGL3PeInrh1SPMhGOINhawvdy0OD3q37cUrTdRVwJuYByS0Lfzz
-         9FnLcOow0Tf17wI5/NoBKeoTv7VO8oDq0ICPNwmNaOHy1KzGwU4Lj/w3q+JQ2aS+92JR
-         QeJAD7+R1/azML/MYXwcBLb0BNUnvsk+OdCrAKg6pSYeZBX9zRS4T9fPDftykbJCSMGZ
-         y/MA==
-X-Gm-Message-State: APjAAAWgRg9th8H+t1va+ezOZ8QfXD/sPH4pSCydgpiZzjrxttDuwMmQ
-        kWo1/07u2rdKnwI9Dk68b9cmcTm4NGk=
-X-Google-Smtp-Source: APXvYqzkC/sFkwVKPTSaPC2A+NnLvZAz6bMhSLia3Uf5bqM63YYSyf50PbcbsfXUKBK5OQl5rwiQKw==
-X-Received: by 2002:adf:fd82:: with SMTP id d2mr11692806wrr.194.1565973136985;
-        Fri, 16 Aug 2019 09:32:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=uQYPrIW+PkLuxFJC+jWmtXibV5EXo8mo5nblOSBDmH4=;
+        b=soQp1ap2Fu8PyNvS1gy5srql/ziFs4pS1SffSI4Ib//0o+vnqYNYfpxEh2xtllThD6
+         BIl8XLGs5iWL7wAxzgY3d1Jn8T6GbA/kOBP1d2b7Jq2i4rlnXvzv84cKLcIKcyL/BinW
+         i/W3umS8JmuOn2hD3JBfj5JDDKZ4kBj/dsXtTN6Ur6YNLgM8u7qj+GRu/uwwcSTowCzD
+         iEBwjhbaEK2U83jZ6R3WEXdaa9JSFt9XpAwdOkEwGHCGVTHBTmAXEF4YpmHw4GXNBRmR
+         izpMaY0hx0wWzE9+4uxrVk0vSSstbI18VjETbu6Fefy5z5trnMaYT3ickrbLOAB+TOzS
+         pRbQ==
+X-Gm-Message-State: APjAAAWVkircd/59Hik8oeLWeVP44hMEUV5KqEspuhqNp5Ttug1i+UgT
+        oVWAJMXIofqQSfuRJfwynJ5bQ0MmcC0=
+X-Google-Smtp-Source: APXvYqwecj+b1sl01cEpmYBjUbSrszoev2kH+NR5fRAneKWRqIuUrYaiobh0C8PVWHFDntzxC2bvqw==
+X-Received: by 2002:a5d:4dc6:: with SMTP id f6mr11990065wru.209.1565973143811;
+        Fri, 16 Aug 2019 09:32:23 -0700 (PDT)
 Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id d19sm11031677wrb.7.2019.08.16.09.32.15
+        by smtp.gmail.com with ESMTPSA id d19sm11031677wrb.7.2019.08.16.09.32.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2019 09:32:16 -0700 (PDT)
+        Fri, 16 Aug 2019 09:32:23 -0700 (PDT)
 From:   Hubert Feurstein <h.feurstein@gmail.com>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Richard Cochran <richardcochran@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next 0/3] Improve phc2sys precision for mv88e6xxx switch in combination with imx6-fec
-Date:   Fri, 16 Aug 2019 18:31:54 +0200
-Message-Id: <20190816163157.25314-1-h.feurstein@gmail.com>
+Subject: [PATCH net-next 1/3] net: mdio: add support for passing a PTP system timestamp to the mii_bus driver
+Date:   Fri, 16 Aug 2019 18:31:55 +0200
+Message-Id: <20190816163157.25314-2-h.feurstein@gmail.com>
 X-Mailer: git-send-email 2.22.1
+In-Reply-To: <20190816163157.25314-1-h.feurstein@gmail.com>
+References: <20190816163157.25314-1-h.feurstein@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -66,51 +66,213 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With this patchset the phc2sys synchronisation precision improved to +/-555ns on an IMX6DL with an MV88E6220 switch attached.
+In order to improve the synchronisation precision of phc2sys (from
+the linuxptp project) for devices like switches which are attached
+to the MDIO bus, it is necessary the get the system timestamps as
+close as possible to the access which causes the PTP timestamp
+register to be snapshotted in the switch hardware. Usually this is
+triggered by an MDIO write access, the snapshotted timestamp is then
+transferred by several MDIO reads.
 
-This patchset takes into account the comments from the following discussions:
-- https://lkml.org/lkml/2019/8/2/1364
-- https://lkml.org/lkml/2019/8/5/169
+This patch adds the required infrastructure to solve the problem described
+above.
 
-Patch 01 adds the required infrastructure in the MDIO layer.
-Patch 02 adds support for the PTP_SYS_OFFSET_EXTENDED ioctl in the mv88e6xxx driver.
-Patch 03 adds support for the PTP system timestamping in the imx-fec driver.
+Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
+---
+ drivers/net/phy/mdio_bus.c | 105 +++++++++++++++++++++++++++++++++++++
+ include/linux/mdio.h       |   7 +++
+ include/linux/phy.h        |  25 +++++++++
+ 3 files changed, 137 insertions(+)
 
-The following tests show the improvement caused by each patch. The system clock precision was set to 15ns instead of 333ns (as described in https://lkml.org/lkml/2019/8/2/1364).
-
-Without this patchset applied, the phc2sys synchronisation performance was very poor:
-
-  offset: min -27120 max 28840 mean 2.44 stddev 8040.78 count 1236
-  delay:  min 282103 max 386385 mean 352568.03 stddev 27814.27 count 1236
-  (test runtime 20 minutes)
-
-Results after appling patch 01 and 02:
-
-  offset: min -12316 max 13314 mean -9.38 stddev 4274.82 count 1022
-  delay:  min 69977 max 96266 mean 87939.04 stddev 6466.17 count 1022
-  (test runtime 16 minutes)
-
-Results after appling patch 03:
-
-  offset: min -788 max 528 mean -0.06 stddev 185.02 count 7171
-  delay:  min 1773 max 2031 mean 1909.43 stddev 33.74 count 7171
-  (test runtime 119 minutes)
-
-Hubert Feurstein (3):
-  net: mdio: add support for passing a PTP system timestamp to the
-    mii_bus driver
-  net: dsa: mv88e6xxx: extend PTP gettime function to read system clock
-  net: fec: add support for PTP system timestamping for MDIO devices
-
- drivers/net/dsa/mv88e6xxx/chip.h          |   2 +
- drivers/net/dsa/mv88e6xxx/ptp.c           |  11 ++-
- drivers/net/dsa/mv88e6xxx/smi.c           |   3 +-
- drivers/net/ethernet/freescale/fec_main.c |   3 +
- drivers/net/phy/mdio_bus.c                | 105 ++++++++++++++++++++++
- include/linux/mdio.h                      |   7 ++
- include/linux/phy.h                       |  25 ++++++
- 7 files changed, 151 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index bd04fe762056..167a21f267fa 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -34,6 +34,7 @@
+ #include <linux/phy.h>
+ #include <linux/io.h>
+ #include <linux/uaccess.h>
++#include <linux/ptp_clock_kernel.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/mdio.h>
+@@ -697,6 +698,110 @@ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+ }
+ EXPORT_SYMBOL(mdiobus_write);
+ 
++/**
++ * __mdiobus_write_sts - Unlocked version of the mdiobus_write_sts function
++ * @bus: the mii_bus struct
++ * @addr: the phy address
++ * @regnum: register number to write
++ * @val: value to write to @regnum
++ * @sts: the ptp system timestamp
++ *
++ * Write a MDIO bus register and request the MDIO bus driver to take the
++ * system timestamps when sts-pointer is valid. When the bus driver doesn't
++ * support this, the timestamps are taken in this function instead.
++ *
++ * In order to improve the synchronisation precision of phc2sys (from
++ * the linuxptp project) for devices like switches which are attached
++ * to the MDIO bus, it is necessary the get the system timestamps as
++ * close as possible to the access which causes the PTP timestamp
++ * register to be snapshotted in the switch hardware. Usually this is
++ * triggered by an MDIO write access, the snapshotted timestamp is then
++ * transferred by several MDIO reads.
++ *
++ * Caller must hold the mdio bus lock.
++ *
++ * NOTE: MUST NOT be called from interrupt context.
++ */
++int __mdiobus_write_sts(struct mii_bus *bus, int addr, u32 regnum, u16 val,
++			struct ptp_system_timestamp *sts)
++{
++	int retval;
++
++	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
++
++	if (!bus->ptp_sts_supported)
++		ptp_read_system_prets(sts);
++
++	bus->ptp_sts = sts;
++	retval = __mdiobus_write(bus, addr, regnum, val);
++	bus->ptp_sts = NULL;
++
++	if (!bus->ptp_sts_supported)
++		ptp_read_system_postts(sts);
++
++	return retval;
++}
++EXPORT_SYMBOL(__mdiobus_write_sts);
++
++/**
++ * mdiobus_write_sts - Convenience function for writing a given MII mgmt
++ * register
++ *
++ * @bus: the mii_bus struct
++ * @addr: the phy address
++ * @regnum: register number to write
++ * @val: value to write to @regnum
++ * @sts: the ptp system timestamp
++ *
++ * NOTE: MUST NOT be called from interrupt context,
++ * because the bus read/write functions may wait for an interrupt
++ * to conclude the operation.
++ */
++int mdiobus_write_sts(struct mii_bus *bus, int addr, u32 regnum, u16 val,
++		      struct ptp_system_timestamp *sts)
++{
++	int retval;
++
++	BUG_ON(in_interrupt());
++
++	mutex_lock(&bus->mdio_lock);
++	retval = __mdiobus_write_sts(bus, addr, regnum, val, sts);
++	mutex_unlock(&bus->mdio_lock);
++
++	return retval;
++}
++EXPORT_SYMBOL(mdiobus_write_sts);
++
++/**
++ * mdiobus_write_sts_nested - Nested version of the mdiobus_write_sts function
++ * @bus: the mii_bus struct
++ * @addr: the phy address
++ * @regnum: register number to write
++ * @val: value to write to @regnum
++ * @sts: the ptp system timestamp
++ *
++ * In case of nested MDIO bus access avoid lockdep false positives by
++ * using mutex_lock_nested().
++ *
++ * NOTE: MUST NOT be called from interrupt context,
++ * because the bus read/write functions may wait for an interrupt
++ * to conclude the operation.
++ */
++int mdiobus_write_sts_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val,
++			     struct ptp_system_timestamp *sts)
++{
++	int retval;
++
++	BUG_ON(in_interrupt());
++
++	mutex_lock_nested(&bus->mdio_lock, MDIO_MUTEX_NESTED);
++	retval = __mdiobus_write_sts(bus, addr, regnum, val, sts);
++	mutex_unlock(&bus->mdio_lock);
++
++	return retval;
++}
++EXPORT_SYMBOL(mdiobus_write_sts_nested);
++
+ /**
+  * mdio_bus_match - determine if given MDIO driver supports the given
+  *		    MDIO device
+diff --git a/include/linux/mdio.h b/include/linux/mdio.h
+index e8242ad88c81..d65625c75b15 100644
+--- a/include/linux/mdio.h
++++ b/include/linux/mdio.h
+@@ -9,6 +9,7 @@
+ #include <uapi/linux/mdio.h>
+ #include <linux/mod_devicetable.h>
+ 
++struct ptp_system_timestamp;
+ struct gpio_desc;
+ struct mii_bus;
+ 
+@@ -305,11 +306,17 @@ static inline void mii_10gbt_stat_mod_linkmode_lpa_t(unsigned long *advertising,
+ 
+ int __mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
+ int __mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
++int __mdiobus_write_sts(struct mii_bus *bus, int addr, u32 regnum, u16 val,
++			struct ptp_system_timestamp *sts);
+ 
+ int mdiobus_read(struct mii_bus *bus, int addr, u32 regnum);
+ int mdiobus_read_nested(struct mii_bus *bus, int addr, u32 regnum);
+ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val);
+ int mdiobus_write_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val);
++int mdiobus_write_sts(struct mii_bus *bus, int addr, u32 regnum, u16 val,
++		      struct ptp_system_timestamp *sts);
++int mdiobus_write_sts_nested(struct mii_bus *bus, int addr, u32 regnum, u16 val,
++			     struct ptp_system_timestamp *sts);
+ 
+ int mdiobus_register_device(struct mdio_device *mdiodev);
+ int mdiobus_unregister_device(struct mdio_device *mdiodev);
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index 462b90b73f93..15afe9c5256b 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -252,6 +252,31 @@ struct mii_bus {
+ 	int reset_delay_us;
+ 	/* RESET GPIO descriptor pointer */
+ 	struct gpio_desc *reset_gpiod;
++
++	/* PTP system timestamping support
++	 *
++	 * In order to improve the synchronisation precision of phc2sys (from
++	 * the linuxptp project) for devices like switches which are attached
++	 * to the MDIO bus, it is necessary the get the system timestamps as
++	 * close as possible to the access which causes the PTP timestamp
++	 * register to be snapshotted in the switch hardware. Usually this is
++	 * triggered by an MDIO write access, the snapshotted timestamp is then
++	 * transferred by several MDIO reads.
++	 *
++	 * The switch driver can use mdio_write_sts*() to pass through the
++	 * system timestamp pointer @ptp_sts to the MDIO bus driver. The bus
++	 * driver simply has to do the following calls in its write handler:
++	 *	ptp_read_system_prets(bus->ptp_sts);
++	 *	writel(value, mdio-register)
++	 *	ptp_read_system_postts(bus->ptp_sts);
++	 *
++	 * The ptp_read_system_*ts functions already check the ptp_sts pointer.
++	 *
++	 * @ptp_sts_supported: Must be set to true when the MDIO bus driver
++	 * takes the timestamps as described above.
++	 */
++	struct ptp_system_timestamp *ptp_sts;
++	bool ptp_sts_supported;
+ };
+ #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
+ 
 -- 
 2.22.1
 
