@@ -2,111 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2800C90750
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 19:56:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C59F90765
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 20:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726900AbfHPR4o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 13:56:44 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:36548 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727459AbfHPR4o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 13:56:44 -0400
-Received: by mail-qk1-f193.google.com with SMTP id d23so5484913qko.3
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 10:56:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=mMaTuiPyKLM9tfCLZcB7Dek/W9Zw2QriOJBDcXfSjQ8=;
-        b=pQZR2TNWrG26Y9jB/x9XjzoHpYgaG3BQIGAKjPUdsW3Ge1vrxVxyC3XbjpAHTlpUz3
-         4HC7CraQcupeHBpge9VZHxM2vkVLVawnhiIxbYkDdd5lP2RszB1OISk96/UjsbIBlY8s
-         Ah3FqiTn609CtBUAdj7VnSK1tr/9oP5use5bjDCn7Tlja1sBRxP3RmfTAa0qkJMva2K9
-         dEbBckXSZjWRJUNGCK3yQP/D4HjGIH0Fpha05C5x6+wV8QUkJq0gTI+lo7HEePFpQyNP
-         zJWwZfLxCpzAhKftwcKAPN6bn8RXT0AIaRKJYG9+v+9cbr89ZQByRdmy7eDkR8Hq5giS
-         pdcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=mMaTuiPyKLM9tfCLZcB7Dek/W9Zw2QriOJBDcXfSjQ8=;
-        b=SIQ40yXisjVJgez1QShkWKpOxpqO4D0bo1qKo83a38JrJ/OzqVDOm9hRRYGpFvKb9x
-         bKVwsQ1FQeqZcaui+xwTTF8MgVE4YZcOJbzR3s/b1jcVcb4BwvH87WZsblEE2OszyCV9
-         rfuAbx/q9OKOa2Fbq/PeAIxtsJiajCEwrORUfhPCpSEzKr71aW7rjKXCHqw53A609598
-         IR46xQTWHdU1i+rWFAvj8o0ld5K5rJp96fv98t8Y8n+PTIAyKKO1ec8jXad9i7z8R7a7
-         Dt4KvfVTpEm02WC/fQC82uB3tcfAzGf2Jc93veEAnLIFBU1pc5pB5mj4vAOOdQZMw3VR
-         4zmA==
-X-Gm-Message-State: APjAAAX8Dhwdf73tAZXes3eoFXggh5ulIQH9XOggoHaXePcl6cNQFs7k
-        fa38/F0QoHqMykZz8UZWr843wQ==
-X-Google-Smtp-Source: APXvYqxgxMUn0Os7xzdLYkAtyUoCCk2KkYV1Lt1eDu/B49D4i+/3ZDwkfGjrtjynjQckySTiPVSNCw==
-X-Received: by 2002:a37:ef0c:: with SMTP id j12mr8969221qkk.345.1565978203530;
-        Fri, 16 Aug 2019 10:56:43 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z5sm3011473qti.80.2019.08.16.10.56.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2019 10:56:43 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 10:56:27 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     wenxu <wenxu@ucloud.cn>, David Miller <davem@davemloft.net>,
-        Jiri Pirko <jiri@resnulli.us>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next v7 5/6] flow_offload: support get
- multi-subsystem block
-Message-ID: <20190816105627.57c1c2aa@cakuba.netronome.com>
-In-Reply-To: <vbfpnl55eyg.fsf@mellanox.com>
-References: <1565140434-8109-1-git-send-email-wenxu@ucloud.cn>
-        <1565140434-8109-6-git-send-email-wenxu@ucloud.cn>
-        <vbfimr2o4ly.fsf@mellanox.com>
-        <f28ddefe-a7d8-e5ad-e03e-08cfee4db147@ucloud.cn>
-        <vbfpnl55eyg.fsf@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        id S1727493AbfHPSBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 14:01:24 -0400
+Received: from mga09.intel.com ([134.134.136.24]:25703 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727067AbfHPSBY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 14:01:24 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Aug 2019 11:01:23 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,394,1559545200"; 
+   d="p7s'?scan'208";a="201608953"
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by fmsmga004.fm.intel.com with ESMTP; 16 Aug 2019 11:01:23 -0700
+Received: from orsmsx123.amr.corp.intel.com (10.22.240.116) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.439.0; Fri, 16 Aug 2019 11:01:22 -0700
+Received: from orsmsx116.amr.corp.intel.com ([169.254.7.85]) by
+ ORSMSX123.amr.corp.intel.com ([169.254.1.245]) with mapi id 14.03.0439.000;
+ Fri, 16 Aug 2019 11:01:22 -0700
+From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+To:     "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>
+CC:     "nhorman@redhat.com" <nhorman@redhat.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Kirsher, Jeffrey T" <jeffrey.t.kirsher@intel.com>,
+        "Bowers, AndrewX" <andrewx.bowers@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Tieman, Henry W" <henry.w.tieman@intel.com>
+Subject: Re: [net-next 01/15] ice: Implement ethtool ops for channels
+Thread-Topic: [net-next 01/15] ice: Implement ethtool ops for channels
+Thread-Index: AQHVTuC3HE5wxf7L2Uqpc1QipS81DKbzxq4AgARQHgCAAHolAIAF/9yA
+Date:   Fri, 16 Aug 2019 18:01:22 +0000
+Message-ID: <86c85e1835764d7b147567e907681d74d315babc.camel@intel.com>
+References: <20190809183139.30871-1-jeffrey.t.kirsher@intel.com>
+         <20190809183139.30871-2-jeffrey.t.kirsher@intel.com>
+         <20190809141518.55fe7f8a@cakuba.netronome.com>
+         <8a72e5d0ee26743dc5a896a426a55e6e9660f4d2.camel@intel.com>
+         <20190812152416.35f98091@cakuba.netronome.com>
+In-Reply-To: <20190812152416.35f98091@cakuba.netronome.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.166.244.155]
+Content-Type: multipart/signed; micalg=sha-1;
+        protocol="application/x-pkcs7-signature"; boundary="=-ealUzZJMVdrrT//P3mZq"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Aug 2019 15:04:44 +0000, Vlad Buslov wrote:
-> >> [  401.511871] RSP: 002b:00007ffca2a9fad8 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> >> [  401.511875] RAX: ffffffffffffffda RBX: 0000000000000002 RCX: 00007fad892d30f8
-> >> [  401.511878] RDX: 0000000000000002 RSI: 000055afeb072a90 RDI: 0000000000000001
-> >> [  401.511881] RBP: 000055afeb072a90 R08: 00000000ffffffff R09: 000000000000000a
-> >> [  401.511884] R10: 000055afeb058710 R11: 0000000000000246 R12: 0000000000000002
-> >> [  401.511887] R13: 00007fad893a8780 R14: 0000000000000002 R15: 00007fad893a3740
-> >>
-> >> I don't think it is correct approach to try to call these callbacks with
-> >> rcu protection because:
-> >>
-> >> - Cls API uses sleeping locks that cannot be used in rcu read section
-> >>   (hence the included trace).
-> >>
-> >> - It assumes that all implementation of classifier ops reoffload() don't
-> >>   sleep.
-> >>
-> >> - And that all driver offload callbacks (both block and classifier
-> >>   setup) don't sleep, which is not the case.
-> >>
-> >> I don't see any straightforward way to fix this, besides using some
-> >> other locking mechanism to protect block_ing_cb_list.
-> >>
-> >> Regards,
-> >> Vlad  
-> >
-> > Maybe get the  mutex flow_indr_block_ing_cb_lock for both lookup, add, delete? 
-> >
-> > the callbacks_lists. the add and delete is work only on modules init case. So the
-> >
-> > lookup is also not frequently(ony [un]register) and can protect with the locks.  
-> 
-> That should do the job. I'll send the patch.
+--=-ealUzZJMVdrrT//P3mZq
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Hi Vlad! 
+On Mon, 2019-08-12 at 15:24 -0700, Jakub Kicinski wrote:
+> On Mon, 12 Aug 2019 15:07:09 +0000, Nguyen, Anthony L wrote:
+> > On Fri, 2019-08-09 at 14:15 -0700, Jakub Kicinski wrote:
+> > > On Fri,  9 Aug 2019 11:31:25 -0700, Jeff Kirsher wrote: =20
+> > > > From: Henry Tieman <henry.w.tieman@intel.com>
+> > > >=20
+> > > > Add code to query and set the number of queues on the primary
+> > > > VSI for a PF. This is accessed from the 'ethtool -l' and
+> > > > 'ethtool
+> > > > -L'
+> > > > commands, respectively.
+> > > >=20
+> > > > Signed-off-by: Henry Tieman <henry.w.tieman@intel.com>
+> > > > Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
+> > > > Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
+> > > > Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com> =20
+> > >=20
+> > > If you're using the same IRQ vector for RX and TX queue the
+> > > channel
+> > > counts as combined. Looks like you are counting RX and TX
+> > > separately
+> > > here. That's incorrect. =20
+> >=20
+> > Hi Jakub,
+> >=20
+> > The ice driver can support asymmetric queues.  We report these
+> > seperately, as opposed to combined, so that the user can specify a
+> > different number of Rx and Tx queues.
+>=20
+> If you have 20 IRQ vectors, 10 TX queues and 20 RX queues, the first
+> 10
+> RX queues share a IRQ vector with TX queues the ethool API counts
+> them
+> as 10 combined and 10 rx-only.=20
+>=20
+> 10 tx-only and 20 rx-only would require 30 IRQ vectors.
 
-While looking into this, would you mind also add the missing
-flow_block_cb_is_busy() calls in the indirect handlers in the drivers?
+Thanks for the feedback Jakub.  We are looking into this.
 
-LMK if you're too busy, I don't want this to get forgotten :)
+-Tony
+
+--=-ealUzZJMVdrrT//P3mZq
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+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
+UDSWFPJn1IonMumCuP0DYWGYiGS8dKTJMMh2WA2XVewXVn0JQTWQDpckAOkmi+A0RwpZzYJ0Y3gT
+AgMBAAGjggI2MIICMjAdBgNVHQ4EFgQUydTU8+nnPeJE0ndEkV7rlhV6p30wHwYDVR0jBBgwFoAU
+HmkqtNwo/kcYTiELP7ysES/wmPUwZQYDVR0fBF4wXDBaoFigVoZUaHR0cDovL3d3dy5pbnRlbC5j
+b20vcmVwb3NpdG9yeS9DUkwvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENB
+JTIwNEEuY3JsMIGeBggrBgEFBQcBAQSBkTCBjjBpBggrBgEFBQcwAoZdaHR0cDovL3d3dy5pbnRl
+bC5jb20vcmVwb3NpdG9yeS9jZXJ0aWZpY2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIw
+SXNzdWluZyUyMENBJTIwNEEuY3J0MCEGCCsGAQUFBzABhhVodHRwOi8vb2NzcC5pbnRlbC5jb20w
+CwYDVR0PBAQDAgeAMDwGCSsGAQQBgjcVBwQvMC0GJSsGAQQBgjcVCIbDjHWEmeVRg/2BKIWOn1OC
+kcAJZ4HevTmV8EMCAWQCAQkwHwYDVR0lBBgwFgYIKwYBBQUHAwQGCisGAQQBgjcKAwwwKQYJKwYB
+BAGCNxUKBBwwGjAKBggrBgEFBQcDBDAMBgorBgEEAYI3CgMMMFEGA1UdEQRKMEigKgYKKwYBBAGC
+NxQCA6AcDBphbnRob255Lmwubmd1eWVuQGludGVsLmNvbYEaYW50aG9ueS5sLm5ndXllbkBpbnRl
+bC5jb20wDQYJKoZIhvcNAQEFBQADggEBALLF5b7PLd6kEWuQRkEq6eZpohKWRkfC9DyLiwS+HaeH
+9euNcIqpV4xrMXM6mPqs3AHRb9ibqUPo3wQMtHph35RRsmY7ENk9FxF/W8Ov5ZVPyW0rFiRsnr1C
+QVc08YqXp1dlbQGf8nvJn8ryCwjNpw0CTQcGHXrL/YnboLu8+R9RdBue/HIlP4g0pyAC/8YOie04
+PVo4flU2CGMYilm1euQ6OV8WRA2CKgvRVp/DZEzTqnmDvy12efG74bmMzXAvDv2I53TR5ltDpx5X
+B8uO1XlhOrj+Z3mSi85eblWWhJlq6+TQH/hZWSiyZH2lo3J49oHClTlk86GUEIUp/sf5v5cxggIX
+MIICEwIBATCBkDB5MQswCQYDVQQGEwJVUzELMAkGA1UECBMCQ0ExFDASBgNVBAcTC1NhbnRhIENs
+YXJhMRowGAYDVQQKExFJbnRlbCBDb3Jwb3JhdGlvbjErMCkGA1UEAxMiSW50ZWwgRXh0ZXJuYWwg
+QmFzaWMgSXNzdWluZyBDQSA0QQITMwAA0J5PWjT/SLEH2wAAAADQnjAJBgUrDgMCGgUAoF0wGAYJ
+KoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUxDxcNMTkwODE2MTgwMTE5WjAjBgkq
+hkiG9w0BCQQxFgQULfdcDjecdftgimycPJeRdkD+MUIwDQYJKoZIhvcNAQEBBQAEggEALdCA+FRs
+vzhNsc81ulI2nPvNI6KBvVYF7DyHbGqfb9+XI2YVf8NxdX+TkKqgU8gKT6dzbq4eSs8KQLj4qncE
+RgkqpSLcKofic7MyiV9eJwYpSo4fkW3lf1SP8u45dbF7ey3f4kvVO9NFIDnFMLDzXAgf3ivJVJgi
+qkuLY+TMMv6ozA9vi8BFSO/MhASifSAPe6peJ4Zdp56lHPCwrNkz7vcNYRu7h8rw5zOKhP+SBvrT
+UJk5p0+7gfndzGW8V85OYG3+tjD+YvHQde/hVWLT/mPPXCPlUxr7eaJTi4QeqEQj9os15ta3zdSr
+Tv2FILTAeAZ4yNVuupR5wHZrpONVOAAAAAAAAA==
+
+
+--=-ealUzZJMVdrrT//P3mZq--
