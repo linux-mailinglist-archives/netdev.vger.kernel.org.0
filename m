@@ -2,115 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDAF390A9F
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 00:01:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6415990AAF
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 00:04:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727762AbfHPWBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 18:01:10 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:33616 "EHLO
+        id S1727789AbfHPWEP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 18:04:15 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:45530 "EHLO
         mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727755AbfHPWBK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 18:01:10 -0400
-Received: by mail-pg1-f193.google.com with SMTP id n190so3593651pgn.0;
-        Fri, 16 Aug 2019 15:01:09 -0700 (PDT)
+        with ESMTP id S1727763AbfHPWEP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 18:04:15 -0400
+Received: by mail-pg1-f193.google.com with SMTP id o13so3567537pgp.12
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 15:04:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=dWMHoo7zy5ro+gPfK7r7C9aoJ9XMNHd5EkfhgDYq2io=;
-        b=LwIltLncEeFNdJYXoqGTJocMGGOj0Lg9xJIqK6w4TpXIKb34G9ISsaaZzYHwGNM90e
-         +p0m3Meh3mZO/YykNbhnl2K6G+Aj4A0mgoxenX5pTs4Uy0PWO4uUvZ4o4mJzrdlo+iao
-         OZICN2buLu2t1qgV4K8PJ5YeynAKYeYvKxdWkhscnUl5BlJLNlRvSvMDOfWZluDnNU+B
-         PEKXayPfVBJxFzA/N4DwhTgYJJf7Oa3V/j39LBm8DN64kL0J4FXYF8BtPAuyZ3rmLkmd
-         cWQjZ4dnpTYL6ZLTx8nZCcaIwUGEB9AJixrtcMXOn5z1u/TKCO0KzjXpRjF7mO0Bfphd
-         4wpQ==
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=2jts3hBzwwnHxg1iUXq8B1Z0rmV8e++y+KmKdSCHThk=;
+        b=m+0+I/TpTOyQzaEQUomEUx5W96kpIKZVzID/SkVn4hAsDzIkGAvTdSA6QTt4SW2i7Y
+         8Q2cpCm0spTv80IFdkK2fZewW3cKCkrBDpP0oj0xZSWmnwJorJdZfeQ1E+7RJy/wI5+C
+         chhLlDXPpjvzQ1qTzVNCWZucGOIHWnxg7994o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=dWMHoo7zy5ro+gPfK7r7C9aoJ9XMNHd5EkfhgDYq2io=;
-        b=oBoTTik7lPBte4uYOWfGqwzb2QLNfWVJv4s4+MwFfgab3tANkFwmIPOhoWzBAt1wV2
-         LXW52NRJ25c6b3jNA6Y76EymP7Gwgjofi/0mikeF8Bhs6FCy3hZw5zP4cRdBo+lg1Ypm
-         tJbsznQTkVhvk3LPwSfzuwML3hFSYJzYwPTUBcBrR/NZSFlYXAMe5xEA9uoPMK4Ky5Nn
-         bIWZmJZBVzyuhm9mBjf9QMu0R1wZ0fp6OAmRQy1RPisdCpnPkdqkDWMOs0u1PPCGLW6f
-         cb6XeOnExc+2cK/ElbXBTJSt55O93f3urwVn9Xsa3vzXQODGFia5rMlY5p7NCFQOvVpQ
-         EXkw==
-X-Gm-Message-State: APjAAAVr2d+RD/LxC+0SDYnHtgRo+eQOMLJR+mZcnNp8BcyclPZOkT5H
-        5NglqgXJvWoAJtWxssu2/SfOlAT8
-X-Google-Smtp-Source: APXvYqzYae918bOj1V4zW1RDJQqkzK7RNhZCHLfvCJFTfk87w2sYSffrhNgWH0+zW1Mng7zE1hUiAw==
-X-Received: by 2002:a63:31c1:: with SMTP id x184mr9881417pgx.128.1565992869213;
-        Fri, 16 Aug 2019 15:01:09 -0700 (PDT)
-Received: from [169.254.4.234] ([2620:10d:c090:200::3:e378])
-        by smtp.gmail.com with ESMTPSA id e13sm7664950pff.181.2019.08.16.15.01.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=2jts3hBzwwnHxg1iUXq8B1Z0rmV8e++y+KmKdSCHThk=;
+        b=MGRlEORJ+FQ974g5MsVn78HWGkJV4A8kGX84a2O8Slg8zGuNBDeZjYY/WkXY8q8M+A
+         SAQ6yIHBFuSstyIPC0/3y+Up/lIJqKQHX9t9fuqj/jYUo6am6CZkIiNAYqUAWNED+Yf4
+         XHdUEGu7kMY+aqMwxbJBLj2G8DDpZD6ey9kJtzdOU+lllbbidzgY03VHPkQwpsBbNOVP
+         5cukLGDNWQ9Vi7OoJKDAW/uCMg32PKmN7UUPwh5PQw/Ylhl0VzzJugHGKZzw1vPmIstJ
+         rCyiZUoFGpXOBl0slYtw7qUyLZHF9u36XOn/3EoYCTjJeLFswJLNaSpXusMYCUfrTA+L
+         zflA==
+X-Gm-Message-State: APjAAAVCip3lKpnKfgaJRQL5JyhStVWYpfognOsGghEjhcXG0iufXMfU
+        rjnh9rdvVO26LrqJASFObc+yGA==
+X-Google-Smtp-Source: APXvYqzSjjQ6lUaojHffuDZVtmBKjVdYmKgcPupyNOrT/RtfpSy+MnLEpH7GklayvOJ9u1JaEveP6g==
+X-Received: by 2002:a63:5550:: with SMTP id f16mr9955980pgm.426.1565993054375;
+        Fri, 16 Aug 2019 15:04:14 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id t6sm5064133pjy.18.2019.08.16.15.04.13
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 15:01:08 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "Yonghong Song" <yhs@fb.com>
-Cc:     "Magnus Karlsson" <magnus.karlsson@intel.com>,
-        bjorn.topel@intel.com, ast@kernel.org, daniel@iogearbox.net,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] libbpf: remove zc variable as it is not used
-Date:   Fri, 16 Aug 2019 15:01:06 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <2B143E7F-EE34-4298-B628-E2F669F89896@gmail.com>
-In-Reply-To: <f3a8ea34-bd70-8ab8-9739-bb086643fa44@fb.com>
-References: <1565951171-14439-1-git-send-email-magnus.karlsson@intel.com>
- <f3a8ea34-bd70-8ab8-9739-bb086643fa44@fb.com>
+        Fri, 16 Aug 2019 15:04:13 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 15:04:11 -0700
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Pavel Machek <pavel@ucw.cz>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>
+Subject: Re: [PATCH v6 1/4] dt-bindings: net: phy: Add subnode for LED
+ configuration
+Message-ID: <20190816220411.GX250418@google.com>
+References: <20190813191147.19936-1-mka@chromium.org>
+ <20190813191147.19936-2-mka@chromium.org>
+ <20190816201338.GA1646@bug>
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190816201338.GA1646@bug>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 16, 2019 at 10:13:38PM +0200, Pavel Machek wrote:
+> Hi!
+> 
+> Please Cc led mailing lists on led issues.
 
+sorry for missing this
 
-On 16 Aug 2019, at 8:37, Yonghong Song wrote:
+> On Tue 2019-08-13 12:11:44, Matthias Kaehlcke wrote:
+> > The LED behavior of some Ethernet PHYs is configurable. Add an
+> > optional 'leds' subnode with a child node for each LED to be
+> > configured. The binding aims to be compatible with the common
+> > LED binding (see devicetree/bindings/leds/common.txt).
+> > 
+> > A LED can be configured to be:
+> > 
+> > - 'on' when a link is active, some PHYs allow configuration for
+> >   certain link speeds
+> >   speeds
+> > - 'off'
+> > - blink on RX/TX activity, some PHYs allow configuration for
+> >   certain link speeds
+> > 
+> > For the configuration to be effective it needs to be supported by
+> > the hardware and the corresponding PHY driver.
+> > 
+> > Suggested-by: Andrew Lunn <andrew@lunn.ch>
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> 
+> > @@ -173,5 +217,20 @@ examples:
+> >              reset-gpios = <&gpio1 4 1>;
+> >              reset-assert-us = <1000>;
+> >              reset-deassert-us = <2000>;
+> > +
+> > +            leds {
+> > +                #address-cells = <1>;
+> > +                #size-cells = <0>;
+> > +
+> > +                led@0 {
+> > +                    reg = <0>;
+> > +                    linux,default-trigger = "phy-link-1g";
+> > +                };
+> 
+> Because this affects us.
+> 
+> Is the LED software controllable?
 
-> On 8/16/19 3:26 AM, Magnus Karlsson wrote:
->> The zc is not used in the xsk part of libbpf, so let us remove it. 
->> Not
->> good to have dead code lying around.
->>
->> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
->> Reported-by: Yonghong Song <yhs@fb.com> > ---
->>   tools/lib/bpf/xsk.c | 3 ---
->>   1 file changed, 3 deletions(-)
->>
->> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
->> index 680e630..9687da9 100644
->> --- a/tools/lib/bpf/xsk.c
->> +++ b/tools/lib/bpf/xsk.c
->> @@ -65,7 +65,6 @@ struct xsk_socket {
->>   	int xsks_map_fd;
->>   	__u32 queue_id;
->>   	char ifname[IFNAMSIZ];
->> -	bool zc;
->>   };
->>
->>   struct xsk_nl_info {
->> @@ -608,8 +607,6 @@ int xsk_socket__create(struct xsk_socket 
->> **xsk_ptr, const char *ifname,
->>   		goto out_mmap_tx;
->>   	}
->>
->> -	xsk->zc = opts.flags & XDP_OPTIONS_ZEROCOPY;
->
-> Since opts.flags usage is removed. Do you think it makes sense to
-> remove
->          optlen = sizeof(opts);
->          err = getsockopt(xsk->fd, SOL_XDP, XDP_OPTIONS, &opts, 
-> &optlen);
->          if (err) {
->                  err = -errno;
->                  goto out_mmap_tx;
->          }
-> as well since nobody then uses opts?
+it might be for certain PHYs, integration with the LED framework is
+not part of this series.
 
-IIRC, this was added specifically in 
-2761ed4b6e192820760d5ba913834b2ba05fd08c
-so that userland code could know whether the socket was operating in 
-zero-copy
-mode or not.
--- 
-Jonathan
+> Or can it do limited subset of triggers you listed?
+
+it depends on the PHY. The one in this series (RTL8211E) only supports
+a limited subset of the listed triggers.
