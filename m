@@ -2,115 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 046228FDC1
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 10:26:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C91E48FE12
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 10:38:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726810AbfHPI0U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 04:26:20 -0400
-Received: from de-out1.bosch-org.com ([139.15.230.186]:38268 "EHLO
-        de-out1.bosch-org.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725945AbfHPI0U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 04:26:20 -0400
-Received: from si0vm1947.rbesz01.com (unknown [139.15.230.188])
-        by si0vms0217.rbdmz01.com (Postfix) with ESMTPS id 468xHD4PLnz4f3kZr;
-        Fri, 16 Aug 2019 10:26:16 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=escrypt.com;
-        s=key1-intmail; t=1565943976;
-        bh=51lHsOudyERfxi06LdmLTl0wH2tAJofmNNzjgVcYkQk=; l=10;
-        h=From:Subject:From:Reply-To:Sender;
-        b=eKmEMwuZXGOsZ8mgXfzigiOEyHZf+By8nt9KDsoawFhz12ggcA1JlhY3glYwYxUyp
-         0PnlGtbmuS5w/P2Muap52fJ37iG1+1rkSmdxijvQIpoyTAfpyuiLLCQyeYMqUSYEyM
-         atn8MD2/cxfOOkAiC3fGG17LZ43DUomtkZuFa6RE=
-Received: from fe0vm7918.rbesz01.com (unknown [10.58.172.176])
-        by si0vm1947.rbesz01.com (Postfix) with ESMTPS id 468xHD42ktz6CjQfT;
-        Fri, 16 Aug 2019 10:26:16 +0200 (CEST)
-X-AuditID: 0a3aad10-12dff700000020cf-9e-5d5668a833e4
-Received: from si0vm1949.rbesz01.com ( [10.58.173.29])
-        (using TLS with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by fe0vm7918.rbesz01.com (SMG Outbound) with SMTP id 71.8D.08399.8A8665D5; Fri, 16 Aug 2019 10:26:16 +0200 (CEST)
-Received: from FE-MBX2038.de.bosch.com (fe-mbx2038.de.bosch.com [10.3.231.48])
-        by si0vm1949.rbesz01.com (Postfix) with ESMTPS id 468xHD2TcNz6Cjw36;
-        Fri, 16 Aug 2019 10:26:16 +0200 (CEST)
-Received: from FE-MBX2038.de.bosch.com (10.3.231.48) by
- FE-MBX2038.de.bosch.com (10.3.231.48) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Fri, 16 Aug 2019 10:26:16 +0200
-Received: from FE-MBX2038.de.bosch.com ([fe80::12c:f84b:4fd6:38c2]) by
- FE-MBX2038.de.bosch.com ([fe80::12c:f84b:4fd6:38c2%2]) with mapi id
- 15.01.1713.008; Fri, 16 Aug 2019 10:26:16 +0200
-From:   "FIXED-TERM Buecheler Konstantin (ETAS-SEC/ECT-Mu)" 
-        <fixed-term.Konstantin.Buecheler@escrypt.com>
-To:     Patrick Menschel <menschel.p@posteo.de>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        id S1727226AbfHPIiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 04:38:00 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:40067 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727216AbfHPIh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 04:37:59 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1hyXkB-0001x0-4K; Fri, 16 Aug 2019 10:37:55 +0200
+Received: from [IPv6:2001:67c:670:202:595f:209f:a34b:fbc1] (unknown [IPv6:2001:67c:670:202:595f:209f:a34b:fbc1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 14D5D446686;
+        Fri, 16 Aug 2019 08:37:52 +0000 (UTC)
+To:     "FIXED-TERM Buecheler Konstantin (ETAS-SEC/ECT-Mu)" 
+        <fixed-term.Konstantin.Buecheler@escrypt.com>,
+        Patrick Menschel <menschel.p@posteo.de>,
         "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     Dan Murphy <dmurphy@ti.com>
-Subject: AW: can: tcan4x5x: spi bits_per_word issue on Raspberry PI
-Thread-Topic: can: tcan4x5x: spi bits_per_word issue on Raspberry PI
-Thread-Index: AdVShK+Dlg6CyEY5S5W9jARFpSiyrAAKzACwACDpRIAABDvpgAAxaNpg
-Date:   Fri, 16 Aug 2019 08:26:16 +0000
-Message-ID: <47108d803086402c83d1073f3e3a62bb@escrypt.com>
+Cc:     Dan Murphy <dmurphy@ti.com>
 References: <3f71bdff8f4f4fe19ad9a09be89bc73d@escrypt.com>
  <f78bb414-4165-3f56-151a-47ab4a8a645d@pengutronix.de>
  <e6577cc2-89fc-9428-b73e-47f41eff2949@posteo.de>
-In-Reply-To: <e6577cc2-89fc-9428-b73e-47f41eff2949@posteo.de>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.23.200.63]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+ <47108d803086402c83d1073f3e3a62bb@escrypt.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXzuQENBFxSzJYBCAC58uHRFEjVVE3J
+ 31eyEQT6H1zSFCccTMPO/ewwAnotQWo98Bc67ecmprcnjRjSUKTbyY/eFxS21JnC4ZB0pJKx
+ MNwK6zq71wLmpseXOgjufuG3kvCgwHLGf/nkBHXmSINHvW00eFK/kJBakwHEbddq8Dr4ewmr
+ G7yr8d6A3CSn/qhOYWhIxNORK3SVo4Io7ExNX/ljbisGsgRzsWvY1JlN4sabSNEr7a8YaqTd
+ 2CfFe/5fPcQRGsfhAbH2pVGigr7JddONJPXGE7XzOrx5KTwEv19H6xNe+D/W3FwjZdO4TKIo
+ vcZveSDrFWOi4o2Te4O5OB/2zZbNWPEON8MaXi9zABEBAAGJA3IEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXFLMlgIbAgUJAeKNmgFACRArXuIRxYrqVMB0IAQZAQoAHRYhBJrx
+ JF84Dn3PPNRrhVrGIaOR5J0gBQJcUsyWAAoJEFrGIaOR5J0grw4H/itil/yryJCvzi6iuZHS
+ suSHHOiEf+UQHib1MLP96LM7FmDabjVSmJDpH4TsMu17A0HTG+bPMAdeia0+q9FWSvSHYW8D
+ wNhfkb8zojpa37qBpVpiNy7r6BKGSRSoFOv6m/iIoRJuJ041AEKao6djj/FdQF8OV1EtWKRO
+ +nE2bNuDCcwHkhHP+FHExdzhKSmnIsMjGpGwIQKN6DxlJ7fN4W7UZFIQdSO21ei+akinBo4K
+ O0uNCnVmePU1UzrwXKG2sS2f97A+sZE89vkc59NtfPHhofI3JkmYexIF6uqLA3PumTqLQ2Lu
+ bywPAC3YNphlhmBrG589p+sdtwDQlpoH9O7NeBAAg/lyGOUUIONrheii/l/zR0xxr2TDE6tq
+ 6HZWdtjWoqcaky6MSyJQIeJ20AjzdV/PxMkd8zOijRVTnlK44bcfidqFM6yuT1bvXAO6NOPy
+ pvBRnfP66L/xECnZe7s07rXpNFy72XGNZwhj89xfpK4a9E8HQcOD0mNtCJaz7TTugqBOsQx2
+ 45VPHosmhdtBQ6/gjlf2WY9FXb5RyceeSuK4lVrz9uZB+fUHBge/giOSsrqFo/9fWAZsE67k
+ 6Mkdbpc7ZQwxelcpP/giB9N+XAfBsffQ8q6kIyuFV4ILsIECCIA4nt1rYmzphv6t5J6PmlTq
+ TzW9jNzbYANoOFAGnjzNRyc9i8UiLvjhTzaKPBOkQfhStEJaZrdSWuR/7Tt2wZBBoNTsgNAw
+ A+cEu+SWCvdX7vNpsCHMiHtcEmVt5R0Tex1Ky87EfXdnGR2mDi6Iyxi3MQcHez3C61Ga3Baf
+ P8UtXR6zrrrlX22xXtpNJf4I4Z6RaLpB/avIXTFXPbJ8CUUbVD2R2mZ/jyzaTzgiABDZspbS
+ gw17QQUrKqUog0nHXuaGGA1uvreHTnyBWx5P8FP7rhtvYKhw6XdJ06ns+2SFcQv0Bv6PcSDK
+ aRXmnW+OsDthn84x1YkfGIRJEPvvmiOKQsFEiB4OUtTX2pheYmZcZc81KFfJMmE8Z9+LT6Ry
+ uSS5AQ0EXFLNDgEIAL14qAzTMCE1PwRrYJRI/RSQGAGF3HLdYvjbQd9Ozzg02K3mNCF2Phb1
+ cjsbMk/V6WMxYoZCEtCh4X2GjQG2GDDW4KC9HOa8cTmr9Vcno+f+pUle09TMzWDgtnH92WKx
+ d0FIQev1zDbxU7lk1dIqyOjjpyhmR8Put6vgunvuIjGJ/GapHL/O0yjVlpumtmow6eME2muc
+ TeJjpapPWBGcy/8VU4LM8xMeMWv8DtQML5ogyJxZ0Smt+AntIzcF9miV2SeYXA3OFiojQstF
+ vScN7owL1XiQ3UjJotCp6pUcSVgVv0SgJXbDo5Nv87M2itn68VPfTu2uBBxRYqXQovsR++kA
+ EQEAAYkCPAQYAQoAJhYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUs0OAhsMBQkB4o0iAAoJ
+ ECte4hHFiupUbioQAJ40bEJmMOF28vFcGvQrpI+lfHJGk9zSrh4F4SlJyOVWV1yWyUAINr8w
+ v1aamg2nAppZ16z4nAnGU/47tWZ4P8blLVG8x4SWzz3D7MCy1FsQBTrWGLqWldPhkBAGp2VH
+ xDOK4rLhuQWx3H5zd3kPXaIgvHI3EliWaQN+u2xmTQSJN75I/V47QsaPvkm4TVe3JlB7l1Fg
+ OmSvYx31YC+3slh89ayjPWt8hFaTLnB9NaW9bLhs3E2ESF9Dei0FRXIt3qnFV/hnETsx3X4h
+ KEnXxhSRDVeURP7V6P/z3+WIfddVKZk5ZLHi39fJpxvsg9YLSfStMJ/cJfiPXk1vKdoa+FjN
+ 7nGAZyF6NHTNhsI7aHnvZMDavmAD3lK6CY+UBGtGQA3QhrUc2cedp1V53lXwor/D/D3Wo9wY
+ iSXKOl4fFCh2Peo7qYmFUaDdyiCxvFm+YcIeMZ8wO5udzkjDtP4lWKAn4tUcdcwMOT5d0I3q
+ WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
+ lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
+ QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
+Subject: Re: AW: can: tcan4x5x: spi bits_per_word issue on Raspberry PI
+Message-ID: <175f7e89-5b4b-dd54-20a3-d6a5a04c6e9c@pengutronix.de>
+Date:   Fri, 16 Aug 2019 10:37:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-Brightmail-Tracker: H4sIAAAAAAAAA22Tb0xTVxjGOb0XubBePVza8g6odF1kUSLCplnVbTFxM3yYc3OBELYGi1xo
-        M1pIb3FCsoXYuRBqoCaUlTJAwTrnolX+yMaUhgICZbJpmEEDW3RzQ6bOjVBEEXfbW2g/7MvJ
-        Oc9zfs/7nvfmUgTTQSVQOoOJNRo0xcpVMWTMtjPyjae02er08+5ElWW0M1J1et5GqP6xjpEq
-        V2sdqbp8TLYjMrP2aXrm435p5tBEtyhztn3tu2RuzGsFbLHuAGvc9Ma+GO3C8Hxk6QV88PMj
-        40QlqsTVKJoCvBm+9/4ZVY1iKAbbRXDr2Xjw0IvgjtkbKRzuIxiYqiRWnLN/LZJ+fhXWwdEO
-        q8hvSPAgArN9KspvEDgZJloeIv8+Du+Ee2fv8ADFX3oTjjSm+mUJ3gU1422BHBKvA3O9L3Cd
-        xtvg+BdtIqGYE8Gw3RUwovHr0GFdCOQjLIdz534khFrx0P7HfKTwIAwnLgo6YCnc/W0pqCvg
-        QX9PoAcCrwdXzyYBfQHqLLeihLqxMNLwO2lF8Y6wVEeIcIQRjjDiGCJPI2khm35A/+rWDFWa
-        MZ/lKtIz0vaX6NuR8Anxt+g7b6EHiSjkQVsokVJKf2x7X82szi8pKNdqOG2esayY5ZQJdJdc
-        pWbiVmSuLF+v4zhdicGDgCKUEtp6da+aoQs05RWssUTAPCiRIpXxdBG150MGF2lM7EcsW8oa
-        l93tFKUEerYwW83EGtki9mChrti0bCvlNIqIiGBk4U54WREV7UGvUGK+doM/guZKNXpOVxTE
-        nxdwZlkNoV6URVnvNrUSVN9gM786B9v4daDJ2UowpKHEwCbE02Vb+ETsZ7VlhpWeEpLol5z8
-        M6VhRih3Bk0gCinj6I4CHhbzf0uoG6C7/QOMDYoh6OUTPIO9z0HzISPYH9oQLNlPknDINUfC
-        XNczftfeGQWu+hEKqnofUTD9w7AYqlrnxDDhPENDy+XDq6Hz8PE1MDEztAYaa69iaK43M1D3
-        6AoDt61OCczeOy+Fqs4RGTyYORkP7r6hJPil7kYSzF75Wg43emuT4afJm8nQZXcoYPFXnwKu
-        +VqUMDx98UWwuGvXw2cW34YZftIiftJbx7L8kzZpTP8z6aAaelxCJYIxrwbJOnIfL41m7/wy
-        p2Cv27S73/UzkyZpesuyveGbZFuO6v7mGq4rZXHtV6n6jO7r124+GamRKFJk7803fipKHOnb
-        uDCZt9ujcA0+saVMpppl+v3TuadSFezb4gFC/U7F7bxPfJeu28vd0n17Llj/nc764Ojojr97
-        ctZdmnraW60kOa0mYwNh5DT/AbbNXJzGBAAA
+In-Reply-To: <47108d803086402c83d1073f3e3a62bb@escrypt.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="IpmV2nXkM23PsJCcqjltl8zNRA16cz2PT"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+PiBOb3cgSSBoYXZlIGFub3RoZXIgcmVhbGx5IGNvbmZ1c2luZyBwcm9ibGVtLiBBbnl0aGlu
-ZyBJIHdyaXRlIHRvIFNQSSBpcyB3cml0dGVuIGxpdHRsZSBlbmRpYW4uIFRoZSB0Y2FuIGNoaXAg
-ZXhwZWN0cyBiaWcgZW5kaWFuLg0KPiA+PiBBbnl0aGluZyBJIHJlYWQgZnJvbSBTUEkgaXMgdHJl
-YXRlZCBhcyBsaXR0bGUgZW5kaWFuIGJ1dCBpcyBiaWcgZW5kaWFuLiBEb2VzIGFueW9uZSBrbm93
-IHdoeSB0aGlzIGhhcHBlbnM/DQo+ID4+IElzIHRoZXJlIGEgZmxhZyBvciBzb21ldGhpbmcgSSBj
-YW4gc2V0IGZvciB0aGUgU1BJIGRldmljZS93aXJlIHRvIGZpeCB0aGlzPw0KPiA+DQo+ID4gSGF2
-ZSB5b3UgY2hhbmdlZCB0aGUgYml0c19wZXJfd29yZCB0byA4PyBUaGVuIHlvdSByZWFkIGp1c3Qg
-YSBzdHJlYW0NCj4gPiBvZiBieXRlcy4gSWYgeW91IHRyZWFkIHRoZW0gYXMgYW4gdTMyIHRoZXkg
-YXJlIGluIGhvc3Qgb3JkZXIuDQo+ID4NCg0KQE1hcmMNClllcywgSSBjaGFuZ2VkIGJpdHNfcGVy
-X3dvcmQgdG8gOC4gU2luY2UgdGhlIFBJIGRvZXMgbm90IHN1cHBvcnQgYW55IHZhbHVlcyBhcGFy
-dCBmcm9tIA0KOCBhbmQgOSB0aGlzIHNlZW1zIHRvIGJlIHRoZSBvbmx5IHdheS4NCg0KPiA+IE1h
-cmMNCj4gPg0KPiANCj4gDQo+IEhpLA0KPiANCj4gZnJvbSBteSBleHBlcmllbmNlIHdpdGggU1BJ
-REVWIG9uIFJQSSwgdGhlIGRyaXZlciB1c2VzIGEgY2hhciBhcnJheSBmb3IgSS9PLg0KPiBBcyB0
-aGUgUlBJIGNvZGUgaXMgYnVpbGQgbGl0dGxlIGVuZGlhbiwgbG9naWNhbGx5IGxpdHRsZSBlbmRp
-YW4gY29tZXMgb3V0IG9mIFNQSS4gWW91DQo+IGJhc2ljYWxseSBoYXZlIHRvIGludmVydCB0aGUg
-Yml0IGFuZCBieXRlIG9yZGVyIGJ5IGhhbmQgZm9yIGEgYmlnIGVuZGlhbiBzbGF2ZS4NCj4gDQoN
-CkBQYXRyaWNrLCBNYXJjDQpZb3UgYm90aCBhcmUgcmlnaHQuIFRoaXMgc2VlbXMgdG8gYmUgdGhl
-IHByb2JsZW0uIFRoZSBTUEkgZHJpdmVyIHVzZXMgY2hhciBhcnJheXMNCmFuZCB0aGUgdGNhbiBk
-cml2ZXIgdHJlYXRzIHRoZW0gYXMgdTMyLiANCg0KSSB3aWxsIHRyeSB0byBjaGFuZ2UgdGhlIGJ5
-dGUgb3JkZXIgYnkgaGFuZCB0byBnZXQgaXQgcnVubmluZyBmb3IgbXkgcHJvamVjdC4gQnV0IGlu
-IHRoZSBsb25nIA0KcnVuLCB0aGlzIGRvZXMgbm90IHNlZW0gdG8gYmUgYSBwcm9wZXIgc29sdXRp
-b24uLi4gDQoNClJlZ2FyZHMsIA0KS29uc3RhbnRpbiANCg0KDQo+IENsb2NrIFBoYXNlIGFuZCBD
-bG9jayBQb2xhcml0eSBhcmUgYWxzbyBhbiBpc3N1ZSBvbiB0aGUgUlBJIGFzIGF0IGxlYXN0IFNQ
-SURFVg0KPiBraW5kbHkgb3Zlcmxvb2tzIGFueSBvcHRpb25zIHNldCBwcmV2aW91c2x5Lg0KPiBJ
-IGhhZCBteSBzaGFyZSBvZiB0aGlzIHdoaWxlIHdyaXRpbmcgYSB0ZXN0IGFwcCBmb3IgYSBNQVgz
-MTg1NSBJQyBhbmQgZW5kZWQgdXANCj4gY2FzdGluZyBhIGxpdHRsZSBlbmRpYW4gYXJyYXkgdG8g
-YSBiaWcgZW5kaWFuIHN0cnVjdHVyZS4NCj4gDQo+IFJlZ2FyZHMsDQo+IFBhdHJpY2sNCg0K
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--IpmV2nXkM23PsJCcqjltl8zNRA16cz2PT
+Content-Type: multipart/mixed; boundary="ak7Mq7nZXYSjf959xHCvJGAI8P3hrHYs1";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: "FIXED-TERM Buecheler Konstantin (ETAS-SEC/ECT-Mu)"
+ <fixed-term.Konstantin.Buecheler@escrypt.com>,
+ Patrick Menschel <menschel.p@posteo.de>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+ "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc: Dan Murphy <dmurphy@ti.com>
+Message-ID: <175f7e89-5b4b-dd54-20a3-d6a5a04c6e9c@pengutronix.de>
+Subject: Re: AW: can: tcan4x5x: spi bits_per_word issue on Raspberry PI
+References: <3f71bdff8f4f4fe19ad9a09be89bc73d@escrypt.com>
+ <f78bb414-4165-3f56-151a-47ab4a8a645d@pengutronix.de>
+ <e6577cc2-89fc-9428-b73e-47f41eff2949@posteo.de>
+ <47108d803086402c83d1073f3e3a62bb@escrypt.com>
+In-Reply-To: <47108d803086402c83d1073f3e3a62bb@escrypt.com>
+
+--ak7Mq7nZXYSjf959xHCvJGAI8P3hrHYs1
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
+
+On 8/16/19 10:26 AM, FIXED-TERM Buecheler Konstantin (ETAS-SEC/ECT-Mu)
+wrote:
+>>> Have you changed the bits_per_word to 8? Then you read just a stream
+>>> of bytes. If you tread them as an u32 they are in host order.
+>=20
+> @Marc
+> Yes, I changed bits_per_word to 8. Since the PI does not support any va=
+lues apart from=20
+> 8 and 9 this seems to be the only way.
+
+ok
+
+>> from my experience with SPIDEV on RPI, the driver uses a char array fo=
+r I/O.
+>> As the RPI code is build little endian, logically little endian comes =
+out of SPI. You
+>> basically have to invert the bit and byte order by hand for a big endi=
+an slave.
+>=20
+> @Patrick, Marc
+> You both are right. This seems to be the problem. The SPI driver uses c=
+har arrays
+> and the tcan driver treats them as u32.=20
+
+No, the tcan configures the spi device or rather the host driver that
+the word len should be 32 bit. If you change the value to 8 you break
+the assumptions in the driver.
+
+> I will try to change the byte order by hand to get it running for my pr=
+oject. But in the long=20
+> run, this does not seem to be a proper solution...=20
+
+Indeed, that's the wrong approach. I don't have any HW here to test, but
+I'll prepare a patch. BTW: the driver is broken in several ways, when it
+comes to the regmap configuration.
+
+Marc
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+--ak7Mq7nZXYSjf959xHCvJGAI8P3hrHYs1--
+
+--IpmV2nXkM23PsJCcqjltl8zNRA16cz2PT
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl1Wa1oACgkQWsYho5Hk
+nSBYbggArMg9DyraQFbMqVDr2Posft5IoTY9z7iEoWSEOoxOukZ/RgihVCgGBseu
+3ClgJrD8GHOA0bYV7CVIOaj2hRLFIxA7gS6mq1Ur32XejLIdw8+tSmd76mIVPNrL
+273pSYYsp3Tbrn96oFoJ56ZD+VXAUzDNbOYo6iNG3xa6A+CeAPOZ/6VAiI1wIwoo
+PiPNJe481G0d3qghj4rPCN9H/qUlOq/MaAhGL6cyNSUUY2QIXmmhUC8AblKq5SSE
+ord5WgW0+m9ht0CUrLof5iGLVSh04xKWEMi+CcLLOEH6scsJQRQsJdltxYuUX7UG
+ikjR5aHjHWqtAjTuAzajPTklEsqw/w==
+=/+CC
+-----END PGP SIGNATURE-----
+
+--IpmV2nXkM23PsJCcqjltl8zNRA16cz2PT--
