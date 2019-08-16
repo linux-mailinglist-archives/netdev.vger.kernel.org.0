@@ -2,134 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F0D20905B5
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:26:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 27D9A905E1
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:33:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726758AbfHPQZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 12:25:56 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:43541 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfHPQZz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:25:55 -0400
-Received: by mail-qt1-f195.google.com with SMTP id b11so6666552qtp.10
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 09:25:55 -0700 (PDT)
+        id S1726807AbfHPQcT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 12:32:19 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:36859 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725971AbfHPQcT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:32:19 -0400
+Received: by mail-wr1-f66.google.com with SMTP id r3so2117006wrt.3;
+        Fri, 16 Aug 2019 09:32:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=tJbAL73peLOlLB4/pZ1mzmtP7kI+uk4j46LfYonMjvo=;
-        b=WHv0rmdFdva8tEfBCMXPRvVIsrye+EN364/5ZmRjTvfe+XfZxJc7xqjiRRByHb/T2Z
-         lGJOTnNDkZWwvvaOHyQsXqpFKmVtuRquDTIRKFpu2tveJkOnmbQpVeXRf3TRPMvB5mce
-         xERh+a5IsHz0/NBNaP2j5aIKEI7L9CuSFFJFcXI69N2tiGP9+xhPfWYQQn0b7P5HINa0
-         w1QUh8k607qZMQkHqS63eBk1V4/mI4JCIn/p5+Ak+cJXr3vvXyqtXwahUH7SEtc+TcFc
-         KmBY4nW3YiNQUOivzHeVSFxc55JJo2o15e5qwQQ3z2nLBwhiJEIr4seh3BdSqoeEFZuG
-         Kluw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J314qdUvz12V6d3QViRALM7rawvrwtwSfJHkRDPm5Hw=;
+        b=bFlPjlEbw16qXErPnq5piBe7z3XTDmnzeoiTTCa7lc/N9m/opz9lUSrcjavE9JorkZ
+         ogHzZOEyqVTNQ29Wfj+KQ6HXetYWVNw44ukOtf2YM7iaRbDHWQuamn2ZiJe2ZBRWjPGg
+         /V1Lk3DwUZUEFaUQfPny1AKHESiMWuA1DRdKdh1evm8msptix+KZXlHrnKOXSsk5a5iU
+         MpVlOZY5tzglGEYHY7nDPG8rzcRAiO7fks7ZhcMR7gCSiAlnMd0N4DBpZAhazBgCpv/u
+         pGdfGTgQLCiNJ3PskruNkCZmVRO75aVGcqnyorAWE/4WGX3IkgAR76HI5gwQqZJx4sz2
+         Ob7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=tJbAL73peLOlLB4/pZ1mzmtP7kI+uk4j46LfYonMjvo=;
-        b=fu7hgtVay+N5BLAF732RUO6o9C3Cz4pVKi7Gm23vH/R35VSQkoESjUVZVXzNXA7aDg
-         eanvTFRg6KAdfjCt6sV/kWLMCghdQ3/W67qzXp/2zR233T/1BCeVZu+jYO1mTBcgPppz
-         SHjmIuzqGg8uIEoMESLeuUD+Cxn7DZuzUz1ZQ77+x1Mti+dp/YAR6nntZNTF4pUWvPY+
-         iGb1jWwoWFQowO3bxsqvArcilQcahA7cE/a1LEgSqKe8DryvLLe9SVWJ1J+Jq94krL8L
-         drnkndW/rheR2kxb6AHfktbA60CbBaF51hYIvG3M3ZEwPnOYlcCnYr+xgjaHODvTAYCK
-         eMgA==
-X-Gm-Message-State: APjAAAV3gocwAXyWNnuN821PGvXeQeChmFc4M+MBuW6aksNfL7k+Oyy0
-        rkGIoy+mDX8+3q8HI/Ef15A=
-X-Google-Smtp-Source: APXvYqyf5le6Ss+09vmtqsvppjzIp7yE3ggLO4F6e0lIxtl7Li7GONaroKZP/vY7ghw78HQB4EVq6A==
-X-Received: by 2002:a0c:e6cc:: with SMTP id l12mr2337264qvn.60.1565972754628;
-        Fri, 16 Aug 2019 09:25:54 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id g3sm3127157qke.105.2019.08.16.09.25.53
+        bh=J314qdUvz12V6d3QViRALM7rawvrwtwSfJHkRDPm5Hw=;
+        b=ogxq41SWjEuwW/SS3SQTojLB2WFJhKjjpGkChtSwT3TrhV2kgfKXarW1mAgH8eGQYL
+         ydfGN9kp/An8hM7gKS54xDgPAiPeGOOb18fijuo2JLP3IUUQ1jQbrCG7+2KYTgpW5w08
+         9H1LIdD1PiGiuWQh0PGL3PeInrh1SPMhGOINhawvdy0OD3q37cUrTdRVwJuYByS0Lfzz
+         9FnLcOow0Tf17wI5/NoBKeoTv7VO8oDq0ICPNwmNaOHy1KzGwU4Lj/w3q+JQ2aS+92JR
+         QeJAD7+R1/azML/MYXwcBLb0BNUnvsk+OdCrAKg6pSYeZBX9zRS4T9fPDftykbJCSMGZ
+         y/MA==
+X-Gm-Message-State: APjAAAWgRg9th8H+t1va+ezOZ8QfXD/sPH4pSCydgpiZzjrxttDuwMmQ
+        kWo1/07u2rdKnwI9Dk68b9cmcTm4NGk=
+X-Google-Smtp-Source: APXvYqzkC/sFkwVKPTSaPC2A+NnLvZAz6bMhSLia3Uf5bqM63YYSyf50PbcbsfXUKBK5OQl5rwiQKw==
+X-Received: by 2002:adf:fd82:: with SMTP id d2mr11692806wrr.194.1565973136985;
+        Fri, 16 Aug 2019 09:32:16 -0700 (PDT)
+Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
+        by smtp.gmail.com with ESMTPSA id d19sm11031677wrb.7.2019.08.16.09.32.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2019 09:25:53 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 12:25:52 -0400
-Message-ID: <20190816122552.GC629@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        Fri, 16 Aug 2019 09:32:16 -0700 (PDT)
+From:   Hubert Feurstein <h.feurstein@gmail.com>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
-Subject: Re: [PATCH RFC net-next 3/3] net: dsa: mv88e6xxx: setup SERDES irq
- also for CPU/DSA ports
-In-Reply-To: <20190816150834.26939-4-marek.behun@nic.cz>
-References: <20190816150834.26939-1-marek.behun@nic.cz>
- <20190816150834.26939-4-marek.behun@nic.cz>
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net-next 0/3] Improve phc2sys precision for mv88e6xxx switch in combination with imx6-fec
+Date:   Fri, 16 Aug 2019 18:31:54 +0200
+Message-Id: <20190816163157.25314-1-h.feurstein@gmail.com>
+X-Mailer: git-send-email 2.22.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Aug 2019 17:08:34 +0200, Marek Behún <marek.behun@nic.cz> wrote:
-> @@ -2151,16 +2151,6 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
->  	if (err)
->  		return err;
->  
-> -	/* Enable the SERDES interface for DSA and CPU ports. Normal
-> -	 * ports SERDES are enabled when the port is enabled, thus
-> -	 * saving a bit of power.
-> -	 */
-> -	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
-> -		err = mv88e6xxx_serdes_power(chip, port, true);
-> -		if (err)
-> -			return err;
-> -	}
-> -
->  	/* Port Control 2: don't force a good FCS, set the maximum frame size to
->  	 * 10240 bytes, disable 802.1q tags checking, don't discard tagged or
->  	 * untagged frames on this port, do a destination address lookup on all
-> @@ -2557,6 +2547,48 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
->  	return err;
->  }
->  
-> +static int mv88e6xxx_port_setup(struct dsa_switch *ds, int port)
-> +{
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +	int err;
-> +
-> +	/* Enable the SERDES interface for DSA and CPU ports. Normal
-> +	 * ports SERDES are enabled when the port is enabled, thus
-> +	 * saving a bit of power.
-> +	 */
-> +	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
-> +		mv88e6xxx_reg_lock(chip);
-> +
-> +		err = mv88e6xxx_serdes_power(chip, port, true);
-> +
-> +		if (!err && chip->info->ops->serdes_irq_setup)
-> +			err = chip->info->ops->serdes_irq_setup(chip, port);
-> +
-> +		mv88e6xxx_reg_unlock(chip);
-> +
-> +		return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void mv88e6xxx_port_teardown(struct dsa_switch *ds, int port)
-> +{
-> +	struct mv88e6xxx_chip *chip = ds->priv;
-> +
-> +	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
-> +		mv88e6xxx_reg_lock(chip);
-> +
-> +		if (chip->info->ops->serdes_irq_free)
-> +			chip->info->ops->serdes_irq_free(chip, port);
-> +
-> +		if (mv88e6xxx_serdes_power(chip, port, false))
-> +			dev_err(chip->dev, "failed to power off SERDES\n");
-> +
-> +		mv88e6xxx_reg_unlock(chip);
-> +	}
-> +}
+With this patchset the phc2sys synchronisation precision improved to +/-555ns on an IMX6DL with an MV88E6220 switch attached.
 
-So now we have mv88e6xxx_setup_port() and mv88e6xxx_port_setup(), which both
-setup a port, differently, at different time. This is definitely error prone.
+This patchset takes into account the comments from the following discussions:
+- https://lkml.org/lkml/2019/8/2/1364
+- https://lkml.org/lkml/2019/8/5/169
+
+Patch 01 adds the required infrastructure in the MDIO layer.
+Patch 02 adds support for the PTP_SYS_OFFSET_EXTENDED ioctl in the mv88e6xxx driver.
+Patch 03 adds support for the PTP system timestamping in the imx-fec driver.
+
+The following tests show the improvement caused by each patch. The system clock precision was set to 15ns instead of 333ns (as described in https://lkml.org/lkml/2019/8/2/1364).
+
+Without this patchset applied, the phc2sys synchronisation performance was very poor:
+
+  offset: min -27120 max 28840 mean 2.44 stddev 8040.78 count 1236
+  delay:  min 282103 max 386385 mean 352568.03 stddev 27814.27 count 1236
+  (test runtime 20 minutes)
+
+Results after appling patch 01 and 02:
+
+  offset: min -12316 max 13314 mean -9.38 stddev 4274.82 count 1022
+  delay:  min 69977 max 96266 mean 87939.04 stddev 6466.17 count 1022
+  (test runtime 16 minutes)
+
+Results after appling patch 03:
+
+  offset: min -788 max 528 mean -0.06 stddev 185.02 count 7171
+  delay:  min 1773 max 2031 mean 1909.43 stddev 33.74 count 7171
+  (test runtime 119 minutes)
+
+Hubert Feurstein (3):
+  net: mdio: add support for passing a PTP system timestamp to the
+    mii_bus driver
+  net: dsa: mv88e6xxx: extend PTP gettime function to read system clock
+  net: fec: add support for PTP system timestamping for MDIO devices
+
+ drivers/net/dsa/mv88e6xxx/chip.h          |   2 +
+ drivers/net/dsa/mv88e6xxx/ptp.c           |  11 ++-
+ drivers/net/dsa/mv88e6xxx/smi.c           |   3 +-
+ drivers/net/ethernet/freescale/fec_main.c |   3 +
+ drivers/net/phy/mdio_bus.c                | 105 ++++++++++++++++++++++
+ include/linux/mdio.h                      |   7 ++
+ include/linux/phy.h                       |  25 ++++++
+ 7 files changed, 151 insertions(+), 5 deletions(-)
+
+-- 
+2.22.1
+
