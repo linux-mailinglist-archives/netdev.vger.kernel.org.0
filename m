@@ -2,160 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A48F290585
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:13:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F56D9059B
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:16:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727441AbfHPQNE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 12:13:04 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:43999 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727357AbfHPQNE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:13:04 -0400
-Received: by mail-pf1-f195.google.com with SMTP id v12so3341216pfn.10
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 09:13:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=WQixU0fZP8Z2akFwLIh0P4tmgyV6zz+KmxGRGUStWaQ=;
-        b=xOAXPRWNhEyLpz5iV3fw1FUOQOW8dTEGcnwCP6caZ5GaOLsEchUFFmXhTe5qBoA/g9
-         2oqzNTJ9ZBWRUZrCEY0WAzPvgiEl4i3zxsXTrq3j19eLGQvYdJnwr2KI9+6aVBY5OS87
-         5p2OuhOdF1Do/PeNASm+OifXB0Yfcm4U5qoNejL4K2PZNEd303jSDIhn9J46fOSz+/f/
-         4qZ0W7SFJ7Z42Tjc1tvyHsbkXSvg5n1njPXAZOZe0OjSc6tGryvg7u1z+Fm17BT1ktmL
-         uSYejeqLUSR0HhYOi16fKFjsDCiiWVYmPXkruklOGb8il8rp/Oy9YpAhgH72mnbO/NX+
-         d0FQ==
+        id S1726654AbfHPQQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 12:16:21 -0400
+Received: from mail-wr1-f46.google.com ([209.85.221.46]:41874 "EHLO
+        mail-wr1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726265AbfHPQQU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:16:20 -0400
+Received: by mail-wr1-f46.google.com with SMTP id j16so2059316wrr.8
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 09:16:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=WQixU0fZP8Z2akFwLIh0P4tmgyV6zz+KmxGRGUStWaQ=;
-        b=ayg6t5S0RzKB7+7oDJEpNfLNADlrkOhqylESrxA8O/h8KEm/0apc5eyqERgr8CBjkU
-         oP3vfDfp9RseEOVtbPHDX0ayJWc0MI5jiqHgYCvPajxV46ugvhbwonw3IxYTF7KyIuQe
-         4CoYK1qv88HRLWxHBac8MPVj4VS9FswxaCOzssbX4HzCvBNsIR+Akbl0+0qhrGxo+cyj
-         PPeLSLoCvTLAXB5OFB2SU4qeriU5slzgnjeUPudyCTVsotXgzzdAlaciGee4f6taDOqr
-         vlda3/sxXhL3e039mv6Bmqqp/4LO02KoQ25eqigPMLp14X6r4pAIaf14vhELkZCrRf7H
-         0lPA==
-X-Gm-Message-State: APjAAAUSVX0ZExVI8LoVmlXHtid2DnEG9x+mnG4tzPnNlgZz39ryT/PW
-        xLi5a9XT2bkbMjG4ZAj1zSDp0w==
-X-Google-Smtp-Source: APXvYqyH1PmTjiubGIUx2pWC75jcQLxJflbOUj7GlvarB6iqgf4+i21Gxo3DKbYGLck6jU+tN6KoTg==
-X-Received: by 2002:aa7:842f:: with SMTP id q15mr11503809pfn.250.1565971983984;
-        Fri, 16 Aug 2019 09:13:03 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id z12sm1117798pfg.21.2019.08.16.09.13.03
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=aXOWm885zlSQjaOTNsiB6ixyEYYi9R71KVEE87CvUak=;
+        b=EvJjF9fmRCRaYF7XxJChHPaRWs1MZcfz3b0xqF0DiwM5t+IUcillPmXobbM29QLj4j
+         JtRiWllU/dZ3dXY1d5Lt8CEcR6g49+YnIdaYx01dsnzipvlDhDpwvOf15vDh0YKwV3tZ
+         25n2GryB4SHHP2wq2dvAfbSRzI18bVhqCNDoNuDZpDywgcZSLNEyHangtqmp9bPxpA2I
+         6+2GjAnn8uF1bV6UYb3JuNLt8RIQIMdGxRkWxJmau+xvCdZ5KZSPo70MYBpPbu3TBHxw
+         Xt9wAt4Gkcg7JE5mL+QghKorabHQBf83F4gzjEXZzDeD8RywMnNPvkrA8AHMzIiinyG2
+         8yDw==
+X-Gm-Message-State: APjAAAUG5yZtrq0ec6lwLRkHc5O60jGuz2gJVzC2qDud4QNaAaU0UveN
+        lFxQPiK6ZhguhzzyKTQ8+4hvJczkS+Q=
+X-Google-Smtp-Source: APXvYqy6B4y9yrIXuG+5Spcygji8YfnMrNZIuzappqSMix4ReJs2eJshqSyIxnLvZ0v0kauGmsdKjg==
+X-Received: by 2002:a5d:6b84:: with SMTP id n4mr12261415wrx.118.1565972178874;
+        Fri, 16 Aug 2019 09:16:18 -0700 (PDT)
+Received: from vitty.brq.redhat.com (nat-pool-brq-t.redhat.com. [213.175.37.10])
+        by smtp.gmail.com with ESMTPSA id f70sm8693222wme.22.2019.08.16.09.16.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2019 09:13:03 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 09:13:02 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Petar Penkov <ppenkov.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, davem@davemloft.net,
-        ast@kernel.org, daniel@iogearbox.net, sdf@google.com,
-        Petar Penkov <ppenkov@google.com>
-Subject: Re: [bpf-next] selftests/bpf: fix race in test_tcp_rtt test
-Message-ID: <20190816161302.GQ2820@mini-arch>
-References: <20190816160339.249832-1-ppenkov.kernel@gmail.com>
+        Fri, 16 Aug 2019 09:16:18 -0700 (PDT)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Haiyang Zhang <haiyangz@microsoft.com>
+Cc:     KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "sashal\@kernel.org" <sashal@kernel.org>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "saeedm\@mellanox.com" <saeedm@mellanox.com>,
+        "leon\@kernel.org" <leon@kernel.org>,
+        "eranbe\@mellanox.com" <eranbe@mellanox.com>,
+        "lorenzo.pieralisi\@arm.com" <lorenzo.pieralisi@arm.com>,
+        "bhelgaas\@google.com" <bhelgaas@google.com>,
+        "linux-pci\@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-hyperv\@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH net-next, 2/6] PCI: hv: Add a Hyper-V PCI mini driver for software backchannel interface
+In-Reply-To: <DM6PR21MB13375FA0BA0220A91EF448E1CAAF0@DM6PR21MB1337.namprd21.prod.outlook.com>
+References: <1565809632-39138-1-git-send-email-haiyangz@microsoft.com> <1565809632-39138-3-git-send-email-haiyangz@microsoft.com> <878srt8fd8.fsf@vitty.brq.redhat.com> <DM6PR21MB13375FA0BA0220A91EF448E1CAAF0@DM6PR21MB1337.namprd21.prod.outlook.com>
+Date:   Fri, 16 Aug 2019 18:16:17 +0200
+Message-ID: <871rxl84ry.fsf@vitty.brq.redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190816160339.249832-1-ppenkov.kernel@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/16, Petar Penkov wrote:
-> From: Petar Penkov <ppenkov@google.com>
-> 
-> There is a race in this test between receiving the ACK for the
-> single-byte packet sent in the test, and reading the values from the
-> map.
-> 
-> This patch fixes this by having the client wait until there are no more
-> unacknowledged packets.
-> 
-> Before:
-> for i in {1..1000}; do ../net/in_netns.sh ./test_tcp_rtt; \
-> done | grep -c PASSED
-> < trimmed error messages >
-> 993
-> 
-> After:
-> for i in {1..10000}; do ../net/in_netns.sh ./test_tcp_rtt; \
-> done | grep -c PASSED
-> 10000
-> 
-> Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
-> Signed-off-by: Petar Penkov <ppenkov@google.com>
-> ---
->  tools/testing/selftests/bpf/test_tcp_rtt.c | 31 ++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
-> 
-> diff --git a/tools/testing/selftests/bpf/test_tcp_rtt.c b/tools/testing/selftests/bpf/test_tcp_rtt.c
-> index 90c3862f74a8..2b4754473956 100644
-> --- a/tools/testing/selftests/bpf/test_tcp_rtt.c
-> +++ b/tools/testing/selftests/bpf/test_tcp_rtt.c
-> @@ -6,6 +6,7 @@
->  #include <sys/types.h>
->  #include <sys/socket.h>
->  #include <netinet/in.h>
-> +#include <netinet/tcp.h>
->  #include <pthread.h>
->  
->  #include <linux/filter.h>
-> @@ -34,6 +35,30 @@ static void send_byte(int fd)
->  		error(1, errno, "Failed to send single byte");
->  }
->  
-> +static int wait_for_ack(int fd, int retries)
-> +{
-> +	struct tcp_info info;
-> +	socklen_t optlen;
-> +	int i, err;
-> +
-> +	for (i = 0; i < retries; i++) {
-> +		optlen = sizeof(info);
-> +		err = getsockopt(fd, SOL_TCP, TCP_INFO, &info, &optlen);
-> +		if (err < 0) {
-> +			log_err("Failed to lookup TCP stats");
-> +			return err;
-> +		}
-> +
-> +		if (info.tcpi_unacked == 0)
-> +			return 0;
-> +
-> +		sleep(1);
-Isn't it too big of a hammer? Maybe usleep(10) here and do x100 retries
-instead?
+Haiyang Zhang <haiyangz@microsoft.com> writes:
 
-> +	}
-> +
-> +	log_err("Did not receive ACK");
-> +	return -1;
-> +}
-> +
->  static int verify_sk(int map_fd, int client_fd, const char *msg, __u32 invoked,
->  		     __u32 dsack_dups, __u32 delivered, __u32 delivered_ce,
->  		     __u32 icsk_retransmits)
-> @@ -149,6 +174,11 @@ static int run_test(int cgroup_fd, int server_fd)
->  			 /*icsk_retransmits=*/0);
->  
->  	send_byte(client_fd);
-> +	if (wait_for_ack(client_fd, 5) < 0) {
-> +		err = -1;
-> +		goto close_client_fd;
-> +	}
-> +
->  
->  	err += verify_sk(map_fd, client_fd, "first payload byte",
->  			 /*invoked=*/2,
-> @@ -157,6 +187,7 @@ static int run_test(int cgroup_fd, int server_fd)
->  			 /*delivered_ce=*/0,
->  			 /*icsk_retransmits=*/0);
->  
-> +close_client_fd:
->  	close(client_fd);
->  
->  close_bpf_object:
-> -- 
-> 2.23.0.rc1.153.gdeed80330f-goog
-> 
+>
+> The pci_hyperv can only be loaded on VMs on Hyper-V and Azure. Other 
+> drivers like MLX5e will have symbolic dependency of pci_hyperv if they 
+> use functions exported by pci_hyperv. This dependency will cause other 
+> drivers fail to load on other platforms, like VMs on KVM. So we created 
+> this mini driver, which can be loaded on any platforms to provide the 
+> symbolic dependency.
+
+(/me wondering is there a nicer way around this, by using __weak or
+something like that...)
+
+In case this stub is the best solution I'd suggest to rename it to
+something like PCI_HYPERV_INTERFACE to make it clear it is not a
+separate driver (_MINI makes me think so).
+
+-- 
+Vitaly
