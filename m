@@ -2,167 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 69A788FA53
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 07:21:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC338FA5C
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 07:23:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726622AbfHPFVm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 01:21:42 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:45903 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbfHPFVm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 01:21:42 -0400
-Received: by mail-qt1-f194.google.com with SMTP id k13so4884244qtm.12;
-        Thu, 15 Aug 2019 22:21:41 -0700 (PDT)
+        id S1726277AbfHPFX1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 01:23:27 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:39669 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725971AbfHPFX1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 01:23:27 -0400
+Received: by mail-qk1-f196.google.com with SMTP id 125so3795098qkl.6;
+        Thu, 15 Aug 2019 22:23:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=6BgRH7uWgXm0ykwcCnyCSO3U7xukvqKpk3J2XCkWVPo=;
-        b=TqCn+Vkkso2vIKA/Shpkxj3r2rinRLtPiM1y7AW9KLiB1sPE4I+AwCdOnM2AoAfZTp
-         SwP+xpsHXaR/HtcFDh55UVZmht5iefN3MQGGvHp/w8gOrnxWNzepaGwLL1QJtmGqS23r
-         bO2AjU3miELbzKNGUitK3HZEAnN3iS9QqFt3zOMtBrBEFOvlNmUCgaxIFmRd7SSh9IbT
-         /pETUBEfROC3jLYMFin8jWxRJihPWPMQgzqStakOXs1j5XkpZsWBAKMhIBdIWHQCYIyb
-         nzA3I36Weo/XwkWvsQdTeBdIn1qQxFWAKvFH9WoFCOLg+udV9zTFXrASqTaCvbMfx8B0
-         oJXQ==
+        bh=uHyOSrsLg+OpTAnL/CHZKBv938Zif7lAbBDshh9pX/c=;
+        b=lYK9LS3N7wVCkLjV2IsreoUe7z+fSQ9B/mQ08Q3vfdBmDbtZUiYi0wa6QMOZSXWJGI
+         RB2Lc+mK0FrrdoMlT6ptkYsIjxwwNCbc16b4K6kKgiytfPkhEWKpzljzg4L0JYplp0Ao
+         ETAEXJjEe2KA+kSlN9b10R5CNaKIivxG4iAKKQfotYPv0bLjPoAZgxVklWZ3e98qNmra
+         SEWCCfTaEBlGNusKq86KxYTZEzcSGJbLJTPhL0WNeO9RMXJ2Q7gue0fCSusiCBvug4q4
+         uMNs2Lp3LJtq5jf6jR4TwpZ5exqo1S7by7/bal6Mhlx8nOUvgj/a8+RS1ptYVSHDrofR
+         4law==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=6BgRH7uWgXm0ykwcCnyCSO3U7xukvqKpk3J2XCkWVPo=;
-        b=F0W+nMTFhjlNArxMxGQ1YEZix/tzXFsLx7Jx09Py63CyeCbgJBl0nheQtDeXzPBXAr
-         /+A+sfcYbtmND2PAR3wLiTFU0PUzkI4NCBCxP7suukCserbmXI71SJsdxOzGt9QJVSG7
-         dToevYJFjso1kM+k36L8YLfGgf/PKbbxhT/2CxfoWYKIulvPtCHbP6JTpKNSJvosmTjr
-         npJ/UkdR9+xhNfaU47TG4S7d4Ls/2xLT5JwSG6vaqeOFkiMQ8RQHap4jZhGf+jTNG0Uj
-         5PYLCl7H4XIPWcNsVCn7QbJBnZVh6YmiklkLTqLeljEqPjsft+YYw8jGfyRIT1zPnWZM
-         cVxg==
-X-Gm-Message-State: APjAAAVbOf3ZuiCDpFldeeBVBZPQF4A7Ed6qVy6cOTkAl4Li3nYTM2gz
-        XA13qU3AH4FXLTqMcGQWfMp4hdS1jsl/hp4DKMQ=
-X-Google-Smtp-Source: APXvYqzA3IkpdcaIkjY3gb084X+01cYyzaz0onoPodRabUEacOs6jo8MtaiF9GOgYUpLwwiTjiPzkGFHp44X6ufK3es=
-X-Received: by 2002:a0c:e6cc:: with SMTP id l12mr674955qvn.60.1565932900638;
- Thu, 15 Aug 2019 22:21:40 -0700 (PDT)
+        bh=uHyOSrsLg+OpTAnL/CHZKBv938Zif7lAbBDshh9pX/c=;
+        b=AGE64x333SK+w483f4/+Jj8LNUuUfGP80yr0WxdHsp6lERYUZnNeSW3AB3+AnGTHgb
+         BONk7edO18+NFMGV/V8DnCEYadPH8MXs1t5d1JkNHwdxoVh8q6qKQe602it7Vknsu2WI
+         bLL48m+IpSdI9UzKnMIChpqElhrMA1HT6om0152jXSEj+256jukmouwDOExYhVvFPcfu
+         bVmSLb7NHiBjHlcI4RVaVrZsAzKYB+bvnoa2etkUVoeMl6iK5H1hoPWxidQjY97M5Jkc
+         p9bR8aHGhHDEyFdYc6W46XR6y9KU087Cj2abkabyBeCGGSsnVfSryEifQhaD1xss3PEk
+         Wpqg==
+X-Gm-Message-State: APjAAAWhYq1feGVWXgenVaXxX7vKWpBFRJkGGKYBhdUAanfo/ywWjtxW
+        4hZj6nugtm8PFVFDnA3IlLcsMIZy1tRVh9BcFvQ=
+X-Google-Smtp-Source: APXvYqxvHQeKguD98k0XdADD/VXzOjaffIHkuxcXXYHy0FpA90De4BOpFPS7MfUZZ1XksLjDU+lcQvwf79yN3UzAR8E=
+X-Received: by 2002:a37:9b48:: with SMTP id d69mr7465606qke.449.1565933006557;
+ Thu, 15 Aug 2019 22:23:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190816124143.2640218a@canb.auug.org.au>
-In-Reply-To: <20190816124143.2640218a@canb.auug.org.au>
+References: <20190814164742.208909-1-sdf@google.com> <20190814164742.208909-3-sdf@google.com>
+ <CAEf4BzZR12JgbSvBqS7LMZjLcsneVDfFL9XyZdi3gtneyA9X9g@mail.gmail.com>
+ <CAEf4BzaE-KiW1Xt049A4s25YiaLeTH3yhgahwLUdpXNjF1sVpA@mail.gmail.com>
+ <20190814195330.GL2820@mini-arch> <CAEf4BzaEJcTKV6s8cVinpJcBStvs2LAJ+obNjevw54EOQq1QdQ@mail.gmail.com>
+ <CAADnVQ+Bz6R17bassdr3xOR7rhbuw-HbdXYu-hHkxE8S2WiNrA@mail.gmail.com>
+In-Reply-To: <CAADnVQ+Bz6R17bassdr3xOR7rhbuw-HbdXYu-hHkxE8S2WiNrA@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 15 Aug 2019 22:21:29 -0700
-Message-ID: <CAEf4BzY9dDZF-DBDmuQQz0Rcx3DNGvQn_GLr0Uar1PAbAf2iig@mail.gmail.com>
-Subject: Re: linux-next: manual merge of the net-next tree with the kbuild tree
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
+Date:   Thu, 15 Aug 2019 22:23:15 -0700
+Message-ID: <CAEf4BzbA_GtJSSxtVKLL+x3hScSw6zVy2cKPgBcYCa1eisr28g@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/4] selftests/bpf: test_progs: test__skip
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Stanislav Fomichev <sdf@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 7:42 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+On Thu, Aug 15, 2019 at 10:16 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> Hi all,
+> On Wed, Aug 14, 2019 at 1:01 PM Andrii Nakryiko
+> <andrii.nakryiko@gmail.com> wrote:
+> > >
+> > > Let me know if you see a value in highlighting test vs subtest skip.
+> > >
+> > > Other related question is: should we do verbose output in case
+> > > of a skip? Right now we don't do it.
+> >
+> > It might be useful, I guess, especially if it's not too common. But
+> > Alexei is way more picky about stuff like that, so I'd defer to him. I
+> > have no problem with a clean "SKIPPED: <test>/<subtest> (maybe some
+> > reason for skipping here)" message.
 >
-> Today's linux-next merge of the net-next tree got a conflict in:
->
->   scripts/link-vmlinux.sh
->
-> between commit:
->
->   e167191e4a8a ("kbuild: Parameterize kallsyms generation and correct reporting")
->
-> from the kbuild tree and commits:
->
->   341dfcf8d78e ("btf: expose BTF info through sysfs")
->   7fd785685e22 ("btf: rename /sys/kernel/btf/kernel into /sys/kernel/btf/vmlinux")
->
-> from the net-next tree.
->
-> I fixed it up (I think - see below) and can carry the fix as necessary.
+> Since test_progs prints single number for FAILED tests then single number
+> for SKIPPED tests is fine as well.
 
-Thanks, Stephen! Looks good except one minor issue below.
-
-> This is now fixed as far as linux-next is concerned, but any non trivial
-> conflicts should be mentioned to your upstream maintainer when your tree
-> is submitted for merging.  You may also want to consider cooperating
-> with the maintainer of the conflicting tree to minimise any particularly
-> complex conflicts.
->
-> --
-> Cheers,
-> Stephen Rothwell
->
-> diff --cc scripts/link-vmlinux.sh
-> index 2438a9faf3f1,c31193340108..000000000000
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@@ -56,11 -56,10 +56,11 @@@ modpost_link(
->   }
->
->   # Link of vmlinux
-> - # ${1} - optional extra .o files
-> - # ${2} - output file
-> + # ${1} - output file
-> + # ${@:2} - optional extra .o files
->   vmlinux_link()
->   {
->  +      info LD ${2}
-
-This needs to be ${1}.
-
->         local lds="${objtree}/${KBUILD_LDS}"
->         local objects
->
-> @@@ -139,18 -149,6 +150,18 @@@ kallsyms(
->         ${CC} ${aflags} -c -o ${2} ${afile}
->   }
->
->  +# Perform one step in kallsyms generation, including temporary linking of
->  +# vmlinux.
->  +kallsyms_step()
->  +{
->  +      kallsymso_prev=${kallsymso}
->  +      kallsymso=.tmp_kallsyms${1}.o
->  +      kallsyms_vmlinux=.tmp_vmlinux${1}
->  +
-> -       vmlinux_link "${kallsymso_prev}" ${kallsyms_vmlinux}
-> ++      vmlinux_link ${kallsyms_vmlinux} "${kallsymso_prev}" ${btf_vmlinux_bin_o}
->  +      kallsyms ${kallsyms_vmlinux} ${kallsymso}
->  +}
->  +
->   # Create map file with all symbols from ${1}
->   # See mksymap for additional details
->   mksysmap()
-> @@@ -228,8 -227,14 +240,15 @@@ ${MAKE} -f "${srctree}/scripts/Makefile
->   info MODINFO modules.builtin.modinfo
->   ${OBJCOPY} -j .modinfo -O binary vmlinux.o modules.builtin.modinfo
->
-> + btf_vmlinux_bin_o=""
-> + if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
-> +       if gen_btf .tmp_vmlinux.btf .btf.vmlinux.bin.o ; then
-> +               btf_vmlinux_bin_o=.btf.vmlinux.bin.o
-> +       fi
-> + fi
-> +
->   kallsymso=""
->  +kallsymso_prev=""
->   kallsyms_vmlinux=""
->   if [ -n "${CONFIG_KALLSYMS}" ]; then
->
-> @@@ -268,11 -285,8 +287,7 @@@
->         fi
->   fi
->
-> - vmlinux_link "${kallsymso}" vmlinux
-> -
-> - if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
-> -       gen_btf vmlinux
-> - fi
->  -info LD vmlinux
-> + vmlinux_link vmlinux "${kallsymso}" "${btf_vmlinux_bin_o}"
->
->   if [ -n "${CONFIG_BUILDTIME_EXTABLE_SORT}" ]; then
->         info SORTEX vmlinux
+I'm fine with single number, but it should count number of subtests
+skipped, if there are subtests within test, same as for FAILED.
