@@ -2,185 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 608999076E
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 20:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7539390791
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 20:13:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727574AbfHPSDa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 14:03:30 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:46428 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727451AbfHPSDa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 14:03:30 -0400
-Received: by mail-pg1-f193.google.com with SMTP id m3so2709949pgv.13
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 11:03:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3Kz/XOyz7LZ0pcUiL3uYqVXSGf72BjYZb+6cd6xy5cA=;
-        b=VssH97Aa1l5+/qAKrdEV2xBU0FSV5oqLPtio7jR0gHpBsIjF0+Xds6ulGNhQ+VtpCc
-         GuSSVmASgP4mwjk/Dd15Ke1AV9sY9OfFoEZsM1OIBajZMouxpYfTS5KVNqifD1GnQhD7
-         8AexrzxK9CwKKJFLhRi5ftO60HJrpUyGh/Z3c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3Kz/XOyz7LZ0pcUiL3uYqVXSGf72BjYZb+6cd6xy5cA=;
-        b=VDh0+SM7eYXWbEIRb23t4EXSD9xSmWkv4D9HGkxGKTg9TI9c19QUo5Ub8r4e5xWJGZ
-         PZwLHTyADp3bX7SmUVoza5qFRMIdFjxJIjCIHpWoMoCLDVFLZgc2lg9ziFT0jJ1imRXf
-         2zgB4nrvaItqpv5/97spVtHBFSVSQ/WItaYlXT94ZjhnBJ/M5NSLL83ApV5HL75Pl8yC
-         +2PJsZakwa92IW+xaBzVVRoR5SvNkLcuWzoKudq3EGYmrjp0nqlveLNS7aMicBB0n7+W
-         8ASonTu1gMHzgJpLwPSZK70Adgd7ro+MFrETKkLybe2E3l0zXJU1r7yyiT1CJF/KLYqv
-         xatQ==
-X-Gm-Message-State: APjAAAVXKznspaC2B3FiHMmj7zoHSu8c0vsqVfjOu+AKOX1Hr2s7yUbr
-        uvfBtNY7ed0nX2zJ9pGVILl4Pw==
-X-Google-Smtp-Source: APXvYqxSlv62Xa3cqpk6BDBCnRroF7ZbQBXX0NszVmMx/QCm1xioP5tJe2sDAo/jhKWeeJwvhj+jJQ==
-X-Received: by 2002:a17:90a:17e2:: with SMTP id q89mr8579319pja.8.1565978609675;
-        Fri, 16 Aug 2019 11:03:29 -0700 (PDT)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id j10sm6515262pfn.188.2019.08.16.11.03.28
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 16 Aug 2019 11:03:28 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 11:03:27 -0700
-From:   Kees Cook <keescook@chromium.org>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: linux-next: manual merge of the net-next tree with the kbuild
- tree
-Message-ID: <201908161101.31674596CC@keescook>
-References: <20190816124143.2640218a@canb.auug.org.au>
- <CAEf4BzY9dDZF-DBDmuQQz0Rcx3DNGvQn_GLr0Uar1PAbAf2iig@mail.gmail.com>
+        id S1727557AbfHPSNN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 14:13:13 -0400
+Received: from dispatch1-us1.ppe-hosted.com ([67.231.154.164]:56664 "EHLO
+        dispatch1-us1.ppe-hosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727490AbfHPSNM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 14:13:12 -0400
+X-Virus-Scanned: Proofpoint Essentials engine
+Received: from webmail.solarflare.com (webmail.solarflare.com [12.187.104.26])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx1-us5.ppe-hosted.com (PPE Hosted ESMTP Server) with ESMTPS id 8C6E04C0062;
+        Fri, 16 Aug 2019 18:13:11 +0000 (UTC)
+Received: from [10.17.20.203] (10.17.20.203) by ocex03.SolarFlarecom.com
+ (10.20.40.36) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Fri, 16 Aug
+ 2019 11:13:07 -0700
+Subject: Re: [RFC bpf-next 0/3] tools: bpftool: add subcommand to count map
+ entries
+To:     Quentin Monnet <quentin.monnet@netronome.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <oss-drivers@netronome.com>
+References: <20190813130921.10704-1-quentin.monnet@netronome.com>
+ <20190814015149.b4pmubo3s4ou5yek@ast-mbp>
+ <ab11a9f2-0fbd-d35f-fee1-784554a2705a@netronome.com>
+ <bdb4b47b-25fa-eb96-aa8d-dd4f4b012277@solarflare.com>
+ <18f887ec-99fd-20ae-f5d6-a1f4117b2d77@netronome.com>
+ <84aa97e3-5fde-e041-12c6-85863e27d2d9@solarflare.com>
+ <031de7fd-caa7-9e66-861f-8e46e5bb8851@netronome.com>
+From:   Edward Cree <ecree@solarflare.com>
+Message-ID: <c62611b7-9322-4efe-6b44-cb4087617e29@solarflare.com>
+Date:   Fri, 16 Aug 2019 19:13:06 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzY9dDZF-DBDmuQQz0Rcx3DNGvQn_GLr0Uar1PAbAf2iig@mail.gmail.com>
+In-Reply-To: <031de7fd-caa7-9e66-861f-8e46e5bb8851@netronome.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Originating-IP: [10.17.20.203]
+X-TM-AS-Product-Ver: SMEX-12.5.0.1300-8.5.1010-24850.005
+X-TM-AS-Result: No-1.736300-4.000000-10
+X-TMASE-MatchedRID: 7ySqCuYCpfjmLzc6AOD8DfHkpkyUphL99+PHtghP8GLo5ylrWfS0yzKy
+        dfFQiPH7pVO+oN4Yy+nwJd0y95699XufZC0Pz+WkBcaL/tyWL2PDu9Ig2VAzuXRBPvVzfVU/m+q
+        3qIvun/12d8d8QAF3I+P3YB3VAfGPlwV2iaAfSWc5f9Xw/xqKXXJnzNw42kCx2bNx1HEv7HAqtq
+        5d3cxkNcDmktstdnbHsCD6Gug0nSw6dFPM3ONtRe0449QWDDb4Oidh6Pj4BzCFcgJc+QNMwu8bJ
+        ovJYm8FYupx0XjSQPLDOFVmKqGJ4bPn3tFon6UK
+X-TM-AS-User-Approved-Sender: No
+X-TM-AS-User-Blocked-Sender: No
+X-TMASE-Result: 10--1.736300-4.000000
+X-TMASE-Version: SMEX-12.5.0.1300-8.5.1010-24850.005
+X-MDID: 1565979192-y5jBoVQEMl90
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 10:21:29PM -0700, Andrii Nakryiko wrote:
-> On Thu, Aug 15, 2019 at 7:42 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
-> >
-> > Hi all,
-> >
-> > Today's linux-next merge of the net-next tree got a conflict in:
-> >
-> >   scripts/link-vmlinux.sh
-> >
-> > between commit:
-> >
-> >   e167191e4a8a ("kbuild: Parameterize kallsyms generation and correct reporting")
-> >
-> > from the kbuild tree and commits:
-> >
-> >   341dfcf8d78e ("btf: expose BTF info through sysfs")
-> >   7fd785685e22 ("btf: rename /sys/kernel/btf/kernel into /sys/kernel/btf/vmlinux")
-> >
-> > from the net-next tree.
-> >
-> > I fixed it up (I think - see below) and can carry the fix as necessary.
-> 
-> Thanks, Stephen! Looks good except one minor issue below.
-> 
-> > This is now fixed as far as linux-next is concerned, but any non trivial
-> > conflicts should be mentioned to your upstream maintainer when your tree
-> > is submitted for merging.  You may also want to consider cooperating
-> > with the maintainer of the conflicting tree to minimise any particularly
-> > complex conflicts.
-> >
-> > --
-> > Cheers,
-> > Stephen Rothwell
-> >
-> > diff --cc scripts/link-vmlinux.sh
-> > index 2438a9faf3f1,c31193340108..000000000000
-> > --- a/scripts/link-vmlinux.sh
-> > +++ b/scripts/link-vmlinux.sh
-> > @@@ -56,11 -56,10 +56,11 @@@ modpost_link(
-> >   }
-> >
-> >   # Link of vmlinux
-> > - # ${1} - optional extra .o files
-> > - # ${2} - output file
-> > + # ${1} - output file
-> > + # ${@:2} - optional extra .o files
-> >   vmlinux_link()
-> >   {
-> >  +      info LD ${2}
-> 
-> This needs to be ${1}.
-> 
-> >         local lds="${objtree}/${KBUILD_LDS}"
-> >         local objects
-> >
-> > @@@ -139,18 -149,6 +150,18 @@@ kallsyms(
-> >         ${CC} ${aflags} -c -o ${2} ${afile}
-> >   }
-> >
-> >  +# Perform one step in kallsyms generation, including temporary linking of
-> >  +# vmlinux.
-> >  +kallsyms_step()
-> >  +{
-> >  +      kallsymso_prev=${kallsymso}
-> >  +      kallsymso=.tmp_kallsyms${1}.o
-> >  +      kallsyms_vmlinux=.tmp_vmlinux${1}
-> >  +
-> > -       vmlinux_link "${kallsymso_prev}" ${kallsyms_vmlinux}
-> > ++      vmlinux_link ${kallsyms_vmlinux} "${kallsymso_prev}" ${btf_vmlinux_bin_o}
+On 15/08/2019 15:15, Quentin Monnet wrote:
+> So if I understand correctly, we would use the bpf() syscall to trigger
+> a run of such program on all map entries (for map implementing the new
+> operation), and the context would include pointers to the key and the
+> value for the entry being processed so we can count/sum/compute an
+> average of the values or any other kind of processing?
+Yep, that's pretty much exactly what I had in mind.
 
-Good cleanup on the "optional .o files" reordering! With your ordering
-change, I think the ""s around ${kallsymso_prev} here are no longer needed
-(which makes it read a bit more nicely).
-
-> >  +      kallsyms ${kallsyms_vmlinux} ${kallsymso}
-> >  +}
-> >  +
-> >   # Create map file with all symbols from ${1}
-> >   # See mksymap for additional details
-> >   mksysmap()
-> > @@@ -228,8 -227,14 +240,15 @@@ ${MAKE} -f "${srctree}/scripts/Makefile
-> >   info MODINFO modules.builtin.modinfo
-> >   ${OBJCOPY} -j .modinfo -O binary vmlinux.o modules.builtin.modinfo
-> >
-> > + btf_vmlinux_bin_o=""
-> > + if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
-> > +       if gen_btf .tmp_vmlinux.btf .btf.vmlinux.bin.o ; then
-> > +               btf_vmlinux_bin_o=.btf.vmlinux.bin.o
-> > +       fi
-> > + fi
-> > +
-> >   kallsymso=""
-> >  +kallsymso_prev=""
-> >   kallsyms_vmlinux=""
-> >   if [ -n "${CONFIG_KALLSYMS}" ]; then
-> >
-> > @@@ -268,11 -285,8 +287,7 @@@
-> >         fi
-> >   fi
-> >
-> > - vmlinux_link "${kallsymso}" vmlinux
-> > -
-> > - if [ -n "${CONFIG_DEBUG_INFO_BTF}" ]; then
-> > -       gen_btf vmlinux
-> > - fi
-> >  -info LD vmlinux
-> > + vmlinux_link vmlinux "${kallsymso}" "${btf_vmlinux_bin_o}"
-
-And, I think, also not here for either trailing argument.
-
-> >
-> >   if [ -n "${CONFIG_BUILDTIME_EXTABLE_SORT}" ]; then
-> >         info SORTEX vmlinux
-
--Kees
-
--- 
-Kees Cook
+-Ed
