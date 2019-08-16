@@ -2,139 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 699328F7D1
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 02:07:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 593468F7E9
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 02:11:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbfHPAHi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 20:07:38 -0400
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:11682 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726023AbfHPAHi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 20:07:38 -0400
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7G04bmi014228;
-        Thu, 15 Aug 2019 17:07:01 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=Vvxb8dywXEIu3tGxVQPeysTzapN5cjrzEXOWsQAKQHk=;
- b=hjH1R0hQMuMnY1q1T4qXZUsYFcqf8i9mvFo9zWfTdcMaKq/LxYDQ4R5GT4E0xA9x/fwe
- kgu06nYmEDghotTG5QyjVP1/Rbhs8Tibxlvvf8w+HIh4wh5gaHFaMeQ4wwjZse7Rm/Dg
- iMgj9zNrSMcasu5rua0J5vaXo/m6qaB85QE= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2udehmgxbn-8
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 15 Aug 2019 17:07:01 -0700
-Received: from prn-hub05.TheFacebook.com (2620:10d:c081:35::129) by
- prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Thu, 15 Aug 2019 17:06:59 -0700
-Received: from NAM04-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.29) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Thu, 15 Aug 2019 17:06:59 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VigKAG5hRHOm35b8e7BOhMnkpTCsYho6XzurL3aK0SvW5/0bkkQgVclIelci3SoTuzHLQqrBKzEdrKURl4cWgrEw7xC184Szp/Xfl8oVhWG1/5FRbjD5mNqmJLC0/7QAAhFu1ptssjDp5aEJkX2JvGTpPeNrxSqINfk2NblVUi+JXClltmtGLpdMYy3jVypfwkLxb/oC7U5HBT6eKX4OtywLpwDNZMsaDrFCYSjh/TCyP88flS0h3l4ozX6zUVHrjBo0AGKJXRRRk5ozpa4GTusFpnVTkyMbk6ebp6IhQsg5akFHIJbL7e9XARiW6C85KscyMM9SLUdL+hIZAdAq1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vvxb8dywXEIu3tGxVQPeysTzapN5cjrzEXOWsQAKQHk=;
- b=Fl2WU8uex1mf5Qw7rceS7eE5swjlUCZTcSZLPP3YbiBbjhLOnVmDlNTNJIFcew81q7UqtCDyDr7+WrfjmnvL/MGenNXQ5/u+tRmYv77oLR4leXkA7jHX0gAbOk5ChXVjg5a47n3iod3SWz18hOLj0LDQjeVuQhy3gSKoGxS4hTVc7kI9PDPNatCIm2L652lBu3bmlwIbKYrhQ8AoseUfxEgbv+A1G+sRvgxNyOthAWcB/0EdUjN4d6D8SqTwMlMisKyVXpktjjHcPOycJEGMXswL7AqoNeTQtVJ5Oc0QEjF86MKRpnsuwCsEjQ12KFteSN3o4BjPcpQSKGKN1CCmDg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vvxb8dywXEIu3tGxVQPeysTzapN5cjrzEXOWsQAKQHk=;
- b=h+TVQs2XzJKoJnBZAqbgaHZguGZDLRLr7pLoQkvaSCDNmnuBzVfwqMNU/OE3lPHRm1gCWqT3c/6db0z6r6IAfvASnRw4q0p3rZt5UYsPaa3SKV7Mm+Qe2G01HcrX8XnU8uYeIQl0lTzIDUYPGr8GAQfSg3sw21DoZ9k+HBwmcqM=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
- BYAPR15MB2424.namprd15.prod.outlook.com (52.135.198.152) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2157.23; Fri, 16 Aug 2019 00:06:58 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978%5]) with mapi id 15.20.2157.022; Fri, 16 Aug 2019
- 00:06:57 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "bjorn.topel@intel.com" <bjorn.topel@intel.com>
-CC:     "davem@davemloft.net" <davem@davemloft.net>,
-        "hawk@kernel.org" <hawk@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "jakub.kicinski@netronome.com" <jakub.kicinski@netronome.com>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "xdp-newbies@vger.kernel.org" <xdp-newbies@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "jlemon@flugsvamp.com" <jlemon@flugsvamp.com>,
-        "andrii.nakryiko@gmail.com" <andrii.nakryiko@gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/3] libbpf: use LFS (_FILE_OFFSET_BITS)
- instead of direct mmap2 syscall
-Thread-Topic: [PATCH bpf-next v2 1/3] libbpf: use LFS (_FILE_OFFSET_BITS)
- instead of direct mmap2 syscall
-Thread-Index: AQHVU8aF/QvS/xH1r0S6gYrkS1Hn9A==
-Date:   Fri, 16 Aug 2019 00:06:57 +0000
-Message-ID: <7e323b73-8ed1-349f-4c08-49450854be0d@fb.com>
-References: <20190815121356.8848-1-ivan.khoronzhuk@linaro.org>
- <20190815121356.8848-2-ivan.khoronzhuk@linaro.org>
-In-Reply-To: <20190815121356.8848-2-ivan.khoronzhuk@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: CO1PR15CA0104.namprd15.prod.outlook.com
- (2603:10b6:101:21::24) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:10e::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:11f2]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 262d26f6-b640-4772-bd84-08d721dda769
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2424;
-x-ms-traffictypediagnostic: BYAPR15MB2424:
-x-microsoft-antispam-prvs: <BYAPR15MB24249009FF95057218789220D3AF0@BYAPR15MB2424.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1443;
-x-forefront-prvs: 0131D22242
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(136003)(346002)(39860400002)(366004)(396003)(189003)(199004)(4326008)(52116002)(386003)(31686004)(102836004)(53546011)(6506007)(486006)(316002)(71190400001)(476003)(186003)(2616005)(76176011)(6246003)(110136005)(53936002)(6116002)(71200400001)(11346002)(81156014)(25786009)(2906002)(81166006)(99286004)(54906003)(8936002)(66946007)(8676002)(64756008)(36756003)(478600001)(66476007)(229853002)(46003)(7736002)(14454004)(2201001)(7416002)(66556008)(6486002)(14444005)(6436002)(86362001)(31696002)(256004)(5660300002)(446003)(6512007)(4744005)(2501003)(305945005)(66446008);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2424;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: WUwJ7595xX2WmCSa1BaT6gq3XBJPwdH63Lxzs7f2FNAJt/kC2FUiz8CDSd9hNIZly4wqe4Zk3g4Qg/79tjRKFQIn6fgdJ4MAJbzmhVE+rF5UBejAYjlryOYoKezqxrAc17KlD+/8XYm90UDwmiD6MU1U6H/VlBny3Kxdg2hYVTfw6T6imlVN8HzjZ2GOHvHdViornjj4VIMn/hbfaJkHdT1AUEBVauETsTz2sNguoDHz/I/aUJa4kde6cFq74e7tyNJiFr0W6o7F0xhs7qxb4QS6TA10meSaUh5BHVfRjqYWbxNMO/fDw/GK8EK/TXlQvIznEi0Kd7HwkZFgXtlPD+HK1U763h0tvAhOqeicXyo8GDF6ARN4rOw7Io5PXHG8AeOp/ubMjRu4BkeSeM1LMOHYb6mjf4rlMPqR/5qhxdI=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <D9A6445D787AF145A235E478231C6746@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1726132AbfHPALF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 20:11:05 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:41691 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726047AbfHPALF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 20:11:05 -0400
+Received: by mail-io1-f72.google.com with SMTP id r6so1423742iog.8
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 17:11:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=7aNOMcysliVqYix28FIAFaamW29TY9E/DIOR9SA9tVo=;
+        b=RUlXjuXgW8NjKuklz3t+aDAUSNfGUMPaZWWYKg6OkV3ZdpEU+MiHd/ejnRyDBP5Ggu
+         B8PXvkysziyPqB1TyVnrA39QX8mOQZn2Askeox7g4rUVCsXSSslCLkhWZ9RyerGvH1gV
+         E5NRhIZcA/VGrnuVN46iv3O6Q7900002cI+uII1Ta8ycocLvPJYxS94ujnpDC5iNte+9
+         8kyC1dMCL2vcQhydsyVfenpvXx5Grnae/KC1jAPhWVAswHo0CVFkf3eypvPwNI+8M5ZM
+         F0igsOE8YVMfvDM3h7ENnjr8w7NmdaLgN4qRZ3xBlHJq7XBv/6BffCk9Th/wbIq3X+Ac
+         zUZg==
+X-Gm-Message-State: APjAAAUYZxBy/bLp6yKlmKHlTFRpUKoCKRvQz1R4My/wuVAIX4NRS2oW
+        tBVjufdmXuLW/uyE+H5IS31wLheCo6tvFI4a6nQjziRhf6kg
+X-Google-Smtp-Source: APXvYqz6bK5qk2bfTYB+nezTUfiQuXS7EZc0ZX1tjIAMdih8Y/x52ZzN3gyLpTW7T4oU0FyX39wPb3Le2RuodI3clWkblgMnCRcS
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 262d26f6-b640-4772-bd84-08d721dda769
-X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2019 00:06:57.8497
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 0VspcJshEQWC3r2QAIyoO0iEOzIVXkN8rc++C8ktNYlOSd04SiXkknxeSiE0nevn
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2424
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-15_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=891 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908150232
-X-FB-Internal: deliver
+X-Received: by 2002:a02:4e43:: with SMTP id r64mr7978873jaa.34.1565914264167;
+ Thu, 15 Aug 2019 17:11:04 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 17:11:04 -0700
+In-Reply-To: <000000000000ab6f84056c786b93@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000076ecf3059030d3f1@google.com>
+Subject: Re: WARNING in tracepoint_probe_register_prio (3)
+From:   syzbot <syzbot+774fddf07b7ab29a1e55@syzkaller.appspotmail.com>
+To:     ard.biesheuvel@linaro.org, gregkh@linuxfoundation.org,
+        gustavo@embeddedor.com, jeyu@kernel.org,
+        linux-kernel@vger.kernel.org, mathieu.desnoyers@efficios.com,
+        mingo@kernel.org, netdev@vger.kernel.org, paulmck@linux.ibm.com,
+        paulmck@linux.vnet.ibm.com, rostedt@goodmis.org,
+        syzkaller-bugs@googlegroups.com, tglx@linutronix.de
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDgvMTUvMTkgNToxMyBBTSwgSXZhbiBLaG9yb256aHVrIHdyb3RlOg0KPiBEcm9wIF9f
-TlJfbW1hcDIgZm9yayBpbiBmbGF2b3Igb2YgTEZTLCB0aGF0IGlzIF9GSUxFX09GRlNFVF9CSVRT
-PTY0DQo+IChnbGliYyAmIGJpb25pYykgLyBMQVJHRUZJTEU2NF9TT1VSQ0UgKGZvciBtdXNsKSBk
-ZWNpc2lvbi4gSXQgYWxsb3dzDQo+IG1tYXAoKSB0byB1c2UgNjRiaXQgb2Zmc2V0IHRoYXQgaXMg
-cGFzc2VkIHRvIG1tYXAyIHN5c2NhbGwuIEFzIHJlc3VsdA0KPiBwZ29mZiBpcyBub3QgdHJ1bmNh
-dGVkIGFuZCBubyBuZWVkIHRvIHVzZSBkaXJlY3QgYWNjZXNzIHRvIG1tYXAyIGZvcg0KPiAzMiBi
-aXRzIHN5c3RlbXMuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBJdmFuIEtob3JvbnpodWsgPGl2YW4u
-a2hvcm9uemh1a0BsaW5hcm8ub3JnPg0KDQpBY2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZi
-LmNvbT4NCg==
+syzbot has found a reproducer for the following crash on:
+
+HEAD commit:    ecb9f80d net/mvpp2: Replace tasklet with softirq hrtimer
+git tree:       net-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=115730ac600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=d4cf1ffb87d590d7
+dashboard link: https://syzkaller.appspot.com/bug?extid=774fddf07b7ab29a1e55
+compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=11b02a22600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+774fddf07b7ab29a1e55@syzkaller.appspotmail.com
+
+WARNING: CPU: 0 PID: 8824 at kernel/tracepoint.c:243 tracepoint_add_func  
+kernel/tracepoint.c:243 [inline]
+WARNING: CPU: 0 PID: 8824 at kernel/tracepoint.c:243  
+tracepoint_probe_register_prio+0x216/0x790 kernel/tracepoint.c:315
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 8824 Comm: syz-executor.4 Not tainted 5.3.0-rc3+ #133
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x172/0x1f0 lib/dump_stack.c:113
+  panic+0x2dc/0x755 kernel/panic.c:219
+  __warn.cold+0x20/0x4c kernel/panic.c:576
+  report_bug+0x263/0x2b0 lib/bug.c:186
+  fixup_bug arch/x86/kernel/traps.c:179 [inline]
+  fixup_bug arch/x86/kernel/traps.c:174 [inline]
+  do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:272
+  do_invalid_op+0x37/0x50 arch/x86/kernel/traps.c:291
+  invalid_op+0x23/0x30 arch/x86/entry/entry_64.S:1028
+RIP: 0010:tracepoint_add_func kernel/tracepoint.c:243 [inline]
+RIP: 0010:tracepoint_probe_register_prio+0x216/0x790 kernel/tracepoint.c:315
+Code: 48 89 f8 48 c1 e8 03 80 3c 08 00 0f 85 bf 04 00 00 48 8b 45 b8 49 3b  
+45 08 0f 85 21 ff ff ff 41 bd ef ff ff ff e8 aa 8c fe ff <0f> 0b e8 a3 8c  
+fe ff 48 c7 c7 20 44 de 88 e8 d7 1d ca 05 44 89 e8
+RSP: 0018:ffff88807b5a7498 EFLAGS: 00010293
+RAX: ffff8880a87a85c0 RBX: ffffffff89a1eb00 RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: ffffffff8173fcd6 RDI: ffff88808afc4698
+RBP: ffff88807b5a74f0 R08: ffff8880a87a85c0 R09: fffffbfff11bc885
+R10: ffff88807b5a7488 R11: ffffffff88de4427 R12: ffff88808afc4690
+R13: 00000000ffffffef R14: 00000000ffffffff R15: ffffffff8177f710
+  tracepoint_probe_register+0x2b/0x40 kernel/tracepoint.c:335
+  register_trace_sched_wakeup include/trace/events/sched.h:96 [inline]
+  tracing_sched_register kernel/trace/trace_sched_switch.c:54 [inline]
+  tracing_start_sched_switch+0xa8/0x190 kernel/trace/trace_sched_switch.c:106
+  tracing_start_cmdline_record+0x13/0x20  
+kernel/trace/trace_sched_switch.c:131
+  trace_printk_init_buffers kernel/trace/trace.c:3050 [inline]
+  trace_printk_init_buffers.cold+0xdf/0xe9 kernel/trace/trace.c:3013
+  bpf_get_trace_printk_proto+0xe/0x20 kernel/trace/bpf_trace.c:338
+  cgroup_base_func_proto kernel/bpf/cgroup.c:799 [inline]
+  cgroup_base_func_proto.isra.0+0x10e/0x120 kernel/bpf/cgroup.c:776
+  cg_sockopt_func_proto+0x53/0x70 kernel/bpf/cgroup.c:1411
+  check_helper_call+0x141/0x32f0 kernel/bpf/verifier.c:3950
+  do_check+0x6213/0x89f0 kernel/bpf/verifier.c:7707
+  bpf_check+0x6f99/0x9948 kernel/bpf/verifier.c:9294
+  bpf_prog_load+0xe68/0x1670 kernel/bpf/syscall.c:1698
+  __do_sys_bpf+0xc43/0x3460 kernel/bpf/syscall.c:2849
+  __se_sys_bpf kernel/bpf/syscall.c:2808 [inline]
+  __x64_sys_bpf+0x73/0xb0 kernel/bpf/syscall.c:2808
+  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
+  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+RIP: 0033:0x459829
+Code: fd b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00 00 66 90 48 89 f8 48 89 f7  
+48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff  
+ff 0f 83 cb b7 fb ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fc4bf1dec78 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 0000000000459829
+RDX: 0000000000000070 RSI: 0000000020000180 RDI: 0000000000000005
+RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 00007fc4bf1df6d4
+R13: 00000000004bfc7c R14: 00000000004d1938 R15: 00000000ffffffff
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
