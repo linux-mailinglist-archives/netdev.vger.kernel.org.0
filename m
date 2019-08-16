@@ -2,80 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2E4B90904
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 21:55:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3BE7090907
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 21:56:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727588AbfHPTzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 15:55:50 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:38217 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727542AbfHPTzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 15:55:50 -0400
-Received: by mail-wr1-f68.google.com with SMTP id g17so2608188wrr.5
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 12:55:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=RfGP+7kZdBsf2r11yIB02Dl+fEpl22JvVrRGRYrj98k=;
-        b=irUqZtZfDzMSqVOQHQBrsEdRsm/OEo37qbrvwHBvx7jVsJtmh1LSSHxHyKQsHuntCe
-         PmFxujH4xm/zqSrr/41ZxlqQ5NsTRKkpBaMZQmFd9l00q+7xFRqaxcrzG81gBaSjbolX
-         e8SMKvFarj869K2MAkFqUmdDdRhqgXzCWFLFxmX7xyq2vdcb5WFZhEqhawduhGfQn0mI
-         VsaZkUt6dqDFf2tfEBVPFCaJbhqgVTuGmExQ+J9fg7bj7NL7PGygfnbTeNUBZBd7SOID
-         1pnhaT7t5Bfh+iBMnJCHFBA9yuN9fu6FMpxZfAbYq9gIEmRR0mxyvKSMZC+XfNzh1Pno
-         T1Cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=RfGP+7kZdBsf2r11yIB02Dl+fEpl22JvVrRGRYrj98k=;
-        b=rsTkokxUZu38ItWjg/lLIoZCLCN2BUYeqtr2+gzNfOCiq3Exy2K17nt/AnBvAR57ot
-         7w5vG2Op9SW55jB3C6TAqS1cZM/82MbKCKLNASpvj075QOSn2qdpUcIlOaLyapTyJopN
-         //A3wjcEkIqVlwsnU/lA+FHWGWLPw67SyvySj4/9b4+F0I/dm1SsKKypBWpI3/CpOzwf
-         Za6t/jbXSzCOanS5Fi9kbW7STILECrfut5jALjHnKQ1Ji/PfRn01NWO7wO9J7sSUBNxN
-         hsNDazJImnlEw1Rzj6vvck5JO5G45/t75LvPQhmiD9nAFBXDheODDz13aX4ZgUiTyZSN
-         KltA==
-X-Gm-Message-State: APjAAAU+zsAuaROFcKdnEwoGGWBgtYAmqf1xcIUNfCeidABUYqbDI8E3
-        slw0Nk6xXv3Psip+CAWaDET+v9BP
-X-Google-Smtp-Source: APXvYqxo731R1UJmdSiAujXXHpxBANlKJiI1UUKfMaKKpJOvU6ksRzhYuu7SpO+VYTOqbZgtxr7Daw==
-X-Received: by 2002:a05:6000:110f:: with SMTP id z15mr12032784wrw.162.1565985348132;
-        Fri, 16 Aug 2019 12:55:48 -0700 (PDT)
-Received: from ?IPv6:2003:ea:8f2f:3200:4112:e131:7f21:ec09? (p200300EA8F2F32004112E1317F21EC09.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:4112:e131:7f21:ec09])
-        by smtp.googlemail.com with ESMTPSA id j9sm7613448wrx.66.2019.08.16.12.55.47
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 12:55:47 -0700 (PDT)
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        David Miller <davem@davemloft.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next 0/2] net: phy: realtek: support NBase-T MMD EEE
- registers on RTL8125
-Message-ID: <d2669c95-9861-df53-2e37-6ebfde11c4c9@gmail.com>
-Date:   Fri, 16 Aug 2019 21:55:40 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+        id S1727613AbfHPT4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 15:56:03 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38826 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727542AbfHPT4D (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 15:56:03 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id A21A913E2E200;
+        Fri, 16 Aug 2019 12:56:02 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 12:55:59 -0700 (PDT)
+Message-Id: <20190816.125559.209860777726370229.davem@davemloft.net>
+To:     efremov@linux.com
+Cc:     f.fainelli@gmail.com, andrew@lunn.ch, joe@perches.com,
+        linux-kernel@vger.kernel.org, hkallweit1@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: PHY LIBRARY: Update files in the record
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190814125800.23729-1-efremov@linux.com>
+References: <039d86b5-6897-0176-bf15-6f58e9d26b89@gmail.com>
+        <20190814125800.23729-1-efremov@linux.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 16 Aug 2019 12:56:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add missing EEE-related constants, including the new MMD EEE registers
-for NBase-T / 802.3bz. Based on that emulate the new 802.3bz MMD EEE
-registers for 2.5Gbps EEE on RTL8125.
+From: Denis Efremov <efremov@linux.com>
+Date: Wed, 14 Aug 2019 15:58:00 +0300
 
-Heiner Kallweit (2):
-  net: phy: add EEE-related constants
-  net: phy: realtek: support NBase-T MMD EEE registers on RTL8125
+> Update MAINTAINERS to reflect that sysfs-bus-mdio was removed in
+> commit a6cd0d2d493a ("Documentation: net-sysfs: Remove duplicate
+> PHY device documentation") and sysfs-class-net-phydev was added in
+> commit 86f22d04dfb5 ("net: sysfs: Document PHY device sysfs
+> attributes").
+> 
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Andrew Lunn <andrew@lunn.ch>
+> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+> Cc: David S. Miller <davem@davemloft.net>
+> Cc: netdev@vger.kernel.org
+> Signed-off-by: Denis Efremov <efremov@linux.com>
 
- drivers/net/phy/realtek.c | 45 +++++++++++++++++++++++++++++++++++++--
- include/uapi/linux/mdio.h | 10 +++++++++
- 2 files changed, 53 insertions(+), 2 deletions(-)
-
--- 
-2.22.1
-
+Applied.
