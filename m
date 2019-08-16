@@ -2,228 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 821F08F9AD
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 06:18:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 199F88FA3A
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 07:08:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbfHPESn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 00:18:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58270 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726442AbfHPESm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 00:18:42 -0400
-Received: from sol.localdomain (c-24-5-143-220.hsd1.ca.comcast.net [24.5.143.220])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0DE9E206C2;
-        Fri, 16 Aug 2019 04:18:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565929121;
-        bh=MydB4XC4uGl4LGn19qSjbTVdWnys21WMSc8tlQjVMPQ=;
-        h=Date:From:To:Cc:Subject:From;
-        b=RELSb4jPkizEkZ3eDcPHFOTYY/TsVzs5iq/De/jyuJe/zRdgfgwkhEiZ5Sc7GRVxy
-         9ODTT88+cxAY2rDsyq0zfMraXJ8DPbwi+FmAVQ9QhUVsdhp8+upBtiyjPAUX18Trpg
-         0USwKVE3QLILdKorlnxgdJpJA6lnSaz6QbaF5gyw=
-Date:   Thu, 15 Aug 2019 21:18:39 -0700
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     netdev@vger.kernel.org, Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        Dave Watson <davejwatson@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vakul Garg <vakul.garg@nxp.com>
-Cc:     syzkaller-bugs@googlegroups.com
-Subject: Reminder: 6 active syzbot reports in "net/tls" subsystem
-Message-ID: <20190816041839.GC12185@sol.localdomain>
-Mail-Followup-To: netdev@vger.kernel.org,
-        Boris Pismenny <borisp@mellanox.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        Dave Watson <davejwatson@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vakul Garg <vakul.garg@nxp.com>, syzkaller-bugs@googlegroups.com
+        id S1726636AbfHPFIz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 01:08:55 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:35111 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725945AbfHPFIy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 01:08:54 -0400
+Received: by mail-lf1-f66.google.com with SMTP id p197so3212661lfa.2;
+        Thu, 15 Aug 2019 22:08:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=z6SC2HE4Qz0atBAfBNgG9UkV/smYkL/54apM6Bm++F0=;
+        b=XstnF5PgUy7tEU9ReAhktiwVFaI18nlnGNzByJ+tiL2JZpfwqH+mkeqmLOp+A+sLfr
+         ru9PVvfk60NJgdzGJ9fSJ7YYMNCt3OdZG7VWXGNYOjj0vYKknF4ZUmTwDwKfEvmRH1t3
+         0pYMaO0090/Ti7t5uhFMlKSCLMkhV/UYVZey++Hsypd4ULOutTOl26GDE+nl9E6EP44U
+         ANMf4DVc5B/hCop6+q92g3JGbzKUZTdxoecfK+QTjFVUUE3j9O2AhsDE5wkZU87SLbWp
+         AYPpuJhMM1z2nVb7ByQacEKZ9vv8WzXG24/kR1YGcG1RT6eI3hKPoBkxKBe0cS5hwCi/
+         t+ig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=z6SC2HE4Qz0atBAfBNgG9UkV/smYkL/54apM6Bm++F0=;
+        b=mfm9w/1a0xmKTzSGvRI7K3eqS26XIuqGXWKl+UiDVKyxxmj7g8mAt44R8WLEwGNPHK
+         ewfsIy9mS+1q0anLvjH2Bkwkm/Wc7/zHjauSeTejGrkq/TnJbnEDW9ecJyuRhX6C1ykT
+         jiQKIz2gMmE9DLPGe75kRcNUwplWEV2qBWOFH+9b2KffLbcps4pETMiVj70cthREx2p6
+         FFkvRhWJz//XLoLSDXp7rAd/6EN2Gr4J4CoPsOv+0Tp9+z4xXWhwWK3kLgIUr5qtoz3u
+         3lcEKO0tJdZXQEiPI67TpFwz6b9xMzD1jWaqh1WkWiYq9yXyJ8iot1Lj6t0VXcWlh/Yd
+         yg9Q==
+X-Gm-Message-State: APjAAAUHeS7a9m1ZQlz+2GefiZMi9W5eQnoneagfe0y37n43/9B0yigx
+        wT40iKPkcUUV4ARmxlroAQwUwZsGy03O8jOGL0I=
+X-Google-Smtp-Source: APXvYqxhR3jp1qxnjxWEituGs+YrlqRegjMDIbYm+FXE5251atPUMkQAC9byLbOehFgPRUuDxu3WLavNR4aoAtcB+00=
+X-Received: by 2002:a19:6450:: with SMTP id b16mr4302290lfj.15.1565932132520;
+ Thu, 15 Aug 2019 22:08:52 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190815143220.4199-1-quentin.monnet@netronome.com>
+In-Reply-To: <20190815143220.4199-1-quentin.monnet@netronome.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Thu, 15 Aug 2019 22:08:41 -0700
+Message-ID: <CAADnVQKpPaZ3wJJwSn=JPML9pWzwy_8G9c0H=ToaaxZEJ8isnQ@mail.gmail.com>
+Subject: Re: [PATCH bpf 0/6] tools: bpftool: fix printf()-like functions
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-[This email was generated by a script.  Let me know if you have any suggestions
-to make it better, or if you want it re-generated with the latest status.]
+On Thu, Aug 15, 2019 at 7:32 AM Quentin Monnet
+<quentin.monnet@netronome.com> wrote:
+>
+> Hi,
+> Because the "__printf()" attributes were used only where the functions are
+> implemented, and not in header files, the checks have not been enforced on
+> all the calls to printf()-like functions, and a number of errors slipped in
+> bpftool over time.
+>
+> This set cleans up such errors, and then moves the "__printf()" attributes
+> to header files, so that the checks are performed at all locations.
 
-Of the distinct crashes that syzbot has seen in the last week, I've manually
-marked 6 of them as possibly being bugs in the "net/tls" subsystem.  I've listed
-these bug reports below.
-
-Of these 6 reports, 3 were bisected to commits from the following people:
-
-	Vakul Garg <vakul.garg@nxp.com>
-	Dave Watson <davejwatson@fb.com>
-
-I've manually checked that these bisection results look plausible.
-
-If you believe a bug report is no longer valid, please close it by sending a
-'#syz fix', '#syz dup', or '#syz invalid' command in reply to the original
-thread, as explained at https://goo.gl/tpsmEJ#status
-
-If you believe I misattributed a bug report to the "net/tls" subsystem, please
-let me know and (if possible) forward it to the correct place.
-
-Note: in total, I've actually assigned 27 open syzbot reports to this subsystem.
-But to help focus people's efforts, I've only listed the 6 that have
-(re-)occurred in the last week.  Let me know if you want the full list.
-
-Here are the bug reports:
-
---------------------------------------------------------------------------------
-Title:              kernel BUG at include/linux/scatterlist.h:LINE!
-Last occurred:      0 days ago
-Reported:           85 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=effb623cefb879664122cc47df3af728957eb279
-Original thread:    https://lore.kernel.org/lkml/000000000000f41cd905897c075e@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-		commit f295b3ae9f5927e084bd5decdff82390e3471801
-		Author: Vakul Garg <vakul.garg@nxp.com>
-		Date:   Wed Mar 20 02:03:36 2019 +0000
-
-		  net/tls: Add support of AES128-CCM based ciphers
-
-The original thread for this bug has received 1 reply, 66 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+df0d4ec12332661dd1f9@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000f41cd905897c075e@google.com
-
---------------------------------------------------------------------------------
-Title:              kernel BUG at ./include/linux/scatterlist.h:LINE!
-Last occurred:      6 days ago
-Reported:           56 days ago
-Branches:           Mainline
-Dashboard link:     https://syzkaller.appspot.com/bug?id=3008161aab5958fe4125a4cae3e4b7ad3ea50a26
-Original thread:    https://lore.kernel.org/lkml/000000000000417551058bc0bef9@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-		commit f295b3ae9f5927e084bd5decdff82390e3471801
-		Author: Vakul Garg <vakul.garg@nxp.com>
-		Date:   Wed Mar 20 02:03:36 2019 +0000
-
-		  net/tls: Add support of AES128-CCM based ciphers
-
-No one has replied to the original thread for this bug yet.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+ef0daa6ce95facb233c1@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000417551058bc0bef9@google.com
-
---------------------------------------------------------------------------------
-Title:              INFO: task hung in tls_sw_release_resources_tx
-Last occurred:      0 days ago
-Reported:           0 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=845e2a9172ab3afe80b95af12014c65930a053d5
-Original thread:    https://lore.kernel.org/lkml/000000000000523ea3059025b11d@google.com/T/#u
-
-This bug has a C reproducer.
-
-This bug was bisected to:
-
-		commit 130b392c6cd6b2aed1b7eb32253d4920babb4891
-		Author: Dave Watson <davejwatson@fb.com>
-		Date:   Wed Jan 30 21:58:31 2019 +0000
-
-		  net: tls: Add tls 1.3 support
-
-The original thread for this bug has received 1 reply, 3 hours ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6a9ff159672dfbb41c95@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please reply to the original
-thread, which had activity only 3 hours ago.  For the git send-email command to
-use, or tips on how to reply if the thread isn't in your mailbox, see the "Reply
-instructions" at https://lore.kernel.org/r/000000000000523ea3059025b11d@google.com
-
---------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in gf128mul_4k_lle (3)
-Last occurred:      0 days ago
-Reported:           265 days ago
-Branches:           https://github.com/google/kmsan.git master
-Dashboard link:     https://syzkaller.appspot.com/bug?id=a01db4c67933e9e4be8e721a8ee15a9530f1ac04
-Original thread:    https://lore.kernel.org/lkml/000000000000bf2457057b5ccda3@google.com/T/#u
-
-This bug has a C reproducer.
-
-The original thread for this bug received 2 replies; the last was 260 days ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+f8495bff23a879a6d0bd@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000bf2457057b5ccda3@google.com
-
---------------------------------------------------------------------------------
-Title:              INFO: task hung in __flush_work
-Last occurred:      7 days ago
-Reported:           180 days ago
-Branches:           Mainline and others
-Dashboard link:     https://syzkaller.appspot.com/bug?id=9613d8dffb5c6cc39da8ec290cb8f3eb62bdf21f
-Original thread:    https://lore.kernel.org/lkml/0000000000008f9c780581fd7417@google.com/T/#u
-
-This bug has a C reproducer.
-
-No one replied to the original thread for this bug.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+aa0b64a57e300a1c6bcc@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/0000000000008f9c780581fd7417@google.com
-
---------------------------------------------------------------------------------
-Title:              KMSAN: uninit-value in aesti_encrypt
-Last occurred:      1 day ago
-Reported:           49 days ago
-Branches:           https://github.com/google/kmsan.git master
-Dashboard link:     https://syzkaller.appspot.com/bug?id=9e9babd01df34db0c4d4dbde8ca57a0380e6db0b
-Original thread:    https://lore.kernel.org/lkml/000000000000a97a15058c50c52e@google.com/T/#u
-
-This bug has a C reproducer.
-
-The original thread for this bug has received 4 replies; the last was 43 days
-ago.
-
-If you fix this bug, please add the following tag to the commit:
-    Reported-by: syzbot+6f50c99e8f6194bf363f@syzkaller.appspotmail.com
-
-If you send any email or patch for this bug, please consider replying to the
-original thread.  For the git send-email command to use, or tips on how to reply
-if the thread isn't in your mailbox, see the "Reply instructions" at
-https://lore.kernel.org/r/000000000000a97a15058c50c52e@google.com
-
+Applied. Thanks
