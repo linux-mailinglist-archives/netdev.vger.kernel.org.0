@@ -2,161 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DB96905FA
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:38:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 70B1A90600
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:41:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726941AbfHPQh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 12:37:59 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:42019 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfHPQh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:37:58 -0400
-Received: by mail-ot1-f66.google.com with SMTP id j7so10125706ota.9;
-        Fri, 16 Aug 2019 09:37:58 -0700 (PDT)
+        id S1726557AbfHPQlJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 12:41:09 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:35224 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726245AbfHPQlJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:41:09 -0400
+Received: by mail-wm1-f68.google.com with SMTP id l2so4577986wmg.0
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 09:41:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Jojj179az45tbHD4CUEIdOITmY1yKd9pWEAUy54nDTg=;
-        b=mnZAfvbT9nPKTno+KcYGSDBOEPnAx3N6/W+GzB0PNSl8qdcsgoh6hdHCoYay7PUnoA
-         klYEK5LJDqOYTiZfxs3Ef5LOZiXh7WrmfC0nFcthb6bXpW4O6v9xKMt+ttDVMpXKPVWk
-         sL6f7c6kh/O70x45js7EXDOzM9StT0wz+Nm7ljRbRfVLmqJ0bpLXg8VU2SuDnFr+B+Bb
-         6TFGaqDBae12CjCyM4GCK6cGoqJ0Ex7LDJ5QCn7SiRrgZxHd11z9PBwJLp5iu+0oIJEf
-         jwyFVeJJEy6s0to2kFcc61hoqvCxppoIjBQxvk16iIu6rOoUA9UDqsXbmPs8SOXJ38ri
-         db8Q==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Aco6RlnDGHj3Ldvlxx9E7QBew9pXCsTOcrznKjN5B8o=;
+        b=t4m+v2/YmsK/MKhAbTR4jbzSkJ7rpetP67sxw6u6NX3LkbS8j1Ni0rHPzPJJ2yB0n3
+         6f29bbMagDwx2chCL5QOXny1Mex5kUC3TrMJLHQ7RYT98gVmuZRVxpZUdGXMzX5qAok2
+         MWBHxLvAA0gsQwGVi/VeHyHVVr5hSi2xcdD/M0VlZpfDnLU33w+AVeBrHbSJntMUbVXT
+         k3CjKymZEDvReShrXNqOEbzByoDwGN2qOlOl46tBOapgbup6OSPkU5vaxXzvEmm77IZr
+         R6WmQC0re2ZfwW1O8b0XKcLx/CpXJleVSWRd2k8xS+EoNjVDQA8jYs3LStXE6/NOkgB2
+         0LCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Jojj179az45tbHD4CUEIdOITmY1yKd9pWEAUy54nDTg=;
-        b=EomMdUoN1c+fwV/hB00aZZ63HJEywgfOuHwBXUrFbvlyAnpU5VrGsD81YdrsxZFigu
-         cp3GjguhSKw4ydVrjq7pQQvpbO7Kc3ZrkXBxw2feyG0kjogekVatpl5nv8kkxKYTl9N/
-         RNhkGCrDp4cshJR2yQTg1S0UymchicFjcKa572Tsy+DYlhIUNx2Mnx1f++h0IOFYGlXn
-         f2SIXxVwclzMW4tigrR/Y/w4B000TJ39wNi7Umk4xFf/Wr4Pr8IrjYbSG7e4fKhxSg9b
-         9PsclJe9Ay6/JQkb2EVXIX9xO9FMpg1ZQKdPHJuY6N3YWaYW8MjT8ysbMjqS3WCf4HDz
-         v4tw==
-X-Gm-Message-State: APjAAAWdqkQSkYWxPT4RmvBv6/VTQW5IjsVCr0XcqsrVXUUNfapUwJYS
-        ByVmezGDc2KaLIUAeSElFSyAmBqbNgMpMn5Y0uQ=
-X-Google-Smtp-Source: APXvYqx3ajM5Unmh3ZmHZ5WsZyz+aWr06MeHQiPf81QbQyNvupnu4IHpVuCa1oUB0pHwkN8wUdYGYyhyyMJJBHWQNH8=
-X-Received: by 2002:a9d:67cd:: with SMTP id c13mr6381658otn.196.1565973477817;
- Fri, 16 Aug 2019 09:37:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190816160339.249832-1-ppenkov.kernel@gmail.com> <20190816161302.GQ2820@mini-arch>
-In-Reply-To: <20190816161302.GQ2820@mini-arch>
-From:   Petar Penkov <ppenkov.kernel@gmail.com>
-Date:   Fri, 16 Aug 2019 09:37:46 -0700
-Message-ID: <CAGdtWsR0KtCuc7wb3Uh57DpNrWZTYL2pxXQ2FVFJHtFfoSPmwg@mail.gmail.com>
-Subject: Re: [bpf-next] selftests/bpf: fix race in test_tcp_rtt test
-To:     Stanislav Fomichev <sdf@fomichev.me>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        davem@davemloft.net, Alexei Starovoitov <ast@kernel.org>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Aco6RlnDGHj3Ldvlxx9E7QBew9pXCsTOcrznKjN5B8o=;
+        b=UydjFQhNSeBxfIT3SemI0LkPxLGvxNyQpT3hAT7QeAqa44nBj8u+cwAgO4sOhsIJ5h
+         SiCz5lSklNkPHpKyCDc072tgtY/WaYva9IXMGG7POznCabhsiqPV9PaO4bUvAw+VR0fN
+         FM4Q7zDLti4/Yl4ScTR3zz4Lr9B/Ga425KHyvnTYLEi060P0faDqieR0mTxhrGTgZ9on
+         zqSLaJQXJ3lsB2wMjX2+AEouOlNSbYz3wgXUl7bFleziLlRzfLUUceJLzu8ka0emPlgJ
+         strgIcnUkIG1LbJff56ThEj9T1NlS+1p/vr1wDRSxEtldd+d1DGTqekaRfu6r4VXxu5p
+         0LsQ==
+X-Gm-Message-State: APjAAAUg367TTVTcY346Sh3msprOr+s5e8Mo2MiwohiH99zx7cuERV4V
+        Rrjr7CfeoU9C9sZodRBZkRnUNg==
+X-Google-Smtp-Source: APXvYqz3gPhu2PqxetwNSRSNB9jAeiUSXpI7IpKwc+DNXDp++HPjsy07mF5n2fEpWEHvZU6TDMRUCg==
+X-Received: by 2002:a7b:cf21:: with SMTP id m1mr8804898wmg.150.1565973667374;
+        Fri, 16 Aug 2019 09:41:07 -0700 (PDT)
+Received: from [192.168.1.2] ([194.53.186.47])
+        by smtp.gmail.com with ESMTPSA id h2sm3761565wmb.28.2019.08.16.09.41.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 16 Aug 2019 09:41:06 -0700 (PDT)
+Subject: Re: [PATCH bpf 0/6] tools: bpftool: fix printf()-like functions
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Stanislav Fomichev <sdf@google.com>,
-        Petar Penkov <ppenkov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
+References: <20190815143220.4199-1-quentin.monnet@netronome.com>
+ <CAADnVQKpPaZ3wJJwSn=JPML9pWzwy_8G9c0H=ToaaxZEJ8isnQ@mail.gmail.com>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Message-ID: <10602447-213f-fce5-54c7-7952eb3e8712@netronome.com>
+Date:   Fri, 16 Aug 2019 17:41:05 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <CAADnVQKpPaZ3wJJwSn=JPML9pWzwy_8G9c0H=ToaaxZEJ8isnQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 16, 2019 at 9:13 AM Stanislav Fomichev <sdf@fomichev.me> wrote:
->
-> On 08/16, Petar Penkov wrote:
-> > From: Petar Penkov <ppenkov@google.com>
-> >
-> > There is a race in this test between receiving the ACK for the
-> > single-byte packet sent in the test, and reading the values from the
-> > map.
-> >
-> > This patch fixes this by having the client wait until there are no more
-> > unacknowledged packets.
-> >
-> > Before:
-> > for i in {1..1000}; do ../net/in_netns.sh ./test_tcp_rtt; \
-> > done | grep -c PASSED
-> > < trimmed error messages >
-> > 993
-> >
-> > After:
-> > for i in {1..10000}; do ../net/in_netns.sh ./test_tcp_rtt; \
-> > done | grep -c PASSED
-> > 10000
-> >
-> > Fixes: b55873984dab ("selftests/bpf: test BPF_SOCK_OPS_RTT_CB")
-> > Signed-off-by: Petar Penkov <ppenkov@google.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_tcp_rtt.c | 31 ++++++++++++++++++++++
-> >  1 file changed, 31 insertions(+)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_tcp_rtt.c b/tools/testing/selftests/bpf/test_tcp_rtt.c
-> > index 90c3862f74a8..2b4754473956 100644
-> > --- a/tools/testing/selftests/bpf/test_tcp_rtt.c
-> > +++ b/tools/testing/selftests/bpf/test_tcp_rtt.c
-> > @@ -6,6 +6,7 @@
-> >  #include <sys/types.h>
-> >  #include <sys/socket.h>
-> >  #include <netinet/in.h>
-> > +#include <netinet/tcp.h>
-> >  #include <pthread.h>
-> >
-> >  #include <linux/filter.h>
-> > @@ -34,6 +35,30 @@ static void send_byte(int fd)
-> >               error(1, errno, "Failed to send single byte");
-> >  }
-> >
-> > +static int wait_for_ack(int fd, int retries)
-> > +{
-> > +     struct tcp_info info;
-> > +     socklen_t optlen;
-> > +     int i, err;
-> > +
-> > +     for (i = 0; i < retries; i++) {
-> > +             optlen = sizeof(info);
-> > +             err = getsockopt(fd, SOL_TCP, TCP_INFO, &info, &optlen);
-> > +             if (err < 0) {
-> > +                     log_err("Failed to lookup TCP stats");
-> > +                     return err;
-> > +             }
-> > +
-> > +             if (info.tcpi_unacked == 0)
-> > +                     return 0;
-> > +
-> > +             sleep(1);
-> Isn't it too big of a hammer? Maybe usleep(10) here and do x100 retries
-> instead?
->
-I guess this is more consistent with the time we expect to wait for an
-ACK in the test, will change and send out a v2 shortly. Thank you for
-your quick review!
-> > +     }
-> > +
-> > +     log_err("Did not receive ACK");
-> > +     return -1;
-> > +}
-> > +
-> >  static int verify_sk(int map_fd, int client_fd, const char *msg, __u32 invoked,
-> >                    __u32 dsack_dups, __u32 delivered, __u32 delivered_ce,
-> >                    __u32 icsk_retransmits)
-> > @@ -149,6 +174,11 @@ static int run_test(int cgroup_fd, int server_fd)
-> >                        /*icsk_retransmits=*/0);
-> >
-> >       send_byte(client_fd);
-> > +     if (wait_for_ack(client_fd, 5) < 0) {
-> > +             err = -1;
-> > +             goto close_client_fd;
-> > +     }
-> > +
-> >
-> >       err += verify_sk(map_fd, client_fd, "first payload byte",
-> >                        /*invoked=*/2,
-> > @@ -157,6 +187,7 @@ static int run_test(int cgroup_fd, int server_fd)
-> >                        /*delivered_ce=*/0,
-> >                        /*icsk_retransmits=*/0);
-> >
-> > +close_client_fd:
-> >       close(client_fd);
-> >
-> >  close_bpf_object:
-> > --
-> > 2.23.0.rc1.153.gdeed80330f-goog
-> >
+2019-08-15 22:08 UTC-0700 ~ Alexei Starovoitov
+<alexei.starovoitov@gmail.com>
+> On Thu, Aug 15, 2019 at 7:32 AM Quentin Monnet
+> <quentin.monnet@netronome.com> wrote:
+>>
+>> Hi,
+>> Because the "__printf()" attributes were used only where the functions are
+>> implemented, and not in header files, the checks have not been enforced on
+>> all the calls to printf()-like functions, and a number of errors slipped in
+>> bpftool over time.
+>>
+>> This set cleans up such errors, and then moves the "__printf()" attributes
+>> to header files, so that the checks are performed at all locations.
+> 
+> Applied. Thanks
+> 
+
+Thanks Alexei!
+
+I noticed the set was applied to the bpf-next tree, and not bpf. Just
+checking if this is intentional?
+
+Regards,
+Quentin
