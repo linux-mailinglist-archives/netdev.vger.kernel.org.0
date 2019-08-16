@@ -2,88 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 52698901BF
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 14:38:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C094901C8
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 14:39:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727243AbfHPMh7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 08:37:59 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:42013 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726981AbfHPMh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 08:37:59 -0400
-Received: by mail-ed1-f65.google.com with SMTP id m44so4983686edd.9;
-        Fri, 16 Aug 2019 05:37:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aT3jGG1YNcHwcyTnJmTqzndCbFRkZE1GryxTRKjRC44=;
-        b=MGnpH0iy4SRhnjY6YG8W5zBbE7lgLdoyttUmgLOZTBEBWklUL5cQb9AObOdrzee672
-         ZU4SlhvmtdSCTSPf/kbR0aGWiGVfaDpPtmUa74uoNY7uG2oaMjFoRZoQ2AOLvglt0pTn
-         FnysPTSP5rK4ha6EBjtuOYC6Q95z3+0421sMFtgvrvPfkMtP1jvqar0KwjUQhxjqhf1c
-         JSU2V0SwYNWueQghJ/E64nFSlPWRi2uP/kWhrQv2JttVzLlAHZXnUj112tvn2HeRNzIx
-         +GkTnP3Cz9JBFX8p03C4R4fwlK+AYQyqTekm72wbTk5IlHsjzjImBvOizlzgIFnanSXS
-         jhJA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aT3jGG1YNcHwcyTnJmTqzndCbFRkZE1GryxTRKjRC44=;
-        b=hbhynUZew2vzQkkhVMK4B2kKIrhjpkFb2dOkf4IX/9X8rdOPWMYWJHAZ127SxUSNDw
-         LGjIaJ15LCeSSmQ2zbuf8DpM0TU2TToguJBlpLHVO1aX9Zfo3QcNyMxUekQP4ebo9zbH
-         EoyL/BrkAon5Hf5wHrA5y32i7Cvx65L2FCUiddgzz2p7Q6wsmMzIk1uqvePPUHM7VnO2
-         uHO9FKfeUw6kYfiF4JgRUB75/nOGS2K+gV2h56WzmE1H9dW/hev+AgWcgcYYbNQn2eWi
-         yBuxt9kq7+rKYwZadMhC/S9GRX7GfBBhmfuKGHFyzbJN2bgio/lCPKriiyuUpOnngjLt
-         Ojuw==
-X-Gm-Message-State: APjAAAXm9aTVy400SK3cOkwOyBkHhzkMFaowihFV8Ufd08w3EkjjsVaC
-        sns+V+aG8L6sy2O+SVkVq+VP8nyiuFLVDQbgoOI=
-X-Google-Smtp-Source: APXvYqweKlLMG8XDoYHQkkr7XvayGS1UCf+qnxoZiAw/uATvp93SN67Fb5wnSisUWCgZi4Y0a8g8WQ9K6lARrMTUtkw=
-X-Received: by 2002:a17:906:d298:: with SMTP id ay24mr9162561ejb.230.1565959077466;
- Fri, 16 Aug 2019 05:37:57 -0700 (PDT)
+        id S1727249AbfHPMjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 08:39:22 -0400
+Received: from ozlabs.org ([203.11.71.1]:37755 "EHLO ozlabs.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727182AbfHPMjW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 08:39:22 -0400
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4692v90yfSz9sDQ;
+        Fri, 16 Aug 2019 22:39:17 +1000 (AEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
+        s=201702; t=1565959159;
+        bh=BViRoTUOAfG+pYpx8zNplnOf0mFkjZ2oGDklRG/VWIg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aW9RsszNHcmOQIoQlpVO3Q0a2krBJN0PJaQQQfGQKg9xmkAq5ppFud5qbPiV7GO0p
+         ObixDABG2hCmyVK/c4OrF5WSAFtjHm1aKIu0CZgfWVf0Q8WXrDa3e1Obmx3VngM8Tr
+         13srGruUtxDdL4vFWGjxnnbUndCcCB534qwSybQy8Qwl+xHEYTQVZyllS7992p83Ia
+         w5M2BXZNTQI+YMGvbcFxHPhsRTGFQVu8nXauRNo9SHV+yQG0rUuqu/oSmcb1rIGEoh
+         gOZeAxlaO0ZHlJYuwVI+a+PCOAoiJoZhcU/oOYQOYCr0fshidtxvjMCG8s29vYP7O9
+         /P3cwxeswgQ+g==
+Date:   Fri, 16 Aug 2019 22:39:14 +1000
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: Re: linux-next: manual merge of the net-next tree with the kbuild
+ tree
+Message-ID: <20190816223914.1cc64295@canb.auug.org.au>
+In-Reply-To: <20190816160128.36e5cc4e@canb.auug.org.au>
+References: <20190816124143.2640218a@canb.auug.org.au>
+        <CAEf4BzY9dDZF-DBDmuQQz0Rcx3DNGvQn_GLr0Uar1PAbAf2iig@mail.gmail.com>
+        <20190816160128.36e5cc4e@canb.auug.org.au>
 MIME-Version: 1.0
-References: <20190816004449.10100-1-olteanv@gmail.com> <20190816004449.10100-5-olteanv@gmail.com>
- <20190816122103.GE4039@sirena.co.uk>
-In-Reply-To: <20190816122103.GE4039@sirena.co.uk>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Fri, 16 Aug 2019 15:37:46 +0300
-Message-ID: <CA+h21hoP3t6j2mTd2BLwizqbFap+9Z2vdxQ4ahHS3-7Vr31Lxw@mail.gmail.com>
-Subject: Re: [RFC PATCH net-next 04/11] spi: spi-fsl-dspi: Cosmetic cleanup
-To:     Mark Brown <broonie@kernel.org>
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; boundary="Sig_/spNxyuS=dKTRE=B2ygqtFmd";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Mark,
+--Sig_/spNxyuS=dKTRE=B2ygqtFmd
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-On Fri, 16 Aug 2019 at 15:21, Mark Brown <broonie@kernel.org> wrote:
+Hi all,
+
+On Fri, 16 Aug 2019 16:01:28 +1000 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
 >
-> On Fri, Aug 16, 2019 at 03:44:42AM +0300, Vladimir Oltean wrote:
-> > This patch addresses some cosmetic issues:
-> > - Alignment
-> > - Typos
-> > - (Non-)use of BIT() and GENMASK() macros
-> > - Unused definitions
-> > - Unused includes
-> > - Abuse of ternary operator in detriment of readability
-> > - Reduce indentation level
->
-> This is difficult to review since there's a bunch of largely unrelated
-> changes all munged into one patch.  It'd be better to split this up so
-> each change makes one kind of fix, and better to do this separately to
-> the rest of the series.  In particular having alignment changes along
-> with other changes hurts reviewability as it's less immediately clear
-> what's a like for liken substitution.
+> On Thu, 15 Aug 2019 22:21:29 -0700 Andrii Nakryiko <andrii.nakryiko@gmail=
+.com> wrote:
+> >
+> > Thanks, Stephen! Looks good except one minor issue below. =20
+>=20
+> Thanks for checking.
+>=20
+> > >   vmlinux_link()
+> > >   {
+> > >  +      info LD ${2}   =20
+> >=20
+> > This needs to be ${1}. =20
+>=20
+> At least its only an information message and doesn't affect the build.
+> I will fix my resolution for Monday.
 
-Yes, the diff of this patch looks relatively bad. But I don't know if
-splitting it in more patches isn't in fact going to pollute the git
-history, so I can just as well drop it.
+I also fixed it up in today's linux-next (just so people aren't
+suprised and report it :-)).
+--=20
+Cheers,
+Stephen Rothwell
 
-Regards,
--Vladimir
+--Sig_/spNxyuS=dKTRE=B2ygqtFmd
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1Wo/IACgkQAVBC80lX
+0Gyz4Af/ewkkUYxT3pvXClY2luiHNEx7ic7jT2jK8sY6lPKBYWVFi6DDOBe5np3u
+bWiiA3RaZBDnCts7mw/mfS2NJTRrza51FnjQeVIPHucqlUt8L5sjDorBSwS6Rgyh
+TXTXXQVer6Fldf9dm+5WoVgUDys3DUIrKtSMsQ+iKWQRykiaaHWgKDz8is250Z+v
+FX7eQ27AwYnl/eTsTAOf65gIDekjDauaJnbljKBl1jIOxC/5VEmU0YFXrKCP4nnU
+cHNsvPruzO+d1+0sTapb2MiEGpndV3m4HlvaB705hJaLmI3E0Jtu/d+3zX3rQDkr
+VYZ7Ug24gl+wJClrOC1c0WzpdIv0vg==
+=E/fG
+-----END PGP SIGNATURE-----
+
+--Sig_/spNxyuS=dKTRE=B2ygqtFmd--
