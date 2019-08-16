@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B6E19045D
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 17:08:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E58ED90460
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 17:08:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbfHPPIl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 11:08:41 -0400
-Received: from mail.nic.cz ([217.31.204.67]:32864 "EHLO mail.nic.cz"
+        id S1727514AbfHPPIo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 11:08:44 -0400
+Received: from mail.nic.cz ([217.31.204.67]:32870 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727326AbfHPPIk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 11:08:40 -0400
+        id S1727337AbfHPPIm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 11:08:42 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id CC6AA140CDD;
+        by mail.nic.cz (Postfix) with ESMTP id F1B8A140CDF;
         Fri, 16 Aug 2019 17:08:38 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1565968118; bh=vRUZH/gOa1T/0u+NCfdx4Pvdwhu91i7kAAljJm1hyBQ=;
+        t=1565968119; bh=WP7vOSOuRP24DU4xBBueR+LHlsNyCSHZfsqHpMThghI=;
         h=From:To:Date;
-        b=V8lgn2hv777vs2mA6Ot9kUWiO4KNUg/0D2YoK0C2cy55VFuUxtLuQKo3T8qbDbSrM
-         YWxcAvJ0/Nh/ov109gSQjJo/UuuOHmHeiDB7sSUmhoAuZt9Of6LieW1I2xPAyrt96C
-         29EI8TfEEcZ3JTMyRiWWRCVvXswYWZgRH/0e3ARI=
+        b=oP15WurON/mn1NSPwC+LrjwEQIoPOr9BMw5CY7qPgadn+CVhgnyX54Ry9n0vqicPV
+         30RGKbc8wF+U3dddJsae3+PxXrInWjbduw+O8reBwgUluw1EJ7GYD1Se02ggAOZEDp
+         JljVRrDZmgYfT2GiAM8nt2CqR8jWLBkajojfAu5g=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -27,9 +27,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vladimir Oltean <olteanv@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH RFC net-next 2/3] net: dsa: add port_setup/port_teardown methods to DSA ops
-Date:   Fri, 16 Aug 2019 17:08:33 +0200
-Message-Id: <20190816150834.26939-3-marek.behun@nic.cz>
+Subject: [PATCH RFC net-next 3/3] net: dsa: mv88e6xxx: setup SERDES irq also for CPU/DSA ports
+Date:   Fri, 16 Aug 2019 17:08:34 +0200
+Message-Id: <20190816150834.26939-4-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190816150834.26939-1-marek.behun@nic.cz>
 References: <20190816150834.26939-1-marek.behun@nic.cz>
@@ -46,11 +46,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add two new methods into the DSA operations structure:
-  - port_setup(), called from dsa_port_setup() after the DSA port
-    already registered
-  - port_teardown(), called from dsa_port_teardown() before the port is
-    unregistered
+When CPU/DSA port is put into for example into 2500base-x mode, the
+SERDES irq has to be enabled so that port's MAC is configured properly
+after autonegotiation.
+
+When SERDES irq is being enabled, the port's phylink structure already
+has to exist. Otherwise if the IRQ fires immediately, the IRQ routine's
+access to the nonexistent phylink structure results in an exception.
+
+We therefore enable SERDES irqs for CPU/DSA ports in the .port_setup()
+method, which is called by DSA from dsa_setup_port after the port is
+registered and phylink structures exist.
+
+We also move SERDES powering on for CPU/DSA ports to this method.
+
+We also free the IRQ and power off SERDESes for these ports in the
+.port_teardown() method.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
 Cc: Andrew Lunn <andrew@lunn.ch>
@@ -58,52 +69,88 @@ Cc: Florian Fainelli <f.fainelli@gmail.com>
 Cc: Vladimir Oltean <olteanv@gmail.com>
 Cc: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- include/net/dsa.h |  2 ++
- net/dsa/dsa2.c    | 10 +++++++++-
- 2 files changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 54 ++++++++++++++++++++++++++------
+ 1 file changed, 44 insertions(+), 10 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 147b757ef8ea..848898e5d7c5 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -360,6 +360,8 @@ struct dsa_switch_ops {
- 
- 	int	(*setup)(struct dsa_switch *ds);
- 	void	(*teardown)(struct dsa_switch *ds);
-+	int	(*port_setup)(struct dsa_switch *ds, int port);
-+	void	(*port_teardown)(struct dsa_switch *ds, int port);
- 	u32	(*get_phy_flags)(struct dsa_switch *ds, int port);
- 
- 	/*
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 3abd173ebacb..c891300a6d2c 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -315,6 +315,9 @@ static int dsa_port_setup(struct dsa_port *dp)
- 		break;
- 	}
- 
-+	if (!err && ds->ops->port_setup)
-+		err = ds->ops->port_setup(ds, dp->index);
-+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 9b3ad22a5b98..23d3e39d2b9c 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2151,16 +2151,6 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
  	if (err)
- 		devlink_port_unregister(&dp->devlink_port);
+ 		return err;
  
-@@ -323,8 +326,13 @@ static int dsa_port_setup(struct dsa_port *dp)
+-	/* Enable the SERDES interface for DSA and CPU ports. Normal
+-	 * ports SERDES are enabled when the port is enabled, thus
+-	 * saving a bit of power.
+-	 */
+-	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
+-		err = mv88e6xxx_serdes_power(chip, port, true);
+-		if (err)
+-			return err;
+-	}
+-
+ 	/* Port Control 2: don't force a good FCS, set the maximum frame size to
+ 	 * 10240 bytes, disable 802.1q tags checking, don't discard tagged or
+ 	 * untagged frames on this port, do a destination address lookup on all
+@@ -2557,6 +2547,48 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+ 	return err;
+ }
  
- static void dsa_port_teardown(struct dsa_port *dp)
- {
--	if (dp->type != DSA_PORT_TYPE_UNUSED)
-+	struct dsa_switch *ds = dp->ds;
++static int mv88e6xxx_port_setup(struct dsa_switch *ds, int port)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err;
 +
-+	if (dp->type != DSA_PORT_TYPE_UNUSED) {
- 		devlink_port_unregister(&dp->devlink_port);
-+		if (ds->ops->port_teardown)
-+			ds->ops->port_teardown(ds, dp->index);
++	/* Enable the SERDES interface for DSA and CPU ports. Normal
++	 * ports SERDES are enabled when the port is enabled, thus
++	 * saving a bit of power.
++	 */
++	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
++		mv88e6xxx_reg_lock(chip);
++
++		err = mv88e6xxx_serdes_power(chip, port, true);
++
++		if (!err && chip->info->ops->serdes_irq_setup)
++			err = chip->info->ops->serdes_irq_setup(chip, port);
++
++		mv88e6xxx_reg_unlock(chip);
++
++		return err;
 +	}
- 
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
++
++	return 0;
++}
++
++static void mv88e6xxx_port_teardown(struct dsa_switch *ds, int port)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++
++	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
++		mv88e6xxx_reg_lock(chip);
++
++		if (chip->info->ops->serdes_irq_free)
++			chip->info->ops->serdes_irq_free(chip, port);
++
++		if (mv88e6xxx_serdes_power(chip, port, false))
++			dev_err(chip->dev, "failed to power off SERDES\n");
++
++		mv88e6xxx_reg_unlock(chip);
++	}
++}
++
+ static int mv88e6xxx_mdio_read(struct mii_bus *bus, int phy, int reg)
+ {
+ 	struct mv88e6xxx_mdio_bus *mdio_bus = bus->priv;
+@@ -4692,6 +4724,8 @@ static int mv88e6xxx_port_egress_floods(struct dsa_switch *ds, int port,
+ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.get_tag_protocol	= mv88e6xxx_get_tag_protocol,
+ 	.setup			= mv88e6xxx_setup,
++	.port_setup		= mv88e6xxx_port_setup,
++	.port_teardown		= mv88e6xxx_port_teardown,
+ 	.phylink_validate	= mv88e6xxx_validate,
+ 	.phylink_mac_link_state	= mv88e6xxx_link_state,
+ 	.phylink_mac_config	= mv88e6xxx_mac_config,
 -- 
 2.21.0
 
