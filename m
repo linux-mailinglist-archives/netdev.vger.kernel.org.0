@@ -2,129 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19DE090B18
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 00:40:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74CE990B25
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 00:43:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727862AbfHPWkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 18:40:15 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:41130 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727736AbfHPWkP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 18:40:15 -0400
-Received: by mail-pg1-f195.google.com with SMTP id x15so3612241pgg.8
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 15:40:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=4isWOpXxrzUvNme/KCgMCxUh6xJ4ndIEmHXD23Gkt60=;
-        b=VPlnuRvnp4Gy3Kcy4Aa01BccZtnwXkpsFKyQtfLlkt8r5BLx1mqm3OUNzv1S1MCVr8
-         kMAPwdTQeUwIdVopqKrH2e38F7ZChox4T0C7YWND7ZZrSl8Hk2qBiVCQgYVup4W3iJjc
-         J8iXwOx114xHwEVVzn5UUt/qY9hoUFQrOMJbs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=4isWOpXxrzUvNme/KCgMCxUh6xJ4ndIEmHXD23Gkt60=;
-        b=uG5tCv3n0JdRKYjmffOIY6lPoSL0BqOztGg80EazPAFRBQ5xriyp7UD5lIGM+EiZdv
-         7P+Y913aoThJwopr1gEtnyWOzTGsuysM+bJRX48hd62ceflFZMkxt1ihOlBwpR7Wiy+J
-         XskWmFKCM9g9XI9arHDtt7ta+nwUtB90+WVrxdLMVqrcgHoKtGjNGkVdRknyX68YBq/t
-         szkK/1C302xScULTAeQm/8yu+yp8c+ycwYy/2M2PDj38GrgNIWe2SVzCMhAuXj/WsogC
-         pyUwq01rA0YXZ0AgGErFglrQSfHKVtOTuru8Oizy6oDlJJoa9Tn4JCPRAxpPxcTBIDo7
-         uOBA==
-X-Gm-Message-State: APjAAAXlRMlFdeCIRJgdqFUG7J91QUg7qtm7vaGijpTCObmg7hnuUT9P
-        PqYZqRUTY3HWHsVjoKDDwstVIQ==
-X-Google-Smtp-Source: APXvYqwPZMpFzJcNDgtXSglJwyeoPaqBu5+IeIbMG0rnKOkYBqlA3hM1tNAHo+48LQZW0UAQnXzd4A==
-X-Received: by 2002:a17:90a:30ad:: with SMTP id h42mr9234947pjb.31.1565995214058;
-        Fri, 16 Aug 2019 15:40:14 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
-        by smtp.gmail.com with ESMTPSA id p5sm7395219pfg.184.2019.08.16.15.40.13
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 15:40:13 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 15:40:11 -0700
-From:   Matthias Kaehlcke <mka@chromium.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Pavel Machek <pavel@ucw.cz>,
-        "David S . Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Douglas Anderson <dianders@chromium.org>
-Subject: Re: [PATCH v6 4/4] net: phy: realtek: Add LED configuration support
- for RTL8211E
-Message-ID: <20190816224011.GY250418@google.com>
-References: <20190813191147.19936-1-mka@chromium.org>
- <20190813191147.19936-5-mka@chromium.org>
- <20190816201342.GB1646@bug>
- <20190816212728.GW250418@google.com>
- <31dc724d-77ba-3400-6abe-4cf2e3c2a20a@gmail.com>
+        id S1727779AbfHPWm4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 18:42:56 -0400
+Received: from mout2.fh-giessen.de ([212.201.18.46]:49138 "EHLO
+        mout2.fh-giessen.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727660AbfHPWm4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 18:42:56 -0400
+Received: from mx1.fh-giessen.de ([212.201.18.40])
+        by mout2.fh-giessen.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <tobias.johannes.klausmann@mni.thm.de>)
+        id 1hykvq-0007N2-AQ; Sat, 17 Aug 2019 00:42:50 +0200
+Received: from mailgate-2.its.fh-giessen.de ([212.201.18.14])
+        by mx1.fh-giessen.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <tobias.johannes.klausmann@mni.thm.de>)
+        id 1hykvq-008QGk-5h; Sat, 17 Aug 2019 00:42:50 +0200
+Received: from p2e561b42.dip0.t-ipconnect.de ([46.86.27.66] helo=[192.168.1.24])
+        by mailgate-2.its.fh-giessen.de with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.92)
+        (envelope-from <tobias.johannes.klausmann@mni.thm.de>)
+        id 1hykvp-000Exn-SB; Sat, 17 Aug 2019 00:42:49 +0200
+Subject: Re: regression in ath10k dma allocation
+To:     Nicolin Chen <nicoleotsuka@gmail.com>
+Cc:     Christoph Hellwig <hch@lst.de>, kvalo@codeaurora.org,
+        davem@davemloft.net, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, m.szyprowski@samsung.com,
+        robin.murphy@arm.com, iommu@lists.linux-foundation.org,
+        tobias.klausmann@freenet.de
+References: <8fe8b415-2d34-0a14-170b-dcb31c162e67@mni.thm.de>
+ <20190816164301.GA3629@lst.de>
+ <af96ea6a-2b17-9b66-7aba-b7dae5bcbba5@mni.thm.de>
+ <20190816222506.GA24413@Asurada-Nvidia.nvidia.com>
+From:   Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
+Message-ID: <3f7475e3-e27b-aca7-c21e-71cac6cafc1c@mni.thm.de>
+Date:   Sat, 17 Aug 2019 00:42:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101
+ Thunderbird/70.0a1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <31dc724d-77ba-3400-6abe-4cf2e3c2a20a@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190816222506.GA24413@Asurada-Nvidia.nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 16, 2019 at 03:12:47PM -0700, Florian Fainelli wrote:
-> On 8/16/19 2:27 PM, Matthias Kaehlcke wrote:
-> > On Fri, Aug 16, 2019 at 10:13:42PM +0200, Pavel Machek wrote:
-> >> On Tue 2019-08-13 12:11:47, Matthias Kaehlcke wrote:
-> >>> Add a .config_led hook which is called by the PHY core when
-> >>> configuration data for a PHY LED is available. Each LED can be
-> >>> configured to be solid 'off, solid 'on' for certain (or all)
-> >>> link speeds or to blink on RX/TX activity.
-> >>>
-> >>> Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
-> >>
-> >> THis really needs to go through the LED subsystem,
-> > 
-> > Sorry, I used what get_maintainers.pl threw at me, I should have
-> > manually cc-ed the LED list.
-> > 
-> >> and use the same userland interfaces as the rest of the system.
-> > 
-> > With the PHY maintainers we discussed to define a binding that is
-> > compatible with that of the LED one, to have the option to integrate
-> > it with the LED subsystem later. The integration itself is beyond the
-> > scope of this patchset.
-> > 
-> > The PHY LED configuration is a low priority for the project I'm
-> > working on. I wanted to make an attempt to upstream it and spent
-> > already significantly more time on it than planned, if integration
-> > with the LED framework now is a requirement please consider this
-> > series abandonded.
-> 
-> While I have an appreciation for how hard it can be to work in a
-> corporate environment while doing upstream first and working with
-> virtually unbounded goals (in time or scope) due to maintainers and
-> reviewers, that kind of statement can hinder your ability to establish
-> trust with peers in the community as it can be read as take it or leave it.
+Hi Nicolin,
 
-I'm really just stating the reality here. We strongly prefer landing
-patches upstream over doing custom hacks, and depending on the
-priority of a given feature/sub-system and impact on schedule we can
-allocate more time on it or less. In some cases/at some point a
-downstream patch is just good enough.
+On 17.08.19 00:25, Nicolin Chen wrote:
+> Hi Tobias
+>
+> On Fri, Aug 16, 2019 at 10:16:45PM +0200, Tobias Klausmann wrote:
+>>> do you have CONFIG_DMA_CMA set in your config?  If not please make sure
+>>> you have this commit in your testing tree, and if the problem still
+>>> persists it would be a little odd and we'd have to dig deeper:
+>>>
+>>> commit dd3dcede9fa0a0b661ac1f24843f4a1b1317fdb6
+>>> Author: Nicolin Chen <nicoleotsuka@gmail.com>
+>>> Date:   Wed May 29 17:54:25 2019 -0700
+>>>
+>>>       dma-contiguous: fix !CONFIG_DMA_CMA version of dma_{alloc, free}_contiguous()
+>> yes CONFIG_DMA_CMA is set (=y, see attached config), the commit you mention
+>> above is included, if you have any hints how to go forward, please let me
+>> know!
+> For CONFIG_DMA_CMA=y, by judging the log with error code -12, I
+> feel this one should work for you. Would you please check if it
+> is included or try it out otherwise?
+>
+> dma-contiguous: do not overwrite align in dma_alloc_contiguous()
+> https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/commit/?id=c6622a425acd1d2f3a443cd39b490a8777b622d7
 
-I definitely don't intend to get a patchset landed if it isn't deemed
-ready or suitable at all. In this case I just can't justify to spend
-significantly more time on it. IMO it is better to be clear on this,
-not to pressure maintainers to take a patch, but so people know what
-to expect. This information can also help if someone comes across this
-patchset in the future and wonders about its status.
 
-btw, a birdie told me there will be a talk next week at ELC in San
-Diego on how Chrome OS works with upstream, discussing pros and
-cons for both the project and upstream. For those who are intersted
-in the topic but can't make it to the conference, the slides are
-already online and IMO have good information:
-https://static.sched.com/hosted_files/ossna19/9c/ELC19_ChromeOSAndUpstream.pdf
+Thanks for the hint, yet the commit is included and does not fix the 
+problem!
 
-Cheers
+Greetings,
 
-Matthias
+Tobias
+
