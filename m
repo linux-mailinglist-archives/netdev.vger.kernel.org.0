@@ -2,36 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 67BBB8F91D
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 04:39:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 91F8B8F919
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 04:37:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726477AbfHPCjg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 15 Aug 2019 22:39:36 -0400
-Received: from [157.230.164.221] ([157.230.164.221]:47556 "EHLO
-        9389689244-jhnabhfbn.localdomain" rhost-flags-FAIL-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726364AbfHPCjg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 22:39:36 -0400
-Received: from localhost (9389689244-jhnabhfbn [127.0.0.1])
-        by 9389689244-jhnabhfbn.localdomain (Postfix) with SMTP id 62C659BC145;
-        Sun, 11 Aug 2019 11:19:29 +0000 (UTC)
-Received: from [138.158.68.58] by localhost SMTP id x425cFKGQ7MPC4 for <netcafe_sonal@rediffmail.com>; Sun, 11 Aug 2019 17:11:36 +0500
-Message-ID: <n515$$6vg67$-n$$nc-5$j9@fm90.qq>
-From:   "RECEIVE AND SECURE THIS MONEY FOR ME" <fta447447@gmail.com>
-Reply-To: "RECEIVE AND SECURE THIS MONEY FOR ME" <fta447447@gmail.com>
-To:     netcafe_sonal@rediffmail.com
-Subject: RECEIVE AND KEEP THIS MONEY FOR ME IN YOUR BANK ACCOUNT,REPLY TO fta447447@gmail.com FOR DETAILS
-Date:   Sun, 11 Aug 19 17:11:36 GMT
-X-Mailer: Microsoft Outlook Express 5.00.2615.200
+        id S1726512AbfHPCgq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 22:36:46 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:50418 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726652AbfHPCgq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 15 Aug 2019 22:36:46 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DEC0FDF054EDA62492E1;
+        Fri, 16 Aug 2019 10:36:41 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS412-HUB.china.huawei.com (10.3.19.212) with Microsoft SMTP Server id
+ 14.3.439.0; Fri, 16 Aug 2019 10:36:35 +0800
+From:   Wei Yongjun <weiyongjun1@huawei.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>
+CC:     Wei Yongjun <weiyongjun1@huawei.com>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-janitors@vger.kernel.org>
+Subject: [PATCH -next v2] btf: fix return value check in btf_vmlinux_init()
+Date:   Fri, 16 Aug 2019 02:40:44 +0000
+Message-ID: <20190816024044.139761-1-weiyongjun1@huawei.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190815142432.101401-1-weiyongjun1@huawei.com>
+References: <20190815142432.101401-1-weiyongjun1@huawei.com>
 MIME-Version: 1.0
-Content-Type: multipart/alternative;
-        boundary="0D35955BFD.A9_8DF_708"
-X-Priority: 3
-X-MSMail-Priority: Normal
+Content-Type:   text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7BIT
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+In case of error, the function kobject_create_and_add() returns NULL
+pointer not ERR_PTR(). The IS_ERR() test in the return value check
+should be replaced with NULL test.
 
---0D35955BFD.A9_8DF_708--
+Fixes: 341dfcf8d78e ("btf: expose BTF info through sysfs")
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Acked-by: Andrii Nakryiko <andriin@fb.com>
+---
+ kernel/bpf/sysfs_btf.c | 9 ++-------
+ 1 file changed, 2 insertions(+), 7 deletions(-)
+
+diff --git a/kernel/bpf/sysfs_btf.c b/kernel/bpf/sysfs_btf.c
+index 4659349fc795..7ae5dddd1fe6 100644
+--- a/kernel/bpf/sysfs_btf.c
++++ b/kernel/bpf/sysfs_btf.c
+@@ -30,17 +30,12 @@ static struct kobject *btf_kobj;
+ 
+ static int __init btf_vmlinux_init(void)
+ {
+-	int err;
+-
+ 	if (!_binary__btf_vmlinux_bin_start)
+ 		return 0;
+ 
+ 	btf_kobj = kobject_create_and_add("btf", kernel_kobj);
+-	if (IS_ERR(btf_kobj)) {
+-		err = PTR_ERR(btf_kobj);
+-		btf_kobj = NULL;
+-		return err;
+-	}
++	if (!btf_kobj)
++		return -ENOMEM;
+ 
+ 	bin_attr_btf_vmlinux.size = _binary__btf_vmlinux_bin_end -
+ 				    _binary__btf_vmlinux_bin_start;
+
+
 
