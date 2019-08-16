@@ -2,108 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 628AC90228
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F3FF90249
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbfHPM7p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 08:59:45 -0400
-Received: from mail-wr1-f100.google.com ([209.85.221.100]:36884 "EHLO
-        mail-wr1-f100.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726032AbfHPM7p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 08:59:45 -0400
-Received: by mail-wr1-f100.google.com with SMTP id z11so1474655wrt.4
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 05:59:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8WjA/SkmjSW1Q7MwGAGn/uHdUZXIAVmUpNLasanPGps=;
-        b=KOwnK2sKc3dtwPlMoIhlPhr7Q2d45DQP3oy4Uf7C+4eNsmoVxPKbDpyiZZVmv0KY5o
-         ByJJ8EszFyWbKRg7iEtgVsDH2cPjwScDLDFAlAiIJB2XS02wbqPI8Ed0de/k0idn+Nw1
-         YorDCI8DsvcqWvD3aX+Qo6RQ9jQD+Vw9p3nR9ZNM3oQHHo8f6WV3RFYNAmGS93JJdq//
-         h88HPGh1wz+PUxiySw5gBu7TdtblbKWMiVU5EN26gOJlIofmUwwrZocK/95aXulR5Lbx
-         1S01RnxTZKg9eI+pxprchhIIUk1EjnPFwxTCX1CWE2W7TNr5L4SWqaDG7912jKq+Gatv
-         A29w==
-X-Gm-Message-State: APjAAAW3/DaO90Wb0nrcse3MIea0sOaSUJu4xIXfPzvJXNv1AYO3MZPw
-        sYlFo4NX4AesVmxXDjmh19xHSm97FtscfWgUR53XvhskGUoQRfzGGBBi9s5o+QGmig==
-X-Google-Smtp-Source: APXvYqwCW4UxgyGEgUwqCoysCHJBelEafLxd5IhZ2aEFV3SQ5gU8ql+nM6LFXiFZW1x7Jsn2O6UYWqZpOWof
-X-Received: by 2002:a5d:4a45:: with SMTP id v5mr3583238wrs.108.1565960383159;
-        Fri, 16 Aug 2019 05:59:43 -0700 (PDT)
-Received: from heliosphere.sirena.org.uk (heliosphere.sirena.org.uk. [2a01:7e01::f03c:91ff:fed4:a3b6])
-        by smtp-relay.gmail.com with ESMTPS id w1sm99570wrn.59.2019.08.16.05.59.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2019 05:59:43 -0700 (PDT)
-X-Relaying-Domain: sirena.org.uk
-Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
-        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <broonie@sirena.co.uk>)
-        id 1hybpW-000419-UO; Fri, 16 Aug 2019 12:59:42 +0000
-Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id 744AE27430D6; Fri, 16 Aug 2019 13:59:42 +0100 (BST)
-Date:   Fri, 16 Aug 2019 13:59:42 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 04/11] spi: spi-fsl-dspi: Cosmetic cleanup
-Message-ID: <20190816125942.GG4039@sirena.co.uk>
-References: <20190816004449.10100-1-olteanv@gmail.com>
- <20190816004449.10100-5-olteanv@gmail.com>
- <20190816122103.GE4039@sirena.co.uk>
- <CA+h21hoP3t6j2mTd2BLwizqbFap+9Z2vdxQ4ahHS3-7Vr31Lxw@mail.gmail.com>
+        id S1727282AbfHPNBS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 09:01:18 -0400
+Received: from mga12.intel.com ([192.55.52.136]:56584 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726075AbfHPNBS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 09:01:18 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Aug 2019 06:01:17 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,393,1559545200"; 
+   d="scan'208";a="171409585"
+Received: from ahunter-desktop.fi.intel.com (HELO [10.237.72.122]) ([10.237.72.122])
+  by orsmga008.jf.intel.com with ESMTP; 16 Aug 2019 06:01:12 -0700
+Subject: Re: [PATCH v5] perf machine: arm/arm64: Improve completeness for
+ kernel address space
+To:     Leo Yan <leo.yan@linaro.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Suzuki Poulouse <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org
+References: <20190815082521.16885-1-leo.yan@linaro.org>
+ <d874e6b3-c115-6c8c-bb12-160cfd600505@intel.com>
+ <20190815113242.GA28881@leoy-ThinkPad-X240s>
+ <e0919e39-7607-815b-3a12-96f098e45a5f@intel.com>
+ <20190816014541.GA17960@leoy-ThinkPad-X240s>
+From:   Adrian Hunter <adrian.hunter@intel.com>
+Organization: Intel Finland Oy, Registered Address: PL 281, 00181 Helsinki,
+ Business Identity Code: 0357606 - 4, Domiciled in Helsinki
+Message-ID: <363577f1-097e-eddd-a6ca-b23f644dd8ce@intel.com>
+Date:   Fri, 16 Aug 2019 16:00:02 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="TdkiTnkLhLQllcMS"
-Content-Disposition: inline
-In-Reply-To: <CA+h21hoP3t6j2mTd2BLwizqbFap+9Z2vdxQ4ahHS3-7Vr31Lxw@mail.gmail.com>
-X-Cookie: My life is a patio of fun!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190816014541.GA17960@leoy-ThinkPad-X240s>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 16/08/19 4:45 AM, Leo Yan wrote:
+> Hi Adrian,
+> 
+> On Thu, Aug 15, 2019 at 02:45:57PM +0300, Adrian Hunter wrote:
+> 
+> [...]
+> 
+>>>> How come you cannot use kallsyms to get the information?
+>>>
+>>> Thanks for pointing out this.  Sorry I skipped your comment "I don't
+>>> know how you intend to calculate ARM_PRE_START_SIZE" when you reviewed
+>>> the patch v3, I should use that chance to elaborate the detailed idea
+>>> and so can get more feedback/guidance before procceed.
+>>>
+>>> Actually, I have considered to use kallsyms when worked on the previous
+>>> patch set.
+>>>
+>>> As mentioned in patch set v4's cover letter, I tried to implement
+>>> machine__create_extra_kernel_maps() for arm/arm64, the purpose is to
+>>> parse kallsyms so can find more kernel maps and thus also can fixup
+>>> the kernel start address.  But I found the 'perf script' tool directly
+>>> calls machine__get_kernel_start() instead of running into the flow for
+>>> machine__create_extra_kernel_maps();
+>>
+>> Doesn't it just need to loop through each kernel map to find the lowest
+>> start address?
+> 
+> Based on your suggestion, I worked out below change and verified it
+> can work well on arm64 for fixing up start address; please let me know
+> if the change works for you?
 
---TdkiTnkLhLQllcMS
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+How does that work if take a perf.data file to a machine with a different
+architecture?
 
-On Fri, Aug 16, 2019 at 03:37:46PM +0300, Vladimir Oltean wrote:
-> On Fri, 16 Aug 2019 at 15:21, Mark Brown <broonie@kernel.org> wrote:
+> 
+> diff --git a/tools/perf/util/machine.c b/tools/perf/util/machine.c
+> index f6ee7fbad3e4..51d78313dca1 100644
+> --- a/tools/perf/util/machine.c
+> +++ b/tools/perf/util/machine.c
+> @@ -2671,9 +2671,26 @@ int machine__nr_cpus_avail(struct machine *machine)
+>  	return machine ? perf_env__nr_cpus_avail(machine->env) : 0;
+>  }
+>  
+> +static int machine__fixup_kernel_start(void *arg,
+> +				       const char *name __maybe_unused,
+> +				       char type,
+> +				       u64 start)
+> +{
+> +	struct machine *machine = arg;
+> +
+> +	type = toupper(type);
+> +
+> +	/* Fixup for text, weak, data and bss sections. */
+> +	if (type == 'T' || type == 'W' || type == 'D' || type == 'B')
+> +		machine->kernel_start = min(machine->kernel_start, start);
+> +
+> +	return 0;
+> +}
+> +
+>  int machine__get_kernel_start(struct machine *machine)
+>  {
+>  	struct map *map = machine__kernel_map(machine);
+> +	char filename[PATH_MAX];
+>  	int err = 0;
+>  
+>  	/*
+> @@ -2687,6 +2704,7 @@ int machine__get_kernel_start(struct machine *machine)
+>  	machine->kernel_start = 1ULL << 63;
+>  	if (map) {
+>  		err = map__load(map);
+>  		/*
+>  		 * On x86_64, PTI entry trampolines are less than the
+>  		 * start of kernel text, but still above 2^63. So leave
+> @@ -2695,6 +2713,16 @@ int machine__get_kernel_start(struct machine *machine)
+>  		if (!err && !machine__is(machine, "x86_64"))
+>  			machine->kernel_start = map->start;
+>  	}
+> +
+> +	machine__get_kallsyms_filename(machine, filename, PATH_MAX);
+> +
+> +	if (symbol__restricted_filename(filename, "/proc/kallsyms"))
+> +		goto out;
+> +
+> +	if (kallsyms__parse(filename, machine, machine__fixup_kernel_start))
+> +		pr_warning("Fail to fixup kernel start address. skipping...\n");
+> +
+> +out:
+>  	return err;
+>  }
+> 
+> Thanks,
+> Leo Yan
+> 
 
-> > This is difficult to review since there's a bunch of largely unrelated
-> > changes all munged into one patch.  It'd be better to split this up so
-> > each change makes one kind of fix, and better to do this separately to
-> > the rest of the series.  In particular having alignment changes along
-> > with other changes hurts reviewability as it's less immediately clear
-> > what's a like for liken substitution.
-
-> Yes, the diff of this patch looks relatively bad. But I don't know if
-> splitting it in more patches isn't in fact going to pollute the git
-> history, so I can just as well drop it.
-
-No problem with lots of patches in git history if you want to split it
-up (and probably split it out of the series).  Like I say it's mainly
-the alignment changes that it'd be better to pull out, the others really
-should be but it's easier to cope there.
-
---TdkiTnkLhLQllcMS
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl1WqL0ACgkQJNaLcl1U
-h9DF+wf7B3B4JsNBW4VWkpFnGhsr4gl+XnKkqDJ7m73tC2Dl3/3FKwqSYXVfkUWS
-LbcxZOobEr61s9fmfjA0TUFu8B4JB8wp/jKmmzTj5ygRP07LF0jYuGAiRBaS0X7m
-tfDkFIaBbHbxUdVcjqkWPAJ5LxJWMhgsDJR4rWC4FW8/KYABGNTGtKzKiMA89UEI
-1UeQ13P7LnA+uSIqgypnD1QOmucjJyBZH2QWGR3D/ZoxF9Uc4M+uticmdK6+baNM
-0xXq29jl5RjwEJ33XgAL9I6bSNPooiu4QVRr4DkhVV7Tvu6w7O8/sLnrq8e/bZWM
-Uvi+kxInQPyMoTHZdyylCtohid/Grg==
-=1nYD
------END PGP SIGNATURE-----
-
---TdkiTnkLhLQllcMS--
