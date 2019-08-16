@@ -2,145 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B1058FD9A
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 10:19:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8178FDA1
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 10:20:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726983AbfHPITi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 04:19:38 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:37770 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726575AbfHPITh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 04:19:37 -0400
-Received: by mail-wr1-f67.google.com with SMTP id z11so726734wrt.4;
-        Fri, 16 Aug 2019 01:19:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Ih81cmjP0TC8sbhrB1z4mmZ7XiZ/5cGAXydJGdybczA=;
-        b=Oh3cq/rHUzrBEdvWDyyFt4lkYBIvp+bttTvqetWMAWHLDk27z1aiLJTkRxQk6Ljdf1
-         ClmDxc+7ndRFnTdkLESApMPsBMZ76HPcTMYzKLDC+EFj6M53fUkbsQmRdqdSgZWTkypO
-         D+TLLgoEWO6OWHkEiOqmKbBwxlLKzDnLU0h6gdpYzfRpQ7ajuz9+65lqHBLHOy8YUnos
-         v1FuXUMnNA1dQKQf0bFPf2I6lr22dWOdYUMScV+ClLIA204YeP8daFLWIp5S293H4wRw
-         xVxtBJrjFqrHtc4rJzkh0t5aTtfSVrjzE+FYU4JnA30pdvZOcb/jUdl1zrk+TwBtP05N
-         Rjag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Ih81cmjP0TC8sbhrB1z4mmZ7XiZ/5cGAXydJGdybczA=;
-        b=ouq5BPVADzNsBsdTFom7IucFQVgTvxcfGIFzQor21U8WmI1wOwVIrQluWCIFYJFYHN
-         RMCnzAQnT/gPHrzJ8a38IDe2NakLyteuytZNAbExRtMHYDAkjmcr8pRxXgfisZ65A52u
-         +NL6TrkK53HWaOTQu5KCk/+B1qU61JJOXM1Ll5VHDsNQLkI42UpJ5HlC+Wt2BOguugOD
-         QUaj/3cpcFmOLI609g8T5f1Z/S8ABZ2PvsxAhYxcVTJu9HpTzLGkG0OaBKhoiAkLHQbw
-         Oa1ELAHEYbGsj/GV0ZWLmbAPI32Eh/R/W8Un3uoE1e2JG5bo9CI6hkWGN9sgEGuCEjA7
-         fwRA==
-X-Gm-Message-State: APjAAAW64gd0Mq8N9EQ0uRznIi0S1yb9y7FX/3C+WvBSVF2xP6DfoUhK
-        nV87/xOVupB2t/AAP3UgpFd3tRiW
-X-Google-Smtp-Source: APXvYqxqGnWs+sGNRtQVxsclqeR5R2BGunevD+LeIHpgnoJFi3Pkom2JraUkBslO/eu3Hvtgmne7wQ==
-X-Received: by 2002:a5d:4b41:: with SMTP id w1mr8605097wrs.23.1565943575268;
-        Fri, 16 Aug 2019 01:19:35 -0700 (PDT)
-Received: from [192.168.8.147] (187.170.185.81.rev.sfr.net. [81.185.170.187])
-        by smtp.gmail.com with ESMTPSA id s64sm7336977wmf.16.2019.08.16.01.19.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 01:19:34 -0700 (PDT)
-Subject: Re: [PATCH net-next] r8152: divide the tx and rx bottom functions
-To:     Hayes Wang <hayeswang@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <1394712342-15778-301-Taiwan-albertk@realtek.com>
- <9749764d-7815-b673-0fc4-22475601efec@gmail.com>
- <0835B3720019904CB8F7AA43166CEEB2F18D470D@RTITMBSVM03.realtek.com.tw>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <68015004-fb60-f6c6-05b0-610466223cf5@gmail.com>
-Date:   Fri, 16 Aug 2019 10:19:33 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <0835B3720019904CB8F7AA43166CEEB2F18D470D@RTITMBSVM03.realtek.com.tw>
-Content-Type: text/plain; charset=utf-8
+        id S1727068AbfHPIUn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 04:20:43 -0400
+Received: from mail-eopbgr140041.outbound.protection.outlook.com ([40.107.14.41]:58119
+        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726575AbfHPIUm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 04:20:42 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=d7VN6bNmkOxPU4QvwccDhEWPQh+tJMFZonjkSuwHZaj4QKNZctX89i1SiTZhIwcoALfS5H1ttZzBCBtxlxQHKGD25JozzYtPJtlyd3YVk3a7iE6hwkhSi50B+XREOcxjwEr/4wmBwQNSxiy6AU/BHoY/yiRGDfYl+N/hEmWz0WhPESIGmva35ciZj94UZ0tcN2GARdSC85qWqcqrH8mOTBiPMwiB5gJWNQ67T8Kr5c2IhaT0XreSDAJQ2EgVUMhax4/rqKWlaB1I5Mgya7XPGMs+v33M1NLL6MGRJlljLYKy1XIaMZXODdmjy0xVtdB6tAcBWs2omq2y3/DeLH0uWw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hahgNNew1V4N2U9romiu7ruvap26xr/jDafMkCx/2co=;
+ b=nPdIjJ88l8caJ1mq9fwEeIh7Hhy+6bhYdAXcCTTML4+9YrxMv/c1Y9aInH0lrIrG8OmAxcPBuvn8mOzgEntS84afGocq4nhvFwPb6AvYuU5Y3nw/aJHY6s74vs44vMX8sdgPFyT02teH+AUQGmzd5q0JzmAh6Axn1C39yFF70xVDD5PVrhf9qnFTlvfoTMzlT99gn2sZ2dcIpAbjr2NnEd1voOJQOUrHvU9v0090uyf6z0pTzeOr2ZkOh4kILB2r+5bgUPeGVaAPFiw9b1zKA04spxgSqaxySEl2wxbBqh0zJb2mWhNozCTf3IAxZyhdiF08HZC+HPy6M0yDjNC83g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hahgNNew1V4N2U9romiu7ruvap26xr/jDafMkCx/2co=;
+ b=hqiXgTFZhWPSsRAme6HvZKmZwfm5IpCtUwmA5whe6AZYBuX5QBsGpUpCFxQP724+wwmQ3EmoVC5kh7M1J2YrkbGgrd+G1XC0AchbppbZYFcamua+7pT0A1RpVAwHFisu5DGF38d0z912RolhozhTCMvN+B8Hk09QOwqZv7gWvLQ=
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com (52.135.139.151) by
+ DB7PR04MB5419.eurprd04.prod.outlook.com (20.178.104.204) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2157.21; Fri, 16 Aug 2019 08:20:39 +0000
+Received: from DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::c8ca:1c9c:6c3:fb6f]) by DB7PR04MB4618.eurprd04.prod.outlook.com
+ ([fe80::c8ca:1c9c:6c3:fb6f%4]) with mapi id 15.20.2157.022; Fri, 16 Aug 2019
+ 08:20:39 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "sean@geanix.com" <sean@geanix.com>
+CC:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+Subject: [PATCH REPOST 0/2] can: flexcan: fix PM and wakeup issue
+Thread-Topic: [PATCH REPOST 0/2] can: flexcan: fix PM and wakeup issue
+Thread-Index: AQHVVAt8AdRkXbIHl0KPDqlhDaA0Bw==
+Date:   Fri, 16 Aug 2019 08:20:38 +0000
+Message-ID: <20190816081749.19300-1-qiangqing.zhang@nxp.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.17.1
+x-clientproxiedby: SG2PR0401CA0004.apcprd04.prod.outlook.com
+ (2603:1096:3:1::14) To DB7PR04MB4618.eurprd04.prod.outlook.com
+ (2603:10a6:5:38::23)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=qiangqing.zhang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a29dcd4d-57b8-4b2e-f042-08d722229ec8
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB7PR04MB5419;
+x-ms-traffictypediagnostic: DB7PR04MB5419:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB7PR04MB5419C78D9356C38018B4F917E6AF0@DB7PR04MB5419.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2512;
+x-forefront-prvs: 0131D22242
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(346002)(396003)(39840400004)(136003)(199004)(189003)(5660300002)(478600001)(6512007)(110136005)(4326008)(25786009)(54906003)(81166006)(2906002)(81156014)(53936002)(8676002)(316002)(1076003)(558084003)(186003)(3846002)(99286004)(66946007)(14454004)(26005)(86362001)(2501003)(52116002)(6436002)(476003)(50226002)(6486002)(2616005)(386003)(66556008)(66066001)(256004)(6506007)(486006)(36756003)(66476007)(6116002)(71190400001)(71200400001)(305945005)(102836004)(64756008)(66446008)(8936002)(2201001)(7736002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB5419;H:DB7PR04MB4618.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 9JCfxjv7bpA1vz6QHGI8dn5iF66vH4uMqFFfGoEtFG0sKq55hdf7hjdJ2yYDJjgjyS6fIEnc9IGNpJjLnkhMv67vUoufhNUhOvHfnntI42spwRo800tKKPENGVJeCmIzyeOJm3oqNjaJuFSafo3SgHT1uwVDGU4VwbDhBKtEyuisvRJHJUxQSd7NWMdTpy1oMVY/+k69fjU0zwzbf1Uww7rbdCMYF8J6JRb2z4wc9lrDR33Mg0M31qsWYG4AXJ1E+Sch7VmKFJFnS7juTPZgQQB32YJtSsUmZXqB6whZcdRbaUwVm/Nz+oPWFItvz2nd6pE6OaStaJ1jDSwdI/RkvhGnHG8oOm7BfkA8rs7RArMNYyZAo13BPhuaNUxB4xPXDHyMol8FJQBTPHID9Syadoec585fjnKuOrUP29WRqmI=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a29dcd4d-57b8-4b2e-f042-08d722229ec8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2019 08:20:38.8393
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: UxhG3r5N7RmxLNHzduSuLpjtUadGXSQKL/pxyONYzB9rnP9UaJKztT0IQKPWmb6GD8hYiTsaRMhAlFiTZ+w0LA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB5419
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch set intends to fix Flecan PM and wakeup issue.
 
+Joakim Zhang (2):
+  can: flexcan: fix deadlock when using self wakeup
+  can: flexcan: add LPSR mode support for i.MX7D
 
-On 8/16/19 10:10 AM, Hayes Wang wrote:
-> Eric Dumazet [mailto:eric.dumazet@gmail.com]
->> Sent: Friday, August 16, 2019 2:40 PM
-> [...]
->> tasklet and NAPI are scheduled on the same core (the current
->> cpu calling napi_schedule() or tasklet_schedule())
->>
->> I would rather not add this dubious tasklet, and instead try to understand
->> what is wrong in this driver ;)
->>
->> The various napi_schedule() calls are suspect IMO.
-> 
-> The original method as following.
-> 
-> static int r8152_poll(struct napi_struct *napi, int budget)
-> {
-> 	struct r8152 *tp = container_of(napi, struct r8152, napi);
-> 	int work_done;
-> 
-> 	work_done = rx_bottom(tp, budget); <-- RX
-> 	bottom_half(tp); <-- Tx (tx_bottom)
-> 	[...]
-> 
-> The rx_bottom and tx_bottom would only be called in r8152_poll.
-> That is, tx_bottom wouldn't be run unless rx_bottom is finished.
-> And, rx_bottom would be called if tx_bottom is running.
-> 
-> If the traffic is busy. rx_bottom or tx_bottom may take a lot
-> of time to deal with the packets. And the one would increase
-> the latency time for the other one.
-> 
-> Therefore, when I separate the tx_bottom and rx_bottom to
-> different tasklet and napi, the callback functions of tx and
-> rx may schedule the tasklet and napi to different cpu. Then,
-> the rx_bottom and tx_bottom may be run at the same time.
+ drivers/net/can/flexcan.c | 34 ++++++++++++++++++++++++++++++----
+ 1 file changed, 30 insertions(+), 4 deletions(-)
 
+--=20
+2.17.1
 
-Your patch makes absolutely no guarantee of doing what you
-want, I am afraid.
-
-> 
-> Take our arm platform for example. There are five cpus to
-> handle the interrupt of USB host controller. When the rx is
-> completed, cpu #1 may handle the interrupt and napi would
-> be scheduled. When the tx is finished, cpu #2 may handle
-> the interrupt and the tasklet is scheduled. Then, napi is
-> run on cpu #1, and tasklet is run on cpu #2.
-> 
->> Also rtl8152_start_xmit() uses skb_queue_tail(&tp->tx_queue, skb);
->>
->> But I see nothing really kicking the transmit if tx_free is empty ?
-> 
-> Tx callback function "write_bulk_callback" would deal with it.
-> The callback function would check if there are packets waiting
-> to be sent.
-
-Which callback ?
-
-After an idle period (no activity, no prior packets being tx-completed ...),
-a packet is sent by the upper stack, enters the ndo_start_xmit() of a network driver.
-
-This driver ndo_start_xmit() simply adds an skb to a local list, and returns.
-
-Where/how is scheduled this callback ?
-
-Some kind of timer ?
-An (unrelated) incoming packet ?
-
-> 
-> 
-> Best Regards,
-> Hayes
-> 
-> 
