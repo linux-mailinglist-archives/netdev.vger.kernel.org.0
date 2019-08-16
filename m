@@ -2,33 +2,33 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD83902DB
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:23:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 85C7F902D9
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 15:23:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727277AbfHPNXg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 09:23:36 -0400
-Received: from mx2.mailbox.org ([80.241.60.215]:11082 "EHLO mx2.mailbox.org"
+        id S1727261AbfHPNXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 09:23:34 -0400
+Received: from mx2.mailbox.org ([80.241.60.215]:11118 "EHLO mx2.mailbox.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727159AbfHPNXf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 09:23:35 -0400
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [80.241.60.240])
+        id S1727218AbfHPNXe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 09:23:34 -0400
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
         (using TLSv1.2 with cipher ECDHE-RSA-CHACHA20-POLY1305 (256/256 bits))
         (No client certificate requested)
-        by mx2.mailbox.org (Postfix) with ESMTPS id D3FA2A166E;
+        by mx2.mailbox.org (Postfix) with ESMTPS id F1CFDA0462;
         Fri, 16 Aug 2019 15:23:32 +0200 (CEST)
 X-Virus-Scanned: amavisd-new at heinlein-support.de
 Received: from smtp1.mailbox.org ([80.241.60.240])
-        by hefe.heinlein-support.de (hefe.heinlein-support.de [91.198.250.172]) (amavisd-new, port 10030)
-        with ESMTP id ZylTTHPGOGlm; Fri, 16 Aug 2019 15:23:27 +0200 (CEST)
+        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
+        with ESMTP id PHw5EQY0IY8n; Fri, 16 Aug 2019 15:23:28 +0200 (CEST)
 From:   Stefan Roese <sr@denx.de>
 To:     netdev@vger.kernel.org, linux-mediatek@lists.infradead.org
 Cc:     =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>,
         Daniel Golle <daniel@makrotopia.org>,
         Sean Wang <sean.wang@mediatek.com>,
         John Crispin <john@phrozen.org>
-Subject: [PATCH net-next 2/4 v3] net: ethernet: mediatek: Rename MTK_QMTK_INT_STATUS to MTK_QDMA_INT_STATUS
-Date:   Fri, 16 Aug 2019 15:23:23 +0200
-Message-Id: <20190816132325.28426-2-sr@denx.de>
+Subject: [PATCH net-next 3/4 v3] net: ethernet: mediatek: Rename NEXT_RX_DESP_IDX to NEXT_DESP_IDX
+Date:   Fri, 16 Aug 2019 15:23:24 +0200
+Message-Id: <20190816132325.28426-3-sr@denx.de>
 In-Reply-To: <20190816132325.28426-1-sr@denx.de>
 References: <20190816132325.28426-1-sr@denx.de>
 MIME-Version: 1.0
@@ -39,10 +39,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently all QDMA registers are named "MTK_QDMA_foo" in this driver
-with one exception: MTK_QMTK_INT_STATUS. This patch renames
-MTK_QMTK_INT_STATUS to MTK_QDMA_INT_STATUS so that all macros follow
-this rule.
+Rename the NEXT_RX_DESP_IDX macro to NEXT_DESP_IDX, so that it better
+can be used for TX ops as well. This will be used in the upcoming
+MT7628/88 support (same functionality for RX and TX in this macro).
 
 Signed-off-by: Stefan Roese <sr@denx.de>
 Cc: René van Dorst <opensource@vdorst.com>
@@ -56,59 +55,45 @@ v3:
 v2:
 - New patch
 
- drivers/net/ethernet/mediatek/mtk_eth_soc.c | 8 ++++----
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 4 ++--
  drivers/net/ethernet/mediatek/mtk_eth_soc.h | 2 +-
- 2 files changed, 5 insertions(+), 5 deletions(-)
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-index ddbffeb5701b..bee2cdca66e7 100644
+index bee2cdca66e7..d9978174b96a 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -1122,11 +1122,11 @@ static int mtk_napi_tx(struct napi_struct *napi, int budget)
- 	int tx_done = 0;
+@@ -903,7 +903,7 @@ static struct mtk_rx_ring *mtk_get_rx_ring(struct mtk_eth *eth)
  
- 	mtk_handle_status_irq(eth);
--	mtk_w32(eth, MTK_TX_DONE_INT, MTK_QMTK_INT_STATUS);
-+	mtk_w32(eth, MTK_TX_DONE_INT, MTK_QDMA_INT_STATUS);
- 	tx_done = mtk_poll_tx(eth, budget);
+ 	for (i = 0; i < MTK_MAX_RX_RING_NUM; i++) {
+ 		ring = &eth->rx_ring[i];
+-		idx = NEXT_RX_DESP_IDX(ring->calc_idx, ring->dma_size);
++		idx = NEXT_DESP_IDX(ring->calc_idx, ring->dma_size);
+ 		if (ring->dma[idx].rxd2 & RX_DMA_DONE) {
+ 			ring->calc_idx_update = true;
+ 			return ring;
+@@ -952,7 +952,7 @@ static int mtk_poll_rx(struct napi_struct *napi, int budget,
+ 		if (unlikely(!ring))
+ 			goto rx_done;
  
- 	if (unlikely(netif_msg_intr(eth))) {
--		status = mtk_r32(eth, MTK_QMTK_INT_STATUS);
-+		status = mtk_r32(eth, MTK_QDMA_INT_STATUS);
- 		mask = mtk_r32(eth, MTK_QDMA_INT_MASK);
- 		dev_info(eth->dev,
- 			 "done tx %d, intr 0x%08x/0x%x\n",
-@@ -1136,7 +1136,7 @@ static int mtk_napi_tx(struct napi_struct *napi, int budget)
- 	if (tx_done == budget)
- 		return budget;
- 
--	status = mtk_r32(eth, MTK_QMTK_INT_STATUS);
-+	status = mtk_r32(eth, MTK_QDMA_INT_STATUS);
- 	if (status & MTK_TX_DONE_INT)
- 		return budget;
- 
-@@ -1747,7 +1747,7 @@ static irqreturn_t mtk_handle_irq(int irq, void *_eth)
- 			mtk_handle_irq_rx(irq, _eth);
- 	}
- 	if (mtk_r32(eth, MTK_QDMA_INT_MASK) & MTK_TX_DONE_INT) {
--		if (mtk_r32(eth, MTK_QMTK_INT_STATUS) & MTK_TX_DONE_INT)
-+		if (mtk_r32(eth, MTK_QDMA_INT_STATUS) & MTK_TX_DONE_INT)
- 			mtk_handle_irq_tx(irq, _eth);
- 	}
+-		idx = NEXT_RX_DESP_IDX(ring->calc_idx, ring->dma_size);
++		idx = NEXT_DESP_IDX(ring->calc_idx, ring->dma_size);
+ 		rxd = &ring->dma[idx];
+ 		data = ring->data[idx];
  
 diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.h b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-index bab94f763e2c..088e2bc621f7 100644
+index 088e2bc621f7..556644f28eae 100644
 --- a/drivers/net/ethernet/mediatek/mtk_eth_soc.h
 +++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.h
-@@ -212,7 +212,7 @@
- #define FC_THRES_MIN		0x4444
+@@ -39,7 +39,7 @@
+ 				 NETIF_F_SG | NETIF_F_TSO | \
+ 				 NETIF_F_TSO6 | \
+ 				 NETIF_F_IPV6_CSUM)
+-#define NEXT_RX_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
++#define NEXT_DESP_IDX(X, Y)	(((X) + 1) & ((Y) - 1))
  
- /* QDMA Interrupt Status Register */
--#define MTK_QMTK_INT_STATUS	0x1A18
-+#define MTK_QDMA_INT_STATUS	0x1A18
- #define MTK_RX_DONE_DLY		BIT(30)
- #define MTK_RX_DONE_INT3	BIT(19)
- #define MTK_RX_DONE_INT2	BIT(18)
+ #define MTK_MAX_RX_RING_NUM	4
+ #define MTK_HW_LRO_DMA_SIZE	8
 -- 
 2.22.1
 
