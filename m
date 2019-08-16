@@ -2,130 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 62EEB9003E
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 12:51:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CED2490043
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 12:52:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727127AbfHPKvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 06:51:32 -0400
-Received: from foss.arm.com ([217.140.110.172]:54910 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725897AbfHPKvc (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 16 Aug 2019 06:51:32 -0400
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id C4E9B28;
-        Fri, 16 Aug 2019 03:51:30 -0700 (PDT)
-Received: from localhost (unknown [10.37.6.20])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1F1073F706;
-        Fri, 16 Aug 2019 03:51:30 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 11:51:28 +0100
-From:   Andrew Murray <andrew.murray@arm.com>
-To:     Denis Efremov <efremov@linux.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>, linux-kernel@vger.kernel.org,
-        linux-pci@vger.kernel.org, Sebastian Ott <sebott@linux.ibm.com>,
-        Gerald Schaefer <gerald.schaefer@de.ibm.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Matt Porter <mporter@kernel.crashing.org>,
-        Alexandre Bounine <alex.bou9@gmail.com>,
-        Peter Jones <pjones@redhat.com>,
-        Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Jose Abreu <Jose.Abreu@synopsys.com>, kvm@vger.kernel.org,
-        linux-fbdev@vger.kernel.org, netdev@vger.kernel.org,
-        x86@kernel.org, linux-s390@vger.kernel.org
-Subject: Re: [PATCH v2 00/10] Add definition for the number of standard PCI
- BARs
-Message-ID: <20190816105128.GD14111@e119886-lin.cambridge.arm.com>
-References: <20190816092437.31846-1-efremov@linux.com>
+        id S1727148AbfHPKwC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 06:52:02 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:46564 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727110AbfHPKwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 06:52:01 -0400
+Received: by mail-pl1-f193.google.com with SMTP id c2so2300724plz.13
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 03:52:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=LYCRkgDKfMqQxnDtmwwtLXZySetJrlEBoEjy46t0lwY=;
+        b=XuM+qSciJLvTMPXIjlqOuQPke0/NVpv9VNiQltff0yrDScOCvsN75BDiKx1BTWonTv
+         jlzYFdAM8lA1/zu+IiLSqUsvdmy8LL5GHjKJIEUuUNrDIyKP0aGc/qQnOAt9tks+empu
+         m8JDoiGV+5ZTKNMqsGRZN6YaRiK1H81riTah8udfx8hKVqjG/iteHb2kL73o+Y0RGxOs
+         9+sVyB092yhWQjLOvYEvIe6TTloHMJYX66d9tkPzxLl52iTWP4pDTZNNNXSb7xoANeXs
+         4w89QiQxD9CAiftBEIZ8JBL+jUvaYiI3SKLxakDRP77Blvh0WRuCYt1EPMiJ8GO0YsZV
+         ltZg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=LYCRkgDKfMqQxnDtmwwtLXZySetJrlEBoEjy46t0lwY=;
+        b=gt2TktDPx/2TAbPoYS7pqRm3cxs+8BtrL/abE0odQETYnB1lfOi/nf59TjDd8AfPQ/
+         oF0wnhA081EAEAyv5MP/pDvXCLTpPimEiW6l9CuyA7kf9UuRNYTmrd3hiuHSrenDrGil
+         MdzNLRVdRW2+1jACqFqJrVrgVCMjMPOaAc9J3TIvZxrt0p6j14DJjZiuquE09so39OKD
+         IVZSRT5W3DHfRiJC7MTcI1qYTt3X10xzqOJO4DUsZ2Ekd6s+wecPOuxVg78U/D5m7Vfg
+         vWeRogOQcfskJg4ETRkhXFubO5cb4OUJ88y3o2wE8AfyN0cnRnOz452zZb/Q/qCvaJUy
+         hx2Q==
+X-Gm-Message-State: APjAAAW34Y7HHbIMiIjmmltycjS8IlA9WvnMO6cKy06KgGBvuGK/KPVI
+        eymJbckQwEBgGBKtzX9+DAg=
+X-Google-Smtp-Source: APXvYqzrHycMpIYeNU1oJwQ3BCk0pDR7MRMNwVS+JejLnIMv8AOBPIl3JjAPHx490dTVLMltsCwiCA==
+X-Received: by 2002:a17:902:d890:: with SMTP id b16mr8480713plz.315.1565952720984;
+        Fri, 16 Aug 2019 03:52:00 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a20sm3393674pjo.0.2019.08.16.03.51.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Aug 2019 03:52:00 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 18:51:50 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, Stefano Brivio <sbrivio@redhat.com>,
+        wenxu <wenxu@ucloud.cn>, Alexei Starovoitov <ast@fb.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] tunnel: fix dev null pointer dereference when send
+ pkg larger than mtu in collect_md mode
+Message-ID: <20190816105150.GZ18865@dhcp-12-139.nay.redhat.com>
+References: <20190815060904.19426-1-liuhangbin@gmail.com>
+ <cb5b5d82-1239-34a9-23f5-1894a2ec92a2@gmail.com>
+ <20190816032418.GX18865@dhcp-12-139.nay.redhat.com>
+ <fe103dee-bba8-1e0d-83b2-f91c2c37089d@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190816092437.31846-1-efremov@linux.com>
-User-Agent: Mutt/1.10.1+81 (426a6c1) (2018-08-26)
+In-Reply-To: <fe103dee-bba8-1e0d-83b2-f91c2c37089d@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 16, 2019 at 12:24:27PM +0300, Denis Efremov wrote:
-> Code that iterates over all standard PCI BARs typically uses
-> PCI_STD_RESOURCE_END, but this is error-prone because it requires
-> "i <= PCI_STD_RESOURCE_END" rather than something like
-> "i < PCI_STD_NUM_BARS". We could add such a definition and use it the same
-> way PCI_SRIOV_NUM_BARS is used. There is already the definition
-> PCI_BAR_COUNT for s390 only. Thus, this patchset introduces it globally.
+On Fri, Aug 16, 2019 at 10:23:55AM +0200, Eric Dumazet wrote:
 > 
-> Changes in v2:
->   - Reverse checks in pci_iomap_range,pci_iomap_wc_range.
->   - Refactor loops in vfio_pci to keep PCI_STD_RESOURCES.
->   - Add 2 new patches to replace the magic constant with new define.
->   - Split net patch in v1 to separate stmmac and dwc-xlgmac patches.
 > 
-> Denis Efremov (10):
->   PCI: Add define for the number of standard PCI BARs
->   s390/pci: Loop using PCI_STD_NUM_BARS
->   x86/PCI: Loop using PCI_STD_NUM_BARS
->   stmmac: pci: Loop using PCI_STD_NUM_BARS
->   net: dwc-xlgmac: Loop using PCI_STD_NUM_BARS
->   rapidio/tsi721: Loop using PCI_STD_NUM_BARS
->   efifb: Loop using PCI_STD_NUM_BARS
->   vfio_pci: Loop using PCI_STD_NUM_BARS
->   PCI: hv: Use PCI_STD_NUM_BARS
->   PCI: Use PCI_STD_NUM_BARS
+> On 8/16/19 5:24 AM, Hangbin Liu wrote:
+> > Hi Eric,
+> > 
+> > Thanks for the review.
+> > On Thu, Aug 15, 2019 at 11:16:58AM +0200, Eric Dumazet wrote:
+> >>> diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+> >>> index 38c02bb62e2c..c6713c7287df 100644
+> >>> --- a/net/ipv4/ip_tunnel.c
+> >>> +++ b/net/ipv4/ip_tunnel.c
+> >>> @@ -597,6 +597,9 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+> >>>  		goto tx_error;
+> >>>  	}
+> >>>  
+> >>> +	if (skb_dst(skb) && !skb_dst(skb)->dev)
+> >>> +		skb_dst(skb)->dev = rt->dst.dev;
+> >>> +
+> >>
+> >>
+> >> IMO this looks wrong.
+> >> This dst seems shared. 
+> > 
+> > If the dst is shared, it may cause some problem. Could you point me where the
+> > dst may be shared possibly?
+> >
 > 
->  arch/s390/include/asm/pci.h                      |  5 +----
->  arch/s390/include/asm/pci_clp.h                  |  6 +++---
->  arch/s390/pci/pci.c                              | 16 ++++++++--------
->  arch/s390/pci/pci_clp.c                          |  6 +++---
->  arch/x86/pci/common.c                            |  2 +-
->  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c |  4 ++--
->  drivers/net/ethernet/synopsys/dwc-xlgmac-pci.c   |  2 +-
->  drivers/pci/controller/pci-hyperv.c              | 10 +++++-----
->  drivers/pci/pci.c                                | 11 ++++++-----
->  drivers/pci/quirks.c                             |  4 ++--
->  drivers/rapidio/devices/tsi721.c                 |  2 +-
->  drivers/vfio/pci/vfio_pci.c                      | 11 +++++++----
->  drivers/vfio/pci/vfio_pci_config.c               | 10 ++++++----
->  drivers/vfio/pci/vfio_pci_private.h              |  4 ++--
->  drivers/video/fbdev/efifb.c                      |  2 +-
->  include/linux/pci.h                              |  2 +-
->  include/uapi/linux/pci_regs.h                    |  1 +
->  17 files changed, 51 insertions(+), 47 deletions(-)
-
-I've come across a few more places where this change can be made. There
-may be multiple instances in the same file, but only the first is shown
-below:
-
-drivers/misc/pci_endpoint_test.c:       for (bar = BAR_0; bar <= BAR_5; bar++) {
-drivers/net/ethernet/intel/e1000/e1000_main.c:          for (i = BAR_1; i <= BAR_5; i++) {
-drivers/net/ethernet/intel/ixgb/ixgb_main.c:    for (i = BAR_1; i <= BAR_5; i++) {
-drivers/pci/controller/dwc/pci-dra7xx.c:        for (bar = BAR_0; bar <= BAR_5; bar++)
-drivers/pci/controller/dwc/pci-layerscape-ep.c: for (bar = BAR_0; bar <= BAR_5; bar++)
-drivers/pci/controller/dwc/pcie-artpec6.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
-drivers/pci/controller/dwc/pcie-designware-plat.c:      for (bar = BAR_0; bar <= BAR_5; bar++)
-drivers/pci/endpoint/functions/pci-epf-test.c:  for (bar = BAR_0; bar <= BAR_5; bar++) {
-include/linux/pci-epc.h:        u64     bar_fixed_size[BAR_5 + 1];
-drivers/scsi/pm8001/pm8001_hwi.c:       for (bar = 0; bar < 6; bar++) {
-drivers/scsi/pm8001/pm8001_init.c:      for (bar = 0; bar < 6; bar++) {
-drivers/ata/sata_nv.c:  for (bar = 0; bar < 6; bar++)
-drivers/video/fbdev/core/fbmem.c:       for (idx = 0, bar = 0; bar < PCI_ROM_RESOURCE; bar++) {
-drivers/staging/gasket/gasket_core.c:   for (i = 0; i < GASKET_NUM_BARS; i++) {
-drivers/tty/serial/8250/8250_pci.c:     for (i = 0; i < PCI_NUM_BAR_RESOURCES; i++) { <-----------
-
-It looks like BARs are often iterated with PCI_NUM_BAR_RESOURCES, there
-are a load of these too found with:
-
-git grep PCI_ROM_RESOURCE | grep "< "
-
-I'm happy to share patches if preferred.
-
-Thanks,
-
-Andrew Murray
-
+> dst are inherently shared.
 > 
-> -- 
-> 2.21.0
+> This is why we have a refcount on them.
 > 
+> Only when the dst has been allocated by the current thread we can make changes on them.
+> 
+
+OK, I see now.
+
+Then how about fix the issue in __icmp_send and decode_session{4,6}. The
+fix in there is safe, as in __icmp_send() we only want to get net,
+dev_net(skb_in->dev) could also do the work, just as icmp6_send() does.
+
+For decode_session{4,6} the oif is also not needed in this scenario as this
+is called by xfrm_decode_session_reverse(), we only need the skb_iif
+fl4->flowi4_oif = reverse ? skb->skb_iif : oif;
+
+I also need to check more code in OVS..
+
+diff --git a/net/ipv4/icmp.c b/net/ipv4/icmp.c
+index 1510e951f451..95d803543df5 100644
+--- a/net/ipv4/icmp.c
++++ b/net/ipv4/icmp.c
+@@ -582,7 +582,11 @@ void __icmp_send(struct sk_buff *skb_in, int type, int code, __be32 info,
+
+        if (!rt)
+                goto out;
+-       net = dev_net(rt->dst.dev);
++
++       if (skb_in->dev)
++               net = dev_net(skb_in->dev);
++       else
++               goto out;
+
+        /*
+         *      Find the original header. It is expected to be valid, of course.
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index 8ca637a72697..ec94f5795ea4 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3269,7 +3269,7 @@ decode_session4(struct sk_buff *skb, struct flowi *fl, bool reverse)
+        struct flowi4 *fl4 = &fl->u.ip4;
+        int oif = 0;
+
+-       if (skb_dst(skb))
++       if (skb_dst(skb) && skb_dst(skb)->dev)
+                oif = skb_dst(skb)->dev->ifindex;
+
+        memset(fl4, 0, sizeof(struct flowi4));
+@@ -3387,7 +3387,7 @@ decode_session6(struct sk_buff *skb, struct flowi *fl, bool reverse)
+
+        nexthdr = nh[nhoff];
+
+-       if (skb_dst(skb))
++       if (skb_dst(skb) && skb_dst(skb)->dev)
+                oif = skb_dst(skb)->dev->ifindex;
+
+        memset(fl6, 0, sizeof(struct flowi6));
+
+
+Thanks
+Hangbin
