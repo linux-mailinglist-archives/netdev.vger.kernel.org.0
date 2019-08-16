@@ -2,142 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 161B5905A4
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:20:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0D20905B5
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 18:26:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbfHPQUc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 12:20:32 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:44742 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726261AbfHPQUc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:20:32 -0400
-Received: by mail-pf1-f194.google.com with SMTP id c81so3342570pfc.11
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 09:20:31 -0700 (PDT)
+        id S1726758AbfHPQZ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 12:25:56 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43541 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726097AbfHPQZz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 12:25:55 -0400
+Received: by mail-qt1-f195.google.com with SMTP id b11so6666552qtp.10
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 09:25:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=Z+jwXCn4Nrf4ggKgpv88PtHdT/59MEwcFoA29WZ+sWM=;
-        b=dq+JJrDDK/vTTtdT4WHD4v4RDL9h/yIunZwnbmuOuqunmGJdQyUzUsTj/lD/mZhylI
-         0Uqult2Bt5JSQ8EaQEl0bQaQsm2t2f/WXie0vLHISDR3AS696sifXQxIkqsPiOYfxt6T
-         R7LMe8Wz5CRbsbcLqB09MGC3Bi1GbY6i6g9iDntWdhEKUpfdL2tZTKo+Nwyl2SCpBcCY
-         ds7JZsTVICFO8Y1Yx6+Ejm3Q9uxVPZqKGRQJ91KQBaXnvn6wf11r8I02A/7piKe2KSPo
-         iOLLHtC1eRnT/kKxXk2rViALmSR+4cCShj8sBO+lOeL2+U1JSLSCTVfsGqVEBaB88rNu
-         xtNw==
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=tJbAL73peLOlLB4/pZ1mzmtP7kI+uk4j46LfYonMjvo=;
+        b=WHv0rmdFdva8tEfBCMXPRvVIsrye+EN364/5ZmRjTvfe+XfZxJc7xqjiRRByHb/T2Z
+         lGJOTnNDkZWwvvaOHyQsXqpFKmVtuRquDTIRKFpu2tveJkOnmbQpVeXRf3TRPMvB5mce
+         xERh+a5IsHz0/NBNaP2j5aIKEI7L9CuSFFJFcXI69N2tiGP9+xhPfWYQQn0b7P5HINa0
+         w1QUh8k607qZMQkHqS63eBk1V4/mI4JCIn/p5+Ak+cJXr3vvXyqtXwahUH7SEtc+TcFc
+         KmBY4nW3YiNQUOivzHeVSFxc55JJo2o15e5qwQQ3z2nLBwhiJEIr4seh3BdSqoeEFZuG
+         Kluw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=Z+jwXCn4Nrf4ggKgpv88PtHdT/59MEwcFoA29WZ+sWM=;
-        b=K/QzeCWG4nL7xLQvvj0oHx3eD0ca+c7aWHZSsTvkrNqMHfs/q/m7WmEmry+C/t/grM
-         I/cyaBixC9/vKyrLVLJy/VwLpUSucja6pyN+u6uc3pl10UVeUcKoN0iVvuckeJgAtEP9
-         LYwLCcL8Q2q5eJYjz6p9DkksMv/E5UIbjIbPR2uEJ7WkVIbTS+TBAirFXmtxZqXZSMvA
-         LvdtNVF//bb3/bqPNuh3ItTqscqljeuplF3J2ZxrSbS9F7ZiV1aa9PIUC+z3i1P5nt7C
-         QaiZl9zszNbO9T9BtuoXA/XSBvLtt1OjhI5NNKAv77MZ+zHZIuf2JoPCMIRUeP8VBqQI
-         NOzw==
-X-Gm-Message-State: APjAAAXP2CSsPcUvuseNCtHwIOs/L3KrNCApDPNfyYb30UDxlPPLk1fT
-        sx+vbQ3K9AMBkf/MThxMr2/Xuw==
-X-Google-Smtp-Source: APXvYqy7xbf0oeZMLxRIKCMpxiZxJiFL+gKjY3snNZxR195IKv4ZDKrh4MMrMH5ydsuFGEAgnd3WNA==
-X-Received: by 2002:a63:ff0c:: with SMTP id k12mr8156108pgi.186.1565972431208;
-        Fri, 16 Aug 2019 09:20:31 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id o11sm7318906pfh.114.2019.08.16.09.20.30
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=tJbAL73peLOlLB4/pZ1mzmtP7kI+uk4j46LfYonMjvo=;
+        b=fu7hgtVay+N5BLAF732RUO6o9C3Cz4pVKi7Gm23vH/R35VSQkoESjUVZVXzNXA7aDg
+         eanvTFRg6KAdfjCt6sV/kWLMCghdQ3/W67qzXp/2zR233T/1BCeVZu+jYO1mTBcgPppz
+         SHjmIuzqGg8uIEoMESLeuUD+Cxn7DZuzUz1ZQ77+x1Mti+dp/YAR6nntZNTF4pUWvPY+
+         iGb1jWwoWFQowO3bxsqvArcilQcahA7cE/a1LEgSqKe8DryvLLe9SVWJ1J+Jq94krL8L
+         drnkndW/rheR2kxb6AHfktbA60CbBaF51hYIvG3M3ZEwPnOYlcCnYr+xgjaHODvTAYCK
+         eMgA==
+X-Gm-Message-State: APjAAAV3gocwAXyWNnuN821PGvXeQeChmFc4M+MBuW6aksNfL7k+Oyy0
+        rkGIoy+mDX8+3q8HI/Ef15A=
+X-Google-Smtp-Source: APXvYqyf5le6Ss+09vmtqsvppjzIp7yE3ggLO4F6e0lIxtl7Li7GONaroKZP/vY7ghw78HQB4EVq6A==
+X-Received: by 2002:a0c:e6cc:: with SMTP id l12mr2337264qvn.60.1565972754628;
+        Fri, 16 Aug 2019 09:25:54 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id g3sm3127157qke.105.2019.08.16.09.25.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2019 09:20:30 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 09:20:29 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Toshiaki Makita <toshiaki.makita1@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>
-Subject: Re: [RFC PATCH bpf-next 00/14] xdp_flow: Flow offload to XDP
-Message-ID: <20190816162029.GR2820@mini-arch>
-References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
- <20190814170715.GJ2820@mini-arch>
- <14c4a876-6f5d-4750-cbe4-19622f64975b@gmail.com>
- <20190815152100.GN2820@mini-arch>
- <20190815122232.4b1fa01c@cakuba.netronome.com>
- <20190816155911.GP2820@mini-arch>
+        Fri, 16 Aug 2019 09:25:53 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 12:25:52 -0400
+Message-ID: <20190816122552.GC629@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
+Subject: Re: [PATCH RFC net-next 3/3] net: dsa: mv88e6xxx: setup SERDES irq
+ also for CPU/DSA ports
+In-Reply-To: <20190816150834.26939-4-marek.behun@nic.cz>
+References: <20190816150834.26939-1-marek.behun@nic.cz>
+ <20190816150834.26939-4-marek.behun@nic.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190816155911.GP2820@mini-arch>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/16, Stanislav Fomichev wrote:
-> On 08/15, Jakub Kicinski wrote:
-> > On Thu, 15 Aug 2019 08:21:00 -0700, Stanislav Fomichev wrote:
-> > > On 08/15, Toshiaki Makita wrote:
-> > > > On 2019/08/15 2:07, Stanislav Fomichev wrote:  
-> > > > > On 08/13, Toshiaki Makita wrote:  
-> > > > > > * Implementation
-> > > > > > 
-> > > > > > xdp_flow makes use of UMH to load an eBPF program for XDP, similar to
-> > > > > > bpfilter. The difference is that xdp_flow does not generate the eBPF
-> > > > > > program dynamically but a prebuilt program is embedded in UMH. This is
-> > > > > > mainly because flow insertion is considerably frequent. If we generate
-> > > > > > and load an eBPF program on each insertion of a flow, the latency of the
-> > > > > > first packet of ping in above test will incease, which I want to avoid.  
-> > > > > Can this be instead implemented with a new hook that will be called
-> > > > > for TC events? This hook can write to perf event buffer and control
-> > > > > plane will insert/remove/modify flow tables in the BPF maps (contol
-> > > > > plane will also install xdp program).
-> > > > > 
-> > > > > Why do we need UMH? What am I missing?  
-> > > > 
-> > > > So you suggest doing everything in xdp_flow kmod?  
-> > > You probably don't even need xdp_flow kmod. Add new tc "offload" mode
-> > > (bypass) that dumps every command via netlink (or calls the BPF hook
-> > > where you can dump it into perf event buffer) and then read that info
-> > > from userspace and install xdp programs and modify flow tables.
-> > > I don't think you need any kernel changes besides that stream
-> > > of data from the kernel about qdisc/tc flow creation/removal/etc.
-> > 
-> > There's a certain allure in bringing the in-kernel BPF translation
-> > infrastructure forward. OTOH from system architecture perspective IMHO
-> > it does seem like a task best handed in user space. bpfilter can replace
-> > iptables completely, here we're looking at an acceleration relatively
-> > loosely coupled with flower.
-> Even for bpfilter I would've solved it using something similar:
-> iptables bypass + redirect iptables netlink requests to some
-> userspace helper that was registered to be iptables compatibility
-> manager. And then, again, it becomes a purely userspace problem.
-Oh, wait, isn't iptables kernel api is setsockopt/getsockopt?
-With the new cgroup hooks you can now try to do bpfilter completely
-in BPF 🤯
+On Fri, 16 Aug 2019 17:08:34 +0200, Marek Behún <marek.behun@nic.cz> wrote:
+> @@ -2151,16 +2151,6 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+>  	if (err)
+>  		return err;
+>  
+> -	/* Enable the SERDES interface for DSA and CPU ports. Normal
+> -	 * ports SERDES are enabled when the port is enabled, thus
+> -	 * saving a bit of power.
+> -	 */
+> -	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
+> -		err = mv88e6xxx_serdes_power(chip, port, true);
+> -		if (err)
+> -			return err;
+> -	}
+> -
+>  	/* Port Control 2: don't force a good FCS, set the maximum frame size to
+>  	 * 10240 bytes, disable 802.1q tags checking, don't discard tagged or
+>  	 * untagged frames on this port, do a destination address lookup on all
+> @@ -2557,6 +2547,48 @@ static int mv88e6xxx_setup(struct dsa_switch *ds)
+>  	return err;
+>  }
+>  
+> +static int mv88e6xxx_port_setup(struct dsa_switch *ds, int port)
+> +{
+> +	struct mv88e6xxx_chip *chip = ds->priv;
+> +	int err;
+> +
+> +	/* Enable the SERDES interface for DSA and CPU ports. Normal
+> +	 * ports SERDES are enabled when the port is enabled, thus
+> +	 * saving a bit of power.
+> +	 */
+> +	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
+> +		mv88e6xxx_reg_lock(chip);
+> +
+> +		err = mv88e6xxx_serdes_power(chip, port, true);
+> +
+> +		if (!err && chip->info->ops->serdes_irq_setup)
+> +			err = chip->info->ops->serdes_irq_setup(chip, port);
+> +
+> +		mv88e6xxx_reg_unlock(chip);
+> +
+> +		return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static void mv88e6xxx_port_teardown(struct dsa_switch *ds, int port)
+> +{
+> +	struct mv88e6xxx_chip *chip = ds->priv;
+> +
+> +	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
+> +		mv88e6xxx_reg_lock(chip);
+> +
+> +		if (chip->info->ops->serdes_irq_free)
+> +			chip->info->ops->serdes_irq_free(chip, port);
+> +
+> +		if (mv88e6xxx_serdes_power(chip, port, false))
+> +			dev_err(chip->dev, "failed to power off SERDES\n");
+> +
+> +		mv88e6xxx_reg_unlock(chip);
+> +	}
+> +}
 
-> The issue with UMH is that the helper has to be statically compiled
-> from the kernel tree, which means we can't bring in any dependencies
-> (stuff like libkefir you mentioned below).
-> 
-> But I digress :-)
-> 
-> > FWIW Quentin spent some time working on a universal flow rule to BPF
-> > translation library:
-> > 
-> > https://github.com/Netronome/libkefir
-> > 
-> > A lot remains to be done there, but flower front end is one of the
-> > targets. A library can be tuned for any application, without a
-> > dependency on flower uAPI.
-> > 
-> > > But, I haven't looked at the series deeply, so I might be missing
-> > > something :-)
-> > 
-> > I don't think you are :)
+So now we have mv88e6xxx_setup_port() and mv88e6xxx_port_setup(), which both
+setup a port, differently, at different time. This is definitely error prone.
