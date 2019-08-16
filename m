@@ -2,383 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D34788FA68
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 07:29:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 60D468FA86
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 07:56:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726603AbfHPF3W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 01:29:22 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:40234 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726470AbfHPF3W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 01:29:22 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v19so3058796wmj.5
-        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 22:29:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=ope7w50SlIuNWWorWClkMokp+GHiBVuI/NRX3t+tDHQ=;
-        b=ewoDZ6AWxnGrjsi9T7AVupUJnPGYAoOAtxrRaF2OiBzIdccjjLBRhJI+WmzVlYdU8/
-         98oA55XKrgJxAbfoeDgYqYXOVois4baaa86zT3h4U/4A0RF9JxhEIQXp/jQi/XNtHV+L
-         spYaFhXXfCNANEDhyMV4X6DZklEwteG4vgQfm3YoGFrCfo05u6fgoHl1C2rVzdEkyy9c
-         4j/CET/SdeTh9oUc7OCbatduCpz6WcOjISTgahRi4vffo8g4vy6Z0ClmPW3VK9Bp7LoD
-         lvse9S85ttFlqNo1XtykRenAzFqWUfC7D7sL/TGzi2xzTc8HYNPxK55xKAaL3dDOwRjK
-         mXxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=ope7w50SlIuNWWorWClkMokp+GHiBVuI/NRX3t+tDHQ=;
-        b=c/y6kcsMK4KT1nBh0Pb2+zM7754Eh85JCj+EABg0RU8oMXnH/XXQ1HU7ReixuCQOY7
-         eEideCCfav9HYYkykwiRtgLB3Z+D+kySuuWdnCQbEMU0m/IMgxujSe2q5KM4pt8zPXAH
-         Gl0E3Lx2ei4erECsVfYjNYld2cync89h7mSmVWNQf5nRzRnczEO8AIjh1aHfQERGuIfh
-         YG79ZDFGi7ZV2LW8DnUz0FJJNBHTGPD5geRH7rzA9UlL9LqlRwCbObyS5vc/Rz+v5s3V
-         XYd1qoC6XX3WElNpAPZLkRZ7uIn3HGsodm+0+wxVicNVwcNi9ZT4Kq1G9ceBC4UX6v2c
-         XMnw==
-X-Gm-Message-State: APjAAAUYvbCw3fpDytozmDIkWv3rry4WCjEIx+vVMvZ1moBFsAB2ibG5
-        Nuh7VeYvsAUNW5gNBkWxgAjvp09sT2WaXKDinSM=
-X-Google-Smtp-Source: APXvYqyKG67SPqwdzSTsrZQDWAZThk6jJFxzt1bf/J/OifacX3dpJ8Y76raJWaGiOCebwauTXcgGQE66bhNhY+S3hXY=
-X-Received: by 2002:a1c:1bd7:: with SMTP id b206mr5035504wmb.85.1565933358617;
- Thu, 15 Aug 2019 22:29:18 -0700 (PDT)
+        id S1726584AbfHPF4t (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 01:56:49 -0400
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:11914 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726166AbfHPF4t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 01:56:49 -0400
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7G5runs027062;
+        Thu, 15 Aug 2019 22:56:24 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=kWal1GjVCRKuz0W/IfWFyGfTVFqKaHX5Clzafw2II6g=;
+ b=FmBhI/+8yft8pQxvzxjWORcGx4pj9M1Ym9DS0v6VZxNH5kTibxLqHvjJkAWfkOcHMd6A
+ hPhR2smkZSK4qtBgav8B920TGOW51NYuZzkow00vT49lcfiU4yRcVBQlmETb+N9R9LhU
+ JnbJItCcSxPHMG5XhT9CHAkDOB9fXcuQeI8= 
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2udnkp869k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 15 Aug 2019 22:56:23 -0700
+Received: from prn-hub03.TheFacebook.com (2620:10d:c081:35::127) by
+ prn-hub06.TheFacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.1.1713.5; Thu, 15 Aug 2019 22:56:22 -0700
+Received: from NAM03-DM3-obe.outbound.protection.outlook.com (192.168.54.28)
+ by o365-in.thefacebook.com (192.168.16.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
+ via Frontend Transport; Thu, 15 Aug 2019 22:56:22 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=iyisf+Wah8ENtZqlmWhd6i4Elbi4JFuNr7CgZio+UoWaknARfdr76yXu59BlUo7g554a/91pfg4HnwUVl6e3+HqaMd8NdXyvHFCdOzHMvU2w5FNl5VrPMFPWWWnFrD/9yu3zL0uy7da0JWCfEaeGTRoasWD7uDWjfDJOXIrjLBtib7Q+dkpJS7GBHI/feUQ5o9UFVw1y2F6DLoEb0Bvq43P6MSkTOImQEhOaHJnUi7p2x3tT1lHGz6xNSiCcMpcRSFQ+FaPOHwzlUqZfcwUFWalmKsW+HtewsiDUJJLYJuYtbfzOGiv6ClYtIBkmO7gFoREJNN2Vhiob7ExQutHVcQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kWal1GjVCRKuz0W/IfWFyGfTVFqKaHX5Clzafw2II6g=;
+ b=gVzYPgCLFbtm937cd/Uif1qIdfe6sKB/uY3g7l+rDsdQkKtD/rpo/1sUZYfoKX10v/+HMlLDxE3WLDE36yVz19t5Q+ANR70qyxWyNM6VQ533JX0Fhr4quEeR0Dn4JhKrKV7vNbjg/BETo8M5ODrauUp7h+4C+Q8GfFs0nR6xy+VcXfPBl9cdnIvzEO2epTeLt3OBzHPSleKY5vV7uxOUd0kh98G8hjGDq2tJyk7Otp1eeuMeEe4TzyaJMh/ZprcC61JlTD0bio2SPSr039JVSfRzFdwnApgDyWoQV25ibTdSNho5pqmAFXePvKRbw2YCdDv6+Kxh+9QyeY7wRwBmUA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kWal1GjVCRKuz0W/IfWFyGfTVFqKaHX5Clzafw2II6g=;
+ b=hO0lrql+o3ZYroYy56jGPDqJZhHWn4x6iHNkAJ3XIIxnDcMCTl8YPMaISyDKSA60RM+pBPt5090J2lKXTtqzGnXDvWZnlC12lKA5DNFz9aqiqmZbJmL5O7+OfCb9JmP/oU4ojWIDm7fAOLclw4A6YGMmR24bGZgxkoE+x9l0J8I=
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com (10.175.3.22) by
+ MWHPR15MB1279.namprd15.prod.outlook.com (10.175.4.142) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Fri, 16 Aug 2019 05:56:20 +0000
+Received: from MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::45ee:bc50:acfa:60a5]) by MWHPR15MB1165.namprd15.prod.outlook.com
+ ([fe80::45ee:bc50:acfa:60a5%3]) with mapi id 15.20.2178.016; Fri, 16 Aug 2019
+ 05:56:20 +0000
+From:   Song Liu <songliubraving@fb.com>
+To:     Andy Lutomirski <luto@amacapital.net>
+CC:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Thread-Topic: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via
+ /dev/bpf
+Thread-Index: AQHVLSW5611trSWWQEuGSg4xXBva46awKSYAgAFFJoCAAehSgIACJsgAgAEbzICAARNPgIAANGYAgB9j6wCAATKggIAAgfQAgAAt2QCAAFEqAIAFfSwAgAPZeACAAQAYAIAAxVOAgAC4LoCAAl7hgIAEHsgAgAAfGQCAAF7NAIAAHpUAgACj0gCAACEJAIAAIrKAgAA/JgCAAdj4gIAKg7WAgAL/24CAAEL5gIAAEyuAgABUMgA=
+Date:   Fri, 16 Aug 2019 05:56:20 +0000
+Message-ID: <4F52274A-CD70-4261-A255-2C4A7E818141@fb.com>
+References: <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
+ <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
+ <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
+ <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
+ <20190805192122.laxcaz75k4vxdspn@ast-mbp>
+ <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
+ <20190806011134.p5baub5l3t5fkmou@ast-mbp>
+ <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+ <20190813215823.3sfbakzzjjykyng2@ast-mbp> <201908151203.FE87970@keescook>
+ <20190815234622.t65oxm5mtfzy6fhg@ast-mbp.dhcp.thefacebook.com>
+ <B0364660-AD6A-4E5C-B04F-3B6DA78B4BBE@amacapital.net>
+In-Reply-To: <B0364660-AD6A-4E5C-B04F-3B6DA78B4BBE@amacapital.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Apple Mail (2.3445.104.11)
+x-originating-ip: [2620:10d:c090:180::4a64]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 00e30123-bd54-4240-80e2-08d7220e7675
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MWHPR15MB1279;
+x-ms-traffictypediagnostic: MWHPR15MB1279:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR15MB12799154B4790D09D869E9D4B3AF0@MWHPR15MB1279.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 0131D22242
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(376002)(366004)(136003)(39860400002)(346002)(396003)(189003)(199004)(6486002)(81166006)(6512007)(81156014)(66476007)(14444005)(256004)(6436002)(66946007)(8936002)(36756003)(50226002)(66446008)(66556008)(64756008)(8676002)(14454004)(446003)(11346002)(2616005)(476003)(46003)(99286004)(316002)(54906003)(71190400001)(486006)(76176011)(71200400001)(561944003)(186003)(102836004)(33656002)(53546011)(6506007)(478600001)(7416002)(5660300002)(2906002)(25786009)(305945005)(7736002)(6116002)(57306001)(4326008)(53936002)(229853002)(6246003)(76116006)(86362001)(66574012)(6916009);DIR:OUT;SFP:1102;SCL:1;SRVR:MWHPR15MB1279;H:MWHPR15MB1165.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: nNXX4fRfPzM4WNmd2ig3kuqijS3gF65gL0PsBZyKMJfwkiXyygwagczS/nfy2AVmG7FIFHJs3lT29uAr5TKXQpXC7cC03RvExgTeg0Kkx3PugUwdXZoqDjbQQKyIPoif9eQJqelbxgdnN4clk3eEY8weqFFmF7XiphGiA7057AQltQuBDxi9iUMfWCl5Y4s4CeI3gLhqPFW2GhqX8QHCh5gFMR6SRsWlvuxjY3YmtSFK+KdtEo1cOR8qd7nFJwAlf+IFjES78NAk/hlpS0MnIv+0XzQhZZDoRnrl7U/JxGhG87DnmvjYtIgJAJuhZOpi+wfa2RMDS8V5WeYVC2S/q988Rk9Ynmcp6BErtIHJrKVlje1uKstp6VCypDrRC7g05DVbgUvyOpUvBedBhx6cYmBLpVvn/wS5csQO38yCJ9Q=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <5CAAA3EA589AD74FAB87425A3C3BEBA7@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <1565880170-19548-1-git-send-email-jon.maloy@ericsson.com>
-In-Reply-To: <1565880170-19548-1-git-send-email-jon.maloy@ericsson.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 16 Aug 2019 13:29:07 +0800
-Message-ID: <CADvbK_dtsS5hxn1RLvG9hpB974tDsx_dAU394baSp2OgHubLJg@mail.gmail.com>
-Subject: Re: [net-next v2 1/1] tipc: clean up skb list lock handling on send path
-To:     Jon Maloy <jon.maloy@ericsson.com>
-Cc:     davem <davem@davemloft.net>, network dev <netdev@vger.kernel.org>,
-        tung.q.nguyen@dektech.com.au, hoang.h.le@dektech.com.au,
-        Long Xin <lxin@redhat.com>, shuali@redhat.com,
-        Ying Xue <ying.xue@windriver.com>,
-        Eric Dumazet <edumazet@google.com>,
-        tipc-discussion@lists.sourceforge.net
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00e30123-bd54-4240-80e2-08d7220e7675
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Aug 2019 05:56:20.6304
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: P48GhUIR5YUJGdDULSiH2VWyYv5mIET8vQgkZxHItbhur16OQfaso42FZLaBHCcdmXDGgHYyinwgKbqGe9uadQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR15MB1279
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-16_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908160064
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 11:36 PM Jon Maloy <jon.maloy@ericsson.com> wrote:
->
-> The policy for handling the skb list locks on the send and receive paths
-> is simple.
->
-> - On the send path we never need to grab the lock on the 'xmitq' list
->   when the destination is an exernal node.
->
-> - On the receive path we always need to grab the lock on the 'inputq'
->   list, irrespective of source node.
->
-> However, when transmitting node local messages those will eventually
-> end up on the receive path of a local socket, meaning that the argument
-> 'xmitq' in tipc_node_xmit() will become the '=C3=ADnputq' argument in  th=
-e
-> function tipc_sk_rcv(). This has been handled by always initializing
-> the spinlock of the 'xmitq' list at message creation, just in case it
-> may end up on the receive path later, and despite knowing that the lock
-> in most cases never will be used.
->
-> This approach is inaccurate and confusing, and has also concealed the
-> fact that the stated 'no lock grabbing' policy for the send path is
-> violated in some cases.
->
-> We now clean up this by never initializing the lock at message creation,
-> instead doing this at the moment we find that the message actually will
-> enter the receive path. At the same time we fix the four locations
-> where we incorrectly access the spinlock on the send/error path.
->
-> This patch also reverts commit d12cffe9329f ("tipc: ensure head->lock
-> is initialised") which has now become redundant.
->
-> CC: Eric Dumazet <edumazet@google.com>
-> Reported-by: Chris Packham <chris.packham@alliedtelesis.co.nz>
-> Acked-by: Ying Xue <ying.xue@windriver.com>
-> Signed-off-by: Jon Maloy <jon.maloy@ericsson.com>
->
-> ---
-> v2: removed more unnecessary lock initializations after feedback
->     from Xin Long.
-> ---
->  net/tipc/bcast.c      | 10 +++++-----
->  net/tipc/group.c      |  4 ++--
->  net/tipc/link.c       | 14 +++++++-------
->  net/tipc/name_distr.c |  2 +-
->  net/tipc/node.c       |  7 ++++---
->  net/tipc/socket.c     | 14 +++++++-------
->  6 files changed, 26 insertions(+), 25 deletions(-)
->
-> diff --git a/net/tipc/bcast.c b/net/tipc/bcast.c
-> index 34f3e56..6ef1abd 100644
-> --- a/net/tipc/bcast.c
-> +++ b/net/tipc/bcast.c
-> @@ -185,7 +185,7 @@ static void tipc_bcbase_xmit(struct net *net, struct =
-sk_buff_head *xmitq)
->         }
->
->         /* We have to transmit across all bearers */
-> -       skb_queue_head_init(&_xmitq);
-> +       __skb_queue_head_init(&_xmitq);
->         for (bearer_id =3D 0; bearer_id < MAX_BEARERS; bearer_id++) {
->                 if (!bb->dests[bearer_id])
->                         continue;
-> @@ -256,7 +256,7 @@ static int tipc_bcast_xmit(struct net *net, struct sk=
-_buff_head *pkts,
->         struct sk_buff_head xmitq;
->         int rc =3D 0;
->
-> -       skb_queue_head_init(&xmitq);
-> +       __skb_queue_head_init(&xmitq);
->         tipc_bcast_lock(net);
->         if (tipc_link_bc_peers(l))
->                 rc =3D tipc_link_xmit(l, pkts, &xmitq);
-> @@ -286,7 +286,7 @@ static int tipc_rcast_xmit(struct net *net, struct sk=
-_buff_head *pkts,
->         u32 dnode, selector;
->
->         selector =3D msg_link_selector(buf_msg(skb_peek(pkts)));
-> -       skb_queue_head_init(&_pkts);
-> +       __skb_queue_head_init(&_pkts);
->
->         list_for_each_entry_safe(dst, tmp, &dests->list, list) {
->                 dnode =3D dst->node;
-> @@ -344,7 +344,7 @@ static int tipc_mcast_send_sync(struct net *net, stru=
-ct sk_buff *skb,
->         msg_set_size(_hdr, MCAST_H_SIZE);
->         msg_set_is_rcast(_hdr, !msg_is_rcast(hdr));
->
-> -       skb_queue_head_init(&tmpq);
-> +       __skb_queue_head_init(&tmpq);
->         __skb_queue_tail(&tmpq, _skb);
->         if (method->rcast)
->                 tipc_bcast_xmit(net, &tmpq, cong_link_cnt);
-> @@ -378,7 +378,7 @@ int tipc_mcast_xmit(struct net *net, struct sk_buff_h=
-ead *pkts,
->         int rc =3D 0;
->
->         skb_queue_head_init(&inputq);
-> -       skb_queue_head_init(&localq);
-> +       __skb_queue_head_init(&localq);
->
->         /* Clone packets before they are consumed by next call */
->         if (dests->local && !tipc_msg_reassemble(pkts, &localq)) {
-> diff --git a/net/tipc/group.c b/net/tipc/group.c
-> index 5f98d38..89257e2 100644
-> --- a/net/tipc/group.c
-> +++ b/net/tipc/group.c
-> @@ -199,7 +199,7 @@ void tipc_group_join(struct net *net, struct tipc_gro=
-up *grp, int *sk_rcvbuf)
->         struct tipc_member *m, *tmp;
->         struct sk_buff_head xmitq;
->
-> -       skb_queue_head_init(&xmitq);
-> +       __skb_queue_head_init(&xmitq);
->         rbtree_postorder_for_each_entry_safe(m, tmp, tree, tree_node) {
->                 tipc_group_proto_xmit(grp, m, GRP_JOIN_MSG, &xmitq);
->                 tipc_group_update_member(m, 0);
-> @@ -435,7 +435,7 @@ bool tipc_group_cong(struct tipc_group *grp, u32 dnod=
-e, u32 dport,
->                 return true;
->         if (state =3D=3D MBR_PENDING && adv =3D=3D ADV_IDLE)
->                 return true;
-> -       skb_queue_head_init(&xmitq);
-> +       __skb_queue_head_init(&xmitq);
->         tipc_group_proto_xmit(grp, m, GRP_ADV_MSG, &xmitq);
->         tipc_node_distr_xmit(grp->net, &xmitq);
->         return true;
-> diff --git a/net/tipc/link.c b/net/tipc/link.c
-> index dd3155b..289e848 100644
-> --- a/net/tipc/link.c
-> +++ b/net/tipc/link.c
-> @@ -959,7 +959,7 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_buf=
-f_head *list,
->                 pr_warn("Too large msg, purging xmit list %d %d %d %d %d!=
-\n",
->                         skb_queue_len(list), msg_user(hdr),
->                         msg_type(hdr), msg_size(hdr), mtu);
-> -               skb_queue_purge(list);
-> +               __skb_queue_purge(list);
->                 return -EMSGSIZE;
->         }
->
-> @@ -988,7 +988,7 @@ int tipc_link_xmit(struct tipc_link *l, struct sk_buf=
-f_head *list,
->                 if (likely(skb_queue_len(transmq) < maxwin)) {
->                         _skb =3D skb_clone(skb, GFP_ATOMIC);
->                         if (!_skb) {
-> -                               skb_queue_purge(list);
-> +                               __skb_queue_purge(list);
->                                 return -ENOBUFS;
->                         }
->                         __skb_dequeue(list);
-> @@ -1668,7 +1668,7 @@ void tipc_link_create_dummy_tnl_msg(struct tipc_lin=
-k *l,
->         struct sk_buff *skb;
->         u32 dnode =3D l->addr;
->
-> -       skb_queue_head_init(&tnlq);
-> +       __skb_queue_head_init(&tnlq);
->         skb =3D tipc_msg_create(TUNNEL_PROTOCOL, FAILOVER_MSG,
->                               INT_H_SIZE, BASIC_H_SIZE,
->                               dnode, onode, 0, 0, 0);
-> @@ -1708,9 +1708,9 @@ void tipc_link_tnl_prepare(struct tipc_link *l, str=
-uct tipc_link *tnl,
->         if (!tnl)
->                 return;
->
-> -       skb_queue_head_init(&tnlq);
-> -       skb_queue_head_init(&tmpxq);
-> -       skb_queue_head_init(&frags);
-> +       __skb_queue_head_init(&tnlq);
-> +       __skb_queue_head_init(&tmpxq);
-> +       __skb_queue_head_init(&frags);
->
->         /* At least one packet required for safe algorithm =3D> add dummy=
- */
->         skb =3D tipc_msg_create(TIPC_LOW_IMPORTANCE, TIPC_DIRECT_MSG,
-> @@ -1720,7 +1720,7 @@ void tipc_link_tnl_prepare(struct tipc_link *l, str=
-uct tipc_link *tnl,
->                 pr_warn("%sunable to create tunnel packet\n", link_co_err=
-);
->                 return;
->         }
-> -       skb_queue_tail(&tnlq, skb);
-> +       __skb_queue_tail(&tnlq, skb);
->         tipc_link_xmit(l, &tnlq, &tmpxq);
->         __skb_queue_purge(&tmpxq);
->
-> diff --git a/net/tipc/name_distr.c b/net/tipc/name_distr.c
-> index 44abc8e..61219f0 100644
-> --- a/net/tipc/name_distr.c
-> +++ b/net/tipc/name_distr.c
-> @@ -190,7 +190,7 @@ void tipc_named_node_up(struct net *net, u32 dnode)
->         struct name_table *nt =3D tipc_name_table(net);
->         struct sk_buff_head head;
->
-> -       skb_queue_head_init(&head);
-> +       __skb_queue_head_init(&head);
->
->         read_lock_bh(&nt->cluster_scope_lock);
->         named_distribute(net, &head, dnode, &nt->cluster_scope);
-> diff --git a/net/tipc/node.c b/net/tipc/node.c
-> index 1bdcf0f..c8f6177 100644
-> --- a/net/tipc/node.c
-> +++ b/net/tipc/node.c
-> @@ -1444,13 +1444,14 @@ int tipc_node_xmit(struct net *net, struct sk_buf=
-f_head *list,
->
->         if (in_own_node(net, dnode)) {
->                 tipc_loopback_trace(net, list);
-> +               spin_lock_init(&list->lock);
->                 tipc_sk_rcv(net, list);
->                 return 0;
->         }
->
->         n =3D tipc_node_find(net, dnode);
->         if (unlikely(!n)) {
-> -               skb_queue_purge(list);
-> +               __skb_queue_purge(list);
->                 return -EHOSTUNREACH;
->         }
->
-> @@ -1459,7 +1460,7 @@ int tipc_node_xmit(struct net *net, struct sk_buff_=
-head *list,
->         if (unlikely(bearer_id =3D=3D INVALID_BEARER_ID)) {
->                 tipc_node_read_unlock(n);
->                 tipc_node_put(n);
-> -               skb_queue_purge(list);
-> +               __skb_queue_purge(list);
->                 return -EHOSTUNREACH;
->         }
->
-> @@ -1491,7 +1492,7 @@ int tipc_node_xmit_skb(struct net *net, struct sk_b=
-uff *skb, u32 dnode,
->  {
->         struct sk_buff_head head;
->
-> -       skb_queue_head_init(&head);
-> +       __skb_queue_head_init(&head);
->         __skb_queue_tail(&head, skb);
->         tipc_node_xmit(net, &head, dnode, selector);
->         return 0;
-> diff --git a/net/tipc/socket.c b/net/tipc/socket.c
-> index 83ae41d..3b9f8cc 100644
-> --- a/net/tipc/socket.c
-> +++ b/net/tipc/socket.c
-> @@ -809,7 +809,7 @@ static int tipc_sendmcast(struct  socket *sock, struc=
-t tipc_name_seq *seq,
->         msg_set_nameupper(hdr, seq->upper);
->
->         /* Build message as chain of buffers */
-> -       skb_queue_head_init(&pkts);
-> +       __skb_queue_head_init(&pkts);
->         rc =3D tipc_msg_build(hdr, msg, 0, dlen, mtu, &pkts);
->
->         /* Send message if build was successful */
-> @@ -853,7 +853,7 @@ static int tipc_send_group_msg(struct net *net, struc=
-t tipc_sock *tsk,
->         msg_set_grp_bc_seqno(hdr, bc_snd_nxt);
->
->         /* Build message as chain of buffers */
-> -       skb_queue_head_init(&pkts);
-> +       __skb_queue_head_init(&pkts);
->         mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid);
->         rc =3D tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
->         if (unlikely(rc !=3D dlen))
-> @@ -1058,7 +1058,7 @@ static int tipc_send_group_bcast(struct socket *soc=
-k, struct msghdr *m,
->         msg_set_grp_bc_ack_req(hdr, ack);
->
->         /* Build message as chain of buffers */
-> -       skb_queue_head_init(&pkts);
-> +       __skb_queue_head_init(&pkts);
->         rc =3D tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
->         if (unlikely(rc !=3D dlen))
->                 return rc;
-> @@ -1387,7 +1387,7 @@ static int __tipc_sendmsg(struct socket *sock, stru=
-ct msghdr *m, size_t dlen)
->         if (unlikely(rc))
->                 return rc;
->
-> -       skb_queue_head_init(&pkts);
-> +       __skb_queue_head_init(&pkts);
->         mtu =3D tipc_node_get_mtu(net, dnode, tsk->portid);
->         rc =3D tipc_msg_build(hdr, m, 0, dlen, mtu, &pkts);
->         if (unlikely(rc !=3D dlen))
-> @@ -1445,7 +1445,7 @@ static int __tipc_sendstream(struct socket *sock, s=
-truct msghdr *m, size_t dlen)
->         int send, sent =3D 0;
->         int rc =3D 0;
->
-> -       skb_queue_head_init(&pkts);
-> +       __skb_queue_head_init(&pkts);
->
->         if (unlikely(dlen > INT_MAX))
->                 return -EMSGSIZE;
-> @@ -1805,7 +1805,7 @@ static int tipc_recvmsg(struct socket *sock, struct=
- msghdr *m,
->
->         /* Send group flow control advertisement when applicable */
->         if (tsk->group && msg_in_group(hdr) && !grp_evt) {
-> -               skb_queue_head_init(&xmitq);
-> +               __skb_queue_head_init(&xmitq);
->                 tipc_group_update_rcv_win(tsk->group, tsk_blocks(hlen + d=
-len),
->                                           msg_orignode(hdr), msg_origport=
-(hdr),
->                                           &xmitq);
-> @@ -2674,7 +2674,7 @@ static void tipc_sk_timeout(struct timer_list *t)
->         struct sk_buff_head list;
->         int rc =3D 0;
->
-> -       skb_queue_head_init(&list);
-> +       __skb_queue_head_init(&list);
->         bh_lock_sock(sk);
->
->         /* Try again later if socket is busy */
-> --
-> 2.1.4
->
-Reviewed-by: Xin Long <lucien.xin@gmail.com>
+DQoNCj4gT24gQXVnIDE1LCAyMDE5LCBhdCA1OjU0IFBNLCBBbmR5IEx1dG9taXJza2kgPGx1dG9A
+YW1hY2FwaXRhbC5uZXQ+IHdyb3RlOg0KPiANCj4gDQo+IA0KPj4gT24gQXVnIDE1LCAyMDE5LCBh
+dCA0OjQ2IFBNLCBBbGV4ZWkgU3Rhcm92b2l0b3YgPGFsZXhlaS5zdGFyb3ZvaXRvdkBnbWFpbC5j
+b20+IHdyb3RlOg0KPiANCj4gDQo+Pj4gDQo+Pj4gSSdtIG5vdCBzdXJlIHdoeSB5b3UgZHJhdyB0
+aGUgbGluZSBmb3IgVk1zIC0tIHRoZXkncmUganVzdCBhcyBidWdneQ0KPj4+IGFzIGFueXRoaW5n
+IGVsc2UuIFJlZ2FyZGxlc3MsIEkgcmVqZWN0IHRoaXMgbGluZSBvZiB0aGlua2luZzogeWVzLA0K
+Pj4+IGFsbCBzb2Z0d2FyZSBpcyBidWdneSwgYnV0IHRoYXQgaXNuJ3QgYSByZWFzb24gdG8gZ2l2
+ZSB1cC4NCj4+IA0KPj4gaG1tLiBhcmUgeW91IHNheWluZyB5b3Ugd2FudCBrZXJuZWwgY29tbXVu
+aXR5IHRvIHdvcmsgdG93YXJkcw0KPj4gbWFraW5nIGNvbnRhaW5lcnMgKG5hbWVzcGFjZXMpIGJl
+aW5nIGFibGUgdG8gcnVuIGFyYml0cmFyeSBjb2RlDQo+PiBkb3dubG9hZGVkIGZyb20gdGhlIGlu
+dGVybmV0Pw0KPiANCj4gWWVzLg0KPiANCj4gQXMgYW4gZXhhbXBsZSwgU2FuZHN0b3JtIHVzZXMg
+YSBjb21iaW5hdGlvbiBvZiBuYW1lc3BhY2VzICh1c2VyLCBuZXR3b3JrLCBtb3VudCwgaXBjKSBh
+bmQgYSBtb2RlcmF0ZWx5IHBlcm1pc3NpdmUgc2VjY29tcCBwb2xpY3kgdG8gcnVuIGFyYml0cmFy
+eSBjb2RlLiBOb3QganVzdCBsaXR0bGUgc25pcHBldHMsIGVpdGhlciDigJQgbm9kZS5qcywgTW9u
+Z28sIE15U1FMLCBNZXRlb3IsIGFuZCBvdGhlciBmYWlybHkgaGVhdnl3ZWlnaHQgc3RhY2tzIGNh
+biBhbGwgcnVuIHVuZGVyIFNhbmRzdG9ybSwgd2l0aCB0aGUgd2hvbGUgc3RhY2sgKGRhdGFiYXNl
+IGVuZ2luZSBiaW5hcmllcywgZXRjKSBzdXBwbGllZCBieSBlbnRpcmVseSB1bnRydXN0ZWQgY3Vz
+dG9tZXJzLiAgRHVyaW5nIHRoZSB0aW1lIFNhbmRzdG9ybSB3YXMgdW5kZXIgYWN0aXZlIGRldmVs
+b3BtZW50LCBJIGNhbiByZWNhbGwgKm9uZSogYnVnIHRoYXQgd291bGQgaGF2ZSBhbGxvd2VkIGEg
+c2FuZGJveCBlc2NhcGUuIFRoYXTigJlzIGEgcHJldHR5IGdvb2QgdHJhY2sgcmVjb3JkLiAgKEFs
+c28sIE1lbHRkb3duIGFuZCBTcGVjdHJlLCBzaWdoLikNCj4gDQo+IFRvIGJlIGNsZWFyLCBTYW5k
+c3Rvcm0gZGlkIG5vdCBhbGxvdyBjcmVhdGlvbiBvZiBhIHVzZXJucyBieSB0aGUgdW50cnVzdGVk
+IGNvZGUsIGFuZCBTYW5kc3Rvcm0gd291bGQgaGF2ZSBoZWF2aWx5IHJlc3RyaWN0ZWQgYnBmKCks
+IGJ1dCB0aGF0IHNob3VsZCBvbmx5IGJlIG5lY2Vzc2FyeSBiZWNhdXNlIG9mIHRoZSBwb3NzaWJp
+bGl0eSBvZiBrZXJuZWwgYnVncywgbm90IGJlY2F1c2Ugb2YgdGhlIG92ZXJhbGwgZGVzaWduLg0K
+PiANCj4gQWxleGVpLCBJ4oCZbSB0cnlpbmcgdG8gZW5jb3VyYWdlIHlvdSB0byBhaW0gZm9yIHNv
+bWV0aGluZyBldmVuIGJldHRlciB0aGFuIHlvdSBoYXZlIG5vdy4gUmlnaHQgbm93LCBpZiB5b3Ug
+Z3JhbnQgYSB1c2VyIHZhcmlvdXMgdmVyeSBzdHJvbmcgY2FwYWJpbGl0aWVzLCB0aGF0IHVzZXLi
+gJlzIHN5c3RlbWQgY2FuIHVzZSBicGYgbmV0d29yayBmaWx0ZXJzLiAgWW91ciBwcm9wb3NhbCB3
+b3VsZCBhbGxvdyB0aGlzIHdpdGggYSBkaWZmZXJlbnQsIGJ1dCBzdGlsbCB2ZXJ5IHN0cm9uZywg
+c2V0IG9mIGNhcGFiaWxpdGllcy4gVGhlcmXigJlzIG5vdGhpbmcgd3Jvbmcgd2l0aCB0aGlzIHBl
+ciBzZSwgYnV0IEkgdGhpbmsgeW91IGNhbiBhaW0gbXVjaCBoaWdoZXI6DQo+IA0KPiBDQVBfTkVU
+X0FETUlOIGFuZCB5b3VyIENBUF9CUEYgYm90aCBlZmZlY3RpdmVseSBhbGxvdyB0aGUgaG9sZGVy
+IHRvIHRha2Ugb3ZlciB0aGUgc3lzdGVtLCAqYnkgZGVzaWduKi4gIEnigJltIHN1Z2dlc3Rpbmcg
+dGhhdCB5b3UgZW5nYWdlIHRoZSBzZWN1cml0eSBjb21tdW5pdHkgKEtlZXMsIG15c2VsZiwgQWxl
+a3NhLCBKYW5uLCBTZXJnZSwgQ2hyaXN0aWFuLCBldGMpIHRvIGFpbSBmb3Igc29tZXRoaW5nIGJl
+dHRlcjogbWFrZSBpdCBzbyB0aGF0IGEgbm9ybWFsIExpbnV4IGRpc3RybyB3b3VsZCBiZSB3aWxs
+aW5nIHRvIHJlbGF4IGl0cyBzZXR0aW5ncyBlbm91Z2ggc28gdGhhdCBub3JtYWwgdXNlcnMgY2Fu
+IHVzZSBicGYgZmlsdGVyaW5nIGluIHRoZSBzeXN0ZW1kIHVuaXRzIGFuZCBtYXliZSBldmVudHVh
+bGx5IHVzZSBldmVuIG1vcmUgYnBmKCkgY2FwYWJpbGl0aWVzLiBBbmQgbGV04oCZcyBtYWtlIGlz
+IHRvIHRoYXQgbWFpbnN0cmVhbSBjb250YWluZXIgbWFuYWdlcnMgKHRoYXQgdXNlIHVzZXJucyEp
+IHdpbGwgYmUgd2lsbGluZyAoYXMgYW4gb3B0aW9uKSB0byBkZWxlZ2F0ZSBicGYoKSB0byB0aGVp
+ciBjb250YWluZXJzLiBXZeKAmXJlIGhhcHB5IHRvIGhlbHAgZGVzaWduLCByZXZpZXcsIGFuZCBl
+dmVuIHdyaXRlIGNvZGUsIGJ1dCB3ZSBuZWVkIHlvdSB0byBiZSB3aWxsaW5nIHRvIHdvcmsgd2l0
+aCB1cyB0byBtYWtlIGEgZGVzaWduIHRoYXQgc2VlbXMgbGlrZSBpdCB3aWxsIHdvcmsgYW5kIHRo
+ZW4gdG8gd2FpdCBsb25nIGVub3VnaCB0byBtZXJnZSBpdCBmb3IgdXMgdG8gdGhpbmsgYWJvdXQg
+aXQsIHRyeSB0byBwb2tlIGhvbGVzIGluIGl0LCBhbmQgY29udmluY2Ugb3Vyc2VsdmVzIGFuZCBl
+YWNoIG90aGVyIHRoYXQgaXQgaGFzIGEgZ29vZCBjaGFuY2Ugb2YgYmVpbmcgc291bmQuDQo+IA0K
+PiBPYnZpb3VzbHkgdGhlcmUgd2lsbCBiZSBtYW55IGNhc2VzIHdoZXJlIGFuIHVucHJpdmlsZWdl
+ZCBwcm9ncmFtIHNob3VsZCAqbm90KiBiZSBhYmxlIHRvIHVzZSBicGYoKSBJUCBmaWx0ZXJpbmcs
+IGJ1dCBsZXTigJlzIG1ha2UgaXQgc28gdGhhdCBlbmFibGluZyB0aGVzZSBhZHZhbmNlZCBmZWF0
+dXJlcyBkb2VzIG5vdCBhdXRvbWF0aWNhbGx5IGdpdmUgYXdheSB0aGUga2V5cyB0byB0aGUga2lu
+Z2RvbS4NCj4gDQo+IChTYW5kc3Rvcm0gc3RpbGwgZXhpc3RzIGJ1dCBpcyBubyBsb25nZXIgYXMg
+YWN0aXZlbHkgZGV2ZWxvcGVkLCBzYWRseS4pDQoNCkkgYW0gdHJ5aW5nIHRvIHVuZGVyc3RhbmQg
+ZGlmZmVyZW50IHBlcnNwZWN0aXZlcyBoZXJlLiANCg0KRGlzY2xhaW1lcjogQWxleGVpIGFuZCBJ
+IGJvdGggd29yayBmb3IgRmFjZWJvb2suIEJ1dCBoZSBtYXkgZGlzYWdyZWUgDQp3aXRoIGV2ZXJ5
+dGhpbmcgSSBhbSBhYm91dCB0byBzYXkgYmVsb3csIGJlY2F1c2Ugd2UgaGF2ZW4ndCBzeW5jJ2Vk
+IA0KYWJvdXQgdGhpcyBmb3IgYSB3aGlsZS4gOikNCg0KSSB0aGluayB0aGVyZSBhcmUgdHdvIHR5
+cGVzIG9mIHVzZSBjYXNlcyBoZXJlOiANCg0KICAgIDEuIENBUF9CUEZfQURNSU46IG9uZSBiaWcg
+a2V5IHRvIGFsbCBzeXNfYnBmKCkuIA0KICAgIDIuIENBUF9CUEY6IHN1YnNldCBvZiBzeXNfYnBm
+KCkgdGhhdCBpcyBzYWZlIGZvciBjb250YWluZXJzLg0KDQpJSVVDLCBjdXJyZW50bHksIENBUF9C
+UEZfQURNSU4gaXMgKGFsbW9zdCkgc2FtZSBhcyBDQVBfU1lTX0FETUlOLiANCkFuZCB0aGVyZSBh
+cmVuJ3QgbWFueSByZWFsIHdvcmxkIHVzZSBjYXNlcyBmb3IgQ0FQX0JQRi4gDQoNClRoZSAvZGV2
+L2JwZiBwYXRjaCB0cmllcyB0byBzZXBhcmF0ZSBDQVBfQlBGX0FETUlOIGZyb20gQ0FQX1NZU19B
+RE1JTi4NCk9uIHRoZSBvdGhlciBoYW5kLCBBbmR5IHdvdWxkIGxpa2UgdG8gaW50cm9kdWNlIENB
+UF9CUEYgYW5kIGJ1aWxkDQphbWF6aW5nIHVzZSBjYXNlcyBhcm91bmQgaXQgKGNoaWNrZW4tZWdn
+IHByb2JsZW0pLiANCg0KRGlkIEkgbWlzdW5kZXJzdGFuZCBhbnl0aGluZz8NCg0KSWYgbm90LCBJ
+IHRoaW5rIHRoZXNlIHR3byB1c2UgY2FzZXMgZG8gbm90IHJlYWxseSBjb25mbGljdCB3aXRoIGVh
+Y2gNCm90aGVyLCBhbmQgd2UgcHJvYmFibHkgbmVlZCBib3RoIG9mIHRoZW0uIFRoZW4sIHRoZSBu
+ZXh0IHF1ZXN0aW9uIGlzIA0KZG8gd2UgcmVhbGx5IG5lZWQgYm90aC9laXRoZXIgb2YgdGhlbS4g
+TWF5YmUgaGF2aW5nIHR3byBzZXBhcmF0ZSANCmRpc2N1c3Npb25zIHdvdWxkIG1ha2UgaXQgZWFz
+aWVyPw0KDQoNClRoZSBmb2xsb3dpbmcgYXJlIHNvbWUgcXVlc3Rpb25zIEkgYW0gdHJ5aW5nIHRv
+IHVuZGVyc3RhbmQgZm9yIA0KdGhlIHR3byBjYXNlcy4gDQoNCkZvciBDQVBfQlBGX0FETUlOIChv
+ciAvZGV2L2JwZik6DQpDYW4gd2UganVzdCB1c2UgQ0FQX05FVF9BRE1JTj8gSXQgaXMgc2FmZXIg
+dGhhbiBDQVBfU1lTX0FETUlOLCBhbmQNCnJldXNlIGV4aXN0aW5nIENBUF8gc2hvdWxkIGJlIGVh
+c2llciB0aGFuIGludHJvZHVjaW5nIGEgbmV3IG9uZT8gDQoNCkZvciBDQVBfQlBGOiANCkRvIHdl
+IHJlYWxseSBuZWVkIGl0IGZvciB0aGUgY29udGFpbmVycz8gSXMgaXQgcG9zc2libGUgdG8gaW1w
+bGVtZW50IA0KYWxsIGNvbnRhaW5lciB1c2UgY2FzZXMgd2l0aCBTVUlEPyBBdCB0aGlzIG1vbWVu
+dCwgSSB0aGluayBTVUlEIGlzIA0KdGhlIHJpZ2h0IHdheSB0byBnbyBmb3IgdGhpcyB1c2UgY2Fz
+ZSwgYmVjYXVzZSB0aGlzIGlzIGxpa2VseSB0byANCnN0YXJ0IHdpdGggYSBzbWFsbCBzZXQgb2Yg
+ZnVuY3Rpb25hbGl0aWVzLiBXZSBjYW4gaW50cm9kdWNlIENBUF9CUEYNCndoZW4gdGhlIGNvbnRh
+aW5lciB1c2UgY2FzZSBpcyB0b28gY29tcGxpY2F0ZWQgZm9yIFNVSUQuIA0KDQoNCkkgaG9wZSBz
+b21lIG9mIHRoZXNlIHF1ZXN0aW9ucy90aG91Z2h0cyB3b3VsZCBtYWtlIHNvbWUgc2Vuc2U/DQoN
+ClRoYW5rcywNClNvbmc=
