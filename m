@@ -2,104 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 736E390916
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 21:58:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA9FB9091F
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 22:02:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727664AbfHPT6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 15:58:20 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:46460 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727585AbfHPT6U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 15:58:20 -0400
-Received: by mail-qt1-f196.google.com with SMTP id j15so7328626qtl.13
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 12:58:19 -0700 (PDT)
+        id S1727572AbfHPUC1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 16:02:27 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:32867 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727545AbfHPUC1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 16:02:27 -0400
+Received: by mail-wm1-f66.google.com with SMTP id p77so3870692wme.0
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 13:02:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=cPTikdBvKEsu5fBF9SHgC8BRCguXqLmj/Y5cbTsPbbY=;
-        b=G/Dr26bi25FJ+7o0zBZj78DE/ZK5P/0cVntkxH5lhF7qDUstlvc2565nrO64i8cLIo
-         Shb5J3iwf+wICyb2ObKRz6iJSr54M4zjtD1rOGqc3CGw/2vJAfVWJeoAc0Uyc3Vh2C5G
-         IBo0XwaYRoeUv+TOPcKOyKkQAQDavl71aSdI+ckTMGzvj9pxQyf7LFkGRQEopxlQer2k
-         7y77YM+MR69uQRJSrY8QnZlsHMBg+NLqlMTNfhIC8rpQ7mTvx4YCep/5+R357CpnVDz3
-         4iAnWsDa27XOLWX4/MehEXg1qoIwZ/06gmOb9MUOisTrmW4bEakCBtrsNd75kyq8/By5
-         CSww==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MVcky00cL9Izjkmq24TTUY3wBYWfFwCVX+CmLNIxHAc=;
+        b=Ryl/jnO35VzIc5OmYxSXuX9ZOHwWKrrh9/XKBA2mrIEy6dyJKxcqnc9KP1rmtfbg5z
+         +gBgpfQYBWg7tNUMj57KQI+nD27aRFeq6ixsxCONUU849JpGxOBTCrNAR9d/+bnrBchU
+         j6K5+0GosP79nhbWtKcE6ExLoSscvu6msxmMAzD/6ovYoPckNfL2vSsN9GFmdYQOzngZ
+         t+1zb8DH1QwOSR/cJnh3DkiVU10/fbaXNrP96VLCdg29vIPrN1ILvMlNiisy5PjfuMz0
+         pLALKMZZ0mBt3VR0qV4t+WPly5/vYX9gngoJqkHoPRWhBlwrESh0aSDvxKe3a/1J9nJj
+         CtzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=cPTikdBvKEsu5fBF9SHgC8BRCguXqLmj/Y5cbTsPbbY=;
-        b=l+4BDdO/kWJdfXgPiEckiHoPrqx/JhzR7AQMow9/Kz7GjA0yoL+68PIQI1DbnNlkRe
-         g/QaxFR+Q6X1GZxpP55LBG5JvqlqSwIJuTpvb+i5rOpMz71kt63HH85hpub94bTAV9gW
-         sG+D/UGArm7MylXdJCT+sQBH9gXBhMpctgv4x730uHSroYTKI80SQ9EkbcBZ7x5oxvN3
-         sTKY1X84yx1I5IwEoSfMywWTDhX/zvHfAi5Ul69wJSCMs83KEUOJqhmC66e3rY7E6pB1
-         Tzp+sZNr51r5Zl0M2v5kwyxQJA2r8ol9TceTScFSgr6xuwNQ1Pmc4BSLqJrQnBzcS542
-         Zgjw==
-X-Gm-Message-State: APjAAAUoTgSoL/UHuuZZo5cjrhKwpHaMHBI0RrbfIPCoCT1xZx7TrJfp
-        k12BqaWq0X1Va+6R8BcpN7IpVA==
-X-Google-Smtp-Source: APXvYqz2plHU9kFS9ecV9Dndef+BfdlJFIIc5WflEBcYfhhdN6mD8dKupHSwolNVrlNLEK92K96Ylw==
-X-Received: by 2002:ac8:34aa:: with SMTP id w39mr10435554qtb.118.1565985499257;
-        Fri, 16 Aug 2019 12:58:19 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id q42sm4017774qtc.52.2019.08.16.12.58.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 16 Aug 2019 12:58:19 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 12:58:01 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, wenxu@ucloud.cn,
-        pablo@netfilter.org
-Subject: Re: [PATCH net-next] net: flow_offload: convert block_ing_cb_list
- to regular list type
-Message-ID: <20190816125801.095bfd23@cakuba.netronome.com>
-In-Reply-To: <20190816150654.22106-1-vladbu@mellanox.com>
-References: <20190816150654.22106-1-vladbu@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MVcky00cL9Izjkmq24TTUY3wBYWfFwCVX+CmLNIxHAc=;
+        b=Zn0VU5ouOSlyw2R0/xN+B0H1jUZAdL0TpaWebwUb/SV30mPWSMYqGFqUHHyqdyfEU/
+         UGluuK4QhQB3Cs119diwpkT7pEexnrhB3qHMSUFqnYhi2uUtrKgG58kNolojjklqo3DB
+         bLwUtIP3PhS2zXRlPxZ3MSl9XsRQDjv9jk56CFWcHlE+LCamlzl8LpjXWRl5RCUKO5al
+         hnMZOxBU1O2iQgWNyfPkeA12FoYfv6FFtXZCS980OXgibxhXpzmSW5Vc4DdOwLRHc/7G
+         qgrGOq0k4KMIose33MkE8RCB5U1QvfkzkICzNTMNZ5/h9FYd1ha6+TdP+ryQxHhjBEeM
+         dyAA==
+X-Gm-Message-State: APjAAAU8BC8vucoUv8BpG1ya2Yun/hQhagse3+cBONXCaXUQhETjvJY7
+        jJxuwinyf+sOhmixX2TeiyE=
+X-Google-Smtp-Source: APXvYqzcYrIDjzKdpiQ4tI4a5N55fRtIJCU5ASVcbUwgQs7l82l96u+O+kkNkpM2rDgx/qA1ozKh1A==
+X-Received: by 2002:a1c:2302:: with SMTP id j2mr8505269wmj.174.1565985745527;
+        Fri, 16 Aug 2019 13:02:25 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:4112:e131:7f21:ec09? (p200300EA8F2F32004112E1317F21EC09.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:4112:e131:7f21:ec09])
+        by smtp.googlemail.com with ESMTPSA id z8sm4295465wmi.7.2019.08.16.13.02.24
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 16 Aug 2019 13:02:24 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/3] net: phy: remove genphy_config_init
+To:     David Miller <davem@davemloft.net>
+Cc:     andrew@lunn.ch, f.fainelli@gmail.com, khilman@baylibre.com,
+        vivien.didelot@gmail.com, netdev@vger.kernel.org,
+        linux-amlogic@lists.infradead.org
+References: <95dfdb55-415c-c995-cba3-1902bdd46aec@gmail.com>
+ <20190816.115754.393902669786330872.davem@davemloft.net>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <7ca48c8c-80d0-7abc-c0d9-f0ab7f787f04@gmail.com>
+Date:   Fri, 16 Aug 2019 22:02:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190816.115754.393902669786330872.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 16 Aug 2019 18:06:54 +0300, Vlad Buslov wrote:
-> diff --git a/net/core/flow_offload.c b/net/core/flow_offload.c
-> index 64c3d4d72b9c..cf52d9c422fa 100644
-> --- a/net/core/flow_offload.c
-> +++ b/net/core/flow_offload.c
-> @@ -391,6 +391,8 @@ static void flow_indr_block_cb_del(struct flow_indr_block_cb *indr_block_cb)
->  	kfree(indr_block_cb);
->  }
->  
-> +static DEFINE_MUTEX(flow_indr_block_ing_cb_lock);
-
-I'd be tempted to place this definition next to:
-
-static LIST_HEAD(block_ing_cb_list);
-
-as it seems this is the list it protects. The reason for the name
-discrepancy between the two is not immediately obvious to me :S 
-but you're not changing that.
-
-Otherwise makes sense, so FWIW:
-
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-
->  static void flow_block_ing_cmd(struct net_device *dev,
->  			       flow_indr_block_bind_cb_t *cb,
->  			       void *cb_priv,
-> @@ -398,11 +400,11 @@ static void flow_block_ing_cmd(struct net_device *dev,
->  {
->  	struct flow_indr_block_ing_entry *entry;
->  
-> -	rcu_read_lock();
-> -	list_for_each_entry_rcu(entry, &block_ing_cb_list, list) {
-> +	mutex_lock(&flow_indr_block_ing_cb_lock);
-> +	list_for_each_entry(entry, &block_ing_cb_list, list) {
->  		entry->cb(dev, cb, cb_priv, command);
->  	}
-> -	rcu_read_unlock();
-> +	mutex_unlock(&flow_indr_block_ing_cb_lock);
->  }
+On 16.08.2019 20:57, David Miller wrote:
+> From: Heiner Kallweit <hkallweit1@gmail.com>
+> Date: Thu, 15 Aug 2019 14:01:43 +0200
+> 
+>> Supported PHY features are either auto-detected or explicitly set.
+>> In both cases calling genphy_config_init isn't needed. All that
+>> genphy_config_init does is removing features that are set as
+>> supported but can't be auto-detected. Basically it duplicates the
+>> code in genphy_read_abilities. Therefore remove genphy_config_init.
+> 
+> Heiner you will need to respin this series as the new adin driver
+> added a new call to genphy_config_init().
+> 
+> Thank you.
+> 
+OK, will do. Thanks.
