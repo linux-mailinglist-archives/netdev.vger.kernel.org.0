@@ -2,98 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 34F5390974
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 22:28:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EC05490978
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 22:30:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727643AbfHPU2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 16:28:48 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:43151 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727589AbfHPU2s (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 16:28:48 -0400
-Received: from pd9ef1cb8.dip0.t-ipconnect.de ([217.239.28.184] helo=nanos)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1hyipq-00005o-Km; Fri, 16 Aug 2019 22:28:30 +0200
-Date:   Fri, 16 Aug 2019 22:28:29 +0200 (CEST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-cc:     Jordan Glover <Golden_Miller83@protonmail.ch>,
-        Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via
- /dev/bpf
-In-Reply-To: <20190816195233.vzqqbqrivnooohq6@ast-mbp.dhcp.thefacebook.com>
-Message-ID: <alpine.DEB.2.21.1908162211270.1923@nanos.tec.linutronix.de>
-References: <20190806011134.p5baub5l3t5fkmou@ast-mbp> <CALCETrUkqUprujww26VxHwkdXQ3DWJH8nnL2VBYpK2EU0oX_YA@mail.gmail.com> <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com> <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch>
- <20190815172856.yoqvgu2yfrgbkowu@ast-mbp.dhcp.thefacebook.com> <CALCETrUv+g+cb79FJ1S4XuV0K=kowFkPXpzoC99svoOfs4-Kvg@mail.gmail.com> <20190815230808.2o2qe7a72cwdce2m@ast-mbp.dhcp.thefacebook.com>
- <fkD3fs46a1YnR4lh0tEG-g3tDnDcyZuzji7bAUR9wujPLLl75ZhI8Yk-H1jZpSugO7qChVeCwxAMmxLdeoF2QFS3ZzuYlh7zmeZOmhDJxww=@protonmail.ch> <alpine.DEB.2.21.1908161158490.1873@nanos.tec.linutronix.de> <lGGTLXBsX3V6p1Z4TkdzAjxbNywaPS2HwX5WLleAkmXNcnKjTPpWnP6DnceSsy8NKt5NBRBbuoAb0woKTcDhJXVoFb7Ygk3Skfj8j6rVfMQ=@protonmail.ch>
- <20190816195233.vzqqbqrivnooohq6@ast-mbp.dhcp.thefacebook.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1727647AbfHPUaZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 16:30:25 -0400
+Received: from mail-wm1-f45.google.com ([209.85.128.45]:53178 "EHLO
+        mail-wm1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727545AbfHPUaY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 16:30:24 -0400
+Received: by mail-wm1-f45.google.com with SMTP id o4so4984701wmh.2
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 13:30:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=T9zrjLIygzStwRFu7jZ+vDx/MRzKjAVtrqummeEGsVY=;
+        b=CG1NKHbp5/TMq+MEe9V6fFd+i4eP5avzHiad9kljw6XMeF3d8/VAClvo+Y2ZTu71H9
+         suIHM2YHtcw/KAWHWSanFwsTCxiz5H4+J8AqIdnFC85WcZ+YJsyGapGWmzoFnBZNC1uN
+         On1Zt+yKTNtJzmFqKDgkLE0igqbSYS9wnXe+aTeUWs59ULwY6tW6V7axXYFbSKlHz/n9
+         Se+6uXqoOGx+qk9Aye6yjNF6mSL7Slik7VnxfuD7qLZN4GmLche7wp7LZhX4Po81Ruqb
+         BC2QAV+/qGjSrWyD6/pL5T6FgqpLrszMTPXwnnYSVkOVnNhLmGWm406ROphWAq4PRMfe
+         kzBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=T9zrjLIygzStwRFu7jZ+vDx/MRzKjAVtrqummeEGsVY=;
+        b=ix8X5C1c0ZwAS4EzXC13rjMQqItGXL9us2hot3Y84ULkv2RKbi6J291GazVrdDB829
+         ppe/QnQy8lhcd0/ouvi+jSimW8a5uP6BIoRhXFGEPbX029+R3/x6cO8aXv1lrvjlbJvr
+         wHxEjym+JUUR5xy5wZXg8mNl24OByUBOusHDb5xpVoNKsIeXOl1jkmMs948Up1XmmYrf
+         LHMfQKbw0v4cZLIKe0ulgxF/KQNJmfL+gmiZ6NJSo87MYLaEuBhWWl/OdfUH9QmCGe1K
+         hRBtJfNL9M16F7/11HSPP2Azri3Y9ZhZOxAx2XBPnC56RhpfNA/1Nb7ruEz35k9vsRuY
+         2z7g==
+X-Gm-Message-State: APjAAAXZ8MwircDjTMdjzAG8A1NDPqganZGRt5R90qYeR/pNxnPjASHG
+        QkqpCgdz22NoXSwru3u9izg=
+X-Google-Smtp-Source: APXvYqx7oJ4Z5dwI7ZN3OzyuiffQGw6u7ZJ1GJYeeJpiiBIq2be/gWh57gDXhou7nCypWyx9NiPNJg==
+X-Received: by 2002:a1c:39c5:: with SMTP id g188mr8684502wma.167.1565987422640;
+        Fri, 16 Aug 2019 13:30:22 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f2f:3200:4112:e131:7f21:ec09? (p200300EA8F2F32004112E1317F21EC09.dip0.t-ipconnect.de. [2003:ea:8f2f:3200:4112:e131:7f21:ec09])
+        by smtp.googlemail.com with ESMTPSA id g12sm6579332wrv.9.2019.08.16.13.30.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 16 Aug 2019 13:30:22 -0700 (PDT)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next v2 0/3] net: phy: remove genphy_config_init
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>
+Message-ID: <62de47ba-0624-28c0-56a1-e2fc39a36061@gmail.com>
+Date:   Fri, 16 Aug 2019 22:30:15 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei,
+Supported PHY features are either auto-detected or explicitly set.
+In both cases calling genphy_config_init isn't needed. All that
+genphy_config_init does is removing features that are set as
+supported but can't be auto-detected. Basically it duplicates the
+code in genphy_read_abilities. Therefore remove genphy_config_init.
 
-On Fri, 16 Aug 2019, Alexei Starovoitov wrote:
-> It's both of the above when 'systemd' is not taken literally.
-> To earlier Thomas's point: the use case is not only about systemd.
-> There are other containers management systems.
+v2:
+- remove call also from new adin driver
 
-<SNIP>
+Heiner Kallweit (3):
+  net: phy: remove calls to genphy_config_init
+  net: dsa: remove calls to genphy_config_init
+  net: phy: remove genphy_config_init
 
-> These daemons need to drop privileges to make the system safer == less
-> prone to corruption due to bugs in themselves. Not necessary security
-> bugs.
+ drivers/net/phy/adin.c         |  4 ---
+ drivers/net/phy/at803x.c       |  4 ---
+ drivers/net/phy/dp83822.c      |  5 ----
+ drivers/net/phy/dp83848.c      | 16 +++++------
+ drivers/net/phy/dp83tc811.c    |  4 ---
+ drivers/net/phy/meson-gxl.c    |  2 +-
+ drivers/net/phy/microchip.c    |  1 -
+ drivers/net/phy/microchip_t1.c |  1 -
+ drivers/net/phy/mscc.c         |  4 +--
+ drivers/net/phy/phy_device.c   | 51 ----------------------------------
+ drivers/net/phy/vitesse.c      |  6 ++--
+ include/linux/phy.h            |  1 -
+ net/dsa/port.c                 |  5 ----
+ 13 files changed, 14 insertions(+), 90 deletions(-)
 
-Let's take a step back.
+-- 
+2.22.1
 
-While real usecases are helpful to understand a design decision, the design
-needs to be usecase independent.
-
-The kernel provides mechanisms, not policies. My impression of this whole
-discussion is that it is policy driven. That's the wrong approach.
-
-So let's look at the mechanisms which we have at hand:
-
- 1) Capabilities
- 
- 2) SUID and dropping priviledges
-
- 3) Seccomp and LSM
-
-Now the real interesting questions are:
-
- A) What kind of restrictions does BPF allow? Is it a binary on/off or is
-    there a more finegrained control of BPF functionality?
-
-    TBH, I can't tell.
-
- B) Depending on the answer to #A what is the control possibility for
-    #1/#2/#3 ?
-
-Answering those questions gives us a real scope of what can be achieved
-independent of use cases and wishful thought out policies.
-
-Thanks,
-
-	tglx
