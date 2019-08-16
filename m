@@ -2,75 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB76E9081F
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 21:17:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E2E28908DC
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 21:45:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727565AbfHPTPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 15:15:08 -0400
-Received: from mail-pl1-f181.google.com ([209.85.214.181]:44741 "EHLO
-        mail-pl1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727067AbfHPTPI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 15:15:08 -0400
-Received: by mail-pl1-f181.google.com with SMTP id t14so2802566plr.11
-        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 12:15:08 -0700 (PDT)
+        id S1727602AbfHPTo5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 15:44:57 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45019 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727569AbfHPTo5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 15:44:57 -0400
+Received: by mail-qt1-f195.google.com with SMTP id 44so7323460qtg.11
+        for <netdev@vger.kernel.org>; Fri, 16 Aug 2019 12:44:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=BpRS07Q8R4qg1L/x2A0Q1Zvjt3F68iNQK3W7hCKUhxE=;
-        b=Nhg9Vqj+sbum95Iqu6CjauW/79rCH2Y6pJ9/jSmSEN0nAuq9jU1kNh0C14XbVP++Sm
-         FNKvaMWePXtZVhedU5iS4dMYpbPy1li6jXjc5aoIeEoy36WRMq33LHC4QVWZoOv9T1if
-         3on+EU2T38OWYoG73toTcJSU1EwCBD93Y2WP585CeLxwukoVKLy8zLqvJvBCmjNJHncS
-         Jl1bkgiUenmtHKCVw+N88pR4ItUMynBXXFWyuW3mjnrhE1b82Y/ER8C1V3rHDjh72toH
-         MDkbZV5CzNzDyiav54P/cylSYlMAOqUbOYkYyqf0UijamIJP8rrF/2d4ZqsqaMu/9Qck
-         S7Ng==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=8oUD8uoK0U6eFOyqa1XdhinrbHHTjvt4vpE48z+ZU84=;
+        b=inuomRVSW6pUNWICL/LbsTDKMo3RFuU0MwjtDwAmZ/ul11E1NZ00LJ9DyRk41zY7lH
+         PQ5mS8WIPGJ29Idzv+lEjxBYaVGUxS9PuoKSanjPK2Poegc5eDbP7ikPdo1Tiy+MJjXu
+         eZ8l20Gl0bj5tazFxsSjC6tyIlmsk7WiKl92eX/F3xrnwknxfylLwY3aLo5tMaI0pq8D
+         cVzR/9gp/hTp1UMuo90lvfHQKlvMhIMIATbq9g+j69oPL6NkS9Hd0qYCy95O6wlEvUXj
+         iXQWU+RXsym8ifNA4Z3SbfEy6DoQK8hsnrkJvTgiLqUJS5DSaSaJk7lhdBIHbBZsXGd6
+         j6Ow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=BpRS07Q8R4qg1L/x2A0Q1Zvjt3F68iNQK3W7hCKUhxE=;
-        b=lzI5/V8r10x7/e4jibf8sXeaF9s5hBXtyNDLXU0yeTcx0x6A6f1zexH2yyfU1xlKGJ
-         AixKDduOSHel6p1VkEpaE0QWjWN+FYj/vLVkzG+hX7wwknTY6AcHmSDCX96fPANZDTDn
-         z7NIt22/qs4PJ93DpwvV3iTLX7sHb7pbX8bZix67cjyQsZ1Gs4JmLi+3Dgim1FESIwkW
-         F62lN8GBzhmr7cAd/7toY0xGt7PLKhr452vhnGX7ghZG+Uf6g7QjkzIhS2ORyiBQci80
-         O9AThmJ3CXBkLDBca/kf707EY5tywkE/ZhBiF4B3N94jVaLJcfQfcGPqHGzDUnFMcpL6
-         mBQA==
-X-Gm-Message-State: APjAAAVwNdRzNFhiI536TDjxtdXHpWsAEOac8jdfsW1mvsMy3RjyRQBd
-        X9SSiVww1zoYJjIKwhmk6Angjda6
-X-Google-Smtp-Source: APXvYqyYC9wIcbNqp3no8NTXlvl7j74JUO9ogV/kB0ISHUEdxTBm0JjVKXHccZIEHarxwTm4QXJBhQ==
-X-Received: by 2002:a17:902:7c10:: with SMTP id x16mr4941992pll.31.1565982907405;
-        Fri, 16 Aug 2019 12:15:07 -0700 (PDT)
-Received: from [172.27.227.212] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id h129sm6345541pfb.110.2019.08.16.12.15.06
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 16 Aug 2019 12:15:06 -0700 (PDT)
-Subject: Re: IPv6 addr and route is gone after adding port to vrf (5.2.0+)
-To:     Ben Greear <greearb@candelatech.com>,
-        netdev <netdev@vger.kernel.org>
-References: <c55619f8-c565-d611-0261-c64fa7590274@candelatech.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <2a53ff58-9d5d-ac22-dd23-b4225682c944@gmail.com>
-Date:   Fri, 16 Aug 2019 13:15:05 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=8oUD8uoK0U6eFOyqa1XdhinrbHHTjvt4vpE48z+ZU84=;
+        b=Ys5b0xUjaP13KzyrvtF1xqLogiS6OpJY5/2c28wmBmntY3eFw8QJpJNo2Benev9ZE0
+         xV+TlU8KJ8EMbb/gujQwr8L0Mm0JoYbjYdGwDowTKX7Jk5u+uYifUcfhtBowX85garJ5
+         Z8Deug8lw7aY+sBtzO9NHC/E++axNi9OKnFYRu7pNiFDmghZzgfmZGHwhVM4MY2F5sio
+         dyRHqGmJj0AZtga4bpWf6UzWDzcn4xEi8E7LWngn9x6WXJC6pLHsidzs3CW81XBnNaAx
+         Myr1iUdazmJ5VU6l72d/xFkvtx21RaVQhUwXLxLKSD/Gxrh4SDkMvU/EjdGN/L6jbDnk
+         ftPg==
+X-Gm-Message-State: APjAAAU/8Pmy5xAU2HEMMYIZQdIkGY+3L33cV6ZzZov/V8PHRFtIBplJ
+        n80RP2MuHYeCYERRMuid9lJULQ==
+X-Google-Smtp-Source: APXvYqyThjW/BK3sV6h6FsEOIUaTM8wHYUa/3RM+1cvkwCZoYYzkocQGFjDKyvknq7JuMpiGF8phpg==
+X-Received: by 2002:ac8:376c:: with SMTP id p41mr10458702qtb.306.1565984696577;
+        Fri, 16 Aug 2019 12:44:56 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id m8sm3812416qti.97.2019.08.16.12.44.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 16 Aug 2019 12:44:56 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 12:44:39 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, marcelo.leitner@gmail.com,
+        jiri@resnulli.us, wenxu@ucloud.cn, saeedm@mellanox.com,
+        paulb@mellanox.com, gerlitz.or@gmail.com
+Subject: Re: [PATCH net,v5 2/2] netfilter: nf_tables: map basechain priority
+ to hardware priority
+Message-ID: <20190816124439.7cc166c1@cakuba.netronome.com>
+In-Reply-To: <20190816012410.31844-3-pablo@netfilter.org>
+References: <20190816012410.31844-1-pablo@netfilter.org>
+        <20190816012410.31844-3-pablo@netfilter.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <c55619f8-c565-d611-0261-c64fa7590274@candelatech.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/16/19 1:13 PM, Ben Greear wrote:
-> I have a problem with a VETH port when setting up a somewhat complicated
-> VRF setup. I am loosing the global IPv6 addr, and also the route,
-> apparently
-> when I add the veth device to a vrf.  From my script's output:
+On Fri, 16 Aug 2019 03:24:10 +0200, Pablo Neira Ayuso wrote:
+> This patch adds initial support for offloading basechains using the
+> priority range from 1 to 65535. This is restricting the netfilter
+> priority range to 16-bit integer since this is what most drivers assume
+> so far from tc. It should be possible to extend this range of supported
+> priorities later on once drivers are updated to support for 32-bit
+> integer priorities.
+> 
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> ---
+> v5: fix clang warning by simplifying the mapping of hardware priorities
+>     to basechain priority in the range of 1-65535. Zero is left behind
+>     since some drivers do not support this, no negative basechain
+>     priorities are used at this stage.
 
-Either enslave the device before adding the address or enable the
-retention of addresses:
-
-sysctl -q -w net.ipv6.conf.all.keep_addr_on_down=1
+LGTM.
