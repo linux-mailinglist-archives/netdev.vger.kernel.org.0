@@ -2,69 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75F958F951
-	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 04:59:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB148F96C
+	for <lists+netdev@lfdr.de>; Fri, 16 Aug 2019 05:24:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726659AbfHPC71 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 15 Aug 2019 22:59:27 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:52971 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726329AbfHPC70 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 22:59:26 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7G2xI8R019537, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7G2xI8R019537
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Fri, 16 Aug 2019 10:59:18 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Fri, 16 Aug
- 2019 10:59:17 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     David Miller <davem@davemloft.net>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net-next] r8152: divide the tx and rx bottom functions
-Thread-Topic: [PATCH net-next] r8152: divide the tx and rx bottom functions
-Thread-Index: AQHVUnqNDBLFc1N41kCW+rl5DeKpGqb8LWmAgADnKaA=
-Date:   Fri, 16 Aug 2019 02:59:16 +0000
-Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D43A3@RTITMBSVM03.realtek.com.tw>
-References: <1394712342-15778-301-Taiwan-albertk@realtek.com>
- <20190815.135851.1942927063321516679.davem@davemloft.net>
-In-Reply-To: <20190815.135851.1942927063321516679.davem@davemloft.net>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1726571AbfHPDYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 15 Aug 2019 23:24:30 -0400
+Received: from mail-pl1-f195.google.com ([209.85.214.195]:41029 "EHLO
+        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726487AbfHPDY3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 15 Aug 2019 23:24:29 -0400
+Received: by mail-pl1-f195.google.com with SMTP id m9so1854123pls.8
+        for <netdev@vger.kernel.org>; Thu, 15 Aug 2019 20:24:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=cN+7rGP0xjUhYzQcCZSy/Mfo1mEBhFYPPci5RZZdT5I=;
+        b=ASUjGWynpDIvUt4hrSrdD8SxCP2cQbR7KGEbUgdIiBdgR36JmBmdGJuflluHQEKh/3
+         NNQ3mm5ZJO0OZjzeNn78QgzgY+sc6p1JfK1/58uEp5yj+IL41exXeZdetXFDmHAEw9Hw
+         2RXi0qoqvKQSGiNnancVMx42lC0LXNhKlurbBVIYb6+aVDsiQgr9L8ky5AzeLe0gYI6K
+         pUADaSoy7+cC+kck/HRlT3J00SMxpci8oZpXX4Vr9J3xOSAZNdgQVqoEQmyOW3dvIjax
+         Rm0GTUnScOmGiIes5u+lC2T8jGT6nhajnaB/wpa+pQVJy2UaNhyEB7hD6D00ERszwwLu
+         JnCw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=cN+7rGP0xjUhYzQcCZSy/Mfo1mEBhFYPPci5RZZdT5I=;
+        b=o4qIwCMIGhdAnrN4/8BuwFloUHSwsIXXKiRBWO8QbEc8j1zlWC0SRSFSVT2v7Y8XcH
+         OAyUKVRG9EgKSDuUA1GTVO5Iy/HVVzeXdHQuxa3sCZ1ygHnZqfhpt2lnjkiPOyzGsoUc
+         9WKrv0wFdpVcWXpcn5iVjEYGAwXFby8f7bwNrMWyhEBHjhPLWvCoftDy4MVIQ7iExcXE
+         2K7mU4D4Q8BX32T5Jx8jIm5cyHyYik44+q8PuVJzyJj7+PQqH3WtEky6MhXdsi8xPTXS
+         iuMskrt/YqUnD41I1ffz2MsZxnPLtj5uwAyaaNd9pxoatKdEvUAiW9qTtkw/XgmetqbC
+         PNgA==
+X-Gm-Message-State: APjAAAVjBY8e+EGGHUDSQftu7TXDCdh2/gwARo5zgGzpONcQEVE0FsIk
+        XFQX0wicGVclNKM3uYgNRo0=
+X-Google-Smtp-Source: APXvYqx6KqQrpywOD61GVBN8ca8dFdIH5FSkXKtzDV2Or1o+3OoREPcz4Vwp27yWu9ZMzw3xWdvnvQ==
+X-Received: by 2002:a17:902:d890:: with SMTP id b16mr7073537plz.315.1565925869335;
+        Thu, 15 Aug 2019 20:24:29 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id u24sm3495750pgk.31.2019.08.15.20.24.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 15 Aug 2019 20:24:28 -0700 (PDT)
+Date:   Fri, 16 Aug 2019 11:24:18 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     netdev@vger.kernel.org, Stefano Brivio <sbrivio@redhat.com>,
+        wenxu <wenxu@ucloud.cn>, Alexei Starovoitov <ast@fb.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] tunnel: fix dev null pointer dereference when send
+ pkg larger than mtu in collect_md mode
+Message-ID: <20190816032418.GX18865@dhcp-12-139.nay.redhat.com>
+References: <20190815060904.19426-1-liuhangbin@gmail.com>
+ <cb5b5d82-1239-34a9-23f5-1894a2ec92a2@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cb5b5d82-1239-34a9-23f5-1894a2ec92a2@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-David Miller [mailto:davem@davemloft.net]
-> Sent: Friday, August 16, 2019 4:59 AM
-[...]
-> Theoretically, yes.
+Hi Eric,
+
+Thanks for the review.
+On Thu, Aug 15, 2019 at 11:16:58AM +0200, Eric Dumazet wrote:
+> > diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+> > index 38c02bb62e2c..c6713c7287df 100644
+> > --- a/net/ipv4/ip_tunnel.c
+> > +++ b/net/ipv4/ip_tunnel.c
+> > @@ -597,6 +597,9 @@ void ip_md_tunnel_xmit(struct sk_buff *skb, struct net_device *dev,
+> >  		goto tx_error;
+> >  	}
+> >  
+> > +	if (skb_dst(skb) && !skb_dst(skb)->dev)
+> > +		skb_dst(skb)->dev = rt->dst.dev;
+> > +
 > 
-> But do you have actual performance numbers showing this to be worth
-> the change?
 > 
-> Always provide performance numbers with changes that are supposed to
-> improve performance.
+> IMO this looks wrong.
+> This dst seems shared. 
 
-On x86, they are almost the same.
-Tx/Rx: 943/943 Mbits/sec -> 945/944
+If the dst is shared, it may cause some problem. Could you point me where the
+dst may be shared possibly?
 
-For arm platform,
-Tx/Rx: 917/917 Mbits/sec -> 933/933
-Improve about 1.74%.
+> Once set, we will reuse the same dev ?
 
-Best Regards,
-Hayes
+If yes, how about just set the skb dst to rt->dst, as the
+iptunnel_xmit would do later.
 
+skb_dst_drop(skb);
+skb_dst_set(skb, &rt->dst);
 
+or do you have any other idea?
+> 
+> If intended, why not doing this in __metadata_dst_init() instead of in the fast path ?
+
+I'm afraid we couldn't do this, I didn't find a way to init dev in
+__metadata_dst_init(). Do you?
+
+Thanks
+Hangbin
