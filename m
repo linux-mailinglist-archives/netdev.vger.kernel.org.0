@@ -2,159 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 553C6910B8
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 16:23:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9545A9111A
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 17:02:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726012AbfHQOT7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Aug 2019 10:19:59 -0400
-Received: from mx0b-00190b01.pphosted.com ([67.231.157.127]:55292 "EHLO
-        mx0b-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725945AbfHQOT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 10:19:59 -0400
-Received: from pps.filterd (m0050096.ppops.net [127.0.0.1])
-        by m0050096.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id x7HEHr05016447;
-        Sat, 17 Aug 2019 15:19:53 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=jan2016.eng;
- bh=HZUK4esCpMqWRr83UOdTiJtE5q50tG9xMYSW+4E+yJY=;
- b=Jnrl9D8gIGztQ/EVEdcuhefZgpGw1Dy4dQtXflQv9qAZ7P/Hy1M1h3tclHs6oqvTXVkJ
- cNKrg03Kw3eBilQaYbhtDeW6CcrHXG/KoDWLuBXJZTxwCjUkOUbaiZtaNAVOnOBVWTWr
- c9lmzAWloOQBKZeAHC1XBzejysDZ2feolIwpnZ6AQ10Ag+n4o0f77ca+ofkbeqlqZgYc
- x0++MyQNEN+On6j2Ff7L9sm1q8z3DG6TVHUuV/WlQfjHokpte8QuO69HohZU2Me7J79l
- Ft/kq1ldtNpCNpUzWFQDiWVVTA2dkMt0VjKW0H3sSmV3wZ2QehgX31zRaIdKvNqmDA5f qA== 
-Received: from prod-mail-ppoint1 (prod-mail-ppoint1.akamai.com [184.51.33.18] (may be forged))
-        by m0050096.ppops.net-00190b01. with ESMTP id 2uea0asq1w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 17 Aug 2019 15:19:53 +0100
-Received: from pps.filterd (prod-mail-ppoint1.akamai.com [127.0.0.1])
-        by prod-mail-ppoint1.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x7HEGoIi004445;
-        Sat, 17 Aug 2019 10:19:52 -0400
-Received: from prod-mail-relay11.akamai.com ([172.27.118.250])
-        by prod-mail-ppoint1.akamai.com with ESMTP id 2uecwv13kf-1;
-        Sat, 17 Aug 2019 10:19:52 -0400
-Received: from [0.0.0.0] (prod-ssh-gw01.bos01.corp.akamai.com [172.27.119.138])
-        by prod-mail-relay11.akamai.com (Postfix) with ESMTP id D450D1FC6B;
-        Sat, 17 Aug 2019 14:19:51 +0000 (GMT)
-Subject: Re: [PATCH net] tcp: make sure EPOLLOUT wont be missed
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Vladimir Rutsky <rutsky@google.com>
-References: <20190817042622.91497-1-edumazet@google.com>
-From:   Jason Baron <jbaron@akamai.com>
-Message-ID: <b9ab6b03-664c-eb81-0fbd-6f696276d9aa@akamai.com>
-Date:   Sat, 17 Aug 2019 10:19:51 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726032AbfHQPCw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Aug 2019 11:02:52 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:36809 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725925AbfHQPCv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 11:02:51 -0400
+Received: by mail-pf1-f194.google.com with SMTP id w2so4659140pfi.3;
+        Sat, 17 Aug 2019 08:02:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1yM+3gaDT2rRc0Bnym4V9e44Bftn+Nt4gZNjCRfq0Zc=;
+        b=L5JD5xwE59YvEytmxCvXa0dMfZE56DMqONaXkYB90GeRMd9ciAEL8NDD2MlHS6sQJp
+         xwGbCcUvQjPeEZ5OMM+LLMp+enQYkbUvRd4uVqdFvGwPClNn0df5DyQwTRJqo0bcvJ5j
+         0RCjSr8Oa6Vc31vtOJjyXtSZYIF2RpcCx0hTELf9XvYcHkopAxIk8MydOuH8VojjcXui
+         PogcwXEByTJVk0HRayk6CpeoDeWjlBub9B7btPMSU/y4RbCEQYnBuASXBM/QD9U2k9h4
+         1/buHcPAIxUiX4rePL1p5wOBIlGHf6zXeCJNC4gBPVIUWsoQa9j5GslA//38We/qbrLU
+         lxnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1yM+3gaDT2rRc0Bnym4V9e44Bftn+Nt4gZNjCRfq0Zc=;
+        b=ox3TlWcgJkHNj9zbxbdMMhBCQP5C0ggM76UBHdteh/c7XhqpiBJ20ZNe4vP0b1/Dsi
+         BVww/Tp5tFMY8PYgtsqHJ7umUKljgsL1K7OS0iroaEWR01mvkLQixm14pv4rUL+XpWkN
+         IkR9I9z4w/iq6zgdBEvq9RkKINxQdEzyPOUHtydeJG3632i1OBtFKfGjJ5DP9FUi5ckT
+         viAnvhHVBcVzTDoE2fyjIomRFVpgNc8vF8e7aqkQy1p4b4MzEjHAY8UlJU2/16sm+RNf
+         X6Zg4r5Wi/a3mhI7tGb+pv4+0w74O6dVdMbm/tGLBOwKxCaWMJL4VvbKIWSLbgpwg+4v
+         Jvag==
+X-Gm-Message-State: APjAAAWueqQuNmy8DYITaV59tt9I2hMwhHl7X6+BAWME7hMrZFuLgN94
+        L3MFkUhjob57+HkYiCa9Fk0=
+X-Google-Smtp-Source: APXvYqzL25Fka42KOBCiR2tWbSPJ47nKP4Id6XB3/20akCnmXzBuscYvgcS7HYZh6Zwbdn8j38dDeQ==
+X-Received: by 2002:a63:2043:: with SMTP id r3mr12314709pgm.311.1566054170489;
+        Sat, 17 Aug 2019 08:02:50 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:180::9c96])
+        by smtp.gmail.com with ESMTPSA id d18sm8153411pgi.40.2019.08.17.08.02.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 17 Aug 2019 08:02:49 -0700 (PDT)
+Date:   Sat, 17 Aug 2019 08:02:47 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     Jordan Glover <Golden_Miller83@protonmail.ch>,
+        Andy Lutomirski <luto@kernel.org>,
+        Daniel Colascione <dancol@google.com>,
+        Song Liu <songliubraving@fb.com>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+Message-ID: <20190817150245.xxzxqjpvgqsxmloe@ast-mbp>
+References: <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com>
+ <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch>
+ <20190815172856.yoqvgu2yfrgbkowu@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrUv+g+cb79FJ1S4XuV0K=kowFkPXpzoC99svoOfs4-Kvg@mail.gmail.com>
+ <20190815230808.2o2qe7a72cwdce2m@ast-mbp.dhcp.thefacebook.com>
+ <fkD3fs46a1YnR4lh0tEG-g3tDnDcyZuzji7bAUR9wujPLLl75ZhI8Yk-H1jZpSugO7qChVeCwxAMmxLdeoF2QFS3ZzuYlh7zmeZOmhDJxww=@protonmail.ch>
+ <alpine.DEB.2.21.1908161158490.1873@nanos.tec.linutronix.de>
+ <lGGTLXBsX3V6p1Z4TkdzAjxbNywaPS2HwX5WLleAkmXNcnKjTPpWnP6DnceSsy8NKt5NBRBbuoAb0woKTcDhJXVoFb7Ygk3Skfj8j6rVfMQ=@protonmail.ch>
+ <20190816195233.vzqqbqrivnooohq6@ast-mbp.dhcp.thefacebook.com>
+ <alpine.DEB.2.21.1908162211270.1923@nanos.tec.linutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20190817042622.91497-1-edumazet@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-17_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1906280000 definitions=main-1908170154
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
- definitions=2019-08-17_06:2019-08-16,2019-08-17 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999
- clxscore=1011 phishscore=0 bulkscore=0 spamscore=0 adultscore=0
- lowpriorityscore=0 suspectscore=2 malwarescore=0 impostorscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1908170154
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <alpine.DEB.2.21.1908162211270.1923@nanos.tec.linutronix.de>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/17/19 12:26 AM, Eric Dumazet wrote:
-> As Jason Baron explained in commit 790ba4566c1a ("tcp: set SOCK_NOSPACE
-> under memory pressure"), it is crucial we properly set SOCK_NOSPACE
-> when needed.
+On Fri, Aug 16, 2019 at 10:28:29PM +0200, Thomas Gleixner wrote:
+> Alexei,
 > 
-> However, Jason patch had a bug, because the 'nonblocking' status
-> as far as sk_stream_wait_memory() is concerned is governed
-> by MSG_DONTWAIT flag passed at sendmsg() time :
+> On Fri, 16 Aug 2019, Alexei Starovoitov wrote:
+> > It's both of the above when 'systemd' is not taken literally.
+> > To earlier Thomas's point: the use case is not only about systemd.
+> > There are other containers management systems.
 > 
->     long timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
+> <SNIP>
 > 
-> So it is very possible that tcp sendmsg() calls sk_stream_wait_memory(),
-> and that sk_stream_wait_memory() returns -EAGAIN with SOCK_NOSPACE
-> cleared, if sk->sk_sndtimeo has been set to a small (but not zero)
-> value.
-
-Is MSG_DONTWAIT not set in this case? The original patch was intended
-only for the explicit non-blocking case. The epoll manpage says:
-"EPOLLET flag should use nonblocking file descriptors". So the original
-intention was not to impact the blocking case. This seems to me like
-a different use-case.
-
-Thanks,
-
--Jason
-
-
-> This patch removes the 'noblock' variable since we must always
-> set SOCK_NOSPACE if -EAGAIN is returned.
+> > These daemons need to drop privileges to make the system safer == less
+> > prone to corruption due to bugs in themselves. Not necessary security
+> > bugs.
 > 
-> It also renames the do_nonblock label since we might reach this
-> code path even if we were in blocking mode.
+> Let's take a step back.
 > 
-> Fixes: 790ba4566c1a ("tcp: set SOCK_NOSPACE under memory pressure")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Jason Baron <jbaron@akamai.com>
-> Reported-by: Vladimir Rutsky  <rutsky@google.com>
-> ---
->  net/core/stream.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
+> While real usecases are helpful to understand a design decision, the design
+> needs to be usecase independent.
 > 
-> diff --git a/net/core/stream.c b/net/core/stream.c
-> index e94bb02a56295ec2db34ab423a8c7c890df0a696..4f1d4aa5fb38d989a9c81f32dfce3f31bbc1fa47 100644
-> --- a/net/core/stream.c
-> +++ b/net/core/stream.c
-> @@ -120,7 +120,6 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
->  	int err = 0;
->  	long vm_wait = 0;
->  	long current_timeo = *timeo_p;
-> -	bool noblock = (*timeo_p ? false : true);
->  	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+> The kernel provides mechanisms, not policies. My impression of this whole
+> discussion is that it is policy driven. That's the wrong approach.
+
+not sure what you mean by 'policy driven'.
+Proposed CAP_BPF is a policy?
+
+My desire to do kernel.unprivileged_bpf_disabled=1 is driven by
+text in Documentation/x86/mds.rst which says:
+"There is one exception, which is untrusted BPF. The functionality of
+untrusted BPF is limited, but it needs to be thoroughly investigated
+whether it can be used to create such a construct."
+
+commit 6a9e52927251 ("x86/speculation/mds: Add mds_clear_cpu_buffers()")
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Reviewed-by: Borislav Petkov <bp@suse.de>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reviewed-by: Frederic Weisbecker <frederic@kernel.org>
+Reviewed-by: Jon Masters <jcm@redhat.com>
+Tested-by: Jon Masters <jcm@redhat.com>
+
+The way I read this text:
+- there is a concern that mds is exploitable via bpf
+- there is a desire to investigate to address this concern
+
+I'm committed to help with the investigation.
+
+In the mean time I propose a path to do
+kernel.unprivileged_bpf_disabled=1 which is CAP_BPF.
+
+Can kernel.unprivileged_bpf_disabled=1 be used now?
+Yes, but it will weaken overall system security because things that
+use unpriv to load bpf and CAP_NET_ADMIN to attach bpf would need
+to move to stronger CAP_SYS_ADMIN.
+
+With CAP_BPF both load and attach would happen under CAP_BPF
+instead of CAP_SYS_ADMIN.
+
+> So let's look at the mechanisms which we have at hand:
+> 
+>  1) Capabilities
 >  
->  	if (sk_stream_memory_free(sk))
-> @@ -133,11 +132,8 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
->  
->  		if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN))
->  			goto do_error;
-> -		if (!*timeo_p) {
-> -			if (noblock)
-> -				set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
-> -			goto do_nonblock;
-> -		}
-> +		if (!*timeo_p)
-> +			goto do_eagain;
->  		if (signal_pending(current))
->  			goto do_interrupted;
->  		sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
-> @@ -169,7 +165,13 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
->  do_error:
->  	err = -EPIPE;
->  	goto out;
-> -do_nonblock:
-> +do_eagain:
-> +	/* Make sure that whenever EAGAIN is returned, EPOLLOUT event can
-> +	 * be generated later.
-> +	 * When TCP receives ACK packets that make room, tcp_check_space()
-> +	 * only calls tcp_new_space() if SOCK_NOSPACE is set.
-> +	 */
-> +	set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
->  	err = -EAGAIN;
->  	goto out;
->  do_interrupted:
+>  2) SUID and dropping priviledges
 > 
+>  3) Seccomp and LSM
+> 
+> Now the real interesting questions are:
+> 
+>  A) What kind of restrictions does BPF allow? Is it a binary on/off or is
+>     there a more finegrained control of BPF functionality?
+> 
+>     TBH, I can't tell.
+> 
+>  B) Depending on the answer to #A what is the control possibility for
+>     #1/#2/#3 ?
+
+Can any of the mechanisms 1/2/3 address the concern in mds.rst?
+
+I believe Andy wants to expand the attack surface when
+kernel.unprivileged_bpf_disabled=0
+Before that happens I'd like the community to work on addressing the text above.
+
