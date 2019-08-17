@@ -2,67 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 244DC90B71
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 01:31:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4817190BFE
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 03:59:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727756AbfHPX1o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 16 Aug 2019 19:27:44 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:42468 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727660AbfHPX1n (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 16 Aug 2019 19:27:43 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 15473141B37F4;
-        Fri, 16 Aug 2019 16:27:43 -0700 (PDT)
-Date:   Fri, 16 Aug 2019 16:27:37 -0700 (PDT)
-Message-Id: <20190816.162737.128286385440292449.davem@davemloft.net>
-To:     tuong.t.lien@dektech.com.au
-Cc:     jon.maloy@ericsson.com, maloy@donjonn.com, ying.xue@windriver.com,
-        netdev@vger.kernel.org, tipc-discussion@lists.sourceforge.net
-Subject: Re: [net] tipc: fix false detection of retransmit failures
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190815032408.7287-1-tuong.t.lien@dektech.com.au>
-References: <20190815032408.7287-1-tuong.t.lien@dektech.com.au>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 16 Aug 2019 16:27:43 -0700 (PDT)
+        id S1726166AbfHQB7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 16 Aug 2019 21:59:23 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:55238 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726087AbfHQB7X (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 16 Aug 2019 21:59:23 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 4C247C79EB23FF747CF8;
+        Sat, 17 Aug 2019 09:59:20 +0800 (CST)
+Received: from localhost.localdomain (10.67.165.24) by
+ DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
+ 14.3.439.0; Sat, 17 Aug 2019 09:59:13 +0800
+From:   Yonglong Liu <liuyonglong@huawei.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linuxarm@huawei.com>, <salil.mehta@huawei.com>,
+        <yisen.zhuang@huawei.com>, <shiju.jose@huawei.com>
+Subject: [PATCH net] net: hns: add phy_attached_info() to the hns driver
+Date:   Sat, 17 Aug 2019 09:56:07 +0800
+Message-ID: <1566006967-1509-1-git-send-email-liuyonglong@huawei.com>
+X-Mailer: git-send-email 2.8.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.67.165.24]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tuong Lien <tuong.t.lien@dektech.com.au>
-Date: Thu, 15 Aug 2019 10:24:08 +0700
+This patch add the call to phy_attached_info() to the hns driver
+to identify which exact PHY drivers is in use.
 
-> This commit eliminates the use of the link 'stale_limit' & 'prev_from'
-> (besides the already removed - 'stale_cnt') variables in the detection
-> of repeated retransmit failures as there is no proper way to initialize
-> them to avoid a false detection, i.e. it is not really a retransmission
-> failure but due to a garbage values in the variables.
-> 
-> Instead, a jiffies variable will be added to individual skbs (like the
-> way we restrict the skb retransmissions) in order to mark the first skb
-> retransmit time. Later on, at the next retransmissions, the timestamp
-> will be checked to see if the skb in the link transmq is "too stale",
-> that is, the link tolerance time has passed, so that a link reset will
-> be ordered. Note, just checking on the first skb in the queue is fine
-> enough since it must be the oldest one.
-> A counter is also added to keep track the actual skb retransmissions'
-> number for later checking when the failure happens.
-> 
-> The downside of this approach is that the skb->cb[] buffer is about to
-> be exhausted, however it is always able to allocate another memory area
-> and keep a reference to it when needed.
-> 
-> Fixes: 77cf8edbc0e7 ("tipc: simplify stale link failure criteria")
-> Reported-by: Hoang Le <hoang.h.le@dektech.com.au>
-> Acked-by: Ying Xue <ying.xue@windriver.com>
-> Acked-by: Jon Maloy <jon.maloy@ericsson.com>
-> Signed-off-by: Tuong Lien <tuong.t.lien@dektech.com.au>
+Signed-off-by: Yonglong Liu <liuyonglong@huawei.com>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Applied, thank you.
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index 2235dd5..ab5118d 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -1182,6 +1182,8 @@ int hns_nic_init_phy(struct net_device *ndev, struct hnae_handle *h)
+ 	if (unlikely(ret))
+ 		return -ENODEV;
+ 
++	phy_attached_info(phy_dev);
++
+ 	return 0;
+ }
+ 
+-- 
+2.8.1
+
