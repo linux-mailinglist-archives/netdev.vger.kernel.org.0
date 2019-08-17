@@ -2,95 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 788CD911E8
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 18:18:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1C8911F1
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 18:26:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726048AbfHQQRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Aug 2019 12:17:25 -0400
-Received: from smtprelay0152.hostedemail.com ([216.40.44.152]:48177 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725945AbfHQQRZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 12:17:25 -0400
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id A07731800BC36;
-        Sat, 17 Aug 2019 16:17:23 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3874:4250:4321:4605:5007:6119:7514:7903:10004:10400:10848:11026:11232:11473:11658:11914:12043:12291:12296:12297:12683:12740:12760:12895:13069:13149:13230:13311:13357:13439:14096:14097:14181:14659:14721:21080:21451:21627:30054:30075:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:28,LUA_SUMMARY:none
-X-HE-Tag: oven99_5d7e0eb857a12
-X-Filterd-Recvd-Size: 2692
-Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
-        (Authenticated sender: joe@perches.com)
-        by omf20.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 17 Aug 2019 16:17:22 +0000 (UTC)
-Message-ID: <a146c1356b4272c481e5cc63666c6e58b8442407.camel@perches.com>
-Subject: Re: [PATCH 1/2] PTP: introduce new versions of IOCTLs
-From:   Joe Perches <joe@perches.com>
-To:     Richard Cochran <richardcochran@gmail.com>,
-        Felipe Balbi <felipe.balbi@linux.intel.com>
-Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sat, 17 Aug 2019 09:17:20 -0700
-In-Reply-To: <20190817155927.GA1540@localhost>
-References: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
-         <20190817155927.GA1540@localhost>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.32.1-2 
+        id S1726048AbfHQQ0q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Aug 2019 12:26:46 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:32902 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725925AbfHQQ0q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 12:26:46 -0400
+Received: by mail-wm1-f66.google.com with SMTP id p77so5240504wme.0
+        for <netdev@vger.kernel.org>; Sat, 17 Aug 2019 09:26:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=CVSENXFHSp/QDVNj+aZZD32VbLeXr6l59st3bGQHu0Y=;
+        b=DuhOOtaihMdKw/gmyqB5kKUfWvVAU+NL5eijKH7n8OQYAaoM9cat5kHZmCRbCznJNB
+         rb7+0mUujqrLuoumdA6g6Ms4LlUZFnCuMJx+ZK6C5Tl8qIWoQKlXA3cQvzHzogMuP8sa
+         vwPLNL5v5YyToRJ1OMUlr7/4zoz5mwTVmO4K2choOF9xFnEZTt1QtbdCl57hFiYLMDJF
+         N+1Lzj7hs4BTnH3nEqoSMbSKOy0Xv3pBvXmzMPih0+LhlD1QyPWF4C5LwSc4lHl1d4iW
+         Mg7e2EQ5VvmDs1AEcM4/ZPw6eAdEcyI9IJFUHsFCWgMMIPyl4eMiD4wqFX6KbGHkrrr2
+         FtFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=CVSENXFHSp/QDVNj+aZZD32VbLeXr6l59st3bGQHu0Y=;
+        b=q0p/uNnLmJcPtdVttnLTGORhAf3KlqIvIRmyyupL7KPHas0L598xwVQUjrgJD7ob9y
+         tjhfYz6tv/r83ydBsR06yX5SYc6Vpug37Ng5cS9YlXtqv1EhzL7uCrA8hIWHB8opyyXp
+         0BVWz++FeSkk/e51TmahBD3EUenvJhYRuPO37mvp3zbGMHfrLZiS1iiOTp3DG8egE8s6
+         RX/XB5VaP7opDbc7T6E7mttS3pLgqd43fgYpxH2LtMgeVj4n4ox9iYUxBTyqUbdhiqXu
+         QV2mz1Gqe1d5ecjnLfvSwKmhVnjS/dnbY7O1DHDxsrenP452oeeKXbLGbCVnOzYh7DBq
+         P4Yg==
+X-Gm-Message-State: APjAAAUOCb9CY5DngMAjdrRQHLvWGlaUODfbFZEAbH1p88eoyWL1G4X2
+        xqp6qP3QevT1C/+daeajCAU=
+X-Google-Smtp-Source: APXvYqzcOoA++F3gFxQarBrFsfsfopHjrBzwlRW8TZ38t3a6AQpz8seDzMx76CqFLWfffh4g1PsV3w==
+X-Received: by 2002:a1c:c78d:: with SMTP id x135mr12217859wmf.82.1566059204227;
+        Sat, 17 Aug 2019 09:26:44 -0700 (PDT)
+Received: from [192.168.8.147] (129.171.185.81.rev.sfr.net. [81.185.171.129])
+        by smtp.gmail.com with ESMTPSA id s64sm17572510wmf.16.2019.08.17.09.26.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 17 Aug 2019 09:26:42 -0700 (PDT)
+Subject: Re: [PATCH net] tcp: make sure EPOLLOUT wont be missed
+To:     Jason Baron <jbaron@akamai.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Vladimir Rutsky <rutsky@google.com>
+References: <20190817042622.91497-1-edumazet@google.com>
+ <b9ab6b03-664c-eb81-0fbd-6f696276d9aa@akamai.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <c31d7c04-9d6f-aefb-500e-5b9b635ff221@gmail.com>
+Date:   Sat, 17 Aug 2019 18:26:40 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <b9ab6b03-664c-eb81-0fbd-6f696276d9aa@akamai.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2019-08-17 at 08:59 -0700, Richard Cochran wrote:
-> On Wed, Aug 14, 2019 at 10:47:11AM +0300, Felipe Balbi wrote:
-> > The current version of the IOCTL have a small problem which prevents us
-> > from extending the API by making use of reserved fields. In these new
-> > IOCTLs, we are now making sure that flags and rsv fields are zero which
-> > will allow us to extend the API in the future.
-> > 
-> > Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
-> > ---
-> >  drivers/ptp/ptp_chardev.c      | 58 ++++++++++++++++++++++++++++++++--
-> >  include/uapi/linux/ptp_clock.h | 12 +++++++
-> >  2 files changed, 68 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
-[]
-> > @@ -123,9 +123,11 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
-> >  	struct timespec64 ts;
-> >  	int enable, err = 0;
-> >  
-> > +	memset(&req, 0, sizeof(req));
+
+
+On 8/17/19 4:19 PM, Jason Baron wrote:
 > 
-> Nit: please leave a blank line between memset() and switch/case.
-
-or just initialize the declaration of req with = {}
-
-Is there a case where this initialization is
-unnecessary such that it impacts performance
-given the use in ptp_ioctl?
-
-caps for instance is memset to zero only in
-PTP_CLOCK_GETCAP
-
-req is used in only 3 of the case blocks.
-
-	case PTP_EXTTS_REQUEST:
-	case PTP_PEROUT_REQUEST:
-	case PTP_ENABLE_PPS:
-
-Maybe it would be better to move the memset(&req...)
-into each of the case blocks.
-
-> >  	switch (cmd) {
-> >  
-> >  	case PTP_CLOCK_GETCAPS:
-> > +	case PTP_CLOCK_GETCAPS2:
-> >  		memset(&caps, 0, sizeof(caps));
-> >  		caps.max_adj = ptp->info->max_adj;
-> >  		caps.n_alarm = ptp->info->n_alarm;
 > 
-> Reviewed-by: Richard Cochran <richardcochran@gmail.com>
+> On 8/17/19 12:26 AM, Eric Dumazet wrote:
+>> As Jason Baron explained in commit 790ba4566c1a ("tcp: set SOCK_NOSPACE
+>> under memory pressure"), it is crucial we properly set SOCK_NOSPACE
+>> when needed.
+>>
+>> However, Jason patch had a bug, because the 'nonblocking' status
+>> as far as sk_stream_wait_memory() is concerned is governed
+>> by MSG_DONTWAIT flag passed at sendmsg() time :
+>>
+>>     long timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
+>>
+>> So it is very possible that tcp sendmsg() calls sk_stream_wait_memory(),
+>> and that sk_stream_wait_memory() returns -EAGAIN with SOCK_NOSPACE
+>> cleared, if sk->sk_sndtimeo has been set to a small (but not zero)
+>> value.
 > 
+> Is MSG_DONTWAIT not set in this case? The original patch was intended
+> only for the explicit non-blocking case. The epoll manpage says:
+> "EPOLLET flag should use nonblocking file descriptors". So the original
+> intention was not to impact the blocking case. This seems to me like
+> a different use-case.
+>
+
+I guess the problem is how we define 'non-blocking' ...
+
+SO_SNDTIMEO can be used by application to implement a variation of non-blocking,
+by waiting for a socket event with a short timeout, to maybe recover
+from memory pressure conditions in a more efficient way than simply looping.
+
+Note that the man page for epoll() only _suggests_ to use nonblocking file descriptors.
+
+<quote>
+       The  suggested  way  to use epoll as an edge-triggered (EPOLLET)
+       interface is as follows:
+
+              i   with nonblocking file descriptors; and
+
+              ii  by  waiting  for  an  event  only  after  read(2)  or
+                  write(2) return EAGAIN.
+</quote>
+
+
+
+
+
+
+
 
