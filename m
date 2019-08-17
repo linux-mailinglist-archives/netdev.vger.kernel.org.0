@@ -2,141 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B014C9106C
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 14:41:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E16E9106E
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 14:46:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726010AbfHQMkZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Aug 2019 08:40:25 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34153 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbfHQMkY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 08:40:24 -0400
-Received: by mail-wr1-f68.google.com with SMTP id s18so4116504wrn.1
-        for <netdev@vger.kernel.org>; Sat, 17 Aug 2019 05:40:22 -0700 (PDT)
+        id S1726002AbfHQMqW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Aug 2019 08:46:22 -0400
+Received: from mail-wr1-f50.google.com ([209.85.221.50]:42657 "EHLO
+        mail-wr1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725832AbfHQMqV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 08:46:21 -0400
+Received: by mail-wr1-f50.google.com with SMTP id b16so4102876wrq.9;
+        Sat, 17 Aug 2019 05:46:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LaZ1tX4gz22oa4p+lxpFJQab8WKTRtUULcHikEKr6/s=;
-        b=egOXgFY1ADWmSBm1+8P+Cg4CoaSAv5VCSPxaKpGufYOof8VoDyWBj1VJuLV3Z71V8l
-         zuabZexjqplU1kyD1VmkaW6nmUPq7RNT7jZRe9ZFNLIQjetarJ5Ig9OYiUqYapeHvrNC
-         NQHYbujqCC6HdmkvtjmAsM/LUBQbXw9sAav7on6SnA300sFnhJf/9RHTmI4fKIQAPmNH
-         AaQU1I+6UDVP3NjaOPbDEfNYZ5/9qJ9Ld8hb2NWqTOKAGcTyXg3Wbotr5FjHY721w/ZJ
-         5zLQ1yZIyRSnENdCIGqm0erxp4XWN9O91qxHapkGvalhVvrbheob1FtA0aeE8XZQMWo9
-         O2qg==
+        bh=2pfNQGCh4bl0mf6scXIqLXLsi31gckxp3PKJLBvyYTg=;
+        b=PY1uvxiYFchcVO/vymSgiIaAMFTTfTQrsU4+DUupB4PEy2w4ui0VP0rB3sx4axUXNd
+         GeTBfL8vauDDt538K7+SChie9W97RTf4H8r6qfmMZ5KcXsPKkr1J0S0r+eUlMaxgzonc
+         +0d9wDkUpgTQWHAGIutiTFz9BsKklohtAbtjEN+kf/LkHw7myG7c+24t3WKRa//zUgHy
+         Rh3D2wtrZTaVEf/AdyIqPCCLqm9BxrrKV6/0e2ycGuDn1fegeOzubN96fH9q6zaedZ+2
+         UvAMX90EfgB7+RZlz6DijqNtJO99iMY39rCMpAlZlwnAeasjvlefcytktQjAnTH43UzN
+         8wfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LaZ1tX4gz22oa4p+lxpFJQab8WKTRtUULcHikEKr6/s=;
-        b=n4D4YxLeMlt5RjGBvCKTcMPSBmghFBclfXFGlQYpaiXBPN0vaqJkLJo1eggRDd3Ffc
-         teZ99HgHd7XFo9QSzsh98fIFHUt01PrY38dcsL57YvUXzngmUMp6juiUqzMEOeYD5Ge+
-         cKgqE1USriQehdqPdgwEZZlmqETDXraTe1i0CMXHVjXJGbHj+uzx7VJaqJr9ZtnT2tXJ
-         gGeCQPVMRusINwFSlUjo9NxMHfD1kFKvlEwgTnccv89VvCPs1oAjtgXrAybEM1VHWRCh
-         qcoNE+wtF8apTTPnFy6AD++6AJTqaWW4H5gPtSzmgdICL8MSlDXYLzrA7taZ+kJ4mgKl
-         M03g==
-X-Gm-Message-State: APjAAAW2Lk590pgt2sNTOEl0oqFGd+qKiIP99ZQovSpx+coqc/PXzeih
-        b7iOJXWHjsaBeg2S6VMoruF+TyKnDmX8STkRQPlZuw==
-X-Google-Smtp-Source: APXvYqwdVHhj8rOztytmi4oVVH8IQ2HEdKGNKur5FH3NPi9D3EafsYhx2xjLHKj24eDEOkNBIKW2WLYkZuzcKIzxhUA=
-X-Received: by 2002:a05:6000:10cf:: with SMTP id b15mr16119269wrx.180.1566045621662;
- Sat, 17 Aug 2019 05:40:21 -0700 (PDT)
+        bh=2pfNQGCh4bl0mf6scXIqLXLsi31gckxp3PKJLBvyYTg=;
+        b=EhRfpftySNw4EnkOBrLhuziwJ3m/Tic0gQxVh82xTkOmBB9PRgYYWuA7qixzz9cOsp
+         5+73r5mMiU2r57wYIJ+pGgUFzUDLfwghQQDry8TDOTWv15+Rh82TImEX88GmiyBkrTfh
+         EdwvJMHIFtnPr/7s00CFca/eE0fTHJud1LB2u3IW8SlUzYHF7JhtL29QJwsNjjiV4NQb
+         /JVifGPLzpS9Aij+4AfPRUsZDK1H/WelmgjZL7zHnuyblRfgoImJ970h5vwi7FZ9Ac6L
+         mGB7k5CHd6qXD72kGNicQVVC080opaMhSREp7Yc9HySEKdOnVE8x4fs6cbV8AD/KpV+i
+         OY+Q==
+X-Gm-Message-State: APjAAAW065ptn3IfUwgH1wAuYAGimltGg1eVYvMluj1WtvbNhFQB9QZk
+        gfxq3BEugfTMFJ1MF4C83jR08KJ3vOCz7+0bJ36jmu7s
+X-Google-Smtp-Source: APXvYqzcahsc6U7mNTgJExlQl/MPBfE73r2bJmCpxK7jg2R3glGaGaCDzVvWTvZkJALgNWEzJEibXbyxM2l7aWKbM5k=
+X-Received: by 2002:a05:6000:110f:: with SMTP id z15mr15402092wrw.162.1566045979073;
+ Sat, 17 Aug 2019 05:46:19 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190817042622.91497-1-edumazet@google.com>
-In-Reply-To: <20190817042622.91497-1-edumazet@google.com>
-From:   Soheil Hassas Yeganeh <soheil@google.com>
-Date:   Sat, 17 Aug 2019 08:39:44 -0400
-Message-ID: <CACSApvaExue4uW198Xw1Uipo8BY12PnvbpqceBs8EOHGQMn1YQ@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: make sure EPOLLOUT wont be missed
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Vladimir Rutsky <rutsky@google.com>
+References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
+ <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
+In-Reply-To: <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
+From:   Akshat Kakkar <akshat.1984@gmail.com>
+Date:   Sat, 17 Aug 2019 18:16:19 +0530
+Message-ID: <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
+Subject: Re: Unable to create htb tc classes more than 64K
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     NetFilter <netfilter-devel@vger.kernel.org>,
+        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 17, 2019 at 12:26 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> As Jason Baron explained in commit 790ba4566c1a ("tcp: set SOCK_NOSPACE
-> under memory pressure"), it is crucial we properly set SOCK_NOSPACE
-> when needed.
->
-> However, Jason patch had a bug, because the 'nonblocking' status
-> as far as sk_stream_wait_memory() is concerned is governed
-> by MSG_DONTWAIT flag passed at sendmsg() time :
->
->     long timeo = sock_sndtimeo(sk, flags & MSG_DONTWAIT);
->
-> So it is very possible that tcp sendmsg() calls sk_stream_wait_memory(),
-> and that sk_stream_wait_memory() returns -EAGAIN with SOCK_NOSPACE
-> cleared, if sk->sk_sndtimeo has been set to a small (but not zero)
-> value.
->
-> This patch removes the 'noblock' variable since we must always
-> set SOCK_NOSPACE if -EAGAIN is returned.
->
-> It also renames the do_nonblock label since we might reach this
-> code path even if we were in blocking mode.
->
-> Fixes: 790ba4566c1a ("tcp: set SOCK_NOSPACE under memory pressure")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Jason Baron <jbaron@akamai.com>
-> Reported-by: Vladimir Rutsky  <rutsky@google.com>
+I agree that it is because of 16bit of minor I'd of class which
+restricts it to 64K.
+Point is, can we use multilevel qdisc and classes to extend it to more
+no. of classes i.e. to more than 64K classes
 
-Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
+One scheme can be like
+                                      100: root qdisc
+                                         |
+                                       / | \
+                                     /   |   \
+                                   /     |     \
+                                 /       |       \
+                          100:1   100:2   100:3        child classes
+                            |              |           |
+                            |              |           |
+                            |              |           |
+                           1:            2:          3:     qdisc
+                           / \           / \           / \
+                         /     \                     /     \
+                      1:1    1:2             3:1      3:2 leaf classes
 
-Thank you for the fix!
+with all qdisc and classes defined as htb.
 
-> ---
->  net/core/stream.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
->
-> diff --git a/net/core/stream.c b/net/core/stream.c
-> index e94bb02a56295ec2db34ab423a8c7c890df0a696..4f1d4aa5fb38d989a9c81f32dfce3f31bbc1fa47 100644
-> --- a/net/core/stream.c
-> +++ b/net/core/stream.c
-> @@ -120,7 +120,6 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
->         int err = 0;
->         long vm_wait = 0;
->         long current_timeo = *timeo_p;
-> -       bool noblock = (*timeo_p ? false : true);
->         DEFINE_WAIT_FUNC(wait, woken_wake_function);
->
->         if (sk_stream_memory_free(sk))
-> @@ -133,11 +132,8 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
->
->                 if (sk->sk_err || (sk->sk_shutdown & SEND_SHUTDOWN))
->                         goto do_error;
-> -               if (!*timeo_p) {
-> -                       if (noblock)
-> -                               set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
-> -                       goto do_nonblock;
-> -               }
-> +               if (!*timeo_p)
-> +                       goto do_eagain;
->                 if (signal_pending(current))
->                         goto do_interrupted;
->                 sk_clear_bit(SOCKWQ_ASYNC_NOSPACE, sk);
-> @@ -169,7 +165,13 @@ int sk_stream_wait_memory(struct sock *sk, long *timeo_p)
->  do_error:
->         err = -EPIPE;
->         goto out;
-> -do_nonblock:
-> +do_eagain:
-> +       /* Make sure that whenever EAGAIN is returned, EPOLLOUT event can
-> +        * be generated later.
-> +        * When TCP receives ACK packets that make room, tcp_check_space()
-> +        * only calls tcp_new_space() if SOCK_NOSPACE is set.
-> +        */
-> +       set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
->         err = -EAGAIN;
->         goto out;
->  do_interrupted:
-> --
-> 2.23.0.rc1.153.gdeed80330f-goog
->
+Is this correct approach? Any alternative??
+
+Besides, in order to direct traffic to leaf classes 1:1, 1:2, 2:1,
+2:2, 3:1, 3:2 .... , instead of using filters I am using ipset with
+skbprio and iptables map-set match rule.
+But even after all this it don't work. Why?
+
+What I am missing?
