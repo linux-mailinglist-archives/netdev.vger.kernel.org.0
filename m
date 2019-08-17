@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED075912A2
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 21:15:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 626E1912A3
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 21:15:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726256AbfHQTPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726240AbfHQTPA (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 17 Aug 2019 15:15:00 -0400
-Received: from mail.nic.cz ([217.31.204.67]:41650 "EHLO mail.nic.cz"
+Received: from mail.nic.cz ([217.31.204.67]:41656 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726129AbfHQTO7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 17 Aug 2019 15:14:59 -0400
+        id S1726162AbfHQTPA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 17 Aug 2019 15:15:00 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id 03ABD140B53;
+        by mail.nic.cz (Postfix) with ESMTP id 244AB140B54;
         Sat, 17 Aug 2019 21:14:58 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566069298; bh=gwiHlu1/e5gUceR70Z1eXl8Fjfy+Wc1wI65HN+bkQiU=;
+        t=1566069298; bh=qicFrCIaUQafmC2tXbYuA0sqLyoW/+M2sqPggITw7PA=;
         h=From:To:Date;
-        b=g6o6lspXYZNWy5hK4P0ksqiLzHso6nGRE71EL1eqA1lFbCvJKapJ22jOpjl8PhqEW
-         Pg+tSY6Ks9rgEFyLgH6xJlJDHmtm1iGo1e6fMj26ZPtNIBP33HbHC32ZEsVsw49z54
-         xr+oQxuZpnYLt8RisbpJJIJi5FzlTztJcyTHiNFU=
+        b=KrTbl7mm/zCI2zzcnF4DicypyLXYjNLmIpVTfZdka607PSJg8I8umdFKuARsDA0PV
+         g7F7S9nmWioXCRiGHZGcZIrBHw5x1j9p1dg7GgOphYN4YetwW/yRD4fEiLJQVzls5C
+         TPuPEATG0G+r3uvBjiOHSPLtG0mWW+I5gf0C+MYU=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -27,9 +27,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH RFC v2 net-next 3/4] net: dsa: mv88e6xxx: check for port type in port_disable
-Date:   Sat, 17 Aug 2019 21:14:51 +0200
-Message-Id: <20190817191452.16716-4-marek.behun@nic.cz>
+Subject: [PATCH RFC v2 net-next 4/4] net: dsa: mv88e6xxx: do not enable SERDESes in mv88e6xxx_setup
+Date:   Sat, 17 Aug 2019 21:14:52 +0200
+Message-Id: <20190817191452.16716-5-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190817191452.16716-1-marek.behun@nic.cz>
 References: <20190817191452.16716-1-marek.behun@nic.cz>
@@ -46,8 +46,9 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mv88e6xxx_port_disable method calls mv88e6xxx_port_set_state, which
-should be called only for user ports.
+CPU/DSA ports are now enabled/disabled in the .port_enable() and
+.port_disable() methods. We do not need to enable SERDESes for these
+ports in mv88e6xxx_setup.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
 Cc: Andrew Lunn <andrew@lunn.ch>
@@ -55,25 +56,30 @@ Cc: Florian Fainelli <f.fainelli@gmail.com>
 Cc: Vladimir Oltean <olteanv@gmail.com>
 Cc: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
 diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 9b3ad22a5b98..ad27f2fc5c33 100644
+index ad27f2fc5c33..cca9f1e2038f 100644
 --- a/drivers/net/dsa/mv88e6xxx/chip.c
 +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2285,8 +2285,9 @@ static void mv88e6xxx_port_disable(struct dsa_switch *ds, int port)
+@@ -2151,16 +2151,6 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 	if (err)
+ 		return err;
  
- 	mv88e6xxx_reg_lock(chip);
- 
--	if (mv88e6xxx_port_set_state(chip, port, BR_STATE_DISABLED))
--		dev_err(chip->dev, "failed to disable port\n");
-+	if (dsa_is_user_port(ds, port))
-+		if (mv88e6xxx_port_set_state(chip, port, BR_STATE_DISABLED))
-+			dev_err(chip->dev, "failed to disable port\n");
- 
- 	if (chip->info->ops->serdes_irq_free)
- 		chip->info->ops->serdes_irq_free(chip, port);
+-	/* Enable the SERDES interface for DSA and CPU ports. Normal
+-	 * ports SERDES are enabled when the port is enabled, thus
+-	 * saving a bit of power.
+-	 */
+-	if ((dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))) {
+-		err = mv88e6xxx_serdes_power(chip, port, true);
+-		if (err)
+-			return err;
+-	}
+-
+ 	/* Port Control 2: don't force a good FCS, set the maximum frame size to
+ 	 * 10240 bytes, disable 802.1q tags checking, don't discard tagged or
+ 	 * untagged frames on this port, do a destination address lookup on all
 -- 
 2.21.0
 
