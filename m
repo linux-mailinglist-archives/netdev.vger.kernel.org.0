@@ -2,51 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36FAA912F0
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 23:05:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FAFB912F1
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 23:05:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726408AbfHQVFh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Aug 2019 17:05:37 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:33755 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726198AbfHQVFg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 17:05:36 -0400
-Received: by mail-pg1-f193.google.com with SMTP id n190so4701917pgn.0
-        for <netdev@vger.kernel.org>; Sat, 17 Aug 2019 14:05:36 -0700 (PDT)
+        id S1726434AbfHQVFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Aug 2019 17:05:39 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:43489 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726198AbfHQVFi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 17:05:38 -0400
+Received: by mail-pl1-f196.google.com with SMTP id 4so3895179pld.10
+        for <netdev@vger.kernel.org>; Sat, 17 Aug 2019 14:05:38 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=mmW8YPtsz/Pq3tMA0Dog6lLToNJ746rqL0VUwvy/URM=;
-        b=bNysoYjahYt4D9P0DRAWz32ecl1vsThBNyEYM1RBlgnHtgchgDRPij48L4LmTbS5Xl
-         x9YvC5PF7QPqTvAE0IgsQKg/YoiHHCi5k139Ia42wu/rDTnppVcVGk7TQCrSbJGNTLik
-         tURemrtGsziatF2he83piGl/cC6cJ7fsWngAU=
+        bh=8FLCheCGFH43zwO48CXL3zwzgYS298RJST523279m94=;
+        b=aA9rSYS6TOnBIzSvxdiqZIfd99kSo1thPe+riy9AEX9ppidSvXgKmpsdCLcHLG0mt/
+         hmRhGhbgG6uZqYaHt0JpyS97G1B1pSAczSdfEIgKf4i4Od7wPwK5Rve+Axtip7+HlccH
+         pFA+kiYk877d/ne5WZsLW4A1j/Yz0o19xPnNU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=mmW8YPtsz/Pq3tMA0Dog6lLToNJ746rqL0VUwvy/URM=;
-        b=raRQ6XEIiifEGT6S4x1s6fk/JdVH/Hb+hGsstxHsiW6ffP4K0/t6cBOzQQt35A5ZCM
-         8DHlgSL0g2IfvM7SEcjKqmpomrL8gU9zcsgSlvKGjsrSJTrGpUCzd5gF6WJihy8upm3s
-         dpTN6+CeBZzbJeZcx0HBSbn5t9WhmrPC2msKkpg1pqKA+I+rmM3ru67pus+XNHvYEfsn
-         biGBERlcptEBUo2cKJJ/VNZSifFaXEsrFZonUjX2QXGIoSyfgLxPL6teFxcI7YaFHiu/
-         c15Ig0G8Dq2GJo3F4tCN7WakMtSby1rDsiWz2aFDaerorxsbizDaDtH1CG3uSqqFfDfG
-         GX1g==
-X-Gm-Message-State: APjAAAWgWNY9dthX9mKk3WKca9Jek5Hd0L4m3MBB5sN2/Vb9F1F8vwul
-        NK7caJoNPqeKi4/3HxzjiF32/A==
-X-Google-Smtp-Source: APXvYqxMJjizASkcQ3d9iyw2jHwBPnoHJRHgo5RrktjjFqefoOxxH78efs39OQSKqqq0gnW8IsqN2g==
-X-Received: by 2002:a17:90a:1110:: with SMTP id d16mr13870092pja.29.1566075935791;
-        Sat, 17 Aug 2019 14:05:35 -0700 (PDT)
+        bh=8FLCheCGFH43zwO48CXL3zwzgYS298RJST523279m94=;
+        b=ArFaTmQWPyFeHz9qKS6203KHs4icCxk0dlWiYOeMAiftwvZ4I6as53RD50OgVO8kDj
+         U1CyteU8Mkt7i3+Zz7H3YSKaedW+p3wiAfj3OHpw2wZWz3m9+ewnp2fBwKvNE8+eEOAn
+         CrfresV7RSKbyqBF4zAqEhabhUA6Q9cb6Ca6lv6QkY4+dk8vDZsaERlHKZ8tEjt7F8yq
+         AocFpOQG8IZ15ZLjwk4CWA2TmEoBPelxJuzUltw1IsuybDY4OWiTX1s2ZG1sr/j/r9Pn
+         xiad88JvTscts8Gn33HpGk4uuOdw7VWdOL7pRkmwxRHNKmv5wXP3sGztfqTbytSFnGK5
+         ntTw==
+X-Gm-Message-State: APjAAAWPcvdzpHHlH9TuUnJ0lkJ/Fs6D8M+vp1ACiAzCh9vRx73XL8wZ
+        j5ZfooPmduBvp/tYcVWCrfgVjgFu1go=
+X-Google-Smtp-Source: APXvYqyoi0kgYTtih1sRurXx28pyrzJMv1tnd3Nf7oF0eKiXme86gkCBy9Rr9Ulr0VOJFUDNTm+mlA==
+X-Received: by 2002:a17:902:900a:: with SMTP id a10mr15840202plp.281.1566075937881;
+        Sat, 17 Aug 2019 14:05:37 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id e189sm9099295pgc.15.2019.08.17.14.05.33
+        by smtp.gmail.com with ESMTPSA id e189sm9099295pgc.15.2019.08.17.14.05.36
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 17 Aug 2019 14:05:35 -0700 (PDT)
+        Sat, 17 Aug 2019 14:05:37 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org,
-        Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
-Subject: [PATCH net v2 5/6] bnxt_en: Use correct src_fid to determine direction of the flow
-Date:   Sat, 17 Aug 2019 17:04:51 -0400
-Message-Id: <1566075892-30064-6-git-send-email-michael.chan@broadcom.com>
+Cc:     netdev@vger.kernel.org, Somnath Kotur <somnath.kotur@broadcom.com>
+Subject: [PATCH net v2 6/6] bnxt_en: Fix to include flow direction in L2 key
+Date:   Sat, 17 Aug 2019 17:04:52 -0400
+Message-Id: <1566075892-30064-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1566075892-30064-1-git-send-email-michael.chan@broadcom.com>
 References: <1566075892-30064-1-git-send-email-michael.chan@broadcom.com>
@@ -55,42 +54,76 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+From: Somnath Kotur <somnath.kotur@broadcom.com>
 
-Direction of the flow is determined using src_fid. For an RX flow,
-src_fid is PF's fid and for TX flow, src_fid is VF's fid. Direction
-of the flow must be specified, when getting statistics for that flow.
-Currently, for DECAP flow, direction is determined incorrectly, i.e.,
-direction is initialized as TX for DECAP flow, instead of RX. Because
-of which, stats are not reported for this DECAP flow, though it is
-offloaded and there is traffic for that flow, resulting in flow age out.
+FW expects the driver to provide unique flow reference handles
+for Tx or Rx flows. When a Tx flow and an Rx flow end up sharing
+a reference handle, flow offload does not seem to work.
+This could happen in the case of 2 flows having their L2 fields
+wildcarded but in different direction.
+Fix to incorporate the flow direction as part of the L2 key
 
-This patch fixes the problem by determining the DECAP flow's direction
-using correct fid.  Set the flow direction in all cases for consistency
-even if 64-bit flow handle is not used.
+v2: Move the dir field to the end of the bnxt_tc_l2_key struct to
+fix the warning reported by kbuild test robot <lkp@intel.com>.
+There is existing code that initializes the structure using
+nested initializer and will warn with the new u8 field added to
+the beginning.  The structure also packs nicer when this new u8 is
+added to the end of the structure [MChan].
 
 Fixes: abd43a13525d ("bnxt_en: Support for 64-bit flow handle.")
-Signed-off-by: Venkat Duvvuru <venkatkumar.duvvuru@broadcom.com>
+Signed-off-by: Somnath Kotur <somnath.kotur@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c | 4 ++--
+ drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h | 6 +++---
+ 2 files changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-index 6fe4a71..6224c30 100644
+index 6224c30..dd621f6 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.c
-@@ -1285,9 +1285,7 @@ static int bnxt_tc_add_flow(struct bnxt *bp, u16 src_fid,
- 		goto free_node;
+@@ -1236,7 +1236,7 @@ static int __bnxt_tc_del_flow(struct bnxt *bp,
+ static void bnxt_tc_set_flow_dir(struct bnxt *bp, struct bnxt_tc_flow *flow,
+ 				 u16 src_fid)
+ {
+-	flow->dir = (bp->pf.fw_fid == src_fid) ? BNXT_DIR_RX : BNXT_DIR_TX;
++	flow->l2_key.dir = (bp->pf.fw_fid == src_fid) ? BNXT_DIR_RX : BNXT_DIR_TX;
+ }
  
- 	bnxt_tc_set_src_fid(bp, flow, src_fid);
--
--	if (bp->fw_cap & BNXT_FW_CAP_OVS_64BIT_HANDLE)
--		bnxt_tc_set_flow_dir(bp, flow, src_fid);
-+	bnxt_tc_set_flow_dir(bp, flow, flow->src_fid);
+ static void bnxt_tc_set_src_fid(struct bnxt *bp, struct bnxt_tc_flow *flow,
+@@ -1405,7 +1405,7 @@ static void bnxt_fill_cfa_stats_req(struct bnxt *bp,
+ 		 * 2. 15th bit of flow_handle must specify the flow
+ 		 *    direction (TX/RX).
+ 		 */
+-		if (flow_node->flow.dir == BNXT_DIR_RX)
++		if (flow_node->flow.l2_key.dir == BNXT_DIR_RX)
+ 			handle = CFA_FLOW_INFO_REQ_FLOW_HANDLE_DIR_RX |
+ 				 CFA_FLOW_INFO_REQ_FLOW_HANDLE_MAX_MASK;
+ 		else
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
+index ffec57d..4f05305 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_tc.h
+@@ -23,6 +23,9 @@ struct bnxt_tc_l2_key {
+ 	__be16		inner_vlan_tci;
+ 	__be16		ether_type;
+ 	u8		num_vlans;
++	u8		dir;
++#define BNXT_DIR_RX	1
++#define BNXT_DIR_TX	0
+ };
  
- 	if (!bnxt_tc_can_offload(bp, flow)) {
- 		rc = -EOPNOTSUPP;
+ struct bnxt_tc_l3_key {
+@@ -98,9 +101,6 @@ struct bnxt_tc_flow {
+ 
+ 	/* flow applicable to pkts ingressing on this fid */
+ 	u16				src_fid;
+-	u8				dir;
+-#define BNXT_DIR_RX	1
+-#define BNXT_DIR_TX	0
+ 	struct bnxt_tc_l2_key		l2_key;
+ 	struct bnxt_tc_l2_key		l2_mask;
+ 	struct bnxt_tc_l3_key		l3_key;
 -- 
 2.5.1
 
