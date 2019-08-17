@@ -2,103 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DC49091235
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 20:24:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 161B991275
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 20:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726298AbfHQSYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Aug 2019 14:24:25 -0400
-Received: from mail-pl1-f172.google.com ([209.85.214.172]:40864 "EHLO
-        mail-pl1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726046AbfHQSYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 14:24:25 -0400
-Received: by mail-pl1-f172.google.com with SMTP id h3so440123pls.7;
-        Sat, 17 Aug 2019 11:24:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ChyHBGIA+t8HHZ8fjN+eZZX89DxnxMH1aUXinF6wiX8=;
-        b=CWGpTz2+Kce16DRmUO/jFzSJe3WGQ96RREy4aTkTsTuVqHqQ87tvxcxU4KOiMDYdFt
-         XriNb+8VEE4C0sObeH36vyFboMPwZnl7k1/KsZtBmJuQVclQcm91hnpT3X554q4XYmYU
-         lGiZ0+gegS6xUNmS27Sor+eyACUmAJkmwTc2nLNPmqaNhHB/hCZMR6YMHsEGW2VbnQJ6
-         hhttkt0vv7FUz5+a0Nyu9bwdQ+k4kESZ8TYKQkPEN0LQnqp+m9xk1/M017UmR6jtDMS3
-         GPfm/trqEYTQS6SLn/z4OuZ1X9s8do2BIEGJkWPufQmH6fKVmtbiIzhLi4yNRGCdAeAG
-         3UoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ChyHBGIA+t8HHZ8fjN+eZZX89DxnxMH1aUXinF6wiX8=;
-        b=MdtErWUVYq/g0iXIM0aZYzw1C2KUD53Pwa3OUfM1XsTQE0w2fhAJmgMi05eBW9ZhFN
-         IiHdcyW7ce/4Nfpp8Tec/aJ/uhY7Yz/pJmHedSgtvDhItW3uS67uxbGJm6INH+2aJfJ2
-         Y/ZqZ0FWBF+s+5ri1vtm8ThODOkABHMy1HWtue02mP/0KOW7M/d1HhvJFThCVgHTdfdz
-         u0BFoW+eNc113hPeVEY3Tw7Na2dN2G22Yim+1b7skufui8yMb+HQ5Pdnd4UeFvMxLbnn
-         r0B4KNUeImc3jQwA6lysHMmayUv/HUbmQE9LqgWbJQMiMgvfqupG24kbEJZeS2fSGhbt
-         zU1A==
-X-Gm-Message-State: APjAAAWzK9ISvG+/hJzU4LvISo+QynUXijn6iOOeeTl4JFairPiZ+qXA
-        peXBIlBy8j146JwJ8hPg9wr5TDZ+zuEF/orbH7bPQg==
-X-Google-Smtp-Source: APXvYqzgr7bPKeOp+oPpw+bieCQE/gQng0l173PxZmamuwodfUO57xHUDUAl0sCyN2qsf9k5Fdt9dWM8wn4yaMG4ZJw=
-X-Received: by 2002:a17:902:7286:: with SMTP id d6mr15082675pll.61.1566066264315;
- Sat, 17 Aug 2019 11:24:24 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
- <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com> <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
-In-Reply-To: <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sat, 17 Aug 2019 11:24:13 -0700
-Message-ID: <CAM_iQpUH6y8oEct3FXUhqNekQ3sn3N7LoSR0chJXAPYUzvWbxA@mail.gmail.com>
-Subject: Re: Unable to create htb tc classes more than 64K
-To:     Akshat Kakkar <akshat.1984@gmail.com>
-Cc:     NetFilter <netfilter-devel@vger.kernel.org>,
-        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726556AbfHQSzB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Aug 2019 14:55:01 -0400
+Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:53942 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726082AbfHQSzA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 14:55:00 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id B5101C0051;
+        Sat, 17 Aug 2019 18:54:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1566068100; bh=R7aF5EjeHRaz3V0jYhX81XQ4Vx/vUvia+WkrllGMdp8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=klHGs7Wt4qpN//vshsoyUFv7c/QKb7AgVf1s6U8uNN+Lii5AyjIsgob+26b5x3FtC
+         WqL969hl0Bgb694G7TZQRHfkG4EH9C5tSVLfCncajH2KwUWZjbgSTmuLrKI/IeGXTx
+         MrS/DcUZWFe4QlakUt/vrfrdIh6JclcuaChfJs9Jc+hCIRVX9m5s9iJ0rQd+DvZFCc
+         Zn3tyRG4Vt0zA0/3kK0E/x4R3tarPoxpkwtQzW2Yw2ayFH0/mvR7tjb5P87vN3fAo4
+         jzZAlNjZkuctooeqV1aFaIMRxMo7V41PBXqgJBNqphUbI/MQseI6oDyxhEDb0r4LAV
+         C3xuQ+WlPUfGQ==
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 60C4CA0057;
+        Sat, 17 Aug 2019 18:54:53 +0000 (UTC)
+From:   Jose Abreu <Jose.Abreu@synopsys.com>
+To:     netdev@vger.kernel.org
+Cc:     Joao Pinto <Joao.Pinto@synopsys.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Jose Abreu <Jose.Abreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v3 00/12] net: stmmac: Improvements for -next
+Date:   Sat, 17 Aug 2019 20:54:39 +0200
+Message-Id: <cover.1566067802.git.joabreu@synopsys.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 17, 2019 at 5:46 AM Akshat Kakkar <akshat.1984@gmail.com> wrote:
->
-> I agree that it is because of 16bit of minor I'd of class which
-> restricts it to 64K.
-> Point is, can we use multilevel qdisc and classes to extend it to more
-> no. of classes i.e. to more than 64K classes
+Couple of improvements for -next tree. More info in commit logs.
 
-If your goal is merely having as many classes as you can, then yes.
+---
+Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: Jose Abreu <joabreu@synopsys.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: netdev@vger.kernel.org
+Cc: linux-stm32@st-md-mailman.stormreply.com
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-kernel@vger.kernel.org
+---
 
+Jose Abreu (12):
+  net: stmmac: Get correct timestamp values from XGMAC
+  net: stmmac: Prepare to add Split Header support
+  net: stmmac: xgmac: Correctly return that RX descriptor is not last
+    one
+  net: stmmac: Add Split Header support and enable it in XGMAC cores
+  net: stmmac: Add a counter for Split Header packets
+  net: stmmac: dwxgmac: Add Flexible PPS support
+  net: stmmac: Add ethtool register dump for XGMAC cores
+  net: stmmac: Add support for SA Insertion/Replacement in XGMAC cores
+  net: stmmac: selftests: Add tests for SA Insertion/Replacement
+  net: stmmac: xgmac: Add EEE support
+  net: stmmac: Add support for VLAN Insertion Offload
+  net: stmmac: selftests: Add selftest for VLAN TX Offload
 
->
-> One scheme can be like
->                                       100: root qdisc
->                                          |
->                                        / | \
->                                      /   |   \
->                                    /     |     \
->                                  /       |       \
->                           100:1   100:2   100:3        child classes
->                             |              |           |
->                             |              |           |
->                             |              |           |
->                            1:            2:          3:     qdisc
->                            / \           / \           / \
->                          /     \                     /     \
->                       1:1    1:2             3:1      3:2 leaf classes
->
-> with all qdisc and classes defined as htb.
->
-> Is this correct approach? Any alternative??
+ drivers/net/ethernet/stmicro/stmmac/common.h       |  10 +
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2.h     |  56 ++++
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_core.c    | 182 ++++++++++++-
+ .../net/ethernet/stmicro/stmmac/dwxgmac2_descs.c   |  85 +++++-
+ drivers/net/ethernet/stmicro/stmmac/dwxgmac2_dma.c |  31 ++-
+ drivers/net/ethernet/stmicro/stmmac/hwif.h         |  30 +++
+ drivers/net/ethernet/stmicro/stmmac/stmmac.h       |  10 +
+ .../net/ethernet/stmicro/stmmac/stmmac_ethtool.c   |  24 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  | 286 ++++++++++++++++-----
+ .../net/ethernet/stmicro/stmmac/stmmac_selftests.c | 194 +++++++++++++-
+ 10 files changed, 817 insertions(+), 91 deletions(-)
 
-Again, depends on what your goal is.
+-- 
+2.7.4
 
-
->
-> Besides, in order to direct traffic to leaf classes 1:1, 1:2, 2:1,
-> 2:2, 3:1, 3:2 .... , instead of using filters I am using ipset with
-> skbprio and iptables map-set match rule.
-> But even after all this it don't work. Why?
-
-Again, the filters you use to classify the packets could only
-work for the classes on the same level, no the next level.
-
-
-Thanks.
