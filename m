@@ -2,130 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B0B5911C3
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 17:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B585911CE
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 18:00:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726075AbfHQPoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Aug 2019 11:44:55 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:39702 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726002AbfHQPoz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 11:44:55 -0400
-Received: by mail-pl1-f196.google.com with SMTP id z3so3717926pln.6
-        for <netdev@vger.kernel.org>; Sat, 17 Aug 2019 08:44:54 -0700 (PDT)
+        id S1726083AbfHQP7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Aug 2019 11:59:31 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:46143 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726013AbfHQP7b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 11:59:31 -0400
+Received: by mail-pg1-f195.google.com with SMTP id m3so3864463pgv.13;
+        Sat, 17 Aug 2019 08:59:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=amacapital-net.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=R2/VJq6nrOFMWOBOgnh5HWjyHIE/BDqFX+S1CeV3qAs=;
-        b=WaP7COrr+38AIFHTYCbpqcx3jLbdYVTtlCWA+1q5UPdXIiVAPDyvZf9DznDc9S8c2u
-         J2urZpD3/44z3m341acVQM9Fd6YpoHb6MV0OC587gacLZPxksqSGGC5P18a+s9X4DrC5
-         glswsfCwPe1MCUkV9D77l52MeDoV/odb8e7K4nf++wuk6JbknP2w+WFaswPoGL/LA1Ea
-         k/enOTcOZq7XAVufNnZKXMAJcjpbnfTcyP/psfuUKkaAKPmN8RMT03nLb++aubNbv05Q
-         PcFbzZBJWsHQEEzMKpsLM2OgRqPkqlP5hVihi3lo369sVowoeJmpga1fVTtsowuIKZZe
-         dmDQ==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=xIlhVyHBmb3rcCp+KzrwcLo7a20Ei5NLFLjc/pDseU0=;
+        b=cbCTvjIBVb+wS7VLXUoKpVlN88AtzcWy+XNBk1e3ABUE1OyesQ6KdJ8vfYqmtMnIPC
+         BLSK0/1+8k7+BLIHnS8oP6QYJ8UUTzAdilvpCb3MGsDYO18De6mJ/AWTvtGIolUiABY/
+         6azsDVWEoSfqXRdCCiMjaoT1az8eRdMuBk8qt3/SS+TiHIkUO7HXWheQo6tVbRrwBCJf
+         jUSE/AvYDrDIIfnhYZZX/3cxvrf99p1VQZ7GVhV/euYQcWqI8OQE5InvtGbR7l9uF8/6
+         +x9a5dzFh4TZZx9iEugr/QJMMmcgOuYAwrrPHTC863JGtn10RloPL0tex6eoAqgWeP9s
+         HdoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=R2/VJq6nrOFMWOBOgnh5HWjyHIE/BDqFX+S1CeV3qAs=;
-        b=rGnufN1GChaaE18QdiSlhfeQ+eKF8Ex2rbmLe0uTgvITA3uw9aNgPYfsnbAJeygE1z
-         eUv5o+F9iUbt/PePI8IzhaDntEtzEXIO0/B+kUJIcbktfdv+8w3vWp2hLfw1r0XKhPcJ
-         ppY9AKBc0t8uLW09jekMhemKY+5ZW+xQImug1w/Mm3bp8955mVDGYHRGXWQoTrJqHP2x
-         L/XoRCvXsXO46aYedJAiCZW2gNS5Af3BU0aJ3+aT5f9fRQlGBYR+n0UWGR7x+SCPmDHd
-         mcT3egJaDDI7+aqVUK6khLuL7PIN1qMBdHlOaW/Ui2VRjxM6zXVLHuT3uP1fKvR8MgTk
-         YiNQ==
-X-Gm-Message-State: APjAAAUZQ3tmpCPavnUWx5Qxn05o9fvlTFMy70JMq8R//b9shCYaESqx
-        lg3YM9uooq0Cuiutn7a5mTVutA==
-X-Google-Smtp-Source: APXvYqxGPZQ32jm+v1QngNi4NkhKo4BrhhWdQ6WcwGGei+2UBkhZw6dczbdrutxMwyo4yOE9YZomEQ==
-X-Received: by 2002:a17:902:2bc8:: with SMTP id l66mr14790994plb.222.1566056694423;
-        Sat, 17 Aug 2019 08:44:54 -0700 (PDT)
-Received: from ?IPv6:2600:1010:b04e:b450:b585:791c:ba5c:79b4? ([2600:1010:b04e:b450:b585:791c:ba5c:79b4])
-        by smtp.gmail.com with ESMTPSA id m13sm9400788pgn.57.2019.08.17.08.44.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 17 Aug 2019 08:44:53 -0700 (PDT)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-From:   Andy Lutomirski <luto@amacapital.net>
-X-Mailer: iPhone Mail (16G77)
-In-Reply-To: <20190817150245.xxzxqjpvgqsxmloe@ast-mbp>
-Date:   Sat, 17 Aug 2019 08:44:52 -0700
-Cc:     Thomas Gleixner <tglx@linutronix.de>,
-        Jordan Glover <Golden_Miller83@protonmail.ch>,
-        Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <959BAF9B-F2A2-4187-A2A7-C64D675F537B@amacapital.net>
-References: <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com> <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch> <20190815172856.yoqvgu2yfrgbkowu@ast-mbp.dhcp.thefacebook.com> <CALCETrUv+g+cb79FJ1S4XuV0K=kowFkPXpzoC99svoOfs4-Kvg@mail.gmail.com> <20190815230808.2o2qe7a72cwdce2m@ast-mbp.dhcp.thefacebook.com> <fkD3fs46a1YnR4lh0tEG-g3tDnDcyZuzji7bAUR9wujPLLl75ZhI8Yk-H1jZpSugO7qChVeCwxAMmxLdeoF2QFS3ZzuYlh7zmeZOmhDJxww=@protonmail.ch> <alpine.DEB.2.21.1908161158490.1873@nanos.tec.linutronix.de> <lGGTLXBsX3V6p1Z4TkdzAjxbNywaPS2HwX5WLleAkmXNcnKjTPpWnP6DnceSsy8NKt5NBRBbuoAb0woKTcDhJXVoFb7Ygk3Skfj8j6rVfMQ=@protonmail.ch> <20190816195233.vzqqbqrivnooohq6@ast-mbp.dhcp.thefacebook.com> <alpine.DEB.2.21.1908162211270.1923@nanos.tec.linutronix.de> <20190817150245.xxzxqjpvgqsxmloe@ast-mbp>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xIlhVyHBmb3rcCp+KzrwcLo7a20Ei5NLFLjc/pDseU0=;
+        b=hiEaxg47gVMef+mM60i/A1iU1pUJHQ+M4UR95TGibRpTVDtSY2zFBlsD2pDCrFQkkw
+         hiTALTHlxawM8jI4BX/IbsBmRFQhqqsWIKzD8PEdyTnQFsHZz3N4/hwCAITQ+3I94T5k
+         3bU2omhCkQlIAQA0GGSY2O0KmdoAD4JY75p7clYBCUQ/Qz8uwKmjGFX/Cj5lj9S10+Vl
+         kgggmOiKx3ipl2/4KJztoorrT/SeGlkRuW3MvmDbPZKehTbAm6R5K3xLG1lwa+AkaQTR
+         PGKoAKWYAHBnlTpeBTtcJ/nAo8yRfJge739KLF/owX7JAUruTaPhqBFWkCtoiUlZyeSZ
+         hItg==
+X-Gm-Message-State: APjAAAXIAT0jh5GjK1FTdPyV+V7C86MFgVkSA0a7NXWkcGuaWEXKeY4M
+        wFA1UDYQ40MQE6Y/jpEEifs=
+X-Google-Smtp-Source: APXvYqx729u4HAZJtk7rY2vqxpnYL8YoY7lKPmX9QdvNVhy7BLwnYGYevQ3WBAFQhnIpcAwTBs+glQ==
+X-Received: by 2002:a62:e806:: with SMTP id c6mr16431028pfi.132.1566057570572;
+        Sat, 17 Aug 2019 08:59:30 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id n128sm9486232pfn.46.2019.08.17.08.59.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 17 Aug 2019 08:59:29 -0700 (PDT)
+Date:   Sat, 17 Aug 2019 08:59:27 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] PTP: introduce new versions of IOCTLs
+Message-ID: <20190817155927.GA1540@localhost>
+References: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Aug 14, 2019 at 10:47:11AM +0300, Felipe Balbi wrote:
+> The current version of the IOCTL have a small problem which prevents us
+> from extending the API by making use of reserved fields. In these new
+> IOCTLs, we are now making sure that flags and rsv fields are zero which
+> will allow us to extend the API in the future.
+> 
+> Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+> ---
+>  drivers/ptp/ptp_chardev.c      | 58 ++++++++++++++++++++++++++++++++--
+>  include/uapi/linux/ptp_clock.h | 12 +++++++
+>  2 files changed, 68 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+> index 18ffe449efdf..204212fc3f8c 100644
+> --- a/drivers/ptp/ptp_chardev.c
+> +++ b/drivers/ptp/ptp_chardev.c
+> @@ -123,9 +123,11 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+>  	struct timespec64 ts;
+>  	int enable, err = 0;
+>  
+> +	memset(&req, 0, sizeof(req));
 
+Nit: please leave a blank line between memset() and switch/case.
 
-> On Aug 17, 2019, at 8:02 AM, Alexei Starovoitov <alexei.starovoitov@gmail.=
-com> wrote:
+>  	switch (cmd) {
+>  
+>  	case PTP_CLOCK_GETCAPS:
+> +	case PTP_CLOCK_GETCAPS2:
+>  		memset(&caps, 0, sizeof(caps));
+>  		caps.max_adj = ptp->info->max_adj;
+>  		caps.n_alarm = ptp->info->n_alarm;
 
->=20
-> Can any of the mechanisms 1/2/3 address the concern in mds.rst?
->=20
-
-seccomp() can. It=E2=80=99s straightforward to use seccomp to disable bpf() o=
-utright for a process tree.  In this regard, bpf() isn=E2=80=99t particularl=
-y unique =E2=80=94 it=E2=80=99s a system call that exposes some attack surfa=
-ce and that isn=E2=80=99t required by most programs for basic functionality.=
-
-
-At LPC this year, there will be a discussion about seccomp improvements that=
- will, among other things, offer fiber-grained control. It=E2=80=99s quite l=
-ikely, for example, that seccomp will soon be able to enable and disable spe=
-cific map types or attach types.  The exact mechanism isn=E2=80=99t decided y=
-et,  but I think everyone expects that this is mostly a design problem, not a=
-n implementation problem.
-
-This is off topic for the current thread, but it could be useful to allow bp=
-f programs to be loaded from files directly (i.e. pass an fd to a file into b=
-pf() to load the program), which would enable LSMs to check that the file is=
- appropriately labeled. This would dramatically raise the bar for exploitati=
-on of verifier bugs or speculation attacks, since anyone trying to exploit i=
-t would need to get the bpf payload through LSM policy first.
-
-> I believe Andy wants to expand the attack surface when
-> kernel.unprivileged_bpf_disabled=3D0
-> Before that happens I'd like the community to work on addressing the text a=
-bove.
->=20
-
-Not by much. BPF maps are already largely exposed to unprivileged code (when=
- unprivileged_bpf_disabled=3D0).  The attack surface is there, and they=E2=80=
-=99re arguably even more exposed than they should be.  My patch 1 earlier wa=
-s about locking these interfaces down.
-
-Similarly, my suggestions about reworking cgroup attach and program load don=
-=E2=80=99t actually allow fully unprivileged users to run arbitrary bpf() pr=
-ograms [0] =E2=80=94 under my proposal, to attach a bpf cgroup program, you n=
-eed a delegated cgroup. The mechanism could be extended by a requirement tha=
-t a privileged cgroup manager explicitly enable certain attach types for a d=
-elegated subtree.
-
-A cgroup knob to turn unprivileged bpf on and off for tasks in the cgroup mi=
-ght actually be quite useful.
-
-[0] on some thought, the test run mechanism should probably remain root-only=
-.
+Reviewed-by: Richard Cochran <richardcochran@gmail.com>
 
