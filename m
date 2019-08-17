@@ -2,89 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F18B911DE
-	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 18:03:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 788CD911E8
+	for <lists+netdev@lfdr.de>; Sat, 17 Aug 2019 18:18:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726067AbfHQQDq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 17 Aug 2019 12:03:46 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:38794 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbfHQQDq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 12:03:46 -0400
-Received: by mail-pg1-f195.google.com with SMTP id e11so4465243pga.5;
-        Sat, 17 Aug 2019 09:03:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VX9SuN022Zgb1Vaem7TDWo/v6LonzdjcvnS8iGmSoyI=;
-        b=nGeNWyM9NauOz00Dd0d3rDDL4kpZN6/LIgEVPapNO4Sd/KGnMxRPQXMVarArOOoVIy
-         R3JkBPHYSpVglbK1InK7bEc6ClXdGbK7R/5ymakF2pmAd7AeoU3lr2kIXDngkOXDV0w7
-         VIbcyHbQK9CtiCuTYe2JzMD5ja6MASNZK3ihzvq9Np91iMdKphp8MT3DXNda2Cg6I11G
-         /JtTFD39yeHfOELTwcRYgUXjFKSJWWGHest4yBUp2oAvQ49JmBjBxgSkADEu3hUI2Oz7
-         zGD4O2Gb3L+9/MMBXt8ywcwDhpS00Az2Ttu25VZ0lKTysQ7l3HUKmUGVl288I6xB/S+c
-         pIxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VX9SuN022Zgb1Vaem7TDWo/v6LonzdjcvnS8iGmSoyI=;
-        b=Mpe+SIxvqV6FJIaF2vVlLkwE1hjcLMPo42r0wa0RrbtC01F3UfgHaP+vrGIRo99TQL
-         S1oHZ9MeGxSJGQatPKzyIMeUzG10SFCpSUTYIt8KFi2jAxfX+gI9caIM4NqH6eOlY/5c
-         foZP6aum3hEJSVAsmR8iei8L49GsAQse1rC4UII9+n7eW+R0tIa9UHHaW872srOqANU5
-         hwrOE9PdyTuOk71yZTXDdHqbtQw/7KfGbbK2dBz+ABlttgm6dWyxZ99Z3AmJpYyE5+2m
-         eLU71v3bXaBTFH2QRU0uxUJ2OIBYXTx6jfjJBPvH7vQzb/vAr59NMTM6umqCzh0ceV6W
-         eJ0A==
-X-Gm-Message-State: APjAAAXEovOE+/f7d4xZN0ajtsnHdsxyvLc1YgP5EEk221t0pNTSGgVL
-        bDCKB0iUUE8ofhosndjh+RQ=
-X-Google-Smtp-Source: APXvYqzV2LlHDU2zsYA3MncwrJG/FqdniLTR9RztJFkT4pUxIEg/t4O9IHHu/jHXqgjmx8MXWntwhA==
-X-Received: by 2002:a17:90a:d792:: with SMTP id z18mr12534888pju.36.1566057825781;
-        Sat, 17 Aug 2019 09:03:45 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id b6sm8568436pgq.26.2019.08.17.09.03.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 17 Aug 2019 09:03:44 -0700 (PDT)
-Date:   Sat, 17 Aug 2019 09:03:42 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Felipe Balbi <felipe.balbi@linux.intel.com>
+        id S1726048AbfHQQRZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 17 Aug 2019 12:17:25 -0400
+Received: from smtprelay0152.hostedemail.com ([216.40.44.152]:48177 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725945AbfHQQRZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 17 Aug 2019 12:17:25 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id A07731800BC36;
+        Sat, 17 Aug 2019 16:17:23 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,:::::::::,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2693:2828:3138:3139:3140:3141:3142:3353:3622:3865:3866:3867:3868:3870:3871:3872:3874:4250:4321:4605:5007:6119:7514:7903:10004:10400:10848:11026:11232:11473:11658:11914:12043:12291:12296:12297:12683:12740:12760:12895:13069:13149:13230:13311:13357:13439:14096:14097:14181:14659:14721:21080:21451:21627:30054:30075:30090:30091,0,RBL:23.242.196.136:@perches.com:.lbl8.mailshell.net-62.8.0.180 64.201.201.201,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:fn,MSBL:0,DNSBL:neutral,Custom_rules:0:0:0,LFtime:28,LUA_SUMMARY:none
+X-HE-Tag: oven99_5d7e0eb857a12
+X-Filterd-Recvd-Size: 2692
+Received: from XPS-9350.home (cpe-23-242-196-136.socal.res.rr.com [23.242.196.136])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Sat, 17 Aug 2019 16:17:22 +0000 (UTC)
+Message-ID: <a146c1356b4272c481e5cc63666c6e58b8442407.camel@perches.com>
+Subject: Re: [PATCH 1/2] PTP: introduce new versions of IOCTLs
+From:   Joe Perches <joe@perches.com>
+To:     Richard Cochran <richardcochran@gmail.com>,
+        Felipe Balbi <felipe.balbi@linux.intel.com>
 Cc:     Christopher S Hall <christopher.s.hall@intel.com>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] PTP: add support for one-shot output
-Message-ID: <20190817160342.GB1540@localhost>
+Date:   Sat, 17 Aug 2019 09:17:20 -0700
+In-Reply-To: <20190817155927.GA1540@localhost>
 References: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
- <20190814074712.10684-2-felipe.balbi@linux.intel.com>
+         <20190817155927.GA1540@localhost>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.32.1-2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190814074712.10684-2-felipe.balbi@linux.intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 14, 2019 at 10:47:12AM +0300, Felipe Balbi wrote:
-> diff --git a/include/uapi/linux/ptp_clock.h b/include/uapi/linux/ptp_clock.h
-> index 039cd62ec706..9412b16cc8ed 100644
-> --- a/include/uapi/linux/ptp_clock.h
-> +++ b/include/uapi/linux/ptp_clock.h
-> @@ -67,7 +67,9 @@ struct ptp_perout_request {
->  	struct ptp_clock_time start;  /* Absolute start time. */
->  	struct ptp_clock_time period; /* Desired period, zero means disable. */
->  	unsigned int index;           /* Which channel to configure. */
-> -	unsigned int flags;           /* Reserved for future use. */
-> +
-> +#define PTP_PEROUT_ONE_SHOT BIT(0)
-> +	unsigned int flags;           /* Bit 0 -> oneshot output. */
+On Sat, 2019-08-17 at 08:59 -0700, Richard Cochran wrote:
+> On Wed, Aug 14, 2019 at 10:47:11AM +0300, Felipe Balbi wrote:
+> > The current version of the IOCTL have a small problem which prevents us
+> > from extending the API by making use of reserved fields. In these new
+> > IOCTLs, we are now making sure that flags and rsv fields are zero which
+> > will allow us to extend the API in the future.
+> > 
+> > Signed-off-by: Felipe Balbi <felipe.balbi@linux.intel.com>
+> > ---
+> >  drivers/ptp/ptp_chardev.c      | 58 ++++++++++++++++++++++++++++++++--
+> >  include/uapi/linux/ptp_clock.h | 12 +++++++
+> >  2 files changed, 68 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/ptp/ptp_chardev.c b/drivers/ptp/ptp_chardev.c
+[]
+> > @@ -123,9 +123,11 @@ long ptp_ioctl(struct posix_clock *pc, unsigned int cmd, unsigned long arg)
+> >  	struct timespec64 ts;
+> >  	int enable, err = 0;
+> >  
+> > +	memset(&req, 0, sizeof(req));
+> 
+> Nit: please leave a blank line between memset() and switch/case.
 
-The .flags field doesn't need this comment.  The individual BIT macro
-names should be clear enough, and if not, then comment the macros.
+or just initialize the declaration of req with = {}
 
->  	unsigned int rsv[4];          /* Reserved for future use. */
->  };
->  
-> -- 
-> 2.22.0
+Is there a case where this initialization is
+unnecessary such that it impacts performance
+given the use in ptp_ioctl?
+
+caps for instance is memset to zero only in
+PTP_CLOCK_GETCAP
+
+req is used in only 3 of the case blocks.
+
+	case PTP_EXTTS_REQUEST:
+	case PTP_PEROUT_REQUEST:
+	case PTP_ENABLE_PPS:
+
+Maybe it would be better to move the memset(&req...)
+into each of the case blocks.
+
+> >  	switch (cmd) {
+> >  
+> >  	case PTP_CLOCK_GETCAPS:
+> > +	case PTP_CLOCK_GETCAPS2:
+> >  		memset(&caps, 0, sizeof(caps));
+> >  		caps.max_adj = ptp->info->max_adj;
+> >  		caps.n_alarm = ptp->info->n_alarm;
+> 
+> Reviewed-by: Richard Cochran <richardcochran@gmail.com>
 > 
 
-Reviewed-by: Richard Cochran <richardcochran@gmail.com>
