@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D31CA918CE
-	for <lists+netdev@lfdr.de>; Sun, 18 Aug 2019 20:26:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 41DCA918D8
+	for <lists+netdev@lfdr.de>; Sun, 18 Aug 2019 20:26:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726945AbfHRS0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Aug 2019 14:26:16 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:35058 "EHLO
+        id S1727078AbfHRS00 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Aug 2019 14:26:26 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:50304 "EHLO
         mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726005AbfHRS0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Aug 2019 14:26:16 -0400
-Received: by mail-wm1-f66.google.com with SMTP id l2so1100204wmg.0;
-        Sun, 18 Aug 2019 11:26:14 -0700 (PDT)
+        with ESMTP id S1726247AbfHRS0S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Aug 2019 14:26:18 -0400
+Received: by mail-wm1-f66.google.com with SMTP id v15so1109099wml.0;
+        Sun, 18 Aug 2019 11:26:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ur3QGWAKmlqcvTKY0sjVTLZcBbPRFu8RJploRDnwy0w=;
-        b=rbs88MZrejsH7+8YhPr5ZutOKhmcz9cYoIBKoE8w45QWR5nrrx3f0xyx07gfnzNCYu
-         VvYhZDsEeL9pLlZW1a1SeJ2K+bhsd4jEL6lNxVKCaQYC5ysxLpQuciyFVZzPauKXmah9
-         I2Z+RNXFqR9/FIoFCeQJ9bxy/BQOv7NmGJR3P6Kn5/mWuTwDihJJjBFJEMyZ9DCXi8hg
-         r2nLmYiKUvF2OZQ9rfk3zsKNgjSzSEmLfJna7HTUv9uLhWisHQ+DshCsy2ATwKDYfs1v
-         euyN5UAUPhha983Y7Cbuy5J2h/o3O6uSguvKqwddha2MUprqzOgFjMbyPZ+Z2uZFNjop
-         vXkw==
+        bh=v1PQz0Rf6qIdBP4XpmfM9YaqjSMhtTmcGs5vz0o4lDg=;
+        b=gnkXMpwneEi9NlbC64UBpwW9Bllw5hY8ivs4wggaQqEB9WRyLUoSjvOyOPGa4HC4ae
+         eBGDlx0hldKVNW+CNLpe2a+FFnHt2EjEy+Pip4RyMg0HJ7BQ+F1q1ahqoKi0KqzM0yr9
+         92pU15SiWzGwZKwhAlI4AJhqkCdQO2Y2qGwb7J+SvMf652FI2i0ddkVS5t/nQe4Vgn4b
+         PSwe0wlCWXYeOTefE0zdGFwgmE6mML3vJs3PQoc8/AYSOIv3j3HlBYH9lOq8ONnS1UCR
+         dSFt4sjZmhZct8hI6vMOMyqvFdZwv7otWeeyRF7o31LykrUn0CaKhblS05w1pzO4e9mR
+         D//A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ur3QGWAKmlqcvTKY0sjVTLZcBbPRFu8RJploRDnwy0w=;
-        b=jbABrcD/iH6b9gQlFc5HRCqCXHcyku069UGbVLTcKjyo3DnEUaCWDsA/wBpoFbGLQD
-         8VHsOtKPQ7wsaXvHadC39ojz9bsF4YMxgrLLrspWxR8bhcE4sSygz3zkAE2zzUHea2ud
-         yE3pmCAKrwfabxM7/Zg1aZ9y+YIpkXxUKGWcDnqJnjQL1epvVGgLaFI3chPszEhV4Uok
-         fn+X+/DfMzibbkDcfp8mLolrqk7u+VosIp4rwe/PcZEWrZ0cM5SWQPBFuz8K5DlQJCQd
-         EBC4/cbbtc2mhFsgRgclFVl0owb1ze3vzV5B6VBI5XQkLbEWU+3TE+13bEyyYeu97S8U
-         /b7w==
-X-Gm-Message-State: APjAAAWVBcqVVyxoRfTA/JqVEIzlQiqZMr76abjO8fYfU2Jdz8PTDuKp
-        ZPiT1vQUUuTo3f0tZmXMWH8=
-X-Google-Smtp-Source: APXvYqzLhtEsLSbHL9YU6BgKFpl+yhPSUTFYHC3C7rR7T7tPbCoYv9PK68LJVnqVENoKRHvvfxyI0Q==
-X-Received: by 2002:a1c:4087:: with SMTP id n129mr16446303wma.3.1566152774070;
-        Sun, 18 Aug 2019 11:26:14 -0700 (PDT)
+        bh=v1PQz0Rf6qIdBP4XpmfM9YaqjSMhtTmcGs5vz0o4lDg=;
+        b=brMPr7gjhemniHrJejku8ZCiysv197QVDfYam35ub5gPeHnA3Y2YGwO4B36KUZ5QPA
+         j/2fXvbFU0uNJopSJlT8qOFf3d4rfibvE3HJr9pFAdsIJgseGK5mQl4e6F39ypV6cT0x
+         SG51GA8drBAU6Egu6XAcQwfQDuBgcBLgQS5oLzpM89PDiSzdThNyp+j5xm8SljstSdaO
+         EorkMr/h6w1v2lqgtC91Trg8hopomShpcMeEUMovQGh3QqMS2eiaYQNwKDBxBpNex+Fd
+         ValEYlkhLNoirZ2M4KdXRUWZfByzQqhczO8+EW9fUBz7LIWZ5ou/2xKIPvwnNzjifdjk
+         yAZw==
+X-Gm-Message-State: APjAAAXsnoAZrpf6YsiJK0QdP6i3h9Ia5XrJnLqoaQQ3Y3pTl2RMs4FC
+        CfBLCfNXQXBChGDADLgns25wxfly
+X-Google-Smtp-Source: APXvYqzAkx+5tewa6+DzA9lqe2ACNEwMBNZ6mnIyIOf3kYim2kirKYv1V6QJgb38E3ubpkKTPF2vrA==
+X-Received: by 2002:a1c:411:: with SMTP id 17mr12119331wme.34.1566152775131;
+        Sun, 18 Aug 2019 11:26:15 -0700 (PDT)
 Received: from localhost.localdomain ([188.25.91.80])
-        by smtp.gmail.com with ESMTPSA id 39sm40831107wrc.45.2019.08.18.11.26.13
+        by smtp.gmail.com with ESMTPSA id 39sm40831107wrc.45.2019.08.18.11.26.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 18 Aug 2019 11:26:13 -0700 (PDT)
+        Sun, 18 Aug 2019 11:26:14 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     broonie@kernel.org, h.feurstein@gmail.com, mlichvar@redhat.com,
         richardcochran@gmail.com, andrew@lunn.ch, f.fainelli@gmail.com
 Cc:     linux-spi@vger.kernel.org, netdev@vger.kernel.org,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH spi for-5.4 1/5] spi: Use an abbreviated pointer to ctlr->cur_msg in __spi_pump_messages
-Date:   Sun, 18 Aug 2019 21:25:56 +0300
-Message-Id: <20190818182600.3047-2-olteanv@gmail.com>
+Subject: [PATCH spi for-5.4 2/5] spi: Add a PTP system timestamp to the transfer structure
+Date:   Sun, 18 Aug 2019 21:25:57 +0300
+Message-Id: <20190818182600.3047-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190818182600.3047-1-olteanv@gmail.com>
 References: <20190818182600.3047-1-olteanv@gmail.com>
@@ -59,88 +59,252 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This helps a bit with line fitting now (the list_first_entry call) as
-well as during the next patch which needs to iterate through all
-transfers of ctlr->cur_msg so it timestamps them.
+SPI is one of the interfaces used to access devices which have a POSIX
+clock driver (real time clocks, 1588 timers etc).
+
+Since there are lots of sources of timing jitter when retrieving the
+time from such a device (queuing delays, locking contention, running in
+interruptible context etc), introduce a PTP system timestamp structure
+in struct spi_transfer. This is to be used by SPI device drivers when
+they need to know the exact time at which the underlying device's time
+was snapshotted.
+
+Because SPI controllers may have jitter even between frames, also
+introduce a field which specifies to the controller driver specifically
+which byte needs to be snapshotted.
+
+Add a default implementation of the PTP system timestamping in the SPI
+core. There are 3 entry points from the core towards the SPI controller
+drivers:
+- transfer_one: The driver is passed individual spi_transfers to
+  execute. This is the easiest to timestamp.
+- transfer_one_message: The core passes the driver an entire spi_message
+  (a potential batch of spi_transfers). The core puts the same pre and
+  post timestamp to all transfers within a message. This is not ideal,
+  but nothing better can be done by default anyway, since the core has
+  no insight into how the driver batches the transfers.
+- transfer: Like transfer_one_message, but for unqueued drivers (i.e.
+  the driver implements its own queue scheduling).
 
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- drivers/spi/spi.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/spi/spi.c       | 62 +++++++++++++++++++++++++++++++++++++++++
+ include/linux/spi/spi.h | 38 +++++++++++++++++++++++++
+ 2 files changed, 100 insertions(+)
 
 diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index aef55acb5ccd..d96e04627982 100644
+index d96e04627982..cf5c5435edcd 100644
 --- a/drivers/spi/spi.c
 +++ b/drivers/spi/spi.c
-@@ -1265,8 +1265,9 @@ EXPORT_SYMBOL_GPL(spi_finalize_current_transfer);
+@@ -1171,6 +1171,11 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
+ 		spi_statistics_add_transfer_stats(statm, xfer, ctlr);
+ 		spi_statistics_add_transfer_stats(stats, xfer, ctlr);
+ 
++		if (!ctlr->ptp_sts_supported) {
++			xfer->ptp_sts_word_pre = 0;
++			ptp_read_system_prets(xfer->ptp_sts);
++		}
++
+ 		if (xfer->tx_buf || xfer->rx_buf) {
+ 			reinit_completion(&ctlr->xfer_completion);
+ 
+@@ -1197,6 +1202,11 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
+ 					xfer->len);
+ 		}
+ 
++		if (!ctlr->ptp_sts_supported) {
++			ptp_read_system_postts(xfer->ptp_sts);
++			xfer->ptp_sts_word_post = xfer->len;
++		}
++
+ 		trace_spi_transfer_stop(msg, xfer);
+ 
+ 		if (msg->status != -EINPROGRESS)
+@@ -1265,6 +1275,7 @@ EXPORT_SYMBOL_GPL(spi_finalize_current_transfer);
   */
  static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
  {
--	unsigned long flags;
-+	struct spi_message *mesg;
++	struct spi_transfer *xfer;
+ 	struct spi_message *mesg;
  	bool was_busy = false;
-+	unsigned long flags;
- 	int ret;
- 
- 	/* Lock queue */
-@@ -1325,10 +1326,10 @@ static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
- 	}
- 
- 	/* Extract head of queue */
--	ctlr->cur_msg =
--		list_first_entry(&ctlr->queue, struct spi_message, queue);
-+	mesg = list_first_entry(&ctlr->queue, struct spi_message, queue);
-+	ctlr->cur_msg = mesg;
- 
--	list_del_init(&ctlr->cur_msg->queue);
-+	list_del_init(&mesg->queue);
- 	if (ctlr->busy)
- 		was_busy = true;
- 	else
-@@ -1361,7 +1362,7 @@ static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
- 			if (ctlr->auto_runtime_pm)
- 				pm_runtime_put(ctlr->dev.parent);
- 
--			ctlr->cur_msg->status = ret;
-+			mesg->status = ret;
- 			spi_finalize_current_message(ctlr);
- 
- 			mutex_unlock(&ctlr->io_mutex);
-@@ -1369,28 +1370,28 @@ static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
- 		}
- 	}
- 
--	trace_spi_message_start(ctlr->cur_msg);
-+	trace_spi_message_start(mesg);
- 
- 	if (ctlr->prepare_message) {
--		ret = ctlr->prepare_message(ctlr, ctlr->cur_msg);
-+		ret = ctlr->prepare_message(ctlr, mesg);
- 		if (ret) {
- 			dev_err(&ctlr->dev, "failed to prepare message: %d\n",
- 				ret);
--			ctlr->cur_msg->status = ret;
-+			mesg->status = ret;
- 			spi_finalize_current_message(ctlr);
- 			goto out;
- 		}
- 		ctlr->cur_msg_prepared = true;
- 	}
- 
--	ret = spi_map_msg(ctlr, ctlr->cur_msg);
-+	ret = spi_map_msg(ctlr, mesg);
- 	if (ret) {
--		ctlr->cur_msg->status = ret;
-+		mesg->status = ret;
- 		spi_finalize_current_message(ctlr);
+ 	unsigned long flags;
+@@ -1391,6 +1402,13 @@ static void __spi_pump_messages(struct spi_controller *ctlr, bool in_kthread)
  		goto out;
  	}
  
--	ret = ctlr->transfer_one_message(ctlr, ctlr->cur_msg);
-+	ret = ctlr->transfer_one_message(ctlr, mesg);
++	if (!ctlr->ptp_sts_supported) {
++		list_for_each_entry(xfer, &mesg->transfers, transfer_list) {
++			xfer->ptp_sts_word_pre = 0;
++			ptp_read_system_prets(xfer->ptp_sts);
++		}
++	}
++
+ 	ret = ctlr->transfer_one_message(ctlr, mesg);
  	if (ret) {
  		dev_err(&ctlr->dev,
- 			"failed to transfer one message from queue\n");
+@@ -1418,6 +1436,34 @@ static void spi_pump_messages(struct kthread_work *work)
+ 	__spi_pump_messages(ctlr, true);
+ }
+ 
++/**
++ * spi_xfer_ptp_sts_word - helper for drivers to retrieve the pointer to the
++ *			   word in the TX buffer which must be timestamped.
++ *			   The SPI slave does not provide a pointer directly
++ *			   because the TX and RX buffers may be reallocated
++ *			   (see @spi_map_msg).
++ * @xfer: Pointer to the transfer being timestamped
++ * @pre: If true, returns the pointer to @ptp_sts_word_pre, otherwise returns
++ *	the pointer to @ptp_sts_word_post.
++ */
++const void *spi_xfer_ptp_sts_word(struct spi_transfer *xfer, bool pre)
++{
++	unsigned int bytes_per_word;
++
++	if (xfer->bits_per_word <= 8)
++		bytes_per_word = 1;
++	else if (xfer->bits_per_word <= 16)
++		bytes_per_word = 2;
++	else
++		bytes_per_word = 4;
++
++	if (pre)
++		return xfer->tx_buf + xfer->ptp_sts_word_pre * bytes_per_word;
++
++	return xfer->tx_buf + xfer->ptp_sts_word_post * bytes_per_word;
++}
++EXPORT_SYMBOL_GPL(spi_xfer_ptp_sts_word);
++
+ /**
+  * spi_set_thread_rt - set the controller to pump at realtime priority
+  * @ctlr: controller to boost priority of
+@@ -1503,6 +1549,7 @@ EXPORT_SYMBOL_GPL(spi_get_next_queued_message);
+  */
+ void spi_finalize_current_message(struct spi_controller *ctlr)
+ {
++	struct spi_transfer *xfer;
+ 	struct spi_message *mesg;
+ 	unsigned long flags;
+ 	int ret;
+@@ -1511,6 +1558,13 @@ void spi_finalize_current_message(struct spi_controller *ctlr)
+ 	mesg = ctlr->cur_msg;
+ 	spin_unlock_irqrestore(&ctlr->queue_lock, flags);
+ 
++	if (!ctlr->ptp_sts_supported) {
++		list_for_each_entry(xfer, &mesg->transfers, transfer_list) {
++			ptp_read_system_postts(xfer->ptp_sts);
++			xfer->ptp_sts_word_post = xfer->len;
++		}
++	}
++
+ 	spi_unmap_msg(ctlr, mesg);
+ 
+ 	if (ctlr->cur_msg_prepared && ctlr->unprepare_message) {
+@@ -3270,6 +3324,7 @@ static int __spi_validate(struct spi_device *spi, struct spi_message *message)
+ static int __spi_async(struct spi_device *spi, struct spi_message *message)
+ {
+ 	struct spi_controller *ctlr = spi->controller;
++	struct spi_transfer *xfer;
+ 
+ 	/*
+ 	 * Some controllers do not support doing regular SPI transfers. Return
+@@ -3285,6 +3340,13 @@ static int __spi_async(struct spi_device *spi, struct spi_message *message)
+ 
+ 	trace_spi_message_submit(message);
+ 
++	if (!ctlr->ptp_sts_supported) {
++		list_for_each_entry(xfer, &message->transfers, transfer_list) {
++			xfer->ptp_sts_word_pre = 0;
++			ptp_read_system_prets(xfer->ptp_sts);
++		}
++	}
++
+ 	return ctlr->transfer(spi, message);
+ }
+ 
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index af4f265d0f67..bb7553c6e5d0 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -13,6 +13,7 @@
+ #include <linux/completion.h>
+ #include <linux/scatterlist.h>
+ #include <linux/gpio/consumer.h>
++#include <linux/ptp_clock_kernel.h>
+ 
+ struct dma_chan;
+ struct property_entry;
+@@ -409,6 +410,12 @@ static inline void spi_unregister_driver(struct spi_driver *sdrv)
+  * @fw_translate_cs: If the boot firmware uses different numbering scheme
+  *	what Linux expects, this optional hook can be used to translate
+  *	between the two.
++ * @ptp_sts_supported: If the driver sets this to true, it must provide a
++ *	time snapshot in @spi_transfer->ptp_sts as close as possible to the
++ *	moment in time when @spi_transfer->ptp_sts_word_pre and
++ *	@spi_transfer->ptp_sts_word_post were transmitted.
++ *	If the driver does not set this, the SPI core takes the snapshot as
++ *	close to the driver hand-over as possible.
+  *
+  * Each SPI controller can communicate with one or more @spi_device
+  * children.  These make a small bus, sharing MOSI, MISO and SCK signals
+@@ -604,6 +611,12 @@ struct spi_controller {
+ 	void			*dummy_tx;
+ 
+ 	int (*fw_translate_cs)(struct spi_controller *ctlr, unsigned cs);
++
++	/*
++	 * Driver sets this field to indicate it is able to snapshot SPI
++	 * transfers (needed e.g. for reading the time of POSIX clocks)
++	 */
++	bool			ptp_sts_supported;
+ };
+ 
+ static inline void *spi_controller_get_devdata(struct spi_controller *ctlr)
+@@ -644,6 +657,9 @@ extern struct spi_message *spi_get_next_queued_message(struct spi_controller *ct
+ extern void spi_finalize_current_message(struct spi_controller *ctlr);
+ extern void spi_finalize_current_transfer(struct spi_controller *ctlr);
+ 
++/* Helper calls for driver to get which buffer pointer must be timestamped */
++extern const void *spi_xfer_ptp_sts_word(struct spi_transfer *xfer, bool pre);
++
+ /* the spi driver core manages memory for the spi_controller classdev */
+ extern struct spi_controller *__spi_alloc_controller(struct device *host,
+ 						unsigned int size, bool slave);
+@@ -753,6 +769,24 @@ extern void spi_res_release(struct spi_controller *ctlr,
+  * @transfer_list: transfers are sequenced through @spi_message.transfers
+  * @tx_sg: Scatterlist for transmit, currently not for client use
+  * @rx_sg: Scatterlist for receive, currently not for client use
++ * @ptp_sts_word_pre: The word (subject to bits_per_word semantics) offset
++ *	within @tx_buf for which the SPI device is requesting that the time
++ *	snapshot for this transfer begins. Upon completing the SPI transfer,
++ *	this value may have changed compared to what was requested, depending
++ *	on the available snapshotting resolution (DMA transfer,
++ *	@ptp_sts_supported is false, etc).
++ * @ptp_sts_word_post: See @ptp_sts_word_post. The two can be equal (meaning
++ *	that a single byte should be snapshotted). The core will set
++ *	@ptp_sts_word_pre to 0, and @ptp_sts_word_post to the length of the
++ *	transfer, if @ptp_sts_supported is false for this controller. This is
++ *	done purposefully (instead of setting to spi_transfer->len - 1) to
++ *	denote that a transfer-level snapshot taken from within the driver may
++ *	still be of higher quality.
++ * @ptp_sts: Pointer to a memory location held by the SPI slave device where a
++ *	PTP system timestamp structure may lie. If drivers use PIO or their
++ *	hardware has some sort of assist for retrieving exact transfer timing,
++ *	they can (and should) assert @ptp_sts_supported and populate this
++ *	structure using the ptp_read_system_*ts helper functions.
+  *
+  * SPI transfers always write the same number of bytes as they read.
+  * Protocol drivers should always provide @rx_buf and/or @tx_buf.
+@@ -842,6 +876,10 @@ struct spi_transfer {
+ 
+ 	u32		effective_speed_hz;
+ 
++	unsigned int	ptp_sts_word_pre;
++	unsigned int	ptp_sts_word_post;
++	struct ptp_system_timestamp *ptp_sts;
++
+ 	struct list_head transfer_list;
+ };
+ 
 -- 
 2.17.1
 
