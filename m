@@ -2,150 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 07E319158B
-	for <lists+netdev@lfdr.de>; Sun, 18 Aug 2019 10:31:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CCFF915B7
+	for <lists+netdev@lfdr.de>; Sun, 18 Aug 2019 11:08:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726256AbfHRIbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Aug 2019 04:31:12 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:53134 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfHRIbL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Aug 2019 04:31:11 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7I8UAkQ045583;
-        Sun, 18 Aug 2019 08:31:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=mime-version :
- message-id : date : from : to : cc : subject : content-type :
- content-transfer-encoding; s=corp-2019-08-05;
- bh=OscEuJNSgaecc7omNE4pQTG5ugKKHTX9RKDQmcCtGr8=;
- b=VmfD0lZbcw1KI7nt0/A4dxSbgisrKmDi0ksS4DOvJSPFmZguw8QqN2r6SDm0Z6wBNXmX
- G9BAwNYAcfAOXkDya1jgpQlSWYNjdB+cjqm5KpmO9/O5DiYiytDKpaY/fxumu/OnzHuy
- bqVLfnlthkywEusuaLChoXe8DikNC9QC5x70lHKijTiX8EYQ58fAgNB/Sehg3d3xadve
- cIvZ77/epLNw47iZhE+9dRhe/nInKAarpbCUqO2bxH8hlMTOBZF9b3hDtUoKNAdhHiBj
- ZX0/GJSPhIZwysvofZ/ZXsZfA25bQwi/C6L147375Qu19zddOcs0YzKkSOVJ99Yzhu/L 1A== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2120.oracle.com with ESMTP id 2uea7qawt2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 18 Aug 2019 08:31:02 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7I8S93Q053923;
-        Sun, 18 Aug 2019 08:31:02 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3020.oracle.com with ESMTP id 2ue8wx3qu9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 18 Aug 2019 08:31:02 +0000
-Received: from abhmp0010.oracle.com (abhmp0010.oracle.com [141.146.116.16])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7I8V1h2012172;
-        Sun, 18 Aug 2019 08:31:01 GMT
+        id S1726627AbfHRJI6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Aug 2019 05:08:58 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:51382 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726553AbfHRJI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 18 Aug 2019 05:08:57 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 207so488892wma.1
+        for <netdev@vger.kernel.org>; Sun, 18 Aug 2019 02:08:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=MXsOHISmCpUILyy9WHiVYPcKhs15OcsHvOVCutfJVTQ=;
+        b=VnCEES/UltGfTFiTg/85Nqzwi5/ac6wr6TakwWpR7pOAZlH9NoN4dI+SNQbrTNye8+
+         ArfSICQSVhQyfo4G9syzmU00C8Hzn3dUwkMMDfGVws4EIQ9zr8dOp+X4LukKiXZ7VmIC
+         zkCyy6Ev4yGgywH69ioOaqXxOm6xPvV++me6ZhKHs1QgOJLY/yZXl2jmnC8D29sYRLHE
+         +xhAWaS66VDRWtmazSF3gUeFaQbfC6etJ2lvgmeCxo4zelZjtIr4YLN7c2oAkVfFRrdm
+         rcvS7tr74BBsCyDHTylY/ZLZi3wxoAiTuq9hNnxjIYU4HcX0z1vwatZ7a9PZRBbpdSfg
+         ktkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=MXsOHISmCpUILyy9WHiVYPcKhs15OcsHvOVCutfJVTQ=;
+        b=nlfY8BWvU5j21rEpgpLD3cUKV07OVVeQ5D7W2+HT5S2/UgnugeEy27lvU88Hoa2KhT
+         1ke+mqBFuClxzMILl38fW5Awq40DuoCsnG2uC/ToCwvoVB1gm7wArjkKG0zNvq6MtAxi
+         fQa4VPEwcsq1vf+jKBb/gDgz3CotmEOzhObzCOjovqlwtv1ubE6We9ujhLlZUtSy98TG
+         ikBximsbtvNpH5WqMABIcef2Tg+q2sEI9xmOeiYYQ67MBhin4YWpw50T7DhOpn0O8hij
+         K2rcTsHwd9V048zuc1pfAH0iJOHpWn7VaF0HRZXyo2NqGdheBdIbPlMLx7K2ql+MQTv+
+         TT7Q==
+X-Gm-Message-State: APjAAAUWyj8wRkIOdCGA7C9ySZiA0K8fZ8hqRnve7nnpL4Gczl7bYgP5
+        rLC9FShX230EhIHZ3b8uqCK424Ei8Hw=
+X-Google-Smtp-Source: APXvYqyHX+LW9YR2h2Sapt+smYzR6FMkFbhNfzF9MEfgizCxuJ1WxMrjeaOYDF1/XkV6nlK+MuPFTQ==
+X-Received: by 2002:a1c:2314:: with SMTP id j20mr14813865wmj.152.1566119334824;
+        Sun, 18 Aug 2019 02:08:54 -0700 (PDT)
+Received: from [192.168.86.34] (cpc89974-aztw32-2-0-cust43.18-1.cable.virginm.net. [86.30.250.44])
+        by smtp.googlemail.com with ESMTPSA id p7sm8422702wmh.38.2019.08.18.02.08.52
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 18 Aug 2019 02:08:54 -0700 (PDT)
+Subject: Re: [PATCH 1/3] nvmem: mxs-ocotp: update MODULE_AUTHOR() email
+ address
+To:     Stefan Wahren <wahrenst@gmx.net>, Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>
+Cc:     linux-hwmon@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <1565720249-6549-1-git-send-email-wahrenst@gmx.net>
+From:   Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Message-ID: <5883944e-efef-ed3d-fdfb-19d9964762f9@linaro.org>
+Date:   Sun, 18 Aug 2019 10:08:51 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-Message-ID: <c45b306e-c67b-49f5-8fe8-3913557a8774@default>
-Date:   Sun, 18 Aug 2019 01:31:00 -0700 (PDT)
-From:   Dongli Zhang <dongli.zhang@oracle.com>
-To:     <xen-devel@lists.xenproject.org>
-Cc:     <netdev@vger.kernel.org>, <jgross@suse.com>,
-        Joe Jin <joe.jin@oracle.com>
-Subject: Question on xen-netfront code to fix a potential ring buffer
- corruption
-X-Mailer: Zimbra on Oracle Beehive
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: inline
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9352 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1906280000 definitions=main-1908180094
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9352 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908180094
+In-Reply-To: <1565720249-6549-1-git-send-email-wahrenst@gmx.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-Would you please help confirm why the condition at line 908 is ">=3D"?
-
-In my opinion, we would only hit "skb_shinfo(skb)->nr_frag =3D=3D MAX_SKB_F=
-RAGS" at
-line 908.
-
-890 static RING_IDX xennet_fill_frags(struct netfront_queue *queue,
-891                                   struct sk_buff *skb,
-892                                   struct sk_buff_head *list)
-893 {
-894         RING_IDX cons =3D queue->rx.rsp_cons;
-895         struct sk_buff *nskb;
-896=20
-897         while ((nskb =3D __skb_dequeue(list))) {
-898                 struct xen_netif_rx_response *rx =3D
-899                         RING_GET_RESPONSE(&queue->rx, ++cons);
-900                 skb_frag_t *nfrag =3D &skb_shinfo(nskb)->frags[0];
-901=20
-902                 if (skb_shinfo(skb)->nr_frags =3D=3D MAX_SKB_FRAGS) {
-903                         unsigned int pull_to =3D NETFRONT_SKB_CB(skb)->=
-pull_to;
-904=20
-905                         BUG_ON(pull_to < skb_headlen(skb));
-906                         __pskb_pull_tail(skb, pull_to - skb_headlen(skb=
-));
-907                 }
-908                 if (unlikely(skb_shinfo(skb)->nr_frags >=3D MAX_SKB_FRA=
-GS)) {
-909                         queue->rx.rsp_cons =3D ++cons;
-910                         kfree_skb(nskb);
-911                         return ~0U;
-912                 }
-913=20
-914                 skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-915                                 skb_frag_page(nfrag),
-916                                 rx->offset, rx->status, PAGE_SIZE);
-917=20
-918                 skb_shinfo(nskb)->nr_frags =3D 0;
-919                 kfree_skb(nskb);
-920         }
-921=20
-922         return cons;
-923 }
 
 
-The reason that I ask about this is because I am considering below patch to
-avoid a potential xen-netfront ring buffer corruption.
+On 13/08/2019 19:17, Stefan Wahren wrote:
+> The email address listed in MODULE_AUTHOR() will be disabled in the
+> near future. Replace it with my private one.
+> 
+> Signed-off-by: Stefan Wahren <wahrenst@gmx.net>
+> =2D--
+>   drivers/nvmem/mxs-ocotp.c | 2 +-
+>   1 file changed, 1 insertion(+), 1 deletion(-)
+> 
 
-diff --git a/drivers/net/xen-netfront.c b/drivers/net/xen-netfront.c
-index 8d33970..48a2162 100644
---- a/drivers/net/xen-netfront.c
-+++ b/drivers/net/xen-netfront.c
-@@ -906,7 +906,7 @@ static RING_IDX xennet_fill_frags(struct netfront_queue=
- *queue,
-                        __pskb_pull_tail(skb, pull_to - skb_headlen(skb));
-                }
-                if (unlikely(skb_shinfo(skb)->nr_frags >=3D MAX_SKB_FRAGS))=
- {
--                       queue->rx.rsp_cons =3D ++cons;
-+                       queue->rx.rsp_cons =3D cons + skb_queue_len(list) +=
- 1;
-                        kfree_skb(nskb);
-                        return ~0U;
-                }
+Applied thanks.
 
-
-If there is skb left in list when we return ~0U, queue->rx.rsp_cons may be =
-set
-incorrectly.
-
-While I am trying to make up a case that would hit the corruption, I could =
-not
-explain why (unlikely(skb_shinfo(skb)->nr_frags >=3D MAX_SKB_FRAGS)), but n=
-ot
-just "=3D=3D". Perhaps __pskb_pull_tail() may fail although pull_to is less=
- than
-skb_headlen(skb).
-
-Thank you very much!
-
-Dongli Zhang
+--srini
