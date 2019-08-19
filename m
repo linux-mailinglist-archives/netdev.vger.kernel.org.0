@@ -2,216 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 096C19247E
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 15:16:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 53D2F924D4
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 15:23:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727574AbfHSNQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 09:16:22 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:53150 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727301AbfHSNQW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 09:16:22 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id DBDDED5A0F857D2905A1;
-        Mon, 19 Aug 2019 21:13:15 +0800 (CST)
-Received: from huawei.com (10.175.101.78) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Mon, 19 Aug 2019
- 21:13:07 +0800
-From:   Yang Yingliang <yangyingliang@huawei.com>
-To:     <netdev@vger.kernel.org>
-CC:     <jasowang@redhat.com>, <eric.dumazet@gmail.com>,
-        <xiyou.wangcong@gmail.com>, <davem@davemloft.net>,
-        <yangyingliang@huawei.com>, <weiyongjun1@huawei.com>
-Subject: [PATCH v3] tun: fix use-after-free when register netdev failed
-Date:   Mon, 19 Aug 2019 21:31:19 +0800
-Message-ID: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com>
-X-Mailer: git-send-email 1.8.3
+        id S1727868AbfHSNXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 09:23:34 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47538 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727776AbfHSNXd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 09:23:33 -0400
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 96A1E1089045;
+        Mon, 19 Aug 2019 13:23:33 +0000 (UTC)
+Received: from localhost.localdomain (unknown [10.32.181.77])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 38017871E7;
+        Mon, 19 Aug 2019 13:23:32 +0000 (UTC)
+Message-ID: <b6741af18dace7eac9e2b6985de6bf6e33a6b852.camel@redhat.com>
+Subject: Re: [PATCH net-next 1/3] net/tls: use RCU protection on
+ icsk->icsk_ulp_data
+From:   Davide Caratti <dcaratti@redhat.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Boris Pismenny <borisp@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Dave Watson <davejwatson@fb.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+In-Reply-To: <20190815143216.45f6da44@cakuba.netronome.com>
+References: <cover.1565882584.git.dcaratti@redhat.com>
+         <b7c351a5ad6c756129d036fd87db6b4edcd3cb6a.1565882584.git.dcaratti@redhat.com>
+         <20190815143216.45f6da44@cakuba.netronome.com>
+Organization: red hat
+Content-Type: text/plain; charset="UTF-8"
+Date:   Mon, 19 Aug 2019 15:23:31 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.101.78]
-X-CFilter-Loop: Reflected
+User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Mon, 19 Aug 2019 13:23:33 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I got a UAF repport in tun driver when doing fuzzy test:
+On Thu, 2019-08-15 at 14:32 -0700, Jakub Kicinski wrote:
+> On Thu, 15 Aug 2019 18:00:42 +0200, Davide Caratti wrote:
+> > From: Jakub Kicinski <jakub.kicinski@netronome.com>
+> > 
+> > We need to make sure context does not get freed while diag
+> > code is interrogating it. Free struct tls_context with
+> > kfree_rcu().
+> > 
+> > We add the __rcu annotation directly in icsk, and cast it
+> > away in the datapath accessor. Presumably all ULPs will
+> > do a similar thing.
+> > 
+> > Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-[  466.269490] ==================================================================
-[  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
-[  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
-[  466.271810]
-[  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
-[  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
-[  466.271838] Call Trace:
-[  466.271858]  dump_stack+0xca/0x13e
-[  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271890]  print_address_description+0x79/0x440
-[  466.271906]  ? vprintk_func+0x5e/0xf0
-[  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271935]  __kasan_report+0x15c/0x1df
-[  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
-[  466.271976]  kasan_report+0xe/0x20
-[  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
-[  466.272013]  do_iter_readv_writev+0x4b7/0x740
-[  466.272032]  ? default_llseek+0x2d0/0x2d0
-[  466.272072]  do_iter_read+0x1c5/0x5e0
-[  466.272110]  vfs_readv+0x108/0x180
-[  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
-[  466.299020]  ? fsnotify+0x888/0xd50
-[  466.299040]  ? __fsnotify_parent+0xd0/0x350
-[  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
-[  466.304548]  ? vfs_write+0x264/0x510
-[  466.304569]  ? ksys_write+0x101/0x210
-[  466.304591]  ? do_preadv+0x116/0x1a0
-[  466.304609]  do_preadv+0x116/0x1a0
-[  466.309829]  do_syscall_64+0xc8/0x600
-[  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.309861] RIP: 0033:0x4560f9
-[  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-[  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
-[  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
-[  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
-[  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
-[  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
-[  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
-[  466.323057]
-[  466.323064] Allocated by task 2605:
-[  466.335165]  save_stack+0x19/0x80
-[  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
-[  466.337755]  kmem_cache_alloc+0xe8/0x320
-[  466.339050]  getname_flags+0xca/0x560
-[  466.340229]  user_path_at_empty+0x2c/0x50
-[  466.341508]  vfs_statx+0xe6/0x190
-[  466.342619]  __do_sys_newstat+0x81/0x100
-[  466.343908]  do_syscall_64+0xc8/0x600
-[  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.347034]
-[  466.347517] Freed by task 2605:
-[  466.348471]  save_stack+0x19/0x80
-[  466.349476]  __kasan_slab_free+0x12e/0x180
-[  466.350726]  kmem_cache_free+0xc8/0x430
-[  466.351874]  putname+0xe2/0x120
-[  466.352921]  filename_lookup+0x257/0x3e0
-[  466.354319]  vfs_statx+0xe6/0x190
-[  466.355498]  __do_sys_newstat+0x81/0x100
-[  466.356889]  do_syscall_64+0xc8/0x600
-[  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-[  466.359567]
-[  466.360050] The buggy address belongs to the object at ffff888372139100
-[  466.360050]  which belongs to the cache names_cache of size 4096
-[  466.363735] The buggy address is located 336 bytes inside of
-[  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
-[  466.367179] The buggy address belongs to the page:
-[  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
-[  466.371582] flags: 0x2fffff80010200(slab|head)
-[  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
-[  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
-[  466.377778] page dumped because: kasan: bad access detected
-[  466.379730]
-[  466.380288] Memory state around the buggy address:
-[  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.388257]                                                  ^
-[  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
-[  466.394667] ==================================================================
+hello Jakub,
 
-tun_chr_read_iter() accessed the memory which freed by free_netdev()
-called by tun_set_iff():
+> > @@ -251,14 +251,31 @@ static void tls_write_space(struct sock *sk)
+> >  	ctx->sk_write_space(sk);
+> >  }
+> >  
+> > -void tls_ctx_free(struct tls_context *ctx)
+> > +/**
+> > + * tls_ctx_free() - free TLS ULP context
+> > + * @sk:  socket to with @ctx is attached
+> > + * @ctx: TLS context structure
+> > + *
+> > + * Free TLS context. If @sk is %NULL caller guarantees that the socket
+> > + * to which @ctx was attached has no outstanding references.
+> > + */
+> > +void tls_ctx_free(struct sock *sk, struct tls_context *ctx)
+> >  {
+> > +	struct inet_connection_sock *icsk;
+> > +
+> >  	if (!ctx)
+> >  		return;
+> >  
+> >  	memzero_explicit(&ctx->crypto_send, sizeof(ctx->crypto_send));
+> >  	memzero_explicit(&ctx->crypto_recv, sizeof(ctx->crypto_recv));
+> > -	kfree(ctx);
+> > +
+> > +	if (sk) {
+> > +		icsk = inet_csk(sk);
+> > +		rcu_assign_pointer(icsk->icsk_ulp_data, NULL);
+> 
+> Now that we kind of want to set the icsk_ulp_data to NULL under the
+> callback_lock I think we should let the callers do it.
 
-        CPUA                                     CPUB
-    tun_set_iff()
-      alloc_netdev_mqs()
-      tun_attach()
-                                            tun_chr_read_iter()
-                                              tun_get()
-      register_netdevice() <-- inject error
-      tun_detach_all()
-        synchronize_net()
-                                              tun_do_read()
-                                                tun_ring_recv()
-                                                  schedule()
-      free_netdev()
-        netdev_freemem()
-                                              tun_put()
-                                                dev_put() <-- UAF
+Ok, I will fix this in series v2.
 
-Call netif_set_real_num_t/rx_queues() before register_netdevice().
+> > 
+> > @@ -649,8 +666,8 @@ static void tls_hw_sk_destruct(struct sock *sk)
+> >  
+> >  	ctx->sk_destruct(sk);
+> >  	/* Free ctx */
+> > -	tls_ctx_free(ctx);
+> > -	icsk->icsk_ulp_data = NULL;
+> > +	tls_ctx_free(sk, ctx);
+> > +	rcu_assign_pointer(icsk->icsk_ulp_data, NULL);
+> 
+> Let's reorder the assignment before the free.
 
-Call tun_attach() after register_netdevice() to make sure tfile->tun
-is not published until the netdevice is registered. So the read/write
-thread can not use the tun pointer that may freed by free_netdev().
-(The tun and dev pointer are allocated by alloc_netdev_mqs(), they can
-be freed by netdev_freemem().)
+Ok, I will fix this in series v2.
 
----
-Changes in v3:
- - call netif_set_real_num_t/rx_queues() before register_netdevice()
-
-Changes in v2:
- - add a param in tun_set_real_num_queues()
- - move tun_set_real_num_queues() out of tun_attach()
- - call tun_set_real_num_queues() before register_netdevice()
- - call tun_attach() after register_netdevice()
----
-
-Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Suggested-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
----
- drivers/net/tun.c | 25 +++++++++++++------------
- 1 file changed, 13 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index db16d7a13e00..07d1e945385a 100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -2828,14 +2828,19 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 			      (ifr->ifr_flags & TUN_FEATURES);
- 
- 		INIT_LIST_HEAD(&tun->disabled);
--		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
--				 ifr->ifr_flags & IFF_NAPI_FRAGS);
--		if (err < 0)
--			goto err_free_flow;
-+
-+		netif_set_real_num_tx_queues(tun->dev, 1);
-+		netif_set_real_num_rx_queues(tun->dev, 1);
- 
- 		err = register_netdevice(tun->dev);
- 		if (err < 0)
--			goto err_detach;
-+			/* register_netdevice() already called tun_free_netdev() */
-+			goto err_free_dev;
-+
-+		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
-+				 ifr->ifr_flags & IFF_NAPI_FRAGS);
-+		if (err < 0)
-+			goto err_unregister;
- 	}
- 
- 	netif_carrier_on(tun->dev);
-@@ -2851,14 +2856,10 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
- 	strcpy(ifr->ifr_name, tun->dev->name);
- 	return 0;
- 
--err_detach:
--	tun_detach_all(dev);
--	/* register_netdevice() already called tun_free_netdev() */
--	goto err_free_dev;
-+err_unregister:
-+	unregister_netdevice(dev);
-+	return err;
- 
--err_free_flow:
--	tun_flow_uninit(tun);
--	security_tun_dev_free_security(tun->security);
- err_free_stat:
- 	free_percpu(tun->pcpu_stats);
- err_free_dev:
+thanks!
 -- 
-2.17.1
+davide
+
 
