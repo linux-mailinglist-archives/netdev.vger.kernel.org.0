@@ -2,18 +2,18 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E71D949EB
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 18:32:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA1DE94A61
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 18:34:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727962AbfHSQcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 12:32:06 -0400
-Received: from mx2.suse.de ([195.135.220.15]:55270 "EHLO mx1.suse.de"
+        id S1728142AbfHSQeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 12:34:10 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55310 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727524AbfHSQcE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727525AbfHSQcE (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 19 Aug 2019 12:32:04 -0400
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 8D471B0B6;
+        by mx1.suse.de (Postfix) with ESMTP id EEAB3B0E2;
         Mon, 19 Aug 2019 16:32:01 +0000 (UTC)
 From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
 To:     Jonathan Corbet <corbet@lwn.net>,
@@ -32,9 +32,9 @@ To:     Jonathan Corbet <corbet@lwn.net>,
         linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-input@vger.kernel.org, netdev@vger.kernel.org,
         linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH v5 02/17] w1: add DS2501, DS2502, DS2505 EPROM device driver
-Date:   Mon, 19 Aug 2019 18:31:25 +0200
-Message-Id: <20190819163144.3478-3-tbogendoerfer@suse.de>
+Subject: [PATCH v5 03/17] nvmem: core: add nvmem_device_find
+Date:   Mon, 19 Aug 2019 18:31:26 +0200
+Message-Id: <20190819163144.3478-4-tbogendoerfer@suse.de>
 X-Mailer: git-send-email 2.13.7
 In-Reply-To: <20190819163144.3478-1-tbogendoerfer@suse.de>
 References: <20190819163144.3478-1-tbogendoerfer@suse.de>
@@ -43,346 +43,178 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add a 1-Wire slave driver to support DS250x EPROM deivces. This
-slave driver attaches the devices to the NVMEM subsystem for
-an easy in-kernel usage.
+nvmem_device_find provides a way to search for nvmem devices with
+the help of a match function simlair to bus_find_device.
 
 Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
 ---
- drivers/w1/slaves/Kconfig     |   6 +
- drivers/w1/slaves/Makefile    |   1 +
- drivers/w1/slaves/w1_ds250x.c | 293 ++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 300 insertions(+)
- create mode 100644 drivers/w1/slaves/w1_ds250x.c
+ Documentation/driver-api/nvmem.rst |  2 ++
+ drivers/nvmem/core.c               | 62 ++++++++++++++++++++------------------
+ include/linux/nvmem-consumer.h     |  9 ++++++
+ 3 files changed, 43 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/w1/slaves/Kconfig b/drivers/w1/slaves/Kconfig
-index 37aaad26b373..ebed495b9e69 100644
---- a/drivers/w1/slaves/Kconfig
-+++ b/drivers/w1/slaves/Kconfig
-@@ -101,6 +101,12 @@ config W1_SLAVE_DS2438
- 	  Say Y here if you want to use a 1-wire
- 	  DS2438 Smart Battery Monitor device support
+diff --git a/Documentation/driver-api/nvmem.rst b/Documentation/driver-api/nvmem.rst
+index d9d958d5c824..287e86819640 100644
+--- a/Documentation/driver-api/nvmem.rst
++++ b/Documentation/driver-api/nvmem.rst
+@@ -129,6 +129,8 @@ To facilitate such consumers NVMEM framework provides below apis::
+   struct nvmem_device *nvmem_device_get(struct device *dev, const char *name);
+   struct nvmem_device *devm_nvmem_device_get(struct device *dev,
+ 					   const char *name);
++  struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data));
+   void nvmem_device_put(struct nvmem_device *nvmem);
+   int nvmem_device_read(struct nvmem_device *nvmem, unsigned int offset,
+ 		      size_t bytes, void *buf);
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index ac5d945be88a..e591ba54758f 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -76,36 +76,18 @@ static struct bus_type nvmem_bus_type = {
+ 	.name		= "nvmem",
+ };
  
-+config W1_SLAVE_DS250X
-+	tristate "512b/1kb/16kb EPROM family support"
-+	help
-+	  Say Y here if you want to use a 1-wire
-+	  512b/1kb/16kb EPROM family device (DS250x).
-+
- config W1_SLAVE_DS2780
- 	tristate "Dallas 2780 battery monitor chip"
- 	help
-diff --git a/drivers/w1/slaves/Makefile b/drivers/w1/slaves/Makefile
-index eab29f151413..8e9655eaa478 100644
---- a/drivers/w1/slaves/Makefile
-+++ b/drivers/w1/slaves/Makefile
-@@ -14,6 +14,7 @@ obj-$(CONFIG_W1_SLAVE_DS2431)	+= w1_ds2431.o
- obj-$(CONFIG_W1_SLAVE_DS2805)	+= w1_ds2805.o
- obj-$(CONFIG_W1_SLAVE_DS2433)	+= w1_ds2433.o
- obj-$(CONFIG_W1_SLAVE_DS2438)	+= w1_ds2438.o
-+obj-$(CONFIG_W1_SLAVE_DS250X)	+= w1_ds250x.o
- obj-$(CONFIG_W1_SLAVE_DS2780)	+= w1_ds2780.o
- obj-$(CONFIG_W1_SLAVE_DS2781)	+= w1_ds2781.o
- obj-$(CONFIG_W1_SLAVE_DS28E04)	+= w1_ds28e04.o
-diff --git a/drivers/w1/slaves/w1_ds250x.c b/drivers/w1/slaves/w1_ds250x.c
-new file mode 100644
-index 000000000000..78da3774bbbe
---- /dev/null
-+++ b/drivers/w1/slaves/w1_ds250x.c
-@@ -0,0 +1,293 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * w1_ds250x.c - w1 family 09/0b/89/91 (DS250x) driver
++#if IS_ENABLED(CONFIG_OF)
+ static int of_nvmem_match(struct device *dev, const void *nvmem_np)
+ {
+ 	return dev->of_node == nvmem_np;
+ }
++#endif
+ 
+-static struct nvmem_device *of_nvmem_find(struct device_node *nvmem_np)
++static int nvmem_match_name(struct device *dev, const void *data)
+ {
+-	struct device *d;
+-
+-	if (!nvmem_np)
+-		return NULL;
+-
+-	d = bus_find_device(&nvmem_bus_type, NULL, nvmem_np, of_nvmem_match);
+-
+-	if (!d)
+-		return NULL;
++	const char *name = data;
+ 
+-	return to_nvmem_device(d);
+-}
+-
+-static struct nvmem_device *nvmem_find(const char *name)
+-{
+-	struct device *d;
+-
+-	d = bus_find_device_by_name(&nvmem_bus_type, NULL, name);
+-
+-	if (!d)
+-		return NULL;
+-
+-	return to_nvmem_device(d);
++	return sysfs_streq(name, dev_name(dev));
+ }
+ 
+ static void nvmem_cell_drop(struct nvmem_cell *cell)
+@@ -537,13 +519,16 @@ int devm_nvmem_unregister(struct device *dev, struct nvmem_device *nvmem)
+ }
+ EXPORT_SYMBOL(devm_nvmem_unregister);
+ 
+-static struct nvmem_device *__nvmem_device_get(struct device_node *np,
+-					       const char *nvmem_name)
++static struct nvmem_device *__nvmem_device_get(void *data,
++			int (*match)(struct device *dev, const void *data))
+ {
+ 	struct nvmem_device *nvmem = NULL;
++	struct device *dev;
+ 
+ 	mutex_lock(&nvmem_mutex);
+-	nvmem = np ? of_nvmem_find(np) : nvmem_find(nvmem_name);
++	dev = bus_find_device(&nvmem_bus_type, NULL, data, match);
++	if (dev)
++		nvmem = to_nvmem_device(dev);
+ 	mutex_unlock(&nvmem_mutex);
+ 	if (!nvmem)
+ 		return ERR_PTR(-EPROBE_DEFER);
+@@ -592,7 +577,7 @@ struct nvmem_device *of_nvmem_device_get(struct device_node *np, const char *id)
+ 	if (!nvmem_np)
+ 		return ERR_PTR(-ENOENT);
+ 
+-	return __nvmem_device_get(nvmem_np, NULL);
++	return __nvmem_device_get(nvmem_np, of_nvmem_match);
+ }
+ EXPORT_SYMBOL_GPL(of_nvmem_device_get);
+ #endif
+@@ -618,10 +603,26 @@ struct nvmem_device *nvmem_device_get(struct device *dev, const char *dev_name)
+ 
+ 	}
+ 
+-	return __nvmem_device_get(NULL, dev_name);
++	return __nvmem_device_get((void *)dev_name, nvmem_match_name);
+ }
+ EXPORT_SYMBOL_GPL(nvmem_device_get);
+ 
++/**
++ * nvmem_device_find() - Find nvmem device with matching function
++ *
++ * @data: Data to pass to match function
++ * @match: Callback function to check device
++ *
++ * Return: ERR_PTR() on error or a valid pointer to a struct nvmem_device
++ * on success.
 + */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/moduleparam.h>
-+#include <linux/device.h>
-+#include <linux/types.h>
-+#include <linux/delay.h>
-+#include <linux/slab.h>
-+#include <linux/crc16.h>
-+
-+#include <linux/w1.h>
-+#include <linux/nvmem-provider.h>
-+
-+#define W1_DS2501_UNW_FAMILY    0x91
-+#define W1_DS2501_SIZE          64
-+
-+#define W1_DS2502_FAMILY        0x09
-+#define W1_DS2502_UNW_FAMILY    0x89
-+#define W1_DS2502_SIZE          128
-+
-+#define W1_DS2505_FAMILY	0x0b
-+#define W1_DS2505_SIZE		2048
-+
-+#define W1_PAGE_SIZE		32
-+
-+#define W1_EXT_READ_MEMORY	0xA5
-+#define W1_READ_DATA_CRC        0xC3
-+
-+#define OFF2PG(off)	((off) / W1_PAGE_SIZE)
-+
-+#define CRC16_INIT		0
-+#define CRC16_VALID		0xb001
-+
-+struct w1_eprom_data {
-+	size_t size;
-+	int (*read)(struct w1_slave *sl, int pageno);
-+	u8 eprom[W1_DS2505_SIZE];
-+	DECLARE_BITMAP(page_present, W1_DS2505_SIZE / W1_PAGE_SIZE);
-+	char nvmem_name[64];
-+};
-+
-+static int w1_ds2502_read_page(struct w1_slave *sl, int pageno)
++struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data))
 +{
-+	struct w1_eprom_data *data = sl->family_data;
-+	int pgoff = pageno * W1_PAGE_SIZE;
-+	int ret = -EIO;
-+	u8 buf[3];
-+	u8 crc8;
++	return __nvmem_device_get(data, match);
++}
++EXPORT_SYMBOL_GPL(nvmem_device_find);
 +
-+	if (test_bit(pageno, data->page_present))
-+		return 0; /* page already present */
+ static int devm_nvmem_device_match(struct device *dev, void *res, void *data)
+ {
+ 	struct nvmem_device **nvmem = res;
+@@ -715,7 +716,8 @@ nvmem_cell_get_from_lookup(struct device *dev, const char *con_id)
+ 		if ((strcmp(lookup->dev_id, dev_id) == 0) &&
+ 		    (strcmp(lookup->con_id, con_id) == 0)) {
+ 			/* This is the right entry. */
+-			nvmem = __nvmem_device_get(NULL, lookup->nvmem_name);
++			nvmem = __nvmem_device_get((void *)lookup->nvmem_name,
++						   nvmem_match_name);
+ 			if (IS_ERR(nvmem)) {
+ 				/* Provider may not be registered yet. */
+ 				cell = ERR_CAST(nvmem);
+@@ -785,7 +787,7 @@ struct nvmem_cell *of_nvmem_cell_get(struct device_node *np, const char *id)
+ 	if (!nvmem_np)
+ 		return ERR_PTR(-EINVAL);
+ 
+-	nvmem = __nvmem_device_get(nvmem_np, NULL);
++	nvmem = __nvmem_device_get(nvmem_np, of_nvmem_match);
+ 	of_node_put(nvmem_np);
+ 	if (IS_ERR(nvmem))
+ 		return ERR_CAST(nvmem);
+diff --git a/include/linux/nvmem-consumer.h b/include/linux/nvmem-consumer.h
+index 8f8be5b00060..02dc4aa992b2 100644
+--- a/include/linux/nvmem-consumer.h
++++ b/include/linux/nvmem-consumer.h
+@@ -89,6 +89,9 @@ void nvmem_del_cell_lookups(struct nvmem_cell_lookup *entries,
+ int nvmem_register_notifier(struct notifier_block *nb);
+ int nvmem_unregister_notifier(struct notifier_block *nb);
+ 
++struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data));
 +
-+	mutex_lock(&sl->master->bus_mutex);
-+
-+	if (w1_reset_select_slave(sl))
-+		goto err;
-+
-+	buf[0] = W1_READ_DATA_CRC;
-+	buf[1] = pgoff & 0xff;
-+	buf[2] = pgoff >> 8;
-+	w1_write_block(sl->master, buf, 3);
-+
-+	crc8 = w1_read_8(sl->master);
-+	if (w1_calc_crc8(buf, 3) != crc8)
-+		goto err;
-+
-+	w1_read_block(sl->master, &data->eprom[pgoff], W1_PAGE_SIZE);
-+
-+	crc8 = w1_read_8(sl->master);
-+	if (w1_calc_crc8(&data->eprom[pgoff], W1_PAGE_SIZE) != crc8)
-+		goto err;
-+
-+	set_bit(pageno, data->page_present); /* mark page present */
-+	ret = 0;
-+err:
-+	mutex_unlock(&sl->master->bus_mutex);
-+	return ret;
+ #else
+ 
+ static inline struct nvmem_cell *nvmem_cell_get(struct device *dev,
+@@ -204,6 +207,12 @@ static inline int nvmem_unregister_notifier(struct notifier_block *nb)
+ 	return -EOPNOTSUPP;
+ }
+ 
++static inline struct nvmem_device *nvmem_device_find(void *data,
++			int (*match)(struct device *dev, const void *data))
++{
++	return NULL;
 +}
 +
-+static int w1_ds2505_read_page(struct w1_slave *sl, int pageno)
-+{
-+	struct w1_eprom_data *data = sl->family_data;
-+	int redir_retries = 16;
-+	int pgoff, epoff;
-+	int ret = -EIO;
-+	u8 buf[6];
-+	u8 redir;
-+	u16 crc;
-+
-+	if (test_bit(pageno, data->page_present))
-+		return 0; /* page already present */
-+
-+	epoff = pgoff = pageno * W1_PAGE_SIZE;
-+	mutex_lock(&sl->master->bus_mutex);
-+
-+retry:
-+	if (w1_reset_select_slave(sl))
-+		goto err;
-+
-+	buf[0] = W1_EXT_READ_MEMORY;
-+	buf[1] = pgoff & 0xff;
-+	buf[2] = pgoff >> 8;
-+	w1_write_block(sl->master, buf, 3);
-+	w1_read_block(sl->master, buf + 3, 3); /* redir, crc16 */
-+	redir = buf[3];
-+	crc = crc16(CRC16_INIT, buf, 6);
-+
-+	if (crc != CRC16_VALID)
-+		goto err;
-+
-+
-+	if (redir != 0xff) {
-+		redir_retries--;
-+		if (redir_retries < 0)
-+			goto err;
-+
-+		pgoff = (redir ^ 0xff) * W1_PAGE_SIZE;
-+		goto retry;
-+	}
-+
-+	w1_read_block(sl->master, &data->eprom[epoff], W1_PAGE_SIZE);
-+	w1_read_block(sl->master, buf, 2); /* crc16 */
-+	crc = crc16(CRC16_INIT, &data->eprom[epoff], W1_PAGE_SIZE);
-+	crc = crc16(crc, buf, 2);
-+
-+	if (crc != CRC16_VALID)
-+		goto err;
-+
-+	set_bit(pageno, data->page_present);
-+	ret = 0;
-+err:
-+	mutex_unlock(&sl->master->bus_mutex);
-+	return ret;
-+}
-+
-+static int w1_nvmem_read(void *priv, unsigned int off, void *buf, size_t count)
-+{
-+	struct w1_slave *sl = priv;
-+	struct w1_eprom_data *data = sl->family_data;
-+	size_t eprom_size = data->size;
-+	int ret;
-+	int i;
-+
-+	if (off > eprom_size)
-+		return -EINVAL;
-+
-+	if ((off + count) > eprom_size)
-+		count = eprom_size - off;
-+
-+	i = OFF2PG(off);
-+	do {
-+		ret = data->read(sl, i++);
-+		if (ret < 0)
-+			return ret;
-+	} while (i < OFF2PG(off + count));
-+
-+	memcpy(buf, &data->eprom[off], count);
-+	return 0;
-+}
-+
-+static int w1_eprom_add_slave(struct w1_slave *sl)
-+{
-+	struct w1_eprom_data *data;
-+	struct nvmem_device *nvmem;
-+	struct nvmem_config nvmem_cfg = {
-+		.dev = &sl->dev,
-+		.reg_read = w1_nvmem_read,
-+		.type = NVMEM_TYPE_OTP,
-+		.read_only = true,
-+		.word_size = 1,
-+		.priv = sl,
-+		.id = -1
-+	};
-+
-+	data = devm_kzalloc(&sl->dev, sizeof(struct w1_eprom_data), GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	sl->family_data = data;
-+	switch (sl->family->fid) {
-+	case W1_DS2501_UNW_FAMILY:
-+		data->size = W1_DS2501_SIZE;
-+		data->read = w1_ds2502_read_page;
-+		break;
-+	case W1_DS2502_FAMILY:
-+	case W1_DS2502_UNW_FAMILY:
-+		data->size = W1_DS2502_SIZE;
-+		data->read = w1_ds2502_read_page;
-+		break;
-+	case W1_DS2505_FAMILY:
-+		data->size = W1_DS2505_SIZE;
-+		data->read = w1_ds2505_read_page;
-+		break;
-+	}
-+
-+	if (sl->master->bus_master->dev_id)
-+		snprintf(data->nvmem_name, sizeof(data->nvmem_name),
-+			 "%s-%02x-%012llx",
-+			 sl->master->bus_master->dev_id, sl->reg_num.family,
-+			 (unsigned long long)sl->reg_num.id);
-+	else
-+		snprintf(data->nvmem_name, sizeof(data->nvmem_name),
-+			 "%02x-%012llx",
-+			 sl->reg_num.family,
-+			 (unsigned long long)sl->reg_num.id);
-+
-+	nvmem_cfg.name = data->nvmem_name;
-+	nvmem_cfg.size = data->size;
-+
-+	nvmem = devm_nvmem_register(&sl->dev, &nvmem_cfg);
-+	if (IS_ERR(nvmem))
-+		return PTR_ERR(nvmem);
-+
-+	return 0;
-+}
-+
-+static struct w1_family_ops w1_eprom_fops = {
-+	.add_slave	= w1_eprom_add_slave,
-+};
-+
-+static struct w1_family w1_family_09 = {
-+	.fid = W1_DS2502_FAMILY,
-+	.fops = &w1_eprom_fops,
-+};
-+
-+static struct w1_family w1_family_0b = {
-+	.fid = W1_DS2505_FAMILY,
-+	.fops = &w1_eprom_fops,
-+};
-+
-+static struct w1_family w1_family_89 = {
-+	.fid = W1_DS2502_UNW_FAMILY,
-+	.fops = &w1_eprom_fops,
-+};
-+
-+static struct w1_family w1_family_91 = {
-+	.fid = W1_DS2501_UNW_FAMILY,
-+	.fops = &w1_eprom_fops,
-+};
-+
-+static int __init w1_ds250x_init(void)
-+{
-+	int err;
-+
-+	err = w1_register_family(&w1_family_09);
-+	if (err)
-+		return err;
-+
-+	err = w1_register_family(&w1_family_0b);
-+	if (err)
-+		goto err_0b;
-+
-+	err = w1_register_family(&w1_family_89);
-+	if (err)
-+		goto err_89;
-+
-+	err = w1_register_family(&w1_family_91);
-+	if (err)
-+		goto err_91;
-+
-+	return 0;
-+
-+err_91:
-+	w1_unregister_family(&w1_family_89);
-+err_89:
-+	w1_unregister_family(&w1_family_0b);
-+err_0b:
-+	w1_unregister_family(&w1_family_09);
-+	return err;
-+}
-+
-+static void __exit w1_ds250x_exit(void)
-+{
-+	w1_unregister_family(&w1_family_09);
-+	w1_unregister_family(&w1_family_0b);
-+	w1_unregister_family(&w1_family_89);
-+	w1_unregister_family(&w1_family_91);
-+}
-+
-+module_init(w1_ds250x_init);
-+module_exit(w1_ds250x_exit);
-+
-+MODULE_AUTHOR("Thomas Bogendoerfer <tbogendoerfe@suse.de>");
-+MODULE_DESCRIPTION("w1 family driver for DS250x Add Only Memory");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("w1-family-" __stringify(W1_DS2502_FAMILY));
-+MODULE_ALIAS("w1-family-" __stringify(W1_DS2505_FAMILY));
-+MODULE_ALIAS("w1-family-" __stringify(W1_DS2501_UNW_FAMILY));
-+MODULE_ALIAS("w1-family-" __stringify(W1_DS2502_UNW_FAMILY));
+ #endif /* CONFIG_NVMEM */
+ 
+ #if IS_ENABLED(CONFIG_NVMEM) && IS_ENABLED(CONFIG_OF)
 -- 
 2.13.7
 
