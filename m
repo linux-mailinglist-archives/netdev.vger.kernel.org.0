@@ -2,32 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8346191E57
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 09:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4AD91E54
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 09:53:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbfHSHxv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 03:53:51 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:58650 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726880AbfHSHxu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 03:53:50 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 19 Aug 2019 10:53:43 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7J7rgG2010776;
-        Mon, 19 Aug 2019 10:53:43 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
+        id S1726661AbfHSHxo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 03:53:44 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:35327 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725790AbfHSHxn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 03:53:43 -0400
+Received: by mail-pg1-f193.google.com with SMTP id n4so733176pgv.2
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 00:53:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=A0f6RCOvgs2tpow2suAG8bg3jd/7SAgdmw3f5k5em/A=;
+        b=eLXFsqoMzwtq3topgDvJc+AKPoorzD4etwl55sDKYgkjw76oriffwf0NZQhkECty5j
+         NPgqBVgN18I0p4qVqsKuwa79tr94d0yY6JwkPxB/gVkjo2iRlffhOZ7zPo2UnyPfdiRc
+         ABfidMRbXKsw4fm5iOjPSrLVe8FTbu64Jq3Xli1un+SVpUKllgqXBFmnwh6KqtvqxPZN
+         7sNXdQAm43XdUuyM53CFS1Q9D2+Cq0tqypJKTPo0PtzWOjp261WdSljBBkF2653iGee5
+         aGYcs1ie9Ys8u5ZbEXsMadscviZtK+gmDG90nSEhSkzaWtpXHgx1RIpXIsPZg1mHvZS8
+         fijQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=A0f6RCOvgs2tpow2suAG8bg3jd/7SAgdmw3f5k5em/A=;
+        b=IwL0xF9Tta33KRzLKYDm5UlETk/mclvqY60dunLe4g0yI0dCIuNoUGhqFfu79mL5YF
+         SsQa8GPy9WUrU6bB4AzoGqDQN8Jdq94fft8GXl+QQK7NGfzWYHQfAnvvomdjxCZe0SqH
+         4CSvxXJ68so9T2Xe3mzy7SiZrgeCJ2JLTdYLbRdkfCrzljfDveyoknRIxosVIWPRgBYO
+         zou1kTuHEZoKNTMFLxT2P7+od+RZcseKfglKtgAzJ/GPGXgnnkPhz1rW9zAgXdinhkQ6
+         zrL/yKNIL9UbPyzPcuoDt6nIHjKHwotMe8dfMPTsgfB1zaCPrYZ/6zGwJTWIN8iJcb/E
+         bpDw==
+X-Gm-Message-State: APjAAAUZ16OjJAUXS5fZDHDsUpMy09lcsgSdxwDzmE5L7fghKoMUHRqV
+        MqyUTbi8QC3NRSpVh0I/uKQqzlhAaFw=
+X-Google-Smtp-Source: APXvYqwzx775BpAapzqpzewrRmcav3e8hauekLqdIYWcDvV0ygfwJk4Vasi6HE6iSJm6nEhzM7qAaw==
+X-Received: by 2002:a63:e948:: with SMTP id q8mr18191948pgj.93.1566201222691;
+        Mon, 19 Aug 2019 00:53:42 -0700 (PDT)
+Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id y188sm16941270pfb.115.2019.08.19.00.53.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Aug 2019 00:53:42 -0700 (PDT)
+From:   Hangbin Liu <liuhangbin@gmail.com>
 To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, jhs@mojatatu.com, lucasb@mojatatu.com,
-        mrv@mojatatu.com, shuah@kernel.org, batuhanosmantaskaya@gmail.com,
-        dcaratti@redhat.com, marcelo.leitner@gmail.com,
-        Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net-next 2/2] tc-testing: concurrency: wrap piped rule update commands
-Date:   Mon, 19 Aug 2019 10:52:08 +0300
-Message-Id: <20190819075208.12240-3-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190819075208.12240-1-vladbu@mellanox.com>
-References: <20190819075208.12240-1-vladbu@mellanox.com>
+Cc:     Stefano Brivio <sbrivio@redhat.com>, wenxu <wenxu@ucloud.cn>,
+        Alexei Starovoitov <ast@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv2 0/2] fix dev null pointer dereference when send pkg larger than mtu in collect_md mode
+Date:   Mon, 19 Aug 2019 15:53:25 +0800
+Message-Id: <20190819075327.32412-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.19.2
+In-Reply-To: <20190815060904.19426-1-liuhangbin@gmail.com>
+References: <20190815060904.19426-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -35,141 +64,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Concurrent tests use several commands to update rules in parallel: 'find'
-prints names of batch files in tmp directory and pipes result to 'xargs'
-which runs instance of tc per batch file in parallel. This breaks when used
-with ns plugin that adds 'ip netns exec $NS' prefix to the command, which
-causes only first command in pipe to be executed in namespace:
+When we send a packet larger than PMTU, we need to reply with
+icmp_send(ICMP_FRAG_NEEDED) or icmpv6_send(ICMPV6_PKT_TOOBIG).
 
-=====> Test e41d: Add 1M flower filters with 10 parallel tc instances
------> prepare stage
-ns/SubPlugin.adjust_command
-adjust_command:  stage is setup; inserting netns stuff in command [/bin/mkdir tmp] list [['/bin/mkdir', 'tmp']]
-adjust_command:  return command [ip netns exec tcut /bin/mkdir tmp]
-command "ip netns exec tcut /bin/mkdir tmp"
-ns/SubPlugin.adjust_command
-adjust_command:  stage is setup; inserting netns stuff in command [/sbin/tc qdisc add dev ens1f0 ingress] list [['/sbin/tc', 'qdisc', 'add', 'dev', 'ens1f0', 'ingress']]
-adjust_command:  return command [ip netns exec tcut /sbin/tc qdisc add dev ens1f0 ingress]
-command "ip netns exec tcut /sbin/tc qdisc add dev ens1f0 ingress"
-ns/SubPlugin.adjust_command
-adjust_command:  stage is setup; inserting netns stuff in command [./tdc_multibatch.py ens1f0 tmp 100000 10 add] list [['./tdc_multibatch.py', 'ens1f0', 'tmp', '100000', '10', 'add']]
-adjust_command:  return command [ip netns exec tcut ./tdc_multibatch.py ens1f0 tmp 100000 10 add]
-command "ip netns exec tcut ./tdc_multibatch.py ens1f0 tmp 100000 10 add"
------> execute stage
-ns/SubPlugin.adjust_command
-adjust_command:  stage is execute; inserting netns stuff in command [find tmp/add* -print | xargs -n 1 -P 10 /sbin/tc -b] list [['find', 'tmp/add*', '-print', '|', 'xargs', '-n', '1', '-P', '10', '/sbin/tc', '-b']
-]
-adjust_command:  return command [ip netns exec tcut find tmp/add* -print | xargs -n 1 -P 10 /sbin/tc -b]
-command "ip netns exec tcut find tmp/add* -print | xargs -n 1 -P 10 /sbin/tc -b"
-exit: 123
-exit: 0
-Cannot find device "ens1f0"
-Cannot find device "ens1f0"
-Command failed tmp/add_0:1
-Command failed tmp/add_1:1
-Cannot find device "ens1f0"
-Command failed tmp/add_2:1
-Cannot find device "ens1f0"
-Command failed tmp/add_4:1
-Cannot find device "ens1f0"
-Command failed tmp/add_3:1
-Cannot find device "ens1f0"
-Command failed tmp/add_5:1
-Cannot find device "ens1f0"
-Command failed tmp/add_6:1
-Cannot find device "ens1f0"
-Command failed tmp/add_8:1
-Cannot find device "ens1f0"
-Command failed tmp/add_7:1
-Cannot find device "ens1f0"
-Command failed tmp/add_9:1
+But with collect_md mode, kernel will crash while accessing the dst dev
+as __metadata_dst_init() init dst->dev to NULL by default. Here is what
+the code path looks like, for GRE:
 
-Fix the issue by executing whole compound command in namespace by wrapping
-it in 'bash -c' invocation.
+- ip6gre_tunnel_xmit
+  - ip6gre_xmit_ipv4
+    - __gre6_xmit
+      - ip6_tnl_xmit
+        - if skb->len - t->tun_hlen - eth_hlen > mtu; return -EMSGSIZE
+    - icmp_send
+      - net = dev_net(rt->dst.dev); <-- here
+  - ip6gre_xmit_ipv6
+    - __gre6_xmit
+      - ip6_tnl_xmit
+        - if skb->len - t->tun_hlen - eth_hlen > mtu; return -EMSGSIZE
+    - icmpv6_send
+      ...
+      - decode_session4
+        - oif = skb_dst(skb)->dev->ifindex; <-- here
+      - decode_session6
+        - oif = skb_dst(skb)->dev->ifindex; <-- here
 
-Fixes: 489ce2f42514 ("tc-testing: Restore original behaviour for namespaces in tdc")
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
----
- .../tc-tests/filters/concurrency.json          | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+We could not fix it in __metadata_dst_init() as there is no dev supplied.
+Look in to the __icmp_send()/decode_session{4,6} code we could find the dst
+dev is actually not needed. In __icmp_send(), we could get the net by skb->dev.
+For decode_session{4,6}, as it was called by xfrm_decode_session_reverse()
+in this scenario, the oif is not used by
+fl4->flowi4_oif = reverse ? skb->skb_iif : oif;
 
-diff --git a/tools/testing/selftests/tc-testing/tc-tests/filters/concurrency.json b/tools/testing/selftests/tc-testing/tc-tests/filters/concurrency.json
-index 9002714b1851..c2a433a4737e 100644
---- a/tools/testing/selftests/tc-testing/tc-tests/filters/concurrency.json
-+++ b/tools/testing/selftests/tc-testing/tc-tests/filters/concurrency.json
-@@ -12,7 +12,7 @@
-             "$TC qdisc add dev $DEV2 ingress",
-             "./tdc_multibatch.py $DEV2 $BATCH_DIR 100000 10 add"
-         ],
--        "cmdUnderTest": "find $BATCH_DIR/add* -print | xargs -n 1 -P 10 $TC -b",
-+        "cmdUnderTest": "bash -c \"find $BATCH_DIR/add* -print | xargs -n 1 -P 10 $TC -b\"",
-         "expExitCode": "0",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
-@@ -37,7 +37,7 @@
-             "$TC -b $BATCH_DIR/add_0",
-             "./tdc_multibatch.py $DEV2 $BATCH_DIR 100000 10 del"
-         ],
--        "cmdUnderTest": "find $BATCH_DIR/del* -print | xargs -n 1 -P 10 $TC -b",
-+        "cmdUnderTest": "bash -c \"find $BATCH_DIR/del* -print | xargs -n 1 -P 10 $TC -b\"",
-         "expExitCode": "0",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
-@@ -62,7 +62,7 @@
-             "$TC -b $BATCH_DIR/add_0",
-             "./tdc_multibatch.py $DEV2 $BATCH_DIR 100000 10 replace"
-         ],
--        "cmdUnderTest": "find $BATCH_DIR/replace* -print | xargs -n 1 -P 10 $TC -b",
-+        "cmdUnderTest": "bash -c \"find $BATCH_DIR/replace* -print | xargs -n 1 -P 10 $TC -b\"",
-         "expExitCode": "0",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
-@@ -87,7 +87,7 @@
-             "$TC -b $BATCH_DIR/add_0",
-             "./tdc_multibatch.py -d $DEV2 $BATCH_DIR 100000 10 replace"
-         ],
--        "cmdUnderTest": "find $BATCH_DIR/replace* -print | xargs -n 1 -P 10 $TC -b",
-+        "cmdUnderTest": "bash -c \"find $BATCH_DIR/replace* -print | xargs -n 1 -P 10 $TC -b\"",
-         "expExitCode": "0",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
-@@ -112,7 +112,7 @@
-             "$TC -b $BATCH_DIR/add_0",
-             "./tdc_multibatch.py -d $DEV2 $BATCH_DIR 100000 10 del"
-         ],
--        "cmdUnderTest": "find $BATCH_DIR/del* -print | xargs -n 1 -P 10 $TC -f -b",
-+        "cmdUnderTest": "bash -c \"find $BATCH_DIR/del* -print | xargs -n 1 -P 10 $TC -f -b\"",
-         "expExitCode": "123",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
-@@ -134,11 +134,11 @@
-             "/bin/mkdir $BATCH_DIR",
-             "$TC qdisc add dev $DEV2 ingress",
-             "./tdc_multibatch.py -x init_ $DEV2 $BATCH_DIR 100000 5 add",
--            "find $BATCH_DIR/init_* -print | xargs -n 1 -P 5 $TC -b",
-+            "bash -c \"find $BATCH_DIR/init_* -print | xargs -n 1 -P 5 $TC -b\"",
-             "./tdc_multibatch.py -x par_ -a 500001 -m 5 $DEV2 $BATCH_DIR 100000 5 add",
-             "./tdc_multibatch.py -x par_ $DEV2 $BATCH_DIR 100000 5 del"
-         ],
--        "cmdUnderTest": "find $BATCH_DIR/par_* -print | xargs -n 1 -P 10 $TC -b",
-+        "cmdUnderTest": "bash -c \"find $BATCH_DIR/par_* -print | xargs -n 1 -P 10 $TC -b\"",
-         "expExitCode": "0",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
-@@ -160,11 +160,11 @@
-             "/bin/mkdir $BATCH_DIR",
-             "$TC qdisc add dev $DEV2 ingress",
-             "./tdc_multibatch.py -x init_ $DEV2 $BATCH_DIR 100000 10 add",
--            "find $BATCH_DIR/init_* -print | xargs -n 1 -P 5 $TC -b",
-+            "bash -c \"find $BATCH_DIR/init_* -print | xargs -n 1 -P 5 $TC -b\"",
-             "./tdc_multibatch.py -x par_ -a 500001 -m 5 $DEV2 $BATCH_DIR 100000 5 replace",
-             "./tdc_multibatch.py -x par_ $DEV2 $BATCH_DIR 100000 5 del"
-         ],
--        "cmdUnderTest": "find $BATCH_DIR/par_* -print | xargs -n 1 -P 10 $TC -b",
-+        "cmdUnderTest": "bash -c \"find $BATCH_DIR/par_* -print | xargs -n 1 -P 10 $TC -b\"",
-         "expExitCode": "0",
-         "verifyCmd": "$TC -s filter show dev $DEV2 ingress",
-         "matchPattern": "filter protocol ip pref 1 flower chain 0 handle",
+The reproducer is easy:
+
+ovs-vsctl add-br br0
+ip link set br0 up
+ovs-vsctl add-port br0 gre0 -- set interface gre0 type=gre options:remote_ip=$dst_addr
+ip link set gre0 up
+ip addr add ${local_gre6}/64 dev br0
+ping6 $remote_gre6 -s 1500
+
+The kernel will crash like
+[40595.821651] BUG: kernel NULL pointer dereference, address: 0000000000000108
+[40595.822411] #PF: supervisor read access in kernel mode
+[40595.822949] #PF: error_code(0x0000) - not-present page
+[40595.823492] PGD 0 P4D 0
+[40595.823767] Oops: 0000 [#1] SMP PTI
+[40595.824139] CPU: 0 PID: 2831 Comm: handler12 Not tainted 5.2.0 #57
+[40595.824788] Hardware name: Red Hat KVM, BIOS 1.11.1-3.module+el8.1.0+2983+b2ae9c0a 04/01/2014
+[40595.825680] RIP: 0010:__xfrm_decode_session+0x6b/0x930
+[40595.826219] Code: b7 c0 00 00 00 b8 06 00 00 00 66 85 d2 0f b7 ca 48 0f 45 c1 44 0f b6 2c 06 48 8b 47 58 48 83 e0 fe 0f 84 f4 04 00 00 48 8b 00 <44> 8b 80 08 01 00 00 41 f6 c4 01 4c 89 e7
+ba 58 00 00 00 0f 85 47
+[40595.828155] RSP: 0018:ffffc90000a73438 EFLAGS: 00010286
+[40595.828705] RAX: 0000000000000000 RBX: ffff8881329d7100 RCX: 0000000000000000
+[40595.829450] RDX: 0000000000000000 RSI: ffff8881339e70ce RDI: ffff8881329d7100
+[40595.830191] RBP: ffffc90000a73470 R08: 0000000000000000 R09: 000000000000000a
+[40595.830936] R10: 0000000000000000 R11: 0000000000000000 R12: ffffc90000a73490
+[40595.831682] R13: 000000000000002c R14: ffff888132ff1301 R15: ffff8881329d7100
+[40595.832427] FS:  00007f5bfcfd6700(0000) GS:ffff88813ba00000(0000) knlGS:0000000000000000
+[40595.833266] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[40595.833883] CR2: 0000000000000108 CR3: 000000013a368000 CR4: 00000000000006f0
+[40595.834633] Call Trace:
+[40595.835392]  ? rt6_multipath_hash+0x4c/0x390
+[40595.835853]  icmpv6_route_lookup+0xcb/0x1d0
+[40595.836296]  ? icmpv6_xrlim_allow+0x3e/0x140
+[40595.836751]  icmp6_send+0x537/0x840
+[40595.837125]  icmpv6_send+0x20/0x30
+[40595.837494]  tnl_update_pmtu.isra.27+0x19d/0x2a0 [ip_tunnel]
+[40595.838088]  ip_md_tunnel_xmit+0x1b6/0x510 [ip_tunnel]
+[40595.838633]  gre_tap_xmit+0x10c/0x160 [ip_gre]
+[40595.839103]  dev_hard_start_xmit+0x93/0x200
+[40595.839551]  sch_direct_xmit+0x101/0x2d0
+[40595.839967]  __dev_queue_xmit+0x69f/0x9c0
+[40595.840399]  do_execute_actions+0x1717/0x1910 [openvswitch]
+[40595.840987]  ? validate_set.isra.12+0x2f5/0x3d0 [openvswitch]
+[40595.841596]  ? reserve_sfa_size+0x31/0x130 [openvswitch]
+[40595.842154]  ? __ovs_nla_copy_actions+0x1b4/0xad0 [openvswitch]
+[40595.842778]  ? __kmalloc_reserve.isra.50+0x2e/0x80
+[40595.843285]  ? should_failslab+0xa/0x20
+[40595.843696]  ? __kmalloc+0x188/0x220
+[40595.844078]  ? __alloc_skb+0x97/0x270
+[40595.844472]  ovs_execute_actions+0x47/0x120 [openvswitch]
+[40595.845041]  ovs_packet_cmd_execute+0x27d/0x2b0 [openvswitch]
+[40595.845648]  genl_family_rcv_msg+0x3a8/0x430
+[40595.846101]  genl_rcv_msg+0x47/0x90
+[40595.846476]  ? __alloc_skb+0x83/0x270
+[40595.846866]  ? genl_family_rcv_msg+0x430/0x430
+[40595.847335]  netlink_rcv_skb+0xcb/0x100
+[40595.847777]  genl_rcv+0x24/0x40
+[40595.848113]  netlink_unicast+0x17f/0x230
+[40595.848535]  netlink_sendmsg+0x2ed/0x3e0
+[40595.848951]  sock_sendmsg+0x4f/0x60
+[40595.849323]  ___sys_sendmsg+0x2bd/0x2e0
+[40595.849733]  ? sock_poll+0x6f/0xb0
+[40595.850098]  ? ep_scan_ready_list.isra.14+0x20b/0x240
+[40595.850634]  ? _cond_resched+0x15/0x30
+[40595.851032]  ? ep_poll+0x11b/0x440
+[40595.851401]  ? _copy_to_user+0x22/0x30
+[40595.851799]  __sys_sendmsg+0x58/0xa0
+[40595.852180]  do_syscall_64+0x5b/0x190
+[40595.852574]  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+[40595.853105] RIP: 0033:0x7f5c00038c7d
+[40595.853489] Code: c7 20 00 00 75 10 b8 2e 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 8e f7 ff ff 48 89 04 24 b8 2e 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 d7 f7 ff ff 48 89
+d0 48 83 c4 08 48 3d 01
+[40595.855443] RSP: 002b:00007f5bfcf73c00 EFLAGS: 00003293 ORIG_RAX: 000000000000002e
+[40595.856244] RAX: ffffffffffffffda RBX: 00007f5bfcf74a60 RCX: 00007f5c00038c7d
+[40595.856990] RDX: 0000000000000000 RSI: 00007f5bfcf73c60 RDI: 0000000000000015
+[40595.857736] RBP: 0000000000000004 R08: 0000000000000b7c R09: 0000000000000110
+[40595.858613] R10: 0001000800050004 R11: 0000000000003293 R12: 000055c2d8329da0
+[40595.859401] R13: 00007f5bfcf74120 R14: 0000000000000347 R15: 00007f5bfcf73c60
+[40595.860185] Modules linked in: ip_gre ip_tunnel gre openvswitch nsh nf_conncount nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 sunrpc bochs_drm ttm drm_kms_helper drm pcspkr joydev i2c_piix4 qemu_fw_cfg xfs libcrc32c virtio_net net_failover serio_raw failover ata_generic virtio_blk pata_acpi floppy
+[40595.863155] CR2: 0000000000000108
+[40595.863551] ---[ end trace 22209bbcacb4addd ]---
+
+v2: fix it in __icmp_send() and decode_session{4,6} instead of updating
+shared dst dev in {ip_md, ip6}_tunnel_xmit.
+
+Hangbin Liu (2):
+  ipv4/icmp: fix rt dst dev null pointer dereference
+  xfrm/xfrm_policy: fix dst dev null pointer dereference in collect_md
+    mode
+
+ net/ipv4/icmp.c        | 5 ++++-
+ net/xfrm/xfrm_policy.c | 4 ++--
+ 2 files changed, 6 insertions(+), 3 deletions(-)
+
 -- 
-2.21.0
+2.19.2
 
