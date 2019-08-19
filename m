@@ -2,210 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C00692457
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 15:09:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C9B9248B
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 15:17:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727525AbfHSNJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 09:09:14 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:54170 "EHLO mx1.redhat.com"
+        id S1727715AbfHSNRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 09:17:41 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:41502 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727424AbfHSNJN (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 09:09:13 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7225E811A9;
-        Mon, 19 Aug 2019 13:09:13 +0000 (UTC)
-Received: from localhost (ovpn-117-111.ams2.redhat.com [10.36.117.111])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C38B95C205;
-        Mon, 19 Aug 2019 13:09:12 +0000 (UTC)
-Date:   Mon, 19 Aug 2019 14:09:11 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vishnu Dasa <vdasa@vmware.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: Re: [RFC v2] vsock: proposal to support multiple transports at
- runtime
-Message-ID: <20190819130911.GE28081@stefanha-x1.localdomain>
-References: <20190606100912.f2zuzrkgmdyxckog@steredhat>
+        id S1727606AbfHSNRl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 09:17:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=t0XkevwjTJ9RP2/my1dFM8HES1/oX+7ad8jFlZ4adgM=; b=3LgLTLxFNfpOG3Y5hYlz7akQsD
+        KTxMzW/T7B9ii7ynlPFYiwsCaqZRSv4dDJtVjlnrFk+uWSxw1nuEBjlHHy6hfbCgw+ZkcuTS6PkYE
+        KtbmaQtcdN/dr9TAgRIhxpEAYPSGecuzOOPaEGy4K4nN0Dkkj3wDN5wUFDr6LqWYtArM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hzhXU-0005wf-He; Mon, 19 Aug 2019 15:17:36 +0200
+Date:   Mon, 19 Aug 2019 15:17:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hubert Feurstein <h.feurstein@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 1/3] net: mdio: add support for passing a PTP
+ system timestamp to the mii_bus driver
+Message-ID: <20190819131736.GD8981@lunn.ch>
+References: <20190816163157.25314-1-h.feurstein@gmail.com>
+ <20190816163157.25314-2-h.feurstein@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="uCPdOCrL+PnN2Vxy"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190606100912.f2zuzrkgmdyxckog@steredhat>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Mon, 19 Aug 2019 13:09:13 +0000 (UTC)
+In-Reply-To: <20190816163157.25314-2-h.feurstein@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Aug 16, 2019 at 06:31:55PM +0200, Hubert Feurstein wrote:
+> In order to improve the synchronisation precision of phc2sys (from
+> the linuxptp project) for devices like switches which are attached
+> to the MDIO bus, it is necessary the get the system timestamps as
+> close as possible to the access which causes the PTP timestamp
+> register to be snapshotted in the switch hardware. Usually this is
+> triggered by an MDIO write access, the snapshotted timestamp is then
+> transferred by several MDIO reads.
+> 
+> This patch adds the required infrastructure to solve the problem described
+> above.
+> 
+> Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
+> ---
+>  drivers/net/phy/mdio_bus.c | 105 +++++++++++++++++++++++++++++++++++++
+>  include/linux/mdio.h       |   7 +++
+>  include/linux/phy.h        |  25 +++++++++
+>  3 files changed, 137 insertions(+)
+> 
+> diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+> index bd04fe762056..167a21f267fa 100644
+> --- a/drivers/net/phy/mdio_bus.c
+> +++ b/drivers/net/phy/mdio_bus.c
+> @@ -34,6 +34,7 @@
+>  #include <linux/phy.h>
+>  #include <linux/io.h>
+>  #include <linux/uaccess.h>
+> +#include <linux/ptp_clock_kernel.h>
+>  
+>  #define CREATE_TRACE_POINTS
+>  #include <trace/events/mdio.h>
+> @@ -697,6 +698,110 @@ int mdiobus_write(struct mii_bus *bus, int addr, u32 regnum, u16 val)
+>  }
+>  EXPORT_SYMBOL(mdiobus_write);
+>  
+> +/**
+> + * __mdiobus_write_sts - Unlocked version of the mdiobus_write_sts function
+> + * @bus: the mii_bus struct
+> + * @addr: the phy address
+> + * @regnum: register number to write
+> + * @val: value to write to @regnum
+> + * @sts: the ptp system timestamp
+> + *
+> + * Write a MDIO bus register and request the MDIO bus driver to take the
+> + * system timestamps when sts-pointer is valid. When the bus driver doesn't
+> + * support this, the timestamps are taken in this function instead.
+> + *
+> + * In order to improve the synchronisation precision of phc2sys (from
+> + * the linuxptp project) for devices like switches which are attached
+> + * to the MDIO bus, it is necessary the get the system timestamps as
+> + * close as possible to the access which causes the PTP timestamp
+> + * register to be snapshotted in the switch hardware. Usually this is
+> + * triggered by an MDIO write access, the snapshotted timestamp is then
+> + * transferred by several MDIO reads.
+> + *
+> + * Caller must hold the mdio bus lock.
+> + *
+> + * NOTE: MUST NOT be called from interrupt context.
+> + */
+> +int __mdiobus_write_sts(struct mii_bus *bus, int addr, u32 regnum, u16 val,
+> +			struct ptp_system_timestamp *sts)
+> +{
+> +	int retval;
+> +
+> +	WARN_ON_ONCE(!mutex_is_locked(&bus->mdio_lock));
+> +
+> +	if (!bus->ptp_sts_supported)
+> +		ptp_read_system_prets(sts);
 
---uCPdOCrL+PnN2Vxy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+How expensive is ptp_read_system_prets()? My original suggestion was
+to unconditionally call it here, and then let the driver overwrite it
+if it supports finer grained time stamping. MDIO is slow, so as long
+as ptp_read_system_prets() is not too expensive, i prefer KISS.
 
-On Thu, Jun 06, 2019 at 12:09:12PM +0200, Stefano Garzarella wrote:
->=20
-> Hi all,
-> this is a v2 of a proposal addressing the comments made by Dexuan, Stefan,
-> and Jorgen.
->=20
-> v1: https://www.spinics.net/lists/netdev/msg570274.html
->=20
->=20
->=20
-> We can define two types of transport that we have to handle at the same t=
-ime
-> (e.g. in a nested VM we would have both types of transport running togeth=
-er):
->=20
-> - 'host->guest' transport, it runs in the host and it is used to communic=
-ate
->   with the guests of a specific hypervisor (KVM, VMWare or Hyper-V). It a=
-lso
->   runs in the guest who has nested guests, to communicate with them.
->=20
->   [Phase 2]
->   We can support multiple 'host->guest' transport running at the same tim=
-e,
->   but on x86 only one hypervisor uses VMX at any given time.
->=20
-> - 'guest->host' transport, it runs in the guest and it is used to communi=
-cate
->   with the host.
->=20
->=20
-> The main goal is to find a way to decide what transport use in these case=
-s:
-> 1. connect() / sendto()
->=20
->    a. use the 'host->guest' transport, if the destination is the guest
->       (dest_cid > VMADDR_CID_HOST).
->=20
->       [Phase 2]
->       In order to support multiple 'host->guest' transports running at th=
-e same
->       time, we should assign CIDs uniquely across all transports. In this=
- way,
->       a packet generated by the host side will get directed to the approp=
-riate
->       transport based on the CID.
->=20
->    b. use the 'guest->host' transport, if the destination is the host or =
-the
->       hypervisor.
->       (dest_cid =3D=3D VMADDR_CID_HOST || dest_cid =3D=3D VMADDR_CID_HYPE=
-RVISOR)
->=20
->=20
-> 2. listen() / recvfrom()
->=20
->    a. use the 'host->guest' transport, if the socket is bound to
->       VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
->       'guest->host' transport.
->       We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
->       address this case.
->=20
->       [Phase 2]
->       We can support network namespaces to create independent AF_VSOCK
->       addressing domains:
->       - could be used to partition VMs between hypervisors or at a finer
->    	 granularity;
->       - could be used to isolate host applications from guest applications
->    	 using the same ports with CID_ANY;
->=20
->    b. use the 'guest->host' transport, if the socket is bound to local CID
->       different from the VMADDR_CID_HOST (guest CID get with
->       IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY (=
-to be
->       backward compatible).
->       Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOS=
-T.
->=20
->    c. shared port space between transports
->       For incoming requests or packets, we should be able to choose which
->       transport use, looking at the 'port' requested.
->=20
->       - stream sockets already support shared port space between transpor=
-ts
->         (one port can be assigned to only one transport)
->=20
->       [Phase 2]
->       - datagram sockets will support it, but for now VMCI transport is t=
-he
->         default transport for any host side datagram socket (KVM and Hype=
-r-V
->         do not yet support datagrams sockets)
->=20
-> We will make the loading of af_vsock.ko independent of the transports to
-> allow to:
->    - create a AF_VSOCK socket without any loaded transports;
->    - listen on a socket (e.g. bound to VMADDR_CID_ANY) without any loaded
->      transports;
->=20
-> Hopefully, we could move MODULE_ALIAS_NETPROTO(PF_VSOCK) from the
-> vmci_transport.ko to the af_vsock.ko.
-> [Jorgen will check if this will impact the existing VMware products]
->=20
-> Notes:
->    - For Hyper-V sockets, the host can only be Windows. No changes should
->      be required on the Windows host to support the changes on this propo=
-sal.
->=20
->    - Communication between guests are not allowed on any transports, so w=
-e can
->      drop packets sent from a guest to another guest (dest_cid >
->      VMADDR_CID_HOST) if the 'host->guest' transport is not available.
->=20
->    - [Phase 2] tag used to identify things that can be done at a later st=
-age,
->      but that should be taken into account during this design.
->=20
->    - Namespace support will be developed in [Phase 2] or in a separate pr=
-oject.
->=20
->=20
->=20
-> Comments and suggestions are welcome.
-> I'll be on PTO for next two weeks, so sorry in advance if I'll answer lat=
-er.
->=20
-> If we agree on this proposal, when I get back, I'll start working on the =
-code
-> to get a first PATCH RFC.
-
-Stefano,
-I've reviewed your proposal and it looks good for solving nested
-virtualization.
-
-The tricky implementation details will be supporting listen sockets,
-especially with VMADDR_CID_ANY so they can be accessed from both
-transports.
-
-Stefan
-
---uCPdOCrL+PnN2Vxy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl1an3cACgkQnKSrs4Gr
-c8iFcwf+J7Hgpr8SCqSHK6DmBwYGTPkESE0j2G7rR4ZDh1namYBmVlinwL++O1cU
-uZGLMnl4HqOUF0kWxmNmC3qiX4rDK1VTvAbBt/xhGUemiJ0YIj/zPEkQJ1V/Jt8z
-UyT6XZ8cXOMqqWPIVIJmboy7sJp3Ji8ItVfQ0T1sMMCyjN99dP1GfuqpIEfb/FeF
-vI0y0HOvBJOVghp6omP/BMuxH5vYyEcWJdgWkgPeCuL1I/qKrtmfGQnasGacedq2
-IouXQwXTS57XmL07BY9Cv1b3N6tF5rflCL96Px3l6PggUigmFncOMzZFQneaFY5b
-GJ9Mfkh6Z8/5BxWe9IaP+RmcmHmypg==
-=23Yg
------END PGP SIGNATURE-----
-
---uCPdOCrL+PnN2Vxy--
+   Andrew
