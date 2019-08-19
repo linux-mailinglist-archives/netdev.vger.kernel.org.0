@@ -2,91 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD778948B5
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 17:43:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4FEEC9493F
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 17:56:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727768AbfHSPnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 11:43:25 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:40996 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727019AbfHSPnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 11:43:25 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 196so1380150pfz.8;
-        Mon, 19 Aug 2019 08:43:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=eV94SApWZTFweA/qwK/ErWJOHYhfzE92sQRqbCwLV9E=;
-        b=E1hwBmAG+r761tHLSNhL8Yf8dofQ0qJwDAvMSAT3O4bJhJgUS+9Dqn1VsF4fUqPzu7
-         vLqskfrtlEs7mNSflqoWWDDDTiamf3Z2Cp7Z9GYAEDIrvKz4s+x1SP1savoDBQ54uKKw
-         H+qXTN28duDQPFXM9kG/HAS/rC9yR5yaN/9pYCkF2RZ4gabyXtS9zuiiO0RP/rxfmznu
-         OPU/fuk6hK9yIppCZJ2TafIgCxWLPH5kbv438t8sS8SP3sTmYYZLaEaENKcg7GtSphF3
-         LxFOiFcdjZsbCF2rpV//VdsKM9+b0QjCvjnK0MiOBkFTkEeeSdNZoeEN/xWJdiDdAQCZ
-         XKBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eV94SApWZTFweA/qwK/ErWJOHYhfzE92sQRqbCwLV9E=;
-        b=aYObmW3O5LAEOm4iT22PGPWOQ3B8FJh1MY6II7fYFqogaRj+Zl01GHqt7JiBBaSzIw
-         9wBBEKn+RlwV87cBEqEhBi7n7Eu5xxsRdCr7OxSFdrTMW/sKP6nlbW8CGj/YIryqDquV
-         41w0lSs+PoC3jd42PH0Q7lo16htXaiUgskLl9dbDyYIM2tt6x+UCJdLlbQuwyLu8gQOx
-         SwipLW94kCAxljd8LiMMN3WrGDhg4h/gJOAqPkjfH3ahhTo7gCVyM2Qc/D0M3Panh17U
-         O1I5UXmQzjZ/LvKogXgKZQ0edOfyl5m+tNh29XMIcJo6ZQ6YcZk+REOL0EVy+p6km7dt
-         gJ7A==
-X-Gm-Message-State: APjAAAW7fFNLsbErEpd4vGx71zI3C0ct74xmvn0oF8dIze75zTI7ku4E
-        CNiz02lL6xws3xNwE91VQEk=
-X-Google-Smtp-Source: APXvYqyOdxQtsD5gKEcfQEmF7fnJv4q1CsPL02eETqip58Blor0faUe4mOdd7WihjMh6h6S495xcvA==
-X-Received: by 2002:a63:5811:: with SMTP id m17mr20522184pgb.237.1566229403179;
-        Mon, 19 Aug 2019 08:43:23 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id s14sm15785318pfe.16.2019.08.19.08.43.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 08:43:22 -0700 (PDT)
-Date:   Mon, 19 Aug 2019 08:43:20 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Joe Perches <joe@perches.com>
-Cc:     Felipe Balbi <felipe.balbi@linux.intel.com>,
-        Christopher S Hall <christopher.s.hall@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] PTP: introduce new versions of IOCTLs
-Message-ID: <20190819154320.GB2883@localhost>
-References: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
- <20190817155927.GA1540@localhost>
- <a146c1356b4272c481e5cc63666c6e58b8442407.camel@perches.com>
- <20190818201150.GA1316@localhost>
- <83075553a61ede1de9cbf77b90a5acdeab5aacbf.camel@perches.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <83075553a61ede1de9cbf77b90a5acdeab5aacbf.camel@perches.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727840AbfHSP43 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 19 Aug 2019 11:56:29 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:29562 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727580AbfHSP43 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 11:56:29 -0400
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7JFlbfU016159
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 11:56:27 -0400
+Received: from e06smtp01.uk.ibm.com (e06smtp01.uk.ibm.com [195.75.94.97])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2ufwbmc4yq-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 11:56:27 -0400
+Received: from localhost
+        by e06smtp01.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <iii@linux.ibm.com>;
+        Mon, 19 Aug 2019 16:56:25 +0100
+Received: from b06avi18626390.portsmouth.uk.ibm.com (9.149.26.192)
+        by e06smtp01.uk.ibm.com (192.168.101.131) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Mon, 19 Aug 2019 16:56:23 +0100
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7JFu27p41484552
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 19 Aug 2019 15:56:02 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7F67CAE058;
+        Mon, 19 Aug 2019 15:56:22 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3AB52AE055;
+        Mon, 19 Aug 2019 15:56:22 +0000 (GMT)
+Received: from dyn-9-152-98-226.boeblingen.de.ibm.com (unknown [9.152.98.226])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Mon, 19 Aug 2019 15:56:22 +0000 (GMT)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 11.5 \(3445.9.1\))
+Subject: Re: [RESEND][PATCH v3 bpf-next] btf: expose BTF info through sysfs
+From:   Ilya Leoshkevich <iii@linux.ibm.com>
+In-Reply-To: <20190812183947.130889-1-andriin@fb.com>
+Date:   Mon, 19 Aug 2019 17:56:21 +0200
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Kernel Team <kernel-team@fb.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>
+Content-Transfer-Encoding: 8BIT
+References: <20190812183947.130889-1-andriin@fb.com>
+To:     Andrii Nakryiko <andriin@fb.com>
+X-Mailer: Apple Mail (2.3445.9.1)
+X-TM-AS-GCONF: 00
+x-cbid: 19081915-4275-0000-0000-0000035ACB54
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19081915-4276-0000-0000-0000386CE8BB
+Message-Id: <3F6DFBAE-ECA5-4E06-B9A0-4D6868FD0B13@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-19_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=3 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=615 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908190171
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 18, 2019 at 03:07:18PM -0700, Joe Perches wrote:
-> Also the original patch deletes 2 case entries for
-> PTP_PIN_GETFUNC and PTP_PIN_SETFUNC and converts them to
-> PTP_PIN_GETFUNC2 and PTP_PIN_SETFUNC2 but still uses tests
-> for the deleted case label entries making part of the case
-> code block unreachable.
+> Am 12.08.2019 um 20:39 schrieb Andrii Nakryiko <andriin@fb.com>:
 > 
-> That's at least a defect:
+> @@ -92,23 +92,34 @@ vmlinux_link()
+> }
 > 
-> -	case PTP_PIN_GETFUNC:
-> +	case PTP_PIN_GETFUNC2:
+> # generate .BTF typeinfo from DWARF debuginfo
+> +# ${1} - vmlinux image
+> +# ${2} - file to dump raw BTF data into
+> gen_btf()
+> {
+> -	local pahole_ver;
+> +	local pahole_ver
+> +	local bin_arch
 > 
-> and
->  
-> -	case PTP_PIN_SETFUNC:
-> +	case PTP_PIN_SETFUNC2:
+> 	if ! [ -x "$(command -v ${PAHOLE})" ]; then
+> 		info "BTF" "${1}: pahole (${PAHOLE}) is not available"
+> -		return 0
+> +		return 1
+> 	fi
+> 
+> 	pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
+> 	if [ "${pahole_ver}" -lt "113" ]; then
+> 		info "BTF" "${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.13"
+> -		return 0
+> +		return 1
+> 	fi
+> 
+> -	info "BTF" ${1}
+> +	info "BTF" ${2}
+> +	vmlinux_link ${1}
+> 	LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
+> +
+> +	# dump .BTF section into raw binary file to link with final vmlinux
+> +	bin_arch=$(${OBJDUMP} -f ${1} | grep architecture | \
+> +		cut -d, -f1 | cut -d' ' -f2)
+> +	${OBJCOPY} --dump-section .BTF=.btf.kernel.bin ${1} 2>/dev/null
+> +	${OBJCOPY} -I binary -O ${CONFIG_OUTPUT_FORMAT} -B ${bin_arch} \
+> +		--rename-section .data=.BTF .btf.kernel.bin ${2}
+> }
 
-Good catch.  Felipe, please fix that!
-
-(Regarding Joe's memset suggestion, I'll leave that to your discretion.)
-
-Thanks,
-Richard
+CONFIG_OUTPUT_FORMAT appears to be x86-only; enabling
+CONFIG_DEBUG_INFO_BTF on s390 caused a build failure. I now have a quick
+and dirty local patch, which adds CONFIG_OUTPUT_FORMAT to s390 and fixes
+the issue for me, but I suspect that CONFIG_DEBUG_INFO_BTF might be
+broken on other arches as well.
