@@ -2,65 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AD3894FC8
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 23:22:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7203394FCC
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 23:22:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728579AbfHSVV3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 17:21:29 -0400
-Received: from lekensteyn.nl ([178.21.112.251]:32881 "EHLO lekensteyn.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728376AbfHSVV2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 17:21:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lekensteyn.nl; s=s2048-2015-q1;
-        h=Content-Transfer-Encoding:MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From; bh=CPhDF5jnURDhjAxSFhJHWKq3/SRRecFjjjdMVgviX/E=;
-        b=RpJXXkmzoFgbBUx1sJBeRcHJKuT3/TD6/lyleO5gyECCe5Im1ZGtsgioV7qOQNSOQ9H8LaNRFUpvCyaAI5XWirTUJRmHqgykZG0bncQM6g7OTi/uywPq9eskKMNeNw2mPUIAoTt4rCvsVXnFA93SsSHF+dxJ7WCwl+X1l4x9AsHZ6oG4Cz2Z/EOMcDuM/Qqhr1xj1NpDtweWRh72S1y/+xwr0rVYWjv2c0Xsvz6Cz9/r7lJLQJsV49/MBi6PgbuUG2CoPgZYUSlS6489CWe4iTLWndmoljJoVEuXwsYfOBgWx5iYEkg8EfRsJ6nKzsObRqRWVGPVBLWexQZMJd489g==;
-Received: by lekensteyn.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.84_2)
-        (envelope-from <peter@lekensteyn.nl>)
-        id 1hzp5h-0005T6-0w; Mon, 19 Aug 2019 23:21:25 +0200
-From:   Peter Wu <peter@lekensteyn.nl>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH 2/2] bpf: clarify description for CONFIG_BPF_EVENTS
-Date:   Mon, 19 Aug 2019 22:21:22 +0100
-Message-Id: <20190819212122.10286-3-peter@lekensteyn.nl>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190819212122.10286-1-peter@lekensteyn.nl>
-References: <20190819212122.10286-1-peter@lekensteyn.nl>
+        id S1728596AbfHSVW2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 17:22:28 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:33027 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728014AbfHSVW2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 17:22:28 -0400
+Received: by mail-qt1-f195.google.com with SMTP id v38so3612890qtb.0
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 14:22:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Eyvjuyl6e+48GXyoQtQ0Bav0v4bio9vejLA0zjYntlQ=;
+        b=SjxVcsjpNDsxMB43E9GO9HuatiRTR2hWaKxQD8EtovL2PQH83fXQqTKsTqm3XPtjjw
+         7Vk4uHZ8mj23l2CPavnsa2zgP50UGD+hS6WWf2mtZT4f6RbRSv39+Snnf+UIBCY6K7Q4
+         7Y0qWNMlPOsng5vAsDaREC00Xx59sfrw9zRmIGpS+I3ZriW8ndH5mDMoatt0NoVf9k13
+         S4DFZqBfy4XdI1Yf0YXF1r7uwXkDkqJYNlk/ifUnyCiSMGWqX+BinsCdifBnzLFAG17/
+         LDl8AybhmMx8kvFkxmGyWxICYwc0oU7PeRMsbXEwRDfE919SpeCAeJj7F91AXpRpF7d9
+         YskA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Eyvjuyl6e+48GXyoQtQ0Bav0v4bio9vejLA0zjYntlQ=;
+        b=GJLZfSo8Cw7CV35M9ub69ohsDTKNuBxfoU7dC/M73InFGm2NvG/WaRGaY170nwQ940
+         0D72Ne5LHYPIpW8R5Hdt16XDKu8Q7z1PHd2eLH/JMPkNnPDh2ABfzOq+9O4xm1M63nD7
+         QRGLAwiIKIxwxdHLvykpWQCC35Gr8nqj+r4AhlYz3M//pvg8VW//2z1M84KHI3weyvjo
+         ZfKCJh5dKBstibchyLscljJOccO4GvROs2l1EmNQdLzc2okaOpCFCGOn0GrUhldwY5Se
+         84K7BrSo3UsHY/EEtLmIUJ4b9ge6GOUH8Z9Vm2Nb5bCdQw/YLFR5QV+tXWgIpc6U6kCT
+         /v/A==
+X-Gm-Message-State: APjAAAWkbUCzigVbfz1lzgNuFhzlRcbgN90w5nuo54Azku8c2ua5Qlbz
+        MPQM08U7HFyXq9at188Mw6GFPg==
+X-Google-Smtp-Source: APXvYqwZjrxoURDZUnFvrPAuAYmIucmRL5XJOtPCZmkOlm9gcOGuN4XKpxMjR/HF61FZDPkjdzTfFA==
+X-Received: by 2002:ac8:3258:: with SMTP id y24mr22710720qta.183.1566249747361;
+        Mon, 19 Aug 2019 14:22:27 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id h13sm7579776qkk.12.2019.08.19.14.22.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Aug 2019 14:22:27 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 14:22:20 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     syzbot <syzbot+2134b6b74dec9f8c760f@syzkaller.appspotmail.com>
+Cc:     aviadye@mellanox.com, borisp@mellanox.com, davejwatson@fb.com,
+        davem@davemloft.net, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Subject: Re: KASAN: use-after-free Read in tls_write_space
+Message-ID: <20190819142220.264040d8@cakuba.netronome.com>
+In-Reply-To: <0000000000003dab1605704fb71d@google.com>
+References: <0000000000003dab1605704fb71d@google.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Spam-Score: -0.0 (/)
-X-Spam-Status: No, hits=-0.0 required=5.0 tests=NO_RELAYS=-0.001 autolearn=unavailable autolearn_force=no
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PERF_EVENT_IOC_SET_BPF supports uprobes since v4.3, and tracepoints
-since v4.7 via commit 04a22fae4cbc ("tracing, perf: Implement BPF
-programs attached to uprobes"), and commit 98b5c2c65c29 ("perf, bpf:
-allow bpf programs attach to tracepoints") respectively.
+On Fri, 06 Jul 2018 00:36:02 -0700, syzbot wrote:
+> Hello,
+> 
+> syzbot found the following crash on:
+> 
+> HEAD commit:    1a84d7fdb5fc Merge branch 'mlxsw-Add-resource-scale-tests'
+> git tree:       net-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=17dec75c400000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=a63be0c83e84d370
+> dashboard link: https://syzkaller.appspot.com/bug?extid=2134b6b74dec9f8c760f
+> compiler:       gcc (GCC) 8.0.1 20180413 (experimental)
+> 
+> Unfortunately, I don't have any reproducer for this crash yet.
+> 
+> IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> Reported-by: syzbot+2134b6b74dec9f8c760f@syzkaller.appspotmail.com
 
-Signed-off-by: Peter Wu <peter@lekensteyn.nl>
----
- kernel/trace/Kconfig | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
-index 98da8998c25c..b09d7b1ffffd 100644
---- a/kernel/trace/Kconfig
-+++ b/kernel/trace/Kconfig
-@@ -520,7 +520,8 @@ config BPF_EVENTS
- 	bool
- 	default y
- 	help
--	  This allows the user to attach BPF programs to kprobe events.
-+	  This allows the user to attach BPF programs to kprobe, uprobe, and
-+	  tracepoint events.
- 
- config DYNAMIC_EVENTS
- 	def_bool n
--- 
-2.22.0
-
+#syz dup: general protection fault in tls_write_space
