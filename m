@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 299B992854
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 17:27:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD778948B5
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 17:43:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727212AbfHSP1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 11:27:36 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:45089 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbfHSP1g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 11:27:36 -0400
-Received: by mail-qk1-f194.google.com with SMTP id m2so1718731qki.12
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 08:27:35 -0700 (PDT)
+        id S1727768AbfHSPnZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 11:43:25 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40996 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727019AbfHSPnZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 11:43:25 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 196so1380150pfz.8;
+        Mon, 19 Aug 2019 08:43:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=FQ4MSexiAjWhQJlJfac2gGYs70GEnnOh/hYCjFYncqE=;
-        b=cnoVBGy/G0/MYV6di4Hs2b1onn7ufT8+oYgUnB5PIzRN14U6GhwZTQ6ekwQY0xEUG+
-         Uf20+l7i2Y0yITw/uE2ErittPN2IBKHV+d6FeScNp2qIQWFUyRLmjjTDKhjGPWGi2UqO
-         nWobUVbwl+znNxXGk4iT4E3JweVC0hF+8C/9wD6ZNhX7KwOLpwL/Xp7po7QXb/KCYIux
-         MjmEzfUk7bi5YchoD4xZnlKcIUvh7glYjsNVc0fB0XnHFsnbC1FlMMGL6yB1+cZqp6Fr
-         tGwQQ6YRXq+Bqy/F4nABsGG4YJJkKDPJU7UCk84jRHM7XMFVZ65NSD0o0LBaryjomgyx
-         QgbQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=eV94SApWZTFweA/qwK/ErWJOHYhfzE92sQRqbCwLV9E=;
+        b=E1hwBmAG+r761tHLSNhL8Yf8dofQ0qJwDAvMSAT3O4bJhJgUS+9Dqn1VsF4fUqPzu7
+         vLqskfrtlEs7mNSflqoWWDDDTiamf3Z2Cp7Z9GYAEDIrvKz4s+x1SP1savoDBQ54uKKw
+         H+qXTN28duDQPFXM9kG/HAS/rC9yR5yaN/9pYCkF2RZ4gabyXtS9zuiiO0RP/rxfmznu
+         OPU/fuk6hK9yIppCZJ2TafIgCxWLPH5kbv438t8sS8SP3sTmYYZLaEaENKcg7GtSphF3
+         LxFOiFcdjZsbCF2rpV//VdsKM9+b0QjCvjnK0MiOBkFTkEeeSdNZoeEN/xWJdiDdAQCZ
+         XKBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=FQ4MSexiAjWhQJlJfac2gGYs70GEnnOh/hYCjFYncqE=;
-        b=B7sAImg8z6WotPkp/o+peDphRQsyHQrLxnEhsoHeFV+yXv4u5vAISAvIY9i5PsEXQr
-         QrsPMRiN6ZjPsCK712Wl8CS4N4hWIFAWF3WJZgkNMbF0//jO+VbV7JT7QC08AliBcpC1
-         aAEidG6c1balWu0xvnq1aTDGSbWvht34Ux/AEWGlSvo6LoJsc3cuiEmnXzntnxpszkPw
-         /g34PxRynWruemt59HT/JfbCwldSGO3Up7DzR2nCZB2qd0rUueCiYHqdpE5RoubvxzEE
-         jX3Au6vr/jQoF7NEkD9xYvHMlQb1jJiGFFJ/5r4p4iuTKsNYZVl1XRPZmAvcyavl+W2j
-         McZQ==
-X-Gm-Message-State: APjAAAVzkv9Z6VU+sp88rQ1W521pqooCD4QytR+VxrPEJ/Hm1/dxcCi+
-        BcZghRxR0fVpLkK6hiA8IZo=
-X-Google-Smtp-Source: APXvYqwCMEr9GEZVamu5B70JRE+pEk39dqcoUhQMtdXXY9UR2TTBbvcTFKFqoGfMQmVnlJ7vv5GwFQ==
-X-Received: by 2002:a05:620a:621:: with SMTP id 1mr18536979qkv.380.1566228455214;
-        Mon, 19 Aug 2019 08:27:35 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id c11sm6758695qtq.41.2019.08.19.08.27.34
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=eV94SApWZTFweA/qwK/ErWJOHYhfzE92sQRqbCwLV9E=;
+        b=aYObmW3O5LAEOm4iT22PGPWOQ3B8FJh1MY6II7fYFqogaRj+Zl01GHqt7JiBBaSzIw
+         9wBBEKn+RlwV87cBEqEhBi7n7Eu5xxsRdCr7OxSFdrTMW/sKP6nlbW8CGj/YIryqDquV
+         41w0lSs+PoC3jd42PH0Q7lo16htXaiUgskLl9dbDyYIM2tt6x+UCJdLlbQuwyLu8gQOx
+         SwipLW94kCAxljd8LiMMN3WrGDhg4h/gJOAqPkjfH3ahhTo7gCVyM2Qc/D0M3Panh17U
+         O1I5UXmQzjZ/LvKogXgKZQ0edOfyl5m+tNh29XMIcJo6ZQ6YcZk+REOL0EVy+p6km7dt
+         gJ7A==
+X-Gm-Message-State: APjAAAW7fFNLsbErEpd4vGx71zI3C0ct74xmvn0oF8dIze75zTI7ku4E
+        CNiz02lL6xws3xNwE91VQEk=
+X-Google-Smtp-Source: APXvYqyOdxQtsD5gKEcfQEmF7fnJv4q1CsPL02eETqip58Blor0faUe4mOdd7WihjMh6h6S495xcvA==
+X-Received: by 2002:a63:5811:: with SMTP id m17mr20522184pgb.237.1566229403179;
+        Mon, 19 Aug 2019 08:43:23 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id s14sm15785318pfe.16.2019.08.19.08.43.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 08:27:34 -0700 (PDT)
-Date:   Mon, 19 Aug 2019 11:27:33 -0400
-Message-ID: <20190819112733.GD6123@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, marek.behun@nic.cz, davem@davemloft.net,
-        f.fainelli@gmail.com
-Subject: Re: [PATCH net-next 4/6] net: dsa: mv88e6xxx: do not change STP state
- on port disabling
-In-Reply-To: <20190819134057.GF8981@lunn.ch>
-References: <20190818173548.19631-1-vivien.didelot@gmail.com>
- <20190818173548.19631-5-vivien.didelot@gmail.com>
- <20190819134057.GF8981@lunn.ch>
+        Mon, 19 Aug 2019 08:43:22 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 08:43:20 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Felipe Balbi <felipe.balbi@linux.intel.com>,
+        Christopher S Hall <christopher.s.hall@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] PTP: introduce new versions of IOCTLs
+Message-ID: <20190819154320.GB2883@localhost>
+References: <20190814074712.10684-1-felipe.balbi@linux.intel.com>
+ <20190817155927.GA1540@localhost>
+ <a146c1356b4272c481e5cc63666c6e58b8442407.camel@perches.com>
+ <20190818201150.GA1316@localhost>
+ <83075553a61ede1de9cbf77b90a5acdeab5aacbf.camel@perches.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <83075553a61ede1de9cbf77b90a5acdeab5aacbf.camel@perches.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
-
-On Mon, 19 Aug 2019 15:40:57 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
-> On Sun, Aug 18, 2019 at 01:35:46PM -0400, Vivien Didelot wrote:
-> > When disabling a port, that is not for the driver to decide what to
-> > do with the STP state. This is already handled by the DSA layer.
+On Sun, Aug 18, 2019 at 03:07:18PM -0700, Joe Perches wrote:
+> Also the original patch deletes 2 case entries for
+> PTP_PIN_GETFUNC and PTP_PIN_SETFUNC and converts them to
+> PTP_PIN_GETFUNC2 and PTP_PIN_SETFUNC2 but still uses tests
+> for the deleted case label entries making part of the case
+> code block unreachable.
 > 
-> Hi Vivien
+> That's at least a defect:
 > 
-> Putting the port into STP disabled state is how you actually disable
-> it, for the mv88e6xxx. So this is not really about STP, it is about
-> powering off the port. Maybe a comment is needed, rather than removing
-> the code?
+> -	case PTP_PIN_GETFUNC:
+> +	case PTP_PIN_GETFUNC2:
+> 
+> and
+>  
+> -	case PTP_PIN_SETFUNC:
+> +	case PTP_PIN_SETFUNC2:
 
-This is not for the driver to decide, the stack already handles that.
-Otherwise, calling dsa_port_disable on a bridged port would result in
-mv88e6xxx forcing the STP state to Disabled while this is not expected.
+Good catch.  Felipe, please fix that!
 
+(Regarding Joe's memset suggestion, I'll leave that to your discretion.)
 
 Thanks,
-
-	Vivien
+Richard
