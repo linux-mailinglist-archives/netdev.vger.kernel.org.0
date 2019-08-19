@@ -2,68 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 97B2B91B68
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 05:15:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C74491B6B
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 05:17:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbfHSDPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Aug 2019 23:15:45 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:38967 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbfHSDPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 18 Aug 2019 23:15:45 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7J3Fhrd005516, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7J3Fhrd005516
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Mon, 19 Aug 2019 11:15:43 +0800
-Received: from fc30.localdomain (172.21.177.138) by RTITCASV02.realtek.com.tw
- (172.21.6.19) with Microsoft SMTP Server id 14.3.468.0; Mon, 19 Aug 2019
- 11:15:42 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     <netdev@vger.kernel.org>
-CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
-        Hayes Wang <hayeswang@realtek.com>
-Subject: [PATCH net-next] r8152: fix accessing skb after napi_gro_receive
-Date:   Mon, 19 Aug 2019 11:15:19 +0800
-Message-ID: <1394712342-15778-302-Taiwan-albertk@realtek.com>
-X-Mailer: Microsoft Office Outlook 11
-In-Reply-To: <1394712342-15778-299-albertk@realtek.com>
-References: <1394712342-15778-299-albertk@realtek.com>
+        id S1726384AbfHSDRN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Aug 2019 23:17:13 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46266 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726186AbfHSDRN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Aug 2019 23:17:13 -0400
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 6A318189DACB;
+        Mon, 19 Aug 2019 03:17:12 +0000 (UTC)
+Received: from [10.72.12.146] (ovpn-12-146.pek2.redhat.com [10.72.12.146])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id ED77660C18;
+        Mon, 19 Aug 2019 03:17:09 +0000 (UTC)
+Subject: Re: [PATCH v2] tun: fix use-after-free when register netdev failed
+To:     Yang Yingliang <yangyingliang@huawei.com>, netdev@vger.kernel.org
+Cc:     eric.dumazet@gmail.com, xiyou.wangcong@gmail.com,
+        davem@davemloft.net, weiyongjun1@huawei.com
+References: <1565953224-104941-1-git-send-email-yangyingliang@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <1b8175f3-7781-923b-5a24-d473f6efd33d@redhat.com>
+Date:   Mon, 19 Aug 2019 11:17:07 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.21.177.138]
+In-Reply-To: <1565953224-104941-1-git-send-email-yangyingliang@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Mon, 19 Aug 2019 03:17:12 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix accessing skb after napi_gro_receive which is caused by
-commit 47922fcde536 ("r8152: support skb_add_rx_frag").
 
-Fixes: 47922fcde536 ("r8152: support skb_add_rx_frag")
-Signed-off-by: Hayes Wang <hayeswang@realtek.com>
----
- drivers/net/usb/r8152.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 2019/8/16 下午7:00, Yang Yingliang wrote:
+> I got a UAF repport in tun driver when doing fuzzy test:
+>
+> [  466.269490] ==================================================================
+> [  466.271792] BUG: KASAN: use-after-free in tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271806] Read of size 8 at addr ffff888372139250 by task tun-test/2699
+> [  466.271810]
+> [  466.271824] CPU: 1 PID: 2699 Comm: tun-test Not tainted 5.3.0-rc1-00001-g5a9433db2614-dirty #427
+> [  466.271833] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS rel-1.12.1-0-ga5cab58e9a3f-prebuilt.qemu.org 04/01/2014
+> [  466.271838] Call Trace:
+> [  466.271858]  dump_stack+0xca/0x13e
+> [  466.271871]  ? tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271890]  print_address_description+0x79/0x440
+> [  466.271906]  ? vprintk_func+0x5e/0xf0
+> [  466.271920]  ? tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271935]  __kasan_report+0x15c/0x1df
+> [  466.271958]  ? tun_chr_read_iter+0x2ca/0x2d0
+> [  466.271976]  kasan_report+0xe/0x20
+> [  466.271987]  tun_chr_read_iter+0x2ca/0x2d0
+> [  466.272013]  do_iter_readv_writev+0x4b7/0x740
+> [  466.272032]  ? default_llseek+0x2d0/0x2d0
+> [  466.272072]  do_iter_read+0x1c5/0x5e0
+> [  466.272110]  vfs_readv+0x108/0x180
+> [  466.299007]  ? compat_rw_copy_check_uvector+0x440/0x440
+> [  466.299020]  ? fsnotify+0x888/0xd50
+> [  466.299040]  ? __fsnotify_parent+0xd0/0x350
+> [  466.299064]  ? fsnotify_first_mark+0x1e0/0x1e0
+> [  466.304548]  ? vfs_write+0x264/0x510
+> [  466.304569]  ? ksys_write+0x101/0x210
+> [  466.304591]  ? do_preadv+0x116/0x1a0
+> [  466.304609]  do_preadv+0x116/0x1a0
+> [  466.309829]  do_syscall_64+0xc8/0x600
+> [  466.309849]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [  466.309861] RIP: 0033:0x4560f9
+> [  466.309875] Code: 00 00 66 2e 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
+> [  466.309889] RSP: 002b:00007ffffa5166e8 EFLAGS: 00000206 ORIG_RAX: 0000000000000127
+> [  466.322992] RAX: ffffffffffffffda RBX: 0000000000400460 RCX: 00000000004560f9
+> [  466.322999] RDX: 0000000000000003 RSI: 00000000200008c0 RDI: 0000000000000003
+> [  466.323007] RBP: 00007ffffa516700 R08: 0000000000000004 R09: 0000000000000000
+> [  466.323014] R10: 0000000000000000 R11: 0000000000000206 R12: 000000000040cb10
+> [  466.323021] R13: 0000000000000000 R14: 00000000006d7018 R15: 0000000000000000
+> [  466.323057]
+> [  466.323064] Allocated by task 2605:
+> [  466.335165]  save_stack+0x19/0x80
+> [  466.336240]  __kasan_kmalloc.constprop.8+0xa0/0xd0
+> [  466.337755]  kmem_cache_alloc+0xe8/0x320
+> [  466.339050]  getname_flags+0xca/0x560
+> [  466.340229]  user_path_at_empty+0x2c/0x50
+> [  466.341508]  vfs_statx+0xe6/0x190
+> [  466.342619]  __do_sys_newstat+0x81/0x100
+> [  466.343908]  do_syscall_64+0xc8/0x600
+> [  466.345303]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [  466.347034]
+> [  466.347517] Freed by task 2605:
+> [  466.348471]  save_stack+0x19/0x80
+> [  466.349476]  __kasan_slab_free+0x12e/0x180
+> [  466.350726]  kmem_cache_free+0xc8/0x430
+> [  466.351874]  putname+0xe2/0x120
+> [  466.352921]  filename_lookup+0x257/0x3e0
+> [  466.354319]  vfs_statx+0xe6/0x190
+> [  466.355498]  __do_sys_newstat+0x81/0x100
+> [  466.356889]  do_syscall_64+0xc8/0x600
+> [  466.358037]  entry_SYSCALL_64_after_hwframe+0x49/0xbe
+> [  466.359567]
+> [  466.360050] The buggy address belongs to the object at ffff888372139100
+> [  466.360050]  which belongs to the cache names_cache of size 4096
+> [  466.363735] The buggy address is located 336 bytes inside of
+> [  466.363735]  4096-byte region [ffff888372139100, ffff88837213a100)
+> [  466.367179] The buggy address belongs to the page:
+> [  466.368604] page:ffffea000dc84e00 refcount:1 mapcount:0 mapping:ffff8883df1b4f00 index:0x0 compound_mapcount: 0
+> [  466.371582] flags: 0x2fffff80010200(slab|head)
+> [  466.372910] raw: 002fffff80010200 dead000000000100 dead000000000122 ffff8883df1b4f00
+> [  466.375209] raw: 0000000000000000 0000000000070007 00000001ffffffff 0000000000000000
+> [  466.377778] page dumped because: kasan: bad access detected
+> [  466.379730]
+> [  466.380288] Memory state around the buggy address:
+> [  466.381844]  ffff888372139100: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.384009]  ffff888372139180: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.386131] >ffff888372139200: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.388257]                                                  ^
+> [  466.390234]  ffff888372139280: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.392512]  ffff888372139300: fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb fb
+> [  466.394667] ==================================================================
+>
+> tun_chr_read_iter() accessed the memory which freed by free_netdev()
+> called by tun_set_iff():
+>
+>         CPUA                                     CPUB
+>     tun_set_iff()
+>       alloc_netdev_mqs()
+>       tun_attach()
+>                                             tun_chr_read_iter()
+>                                               tun_get()
+>       register_netdevice() <-- inject error
+>       tun_detach_all()
+>         synchronize_net()
+>                                               tun_do_read()
+>                                                 tun_ring_recv()
+>                                                   schedule()
+>       free_netdev()
+>         netdev_freemem()
+>                                               tun_put()
+>                                                 dev_put() <-- UAF
+>
+> Move tun_set_real_num_queues() out of tun_attach() and call it
+> before register_netdevice() in tun_set_iff().
+>
+> Call tun_attach() after register_netdevice() to make sure tfile->tun
+> is not published until the netdevice is registered. So the read/write
+> thread can not use the tun pointer that may freed by free_netdev().
+> (The tun and dev pointer are allocated by alloc_netdev_mqs(), they can
+> be freed by netdev_freemem().)
+>
+> ---
+> Changes in v2:
+>  - add a param in tun_set_real_num_queues()
+>  - move tun_set_real_num_queues() out of tun_attach()
+>  - call tun_set_real_num_queues() before register_netdevice()
+>  - call tun_attach() after register_netdevice()
+> ---
+>
+> Cc: Yang Yingliang <yangyingliang@huawei.com>
+> Fixes: eb0fb363f920 ("tuntap: attach queue 0 before registering netdevice")
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> ---
+>  drivers/net/tun.c | 38 +++++++++++++++++++++-----------------
+>  1 file changed, 21 insertions(+), 17 deletions(-)
+>
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index db16d7a13e00..a19f864c5f8d 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -626,10 +626,11 @@ static inline bool tun_not_capable(struct tun_struct *tun)
+>  		!ns_capable(net->user_ns, CAP_NET_ADMIN);
+>  }
+>  
+> -static void tun_set_real_num_queues(struct tun_struct *tun)
+> +static void tun_set_real_num_queues(struct tun_struct *tun,
+> +				    unsigned int numqueues)
+>  {
+> -	netif_set_real_num_tx_queues(tun->dev, tun->numqueues);
+> -	netif_set_real_num_rx_queues(tun->dev, tun->numqueues);
+> +	netif_set_real_num_tx_queues(tun->dev, numqueues);
+> +	netif_set_real_num_rx_queues(tun->dev, numqueues);
+>  }
+>  
+>  static void tun_disable_queue(struct tun_struct *tun, struct tun_file *tfile)
+> @@ -708,7 +709,7 @@ static void __tun_detach(struct tun_file *tfile, bool clean)
+>  		tun_flow_delete_by_queue(tun, tun->numqueues + 1);
+>  		/* Drop read queue */
+>  		tun_queue_purge(tfile);
+> -		tun_set_real_num_queues(tun);
+> +		tun_set_real_num_queues(tun, tun->numqueues);
+>  	} else if (tfile->detached && clean) {
+>  		tun = tun_enable_queue(tfile);
+>  		sock_put(&tfile->sk);
+> @@ -873,7 +874,6 @@ static int tun_attach(struct tun_struct *tun, struct file *file,
+>  	rcu_assign_pointer(tfile->tun, tun);
+>  	rcu_assign_pointer(tun->tfiles[tun->numqueues], tfile);
+>  	tun->numqueues++;
+> -	tun_set_real_num_queues(tun);
+>  out:
+>  	return err;
+>  }
+> @@ -2734,6 +2734,8 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+>  		if (err < 0)
+>  			return err;
+>  
+> +		tun_set_real_num_queues(tun, tun->numqueues);
+> +
+>  		if (tun->flags & IFF_MULTI_QUEUE &&
+>  		    (tun->numqueues + tun->numdisabled > 1)) {
+>  			/* One or more queue has already been attached, no need
+> @@ -2828,14 +2830,18 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+>  			      (ifr->ifr_flags & TUN_FEATURES);
+>  
+>  		INIT_LIST_HEAD(&tun->disabled);
+> -		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
+> -				 ifr->ifr_flags & IFF_NAPI_FRAGS);
+> -		if (err < 0)
+> -			goto err_free_flow;
+> +
+> +		tun_set_real_num_queues(tun, tun->numqueues + 1);
 
-diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-index 40d18e866269..b1db6df6f4ab 100644
---- a/drivers/net/usb/r8152.c
-+++ b/drivers/net/usb/r8152.c
-@@ -2094,10 +2094,10 @@ static int rx_bottom(struct r8152 *tp, int budget)
- 			skb->protocol = eth_type_trans(skb, netdev);
- 			rtl_rx_vlan_tag(rx_desc, skb);
- 			if (work_done < budget) {
--				napi_gro_receive(napi, skb);
- 				work_done++;
- 				stats->rx_packets++;
- 				stats->rx_bytes += skb->len;
-+				napi_gro_receive(napi, skb);
- 			} else {
- 				__skb_queue_tail(&tp->rx_queue, skb);
- 			}
--- 
-2.21.0
 
+This looks tricky, why not simply call netif_set_real_num_tx/rx_queues()
+here?
+
+Thanks
+
+
+>  
+>  		err = register_netdevice(tun->dev);
+>  		if (err < 0)
+> -			goto err_detach;
+> +			/* register_netdevice() already called tun_free_netdev() */
+> +			goto err_free_dev;
+> +
+> +		err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
+> +				 ifr->ifr_flags & IFF_NAPI_FRAGS);
+> +		if (err < 0)
+> +			goto err_unregister;
+>  	}
+>  
+>  	netif_carrier_on(tun->dev);
+> @@ -2851,14 +2857,10 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+>  	strcpy(ifr->ifr_name, tun->dev->name);
+>  	return 0;
+>  
+> -err_detach:
+> -	tun_detach_all(dev);
+> -	/* register_netdevice() already called tun_free_netdev() */
+> -	goto err_free_dev;
+> +err_unregister:
+> +	unregister_netdevice(dev);
+> +	return err;
+>  
+> -err_free_flow:
+> -	tun_flow_uninit(tun);
+> -	security_tun_dev_free_security(tun->security);
+>  err_free_stat:
+>  	free_percpu(tun->pcpu_stats);
+>  err_free_dev:
+> @@ -2979,6 +2981,8 @@ static int tun_set_queue(struct file *file, struct ifreq *ifr)
+>  			goto unlock;
+>  		ret = tun_attach(tun, file, false, tun->flags & IFF_NAPI,
+>  				 tun->flags & IFF_NAPI_FRAGS);
+> +		if (!ret)
+> +			tun_set_real_num_queues(tun, tun->numqueues);
+>  	} else if (ifr->ifr_flags & IFF_DETACH_QUEUE) {
+>  		tun = rtnl_dereference(tfile->tun);
+>  		if (!tun || !(tun->flags & IFF_MULTI_QUEUE) || tfile->detached)
