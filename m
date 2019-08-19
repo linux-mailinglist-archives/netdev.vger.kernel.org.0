@@ -2,220 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B9F8994DBA
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 21:18:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 990A094DBC
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 21:18:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728409AbfHSTSF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 15:18:05 -0400
-Received: from mail-pg1-f202.google.com ([209.85.215.202]:41199 "EHLO
-        mail-pg1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728398AbfHSTSD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 15:18:03 -0400
-Received: by mail-pg1-f202.google.com with SMTP id b18so3130144pgg.8
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 12:18:03 -0700 (PDT)
+        id S1728429AbfHSTSI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 15:18:08 -0400
+Received: from mail-ua1-f74.google.com ([209.85.222.74]:57342 "EHLO
+        mail-ua1-f74.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728417AbfHSTSG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 15:18:06 -0400
+Received: by mail-ua1-f74.google.com with SMTP id u25so466360uap.23
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 12:18:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:in-reply-to:message-id:mime-version:references:subject:from:to
          :cc;
-        bh=VTfes5EE6SjuBV3qP4ngRecz5KbbMAO8MyqjhFcnQlk=;
-        b=cLWrvRIPV/g/z2CIUlBAvjAmYngAK0bHS0116eH6XMbYwa0RHpWCOwHWhI6NjdC7PX
-         tatVoK+PUj+ylsKzeCcnra5gTzyNxaqHSgm0mybvtFEGG7/RW8+/c8H7ac7RP8S5ZK3u
-         FhVqUYaz6XzytvoJcVxafRzBeV/H8lbR27SN74c//ddcIxmGCAqHUtmr7lkEFUiFd/ky
-         qQ5Q8JZLjoN6G2IPfJfi+oYA8WeBfTjHRuKuUKZkmOmJBp9LIPY1otx2T25bIo9VjVtM
-         PhMk7XgyrZe/GtlvOBhiaz9MBnj9h+boNAUlbJfnpAwWDuT551ozzsLmvBl4I4uykmbR
-         4b4w==
+        bh=dLxQ1wYSS3RWXesnQ+cpyN7aVwgKkyNbwf3Df6Ls4XE=;
+        b=P+6ae/IRhmtFDTjDrd8/CdmmRGJePgXo0FRhoShFaQSkufDiXAmyTnzznJlCTMfisb
+         SBseoJD3hNAjtzzqeqBtCDcv/M+OB3VcpjotcXE8zOHn7HqYUm/7pFBxNbKyr7o+hdB/
+         VsWsxRveM+faoYaCD0tRz8Ux6PDqx0sbNC40ywS07uSzV8KtJ5Rr7CyK/GUkVEkQI27X
+         7ql+F3I7qfwb6prfX8zm37vTcg8n34YpOfQkFUQbdIkbi/NlPaijZphLzOYzWCmaGlEg
+         RRX1YMTaVGz7bJ1541FTFRyLUSDI5/B8jNWhmJjDX7EDuGRMm9nC/rkQF92qIrnvZVu/
+         DG0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:in-reply-to:message-id:mime-version
          :references:subject:from:to:cc;
-        bh=VTfes5EE6SjuBV3qP4ngRecz5KbbMAO8MyqjhFcnQlk=;
-        b=MBueRGMPZpHK6yKrowUKoMR9D1cGRSOku1kaNtrOaTsRJe8qimFX2+hlP2dSsp0NwG
-         DLYMTU0uKCgn1gLCaCVKvtF+5Nqr8dzdPtF9JFFpq5W/afIMy3JhciOCNPjNlYQKyU+a
-         zA0HZvTe7xnqU3n6rtVT5+T/uz3gvX0QUPuLG2WdmCMQtqMY6OgyjGOXDj615LfULqR9
-         JNADM5DXrKicKZh6caJMmVWrOf4/Dl9BQ+wi/oOy05D2C2LYd7qePCMkOjTnrk+u8JUa
-         S95wUK7WGPgegkbuoAztoxszCwgbStyfZK1ptBh2rF52uYkX6OtkHvXp59Oo/t4lPwzh
-         sK/Q==
-X-Gm-Message-State: APjAAAVPkM9fNJoiwzo/xnEV0GXHyMikvGJQ1U6IVbg0Z4nxotMaC7NH
-        YfOJ8Bjdf2JJTuTJciGC5POA2tAs/VrCxj1cZVGvIy2rS+tva1ImbpiWM6kH0kCwzl37hvKdSQa
-        aPqlG3q8JzsI8JVb7OZ2TeBY8tuAJBfcBsvYwHfrlluLqThMVsSW51w==
-X-Google-Smtp-Source: APXvYqyuOmMlCTr7mKsIIQmF/gc9Hgzou9nTW6fL5yhS2Iotd8CGs+qeiDCQWUk6NOrRDtNAC0LXOwQ=
-X-Received: by 2002:a63:5920:: with SMTP id n32mr20607682pgb.352.1566242282597;
- Mon, 19 Aug 2019 12:18:02 -0700 (PDT)
-Date:   Mon, 19 Aug 2019 12:17:51 -0700
+        bh=dLxQ1wYSS3RWXesnQ+cpyN7aVwgKkyNbwf3Df6Ls4XE=;
+        b=coUsRqkXq7fU16IbRGdbd9yHAT3R912YpXlvefMdZQVxwD7dSyTyiWjZ9dtSnAZseA
+         bNTilomRCCe1EiuVJFCaujgWcCpotAQ7FSBi6Mo89e5HQaLD/bqYn89eKEWt0DaNzfh/
+         X/pMlfarpY/ZLK+Jc3220zQbgSXeHy8D7TQYeMxVXaT3bAFAbaAP7AaPbDxQQ5hIsp5I
+         qbmfl/x+MUFRLlH20IqW0Q190ED8qo84/FDHL8Si3xAfAUqmhCafRk44DEDbOCtQFdfV
+         acxpV5NyFbqUXzOo2JSScd1IlLdQX/LeuD4S7Sjhs7T6dRmtE5CKAHj6+GKgrE60SDR8
+         yXjw==
+X-Gm-Message-State: APjAAAWGblmYidyrqyD5kcB8wbaBgMLlTfgOLffDmiJpA92h52wsNfFJ
+        9U2DSUn/bTfRjhWhofg8AcQ0Ph6CX8YJvl2yMRRsE6kx/aHDkE1eCzrSK6RiShtyKi12jNg/A8O
+        6zBXuCBwupilE/ifI/vhws2RKzBIOrqGFjjWANf/DqSVDaNOrBZaCFQ==
+X-Google-Smtp-Source: APXvYqzftsnGwitMmF89Y23dNMecTdI0QeymHwQw43YvyfRWQ4kz8jpls8uPQrRyNrA2rogEAj11JtU=
+X-Received: by 2002:ab0:14a9:: with SMTP id d38mr4242685uae.94.1566242285320;
+ Mon, 19 Aug 2019 12:18:05 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 12:17:52 -0700
 In-Reply-To: <20190819191752.241637-1-sdf@google.com>
-Message-Id: <20190819191752.241637-4-sdf@google.com>
+Message-Id: <20190819191752.241637-5-sdf@google.com>
 Mime-Version: 1.0
 References: <20190819191752.241637-1-sdf@google.com>
 X-Mailer: git-send-email 2.23.0.rc1.153.gdeed80330f-goog
-Subject: [PATCH bpf-next v2 3/4] selftests/bpf: test_progs: remove asserts
- from subtests
+Subject: [PATCH bpf-next v2 4/4] selftests/bpf: test_progs: remove unused ret
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Andrii Nakryiko <andriin@fb.com>
+        Stanislav Fomichev <sdf@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Otherwise they can bring the whole process down.
+send_signal test returns static codes from the subtests which
+nobody looks at, let's rely on the CHECK macros instead.
 
-Cc: Andrii Nakryiko <andriin@fb.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- .../selftests/bpf/prog_tests/bpf_obj_id.c     | 19 +++++++++++-------
- .../selftests/bpf/prog_tests/map_lock.c       | 20 +++++++++++--------
- .../selftests/bpf/prog_tests/spinlock.c       | 12 ++++++-----
- .../bpf/prog_tests/stacktrace_build_id.c      |  7 ++++---
- .../bpf/prog_tests/stacktrace_build_id_nmi.c  |  7 ++++---
- 5 files changed, 39 insertions(+), 26 deletions(-)
+ .../selftests/bpf/prog_tests/send_signal.c    | 42 +++++++++----------
+ 1 file changed, 19 insertions(+), 23 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bpf_obj_id.c b/tools/testing/selftests/bpf/prog_tests/bpf_obj_id.c
-index b9d0cd312839..acc2fc046b01 100644
---- a/tools/testing/selftests/bpf/prog_tests/bpf_obj_id.c
-+++ b/tools/testing/selftests/bpf/prog_tests/bpf_obj_id.c
-@@ -48,15 +48,17 @@ void test_bpf_obj_id(void)
- 		/* test_obj_id.o is a dumb prog. It should never fail
- 		 * to load.
- 		 */
--		QCHECK(err);
--		assert(!err);
-+		if (QCHECK(err))
-+			continue;
- 
- 		/* Insert a magic value to the map */
- 		map_fds[i] = bpf_find_map(__func__, objs[i], "test_map_id");
--		assert(map_fds[i] >= 0);
-+		if (QCHECK(map_fds[i] < 0))
-+			goto done;
- 		err = bpf_map_update_elem(map_fds[i], &array_key,
- 					  &array_magic_value, 0);
--		assert(!err);
-+		if (QCHECK(err))
-+			goto done;
- 
- 		/* Check getting map info */
- 		info_len = sizeof(struct bpf_map_info) * 2;
-@@ -95,9 +97,11 @@ void test_bpf_obj_id(void)
- 		prog_infos[i].map_ids = ptr_to_u64(map_ids + i);
- 		prog_infos[i].nr_map_ids = 2;
- 		err = clock_gettime(CLOCK_REALTIME, &real_time_ts);
--		assert(!err);
-+		if (QCHECK(err))
-+			goto done;
- 		err = clock_gettime(CLOCK_BOOTTIME, &boot_time_ts);
--		assert(!err);
-+		if (QCHECK(err))
-+			goto done;
- 		err = bpf_obj_get_info_by_fd(prog_fds[i], &prog_infos[i],
- 					     &info_len);
- 		load_time = (real_time_ts.tv_sec - boot_time_ts.tv_sec)
-@@ -223,7 +227,8 @@ void test_bpf_obj_id(void)
- 		nr_id_found++;
- 
- 		err = bpf_map_lookup_elem(map_fd, &array_key, &array_value);
--		assert(!err);
-+		if (QCHECK(err))
-+			goto done;
- 
- 		err = bpf_obj_get_info_by_fd(map_fd, &map_info, &info_len);
- 		CHECK(err || info_len != sizeof(struct bpf_map_info) ||
-diff --git a/tools/testing/selftests/bpf/prog_tests/map_lock.c b/tools/testing/selftests/bpf/prog_tests/map_lock.c
-index c1bddc433a5a..7a12129def9a 100644
---- a/tools/testing/selftests/bpf/prog_tests/map_lock.c
-+++ b/tools/testing/selftests/bpf/prog_tests/map_lock.c
-@@ -54,17 +54,21 @@ void test_map_lock(void)
- 	bpf_map_update_elem(map_fd[0], &key, vars, BPF_F_LOCK);
- 
- 	for (i = 0; i < 4; i++)
--		assert(pthread_create(&thread_id[i], NULL,
--				      &spin_lock_thread, &prog_fd) == 0);
-+		if (QCHECK(pthread_create(&thread_id[i], NULL,
-+					  &spin_lock_thread, &prog_fd)))
-+			goto close_prog;
- 	for (i = 4; i < 6; i++)
--		assert(pthread_create(&thread_id[i], NULL,
--				      &parallel_map_access, &map_fd[i - 4]) == 0);
-+		if (QCHECK(pthread_create(&thread_id[i], NULL,
-+					  &parallel_map_access, &map_fd[i - 4])))
-+			goto close_prog;
- 	for (i = 0; i < 4; i++)
--		assert(pthread_join(thread_id[i], &ret) == 0 &&
--		       ret == (void *)&prog_fd);
-+		if (QCHECK(pthread_join(thread_id[i], &ret) ||
-+			   ret != (void *)&prog_fd))
-+			goto close_prog;
- 	for (i = 4; i < 6; i++)
--		assert(pthread_join(thread_id[i], &ret) == 0 &&
--		       ret == (void *)&map_fd[i - 4]);
-+		if (QCHECK(pthread_join(thread_id[i], &ret) ||
-+			   ret != (void *)&map_fd[i - 4]))
-+			goto close_prog;
- close_prog:
- 	bpf_object__close(obj);
+diff --git a/tools/testing/selftests/bpf/prog_tests/send_signal.c b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+index 40c2c5efdd3e..b607112c64e7 100644
+--- a/tools/testing/selftests/bpf/prog_tests/send_signal.c
++++ b/tools/testing/selftests/bpf/prog_tests/send_signal.c
+@@ -8,7 +8,7 @@ static void sigusr1_handler(int signum)
+ 	sigusr1_received++;
  }
-diff --git a/tools/testing/selftests/bpf/prog_tests/spinlock.c b/tools/testing/selftests/bpf/prog_tests/spinlock.c
-index e4294a7fdf1a..00b4ed1734e0 100644
---- a/tools/testing/selftests/bpf/prog_tests/spinlock.c
-+++ b/tools/testing/selftests/bpf/prog_tests/spinlock.c
-@@ -16,12 +16,14 @@ void test_spinlock(void)
- 		goto close_prog;
+ 
+-static int test_send_signal_common(struct perf_event_attr *attr,
++static void test_send_signal_common(struct perf_event_attr *attr,
+ 				    int prog_type,
+ 				    const char *test_name)
+ {
+@@ -23,13 +23,13 @@ static int test_send_signal_common(struct perf_event_attr *attr,
+ 
+ 	if (CHECK(pipe(pipe_c2p), test_name,
+ 		  "pipe pipe_c2p error: %s\n", strerror(errno)))
+-		goto no_fork_done;
++		return;
+ 
+ 	if (CHECK(pipe(pipe_p2c), test_name,
+ 		  "pipe pipe_p2c error: %s\n", strerror(errno))) {
+ 		close(pipe_c2p[0]);
+ 		close(pipe_c2p[1]);
+-		goto no_fork_done;
++		return;
  	}
- 	for (i = 0; i < 4; i++)
--		assert(pthread_create(&thread_id[i], NULL,
--				      &spin_lock_thread, &prog_fd) == 0);
--	for (i = 0; i < 4; i++)
--		assert(pthread_join(thread_id[i], &ret) == 0 &&
--		       ret == (void *)&prog_fd);
-+		if (QCHECK(pthread_create(&thread_id[i], NULL,
-+					  &spin_lock_thread, &prog_fd)))
-+			goto close_prog;
  
-+	for (i = 0; i < 4; i++)
-+		if (QCHECK(pthread_join(thread_id[i], &ret) ||
-+			   ret != (void *)&prog_fd))
-+			goto close_prog;
- close_prog:
- 	bpf_object__close(obj);
+ 	pid = fork();
+@@ -38,7 +38,7 @@ static int test_send_signal_common(struct perf_event_attr *attr,
+ 		close(pipe_c2p[1]);
+ 		close(pipe_p2c[0]);
+ 		close(pipe_p2c[1]);
+-		goto no_fork_done;
++		return;
+ 	}
+ 
+ 	if (pid == 0) {
+@@ -125,7 +125,7 @@ static int test_send_signal_common(struct perf_event_attr *attr,
+ 		goto disable_pmu;
+ 	}
+ 
+-	err = CHECK(buf[0] != '2', test_name, "incorrect result\n");
++	CHECK(buf[0] != '2', test_name, "incorrect result\n");
+ 
+ 	/* notify child safe to exit */
+ 	write(pipe_p2c[1], buf, 1);
+@@ -138,11 +138,9 @@ static int test_send_signal_common(struct perf_event_attr *attr,
+ 	close(pipe_c2p[0]);
+ 	close(pipe_p2c[1]);
+ 	wait(NULL);
+-no_fork_done:
+-	return err;
  }
-diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c
-index ac44fda84833..552e07e7800c 100644
---- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c
-+++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id.c
-@@ -51,9 +51,10 @@ void test_stacktrace_build_id(void)
- 		  "err %d errno %d\n", err, errno))
- 		goto disable_pmu;
  
--	assert(system("dd if=/dev/urandom of=/dev/zero count=4 2> /dev/null")
--	       == 0);
--	assert(system("./urandom_read") == 0);
-+	if (QCHECK(system("dd if=/dev/urandom of=/dev/zero count=4 2> /dev/null")))
-+		goto disable_pmu;
-+	if (QCHECK(system("./urandom_read")))
-+		goto disable_pmu;
- 	/* disable stack trace collection */
- 	key = 0;
- 	val = 1;
-diff --git a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
-index 9557b7dfb782..1553c848edc5 100644
---- a/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
-+++ b/tools/testing/selftests/bpf/prog_tests/stacktrace_build_id_nmi.c
-@@ -82,9 +82,10 @@ void test_stacktrace_build_id_nmi(void)
- 		  "err %d errno %d\n", err, errno))
- 		goto disable_pmu;
+-static int test_send_signal_tracepoint(void)
++static void test_send_signal_tracepoint(void)
+ {
+ 	const char *id_path = "/sys/kernel/debug/tracing/events/syscalls/sys_enter_nanosleep/id";
+ 	struct perf_event_attr attr = {
+@@ -159,21 +157,21 @@ static int test_send_signal_tracepoint(void)
+ 	if (CHECK(efd < 0, "tracepoint",
+ 		  "open syscalls/sys_enter_nanosleep/id failure: %s\n",
+ 		  strerror(errno)))
+-		return -1;
++		return;
  
--	assert(system("dd if=/dev/urandom of=/dev/zero count=4 2> /dev/null")
--	       == 0);
--	assert(system("taskset 0x1 ./urandom_read 100000") == 0);
-+	if (QCHECK(system("dd if=/dev/urandom of=/dev/zero count=4 2> /dev/null")))
-+		goto disable_pmu;
-+	if (QCHECK(system("taskset 0x1 ./urandom_read 100000")))
-+		goto disable_pmu;
- 	/* disable stack trace collection */
- 	key = 0;
- 	val = 1;
+ 	bytes = read(efd, buf, sizeof(buf));
+ 	close(efd);
+ 	if (CHECK(bytes <= 0 || bytes >= sizeof(buf), "tracepoint",
+ 		  "read syscalls/sys_enter_nanosleep/id failure: %s\n",
+ 		  strerror(errno)))
+-		return -1;
++		return;
+ 
+ 	attr.config = strtol(buf, NULL, 0);
+ 
+-	return test_send_signal_common(&attr, BPF_PROG_TYPE_TRACEPOINT, "tracepoint");
++	test_send_signal_common(&attr, BPF_PROG_TYPE_TRACEPOINT, "tracepoint");
+ }
+ 
+-static int test_send_signal_perf(void)
++static void test_send_signal_perf(void)
+ {
+ 	struct perf_event_attr attr = {
+ 		.sample_period = 1,
+@@ -181,11 +179,11 @@ static int test_send_signal_perf(void)
+ 		.config = PERF_COUNT_SW_CPU_CLOCK,
+ 	};
+ 
+-	return test_send_signal_common(&attr, BPF_PROG_TYPE_PERF_EVENT,
+-				       "perf_sw_event");
++	test_send_signal_common(&attr, BPF_PROG_TYPE_PERF_EVENT,
++				"perf_sw_event");
+ }
+ 
+-static int test_send_signal_nmi(void)
++static void test_send_signal_nmi(void)
+ {
+ 	struct perf_event_attr attr = {
+ 		.sample_freq = 50,
+@@ -205,25 +203,23 @@ static int test_send_signal_nmi(void)
+ 			printf("%s:SKIP:no PERF_COUNT_HW_CPU_CYCLES\n",
+ 			       __func__);
+ 			test__skip();
+-			return 0;
++			return;
+ 		}
+ 		/* Let the test fail with a more informative message */
+ 	} else {
+ 		close(pmu_fd);
+ 	}
+ 
+-	return test_send_signal_common(&attr, BPF_PROG_TYPE_PERF_EVENT,
+-				       "perf_hw_event");
++	test_send_signal_common(&attr, BPF_PROG_TYPE_PERF_EVENT,
++				"perf_hw_event");
+ }
+ 
+ void test_send_signal(void)
+ {
+-	int ret = 0;
+-
+ 	if (test__start_subtest("send_signal_tracepoint"))
+-		ret |= test_send_signal_tracepoint();
++		test_send_signal_tracepoint();
+ 	if (test__start_subtest("send_signal_perf"))
+-		ret |= test_send_signal_perf();
++		test_send_signal_perf();
+ 	if (test__start_subtest("send_signal_nmi"))
+-		ret |= test_send_signal_nmi();
++		test_send_signal_nmi();
+ }
 -- 
 2.23.0.rc1.153.gdeed80330f-goog
 
