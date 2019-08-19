@@ -2,83 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 332109281F
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 17:14:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E3F2192824
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 17:16:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727683AbfHSPOd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 11:14:33 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:41928 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726628AbfHSPOd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 11:14:33 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=nFZpbvfIabN6ZxKbSqt9D3Cc1DfWniWgSlpwjlw0n+Q=; b=ra7HSHHXFtGvuiSKMnz7YcpZjO
-        qrgvxNKomvKX631ODd0yRNYN5vU+uCAPwJJSsQDQ0RYKuNOQG6e+VNA9mWEiAefB2ikestGWCLY0d
-        fqPKtWdQSPhObn0N3cV3JQzPSc9ifLT00tRUuVJ/bn8YgTFmuAa3G/D+ERAvWik8IoHs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hzjMb-0006xZ-Ad; Mon, 19 Aug 2019 17:14:29 +0200
-Date:   Mon, 19 Aug 2019 17:14:29 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
+        id S1727667AbfHSPQn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 11:16:43 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:33841 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726628AbfHSPQm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 11:16:42 -0400
+Received: by mail-qk1-f196.google.com with SMTP id m10so1707535qkk.1;
+        Mon, 19 Aug 2019 08:16:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=24B83GAj2zrYC67kLJsxEOw0y5XbbNOfyVyJzgA3rdw=;
+        b=Asot8gPdIFuuMjVgsBA6+u074prDvDVWXLNd5isC8rSw0AjNMr3648EAb6eP83IoIJ
+         SD1fIFkYpwsy52ssJtroXf8k8mPSm/6N3zgCWJgZhta3pnRGfZk16sM+Gans4YkxEZ2Z
+         5PEXbt3HcsdLAAV3XguWoZVEotWa4H/bFgxshaLKS8pM++5m24ymRd/2mHraHlRnXu+x
+         Oc0gOHjnCiayflb9CBx/WQn8JgTNIILt0EoVW7RWqJ0ZFO2zri/qRWdNvrLuyC/YYASd
+         n33TOjYhzDjydSSzNN3PxDeOR4vxRrRMIEmdDooG9Eq8lvBBUjW30TG1xxcbwnDQ7jUm
+         yRsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=24B83GAj2zrYC67kLJsxEOw0y5XbbNOfyVyJzgA3rdw=;
+        b=DNQZfL4aSNkw0RkYS5kxEDj8Lvz8XPCNc6pNKNkqH3SMZwxqCKVAZEYDb2Zf3i6lEU
+         dKmOoRd0pditJpjDoTO3InhwMeIismayGZt1qSAQ2mH2QdGz54gThDWvtzVjeAvFV2Yh
+         mEfvmDaEVhff33ijN5Iq95r0U/W9D8il7lrfYfbbTm6AJjMhuEM7eDjIB813TE7/ujIp
+         AWeHoJw4TZDS2BDl/S828rw5m2ax04LmgWkGx/7zZz5ZVzarh4OmC69oVUAWWftSuLbU
+         bxXiadang3PI70ihNxF+jnz+M0LrBn1r1w3cgSHklI99k4RL1D89reUCwc0Z94rex8S2
+         sQrg==
+X-Gm-Message-State: APjAAAXIg5noyHToZEu+eOhOQmg32npXk8PUeThWp50/NK10pmtIztrm
+        J2tW/0g3tbOyQU3jqVqmvdw=
+X-Google-Smtp-Source: APXvYqyeMoQKzzB2cvMJ5CgtPb7GqHXZqwrsN8c92XAswh0+10YEXSUuqDoz4U5jfepWD4UVwTym3Q==
+X-Received: by 2002:ae9:f804:: with SMTP id x4mr21041900qkh.178.1566227801585;
+        Mon, 19 Aug 2019 08:16:41 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id y188sm7927972qkc.29.2019.08.19.08.16.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Aug 2019 08:16:40 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 11:16:39 -0400
+Message-ID: <20190819111639.GB6123@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
         Richard Cochran <richardcochran@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next 1/3] net: mdio: add support for passing a PTP
- system timestamp to the mii_bus driver
-Message-ID: <20190819151429.GG15291@lunn.ch>
+Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: extend PTP gettime
+ function to read system clock
+In-Reply-To: <20190819132733.GE8981@lunn.ch>
 References: <20190816163157.25314-1-h.feurstein@gmail.com>
- <20190816163157.25314-2-h.feurstein@gmail.com>
- <20190819131736.GD8981@lunn.ch>
- <CA+h21hou0v0gPURO3VHe2Ur1-heXnuueN5F92iDLffArB+1d5w@mail.gmail.com>
- <CA+h21hpe1JRBAGX5GwAZopuG9D2oe-+G+7Y026vBLPhhX--YNQ@mail.gmail.com>
+ <20190816163157.25314-3-h.feurstein@gmail.com> <20190819132733.GE8981@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <CA+h21hpe1JRBAGX5GwAZopuG9D2oe-+G+7Y026vBLPhhX--YNQ@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > How expensive is ptp_read_system_prets()? My original suggestion was
-> > > to unconditionally call it here, and then let the driver overwrite it
-> > > if it supports finer grained time stamping. MDIO is slow, so as long
-> > > as ptp_read_system_prets() is not too expensive, i prefer KISS.
-> > >
-> > >    Andrew
-> >
-> > While that works for the pre_ts, it doesn't work for the post_ts (the
-> > MDIO bus core will unconditionally overwrite the system timestamp from
-> > the driver).
-> > Unless you're suggesting to keep the pre_ts unconditional and the
-> > post_ts under the "if" condition, which is a bit odd.
-> > According to my tests with a scope (measuring the width between SPI
-> > transfers with and without the ptp_read_system_*ts calls), two calls
-> > to ktime_get_real_ts64 amount to around 750 ns on a 1200 MHz Cortex A7
-> > core, or around 90 clock cycles.
+On Mon, 19 Aug 2019 15:27:33 +0200, Andrew Lunn <andrew@lunn.ch> wrote:
+> > @@ -45,7 +45,8 @@ static int mv88e6xxx_smi_direct_write(struct mv88e6xxx_chip *chip,
+> >  {
+> >  	int ret;
+> >  
+> > -	ret = mdiobus_write_nested(chip->bus, dev, reg, data);
+> > +	ret = mdiobus_write_sts_nested(chip->bus, dev, reg, data,
+> > +				       chip->ptp_sts);
+> >  	if (ret < 0)
+> >  		return ret;
+> >  
 > 
-> 900 clock cycles, my bad.
+> Please also make a similar change to mv88e6xxx_smi_indirect_write().
+> The last write in that function should be timestamped.
+> 
+> Vivien, please could you think about these changes with respect to
+> RMU. We probably want to skip the RMU in this case, so we get slow but
+> uniform jitter, vs fast and unpredictable jitter from using the RMU.
 
-That is quite a lot. I was just expecting it to read a free running
-clock and maybe do some unit conversions. 900 cycles suggests it is
-doing a lot more.
-
-So please keep with the idea of the bus driver indicating if it
-supports the time stamping. But please make it a generic bus->flags,
-and bit 0 indicating time stamping. At some point in the future, it
-would be useful to indicate if the bus supports c45, which would be
-another use of flags.
-
-Thanks
-	Andrew
+The RMU will have its own mv88e6xxx_bus_ops.
