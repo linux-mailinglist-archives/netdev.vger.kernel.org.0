@@ -2,151 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AF6294BBA
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:30:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 974CB94BC4
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:33:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728204AbfHSR26 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 13:28:58 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:34042 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727801AbfHSR2o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 13:28:44 -0400
-Received: by mail-wm1-f66.google.com with SMTP id e8so511712wme.1;
-        Mon, 19 Aug 2019 10:28:42 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=N4+pf5d7pVmnBlivGuHqKTTW2Rfxav1QD4GVn+SGku8=;
-        b=rB+i0qylgMJQS7W6tIapfGXnwknLUgZSuLbNMFUO5e0mY9mi6LehXLYeQ7C3mPriH4
-         whXcuu7eAGt49zKShHlAgvFJ1XRBIiVz0kt46A8CXx2vZGTvbHHlfBIqPaPL65RQIyVR
-         oSQhSq1QYb+sCIQht0/6YvF8jFqusSUf9CqGKcmpJkxzuznHJXTz8vKfK93dXq9wtSFa
-         Tla2r5lNdRX9kqJRK8yFbc5WuRQws497J6xZM5QSCo0x61ZY93qkbiUhDOT6IEyeTweh
-         iqFU76VYUaFuhL0tvdGfV6qUh4yuMGiYUcYlgCLseza4NiVq/5mIVi/b15a8oqx/CQiG
-         5ygw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=N4+pf5d7pVmnBlivGuHqKTTW2Rfxav1QD4GVn+SGku8=;
-        b=WmSc7QzqcD9mFCqcmUmhXLYA9ZY9jFrMq+55iRUUGM4Jj6NJHtXaHLYFL2qSvnVz26
-         ElhXa99gEBVGQDc6xD/j5ZKTsHybNQZpwojyyMbXT8xG7Wtrnr30oR78UWDYVuQnYhoL
-         ILvFiz73gE9DmBlfhPxzD75ZI2K5GY/0d12Nf5j15pkI6oITTDYQpt9NgXaOKsB9NAPL
-         o6wIkTbSlqLO5ZcN4w6oKYrFjiqIp9vkaVaz5/VexIHZF8xmSKPPH4UPDsQTPg4lxUga
-         1i+kvh7D4jR7+rziuwmU3hIOsgwW2PF9tkgeJ0ScIQXviVPe6s8ROAxNjIDpEoCTDUa7
-         IkCw==
-X-Gm-Message-State: APjAAAWP6SH6GmTp27k9I0Zafz1aJlHO5d/26lcjTqAOJSaneFp3Qv/n
-        glYTy65kl+mmgJqd3vVk67kgurMqhzs=
-X-Google-Smtp-Source: APXvYqy73eiSXTGbmsnpMG7uHCQEtftllyD/DExkUuGM5RhQ4eFmkuRfv24N/mORrnN11uzM7J/z+A==
-X-Received: by 2002:a1c:9ec5:: with SMTP id h188mr21805675wme.176.1566235722008;
-        Mon, 19 Aug 2019 10:28:42 -0700 (PDT)
-Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id c15sm41983879wrb.80.2019.08.19.10.28.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 10:28:41 -0700 (PDT)
-From:   Hubert Feurstein <h.feurstein@gmail.com>
-X-Google-Original-From: Hubert Feurstein <hubert.feurstein@vahle.at>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next v2 3/4] net: dsa: mv88e6xxx: extend PTP gettime function to read system clock
-Date:   Mon, 19 Aug 2019 19:28:26 +0200
-Message-Id: <20190819172827.9550-4-hubert.feurstein@vahle.at>
-X-Mailer: git-send-email 2.22.1
-In-Reply-To: <20190819172827.9550-1-hubert.feurstein@vahle.at>
-References: <20190819172827.9550-1-hubert.feurstein@vahle.at>
+        id S1727653AbfHSRcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 13:32:50 -0400
+Received: from mail.nic.cz ([217.31.204.67]:35456 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727398AbfHSRcu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 13:32:50 -0400
+Received: from localhost (unknown [172.20.6.135])
+        by mail.nic.cz (Postfix) with ESMTPSA id 7599D140B70;
+        Mon, 19 Aug 2019 19:32:48 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1566235968; bh=wOYX7VTyXUel+7isJ1uJ52UrgNEboML/bErym9AZf5M=;
+        h=Date:From:To;
+        b=sZSzpu+ee+C5Cj3zPzsPldWDUFKZJPzmT3fxN7Kg6C7a19EiMHGcJEzeleYXXRleS
+         fsIYjnoZYV6Zm3J7CFBzG1aUCP+Tub/ErCxb+8KW33gBKJEVwL66goQDDjc+gityBW
+         xL90KQhZZow55UppCxVCJjkoMxK6TsppXGTG9m7g=
+Date:   Mon, 19 Aug 2019 19:32:46 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
+        andrew@lunn.ch
+Subject: Re: [PATCH net-next 3/6] net: dsa: enable and disable all ports
+Message-ID: <20190819193246.0e40a1d4@nic.cz>
+In-Reply-To: <20190818173548.19631-4-vivien.didelot@gmail.com>
+References: <20190818173548.19631-1-vivien.didelot@gmail.com>
+        <20190818173548.19631-4-vivien.didelot@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hubert Feurstein <h.feurstein@gmail.com>
+On Sun, 18 Aug 2019 13:35:45 -0400
+Vivien Didelot <vivien.didelot@gmail.com> wrote:
 
-This adds support for the PTP_SYS_OFFSET_EXTENDED ioctl.
+> Call the .port_enable and .port_disable functions for all ports,
+> not only the user ports, so that drivers may optimize the power
+> consumption of all ports after a successful setup.
+> 
+> Unused ports are now disabled on setup. CPU and DSA ports are now
+> enabled on setup and disabled on teardown. User ports were already
+> enabled at slave creation and disabled at slave destruction.
+> 
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 
-Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
----
- drivers/net/dsa/mv88e6xxx/chip.h |  2 ++
- drivers/net/dsa/mv88e6xxx/ptp.c  | 11 +++++++----
- drivers/net/dsa/mv88e6xxx/smi.c  |  3 ++-
- 3 files changed, 11 insertions(+), 5 deletions(-)
+My original reason for enabling CPU and DSA ports is that enabling
+serdes irq could not be done in .setup in mv88e6xxx, since the required
+phylink structures did not yet exists for those ports.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index a406be2f5652..1bfde0d8a5a3 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -275,6 +275,8 @@ struct mv88e6xxx_chip {
- 	struct ptp_clock_info	ptp_clock_info;
- 	struct delayed_work	tai_event_work;
- 	struct ptp_pin_desc	pin_config[MV88E6XXX_MAX_GPIO];
-+	struct ptp_system_timestamp *ptp_sts;
-+
- 	u16 trig_config;
- 	u16 evcap_config;
- 	u16 enable_count;
-diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
-index 073cbd0bb91b..cf6e52ee9e0a 100644
---- a/drivers/net/dsa/mv88e6xxx/ptp.c
-+++ b/drivers/net/dsa/mv88e6xxx/ptp.c
-@@ -235,14 +235,17 @@ static int mv88e6xxx_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 	return 0;
- }
- 
--static int mv88e6xxx_ptp_gettime(struct ptp_clock_info *ptp,
--				 struct timespec64 *ts)
-+static int mv88e6xxx_ptp_gettimex(struct ptp_clock_info *ptp,
-+				  struct timespec64 *ts,
-+				  struct ptp_system_timestamp *sts)
- {
- 	struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
- 	u64 ns;
- 
- 	mv88e6xxx_reg_lock(chip);
-+	chip->ptp_sts = sts;
- 	ns = timecounter_read(&chip->tstamp_tc);
-+	chip->ptp_sts = NULL;
- 	mv88e6xxx_reg_unlock(chip);
- 
- 	*ts = ns_to_timespec64(ns);
-@@ -426,7 +429,7 @@ static void mv88e6xxx_ptp_overflow_check(struct work_struct *work)
- 	struct mv88e6xxx_chip *chip = dw_overflow_to_chip(dw);
- 	struct timespec64 ts;
- 
--	mv88e6xxx_ptp_gettime(&chip->ptp_clock_info, &ts);
-+	mv88e6xxx_ptp_gettimex(&chip->ptp_clock_info, &ts, NULL);
- 
- 	schedule_delayed_work(&chip->overflow_work,
- 			      MV88E6XXX_TAI_OVERFLOW_PERIOD);
-@@ -472,7 +475,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
- 	chip->ptp_clock_info.max_adj    = MV88E6XXX_MAX_ADJ_PPB;
- 	chip->ptp_clock_info.adjfine	= mv88e6xxx_ptp_adjfine;
- 	chip->ptp_clock_info.adjtime	= mv88e6xxx_ptp_adjtime;
--	chip->ptp_clock_info.gettime64	= mv88e6xxx_ptp_gettime;
-+	chip->ptp_clock_info.gettimex64	= mv88e6xxx_ptp_gettimex;
- 	chip->ptp_clock_info.settime64	= mv88e6xxx_ptp_settime;
- 	chip->ptp_clock_info.enable	= ptp_ops->ptp_enable;
- 	chip->ptp_clock_info.verify	= ptp_ops->ptp_verify;
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-index 282fe08db050..abedd04ff2ae 100644
---- a/drivers/net/dsa/mv88e6xxx/smi.c
-+++ b/drivers/net/dsa/mv88e6xxx/smi.c
-@@ -45,7 +45,8 @@ static int mv88e6xxx_smi_direct_write(struct mv88e6xxx_chip *chip,
- {
- 	int ret;
- 
--	ret = mdiobus_write_nested(chip->bus, dev, reg, data);
-+	ret = mdiobus_write_sts_nested(chip->bus, dev, reg, data,
-+				       chip->ptp_sts);
- 	if (ret < 0)
- 		return ret;
- 
--- 
-2.22.1
+The case after this patch would be that .port_enable is called for
+CPU/DSA ports right after these required phylink structures are created
+for this port. A thought came to me while reading this that some driver
+in the future can expect, in their implementation of
+port_enable/port_disable, that phylink structures already exist for all
+ports, not just the one being currently enabled/disabled.
 
+Wouldn't it be safer if CPU/DSA ports were enabled in setup after all
+ports are registered, and disabled in teardown before ports are
+unregistered?
+
+Current:
+  ->setup()
+  for each port
+      dsa_port_link_register_of()
+      dsa_port_enable()
+
+Proposed:
+  ->setup()
+  for each port
+      dsa_port_link_register_of()
+  for each port
+      dsa_port_enable()
+
+Marek
