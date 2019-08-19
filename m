@@ -2,61 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9726D91A84
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 02:44:01 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF1F91ACA
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 03:37:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726242AbfHSAn6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 18 Aug 2019 20:43:58 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:40330 "EHLO vps0.lunn.ch"
+        id S1726463AbfHSBhI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 18 Aug 2019 21:37:08 -0400
+Received: from mx7.zte.com.cn ([202.103.147.169]:45254 "EHLO mxct.zte.com.cn"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726115AbfHSAn6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 18 Aug 2019 20:43:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=lMugEJt4cnK9k51RWef6u0jdy0vfdnqoQK03dOzJTog=; b=hl40ku5jUBIQVQjTFYSpJR+fXM
-        Gd4XmCnOwVdqbiGv2D4nRkyJwELjNGhB9m/9a7FGxIPH7chWgY6rlpA3BIRN6oa+d9xx8L15fQRh8
-        URbFpGIdAv1wqoOs0nAW4ndXdYHTUnHXU/UfH4AhV19/SLa54FCzMwQ74PMUilePN5bc=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1hzVm6-0002Za-4R; Mon, 19 Aug 2019 02:43:54 +0200
-Date:   Mon, 19 Aug 2019 02:43:54 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 03/11] spi: Add a PTP system timestamp to
- the transfer structure
-Message-ID: <20190819004354.GC8981@lunn.ch>
-References: <20190816004449.10100-1-olteanv@gmail.com>
- <20190816004449.10100-4-olteanv@gmail.com>
- <20190816121837.GD4039@sirena.co.uk>
- <CA+h21hqatTeS2shV9QSiPzkjSeNj2Z4SOTrycffDjRHj=9s=nQ@mail.gmail.com>
- <20190816125820.GF4039@sirena.co.uk>
- <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S1726028AbfHSBhI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 18 Aug 2019 21:37:08 -0400
+Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
+        by Forcepoint Email with ESMTPS id 344124AE22AB3D25044F;
+        Mon, 19 Aug 2019 09:37:05 +0800 (CST)
+Received: from notes_smtp.zte.com.cn (notes_smtp.zte.com.cn [10.30.1.239])
+        by mse-fl1.zte.com.cn with ESMTP id x7J1aQZ2051895;
+        Mon, 19 Aug 2019 09:36:26 +0800 (GMT-8)
+        (envelope-from zhang.lin16@zte.com.cn)
+Received: from fox-host8.localdomain ([10.74.120.8])
+          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
+          with ESMTP id 2019081909362859-3033320 ;
+          Mon, 19 Aug 2019 09:36:28 +0800 
+From:   zhanglin <zhang.lin16@zte.com.cn>
+To:     davem@davemloft.net
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, willemb@google.com,
+        edumazet@google.com, deepa.kernel@gmail.com, arnd@arndb.de,
+        dh.herrmann@gmail.com, gnault@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
+        jiang.xuexin@zte.com.cn, zhanglin <zhang.lin16@zte.com.cn>
+Subject: [PATCH] sock: fix potential memory leak in proto_register()
+Date:   Mon, 19 Aug 2019 09:35:56 +0800
+Message-Id: <1566178556-46071-1-git-send-email-zhang.lin16@zte.com.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
+ 21, 2013) at 2019-08-19 09:36:28,
+        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
+ 2019-08-19 09:36:27,
+        Serialize complete at 2019-08-19 09:36:27
+X-MAIL: mse-fl1.zte.com.cn x7J1aQZ2051895
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> MDIO bus controllers are in a similar situation (with Hubert's patch)
-> but at least there the frame size is fixed and I haven't heard of an
-> MDIO controller to use DMA.
+If protocols registered exceeded PROTO_INUSE_NR, prot will be
+added to proto_list, but no available bit left for prot in
+proto_inuse_idx.
 
-Linux does not have any DMA driver MDIO busses, as far as i know. It
-does not make sense, since you are only transferring 16bits of
-data. The vast majority are polled completion, but there is one which
-generates an interrupt on completion.
+Signed-off-by: zhanglin <zhang.lin16@zte.com.cn>
+---
+ net/core/sock.c | 21 ++++++++++++++-------
+ 1 file changed, 14 insertions(+), 7 deletions(-)
 
-	Andrew
+diff --git a/net/core/sock.c b/net/core/sock.c
+index bc3512f230a3..25388d429f6a 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3139,16 +3139,17 @@ static __init int net_inuse_init(void)
+ 
+ core_initcall(net_inuse_init);
+ 
+-static void assign_proto_idx(struct proto *prot)
++static int assign_proto_idx(struct proto *prot)
+ {
+ 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
+ 
+ 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
+ 		pr_err("PROTO_INUSE_NR exhausted\n");
+-		return;
++		return -ENOSPC;
+ 	}
+ 
+ 	set_bit(prot->inuse_idx, proto_inuse_idx);
++	return 0;
+ }
+ 
+ static void release_proto_idx(struct proto *prot)
+@@ -3243,18 +3244,24 @@ int proto_register(struct proto *prot, int alloc_slab)
+ 	}
+ 
+ 	mutex_lock(&proto_list_mutex);
++	if (assign_proto_idx(prot)) {
++		mutex_unlock(&proto_list_mutex);
++		goto out_free_timewait_sock_slab_name;
++	}
+ 	list_add(&prot->node, &proto_list);
+-	assign_proto_idx(prot);
+ 	mutex_unlock(&proto_list_mutex);
+ 	return 0;
+ 
+ out_free_timewait_sock_slab_name:
+-	kfree(prot->twsk_prot->twsk_slab_name);
++	if (alloc_slab && prot->twsk_prot)
++		kfree(prot->twsk_prot->twsk_slab_name);
+ out_free_request_sock_slab:
+-	req_prot_cleanup(prot->rsk_prot);
++	if (alloc_slab) {
++		req_prot_cleanup(prot->rsk_prot);
+ 
+-	kmem_cache_destroy(prot->slab);
+-	prot->slab = NULL;
++		kmem_cache_destroy(prot->slab);
++		prot->slab = NULL;
++	}
+ out:
+ 	return -ENOBUFS;
+ }
+-- 
+2.17.1
+
