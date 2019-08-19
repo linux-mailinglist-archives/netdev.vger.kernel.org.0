@@ -2,100 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9EAB692410
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 15:01:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C00692457
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 15:09:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727525AbfHSNBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 09:01:09 -0400
-Received: from mail-vs1-f68.google.com ([209.85.217.68]:35238 "EHLO
-        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727128AbfHSNBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 09:01:09 -0400
-Received: by mail-vs1-f68.google.com with SMTP id q16so1105793vsm.2;
-        Mon, 19 Aug 2019 06:01:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZePDTxUfjMjKLHjhwy9E6JOUCjVAy0prTpZjzd31lbc=;
-        b=N4bCc1bVSQzLWboEBPRBuQtP3MqpZJu3+NUnPcykdFkfWohJqvIhQV+++Pkwt2yo+R
-         nrBD5GI1/aVmOCOYppUGA6zfoUb36QV+942xfqRypVLUyHq8AoN/z4cZYB/9yqpdmibH
-         uBJpBc/EMd6fwjWtkOKebPcPQjHrBaIH8zKFwEimQ86o3oDnwr2NgvXkoiSYUesZt7X6
-         CMvWa2WeB7ucdLg785KGo2o5bVOs4XokRWJ49g42qCkiYjC8IdlAUcbEQ9F0yPVIs8hO
-         vIxuL/Puq7CrslDz65DtIMkW1ws+Qha5s2HRj9YBUadRzqNzBc4wf9Ypcuqhq9ytE/NQ
-         kx9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZePDTxUfjMjKLHjhwy9E6JOUCjVAy0prTpZjzd31lbc=;
-        b=gWuLL9lJh5NBolOSNXJJ0c2U4PQDhCityqK7Nd1gB902IfnwmDifTeK85jPnnbl8AV
-         MXdsNkSKyQSBhvLk+FHepEhPUUi/kony2vo+fv7yNRwViJ9KshoB4r8N9SsOUnzLpdSR
-         qthm3IWM2BbqxE3XWw5HsFvjju3kvBFnUNAcLgt91gMlXla+exP117eBxf0089/zd95+
-         xv/4BGEvU91SlrhZNg+g6uMLxqLewyWkhEw4DPLLOAtD41A2XuDKalF4dlFQ/gL77Q04
-         RYwkkoj0A3rRILNVsiqnK/F3xipwZosJ+ELy1TuPBGDT7zrmbNqzdLVCmdIXK8ApyAta
-         jV/A==
-X-Gm-Message-State: APjAAAVRpIGx/A/G+m7+4IO2I2uLmKqwrn4e9OQc9xGV5jf4WdlaZ1T0
-        ukFWFPXgYmCx48T7hhHkh2AK0VHxZ9U2zU4SiYI=
-X-Google-Smtp-Source: APXvYqxP0H91DjJU9+nWXUKVwORmVnF97Dfobj+YLJ+6hAK7mKDYgbzVa/qutDn6JoWUgpFjfklEsR7Fwpqgc1JfUwU=
-X-Received: by 2002:a67:8b8a:: with SMTP id n132mr14074612vsd.90.1566219667950;
- Mon, 19 Aug 2019 06:01:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <1565684495-2454-1-git-send-email-wenwen@cs.uga.edu>
-In-Reply-To: <1565684495-2454-1-git-send-email-wenwen@cs.uga.edu>
-From:   Moshe Shemesh <moshes20.il@gmail.com>
-Date:   Mon, 19 Aug 2019 16:00:53 +0300
-Message-ID: <CALBF4T_xmmAyTpPRfuC0a_C+TpX5xbA9+U1JxUJ6p1RvUFjGHQ@mail.gmail.com>
-Subject: Re: [PATCH] net/mlx5: Fix a memory leak bug
-To:     Wenwen Wang <wenwen@cs.uga.edu>
-Cc:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>,
+        id S1727525AbfHSNJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 09:09:14 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:54170 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727424AbfHSNJN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 09:09:13 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7225E811A9;
+        Mon, 19 Aug 2019 13:09:13 +0000 (UTC)
+Received: from localhost (ovpn-117-111.ams2.redhat.com [10.36.117.111])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C38B95C205;
+        Mon, 19 Aug 2019 13:09:12 +0000 (UTC)
+Date:   Mon, 19 Aug 2019 14:09:11 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
         "David S. Miller" <davem@davemloft.net>,
-        "open list:MELLANOX MLX5 core VPI driver" <netdev@vger.kernel.org>,
-        "open list:MELLANOX MLX5 core VPI driver" 
-        <linux-rdma@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Vishnu Dasa <vdasa@vmware.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [RFC v2] vsock: proposal to support multiple transports at
+ runtime
+Message-ID: <20190819130911.GE28081@stefanha-x1.localdomain>
+References: <20190606100912.f2zuzrkgmdyxckog@steredhat>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="uCPdOCrL+PnN2Vxy"
+Content-Disposition: inline
+In-Reply-To: <20190606100912.f2zuzrkgmdyxckog@steredhat>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Mon, 19 Aug 2019 13:09:13 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Please don't change that.
-On command timeout we don't release ent, since the FW event on
-completion can occur after timeout, so it is released on the
-completion handler mlx5_cmd_comp_handler().
-See commit 73dd3a4839c1d ("net/mlx5: Avoid using pending command
-interface slots").
 
-On Tue, Aug 13, 2019 at 11:22 AM Wenwen Wang <wenwen@cs.uga.edu> wrote:
->
-> In mlx5_cmd_invoke(), 'ent' is allocated through kzalloc() in alloc_cmd().
-> After the work is queued, wait_func() is invoked to wait the completion of
-> the work. If wait_func() returns -ETIMEDOUT, the following execution will
-> be terminated. However, the allocated 'ent' is not deallocated on this
-> program path, leading to a memory leak bug.
->
-> To fix the above issue, free 'ent' before returning the error.
->
-> Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
-> ---
->  drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-> index 8cdd7e6..90cdb9a 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
-> @@ -1036,7 +1036,7 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
->
->         err = wait_func(dev, ent);
->         if (err == -ETIMEDOUT)
-> -               goto out;
-> +               goto out_free;
->
->         ds = ent->ts2 - ent->ts1;
->         op = MLX5_GET(mbox_in, in->first.data, opcode);
-> --
-> 2.7.4
->
+--uCPdOCrL+PnN2Vxy
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Thu, Jun 06, 2019 at 12:09:12PM +0200, Stefano Garzarella wrote:
+>=20
+> Hi all,
+> this is a v2 of a proposal addressing the comments made by Dexuan, Stefan,
+> and Jorgen.
+>=20
+> v1: https://www.spinics.net/lists/netdev/msg570274.html
+>=20
+>=20
+>=20
+> We can define two types of transport that we have to handle at the same t=
+ime
+> (e.g. in a nested VM we would have both types of transport running togeth=
+er):
+>=20
+> - 'host->guest' transport, it runs in the host and it is used to communic=
+ate
+>   with the guests of a specific hypervisor (KVM, VMWare or Hyper-V). It a=
+lso
+>   runs in the guest who has nested guests, to communicate with them.
+>=20
+>   [Phase 2]
+>   We can support multiple 'host->guest' transport running at the same tim=
+e,
+>   but on x86 only one hypervisor uses VMX at any given time.
+>=20
+> - 'guest->host' transport, it runs in the guest and it is used to communi=
+cate
+>   with the host.
+>=20
+>=20
+> The main goal is to find a way to decide what transport use in these case=
+s:
+> 1. connect() / sendto()
+>=20
+>    a. use the 'host->guest' transport, if the destination is the guest
+>       (dest_cid > VMADDR_CID_HOST).
+>=20
+>       [Phase 2]
+>       In order to support multiple 'host->guest' transports running at th=
+e same
+>       time, we should assign CIDs uniquely across all transports. In this=
+ way,
+>       a packet generated by the host side will get directed to the approp=
+riate
+>       transport based on the CID.
+>=20
+>    b. use the 'guest->host' transport, if the destination is the host or =
+the
+>       hypervisor.
+>       (dest_cid =3D=3D VMADDR_CID_HOST || dest_cid =3D=3D VMADDR_CID_HYPE=
+RVISOR)
+>=20
+>=20
+> 2. listen() / recvfrom()
+>=20
+>    a. use the 'host->guest' transport, if the socket is bound to
+>       VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
+>       'guest->host' transport.
+>       We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
+>       address this case.
+>=20
+>       [Phase 2]
+>       We can support network namespaces to create independent AF_VSOCK
+>       addressing domains:
+>       - could be used to partition VMs between hypervisors or at a finer
+>    	 granularity;
+>       - could be used to isolate host applications from guest applications
+>    	 using the same ports with CID_ANY;
+>=20
+>    b. use the 'guest->host' transport, if the socket is bound to local CID
+>       different from the VMADDR_CID_HOST (guest CID get with
+>       IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY (=
+to be
+>       backward compatible).
+>       Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOS=
+T.
+>=20
+>    c. shared port space between transports
+>       For incoming requests or packets, we should be able to choose which
+>       transport use, looking at the 'port' requested.
+>=20
+>       - stream sockets already support shared port space between transpor=
+ts
+>         (one port can be assigned to only one transport)
+>=20
+>       [Phase 2]
+>       - datagram sockets will support it, but for now VMCI transport is t=
+he
+>         default transport for any host side datagram socket (KVM and Hype=
+r-V
+>         do not yet support datagrams sockets)
+>=20
+> We will make the loading of af_vsock.ko independent of the transports to
+> allow to:
+>    - create a AF_VSOCK socket without any loaded transports;
+>    - listen on a socket (e.g. bound to VMADDR_CID_ANY) without any loaded
+>      transports;
+>=20
+> Hopefully, we could move MODULE_ALIAS_NETPROTO(PF_VSOCK) from the
+> vmci_transport.ko to the af_vsock.ko.
+> [Jorgen will check if this will impact the existing VMware products]
+>=20
+> Notes:
+>    - For Hyper-V sockets, the host can only be Windows. No changes should
+>      be required on the Windows host to support the changes on this propo=
+sal.
+>=20
+>    - Communication between guests are not allowed on any transports, so w=
+e can
+>      drop packets sent from a guest to another guest (dest_cid >
+>      VMADDR_CID_HOST) if the 'host->guest' transport is not available.
+>=20
+>    - [Phase 2] tag used to identify things that can be done at a later st=
+age,
+>      but that should be taken into account during this design.
+>=20
+>    - Namespace support will be developed in [Phase 2] or in a separate pr=
+oject.
+>=20
+>=20
+>=20
+> Comments and suggestions are welcome.
+> I'll be on PTO for next two weeks, so sorry in advance if I'll answer lat=
+er.
+>=20
+> If we agree on this proposal, when I get back, I'll start working on the =
+code
+> to get a first PATCH RFC.
+
+Stefano,
+I've reviewed your proposal and it looks good for solving nested
+virtualization.
+
+The tricky implementation details will be supporting listen sockets,
+especially with VMADDR_CID_ANY so they can be accessed from both
+transports.
+
+Stefan
+
+--uCPdOCrL+PnN2Vxy
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl1an3cACgkQnKSrs4Gr
+c8iFcwf+J7Hgpr8SCqSHK6DmBwYGTPkESE0j2G7rR4ZDh1namYBmVlinwL++O1cU
+uZGLMnl4HqOUF0kWxmNmC3qiX4rDK1VTvAbBt/xhGUemiJ0YIj/zPEkQJ1V/Jt8z
+UyT6XZ8cXOMqqWPIVIJmboy7sJp3Ji8ItVfQ0T1sMMCyjN99dP1GfuqpIEfb/FeF
+vI0y0HOvBJOVghp6omP/BMuxH5vYyEcWJdgWkgPeCuL1I/qKrtmfGQnasGacedq2
+IouXQwXTS57XmL07BY9Cv1b3N6tF5rflCL96Px3l6PggUigmFncOMzZFQneaFY5b
+GJ9Mfkh6Z8/5BxWe9IaP+RmcmHmypg==
+=23Yg
+-----END PGP SIGNATURE-----
+
+--uCPdOCrL+PnN2Vxy--
