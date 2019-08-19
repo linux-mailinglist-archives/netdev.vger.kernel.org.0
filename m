@@ -2,98 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AE5B6923EF
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 14:55:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9EAB692410
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 15:01:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727424AbfHSMz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 08:55:56 -0400
-Received: from mail-eopbgr00083.outbound.protection.outlook.com ([40.107.0.83]:26435
-        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727128AbfHSMzz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 08:55:55 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DTit1lPKdmiR6hLwfnULDmnq6BKGa9XSi6fG48Ah1Wux70YvOLCyDlqpSccqyJT3lF+7bjn60794yAmF04ygZYOuawgWqamFb2kiUAf0HJWtE2QUypv7SGG0XfxzDVA0UjS/TaT7Hdib9aLQcd8lCS9K+OWbVe9RbHBywrXzux/lrtdVmCd+AER3Jq8CDL3BrSpVHDOxnjOxmxPSf52xDaWUEtjoS89t7nu174oPopJKKHk3hSShJwXqCn2MHQ6hrfG0dLNgBAzOaS00tT7wNpcJgzOieNse9RlJU1ti/1j3WlzhXaeAXSf97FWSNlkR3/OZMuADa9X4pYK5GEpNyw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VyCpNWu6iy3O5DhZrV+kYhEEQozZxAmqF/+cS1/NBJw=;
- b=R0tPI5R3M5Ak8dnT3zygKWBN1UkdO8EGfa8O463kfwW1yP/fa9OiPNtJI1Af0VGXP/qRK5wk0uaHx6os5NAzui1HfsO9e49IV+aRM/wcjtOIcFUJq5FNsNEVIk1sWuOMWvzmBwZfZkG98VmAFHiLSnPQkA6gvx9v+GUV+ANaX3+eH1rrZG5G8WjxBSJgFAbKpCn1bVlN72DGLQV8PdlCQLO2lWM8tvxCAqoeB+Zj/g+nDS0W8mAcxFytNVP42WFSfSiD8WYtXJ47LqNKIMSbZAehN6pnWeSQQy74y8pd7ajXJ/fRBditLSnPnAuXb6B38vfNXc74R+2oWw0iUhyB8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VyCpNWu6iy3O5DhZrV+kYhEEQozZxAmqF/+cS1/NBJw=;
- b=OjlTxQb/aIvJjfWC+lHBMvBeN376dDXxCM8UHHgkhNuJ5SBny/a56gk40PScsEx6FTEQq+S6DcSuBZlwmgAUo9gHdt32zhHgyb1xblsueUpukp9N2im02kIiAjtPTAMAMSztkgqoZZLRDdga5QVu3YN9nP6KtdyaDASnFWV4pZA=
-Received: from DB7PR04MB4620.eurprd04.prod.outlook.com (52.135.140.28) by
- DB7PR04MB4889.eurprd04.prod.outlook.com (20.176.234.20) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Mon, 19 Aug 2019 12:55:42 +0000
-Received: from DB7PR04MB4620.eurprd04.prod.outlook.com
- ([fe80::7c8a:c0c2:97d1:4250]) by DB7PR04MB4620.eurprd04.prod.outlook.com
- ([fe80::7c8a:c0c2:97d1:4250%4]) with mapi id 15.20.2178.018; Mon, 19 Aug 2019
- 12:55:42 +0000
-From:   Vakul Garg <vakul.garg@nxp.com>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Help needed - Kernel lockup while running ipsec
-Thread-Topic: Help needed - Kernel lockup while running ipsec
-Thread-Index: AdVWjKmxsxThBk5DR52nDhmLe9COdg==
-Date:   Mon, 19 Aug 2019 12:55:42 +0000
-Message-ID: <DB7PR04MB4620CD9AFFAFF8678F803DCE8BA80@DB7PR04MB4620.eurprd04.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vakul.garg@nxp.com; 
-x-originating-ip: [103.92.40.211]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 56dfc88d-e9dc-47d0-0137-08d724a48b51
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB7PR04MB4889;
-x-ms-traffictypediagnostic: DB7PR04MB4889:
-x-microsoft-antispam-prvs: <DB7PR04MB4889D2FE2C5316E1DE41AD4B8BA80@DB7PR04MB4889.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
-x-forefront-prvs: 0134AD334F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(346002)(39860400002)(366004)(136003)(199004)(189003)(2906002)(4744005)(2351001)(25786009)(2501003)(486006)(52536014)(7736002)(53936002)(305945005)(66476007)(8676002)(99286004)(5640700003)(6436002)(74316002)(9686003)(256004)(55016002)(14454004)(81166006)(76116006)(66446008)(316002)(66946007)(64756008)(66556008)(33656002)(81156014)(1730700003)(6916009)(8936002)(86362001)(6506007)(102836004)(26005)(186003)(3846002)(6116002)(7696005)(44832011)(66066001)(71200400001)(5660300002)(476003)(71190400001)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:DB7PR04MB4889;H:DB7PR04MB4620.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: VJPVqalyTwOBfHvd9/2Al3284G7YjPZNjK0SS7ldmBtVhNnpWzDgJ05CJMpcjJo6yMHccE6VROZ9O4oKtYnu9KhWQQuPK0OzAk8Dh5gCQEXPdQX7fZ3I8WXPNWj/mQaQD8iJL6I/9F/fwVA3JkBcvBj1a0qzyxQG3gINzWq4k3mnyJ+zwQ9HL1EH3wpirckWI1xgRYZUHXMXgoLsanBK5UjxSPtS6zUEkCgUD1C4oq8bKCIFvb5JxcnUNaMWVFfmG7QYwwpsuI66aTWVnpTTvyM73IOSVOMZFTUqTEcSC92VCj9J2j4ILwzdmctJaWYtT17RJ1slns0igvsgXBFQh5NGzELlisRIM7EpWu9mwE2WvCE9AWQUj8YQ6H0Vbmzkl1Am3pMk5+HwFZkxU+TAWnh3y0Q6Uq8qpaTV9DktR+8=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727525AbfHSNBJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 09:01:09 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:35238 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727128AbfHSNBJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 09:01:09 -0400
+Received: by mail-vs1-f68.google.com with SMTP id q16so1105793vsm.2;
+        Mon, 19 Aug 2019 06:01:08 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZePDTxUfjMjKLHjhwy9E6JOUCjVAy0prTpZjzd31lbc=;
+        b=N4bCc1bVSQzLWboEBPRBuQtP3MqpZJu3+NUnPcykdFkfWohJqvIhQV+++Pkwt2yo+R
+         nrBD5GI1/aVmOCOYppUGA6zfoUb36QV+942xfqRypVLUyHq8AoN/z4cZYB/9yqpdmibH
+         uBJpBc/EMd6fwjWtkOKebPcPQjHrBaIH8zKFwEimQ86o3oDnwr2NgvXkoiSYUesZt7X6
+         CMvWa2WeB7ucdLg785KGo2o5bVOs4XokRWJ49g42qCkiYjC8IdlAUcbEQ9F0yPVIs8hO
+         vIxuL/Puq7CrslDz65DtIMkW1ws+Qha5s2HRj9YBUadRzqNzBc4wf9Ypcuqhq9ytE/NQ
+         kx9g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZePDTxUfjMjKLHjhwy9E6JOUCjVAy0prTpZjzd31lbc=;
+        b=gWuLL9lJh5NBolOSNXJJ0c2U4PQDhCityqK7Nd1gB902IfnwmDifTeK85jPnnbl8AV
+         MXdsNkSKyQSBhvLk+FHepEhPUUi/kony2vo+fv7yNRwViJ9KshoB4r8N9SsOUnzLpdSR
+         qthm3IWM2BbqxE3XWw5HsFvjju3kvBFnUNAcLgt91gMlXla+exP117eBxf0089/zd95+
+         xv/4BGEvU91SlrhZNg+g6uMLxqLewyWkhEw4DPLLOAtD41A2XuDKalF4dlFQ/gL77Q04
+         RYwkkoj0A3rRILNVsiqnK/F3xipwZosJ+ELy1TuPBGDT7zrmbNqzdLVCmdIXK8ApyAta
+         jV/A==
+X-Gm-Message-State: APjAAAVRpIGx/A/G+m7+4IO2I2uLmKqwrn4e9OQc9xGV5jf4WdlaZ1T0
+        ukFWFPXgYmCx48T7hhHkh2AK0VHxZ9U2zU4SiYI=
+X-Google-Smtp-Source: APXvYqxP0H91DjJU9+nWXUKVwORmVnF97Dfobj+YLJ+6hAK7mKDYgbzVa/qutDn6JoWUgpFjfklEsR7Fwpqgc1JfUwU=
+X-Received: by 2002:a67:8b8a:: with SMTP id n132mr14074612vsd.90.1566219667950;
+ Mon, 19 Aug 2019 06:01:07 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 56dfc88d-e9dc-47d0-0137-08d724a48b51
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2019 12:55:42.5323
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: o6aYRasZ/wSklCcfUsRXmpUgZdjTcTI3pJXGFWojYgVm3yNIhZU54Z/TWBfshnFb9Mlxa5Jxeah//UE9tTXoUQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR04MB4889
+References: <1565684495-2454-1-git-send-email-wenwen@cs.uga.edu>
+In-Reply-To: <1565684495-2454-1-git-send-email-wenwen@cs.uga.edu>
+From:   Moshe Shemesh <moshes20.il@gmail.com>
+Date:   Mon, 19 Aug 2019 16:00:53 +0300
+Message-ID: <CALBF4T_xmmAyTpPRfuC0a_C+TpX5xbA9+U1JxUJ6p1RvUFjGHQ@mail.gmail.com>
+Subject: Re: [PATCH] net/mlx5: Fix a memory leak bug
+To:     Wenwen Wang <wenwen@cs.uga.edu>
+Cc:     Saeed Mahameed <saeedm@mellanox.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:MELLANOX MLX5 core VPI driver" <netdev@vger.kernel.org>,
+        "open list:MELLANOX MLX5 core VPI driver" 
+        <linux-rdma@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi
+Please don't change that.
+On command timeout we don't release ent, since the FW event on
+completion can occur after timeout, so it is released on the
+completion handler mlx5_cmd_comp_handler().
+See commit 73dd3a4839c1d ("net/mlx5: Avoid using pending command
+interface slots").
 
-With kernel 4.14.122, I am getting a kernel softlockup while running single=
- static ipsec tunnel.
-The problem reproduces mostly after running 8-10 hours of ipsec encap test =
-(on my dual core arm board).
-
-I found that in function xfrm_policy_lookup_bytype(), the policy in variabl=
-e 'ret' shows refcnt=3D0 under problem situation.
-This creates an infinite loop in  xfrm_policy_lookup_bytype() and hence the=
- lockup.
-
-Can some body please provide me pointers about 'refcnt'?
-Is it legitimate for 'refcnt' to become '0'? Under what condition can it be=
-come '0'?
-
-Regards
-Vakul
+On Tue, Aug 13, 2019 at 11:22 AM Wenwen Wang <wenwen@cs.uga.edu> wrote:
+>
+> In mlx5_cmd_invoke(), 'ent' is allocated through kzalloc() in alloc_cmd().
+> After the work is queued, wait_func() is invoked to wait the completion of
+> the work. If wait_func() returns -ETIMEDOUT, the following execution will
+> be terminated. However, the allocated 'ent' is not deallocated on this
+> program path, leading to a memory leak bug.
+>
+> To fix the above issue, free 'ent' before returning the error.
+>
+> Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+> ---
+>  drivers/net/ethernet/mellanox/mlx5/core/cmd.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+> index 8cdd7e6..90cdb9a 100644
+> --- a/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+> +++ b/drivers/net/ethernet/mellanox/mlx5/core/cmd.c
+> @@ -1036,7 +1036,7 @@ static int mlx5_cmd_invoke(struct mlx5_core_dev *dev, struct mlx5_cmd_msg *in,
+>
+>         err = wait_func(dev, ent);
+>         if (err == -ETIMEDOUT)
+> -               goto out;
+> +               goto out_free;
+>
+>         ds = ent->ts2 - ent->ts1;
+>         op = MLX5_GET(mbox_in, in->first.data, opcode);
+> --
+> 2.7.4
+>
