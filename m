@@ -2,132 +2,237 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F3D191D34
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 08:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 647FD91D41
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 08:41:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbfHSGf0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 02:35:26 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:35577 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726261AbfHSGfZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 02:35:25 -0400
-Received: by mail-ot1-f65.google.com with SMTP id g17so685820otl.2;
-        Sun, 18 Aug 2019 23:35:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hehynR5oMc0ygrLfxgtV2LBMgj/0/3USx04Fi55/N18=;
-        b=BqWb4oAF5EmHxqNMEkZ+gZT+JcDLLnz0XU9HRjN0B2I4FS/61qK4wt2ZtvUGFoei8g
-         ZWJCaUh0TMbTF/cN6PII/9t1ebsCS77u8Og/uMeYojffXAQEsounkP6nhUaIiRxLsmTh
-         WwSlnzyCl+uwRv/BwB106rGTgq8o/K3mK6mb1AWy0vSMGXwgGCId760ZnGSzJdnNdGnO
-         QTBREfJ8UxrZoMdr1gnuodlCoatRC0qzAXP+VdfE20TZ4eYhNGt34Bm582mR52Uui35C
-         48W0uXhaUZF9Z4W4js/7DY6dYv6j7DuhZtGElAXTEBIUY52EbrhhKowuksR/iROLQnEL
-         +sYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hehynR5oMc0ygrLfxgtV2LBMgj/0/3USx04Fi55/N18=;
-        b=nFwFaHewk1Z5kohYViGfUirAE8iy7Y9Hq8yKWyjdxL1aYvB9nygR8gUPR1baKGDwWG
-         vIQsC20OIGqOZDhAu1dpU5N6N8WeIB0sQqTTHWKizrY4NAjEUZDjZMq8FlgWuvSQpC2P
-         CyXbOzcXH92GcZRe1RbxJJ9FnvoKHtsRsdUqmxFZsyu5f7PPwdEN+1rmQmjh5lc7rw9d
-         kZYTuTTEaiW7AXx/Ql6dVOZFZjPK/UTMOlbGnyOwSaLfNVx0FPaNdT2uGfttakb9zbii
-         XGq0Pd+yCWbD/SZQHmCXdh+89YrtNX68Ou6sGcMhARjEwNfP3/ra3r/zPuedfowC0kAV
-         QjVg==
-X-Gm-Message-State: APjAAAUxxVoEwqwB0v1SB1519kMiWj4PwbeA6kpW0RxpIgIE0MpNnDJT
-        uuLOE3xqTi6syVDnskHHEhwlGQFIEwtfrHTl46Q=
-X-Google-Smtp-Source: APXvYqzWetXyg+zssDPoektkY2F3mYhPVSAYE/uwaNM/FFoHYpl9cGOm5nWniMRcJ8f0c8s+tjYglzEdpvdjJ0iGUVE=
-X-Received: by 2002:a9d:5e19:: with SMTP id d25mr17527065oti.192.1566196524573;
- Sun, 18 Aug 2019 23:35:24 -0700 (PDT)
+        id S1726769AbfHSGlB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 02:41:01 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:47947 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725790AbfHSGlA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 02:41:00 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7J6ewZm007486, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7J6ewZm007486
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Mon, 19 Aug 2019 14:40:58 +0800
+Received: from fc30.localdomain (172.21.177.138) by RTITCASV02.realtek.com.tw
+ (172.21.6.19) with Microsoft SMTP Server id 14.3.468.0; Mon, 19 Aug 2019
+ 14:40:57 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     <netdev@vger.kernel.org>
+CC:     <nic_swsd@realtek.com>, <linux-kernel@vger.kernel.org>,
+        Hayes Wang <hayeswang@realtek.com>
+Subject: [PATCH net-next v2] r8152: divide the tx and rx bottom functions
+Date:   Mon, 19 Aug 2019 14:40:36 +0800
+Message-ID: <1394712342-15778-303-Taiwan-albertk@realtek.com>
+X-Mailer: Microsoft Office Outlook 11
+In-Reply-To: <1394712342-15778-301-Taiwan-albertk@realtek.com>
+References: <1394712342-15778-301-Taiwan-albertk@realtek.com>
 MIME-Version: 1.0
-References: <1565951171-14439-1-git-send-email-magnus.karlsson@intel.com>
- <f3a8ea34-bd70-8ab8-9739-bb086643fa44@fb.com> <2B143E7F-EE34-4298-B628-E2F669F89896@gmail.com>
-In-Reply-To: <2B143E7F-EE34-4298-B628-E2F669F89896@gmail.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 19 Aug 2019 08:35:13 +0200
-Message-ID: <CAJ8uoz1hY0P+xypkJYYi775SeSXnrrPSM5v0yTf3G+d2a3OhJg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] libbpf: remove zc variable as it is not used
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     Yonghong Song <yhs@fb.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [172.21.177.138]
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 17, 2019 at 12:02 AM Jonathan Lemon
-<jonathan.lemon@gmail.com> wrote:
->
->
->
-> On 16 Aug 2019, at 8:37, Yonghong Song wrote:
->
-> > On 8/16/19 3:26 AM, Magnus Karlsson wrote:
-> >> The zc is not used in the xsk part of libbpf, so let us remove it.
-> >> Not
-> >> good to have dead code lying around.
-> >>
-> >> Signed-off-by: Magnus Karlsson <magnus.karlsson@intel.com>
-> >> Reported-by: Yonghong Song <yhs@fb.com> > ---
-> >>   tools/lib/bpf/xsk.c | 3 ---
-> >>   1 file changed, 3 deletions(-)
-> >>
-> >> diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-> >> index 680e630..9687da9 100644
-> >> --- a/tools/lib/bpf/xsk.c
-> >> +++ b/tools/lib/bpf/xsk.c
-> >> @@ -65,7 +65,6 @@ struct xsk_socket {
-> >>      int xsks_map_fd;
-> >>      __u32 queue_id;
-> >>      char ifname[IFNAMSIZ];
-> >> -    bool zc;
-> >>   };
-> >>
-> >>   struct xsk_nl_info {
-> >> @@ -608,8 +607,6 @@ int xsk_socket__create(struct xsk_socket
-> >> **xsk_ptr, const char *ifname,
-> >>              goto out_mmap_tx;
-> >>      }
-> >>
-> >> -    xsk->zc = opts.flags & XDP_OPTIONS_ZEROCOPY;
-> >
-> > Since opts.flags usage is removed. Do you think it makes sense to
-> > remove
-> >          optlen = sizeof(opts);
-> >          err = getsockopt(xsk->fd, SOL_XDP, XDP_OPTIONS, &opts,
-> > &optlen);
-> >          if (err) {
-> >                  err = -errno;
-> >                  goto out_mmap_tx;
-> >          }
-> > as well since nobody then uses opts?
->
-> IIRC, this was added specifically in
-> 2761ed4b6e192820760d5ba913834b2ba05fd08c
-> so that userland code could know whether the socket was operating in
-> zero-copy
-> mode or not.
+Move the tx bottom function from NAPI to a new tasklet. Then, for
+multi-cores, the bottom functions of tx and rx may be run at same
+time with different cores. This is used to improve performance.
 
-Thanks for reminding me Jonathan.
+On x86, Tx/Rx 943/943 Mbits/sec -> 945/944.
+For arm platform, Tx/Rx: 917/917 Mbits/sec -> 933/933.
 
-Roping in Maxim here since he wrote the patch. Was this something you
-planned on using but the functionality that needed it was removed? The
-patch set did go through a number of changes in the libbpf area, if I
-remember correctly.
+Signed-off-by: Hayes Wang <hayeswang@realtek.com>
+---
+v2: add the performance number in the commit message.
+---
+ drivers/net/usb/r8152.c | 39 ++++++++++++++++++++++++++-------------
+ 1 file changed, 26 insertions(+), 13 deletions(-)
 
-There are two options: either we remove it, or we add an interface in
-xsk.h so that people can use it. I vote for the latter since I think
-it could be useful. The sample app could use it at least :-).
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 40d18e866269..3ed9f8e082c9 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -619,7 +619,7 @@ enum rtl8152_flags {
+ 	RTL8152_LINK_CHG,
+ 	SELECTIVE_SUSPEND,
+ 	PHY_RESET,
+-	SCHEDULE_NAPI,
++	SCHEDULE_TASKLET,
+ 	GREEN_ETHERNET,
+ 	DELL_TB_RX_AGG_BUG,
+ };
+@@ -733,6 +733,7 @@ struct r8152 {
+ #ifdef CONFIG_PM_SLEEP
+ 	struct notifier_block pm_notifier;
+ #endif
++	struct tasklet_struct tx_tl;
+ 
+ 	struct rtl_ops {
+ 		void (*init)(struct r8152 *);
+@@ -1401,7 +1402,7 @@ static void write_bulk_callback(struct urb *urb)
+ 		return;
+ 
+ 	if (!skb_queue_empty(&tp->tx_queue))
+-		napi_schedule(&tp->napi);
++		tasklet_schedule(&tp->tx_tl);
+ }
+ 
+ static void intr_callback(struct urb *urb)
+@@ -2179,8 +2180,12 @@ static void tx_bottom(struct r8152 *tp)
+ 	} while (res == 0);
+ }
+ 
+-static void bottom_half(struct r8152 *tp)
++static void bottom_half(unsigned long data)
+ {
++	struct r8152 *tp;
++
++	tp = (struct r8152 *)data;
++
+ 	if (test_bit(RTL8152_UNPLUG, &tp->flags))
+ 		return;
+ 
+@@ -2192,7 +2197,7 @@ static void bottom_half(struct r8152 *tp)
+ 	if (!netif_carrier_ok(tp->netdev))
+ 		return;
+ 
+-	clear_bit(SCHEDULE_NAPI, &tp->flags);
++	clear_bit(SCHEDULE_TASKLET, &tp->flags);
+ 
+ 	tx_bottom(tp);
+ }
+@@ -2203,16 +2208,12 @@ static int r8152_poll(struct napi_struct *napi, int budget)
+ 	int work_done;
+ 
+ 	work_done = rx_bottom(tp, budget);
+-	bottom_half(tp);
+ 
+ 	if (work_done < budget) {
+ 		if (!napi_complete_done(napi, work_done))
+ 			goto out;
+ 		if (!list_empty(&tp->rx_done))
+ 			napi_schedule(napi);
+-		else if (!skb_queue_empty(&tp->tx_queue) &&
+-			 !list_empty(&tp->tx_free))
+-			napi_schedule(napi);
+ 	}
+ 
+ out:
+@@ -2366,11 +2367,11 @@ static netdev_tx_t rtl8152_start_xmit(struct sk_buff *skb,
+ 
+ 	if (!list_empty(&tp->tx_free)) {
+ 		if (test_bit(SELECTIVE_SUSPEND, &tp->flags)) {
+-			set_bit(SCHEDULE_NAPI, &tp->flags);
++			set_bit(SCHEDULE_TASKLET, &tp->flags);
+ 			schedule_delayed_work(&tp->schedule, 0);
+ 		} else {
+ 			usb_mark_last_busy(tp->udev);
+-			napi_schedule(&tp->napi);
++			tasklet_schedule(&tp->tx_tl);
+ 		}
+ 	} else if (skb_queue_len(&tp->tx_queue) > tp->tx_qlen) {
+ 		netif_stop_queue(netdev);
+@@ -4020,9 +4021,11 @@ static void set_carrier(struct r8152 *tp)
+ 	} else {
+ 		if (netif_carrier_ok(netdev)) {
+ 			netif_carrier_off(netdev);
++			tasklet_disable(&tp->tx_tl);
+ 			napi_disable(napi);
+ 			tp->rtl_ops.disable(tp);
+ 			napi_enable(napi);
++			tasklet_enable(&tp->tx_tl);
+ 			netif_info(tp, link, netdev, "carrier off\n");
+ 		}
+ 	}
+@@ -4055,10 +4058,10 @@ static void rtl_work_func_t(struct work_struct *work)
+ 	if (test_and_clear_bit(RTL8152_SET_RX_MODE, &tp->flags))
+ 		_rtl8152_set_rx_mode(tp->netdev);
+ 
+-	/* don't schedule napi before linking */
+-	if (test_and_clear_bit(SCHEDULE_NAPI, &tp->flags) &&
++	/* don't schedule tasket before linking */
++	if (test_and_clear_bit(SCHEDULE_TASKLET, &tp->flags) &&
+ 	    netif_carrier_ok(tp->netdev))
+-		napi_schedule(&tp->napi);
++		tasklet_schedule(&tp->tx_tl);
+ 
+ 	mutex_unlock(&tp->control);
+ 
+@@ -4144,6 +4147,7 @@ static int rtl8152_open(struct net_device *netdev)
+ 		goto out_unlock;
+ 	}
+ 	napi_enable(&tp->napi);
++	tasklet_enable(&tp->tx_tl);
+ 
+ 	mutex_unlock(&tp->control);
+ 
+@@ -4171,6 +4175,7 @@ static int rtl8152_close(struct net_device *netdev)
+ #ifdef CONFIG_PM_SLEEP
+ 	unregister_pm_notifier(&tp->pm_notifier);
+ #endif
++	tasklet_disable(&tp->tx_tl);
+ 	if (!test_bit(RTL8152_UNPLUG, &tp->flags))
+ 		napi_disable(&tp->napi);
+ 	clear_bit(WORK_ENABLE, &tp->flags);
+@@ -4440,6 +4445,7 @@ static int rtl8152_pre_reset(struct usb_interface *intf)
+ 		return 0;
+ 
+ 	netif_stop_queue(netdev);
++	tasklet_disable(&tp->tx_tl);
+ 	napi_disable(&tp->napi);
+ 	clear_bit(WORK_ENABLE, &tp->flags);
+ 	usb_kill_urb(tp->intr_urb);
+@@ -4483,6 +4489,7 @@ static int rtl8152_post_reset(struct usb_interface *intf)
+ 	}
+ 
+ 	napi_enable(&tp->napi);
++	tasklet_enable(&tp->tx_tl);
+ 	netif_wake_queue(netdev);
+ 	usb_submit_urb(tp->intr_urb, GFP_KERNEL);
+ 
+@@ -4636,10 +4643,12 @@ static int rtl8152_system_suspend(struct r8152 *tp)
+ 
+ 		clear_bit(WORK_ENABLE, &tp->flags);
+ 		usb_kill_urb(tp->intr_urb);
++		tasklet_disable(&tp->tx_tl);
+ 		napi_disable(napi);
+ 		cancel_delayed_work_sync(&tp->schedule);
+ 		tp->rtl_ops.down(tp);
+ 		napi_enable(napi);
++		tasklet_enable(&tp->tx_tl);
+ 	}
+ 
+ 	return 0;
+@@ -5499,6 +5508,8 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 	mutex_init(&tp->control);
+ 	INIT_DELAYED_WORK(&tp->schedule, rtl_work_func_t);
+ 	INIT_DELAYED_WORK(&tp->hw_phy_work, rtl_hw_phy_work_func_t);
++	tasklet_init(&tp->tx_tl, bottom_half, (unsigned long)tp);
++	tasklet_disable(&tp->tx_tl);
+ 
+ 	netdev->netdev_ops = &rtl8152_netdev_ops;
+ 	netdev->watchdog_timeo = RTL8152_TX_TIMEOUT;
+@@ -5585,6 +5596,7 @@ static int rtl8152_probe(struct usb_interface *intf,
+ 
+ out1:
+ 	netif_napi_del(&tp->napi);
++	tasklet_kill(&tp->tx_tl);
+ 	usb_set_intfdata(intf, NULL);
+ out:
+ 	free_netdev(netdev);
+@@ -5601,6 +5613,7 @@ static void rtl8152_disconnect(struct usb_interface *intf)
+ 
+ 		netif_napi_del(&tp->napi);
+ 		unregister_netdev(tp->netdev);
++		tasklet_kill(&tp->tx_tl);
+ 		cancel_delayed_work_sync(&tp->hw_phy_work);
+ 		tp->rtl_ops.unload(tp);
+ 		free_netdev(tp->netdev);
+-- 
+2.21.0
 
-/Magnus
-
-> --
-> Jonathan
