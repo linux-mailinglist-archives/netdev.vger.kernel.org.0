@@ -2,122 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C57E091FC6
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 11:15:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D829591FD7
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 11:18:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727377AbfHSJPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 05:15:30 -0400
-Received: from Galois.linutronix.de ([193.142.43.55]:46607 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726661AbfHSJPa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 05:15:30 -0400
-Received: from pd9ef1cb8.dip0.t-ipconnect.de ([217.239.28.184] helo=nanos)
-        by Galois.linutronix.de with esmtpsa (TLS1.2:DHE_RSA_AES_256_CBC_SHA256:256)
-        (Exim 4.80)
-        (envelope-from <tglx@linutronix.de>)
-        id 1hzdku-00009b-Bv; Mon, 19 Aug 2019 11:15:12 +0200
-Date:   Mon, 19 Aug 2019 11:15:11 +0200 (CEST)
-From:   Thomas Gleixner <tglx@linutronix.de>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-cc:     Jordan Glover <Golden_Miller83@protonmail.ch>,
-        Andy Lutomirski <luto@kernel.org>,
-        Daniel Colascione <dancol@google.com>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        id S1727325AbfHSJST (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 05:18:19 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:43106 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727218AbfHSJST (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 05:18:19 -0400
+Received: by mail-pl1-f196.google.com with SMTP id 4so676349pld.10
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 02:18:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=EWeFe61NjVZsw0MX6UC+IPTXiHZgyCfddwQtPOe4yOY=;
+        b=Av/fd6DuCqD3aQRAuu8B6WDBiSNYnjii1FPfts2kGCg0+Twyjs8z1xa3zu6MSXgiem
+         tAo6QbpvxAg2KVJEMqHi6UYQACJJ3s9UhZ5MACP9eBB2Al1xVVCEkQMjCrxHvZ8hhJvN
+         yc/7GCDU+oFUp1rTrD9gnsdm8VHs5MN3pgPJJN5sRAlC3T1UbxW2kfXHBelS3eNkg6dT
+         YZB4Giq1av/PaLZxx7E1TDh/FG61CZi35GpdySl8enyYAo1aklP5oo5St3A657Swuujf
+         mjk7ATqw50OHlQ0LOo3AEaQLD32NVM8+dgiayh1JL8tH1CiK55wn/4UV9u9cZAiVi6sM
+         BGgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=EWeFe61NjVZsw0MX6UC+IPTXiHZgyCfddwQtPOe4yOY=;
+        b=LjJnATyvrrDdxPM+5Sc38e2itwBmiMiL1FE0dMgmggKyaMbcbOCaPaPGn0dEIgGdiQ
+         Ign/227ZrAb1nRbT5y7WtpxnzWUVg3vzXawB1s7vxrNsUHKzo+toIc78wrgE1m44SF7Z
+         rXyl/ZsURCnVC9d7fLAGwtLKIybOiKPvXei9+eXdETyQjTcBUixgv3aJPudvFan2rRcX
+         j33S1nIO9Eh4HP0X85wQlSuRb39I0XpsuRWnW+imbPvfCimpN4vfH2DqSc2YWhCJrPsm
+         5s1smPR5fLh5bnAnnLg79pl+3QW9oNCNvQP1j0RjhRt18XWVcD+PwWarzK4xUQYH0vKy
+         pbxg==
+X-Gm-Message-State: APjAAAXFncf3of9TqVfbZYoKa9ADGWulcGbVsKlOupy8ch8Mlir0NaqT
+        8UZubB4lHd7vD0dx5qIURr1jFw==
+X-Google-Smtp-Source: APXvYqxHZbQ6AKILK5r1gXP12qaqsKkN+4COxNlst8U8XzfUTS8V/tZT8lHFRS6rP/NugHkoh1oHyw==
+X-Received: by 2002:a17:902:2bc5:: with SMTP id l63mr19077218plb.239.1566206298095;
+        Mon, 19 Aug 2019 02:18:18 -0700 (PDT)
+Received: from leoy-ThinkPad-X240s (li456-16.members.linode.com. [50.116.10.16])
+        by smtp.gmail.com with ESMTPSA id d2sm11867796pjs.21.2019.08.19.02.18.11
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 19 Aug 2019 02:18:17 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 17:18:08 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Russell King <linux@armlinux.org.uk>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via
- /dev/bpf
-In-Reply-To: <20190817150245.xxzxqjpvgqsxmloe@ast-mbp>
-Message-ID: <alpine.DEB.2.21.1908191103130.1923@nanos.tec.linutronix.de>
-References: <20190814220545.co5pucyo5jk3weiv@ast-mbp.dhcp.thefacebook.com> <HG0x24u69mnaMFKuxHVAzHpyjwsD5-U6RpqFRua87wGWQCHg00Q8ZqPeA_5kJ9l-d6oe0cXa4HyYXMnOO0Aofp_LcPcQdG0WFV21z1MbgcE=@protonmail.ch> <20190815172856.yoqvgu2yfrgbkowu@ast-mbp.dhcp.thefacebook.com>
- <CALCETrUv+g+cb79FJ1S4XuV0K=kowFkPXpzoC99svoOfs4-Kvg@mail.gmail.com> <20190815230808.2o2qe7a72cwdce2m@ast-mbp.dhcp.thefacebook.com> <fkD3fs46a1YnR4lh0tEG-g3tDnDcyZuzji7bAUR9wujPLLl75ZhI8Yk-H1jZpSugO7qChVeCwxAMmxLdeoF2QFS3ZzuYlh7zmeZOmhDJxww=@protonmail.ch>
- <alpine.DEB.2.21.1908161158490.1873@nanos.tec.linutronix.de> <lGGTLXBsX3V6p1Z4TkdzAjxbNywaPS2HwX5WLleAkmXNcnKjTPpWnP6DnceSsy8NKt5NBRBbuoAb0woKTcDhJXVoFb7Ygk3Skfj8j6rVfMQ=@protonmail.ch> <20190816195233.vzqqbqrivnooohq6@ast-mbp.dhcp.thefacebook.com>
- <alpine.DEB.2.21.1908162211270.1923@nanos.tec.linutronix.de> <20190817150245.xxzxqjpvgqsxmloe@ast-mbp>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-arch@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Masami Hiramatsu <mhiramat@kernel.org>
+Subject: Re: [PATCH v2 3/3] arm: Add support for function error injection
+Message-ID: <20190819091808.GB5599@leoy-ThinkPad-X240s>
+References: <20190806100015.11256-1-leo.yan@linaro.org>
+ <20190806100015.11256-4-leo.yan@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-X-Linutronix-Spam-Score: -1.0
-X-Linutronix-Spam-Level: -
-X-Linutronix-Spam-Status: No , -1.0 points, 5.0 required,  ALL_TRUSTED=-1,SHORTCIRCUIT=-0.0001
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190806100015.11256-4-leo.yan@linaro.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Alexei,
+Hi Russell,
 
-On Sat, 17 Aug 2019, Alexei Starovoitov wrote:
-> On Fri, Aug 16, 2019 at 10:28:29PM +0200, Thomas Gleixner wrote:
-> > On Fri, 16 Aug 2019, Alexei Starovoitov wrote:
-> > While real usecases are helpful to understand a design decision, the design
-> > needs to be usecase independent.
-> > 
-> > The kernel provides mechanisms, not policies. My impression of this whole
-> > discussion is that it is policy driven. That's the wrong approach.
+On Tue, Aug 06, 2019 at 06:00:15PM +0800, Leo Yan wrote:
+> This patch implements arm specific functions regs_set_return_value() and
+> override_function_with_return() to support function error injection.
 > 
-> not sure what you mean by 'policy driven'.
-> Proposed CAP_BPF is a policy?
+> In the exception flow, it updates pt_regs::ARM_pc with pt_regs::ARM_lr
+> so can override the probed function return.
 
-I was referring to the discussion as a whole.
- 
-> Can kernel.unprivileged_bpf_disabled=1 be used now?
-> Yes, but it will weaken overall system security because things that
-> use unpriv to load bpf and CAP_NET_ADMIN to attach bpf would need
-> to move to stronger CAP_SYS_ADMIN.
-> 
-> With CAP_BPF both load and attach would happen under CAP_BPF
-> instead of CAP_SYS_ADMIN.
-
-I'm not arguing against that.
-
-> > So let's look at the mechanisms which we have at hand:
-> > 
-> >  1) Capabilities
-> >  
-> >  2) SUID and dropping priviledges
-> > 
-> >  3) Seccomp and LSM
-> > 
-> > Now the real interesting questions are:
-> > 
-> >  A) What kind of restrictions does BPF allow? Is it a binary on/off or is
-> >     there a more finegrained control of BPF functionality?
-> > 
-> >     TBH, I can't tell.
-> > 
-> >  B) Depending on the answer to #A what is the control possibility for
-> >     #1/#2/#3 ?
-> 
-> Can any of the mechanisms 1/2/3 address the concern in mds.rst?
-
-Well, that depends. As with any other security policy which is implemented
-via these mechanisms, the policy can be strict enough to prevent it by not
-allowing certain operations. The more fine-grained the control is, it
-allows the administrator who implements the policy to remove the
-'dangerous' parts from an untrusted user.
-
-So really question #A is important for this. Is BPF just providing a binary
-ON/OFF knob or does it allow to disable/enable certain aspects of BPF
-functionality in a more fine grained way? If the latter, then it might be
-possible to control functionality which might be abused for exploits of
-some sorts (including MDS) in a way which allows other parts of BBF to be
-exposed to less priviledged contexts.
-
-> I believe Andy wants to expand the attack surface when
-> kernel.unprivileged_bpf_disabled=0
-> Before that happens I'd like the community to work on addressing the text above.
-
-Well, that text above can be removed when the BPF wizards are entirely sure
-that BPF cannot be abused to exploit stuff. 
+Gentle ping ...  Could you review this patch?
 
 Thanks,
+Leo.
 
-	tglx
+> Signed-off-by: Leo Yan <leo.yan@linaro.org>
+> ---
+>  arch/arm/Kconfig              |  1 +
+>  arch/arm/include/asm/ptrace.h |  5 +++++
+>  arch/arm/lib/Makefile         |  2 ++
+>  arch/arm/lib/error-inject.c   | 19 +++++++++++++++++++
+>  4 files changed, 27 insertions(+)
+>  create mode 100644 arch/arm/lib/error-inject.c
+> 
+> diff --git a/arch/arm/Kconfig b/arch/arm/Kconfig
+> index 33b00579beff..2d3d44a037f6 100644
+> --- a/arch/arm/Kconfig
+> +++ b/arch/arm/Kconfig
+> @@ -77,6 +77,7 @@ config ARM
+>  	select HAVE_EXIT_THREAD
+>  	select HAVE_FAST_GUP if ARM_LPAE
+>  	select HAVE_FTRACE_MCOUNT_RECORD if !XIP_KERNEL
+> +	select HAVE_FUNCTION_ERROR_INJECTION if !THUMB2_KERNEL
+>  	select HAVE_FUNCTION_GRAPH_TRACER if !THUMB2_KERNEL && !CC_IS_CLANG
+>  	select HAVE_FUNCTION_TRACER if !XIP_KERNEL
+>  	select HAVE_GCC_PLUGINS
+> diff --git a/arch/arm/include/asm/ptrace.h b/arch/arm/include/asm/ptrace.h
+> index 91d6b7856be4..3b41f37b361a 100644
+> --- a/arch/arm/include/asm/ptrace.h
+> +++ b/arch/arm/include/asm/ptrace.h
+> @@ -89,6 +89,11 @@ static inline long regs_return_value(struct pt_regs *regs)
+>  	return regs->ARM_r0;
+>  }
+>  
+> +static inline void regs_set_return_value(struct pt_regs *regs, unsigned long rc)
+> +{
+> +	regs->ARM_r0 = rc;
+> +}
+> +
+>  #define instruction_pointer(regs)	(regs)->ARM_pc
+>  
+>  #ifdef CONFIG_THUMB2_KERNEL
+> diff --git a/arch/arm/lib/Makefile b/arch/arm/lib/Makefile
+> index b25c54585048..8f56484a7156 100644
+> --- a/arch/arm/lib/Makefile
+> +++ b/arch/arm/lib/Makefile
+> @@ -42,3 +42,5 @@ ifeq ($(CONFIG_KERNEL_MODE_NEON),y)
+>    CFLAGS_xor-neon.o		+= $(NEON_FLAGS)
+>    obj-$(CONFIG_XOR_BLOCKS)	+= xor-neon.o
+>  endif
+> +
+> +obj-$(CONFIG_FUNCTION_ERROR_INJECTION) += error-inject.o
+> diff --git a/arch/arm/lib/error-inject.c b/arch/arm/lib/error-inject.c
+> new file mode 100644
+> index 000000000000..2d696dc94893
+> --- /dev/null
+> +++ b/arch/arm/lib/error-inject.c
+> @@ -0,0 +1,19 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +
+> +#include <linux/error-injection.h>
+> +#include <linux/kprobes.h>
+> +
+> +void override_function_with_return(struct pt_regs *regs)
+> +{
+> +	/*
+> +	 * 'regs' represents the state on entry of a predefined function in
+> +	 * the kernel/module and which is captured on a kprobe.
+> +	 *
+> +	 * 'regs->ARM_lr' contains the the link register for the probed
+> +	 * function, when kprobe returns back from exception it will override
+> +	 * the end of probed function and directly return to the predefined
+> +	 * function's caller.
+> +	 */
+> +	instruction_pointer_set(regs, regs->ARM_lr);
+> +}
+> +NOKPROBE_SYMBOL(override_function_with_return);
+> -- 
+> 2.17.1
+> 
