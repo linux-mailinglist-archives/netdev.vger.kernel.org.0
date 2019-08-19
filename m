@@ -2,58 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C62594EFA
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 22:29:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B64A594F35
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 22:41:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728302AbfHSU3L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 16:29:11 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:42432 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727988AbfHSU3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 16:29:11 -0400
-Received: by mail-qt1-f196.google.com with SMTP id t12so3417672qtp.9
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 13:29:11 -0700 (PDT)
+        id S1728316AbfHSUlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 16:41:07 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:35284 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728287AbfHSUlH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 16:41:07 -0400
+Received: by mail-qk1-f194.google.com with SMTP id r21so2639348qke.2
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 13:41:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=netronome-com.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:in-reply-to:references
          :organization:mime-version:content-transfer-encoding;
-        bh=JE9NE50gW1Dye2LG4r5kUn+4ALy8w0ijIqPdFitTYSg=;
-        b=oVleNcGIo4yNdd0pwKc6UcAljtaFVSvBdhu0Ur07inNXzFCHiWqlwUlTYNtdCQjef3
-         jcRcqrhuZiREF0HZ3Ewe8qEw5crtqw0Ht6BltmJsw/ff312LtUcPoPng4eXw1zrM0tPa
-         3d2dLVxZL/Ahwv0QMM3n+ilNIZ4qZSiyaZzk/aJHzYGnMzyx+c2F3Ru8UhL5h51fCzYp
-         1oiqfHtBkHvibENhTMAHl0nj5em+OqypWZYLLThnWYoDmhl5NTOVn0JP5NyrZSo1eCCi
-         9amTGL1gGp4kJKvbw2m8uVPUAqx5nc32w5i6KC3vXITZsK/Auq6lWAMeB7wI6bjYhC46
-         ct+w==
+        bh=i1QyQWhoM3Qmw7JUjKggfzWHZbx+tCHV+wohd71bQKw=;
+        b=ed8hbIrBmZGYlVaI0jCLF5xizyk8mVTXvUr/dcJJ0MgwVEnnYDHh8fVF4Vz+BH0rd5
+         PSUEe2Jm+JGNNpfu33JUHSFgYQbdGhtYAdRvpR72wp48yTkO8ozWmZv9VWJLa/bfW0Mf
+         UAPWEp/4B8Z3EDKrim8YC16mKVcoMAkyn6iahS/uPmwwzCxZFFQ2rMVwZHK3soXqtwWu
+         MNrYSaJQELjyvjVn8nDAdvRPz4SzVtjB4Z25zjZZ6gkrNlpU5evYYqRZQ/ZYcxDaWRdG
+         P/PTci3g2k+QgPWD56dcfclKNHyit/AGDkUn+ReyiasRaIhIXvg56T93NwMJ5uss+er1
+         1dyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
          :references:organization:mime-version:content-transfer-encoding;
-        bh=JE9NE50gW1Dye2LG4r5kUn+4ALy8w0ijIqPdFitTYSg=;
-        b=jYRuyZklSKpSINwBglCi5SQZww8MTRZvB6WAKcv0V7ovmAuXruAHC8PFMB3rQrY3M5
-         oVQZKKW25ye/m1oCHWK2R3CNY5Yhx/nlVZDH8NjJ6h5JQHrVRgfcyZ7ZlfmlOxhR/11m
-         cugaS00aPD6KmCIWPObVqElbtgM2hMBKIdQvAOfmAjEsSHRejHk+/qGVpraBd6Nfp0H3
-         4i2aGmfam3YM6KkVv6+/jp2RNIpwX9JtKNqWsss889GWAePFyCLbSfyOuBwcfUfC5T/6
-         1ZvCPCGM7LpfO+luPp/VRi/VZEY3MzPRfBCToGRN7Fpr8CqX3Z0K6afrL6R4Kv3ZGD92
-         aqgw==
-X-Gm-Message-State: APjAAAX5hEdQbdBDVLt0uVw8xJuM4Trjx0DejfyZ0lFJxEqaLHfk8qOj
-        QOu1FvoZ3DD54SyMPWZvRbmDhA==
-X-Google-Smtp-Source: APXvYqyl64YGUHNgloNrkxmuvfvMEMhgcSkXQo3hQcJVMF3D8MMWveUeJAxuzjyL4iTBg4iI0d+g6A==
-X-Received: by 2002:ac8:739a:: with SMTP id t26mr23066537qtp.65.1566246550732;
-        Mon, 19 Aug 2019 13:29:10 -0700 (PDT)
+        bh=i1QyQWhoM3Qmw7JUjKggfzWHZbx+tCHV+wohd71bQKw=;
+        b=A5kTxrvuKmzpA1kywg9ap5pLkqXDL4QGgJdaxbfzNTnWMJS6pTpVUaSO2O0VWFPXNz
+         9bguQv/iz+W3G9Y8mpbz4HWhvAe/xePlztCV5jIsYf8OrNp9877Msemn7I+2mx5/vmKq
+         HU8FrqXuxgYjvGz4zNttPydH5nITYrRlxVfQAL1e98BFVO0HbRcrwBS8BQfbjbe3d3Ph
+         FABQfDQePMxPV2V05Yeu0sa7pAxLYtS4dlWfCNIYd3Hc3WdVvxT+wW3szz6zUtpHkIZX
+         GtQE3CUV8dZ1oogVi8Yo2YZD5BNarne0YMyPCZ/sbtGqPv/QD1KuF1EJK239XtDaRUO+
+         7/OQ==
+X-Gm-Message-State: APjAAAWnywjPdfyHKW/REkoIvzlC27qSlyWeoZbWfnGD7+dLPRNKSg72
+        g5rzLTyCOU4BQ3RkEE6F9IaWXw==
+X-Google-Smtp-Source: APXvYqytGQvHU9QifypFbHdFtn+YWLefEL14xyXLliESSSkx3KqdAa1hbsXb0+zV57UYHKtUPxdq9A==
+X-Received: by 2002:a37:4791:: with SMTP id u139mr21918654qka.386.1566247266360;
+        Mon, 19 Aug 2019 13:41:06 -0700 (PDT)
 Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id z33sm7462946qtc.56.2019.08.19.13.29.09
+        by smtp.gmail.com with ESMTPSA id c13sm7198142qtn.77.2019.08.19.13.41.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 13:29:10 -0700 (PDT)
-Date:   Mon, 19 Aug 2019 13:29:04 -0700
+        Mon, 19 Aug 2019 13:41:06 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 13:40:58 -0700
 From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, pablo@netfilter.org
-Subject: Re: [PATCH net] nfp: flower: verify that block cb is not busy
- before binding
-Message-ID: <20190819132904.0ba5f751@cakuba.netronome.com>
-In-Reply-To: <20190819073304.9419-1-vladbu@mellanox.com>
-References: <20190819073304.9419-1-vladbu@mellanox.com>
+To:     Davide Caratti <dcaratti@redhat.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Boris Pismenny <borisp@mellanox.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Dave Watson <davejwatson@fb.com>,
+        Aviad Yehezkel <aviadye@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 2/3] tcp: ulp: add functions to dump
+ ulp-specific information
+Message-ID: <20190819134058.575c243c@cakuba.netronome.com>
+In-Reply-To: <b765aa08456ef258615a46e7ff106703a240ddb5.camel@redhat.com>
+References: <cover.1565882584.git.dcaratti@redhat.com>
+        <f9b5663d28547b0d1c187d874c7b5e5ece8fe8fa.1565882584.git.dcaratti@redhat.com>
+        <228db5cc-9b10-521f-9031-e0f86f5ded3e@gmail.com>
+        <20190815143810.3a190c81@cakuba.netronome.com>
+        <b765aa08456ef258615a46e7ff106703a240ddb5.camel@redhat.com>
 Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,14 +71,66 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Aug 2019 10:33:04 +0300, Vlad Buslov wrote:
-> When processing FLOW_BLOCK_BIND command on indirect block, check that flow
-> block cb is not busy.
+On Mon, 19 Aug 2019 15:32:09 +0200, Davide Caratti wrote:
+> On Thu, 2019-08-15 at 14:38 -0700, Jakub Kicinski wrote:
+> > On Thu, 15 Aug 2019 20:46:01 +0200, Eric Dumazet wrote:  
+> > > On 8/15/19 6:00 PM, Davide Caratti wrote:
+> > > > +	if (net_admin) {
+> > > > +		const struct tcp_ulp_ops *ulp_ops;
+> > > > +
+> > > > +		rcu_read_lock();
+> > > > +		ulp_ops = icsk->icsk_ulp_ops;
+> > > > +		if (ulp_ops)
+> > > > +			err = tcp_diag_put_ulp(skb, sk, ulp_ops);
+> > > > +		rcu_read_unlock();
+> > > > +		if (err)
+> > > > +			return err;
+> > > > +	}
+> > > >  	return 0;    
+> > > 
+> > > Why is rcu_read_lock() and rcu_read_unlock() used at all ?
+> > > 
+> > > icsk->icsk_ulp_ops does not seem to be rcu protected ?
+> > > 
+> > > If this was, then an rcu_dereference() would be appropriate.  
+> > 
+> > Indeed it's ulp_data not ulp_ops that are protected.   
 > 
-> Fixes: 0d4fd02e7199 ("net: flow_offload: add flow_block_cb_is_busy() and use it")
-> Reported-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+> the goal is to protect execution of 'ss -tni' against concurrent removal
+> of tls.ko module, similarly to what was done in inet_sk_diag_fill() when
+> INET_DIAG_CONG is requested [1]. But after reading more carefully, the
+> assignment of ulp_ops needs to be:
+> 
+> 	ulp_ops = READ_ONCE(icsk->icsk_ulp_ops);
+> 
+> which I lost in internal reviews, with some additional explanatory
+> comment. Ok if I correct the above hunk with READ_ONCE() and add a
+> comment?
 
-Acked-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+Seems like a forth while future-proofing. Currently the ULP can't
+change, and is only released when socket is destroyed, so we should 
+be safe (unlike CC which can be changed at any moment). 
 
-Thank you!
+We should mark the pointer as RCU tho, I find it hard to wrap my head
+around these half-way RCU pointers with just READ_ONCE() on them :S
+
+> > Davide, perhaps we could push the RCU lock into tls_get_info(), after all?  
+> 
+> It depends on whether concurrent dump / module removal is an issue for TCP
+> ULPs, like it was for congestion control schemes [1]. Any advice?
+
+If we're willing to mark icsk->icsk_ulp_ops as RCU I think it's fine.
+But I'm not 100% sure its worth the churn :S
+
+> > And tls_context has to use rcu_deference there, as Eric points out, 
+> > plus we should probably NULL-check it.  
+> 
+> yes, it makes sense, for patch 3/3, in the assignment of 'ctx'. Instead of
+> calling tls_get_ctx() in tls_get_info() I will do
+> 
+> 	ctx = rcu_dereference(inet_csk(sk)->icsk_ulp_data);
+> 
+> and let it return 0 in case of NULL ctx (as it doesn't look like a faulty
+> situation). Ok? 
+
+SGTM!
