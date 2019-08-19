@@ -2,290 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 45F5F949D5
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 18:28:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 29FD2949F8
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 18:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727873AbfHSQ2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 12:28:34 -0400
-Received: from smtp.codeaurora.org ([198.145.29.96]:43022 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726879AbfHSQ2e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 12:28:34 -0400
-Received: by smtp.codeaurora.org (Postfix, from userid 1000)
-        id 7084060735; Mon, 19 Aug 2019 16:28:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1566232112;
-        bh=oFPm0akAMtPV52h7/LybKDpRV5+FKT/K+TDMwnYBG2Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AFLO6GO9oHuIRdAvuil9gfbDD3aKpSwq2LXt7qLx8TgjwXvabDDjlHdy906M7ngDO
-         2gdeNETxRdhS+nZnsYQuqw9/1F/Xnrq0a0ZNqyc8i1snJFEkyBl0fhFQra5bmPuYx4
-         EOAchQ/44MMuyD3BrfNH+G9oXiiN34mMs3XXpl20=
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        pdx-caf-mail.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        DKIM_INVALID,DKIM_SIGNED,SPF_NONE autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo@smtp.codeaurora.org)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 7F5CD60112;
-        Mon, 19 Aug 2019 16:28:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=codeaurora.org;
-        s=default; t=1566232111;
-        bh=oFPm0akAMtPV52h7/LybKDpRV5+FKT/K+TDMwnYBG2Q=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nMOiqkcp5eO+uu+gZ39vxilL50Ex8HCrAL16dn/g0dAmLSWQeXlXz1g1iMAhL1CpF
-         qIWtR/4bzBLhOoqkp2Qu4jMsYO1g1+9Z5kkkhK3bP7MhAq2swFSYpDZ19hle1DxPK8
-         6kzGDWauCiaq2tSzwkycEBXqxa2ddo5ShmO1X8aU=
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 7F5CD60112
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: pdx-caf-mail.web.codeaurora.org; spf=none smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     David Miller <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: pull-request: wireless-drivers-next 2019-08-19
-Date:   Mon, 19 Aug 2019 19:28:28 +0300
-Message-ID: <87tvad9l1v.fsf@kamboji.qca.qualcomm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1727989AbfHSQcG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 12:32:06 -0400
+Received: from mx2.suse.de ([195.135.220.15]:55208 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726879AbfHSQcE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 12:32:04 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 310AAAFAE;
+        Mon, 19 Aug 2019 16:32:01 +0000 (UTC)
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH v5 00/17] Use MFD framework for SGI IOC3 drivers
+Date:   Mon, 19 Aug 2019 18:31:23 +0200
+Message-Id: <20190819163144.3478-1-tbogendoerfer@suse.de>
+X-Mailer: git-send-email 2.13.7
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
+GI IOC3 ASIC includes support for ethernet, PS2 keyboard/mouse,
+NIC (number in a can), GPIO and a byte  bus. By attaching a
+SuperIO chip to it, it also supports serial lines and a parallel
+port. The chip is used on a variety of SGI systems with different
+configurations. This patchset moves code out of the network driver,
+which doesn't belong there, into its new place a MFD driver and
+specific platform drivers for the different subfunctions.
 
-here's a pull request to net-next for v5.4, more info below. Please let
-me know if there are any problems.
+Changes in v5:
+ - requested by Jakub I've splitted ioc3 ethernet driver changes into
+   more steps to make the transition more visible; on the way there 
+   I've "checkpatched" the driver and reduced code reorderings
+ - dropped all uint16_t and uint32_t
+ - added nvmem API extension to the documenation file
+ - changed to use request_irq/free_irq in serio driver
+ - removed wrong kfree() in serio error path
 
-Kalle
+Changes in v4:
+ - added w1 drivers to the series after merge in 5.3 failed because
+   of no response from maintainer and other parts of this series
+   won't work without that drivers
+ - moved ip30 systemboard support to the ip30 series, which will
+   deal with rtc oddity Lee found
+ - converted to use devm_platform_ioremap_resource
+ - use PLATFORM_DEVID_AUTO for serial, ethernet and serio in mfd driver
+ - fixed reverse christmas order in ioc3-eth.c
+ - formating issue found by Lee
+ - re-worked irq request/free in serio driver to avoid crashes during
+   probe/remove
 
-The following changes since commit 3e3bb69589e482e0783f28d4cd1d8e56fda0bcbb:
+Changes in v3:
+ - use 1-wire subsystem for handling proms
+ - pci-xtalk driver uses prom information to create PCI subsystem
+   ids for use in MFD driver
+ - changed MFD driver to only use static declared mfd_cells
+ - added IP30 system board setup to MFD driver
+ - mac address is now read from ioc3-eth driver with nvmem framework
 
-  tc-testing: added tdc tests for [b|p]fifo qdisc (2019-07-23 14:08:15 -070=
-0)
+Changes in v2:
+ - fixed issue in ioc3kbd.c reported by Dmitry Torokhov
+ - merged IP27 RTC removal and 8250 serial driver addition into
+   main MFD patch to keep patches bisectable
 
-are available in the git repository at:
+Thomas Bogendoerfer (17):
+  w1: add 1-wire master driver for IP block found in SGI ASICs
+  w1: add DS2501, DS2502, DS2505 EPROM device driver
+  nvmem: core: add nvmem_device_find
+  MIPS: PCI: refactor ioc3 special handling
+  MIPS: PCI: use information from 1-wire PROM for IOC3 detection
+  MIPS: SGI-IP27: remove ioc3 ethernet init
+  MIPS: SGI-IP27: restructure ioc3 register access
+  net: sgi: ioc3-eth: remove checkpatch errors/warning
+  net: sgi: ioc3-eth: use defines for constants dealing with desc rings
+  net: sgi: ioc3-eth: rework skb rx handling
+  net: sgi: ioc3-eth: no need to stop queue set_multicast_list
+  net: sgi: ioc3-eth: use dma-direct for dma allocations
+  net: sgi: ioc3-eth: use csum_fold
+  net: sgi: ioc3-eth: Fix IPG settings
+  mfd: ioc3: Add driver for SGI IOC3 chip
+  MIPS: SGI-IP27: fix readb/writeb addressing
+  Input: add IOC3 serio driver
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next=
-.git tags/wireless-drivers-next-for-davem-2019-08-19
+ Documentation/driver-api/nvmem.rst            |    2 +
+ arch/mips/include/asm/mach-ip27/mangle-port.h |    4 +-
+ arch/mips/include/asm/pci/bridge.h            |    1 +
+ arch/mips/include/asm/sn/ioc3.h               |  364 +++----
+ arch/mips/pci/pci-xtalk-bridge.c              |  296 ++++--
+ arch/mips/sgi-ip27/ip27-console.c             |    5 +-
+ arch/mips/sgi-ip27/ip27-init.c                |   13 -
+ arch/mips/sgi-ip27/ip27-timer.c               |   20 -
+ arch/mips/sgi-ip27/ip27-xtalk.c               |   38 +-
+ drivers/input/serio/Kconfig                   |   10 +
+ drivers/input/serio/Makefile                  |    1 +
+ drivers/input/serio/ioc3kbd.c                 |  160 +++
+ drivers/mfd/Kconfig                           |   13 +
+ drivers/mfd/Makefile                          |    1 +
+ drivers/mfd/ioc3.c                            |  586 +++++++++++
+ drivers/net/ethernet/sgi/Kconfig              |    4 +-
+ drivers/net/ethernet/sgi/ioc3-eth.c           | 1405 +++++++++----------------
+ drivers/nvmem/core.c                          |   62 +-
+ drivers/rtc/rtc-m48t35.c                      |   11 +
+ drivers/tty/serial/8250/8250_ioc3.c           |   98 ++
+ drivers/tty/serial/8250/Kconfig               |   11 +
+ drivers/tty/serial/8250/Makefile              |    1 +
+ drivers/w1/masters/Kconfig                    |    9 +
+ drivers/w1/masters/Makefile                   |    1 +
+ drivers/w1/masters/sgi_w1.c                   |  130 +++
+ drivers/w1/slaves/Kconfig                     |    6 +
+ drivers/w1/slaves/Makefile                    |    1 +
+ drivers/w1/slaves/w1_ds250x.c                 |  293 ++++++
+ include/linux/nvmem-consumer.h                |    9 +
+ include/linux/platform_data/sgi-w1.h          |   15 +
+ include/linux/w1.h                            |    2 +
+ 31 files changed, 2266 insertions(+), 1306 deletions(-)
+ create mode 100644 drivers/input/serio/ioc3kbd.c
+ create mode 100644 drivers/mfd/ioc3.c
+ create mode 100644 drivers/tty/serial/8250/8250_ioc3.c
+ create mode 100644 drivers/w1/masters/sgi_w1.c
+ create mode 100644 drivers/w1/slaves/w1_ds250x.c
+ create mode 100644 include/linux/platform_data/sgi-w1.h
 
-for you to fetch changes up to 6004cf298a4180199dc40bc40466126df8a5a88c:
+-- 
+2.13.7
 
-  b43legacy: Remove pointless cond_resched() wrapper (2019-08-06 15:43:50 +=
-0300)
-
-----------------------------------------------------------------
-wireless-drivers-next patches for 5.4
-
-First set of patches for 5.4.
-
-Major changes:
-
-brcmfmac
-
-* enable 160 MHz channel support
-
-rt2x00
-
-* add support for PLANEX GW-USMicroN USB device
-
-rtw88
-
-* add Bluetooth coexistance support
-
-----------------------------------------------------------------
-Arend van Spriel (10):
-      brcmfmac: add 160MHz in chandef_to_chanspec()
-      brcmfmac: enable DFS_OFFLOAD extended feature if supported
-      brcmfmac: allow 160MHz in custom regulatory rules
-      Revert "brcmfmac: fix NULL pointer derefence during USB disconnect"
-      brcmfmac: change the order of things in brcmf_detach()
-      brcmfmac: avoid firmware command in brcmf_netdev_open() when bus is d=
-own
-      brcmfmac: clear events in brcmf_fweh_detach() will always fail
-      brcmfmac: avoid firmware commands when bus is down
-      brcmfmac: simply remove flowring if bus is down
-      brcmfmac: remove unnecessary strlcpy() upon obtaining "ver" iovar
-
-Brian Norris (2):
-      rtw88: use txpwr_lmt_cfg_pair struct, not arrays
-      Revert "mwifiex: fix system hang problem after resume"
-
-Chris Chiu (1):
-      rtl8xxxu: Fix wifi low signal strength issue of RTL8723BU
-
-Chuhong Yuan (5):
-      bcma: Use dev_get_drvdata
-      iwlegacy: Use dev_get_drvdata where possible
-      mwifiex: pcie: Use dev_get_drvdata
-      qtnfmac_pcie: Use dev_get_drvdata
-      rtlwifi: rtl_pci: Use dev_get_drvdata
-
-Colin Ian King (3):
-      libertas: remove redundant assignment to variable ret
-      wl3501_cs: remove redundant variable rc
-      ipw2x00: remove redundant assignment to err
-
-Dan Williams (1):
-      libertas: Fix a double free in if_spi_c2h_data()
-
-Enrico Weigelt (1):
-      rsi: return explicit error values
-
-Ganapathi Kondraju (2):
-      rsi: fix for sdio interface setup in 9116
-      rsi: fix for sdio reset card issue
-
-Greg Kroah-Hartman (1):
-      rt2x00: no need to check return value of debugfs_create functions
-
-Hariprasad Kelam (1):
-      rtlwifi: btcoex: fix issue possible condition with no effect (if =3D=
-=3D else)
-
-Jian-Hong Pan (2):
-      rtw88: pci: Rearrange the memory usage for skb in RX ISR
-      rtw88: pci: Use DMA sync instead of remapping in RX ISR
-
-Joe Perches (1):
-      rtw88: Fix misuse of GENMASK macro
-
-Kevin Easton (1):
-      libertas: Add missing sentinel at end of if_usb.c fw_table
-
-Larry Finger (9):
-      rtlwifi: rtl8188ee: Remove unused GET_XXX and SET_XXX descriptor macr=
-os
-      rtlwifi: rtl88188ee: Replace local bit manipulation macros
-      rtlwifi: rtl8188ee: Convert macros that set descriptor
-      rtlwifi: rtl8188ee: Convert inline routines to little-endian words
-      rtlwifi: rtl8188ee: Remove local configuration variable
-      rtlwifi: rtl8192ce: Remove unused GET_XXX and SET_XXX
-      rtlwifi: rtl8192ce: Replace local bit manipulation macros
-      rtlwifi: rtl8192ce: Convert macros that set descriptor
-      rtlwifi: rtl8192ce: Convert inline routines to little-endian words
-
-Mao Wenan (1):
-      mwifiex: use eth_broadcast_addr() to assign broadcast address
-
-Masanari Iida (1):
-      rt2800usb: Add new rt2800usb device PLANEX GW-USMicroN
-
-Navid Emamdoost (1):
-      mt7601u: null check the allocation
-
-Pavel Machek (1):
-      mwifiex: make error values consistent in mwifiex_update_bss_desc_with=
-_ie()
-
-Ping-Ke Shih (1):
-      rtlwifi: remove assignment to itself
-
-Rafa=C5=82 Mi=C5=82ecki (1):
-      brcmfmac: don't net_ratelimit() CONSOLE messages on firmware crash
-
-Soeren Moch (1):
-      rt2x00usb: remove unnecessary rx flag checks
-
-Stanislaw Gruszka (1):
-      mt7601u: use params->ssn value directly
-
-Thomas Gleixner (1):
-      b43legacy: Remove pointless cond_resched() wrapper
-
-Yan-Hsuan Chuang (3):
-      rtw88: allow c2h operation in irq context
-      rtw88: enclose c2h cmd handle with mutex
-      rtw88: add BT co-existence support
-
-YueHaibing (5):
-      libertas_tf: Use correct channel range in lbtf_geo_init
-      rtlwifi: remove unneeded function _rtl_dump_channel_map()
-      brcmfmac: remove set but not used variable 'dtim_period'
-      brcmsmac: remove three set but not used variables
-      rtw88: pci: remove set but not used variable 'ip_sel'
-
-Zong-Zhe Yang (1):
-      rtw88: debug: dump tx power indexes in use
-
- drivers/bcma/host_pci.c                            |    6 +-
- drivers/net/wireless/broadcom/b43legacy/phy.c      |   21 +-
- .../wireless/broadcom/brcm80211/brcmfmac/bcdc.c    |   11 +-
- .../wireless/broadcom/brcm80211/brcmfmac/bcdc.h    |    6 +-
- .../broadcom/brcm80211/brcmfmac/cfg80211.c         |   61 +-
- .../wireless/broadcom/brcm80211/brcmfmac/common.c  |    1 -
- .../wireless/broadcom/brcm80211/brcmfmac/core.c    |   30 +-
- .../wireless/broadcom/brcm80211/brcmfmac/feature.c |    1 +
- .../wireless/broadcom/brcm80211/brcmfmac/feature.h |    4 +-
- .../wireless/broadcom/brcm80211/brcmfmac/fweh.c    |    9 -
- .../broadcom/brcm80211/brcmfmac/fwsignal.c         |   16 +-
- .../broadcom/brcm80211/brcmfmac/fwsignal.h         |    3 +-
- .../wireless/broadcom/brcm80211/brcmfmac/msgbuf.c  |    7 +
- .../wireless/broadcom/brcm80211/brcmfmac/pcie.c    |    3 +-
- .../wireless/broadcom/brcm80211/brcmfmac/proto.c   |   10 +-
- .../wireless/broadcom/brcm80211/brcmfmac/proto.h   |    3 +-
- .../wireless/broadcom/brcm80211/brcmsmac/main.c    |   13 -
- drivers/net/wireless/intel/ipw2x00/ipw2100.c       |    2 +-
- drivers/net/wireless/intel/iwlegacy/common.c       |    3 +-
- drivers/net/wireless/marvell/libertas/if_spi.c     |   14 +-
- drivers/net/wireless/marvell/libertas/if_usb.c     |    3 +-
- drivers/net/wireless/marvell/libertas/main.c       |    2 +-
- drivers/net/wireless/marvell/libertas_tf/cmd.c     |    2 +-
- drivers/net/wireless/marvell/mwifiex/init.c        |    2 +-
- drivers/net/wireless/marvell/mwifiex/pcie.c        |    8 +-
- drivers/net/wireless/marvell/mwifiex/scan.c        |    2 +-
- drivers/net/wireless/marvell/mwifiex/tdls.c        |    3 +-
- drivers/net/wireless/mediatek/mt7601u/init.c       |    3 +
- drivers/net/wireless/mediatek/mt7601u/main.c       |    4 +-
- drivers/net/wireless/quantenna/qtnfmac/pcie/pcie.c |    4 +-
- drivers/net/wireless/ralink/rt2x00/rt2800usb.c     |    1 +
- drivers/net/wireless/ralink/rt2x00/rt2x00debug.c   |  136 +-
- drivers/net/wireless/ralink/rt2x00/rt2x00usb.c     |    9 +-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_8723b.c |   11 +-
- .../net/wireless/realtek/rtl8xxxu/rtl8xxxu_core.c  |    3 +-
- .../realtek/rtlwifi/btcoexist/halbtcoutsrc.c       |    8 +-
- drivers/net/wireless/realtek/rtlwifi/pci.c         |    6 +-
- drivers/net/wireless/realtek/rtlwifi/regd.c        |   18 -
- .../net/wireless/realtek/rtlwifi/rtl8188ee/dm.c    |    7 +-
- .../net/wireless/realtek/rtlwifi/rtl8188ee/sw.c    |    4 -
- .../net/wireless/realtek/rtlwifi/rtl8188ee/trx.c   |  257 +-
- .../net/wireless/realtek/rtlwifi/rtl8188ee/trx.h   | 1046 ++++----
- .../net/wireless/realtek/rtlwifi/rtl8192ce/sw.c    |    2 -
- .../net/wireless/realtek/rtlwifi/rtl8192ce/trx.c   |  215 +-
- .../net/wireless/realtek/rtlwifi/rtl8192ce/trx.h   |  803 +++---
- .../net/wireless/realtek/rtlwifi/rtl8192cu/sw.c    |    2 -
- .../net/wireless/realtek/rtlwifi/rtl8192se/sw.c    |    2 -
- .../net/wireless/realtek/rtlwifi/rtl8723ae/sw.c    |    4 -
- .../net/wireless/realtek/rtlwifi/rtl8723be/sw.c    |    4 -
- .../net/wireless/realtek/rtlwifi/rtl8821ae/sw.c    |    4 -
- drivers/net/wireless/realtek/rtw88/Makefile        |    1 +
- drivers/net/wireless/realtek/rtw88/coex.c          | 2507 ++++++++++++++++=
-+++
- drivers/net/wireless/realtek/rtw88/coex.h          |  369 +++
- drivers/net/wireless/realtek/rtw88/debug.c         |  112 +
- drivers/net/wireless/realtek/rtw88/fw.c            |  135 +-
- drivers/net/wireless/realtek/rtw88/fw.h            |   73 +
- drivers/net/wireless/realtek/rtw88/mac80211.c      |   19 +
- drivers/net/wireless/realtek/rtw88/main.c          |   45 +-
- drivers/net/wireless/realtek/rtw88/main.h          |  233 ++
- drivers/net/wireless/realtek/rtw88/pci.c           |   74 +-
- drivers/net/wireless/realtek/rtw88/phy.c           |   15 +-
- drivers/net/wireless/realtek/rtw88/phy.h           |    9 +
- drivers/net/wireless/realtek/rtw88/ps.c            |    9 +
- drivers/net/wireless/realtek/rtw88/reg.h           |   62 +
- drivers/net/wireless/realtek/rtw88/rtw8822b.c      |  462 +++-
- .../net/wireless/realtek/rtw88/rtw8822b_table.c    | 1564 +++++++++---
- drivers/net/wireless/realtek/rtw88/rtw8822c.c      |  355 ++-
- .../net/wireless/realtek/rtw88/rtw8822c_table.c    | 2635 +++++++++++++---=
-----
- drivers/net/wireless/rsi/rsi_91x_sdio.c            |   31 +-
- drivers/net/wireless/wl3501_cs.c                   |    4 +-
- 70 files changed, 8606 insertions(+), 2907 deletions(-)
- create mode 100644 drivers/net/wireless/realtek/rtw88/coex.c
- create mode 100644 drivers/net/wireless/realtek/rtw88/coex.h
