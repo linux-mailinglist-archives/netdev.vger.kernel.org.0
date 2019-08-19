@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 94A26925CE
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 16:03:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2616B925D0
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 16:03:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726366AbfHSODZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 10:03:25 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34783 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726211AbfHSODY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 10:03:24 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n9so1295669pgc.1;
-        Mon, 19 Aug 2019 07:03:24 -0700 (PDT)
+        id S1726728AbfHSODd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 10:03:33 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:38950 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726604AbfHSODd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 10:03:33 -0400
+Received: by mail-pl1-f193.google.com with SMTP id z3so1022744pln.6;
+        Mon, 19 Aug 2019 07:03:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=SjamFk2CxAqOx3EFs9eqNhlrLUeRDX56N1XDOre1+yo=;
-        b=IwWdVoHfHDGQ/UQWqVaCs8pbs+58XulU1qJRzNZ3ryIB2pXMNGtGSutnuB9Fi00Ja3
-         Ps+DfblgeMkskeSFHRp1jfL2Wd6hlGJZUtD1+Gw/4OruBEF+lBvzgUmkvOlBTMv3QVsb
-         T+HEWoG0YArFkY1uc0YWQ5OQhU9tAm3535hWUC3znuAAHRH3AgjUK2fBuRbBHRYXjWYy
-         szZBIohhg2Qt0x5TxblkHqjfEdckOOqIxCZsbbAnm2kIq3nnOYkSBPW7L+wE1meH9OmI
-         dPNOb/hi5veMPWO3NrJHWiBuE2BCDbGZTrFzXpNW1htcDwwruyAIZ2rcPmrLTOt8Gw3W
-         bwjQ==
+        bh=OjEJEENg/P3M/Cft3nyKqPbtotn/dVOoN3cFpY/LwK0=;
+        b=uzJ8mgmXwTOM1BVmtD9jOhCkX6G5WaPnTe7bYuwEdOvTUi5Mqz+HbgSLPm/DRtP9Kp
+         iiBADKl4/o3Jf8AfvF3H2cvPXAWMOH9GOHG31zXU6X6cC+sLDUqnDZxj0N919tcf+rL8
+         xN8lpv2YqXQiIHytoOQbWwtI5iestPpRY0+3sqUBJZYxyNGzYEjn5dGxVTK1LI/cUeO4
+         EHMjgWZouYRGSsCbv8zDK+5rAa8PDAIPcSFfgx5dwKMGJsTAl8xqBDewp4FZvwhqrpmK
+         OCJMeOONNNe181hLu3zm9Kk3xgHlWPfso46G3l5nrwUJ1Lc0fuSVIzTYaUi6IES7dESP
+         Ll8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=SjamFk2CxAqOx3EFs9eqNhlrLUeRDX56N1XDOre1+yo=;
-        b=huG30vH7pzKaryO6lb6KmbvgVoiE9PeSO5h0wefl5a3m+pm5KJEaOOq5bqaUoN8DTe
-         5BlPLjfpQdep6J01PDkyLwB4Mqg41MXVHf+S5AeIPzx1qcDU53UxtuQSaB/vJJQqmTU7
-         CBQVqSLNx4Muz/YPp4yCzUY43r+2hQY5/YbEbzI8PCpxTcZa1zL6NSmJN3ITMeIgPcIA
-         WcO7UEjk4aFwXF2GzjHPp5CqXseHSylCOaLJ6FwfzNfSkwglA0bYFqd+ebxjVKqJBLPZ
-         yPYz1IqGIrOB+d2lxMuyhF/zUHykKjaU784+dhZHHMmSMjUezf3rL/EbSzpSQpUsZzxx
-         n6Ug==
-X-Gm-Message-State: APjAAAUiuK94euboWcSm49LXUNdYccikv5hL3luMIG9K4QNIQi1jSr8n
-        hq3syul1l5tYtk+Lpy+4jNsLxkq29bk=
-X-Google-Smtp-Source: APXvYqzlKbg3JZ7z0ZUFKjA38F0ZOeSpoS+Sk3hl//CKpQSPO2qwK621oY1g3aWLc1MWCHSpM2dHYw==
-X-Received: by 2002:a17:90a:b395:: with SMTP id e21mr20808244pjr.76.1566223403952;
-        Mon, 19 Aug 2019 07:03:23 -0700 (PDT)
+        bh=OjEJEENg/P3M/Cft3nyKqPbtotn/dVOoN3cFpY/LwK0=;
+        b=VzXPwqKzQ8QX21biNOLQG13mY45qNIkG7jyiphbnDmDv+tpqrbSS18Nrf2qNH+72GT
+         x0Bc+zkQkrAoiXIEpSRsEKVKOtlF2IW+cMG1ykfmgiFlzCFEkSCwasFr9b7hx+HClXAL
+         NY482jqd5Dze6N00nZsuuD3uwCmkWTnAmWxjLDcCj/XAFwfmkpu0cPRJCbShdoJz5Lse
+         DKLpM9kY0VGIsbO0IisiOYEg2A8D7qX5HgTDu1d8wZ+kK9/AsGpZ61BaK3M17jD1XqgY
+         mRmS6ckzyw0waGXirTgKy+Juh/DCpImqTlbxaczOE4gxg1j7f1x1Yh6uH623szePRflE
+         rzcg==
+X-Gm-Message-State: APjAAAUmX3ltypL7bnvEgQs0OHwdmdmn5wZ0SOElsZKbd4Ks5uEm5uaf
+        U942t99HOWUAEf1YfUB3Ffu3EOmE7Oo=
+X-Google-Smtp-Source: APXvYqyMeIURecMJxWGl9WctRqO7xVr8uf47XDDKvfC8zO4AGzyuRsu9MZ5g3k4S/YD4Bfj9Ou9elg==
+X-Received: by 2002:a17:902:2bc8:: with SMTP id l66mr23037803plb.222.1566223412267;
+        Mon, 19 Aug 2019 07:03:32 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id c2sm6933761pjs.13.2019.08.19.07.03.22
+        by smtp.gmail.com with ESMTPSA id t9sm13376861pji.18.2019.08.19.07.03.31
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 19 Aug 2019 07:03:23 -0700 (PDT)
+        Mon, 19 Aug 2019 07:03:31 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net
-Subject: [PATCH net-next 3/8] sctp: check asoc peer.asconf_capable before processing asconf
-Date:   Mon, 19 Aug 2019 22:02:45 +0800
-Message-Id: <b868cd2896190a99a8553d0cfd372e72f3dbb1b7.1566223325.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 4/8] sctp: add SCTP_ASCONF_SUPPORTED sockopt
+Date:   Mon, 19 Aug 2019 22:02:46 +0800
+Message-Id: <f4fbfa28a7fd2ed85f0fc66ddcbd4249e6e7b487.1566223325.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <04b2de14df6de243e9faacc3a3de091adff45d52.1566223325.git.lucien.xin@gmail.com>
+In-Reply-To: <b868cd2896190a99a8553d0cfd372e72f3dbb1b7.1566223325.git.lucien.xin@gmail.com>
 References: <cover.1566223325.git.lucien.xin@gmail.com>
  <4c4682aab70fc11be7a505b11939dd998b9b21f5.1566223325.git.lucien.xin@gmail.com>
  <04b2de14df6de243e9faacc3a3de091adff45d52.1566223325.git.lucien.xin@gmail.com>
+ <b868cd2896190a99a8553d0cfd372e72f3dbb1b7.1566223325.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1566223325.git.lucien.xin@gmail.com>
 References: <cover.1566223325.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -63,38 +64,147 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-asconf chunks should be dropped when the asoc doesn't support
-asconf feature.
+SCTP_ASCONF_SUPPORTED sockopt is used to set enpoint's asconf
+flag. With this feature, each endpoint will have its own flag
+for its future asoc's asconf_capable, instead of netns asconf
+flag.
+
+Note that when both ep's asconf_enable and auth_enable are
+enabled, SCTP_CID_ASCONF and SCTP_CID_ASCONF_ACK should be
+added into auth_chunk_list.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/sctp/sm_statefuns.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ include/uapi/linux/sctp.h |  1 +
+ net/sctp/socket.c         | 82 +++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 83 insertions(+)
 
-diff --git a/net/sctp/sm_statefuns.c b/net/sctp/sm_statefuns.c
-index 2c244b2..0c21c52 100644
---- a/net/sctp/sm_statefuns.c
-+++ b/net/sctp/sm_statefuns.c
-@@ -3721,7 +3721,8 @@ enum sctp_disposition sctp_sf_do_asconf(struct net *net,
- 	 * is received unauthenticated it MUST be silently discarded as
- 	 * described in [I-D.ietf-tsvwg-sctp-auth].
- 	 */
--	if (!net->sctp.addip_noauth && !chunk->auth)
-+	if (!asoc->peer.asconf_capable ||
-+	    (!net->sctp.addip_noauth && !chunk->auth))
- 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg,
- 					     commands);
+diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
+index b8f2c4d..9b9b82d 100644
+--- a/include/uapi/linux/sctp.h
++++ b/include/uapi/linux/sctp.h
+@@ -134,6 +134,7 @@ typedef __s32 sctp_assoc_t;
+ #define SCTP_INTERLEAVING_SUPPORTED	125
+ #define SCTP_SENDMSG_CONNECT	126
+ #define SCTP_EVENT	127
++#define SCTP_ASCONF_SUPPORTED	128
  
-@@ -3863,7 +3864,8 @@ enum sctp_disposition sctp_sf_do_asconf_ack(struct net *net,
- 	 * is received unauthenticated it MUST be silently discarded as
- 	 * described in [I-D.ietf-tsvwg-sctp-auth].
- 	 */
--	if (!net->sctp.addip_noauth && !asconf_ack->auth)
-+	if (!asoc->peer.asconf_capable ||
-+	    (!net->sctp.addip_noauth && !asconf_ack->auth))
- 		return sctp_sf_discard_chunk(net, ep, asoc, type, arg,
- 					     commands);
+ /* PR-SCTP policies */
+ #define SCTP_PR_SCTP_NONE	0x0000
+diff --git a/net/sctp/socket.c b/net/sctp/socket.c
+index 559793f..b21a707 100644
+--- a/net/sctp/socket.c
++++ b/net/sctp/socket.c
+@@ -4496,6 +4496,42 @@ static int sctp_setsockopt_event(struct sock *sk, char __user *optval,
+ 	return retval;
+ }
  
++static int sctp_setsockopt_asconf_supported(struct sock *sk,
++					    char __user *optval,
++					    unsigned int optlen)
++{
++	struct sctp_assoc_value params;
++	struct sctp_association *asoc;
++	struct sctp_endpoint *ep;
++	int retval = -EINVAL;
++
++	if (optlen != sizeof(params))
++		goto out;
++
++	if (copy_from_user(&params, optval, optlen)) {
++		retval = -EFAULT;
++		goto out;
++	}
++
++	asoc = sctp_id2assoc(sk, params.assoc_id);
++	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
++	    sctp_style(sk, UDP))
++		goto out;
++
++	ep = sctp_sk(sk)->ep;
++	ep->asconf_enable = !!params.assoc_value;
++
++	if (ep->asconf_enable && ep->auth_enable) {
++		sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF);
++		sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF_ACK);
++	}
++
++	retval = 0;
++
++out:
++	return retval;
++}
++
+ /* API 6.2 setsockopt(), getsockopt()
+  *
+  * Applications use setsockopt() and getsockopt() to set or retrieve
+@@ -4696,6 +4732,9 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
+ 	case SCTP_EVENT:
+ 		retval = sctp_setsockopt_event(sk, optval, optlen);
+ 		break;
++	case SCTP_ASCONF_SUPPORTED:
++		retval = sctp_setsockopt_asconf_supported(sk, optval, optlen);
++		break;
+ 	default:
+ 		retval = -ENOPROTOOPT;
+ 		break;
+@@ -7675,6 +7714,45 @@ static int sctp_getsockopt_event(struct sock *sk, int len, char __user *optval,
+ 	return 0;
+ }
+ 
++static int sctp_getsockopt_asconf_supported(struct sock *sk, int len,
++					    char __user *optval,
++					    int __user *optlen)
++{
++	struct sctp_assoc_value params;
++	struct sctp_association *asoc;
++	int retval = -EFAULT;
++
++	if (len < sizeof(params)) {
++		retval = -EINVAL;
++		goto out;
++	}
++
++	len = sizeof(params);
++	if (copy_from_user(&params, optval, len))
++		goto out;
++
++	asoc = sctp_id2assoc(sk, params.assoc_id);
++	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
++	    sctp_style(sk, UDP)) {
++		retval = -EINVAL;
++		goto out;
++	}
++
++	params.assoc_value = asoc ? asoc->peer.asconf_capable
++				  : sctp_sk(sk)->ep->asconf_enable;
++
++	if (put_user(len, optlen))
++		goto out;
++
++	if (copy_to_user(optval, &params, len))
++		goto out;
++
++	retval = 0;
++
++out:
++	return retval;
++}
++
+ static int sctp_getsockopt(struct sock *sk, int level, int optname,
+ 			   char __user *optval, int __user *optlen)
+ {
+@@ -7876,6 +7954,10 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
+ 	case SCTP_EVENT:
+ 		retval = sctp_getsockopt_event(sk, len, optval, optlen);
+ 		break;
++	case SCTP_ASCONF_SUPPORTED:
++		retval = sctp_getsockopt_asconf_supported(sk, len, optval,
++							  optlen);
++		break;
+ 	default:
+ 		retval = -ENOPROTOOPT;
+ 		break;
 -- 
 2.1.0
 
