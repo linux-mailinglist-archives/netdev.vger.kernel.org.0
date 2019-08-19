@@ -2,61 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D81C194BB4
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E0194BB8
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:30:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728157AbfHSR2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 13:28:44 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33836 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727094AbfHSR2m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 13:28:42 -0400
-Received: by mail-wr1-f67.google.com with SMTP id s18so9574160wrn.1;
-        Mon, 19 Aug 2019 10:28:41 -0700 (PDT)
+        id S1728185AbfHSR2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 13:28:48 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:36456 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728101AbfHSR2p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 13:28:45 -0400
+Received: by mail-wr1-f65.google.com with SMTP id r3so9571460wrt.3;
+        Mon, 19 Aug 2019 10:28:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fJRlmlBru4RfFVqA4+d8k80FcuTjsj2jSzcYsHbb4+E=;
-        b=QbDyngL9zFtAGjC3x/6yoI+ngXX8zIZ3g6f5LhhPKjeQdbJC75iUjIdPIUAbvw0mBv
-         HL+0wx345agETAqUx2DeDyaquj38vWycdhR6saGG+aSa3BhSmtFrJRUj8wr2++u3V6Tk
-         WRkF6pXeL8/lH71s42tKpCJmlaHaxmPankWNN6rtt/OsOpVmRlO/VjHWsCRVlP8ZPquS
-         4BROHWZXLCgwCefYfVvPLjNM9/G+T7AFnyUIqfjEqL+HWCnSw2MGIVurgYLxSlNpy/R1
-         Qulv+PE2MZgkkPexJdJ7fM1TRlvNGjVLhC1KggfQ+e+7iYsxG/YM7bzElSD7dDgEuR7g
-         fPRw==
+        bh=LDL1hIKadz1gfObFDnKi45zKhu1D1Ko8kUYujKrQlXI=;
+        b=Z60DL/+1uGqB6RAG9SY6mTUSrszUibmymMj+BCjmF8VzVv0OfxV6lTLlkqtJLYliZN
+         ogn5iXTtb00TNB/5OSLI6xhz3CxHE7pJmcd7f5Axr/2IVT0/ELrp6GAZ+SbFNRhKKwWq
+         hNMLwkTLlNmGgFiHX56LYQk1nL0vI0aCe6S6Q+UjxTMaX8kNewewdopAU+P/fix/I2lw
+         tvJ4+WM2gEi00fnFGVzGXiQV+ClNzw3ztJci7nmC8Uo2JKobJVLBjzP5ATDeWHpRcZKd
+         6BKmclfp3iq2648uxgx6aWa/it/S41T/MVEDXzgdHCdRQGr7Vdgz5/RtRBTcRmmsB30z
+         eP6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fJRlmlBru4RfFVqA4+d8k80FcuTjsj2jSzcYsHbb4+E=;
-        b=qzdGQpVMJXkio0c4+yABEnmerIkTIK1qHNVs+tVWOezIaWlLuGqElKPhRVYygy4WSj
-         Bv15NeqENpjM60FSNpxXd81AfT8OBGsMOcmhW4NBf6aVBWhknl8wU9c+wamSYWUNeEBg
-         2R2gqUxKMTCZGNHLyA5bmKxmgc2pO2oYqaW3HFzHtinb+x3CWv+I7loJn+3mLd+evPBm
-         8/4EQAGw1k82c7ZE2qRTu82CkR2JGQ9rLYukM2ft7sG1NwjiZTp5yCugrOWYrJC32JmK
-         adrlG0pFrplUE7mH+5CGXoxDM1hf1lULE43uFfUSVMCXOlBHKzpzQ/2vN7WuQfveX19T
-         k3gA==
-X-Gm-Message-State: APjAAAVTnso4F8BnMnaF2yJamq+IbwcFnYQAUa+ImXcQBRGSnx8uTnRs
-        GIj8ooDnGn3oy17Ewq+wlrLWZK9VYTw=
-X-Google-Smtp-Source: APXvYqyGcAbp2p9pu3cM4D4KXc1lUmVtuwAh5z92aZ4jI0xDyQT9LJUXyKjjhR+D+jEDg5+H1OExhQ==
-X-Received: by 2002:adf:ea08:: with SMTP id q8mr5731752wrm.188.1566235720807;
-        Mon, 19 Aug 2019 10:28:40 -0700 (PDT)
+        bh=LDL1hIKadz1gfObFDnKi45zKhu1D1Ko8kUYujKrQlXI=;
+        b=bPRgO3CRzkKDrNeVXjOX/CRb4jaQQVjGO62EA9J4Mil1fmoAQgdkf6oxsFeLzaWZiZ
+         Wu9lcbS0rcVT4qYh2yX8/M+4kxyDSv093T/+C7GS7fVhvbyoVhQI8kwS6T0oBDOklKzL
+         4LxASy4MWOE0c3BNxOCUo0njJqOLQQoN+peUB4k7kbFuBGX3lvfPIAvmmLTLGoydLa0z
+         b3FmW1YTjfLwcSBnaHx38sRDCvb2Jb+g5z4Gr65AlKK5Or/xt4Vxl2zc1NbUAbbh1A5D
+         8qyD5Guc603IeY6vJrpWBq8IvYqHFt9ExKlS9bczWh9m/DQDUROxD6TFp2Dm7ulOvOV/
+         aM4g==
+X-Gm-Message-State: APjAAAULgjud2ij0PiJumC+QbAMFl5RBMtP8WodjwmPjb+VsxatwCFcQ
+        /0j5laO3CL2xD7mhkTCHh4coCQjENVA=
+X-Google-Smtp-Source: APXvYqx5uU5Wkhv60Ep5MQhWUVfVnCLRfGCdZTr4zXY0b1zOPWbc8aC4hUxy7JD5FDmQPjf/M14kSg==
+X-Received: by 2002:adf:e3ce:: with SMTP id k14mr27044218wrm.303.1566235723149;
+        Mon, 19 Aug 2019 10:28:43 -0700 (PDT)
 Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id c15sm41983879wrb.80.2019.08.19.10.28.39
+        by smtp.gmail.com with ESMTPSA id c15sm41983879wrb.80.2019.08.19.10.28.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 10:28:40 -0700 (PDT)
+        Mon, 19 Aug 2019 10:28:42 -0700 (PDT)
 From:   Hubert Feurstein <h.feurstein@gmail.com>
 X-Google-Original-From: Hubert Feurstein <hubert.feurstein@vahle.at>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next v2 2/4] net: mdio: add PTP offset compensation to mdiobus_write_sts
-Date:   Mon, 19 Aug 2019 19:28:25 +0200
-Message-Id: <20190819172827.9550-3-hubert.feurstein@vahle.at>
+Subject: [PATCH net-next v2 4/4] net: fec: add support for PTP system timestamping for MDIO devices
+Date:   Mon, 19 Aug 2019 19:28:27 +0200
+Message-Id: <20190819172827.9550-5-hubert.feurstein@vahle.at>
 X-Mailer: git-send-email 2.22.1
 In-Reply-To: <20190819172827.9550-1-hubert.feurstein@vahle.at>
 References: <20190819172827.9550-1-hubert.feurstein@vahle.at>
@@ -69,60 +68,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hubert Feurstein <h.feurstein@gmail.com>
 
-The slow MDIO access introduces quite a big offset (~13us) to the PTP
-system time synchronisation. With this patch the driver has the possibility
-to set the correct offset which can then be compensated.
+In order to improve the synchronisation precision of phc2sys (from
+the linuxptp project) for devices like switches which are attached
+to the MDIO bus, it is necessary the get the system timestamps as
+close as possible to the access which causes the PTP timestamp
+register to be snapshotted in the switch hardware. Usually this is
+triggered by an MDIO write access, the snapshotted timestamp is then
+transferred by several MDIO reads.
+
+The ptp_read_system_*ts functions already check the ptp_sts pointer.
 
 Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 ---
- drivers/net/phy/mdio_bus.c | 12 ++++++++++++
- include/linux/phy.h        |  8 ++++++++
- 2 files changed, 20 insertions(+)
+ drivers/net/ethernet/freescale/fec_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 4dba2714495e..50a37cf46f96 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -739,6 +739,18 @@ int __mdiobus_write_sts(struct mii_bus *bus, int addr, u32 regnum, u16 val,
- 	if (!(bus->flags & MII_BUS_F_PTP_STS_SUPPORTED))
- 		ptp_read_system_postts(sts);
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index c01d3ec3e9af..dd1253683ac0 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1815,10 +1815,12 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 	reinit_completion(&fep->mdio_done);
  
-+	/* PTP offset compensation:
-+	 * After the MDIO access is completed (from the chip perspective), the
-+	 * switch chip will snapshot the PHC timestamp. To make sure our system
-+	 * timestamp corresponds to the PHC timestamp, we have to add the
-+	 * duration of this MDIO access to sts->post_ts. Linuxptp's phc2sys
-+	 * takes the average of pre_ts and post_ts to calculate the final
-+	 * system timestamp. With this in mind, we have to add ptp_sts_offset
-+	 * twice to post_ts, in order to not introduce an constant time offset.
-+	 */
-+	if (sts)
-+		timespec64_add_ns(&sts->post_ts, 2 * bus->ptp_sts_offset);
-+
- 	return retval;
- }
- EXPORT_SYMBOL(__mdiobus_write_sts);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 0b33662e0320..615df9c7f2c3 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -283,8 +283,16 @@ struct mii_bus {
- 	 * The ptp_read_system_*ts functions already check the ptp_sts pointer.
- 	 * The MII_BUS_F_PTP_STS_SUPPORTED-bit must be set in flags, when the
- 	 * MDIO bus driver takes the timestamps as described above.
-+	 *
-+	 * @ptp_sts_offset: This is the compensation offset for the system
-+	 * timestamp which is introduced by the slow MDIO access duration. An
-+	 * MDIO access consists of 32 clock cycles. Usually the MDIO bus runs
-+	 * at ~2.5MHz, so we have to compensate ~12800ns offset.
-+	 * Set the ptp_sts_offset to the exact duration of one MDIO frame
-+	 * (= 32 * clock-period) in nano-seconds.
+ 	/* start a write op */
++	ptp_read_system_prets(bus->ptp_sts);
+ 	writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
+ 		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
+ 		FEC_MMFR_TA | FEC_MMFR_DATA(value),
+ 		fep->hwp + FEC_MII_DATA);
++	ptp_read_system_postts(bus->ptp_sts);
+ 
+ 	/* wait for end of transfer */
+ 	time_left = wait_for_completion_timeout(&fep->mdio_done,
+@@ -1956,7 +1958,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	struct device_node *node;
+ 	int err = -ENXIO;
+-	u32 mii_speed, holdtime;
++	u32 mii_speed, mii_period, holdtime;
+ 
+ 	/*
+ 	 * The i.MX28 dual fec interfaces are not equal.
+@@ -1993,6 +1995,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 	 * document.
  	 */
- 	struct ptp_system_timestamp *ptp_sts;
-+	u32 ptp_sts_offset;
- };
+ 	mii_speed = DIV_ROUND_UP(clk_get_rate(fep->clk_ipg), 5000000);
++	mii_period = div_u64((u64)mii_speed * 2 * NSEC_PER_SEC, clk_get_rate(fep->clk_ipg));
+ 	if (fep->quirks & FEC_QUIRK_ENET_MAC)
+ 		mii_speed--;
+ 	if (mii_speed > 63) {
+@@ -2034,6 +2037,8 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 		pdev->name, fep->dev_id + 1);
+ 	fep->mii_bus->priv = fep;
+ 	fep->mii_bus->parent = &pdev->dev;
++	fep->mii_bus->flags = MII_BUS_F_PTP_STS_SUPPORTED;
++	fep->mii_bus->ptp_sts_offset = 32 * mii_period;
  
- #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
+ 	node = of_get_child_by_name(pdev->dev.of_node, "mdio");
+ 	err = of_mdiobus_register(fep->mii_bus, node);
 -- 
 2.22.1
 
