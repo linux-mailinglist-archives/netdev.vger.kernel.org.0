@@ -2,56 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8895894B79
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:16:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E2F994B82
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:17:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727994AbfHSRQ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 13:16:26 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:34508 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727094AbfHSRQ0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 13:16:26 -0400
-Received: by mail-pg1-f196.google.com with SMTP id n9so1587050pgc.1
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 10:16:26 -0700 (PDT)
+        id S1727817AbfHSRRl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 13:17:41 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:42436 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726959AbfHSRRl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 13:17:41 -0400
+Received: by mail-pf1-f196.google.com with SMTP id i30so1533098pfk.9
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 10:17:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=FtCbMxdQQl/hfKoj36MFrFv8N0lEYgtbBL6OODrqr/Q=;
-        b=rv/b3bKH020FzAIxOvLH3TMk0oAcjvSst7TLzLWUVDYSte34JRRXW/X7PIpXBs/Iwy
-         xAMR5xhUuESXU1aABGPbLXuBztbqRmEeXCGH2gQ7lRsRIpWvOre2FeNq4AA4ChkTcQlS
-         FgEToYiRTHfM58hDF7ahzWQ7zIR0EUIZlte28BX0YoBRP4jiV3P6CrzZOnJD9ODBQYdR
-         bJ9etaK/8MhgAVu+/IlpZGi7blGtBTq1Qh0kWEwcNgCa/bzi5ZKRzO0E+RwQlo6Ej5GV
-         +1FI069PVUObv0TxumDqF3paEu9oB1F2pT7T3mSbqlf7O8l5XngcqR4qTjbJRJwBsPLo
-         Q3/A==
+        bh=EcEOIBSgu9BrYyyDNf2N8jo6Cx7ty4sqlkYNcMq0Elk=;
+        b=lL115gia/WpmnGe0IHIVpzA0Q6gsX+SeUn+lnWD1g/LIG5BnPcgNxbT2m2UFhh6y7x
+         ZvSYQ9V2pOBX6soFKncPTHWsu1WfAVbGhftWrScTrIvsKq3SWeL3gmRPiJc8izSTaX/a
+         J3Xfe49OUez5K0BEE/KhSec3H5ZTz87CWyy/o47F/3GSOyre6N06zg7RWO6aVX4T0wF/
+         Y6e4Rmabu8juIkshJews8yPxu5bq1wRdasfa1wheDkhwwjbSVvGFdcGzD342reiW1plM
+         qdNYV0kX6wdDBkeNke8JjU6ixv20U1H/cm9ENQ0cZMjIRURMgMEaJrqlxWBp+7fGb6HO
+         bAiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=FtCbMxdQQl/hfKoj36MFrFv8N0lEYgtbBL6OODrqr/Q=;
-        b=nRJ39d59W14kWoOYtsaEQsmmj0xtCx4PMiBcgEWfPBjy8+9mBP6cMMb6DQm4sSKp6/
-         b0XWmIedZme5ty2gYOoE7G0/3VqB9OqMsj73bZOymc4XO3sU585T+/x4tDjxuK8CcpZb
-         NZc5CMhq5R4YQqJota0Rh70HoCQm3cNUeiPB/UpX94LIUMAa+K9gYV4PXW5dzKEf3XsX
-         6NOnyJyN7b5ZK99+XZn6TmrVzV+L3ls8RuItMTVCGm+Id8nYMHZCsYdcv5/qMXOGuwHN
-         uQn5VUcB2cQldx9MysfXamFbByzlzypn+veubQF+ZwZGvHl9FfPPCGZ+q5sXn1IF92Du
-         7BrQ==
-X-Gm-Message-State: APjAAAWs1en4fN9G2rWMSBtFl29GcmdalEjRoYxfVnsLR0NLNwU7aWNJ
-        ZNacD0KAY6aaBRB7nPGIdpo=
-X-Google-Smtp-Source: APXvYqw8jNvuTVYvxCYfW9FiYMvffpC0r7k91aUObWm7a/GxVSkD92Yb47ynPqSiCeA5UF3ISPeLHg==
-X-Received: by 2002:a62:584:: with SMTP id 126mr25392485pff.73.1566234985581;
-        Mon, 19 Aug 2019 10:16:25 -0700 (PDT)
+        bh=EcEOIBSgu9BrYyyDNf2N8jo6Cx7ty4sqlkYNcMq0Elk=;
+        b=nEFI7XAQ1ECYGXBTP2JBITjVU4G3JILXCA9GN0vgctzYVsnDjAHy5YImQ7+FFxV+vp
+         LQ6VJSkBZgD6Pn6Vp5a4n04mA2U12wy48KROoYNoGJL64FJrZ6wKNerhmSgNAOoaX5la
+         hanxj4fwD+YYUW/i3VYwWH0eu8KK70cy9AG9Q6j5ryGKQ7tdhBJn1/V0bHwdsfSuWauM
+         W/qybLibOCUQJ3K5DRA87aI889I47BmPBWCW4DWi7DpY+7pqJ8NEThgFx+2jNoAdNHQ1
+         GorD2eqSx5RTRSB9dWlbIowdbbEnePYKFOFFA1PSvcaB9eo+1HQRJ3v0PgYlXkc7n9tI
+         BGzw==
+X-Gm-Message-State: APjAAAXVbOOpwesJCSu9qzsRcQwoaefr6kN4dlKjVbi+JeH3SR8xhpr0
+        zqkrC4hQPOU7Pc+RFR0Ji1A=
+X-Google-Smtp-Source: APXvYqwEn+D/ym8DqHLZ/ho3kBQcmnLfzIZE9XPBarCvoWMapPeJRSyJE/5Vr5AuVtA0joi8m8YDdw==
+X-Received: by 2002:aa7:9524:: with SMTP id c4mr25870852pfp.225.1566235060428;
+        Mon, 19 Aug 2019 10:17:40 -0700 (PDT)
 Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id h20sm16793530pfq.156.2019.08.19.10.16.24
+        by smtp.googlemail.com with ESMTPSA id u26sm19009588pgl.79.2019.08.19.10.17.39
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 19 Aug 2019 10:16:24 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/6] net: dsa: do not enable or disable non user
- ports
+        Mon, 19 Aug 2019 10:17:39 -0700 (PDT)
+Subject: Re: [PATCH net-next 3/6] net: dsa: enable and disable all ports
 To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
 Cc:     marek.behun@nic.cz, davem@davemloft.net, andrew@lunn.ch
 References: <20190818173548.19631-1-vivien.didelot@gmail.com>
- <20190818173548.19631-3-vivien.didelot@gmail.com>
+ <20190818173548.19631-4-vivien.didelot@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -108,12 +107,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <14cac8d6-c134-733b-ac27-079061acfb0c@gmail.com>
-Date:   Mon, 19 Aug 2019 10:16:22 -0700
+Message-ID: <3ab43c9d-ea4f-6b4e-ef99-8b9754de6d62@gmail.com>
+Date:   Mon, 19 Aug 2019 10:17:38 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190818173548.19631-3-vivien.didelot@gmail.com>
+In-Reply-To: <20190818173548.19631-4-vivien.didelot@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -123,75 +122,16 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 8/18/19 10:35 AM, Vivien Didelot wrote:
-> The .port_enable and .port_disable operations are currently only
-> called for user ports, hence assuming they have a slave device. In
-> preparation for using these operations for other port types as well,
-> simply guard all implementations against non user ports and return
-> directly in such case.
+> Call the .port_enable and .port_disable functions for all ports,
+> not only the user ports, so that drivers may optimize the power
+> consumption of all ports after a successful setup.
+> 
+> Unused ports are now disabled on setup. CPU and DSA ports are now
+> enabled on setup and disabled on teardown. User ports were already
+> enabled at slave creation and disabled at slave destruction.
 > 
 > Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> ---
 
-[snip]
-
->
-diff --git a/drivers/net/dsa/b53/b53_common.c
-b/drivers/net/dsa/b53/b53_common.c
-> index 907af62846ba..1639ea7b7dab 100644
-> --- a/drivers/net/dsa/b53/b53_common.c
-> +++ b/drivers/net/dsa/b53/b53_common.c
-> @@ -510,10 +510,15 @@ EXPORT_SYMBOL(b53_imp_vlan_setup);
->  int b53_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
->  {
->  	struct b53_device *dev = ds->priv;
-> -	unsigned int cpu_port = ds->ports[port].cpu_dp->index;
-> +	unsigned int cpu_port;
->  	int ret = 0;
->  	u16 pvlan;
->  
-> +	if (!dsa_is_user_port(ds, port))
-> +		return 0;
-> +
-> +	cpu_port = ds->ports[port].cpu_dp->index;
-> +
->  	if (dev->ops->irq_enable)
->  		ret = dev->ops->irq_enable(dev, port);
->  	if (ret)
-> @@ -547,6 +552,9 @@ void b53_disable_port(struct dsa_switch *ds, int port)
->  	struct b53_device *dev = ds->priv;
->  	u8 reg;
->  
-> +	if (!dsa_is_user_port(ds, port))
-> +		return;
-> +
->  	/* Disable Tx/Rx for the port */
->  	b53_read8(dev, B53_CTRL_PAGE, B53_PORT_CTRL(port), &reg);
->  	reg |= PORT_CTRL_RX_DISABLE | PORT_CTRL_TX_DISABLE;
-
-For b53, the changes are correct, for bcm_sf2, see comments below:
-
-> diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
-> index 49f99436018a..3d06262817bd 100644
-> --- a/drivers/net/dsa/bcm_sf2.c
-> +++ b/drivers/net/dsa/bcm_sf2.c
-> @@ -157,6 +157,9 @@ static int bcm_sf2_port_setup(struct dsa_switch *ds, int port,
->  	unsigned int i;
->  	u32 reg;
->  
-> +	if (!dsa_is_user_port(ds, port))
-> +		return 0;
-> +
->  	/* Clear the memory power down */
->  	reg = core_readl(priv, CORE_MEM_PSM_VDD_CTRL);
->  	reg &= ~P_TXQ_PSM_VDD(port);
-> @@ -222,6 +225,9 @@ static void bcm_sf2_port_disable(struct dsa_switch *ds, int port)
->  	struct bcm_sf2_priv *priv = bcm_sf2_to_priv(ds);
->  	u32 reg;
->  
-> +	if (!dsa_is_user_port(ds, port))
-> +		return;
-
-in bcm_sf2_sw_suspend(), we do call bcm_sf2_port_disable() against the
-user and CPU port.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
 Florian
