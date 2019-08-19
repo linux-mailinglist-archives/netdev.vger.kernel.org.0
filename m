@@ -2,87 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 974CB94BC4
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:33:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03A4494BCD
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:34:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727653AbfHSRcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 13:32:50 -0400
-Received: from mail.nic.cz ([217.31.204.67]:35456 "EHLO mail.nic.cz"
+        id S1727995AbfHSReo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 13:34:44 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:42394 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727398AbfHSRcu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 13:32:50 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 7599D140B70;
-        Mon, 19 Aug 2019 19:32:48 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566235968; bh=wOYX7VTyXUel+7isJ1uJ52UrgNEboML/bErym9AZf5M=;
-        h=Date:From:To;
-        b=sZSzpu+ee+C5Cj3zPzsPldWDUFKZJPzmT3fxN7Kg6C7a19EiMHGcJEzeleYXXRleS
-         fsIYjnoZYV6Zm3J7CFBzG1aUCP+Tub/ErCxb+8KW33gBKJEVwL66goQDDjc+gityBW
-         xL90KQhZZow55UppCxVCJjkoMxK6TsppXGTG9m7g=
-Date:   Mon, 19 Aug 2019 19:32:46 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, f.fainelli@gmail.com,
-        andrew@lunn.ch
-Subject: Re: [PATCH net-next 3/6] net: dsa: enable and disable all ports
-Message-ID: <20190819193246.0e40a1d4@nic.cz>
-In-Reply-To: <20190818173548.19631-4-vivien.didelot@gmail.com>
-References: <20190818173548.19631-1-vivien.didelot@gmail.com>
-        <20190818173548.19631-4-vivien.didelot@gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726905AbfHSReo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 13:34:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=cEDa1jd0IM5tnPDrGC/SEB2nMeNbumnHk7r8JEYNkc0=; b=xStubRN+WGxodKGmzl2+tPIHGy
+        n1dc7ihOw9y7O/sGpHvmsbrrouAa1kpbVZS8qqLOb5vxTkwi1oUg1eIFhQ91KzdgFVyCaI+g5Pf/L
+        PgfrmKT5CQlZMhpBVb+d89HsC9uVnZlBSO0OueriT+N5dyGbL7vyaDcKZHw7zg9Clw6A=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1hzlYH-00082s-Gr; Mon, 19 Aug 2019 19:34:41 +0200
+Date:   Mon, 19 Aug 2019 19:34:41 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hubert Feurstein <h.feurstein@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next 2/3] net: dsa: mv88e6xxx: extend PTP gettime
+ function to read system clock
+Message-ID: <20190819173441.GB29991@lunn.ch>
+References: <20190816163157.25314-1-h.feurstein@gmail.com>
+ <20190816163157.25314-3-h.feurstein@gmail.com>
+ <20190819132733.GE8981@lunn.ch>
+ <CAFfN3gUNrnjdOt8bW2EugzjSZMb_vvdEaLN0yOv_06=roqcJYQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
-        shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFfN3gUNrnjdOt8bW2EugzjSZMb_vvdEaLN0yOv_06=roqcJYQ@mail.gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 18 Aug 2019 13:35:45 -0400
-Vivien Didelot <vivien.didelot@gmail.com> wrote:
-
-> Call the .port_enable and .port_disable functions for all ports,
-> not only the user ports, so that drivers may optimize the power
-> consumption of all ports after a successful setup.
+On Mon, Aug 19, 2019 at 07:14:25PM +0200, Hubert Feurstein wrote:
+> Hi Andrew,
 > 
-> Unused ports are now disabled on setup. CPU and DSA ports are now
-> enabled on setup and disabled on teardown. User ports were already
-> enabled at slave creation and disabled at slave destruction.
-> 
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> Am Mo., 19. Aug. 2019 um 15:27 Uhr schrieb Andrew Lunn <andrew@lunn.ch>:
+> >
+> > > @@ -45,7 +45,8 @@ static int mv88e6xxx_smi_direct_write(struct mv88e6xxx_chip *chip,
+> > >  {
+> > >       int ret;
+> > >
+> > > -     ret = mdiobus_write_nested(chip->bus, dev, reg, data);
+> > > +     ret = mdiobus_write_sts_nested(chip->bus, dev, reg, data,
+> > > +                                    chip->ptp_sts);
+> > >       if (ret < 0)
+> > >               return ret;
+> > >
+> >
+> > Please also make a similar change to mv88e6xxx_smi_indirect_write().
+> > The last write in that function should be timestamped.
+> Since it is already the last write it should be already ok (The
+> mv88e6xxx_smi_indirect_write
+> calls the mv88e6xxx_smi_direct_write which initiates the timestamping).
 
-My original reason for enabling CPU and DSA ports is that enabling
-serdes irq could not be done in .setup in mv88e6xxx, since the required
-phylink structures did not yet exists for those ports.
+Hi Hubert
 
-The case after this patch would be that .port_enable is called for
-CPU/DSA ports right after these required phylink structures are created
-for this port. A thought came to me while reading this that some driver
-in the future can expect, in their implementation of
-port_enable/port_disable, that phylink structures already exist for all
-ports, not just the one being currently enabled/disabled.
+But you are also time stamping the first write as well. And it seems
+like it is not completely for free. So it would be nice to limit it to
+the write which actually matters.
 
-Wouldn't it be safer if CPU/DSA ports were enabled in setup after all
-ports are registered, and disabled in teardown before ports are
-unregistered?
-
-Current:
-  ->setup()
-  for each port
-      dsa_port_link_register_of()
-      dsa_port_enable()
-
-Proposed:
-  ->setup()
-  for each port
-      dsa_port_link_register_of()
-  for each port
-      dsa_port_enable()
-
-Marek
+    Andrew
