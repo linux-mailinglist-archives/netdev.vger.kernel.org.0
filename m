@@ -2,61 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2616B925D0
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 16:03:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 644A0925D2
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 16:03:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbfHSODd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 10:03:33 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:38950 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726604AbfHSODd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 10:03:33 -0400
-Received: by mail-pl1-f193.google.com with SMTP id z3so1022744pln.6;
-        Mon, 19 Aug 2019 07:03:32 -0700 (PDT)
+        id S1726805AbfHSODm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 10:03:42 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41382 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbfHSODl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 10:03:41 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 196so1226303pfz.8;
+        Mon, 19 Aug 2019 07:03:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=OjEJEENg/P3M/Cft3nyKqPbtotn/dVOoN3cFpY/LwK0=;
-        b=uzJ8mgmXwTOM1BVmtD9jOhCkX6G5WaPnTe7bYuwEdOvTUi5Mqz+HbgSLPm/DRtP9Kp
-         iiBADKl4/o3Jf8AfvF3H2cvPXAWMOH9GOHG31zXU6X6cC+sLDUqnDZxj0N919tcf+rL8
-         xN8lpv2YqXQiIHytoOQbWwtI5iestPpRY0+3sqUBJZYxyNGzYEjn5dGxVTK1LI/cUeO4
-         EHMjgWZouYRGSsCbv8zDK+5rAa8PDAIPcSFfgx5dwKMGJsTAl8xqBDewp4FZvwhqrpmK
-         OCJMeOONNNe181hLu3zm9Kk3xgHlWPfso46G3l5nrwUJ1Lc0fuSVIzTYaUi6IES7dESP
-         Ll8w==
+        bh=vfjWT+lWbfm5apwc5eQVv+A593soCIXOnqG/iQbaTos=;
+        b=QCSmNJoOTo0Mtl5bCMfmeaNIQEzM5bhqJLB7BQB1DX9tZMGGzqiUsJI2ad1LSWv1XZ
+         mBo3YgxWyAJdUE0YU/jda5mDuGpDUo6rNdoprWwJOuj5ztRg9q1CVyDeTYB1uHAjFFfP
+         jzrmrgWGZO0iBuZgI2Px0f3Tim41HvcsEVGf+m1fU8fquksPlcAno6PCZdsReIQqx7GB
+         Peb5xN0e5+w84udoL8l4epwhcAMsUQ+Xciq2tGZ6jzw5yL5t4klHafh4dgy7eBLNiBKl
+         hMI8EQkePu9AQcubzVfTvmjjziSiUdlZrGv3S7rHZypua6OamdqAG5x60DFqCaGf2NAm
+         11UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=OjEJEENg/P3M/Cft3nyKqPbtotn/dVOoN3cFpY/LwK0=;
-        b=VzXPwqKzQ8QX21biNOLQG13mY45qNIkG7jyiphbnDmDv+tpqrbSS18Nrf2qNH+72GT
-         x0Bc+zkQkrAoiXIEpSRsEKVKOtlF2IW+cMG1ykfmgiFlzCFEkSCwasFr9b7hx+HClXAL
-         NY482jqd5Dze6N00nZsuuD3uwCmkWTnAmWxjLDcCj/XAFwfmkpu0cPRJCbShdoJz5Lse
-         DKLpM9kY0VGIsbO0IisiOYEg2A8D7qX5HgTDu1d8wZ+kK9/AsGpZ61BaK3M17jD1XqgY
-         mRmS6ckzyw0waGXirTgKy+Juh/DCpImqTlbxaczOE4gxg1j7f1x1Yh6uH623szePRflE
-         rzcg==
-X-Gm-Message-State: APjAAAUmX3ltypL7bnvEgQs0OHwdmdmn5wZ0SOElsZKbd4Ks5uEm5uaf
-        U942t99HOWUAEf1YfUB3Ffu3EOmE7Oo=
-X-Google-Smtp-Source: APXvYqyMeIURecMJxWGl9WctRqO7xVr8uf47XDDKvfC8zO4AGzyuRsu9MZ5g3k4S/YD4Bfj9Ou9elg==
-X-Received: by 2002:a17:902:2bc8:: with SMTP id l66mr23037803plb.222.1566223412267;
-        Mon, 19 Aug 2019 07:03:32 -0700 (PDT)
+        bh=vfjWT+lWbfm5apwc5eQVv+A593soCIXOnqG/iQbaTos=;
+        b=ekcbwCFe3A3+jSAuIS5tduweVIcz9ryZeA111cQ6Qsq1YhMNgq5OjhlfRG2WKu9KL9
+         IDVoku60ZuAqUZAsuuCyebsuF/B73fIm6RlnYFpenmEDa4i3bYcY8DKpYv6QQlSeJRQF
+         fEao8Ym2H4HLy7F1ofQOHSJ/v6NVOL7g8mkTmZD90ZeikbNMQwtRVFv+jLK4GxL8W6eZ
+         +p2e3QWennGMpYaOa8t6HDEa0qfz4a1hUGppjmW09CXBI6xIfMD+tmwTVunJ+t6MH66p
+         qL2yge3rwI0tGBVj6UeM012cKw6Zjs/XkBooWNQifyWchA31uZAZToIQdUmfr/+3kQbW
+         E6dg==
+X-Gm-Message-State: APjAAAWbS/1U9+5sFvSVKbElZc+nDpIGjJc6Adu80cnaAaz4KqZYBQ+B
+        K2J31zgA/OfW0QtCaOl6BiFOFIkFu00=
+X-Google-Smtp-Source: APXvYqwsGxsEjnwUtCPYh66ylYnrj/5B0zgVcnhIIFRc5H0E//r4km3xJ1mdGv7ENOwptgWuPUcvzQ==
+X-Received: by 2002:a63:f048:: with SMTP id s8mr19635132pgj.26.1566223420554;
+        Mon, 19 Aug 2019 07:03:40 -0700 (PDT)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t9sm13376861pji.18.2019.08.19.07.03.31
+        by smtp.gmail.com with ESMTPSA id f27sm14673397pgm.60.2019.08.19.07.03.39
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 19 Aug 2019 07:03:31 -0700 (PDT)
+        Mon, 19 Aug 2019 07:03:39 -0700 (PDT)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net
-Subject: [PATCH net-next 4/8] sctp: add SCTP_ASCONF_SUPPORTED sockopt
-Date:   Mon, 19 Aug 2019 22:02:46 +0800
-Message-Id: <f4fbfa28a7fd2ed85f0fc66ddcbd4249e6e7b487.1566223325.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 5/8] sctp: use ep and asoc auth_enable properly
+Date:   Mon, 19 Aug 2019 22:02:47 +0800
+Message-Id: <db032735abcb20ea14637fa610b9f95fa2710abb.1566223325.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <b868cd2896190a99a8553d0cfd372e72f3dbb1b7.1566223325.git.lucien.xin@gmail.com>
+In-Reply-To: <f4fbfa28a7fd2ed85f0fc66ddcbd4249e6e7b487.1566223325.git.lucien.xin@gmail.com>
 References: <cover.1566223325.git.lucien.xin@gmail.com>
  <4c4682aab70fc11be7a505b11939dd998b9b21f5.1566223325.git.lucien.xin@gmail.com>
  <04b2de14df6de243e9faacc3a3de091adff45d52.1566223325.git.lucien.xin@gmail.com>
  <b868cd2896190a99a8553d0cfd372e72f3dbb1b7.1566223325.git.lucien.xin@gmail.com>
+ <f4fbfa28a7fd2ed85f0fc66ddcbd4249e6e7b487.1566223325.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1566223325.git.lucien.xin@gmail.com>
 References: <cover.1566223325.git.lucien.xin@gmail.com>
 Sender: netdev-owner@vger.kernel.org
@@ -64,147 +65,243 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SCTP_ASCONF_SUPPORTED sockopt is used to set enpoint's asconf
-flag. With this feature, each endpoint will have its own flag
-for its future asoc's asconf_capable, instead of netns asconf
-flag.
-
-Note that when both ep's asconf_enable and auth_enable are
-enabled, SCTP_CID_ASCONF and SCTP_CID_ASCONF_ACK should be
-added into auth_chunk_list.
+sctp has per endpoint auth flag and per asoc auth flag, and
+the asoc one should be checked when coming to asoc and the
+endpoint one should be checked when coming to endpoint.
 
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- include/uapi/linux/sctp.h |  1 +
- net/sctp/socket.c         | 82 +++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 83 insertions(+)
+ net/sctp/auth.c   | 32 +++++++++++++++++++++++++-------
+ net/sctp/socket.c | 45 +++++++++++++++++++--------------------------
+ 2 files changed, 44 insertions(+), 33 deletions(-)
 
-diff --git a/include/uapi/linux/sctp.h b/include/uapi/linux/sctp.h
-index b8f2c4d..9b9b82d 100644
---- a/include/uapi/linux/sctp.h
-+++ b/include/uapi/linux/sctp.h
-@@ -134,6 +134,7 @@ typedef __s32 sctp_assoc_t;
- #define SCTP_INTERLEAVING_SUPPORTED	125
- #define SCTP_SENDMSG_CONNECT	126
- #define SCTP_EVENT	127
-+#define SCTP_ASCONF_SUPPORTED	128
+diff --git a/net/sctp/auth.c b/net/sctp/auth.c
+index de4c78d..61b0090 100644
+--- a/net/sctp/auth.c
++++ b/net/sctp/auth.c
+@@ -389,7 +389,7 @@ int sctp_auth_asoc_init_active_key(struct sctp_association *asoc, gfp_t gfp)
+ 	/* If we don't support AUTH, or peer is not capable
+ 	 * we don't need to do anything.
+ 	 */
+-	if (!asoc->ep->auth_enable || !asoc->peer.auth_capable)
++	if (!asoc->peer.auth_capable)
+ 		return 0;
  
- /* PR-SCTP policies */
- #define SCTP_PR_SCTP_NONE	0x0000
+ 	/* If the key_id is non-zero and we couldn't find an
+@@ -675,7 +675,7 @@ int sctp_auth_send_cid(enum sctp_cid chunk, const struct sctp_association *asoc)
+ 	if (!asoc)
+ 		return 0;
+ 
+-	if (!asoc->ep->auth_enable || !asoc->peer.auth_capable)
++	if (!asoc->peer.auth_capable)
+ 		return 0;
+ 
+ 	return __sctp_auth_cid(chunk, asoc->peer.peer_chunks);
+@@ -687,7 +687,7 @@ int sctp_auth_recv_cid(enum sctp_cid chunk, const struct sctp_association *asoc)
+ 	if (!asoc)
+ 		return 0;
+ 
+-	if (!asoc->ep->auth_enable)
++	if (!asoc->peer.auth_capable)
+ 		return 0;
+ 
+ 	return __sctp_auth_cid(chunk,
+@@ -831,10 +831,15 @@ int sctp_auth_set_key(struct sctp_endpoint *ep,
+ 	/* Try to find the given key id to see if
+ 	 * we are doing a replace, or adding a new key
+ 	 */
+-	if (asoc)
++	if (asoc) {
++		if (!asoc->peer.auth_capable)
++			return -EACCES;
+ 		sh_keys = &asoc->endpoint_shared_keys;
+-	else
++	} else {
++		if (!ep->auth_enable)
++			return -EACCES;
+ 		sh_keys = &ep->endpoint_shared_keys;
++	}
+ 
+ 	key_for_each(shkey, sh_keys) {
+ 		if (shkey->key_id == auth_key->sca_keynumber) {
+@@ -875,10 +880,15 @@ int sctp_auth_set_active_key(struct sctp_endpoint *ep,
+ 	int found = 0;
+ 
+ 	/* The key identifier MUST correst to an existing key */
+-	if (asoc)
++	if (asoc) {
++		if (!asoc->peer.auth_capable)
++			return -EACCES;
+ 		sh_keys = &asoc->endpoint_shared_keys;
+-	else
++	} else {
++		if (!ep->auth_enable)
++			return -EACCES;
+ 		sh_keys = &ep->endpoint_shared_keys;
++	}
+ 
+ 	key_for_each(key, sh_keys) {
+ 		if (key->key_id == key_id) {
+@@ -911,11 +921,15 @@ int sctp_auth_del_key_id(struct sctp_endpoint *ep,
+ 	 * The key identifier MUST correst to an existing key
+ 	 */
+ 	if (asoc) {
++		if (!asoc->peer.auth_capable)
++			return -EACCES;
+ 		if (asoc->active_key_id == key_id)
+ 			return -EINVAL;
+ 
+ 		sh_keys = &asoc->endpoint_shared_keys;
+ 	} else {
++		if (!ep->auth_enable)
++			return -EACCES;
+ 		if (ep->active_key_id == key_id)
+ 			return -EINVAL;
+ 
+@@ -950,11 +964,15 @@ int sctp_auth_deact_key_id(struct sctp_endpoint *ep,
+ 	 * The key identifier MUST correst to an existing key
+ 	 */
+ 	if (asoc) {
++		if (!asoc->peer.auth_capable)
++			return -EACCES;
+ 		if (asoc->active_key_id == key_id)
+ 			return -EINVAL;
+ 
+ 		sh_keys = &asoc->endpoint_shared_keys;
+ 	} else {
++		if (!ep->auth_enable)
++			return -EACCES;
+ 		if (ep->active_key_id == key_id)
+ 			return -EINVAL;
+ 
 diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 559793f..b21a707 100644
+index b21a707..dcde8d9 100644
 --- a/net/sctp/socket.c
 +++ b/net/sctp/socket.c
-@@ -4496,6 +4496,42 @@ static int sctp_setsockopt_event(struct sock *sk, char __user *optval,
- 	return retval;
- }
+@@ -3687,9 +3687,6 @@ static int sctp_setsockopt_auth_key(struct sock *sk,
+ 	struct sctp_association *asoc;
+ 	int ret = -EINVAL;
  
-+static int sctp_setsockopt_asconf_supported(struct sock *sk,
-+					    char __user *optval,
-+					    unsigned int optlen)
-+{
-+	struct sctp_assoc_value params;
-+	struct sctp_association *asoc;
-+	struct sctp_endpoint *ep;
-+	int retval = -EINVAL;
-+
-+	if (optlen != sizeof(params))
-+		goto out;
-+
-+	if (copy_from_user(&params, optval, optlen)) {
-+		retval = -EFAULT;
-+		goto out;
-+	}
-+
-+	asoc = sctp_id2assoc(sk, params.assoc_id);
-+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
-+	    sctp_style(sk, UDP))
-+		goto out;
-+
-+	ep = sctp_sk(sk)->ep;
-+	ep->asconf_enable = !!params.assoc_value;
-+
-+	if (ep->asconf_enable && ep->auth_enable) {
-+		sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF);
-+		sctp_auth_ep_add_chunkid(ep, SCTP_CID_ASCONF_ACK);
-+	}
-+
-+	retval = 0;
-+
-+out:
-+	return retval;
-+}
-+
- /* API 6.2 setsockopt(), getsockopt()
-  *
-  * Applications use setsockopt() and getsockopt() to set or retrieve
-@@ -4696,6 +4732,9 @@ static int sctp_setsockopt(struct sock *sk, int level, int optname,
- 	case SCTP_EVENT:
- 		retval = sctp_setsockopt_event(sk, optval, optlen);
- 		break;
-+	case SCTP_ASCONF_SUPPORTED:
-+		retval = sctp_setsockopt_asconf_supported(sk, optval, optlen);
-+		break;
- 	default:
- 		retval = -ENOPROTOOPT;
- 		break;
-@@ -7675,6 +7714,45 @@ static int sctp_getsockopt_event(struct sock *sk, int len, char __user *optval,
- 	return 0;
- }
+-	if (!ep->auth_enable)
+-		return -EACCES;
+-
+ 	if (optlen <= sizeof(struct sctp_authkey))
+ 		return -EINVAL;
+ 	/* authkey->sca_keylength is u16, so optlen can't be bigger than
+@@ -3756,9 +3753,6 @@ static int sctp_setsockopt_active_key(struct sock *sk,
+ 	struct sctp_authkeyid val;
+ 	int ret = 0;
  
-+static int sctp_getsockopt_asconf_supported(struct sock *sk, int len,
-+					    char __user *optval,
-+					    int __user *optlen)
-+{
-+	struct sctp_assoc_value params;
-+	struct sctp_association *asoc;
-+	int retval = -EFAULT;
-+
-+	if (len < sizeof(params)) {
-+		retval = -EINVAL;
-+		goto out;
+-	if (!ep->auth_enable)
+-		return -EACCES;
+-
+ 	if (optlen != sizeof(struct sctp_authkeyid))
+ 		return -EINVAL;
+ 	if (copy_from_user(&val, optval, optlen))
+@@ -3810,9 +3804,6 @@ static int sctp_setsockopt_del_key(struct sock *sk,
+ 	struct sctp_authkeyid val;
+ 	int ret = 0;
+ 
+-	if (!ep->auth_enable)
+-		return -EACCES;
+-
+ 	if (optlen != sizeof(struct sctp_authkeyid))
+ 		return -EINVAL;
+ 	if (copy_from_user(&val, optval, optlen))
+@@ -3863,9 +3854,6 @@ static int sctp_setsockopt_deactivate_key(struct sock *sk, char __user *optval,
+ 	struct sctp_authkeyid val;
+ 	int ret = 0;
+ 
+-	if (!ep->auth_enable)
+-		return -EACCES;
+-
+ 	if (optlen != sizeof(struct sctp_authkeyid))
+ 		return -EINVAL;
+ 	if (copy_from_user(&val, optval, optlen))
+@@ -6872,9 +6860,6 @@ static int sctp_getsockopt_active_key(struct sock *sk, int len,
+ 	struct sctp_authkeyid val;
+ 	struct sctp_association *asoc;
+ 
+-	if (!ep->auth_enable)
+-		return -EACCES;
+-
+ 	if (len < sizeof(struct sctp_authkeyid))
+ 		return -EINVAL;
+ 
+@@ -6886,10 +6871,15 @@ static int sctp_getsockopt_active_key(struct sock *sk, int len,
+ 	if (!asoc && val.scact_assoc_id && sctp_style(sk, UDP))
+ 		return -EINVAL;
+ 
+-	if (asoc)
++	if (asoc) {
++		if (!asoc->peer.auth_capable)
++			return -EACCES;
+ 		val.scact_keynumber = asoc->active_key_id;
+-	else
++	} else {
++		if (!ep->auth_enable)
++			return -EACCES;
+ 		val.scact_keynumber = ep->active_key_id;
 +	}
-+
-+	len = sizeof(params);
-+	if (copy_from_user(&params, optval, len))
-+		goto out;
-+
-+	asoc = sctp_id2assoc(sk, params.assoc_id);
-+	if (!asoc && params.assoc_id != SCTP_FUTURE_ASSOC &&
-+	    sctp_style(sk, UDP)) {
-+		retval = -EINVAL;
-+		goto out;
-+	}
-+
-+	params.assoc_value = asoc ? asoc->peer.asconf_capable
-+				  : sctp_sk(sk)->ep->asconf_enable;
-+
-+	if (put_user(len, optlen))
-+		goto out;
-+
-+	if (copy_to_user(optval, &params, len))
-+		goto out;
-+
-+	retval = 0;
-+
-+out:
-+	return retval;
-+}
-+
- static int sctp_getsockopt(struct sock *sk, int level, int optname,
- 			   char __user *optval, int __user *optlen)
+ 
+ 	if (put_user(len, optlen))
+ 		return -EFAULT;
+@@ -6902,7 +6892,6 @@ static int sctp_getsockopt_active_key(struct sock *sk, int len,
+ static int sctp_getsockopt_peer_auth_chunks(struct sock *sk, int len,
+ 				    char __user *optval, int __user *optlen)
  {
-@@ -7876,6 +7954,10 @@ static int sctp_getsockopt(struct sock *sk, int level, int optname,
- 	case SCTP_EVENT:
- 		retval = sctp_getsockopt_event(sk, len, optval, optlen);
- 		break;
-+	case SCTP_ASCONF_SUPPORTED:
-+		retval = sctp_getsockopt_asconf_supported(sk, len, optval,
-+							  optlen);
-+		break;
- 	default:
- 		retval = -ENOPROTOOPT;
- 		break;
+-	struct sctp_endpoint *ep = sctp_sk(sk)->ep;
+ 	struct sctp_authchunks __user *p = (void __user *)optval;
+ 	struct sctp_authchunks val;
+ 	struct sctp_association *asoc;
+@@ -6910,9 +6899,6 @@ static int sctp_getsockopt_peer_auth_chunks(struct sock *sk, int len,
+ 	u32    num_chunks = 0;
+ 	char __user *to;
+ 
+-	if (!ep->auth_enable)
+-		return -EACCES;
+-
+ 	if (len < sizeof(struct sctp_authchunks))
+ 		return -EINVAL;
+ 
+@@ -6924,6 +6910,9 @@ static int sctp_getsockopt_peer_auth_chunks(struct sock *sk, int len,
+ 	if (!asoc)
+ 		return -EINVAL;
+ 
++	if (!asoc->peer.auth_capable)
++		return -EACCES;
++
+ 	ch = asoc->peer.peer_chunks;
+ 	if (!ch)
+ 		goto num;
+@@ -6955,9 +6944,6 @@ static int sctp_getsockopt_local_auth_chunks(struct sock *sk, int len,
+ 	u32    num_chunks = 0;
+ 	char __user *to;
+ 
+-	if (!ep->auth_enable)
+-		return -EACCES;
+-
+ 	if (len < sizeof(struct sctp_authchunks))
+ 		return -EINVAL;
+ 
+@@ -6970,8 +6956,15 @@ static int sctp_getsockopt_local_auth_chunks(struct sock *sk, int len,
+ 	    sctp_style(sk, UDP))
+ 		return -EINVAL;
+ 
+-	ch = asoc ? (struct sctp_chunks_param *)asoc->c.auth_chunks
+-		  : ep->auth_chunk_list;
++	if (asoc) {
++		if (!asoc->peer.auth_capable)
++			return -EACCES;
++		ch = (struct sctp_chunks_param *)asoc->c.auth_chunks;
++	} else {
++		if (!ep->auth_enable)
++			return -EACCES;
++		ch = ep->auth_chunk_list;
++	}
+ 	if (!ch)
+ 		goto num;
+ 
 -- 
 2.1.0
 
