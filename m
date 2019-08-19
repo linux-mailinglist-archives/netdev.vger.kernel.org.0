@@ -2,112 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CFBB94B5F
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:11:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD5494B69
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 19:14:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbfHSRLS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 13:11:18 -0400
-Received: from mail-eopbgr30062.outbound.protection.outlook.com ([40.107.3.62]:20964
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727398AbfHSRLS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 13:11:18 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mHTCwGDwtUtTuuzxoSF0DYsIvTSA4tSc8r7dgh2NYgnz4CaBvFAnU4gG3COwNXBbNVeQLKVOW6YXXiwybUC4LowRAcmOMISDt/QTIC+ylwVbjTKwYwpnW6Jp54jB6eV+3xVIvaoacqdubiExhH3atcuZzMNOvkf5ifDX63IfyAJW2OERlSJ9FyGjRA3/4xprDC4mHv+eXKgo4RoAR6qGW+sJrpzbggJHkAKblPM7l2rCzKSAtgrKC7fSEd+AwHzSkFWgbiQhgXK+hswAIG3D3niPslKfeU+ztoRRzxcNhOhvO/Ts/dvNjtSgKpF/lE22eQ6eUb4AiaIAZ7SH0EgDeg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yZ4/t4hwC5Ir+vn8G9F1t23vtpyPOd+wPPZ7wX2I3yE=;
- b=N1p5+CLLvXS+4UHvzYmA5UyOoDM0X6xW4fPQtt3SNde2f0ZX5eTMUclj9rxFogBs+OiVxpCPQZJRESfUzdaA5tQkQsXM+k8rgwPC5CEb2EVEBw9Mr0iD+IVHUA6x9rAM04+ZS5OF6MnP4mXaKMjWwROgeIIl5V1t9TgN6iMeBKNNUY2Uho8ekY9Uh/iSFsJO29cJRbDdPhiJElrQdfAK+IuC/8pau32K2AcIS24rThhsvmN9yIbHC1q0QuucnaqELDL8EgKS3c3uE6NRclBHyG5D68MRGHHdsdbgWZyCp4TcJ3L+DmaQQc5LA0dWdqq4K/2ix8eGBjHaG2fwnvkmoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yZ4/t4hwC5Ir+vn8G9F1t23vtpyPOd+wPPZ7wX2I3yE=;
- b=BeDR3QRmKSpX2ujboivrWQeirsRPLEJGxmTSryMNCNDk36Pm14O9aZT59hFbEREKTk+qornSb2qED5knYVsXZCCwjJ+IdOH6ayX5YWb9cwj5F8dO8tyJug7n+pXGILvD1bbHzL29mAJ5TSnpEOhg6paojh8Pio6EmwcNpT9itCQ=
-Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com (10.172.248.19) by
- DB6PR0402MB2888.eurprd04.prod.outlook.com (10.172.248.135) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Mon, 19 Aug 2019 17:11:14 +0000
-Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com
- ([fe80::3519:c2fc:4322:4f90]) by DB6PR0402MB2936.eurprd04.prod.outlook.com
- ([fe80::3519:c2fc:4322:4f90%2]) with mapi id 15.20.2178.018; Mon, 19 Aug 2019
- 17:11:14 +0000
-From:   Marco Hartmann <marco.hartmann@nxp.com>
-To:     Marco Hartmann <marco.hartmann@nxp.com>,
-        Andy Duan <fugang.duan@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: [PATCH net-next 0/1] net: fec: add C45 MDIO read/write support 
-Thread-Topic: [PATCH net-next 0/1] net: fec: add C45 MDIO read/write support 
-Thread-Index: AQHVVrEbaaUHZXnfyUWEGTy4sTss5Q==
-Date:   Mon, 19 Aug 2019 17:11:14 +0000
-Message-ID: <1566234659-7164-1-git-send-email-marco.hartmann@nxp.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM3PR05CA0109.eurprd05.prod.outlook.com
- (2603:10a6:207:2::11) To DB6PR0402MB2936.eurprd04.prod.outlook.com
- (2603:10a6:4:9a::19)
-x-mailer: git-send-email 2.7.4
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=marco.hartmann@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [217.111.68.82]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 8de3efc0-b674-488e-bf89-08d724c83d99
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0402MB2888;
-x-ms-traffictypediagnostic: DB6PR0402MB2888:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0402MB288882AC20CE33013DE20BEF8CA80@DB6PR0402MB2888.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0134AD334F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(366004)(396003)(346002)(376002)(39860400002)(199004)(189003)(66066001)(25786009)(66556008)(478600001)(66446008)(14454004)(64756008)(66476007)(53936002)(3846002)(6116002)(2906002)(52116002)(5660300002)(6506007)(6486002)(386003)(7736002)(4744005)(14444005)(55236004)(256004)(26005)(4743002)(305945005)(66946007)(44832011)(86362001)(2201001)(71190400001)(71200400001)(2501003)(6636002)(102836004)(99286004)(186003)(316002)(81156014)(81166006)(110136005)(8936002)(36756003)(8676002)(50226002)(6512007)(486006)(6436002)(476003)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0402MB2888;H:DB6PR0402MB2936.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 3nJTKvx/voWEqzkAZeDZwXqNnKSqHEm0RrXmAxooj4ZcFt00ABIlRkvzfiGOYBtVe4qJbKxJxZXlJ3oRyX64aTiGD+tjCDmmpRrOR3i6+e7YwjUbHTY72+LR6ZzAT0IcKkhj5298QWqp0BTAvTuHLIrOEOo38+/AblW//gqpDsGzayNyj7uI8F6nkq8S0T0+wO9I7Zx+yyeTmwJhN6h76Nul6wbSSiOKXM2wB78xCviHkv4Yypt7EN3qVrfpMfinvr+xwyErqJJH7yvzR7eNmty/nwF5BatsxE3DOlvAjuqajbSMkg3itrspyun0ZPi3Ghd8W9ncly+XDOuXBze+kIiKYsiYqdfVHy1dtqxaT/eL6w1l4Evq791FFnsSSsjpRxa9DUexKRVsuCwjzWdtxRJLQ4Sb1Yoho0gcfI6r3lY=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <F1EEADD381CB8F44994EDA4F5BDA6E79@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S1727524AbfHSROa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 13:14:30 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37885 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726918AbfHSRO3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 13:14:29 -0400
+Received: by mail-pg1-f195.google.com with SMTP id d1so1579253pgp.4
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 10:14:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cvlPdVyS0pg17IwhXfBkJG8061fpLEc4MPyXAdUFvTk=;
+        b=d1IGAJeN075ysoCXq4HhRTS6yeDhQ2jTwnwYD9PqCRfKP3iq9Unf+PgJ8+tTPY+G92
+         phL5eD6zTVzKjMgb1wnXY9q5b6gO/lIF7larI9iz3cL2qwVVsgyGbCjf5go9RbXrUVXa
+         ZC37pW99wvBM66PVu2P70qarzRzTbRhDcb+gHF7tqccU9fa8w8dx6Jq8mL+7/X1Z8mn8
+         GPZmOs3Q1wQhzcZ/54/zVSVOJBAGgNZi5ouJOKi+svXyNsm3sZqXh8y0gZtMqSbO28Xd
+         EaUr6d/4MaMzSNR2nC6ZHkho6EapyOfx1Y1Y1LpEHXzhz6aHIdL3BYtuhcEN+31upSE+
+         4RvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=cvlPdVyS0pg17IwhXfBkJG8061fpLEc4MPyXAdUFvTk=;
+        b=s6B6mO1L0YZgCwPptZgnLdl8nih9DwZUYPFf4Bt36xR2Anr/q5g3oq2m2oIT1v+JLc
+         NFw93QuGfOCcK8VgXSEwx84gXfnA6VQMMUvI56RYgCXkI4r7u7XirsxQC+mRU2RQqXpr
+         +LACkYzYIekB0PnFbCCOb8YxCCEJ2eDTRdGNv2Gr0p6v9dH0kFkKwXnq1n9hHdar8nGc
+         6qh4UZfLXASestPEro0GKrKySnaEniORlX9DeiXoBqYEqygbz5KgXPxsOuDMXTgBR2Ty
+         VGvZ7QaWK9rA/SWJ0fZ4gt/5w1wmPz9mo5vlsVxhobsyhK56jaI6ccYdiSVNtp5Nal8m
+         1mOw==
+X-Gm-Message-State: APjAAAXPd2FTKxDRJXoxijT5eJILinhRSh3+gUg8xbOMDvE8kstTocio
+        95+a4SKMaOuGZl3y4KK0wBk=
+X-Google-Smtp-Source: APXvYqxiQdKkHFimvScZod5FZkFpvyqeJWPPy5LG21aXUpZ07yM2ifjCPrKPcZzlaq/awz71As4EDA==
+X-Received: by 2002:a17:90a:3646:: with SMTP id s64mr22016708pjb.44.1566234868859;
+        Mon, 19 Aug 2019 10:14:28 -0700 (PDT)
+Received: from [10.67.49.31] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id l123sm21641014pfl.9.2019.08.19.10.14.27
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 19 Aug 2019 10:14:27 -0700 (PDT)
+Subject: Re: [PATCH net-next 1/6] net: dsa: use a single switch statement for
+ port setup
+To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
+Cc:     marek.behun@nic.cz, davem@davemloft.net, andrew@lunn.ch
+References: <20190818173548.19631-1-vivien.didelot@gmail.com>
+ <20190818173548.19631-2-vivien.didelot@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <cb37b6b0-c6c4-6f77-3658-a5cf676fabfe@gmail.com>
+Date:   Mon, 19 Aug 2019 10:14:24 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8de3efc0-b674-488e-bf89-08d724c83d99
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2019 17:11:14.3928
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vZDJWcpmkwBxX6KFw5kxPCfm8Sh/r3V9OMquxV4r7dX6n8rZloEEHYv+01J3YawhTLKbA80qotqgT6VwmrMTPQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2888
+In-Reply-To: <20190818173548.19631-2-vivien.didelot@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As of yet, the Fast Ethernet Controller (FEC) driver only supports Clause 2=
-2
-conform MDIO transactions. IEEE 802.3ae Clause 45 defines a modified MDIO
-protocol that uses a two staged access model in order to increase the addre=
-ss
-space.
+On 8/18/19 10:35 AM, Vivien Didelot wrote:
+> It is currently difficult to read the different steps involved in the
+> setup and teardown of ports in the DSA code. Keep it simple with a
+> single switch statement for each port type: UNUSED, CPU, DSA, or USER.
+> 
+> Also no need to call devlink_port_unregister from within dsa_port_setup
+> as this step is inconditionally handled by dsa_port_teardown on error.
+> 
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> ---
 
-This patch adds support for Clause 45 conform MDIO read and write operation=
-s to
-the FEC driver.
+[snip]
 
-Marco Hartmann (1):
-  fec: add C45 MDIO read/write support
+>  	case DSA_PORT_TYPE_CPU:
+> +		memset(dlp, 0, sizeof(*dlp));
+> +		devlink_port_attrs_set(dlp, DEVLINK_PORT_FLAVOUR_CPU,
+> +				       dp->index, false, 0, id, len);
+> +		err = devlink_port_register(dl, dlp, dp->index);
+> +		if (err)
+> +			return err;
 
- drivers/net/ethernet/freescale/fec_main.c | 65 +++++++++++++++++++++++++++=
-+---
- 1 file changed, 59 insertions(+), 6 deletions(-)
-
---=20
-2.7.4
-
+This is shared between all port flavors with the exception that the
+flavor type is different, maybe we should create a helper function and
+factor out even more code. I don't feel great about repeating 3 times t
+the same code without making use of a fall through.
+-- 
+Florian
