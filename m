@@ -2,178 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDA991CF8
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 08:21:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F127591D24
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 08:32:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbfHSGUo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 02:20:44 -0400
-Received: from mail-eopbgr80080.outbound.protection.outlook.com ([40.107.8.80]:30531
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        id S1726481AbfHSGcf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 02:32:35 -0400
+Received: from mail-eopbgr70084.outbound.protection.outlook.com ([40.107.7.84]:1978
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726390AbfHSGUo (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 02:20:44 -0400
+        id S1725308AbfHSGcf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 02:32:35 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EqcyTwMvL9bpfXhgSn369r2IPqUkQKWOQOurZTBlf2kAgxuAu2dCzxsBqyxXoDrS2Oqjo0PA3PQdceQV6ABve3Fpo1zF/OTHIgNHUTEqIILo2ZG3ang7hnwoP3hVg5bhZOgN+b841seKb49BLFoVQZHtoJv4wqVXo+a5eHqfBHOGKDnQsaYR4Y/nmOxGgDtGGE8lR+Uce1zNhYR502ijf+49uQqQla1APEm7wfg880pqhYc6Z88w2Bwld5KE34ox5MtpG4C+g1HK44ZHNZuEPYPzc7sqcWxrRNWcRDHn8NwI+bw17m1GYJuX1QTZFWCQ4ZsoZVFCSKR27atb6m3T3A==
+ b=RYxJQEOyJ6HSILXAwx9Ib7YjA/TK6w30A1BGrE//LyWH7Qa7A4j8Z11a7gqzYwWsOyVYVxwPOvw7ZOWAHb/D3orITvo7wsf0nuzlNrmyMxzjdXvDVr9X59C5XEmKz8eNEK79tBWEkECBLTVC0pAZbfl9852GUqqFeFdVGxZmYpN/9OzuAloR8C62GrlcdPYb5vg2ZoiAydnqfm2nUDUWEGyZM8/VqMoB78sR3Bsz5TijtID3GX2kqgTIzEf2xyRqSpKK/29u5XUS/OXlKd/DVc591TbCTFMGc2uBxwuPQ6/H95MtpK5niNaURSoWj2MVhfGjzVzqfINUObkQ1E/Slw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vzdXg1GJfogyXN5KNtQ+i4UazbHcCqY9PPNr1UALYyc=;
- b=WFErqG2P0CizAd7ezUo6MniAh2tCwx8btQllj7Aqlfs0wM5M85Ed635AQrPMk3KO3QR0XQBDc9xhKTdxB3x++zj2MQdY4Ula8RfMYbPksHF8siFLHGeSBVrhgm72YuSqsEfWY70HSsTZT4qUXsAQeRMNqnRDpV0Ge4Y4yvtrIRW0eYU5HryJB8AQBCZ+IPTbIrBAx/17ok3hcEQFd922qjE+0LTDrgh7j1mJkAgAdBWNLRvkgyY6FhmGf9mutlSnZnR2U3CxkaXcGG9QG4NVmE6u0dzYXNoms2BvKfb1tLRUSHykY74+FS8fRhteK/D3ueG5iah6EmcSfceU2t3sgg==
+ bh=UWFLIuuGkf13ePRQ4yezHdXeetUjmt82N08eDvZHSfk=;
+ b=IkPgE0VSn9in/EHQrwqdrgROeyRzGTLoSl83r2NheTYcZF/JwwVN5jP3Rb/nQH5OCb2+mZaHrAu9nSkA2XaIF5gnE2xfJnQ63iA8pdxDpAdw2f+nKK55evKUIa1ALW/JOx+9CYGcxl4hux0g1cgLTSIGhPrrC2t7VMNF8af3iKBQe+lqlAMMLt5hZrtcJih2JgsfQqQYT14v8Jq/6JYFJp7beylLba67hbG0XR6MRxxRdzoTzJ+1knUBqaTh4/4GZ8daj4eIbpJGd8rGJQK5UjBfW2vsPqXj3J6nvuuBwAZoFSC9s2fMdVGWta26gqShtziIoyHpDargMnnPySsepA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vzdXg1GJfogyXN5KNtQ+i4UazbHcCqY9PPNr1UALYyc=;
- b=IcY+JddSRymGUEd36V7HXZiuKsYclNcXRKMGPuvvkFru28ScEY1B8XY9XRlkO4UjbIeLbdLm6iu8UXyxLQIBFxqv/8v8RKqb3/8HL0mLyrbjSets8iklE0Ns87WtsrT17jETNMw6M5jQdVAyGNRL9PqlPWry0R1sRJDVOKSIsuc=
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com (10.171.190.30) by
- AM4PR05MB3204.eurprd05.prod.outlook.com (10.171.186.33) with Microsoft SMTP
+ bh=UWFLIuuGkf13ePRQ4yezHdXeetUjmt82N08eDvZHSfk=;
+ b=QKQr8Lzh+5CZmZOt1Btv+Ex3queoXOmKlaow7SprmwFu2U6XG+s0Dnh37tQPR26CNUErYE2XOWr5jFqxFa0G95uN8bQ/eLJM5Y4nULahklXOI1s+7R2ZP8sK9lh2MmJB+oDDnXbjQCjHP8NlzJ0uf3UMlFqh3EXU/FakkB7IbMQ=
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com (52.133.29.29) by
+ AM6PR0402MB3607.eurprd04.prod.outlook.com (52.133.25.18) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Mon, 19 Aug 2019 06:20:26 +0000
-Received: from AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::d027:14a2:95db:6f1f]) by AM4PR05MB3411.eurprd05.prod.outlook.com
- ([fe80::d027:14a2:95db:6f1f%7]) with mapi id 15.20.2178.018; Mon, 19 Aug 2019
- 06:20:26 +0000
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Pravin B Shelar <pshelar@ovn.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Justin Pettit <jpettit@nicira.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@mellanox.com>
-CC:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
-Subject: Re: [PATCH net-next] net: openvswitch: Set OvS recirc_id from tc
- chain
-Thread-Topic: [PATCH net-next] net: openvswitch: Set OvS recirc_id from tc
- chain
-Thread-Index: AQHVVd4vntP1emxsQEi9o1hhY1fsp6cCAKAA
-Date:   Mon, 19 Aug 2019 06:20:26 +0000
-Message-ID: <5465b87e-9365-54d2-8b2f-f2107e33ad79@mellanox.com>
-References: <1566144059-8247-1-git-send-email-paulb@mellanox.com>
-In-Reply-To: <1566144059-8247-1-git-send-email-paulb@mellanox.com>
+ 15.20.2178.18; Mon, 19 Aug 2019 06:32:31 +0000
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc]) by AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc%5]) with mapi id 15.20.2178.018; Mon, 19 Aug 2019
+ 06:32:31 +0000
+From:   Christian Herber <christian.herber@nxp.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
+Thread-Topic: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
+Thread-Index: AQHVVlfh9z1APBIvVEOf3Cz5T4N+yg==
+Date:   Mon, 19 Aug 2019 06:32:31 +0000
+Message-ID: <AM6PR0402MB379864B810F08D3698618B5F86A80@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+References: <20190815153209.21529-1-christian.herber@nxp.com>
+ <8c15b855-6947-9930-c3df-71a64fbff33b@gmail.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: MR2P264CA0001.FRAP264.PROD.OUTLOOK.COM
- (2603:10a6:500:1::13) To AM4PR05MB3411.eurprd05.prod.outlook.com
- (2603:10a6:205:b::30)
 authentication-results: spf=none (sender IP is )
- smtp.mailfrom=paulb@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [193.47.165.251]
+ smtp.mailfrom=christian.herber@nxp.com; 
+x-originating-ip: [217.111.68.82]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 85bea3f8-11a9-4408-5558-08d7246d5331
+x-ms-office365-filtering-correlation-id: 811b5873-2c79-43e0-202f-08d7246f03ac
 x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM4PR05MB3204;
-x-ms-traffictypediagnostic: AM4PR05MB3204:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR05MB3204FB3B66BBBFCE8CB1E507CFA80@AM4PR05MB3204.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR0402MB3607;
+x-ms-traffictypediagnostic: AM6PR0402MB3607:
+x-microsoft-antispam-prvs: <AM6PR0402MB3607F2DC38403BD47A79E00D86A80@AM6PR0402MB3607.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
 x-forefront-prvs: 0134AD334F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(39860400002)(346002)(366004)(136003)(396003)(199004)(189003)(31696002)(81166006)(81156014)(66066001)(8676002)(36756003)(52116002)(86362001)(8936002)(6116002)(4326008)(5660300002)(3846002)(478600001)(25786009)(256004)(14444005)(6246003)(53936002)(31686004)(14454004)(7736002)(71200400001)(71190400001)(107886003)(305945005)(2906002)(6506007)(486006)(102836004)(476003)(66946007)(53546011)(2616005)(386003)(6436002)(64756008)(66556008)(66446008)(66476007)(99286004)(11346002)(2501003)(110136005)(54906003)(446003)(26005)(186003)(6512007)(316002)(6486002)(76176011)(229853002)(6636002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3204;H:AM4PR05MB3411.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(979002)(4636009)(366004)(136003)(346002)(396003)(376002)(39860400002)(189003)(199004)(110136005)(33656002)(478600001)(9686003)(102836004)(3846002)(6116002)(54906003)(2501003)(64756008)(76116006)(5660300002)(66946007)(4326008)(52536014)(66556008)(66066001)(91956017)(66476007)(66446008)(25786009)(6246003)(316002)(53936002)(2906002)(14454004)(71190400001)(446003)(476003)(305945005)(99286004)(486006)(76176011)(8676002)(229853002)(8936002)(81156014)(81166006)(256004)(74316002)(44832011)(7696005)(26005)(7736002)(55016002)(186003)(6506007)(86362001)(53546011)(6436002)(55236004)(71200400001)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR0402MB3607;H:AM6PR0402MB3798.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Gz4S008rlQWXXetjzHbJU5LAS8V+6qxK7u1Y7uCxh9ROMmSbFWhuNsYIO7qXAoJVOFUTMScZ7vgGSfrpfpBwhUMFIy/WYe9UE/DaTW6zd6NGV39DOVQD9gUwrOXqAChBWYClP0akAyCAJYDODSkTd+n2XNR4RsjzcqiuTX0Tt9s4EsUrFzkOAs5bpQ3xhwOdR2NxylpqPhK1cEEhh69Jubb3IhlREAZs1VE3D7zyL/P1HZNlt7duFHXRVp5oXprPwoqSXh4fDfVYoXW28c1d5HSa99mLBz/uX5m6KuffifykuBAgEHNYtw9RqC3n//jO0Nr+lVPCzDYTeYN7g21+uQkYfHu9jSIzY9T85aJvftdzczxShUs8+wO5hXUtSnqrMwTgjNDKT/SEA8cWiR6J8fWUeyiTOvqahTZd+IhXZpA=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <90BD0FC74014284BB1404A837D1A37ED@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+x-microsoft-antispam-message-info: O796B9BTL/asU+mklje9iAcAEQ34bwZMhAhnY0ersl1SqnWPqZ72xt8PQOfAHUZfgA/Z7bkY8IdBJQo64NnJSNsJWCOE928CbQk12xz0Sa/E2AWgyQHxHmKaIlTEEQQjtD8Pd1eO2OH4x49/PFGo7OXOmIz/U+Y0g6f4KXiKtsUK3TpmiTU5l+K5Im5nhwgfByhgC0TaVth1DIr2YkxpZiIpkybOTcixk83/3wHEMCL937vOaIt+uwn08AQe2lZXvLtiG71rk+nDo3XHLSpX2Eo8rS0cayu6zq+YUlfCsnxyuA6QL51otOfnIagaz30w1B3wVaCHPVoJP33QApBlwBZ3r6s1OcHJ6wNKkB8DEhGTL6F84tBX0K0WXCtsYDHGijbBeVAseC7EqtVT/kE0uZHNXoRseuUvCfBIKi/Ltus=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 85bea3f8-11a9-4408-5558-08d7246d5331
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2019 06:20:26.4780
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 811b5873-2c79-43e0-202f-08d7246f03ac
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Aug 2019 06:32:31.7486
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: +aNsqZ1ICNreRUjdsoxlFc1QHhdE3xejDAN/bQpohtWH7eFVjQBZEx6u1BG/lZz9+sUWH96//0AHaZXDI4Wpsg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3204
+X-MS-Exchange-CrossTenant-userprincipalname: /Nnt0bHjLw7ayfcF52yeHImE1NPFdKWgS20i4b3TEFAecYIfAlcCyDqx7NJj8weQDmPwecEkZjwRUHPLkq4IGF8cCyess7cf7gQLo8BrFOM=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3607
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQpPbiA4LzE4LzIwMTkgNzowMCBQTSwgUGF1bCBCbGFrZXkgd3JvdGU6DQo+IFdoYXQgZG8geW91
-IGd1eXMgc2F5IGFib3V0IHRoZSBmb2xsb3dpbmcgZGlmZiBvbiB0b3Agb2YgdGhlIGxhc3Qgb25l
-Pw0KPiBVc2Ugc3RhdGljIGtleSwgYW5kIGFsc28gaGF2ZSBPVlNfRFBfQ01EX1NFVCBjb21tYW5k
-IHByb2JlL2VuYWJsZSB0aGUgZmVhdHVyZS4NCj4NCj4gVGhpcyB3aWxsIGFsbG93IHVzZXJzcGFj
-ZSB0byBwcm9iZSB0aGUgZmVhdHVyZSwgYW5kIHNlbGVjdGl2bHkgZW5hYmxlIGl0IHZpYSB0aGUN
-Cj4gT1ZTX0RQX0NNRF9TRVQgY29tbWFuZC4NCj4NCj4gVGhhbnNrLA0KPiBQYXVsLg0KPg0KPg0K
-PiAtLS0NCj4gICBpbmNsdWRlL3VhcGkvbGludXgvb3BlbnZzd2l0Y2guaCB8ICAzICsrKw0KPiAg
-IG5ldC9vcGVudnN3aXRjaC9kYXRhcGF0aC5jICAgICAgIHwgMjkgKysrKysrKysrKysrKysrKysr
-KysrKysrKy0tLS0NCj4gICBuZXQvb3BlbnZzd2l0Y2gvZGF0YXBhdGguaCAgICAgICB8ICAyICsr
-DQo+ICAgbmV0L29wZW52c3dpdGNoL2Zsb3cuYyAgICAgICAgICAgfCAgNiArKysrLS0NCj4gICA0
-IGZpbGVzIGNoYW5nZWQsIDM0IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+DQo+IGRp
-ZmYgLS1naXQgYS9pbmNsdWRlL3VhcGkvbGludXgvb3BlbnZzd2l0Y2guaCBiL2luY2x1ZGUvdWFw
-aS9saW51eC9vcGVudnN3aXRjaC5oDQo+IGluZGV4IGYyNzFmMWUuLjE4ODdhNDUgMTAwNjQ0DQo+
-IC0tLSBhL2luY2x1ZGUvdWFwaS9saW51eC9vcGVudnN3aXRjaC5oDQo+ICsrKyBiL2luY2x1ZGUv
-dWFwaS9saW51eC9vcGVudnN3aXRjaC5oDQo+IEBAIC0xMjMsNiArMTIzLDkgQEAgc3RydWN0IG92
-c192cG9ydF9zdGF0cyB7DQo+ICAgLyogQWxsb3cgZGF0YXBhdGggdG8gYXNzb2NpYXRlIG11bHRp
-cGxlIE5ldGxpbmsgUElEcyB0byBlYWNoIHZwb3J0ICovDQo+ICAgI2RlZmluZSBPVlNfRFBfRl9W
-UE9SVF9QSURTCSgxIDw8IDEpDQo+ICAgDQo+ICsvKiBBbGxvdyB0YyBvZmZsb2FkIHJlY2lyYyBz
-aGFyaW5nICovDQo+ICsjZGVmaW5lIE9WU19EUF9GX1RDX1JFQ0lSQ19TSEFSSU5HCSgxIDw8IDIp
-DQo+ICsNCj4gICAvKiBGaXhlZCBsb2dpY2FsIHBvcnRzLiAqLw0KPiAgICNkZWZpbmUgT1ZTUF9M
-T0NBTCAgICAgICgoX191MzIpMCkNCj4gICANCj4gZGlmZiAtLWdpdCBhL25ldC9vcGVudnN3aXRj
-aC9kYXRhcGF0aC5jIGIvbmV0L29wZW52c3dpdGNoL2RhdGFwYXRoLmMNCj4gaW5kZXggODkyMjg3
-ZC4uNTg5YjRmMSAxMDA2NDQNCj4gLS0tIGEvbmV0L29wZW52c3dpdGNoL2RhdGFwYXRoLmMNCj4g
-KysrIGIvbmV0L29wZW52c3dpdGNoL2RhdGFwYXRoLmMNCj4gQEAgLTE1NDEsMTAgKzE1NDEsMjcg
-QEAgc3RhdGljIHZvaWQgb3ZzX2RwX3Jlc2V0X3VzZXJfZmVhdHVyZXMoc3RydWN0IHNrX2J1ZmYg
-KnNrYiwgc3RydWN0IGdlbmxfaW5mbyAqaW4NCj4gICAJZHAtPnVzZXJfZmVhdHVyZXMgPSAwOw0K
-PiAgIH0NCj4gICANCj4gLXN0YXRpYyB2b2lkIG92c19kcF9jaGFuZ2Uoc3RydWN0IGRhdGFwYXRo
-ICpkcCwgc3RydWN0IG5sYXR0ciAqYVtdKQ0KPiArREVGSU5FX1NUQVRJQ19LRVlfRkFMU0UodGNf
-cmVjaXJjX3NoYXJpbmdfc3VwcG9ydCk7DQo+ICsNCj4gK3N0YXRpYyBpbnQgb3ZzX2RwX2NoYW5n
-ZShzdHJ1Y3QgZGF0YXBhdGggKmRwLCBzdHJ1Y3QgbmxhdHRyICphW10pDQo+ICAgew0KPiArCXUz
-MiB1c2VyX2ZlYXR1cmVzOw0KPiArDQo+ICAgCWlmIChhW09WU19EUF9BVFRSX1VTRVJfRkVBVFVS
-RVNdKQ0KPiAtCQlkcC0+dXNlcl9mZWF0dXJlcyA9IG5sYV9nZXRfdTMyKGFbT1ZTX0RQX0FUVFJf
-VVNFUl9GRUFUVVJFU10pOw0KPiArCQl1c2VyX2ZlYXR1cmVzID0gbmxhX2dldF91MzIoYVtPVlNf
-RFBfQVRUUl9VU0VSX0ZFQVRVUkVTXSk7DQo+ICsNCj4gKyNpZiAhSVNfRU5BQkxFRChDT05GSUdf
-TkVUX1RDX1NLQl9FWFQpDQo+ICsJaWYgKHVzZXJfZmVhdHVyZXMgJiBPVlNfRFBfRl9UQ19SRUNJ
-UkNfU0hBUklORykNCj4gKwkJcmV0dXJuIC1FT1BOT1RTVVBQOw0KPiArI2VuZGlmDQo+ICsJZHAt
-PnVzZXJfZmVhdHVyZXMgPSB1c2VyX2ZlYXR1cmVzOw0KPiArDQo+ICsJaWYgKGRwLT51c2VyX2Zl
-YXR1cmVzICYgT1ZTX0RQX0ZfVENfUkVDSVJDX1NIQVJJTkcpDQo+ICsJCXN0YXRpY19icmFuY2hf
-ZW5hYmxlKCZ0Y19yZWNpcmNfc2hhcmluZ19zdXBwb3J0KTsNCj4gKwllbHNlDQo+ICsJCXN0YXRp
-Y19icmFuY2hfZGlzYWJsZSgmdGNfcmVjaXJjX3NoYXJpbmdfc3VwcG9ydCk7DQo+ICsNCj4gKwly
-ZXR1cm4gMDsNCj4gICB9DQo+ICAgDQo+ICAgc3RhdGljIGludCBvdnNfZHBfY21kX25ldyhzdHJ1
-Y3Qgc2tfYnVmZiAqc2tiLCBzdHJ1Y3QgZ2VubF9pbmZvICppbmZvKQ0KPiBAQCAtMTYwNiw3ICsx
-NjIzLDkgQEAgc3RhdGljIGludCBvdnNfZHBfY21kX25ldyhzdHJ1Y3Qgc2tfYnVmZiAqc2tiLCBz
-dHJ1Y3QgZ2VubF9pbmZvICppbmZvKQ0KPiAgIAlwYXJtcy5wb3J0X25vID0gT1ZTUF9MT0NBTDsN
-Cj4gICAJcGFybXMudXBjYWxsX3BvcnRpZHMgPSBhW09WU19EUF9BVFRSX1VQQ0FMTF9QSURdOw0K
-PiAgIA0KPiAtCW92c19kcF9jaGFuZ2UoZHAsIGEpOw0KPiArCWVyciA9IG92c19kcF9jaGFuZ2Uo
-ZHAsIGEpOw0KPiArCWlmIChlcnIpDQo+ICsJCWdvdG8gZXJyX2Rlc3Ryb3lfbWV0ZXJzOw0KPiAg
-IA0KPiAgIAkvKiBTbyBmYXIgb25seSBsb2NhbCBjaGFuZ2VzIGhhdmUgYmVlbiBtYWRlLCBub3cg
-bmVlZCB0aGUgbG9jay4gKi8NCj4gICAJb3ZzX2xvY2soKTsNCj4gQEAgLTE3MzIsNyArMTc1MSw5
-IEBAIHN0YXRpYyBpbnQgb3ZzX2RwX2NtZF9zZXQoc3RydWN0IHNrX2J1ZmYgKnNrYiwgc3RydWN0
-IGdlbmxfaW5mbyAqaW5mbykNCj4gICAJaWYgKElTX0VSUihkcCkpDQo+ICAgCQlnb3RvIGVycl91
-bmxvY2tfZnJlZTsNCj4gICANCj4gLQlvdnNfZHBfY2hhbmdlKGRwLCBpbmZvLT5hdHRycyk7DQo+
-ICsJZXJyID0gb3ZzX2RwX2NoYW5nZShkcCwgaW5mby0+YXR0cnMpOw0KPiArCWlmIChlcnIpDQo+
-ICsJCWdvdG8gZXJyX3VubG9ja19mcmVlOw0KPiAgIA0KPiAgIAllcnIgPSBvdnNfZHBfY21kX2Zp
-bGxfaW5mbyhkcCwgcmVwbHksIGluZm8tPnNuZF9wb3J0aWQsDQo+ICAgCQkJCSAgIGluZm8tPnNu
-ZF9zZXEsIDAsIE9WU19EUF9DTURfU0VUKTsNCj4gZGlmZiAtLWdpdCBhL25ldC9vcGVudnN3aXRj
-aC9kYXRhcGF0aC5oIGIvbmV0L29wZW52c3dpdGNoL2RhdGFwYXRoLmgNCj4gaW5kZXggNzUxZDM0
-YS4uODFlODVkZCAxMDA2NDQNCj4gLS0tIGEvbmV0L29wZW52c3dpdGNoL2RhdGFwYXRoLmgNCj4g
-KysrIGIvbmV0L29wZW52c3dpdGNoL2RhdGFwYXRoLmgNCj4gQEAgLTIxOCw2ICsyMTgsOCBAQCBz
-dGF0aWMgaW5saW5lIHN0cnVjdCBkYXRhcGF0aCAqZ2V0X2RwKHN0cnVjdCBuZXQgKm5ldCwgaW50
-IGRwX2lmaW5kZXgpDQo+ICAgZXh0ZXJuIHN0cnVjdCBub3RpZmllcl9ibG9jayBvdnNfZHBfZGV2
-aWNlX25vdGlmaWVyOw0KPiAgIGV4dGVybiBzdHJ1Y3QgZ2VubF9mYW1pbHkgZHBfdnBvcnRfZ2Vu
-bF9mYW1pbHk7DQo+ICAgDQo+ICtERUNMQVJFX1NUQVRJQ19LRVlfRkFMU0UodGNfcmVjaXJjX3No
-YXJpbmdfc3VwcG9ydCk7DQo+ICsNCj4gICB2b2lkIG92c19kcF9wcm9jZXNzX3BhY2tldChzdHJ1
-Y3Qgc2tfYnVmZiAqc2tiLCBzdHJ1Y3Qgc3dfZmxvd19rZXkgKmtleSk7DQo+ICAgdm9pZCBvdnNf
-ZHBfZGV0YWNoX3BvcnQoc3RydWN0IHZwb3J0ICopOw0KPiAgIGludCBvdnNfZHBfdXBjYWxsKHN0
-cnVjdCBkYXRhcGF0aCAqLCBzdHJ1Y3Qgc2tfYnVmZiAqLA0KPiBkaWZmIC0tZ2l0IGEvbmV0L29w
-ZW52c3dpdGNoL2Zsb3cuYyBiL25ldC9vcGVudnN3aXRjaC9mbG93LmMNCj4gaW5kZXggMDI4N2Vh
-ZC4uYzBhYzdjOSAxMDA2NDQNCj4gLS0tIGEvbmV0L29wZW52c3dpdGNoL2Zsb3cuYw0KPiArKysg
-Yi9uZXQvb3BlbnZzd2l0Y2gvZmxvdy5jDQo+IEBAIC04NTMsOCArODUzLDEwIEBAIGludCBvdnNf
-Zmxvd19rZXlfZXh0cmFjdChjb25zdCBzdHJ1Y3QgaXBfdHVubmVsX2luZm8gKnR1bl9pbmZvLA0K
-PiAgIAlrZXktPm1hY19wcm90byA9IHJlczsNCj4gICANCj4gICAjaWYgSVNfRU5BQkxFRChDT05G
-SUdfTkVUX1RDX1NLQl9FWFQpDQo+IC0JdGNfZXh0ID0gc2tiX2V4dF9maW5kKHNrYiwgVENfU0tC
-X0VYVCk7DQo+IC0Ja2V5LT5yZWNpcmNfaWQgPSB0Y19leHQgPyB0Y19leHQtPmNoYWluIDogMDsN
-Cj4gKwlpZiAoc3RhdGljX2JyYW5jaF91bmxpa2VseSgmdGNfcmVjaXJjX3NoYXJpbmdfc3VwcG9y
-dCkpIHsNCj4gKwkJdGNfZXh0ID0gc2tiX2V4dF9maW5kKHNrYiwgVENfU0tCX0VYVCk7DQo+ICsJ
-CWtleS0+cmVjaXJjX2lkID0gdGNfZXh0ID8gdGNfZXh0LT5jaGFpbiA6IDA7DQo+ICsJfQ0KDQpI
-ZXJlIHNob3VsZCBiZQ0KDQplbHNlDQoNCiDCoMKgwqDCoMKgIGtleS0+cmVjaXJjX2lkID0gMA0K
-DQo+ICAgI2Vsc2UNCj4gICAJa2V5LT5yZWNpcmNfaWQgPSAwOw0KPiAgICNlbmRpZg0K
+On 16.08.2019 22:59, Heiner Kallweit wrote:=0A=
+> On 15.08.2019 17:32, Christian Herber wrote:=0A=
+>> This patch adds basic support for BASE-T1 PHYs in the framework.=0A=
+>> BASE-T1 PHYs main area of application are automotive and industrial.=0A=
+>> BASE-T1 is standardized in IEEE 802.3, namely=0A=
+>> - IEEE 802.3bw: 100BASE-T1=0A=
+>> - IEEE 802.3bp 1000BASE-T1=0A=
+>> - IEEE 802.3cg: 10BASE-T1L and 10BASE-T1S=0A=
+>>=0A=
+>> There are no products which contain BASE-T1 and consumer type PHYs like=
+=0A=
+>> 1000BASE-T. However, devices exist which combine 100BASE-T1 and 1000BASE=
+-T1=0A=
+>> PHYs with auto-negotiation.=0A=
+> =0A=
+> Is this meant in a way that *currently* there are no PHY's combining Base=
+-T1=0A=
+> with normal Base-T modes? Or are there reasons why this isn't possible in=
+=0A=
+> general? I'm asking because we have PHY's combining copper and fiber, and=
+ e.g.=0A=
+> the mentioned Aquantia PHY that combines NBase-T with 1000Base-T2.=0A=
+> =0A=
+>>=0A=
+>> The intention of this patch is to make use of the existing Clause 45 fun=
+ctions.=0A=
+>> BASE-T1 adds some additional registers e.g. for aneg control, which foll=
+ow a=0A=
+>> similiar register layout as the existing devices. The bits which are use=
+d in=0A=
+>> BASE-T1 specific registers are the same as in basic registers, thus the=
+=0A=
+>> existing functions can be resued, with get_aneg_ctrl() selecting the cor=
+rect=0A=
+>> register address.=0A=
+>>=0A=
+> If Base-T1 can't be combined with other modes then at a first glance I se=
+e no=0A=
+> benefit in defining new registers e.g. for aneg control, and the standard=
+ ones=0A=
+> are unused. Why not using the standard registers? Can you shed some light=
+ on that?=0A=
+> =0A=
+> Are the new registers internally shadowed to the standard location?=0A=
+> That's something I've seen on other PHY's: one register appears in differ=
+ent=0A=
+> places in different devices.=0A=
+> =0A=
+>> The current version of ethtool has been prepared for 100/1000BASE-T1 and=
+ works=0A=
+>> with this patch. 10BASE-T1 needs to be added to ethtool.=0A=
+>>=0A=
+>> Christian Herber (1):=0A=
+>>    Added BASE-T1 PHY support to PHY Subsystem=0A=
+>>=0A=
+>>   drivers/net/phy/phy-c45.c    | 113 +++++++++++++++++++++++++++++++----=
+=0A=
+>>   drivers/net/phy/phy-core.c   |   4 +-=0A=
+>>   include/uapi/linux/ethtool.h |   2 +=0A=
+>>   include/uapi/linux/mdio.h    |  21 +++++++=0A=
+>>   4 files changed, 129 insertions(+), 11 deletions(-)=0A=
+>>=0A=
+> =0A=
+> Heiner=0A=
+> =0A=
+=0A=
+Hi Heiner,=0A=
+=0A=
+I do not think the Aquantia part you are describing is publicly =0A=
+documented, so i cannot comment on that part.=0A=
+There are multiple reasons why e.g. xBASE-T1 plus 1000BASE-T is =0A=
+unlikely. First, the is no use-case known to me, where this would be =0A=
+required. Second, there is no way that you can do an auto-negotiation =0A=
+between the two, as these both have their own auto-neg defined (Clause =0A=
+28/73 vs. Clause 98). Thirdly, if you would ever have a product with =0A=
+both, I believe it would just include two full PHYs and a way to select =0A=
+which flavor you want. Of course, this is the theory until proven =0A=
+otherwise, but to me it is sufficient to use a single driver.=0A=
+=0A=
+The registers are different in the fields they include. It is just that =0A=
+the flags which are used by the Linux driver, like restarting auto-neg, =0A=
+are at the same position.=0A=
+=0A=
+Christian=0A=
+=0A=
