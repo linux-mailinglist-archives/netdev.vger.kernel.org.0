@@ -2,135 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B64A594F35
-	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 22:41:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50D9094F60
+	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 22:54:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728316AbfHSUlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 16:41:07 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:35284 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728287AbfHSUlH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 16:41:07 -0400
-Received: by mail-qk1-f194.google.com with SMTP id r21so2639348qke.2
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 13:41:06 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=i1QyQWhoM3Qmw7JUjKggfzWHZbx+tCHV+wohd71bQKw=;
-        b=ed8hbIrBmZGYlVaI0jCLF5xizyk8mVTXvUr/dcJJ0MgwVEnnYDHh8fVF4Vz+BH0rd5
-         PSUEe2Jm+JGNNpfu33JUHSFgYQbdGhtYAdRvpR72wp48yTkO8ozWmZv9VWJLa/bfW0Mf
-         UAPWEp/4B8Z3EDKrim8YC16mKVcoMAkyn6iahS/uPmwwzCxZFFQ2rMVwZHK3soXqtwWu
-         MNrYSaJQELjyvjVn8nDAdvRPz4SzVtjB4Z25zjZZ6gkrNlpU5evYYqRZQ/ZYcxDaWRdG
-         P/PTci3g2k+QgPWD56dcfclKNHyit/AGDkUn+ReyiasRaIhIXvg56T93NwMJ5uss+er1
-         1dyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=i1QyQWhoM3Qmw7JUjKggfzWHZbx+tCHV+wohd71bQKw=;
-        b=A5kTxrvuKmzpA1kywg9ap5pLkqXDL4QGgJdaxbfzNTnWMJS6pTpVUaSO2O0VWFPXNz
-         9bguQv/iz+W3G9Y8mpbz4HWhvAe/xePlztCV5jIsYf8OrNp9877Msemn7I+2mx5/vmKq
-         HU8FrqXuxgYjvGz4zNttPydH5nITYrRlxVfQAL1e98BFVO0HbRcrwBS8BQfbjbe3d3Ph
-         FABQfDQePMxPV2V05Yeu0sa7pAxLYtS4dlWfCNIYd3Hc3WdVvxT+wW3szz6zUtpHkIZX
-         GtQE3CUV8dZ1oogVi8Yo2YZD5BNarne0YMyPCZ/sbtGqPv/QD1KuF1EJK239XtDaRUO+
-         7/OQ==
-X-Gm-Message-State: APjAAAWnywjPdfyHKW/REkoIvzlC27qSlyWeoZbWfnGD7+dLPRNKSg72
-        g5rzLTyCOU4BQ3RkEE6F9IaWXw==
-X-Google-Smtp-Source: APXvYqytGQvHU9QifypFbHdFtn+YWLefEL14xyXLliESSSkx3KqdAa1hbsXb0+zV57UYHKtUPxdq9A==
-X-Received: by 2002:a37:4791:: with SMTP id u139mr21918654qka.386.1566247266360;
-        Mon, 19 Aug 2019 13:41:06 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id c13sm7198142qtn.77.2019.08.19.13.41.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 13:41:06 -0700 (PDT)
-Date:   Mon, 19 Aug 2019 13:40:58 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Davide Caratti <dcaratti@redhat.com>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Boris Pismenny <borisp@mellanox.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Dave Watson <davejwatson@fb.com>,
-        Aviad Yehezkel <aviadye@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next 2/3] tcp: ulp: add functions to dump
- ulp-specific information
-Message-ID: <20190819134058.575c243c@cakuba.netronome.com>
-In-Reply-To: <b765aa08456ef258615a46e7ff106703a240ddb5.camel@redhat.com>
-References: <cover.1565882584.git.dcaratti@redhat.com>
-        <f9b5663d28547b0d1c187d874c7b5e5ece8fe8fa.1565882584.git.dcaratti@redhat.com>
-        <228db5cc-9b10-521f-9031-e0f86f5ded3e@gmail.com>
-        <20190815143810.3a190c81@cakuba.netronome.com>
-        <b765aa08456ef258615a46e7ff106703a240ddb5.camel@redhat.com>
-Organization: Netronome Systems, Ltd.
+        id S1728302AbfHSUx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 16:53:57 -0400
+Received: from zabedu.ru ([95.189.97.10]:48669 "EHLO mail.zabedu.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727769AbfHSUx5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 16:53:57 -0400
+X-Greylist: delayed 5161 seconds by postgrey-1.27 at vger.kernel.org; Mon, 19 Aug 2019 16:53:56 EDT
+Received: from localhost (localhost [127.0.0.1])
+        by mail.zabedu.ru (Postfix) with ESMTP id E269558E130;
+        Tue, 20 Aug 2019 03:41:24 +0900 (+09)
+Received: from mail.zabedu.ru ([127.0.0.1])
+        by localhost (mail.zabedu.ru [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id TBIL0gL4jPmf; Tue, 20 Aug 2019 03:41:24 +0900 (+09)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.zabedu.ru (Postfix) with ESMTP id B9F0C58E13B;
+        Tue, 20 Aug 2019 03:41:21 +0900 (+09)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.zabedu.ru B9F0C58E13B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zabedu.ru;
+        s=F4F8CB62-D72E-11E6-B493-75AB9FC1A46C; t=1566240081;
+        bh=vPS5FqbSZoEURj2D9uL5fJeHEF60DB2VAL7BzwggNEo=;
+        h=Date:From:Message-ID:MIME-Version;
+        b=Y1wGoILnfO7HM6y/GoCeUYoTOI37mcqdjQlDupDLgjNiBPiKbad3ueqy2ovW54mPS
+         hGtryU87Mb1BCXMQHH59EaR/3JYxoUlJ1z/+mR5RZg6c2vNJ7H0+3gcaYno+4KSHKf
+         Ox+JdCqlt6u+2rs31N0+xhXc3F+LFYKbi9DbvJyA=
+X-Virus-Scanned: amavisd-new at zabedu.ru
+Received: from mail.zabedu.ru ([127.0.0.1])
+        by localhost (mail.zabedu.ru [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id xQ4ITUaRLeaP; Tue, 20 Aug 2019 03:41:21 +0900 (+09)
+Received: from mail.zabedu.ru (localhost [127.0.0.1])
+        by mail.zabedu.ru (Postfix) with ESMTP id 898F158E113;
+        Tue, 20 Aug 2019 03:41:17 +0900 (+09)
+Date:   Tue, 20 Aug 2019 03:41:17 +0900 (YAKT)
+From:   Mme Mellie CARIUS <agns_pk.spo@zabedu.ru>
+Reply-To: Mme Mellie CARIUS <mellie.carius@gmail.com>
+Message-ID: <1993966282.673426.1566240077509.JavaMail.zimbra@zabedu.ru>
+Subject: Proposition!
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Originating-IP: [197.234.219.43]
+X-Mailer: Zimbra 8.7.11_GA_1854 (zclient/8.7.11_GA_1854)
+Thread-Index: ulBCx3RV/XyiaJP3kp9OUy8axKF3Tg==
+Thread-Topic: Proposition!
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Aug 2019 15:32:09 +0200, Davide Caratti wrote:
-> On Thu, 2019-08-15 at 14:38 -0700, Jakub Kicinski wrote:
-> > On Thu, 15 Aug 2019 20:46:01 +0200, Eric Dumazet wrote:  
-> > > On 8/15/19 6:00 PM, Davide Caratti wrote:
-> > > > +	if (net_admin) {
-> > > > +		const struct tcp_ulp_ops *ulp_ops;
-> > > > +
-> > > > +		rcu_read_lock();
-> > > > +		ulp_ops = icsk->icsk_ulp_ops;
-> > > > +		if (ulp_ops)
-> > > > +			err = tcp_diag_put_ulp(skb, sk, ulp_ops);
-> > > > +		rcu_read_unlock();
-> > > > +		if (err)
-> > > > +			return err;
-> > > > +	}
-> > > >  	return 0;    
-> > > 
-> > > Why is rcu_read_lock() and rcu_read_unlock() used at all ?
-> > > 
-> > > icsk->icsk_ulp_ops does not seem to be rcu protected ?
-> > > 
-> > > If this was, then an rcu_dereference() would be appropriate.  
-> > 
-> > Indeed it's ulp_data not ulp_ops that are protected.   
-> 
-> the goal is to protect execution of 'ss -tni' against concurrent removal
-> of tls.ko module, similarly to what was done in inet_sk_diag_fill() when
-> INET_DIAG_CONG is requested [1]. But after reading more carefully, the
-> assignment of ulp_ops needs to be:
-> 
-> 	ulp_ops = READ_ONCE(icsk->icsk_ulp_ops);
-> 
-> which I lost in internal reviews, with some additional explanatory
-> comment. Ok if I correct the above hunk with READ_ONCE() and add a
-> comment?
+Bonjour,
 
-Seems like a forth while future-proofing. Currently the ULP can't
-change, and is only released when socket is destroyed, so we should 
-be safe (unlike CC which can be changed at any moment). 
+Je soussign=C3=A9e Mme Mellie CARIUS de nationalit=C3=A9 fran=C3=A7aise. Je=
+ vous envoie ce pr=C3=A9sent message afin de solliciter votre accord pour l=
+a r=C3=A9alisation d'un projet de donation. Ayant perdu mon =C3=A9poux et m=
+on enfant de 8 ans au cours d'un accident tragique et mortel Il y a quelque=
+s ann=C3=A9es, je n'ai ni famille ni enfant qui pourra b=C3=A9n=C3=A9ficier=
+ de ma fortune.
 
-We should mark the pointer as RCU tho, I find it hard to wrap my head
-around these half-way RCU pointers with just READ_ONCE() on them :S
+Actuellement hospitalis=C3=A9e aux =C3=89tats-Unis pour un cancer en phase =
+terminale, je d=C3=A9cide de faire don de ma fortune afin que vous puissiez=
+ r=C3=A9aliser les =C5=93uvres de charit=C3=A9 de votre choix.
 
-> > Davide, perhaps we could push the RCU lock into tls_get_info(), after all?  
-> 
-> It depends on whether concurrent dump / module removal is an issue for TCP
-> ULPs, like it was for congestion control schemes [1]. Any advice?
+Pour cela je vous l=C3=A8gue =C3=A0 titre de don.une somme de un million ci=
+nq cent mille dollars am=C3=A9ricain en banque en Afrique de l=E2=80=99oues=
+t o=C3=B9 je m=E2=80=99=C3=A9tais install=C3=A9e apr=C3=A8s la mort de mon =
+mari et mon enfant.
+Merci me de r=C3=A9pondre pour plus de d=C3=A9tails.
 
-If we're willing to mark icsk->icsk_ulp_ops as RCU I think it's fine.
-But I'm not 100% sure its worth the churn :S
-
-> > And tls_context has to use rcu_deference there, as Eric points out, 
-> > plus we should probably NULL-check it.  
-> 
-> yes, it makes sense, for patch 3/3, in the assignment of 'ctx'. Instead of
-> calling tls_get_ctx() in tls_get_info() I will do
-> 
-> 	ctx = rcu_dereference(inet_csk(sk)->icsk_ulp_data);
-> 
-> and let it return 0 in case of NULL ctx (as it doesn't look like a faulty
-> situation). Ok? 
-
-SGTM!
+Sinc=C3=A8rement
+Mme Mellie C.
