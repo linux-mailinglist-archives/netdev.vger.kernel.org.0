@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FDC694EA1
+	by mail.lfdr.de (Postfix) with ESMTP id DABCA94EA2
 	for <lists+netdev@lfdr.de>; Mon, 19 Aug 2019 22:01:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728177AbfHSUBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 16:01:10 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:42271 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727769AbfHSUBJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 16:01:09 -0400
-Received: by mail-qk1-f195.google.com with SMTP id 201so2510630qkm.9
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 13:01:09 -0700 (PDT)
+        id S1728245AbfHSUBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 16:01:11 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:35841 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728101AbfHSUBK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 16:01:10 -0400
+Received: by mail-qt1-f195.google.com with SMTP id z4so3332534qtc.3
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 13:01:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=niSW7iIXVcLdsvzJzwpRywzI+Ylz40m6NYatkfatDgs=;
-        b=WM7oz7uKxCqDiN1LRMHy45caOgj4xXDo6VJxOIoDT/ENxt7OR+jFBLd8rIwfU9pdZ3
-         Ub79ejy0c+vX0VSeF3w9nvmQF8+0CP0dMrcowSyc+K4dtILJiu1i9W3ZYoBpDSUHrOpf
-         SauzBEpsF4jdpfXbWccp9fpAXV256nGwIU0O9WM9GpEx/m+HeiuQ4Bpf0sSzKwOmvB9/
-         1PlhTh8rIo+mE83y11CJCwL0z3AZ90vLjMH+EGHDQ1reYJ7egEyXdBGwDZ5PiTE9l/VO
-         EhYfSbdpOdBYBHKuL/7WaLibaqxauAlx89IfYUrilNhxzM+1h5Fnx4DAwcWNZWAJemF6
-         XirA==
+        bh=t1UQ9o8He35/DPyYwqfbn2F9VbwpmceAG9OJP8XOjrs=;
+        b=EGkoenfzIAvIcFYBCCcWoF1aY6UiIG1TJcDWsyQsLYAGQAKAsJm3j8RoR7v3MYvJkM
+         F9coJ9jlw145fa1nz5+AtD04Hvf5yf0IYXcuwhIkHsa8KP3Pa5ZESDNHlTp6jRGdnwy7
+         XEdYaiCJx4Wsd44I7BEkH0m30Eh/GEhyI2N90dVXNOTv075WYd4mMjbvKUFz9nMx6l06
+         1v6mfgue3kSQ4XBZPGLbgeuGpR71y8vSqlRARPvdcDp4gs6iUFoo0d56+bCIcSArt1Oe
+         1E7G491OxI6UJeOUT8MGSYWkwzLjFgHW0NtimngsscIdQCshphKlLzRvm1TgUo9K65aR
+         jVGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=niSW7iIXVcLdsvzJzwpRywzI+Ylz40m6NYatkfatDgs=;
-        b=WZf0GKPD+8n7N2VM5hWtv3pZTChckC8WFjG6UlRRVsnvPOCTSvOgp5FNPfEhdaIUV6
-         i7vw7mZQCOdnPVs4KGa31kBkXF+zp+yAXdYVfl+wqCJylEzfKBKD1cV1mBzh8daKVoPc
-         MzGq8P+u2jjVgqWkawf4u4RJAS7OKKKZ60eEEZNClUKrmmW58P1VhhHXHRq9sKjWpOVh
-         i9N7TiktZ3cTGQcX1oD9r+BzIRckHDLBAxstsYgqa/SzhXVcTpwTo64oqHOgB4LSNC+l
-         F4H4hhONuY4dsdG1PPlZ6u4aDZSfjE3bq/KEb2kqDn19901m4MbohO2cnnT5qCeNFJmq
-         CNwg==
-X-Gm-Message-State: APjAAAWGdOat50yum9xvA2X2xp1cXzz+Dt5fP03jwqtcRI6D7rt82bP9
-        +wNCBvjfkowu9OyoPksmjoZsG6+nyjA=
-X-Google-Smtp-Source: APXvYqwuJGPIUdyVfknaSmRFWi16sA/6QdQMhi8LCzwf0X3pUzSskV7s5/gp2CANlLpK0RoQd8NBLw==
-X-Received: by 2002:a37:c81:: with SMTP id 123mr22577296qkm.300.1566244868197;
-        Mon, 19 Aug 2019 13:01:08 -0700 (PDT)
+        bh=t1UQ9o8He35/DPyYwqfbn2F9VbwpmceAG9OJP8XOjrs=;
+        b=D0SjSZnElfLuJzcNYML6c1mUvswy7QlI8kLE37ENeq8tujvr184BGGn/MQbXSl7EoY
+         0AzQwluJO9oam122/fwj4TsxOhtr/p+fLRkmWSHjS2J9HWIh+OA9tJx8Ntup3WvU6B5u
+         Wys3Y3piGbIKxuw6zT67zUxbdPuCUX3yBU/zj6NaicMUU4oSa5zXfuFginjlJ3zmIH4U
+         /Xm/yZMSbzJ/8fU5U/dv8t7/ljzXmp0A8KaY47LQmmRN14g7Nb6iG9LTbog4hPNeFmMd
+         YQRL5efs4pRa7vks9ZgxNyzc5UYdu8/y1qqtL14vymQVw1FnkyQEauReTDY+Wk0B+/6+
+         +xlA==
+X-Gm-Message-State: APjAAAWm0OqpOkl5ySZiG4YPnWmbRQFjJllHBqAL//zM+txXS9q2T9+n
+        sMvZWKh5zWHZZZR/em0b6awXZ641i+s=
+X-Google-Smtp-Source: APXvYqyrThjt/nyZFIwrZqsziQNjfsNDpTP8oMiw6sdVHQa8jvR8Vi5c3okFKGYS9qpCphK5bkELXw==
+X-Received: by 2002:ac8:474d:: with SMTP id k13mr22442379qtp.266.1566244869590;
+        Mon, 19 Aug 2019 13:01:09 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id r5sm7600160qkc.42.2019.08.19.13.01.07
+        by smtp.gmail.com with ESMTPSA id 18sm7452341qkh.77.2019.08.19.13.01.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 13:01:07 -0700 (PDT)
+        Mon, 19 Aug 2019 13:01:09 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     marek.behun@nic.cz, davem@davemloft.net, f.fainelli@gmail.com,
         andrew@lunn.ch, Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next v2 1/6] net: dsa: use a single switch statement for port setup
-Date:   Mon, 19 Aug 2019 16:00:48 -0400
-Message-Id: <20190819200053.21637-2-vivien.didelot@gmail.com>
+Subject: [PATCH net-next v2 2/6] net: dsa: do not enable or disable non user ports
+Date:   Mon, 19 Aug 2019 16:00:49 -0400
+Message-Id: <20190819200053.21637-3-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190819200053.21637-1-vivien.didelot@gmail.com>
 References: <20190819200053.21637-1-vivien.didelot@gmail.com>
@@ -61,150 +61,183 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It is currently difficult to read the different steps involved in the
-setup and teardown of ports in the DSA code. Keep it simple with a
-single switch statement for each port type: UNUSED, CPU, DSA, or USER.
+The .port_enable and .port_disable operations are currently only
+called for user ports, hence assuming they have a slave device. In
+preparation for using these operations for other port types as well,
+simply guard all implementations against non user ports and return
+directly in such case.
 
-Also no need to call devlink_port_unregister from within dsa_port_setup
-as this step is inconditionally handled by dsa_port_teardown on error.
+Note that bcm_sf2_sw_suspend() currently calls bcm_sf2_port_disable()
+(and thus b53_disable_port()) against the user and CPU ports, so do
+not guards those functions. They will be called for unused ports in
+the future, but that was expected by those drivers anyway.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
 ---
- net/dsa/dsa2.c | 87 ++++++++++++++++++++++----------------------------
- 1 file changed, 39 insertions(+), 48 deletions(-)
+ drivers/net/dsa/b53/b53_common.c       | 7 ++++++-
+ drivers/net/dsa/bcm_sf2.c              | 3 +++
+ drivers/net/dsa/lan9303-core.c         | 6 ++++++
+ drivers/net/dsa/lantiq_gswip.c         | 6 ++++++
+ drivers/net/dsa/microchip/ksz_common.c | 6 ++++++
+ drivers/net/dsa/mt7530.c               | 6 ++++++
+ drivers/net/dsa/mv88e6xxx/chip.c       | 6 ++++++
+ 7 files changed, 39 insertions(+), 1 deletion(-)
 
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 3abd173ebacb..405552ac4c08 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -254,88 +254,79 @@ static void dsa_tree_teardown_default_cpu(struct dsa_switch_tree *dst)
- 
- static int dsa_port_setup(struct dsa_port *dp)
+diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
+index 907af62846ba..7d328a5f0161 100644
+--- a/drivers/net/dsa/b53/b53_common.c
++++ b/drivers/net/dsa/b53/b53_common.c
+@@ -510,10 +510,15 @@ EXPORT_SYMBOL(b53_imp_vlan_setup);
+ int b53_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
  {
--	enum devlink_port_flavour flavour;
- 	struct dsa_switch *ds = dp->ds;
- 	struct dsa_switch_tree *dst = ds->dst;
--	int err = 0;
--
--	if (dp->type == DSA_PORT_TYPE_UNUSED)
--		return 0;
--
--	memset(&dp->devlink_port, 0, sizeof(dp->devlink_port));
--	dp->mac = of_get_mac_address(dp->dn);
--
--	switch (dp->type) {
--	case DSA_PORT_TYPE_CPU:
--		flavour = DEVLINK_PORT_FLAVOUR_CPU;
--		break;
--	case DSA_PORT_TYPE_DSA:
--		flavour = DEVLINK_PORT_FLAVOUR_DSA;
--		break;
--	case DSA_PORT_TYPE_USER: /* fall-through */
--	default:
--		flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
--		break;
--	}
--
--	/* dp->index is used now as port_number. However
--	 * CPU and DSA ports should have separate numbering
--	 * independent from front panel port numbers.
--	 */
--	devlink_port_attrs_set(&dp->devlink_port, flavour,
--			       dp->index, false, 0,
--			       (const char *) &dst->index, sizeof(dst->index));
--	err = devlink_port_register(ds->devlink, &dp->devlink_port,
--				    dp->index);
--	if (err)
--		return err;
-+	const unsigned char *id = (const unsigned char *)&dst->index;
-+	const unsigned char len = sizeof(dst->index);
-+	struct devlink_port *dlp = &dp->devlink_port;
-+	struct devlink *dl = ds->devlink;
-+	int err;
+ 	struct b53_device *dev = ds->priv;
+-	unsigned int cpu_port = ds->ports[port].cpu_dp->index;
++	unsigned int cpu_port;
+ 	int ret = 0;
+ 	u16 pvlan;
  
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
- 		break;
- 	case DSA_PORT_TYPE_CPU:
-+		memset(dlp, 0, sizeof(*dlp));
-+		devlink_port_attrs_set(dlp, DEVLINK_PORT_FLAVOUR_CPU,
-+				       dp->index, false, 0, id, len);
-+		err = devlink_port_register(dl, dlp, dp->index);
-+		if (err)
-+			return err;
++	if (!dsa_is_user_port(ds, port))
++		return 0;
 +
- 		err = dsa_port_link_register_of(dp);
- 		if (err)
--			dev_err(ds->dev, "failed to setup link for port %d.%d\n",
--				ds->index, dp->index);
-+			return err;
- 		break;
- 	case DSA_PORT_TYPE_DSA:
-+		memset(dlp, 0, sizeof(*dlp));
-+		devlink_port_attrs_set(dlp, DEVLINK_PORT_FLAVOUR_DSA,
-+				       dp->index, false, 0, id, len);
-+		err = devlink_port_register(dl, dlp, dp->index);
-+		if (err)
-+			return err;
++	cpu_port = ds->ports[port].cpu_dp->index;
 +
- 		err = dsa_port_link_register_of(dp);
- 		if (err)
--			dev_err(ds->dev, "failed to setup link for port %d.%d\n",
--				ds->index, dp->index);
-+			return err;
- 		break;
- 	case DSA_PORT_TYPE_USER:
-+		memset(dlp, 0, sizeof(*dlp));
-+		devlink_port_attrs_set(dlp, DEVLINK_PORT_FLAVOUR_PHYSICAL,
-+				       dp->index, false, 0, id, len);
-+		err = devlink_port_register(dl, dlp, dp->index);
-+		if (err)
-+			return err;
-+
-+		dp->mac = of_get_mac_address(dp->dn);
- 		err = dsa_slave_create(dp);
- 		if (err)
--			dev_err(ds->dev, "failed to create slave for port %d.%d\n",
--				ds->index, dp->index);
--		else
--			devlink_port_type_eth_set(&dp->devlink_port, dp->slave);
-+			return err;
-+
-+		devlink_port_type_eth_set(dlp, dp->slave);
- 		break;
- 	}
+ 	if (dev->ops->irq_enable)
+ 		ret = dev->ops->irq_enable(dev, port);
+ 	if (ret)
+diff --git a/drivers/net/dsa/bcm_sf2.c b/drivers/net/dsa/bcm_sf2.c
+index 49f99436018a..4f839348011d 100644
+--- a/drivers/net/dsa/bcm_sf2.c
++++ b/drivers/net/dsa/bcm_sf2.c
+@@ -157,6 +157,9 @@ static int bcm_sf2_port_setup(struct dsa_switch *ds, int port,
+ 	unsigned int i;
+ 	u32 reg;
  
--	if (err)
--		devlink_port_unregister(&dp->devlink_port);
--
--	return err;
-+	return 0;
++	if (!dsa_is_user_port(ds, port))
++		return 0;
++
+ 	/* Clear the memory power down */
+ 	reg = core_readl(priv, CORE_MEM_PSM_VDD_CTRL);
+ 	reg &= ~P_TXQ_PSM_VDD(port);
+diff --git a/drivers/net/dsa/lan9303-core.c b/drivers/net/dsa/lan9303-core.c
+index 7a2063e7737a..bbec86b9418e 100644
+--- a/drivers/net/dsa/lan9303-core.c
++++ b/drivers/net/dsa/lan9303-core.c
+@@ -1079,6 +1079,9 @@ static int lan9303_port_enable(struct dsa_switch *ds, int port,
+ {
+ 	struct lan9303 *chip = ds->priv;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return 0;
++
+ 	return lan9303_enable_processing_port(chip, port);
  }
  
- static void dsa_port_teardown(struct dsa_port *dp)
+@@ -1086,6 +1089,9 @@ static void lan9303_port_disable(struct dsa_switch *ds, int port)
  {
--	if (dp->type != DSA_PORT_TYPE_UNUSED)
--		devlink_port_unregister(&dp->devlink_port);
-+	struct devlink_port *dlp = &dp->devlink_port;
+ 	struct lan9303 *chip = ds->priv;
  
- 	switch (dp->type) {
- 	case DSA_PORT_TYPE_UNUSED:
- 		break;
- 	case DSA_PORT_TYPE_CPU:
- 		dsa_tag_driver_put(dp->tag_ops);
--		/* fall-through */
-+		devlink_port_unregister(dlp);
-+		dsa_port_link_unregister_of(dp);
-+		break;
- 	case DSA_PORT_TYPE_DSA:
-+		devlink_port_unregister(dlp);
- 		dsa_port_link_unregister_of(dp);
- 		break;
- 	case DSA_PORT_TYPE_USER:
-+		devlink_port_unregister(dlp);
- 		if (dp->slave) {
- 			dsa_slave_destroy(dp->slave);
- 			dp->slave = NULL;
++	if (!dsa_is_user_port(ds, port))
++		return;
++
+ 	lan9303_disable_processing_port(chip, port);
+ 	lan9303_phy_write(ds, chip->phy_addr_base + port, MII_BMCR, BMCR_PDOWN);
+ }
+diff --git a/drivers/net/dsa/lantiq_gswip.c b/drivers/net/dsa/lantiq_gswip.c
+index 2175ec13bb2c..a69c9b9878b7 100644
+--- a/drivers/net/dsa/lantiq_gswip.c
++++ b/drivers/net/dsa/lantiq_gswip.c
+@@ -642,6 +642,9 @@ static int gswip_port_enable(struct dsa_switch *ds, int port,
+ 	struct gswip_priv *priv = ds->priv;
+ 	int err;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return 0;
++
+ 	if (!dsa_is_cpu_port(ds, port)) {
+ 		err = gswip_add_single_port_br(priv, port, true);
+ 		if (err)
+@@ -678,6 +681,9 @@ static void gswip_port_disable(struct dsa_switch *ds, int port)
+ {
+ 	struct gswip_priv *priv = ds->priv;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return;
++
+ 	if (!dsa_is_cpu_port(ds, port)) {
+ 		gswip_mdio_mask(priv, GSWIP_MDIO_PHY_LINK_DOWN,
+ 				GSWIP_MDIO_PHY_LINK_MASK,
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index b45c7b972cec..b0b870f0c252 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -361,6 +361,9 @@ int ksz_enable_port(struct dsa_switch *ds, int port, struct phy_device *phy)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return 0;
++
+ 	/* setup slave port */
+ 	dev->dev_ops->port_setup(dev, port, false);
+ 	if (dev->dev_ops->phy_setup)
+@@ -378,6 +381,9 @@ void ksz_disable_port(struct dsa_switch *ds, int port)
+ {
+ 	struct ksz_device *dev = ds->priv;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return;
++
+ 	dev->on_ports &= ~(1 << port);
+ 	dev->live_ports &= ~(1 << port);
+ 
+diff --git a/drivers/net/dsa/mt7530.c b/drivers/net/dsa/mt7530.c
+index 3181e95586d6..c48e29486b10 100644
+--- a/drivers/net/dsa/mt7530.c
++++ b/drivers/net/dsa/mt7530.c
+@@ -726,6 +726,9 @@ mt7530_port_enable(struct dsa_switch *ds, int port,
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return 0;
++
+ 	mutex_lock(&priv->reg_mutex);
+ 
+ 	/* Setup the MAC for the user port */
+@@ -751,6 +754,9 @@ mt7530_port_disable(struct dsa_switch *ds, int port)
+ {
+ 	struct mt7530_priv *priv = ds->priv;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return;
++
+ 	mutex_lock(&priv->reg_mutex);
+ 
+ 	/* Clear up all port matrix which could be restored in the next
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 9b3ad22a5b98..5e557545df6d 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2267,6 +2267,9 @@ static int mv88e6xxx_port_enable(struct dsa_switch *ds, int port,
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 	int err;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return 0;
++
+ 	mv88e6xxx_reg_lock(chip);
+ 
+ 	err = mv88e6xxx_serdes_power(chip, port, true);
+@@ -2283,6 +2286,9 @@ static void mv88e6xxx_port_disable(struct dsa_switch *ds, int port)
+ {
+ 	struct mv88e6xxx_chip *chip = ds->priv;
+ 
++	if (!dsa_is_user_port(ds, port))
++		return;
++
+ 	mv88e6xxx_reg_lock(chip);
+ 
+ 	if (mv88e6xxx_port_set_state(chip, port, BR_STATE_DISABLED))
 -- 
 2.22.0
 
