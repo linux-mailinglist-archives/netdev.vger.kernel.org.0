@@ -2,382 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7B0595F34
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:52:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9316395F45
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:56:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729677AbfHTMwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 08:52:09 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41350 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729203AbfHTMwJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 08:52:09 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 20 Aug 2019 15:52:02 +0300
-Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7KCq2wO009694;
-        Tue, 20 Aug 2019 15:52:02 +0300
-From:   Paul Blakey <paulb@mellanox.com>
-To:     Pravin B Shelar <pshelar@ovn.org>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Justin Pettit <jpettit@nicira.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Vlad Buslov <vladbu@mellanox.com>,
-        Paul Blakey <paulb@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
-        Yossi Kuperman <yossiku@mellanox.com>,
-        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
-Subject: Re: [PATCH net-next v2] net: openvswitch: Set OvS recirc_id from tc chain index
-Date:   Tue, 20 Aug 2019 15:51:55 +0300
-Message-Id: <1566305515-25008-1-git-send-email-paulb@mellanox.com>
-X-Mailer: git-send-email 1.8.4.3
-In-Reply-To: <1566304251-15795-1-git-send-email-paulb@mellanox.com>
-References: <1566304251-15795-1-git-send-email-paulb@mellanox.com>
+        id S1729458AbfHTM4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 08:56:00 -0400
+Received: from mail-ed1-f97.google.com ([209.85.208.97]:46470 "EHLO
+        mail-ed1-f97.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729677AbfHTM4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 08:56:00 -0400
+Received: by mail-ed1-f97.google.com with SMTP id z51so6193604edz.13
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 05:55:58 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=sTNITPURPb4r/eqB5oSrUPyoCIQAB00GeOT0IVjNBUQ=;
+        b=bbgsdV1VaILwUb2pAROp231dwTuUQnJDlKMY+cpo2F46m1qclx/IunUe0txdhOK7PM
+         3YNPL4hqvsJ9KE3HaSdExt18PCZ3ZZiWIbbmcYanZ0vLERNOZemOKLPSEkX5eIqoV8CK
+         /q0VmZpMZZBEDguGiIhZuFS0USmD+ht2lcgw3isnRgoFMo1yyaPJJu8EfNDH8WzDrpq8
+         SLfRUce98ukzZcso6uMIdNpeFAtgNtHoDXC8Tkw0Th3lxNrKMGHu7aEI3Lotk+ew3ZJA
+         Rz8XrRNMEEhXESkmiRKTXfRduIolylD0mNgb+9AXRy+9i1X/iJsRKgP63HUpvZszW7Oc
+         flug==
+X-Gm-Message-State: APjAAAULXgWd/XDBIjpvIXmg1h3JwLdPVkpKCI3y/3zL64F9SXepu8k/
+        AS04wRXmkGivXJHxJUMtBuPg7hvvhD/H44vUaPDzTmBmXIdxRad7+/kO4IPeibQa8g==
+X-Google-Smtp-Source: APXvYqytjtPULfzeO/6Q1HzRiHGCA74gB4Fkqu7AGrV+3JIcj0woBeciNthIExcMV0YcOejFzWV2BPHfY5hA
+X-Received: by 2002:a17:906:94d3:: with SMTP id d19mr26260995ejy.298.1566305758183;
+        Tue, 20 Aug 2019 05:55:58 -0700 (PDT)
+Received: from heliosphere.sirena.org.uk (heliosphere.sirena.org.uk. [2a01:7e01::f03c:91ff:fed4:a3b6])
+        by smtp-relay.gmail.com with ESMTPS id p15sm84519ejb.24.2019.08.20.05.55.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Aug 2019 05:55:58 -0700 (PDT)
+X-Relaying-Domain: sirena.org.uk
+Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
+        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <broonie@sirena.co.uk>)
+        id 1i03g5-0002EB-Sn; Tue, 20 Aug 2019 12:55:57 +0000
+Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
+        id 5ADFE2742ABD; Tue, 20 Aug 2019 13:55:57 +0100 (BST)
+Date:   Tue, 20 Aug 2019 13:55:57 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 03/11] spi: Add a PTP system timestamp to
+ the transfer structure
+Message-ID: <20190820125557.GB4738@sirena.co.uk>
+References: <20190816004449.10100-1-olteanv@gmail.com>
+ <20190816004449.10100-4-olteanv@gmail.com>
+ <20190816121837.GD4039@sirena.co.uk>
+ <CA+h21hqatTeS2shV9QSiPzkjSeNj2Z4SOTrycffDjRHj=9s=nQ@mail.gmail.com>
+ <20190816125820.GF4039@sirena.co.uk>
+ <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="DBIVS5p969aUjpLe"
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
+X-Cookie: It's the thought, if any, that counts!
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Regarding the user_features change, I tested the above patch with this one in
-userspace that I'll send once this is accepted, togother with the rest
-of connection tracking offload patches.
 
-I also have a test for it, if anyone wants it.
+--DBIVS5p969aUjpLe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Patch is:
-lib/netdev-offloads-tc: Probe recirc tc sharing feature on first recirc_id rule
+On Fri, Aug 16, 2019 at 05:05:53PM +0300, Vladimir Oltean wrote:
 
-Signed-off-by: Paul Blakey <paulb@mellanox.com>
----
- datapath/linux/compat/include/linux/openvswitch.h |  3 ++
- lib/dpif-netdev.c                                 |  1 +
- lib/dpif-netlink.c                                | 61 +++++++++++++++++++----
- lib/dpif-provider.h                               |  2 +
- lib/dpif.c                                        |  9 ++++
- lib/dpif.h                                        |  2 +
- lib/netdev-offload-tc.c                           | 33 ++++++++++--
- lib/netdev-offload.h                              |  2 +-
- 8 files changed, 100 insertions(+), 13 deletions(-)
+> I'm not sure how to respond to this, because I don't know anything
+> about the timing of DMA transfers.
+> Maybe snapshotting DMA transfers the same way is not possible (if at
+> all). Maybe they are not exactly adequate for this sort of application
+> anyway. Maybe it depends.
 
-diff --git a/datapath/linux/compat/include/linux/openvswitch.h b/datapath/linux/compat/include/linux/openvswitch.h
-index 65a003a..921ef5b 100644
---- a/datapath/linux/compat/include/linux/openvswitch.h
-+++ b/datapath/linux/compat/include/linux/openvswitch.h
-@@ -143,6 +143,9 @@ struct ovs_vport_stats {
- /* Allow datapath to associate multiple Netlink PIDs to each vport */
- #define OVS_DP_F_VPORT_PIDS	(1 << 1)
- 
-+/* Allow tc offload recirc sharing */
-+#define OVS_DP_F_TC_RECIRC_SHARING  (1 << 2)
-+
- /* Fixed logical ports. */
- #define OVSP_LOCAL      ((__u32)0)
- 
-diff --git a/lib/dpif-netdev.c b/lib/dpif-netdev.c
-index d0a1c58..fd8275f 100644
---- a/lib/dpif-netdev.c
-+++ b/lib/dpif-netdev.c
-@@ -7489,6 +7489,7 @@ const struct dpif_class dpif_netdev_class = {
-     dpif_netdev_run,
-     dpif_netdev_wait,
-     dpif_netdev_get_stats,
-+    NULL,                      /* set_features */
-     dpif_netdev_port_add,
-     dpif_netdev_port_del,
-     dpif_netdev_port_set_config,
-diff --git a/lib/dpif-netlink.c b/lib/dpif-netlink.c
-index 07a9ddd..15e6057 100644
---- a/lib/dpif-netlink.c
-+++ b/lib/dpif-netlink.c
-@@ -192,6 +192,7 @@ struct dpif_handler {
- struct dpif_netlink {
-     struct dpif dpif;
-     int dp_ifindex;
-+    uint32_t user_features;
- 
-     /* Upcall messages. */
-     struct fat_rwlock upcall_lock;
-@@ -303,7 +304,6 @@ dpif_netlink_enumerate(struct sset *all_dps,
-     if (error) {
-         return error;
-     }
--
-     ofpbuf_use_stub(&buf, reply_stub, sizeof reply_stub);
-     dpif_netlink_dp_dump_start(&dump);
-     while (nl_dump_next(&dump, &msg, &buf)) {
-@@ -333,15 +333,26 @@ dpif_netlink_open(const struct dpif_class *class OVS_UNUSED, const char *name,
- 
-     /* Create or look up datapath. */
-     dpif_netlink_dp_init(&dp_request);
-+    upcall_pid = 0;
-+    dp_request.upcall_pid = &upcall_pid;
-+    dp_request.name = name;
-+
-     if (create) {
-         dp_request.cmd = OVS_DP_CMD_NEW;
--        upcall_pid = 0;
--        dp_request.upcall_pid = &upcall_pid;
-     } else {
-+        dp_request.cmd = OVS_DP_CMD_GET;
-+
-+        error = dpif_netlink_dp_transact(&dp_request, &dp, &buf);
-+        if (error)  {
-+            return error;
-+        }
-+        dp_request.user_features = dp.user_features;
-+        ofpbuf_delete(buf);
-+
-         /* Use OVS_DP_CMD_SET to report user features */
-         dp_request.cmd = OVS_DP_CMD_SET;
-     }
--    dp_request.name = name;
-+
-     dp_request.user_features |= OVS_DP_F_UNALIGNED;
-     dp_request.user_features |= OVS_DP_F_VPORT_PIDS;
-     error = dpif_netlink_dp_transact(&dp_request, &dp, &buf);
-@@ -367,6 +378,7 @@ open_dpif(const struct dpif_netlink_dp *dp, struct dpif **dpifp)
-               dp->dp_ifindex, dp->dp_ifindex);
- 
-     dpif->dp_ifindex = dp->dp_ifindex;
-+    dpif->user_features = dp->user_features;
-     *dpifp = &dpif->dpif;
- 
-     return 0;
-@@ -662,6 +674,31 @@ dpif_netlink_get_stats(const struct dpif *dpif_, struct dpif_dp_stats *stats)
-     return error;
- }
- 
-+static int
-+dpif_netlink_set_features(struct dpif *dpif_, uint32_t new_features)
-+{
-+    struct dpif_netlink *dpif = dpif_netlink_cast(dpif_);
-+    struct dpif_netlink_dp request, reply;
-+    struct ofpbuf *bufp;
-+    int error;
-+
-+    dpif_netlink_dp_init(&request);
-+    request.cmd = OVS_DP_CMD_SET;
-+    request.dp_ifindex = dpif->dp_ifindex;
-+    request.user_features = dpif->user_features | new_features;
-+
-+    error = dpif_netlink_dp_transact(&request, &reply, &bufp);
-+    if (!error) {
-+        dpif->user_features = reply.user_features;
-+        ofpbuf_delete(bufp);
-+        if (!(dpif->user_features & new_features)) {
-+            return -EOPNOTSUPP;
-+        }
-+    }
-+
-+    return error;
-+}
-+
- static const char *
- get_vport_type(const struct dpif_netlink_vport *vport)
- {
-@@ -1989,7 +2026,6 @@ static int
- parse_flow_put(struct dpif_netlink *dpif, struct dpif_flow_put *put)
- {
-     static struct vlog_rate_limit rl = VLOG_RATE_LIMIT_INIT(5, 20);
--    const struct dpif_class *dpif_class = dpif->dpif.dpif_class;
-     struct match match;
-     odp_port_t in_port;
-     const struct nlattr *nla;
-@@ -2011,7 +2047,7 @@ parse_flow_put(struct dpif_netlink *dpif, struct dpif_flow_put *put)
-     }
- 
-     in_port = match.flow.in_port.odp_port;
--    dev = netdev_ports_get(in_port, dpif_class);
-+    dev = netdev_ports_get(in_port, dpif->dpif.dpif_class);
-     if (!dev) {
-         return EOPNOTSUPP;
-     }
-@@ -2024,7 +2060,7 @@ parse_flow_put(struct dpif_netlink *dpif, struct dpif_flow_put *put)
-             odp_port_t out_port;
- 
-             out_port = nl_attr_get_odp_port(nla);
--            outdev = netdev_ports_get(out_port, dpif_class);
-+            outdev = netdev_ports_get(out_port, dpif->dpif.dpif_class);
-             if (!outdev) {
-                 err = EOPNOTSUPP;
-                 goto out;
-@@ -2040,7 +2076,7 @@ parse_flow_put(struct dpif_netlink *dpif, struct dpif_flow_put *put)
-         }
-     }
- 
--    info.dpif_class = dpif_class;
-+    info.dpif = &dpif->dpif;
-     info.tp_dst_port = dst_port;
-     info.tunnel_csum_on = csum_on;
-     err = netdev_flow_put(dev, &match,
-@@ -3394,6 +3430,7 @@ const struct dpif_class dpif_netlink_class = {
-     dpif_netlink_run,
-     NULL,                       /* wait */
-     dpif_netlink_get_stats,
-+    dpif_netlink_set_features,
-     dpif_netlink_port_add,
-     dpif_netlink_port_del,
-     NULL,                       /* port_set_config */
-@@ -3702,6 +3739,9 @@ dpif_netlink_dp_from_ofpbuf(struct dpif_netlink_dp *dp, const struct ofpbuf *buf
-         [OVS_DP_ATTR_MEGAFLOW_STATS] = {
-                         NL_POLICY_FOR(struct ovs_dp_megaflow_stats),
-                         .optional = true },
-+        [OVS_DP_ATTR_USER_FEATURES] = {
-+                        .type = NL_A_U32,
-+                        .optional = true },
-     };
- 
-     dpif_netlink_dp_init(dp);
-@@ -3730,6 +3770,10 @@ dpif_netlink_dp_from_ofpbuf(struct dpif_netlink_dp *dp, const struct ofpbuf *buf
-         dp->megaflow_stats = nl_attr_get(a[OVS_DP_ATTR_MEGAFLOW_STATS]);
-     }
- 
-+    if (a[OVS_DP_ATTR_USER_FEATURES]) {
-+        dp->user_features = nl_attr_get_u32(a[OVS_DP_ATTR_USER_FEATURES]);
-+    }
-+
-     return 0;
- }
- 
-@@ -3802,7 +3846,6 @@ dpif_netlink_dp_transact(const struct dpif_netlink_dp *request,
-     dpif_netlink_dp_to_ofpbuf(request, request_buf);
-     error = nl_transact(NETLINK_GENERIC, request_buf, bufp);
-     ofpbuf_delete(request_buf);
--
-     if (reply) {
-         dpif_netlink_dp_init(reply);
-         if (!error) {
-diff --git a/lib/dpif-provider.h b/lib/dpif-provider.h
-index 12898b9..8c8bc77 100644
---- a/lib/dpif-provider.h
-+++ b/lib/dpif-provider.h
-@@ -187,6 +187,8 @@ struct dpif_class {
-     /* Retrieves statistics for 'dpif' into 'stats'. */
-     int (*get_stats)(const struct dpif *dpif, struct dpif_dp_stats *stats);
- 
-+    int (*set_features)(struct dpif *dpif, uint32_t user_features);
-+
-     /* Adds 'netdev' as a new port in 'dpif'.  If '*port_no' is not
-      * ODPP_NONE, attempts to use that as the port's port number.
-      *
-diff --git a/lib/dpif.c b/lib/dpif.c
-index c88b210..dc13655 100644
---- a/lib/dpif.c
-+++ b/lib/dpif.c
-@@ -543,6 +543,15 @@ dpif_get_dp_stats(const struct dpif *dpif, struct dpif_dp_stats *stats)
-     return error;
- }
- 
-+int
-+dpif_set_features(struct dpif *dpif, uint32_t new_features)
-+{
-+    int error = dpif->dpif_class->set_features(dpif, new_features);
-+
-+    log_operation(dpif, "set_features", error);
-+    return error;
-+}
-+
- const char *
- dpif_port_open_type(const char *datapath_type, const char *port_type)
- {
-diff --git a/lib/dpif.h b/lib/dpif.h
-index 289d574..c7bb48f 100644
---- a/lib/dpif.h
-+++ b/lib/dpif.h
-@@ -435,6 +435,8 @@ struct dpif_dp_stats {
- };
- int dpif_get_dp_stats(const struct dpif *, struct dpif_dp_stats *);
- 
-+int dpif_set_features(struct dpif *, uint32_t new_features);
-+
- 
- /* Port operations. */
- 
-diff --git a/lib/netdev-offload-tc.c b/lib/netdev-offload-tc.c
-index 60d5a42..4e85585 100644
---- a/lib/netdev-offload-tc.c
-+++ b/lib/netdev-offload-tc.c
-@@ -38,6 +38,7 @@
- #include "tc.h"
- #include "unaligned.h"
- #include "util.h"
-+#include "dpif-provider.h"
- 
- VLOG_DEFINE_THIS_MODULE(netdev_offload_tc);
- 
-@@ -1354,6 +1355,25 @@ flower_match_to_tun_opt(struct tc_flower *flower, const struct flow_tnl *tnl,
-     flower->mask.tunnel.metadata.present.len = tnl->metadata.present.len;
- }
- 
-+static bool
-+recirc_id_sharing_support(struct dpif *dpif)
-+{
-+    static struct ovsthread_once once = OVSTHREAD_ONCE_INITIALIZER;
-+    static bool supported = false;
-+    int err;
-+
-+    if (ovsthread_once_start(&once)) {
-+        err = dpif_set_features(dpif, OVS_DP_F_TC_RECIRC_SHARING);
-+        supported = err ? supported : true;
-+        if (supported) {
-+            VLOG_INFO("probe tc: tc recirc id sharing with OvS datapath is supported.");
-+        }
-+        ovsthread_once_done(&once);
-+    }
-+
-+    return supported;
-+}
-+
- static int
- netdev_tc_flow_put(struct netdev *netdev, struct match *match,
-                    struct nlattr *actions, size_t actions_len,
-@@ -1371,7 +1391,7 @@ netdev_tc_flow_put(struct netdev *netdev, struct match *match,
-     uint32_t block_id = 0;
-     struct nlattr *nla;
-     struct tc_id id;
--    uint32_t chain;
-+    uint32_t chain = 0;
-     size_t left;
-     int prio = 0;
-     int ifindex;
-@@ -1386,7 +1406,13 @@ netdev_tc_flow_put(struct netdev *netdev, struct match *match,
- 
-     memset(&flower, 0, sizeof flower);
- 
--    chain = key->recirc_id;
-+    if (key->recirc_id) {
-+        if (recirc_id_sharing_support(info->dpif)) {
-+            chain = key->recirc_id;
-+        } else {
-+            return -EOPNOTSUPP;
-+        }
-+    }
-     mask->recirc_id = 0;
- 
-     if (flow_tnl_dst_is_set(&key->tunnel)) {
-@@ -1634,7 +1660,8 @@ netdev_tc_flow_put(struct netdev *netdev, struct match *match,
-         action = &flower.actions[flower.action_count];
-         if (nl_attr_type(nla) == OVS_ACTION_ATTR_OUTPUT) {
-             odp_port_t port = nl_attr_get_odp_port(nla);
--            struct netdev *outdev = netdev_ports_get(port, info->dpif_class);
-+            struct netdev *outdev = netdev_ports_get(port,
-+                                                     info->dpif->dpif_class);
- 
-             action->out.ifindex_out = netdev_get_ifindex(outdev);
-             action->out.ingress = is_internal_port(netdev_get_type(outdev));
-diff --git a/lib/netdev-offload.h b/lib/netdev-offload.h
-index 97a5006..d852fe2 100644
---- a/lib/netdev-offload.h
-+++ b/lib/netdev-offload.h
-@@ -62,7 +62,7 @@ struct netdev_flow_dump {
- 
- /* Flow offloading. */
- struct offload_info {
--    const struct dpif_class *dpif_class;
-+    struct dpif *dpif;
-     ovs_be16 tp_dst_port; /* Destination port for tunnel in SET action */
-     uint8_t tunnel_csum_on; /* Tunnel header with checksum */
- 
--- 
-1.8.3.1
+DMA transfers generally proceed without any involvement from the CPU,
+this is broadly the point of DMA.  You *may* be able to split into
+multiple transactions but it's not reliable that you'd be able to do so
+on byte boundaries and there will be latency getting notified of
+completions.
 
+> In other words, from a purely performance perspective, I am against
+> limiting the API to just snapshotting the first and last byte. At this
+> level of "zoom", if I change the offset of the byte to anything other
+> than 3, the synchronization offset refuses to converge towards zero,
+> because the snapshot is incurring a constant offset that the servo
+> loop from userspace (phc2sys) can't compensate for.
+
+> Maybe the SPI master driver should just report what sort of
+> snapshotting capability it can offer, ranging from none (default
+> unless otherwise specified), to transfer-level (DMA style) or
+> byte-level.
+
+That does then have the consequence that the majority of controllers
+aren't going to be usable with the API which isn't great.
+
+> I'm afraid more actual experimentation is needed with DMA-based
+> controllers to understand what can be expected from them, and as a
+> result, how the API should map around them.
+> MDIO bus controllers are in a similar situation (with Hubert's patch)
+> but at least there the frame size is fixed and I haven't heard of an
+> MDIO controller to use DMA.
+
+I'm not 100% clear what the problem you're trying to solve is, or if
+it's a sensible problem to try to solve for that matter.
+
+--DBIVS5p969aUjpLe
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl1b7dwACgkQJNaLcl1U
+h9Dwjwf/dbqcU17zGra+YlgRKo6DqR3lr7Zs78XeUA8t53b61L28+ZuDRE1j6wYZ
+9OR/cjPU20FZ5KSjqpHsGbGvvJh6M0/v5az8EBm0e3vpglKcTRNGJ5dsZHLbOyPb
+uEhweMwaanElatxIvhQJvnL6aicGZhl4CQeWqLglAfxvmnfxDzAluYoalAMBk5+c
+pjUunBGPtX3bIDuSS/TGeoAtP1+wu/pNS8Nr6+rJ6IIclLlxrm9m3UqxxU8Gg48o
+Wxlm31t+Byb5sp8BgweEStjxUzKgwFr4yrgVXCP/mPNpdUv6ViqAq5usdN0SlNsS
+ph2TXu+C7V/RLrSsXeCjjbK+STc2Xg==
+=wLY1
+-----END PGP SIGNATURE-----
+
+--DBIVS5p969aUjpLe--
