@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 477D896C61
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5071596C63
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731197AbfHTWdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:52 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36984 "EHLO
+        id S1731199AbfHTWd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:56 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36986 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730975AbfHTWdC (ORCPT
+        with ESMTP id S1730981AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hpAHsO1eAQW8oJVPu7RS9TlFJ/oXbXdMYzhwcQSATiU=; b=OS+Xl92jhBg6JL25jhcw0/sTYZ
-        IfxP215izLHR9Vj6pHUGh/CQTpwx5BiWnY8tzXPMef0ovpeMmVkIxJynd+EBBrCYdyOaoU3raT9Yo
-        ty1ud2NMRzKVHigjeTj0uw7MzboxL9b+g0WH5JeT1FLzMdavDdnmSg2RSW6LxihHIPkFrW4ycYIYi
-        jaab+dnOvfDlZR9hxi6PgmduVAMRE62S3pmelb/xoctjqZo366eHxhO9/BbGbACrlIZvZBHoc2+e3
-        Pn3JT0CGY9kVW5I2V+k28e0vwP9X9PB7tbzFCmHuTHCTOm1ucZQDej6r4NmlCy7kJsyLhBVU/zIlM
-        xSyPq4Bg==;
+        bh=Zi03AHwAAmTpHDRqyNtFRC9dOLO7obHgqglUc3WJ1ZI=; b=hi64jpA4/bQxmlT+QeTiHbpikf
+        ZZ3FtkRnyItYX1/hSxi94LL2ClLiSZ8cvPpuf3PpWtpjl2QAU4VDnONviPirKDmiZu/se7UKwA4zf
+        JccXPoWQive1KWTqh1s0krVogn/3y+eYfEhMlrIr0TG1QcTZxPwiqD4vkZaPSBf4cPP3I6ltDtFtp
+        vqTet0qD45vhzP96E2E/xkKLLOjyUS3J8iL5Y2zdJ/mpwJ2bjc7rS2SSHu2aqbC1P8HUalGMfYeCA
+        OYfScgfcRRfQIzFRLPIdGVEN2wDKCwtoqAYTZYZymIzNxEzNXT8yoU5lYfyfZ/vEG8LnqFYEqPmoF
+        SqYCM+gw==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005ql-BB; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005qr-DJ; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 13/38] ppp: Convert units_idr to XArray
-Date:   Tue, 20 Aug 2019 15:32:34 -0700
-Message-Id: <20190820223259.22348-14-willy@infradead.org>
+Subject: [PATCH 14/38] tap: Convert minor_idr to XArray
+Date:   Tue, 20 Aug 2019 15:32:35 -0700
+Message-Id: <20190820223259.22348-15-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,194 +43,115 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Remove the unit_* wrappers around the IDR code; using the XArray API
-directly is more clear.  I suspect the all_ppp_mutex could probably be
-removed, but it probably isn't a scalability bottleneck.
+The minor_lock can be removed as the XArray contains its own spinlock.
+I suspect the GFP_ATOMIC allocation could be GFP_KERNEL, but I couldn't
+prove it.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/ppp/ppp_generic.c | 73 ++++++++---------------------------
- 1 file changed, 16 insertions(+), 57 deletions(-)
+ drivers/net/tap.c | 32 +++++++++++++-------------------
+ 1 file changed, 13 insertions(+), 19 deletions(-)
 
-diff --git a/drivers/net/ppp/ppp_generic.c b/drivers/net/ppp/ppp_generic.c
-index a30e41a56085..1a12f30de30f 100644
---- a/drivers/net/ppp/ppp_generic.c
-+++ b/drivers/net/ppp/ppp_generic.c
-@@ -24,7 +24,6 @@
- #include <linux/kmod.h>
- #include <linux/init.h>
- #include <linux/list.h>
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index dd614c2cd994..81b06a21d96c 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -14,9 +14,9 @@
+ #include <linux/slab.h>
+ #include <linux/wait.h>
+ #include <linux/cdev.h>
 -#include <linux/idr.h>
- #include <linux/netdevice.h>
- #include <linux/poll.h>
- #include <linux/ppp_defs.h>
-@@ -48,6 +47,7 @@
- #include <net/slhc_vj.h>
- #include <linux/atomic.h>
- #include <linux/refcount.h>
+ #include <linux/fs.h>
+ #include <linux/uio.h>
 +#include <linux/xarray.h>
  
- #include <linux/nsproxy.h>
  #include <net/net_namespace.h>
-@@ -206,7 +206,7 @@ static atomic_t channel_count = ATOMIC_INIT(0);
- static unsigned int ppp_net_id __read_mostly;
- struct ppp_net {
- 	/* units to ppp mapping */
--	struct idr units_idr;
-+	struct xarray units;
- 
- 	/*
- 	 * all_ppp_mutex protects the units_idr mapping.
-@@ -283,10 +283,6 @@ static struct channel *ppp_find_channel(struct ppp_net *pn, int unit);
- static int ppp_connect_channel(struct channel *pch, int unit);
- static int ppp_disconnect_channel(struct channel *pch);
- static void ppp_destroy_channel(struct channel *pch);
--static int unit_get(struct idr *p, void *ptr);
--static int unit_set(struct idr *p, void *ptr, int n);
--static void unit_put(struct idr *p, int n);
--static void *unit_find(struct idr *p, int n);
- static void ppp_setup(struct net_device *dev);
- 
- static const struct net_device_ops ppp_netdev_ops;
-@@ -904,7 +900,7 @@ static __net_init int ppp_init_net(struct net *net)
- {
- 	struct ppp_net *pn = net_generic(net, ppp_net_id);
- 
--	idr_init(&pn->units_idr);
-+	xa_init_flags(&pn->units, XA_FLAGS_ALLOC);
- 	mutex_init(&pn->all_ppp_mutex);
- 
- 	INIT_LIST_HEAD(&pn->all_channels);
-@@ -922,7 +918,7 @@ static __net_exit void ppp_exit_net(struct net *net)
- 	struct net_device *aux;
- 	struct ppp *ppp;
- 	LIST_HEAD(list);
--	int id;
-+	unsigned long id;
- 
- 	rtnl_lock();
- 	for_each_netdev_safe(net, dev, aux) {
-@@ -930,7 +926,7 @@ static __net_exit void ppp_exit_net(struct net *net)
- 			unregister_netdevice_queue(dev, &list);
+ #include <net/rtnetlink.h>
+@@ -106,8 +106,7 @@ static LIST_HEAD(major_list);
+ struct major_info {
+ 	struct rcu_head rcu;
+ 	dev_t major;
+-	struct idr minor_idr;
+-	spinlock_t minor_lock;
++	struct xarray tap_devs;
+ 	const char *device_name;
+ 	struct list_head next;
+ };
+@@ -414,19 +413,16 @@ int tap_get_minor(dev_t major, struct tap_dev *tap)
+ 		goto unlock;
  	}
  
--	idr_for_each_entry(&pn->units_idr, ppp, id)
-+	xa_for_each(&pn->units, id, ppp)
- 		/* Skip devices already unregistered by previous loop */
- 		if (!net_eq(dev_net(ppp->dev), net))
- 			unregister_netdevice_queue(ppp->dev, &list);
-@@ -939,7 +935,6 @@ static __net_exit void ppp_exit_net(struct net *net)
- 	rtnl_unlock();
+-	spin_lock(&tap_major->minor_lock);
+-	retval = idr_alloc(&tap_major->minor_idr, tap, 1, TAP_NUM_DEVS, GFP_ATOMIC);
+-	if (retval >= 0) {
+-		tap->minor = retval;
+-	} else if (retval == -ENOSPC) {
++	retval = xa_alloc(&tap_major->tap_devs, &tap->minor, tap,
++			XA_LIMIT(0, TAP_NUM_DEVS), GFP_ATOMIC);
++	if (retval == -EBUSY) {
+ 		netdev_err(tap->dev, "Too many tap devices\n");
+ 		retval = -EINVAL;
+ 	}
+-	spin_unlock(&tap_major->minor_lock);
  
- 	mutex_destroy(&pn->all_ppp_mutex);
--	idr_destroy(&pn->units_idr);
- 	WARN_ON_ONCE(!list_empty(&pn->all_channels));
- 	WARN_ON_ONCE(!list_empty(&pn->new_channels));
+ unlock:
+ 	rcu_read_unlock();
+-	return retval < 0 ? retval : 0;
++	return retval;
  }
-@@ -959,27 +954,25 @@ static int ppp_unit_register(struct ppp *ppp, int unit, bool ifname_is_set)
- 	mutex_lock(&pn->all_ppp_mutex);
+ EXPORT_SYMBOL_GPL(tap_get_minor);
  
- 	if (unit < 0) {
--		ret = unit_get(&pn->units_idr, ppp);
-+		ret = xa_alloc(&pn->units, &ppp->file.index, ppp,
-+				xa_limit_31b, GFP_KERNEL);
- 		if (ret < 0)
- 			goto err;
- 	} else {
--		/* Caller asked for a specific unit number. Fail with -EEXIST
-+		/*
-+		 * Caller asked for a specific unit number. Fail with -EEXIST
- 		 * if unavailable. For backward compatibility, return -EEXIST
--		 * too if idr allocation fails; this makes pppd retry without
--		 * requesting a specific unit number.
-+		 * too if memory allocation fails; this makes pppd retry
-+		 * without requesting a specific unit number.
- 		 */
--		if (unit_find(&pn->units_idr, unit)) {
--			ret = -EEXIST;
--			goto err;
--		}
--		ret = unit_set(&pn->units_idr, ppp, unit);
-+		ret = xa_insert(&pn->units, unit, ppp, GFP_KERNEL);
- 		if (ret < 0) {
- 			/* Rewrite error for backward compatibility */
- 			ret = -EEXIST;
- 			goto err;
+@@ -440,12 +436,12 @@ void tap_free_minor(dev_t major, struct tap_dev *tap)
+ 		goto unlock;
+ 	}
+ 
+-	spin_lock(&tap_major->minor_lock);
++	xa_lock(&tap_major->tap_devs);
+ 	if (tap->minor) {
+-		idr_remove(&tap_major->minor_idr, tap->minor);
++		__xa_erase(&tap_major->tap_devs, tap->minor);
+ 		tap->minor = 0;
+ 	}
+-	spin_unlock(&tap_major->minor_lock);
++	xa_unlock(&tap_major->tap_devs);
+ 
+ unlock:
+ 	rcu_read_unlock();
+@@ -465,13 +461,13 @@ static struct tap_dev *dev_get_by_tap_file(int major, int minor)
+ 		goto unlock;
+ 	}
+ 
+-	spin_lock(&tap_major->minor_lock);
+-	tap = idr_find(&tap_major->minor_idr, minor);
++	xa_lock(&tap_major->tap_devs);
++	tap = xa_load(&tap_major->tap_devs, minor);
+ 	if (tap) {
+ 		dev = tap->dev;
+ 		dev_hold(dev);
+ 	}
+-	spin_unlock(&tap_major->minor_lock);
++	xa_unlock(&tap_major->tap_devs);
+ 
+ unlock:
+ 	rcu_read_unlock();
+@@ -1322,8 +1318,7 @@ static int tap_list_add(dev_t major, const char *device_name)
+ 
+ 	tap_major->major = MAJOR(major);
+ 
+-	idr_init(&tap_major->minor_idr);
+-	spin_lock_init(&tap_major->minor_lock);
++	xa_init_flags(&tap_major->tap_devs, XA_FLAGS_ALLOC1);
+ 
+ 	tap_major->device_name = device_name;
+ 
+@@ -1369,7 +1364,6 @@ void tap_destroy_cdev(dev_t major, struct cdev *tap_cdev)
+ 	unregister_chrdev_region(major, TAP_NUM_DEVS);
+ 	list_for_each_entry_safe(tap_major, tmp, &major_list, next) {
+ 		if (tap_major->major == MAJOR(major)) {
+-			idr_destroy(&tap_major->minor_idr);
+ 			list_del_rcu(&tap_major->next);
+ 			kfree_rcu(tap_major, rcu);
  		}
-+		ppp->file.index = unit;
- 	}
--	ppp->file.index = ret;
- 
- 	if (!ifname_is_set)
- 		snprintf(ppp->dev->name, IFNAMSIZ, "ppp%i", ppp->file.index);
-@@ -996,7 +989,7 @@ static int ppp_unit_register(struct ppp *ppp, int unit, bool ifname_is_set)
- 
- err_unit:
- 	mutex_lock(&pn->all_ppp_mutex);
--	unit_put(&pn->units_idr, ppp->file.index);
-+	xa_erase(&pn->units, ppp->file.index);
- err:
- 	mutex_unlock(&pn->all_ppp_mutex);
- 
-@@ -1346,7 +1339,7 @@ static void ppp_dev_uninit(struct net_device *dev)
- 	ppp_unlock(ppp);
- 
- 	mutex_lock(&pn->all_ppp_mutex);
--	unit_put(&pn->units_idr, ppp->file.index);
-+	xa_erase(&pn->units, ppp->file.index);
- 	mutex_unlock(&pn->all_ppp_mutex);
- 
- 	ppp->owner = NULL;
-@@ -3136,7 +3129,7 @@ static void ppp_destroy_interface(struct ppp *ppp)
- static struct ppp *
- ppp_find_unit(struct ppp_net *pn, int unit)
- {
--	return unit_find(&pn->units_idr, unit);
-+	return xa_load(&pn->units, unit);
- }
- 
- /*
-@@ -3277,40 +3270,6 @@ static void __exit ppp_cleanup(void)
- 	unregister_pernet_device(&ppp_net_ops);
- }
- 
--/*
-- * Units handling. Caller must protect concurrent access
-- * by holding all_ppp_mutex
-- */
--
--/* associate pointer with specified number */
--static int unit_set(struct idr *p, void *ptr, int n)
--{
--	int unit;
--
--	unit = idr_alloc(p, ptr, n, n + 1, GFP_KERNEL);
--	if (unit == -ENOSPC)
--		unit = -EINVAL;
--	return unit;
--}
--
--/* get new free unit number and associate pointer with it */
--static int unit_get(struct idr *p, void *ptr)
--{
--	return idr_alloc(p, ptr, 0, 0, GFP_KERNEL);
--}
--
--/* put unit number back to a pool */
--static void unit_put(struct idr *p, int n)
--{
--	idr_remove(p, n);
--}
--
--/* get pointer associated with the number */
--static void *unit_find(struct idr *p, int n)
--{
--	return idr_find(p, n);
--}
--
- /* Module/initialization stuff */
- 
- module_init(ppp_init);
 -- 
 2.23.0.rc1
 
