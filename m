@@ -2,131 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9316395F45
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:56:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 127DD95F47
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:56:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729458AbfHTM4A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 08:56:00 -0400
-Received: from mail-ed1-f97.google.com ([209.85.208.97]:46470 "EHLO
-        mail-ed1-f97.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729677AbfHTM4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 08:56:00 -0400
-Received: by mail-ed1-f97.google.com with SMTP id z51so6193604edz.13
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 05:55:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sTNITPURPb4r/eqB5oSrUPyoCIQAB00GeOT0IVjNBUQ=;
-        b=bbgsdV1VaILwUb2pAROp231dwTuUQnJDlKMY+cpo2F46m1qclx/IunUe0txdhOK7PM
-         3YNPL4hqvsJ9KE3HaSdExt18PCZ3ZZiWIbbmcYanZ0vLERNOZemOKLPSEkX5eIqoV8CK
-         /q0VmZpMZZBEDguGiIhZuFS0USmD+ht2lcgw3isnRgoFMo1yyaPJJu8EfNDH8WzDrpq8
-         SLfRUce98ukzZcso6uMIdNpeFAtgNtHoDXC8Tkw0Th3lxNrKMGHu7aEI3Lotk+ew3ZJA
-         Rz8XrRNMEEhXESkmiRKTXfRduIolylD0mNgb+9AXRy+9i1X/iJsRKgP63HUpvZszW7Oc
-         flug==
-X-Gm-Message-State: APjAAAULXgWd/XDBIjpvIXmg1h3JwLdPVkpKCI3y/3zL64F9SXepu8k/
-        AS04wRXmkGivXJHxJUMtBuPg7hvvhD/H44vUaPDzTmBmXIdxRad7+/kO4IPeibQa8g==
-X-Google-Smtp-Source: APXvYqytjtPULfzeO/6Q1HzRiHGCA74gB4Fkqu7AGrV+3JIcj0woBeciNthIExcMV0YcOejFzWV2BPHfY5hA
-X-Received: by 2002:a17:906:94d3:: with SMTP id d19mr26260995ejy.298.1566305758183;
-        Tue, 20 Aug 2019 05:55:58 -0700 (PDT)
-Received: from heliosphere.sirena.org.uk (heliosphere.sirena.org.uk. [2a01:7e01::f03c:91ff:fed4:a3b6])
-        by smtp-relay.gmail.com with ESMTPS id p15sm84519ejb.24.2019.08.20.05.55.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 05:55:58 -0700 (PDT)
-X-Relaying-Domain: sirena.org.uk
-Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
-        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <broonie@sirena.co.uk>)
-        id 1i03g5-0002EB-Sn; Tue, 20 Aug 2019 12:55:57 +0000
-Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id 5ADFE2742ABD; Tue, 20 Aug 2019 13:55:57 +0100 (BST)
-Date:   Tue, 20 Aug 2019 13:55:57 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 03/11] spi: Add a PTP system timestamp to
- the transfer structure
-Message-ID: <20190820125557.GB4738@sirena.co.uk>
-References: <20190816004449.10100-1-olteanv@gmail.com>
- <20190816004449.10100-4-olteanv@gmail.com>
- <20190816121837.GD4039@sirena.co.uk>
- <CA+h21hqatTeS2shV9QSiPzkjSeNj2Z4SOTrycffDjRHj=9s=nQ@mail.gmail.com>
- <20190816125820.GF4039@sirena.co.uk>
- <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
+        id S1729684AbfHTM41 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 08:56:27 -0400
+Received: from mail-eopbgr130053.outbound.protection.outlook.com ([40.107.13.53]:59995
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729260AbfHTM41 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 08:56:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Wo/0xFtydN3vzhwzxEGwURw2g5UyyOj6aCXNglHVW/I5Z+ZdoerCXBa71UHBBmjuU0lhfcdbU4IVYRAsVqYW768yGVyrkWbwbLh5ee17cbK6s4runPfVVB1eH0cuFD1jhNzoEP+QsOXaeVVQXqzY1bqqdqjIQleMbpn12S7VsAUDbyvtfwWVBdkQ306qkHYG+R6x7DOxpvY2ObrbfxYoPkXo8jVZpKzKa9RFzMCFNYQIRoZeGW47ge6k+yptj2VUUl/raEKNG06KknWGC7xFX80RCG5I+tS6DdPTswrZEltMm4Os4JSKs1/bLPhJd30jt4TtFjos3tdDCoii84unWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8x8R4eyFAndOyW7DOAuxs+z71qcCe0wf3hGGtJByrqI=;
+ b=ggp7PlttXRylYdL0jhyazbbURu5/em7ylhh110/FVlEknB5QG7YAXA9Qk22rrpCd2ir9meBj82ujNxgn363xdXJrawSuJcTNB/at9yUUTP9sf5z84ad6zJ4eZnSdYOKEk9UbVUazSTLXDSBC/feGc03p/TwxAXta24iyQWh6Zymu11hmSKkoI21Er8emUGIzAa3tj0nP19yIlL8/bxDpGEmgDuZjQwseKJXF6mjA0NBIy/PpklqDTjjBXrA3MGQBMds46ERADbXXmZQNQmwQWPPIZyHRyCLegvJeHlP5XCols7V6msdlMPT+vZqfmvrpJfZz0CTqOSA74BmvXP1jFg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=8x8R4eyFAndOyW7DOAuxs+z71qcCe0wf3hGGtJByrqI=;
+ b=UsisJ4JK90YrtbcQ7UbBuGkIAbzNaNmINTdgA3BTIa3fwI1INrJAqFx1/a/RtFvsRulF5w5HN6/s6G5PWiKo+6Xlo40VzHWI84JBplNkBAmDACV83IQA/04ZnQet3BWCINYkpW6NLfB//gCO/xeszLcNBFc5ynY+y/zS1FcHnF0=
+Received: from AM4PR05MB3411.eurprd05.prod.outlook.com (10.171.190.30) by
+ AM4PR05MB3473.eurprd05.prod.outlook.com (10.170.126.150) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Tue, 20 Aug 2019 12:56:23 +0000
+Received: from AM4PR05MB3411.eurprd05.prod.outlook.com
+ ([fe80::d027:14a2:95db:6f1f]) by AM4PR05MB3411.eurprd05.prod.outlook.com
+ ([fe80::d027:14a2:95db:6f1f%7]) with mapi id 15.20.2178.018; Tue, 20 Aug 2019
+ 12:56:23 +0000
+From:   Paul Blakey <paulb@mellanox.com>
+To:     Pravin B Shelar <pshelar@ovn.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Justin Pettit <jpettit@nicira.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Vlad Buslov <vladbu@mellanox.com>
+CC:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
+        Yossi Kuperman <yossiku@mellanox.com>,
+        Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
+Subject: Re: [PATCH net-next v2] net: openvswitch: Set OvS recirc_id from tc
+ chain index
+Thread-Topic: [PATCH net-next v2] net: openvswitch: Set OvS recirc_id from tc
+ chain index
+Thread-Index: AQHVV1SLSJS9nzUEck6pAZSmyfPbF6cD/qkA
+Date:   Tue, 20 Aug 2019 12:56:23 +0000
+Message-ID: <677eef11-7f6a-ffcd-6e1d-b1b6e885ac20@mellanox.com>
+References: <1566304834-22836-1-git-send-email-paulb@mellanox.com>
+In-Reply-To: <1566304834-22836-1-git-send-email-paulb@mellanox.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: PR2P264CA0025.FRAP264.PROD.OUTLOOK.COM
+ (2603:10a6:101:1::13) To AM4PR05MB3411.eurprd05.prod.outlook.com
+ (2603:10a6:205:b::30)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=paulb@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [193.47.165.251]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: fef224cb-bf78-4344-2c07-08d7256dce0a
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM4PR05MB3473;
+x-ms-traffictypediagnostic: AM4PR05MB3473:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <AM4PR05MB347345CAA718B43030BAF56ACFAB0@AM4PR05MB3473.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 013568035E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(39860400002)(136003)(366004)(376002)(396003)(189003)(199004)(6506007)(5660300002)(71200400001)(52116002)(86362001)(76176011)(31696002)(4744005)(3846002)(31686004)(53936002)(6246003)(36756003)(110136005)(316002)(2616005)(476003)(99286004)(81156014)(6116002)(7736002)(8936002)(81166006)(305945005)(8676002)(54906003)(107886003)(25786009)(256004)(102836004)(6512007)(6436002)(6486002)(446003)(486006)(478600001)(66556008)(66476007)(66946007)(66446008)(53546011)(64756008)(71190400001)(14454004)(2906002)(2501003)(6636002)(66066001)(11346002)(4326008)(229853002)(26005)(186003)(386003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR05MB3473;H:AM4PR05MB3411.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: dA35yAhrldlAh6gncdtrTdJXJbQPwSmiU+UTSEHkHNN1jUhLiu3S/k6aQLH1jsU5n9yvR7ozNk+LaK7toxHImXiDtsaIQmG7XYQh8G3baD7BgT4xCRPdFcqAnJ4tIv4Xu94e0lbr0VzXDlO+rn5UF/pq4vjRShpvbkwT9mwSuaNRmNElhAZwJ9aDyP/hu8jWxYKDwLOO/pq3X6EgZmeJ5RX4LHz0kY7qGqzPboBxvrWcs8GlAEXca3UZYlQhv0CKzPDOr+tAkddHj8/0+juU5P+HTKcXOQugvcxzQ76aZDEc6oOxmUvhQnwS9Ymck95N8nbyjMzhlElB+iaOVV8AJsHEwHJsCyqYB1ts4X119vXnDmFNNKh2D4QlX0YyLiiawH1oF5qJoGg5NZlXpAK8FEOq33seO6eZvYtDNRRAG/M=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <953AFA86E6669C4E951C3C109E369A64@eurprd05.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="DBIVS5p969aUjpLe"
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
-X-Cookie: It's the thought, if any, that counts!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: fef224cb-bf78-4344-2c07-08d7256dce0a
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2019 12:56:23.6669
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZpBV/mXbR4fx6o7cmZuJG+xDti6nNblXOwwthHzO6I3xQKPn6dmExoPh8PzyzY35F8hHX5IS2Um7zPK8yCS3hg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR05MB3473
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---DBIVS5p969aUjpLe
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Fri, Aug 16, 2019 at 05:05:53PM +0300, Vladimir Oltean wrote:
-
-> I'm not sure how to respond to this, because I don't know anything
-> about the timing of DMA transfers.
-> Maybe snapshotting DMA transfers the same way is not possible (if at
-> all). Maybe they are not exactly adequate for this sort of application
-> anyway. Maybe it depends.
-
-DMA transfers generally proceed without any involvement from the CPU,
-this is broadly the point of DMA.  You *may* be able to split into
-multiple transactions but it's not reliable that you'd be able to do so
-on byte boundaries and there will be latency getting notified of
-completions.
-
-> In other words, from a purely performance perspective, I am against
-> limiting the API to just snapshotting the first and last byte. At this
-> level of "zoom", if I change the offset of the byte to anything other
-> than 3, the synchronization offset refuses to converge towards zero,
-> because the snapshot is incurring a constant offset that the servo
-> loop from userspace (phc2sys) can't compensate for.
-
-> Maybe the SPI master driver should just report what sort of
-> snapshotting capability it can offer, ranging from none (default
-> unless otherwise specified), to transfer-level (DMA style) or
-> byte-level.
-
-That does then have the consequence that the majority of controllers
-aren't going to be usable with the API which isn't great.
-
-> I'm afraid more actual experimentation is needed with DMA-based
-> controllers to understand what can be expected from them, and as a
-> result, how the API should map around them.
-> MDIO bus controllers are in a similar situation (with Hubert's patch)
-> but at least there the frame size is fixed and I haven't heard of an
-> MDIO controller to use DMA.
-
-I'm not 100% clear what the problem you're trying to solve is, or if
-it's a sensible problem to try to solve for that matter.
-
---DBIVS5p969aUjpLe
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl1b7dwACgkQJNaLcl1U
-h9Dwjwf/dbqcU17zGra+YlgRKo6DqR3lr7Zs78XeUA8t53b61L28+ZuDRE1j6wYZ
-9OR/cjPU20FZ5KSjqpHsGbGvvJh6M0/v5az8EBm0e3vpglKcTRNGJ5dsZHLbOyPb
-uEhweMwaanElatxIvhQJvnL6aicGZhl4CQeWqLglAfxvmnfxDzAluYoalAMBk5+c
-pjUunBGPtX3bIDuSS/TGeoAtP1+wu/pNS8Nr6+rJ6IIclLlxrm9m3UqxxU8Gg48o
-Wxlm31t+Byb5sp8BgweEStjxUzKgwFr4yrgVXCP/mPNpdUv6ViqAq5usdN0SlNsS
-ph2TXu+C7V/RLrSsXeCjjbK+STc2Xg==
-=wLY1
------END PGP SIGNATURE-----
-
---DBIVS5p969aUjpLe--
+SGV5IGd1eXMsIHNvcnJ5IGZvciBzcGFtLCBJIHVzZWQgdGhlIC0taW4tcmVwbHktdG/CoCB0aGlz
+IHRpbWUgc28gaXQgZ2V0cyANCnRvIHRoZSBvcmlnaW5hbCB0aHJlYWQgKCJbUEFUQ0ggbmV0LW5l
+eHQgdjJdIG5ldDogb3BlbnZzd2l0Y2g6IFNldCBPdlMgDQpyZWNpcmNfaWQgZnJvbSB0YyBjaGFp
+biBpbmRleCIpICwNCg0KSWdub3JlIHRoaXMgdGhyZWFkIGFuZCByZXNwb25kIHRoZXJlIGlmIG5l
+ZWRlZC4NCg0KVGhhbmtzLg0KDQoNCk9uIDgvMjAvMjAxOSAzOjQwIFBNLCBQYXVsIEJsYWtleSB3
+cm90ZToNCj4gUmVnYXJkaW5nIHRoZSB1c2VyX2ZlYXR1cmVzIGNoYW5nZSwgSSB0ZXN0ZWQgdGhl
+IGFib3ZlIHBhdGNoIHdpdGggdGhpcyBvbmUgaW4NCj4gdXNlcnNwYWNlIHRoYXQgSSdsbCBzZW5k
+IG9uY2UgdGhpcyBpcyBhY2NlcHRlZCwgdG9nb3RoZXIgd2l0aCB0aGUgcmVzdA0KPiBvZiBjb25u
+ZWN0aW9uIHRyYWNraW5nIG9mZmxvYWQgcGF0Y2hlcy4NCj4NCj4gSSBhbHNvIGhhdmUgYSB0ZXN0
+IGZvciBpdCwgaWYgYW55b25lIHdhbnRzIGl0Lg0KPg0KPiBQYXRjaCBpczoNCj4gbGliL25ldGRl
+di1vZmZsb2Fkcy10YzogUHJvYmUgcmVjaXJjIHRjIHNoYXJpbmcgZmVhdHVyZSBvbiBmaXJzdCBy
+ZWNpcmNfaWQgcnVsZQ0KPiBbLi4uXQ0K
