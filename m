@@ -2,101 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A96E89603A
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:37:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BC3F96042
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:38:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730034AbfHTNgw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 09:36:52 -0400
-Received: from www62.your-server.de ([213.133.104.62]:48650 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728682AbfHTNgw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 09:36:52 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i04Jd-0000lu-Ho; Tue, 20 Aug 2019 15:36:49 +0200
-Received: from [178.197.249.40] (helo=pc-63.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i04Jd-000MPw-8g; Tue, 20 Aug 2019 15:36:49 +0200
-Subject: Re: [PATCH bpf-next] bpf: add BTF ids in procfs for file descriptors
- to BTF objects
-To:     Quentin Monnet <quentin.monnet@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-References: <20190820095233.17097-1-quentin.monnet@netronome.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fcb2e528-6750-2192-befe-dd68ca36fc62@iogearbox.net>
-Date:   Tue, 20 Aug 2019 15:36:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1729929AbfHTNij (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 09:38:39 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:39258 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728947AbfHTNii (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 09:38:38 -0400
+Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 9E7C1243BF4AA7F1792B;
+        Tue, 20 Aug 2019 21:38:29 +0800 (CST)
+Received: from localhost (10.177.220.209) by DGGEMS403-HUB.china.huawei.com
+ (10.3.19.203) with Microsoft SMTP Server id 14.3.439.0; Tue, 20 Aug 2019
+ 21:38:23 +0800
+From:   <zhangsha.zhang@huawei.com>
+To:     <j.vosburgh@gmail.com>, <vfalico@gmail.com>, <andy@greyhouse.net>,
+        <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <zhangsha.zhang@huawei.com>, <yuehaibing@huawei.com>,
+        <hunongda@huawei.com>, <alex.chen@huawei.com>
+Subject: [PATCH] bonding: force enable lacp port after link state recovery for 802.3ad
+Date:   Tue, 20 Aug 2019 21:38:22 +0800
+Message-ID: <20190820133822.2508-1-zhangsha.zhang@huawei.com>
+X-Mailer: git-send-email 2.17.0.windows.1
 MIME-Version: 1.0
-In-Reply-To: <20190820095233.17097-1-quentin.monnet@netronome.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25547/Tue Aug 20 10:27:49 2019)
+Content-Type: text/plain
+X-Originating-IP: [10.177.220.209]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/20/19 11:52 AM, Quentin Monnet wrote:
-> Implement the show_fdinfo hook for BTF FDs file operations, and make it
-> print the id and the size of the BTF object. This allows for a quick
-> retrieval of the BTF id from its FD; or it can help understanding what
-> type of object (BTF) the file descriptor points to.
-> 
-> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
-> ---
->   kernel/bpf/btf.c | 16 ++++++++++++++++
->   1 file changed, 16 insertions(+)
-> 
-> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-> index 5fcc7a17eb5a..39e184f1b27c 100644
-> --- a/kernel/bpf/btf.c
-> +++ b/kernel/bpf/btf.c
-> @@ -3376,6 +3376,19 @@ void btf_type_seq_show(const struct btf *btf, u32 type_id, void *obj,
->   	btf_type_ops(t)->seq_show(btf, t, type_id, obj, 0, m);
->   }
->   
-> +#ifdef CONFIG_PROC_FS
-> +static void bpf_btf_show_fdinfo(struct seq_file *m, struct file *filp)
-> +{
-> +	const struct btf *btf = filp->private_data;
-> +
-> +	seq_printf(m,
-> +		   "btf_id:\t%u\n"
-> +		   "data_size:\t%u\n",
-> +		   btf->id,
-> +		   btf->data_size);
+From: Sha Zhang <zhangsha.zhang@huawei.com>
 
-Looks good, exposing btf_id makes sense to me in order to correlate with applications.
-Do you have a concrete use case for data_size to expose it this way as opposed to fetch
-it via btf_get_info_by_fd()? If not, I'd say lets only add btf_id in there.
+After the commit 334031219a84 ("bonding/802.3ad: fix slave link
+initialization transition states") merged,
+the slave's link status will be changed to BOND_LINK_FAIL
+from BOND_LINK_DOWN in the following scenario:
+- Driver reports loss of carrier and
+  bonding driver receives NETDEV_CHANGE notifier
+- slave's duplex and speed is zerod and
+  its port->is_enabled is cleard to 'false';
+- Driver reports link recovery and
+  bonding driver receives NETDEV_UP notifier;
+- If speed/duplex getting failed here, the link status
+  will be changed to BOND_LINK_FAIL;
+- The MII monotor later recover the slave's speed/duplex
+  and set link status to BOND_LINK_UP, but remains
+  the 'port->is_enabled' to 'false'.
 
-> +}
-> +#endif
-> +
->   static int btf_release(struct inode *inode, struct file *filp)
->   {
->   	btf_put(filp->private_data);
-> @@ -3383,6 +3396,9 @@ static int btf_release(struct inode *inode, struct file *filp)
->   }
->   
->   const struct file_operations btf_fops = {
-> +#ifdef CONFIG_PROC_FS
-> +	.show_fdinfo	= bpf_btf_show_fdinfo,
-> +#endif
->   	.release	= btf_release,
->   };
->   
-> 
+In this scenario, the lacp port will not be enabled even its speed
+and duplex are valid. The bond will not send LACPDU's, and its
+state is 'AD_STATE_DEFAULTED' forever. The simplest fix I think
+is to force enable lacp after port slave speed check in
+bond_miimon_commit. As enabled, the lacp port can run its state machine
+normally after link recovery.
 
-Thanks,
-Daniel
+Signed-off-by: Sha Zhang <zhangsha.zhang@huawei.com>
+---
+ drivers/net/bonding/bond_main.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 931d9d9..379253a 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -2194,6 +2194,7 @@ static void bond_miimon_commit(struct bonding *bond)
+ {
+ 	struct list_head *iter;
+ 	struct slave *slave, *primary;
++	struct port *port;
+ 
+ 	bond_for_each_slave(bond, slave, iter) {
+ 		switch (slave->new_link) {
+@@ -2205,8 +2206,13 @@ static void bond_miimon_commit(struct bonding *bond)
+ 			 * link status
+ 			 */
+ 			if (BOND_MODE(bond) == BOND_MODE_8023AD &&
+-			    slave->link == BOND_LINK_UP)
++			    slave->link == BOND_LINK_UP) {
+ 				bond_3ad_adapter_speed_duplex_changed(slave);
++				if (slave->duplex == DUPLEX_FULL) {
++					port = &(SLAVE_AD_INFO(slave)->port);
++					port->is_enabled = true;
++				}
++			}
+ 			continue;
+ 
+ 		case BOND_LINK_UP:
+-- 
+1.8.3.1
+
