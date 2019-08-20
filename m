@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E03C996C4C
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6272196C4F
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731124AbfHTWdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:20 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:37026 "EHLO
+        id S1731116AbfHTWdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:19 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:37028 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731059AbfHTWdD (ORCPT
+        with ESMTP id S1731060AbfHTWdD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2NZNW7Fy8k5K4XtJRjaafLU/dV4S5mZFuLucCgRMnqY=; b=J/Lav1bDj8uBH5UaEj05ORjcq3
-        IUay/1EYccRoCmPLFq5qE8wCLijqXrrBUFLWZN7QY+Zlb4eThHGKZOsrQr2wf7xz+/llaS8x1A737
-        lFk/k/DacWPhHMc0wNrgBMwT9DCKPINN4MpJb7Ef2X/mOyzqF1M5UCXqA1UEykGfXQ4AXCbQtGMyp
-        UNVYwZrII5kHB81RvXPMMYsJkByd58U5ucI9vq5N07VpwtggQDGNN0dhEtxwnCz75rYlCepkEMMOU
-        j4hxtxf9O1AAgcGxIQo6ELaTRfvs1j4lu1F8xW6q6Rfi/R8Jx6UvQYJj9UD/51wA9hyfu9Bwzy83n
-        0VY80HVg==;
+        bh=AwzYE3CFMojGwX+Ip6BkOSqW9iI3mfTJ+t+02MwvhKc=; b=LKH0ahLNaaRaA4xHofDWsiX6mN
+        rn/EejyrkHkpklnleccUBexieuuEF4Qw0v87iphhC2uEI9UshmM/iIXnKUvKfnn1Zm5G1Dik02Gmj
+        qimwzc9kpA7KUIgE/qPwL3tKrtSeRrasVj/v/8O/tAU22/Z6uWldHhHnziSVta70jRhOIJ9hftUOa
+        HBQWlyztEcjxno8aZSf9HVx2/0oFn+EqCgGhy8yTf6aueYS8cA2bH3CpIInCXrhEuU/fmud7WU3P7
+        sLfrcLhhGcbLEC+fp1jTm6IJE+JwEOOxg6SK7wINMoh0Uh2pf0TnnROx9W1XX0KwPjdU5s+ds7aPL
+        M4lSCtHg==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgZ-0005so-GQ; Tue, 20 Aug 2019 22:33:03 +0000
+        id 1i0CgZ-0005su-Hm; Tue, 20 Aug 2019 22:33:03 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 34/38] net_namespace: Convert netns_ids to XArray
-Date:   Tue, 20 Aug 2019 15:32:55 -0700
-Message-Id: <20190820223259.22348-35-willy@infradead.org>
+Subject: [PATCH 35/38] tipc: Convert conn_idr to XArray
+Date:   Tue, 20 Aug 2019 15:32:56 -0700
+Message-Id: <20190820223259.22348-36-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,184 +43,128 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-This is a straightforward conversion; it should be possible to eliminate
-nsid_lock as it seems to only be used to protect netns_ids.  The tricky
-part is that dropping the lock (eg to allocate memory) could end up
-allowing two networks which are equal to each other being allocated.
-So stick with the GFP_ATOMIC allocations and double locking until
-someone who's more savvy wants to try their hand at eliminating it.
+Replace idr_lock with the internal XArray lock.  The idr_in_use
+counter isn't needed as we can free all the elements in the array
+without it.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/net/net_namespace.h |  2 +-
- net/core/net_namespace.c    | 65 +++++++++++++++++--------------------
- 2 files changed, 30 insertions(+), 37 deletions(-)
+ net/tipc/topsrv.c | 49 ++++++++++++++---------------------------------
+ 1 file changed, 14 insertions(+), 35 deletions(-)
 
-diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
-index 4a9da951a794..6c80cadc6396 100644
---- a/include/net/net_namespace.h
-+++ b/include/net/net_namespace.h
-@@ -78,7 +78,7 @@ struct net {
- 	struct user_namespace   *user_ns;	/* Owning user namespace */
- 	struct ucounts		*ucounts;
- 	spinlock_t		nsid_lock;
--	struct idr		netns_ids;
-+	struct xarray		netns_ids;
+diff --git a/net/tipc/topsrv.c b/net/tipc/topsrv.c
+index 3a12fc18239b..72b3180e0ea5 100644
+--- a/net/tipc/topsrv.c
++++ b/net/tipc/topsrv.c
+@@ -54,9 +54,7 @@
  
- 	struct ns_common	ns;
- 
-diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
-index a0e0d298c991..c9b16e1b4a7e 100644
---- a/net/core/net_namespace.c
-+++ b/net/core/net_namespace.c
-@@ -188,27 +188,18 @@ static void ops_free_list(const struct pernet_operations *ops,
- /* should be called with nsid_lock held */
- static int alloc_netid(struct net *net, struct net *peer, int reqid)
- {
--	int min = 0, max = 0;
-+	int ret;
- 
- 	if (reqid >= 0) {
--		min = reqid;
--		max = reqid + 1;
-+		ret = xa_insert(&net->netns_ids, reqid, peer, GFP_ATOMIC);
-+	} else {
-+		ret = xa_alloc(&net->netns_ids, &reqid, peer, xa_limit_31b,
-+				GFP_ATOMIC);
- 	}
- 
--	return idr_alloc(&net->netns_ids, peer, min, max, GFP_ATOMIC);
--}
--
--/* This function is used by idr_for_each(). If net is equal to peer, the
-- * function returns the id so that idr_for_each() stops. Because we cannot
-- * returns the id 0 (idr_for_each() will not stop), we return the magic value
-- * NET_ID_ZERO (-1) for it.
-- */
--#define NET_ID_ZERO -1
--static int net_eq_idr(int id, void *net, void *peer)
--{
--	if (net_eq(net, peer))
--		return id ? : NET_ID_ZERO;
--	return 0;
-+	if (ret)
-+		return ret;
-+	return reqid;
- }
- 
- /* Should be called with nsid_lock held. If a new id is assigned, the bool alloc
-@@ -217,16 +208,17 @@ static int net_eq_idr(int id, void *net, void *peer)
+ /**
+  * struct tipc_topsrv - TIPC server structure
+- * @conn_idr: identifier set of connection
+- * @idr_lock: protect the connection identifier set
+- * @idr_in_use: amount of allocated identifier entry
++ * @conns: identifier set of connection
+  * @net: network namspace instance
+  * @awork: accept work item
+  * @rcv_wq: receive workqueue
+@@ -65,9 +63,7 @@
+  * @name: server name
   */
- static int __peernet2id_alloc(struct net *net, struct net *peer, bool *alloc)
- {
--	int id = idr_for_each(&net->netns_ids, net_eq_idr, peer);
-+	int id;
-+	struct net *tmp;
-+	unsigned long index;
- 	bool alloc_it = *alloc;
+ struct tipc_topsrv {
+-	struct idr conn_idr;
+-	spinlock_t idr_lock; /* for idr list */
+-	int idr_in_use;
++	struct xarray conns;
+ 	struct net *net;
+ 	struct work_struct awork;
+ 	struct workqueue_struct *rcv_wq;
+@@ -127,10 +123,7 @@ static void tipc_conn_kref_release(struct kref *kref)
+ 	struct tipc_topsrv *s = con->server;
+ 	struct outqueue_entry *e, *safe;
  
--	*alloc = false;
--
--	/* Magic value for id 0. */
--	if (id == NET_ID_ZERO)
--		return 0;
--	if (id > 0)
--		return id;
-+	xa_for_each(&net->netns_ids, index, tmp) {
-+		if (net_eq(tmp, peer)) {
-+			*alloc = false;
-+			return index;
-+		}
-+	}
+-	spin_lock_bh(&s->idr_lock);
+-	idr_remove(&s->conn_idr, con->conid);
+-	s->idr_in_use--;
+-	spin_unlock_bh(&s->idr_lock);
++	xa_erase_bh(&s->conns, con->conid);
+ 	if (con->sock)
+ 		sock_release(con->sock);
  
- 	if (alloc_it) {
- 		id = alloc_netid(net, peer, -1);
-@@ -261,7 +253,7 @@ int peernet2id_alloc(struct net *net, struct net *peer)
- 	 * When peer is obtained from RCU lists, we may race with
- 	 * its cleanup. Check whether it's alive, and this guarantees
- 	 * we never hash a peer back to net->netns_ids, after it has
--	 * just been idr_remove()'d from there in cleanup_net().
-+	 * just been removed from there in cleanup_net().
- 	 */
- 	if (maybe_get_net(peer))
- 		alive = alloc = true;
-@@ -303,7 +295,7 @@ struct net *get_net_ns_by_id(struct net *net, int id)
- 		return NULL;
+@@ -194,16 +187,12 @@ static struct tipc_conn *tipc_conn_alloc(struct tipc_topsrv *s)
+ 	INIT_WORK(&con->swork, tipc_conn_send_work);
+ 	INIT_WORK(&con->rwork, tipc_conn_recv_work);
  
- 	rcu_read_lock();
--	peer = idr_find(&net->netns_ids, id);
-+	peer = xa_load(&net->netns_ids, id);
- 	if (peer)
- 		peer = maybe_get_net(peer);
- 	rcu_read_unlock();
-@@ -326,7 +318,7 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
- 	get_random_bytes(&net->hash_mix, sizeof(u32));
- 	net->dev_base_seq = 1;
- 	net->user_ns = user_ns;
--	idr_init(&net->netns_ids);
-+	xa_init_flags(&net->netns_ids, XA_FLAGS_ALLOC);
- 	spin_lock_init(&net->nsid_lock);
- 	mutex_init(&net->ipv4.ra_mutex);
- 
-@@ -529,16 +521,14 @@ static void unhash_nsid(struct net *net, struct net *last)
- 		spin_lock_bh(&tmp->nsid_lock);
- 		id = __peernet2id(tmp, net);
- 		if (id >= 0)
--			idr_remove(&tmp->netns_ids, id);
-+			xa_erase(&tmp->netns_ids, id);
- 		spin_unlock_bh(&tmp->nsid_lock);
- 		if (id >= 0)
- 			rtnl_net_notifyid(tmp, RTM_DELNSID, id);
- 		if (tmp == last)
- 			break;
+-	spin_lock_bh(&s->idr_lock);
+-	ret = idr_alloc(&s->conn_idr, con, 0, 0, GFP_ATOMIC);
++	ret = xa_alloc_bh(&s->conns, &con->conid, con, xa_limit_32b,
++			GFP_ATOMIC);
+ 	if (ret < 0) {
+ 		kfree(con);
+-		spin_unlock_bh(&s->idr_lock);
+ 		return ERR_PTR(-ENOMEM);
  	}
--	spin_lock_bh(&net->nsid_lock);
--	idr_destroy(&net->netns_ids);
--	spin_unlock_bh(&net->nsid_lock);
-+	BUG_ON(!xa_empty(&net->netns_ids));
+-	con->conid = ret;
+-	s->idr_in_use++;
+-	spin_unlock_bh(&s->idr_lock);
+ 
+ 	set_bit(CF_CONNECTED, &con->flags);
+ 	con->server = s;
+@@ -215,11 +204,11 @@ static struct tipc_conn *tipc_conn_lookup(struct tipc_topsrv *s, int conid)
+ {
+ 	struct tipc_conn *con;
+ 
+-	spin_lock_bh(&s->idr_lock);
+-	con = idr_find(&s->conn_idr, conid);
++	xa_lock_bh(&s->conns);
++	con = xa_load(&s->conns, conid);
+ 	if (!connected(con) || !kref_get_unless_zero(&con->kref))
+ 		con = NULL;
+-	spin_unlock_bh(&s->idr_lock);
++	xa_unlock_bh(&s->conns);
+ 	return con;
  }
  
- static LLIST_HEAD(cleanup_list);
-@@ -766,7 +756,7 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
- 	if (err >= 0) {
- 		rtnl_net_notifyid(net, RTM_NEWNSID, err);
- 		err = 0;
--	} else if (err == -ENOSPC && nsid >= 0) {
-+	} else if (err == -EBUSY && nsid >= 0) {
- 		err = -EEXIST;
- 		NL_SET_BAD_ATTR(extack, tb[NETNSA_NSID]);
- 		NL_SET_ERR_MSG(extack, "The specified nsid is already used");
-@@ -946,9 +936,9 @@ struct rtnl_net_dump_cb {
- 	int s_idx;
- };
+@@ -655,9 +644,7 @@ static int tipc_topsrv_start(struct net *net)
+ 	tn->topsrv = srv;
+ 	atomic_set(&tn->subscription_count, 0);
  
--static int rtnl_net_dumpid_one(int id, void *peer, void *data)
-+static int rtnl_net_dumpid_one(int id, struct net *peer,
-+		struct rtnl_net_dump_cb *net_cb)
- {
--	struct rtnl_net_dump_cb *net_cb = (struct rtnl_net_dump_cb *)data;
- 	int ret;
+-	spin_lock_init(&srv->idr_lock);
+-	idr_init(&srv->conn_idr);
+-	srv->idr_in_use = 0;
++	xa_init_flags(&srv->conns, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_BH);
  
- 	if (net_cb->idx < net_cb->s_idx)
-@@ -1022,6 +1012,8 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
- 		.idx = 0,
- 		.s_idx = cb->args[0],
- 	};
-+	struct net *peer;
-+	unsigned long index;
- 	int err = 0;
+ 	ret = tipc_topsrv_work_start(srv);
+ 	if (ret < 0)
+@@ -675,24 +662,16 @@ static void tipc_topsrv_stop(struct net *net)
+ 	struct tipc_topsrv *srv = tipc_topsrv(net);
+ 	struct socket *lsock = srv->listener;
+ 	struct tipc_conn *con;
+-	int id;
+-
+-	spin_lock_bh(&srv->idr_lock);
+-	for (id = 0; srv->idr_in_use; id++) {
+-		con = idr_find(&srv->conn_idr, id);
+-		if (con) {
+-			spin_unlock_bh(&srv->idr_lock);
+-			tipc_conn_close(con);
+-			spin_lock_bh(&srv->idr_lock);
+-		}
+-	}
++	unsigned long id;
++
++	xa_for_each(&srv->conns, id, con)
++		tipc_conn_close(con);
++
+ 	__module_get(lsock->ops->owner);
+ 	__module_get(lsock->sk->sk_prot_creator->owner);
+ 	srv->listener = NULL;
+-	spin_unlock_bh(&srv->idr_lock);
+ 	sock_release(lsock);
+ 	tipc_topsrv_work_stop(srv);
+-	idr_destroy(&srv->conn_idr);
+ 	kfree(srv);
+ }
  
- 	if (cb->strict_check) {
-@@ -1038,7 +1030,8 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
- 		err = -EAGAIN;
- 		goto end;
- 	}
--	idr_for_each(&net_cb.tgt_net->netns_ids, rtnl_net_dumpid_one, &net_cb);
-+	xa_for_each(&net_cb.tgt_net->netns_ids, index, peer)
-+		rtnl_net_dumpid_one(index, peer, &net_cb);
- 	if (net_cb.fillargs.add_ref &&
- 	    !net_eq(net_cb.ref_net, net_cb.tgt_net))
- 		spin_unlock_bh(&net_cb.ref_net->nsid_lock);
 -- 
 2.23.0.rc1
 
