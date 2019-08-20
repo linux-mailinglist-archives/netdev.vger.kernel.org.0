@@ -2,202 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 37DF995E22
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:10:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 863FC95E57
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:25:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729611AbfHTMJd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 08:09:33 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:34388 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728907AbfHTMJc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 08:09:32 -0400
-Received: by mail-ed1-f67.google.com with SMTP id s49so6055702edb.1
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 05:09:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qFWAGFVeWnTfBvcN91wVBqyrdIkSXLBEFQef78nRKhE=;
-        b=SB0QmAJEVe2Yu+rJ2pUmNiPQp5B8dNKTDJkIDfhFZL59gPmrkLPBoeBiL9fxd3NCdF
-         Kj1gsGO8PF6t+m0dqaeqpXIe9LdE3I8A7rgs2ybjhktrxquZ7G2urwnpUGY3vLF+qR3d
-         +EOruiAqpQqzMFpfZSIBdDO0rTPuxfd35e4d07o41PuvyygDGTI0YmJ5GMNu6m5Z8dzI
-         LlOYyET1zLIR+BmDWreFhrK+/rxuO1jT1kjHG3WAxoUeDBsPzXCBBGRRQGXvv6cy+U86
-         F3XgCEnio3AxRCw/QqlrCnlvjjbKRn0ZWljDiYDwxRyEzLcb82VeDJL3noy7Z6J7GI+O
-         wfyQ==
+        id S1729383AbfHTMXt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 08:23:49 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:33276 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727006AbfHTMXt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 08:23:49 -0400
+Received: by mail-lf1-f66.google.com with SMTP id x3so3977719lfc.0;
+        Tue, 20 Aug 2019 05:23:48 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qFWAGFVeWnTfBvcN91wVBqyrdIkSXLBEFQef78nRKhE=;
-        b=swVUwthPEZFacdRSuZFJXx+98RddSUrqJNdiTq/jaPUJvSqHOaSKbdb07Nwdrkpn9G
-         xDNLnwftrrA2bGRkh9tIbU2DITBPEEqraepF8H9dTo4Ag3JelFL14YsnLZDe7Xf+zaui
-         xYWsnB6UU9yN/zGhmakY1J+0HO+zjLkWfvJ64sxS+DKCW4vnfu5IVNbaVfU85GSMx5FF
-         uPvdp1eMjLCiBdPkC4JZEw1Ld7Kpf/lKiHghiXZglOkS432IE8NQEZX7wwbHxEFPGNBO
-         fARiYzT3YaPjGQd1DJQpiBrRgXohub6Fuit5OvQVODu2LIczZinVuhaWkKnCW7xNYekn
-         h6Lg==
-X-Gm-Message-State: APjAAAUTbkrNmB8/kJK2tWm5BudCsRQKvSBBdGKLA1gdklrgiOm2OpRH
-        eynuHAX7BkBKIzaviD/uduylmGHPQ8kIb4RRKWwUSKCgwd0=
-X-Google-Smtp-Source: APXvYqwdDpg8NO978+YMiOZppqG7VwWrcr6S65GpVJBX7K/juTf6sRuiUFnzo0cOtr24EKdJdHEFVhk/+a4oT/ge/Zo=
-X-Received: by 2002:a05:6402:1285:: with SMTP id w5mr30981390edv.36.1566302970412;
- Tue, 20 Aug 2019 05:09:30 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=xzCx8rfipqjiXyNq4gJ4Cz+X4TRNhHPHouMg4toUPfA=;
+        b=lrm/1a9jKxCdouUR+V3WMek7WebdVClaXa9VmrNGP/wuX4w4UO9PrikfyKMOw2h8Ta
+         lwruLbzAGB12q40g9UdcFG2IRX6seldKYPVq5X5PH/fYc471xa4XPEx7Aj1L6ir4cuow
+         HQpDRbZnRsIgcsK58AWwmHZQjaXkvx4Qfv8aITLVSvOjyqZQ/v0enh+QAQAOn0Y5snDh
+         /DFxrqtkSC85KNrdAcNySXeDeFyq34kMEbXatK5I6jPREFGsFcM3Q8B1MWparcA0IUkB
+         +WAD4fApEX5wU9GCEDGZ7LLgGE2IUkp/JhCbn7BA6st5wAH+iiThmBlirNt1bWucFYy8
+         SW0w==
+X-Gm-Message-State: APjAAAXndYK2wWmj6TnvRjFvvTeIqy51s4lLlnlsyEkn6d5/40/qlMTk
+        YqTOt9TT530VNLmG19+pYarZiU9RRkc=
+X-Google-Smtp-Source: APXvYqxFQ2ko1xAoC/Pf3Vfq7Q5vJ1Jrs/WfZsfoPBvNjK7xuCf/JwLwk+dE/Whe5y3+eULYxc2glw==
+X-Received: by 2002:ac2:48b8:: with SMTP id u24mr14915884lfg.170.1566303827572;
+        Tue, 20 Aug 2019 05:23:47 -0700 (PDT)
+Received: from xi.terra (c-51f1e055.07-184-6d6c6d4.bbcust.telenor.se. [85.224.241.81])
+        by smtp.gmail.com with ESMTPSA id q30sm3193284lfd.27.2019.08.20.05.23.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 20 Aug 2019 05:23:46 -0700 (PDT)
+Received: from johan by xi.terra with local (Exim 4.92)
+        (envelope-from <johan@kernel.org>)
+        id 1i03Au-0002Fy-JN; Tue, 20 Aug 2019 14:23:44 +0200
+Date:   Tue, 20 Aug 2019 14:23:44 +0200
+From:   Johan Hovold <johan@kernel.org>
+To:     Lars Poeschel <poeschel@lemonage.de>
+Cc:     Allison Randal <allison@lohutok.net>,
+        Steve Winslow <swinslow@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "open list:NFC SUBSYSTEM" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Johan Hovold <johan@kernel.org>
+Subject: Re: [PATCH v6 6/7] nfc: pn533: Add autopoll capability
+Message-ID: <20190820122344.GK32300@localhost>
+References: <20190820120345.22593-1-poeschel@lemonage.de>
+ <20190820120345.22593-6-poeschel@lemonage.de>
 MIME-Version: 1.0
-References: <20190820000002.9776-1-olteanv@gmail.com> <20190820000002.9776-5-olteanv@gmail.com>
- <19610afd-298a-e434-00ea-48eb5b143c1b@gmail.com>
-In-Reply-To: <19610afd-298a-e434-00ea-48eb5b143c1b@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 20 Aug 2019 15:09:19 +0300
-Message-ID: <CA+h21hpCP2KpTnCuki1M6tkQ1Qv-ex5MfKHbwQXsqotoh3ndKw@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/6] net: dsa: Don't program the VLAN as pvid on
- the upstream port
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        nikolay@cumulusnetworks.com,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190820120345.22593-6-poeschel@lemonage.de>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On Tue, Aug 20, 2019 at 02:03:43PM +0200, Lars Poeschel wrote:
+> pn532 devices support an autopoll command, that lets the chip
+> automatically poll for selected nfc technologies instead of manually
+> looping through every single nfc technology the user is interested in.
+> This is faster and less cpu and bus intensive than manually polling.
+> This adds this autopoll capability to the pn533 driver.
+> 
+> Cc: Johan Hovold <johan@kernel.org>
+> Signed-off-by: Lars Poeschel <poeschel@lemonage.de>
+> ---
+> Changes in v6:
+> - Rebased the patch series on v5.3-rc5
 
-On Tue, 20 Aug 2019 at 06:15, Florian Fainelli <f.fainelli@gmail.com> wrote:
->
->
->
-> On 8/19/2019 5:00 PM, Vladimir Oltean wrote:
-> > Commit b2f81d304cee ("net: dsa: add CPU and DSA ports as VLAN members")
-> > programs the VLAN from the bridge into the specified port as well as the
-> > upstream port, with the same set of flags.
-> >
-> > Consider the typical case of installing pvid 1 on user port 1, pvid 2 on
-> > user port 2, etc. The upstream port would end up having a pvid equal to
-> > the last user port whose pvid was programmed from the bridge. Less than
-> > useful.
-> >
-> > So just don't change the pvid of the upstream port and let it be
-> > whatever the driver set it internally to be.
->
-> This patch should allow removing the !dsa_is_cpu_port() checks from
-> b53_common.c:b53_vlan_add, about time :)
->
-> It seems to me that the fundamental issue here is that because we do not
-> have a user visible network device that 1:1 maps with the CPU (or DSA)
-> ports for that matter (and for valid reasons, they would represent two
-> ends of the same pipe), we do not have a good way to control the CPU
-> port VLAN attributes.
->
-> There was a prior attempt at allowing using the bridge master device to
-> program the CPU port's VLAN attributes, see [1], but I did not follow up
-> with that until [2] and then life caught me. If you can/want, that would
-> be great (not asking for TPS reports).
->
-> [1]:
-> https://lists.linuxfoundation.org/pipermail/bridge/2016-November/010112.html
-> [2]:
-> https://lore.kernel.org/lkml/20180624153339.13572-1-f.fainelli@gmail.com/T/
->
+Just two drive-by comments below.
 
-So what was the conclusion of that discussion? Should you or should
-you not add the check for vlan->flags & BRIDGE_VLAN_INFO_BRENTRY?
-I don't exactly handle the meaning of 'master' and 'self' options from
-a user perspective.
-Right now (no patches applied) I get the following behavior in DSA
-(swp2 is already member of br0):
+>  drivers/nfc/pn533/pn533.c | 193 +++++++++++++++++++++++++++++++++++++-
+>  drivers/nfc/pn533/pn533.h |  10 +-
+>  2 files changed, 197 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/nfc/pn533/pn533.c b/drivers/nfc/pn533/pn533.c
+> index a8c756caa678..7e915239222b 100644
+> --- a/drivers/nfc/pn533/pn533.c
+> +++ b/drivers/nfc/pn533/pn533.c
+> @@ -185,6 +185,32 @@ struct pn533_cmd_jump_dep_response {
+>  	u8 gt[];
+>  } __packed;
+>  
+> +struct pn532_autopoll_resp {
+> +	u8 type;
+> +	u8 ln;
+> +	u8 tg;
+> +	u8 tgdata[];
+> +} __packed;
 
-$ echo 1 | sudo tee /sys/class/net/br0/bridge/vlan_filtering
-$ sudo bridge vlan add vid 100 dev swp2
-$ sudo bridge vlan add vid 101 dev swp2 self
-RTNETLINK answers: Operation not supported
-$ sudo bridge vlan add vid 102 dev swp2 master
-$ sudo bridge vlan add vid 103 dev br0
-RTNETLINK answers: Operation not supported
-$ sudo bridge vlan add vid 104 dev br0 self
-$ sudo bridge vlan add vid 105 dev br0 master
-RTNETLINK answers: Operation not supported
+No need for __packed.
 
-$ bridge vlan
-port    vlan ids
-eth0     1 PVID Egress Untagged
+> +static int pn533_autopoll_complete(struct pn533 *dev, void *arg,
+> +			       struct sk_buff *resp)
+> +{
+> +	u8 nbtg;
+> +	int rc;
+> +	struct pn532_autopoll_resp *apr;
+> +	struct nfc_target nfc_tgt;
+> +
+> +	if (IS_ERR(resp)) {
+> +		rc = PTR_ERR(resp);
+> +
+> +		nfc_err(dev->dev, "%s  autopoll complete error %d\n",
+> +			__func__, rc);
+> +
+> +		if (rc == -ENOENT) {
+> +			if (dev->poll_mod_count != 0)
+> +				return rc;
+> +			goto stop_poll;
+> +		} else if (rc < 0) {
+> +			nfc_err(dev->dev,
+> +				"Error %d when running autopoll\n", rc);
+> +			goto stop_poll;
+> +		}
+> +	}
+> +
+> +	nbtg = resp->data[0];
+> +	if ((nbtg > 2) || (nbtg <= 0))
+> +		return -EAGAIN;
+> +
+> +	apr = (struct pn532_autopoll_resp *)&resp->data[1];
+> +	while (nbtg--) {
+> +		memset(&nfc_tgt, 0, sizeof(struct nfc_target));
+> +		switch (apr->type) {
+> +		case PN532_AUTOPOLL_TYPE_ISOA:
+> +			dev_dbg(dev->dev, "ISOA");
 
-swp5     1 PVID Egress Untagged
+You forgot the '\n' here and elsewhere (some nfc_err as well).
 
-swp2     1 PVID Egress Untagged
-         100
-         102
-
-swp3     1 PVID Egress Untagged
-
-swp4     1 PVID Egress Untagged
-
-br0      1 PVID Egress Untagged
-         104
-
-Who returns EOPNOTSUPP for VID 101 and why?
-Why is VID 102 not installed in br0? This part I don't understand from
-your patchset. Does it mean that the CPU port (br0) will have to be
-explicitly configured from now on, even if I run the commands on swp2
-with 'master'?
-
-
-> >
-> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> > ---
-> >  net/dsa/switch.c | 16 ++++++++++++----
-> >  1 file changed, 12 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-> > index 84ab2336131e..02ccc53f1926 100644
-> > --- a/net/dsa/switch.c
-> > +++ b/net/dsa/switch.c
-> > @@ -239,17 +239,21 @@ dsa_switch_vlan_prepare_bitmap(struct dsa_switch *ds,
-> >                              const struct switchdev_obj_port_vlan *vlan,
-> >                              const unsigned long *bitmap)
-> >  {
-> > +     struct switchdev_obj_port_vlan v = *vlan;
-> >       int port, err;
-> >
-> >       if (!ds->ops->port_vlan_prepare || !ds->ops->port_vlan_add)
-> >               return -EOPNOTSUPP;
-> >
-> >       for_each_set_bit(port, bitmap, ds->num_ports) {
-> > -             err = dsa_port_vlan_check(ds, port, vlan);
-> > +             if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
-> > +                     v.flags &= ~BRIDGE_VLAN_INFO_PVID;
-> > +
-> > +             err = dsa_port_vlan_check(ds, port, &v);
-> >               if (err)
-> >                       return err;
-> >
-> > -             err = ds->ops->port_vlan_prepare(ds, port, vlan);
-> > +             err = ds->ops->port_vlan_prepare(ds, port, &v);
-> >               if (err)
-> >                       return err;
-> >       }
-> > @@ -262,10 +266,14 @@ dsa_switch_vlan_add_bitmap(struct dsa_switch *ds,
-> >                          const struct switchdev_obj_port_vlan *vlan,
-> >                          const unsigned long *bitmap)
-> >  {
-> > +     struct switchdev_obj_port_vlan v = *vlan;
-> >       int port;
-> >
-> > -     for_each_set_bit(port, bitmap, ds->num_ports)
-> > -             ds->ops->port_vlan_add(ds, port, vlan);
-> > +     for_each_set_bit(port, bitmap, ds->num_ports) {
-> > +             if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
-> > +                     v.flags &= ~BRIDGE_VLAN_INFO_PVID;
-> > +             ds->ops->port_vlan_add(ds, port, &v);
-> > +     }
-> >  }
-> >
-> >  static int dsa_switch_vlan_add(struct dsa_switch *ds,
-> >
->
-> --
-> Florian
-
-Regards,
--Vladimir
+Johan
