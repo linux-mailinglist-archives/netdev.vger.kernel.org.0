@@ -2,189 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 058BD95C1C
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 12:19:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6835E95C29
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 12:20:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729706AbfHTKRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 06:17:04 -0400
-Received: from esa4.microchip.iphmx.com ([68.232.154.123]:25089 "EHLO
-        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728545AbfHTKRD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 06:17:03 -0400
-Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
-  Nicolas.Ferre@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="Nicolas.Ferre@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa4.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
-  envelope-from="Nicolas.Ferre@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa4.microchip.iphmx.com; spf=Pass smtp.mailfrom=Nicolas.Ferre@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: ZGTbEEY+aI+WKlbYpD5ycmwultfFf1rrRGTTC0UOIvgUj1seW4d9QEPk9TqYl+ayAMqDmlA6MC
- T8mvev5nr298kzPbNSuD3pVGLUnQX9h/0IS6AX6//cZgxkT5OvHVOUSG2w79A+DxOYOV1/qR3t
- ZFViicjFTQ1g1HjJvSTsA07RLoHVpPCnGq1qNgcjYLUmgQ2AD/9QVswloOSZFRnz0XkBIE7sPu
- ckSWgeDieZcguyyxNCgPKkGvGK8kxhU892UwRTKeGNm9anO6I3QtNSyNgHznvRHUnUYwR2Uac6
- AWQ=
-X-IronPort-AV: E=Sophos;i="5.64,408,1559545200"; 
-   d="scan'208";a="44908227"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 20 Aug 2019 03:17:02 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 20 Aug 2019 03:17:00 -0700
-Received: from NAM05-CO1-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Tue, 20 Aug 2019 03:17:00 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qg1vY2qsULAmh0y6Sa7UYKQ6gGnMcde7FvgwHjv6HGYfrcC8VEiukuPywMKS48x81xVWVh0jGwsUr+FVRDU9lqpOofezjHI5N6Pkz+iaLyyPhZ6WjcU/4rw+Ye4GhUmpvo93ObC+Tt/lIBOtN62SL/+/Vqg82+y4OLeLaHcUXHvFst/JwfDHHa1trGjoN+LCyqwNMtPT6DArGIV+VAtLQpsW27CP+ErqUcdKhDJoBLadHiMMKtMQ2Zcs2oRVXIhCuAcpgUsuM42SPQYZmdXnf6Ap6nstd5twTBRiyr44wEghJrk41Pe9S3uB+Wi5NDJmWLMk2KCaeOsqhEh+Uvx0KQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aEIMYzzWkSSNcvtr2qol2Ykt2ssfx0bRv8oWR/ba6nA=;
- b=BZ92G/yApSHWuPX226xkBHPqkhtJCuw30lYngPPABt/OyfKDLyWdAm8x8cavQMEvM2wmolBAe/Yp+XVz96oXHWKpjLtDOFtH6EJtpTO4nY3r8vfXs56zvK0mKW9YU6TJvBmCzXdCAvgqfGtvztu9S2RFjaqceEC4UPZ+V82/R+uTw9v/3PrLCLQkoGab4R9y4vYcWRE5WsOiPZMSUKt0SxrXSHrmUkPn21RXAdbmFg8VT011c9t2ir5vA34ewFGX30eXBEswtTNwCzN2IeDE3bTgJcKt0eh0PS3QWC4+4W41t3E0KYLQDRd7xsmv0wLi823WCvJNLtnDw+OicyEnoA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S1729544AbfHTKS2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 06:18:28 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:34562 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729378AbfHTKS2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 06:18:28 -0400
+Received: by mail-ed1-f65.google.com with SMTP id s49so5692260edb.1
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 03:18:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aEIMYzzWkSSNcvtr2qol2Ykt2ssfx0bRv8oWR/ba6nA=;
- b=uzVwJ0u/9k25vmfaHCkSDjAz/2kKIUNJ1Tk6NdjjdTQM3ZmrbLQn5+kqB0LEVTdqw7MSu3U7C7cjXUb5FED7oZPSxoBntKCEILa+R353RidbaFUDCeXAwJQsIL770kcFAAQtyBgY6RsWf/hK1H2FgyUlHXNP6TN9lF4HEtIOTXI=
-Received: from MWHPR11MB1662.namprd11.prod.outlook.com (10.172.55.15) by
- MWHPR11MB1374.namprd11.prod.outlook.com (10.169.234.8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Tue, 20 Aug 2019 10:16:59 +0000
-Received: from MWHPR11MB1662.namprd11.prod.outlook.com
- ([fe80::410a:9d4b:b1df:2134]) by MWHPR11MB1662.namprd11.prod.outlook.com
- ([fe80::410a:9d4b:b1df:2134%12]) with mapi id 15.20.2178.018; Tue, 20 Aug
- 2019 10:16:59 +0000
-From:   <Nicolas.Ferre@microchip.com>
-To:     <schwab@suse.de>, <paul.walmsley@sifive.com>,
-        <davem@davemloft.net>, <jakub.kicinski@netronome.com>
-CC:     <yash.shah@sifive.com>, <robh+dt@kernel.org>,
-        <netdev@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <mark.rutland@arm.com>, <palmer@sifive.com>,
-        <aou@eecs.berkeley.edu>, <ynezz@true.cz>, <sachin.ghadi@sifive.com>
-Subject: Re: [PATCH 2/3] macb: Update compatibility string for SiFive
- FU540-C000
-Thread-Topic: [PATCH 2/3] macb: Update compatibility string for SiFive
- FU540-C000
-Thread-Index: AQHVPiKzEWVX87W+rUadJIz70Teg7KbR2FcAgDIZnv2AABKIAA==
-Date:   Tue, 20 Aug 2019 10:16:58 +0000
-Message-ID: <0b50622a-1145-3637-082f-c4edaccbbaa1@microchip.com>
-References: <1563534631-15897-1-git-send-email-yash.shah@sifive.com>
- <1563534631-15897-2-git-send-email-yash.shah@sifive.com>
- <4075b955-a187-6fd7-a2e6-deb82b5d4fb6@microchip.com>
- <CAJ2_jOEHoh+D76VpAoVq3XnpAZEQxdQtaVX5eiKw5X4r+ypKVw@mail.gmail.com>
- <alpine.DEB.2.21.9999.1908131142150.5033@viisi.sifive.com>
- <mvm5zmskxs3.fsf@suse.de>
-In-Reply-To: <mvm5zmskxs3.fsf@suse.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: PR1PR01CA0003.eurprd01.prod.exchangelabs.com
- (2603:10a6:102::16) To MWHPR11MB1662.namprd11.prod.outlook.com
- (2603:10b6:301:e::15)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [213.41.198.74]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 167aa7df-a634-4e92-2da0-08d725578907
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:MWHPR11MB1374;
-x-ms-traffictypediagnostic: MWHPR11MB1374:
-x-ms-exchange-purlcount: 2
-x-microsoft-antispam-prvs: <MWHPR11MB1374FADB3A23A27432C3563FE0AB0@MWHPR11MB1374.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 013568035E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(6029001)(396003)(376002)(346002)(39860400002)(136003)(366004)(199004)(189003)(25786009)(54906003)(53546011)(386003)(36756003)(31686004)(53936002)(6116002)(3846002)(229853002)(81156014)(66446008)(2906002)(6512007)(6486002)(66476007)(4326008)(2501003)(81166006)(8676002)(6246003)(6306002)(6436002)(5660300002)(8936002)(15650500001)(966005)(14444005)(186003)(66066001)(52116002)(76176011)(256004)(14454004)(26005)(31696002)(7736002)(66946007)(305945005)(66556008)(71200400001)(64756008)(476003)(2616005)(486006)(478600001)(316002)(446003)(11346002)(102836004)(7416002)(110136005)(6506007)(71190400001)(99286004)(86362001);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR11MB1374;H:MWHPR11MB1662.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: microchip.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: KICwnLLISOxrOv/0JEy2xHyajJhufVGsGsO8qRvqnCCU10roIs47seYEi/V9BCptrrSyhNK6OIJRapeSIP67WY2h4e8TqVPnyn2Bro1otWx0ZJy6wgEeZXRXo05R3I7GY+sU+2fmvxIYxhkv3xMFWSxHb4mgXGYjDKkty0la0YVDKfxe03T46YxKdrejsZRCdIE9qRqEntk/Qtt6WzHonvfpjX0o0OBqb53d6rxoBNTuxVAVBUurJlw4r/HD69PI8J0GrozL7fFLOE38Xx3RDdztmmvQHWK5EltE3Y05thzl7q3ku/7m6sWLFPkTLwqm/1DOPkUEv2U6tMRPkXoQBTTYdStH87TqudadYOsnKOw9E+5496gp3Ns8ZRm+ni5iK0KtY9OWPVqws7+UCpTtp82YSlH7SfrnzflMLUF9ApM=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="Windows-1252"
-Content-ID: <44B36E30E59D7841828B2F7738A2E610@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rMdIuNKulQ5kpGuYnWpzv0fPBvF1nNHem8YlyijlG8Y=;
+        b=Q1XAU5roPH+BQAhYLDQt4gFZb4jREx+2gH0F/2bQkfmyHprNGAcsbdI/kMBlGsWlib
+         noWmN1/rvx325BenoAZ71HevkEFUGq3ZnsGB9CEzZU3nG2F6SAnoINbbw7ycx+Ufa7tn
+         TVAdGeEzKOqvoHlCqauaArohCqqrQqmU3KU1f0FDV+ppM0lFGNS8/MyoHd9gosOU2hyd
+         rNk27f3T4Dk4z+OKqNRJB4kqRQBbD1jY/lnDwJE494JFkll1NOQg5SlVn27kQoXUVIYi
+         cd6u0XsmfaQ/iAWoJjNUHRUxTgeing8X/sevdTaLnfFnzAIh6hutYhO1IfxH89K5ZqK9
+         F3VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rMdIuNKulQ5kpGuYnWpzv0fPBvF1nNHem8YlyijlG8Y=;
+        b=rj3WDedJl+NQbwSrY/0QIJbJ05Sjc3ipWjzXORKePhSVsnoR/tKTUA/D+Rp/RupGH0
+         5Ap/yibpvP5W+YGAH6829mEnI53V6HaDeEGxQMpv6lYwfpChGEt9AMP81LRVLpPmKTuZ
+         qqKGphrmhAkPEWZWCfmE2LkgPjaILkccOUAvCNMgF+2ke+dtll7WYipxHKiMhN+MGZpN
+         WscE+jC79TKdvgkfkkv/5fulD03fRaljAVjC0hk3pTTd9QCnQ/dlBGEBwRlGnf+X4i+t
+         y6F/zchuFXX1sXfQSRYJmXuU8zUoE0FtKUALuuTukCkHTFgy7LX7/UU41zVla98BCVQX
+         OZVA==
+X-Gm-Message-State: APjAAAUol4Tx+nu9UCE0Rjll/lkN2mjB4TQXZ+9hqBl19Lfa6insDoS9
+        sESMFx7lln9+8wQw8J2R0B5pBUxAft5smxnHq8o=
+X-Google-Smtp-Source: APXvYqy9V4h1pAM0UxGjHqw8b2/sFKWdzMtpJddzJRsPPRo+pKTR7e3HyGXq+L6iPlQCZSqaWtUMQ3Y6RxeUF1whKzs=
+X-Received: by 2002:a05:6402:124f:: with SMTP id l15mr29801117edw.140.1566296306645;
+ Tue, 20 Aug 2019 03:18:26 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 167aa7df-a634-4e92-2da0-08d725578907
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2019 10:16:58.9305
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 90njDbk/ipZduyIUYuv7+WpfMOHEdh/Xr6IZsEBclylYmtnHoEwc3ZIuznS/4mOV3/VmC/alzFLxzz7abWkQLSbPNArIbiZ8R8evW9J4KTw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1374
+References: <20190820000002.9776-1-olteanv@gmail.com> <20190820040443.GB4919@t480s.localdomain>
+In-Reply-To: <20190820040443.GB4919@t480s.localdomain>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 20 Aug 2019 13:18:15 +0300
+Message-ID: <CA+h21hqMRG0Ai+KBsft_0uKDSBr4FQaO+tM+sNtm32_ekwdziA@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/6] Dynamic toggling of vlan_filtering for
+ SJA1105 DSA
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        nikolay@cumulusnetworks.com,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/08/2019 at 11:10, Andreas Schwab wrote:
-> External E-Mail
->=20
->=20
-> On Aug 13 2019, Paul Walmsley <paul.walmsley@sifive.com> wrote:
->=20
->> Dave, Nicolas,
->>
->> On Mon, 22 Jul 2019, Yash Shah wrote:
->>
->>> On Fri, Jul 19, 2019 at 5:36 PM <Nicolas.Ferre@microchip.com> wrote:
->>>>
->>>> On 19/07/2019 at 13:10, Yash Shah wrote:
->>>>> Update the compatibility string for SiFive FU540-C000 as per the new
->>>>> string updated in the binding doc.
->>>>> Reference: https://lkml.org/lkml/2019/7/17/200
->>>>
->>>> Maybe referring to lore.kernel.org is better:
->>>> https://lore.kernel.org/netdev/CAJ2_jOFEVZQat0Yprg4hem4jRrqkB72FKSeQj4=
-p8P5KA-+rgww@mail.gmail.com/
->>>
->>> Sure. Will keep that in mind for future reference.
->>>
->>>>
->>>>> Signed-off-by: Yash Shah <yash.shah@sifive.com>
->>>>
->>>> Acked-by: Nicolas Ferre <nicolas.ferre@microchip.com>
->>>
->>> Thanks.
->>
->> Am assuming you'll pick this up for the -net tree for v5.4-rc1 or earlie=
-r.
->> If not, please let us know.
->=20
-> This is still missing in v5.4-rc5, which means that networking is broken.
+On Tue, 20 Aug 2019 at 11:04, Vivien Didelot <vivien.didelot@gmail.com> wrote:
+>
+> On Tue, 20 Aug 2019 02:59:56 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > This patchset addresses a few limitations in DSA and the bridge core
+> > that made it impossible for this sequence of commands to work:
+> >
+> >   ip link add name br0 type bridge
+> >   ip link set dev swp2 master br0
+> >   echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+> >
+> > Only this sequence was previously working:
+> >
+> >   ip link add name br0 type bridge vlan_filtering 1
+> >   ip link set dev swp2 master br0
+>
+> This is not quite true, these sequences of commands do "work". What I see
+> though is that with the first sequence, the PVID 1 won't be programmed in
+> the hardware. But the second sequence does program the hardware.
+>
+> But following bridge members will be correctly programmed with the VLAN
+> though. The sequence below programs the hardware with VLAN 1 for swp3 as
+> well as CPU and DSA ports, but not for swp2:
+>
+>     ip link add name br0 type bridge
+>     ip link set dev swp2 master br0
+>     echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+>     ip link set dev swp3 master br0
+>
+> This is unfortunately also true for any 802.1Q VLANs. For example, only VID
+> 43 is programmed with the following sequence, but not VID 1 and VID 42:
+>
+>     ip link add name br0 type bridge
+>     ip link set dev swp2 master br0
+>     bridge vlan add dev swp2 vid 42
+>     echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+>     bridge vlan add dev swp2 vid 43
+>
+> So I understand that because VLANs are not propagated by DSA to the hardware
+> when VLAN filtering is disabled, a port may not be programmed with its
+> bridge's default PVID, and this is causing a problem for tag_8021q.
+>
+> Please reword so that we understand better what is the issue being fixed here.
+>
 
-Andreas, Paul,
+Not exactly, no.
+The fact that a port in DSA is not programmed with the bridge's
+default_pvid is just a fact.
+Right now, letting the bridge install the default_pvid into the ports
+even breaks dsa_8021q when enslaving the ports to a vlan_filtering=0
+bridge, but that is perhaps only a timing issue and can be resolved in
+other ways.
 
-The patchwork state for the 2 first patches of this series is "Changes=20
-Requested". It's probably due to my advice of using lore.kernel.org (or=20
-something else).
+To understand my issue I need to make a side-note.
+The sja1105 needs to be reset at runtime for changing some settings. I
+am working on a separate patchset that tries to make those switch
+resets as seamless as possible. The end goal is to not disrupt
+linuxptp (ptp4l, phc2sys) operation when enabling the tc-taprio
+offload. That means:
+- saving and restoring the PTP time after reset
+- preventing switch reset to happen during TX timestamping
+- preventing any clock operation on the PTP timer during switch reset
+Since toggling vlan_filtering also needs to reset the switch, I am
+simply using that as a handy tool to test how seamless the switch
+reset is.
+But currently, toggling vlan_filtering breaks traffic, due to nobody
+restoring the correct (from the bridge's perspective) pvid on the
+ports. So I need to fix this to continue the testing.
+On the user ports, I can just query the bridge, and that's exactly
+what I'm doing.
+On the CPU and DSA ports, I can't query the bridge because the bridge
+knows nothing about them. And I also can't query the pvid from the DSA
+core - it can change it, but not know what it is. So I need to be
+proactive and make DSA avoid changing their pvid needlessly.
+With this set of changes, the goal was for traffic to 'just work' when
+changing the vlan_filtering setting back and forth. This would also
+benefit other future users of dsa_8021q.
+There is still work to be done. dsa_8021q uses VID range 1024-2559
+privately. If the bridge had been using any VLAN in that range during
+vlan_filtering=1, then dsa_8021q should also restore that VLAN.
+Currently I'm not doing that because I'm still not clear whether it's
+just as simple as calling br_vlan_get_info(slave, {rx,tx}_vid,
+&vinfo); and adding that back (I don't completely understand the
+interaction with the implicit rules on the CPU ports - I am concerned
+that if the switch driver sees the VID is already installed on the CPU
+port, it will just skip the command).
+Ido Schimmel mentioned that static FDB entries with VLAN != PVID need
+to be preserved. I am already doing something in that direction there
+- in vlan_filtering=0 mode I am switching to shared VLAN learning
+mode. This means the switch is ignoring the VLAN from the FDB entries,
+and just uses the DMAC for L2 routing. When going back to the
+vlan_filtering=1 mode, the VLAN from the static FDB entries goes back
+in use. I think that's ok.
+There is also stuff that cannot be reasonably expected to be preserved
+across switch resets. Learned FDB entries is one thing. Traffic
+(including regular, but not management, traffic originated from the
+CPU) will be temporarily dropped.
 
-I'm perfectly fine in accepting the patches are they are today but can't=20
-change their patchwork state myself. We would need Dave or Jakub to take=20
-them.
+> >
+> > On SJA1105, the situation is further complicated by the fact that
+> > toggling vlan_filtering is causing a switch reset. However, the hardware
+> > state restoration logic is already there in the driver. It is a matter
+> > of the layers above which need a few fixups.
+> >
+> > Also see this discussion thread:
+> > https://www.spinics.net/lists/netdev/msg581042.html
+> >
+> > Patch 1/6 is not functionally related but also related to dsa_8021q
+> > handling of VLANs and this is a good opportunity to bring up the subject
+> > for discussion.
+>
+> So please send 1/6 as a separate patch and bring up the discussion there.
+>
 
-Dave, Jakub,
+Ok.
 
-All tags are collected in patchwork and all should be fine on DT (Rob)=20
-side as well.
-Please tell me if you're waiting some sign from me.
+>
+> Thanks,
+>
+>         Vivien
 
-Best regards,
---=20
-Nicolas Ferre
+Regards,
+-Vladimir
