@@ -2,131 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7700995A2F
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:50:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 47C9295A84
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:58:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729585AbfHTItJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 04:49:09 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35942 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729471AbfHTItD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:49:03 -0400
-Received: by mail-wr1-f67.google.com with SMTP id r3so11511750wrt.3;
-        Tue, 20 Aug 2019 01:49:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=LDL1hIKadz1gfObFDnKi45zKhu1D1Ko8kUYujKrQlXI=;
-        b=Eev7i6GzahYrLsR0wFJydyUOqhkGy0UVi5NypT33nkNFTETCLPE/pDVaolap9SKM1D
-         9TiAi4Nnzn6piRb3l8GXZQqGP05ylBLVO1lMUWGpOAMSuMCllaq6EEYazl/Ft0McA7S6
-         lTVdRGdxo1K/KVNb8HePAjZeFGMlubvy/rOCmmExGctrPjsAi3iRc3jrDEoGmP1mPhgJ
-         QLcdznl3R0xdyKVzfpY8El3rPs23JdJb03xV0L7VDhL4AoAxHxG32qX+LegZ/MmN63gi
-         ZPAUJWFiXR8QHi0UIL3UymONMsLobxwfJvEUMgO5RyeGJqv9r/1YvcIMtbnhiNRwnktG
-         YVzg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=LDL1hIKadz1gfObFDnKi45zKhu1D1Ko8kUYujKrQlXI=;
-        b=qY9zzdWXwTPnv3cB0Yi68G9qoQRIsndakrb2H2uCg/VL9WReInWoPexTyXj7TcEqSW
-         bVO554EsWSMRcBbDmg/8LXyDpRAxOE8oTwXjR6koTEny7FbzoKDs7PauHa1PrzFXAJR0
-         3D8foW7Ub4Yc6e/DAzBoaKam7uW9y7sLHfoiAXNzAugn/V5bjfrOpy8vSqkZU4qNmupu
-         OTBbrrjzV4yN7/iwggsKWSGk5s18eUyDwc1WL5HYxEePxd9rzE93TA5tM5uqmh2epqbA
-         puezlm4XqYGc4k91cXp48B1pqr4USU7kAnfcJigIvN2YSCg0HKdtUlkAsNqGmGijoQiU
-         9F1A==
-X-Gm-Message-State: APjAAAVBeoKmxJwYP6MTM79whBIy5kfdiG+wdevFPPdS/GYGrBefgd2s
-        JpcjOmOaj+avsU/96QebjiLqBpEM8Gg=
-X-Google-Smtp-Source: APXvYqwwZ1dBDGbYAQszivzUqUT0eItl/QLi/GTtdUO22WiA5QVggUXxRrv6VC+gmTXvTOe0SEJEUg==
-X-Received: by 2002:adf:cd81:: with SMTP id q1mr29360456wrj.16.1566290940464;
-        Tue, 20 Aug 2019 01:49:00 -0700 (PDT)
-Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id s64sm36437105wmf.16.2019.08.20.01.48.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 01:48:59 -0700 (PDT)
-From:   Hubert Feurstein <h.feurstein@gmail.com>
-X-Google-Original-From: Hubert Feurstein <hubert.feurstein@vahle.at>
-To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next v3 4/4] net: fec: add support for PTP system timestamping for MDIO devices
-Date:   Tue, 20 Aug 2019 10:48:33 +0200
-Message-Id: <20190820084833.6019-5-hubert.feurstein@vahle.at>
-X-Mailer: git-send-email 2.22.1
-In-Reply-To: <20190820084833.6019-1-hubert.feurstein@vahle.at>
-References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
+        id S1729614AbfHTI6a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 04:58:30 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:55284 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729405AbfHTI63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:58:29 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7K8mlIl093857;
+        Tue, 20 Aug 2019 08:57:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ content-transfer-encoding : in-reply-to; s=corp-2019-08-05;
+ bh=OBYJdKc9ABkHszixtESMVjnUaHwXkRGiyjxpo+PVkvU=;
+ b=gUbYQwHvEQoNaNOFYW0nCR3NQAKBh/gA8DnqX71fqTX1K1f+Z3QCtgecMgP1PwMZejuv
+ dASOeQ/w+i4UV5je8whUi6gPiCx4nGRZrPr9MhFwqKNKTRZOEW/NQngr89I1y9q7Lni3
+ 6HTBzaHErW/L4jU+nZP4xoFQSM+NKsT+fQXdigmxv+O+qh1rFrCmqiLhigThxoMQiG7b
+ k9o7+DLO4ThH9VOZDWItyLVU54t/ptxvNH5HaOH7pjpOPmcD1fOJRTY0gEqOq803wPDi
+ M5Hi64a3PXiofVQstBK96i1NakYSH6f2PXEk9N7g9yboI0YnQR5hznXywnO2Z+05C4Xe VQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2uea7qmvqs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 20 Aug 2019 08:57:59 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7K8mSLG068665;
+        Tue, 20 Aug 2019 08:55:58 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by aserp3030.oracle.com with ESMTP id 2ufwgcx89f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 20 Aug 2019 08:55:58 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7K8tvCl009490;
+        Tue, 20 Aug 2019 08:55:57 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 20 Aug 2019 01:55:57 -0700
+Date:   Tue, 20 Aug 2019 11:55:47 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>
+Cc:     YueHaibing <yuehaibing@huawei.com>, magnus.karlsson@intel.com,
+        jonathan.lemon@gmail.com, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH -next] bpf: Use PTR_ERR_OR_ZERO in xsk_map_inc()
+Message-ID: <20190820085547.GE4451@kadam>
+References: <20190820013652.147041-1-yuehaibing@huawei.com>
+ <93fafdab-8fb3-0f2b-8f36-0cf297db3cd9@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <93fafdab-8fb3-0f2b-8f36-0cf297db3cd9@intel.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9354 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=710
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1908200095
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9354 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=777 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908200095
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hubert Feurstein <h.feurstein@gmail.com>
+On Tue, Aug 20, 2019 at 09:28:26AM +0200, Björn Töpel wrote:
+> For future patches: Prefix AF_XDP socket work with "xsk:" and use "PATCH
+> bpf-next" to let the developers know what tree you're aiming for.
 
-In order to improve the synchronisation precision of phc2sys (from
-the linuxptp project) for devices like switches which are attached
-to the MDIO bus, it is necessary the get the system timestamps as
-close as possible to the access which causes the PTP timestamp
-register to be snapshotted in the switch hardware. Usually this is
-triggered by an MDIO write access, the snapshotted timestamp is then
-transferred by several MDIO reads.
+There are over 300 trees in linux-next.  It impossible to try remember
+everyone's trees.  No one else has this requirement.
 
-The ptp_read_system_*ts functions already check the ptp_sts pointer.
+Maybe add it as an option to get_maintainer.pl --tree <hash> then that
+would be very easy.
 
-Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
----
- drivers/net/ethernet/freescale/fec_main.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-index c01d3ec3e9af..dd1253683ac0 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -1815,10 +1815,12 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
- 	reinit_completion(&fep->mdio_done);
- 
- 	/* start a write op */
-+	ptp_read_system_prets(bus->ptp_sts);
- 	writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
- 		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
- 		FEC_MMFR_TA | FEC_MMFR_DATA(value),
- 		fep->hwp + FEC_MII_DATA);
-+	ptp_read_system_postts(bus->ptp_sts);
- 
- 	/* wait for end of transfer */
- 	time_left = wait_for_completion_timeout(&fep->mdio_done,
-@@ -1956,7 +1958,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 	struct fec_enet_private *fep = netdev_priv(ndev);
- 	struct device_node *node;
- 	int err = -ENXIO;
--	u32 mii_speed, holdtime;
-+	u32 mii_speed, mii_period, holdtime;
- 
- 	/*
- 	 * The i.MX28 dual fec interfaces are not equal.
-@@ -1993,6 +1995,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 	 * document.
- 	 */
- 	mii_speed = DIV_ROUND_UP(clk_get_rate(fep->clk_ipg), 5000000);
-+	mii_period = div_u64((u64)mii_speed * 2 * NSEC_PER_SEC, clk_get_rate(fep->clk_ipg));
- 	if (fep->quirks & FEC_QUIRK_ENET_MAC)
- 		mii_speed--;
- 	if (mii_speed > 63) {
-@@ -2034,6 +2037,8 @@ static int fec_enet_mii_init(struct platform_device *pdev)
- 		pdev->name, fep->dev_id + 1);
- 	fep->mii_bus->priv = fep;
- 	fep->mii_bus->parent = &pdev->dev;
-+	fep->mii_bus->flags = MII_BUS_F_PTP_STS_SUPPORTED;
-+	fep->mii_bus->ptp_sts_offset = 32 * mii_period;
- 
- 	node = of_get_child_by_name(pdev->dev.of_node, "mdio");
- 	err = of_mdiobus_register(fep->mii_bus, node);
--- 
-2.22.1
+regards,
+dan carpenter
 
