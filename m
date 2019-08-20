@@ -2,91 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD7D395944
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:18:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2B2F95976
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:29:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729401AbfHTIRi convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Aug 2019 04:17:38 -0400
-Received: from mx2.suse.de ([195.135.220.15]:51140 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729150AbfHTIRh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 04:17:37 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 6F5DEAEA1;
-        Tue, 20 Aug 2019 08:17:35 +0000 (UTC)
-Date:   Tue, 20 Aug 2019 10:17:34 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
+        id S1729471AbfHTI2a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 04:28:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:48928 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726049AbfHTI2a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 04:28:30 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 368D4300180E;
+        Tue, 20 Aug 2019 08:28:30 +0000 (UTC)
+Received: from localhost (ovpn-117-123.ams2.redhat.com [10.36.117.123])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A490C5D9D5;
+        Tue, 20 Aug 2019 08:28:29 +0000 (UTC)
+Date:   Tue, 20 Aug 2019 09:28:28 +0100
+From:   Stefan Hajnoczi <stefanha@redhat.com>
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
+        Dexuan Cui <decui@microsoft.com>,
+        virtualization@lists.linux-foundation.org,
         "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-input@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 15/17] mfd: ioc3: Add driver for SGI IOC3 chip
-Message-Id: <20190820101734.bffe41588e0c92094b9dba3d@suse.de>
-In-Reply-To: <20190820062308.GK3545@piout.net>
-References: <20190819163144.3478-1-tbogendoerfer@suse.de>
-        <20190819163144.3478-16-tbogendoerfer@suse.de>
-        <20190820062308.GK3545@piout.net>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        Jorgen Hansen <jhansen@vmware.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 11/11] vsock_test: wait for the remote to close the
+ connection
+Message-ID: <20190820082828.GA9855@stefanha-x1.localdomain>
+References: <20190801152541.245833-1-sgarzare@redhat.com>
+ <20190801152541.245833-12-sgarzare@redhat.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="0F1p//8PRICkK4MW"
+Content-Disposition: inline
+In-Reply-To: <20190801152541.245833-12-sgarzare@redhat.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Tue, 20 Aug 2019 08:28:30 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Aug 2019 08:23:08 +0200
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
-> On 19/08/2019 18:31:38+0200, Thomas Bogendoerfer wrote:
-> > diff --git a/drivers/mfd/ioc3.c b/drivers/mfd/ioc3.c
-> > new file mode 100644
-> > index 000000000000..5bcb3461a189
-> > --- /dev/null
-> > +++ b/drivers/mfd/ioc3.c
-> > @@ -0,0 +1,586 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * SGI IOC3 multifunction device driver
-> > + *
-> > + * Copyright (C) 2018, 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
-> > + *
-> > + * Based on work by:
-> > + *   Stanislaw Skowronek <skylark@unaligned.org>
-> > + *   Joshua Kinard <kumba@gentoo.org>
-> > + *   Brent Casavant <bcasavan@sgi.com> - IOC4 master driver
-> > + *   Pat Gefre <pfg@sgi.com> - IOC3 serial port IRQ demuxer
-> > + */
-> > +
-> > +#include <linux/delay.h>
-> > +#include <linux/errno.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/mfd/core.h>
-> > +#include <linux/module.h>
-> > +#include <linux/pci.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/platform_data/sgi-w1.h>
-> > +#include <linux/rtc/ds1685.h>
-> I don't think this include is necessary.
 
-you are right. I'll move it to the patch where IP30 systemboard gets added.
+--0F1p//8PRICkK4MW
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
-Thomas.
+On Thu, Aug 01, 2019 at 05:25:41PM +0200, Stefano Garzarella wrote:
+> +/* Wait for the remote to close the connection */
+> +void vsock_wait_remote_close(int fd)
+> +{
+> +	struct epoll_event ev;
+> +	int epollfd, nfds;
+> +
+> +	epollfd =3D epoll_create1(0);
+> +	if (epollfd =3D=3D -1) {
+> +		perror("epoll_create1");
+> +		exit(EXIT_FAILURE);
+> +	}
+> +
+> +	ev.events =3D EPOLLRDHUP | EPOLLHUP;
+> +	ev.data.fd =3D fd;
+> +	if (epoll_ctl(epollfd, EPOLL_CTL_ADD, fd, &ev) =3D=3D -1) {
+> +		perror("epoll_ctl");
+> +		exit(EXIT_FAILURE);
+> +	}
+> +
+> +	nfds =3D epoll_wait(epollfd, &ev, 1, TIMEOUT * 1000);
+> +	if (nfds =3D=3D -1) {
+> +		perror("epoll_wait");
+> +		exit(EXIT_FAILURE);
+> +	}
+> +
+> +	if (nfds =3D=3D 0) {
+> +		fprintf(stderr, "epoll_wait timed out\n");
+> +		exit(EXIT_FAILURE);
+> +	}
+> +
+> +	assert(nfds =3D=3D 1);
+> +	assert(ev.events & (EPOLLRDHUP | EPOLLHUP));
+> +	assert(ev.data.fd =3D=3D fd);
+> +
+> +	close(epollfd);
+> +}
 
--- 
-SUSE Linux GmbH
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+Please use timeout_begin()/timeout_end() so that the test cannot hang.
+
+> diff --git a/tools/testing/vsock/vsock_test.c b/tools/testing/vsock/vsock=
+_test.c
+> index 64adf45501ca..a664675bec5a 100644
+> --- a/tools/testing/vsock/vsock_test.c
+> +++ b/tools/testing/vsock/vsock_test.c
+> @@ -84,6 +84,11 @@ static void test_stream_client_close_server(const stru=
+ct test_opts *opts)
+> =20
+>  	control_expectln("CLOSED");
+> =20
+> +	/* Wait for the remote to close the connection, before check
+> +	 * -EPIPE error on send.
+> +	 */
+> +	vsock_wait_remote_close(fd);
+
+Is control_expectln("CLOSED") still necessary now that we're waiting for
+the poll event?  The control message was an attempt to wait until the
+other side closed the socket.
+
+--0F1p//8PRICkK4MW
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl1brywACgkQnKSrs4Gr
+c8he/ggAs417RXraEFHwXmiz0k0MOniGzChyB01FvERBmU5Q3lFaA9yTm3CfBmeM
+dsWmGaQ+UcV0T+BvE+Y+oUV6lspdjNMX2D02+Xfl9SNwKh1CGxmipyRSsITapVXg
+9wFwZzD/+IJ6bSzUxyYpPZhb0n1cZNnMnB0hpTFGSvJMrbk/phSv3NVd7LrJVuM2
+uTYaoaFXQ4QTPnnVO7JonGbeHJuinIleByziLGaCCDgeEan9gf48eQPsN1Pvhf+g
+/YjmlJEqbpekU8wpwggoRFZ9UlkbiLhbCtZdvE7Kzj9PaS1DSF+AWLdL9fOa+N1K
+jNvf8bhepUvIw0MgGeM/Az9vsHfFZw==
+=E1TQ
+-----END PGP SIGNATURE-----
+
+--0F1p//8PRICkK4MW--
