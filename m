@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F16B96C66
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B208396C62
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731218AbfHTWeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:34:02 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36970 "EHLO
+        id S1731200AbfHTWdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:54 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36972 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730927AbfHTWdC (ORCPT
+        with ESMTP id S1730930AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/EbgvB20GJcDqvoWugcIThkwN3eefHXUKk3FhXLdQ6Y=; b=OCs+Fev6qUsIKaWypkeOyeMZah
-        Kbajg2IpVNUHm2M1ZDwAF4Gvwy9AcLznKJuG1+U/3/kSap91Gmm7N97eii9lS7avEcVqD514MN7iV
-        SUWxJA4aUy0xNnWIx64PsFvvXtavl/SXqcKs5iBkDKZ4tNJanCK9it9gjrO8jkD7OaRDPRxP6bZtW
-        xxXJWajYhK05U7GrqYcFAJM5gQvL6y6ckw3b6joaEB1AH0aPvXWH9zY89c6NfDHqC7A028Gvmr4fO
-        y1pspQoTqNbf8t41dXKsfLo51+KuoYRieZJz9NJlEvd2ey/RwgmcePdfeQ4TZ/vdwePX0zOpWdjkA
-        Rb5AB0YA==;
+        bh=Q8j9KokhURHH0lN02kIgFmPMPrSz2fFuerT1/ziZ5ZI=; b=g9HrJsUEWVm5tLbqH3wOXYRdQP
+        bAUvHutIf5FfV4HsvIcYWkFoYexA3xDxpLv8rfYucnBrCQwSdCvZQeDYwqo2lr6ee72sFvQ+dxIX4
+        pvKiS/Wohkie+HS+5A6css3G6040aGNIok2vGEihxn4iwLbqGAPPQER/DVjL5c27wjYmycnVtEs+W
+        LJV0sIX6uDXVH9Taoht8Gj0MuRe/hoG0BxU2bV+2pb1dQdoXeinjdxO8mU0PWryBeHwEmSA7JoB4Q
+        fLZxZBFfRK2Fn3WoCAsMuk1ZOIYoPe9HvvFQnmkQ23WHyJ/MFEvhaavAAH61CPgPQnwC4mV2ZECTu
+        jEdPJzhA==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgX-0005q3-Vr; Tue, 20 Aug 2019 22:33:01 +0000
+        id 1i0CgY-0005q9-0u; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 06/38] mlx5: Convert counters_idr to XArray
-Date:   Tue, 20 Aug 2019 15:32:27 -0700
-Message-Id: <20190820223259.22348-7-willy@infradead.org>
+Subject: [PATCH 07/38] mlx5: Convert fpga IDRs to XArray
+Date:   Tue, 20 Aug 2019 15:32:28 -0700
+Message-Id: <20190820223259.22348-8-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,109 +43,154 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-This IDR wasn't using the allocation functionality, so convert it to a
-plain XArray.  I also suspect it could be used to replace the list_head
-'counters', but I'm not willing to do that work right now.
+Leave the locking as irq-disabling since it appears we can release
+entries from interrupt context.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- .../ethernet/mellanox/mlx5/core/fs_counters.c | 31 +++++--------------
- include/linux/mlx5/driver.h                   |  3 +-
- 2 files changed, 9 insertions(+), 25 deletions(-)
+ .../ethernet/mellanox/mlx5/core/fpga/tls.c    | 54 +++++++------------
+ .../ethernet/mellanox/mlx5/core/fpga/tls.h    |  6 +--
+ 2 files changed, 21 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
-index 1804cf3c3814..5ee20d285c5e 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
-@@ -108,18 +108,14 @@ static struct list_head *mlx5_fc_counters_lookup_next(struct mlx5_core_dev *dev,
- 						      u32 id)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c
+index 22a2ef111514..dbc09c8659a5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c
+@@ -121,16 +121,12 @@ static void mlx5_fpga_tls_cmd_send(struct mlx5_fpga_device *fdev,
+ 	spin_unlock_irqrestore(&tls->pending_cmds_lock, flags);
+ }
+ 
+-/* Start of context identifiers range (inclusive) */
+-#define SWID_START	0
+ /* End of context identifiers range (exclusive) */
+ #define SWID_END	BIT(24)
+ 
+-static int mlx5_fpga_tls_alloc_swid(struct idr *idr, spinlock_t *idr_spinlock,
+-				    void *ptr)
++static int mlx5_fpga_tls_alloc_swid(struct xarray *xa, void *flow)
  {
- 	struct mlx5_fc_stats *fc_stats = &dev->priv.fc_stats;
--	unsigned long next_id = (unsigned long)id + 1;
- 	struct mlx5_fc *counter;
--	unsigned long tmp;
-+	unsigned long next_id;
+-	unsigned long flags;
+-	int ret;
++	int ret, id;
  
--	rcu_read_lock();
--	/* skip counters that are in idr, but not yet in counters list */
--	idr_for_each_entry_continue_ul(&fc_stats->counters_idr,
--				       counter, tmp, next_id) {
-+	/* skip counters that are not yet in counters list */
-+	xa_for_each_start(&fc_stats->counters_xa, next_id, counter, id + 1) {
- 		if (!list_empty(&counter->list))
- 			break;
- 	}
--	rcu_read_unlock();
+ 	/* TLS metadata format is 1 byte for syndrome followed
+ 	 * by 3 bytes of swid (software ID)
+@@ -139,24 +135,22 @@ static int mlx5_fpga_tls_alloc_swid(struct idr *idr, spinlock_t *idr_spinlock,
+ 	 */
+ 	BUILD_BUG_ON((SWID_END - 1) & 0xFF000000);
  
- 	return counter ? &counter->list : &fc_stats->counters;
- }
-@@ -139,9 +135,7 @@ static void mlx5_fc_stats_remove(struct mlx5_core_dev *dev,
+-	idr_preload(GFP_KERNEL);
+-	spin_lock_irqsave(idr_spinlock, flags);
+-	ret = idr_alloc(idr, ptr, SWID_START, SWID_END, GFP_ATOMIC);
+-	spin_unlock_irqrestore(idr_spinlock, flags);
+-	idr_preload_end();
++	ret = xa_alloc_irq(xa, &id, flow, XA_LIMIT(0, SWID_END - 1),
++			GFP_KERNEL);
++	if (!ret)
++		return id;
  
- 	list_del(&counter->list);
- 
--	spin_lock(&fc_stats->counters_idr_lock);
--	WARN_ON(!idr_remove(&fc_stats->counters_idr, counter->id));
--	spin_unlock(&fc_stats->counters_idr_lock);
-+	WARN_ON(!xa_erase(&fc_stats->counters_xa, counter->id));
+ 	return ret;
  }
  
- static int get_max_bulk_query_len(struct mlx5_core_dev *dev)
-@@ -309,20 +303,12 @@ struct mlx5_fc *mlx5_fc_create(struct mlx5_core_dev *dev, bool aging)
- 	counter->aging = aging;
+-static void *mlx5_fpga_tls_release_swid(struct idr *idr,
+-					spinlock_t *idr_spinlock, u32 swid)
++static void *mlx5_fpga_tls_release_swid(struct xarray *xa, u32 swid)
+ {
+ 	unsigned long flags;
+ 	void *ptr;
  
- 	if (aging) {
--		u32 id = counter->id;
--
- 		counter->cache.lastuse = jiffies;
- 		counter->lastbytes = counter->cache.bytes;
- 		counter->lastpackets = counter->cache.packets;
+-	spin_lock_irqsave(idr_spinlock, flags);
+-	ptr = idr_remove(idr, swid);
+-	spin_unlock_irqrestore(idr_spinlock, flags);
++	xa_lock_irqsave(xa, flags);
++	ptr = __xa_erase(xa, swid);
++	xa_unlock_irqrestore(xa, flags);
+ 	return ptr;
+ }
  
--		idr_preload(GFP_KERNEL);
--		spin_lock(&fc_stats->counters_idr_lock);
--
--		err = idr_alloc_u32(&fc_stats->counters_idr, counter, &id, id,
--				    GFP_NOWAIT);
--
--		spin_unlock(&fc_stats->counters_idr_lock);
--		idr_preload_end();
-+		err = xa_insert(&fc_stats->counters_xa, counter->id, counter,
-+				GFP_KERNEL);
- 		if (err)
- 			goto err_out_alloc;
+@@ -210,7 +204,7 @@ int mlx5_fpga_tls_resync_rx(struct mlx5_core_dev *mdev, u32 handle, u32 seq,
+ 	cmd = (buf + 1);
  
-@@ -368,8 +354,7 @@ int mlx5_init_fc_stats(struct mlx5_core_dev *dev)
- 	int max_bulk_len;
- 	int max_out_len;
+ 	rcu_read_lock();
+-	flow = idr_find(&mdev->fpga->tls->rx_idr, ntohl(handle));
++	flow = xa_load(&mdev->fpga->tls->rx_flows, ntohl(handle));
+ 	if (unlikely(!flow)) {
+ 		rcu_read_unlock();
+ 		WARN_ONCE(1, "Received NULL pointer for handle\n");
+@@ -269,13 +263,9 @@ void mlx5_fpga_tls_del_flow(struct mlx5_core_dev *mdev, u32 swid,
+ 	void *flow;
  
--	spin_lock_init(&fc_stats->counters_idr_lock);
--	idr_init(&fc_stats->counters_idr);
-+	xa_init(&fc_stats->counters_xa);
- 	INIT_LIST_HEAD(&fc_stats->counters);
- 	init_llist_head(&fc_stats->addlist);
- 	init_llist_head(&fc_stats->dellist);
-@@ -409,7 +394,7 @@ void mlx5_cleanup_fc_stats(struct mlx5_core_dev *dev)
+ 	if (direction_sx)
+-		flow = mlx5_fpga_tls_release_swid(&tls->tx_idr,
+-						  &tls->tx_idr_spinlock,
+-						  swid);
++		flow = mlx5_fpga_tls_release_swid(&tls->tx_flows, swid);
+ 	else
+-		flow = mlx5_fpga_tls_release_swid(&tls->rx_idr,
+-						  &tls->rx_idr_spinlock,
+-						  swid);
++		flow = mlx5_fpga_tls_release_swid(&tls->rx_flows, swid);
  
- 	kfree(fc_stats->bulk_query_out);
+ 	if (!flow) {
+ 		mlx5_fpga_err(mdev->fpga, "No flow information for swid %u\n",
+@@ -483,10 +473,8 @@ int mlx5_fpga_tls_init(struct mlx5_core_dev *mdev)
+ 	spin_lock_init(&tls->pending_cmds_lock);
+ 	INIT_LIST_HEAD(&tls->pending_cmds);
  
--	idr_destroy(&fc_stats->counters_idr);
-+	xa_destroy(&fc_stats->counters_xa);
+-	idr_init(&tls->tx_idr);
+-	idr_init(&tls->rx_idr);
+-	spin_lock_init(&tls->tx_idr_spinlock);
+-	spin_lock_init(&tls->rx_idr_spinlock);
++	xa_init_flags(&tls->tx_flows, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_IRQ);
++	xa_init_flags(&tls->rx_flows, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_IRQ);
+ 	fdev->tls = tls;
+ 	return 0;
  
- 	tmplist = llist_del_all(&fc_stats->addlist);
- 	llist_for_each_entry_safe(counter, tmp, tmplist, addlist)
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index ba8f59b11920..b8b66cdb8357 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -477,8 +477,7 @@ struct mlx5_fc_pool {
+@@ -591,11 +579,9 @@ int mlx5_fpga_tls_add_flow(struct mlx5_core_dev *mdev, void *flow,
+ 	u32 swid;
+ 
+ 	if (direction_sx)
+-		ret = mlx5_fpga_tls_alloc_swid(&tls->tx_idr,
+-					       &tls->tx_idr_spinlock, flow);
++		ret = mlx5_fpga_tls_alloc_swid(&tls->tx_flows, flow);
+ 	else
+-		ret = mlx5_fpga_tls_alloc_swid(&tls->rx_idr,
+-					       &tls->rx_idr_spinlock, flow);
++		ret = mlx5_fpga_tls_alloc_swid(&tls->rx_flows, flow);
+ 
+ 	if (ret < 0)
+ 		return ret;
+@@ -612,11 +598,9 @@ int mlx5_fpga_tls_add_flow(struct mlx5_core_dev *mdev, void *flow,
+ 	return 0;
+ free_swid:
+ 	if (direction_sx)
+-		mlx5_fpga_tls_release_swid(&tls->tx_idr,
+-					   &tls->tx_idr_spinlock, swid);
++		mlx5_fpga_tls_release_swid(&tls->tx_flows, swid);
+ 	else
+-		mlx5_fpga_tls_release_swid(&tls->rx_idr,
+-					   &tls->rx_idr_spinlock, swid);
++		mlx5_fpga_tls_release_swid(&tls->rx_flows, swid);
+ 
+ 	return ret;
+ }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h
+index 3b2e37bf76fe..0b56332f453b 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h
+@@ -45,10 +45,8 @@ struct mlx5_fpga_tls {
+ 	u32 caps;
+ 	struct mlx5_fpga_conn *conn;
+ 
+-	struct idr tx_idr;
+-	struct idr rx_idr;
+-	spinlock_t tx_idr_spinlock; /* protects the IDR */
+-	spinlock_t rx_idr_spinlock; /* protects the IDR */
++	struct xarray tx_flows;
++	struct xarray rx_flows;
  };
  
- struct mlx5_fc_stats {
--	spinlock_t counters_idr_lock; /* protects counters_idr */
--	struct idr counters_idr;
-+	struct xarray counters_xa;
- 	struct list_head counters;
- 	struct llist_head addlist;
- 	struct llist_head dellist;
+ int mlx5_fpga_tls_add_flow(struct mlx5_core_dev *mdev, void *flow,
 -- 
 2.23.0.rc1
 
