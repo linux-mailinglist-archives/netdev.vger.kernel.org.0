@@ -2,95 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 697479680C
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:52:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BBA1496816
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:55:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728344AbfHTRwQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 13:52:16 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:41312 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726717AbfHTRwQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 13:52:16 -0400
-Received: by mail-qt1-f194.google.com with SMTP id i4so7030397qtj.8
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 10:52:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=s21+R8BhQRQkHzvnG5Wp/7k41zonwA/yuxp6NlTkwKE=;
-        b=oqLkqgBTlMHDx+TWDyUIxiaA96/y81v9C905DODcmqVqH7Qql2Bai5c+2PFMVKSWHR
-         uQol4HnQQBkpIwRDcgzvRCk/RhJCDGZ7nEpp4RHMuFg6HZ9CVy4nyXwYu45yZXEBH42M
-         yLbJNX8AkfWUlfNiJq8CsWBZ94NRInZlGCUnBYRrT+AT2/n2Eo1naxstdB618xuyhqFd
-         ox38YY1x4mgQ3B7qq0uznJ+7F0QKWXaS0Xs0MU8qymJ6VY/bNS97Xf29E1y8dTgDc0Pz
-         T2ljccWGSRDLjq75R0189kqw4fzkoT1sDyQYbjdPj1EC//t05ZliHF2r8sPyhyeW4stJ
-         DKYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=s21+R8BhQRQkHzvnG5Wp/7k41zonwA/yuxp6NlTkwKE=;
-        b=jILGuiilBxL9EIY2PCKxppfSjGOLTq7aD03Of/miE0xZIyie5k6EVzdRc06OoXvM5S
-         doVgZs94bGFp1K8CwpqxOjUlkz1x5jxbg7pB6RoSb70y9SJ/RNzweCrVLJV7Cib1P9+M
-         s1cjDEzXzmEHXAbAH4158b2vDTp8SjGdXH1dcBMnygV+FtlaVGMUqBTZIs89OjiYRbXC
-         z6BlmV6QiU8p22sSTdi7H8KuXfHO9LfYZD8wI1J2S7r4w5aVuuZuRLKviGCfHKA5x+t1
-         MO5k3TZmnagVVravBrVpNYR9ZmcWEuGt+cmV69HXL6lr7GqZ902pIJq4hfYf39fsDMkt
-         6Jmg==
-X-Gm-Message-State: APjAAAV5sqJ/iK20kHukZq8olDzY907Jcf6MnEoos3oXS90/Z1PtzQJR
-        /HCufoDYChYWgLMUBxbBlkHyB9XU5gA=
-X-Google-Smtp-Source: APXvYqz6MymVQ3wqo2ZuG9l9AGk0Z4buBaHjKcoHM4au5mNLufYxDATxIodqYWjsDoE4fA8V19/Tpw==
-X-Received: by 2002:ac8:50b:: with SMTP id u11mr27126344qtg.308.1566323535406;
-        Tue, 20 Aug 2019 10:52:15 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id h66sm8837478qke.61.2019.08.20.10.52.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 10:52:14 -0700 (PDT)
-Date:   Tue, 20 Aug 2019 13:52:13 -0400
-Message-ID: <20190820135213.GB11752@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        nikolay@cumulusnetworks.com,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/6] net: dsa: Delete the VID from the upstream
- port as well
-In-Reply-To: <CA+h21hpdDuoR5nj98EC+-W4HoBs35e_rURS1LD1jJWF5pkty9w@mail.gmail.com>
-References: <20190820000002.9776-1-olteanv@gmail.com>
- <20190820000002.9776-4-olteanv@gmail.com>
- <20190820015138.GB975@t480s.localdomain>
- <CA+h21hpdDuoR5nj98EC+-W4HoBs35e_rURS1LD1jJWF5pkty9w@mail.gmail.com>
+        id S1729887AbfHTRzE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 13:55:04 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53556 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726717AbfHTRzE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 13:55:04 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B5C12C0022F1;
+        Tue, 20 Aug 2019 17:55:03 +0000 (UTC)
+Received: from linux-ws.nc.xsintricity.com (ovpn-112-63.rdu2.redhat.com [10.10.112.63])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4098427CCF;
+        Tue, 20 Aug 2019 17:55:02 +0000 (UTC)
+Message-ID: <6e099d052f1803e74b5731fe3da2d9109533734d.camel@redhat.com>
+Subject: Re: [PATCH rdma-next 0/3] RDMA RX RoCE Steering Support
+From:   Doug Ledford <dledford@redhat.com>
+To:     Leon Romanovsky <leon@kernel.org>,
+        Jason Gunthorpe <jgg@mellanox.com>
+Cc:     Leon Romanovsky <leonro@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Date:   Tue, 20 Aug 2019 13:54:59 -0400
+In-Reply-To: <20190819113626.20284-1-leon@kernel.org>
+References: <20190819113626.20284-1-leon@kernel.org>
+Organization: Red Hat, Inc.
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-3B5VOJtY6hTY/+Hg+kip"
+User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.31]); Tue, 20 Aug 2019 17:55:03 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vladimir,
 
-On Tue, 20 Aug 2019 12:54:44 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
-> I can agree that this isn't one of my brightest moments. But at least
-> we get to see Cunningham's law in action :)
-> When dsa_8021q is cleaning up the switch's VLAN table for the bridge
-> to use it, it is good to really clean it up, i.e. not leave any VLAN
-> installed on the upstream ports.
-> But I think this is just an academical concern at this point. In
-> vlan_filtering mode, the CPU port will accept VLAN frames with the
-> dsa_8021q ID's, but they will eventually get dropped due to no
-> destination. The real breaker is the pvid change. If something like
-> patch 4/6 gets accepted I will drop this one.
+--=-3B5VOJtY6hTY/+Hg+kip
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-I wish Ward had mentioned to submit such academical concern as RFC :)
+On Mon, 2019-08-19 at 14:36 +0300, Leon Romanovsky wrote:
+> From: Leon Romanovsky <leonro@mellanox.com>
+>=20
+> Hi,
+>=20
+> This series from Mark extends mlx5 with RDMA_RX RoCE flow steering
+> support
+> for DEVX and QP objects.
+>=20
+> Thanks
+>=20
+> Mark Zhang (3):
+>   net/mlx5: Add per-namespace flow table default miss action support
+>   net/mlx5: Create bypass and loopback flow steering namespaces for
+> RDMA
+>     RX
+>   RDMA/mlx5: RDMA_RX flow type support for user applications
 
-Please submit smaller series, targeting a single functional problem each,
-with clear and detailed messages.
+I have no objection to this series.
 
+--=20
+Doug Ledford <dledford@redhat.com>
+    GPG KeyID: B826A3330E572FDD
+    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
 
-Thanks,
+--=-3B5VOJtY6hTY/+Hg+kip
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
-	Vivien
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl1cM/MACgkQuCajMw5X
+L92Qmg//TjZFAGoUsS2Mx4bqktSXOLOvSnKtxGJE9nSmZzNftq7zbhqmnCMEizA7
+j6Jd7WyVAQu1aHQRvRlH1swQlY8S88yLV8HGtLtcALI1/2auyy8734Loaer3eVJh
+x6D+TC8bneDIFzWXhuq7Ug7qucSqL40elklo1s9qMSBgp/YC9iulH1GrPcH+kMS6
+CByqlg7y6zLpvBcdFnYp78mroRt1jzSxH7vCpm2HrEvdFZEmGbOYYITryy5FAwUj
+tK9HarL1uc4k28J8UW6nQBtH6QKCsWhwV5+G7VdTWBK1G+zDoZXs17MkDOLP9oJZ
++Hq+5xDTAF53aSMNjKa35mcqRwJvS32hrfigrcsX+7ZnmGvRMOMMYqMdLsX4dMil
+Qlh/cer70af/0yx+CS1ysJ2vryJWVo0D+6a0HwcQ6XVlFyZxKyc+tDO4wIWXaHuW
+fOTHNb/hM6MBfVnQxUjYTvbluqGw6CSqGtPYniGTknj65k5+tiO8ohHfIcGUdLJV
+SDiineOwkxusockHG2WOCSmKrY2Q6H9YcNl2QtzIEtgg3FL6FAv1/vv5lHlBfu4R
+z04Gr4pihJoGxbpbZX9SXK9jScub9yZLynxl4ygpu2Mimwn/GgZSN9uDxaPwwb75
+0ciFc5MFZzONviyjApSegTGT1T2C28MohHh6bqzJwkH0JRAMGBY=
+=/ncf
+-----END PGP SIGNATURE-----
+
+--=-3B5VOJtY6hTY/+Hg+kip--
+
