@@ -2,131 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A32695210
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 02:00:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0650D9521F
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 02:06:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728802AbfHTAAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 20:00:21 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:39668 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728777AbfHTAAQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 20:00:16 -0400
-Received: by mail-wm1-f65.google.com with SMTP id i63so1000424wmg.4
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 17:00:15 -0700 (PDT)
+        id S1728782AbfHTAFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 20:05:04 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37036 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728554AbfHTAFE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 20:05:04 -0400
+Received: by mail-qt1-f194.google.com with SMTP id y26so4006958qto.4
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 17:05:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=GPFUyFS+jWxWApicUeRc6xCKGl96d1tW08U0ZTQLvpw=;
-        b=M7D2OsgIvcT021nSxSGk6vw2iol87qI62NqIt3S5zrEhKrFl6EavHG6q4M9i50EAIY
-         8NDSx7Ag6W2/iIMq6e5JJw/IQI9daEmjIBPTzoRSSR6TIXtPw5TD3UH8DG1IWZwnUtMp
-         iXJFeob2/luFLVy9ovCm38jwiplR/CxT4y5nXvVV+ssq/i9Q0fbeInnjeU3G4f55RM4M
-         OdZpPpep0TSCLCtN2w6ui8WSUV6epehGse68IYP1c/10mV1u3DeZ9S2QFMQ7QCjQpG/t
-         w4qyqjcRfJZqab0Xz4xB8YvvRwPd47haN++ByJuOhkpue+Dm7EhMsHekERXENE8plwQF
-         e7Xw==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=EqawCVMNR5ggkVvM3Y8TbC/GggOP05ogNA2z4zWjBzA=;
+        b=W2ZnE/pxltTX4kXiXH96rp142zmXmi2sD4mi6KTNLHIp3seAnOcVlhN0dqf6iMWn4x
+         RXqhV3hcByajFyP9UJKzVpbTZspbLawweQJWhwe3YVlJ9g6iW/KPDZSemRIltIlOeQd+
+         D4/1LhNRdtgfjVEKONKun8bNqwtRTvgHPDMkXzVPA0J2HEQXzUN6X9+92PixFL6TLsS7
+         w4BHqL/BJNcqkSmJdFS9cLDFS3btD9pC/aDz8ko6Nyg3I7POzUYsEM+U4ZGMWiJP0nM4
+         8po2viFqcGLQLq9Y1lRGyNujerL0eRYMcYunMrGhW5kYC79Y93PRe8Kc2lL8EtKmxnM1
+         MPAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=GPFUyFS+jWxWApicUeRc6xCKGl96d1tW08U0ZTQLvpw=;
-        b=BgmXIrCZ5VCDI2PH9ftytTvbJ0CGYj3UdFIvp9bvEcAAF7fmz9tWmWMZMKpVMxVywr
-         9VjiWsIw0xlmAS1+MPy++iPfCZQ3NoFhLtTEPCPZlrbYjEm7/iSxC5vNreIC+HhQMKQO
-         VzY/hXN4LCXNO8QzrI56PKkYvLadcN6cIYA11/Yw80ciyzKCLlso0xL2tkHOJQYYPiqJ
-         tJGEUS86tG60LKGm1WUjXIozpUX1wLMoCHs6cJdG1N5WuLsAXYOY8iiHPUzPSdnCWzKQ
-         n8VCvimAZuQDq7yk8hdbSLEqOb2rgi1wnSqkDDr+truPse1XTFYtGWYdinPL/KuFLSDW
-         37AQ==
-X-Gm-Message-State: APjAAAXnECLciMOH2OSbKjcTgbRd/2J/IqG1G+mPe/Y0tv2M6zEUqITe
-        VKj4NcWrFuitYTzcR4Kxvos=
-X-Google-Smtp-Source: APXvYqx4EIeEWxvx0KOKvBiNd0PiW51FuV1hVaMX9RjEdM9M5AGImBJnPhbknuyJOJOiPT3hk/34NA==
-X-Received: by 2002:a7b:c5c3:: with SMTP id n3mr22762914wmk.101.1566259213648;
-        Mon, 19 Aug 2019 17:00:13 -0700 (PDT)
-Received: from localhost.localdomain ([188.25.91.80])
-        by smtp.gmail.com with ESMTPSA id c9sm3814064wrv.40.2019.08.19.17.00.12
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=EqawCVMNR5ggkVvM3Y8TbC/GggOP05ogNA2z4zWjBzA=;
+        b=X1yGujbauJk/rIzsUTOv0rk2UbuJ5x7Mh6ef4BVfVRs5ds2WonDaPXB0RYInSE7Gi1
+         6uRLrzMioRpSWYfVrj2R3uMIb/AgHoaDuidD90EKtqIF8duYH7f29i3xEu/UmRq0UGFu
+         09NQRuqrJ1lbtaEhH233A2iSv2Dc+DyPf1VdjQlnyQ2BtA9Mwfzck5CnwV5G9hos9VVU
+         lSFzi2sEXR/vkLm9A1G09X2uVpdol4UuDGBdO26et4+O5i5xwK9amDZavc41i3+ORVjR
+         wTMFGlv4azoKN9SFaPnfKYUnOZKnBNgXVzB85h70l/o0ZraKaIXWjNu74HDepVc+s93h
+         vGDw==
+X-Gm-Message-State: APjAAAW30NIs69oaqfRULEhBtULbP0PPg1ldML60ny04fVSTDJOdCeJS
+        1t4aNSkf9B9ISpY9icKCvYLyhQ==
+X-Google-Smtp-Source: APXvYqwSt09bYAD/GaUVUI3fSb7OlzA8CcLokwjOvHc1e2U7D7S/CCp818w1Esqb0twyjrhfoLDxUw==
+X-Received: by 2002:a0c:b209:: with SMTP id x9mr2784510qvd.217.1566259502266;
+        Mon, 19 Aug 2019 17:05:02 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id o27sm7646908qkm.37.2019.08.19.17.05.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 17:00:13 -0700 (PDT)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        idosch@idosch.org, roopa@cumulusnetworks.com,
-        nikolay@cumulusnetworks.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 6/6] net: dsa: tag_8021q: Restore bridge pvid when enabling vlan_filtering
-Date:   Tue, 20 Aug 2019 03:00:02 +0300
-Message-Id: <20190820000002.9776-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190820000002.9776-1-olteanv@gmail.com>
-References: <20190820000002.9776-1-olteanv@gmail.com>
+        Mon, 19 Aug 2019 17:05:02 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 17:04:53 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Thomas Bogendoerfer <tbogendoerfer@suse.de>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 11/17] net: sgi: ioc3-eth: no need to stop queue
+ set_multicast_list
+Message-ID: <20190819170440.37ff18d4@cakuba.netronome.com>
+In-Reply-To: <20190819163144.3478-12-tbogendoerfer@suse.de>
+References: <20190819163144.3478-1-tbogendoerfer@suse.de>
+        <20190819163144.3478-12-tbogendoerfer@suse.de>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bridge core assumes that enabling/disabling vlan_filtering will
-translate into the simple toggling of a flag for switchdev drivers.
+On Mon, 19 Aug 2019 18:31:34 +0200, Thomas Bogendoerfer wrote:
+> netif_stop_queue()/netif_wake_qeue() aren't needed for changing
+> multicast filters. Use spinlocks instead for proper protection
+> of private struct.
+>=20
+> Signed-off-by: Thomas Bogendoerfer <tbogendoerfer@suse.de>
+> ---
+>  drivers/net/ethernet/sgi/ioc3-eth.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/sgi/ioc3-eth.c b/drivers/net/ethernet/s=
+gi/ioc3-eth.c
+> index d862f28887f9..7f85a3bfef14 100644
+> --- a/drivers/net/ethernet/sgi/ioc3-eth.c
+> +++ b/drivers/net/ethernet/sgi/ioc3-eth.c
+> @@ -1542,8 +1542,7 @@ static void ioc3_set_multicast_list(struct net_devi=
+ce *dev)
+>  	struct netdev_hw_addr *ha;
+>  	u64 ehar =3D 0;
+> =20
+> -	netif_stop_queue(dev);				/* Lock out others. */
+> -
+> +	spin_lock_irq(&ip->ioc3_lock);
 
-That is clearly not the case for sja1105, which alters the VLAN table
-and the pvids in order to obtain port separation in standalone mode.
+What does this lock protect? =F0=9F=A4=94 No question that stopping TX queu=
+es
+makes little sense, but this function is only called from
+ndo_set_rx_mode(), so with rtnl_lock held.=20
 
-So, since the bridge will not call any vlan operation through switchdev
-after enabling vlan_filtering, we need to ensure we're in a functional
-state ourselves.
+I thought it may protect ip->emcr, but that one is accessed with no
+locking from the ioc3_timer() -> ioc3_setup_duplex() path..
 
-Hence read the pvid that the bridge is aware of, and program that into
-our ports.
-
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- net/dsa/tag_8021q.c | 32 +++++++++++++++++++++++++++++++-
- 1 file changed, 31 insertions(+), 1 deletion(-)
-
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 67a1bc635a7b..6423beb1efcd 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -93,6 +93,33 @@ int dsa_8021q_rx_source_port(u16 vid)
- }
- EXPORT_SYMBOL_GPL(dsa_8021q_rx_source_port);
- 
-+static int dsa_port_restore_pvid(struct dsa_switch *ds, int port)
-+{
-+	struct bridge_vlan_info vinfo;
-+	struct net_device *slave;
-+	u16 pvid;
-+	int err;
-+
-+	if (!dsa_is_user_port(ds, port))
-+		return 0;
-+
-+	slave = ds->ports[port].slave;
-+
-+	err = br_vlan_get_pvid(slave, &pvid);
-+	if (err < 0) {
-+		dev_err(ds->dev, "Couldn't determine bridge PVID\n");
-+		return err;
-+	}
-+
-+	err = br_vlan_get_info(slave, pvid, &vinfo);
-+	if (err < 0) {
-+		dev_err(ds->dev, "Couldn't determine PVID attributes\n");
-+		return err;
-+	}
-+
-+	return dsa_port_vid_add(&ds->ports[port], pvid, vinfo.flags);
-+}
-+
- /* RX VLAN tagging (left) and TX VLAN tagging (right) setup shown for a single
-  * front-panel switch port (here swp0).
-  *
-@@ -223,7 +250,10 @@ int dsa_port_setup_8021q_tagging(struct dsa_switch *ds, int port, bool enabled)
- 		return err;
- 	}
- 
--	return 0;
-+	if (!enabled)
-+		err = dsa_port_restore_pvid(ds, port);
-+
-+	return err;
- }
- EXPORT_SYMBOL_GPL(dsa_port_setup_8021q_tagging);
- 
--- 
-2.17.1
+>  	if (dev->flags & IFF_PROMISC) {			/* Set promiscuous.  */
+>  		ip->emcr |=3D EMCR_PROMISC;
+>  		writel(ip->emcr, &regs->emcr);
+> @@ -1572,7 +1571,7 @@ static void ioc3_set_multicast_list(struct net_devi=
+ce *dev)
+>  		writel(ip->ehar_l, &regs->ehar_l);
+>  	}
+> =20
+> -	netif_wake_queue(dev);			/* Let us get going again. */
+> +	spin_unlock_irq(&ip->ioc3_lock);
+>  }
+> =20
+>  module_pci_driver(ioc3_driver);
 
