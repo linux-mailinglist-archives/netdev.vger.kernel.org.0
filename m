@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5071596C63
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D5C0B96C6A
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731199AbfHTWd4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:56 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36986 "EHLO
+        id S1731205AbfHTWd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:59 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36988 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730981AbfHTWdC (ORCPT
+        with ESMTP id S1730983AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Zi03AHwAAmTpHDRqyNtFRC9dOLO7obHgqglUc3WJ1ZI=; b=hi64jpA4/bQxmlT+QeTiHbpikf
-        ZZ3FtkRnyItYX1/hSxi94LL2ClLiSZ8cvPpuf3PpWtpjl2QAU4VDnONviPirKDmiZu/se7UKwA4zf
-        JccXPoWQive1KWTqh1s0krVogn/3y+eYfEhMlrIr0TG1QcTZxPwiqD4vkZaPSBf4cPP3I6ltDtFtp
-        vqTet0qD45vhzP96E2E/xkKLLOjyUS3J8iL5Y2zdJ/mpwJ2bjc7rS2SSHu2aqbC1P8HUalGMfYeCA
-        OYfScgfcRRfQIzFRLPIdGVEN2wDKCwtoqAYTZYZymIzNxEzNXT8yoU5lYfyfZ/vEG8LnqFYEqPmoF
-        SqYCM+gw==;
+        bh=waO2JwpBXdWHyRZFOnonh6emzAyL3KyxKm8YUitOyec=; b=FMYL65xn2z9b/O6U7QHAESO6wm
+        +62ikzccBeuT/AP/SWhttGbDbcxq4G1yEUPlhWS5js+fwdplKFOva4ojF+rNejckvsBc5u7uu1oDU
+        S7Ac6xEQFO4h5mKqii5hsZ/aEQtAPpbpHHKOrC6l2/nAhhRXuVSulxChV1rhcBQG+X4F+tMJuCusE
+        Q9/TY29ifodNUf2Fm301y2hQuhtF+KMJEU8NER6tpavFFR8hTlMBms0Z1w5LuZtJa9KasDBByAZj4
+        BmbGTyUJDwa4gkDxBbDupHDky4d4JrmRU73FbD72D5soOb+EHwkUs9ktGNNeEUOKmZg7lkcvUSyKl
+        OHFiokqA==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005qr-DJ; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005qx-Eg; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 14/38] tap: Convert minor_idr to XArray
-Date:   Tue, 20 Aug 2019 15:32:35 -0700
-Message-Id: <20190820223259.22348-15-willy@infradead.org>
+Subject: [PATCH 15/38] nfp: Convert internal ports to XArray
+Date:   Tue, 20 Aug 2019 15:32:36 -0700
+Message-Id: <20190820223259.22348-16-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,115 +43,140 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-The minor_lock can be removed as the XArray contains its own spinlock.
-I suspect the GFP_ATOMIC allocation could be GFP_KERNEL, but I couldn't
-prove it.
+Since nfp_fl_internal_ports was only an IDR and the lock to protect it,
+replace the entire data structure with an XArray (which has an embedded
+lock).
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/tap.c | 32 +++++++++++++-------------------
- 1 file changed, 13 insertions(+), 19 deletions(-)
+ .../net/ethernet/netronome/nfp/flower/main.c  | 44 +++++++------------
+ .../net/ethernet/netronome/nfp/flower/main.h  | 12 +----
+ 2 files changed, 17 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/net/tap.c b/drivers/net/tap.c
-index dd614c2cd994..81b06a21d96c 100644
---- a/drivers/net/tap.c
-+++ b/drivers/net/tap.c
-@@ -14,9 +14,9 @@
- #include <linux/slab.h>
- #include <linux/wait.h>
- #include <linux/cdev.h>
--#include <linux/idr.h>
- #include <linux/fs.h>
- #include <linux/uio.h>
-+#include <linux/xarray.h>
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
+index 7a20447cca19..706ae41645f5 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.c
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
+@@ -40,35 +40,31 @@ nfp_flower_lookup_internal_port_id(struct nfp_flower_priv *priv,
+ 				   struct net_device *netdev)
+ {
+ 	struct net_device *entry;
+-	int i, id = 0;
++	unsigned long i;
  
- #include <net/net_namespace.h>
- #include <net/rtnetlink.h>
-@@ -106,8 +106,7 @@ static LIST_HEAD(major_list);
- struct major_info {
- 	struct rcu_head rcu;
- 	dev_t major;
--	struct idr minor_idr;
--	spinlock_t minor_lock;
-+	struct xarray tap_devs;
- 	const char *device_name;
- 	struct list_head next;
- };
-@@ -414,19 +413,16 @@ int tap_get_minor(dev_t major, struct tap_dev *tap)
- 		goto unlock;
- 	}
+-	rcu_read_lock();
+-	idr_for_each_entry(&priv->internal_ports.port_ids, entry, i)
+-		if (entry == netdev) {
+-			id = i;
+-			break;
+-		}
+-	rcu_read_unlock();
++	xa_for_each(&priv->internal_ports, i, entry) {
++		if (entry == netdev)
++			return i;
++	}
  
--	spin_lock(&tap_major->minor_lock);
--	retval = idr_alloc(&tap_major->minor_idr, tap, 1, TAP_NUM_DEVS, GFP_ATOMIC);
--	if (retval >= 0) {
--		tap->minor = retval;
--	} else if (retval == -ENOSPC) {
-+	retval = xa_alloc(&tap_major->tap_devs, &tap->minor, tap,
-+			XA_LIMIT(0, TAP_NUM_DEVS), GFP_ATOMIC);
-+	if (retval == -EBUSY) {
- 		netdev_err(tap->dev, "Too many tap devices\n");
- 		retval = -EINVAL;
- 	}
--	spin_unlock(&tap_major->minor_lock);
- 
- unlock:
- 	rcu_read_unlock();
--	return retval < 0 ? retval : 0;
-+	return retval;
+-	return id;
++	return 0;
  }
- EXPORT_SYMBOL_GPL(tap_get_minor);
  
-@@ -440,12 +436,12 @@ void tap_free_minor(dev_t major, struct tap_dev *tap)
- 		goto unlock;
- 	}
+ static int
+ nfp_flower_get_internal_port_id(struct nfp_app *app, struct net_device *netdev)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+-	int id;
++	int err, id;
  
--	spin_lock(&tap_major->minor_lock);
-+	xa_lock(&tap_major->tap_devs);
- 	if (tap->minor) {
--		idr_remove(&tap_major->minor_idr, tap->minor);
-+		__xa_erase(&tap_major->tap_devs, tap->minor);
- 		tap->minor = 0;
- 	}
--	spin_unlock(&tap_major->minor_lock);
-+	xa_unlock(&tap_major->tap_devs);
+ 	id = nfp_flower_lookup_internal_port_id(priv, netdev);
+ 	if (id > 0)
+ 		return id;
  
- unlock:
- 	rcu_read_unlock();
-@@ -465,13 +461,13 @@ static struct tap_dev *dev_get_by_tap_file(int major, int minor)
- 		goto unlock;
- 	}
+-	idr_preload(GFP_ATOMIC);
+-	spin_lock_bh(&priv->internal_ports.lock);
+-	id = idr_alloc(&priv->internal_ports.port_ids, netdev,
+-		       NFP_MIN_INT_PORT_ID, NFP_MAX_INT_PORT_ID, GFP_ATOMIC);
+-	spin_unlock_bh(&priv->internal_ports.lock);
+-	idr_preload_end();
++	err = xa_alloc_bh(&priv->internal_ports, &id, netdev,
++		       XA_LIMIT(NFP_MIN_INT_PORT_ID, NFP_MAX_INT_PORT_ID),
++		       GFP_ATOMIC);
++	if (err < 0)
++		return err;
  
--	spin_lock(&tap_major->minor_lock);
--	tap = idr_find(&tap_major->minor_idr, minor);
-+	xa_lock(&tap_major->tap_devs);
-+	tap = xa_load(&tap_major->tap_devs, minor);
- 	if (tap) {
- 		dev = tap->dev;
- 		dev_hold(dev);
- 	}
--	spin_unlock(&tap_major->minor_lock);
-+	xa_unlock(&tap_major->tap_devs);
+ 	return id;
+ }
+@@ -95,13 +91,8 @@ static struct net_device *
+ nfp_flower_get_netdev_from_internal_port_id(struct nfp_app *app, int port_id)
+ {
+ 	struct nfp_flower_priv *priv = app->priv;
+-	struct net_device *netdev;
+-
+-	rcu_read_lock();
+-	netdev = idr_find(&priv->internal_ports.port_ids, port_id);
+-	rcu_read_unlock();
  
- unlock:
- 	rcu_read_unlock();
-@@ -1322,8 +1318,7 @@ static int tap_list_add(dev_t major, const char *device_name)
+-	return netdev;
++	return xa_load(&priv->internal_ports, port_id);
+ }
  
- 	tap_major->major = MAJOR(major);
+ static void
+@@ -114,9 +105,7 @@ nfp_flower_free_internal_port_id(struct nfp_app *app, struct net_device *netdev)
+ 	if (!id)
+ 		return;
  
--	idr_init(&tap_major->minor_idr);
--	spin_lock_init(&tap_major->minor_lock);
-+	xa_init_flags(&tap_major->tap_devs, XA_FLAGS_ALLOC1);
+-	spin_lock_bh(&priv->internal_ports.lock);
+-	idr_remove(&priv->internal_ports.port_ids, id);
+-	spin_unlock_bh(&priv->internal_ports.lock);
++	xa_erase_bh(&priv->internal_ports, id);
+ }
  
- 	tap_major->device_name = device_name;
+ static int
+@@ -133,13 +122,12 @@ nfp_flower_internal_port_event_handler(struct nfp_app *app,
  
-@@ -1369,7 +1364,6 @@ void tap_destroy_cdev(dev_t major, struct cdev *tap_cdev)
- 	unregister_chrdev_region(major, TAP_NUM_DEVS);
- 	list_for_each_entry_safe(tap_major, tmp, &major_list, next) {
- 		if (tap_major->major == MAJOR(major)) {
--			idr_destroy(&tap_major->minor_idr);
- 			list_del_rcu(&tap_major->next);
- 			kfree_rcu(tap_major, rcu);
- 		}
+ static void nfp_flower_internal_port_init(struct nfp_flower_priv *priv)
+ {
+-	spin_lock_init(&priv->internal_ports.lock);
+-	idr_init(&priv->internal_ports.port_ids);
++	xa_init_flags(&priv->internal_ports, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_BH);
+ }
+ 
+ static void nfp_flower_internal_port_cleanup(struct nfp_flower_priv *priv)
+ {
+-	idr_destroy(&priv->internal_ports.port_ids);
++	xa_destroy(&priv->internal_ports);
+ }
+ 
+ static struct nfp_flower_non_repr_priv *
+diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
+index 31d94592a7c0..735e995ae740 100644
+--- a/drivers/net/ethernet/netronome/nfp/flower/main.h
++++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
+@@ -119,16 +119,6 @@ struct nfp_fl_lag {
+ 	struct sk_buff_head retrans_skbs;
+ };
+ 
+-/**
+- * struct nfp_fl_internal_ports - Flower APP priv data for additional ports
+- * @port_ids:	Assignment of ids to any additional ports
+- * @lock:	Lock for extra ports list
+- */
+-struct nfp_fl_internal_ports {
+-	struct idr port_ids;
+-	spinlock_t lock;
+-};
+-
+ /**
+  * struct nfp_flower_priv - Flower APP per-vNIC priv data
+  * @app:		Back pointer to app
+@@ -191,7 +181,7 @@ struct nfp_flower_priv {
+ 	struct list_head non_repr_priv;
+ 	unsigned int active_mem_unit;
+ 	unsigned int total_mem_units;
+-	struct nfp_fl_internal_ports internal_ports;
++	struct xarray internal_ports;
+ 	struct delayed_work qos_stats_work;
+ 	unsigned int qos_rate_limiters;
+ 	spinlock_t qos_stats_lock; /* Protect the qos stats */
 -- 
 2.23.0.rc1
 
