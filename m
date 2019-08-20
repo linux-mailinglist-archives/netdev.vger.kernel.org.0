@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F266796C15
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:21:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 146B596C19
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:24:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730957AbfHTWVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:21:19 -0400
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:2906 "EHLO
+        id S1730957AbfHTWWW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:22:22 -0400
+Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:22710 "EHLO
         mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727358AbfHTWVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:21:19 -0400
-Received: from pps.filterd (m0170389.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMFDso015677;
-        Tue, 20 Aug 2019 18:21:17 -0400
+        by vger.kernel.org with ESMTP id S1727358AbfHTWWW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:22:22 -0400
+Received: from pps.filterd (m0170390.ppops.net [127.0.0.1])
+        by mx0a-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMLKUh031014;
+        Tue, 20 Aug 2019 18:22:21 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dellteam.com; h=from : to : cc :
  subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=smtpout1; bh=B+wXgXgTvN363It3lsd6rFsNGvZA0bT1QIBC3//VrxE=;
- b=FAg8ZxlCtzuDLEDiRTUgY2+YnIvn+T7FkoRG+AMawpBnPjIcU8mx3dfx8qGQgfWIoscL
- 26jpiBsCo8ltV/9D0qWsJ9d/gprui8nHqcMU0z6YTVzr+PV6eu8RazC5T+w4XJVWHJ7C
- mJb1jd2hOi79e6qVyX5rkjOIkQHw9dOYq7v4L7sp1eif7GQz5oicznj1wAdtI3QNf7Dh
- tjNuyS/LFKoq0hRjJWyLZUrtTlQTSy9AG6KIsDsgpuszoVg//j3A9KEDtB0JNw70z2pf
- HCi4EAkEddVgv9g7QI9UFcUVqt9RM83wmCxj4rHDLR9A0oMyKxgRpFQA4MJicY5veGdu rQ== 
-Received: from mx0b-00154901.pphosted.com (mx0b-00154901.pphosted.com [67.231.157.37])
-        by mx0a-00154904.pphosted.com with ESMTP id 2ug0d16b0h-1
+ mime-version; s=smtpout1; bh=qmAnrRGHMMYWyrXBxMC7oZF7obTugelH4zmgxwm12Tw=;
+ b=fBFU8ACzu3N/+3GeYJIqiJqM1S2yt2qe5gv9P2SAioChL879kGvrUGkhagX4f1PjrXOF
+ vVq3Hz+FAiQ4bMZs6hj2EOF5N3ZFHeK94yxfg1Kinn7m1hGXLAI9nH8FjXLdVsSUtKDm
+ RDxfcuyPwjkrd+gPGJTewp7g50RmPPUOtrc6TXPyO+L+Jh1XpOcQWnAqwo08NNbuzSjJ
+ gjTXAAiQdUgAdRx3LxajrFvoY88grmC8rHrlrgcgcqy9zhZXaV8RkfEVTLE/zCkuV8zA
+ LAze0ZvU96E5i2homy1pCHnvp4/RmPO126OIQUIr5DSd3VYwLeq0MoynbNZRFlNkVn1h KQ== 
+Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
+        by mx0a-00154904.pphosted.com with ESMTP id 2ugfdm2vv5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Aug 2019 18:21:06 -0400
-Received: from pps.filterd (m0144104.ppops.net [127.0.0.1])
-        by mx0b-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMI5S2026865;
-        Tue, 20 Aug 2019 18:21:05 -0400
-Received: from ausc60ps301.us.dell.com (ausc60ps301.us.dell.com [143.166.148.206])
-        by mx0b-00154901.pphosted.com with ESMTP id 2ugpb7jjju-1
+        Tue, 20 Aug 2019 18:22:21 -0400
+Received: from pps.filterd (m0142693.ppops.net [127.0.0.1])
+        by mx0a-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMI47i097576;
+        Tue, 20 Aug 2019 18:22:21 -0400
+Received: from ausc60pc101.us.dell.com (ausc60pc101.us.dell.com [143.166.85.206])
+        by mx0a-00154901.pphosted.com with ESMTP id 2ugp98tt15-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 20 Aug 2019 18:21:05 -0400
-X-LoopCount0: from 10.166.132.132
+        Tue, 20 Aug 2019 18:22:21 -0400
+X-LoopCount0: from 10.166.132.128
 X-PREM-Routing: D-Outbound
 X-IronPort-AV: E=Sophos;i="5.60,349,1549951200"; 
-   d="scan'208";a="1346990097"
+   d="scan'208";a="1455945352"
 From:   <Charles.Hyde@dellteam.com>
 To:     <linux-usb@vger.kernel.org>, <linux-acpi@vger.kernel.org>
 CC:     <gregkh@linuxfoundation.org>, <Mario.Limonciello@dell.com>,
         <oliver@neukum.org>, <netdev@vger.kernel.org>,
         <nic_swsd@realtek.com>
-Subject: [RFC 2/4] Allow cdc_ncm to set MAC address in hardware
-Thread-Topic: [RFC 2/4] Allow cdc_ncm to set MAC address in hardware
-Thread-Index: AQHVV6VMi2mBgTVez06jTeC7fFTbBw==
-Date:   Tue, 20 Aug 2019 22:21:03 +0000
-Message-ID: <1566339663476.54366@Dellteam.com>
+Subject: [RFC 3/4] Move ACPI functionality out of r8152 driver
+Thread-Topic: [RFC 3/4] Move ACPI functionality out of r8152 driver
+Thread-Index: AQHVV6Wmg1QvoyTvokGSVMHHZMBMTw==
+Date:   Tue, 20 Aug 2019 22:22:18 +0000
+Message-ID: <1566339738195.2913@Dellteam.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -67,138 +67,127 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=150
  suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
  lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908200204
+ definitions=main-1908200205
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch adds support for pushing a MAC address out to USB based=0A=
-ethernet controllers driven by cdc_ncm.  With this change, ifconfig can=0A=
-now set the device's MAC address.  For example, the Dell Universal Dock=0A=
-D6000 is driven by cdc_ncm.  The D6000 can now have its MAC address set=0A=
-by ifconfig, as it can be done in Windows.  This was tested with a D6000=0A=
-using ifconfig.=0A=
+This change moves ACPI functionality out of the Realtek r8152 driver to=0A=
+its own source and header file, making it available to other drivers as=0A=
+needed now and into the future.  At the time this ACPI snippet was=0A=
+introduced in 2016, only the Realtek driver made use of it in support of=0A=
+Dell's enterprise IT policy efforts.  There comes now a need for this=0A=
+same support in a different driver, also in support of Dell's enterprise=0A=
+IT policy efforts.=0A=
 =0A=
 Signed-off-by: Charles Hyde <charles.hyde@dellteam.com>=0A=
 Cc: Mario Limonciello <mario.limonciello@dell.com>=0A=
-Cc: Oliver Neukum <oliver@neukum.org>=0A=
-Cc: netdev@vger.kernel.org=0A=
+Cc: Realtek linux nic maintainers <nic_swsd@realtek.com>=0A=
 Cc: linux-usb@vger.kernel.org=0A=
+Cc: linux-acpi@vger.kernel.org=0A=
 ---=0A=
- drivers/net/usb/cdc_ncm.c  | 20 +++++++++++++++++++-=0A=
- drivers/net/usb/usbnet.c   | 37 ++++++++++++++++++++++++++++---------=0A=
- include/linux/usb/usbnet.h |  1 +=0A=
- 3 files changed, 48 insertions(+), 10 deletions(-)=0A=
+ drivers/net/usb/r8152.c | 44 ++++-------------------------------------=0A=
+ lib/Makefile            |  3 ++-=0A=
+ 2 files changed, 6 insertions(+), 41 deletions(-)=0A=
 =0A=
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c=0A=
-index 50c05d0f44cb..f77c8672f972 100644=0A=
---- a/drivers/net/usb/cdc_ncm.c=0A=
-+++ b/drivers/net/usb/cdc_ncm.c=0A=
-@@ -750,6 +750,24 @@ int cdc_ncm_change_mtu(struct net_device *net, int new=
-_mtu)=0A=
- }=0A=
- EXPORT_SYMBOL_GPL(cdc_ncm_change_mtu);=0A=
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c=0A=
+index 0cc03a9ff545..b1dba3400b74 100644=0A=
+--- a/drivers/net/usb/r8152.c=0A=
++++ b/drivers/net/usb/r8152.c=0A=
+@@ -23,6 +23,7 @@=0A=
+ #include <linux/usb/cdc.h>=0A=
+ #include <linux/suspend.h>=0A=
+ #include <linux/acpi.h>=0A=
++#include <acpi/acpi_mac_passthru.h>=0A=
  =0A=
-+/* Provide method to push MAC address to the USB device's ethernet control=
-ler.=0A=
-+ */=0A=
-+int cdc_ncm_set_mac_addr(struct net_device *net, void *p)=0A=
-+{=0A=
-+	struct usbnet *dev =3D netdev_priv(net);=0A=
-+	struct sockaddr *addr =3D p;=0A=
-+=0A=
-+	memcpy(dev->net->dev_addr, addr->sa_data, ETH_ALEN);=0A=
-+	/*=0A=
-+	 * Try to push the MAC address out to the device.  Ignore any errors,=0A=
-+	 * to be compatible with prior versions of this source.=0A=
-+	 */=0A=
-+	usbnet_set_ethernet_addr(dev);=0A=
-+=0A=
-+	return eth_mac_addr(net, p);=0A=
-+}=0A=
-+EXPORT_SYMBOL_GPL(cdc_ncm_set_mac_addr);=0A=
-+=0A=
- static const struct net_device_ops cdc_ncm_netdev_ops =3D {=0A=
- 	.ndo_open	     =3D usbnet_open,=0A=
- 	.ndo_stop	     =3D usbnet_stop,=0A=
-@@ -757,7 +775,7 @@ static const struct net_device_ops cdc_ncm_netdev_ops =
-=3D {=0A=
- 	.ndo_tx_timeout	     =3D usbnet_tx_timeout,=0A=
- 	.ndo_get_stats64     =3D usbnet_get_stats64,=0A=
- 	.ndo_change_mtu	     =3D cdc_ncm_change_mtu,=0A=
--	.ndo_set_mac_address =3D eth_mac_addr,=0A=
-+	.ndo_set_mac_address =3D cdc_ncm_set_mac_addr,=0A=
- 	.ndo_validate_addr   =3D eth_validate_addr,=0A=
- };=0A=
- =0A=
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c=0A=
-index 72514c46b478..72bdac34b0ee 100644=0A=
---- a/drivers/net/usb/usbnet.c=0A=
-+++ b/drivers/net/usb/usbnet.c=0A=
-@@ -149,20 +149,39 @@ int usbnet_get_ethernet_addr(struct usbnet *dev, int =
-iMACAddress)=0A=
- 	int 		tmp =3D -1, ret;=0A=
- 	unsigned char	buf [13];=0A=
- =0A=
--	ret =3D usb_string(dev->udev, iMACAddress, buf, sizeof buf);=0A=
--	if (ret =3D=3D 12)=0A=
--		tmp =3D hex2bin(dev->net->dev_addr, buf, 6);=0A=
--	if (tmp < 0) {=0A=
--		dev_dbg(&dev->udev->dev,=0A=
--			"bad MAC string %d fetch, %d\n", iMACAddress, tmp);=0A=
--		if (ret >=3D 0)=0A=
--			ret =3D -EINVAL;=0A=
--		return ret;=0A=
-+	ret =3D usb_get_address(dev->udev, buf);=0A=
-+	if (ret =3D=3D 6)=0A=
-+		memcpy(dev->net->dev_addr, buf, 6);=0A=
-+	else if (ret < 0) {=0A=
-+		ret =3D usb_string(dev->udev, iMACAddress, buf, sizeof buf);=0A=
-+		if (ret =3D=3D 12)=0A=
-+			tmp =3D hex2bin(dev->net->dev_addr, buf, 6);=0A=
-+		if (tmp < 0) {=0A=
-+			dev_dbg(&dev->udev->dev,=0A=
-+				"bad MAC string %d fetch, %d\n", iMACAddress,=0A=
-+				tmp);=0A=
-+			if (ret >=3D 0)=0A=
-+				ret =3D -EINVAL;=0A=
-+			return ret;=0A=
-+		}=0A=
- 	}=0A=
- 	return 0;=0A=
- }=0A=
- EXPORT_SYMBOL_GPL(usbnet_get_ethernet_addr);=0A=
- =0A=
-+int usbnet_set_ethernet_addr(struct usbnet *dev)=0A=
-+{=0A=
-+	int ret;=0A=
-+=0A=
-+	ret =3D usb_set_address(dev->udev, dev->net->dev_addr);=0A=
-+	if (ret < 0) {=0A=
-+		dev_dbg(&dev->udev->dev,=0A=
-+			"bad MAC address put, %d\n", ret);=0A=
-+	}=0A=
-+	return ret;=0A=
-+}=0A=
-+EXPORT_SYMBOL_GPL(usbnet_set_ethernet_addr);=0A=
-+=0A=
- static void intr_complete (struct urb *urb)=0A=
+ /* Information for net-next */=0A=
+ #define NETNEXT_VERSION		"09"=0A=
+@@ -1175,12 +1176,7 @@ static int rtl8152_set_mac_address(struct net_device=
+ *netdev, void *p)=0A=
+  */=0A=
+ static int vendor_mac_passthru_addr_read(struct r8152 *tp, struct sockaddr=
+ *sa)=0A=
  {=0A=
- 	struct usbnet	*dev =3D urb->context;=0A=
-diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h=0A=
-index d8860f2d0976..f2b2c5ab5493 100644=0A=
---- a/include/linux/usb/usbnet.h=0A=
-+++ b/include/linux/usb/usbnet.h=0A=
-@@ -258,6 +258,7 @@ extern int usbnet_change_mtu(struct net_device *net, in=
-t new_mtu);=0A=
+-	acpi_status status;=0A=
+-	struct acpi_buffer buffer =3D { ACPI_ALLOCATE_BUFFER, NULL };=0A=
+-	union acpi_object *obj;=0A=
+-	int ret =3D -EINVAL;=0A=
+ 	u32 ocp_data;=0A=
+-	unsigned char buf[6];=0A=
  =0A=
- extern int usbnet_get_endpoints(struct usbnet *, struct usb_interface *);=
+ 	/* test for -AD variant of RTL8153 */=0A=
+ 	ocp_data =3D ocp_read_word(tp, MCU_TYPE_USB, USB_MISC_0);=0A=
+@@ -1201,39 +1197,7 @@ static int vendor_mac_passthru_addr_read(struct r815=
+2 *tp, struct sockaddr *sa)=0A=
+ 			return -ENODEV;=0A=
+ 		}=0A=
+ 	}=0A=
+-=0A=
+-	/* returns _AUXMAC_#AABBCCDDEEFF# */=0A=
+-	status =3D acpi_evaluate_object(NULL, "\\_SB.AMAC", NULL, &buffer);=0A=
+-	obj =3D (union acpi_object *)buffer.pointer;=0A=
+-	if (!ACPI_SUCCESS(status))=0A=
+-		return -ENODEV;=0A=
+-	if (obj->type !=3D ACPI_TYPE_BUFFER || obj->string.length !=3D 0x17) {=0A=
+-		netif_warn(tp, probe, tp->netdev,=0A=
+-			   "Invalid buffer for pass-thru MAC addr: (%d, %d)\n",=0A=
+-			   obj->type, obj->string.length);=0A=
+-		goto amacout;=0A=
+-	}=0A=
+-	if (strncmp(obj->string.pointer, "_AUXMAC_#", 9) !=3D 0 ||=0A=
+-	    strncmp(obj->string.pointer + 0x15, "#", 1) !=3D 0) {=0A=
+-		netif_warn(tp, probe, tp->netdev,=0A=
+-			   "Invalid header when reading pass-thru MAC addr\n");=0A=
+-		goto amacout;=0A=
+-	}=0A=
+-	ret =3D hex2bin(buf, obj->string.pointer + 9, 6);=0A=
+-	if (!(ret =3D=3D 0 && is_valid_ether_addr(buf))) {=0A=
+-		netif_warn(tp, probe, tp->netdev,=0A=
+-			   "Invalid MAC for pass-thru MAC addr: %d, %pM\n",=0A=
+-			   ret, buf);=0A=
+-		ret =3D -EINVAL;=0A=
+-		goto amacout;=0A=
+-	}=0A=
+-	memcpy(sa->sa_data, buf, 6);=0A=
+-	netif_info(tp, probe, tp->netdev,=0A=
+-		   "Using pass-thru MAC addr %pM\n", sa->sa_data);=0A=
+-=0A=
+-amacout:=0A=
+-	kfree(obj);=0A=
+-	return ret;=0A=
++	return get_acpi_mac_passthru(&tp->intf->dev, sa);=0A=
+ }=0A=
+ =0A=
+ static int determine_ethernet_addr(struct r8152 *tp, struct sockaddr *sa)=
 =0A=
- extern int usbnet_get_ethernet_addr(struct usbnet *, int);=0A=
-+extern int usbnet_set_ethernet_addr(struct usbnet *);=0A=
- extern void usbnet_defer_kevent(struct usbnet *, int);=0A=
- extern void usbnet_skb_return(struct usbnet *, struct sk_buff *);=0A=
- extern void usbnet_unlink_rx_urbs(struct usbnet *);=0A=
+@@ -4309,10 +4273,10 @@ static int rtl8152_post_reset(struct usb_interface =
+*intf)=0A=
+ 	if (!tp)=0A=
+ 		return 0;=0A=
+ =0A=
+-	/* reset the MAC adddress in case of policy change */=0A=
++	/* reset the MAC address in case of policy change */=0A=
+ 	if (determine_ethernet_addr(tp, &sa) >=3D 0) {=0A=
+ 		rtnl_lock();=0A=
+-		dev_set_mac_address (tp->netdev, &sa, NULL);=0A=
++		dev_set_mac_address(tp->netdev, &sa, NULL);=0A=
+ 		rtnl_unlock();=0A=
+ 	}=0A=
+ =0A=
+diff --git a/lib/Makefile b/lib/Makefile=0A=
+index 29c02a924973..a902bec0ac65 100644=0A=
+--- a/lib/Makefile=0A=
++++ b/lib/Makefile=0A=
+@@ -35,7 +35,8 @@ lib-y :=3D ctype.o string.o vsprintf.o cmdline.o \=0A=
+ 	 flex_proportions.o ratelimit.o show_mem.o \=0A=
+ 	 is_single_threaded.o plist.o decompress.o kobject_uevent.o \=0A=
+ 	 earlycpio.o seq_buf.o siphash.o dec_and_lock.o \=0A=
+-	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o=0A=
++	 nmi_backtrace.o nodemask.o win_minmax.o memcat_p.o \=0A=
++	 acpi_mac_passthru.o=0A=
+ =0A=
+ lib-$(CONFIG_PRINTK) +=3D dump_stack.o=0A=
+ lib-$(CONFIG_MMU) +=3D ioremap.o=0A=
 -- =0A=
 2.20.1=0A=
