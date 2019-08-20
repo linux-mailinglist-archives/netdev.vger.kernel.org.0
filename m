@@ -2,167 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98F9996B78
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 23:28:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BA1C996B8E
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 23:39:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730680AbfHTV2G convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Aug 2019 17:28:06 -0400
-Received: from gauss.credativ.com ([93.94.130.89]:58165 "EHLO
-        gauss.credativ.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730430AbfHTV2G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 17:28:06 -0400
-Received: from gauss.credativ.com (localhost [127.0.0.1])
-        by gauss.credativ.com (Postfix) with ESMTP id EACCC1E3CA6;
-        Tue, 20 Aug 2019 23:27:59 +0200 (CEST)
-Received: from openxchange.credativ.com (openxchange.credativ.com [93.94.130.84])
-        (using TLSv1 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by gauss.credativ.com (Postfix) with ESMTPS id CDFD11E3C50;
-        Tue, 20 Aug 2019 23:27:59 +0200 (CEST)
-Received: from openxchange.credativ.com (localhost [127.0.0.1])
-        by openxchange.credativ.com (Postfix) with ESMTPS id 46CkRM4l5Qz2xc4;
-        Tue, 20 Aug 2019 21:27:59 +0000 (UTC)
-Date:   Tue, 20 Aug 2019 23:27:59 +0200 (CEST)
-From:   Sedat Dilek <sedat.dilek@credativ.de>
-Reply-To: Sedat Dilek <sedat.dilek@credativ.de>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Cl=C3=A9ment_Perrochaud?= 
-        <clement.perrochaud@effinnov.com>,
-        Charles Gorand <charles.gorand@effinnov.com>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
-Cc:     Sedat Dilek <sedat.dilek@gmail.com>
-Message-ID: <892584913.468.1566336479573@ox.credativ.com>
-In-Reply-To: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
-References: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
-Subject: Re: [PATCH v4 00/14] NFC: nxp-nci: clean up and new device support
+        id S1730786AbfHTVgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 17:36:05 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:46339 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730649AbfHTVgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 17:36:05 -0400
+Received: by mail-qk1-f195.google.com with SMTP id p13so5846911qkg.13
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 14:36:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=GIVo5Nol5Q2ZzbfZYz8YZhTA7PTrXGn6nTuuh66O9nY=;
+        b=u1FHpOwhPmNtvBHUzMQRL2zXOP/+HSNytgxZD0K2rb9aSKWElmOTtTrKoK5zNU1eSN
+         8+TpAmbd8UEsmVJzLMwT3O5lwU0y+SFaKxApRXxThEYFHQaA4zp2uuEN1fVxfku++NXv
+         abUdLAGaIdjqm1su1OFnYP5aA0dSKz0gwQJTMEoklS7wS4v9VLqa2oE6kyeHX2tFi18n
+         ctCUpCGQSgr6VhV4az6qnCMSz/jZ2ipOKkAUwhgAcc42dHM1+g9KN2UbF0SHbqhbdEjd
+         neFYNpwKH8laFj8UWtWGUO7BeLse7yGdh3GGfHUvzldgNYLHToCF9aMDNIQUIwG1HDHW
+         Smgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=GIVo5Nol5Q2ZzbfZYz8YZhTA7PTrXGn6nTuuh66O9nY=;
+        b=ajHeESYTzRBywFOmrh9O1dEbnRFLiOmKO+FLeMXouL8xH26+6SFDWdGLC/6+IMAb0a
+         NZAVUdYk5VXzghia5UP9ArrNVUeZJqjHYVg85lumpe4sRlz5KnBtrD9to+2TaeodKjZX
+         J97ChDksyxEHvcHsN18C3rLdReUC/b5tVWOeQPIidwc8jVIH41H4+m4c8ggLCjm0dInx
+         1wfk9OyKRAtJ+Zki3YYVUra9p4rxjhebm5FvJ9qAHSYRM3xHYbn5QE3X+ORCUviKSyLH
+         6QKDeMF4YVJIhjswhBfdJcXdONk420JZ8qQH3S3amO6z7AdF5SZMpcOLc4S2uM23dvt0
+         TwpQ==
+X-Gm-Message-State: APjAAAVZDDdai9pdfZFEMKhdHKxDupt5SC0d1gkC+GCnw4rkp9sM47RJ
+        /f0Lqqo/d7rBpAMDamSO2BI=
+X-Google-Smtp-Source: APXvYqzgDgvM5uWH/r1kGokH8YZq7QhL6+LyGC/YVfOj+sMMR/kHDrQO5coJ1JyLQG0j/sQPqLGzzA==
+X-Received: by 2002:a37:a04b:: with SMTP id j72mr27567275qke.277.1566336964436;
+        Tue, 20 Aug 2019 14:36:04 -0700 (PDT)
+Received: from localhost (mtrlpq2853w-lp130-05-67-70-100-98.dsl.bell.ca. [67.70.100.98])
+        by smtp.gmail.com with ESMTPSA id k16sm9141210qki.119.2019.08.20.14.36.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Aug 2019 14:36:03 -0700 (PDT)
+Date:   Tue, 20 Aug 2019 17:36:02 -0400
+Message-ID: <20190820173602.GB10980@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        nikolay@cumulusnetworks.com,
+        "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/6] net: dsa: Delete the VID from the upstream
+ port as well
+In-Reply-To: <CA+h21hrgUxKXmYuzdCPd-GqVyzNnjPAmf-Q29=7=gFJyAfY_gw@mail.gmail.com>
+References: <20190820000002.9776-1-olteanv@gmail.com>
+ <20190820000002.9776-4-olteanv@gmail.com>
+ <20190820015138.GB975@t480s.localdomain>
+ <CA+h21hpdDuoR5nj98EC+-W4HoBs35e_rURS1LD1jJWF5pkty9w@mail.gmail.com>
+ <20190820135213.GB11752@t480s.localdomain>
+ <c359e0ca-c770-19da-7a3a-a3173d36a12d@gmail.com>
+ <CA+h21hqdXP1DnCxwuZOCs4H6MtwzjCnjkBf3ibt+JmnZMEFe=g@mail.gmail.com>
+ <20190820165813.GB8523@t480s.localdomain>
+ <CA+h21hrgUxKXmYuzdCPd-GqVyzNnjPAmf-Q29=7=gFJyAfY_gw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-X-Priority: 3
-Importance: Medium
-X-Mailer: Open-Xchange Mailer v7.10.2-Rev10
-X-Originating-Client: open-xchange-appsuite
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> hat am 29. Juli 2019 15:35 geschrieben:
+On Wed, 21 Aug 2019 00:02:22 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> On Tue, 20 Aug 2019 at 23:58, Vivien Didelot <vivien.didelot@gmail.com> wrote:
+> >
+> > On Tue, 20 Aug 2019 23:40:34 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> > > I don't need this patch. I'm not sure what my thought process was at
+> > > the time I added it to the patchset.
+> > > I'm still interested in getting rid of the vlan bitmap through other
+> > > means (picking up your old changeset). Could you take a look at my
+> > > questions in that thread? I'm not sure I understand what the user
+> > > interaction is supposed to look like for configuring CPU/DSA ports.
+> >
+> > What do you mean by getting rid of the vlan bitmap? What do you need exactly?
 > 
->  
-> Few people reported that some laptops are coming with new ACPI ID for the
-> devices should be supported by nxp-nci driver.
-> 
-> This series adds new ID (patch 2), cleans up the driver from legacy platform
-> data and unifies GPIO request for Device Tree and ACPI (patches 3-6), removes
-> dead or unneeded code (patches 7, 9, 11), constifies ID table (patch 8),
-> removes comma in terminator line for better maintenance (patch 10) and
-> rectifies Kconfig entry (patches 12-14).
-> 
-> It also contains a fix for NFC subsystem as suggested by Sedat.
-> 
-> Series has been tested by Sedat.
-> 
-> Changelog v4:
-> - rebased on top of latest linux-next
-> - appended cover letter
-> - elaborated removal of pr_fmt() in the patch 11 (David)
-> 
-> Andrey Konovalov (1):
->   NFC: fix attrs checks in netlink interface
-> 
-> Andy Shevchenko (11):
->   NFC: nxp-nci: Add NXP1001 to the ACPI ID table
->   NFC: nxp-nci: Get rid of platform data
->   NFC: nxp-nci: Convert to use GPIO descriptor
->   NFC: nxp-nci: Add GPIO ACPI mapping table
->   NFC: nxp-nci: Get rid of code duplication in ->probe()
->   NFC: nxp-nci: Get rid of useless label
->   NFC: nxp-nci: Constify acpi_device_id
->   NFC: nxp-nci: Drop of_match_ptr() use
->   NFC: nxp-nci: Drop comma in terminator lines
->   NFC: nxp-nci: Remove unused macro pr_fmt()
->   NFC: nxp-nci: Remove 'default n' for the core
-> 
-> Sedat Dilek (2):
->   NFC: nxp-nci: Clarify on supported chips
->   NFC: nxp-nci: Fix recommendation for NFC_NXP_NCI_I2C Kconfig
-> 
->  MAINTAINERS                           |   1 -
->  drivers/nfc/nxp-nci/Kconfig           |   7 +-
->  drivers/nfc/nxp-nci/core.c            |   2 -
->  drivers/nfc/nxp-nci/i2c.c             | 134 +++++++-------------------
->  drivers/nfc/nxp-nci/nxp-nci.h         |   1 -
->  include/linux/platform_data/nxp-nci.h |  19 ----
->  net/nfc/netlink.c                     |   6 +-
->  7 files changed, 41 insertions(+), 129 deletions(-)
->  delete mode 100644 include/linux/platform_data/nxp-nci.h
-> 
-> -- 
-> 2.20.1
+> It would be nice to configure the VLAN attributes of the CPU port in
+> another way than the implicit way it is done currently. I don't have a
+> specific use case right now.
 
-Hi Andy,
+So you mean you need a lower level API to configure VLANs on a per-port basis,
+without any logic, like including CPU and DSA links, etc.
 
-I gave that patchset v4 a try against Linux v5.3-rc5.
+The bitmap operations were introduced to simplify the switch drivers in the
+future, since most of them could implement the VLAN operations (add, del)
+in simple functions taking all local members at once.
 
-And played with neard and neard-tools v0.16-0.1 from Debian/buster AMD64.
+But the Linux interface being exclusively based on a per port (slave) logic,
+it is hard to implement right now.
 
-# nfctool --list
+The thing is that CPU ports, as well as DSA links in a multi-chip setup,
+need to be programmed transparently when a given user port is configured,
+hence the notification sent by a port to all switches of the fabric.
 
-# nfctool --enable --device=nfc0
+So I'm not against removing the bitmap logic, actually I'm looking into it
+as well as moving more bridge checking logic into the slave code itself,
+because I'm not a fan of your "Allow proper internal use of VLANs" patch.
 
-# nfctool --list --device=nfc0
-nfc0:
-          Tags: [ tag11 ]
-          Devices: [ ]
-          Protocols: [ Felica MIFARE Jewel ISO-DEP NFC-DEP ]
-          Powered: Yes
-          RF Mode: Initiator
-          lto: 0
-          rw: 0
-          miux: 0
+But you'll need to provide more than "it would be nice" to push in that
+direction, instead of making changes everywhere to make your switch work.
 
-# nfctool --device=nfc0 --poll=Both --sniff --dump-symm
-Start sniffer on nfc0
 
-Start polling on nfc0 as both initiator and target
+Thanks,
 
-Targets found for nfc0
-  Tags: [ tag11 ]
-  Devices: [ ]
-
-But I see in the logs:
-
-# journalctl -u neard.service -f
-Aug 20 23:01:15 iniza neard[6158]: Error while reading NFC bytes
-
-What does this error mean?
-How can I get more informations?
-Can you aid with debugging help?
-
-Thanks in advance.
-
-Regards,
-- Sedat -
-
-[1] https://github.com/nfc-tools/libnfc/issues/455#issuecomment-523185147
-[2] https://github.com/nfc-tools/libnfc/issues/455#issuecomment-523195283
-[3] https://github.com/nfc-tools/libnfc/issues/455#issuecomment-523198304
-
--- 
-Mit freundlichen Grüssen 
-Sedat Dilek
-Telefon: +49 2166 9901-153 
-E-Mail: sedat.dilek@credativ.de
-Internet: https://www.credativ.de/
-
-GPG-Fingerprint: EA6D E17D D269 AC7E 101D C910 476F 2B3B 0AF7 F86B
-
-credativ GmbH, Trompeterallee 108, 41189 Mönchengladbach 
-Handelsregister: Amtsgericht Mönchengladbach HRB 12080 USt-ID-Nummer DE204566209 
-Geschäftsführung: Dr. Michael Meskes, Jörg Folz, Sascha Heuer
-
-Unser Umgang mit personenbezogenen Daten unterliegt folgenden Bestimmungen: 
-https://www.credativ.de/datenschutz/
+	Vivien
