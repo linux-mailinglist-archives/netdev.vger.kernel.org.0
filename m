@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD2D096C48
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B97FD96C43
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731085AbfHTWdF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:05 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:37002 "EHLO
+        id S1731089AbfHTWdG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:06 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:37004 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731019AbfHTWdD (ORCPT
+        with ESMTP id S1731030AbfHTWdD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=jDclIThSgBOsZNs2p2vTHcleRank21BP0iRlpVH7o5A=; b=tMWvCkw8uv4yV3+uG4vJGufBsA
-        hbdihTdlgVllhyvKkHChJRMYUbDwPBUoCxwaabn9IW0ZjYhZR3OVemdDSDB2jOUUBFyjuQavpHcxE
-        CjYKp2hk+rXMjS7254huNcNy6QhpT6ofrPKJm7m1amSzM2ngPP7LbuaCujzxnCo/JyuKDlFaX+7Zp
-        NMNS+qs57f73G0azqS2Y9ws8czKkRw+AUboIaM2BbtZi8Rtf76Vui99KaJOn01n1yuTa1hsTCy3P3
-        X+nYWfgxshvvKg8lGB+bfvsuVCIle/LpTrcdcYj1fPHj4xzofvnrbUYaFUR6uQaCVsj0LKG6y9sUZ
-        2UW8HQnQ==;
+        bh=UEhLKkpgNH4KlH3PQrZsT7mf6194XuRDSRS50YMqg4s=; b=F/NoS4Q1PNdYd5f22AJfrkaupf
+        tMh07YSXKcksyWRd4pzVm/3/xGI0ZbUjVR8Yuk7DKy71o52u3LBxEgNnUGU6aZBg7jHAR0nkwup83
+        Zh4EuECGIXJyyDOAUXIzp3LbhexmseS/EtyB6EZFk7CYLgPXA1H6mQr5KVpERpG/Po3CQtQD2WT+J
+        7tnp8EeLuebIwFanWDhwyLpxIB3ZOzmTsvGNfXzzd+vU2j3V7HG+gV0/4jQoUmox/hjIp4/EKGPgO
+        KDOuxB5G9lE5cFOhjqqKOBMv2TNVEKdU+dkg6x4yiZ1QyGzqQcIDvNV5yR9lE7AZWRAPddTX/4mj1
+        gujQg7NQ==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005re-Rr; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005rj-Tm; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 22/38] sctp: Convert sctp_assocs_id to XArray
-Date:   Tue, 20 Aug 2019 15:32:43 -0700
-Message-Id: <20190820223259.22348-23-willy@infradead.org>
+Subject: [PATCH 23/38] cls_api: Convert tcf_net to XArray
+Date:   Tue, 20 Aug 2019 15:32:44 -0700
+Message-Id: <20190820223259.22348-24-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,171 +43,97 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-This is a fairly straightforward conversion.  The load side could be
-converted to RCU by appropriate handling of races between delete and
-lookup (eg RCU-freeing the sctp_association).  One point to note is
-that sctp_assoc_set_id() will now return 1 if the allocation wrapped;
-I have converted the callers to check for an error using '< 0' instead
-of '!= 0'.
+This module doesn't use the allocating functionality; convert it to a
+plain XArray instead of an allocating one.  I've left struct tcf_net
+in place in case more objects are added to it in future, although
+it now only contains an XArray.  We don't need to call xa_destroy()
+if the array is empty, so I've removed the contents of tcf_net_exit()
+-- if it can be called with entries still in place, then it shoud call
+xa_destroy() instead.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/net/sctp/sctp.h  |  5 ++---
- net/sctp/associola.c     | 34 +++++++++-------------------------
- net/sctp/protocol.c      |  6 ------
- net/sctp/sm_make_chunk.c |  2 +-
- net/sctp/socket.c        |  6 +++---
- 5 files changed, 15 insertions(+), 38 deletions(-)
+ net/sched/cls_api.c | 27 ++++++---------------------
+ 1 file changed, 6 insertions(+), 21 deletions(-)
 
-diff --git a/include/net/sctp/sctp.h b/include/net/sctp/sctp.h
-index 5d60f13d2347..4bcce5d052d1 100644
---- a/include/net/sctp/sctp.h
-+++ b/include/net/sctp/sctp.h
-@@ -47,7 +47,7 @@
- #include <linux/proc_fs.h>
- #include <linux/spinlock.h>
- #include <linux/jiffies.h>
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index e0d8b456e9f5..8392a7ef0ed4 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -19,7 +19,7 @@
+ #include <linux/init.h>
+ #include <linux/kmod.h>
+ #include <linux/slab.h>
 -#include <linux/idr.h>
 +#include <linux/xarray.h>
+ #include <linux/rhashtable.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+@@ -777,8 +777,7 @@ tcf_chain0_head_change_cb_del(struct tcf_block *block,
+ }
  
- #if IS_ENABLED(CONFIG_IPV6)
- #include <net/ipv6.h>
-@@ -462,8 +462,7 @@ extern struct proto sctp_prot;
- extern struct proto sctpv6_prot;
- void sctp_put_port(struct sock *sk);
+ struct tcf_net {
+-	spinlock_t idr_lock; /* Protects idr */
+-	struct idr idr;
++	struct xarray blocks;
+ };
  
--extern struct idr sctp_assocs_id;
--extern spinlock_t sctp_assocs_id_lock;
-+extern struct xarray sctp_assocs_id;
- 
- /* Static inline functions. */
- 
-diff --git a/net/sctp/associola.c b/net/sctp/associola.c
-index 5010cce52c93..4d6baecbdb99 100644
---- a/net/sctp/associola.c
-+++ b/net/sctp/associola.c
-@@ -39,6 +39,9 @@
- #include <net/sctp/sctp.h>
- #include <net/sctp/sm.h>
- 
-+DEFINE_XARRAY_FLAGS(sctp_assocs_id, XA_FLAGS_ALLOC1 | XA_FLAGS_LOCK_BH);
-+static u32 sctp_assocs_next_id;
-+
- /* Forward declarations for internal functions. */
- static void sctp_select_active_and_retran_path(struct sctp_association *asoc);
- static void sctp_assoc_bh_rcv(struct work_struct *work);
-@@ -412,11 +415,8 @@ static void sctp_association_destroy(struct sctp_association *asoc)
- 	sctp_endpoint_put(asoc->ep);
- 	sock_put(asoc->base.sk);
- 
--	if (asoc->assoc_id != 0) {
--		spin_lock_bh(&sctp_assocs_id_lock);
--		idr_remove(&sctp_assocs_id, asoc->assoc_id);
--		spin_unlock_bh(&sctp_assocs_id_lock);
--	}
-+	if (asoc->assoc_id != 0)
-+		xa_erase_bh(&sctp_assocs_id, asoc->assoc_id);
- 
- 	WARN_ON(atomic_read(&asoc->rmem_alloc));
- 
-@@ -1177,7 +1177,7 @@ int sctp_assoc_update(struct sctp_association *asoc,
- 			sctp_stream_update(&asoc->stream, &new->stream);
- 
- 		/* get a new assoc id if we don't have one yet. */
--		if (sctp_assoc_set_id(asoc, GFP_ATOMIC))
-+		if (sctp_assoc_set_id(asoc, GFP_ATOMIC) < 0)
- 			return -ENOMEM;
- 	}
- 
-@@ -1624,29 +1624,13 @@ int sctp_assoc_lookup_laddr(struct sctp_association *asoc,
- /* Set an association id for a given association */
- int sctp_assoc_set_id(struct sctp_association *asoc, gfp_t gfp)
+ static unsigned int tcf_net_id;
+@@ -787,25 +786,15 @@ static int tcf_block_insert(struct tcf_block *block, struct net *net,
+ 			    struct netlink_ext_ack *extack)
  {
--	bool preload = gfpflags_allow_blocking(gfp);
--	int ret;
+ 	struct tcf_net *tn = net_generic(net, tcf_net_id);
+-	int err;
 -
- 	/* If the id is already assigned, keep it. */
- 	if (asoc->assoc_id)
- 		return 0;
+-	idr_preload(GFP_KERNEL);
+-	spin_lock(&tn->idr_lock);
+-	err = idr_alloc_u32(&tn->idr, block, &block->index, block->index,
+-			    GFP_NOWAIT);
+-	spin_unlock(&tn->idr_lock);
+-	idr_preload_end();
  
--	if (preload)
--		idr_preload(gfp);
--	spin_lock_bh(&sctp_assocs_id_lock);
--	/* 0, 1, 2 are used as SCTP_FUTURE_ASSOC, SCTP_CURRENT_ASSOC and
--	 * SCTP_ALL_ASSOC, so an available id must be > SCTP_ALL_ASSOC.
--	 */
--	ret = idr_alloc_cyclic(&sctp_assocs_id, asoc, SCTP_ALL_ASSOC + 1, 0,
--			       GFP_NOWAIT);
--	spin_unlock_bh(&sctp_assocs_id_lock);
--	if (preload)
--		idr_preload_end();
--	if (ret < 0)
--		return ret;
--
--	asoc->assoc_id = (sctp_assoc_t)ret;
--	return 0;
-+	return xa_alloc_cyclic_bh(&sctp_assocs_id, &asoc->assoc_id, asoc,
-+			XA_LIMIT(SCTP_ALL_ASSOC + 1, INT_MAX),
-+			&sctp_assocs_next_id, gfp);
+-	return err;
++	return xa_insert(&tn->blocks, block->index, block, GFP_KERNEL);
  }
  
- /* Free the ASCONF queue */
-diff --git a/net/sctp/protocol.c b/net/sctp/protocol.c
-index 2d47adcb4cbe..79ccc786e5c9 100644
---- a/net/sctp/protocol.c
-+++ b/net/sctp/protocol.c
-@@ -50,9 +50,6 @@
- /* Global data structures. */
- struct sctp_globals sctp_globals __read_mostly;
+ static void tcf_block_remove(struct tcf_block *block, struct net *net)
+ {
+ 	struct tcf_net *tn = net_generic(net, tcf_net_id);
  
--struct idr sctp_assocs_id;
--DEFINE_SPINLOCK(sctp_assocs_id_lock);
--
- static struct sctp_pf *sctp_pf_inet6_specific;
- static struct sctp_pf *sctp_pf_inet_specific;
- static struct sctp_af *sctp_af_v4_specific;
-@@ -1388,9 +1385,6 @@ static __init int sctp_init(void)
- 	sctp_max_instreams    		= SCTP_DEFAULT_INSTREAMS;
- 	sctp_max_outstreams   		= SCTP_DEFAULT_OUTSTREAMS;
- 
--	/* Initialize handle used for association ids. */
--	idr_init(&sctp_assocs_id);
--
- 	limit = nr_free_buffer_pages() / 8;
- 	limit = max(limit, 128UL);
- 	sysctl_sctp_mem[0] = limit / 4 * 3;
-diff --git a/net/sctp/sm_make_chunk.c b/net/sctp/sm_make_chunk.c
-index 36bd8a6e82df..f049cfad6cf8 100644
---- a/net/sctp/sm_make_chunk.c
-+++ b/net/sctp/sm_make_chunk.c
-@@ -2443,7 +2443,7 @@ int sctp_process_init(struct sctp_association *asoc, struct sctp_chunk *chunk,
- 	/* Update frag_point when stream_interleave may get changed. */
- 	sctp_assoc_update_frag_point(asoc);
- 
--	if (!asoc->temp && sctp_assoc_set_id(asoc, gfp))
-+	if (!asoc->temp && sctp_assoc_set_id(asoc, gfp) < 0)
- 		goto clean_up;
- 
- 	/* ADDIP Section 4.1 ASCONF Chunk Procedures
-diff --git a/net/sctp/socket.c b/net/sctp/socket.c
-index 12503e16fa96..0df05adfd033 100644
---- a/net/sctp/socket.c
-+++ b/net/sctp/socket.c
-@@ -236,11 +236,11 @@ struct sctp_association *sctp_id2assoc(struct sock *sk, sctp_assoc_t id)
- 	if (id <= SCTP_ALL_ASSOC)
- 		return NULL;
- 
--	spin_lock_bh(&sctp_assocs_id_lock);
--	asoc = (struct sctp_association *)idr_find(&sctp_assocs_id, (int)id);
-+	xa_lock_bh(&sctp_assocs_id);
-+	asoc = xa_load(&sctp_assocs_id, id);
- 	if (asoc && (asoc->base.sk != sk || asoc->base.dead))
- 		asoc = NULL;
--	spin_unlock_bh(&sctp_assocs_id_lock);
-+	xa_unlock_bh(&sctp_assocs_id);
- 
- 	return asoc;
+-	spin_lock(&tn->idr_lock);
+-	idr_remove(&tn->idr, block->index);
+-	spin_unlock(&tn->idr_lock);
++	xa_erase(&tn->blocks, block->index);
  }
+ 
+ static struct tcf_block *tcf_block_create(struct net *net, struct Qdisc *q,
+@@ -839,7 +828,7 @@ static struct tcf_block *tcf_block_lookup(struct net *net, u32 block_index)
+ {
+ 	struct tcf_net *tn = net_generic(net, tcf_net_id);
+ 
+-	return idr_find(&tn->idr, block_index);
++	return xa_load(&tn->blocks, block_index);
+ }
+ 
+ static struct tcf_block *tcf_block_refcnt_get(struct net *net, u32 block_index)
+@@ -3164,16 +3153,12 @@ static __net_init int tcf_net_init(struct net *net)
+ {
+ 	struct tcf_net *tn = net_generic(net, tcf_net_id);
+ 
+-	spin_lock_init(&tn->idr_lock);
+-	idr_init(&tn->idr);
++	xa_init(&tn->blocks);
+ 	return 0;
+ }
+ 
+ static void __net_exit tcf_net_exit(struct net *net)
+ {
+-	struct tcf_net *tn = net_generic(net, tcf_net_id);
+-
+-	idr_destroy(&tn->idr);
+ }
+ 
+ static struct pernet_operations tcf_net_ops = {
 -- 
 2.23.0.rc1
 
