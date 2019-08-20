@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12C9996C65
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BFFBF96C64
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731214AbfHTWeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:34:02 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36976 "EHLO
+        id S1731193AbfHTWdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:51 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36978 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730957AbfHTWdC (ORCPT
+        with ESMTP id S1730962AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=1gdNAeXt8OgvuJ6X+8IOh2ZR1ZcjsyOrJ3lAttPcG2U=; b=rHoBQMSwPyAxCZkdo2x+ejZcK3
-        iBoJDbgUf/So0cS3wv7zBuFYOVMI+XhSG0uxSynqI5DzlMCGkdpoO238B6DgBTi1ceA13aSme4ktA
-        vzOiuk+GwY2WSRbJA61OIq+ICxcJ9vhLN+wtlfwUYRqSks4vxVn99negfzUhQEIqS7WXjvHaTiOeP
-        A6jPwFH92UN8GqEScclkhPO7ckE4UMxRgNA/ZxMTz9eI8jshgp0aut3iX2K6WJSeJYED0BfFceZO9
-        r6z1Qg8+t+G9ExYeHt3vgNzULxAfWQvx5dhfQs8tAeID1lG8/IbrrUjd803VmkLM40AAGuJ2Ghaef
-        qDj0gemg==;
+        bh=KsfEU9i349Ud9KdlgKH1KjkZNJ+NKRlUdUSatN9sH2o=; b=Bq/5/2hIDhbcwiE5orTAJAt/iA
+        pzdI44kSCUY+RnTa6hWRYRdWWD672EWb6D6gXd3C8jB2jJH2S8IvRcTElhVfdm0QE2ZwHnDNgHWEk
+        sr0qRxZDp6bfWyqSO5XpSWvSeAxgj5o3XIZNe7sBa/MKOd7NxZ1KFtDglDscoadPu0puHGyJ13YDC
+        TCTY1Mj0ZuZT2va7kZF99nQJ0n2wASy++8l3z27tipgKWteVvSWC8Rkj2EzajrYV/kqTw5jTtqSXz
+        gU7M945H8/+3uuJ/0Wsd1b6hPyt59JAmBzeqQXx9W0dIzczJCMrDj68XJ+OQmRdnU203BgQzYm7Ev
+        PxR1QWdw==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005qM-49; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005qS-61; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 09/38] ath10k: Convert pending_tx to XArray
-Date:   Tue, 20 Aug 2019 15:32:30 -0700
-Message-Id: <20190820223259.22348-10-willy@infradead.org>
+Subject: [PATCH 10/38] ath10k: Convert mgmt_pending_tx IDR to XArray
+Date:   Tue, 20 Aug 2019 15:32:31 -0700
+Message-Id: <20190820223259.22348-11-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,144 +43,136 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Leave the tx_lock in place; it might be removable around some of the
-places that use the XArray, but err on the side of double locking for now.
+Leave the ->data_lock locking in place; it may be possible to remove it,
+but err on the side of double-locking for now.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/wireless/ath/ath10k/htt.h    |  2 +-
- drivers/net/wireless/ath/ath10k/htt_tx.c | 31 ++++++++++++------------
- drivers/net/wireless/ath/ath10k/mac.c    |  4 +--
- drivers/net/wireless/ath/ath10k/txrx.c   |  2 +-
- 4 files changed, 20 insertions(+), 19 deletions(-)
+ drivers/net/wireless/ath/ath10k/core.h    |  2 +-
+ drivers/net/wireless/ath/ath10k/wmi-tlv.c |  8 +++--
+ drivers/net/wireless/ath/ath10k/wmi.c     | 43 ++++++++++-------------
+ 3 files changed, 25 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt.h b/drivers/net/wireless/ath/ath10k/htt.h
-index 30c080094af1..971f0a8629bc 100644
---- a/drivers/net/wireless/ath/ath10k/htt.h
-+++ b/drivers/net/wireless/ath/ath10k/htt.h
-@@ -1965,7 +1965,7 @@ struct ath10k_htt {
- 	int max_num_pending_tx;
- 	int num_pending_tx;
- 	int num_pending_mgmt_tx;
--	struct idr pending_tx;
-+	struct xarray pending_tx;
- 	wait_queue_head_t empty_tx_wq;
+diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
+index 4d7db07db6ba..89b94322aeb1 100644
+--- a/drivers/net/wireless/ath/ath10k/core.h
++++ b/drivers/net/wireless/ath/ath10k/core.h
+@@ -175,7 +175,7 @@ struct ath10k_wmi {
+ 	u32 mgmt_max_num_pending_tx;
  
- 	/* FIFO for storing tx done status {ack, no-ack, discard} and msdu id */
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index 2ef717f18795..c25b01fcfa53 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -195,13 +195,16 @@ void ath10k_htt_tx_mgmt_dec_pending(struct ath10k_htt *htt)
- int ath10k_htt_tx_alloc_msdu_id(struct ath10k_htt *htt, struct sk_buff *skb)
+ 	/* Protected by data_lock */
+-	struct idr mgmt_pending_tx;
++	struct xarray mgmt_pending_tx;
+ 
+ 	u32 num_mem_chunks;
+ 	u32 rx_decap_mode;
+diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.c b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
+index 2985bb17decd..6144d6d9c539 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
++++ b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
+@@ -2843,7 +2843,7 @@ ath10k_wmi_mgmt_tx_alloc_msdu_id(struct ath10k *ar, struct sk_buff *skb,
  {
- 	struct ath10k *ar = htt->ar;
+ 	struct ath10k_wmi *wmi = &ar->wmi;
+ 	struct ath10k_mgmt_tx_pkt_addr *pkt_addr;
 -	int ret;
 +	int ret, id;
  
- 	spin_lock_bh(&htt->tx_lock);
--	ret = idr_alloc(&htt->pending_tx, skb, 0,
--			htt->max_num_pending_tx, GFP_ATOMIC);
-+	ret = xa_alloc(&htt->pending_tx, &id, skb,
-+			XA_LIMIT(0, htt->max_num_pending_tx - 1), GFP_ATOMIC);
- 	spin_unlock_bh(&htt->tx_lock);
+ 	pkt_addr = kmalloc(sizeof(*pkt_addr), GFP_ATOMIC);
+ 	if (!pkt_addr)
+@@ -2853,9 +2853,11 @@ ath10k_wmi_mgmt_tx_alloc_msdu_id(struct ath10k *ar, struct sk_buff *skb,
+ 	pkt_addr->paddr = paddr;
  
+ 	spin_lock_bh(&ar->data_lock);
+-	ret = idr_alloc(&wmi->mgmt_pending_tx, pkt_addr, 0,
+-			wmi->mgmt_max_num_pending_tx, GFP_ATOMIC);
++	ret = xa_alloc(&wmi->mgmt_pending_tx, &id, pkt_addr,
++			XA_LIMIT(0, wmi->mgmt_max_num_pending_tx), GFP_ATOMIC);
+ 	spin_unlock_bh(&ar->data_lock);
 +	if (ret == 0)
 +		ret = id;
-+
- 	ath10k_dbg(ar, ATH10K_DBG_HTT, "htt tx alloc msdu_id %d\n", ret);
  
+ 	ath10k_dbg(ar, ATH10K_DBG_WMI, "wmi mgmt tx alloc msdu_id ret %d\n", ret);
  	return ret;
-@@ -215,7 +218,7 @@ void ath10k_htt_tx_free_msdu_id(struct ath10k_htt *htt, u16 msdu_id)
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index 4f707c6394bb..280220c4fe3b 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -2353,7 +2353,7 @@ wmi_process_mgmt_tx_comp(struct ath10k *ar, struct mgmt_tx_compl_params *param)
  
- 	ath10k_dbg(ar, ATH10K_DBG_HTT, "htt tx free msdu_id %hu\n", msdu_id);
+ 	spin_lock_bh(&ar->data_lock);
  
--	idr_remove(&htt->pending_tx, msdu_id);
-+	xa_erase(&htt->pending_tx, msdu_id);
+-	pkt_addr = idr_find(&wmi->mgmt_pending_tx, param->desc_id);
++	pkt_addr = xa_load(&wmi->mgmt_pending_tx, param->desc_id);
+ 	if (!pkt_addr) {
+ 		ath10k_warn(ar, "received mgmt tx completion for invalid msdu_id: %d\n",
+ 			    param->desc_id);
+@@ -2380,7 +2380,7 @@ wmi_process_mgmt_tx_comp(struct ath10k *ar, struct mgmt_tx_compl_params *param)
+ 	ret = 0;
+ 
+ out:
+-	idr_remove(&wmi->mgmt_pending_tx, param->desc_id);
++	xa_erase(&wmi->mgmt_pending_tx, param->desc_id);
+ 	spin_unlock_bh(&ar->data_lock);
+ 	return ret;
  }
+@@ -9389,7 +9389,7 @@ int ath10k_wmi_attach(struct ath10k *ar)
  
- static void ath10k_htt_tx_free_cont_txbuf_32(struct ath10k_htt *htt)
-@@ -479,7 +482,7 @@ int ath10k_htt_tx_start(struct ath10k_htt *htt)
- 		   htt->max_num_pending_tx);
- 
- 	spin_lock_init(&htt->tx_lock);
--	idr_init(&htt->pending_tx);
-+	xa_init_flags(&htt->pending_tx, XA_FLAGS_ALLOC);
- 
- 	if (htt->tx_mem_allocated)
- 		return 0;
-@@ -489,21 +492,15 @@ int ath10k_htt_tx_start(struct ath10k_htt *htt)
- 
- 	ret = ath10k_htt_tx_alloc_buf(htt);
- 	if (ret)
--		goto free_idr_pending_tx;
-+		return ret;
- 
- 	htt->tx_mem_allocated = true;
- 
- 	return 0;
--
--free_idr_pending_tx:
--	idr_destroy(&htt->pending_tx);
--
--	return ret;
- }
- 
--static int ath10k_htt_tx_clean_up_pending(int msdu_id, void *skb, void *ctx)
-+static int ath10k_htt_tx_clean_up_pending(int msdu_id, struct ath10k *ar)
- {
--	struct ath10k *ar = ctx;
- 	struct ath10k_htt *htt = &ar->htt;
- 	struct htt_tx_done tx_done = {0};
- 
-@@ -531,8 +528,12 @@ void ath10k_htt_tx_destroy(struct ath10k_htt *htt)
- 
- void ath10k_htt_tx_stop(struct ath10k_htt *htt)
- {
--	idr_for_each(&htt->pending_tx, ath10k_htt_tx_clean_up_pending, htt->ar);
--	idr_destroy(&htt->pending_tx);
-+	struct sk_buff *skb;
-+	unsigned long index;
-+
-+	xa_for_each(&htt->pending_tx, index, skb)
-+		ath10k_htt_tx_clean_up_pending(index, htt->ar);
-+	xa_destroy(&htt->pending_tx);
- }
- 
- void ath10k_htt_tx_free(struct ath10k_htt *htt)
-diff --git a/drivers/net/wireless/ath/ath10k/mac.c b/drivers/net/wireless/ath/ath10k/mac.c
-index 12dad659bf68..9c4cb2e31b76 100644
---- a/drivers/net/wireless/ath/ath10k/mac.c
-+++ b/drivers/net/wireless/ath/ath10k/mac.c
-@@ -3939,13 +3939,13 @@ static void ath10k_mac_txq_unref(struct ath10k *ar, struct ieee80211_txq *txq)
- {
- 	struct ath10k_skb_cb *cb;
- 	struct sk_buff *msdu;
--	int msdu_id;
-+	unsigned long msdu_id;
- 
- 	if (!txq)
- 		return;
- 
- 	spin_lock_bh(&ar->htt.tx_lock);
--	idr_for_each_entry(&ar->htt.pending_tx, msdu, msdu_id) {
-+	xa_for_each(&ar->htt.pending_tx, msdu_id, msdu) {
- 		cb = ATH10K_SKB_CB(msdu);
- 		if (cb->txq == txq)
- 			cb->txq = NULL;
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index 4102df016931..87bf6ab65347 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -62,7 +62,7 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
+ 	if (test_bit(ATH10K_FW_FEATURE_MGMT_TX_BY_REF,
+ 		     ar->running_fw->fw_file.fw_features)) {
+-		idr_init(&ar->wmi.mgmt_pending_tx);
++		xa_init_flags(&ar->wmi.mgmt_pending_tx, XA_FLAGS_ALLOC);
  	}
  
- 	spin_lock_bh(&htt->tx_lock);
--	msdu = idr_find(&htt->pending_tx, tx_done->msdu_id);
-+	msdu = xa_load(&htt->pending_tx, tx_done->msdu_id);
- 	if (!msdu) {
- 		ath10k_warn(ar, "received tx completion for invalid msdu_id: %d\n",
- 			    tx_done->msdu_id);
+ 	return 0;
+@@ -9410,32 +9410,27 @@ void ath10k_wmi_free_host_mem(struct ath10k *ar)
+ 	ar->wmi.num_mem_chunks = 0;
+ }
+ 
+-static int ath10k_wmi_mgmt_tx_clean_up_pending(int msdu_id, void *ptr,
+-					       void *ctx)
+-{
+-	struct ath10k_mgmt_tx_pkt_addr *pkt_addr = ptr;
+-	struct ath10k *ar = ctx;
+-	struct sk_buff *msdu;
+-
+-	ath10k_dbg(ar, ATH10K_DBG_WMI,
+-		   "force cleanup mgmt msdu_id %hu\n", msdu_id);
+-
+-	msdu = pkt_addr->vaddr;
+-	dma_unmap_single(ar->dev, pkt_addr->paddr,
+-			 msdu->len, DMA_FROM_DEVICE);
+-	ieee80211_free_txskb(ar->hw, msdu);
+-
+-	return 0;
+-}
+-
+ void ath10k_wmi_detach(struct ath10k *ar)
+ {
+ 	if (test_bit(ATH10K_FW_FEATURE_MGMT_TX_BY_REF,
+ 		     ar->running_fw->fw_file.fw_features)) {
++		struct ath10k_mgmt_tx_pkt_addr *pkt_addr;
++		unsigned long index;
++
+ 		spin_lock_bh(&ar->data_lock);
+-		idr_for_each(&ar->wmi.mgmt_pending_tx,
+-			     ath10k_wmi_mgmt_tx_clean_up_pending, ar);
+-		idr_destroy(&ar->wmi.mgmt_pending_tx);
++		xa_for_each(&ar->wmi.mgmt_pending_tx, index, pkt_addr) {
++			struct sk_buff *msdu;
++
++			ath10k_dbg(ar, ATH10K_DBG_WMI,
++					"force cleanup mgmt msdu_id %lu\n",
++					index);
++
++			msdu = pkt_addr->vaddr;
++			dma_unmap_single(ar->dev, pkt_addr->paddr, msdu->len,
++					DMA_FROM_DEVICE);
++			ieee80211_free_txskb(ar->hw, msdu);
++		}
++		xa_destroy(&ar->wmi.mgmt_pending_tx);
+ 		spin_unlock_bh(&ar->data_lock);
+ 	}
+ 
 -- 
 2.23.0.rc1
 
