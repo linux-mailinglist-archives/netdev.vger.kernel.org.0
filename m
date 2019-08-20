@@ -2,84 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B96B996225
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:13:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 706CF96235
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:17:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730092AbfHTONe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 10:13:34 -0400
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:60577 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729762AbfHTONe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 10:13:34 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 5715A45B;
-        Tue, 20 Aug 2019 10:13:32 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Tue, 20 Aug 2019 10:13:32 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=TM1y1m
-        5mUDdALJbEa/kxdffbL8mes0pBL8m2Q8+L714=; b=AZbFaApxsVf1LSQwFwuMjF
-        JcHomHWzuz1dTTSEh1lNjbu6QZw7/jt3B7Htf26JfF7fWwO3DEnBfY//r/KgFNm0
-        C+hmUf4Bpw3ZzTPpxKE4v8r+rVgZfkQJAcgXV+XZBhFFza9suztqMZa1ER1zF9H1
-        khHVp7RNZRnRoHx2hk8bZ0yAbZM1szjCeDksmV7lkO/VjQKeilAofXOv9JQ+KUZZ
-        C7R00ysCu0HX3XLjn48Yv4hLJ7JJFPet2gCGJxxUfiCIHGTrCFgC75CeMBdw9FOG
-        RgDI7fVqUCTEgn5u1X3r23UKBMRudbTJn4D5tqFM2dVGiycmDrJGYN9p1bJb1IFQ
-        ==
-X-ME-Sender: <xms:CQBcXT-6Ra3cbIIXPBNNUBtZvml3_xkKOyQfUv2C61DWBfP5T3Knqg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeguddgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrih
-    hnpehoiihlrggsshdrohhrghenucfkphepjeelrddujeejrddvuddrudektdenucfrrghr
-    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhush
-    htvghrufhiiigvpedt
-X-ME-Proxy: <xmx:CQBcXX9ak_2u1B2F6QphP5OhbvGduq-T9pCmI2AP4jN7Uo1ff-axlA>
-    <xmx:CQBcXU8nwJ9E6wboBS6TBknJakJv6ZjfQykEOHx20B2_Fr_KcST0Zw>
-    <xmx:CQBcXWxbvw2Ll552sqAUIKcGP3PLj0ZvVLzz7SVS26Iht9FoVpsDfg>
-    <xmx:CwBcXSXToNka_kTXMLaWohgMNoHC83FJeWLvI1ptP4Uf8us57Y1JwQ>
-Received: from localhost (bzq-79-177-21-180.red.bezeqint.net [79.177.21.180])
-        by mail.messagingengine.com (Postfix) with ESMTPA id A3B4980059;
-        Tue, 20 Aug 2019 10:13:28 -0400 (EDT)
-Date:   Tue, 20 Aug 2019 17:13:24 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: linux-next: Tree for Aug 19 (drivers/net/netdevsim/dev.o)
-Message-ID: <20190820141324.GC31968@splinter>
-References: <20190819191832.03f1a579@canb.auug.org.au>
- <92ef45a5-c933-0493-b2ff-50352fa8bf3f@infradead.org>
+        id S1730149AbfHTOQz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 10:16:55 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4737 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729762AbfHTOQy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 10:16:54 -0400
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id B7B5DFB8E5CA0C1399FE;
+        Tue, 20 Aug 2019 22:16:51 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Tue, 20 Aug 2019
+ 22:16:41 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <idosch@mellanox.com>, <jiri@mellanox.com>,
+        <mcroce@redhat.com>, <jakub.kicinski@netronome.com>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH v2 net-next] netdevsim: Fix build error without CONFIG_INET
+Date:   Tue, 20 Aug 2019 22:14:46 +0800
+Message-ID: <20190820141446.71604-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+In-Reply-To: <20190819120825.74460-1-yuehaibing@huawei.com>
+References: <20190819120825.74460-1-yuehaibing@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <92ef45a5-c933-0493-b2ff-50352fa8bf3f@infradead.org>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 19, 2019 at 09:16:13PM -0700, Randy Dunlap wrote:
-> On 8/19/19 2:18 AM, Stephen Rothwell wrote:
-> > Hi all,
-> > 
-> > Changes since 20190816:
-> > 
-> 
-> on x86_64:
-> # CONFIG_INET is not set
-> 
-> ld: drivers/net/netdevsim/dev.o: in function `nsim_dev_trap_report_work':
-> dev.c:(.text+0x52f): undefined reference to `ip_send_check'
+If CONFIG_INET is not set, building fails:
 
-Thanks, Randy.
+drivers/net/netdevsim/dev.o: In function `nsim_dev_trap_report_work':
+dev.c:(.text+0x67b): undefined reference to `ip_send_check'
 
-There is a fix here [1], but some changes were requested. I will send a
-fix later today and Cc you.
+Use ip_fast_csum instead of ip_send_check to avoid
+dependencies on CONFIG_INET.
 
-[1] https://patchwork.ozlabs.org/patch/1149229/
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: da58f90f11f5 ("netdevsim: Add devlink-trap support")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+v2: use ip_fast_csum instead of ip_send_check
+---
+ drivers/net/netdevsim/dev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
+index c5b0261..39cdb6c 100644
+--- a/drivers/net/netdevsim/dev.c
++++ b/drivers/net/netdevsim/dev.c
+@@ -389,7 +389,8 @@ static struct sk_buff *nsim_dev_trap_skb_build(void)
+ 	iph->ihl = 0x5;
+ 	iph->tot_len = htons(tot_len);
+ 	iph->ttl = 100;
+-	ip_send_check(iph);
++	iph->check = 0;
++	iph->check = ip_fast_csum((unsigned char *)iph, iph->ihl);
+ 
+ 	udph = skb_put_zero(skb, sizeof(struct udphdr) + data_len);
+ 	get_random_bytes(&udph->source, sizeof(u16));
+-- 
+2.7.4
+
+
