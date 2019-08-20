@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8876896C68
+	by mail.lfdr.de (Postfix) with ESMTP id 1444796C67
 	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731211AbfHTWeB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:34:01 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36964 "EHLO
+        id S1731220AbfHTWeD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:34:03 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36966 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730885AbfHTWdC (ORCPT
+        with ESMTP id S1730886AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=U3FDKmqwzP0HCl58/EtURkMoF5kFjJky2ZF8eC3+P6s=; b=cetpzH/wN693eaOD1XWiiQuBkz
-        /ra23/vc+ni9++NXVrPMc9c0WRJNAU+rNNH76Jun48Z3wYPwwvyLqzbM0+HbO2CLnaGOWug/pbkyN
-        MpumekUk19JEFcRQZJK3b+UBPO1sPqwtriBvNqOb3700oS0+UZYJLrNZ1tlWhLPvlswRCgxLNFqhI
-        6CY4XCFR3lg++XAFG25Xxi4eYC7niJQ8mSmIrv8y4bvROAOFc+OP5IHDPH1UpIhZCctRsyhEG3A7h
-        mmHEtbrSxp2d6iBhS2+qyioxawURWM4absOpzsvoE89rKcqNmqqLaparpq2ncQGZAfVgKgP+kgAZA
-        y/f9YxwQ==;
+        bh=QJieEXhpBPo0xTgXNNnMN9TmSp4JsMbyVf/4hWMqbcU=; b=lHc6V7uQuJ3OjPK1HW9UnmvAh3
+        yeNgxe1pU4quxd4zEYrpo4Kxx2Fv8pemWfFL6CHTpEGjf4wtu4j5kilr57zja56zT3CeVmWU6TpMX
+        khqR3b+U+OZJCnCTmLd4QFwDaL+uDtP5V3tlYOfqw+jgY9pmUsjZusbsk6FIM3IfSqc/A0FrvUVU/
+        Mon+IVoLA52Mwun8F4zt1d9M3OMHGRWs/GbKJ/GRY6ZVuaY/hHUG5MZaStwhST0YTx3u4cAkNICxz
+        nK6JRU8eAXNjlarKQA31wTxiA0vJu5d5ZCWjBV+rBFDYTtoU8enEgKgeojISTV/imk/3Vdon/pAHg
+        5RukVszw==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgX-0005pl-R3; Tue, 20 Aug 2019 22:33:01 +0000
+        id 1i0CgX-0005pr-Sw; Tue, 20 Aug 2019 22:33:01 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 03/38] mlx4: Convert qp_table_tree to XArray
-Date:   Tue, 20 Aug 2019 15:32:24 -0700
-Message-Id: <20190820223259.22348-4-willy@infradead.org>
+Subject: [PATCH 04/38] mlx5: Convert cq_table to XArray
+Date:   Tue, 20 Aug 2019 15:32:25 -0700
+Message-Id: <20190820223259.22348-5-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,171 +43,102 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-This XArray appears to be modifiable from interrupt context, so we have
-to be a little more careful with the locking.  However, the lookup can
-be done without the spinlock held.  I cannot determine whether
-mlx4_qp_alloc() is allowed to sleep, so I've retained the GFP_ATOMIC
-there, but it could be turned into GFP_KERNEL if the callers can
-tolerate it sleeping.
+Since mlx5_cq_table would have shrunk down to just the xarray, eliminate
+it and embed the xarray directly into mlx5_eq.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/ethernet/mellanox/mlx4/mlx4.h |  3 +-
- drivers/net/ethernet/mellanox/mlx4/qp.c   | 37 ++++++-----------------
- include/linux/mlx4/device.h               |  4 +--
- include/linux/mlx4/qp.h                   |  2 +-
- 4 files changed, 14 insertions(+), 32 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c  | 27 ++++---------------
+ .../net/ethernet/mellanox/mlx5/core/lib/eq.h  |  7 +----
+ 2 files changed, 6 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4.h b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-index b6fe22bee9f4..aaece8480da7 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-@@ -38,7 +38,7 @@
- #define MLX4_H
- 
- #include <linux/mutex.h>
--#include <linux/radix-tree.h>
-+#include <linux/xarray.h>
- #include <linux/rbtree.h>
- #include <linux/timer.h>
- #include <linux/semaphore.h>
-@@ -716,7 +716,6 @@ struct mlx4_qp_table {
- 	u32			zones_uids[MLX4_QP_TABLE_ZONE_NUM];
- 	u32			rdmarc_base;
- 	int			rdmarc_shift;
--	spinlock_t		lock;
- 	struct mlx4_icm_table	qp_table;
- 	struct mlx4_icm_table	auxc_table;
- 	struct mlx4_icm_table	altc_table;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/qp.c b/drivers/net/ethernet/mellanox/mlx4/qp.c
-index 427e7a31862c..4659ecec12c1 100644
---- a/drivers/net/ethernet/mellanox/mlx4/qp.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/qp.c
-@@ -48,16 +48,13 @@
- 
- void mlx4_qp_event(struct mlx4_dev *dev, u32 qpn, int event_type)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+index 09d4c64b6e73..c5953f6e0a69 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
+@@ -113,11 +113,10 @@ static int mlx5_cmd_destroy_eq(struct mlx5_core_dev *dev, u8 eqn)
+ /* caller must eventually call mlx5_cq_put on the returned cq */
+ static struct mlx5_core_cq *mlx5_eq_cq_get(struct mlx5_eq *eq, u32 cqn)
  {
--	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
- 	struct mlx4_qp *qp;
+-	struct mlx5_cq_table *table = &eq->cq_table;
+-	struct mlx5_core_cq *cq = NULL;
++	struct mlx5_core_cq *cq;
  
--	spin_lock(&qp_table->lock);
--
-+	xa_lock(&dev->qp_table);
- 	qp = __mlx4_qp_lookup(dev, qpn);
- 	if (qp)
- 		refcount_inc(&qp->refcount);
--
--	spin_unlock(&qp_table->lock);
-+	xa_unlock(&dev->qp_table);
- 
- 	if (!qp) {
- 		mlx4_dbg(dev, "Async event for none existent QP %08x\n", qpn);
-@@ -390,21 +387,11 @@ static void mlx4_qp_free_icm(struct mlx4_dev *dev, int qpn)
- 
- struct mlx4_qp *mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn)
+ 	rcu_read_lock();
+-	cq = radix_tree_lookup(&table->tree, cqn);
++	cq = xa_load(&eq->cq_table, cqn);
+ 	if (likely(cq))
+ 		mlx5_cq_hold(cq);
+ 	rcu_read_unlock();
+@@ -243,7 +242,6 @@ static int
+ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
+ 	      struct mlx5_eq_param *param)
  {
--	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
--	struct mlx4_qp *qp;
--
--	spin_lock_irq(&qp_table->lock);
--
--	qp = __mlx4_qp_lookup(dev, qpn);
--
--	spin_unlock_irq(&qp_table->lock);
--	return qp;
-+	return __mlx4_qp_lookup(dev, qpn);
- }
- 
- int mlx4_qp_alloc(struct mlx4_dev *dev, int qpn, struct mlx4_qp *qp)
- {
--	struct mlx4_priv *priv = mlx4_priv(dev);
--	struct mlx4_qp_table *qp_table = &priv->qp_table;
+-	struct mlx5_cq_table *cq_table = &eq->cq_table;
+ 	u32 out[MLX5_ST_SZ_DW(create_eq_out)] = {0};
+ 	struct mlx5_priv *priv = &dev->priv;
+ 	u8 vecidx = param->irq_index;
+@@ -254,11 +252,7 @@ create_map_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq,
  	int err;
+ 	int i;
  
- 	if (!qpn)
-@@ -416,10 +403,9 @@ int mlx4_qp_alloc(struct mlx4_dev *dev, int qpn, struct mlx4_qp *qp)
- 	if (err)
- 		return err;
+-	/* Init CQ table */
+-	memset(cq_table, 0, sizeof(*cq_table));
+-	spin_lock_init(&cq_table->lock);
+-	INIT_RADIX_TREE(&cq_table->tree, GFP_ATOMIC);
+-
++	xa_init_flags(&eq->cq_table, XA_FLAGS_LOCK_IRQ);
+ 	eq->nent = roundup_pow_of_two(param->nent + MLX5_NUM_SPARE_EQE);
+ 	eq->cons_index = 0;
+ 	err = mlx5_buf_alloc(dev, eq->nent * MLX5_EQE_SIZE, &eq->buf);
+@@ -378,25 +372,14 @@ static int destroy_unmap_eq(struct mlx5_core_dev *dev, struct mlx5_eq *eq)
  
--	spin_lock_irq(&qp_table->lock);
--	err = radix_tree_insert(&dev->qp_table_tree, qp->qpn &
--				(dev->caps.num_qps - 1), qp);
--	spin_unlock_irq(&qp_table->lock);
-+	err = xa_err(xa_store_irq(&dev->qp_table,
-+				qp->qpn & (dev->caps.num_qps - 1),
-+				qp, GFP_ATOMIC));
- 	if (err)
- 		goto err_icm;
- 
-@@ -512,12 +498,11 @@ EXPORT_SYMBOL_GPL(mlx4_update_qp);
- 
- void mlx4_qp_remove(struct mlx4_dev *dev, struct mlx4_qp *qp)
+ int mlx5_eq_add_cq(struct mlx5_eq *eq, struct mlx5_core_cq *cq)
  {
--	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&qp_table->lock, flags);
--	radix_tree_delete(&dev->qp_table_tree, qp->qpn & (dev->caps.num_qps - 1));
--	spin_unlock_irqrestore(&qp_table->lock, flags);
-+	xa_lock_irqsave(&dev->qp_table, flags);
-+	__xa_erase(&dev->qp_table, qp->qpn & (dev->caps.num_qps - 1));
-+	xa_unlock_irqrestore(&dev->qp_table, flags);
- }
- EXPORT_SYMBOL_GPL(mlx4_qp_remove);
- 
-@@ -760,7 +745,6 @@ static void mlx4_cleanup_qp_zones(struct mlx4_dev *dev)
- 
- int mlx4_init_qp_table(struct mlx4_dev *dev)
- {
--	struct mlx4_qp_table *qp_table = &mlx4_priv(dev)->qp_table;
- 	int err;
- 	int reserved_from_top = 0;
- 	int reserved_from_bot;
-@@ -770,8 +754,7 @@ int mlx4_init_qp_table(struct mlx4_dev *dev)
- 	u32 max_table_offset = dev->caps.dmfs_high_rate_qpn_base +
- 			dev->caps.dmfs_high_rate_qpn_range;
- 
--	spin_lock_init(&qp_table->lock);
--	INIT_RADIX_TREE(&dev->qp_table_tree, GFP_ATOMIC);
-+	xa_init_flags(&dev->qp_table, XA_FLAGS_LOCK_IRQ);
- 	if (mlx4_is_slave(dev))
- 		return 0;
- 
-diff --git a/include/linux/mlx4/device.h b/include/linux/mlx4/device.h
-index 36e412c3d657..acffca7d9f00 100644
---- a/include/linux/mlx4/device.h
-+++ b/include/linux/mlx4/device.h
-@@ -36,7 +36,7 @@
- #include <linux/if_ether.h>
- #include <linux/pci.h>
- #include <linux/completion.h>
--#include <linux/radix-tree.h>
-+#include <linux/xarray.h>
- #include <linux/cpu_rmap.h>
- #include <linux/crash_dump.h>
- 
-@@ -889,7 +889,7 @@ struct mlx4_dev {
- 	struct mlx4_caps	caps;
- 	struct mlx4_phys_caps	phys_caps;
- 	struct mlx4_quotas	quotas;
--	struct radix_tree_root	qp_table_tree;
-+	struct xarray		qp_table;
- 	u8			rev_id;
- 	u8			port_random_macs;
- 	char			board_id[MLX4_BOARD_ID_LEN];
-diff --git a/include/linux/mlx4/qp.h b/include/linux/mlx4/qp.h
-index 8e2828d48d7f..6c3ec3197a10 100644
---- a/include/linux/mlx4/qp.h
-+++ b/include/linux/mlx4/qp.h
-@@ -488,7 +488,7 @@ int mlx4_qp_to_ready(struct mlx4_dev *dev, struct mlx4_mtt *mtt,
- 
- static inline struct mlx4_qp *__mlx4_qp_lookup(struct mlx4_dev *dev, u32 qpn)
- {
--	return radix_tree_lookup(&dev->qp_table_tree, qpn & (dev->caps.num_qps - 1));
-+	return xa_load(&dev->qp_table, qpn & (dev->caps.num_qps - 1));
+-	struct mlx5_cq_table *table = &eq->cq_table;
+-	int err;
+-
+-	spin_lock(&table->lock);
+-	err = radix_tree_insert(&table->tree, cq->cqn, cq);
+-	spin_unlock(&table->lock);
+-
+-	return err;
++	return xa_err(xa_store(&eq->cq_table, cq->cqn, cq, GFP_KERNEL));
  }
  
- void mlx4_qp_remove(struct mlx4_dev *dev, struct mlx4_qp *qp);
+ void mlx5_eq_del_cq(struct mlx5_eq *eq, struct mlx5_core_cq *cq)
+ {
+-	struct mlx5_cq_table *table = &eq->cq_table;
+ 	struct mlx5_core_cq *tmp;
+ 
+-	spin_lock(&table->lock);
+-	tmp = radix_tree_delete(&table->tree, cq->cqn);
+-	spin_unlock(&table->lock);
+-
++	tmp = xa_erase(&eq->cq_table, cq->cqn);
+ 	if (!tmp) {
+ 		mlx5_core_dbg(eq->dev, "cq 0x%x not found in eq 0x%x tree\n",
+ 			      eq->eqn, cq->cqn);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h b/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
+index 4be4d2d36218..a342cf78120e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/eq.h
+@@ -16,14 +16,9 @@ struct mlx5_eq_tasklet {
+ 	spinlock_t            lock; /* lock completion tasklet list */
+ };
+ 
+-struct mlx5_cq_table {
+-	spinlock_t              lock;	/* protect radix tree */
+-	struct radix_tree_root  tree;
+-};
+-
+ struct mlx5_eq {
+ 	struct mlx5_core_dev    *dev;
+-	struct mlx5_cq_table    cq_table;
++	struct xarray		cq_table;
+ 	__be32 __iomem	        *doorbell;
+ 	u32                     cons_index;
+ 	struct mlx5_frag_buf    buf;
 -- 
 2.23.0.rc1
 
