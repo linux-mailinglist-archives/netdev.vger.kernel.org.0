@@ -2,294 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E623595906
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 09:58:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 09B3095916
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:04:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729429AbfHTH6C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 03:58:02 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:50517 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729383AbfHTH5z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 03:57:55 -0400
-Received: by mail-wm1-f66.google.com with SMTP id v15so1746671wml.0
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 00:57:52 -0700 (PDT)
+        id S1729312AbfHTIEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 04:04:46 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:37313 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728595AbfHTIEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:04:46 -0400
+Received: by mail-qt1-f195.google.com with SMTP id y26so5029133qto.4
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 01:04:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jLs8gsGUflhNohKub9X/BIMLOOG/CQbdDT1tFffxDuY=;
-        b=XA3B4bg6WqT0fLy5t950iLvYqIA1YkI3SjSakQKOrd8jiL81UexoQ3uOArpuaXPRzx
-         oXX7GKvXz27oz67ZpXY5mzCmk8VOJlC1YgUIEsV9V05o7HAkk49n4nNksd3z9kkrr/kS
-         mCxbS+Up+ttr/vtG6ZVfTRJDmOjk0UcVNNDVsp+DocroXL1bVmJpCZpMeDr9UmGlK0Gv
-         OJHWeGgcS0J32zWRztrZ7vPFvmWQIIvw20jUGfORlg6KWRrWKYpAbEkZiRrnoIPURg40
-         Uw3xeXBhE6G34iYbGfh0JzIXuMZmtBvhaY2X57HXdSPiaz1JB94/W2mB06F3lLZLII/i
-         ss+A==
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=wajzv3AVu+DLNbi9/09U9wdk+g4fltInbvFXPto5n98=;
+        b=t+ZzG5cShGxRyJ6pDwK3jStzn7IADwhlwiimqejNfE9n/CHH9KeE6OWgPghQDiy1PO
+         bKq7F28Txwlt5EU30gd1S2WItWpwV6GVR8WNAuby6lZirKgtUT8DCzeb+Bil9Pvzd2E+
+         IJUQTvOg+hc7DV4/yFeyPkmlrY4rE10q9eRC1WpXN7ElR3WVWDS0nHWVS3b0Men3qrAL
+         573hfQjuN31nqya+UuXxDct+UVoZikwUcp6Sv/aUzf01nllvwxNJH+R4QPlzCi8l0Z9l
+         QkwHPnUDWM6pgUrpatQNefX1xyx1avgjg0wGPscTh8/u9DJQ/crqZyOqju/BMxNaRbKn
+         k/EQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jLs8gsGUflhNohKub9X/BIMLOOG/CQbdDT1tFffxDuY=;
-        b=LVeveAn6XDMKnE2UQWx5pOTt+Bls4w/xA+l2c9scptmSPeUVTytN51KRlUh89SWCkE
-         Dr+66KVxYS4cbxHKVIdwrqEoElj8aB6N1yrmhj+V2lL5WcsdsgOjiF+dhl8LglEBWtAR
-         k1rDTSTdqfTBhBL1DApDKgOCGltB9FdaueYv3CbYXalJW6Kxcs5jGrzQtYzft4oC+LKt
-         AugdmkwFGZabBQLKIk4FFtQHBiKjIKNumvSVoU8xX9vIaf6X6QPW/KTRsnQDhO8+u8VG
-         zlMuiZhs+yuPCS7JoxydPcRSWOsU1NwbgVGpX3edyryJkXQiDK8FwNe72aEQemduOOTU
-         0WMw==
-X-Gm-Message-State: APjAAAUipregO/e/4cR5ez1+sENW0AUpWbwVT4dV6BJjN0vr6u6Zz6bn
-        eS7p/W7H9OAonQgtkvDd35nhDA==
-X-Google-Smtp-Source: APXvYqyB1tp4t5hayCY7Ytn4AzS8RmPhCF5lYyOtTlJm43e2k7Bs9djtBU8mwArQJoAmOCZ0lPMS+A==
-X-Received: by 2002:a1c:1d4f:: with SMTP id d76mr25713009wmd.127.1566287871593;
-        Tue, 20 Aug 2019 00:57:51 -0700 (PDT)
-Received: from bender.baylibre.local (lmontsouris-657-1-212-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
-        by smtp.gmail.com with ESMTPSA id q24sm1506467wmc.3.2019.08.20.00.57.50
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=wajzv3AVu+DLNbi9/09U9wdk+g4fltInbvFXPto5n98=;
+        b=aqLdmILuZegYHiggbo71c0+DbcDRgd6JflLGR1ndJ4M57r402YO1N27CyLGJV2UeQ7
+         2e7+F/up425qsSFZMWU9NhUJuxniaMkW0MFBXD42g4qX6jspHY25oph/df3IWn3N8Xvk
+         R/5AHYgoAgdA6iP+IF76IwyPsoGMtPItBgaHTbNDJysE5ml6u7ivd2E/zAosSyC44IvR
+         HWII3IoNT6m5g4HBGpU8UguIl3KDPtBENZg1MlAOsAfz3RFEI6KUWWWDziOfdeEJ9N6i
+         YXYfq9scZBbzgk0NrcY186AaVto98iMUREzgJ8oo96+BQ++ObhjyvUQ8UAN781JPPuyM
+         CAHA==
+X-Gm-Message-State: APjAAAUiLq77ysAhmqaxHg69Pc+LXO3UKjM51pwRIJ1ZS+6XGm4+Xo95
+        aWlWQSellIV7mZ2I8wFJKDQ=
+X-Google-Smtp-Source: APXvYqyTqLZKsyB1uf4WZrv8DScpJc88HpvFBgjWPm2cGi+RWmZIgduKh0yAYheYdhlIKqBBcha5tQ==
+X-Received: by 2002:ac8:305b:: with SMTP id g27mr25789560qte.127.1566288285045;
+        Tue, 20 Aug 2019 01:04:45 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id j18sm7817579qth.24.2019.08.20.01.04.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 00:57:51 -0700 (PDT)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     davem@davemloft.net, robh+dt@kernel.org
-Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        martin.blumenstingl@googlemail.com, devicetree@vger.kernel.org,
-        netdev@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH net-next v4 2/2] dt-bindings: net: meson-dwmac: convert to yaml
-Date:   Tue, 20 Aug 2019 09:57:42 +0200
-Message-Id: <20190820075742.14857-3-narmstrong@baylibre.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190820075742.14857-1-narmstrong@baylibre.com>
-References: <20190820075742.14857-1-narmstrong@baylibre.com>
+        Tue, 20 Aug 2019 01:04:44 -0700 (PDT)
+Date:   Tue, 20 Aug 2019 04:04:43 -0400
+Message-ID: <20190820040443.GB4919@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     f.fainelli@gmail.com, andrew@lunn.ch, idosch@idosch.org,
+        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        davem@davemloft.net, netdev@vger.kernel.org,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH net-next 0/6] Dynamic toggling of vlan_filtering for
+ SJA1105 DSA
+In-Reply-To: <20190820000002.9776-1-olteanv@gmail.com>
+References: <20190820000002.9776-1-olteanv@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Now that we have the DT validation in place, let's convert the device tree
-bindings for the Synopsys DWMAC Glue for Amlogic SoCs over to a YAML schemas.
+On Tue, 20 Aug 2019 02:59:56 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
+> This patchset addresses a few limitations in DSA and the bridge core
+> that made it impossible for this sequence of commands to work:
+> 
+>   ip link add name br0 type bridge
+>   ip link set dev swp2 master br0
+>   echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+> 
+> Only this sequence was previously working:
+> 
+>   ip link add name br0 type bridge vlan_filtering 1
+>   ip link set dev swp2 master br0
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
----
- .../bindings/net/amlogic,meson-dwmac.yaml     | 113 ++++++++++++++++++
- .../devicetree/bindings/net/meson-dwmac.txt   |  71 -----------
- .../devicetree/bindings/net/snps,dwmac.yaml   |   5 +
- 3 files changed, 118 insertions(+), 71 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
- delete mode 100644 Documentation/devicetree/bindings/net/meson-dwmac.txt
+This is not quite true, these sequences of commands do "work". What I see
+though is that with the first sequence, the PVID 1 won't be programmed in
+the hardware. But the second sequence does program the hardware.
 
-diff --git a/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
-new file mode 100644
-index 000000000000..ae91aa9d8616
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/amlogic,meson-dwmac.yaml
-@@ -0,0 +1,113 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2019 BayLibre, SAS
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/net/amlogic,meson-dwmac.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Amlogic Meson DWMAC Ethernet controller
-+
-+maintainers:
-+  - Neil Armstrong <narmstrong@baylibre.com>
-+  - Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-+
-+# We need a select here so we don't match all nodes with 'snps,dwmac'
-+select:
-+  properties:
-+    compatible:
-+      contains:
-+        enum:
-+          - amlogic,meson6-dwmac
-+          - amlogic,meson8b-dwmac
-+          - amlogic,meson8m2-dwmac
-+          - amlogic,meson-gxbb-dwmac
-+          - amlogic,meson-axg-dwmac
-+  required:
-+    - compatible
-+
-+allOf:
-+  - $ref: "snps,dwmac.yaml#"
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - amlogic,meson8b-dwmac
-+              - amlogic,meson8m2-dwmac
-+              - amlogic,meson-gxbb-dwmac
-+              - amlogic,meson-axg-dwmac
-+
-+    then:
-+      properties:
-+        clocks:
-+          items:
-+            - description: GMAC main clock
-+            - description: First parent clock of the internal mux
-+            - description: Second parent clock of the internal mux
-+
-+        clock-names:
-+          minItems: 3
-+          maxItems: 3
-+          items:
-+            - const: stmmaceth
-+            - const: clkin0
-+            - const: clkin1
-+
-+        amlogic,tx-delay-ns:
-+          $ref: /schemas/types.yaml#definitions/uint32
-+          description:
-+            The internal RGMII TX clock delay (provided by this driver) in
-+            nanoseconds. Allowed values are 0ns, 2ns, 4ns, 6ns.
-+            When phy-mode is set to "rgmii" then the TX delay should be
-+            explicitly configured. When not configured a fallback of 2ns is
-+            used. When the phy-mode is set to either "rgmii-id" or "rgmii-txid"
-+            the TX clock delay is already provided by the PHY. In that case
-+            this property should be set to 0ns (which disables the TX clock
-+            delay in the MAC to prevent the clock from going off because both
-+            PHY and MAC are adding a delay).
-+            Any configuration is ignored when the phy-mode is set to "rmii".
-+
-+properties:
-+  compatible:
-+    additionalItems: true
-+    maxItems: 3
-+    items:
-+      - enum:
-+          - amlogic,meson6-dwmac
-+          - amlogic,meson8b-dwmac
-+          - amlogic,meson8m2-dwmac
-+          - amlogic,meson-gxbb-dwmac
-+          - amlogic,meson-axg-dwmac
-+    contains:
-+      enum:
-+        - snps,dwmac-3.70a
-+        - snps,dwmac
-+
-+  reg:
-+    items:
-+      - description:
-+          The first register range should be the one of the DWMAC controller
-+      - description:
-+          The second range is is for the Amlogic specific configuration
-+          (for example the PRG_ETHERNET register range on Meson8b and newer)
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-names
-+  - clocks
-+  - clock-names
-+  - phy-mode
-+
-+examples:
-+  - |
-+    ethmac: ethernet@c9410000 {
-+         compatible = "amlogic,meson-gxbb-dwmac", "snps,dwmac";
-+         reg = <0xc9410000 0x10000>, <0xc8834540 0x8>;
-+         interrupts = <8>;
-+         interrupt-names = "macirq";
-+         clocks = <&clk_eth>, <&clkc_fclk_div2>, <&clk_mpll2>;
-+         clock-names = "stmmaceth", "clkin0", "clkin1";
-+         phy-mode = "rgmii";
-+    };
-diff --git a/Documentation/devicetree/bindings/net/meson-dwmac.txt b/Documentation/devicetree/bindings/net/meson-dwmac.txt
-deleted file mode 100644
-index 1321bb194ed9..000000000000
---- a/Documentation/devicetree/bindings/net/meson-dwmac.txt
-+++ /dev/null
-@@ -1,71 +0,0 @@
--* Amlogic Meson DWMAC Ethernet controller
--
--The device inherits all the properties of the dwmac/stmmac devices
--described in the file stmmac.txt in the current directory with the
--following changes.
--
--Required properties on all platforms:
--
--- compatible:	Depending on the platform this should be one of:
--			- "amlogic,meson6-dwmac"
--			- "amlogic,meson8b-dwmac"
--			- "amlogic,meson8m2-dwmac"
--			- "amlogic,meson-gxbb-dwmac"
--			- "amlogic,meson-axg-dwmac"
--		Additionally "snps,dwmac" and any applicable more
--		detailed version number described in net/stmmac.txt
--		should be used.
--
--- reg:	The first register range should be the one of the DWMAC
--	controller. The second range is is for the Amlogic specific
--	configuration (for example the PRG_ETHERNET register range
--	on Meson8b and newer)
--
--Required properties on Meson8b, Meson8m2, GXBB and newer:
--- clock-names:	Should contain the following:
--		- "stmmaceth" - see stmmac.txt
--		- "clkin0" - first parent clock of the internal mux
--		- "clkin1" - second parent clock of the internal mux
--
--Optional properties on Meson8b, Meson8m2, GXBB and newer:
--- amlogic,tx-delay-ns:	The internal RGMII TX clock delay (provided
--			by this driver) in nanoseconds. Allowed values
--			are: 0ns, 2ns, 4ns, 6ns.
--			When phy-mode is set to "rgmii" then the TX
--			delay should be explicitly configured. When
--			not configured a fallback of 2ns is used.
--			When the phy-mode is set to either "rgmii-id"
--			or "rgmii-txid" the TX clock delay is already
--			provided by the PHY. In that case this
--			property should be set to 0ns (which disables
--			the TX clock delay in the MAC to prevent the
--			clock from going off because both PHY and MAC
--			are adding a delay).
--			Any configuration is ignored when the phy-mode
--			is set to "rmii".
--
--Example for Meson6:
--
--	ethmac: ethernet@c9410000 {
--		compatible = "amlogic,meson6-dwmac", "snps,dwmac";
--		reg = <0xc9410000 0x10000
--		       0xc1108108 0x4>;
--		interrupts = <0 8 1>;
--		interrupt-names = "macirq";
--		clocks = <&clk81>;
--		clock-names = "stmmaceth";
--	}
--
--Example for GXBB:
--	ethmac: ethernet@c9410000 {
--		compatible = "amlogic,meson-gxbb-dwmac", "snps,dwmac";
--		reg = <0x0 0xc9410000 0x0 0x10000>,
--			<0x0 0xc8834540 0x0 0x8>;
--		interrupts = <0 8 1>;
--		interrupt-names = "macirq";
--		clocks = <&clkc CLKID_ETH>,
--				<&clkc CLKID_FCLK_DIV2>,
--				<&clkc CLKID_MPLL2>;
--		clock-names = "stmmaceth", "clkin0", "clkin1";
--		phy-mode = "rgmii";
--	};
-diff --git a/Documentation/devicetree/bindings/net/snps,dwmac.yaml b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-index 4377f511a51d..c78be15704b9 100644
---- a/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-+++ b/Documentation/devicetree/bindings/net/snps,dwmac.yaml
-@@ -50,6 +50,11 @@ properties:
-         - allwinner,sun8i-r40-emac
-         - allwinner,sun8i-v3s-emac
-         - allwinner,sun50i-a64-emac
-+        - amlogic,meson6-dwmac
-+        - amlogic,meson8b-dwmac
-+        - amlogic,meson8m2-dwmac
-+        - amlogic,meson-gxbb-dwmac
-+        - amlogic,meson-axg-dwmac
-         - snps,dwmac
-         - snps,dwmac-3.50a
-         - snps,dwmac-3.610
--- 
-2.22.0
+But following bridge members will be correctly programmed with the VLAN
+though. The sequence below programs the hardware with VLAN 1 for swp3 as
+well as CPU and DSA ports, but not for swp2:
 
+    ip link add name br0 type bridge
+    ip link set dev swp2 master br0
+    echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+    ip link set dev swp3 master br0
+
+This is unfortunately also true for any 802.1Q VLANs. For example, only VID
+43 is programmed with the following sequence, but not VID 1 and VID 42:
+
+    ip link add name br0 type bridge
+    ip link set dev swp2 master br0
+    bridge vlan add dev swp2 vid 42
+    echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+    bridge vlan add dev swp2 vid 43
+
+So I understand that because VLANs are not propagated by DSA to the hardware
+when VLAN filtering is disabled, a port may not be programmed with its
+bridge's default PVID, and this is causing a problem for tag_8021q.
+
+Please reword so that we understand better what is the issue being fixed here.
+
+> 
+> On SJA1105, the situation is further complicated by the fact that
+> toggling vlan_filtering is causing a switch reset. However, the hardware
+> state restoration logic is already there in the driver. It is a matter
+> of the layers above which need a few fixups.
+> 
+> Also see this discussion thread:
+> https://www.spinics.net/lists/netdev/msg581042.html
+> 
+> Patch 1/6 is not functionally related but also related to dsa_8021q
+> handling of VLANs and this is a good opportunity to bring up the subject
+> for discussion.
+
+So please send 1/6 as a separate patch and bring up the discussion there.
+
+
+Thanks,
+
+	Vivien
