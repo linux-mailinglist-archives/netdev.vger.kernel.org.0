@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 144379631B
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:54:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5809630F
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:53:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730523AbfHTOyB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 10:54:01 -0400
-Received: from vps.xff.cz ([195.181.215.36]:60114 "EHLO vps.xff.cz"
+        id S1730457AbfHTOxu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 10:53:50 -0400
+Received: from vps.xff.cz ([195.181.215.36]:60112 "EHLO vps.xff.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729888AbfHTOxt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1728283AbfHTOxt (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 20 Aug 2019 10:53:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=megous.com; s=mail;
-        t=1566312826; bh=4hhK28dgS8BmhfHSH/CC6uoVklNXHuscBoxMGcS+N/w=;
+        t=1566312827; bh=/wCPaAVAhM9jkrpOgFjJQndvFQSZ3vor/dhJP6G9DqM=;
         h=From:To:Cc:Subject:Date:References:From;
-        b=XI5z9DBnNdOUqFw25KNQyt9MWq35cijMPrMPxwWFujdoAioSTERrxgfz/4Bgv2BoY
-         LnJJavS2Z5Ic3cP0TpH8b795HjbJ4uOUXZsAj60ug3CNw3S0q57v5h7TtLAQ7x87ID
-         yLHJzWbAsNjcbG4da6MFfZ19DXmU85CokPZfpB3U=
+        b=pr0wChX5ZN4OrzzMX3Txai82qwcOk2weMbp798hGCqayc02tBmkgal0EJDif4lKiO
+         0Z5ZyF08kJhi3AKPIG1VQOkAsPGnlq1Ffa9zqT3kRxYLJPaLRGt+jqjuSwbMnK0NXU
+         NDc9zrMaKXcYD+Jlu6URuc8eMVTnKofwFD/p2/Bo=
 From:   megous@megous.com
 To:     "David S. Miller" <davem@davemloft.net>,
         Rob Herring <robh+dt@kernel.org>,
@@ -31,9 +31,9 @@ Cc:     Ondrej Jirman <megous@megous.com>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com
-Subject: [PATCH 5/6] net: stmmac: sun8i: Add support for enabling a regulator for PHY I/O pins
-Date:   Tue, 20 Aug 2019 16:53:42 +0200
-Message-Id: <20190820145343.29108-6-megous@megous.com>
+Subject: [PATCH 6/6] arm64: dts: allwinner: orange-pi-3: Enable ethernet
+Date:   Tue, 20 Aug 2019 16:53:43 +0200
+Message-Id: <20190820145343.29108-7-megous@megous.com>
 In-Reply-To: <20190820145343.29108-1-megous@megous.com>
 References: <20190820145343.29108-1-megous@megous.com>
 MIME-Version: 1.0
@@ -45,98 +45,103 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ondrej Jirman <megous@megous.com>
 
-Orange Pi 3 has two regulators that power the Realtek RTL8211E. According
-to the phy datasheet, both regulators need to be enabled at the same time.
+Orange Pi 3 has two regulators that power the Realtek RTL8211E
+PHY. According to the datasheet, both regulators need to be enabled
+at the same time, or that "phy-io" should be enabled slightly earlier
+than "phy" regulator.
 
-Add support for the second optional regulator, "phy-io", to the glue
-driver.
+RTL8211E/RTL8211EG datasheet says:
+
+  Note 4: 2.5V (or 1.8/1.5V) RGMII power should be risen simultaneously
+  or slightly earlier than 3.3V power. Rising 2.5V (or 1.8/1.5V) power
+  later than 3.3V power may lead to errors.
+
+The driver ensures the regulator enable ordering. The timing is set
+in DT via startup-delay-us.
+
+We also need to wait at least 30ms after power-up/reset, before
+accessing the PHY registers.
+
+All values of RX/TX delay were tested exhaustively and a middle one
+of the range of working values was chosen.
 
 Signed-off-by: Ondrej Jirman <megous@megous.com>
 ---
- .../net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 31 ++++++++++++++++---
- 1 file changed, 27 insertions(+), 4 deletions(-)
+ .../dts/allwinner/sun50i-h6-orangepi-3.dts    | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-index e7df30d3cab1..e96337b7cd12 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
-@@ -61,6 +61,8 @@ struct emac_variant {
-  * @ephy_clk:			reference to the optional EPHY clock for
-  *				the internal PHY
-  * @regulator_phy:		reference to the optional regulator
-+ * @regulator_phy_io:		reference to the optional regulator for
-+ *				PHY I/O pins
-  * @rst_ephy:			reference to the optional EPHY reset for
-  *				the internal PHY
-  * @variant:			reference to the current board variant
-@@ -72,6 +74,7 @@ struct sunxi_priv_data {
- 	struct clk *tx_clk;
- 	struct clk *ephy_clk;
- 	struct regulator *regulator_phy;
-+	struct regulator *regulator_phy_io;
- 	struct reset_control *rst_ephy;
- 	const struct emac_variant *variant;
- 	struct regmap_field *regmap_field;
-@@ -530,21 +533,30 @@ static int sun8i_dwmac_init(struct platform_device *pdev, void *priv)
- 	struct sunxi_priv_data *gmac = priv;
- 	int ret;
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+index eda9d5f640b9..18349e60b8c6 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-h6-orangepi-3.dts
+@@ -15,6 +15,7 @@
  
-+	ret = regulator_enable(gmac->regulator_phy_io);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Fail to enable PHY I/O regulator\n");
-+		return ret;
-+	}
+ 	aliases {
+ 		serial0 = &uart0;
++		ethernet0 = &emac;
+ 	};
+ 
+ 	chosen {
+@@ -56,6 +57,15 @@
+ 		regulator-max-microvolt = <5000000>;
+ 		regulator-always-on;
+ 	};
 +
- 	ret = regulator_enable(gmac->regulator_phy);
- 	if (ret) {
- 		dev_err(&pdev->dev, "Fail to enable PHY regulator\n");
--		return ret;
-+		goto err_disable_regulator_phy_io;
- 	}
++	reg_gmac_2v5: gmac-2v5 {
++		compatible = "regulator-fixed";
++		regulator-name = "gmac-2v5";
++		regulator-min-microvolt = <2500000>;
++		regulator-max-microvolt = <2500000>;
++		enable-active-high;
++		gpio = <&pio 3 6 GPIO_ACTIVE_HIGH>; /* PD6 */
++	};
+ };
  
- 	ret = clk_prepare_enable(gmac->tx_clk);
- 	if (ret) {
--		if (gmac->regulator)
--			regulator_disable(gmac->regulator);
- 		dev_err(&pdev->dev, "Could not enable AHB clock\n");
--		return ret;
-+		goto err_disable_regulator_phy;
- 	}
+ &cpu0 {
+@@ -74,6 +84,35 @@
+ 	status = "okay";
+ };
  
- 	return 0;
-+err_disable_regulator_phy:
-+	regulator_disable(gmac->regulator_phy);
-+err_disable_regulator_phy_io:
-+	regulator_disable(gmac->regulator_phy_io);
-+	return ret;
- }
- 
- static void sun8i_dwmac_core_init(struct mac_device_info *hw,
-@@ -993,6 +1005,7 @@ static void sun8i_dwmac_exit(struct platform_device *pdev, void *priv)
- 	clk_disable_unprepare(gmac->tx_clk);
- 
- 	regulator_disable(gmac->regulator_phy);
-+	regulator_disable(gmac->regulator_phy_io);
- }
- 
- static void sun8i_dwmac_set_mac_loopback(void __iomem *ioaddr, bool enable)
-@@ -1136,6 +1149,16 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	/* Optional regulator for PHY I/O pins */
-+	gmac->regulator_phy_io = devm_regulator_get(dev, "phy-io");
-+	if (IS_ERR(gmac->regulator_phy_io)) {
-+		ret = PTR_ERR(gmac->regulator_phy_io);
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "Failed to get PHY I/O regulator (%d)\n",
-+				ret);
-+		return ret;
-+	}
++&emac {
++	pinctrl-names = "default";
++	pinctrl-0 = <&ext_rgmii_pins>;
++	phy-mode = "rgmii";
++	phy-handle = <&ext_rgmii_phy>;
++	/*
++	 * The board uses 2.5V RGMII signalling. Power sequence to enable
++	 * the phy is to enable GMAC-2V5 and GMAC-3V (aldo2) power rails
++	 * at the same time and to wait 100ms. The driver enables phy-io
++	 * first. Delay is achieved with enable-ramp-delay on reg_aldo2.
++	 */
++	phy-supply = <&reg_aldo2>;
++	phy-io-supply = <&reg_gmac_2v5>;
++	allwinner,rx-delay-ps = <1500>;
++	allwinner,tx-delay-ps = <700>;
++	status = "okay";
++};
 +
- 	/* The "GMAC clock control" register might be located in the
- 	 * CCU address range (on the R40), or the system control address
- 	 * range (on most other sun8i and later SoCs).
++&mdio {
++	ext_rgmii_phy: ethernet-phy@1 {
++		compatible = "ethernet-phy-ieee802.3-c22";
++		reg = <1>;
++
++		reset-gpios = <&pio 3 14 GPIO_ACTIVE_LOW>; /* PD14 */
++		reset-assert-us = <15000>;
++		reset-deassert-us = <40000>;
++	};
++};
++
+ &hdmi {
+ 	status = "okay";
+ };
+@@ -136,6 +175,7 @@
+ 				regulator-min-microvolt = <3300000>;
+ 				regulator-max-microvolt = <3300000>;
+ 				regulator-name = "vcc33-audio-tv-ephy-mac";
++				regulator-enable-ramp-delay = <100000>;
+ 			};
+ 
+ 			/* ALDO3 is shorted to CLDO1 */
 -- 
 2.22.1
 
