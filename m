@@ -2,165 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 86D45954C7
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 05:05:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9FBCC954E7
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 05:15:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729091AbfHTDFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 23:05:19 -0400
-Received: from verein.lst.de ([213.95.11.211]:52815 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728719AbfHTDFT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 19 Aug 2019 23:05:19 -0400
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 48ABB68B02; Tue, 20 Aug 2019 05:05:14 +0200 (CEST)
-Date:   Tue, 20 Aug 2019 05:05:14 +0200
-From:   Christoph Hellwig <hch@lst.de>
-To:     Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
-Cc:     Hillf Danton <hdanton@sina.com>,
-        Nicolin Chen <nicoleotsuka@gmail.com>,
-        Christoph Hellwig <hch@lst.de>, kvalo@codeaurora.org,
-        davem@davemloft.net, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, m.szyprowski@samsung.com,
-        robin.murphy@arm.com, iommu@lists.linux-foundation.org,
-        tobias.klausmann@freenet.de
-Subject: Re: regression in ath10k dma allocation
-Message-ID: <20190820030514.GA24612@lst.de>
-References: <8fe8b415-2d34-0a14-170b-dcb31c162e67@mni.thm.de> <20190816164301.GA3629@lst.de> <af96ea6a-2b17-9b66-7aba-b7dae5bcbba5@mni.thm.de> <20190816222506.GA24413@Asurada-Nvidia.nvidia.com> <20190818031328.11848-1-hdanton@sina.com> <acd7a4b0-fde8-1aa2-af07-2b469e5d5ca7@mni.thm.de>
+        id S1729126AbfHTDO1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 23:14:27 -0400
+Received: from mail-eopbgr680091.outbound.protection.outlook.com ([40.107.68.91]:39765
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728719AbfHTDO0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 23:14:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QzyWXS65cHqh06NbZ2JrYF8Mj0iRIzu2Xv+M5x3NqXKOJsYMCdR0VKLw3xq6pwCSmcFrjIli+mE+6CaxiL3GixA7u0RRSxJYlc5/jH0k8HvvZ3vx2YPOToFVBzDOV4FKh6bu38sxHfeADk7FtA6FS0TsIb+n4S6sj+uFBSnKwEMUXCcU9XEFdkmG8BSSaKLxAEo7bGhAUU6OHh2i9pEu/cEuMHAdSkkOnMCzXICswm7YYWqVp/9qAB9k5yxILI64QtgbNJhB/v873FDcvRc+r084l2GbboS8sDgHYp1fvczxrU/m/kVhVQT/0+AKmP2nJOez82c7tH+QQVffIw6LCw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rQBLdIxgvoWE8byS2jA1IRzQY2WeZr+a+CH/s80mqV8=;
+ b=T1WtKmYJUK6Y9Gxe305x7LojikqHX+7kusZ6LUBPOQHfJH6Ej5LcjbUDavlWKUVqmucHm1OP2B9IKXJptQFqGyeSAvG2YOACbJNguSAwpZzQcTooM2blpBad9zAPZskLt6pk58z7kY8KBuR5vDWWgUguCFHn3TBM3f2njkbcfmke1BiomN6QTMKn7QKBJYJm7GY8/ttOYFf2pqpUqWT7QpzHULXOqluPitG46JBRfrurA4Pi3Z1iHV6aK6o6fDxkfWNDb+2lOTyrDX3tWQ60p82iCEWaLhy3zUIKF6gC/MwDrlJWRDaidmVoztRNlHVT+Y1F9aCstUTDrs2lz6Yfig==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=rQBLdIxgvoWE8byS2jA1IRzQY2WeZr+a+CH/s80mqV8=;
+ b=ANmNzx7cGlo1tQDbV+Y39KuM6dDtMEmp5eqEXpa1UIMlq47WDlTK3b9oQUyTW0rLrhlK+rO9ttIqMZKvkQmxz1XuJ0nErHLT0bzOVX8nQZ2IZ4OwaEtuxhl+6tr3soK/6ttjz/Gels06rVuyJB5HGJNVEpTCtjqHwgha92SJnRo=
+Received: from SN6PR2101MB0942.namprd21.prod.outlook.com (52.132.114.19) by
+ SN6PR2101MB1055.namprd21.prod.outlook.com (52.132.115.16) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.5; Tue, 20 Aug 2019 03:14:22 +0000
+Received: from SN6PR2101MB0942.namprd21.prod.outlook.com
+ ([fe80::f9d7:f678:4131:e0e5]) by SN6PR2101MB0942.namprd21.prod.outlook.com
+ ([fe80::f9d7:f678:4131:e0e5%8]) with mapi id 15.20.2199.004; Tue, 20 Aug 2019
+ 03:14:22 +0000
+From:   Dexuan Cui <decui@microsoft.com>
+To:     "jhansen@vmware.com" <jhansen@vmware.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "stefanha@redhat.com" <stefanha@redhat.com>,
+        "sgarzare@redhat.com" <sgarzare@redhat.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <Alexander.Levin@microsoft.com>,
+        "sashal@kernel.org" <sashal@kernel.org>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>
+CC:     "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dexuan Cui <decui@microsoft.com>
+Subject: [PATCH] vsock: Fix a lockdep warning in __vsock_release()
+Thread-Topic: [PATCH] vsock: Fix a lockdep warning in __vsock_release()
+Thread-Index: AQHVVwVcym1CZW34XkidIpoYaOKV3w==
+Date:   Tue, 20 Aug 2019 03:14:22 +0000
+Message-ID: <1566270830-28981-1-git-send-email-decui@microsoft.com>
+Reply-To: Dexuan Cui <decui@microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR08CA0020.namprd08.prod.outlook.com
+ (2603:10b6:301:5f::33) To SN6PR2101MB0942.namprd21.prod.outlook.com
+ (2603:10b6:805:4::19)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=decui@microsoft.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 1.8.3.1
+x-originating-ip: [13.77.154.182]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 0a3548b1-c813-41dc-49bc-08d7251c7f2f
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600158)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:SN6PR2101MB1055;
+x-ms-traffictypediagnostic: SN6PR2101MB1055:|SN6PR2101MB1055:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <SN6PR2101MB1055A5F5455AD4D2524B3036BFAB0@SN6PR2101MB1055.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1751;
+x-forefront-prvs: 013568035E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(396003)(376002)(39860400002)(136003)(366004)(199004)(189003)(66556008)(81166006)(2616005)(81156014)(66446008)(66476007)(64756008)(14454004)(6436002)(66946007)(86362001)(43066004)(26005)(6512007)(476003)(186003)(3450700001)(25786009)(107886003)(2201001)(478600001)(54906003)(6636002)(110136005)(6116002)(305945005)(3846002)(22452003)(4326008)(316002)(52116002)(66066001)(4720700003)(486006)(10090500001)(10290500003)(8676002)(53936002)(6486002)(50226002)(7736002)(1511001)(256004)(71190400001)(71200400001)(14444005)(2501003)(6506007)(5660300002)(99286004)(36756003)(386003)(2906002)(8936002)(102836004)(921003)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:SN6PR2101MB1055;H:SN6PR2101MB0942.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 1lIpW8nZRNrpX79ij27+c5d9hEvnhrbjohgxbxaVQu5gnCJQ+hutUUo1399jA1baQkxMzyr5xnzeC4RTdxwrUiTi0hXNkDFc+l3Bw6ZAofTtEsyeWHQ/9Q3TMGHCrEwiJ6Ahm2Syq3tWlIAszu+6c0zjqt8dLfBFTRxOcSnag1Sedzvfiy5iyrCyj9KyyIV66Gli6z53Jm9qGjjq0Rk+35zk/O5eHFXf93KDrAYT+qJsmlcfy+XF0MtmqjVUiZ3oDywO4G3Z3i1uzz02BU7uQqjxb1f+mYCRPBxEtlOLeFWzPLoM77A5W6P4wtApW6Pxx5+OmwaifMaHFxRBbE73WjAhUxQHVKlJUgrPXI8C39P5vzNcJvQR7KDiT8jSEr8Fv8C5g+XKf8EXETunmtWH5HbOyeR7nMvR4fErnfLzeSQ=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <acd7a4b0-fde8-1aa2-af07-2b469e5d5ca7@mni.thm.de>
-User-Agent: Mutt/1.5.17 (2007-11-01)
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0a3548b1-c813-41dc-49bc-08d7251c7f2f
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2019 03:14:22.2321
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: K0HBZfHNhUBBActz5pkqooa5oqV9sNPNaZ9Mv4ZeCK97R7awhpF11+FDnMGi58bps/CoHNlRNSg6dU4eqTWK1g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR2101MB1055
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tobias, plase try this patch:
+Lockdep is unhappy if two locks from the same class are held.
 
---
-From 88c590a2ecafc8279388f25bfbe1ead8ea3507a6 Mon Sep 17 00:00:00 2001
-From: Christoph Hellwig <hch@lst.de>
-Date: Tue, 20 Aug 2019 11:45:49 +0900
-Subject: dma-direct: fix zone selection after an unaddressable CMA allocation
+Fix the below warning by making __vsock_release() non-recursive -- this
+patch is kind of ugly, but it looks to me there is not a better way to
+deal with the problem here.
 
-The new dma_alloc_contiguous hides if we allocate CMA or regular
-pages, and thus fails to retry a ZONE_NORMAL allocation if the CMA
-allocation succeeds but isn't addressable.  That means we either fail
-outright or dip into a small zone that might not succeed either.
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=
+=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D=3D
+WARNING: possible recursive locking detected
+5.2.0+ #6 Not tainted
+--------------------------------------------
+a.out/1020 is trying to acquire lock:
+0000000074731a98 (sk_lock-AF_VSOCK){+.+.}, at: hvs_release+0x10/0x120 [hv_s=
+ock]
 
-Thanks to Hillf Danton for debugging this issue.
+but task is already holding lock:
+0000000014ff8397 (sk_lock-AF_VSOCK){+.+.}, at: __vsock_release+0x2e/0xf0 [v=
+sock]
 
-Fixes: b1d2dc009dec ("dma-contiguous: add dma_{alloc,free}_contiguous() helpers")
-Reported-by: Tobias Klausmann <tobias.johannes.klausmann@mni.thm.de>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
+other info that might help us debug this:
+ Possible unsafe locking scenario:
+
+       CPU0
+       ----
+  lock(sk_lock-AF_VSOCK);
+  lock(sk_lock-AF_VSOCK);
+
+ *** DEADLOCK ***
+
+ May be due to missing lock nesting notation
+
+2 locks held by a.out/1020:
+ #0: 00000000f8bceaa7 (&sb->s_type->i_mutex_key#10){+.+.}, at: __sock_relea=
+se+0x2d/0xa0
+ #1: 0000000014ff8397 (sk_lock-AF_VSOCK){+.+.}, at: __vsock_release+0x2e/0x=
+f0 [vsock]
+
+stack backtrace:
+CPU: 7 PID: 1020 Comm: a.out Not tainted 5.2.0+ #6
+Call Trace:
+ dump_stack+0x67/0x90
+ __lock_acquire.cold.66+0x14d/0x1f8
+ lock_acquire+0xb5/0x1c0
+ lock_sock_nested+0x6d/0x90
+ hvs_release+0x10/0x120 [hv_sock]
+ __vsock_release+0x24/0xf0 [vsock]
+ __vsock_release+0xa0/0xf0 [vsock]
+ vsock_release+0x12/0x30 [vsock]
+ __sock_release+0x37/0xa0
+ sock_close+0x14/0x20
+ __fput+0xc1/0x250
+ task_work_run+0x98/0xc0
+ do_exit+0x3dd/0xc60
+ do_group_exit+0x47/0xc0
+ get_signal+0x169/0xc60
+ do_signal+0x30/0x710
+ exit_to_usermode_loop+0x50/0xa0
+ do_syscall_64+0x1fc/0x220
+ entry_SYSCALL_64_after_hwframe+0x49/0xbe
+
+Signed-off-by: Dexuan Cui <decui@microsoft.com>
 ---
- drivers/iommu/dma-iommu.c      | 3 +++
- include/linux/dma-contiguous.h | 5 +----
- kernel/dma/contiguous.c        | 9 +++------
- kernel/dma/direct.c            | 7 ++++++-
- 4 files changed, 13 insertions(+), 11 deletions(-)
+ net/vmw_vsock/af_vsock.c         | 33 ++++++++++++++++++++++++++++++++-
+ net/vmw_vsock/hyperv_transport.c |  2 +-
+ 2 files changed, 33 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iommu/dma-iommu.c b/drivers/iommu/dma-iommu.c
-index d991d40f797f..f68a62c3c32b 100644
---- a/drivers/iommu/dma-iommu.c
-+++ b/drivers/iommu/dma-iommu.c
-@@ -965,10 +965,13 @@ static void *iommu_dma_alloc_pages(struct device *dev, size_t size,
- {
- 	bool coherent = dev_is_dma_coherent(dev);
- 	size_t alloc_size = PAGE_ALIGN(size);
-+	int node = dev_to_node(dev);
- 	struct page *page = NULL;
- 	void *cpu_addr;
- 
- 	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-+	if (!page)
-+		page = alloc_pages_node(node, gfp, get_order(alloc_size));
- 	if (!page)
- 		return NULL;
- 
-diff --git a/include/linux/dma-contiguous.h b/include/linux/dma-contiguous.h
-index c05d4e661489..03f8e98e3bcc 100644
---- a/include/linux/dma-contiguous.h
-+++ b/include/linux/dma-contiguous.h
-@@ -160,10 +160,7 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
- static inline struct page *dma_alloc_contiguous(struct device *dev, size_t size,
- 		gfp_t gfp)
- {
--	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
--	size_t align = get_order(PAGE_ALIGN(size));
--
--	return alloc_pages_node(node, gfp, align);
-+	return NULL;
+diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+index ab47bf3..420f605 100644
+--- a/net/vmw_vsock/af_vsock.c
++++ b/net/vmw_vsock/af_vsock.c
+@@ -638,6 +638,37 @@ struct sock *__vsock_create(struct net *net,
  }
- 
- static inline void dma_free_contiguous(struct device *dev, struct page *page,
-diff --git a/kernel/dma/contiguous.c b/kernel/dma/contiguous.c
-index 2bd410f934b3..e6b450fdbeb6 100644
---- a/kernel/dma/contiguous.c
-+++ b/kernel/dma/contiguous.c
-@@ -230,9 +230,7 @@ bool dma_release_from_contiguous(struct device *dev, struct page *pages,
-  */
- struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
+ EXPORT_SYMBOL_GPL(__vsock_create);
+=20
++static void __vsock_release2(struct sock *sk)
++{
++	if (sk) {
++		struct sk_buff *skb;
++		struct vsock_sock *vsk;
++
++		vsk =3D vsock_sk(sk);
++
++		/* The release call is supposed to use lock_sock_nested()
++		 * rather than lock_sock(), if a lock should be acquired.
++		 */
++		transport->release(vsk);
++
++		/* Use the nested version to avoid the warning
++		 * "possible recursive locking detected".
++		 */
++		lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
++		sock_orphan(sk);
++		sk->sk_shutdown =3D SHUTDOWN_MASK;
++
++		while ((skb =3D skb_dequeue(&sk->sk_receive_queue)))
++			kfree_skb(skb);
++
++		/* This sk can not be a listener, so it's unnecessary
++		 * to call vsock_dequeue_accept().
++		 */
++		release_sock(sk);
++		sock_put(sk);
++	}
++}
++
+ static void __vsock_release(struct sock *sk)
  {
--	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
--	size_t count = PAGE_ALIGN(size) >> PAGE_SHIFT;
--	size_t align = get_order(PAGE_ALIGN(size));
-+	size_t count = size >> PAGE_SHIFT;
- 	struct page *page = NULL;
- 	struct cma *cma = NULL;
- 
-@@ -243,14 +241,12 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
- 
- 	/* CMA can be used only in the context which permits sleeping */
- 	if (cma && gfpflags_allow_blocking(gfp)) {
-+		size_t align = get_order(size);
- 		size_t cma_align = min_t(size_t, align, CONFIG_CMA_ALIGNMENT);
- 
- 		page = cma_alloc(cma, count, cma_align, gfp & __GFP_NOWARN);
- 	}
- 
--	/* Fallback allocation of normal pages */
--	if (!page)
--		page = alloc_pages_node(node, gfp, align);
- 	return page;
- }
- 
-@@ -258,6 +254,7 @@ struct page *dma_alloc_contiguous(struct device *dev, size_t size, gfp_t gfp)
-  * dma_free_contiguous() - release allocated pages
-  * @dev:   Pointer to device for which the pages were allocated.
-  * @page:  Pointer to the allocated pages.
-+	int node = dev ? dev_to_node(dev) : NUMA_NO_NODE;
-  * @size:  Size of allocated pages.
-  *
-  * This function releases memory allocated by dma_alloc_contiguous(). As the
-diff --git a/kernel/dma/direct.c b/kernel/dma/direct.c
-index 795c9b095d75..d82d184463ce 100644
---- a/kernel/dma/direct.c
-+++ b/kernel/dma/direct.c
-@@ -85,6 +85,8 @@ static bool dma_coherent_ok(struct device *dev, phys_addr_t phys, size_t size)
- struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 		dma_addr_t *dma_handle, gfp_t gfp, unsigned long attrs)
- {
-+	size_t alloc_size = PAGE_ALIGN(size);
-+	int node = dev_to_node(dev);
- 	struct page *page = NULL;
- 	u64 phys_mask;
- 
-@@ -95,8 +97,11 @@ struct page *__dma_direct_alloc_pages(struct device *dev, size_t size,
- 	gfp &= ~__GFP_ZERO;
- 	gfp |= __dma_direct_optimal_gfp_mask(dev, dev->coherent_dma_mask,
- 			&phys_mask);
-+	page = dma_alloc_contiguous(dev, alloc_size, gfp);
-+	if (page && dma_coherent_ok(dev, page_to_phys(page), size))
-+		return page;
- again:
--	page = dma_alloc_contiguous(dev, size, gfp);
-+	page = alloc_pages_node(node, gfp, get_order(alloc_size));
- 	if (page && !dma_coherent_ok(dev, page_to_phys(page), size)) {
- 		dma_free_contiguous(dev, page, size);
- 		page = NULL;
--- 
-2.20.1
+ 	if (sk) {
+@@ -659,7 +690,7 @@ static void __vsock_release(struct sock *sk)
+=20
+ 		/* Clean up any sockets that never were accepted. */
+ 		while ((pending =3D vsock_dequeue_accept(sk)) !=3D NULL) {
+-			__vsock_release(pending);
++			__vsock_release2(pending);
+ 			sock_put(pending);
+ 		}
+=20
+diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transp=
+ort.c
+index 9d864eb..4b126b2 100644
+--- a/net/vmw_vsock/hyperv_transport.c
++++ b/net/vmw_vsock/hyperv_transport.c
+@@ -559,7 +559,7 @@ static void hvs_release(struct vsock_sock *vsk)
+ 	struct sock *sk =3D sk_vsock(vsk);
+ 	bool remove_sock;
+=20
+-	lock_sock(sk);
++	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
+ 	remove_sock =3D hvs_close_lock_held(vsk);
+ 	release_sock(sk);
+ 	if (remove_sock)
+--=20
+1.8.3.1
 
