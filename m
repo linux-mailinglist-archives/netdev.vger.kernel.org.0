@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 12FC295A2C
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:50:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7700995A2F
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:50:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729555AbfHTItD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 04:49:03 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40593 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729449AbfHTItC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:49:02 -0400
-Received: by mail-wr1-f65.google.com with SMTP id c3so11497774wrd.7;
-        Tue, 20 Aug 2019 01:49:00 -0700 (PDT)
+        id S1729585AbfHTItJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 04:49:09 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35942 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729471AbfHTItD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:49:03 -0400
+Received: by mail-wr1-f67.google.com with SMTP id r3so11511750wrt.3;
+        Tue, 20 Aug 2019 01:49:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=FKNrrF2xd/dx0ZsLLj4swvq6lspHhHmUFsye77oNcos=;
-        b=BwZXmFPPq1Wrdn30TfGjCW+pZO0jMo5o2/+83297r1e7EizxuKfHknnyfqRB9q7ysC
-         s1Nqa5GEbqJIuVTAQq6fyTz+wSPPBlmCvmzFDpfoKcOaZBqYa9cDf3ClXUY8CCY3+p1v
-         Fz7IDZ6+L895F+ICBw3pNzR8zOFs7YPOkabgQJKJ4+YYSKgllqmHioyYPImGrMwG8WaZ
-         TN/qH8jGKRMyG0avj8sKIWfO9dUHk92e0AmdioDwNMDrCA6HcKhIfT9Q3tEjoLhGCZBG
-         yzuMmXMMMBVw78LNSyqRfAmP/aTpSVrpsKsKXxC4yDvIesxOCqghIpPmZ07cjkQaS1iL
-         ijZA==
+        bh=LDL1hIKadz1gfObFDnKi45zKhu1D1Ko8kUYujKrQlXI=;
+        b=Eev7i6GzahYrLsR0wFJydyUOqhkGy0UVi5NypT33nkNFTETCLPE/pDVaolap9SKM1D
+         9TiAi4Nnzn6piRb3l8GXZQqGP05ylBLVO1lMUWGpOAMSuMCllaq6EEYazl/Ft0McA7S6
+         lTVdRGdxo1K/KVNb8HePAjZeFGMlubvy/rOCmmExGctrPjsAi3iRc3jrDEoGmP1mPhgJ
+         QLcdznl3R0xdyKVzfpY8El3rPs23JdJb03xV0L7VDhL4AoAxHxG32qX+LegZ/MmN63gi
+         ZPAUJWFiXR8QHi0UIL3UymONMsLobxwfJvEUMgO5RyeGJqv9r/1YvcIMtbnhiNRwnktG
+         YVzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FKNrrF2xd/dx0ZsLLj4swvq6lspHhHmUFsye77oNcos=;
-        b=T0myvxQBH12jcQt6FOr6GLGVmhdq2Fyte1FSfH3Nbq4XJbgf6kJzSq5HJFFjRv7Sh4
-         6YJoQNa+QQiQJp761eAxOqr039bzMBnV0KONaq/8qtTo1xaQjsJlsAuC4Y2UF5utJEtk
-         7XtP9SbnqXkWJeCEWWdY3hsgD/2rTjWCAg1KPYm6YxtCkViG3f/Hq2dCeljGCtZU9Htg
-         UVTSz4WAL0CrcDKjYcglDTxYoKMKlhOmH0jNyIXKEB2GFPW+X0clVSV0ZKr2MaFT0BrP
-         HDqv+FP4/2wIlavjfkl0hspn5o+6WV2KKryp845DaUYCeO7Gt5HmwMHoqV7NhrJiLpzi
-         Ufcw==
-X-Gm-Message-State: APjAAAVicUat6fKmxiZgVts41tl9hUYAYZT6PQXKAgZYGMh7Uh6jQpHq
-        9G/wWCeiwajuOUpyZo4vBElCpwt8bXA=
-X-Google-Smtp-Source: APXvYqwMRT0RtALgiYWbr/Z8mQTBee/4TnFeIXe+ZNdw3o2RLFDwI1gOyExtyBq+G2wcULEb57mxog==
-X-Received: by 2002:adf:f7cd:: with SMTP id a13mr32662955wrq.165.1566290939322;
-        Tue, 20 Aug 2019 01:48:59 -0700 (PDT)
+        bh=LDL1hIKadz1gfObFDnKi45zKhu1D1Ko8kUYujKrQlXI=;
+        b=qY9zzdWXwTPnv3cB0Yi68G9qoQRIsndakrb2H2uCg/VL9WReInWoPexTyXj7TcEqSW
+         bVO554EsWSMRcBbDmg/8LXyDpRAxOE8oTwXjR6koTEny7FbzoKDs7PauHa1PrzFXAJR0
+         3D8foW7Ub4Yc6e/DAzBoaKam7uW9y7sLHfoiAXNzAugn/V5bjfrOpy8vSqkZU4qNmupu
+         OTBbrrjzV4yN7/iwggsKWSGk5s18eUyDwc1WL5HYxEePxd9rzE93TA5tM5uqmh2epqbA
+         puezlm4XqYGc4k91cXp48B1pqr4USU7kAnfcJigIvN2YSCg0HKdtUlkAsNqGmGijoQiU
+         9F1A==
+X-Gm-Message-State: APjAAAVBeoKmxJwYP6MTM79whBIy5kfdiG+wdevFPPdS/GYGrBefgd2s
+        JpcjOmOaj+avsU/96QebjiLqBpEM8Gg=
+X-Google-Smtp-Source: APXvYqwwZ1dBDGbYAQszivzUqUT0eItl/QLi/GTtdUO22WiA5QVggUXxRrv6VC+gmTXvTOe0SEJEUg==
+X-Received: by 2002:adf:cd81:: with SMTP id q1mr29360456wrj.16.1566290940464;
+        Tue, 20 Aug 2019 01:49:00 -0700 (PDT)
 Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id s64sm36437105wmf.16.2019.08.20.01.48.58
+        by smtp.gmail.com with ESMTPSA id s64sm36437105wmf.16.2019.08.20.01.48.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 01:48:58 -0700 (PDT)
+        Tue, 20 Aug 2019 01:48:59 -0700 (PDT)
 From:   Hubert Feurstein <h.feurstein@gmail.com>
 X-Google-Original-From: Hubert Feurstein <hubert.feurstein@vahle.at>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -51,13 +51,12 @@ Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Richard Cochran <richardcochran@gmail.com>,
         Miroslav Lichvar <mlichvar@redhat.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next v3 3/4] net: dsa: mv88e6xxx: extend PTP gettime function to read system clock
-Date:   Tue, 20 Aug 2019 10:48:32 +0200
-Message-Id: <20190820084833.6019-4-hubert.feurstein@vahle.at>
+Subject: [PATCH net-next v3 4/4] net: fec: add support for PTP system timestamping for MDIO devices
+Date:   Tue, 20 Aug 2019 10:48:33 +0200
+Message-Id: <20190820084833.6019-5-hubert.feurstein@vahle.at>
 X-Mailer: git-send-email 2.22.1
 In-Reply-To: <20190820084833.6019-1-hubert.feurstein@vahle.at>
 References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
@@ -70,110 +69,64 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hubert Feurstein <h.feurstein@gmail.com>
 
-This adds support for the PTP_SYS_OFFSET_EXTENDED ioctl.
+In order to improve the synchronisation precision of phc2sys (from
+the linuxptp project) for devices like switches which are attached
+to the MDIO bus, it is necessary the get the system timestamps as
+close as possible to the access which causes the PTP timestamp
+register to be snapshotted in the switch hardware. Usually this is
+triggered by an MDIO write access, the snapshotted timestamp is then
+transferred by several MDIO reads.
+
+The ptp_read_system_*ts functions already check the ptp_sts pointer.
 
 Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 ---
-Changes in v3:
- - mv88e6xxx_smi_indirect_write: forward ptp_sts only on the last write
- 
- drivers/net/dsa/mv88e6xxx/chip.h |  2 ++
- drivers/net/dsa/mv88e6xxx/ptp.c  | 11 +++++++----
- drivers/net/dsa/mv88e6xxx/smi.c  |  7 ++++++-
- 3 files changed, 15 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/freescale/fec_main.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
-index a406be2f5652..1bfde0d8a5a3 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.h
-+++ b/drivers/net/dsa/mv88e6xxx/chip.h
-@@ -275,6 +275,8 @@ struct mv88e6xxx_chip {
- 	struct ptp_clock_info	ptp_clock_info;
- 	struct delayed_work	tai_event_work;
- 	struct ptp_pin_desc	pin_config[MV88E6XXX_MAX_GPIO];
-+	struct ptp_system_timestamp *ptp_sts;
-+
- 	u16 trig_config;
- 	u16 evcap_config;
- 	u16 enable_count;
-diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
-index 073cbd0bb91b..cf6e52ee9e0a 100644
---- a/drivers/net/dsa/mv88e6xxx/ptp.c
-+++ b/drivers/net/dsa/mv88e6xxx/ptp.c
-@@ -235,14 +235,17 @@ static int mv88e6xxx_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
- 	return 0;
- }
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+index c01d3ec3e9af..dd1253683ac0 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1815,10 +1815,12 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+ 	reinit_completion(&fep->mdio_done);
  
--static int mv88e6xxx_ptp_gettime(struct ptp_clock_info *ptp,
--				 struct timespec64 *ts)
-+static int mv88e6xxx_ptp_gettimex(struct ptp_clock_info *ptp,
-+				  struct timespec64 *ts,
-+				  struct ptp_system_timestamp *sts)
- {
- 	struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
- 	u64 ns;
+ 	/* start a write op */
++	ptp_read_system_prets(bus->ptp_sts);
+ 	writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
+ 		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
+ 		FEC_MMFR_TA | FEC_MMFR_DATA(value),
+ 		fep->hwp + FEC_MII_DATA);
++	ptp_read_system_postts(bus->ptp_sts);
  
- 	mv88e6xxx_reg_lock(chip);
-+	chip->ptp_sts = sts;
- 	ns = timecounter_read(&chip->tstamp_tc);
-+	chip->ptp_sts = NULL;
- 	mv88e6xxx_reg_unlock(chip);
+ 	/* wait for end of transfer */
+ 	time_left = wait_for_completion_timeout(&fep->mdio_done,
+@@ -1956,7 +1958,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 	struct fec_enet_private *fep = netdev_priv(ndev);
+ 	struct device_node *node;
+ 	int err = -ENXIO;
+-	u32 mii_speed, holdtime;
++	u32 mii_speed, mii_period, holdtime;
  
- 	*ts = ns_to_timespec64(ns);
-@@ -426,7 +429,7 @@ static void mv88e6xxx_ptp_overflow_check(struct work_struct *work)
- 	struct mv88e6xxx_chip *chip = dw_overflow_to_chip(dw);
- 	struct timespec64 ts;
+ 	/*
+ 	 * The i.MX28 dual fec interfaces are not equal.
+@@ -1993,6 +1995,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 	 * document.
+ 	 */
+ 	mii_speed = DIV_ROUND_UP(clk_get_rate(fep->clk_ipg), 5000000);
++	mii_period = div_u64((u64)mii_speed * 2 * NSEC_PER_SEC, clk_get_rate(fep->clk_ipg));
+ 	if (fep->quirks & FEC_QUIRK_ENET_MAC)
+ 		mii_speed--;
+ 	if (mii_speed > 63) {
+@@ -2034,6 +2037,8 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+ 		pdev->name, fep->dev_id + 1);
+ 	fep->mii_bus->priv = fep;
+ 	fep->mii_bus->parent = &pdev->dev;
++	fep->mii_bus->flags = MII_BUS_F_PTP_STS_SUPPORTED;
++	fep->mii_bus->ptp_sts_offset = 32 * mii_period;
  
--	mv88e6xxx_ptp_gettime(&chip->ptp_clock_info, &ts);
-+	mv88e6xxx_ptp_gettimex(&chip->ptp_clock_info, &ts, NULL);
- 
- 	schedule_delayed_work(&chip->overflow_work,
- 			      MV88E6XXX_TAI_OVERFLOW_PERIOD);
-@@ -472,7 +475,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
- 	chip->ptp_clock_info.max_adj    = MV88E6XXX_MAX_ADJ_PPB;
- 	chip->ptp_clock_info.adjfine	= mv88e6xxx_ptp_adjfine;
- 	chip->ptp_clock_info.adjtime	= mv88e6xxx_ptp_adjtime;
--	chip->ptp_clock_info.gettime64	= mv88e6xxx_ptp_gettime;
-+	chip->ptp_clock_info.gettimex64	= mv88e6xxx_ptp_gettimex;
- 	chip->ptp_clock_info.settime64	= mv88e6xxx_ptp_settime;
- 	chip->ptp_clock_info.enable	= ptp_ops->ptp_enable;
- 	chip->ptp_clock_info.verify	= ptp_ops->ptp_verify;
-diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
-index 282fe08db050..1b5f78662158 100644
---- a/drivers/net/dsa/mv88e6xxx/smi.c
-+++ b/drivers/net/dsa/mv88e6xxx/smi.c
-@@ -45,7 +45,8 @@ static int mv88e6xxx_smi_direct_write(struct mv88e6xxx_chip *chip,
- {
- 	int ret;
- 
--	ret = mdiobus_write_nested(chip->bus, dev, reg, data);
-+	ret = mdiobus_write_sts_nested(chip->bus, dev, reg, data,
-+				       chip->ptp_sts);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -130,6 +131,7 @@ static int mv88e6xxx_smi_indirect_read(struct mv88e6xxx_chip *chip,
- static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
- 					int dev, int reg, u16 data)
- {
-+	struct ptp_system_timestamp *ptp_sts = chip->ptp_sts;
- 	int err;
- 
- 	err = mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
-@@ -137,11 +139,14 @@ static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
- 	if (err)
- 		return err;
- 
-+	chip->ptp_sts = NULL;
- 	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
- 					 MV88E6XXX_SMI_DATA, data);
- 	if (err)
- 		return err;
- 
-+	/* Capture the PTP system timestamps only on *this* write operation */
-+	chip->ptp_sts = ptp_sts;
- 	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
- 					 MV88E6XXX_SMI_CMD,
- 					 MV88E6XXX_SMI_CMD_BUSY |
+ 	node = of_get_child_by_name(pdev->dev.of_node, "mdio");
+ 	err = of_mdiobus_register(fep->mii_bus, node);
 -- 
 2.22.1
 
