@@ -2,124 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 765CF96C1C
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:24:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D24D696C28
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730842AbfHTWXU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:23:20 -0400
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:40560 "EHLO
-        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727358AbfHTWXT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:23:19 -0400
-Received: from pps.filterd (m0170390.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMLLSG031038;
-        Tue, 20 Aug 2019 18:23:18 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dellteam.com; h=from : to : cc :
- subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=smtpout1; bh=Y6k0CXvcStQUDgctYziXK5EGTdaIgQ5HuRwJxvV3x7g=;
- b=PoR/yfkxhBL5vT6OC+yodv/kx2LmTvL/QwGiy9ZM4HkASSmq8G/vhDfR3YoPl5PJfMQr
- AB/osjC75PZsrvO17jmPONYBrs+u+q3swf8a3WqH4ha0CEmGEznQ76qL/i9THOlWmqjE
- tpEdSUY15PhjuJsfpzGbKqXCEKyqCdffTPmXBDKZmlWVljnUERk3lAM8BUjH0wAUn3Ed
- YoVY+plq3S/NY2koFHzGvOacR7ng3MyOhX/H7pXW/+TlcunJVpCvQQ6GiqTMTwvuLlA2
- 1gcfyU0neO1CbQ68u2fF90p5gEjZ1Ml3IAG7VwzeU9tgNkTLBGuZz9W36n3xC+x4ct6s sA== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0a-00154904.pphosted.com with ESMTP id 2ugfdm2vx7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Aug 2019 18:23:18 -0400
-Received: from pps.filterd (m0090351.ppops.net [127.0.0.1])
-        by mx0b-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMNIEI137858;
-        Tue, 20 Aug 2019 18:23:18 -0400
-Received: from ausc60ps301.us.dell.com (ausc60ps301.us.dell.com [143.166.148.206])
-        by mx0b-00154901.pphosted.com with ESMTP id 2ugr58s5jn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 20 Aug 2019 18:23:18 -0400
-X-LoopCount0: from 10.166.132.130
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.60,349,1549951200"; 
-   d="scan'208";a="1346990510"
-From:   <Charles.Hyde@dellteam.com>
-To:     <linux-usb@vger.kernel.org>, <linux-acpi@vger.kernel.org>
-CC:     <gregkh@linuxfoundation.org>, <Mario.Limonciello@dell.com>,
-        <oliver@neukum.org>, <netdev@vger.kernel.org>,
-        <nic_swsd@realtek.com>
-Subject: [RFC 4/4] net: cdc_ncm: Add ACPI MAC address pass through
- functionality
-Thread-Topic: [RFC 4/4] net: cdc_ncm: Add ACPI MAC address pass through
- functionality
-Thread-Index: AQHVV6XcyyL7dINtZEiggXCPIGXHZw==
-Date:   Tue, 20 Aug 2019 22:23:15 +0000
-Message-ID: <ec7435e0529243a99f6949ee9efbede5@AUSX13MPS303.AMER.DELL.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.177.90.69]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1730979AbfHTW0J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:26:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59272 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728283AbfHTW0J (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 18:26:09 -0400
+Received: from localhost (li1825-44.members.linode.com [172.104.248.44])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4AE5222DA7;
+        Tue, 20 Aug 2019 22:26:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566339968;
+        bh=NeDjxyqAFNWxNPg4sXdwlX8ljdi6fC+V0/ljpy8i1sU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DfMxh3yl4quSp3++D9aXdp31fH/0Y5HqDGtU/X6iQ5rl4Myp/6mBTnukwu83jEnJs
+         TRVWg8pLxgyBIeem+RoESsiek9Ug++W7N3xQcimXWFSL0tUm/y7PrE5STFdnjrTf+A
+         oeyVGarWAqdly+d2UwnBjzv9lcOge8vwG1j5r9gA=
+Date:   Tue, 20 Aug 2019 15:26:02 -0700
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Charles.Hyde@dellteam.com
+Cc:     linux-usb@vger.kernel.org, linux-acpi@vger.kernel.org,
+        Mario.Limonciello@dell.com, oliver@neukum.org,
+        netdev@vger.kernel.org, nic_swsd@realtek.com
+Subject: Re: [RFC 1/4] Add usb_get_address and usb_set_address support
+Message-ID: <20190820222602.GC8120@kroah.com>
+References: <1566339522507.45056@Dellteam.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-20_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=856 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908200206
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=983 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908200205
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1566339522507.45056@Dellteam.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This change adds support to cdc_ncm for ACPI MAC address pass through=0A=
-functionality that also exists in the Realtek r8152 driver.  This is in=0A=
-support of Dell's Universal Dock D6000, to give it the same feature=0A=
-capability as is currently available in Windows and advertized on Dell's=0A=
-product web site.=0A=
-=0A=
-Signed-off-by: Charles Hyde <charles.hyde@dellteam.com>=0A=
-Cc: Mario Limonciello <mario.limonciello@dell.com>=0A=
-Cc: Oliver Neukum <oliver@neukum.org>=0A=
-Cc: linux-usb@vger.kernel.org=0A=
----=0A=
- drivers/net/usb/cdc_ncm.c | 8 ++++++++=0A=
- 1 file changed, 8 insertions(+)=0A=
-=0A=
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c=0A=
-index f77c8672f972..1f046acca6fc 100644=0A=
---- a/drivers/net/usb/cdc_ncm.c=0A=
-+++ b/drivers/net/usb/cdc_ncm.c=0A=
-@@ -52,6 +52,7 @@=0A=
- #include <linux/usb/usbnet.h>=0A=
- #include <linux/usb/cdc.h>=0A=
- #include <linux/usb/cdc_ncm.h>=0A=
-+#include <acpi/acpi_mac_passthru.h>=0A=
- =0A=
- #if IS_ENABLED(CONFIG_USB_NET_CDC_MBIM)=0A=
- static bool prefer_mbim =3D true;=0A=
-@@ -930,11 +931,18 @@ int cdc_ncm_bind_common(struct usbnet *dev, struct us=
-b_interface *intf, u8 data_=0A=
- 	usb_set_intfdata(ctx->control, dev);=0A=
- =0A=
- 	if (ctx->ether_desc) {=0A=
-+		struct sockaddr sa;=0A=
-+=0A=
- 		temp =3D usbnet_get_ethernet_addr(dev, ctx->ether_desc->iMACAddress);=0A=
- 		if (temp) {=0A=
- 			dev_dbg(&intf->dev, "failed to get mac address\n");=0A=
- 			goto error2;=0A=
- 		}=0A=
-+		if (get_acpi_mac_passthru(&intf->dev, &sa) =3D=3D 0) {=0A=
-+			memcpy(dev->net->dev_addr, sa.sa_data, ETH_ALEN);=0A=
-+			if (usbnet_set_ethernet_addr(dev) < 0)=0A=
-+				usbnet_get_ethernet_addr(dev, ctx->ether_desc->iMACAddress);=0A=
-+		}=0A=
- 		dev_info(&intf->dev, "MAC-Address: %pM\n", dev->net->dev_addr);=0A=
- 	}=0A=
- =0A=
--- =0A=
-2.20.1=0A=
+On Tue, Aug 20, 2019 at 10:18:42PM +0000, Charles.Hyde@dellteam.com wrote:
+> The core USB driver message.c is missing get/set address functionality
+> that stops ifconfig from being able to push MAC addresses out to USB
+> based ethernet devices.  Without this functionality, some USB devices
+> stop responding to ethernet packets when using ifconfig to change MAC
+> addresses.  This has been tested with a Dell Universal Dock D6000.
+> 
+> Signed-off-by: Charles Hyde <charles.hyde@dellteam.com>
+> Cc: Mario Limonciello <mario.limonciello@dell.com>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-usb@vger.kernel.org
+> ---
+>  drivers/usb/core/message.c | 59 ++++++++++++++++++++++++++++++++++++++
+>  include/linux/usb.h        |  3 ++
+>  2 files changed, 62 insertions(+)
+> 
+> diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c
+> index 5adf489428aa..eea775234b09 100644
+> --- a/drivers/usb/core/message.c
+> +++ b/drivers/usb/core/message.c
+> @@ -1085,6 +1085,65 @@ int usb_clear_halt(struct usb_device *dev, int pipe)
+>  }
+>  EXPORT_SYMBOL_GPL(usb_clear_halt);
+>  
+> +/**
+> + * usb_get_address - 
+
+trailing whitespace?
+
+No description of what the function does?
+
+> + * @dev: device whose endpoint is halted
+> + * @mac: buffer for containing 
+
+Trailing whitespace?
+
+> + * Context: !in_interrupt ()
+> + *
+> + * This will attempt to get the six byte MAC address from a USB device's
+> + * ethernet controller using GET_NET_ADDRESS command.
+> + *
+> + * This call is synchronous, and may not be used in an interrupt context.
+> + *
+> + * Return: Zero on success, or else the status code returned by the
+> + * underlying usb_control_msg() call.
+> + */
+> +int usb_get_address(struct usb_device *dev, unsigned char * mac)
+> +{
+> +	int ret = -ENOMEM;
+> +	unsigned char *tbuf = kmalloc(256, GFP_NOIO);
+> +
+> +	if (!tbuf)
+> +		return -ENOMEM;
+> +
+> +	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+> +			USB_CDC_GET_NET_ADDRESS,
+> +			USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,
+> +			0, USB_REQ_SET_ADDRESS, tbuf, 256,
+> +			USB_CTRL_GET_TIMEOUT);
+> +	if (ret == 6)
+> +		memcpy(mac, tbuf, 6);
+> +
+> +	kfree(tbuf);
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(usb_get_address);
+
+This is a VERY cdc-net-specific function.  It is not a "generic" USB
+function at all.  Why does it belong in the USB core?  Shouldn't it live
+in the code that handles the other cdc-net-specific logic?
+
+thanks,
+
+greg k-h
