@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFFBF96C64
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F3ACA96C69
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731193AbfHTWdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:51 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36978 "EHLO
+        id S1731209AbfHTWeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:34:00 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36980 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730962AbfHTWdC (ORCPT
+        with ESMTP id S1730971AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=KsfEU9i349Ud9KdlgKH1KjkZNJ+NKRlUdUSatN9sH2o=; b=Bq/5/2hIDhbcwiE5orTAJAt/iA
-        pzdI44kSCUY+RnTa6hWRYRdWWD672EWb6D6gXd3C8jB2jJH2S8IvRcTElhVfdm0QE2ZwHnDNgHWEk
-        sr0qRxZDp6bfWyqSO5XpSWvSeAxgj5o3XIZNe7sBa/MKOd7NxZ1KFtDglDscoadPu0puHGyJ13YDC
-        TCTY1Mj0ZuZT2va7kZF99nQJ0n2wASy++8l3z27tipgKWteVvSWC8Rkj2EzajrYV/kqTw5jTtqSXz
-        gU7M945H8/+3uuJ/0Wsd1b6hPyt59JAmBzeqQXx9W0dIzczJCMrDj68XJ+OQmRdnU203BgQzYm7Ev
-        PxR1QWdw==;
+        bh=6xmEd+6Hcq8tCHf2bxbsh4w1bvWDerPajMW0hPvFl1E=; b=EgVApfMmIc6ZRfTrdjUTXqdN5F
+        SrQu0CadGcp5jN6qiKniCqSOoCYQruRm1z803tme/zALp5/Voji85At/jwzKyYcuDc/E+CDZ09Dzc
+        0DdC74VRfVRM1TPJRENmKyhs1ALAqnvxTEOQb8uLX2NbA2LgUEEbsPpxYEIQ8w0qkpKNZ264BeXgb
+        51KGdeJaEiKhwpK33SH/z3zx7/4LWEIf5O7npSbJBhLYfkNY0vdKNHtbXUdI6NpRJDnrFgKT34Ve9
+        hl+p5Fjw+8H9S5SwikZEKgLD5nM6e+jW/7rnBTE9u2HsnzpQgFNsXJj30/tIzVg3sEitH+Qywx7aV
+        wSuThaKQ==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005qS-61; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005qZ-86; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 10/38] ath10k: Convert mgmt_pending_tx IDR to XArray
-Date:   Tue, 20 Aug 2019 15:32:31 -0700
-Message-Id: <20190820223259.22348-11-willy@infradead.org>
+Subject: [PATCH 11/38] mt76: Convert token IDR to XArray
+Date:   Tue, 20 Aug 2019 15:32:32 -0700
+Message-Id: <20190820223259.22348-12-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,136 +43,135 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Leave the ->data_lock locking in place; it may be possible to remove it,
-but err on the side of double-locking for now.
+Straightforward conversion; locking is similar.  It may be possible to
+change the GFP_ATOMIC to GFP_KERNEL, but I can't tell whether this
+context permits sleeping or not.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/wireless/ath/ath10k/core.h    |  2 +-
- drivers/net/wireless/ath/ath10k/wmi-tlv.c |  8 +++--
- drivers/net/wireless/ath/ath10k/wmi.c     | 43 ++++++++++-------------
- 3 files changed, 25 insertions(+), 28 deletions(-)
+ .../net/wireless/mediatek/mt76/mt7615/init.c  | 11 ++++-----
+ .../net/wireless/mediatek/mt76/mt7615/mac.c   | 24 +++++++++----------
+ .../wireless/mediatek/mt76/mt7615/mt7615.h    |  4 ++--
+ 3 files changed, 17 insertions(+), 22 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/core.h b/drivers/net/wireless/ath/ath10k/core.h
-index 4d7db07db6ba..89b94322aeb1 100644
---- a/drivers/net/wireless/ath/ath10k/core.h
-+++ b/drivers/net/wireless/ath/ath10k/core.h
-@@ -175,7 +175,7 @@ struct ath10k_wmi {
- 	u32 mgmt_max_num_pending_tx;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/init.c b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
+index 859de2454ec6..459ccb79c9cf 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
+@@ -71,8 +71,7 @@ static int mt7615_init_hardware(struct mt7615_dev *dev)
  
- 	/* Protected by data_lock */
--	struct idr mgmt_pending_tx;
-+	struct xarray mgmt_pending_tx;
+ 	mt76_wr(dev, MT_INT_SOURCE_CSR, ~0);
  
- 	u32 num_mem_chunks;
- 	u32 rx_decap_mode;
-diff --git a/drivers/net/wireless/ath/ath10k/wmi-tlv.c b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-index 2985bb17decd..6144d6d9c539 100644
---- a/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-+++ b/drivers/net/wireless/ath/ath10k/wmi-tlv.c
-@@ -2843,7 +2843,7 @@ ath10k_wmi_mgmt_tx_alloc_msdu_id(struct ath10k *ar, struct sk_buff *skb,
+-	spin_lock_init(&dev->token_lock);
+-	idr_init(&dev->token);
++	xa_init_flags(&dev->token, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_BH);
+ 
+ 	ret = mt7615_eeprom_init(dev);
+ 	if (ret < 0)
+@@ -266,21 +265,19 @@ int mt7615_register_device(struct mt7615_dev *dev)
+ void mt7615_unregister_device(struct mt7615_dev *dev)
  {
- 	struct ath10k_wmi *wmi = &ar->wmi;
- 	struct ath10k_mgmt_tx_pkt_addr *pkt_addr;
--	int ret;
-+	int ret, id;
+ 	struct mt76_txwi_cache *txwi;
+-	int id;
++	unsigned long id;
  
- 	pkt_addr = kmalloc(sizeof(*pkt_addr), GFP_ATOMIC);
- 	if (!pkt_addr)
-@@ -2853,9 +2853,11 @@ ath10k_wmi_mgmt_tx_alloc_msdu_id(struct ath10k *ar, struct sk_buff *skb,
- 	pkt_addr->paddr = paddr;
+ 	mt76_unregister_device(&dev->mt76);
+ 	mt7615_mcu_exit(dev);
+ 	mt7615_dma_cleanup(dev);
  
- 	spin_lock_bh(&ar->data_lock);
--	ret = idr_alloc(&wmi->mgmt_pending_tx, pkt_addr, 0,
--			wmi->mgmt_max_num_pending_tx, GFP_ATOMIC);
-+	ret = xa_alloc(&wmi->mgmt_pending_tx, &id, pkt_addr,
-+			XA_LIMIT(0, wmi->mgmt_max_num_pending_tx), GFP_ATOMIC);
- 	spin_unlock_bh(&ar->data_lock);
-+	if (ret == 0)
-+		ret = id;
+-	spin_lock_bh(&dev->token_lock);
+-	idr_for_each_entry(&dev->token, txwi, id) {
++	xa_for_each(&dev->token, id, txwi) {
+ 		mt7615_txp_skb_unmap(&dev->mt76, txwi);
+ 		if (txwi->skb)
+ 			dev_kfree_skb_any(txwi->skb);
+ 		mt76_put_txwi(&dev->mt76, txwi);
+ 	}
+-	spin_unlock_bh(&dev->token_lock);
+-	idr_destroy(&dev->token);
++	xa_destroy(&dev->token);
  
- 	ath10k_dbg(ar, ATH10K_DBG_WMI, "wmi mgmt tx alloc msdu_id ret %d\n", ret);
- 	return ret;
-diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
-index 4f707c6394bb..280220c4fe3b 100644
---- a/drivers/net/wireless/ath/ath10k/wmi.c
-+++ b/drivers/net/wireless/ath/ath10k/wmi.c
-@@ -2353,7 +2353,7 @@ wmi_process_mgmt_tx_comp(struct ath10k *ar, struct mgmt_tx_compl_params *param)
- 
- 	spin_lock_bh(&ar->data_lock);
- 
--	pkt_addr = idr_find(&wmi->mgmt_pending_tx, param->desc_id);
-+	pkt_addr = xa_load(&wmi->mgmt_pending_tx, param->desc_id);
- 	if (!pkt_addr) {
- 		ath10k_warn(ar, "received mgmt tx completion for invalid msdu_id: %d\n",
- 			    param->desc_id);
-@@ -2380,7 +2380,7 @@ wmi_process_mgmt_tx_comp(struct ath10k *ar, struct mgmt_tx_compl_params *param)
- 	ret = 0;
- 
- out:
--	idr_remove(&wmi->mgmt_pending_tx, param->desc_id);
-+	xa_erase(&wmi->mgmt_pending_tx, param->desc_id);
- 	spin_unlock_bh(&ar->data_lock);
- 	return ret;
+ 	mt76_free_device(&dev->mt76);
  }
-@@ -9389,7 +9389,7 @@ int ath10k_wmi_attach(struct ath10k *ar)
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 1eb0e9c9970c..335fc3cdcb86 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -238,9 +238,7 @@ void mt7615_tx_complete_skb(struct mt76_dev *mdev, enum mt76_txq_id qid,
+ 		txp = (struct mt7615_txp *)(txwi_ptr + MT_TXD_SIZE);
+ 		dev = container_of(mdev, struct mt7615_dev, mt76);
  
- 	if (test_bit(ATH10K_FW_FEATURE_MGMT_TX_BY_REF,
- 		     ar->running_fw->fw_file.fw_features)) {
--		idr_init(&ar->wmi.mgmt_pending_tx);
-+		xa_init_flags(&ar->wmi.mgmt_pending_tx, XA_FLAGS_ALLOC);
+-		spin_lock_bh(&dev->token_lock);
+-		t = idr_remove(&dev->token, le16_to_cpu(txp->token));
+-		spin_unlock_bh(&dev->token_lock);
++		t = xa_erase_bh(&dev->token, le16_to_cpu(txp->token));
+ 		e->skb = t ? t->skb : NULL;
  	}
  
- 	return 0;
-@@ -9410,32 +9410,27 @@ void ath10k_wmi_free_host_mem(struct ath10k *ar)
- 	ar->wmi.num_mem_chunks = 0;
- }
+@@ -457,7 +455,7 @@ int mt7615_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
+ 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(tx_info->skb);
+ 	struct ieee80211_key_conf *key = info->control.hw_key;
+ 	struct ieee80211_vif *vif = info->control.vif;
+-	int i, pid, id, nbuf = tx_info->nbuf - 1;
++	int err, i, pid, id, nbuf = tx_info->nbuf - 1;
+ 	u8 *txwi = (u8 *)txwi_ptr;
+ 	struct mt76_txwi_cache *t;
+ 	struct mt7615_txp *txp;
+@@ -506,13 +504,15 @@ int mt7615_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
+ 	t = (struct mt76_txwi_cache *)(txwi + mdev->drv->txwi_size);
+ 	t->skb = tx_info->skb;
  
--static int ath10k_wmi_mgmt_tx_clean_up_pending(int msdu_id, void *ptr,
--					       void *ctx)
--{
--	struct ath10k_mgmt_tx_pkt_addr *pkt_addr = ptr;
--	struct ath10k *ar = ctx;
--	struct sk_buff *msdu;
--
--	ath10k_dbg(ar, ATH10K_DBG_WMI,
--		   "force cleanup mgmt msdu_id %hu\n", msdu_id);
--
--	msdu = pkt_addr->vaddr;
--	dma_unmap_single(ar->dev, pkt_addr->paddr,
--			 msdu->len, DMA_FROM_DEVICE);
--	ieee80211_free_txskb(ar->hw, msdu);
--
--	return 0;
--}
--
- void ath10k_wmi_detach(struct ath10k *ar)
- {
- 	if (test_bit(ATH10K_FW_FEATURE_MGMT_TX_BY_REF,
- 		     ar->running_fw->fw_file.fw_features)) {
-+		struct ath10k_mgmt_tx_pkt_addr *pkt_addr;
-+		unsigned long index;
-+
- 		spin_lock_bh(&ar->data_lock);
--		idr_for_each(&ar->wmi.mgmt_pending_tx,
--			     ath10k_wmi_mgmt_tx_clean_up_pending, ar);
--		idr_destroy(&ar->wmi.mgmt_pending_tx);
-+		xa_for_each(&ar->wmi.mgmt_pending_tx, index, pkt_addr) {
-+			struct sk_buff *msdu;
-+
-+			ath10k_dbg(ar, ATH10K_DBG_WMI,
-+					"force cleanup mgmt msdu_id %lu\n",
-+					index);
-+
-+			msdu = pkt_addr->vaddr;
-+			dma_unmap_single(ar->dev, pkt_addr->paddr, msdu->len,
-+					DMA_FROM_DEVICE);
-+			ieee80211_free_txskb(ar->hw, msdu);
-+		}
-+		xa_destroy(&ar->wmi.mgmt_pending_tx);
- 		spin_unlock_bh(&ar->data_lock);
- 	}
+-	spin_lock_bh(&dev->token_lock);
+-	id = idr_alloc(&dev->token, t, 0, MT7615_TOKEN_SIZE, GFP_ATOMIC);
+-	spin_unlock_bh(&dev->token_lock);
+-	if (id < 0)
+-		return id;
++	xa_lock_bh(&dev->token);
++	err = __xa_alloc(&dev->token, &id, t,
++			XA_LIMIT(0, MT7615_TOKEN_SIZE - 1), GFP_ATOMIC);
++	if (!err)
++		txp->token = cpu_to_le16(id);
++	xa_unlock_bh(&dev->token);
++	if (err < 0)
++		return err;
  
+-	txp->token = cpu_to_le16(id);
+ 	txp->rept_wds_wcid = 0xff;
+ 	tx_info->skb = DMA_DUMMY_DATA;
+ 
+@@ -717,9 +717,7 @@ void mt7615_mac_tx_free(struct mt7615_dev *dev, struct sk_buff *skb)
+ 
+ 	count = FIELD_GET(MT_TX_FREE_MSDU_ID_CNT, le16_to_cpu(free->ctrl));
+ 	for (i = 0; i < count; i++) {
+-		spin_lock_bh(&dev->token_lock);
+-		txwi = idr_remove(&dev->token, le16_to_cpu(free->token[i]));
+-		spin_unlock_bh(&dev->token_lock);
++		txwi = xa_erase_bh(&dev->token, le16_to_cpu(free->token[i]));
+ 
+ 		if (!txwi)
+ 			continue;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h b/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
+index f02ffcffe637..5a3ecc6faede 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
+@@ -6,6 +6,7 @@
+ 
+ #include <linux/interrupt.h>
+ #include <linux/ktime.h>
++#include <linux/xarray.h>
+ #include "../mt76.h"
+ #include "regs.h"
+ 
+@@ -68,8 +69,7 @@ struct mt7615_dev {
+ 	u32 vif_mask;
+ 	u32 omac_mask;
+ 
+-	spinlock_t token_lock;
+-	struct idr token;
++	struct xarray token;
+ };
+ 
+ enum {
 -- 
 2.23.0.rc1
 
