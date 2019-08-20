@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F34F196C56
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3414296C47
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731006AbfHTWdC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:02 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36960 "EHLO
+        id S1731070AbfHTWdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:04 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36962 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730501AbfHTWdB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:01 -0400
+        with ESMTP id S1730875AbfHTWdC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
         MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=aZm5q1pMdSmj37MZ2pZUKZAJv5gUxiBukUXOdBf2NF4=; b=ShCTvu8TkmpbbhvUHu7zOJrESs
-        ly0c2LXLHNPofJ1j/HoDf9+5M3NvNxxF45Hvoo83e1JHSHg7csfG/AtAixoaIP65Bjb8b9+NQSylo
-        +B7cvuyp1vTxYWcAWChiEPBMBCPR9vij7jjQl1StHxqRltmpyXB00f5nhxuN9rtRe+YWC5UrP6fbO
-        csyeHk8NMv86aXDc+u2RD4INhFOYmq5AJjBaxa3SgQP7HoEvTRnHt7m2zbvLHXYaTPX/nupAkd72E
-        fFMMoerlEWNwVQSRouMKv5Ir7lyrtRKH4kPiMq7x/goBozPNaTPAegqU6ibLoEDtz75QrC4ynXnAc
-        YNcJSzqA==;
+        bh=v9p7uipROWW9QTJPW0kOsPR/8yXx0cxRpnlmUmMvylA=; b=MTTcBhr2nMt17w47ssc6+wiH09
+        WqmFsMal35ei4k0ckHvuVXLqPc2PsjfY6+LAiFE263x0B2uN68F+k2mYcFtQXa6zSjT2yB1OV6joL
+        0AvbQuI0Y0c0WT7717jkt2vO437glzymhVnlL1hkKOiALSFR7jIK508OgkoSpfHNWY+Y6x7kVBR9s
+        iplW2VFQIXNpaZJEXdIififckB/zpvJPqlrKtioyipnlc7+nrQYf/PxzEHnTMtMkKekwTUMQMHpWR
+        UDBcbqJjbw8o0k/AjCNuc20N/t2QxlQTm7DwoybqMfK6sYIxy/m12JjP72jB+AC91ZSY9tJ+OrH8d
+        lSi+8cNQ==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgX-0005pZ-Ld; Tue, 20 Aug 2019 22:33:01 +0000
+        id 1i0CgX-0005pf-PQ; Tue, 20 Aug 2019 22:33:01 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 01/38] mlx4: Convert cq_table->tree to XArray
-Date:   Tue, 20 Aug 2019 15:32:22 -0700
-Message-Id: <20190820223259.22348-2-willy@infradead.org>
+Subject: [PATCH 02/38] mlx4: Convert srq_table->tree to XArray
+Date:   Tue, 20 Aug 2019 15:32:23 -0700
+Message-Id: <20190820223259.22348-3-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,51 +43,67 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Remove the custom spinlock as the XArray handles its own locking.
-It might also be possible to remove the bitmap and use the XArray
-in allocating mode.
+Adjust the locking to not disable interrupts; this isn't needed as all
+accesses are either writes from process context or reads protected
+by the RCU lock.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/ethernet/mellanox/mlx4/cq.c   | 30 +++++++----------------
+ drivers/infiniband/hw/mlx4/cq.c           |  2 +-
  drivers/net/ethernet/mellanox/mlx4/mlx4.h |  3 +--
- 2 files changed, 10 insertions(+), 23 deletions(-)
+ drivers/net/ethernet/mellanox/mlx4/srq.c  | 33 +++++++----------------
+ 3 files changed, 11 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/cq.c b/drivers/net/ethernet/mellanox/mlx4/cq.c
-index 65f8a4b6ed0c..d0be77e70065 100644
---- a/drivers/net/ethernet/mellanox/mlx4/cq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/cq.c
-@@ -105,10 +105,8 @@ void mlx4_cq_completion(struct mlx4_dev *dev, u32 cqn)
- {
- 	struct mlx4_cq *cq;
+diff --git a/drivers/infiniband/hw/mlx4/cq.c b/drivers/infiniband/hw/mlx4/cq.c
+index a7d238d312f0..0d7709823b9f 100644
+--- a/drivers/infiniband/hw/mlx4/cq.c
++++ b/drivers/infiniband/hw/mlx4/cq.c
+@@ -728,7 +728,7 @@ static int mlx4_ib_poll_one(struct mlx4_ib_cq *cq,
+ 		u32 srq_num;
+ 		g_mlpath_rqpn = be32_to_cpu(cqe->g_mlpath_rqpn);
+ 		srq_num       = g_mlpath_rqpn & 0xffffff;
+-		/* SRQ is also in the radix tree */
++		/* SRQ is also in the xarray */
+ 		msrq = mlx4_srq_lookup(to_mdev(cq->ibcq.device)->dev,
+ 				       srq_num);
+ 	}
+diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4.h b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
+index a40a9a259adb..b6fe22bee9f4 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/mlx4.h
++++ b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
+@@ -698,8 +698,7 @@ struct mlx4_eq_table {
+ 
+ struct mlx4_srq_table {
+ 	struct mlx4_bitmap	bitmap;
+-	spinlock_t		lock;
+-	struct radix_tree_root	tree;
++	struct xarray		array;
+ 	struct mlx4_icm_table	table;
+ 	struct mlx4_icm_table	cmpt_table;
+ };
+diff --git a/drivers/net/ethernet/mellanox/mlx4/srq.c b/drivers/net/ethernet/mellanox/mlx4/srq.c
+index cbe4d9746ddf..b7c4007fbc85 100644
+--- a/drivers/net/ethernet/mellanox/mlx4/srq.c
++++ b/drivers/net/ethernet/mellanox/mlx4/srq.c
+@@ -45,9 +45,7 @@ void mlx4_srq_event(struct mlx4_dev *dev, u32 srqn, int event_type)
+ 	struct mlx4_srq_table *srq_table = &mlx4_priv(dev)->srq_table;
+ 	struct mlx4_srq *srq;
  
 -	rcu_read_lock();
--	cq = radix_tree_lookup(&mlx4_priv(dev)->cq_table.tree,
-+	cq = xa_load(&mlx4_priv(dev)->cq_table.array,
- 			       cqn & (dev->caps.num_cqs - 1));
+-	srq = radix_tree_lookup(&srq_table->tree, srqn & (dev->caps.num_srqs - 1));
 -	rcu_read_unlock();
- 
- 	if (!cq) {
- 		mlx4_dbg(dev, "Completion event for bogus CQ %08x\n", cqn);
-@@ -128,9 +126,7 @@ void mlx4_cq_event(struct mlx4_dev *dev, u32 cqn, int event_type)
- 	struct mlx4_cq_table *cq_table = &mlx4_priv(dev)->cq_table;
- 	struct mlx4_cq *cq;
- 
--	rcu_read_lock();
--	cq = radix_tree_lookup(&cq_table->tree, cqn & (dev->caps.num_cqs - 1));
--	rcu_read_unlock();
-+	cq = xa_load(&cq_table->array, cqn & (dev->caps.num_cqs - 1));
- 
- 	if (!cq) {
- 		mlx4_dbg(dev, "Async event for bogus CQ %08x\n", cqn);
-@@ -360,16 +356,14 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
++	srq = xa_load(&srq_table->array, srqn & (dev->caps.num_srqs - 1));
+ 	if (srq)
+ 		refcount_inc(&srq->refcount);
+ 	else {
+@@ -172,16 +170,14 @@ int mlx4_srq_alloc(struct mlx4_dev *dev, u32 pdn, u32 cqn, u16 xrcd,
  	if (err)
  		return err;
  
--	spin_lock(&cq_table->lock);
--	err = radix_tree_insert(&cq_table->tree, cq->cqn, cq);
--	spin_unlock(&cq_table->lock);
-+	err = xa_err(xa_store(&cq_table->array, cq->cqn, cq, GFP_KERNEL));
+-	spin_lock_irq(&srq_table->lock);
+-	err = radix_tree_insert(&srq_table->tree, srq->srqn, srq);
+-	spin_unlock_irq(&srq_table->lock);
++	err = xa_err(xa_store(&srq_table->array, srq->srqn, srq, GFP_KERNEL));
  	if (err)
  		goto err_icm;
  
@@ -98,71 +114,64 @@ index 65f8a4b6ed0c..d0be77e70065 100644
 +		goto err_xa;
  	}
  
- 	cq_context = mailbox->buf;
-@@ -404,7 +398,7 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
- 
+ 	srq_context = mailbox->buf;
+@@ -201,17 +197,15 @@ int mlx4_srq_alloc(struct mlx4_dev *dev, u32 pdn, u32 cqn, u16 xrcd,
+ 	err = mlx4_SW2HW_SRQ(dev, mailbox, srq->srqn);
  	mlx4_free_cmd_mailbox(dev, mailbox);
  	if (err)
 -		goto err_radix;
 +		goto err_xa;
  
- 	cq->cons_index = 0;
- 	cq->arm_sn     = 1;
-@@ -420,10 +414,8 @@ int mlx4_cq_alloc(struct mlx4_dev *dev, int nent,
- 	cq->irq = priv->eq_table.eq[MLX4_CQ_TO_EQ_VECTOR(vector)].irq;
+ 	refcount_set(&srq->refcount, 1);
+ 	init_completion(&srq->free);
+ 
  	return 0;
  
 -err_radix:
--	spin_lock(&cq_table->lock);
--	radix_tree_delete(&cq_table->tree, cq->cqn);
--	spin_unlock(&cq_table->lock);
+-	spin_lock_irq(&srq_table->lock);
+-	radix_tree_delete(&srq_table->tree, srq->srqn);
+-	spin_unlock_irq(&srq_table->lock);
 +err_xa:
-+	xa_erase(&cq_table->array, cq->cqn);
++	xa_erase(&srq_table->array, srq->srqn);
  
  err_icm:
- 	mlx4_cq_free_icm(dev, cq->cqn);
-@@ -442,9 +434,7 @@ void mlx4_cq_free(struct mlx4_dev *dev, struct mlx4_cq *cq)
+ 	mlx4_srq_free_icm(dev, srq->srqn);
+@@ -228,9 +222,7 @@ void mlx4_srq_free(struct mlx4_dev *dev, struct mlx4_srq *srq)
  	if (err)
- 		mlx4_warn(dev, "HW2SW_CQ failed (%d) for CQN %06x\n", err, cq->cqn);
+ 		mlx4_warn(dev, "HW2SW_SRQ failed (%d) for SRQN %06x\n", err, srq->srqn);
  
--	spin_lock(&cq_table->lock);
--	radix_tree_delete(&cq_table->tree, cq->cqn);
--	spin_unlock(&cq_table->lock);
-+	xa_erase(&cq_table->array, cq->cqn);
+-	spin_lock_irq(&srq_table->lock);
+-	radix_tree_delete(&srq_table->tree, srq->srqn);
+-	spin_unlock_irq(&srq_table->lock);
++	xa_erase(&srq_table->array, srq->srqn);
  
- 	synchronize_irq(priv->eq_table.eq[MLX4_CQ_TO_EQ_VECTOR(cq->vector)].irq);
- 	if (priv->eq_table.eq[MLX4_CQ_TO_EQ_VECTOR(cq->vector)].irq !=
-@@ -464,8 +454,7 @@ int mlx4_init_cq_table(struct mlx4_dev *dev)
- 	struct mlx4_cq_table *cq_table = &mlx4_priv(dev)->cq_table;
+ 	if (refcount_dec_and_test(&srq->refcount))
+ 		complete(&srq->free);
+@@ -274,8 +266,7 @@ int mlx4_init_srq_table(struct mlx4_dev *dev)
+ 	struct mlx4_srq_table *srq_table = &mlx4_priv(dev)->srq_table;
  	int err;
  
--	spin_lock_init(&cq_table->lock);
--	INIT_RADIX_TREE(&cq_table->tree, GFP_ATOMIC);
-+	xa_init(&cq_table->array);
+-	spin_lock_init(&srq_table->lock);
+-	INIT_RADIX_TREE(&srq_table->tree, GFP_ATOMIC);
++	xa_init(&srq_table->array);
  	if (mlx4_is_slave(dev))
  		return 0;
  
-@@ -481,6 +470,5 @@ void mlx4_cleanup_cq_table(struct mlx4_dev *dev)
+@@ -297,13 +288,7 @@ void mlx4_cleanup_srq_table(struct mlx4_dev *dev)
+ struct mlx4_srq *mlx4_srq_lookup(struct mlx4_dev *dev, u32 srqn)
  {
- 	if (mlx4_is_slave(dev))
- 		return;
--	/* Nothing to do to clean up radix_tree */
- 	mlx4_bitmap_cleanup(&mlx4_priv(dev)->cq_table.bitmap);
- }
-diff --git a/drivers/net/ethernet/mellanox/mlx4/mlx4.h b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-index 23f1b5b512c2..a40a9a259adb 100644
---- a/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-+++ b/drivers/net/ethernet/mellanox/mlx4/mlx4.h
-@@ -678,8 +678,7 @@ struct mlx4_mr_table {
+ 	struct mlx4_srq_table *srq_table = &mlx4_priv(dev)->srq_table;
+-	struct mlx4_srq *srq;
+-
+-	rcu_read_lock();
+-	srq = radix_tree_lookup(&srq_table->tree,
+-				srqn & (dev->caps.num_srqs - 1));
+-	rcu_read_unlock();
  
- struct mlx4_cq_table {
- 	struct mlx4_bitmap	bitmap;
--	spinlock_t		lock;
--	struct radix_tree_root	tree;
-+	struct xarray		array;
- 	struct mlx4_icm_table	table;
- 	struct mlx4_icm_table	cmpt_table;
- };
+-	return srq;
++	return xa_load(&srq_table->array, srqn & (dev->caps.num_srqs - 1));
+ }
+ EXPORT_SYMBOL_GPL(mlx4_srq_lookup);
 -- 
 2.23.0.rc1
 
