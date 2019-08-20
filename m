@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF1D96C4E
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CC07096C50
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731133AbfHTWdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:23 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:37030 "EHLO
+        id S1731111AbfHTWdS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:18 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:37032 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731062AbfHTWdD (ORCPT
+        with ESMTP id S1731063AbfHTWdD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=uxjydkD/7Vpe331e6pJnW+AIz5qFMTsK6OIGFiodGPI=; b=SWmN+7go46GU5B+Mi+dCBt2Oaf
-        6iwbPxLAeySt+tcLArsnoFps3mwUbubkGqM/D6OVD4pZgdwbwhpTOCLV+teYw1d7UppEkIjbQ6Lav
-        T0TegY9HaUSxauf+9mDNhAnTf8A5s3irLAB8k01SNOY78xQ2vPPAHw0ipqxdl1FelF15bHSQKevOC
-        UKO4z2oTDuAsoiktjD9+wQOGXowrPDstwvwSUVi5c6g0aiJm0ThBzaaDORzozkCZeGquHDWraT1yF
-        DgM+a2BrMp2k/SdqA4vqxgQFoB7d5AqiryjRn+mgRhka7C0/1lboBhtrjqMwvvPkJG5/OEY6DIHeL
-        zecLw13g==;
+        bh=cxcxLvH6l1nBcsZKYtcoeA4LGVqYEte7Yi+i+yeNoos=; b=eQA0DfxGGlC5jvEWwa/WRZUMgj
+        An8VwlVxs6dW98DjRexGy93p9qMNgMX7ojMjW6+SyA2hCYcmP2QnEolMrCIhS15TV767E8GIM4Hzm
+        QSnVIz+Xkdjr0qZlpZVi2st4Ub2ObSvd8XOywSRy3OZa5dkNb4pLGVXnObmUzgeZXXTS1akGC6St0
+        1k52qQqf1bHZmT/47JH3P6B0LQlrXlNeL1s2fgc6JY8j6omEVykTxasnB8opLYmYOEeWjxzk6hx2h
+        VqojVAdZc3gL1leFRPFymWeMdurLJazWI6DzeRgKs6DeJZJoyUQsQso3FUN1zzKRpfqi3nY0KwjY+
+        Ad9ombdg==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgZ-0005t0-JH; Tue, 20 Aug 2019 22:33:03 +0000
+        id 1i0CgZ-0005t8-Ka; Tue, 20 Aug 2019 22:33:03 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 36/38] netlink: Convert genl_fam_idr to XArray
-Date:   Tue, 20 Aug 2019 15:32:57 -0700
-Message-Id: <20190820223259.22348-37-willy@infradead.org>
+Subject: [PATCH 37/38] mac80211: Convert ack_status_frames to XArray
+Date:   Tue, 20 Aug 2019 15:32:58 -0700
+Message-Id: <20190820223259.22348-38-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,150 +43,168 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Straightforward conversion without touching the locking.
+Replace the ack_status_lock with the XArray internal lock.  Using the
+xa_for_each() iterator lets us inline ieee80211_free_ack_frame().
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- net/netlink/genetlink.c | 46 +++++++++++++++++------------------------
- 1 file changed, 19 insertions(+), 27 deletions(-)
+ net/mac80211/cfg.c         | 13 ++++++-------
+ net/mac80211/ieee80211_i.h |  3 +--
+ net/mac80211/main.c        | 20 ++++++++------------
+ net/mac80211/status.c      |  6 +++---
+ net/mac80211/tx.c          | 16 ++++++++--------
+ 5 files changed, 26 insertions(+), 32 deletions(-)
 
-diff --git a/net/netlink/genetlink.c b/net/netlink/genetlink.c
-index efccd1ac9a66..02f5c7453f84 100644
---- a/net/netlink/genetlink.c
-+++ b/net/netlink/genetlink.c
-@@ -18,7 +18,7 @@
- #include <linux/mutex.h>
- #include <linux/bitmap.h>
- #include <linux/rwsem.h>
--#include <linux/idr.h>
-+#include <linux/xarray.h>
- #include <net/sock.h>
- #include <net/genetlink.h>
- 
-@@ -60,7 +60,8 @@ static void genl_unlock_all(void)
- 	up_write(&cb_lock);
- }
- 
--static DEFINE_IDR(genl_fam_idr);
-+static unsigned int genl_families_next;
-+static DEFINE_XARRAY_ALLOC(genl_families);
- 
- /*
-  * Bitmap of multicast groups that are currently in use.
-@@ -92,15 +93,15 @@ static int genl_ctrl_event(int event, const struct genl_family *family,
- 
- static const struct genl_family *genl_family_find_byid(unsigned int id)
+diff --git a/net/mac80211/cfg.c b/net/mac80211/cfg.c
+index ed56b0c6fe19..47d7670094a9 100644
+--- a/net/mac80211/cfg.c
++++ b/net/mac80211/cfg.c
+@@ -3425,24 +3425,23 @@ int ieee80211_attach_ack_skb(struct ieee80211_local *local, struct sk_buff *skb,
  {
--	return idr_find(&genl_fam_idr, id);
-+	return xa_load(&genl_families, id);
- }
+ 	unsigned long spin_flags;
+ 	struct sk_buff *ack_skb;
+-	int id;
++	int err, id;
  
- static const struct genl_family *genl_family_find_byname(char *name)
- {
- 	const struct genl_family *family;
--	unsigned int id;
-+	unsigned long id;
+ 	ack_skb = skb_copy(skb, gfp);
+ 	if (!ack_skb)
+ 		return -ENOMEM;
  
--	idr_for_each_entry(&genl_fam_idr, family, id)
-+	xa_for_each(&genl_families, id, family)
- 		if (strcmp(family->name, name) == 0)
- 			return family;
+-	spin_lock_irqsave(&local->ack_status_lock, spin_flags);
+-	id = idr_alloc(&local->ack_status_frames, ack_skb,
+-		       1, 0x10000, GFP_ATOMIC);
+-	spin_unlock_irqrestore(&local->ack_status_lock, spin_flags);
++	xa_lock_irqsave(&local->ack_status_frames, spin_flags);
++	err = __xa_alloc(&local->ack_status_frames, &id, ack_skb,
++			XA_LIMIT(0, 0xffff), GFP_ATOMIC);
++	xa_unlock_irqrestore(&local->ack_status_frames, spin_flags);
  
-@@ -362,12 +363,10 @@ int genl_register_family(struct genl_family *family)
- 	} else
- 		family->attrbuf = NULL;
- 
--	family->id = idr_alloc_cyclic(&genl_fam_idr, family,
--				      start, end + 1, GFP_KERNEL);
--	if (family->id < 0) {
--		err = family->id;
-+	err = xa_alloc_cyclic(&genl_families, &family->id, family,
-+			XA_LIMIT(start, end), &genl_families_next, GFP_KERNEL);
-+	if (err < 0)
- 		goto errout_free;
--	}
- 
- 	err = genl_validate_assign_mc_groups(family);
- 	if (err)
-@@ -384,7 +383,7 @@ int genl_register_family(struct genl_family *family)
- 	return 0;
- 
- errout_remove:
--	idr_remove(&genl_fam_idr, family->id);
-+	xa_erase(&genl_families, family->id);
- errout_free:
- 	kfree(family->attrbuf);
- errout_locked:
-@@ -412,7 +411,7 @@ int genl_unregister_family(const struct genl_family *family)
- 
- 	genl_unregister_mc_groups(family);
- 
--	idr_remove(&genl_fam_idr, family->id);
-+	xa_erase(&genl_families, family->id);
- 
- 	up_write(&cb_lock);
- 	wait_event(genl_sk_destructing_waitq,
-@@ -802,28 +801,21 @@ static int ctrl_fill_mcgrp_info(const struct genl_family *family,
- 
- static int ctrl_dumpfamily(struct sk_buff *skb, struct netlink_callback *cb)
- {
--	int n = 0;
- 	struct genl_family *rt;
- 	struct net *net = sock_net(skb->sk);
--	int fams_to_skip = cb->args[0];
--	unsigned int id;
-+	unsigned long id;
- 
--	idr_for_each_entry(&genl_fam_idr, rt, id) {
-+	xa_for_each_start(&genl_families, id, rt, cb->args[0]) {
- 		if (!rt->netnsok && !net_eq(net, &init_net))
- 			continue;
- 
--		if (n++ < fams_to_skip)
--			continue;
--
- 		if (ctrl_fill_info(rt, NETLINK_CB(cb->skb).portid,
- 				   cb->nlh->nlmsg_seq, NLM_F_MULTI,
--				   skb, CTRL_CMD_NEWFAMILY) < 0) {
--			n--;
-+				   skb, CTRL_CMD_NEWFAMILY) < 0)
- 			break;
--		}
+-	if (id < 0) {
++	if (err < 0) {
+ 		kfree_skb(ack_skb);
+ 		return -ENOMEM;
  	}
  
--	cb->args[0] = n;
-+	cb->args[0] = id;
- 	return skb->len;
+ 	IEEE80211_SKB_CB(skb)->ack_frame_id = id;
+-
+ 	*cookie = ieee80211_mgmt_tx_cookie(local);
+ 	IEEE80211_SKB_CB(ack_skb)->ack.cookie = *cookie;
+ 
+diff --git a/net/mac80211/ieee80211_i.h b/net/mac80211/ieee80211_i.h
+index 791ce58d0f09..ade005892099 100644
+--- a/net/mac80211/ieee80211_i.h
++++ b/net/mac80211/ieee80211_i.h
+@@ -1393,8 +1393,7 @@ struct ieee80211_local {
+ 	unsigned long hw_roc_start_time;
+ 	u64 roc_cookie_counter;
+ 
+-	struct idr ack_status_frames;
+-	spinlock_t ack_status_lock;
++	struct xarray ack_status_frames;
+ 
+ 	struct ieee80211_sub_if_data __rcu *p2p_sdata;
+ 
+diff --git a/net/mac80211/main.c b/net/mac80211/main.c
+index 29b9d57df1a3..0d46aa52368a 100644
+--- a/net/mac80211/main.c
++++ b/net/mac80211/main.c
+@@ -693,8 +693,7 @@ struct ieee80211_hw *ieee80211_alloc_hw_nm(size_t priv_data_len,
+ 
+ 	INIT_WORK(&local->tdls_chsw_work, ieee80211_tdls_chsw_work);
+ 
+-	spin_lock_init(&local->ack_status_lock);
+-	idr_init(&local->ack_status_frames);
++	xa_init_flags(&local->ack_status_frames, XA_FLAGS_ALLOC1);
+ 
+ 	for (i = 0; i < IEEE80211_MAX_QUEUES; i++) {
+ 		skb_queue_head_init(&local->pending[i]);
+@@ -1353,16 +1352,11 @@ void ieee80211_unregister_hw(struct ieee80211_hw *hw)
  }
+ EXPORT_SYMBOL(ieee80211_unregister_hw);
  
-@@ -993,11 +985,11 @@ static int genl_bind(struct net *net, int group)
+-static int ieee80211_free_ack_frame(int id, void *p, void *data)
+-{
+-	WARN_ONCE(1, "Have pending ack frames!\n");
+-	kfree_skb(p);
+-	return 0;
+-}
+-
+ void ieee80211_free_hw(struct ieee80211_hw *hw)
  {
- 	struct genl_family *f;
- 	int err = -ENOENT;
--	unsigned int id;
-+	unsigned long id;
+ 	struct ieee80211_local *local = hw_to_local(hw);
++	struct sk_buff *skb;
++	unsigned long index;
+ 	enum nl80211_band band;
  
- 	down_read(&cb_lock);
+ 	mutex_destroy(&local->iflist_mtx);
+@@ -1371,9 +1365,11 @@ void ieee80211_free_hw(struct ieee80211_hw *hw)
+ 	if (local->wiphy_ciphers_allocated)
+ 		kfree(local->hw.wiphy->cipher_suites);
  
--	idr_for_each_entry(&genl_fam_idr, f, id) {
-+	xa_for_each(&genl_families, id, f) {
- 		if (group >= f->mcgrp_offset &&
- 		    group < f->mcgrp_offset + f->n_mcgrps) {
- 			int fam_grp = group - f->mcgrp_offset;
-@@ -1019,11 +1011,11 @@ static int genl_bind(struct net *net, int group)
- static void genl_unbind(struct net *net, int group)
- {
- 	struct genl_family *f;
--	unsigned int id;
-+	unsigned long id;
+-	idr_for_each(&local->ack_status_frames,
+-		     ieee80211_free_ack_frame, NULL);
+-	idr_destroy(&local->ack_status_frames);
++	xa_for_each(&local->ack_status_frames, index, skb) {
++		WARN_ONCE(1, "Have pending ack frames!\n");
++		kfree_skb(skb);
++	}
++	xa_destroy(&local->ack_status_frames);
  
- 	down_read(&cb_lock);
+ 	sta_info_stop(local);
  
--	idr_for_each_entry(&genl_fam_idr, f, id) {
-+	xa_for_each(&genl_families, id, f) {
- 		if (group >= f->mcgrp_offset &&
- 		    group < f->mcgrp_offset + f->n_mcgrps) {
- 			int fam_grp = group - f->mcgrp_offset;
+diff --git a/net/mac80211/status.c b/net/mac80211/status.c
+index f03aa8924d23..8f38af968941 100644
+--- a/net/mac80211/status.c
++++ b/net/mac80211/status.c
+@@ -619,9 +619,9 @@ static void ieee80211_report_ack_skb(struct ieee80211_local *local,
+ 	struct sk_buff *skb;
+ 	unsigned long flags;
+ 
+-	spin_lock_irqsave(&local->ack_status_lock, flags);
+-	skb = idr_remove(&local->ack_status_frames, info->ack_frame_id);
+-	spin_unlock_irqrestore(&local->ack_status_lock, flags);
++	xa_lock_irqsave(&local->ack_status_frames, flags);
++	skb = __xa_erase(&local->ack_status_frames, info->ack_frame_id);
++	xa_unlock_irqrestore(&local->ack_status_frames, flags);
+ 
+ 	if (!skb)
+ 		return;
+diff --git a/net/mac80211/tx.c b/net/mac80211/tx.c
+index 235c6377a203..a7c0e3a0dbfb 100644
+--- a/net/mac80211/tx.c
++++ b/net/mac80211/tx.c
+@@ -2459,7 +2459,7 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+ 	bool wme_sta = false, authorized = false;
+ 	bool tdls_peer;
+ 	bool multicast;
+-	u16 info_id = 0;
++	u32 info_id = 0;
+ 	struct ieee80211_chanctx_conf *chanctx_conf;
+ 	struct ieee80211_sub_if_data *ap_sdata;
+ 	enum nl80211_band band;
+@@ -2721,15 +2721,15 @@ static struct sk_buff *ieee80211_build_hdr(struct ieee80211_sub_if_data *sdata,
+ 
+ 		if (ack_skb) {
+ 			unsigned long flags;
+-			int id;
++			int err;
+ 
+-			spin_lock_irqsave(&local->ack_status_lock, flags);
+-			id = idr_alloc(&local->ack_status_frames, ack_skb,
+-				       1, 0x10000, GFP_ATOMIC);
+-			spin_unlock_irqrestore(&local->ack_status_lock, flags);
++			xa_lock_irqsave(&local->ack_status_frames, flags);
++			err = __xa_alloc(&local->ack_status_frames, &info_id,
++					ack_skb, XA_LIMIT(0, 0xffff),
++					GFP_ATOMIC);
++			xa_unlock_irqrestore(&local->ack_status_frames, flags);
+ 
+-			if (id >= 0) {
+-				info_id = id;
++			if (!err) {
+ 				info_flags |= IEEE80211_TX_CTL_REQ_TX_STATUS;
+ 			} else {
+ 				kfree_skb(ack_skb);
 -- 
 2.23.0.rc1
 
