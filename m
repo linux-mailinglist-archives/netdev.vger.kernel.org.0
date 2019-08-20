@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 41D8696C51
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:30 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 131B496C4B
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731137AbfHTWd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:28 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:37020 "EHLO
+        id S1731120AbfHTWdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:20 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:37022 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731049AbfHTWdD (ORCPT
+        with ESMTP id S1731051AbfHTWdD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wS0Pg711i60NN/j8RgpVwfILHAHlloOfykW9Zb4cfxc=; b=uLIUvIWD5pjpsxK8bUnr22t4yf
-        xkpR1eePAoMpHaxCrtB+xPJkICRTO44UcM/Ne21pAcSW7D3emkET3Yr1zM02offLim7T2Xh+iZO85
-        0NPktOhcjkjaxsKltn0oyGFzLo+8XWmlHyR/Oqho2wPyXGoPQWBthUseVdG7ij8Kr1DEQfYVlYeux
-        97yBqLDNq5E7ydSTNdUKvsyKXIfOOxGdwo0Dabn6CPfPoPHuktQYT/HESKVvmwiXnjA/2ggBtvaZO
-        yu2GthG/6TaYoEDD54msbdMyPHg3caPuBskVAhZkY9qE/TQlU3IZNncB1rUHJkxUshhn4nx22Y5uK
-        idF40VUQ==;
+        bh=ZmZZXVlrj0yR9tD6NJHhZntmQHEYhX2foYRPM5aqMeQ=; b=S2pIgZG6TlvZ8jN1oty3Gsirho
+        7b6FzAlhb0qr4H6XzUmrXhM2t2bKjNJEeKFm3au8Xb7O8z/D9jNwWWRrgKO7Z/Yr8ZOR+H1bcb0HB
+        dbw8ypq7wahZmHZ9TcWSzYGdosLh62aC1CyLy3wEF1ssgy8CZVrfBq2kFk24K58t5C9rxQ8GqMwmA
+        ovhH0GFbETKA1PPz5SNUIu3N9U/5Q5HQa+ptz7tCjiA1GPT02mWY2L/cS64GGRuhW/jD4CR+tc5ch
+        KP/gvY47AxBcAtp8UF4otN5BJb+hvIN+sYRH477sRhp3qApq5Qy/owFDloDv7LMUBMkbvi4rZ28ge
+        jNji0ZVw==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgZ-0005sW-Af; Tue, 20 Aug 2019 22:33:03 +0000
+        id 1i0CgZ-0005sc-CR; Tue, 20 Aug 2019 22:33:03 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 31/38] cls_flower: Use XArray marks instead of separate list
-Date:   Tue, 20 Aug 2019 15:32:52 -0700
-Message-Id: <20190820223259.22348-32-willy@infradead.org>
+Subject: [PATCH 32/38] cls_basic: Convert handle_idr to XArray
+Date:   Tue, 20 Aug 2019 15:32:53 -0700
+Message-Id: <20190820223259.22348-33-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,144 +43,180 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Remove the hw_filter list in favour of using one of the XArray mark
-bits which lets us iterate more efficiently than walking a linked list.
+The flist is redundant with the XArray, so remove it and use XArray
+operations to iterate & look up filters by ID.  Locking is unadjusted,
+so most XArray operations continue to be protected by both the rtnl
+lock and the XArray spinlock.  Lookups remain under the rtnl lock,
+but could be switched to pure RCU protection.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- net/sched/cls_flower.c | 47 ++++++++++--------------------------------
- 1 file changed, 11 insertions(+), 36 deletions(-)
+ net/sched/cls_basic.c | 56 ++++++++++++++++---------------------------
+ 1 file changed, 21 insertions(+), 35 deletions(-)
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 2a1999d2b507..4625de5e29a7 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -85,11 +85,12 @@ struct fl_flow_tmplt {
- 	struct tcf_chain *chain;
+diff --git a/net/sched/cls_basic.c b/net/sched/cls_basic.c
+index 4aafbe3d435c..66efad664a92 100644
+--- a/net/sched/cls_basic.c
++++ b/net/sched/cls_basic.c
+@@ -13,15 +13,14 @@
+ #include <linux/errno.h>
+ #include <linux/rtnetlink.h>
+ #include <linux/skbuff.h>
+-#include <linux/idr.h>
+ #include <linux/percpu.h>
++#include <linux/xarray.h>
+ #include <net/netlink.h>
+ #include <net/act_api.h>
+ #include <net/pkt_cls.h>
+ 
+ struct basic_head {
+-	struct list_head	flist;
+-	struct idr		handle_idr;
++	struct xarray		filters;
+ 	struct rcu_head		rcu;
  };
  
-+#define HW_FILTER	XA_MARK_1
-+
- struct cls_fl_head {
- 	struct rhashtable ht;
- 	spinlock_t masks_lock; /* Protect masks list */
- 	struct list_head masks;
--	struct list_head hw_filters;
- 	struct rcu_work rwork;
- 	struct xarray filters;
+@@ -31,7 +30,6 @@ struct basic_filter {
+ 	struct tcf_ematch_tree	ematches;
+ 	struct tcf_result	res;
+ 	struct tcf_proto	*tp;
+-	struct list_head	link;
+ 	struct tc_basic_pcnt __percpu *pf;
+ 	struct rcu_work		rwork;
  };
-@@ -102,7 +103,6 @@ struct cls_fl_filter {
- 	struct tcf_result res;
- 	struct fl_flow_key key;
- 	struct list_head list;
--	struct list_head hw_list;
- 	u32 handle;
- 	u32 flags;
- 	u32 in_hw_count;
-@@ -332,7 +332,6 @@ static int fl_init(struct tcf_proto *tp)
+@@ -42,8 +40,9 @@ static int basic_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ 	int r;
+ 	struct basic_head *head = rcu_dereference_bh(tp->root);
+ 	struct basic_filter *f;
++	unsigned long index;
  
- 	spin_lock_init(&head->masks_lock);
- 	INIT_LIST_HEAD_RCU(&head->masks);
--	INIT_LIST_HEAD(&head->hw_filters);
- 	rcu_assign_pointer(tp->root, head);
- 	xa_init_flags(&head->filters, XA_FLAGS_ALLOC1);
- 
-@@ -421,7 +420,6 @@ static void fl_hw_destroy_filter(struct tcf_proto *tp, struct cls_fl_filter *f,
- 
- 	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false);
- 	spin_lock(&tp->lock);
--	list_del_init(&f->hw_list);
- 	tcf_block_offload_dec(block, &f->flags);
- 	spin_unlock(&tp->lock);
- 
-@@ -433,7 +431,6 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
- 				struct cls_fl_filter *f, bool rtnl_held,
- 				struct netlink_ext_ack *extack)
+-	list_for_each_entry_rcu(f, &head->flist, link) {
++	xa_for_each(&head->filters, index, f) {
+ 		__this_cpu_inc(f->pf->rcnt);
+ 		if (!tcf_em_tree_match(skb, &f->ematches, NULL))
+ 			continue;
+@@ -60,15 +59,8 @@ static int basic_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+ static void *basic_get(struct tcf_proto *tp, u32 handle)
  {
--	struct cls_fl_head *head = fl_head_dereference(tp);
- 	struct tcf_block *block = tp->chain->block;
- 	struct flow_cls_offload cls_flower = {};
- 	bool skip_sw = tc_skip_sw(f->flags);
-@@ -485,9 +482,6 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
- 		goto errout;
- 	}
- 
--	spin_lock(&tp->lock);
--	list_add(&f->hw_list, &head->hw_filters);
--	spin_unlock(&tp->lock);
- errout:
- 	if (!rtnl_held)
- 		rtnl_unlock();
-@@ -1581,7 +1575,6 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- 		err = -ENOBUFS;
- 		goto errout_tb;
- 	}
--	INIT_LIST_HEAD(&fnew->hw_list);
- 	refcount_set(&fnew->refcnt, 1);
- 
- 	err = tcf_exts_init(&fnew->exts, net, TCA_FLOWER_ACT, 0);
-@@ -1698,6 +1691,11 @@ static int fl_change(struct net *net, struct sk_buff *in_skb,
- 
- 	*arg = fnew;
- 
-+	if (!tc_skip_hw(fnew->flags))
-+		xa_set_mark(&head->filters, fnew->handle, HW_FILTER);
-+	else if (fold)
-+		xa_clear_mark(&head->filters, fnew->handle, HW_FILTER);
-+
- 	kfree(tb);
- 	tcf_queue_work(&mask->rwork, fl_uninit_mask_free_work);
- 	return 0;
-@@ -1770,37 +1768,14 @@ static void fl_walk(struct tcf_proto *tp, struct tcf_walker *arg,
- 	arg->cookie = id;
- }
- 
--static struct cls_fl_filter *
--fl_get_next_hw_filter(struct tcf_proto *tp, struct cls_fl_filter *f, bool add)
--{
--	struct cls_fl_head *head = fl_head_dereference(tp);
+ 	struct basic_head *head = rtnl_dereference(tp->root);
+-	struct basic_filter *f;
 -
--	spin_lock(&tp->lock);
--	if (list_empty(&head->hw_filters)) {
--		spin_unlock(&tp->lock);
--		return NULL;
--	}
--
--	if (!f)
--		f = list_entry(&head->hw_filters, struct cls_fl_filter,
--			       hw_list);
--	list_for_each_entry_continue(f, &head->hw_filters, hw_list) {
--		if (!(add && f->deleted) && refcount_inc_not_zero(&f->refcnt)) {
--			spin_unlock(&tp->lock);
+-	list_for_each_entry(f, &head->flist, link) {
+-		if (f->handle == handle) {
 -			return f;
 -		}
 -	}
--
--	spin_unlock(&tp->lock);
+ 
 -	return NULL;
--}
--
- static int fl_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
- 			void *cb_priv, struct netlink_ext_ack *extack)
++	return xa_load(&head->filters, handle);
+ }
+ 
+ static int basic_init(struct tcf_proto *tp)
+@@ -78,8 +70,7 @@ static int basic_init(struct tcf_proto *tp)
+ 	head = kzalloc(sizeof(*head), GFP_KERNEL);
+ 	if (head == NULL)
+ 		return -ENOBUFS;
+-	INIT_LIST_HEAD(&head->flist);
+-	idr_init(&head->handle_idr);
++	xa_init_flags(&head->filters, XA_FLAGS_ALLOC1);
+ 	rcu_assign_pointer(tp->root, head);
+ 	return 0;
+ }
+@@ -107,18 +98,17 @@ static void basic_destroy(struct tcf_proto *tp, bool rtnl_held,
+ 			  struct netlink_ext_ack *extack)
  {
-+	struct cls_fl_head *head = fl_head_dereference(tp);
- 	struct tcf_block *block = tp->chain->block;
- 	struct flow_cls_offload cls_flower = {};
--	struct cls_fl_filter *f = NULL;
-+	struct cls_fl_filter *f;
-+	unsigned long handle;
- 	int err;
+ 	struct basic_head *head = rtnl_dereference(tp->root);
+-	struct basic_filter *f, *n;
++	struct basic_filter *f;
++	unsigned long index;
  
- 	/* hw_filters list can only be changed by hw offload functions after
-@@ -1809,7 +1784,7 @@ static int fl_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
- 	 */
- 	ASSERT_RTNL();
+-	list_for_each_entry_safe(f, n, &head->flist, link) {
+-		list_del_rcu(&f->link);
++	xa_for_each(&head->filters, index, f) {
+ 		tcf_unbind_filter(tp, &f->res);
+-		idr_remove(&head->handle_idr, f->handle);
++		xa_erase(&head->filters, index);
+ 		if (tcf_exts_get_net(&f->exts))
+ 			tcf_queue_work(&f->rwork, basic_delete_filter_work);
+ 		else
+ 			__basic_delete_filter(f);
+ 	}
+-	idr_destroy(&head->handle_idr);
+ 	kfree_rcu(head, rcu);
+ }
  
--	while ((f = fl_get_next_hw_filter(tp, f, add))) {
-+	xa_for_each_marked(&head->filters, handle, f, HW_FILTER) {
- 		cls_flower.rule =
- 			flow_rule_alloc(tcf_exts_num_actions(&f->exts));
- 		if (!cls_flower.rule) {
+@@ -128,12 +118,11 @@ static int basic_delete(struct tcf_proto *tp, void *arg, bool *last,
+ 	struct basic_head *head = rtnl_dereference(tp->root);
+ 	struct basic_filter *f = arg;
+ 
+-	list_del_rcu(&f->link);
+ 	tcf_unbind_filter(tp, &f->res);
+-	idr_remove(&head->handle_idr, f->handle);
++	xa_erase(&head->filters, f->handle);
+ 	tcf_exts_get_net(&f->exts);
+ 	tcf_queue_work(&f->rwork, basic_delete_filter_work);
+-	*last = list_empty(&head->flist);
++	*last = xa_empty(&head->filters);
+ 	return 0;
+ }
+ 
+@@ -199,17 +188,16 @@ static int basic_change(struct net *net, struct sk_buff *in_skb,
+ 	if (err < 0)
+ 		goto errout;
+ 
++	fnew->handle = handle;
+ 	if (!handle) {
+-		handle = 1;
+-		err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
+-				    INT_MAX, GFP_KERNEL);
++		err = xa_alloc(&head->filters, &fnew->handle, fnew,
++				xa_limit_32b, GFP_KERNEL);
+ 	} else if (!fold) {
+-		err = idr_alloc_u32(&head->handle_idr, fnew, &handle,
+-				    handle, GFP_KERNEL);
++		err = xa_insert(&head->filters, handle, fnew, GFP_KERNEL);
+ 	}
+ 	if (err)
+ 		goto errout;
+-	fnew->handle = handle;
++
+ 	fnew->pf = alloc_percpu(struct tc_basic_pcnt);
+ 	if (!fnew->pf) {
+ 		err = -ENOMEM;
+@@ -220,20 +208,17 @@ static int basic_change(struct net *net, struct sk_buff *in_skb,
+ 			      extack);
+ 	if (err < 0) {
+ 		if (!fold)
+-			idr_remove(&head->handle_idr, fnew->handle);
++			xa_erase(&head->filters, fnew->handle);
+ 		goto errout;
+ 	}
+ 
+ 	*arg = fnew;
+ 
+ 	if (fold) {
+-		idr_replace(&head->handle_idr, fnew, fnew->handle);
+-		list_replace_rcu(&fold->link, &fnew->link);
++		xa_store(&head->filters, fnew->handle, fnew, GFP_KERNEL);
+ 		tcf_unbind_filter(tp, &fold->res);
+ 		tcf_exts_get_net(&fold->exts);
+ 		tcf_queue_work(&fold->rwork, basic_delete_filter_work);
+-	} else {
+-		list_add_rcu(&fnew->link, &head->flist);
+ 	}
+ 
+ 	return 0;
+@@ -249,8 +234,9 @@ static void basic_walk(struct tcf_proto *tp, struct tcf_walker *arg,
+ {
+ 	struct basic_head *head = rtnl_dereference(tp->root);
+ 	struct basic_filter *f;
++	unsigned long index;
+ 
+-	list_for_each_entry(f, &head->flist, link) {
++	xa_for_each(&head->filters, index, f) {
+ 		if (arg->count < arg->skip)
+ 			goto skip;
+ 
 -- 
 2.23.0.rc1
 
