@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 42CC995F08
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:40:45 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7B0595F34
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 14:52:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729761AbfHTMkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 08:40:42 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40251 "EHLO
+        id S1729677AbfHTMwJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 08:52:09 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41350 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1727006AbfHTMkm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 08:40:42 -0400
+        with ESMTP id S1729203AbfHTMwJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 08:52:09 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from paulb@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 20 Aug 2019 15:40:36 +0300
+        with ESMTPS (AES256-SHA encrypted); 20 Aug 2019 15:52:02 +0300
 Received: from reg-r-vrt-019-180.mtr.labs.mlnx (reg-r-vrt-019-180.mtr.labs.mlnx [10.213.19.180])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7KCeaXD026869;
-        Tue, 20 Aug 2019 15:40:36 +0300
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7KCq2wO009694;
+        Tue, 20 Aug 2019 15:52:02 +0300
 From:   Paul Blakey <paulb@mellanox.com>
 To:     Pravin B Shelar <pshelar@ovn.org>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
@@ -28,9 +28,11 @@ Cc:     Jiri Pirko <jiri@mellanox.com>, Roi Dayan <roid@mellanox.com>,
         Yossi Kuperman <yossiku@mellanox.com>,
         Rony Efraim <ronye@mellanox.com>, Oz Shlomo <ozsh@mellanox.com>
 Subject: Re: [PATCH net-next v2] net: openvswitch: Set OvS recirc_id from tc chain index
-Date:   Tue, 20 Aug 2019 15:40:34 +0300
-Message-Id: <1566304834-22836-1-git-send-email-paulb@mellanox.com>
+Date:   Tue, 20 Aug 2019 15:51:55 +0300
+Message-Id: <1566305515-25008-1-git-send-email-paulb@mellanox.com>
 X-Mailer: git-send-email 1.8.4.3
+In-Reply-To: <1566304251-15795-1-git-send-email-paulb@mellanox.com>
+References: <1566304251-15795-1-git-send-email-paulb@mellanox.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
