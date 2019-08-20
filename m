@@ -2,55 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5CFC96CAA
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 01:05:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 50DE396CF0
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 01:11:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbfHTXFT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 19:05:19 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:52420 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726028AbfHTXFS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 19:05:18 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 59CFD14C652CF;
-        Tue, 20 Aug 2019 16:05:18 -0700 (PDT)
-Date:   Tue, 20 Aug 2019 16:05:17 -0700 (PDT)
-Message-Id: <20190820.160517.617004656524634921.davem@davemloft.net>
-To:     netdev@vger.kernel.org
-CC:     jakub.kicinski@netronome.com
-Subject: various TLS bug fixes...
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 20 Aug 2019 16:05:18 -0700 (PDT)
+        id S1726568AbfHTXJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 19:09:10 -0400
+Received: from lekensteyn.nl ([178.21.112.251]:34323 "EHLO lekensteyn.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726028AbfHTXJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 19:09:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lekensteyn.nl; s=s2048-2015-q1;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=4HwCBJFfSBkXZe8xYmCQoO/bOakWt6wrHLfSFTA8ino=;
+        b=DqHIfd6f8UIzx3Bsa35j8eDbh7AAhwSm9FPc9wXLKvqtE5T2rGjgfAlHg5YzwuKI1ujcJ4a0nrnx1FTlSk/6iJZi5DsySs0MX4zWNk/3LhjQQ4pC17NL0UV+BKLk5VRIsUM3NyL+4HSF2TTBlhPIB1Bg2+53eJYJY0U4yQV6va6vD8dZevdxKDhzlMMrFqZ127aS02S/FvOnFiDXjPoC4yYRjy9Sw8R0ADjkIrMjjD4aSyTLUtqgBlEhV/Hst0o1ukeOZHUshks8p5/uOC9+CKBDc5MEKRs+TMINC+3AuT0hQh7zJRHVYpgWzznbRIhDQlgSuyA+luAmZq85ompJNQ==;
+Received: by lekensteyn.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.84_2)
+        (envelope-from <peter@lekensteyn.nl>)
+        id 1i0DFO-00055S-9k; Wed, 21 Aug 2019 01:09:03 +0200
+From:   Peter Wu <peter@lekensteyn.nl>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH v2 0/4] BPF-related documentation fixes
+Date:   Wed, 21 Aug 2019 00:08:56 +0100
+Message-Id: <20190820230900.23445-1-peter@lekensteyn.nl>
+X-Mailer: git-send-email 2.22.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Spam-Score: -0.0 (/)
+X-Spam-Status: No, hits=-0.0 required=5.0 tests=NO_RELAYS=-0.001 autolearn=unavailable autolearn_force=no
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
-Jakub,
+Here are some small doc updates that should hopefully save the next
+eBPF/uprobe user some time. Based on v5.3-rc2, but net-next appears to
+have no conflicts.
 
-I just did a batch of networking -stable submissions, however I ran
-into some troubles with the various TLS backports.
+Changes since the v1[1]:
+- Split bpf.h patch for kernel and userspace tools (requested by Alexei)
+- Add new 'bpf: clarify when bpf_trace_printk discards lines' patch.
 
-I was able to backport commit 414776621d10 ("net/tls: prevent
-skb_orphan() from leaking TLS plain text with offload") to v5.2
-but not to v4.19
+Kind regards,
+Peter
 
-I was not able to backport neither d85f01775850 ("net: tls, fix
-sk_write_space NULL write when tx disabled") nor commit 57c722e932cf
-("net/tls: swap sk_write_space on close") to any release.  It seems
-like there are a bunch of dependencies and perhaps other fixes.
+ [1]: https://lkml.kernel.org/r/20190819212122.10286-1-peter@lekensteyn.nl
 
-I suspect you've triaged through this already on your side for other
-reasons, so perhaps you could help come up with a sane set of TLS
-bug fix backports that would be appropriate for -stable?
+Peter Wu (4):
+  bpf: clarify description for CONFIG_BPF_EVENTS
+  bpf: fix 'struct pt_reg' typo in documentation
+  bpf: clarify when bpf_trace_printk discards lines
+  bpf: sync bpf.h to tools/
 
-Thanks!
+ include/uapi/linux/bpf.h       | 8 +++++---
+ kernel/trace/Kconfig           | 3 ++-
+ tools/include/uapi/linux/bpf.h | 8 +++++---
+ 3 files changed, 12 insertions(+), 7 deletions(-)
+
+-- 
+2.22.0
 
