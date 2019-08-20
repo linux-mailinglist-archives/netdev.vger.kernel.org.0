@@ -2,71 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DA66A96894
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 20:27:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 82F49968A4
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 20:35:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730552AbfHTS1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 14:27:47 -0400
-Received: from mail2.candelatech.com ([208.74.158.173]:36066 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728682AbfHTS1q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 14:27:46 -0400
-Received: from [192.168.100.195] (50-251-239-81-static.hfc.comcastbusiness.net [50.251.239.81])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1730119AbfHTSfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 14:35:40 -0400
+Received: from correo.us.es ([193.147.175.20]:42396 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729639AbfHTSfj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 14:35:39 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id A3986DA72B
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 20:35:36 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 94805CE17F
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 20:35:36 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 83751DA72F; Tue, 20 Aug 2019 20:35:36 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 7DB6FDA8E8;
+        Tue, 20 Aug 2019 20:35:34 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 20 Aug 2019 20:35:34 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [47.60.43.0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id D248B65934
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 11:27:45 -0700 (PDT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com D248B65934
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1566325665;
-        bh=a0gNksfCPyRPHwx3+ioCoC142WPAEXpyjC4d0Dwwin8=;
-        h=To:From:Subject:Date:From;
-        b=hWuzJXNP7LXeAs97T4voBBRqLz1sN2WJBogfY5l1X0ie6cxCCssHBoDytwbqjcoTu
-         dE7lrUgtzMCmFwCc4MUiqKC05JtBlWOrtnhwxgrl5z/slMnsZFa+bfPq0W+/kUZcli
-         gNOO6K486nieVWF1AdNFenM2fa0F/zoSwAtJYodU=
-To:     netdev <netdev@vger.kernel.org>
-From:   Ben Greear <greearb@candelatech.com>
-Subject: VRF notes when using ipv6 and flushing tables.
-Organization: Candela Technologies
-Message-ID: <8977a25e-29c1-5375-cc97-950dc7c2eb0f@candelatech.com>
-Date:   Tue, 20 Aug 2019 11:27:45 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 40B0D4265A2F;
+        Tue, 20 Aug 2019 20:35:34 +0200 (CEST)
+Date:   Tue, 20 Aug 2019 20:35:33 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, jakub.kicinski@netronome.com,
+        jiri@resnulli.us, vladbu@mellanox.com
+Subject: Re: [PATCH net-next 1/2] net: flow_offload: mangle 128-bit packet
+ field with one action
+Message-ID: <20190820183533.ykh7mnurpmegxb27@salvia>
+References: <20190820105225.13943-1-pablo@netfilter.org>
+ <f18d8369-f87d-5b9a-6c9d-daf48a3b95f1@solarflare.com>
+ <20190820144453.ckme6oj2c4hmofhu@salvia>
+ <c8a00a98-74eb-9f8d-660f-c2ea159dec91@solarflare.com>
+ <20190820173344.3nrzfjboyztz3lji@salvia>
+ <f4cf8a97-3322-d982-6068-d4c0ce997b1c@solarflare.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <f4cf8a97-3322-d982-6068-d4c0ce997b1c@solarflare.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I recently spend a few days debugging what in the end was user error on my part.
+On Tue, Aug 20, 2019 at 07:15:10PM +0100, Edward Cree wrote:
+> On 20/08/2019 18:33, Pablo Neira Ayuso wrote:
+> > I can update tc pedit to generate one single action for offset
+> > consecutive packet editions, if that is the concern, I'll send a v2.
+> IMHO the fix belongs in TC userland (i.e. iproute2), to turn a
+> single action on the commandline for an ipv6 addr into four pedit
+> actions before the kernel ever sees it.
+> Similarly if nftables wants to use this it should generate four
+> separate pedit actions, probably in the kernel netfilter code as (I
+> assume) your uAPI talks in terms of named fields rather than the
+> u32ish offsets and masks of tc pedit.
 
-Here are my notes in hope they help someone else.
+The driver flow_offload API does not necessarily need to map 1:1 to
+the netlink control plane / UAPI. The driver flow_offload API is
+detached from UAPI and it is internal to drivers.
 
-First, 'ip -6 route show vrf vrfX' will not show some of the
-routes (like local routes) that will show up with
-'ip -6 route show table X', where X == vrfX's table-id
+> The TC (well, flow_offload now I suppose) API should be kept narrow,
+> not widened for things that can already be expressed adequately. 
+> Your array of words inside a pedit action looks like a kind of loop
+> unrolling but for data structures, which doesn't look sensible to
+> me.
 
-If you run 'ip -6 route flush table X', then you will loose all of the auto
-generated routes, including anycast, ff00::/8, and local routes.
+With one action that says "mangle an IPv6 at offset ip6 daddr field"
+the driver has more global view on what is going on, rather than
+having four actions to mangle four 32-bit words at some offset.
 
-ff00::/8 is needed for neigh discovery to work (probably among other things)
+If this patch adds some loops here is because I did not want to make
+too smart changes on the drivers.
 
-local route is needed or packets won't actually be accepted up the stack
-(I think that is the symptom at least)
+The only reason I can find why mangling is restricted to 32-bits word
+is tc pedit. The existing flow_offload API was modeled after tc
+actions, which was exposing tc pedit implementation details to
+hardware.
 
-Not sure exactly what anycast does, but I'm guessing it is required for
-something useful.
-
-You must manually re-add those to the table unless you for certain know that
-you do not need them for whatever reason.
-
-Thanks,
-Ben
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
-
+Please, allow for incremental updates on the flow_offload API to get
+it better now. Later we'll have way more drivers it will become harder
+to update this.
