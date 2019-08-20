@@ -2,181 +2,230 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7C87396797
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:30:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C39B69679F
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:33:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729937AbfHTRaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 13:30:00 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21096 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728344AbfHTR37 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 13:29:59 -0400
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KHRpHC023245;
-        Tue, 20 Aug 2019 10:29:56 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=OLbPRXTI4r9B6Hy/IQsVMXalG+WFRGvAWttcapTghgc=;
- b=YG2CLu32a9BBnNuSNPg+b/UGzfXQw3JU+gJxre4QXUqDc76Ty5RxuXSGhs/H2aaU/mh2
- Qdi+oeHe69yPUvbbbdUULCd8f7F8GJdrGTbxEuIh8hkb8cuiWboFD9NMmiUvSD/phg/g
- aWd5uBSsFYYVumtcmzfioQ/ekvJTJTVinz0= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ugjymrsu3-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 20 Aug 2019 10:29:56 -0700
-Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
- ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 20 Aug 2019 10:29:55 -0700
-Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
- ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 20 Aug 2019 10:29:55 -0700
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
- via Frontend Transport; Tue, 20 Aug 2019 10:29:55 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lwCb9l07UsOmns7My2ey8G6w9TQt82DfThE4vL5PFw4A124ela6Qc+BP9fe+O/xqysP4NmnAvJUAgGG9+uR6MblgfkPU+IzHvMokiSKn7kQ9SRUwbj/JqgcB3tFRvsGSmdpVO8kBrJyeZscIZ/NiSH7i7k8BcTHiCPwlg3tzpS1p31ptez61h34EOwxcAR9rOIXdUom9lUW22edxbAougUPXA9zgKhzsZl3RXMxDytsD+kEYBTs0f3tw9PLMGewWG6aFus8doDMhoEHlXhAANMTqoxmvlNdpNlZ1d9RZTDU5QsGZLbUiH5Gl9dbPyxz32u4mcuNbquDymQwaW/sutA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OLbPRXTI4r9B6Hy/IQsVMXalG+WFRGvAWttcapTghgc=;
- b=SAV1ryvYJ6Mr7iB3LiRdaFCUktDdG/4AwXbz+VSpiFrf+cnISzV/aSPuHVsNe9qcf3g+ih+d7B6LyZc08GhQJZVCNOYRQxMYMndHsANfd0+qQgdnKJiZ8gm+lXJCsS/06bItZN5I+GLGZKAjhJnrM1CY301yFg7dwkYzf1mDlVzcEkAWczzkxiHhNnzEa98wS/tR6Zrr1o8uJNYNN51gV24iY9QqzqnmdoIWxKqW6nSq+CBlLgzrUp8fdcQxWEmzY3FtHnGo923r55CGY5h3PjJ596zZsBQUFS2r2jWo9KCnGVc6MvaeyFr2Z+ddbFkdDkII6E0BNQFYZQaQb19tww==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=OLbPRXTI4r9B6Hy/IQsVMXalG+WFRGvAWttcapTghgc=;
- b=i9Jk+2A+GqobvCQAgEMGlj98rBlyNhNJBa/hTX71MG6r4RHsHB5TEV4XejcJIgVkeQEA9NYTqeEGMbLHBnDsXkJY0atZzdIqSGO3Iqe65tvN+K8FCpjn8jFDShmR4OmD6bu6yR1+FyeH97s1UHFVYU58Ig3nHOUfcpcuGp7V/KY=
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
- BYAPR15MB2872.namprd15.prod.outlook.com (20.178.206.146) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Tue, 20 Aug 2019 17:29:54 +0000
-Received: from BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978]) by BYAPR15MB3384.namprd15.prod.outlook.com
- ([fe80::d95b:271:fa7e:e978%5]) with mapi id 15.20.2178.018; Tue, 20 Aug 2019
- 17:29:54 +0000
-From:   Yonghong Song <yhs@fb.com>
-To:     Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "ebiederm@xmission.com" <ebiederm@xmission.com>,
-        "brouer@redhat.com" <brouer@redhat.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
-Subject: Re: [PATCH bpf-next V9 1/3] bpf: new helper to obtain namespace data
- from current task
-Thread-Topic: [PATCH bpf-next V9 1/3] bpf: new helper to obtain namespace data
- from current task
-Thread-Index: AQHVUgen0TRJjFwMbUCsjzJfHVP59ab5NXYAgAr5WACAACbhgA==
-Date:   Tue, 20 Aug 2019 17:29:54 +0000
-Message-ID: <e1265647-f934-1cb5-a31d-73608b7adad5@fb.com>
-References: <20190813184747.12225-1-cneirabustos@gmail.com>
- <20190813184747.12225-2-cneirabustos@gmail.com>
- <445a4535-b8cc-b6bc-717b-a5736030533a@fb.com>
- <20190820151040.GA53610@localhost>
-In-Reply-To: <20190820151040.GA53610@localhost>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR04CA0097.namprd04.prod.outlook.com
- (2603:10b6:301:3a::38) To BYAPR15MB3384.namprd15.prod.outlook.com
- (2603:10b6:a03:10e::17)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:200::2:b743]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 965f5366-c050-4eff-8668-08d7259403a2
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:BYAPR15MB2872;
-x-ms-traffictypediagnostic: BYAPR15MB2872:
-x-microsoft-antispam-prvs: <BYAPR15MB28728F042F66146C16C684DED3AB0@BYAPR15MB2872.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 013568035E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(39860400002)(346002)(366004)(396003)(189003)(199004)(66446008)(52116002)(446003)(66556008)(2616005)(476003)(54906003)(36756003)(66946007)(99286004)(11346002)(86362001)(486006)(6916009)(53936002)(186003)(7736002)(71190400001)(31696002)(6246003)(46003)(305945005)(53546011)(256004)(478600001)(14444005)(71200400001)(6506007)(102836004)(64756008)(6116002)(76176011)(5660300002)(2906002)(14454004)(386003)(66476007)(1411001)(4326008)(6436002)(81156014)(316002)(6512007)(81166006)(8936002)(229853002)(6486002)(25786009)(31686004)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2872;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Z9wAJz4D1zJmcGe+VPsCUzTYWj2c95iVXdC5yx3U0GiQgZxPW9QMmfbhVaPY6AarHJaXU71JllGOYgqm3/chiRPUIdtDV7CsBOOoyx7G4Pg0kXrAMUgNWivslNq3BZgCeW/ahd7bUZ8PkW48wflTkfAJPse3NJpYOQ83VsXo2q14etL4aIYXnfeKlA/DsU3lFLpZ+qhmo2J5qSgafwnN7jnlK0Jx4CqvA/r6YKD4IYOJ1S09ZG5NcTY5LcKyYSiLY16wXEq0pCJGlsMNaWPhafB/g1kEXdqQRpfnY396xkpoIddcZCHPRbh5/X9MsrNewfF06fjubP/892fn1L8wzZTLpgEPZO8tznN8DlJjdEVE5pl5+p8Uyy2MCixqN9EQnqZWnc5weFkdThq0O+qLoq8ZCJXB2seczHF4kZuyiBE=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <8E8396C2A20A7148AEC70E780E4E0656@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1729933AbfHTRcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 13:32:45 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:54481 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727006AbfHTRcp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 13:32:45 -0400
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1i07zt-0006PQ-HT; Tue, 20 Aug 2019 19:32:41 +0200
+Received: from [IPv6:2001:67c:20a1:1192:1c6e:731:5705:ce35] (unknown [IPv6:2001:67c:20a1:1192:1c6e:731:5705:ce35])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 75CDE448847;
+        Tue, 20 Aug 2019 17:32:39 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kernel@pengutronix.de,
+        linux-can@vger.kernel.org
+Openpgp: preference=signencrypt
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUsSbBQkM366zAAoJECte4hHF
+ iupUgkAP/2RdxKPZ3GMqag33jKwKAbn/fRqAFWqUH9TCsRH3h6+/uEPnZdzhkL4a9p/6OeJn
+ Z6NXqgsyRAOTZsSFcwlfxLNHVxBWm8pMwrBecdt4lzrjSt/3ws2GqxPsmza1Gs61lEdYvLST
+ Ix2vPbB4FAfE0kizKAjRZzlwOyuHOr2ilujDsKTpFtd8lV1nBNNn6HBIBR5ShvJnwyUdzuby
+ tOsSt7qJEvF1x3y49bHCy3uy+MmYuoEyG6zo9udUzhVsKe3hHYC2kfB16ZOBjFC3lH2U5An+
+ yQYIIPZrSWXUeKjeMaKGvbg6W9Oi4XEtrwpzUGhbewxCZZCIrzAH2hz0dUhacxB201Y/faY6
+ BdTS75SPs+zjTYo8yE9Y9eG7x/lB60nQjJiZVNvZ88QDfVuLl/heuIq+fyNajBbqbtBT5CWf
+ mOP4Dh4xjm3Vwlz8imWW/drEVJZJrPYqv0HdPbY8jVMpqoe5jDloyVn3prfLdXSbKPexlJaW
+ 5tnPd4lj8rqOFShRnLFCibpeHWIumqrIqIkiRA9kFW3XMgtU6JkIrQzhJb6Tc6mZg2wuYW0d
+ Wo2qvdziMgPkMFiWJpsxM9xPk9BBVwR+uojNq5LzdCsXQ2seG0dhaOTaaIDWVS8U/V8Nqjrl
+ 6bGG2quo5YzJuXKjtKjZ4R6k762pHJ3tnzI/jnlc1sXzuQENBFxSzJYBCAC58uHRFEjVVE3J
+ 31eyEQT6H1zSFCccTMPO/ewwAnotQWo98Bc67ecmprcnjRjSUKTbyY/eFxS21JnC4ZB0pJKx
+ MNwK6zq71wLmpseXOgjufuG3kvCgwHLGf/nkBHXmSINHvW00eFK/kJBakwHEbddq8Dr4ewmr
+ G7yr8d6A3CSn/qhOYWhIxNORK3SVo4Io7ExNX/ljbisGsgRzsWvY1JlN4sabSNEr7a8YaqTd
+ 2CfFe/5fPcQRGsfhAbH2pVGigr7JddONJPXGE7XzOrx5KTwEv19H6xNe+D/W3FwjZdO4TKIo
+ vcZveSDrFWOi4o2Te4O5OB/2zZbNWPEON8MaXi9zABEBAAGJA3IEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXFLMlgIbAgUJAeKNmgFACRArXuIRxYrqVMB0IAQZAQoAHRYhBJrx
+ JF84Dn3PPNRrhVrGIaOR5J0gBQJcUsyWAAoJEFrGIaOR5J0grw4H/itil/yryJCvzi6iuZHS
+ suSHHOiEf+UQHib1MLP96LM7FmDabjVSmJDpH4TsMu17A0HTG+bPMAdeia0+q9FWSvSHYW8D
+ wNhfkb8zojpa37qBpVpiNy7r6BKGSRSoFOv6m/iIoRJuJ041AEKao6djj/FdQF8OV1EtWKRO
+ +nE2bNuDCcwHkhHP+FHExdzhKSmnIsMjGpGwIQKN6DxlJ7fN4W7UZFIQdSO21ei+akinBo4K
+ O0uNCnVmePU1UzrwXKG2sS2f97A+sZE89vkc59NtfPHhofI3JkmYexIF6uqLA3PumTqLQ2Lu
+ bywPAC3YNphlhmBrG589p+sdtwDQlpoH9O7NeBAAg/lyGOUUIONrheii/l/zR0xxr2TDE6tq
+ 6HZWdtjWoqcaky6MSyJQIeJ20AjzdV/PxMkd8zOijRVTnlK44bcfidqFM6yuT1bvXAO6NOPy
+ pvBRnfP66L/xECnZe7s07rXpNFy72XGNZwhj89xfpK4a9E8HQcOD0mNtCJaz7TTugqBOsQx2
+ 45VPHosmhdtBQ6/gjlf2WY9FXb5RyceeSuK4lVrz9uZB+fUHBge/giOSsrqFo/9fWAZsE67k
+ 6Mkdbpc7ZQwxelcpP/giB9N+XAfBsffQ8q6kIyuFV4ILsIECCIA4nt1rYmzphv6t5J6PmlTq
+ TzW9jNzbYANoOFAGnjzNRyc9i8UiLvjhTzaKPBOkQfhStEJaZrdSWuR/7Tt2wZBBoNTsgNAw
+ A+cEu+SWCvdX7vNpsCHMiHtcEmVt5R0Tex1Ky87EfXdnGR2mDi6Iyxi3MQcHez3C61Ga3Baf
+ P8UtXR6zrrrlX22xXtpNJf4I4Z6RaLpB/avIXTFXPbJ8CUUbVD2R2mZ/jyzaTzgiABDZspbS
+ gw17QQUrKqUog0nHXuaGGA1uvreHTnyBWx5P8FP7rhtvYKhw6XdJ06ns+2SFcQv0Bv6PcSDK
+ aRXmnW+OsDthn84x1YkfGIRJEPvvmiOKQsFEiB4OUtTX2pheYmZcZc81KFfJMmE8Z9+LT6Ry
+ uSS5AQ0EXFLNDgEIAL14qAzTMCE1PwRrYJRI/RSQGAGF3HLdYvjbQd9Ozzg02K3mNCF2Phb1
+ cjsbMk/V6WMxYoZCEtCh4X2GjQG2GDDW4KC9HOa8cTmr9Vcno+f+pUle09TMzWDgtnH92WKx
+ d0FIQev1zDbxU7lk1dIqyOjjpyhmR8Put6vgunvuIjGJ/GapHL/O0yjVlpumtmow6eME2muc
+ TeJjpapPWBGcy/8VU4LM8xMeMWv8DtQML5ogyJxZ0Smt+AntIzcF9miV2SeYXA3OFiojQstF
+ vScN7owL1XiQ3UjJotCp6pUcSVgVv0SgJXbDo5Nv87M2itn68VPfTu2uBBxRYqXQovsR++kA
+ EQEAAYkCPAQYAQoAJhYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJcUs0OAhsMBQkB4o0iAAoJ
+ ECte4hHFiupUbioQAJ40bEJmMOF28vFcGvQrpI+lfHJGk9zSrh4F4SlJyOVWV1yWyUAINr8w
+ v1aamg2nAppZ16z4nAnGU/47tWZ4P8blLVG8x4SWzz3D7MCy1FsQBTrWGLqWldPhkBAGp2VH
+ xDOK4rLhuQWx3H5zd3kPXaIgvHI3EliWaQN+u2xmTQSJN75I/V47QsaPvkm4TVe3JlB7l1Fg
+ OmSvYx31YC+3slh89ayjPWt8hFaTLnB9NaW9bLhs3E2ESF9Dei0FRXIt3qnFV/hnETsx3X4h
+ KEnXxhSRDVeURP7V6P/z3+WIfddVKZk5ZLHi39fJpxvsg9YLSfStMJ/cJfiPXk1vKdoa+FjN
+ 7nGAZyF6NHTNhsI7aHnvZMDavmAD3lK6CY+UBGtGQA3QhrUc2cedp1V53lXwor/D/D3Wo9wY
+ iSXKOl4fFCh2Peo7qYmFUaDdyiCxvFm+YcIeMZ8wO5udzkjDtP4lWKAn4tUcdcwMOT5d0I3q
+ WATP4wFI8QktNBqF3VY47HFwF9PtNuOZIqeAquKezywUc5KqKdqEWCPx9pfLxBAh3GW2Zfjp
+ lP6A5upKs2ktDZOC2HZXP4IJ1GTk8hnfS4ade8s9FNcwu9m3JlxcGKLPq5DnIbPVQI1UUR4F
+ QyAqTtIdSpeFYbvH8D7pO4lxLSz2ZyBMk+aKKs6GL5MqEci8OcFW
+Subject: pull-request: can-next 2019-08-20
+Message-ID: <827b7ab8-f678-d5ce-a0c6-2a4b5f42238d@pengutronix.de>
+Date:   Tue, 20 Aug 2019 19:32:13 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 965f5366-c050-4eff-8668-08d7259403a2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2019 17:29:54.5123
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 9jxL+5DrIT2MYjIr8J4tv5gf+9CvvjDoMqcggdSEOh9PsquzdZ0QnR6/qKeeDurQ
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2872
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-20_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908200161
-X-FB-Internal: deliver
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCk9uIDgvMjAvMTkgODoxMCBBTSwgQ2FybG9zIEFudG9uaW8gTmVpcmEgQnVzdG9zIHdyb3Rl
-Og0KPiBIaSBZb25naG9uZywNCj4gDQo+IFRoYW5rcyBmb3IgdGFraW5nIHRoZSB0aW1lIHRvIHJl
-dmlldyB0aGlzLg0KPiANCj4gDQo+Pj4gKyAqDQo+Pj4gKyAqCQkqKi1FSU5WQUwqKiBpZiAqc2l6
-ZV9vZl9waWRucyogaXMgbm90IHZhbGlkIG9yIHVuYWJsZSB0byBnZXQgbnMsIHBpZA0KPj4+ICsg
-KgkJb3IgdGdpZCBvZiB0aGUgY3VycmVudCB0YXNrLg0KPj4+ICsgKg0KPj4+ICsgKgkJKiotRUNI
-SUxEKiogaWYgL3Byb2Mvc2VsZi9ucy9waWQgZG9lcyBub3QgZXhpc3RzLg0KPj4+ICsgKg0KPj4+
-ICsgKgkJKiotRU5PVERJUioqIGlmIC9wcm9jL3NlbGYvbnMgZG9lcyBub3QgZXhpc3RzLg0KPj4N
-Cj4+IExldCB1cyByZW1vdmUgRUNISUxEIGFuZCBFTk9URElSIGFuZCByZXBsYWNlIGl0IHdpdGgg
-RU5PRU5UIGFzIEkNCj4+IGRlc2NyaWJlZCBiZWxvdy4NCj4+DQo+PiBQbGVhc2UgKmRvIHZlcmlm
-eSogd2hhdCBoYXBwZW5zIHdoZW4gbmFtZXNwYWNlcyBvciBwaWRfbnMgYXJlIG5vdA0KPj4gY29u
-ZmlndXJlZC4NCj4+DQo+IA0KPiANCj4gSSBoYXZlIHRlc3RlZCBrZXJuZWwgY29uZmlndXJhdGlv
-bnMgd2l0aG91dCBuYW1lc3BhY2Ugc3VwcG9ydCBhbmQgd2l0aA0KPiBuYW1lc3BhY2Ugc3VwcG9y
-dCBidXQgd2l0aG91dCBwaWQgbmFtZXNwYWNlcywgdGhlIGhlbHBlciByZXR1cm5zIC1FSU5WQUwN
-Cj4gb24gYm90aCBjYXNlcywgbm93IGl0IHNob3VsZCByZXR1cm4gLUVOT0VOVC4NCg0KSW5kZWVk
-LiAtRU5PRU5UIGlzIGJldHRlci4NCg0KPiANCj4gDQo+Pj4gK3N0cnVjdCBicGZfcGlkbnNfaW5m
-byB7DQo+Pj4gKwlfX3UzMiBkZXY7DQo+Pg0KPj4gUGxlYXNlIGFkZCBhIGNvbW1lbnQgZm9yIGRl
-diBmb3IgaG93IGRldmljZSBtYWpvciBhbmQgbWlub3IgbnVtYmVyIGFyZQ0KPj4gZGVyaXZlZC4g
-VXNlciBzcGFjZSBnZXRzIGRldmljZSBtYWpvciBhbmQgbWlub3IgbnVtYmVyLCB0aGV5IG5lZWQg
-dG8NCj4+IGNvbXBhcmUgdG8gdGhlIGNvcnJlc3BvbmRpbmcgbWFqb3IvbWlub3IgbnVtYmVycyBy
-ZXR1cm5lZCBieSB0aGlzIGhlbHBlci4NCj4+DQo+Pj4gKwlfX3UzMiBuc2lkOw0KPj4+ICsJX191
-MzIgdGdpZDsNCj4+PiArCV9fdTMyIHBpZDsNCj4+PiArfTsNCj4+DQo+IA0KPiBXaGF0IGRvIHlv
-dSB0aGluayBvZiB0aGlzIGNvbW1lbnQgPw0KPiANCj4gc3RydWN0IGJwZl9waWRuc19pbmZvIHsN
-Cj4gCV9fdTMyIGRldjsJLyogbWFqb3IvbWlub3IgbnVtYmVycyBmcm9tIC9wcm9jL3NlbGYvbnMv
-cGlkLg0KPiAJCQkgKiBVc2VyIHNwYWNlIGdldHMgZGV2aWNlIG1ham9yIGFuZCBtaW5vciBudW1i
-ZXJzIGZyb20NCj4gCQkJICogdGhlIHNhbWUgZGV2aWNlIHRoYXQgbmVlZCB0byBiZSBjb21wYXJl
-ZCBhZ2FpbnN0IHRoZQ0KPiAJCQkgKiBtYWpvci9taW5vciBudW1iZXJzIHJldHVybmVkIGJ5IHRo
-aXMgaGVscGVyLg0KPiAJCQkgKi8NCj4gCV9fdTMyIG5zaWQ7DQo+IAlfX3UzMiB0Z2lkOw0KPiAJ
-X191MzIgcGlkOw0KPiB9Ow0KPiANCg0KVG8gYmUgbW9yZSBzcGVjaWZpYywgSSBsaWtlIGEgY29t
-bWVudCBzaW1pbGFyIHRvIGJlbG93IGluIHVhcGkgYnBmLmgNCg0Kc3RydWN0IGJwZl9jZ3JvdXBf
-ZGV2X2N0eCB7DQogICAgICAgICAvKiBhY2Nlc3NfdHlwZSBlbmNvZGVkIGFzIChCUEZfREVWQ0df
-QUNDXyogPDwgMTYpIHwgDQpCUEZfREVWQ0dfREVWXyogKi8NCiAgICAgICAgIF9fdTMyIGFjY2Vz
-c190eXBlOw0KICAgICAgICAgX191MzIgbWFqb3I7DQogICAgICAgICBfX3UzMiBtaW5vcjsNCn07
-DQoNClNvbWUgbGlrZToNCgkvKiBkZXYgZW5jb2RlZCBhcyAobWFqb3IgPDwgOCB8IChtaW5vciAm
-IDB4ZmYpKSAqLw0KDQo+Pg0KPj4gUGxlYXNlIHB1dCBhbiBlbXB0eSBsaW5lLiBBcyBhIGdlbmVy
-YWwgcnVsZSBmb3IgcmVhZGFiaWxpdHksDQo+PiBwdXQgYW4gZW1wdHkgbGluZSBpZiBjb250cm9s
-IGZsb3cgaXMgaW50ZXJydXB0ZWQsIGUuZy4sIGJ5DQo+PiAicmV0dXJuIiwgImJyZWFrIiBvciAi
-Y29udGludWUiLiBBdCBsZWFzdCB0aGlzIGlzIHdoYXQNCj4+IEkgc2F3IG1vc3QgaW4gYnBmIG1h
-aWxpbmcgbGlzdC4NCj4+DQo+IEknbGwgZml4IGl0IGluIHZlcnNpb24gMTAuDQo+IA0KPj4+ICsJ
-bGVuID0gc3RybGVuKHBpZG5zX3BhdGgpICsgMTsNCj4+PiArCW1lbWNweSgoY2hhciAqKXRtcC0+
-bmFtZSwgcGlkbnNfcGF0aCwgbGVuKTsNCj4+PiArCXRtcC0+dXB0ciA9IE5VTEw7DQo+Pj4gKwl0
-bXAtPmFuYW1lID0gTlVMTDsNCj4+PiArCXRtcC0+cmVmY250ID0gMTsNCj4+PiArCXJldCA9IGZp
-bGVuYW1lX2xvb2t1cChBVF9GRENXRCwgdG1wLCAwLCAma3AsIE5VTEwpOw0KPj4gQWRkaW5nIGJl
-bG93IHRvIGZyZWUga21lbSBjYWNoZSBtZW1vcnkNCj4+IAlrbWVtX2NhY2hlX2ZyZWUobmFtZXNf
-Y2FjaGVwLCBmbmFtZSk7DQo+Pg0KPiANCj4gSSB0aGluayB3ZSBkb24ndCBuZWVkIHRvIGNhbGwg
-a21lbV9jYWNoZV9mcmVlIGFzIGZpbGVuYW1lX2xvb2t1cA0KPiBjYWxscyBwdXRuYW1lIHRoYXQg
-Y2FsbHMga21lbV9jYWNoZV9mcmVlLg0KDQpPaCwgcmlnaHQuIFRoYW5rcyBmb3IgY2hlY2tpbmcg
-dGhpcy4NCg0KPiANCj4gDQo+IFRoYW5rcyBhIGxvdCBmb3IgeW91ciBoZWxwLg0KPiANCj4gQmVz
-dHMNCj4gDQo+PiBJbiB0aGUgYWJvdmUsIHdlIGNoZWNrZWQgdGFza19hY3RpdmVfcGlkX25zKCku
-DQo+PiBJZiBub3QgcmV0dXJuaW5nIE5VTEwsIHdlIGhhdmUgYSB2YWxpZCBwaWQgbnMuIFNvIHRo
-ZSBhYm92ZQ0KPj4gZmlsZW5hbWVfbG9va3VwIHNob3VsZCBub3QgZ28gd3JvbmcuIFdlIGNhbiBz
-dGlsbCBrZWVwDQo+PiB0aGUgZXJyb3IgY2hlY2tpbmcgdGhvdWdoLg0KPj4NCj4+PiArCWlmIChy
-ZXQpIHsNCj4+PiArCQltZW1zZXQoKHZvaWQgKilwaWRuc19pbmZvLCAwLCAoc2l6ZV90KSBzaXpl
-KTsNCj4+PiArCQlyZXR1cm4gcmV0Ow0KPj4NCj4+DQo+IA0KPiBJIHRoaW5rIHdlIGNvdWxkIGdl
-dCByaWQgb2YgdGhpcy4NCj4gDQo+IA0K
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9
+Content-Type: multipart/mixed; boundary="OZT6XtUoTd9MHUaXgwXWvfibvKh3zgDf2";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: netdev@vger.kernel.org
+Cc: davem@davemloft.net, kernel@pengutronix.de, linux-can@vger.kernel.org
+Message-ID: <827b7ab8-f678-d5ce-a0c6-2a4b5f42238d@pengutronix.de>
+Subject: pull-request: can-next 2019-08-20
+
+--OZT6XtUoTd9MHUaXgwXWvfibvKh3zgDf2
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: quoted-printable
+
+Hello David,
+
+this is a pull request for net-next/master consisting of 18 patches.
+
+The first patch is by Geert Uytterhoeven, it removes the unused platform
+data support from the rcar_can driver.
+
+A patch by Nishka Dasgupta marks the structure peak_pciec_i2c_bit_ops in
+the peak_pci driver as constant.
+
+A patch by me removes the custom DMA support from the hi311x driver.
+
+The next 4 patches target the tcan4x5x driver and are also by me, they
+first clean up the driver a bit, and then add missing error handling and
+fix a bug in the length calculation in the regmap callbacks.
+
+The next 2 patches are by me for the m_can_platform driver, they also
+remove unneeded casts and add missing error handling.
+
+The remaining 9 patches all target the mcp251x driver. The first 5 are
+clean up patches by me, the next relaxes the timing in the
+mcp251x_hw_reset() function. Alexander Shiyan's patch improves the name
+which is used while registering the interrupt handler. Phil Elwell's
+patch improves the mcp251x_open() function to use the DT-supplied
+interrupt flags instead of hard coding them. The final patch is again by
+me, it removes the custom DMA support from the hi311x driver.
+
+Marc
+
+---
+
+The following changes since commit 932630fa902878f4c8c50d0b1260eeb9de16b0=
+a4:
+
+  Merge tag 'wireless-drivers-next-for-davem-2019-08-19' of git://git.ker=
+nel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next (2019-08-19 =
+18:32:30 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git ta=
+gs/linux-can-next-for-5.4-20190820
+
+for you to fetch changes up to df58525df395561551440392d92daa6416b4f8f3:
+
+  can: mcp251x: remove custom DMA mapped buffer (2019-08-20 13:41:26 +020=
+0)
+
+----------------------------------------------------------------
+linux-can-next-for-5.4-20190820
+
+----------------------------------------------------------------
+Alexander Shiyan (1):
+      can: mcp251x: Use dev_name() during request_threaded_irq()
+
+Geert Uytterhoeven (1):
+      can: rcar_can: Remove unused platform data support
+
+Marc Kleine-Budde (14):
+      can: hi311x: remove custom DMA mapped buffer
+      can: tcan4x5x: remove unused struct tcan4x5x_priv::tcan4x5x_lock
+      can: tcan4x5x: remove not needed casts to struct tcan4x5x_priv *
+      can: tcan4x5x: tcan4x5x_can_probe(): add missing error handling if =
+mcan_class is NULL
+      can: tcan4x5x: fix data length in regmap write path
+      can: m_can_platform: remove not needed casts to struct m_can_plat_p=
+riv *
+      can: m_can_platform: m_can_plat_probe(): add missing error handling=
+ if mcan_class is NULL
+      can: mcp251x: convert block comments to network style comments
+      can: mcp251x: remove unnecessary blank lines
+
+--=20
+Pengutronix e.K.                  | Marc Kleine-Budde           |
+Industrial Linux Solutions        | Phone: +49-231-2826-924     |
+Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |-
+Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
+
+
+
+
+
+
+
+
+
+
+--OZT6XtUoTd9MHUaXgwXWvfibvKh3zgDf2--
+
+--ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl1cLp0ACgkQWsYho5Hk
+nSCm4QgAhLYwwRBkWcxh9Cgwsc0wsEPJI7a2UgZLZelDl28RkErcESceY4qA+Gs/
+2q98SCSWV1fgkCc/ff4KfxDI1EAg51Vta8HBsf7seCR58vHQ6hrnOr6U3/s17txd
++wkjlYusZQkFt0sQkxr9RNKH4dm/LTgN/Xk29EXIVKbKSYdEf/7DugI48H3nAPvO
+vRiS6pj8gFpU0yMENU6PCR0kn1wKEckx4frnjp8/elrkAc4WOWLnS5fLHFmbrdhh
+2VXFcnQFetx4N1BEhVe6EmPelt1oPyL0F0Kpwba+V9ECzPsQpnBm++vPKheRbobF
+j1vw/AOWh0KFxr1+oswsEmk3zKvMZw==
+=Zbov
+-----END PGP SIGNATURE-----
+
+--ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9--
