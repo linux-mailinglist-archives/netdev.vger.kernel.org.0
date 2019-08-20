@@ -2,56 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 860BB96077
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:41:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD91A96083
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:41:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730356AbfHTNlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 09:41:16 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:40579 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730340AbfHTNlM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 09:41:12 -0400
-Received: by mail-lf1-f68.google.com with SMTP id b17so4151571lff.7
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 06:41:11 -0700 (PDT)
+        id S1730412AbfHTNld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 09:41:33 -0400
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:32805 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730386AbfHTNl1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 09:41:27 -0400
+Received: by mail-lf1-f66.google.com with SMTP id x3so4174701lfc.0
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 06:41:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=qKDCjGrUGEITn9keK4O4wSbQw8s60BA2KTQLoKiFzno=;
-        b=NCf+aQCLyOPmICxmwDK6V0Xcg9NK5tJa5uZ4tFopVmo3qpZW6uFwm9JMgevQtG9Qns
-         hGHjeb0UzJ7k09qOfUkp4Tql14PTk9unwPbaHn939zgf4VvQG10w3MfUxWZjjoCKatxl
-         EPG7eYhW6U7R91XYDZNKBKlrBYpL8eES3GJDUgi5sZdP7nqOjqr3C28o5/77BHkLSvqF
-         Fc5OouIJ09I1e4/Qzl0Aw9X/1cvzsuWb4o3+kehRU8k3RCQV2jdLDOmi2XICAYA8O50t
-         UC9Rsy6Wxa5j/F4H6Kjn2u4Dj9hkiAVk1c/6idfukQi4nLlZwGfGWAdkhlgEdvk2An7m
-         3X9g==
+        bh=RAAFc3+apg9ghKgSz+2bVCqiXJK62BSpSIfioRn9dmg=;
+        b=MTqrFrq7NfIcYX9hZQL8gHvCMgEAMVDAzMl6TymnK6KbYCaZv69caw+OpIpdvI9Px5
+         gDX4Zxaq2sS7V5U6g6Y/wPqNyTlwjF4jy+xRb9RcnrN+1+KuJ4n09lIPFEtdM8WlqHsh
+         ia6xuVPFx58wyVZKboIoFB4vQsEsMVTB9yIIUxgUBd7I431PQ+F7yu9v2iL3YFwYYgR+
+         HWqVclyuJVe663v+Ns1j9KQ/wgT0wbivkUt1hyUgsaPfOD6Gb5ed0vWf0QBRIQGp52ks
+         Qvr00G+cTcj6ScQunx7eluB+rl8OBiBc8XVMdWN9nWDKOD6Vu21s8yo0bPQeJ4u5lZwE
+         hgng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=qKDCjGrUGEITn9keK4O4wSbQw8s60BA2KTQLoKiFzno=;
-        b=R3NNHqREpZGU5heCbUHHN29PdfDb4qTP8/cb2hMar6xyO+ONN+zEAnRjDSl5i/UfKr
-         HlZeL8W+frRtQzwCDi5g6ToLAGks+8rHCyPt0kXjlkWrQuW8qz/1tMDYrQKfcjl3DkMu
-         CjgSBBmfQuElamt89KkxLcBiuyPgQIpnKGVyGXRyWm+lYTpAS2GfGvO9V5353ESx3wmS
-         NfpP5MiYe5G5NPxmchdE/yeZx/VP8TLulOOvzfKJgOtFVgjCGIWKFh4OctcEF/Vt26Mz
-         L0zyyFj98mDQkepdouWv5ZJ1DV4/Q23M6ZJMlsdOeQ8OZo3NLi0dauVfMIl3OzIzHHNk
-         01Fg==
-X-Gm-Message-State: APjAAAVHjeZPzkUDMCQSnH3MiriBw0p2zgIN4et5/3tXrZYltbrVGQ4h
-        LcNZuSn0G6b1bNX+1NSPXZOWIg==
-X-Google-Smtp-Source: APXvYqxttx78GtX0vd5yiKKkdqsdz1pehalivWVgs1kXk1dF/0y8Iyrv4JOoqygWTduXugZhAZBz6w==
-X-Received: by 2002:a19:a416:: with SMTP id q22mr15652060lfc.145.1566308470396;
-        Tue, 20 Aug 2019 06:41:10 -0700 (PDT)
+        bh=RAAFc3+apg9ghKgSz+2bVCqiXJK62BSpSIfioRn9dmg=;
+        b=DOnTIfq/1R95lUsGG183rL9Aj1+SkVjmDxsPveYx9p8s0rT+eDli19cv6Z/KX9uQeM
+         5t7s3KAwEBkWfOxAY4/vGpHrcLRTdpLwT6Ogv73m6G2kQlGneZMNj9YypO3n2znP+eQt
+         3icsYBNJImw6UdQ73uAKy+OOiQ6JaxLHiy0gHGKjsums4y8O75H9obri6E2eAAhwGHFP
+         Mk5KiLT2pMVvEkBre1ggSMicPL2YQxM1ZozVT8XlPaNJdlJ3WxsnVD4KjXzkDN+cvji4
+         omtSp3kJSoINj/jTMkKY5I6X1ne3O+pfUBxh59axIdOmf4UqeLUQn9nqx6u20JRCN9Fm
+         aaKQ==
+X-Gm-Message-State: APjAAAWUMpt7q+oCTUKnHg3DJn/2T2Q6nEB4iPkZZ9dTWC3YGWUVxww9
+        50wKqTg2ERz5CSy1jmC7pNDRGA==
+X-Google-Smtp-Source: APXvYqyvwdCS8wFTEeve9kgL335NwHhmLcAkFv5HfhnI2TJSfJ1PR0BGeJVDiZ1r7BJ+GzhNm2aF+g==
+X-Received: by 2002:ac2:4a75:: with SMTP id q21mr14989391lfp.175.1566308486105;
+        Tue, 20 Aug 2019 06:41:26 -0700 (PDT)
 Received: from localhost (c-243c70d5.07-21-73746f28.bbcust.telenor.se. [213.112.60.36])
-        by smtp.gmail.com with ESMTPSA id d3sm2867007lfb.92.2019.08.20.06.41.09
+        by smtp.gmail.com with ESMTPSA id d21sm2861682lfc.73.2019.08.20.06.41.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 06:41:09 -0700 (PDT)
+        Tue, 20 Aug 2019 06:41:24 -0700 (PDT)
 From:   Anders Roxell <anders.roxell@linaro.org>
-To:     davem@davemloft.net, shuah@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+To:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com
+Cc:     linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
         Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH] selftests: net: add missing NFT_FWD_NETDEV to config
-Date:   Tue, 20 Aug 2019 15:41:02 +0200
-Message-Id: <20190820134102.25636-1-anders.roxell@linaro.org>
+Subject: [PATCH] selftests: bpf: install files test_xdp_vlan.sh
+Date:   Tue, 20 Aug 2019 15:41:21 +0200
+Message-Id: <20190820134121.25728-1-anders.roxell@linaro.org>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -60,46 +62,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When running xfrm_policy.sh we see the following
+When ./test_xdp_vlan_mode_generic.sh runs it complains that it can't
+find file test_xdp_vlan.sh.
 
- # sysctl cannot stat /proc/sys/net/ipv4/conf/eth1/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv4/conf/eth1/forwarding #
- # sysctl cannot stat /proc/sys/net/ipv4/conf/veth0/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv4/conf/veth0/forwarding #
- # sysctl cannot stat /proc/sys/net/ipv4/conf/eth1/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv4/conf/eth1/forwarding #
- # sysctl cannot stat /proc/sys/net/ipv4/conf/veth0/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv4/conf/veth0/forwarding #
- # sysctl cannot stat /proc/sys/net/ipv6/conf/eth1/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv6/conf/eth1/forwarding #
- # sysctl cannot stat /proc/sys/net/ipv6/conf/veth0/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv6/conf/veth0/forwarding #
- # sysctl cannot stat /proc/sys/net/ipv6/conf/eth1/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv6/conf/eth1/forwarding #
- # sysctl cannot stat /proc/sys/net/ipv6/conf/veth0/forwarding No such file or directory
- cannot: stat_/proc/sys/net/ipv6/conf/veth0/forwarding #
- # modprobe FATAL Module ip_tables not found in directory /lib/modules/5.3.0-rc5-next-20190820+
- FATAL: Module_ip_tables #
- # iptables v1.6.2 can't initialize iptables table `filter' Table does not exist (do you need to insmod?)
- v1.6.2: can't_initialize #
+ # selftests: bpf: test_xdp_vlan_mode_generic.sh
+ # ./test_xdp_vlan_mode_generic.sh: line 9: ./test_xdp_vlan.sh: No such
+ file or directory
 
-Rework to enable CONFIG_NF_TABLES_NETDEV and CONFIG_NFT_FWD_NETDEV.
+Rework so that test_xdp_vlan.sh gets installed, added to the variable
+TEST_PROGS_EXTENDED.
 
+Fixes: d35661fcf95d ("selftests/bpf: add wrapper scripts for test_xdp_vlan.sh")
 Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
 ---
- tools/testing/selftests/net/config | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/testing/selftests/bpf/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/net/config b/tools/testing/selftests/net/config
-index b8503a8119b0..e30b0ae5d474 100644
---- a/tools/testing/selftests/net/config
-+++ b/tools/testing/selftests/net/config
-@@ -29,3 +29,5 @@ CONFIG_NET_SCH_FQ=m
- CONFIG_NET_SCH_ETF=m
- CONFIG_TEST_BLACKHOLE_DEV=m
- CONFIG_KALLSYMS=y
-+CONFIG_NF_TABLES_NETDEV=y
-+CONFIG_NFT_FWD_NETDEV=m
+diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+index 1faad0c3c3c9..d7968e20463c 100644
+--- a/tools/testing/selftests/bpf/Makefile
++++ b/tools/testing/selftests/bpf/Makefile
+@@ -68,7 +68,8 @@ TEST_PROGS := test_kmod.sh \
+ TEST_PROGS_EXTENDED := with_addr.sh \
+ 	with_tunnels.sh \
+ 	tcp_client.py \
+-	tcp_server.py
++	tcp_server.py \
++	test_xdp_vlan.sh
+ 
+ # Compile but not part of 'make run_tests'
+ TEST_GEN_PROGS_EXTENDED = test_libbpf_open test_sock_addr test_skb_cgroup_id_user \
 -- 
 2.20.1
 
