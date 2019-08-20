@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8DF1F95A2B
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:50:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 12FC295A2C
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:50:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729527AbfHTItC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 04:49:02 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:43875 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728698AbfHTIs7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:48:59 -0400
-Received: by mail-wr1-f66.google.com with SMTP id y8so11480562wrn.10;
-        Tue, 20 Aug 2019 01:48:59 -0700 (PDT)
+        id S1729555AbfHTItD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 04:49:03 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40593 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729449AbfHTItC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:49:02 -0400
+Received: by mail-wr1-f65.google.com with SMTP id c3so11497774wrd.7;
+        Tue, 20 Aug 2019 01:49:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fJRlmlBru4RfFVqA4+d8k80FcuTjsj2jSzcYsHbb4+E=;
-        b=dyFWDqJO4XA0IkhbohbgkMzHBaAbQwIP3GP05rJgMxEq0/IGlpRDPqYDJ5RMYoh8uW
-         +FJV9zQ1cnNkLZcb20rIGmta29Dm7g1JnpWX0OSA9eGBU9fRvKpcI5ZGu0BHrg1eHMl5
-         7m8qiWLgf4iF82ulGCVN83FbrHP28G3iKzBHeFmb0rrZTOoIlUmq1wkprPm3sxjfeROd
-         T1sStWn2u/2CoqBropLYiqlS6cuDlCkceXMGC5bDFr64nqWxkpCX5hjgPAztSCCxWBY7
-         dJrGpoN6MehS0DdYneTrtdr3ICvDcu/Wzuxpid49UotbyjXgxvxi09D8hmlqy0NcqN8c
-         +m/Q==
+        bh=FKNrrF2xd/dx0ZsLLj4swvq6lspHhHmUFsye77oNcos=;
+        b=BwZXmFPPq1Wrdn30TfGjCW+pZO0jMo5o2/+83297r1e7EizxuKfHknnyfqRB9q7ysC
+         s1Nqa5GEbqJIuVTAQq6fyTz+wSPPBlmCvmzFDpfoKcOaZBqYa9cDf3ClXUY8CCY3+p1v
+         Fz7IDZ6+L895F+ICBw3pNzR8zOFs7YPOkabgQJKJ4+YYSKgllqmHioyYPImGrMwG8WaZ
+         TN/qH8jGKRMyG0avj8sKIWfO9dUHk92e0AmdioDwNMDrCA6HcKhIfT9Q3tEjoLhGCZBG
+         yzuMmXMMMBVw78LNSyqRfAmP/aTpSVrpsKsKXxC4yDvIesxOCqghIpPmZ07cjkQaS1iL
+         ijZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fJRlmlBru4RfFVqA4+d8k80FcuTjsj2jSzcYsHbb4+E=;
-        b=hnAE3DHOFzVofNDzs6OrLBKkicVvs5UHyV3cC29w8pWyV0bBGCmA/mf2/tHud/22ze
-         +2A2CCsOZnzmy965Vi5Iuo2fPme8cOFtWAcuZt4ktQSZ8g8xbClDJ+M+okZAhtQSgcX1
-         U66ZWNjh/68dPhH1o8yXndCLMcjk83gKw3AqLG3CDQB2Mtzi/gP5WCAZxR6/qdSC2MlX
-         BAw3vxjIbP5A2jmZWwVhaHB9z6yAdmIjtq7lSDSbcymNTsZsrd+jgBTEttG84JkuJpcu
-         QAEgIkfzGWTIitY6gCUly8BgNa56Q4dk+aS6d85L/sXZwVEQyzFvyP/2cunMCj7wMH0f
-         XOtw==
-X-Gm-Message-State: APjAAAUS5SmfRU6vj/rwVeoIEsVyAKi50NfasoqmdAS0cX3bz9uPAbOy
-        S/8M/aWMBKRh9humh0hakcnR8bSz8hk=
-X-Google-Smtp-Source: APXvYqwn/ZfOKNJgtLt3QtCbOcefQ4f5jOUF4Txx8QAiKctbGE2Z4ye5dL1gLm0tzJ1XndGoex8msQ==
-X-Received: by 2002:a5d:4b0e:: with SMTP id v14mr33485466wrq.24.1566290938142;
-        Tue, 20 Aug 2019 01:48:58 -0700 (PDT)
+        bh=FKNrrF2xd/dx0ZsLLj4swvq6lspHhHmUFsye77oNcos=;
+        b=T0myvxQBH12jcQt6FOr6GLGVmhdq2Fyte1FSfH3Nbq4XJbgf6kJzSq5HJFFjRv7Sh4
+         6YJoQNa+QQiQJp761eAxOqr039bzMBnV0KONaq/8qtTo1xaQjsJlsAuC4Y2UF5utJEtk
+         7XtP9SbnqXkWJeCEWWdY3hsgD/2rTjWCAg1KPYm6YxtCkViG3f/Hq2dCeljGCtZU9Htg
+         UVTSz4WAL0CrcDKjYcglDTxYoKMKlhOmH0jNyIXKEB2GFPW+X0clVSV0ZKr2MaFT0BrP
+         HDqv+FP4/2wIlavjfkl0hspn5o+6WV2KKryp845DaUYCeO7Gt5HmwMHoqV7NhrJiLpzi
+         Ufcw==
+X-Gm-Message-State: APjAAAVicUat6fKmxiZgVts41tl9hUYAYZT6PQXKAgZYGMh7Uh6jQpHq
+        9G/wWCeiwajuOUpyZo4vBElCpwt8bXA=
+X-Google-Smtp-Source: APXvYqwMRT0RtALgiYWbr/Z8mQTBee/4TnFeIXe+ZNdw3o2RLFDwI1gOyExtyBq+G2wcULEb57mxog==
+X-Received: by 2002:adf:f7cd:: with SMTP id a13mr32662955wrq.165.1566290939322;
+        Tue, 20 Aug 2019 01:48:59 -0700 (PDT)
 Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
-        by smtp.gmail.com with ESMTPSA id s64sm36437105wmf.16.2019.08.20.01.48.56
+        by smtp.gmail.com with ESMTPSA id s64sm36437105wmf.16.2019.08.20.01.48.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 01:48:57 -0700 (PDT)
+        Tue, 20 Aug 2019 01:48:58 -0700 (PDT)
 From:   Hubert Feurstein <h.feurstein@gmail.com>
 X-Google-Original-From: Hubert Feurstein <hubert.feurstein@vahle.at>
 To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -51,13 +51,13 @@ Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Richard Cochran <richardcochran@gmail.com>,
         Miroslav Lichvar <mlichvar@redhat.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH net-next v3 2/4] net: mdio: add PTP offset compensation to mdiobus_write_sts
-Date:   Tue, 20 Aug 2019 10:48:31 +0200
-Message-Id: <20190820084833.6019-3-hubert.feurstein@vahle.at>
+Subject: [PATCH net-next v3 3/4] net: dsa: mv88e6xxx: extend PTP gettime function to read system clock
+Date:   Tue, 20 Aug 2019 10:48:32 +0200
+Message-Id: <20190820084833.6019-4-hubert.feurstein@vahle.at>
 X-Mailer: git-send-email 2.22.1
 In-Reply-To: <20190820084833.6019-1-hubert.feurstein@vahle.at>
 References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
@@ -70,60 +70,110 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Hubert Feurstein <h.feurstein@gmail.com>
 
-The slow MDIO access introduces quite a big offset (~13us) to the PTP
-system time synchronisation. With this patch the driver has the possibility
-to set the correct offset which can then be compensated.
+This adds support for the PTP_SYS_OFFSET_EXTENDED ioctl.
 
 Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 ---
- drivers/net/phy/mdio_bus.c | 12 ++++++++++++
- include/linux/phy.h        |  8 ++++++++
- 2 files changed, 20 insertions(+)
+Changes in v3:
+ - mv88e6xxx_smi_indirect_write: forward ptp_sts only on the last write
+ 
+ drivers/net/dsa/mv88e6xxx/chip.h |  2 ++
+ drivers/net/dsa/mv88e6xxx/ptp.c  | 11 +++++++----
+ drivers/net/dsa/mv88e6xxx/smi.c  |  7 ++++++-
+ 3 files changed, 15 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 4dba2714495e..50a37cf46f96 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -739,6 +739,18 @@ int __mdiobus_write_sts(struct mii_bus *bus, int addr, u32 regnum, u16 val,
- 	if (!(bus->flags & MII_BUS_F_PTP_STS_SUPPORTED))
- 		ptp_read_system_postts(sts);
- 
-+	/* PTP offset compensation:
-+	 * After the MDIO access is completed (from the chip perspective), the
-+	 * switch chip will snapshot the PHC timestamp. To make sure our system
-+	 * timestamp corresponds to the PHC timestamp, we have to add the
-+	 * duration of this MDIO access to sts->post_ts. Linuxptp's phc2sys
-+	 * takes the average of pre_ts and post_ts to calculate the final
-+	 * system timestamp. With this in mind, we have to add ptp_sts_offset
-+	 * twice to post_ts, in order to not introduce an constant time offset.
-+	 */
-+	if (sts)
-+		timespec64_add_ns(&sts->post_ts, 2 * bus->ptp_sts_offset);
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index a406be2f5652..1bfde0d8a5a3 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -275,6 +275,8 @@ struct mv88e6xxx_chip {
+ 	struct ptp_clock_info	ptp_clock_info;
+ 	struct delayed_work	tai_event_work;
+ 	struct ptp_pin_desc	pin_config[MV88E6XXX_MAX_GPIO];
++	struct ptp_system_timestamp *ptp_sts;
 +
- 	return retval;
+ 	u16 trig_config;
+ 	u16 evcap_config;
+ 	u16 enable_count;
+diff --git a/drivers/net/dsa/mv88e6xxx/ptp.c b/drivers/net/dsa/mv88e6xxx/ptp.c
+index 073cbd0bb91b..cf6e52ee9e0a 100644
+--- a/drivers/net/dsa/mv88e6xxx/ptp.c
++++ b/drivers/net/dsa/mv88e6xxx/ptp.c
+@@ -235,14 +235,17 @@ static int mv88e6xxx_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
+ 	return 0;
  }
- EXPORT_SYMBOL(__mdiobus_write_sts);
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 0b33662e0320..615df9c7f2c3 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -283,8 +283,16 @@ struct mii_bus {
- 	 * The ptp_read_system_*ts functions already check the ptp_sts pointer.
- 	 * The MII_BUS_F_PTP_STS_SUPPORTED-bit must be set in flags, when the
- 	 * MDIO bus driver takes the timestamps as described above.
-+	 *
-+	 * @ptp_sts_offset: This is the compensation offset for the system
-+	 * timestamp which is introduced by the slow MDIO access duration. An
-+	 * MDIO access consists of 32 clock cycles. Usually the MDIO bus runs
-+	 * at ~2.5MHz, so we have to compensate ~12800ns offset.
-+	 * Set the ptp_sts_offset to the exact duration of one MDIO frame
-+	 * (= 32 * clock-period) in nano-seconds.
- 	 */
- 	struct ptp_system_timestamp *ptp_sts;
-+	u32 ptp_sts_offset;
- };
  
- #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
+-static int mv88e6xxx_ptp_gettime(struct ptp_clock_info *ptp,
+-				 struct timespec64 *ts)
++static int mv88e6xxx_ptp_gettimex(struct ptp_clock_info *ptp,
++				  struct timespec64 *ts,
++				  struct ptp_system_timestamp *sts)
+ {
+ 	struct mv88e6xxx_chip *chip = ptp_to_chip(ptp);
+ 	u64 ns;
+ 
+ 	mv88e6xxx_reg_lock(chip);
++	chip->ptp_sts = sts;
+ 	ns = timecounter_read(&chip->tstamp_tc);
++	chip->ptp_sts = NULL;
+ 	mv88e6xxx_reg_unlock(chip);
+ 
+ 	*ts = ns_to_timespec64(ns);
+@@ -426,7 +429,7 @@ static void mv88e6xxx_ptp_overflow_check(struct work_struct *work)
+ 	struct mv88e6xxx_chip *chip = dw_overflow_to_chip(dw);
+ 	struct timespec64 ts;
+ 
+-	mv88e6xxx_ptp_gettime(&chip->ptp_clock_info, &ts);
++	mv88e6xxx_ptp_gettimex(&chip->ptp_clock_info, &ts, NULL);
+ 
+ 	schedule_delayed_work(&chip->overflow_work,
+ 			      MV88E6XXX_TAI_OVERFLOW_PERIOD);
+@@ -472,7 +475,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
+ 	chip->ptp_clock_info.max_adj    = MV88E6XXX_MAX_ADJ_PPB;
+ 	chip->ptp_clock_info.adjfine	= mv88e6xxx_ptp_adjfine;
+ 	chip->ptp_clock_info.adjtime	= mv88e6xxx_ptp_adjtime;
+-	chip->ptp_clock_info.gettime64	= mv88e6xxx_ptp_gettime;
++	chip->ptp_clock_info.gettimex64	= mv88e6xxx_ptp_gettimex;
+ 	chip->ptp_clock_info.settime64	= mv88e6xxx_ptp_settime;
+ 	chip->ptp_clock_info.enable	= ptp_ops->ptp_enable;
+ 	chip->ptp_clock_info.verify	= ptp_ops->ptp_verify;
+diff --git a/drivers/net/dsa/mv88e6xxx/smi.c b/drivers/net/dsa/mv88e6xxx/smi.c
+index 282fe08db050..1b5f78662158 100644
+--- a/drivers/net/dsa/mv88e6xxx/smi.c
++++ b/drivers/net/dsa/mv88e6xxx/smi.c
+@@ -45,7 +45,8 @@ static int mv88e6xxx_smi_direct_write(struct mv88e6xxx_chip *chip,
+ {
+ 	int ret;
+ 
+-	ret = mdiobus_write_nested(chip->bus, dev, reg, data);
++	ret = mdiobus_write_sts_nested(chip->bus, dev, reg, data,
++				       chip->ptp_sts);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -130,6 +131,7 @@ static int mv88e6xxx_smi_indirect_read(struct mv88e6xxx_chip *chip,
+ static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
+ 					int dev, int reg, u16 data)
+ {
++	struct ptp_system_timestamp *ptp_sts = chip->ptp_sts;
+ 	int err;
+ 
+ 	err = mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
+@@ -137,11 +139,14 @@ static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
+ 	if (err)
+ 		return err;
+ 
++	chip->ptp_sts = NULL;
+ 	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
+ 					 MV88E6XXX_SMI_DATA, data);
+ 	if (err)
+ 		return err;
+ 
++	/* Capture the PTP system timestamps only on *this* write operation */
++	chip->ptp_sts = ptp_sts;
+ 	err = mv88e6xxx_smi_direct_write(chip, chip->sw_addr,
+ 					 MV88E6XXX_SMI_CMD,
+ 					 MV88E6XXX_SMI_CMD_BUSY |
 -- 
 2.22.1
 
