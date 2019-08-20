@@ -2,86 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A208962BB
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:45:03 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A3DD962C4
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:47:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729980AbfHTOpB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 10:45:01 -0400
-Received: from correo.us.es ([193.147.175.20]:33582 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729762AbfHTOpA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 10:45:00 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id C58BAFB442
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 16:44:56 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id B7FC37E4C2
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 16:44:56 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id AB967DA7B6; Tue, 20 Aug 2019 16:44:56 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id A1609D1DBB;
-        Tue, 20 Aug 2019 16:44:54 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 20 Aug 2019 16:44:54 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [47.60.43.0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id 678164265A2F;
-        Tue, 20 Aug 2019 16:44:54 +0200 (CEST)
-Date:   Tue, 20 Aug 2019 16:44:53 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Edward Cree <ecree@solarflare.com>
-Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
-        netdev@vger.kernel.org, jakub.kicinski@netronome.com,
-        jiri@resnulli.us, vladbu@mellanox.com
-Subject: Re: [PATCH net-next 1/2] net: flow_offload: mangle 128-bit packet
- field with one action
-Message-ID: <20190820144453.ckme6oj2c4hmofhu@salvia>
-References: <20190820105225.13943-1-pablo@netfilter.org>
- <f18d8369-f87d-5b9a-6c9d-daf48a3b95f1@solarflare.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <f18d8369-f87d-5b9a-6c9d-daf48a3b95f1@solarflare.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+        id S1730301AbfHTOq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 10:46:59 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60160 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730189AbfHTOq6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 10:46:58 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KEXpHe127264
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 10:46:56 -0400
+Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2ugh4mx8dt-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 10:46:56 -0400
+Received: from localhost
+        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Tue, 20 Aug 2019 15:46:54 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Tue, 20 Aug 2019 15:46:52 +0100
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7KEko6642598542
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 20 Aug 2019 14:46:50 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id B0B9011C052;
+        Tue, 20 Aug 2019 14:46:50 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 67C3911C04C;
+        Tue, 20 Aug 2019 14:46:50 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 20 Aug 2019 14:46:50 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net-next 0/9] s390/net: updates 2019-08-20
+Date:   Tue, 20 Aug 2019 16:46:34 +0200
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19082014-0008-0000-0000-0000030B14E1
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19082014-0009-0000-0000-00004A293C8B
+Message-Id: <20190820144643.64041-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-20_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=867 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908200145
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 03:15:16PM +0100, Edward Cree wrote:
-> On 20/08/2019 11:52, Pablo Neira Ayuso wrote:
-> > The existing infrastructure needs the front-end to generate up to four
-> > actions (one for each 32-bit word) to mangle an IPv6 address. This patch
-> > allows you to mangle fields than are longer than 4-bytes with one single
-> > action. Drivers have been adapted to this new representation following a
-> > simple approach, that is, iterate over the array of words and configure
-> > the hardware IR to make the packet mangling. FLOW_ACTION_MANGLE_MAX_WORDS
-> > defines the maximum number of words from one given offset (currently 4
-> > words).
-> >
-> > Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
->
-> What's the point of this?
-> Why do you need to be able to do this with a single action?  It doesn't
->  look like this extra 70 lines of code is actually buying you anything,
->  and it makes more work for any other drivers that want to implement the
->  offload API.
+Hi Dave,
 
-It looks to me this limitation is coming from tc pedit.
+please apply the following patches to net-next. This series brings a mix
+of cleanups and small improvements for various parts of qeth's control
+path. Also, a minor cleanup for ctcm and lcs.
 
-Four actions to mangle an IPv6 address consume more memory when making
-the translation, and if you expect a lot of rules.
+Thanks,
+Julian
 
-I think drivers can do more than one 32-bit word mangling in one go.
+
+Julian Wiedmann (9):
+  s390/qeth: use node_descriptor struct
+  s390/qeth: propagate length of processed cmd IO data to callback
+  s390/qeth: use correct length field in SNMP cmd callback
+  s390/qeth: keep cmd alive after IO completion
+  s390/qeth: merge qeth_reply struct into qeth_cmd_buffer
+  s390/qeth: get vnicc sub-cmd type from reply data
+  s390/qeth: streamline control code for promisc mode
+  s390/ctcm: don't use intparm for channel IO
+  s390/lcs: don't use intparm for channel IO
+
+ drivers/s390/net/ctcm_fsms.c      |  42 ++---
+ drivers/s390/net/ctcm_main.c      |   6 +-
+ drivers/s390/net/ctcm_mpc.c       |   6 +-
+ drivers/s390/net/lcs.c            |   6 +-
+ drivers/s390/net/qeth_core.h      |  36 ++---
+ drivers/s390/net/qeth_core_main.c | 261 ++++++++++++++----------------
+ drivers/s390/net/qeth_core_mpc.h  |   1 -
+ drivers/s390/net/qeth_l2_main.c   |  62 +++----
+ drivers/s390/net/qeth_l3_main.c   |  24 +--
+ 9 files changed, 197 insertions(+), 247 deletions(-)
+
+-- 
+2.17.1
+
