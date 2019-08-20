@@ -2,157 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5ED99618F
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:48:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C153D96193
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:49:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730417AbfHTNsg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 09:48:36 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:50642 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729833AbfHTNsf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 09:48:35 -0400
-Received: by mail-wm1-f65.google.com with SMTP id v15so2697868wml.0
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 06:48:32 -0700 (PDT)
+        id S1730363AbfHTNsw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 09:48:52 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:34523 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729833AbfHTNsw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 09:48:52 -0400
+Received: by mail-ed1-f67.google.com with SMTP id s49so6417742edb.1;
+        Tue, 20 Aug 2019 06:48:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=to:cc:references:from:openpgp:autocrypt:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wAT7SyBCLW4Yu4QrSneHAfmHCfaOcdPIhTOn63ZR9A4=;
-        b=OLJ9oWSKBahvsUbwcKYm3EdKff/9kJI1ieDki1y8XUIY8Zk4vsQYeVxpF3pgeH03Dw
-         NttuADIXxMTEU3UvpCF/w10V+3WRd+ZWkHzMUIuEE1LA0TaX8Jv15DeLqZHfQBT8gvE/
-         bJq9+TvGN38Z4bT18oFxEdmPKM70Q1kBZGxomv3bcR0+wlANiFQ4lVBvlBjcEb8x1W4R
-         NPQmdu4j+pFQCwCTHmpW+nOROMpHH/5oOcR3FM8HcuO69N52KwbNJSTV46thOdIEm8ov
-         mwN3xw6nHN4VK4C9J5COc1+0xHloLdQmj/CTjU6VTHC7bmmNjTJehtaj56YHMut+9Zkr
-         q93g==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=m+JdZSXD0D2c02Imv40GB5KWh8cWJNBa36c7pON1v6s=;
+        b=hqY92RF0L3162rzl/kU0ZJ+pZpjLuw8SBGXb0Z3uxTPvLjmtNi34GyPjhNAdbElXuu
+         ppp1IZKQ2QMWwgeEJ08aTY+0bWJqKkolN25kwPTgVKRgbcDQ5/+UXM++2O5iAiMcy+Ht
+         4VPlGY0LiK/INND7svw/fKBgPCOc6nzIYA9qE87kCV6t+pipJyYl9ZC+eAAr5LR05YwT
+         9OLVrR7b75OTiEwgJHtUQGEXMxIPlJC+t3+2uvdlcm0eYOmfVAYCsF2saV056s8ZRD/z
+         2Ik9318u9FYKcaRBddGyq8e+ErrezwjNV7Zn8CVCuBexa74W8f5acKZ10YOosPI6+2kt
+         12gQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:references:from:openpgp:autocrypt:subject
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=wAT7SyBCLW4Yu4QrSneHAfmHCfaOcdPIhTOn63ZR9A4=;
-        b=mjT6VRRcqC4ld3i0kTn3cHjj9TWX5CctPz4Ih3p+0nJJsV9F3DUjU2Gv8UKITCm1N2
-         AlNoEIuyvYwiyddkcAGXerfaTb+MxJ30d1Skucl2TfHAzGr03LWZNsr0nN6myyG0pOe5
-         zE/qTRx/MDxlyqOH4cWVr8jkTCkFwvsE+cPkH9dpYlUcIWddf2ZEaQFhKM5FkpBeek+3
-         UkUidtPudn2LkVhJCd/yB6Yq3y8D7qzcNwxGTJL1xMYkz8ogSWDDcpPVTL5mxMNJ7eWb
-         w5en3SqqFC1HdTS+dHIGMJJscY1h/ociEOyxa2Am47H2uko5tHmPFIs1YqpdecPt5KmA
-         3Ncg==
-X-Gm-Message-State: APjAAAUmoCZ5n9m1tPTq1p9kPvy+NPurdF6feVfduYAWv2kR72uBdd5n
-        BjF1pPo1wrnT6BvI1MEAoZx9bA==
-X-Google-Smtp-Source: APXvYqzw5VL2EY7tUEATyO7k1BRMQOVVWPMvfC2ycjU5JCZv2DMjS5gNqN9z6a4Erxg+kdhL7u+Kzg==
-X-Received: by 2002:a7b:cd0f:: with SMTP id f15mr121947wmj.86.1566308912168;
-        Tue, 20 Aug 2019 06:48:32 -0700 (PDT)
-Received: from [172.20.1.254] ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id w5sm27954wmm.43.2019.08.20.06.48.31
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 20 Aug 2019 06:48:31 -0700 (PDT)
-To:     Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com
-References: <20190820095233.17097-1-quentin.monnet@netronome.com>
- <fcb2e528-6750-2192-befe-dd68ca36fc62@iogearbox.net>
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
- 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
- RHhSHGnKaQ6MfrTge5Q0h5A=
-Subject: Re: [oss-drivers] Re: [PATCH bpf-next] bpf: add BTF ids in procfs for
- file descriptors to BTF objects
-Message-ID: <534ce109-06e9-d8d5-9de6-240518286d11@netronome.com>
-Date:   Tue, 20 Aug 2019 14:48:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=m+JdZSXD0D2c02Imv40GB5KWh8cWJNBa36c7pON1v6s=;
+        b=SfGUZR+oFesUXqVg9WGHkn1oXM1lN8qSlhuPo7E/bcgjBSeJO2kAtx6EJ+PrDmUK0X
+         jNpMZUqVSnsCT6hMCGkuNhoMYmOVc//qlKRwoFLi7GCCpiDjvRlBkgUBcT6Gn8bhRJB/
+         cGbLY9jZL5L1j7rCOKytPnoDV1n9LdqjiMjvVDfeFmXgst8opqW8iiWj8rOvpzJDzcUC
+         uz9x6cKfrLRUuxIpf15lQFoehOkoan01VaBGwFA79vHATCi7kyDZmHAdPo8f/VJ7HMAQ
+         WA50rELQgHsAgnv9FP43CXrpb+qgCAa8nGVqAvhF7d8Y07Wnw9u5tLhWEIOpeGR3J/+l
+         55GA==
+X-Gm-Message-State: APjAAAX6boJAQtKXnv+CT4vs9xcoKkToUO8mI+SJLjvNvx2cZzkxXW1k
+        HAJRgUqYxY6ZmwuTMOwPFcqTUy8kIRa0vgGqbqw=
+X-Google-Smtp-Source: APXvYqzUZIKwnbDgamVnX9gB78XfXRD3TsYr5rvVNhkOU18V0B78GCOJnJ6SGd5MKO0bVNaUzRkH38cnHCbn0lSZaig=
+X-Received: by 2002:a17:906:4683:: with SMTP id a3mr25606222ejr.47.1566308930492;
+ Tue, 20 Aug 2019 06:48:50 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <fcb2e528-6750-2192-befe-dd68ca36fc62@iogearbox.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+References: <20190816004449.10100-1-olteanv@gmail.com> <20190816004449.10100-4-olteanv@gmail.com>
+ <20190816121837.GD4039@sirena.co.uk> <CA+h21hqatTeS2shV9QSiPzkjSeNj2Z4SOTrycffDjRHj=9s=nQ@mail.gmail.com>
+ <20190816125820.GF4039@sirena.co.uk> <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
+ <20190820125557.GB4738@sirena.co.uk>
+In-Reply-To: <20190820125557.GB4738@sirena.co.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Tue, 20 Aug 2019 16:48:39 +0300
+Message-ID: <CA+h21hr653oqOPxoJKWkP9ZhTywNR8EBjWV7U9LHwPRz=PJXsw@mail.gmail.com>
+Subject: Re: [RFC PATCH net-next 03/11] spi: Add a PTP system timestamp to the
+ transfer structure
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-2019-08-20 15:36 UTC+0200 ~ Daniel Borkmann <daniel@iogearbox.net>
-> On 8/20/19 11:52 AM, Quentin Monnet wrote:
->> Implement the show_fdinfo hook for BTF FDs file operations, and make it
->> print the id and the size of the BTF object. This allows for a quick
->> retrieval of the BTF id from its FD; or it can help understanding what
->> type of object (BTF) the file descriptor points to.
->>
->> Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
->> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
->> ---
->>   kernel/bpf/btf.c | 16 ++++++++++++++++
->>   1 file changed, 16 insertions(+)
->>
->> diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
->> index 5fcc7a17eb5a..39e184f1b27c 100644
->> --- a/kernel/bpf/btf.c
->> +++ b/kernel/bpf/btf.c
->> @@ -3376,6 +3376,19 @@ void btf_type_seq_show(const struct btf *btf,
->> u32 type_id, void *obj,
->>       btf_type_ops(t)->seq_show(btf, t, type_id, obj, 0, m);
->>   }
->>   +#ifdef CONFIG_PROC_FS
->> +static void bpf_btf_show_fdinfo(struct seq_file *m, struct file *filp)
->> +{
->> +    const struct btf *btf = filp->private_data;
->> +
->> +    seq_printf(m,
->> +           "btf_id:\t%u\n"
->> +           "data_size:\t%u\n",
->> +           btf->id,
->> +           btf->data_size);
-> 
-> Looks good, exposing btf_id makes sense to me in order to correlate with
-> applications.
-> Do you have a concrete use case for data_size to expose it this way as
-> opposed to fetch
-> it via btf_get_info_by_fd()? If not, I'd say lets only add btf_id in there.
+Hi Mark,
 
-No, I don't have one for data_size to be honest. I'll respin with btf_id
-only then.
+On Tue, 20 Aug 2019 at 15:55, Mark Brown <broonie@kernel.org> wrote:
+>
+> On Fri, Aug 16, 2019 at 05:05:53PM +0300, Vladimir Oltean wrote:
+>
+> > I'm not sure how to respond to this, because I don't know anything
+> > about the timing of DMA transfers.
+> > Maybe snapshotting DMA transfers the same way is not possible (if at
+> > all). Maybe they are not exactly adequate for this sort of application
+> > anyway. Maybe it depends.
+>
+> DMA transfers generally proceed without any involvement from the CPU,
+> this is broadly the point of DMA.  You *may* be able to split into
+> multiple transactions but it's not reliable that you'd be able to do so
+> on byte boundaries and there will be latency getting notified of
+> completions.
+>
+> > In other words, from a purely performance perspective, I am against
+> > limiting the API to just snapshotting the first and last byte. At this
+> > level of "zoom", if I change the offset of the byte to anything other
+> > than 3, the synchronization offset refuses to converge towards zero,
+> > because the snapshot is incurring a constant offset that the servo
+> > loop from userspace (phc2sys) can't compensate for.
+>
+> > Maybe the SPI master driver should just report what sort of
+> > snapshotting capability it can offer, ranging from none (default
+> > unless otherwise specified), to transfer-level (DMA style) or
+> > byte-level.
+>
+> That does then have the consequence that the majority of controllers
+> aren't going to be usable with the API which isn't great.
+>
 
-Thanks,
-Quentin
+Can we continue this discussion on this thread:
+https://www.spinics.net/lists/netdev/msg593772.html
+The whole point there is that if there's nothing that the driver can
+do, the SPI core will take the timestamps and record their (bad)
+precision.
+
+> > I'm afraid more actual experimentation is needed with DMA-based
+> > controllers to understand what can be expected from them, and as a
+> > result, how the API should map around them.
+> > MDIO bus controllers are in a similar situation (with Hubert's patch)
+> > but at least there the frame size is fixed and I haven't heard of an
+> > MDIO controller to use DMA.
+>
+> I'm not 100% clear what the problem you're trying to solve is, or if
+> it's a sensible problem to try to solve for that matter.
+
+The problem can simply be summarized as: you're trying to read a clock
+over SPI, but there's so much timing jitter in you doing that, that
+you have a high degree of uncertainty in the actual precision of the
+readout you took.
+The solution has two parts:
+- Make the SPI access itself more predictable in terms of latency.
+This is always going to have to be dealt with on a driver-by-driver,
+hardware-by-hardware basis.
+- Provide a way of taking a software timestamp in the time interval
+when the latency is predictable, and as close as possible to the
+moment when the SPI slave will receive the request. Disabling
+interrupts and preemption always helps to snapshot that critical
+section. Again, the SPI core can't do that. And finding the correct
+"pre" and "post" hooks that surround the hardware transfer in a
+deterministic fashion is crucial. If you read the cover letter, I used
+a GPIO pin to make sure the timestamps are where they should be, and
+that they don't vary in width (post - pre) - there are also some
+screenshots on Gdrive. Maybe something similar is not impossible for a
+DMA transfer, although the problem formulation so far is too vague to
+emit a more clear statement.
+If you know when the SPI slave's clock was actually read, you have a
+better idea of what time it was.
+
+Regards,
+-Vladimir
