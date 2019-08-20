@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B7FC696C60
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AACEB96C5E
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731191AbfHTWds (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:48 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36992 "EHLO
+        id S1731181AbfHTWdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:46 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36994 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730990AbfHTWdC (ORCPT
+        with ESMTP id S1730999AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pv49RFD9C+s7CO0mJEtOqJ4XIjF3fRmlHkVxSSOmTAU=; b=SKYj8bj6lcpfcApWc44hN3lMNM
-        T3wO7eBP43ROFX2QVYOoPUUxMhOknMlUXSWMc8gu1ncvVZmGgeUndMTZJefEFBp2oxz/z9Az7F8pq
-        YR35GvbMCQ5ejLHh+VG2VANIZLQIurInq0OZNTSKSoIM9+TIi9Z19ol2RelQqtt98zTclofcJSDFt
-        cLkisMIJtUoqzkRv3ImeC+bkzIx1QcAH+zgLOO/WSJWOWXZ+nIoIxl0rA5mrrZpHCFqhXB1EubWLR
-        hZYyPDWy9dWgZ7F+4KvdKKi2oCRge7ewUdQlaY3033D/h29fvGst6ozvK8sma2PHSPyCVZyqQV8RF
-        KCDWxkYw==;
+        bh=oUsTSvSDmYgcEQnLx8tgcQnz/Pw556FSq7JuLbGhR9g=; b=ENwi3zZzWHiXsxCp0u57JCSROP
+        k0SMrK2zWnzUosHwYjYggOQFJy+gIv6eYwTpvXXeDJgOMy+V6oaYO5mQX28HfH+MQvwRbscVdAGtn
+        LMNiDWJJMns78CFGuyUzUFzXs4SbOmeDEbA11uwr8nLmn+f7dvOBhQOlp2L6ZoF+4a351Zg3HhZxL
+        2vmtLEfu+DiEb4b7IPBy1UJQEvj145RH91fweVODWGyFhGG2xCh+4xRJf6aIYe00FLWVmA5R3b1DH
+        UHeA/DNI5S/DbkCtS70plH3NE8dMnxKf4Sa1FCPGzJVLfRpuPbUX9ZIAT9hurFszkHUsRLRhvVd3g
+        dTc0m1hQ==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005r9-Hv; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005rE-JK; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 17/38] qrtr: Convert qrtr_ports to XArray
-Date:   Tue, 20 Aug 2019 15:32:38 -0700
-Message-Id: <20190820223259.22348-18-willy@infradead.org>
+Subject: [PATCH 18/38] rxrpc: Convert to XArray
+Date:   Tue, 20 Aug 2019 15:32:39 -0700
+Message-Id: <20190820223259.22348-19-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,110 +43,184 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Replace the qrtr_port_lock mutex with the XArray internal spinlock.
+The XArray requires a separate cursor, but embeds the lock, so it's
+a minor saving.  Also, there's no need to preload.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- net/qrtr/qrtr.c | 43 +++++++++++++++----------------------------
- 1 file changed, 15 insertions(+), 28 deletions(-)
+ net/rxrpc/af_rxrpc.c    |  2 +-
+ net/rxrpc/ar-internal.h |  3 ++-
+ net/rxrpc/conn_client.c | 49 +++++++++++++++--------------------------
+ net/rxrpc/conn_object.c |  2 +-
+ 4 files changed, 22 insertions(+), 34 deletions(-)
 
-diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
-index e02fa6be76d2..fdbc20442a93 100644
---- a/net/qrtr/qrtr.c
-+++ b/net/qrtr/qrtr.c
-@@ -104,8 +104,7 @@ static LIST_HEAD(qrtr_all_nodes);
- static DEFINE_MUTEX(qrtr_node_lock);
+diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
+index d09eaf153544..16e289bbc825 100644
+--- a/net/rxrpc/af_rxrpc.c
++++ b/net/rxrpc/af_rxrpc.c
+@@ -981,7 +981,7 @@ static int __init af_rxrpc_init(void)
+ 	tmp &= 0x3fffffff;
+ 	if (tmp == 0)
+ 		tmp = 1;
+-	idr_set_cursor(&rxrpc_client_conn_ids, tmp);
++	rxrpc_client_conn_next = tmp;
  
- /* local port allocation management */
--static DEFINE_IDR(qrtr_ports);
--static DEFINE_MUTEX(qrtr_port_lock);
-+static DEFINE_XARRAY_ALLOC(qrtr_ports);
+ 	ret = -ENOMEM;
+ 	rxrpc_call_jar = kmem_cache_create(
+diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
+index 63b26baa108a..7721448aa7a4 100644
+--- a/net/rxrpc/ar-internal.h
++++ b/net/rxrpc/ar-internal.h
+@@ -898,7 +898,8 @@ extern unsigned int rxrpc_max_client_connections;
+ extern unsigned int rxrpc_reap_client_connections;
+ extern unsigned long rxrpc_conn_idle_client_expiry;
+ extern unsigned long rxrpc_conn_idle_client_fast_expiry;
+-extern struct idr rxrpc_client_conn_ids;
++extern struct xarray rxrpc_client_conn_ids;
++extern u32 rxrpc_client_conn_next;
  
- /**
-  * struct qrtr_node - endpoint node
-@@ -483,11 +482,11 @@ static struct qrtr_sock *qrtr_port_lookup(int port)
- 	if (port == QRTR_PORT_CTRL)
- 		port = 0;
+ void rxrpc_destroy_client_conn_ids(void);
+ int rxrpc_connect_call(struct rxrpc_sock *, struct rxrpc_call *,
+diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
+index aea82f909c60..d967de7a5eb9 100644
+--- a/net/rxrpc/conn_client.c
++++ b/net/rxrpc/conn_client.c
+@@ -72,7 +72,7 @@
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
  
--	mutex_lock(&qrtr_port_lock);
--	ipc = idr_find(&qrtr_ports, port);
-+	xa_lock(&qrtr_ports);
-+	ipc = xa_load(&qrtr_ports, port);
- 	if (ipc)
- 		sock_hold(&ipc->sk);
--	mutex_unlock(&qrtr_port_lock);
-+	xa_unlock(&qrtr_ports);
+ #include <linux/slab.h>
+-#include <linux/idr.h>
++#include <linux/xarray.h>
+ #include <linux/timer.h>
+ #include <linux/sched/signal.h>
  
- 	return ipc;
- }
-@@ -526,9 +525,7 @@ static void qrtr_port_remove(struct qrtr_sock *ipc)
+@@ -86,14 +86,14 @@ __read_mostly unsigned long rxrpc_conn_idle_client_fast_expiry = 2 * HZ;
+ /*
+  * We use machine-unique IDs for our client connections.
+  */
+-DEFINE_IDR(rxrpc_client_conn_ids);
+-static DEFINE_SPINLOCK(rxrpc_conn_id_lock);
++DEFINE_XARRAY_ALLOC1(rxrpc_client_conn_ids);
++u32 rxrpc_client_conn_next;
  
- 	__sock_put(&ipc->sk);
+ static void rxrpc_cull_active_client_conns(struct rxrpc_net *);
  
--	mutex_lock(&qrtr_port_lock);
--	idr_remove(&qrtr_ports, port);
--	mutex_unlock(&qrtr_port_lock);
-+	xa_erase(&qrtr_ports, port);
- }
- 
- /* Assign port number to socket.
-@@ -545,25 +542,19 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
+ /*
+  * Get a connection ID and epoch for a client connection from the global pool.
+- * The connection struct pointer is then recorded in the idr radix tree.  The
++ * The connection struct pointer is then recorded in the XArray.  The
+  * epoch doesn't change until the client is rebooted (or, at least, unless the
+  * module is unloaded).
+  */
+@@ -101,21 +101,15 @@ static int rxrpc_get_client_connection_id(struct rxrpc_connection *conn,
+ 					  gfp_t gfp)
  {
- 	int rc;
- 
--	mutex_lock(&qrtr_port_lock);
- 	if (!*port) {
--		rc = idr_alloc(&qrtr_ports, ipc,
--			       QRTR_MIN_EPH_SOCKET, QRTR_MAX_EPH_SOCKET + 1,
--			       GFP_ATOMIC);
--		if (rc >= 0)
--			*port = rc;
-+		rc = xa_alloc(&qrtr_ports, port, ipc,
-+				XA_LIMIT(QRTR_MIN_EPH_SOCKET,
-+					QRTR_MAX_EPH_SOCKET), GFP_KERNEL);
- 	} else if (*port < QRTR_MIN_EPH_SOCKET && !capable(CAP_NET_ADMIN)) {
- 		rc = -EACCES;
- 	} else if (*port == QRTR_PORT_CTRL) {
--		rc = idr_alloc(&qrtr_ports, ipc, 0, 1, GFP_ATOMIC);
-+		rc = xa_insert(&qrtr_ports, 0, ipc, GFP_KERNEL);
- 	} else {
--		rc = idr_alloc(&qrtr_ports, ipc, *port, *port + 1, GFP_ATOMIC);
--		if (rc >= 0)
--			*port = rc;
-+		rc = xa_insert(&qrtr_ports, *port, ipc, GFP_KERNEL);
- 	}
--	mutex_unlock(&qrtr_port_lock);
- 
--	if (rc == -ENOSPC)
-+	if (rc == -EBUSY)
- 		return -EADDRINUSE;
- 	else if (rc < 0)
- 		return rc;
-@@ -577,20 +568,16 @@ static int qrtr_port_assign(struct qrtr_sock *ipc, int *port)
- static void qrtr_reset_ports(void)
- {
- 	struct qrtr_sock *ipc;
+ 	struct rxrpc_net *rxnet = conn->params.local->rxnet;
 -	int id;
--
--	mutex_lock(&qrtr_port_lock);
--	idr_for_each_entry(&qrtr_ports, ipc, id) {
--		/* Don't reset control port */
--		if (id == 0)
--			continue;
-+	unsigned long id;
++	int err, id;
  
-+	xa_lock(&qrtr_ports);
-+	xa_for_each_start(&qrtr_ports, id, ipc, 1) {
- 		sock_hold(&ipc->sk);
- 		ipc->sk.sk_err = ENETRESET;
- 		ipc->sk.sk_error_report(&ipc->sk);
- 		sock_put(&ipc->sk);
- 	}
--	mutex_unlock(&qrtr_port_lock);
-+	xa_unlock(&qrtr_ports);
+ 	_enter("");
+ 
+-	idr_preload(gfp);
+-	spin_lock(&rxrpc_conn_id_lock);
+-
+-	id = idr_alloc_cyclic(&rxrpc_client_conn_ids, conn,
+-			      1, 0x40000000, GFP_NOWAIT);
+-	if (id < 0)
++	err = xa_alloc_cyclic(&rxrpc_client_conn_ids, &id, conn,
++			XA_LIMIT(1, 0x40000000), &rxrpc_client_conn_next, gfp);
++	if (err < 0)
+ 		goto error;
+ 
+-	spin_unlock(&rxrpc_conn_id_lock);
+-	idr_preload_end();
+-
+ 	conn->proto.epoch = rxnet->epoch;
+ 	conn->proto.cid = id << RXRPC_CIDSHIFT;
+ 	set_bit(RXRPC_CONN_HAS_IDR, &conn->flags);
+@@ -123,10 +117,8 @@ static int rxrpc_get_client_connection_id(struct rxrpc_connection *conn,
+ 	return 0;
+ 
+ error:
+-	spin_unlock(&rxrpc_conn_id_lock);
+-	idr_preload_end();
+-	_leave(" = %d", id);
+-	return id;
++	_leave(" = %d", err);
++	return err;
  }
  
- /* Bind socket to address.
+ /*
+@@ -135,30 +127,26 @@ static int rxrpc_get_client_connection_id(struct rxrpc_connection *conn,
+ static void rxrpc_put_client_connection_id(struct rxrpc_connection *conn)
+ {
+ 	if (test_bit(RXRPC_CONN_HAS_IDR, &conn->flags)) {
+-		spin_lock(&rxrpc_conn_id_lock);
+-		idr_remove(&rxrpc_client_conn_ids,
++		xa_erase(&rxrpc_client_conn_ids,
+ 			   conn->proto.cid >> RXRPC_CIDSHIFT);
+-		spin_unlock(&rxrpc_conn_id_lock);
+ 	}
+ }
+ 
+ /*
+- * Destroy the client connection ID tree.
++ * There should be no outstanding client connections.
+  */
+ void rxrpc_destroy_client_conn_ids(void)
+ {
+-	struct rxrpc_connection *conn;
+-	int id;
++	if (!xa_empty(&rxrpc_client_conn_ids)) {
++		struct rxrpc_connection *conn;
++		unsigned long id;
+ 
+-	if (!idr_is_empty(&rxrpc_client_conn_ids)) {
+-		idr_for_each_entry(&rxrpc_client_conn_ids, conn, id) {
++		xa_for_each(&rxrpc_client_conn_ids, id, conn) {
+ 			pr_err("AF_RXRPC: Leaked client conn %p {%d}\n",
+ 			       conn, atomic_read(&conn->usage));
+ 		}
+ 		BUG();
+ 	}
+-
+-	idr_destroy(&rxrpc_client_conn_ids);
+ }
+ 
+ /*
+@@ -234,7 +222,7 @@ rxrpc_alloc_client_connection(struct rxrpc_conn_parameters *cp, gfp_t gfp)
+ static bool rxrpc_may_reuse_conn(struct rxrpc_connection *conn)
+ {
+ 	struct rxrpc_net *rxnet = conn->params.local->rxnet;
+-	int id_cursor, id, distance, limit;
++	int id, distance, limit;
+ 
+ 	if (test_bit(RXRPC_CONN_DONT_REUSE, &conn->flags))
+ 		goto dont_reuse;
+@@ -248,9 +236,8 @@ static bool rxrpc_may_reuse_conn(struct rxrpc_connection *conn)
+ 	 * times the maximum number of client conns away from the current
+ 	 * allocation point to try and keep the IDs concentrated.
+ 	 */
+-	id_cursor = idr_get_cursor(&rxrpc_client_conn_ids);
+ 	id = conn->proto.cid >> RXRPC_CIDSHIFT;
+-	distance = id - id_cursor;
++	distance = id - rxrpc_client_conn_next;
+ 	if (distance < 0)
+ 		distance = -distance;
+ 	limit = max(rxrpc_max_client_connections * 4, 1024U);
+diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
+index 434ef392212b..31eef9c2a9ac 100644
+--- a/net/rxrpc/conn_object.c
++++ b/net/rxrpc/conn_object.c
+@@ -115,7 +115,7 @@ struct rxrpc_connection *rxrpc_find_connection_rcu(struct rxrpc_local *local,
+ 		/* Look up client connections by connection ID alone as their
+ 		 * IDs are unique for this machine.
+ 		 */
+-		conn = idr_find(&rxrpc_client_conn_ids,
++		conn = xa_load(&rxrpc_client_conn_ids,
+ 				sp->hdr.cid >> RXRPC_CIDSHIFT);
+ 		if (!conn || atomic_read(&conn->usage) == 0) {
+ 			_debug("no conn");
 -- 
 2.23.0.rc1
 
