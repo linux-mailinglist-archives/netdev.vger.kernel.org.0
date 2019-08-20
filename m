@@ -2,76 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BC8C295B78
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 11:49:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7B04895B8F
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 11:51:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729459AbfHTJtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 05:49:09 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:59180 "EHLO mx1.redhat.com"
+        id S1729823AbfHTJuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 05:50:07 -0400
+Received: from first.geanix.com ([116.203.34.67]:36282 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728426AbfHTJtI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 05:49:08 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 642362F3670;
-        Tue, 20 Aug 2019 09:49:08 +0000 (UTC)
-Received: from localhost (holly.tpb.lab.eng.brq.redhat.com [10.43.134.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 787376092F;
-        Tue, 20 Aug 2019 09:49:06 +0000 (UTC)
-Date:   Tue, 20 Aug 2019 11:49:03 +0200
-From:   Miroslav Lichvar <mlichvar@redhat.com>
-To:     Hubert Feurstein <h.feurstein@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v3 2/4] net: mdio: add PTP offset compensation
- to mdiobus_write_sts
-Message-ID: <20190820094903.GI891@localhost>
-References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
- <20190820084833.6019-3-hubert.feurstein@vahle.at>
+        id S1729763AbfHTJuG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 05:50:06 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 6D9FD26E;
+        Tue, 20 Aug 2019 09:49:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1566294599; bh=majl3nyBvA4Hc7wv6h7n+t2Fd+WbI8G3CV7l7IjaXiY=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=a3pD806N0396ONmRk31tMI1l7TyT2tNLFd0s2OPFFSDeKwLgadghDGo+oCCSz3j/A
+         iFRpWLfqPKKMYuEBhoex1QY/2XcxD2mmyKZdKSBfELzfzyHa3A0qAA1YPBsFHoBPai
+         8QYpjicVnRe3izUPnASMD2/cBfK1Lu7ZUibVFOrD1auox5K7IGq3fFVorPHzt0cG6+
+         DEij66Vcqog4L49guUho8SN4Mh5O8yRp02lNjsm3KoKeOgTVXWCBYunVBt7zvbU8AG
+         BGlV878gwTeQrlyZPoWz7faGIEQqaattlD66XUEVDsyLyrkodcp3HFpynY+gZs4Q9o
+         UnUV/gWdmJfSg==
+Subject: Re: [PATCH] can: flexcan: free error skb if enqueueing failed
+To:     =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>
+References: <20190715185308.104333-1-martin@geanix.com>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <6bddb702-e9ba-1c9e-7d7a-eb974d2e0fdd@geanix.com>
+Date:   Tue, 20 Aug 2019 11:49:46 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190820084833.6019-3-hubert.feurstein@vahle.at>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Tue, 20 Aug 2019 09:49:08 +0000 (UTC)
+In-Reply-To: <20190715185308.104333-1-martin@geanix.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 8bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 77834cc0481d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 10:48:31AM +0200, Hubert Feurstein wrote:
+CC'ing Joakim Zhang
 
-> +	/* PTP offset compensation:
-> +	 * After the MDIO access is completed (from the chip perspective), the
-> +	 * switch chip will snapshot the PHC timestamp. To make sure our system
-> +	 * timestamp corresponds to the PHC timestamp, we have to add the
-> +	 * duration of this MDIO access to sts->post_ts. Linuxptp's phc2sys
-> +	 * takes the average of pre_ts and post_ts to calculate the final
-> +	 * system timestamp. With this in mind, we have to add ptp_sts_offset
-> +	 * twice to post_ts, in order to not introduce an constant time offset.
-> +	 */
-> +	if (sts)
-> +		timespec64_add_ns(&sts->post_ts, 2 * bus->ptp_sts_offset);
-
-This correction looks good to me.
-
-Is the MDIO write delay constant in reality, or does it at least have
-an upper bound? That is, is it always true that the post_ts timestamp
-does not point to a time before the PHC timestamp was actually taken?
-
-This is important to not break the estimation of maximum error in the
-measured offset. Applications using the ioctl may assume that the
-maximum error is (post_ts-pre_ts)/2 (i.e. half of the delay printed by
-phc2sys). That would not work if the delay could be occasionally 50
-microseconds for instance, i.e. the post_ts timestamp would be earlier
-than the PHC timestamp.
-
--- 
-Miroslav Lichvar
+On 15/07/2019 20.53, Martin Hundebøll wrote:
+> If the call to can_rx_offload_queue_sorted() fails, the passed skb isn't
+> consumed, so the caller must do so.
+> 
+> Fixes: 30164759db1b ("can: flexcan: make use of rx-offload's irq_offload_fifo")
+> Signed-off-by: Martin Hundebøll <martin@geanix.com>
+> ---
+>   drivers/net/can/flexcan.c | 6 ++++--
+>   1 file changed, 4 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+> index 1c66fb2ad76b..21f39e805d42 100644
+> --- a/drivers/net/can/flexcan.c
+> +++ b/drivers/net/can/flexcan.c
+> @@ -688,7 +688,8 @@ static void flexcan_irq_bus_err(struct net_device *dev, u32 reg_esr)
+>   	if (tx_errors)
+>   		dev->stats.tx_errors++;
+>   
+> -	can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
+> +	if (can_rx_offload_queue_sorted(&priv->offload, skb, timestamp))
+> +		kfree_skb(skb);
+>   }
+>   
+>   static void flexcan_irq_state(struct net_device *dev, u32 reg_esr)
+> @@ -732,7 +733,8 @@ static void flexcan_irq_state(struct net_device *dev, u32 reg_esr)
+>   	if (unlikely(new_state == CAN_STATE_BUS_OFF))
+>   		can_bus_off(dev);
+>   
+> -	can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
+> +	if (can_rx_offload_queue_sorted(&priv->offload, skb, timestamp))
+> +		kfree_skb(skb);
+>   }
+>   
+>   static inline struct flexcan_priv *rx_offload_to_priv(struct can_rx_offload *offload)
+> 
