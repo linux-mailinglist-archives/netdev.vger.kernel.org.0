@@ -2,134 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE91955E3
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 06:23:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 807E595680
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 07:10:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728777AbfHTEXj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 00:23:39 -0400
-Received: from mail-eopbgr60045.outbound.protection.outlook.com ([40.107.6.45]:50311
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726049AbfHTEXj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 00:23:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bul4igfmjGGh7wuAyMAiTvaRLh/LoEwCs4EIMcIihEa2apnxrIcUX7RNmW4//Coa//cX66+M4UY6fA6OOGHn0W9kOC+7I0Qw4hfLAGu5avYtlm/v151KIKhpuqURq/ejEt3zgKUgrbOWwzgYlNPYT6bGYmMIxr3ZT+PMZk32+KUsFurh/EqqiQdu4HZRY4Vvv08gVbY7DUzh91yizVuLi5UUJqhTHbKmFu5rzKKESw6qDA5vdii6HlWasegvYXDi62OQAoF3Nxw5fH7NaqD6Pa9Uwe0oazkWnH673tABCDaIfWwq15ND3JQHtT40Xg2NkFHOy430AA9gCpy8W838wQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gxOkqTygBMizpOZui7/0ned7IPloNf+hfVd487wP3HM=;
- b=H1CZOp9EmAIFVjVHkdTP0lJ9qXmK+oe2xGSFqNFRYM6WEgg6BJPUhwDRQafWYty2vS+EPgBHLybiWQ1edJpIqmIsQbPTaH6ERZa+niSl4R7LfaGY6XKipval4UMDjz9PViIbmSFOO1GEuzEoHa4bjg1zEfOUEsW3xoehytUyoEQeV2gcvU4UvKY/DeaqyW1LOCvqqcSZl27s5ETwtDynoZHdnx8r8TQzB/nxGFn0zOlz7ivkmcW3qx8tIIwUXyeyVfpV2HlUqb8MiIg/JAAZMieHElEpRr0fTmWSkUBI4p0qL663mudGIqS9a9+NJSN7ui9/3IcCWOtG/vRWMUEC0A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gxOkqTygBMizpOZui7/0ned7IPloNf+hfVd487wP3HM=;
- b=NaVjWrNO6SANoBIPp9/mevlhvrSi0GO2zO/0Vk+gqnlhtpzrPyA3vZfc0WvKB1mro9zYsgEKQe2+GDF3M05t447JXP7N8w0956iRq/4wspTfabEHSpWFE4xzk0USSFB/R88RvRdDWY/rS3rGUdGcowq1RXzAKg7aWBBQNhTLoUQ=
-Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com (10.169.132.138) by
- VI1PR0401MB2446.eurprd04.prod.outlook.com (10.168.61.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Tue, 20 Aug 2019 04:23:34 +0000
-Received: from VI1PR0401MB2237.eurprd04.prod.outlook.com
- ([fe80::2072:e49f:a84a:8f37]) by VI1PR0401MB2237.eurprd04.prod.outlook.com
- ([fe80::2072:e49f:a84a:8f37%11]) with mapi id 15.20.2178.018; Tue, 20 Aug
- 2019 04:23:34 +0000
-From:   "Y.b. Lu" <yangbo.lu@nxp.com>
-To:     "Allan W . Nielsen" <allan.nielsen@microchip.com>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
-Subject: RE: [v2, 3/4] ocelot_ace: fix action of trap
-Thread-Topic: [v2, 3/4] ocelot_ace: fix action of trap
-Thread-Index: AQHVUYHAMgIQ7j68xkmdFszj+Iric6b4mmEAgAADugCACtwT4A==
-Date:   Tue, 20 Aug 2019 04:23:34 +0000
-Message-ID: <VI1PR0401MB2237F95DABF498497A58702BF8AB0@VI1PR0401MB2237.eurprd04.prod.outlook.com>
-References: <20190813025214.18601-1-yangbo.lu@nxp.com>
- <20190813025214.18601-4-yangbo.lu@nxp.com>
- <20190813061651.7gtbum4wsaw5dahg@lx-anielsen.microsemi.net>
- <20190813063011.7pwlzm7mtzlqwwkx@lx-anielsen.microsemi.net>
-In-Reply-To: <20190813063011.7pwlzm7mtzlqwwkx@lx-anielsen.microsemi.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=yangbo.lu@nxp.com; 
-x-originating-ip: [92.121.36.197]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f1809fcb-3b31-4f0b-50f0-08d725262a6a
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0401MB2446;
-x-ms-traffictypediagnostic: VI1PR0401MB2446:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <VI1PR0401MB2446D193D15F85AAF4F4DD0DF8AB0@VI1PR0401MB2446.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 013568035E
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(346002)(376002)(366004)(39860400002)(13464003)(54534003)(199004)(189003)(229853002)(74316002)(53936002)(81166006)(102836004)(55016002)(8936002)(4326008)(81156014)(186003)(6916009)(8676002)(25786009)(5660300002)(3846002)(256004)(316002)(6116002)(54906003)(2906002)(71200400001)(71190400001)(33656002)(6306002)(9686003)(6436002)(99286004)(6246003)(305945005)(6506007)(66946007)(7736002)(66446008)(86362001)(66476007)(66556008)(64756008)(53546011)(76116006)(52536014)(966005)(478600001)(446003)(14454004)(486006)(26005)(7696005)(11346002)(476003)(66066001)(76176011);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0401MB2446;H:VI1PR0401MB2237.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 9CARQ8Xqgf5lcXR1Zfl6N4PKxEXbDKiGXOcelO6VChx5UdDWRmkVYhHboE/53v9boMGlKQ4uL3g8RzqcaLboeVsGTqTCbPKeAP2QfHK9prgHocrgN6p3LKndEKLyAeu16qrRT3gR/YKCMqv52rjQkpvdoSng7HT/fRsmYnEnpmpb0uRfwa/9aCwJGWJHJ5QtXkdR8zZrWdfodQ2HbpajB7bEc3T1LEvAq0yX2vO2P3ZU0chuhN02+5JzoYfqmqc0NV4Aumw71SKR/NK6q8gN6tODf5q7Ngid6b8FNY4Hm8AqytTWH8Wl/emAmdyfayUQnVwD4ea0HHyyyZCddysnCwj5M/DEiQ2Ze8lJuX/zeJKaMdrocXwxVYG3EnHlgt0bxbGfg7tonhcyJEMJ+g8Ybru2e87gfFbN5EJ1DRVjpVE=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1729254AbfHTFJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 01:09:38 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:41999 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729108AbfHTFJi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 01:09:38 -0400
+Received: by mail-pl1-f194.google.com with SMTP id y1so2105754plp.9
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 22:09:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=DV/WqxRBj1zmpM+E4gMAZS0eS9d1iKH2+F8A7pnrP0Y=;
+        b=sE1VeczhPDfa9x422ZzMyCbZLrf9ia7yAAOeHIpaWioXnYZn1E/SZ5WW3O7YkpHDW9
+         tJ//D1tmP9QCYKvD2Ax7eeb6ivFGMKgdVKj4w8ZFF4t8Mcj7OoC2Oiod3R1LJVDd0zSk
+         LWTtyrxOHyyqboZsYO1vWJ6r+3BcH03x+szIVzRVKF0nFnll8trBP29tlcmmL+xK90l3
+         UBtksYy4OVb+y25cLifjI0m7Q4rYXvda4kMPsf8CA/9LpHdrfj6d56B/Lyvv04KD8rR5
+         gpbCVAC4++xSqNmb2lXDcki7da8Bc2pYKnLezmFduIAYqNiHmleN+kd37mzG9ghz4S/4
+         Un9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=DV/WqxRBj1zmpM+E4gMAZS0eS9d1iKH2+F8A7pnrP0Y=;
+        b=d0pX3KTm5jxnozP1LtBzpvMipTNaIHZqs9TH8TVpCLhiiuAB/8mUqgFCP32B0Wea6Q
+         bllbZocJnUxfnk7CPckbioijVqDNdEt5vQml1o3YvVgCXzmkfaEZdR5zuMkHS+830OcZ
+         QlEbhmPthjQwKElZSO9V3xqCR4ketcKTY5rWKvaFP+rfz7Oda/oBfBAZ+rUWw6e0l3EA
+         6QW2VUknbg2OD9z2yMePvLJHE+FaLxLbS7WrNK+dKHqGONYoFux0sWqRlPOh9ytqPo34
+         YL/Rrhv6c+XeDy3hx+gV1m1Cp37szNRpH4ArEQLMLg34kKEahaKeVter1sU7aFTKBWe+
+         eBtw==
+X-Gm-Message-State: APjAAAV3K6HDRVU0mL+e8D6Odf+aI6//J8UxEeBgKh3BsTO2D1jsgHGX
+        fMlkilAAzR0nIEFYP0XBqNWCug==
+X-Google-Smtp-Source: APXvYqxKjd535rM4n/0gwnMzd/Oeg9Dm9I6Cy1cfG3BImIqyaXap5RLsjm5lQg4ypBPf1pKYU8Gd4A==
+X-Received: by 2002:a17:902:a612:: with SMTP id u18mr25603093plq.181.1566277777185;
+        Mon, 19 Aug 2019 22:09:37 -0700 (PDT)
+Received: from localhost.localdomain (123-204-46-122.static.seed.net.tw. [123.204.46.122])
+        by smtp.gmail.com with ESMTPSA id r1sm16023902pgv.70.2019.08.19.22.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 19 Aug 2019 22:09:36 -0700 (PDT)
+From:   Jian-Hong Pan <jian-hong@endlessm.com>
+To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux@endlessm.com,
+        Jian-Hong Pan <jian-hong@endlessm.com>
+Subject: [PATCH v3] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
+Date:   Tue, 20 Aug 2019 12:59:35 +0800
+Message-Id: <20190820045934.24841-1-jian-hong@endlessm.com>
+X-Mailer: git-send-email 2.22.1
+In-Reply-To: <CAPpJ_edU68X-Ki+J61qfws+1-=zv54bcak9tzkMX=CkDS5mOMA@mail.gmail.com>
+References: <CAPpJ_edU68X-Ki+J61qfws+1-=zv54bcak9tzkMX=CkDS5mOMA@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f1809fcb-3b31-4f0b-50f0-08d725262a6a
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2019 04:23:34.5730
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Uw1dJCLi+w/IJOu/ZV/W1tRjck+pEQ5ZbnoxuqUhxOBwcdGdyhbj5Q2Ph1HB0uege+yXlmAyUNixRB0LJ9J6Bw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0401MB2446
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGksDQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogbmV0ZGV2LW93bmVy
-QHZnZXIua2VybmVsLm9yZyA8bmV0ZGV2LW93bmVyQHZnZXIua2VybmVsLm9yZz4gT24NCj4gQmVo
-YWxmIE9mIEFsbGFuIFcgLiBOaWVsc2VuDQo+IFNlbnQ6IFR1ZXNkYXksIEF1Z3VzdCAxMywgMjAx
-OSAyOjMwIFBNDQo+IFRvOiBZLmIuIEx1IDx5YW5nYm8ubHVAbnhwLmNvbT4NCj4gQ2M6IG5ldGRl
-dkB2Z2VyLmtlcm5lbC5vcmc7IERhdmlkIFMgLiBNaWxsZXIgPGRhdmVtQGRhdmVtbG9mdC5uZXQ+
-Ow0KPiBBbGV4YW5kcmUgQmVsbG9uaSA8YWxleGFuZHJlLmJlbGxvbmlAYm9vdGxpbi5jb20+OyBN
-aWNyb2NoaXAgTGludXggRHJpdmVyDQo+IFN1cHBvcnQgPFVOR0xpbnV4RHJpdmVyQG1pY3JvY2hp
-cC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbdjIsIDMvNF0gb2NlbG90X2FjZTogZml4IGFjdGlvbiBv
-ZiB0cmFwDQo+IA0KPiBUaGUgMDgvMTMvMjAxOSAwODoxNiwgQWxsYW4gVyAuIE5pZWxzZW4gd3Jv
-dGU6DQo+ID4gVGhlIDA4LzEzLzIwMTkgMTA6NTIsIFlhbmdibyBMdSB3cm90ZToNCj4gPiA+IFRo
-ZSB0cmFwIGFjdGlvbiBzaG91bGQgYmUgY29weWluZyB0aGUgZnJhbWUgdG8gQ1BVIGFuZCBkcm9w
-cGluZyBpdA0KPiA+ID4gZm9yIGZvcndhcmRpbmcsIGJ1dCBjdXJyZW50IHNldHRpbmcgd2FzIGp1
-c3QgY29weWluZyBmcmFtZSB0byBDUFUuDQo+ID4gPg0KPiA+ID4gU2lnbmVkLW9mZi1ieTogWWFu
-Z2JvIEx1IDx5YW5nYm8ubHVAbnhwLmNvbT4NCj4gPiA+IC0tLQ0KPiA+ID4gQ2hhbmdlcyBmb3Ig
-djI6DQo+ID4gPiAJLSBOb25lLg0KPiA+ID4gLS0tDQo+ID4gPiAgZHJpdmVycy9uZXQvZXRoZXJu
-ZXQvbXNjYy9vY2Vsb3RfYWNlLmMgfCA2ICsrKy0tLQ0KPiA+ID4gIDEgZmlsZSBjaGFuZ2VkLCAz
-IGluc2VydGlvbnMoKyksIDMgZGVsZXRpb25zKC0pDQo+ID4gPg0KPiA+ID4gZGlmZiAtLWdpdCBh
-L2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X2FjZS5jDQo+ID4gPiBiL2RyaXZlcnMv
-bmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X2FjZS5jDQo+ID4gPiBpbmRleCA5MTI1MGYzLi41OWFk
-NTkwIDEwMDY0NA0KPiA+ID4gLS0tIGEvZHJpdmVycy9uZXQvZXRoZXJuZXQvbXNjYy9vY2Vsb3Rf
-YWNlLmMNCj4gPiA+ICsrKyBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21zY2Mvb2NlbG90X2FjZS5j
-DQo+ID4gPiBAQCAtMzE3LDkgKzMxNyw5IEBAIHN0YXRpYyB2b2lkIGlzMl9hY3Rpb25fc2V0KHN0
-cnVjdCB2Y2FwX2RhdGEgKmRhdGEsDQo+ID4gPiAgCQlicmVhazsNCj4gPiA+ICAJY2FzZSBPQ0VM
-T1RfQUNMX0FDVElPTl9UUkFQOg0KPiA+ID4gIAkJVkNBUF9BQ1RfU0VUKFBPUlRfTUFTSywgMHgw
-KTsNCj4gPiA+IC0JCVZDQVBfQUNUX1NFVChNQVNLX01PREUsIDB4MCk7DQo+ID4gPiAtCQlWQ0FQ
-X0FDVF9TRVQoUE9MSUNFX0VOQSwgMHgwKTsNCj4gPiA+IC0JCVZDQVBfQUNUX1NFVChQT0xJQ0Vf
-SURYLCAweDApOw0KPiA+ID4gKwkJVkNBUF9BQ1RfU0VUKE1BU0tfTU9ERSwgMHgxKTsNCj4gPiA+
-ICsJCVZDQVBfQUNUX1NFVChQT0xJQ0VfRU5BLCAweDEpOw0KPiA+ID4gKwkJVkNBUF9BQ1RfU0VU
-KFBPTElDRV9JRFgsIE9DRUxPVF9QT0xJQ0VSX0RJU0NBUkQpOw0KPiA+ID4gIAkJVkNBUF9BQ1Rf
-U0VUKENQVV9RVV9OVU0sIDB4MCk7DQo+ID4gPiAgCQlWQ0FQX0FDVF9TRVQoQ1BVX0NPUFlfRU5B
-LCAweDEpOw0KPiA+ID4gIAkJYnJlYWs7DQo+ID4NCj4gPiBUaGlzIGlzIHN0aWxsIHdyb25nLCBw
-bGVhc2Ugc2VlIHRoZSBjb21tZW50cyBwcm92aWRlZCB0aGUgZmlyc3QgdGltZQ0KPiA+IHlvdSBz
-dWJtaXR0ZWQgdGhpcy4NCj4gPg0KPiA+IC9BbGxhbg0KPiANCj4gSSBiZWxpZXZlIHRoaXMgd2ls
-bCBtYWtlIGl0IHdvcmsgLSBidXQgSSBoYXZlIG5vdCB0ZXN0ZWQgaXQ6DQo+IA0KPiAgCWNhc2Ug
-T0NFTE9UX0FDTF9BQ1RJT05fVFJBUDoNCj4gIAkJVkNBUF9BQ1RfU0VUKFBPUlRfTUFTSywgMHgw
-KTsNCj4gLQkJVkNBUF9BQ1RfU0VUKE1BU0tfTU9ERSwgMHgwKTsNCj4gKwkJVkNBUF9BQ1RfU0VU
-KE1BU0tfTU9ERSwgMHgxKTsNCj4gIAkJVkNBUF9BQ1RfU0VUKENQVV9RVV9OVU0sIDB4MCk7DQo+
-ICAJCVZDQVBfQUNUX1NFVChDUFVfQ09QWV9FTkEsIDB4MSk7DQo+ICAJCWJyZWFrOw0KPiANCg0K
-W1kuYi4gTHVdIEl0IG1ha2VzIHNlbnNlLiBBbmQgaXQgd29ya2VkLg0KSSBoYXZlIHNlbnQgb3V0
-IHYzIHdoaWNoIG9ubHkgaW5jbHVkZWQgdGhpcyBvbmUgcGF0Y2guIEknZCBsaWtlIHRvIHNlbmQg
-dGhlIG90aGVyIHBhdGNoZXMgb25jZSBGZWxpeCBkcml2ZXIgaXMgYWNjZXB0ZWQsIGJ1dCBJJ2Qg
-bGlrZSB0byBjb2xsZWN0IHRoZSBzdWdnZXN0aW9ucyA6KQ0KVGhhbmtzLg0KDQpTb3JyeSwgSSBt
-aXNzZWQgdG8gYWRkIGNoYW5nZSBsb2dzIGZvciB2MyBwYXRjaC4uLg0KaHR0cHM6Ly9wYXRjaHdv
-cmsub3psYWJzLm9yZy9wYXRjaC8xMTQ5NzcwLw0KDQoNCj4gLS0NCj4gL0FsbGFuDQo=
+There is a mass of jobs between spin lock and unlock in the hardware
+IRQ which will occupy much time originally. To make system work more
+efficiently, this patch moves the jobs to the soft IRQ (bottom half) to
+reduce the time in hardware IRQ.
+
+Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+---
+v2:
+ Change the spin_lock_irqsave/unlock_irqrestore to spin_lock/unlock in
+ rtw_pci_interrupt_handler. Because the interrupts are already disabled
+ in the hardware interrupt handler.
+
+v3:
+ Extend the spin lock protecting area for the TX path in
+ rtw_pci_interrupt_threadfn by Realtek's suggestion
+
+ drivers/net/wireless/realtek/rtw88/pci.c | 33 +++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index 00ef229552d5..a8c17a01f318 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -866,12 +866,29 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq, void *dev)
+ {
+ 	struct rtw_dev *rtwdev = dev;
+ 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
+-	u32 irq_status[4];
+ 
+ 	spin_lock(&rtwpci->irq_lock);
+ 	if (!rtwpci->irq_enabled)
+ 		goto out;
+ 
++	/* disable RTW PCI interrupt to avoid more interrupts before the end of
++	 * thread function
++	 */
++	rtw_pci_disable_interrupt(rtwdev, rtwpci);
++out:
++	spin_unlock(&rtwpci->irq_lock);
++
++	return IRQ_WAKE_THREAD;
++}
++
++static irqreturn_t rtw_pci_interrupt_threadfn(int irq, void *dev)
++{
++	struct rtw_dev *rtwdev = dev;
++	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
++	unsigned long flags;
++	u32 irq_status[4];
++
++	spin_lock_irqsave(&rtwpci->irq_lock, flags);
+ 	rtw_pci_irq_recognized(rtwdev, rtwpci, irq_status);
+ 
+ 	if (irq_status[0] & IMR_MGNTDOK)
+@@ -891,8 +908,10 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq, void *dev)
+ 	if (irq_status[0] & IMR_ROK)
+ 		rtw_pci_rx_isr(rtwdev, rtwpci, RTW_RX_QUEUE_MPDU);
+ 
+-out:
+-	spin_unlock(&rtwpci->irq_lock);
++	/* all of the jobs for this interrupt have been done */
++	if (rtw_flag_check(rtwdev, RTW_FLAG_RUNNING))
++		rtw_pci_enable_interrupt(rtwdev, rtwpci);
++	spin_unlock_irqrestore(&rtwpci->irq_lock, flags);
+ 
+ 	return IRQ_HANDLED;
+ }
+@@ -1152,8 +1171,10 @@ static int rtw_pci_probe(struct pci_dev *pdev,
+ 		goto err_destroy_pci;
+ 	}
+ 
+-	ret = request_irq(pdev->irq, &rtw_pci_interrupt_handler,
+-			  IRQF_SHARED, KBUILD_MODNAME, rtwdev);
++	ret = devm_request_threaded_irq(rtwdev->dev, pdev->irq,
++					rtw_pci_interrupt_handler,
++					rtw_pci_interrupt_threadfn,
++					IRQF_SHARED, KBUILD_MODNAME, rtwdev);
+ 	if (ret) {
+ 		ieee80211_unregister_hw(hw);
+ 		goto err_destroy_pci;
+@@ -1192,7 +1213,7 @@ static void rtw_pci_remove(struct pci_dev *pdev)
+ 	rtw_pci_disable_interrupt(rtwdev, rtwpci);
+ 	rtw_pci_destroy(rtwdev, pdev);
+ 	rtw_pci_declaim(rtwdev, pdev);
+-	free_irq(rtwpci->pdev->irq, rtwdev);
++	devm_free_irq(rtwdev->dev, rtwpci->pdev->irq, rtwdev);
+ 	rtw_core_deinit(rtwdev);
+ 	ieee80211_free_hw(hw);
+ }
+-- 
+2.20.1
+
