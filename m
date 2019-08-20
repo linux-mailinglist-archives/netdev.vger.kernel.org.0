@@ -2,100 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C738D966AB
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 18:44:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B091C966C3
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 18:49:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730123AbfHTQoE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 12:44:04 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:12592 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726663AbfHTQoE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 12:44:04 -0400
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 8ECCD87648;
-        Tue, 20 Aug 2019 16:44:04 +0000 (UTC)
-Received: from linux-ws.nc.xsintricity.com (ovpn-112-63.rdu2.redhat.com [10.10.112.63])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id AFD1E90F44;
-        Tue, 20 Aug 2019 16:44:03 +0000 (UTC)
-Message-ID: <14c1cf427331900f296cf80b09bb25890d9dd0a0.camel@redhat.com>
-Subject: Re: [PATCH mlx5-next 0/5] Mellanox, Updates for mlx5-next branch
- 2019-08-15
-From:   Doug Ledford <dledford@redhat.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leonro@mellanox.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>
-Date:   Tue, 20 Aug 2019 12:44:01 -0400
-In-Reply-To: <20190815194543.14369-1-saeedm@mellanox.com>
-References: <20190815194543.14369-1-saeedm@mellanox.com>
-Organization: Red Hat, Inc.
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-KD6TU4HR7jxZbRNWVe9c"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1729852AbfHTQtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 12:49:41 -0400
+Received: from mail-wr1-f97.google.com ([209.85.221.97]:34564 "EHLO
+        mail-wr1-f97.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727272AbfHTQtl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 12:49:41 -0400
+Received: by mail-wr1-f97.google.com with SMTP id s18so13131874wrn.1
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 09:49:39 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=fpjvOAIMdJRCU5oiOWiApHuczCv0tGrwTTKBy1Kzp7I=;
+        b=mjFu191m+xMYFKqHEb2jC9YiX9RMVj9/5J5xwMn44lzUKDcygKGxXdgrZdKwlygtYF
+         8iGD+OJpcuDl7w3KPn4irLRSKMG6c/7si0UWZvs+3jxhp/kGtT8ghx2MX8QITXFumZ3j
+         yU8k60UT8787r3wCjK6xK1niuHitLiISZBoUm8DGve0Nzrtph8ppa7ZJAK2YtmKhKV0A
+         UI17jsYXBcrqzmzsHy3mE5NJEwuLRw4TOczwX+YsfIz9DdHxEuFFnxpoZaJSfEbARZng
+         dn3xhgfGF28oNv/MhVMIOMfShnFcP7JGd5hcU7hmXi/SRGTkqd7a+DVlQ4BwGRcYgMZV
+         C4gg==
+X-Gm-Message-State: APjAAAVmQt7X1nZ2WdImFaREcNlq5mV/prg/6zWg/jTkt4GRh7yl2u28
+        AzTYC4dVpWkxCMz/AxS+gG0d3Butdfc2Of37M7g5iOWHRMU7eHQN5yR9yFYzwqZc2g==
+X-Google-Smtp-Source: APXvYqyKaxLLzHpmoESaK8n/5tlU8bQH/IgXfoX2ONE9tfx2l0LnfuVabT7bPv+RSxIPPeSzV9J8iZ7OsIV4
+X-Received: by 2002:adf:dec8:: with SMTP id i8mr34662792wrn.217.1566319778998;
+        Tue, 20 Aug 2019 09:49:38 -0700 (PDT)
+Received: from heliosphere.sirena.org.uk (heliosphere.sirena.org.uk. [2a01:7e01::f03c:91ff:fed4:a3b6])
+        by smtp-relay.gmail.com with ESMTPS id d1sm354430wrj.19.2019.08.20.09.49.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Aug 2019 09:49:38 -0700 (PDT)
+X-Relaying-Domain: sirena.org.uk
+Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
+        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <broonie@sirena.co.uk>)
+        id 1i07KE-0002vy-L3; Tue, 20 Aug 2019 16:49:38 +0000
+Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
+        id A4DD52742ABD; Tue, 20 Aug 2019 17:49:37 +0100 (BST)
+Date:   Tue, 20 Aug 2019 17:49:37 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
+        Richard Cochran <richardcochran@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Subject: Re: [RFC PATCH net-next 03/11] spi: Add a PTP system timestamp to
+ the transfer structure
+Message-ID: <20190820164937.GE4738@sirena.co.uk>
+References: <20190816004449.10100-1-olteanv@gmail.com>
+ <20190816004449.10100-4-olteanv@gmail.com>
+ <20190816121837.GD4039@sirena.co.uk>
+ <CA+h21hqatTeS2shV9QSiPzkjSeNj2Z4SOTrycffDjRHj=9s=nQ@mail.gmail.com>
+ <20190816125820.GF4039@sirena.co.uk>
+ <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
+ <20190820125557.GB4738@sirena.co.uk>
+ <CA+h21hr653oqOPxoJKWkP9ZhTywNR8EBjWV7U9LHwPRz=PJXsw@mail.gmail.com>
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.26]); Tue, 20 Aug 2019 16:44:04 +0000 (UTC)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="KuLpqunXa7jZSBt+"
+Content-Disposition: inline
+In-Reply-To: <CA+h21hr653oqOPxoJKWkP9ZhTywNR8EBjWV7U9LHwPRz=PJXsw@mail.gmail.com>
+X-Cookie: It's the thought, if any, that counts!
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
---=-KD6TU4HR7jxZbRNWVe9c
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+--KuLpqunXa7jZSBt+
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On Thu, 2019-08-15 at 19:46 +0000, Saeed Mahameed wrote:
-> Hi All,
->=20
-> This series includes misc updates for mlx5-next shared branch.
->=20
-> mlx5 HW spec and bits updates:
-> 1) Aya exposes IP-in-IP capability in mlx5_core.
-> 2) Maxim exposes lag tx port affinity capabilities.
-> 3) Moshe adds VNIC_ENV internal rq counter bits.
->=20
-> Misc updates:
-> 4) Saeed, two compiler warnings cleanups
->=20
-> In case of no objection this series will be applied to mlx5-next
-> branch
-> and sent later as pull request to both rdma-next and net-next
-> branches.
->=20
-> Thanks,
-> Saeed.
+On Tue, Aug 20, 2019 at 04:48:39PM +0300, Vladimir Oltean wrote:
+> On Tue, 20 Aug 2019 at 15:55, Mark Brown <broonie@kernel.org> wrote:
+> > On Fri, Aug 16, 2019 at 05:05:53PM +0300, Vladimir Oltean wrote:
 
-Series looks fine to me.
+> > > Maybe the SPI master driver should just report what sort of
+> > > snapshotting capability it can offer, ranging from none (default
+> > > unless otherwise specified), to transfer-level (DMA style) or
+> > > byte-level.
 
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
+> > That does then have the consequence that the majority of controllers
+> > aren't going to be usable with the API which isn't great.
 
---=-KD6TU4HR7jxZbRNWVe9c
+> Can we continue this discussion on this thread:
+> https://www.spinics.net/lists/netdev/msg593772.html
+> The whole point there is that if there's nothing that the driver can
+> do, the SPI core will take the timestamps and record their (bad)
+> precision.
+
+I'm not on that thread.
+
+> > I'm not 100% clear what the problem you're trying to solve is, or if
+> > it's a sensible problem to try to solve for that matter.
+
+> The problem can simply be summarized as: you're trying to read a clock
+> over SPI, but there's so much timing jitter in you doing that, that
+> you have a high degree of uncertainty in the actual precision of the
+> readout you took.
+
+That doesn't seem like a great idea...
+
+--KuLpqunXa7jZSBt+
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIyBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl1cI1EACgkQuCajMw5X
-L92Fww/3dAB8PdPPJ1drOD+8P9kCOOzwvMbNyttODjWsX83baeZuz/riG+xt7qI5
-GNm6fhWxizEgdvlcuDhfgdYG9nk6itz6pbLK5BtWV0dzUnvGpmUR5pYdc26j/Imd
-XgOvLxvwYlJvSLVRzI3EUIR/sJ+owaq+WXBctU1RwJZ5x2VQdTcV2rl25jdM9CE5
-eIIi8do0yryseLBO7SH6y5XuaYsmFerJ4V8+0a3/n8mQDyjXyNDqcCLPXrD6NG7/
-hfAgfvIri0HimKdFc/TUz4CIGfr7FBOMaR2WmpqaEcO9CQODgShSFcEtvPyhNPg9
-U/nzBgbKp8xkCvDCmHupIM9OCna6d9/PnC2QSklrjzgZ5nvcaWTw2+1SWQV59YV/
-AncnFYy5NhWFi0aMYnfv1ZtE33waBJmx5ysLedsGvGLq9HFVdn8cgvBNUpxOSZqo
-E5vRGAO7jFVn6inb8dKYY8xXiZWxQL/A3RhnRMpC/96kfDAN3Awj/GSsC+jD8ltS
-NsW2UWjHjQUjgrQXlnIxiSrsRH+E6aXfsk2W9UTtoPNjgEZbR6+7fbQwSBz7dqdn
-EuNFCG2sK2HJPZOImjGQ28AqOS5K0uBeUa+VNFXSPjDFiU7X4BN5l7QMt4wWnUEO
-dE3L3JPM9OH9uEJwH4Ts8FG8PfMnYEn4GRKRxTsPcR3TG+PpAA==
-=xuBo
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl1cJKAACgkQJNaLcl1U
+h9Ajjwf7BKBd41sf2crMlSALL87ftWHff3zu1s9zzh4XvUN+afcw89zuNjTuCdJJ
+soVj9H+nLOGS5Ylh22zu3scMpXcTtrRmYNoGixBW08UtkZDGTAxII5sM9kKdRNlj
+e2u9fiqJ6bLLoWfQwlYodzO/5pXi0tCXoe+HuqP9a3GezNTR54EpO3iaCOeGSvq5
+RXPXs6U76X+u8folfG1/s6N4yDDgWZatwBD+rjwhSOaWuNtDEf4/06UGLsczxoup
+DkX/0FAAixRH/6twBZ4qs2gTTLeSsVt2zimSwfyDsfI0CRvfR6CQH6qIwKt3HOaO
+kCue4zjaFxBzR6SU877WWSj6gMNZAA==
+=SHGy
 -----END PGP SIGNATURE-----
 
---=-KD6TU4HR7jxZbRNWVe9c--
-
+--KuLpqunXa7jZSBt+--
