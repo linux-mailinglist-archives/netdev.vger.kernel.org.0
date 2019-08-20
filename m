@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D5C0B96C6A
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4985596C5F
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731205AbfHTWd7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:59 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36988 "EHLO
+        id S1731186AbfHTWdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:47 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36990 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730983AbfHTWdC (ORCPT
+        with ESMTP id S1730989AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=waO2JwpBXdWHyRZFOnonh6emzAyL3KyxKm8YUitOyec=; b=FMYL65xn2z9b/O6U7QHAESO6wm
-        +62ikzccBeuT/AP/SWhttGbDbcxq4G1yEUPlhWS5js+fwdplKFOva4ojF+rNejckvsBc5u7uu1oDU
-        S7Ac6xEQFO4h5mKqii5hsZ/aEQtAPpbpHHKOrC6l2/nAhhRXuVSulxChV1rhcBQG+X4F+tMJuCusE
-        Q9/TY29ifodNUf2Fm301y2hQuhtF+KMJEU8NER6tpavFFR8hTlMBms0Z1w5LuZtJa9KasDBByAZj4
-        BmbGTyUJDwa4gkDxBbDupHDky4d4JrmRU73FbD72D5soOb+EHwkUs9ktGNNeEUOKmZg7lkcvUSyKl
-        OHFiokqA==;
+        bh=jtqCiEbanFInF83J8ev7Qbc96Uvdbncl6Tv3mptEEHo=; b=aeuAFeFNkkOdSt5F8FRG/5K7Tr
+        SalRc0ljZ3YllMwwUr38T34W6hOvlM0lh8+iXK5XQKNswXMMWpazGd/c9xwOtkXMhuEXZ7mxKpsOR
+        vgGjpcrYvhS1JeC4b4iXkYASCax5h17PtOtQrbV5dnwdxfts2B2bwvIjgxYcriqp4TBuPp1w86sdG
+        sBWWL4wPH4DZWiy8mE48bDQSqU7r3XKoABlcHS/eo2CLUcEDKg9/UPAzXUxFO4Ey+XJDtJNHmEyx1
+        Yt8Wrm4PSt64fRNVtCb/BPpeeytySCWptk2nMqK2PIwI/j9E3TQ3ICsneBbnfr+Pk2Bqv7q20L2oi
+        S+tTKetw==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005qx-Eg; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005r3-GF; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 15/38] nfp: Convert internal ports to XArray
-Date:   Tue, 20 Aug 2019 15:32:36 -0700
-Message-Id: <20190820223259.22348-16-willy@infradead.org>
+Subject: [PATCH 16/38] qrtr: Convert qrtr_nodes to XArray
+Date:   Tue, 20 Aug 2019 15:32:37 -0700
+Message-Id: <20190820223259.22348-17-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,140 +43,90 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Since nfp_fl_internal_ports was only an IDR and the lock to protect it,
-replace the entire data structure with an XArray (which has an embedded
-lock).
+Moved the kref protection under the xa_lock too.  It's a little
+disconcerting to not be checking the error code from xa_store(),
+but the original code doesn't return an errno from qrtr_node_assign()
+and that would be a larger change to the driver than I'm conmfortable
+making.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- .../net/ethernet/netronome/nfp/flower/main.c  | 44 +++++++------------
- .../net/ethernet/netronome/nfp/flower/main.h  | 12 +----
- 2 files changed, 17 insertions(+), 39 deletions(-)
+ net/qrtr/qrtr.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.c b/drivers/net/ethernet/netronome/nfp/flower/main.c
-index 7a20447cca19..706ae41645f5 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/main.c
-+++ b/drivers/net/ethernet/netronome/nfp/flower/main.c
-@@ -40,35 +40,31 @@ nfp_flower_lookup_internal_port_id(struct nfp_flower_priv *priv,
- 				   struct net_device *netdev)
+diff --git a/net/qrtr/qrtr.c b/net/qrtr/qrtr.c
+index 6c8b0f6d28f9..e02fa6be76d2 100644
+--- a/net/qrtr/qrtr.c
++++ b/net/qrtr/qrtr.c
+@@ -97,10 +97,10 @@ static inline struct qrtr_sock *qrtr_sk(struct sock *sk)
+ static unsigned int qrtr_local_nid = NUMA_NO_NODE;
+ 
+ /* for node ids */
+-static RADIX_TREE(qrtr_nodes, GFP_KERNEL);
++static DEFINE_XARRAY(qrtr_nodes);
+ /* broadcast list */
+ static LIST_HEAD(qrtr_all_nodes);
+-/* lock for qrtr_nodes, qrtr_all_nodes and node reference */
++/* lock for qrtr_all_nodes */
+ static DEFINE_MUTEX(qrtr_node_lock);
+ 
+ /* local port allocation management */
+@@ -138,15 +138,18 @@ static int qrtr_bcast_enqueue(struct qrtr_node *node, struct sk_buff *skb,
+ /* Release node resources and free the node.
+  *
+  * Do not call directly, use qrtr_node_release.  To be used with
+- * kref_put_mutex.  As such, the node mutex is expected to be locked on call.
++ * kref_put_lock.  As such, the xa_lock is expected to be held on call.
+  */
+ static void __qrtr_node_release(struct kref *kref)
++		__releases(qrtr_nodes.xa_lock)
  {
- 	struct net_device *entry;
--	int i, id = 0;
-+	unsigned long i;
+ 	struct qrtr_node *node = container_of(kref, struct qrtr_node, ref);
  
--	rcu_read_lock();
--	idr_for_each_entry(&priv->internal_ports.port_ids, entry, i)
--		if (entry == netdev) {
--			id = i;
--			break;
--		}
--	rcu_read_unlock();
-+	xa_for_each(&priv->internal_ports, i, entry) {
-+		if (entry == netdev)
-+			return i;
-+	}
+ 	if (node->nid != QRTR_EP_NID_AUTO)
+-		radix_tree_delete(&qrtr_nodes, node->nid);
++		__xa_erase(&qrtr_nodes, node->nid);
++	xa_unlock(&qrtr_nodes);
  
--	return id;
-+	return 0;
++	mutex_lock(&qrtr_node_lock);
+ 	list_del(&node->item);
+ 	mutex_unlock(&qrtr_node_lock);
+ 
+@@ -167,7 +170,7 @@ static void qrtr_node_release(struct qrtr_node *node)
+ {
+ 	if (!node)
+ 		return;
+-	kref_put_mutex(&node->ref, __qrtr_node_release, &qrtr_node_lock);
++	kref_put_lock(&node->ref, __qrtr_node_release, &qrtr_nodes.xa_lock);
  }
  
- static int
- nfp_flower_get_internal_port_id(struct nfp_app *app, struct net_device *netdev)
+ /* Pass an outgoing packet socket buffer to the endpoint driver. */
+@@ -215,10 +218,10 @@ static struct qrtr_node *qrtr_node_lookup(unsigned int nid)
  {
- 	struct nfp_flower_priv *priv = app->priv;
--	int id;
-+	int err, id;
+ 	struct qrtr_node *node;
  
- 	id = nfp_flower_lookup_internal_port_id(priv, netdev);
- 	if (id > 0)
- 		return id;
+-	mutex_lock(&qrtr_node_lock);
+-	node = radix_tree_lookup(&qrtr_nodes, nid);
++	xa_lock(&qrtr_nodes);
++	node = xa_load(&qrtr_nodes, nid);
+ 	node = qrtr_node_acquire(node);
+-	mutex_unlock(&qrtr_node_lock);
++	xa_unlock(&qrtr_nodes);
  
--	idr_preload(GFP_ATOMIC);
--	spin_lock_bh(&priv->internal_ports.lock);
--	id = idr_alloc(&priv->internal_ports.port_ids, netdev,
--		       NFP_MIN_INT_PORT_ID, NFP_MAX_INT_PORT_ID, GFP_ATOMIC);
--	spin_unlock_bh(&priv->internal_ports.lock);
--	idr_preload_end();
-+	err = xa_alloc_bh(&priv->internal_ports, &id, netdev,
-+		       XA_LIMIT(NFP_MIN_INT_PORT_ID, NFP_MAX_INT_PORT_ID),
-+		       GFP_ATOMIC);
-+	if (err < 0)
-+		return err;
- 
- 	return id;
+ 	return node;
  }
-@@ -95,13 +91,8 @@ static struct net_device *
- nfp_flower_get_netdev_from_internal_port_id(struct nfp_app *app, int port_id)
- {
- 	struct nfp_flower_priv *priv = app->priv;
--	struct net_device *netdev;
--
--	rcu_read_lock();
--	netdev = idr_find(&priv->internal_ports.port_ids, port_id);
--	rcu_read_unlock();
- 
--	return netdev;
-+	return xa_load(&priv->internal_ports, port_id);
- }
- 
- static void
-@@ -114,9 +105,7 @@ nfp_flower_free_internal_port_id(struct nfp_app *app, struct net_device *netdev)
- 	if (!id)
+@@ -233,10 +236,8 @@ static void qrtr_node_assign(struct qrtr_node *node, unsigned int nid)
+ 	if (node->nid != QRTR_EP_NID_AUTO || nid == QRTR_EP_NID_AUTO)
  		return;
  
--	spin_lock_bh(&priv->internal_ports.lock);
--	idr_remove(&priv->internal_ports.port_ids, id);
--	spin_unlock_bh(&priv->internal_ports.lock);
-+	xa_erase_bh(&priv->internal_ports, id);
+-	mutex_lock(&qrtr_node_lock);
+-	radix_tree_insert(&qrtr_nodes, nid, node);
+ 	node->nid = nid;
+-	mutex_unlock(&qrtr_node_lock);
++	xa_store(&qrtr_nodes, nid, node, GFP_KERNEL);
  }
  
- static int
-@@ -133,13 +122,12 @@ nfp_flower_internal_port_event_handler(struct nfp_app *app,
- 
- static void nfp_flower_internal_port_init(struct nfp_flower_priv *priv)
- {
--	spin_lock_init(&priv->internal_ports.lock);
--	idr_init(&priv->internal_ports.port_ids);
-+	xa_init_flags(&priv->internal_ports, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_BH);
- }
- 
- static void nfp_flower_internal_port_cleanup(struct nfp_flower_priv *priv)
- {
--	idr_destroy(&priv->internal_ports.port_ids);
-+	xa_destroy(&priv->internal_ports);
- }
- 
- static struct nfp_flower_non_repr_priv *
-diff --git a/drivers/net/ethernet/netronome/nfp/flower/main.h b/drivers/net/ethernet/netronome/nfp/flower/main.h
-index 31d94592a7c0..735e995ae740 100644
---- a/drivers/net/ethernet/netronome/nfp/flower/main.h
-+++ b/drivers/net/ethernet/netronome/nfp/flower/main.h
-@@ -119,16 +119,6 @@ struct nfp_fl_lag {
- 	struct sk_buff_head retrans_skbs;
- };
- 
--/**
-- * struct nfp_fl_internal_ports - Flower APP priv data for additional ports
-- * @port_ids:	Assignment of ids to any additional ports
-- * @lock:	Lock for extra ports list
-- */
--struct nfp_fl_internal_ports {
--	struct idr port_ids;
--	spinlock_t lock;
--};
--
  /**
-  * struct nfp_flower_priv - Flower APP per-vNIC priv data
-  * @app:		Back pointer to app
-@@ -191,7 +181,7 @@ struct nfp_flower_priv {
- 	struct list_head non_repr_priv;
- 	unsigned int active_mem_unit;
- 	unsigned int total_mem_units;
--	struct nfp_fl_internal_ports internal_ports;
-+	struct xarray internal_ports;
- 	struct delayed_work qos_stats_work;
- 	unsigned int qos_rate_limiters;
- 	spinlock_t qos_stats_lock; /* Protect the qos stats */
 -- 
 2.23.0.rc1
 
