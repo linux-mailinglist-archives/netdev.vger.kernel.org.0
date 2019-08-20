@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10C0296BC2
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 23:53:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6957A96BC7
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 23:53:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730873AbfHTVuy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 17:50:54 -0400
-Received: from mga05.intel.com ([192.55.52.43]:28768 "EHLO mga05.intel.com"
+        id S1731039AbfHTVvC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 17:51:02 -0400
+Received: from mga05.intel.com ([192.55.52.43]:28767 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730970AbfHTVux (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730971AbfHTVux (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 20 Aug 2019 17:50:53 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
@@ -17,18 +17,18 @@ Received: from orsmga006.jf.intel.com ([10.7.209.51])
   by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Aug 2019 14:50:50 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,410,1559545200"; 
-   d="scan'208";a="183330519"
+   d="scan'208";a="183330522"
 Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
   by orsmga006.jf.intel.com with ESMTP; 20 Aug 2019 14:50:49 -0700
 From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 To:     davem@davemloft.net
-Cc:     Mitch Williams <mitch.a.williams@intel.com>,
-        netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com,
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com,
         Andrew Bowers <andrewx.bowers@intel.com>,
         Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v3 07/14] ice: allow empty Rx descriptors
-Date:   Tue, 20 Aug 2019 14:50:41 -0700
-Message-Id: <20190820215048.14377-8-jeffrey.t.kirsher@intel.com>
+Subject: [net-next v3 08/14] ice: Do not always bring up PF VSI in ice_ena_vsi()
+Date:   Tue, 20 Aug 2019 14:50:42 -0700
+Message-Id: <20190820215048.14377-9-jeffrey.t.kirsher@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820215048.14377-1-jeffrey.t.kirsher@intel.com>
 References: <20190820215048.14377-1-jeffrey.t.kirsher@intel.com>
@@ -39,78 +39,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mitch Williams <mitch.a.williams@intel.com>
+From: Tony Nguyen <anthony.l.nguyen@intel.com>
 
-In some circumstances, the hardware will hand us a receive descriptor
-which has no data attached, but is otherwise valid. The receive code was
-improperly ignoring these descriptors, which result in an infinite loop.
+During rebuild ice_ena_vsi() is called to recover the VSI state.
+This function assumes the PF VSI is always to be enabled, however,
+it's possible that during reset/rebuild the interface can be
+brought down.  If this occurs, we can attempt to bring up the PF
+VSI on a downed interface which can lead to various crashes. If
+the interface is not running, do not bring up the associated VSI.
 
-To fix this, change the receive code to process all descriptors,
-regardless of the size of the associated data. Add checks to the
-memory-handling functions to allow for zero size.
-
-Signed-off-by: Mitch Williams <mitch.a.williams@intel.com>
+Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
 Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
 Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
 ---
- drivers/net/ethernet/intel/ice/ice_txrx.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/ethernet/intel/ice/ice_main.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
-index c88e0701e1d7..e5c4c9139e54 100644
---- a/drivers/net/ethernet/intel/ice/ice_txrx.c
-+++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
-@@ -607,6 +607,8 @@ ice_add_rx_frag(struct ice_rx_buf *rx_buf, struct sk_buff *skb,
- 	unsigned int truesize = ICE_RXBUF_2048;
- #endif
- 
-+	if (!size)
-+		return;
- 	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags, rx_buf->page,
- 			rx_buf->page_offset, size, truesize);
- 
-@@ -662,6 +664,8 @@ ice_get_rx_buf(struct ice_ring *rx_ring, struct sk_buff **skb,
- 	prefetchw(rx_buf->page);
- 	*skb = rx_buf->skb;
- 
-+	if (!size)
-+		return rx_buf;
- 	/* we are reusing so sync this buffer for CPU use */
- 	dma_sync_single_range_for_cpu(rx_ring->dev, rx_buf->dma,
- 				      rx_buf->page_offset, size,
-@@ -745,8 +749,11 @@ ice_construct_skb(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
-  */
- static void ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf)
- {
--		/* hand second half of page back to the ring */
-+	if (!rx_buf)
-+		return;
-+
- 	if (ice_can_reuse_rx_page(rx_buf)) {
-+		/* hand second half of page back to the ring */
- 		ice_reuse_rx_page(rx_ring, rx_buf);
- 		rx_ring->rx_stats.page_reuse_count++;
- 	} else {
-@@ -1031,8 +1038,9 @@ static int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 		size = le16_to_cpu(rx_desc->wb.pkt_len) &
- 			ICE_RX_FLX_DESC_PKT_LEN_M;
- 
-+		/* retrieve a buffer from the ring */
- 		rx_buf = ice_get_rx_buf(rx_ring, &skb, size);
--		/* allocate (if needed) and populate skb */
-+
- 		if (skb)
- 			ice_add_rx_frag(rx_buf, skb, size);
- 		else
-@@ -1041,7 +1049,8 @@ static int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
- 		/* exit if we failed to retrieve a buffer */
- 		if (!skb) {
- 			rx_ring->rx_stats.alloc_buf_failed++;
--			rx_buf->pagecnt_bias++;
-+			if (rx_buf)
-+				rx_buf->pagecnt_bias++;
- 			break;
+diff --git a/drivers/net/ethernet/intel/ice/ice_main.c b/drivers/net/ethernet/intel/ice/ice_main.c
+index 1aa7e06ebbdc..7805c2abd4ac 100644
+--- a/drivers/net/ethernet/intel/ice/ice_main.c
++++ b/drivers/net/ethernet/intel/ice/ice_main.c
+@@ -3701,8 +3701,6 @@ static int ice_ena_vsi(struct ice_vsi *vsi, bool locked)
+ 				err = netd->netdev_ops->ndo_open(netd);
+ 				rtnl_unlock();
+ 			}
+-		} else {
+-			err = ice_vsi_open(vsi);
  		}
+ 	}
  
 -- 
 2.21.0
