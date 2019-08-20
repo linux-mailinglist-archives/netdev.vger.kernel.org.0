@@ -2,89 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7942C96202
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:09:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B96B996225
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:13:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730359AbfHTOIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 10:08:46 -0400
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:45727 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729968AbfHTOIp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 10:08:45 -0400
+        id S1730092AbfHTONe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 10:13:34 -0400
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:60577 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729762AbfHTONe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 10:13:34 -0400
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 02F9C22281;
-        Tue, 20 Aug 2019 10:08:45 -0400 (EDT)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 20 Aug 2019 10:08:45 -0400
+        by mailout.west.internal (Postfix) with ESMTP id 5715A45B;
+        Tue, 20 Aug 2019 10:13:32 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Tue, 20 Aug 2019 10:13:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-type:date:from:in-reply-to
         :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=O7Kzrf
-        ohIuSvPtd1UzngE8AJHpkANJ/fKm2MTfi1JuU=; b=krT8hvBs1ZEc9ptZTRpdZ1
-        2yhlowAcD4n+UQEeOcVg+CTNdLDi5yoj1449hHWtZUvII3GgNsh82ubS8eQXy/PO
-        XCWc0zZ7oxeb+eSWSZVMipNJquR6qkSi1UgbPT7eyTUqjqMuifZnWCH7OfB95Caj
-        g/5PqSPmI5SdsRxjgqAUnfSrOskw0tOVeCmNBsYwXWRimU9uBd7QqwOS3YK47OwL
-        J490bSwEIDVpFlYPtxwhtpNARIvLg9JDWj7FsRNrKnvvmIF68qFgf9fWOg/Vg454
-        X00fjLI8XHYA0yH64vDq9GOYjZSFnpkO7813IXz4ZYG4EphkmjWPYhbpBI6LoCow
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=TM1y1m
+        5mUDdALJbEa/kxdffbL8mes0pBL8m2Q8+L714=; b=AZbFaApxsVf1LSQwFwuMjF
+        JcHomHWzuz1dTTSEh1lNjbu6QZw7/jt3B7Htf26JfF7fWwO3DEnBfY//r/KgFNm0
+        C+hmUf4Bpw3ZzTPpxKE4v8r+rVgZfkQJAcgXV+XZBhFFza9suztqMZa1ER1zF9H1
+        khHVp7RNZRnRoHx2hk8bZ0yAbZM1szjCeDksmV7lkO/VjQKeilAofXOv9JQ+KUZZ
+        C7R00ysCu0HX3XLjn48Yv4hLJ7JJFPet2gCGJxxUfiCIHGTrCFgC75CeMBdw9FOG
+        RgDI7fVqUCTEgn5u1X3r23UKBMRudbTJn4D5tqFM2dVGiycmDrJGYN9p1bJb1IFQ
         ==
-X-ME-Sender: <xms:6_5bXU8HOIaQ9hzRMvpBXGoSxMTXj8n-Pbd_O9Sii12pGioCWduO-w>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeguddgjeduucetufdoteggodetrfdotf
+X-ME-Sender: <xms:CQBcXT-6Ra3cbIIXPBNNUBtZvml3_xkKOyQfUv2C61DWBfP5T3Knqg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeguddgjedvucetufdoteggodetrfdotf
     fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
     uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
     cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppeejle
-    drudejjedrvddurddukedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhes
-    ihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
-X-ME-Proxy: <xmx:6_5bXQ80BC18pZKIbuXj9sVBt1jCYV13BL_IAsTGiUiPlmX7MLpd5w>
-    <xmx:6_5bXVaCUQgkaZBDed6LFbUdQ4hD72U919odT-Cih1p3JyQVwBgFKQ>
-    <xmx:6_5bXRV7yNbwITfrNHXs-WPpSbnEdXUC9AcplshoEE7ism-KKiwt7w>
-    <xmx:7P5bXSiki45pPxWlEbU_Ls9zsSFkZyyZJHHJDYNj5OZ1eo1H9lLRrw>
-Received: from localhost (unknown [79.177.21.180])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BD30D38008A;
-        Tue, 20 Aug 2019 10:08:42 -0400 (EDT)
-Date:   Tue, 20 Aug 2019 17:08:04 +0300
+    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuffhomhgrih
+    hnpehoiihlrggsshdrohhrghenucfkphepjeelrddujeejrddvuddrudektdenucfrrghr
+    rghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrghenucevlhhush
+    htvghrufhiiigvpedt
+X-ME-Proxy: <xmx:CQBcXX9ak_2u1B2F6QphP5OhbvGduq-T9pCmI2AP4jN7Uo1ff-axlA>
+    <xmx:CQBcXU8nwJ9E6wboBS6TBknJakJv6ZjfQykEOHx20B2_Fr_KcST0Zw>
+    <xmx:CQBcXWxbvw2Ll552sqAUIKcGP3PLj0ZvVLzz7SVS26Iht9FoVpsDfg>
+    <xmx:CwBcXSXToNka_kTXMLaWohgMNoHC83FJeWLvI1ptP4Uf8us57Y1JwQ>
+Received: from localhost (bzq-79-177-21-180.red.bezeqint.net [79.177.21.180])
+        by mail.messagingengine.com (Postfix) with ESMTPA id A3B4980059;
+        Tue, 20 Aug 2019 10:13:28 -0400 (EDT)
+Date:   Tue, 20 Aug 2019 17:13:24 +0300
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
-        idosch@mellanox.com, jiri@mellanox.com, mcroce@redhat.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] netdevsim: Fix build error without CONFIG_INET
-Message-ID: <20190820140804.GA31968@splinter>
-References: <20190819120825.74460-1-yuehaibing@huawei.com>
- <20190819145900.5d9cc1f3@cakuba.netronome.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: linux-next: Tree for Aug 19 (drivers/net/netdevsim/dev.o)
+Message-ID: <20190820141324.GC31968@splinter>
+References: <20190819191832.03f1a579@canb.auug.org.au>
+ <92ef45a5-c933-0493-b2ff-50352fa8bf3f@infradead.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190819145900.5d9cc1f3@cakuba.netronome.com>
+In-Reply-To: <92ef45a5-c933-0493-b2ff-50352fa8bf3f@infradead.org>
 User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 19, 2019 at 02:59:00PM -0700, Jakub Kicinski wrote:
-> On Mon, 19 Aug 2019 20:08:25 +0800, YueHaibing wrote:
-> > If CONFIG_INET is not set, building fails:
+On Mon, Aug 19, 2019 at 09:16:13PM -0700, Randy Dunlap wrote:
+> On 8/19/19 2:18 AM, Stephen Rothwell wrote:
+> > Hi all,
 > > 
-> > drivers/net/netdevsim/dev.o: In function `nsim_dev_trap_report_work':
-> > dev.c:(.text+0x67b): undefined reference to `ip_send_check'
+> > Changes since 20190816:
 > > 
-> > Add CONFIG_INET Kconfig dependency to fix this.
-> > 
-> > Reported-by: Hulk Robot <hulkci@huawei.com>
-> > Fixes: da58f90f11f5 ("netdevsim: Add devlink-trap support")
-> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 > 
-> Hmm.. I'd rather the test module did not have hard dependencies on
-> marginally important config options. We have done a pretty good job
-> so far limiting the requirements though separating the code out at
-> compilation object level. The more tests depend on netdevsim and the
-> more bots we have running tests against randconfig - the more important
-> this is.
+> on x86_64:
+> # CONFIG_INET is not set
 > 
-> This missing reference here is for calculating a checksum over a
-> constant header.. could we perhaps just hard code the checksum?
+> ld: drivers/net/netdevsim/dev.o: in function `nsim_dev_trap_report_work':
+> dev.c:(.text+0x52f): undefined reference to `ip_send_check'
 
-Sure. I was AFK today, will send a patch later today when I get home.
+Thanks, Randy.
 
-Thanks
+There is a fix here [1], but some changes were requested. I will send a
+fix later today and Cc you.
+
+[1] https://patchwork.ozlabs.org/patch/1149229/
