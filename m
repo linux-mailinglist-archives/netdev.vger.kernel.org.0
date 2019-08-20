@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9808E96C4A
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E03C996C4C
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731100AbfHTWdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:09 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:37024 "EHLO
+        id S1731124AbfHTWdU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:20 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:37026 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731055AbfHTWdD (ORCPT
+        with ESMTP id S1731059AbfHTWdD (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:03 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=1v5FVq7XmA1v1uwB+eRs0Znh1nlaacDaYbnE8xGTjYg=; b=MwXGU1p+IOItpu2bo1/iKbVDLe
-        lWIABkcDahs/hxDldWKT0wjCL9rAsuYdLEgiTavcju13j0XYvUHtm98mi8fOTr3fGfhcZxL4MU27q
-        wROjJC0wiJLfoyaPyV0o+gwTZhCP0BKlt6UTW/2odlSoClEUjdUU+cDd2eu7yg/zEmn34XRfuegnJ
-        ZxFOhW8sYUEYzufS7ECn+tYl5FmON1h9qY7WQLn3u//xHZiPMVlsXyIYep6frWUsusEOCGtPA0KfR
-        fItmYUVbZ4aHjx3hHkCPBDJgaz3AwPa9PpTrCt2O6C61JSUJ8uDhneborAWDbr/1k5wc57trKn7mo
-        +O+M1uig==;
+        bh=2NZNW7Fy8k5K4XtJRjaafLU/dV4S5mZFuLucCgRMnqY=; b=J/Lav1bDj8uBH5UaEj05ORjcq3
+        IUay/1EYccRoCmPLFq5qE8wCLijqXrrBUFLWZN7QY+Zlb4eThHGKZOsrQr2wf7xz+/llaS8x1A737
+        lFk/k/DacWPhHMc0wNrgBMwT9DCKPINN4MpJb7Ef2X/mOyzqF1M5UCXqA1UEykGfXQ4AXCbQtGMyp
+        UNVYwZrII5kHB81RvXPMMYsJkByd58U5ucI9vq5N07VpwtggQDGNN0dhEtxwnCz75rYlCepkEMMOU
+        j4hxtxf9O1AAgcGxIQo6ELaTRfvs1j4lu1F8xW6q6Rfi/R8Jx6UvQYJj9UD/51wA9hyfu9Bwzy83n
+        0VY80HVg==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgZ-0005si-Ee; Tue, 20 Aug 2019 22:33:03 +0000
+        id 1i0CgZ-0005so-GQ; Tue, 20 Aug 2019 22:33:03 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 33/38] act_api: Convert action_idr to XArray
-Date:   Tue, 20 Aug 2019 15:32:54 -0700
-Message-Id: <20190820223259.22348-34-willy@infradead.org>
+Subject: [PATCH 34/38] net_namespace: Convert netns_ids to XArray
+Date:   Tue, 20 Aug 2019 15:32:55 -0700
+Message-Id: <20190820223259.22348-35-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,307 +43,184 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Replace the mutex protecting the IDR with the XArray spinlock.
+This is a straightforward conversion; it should be possible to eliminate
+nsid_lock as it seems to only be used to protect netns_ids.  The tricky
+part is that dropping the lock (eg to allocate memory) could end up
+allowing two networks which are equal to each other being allocated.
+So stick with the GFP_ATOMIC allocations and double locking until
+someone who's more savvy wants to try their hand at eliminating it.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- include/net/act_api.h |   6 +-
- net/sched/act_api.c   | 127 +++++++++++++++++-------------------------
- 2 files changed, 53 insertions(+), 80 deletions(-)
+ include/net/net_namespace.h |  2 +-
+ net/core/net_namespace.c    | 65 +++++++++++++++++--------------------
+ 2 files changed, 30 insertions(+), 37 deletions(-)
 
-diff --git a/include/net/act_api.h b/include/net/act_api.h
-index c61a1bf4e3de..da1a515fd94d 100644
---- a/include/net/act_api.h
-+++ b/include/net/act_api.h
-@@ -13,8 +13,7 @@
- #include <net/netns/generic.h>
+diff --git a/include/net/net_namespace.h b/include/net/net_namespace.h
+index 4a9da951a794..6c80cadc6396 100644
+--- a/include/net/net_namespace.h
++++ b/include/net/net_namespace.h
+@@ -78,7 +78,7 @@ struct net {
+ 	struct user_namespace   *user_ns;	/* Owning user namespace */
+ 	struct ucounts		*ucounts;
+ 	spinlock_t		nsid_lock;
+-	struct idr		netns_ids;
++	struct xarray		netns_ids;
  
- struct tcf_idrinfo {
--	struct mutex	lock;
--	struct idr	action_idr;
-+	struct xarray	actions;
+ 	struct ns_common	ns;
+ 
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index a0e0d298c991..c9b16e1b4a7e 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -188,27 +188,18 @@ static void ops_free_list(const struct pernet_operations *ops,
+ /* should be called with nsid_lock held */
+ static int alloc_netid(struct net *net, struct net *peer, int reqid)
+ {
+-	int min = 0, max = 0;
++	int ret;
+ 
+ 	if (reqid >= 0) {
+-		min = reqid;
+-		max = reqid + 1;
++		ret = xa_insert(&net->netns_ids, reqid, peer, GFP_ATOMIC);
++	} else {
++		ret = xa_alloc(&net->netns_ids, &reqid, peer, xa_limit_31b,
++				GFP_ATOMIC);
+ 	}
+ 
+-	return idr_alloc(&net->netns_ids, peer, min, max, GFP_ATOMIC);
+-}
+-
+-/* This function is used by idr_for_each(). If net is equal to peer, the
+- * function returns the id so that idr_for_each() stops. Because we cannot
+- * returns the id 0 (idr_for_each() will not stop), we return the magic value
+- * NET_ID_ZERO (-1) for it.
+- */
+-#define NET_ID_ZERO -1
+-static int net_eq_idr(int id, void *net, void *peer)
+-{
+-	if (net_eq(net, peer))
+-		return id ? : NET_ID_ZERO;
+-	return 0;
++	if (ret)
++		return ret;
++	return reqid;
+ }
+ 
+ /* Should be called with nsid_lock held. If a new id is assigned, the bool alloc
+@@ -217,16 +208,17 @@ static int net_eq_idr(int id, void *net, void *peer)
+  */
+ static int __peernet2id_alloc(struct net *net, struct net *peer, bool *alloc)
+ {
+-	int id = idr_for_each(&net->netns_ids, net_eq_idr, peer);
++	int id;
++	struct net *tmp;
++	unsigned long index;
+ 	bool alloc_it = *alloc;
+ 
+-	*alloc = false;
+-
+-	/* Magic value for id 0. */
+-	if (id == NET_ID_ZERO)
+-		return 0;
+-	if (id > 0)
+-		return id;
++	xa_for_each(&net->netns_ids, index, tmp) {
++		if (net_eq(tmp, peer)) {
++			*alloc = false;
++			return index;
++		}
++	}
+ 
+ 	if (alloc_it) {
+ 		id = alloc_netid(net, peer, -1);
+@@ -261,7 +253,7 @@ int peernet2id_alloc(struct net *net, struct net *peer)
+ 	 * When peer is obtained from RCU lists, we may race with
+ 	 * its cleanup. Check whether it's alive, and this guarantees
+ 	 * we never hash a peer back to net->netns_ids, after it has
+-	 * just been idr_remove()'d from there in cleanup_net().
++	 * just been removed from there in cleanup_net().
+ 	 */
+ 	if (maybe_get_net(peer))
+ 		alive = alloc = true;
+@@ -303,7 +295,7 @@ struct net *get_net_ns_by_id(struct net *net, int id)
+ 		return NULL;
+ 
+ 	rcu_read_lock();
+-	peer = idr_find(&net->netns_ids, id);
++	peer = xa_load(&net->netns_ids, id);
+ 	if (peer)
+ 		peer = maybe_get_net(peer);
+ 	rcu_read_unlock();
+@@ -326,7 +318,7 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
+ 	get_random_bytes(&net->hash_mix, sizeof(u32));
+ 	net->dev_base_seq = 1;
+ 	net->user_ns = user_ns;
+-	idr_init(&net->netns_ids);
++	xa_init_flags(&net->netns_ids, XA_FLAGS_ALLOC);
+ 	spin_lock_init(&net->nsid_lock);
+ 	mutex_init(&net->ipv4.ra_mutex);
+ 
+@@ -529,16 +521,14 @@ static void unhash_nsid(struct net *net, struct net *last)
+ 		spin_lock_bh(&tmp->nsid_lock);
+ 		id = __peernet2id(tmp, net);
+ 		if (id >= 0)
+-			idr_remove(&tmp->netns_ids, id);
++			xa_erase(&tmp->netns_ids, id);
+ 		spin_unlock_bh(&tmp->nsid_lock);
+ 		if (id >= 0)
+ 			rtnl_net_notifyid(tmp, RTM_DELNSID, id);
+ 		if (tmp == last)
+ 			break;
+ 	}
+-	spin_lock_bh(&net->nsid_lock);
+-	idr_destroy(&net->netns_ids);
+-	spin_unlock_bh(&net->nsid_lock);
++	BUG_ON(!xa_empty(&net->netns_ids));
+ }
+ 
+ static LLIST_HEAD(cleanup_list);
+@@ -766,7 +756,7 @@ static int rtnl_net_newid(struct sk_buff *skb, struct nlmsghdr *nlh,
+ 	if (err >= 0) {
+ 		rtnl_net_notifyid(net, RTM_NEWNSID, err);
+ 		err = 0;
+-	} else if (err == -ENOSPC && nsid >= 0) {
++	} else if (err == -EBUSY && nsid >= 0) {
+ 		err = -EEXIST;
+ 		NL_SET_BAD_ATTR(extack, tb[NETNSA_NSID]);
+ 		NL_SET_ERR_MSG(extack, "The specified nsid is already used");
+@@ -946,9 +936,9 @@ struct rtnl_net_dump_cb {
+ 	int s_idx;
  };
  
- struct tc_action_ops;
-@@ -117,8 +116,7 @@ int tc_action_net_init(struct tc_action_net *tn,
- 	if (!tn->idrinfo)
- 		return -ENOMEM;
- 	tn->ops = ops;
--	mutex_init(&tn->idrinfo->lock);
--	idr_init(&tn->idrinfo->action_idr);
-+	xa_init_flags(&tn->idrinfo->actions, XA_FLAGS_ALLOC1);
- 	return err;
- }
- 
-diff --git a/net/sched/act_api.c b/net/sched/act_api.c
-index 339712296164..4039ad8c686c 100644
---- a/net/sched/act_api.c
-+++ b/net/sched/act_api.c
-@@ -126,11 +126,12 @@ static int __tcf_action_put(struct tc_action *p, bool bind)
+-static int rtnl_net_dumpid_one(int id, void *peer, void *data)
++static int rtnl_net_dumpid_one(int id, struct net *peer,
++		struct rtnl_net_dump_cb *net_cb)
  {
- 	struct tcf_idrinfo *idrinfo = p->idrinfo;
- 
--	if (refcount_dec_and_mutex_lock(&p->tcfa_refcnt, &idrinfo->lock)) {
-+	if (refcount_dec_and_lock(&p->tcfa_refcnt,
-+				&idrinfo->actions.xa_lock)) {
- 		if (bind)
- 			atomic_dec(&p->tcfa_bindcnt);
--		idr_remove(&idrinfo->action_idr, p->tcfa_index);
--		mutex_unlock(&idrinfo->lock);
-+		__xa_erase(&idrinfo->actions, p->tcfa_index);
-+		xa_unlock(&idrinfo->actions);
- 
- 		tcf_action_cleanup(p);
- 		return 1;
-@@ -214,24 +215,17 @@ static size_t tcf_action_fill_size(const struct tc_action *act)
- static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 			   struct netlink_callback *cb)
- {
--	int err = 0, index = -1, s_i = 0, n_i = 0;
-+	int err = 0, n_i = 0;
- 	u32 act_flags = cb->args[2];
- 	unsigned long jiffy_since = cb->args[3];
- 	struct nlattr *nest;
--	struct idr *idr = &idrinfo->action_idr;
-+	struct xarray *xa = &idrinfo->actions;
- 	struct tc_action *p;
--	unsigned long id = 1;
--	unsigned long tmp;
-+	unsigned long index;
- 
--	mutex_lock(&idrinfo->lock);
--
--	s_i = cb->args[0];
--
--	idr_for_each_entry_ul(idr, p, tmp, id) {
--		index++;
--		if (index < s_i)
--			continue;
-+	xa_lock(xa);
- 
-+	xa_for_each_start(&idrinfo->actions, index, p, cb->args[0]) {
- 		if (jiffy_since &&
- 		    time_after(jiffy_since,
- 			       (unsigned long)p->tcfa_tm.lastuse))
-@@ -255,10 +249,9 @@ static int tcf_dump_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 			goto done;
- 	}
- done:
--	if (index >= 0)
--		cb->args[0] = index + 1;
-+	cb->args[0] = index + 1;
-+	xa_unlock(xa);
- 
--	mutex_unlock(&idrinfo->lock);
- 	if (n_i) {
- 		if (act_flags & TCA_FLAG_LARGE_DUMP_ON)
- 			cb->args[1] = n_i;
-@@ -276,7 +269,7 @@ static int tcf_idr_release_unsafe(struct tc_action *p)
- 		return -EPERM;
- 
- 	if (refcount_dec_and_test(&p->tcfa_refcnt)) {
--		idr_remove(&p->idrinfo->action_idr, p->tcfa_index);
-+		xa_erase(&p->idrinfo->actions, p->tcfa_index);
- 		tcf_action_cleanup(p);
- 		return ACT_P_DELETED;
- 	}
-@@ -290,10 +283,8 @@ static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 	struct nlattr *nest;
- 	int n_i = 0;
- 	int ret = -EINVAL;
--	struct idr *idr = &idrinfo->action_idr;
- 	struct tc_action *p;
--	unsigned long id = 1;
--	unsigned long tmp;
-+	unsigned long index;
- 
- 	nest = nla_nest_start_noflag(skb, 0);
- 	if (nest == NULL)
-@@ -301,18 +292,18 @@ static int tcf_del_walker(struct tcf_idrinfo *idrinfo, struct sk_buff *skb,
- 	if (nla_put_string(skb, TCA_KIND, ops->kind))
- 		goto nla_put_failure;
- 
--	mutex_lock(&idrinfo->lock);
--	idr_for_each_entry_ul(idr, p, tmp, id) {
-+	xa_lock(&idrinfo->actions);
-+	xa_for_each(&idrinfo->actions, index, p) {
- 		ret = tcf_idr_release_unsafe(p);
- 		if (ret == ACT_P_DELETED) {
- 			module_put(ops->owner);
- 			n_i++;
- 		} else if (ret < 0) {
--			mutex_unlock(&idrinfo->lock);
-+			xa_unlock(&idrinfo->actions);
- 			goto nla_put_failure;
- 		}
- 	}
--	mutex_unlock(&idrinfo->lock);
-+	xa_unlock(&idrinfo->actions);
- 
- 	if (nla_put_u32(skb, TCA_FCNT, n_i))
- 		goto nla_put_failure;
-@@ -348,13 +339,11 @@ int tcf_idr_search(struct tc_action_net *tn, struct tc_action **a, u32 index)
- 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
- 	struct tc_action *p;
- 
--	mutex_lock(&idrinfo->lock);
--	p = idr_find(&idrinfo->action_idr, index);
--	if (IS_ERR(p))
--		p = NULL;
--	else if (p)
-+	xa_lock(&idrinfo->actions);
-+	p = xa_load(&idrinfo->actions, index);
-+	if (p)
- 		refcount_inc(&p->tcfa_refcnt);
--	mutex_unlock(&idrinfo->lock);
-+	xa_unlock(&idrinfo->actions);
- 
- 	if (p) {
- 		*a = p;
-@@ -369,10 +358,10 @@ static int tcf_idr_delete_index(struct tcf_idrinfo *idrinfo, u32 index)
- 	struct tc_action *p;
- 	int ret = 0;
- 
--	mutex_lock(&idrinfo->lock);
--	p = idr_find(&idrinfo->action_idr, index);
-+	xa_lock(&idrinfo->actions);
-+	p = xa_load(&idrinfo->actions, index);
- 	if (!p) {
--		mutex_unlock(&idrinfo->lock);
-+		xa_unlock(&idrinfo->actions);
- 		return -ENOENT;
- 	}
- 
-@@ -380,9 +369,8 @@ static int tcf_idr_delete_index(struct tcf_idrinfo *idrinfo, u32 index)
- 		if (refcount_dec_and_test(&p->tcfa_refcnt)) {
- 			struct module *owner = p->ops->owner;
- 
--			WARN_ON(p != idr_remove(&idrinfo->action_idr,
--						p->tcfa_index));
--			mutex_unlock(&idrinfo->lock);
-+			__xa_erase(&idrinfo->actions, p->tcfa_index);
-+			xa_unlock(&idrinfo->actions);
- 
- 			tcf_action_cleanup(p);
- 			module_put(owner);
-@@ -393,7 +381,7 @@ static int tcf_idr_delete_index(struct tcf_idrinfo *idrinfo, u32 index)
- 		ret = -EPERM;
- 	}
- 
--	mutex_unlock(&idrinfo->lock);
-+	xa_unlock(&idrinfo->actions);
- 	return ret;
- }
- 
-@@ -455,10 +443,7 @@ void tcf_idr_insert(struct tc_action_net *tn, struct tc_action *a)
- {
- 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
- 
--	mutex_lock(&idrinfo->lock);
--	/* Replace ERR_PTR(-EBUSY) allocated by tcf_idr_check_alloc */
--	WARN_ON(!IS_ERR(idr_replace(&idrinfo->action_idr, a, a->tcfa_index)));
--	mutex_unlock(&idrinfo->lock);
-+	xa_store(&idrinfo->actions, a->tcfa_index, a, GFP_KERNEL);
- }
- EXPORT_SYMBOL(tcf_idr_insert);
- 
-@@ -468,10 +453,7 @@ void tcf_idr_cleanup(struct tc_action_net *tn, u32 index)
- {
- 	struct tcf_idrinfo *idrinfo = tn->idrinfo;
- 
--	mutex_lock(&idrinfo->lock);
--	/* Remove ERR_PTR(-EBUSY) allocated by tcf_idr_check_alloc */
--	WARN_ON(!IS_ERR(idr_remove(&idrinfo->action_idr, index)));
--	mutex_unlock(&idrinfo->lock);
-+	xa_erase(&idrinfo->actions, index);
- }
- EXPORT_SYMBOL(tcf_idr_cleanup);
- 
-@@ -489,41 +471,36 @@ int tcf_idr_check_alloc(struct tc_action_net *tn, u32 *index,
+-	struct rtnl_net_dump_cb *net_cb = (struct rtnl_net_dump_cb *)data;
  	int ret;
  
- again:
--	mutex_lock(&idrinfo->lock);
-+	xa_lock(&idrinfo->actions);
- 	if (*index) {
--		p = idr_find(&idrinfo->action_idr, *index);
--		if (IS_ERR(p)) {
--			/* This means that another process allocated
--			 * index but did not assign the pointer yet.
--			 */
--			mutex_unlock(&idrinfo->lock);
--			goto again;
--		}
--
-+		p = xa_load(&idrinfo->actions, *index);
- 		if (p) {
- 			refcount_inc(&p->tcfa_refcnt);
- 			if (bind)
- 				atomic_inc(&p->tcfa_bindcnt);
--			*a = p;
- 			ret = 1;
- 		} else {
- 			*a = NULL;
--			ret = idr_alloc_u32(&idrinfo->action_idr, NULL, index,
--					    *index, GFP_KERNEL);
--			if (!ret)
--				idr_replace(&idrinfo->action_idr,
--					    ERR_PTR(-EBUSY), *index);
-+			ret = __xa_insert(&idrinfo->actions, *index, NULL,
-+					    GFP_KERNEL);
-+			if (ret == -EBUSY) {
-+				/*
-+				 * Another process has allocated this index,
-+				 * but has not yet assigned a pointer.
-+				 */
-+				xa_unlock(&idrinfo->actions);
-+				cpu_relax();
-+				goto again;
-+			}
- 		}
- 	} else {
--		*index = 1;
--		*a = NULL;
--		ret = idr_alloc_u32(&idrinfo->action_idr, NULL, index,
--				    UINT_MAX, GFP_KERNEL);
--		if (!ret)
--			idr_replace(&idrinfo->action_idr, ERR_PTR(-EBUSY),
--				    *index);
-+		ret = __xa_alloc(&idrinfo->actions, index, NULL, xa_limit_32b,
-+				GFP_KERNEL);
-+		p = NULL;
- 	}
--	mutex_unlock(&idrinfo->lock);
-+
-+	*a = p;
-+	xa_unlock(&idrinfo->actions);
- 	return ret;
- }
- EXPORT_SYMBOL(tcf_idr_check_alloc);
-@@ -531,20 +508,18 @@ EXPORT_SYMBOL(tcf_idr_check_alloc);
- void tcf_idrinfo_destroy(const struct tc_action_ops *ops,
- 			 struct tcf_idrinfo *idrinfo)
- {
--	struct idr *idr = &idrinfo->action_idr;
- 	struct tc_action *p;
- 	int ret;
--	unsigned long id = 1;
--	unsigned long tmp;
+ 	if (net_cb->idx < net_cb->s_idx)
+@@ -1022,6 +1012,8 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
+ 		.idx = 0,
+ 		.s_idx = cb->args[0],
+ 	};
++	struct net *peer;
 +	unsigned long index;
+ 	int err = 0;
  
--	idr_for_each_entry_ul(idr, p, tmp, id) {
-+	xa_for_each(&idrinfo->actions, index, p) {
- 		ret = __tcf_idr_release(p, false, true);
- 		if (ret == ACT_P_DELETED)
- 			module_put(ops->owner);
- 		else if (ret < 0)
- 			return;
+ 	if (cb->strict_check) {
+@@ -1038,7 +1030,8 @@ static int rtnl_net_dumpid(struct sk_buff *skb, struct netlink_callback *cb)
+ 		err = -EAGAIN;
+ 		goto end;
  	}
--	idr_destroy(&idrinfo->action_idr);
-+	xa_destroy(&idrinfo->actions);
- }
- EXPORT_SYMBOL(tcf_idrinfo_destroy);
- 
+-	idr_for_each(&net_cb.tgt_net->netns_ids, rtnl_net_dumpid_one, &net_cb);
++	xa_for_each(&net_cb.tgt_net->netns_ids, index, peer)
++		rtnl_net_dumpid_one(index, peer, &net_cb);
+ 	if (net_cb.fillargs.add_ref &&
+ 	    !net_eq(net_cb.ref_net, net_cb.tgt_net))
+ 		spin_unlock_bh(&net_cb.ref_net->nsid_lock);
 -- 
 2.23.0.rc1
 
