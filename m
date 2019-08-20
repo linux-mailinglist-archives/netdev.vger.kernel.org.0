@@ -2,124 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B091C966C3
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 18:49:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D0D6966D8
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 18:55:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729852AbfHTQtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 12:49:41 -0400
-Received: from mail-wr1-f97.google.com ([209.85.221.97]:34564 "EHLO
-        mail-wr1-f97.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727272AbfHTQtl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 12:49:41 -0400
-Received: by mail-wr1-f97.google.com with SMTP id s18so13131874wrn.1
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 09:49:39 -0700 (PDT)
+        id S1729887AbfHTQzT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 12:55:19 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:36157 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728360AbfHTQzT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 12:55:19 -0400
+Received: by mail-lj1-f194.google.com with SMTP id u15so5789882ljl.3;
+        Tue, 20 Aug 2019 09:55:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Phz6WQ0uaL8R2Uo384HhPwvzwbGmWWnyjoGcqcn4K/M=;
+        b=h/hBE9eRYU9HgxhgyZEnoN0JE5DY0pDUb1H9+NEedM55giAxftcUR+gDDUYkVh6f/o
+         qTA1Zx5iZW2uz/e5AyZ6Six0b2R9lr6npuVTBmYUzPpWA2k8eFAr58fZqcINamuBZCpo
+         kGej63QqpVVekQS72+NsSfnRfvwigLUlHstcCrFMYE4I5EXEnhmKg52NB/r3zTzdmnI1
+         0g05nvFQ4t++oDWHiU4ztwFvAdn2pW6m60DoqlqExX9pTDhvLPYzwflaiuss8SjzJbMp
+         z2UgXUtw2I59fNPj+6JnB0d4TtCpWveoidYYlT+alYkzgMIwDM0+tqElFSZbI3YJqUCK
+         PxEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=fpjvOAIMdJRCU5oiOWiApHuczCv0tGrwTTKBy1Kzp7I=;
-        b=mjFu191m+xMYFKqHEb2jC9YiX9RMVj9/5J5xwMn44lzUKDcygKGxXdgrZdKwlygtYF
-         8iGD+OJpcuDl7w3KPn4irLRSKMG6c/7si0UWZvs+3jxhp/kGtT8ghx2MX8QITXFumZ3j
-         yU8k60UT8787r3wCjK6xK1niuHitLiISZBoUm8DGve0Nzrtph8ppa7ZJAK2YtmKhKV0A
-         UI17jsYXBcrqzmzsHy3mE5NJEwuLRw4TOczwX+YsfIz9DdHxEuFFnxpoZaJSfEbARZng
-         dn3xhgfGF28oNv/MhVMIOMfShnFcP7JGd5hcU7hmXi/SRGTkqd7a+DVlQ4BwGRcYgMZV
-         C4gg==
-X-Gm-Message-State: APjAAAVmQt7X1nZ2WdImFaREcNlq5mV/prg/6zWg/jTkt4GRh7yl2u28
-        AzTYC4dVpWkxCMz/AxS+gG0d3Butdfc2Of37M7g5iOWHRMU7eHQN5yR9yFYzwqZc2g==
-X-Google-Smtp-Source: APXvYqyKaxLLzHpmoESaK8n/5tlU8bQH/IgXfoX2ONE9tfx2l0LnfuVabT7bPv+RSxIPPeSzV9J8iZ7OsIV4
-X-Received: by 2002:adf:dec8:: with SMTP id i8mr34662792wrn.217.1566319778998;
-        Tue, 20 Aug 2019 09:49:38 -0700 (PDT)
-Received: from heliosphere.sirena.org.uk (heliosphere.sirena.org.uk. [2a01:7e01::f03c:91ff:fed4:a3b6])
-        by smtp-relay.gmail.com with ESMTPS id d1sm354430wrj.19.2019.08.20.09.49.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 09:49:38 -0700 (PDT)
-X-Relaying-Domain: sirena.org.uk
-Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
-        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <broonie@sirena.co.uk>)
-        id 1i07KE-0002vy-L3; Tue, 20 Aug 2019 16:49:38 +0000
-Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id A4DD52742ABD; Tue, 20 Aug 2019 17:49:37 +0100 (BST)
-Date:   Tue, 20 Aug 2019 17:49:37 +0100
-From:   Mark Brown <broonie@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>, mlichvar@redhat.com,
-        Richard Cochran <richardcochran@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Subject: Re: [RFC PATCH net-next 03/11] spi: Add a PTP system timestamp to
- the transfer structure
-Message-ID: <20190820164937.GE4738@sirena.co.uk>
-References: <20190816004449.10100-1-olteanv@gmail.com>
- <20190816004449.10100-4-olteanv@gmail.com>
- <20190816121837.GD4039@sirena.co.uk>
- <CA+h21hqatTeS2shV9QSiPzkjSeNj2Z4SOTrycffDjRHj=9s=nQ@mail.gmail.com>
- <20190816125820.GF4039@sirena.co.uk>
- <CA+h21hrZbun_j+oABJFP+P+V3zHP2x0mAhv-1ocF38miCvZHew@mail.gmail.com>
- <20190820125557.GB4738@sirena.co.uk>
- <CA+h21hr653oqOPxoJKWkP9ZhTywNR8EBjWV7U9LHwPRz=PJXsw@mail.gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Phz6WQ0uaL8R2Uo384HhPwvzwbGmWWnyjoGcqcn4K/M=;
+        b=AvFgKSPDGg7AOJEyg02EVy2tIYWZ2CyaOUCZVpmZ3vG9o19pRiNfWRO21X3NU00hPZ
+         Q1b2GjQ/WqCSKRYS/7Dn+FOTYC8EUicdBt8WFMwXqt8MW9Aj+s110W6htUj8lddaW75f
+         cRwbEVon9hH8YjDU+l3Py1Y/IMlw9u2xSOj+EZqlSzWJYhJVtey71rTOXl4WG+Vf08kP
+         zf0y5HejCiQ/frtZbrftcGCTZceO+QBR8dGQrFYXg3AJZ97pL9/IbuAuSVG8tJ9FPY5z
+         DFDwkBpObxDBCCiSBsS5WvuasUo/8fhu/bvRO+58ZYi64bzPOmgWI5MMHzD8+6jKoGVu
+         dv8g==
+X-Gm-Message-State: APjAAAVhHz1W0XZbx1HVYJ2BNX2IlOj5ePS4ARaagAUNYcxt2+h6Lzhg
+        6/fDap1EKQGYwV9wEBtcBopeaTcfzbzoIuQv9Ek=
+X-Google-Smtp-Source: APXvYqzNxloBAOX/No5O7h8o8NHa4qt1FYCEk9oHaFrTA34v485tGARu8F78zgB3Z/MW6a+tSY9vxIoxwTccOFWMe5I=
+X-Received: by 2002:a2e:80d0:: with SMTP id r16mr15717515ljg.17.1566320117195;
+ Tue, 20 Aug 2019 09:55:17 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="KuLpqunXa7jZSBt+"
-Content-Disposition: inline
-In-Reply-To: <CA+h21hr653oqOPxoJKWkP9ZhTywNR8EBjWV7U9LHwPRz=PJXsw@mail.gmail.com>
-X-Cookie: It's the thought, if any, that counts!
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20190820093154.14042-1-quentin.monnet@netronome.com>
+In-Reply-To: <20190820093154.14042-1-quentin.monnet@netronome.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 20 Aug 2019 09:55:03 -0700
+Message-ID: <CAADnVQ+ZAgmFKKKnBPt8agJ2V-f6H30OyQ104qD2vZkC=qz9wQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 0/5] bpf: list BTF objects loaded on system
+To:     Quentin Monnet <quentin.monnet@netronome.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        oss-drivers@netronome.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Aug 20, 2019 at 2:32 AM Quentin Monnet
+<quentin.monnet@netronome.com> wrote:
+>
+> Hi,
+> This set adds a new command BPF_BTF_GET_NEXT_ID to the bpf() system call,
+> adds the relevant API function in libbpf, and uses it in bpftool to list
+> all BTF objects loaded on the system (and to dump the ids of maps and
+> programs associated with them, if any).
+>
+> The main motivation of listing BTF objects is introspection and debugging
+> purposes. By getting BPF program and map information, it should already be
+> possible to list all BTF objects associated to at least one map or one
+> program. But there may be unattached BTF objects, held by a file descriptor
+> from a user space process only, and we may want to list them too.
+>
+> As a side note, it also turned useful for examining the BTF objects
+> attached to offloaded programs, which would not show in program information
+> because the BTF id is not copied when retrieving such info. A fix is in
+> progress on that side.
+>
+> v2:
+> - Rebase patch with new libbpf function on top of Andrii's changes
+>   regarding libbpf versioning.
 
---KuLpqunXa7jZSBt+
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-On Tue, Aug 20, 2019 at 04:48:39PM +0300, Vladimir Oltean wrote:
-> On Tue, 20 Aug 2019 at 15:55, Mark Brown <broonie@kernel.org> wrote:
-> > On Fri, Aug 16, 2019 at 05:05:53PM +0300, Vladimir Oltean wrote:
-
-> > > Maybe the SPI master driver should just report what sort of
-> > > snapshotting capability it can offer, ranging from none (default
-> > > unless otherwise specified), to transfer-level (DMA style) or
-> > > byte-level.
-
-> > That does then have the consequence that the majority of controllers
-> > aren't going to be usable with the API which isn't great.
-
-> Can we continue this discussion on this thread:
-> https://www.spinics.net/lists/netdev/msg593772.html
-> The whole point there is that if there's nothing that the driver can
-> do, the SPI core will take the timestamps and record their (bad)
-> precision.
-
-I'm not on that thread.
-
-> > I'm not 100% clear what the problem you're trying to solve is, or if
-> > it's a sensible problem to try to solve for that matter.
-
-> The problem can simply be summarized as: you're trying to read a clock
-> over SPI, but there's so much timing jitter in you doing that, that
-> you have a high degree of uncertainty in the actual precision of the
-> readout you took.
-
-That doesn't seem like a great idea...
-
---KuLpqunXa7jZSBt+
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl1cJKAACgkQJNaLcl1U
-h9Ajjwf7BKBd41sf2crMlSALL87ftWHff3zu1s9zzh4XvUN+afcw89zuNjTuCdJJ
-soVj9H+nLOGS5Ylh22zu3scMpXcTtrRmYNoGixBW08UtkZDGTAxII5sM9kKdRNlj
-e2u9fiqJ6bLLoWfQwlYodzO/5pXi0tCXoe+HuqP9a3GezNTR54EpO3iaCOeGSvq5
-RXPXs6U76X+u8folfG1/s6N4yDDgWZatwBD+rjwhSOaWuNtDEf4/06UGLsczxoup
-DkX/0FAAixRH/6twBZ4qs2gTTLeSsVt2zimSwfyDsfI0CRvfR6CQH6qIwKt3HOaO
-kCue4zjaFxBzR6SU877WWSj6gMNZAA==
-=SHGy
------END PGP SIGNATURE-----
-
---KuLpqunXa7jZSBt+--
+Applied. Thanks
