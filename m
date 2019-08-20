@@ -2,60 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C9E19545C
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 04:26:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 305FC95467
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 04:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729096AbfHTCZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 22:25:46 -0400
-Received: from mx134-tc.baidu.com ([61.135.168.134]:18389 "EHLO
-        tc-sys-mailedm01.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728647AbfHTCZq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 22:25:46 -0400
-Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
-        by tc-sys-mailedm01.tc.baidu.com (Postfix) with ESMTP id 070082040041
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 10:25:33 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org
-Subject: [PATCH] net: Fix __ip_mc_inc_group argument 3 input
-Date:   Tue, 20 Aug 2019 10:25:33 +0800
-Message-Id: <1566267933-30434-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S1728786AbfHTC2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 22:28:54 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:47802 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728768AbfHTC2x (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 19 Aug 2019 22:28:53 -0400
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9BF6F3082B67;
+        Tue, 20 Aug 2019 02:28:53 +0000 (UTC)
+Received: from [10.72.12.194] (ovpn-12-194.pek2.redhat.com [10.72.12.194])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 710576092F;
+        Tue, 20 Aug 2019 02:28:51 +0000 (UTC)
+Subject: Re: [PATCH v3] tun: fix use-after-free when register netdev failed
+To:     David Miller <davem@davemloft.net>, yangyingliang@huawei.com
+Cc:     netdev@vger.kernel.org, eric.dumazet@gmail.com,
+        xiyou.wangcong@gmail.com, weiyongjun1@huawei.com
+References: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com>
+ <20190819.182522.414877916903078544.davem@davemloft.net>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ceeafaf2-6aa4-b815-0b5f-ecc663216f43@redhat.com>
+Date:   Tue, 20 Aug 2019 10:28:49 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+In-Reply-To: <20190819.182522.414877916903078544.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.45]); Tue, 20 Aug 2019 02:28:53 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It expects gfp_t, but got unsigned int mode
 
-Fixes: 6e2059b53f98 ("ipv4/igmp: init group mode as INCLUDE when join source group")
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Zhang Yu <zhangyu31@baidu.com>
----
- net/ipv4/igmp.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+On 2019/8/20 上午9:25, David Miller wrote:
+> From: Yang Yingliang <yangyingliang@huawei.com>
+> Date: Mon, 19 Aug 2019 21:31:19 +0800
+>
+>> Call tun_attach() after register_netdevice() to make sure tfile->tun
+>> is not published until the netdevice is registered. So the read/write
+>> thread can not use the tun pointer that may freed by free_netdev().
+>> (The tun and dev pointer are allocated by alloc_netdev_mqs(), they can
+>> be freed by netdev_freemem().)
+> register_netdevice() must always be the last operation in the order of
+> network device setup.
+>
+> At the point register_netdevice() is called, the device is visible globally
+> and therefore all of it's software state must be fully initialized and
+> ready for us.
+>
+> You're going to have to find another solution to these problems.
 
-diff --git a/net/ipv4/igmp.c b/net/ipv4/igmp.c
-index 180f6896b98b..b8352d716253 100644
---- a/net/ipv4/igmp.c
-+++ b/net/ipv4/igmp.c
-@@ -1475,7 +1475,7 @@ EXPORT_SYMBOL(__ip_mc_inc_group);
- 
- void ip_mc_inc_group(struct in_device *in_dev, __be32 addr)
- {
--	__ip_mc_inc_group(in_dev, addr, MCAST_EXCLUDE);
-+	__ip_mc_inc_group(in_dev, addr, GFP_KERNEL);
- }
- EXPORT_SYMBOL(ip_mc_inc_group);
- 
-@@ -2197,7 +2197,7 @@ static int __ip_mc_join_group(struct sock *sk, struct ip_mreqn *imr,
- 	iml->sflist = NULL;
- 	iml->sfmode = mode;
- 	rcu_assign_pointer(inet->mc_list, iml);
--	__ip_mc_inc_group(in_dev, addr, mode);
-+	__ip_mc_inc_group(in_dev, addr, GFP_KERNEL);
- 	err = 0;
- done:
- 	return err;
--- 
-2.16.2
+
+The device is loosely coupled with sockets/queues. Each side is allowed 
+to be go away without caring the other side. So in this case, there's a 
+small window that network stack think the device has one queue but 
+actually not, the code can then safely drop them. Maybe it's ok here 
+with some comments?
+
+Or if not, we can try to hold the device before tun_attach and drop it 
+after register_netdevice().
+
+Thanks
 
