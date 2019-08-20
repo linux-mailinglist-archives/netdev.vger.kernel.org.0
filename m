@@ -2,213 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2870F96751
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:19:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C87396797
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:30:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730431AbfHTRTG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 13:19:06 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:44882 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725971AbfHTRTG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 13:19:06 -0400
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id BB4C93175291;
-        Tue, 20 Aug 2019 17:19:05 +0000 (UTC)
-Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 108365C205;
-        Tue, 20 Aug 2019 17:19:05 +0000 (UTC)
-Date:   Tue, 20 Aug 2019 11:19:04 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "cjia@nvidia.com" <cjia@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Message-ID: <20190820111904.75515f58@x1.home>
-In-Reply-To: <AM0PR05MB48668B6221E477A873688CDBD1AB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190802065905.45239-1-parav@mellanox.com>
-        <20190808141255.45236-1-parav@mellanox.com>
-        <20190808170247.1fc2c4c4@x1.home>
-        <77ffb1f8-e050-fdf5-e306-0a81614f7a88@nvidia.com>
-        <AM0PR05MB4866993536C0C8ACEA2F92DBD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190813085246.1d642ae5@x1.home>
-        <AM0PR05MB48663579A340E6597B3D01BCD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190813111149.027c6a3c@x1.home>
-        <AM0PR05MB4866D40F8EBB382C78193C91D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190814100135.1f60aa42.cohuck@redhat.com>
-        <AM0PR05MB4866ABFDDD9DDCBC01F6CA90D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190814150911.296da78c.cohuck@redhat.com>
-        <AM0PR05MB48666CCDFE985A25F42A0259D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190814085746.26b5f2a3@x1.home>
-        <AM0PR05MB4866148ABA3C4E48E73E95FCD1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <AM0PR05MB48668B6221E477A873688CDBD1AB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Red Hat
+        id S1729937AbfHTRaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 13:30:00 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:21096 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728344AbfHTR37 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 13:29:59 -0400
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KHRpHC023245;
+        Tue, 20 Aug 2019 10:29:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=facebook;
+ bh=OLbPRXTI4r9B6Hy/IQsVMXalG+WFRGvAWttcapTghgc=;
+ b=YG2CLu32a9BBnNuSNPg+b/UGzfXQw3JU+gJxre4QXUqDc76Ty5RxuXSGhs/H2aaU/mh2
+ Qdi+oeHe69yPUvbbbdUULCd8f7F8GJdrGTbxEuIh8hkb8cuiWboFD9NMmiUvSD/phg/g
+ aWd5uBSsFYYVumtcmzfioQ/ekvJTJTVinz0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 2ugjymrsu3-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 20 Aug 2019 10:29:56 -0700
+Received: from ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) by
+ ash-exhub102.TheFacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 20 Aug 2019 10:29:55 -0700
+Received: from ash-exhub101.TheFacebook.com (2620:10d:c0a8:82::e) by
+ ash-exopmbx201.TheFacebook.com (2620:10d:c0a8:83::8) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 20 Aug 2019 10:29:55 -0700
+Received: from NAM02-BL2-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1713.5
+ via Frontend Transport; Tue, 20 Aug 2019 10:29:55 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lwCb9l07UsOmns7My2ey8G6w9TQt82DfThE4vL5PFw4A124ela6Qc+BP9fe+O/xqysP4NmnAvJUAgGG9+uR6MblgfkPU+IzHvMokiSKn7kQ9SRUwbj/JqgcB3tFRvsGSmdpVO8kBrJyeZscIZ/NiSH7i7k8BcTHiCPwlg3tzpS1p31ptez61h34EOwxcAR9rOIXdUom9lUW22edxbAougUPXA9zgKhzsZl3RXMxDytsD+kEYBTs0f3tw9PLMGewWG6aFus8doDMhoEHlXhAANMTqoxmvlNdpNlZ1d9RZTDU5QsGZLbUiH5Gl9dbPyxz32u4mcuNbquDymQwaW/sutA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OLbPRXTI4r9B6Hy/IQsVMXalG+WFRGvAWttcapTghgc=;
+ b=SAV1ryvYJ6Mr7iB3LiRdaFCUktDdG/4AwXbz+VSpiFrf+cnISzV/aSPuHVsNe9qcf3g+ih+d7B6LyZc08GhQJZVCNOYRQxMYMndHsANfd0+qQgdnKJiZ8gm+lXJCsS/06bItZN5I+GLGZKAjhJnrM1CY301yFg7dwkYzf1mDlVzcEkAWczzkxiHhNnzEa98wS/tR6Zrr1o8uJNYNN51gV24iY9QqzqnmdoIWxKqW6nSq+CBlLgzrUp8fdcQxWEmzY3FtHnGo923r55CGY5h3PjJ596zZsBQUFS2r2jWo9KCnGVc6MvaeyFr2Z+ddbFkdDkII6E0BNQFYZQaQb19tww==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OLbPRXTI4r9B6Hy/IQsVMXalG+WFRGvAWttcapTghgc=;
+ b=i9Jk+2A+GqobvCQAgEMGlj98rBlyNhNJBa/hTX71MG6r4RHsHB5TEV4XejcJIgVkeQEA9NYTqeEGMbLHBnDsXkJY0atZzdIqSGO3Iqe65tvN+K8FCpjn8jFDShmR4OmD6bu6yR1+FyeH97s1UHFVYU58Ig3nHOUfcpcuGp7V/KY=
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com (20.179.59.17) by
+ BYAPR15MB2872.namprd15.prod.outlook.com (20.178.206.146) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Tue, 20 Aug 2019 17:29:54 +0000
+Received: from BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::d95b:271:fa7e:e978]) by BYAPR15MB3384.namprd15.prod.outlook.com
+ ([fe80::d95b:271:fa7e:e978%5]) with mapi id 15.20.2178.018; Tue, 20 Aug 2019
+ 17:29:54 +0000
+From:   Yonghong Song <yhs@fb.com>
+To:     Carlos Antonio Neira Bustos <cneirabustos@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "ebiederm@xmission.com" <ebiederm@xmission.com>,
+        "brouer@redhat.com" <brouer@redhat.com>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>
+Subject: Re: [PATCH bpf-next V9 1/3] bpf: new helper to obtain namespace data
+ from current task
+Thread-Topic: [PATCH bpf-next V9 1/3] bpf: new helper to obtain namespace data
+ from current task
+Thread-Index: AQHVUgen0TRJjFwMbUCsjzJfHVP59ab5NXYAgAr5WACAACbhgA==
+Date:   Tue, 20 Aug 2019 17:29:54 +0000
+Message-ID: <e1265647-f934-1cb5-a31d-73608b7adad5@fb.com>
+References: <20190813184747.12225-1-cneirabustos@gmail.com>
+ <20190813184747.12225-2-cneirabustos@gmail.com>
+ <445a4535-b8cc-b6bc-717b-a5736030533a@fb.com>
+ <20190820151040.GA53610@localhost>
+In-Reply-To: <20190820151040.GA53610@localhost>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR04CA0097.namprd04.prod.outlook.com
+ (2603:10b6:301:3a::38) To BYAPR15MB3384.namprd15.prod.outlook.com
+ (2603:10b6:a03:10e::17)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [2620:10d:c090:200::2:b743]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 965f5366-c050-4eff-8668-08d7259403a2
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:BYAPR15MB2872;
+x-ms-traffictypediagnostic: BYAPR15MB2872:
+x-microsoft-antispam-prvs: <BYAPR15MB28728F042F66146C16C684DED3AB0@BYAPR15MB2872.namprd15.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 013568035E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(136003)(376002)(39860400002)(346002)(366004)(396003)(189003)(199004)(66446008)(52116002)(446003)(66556008)(2616005)(476003)(54906003)(36756003)(66946007)(99286004)(11346002)(86362001)(486006)(6916009)(53936002)(186003)(7736002)(71190400001)(31696002)(6246003)(46003)(305945005)(53546011)(256004)(478600001)(14444005)(71200400001)(6506007)(102836004)(64756008)(6116002)(76176011)(5660300002)(2906002)(14454004)(386003)(66476007)(1411001)(4326008)(6436002)(81156014)(316002)(6512007)(81166006)(8936002)(229853002)(6486002)(25786009)(31686004)(8676002);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2872;H:BYAPR15MB3384.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: fb.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Z9wAJz4D1zJmcGe+VPsCUzTYWj2c95iVXdC5yx3U0GiQgZxPW9QMmfbhVaPY6AarHJaXU71JllGOYgqm3/chiRPUIdtDV7CsBOOoyx7G4Pg0kXrAMUgNWivslNq3BZgCeW/ahd7bUZ8PkW48wflTkfAJPse3NJpYOQ83VsXo2q14etL4aIYXnfeKlA/DsU3lFLpZ+qhmo2J5qSgafwnN7jnlK0Jx4CqvA/r6YKD4IYOJ1S09ZG5NcTY5LcKyYSiLY16wXEq0pCJGlsMNaWPhafB/g1kEXdqQRpfnY396xkpoIddcZCHPRbh5/X9MsrNewfF06fjubP/892fn1L8wzZTLpgEPZO8tznN8DlJjdEVE5pl5+p8Uyy2MCixqN9EQnqZWnc5weFkdThq0O+qLoq8ZCJXB2seczHF4kZuyiBE=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <8E8396C2A20A7148AEC70E780E4E0656@namprd15.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.49]); Tue, 20 Aug 2019 17:19:05 +0000 (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 965f5366-c050-4eff-8668-08d7259403a2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Aug 2019 17:29:54.5123
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 9jxL+5DrIT2MYjIr8J4tv5gf+9CvvjDoMqcggdSEOh9PsquzdZ0QnR6/qKeeDurQ
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2872
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-20_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908200161
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Aug 2019 08:58:02 +0000
-Parav Pandit <parav@mellanox.com> wrote:
-
-> + Dave.
-> 
-> Hi Jiri, Dave, Alex, Kirti, Cornelia,
-> 
-> Please provide your feedback on it, how shall we proceed?
-> 
-> Short summary of requirements.
-> For a given mdev (mediated device [1]), there is one representor
-> netdevice and devlink port in switchdev mode (similar to SR-IOV VF),
-> And there is one netdevice for the actual mdev when mdev is probed.
-> 
-> (a) representor netdev and devlink port should be able derive
-> phys_port_name(). So that representor netdev name can be built
-> deterministically across reboots.
-> 
-> (b) for mdev's netdevice, mdev's device should have an attribute.
-> This attribute can be used by udev rules/systemd or something else to
-> rename netdev name deterministically.
-> 
-> (c) IFNAMSIZ of 16 bytes is too small to fit whole UUID.
-> A simple grep IFNAMSIZ in stack hints hundreds of users of IFNAMSIZ
-> in drivers, uapi, netlink, boot config area and more. Changing
-> IFNAMSIZ for a mdev bus doesn't really look reasonable option to me.
-
-How many characters do we really have to work with?  Your examples
-below prepend various characters, ex. option-1 results in ens2f0_m10 or
-enm10.  Do the extra 8 or 3 characters in these count against IFNAMSIZ?
-
-> Hence, I would like to discuss below options.
-> 
-> Option-1: mdev index
-> Introduce an optional mdev index/handle as u32 during mdev create
-> time. User passes mdev index/handle as input.
-> 
-> phys_port_name=mIndex=m%u
-> mdev_index will be available in sysfs as mdev attribute for udev to
-> name the mdev's netdev.
-> 
-> example mdev create command:
-> UUID=$(uuidgen)
-> echo $UUID index=10
-> > /sys/class/net/ens2f0/mdev_supported_types/mlx5_core_mdev/create
-
-Nit, IIRC previous discussions of additional parameters used comma
-separators, ex. echo $UUID,index=10 >...
-
-> > example netdevs:
-> repnetdev=ens2f0_m10	/*ens2f0 is parent PF's netdevice */
-
-Is the parent really relevant in the name?  Tools like mdevctl are
-meant to provide persistence, creating the same mdev devices on the
-same parent, but that's simply the easiest policy decision.  We can
-also imagine that multiple parent devices might support a specified
-mdev type and policies factoring in proximity, load-balancing, power
-consumption, etc might be weighed such that we really don't want to
-promote userspace creating dependencies on the parent association.
-
-> mdev_netdev=enm10
-> 
-> Pros:
-> 1. mdevctl and any other existing tools are unaffected.
-> 2. netdev stack, ovs and other switching platforms are unaffected.
-> 3. achieves unique phys_port_name for representor netdev
-> 4. achieves unique mdev eth netdev name for the mdev using
-> udev/systemd extension. 5. Aligns well with mdev and netdev subsystem
-> and similar to existing sriov bdf's.
-
-A user provided index seems strange to me.  It's not really an index,
-just a user specified instance number.  Presumably you have the user
-providing this because if it really were an index, then the value
-depends on the creation order and persistence is lost.  Now the user
-needs to both avoid uuid collision as well as "index" number
-collision.  The uuid namespace is large enough to mostly ignore this,
-but this is not.  This seems like a burden.
-
-> Option-2: shorter mdev name
-> Extend mdev to have shorter mdev device name in addition to UUID.
-> such as 'foo', 'bar'.
-> Mdev will continue to have UUID.
-> phys_port_name=mdev_name
-> 
-> Pros:
-> 1. All same as option-1, except mdevctl needs upgrade for newer usage.
-> It is common practice to upgrade iproute2 package along with the
-> kernel. Similar practice to be done with mdevctl.
-> 2. Newer users of mdevctl who wants to work with non_UUID names, will
-> use newer mdevctl/tools. Cons:
-> 1. Dual naming scheme of mdev might affect some of the existing tools.
-> It's unclear how/if it actually affects.
-> mdevctl [2] is very recently developed and can be enhanced for dual
-> naming scheme.
-
-I think we've already nak'ed this one, the device namespace becomes
-meaningless if the name becomes just a string where a uuid might be an
-example string.  mdevs are named by uuid.
- 
-> Option-3: mdev uuid alias
-> Instead of shorter mdev name or mdev index, have alpha-numeric name
-> alias. Alias is an optional mdev sysfs attribute such as 'foo', 'bar'.
-> example mdev create command:
-> UUID=$(uuidgen)
-> echo $UUID alias=foo
-> > /sys/class/net/ens2f0/mdev_supported_types/mlx5_core_mdev/create
-> > example netdevs:
-> examle netdevs:
-> repnetdev = ens2f0_mfoo
-> mdev_netdev=enmfoo
-> 
-> Pros:
-> 1. All same as option-1.
-> 2. Doesn't affect existing mdev naming scheme.
-> Cons:
-> 1. Index scheme of option-1 is better which can number large number
-> of mdevs with fewer characters, simplifying the management tool.
-
-No better than option-1, simply a larger secondary namespace, but still
-requires the user to come up with two independent names for the device.
-
-> Option-4: extend IFNAMESZ to be 64 bytes Extended IFNAMESZ from 16 to
-> 64 bytes phys_port_name=mdev_UUID_string mdev_netdev_name=enmUUID
-> 
-> Pros:
-> 1. Doesn't require mdev extension
-> Cons:
-> 1. netdev stack, driver, uapi, user space, boot config wide changes
-> 2. Possible user space extensions who assumed name size being 16
-> characters 3. Single device type demands namesize change for all
-> netdev types
-
-What about an alias based on the uuid?  For example, we use 160-bit
-sha1s daily with git (uuids are only 128-bit), but we generally don't
-reference git commits with the full 20 character string.  Generally 12
-characters is recommended to avoid ambiguity.  Could mdev automatically
-create an abbreviated sha1 alias for the device?  If so, how many
-characters should we use and what do we do on collision?  The colliding
-device could add enough alias characters to disambiguate (we likely
-couldn't re-alias the existing device to disambiguate, but I'm not sure
-it matters, userspace has sysfs to associate aliases).  Ex.
-
-UUID=$(uuidgen)
-ALIAS=$(echo $UUID | sha1sum | colrm 13)
-
-Since there seems to be some prefix overhead, as I ask about above in
-how many characters we actually have to work with in IFNAMESZ, maybe we
-start with 8 characters (matching your "index" namespace) and expand as
-necessary for disambiguation.  If we can eliminate overhead in
-IFNAMESZ, let's start with 12.  Thanks,
-
-Alex
+DQoNCk9uIDgvMjAvMTkgODoxMCBBTSwgQ2FybG9zIEFudG9uaW8gTmVpcmEgQnVzdG9zIHdyb3Rl
+Og0KPiBIaSBZb25naG9uZywNCj4gDQo+IFRoYW5rcyBmb3IgdGFraW5nIHRoZSB0aW1lIHRvIHJl
+dmlldyB0aGlzLg0KPiANCj4gDQo+Pj4gKyAqDQo+Pj4gKyAqCQkqKi1FSU5WQUwqKiBpZiAqc2l6
+ZV9vZl9waWRucyogaXMgbm90IHZhbGlkIG9yIHVuYWJsZSB0byBnZXQgbnMsIHBpZA0KPj4+ICsg
+KgkJb3IgdGdpZCBvZiB0aGUgY3VycmVudCB0YXNrLg0KPj4+ICsgKg0KPj4+ICsgKgkJKiotRUNI
+SUxEKiogaWYgL3Byb2Mvc2VsZi9ucy9waWQgZG9lcyBub3QgZXhpc3RzLg0KPj4+ICsgKg0KPj4+
+ICsgKgkJKiotRU5PVERJUioqIGlmIC9wcm9jL3NlbGYvbnMgZG9lcyBub3QgZXhpc3RzLg0KPj4N
+Cj4+IExldCB1cyByZW1vdmUgRUNISUxEIGFuZCBFTk9URElSIGFuZCByZXBsYWNlIGl0IHdpdGgg
+RU5PRU5UIGFzIEkNCj4+IGRlc2NyaWJlZCBiZWxvdy4NCj4+DQo+PiBQbGVhc2UgKmRvIHZlcmlm
+eSogd2hhdCBoYXBwZW5zIHdoZW4gbmFtZXNwYWNlcyBvciBwaWRfbnMgYXJlIG5vdA0KPj4gY29u
+ZmlndXJlZC4NCj4+DQo+IA0KPiANCj4gSSBoYXZlIHRlc3RlZCBrZXJuZWwgY29uZmlndXJhdGlv
+bnMgd2l0aG91dCBuYW1lc3BhY2Ugc3VwcG9ydCBhbmQgd2l0aA0KPiBuYW1lc3BhY2Ugc3VwcG9y
+dCBidXQgd2l0aG91dCBwaWQgbmFtZXNwYWNlcywgdGhlIGhlbHBlciByZXR1cm5zIC1FSU5WQUwN
+Cj4gb24gYm90aCBjYXNlcywgbm93IGl0IHNob3VsZCByZXR1cm4gLUVOT0VOVC4NCg0KSW5kZWVk
+LiAtRU5PRU5UIGlzIGJldHRlci4NCg0KPiANCj4gDQo+Pj4gK3N0cnVjdCBicGZfcGlkbnNfaW5m
+byB7DQo+Pj4gKwlfX3UzMiBkZXY7DQo+Pg0KPj4gUGxlYXNlIGFkZCBhIGNvbW1lbnQgZm9yIGRl
+diBmb3IgaG93IGRldmljZSBtYWpvciBhbmQgbWlub3IgbnVtYmVyIGFyZQ0KPj4gZGVyaXZlZC4g
+VXNlciBzcGFjZSBnZXRzIGRldmljZSBtYWpvciBhbmQgbWlub3IgbnVtYmVyLCB0aGV5IG5lZWQg
+dG8NCj4+IGNvbXBhcmUgdG8gdGhlIGNvcnJlc3BvbmRpbmcgbWFqb3IvbWlub3IgbnVtYmVycyBy
+ZXR1cm5lZCBieSB0aGlzIGhlbHBlci4NCj4+DQo+Pj4gKwlfX3UzMiBuc2lkOw0KPj4+ICsJX191
+MzIgdGdpZDsNCj4+PiArCV9fdTMyIHBpZDsNCj4+PiArfTsNCj4+DQo+IA0KPiBXaGF0IGRvIHlv
+dSB0aGluayBvZiB0aGlzIGNvbW1lbnQgPw0KPiANCj4gc3RydWN0IGJwZl9waWRuc19pbmZvIHsN
+Cj4gCV9fdTMyIGRldjsJLyogbWFqb3IvbWlub3IgbnVtYmVycyBmcm9tIC9wcm9jL3NlbGYvbnMv
+cGlkLg0KPiAJCQkgKiBVc2VyIHNwYWNlIGdldHMgZGV2aWNlIG1ham9yIGFuZCBtaW5vciBudW1i
+ZXJzIGZyb20NCj4gCQkJICogdGhlIHNhbWUgZGV2aWNlIHRoYXQgbmVlZCB0byBiZSBjb21wYXJl
+ZCBhZ2FpbnN0IHRoZQ0KPiAJCQkgKiBtYWpvci9taW5vciBudW1iZXJzIHJldHVybmVkIGJ5IHRo
+aXMgaGVscGVyLg0KPiAJCQkgKi8NCj4gCV9fdTMyIG5zaWQ7DQo+IAlfX3UzMiB0Z2lkOw0KPiAJ
+X191MzIgcGlkOw0KPiB9Ow0KPiANCg0KVG8gYmUgbW9yZSBzcGVjaWZpYywgSSBsaWtlIGEgY29t
+bWVudCBzaW1pbGFyIHRvIGJlbG93IGluIHVhcGkgYnBmLmgNCg0Kc3RydWN0IGJwZl9jZ3JvdXBf
+ZGV2X2N0eCB7DQogICAgICAgICAvKiBhY2Nlc3NfdHlwZSBlbmNvZGVkIGFzIChCUEZfREVWQ0df
+QUNDXyogPDwgMTYpIHwgDQpCUEZfREVWQ0dfREVWXyogKi8NCiAgICAgICAgIF9fdTMyIGFjY2Vz
+c190eXBlOw0KICAgICAgICAgX191MzIgbWFqb3I7DQogICAgICAgICBfX3UzMiBtaW5vcjsNCn07
+DQoNClNvbWUgbGlrZToNCgkvKiBkZXYgZW5jb2RlZCBhcyAobWFqb3IgPDwgOCB8IChtaW5vciAm
+IDB4ZmYpKSAqLw0KDQo+Pg0KPj4gUGxlYXNlIHB1dCBhbiBlbXB0eSBsaW5lLiBBcyBhIGdlbmVy
+YWwgcnVsZSBmb3IgcmVhZGFiaWxpdHksDQo+PiBwdXQgYW4gZW1wdHkgbGluZSBpZiBjb250cm9s
+IGZsb3cgaXMgaW50ZXJydXB0ZWQsIGUuZy4sIGJ5DQo+PiAicmV0dXJuIiwgImJyZWFrIiBvciAi
+Y29udGludWUiLiBBdCBsZWFzdCB0aGlzIGlzIHdoYXQNCj4+IEkgc2F3IG1vc3QgaW4gYnBmIG1h
+aWxpbmcgbGlzdC4NCj4+DQo+IEknbGwgZml4IGl0IGluIHZlcnNpb24gMTAuDQo+IA0KPj4+ICsJ
+bGVuID0gc3RybGVuKHBpZG5zX3BhdGgpICsgMTsNCj4+PiArCW1lbWNweSgoY2hhciAqKXRtcC0+
+bmFtZSwgcGlkbnNfcGF0aCwgbGVuKTsNCj4+PiArCXRtcC0+dXB0ciA9IE5VTEw7DQo+Pj4gKwl0
+bXAtPmFuYW1lID0gTlVMTDsNCj4+PiArCXRtcC0+cmVmY250ID0gMTsNCj4+PiArCXJldCA9IGZp
+bGVuYW1lX2xvb2t1cChBVF9GRENXRCwgdG1wLCAwLCAma3AsIE5VTEwpOw0KPj4gQWRkaW5nIGJl
+bG93IHRvIGZyZWUga21lbSBjYWNoZSBtZW1vcnkNCj4+IAlrbWVtX2NhY2hlX2ZyZWUobmFtZXNf
+Y2FjaGVwLCBmbmFtZSk7DQo+Pg0KPiANCj4gSSB0aGluayB3ZSBkb24ndCBuZWVkIHRvIGNhbGwg
+a21lbV9jYWNoZV9mcmVlIGFzIGZpbGVuYW1lX2xvb2t1cA0KPiBjYWxscyBwdXRuYW1lIHRoYXQg
+Y2FsbHMga21lbV9jYWNoZV9mcmVlLg0KDQpPaCwgcmlnaHQuIFRoYW5rcyBmb3IgY2hlY2tpbmcg
+dGhpcy4NCg0KPiANCj4gDQo+IFRoYW5rcyBhIGxvdCBmb3IgeW91ciBoZWxwLg0KPiANCj4gQmVz
+dHMNCj4gDQo+PiBJbiB0aGUgYWJvdmUsIHdlIGNoZWNrZWQgdGFza19hY3RpdmVfcGlkX25zKCku
+DQo+PiBJZiBub3QgcmV0dXJuaW5nIE5VTEwsIHdlIGhhdmUgYSB2YWxpZCBwaWQgbnMuIFNvIHRo
+ZSBhYm92ZQ0KPj4gZmlsZW5hbWVfbG9va3VwIHNob3VsZCBub3QgZ28gd3JvbmcuIFdlIGNhbiBz
+dGlsbCBrZWVwDQo+PiB0aGUgZXJyb3IgY2hlY2tpbmcgdGhvdWdoLg0KPj4NCj4+PiArCWlmIChy
+ZXQpIHsNCj4+PiArCQltZW1zZXQoKHZvaWQgKilwaWRuc19pbmZvLCAwLCAoc2l6ZV90KSBzaXpl
+KTsNCj4+PiArCQlyZXR1cm4gcmV0Ow0KPj4NCj4+DQo+IA0KPiBJIHRoaW5rIHdlIGNvdWxkIGdl
+dCByaWQgb2YgdGhpcy4NCj4gDQo+IA0K
