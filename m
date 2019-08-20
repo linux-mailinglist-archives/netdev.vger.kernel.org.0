@@ -2,73 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D9B5A964BE
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 17:40:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B7067964F8
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 17:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730380AbfHTPkK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 11:40:10 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:39588 "EHLO mx1.redhat.com"
+        id S1730466AbfHTPpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 11:45:40 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:45470 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729351AbfHTPkK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 11:40:10 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2399A10576D3;
-        Tue, 20 Aug 2019 15:40:10 +0000 (UTC)
-Received: from localhost (holly.tpb.lab.eng.brq.redhat.com [10.43.134.11])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4DF9A1000324;
-        Tue, 20 Aug 2019 15:40:08 +0000 (UTC)
-Date:   Tue, 20 Aug 2019 17:40:05 +0200
-From:   Miroslav Lichvar <mlichvar@redhat.com>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
-        netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net-next v3 2/4] net: mdio: add PTP offset compensation
- to mdiobus_write_sts
-Message-ID: <20190820154005.GM891@localhost>
-References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
- <20190820084833.6019-3-hubert.feurstein@vahle.at>
- <20190820094903.GI891@localhost>
- <CAFfN3gW-4avfnrV7t-2nC+cVt3sgMD33L44P4PGU-MCAtuR+XA@mail.gmail.com>
- <20190820142537.GL891@localhost>
- <20190820152306.GJ29991@lunn.ch>
+        id S1728344AbfHTPpk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 11:45:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=28WmtNRSVcK+8PRWzoy6f7dmDxlsxc5JHfaU6aqeQDU=; b=LUyNr/dMWIXi7JsIb1OrRsR/nD
+        taK5+fttJfhl5pqaiUHEV5GDK68RIwk+0j4vYoBzoqGqqA1R2wZWNzpQmf3Zi4MJoeYVWfHH2Av2D
+        953p7sGDsnUO+4z9CIf8NnjNshh3h5rB+CVWw/ORuNFKvb159KDjxbRgmkZLsZVUiIlw=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i06KH-0006fY-09; Tue, 20 Aug 2019 17:45:37 +0200
+Date:   Tue, 20 Aug 2019 17:45:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     "Allan W . Nielsen" <allan.nielsen@microchip.com>
+Cc:     Yangbo Lu <yangbo.lu@nxp.com>, netdev@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>
+Subject: Re: [v3] ocelot_ace: fix action of trap
+Message-ID: <20190820154536.GM29991@lunn.ch>
+References: <20190820042005.12776-1-yangbo.lu@nxp.com>
+ <20190820070518.mypyahquun6t4yjf@lx-anielsen.microsemi.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190820152306.GJ29991@lunn.ch>
-User-Agent: Mutt/1.12.0 (2019-05-25)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Tue, 20 Aug 2019 15:40:10 +0000 (UTC)
+In-Reply-To: <20190820070518.mypyahquun6t4yjf@lx-anielsen.microsemi.net>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 05:23:06PM +0200, Andrew Lunn wrote:
-> > - take a second "post" system timestamp after the completion
+On Tue, Aug 20, 2019 at 09:05:20AM +0200, Allan W . Nielsen wrote:
+> Hi,
 > 
-> For this hardware, completion is an interrupt, which has a lot of
-> jitter on it. But this hardware is odd, in that it uses an
-> interrupt. Every other MDIO bus controller uses polled IO, with an
-> mdelay(10) or similar between each poll. So the jitter is going to be
-> much larger.
+> This is fixing a bug introduced in b596229448dd2
 
-I think a large jitter is ok in this case. We just need to timestamp
-something that we know for sure happened after the PHC timestamp. It
-should have no impact on the offset and its stability, just the
-reported delay. A test with phc2sys should be able to confirm that.
-phc2sys selects the measurement with the shortest delay, which has
-least uncertainty. I'd say that applies to both interrupt and polling.
+Hi Allan
 
-If it is difficult to specify the minimum interrupt delay, I'd still
-prefer an overly pessimistic interval assuming a zero delay.
+You should express that as:
 
--- 
-Miroslav Lichvar
+Fixes: b596229448dd ("net: mscc: ocelot: Add support for tcam")
+
+       Andrew
