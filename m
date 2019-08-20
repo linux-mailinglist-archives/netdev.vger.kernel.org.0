@@ -2,50 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A5239695C
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 21:26:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A61FC96978
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 21:29:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730654AbfHTTZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 15:25:51 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:50036 "EHLO
+        id S1730723AbfHTT31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 15:29:27 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:50084 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728185AbfHTTZv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 15:25:51 -0400
+        with ESMTP id S1730273AbfHTT31 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 15:29:27 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 80D1F142CA46B;
-        Tue, 20 Aug 2019 12:25:50 -0700 (PDT)
-Date:   Tue, 20 Aug 2019 12:25:49 -0700 (PDT)
-Message-Id: <20190820.122549.1717974409774245848.davem@davemloft.net>
-To:     jbaron@akamai.com
-Cc:     netdev@vger.kernel.org, edumazet@google.com, ubraun@linux.ibm.com,
-        kgraul@linux.ibm.com
-Subject: Re: [net PATCH] net/smc: make sure EPOLLOUT is raised
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3AA9F146D389B;
+        Tue, 20 Aug 2019 12:29:26 -0700 (PDT)
+Date:   Tue, 20 Aug 2019 12:29:25 -0700 (PDT)
+Message-Id: <20190820.122925.1080288470348205792.davem@davemloft.net>
+To:     haiyangz@microsoft.com
+Cc:     sashal@kernel.org, saeedm@mellanox.com, leon@kernel.org,
+        eranbe@mellanox.com, lorenzo.pieralisi@arm.com,
+        bhelgaas@google.com, linux-pci@vger.kernel.org,
+        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
+        kys@microsoft.com, sthemmin@microsoft.com,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next,v2 2/6] PCI: hv: Add a Hyper-V PCI interface
+ driver for software backchannel interface
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1566239761-30252-1-git-send-email-jbaron@akamai.com>
-References: <1566239761-30252-1-git-send-email-jbaron@akamai.com>
+In-Reply-To: <1566242976-108801-3-git-send-email-haiyangz@microsoft.com>
+References: <1566242976-108801-1-git-send-email-haiyangz@microsoft.com>
+        <1566242976-108801-3-git-send-email-haiyangz@microsoft.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 20 Aug 2019 12:25:50 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Tue, 20 Aug 2019 12:29:26 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jason Baron <jbaron@akamai.com>
-Date: Mon, 19 Aug 2019 14:36:01 -0400
+From: Haiyang Zhang <haiyangz@microsoft.com>
+Date: Mon, 19 Aug 2019 19:30:47 +0000
 
-> Currently, we are only explicitly setting SOCK_NOSPACE on a write timeout
-> for non-blocking sockets. Epoll() edge-trigger mode relies on SOCK_NOSPACE
-> being set when -EAGAIN is returned to ensure that EPOLLOUT is raised.
-> Expand the setting of SOCK_NOSPACE to non-blocking sockets as well that can
-> use SO_SNDTIMEO to adjust their write timeout. This mirrors the behavior
-> that Eric Dumazet introduced for tcp sockets.
-> 
-> Signed-off-by: Jason Baron <jbaron@akamai.com>
+> +static void __exit exit_hv_pci_intf(void)
+> +{
+> +	pr_info("unloaded\n");
+> +}
+> +
+> +static int __init init_hv_pci_intf(void)
+> +{
+> +	pr_info("loaded\n");
+> +
 
-Applied and queued up for -stable, thanks Jason.
+Clogging up the logs with useless messages like this is inappropriate.
+Please remove these pr_info() calls.
+
+Also, all of these symbols should probably be GPL exported.
