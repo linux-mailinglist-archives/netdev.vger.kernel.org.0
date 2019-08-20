@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B94E396C46
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F16B96C66
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731074AbfHTWdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:04 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36968 "EHLO
+        id S1731218AbfHTWeC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:34:02 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36970 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730918AbfHTWdC (ORCPT
+        with ESMTP id S1730927AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=GhaNEwgY9CnMnSHUSTDErNiB07Wo4XxOmrPuy4e52lA=; b=PYEGuzi8ENINCho5gGabj9jbKU
-        8kOv8BoxzPDN7bN2pdSRRkdndHEU9d0nzsWvdFRLnYcseaqj5Pec6RAm5hNFAsq5bnAiPzZX3Ce9B
-        JhQAqZLMRCL8xDspn8gXgLLJX/itM9JjC09ARIIz1D0jG8vOvWzvz1cZcxnvQ4nBTXqQ/sMSR+emD
-        SGcAsl3HTCDkP40g9VSCCTCUxJyqpjPJZ7FXdisXXyIZhHqaJ2qBs60NcpIGv/+ldnENuedM2CK+/
-        tE0ZiAtxvULPnWiobJGhO2hJjyNVkpORJmNcXNCI8BzpfcsG7U3Awm88so8MYOjAv8yOwq/BB4w5H
-        OsaEI95g==;
+        bh=/EbgvB20GJcDqvoWugcIThkwN3eefHXUKk3FhXLdQ6Y=; b=OCs+Fev6qUsIKaWypkeOyeMZah
+        Kbajg2IpVNUHm2M1ZDwAF4Gvwy9AcLznKJuG1+U/3/kSap91Gmm7N97eii9lS7avEcVqD514MN7iV
+        SUWxJA4aUy0xNnWIx64PsFvvXtavl/SXqcKs5iBkDKZ4tNJanCK9it9gjrO8jkD7OaRDPRxP6bZtW
+        xxXJWajYhK05U7GrqYcFAJM5gQvL6y6ckw3b6joaEB1AH0aPvXWH9zY89c6NfDHqC7A028Gvmr4fO
+        y1pspQoTqNbf8t41dXKsfLo51+KuoYRieZJz9NJlEvd2ey/RwgmcePdfeQ4TZ/vdwePX0zOpWdjkA
+        Rb5AB0YA==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgX-0005pw-UX; Tue, 20 Aug 2019 22:33:01 +0000
+        id 1i0CgX-0005q3-Vr; Tue, 20 Aug 2019 22:33:01 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 05/38] mlx5: Convert mlx5_qp_table to XArray
-Date:   Tue, 20 Aug 2019 15:32:26 -0700
-Message-Id: <20190820223259.22348-6-willy@infradead.org>
+Subject: [PATCH 06/38] mlx5: Convert counters_idr to XArray
+Date:   Tue, 20 Aug 2019 15:32:27 -0700
+Message-Id: <20190820223259.22348-7-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,124 +43,109 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Fix the locking in destroy_resource_common() to be irq-disable rather
-than irq-save.  wait_for_completion() can sleep, so this function must
-not be callable from interrupt context.
+This IDR wasn't using the allocation functionality, so convert it to a
+plain XArray.  I also suspect it could be used to replace the list_head
+'counters', but I'm not willing to do that work right now.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/qp.c | 38 ++++++--------------
- include/linux/mlx5/driver.h                  |  8 ++---
- include/linux/mlx5/qp.h                      |  2 +-
- 3 files changed, 13 insertions(+), 35 deletions(-)
+ .../ethernet/mellanox/mlx5/core/fs_counters.c | 31 +++++--------------
+ include/linux/mlx5/driver.h                   |  3 +-
+ 2 files changed, 9 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/qp.c b/drivers/net/ethernet/mellanox/mlx5/core/qp.c
-index b8ba74de9555..e3367290b5ce 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/qp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/qp.c
-@@ -49,13 +49,11 @@ mlx5_get_rsc(struct mlx5_qp_table *table, u32 rsn)
- 	struct mlx5_core_rsc_common *common;
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&table->lock, flags);
--
--	common = radix_tree_lookup(&table->tree, rsn);
-+	xa_lock_irqsave(&table->array, flags);
-+	common = xa_load(&table->array, rsn);
- 	if (common)
- 		atomic_inc(&common->refcount);
--
--	spin_unlock_irqrestore(&table->lock, flags);
-+	xa_unlock_irqrestore(&table->array, flags);
- 
- 	return common;
- }
-@@ -197,35 +195,22 @@ static int create_resource_common(struct mlx5_core_dev *dev,
- 				  struct mlx5_core_qp *qp,
- 				  int rsc_type)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+index 1804cf3c3814..5ee20d285c5e 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/fs_counters.c
+@@ -108,18 +108,14 @@ static struct list_head *mlx5_fc_counters_lookup_next(struct mlx5_core_dev *dev,
+ 						      u32 id)
  {
--	struct mlx5_qp_table *table = &dev->priv.qp_table;
--	int err;
--
--	qp->common.res = rsc_type;
--	spin_lock_irq(&table->lock);
--	err = radix_tree_insert(&table->tree,
--				qp->qpn | (rsc_type << MLX5_USER_INDEX_LEN),
--				qp);
--	spin_unlock_irq(&table->lock);
--	if (err)
--		return err;
--
- 	atomic_set(&qp->common.refcount, 1);
- 	init_completion(&qp->common.free);
- 	qp->pid = current->pid;
+ 	struct mlx5_fc_stats *fc_stats = &dev->priv.fc_stats;
+-	unsigned long next_id = (unsigned long)id + 1;
+ 	struct mlx5_fc *counter;
+-	unsigned long tmp;
++	unsigned long next_id;
  
--	return 0;
-+	qp->common.res = rsc_type;
-+	return xa_err(xa_store_irq(&dev->priv.qp_table.array,
-+				qp->qpn | (rsc_type << MLX5_USER_INDEX_LEN),
-+				qp, GFP_KERNEL));
+-	rcu_read_lock();
+-	/* skip counters that are in idr, but not yet in counters list */
+-	idr_for_each_entry_continue_ul(&fc_stats->counters_idr,
+-				       counter, tmp, next_id) {
++	/* skip counters that are not yet in counters list */
++	xa_for_each_start(&fc_stats->counters_xa, next_id, counter, id + 1) {
+ 		if (!list_empty(&counter->list))
+ 			break;
+ 	}
+-	rcu_read_unlock();
+ 
+ 	return counter ? &counter->list : &fc_stats->counters;
+ }
+@@ -139,9 +135,7 @@ static void mlx5_fc_stats_remove(struct mlx5_core_dev *dev,
+ 
+ 	list_del(&counter->list);
+ 
+-	spin_lock(&fc_stats->counters_idr_lock);
+-	WARN_ON(!idr_remove(&fc_stats->counters_idr, counter->id));
+-	spin_unlock(&fc_stats->counters_idr_lock);
++	WARN_ON(!xa_erase(&fc_stats->counters_xa, counter->id));
  }
  
- static void destroy_resource_common(struct mlx5_core_dev *dev,
- 				    struct mlx5_core_qp *qp)
- {
--	struct mlx5_qp_table *table = &dev->priv.qp_table;
--	unsigned long flags;
-+	struct xarray *xa = &dev->priv.qp_table.array;
+ static int get_max_bulk_query_len(struct mlx5_core_dev *dev)
+@@ -309,20 +303,12 @@ struct mlx5_fc *mlx5_fc_create(struct mlx5_core_dev *dev, bool aging)
+ 	counter->aging = aging;
  
--	spin_lock_irqsave(&table->lock, flags);
--	radix_tree_delete(&table->tree,
--			  qp->qpn | (qp->common.res << MLX5_USER_INDEX_LEN));
--	spin_unlock_irqrestore(&table->lock, flags);
-+	xa_erase_irq(xa, qp->qpn | (qp->common.res << MLX5_USER_INDEX_LEN));
- 	mlx5_core_put_rsc((struct mlx5_core_rsc_common *)qp);
- 	wait_for_completion(&qp->common.free);
- }
-@@ -524,10 +509,7 @@ EXPORT_SYMBOL_GPL(mlx5_core_qp_modify);
- void mlx5_init_qp_table(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_qp_table *table = &dev->priv.qp_table;
+ 	if (aging) {
+-		u32 id = counter->id;
 -
--	memset(table, 0, sizeof(*table));
--	spin_lock_init(&table->lock);
--	INIT_RADIX_TREE(&table->tree, GFP_ATOMIC);
-+	xa_init_flags(&table->array, XA_FLAGS_LOCK_IRQ);
- 	mlx5_qp_debugfs_init(dev);
+ 		counter->cache.lastuse = jiffies;
+ 		counter->lastbytes = counter->cache.bytes;
+ 		counter->lastpackets = counter->cache.packets;
  
- 	table->nb.notifier_call = rsc_event_notifier;
+-		idr_preload(GFP_KERNEL);
+-		spin_lock(&fc_stats->counters_idr_lock);
+-
+-		err = idr_alloc_u32(&fc_stats->counters_idr, counter, &id, id,
+-				    GFP_NOWAIT);
+-
+-		spin_unlock(&fc_stats->counters_idr_lock);
+-		idr_preload_end();
++		err = xa_insert(&fc_stats->counters_xa, counter->id, counter,
++				GFP_KERNEL);
+ 		if (err)
+ 			goto err_out_alloc;
+ 
+@@ -368,8 +354,7 @@ int mlx5_init_fc_stats(struct mlx5_core_dev *dev)
+ 	int max_bulk_len;
+ 	int max_out_len;
+ 
+-	spin_lock_init(&fc_stats->counters_idr_lock);
+-	idr_init(&fc_stats->counters_idr);
++	xa_init(&fc_stats->counters_xa);
+ 	INIT_LIST_HEAD(&fc_stats->counters);
+ 	init_llist_head(&fc_stats->addlist);
+ 	init_llist_head(&fc_stats->dellist);
+@@ -409,7 +394,7 @@ void mlx5_cleanup_fc_stats(struct mlx5_core_dev *dev)
+ 
+ 	kfree(fc_stats->bulk_query_out);
+ 
+-	idr_destroy(&fc_stats->counters_idr);
++	xa_destroy(&fc_stats->counters_xa);
+ 
+ 	tmplist = llist_del_all(&fc_stats->addlist);
+ 	llist_for_each_entry_safe(counter, tmp, tmplist, addlist)
 diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index df23f17eed64..ba8f59b11920 100644
+index ba8f59b11920..b8b66cdb8357 100644
 --- a/include/linux/mlx5/driver.h
 +++ b/include/linux/mlx5/driver.h
-@@ -448,12 +448,8 @@ struct mlx5_core_health {
+@@ -477,8 +477,7 @@ struct mlx5_fc_pool {
  };
  
- struct mlx5_qp_table {
--	struct notifier_block   nb;
--
--	/* protect radix tree
--	 */
--	spinlock_t		lock;
--	struct radix_tree_root	tree;
-+	struct notifier_block	nb;
-+	struct xarray		array;
- };
- 
- struct mlx5_vf_context {
-diff --git a/include/linux/mlx5/qp.h b/include/linux/mlx5/qp.h
-index ae63b1ae9004..6d1577a1ca41 100644
---- a/include/linux/mlx5/qp.h
-+++ b/include/linux/mlx5/qp.h
-@@ -555,7 +555,7 @@ struct mlx5_qp_context {
- 
- static inline struct mlx5_core_qp *__mlx5_qp_lookup(struct mlx5_core_dev *dev, u32 qpn)
- {
--	return radix_tree_lookup(&dev->priv.qp_table.tree, qpn);
-+	return xa_load(&dev->priv.qp_table.array, qpn);
- }
- 
- int mlx5_core_create_dct(struct mlx5_core_dev *dev,
+ struct mlx5_fc_stats {
+-	spinlock_t counters_idr_lock; /* protects counters_idr */
+-	struct idr counters_idr;
++	struct xarray counters_xa;
+ 	struct list_head counters;
+ 	struct llist_head addlist;
+ 	struct llist_head dellist;
 -- 
 2.23.0.rc1
 
