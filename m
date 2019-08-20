@@ -2,230 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C39B69679F
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:33:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 61DCB967A4
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 19:34:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729933AbfHTRcp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 13:32:45 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:54481 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727006AbfHTRcp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 13:32:45 -0400
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1i07zt-0006PQ-HT; Tue, 20 Aug 2019 19:32:41 +0200
-Received: from [IPv6:2001:67c:20a1:1192:1c6e:731:5705:ce35] (unknown [IPv6:2001:67c:20a1:1192:1c6e:731:5705:ce35])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 75CDE448847;
-        Tue, 20 Aug 2019 17:32:39 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org
-Openpgp: preference=signencrypt
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: pull-request: can-next 2019-08-20
-Message-ID: <827b7ab8-f678-d5ce-a0c6-2a4b5f42238d@pengutronix.de>
-Date:   Tue, 20 Aug 2019 19:32:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1730292AbfHTRdv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 13:33:51 -0400
+Received: from correo.us.es ([193.147.175.20]:34166 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729409AbfHTRdu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 13:33:50 -0400
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id 28F51DA738
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 19:33:47 +0200 (CEST)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 193EFA7E23
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 19:33:47 +0200 (CEST)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id 0CC2EA7E1C; Tue, 20 Aug 2019 19:33:47 +0200 (CEST)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 0DE8FA7E1D;
+        Tue, 20 Aug 2019 19:33:45 +0200 (CEST)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Tue, 20 Aug 2019 19:33:45 +0200 (CEST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [47.60.43.0])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id C6CD14265A2F;
+        Tue, 20 Aug 2019 19:33:44 +0200 (CEST)
+Date:   Tue, 20 Aug 2019 19:33:44 +0200
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Edward Cree <ecree@solarflare.com>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org, jakub.kicinski@netronome.com,
+        jiri@resnulli.us, vladbu@mellanox.com
+Subject: Re: [PATCH net-next 1/2] net: flow_offload: mangle 128-bit packet
+ field with one action
+Message-ID: <20190820173344.3nrzfjboyztz3lji@salvia>
+References: <20190820105225.13943-1-pablo@netfilter.org>
+ <f18d8369-f87d-5b9a-6c9d-daf48a3b95f1@solarflare.com>
+ <20190820144453.ckme6oj2c4hmofhu@salvia>
+ <c8a00a98-74eb-9f8d-660f-c2ea159dec91@solarflare.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <c8a00a98-74eb-9f8d-660f-c2ea159dec91@solarflare.com>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9
-Content-Type: multipart/mixed; boundary="OZT6XtUoTd9MHUaXgwXWvfibvKh3zgDf2";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: netdev@vger.kernel.org
-Cc: davem@davemloft.net, kernel@pengutronix.de, linux-can@vger.kernel.org
-Message-ID: <827b7ab8-f678-d5ce-a0c6-2a4b5f42238d@pengutronix.de>
-Subject: pull-request: can-next 2019-08-20
+On Tue, Aug 20, 2019 at 05:00:26PM +0100, Edward Cree wrote:
+> On 20/08/2019 15:44, Pablo Neira Ayuso wrote:
+> > It looks to me this limitation is coming from tc pedit.
+> >
+> > Four actions to mangle an IPv6 address consume more memory when making
+> > the translation, and if you expect a lot of rules.
+>
+> Your change means that now every pedit uses four hw entries, even if it
+>  was only meant to be a 32-bit mangle.
 
---OZT6XtUoTd9MHUaXgwXWvfibvKh3zgDf2
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+It makes no sense to me that matching an IPv6 address takes _one_
+action, while mangling an IPv6 address takes _four_ actions.
 
-Hello David,
+A consistent model for drivers is good to have.
 
-this is a pull request for net-next/master consisting of 18 patches.
-
-The first patch is by Geert Uytterhoeven, it removes the unused platform
-data support from the rcar_can driver.
-
-A patch by Nishka Dasgupta marks the structure peak_pciec_i2c_bit_ops in
-the peak_pci driver as constant.
-
-A patch by me removes the custom DMA support from the hi311x driver.
-
-The next 4 patches target the tcan4x5x driver and are also by me, they
-first clean up the driver a bit, and then add missing error handling and
-fix a bug in the length calculation in the regmap callbacks.
-
-The next 2 patches are by me for the m_can_platform driver, they also
-remove unneeded casts and add missing error handling.
-
-The remaining 9 patches all target the mcp251x driver. The first 5 are
-clean up patches by me, the next relaxes the timing in the
-mcp251x_hw_reset() function. Alexander Shiyan's patch improves the name
-which is used while registering the interrupt handler. Phil Elwell's
-patch improves the mcp251x_open() function to use the DT-supplied
-interrupt flags instead of hard coding them. The final patch is again by
-me, it removes the custom DMA support from the hi311x driver.
-
-Marc
-
----
-
-The following changes since commit 932630fa902878f4c8c50d0b1260eeb9de16b0=
-a4:
-
-  Merge tag 'wireless-drivers-next-for-davem-2019-08-19' of git://git.ker=
-nel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers-next (2019-08-19 =
-18:32:30 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git ta=
-gs/linux-can-next-for-5.4-20190820
-
-for you to fetch changes up to df58525df395561551440392d92daa6416b4f8f3:
-
-  can: mcp251x: remove custom DMA mapped buffer (2019-08-20 13:41:26 +020=
-0)
-
-----------------------------------------------------------------
-linux-can-next-for-5.4-20190820
-
-----------------------------------------------------------------
-Alexander Shiyan (1):
-      can: mcp251x: Use dev_name() during request_threaded_irq()
-
-Geert Uytterhoeven (1):
-      can: rcar_can: Remove unused platform data support
-
-Marc Kleine-Budde (14):
-      can: hi311x: remove custom DMA mapped buffer
-      can: tcan4x5x: remove unused struct tcan4x5x_priv::tcan4x5x_lock
-      can: tcan4x5x: remove not needed casts to struct tcan4x5x_priv *
-      can: tcan4x5x: tcan4x5x_can_probe(): add missing error handling if =
-mcan_class is NULL
-      can: tcan4x5x: fix data length in regmap write path
-      can: m_can_platform: remove not needed casts to struct m_can_plat_p=
-riv *
-      can: m_can_platform: m_can_plat_probe(): add missing error handling=
- if mcan_class is NULL
-      can: mcp251x: convert block comments to network style comments
-      can: mcp251x: remove unnecessary blank lines
-
---=20
-Pengutronix e.K.                  | Marc Kleine-Budde           |
-Industrial Linux Solutions        | Phone: +49-231-2826-924     |
-Vertretung West/Dortmund          | Fax:   +49-5121-206917-5555 |-
-Amtsgericht Hildesheim, HRA 2686  | http://www.pengutronix.de   |
-
-
-
-
-
-
-
-
-
-
---OZT6XtUoTd9MHUaXgwXWvfibvKh3zgDf2--
-
---ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEmvEkXzgOfc881GuFWsYho5HknSAFAl1cLp0ACgkQWsYho5Hk
-nSCm4QgAhLYwwRBkWcxh9Cgwsc0wsEPJI7a2UgZLZelDl28RkErcESceY4qA+Gs/
-2q98SCSWV1fgkCc/ff4KfxDI1EAg51Vta8HBsf7seCR58vHQ6hrnOr6U3/s17txd
-+wkjlYusZQkFt0sQkxr9RNKH4dm/LTgN/Xk29EXIVKbKSYdEf/7DugI48H3nAPvO
-vRiS6pj8gFpU0yMENU6PCR0kn1wKEckx4frnjp8/elrkAc4WOWLnS5fLHFmbrdhh
-2VXFcnQFetx4N1BEhVe6EmPelt1oPyL0F0Kpwba+V9ECzPsQpnBm++vPKheRbobF
-j1vw/AOWh0KFxr1+oswsEmk3zKvMZw==
-=Zbov
------END PGP SIGNATURE-----
-
---ZKmfzWjGv2CJ5wDzG95EOwMiAyo94VoQ9--
+I can update tc pedit to generate one single action for offset
+consecutive packet editions, if that is the concern, I'll send a v2.
