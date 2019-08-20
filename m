@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F3ACA96C69
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2563196C45
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:19 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731209AbfHTWeA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:34:00 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36980 "EHLO
+        id S1731079AbfHTWdE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:33:04 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36982 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730971AbfHTWdC (ORCPT
+        with ESMTP id S1730974AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=6xmEd+6Hcq8tCHf2bxbsh4w1bvWDerPajMW0hPvFl1E=; b=EgVApfMmIc6ZRfTrdjUTXqdN5F
-        SrQu0CadGcp5jN6qiKniCqSOoCYQruRm1z803tme/zALp5/Voji85At/jwzKyYcuDc/E+CDZ09Dzc
-        0DdC74VRfVRM1TPJRENmKyhs1ALAqnvxTEOQb8uLX2NbA2LgUEEbsPpxYEIQ8w0qkpKNZ264BeXgb
-        51KGdeJaEiKhwpK33SH/z3zx7/4LWEIf5O7npSbJBhLYfkNY0vdKNHtbXUdI6NpRJDnrFgKT34Ve9
-        hl+p5Fjw+8H9S5SwikZEKgLD5nM6e+jW/7rnBTE9u2HsnzpQgFNsXJj30/tIzVg3sEitH+Qywx7aV
-        wSuThaKQ==;
+        bh=2reZNvY6HIasWwjCkHC0sIy5XYZGJpS4stMviGUKElk=; b=SV9M3JVFSBZd/Qz5trFM0uMgIl
+        vKNFk+702rc/Z1u06J7AWESdGAMGv7OQDohYZseHThpjqsh+2F+o9jz+P1UQoj/g7raTWriWnZwms
+        wDUGBx3RnRYLPK+WuMAefaMA8TERKoQIHVuwm5JiIJ80KQ2ox70DYjsEmU3e1UbSKO4hR+pEASdGw
+        ht1Cu0nmE5W1TlpJEUfF4IjI9hUhYayoeSJEedPZbSVmB0R/WGtSowKxHbqVZtpaQ1VQ+nS3HZJDH
+        IUCBfy8dx+8mBt1Nbc0sYUbd/SJ1+xpmTCmXN9uNpUYfW0fRZVCpCTqQQfGsTaTZHlgcdI/5TYcOd
+        WVJ/ey4w==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005qZ-86; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005qf-9U; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 11/38] mt76: Convert token IDR to XArray
-Date:   Tue, 20 Aug 2019 15:32:32 -0700
-Message-Id: <20190820223259.22348-12-willy@infradead.org>
+Subject: [PATCH 12/38] mwifiex: Convert ack_status_frames to XArray
+Date:   Tue, 20 Aug 2019 15:32:33 -0700
+Message-Id: <20190820223259.22348-13-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,135 +43,128 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Straightforward conversion; locking is similar.  It may be possible to
-change the GFP_ATOMIC to GFP_KERNEL, but I can't tell whether this
-context permits sleeping or not.
+Straightforward locking conversion; the only two points of note is that we
+can't pass the address of the tx_token_id to xa_alloc() because it's too
+small (an unsigned char), and mwifiex_free_ack_frame() becomes inlined
+into its caller.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- .../net/wireless/mediatek/mt76/mt7615/init.c  | 11 ++++-----
- .../net/wireless/mediatek/mt76/mt7615/mac.c   | 24 +++++++++----------
- .../wireless/mediatek/mt76/mt7615/mt7615.h    |  4 ++--
- 3 files changed, 17 insertions(+), 22 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/init.c |  4 ++--
+ drivers/net/wireless/marvell/mwifiex/main.c | 10 ++++------
+ drivers/net/wireless/marvell/mwifiex/main.h |  4 +---
+ drivers/net/wireless/marvell/mwifiex/txrx.c |  4 +---
+ drivers/net/wireless/marvell/mwifiex/wmm.c  | 15 ++++++---------
+ 5 files changed, 14 insertions(+), 23 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/init.c b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
-index 859de2454ec6..459ccb79c9cf 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/init.c
-@@ -71,8 +71,7 @@ static int mt7615_init_hardware(struct mt7615_dev *dev)
+diff --git a/drivers/net/wireless/marvell/mwifiex/init.c b/drivers/net/wireless/marvell/mwifiex/init.c
+index 6c0e52eb8794..03e43077ae45 100644
+--- a/drivers/net/wireless/marvell/mwifiex/init.c
++++ b/drivers/net/wireless/marvell/mwifiex/init.c
+@@ -477,8 +477,8 @@ int mwifiex_init_lock_list(struct mwifiex_adapter *adapter)
+ 		spin_lock_init(&priv->tx_ba_stream_tbl_lock);
+ 		spin_lock_init(&priv->rx_reorder_tbl_lock);
  
- 	mt76_wr(dev, MT_INT_SOURCE_CSR, ~0);
- 
--	spin_lock_init(&dev->token_lock);
--	idr_init(&dev->token);
-+	xa_init_flags(&dev->token, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_BH);
- 
- 	ret = mt7615_eeprom_init(dev);
- 	if (ret < 0)
-@@ -266,21 +265,19 @@ int mt7615_register_device(struct mt7615_dev *dev)
- void mt7615_unregister_device(struct mt7615_dev *dev)
- {
- 	struct mt76_txwi_cache *txwi;
--	int id;
-+	unsigned long id;
- 
- 	mt76_unregister_device(&dev->mt76);
- 	mt7615_mcu_exit(dev);
- 	mt7615_dma_cleanup(dev);
- 
--	spin_lock_bh(&dev->token_lock);
--	idr_for_each_entry(&dev->token, txwi, id) {
-+	xa_for_each(&dev->token, id, txwi) {
- 		mt7615_txp_skb_unmap(&dev->mt76, txwi);
- 		if (txwi->skb)
- 			dev_kfree_skb_any(txwi->skb);
- 		mt76_put_txwi(&dev->mt76, txwi);
+-		spin_lock_init(&priv->ack_status_lock);
+-		idr_init(&priv->ack_status_frames);
++		xa_init_flags(&priv->ack_status_frames,
++				XA_FLAGS_ALLOC1 | XA_FLAGS_LOCK_BH);
  	}
--	spin_unlock_bh(&dev->token_lock);
--	idr_destroy(&dev->token);
-+	xa_destroy(&dev->token);
  
- 	mt76_free_device(&dev->mt76);
+ 	return 0;
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.c b/drivers/net/wireless/marvell/mwifiex/main.c
+index a9657ae6d782..0587bd7c8a13 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.c
++++ b/drivers/net/wireless/marvell/mwifiex/main.c
+@@ -822,14 +822,12 @@ mwifiex_clone_skb_for_tx_status(struct mwifiex_private *priv,
+ 
+ 	skb = skb_clone(skb, GFP_ATOMIC);
+ 	if (skb) {
+-		int id;
++		int err, id;
+ 
+-		spin_lock_bh(&priv->ack_status_lock);
+-		id = idr_alloc(&priv->ack_status_frames, orig_skb,
+-			       1, 0x10, GFP_ATOMIC);
+-		spin_unlock_bh(&priv->ack_status_lock);
++		err = xa_alloc_bh(&priv->ack_status_frames, &id, orig_skb,
++			       XA_LIMIT(1, 0xf), GFP_ATOMIC);
+ 
+-		if (id >= 0) {
++		if (err == 0) {
+ 			tx_info = MWIFIEX_SKB_TXCB(skb);
+ 			tx_info->ack_frame_id = id;
+ 			tx_info->flags |= flag;
+diff --git a/drivers/net/wireless/marvell/mwifiex/main.h b/drivers/net/wireless/marvell/mwifiex/main.h
+index 095837fba300..5e06bc9d9519 100644
+--- a/drivers/net/wireless/marvell/mwifiex/main.h
++++ b/drivers/net/wireless/marvell/mwifiex/main.h
+@@ -682,9 +682,7 @@ struct mwifiex_private {
+ 	u8 check_tdls_tx;
+ 	struct timer_list auto_tdls_timer;
+ 	bool auto_tdls_timer_active;
+-	struct idr ack_status_frames;
+-	/* spin lock for ack status */
+-	spinlock_t ack_status_lock;
++	struct xarray ack_status_frames;
+ 	/** rx histogram data */
+ 	struct mwifiex_histogram_data *hist_data;
+ 	struct cfg80211_chan_def dfs_chandef;
+diff --git a/drivers/net/wireless/marvell/mwifiex/txrx.c b/drivers/net/wireless/marvell/mwifiex/txrx.c
+index e3c1446dd847..b2ef30d9f26d 100644
+--- a/drivers/net/wireless/marvell/mwifiex/txrx.c
++++ b/drivers/net/wireless/marvell/mwifiex/txrx.c
+@@ -339,9 +339,7 @@ void mwifiex_parse_tx_status_event(struct mwifiex_private *priv,
+ 	if (!tx_status->tx_token_id)
+ 		return;
+ 
+-	spin_lock_bh(&priv->ack_status_lock);
+-	ack_skb = idr_remove(&priv->ack_status_frames, tx_status->tx_token_id);
+-	spin_unlock_bh(&priv->ack_status_lock);
++	ack_skb = xa_erase_bh(&priv->ack_status_frames, tx_status->tx_token_id);
+ 
+ 	if (ack_skb) {
+ 		tx_info = MWIFIEX_SKB_TXCB(ack_skb);
+diff --git a/drivers/net/wireless/marvell/mwifiex/wmm.c b/drivers/net/wireless/marvell/mwifiex/wmm.c
+index 41f0231376c0..64ff6ac3889b 100644
+--- a/drivers/net/wireless/marvell/mwifiex/wmm.c
++++ b/drivers/net/wireless/marvell/mwifiex/wmm.c
+@@ -562,13 +562,6 @@ static void mwifiex_wmm_delete_all_ralist(struct mwifiex_private *priv)
+ 	}
  }
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-index 1eb0e9c9970c..335fc3cdcb86 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
-@@ -238,9 +238,7 @@ void mt7615_tx_complete_skb(struct mt76_dev *mdev, enum mt76_txq_id qid,
- 		txp = (struct mt7615_txp *)(txwi_ptr + MT_TXD_SIZE);
- 		dev = container_of(mdev, struct mt7615_dev, mt76);
  
--		spin_lock_bh(&dev->token_lock);
--		t = idr_remove(&dev->token, le16_to_cpu(txp->token));
--		spin_unlock_bh(&dev->token_lock);
-+		t = xa_erase_bh(&dev->token, le16_to_cpu(txp->token));
- 		e->skb = t ? t->skb : NULL;
+-static int mwifiex_free_ack_frame(int id, void *p, void *data)
+-{
+-	pr_warn("Have pending ack frames!\n");
+-	kfree_skb(p);
+-	return 0;
+-}
+-
+ /*
+  * This function cleans up the Tx and Rx queues.
+  *
+@@ -582,6 +575,7 @@ static int mwifiex_free_ack_frame(int id, void *p, void *data)
+ void
+ mwifiex_clean_txrx(struct mwifiex_private *priv)
+ {
++	unsigned long index;
+ 	struct sk_buff *skb, *tmp;
+ 
+ 	mwifiex_11n_cleanup_reorder_tbl(priv);
+@@ -612,8 +606,11 @@ mwifiex_clean_txrx(struct mwifiex_private *priv)
  	}
+ 	atomic_set(&priv->adapter->bypass_tx_pending, 0);
  
-@@ -457,7 +455,7 @@ int mt7615_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
- 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(tx_info->skb);
- 	struct ieee80211_key_conf *key = info->control.hw_key;
- 	struct ieee80211_vif *vif = info->control.vif;
--	int i, pid, id, nbuf = tx_info->nbuf - 1;
-+	int err, i, pid, id, nbuf = tx_info->nbuf - 1;
- 	u8 *txwi = (u8 *)txwi_ptr;
- 	struct mt76_txwi_cache *t;
- 	struct mt7615_txp *txp;
-@@ -506,13 +504,15 @@ int mt7615_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
- 	t = (struct mt76_txwi_cache *)(txwi + mdev->drv->txwi_size);
- 	t->skb = tx_info->skb;
+-	idr_for_each(&priv->ack_status_frames, mwifiex_free_ack_frame, NULL);
+-	idr_destroy(&priv->ack_status_frames);
++	xa_for_each(&priv->ack_status_frames, index, skb) {
++		WARN_ONCE(1, "Have pending ack frames!\n");
++		kfree_skb(skb);
++	}
++	xa_destroy(&priv->ack_status_frames);
+ }
  
--	spin_lock_bh(&dev->token_lock);
--	id = idr_alloc(&dev->token, t, 0, MT7615_TOKEN_SIZE, GFP_ATOMIC);
--	spin_unlock_bh(&dev->token_lock);
--	if (id < 0)
--		return id;
-+	xa_lock_bh(&dev->token);
-+	err = __xa_alloc(&dev->token, &id, t,
-+			XA_LIMIT(0, MT7615_TOKEN_SIZE - 1), GFP_ATOMIC);
-+	if (!err)
-+		txp->token = cpu_to_le16(id);
-+	xa_unlock_bh(&dev->token);
-+	if (err < 0)
-+		return err;
- 
--	txp->token = cpu_to_le16(id);
- 	txp->rept_wds_wcid = 0xff;
- 	tx_info->skb = DMA_DUMMY_DATA;
- 
-@@ -717,9 +717,7 @@ void mt7615_mac_tx_free(struct mt7615_dev *dev, struct sk_buff *skb)
- 
- 	count = FIELD_GET(MT_TX_FREE_MSDU_ID_CNT, le16_to_cpu(free->ctrl));
- 	for (i = 0; i < count; i++) {
--		spin_lock_bh(&dev->token_lock);
--		txwi = idr_remove(&dev->token, le16_to_cpu(free->token[i]));
--		spin_unlock_bh(&dev->token_lock);
-+		txwi = xa_erase_bh(&dev->token, le16_to_cpu(free->token[i]));
- 
- 		if (!txwi)
- 			continue;
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h b/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
-index f02ffcffe637..5a3ecc6faede 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/mt7615.h
-@@ -6,6 +6,7 @@
- 
- #include <linux/interrupt.h>
- #include <linux/ktime.h>
-+#include <linux/xarray.h>
- #include "../mt76.h"
- #include "regs.h"
- 
-@@ -68,8 +69,7 @@ struct mt7615_dev {
- 	u32 vif_mask;
- 	u32 omac_mask;
- 
--	spinlock_t token_lock;
--	struct idr token;
-+	struct xarray token;
- };
- 
- enum {
+ /*
 -- 
 2.23.0.rc1
 
