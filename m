@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B3A296C0E
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:19:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F266796C15
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:21:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730938AbfHTWSz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:18:55 -0400
-Received: from mx0b-00154904.pphosted.com ([148.163.137.20]:16864 "EHLO
-        mx0b-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727358AbfHTWSz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:18:55 -0400
-Received: from pps.filterd (m0170394.ppops.net [127.0.0.1])
-        by mx0b-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMFHj8004945;
-        Tue, 20 Aug 2019 18:18:53 -0400
+        id S1730957AbfHTWVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:21:19 -0400
+Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:2906 "EHLO
+        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727358AbfHTWVT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:21:19 -0400
+Received: from pps.filterd (m0170389.ppops.net [127.0.0.1])
+        by mx0a-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMFDso015677;
+        Tue, 20 Aug 2019 18:21:17 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dellteam.com; h=from : to : cc :
  subject : date : message-id : content-type : content-transfer-encoding :
- mime-version; s=smtpout1; bh=t1ntUWnyKU7vtk8aQ3sHa2w2l3X2idBxHhft0DoTAhE=;
- b=VutQFxB9oue4jcCDC4Y3nkkfwgyD2kzLQSGECgot99xO4xmj/vKf1tHu+Fxwyjc8Lzt0
- xiW+DvaV+w3lXLvyeCvuq4HFv2MWt7DuX18EcXXlweu63CXJlOZVAaYxJwY6kN2BjQ6Z
- KDpfIrBQIq5zTxbGfLK7OEvP2NtOcYZKBhfDhIbSccKtu2Dzv4xrIQEdJbxfJndtQAv4
- 7Q9L3eHaFVdrKNhV2taPO2+ZGZLw3w2uC0SdE0qrAlT5ouJ21tmzgOkVyRPquJ3+UiVf
- eavWsdfINFmNs8iTDHO7/VpTEK2fIviKt+5/7U9HL8Fofen1F8KhcEMZMsXPBFKO4kSM Mw== 
+ mime-version; s=smtpout1; bh=B+wXgXgTvN363It3lsd6rFsNGvZA0bT1QIBC3//VrxE=;
+ b=FAg8ZxlCtzuDLEDiRTUgY2+YnIvn+T7FkoRG+AMawpBnPjIcU8mx3dfx8qGQgfWIoscL
+ 26jpiBsCo8ltV/9D0qWsJ9d/gprui8nHqcMU0z6YTVzr+PV6eu8RazC5T+w4XJVWHJ7C
+ mJb1jd2hOi79e6qVyX5rkjOIkQHw9dOYq7v4L7sp1eif7GQz5oicznj1wAdtI3QNf7Dh
+ tjNuyS/LFKoq0hRjJWyLZUrtTlQTSy9AG6KIsDsgpuszoVg//j3A9KEDtB0JNw70z2pf
+ HCi4EAkEddVgv9g7QI9UFcUVqt9RM83wmCxj4rHDLR9A0oMyKxgRpFQA4MJicY5veGdu rQ== 
 Received: from mx0b-00154901.pphosted.com (mx0b-00154901.pphosted.com [67.231.157.37])
-        by mx0b-00154904.pphosted.com with ESMTP id 2ugh3g2h3j-1
+        by mx0a-00154904.pphosted.com with ESMTP id 2ug0d16b0h-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 20 Aug 2019 18:18:53 -0400
-Received: from pps.filterd (m0144102.ppops.net [127.0.0.1])
-        by mx0b-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMHQ2g022625;
-        Tue, 20 Aug 2019 18:18:52 -0400
-Received: from ausxippc110.us.dell.com (AUSXIPPC110.us.dell.com [143.166.85.200])
-        by mx0b-00154901.pphosted.com with ESMTP id 2ugsex8221-1
+        Tue, 20 Aug 2019 18:21:06 -0400
+Received: from pps.filterd (m0144104.ppops.net [127.0.0.1])
+        by mx0b-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7KMI5S2026865;
+        Tue, 20 Aug 2019 18:21:05 -0400
+Received: from ausc60ps301.us.dell.com (ausc60ps301.us.dell.com [143.166.148.206])
+        by mx0b-00154901.pphosted.com with ESMTP id 2ugpb7jjju-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 20 Aug 2019 18:18:52 -0400
-X-LoopCount0: from 10.166.132.133
+        Tue, 20 Aug 2019 18:21:05 -0400
+X-LoopCount0: from 10.166.132.132
 X-PREM-Routing: D-Outbound
 X-IronPort-AV: E=Sophos;i="5.60,349,1549951200"; 
-   d="scan'208";a="846157333"
+   d="scan'208";a="1346990097"
 From:   <Charles.Hyde@dellteam.com>
 To:     <linux-usb@vger.kernel.org>, <linux-acpi@vger.kernel.org>
 CC:     <gregkh@linuxfoundation.org>, <Mario.Limonciello@dell.com>,
         <oliver@neukum.org>, <netdev@vger.kernel.org>,
         <nic_swsd@realtek.com>
-Subject: [RFC 1/4] Add usb_get_address and usb_set_address support
-Thread-Topic: [RFC 1/4] Add usb_get_address and usb_set_address support
-Thread-Index: AQHVV6TlN6JhPmp8+EufEIlfFi8+LA==
-Date:   Tue, 20 Aug 2019 22:18:42 +0000
-Message-ID: <1566339522507.45056@Dellteam.com>
+Subject: [RFC 2/4] Allow cdc_ncm to set MAC address in hardware
+Thread-Topic: [RFC 2/4] Allow cdc_ncm to set MAC address in hardware
+Thread-Index: AQHVV6VMi2mBgTVez06jTeC7fFTbBw==
+Date:   Tue, 20 Aug 2019 22:21:03 +0000
+Message-ID: <1566339663476.54366@Dellteam.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -73,112 +73,132 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The core USB driver message.c is missing get/set address functionality=0A=
-that stops ifconfig from being able to push MAC addresses out to USB=0A=
-based ethernet devices.  Without this functionality, some USB devices=0A=
-stop responding to ethernet packets when using ifconfig to change MAC=0A=
-addresses.  This has been tested with a Dell Universal Dock D6000.=0A=
+This patch adds support for pushing a MAC address out to USB based=0A=
+ethernet controllers driven by cdc_ncm.  With this change, ifconfig can=0A=
+now set the device's MAC address.  For example, the Dell Universal Dock=0A=
+D6000 is driven by cdc_ncm.  The D6000 can now have its MAC address set=0A=
+by ifconfig, as it can be done in Windows.  This was tested with a D6000=0A=
+using ifconfig.=0A=
 =0A=
 Signed-off-by: Charles Hyde <charles.hyde@dellteam.com>=0A=
 Cc: Mario Limonciello <mario.limonciello@dell.com>=0A=
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>=0A=
+Cc: Oliver Neukum <oliver@neukum.org>=0A=
+Cc: netdev@vger.kernel.org=0A=
 Cc: linux-usb@vger.kernel.org=0A=
 ---=0A=
- drivers/usb/core/message.c | 59 ++++++++++++++++++++++++++++++++++++++=0A=
- include/linux/usb.h        |  3 ++=0A=
- 2 files changed, 62 insertions(+)=0A=
+ drivers/net/usb/cdc_ncm.c  | 20 +++++++++++++++++++-=0A=
+ drivers/net/usb/usbnet.c   | 37 ++++++++++++++++++++++++++++---------=0A=
+ include/linux/usb/usbnet.h |  1 +=0A=
+ 3 files changed, 48 insertions(+), 10 deletions(-)=0A=
 =0A=
-diff --git a/drivers/usb/core/message.c b/drivers/usb/core/message.c=0A=
-index 5adf489428aa..eea775234b09 100644=0A=
---- a/drivers/usb/core/message.c=0A=
-+++ b/drivers/usb/core/message.c=0A=
-@@ -1085,6 +1085,65 @@ int usb_clear_halt(struct usb_device *dev, int pipe)=
-=0A=
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c=0A=
+index 50c05d0f44cb..f77c8672f972 100644=0A=
+--- a/drivers/net/usb/cdc_ncm.c=0A=
++++ b/drivers/net/usb/cdc_ncm.c=0A=
+@@ -750,6 +750,24 @@ int cdc_ncm_change_mtu(struct net_device *net, int new=
+_mtu)=0A=
  }=0A=
- EXPORT_SYMBOL_GPL(usb_clear_halt);=0A=
+ EXPORT_SYMBOL_GPL(cdc_ncm_change_mtu);=0A=
  =0A=
-+/**=0A=
-+ * usb_get_address - =0A=
-+ * @dev: device whose endpoint is halted=0A=
-+ * @mac: buffer for containing =0A=
-+ * Context: !in_interrupt ()=0A=
-+ *=0A=
-+ * This will attempt to get the six byte MAC address from a USB device's=
-=0A=
-+ * ethernet controller using GET_NET_ADDRESS command.=0A=
-+ *=0A=
-+ * This call is synchronous, and may not be used in an interrupt context.=
-=0A=
-+ *=0A=
-+ * Return: Zero on success, or else the status code returned by the=0A=
-+ * underlying usb_control_msg() call.=0A=
++/* Provide method to push MAC address to the USB device's ethernet control=
+ler.=0A=
 + */=0A=
-+int usb_get_address(struct usb_device *dev, unsigned char * mac)=0A=
++int cdc_ncm_set_mac_addr(struct net_device *net, void *p)=0A=
 +{=0A=
-+	int ret =3D -ENOMEM;=0A=
-+	unsigned char *tbuf =3D kmalloc(256, GFP_NOIO);=0A=
++	struct usbnet *dev =3D netdev_priv(net);=0A=
++	struct sockaddr *addr =3D p;=0A=
 +=0A=
-+	if (!tbuf)=0A=
-+		return -ENOMEM;=0A=
++	memcpy(dev->net->dev_addr, addr->sa_data, ETH_ALEN);=0A=
++	/*=0A=
++	 * Try to push the MAC address out to the device.  Ignore any errors,=0A=
++	 * to be compatible with prior versions of this source.=0A=
++	 */=0A=
++	usbnet_set_ethernet_addr(dev);=0A=
 +=0A=
-+	ret =3D usb_control_msg(dev, usb_sndctrlpipe(dev, 0),=0A=
-+			USB_CDC_GET_NET_ADDRESS,=0A=
-+			USB_DIR_IN | USB_TYPE_CLASS | USB_RECIP_INTERFACE,=0A=
-+			0, USB_REQ_SET_ADDRESS, tbuf, 256,=0A=
-+			USB_CTRL_GET_TIMEOUT);=0A=
++	return eth_mac_addr(net, p);=0A=
++}=0A=
++EXPORT_SYMBOL_GPL(cdc_ncm_set_mac_addr);=0A=
++=0A=
+ static const struct net_device_ops cdc_ncm_netdev_ops =3D {=0A=
+ 	.ndo_open	     =3D usbnet_open,=0A=
+ 	.ndo_stop	     =3D usbnet_stop,=0A=
+@@ -757,7 +775,7 @@ static const struct net_device_ops cdc_ncm_netdev_ops =
+=3D {=0A=
+ 	.ndo_tx_timeout	     =3D usbnet_tx_timeout,=0A=
+ 	.ndo_get_stats64     =3D usbnet_get_stats64,=0A=
+ 	.ndo_change_mtu	     =3D cdc_ncm_change_mtu,=0A=
+-	.ndo_set_mac_address =3D eth_mac_addr,=0A=
++	.ndo_set_mac_address =3D cdc_ncm_set_mac_addr,=0A=
+ 	.ndo_validate_addr   =3D eth_validate_addr,=0A=
+ };=0A=
+ =0A=
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c=0A=
+index 72514c46b478..72bdac34b0ee 100644=0A=
+--- a/drivers/net/usb/usbnet.c=0A=
++++ b/drivers/net/usb/usbnet.c=0A=
+@@ -149,20 +149,39 @@ int usbnet_get_ethernet_addr(struct usbnet *dev, int =
+iMACAddress)=0A=
+ 	int 		tmp =3D -1, ret;=0A=
+ 	unsigned char	buf [13];=0A=
+ =0A=
+-	ret =3D usb_string(dev->udev, iMACAddress, buf, sizeof buf);=0A=
+-	if (ret =3D=3D 12)=0A=
+-		tmp =3D hex2bin(dev->net->dev_addr, buf, 6);=0A=
+-	if (tmp < 0) {=0A=
+-		dev_dbg(&dev->udev->dev,=0A=
+-			"bad MAC string %d fetch, %d\n", iMACAddress, tmp);=0A=
+-		if (ret >=3D 0)=0A=
+-			ret =3D -EINVAL;=0A=
+-		return ret;=0A=
++	ret =3D usb_get_address(dev->udev, buf);=0A=
 +	if (ret =3D=3D 6)=0A=
-+		memcpy(mac, tbuf, 6);=0A=
++		memcpy(dev->net->dev_addr, buf, 6);=0A=
++	else if (ret < 0) {=0A=
++		ret =3D usb_string(dev->udev, iMACAddress, buf, sizeof buf);=0A=
++		if (ret =3D=3D 12)=0A=
++			tmp =3D hex2bin(dev->net->dev_addr, buf, 6);=0A=
++		if (tmp < 0) {=0A=
++			dev_dbg(&dev->udev->dev,=0A=
++				"bad MAC string %d fetch, %d\n", iMACAddress,=0A=
++				tmp);=0A=
++			if (ret >=3D 0)=0A=
++				ret =3D -EINVAL;=0A=
++			return ret;=0A=
++		}=0A=
+ 	}=0A=
+ 	return 0;=0A=
+ }=0A=
+ EXPORT_SYMBOL_GPL(usbnet_get_ethernet_addr);=0A=
+ =0A=
++int usbnet_set_ethernet_addr(struct usbnet *dev)=0A=
++{=0A=
++	int ret;=0A=
 +=0A=
-+	kfree(tbuf);=0A=
++	ret =3D usb_set_address(dev->udev, dev->net->dev_addr);=0A=
++	if (ret < 0) {=0A=
++		dev_dbg(&dev->udev->dev,=0A=
++			"bad MAC address put, %d\n", ret);=0A=
++	}=0A=
 +	return ret;=0A=
 +}=0A=
-+EXPORT_SYMBOL_GPL(usb_get_address);=0A=
++EXPORT_SYMBOL_GPL(usbnet_set_ethernet_addr);=0A=
 +=0A=
-+/**=0A=
-+ * usb_set_address - =0A=
-+ * @dev: device whose endpoint is halted=0A=
-+ * @mac: desired MAC address in network address order=0A=
-+ * Context: !in_interrupt ()=0A=
-+ *=0A=
-+ * This will attempt to set a six byte MAC address to the USB device's eth=
-ernet=0A=
-+ * controller using SET_NET_ADDRESS command.=0A=
-+ *=0A=
-+ * This call is synchronous, and may not be used in an interrupt context.=
-=0A=
-+ *=0A=
-+ * Return: Zero on success, or else the status code returned by the=0A=
-+ * underlying usb_control_msg() call.=0A=
-+ */=0A=
-+int usb_set_address(struct usb_device *dev, unsigned char *mac)=0A=
-+{=0A=
-+	return usb_control_msg(dev, usb_sndctrlpipe(dev, 0),=0A=
-+			USB_CDC_SET_NET_ADDRESS,=0A=
-+			USB_DIR_OUT | USB_TYPE_CLASS | USB_RECIP_INTERFACE,=0A=
-+			0, USB_REQ_SET_ADDRESS, mac, 6,=0A=
-+			USB_CTRL_SET_TIMEOUT);=0A=
-+}=0A=
-+EXPORT_SYMBOL_GPL(usb_set_address);=0A=
-+=0A=
- static int create_intf_ep_devs(struct usb_interface *intf)=0A=
+ static void intr_complete (struct urb *urb)=0A=
  {=0A=
- 	struct usb_device *udev =3D interface_to_usbdev(intf);=0A=
-diff --git a/include/linux/usb.h b/include/linux/usb.h=0A=
-index e87826e23d59..862c979d9821 100644=0A=
---- a/include/linux/usb.h=0A=
-+++ b/include/linux/usb.h=0A=
-@@ -1806,6 +1806,9 @@ static inline int usb_get_ptm_status(struct usb_devic=
-e *dev, void *data)=0A=
- extern int usb_string(struct usb_device *dev, int index,=0A=
- 	char *buf, size_t size);=0A=
+ 	struct usbnet	*dev =3D urb->context;=0A=
+diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h=0A=
+index d8860f2d0976..f2b2c5ab5493 100644=0A=
+--- a/include/linux/usb/usbnet.h=0A=
++++ b/include/linux/usb/usbnet.h=0A=
+@@ -258,6 +258,7 @@ extern int usbnet_change_mtu(struct net_device *net, in=
+t new_mtu);=0A=
  =0A=
-+extern int usb_get_address(struct usb_device *dev, unsigned char * mac);=
+ extern int usbnet_get_endpoints(struct usbnet *, struct usb_interface *);=
 =0A=
-+extern int usb_set_address(struct usb_device *dev, unsigned char * mac);=
-=0A=
-+=0A=
- /* wrappers that also update important state inside usbcore */=0A=
- extern int usb_clear_halt(struct usb_device *dev, int pipe);=0A=
- extern int usb_reset_configuration(struct usb_device *dev);=0A=
+ extern int usbnet_get_ethernet_addr(struct usbnet *, int);=0A=
++extern int usbnet_set_ethernet_addr(struct usbnet *);=0A=
+ extern void usbnet_defer_kevent(struct usbnet *, int);=0A=
+ extern void usbnet_skb_return(struct usbnet *, struct sk_buff *);=0A=
+ extern void usbnet_unlink_rx_urbs(struct usbnet *);=0A=
 -- =0A=
 2.20.1=0A=
