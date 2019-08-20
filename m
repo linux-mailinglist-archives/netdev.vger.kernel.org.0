@@ -2,153 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5052596B63
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 23:24:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 98F9996B78
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 23:28:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730895AbfHTVYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 17:24:32 -0400
-Received: from www62.your-server.de ([213.133.104.62]:55030 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728283AbfHTVYc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 17:24:32 -0400
-Received: from sslproxy01.your-server.de ([88.198.220.130])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0Bc5-0007QV-Pz; Tue, 20 Aug 2019 23:24:21 +0200
-Received: from [178.197.249.40] (helo=pc-63.home)
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0Bc5-0006tF-Df; Tue, 20 Aug 2019 23:24:21 +0200
-Subject: Re: [PATCH bpf-next] xsk: proper socket state check in xsk_poll
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
-        Alexei Starovoitov <ast@kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        bpf <bpf@vger.kernel.org>, David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs@googlegroups.com, Xdp <xdp-newbies@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, hdanton@sina.com
-References: <0000000000009167320590823a8c@google.com>
- <20190820100405.25564-1-bjorn.topel@gmail.com>
- <beef16bb-a09b-40f1-7dd0-c323b4b89b17@iogearbox.net>
- <CAJ+HfNj8qNwCpiLBw1eO_ggSf11Qq9323NVOcTS6wtfTm=RWcg@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <fa423b3d-d9da-7142-c7bf-e202967620ea@iogearbox.net>
-Date:   Tue, 20 Aug 2019 23:24:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730680AbfHTV2G convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 20 Aug 2019 17:28:06 -0400
+Received: from gauss.credativ.com ([93.94.130.89]:58165 "EHLO
+        gauss.credativ.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730430AbfHTV2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 17:28:06 -0400
+Received: from gauss.credativ.com (localhost [127.0.0.1])
+        by gauss.credativ.com (Postfix) with ESMTP id EACCC1E3CA6;
+        Tue, 20 Aug 2019 23:27:59 +0200 (CEST)
+Received: from openxchange.credativ.com (openxchange.credativ.com [93.94.130.84])
+        (using TLSv1 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by gauss.credativ.com (Postfix) with ESMTPS id CDFD11E3C50;
+        Tue, 20 Aug 2019 23:27:59 +0200 (CEST)
+Received: from openxchange.credativ.com (localhost [127.0.0.1])
+        by openxchange.credativ.com (Postfix) with ESMTPS id 46CkRM4l5Qz2xc4;
+        Tue, 20 Aug 2019 21:27:59 +0000 (UTC)
+Date:   Tue, 20 Aug 2019 23:27:59 +0200 (CEST)
+From:   Sedat Dilek <sedat.dilek@credativ.de>
+Reply-To: Sedat Dilek <sedat.dilek@credativ.de>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        =?UTF-8?Q?Cl=C3=A9ment_Perrochaud?= 
+        <clement.perrochaud@effinnov.com>,
+        Charles Gorand <charles.gorand@effinnov.com>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>
+Cc:     Sedat Dilek <sedat.dilek@gmail.com>
+Message-ID: <892584913.468.1566336479573@ox.credativ.com>
+In-Reply-To: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
+References: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v4 00/14] NFC: nxp-nci: clean up and new device support
 MIME-Version: 1.0
-In-Reply-To: <CAJ+HfNj8qNwCpiLBw1eO_ggSf11Qq9323NVOcTS6wtfTm=RWcg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25547/Tue Aug 20 10:27:49 2019)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-Priority: 3
+Importance: Medium
+X-Mailer: Open-Xchange Mailer v7.10.2-Rev10
+X-Originating-Client: open-xchange-appsuite
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/20/19 5:29 PM, Björn Töpel wrote:
-> On Tue, 20 Aug 2019 at 16:30, Daniel Borkmann <daniel@iogearbox.net> wrote:
->> On 8/20/19 12:04 PM, Björn Töpel wrote:
->>> From: Björn Töpel <bjorn.topel@intel.com>
->>>
->>> The poll() implementation for AF_XDP sockets did not perform the
->>> proper state checks, prior accessing the socket umem. This patch fixes
->>> that by performing a xsk_is_bound() check.
->>>
->>> Suggested-by: Hillf Danton <hdanton@sina.com>
->>> Reported-by: syzbot+c82697e3043781e08802@syzkaller.appspotmail.com
->>> Fixes: 77cd0d7b3f25 ("xsk: add support for need_wakeup flag in AF_XDP rings")
->>> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
->>> ---
->>>    net/xdp/xsk.c | 14 ++++++++++++--
->>>    1 file changed, 12 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
->>> index ee4428a892fa..08bed5e92af4 100644
->>> --- a/net/xdp/xsk.c
->>> +++ b/net/xdp/xsk.c
->>> @@ -356,13 +356,20 @@ static int xsk_generic_xmit(struct sock *sk, struct msghdr *m,
->>>        return err;
->>>    }
->>>
->>> +static bool xsk_is_bound(struct xdp_sock *xs)
->>> +{
->>> +     struct net_device *dev = READ_ONCE(xs->dev);
->>> +
->>> +     return dev && xs->state == XSK_BOUND;
->>> +}
->>> +
->>>    static int xsk_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len)
->>>    {
->>>        bool need_wait = !(m->msg_flags & MSG_DONTWAIT);
->>>        struct sock *sk = sock->sk;
->>>        struct xdp_sock *xs = xdp_sk(sk);
->>>
->>> -     if (unlikely(!xs->dev))
->>> +     if (unlikely(!xsk_is_bound(xs)))
->>>                return -ENXIO;
->>>        if (unlikely(!(xs->dev->flags & IFF_UP)))
->>>                return -ENETDOWN;
->>> @@ -383,6 +390,9 @@ static unsigned int xsk_poll(struct file *file, struct socket *sock,
->>>        struct net_device *dev = xs->dev;
->>>        struct xdp_umem *umem = xs->umem;
->>>
->>> +     if (unlikely(!xsk_is_bound(xs)))
->>> +             return mask;
->>> +
->>>        if (umem->need_wakeup)
->>>                dev->netdev_ops->ndo_xsk_wakeup(dev, xs->queue_id,
->>>                                                umem->need_wakeup);
->>> @@ -417,7 +427,7 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
->>>    {
->>>        struct net_device *dev = xs->dev;
->>>
->>> -     if (!dev || xs->state != XSK_BOUND)
->>> +     if (!xsk_is_bound(xs))
->>>                return;
->>
->> I think I'm a bit confused by your READ_ONCE() usage. ;-/ I can see why you're
->> using it in xsk_is_bound() above, but then at the same time all the other callbacks
->> like xsk_poll() or xsk_unbind_dev() above have a struct net_device *dev = xs->dev
->> right before the test. Could you elaborate?
-> 
-> Yes, now I'm confused as well! Digging deeper... I believe there are a
-> couple of places in xsk.c that do not have
-> READ_ONCE/WRITE_ONCE-correctness. Various xdp_sock members are read
-> lock-less outside the control plane mutex (mutex member of struct
-> xdp_sock). This needs some re-work. I'll look into using the newly
 
-Right, so even in above two cases, the compiler could have refetched, e.g.
-dev variable could have first been NULL, but xsk_is_bound() later returns
-true.
 
-> introduced state member (with corresponding read/write barriers) for
-> this.
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> hat am 29. Juli 2019 15:35 geschrieben:
 > 
-> I'll cook some patch(es) that address this, but first it sounds like I
-> need to reread [1] two, or three times. At least. ;-)
+>  
+> Few people reported that some laptops are coming with new ACPI ID for the
+> devices should be supported by nxp-nci driver.
 > 
+> This series adds new ID (patch 2), cleans up the driver from legacy platform
+> data and unifies GPIO request for Device Tree and ACPI (patches 3-6), removes
+> dead or unneeded code (patches 7, 9, 11), constifies ID table (patch 8),
+> removes comma in terminator line for better maintenance (patch 10) and
+> rectifies Kconfig entry (patches 12-14).
 > 
-> Thanks,
-> Björn
+> It also contains a fix for NFC subsystem as suggested by Sedat.
 > 
+> Series has been tested by Sedat.
 > 
-> [1] https://lwn.net/Articles/793253/
+> Changelog v4:
+> - rebased on top of latest linux-next
+> - appended cover letter
+> - elaborated removal of pr_fmt() in the patch 11 (David)
 > 
+> Andrey Konovalov (1):
+>   NFC: fix attrs checks in netlink interface
 > 
->> Thanks,
->> Daniel
+> Andy Shevchenko (11):
+>   NFC: nxp-nci: Add NXP1001 to the ACPI ID table
+>   NFC: nxp-nci: Get rid of platform data
+>   NFC: nxp-nci: Convert to use GPIO descriptor
+>   NFC: nxp-nci: Add GPIO ACPI mapping table
+>   NFC: nxp-nci: Get rid of code duplication in ->probe()
+>   NFC: nxp-nci: Get rid of useless label
+>   NFC: nxp-nci: Constify acpi_device_id
+>   NFC: nxp-nci: Drop of_match_ptr() use
+>   NFC: nxp-nci: Drop comma in terminator lines
+>   NFC: nxp-nci: Remove unused macro pr_fmt()
+>   NFC: nxp-nci: Remove 'default n' for the core
+> 
+> Sedat Dilek (2):
+>   NFC: nxp-nci: Clarify on supported chips
+>   NFC: nxp-nci: Fix recommendation for NFC_NXP_NCI_I2C Kconfig
+> 
+>  MAINTAINERS                           |   1 -
+>  drivers/nfc/nxp-nci/Kconfig           |   7 +-
+>  drivers/nfc/nxp-nci/core.c            |   2 -
+>  drivers/nfc/nxp-nci/i2c.c             | 134 +++++++-------------------
+>  drivers/nfc/nxp-nci/nxp-nci.h         |   1 -
+>  include/linux/platform_data/nxp-nci.h |  19 ----
+>  net/nfc/netlink.c                     |   6 +-
+>  7 files changed, 41 insertions(+), 129 deletions(-)
+>  delete mode 100644 include/linux/platform_data/nxp-nci.h
+> 
+> -- 
+> 2.20.1
 
+Hi Andy,
+
+I gave that patchset v4 a try against Linux v5.3-rc5.
+
+And played with neard and neard-tools v0.16-0.1 from Debian/buster AMD64.
+
+# nfctool --list
+
+# nfctool --enable --device=nfc0
+
+# nfctool --list --device=nfc0
+nfc0:
+          Tags: [ tag11 ]
+          Devices: [ ]
+          Protocols: [ Felica MIFARE Jewel ISO-DEP NFC-DEP ]
+          Powered: Yes
+          RF Mode: Initiator
+          lto: 0
+          rw: 0
+          miux: 0
+
+# nfctool --device=nfc0 --poll=Both --sniff --dump-symm
+Start sniffer on nfc0
+
+Start polling on nfc0 as both initiator and target
+
+Targets found for nfc0
+  Tags: [ tag11 ]
+  Devices: [ ]
+
+But I see in the logs:
+
+# journalctl -u neard.service -f
+Aug 20 23:01:15 iniza neard[6158]: Error while reading NFC bytes
+
+What does this error mean?
+How can I get more informations?
+Can you aid with debugging help?
+
+Thanks in advance.
+
+Regards,
+- Sedat -
+
+[1] https://github.com/nfc-tools/libnfc/issues/455#issuecomment-523185147
+[2] https://github.com/nfc-tools/libnfc/issues/455#issuecomment-523195283
+[3] https://github.com/nfc-tools/libnfc/issues/455#issuecomment-523198304
+
+-- 
+Mit freundlichen Grüssen 
+Sedat Dilek
+Telefon: +49 2166 9901-153 
+E-Mail: sedat.dilek@credativ.de
+Internet: https://www.credativ.de/
+
+GPG-Fingerprint: EA6D E17D D269 AC7E 101D C910 476F 2B3B 0AF7 F86B
+
+credativ GmbH, Trompeterallee 108, 41189 Mönchengladbach 
+Handelsregister: Amtsgericht Mönchengladbach HRB 12080 USt-ID-Nummer DE204566209 
+Geschäftsführung: Dr. Michael Meskes, Jörg Folz, Sascha Heuer
+
+Unser Umgang mit personenbezogenen Daten unterliegt folgenden Bestimmungen: 
+https://www.credativ.de/datenschutz/
