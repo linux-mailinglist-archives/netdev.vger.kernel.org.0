@@ -2,105 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7194B961A5
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:54:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BEF94961F1
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 16:08:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729930AbfHTNx5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 09:53:57 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35370 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729812AbfHTNx5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 09:53:57 -0400
-Received: by mail-wr1-f66.google.com with SMTP id k2so12510066wrq.2
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 06:53:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id;
-        bh=bm263GMWeKPUI5wuV6Udltpey7traBFFYHIuzV+qSTc=;
-        b=jzoC16fwWZQlep1XQrlZ0OvgarFBOjo2tNoXXGTtGjwGvTi0M94aXOIfTpw1F1usI7
-         l8NV3J0K0RHwN3vSbpENrpEa6I1VK9iYe+7cuMtEp5zUXHftwz+OjeE1CbhDauSWI3t3
-         TI94J1+ntokgm5jht6OkVi9sN3fGCWoryhsD8YjrzBoIlOoq+J9A92frr1wUY7PI4xM9
-         A8f1t/uNwb4i/H1cLogQDqgi3nX6FCfFenanvi4Pmtcujd475T4MmsS11pKL3fhFFb8i
-         /8npLUtIfKqXlSuAXSVx5IDHGlRVo8268w1wRpgOOSqTs3bFDzJw9DorUD+xeRq0SMY+
-         CUvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=bm263GMWeKPUI5wuV6Udltpey7traBFFYHIuzV+qSTc=;
-        b=NaTn1KjwBsHfzXvYeBrqWnMiDsnFs/xk6i6vzDlpNHrmOkMTRB4s99+9CaO8kVF2aU
-         tmPXJ7caN0gdZLS9hMon1AIztGBPgIt+rE5JkcioTk2PIMT4fCMSCoPygfjSwFnymVuZ
-         UIbtwBKLDoawA1scHqcA/fRh9/10DAm1PSWDO34gecOwnKAlVrhX2o6A/oYuTu4BzCzM
-         YBwjIvCzVIXA7eaKxN+40VxQVX4C+DEtqBc3UhlmAaqIfEPhOpw9CivceiC52gSK3iP3
-         e9aCg91uwEb4y0E4aW6HoWgrzKTxymoNCfjChx+o6cf16XpGVUqO/ZycBB+5vXKKrwty
-         FVfg==
-X-Gm-Message-State: APjAAAWZqFfnGLUEcDdB4/RlmCz2f1bEpvv/13ImDk8TrtThVV+CHvvk
-        ENcSjHA7urV/cmtY+JXrWC9L0rEMFrY=
-X-Google-Smtp-Source: APXvYqyz3HKtXQok062DzHDWKPtayPWakbhiAmNsdprn5WW7GG4zo5XvnC2cnQ/Gey1Ng+DO+LGYqQ==
-X-Received: by 2002:adf:ec4f:: with SMTP id w15mr18720296wrn.311.1566309235151;
-        Tue, 20 Aug 2019 06:53:55 -0700 (PDT)
-Received: from cbtest32.netronome.com ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id r18sm107943wmh.6.2019.08.20.06.53.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 06:53:54 -0700 (PDT)
-From:   Quentin Monnet <quentin.monnet@netronome.com>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Quentin Monnet <quentin.monnet@netronome.com>
-Subject: [PATCH bpf-next v2] bpf: add BTF ids in procfs for file descriptors to BTF objects
-Date:   Tue, 20 Aug 2019 14:53:46 +0100
-Message-Id: <20190820135346.7593-1-quentin.monnet@netronome.com>
-X-Mailer: git-send-email 2.17.1
+        id S1730431AbfHTOHg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 10:07:36 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42038 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729960AbfHTOHf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 10:07:35 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id BD665A35FE8;
+        Tue, 20 Aug 2019 14:07:34 +0000 (UTC)
+Received: from carbon (ovpn-200-29.brq.redhat.com [10.40.200.29])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B5FC03DE5;
+        Tue, 20 Aug 2019 14:07:30 +0000 (UTC)
+Date:   Tue, 20 Aug 2019 16:07:26 +0200
+From:   Jesper Dangaard Brouer <jbrouer@redhat.com>
+To:     Anders Roxell <anders.roxell@linaro.org>
+Cc:     shuah@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        davem@davemloft.net, jakub.kicinski@netronome.com, hawk@kernel.org,
+        john.fastabend@gmail.com, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: bpf: install files test_xdp_vlan.sh
+Message-ID: <20190820160726.5a8990c8@carbon>
+In-Reply-To: <20190820134121.25728-1-anders.roxell@linaro.org>
+References: <20190820134121.25728-1-anders.roxell@linaro.org>
+Organization: Red Hat Inc.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.68]); Tue, 20 Aug 2019 14:07:35 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement the show_fdinfo hook for BTF FDs file operations, and make it
-print the id of the BTF object. This allows for a quick retrieval of the
-BTF id from its FD; or it can help understanding what type of object
-(BTF) the file descriptor points to.
+On Tue, 20 Aug 2019 15:41:21 +0200
+Anders Roxell <anders.roxell@linaro.org> wrote:
 
-v2:
-- Do not expose data_size, only btf_id, in FD info.
+> When ./test_xdp_vlan_mode_generic.sh runs it complains that it can't
+> find file test_xdp_vlan.sh.
+> 
+>  # selftests: bpf: test_xdp_vlan_mode_generic.sh
+>  # ./test_xdp_vlan_mode_generic.sh: line 9: ./test_xdp_vlan.sh: No such
+>  file or directory
+> 
+> Rework so that test_xdp_vlan.sh gets installed, added to the variable
+> TEST_PROGS_EXTENDED.
+> 
+> Fixes: d35661fcf95d ("selftests/bpf: add wrapper scripts for test_xdp_vlan.sh")
+> Signed-off-by: Anders Roxell <anders.roxell@linaro.org>
+> ---
 
-Signed-off-by: Quentin Monnet <quentin.monnet@netronome.com>
-Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
----
- kernel/bpf/btf.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+Thanks for catching this!
 
-diff --git a/kernel/bpf/btf.c b/kernel/bpf/btf.c
-index 5fcc7a17eb5a..6b403dc18486 100644
---- a/kernel/bpf/btf.c
-+++ b/kernel/bpf/btf.c
-@@ -3376,6 +3376,15 @@ void btf_type_seq_show(const struct btf *btf, u32 type_id, void *obj,
- 	btf_type_ops(t)->seq_show(btf, t, type_id, obj, 0, m);
- }
- 
-+#ifdef CONFIG_PROC_FS
-+static void bpf_btf_show_fdinfo(struct seq_file *m, struct file *filp)
-+{
-+	const struct btf *btf = filp->private_data;
-+
-+	seq_printf(m, "btf_id:\t%u\n", btf->id);
-+}
-+#endif
-+
- static int btf_release(struct inode *inode, struct file *filp)
- {
- 	btf_put(filp->private_data);
-@@ -3383,6 +3392,9 @@ static int btf_release(struct inode *inode, struct file *filp)
- }
- 
- const struct file_operations btf_fops = {
-+#ifdef CONFIG_PROC_FS
-+	.show_fdinfo	= bpf_btf_show_fdinfo,
-+#endif
- 	.release	= btf_release,
- };
- 
+Acked-by: Jesper Dangaard Brouer <jbrouer@redhat.com>
+
+>  tools/testing/selftests/bpf/Makefile | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/bpf/Makefile b/tools/testing/selftests/bpf/Makefile
+> index 1faad0c3c3c9..d7968e20463c 100644
+> --- a/tools/testing/selftests/bpf/Makefile
+> +++ b/tools/testing/selftests/bpf/Makefile
+> @@ -68,7 +68,8 @@ TEST_PROGS := test_kmod.sh \
+>  TEST_PROGS_EXTENDED := with_addr.sh \
+>  	with_tunnels.sh \
+>  	tcp_client.py \
+> -	tcp_server.py
+> +	tcp_server.py \
+> +	test_xdp_vlan.sh
+>  
+>  # Compile but not part of 'make run_tests'
+>  TEST_GEN_PROGS_EXTENDED = test_libbpf_open test_sock_addr test_skb_cgroup_id_user \
+
+
+
 -- 
-2.17.1
-
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
