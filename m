@@ -2,157 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 807E595680
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 07:10:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D3B0D956AE
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 07:33:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729254AbfHTFJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 01:09:38 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:41999 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729108AbfHTFJi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 01:09:38 -0400
-Received: by mail-pl1-f194.google.com with SMTP id y1so2105754plp.9
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 22:09:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=endlessm-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DV/WqxRBj1zmpM+E4gMAZS0eS9d1iKH2+F8A7pnrP0Y=;
-        b=sE1VeczhPDfa9x422ZzMyCbZLrf9ia7yAAOeHIpaWioXnYZn1E/SZ5WW3O7YkpHDW9
-         tJ//D1tmP9QCYKvD2Ax7eeb6ivFGMKgdVKj4w8ZFF4t8Mcj7OoC2Oiod3R1LJVDd0zSk
-         LWTtyrxOHyyqboZsYO1vWJ6r+3BcH03x+szIVzRVKF0nFnll8trBP29tlcmmL+xK90l3
-         UBtksYy4OVb+y25cLifjI0m7Q4rYXvda4kMPsf8CA/9LpHdrfj6d56B/Lyvv04KD8rR5
-         gpbCVAC4++xSqNmb2lXDcki7da8Bc2pYKnLezmFduIAYqNiHmleN+kd37mzG9ghz4S/4
-         Un9w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DV/WqxRBj1zmpM+E4gMAZS0eS9d1iKH2+F8A7pnrP0Y=;
-        b=d0pX3KTm5jxnozP1LtBzpvMipTNaIHZqs9TH8TVpCLhiiuAB/8mUqgFCP32B0Wea6Q
-         bllbZocJnUxfnk7CPckbioijVqDNdEt5vQml1o3YvVgCXzmkfaEZdR5zuMkHS+830OcZ
-         QlEbhmPthjQwKElZSO9V3xqCR4ketcKTY5rWKvaFP+rfz7Oda/oBfBAZ+rUWw6e0l3EA
-         6QW2VUknbg2OD9z2yMePvLJHE+FaLxLbS7WrNK+dKHqGONYoFux0sWqRlPOh9ytqPo34
-         YL/Rrhv6c+XeDy3hx+gV1m1Cp37szNRpH4ArEQLMLg34kKEahaKeVter1sU7aFTKBWe+
-         eBtw==
-X-Gm-Message-State: APjAAAV3K6HDRVU0mL+e8D6Odf+aI6//J8UxEeBgKh3BsTO2D1jsgHGX
-        fMlkilAAzR0nIEFYP0XBqNWCug==
-X-Google-Smtp-Source: APXvYqxKjd535rM4n/0gwnMzd/Oeg9Dm9I6Cy1cfG3BImIqyaXap5RLsjm5lQg4ypBPf1pKYU8Gd4A==
-X-Received: by 2002:a17:902:a612:: with SMTP id u18mr25603093plq.181.1566277777185;
-        Mon, 19 Aug 2019 22:09:37 -0700 (PDT)
-Received: from localhost.localdomain (123-204-46-122.static.seed.net.tw. [123.204.46.122])
-        by smtp.gmail.com with ESMTPSA id r1sm16023902pgv.70.2019.08.19.22.09.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 19 Aug 2019 22:09:36 -0700 (PDT)
-From:   Jian-Hong Pan <jian-hong@endlessm.com>
-To:     Yan-Hsuan Chuang <yhchuang@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux@endlessm.com,
-        Jian-Hong Pan <jian-hong@endlessm.com>
-Subject: [PATCH v3] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
-Date:   Tue, 20 Aug 2019 12:59:35 +0800
-Message-Id: <20190820045934.24841-1-jian-hong@endlessm.com>
-X-Mailer: git-send-email 2.22.1
-In-Reply-To: <CAPpJ_edU68X-Ki+J61qfws+1-=zv54bcak9tzkMX=CkDS5mOMA@mail.gmail.com>
-References: <CAPpJ_edU68X-Ki+J61qfws+1-=zv54bcak9tzkMX=CkDS5mOMA@mail.gmail.com>
+        id S1729172AbfHTFdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 01:33:46 -0400
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:34270 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729060AbfHTFdq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 01:33:46 -0400
+Received: from [192.168.1.41] ([90.126.162.2])
+        by mwinf5d79 with ME
+        id rHZf2000603Qemq03HZfS8; Tue, 20 Aug 2019 07:33:43 +0200
+X-ME-Helo: [192.168.1.41]
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Tue, 20 Aug 2019 07:33:43 +0200
+X-ME-IP: 90.126.162.2
+Subject: Re: [PATCH] nfc: st-nci: Fix an incorrect skb_buff size in
+ 'st_nci_i2c_read()'
+To:     David Miller <davem@davemloft.net>
+Cc:     tglx@linutronix.de, gregkh@linuxfoundation.org,
+        colin.king@canonical.com, allison@lohutok.net,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+References: <20190806141640.13197-1-christophe.jaillet@wanadoo.fr>
+ <20190811.205719.198343441735959015.davem@davemloft.net>
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Message-ID: <279f5ad0-667c-2e41-e820-f1fc49432a1a@wanadoo.fr>
+Date:   Tue, 20 Aug 2019 07:33:39 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <20190811.205719.198343441735959015.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a mass of jobs between spin lock and unlock in the hardware
-IRQ which will occupy much time originally. To make system work more
-efficiently, this patch moves the jobs to the soft IRQ (bottom half) to
-reduce the time in hardware IRQ.
+Le 12/08/2019 à 05:57, David Miller a écrit :
+> From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Date: Tue,  6 Aug 2019 16:16:40 +0200
+>
+>> In 'st_nci_i2c_read()', we allocate a sk_buff with a size of
+>> ST_NCI_I2C_MIN_SIZE + len.
+>>
+>> However, later on, we first 'skb_reserve()' ST_NCI_I2C_MIN_SIZE bytes, then
+>> we 'skb_put()' ST_NCI_I2C_MIN_SIZE bytes.
+>> Finally, if 'len' is not 0, we 'skb_put()' 'len' bytes.
+>>
+>> So we use ST_NCI_I2C_MIN_SIZE*2 + len bytes.
+>>
+>> This is incorrect and should already panic. I guess that it does not occur
+>> because of extra memory allocated because of some rounding.
+>>
+>> Fix it and allocate enough room for the 'skb_reserve()' and the 'skb_put()'
+>> calls.
+>>
+>> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+>> ---
+>> This patch is LIKELY INCORRECT. So think twice to what is the correct
+>> solution before applying it.
+>> Maybe the skb_reserve should be axed or some other sizes are incorrect.
+>> There seems to be an issue, that's all I can say.
+> The skb_reserve() should be removed,
 
-Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
----
-v2:
- Change the spin_lock_irqsave/unlock_irqrestore to spin_lock/unlock in
- rtw_pci_interrupt_handler. Because the interrupts are already disabled
- in the hardware interrupt handler.
+I don't fully understand the potential implications, but looks ok to me.
+At least, the allocated memory and the size of the used memory would match.
 
-v3:
- Extend the spin lock protecting area for the TX path in
- rtw_pci_interrupt_threadfn by Realtek's suggestion
+What I don't understand is why is does not BUG_ON with the current code. 
+Does my suspected "over allocation" because of rounding/aligment could 
+hide the issue?
 
- drivers/net/wireless/realtek/rtw88/pci.c | 33 +++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 6 deletions(-)
+A Tested-by: by someone who has the corresponding hardware would also be 
+useful IMHO.
 
-diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
-index 00ef229552d5..a8c17a01f318 100644
---- a/drivers/net/wireless/realtek/rtw88/pci.c
-+++ b/drivers/net/wireless/realtek/rtw88/pci.c
-@@ -866,12 +866,29 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq, void *dev)
- {
- 	struct rtw_dev *rtwdev = dev;
- 	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
--	u32 irq_status[4];
- 
- 	spin_lock(&rtwpci->irq_lock);
- 	if (!rtwpci->irq_enabled)
- 		goto out;
- 
-+	/* disable RTW PCI interrupt to avoid more interrupts before the end of
-+	 * thread function
-+	 */
-+	rtw_pci_disable_interrupt(rtwdev, rtwpci);
-+out:
-+	spin_unlock(&rtwpci->irq_lock);
-+
-+	return IRQ_WAKE_THREAD;
-+}
-+
-+static irqreturn_t rtw_pci_interrupt_threadfn(int irq, void *dev)
-+{
-+	struct rtw_dev *rtwdev = dev;
-+	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
-+	unsigned long flags;
-+	u32 irq_status[4];
-+
-+	spin_lock_irqsave(&rtwpci->irq_lock, flags);
- 	rtw_pci_irq_recognized(rtwdev, rtwpci, irq_status);
- 
- 	if (irq_status[0] & IMR_MGNTDOK)
-@@ -891,8 +908,10 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq, void *dev)
- 	if (irq_status[0] & IMR_ROK)
- 		rtw_pci_rx_isr(rtwdev, rtwpci, RTW_RX_QUEUE_MPDU);
- 
--out:
--	spin_unlock(&rtwpci->irq_lock);
-+	/* all of the jobs for this interrupt have been done */
-+	if (rtw_flag_check(rtwdev, RTW_FLAG_RUNNING))
-+		rtw_pci_enable_interrupt(rtwdev, rtwpci);
-+	spin_unlock_irqrestore(&rtwpci->irq_lock, flags);
- 
- 	return IRQ_HANDLED;
- }
-@@ -1152,8 +1171,10 @@ static int rtw_pci_probe(struct pci_dev *pdev,
- 		goto err_destroy_pci;
- 	}
- 
--	ret = request_irq(pdev->irq, &rtw_pci_interrupt_handler,
--			  IRQF_SHARED, KBUILD_MODNAME, rtwdev);
-+	ret = devm_request_threaded_irq(rtwdev->dev, pdev->irq,
-+					rtw_pci_interrupt_handler,
-+					rtw_pci_interrupt_threadfn,
-+					IRQF_SHARED, KBUILD_MODNAME, rtwdev);
- 	if (ret) {
- 		ieee80211_unregister_hw(hw);
- 		goto err_destroy_pci;
-@@ -1192,7 +1213,7 @@ static void rtw_pci_remove(struct pci_dev *pdev)
- 	rtw_pci_disable_interrupt(rtwdev, rtwpci);
- 	rtw_pci_destroy(rtwdev, pdev);
- 	rtw_pci_declaim(rtwdev, pdev);
--	free_irq(rtwpci->pdev->irq, rtwdev);
-+	devm_free_irq(rtwdev->dev, rtwpci->pdev->irq, rtwdev);
- 	rtw_core_deinit(rtwdev);
- 	ieee80211_free_hw(hw);
- }
--- 
-2.20.1
+>   and the second memcpy() should remove
+> the " + ST_NCI_I2C_MIN_SIZE".
+Hmm, not sure on this one.
+
+The skb is manipulated only with skb_put. So only the tail pointer and 
+len are updated. The data pointer remains at the same position, so there 
+should effectively be an offset of ST_NCI_I2C_MIN_SIZE for the 2nd memcpy.
+
+Maybe, using skb_put_data would be cleaner here, in order to 
+"concatenate" these 2 parts without having to handle by hand the right 
+position in the buffer.
+
+If you agree, I'll send a V2.
+
+
+Thx for the review and comments.
+
+CJ
+
+> This SKB just get sent down to ndlc_recv() so the content returned from I2C
+> should places at skb->data to be processed.
+>
+> Pretty clear this code was never tested.
 
