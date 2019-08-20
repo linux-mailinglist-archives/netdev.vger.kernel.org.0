@@ -2,85 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E9E2C95F66
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:04:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B4EB495FF8
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 15:26:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729847AbfHTNEI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 09:04:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:44896 "EHLO vps0.lunn.ch"
+        id S1729842AbfHTN0I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 09:26:08 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:44942 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727006AbfHTNEI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 09:04:08 -0400
+        id S1729677AbfHTN0I (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 09:26:08 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
         s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
         Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
         :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=I7K/h5NF0hSsFkWTVB5gzSxkSpsigmltCouJ/cfBkkA=; b=NkPK1k5HnDT7h4r46UdJdzwq0q
-        +HmBrQTNOkEQOsEV0SI+WArtAV61y4q3l5Tg/AuYDFh8k8PV9EcKKAruNd37nT0PUZBRUgT13CnTC
-        CXe2nRoBlXay9178lQYG2ke7AKX3kwqECGqddrA74R2+gVAOZqy1PlXnn1y8ViLcXBMw=;
+        bh=h++X8Sth9mQxKjJr4msQfFTkzZqJoYeqgKDOLKi4PHQ=; b=TD9KGIuS77AHk/ebjtCYZkfDN6
+        VwK6EwrsocReUeCUIjsffu1Rwq+fc2MF9WCgR3ya/prSYzjmpyoOfnh6WjDMEWchPbx6cTXGHHwrW
+        eOrL0OmgzLq/BcQaas7NXS3uxhnDStLkRjULYdUzTJH6EpbCaCZpZ9VhTGDvXHN3eUPI=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1i03nv-0005Jj-Jd; Tue, 20 Aug 2019 15:04:03 +0200
-Date:   Tue, 20 Aug 2019 15:04:03 +0200
+        id 1i049C-0005SE-1D; Tue, 20 Aug 2019 15:26:02 +0200
+Date:   Tue, 20 Aug 2019 15:26:02 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Andy Duan <fugang.duan@nxp.com>
-Cc:     Marco Hartmann <marco.hartmann@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Christian Herber <christian.herber@nxp.com>
-Subject: Re: [EXT] Re: [PATCH net-next 0/1] net: fec: add C45 MDIO read/write
- support
-Message-ID: <20190820130403.GH29991@lunn.ch>
-References: <1566234659-7164-1-git-send-email-marco.hartmann@nxp.com>
- <20190819225422.GD29991@lunn.ch>
- <VI1PR0402MB360079EAAE7042048B2F5AC8FFAB0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v3 2/4] net: mdio: add PTP offset compensation
+ to mdiobus_write_sts
+Message-ID: <20190820132602.GI29991@lunn.ch>
+References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
+ <20190820084833.6019-3-hubert.feurstein@vahle.at>
+ <20190820094903.GI891@localhost>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <VI1PR0402MB360079EAAE7042048B2F5AC8FFAB0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+In-Reply-To: <20190820094903.GI891@localhost>
 User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 02:32:26AM +0000, Andy Duan wrote:
-> From: Andrew Lunn <andrew@lunn.ch>
-> > On Mon, Aug 19, 2019 at 05:11:14PM +0000, Marco Hartmann wrote:
-> > > As of yet, the Fast Ethernet Controller (FEC) driver only supports
-> > > Clause 22 conform MDIO transactions. IEEE 802.3ae Clause 45 defines a
-> > > modified MDIO protocol that uses a two staged access model in order to
-> > > increase the address space.
-> > >
-> > > This patch adds support for Clause 45 conform MDIO read and write
-> > > operations to the FEC driver.
-> > 
-> > Hi Marco
-> > 
-> > Do all versions of the FEC hardware support C45? Or do we need to make use
-> > of the quirk support in this driver to just enable it for some revisions of FEC?
-> > 
-> > Thanks
-> >         Andrew
+On Tue, Aug 20, 2019 at 11:49:03AM +0200, Miroslav Lichvar wrote:
+> On Tue, Aug 20, 2019 at 10:48:31AM +0200, Hubert Feurstein wrote:
 > 
-> i.MX legacy platforms like i.MX6/7 series, they doesn't support Write & Read Increment.
-> But for i.MX8MQ/MM series, it support C45 full features like Write & Read Increment.
+> > +	/* PTP offset compensation:
+> > +	 * After the MDIO access is completed (from the chip perspective), the
+> > +	 * switch chip will snapshot the PHC timestamp. To make sure our system
+> > +	 * timestamp corresponds to the PHC timestamp, we have to add the
+> > +	 * duration of this MDIO access to sts->post_ts. Linuxptp's phc2sys
+> > +	 * takes the average of pre_ts and post_ts to calculate the final
+> > +	 * system timestamp. With this in mind, we have to add ptp_sts_offset
+> > +	 * twice to post_ts, in order to not introduce an constant time offset.
+> > +	 */
+> > +	if (sts)
+> > +		timespec64_add_ns(&sts->post_ts, 2 * bus->ptp_sts_offset);
 > 
-> For the patch itself, it doesn't support Write & Read Increment, so I think the patch doesn't
-> need to add quirk support.
+> This correction looks good to me.
+> 
+> Is the MDIO write delay constant in reality, or does it at least have
+> an upper bound? That is, is it always true that the post_ts timestamp
+> does not point to a time before the PHC timestamp was actually taken?
 
-Hi Andy
+The post_ts could be before the target hardware does anything. The
+write triggers an MDIO bus transaction, sending about 64 bits of data
+down a wire at around 2.5Mbps. So there is a minimum delay of 25uS
+just sending the bits down the wire. It is unclear to me exactly when
+the post_ts is taken, has the hardware actually sent the bits, or has
+it just initiated sending the bits? In this case, there is an
+interrupt sometime later indicating the transaction has completed, so
+my guess would be, post_ts indicates the transaction has been
+initiated.
 
-So what happens with something older than a i.MX8MQ/MM when a C45
-transfer is attempted? This patch adds a new write. Does that write
-immediately trigger a completion interrupt? Does it never trigger an
-interrupt, and we have to wait FEC_MII_TIMEOUT?
+Also, how long does the device on the end of the bus actually take to
+decode the bits on the wire and do what it needs to do?
 
-Ideally, if the hardware does not support C45, we want it to return
-EOPNOTSUPP.
+> This is important to not break the estimation of maximum error in the
+> measured offset. Applications using the ioctl may assume that the
+> maximum error is (post_ts-pre_ts)/2 (i.e. half of the delay printed by
+> phc2sys). That would not work if the delay could be occasionally 50
+> microseconds for instance, i.e. the post_ts timestamp would be earlier
+> than the PHC timestamp.
 
-Thanks
-	Andrew
+Given my understanding of the hardware, post_ts-pre_ts should be
+constant. But what it exactly measures is not clearly defined :-(
+
+And different hardware will have different definitions.
+
+But the real point is, by doing these timestamps here, we are as close
+as possible to where the action really happens, and we are minimising
+the number of undefined things we are measuring, so in general, the
+error is minimised.
+
+    Andrew
