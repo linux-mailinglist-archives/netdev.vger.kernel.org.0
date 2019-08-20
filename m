@@ -2,156 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ADCB95C31
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 12:23:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A7FDE95C36
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 12:26:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729392AbfHTKWz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 06:22:55 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:41012 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728545AbfHTKWz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 06:22:55 -0400
-Received: by mail-ed1-f67.google.com with SMTP id w5so5696437edl.8
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 03:22:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YqG886AdsFA/q35UJ6Mv481X58+6avjiAa/LueAQgms=;
-        b=oZAAYGeF2AEvhECcHMgoG3gf2KHRP+KxiTHJG8L1bH5s6CAOWMmJCF9X5vovIw0Z6c
-         ZOV9jPo7IZ0gq/pCdj2wWIAjE7TfdjZF4By7facUip2trLNy3ukafVKNuXnlm4cdNdXq
-         WA0nCMBRdlKlwiCEwepPQpqsqO5YCxE1nw1uACud24Bwwwp0Wc9UurYqQRIzJEdJ1XaR
-         MMZWTYuQijKq7ODe19ilconApl+LOoJDm/Lyo9NPPzQ525vbFhsQoW0GSV+vz/me12A3
-         YsMuSosgb5W1MrlYKfxSFkEY18pHYZGlOgfJt8/bONVnTJ9jfZ/FVD8PhmyMy0NNM0fK
-         btyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YqG886AdsFA/q35UJ6Mv481X58+6avjiAa/LueAQgms=;
-        b=E8SJmwtSfp7r2JatTV35AZcrEyIwam3DA2+py0yuHUigKfCgeLyQzwKyId9PMs6oNN
-         BdHcKRg6/JfPK9xq2Pw/vEhPAJJJGH7HcNi7/13iHfvmM15tGk6I42mMkdx/tu7JniAI
-         QO2QbPH4Ty2NyCqAT1UimUfwU+Vs0MgavKn5ZNdvEuF030UE892UIptWk4eNI2mKv/bI
-         1P5DmdfkolMoTIjCE0GEKfp9p/ZKZFC9lGf5K+S3NhzauITfsywnmfX4JMbwg+r8jvS+
-         o1SX6vF6PENpNxmrKwn+2cndtRye6W86+kCJ+UxSOpukb04A8EgUAzTHbUSa8Dr5/8C2
-         NcAw==
-X-Gm-Message-State: APjAAAX7LzYkIrJs+dF0MZITEun1rp5hOHar2PO9qnkrPQw0p9gD7kG/
-        ipFkKpXOTj6/wJJ6v8eVp6JCLOVxlPN/3M/hOcI=
-X-Google-Smtp-Source: APXvYqxpGtJg8IzhxlEHLG8Co8LVKk/bSQd+XRzR7eyTOEDNryCr30DO4VHWg99eTsRQTm7U/8DIfzasw1DA3GIlR7o=
-X-Received: by 2002:a17:907:2069:: with SMTP id qp9mr25134983ejb.90.1566296573442;
- Tue, 20 Aug 2019 03:22:53 -0700 (PDT)
+        id S1729494AbfHTKZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 06:25:46 -0400
+Received: from first.geanix.com ([116.203.34.67]:38454 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728414AbfHTKZq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 06:25:46 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id BC73E27D;
+        Tue, 20 Aug 2019 10:25:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1566296738; bh=PRBYncQeB/7wv/3IPKIG7SGi1FMdOrcMuXs2yWJPv4o=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=EjNBWoFa7C2ioJ3zDKywM2NbCpZEYLXxB9kounRGbdrZADSWoRkvd7+k8TJUcwUrc
+         +FxIPgvMzDF6XUCRJHTddPiwVgk8FK2HPXJHQc0Y5OxF9iJw1N5zKH8dbaD2P6ghZB
+         YiXQ1UGNcPK//pe//qIaaFMlhhOEBdyFRfTLFQ+rx56k+LBBGdvxuycPHLMWoI2lu5
+         5C7PQBxgKJgZ9VSl2v4/HNWGVz0CNd8X5dINCer9UXsdOWYJIfD+SYQyM0Jt++Q6Gv
+         +uoIy8tNhKBc8ghrDKGGvMrQmxs6iuVwlAGhk8dRobpKAewwaIGxGlCFMFQO9zpDYs
+         tQ9S0vpLhwXwg==
+Subject: Re: [PATCH REPOST 1/2] can: flexcan: fix deadlock when using self
+ wakeup
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "mkl@pengutronix.de" <mkl@pengutronix.de>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>
+Cc:     "wg@grandegger.com" <wg@grandegger.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        =?UTF-8?Q?Martin_Hundeb=c3=b8ll?= <martin@geanix.com>
+References: <20190816081749.19300-1-qiangqing.zhang@nxp.com>
+ <20190816081749.19300-2-qiangqing.zhang@nxp.com>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <dd8f5269-8403-702b-b054-e031423ffc73@geanix.com>
+Date:   Tue, 20 Aug 2019 12:25:24 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190820000002.9776-1-olteanv@gmail.com> <20190820000002.9776-5-olteanv@gmail.com>
- <20190820020709.GD975@t480s.localdomain>
-In-Reply-To: <20190820020709.GD975@t480s.localdomain>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Tue, 20 Aug 2019 13:22:42 +0300
-Message-ID: <CA+h21hpWxEO8LQWM3KfcYoFOBZFo=YfDOJ+rLxLaC-Facg+MXA@mail.gmail.com>
-Subject: Re: [PATCH net-next 4/6] net: dsa: Don't program the VLAN as pvid on
- the upstream port
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        nikolay@cumulusnetworks.com,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190816081749.19300-2-qiangqing.zhang@nxp.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-3.1 required=4.0 tests=ALL_TRUSTED,BAYES_00,
+        DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF,URIBL_BLOCKED
+        autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on 77834cc0481d
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vivien,
 
-On Tue, 20 Aug 2019 at 09:07, Vivien Didelot <vivien.didelot@gmail.com> wrote:
->
-> On Tue, 20 Aug 2019 03:00:00 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > Commit b2f81d304cee ("net: dsa: add CPU and DSA ports as VLAN members")
-> > programs the VLAN from the bridge into the specified port as well as the
-> > upstream port, with the same set of flags.
-> >
-> > Consider the typical case of installing pvid 1 on user port 1, pvid 2 on
-> > user port 2, etc. The upstream port would end up having a pvid equal to
-> > the last user port whose pvid was programmed from the bridge. Less than
-> > useful.
-> >
-> > So just don't change the pvid of the upstream port and let it be
-> > whatever the driver set it internally to be.
-> >
-> > Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> > ---
-> >  net/dsa/switch.c | 16 ++++++++++++----
-> >  1 file changed, 12 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-> > index 84ab2336131e..02ccc53f1926 100644
-> > --- a/net/dsa/switch.c
-> > +++ b/net/dsa/switch.c
-> > @@ -239,17 +239,21 @@ dsa_switch_vlan_prepare_bitmap(struct dsa_switch *ds,
-> >                              const struct switchdev_obj_port_vlan *vlan,
-> >                              const unsigned long *bitmap)
-> >  {
-> > +     struct switchdev_obj_port_vlan v = *vlan;
-> >       int port, err;
-> >
-> >       if (!ds->ops->port_vlan_prepare || !ds->ops->port_vlan_add)
-> >               return -EOPNOTSUPP;
-> >
-> >       for_each_set_bit(port, bitmap, ds->num_ports) {
-> > -             err = dsa_port_vlan_check(ds, port, vlan);
-> > +             if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
-> > +                     v.flags &= ~BRIDGE_VLAN_INFO_PVID;
->
-> So you keep the BRIDGE_VLAN_INFO_PVID flag cleared for all other ports that
-> come after any CPU or DSA port?
->
 
-It looks like the convenient hardware decision of making the CPU port
-on my board also be the numerically highest one strikes again :)
-I always find bugs when I change the CPU port to another number.
-This is another example (also related to the inclusion of upstream
-ports in the VLAN bitmap, like they all seem to be):
-https://git.kernel.org/pub/scm/linux/kernel/git/davem/net-next.git/commit/?id=d34d2baa9173f6e0c0f22d005d18e83d1cb54d8d
+On 16/08/2019 10.20, Joakim Zhang wrote:
+> As reproted by Sean Nyekjaer below:
+> When suspending, when there is still can traffic on the interfaces the
+> flexcan immediately wakes the platform again. As it should :-). But it
+> throws this error msg:
+> [ 3169.378661] PM: noirq suspend of devices failed
+> 
+> On the way down to suspend the interface that throws the error message does
+> call flexcan_suspend but fails to call flexcan_noirq_suspend. That means the
+> flexcan_enter_stop_mode is called, but on the way out of suspend the driver
+> only calls flexcan_resume and skips flexcan_noirq_resume, thus it doesn't call
+> flexcan_exit_stop_mode. This leaves the flexcan in stop mode, and with the
+> current driver it can't recover from this even with a soft reboot, it requires
+> a hard reboot.
+> 
+> The best way to exit stop mode is in Wake Up interrupt context, and then
+> suspend() and resume() functions can be symmetric. However, stop mode
+> request and ack will be controlled by SCU(System Control Unit) firmware(manage
+> clock,power,stop mode, etc. by Cortex-M4 core) in coming i.MX8(QM/QXP). And SCU
+> firmware interface can't be available in interrupt context.
+> 
+> For compatibillity, the wake up mechanism can't be symmetric, so we need
+> in_stop_mode hack.
+> 
+> Fixes: de3578c198c6 ("can: flexcan: add self wakeup support")
+> Reported-by: Sean Nyekjaer <sean@geanix.com>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> 
 
-> > +
-> > +             err = dsa_port_vlan_check(ds, port, &v);
-> >               if (err)
-> >                       return err;
-> >
-> > -             err = ds->ops->port_vlan_prepare(ds, port, vlan);
-> > +             err = ds->ops->port_vlan_prepare(ds, port, &v);
-> >               if (err)
-> >                       return err;
-> >       }
-> > @@ -262,10 +266,14 @@ dsa_switch_vlan_add_bitmap(struct dsa_switch *ds,
-> >                          const struct switchdev_obj_port_vlan *vlan,
-> >                          const unsigned long *bitmap)
-> >  {
-> > +     struct switchdev_obj_port_vlan v = *vlan;
-> >       int port;
-> >
-> > -     for_each_set_bit(port, bitmap, ds->num_ports)
-> > -             ds->ops->port_vlan_add(ds, port, vlan);
-> > +     for_each_set_bit(port, bitmap, ds->num_ports) {
-> > +             if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
-> > +                     v.flags &= ~BRIDGE_VLAN_INFO_PVID;
->
-> Same here. Did you intend to initialize your switchdev_obj_port_vlan structure
-> _within_ the for_each_set_bit loop maybe?
->
+Unfortunatly it's still possible to reproduce the deadlock with this 
+patch...
 
-Thanks for pointing this out.
+[  689.921717] flexcan: probe of 2094000.flexcan failed with error -110
 
-> > +             ds->ops->port_vlan_add(ds, port, &v);
-> > +     }
-> >  }
-> >
-> >  static int dsa_switch_vlan_add(struct dsa_switch *ds,
->
-> Do you even test your patches?
+My test setup:
+PC with CAN-USB dongle connected to can0 and can1.
 
-No.
+PC:
+$ while true; do cansend can0 '123#DEADBEEF'; done
 
-Regards,
--Vladimir
+iMX6ull:
+root@iwg26:~# systemctl suspend 
+ 
+
+[  365.858054] systemd[1]: Reached target Sleep.
+root@iwg26:~# [  365.939826] systemd[1]: Starting Suspend...
+[  366.115839] systemd-sleep[248]: Suspending system...
+[  366.517949] dpm_run_callback(): platform_pm_suspend+0x0/0x5c returns -110
+[  366.518249] PM: Device 2094000.flexcan failed to suspend: error -110
+[  366.518406] PM: Some devices failed to suspend, or early wake event 
+detected
+[  366.732162] dpm_run_callback(): platform_pm_suspend+0x0/0x5c returns -110
+[  366.732285] PM: Device 2090000.flexcan failed to suspend: error -110
+[  366.732330] PM: Some devices failed to suspend, or early wake event 
+detected
+[  366.890637] systemd-sleep[248]: System resumed.
+[  366.923062] systemd[1]: Started Suspend.
+[  366.942819] systemd[1]: sleep.target: Unit not needed anymore. Stopping.
+[  366.954791] systemd[1]: Stopped target Sleep.
+[  366.962402] systemd[1]: Reached target Suspend.
+[  366.977546] systemd-logind[135]: Operation 'sleep' finished.
+[  366.979194] systemd[1]: suspend.target: Unit not needed anymore. 
+Stopping.
+[  366.993831] systemd[1]: Stopped target Suspend.
+[  367.139972] systemd-networkd[220]: usb0: Lost carrier
+[  367.294077] systemd-networkd[220]: usb0: Gained carrier
+
+root@iwg26:~# candump can0 | head -n 2 
+
+   can0  123   [4]  DE AD BE EF
+   can0  123   [4]  DE AD BE EF
+root@iwg26:~# candump can1 | head -n 2 
+
+   can1  123   [4]  DE AD BE EF
+   can1  123   [4]  DE AD BE EF
+root@iwg26:~# systemctl suspend 
+
+root@iwg26:~# [  385.106658] systemd[1]: Reached target Sleep.
+[  385.147602] systemd[1]: Starting Suspend...
+[  385.246421] systemd-sleep[260]: Suspending system...
+[  385.634733] dpm_run_callback(): platform_pm_suspend+0x0/0x5c returns -110
+[  385.634855] PM: Device 2090000.flexcan failed to suspend: error -110
+[  385.634897] PM: Some devices failed to suspend, or early wake event 
+detected
+[  385.856251] PM: noirq suspend of devices failed
+[  385.998364] systemd-sleep[260]: System resumed.
+[  386.023390] systemd[1]: Started Suspend.
+[  386.031570] systemd[1]: sleep.target: Unit not needed anymore. Stopping.
+[  386.055886] systemd[1]: Stopped target Sleep.
+[  386.061430] systemd[1]: Reached target Suspend.
+[  386.066142] systemd[1]: suspend.target: Unit not needed anymore. 
+Stopping.
+[  386.112575] systemd-networkd[220]: usb0: Lost carrier
+[  386.116797] systemd-logind[135]: Operation 'sleep' finished.
+[  386.146161] systemd[1]: Stopped target Suspend.
+[  386.260866] systemd-networkd[220]: usb0: Gained carrier
+root@iwg26:~# candump can0 | head -n 2
+   can0  123   [4]  DE AD BE EF
+   can0  123   [4]  DE AD BE EF
+root@iwg26:~# candump can1 | head -n 2 
+
+   can1  123   [4]  DE AD BE EF
+   can1  123   [4]  DE AD BE EF
+root@iwg26:~# systemctl suspend 
+
+[  396.919303] systemd[1]: Reached target Sleep.
+root@iwg26:~# [  396.964722] systemd[1]: Starting Suspend...
+[  397.067336] systemd-sleep[268]: Suspending system...
+[  397.574571] PM: noirq suspend of devices failed
+[  397.834731] PM: noirq suspend of devices failed
+[  397.807996] systemd-networkd[220]: usb0: Lost carrier
+[  398.156295] dpm_run_callback(): platform_pm_suspend+0x0/0x5c returns -110
+[  398.156339] PM: Device 2094000.flexcan failed to suspend: error -110
+[  398.156509] PM: Some devices failed to suspend, or early wake event 
+detected
+[  398.053555] systemd-sleep[268]: Failed to write /sys/power/state: 
+Device or resource busy
+[  398.074751] systemd[1]: systemd-suspend.service: Main process exited, 
+code=exited, status=1/FAILURE
+[  398.076779] systemd[1]: systemd-suspend.service: Failed with result 
+'exit-code'.
+[  398.109255] systemd[1]: Failed to start Suspend.
+[  398.118704] systemd[1]: Dependency failed for Suspend.
+[  398.136283] systemd-logind[135]: Operation 'sleep' finished.
+[  398.137770] systemd[1]: suspend.target: Job suspend.target/start 
+failed with result 'dependency'.
+[  398.139105] systemd[1]: sleep.target: Unit not needed anymore. Stopping.
+[  398.167590] systemd[1]: Stopped target Sleep.
+[  398.201558] systemd-networkd[220]: usb0: Gained carrier
+
+root@iwg26:~# candump can0 | head -n 2
+   can0  123   [4]  DE AD BE EF
+   can0  123   [4]  DE AD BE EF
+root@iwg26:~# candump can1 | head -n 2
+
+nothing on can1 anymore :-(
+
+root@iwg26:~# rmmod flexcan
+[  622.884746] systemd-networkd[220]: can1: Lost carrier
+[  623.046766] systemd-networkd[220]: can0: Lost carrier
+root@iwg26:~# insmod /mnt/flexcan.ko
+[  628.323981] flexcan 2094000.flexcan: registering netdev failed
+
+and can1 fails to register with:
+[  628.347485] flexcan: probe of 2094000.flexcan failed with error -110
+
+/Sean
