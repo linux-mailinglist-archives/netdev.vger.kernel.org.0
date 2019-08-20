@@ -2,126 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C1F89523D
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 02:12:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4158195271
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 02:19:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728647AbfHTAMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 19 Aug 2019 20:12:09 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:45241 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728578AbfHTAMI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 20:12:08 -0400
-Received: by mail-lf1-f68.google.com with SMTP id a30so2682701lfk.12
-        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 17:12:07 -0700 (PDT)
+        id S1729166AbfHTATL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 19 Aug 2019 20:19:11 -0400
+Received: from mail-pl1-f202.google.com ([209.85.214.202]:46589 "EHLO
+        mail-pl1-f202.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729160AbfHTATK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 19 Aug 2019 20:19:10 -0400
+Received: by mail-pl1-f202.google.com with SMTP id k9so2939340pls.13
+        for <netdev@vger.kernel.org>; Mon, 19 Aug 2019 17:19:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cumulusnetworks.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=wvDb3cRNeqyQkEnlMv/q5p9fjN71O5VnLdbSqsJNW7U=;
-        b=SjSYm9aI/UZagFGnpNJHLGdY1VmPhjAJCz+eup6pbWpp/fNoVzHs2E7Tw1uJw2LhNA
-         Tf8J1E42TZOtINI8Cp/9crBJ0NaEnDXUU0ptKYbC0uIrjBYug2b4EqeLYjd5Fi/PKctL
-         wc8tcsBvMGQZRhsXDYZ9g9pnxJQf5nawzv1G8=
+        d=google.com; s=20161025;
+        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
+         :cc;
+        bh=y7A0HibhyhfzIREut3Dwuxy8x8kSL4ALtDSq/DvbdZU=;
+        b=E6L68QxBaU21/SMLGJjUVxfcqlYeoh9KKiuYntVofw3Je/54Bv5YFbSTgASr+mR0Up
+         bRdR94U1mPd4NJbF7fenNctW8EA2R6U5r36ZaVdRqbzVdB805s1Z8hoPo3xgk/bW/FsJ
+         XGISHYMqTtZ5pi0dKMfRWUPYNNUk1ZqQm/dCORAvOZmWxh118qjX/XKjLbG7G80zbnIw
+         5pvIDjlLJdT1xmoZTAVXRxK/LknQgJgzmfo610NNtIpmiWzgk8yIPwNQ3QASW8Irtw+e
+         7Y+74jZkbHXcj5BHnftE099IRg7qujtK3/hCilLV90w5IuGYYe+RYjsvGg1pYHQ8kAZy
+         vZwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wvDb3cRNeqyQkEnlMv/q5p9fjN71O5VnLdbSqsJNW7U=;
-        b=iSURp8db0Sq39D3hk6ri3xs1aaO6xiY2HygZzu2icaAOa5SPH4uIQqVQqJvY39plG3
-         Pyovb6V1NjdZ2msw0p0SfGsxllUO6HtGq1O0fOjkbOjshGNaH80GGCDDona/3Ch1dLrc
-         2OmkORxWovKuuV/Gv1tCwrwEAHkTnyp6CS/iOmDu7nxUwoHPHzzGdzdbiEqV/3+lS3Md
-         h1fb1cXrrlmvBhGqEmd2c1Fgs4eypC3C2mRMWMaXvYJ/xkNkjWSDhFoXMCrCvVVYS4R3
-         0j0QwaVRr0JK3atA4+z2h1bMUUsWI/NbRyVENBgv7BSnnWAYzG2EfVkYYV96Qrh4+UKo
-         rIGA==
-X-Gm-Message-State: APjAAAVkN7R9R7GUbGfvfrIGzW3pkAwKQkaFU3RI4gj/MB+rgvsa3bTj
-        u9A5p/6AFS6qdssOKEQ9dWdb71xUfIsqDA==
-X-Google-Smtp-Source: APXvYqzYuy/LLeZld9+D+gVy82o+hWxZ8H77bCQdPj4paJcLeBsar6Odlr+HV2y4v4lwXVDQKnVGdQ==
-X-Received: by 2002:a19:a419:: with SMTP id q25mr14110463lfc.136.1566259926672;
-        Mon, 19 Aug 2019 17:12:06 -0700 (PDT)
-Received: from [192.168.0.109] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.googlemail.com with ESMTPSA id s21sm2557412ljm.28.2019.08.19.17.12.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 19 Aug 2019 17:12:06 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/6] net: bridge: Populate the pvid flag in
- br_vlan_get_info
-To:     Vladimir Oltean <olteanv@gmail.com>, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com, andrew@lunn.ch, idosch@idosch.org,
-        roopa@cumulusnetworks.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org
-References: <20190820000002.9776-1-olteanv@gmail.com>
- <20190820000002.9776-3-olteanv@gmail.com>
-From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
-Message-ID: <e31d0846-b783-4ace-e9c2-54ec993a1bdf@cumulusnetworks.com>
-Date:   Tue, 20 Aug 2019 03:12:04 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190820000002.9776-3-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=y7A0HibhyhfzIREut3Dwuxy8x8kSL4ALtDSq/DvbdZU=;
+        b=iwfZmBAdej0MMD/xvIuwOi67nmbmF9+Q++Narwy4EZqvoPZ9aE34LiCDOvzaqZAZg5
+         3Wdn89XE4RQ3Tq1O4DlcVn5jhVTvVBVJBETWtwdwN/POgjMxewpTKvAkpVB00/qMqe02
+         QyD6jceS0ZFa0PZXVgbidNC+81C3X2pCTzNsLK7dusVLmfYMCstX5UYLikAP2BXoU4qm
+         KGzPoa2VhG27NrHVR2YcX3srR5kqnxZBUCV5naEQfYXpGK8Ox0QO4AN3wEZu5fRDfoat
+         rD7Ts841JUCxmoQp9PQPHQcF+56nGUw5mX0ehn9sUeUu5HL1zaH4aRQJ+aewnI85Z90F
+         jdIQ==
+X-Gm-Message-State: APjAAAWSZwrucAXcfsZm9tHLOjE08xNeg+GOGB4qrk/n8P42ino0mKLU
+        IaWk6KlcmIA6GVX8x8FhJhc4/jJRWG9dw+LORm9Gkw==
+X-Google-Smtp-Source: APXvYqxNgzDjWlK9zVX2D1LRxy26StW0LiS4oj6z0C920gpBqNX5FvSjQfD9J9cmE4lXFk1B8ByAYmM4L1IzFMjpRqlxBg==
+X-Received: by 2002:a65:60cd:: with SMTP id r13mr22971318pgv.315.1566260349868;
+ Mon, 19 Aug 2019 17:19:09 -0700 (PDT)
+Date:   Mon, 19 Aug 2019 17:17:59 -0700
+In-Reply-To: <20190820001805.241928-1-matthewgarrett@google.com>
+Message-Id: <20190820001805.241928-24-matthewgarrett@google.com>
+Mime-Version: 1.0
+References: <20190820001805.241928-1-matthewgarrett@google.com>
+X-Mailer: git-send-email 2.23.0.rc1.153.gdeed80330f-goog
+Subject: [PATCH V40 23/29] bpf: Restrict bpf when kernel lockdown is in
+ confidentiality mode
+From:   Matthew Garrett <matthewgarrett@google.com>
+To:     jmorris@namei.org
+Cc:     linux-security-module@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
+        David Howells <dhowells@redhat.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Matthew Garrett <mjg59@google.com>,
+        Kees Cook <keescook@chromium.org>, netdev@vger.kernel.org,
+        Chun-Yi Lee <jlee@suse.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/20/19 2:59 AM, Vladimir Oltean wrote:
-> Currently this simplified code snippet fails:
-> 
-> 	br_vlan_get_pvid(netdev, &pvid);
-> 	br_vlan_get_info(netdev, pvid, &vinfo);
-> 	ASSERT(!(vinfo.flags & BRIDGE_VLAN_INFO_PVID));
-> 
-> It is intuitive that the pvid of a netdevice should have the
-> BRIDGE_VLAN_INFO_PVID flag set.
-> 
-> However I can't seem to pinpoint a commit where this behavior was
-> introduced. It seems like it's been like that since forever.
-> 
-> At a first glance it would make more sense to just handle the
-> BRIDGE_VLAN_INFO_PVID flag in __vlan_add_flags. However, as Nikolay
-> explains:
-> 
->   There are a few reasons why we don't do it, most importantly because
->   we need to have only one visible pvid at any single time, even if it's
->   stale - it must be just one. Right now that rule will not be violated
->   by this change, but people will try using this flag and could see two
->   pvids simultaneously. You can see that the pvid code is even using
->   memory barriers to propagate the new value faster and everywhere the
->   pvid is read only once.  That is the reason the flag is set
->   dynamically when dumping entries, too.  A second (weaker) argument
->   against would be given the above we don't want another way to do the
->   same thing, specifically if it can provide us with two pvids (e.g. if
->   walking the vlan list) or if it can provide us with a pvid different
->   from the one set in the vg. [Obviously, I'm talking about RCU
->   pvid/vlan use cases similar to the dumps.  The locked cases are fine.
->   I would like to avoid explaining why this shouldn't be relied upon
->   without locking]
-> 
-> So instead of introducing the above change and making sure of the pvid
-> uniqueness under RCU, simply dynamically populate the pvid flag in
-> br_vlan_get_info().
-> 
-> Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
-> ---
->  net/bridge/br_vlan.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-> index f5b2aeebbfe9..bb98984cd27d 100644
-> --- a/net/bridge/br_vlan.c
-> +++ b/net/bridge/br_vlan.c
-> @@ -1281,6 +1281,8 @@ int br_vlan_get_info(const struct net_device *dev, u16 vid,
->  
->  	p_vinfo->vid = vid;
->  	p_vinfo->flags = v->flags;
-> +	if (vid == br_get_pvid(vg))
-> +		p_vinfo->flags |= BRIDGE_VLAN_INFO_PVID;
->  	return 0;
->  }
->  EXPORT_SYMBOL_GPL(br_vlan_get_info);
-> 
+From: David Howells <dhowells@redhat.com>
 
-Looks good, thanks!
-Acked-by: Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+bpf_read() and bpf_read_str() could potentially be abused to (eg) allow
+private keys in kernel memory to be leaked. Disable them if the kernel
+has been locked down in confidentiality mode.
+
+Suggested-by: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Signed-off-by: Matthew Garrett <mjg59@google.com>
+Reviewed-by: Kees Cook <keescook@chromium.org>
+cc: netdev@vger.kernel.org
+cc: Chun-Yi Lee <jlee@suse.com>
+cc: Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc: Daniel Borkmann <daniel@iogearbox.net>
+Signed-off-by: James Morris <jmorris@namei.org>
+---
+ include/linux/security.h     |  1 +
+ kernel/trace/bpf_trace.c     | 10 ++++++++++
+ security/lockdown/lockdown.c |  1 +
+ 3 files changed, 12 insertions(+)
+
+diff --git a/include/linux/security.h b/include/linux/security.h
+index 0b2529dbf0f4..e604f4c67f03 100644
+--- a/include/linux/security.h
++++ b/include/linux/security.h
+@@ -118,6 +118,7 @@ enum lockdown_reason {
+ 	LOCKDOWN_INTEGRITY_MAX,
+ 	LOCKDOWN_KCORE,
+ 	LOCKDOWN_KPROBES,
++	LOCKDOWN_BPF_READ,
+ 	LOCKDOWN_CONFIDENTIALITY_MAX,
+ };
+ 
+diff --git a/kernel/trace/bpf_trace.c b/kernel/trace/bpf_trace.c
+index 1c9a4745e596..33a954c367f3 100644
+--- a/kernel/trace/bpf_trace.c
++++ b/kernel/trace/bpf_trace.c
+@@ -139,8 +139,13 @@ BPF_CALL_3(bpf_probe_read, void *, dst, u32, size, const void *, unsafe_ptr)
+ {
+ 	int ret;
+ 
++	ret = security_locked_down(LOCKDOWN_BPF_READ);
++	if (ret < 0)
++		goto out;
++
+ 	ret = probe_kernel_read(dst, unsafe_ptr, size);
+ 	if (unlikely(ret < 0))
++out:
+ 		memset(dst, 0, size);
+ 
+ 	return ret;
+@@ -566,6 +571,10 @@ BPF_CALL_3(bpf_probe_read_str, void *, dst, u32, size,
+ {
+ 	int ret;
+ 
++	ret = security_locked_down(LOCKDOWN_BPF_READ);
++	if (ret < 0)
++		goto out;
++
+ 	/*
+ 	 * The strncpy_from_unsafe() call will likely not fill the entire
+ 	 * buffer, but that's okay in this circumstance as we're probing
+@@ -577,6 +586,7 @@ BPF_CALL_3(bpf_probe_read_str, void *, dst, u32, size,
+ 	 */
+ 	ret = strncpy_from_unsafe(dst, unsafe_ptr, size);
+ 	if (unlikely(ret < 0))
++out:
+ 		memset(dst, 0, size);
+ 
+ 	return ret;
+diff --git a/security/lockdown/lockdown.c b/security/lockdown/lockdown.c
+index 27b2cf51e443..2397772c56bd 100644
+--- a/security/lockdown/lockdown.c
++++ b/security/lockdown/lockdown.c
+@@ -33,6 +33,7 @@ static char *lockdown_reasons[LOCKDOWN_CONFIDENTIALITY_MAX+1] = {
+ 	[LOCKDOWN_INTEGRITY_MAX] = "integrity",
+ 	[LOCKDOWN_KCORE] = "/proc/kcore access",
+ 	[LOCKDOWN_KPROBES] = "use of kprobes",
++	[LOCKDOWN_BPF_READ] = "use of bpf to read kernel RAM",
+ 	[LOCKDOWN_CONFIDENTIALITY_MAX] = "confidentiality",
+ };
+ 
+-- 
+2.23.0.rc1.153.gdeed80330f-goog
 
