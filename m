@@ -2,14 +2,14 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B208396C62
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:33:59 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2A17596C6D
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 00:34:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731200AbfHTWdy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 18:33:54 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:36972 "EHLO
+        id S1731223AbfHTWeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 18:34:10 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:36974 "EHLO
         bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730930AbfHTWdC (ORCPT
+        with ESMTP id S1730953AbfHTWdC (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 18:33:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
@@ -17,20 +17,20 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         :Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From
         :Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Q8j9KokhURHH0lN02kIgFmPMPrSz2fFuerT1/ziZ5ZI=; b=g9HrJsUEWVm5tLbqH3wOXYRdQP
-        bAUvHutIf5FfV4HsvIcYWkFoYexA3xDxpLv8rfYucnBrCQwSdCvZQeDYwqo2lr6ee72sFvQ+dxIX4
-        pvKiS/Wohkie+HS+5A6css3G6040aGNIok2vGEihxn4iwLbqGAPPQER/DVjL5c27wjYmycnVtEs+W
-        LJV0sIX6uDXVH9Taoht8Gj0MuRe/hoG0BxU2bV+2pb1dQdoXeinjdxO8mU0PWryBeHwEmSA7JoB4Q
-        fLZxZBFfRK2Fn3WoCAsMuk1ZOIYoPe9HvvFQnmkQ23WHyJ/MFEvhaavAAH61CPgPQnwC4mV2ZECTu
-        jEdPJzhA==;
+        bh=xTe8eISmXiNJDbKasUBColXUOkyVKIerkNqgvAuNgvo=; b=UdaJbHQguy1UDuGZRwPByEZt6e
+        Q+PtYa0edxkrcNlDI4rK1uzkMNkRiSu2WRGcumAapFX9WF0fNuE4ziVEYOXg+ewCBObpEeSO0LgKv
+        N4VZL99wPcA3TZiYJXgdqvyTrnUp8A5vwxzjx4n6rFdLNGUtdV2BJaxK3cLwcEBqtqDVC3489QZSA
+        Xf3OD9sdn+aBoj7SJNMaeC3o0/0+v+6hJY4O1RyiCGPA/RstOkOXa3VOMxeVduW32FcPQoZcqIOE2
+        bS8h1efvloqCprEMNLk9baYtas7PVJKDhm9Hr7UzSQ/J1Jx2n+1OjB3oYMHKPp1r6mnvsj5JmFC6U
+        jVxKYMOQ==;
 Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0CgY-0005q9-0u; Tue, 20 Aug 2019 22:33:02 +0000
+        id 1i0CgY-0005qG-2E; Tue, 20 Aug 2019 22:33:02 +0000
 From:   Matthew Wilcox <willy@infradead.org>
 To:     netdev@vger.kernel.org
 Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
-Subject: [PATCH 07/38] mlx5: Convert fpga IDRs to XArray
-Date:   Tue, 20 Aug 2019 15:32:28 -0700
-Message-Id: <20190820223259.22348-8-willy@infradead.org>
+Subject: [PATCH 08/38] nfp: Convert to XArray
+Date:   Tue, 20 Aug 2019 15:32:29 -0700
+Message-Id: <20190820223259.22348-9-willy@infradead.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190820223259.22348-1-willy@infradead.org>
 References: <20190820223259.22348-1-willy@infradead.org>
@@ -43,154 +43,167 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
 
-Leave the locking as irq-disabling since it appears we can release
-entries from interrupt context.
+A minor change in semantics where we simply store into the XArray rather
+than insert; this only matters if there could already be something stored
+at that index, and from my reading of the code that can't happen.
+
+Use xa_for_each() rather than xas_for_each() as none of these loops
+appear to be performance-critical.
 
 Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 ---
- .../ethernet/mellanox/mlx5/core/fpga/tls.c    | 54 +++++++------------
- .../ethernet/mellanox/mlx5/core/fpga/tls.h    |  6 +--
- 2 files changed, 21 insertions(+), 39 deletions(-)
+ drivers/net/ethernet/netronome/nfp/abm/main.c |  4 +--
+ drivers/net/ethernet/netronome/nfp/abm/main.h |  4 +--
+ .../net/ethernet/netronome/nfp/abm/qdisc.c    | 33 +++++++------------
+ 3 files changed, 15 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c
-index 22a2ef111514..dbc09c8659a5 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.c
-@@ -121,16 +121,12 @@ static void mlx5_fpga_tls_cmd_send(struct mlx5_fpga_device *fdev,
- 	spin_unlock_irqrestore(&tls->pending_cmds_lock, flags);
- }
+diff --git a/drivers/net/ethernet/netronome/nfp/abm/main.c b/drivers/net/ethernet/netronome/nfp/abm/main.c
+index 9183b3e85d21..2a06a3012e39 100644
+--- a/drivers/net/ethernet/netronome/nfp/abm/main.c
++++ b/drivers/net/ethernet/netronome/nfp/abm/main.c
+@@ -345,7 +345,7 @@ nfp_abm_vnic_alloc(struct nfp_app *app, struct nfp_net *nn, unsigned int id)
+ 	netif_keep_dst(nn->dp.netdev);
  
--/* Start of context identifiers range (inclusive) */
--#define SWID_START	0
- /* End of context identifiers range (exclusive) */
- #define SWID_END	BIT(24)
+ 	nfp_abm_vnic_set_mac(app->pf, abm, nn, id);
+-	INIT_RADIX_TREE(&alink->qdiscs, GFP_KERNEL);
++	xa_init(&alink->qdiscs);
  
--static int mlx5_fpga_tls_alloc_swid(struct idr *idr, spinlock_t *idr_spinlock,
--				    void *ptr)
-+static int mlx5_fpga_tls_alloc_swid(struct xarray *xa, void *flow)
- {
--	unsigned long flags;
--	int ret;
-+	int ret, id;
- 
- 	/* TLS metadata format is 1 byte for syndrome followed
- 	 * by 3 bytes of swid (software ID)
-@@ -139,24 +135,22 @@ static int mlx5_fpga_tls_alloc_swid(struct idr *idr, spinlock_t *idr_spinlock,
- 	 */
- 	BUILD_BUG_ON((SWID_END - 1) & 0xFF000000);
- 
--	idr_preload(GFP_KERNEL);
--	spin_lock_irqsave(idr_spinlock, flags);
--	ret = idr_alloc(idr, ptr, SWID_START, SWID_END, GFP_ATOMIC);
--	spin_unlock_irqrestore(idr_spinlock, flags);
--	idr_preload_end();
-+	ret = xa_alloc_irq(xa, &id, flow, XA_LIMIT(0, SWID_END - 1),
-+			GFP_KERNEL);
-+	if (!ret)
-+		return id;
- 
- 	return ret;
- }
- 
--static void *mlx5_fpga_tls_release_swid(struct idr *idr,
--					spinlock_t *idr_spinlock, u32 swid)
-+static void *mlx5_fpga_tls_release_swid(struct xarray *xa, u32 swid)
- {
- 	unsigned long flags;
- 	void *ptr;
- 
--	spin_lock_irqsave(idr_spinlock, flags);
--	ptr = idr_remove(idr, swid);
--	spin_unlock_irqrestore(idr_spinlock, flags);
-+	xa_lock_irqsave(xa, flags);
-+	ptr = __xa_erase(xa, swid);
-+	xa_unlock_irqrestore(xa, flags);
- 	return ptr;
- }
- 
-@@ -210,7 +204,7 @@ int mlx5_fpga_tls_resync_rx(struct mlx5_core_dev *mdev, u32 handle, u32 seq,
- 	cmd = (buf + 1);
- 
- 	rcu_read_lock();
--	flow = idr_find(&mdev->fpga->tls->rx_idr, ntohl(handle));
-+	flow = xa_load(&mdev->fpga->tls->rx_flows, ntohl(handle));
- 	if (unlikely(!flow)) {
- 		rcu_read_unlock();
- 		WARN_ONCE(1, "Received NULL pointer for handle\n");
-@@ -269,13 +263,9 @@ void mlx5_fpga_tls_del_flow(struct mlx5_core_dev *mdev, u32 swid,
- 	void *flow;
- 
- 	if (direction_sx)
--		flow = mlx5_fpga_tls_release_swid(&tls->tx_idr,
--						  &tls->tx_idr_spinlock,
--						  swid);
-+		flow = mlx5_fpga_tls_release_swid(&tls->tx_flows, swid);
- 	else
--		flow = mlx5_fpga_tls_release_swid(&tls->rx_idr,
--						  &tls->rx_idr_spinlock,
--						  swid);
-+		flow = mlx5_fpga_tls_release_swid(&tls->rx_flows, swid);
- 
- 	if (!flow) {
- 		mlx5_fpga_err(mdev->fpga, "No flow information for swid %u\n",
-@@ -483,10 +473,8 @@ int mlx5_fpga_tls_init(struct mlx5_core_dev *mdev)
- 	spin_lock_init(&tls->pending_cmds_lock);
- 	INIT_LIST_HEAD(&tls->pending_cmds);
- 
--	idr_init(&tls->tx_idr);
--	idr_init(&tls->rx_idr);
--	spin_lock_init(&tls->tx_idr_spinlock);
--	spin_lock_init(&tls->rx_idr_spinlock);
-+	xa_init_flags(&tls->tx_flows, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_IRQ);
-+	xa_init_flags(&tls->rx_flows, XA_FLAGS_ALLOC | XA_FLAGS_LOCK_IRQ);
- 	fdev->tls = tls;
  	return 0;
  
-@@ -591,11 +579,9 @@ int mlx5_fpga_tls_add_flow(struct mlx5_core_dev *mdev, void *flow,
- 	u32 swid;
+@@ -361,7 +361,7 @@ static void nfp_abm_vnic_free(struct nfp_app *app, struct nfp_net *nn)
+ 	struct nfp_abm_link *alink = nn->app_priv;
  
- 	if (direction_sx)
--		ret = mlx5_fpga_tls_alloc_swid(&tls->tx_idr,
--					       &tls->tx_idr_spinlock, flow);
-+		ret = mlx5_fpga_tls_alloc_swid(&tls->tx_flows, flow);
- 	else
--		ret = mlx5_fpga_tls_alloc_swid(&tls->rx_idr,
--					       &tls->rx_idr_spinlock, flow);
-+		ret = mlx5_fpga_tls_alloc_swid(&tls->rx_flows, flow);
- 
- 	if (ret < 0)
- 		return ret;
-@@ -612,11 +598,9 @@ int mlx5_fpga_tls_add_flow(struct mlx5_core_dev *mdev, void *flow,
- 	return 0;
- free_swid:
- 	if (direction_sx)
--		mlx5_fpga_tls_release_swid(&tls->tx_idr,
--					   &tls->tx_idr_spinlock, swid);
-+		mlx5_fpga_tls_release_swid(&tls->tx_flows, swid);
- 	else
--		mlx5_fpga_tls_release_swid(&tls->rx_idr,
--					   &tls->rx_idr_spinlock, swid);
-+		mlx5_fpga_tls_release_swid(&tls->rx_flows, swid);
- 
- 	return ret;
+ 	nfp_abm_kill_reprs(alink->abm, alink);
+-	WARN(!radix_tree_empty(&alink->qdiscs), "left over qdiscs\n");
++	WARN(!xa_empty(&alink->qdiscs), "left over qdiscs\n");
+ 	kfree(alink->prio_map);
+ 	kfree(alink);
  }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h
-index 3b2e37bf76fe..0b56332f453b 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/fpga/tls.h
-@@ -45,10 +45,8 @@ struct mlx5_fpga_tls {
- 	u32 caps;
- 	struct mlx5_fpga_conn *conn;
+diff --git a/drivers/net/ethernet/netronome/nfp/abm/main.h b/drivers/net/ethernet/netronome/nfp/abm/main.h
+index 48746c9c6224..2b78abe606d9 100644
+--- a/drivers/net/ethernet/netronome/nfp/abm/main.h
++++ b/drivers/net/ethernet/netronome/nfp/abm/main.h
+@@ -6,7 +6,7 @@
  
--	struct idr tx_idr;
--	struct idr rx_idr;
--	spinlock_t tx_idr_spinlock; /* protects the IDR */
--	spinlock_t rx_idr_spinlock; /* protects the IDR */
-+	struct xarray tx_flows;
-+	struct xarray rx_flows;
+ #include <linux/bits.h>
+ #include <linux/list.h>
+-#include <linux/radix-tree.h>
++#include <linux/xarray.h>
+ #include <net/devlink.h>
+ #include <net/pkt_cls.h>
+ #include <net/pkt_sched.h>
+@@ -219,7 +219,7 @@ struct nfp_abm_link {
+ 	struct list_head dscp_map;
+ 
+ 	struct nfp_qdisc *root_qdisc;
+-	struct radix_tree_root qdiscs;
++	struct xarray qdiscs;
  };
  
- int mlx5_fpga_tls_add_flow(struct mlx5_core_dev *mdev, void *flow,
+ static inline bool nfp_abm_has_prio(struct nfp_abm *abm)
+diff --git a/drivers/net/ethernet/netronome/nfp/abm/qdisc.c b/drivers/net/ethernet/netronome/nfp/abm/qdisc.c
+index 2473fb5f75e5..b40ee2f5e1c1 100644
+--- a/drivers/net/ethernet/netronome/nfp/abm/qdisc.c
++++ b/drivers/net/ethernet/netronome/nfp/abm/qdisc.c
+@@ -24,11 +24,6 @@ static bool nfp_abm_qdisc_child_valid(struct nfp_qdisc *qdisc, unsigned int id)
+ 	       qdisc->children[id] != NFP_QDISC_UNTRACKED;
+ }
+ 
+-static void *nfp_abm_qdisc_tree_deref_slot(void __rcu **slot)
+-{
+-	return rtnl_dereference(*slot);
+-}
+-
+ static void
+ nfp_abm_stats_propagate(struct nfp_alink_stats *parent,
+ 			struct nfp_alink_stats *child)
+@@ -245,10 +240,8 @@ nfp_abm_offload_compile_mq(struct nfp_abm_link *alink, struct nfp_qdisc *qdisc)
+ void nfp_abm_qdisc_offload_update(struct nfp_abm_link *alink)
+ {
+ 	struct nfp_abm *abm = alink->abm;
+-	struct radix_tree_iter iter;
+ 	struct nfp_qdisc *qdisc;
+-	void __rcu **slot;
+-	size_t i;
++	unsigned long i;
+ 
+ 	/* Mark all thresholds as unconfigured */
+ 	for (i = 0; i < abm->num_bands; i++)
+@@ -257,17 +250,14 @@ void nfp_abm_qdisc_offload_update(struct nfp_abm_link *alink)
+ 			     alink->total_queues);
+ 
+ 	/* Clear offload marks */
+-	radix_tree_for_each_slot(slot, &alink->qdiscs, &iter, 0) {
+-		qdisc = nfp_abm_qdisc_tree_deref_slot(slot);
++	xa_for_each(&alink->qdiscs, i, qdisc)
+ 		qdisc->offload_mark = false;
+-	}
+ 
+ 	if (alink->root_qdisc)
+ 		nfp_abm_offload_compile_mq(alink, alink->root_qdisc);
+ 
+ 	/* Refresh offload status */
+-	radix_tree_for_each_slot(slot, &alink->qdiscs, &iter, 0) {
+-		qdisc = nfp_abm_qdisc_tree_deref_slot(slot);
++	xa_for_each(&alink->qdiscs, i, qdisc) {
+ 		if (!qdisc->offload_mark && qdisc->offloaded)
+ 			nfp_abm_qdisc_offload_stop(alink, qdisc);
+ 		qdisc->offloaded = qdisc->offload_mark;
+@@ -285,9 +275,9 @@ static void
+ nfp_abm_qdisc_clear_mq(struct net_device *netdev, struct nfp_abm_link *alink,
+ 		       struct nfp_qdisc *qdisc)
+ {
+-	struct radix_tree_iter iter;
+ 	unsigned int mq_refs = 0;
+-	void __rcu **slot;
++	unsigned long index;
++	struct nfp_qdisc *mq;
+ 
+ 	if (!qdisc->use_cnt)
+ 		return;
+@@ -300,8 +290,7 @@ nfp_abm_qdisc_clear_mq(struct net_device *netdev, struct nfp_abm_link *alink,
+ 		return;
+ 
+ 	/* Count refs held by MQ instances and clear pointers */
+-	radix_tree_for_each_slot(slot, &alink->qdiscs, &iter, 0) {
+-		struct nfp_qdisc *mq = nfp_abm_qdisc_tree_deref_slot(slot);
++	xa_for_each(&alink->qdiscs, index, mq) {
+ 		unsigned int i;
+ 
+ 		if (mq->type != NFP_QDISC_MQ || mq->netdev != netdev)
+@@ -326,8 +315,7 @@ nfp_abm_qdisc_free(struct net_device *netdev, struct nfp_abm_link *alink,
+ 	if (!qdisc)
+ 		return;
+ 	nfp_abm_qdisc_clear_mq(netdev, alink, qdisc);
+-	WARN_ON(radix_tree_delete(&alink->qdiscs,
+-				  TC_H_MAJ(qdisc->handle)) != qdisc);
++	WARN_ON(xa_erase(&alink->qdiscs, TC_H_MAJ(qdisc->handle)) != qdisc);
+ 
+ 	kfree(qdisc->children);
+ 	kfree(qdisc);
+@@ -360,10 +348,11 @@ nfp_abm_qdisc_alloc(struct net_device *netdev, struct nfp_abm_link *alink,
+ 	qdisc->handle = handle;
+ 	qdisc->num_children = children;
+ 
+-	err = radix_tree_insert(&alink->qdiscs, TC_H_MAJ(qdisc->handle), qdisc);
++	err = xa_err(xa_store(&alink->qdiscs, TC_H_MAJ(qdisc->handle), qdisc,
++				GFP_KERNEL));
+ 	if (err) {
+ 		nfp_err(alink->abm->app->cpp,
+-			"Qdisc insertion into radix tree failed: %d\n", err);
++			"Qdisc insertion failed: %d\n", err);
+ 		goto err_free_child_tbl;
+ 	}
+ 
+@@ -380,7 +369,7 @@ nfp_abm_qdisc_alloc(struct net_device *netdev, struct nfp_abm_link *alink,
+ static struct nfp_qdisc *
+ nfp_abm_qdisc_find(struct nfp_abm_link *alink, u32 handle)
+ {
+-	return radix_tree_lookup(&alink->qdiscs, TC_H_MAJ(handle));
++	return xa_load(&alink->qdiscs, TC_H_MAJ(handle));
+ }
+ 
+ static int
 -- 
 2.23.0.rc1
 
