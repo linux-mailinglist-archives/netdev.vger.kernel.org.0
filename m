@@ -2,81 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1A4959A1
-	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:32:14 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B699095A26
+	for <lists+netdev@lfdr.de>; Tue, 20 Aug 2019 10:50:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729429AbfHTIcF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 04:32:05 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:55168 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728842AbfHTIcF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 04:32:05 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id E947B300CB24;
-        Tue, 20 Aug 2019 08:32:04 +0000 (UTC)
-Received: from localhost (ovpn-117-123.ams2.redhat.com [10.36.117.123])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 63E448CBE6;
-        Tue, 20 Aug 2019 08:32:04 +0000 (UTC)
-Date:   Tue, 20 Aug 2019 09:32:03 +0100
-From:   Stefan Hajnoczi <stefanha@redhat.com>
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     netdev@vger.kernel.org, kvm@vger.kernel.org,
-        Dexuan Cui <decui@microsoft.com>,
-        virtualization@lists.linux-foundation.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 10/11] vsock_test: skip read() in test_stream*close
- tests on a VMCI host
-Message-ID: <20190820083203.GB9855@stefanha-x1.localdomain>
-References: <20190801152541.245833-1-sgarzare@redhat.com>
- <20190801152541.245833-11-sgarzare@redhat.com>
+        id S1729387AbfHTIs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 04:48:58 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33411 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728698AbfHTIs6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 04:48:58 -0400
+Received: by mail-wr1-f67.google.com with SMTP id u16so11495616wrr.0;
+        Tue, 20 Aug 2019 01:48:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7C+7nBjsZO3aX1mRx8/Iq0aFxeGfSOIEcnsK8e+lmsI=;
+        b=tbCzqGLD8/3cH1EWSqqXatbWhpVG34OnjPqcnrlXPBxtblOeoOoq26sPGI6ZJv7RmE
+         pNBC/uVZqUkqp2OzxAbAi87YfX41a6cPrLOwdLbTMVTJf5RWijqDiwjg3lLY08JWcGZD
+         +LkqGFOwQ/Nd5ND4UfAaTe0b4C115lHLa4nE5Wq8Z8VzEWXk+0dxb5Xqr9dPd6GGm8EH
+         054ulyrkUkexbZs4O5IDGIDq7wVDyEmPtsKg19ZT4yoU/j661oKjutj1oHTTnUmUSLJr
+         KZH+QX9k1AY08pjjhzPnxdEHeX0pd3WwIuxAdSvIoB0ucRT9utqLQeNSdpKStnGlrIlJ
+         CCYA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7C+7nBjsZO3aX1mRx8/Iq0aFxeGfSOIEcnsK8e+lmsI=;
+        b=TMXsiortSePtXUnmnsXvZxABx0OnVGXE9AG10K3jJ3XM75DNw739k4rNvMhWKncL3A
+         Xm9p79/tDr+NIFDPwzJ/QHeWODRLNfS9HFsJjtE1HQbBbWY++QNvcQHrfzKT4PmhC8sa
+         3ux4xlkqcqxica6Uqx2t2jl6Mwy5MofKQ+r4Ih790N55Pi+XRFopvwenHysmQHtnvdV3
+         TLkXSstc7uVDRamu3uaedXm6kHsHvP4BQ2/sswB08AfeycWK0FyUjvqf1MwqncG+qcpw
+         srh8L5JZBhRvYTn1ipGL24xR6zXW2Z0Yc94nbKnR2tjOHqxByvRLEa1JoQC81qGwtwdj
+         sm/w==
+X-Gm-Message-State: APjAAAUV1haPB5WzCGx4H7EfjlCwXieMhOKslCTpI8Fc7YqazeoNixxD
+        KnYyz6M6ydf5SUk3Bt1dpPHMelCShf8=
+X-Google-Smtp-Source: APXvYqyUld/dVDp3RIzoXsnAneXbfGY444TiVyq4KPpT9uqB141+w0edXpKXOFubORzPmsFOCNetLg==
+X-Received: by 2002:adf:e390:: with SMTP id e16mr22866189wrm.153.1566290935429;
+        Tue, 20 Aug 2019 01:48:55 -0700 (PDT)
+Received: from vd-lxpc-hfe.ad.vahle.at ([80.110.31.209])
+        by smtp.gmail.com with ESMTPSA id s64sm36437105wmf.16.2019.08.20.01.48.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 20 Aug 2019 01:48:54 -0700 (PDT)
+From:   Hubert Feurstein <h.feurstein@gmail.com>
+X-Google-Original-From: Hubert Feurstein <hubert.feurstein@vahle.at>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Hubert Feurstein <h.feurstein@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH net-next v3 0/4] Improve phc2sys precision for mv88e6xxx switch in combination with imx6-fec
+Date:   Tue, 20 Aug 2019 10:48:29 +0200
+Message-Id: <20190820084833.6019-1-hubert.feurstein@vahle.at>
+X-Mailer: git-send-email 2.22.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="qlTNgmc+xy1dBmNv"
-Content-Disposition: inline
-In-Reply-To: <20190801152541.245833-11-sgarzare@redhat.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.46]); Tue, 20 Aug 2019 08:32:05 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Hubert Feurstein <h.feurstein@gmail.com>
 
---qlTNgmc+xy1dBmNv
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Changelog:
+ v3: mv88e6xxx_smi_indirect_write: forward ptp_sts only on the last write
+     Copied Miroslav Lichvar because of PTP offset compensation patch
+ v2: Added patch for PTP offset compensation
+     Removed mdiobus_write_sts as there was no user
+     Removed ptp_sts_supported-boolean and introduced flags instead
 
-On Thu, Aug 01, 2019 at 05:25:40PM +0200, Stefano Garzarella wrote:
-> When VMCI transport is used, if the guest closes a connection,
-> all data is gone and EOF is returned, so we should skip the read
-> of data written by the peer before closing the connection.
+With this patchset the phc2sys synchronisation precision improved to +/-555ns on
+an IMX6DL with an MV88E6220 switch attached.
 
-All transports should aim for identical semantics.  I think virtio-vsock
-should behave the same as VMCI since userspace applications should be
-transport-independent.
+This patchset takes into account the comments from the following discussions:
+- https://lkml.org/lkml/2019/8/2/1364
+- https://lkml.org/lkml/2019/8/5/169
 
-Let's view this as a vsock bug.  Is it feasible to change the VMCI
-behavior so it's more like TCP sockets?  If not, let's change the
-virtio-vsock behavior to be compatible with VMCI.
+Patch 01 adds the required infrastructure in the MDIO layer.
+Patch 02 adds additional PTP offset compensation.
+Patch 03 adds support for the PTP_SYS_OFFSET_EXTENDED ioctl in the mv88e6xxx driver.
+Patch 04 adds support for the PTP system timestamping in the imx-fec driver.
 
---qlTNgmc+xy1dBmNv
-Content-Type: application/pgp-signature; name="signature.asc"
+The following tests show the improvement caused by each patch. The system clock 
+precision was set to 15ns instead of 333ns (as described in https://lkml.org/lkml/2019/8/2/1364).
 
------BEGIN PGP SIGNATURE-----
+Without this patchset applied, the phc2sys synchronisation performance was very 
+poor:
 
-iQEzBAEBCAAdFiEEhpWov9P5fNqsNXdanKSrs4Grc8gFAl1bsAIACgkQnKSrs4Gr
-c8iy2wf9Hf2RT30SVoJTzJ+hX0eVKck7gc8yFdT08PLyaZW9ND3d2J7oYGhT3/kF
-3IneL017fwh3nVZ9rcWcVH2ntn7Mq8+I0mTBH24UP0UMLMz/Ieq/6oRj3ySm/UbA
-7/RZHJ2+he0dBgOPggnmNBPDTqAytUBaDouuIWJiXYnVX8g82C1qhcckeuIrxbc5
-5hQPmjQnSmRVcclubheU+QAqqQbAySFDYbJp36sRGiAyJR31vQJGQWqk+r0uZvlt
-DT1YTMdU7EfmWoVp4nW2dDMnN+WlZA0qFZ2gv/7/ZiZ0etvXTPN8/owaW3HxTQOJ
-PPVwBTXGU+LNuAHvJOt9METVQX4+oQ==
-=YtHX
------END PGP SIGNATURE-----
+  offset: min -27120 max 28840 mean 2.44 stddev 8040.78 count 1236
+  delay:  min 282103 max 386385 mean 352568.03 stddev 27814.27 count 1236
+  (test runtime 20 minutes)
 
---qlTNgmc+xy1dBmNv--
+Results after appling patch 01-03:
+
+  offset: min -12316 max 13314 mean -9.38 stddev 4274.82 count 1022
+  delay:  min 69977 max 96266 mean 87939.04 stddev 6466.17 count 1022
+  (test runtime 16 minutes)
+
+Results after appling patch 04:
+
+  offset: min -788 max 528 mean -0.06 stddev 185.02 count 7171
+  delay:  min 1773 max 2031 mean 1909.43 stddev 33.74 count 7171
+  (test runtime 119 minutes)
+
+Hubert Feurstein (4):
+  net: mdio: add support for passing a PTP system timestamp to the
+    mii_bus driver
+  net: mdio: add PTP offset compensation to mdiobus_write_sts
+  net: dsa: mv88e6xxx: extend PTP gettime function to read system clock
+  net: fec: add support for PTP system timestamping for MDIO devices
+
+ drivers/net/dsa/mv88e6xxx/chip.h          |  2 +
+ drivers/net/dsa/mv88e6xxx/ptp.c           | 11 +--
+ drivers/net/dsa/mv88e6xxx/smi.c           |  7 +-
+ drivers/net/ethernet/freescale/fec_main.c |  7 +-
+ drivers/net/phy/mdio_bus.c                | 88 +++++++++++++++++++++++
+ include/linux/mdio.h                      |  5 ++
+ include/linux/phy.h                       | 42 +++++++++++
+ 7 files changed, 156 insertions(+), 6 deletions(-)
+
+-- 
+2.22.1
+
