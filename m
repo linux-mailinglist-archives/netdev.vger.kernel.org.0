@@ -2,117 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CB9897716
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:25:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AE9F97720
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:28:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727882AbfHUKZj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 06:25:39 -0400
-Received: from ozlabs.org ([203.11.71.1]:35609 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726389AbfHUKZj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 06:25:39 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46D3hP6b02z9sN4;
-        Wed, 21 Aug 2019 20:25:24 +1000 (AEST)
-From:   Michael Ellerman <mpe@ellerman.id.au>
-To:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiong Wang <jiong.wang@netronome.com>
-Cc:     bpf@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Regression fix for bpf in v5.3 (was Re: [RFC PATCH] bpf: handle 32-bit zext during constant blinding)
-In-Reply-To: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com>
-References: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com>
-Date:   Wed, 21 Aug 2019 20:25:17 +1000
-Message-ID: <87d0gy6cj6.fsf@concordia.ellerman.id.au>
+        id S1727959AbfHUK2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 06:28:23 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38584 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726995AbfHUK2W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:28:22 -0400
+Received: by mail-ed1-f68.google.com with SMTP id r12so2349141edo.5;
+        Wed, 21 Aug 2019 03:28:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tH4C4SHneA684UXc3D0kikroiEy/mW4WtnOuT96rGAM=;
+        b=BQwd3ES5iB5HttBbWB7MmvzhXgwGjN1tPwBc9rgjyI4dXXBt3RMxGIY+7W/suYq3NE
+         lWNbrFE/pp+XVvg3D7gmSet9mqwvmzVB/Z3+Pgv/kZ/y5fmwTz/JAKG3xI10dX1TXYnI
+         w/ODwpQpbHmD61JlwUh0Te793e6L6ezn1YCwjnAG8sEFuXhJNNzOMFLG3Tjb1eagSrNb
+         g5ZNNnaRAaP6GtB8MrOwh0crnBqjHYtXmbYLH+JoE2XSY+4YBV7VWkTYfEY57TOmsufz
+         k1VkjkKQaEbnV2JlDjwoXHnudSdDW+x6vX84e12dpNVk5y4WggJcR07ZgeAF8NTyLb1o
+         4KFQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tH4C4SHneA684UXc3D0kikroiEy/mW4WtnOuT96rGAM=;
+        b=F79KTTxHHaa3L3dTvXrE/WQ4bRtDEAs/WG9Iaal/W3rQyMWleXpN/oQAGxtH+lZWlV
+         8C3Wx9ZgJ8zVMM+kpuPswKg+JoA/lx5uZiUATkYS8hdiGncy2iIljQFyJYK6ZmevKlvz
+         l1ILKUCtANtFjjeASuO0c8bqkimT1e9jM+/Be88QyFDDcp/PiKTLpk0L9wrwbTUngDZG
+         jgAd/MaQvkowoZhlQXBQwAaifCrErZuMCDgOM5A3TaxATXqfZqJAH2qw5QY8yeYA7pj6
+         fQYdSWlCDe0Heb74xaT0t8sgP1u2jT+GINeiym0/CnO2DWUCij5GUD5/DpC3rh+ze5ap
+         PDBw==
+X-Gm-Message-State: APjAAAUOX+bN9pqzlrcDyQywZgs8zCMBv+3ipkKS29swNqPwsvs2dRAv
+        4LurPPoct+PYzkQY3NMxNxX2UWGOReV0pteP8+8=
+X-Google-Smtp-Source: APXvYqzm1AMb1SdDCLl2PZqOX1rVW3GzxnXK3xzo7vqdb+GYSql0VNnjYrTZY+VKIhPl9/PtAF3T/yfx4M2nAKykGw8=
+X-Received: by 2002:a50:c385:: with SMTP id h5mr35182112edf.18.1566383300730;
+ Wed, 21 Aug 2019 03:28:20 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20190820084833.6019-1-hubert.feurstein@vahle.at> <20190820084833.6019-5-hubert.feurstein@vahle.at>
+In-Reply-To: <20190820084833.6019-5-hubert.feurstein@vahle.at>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Wed, 21 Aug 2019 13:28:09 +0300
+Message-ID: <CA+h21ho6T=DdE-9XCCj00UBFZahe08oEMP4kbgv+CmfRYD5c_Q@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 4/4] net: fec: add support for PTP system
+ timestamping for MDIO devices
+To:     Hubert Feurstein <h.feurstein@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Fugang Duan <fugang.duan@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-"Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> writes:
-> Since BPF constant blinding is performed after the verifier pass, there
-> are certain ALU32 instructions inserted which don't have a corresponding
-> zext instruction inserted after. This is causing a kernel oops on
-> powerpc and can be reproduced by running 'test_cgroup_storage' with
-> bpf_jit_harden=2.
+On Tue, 20 Aug 2019 at 11:49, Hubert Feurstein <h.feurstein@gmail.com> wrote:
 >
-> Fix this by emitting BPF_ZEXT during constant blinding if
-> prog->aux->verifier_zext is set.
+> From: Hubert Feurstein <h.feurstein@gmail.com>
 >
-> Fixes: a4b1d3c1ddf6cb ("bpf: verifier: insert zero extension according to analysis result")
-> Reported-by: Michael Ellerman <mpe@ellerman.id.au>
-> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+> In order to improve the synchronisation precision of phc2sys (from
+> the linuxptp project) for devices like switches which are attached
+> to the MDIO bus, it is necessary the get the system timestamps as
+> close as possible to the access which causes the PTP timestamp
+> register to be snapshotted in the switch hardware. Usually this is
+> triggered by an MDIO write access, the snapshotted timestamp is then
+> transferred by several MDIO reads.
+>
+> The ptp_read_system_*ts functions already check the ptp_sts pointer.
+>
+> Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
 > ---
-> This approach (the location where zext is being introduced below, in 
-> particular) works for powerpc, but I am not entirely sure if this is 
-> sufficient for other architectures as well. This is broken on v5.3-rc4.
+>  drivers/net/ethernet/freescale/fec_main.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
+> index c01d3ec3e9af..dd1253683ac0 100644
+> --- a/drivers/net/ethernet/freescale/fec_main.c
+> +++ b/drivers/net/ethernet/freescale/fec_main.c
+> @@ -1815,10 +1815,12 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
+>         reinit_completion(&fep->mdio_done);
+>
+>         /* start a write op */
+> +       ptp_read_system_prets(bus->ptp_sts);
+>         writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
+>                 FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
+>                 FEC_MMFR_TA | FEC_MMFR_DATA(value),
+>                 fep->hwp + FEC_MII_DATA);
+> +       ptp_read_system_postts(bus->ptp_sts);
+>
 
-Any comment on this?
+How do you know the core will not service an interrupt here?
+Why are you not disabling (postponing) local interrupts after this
+critical section? (which you were in the RFC)
+If the argument is that you didn't notice any issue with phc2sys -N 5,
+that's not a good argument. "Unlikely for a condition to happen" does
+not mean deterministic.
+Here is an example of the system servicing an interrupt during the
+transmission of a 12-byte SPI transfer (proof that they can occur
+anywhere where they aren't disabled):
+https://drive.google.com/file/d/1rUZpfkBKHJGwQN4orFUWks_5i70wn-mj/view?usp=sharing
 
-This is a regression in v5.3, which results in a kernel crash, it would
-be nice to get it fixed before the release please?
+>         /* wait for end of transfer */
+>         time_left = wait_for_completion_timeout(&fep->mdio_done,
+> @@ -1956,7 +1958,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+>         struct fec_enet_private *fep = netdev_priv(ndev);
+>         struct device_node *node;
+>         int err = -ENXIO;
+> -       u32 mii_speed, holdtime;
+> +       u32 mii_speed, mii_period, holdtime;
+>
+>         /*
+>          * The i.MX28 dual fec interfaces are not equal.
+> @@ -1993,6 +1995,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+>          * document.
+>          */
+>         mii_speed = DIV_ROUND_UP(clk_get_rate(fep->clk_ipg), 5000000);
+> +       mii_period = div_u64((u64)mii_speed * 2 * NSEC_PER_SEC, clk_get_rate(fep->clk_ipg));
+>         if (fep->quirks & FEC_QUIRK_ENET_MAC)
+>                 mii_speed--;
+>         if (mii_speed > 63) {
+> @@ -2034,6 +2037,8 @@ static int fec_enet_mii_init(struct platform_device *pdev)
+>                 pdev->name, fep->dev_id + 1);
+>         fep->mii_bus->priv = fep;
+>         fep->mii_bus->parent = &pdev->dev;
+> +       fep->mii_bus->flags = MII_BUS_F_PTP_STS_SUPPORTED;
+> +       fep->mii_bus->ptp_sts_offset = 32 * mii_period;
+>
+>         node = of_get_child_by_name(pdev->dev.of_node, "mdio");
+>         err = of_mdiobus_register(fep->mii_bus, node);
+> --
+> 2.22.1
+>
 
-cheers
-
-> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-> index 8191a7db2777..d84146e6fd9e 100644
-> --- a/kernel/bpf/core.c
-> +++ b/kernel/bpf/core.c
-> @@ -890,7 +890,8 @@ int bpf_jit_get_func_addr(const struct bpf_prog *prog,
->  
->  static int bpf_jit_blind_insn(const struct bpf_insn *from,
->  			      const struct bpf_insn *aux,
-> -			      struct bpf_insn *to_buff)
-> +			      struct bpf_insn *to_buff,
-> +			      bool emit_zext)
->  {
->  	struct bpf_insn *to = to_buff;
->  	u32 imm_rnd = get_random_int();
-> @@ -939,6 +940,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
->  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
->  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
->  		*to++ = BPF_ALU32_REG(from->code, from->dst_reg, BPF_REG_AX);
-> +		if (emit_zext)
-> +			*to++ = BPF_ZEXT_REG(from->dst_reg);
->  		break;
->  
->  	case BPF_ALU64 | BPF_ADD | BPF_K:
-> @@ -992,6 +995,10 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
->  			off -= 2;
->  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
->  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
-> +		if (emit_zext) {
-> +			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
-> +			off--;
-> +		}
->  		*to++ = BPF_JMP32_REG(from->code, from->dst_reg, BPF_REG_AX,
->  				      off);
->  		break;
-> @@ -1005,6 +1012,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
->  	case 0: /* Part 2 of BPF_LD | BPF_IMM | BPF_DW. */
->  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ aux[0].imm);
->  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
-> +		if (emit_zext)
-> +			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
->  		*to++ = BPF_ALU64_REG(BPF_OR,  aux[0].dst_reg, BPF_REG_AX);
->  		break;
->  
-> @@ -1088,7 +1097,8 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
->  		    insn[1].code == 0)
->  			memcpy(aux, insn, sizeof(aux));
->  
-> -		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff);
-> +		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff,
-> +						clone->aux->verifier_zext);
->  		if (!rewritten)
->  			continue;
->  
-> -- 
-> 2.22.0
+Regards,
+-Vladimir
