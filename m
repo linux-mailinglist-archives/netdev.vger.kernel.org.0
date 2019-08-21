@@ -2,114 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 65FF5976A2
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:04:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C9B8C976B1
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:09:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727507AbfHUKEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 06:04:33 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:59040 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726478AbfHUKEd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:04:33 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1i0NTh-0007nV-5L; Wed, 21 Aug 2019 12:04:29 +0200
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Subject: pull-request: mac80211-next 2019-08-21
-Date:   Wed, 21 Aug 2019 12:04:23 +0200
-Message-Id: <20190821100424.13682-1-johannes@sipsolutions.net>
-X-Mailer: git-send-email 2.20.1
+        id S1727205AbfHUKJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 06:09:11 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:55488 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726389AbfHUKJL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 06:09:11 -0400
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id F05063003185;
+        Wed, 21 Aug 2019 10:09:10 +0000 (UTC)
+Received: from [10.36.116.152] (ovpn-116-152.ams2.redhat.com [10.36.116.152])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 433F75B807;
+        Wed, 21 Aug 2019 10:09:07 +0000 (UTC)
+From:   "Eelco Chaudron" <echaudro@redhat.com>
+To:     "Ilya Maximets" <i.maximets@samsung.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        bpf@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
+        "Magnus Karlsson" <magnus.karlsson@intel.com>,
+        "Jakub Kicinski" <jakub.kicinski@netronome.com>,
+        "Alexei Starovoitov" <ast@kernel.org>,
+        "Daniel Borkmann" <daniel@iogearbox.net>,
+        "Jeff Kirsher" <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan@lists.osuosl.org, "William Tu" <u9012063@gmail.com>
+Subject: Re: [PATCH net] ixgbe: fix double clean of tx descriptors with xdp
+Date:   Wed, 21 Aug 2019 12:09:06 +0200
+Message-ID: <9EFD9B47-2CD0-4D7A-BA22-D87018894E91@redhat.com>
+In-Reply-To: <20190820151611.10727-1-i.maximets@samsung.com>
+References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
+ <20190820151611.10727-1-i.maximets@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; format=flowed
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.40]); Wed, 21 Aug 2019 10:09:11 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Dave,
-
-For -next, we have more changes, but as described in the tag
-they really just fall into a few groups of changes :-)
-
-Please pull and let me know if there's any problem.
-
-Thanks,
-johannes
 
 
+On 20 Aug 2019, at 17:16, Ilya Maximets wrote:
 
-The following changes since commit 8c40f3b212a373be843a29db608b462af5c3ed5d:
+> Tx code doesn't clear the descriptor status after cleaning.
+> So, if the budget is larger than number of used elems in a ring, some
+> descriptors will be accounted twice and xsk_umem_complete_tx will move
+> prod_tail far beyond the prod_head breaking the comletion queue ring.
+>
+> Fix that by limiting the number of descriptors to clean by the number
+> of used descriptors in the tx ring.
+>
+> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
+> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+> ---
+>
+> Not tested yet because of lack of available hardware.
+> So, testing is very welcome.
+>
+Hi Ilya, this patch fixes the issue I reported earlier on the Open 
+vSwitch mailing list regarding complete queue overrun.
 
-  Merge tag 'mlx5-updates-2019-08-15' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2019-08-20 22:59:45 -0700)
+Tested-by: Eelco Chaudron <echaudro@redhat.com>
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-davem-2019-08-21
-
-for you to fetch changes up to 48cb39522a9d4d4680865e40a88f975a1cee6abc:
-
-  mac80211: minstrel_ht: improve rate probing for devices with static fallback (2019-08-21 11:10:13 +0200)
-
-----------------------------------------------------------------
-Here are a few groups of changes:
- * EDMG channel support (60 GHz, just a single patch)
- * initial 6/7 GHz band support (Arend)
- * association timestamp recording (Ben)
- * rate control improvements for better performance with
-   the mt76 driver (Felix)
- * various fixes for previous HE support changes (John)
-
-----------------------------------------------------------------
-Alexei Avshalom Lazar (1):
-      nl80211: Add support for EDMG channels
-
-Arend van Spriel (8):
-      nl80211: add 6GHz band definition to enum nl80211_band
-      cfg80211: add 6GHz UNII band definitions
-      cfg80211: util: add 6GHz channel to freq conversion and vice versa
-      cfg80211: extend ieee80211_operating_class_to_band() for 6GHz
-      cfg80211: add 6GHz in code handling array with NUM_NL80211_BANDS entries
-      cfg80211: use same IR permissive rules for 6GHz band
-      cfg80211: ibss: use 11a mandatory rates for 6GHz band operation
-      cfg80211: apply same mandatory rate flags for 5GHz and 6GHz
-
-Ben Greear (2):
-      cfg80211: Support assoc-at timer in sta-info
-      mac80211: add assoc-at support
-
-Felix Fietkau (4):
-      mac80211: minstrel_ht: fix per-group max throughput rate initialization
-      mac80211: minstrel_ht: reduce unnecessary rate probing attempts
-      mac80211: minstrel_ht: fix default max throughput rate indexes
-      mac80211: minstrel_ht: improve rate probing for devices with static fallback
-
-John Crispin (5):
-      mac80211: fix TX legacy rate reporting when tx_status_ext is used
-      mac80211: fix bad guard when reporting legacy rates
-      mac80211: 80Mhz was not reported properly when using tx_status_ext
-      mac80211: add missing length field increment when generating Radiotap header
-      mac80211: fix possible NULL pointerderef in obss pd code
-
- drivers/net/wireless/ath/wil6210/cfg80211.c |   2 +-
- include/net/cfg80211.h                      |  88 ++++++++-
- include/uapi/linux/nl80211.h                |  29 +++
- net/mac80211/he.c                           |   3 +-
- net/mac80211/mlme.c                         |   2 +-
- net/mac80211/rc80211_minstrel.h             |   1 +
- net/mac80211/rc80211_minstrel_ht.c          | 277 ++++++++++++++++++++++++----
- net/mac80211/rc80211_minstrel_ht.h          |  12 ++
- net/mac80211/sta_info.c                     |   3 +
- net/mac80211/sta_info.h                     |   2 +
- net/mac80211/status.c                       |  31 ++--
- net/mac80211/tx.c                           |   1 +
- net/wireless/chan.c                         | 162 +++++++++++++++-
- net/wireless/ibss.c                         |  16 +-
- net/wireless/nl80211.c                      |  39 ++++
- net/wireless/reg.c                          |  21 ++-
- net/wireless/trace.h                        |   3 +-
- net/wireless/util.c                         |  56 +++++-
- 18 files changed, 684 insertions(+), 64 deletions(-)
-
+<SNIP>
