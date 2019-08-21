@@ -2,118 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DE32D980D9
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 19:00:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1BE398108
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 19:12:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729695AbfHUQ74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 12:59:56 -0400
-Received: from mail-pf1-f173.google.com ([209.85.210.173]:42146 "EHLO
-        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726252AbfHUQ74 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:59:56 -0400
-Received: by mail-pf1-f173.google.com with SMTP id i30so1808243pfk.9;
-        Wed, 21 Aug 2019 09:59:55 -0700 (PDT)
+        id S1729682AbfHURJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 13:09:14 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:55607 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729162AbfHURJO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 13:09:14 -0400
+Received: by mail-wm1-f67.google.com with SMTP id f72so2879066wmf.5;
+        Wed, 21 Aug 2019 10:09:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=rU0HO2JJtDqURYnaTtFk9cmW0rQPqsr0HzcEm0KVNk0=;
-        b=Z9oC5VfzqQvaSI/28mHfZ8UqJyJHY7XZ9RBXXkTHXv4HV4/4bKmPYRxILB3BXuenmH
-         ZNHLKsFVLOyuN62vYcBZd0DLXTOpOPW/3XiPNSaUln4e5DF4bIDGdlGxNe2doHF5j7AA
-         l/qRZ7WUztfqBcg0oxSjGKP4zoqzmxXVRqpclOqMvr0D3+HseM0HTdYi3vqAViWxVfzJ
-         Sfi1hLmKDitDVWFDzgAW14TFZ/q6hUvYSmv1Wmjow2YuYxCRoGSa0tkykoBlDISmIuJs
-         /Bjvo7JIIBh4JhDGyn/remiZg1vlDezNi6GQnWJypyDAlwzO/qCyvTMiktdE7tv9UmTd
-         n4Xw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UMR/Orq2VXEoqtMil/E3IY1gq7rGKQTBq1zwm09du9Q=;
+        b=tqWXC1kvVN/WaBA7ZeYmo6gcE3pIp443OzO9+aw8egrUA4pRZMy0X8AUyC2daJ8KJf
+         skTQ0anvwcSbQK9BCNHFmphfdHHmKkG4zMA6wdDaFm80m5n0RWfYIuXUEQTKci71s4EW
+         sk1Hz7HQRzaAhyndAlwUGZYPzHWnQdPa6RQYf0f4TLSa1nZuFJruwrqWtAlwGQTMoz/A
+         CrmlewrKMB9XSTcOboZindf9XWYXO9JCWJzxLutxx7PsRp7z/HUKdQKJWXEVtQc0IaNo
+         jX3lZJNmTtKqtHFGGn1H4mjDpe+cqk4EV1814y6Gq2Xkqw3j4zT+0jMg/Gfk4/BXXEvm
+         ui9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=rU0HO2JJtDqURYnaTtFk9cmW0rQPqsr0HzcEm0KVNk0=;
-        b=L4TPmNJTnkxYmeBV51OeLZXUl3zvYzomS/cF+UJWjJ1zSUEQ6oHmmsL1G3VWxoa8a4
-         ia1BklJtwC+ohxJLK1kL5oTqI7MDIbTlyhvEnEMQggX8kOY6JDkNjMEg6mLTA11Csf/x
-         8Ir+ZXNcZ1qfi83ODAP18ephI0R+XO5nvrsn7JC/Dx17S5b3AawuYsL4S2vHglQv69Gt
-         ChR8Iel+ntGwtCg6jB7/y1thgT5jJlVqXWOZ/UiVwscpgtc6vTzBG7wgO6CXHFtsOCk2
-         3e1vq0ZdWYeKGf8z9LgqpdKk9NDE5OpHy/gHM4reF+oQiRAWhXMni1OhF24C6li7zIcV
-         DkIg==
-X-Gm-Message-State: APjAAAXMr/DTYbEABj56twy3vYcLnNUfJkdZVONJeIMmpAqRiSfPsypM
-        BzjXaZYv3Q1Btzt19gCT0BoFAFUJ
-X-Google-Smtp-Source: APXvYqw0TUNBdp4O0vuq8L77jFqVIDmfTCzGkVSQxgcino3pZSOf2uAomBaFQnoK8jK9f+yS4RQl2A==
-X-Received: by 2002:aa7:9524:: with SMTP id c4mr37692765pfp.225.1566406795146;
-        Wed, 21 Aug 2019 09:59:55 -0700 (PDT)
-Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q10sm29466437pfl.8.2019.08.21.09.59.53
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UMR/Orq2VXEoqtMil/E3IY1gq7rGKQTBq1zwm09du9Q=;
+        b=WD2bOFjqC/rpfDKbzBRglFCAjwLvvSl5gsnOlf3K2L/yJ3aIXwDqGG5QbBGiyCqns8
+         Ie+wTp7kywYUBcA0X+2mC67Q82GEW8Vc2qcNU2/hFvOT8QT2kz5V54sxKQuruMNuVeZA
+         D6DLX82Tc1Gru9jvm6cN020FlopdpCWKRAHvEA2Rd4yXbH+rRUaSkCsZGreTkj59KcmV
+         pRD3OTcL5YCG01XWj1Koz/JaZ1bf+tNh9KI4g+7pipo5p1MtjzZkfuAL77JVA+FHwaEa
+         4rGIUFhOCQ/w9W4KCsmu/90+zIBsBneRZccjKo1tOqKjTTZBhytwP13VkHmhIj/wuyqu
+         qqUA==
+X-Gm-Message-State: APjAAAXwFh3A91WlI5RJeVTR5DYST088jU5eDRUZVXzNPipDtTAj+XgS
+        Abt2boFyl08M1drXM6FGXZB7IOnG
+X-Google-Smtp-Source: APXvYqyM5KTZhwUSWIZPTATAD3HjZa+4IGrcteHQPv8ofuB4n3NLdmYchdJ6ySkM1zfiXt71u4mc6w==
+X-Received: by 2002:a1c:a8d7:: with SMTP id r206mr1179944wme.47.1566407350948;
+        Wed, 21 Aug 2019 10:09:10 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f04:7c00:7026:65b1:a037:c969? (p200300EA8F047C00702665B1A037C969.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:7026:65b1:a037:c969])
+        by smtp.googlemail.com with ESMTPSA id m3sm300425wmc.44.2019.08.21.10.09.09
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 21 Aug 2019 09:59:54 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: systemport: use
- devm_platform_ioremap_resource() to simplify code
-To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
-        opendmb@gmail.com, bcm-kernel-feedback-list@broadcom.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20190821134613.23276-1-yuehaibing@huawei.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <e1782f4c-a564-07e6-0d13-ccda0fc99e15@gmail.com>
-Date:   Wed, 21 Aug 2019 09:59:53 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        Wed, 21 Aug 2019 10:09:10 -0700 (PDT)
+Subject: Re: [EXT] Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
+To:     Christian Herber <christian.herber@nxp.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190815153209.21529-1-christian.herber@nxp.com>
+ <8c15b855-6947-9930-c3df-71a64fbff33b@gmail.com>
+ <AM6PR0402MB379864B810F08D3698618B5F86A80@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+ <13e65051-fe4f-5964-30b3-75285e6d2eee@gmail.com>
+ <AM6PR0402MB3798FCBF1EE592687B13A3C386AB0@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <5c920846-b8f5-d087-cea4-a8ca3f816127@gmail.com>
+Date:   Wed, 21 Aug 2019 19:09:03 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190821134613.23276-1-yuehaibing@huawei.com>
+In-Reply-To: <AM6PR0402MB3798FCBF1EE592687B13A3C386AB0@AM6PR0402MB3798.eurprd04.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,13 +72,134 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/21/19 6:46 AM, YueHaibing wrote:
-> Use devm_platform_ioremap_resource() to simplify the code a bit.
-> This is detected by coccinelle.
+On 20.08.2019 15:36, Christian Herber wrote:
+> On 19.08.2019 21:07, Heiner Kallweit wrote:
+>> Caution: EXT Email
+>>
+>> On 19.08.2019 08:32, Christian Herber wrote:
+>>> On 16.08.2019 22:59, Heiner Kallweit wrote:
+>>>> On 15.08.2019 17:32, Christian Herber wrote:
+>>>>> This patch adds basic support for BASE-T1 PHYs in the framework.
+>>>>> BASE-T1 PHYs main area of application are automotive and industrial.
+>>>>> BASE-T1 is standardized in IEEE 802.3, namely
+>>>>> - IEEE 802.3bw: 100BASE-T1
+>>>>> - IEEE 802.3bp 1000BASE-T1
+>>>>> - IEEE 802.3cg: 10BASE-T1L and 10BASE-T1S
+>>>>>
+>>>>> There are no products which contain BASE-T1 and consumer type PHYs like
+>>>>> 1000BASE-T. However, devices exist which combine 100BASE-T1 and 1000BASE-T1
+>>>>> PHYs with auto-negotiation.
+>>>>
+>>>> Is this meant in a way that *currently* there are no PHY's combining Base-T1
+>>>> with normal Base-T modes? Or are there reasons why this isn't possible in
+>>>> general? I'm asking because we have PHY's combining copper and fiber, and e.g.
+>>>> the mentioned Aquantia PHY that combines NBase-T with 1000Base-T2.
+>>>>
+>>>>>
+>>>>> The intention of this patch is to make use of the existing Clause 45 functions.
+>>>>> BASE-T1 adds some additional registers e.g. for aneg control, which follow a
+>>>>> similiar register layout as the existing devices. The bits which are used in
+>>>>> BASE-T1 specific registers are the same as in basic registers, thus the
+>>>>> existing functions can be resued, with get_aneg_ctrl() selecting the correct
+>>>>> register address.
+>>>>>
+>>>> If Base-T1 can't be combined with other modes then at a first glance I see no
+>>>> benefit in defining new registers e.g. for aneg control, and the standard ones
+>>>> are unused. Why not using the standard registers? Can you shed some light on that?
+>>>>
+>>>> Are the new registers internally shadowed to the standard location?
+>>>> That's something I've seen on other PHY's: one register appears in different
+>>>> places in different devices.
+>>>>
+>>>>> The current version of ethtool has been prepared for 100/1000BASE-T1 and works
+>>>>> with this patch. 10BASE-T1 needs to be added to ethtool.
+>>>>>
+>>>>> Christian Herber (1):
+>>>>>     Added BASE-T1 PHY support to PHY Subsystem
+>>>>>
+>>>>>    drivers/net/phy/phy-c45.c    | 113 +++++++++++++++++++++++++++++++----
+>>>>>    drivers/net/phy/phy-core.c   |   4 +-
+>>>>>    include/uapi/linux/ethtool.h |   2 +
+>>>>>    include/uapi/linux/mdio.h    |  21 +++++++
+>>>>>    4 files changed, 129 insertions(+), 11 deletions(-)
+>>>>>
+>>>>
+>>>> Heiner
+>>>>
+>>>
+>>> Hi Heiner,
+>>>
+>>> I do not think the Aquantia part you are describing is publicly
+>>> documented, so i cannot comment on that part.
+>> Right, datasheet isn't publicly available. All I wanted to say with
+>> mentioning this PHY: It's not a rare exception that a PHY combines
+>> standard BaseT modes with "non-consumer" modes for special purposes.
+>> One practical use case of this proprietary 1000Base-T2 mode is
+>> re-using existing 2-pair cabling in aircrafts.
+>>
+>>> There are multiple reasons why e.g. xBASE-T1 plus 1000BASE-T is
+>>> unlikely. First, the is no use-case known to me, where this would be
+>>> required. Second, there is no way that you can do an auto-negotiation
+>>> between the two, as these both have their own auto-neg defined (Clause
+>>> 28/73 vs. Clause 98). Thirdly, if you would ever have a product with
+>>> both, I believe it would just include two full PHYs and a way to select
+>>> which flavor you want. Of course, this is the theory until proven
+>>> otherwise, but to me it is sufficient to use a single driver.
+>>>
+>> I'm with you if you say it's unlikely. However your statement in the
+>> commit message leaves the impression that there can't be such a device.
+>> And that's a difference.
+>>
+>> Regarding "including two full PHYs":
+>> This case we have already, there are PHYs combining different IP blocks,
+>> each one supporting a specific mode (e.g. copper and fiber). There you
+>> also have the case of different autoneg methods, clause 28 vs. clause 37.
+>>
+>>> The registers are different in the fields they include. It is just that
+>>> the flags which are used by the Linux driver, like restarting auto-neg,
+>>> are at the same position.
+>>>
+>> Good to know. Your commit description doesn't mention any specific PHY.
+>> I suppose you have PHYs you'd like to operate with the genphy_c45 driver.
+>> Could you give an example? And ideally, is a public datasheet available?
+>>
+>>> Christian
+>>>
+>>>
+>> Heiner
+>>
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> There are no public BASE-T1 devices on the market right now that use 
+> Clause 45 standard registers. The first such products were developed 
+> before the IEEE standard (BroadR-Reach) and used Clause 22 access (see 
+> e.g. the support in the Kernel for TJA110x).
+> 
+> The most convenient way to test with a BASE-T1 device would be to use an 
+> SFP (e.g. 
+> https://technica-engineering.de/produkt/1000base-t1-sfp-module/). 
+> Alternative source could be Goepel.
+> 
+> There are also a number of media-converters around where one could break 
+> out the MDIO and connect to a processor. Of course, in all cases it 
+> should be made sure that this is a Clause-45 device.
+> 
+> As all relevant parts are NDA-restricted, this is pretty much all the 
+> information I can share.
+> 
+If no such device is on the market yet, then I'd suggest:
+- wait for such a device to see whether genphy_c45 driver is really
+  sufficient or whether other chip features require a dedicated driver
+  anyway. In the latter case it may be better to add dedicated T1
+  functions to phylib.
+- add the missing 10BASE-T1L and 10BASE-T1S support meanwhile
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+The current patch set IMO is a little bit hacky. I'm not 100% happy
+with the implicit assumption that there can't be devices supporting
+T1 and classic BaseT modes or fiber modes.
+
+Andrew: Do you have an opinion on that?
+
+> Christian
+> 
+> 
+Heiner
