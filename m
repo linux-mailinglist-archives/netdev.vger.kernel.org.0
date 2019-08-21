@@ -2,111 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5F396E4F
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 02:24:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F8C496E81
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 02:45:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726484AbfHUAYT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 20:24:19 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38802 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726202AbfHUAYT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 20:24:19 -0400
-Received: by mail-qt1-f193.google.com with SMTP id x4so952893qts.5
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 17:24:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=wdyamSDauWIr/8a3miDFCrsaWTOv07ZufwSzJmECkaA=;
-        b=PmfpY1p/MHmnf7pk/Ybd3bCBfsbumJKkpiCD2v0BhzGcb+ghClJwLf21ZPpJ6EnSmK
-         CvOBSed3p9CDY2kOOHUutadWvcuV2RHEUQOecIokWJoKBoeyrjbUzWNNR8RbG5dOgpO1
-         dSKOhfLpiyh/aD1RzaSGiyek+Re1j191b5VxO1KONH9YiS9U87gafXlL+89LPrl5mdh7
-         GE4CZCR2kEqUpjV3FNLSbFIfxi8gBlHVloXypqzBl7MDhs1++hBAGZEjksPZWZl41IMN
-         A7DgBBjjgyFLAu32TaGk+BCyYrypvd6FOXkrEcICzDq6q7O/uJnwfMz/ri4Fka6pqI56
-         /Xvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=wdyamSDauWIr/8a3miDFCrsaWTOv07ZufwSzJmECkaA=;
-        b=uThq/U3AJ8RzjQF9fBIOi5anPftDcbrlpofh5TXLr0DG57uabo9vluC2/JYterB+HX
-         ryKVpBhAsclPWlT5uTLuBMAud9T9MRcddG5NRWXHYSLudS0eB0DFyV4c9A/pHyX2wpIh
-         ZJ54hGF1s9YqLbioObHoWXJBt3ZReOIeEVNt44RHnaysquzcVmUUCeWgJHlHq4yckhbs
-         nX7jd56M+HLgdKo012iaVufnlAYMvyEXtFJJSaQ0psfkXFYKnJjbocR45udBwkau7CxM
-         26uu4axcf6kJaZzbTY1FmE2Ys3HZesGaELPg4cHiqA5e+Yk/3nAAh0McHyV7ElWIvkTC
-         cqzw==
-X-Gm-Message-State: APjAAAV8KBC5/nOTERVmbU1DUkOzwXTschB+snlid7ROAAgpTryxWX1S
-        ywTGaLI45TwQCk/cTPtd1Cv363hAI20=
-X-Google-Smtp-Source: APXvYqxADHLuI8mV55blgXK8YW6aNmC/VZ0OdHOLoyBM5RqkURZ7pb4ULC9S2YIcqMg/1+EsbyCxlg==
-X-Received: by 2002:ac8:e45:: with SMTP id j5mr29298099qti.149.1566347058062;
-        Tue, 20 Aug 2019 17:24:18 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id n21sm11223841qtc.70.2019.08.20.17.24.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 17:24:17 -0700 (PDT)
-Date:   Tue, 20 Aug 2019 17:24:11 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org
-Subject: Re: various TLS bug fixes...
-Message-ID: <20190820172411.70250551@cakuba.netronome.com>
-In-Reply-To: <20190820.160517.617004656524634921.davem@davemloft.net>
-References: <20190820.160517.617004656524634921.davem@davemloft.net>
-Organization: Netronome Systems, Ltd.
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726804AbfHUAnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 20:43:11 -0400
+Received: from mxhk.zte.com.cn ([63.217.80.70]:8004 "EHLO mxhk.zte.com.cn"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726193AbfHUAnL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 20:43:11 -0400
+Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
+        by Forcepoint Email with ESMTPS id D07814679584F6934D3D;
+        Wed, 21 Aug 2019 08:43:07 +0800 (CST)
+Received: from notes_smtp.zte.com.cn (notessmtp.zte.com.cn [10.30.1.239])
+        by mse-fl1.zte.com.cn with ESMTP id x7L0g2Aj077465;
+        Wed, 21 Aug 2019 08:42:02 +0800 (GMT-8)
+        (envelope-from zhang.lin16@zte.com.cn)
+Received: from fox-host8.localdomain ([10.74.120.8])
+          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
+          with ESMTP id 2019082108422087-3081849 ;
+          Wed, 21 Aug 2019 08:42:20 +0800 
+From:   zhanglin <zhang.lin16@zte.com.cn>
+To:     davem@davemloft.net
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, willemb@google.com,
+        edumazet@google.com, deepa.kernel@gmail.com, arnd@arndb.de,
+        dh.herrmann@gmail.com, gnault@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
+        jiang.xuexin@zte.com.cn, zhanglin <zhang.lin16@zte.com.cn>
+Subject: [PATCH v2] sock: fix potential memory leak in proto_register()
+Date:   Wed, 21 Aug 2019 08:42:38 +0800
+Message-Id: <1566348158-43942-1-git-send-email-zhang.lin16@zte.com.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
+ 21, 2013) at 2019-08-21 08:42:20,
+        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
+ 2019-08-21 08:42:06,
+        Serialize complete at 2019-08-21 08:42:06
+X-MAIL: mse-fl1.zte.com.cn x7L0g2Aj077465
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Aug 2019 16:05:17 -0700 (PDT), David Miller wrote:
-> Jakub,
-> 
-> I just did a batch of networking -stable submissions, however I ran
-> into some troubles with the various TLS backports.
+If protocols registered exceeded PROTO_INUSE_NR, prot will be
+added to proto_list, but no available bit left for prot in
+proto_inuse_idx.
 
-Yes, the TLS back ports are a little messy :S
+Signed-off-by: zhanglin <zhang.lin16@zte.com.cn>
+---
+ net/core/sock.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-> I was able to backport commit 414776621d10 ("net/tls: prevent
-> skb_orphan() from leaking TLS plain text with offload") to v5.2
-> but not to v4.19
-
-We can probably leave that out of v4.19. The only practical scenario
-where the issue occurs to my knowledge is if admin configured TC
-redirect, or netem in the setup. Let me know if you'd rather we did the
-backport, I'm not 100% sure the risk/benefit ratio is favourable.
-
-> I was not able to backport neither d85f01775850 ("net: tls, fix
-> sk_write_space NULL write when tx disabled") nor commit 57c722e932cf
-> ("net/tls: swap sk_write_space on close") to any release.  It seems
-> like there are a bunch of dependencies and perhaps other fixes.
-
-Right, those should still be applicable but John and I rejigged 
-the close path quite a bit. I think the back port would be this:
-
-diff --git a/net/tls/tls_main.c b/net/tls/tls_main.c
-index 4c0ac79f82d4..3288bdff9889 100644
---- a/net/tls/tls_main.c
-+++ b/net/tls/tls_main.c
-@@ -301,6 +301,8 @@ static void tls_sk_proto_close(struct sock *sk, long timeout)
+diff --git a/net/core/sock.c b/net/core/sock.c
+index bc3512f230a3..c7ae32705705 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3139,16 +3139,17 @@ static __init int net_inuse_init(void)
+ 
+ core_initcall(net_inuse_init);
+ 
+-static void assign_proto_idx(struct proto *prot)
++static int assign_proto_idx(struct proto *prot)
+ {
+ 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
+ 
+ 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
+ 		pr_err("PROTO_INUSE_NR exhausted\n");
+-		return;
++		return -ENOSPC;
+ 	}
+ 
+ 	set_bit(prot->inuse_idx, proto_inuse_idx);
++	return 0;
+ }
+ 
+ static void release_proto_idx(struct proto *prot)
+@@ -3157,8 +3158,9 @@ static void release_proto_idx(struct proto *prot)
+ 		clear_bit(prot->inuse_idx, proto_inuse_idx);
+ }
  #else
-        {
- #endif
-+               if (sk->sk_write_space == tls_write_space)
-+                       sk->sk_write_space = ctx->sk_write_space;
-                tls_ctx_free(ctx);
-                ctx = NULL;
-        }
+-static inline void assign_proto_idx(struct proto *prot)
++static inline int assign_proto_idx(struct proto *prot)
+ {
++	return 0;
+ }
+ 
+ static inline void release_proto_idx(struct proto *prot)
+@@ -3243,18 +3245,24 @@ int proto_register(struct proto *prot, int alloc_slab)
+ 	}
+ 
+ 	mutex_lock(&proto_list_mutex);
++	if (assign_proto_idx(prot)) {
++		mutex_unlock(&proto_list_mutex);
++		goto out_free_timewait_sock_slab_name;
++	}
+ 	list_add(&prot->node, &proto_list);
+-	assign_proto_idx(prot);
+ 	mutex_unlock(&proto_list_mutex);
+ 	return 0;
+ 
+ out_free_timewait_sock_slab_name:
+-	kfree(prot->twsk_prot->twsk_slab_name);
++	if (alloc_slab && prot->twsk_prot)
++		kfree(prot->twsk_prot->twsk_slab_name);
+ out_free_request_sock_slab:
+-	req_prot_cleanup(prot->rsk_prot);
++	if (alloc_slab) {
++		req_prot_cleanup(prot->rsk_prot);
+ 
+-	kmem_cache_destroy(prot->slab);
+-	prot->slab = NULL;
++		kmem_cache_destroy(prot->slab);
++		prot->slab = NULL;
++	}
+ out:
+ 	return -ENOBUFS;
+ }
+-- 
+2.17.1
 
-> I suspect you've triaged through this already on your side for other
-> reasons, so perhaps you could help come up with a sane set of TLS
-> bug fix backports that would be appropriate for -stable?
-
-I'm planning to spend tomorrow working exactly on v4.19 backport. 
-I have internal reports of openssl failing on v4.19 while v4.20 
-works fine.. Hopefully I'll be able to figure that one out, test the
-above and see if there are any other missing fixes.
-
-Is it okay if I come back to this tomorrow?
