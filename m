@@ -2,135 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CE5F4982FA
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 20:33:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DB2C982FE
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 20:33:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730029AbfHUSdX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 14:33:23 -0400
-Received: from mail-eopbgr50041.outbound.protection.outlook.com ([40.107.5.41]:25664
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729221AbfHUScK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 14:32:10 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=D9CTMHAjSA6Fm6I7uKwEyDHMEdCSJzMs+4kjkKwYkI00/Ydmkefc1Hc8hQFdDLwAYyxcZEaO7aKge1FqoZy/4aCQbNPgexB+am+ZfNpcneXUvdko2YAv1bAoZWLqbGtmjHrS4Abh/HVaaizRzlOU3TxXCeKLLm1VNfnnn1nhmvTFZsyYqHFevzOtaIUvsI+O3fYK4AaL6wLVPC2UXFIxMToZpSAeq5SMcn4G2ICEUVU4Zj0h740CJLaGhEGdrHoNpZnSlPqR7Bc2QMZkvfzw7mvxyBBMXMMx4wYEt/naJIoEJzKH3RX1GxndE/AeDJ7CLamD8fkl75cYf25sBzvokQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZUQhP8iKZnHEhN50GNtnHFOFCS6KyfBbTlgHIm+tBos=;
- b=Pgmg7Nx/jFx451UoSm8fIpurwDmi3zb3J9c8KJ9JsQ3IuLSehggI7+K1ebzIF3LE1AKwqygcAS64wcXKmADGJOPLOZEqkfQreoGdCH6wsHfZPA5aEegAlEPs6Kg+5Y5fyFtpGEh6QMY9v3IRUx9tK6/I9K+sWttXnH1RmeXiTVshXuF3Nx/0aslyd3FChmBUzFxYbbS6lJaOBAZsa2Ui0NqZjDbh9xUgSrIK5MSwcIfq+BOxqBoh98wXo7oqXEQbRlE7x+yG+LaBi9uZhkGx5er2l7x5sDjLNoZPE/xininvD6ia61Wm1vM3J0VUNSxLqtFZjyOHJrfPkthPZE1DrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=ZUQhP8iKZnHEhN50GNtnHFOFCS6KyfBbTlgHIm+tBos=;
- b=akgOyjv9w9QK1WPo1gWUXd4MGyX5gdsSKYMXKPSYrGSj6r+Kfx2Is5D37N/YyBrBRsQT+pSX0EqPKJMY7hZJffOfRt56CMJqKZ9pCprM90fTueMqfQNFieWNHSDD/eGeUlQZwEHpl5BmYJ4AtkBP8Eu7Ny9J2xcASiSCi6QPBWY=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB6144.eurprd05.prod.outlook.com (20.178.205.90) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Wed, 21 Aug 2019 18:32:07 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::ec21:2019:cb6f:44ae]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::ec21:2019:cb6f:44ae%7]) with mapi id 15.20.2178.018; Wed, 21 Aug 2019
- 18:32:07 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Matthew Wilcox <willy@infradead.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 30/38] cls_flower: Use XArray list of filters in fl_walk
-Thread-Topic: [PATCH 30/38] cls_flower: Use XArray list of filters in fl_walk
-Thread-Index: AQHVV6dL3RIPnYsHzU+/CzMAuXpPSacF7iWA
-Date:   Wed, 21 Aug 2019 18:32:07 +0000
-Message-ID: <vbfsgpu4bfg.fsf@mellanox.com>
-References: <20190820223259.22348-1-willy@infradead.org>
- <20190820223259.22348-31-willy@infradead.org>
-In-Reply-To: <20190820223259.22348-31-willy@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LNXP123CA0020.GBRP123.PROD.OUTLOOK.COM
- (2603:10a6:600:d2::32) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b75a2482-2405-4990-318c-08d72665dede
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB6144;
-x-ms-traffictypediagnostic: VI1PR05MB6144:
-x-microsoft-antispam-prvs: <VI1PR05MB614494E1E1CFF2E797180553ADAA0@VI1PR05MB6144.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:3826;
-x-forefront-prvs: 0136C1DDA4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(366004)(396003)(346002)(39860400002)(136003)(189003)(199004)(186003)(5660300002)(8676002)(81156014)(81166006)(36756003)(6916009)(6246003)(486006)(102836004)(99286004)(478600001)(86362001)(25786009)(66476007)(3846002)(8936002)(64756008)(66556008)(66446008)(71190400001)(6116002)(71200400001)(53936002)(386003)(6506007)(76176011)(66946007)(2906002)(316002)(6436002)(11346002)(7736002)(446003)(66066001)(26005)(305945005)(14444005)(5024004)(4326008)(6486002)(256004)(476003)(52116002)(2616005)(6512007)(229853002)(14454004);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB6144;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 8ili54LMjDe7kL2SPWlP22MYhQ8R+TO+l/zBfKcTIkQxMxGliTiKazKK4lmIAm8RLmoXDepyxvJZaFwOgRjM3aPjuAHb1YnDwxvxCf2G6xTv/iVlaixNzvVevJ0YFt6s45Yo0IgqKzgdp7cglAYLLsVTEK1VvDail+ApmOXc9jGB2548cBoudQ72oQr5caNq/1ja+KqbTFWE/b6itRQ6EwsmSCkNKXv29uG32QVd0z0HD9YoEOOlFI9VqJIbTkbK3bRvasOea2QIqBrFrIud3rdI1TIzffuK3OWp0t55hAFLapxO6tod4vss66J9MiFqCgVUZIxoFu3kfDdGNx69C/6vzlIcjEx7BGi6qGuU4qUhifV89hXVJkDb/NGGrYgBddyGMcbM1/5wLGpSMKF6TrtN8Syy7Pv+Nfb8/cQSixM=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S1730001AbfHUSdW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 14:33:22 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:32930 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727720AbfHUSdV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 14:33:21 -0400
+Received: by mail-ot1-f68.google.com with SMTP id q20so3032473otl.0;
+        Wed, 21 Aug 2019 11:33:21 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=egHhqVwtSMDmp9YF4xs0dobfljwNvPw3rwWXCHsf7oo=;
+        b=fNDPgh+uo6pDAEosEFEZ/+tABmMmnfF158ptzURV5nI4OGDLf2B8w1P9rOmuZhsjqz
+         hCfFiEXw+80JJiS26VSgs0uiz2L1iSlPpMVhDwBZ4mgNsItoY8CKfvj7/AZgDFYnGwqv
+         0QvVNbbwPEbcC4yi61AJ7J+CmaH+M3pWCR/IlKnEwfVRt+yNNPAAc8FvPNyLzv1umLFQ
+         BE620Fr0k2O9tKYd5sxaznTkR2y92evyiynODo9WCptEjDYVPSJj7oiCyKOJquAxrKzr
+         2EZgKWj9dU98fey+86A2b1d1Uy+sJ2sY6uBzcOflZvrs7WZcjqclJJYp7NdzyZ5gyC8a
+         6x0Q==
+X-Gm-Message-State: APjAAAUopOR423VJonIhbSAyvWw6vTOmBhJlikxhzlrItfFtxiVgPf9M
+        uAQ5FPzTTVQdNhUt+b+ixg==
+X-Google-Smtp-Source: APXvYqwQIo2Vuh1ftveWru24y3+5VDk13vltqfb28SAYQ4YZfiK4rqCZKAcqCdEvqJ17ZGIKIpXeTA==
+X-Received: by 2002:a9d:331:: with SMTP id 46mr23079892otv.8.1566412400760;
+        Wed, 21 Aug 2019 11:33:20 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id v24sm7972302otj.78.2019.08.21.11.33.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Aug 2019 11:33:20 -0700 (PDT)
+Date:   Wed, 21 Aug 2019 13:33:19 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Avi Fishman <avifishman70@gmail.com>
+Cc:     venture@google.com, yuenn@google.com, benjaminfair@google.com,
+        davem@davemloft.net, mark.rutland@arm.com,
+        gregkh@linuxfoundation.org, tmaimon77@gmail.com,
+        tali.perry1@gmail.com, openbmc@lists.ozlabs.org,
+        netdev@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, tglx@linutronix.de
+Subject: Re: [PATCH v1 1/2] dt-binding: net: document NPCM7xx EMC 10/100 DT
+ bindings
+Message-ID: <20190821183319.GA19310@bogus>
+References: <20190801072611.27935-1-avifishman70@gmail.com>
+ <20190801072611.27935-2-avifishman70@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b75a2482-2405-4990-318c-08d72665dede
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 18:32:07.0709
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ScKEcF6C/XUL6EOSyZ+YUyTSbTJ1VXoYdQjsYFOjhhV7VepenphdAIaak82dmgZiZSKyhpywr1FjoU4KIYtb8A==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6144
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190801072611.27935-2-avifishman70@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Wed 21 Aug 2019 at 01:32, Matthew Wilcox <willy@infradead.org> wrote:
-> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->
-> Instead of iterating over every filter attached to every mark, just
-> iterate over each filter.
->
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+On Thu, Aug 01, 2019 at 10:26:10AM +0300, Avi Fishman wrote:
+> Added device tree binding documentation for
+> Nuvoton NPCM7xx Ethernet MAC Controller (EMC) 10/100 RMII
+> 
+> Signed-off-by: Avi Fishman <avifishman70@gmail.com>
 > ---
->  net/sched/cls_flower.c | 15 ++++++---------
->  1 file changed, 6 insertions(+), 9 deletions(-)
->
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index 54026c9e9b05..2a1999d2b507 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -575,18 +575,15 @@ static void fl_destroy(struct tcf_proto *tp, bool r=
-tnl_held,
->  		       struct netlink_ext_ack *extack)
->  {
->  	struct cls_fl_head *head =3D fl_head_dereference(tp);
-> -	struct fl_flow_mask *mask, *next_mask;
-> -	struct cls_fl_filter *f, *next;
-> +	struct cls_fl_filter *f;
-> +	unsigned long handle;
->  	bool last;
->
-> -	list_for_each_entry_safe(mask, next_mask, &head->masks, list) {
-> -		list_for_each_entry_safe(f, next, &mask->filters, list) {
-> -			__fl_delete(tp, f, &last, rtnl_held, extack);
-> -			if (last)
-> -				break;
-> -		}
-> +	xa_for_each(&head->filters, handle, f) {
-> +		__fl_delete(tp, f, &last, rtnl_held, extack);
-> +		if (last)
-> +			break;
->  	}
-> -	xa_destroy(&head->filters);
->
->  	__module_get(THIS_MODULE);
->  	tcf_queue_work(&head->rwork, fl_destroy_sleepable);
+>  .../bindings/net/nuvoton,npcm7xx-emc.txt      | 38 +++++++++++++++++++
+>  1 file changed, 38 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/net/nuvoton,npcm7xx-emc.txt
 
-What is the motivation for this change? You substitute O(n) iteration
-over linked list with O(nlogn) iteration over xarray without any
-apparent benefit.
+Consider converting this to DT schema (YAML).
+
+> 
+> diff --git a/Documentation/devicetree/bindings/net/nuvoton,npcm7xx-emc.txt b/Documentation/devicetree/bindings/net/nuvoton,npcm7xx-emc.txt
+> new file mode 100644
+> index 000000000000..a7ac3ca66de9
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/net/nuvoton,npcm7xx-emc.txt
+> @@ -0,0 +1,38 @@
+> +Nuvoton NPCM7XX 10/100 Ethernet MAC Controller (EMC)
+> +
+> +The NPCM7XX provides one or two Ethernet MAC RMII Controllers
+> +for WAN/LAN applications
+> +
+> +Required properties:
+> +- device_type     : Should be "network"
+
+Drop this. device_type is deprecated for FDT except for a few cases.
+
+> +- compatible      : "nuvoton,npcm750-emc" for Poleg NPCM7XX.
+> +- reg             : Offset and length of the register set for the device.
+> +- interrupts      : Contain the emc interrupts with flags for falling edge.
+> +                    first interrupt dedicated to Txirq
+> +                    second interrupt dedicated to Rxirq
+> +- phy-mode        : Should be "rmii" (see ethernet.txt in the same directory)
+> +- clocks          : phandle of emc reference clock.
+> +- resets          : phandle to the reset control for this device.
+> +- use-ncsi        : Use the NC-SI stack instead of an MDIO PHY
+
+Vendor prefix needed.
+
+> +
+> +Example:
+> +
+> +emc0: eth@f0825000 {
+
+ethernet@...
+
+> +	device_type = "network";
+> +	compatible = "nuvoton,npcm750-emc";
+> +	reg = <0xf0825000 0x1000>;
+> +	interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>,
+> +	             <GIC_SPI 15 IRQ_TYPE_LEVEL_HIGH>;
+> +	phy-mode = "rmii";
+> +	clocks = <&clk NPCM7XX_CLK_AHB>;
+> +
+> +	#use-ncsi; /* add this to support ncsi */
+
+Doesn't match the binding.
+
+> +
+> +	clock-names = "clk_emc";
+> +	resets = <&rstc 6>;
+> +	pinctrl-names = "default";
+> +	pinctrl-0 = <&r1_pins
+> +	             &r1err_pins
+> +	             &r1md_pins>;
+> +	status = "okay";
+
+Drop status in examples.
+
+> +};
+> -- 
+> 2.18.0
+> 
