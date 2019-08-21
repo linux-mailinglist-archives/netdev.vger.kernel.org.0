@@ -2,43 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC0E0975EC
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 11:21:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E567E975FC
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 11:24:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727031AbfHUJUL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 05:20:11 -0400
-Received: from mail-eopbgr800084.outbound.protection.outlook.com ([40.107.80.84]:10855
-        "EHLO NAM03-DM3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726463AbfHUJUJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 05:20:09 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZQoJDhaaUr1dD2vWtRyi1CctAgB1vmK4fFMI0HXjYj94IrEnmUs6I7nW9S0P9zcVZp/HFT0FP5XKQKSmEI0/6rWu78nEqMyZgRjlXfooONV6nEnYC9ikqyQaVP/8vPOKkyxrKZCmUHV7ZSds4f7QW4dtO7yeDRMAABWr4q3MdZU25SUFSo9Q5u8d1vCY0mpzuVLSNaU4YmemC9hBy/IXBpPmIBwhPFdIjMAGQ6P85F0kG5uuglsqw6PCLRcNDZbFxjvuqNWQk8UhN01wp3kxbPvQFymK2wTTpkxQwOr2lLXhPGu3xOcP/LfH0w7YhV01EW0gxQLWzSPErR4djbRHOg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pG+wx42gEn3RgnksMTOkUsmRfSysBCg4r8qTzD4lXxc=;
- b=Tv558NB/730E8FsY9oj+RjewMlyNmwibdNtk5UIi7eW8/Dd3jsOUqVrJ6l4BDZ2dicx6PqpRh2LnQHYz2Kir5kVe6gGuhInq/s5ZyIS9dqVsec4mA5A+pEJqcbGVDWh7DRb6vLnQqVckMQEZmbbm8wVAaI3ubQiVGA2DR/2/rOICfbQgWt9rIuPa6Al0DCkVighSdgLXRTrHIERPnn8vj4V8CgjpVEqazsoPgxAnSe9APuOJ7bkml2yn0ZiO78eDhPktWqTQsNEvCY4xTH8IPvhj55Sr5WIPuPtgjz7zOJIhLcOebmXdVRh+fqffpCerTYEr6R9ScCFOBPDX50JnOw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=aquantia.com; dmarc=pass action=none header.from=aquantia.com;
- dkim=pass header.d=aquantia.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=AQUANTIA1COM.onmicrosoft.com; s=selector2-AQUANTIA1COM-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pG+wx42gEn3RgnksMTOkUsmRfSysBCg4r8qTzD4lXxc=;
- b=L3ShqL6lkTgfpCRyiufNhhBiACwFIjyc+jtLvG6wqmHNZeQHOv9Qwc7tk6/I2Ybemvtuer/KpbDWQukwXzqZ89lAdtm6nFHwfFnCrar/H0eciEKZjOtEspvpfhEariCE8RYwXb8cQPwzdRWD/bAf8qPvp4gLtyOUqQaj2jf8Nyc=
-Received: from BN6PR11MB4081.namprd11.prod.outlook.com (10.255.128.166) by
- BN6PR11MB1267.namprd11.prod.outlook.com (10.173.26.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Wed, 21 Aug 2019 09:20:05 +0000
-Received: from BN6PR11MB4081.namprd11.prod.outlook.com
- ([fe80::8438:d0c6:4446:68af]) by BN6PR11MB4081.namprd11.prod.outlook.com
- ([fe80::8438:d0c6:4446:68af%6]) with mapi id 15.20.2178.020; Wed, 21 Aug 2019
- 09:20:05 +0000
-From:   Igor Russkikh <Igor.Russkikh@aquantia.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>,
-        Antoine Tenart <antoine.tenart@bootlin.com>
-CC:     Andrew Lunn <andrew@lunn.ch>,
+        id S1726945AbfHUJYL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 05:24:11 -0400
+Received: from esa2.microchip.iphmx.com ([68.232.149.84]:57294 "EHLO
+        esa2.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726617AbfHUJYL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 05:24:11 -0400
+Received-SPF: Pass (esa2.microchip.iphmx.com: domain of
+  Allan.Nielsen@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="Allan.Nielsen@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa2.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa2.microchip.iphmx.com;
+  envelope-from="Allan.Nielsen@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa2.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: TfNkMrrhyb5EUx6EAOB9ixd9sS3OljjA7sRu8k4UZmEVWsl82OLRm6hrDKs+IGJkG6lUjN5RYm
+ T1YhQTZfG3iaK5glTcfdoDyhRr6Ocnm7k5V/4Wb2i6k+dskoDtRKIsburhyXOfIBVN0bbXmoO8
+ M5jdkGo5jsSf/kH/31SB4LzCv2NwMCU29ufrKhyDVA+wOal+EGaZ+the1y8mP/yP8wbB6Tz7na
+ DP0lLlHXnm7XvnlcRvqt9rdj5pr3qNan9ps1Yd2knqUF4W+No3k/76MjZCaK4RNVnRJgxhmgsj
+ PHY=
+X-IronPort-AV: E=Sophos;i="5.64,412,1559545200"; 
+   d="scan'208";a="45953286"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Aug 2019 02:24:09 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 21 Aug 2019 02:24:09 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
+ (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Wed, 21 Aug 2019 02:24:08 -0700
+Date:   Wed, 21 Aug 2019 11:24:08 +0200
+From:   "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>
+To:     Sabrina Dubroca <sd@queasysnail.net>
+CC:     Antoine Tenart <antoine.tenart@bootlin.com>,
+        Igor Russkikh <Igor.Russkikh@aquantia.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
         "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
@@ -46,112 +59,155 @@ CC:     Andrew Lunn <andrew@lunn.ch>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
         "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
         "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
         Simon Edelhaus <Simon.Edelhaus@aquantia.com>,
         Pavel Belous <Pavel.Belous@aquantia.com>
 Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
  infrastructure
-Thread-Topic: [PATCH net-next v2 6/9] net: macsec: hardware offloading
- infrastructure
-Thread-Index: AQHVT35ck9O2Ca3OL0uT1Xyfcpu+c6b9zmmAgAYPIACAAE4igIABOIaA
-Date:   Wed, 21 Aug 2019 09:20:05 +0000
-Message-ID: <81ec0497-58cd-1f4c-faa3-c057693cd50e@aquantia.com>
+Message-ID: <20190821092406.p66uto4kuozakels@lx-anielsen.microsemi.net>
 References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
  <20190808140600.21477-7-antoine.tenart@bootlin.com>
  <e96fa4ae-1f2c-c1be-b2d8-060217d8e151@aquantia.com>
- <20190813085817.GA3200@kwain> <20190813131706.GE15047@lunn.ch>
+ <20190813085817.GA3200@kwain>
+ <20190813131706.GE15047@lunn.ch>
  <2e3c2307-d414-a531-26cb-064e05fa01fc@aquantia.com>
- <20190816132959.GC8697@bistromath.localdomain> <20190820100140.GA3292@kwain>
+ <20190816132959.GC8697@bistromath.localdomain>
+ <20190820100140.GA3292@kwain>
  <20190820144119.GA28714@bistromath.localdomain>
-In-Reply-To: <20190820144119.GA28714@bistromath.localdomain>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1PR1001CA0013.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:3:f7::23) To BN6PR11MB4081.namprd11.prod.outlook.com
- (2603:10b6:405:78::38)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=Igor.Russkikh@aquantia.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [95.79.108.179]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: efcbecdd-c50d-4fe5-f3a1-08d72618c09d
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:BN6PR11MB1267;
-x-ms-traffictypediagnostic: BN6PR11MB1267:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BN6PR11MB126725CF4C640A433AAD8E9F98AA0@BN6PR11MB1267.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 0136C1DDA4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(366004)(136003)(39850400004)(189003)(199004)(52116002)(44832011)(11346002)(446003)(486006)(476003)(2616005)(31696002)(71190400001)(305945005)(7736002)(71200400001)(186003)(66066001)(86362001)(5660300002)(386003)(6506007)(102836004)(26005)(31686004)(6246003)(6486002)(110136005)(36756003)(66946007)(6436002)(107886003)(229853002)(76176011)(478600001)(99286004)(2906002)(54906003)(8936002)(4326008)(3846002)(53936002)(25786009)(6116002)(81156014)(81166006)(8676002)(66476007)(6512007)(64756008)(66556008)(14444005)(316002)(66446008)(256004)(7416002)(14454004);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR11MB1267;H:BN6PR11MB4081.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: aquantia.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: H6Qlk8cD59fKtnLfdqICyWYp120BvCR6y2CTsoAfiXvbTWRJLJVhS9i2GjAs7O21oiKnmAPcP6bN7/7Gp+IefisjyaiqXYNE3JhcUtKz8dZPuNPVD7rTs4bR8pFT8DiiD+5SoXdv9qQZ1bD534MvFLBLsdYy2+NwkYVCbjbCgK5LdFK03nmRq/nvNZl7tdYFgRCi8DmKD907chn5xNRd+m5C/U2nxFHJdq18MPrz/E4mFgK3ANG+qllzGeU/d+YS3TjpXdKClFdKWAGsPQ2xeTs9V+purw7Pb5cdYw5fzxGetCEcURsNvnDEvMORvpTMm/qu6dPlVh0l0eeLHbqR0k9J2UzBIPB6fSiNmORo93b5Qdm+7zOcdrhf0kTHPJclu44nvybyE958nYsdUxJ19GQ62aRZFGQI2U+9Co5b3vU=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9AD6B3AAB827434B9241AE50CDDA861C@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-OriginatorOrg: aquantia.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: efcbecdd-c50d-4fe5-f3a1-08d72618c09d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 09:20:05.0451
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 83e2e134-991c-4ede-8ced-34d47e38e6b1
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Yy7Kdn8J4PUYzLGCWStR4BKziYMLDak0z8gNBxRQUYfM3t8PL1y7USlTndggorOlscut0t/GdldSIrnAE5ig8w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1267
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190820144119.GA28714@bistromath.localdomain>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQo+IA0KPiBUYWxraW5nIGFib3V0IHBhY2tldCBudW1iZXJzLCBjYW4geW91IGRlc2NyaWJlIGhv
-dyBQTiBleGhhdXN0aW9uIGlzDQo+IGhhbmRsZWQ/ICBJIGNvdWxkbid0IGZpbmQgbXVjaCBhYm91
-dCBwYWNrZXQgbnVtYmVycyBhdCBhbGwgaW4gdGhlDQo+IGRyaXZlciBwYXRjaGVzIChJIGhvcGUg
-dGhlIGh3IGRvZXNuJ3Qgd3JhcCBhcm91bmQgZnJvbSAyXjMyLTEgdG8gMCBvbg0KPiB0aGUgc2Ft
-ZSBTQSkuICBBdCBzb21lIHBvaW50IHVzZXJzcGFjZSBuZWVkcyB0byBrbm93IHRoYXQgd2UncmUN
-Cj4gZ2V0dGluZyBjbG9zZSB0byAyXjMyIGFuZCB0aGF0IGl0J3MgdGltZSB0byByZS1rZXkuICBT
-aW5jZSB0aGUgd2hvbGUNCj4gVFggcGF0aCBvZiB0aGUgc29mdHdhcmUgaW1wbGVtZW50YXRpb24g
-aXMgYnlwYXNzZWQsIGl0IGxvb2tzIGxpa2UgdGhlDQo+IFBOIChhcyBmYXIgYXMgZHJpdmVycy9u
-ZXQvbWFjc2VjLmMgaXMgY29uY2VybmVkKSBuZXZlciBpbmNyZWFzZXMsIHNvDQo+IHVzZXJzcGFj
-ZSBjYW4ndCBrbm93IHdoZW4gdG8gbmVnb3RpYXRlIGEgbmV3IFNBLg0KDQpJIHRoaW5rIHRoZXJl
-IHNob3VsZCBiZSBkcml2ZXIgc3BlY2lmaWMgaW1wbGVtZW50YXRpb24gb2YgdGhpcyBmdW5jdGlv
-bmFsaXR5Lg0KQXMgYW4gZXhhbXBsZSwgb3VyIG1hY3NlYyBIVyBpc3N1ZXMgYW4gaW50ZXJydXB0
-IHRvd2FyZHMgdGhlIGhvc3QgdG8gaW5kaWNhdGUNClBOIHRocmVzaG9sZCBoYXMgcmVhY2hlZCBh
-bmQgaXQncyB0aW1lIGZvciB1c2Vyc3BhY2UgdG8gY2hhbmdlIHRoZSBrZXlzLg0KDQpJbiBjb250
-cmFzdCwgY3VycmVudCBTVyBtYWNzZWMgaW1wbGVtZW50YXRpb24ganVzdCBzdG9wcyB0aGlzIFNB
-L3NlY3kuDQoNCj4gSSBkb24ndCBzZWUgaG93IHRoaXMgaW1wbGVtZW50YXRpb24gaGFuZGxlcyBu
-b24tbWFjc2VjIHRyYWZmaWMgKG9uIFRYLA0KPiB0aGF0IHdvdWxkIGJlIHBhY2tldHMgc2VudCBk
-aXJlY3RseSB0aHJvdWdoIHRoZSByZWFsIGludGVyZmFjZSwgZm9yDQo+IGV4YW1wbGUgYnkgd3Bh
-X3N1cHBsaWNhbnQgLSBvbiBSWCwgaW5jb21pbmcgTUtBIHRyYWZmaWMgZm9yDQo+IHdwYV9zdXBw
-bGljYW50KS4gVW5sZXNzIEkgbWlzc2VkIHNvbWV0aGluZywgaW5jb21pbmcgTUtBIHRyYWZmaWMg
-d2lsbA0KPiBlbmQgdXAgb24gdGhlIG1hY3NlYyBpbnRlcmZhY2UgYXMgd2VsbCBhcyB0aGUgbG93
-ZXIgaW50ZXJmYWNlIChub3QNCj4gZW50aXJlbHkgY3JpdGljYWwsIGFzIGxvbmcgYXMgd3BhX3N1
-cHBsaWNhbnQgY2FuIGdyYWIgaXQgb24gdGhlIGxvd2VyDQo+IGRldmljZSwgYnV0IG5vdCBjb25z
-aXN0ZW50IHdpdGggdGhlIHNvZnR3YXJlIGltcGxlbWVudGF0aW9uKS4gSG93IGRvZXMNCj4gdGhl
-IGRyaXZlciBkaXN0aW5ndWlzaCB0cmFmZmljIHRoYXQgc2hvdWxkIHBhc3MgdGhyb3VnaCB1bm1v
-ZGlmaWVkDQo+IGZyb20gdHJhZmZpYyB0aGF0IHRoZSBIVyBuZWVkcyB0byBlbmNhcHN1bGF0ZSBh
-bmQgZW5jcnlwdD8NCg0KSSBjYW4gY29tbWVudCBvbiBvdXIgSFcgZW5naW5lIC0gd2hlcmUgaXQg
-aGFzIHNwZWNpYWwgYnlwYXNzIHJ1bGVzDQpmb3IgY29uZmlndXJlZCBldGhlcnR5cGVzLiBUaGlz
-IHdheSBtYWNzZWMgZW5naW5lIHNraXBzIGVuY3J5cHRpb24gb24gVFggYW5kDQpwYXNzZXMgaW4g
-UlggdW5lbmNyeXB0ZWQgZm9yIHRoZSBzZWxlY3RlZCBjb250cm9sIHBhY2tldHMuDQoNCkJ1dCB0
-aGF0cyB0cnVlLCByZWFsZGV2IGRyaXZlciBpcyBoYXJkIHRvIGRpc3Rpbmd1aXNoIGVuY3J5cHRl
-ZC91bmVuY3J5cHRlZA0KcGFja2V0cy4gSW4gY2FzZSByZWFsZGV2IHNob3VsZCBtYWtlIGEgZGVj
-aXNpb24gd2hlcmUgdG8gcHV0IFJYIHBhY2tldCwNCml0IG9ubHkgbWF5IGRvIHNvbWUgaGV1cmlz
-dGljIChzaW5jZSBhZnRlciBtYWNzZWMgZGVjcmlwdGlvbiBhbGwgdGhlDQptYWNzZWMgcmVsYXRl
-ZCBpbmZvIGlzIGRyb3BwZWQuIFRoYXRzIHRydWUgYXQgbGVhc3QgZm9yIG91ciBIVyBpbXBsZW1l
-bnRhdGlvbikuDQoNCj4gSWYgeW91IGxvb2sgYXQgSVBzZWMgb2ZmbG9hZGluZywgdGhlIG5ldHdv
-cmtpbmcgc3RhY2sgYnVpbGRzIHVwIHRoZQ0KPiBFU1AgaGVhZGVyLCBhbmQgcGFzc2VzIHRoZSB1
-bmVuY3J5cHRlZCBkYXRhIGRvd24gdG8gdGhlIGRyaXZlci4gSSdtDQo+IHdvbmRlcmluZyBpZiB0
-aGUgc2FtZSB3b3VsZCBiZSBwb3NzaWJsZSB3aXRoIE1BQ3NlYyBvZmZsb2FkaW5nOiB0aGUNCj4g
-bWFjc2VjIHZpcnR1YWwgaW50ZXJmYWNlIGFkZHMgdGhlIGhlYWRlciAoYW5kIG1heWJlIGEgZHVt
-bXkgSUNWKSwgYW5kDQo+IHRoZW4gdGhlIEhXIGRvZXMgdGhlIGVuY3J5cHRpb24uIEluIGNhc2Ug
-b2YgSFcgdGhhdCBuZWVkcyB0byBhZGQgdGhlDQo+IHNlY3RhZyBpdHNlbGYsIHRoZSBkcml2ZXIg
-d291bGQgZmlyc3Qgc3RyaXAgdGhlIGhlYWRlcnMgdGhhdCB0aGUgc3RhY2sNCj4gY3JlYXRlZC4g
-T24gcmVjZWl2ZSwgdGhlIGRyaXZlciB3b3VsZCByZWNyZWF0ZSBhIHNlY3RhZyBhbmQgdGhlIG1h
-Y3NlYw0KPiBpbnRlcmZhY2Ugd291bGQganVzdCBza2lwIGFsbCB2ZXJpZmljYXRpb24gKGRlY3J5
-cHQsIFBOKS4NCg0KSSBkb24ndCB0aGluayB0aGlzIHdheSBpcyBnb29kLCBhcyBkcml2ZXIgaGF2
-ZSB0byBkbyBwZXIgcGFja2V0IGhlYWRlciBtYW5nbGluZy4NClRoYXQnbGwgaGFybSBsaW5lcmF0
-ZSBwZXJmb3JtYW5jZSBoZWF2aWx5Lg0KDQpSZWdhcmRzLA0KICAgSWdvcg0K
+Hi,
+
+I can add some information to the HW Antoine is working on, general design of it
+and the thoughts behind it. See below.
+
+The 08/20/2019 16:41, Sabrina Dubroca wrote:
+> 2019-08-20, 12:01:40 +0200, Antoine Tenart wrote:
+> > So it seems the ability to enable or disable the offloading on a given
+> > interface is the main missing feature. I'll add that, however I'll
+> > probably (at least at first):
+> > 
+> > - Have the interface to be fully offloaded or fully handled in s/w (with
+> >   errors being thrown if a given configuration isn't supported). Having
+> >   both at the same time on a given interface would be tricky because of
+> >   the MACsec validation parameter.
+> > 
+> > - Won't allow to enable/disable the offloading of there are rules in
+> >   place, as we're not sure the same rules would be accepted by the other
+> >   implementation.
+> 
+> That's probably quite problematic actually, because to do that you
+> need to be able to resync the state between software and hardware,
+> particularly packet numbers. So, yeah, we're better off having it
+> completely blocked until we have a working implementation (if that
+> ever happens).
+> 
+> However, that means in case the user wants to set up something that's
+> not offloadable, they'll have to:
+>  - configure the offloaded version until EOPNOTSUPP
+>  - tear everything down
+>  - restart from scratch without offloading
+> 
+> That's inconvenient.
+> 
+> Talking about packet numbers, can you describe how PN exhaustion is
+> handled?  I couldn't find much about packet numbers at all in the
+> driver patches (I hope the hw doesn't wrap around from 2^32-1 to 0 on
+> the same SA).
+New SA's are suppose to be installed ahead of time. The HW will automatic move
+to the next SA and reset the PN.
+
+> At some point userspace needs to know that we're
+> getting close to 2^32 and that it's time to re-key.  Since the whole
+> TX path of the software implementation is bypassed, it looks like the
+> PN (as far as drivers/net/macsec.c is concerned) never increases, so
+> userspace can't know when to negotiate a new SA.
+> 
+> > I'm not sure if we should allow to mix the implementations on a given
+> > physical interface (by having two MACsec interfaces attached) as the
+> > validation would be impossible to do (we would have no idea if a
+> > packet was correctly handled by the offloading part or just not being
+> > a MACsec packet in the first place, in Rx).
+> 
+> That's something that really bothers me with this proposal. Quoting
+> from the commit message:
+> 
+> > the packets seen by the networking stack on both the physical and
+> > MACsec virtual interface are exactly the same
+> 
+> If the HW/driver is expected to strip the sectag, I don't see how we
+> could ever have multiple secy's at the same time and demultiplex
+> properly between them. That's part of the reason why I chose to have
+> virtual interfaces: without them, picking the right secy on TX gets
+> weird.
+
+The HW does frame clasification, and use the claisfication to associate frames
+to a given secy.
+
+We we in SW have eth0, with 2 vlan-sub interfaces, and enable macsec on those,
+then we have:
+
+eth0
+eth0.10
+eth0.10.macsec
+eth0.20
+eth0.20.macsec
+
+In this case the HW needs to be configured to match vlan 10 to one secy, and
+vlan 20 to an other one.
+
+This is nor supported in the current patch, but is something we can add later.
+We just wanted to get the basic functionallity done right before moving on to
+this.
+
+But in the current design, there is nothing that prevent us from adding this.
+
+If anyone is interested in the details of this then it is described in section
+3.6.3 in http://ww1.microchip.com/downloads/en/DeviceDoc/VMDS-10455.pdf
+
+It is possible to construct an encapsulation that the HW can not classify
+correctly. If that is the case, then we should reject the HW offload, and use
+the SW.
+
+But it is a good point, which I think is missing. We should properly reject
+MACsec HW offload (with this driver, in this state) on virtual interfaces, if
+the encapsulation can not be handled (could start by reject all virtual
+interfaces)
+
+> AFAICT, it means that any filters (tc, tcpdump) need to be different
+> between offloaded and non-offloaded cases.
+It will see the result of the offloaded operation. But I guess that this is no
+different from when 'tc' operations are offloaded to HW.
+
+> How does the driver distinguish traffic that should pass through unmodified
+> from traffic that the HW needs to encapsulate and encrypt?
+It relay on frame classification (I think Antoine is missing a flow
+configuration to bypass all MKA traffic).
+
+> If you look at IPsec offloading, the networking stack builds up the
+> ESP header, and passes the unencrypted data down to the driver. I'm
+> wondering if the same would be possible with MACsec offloading: the
+> macsec virtual interface adds the header (and maybe a dummy ICV), and
+> then the HW does the encryption. In case of HW that needs to add the
+> sectag itself, the driver would first strip the headers that the stack
+> created. On receive, the driver would recreate a sectag and the macsec
+> interface would just skip all verification (decrypt, PN).
+I do not think this is possible with this HW, nor do I think this is desirable.
+
+One of the big differences between MACsec and IPsec, is the fact that it is a L2
+protocol, designed to be running on switches (this is how MACsec claims to limit
+key-distributions issues, as all frames are decrypted when entering a switch,
+and encrypted with a new key when leaving).
+
+If a SW stack needs to add a tag to the frame, then we cannot offload traffic
+being bridged in HW, and never goes to the CPU.
+
+/Allan
