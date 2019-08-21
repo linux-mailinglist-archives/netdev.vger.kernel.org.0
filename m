@@ -2,167 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C4AA997699
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:01:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65FF5976A2
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726983AbfHUKBL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 06:01:11 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:56929 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726677AbfHUKBL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:01:11 -0400
-X-Originating-IP: 86.250.200.211
-Received: from localhost (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
-        (Authenticated sender: antoine.tenart@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 511F46000D;
-        Wed, 21 Aug 2019 10:01:07 +0000 (UTC)
-Date:   Wed, 21 Aug 2019 12:01:06 +0200
-From:   Antoine Tenart <antoine.tenart@bootlin.com>
-To:     Sabrina Dubroca <sd@queasysnail.net>
-Cc:     Antoine Tenart <antoine.tenart@bootlin.com>,
-        Igor Russkikh <Igor.Russkikh@aquantia.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>,
-        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
-        Simon Edelhaus <Simon.Edelhaus@aquantia.com>,
-        Pavel Belous <Pavel.Belous@aquantia.com>
-Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
- infrastructure
-Message-ID: <20190821100106.GA3006@kwain>
-References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
- <20190808140600.21477-7-antoine.tenart@bootlin.com>
- <e96fa4ae-1f2c-c1be-b2d8-060217d8e151@aquantia.com>
- <20190813085817.GA3200@kwain>
- <20190813131706.GE15047@lunn.ch>
- <2e3c2307-d414-a531-26cb-064e05fa01fc@aquantia.com>
- <20190816132959.GC8697@bistromath.localdomain>
- <20190820100140.GA3292@kwain>
- <20190820144119.GA28714@bistromath.localdomain>
+        id S1727507AbfHUKEd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 06:04:33 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:59040 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726478AbfHUKEd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:04:33 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1i0NTh-0007nV-5L; Wed, 21 Aug 2019 12:04:29 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next 2019-08-21
+Date:   Wed, 21 Aug 2019 12:04:23 +0200
+Message-Id: <20190821100424.13682-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190820144119.GA28714@bistromath.localdomain>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Sabrina,
+Hi Dave,
 
-On Tue, Aug 20, 2019 at 04:41:19PM +0200, Sabrina Dubroca wrote:
-> 2019-08-20, 12:01:40 +0200, Antoine Tenart wrote:
-> > So it seems the ability to enable or disable the offloading on a given
-> > interface is the main missing feature. I'll add that, however I'll
-> > probably (at least at first):
-> > 
-> > - Have the interface to be fully offloaded or fully handled in s/w (with
-> >   errors being thrown if a given configuration isn't supported). Having
-> >   both at the same time on a given interface would be tricky because of
-> >   the MACsec validation parameter.
-> > 
-> > - Won't allow to enable/disable the offloading of there are rules in
-> >   place, as we're not sure the same rules would be accepted by the other
-> >   implementation.
-> 
-> That's probably quite problematic actually, because to do that you
-> need to be able to resync the state between software and hardware,
-> particularly packet numbers. So, yeah, we're better off having it
-> completely blocked until we have a working implementation (if that
-> ever happens).
-> 
-> However, that means in case the user wants to set up something that's
-> not offloadable, they'll have to:
->  - configure the offloaded version until EOPNOTSUPP
->  - tear everything down
->  - restart from scratch without offloading
-> 
-> That's inconvenient.
+For -next, we have more changes, but as described in the tag
+they really just fall into a few groups of changes :-)
 
-That's right, the user might have to replay the whole configuration if
-on rule failed to match the h/w requirements. It's inconvenient, but I
-think it's better to be safe until we have (if that happens) a working
-implementation of synchronizing the rules' state.
-
-> Talking about packet numbers, can you describe how PN exhaustion is
-> handled?  I couldn't find much about packet numbers at all in the
-> driver patches (I hope the hw doesn't wrap around from 2^32-1 to 0 on
-> the same SA).  At some point userspace needs to know that we're
-> getting close to 2^32 and that it's time to re-key.  Since the whole
-> TX path of the software implementation is bypassed, it looks like the
-> PN (as far as drivers/net/macsec.c is concerned) never increases, so
-> userspace can't know when to negotiate a new SA.
-
-That's a very good point. It actually was on my todo list for the next
-version (I wanted to discuss the other points first). We would also
-need to sync the stats at some point.
-
-> > I'm not sure if we should allow to mix the implementations on a given
-> > physical interface (by having two MACsec interfaces attached) as the
-> > validation would be impossible to do (we would have no idea if a
-> > packet was correctly handled by the offloading part or just not being
-> > a MACsec packet in the first place, in Rx).
-> 
-> That's something that really bothers me with this proposal. Quoting
-> from the commit message:
-> 
-> > the packets seen by the networking stack on both the physical and
-> > MACsec virtual interface are exactly the same
-
-That bothers me as well.
-
-> If the HW/driver is expected to strip the sectag, I don't see how we
-> could ever have multiple secy's at the same time and demultiplex
-> properly between them. That's part of the reason why I chose to have
-> virtual interfaces: without them, picking the right secy on TX gets
-> weird.
-> 
-> AFAICT, it means that any filters (tc, tcpdump) need to be different
-> between offloaded and non-offloaded cases.
-> 
-> And it's going to be confusing to the administrator when they look at
-> tcpdumps expecting to see MACsec frames.
-
-Right. I did not see how *not* to strip the sectag in the h/w back then,
-I'll have another look because that would improve things a lot.
-
-@all: do other MACsec offloading hardware allow not to stip the sectag?
-
-> I don't see how this implementation handles non-macsec traffic (on TX,
-> that would be packets sent directly through the real interface, for
-> example by wpa_supplicant - on RX, incoming MKA traffic for
-> wpa_supplicant). Unless I missed something, incoming MKA traffic will
-> end up on the macsec interface as well as the lower interface (not
-> entirely critical, as long as wpa_supplicant can grab it on the lower
-> device, but not consistent with the software implementation).
-
-That's right, as we have no way to tell if an Rx packet was MACsec or
-non-MACsec traffic, both will end up on both interfaces. Some h/w may be
-able to insert a custom header (or may allow not to strip the sectag),
-but I did not find anything related to this in mine (I'll double check).
-
-> How does the driver distinguish traffic that should pass through
-> unmodified from traffic that the HW needs to encapsulate and encrypt?
-
-At least in PHYs, packets go in a classification unit (that can match on
-multiple parts of the packet, given the hardware capabilities, eg. the
-MAC addresses). The result of the match is an action, which can be
-"bypass the MACsec block" or "go through it (which links the packet to a
-given configuration)". This is done in Rx and in Tx, and this is how the
-h/w block will know what to encapsulate and encrypt.
+Please pull and let me know if there's any problem.
 
 Thanks,
-Antoine
+johannes
 
--- 
-Antoine Ténart, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+
+
+The following changes since commit 8c40f3b212a373be843a29db608b462af5c3ed5d:
+
+  Merge tag 'mlx5-updates-2019-08-15' of git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux (2019-08-20 22:59:45 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-davem-2019-08-21
+
+for you to fetch changes up to 48cb39522a9d4d4680865e40a88f975a1cee6abc:
+
+  mac80211: minstrel_ht: improve rate probing for devices with static fallback (2019-08-21 11:10:13 +0200)
+
+----------------------------------------------------------------
+Here are a few groups of changes:
+ * EDMG channel support (60 GHz, just a single patch)
+ * initial 6/7 GHz band support (Arend)
+ * association timestamp recording (Ben)
+ * rate control improvements for better performance with
+   the mt76 driver (Felix)
+ * various fixes for previous HE support changes (John)
+
+----------------------------------------------------------------
+Alexei Avshalom Lazar (1):
+      nl80211: Add support for EDMG channels
+
+Arend van Spriel (8):
+      nl80211: add 6GHz band definition to enum nl80211_band
+      cfg80211: add 6GHz UNII band definitions
+      cfg80211: util: add 6GHz channel to freq conversion and vice versa
+      cfg80211: extend ieee80211_operating_class_to_band() for 6GHz
+      cfg80211: add 6GHz in code handling array with NUM_NL80211_BANDS entries
+      cfg80211: use same IR permissive rules for 6GHz band
+      cfg80211: ibss: use 11a mandatory rates for 6GHz band operation
+      cfg80211: apply same mandatory rate flags for 5GHz and 6GHz
+
+Ben Greear (2):
+      cfg80211: Support assoc-at timer in sta-info
+      mac80211: add assoc-at support
+
+Felix Fietkau (4):
+      mac80211: minstrel_ht: fix per-group max throughput rate initialization
+      mac80211: minstrel_ht: reduce unnecessary rate probing attempts
+      mac80211: minstrel_ht: fix default max throughput rate indexes
+      mac80211: minstrel_ht: improve rate probing for devices with static fallback
+
+John Crispin (5):
+      mac80211: fix TX legacy rate reporting when tx_status_ext is used
+      mac80211: fix bad guard when reporting legacy rates
+      mac80211: 80Mhz was not reported properly when using tx_status_ext
+      mac80211: add missing length field increment when generating Radiotap header
+      mac80211: fix possible NULL pointerderef in obss pd code
+
+ drivers/net/wireless/ath/wil6210/cfg80211.c |   2 +-
+ include/net/cfg80211.h                      |  88 ++++++++-
+ include/uapi/linux/nl80211.h                |  29 +++
+ net/mac80211/he.c                           |   3 +-
+ net/mac80211/mlme.c                         |   2 +-
+ net/mac80211/rc80211_minstrel.h             |   1 +
+ net/mac80211/rc80211_minstrel_ht.c          | 277 ++++++++++++++++++++++++----
+ net/mac80211/rc80211_minstrel_ht.h          |  12 ++
+ net/mac80211/sta_info.c                     |   3 +
+ net/mac80211/sta_info.h                     |   2 +
+ net/mac80211/status.c                       |  31 ++--
+ net/mac80211/tx.c                           |   1 +
+ net/wireless/chan.c                         | 162 +++++++++++++++-
+ net/wireless/ibss.c                         |  16 +-
+ net/wireless/nl80211.c                      |  39 ++++
+ net/wireless/reg.c                          |  21 ++-
+ net/wireless/trace.h                        |   3 +-
+ net/wireless/util.c                         |  56 +++++-
+ 18 files changed, 684 insertions(+), 64 deletions(-)
+
