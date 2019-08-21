@@ -2,391 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5871F97FBD
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:12:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EC4A97FCE
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:17:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727617AbfHUQMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 12:12:02 -0400
-Received: from Chamillionaire.breakpoint.cc ([193.142.43.52]:41342 "EHLO
-        Chamillionaire.breakpoint.cc" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727041AbfHUQMC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:12:02 -0400
-Received: from fw by Chamillionaire.breakpoint.cc with local (Exim 4.92)
-        (envelope-from <fw@strlen.de>)
-        id 1i0TDL-0005Nn-Mp; Wed, 21 Aug 2019 18:11:59 +0200
-Date:   Wed, 21 Aug 2019 18:11:59 +0200
-From:   Florian Westphal <fw@strlen.de>
-To:     Vakul Garg <vakul.garg@nxp.com>
-Cc:     Florian Westphal <fw@strlen.de>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: Help needed - Kernel lockup while running ipsec
-Message-ID: <20190821161159.GA20113@breakpoint.cc>
-References: <DB7PR04MB4620CD9AFFAFF8678F803DCE8BA80@DB7PR04MB4620.eurprd04.prod.outlook.com>
- <20190819173810.GK2588@breakpoint.cc>
- <DB7PR04MB4620C6E770C97AB14A04A1D98BAB0@DB7PR04MB4620.eurprd04.prod.outlook.com>
- <20190820092303.GM2588@breakpoint.cc>
- <DB7PR04MB4620487074796FBC015AFD098BAB0@DB7PR04MB4620.eurprd04.prod.outlook.com>
- <20190820093800.GN2588@breakpoint.cc>
- <DB7PR04MB46204E237BB1E495FC799E588BAB0@DB7PR04MB4620.eurprd04.prod.outlook.com>
- <DB7PR04MB4620B6ACB01BFA338ADAED048BAB0@DB7PR04MB4620.eurprd04.prod.outlook.com>
- <DB7PR04MB46204E4A3EBD5DD665F492D38BAA0@DB7PR04MB4620.eurprd04.prod.outlook.com>
+        id S1728797AbfHUQQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 12:16:40 -0400
+Received: from mail-eopbgr10045.outbound.protection.outlook.com ([40.107.1.45]:8117
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726828AbfHUQQj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 12:16:39 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BE86Kyq/B1nkGEtSlIJbc1n4pJRMbEaxYTYuIve5hH+c22LgO+fgnZ0RojRbfLCBM7lt8l+4EiEH3EqiqFFHpI9j1Vyg/avT1d2Nk+NUMlGFtFV7LmXwTpdGDsa/Aac6REGfCRslQqLmIKZWBefMTFiAwfWIahJRLfjn/vnCEC6oh1yGZRrdUYSmTAkDW597BfLZO8uFaICXm7OXeXHrJTwQ6jdglLWagoj6Aa3mVXmQlig84jJRnesIuyW3GvG/eW3irjiGymcHyxmDNyJWPiynkXQ/O/cv4gMWXh0ii49Ezglcg3WPbjQyUYku8S6r5MzdxtCS4vDmVazwnrrn9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/TGkgoElw0knAwgl5PTJkk82A64yXG7L4CgduFmH6xE=;
+ b=VhhhqqkobPCAUwAut/04Wy87XdAuIBqcg/dKlnF0r87bkH8Z/NpInIGpjzXenldSrEfhxB/PsjJO1dkWPlsdx6Sx/IYuCli5UB1u0KtRF18qZM1JjN0wRKoCpbNYU9D5pGRvF8L+TOwURxRJhLC5tUwBweQGCawpsdGMvcX278GOZXr3ydzDrIBXkMBd3uO+u+gsF/lRt6uYmisMRLJ+1r6ZspcmkgnbgMqKbfcv0iF7QlJgoHvWy6SGZnu2VdgX53yA1+xdYOeQOaIpdx+NKlFZr+jF+2kp24SK8kEEUFmEJ+urmXGfFpWlw/fpDqxLD9179OynC91NxXfRaOwF0Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/TGkgoElw0knAwgl5PTJkk82A64yXG7L4CgduFmH6xE=;
+ b=eFukYABAW9o4OTNtMlKzSyY7/Q6ZnbhOpcnOnE1JCeRQFlphFe8CQlA0R+y/CIAnw5BEh8YX8/HXNGskBlPrM/8aR/1+1QEoSjH3VEpKYkNz6BV9sOwJGAO2Gf0UUpYTil3YOLKmX5JikwPdUcBQR97M7bemZ2ZzKA/ldAx0NpA=
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com (52.133.29.29) by
+ AM6PR0402MB3349.eurprd04.prod.outlook.com (52.133.18.154) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.18; Wed, 21 Aug 2019 16:16:32 +0000
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc]) by AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc%5]) with mapi id 15.20.2178.020; Wed, 21 Aug 2019
+ 16:16:32 +0000
+From:   Christian Herber <christian.herber@nxp.com>
+To:     David Miller <davem@davemloft.net>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
+CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: Re: [PATCH v2 net-next 0/1] Add BASE-T1 PHY support
+Thread-Topic: Re: [PATCH v2 net-next 0/1] Add BASE-T1 PHY support
+Thread-Index: AQHVWDvLLmDgCDHYx0GZluZJmkZkZA==
+Date:   Wed, 21 Aug 2019 16:16:32 +0000
+Message-ID: <AM6PR0402MB37983B7CA4DC2EF962D75D0886AA0@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+References: <20190819151940.27756-1-christian.herber@nxp.com>
+ <20190820.122234.1290995026664280862.davem@davemloft.net>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=christian.herber@nxp.com; 
+x-originating-ip: [217.111.68.82]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c37c23ca-4fcf-4d7a-a1b7-08d72652ee67
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR0402MB3349;
+x-ms-traffictypediagnostic: AM6PR0402MB3349:
+x-ms-exchange-purlcount: 1
+x-microsoft-antispam-prvs: <AM6PR0402MB334909E7847EB8219207093286AA0@AM6PR0402MB3349.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0136C1DDA4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(189003)(199004)(8676002)(71190400001)(74316002)(55016002)(7736002)(305945005)(6306002)(9686003)(71200400001)(33656002)(25786009)(3846002)(44832011)(14454004)(110136005)(486006)(52536014)(2501003)(5660300002)(476003)(54906003)(4744005)(76116006)(91956017)(66946007)(66476007)(53936002)(66446008)(26005)(55236004)(6436002)(186003)(102836004)(2906002)(45080400002)(229853002)(446003)(6506007)(53546011)(966005)(7696005)(4326008)(8936002)(256004)(76176011)(86362001)(99286004)(66556008)(66066001)(6246003)(64756008)(498600001)(6116002)(81156014)(81166006)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR0402MB3349;H:AM6PR0402MB3798.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: M5WDIabyHLJpcmqy6Zi7RagFAkg/kIRzxqn8YqPMJfpJ3AcPeHj4V1Ke2We1SLfoTvAtF821oEo5wOeHmTvfy0vvJqFkEOLAY16NVC4sMT1YJTm7WdWdS2p/4LiXi7eJ24QGlv0BDpv36WiWc8SqKD5d1gI0HteXis5Y+IzXx0QYbpiZevvBURbKwNSkRLdcLo75TsMZgUHxBJcEBVFY7VbSsQwTLIbQYgLaPLQY5Eq0jhgchI/rusypx9GE8A38/LIAQBf2Gn/xZryMqMbi95viAYKKcYeGScFFQrh9z1z9Lkuv/0hK6bOcXUdpVA1ZDXRmsn5eN0YVH9d7kdtuZelQy59mQ4Lmn1gOshonEBl2iHWdYDHxQpr70TauxsUYqQwMdtY0phLr3BX9quyvvSY+ixPI86fZ21U+xh5gCQk=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="r5Pyd7+fXNt84Ff3"
-Content-Disposition: inline
-In-Reply-To: <DB7PR04MB46204E4A3EBD5DD665F492D38BAA0@DB7PR04MB4620.eurprd04.prod.outlook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c37c23ca-4fcf-4d7a-a1b7-08d72652ee67
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 16:16:32.3288
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ZvtGO8F90X3V5fQdIqlIZZVwhjcuX7vzxlWJCQvaAFERNWLZKCjLgMLAo2LZsW8fPnEjCExWsZ3Uhy2ZULyb4KytP1JBCI90wHuJvPN//uc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3349
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
---r5Pyd7+fXNt84Ff3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Vakul Garg <vakul.garg@nxp.com> wrote:
-> > Policy refcount is decreasing properly on 4.19.
-> > Same should be on the latest kernel too.
-> 
-> On kernel-4.14, I find dst_release() is getting called through xfrm_output_one().
-> However since dst->__refcnt gets decremented to '1', 
-> the call_rcu(&dst->rcu_head, dst_destroy_rcu) is not invoked. 
-> 
-> On kernel-4.19, dst->__refcnt gets decremented to '0', hence things fall in place and 
-> dst_destroy_rcu() eventually executes.
-> 
-> Any further help/pointers for kernel-4.14 would be deeply appreciated.
-
-Can you try getting rid of the pcpu dst cache?
-
-I had a look at 4.14-stable and it at least lacks 2950278d2d04ff531.
-
-I've attached an (untested) revert of the pcpu cache (its gone in 4.19
-and onwards).
-
-
-
---r5Pyd7+fXNt84Ff3
-Content-Type: text/x-diff; charset=us-ascii
-Content-Disposition: attachment; filename="0001-xfrm-policy-remove-pcpu-policy-cache.patch"
-
-From 058cb6719223d10dc57743dbf5c20424f118e7e7 Mon Sep 17 00:00:00 2001
-From: Florian Westphal <fw@strlen.de>
-Date: Mon, 25 Jun 2018 17:26:02 +0200
-Subject: [PATCH 4.4.14.y] xfrm: policy: remove pcpu policy cache
-
-commit e4db5b61c572475bbbcf63e3c8a2606bfccf2c9d upstream.
-
-Kristian Evensen says:
-  In a project I am involved in, we are running ipsec (Strongswan) on
-  different mt7621-based routers. Each router is configured as an
-  initiator and has around ~30 tunnels to different responders (running
-  on misc. devices). Before the flow cache was removed (kernel 4.9), we
-  got a combined throughput of around 70Mbit/s for all tunnels on one
-  router. However, we recently switched to kernel 4.14 (4.14.48), and
-  the total throughput is somewhere around 57Mbit/s (best-case). I.e., a
-  drop of around 20%. Reverting the flow cache removal restores, as
-  expected, performance levels to that of kernel 4.9.
-
-When pcpu xdst exists, it has to be validated first before it can be
-used.
-
-A negative hit thus increases cost vs. no-cache.
-
-As number of tunnels increases, hit rate decreases so this pcpu caching
-isn't a viable strategy.
-
-Furthermore, the xdst cache also needs to run with BH off, so when
-removing this the bh disable/enable pairs can be removed too.
-
-Kristian tested a 4.14.y backport of this change and reported
-increased performance:
-
-  In our tests, the throughput reduction has been reduced from around -20%
-  to -5%. We also see that the overall throughput is independent of the
-  number of tunnels, while before the throughput was reduced as the number
-  of tunnels increased.
-
-Reported-by: Kristian Evensen <kristian.evensen@gmail.com>
-Signed-off-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
----
- include/net/xfrm.h     |   1 -
- net/xfrm/xfrm_device.c |  10 ---
- net/xfrm/xfrm_policy.c | 138 +----------------------------------------
- net/xfrm/xfrm_state.c  |   5 +-
- 4 files changed, 3 insertions(+), 151 deletions(-)
-
-diff --git a/include/net/xfrm.h b/include/net/xfrm.h
-index db99efb2d1d0..bdf185ae93db 100644
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -323,7 +323,6 @@ int xfrm_policy_register_afinfo(const struct xfrm_policy_afinfo *afinfo, int fam
- void xfrm_policy_unregister_afinfo(const struct xfrm_policy_afinfo *afinfo);
- void km_policy_notify(struct xfrm_policy *xp, int dir,
- 		      const struct km_event *c);
--void xfrm_policy_cache_flush(void);
- void km_state_notify(struct xfrm_state *x, const struct km_event *c);
- 
- struct xfrm_tmpl;
-diff --git a/net/xfrm/xfrm_device.c b/net/xfrm/xfrm_device.c
-index 30e5746085b8..4e458fd9236a 100644
---- a/net/xfrm/xfrm_device.c
-+++ b/net/xfrm/xfrm_device.c
-@@ -153,12 +153,6 @@ static int xfrm_dev_register(struct net_device *dev)
- 	return NOTIFY_DONE;
- }
- 
--static int xfrm_dev_unregister(struct net_device *dev)
--{
--	xfrm_policy_cache_flush();
--	return NOTIFY_DONE;
--}
--
- static int xfrm_dev_feat_change(struct net_device *dev)
- {
- 	if ((dev->features & NETIF_F_HW_ESP) && !dev->xfrmdev_ops)
-@@ -178,7 +172,6 @@ static int xfrm_dev_down(struct net_device *dev)
- 	if (dev->features & NETIF_F_HW_ESP)
- 		xfrm_dev_state_flush(dev_net(dev), dev, true);
- 
--	xfrm_policy_cache_flush();
- 	return NOTIFY_DONE;
- }
- 
-@@ -190,9 +183,6 @@ static int xfrm_dev_event(struct notifier_block *this, unsigned long event, void
- 	case NETDEV_REGISTER:
- 		return xfrm_dev_register(dev);
- 
--	case NETDEV_UNREGISTER:
--		return xfrm_dev_unregister(dev);
--
- 	case NETDEV_FEAT_CHANGE:
- 		return xfrm_dev_feat_change(dev);
- 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 70ec57b887f6..b5006a091fd6 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -45,8 +45,6 @@ struct xfrm_flo {
- 	u8 flags;
- };
- 
--static DEFINE_PER_CPU(struct xfrm_dst *, xfrm_last_dst);
--static struct work_struct *xfrm_pcpu_work __read_mostly;
- static DEFINE_SPINLOCK(xfrm_policy_afinfo_lock);
- static struct xfrm_policy_afinfo const __rcu *xfrm_policy_afinfo[AF_INET6 + 1]
- 						__read_mostly;
-@@ -1715,108 +1713,6 @@ static int xfrm_expand_policies(const struct flowi *fl, u16 family,
- 
- }
- 
--static void xfrm_last_dst_update(struct xfrm_dst *xdst, struct xfrm_dst *old)
--{
--	this_cpu_write(xfrm_last_dst, xdst);
--	if (old)
--		dst_release(&old->u.dst);
--}
--
--static void __xfrm_pcpu_work_fn(void)
--{
--	struct xfrm_dst *old;
--
--	old = this_cpu_read(xfrm_last_dst);
--	if (old && !xfrm_bundle_ok(old))
--		xfrm_last_dst_update(NULL, old);
--}
--
--static void xfrm_pcpu_work_fn(struct work_struct *work)
--{
--	local_bh_disable();
--	rcu_read_lock();
--	__xfrm_pcpu_work_fn();
--	rcu_read_unlock();
--	local_bh_enable();
--}
--
--void xfrm_policy_cache_flush(void)
--{
--	struct xfrm_dst *old;
--	bool found = 0;
--	int cpu;
--
--	might_sleep();
--
--	local_bh_disable();
--	rcu_read_lock();
--	for_each_possible_cpu(cpu) {
--		old = per_cpu(xfrm_last_dst, cpu);
--		if (old && !xfrm_bundle_ok(old)) {
--			if (smp_processor_id() == cpu) {
--				__xfrm_pcpu_work_fn();
--				continue;
--			}
--			found = true;
--			break;
--		}
--	}
--
--	rcu_read_unlock();
--	local_bh_enable();
--
--	if (!found)
--		return;
--
--	get_online_cpus();
--
--	for_each_possible_cpu(cpu) {
--		bool bundle_release;
--
--		rcu_read_lock();
--		old = per_cpu(xfrm_last_dst, cpu);
--		bundle_release = old && !xfrm_bundle_ok(old);
--		rcu_read_unlock();
--
--		if (!bundle_release)
--			continue;
--
--		if (cpu_online(cpu)) {
--			schedule_work_on(cpu, &xfrm_pcpu_work[cpu]);
--			continue;
--		}
--
--		rcu_read_lock();
--		old = per_cpu(xfrm_last_dst, cpu);
--		if (old && !xfrm_bundle_ok(old)) {
--			per_cpu(xfrm_last_dst, cpu) = NULL;
--			dst_release(&old->u.dst);
--		}
--		rcu_read_unlock();
--	}
--
--	put_online_cpus();
--}
--
--static bool xfrm_xdst_can_reuse(struct xfrm_dst *xdst,
--				struct xfrm_state * const xfrm[],
--				int num)
--{
--	const struct dst_entry *dst = &xdst->u.dst;
--	int i;
--
--	if (xdst->num_xfrms != num)
--		return false;
--
--	for (i = 0; i < num; i++) {
--		if (!dst || dst->xfrm != xfrm[i])
--			return false;
--		dst = dst->child;
--	}
--
--	return xfrm_bundle_ok(xdst);
--}
--
- static struct xfrm_dst *
- xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
- 			       const struct flowi *fl, u16 family,
-@@ -1824,7 +1720,7 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
- {
- 	struct net *net = xp_net(pols[0]);
- 	struct xfrm_state *xfrm[XFRM_MAX_DEPTH];
--	struct xfrm_dst *xdst, *old;
-+	struct xfrm_dst *xdst;
- 	struct dst_entry *dst;
- 	int err;
- 
-@@ -1839,21 +1735,6 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
- 		return ERR_PTR(err);
- 	}
- 
--	xdst = this_cpu_read(xfrm_last_dst);
--	if (xdst &&
--	    xdst->u.dst.dev == dst_orig->dev &&
--	    xdst->num_pols == num_pols &&
--	    memcmp(xdst->pols, pols,
--		   sizeof(struct xfrm_policy *) * num_pols) == 0 &&
--	    xfrm_xdst_can_reuse(xdst, xfrm, err)) {
--		dst_hold(&xdst->u.dst);
--		while (err > 0)
--			xfrm_state_put(xfrm[--err]);
--		return xdst;
--	}
--
--	old = xdst;
--
- 	dst = xfrm_bundle_create(pols[0], xfrm, err, fl, dst_orig);
- 	if (IS_ERR(dst)) {
- 		XFRM_INC_STATS(net, LINUX_MIB_XFRMOUTBUNDLEGENERROR);
-@@ -1866,9 +1747,6 @@ xfrm_resolve_and_create_bundle(struct xfrm_policy **pols, int num_pols,
- 	memcpy(xdst->pols, pols, sizeof(struct xfrm_policy *) * num_pols);
- 	xdst->policy_genid = atomic_read(&pols[0]->genid);
- 
--	atomic_set(&xdst->u.dst.__refcnt, 2);
--	xfrm_last_dst_update(xdst, old);
--
- 	return xdst;
- }
- 
-@@ -2069,11 +1947,8 @@ xfrm_bundle_lookup(struct net *net, const struct flowi *fl, u16 family, u8 dir,
- 	if (num_xfrms <= 0)
- 		goto make_dummy_bundle;
- 
--	local_bh_disable();
- 	xdst = xfrm_resolve_and_create_bundle(pols, num_pols, fl, family,
- 					      xflo->dst_orig);
--	local_bh_enable();
--
- 	if (IS_ERR(xdst)) {
- 		err = PTR_ERR(xdst);
- 		if (err != -EAGAIN)
-@@ -2160,11 +2035,9 @@ struct dst_entry *xfrm_lookup(struct net *net, struct dst_entry *dst_orig,
- 				goto no_transform;
- 			}
- 
--			local_bh_disable();
- 			xdst = xfrm_resolve_and_create_bundle(
- 					pols, num_pols, fl,
- 					family, dst_orig);
--			local_bh_enable();
- 
- 			if (IS_ERR(xdst)) {
- 				xfrm_pols_put(pols, num_pols);
-@@ -2992,15 +2865,6 @@ static struct pernet_operations __net_initdata xfrm_net_ops = {
- 
- void __init xfrm_init(void)
- {
--	int i;
--
--	xfrm_pcpu_work = kmalloc_array(NR_CPUS, sizeof(*xfrm_pcpu_work),
--				       GFP_KERNEL);
--	BUG_ON(!xfrm_pcpu_work);
--
--	for (i = 0; i < NR_CPUS; i++)
--		INIT_WORK(&xfrm_pcpu_work[i], xfrm_pcpu_work_fn);
--
- 	register_pernet_subsys(&xfrm_net_ops);
- 	seqcount_init(&xfrm_policy_hash_generation);
- 	xfrm_input_init();
-diff --git a/net/xfrm/xfrm_state.c b/net/xfrm/xfrm_state.c
-index 0cd2bdf3b217..7c093de68780 100644
---- a/net/xfrm/xfrm_state.c
-+++ b/net/xfrm/xfrm_state.c
-@@ -735,10 +735,9 @@ int xfrm_state_flush(struct net *net, u8 proto, bool task_valid)
- 	}
- out:
- 	spin_unlock_bh(&net->xfrm.xfrm_state_lock);
--	if (cnt) {
-+	if (cnt)
- 		err = 0;
--		xfrm_policy_cache_flush();
--	}
-+
- 	return err;
- }
- EXPORT_SYMBOL(xfrm_state_flush);
--- 
-2.21.0
-
-
---r5Pyd7+fXNt84Ff3--
+On 20.08.2019 21:22, David Miller wrote:=0A=
+> =0A=
+> From: Christian Herber <christian.herber@nxp.com>=0A=
+> Date: Mon, 19 Aug 2019 15:19:52 +0000=0A=
+> =0A=
+>> v1 patchset can be found here: https://eur01.safelinks.protection.outloo=
+k.com/?url=3Dhttps%3A%2F%2Flkml.org%2Flkml%2F2019%2F8%2F15%2F626&amp;data=
+=3D02%7C01%7Cchristian.herber%40nxp.com%7Ccbb5f329425240eda10a08d725a3c305%=
+7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C1%7C637019257604516613&amp;sdata=
+=3DIdBZbqGgA0upPZZrBQSxPL%2Fh7Tn4BtYA4%2FfS6dZngWU%3D&amp;reserved=3D0=0A=
+> =0A=
+> Please expand and clarify your commit messages as requested by Heiner=0A=
+> in his feedback to v1.=0A=
+> =0A=
+=0A=
+Hi David, Heiner,=0A=
+=0A=
+could you please be specific what to add? The discussion was on various =0A=
+topics. Agree that it would probably help to add some more clarity, but =0A=
+it would be good if you can specify your expectation in this.=0A=
+=0A=
+Christian=0A=
