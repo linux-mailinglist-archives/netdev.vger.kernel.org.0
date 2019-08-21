@@ -2,72 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D2C4983D7
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 21:00:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7844E98412
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 21:12:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729184AbfHUS5W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 14:57:22 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:49774 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727959AbfHUS5W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 14:57:22 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=vFX90YRsBTJK5AWhBMwuW2ac3NGFvVKSagxrVlHCSC4=; b=4+I01uoyADD27LQ/mt2GEBa42Y
-        HbuAEganfQyti5Uyxbt1dwaEQJZoXKHtwdpYz5CtuSBCFxQlu/c8juqgI1QyrIciBjofrSemh+cSI
-        a8qz9fC1h24ok064o74smCEVH86GnLus30Mi+BW+s10gxj859SXSSII/L0TZ3r+BUSf8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i0VnH-0007Ea-II; Wed, 21 Aug 2019 20:57:15 +0200
-Date:   Wed, 21 Aug 2019 20:57:15 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Christian Herber <christian.herber@nxp.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [EXT] Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
-Message-ID: <20190821185715.GA16401@lunn.ch>
-References: <20190815153209.21529-1-christian.herber@nxp.com>
- <8c15b855-6947-9930-c3df-71a64fbff33b@gmail.com>
- <AM6PR0402MB379864B810F08D3698618B5F86A80@AM6PR0402MB3798.eurprd04.prod.outlook.com>
- <13e65051-fe4f-5964-30b3-75285e6d2eee@gmail.com>
- <AM6PR0402MB3798FCBF1EE592687B13A3C386AB0@AM6PR0402MB3798.eurprd04.prod.outlook.com>
- <5c920846-b8f5-d087-cea4-a8ca3f816127@gmail.com>
+        id S1729143AbfHUTMV convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 15:12:21 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:4722 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727685AbfHUTMV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 15:12:21 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LIr2a9123798
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 15:12:20 -0400
+Received: from e06smtp07.uk.ibm.com (e06smtp07.uk.ibm.com [195.75.94.103])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2uh92ypws1-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 15:12:19 -0400
+Received: from localhost
+        by e06smtp07.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <naveen.n.rao@linux.vnet.ibm.com>;
+        Wed, 21 Aug 2019 20:12:17 +0100
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (9.149.109.196)
+        by e06smtp07.uk.ibm.com (192.168.101.137) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 21 Aug 2019 20:12:15 +0100
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7LJCE5f48169192
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Aug 2019 19:12:14 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 9D7D64C044;
+        Wed, 21 Aug 2019 19:12:14 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3280F4C040;
+        Wed, 21 Aug 2019 19:12:14 +0000 (GMT)
+Received: from localhost (unknown [9.85.72.179])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 21 Aug 2019 19:12:13 +0000 (GMT)
+Date:   Thu, 22 Aug 2019 00:42:12 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: Regression fix for bpf in v5.3 (was Re: [RFC PATCH] bpf: handle
+ 32-bit zext during constant blinding)
+To:     Jiong Wang <jiong.wang@netronome.com>,
+        Michael Ellerman <mpe@ellerman.id.au>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org
+References: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com>
+        <87d0gy6cj6.fsf@concordia.ellerman.id.au> <87k1b6yeh1.fsf@netronome.com>
+In-Reply-To: <87k1b6yeh1.fsf@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5c920846-b8f5-d087-cea4-a8ca3f816127@gmail.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+User-Agent: astroid/0.15.0 (https://github.com/astroidmail/astroid)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8BIT
+X-TM-AS-GCONF: 00
+x-cbid: 19082119-0028-0000-0000-0000039234C0
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19082119-0029-0000-0000-000024545D62
+Message-Id: <1566414605.l9kcxxdjo7.naveen@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=775 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908210183
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> The current patch set IMO is a little bit hacky. I'm not 100% happy
-> with the implicit assumption that there can't be devices supporting
-> T1 and classic BaseT modes or fiber modes.
+Jiong Wang wrote:
 > 
-> Andrew: Do you have an opinion on that?
+> Michael Ellerman writes:
+> 
+>> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> writes:
+>>> Since BPF constant blinding is performed after the verifier pass, there
+>>> are certain ALU32 instructions inserted which don't have a corresponding
+>>> zext instruction inserted after. This is causing a kernel oops on
+>>> powerpc and can be reproduced by running 'test_cgroup_storage' with
+>>> bpf_jit_harden=2.
+>>>
+>>> Fix this by emitting BPF_ZEXT during constant blinding if
+>>> prog->aux->verifier_zext is set.
+>>>
+>>> Fixes: a4b1d3c1ddf6cb ("bpf: verifier: insert zero extension according to analysis result")
+>>> Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+>>> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+>>> ---
+>>> This approach (the location where zext is being introduced below, in 
+>>> particular) works for powerpc, but I am not entirely sure if this is 
+>>> sufficient for other architectures as well. This is broken on v5.3-rc4.
+>>
+>> Any comment on this?
+> 
+> Have commented on https://marc.info/?l=linux-netdev&m=156637836024743&w=2
+> 
+> The fix looks correct to me on "BPF_LD | BPF_IMM | BPF_DW", but looks
+> unnecessary on two other places. It would be great if you or Naveen could
+> confirm it.
 
-Hi Heiner
+Jiong,
+Thanks for the review. I can now see why the other two changes are not 
+necessary. I will post a follow-on patch.
 
-I would also like cleaner integration. I doubt here is anything in the
-standard which says you cannot combine these modes. It is more a
-marketing question if anybody would build such a device. Maybe not
-directly into a vehicle, but you could imaging a mobile test device
-which uses T1 to talk to the car and T4 to connect to the garage
-network?
+Thanks!
+- Naveen
 
-So i don't think we should limit ourselves. phylib should provide a
-clean, simple set of helpers to perform standard operations for
-various modes. Drivers can make use of those helpers. That much should
-be clear. If we try to make genphy support them all simultaneously, is
-less clear.
-
-     Andrew
