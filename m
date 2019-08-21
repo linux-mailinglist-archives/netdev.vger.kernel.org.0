@@ -2,414 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AAFA97157
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 07:02:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B5929715A
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 07:04:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727630AbfHUFCG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 01:02:06 -0400
-Received: from mail-eopbgr20086.outbound.protection.outlook.com ([40.107.2.86]:52302
-        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725866AbfHUFCF (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 01:02:05 -0400
+        id S1727348AbfHUFEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 01:04:02 -0400
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:54998 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726463AbfHUFEC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 01:04:02 -0400
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7L50oXf006778;
+        Tue, 20 Aug 2019 22:03:56 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0818;
+ bh=0se5OS/zv84LQjO9svHYrr4HE4PlXeriJla1Pna3H2A=;
+ b=Pi8le+Qpy9Lu4k+GZKILreeQiLuhJSmdXLx2R2r5oW86UnwKlWNi7kzaofRgcuKOsxOo
+ IdQyMKrBxsr0PEFVbwczSD6A1vQ4fLdYGpluvrwWyH96Ti+3fmy+60AOLcvWXHaWSiu7
+ 2wDWz+XaRzk+GLjBpLhHm9pPumHVMa/zrOPhYv6wUEjHjDHPPT6FqrjxnQlipSuuHdhI
+ OQd2hasWvejsZgtLNn3bXz1zJEy+aEBhX14Vxnw4dn+d0KasuEG3PzOS1kO6e8T5iwB8
+ BV65jXaEjTuB2GPSpTPZIaYwv5hMkvHtPHyNFDw/xT+kf1q1fta7HhMSpTc45hmVkLWF DQ== 
+Received: from sc-exch02.marvell.com ([199.233.58.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 2ugu7frt6m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Tue, 20 Aug 2019 22:03:56 -0700
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1367.3; Tue, 20 Aug
+ 2019 22:03:54 -0700
+Received: from NAM05-BY2-obe.outbound.protection.outlook.com (104.47.50.50) by
+ SC-EXCH01.marvell.com (10.93.176.81) with Microsoft SMTP Server (TLS) id
+ 15.0.1367.3 via Frontend Transport; Tue, 20 Aug 2019 22:03:54 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Gveo5S3d2O6L30BaHOX8kVQHhcLgLymUW1NVbA504VYrIdev0twTTx7n5Yn+DOfwuqjmMMxGSCxbi4J0AQvAsAO7T8hen0MlbfQStcateN5ZJN43erXfuPsk+75iF6A7PtoG0/HzKfAMSABV2BXA/nWWENxs5xYOd0uXzbCYWPfZv8opQXSYBwP3FNeLMC5Zc3gHBf/UnmGBOkQAa5znrhh0Oq4JipiRtd//+WQzisyjkET2d4MDHK/tu3F8ZYXnoe/pvRx6zFWCW1Gxyio1V0bepeGu+0KLoaZrr8TlTRKw+h1gLVpT79PAtJOlKMTtnewkwzdp9rKjNqfT2FAYtw==
+ b=kknxlOh5d9jKvrikGfuioEI2dGyCKQ8ZNtZp9vCQBu7QxukjyRwWBRbnHTiyAGt0k9daiuzxIUhjzPfSRLF8rkXEd3hVcih7iFUkwZykxgfKdUzHLoWpKHegzDijH7pstFR3EwMMKpNobCyiB1MWwhbr71szavsNlxi5zNY0wBsZav0M7DEobvyG0AfD0jJPQ7tWWxERnVq1A3Jm6cUZXgEdypjEVJVIs9awyRoHQza3em+1bMUKj/R0CYVHLwOvG6UV5pvMXXNmjiI/9DLLPs5qHYCK4vJUXTLB+7z5B6wqXoeDmBN60Th1I6s4gtoPhNAru3B34Id02qKx8FJMXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iodz282orxI/xMGpLcM6O4Mj8OyBlnmxfX41b8iKEnA=;
- b=VX7Hw9fIwu6AUtRqhCq3q18FER1tAc8tGvqQdBeGvLFOLne3J3HQn1dQqJVvxc+LJP3khxL6WEKWbbf/gnmYHd9vuJpI9yYvU8bMzJXCWXYNs3P1UXjx3b2XFikiUnouVt+494xsX6/KaHMQu38TEhDHOx+wb+QuUzcgooN5fVb/s3oadE3rb/zOQsEZbmF2XCwLIDfbWWWVNd4LNan6NHkcU4Jz3SdkXmvNoVe5T5iEqYw3vAird74ybF5v327zdeAtuqU1pCZo156lL+xM1BNhgDLrsEcwi9sw0KsP6QsE65ROc2Q5qEAvKkIR8XR/DVBLj/zW9nvOw7hy66p/6g==
+ bh=0se5OS/zv84LQjO9svHYrr4HE4PlXeriJla1Pna3H2A=;
+ b=iJ1HCCQCV7WlI8LPVPgWF4+UChmCjOdt/ZSUYnGubbBliOvGK2mHfMRL6Jvdlva2GUU3ibISFR2LuqoKAdmROpFU1Htg5yX55gFxbe1rj8hJ54YARTYmbrWj98SauY7PCVddcowJLwCnsPmM1Roz3ZO1Eb3NS7q7DdK5zAsrX4cgWqkqEkh2hcO+UpyHIpWTTe/EVz1irWUz41DbXsjo9CuiRZh8N2N/JczqJM0DhkulfWNv8GJm3oxmRI93ySmHv2TIqbJU7alFV+HokhZv8Qc4OMJOwt5dW0HJebY3pUookbKfEah452DhMGj6BBat84w3QdJFoGDz/mOO4hKt3A==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=marvell.onmicrosoft.com; s=selector2-marvell-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iodz282orxI/xMGpLcM6O4Mj8OyBlnmxfX41b8iKEnA=;
- b=kwzS3fnjLqCTPxRos1gbDwoMCB/7I1sQrWBAm4rbeoJGuO/jBATQ0xiYvWHC6JDTkOqt2mwCWuNWWynKj/JAy2BM2zX6p/4ikrK7MuHMb3Ww2vxXIOoFW7dM8bTpluWsrwc0jN1Gn7LyCYL0zo1bxJvCrfGVkJwrcrqAIGBzc9Y=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6402.eurprd05.prod.outlook.com (20.179.35.82) with Microsoft SMTP
+ bh=0se5OS/zv84LQjO9svHYrr4HE4PlXeriJla1Pna3H2A=;
+ b=eYjNnvhek9hEMritbBxREdVw9asJiXHLwO4OvHomnJECrOq4LKPh4ePNWIcj0AieveB7jTMJ+qPOaePtJqkNgHHXULL+fyW93UAUEWIU+Cjp+mwiOXOfAyn3qBqP+VJMr2QzLAfD7ohOEUMjGzFqHDkOqBkF6GcHn39OO6Jxy1o=
+Received: from MN2PR18MB2528.namprd18.prod.outlook.com (20.179.80.86) by
+ MN2PR18MB2733.namprd18.prod.outlook.com (20.179.21.145) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.19; Wed, 21 Aug 2019 05:01:52 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2178.020; Wed, 21 Aug 2019
- 05:01:52 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Alex Williamson <alex.williamson@redhat.com>
-CC:     Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        cjia <cjia@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Thread-Topic: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Thread-Index: AQHVTfNxjgfwJJG2ZUiuOAmKCwQvf6bx3uKAgAWJU4CAAcVCEIAABCsAgAAWVtCAABCDgIAAzoewgAAqE4CAAECFQIAAFWyAgAAGbNCAABfqAIAAErcwgAjpulCAAJkHAIAAnVNggAAbk4CAAAOYgIAABpwAgAAAVrA=
-Date:   Wed, 21 Aug 2019 05:01:52 +0000
-Message-ID: <AM0PR05MB4866AE8FC4AA3CC24B08B326D1AA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190802065905.45239-1-parav@mellanox.com>
-        <20190813085246.1d642ae5@x1.home>
-        <AM0PR05MB48663579A340E6597B3D01BCD1D20@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190813111149.027c6a3c@x1.home>
-        <AM0PR05MB4866D40F8EBB382C78193C91D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190814100135.1f60aa42.cohuck@redhat.com>
-        <AM0PR05MB4866ABFDDD9DDCBC01F6CA90D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190814150911.296da78c.cohuck@redhat.com>
-        <AM0PR05MB48666CCDFE985A25F42A0259D1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190814085746.26b5f2a3@x1.home>
-        <AM0PR05MB4866148ABA3C4E48E73E95FCD1AD0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <AM0PR05MB48668B6221E477A873688CDBD1AB0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190820111904.75515f58@x1.home>
-        <AM0PR05MB486686D3C311F3C61BE0997DD1AA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190820222051.7aeafb69@x1.home>
-        <AM0PR05MB48664CDF05C3D02F9441440DD1AA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190820225722.237a57d2@x1.home>
-In-Reply-To: <20190820225722.237a57d2@x1.home>
+ 15.20.2178.19; Wed, 21 Aug 2019 05:03:50 +0000
+Received: from MN2PR18MB2528.namprd18.prod.outlook.com
+ ([fe80::cd80:d44a:f501:72a9]) by MN2PR18MB2528.namprd18.prod.outlook.com
+ ([fe80::cd80:d44a:f501:72a9%7]) with mapi id 15.20.2178.018; Wed, 21 Aug 2019
+ 05:03:50 +0000
+From:   Sudarsana Reddy Kalluru <skalluru@marvell.com>
+To:     Wenwen Wang <wenwen@cs.uga.edu>
+CC:     Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "open list:QLOGIC QL4xxx ETHERNET DRIVER" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2] qed: Add cleanup in qed_slowpath_start()
+Thread-Topic: [PATCH v2] qed: Add cleanup in qed_slowpath_start()
+Thread-Index: AQHVV9uErkMhUHV+uESKDd4I7CEBVacFC33Q
+Date:   Wed, 21 Aug 2019 05:03:49 +0000
+Message-ID: <MN2PR18MB2528CE8CB05F12BE7F23AEF1D3AA0@MN2PR18MB2528.namprd18.prod.outlook.com>
+References: <1566362796-5399-1-git-send-email-wenwen@cs.uga.edu>
+In-Reply-To: <1566362796-5399-1-git-send-email-wenwen@cs.uga.edu>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.22.188]
+x-originating-ip: [2402:3a80:538:ebe7:b8f4:f7ff:f796:7d44]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f8e482df-d5b0-403a-8cfc-08d725f4aea4
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM0PR05MB6402;
-x-ms-traffictypediagnostic: AM0PR05MB6402:
-x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
+x-ms-office365-filtering-correlation-id: fdeeb798-4fca-4c33-fba8-08d725f4f4ba
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR18MB2733;
+x-ms-traffictypediagnostic: MN2PR18MB2733:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB6402C0DB01EC40A8F13DA81ED1AA0@AM0PR05MB6402.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-microsoft-antispam-prvs: <MN2PR18MB2733D5C517301B90FC758886D3AA0@MN2PR18MB2733.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1728;
 x-forefront-prvs: 0136C1DDA4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(136003)(346002)(366004)(376002)(189003)(199004)(13464003)(66946007)(305945005)(30864003)(6436002)(4326008)(5660300002)(7736002)(9686003)(74316002)(229853002)(6246003)(55016002)(86362001)(14454004)(486006)(476003)(2906002)(53936002)(6506007)(25786009)(64756008)(52536014)(99286004)(478600001)(66476007)(53546011)(33656002)(66446008)(66556008)(7696005)(561944003)(71200400001)(55236004)(102836004)(76176011)(76116006)(71190400001)(446003)(186003)(26005)(9456002)(8936002)(316002)(6116002)(6916009)(54906003)(256004)(3846002)(11346002)(66066001)(81156014)(81166006)(14444005)(8676002)(473944003)(414714003)(357404004);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6402;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(396003)(39860400002)(136003)(376002)(346002)(13464003)(199004)(189003)(99286004)(11346002)(256004)(46003)(2906002)(478600001)(316002)(296002)(305945005)(102836004)(54906003)(74316002)(446003)(6916009)(6506007)(8936002)(55016002)(7736002)(9686003)(229853002)(6436002)(8676002)(186003)(2171002)(81156014)(7696005)(14454004)(76176011)(4326008)(86362001)(53936002)(81166006)(53546011)(52536014)(71190400001)(33656002)(6116002)(66446008)(66556008)(66946007)(25786009)(76116006)(66476007)(64756008)(5660300002)(476003)(71200400001)(486006)(6246003)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR18MB2733;H:MN2PR18MB2528.namprd18.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: marvell.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: rHVXoTAUjNB1dZD8vwPuxpOM8EtKjLiEEiVCL9fJacGIsFc1G9pNOCjKyCOaDiGps/oUZoJg2HV1NbtRRUfcXjS7kYS3w+GggisEWsMijpvQ7/kS8Kczty9Wc6RFsLFg7r76ZZQt+3OhEfmbvRLrrpM5t792Iq1xorNWx9iEqIy0hcKrKGcAiinaGAmOdB4UJvFqiS9/k+hyHGZiAz/PqUmDHAGlS0N+ARNqgYEQwVPPAkAAGexBFTgsyfryTGR9Ywafd74hALjY70c2Mjgct1uxR4+/efNmHA636UzNrIMreATAGU3JjAj8cYgttqbG7C7GW4lr4i8gdT0H3KlftdmiCQbuxk9a29u5f0V/8kKs7ysoVhUOLC6j1PFTbOkWl54wwKnZS3BMsbepJXjYBT/oFRtep4JhY1vPrU+ZZhE=
+x-microsoft-antispam-message-info: iOKLD0K5J2nboHou7uIDArhCW+GvnBFQzawOmun1ZPv0JQumNOdq9qI55alhgKc+3uRwAOVkMLYEhjNqo5L+xgdZnCOsrt6axWk6bQkpzqBMZKhzzBWOXwlqrvsjfc0HJn8BlTVgLvt7qDFgv/8PnpEVteDS8TAyhRB/Lwn5H+vMM80GjBbXg2h8S5pMG4sIp1OePLYLah02jrhm3KbNqo7jCb9DS7FgGl9x/yYkmDNRb9LbuzRykSyZPnbqdWsvQurKosD9+lr0cYPaXb3RWDtW1oQw3tQUvwOuaOQUSbOUaeRYhh7M8drtxY21xYOVq3Q+aIzuOJGbNXhIAJ7oIwqw+FIxKkep16Sp5O4MIeayE2en49vYcUV1p0TQ0wy1sPs38h301mmTVkyuv4enwBwb6242xy7Mq9eBu9SO3to=
 Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f8e482df-d5b0-403a-8cfc-08d725f4aea4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 05:01:52.7662
+X-MS-Exchange-CrossTenant-Network-Message-Id: fdeeb798-4fca-4c33-fba8-08d725f4f4ba
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 05:03:50.1638
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EKmo70FJd0FpaLB9Q+FwrYMDIMma106xqbxqJVbR1pdwBpbhUX/PfiJzixS/cfmsVJqoOZMf0tqA7ejBS8xCkg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6402
+X-MS-Exchange-CrossTenant-userprincipalname: Y19f8bmEyhiEmNB58lZkW+oCKHjO0/huLHwfI2bsldCHTsWXtkSzaGi+yTKL+9k5poGJwNw9q4WS1hW9qLdOcA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR18MB2733
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-08-21_02:2019-08-19,2019-08-21 signatures=0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-
 > -----Original Message-----
-> From: Alex Williamson <alex.williamson@redhat.com>
-> Sent: Wednesday, August 21, 2019 10:27 AM
-> To: Parav Pandit <parav@mellanox.com>
-> Cc: Jiri Pirko <jiri@mellanox.com>; David S . Miller <davem@davemloft.net=
->;
-> Kirti Wankhede <kwankhede@nvidia.com>; Cornelia Huck
-> <cohuck@redhat.com>; kvm@vger.kernel.org; linux-kernel@vger.kernel.org;
-> cjia <cjia@nvidia.com>; netdev@vger.kernel.org
-> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+> From: Wenwen Wang <wenwen@cs.uga.edu>
+> Sent: Wednesday, August 21, 2019 10:17 AM
+> To: Wenwen Wang <wenwen@cs.uga.edu>
+> Cc: Sudarsana Reddy Kalluru <skalluru@marvell.com>; Ariel Elior
+> <aelior@marvell.com>; GR-everest-linux-l2 <GR-everest-linux-
+> l2@marvell.com>; David S. Miller <davem@davemloft.net>; open
+> list:QLOGIC QL4xxx ETHERNET DRIVER <netdev@vger.kernel.org>; open list
+> <linux-kernel@vger.kernel.org>
+> Subject: [PATCH v2] qed: Add cleanup in qed_slowpath_start()
 >=20
-> On Wed, 21 Aug 2019 04:40:15 +0000
-> Parav Pandit <parav@mellanox.com> wrote:
+> If qed_mcp_send_drv_version() fails, no cleanup is executed, leading to
+> memory leaks. To fix this issue, introduce the label 'err4' to perform th=
+e
+> cleanup work before returning the error.
 >=20
-> > > -----Original Message-----
-> > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > Sent: Wednesday, August 21, 2019 9:51 AM
-> > > To: Parav Pandit <parav@mellanox.com>
-> > > Cc: Jiri Pirko <jiri@mellanox.com>; David S . Miller
-> > > <davem@davemloft.net>; Kirti Wankhede <kwankhede@nvidia.com>;
-> > > Cornelia Huck <cohuck@redhat.com>; kvm@vger.kernel.org;
-> > > linux-kernel@vger.kernel.org; cjia <cjia@nvidia.com>;
-> > > netdev@vger.kernel.org
-> > > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > >
-> > > On Wed, 21 Aug 2019 03:42:25 +0000
-> > > Parav Pandit <parav@mellanox.com> wrote:
-> > >
-> > > > > -----Original Message-----
-> > > > > From: Alex Williamson <alex.williamson@redhat.com>
-> > > > > Sent: Tuesday, August 20, 2019 10:49 PM
-> > > > > To: Parav Pandit <parav@mellanox.com>
-> > > > > Cc: Jiri Pirko <jiri@mellanox.com>; David S . Miller
-> > > > > <davem@davemloft.net>; Kirti Wankhede <kwankhede@nvidia.com>;
-> > > > > Cornelia Huck <cohuck@redhat.com>; kvm@vger.kernel.org;
-> > > > > linux-kernel@vger.kernel.org; cjia <cjia@nvidia.com>;
-> > > > > netdev@vger.kernel.org
-> > > > > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > > > >
-> > > > > On Tue, 20 Aug 2019 08:58:02 +0000 Parav Pandit
-> > > > > <parav@mellanox.com> wrote:
-> > > > >
-> > > > > > + Dave.
-> > > > > >
-> > > > > > Hi Jiri, Dave, Alex, Kirti, Cornelia,
-> > > > > >
-> > > > > > Please provide your feedback on it, how shall we proceed?
-> > > > > >
-> > > > > > Short summary of requirements.
-> > > > > > For a given mdev (mediated device [1]), there is one
-> > > > > > representor netdevice and devlink port in switchdev mode
-> > > > > > (similar to SR-IOV VF), And there is one netdevice for the actu=
-al mdev
-> when mdev is probed.
-> > > > > >
-> > > > > > (a) representor netdev and devlink port should be able derive
-> > > > > > phys_port_name(). So that representor netdev name can be built
-> > > > > > deterministically across reboots.
-> > > > > >
-> > > > > > (b) for mdev's netdevice, mdev's device should have an attribut=
-e.
-> > > > > > This attribute can be used by udev rules/systemd or something
-> > > > > > else to rename netdev name deterministically.
-> > > > > >
-> > > > > > (c) IFNAMSIZ of 16 bytes is too small to fit whole UUID.
-> > > > > > A simple grep IFNAMSIZ in stack hints hundreds of users of
-> > > > > > IFNAMSIZ in drivers, uapi, netlink, boot config area and more.
-> > > > > > Changing IFNAMSIZ for a mdev bus doesn't really look
-> > > > > > reasonable option
-> > > to me.
-> > > > >
-> > > > > How many characters do we really have to work with?  Your
-> > > > > examples below prepend various characters, ex. option-1 results
-> > > > > in ens2f0_m10 or enm10.  Do the extra 8 or 3 characters in these =
-count
-> against IFNAMSIZ?
-> > > > >
-> > > > Maximum 15. Last is null termination.
-> > > > Some udev rules setting by user prefix the PF netdev interface. I
-> > > > took such
-> > > example below where ens2f0 netdev named is prefixed.
-> > > > Some prefer not to prefix.
-> > > >
-> > > > > > Hence, I would like to discuss below options.
-> > > > > >
-> > > > > > Option-1: mdev index
-> > > > > > Introduce an optional mdev index/handle as u32 during mdev
-> > > > > > create time. User passes mdev index/handle as input.
-> > > > > >
-> > > > > > phys_port_name=3DmIndex=3Dm%u
-> > > > > > mdev_index will be available in sysfs as mdev attribute for
-> > > > > > udev to name the mdev's netdev.
-> > > > > >
-> > > > > > example mdev create command:
-> > > > > > UUID=3D$(uuidgen)
-> > > > > > echo $UUID index=3D10
-> > > > > > > /sys/class/net/ens2f0/mdev_supported_types/mlx5_core_mdev/cr
-> > > > > > > eate
-> > > > >
-> > > > > Nit, IIRC previous discussions of additional parameters used
-> > > > > comma separators, ex. echo $UUID,index=3D10 >...
-> > > > >
-> > > > Yes, ok.
-> > > >
-> > > > > > > example netdevs:
-> > > > > > repnetdev=3Dens2f0_m10	/*ens2f0 is parent PF's netdevice */
-> > > > >
-> > > > > Is the parent really relevant in the name?
-> > > > No. I just picked one udev example who prefixed the parent netdev n=
-ame.
-> > > > But there are users who do not prefix it.
-> > > >
-> > > > > Tools like mdevctl are meant to
-> > > > > provide persistence, creating the same mdev devices on the same
-> > > > > parent, but that's simply the easiest policy decision.  We can
-> > > > > also imagine that multiple parent devices might support a
-> > > > > specified mdev type and policies factoring in proximity,
-> > > > > load-balancing, power consumption, etc might be weighed such
-> > > > > that we really don't want to promote userspace creating dependenc=
-ies
-> on the parent association.
-> > > > >
-> > > > > > mdev_netdev=3Denm10
-> > > > > >
-> > > > > > Pros:
-> > > > > > 1. mdevctl and any other existing tools are unaffected.
-> > > > > > 2. netdev stack, ovs and other switching platforms are unaffect=
-ed.
-> > > > > > 3. achieves unique phys_port_name for representor netdev 4.
-> > > > > > achieves unique mdev eth netdev name for the mdev using
-> > > > > > udev/systemd
-> > > extension.
-> > > > > > 5. Aligns well with mdev and netdev subsystem and similar to
-> > > > > > existing sriov bdf's.
-> > > > >
-> > > > > A user provided index seems strange to me.  It's not really an
-> > > > > index, just a user specified instance number.  Presumably you
-> > > > > have the user providing this because if it really were an index,
-> > > > > then the value depends on the creation order and persistence is
-> > > > > lost.  Now the user needs to both avoid uuid collision as well as=
- "index"
-> > > > > number collision.  The uuid namespace is large enough to mostly
-> > > > > ignore
-> > > this, but this is not.  This seems like a burden.
-> > > > >
-> > > > I liked the term 'instance number', which is lot better way to say
-> > > > than
-> > > index/handle.
-> > > > Yes, user needs to avoid both the collision.
-> > > > UUID collision should not occur in most cases, they way UUID are
-> generated.
-> > > > So practically users needs to pick unique 'instance number',
-> > > > similar to how it
-> > > picks unique netdev names.
-> > > >
-> > > > Burden to user comes from the requirement to get uniqueness.
-> > > >
-> > > > > > Option-2: shorter mdev name
-> > > > > > Extend mdev to have shorter mdev device name in addition to UUI=
-D.
-> > > > > > such as 'foo', 'bar'.
-> > > > > > Mdev will continue to have UUID.
-> > > > > > phys_port_name=3Dmdev_name
-> > > > > >
-> > > > > > Pros:
-> > > > > > 1. All same as option-1, except mdevctl needs upgrade for newer
-> usage.
-> > > > > > It is common practice to upgrade iproute2 package along with
-> > > > > > the kernel. Similar practice to be done with mdevctl.
-> > > > > > 2. Newer users of mdevctl who wants to work with non_UUID
-> > > > > > names, will use newer mdevctl/tools. Cons:
-> > > > > > 1. Dual naming scheme of mdev might affect some of the existing
-> tools.
-> > > > > > It's unclear how/if it actually affects.
-> > > > > > mdevctl [2] is very recently developed and can be enhanced for
-> > > > > > dual naming scheme.
-> > > > >
-> > > > > I think we've already nak'ed this one, the device namespace
-> > > > > becomes meaningless if the name becomes just a string where a
-> > > > > uuid might be an example string.  mdevs are named by uuid.
-> > > > >
-> > > > > > Option-3: mdev uuid alias
-> > > > > > Instead of shorter mdev name or mdev index, have alpha-numeric
-> > > > > > name alias. Alias is an optional mdev sysfs attribute such as '=
-foo',
-> 'bar'.
-> > > > > > example mdev create command:
-> > > > > > UUID=3D$(uuidgen)
-> > > > > > echo $UUID alias=3Dfoo
-> > > > > > > /sys/class/net/ens2f0/mdev_supported_types/mlx5_core_mdev/cr
-> > > > > > > eate
-> > > > > > > example netdevs:
-> > > > > > examle netdevs:
-> > > > > > repnetdev =3D ens2f0_mfoo
-> > > > > > mdev_netdev=3Denmfoo
-> > > > > >
-> > > > > > Pros:
-> > > > > > 1. All same as option-1.
-> > > > > > 2. Doesn't affect existing mdev naming scheme.
-> > > > > > Cons:
-> > > > > > 1. Index scheme of option-1 is better which can number large
-> > > > > > number of mdevs with fewer characters, simplifying the
-> > > > > > management
-> > > tool.
-> > > > >
-> > > > > No better than option-1, simply a larger secondary namespace,
-> > > > > but still requires the user to come up with two independent
-> > > > > names for the
-> > > device.
-> > > > >
-> > > > > > Option-4: extend IFNAMESZ to be 64 bytes Extended IFNAMESZ
-> > > > > > from 16 to
-> > > > > > 64 bytes phys_port_name=3Dmdev_UUID_string
-> > > mdev_netdev_name=3DenmUUID
-> > > > > >
-> > > > > > Pros:
-> > > > > > 1. Doesn't require mdev extension
-> > > > > > Cons:
-> > > > > > 1. netdev stack, driver, uapi, user space, boot config wide cha=
-nges 2.
-> > > > > > Possible user space extensions who assumed name size being 16
-> > > > > > characters 3. Single device type demands namesize change for
-> > > > > > all netdev types
-> > > > >
-> > > > > What about an alias based on the uuid?  For example, we use
-> > > > > 160-bit sha1s daily with git (uuids are only 128-bit), but we
-> > > > > generally don't reference git commits with the full 20 character =
-string.
-> > > > > Generally 12 characters is recommended to avoid ambiguity.
-> > > > > Could mdev automatically create an
-> > >
-> > > ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> > > > > abbreviated sha1 alias for the device?  If so, how many
-> > > > > characters should we
-> > >     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-> > > > > use and what do we do on collision?  The colliding device could
-> > > > > add enough alias characters to disambiguate (we likely couldn't
-> > > > > re-alias the existing device to disambiguate, but I'm not sure
-> > > > > it matters, userspace has sysfs to associate aliases).  Ex.
-> > > > >
-> > > > > UUID=3D$(uuidgen)
-> > > > > ALIAS=3D$(echo $UUID | sha1sum | colrm 13)
-> > > > >
-> > > > I explained in previous reply to Cornelia, we should set UUID and
-> > > > ALIAS at the
-> > > same time.
-> > > > Setting is via different sysfs attribute is lot code burden with no=
- extra
-> benefit.
-> > >
-> > > Just an example of the alias, not proposing how it's set.  In fact,
-> > > proposing that the user does not set it, mdev-core provides one
-> automatically.
-> > >
-> > > > > Since there seems to be some prefix overhead, as I ask about
-> > > > > above in how many characters we actually have to work with in
-> > > > > IFNAMESZ, maybe we start with 8 characters (matching your
-> > > > > "index" namespace) and expand as necessary for disambiguation.
-> > > > > If we can eliminate overhead in IFNAMESZ, let's start with 12.
-> > > > > Thanks,
-> > > > >
-> > > > If user is going to choose the alias, why does it have to be limite=
-d to sha1?
-> > > > Or you just told it as an example?
-> > > >
-> > > > It can be an alpha-numeric string.
-> > >
-> > > No, I'm proposing a different solution where mdev-core creates an
-> > > alias based on an abbreviated sha1.  The user does not provide the al=
-ias.
-> > >
-> > > > Instead of mdev imposing number of characters on the alias, it
-> > > > should be best
-> > > left to the user.
-> > > > Because in future if netdev improves on the naming scheme, mdev
-> > > > will be
-> > > limiting it, which is not right.
-> > > > So not restricting alias size seems right to me.
-> > > > User configuring mdev for networking devices in a given kernel
-> > > > knows what
-> > > user is doing.
-> > > > So user can choose alias name size as it finds suitable.
-> > >
-> > > That's not what I'm proposing, please read again.  Thanks,
-> >
-> > I understood your point. But mdev doesn't know how user is going to use
-> udev/systemd to name the netdev.
-> > So even if mdev chose to pick 12 characters, it could result in collisi=
-on.
-> > Hence the proposal to provide the alias by the user, as user know the b=
-est
-> policy for its use case in the environment its using.
-> > So 12 character sha1 method will still work by user.
+> Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+> ---
+>  drivers/net/ethernet/qlogic/qed/qed_main.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 >=20
-> Haven't you already provided examples where certain drivers or subsystems
-> have unique netdev prefixes?  If mdev provides a unique alias within the
-> subsystem, couldn't we simply define a netdev prefix for the mdev subsyst=
-em
-> and avoid all other collisions?  I'm not in favor of the user providing b=
-oth a uuid
-> and an alias/instance.  Thanks,
+> diff --git a/drivers/net/ethernet/qlogic/qed/qed_main.c
+> b/drivers/net/ethernet/qlogic/qed/qed_main.c
+> index 829dd60..1efff7f 100644
+> --- a/drivers/net/ethernet/qlogic/qed/qed_main.c
+> +++ b/drivers/net/ethernet/qlogic/qed/qed_main.c
+> @@ -1325,7 +1325,7 @@ static int qed_slowpath_start(struct qed_dev
+> *cdev,
+>  					      &drv_version);
+>  		if (rc) {
+>  			DP_NOTICE(cdev, "Failed sending drv version
+> command\n");
+> -			return rc;
+> +			goto err4;
+>  		}
+>  	}
 >=20
-For a given prefix, say ens2f0, can two UUID->sha1 first 9 characters have =
-collision?
+> @@ -1333,6 +1333,8 @@ static int qed_slowpath_start(struct qed_dev
+> *cdev,
+>=20
+>  	return 0;
+>=20
+> +err4:
+> +	qed_ll2_dealloc_if(cdev);
+>  err3:
+>  	qed_hw_stop(cdev);
+>  err2:
+> --
+> 2.7.4
+
+Acked-by: Sudarsana Reddy Kalluru <skalluru@marvell.com>
