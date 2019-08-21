@@ -2,135 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A42098763
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 00:27:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BFF898776
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 00:38:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729840AbfHUW1c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 18:27:32 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:44870 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727484AbfHUW1c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 18:27:32 -0400
-Received: by mail-pg1-f196.google.com with SMTP id i18so2168075pgl.11;
-        Wed, 21 Aug 2019 15:27:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UZilChnAhCatXpj3hCbWl2iTCbaV6v5z9OCb9ZGyTME=;
-        b=DGp4cVrEeY7rQ6+8C6gGIHORTkURTGloonDJJy1uj2XzjnAeACnBZ/7vMIYxKsadhL
-         lOe20LMhKNKtOj0senMpIC+EiSDtV+IMhSF1bV8SsawU7/PEqlGO0+m+Lucc06osuIRW
-         LLtFFyGsVq21DWjeparAgu8AQuyCBsOBshVe35xkwk7SvQ8++q3ulpwc3p5ihiWOLt+s
-         xSuuzRlTzWmORKWUCxn64UUmbd9ZTpmjyrWYQ9q5rHJtc4GeWICpYaypgX3ITCg3RL4q
-         0dAZs64HBDOehsFB6h+FIZ4VCFCTNxOxTea34WcakRpJiGZnYIANWh2ZDs4ye/G4nQQy
-         ttVA==
+        id S1731208AbfHUWiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 18:38:09 -0400
+Received: from mail-io1-f72.google.com ([209.85.166.72]:51653 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729787AbfHUWiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 18:38:09 -0400
+Received: by mail-io1-f72.google.com with SMTP id a13so4157673ioh.18
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 15:38:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=UZilChnAhCatXpj3hCbWl2iTCbaV6v5z9OCb9ZGyTME=;
-        b=II2BrJgUSjuvl1/2eN4cVapsjvHpS6UUFraI29HACASaJF7oaPFFYaK2Q3gdzBo6i/
-         b7HoqigLUkGnp7jun/1XBMGG12Gq7TE2tbPUxRSQOKU2ct/jW38pvND8NCkn+gyRWar0
-         Tpp1oE7+YpHNVO2hm5ihix7MaiAkgKkZoFe5rsnakqdXkbFIx66rlUAsQFLdagMY7dhW
-         dHpwhjbOKn0xP1CAn7plJ1nzYoiodTDVtDWb4WMDOYM1qgFCbBOkRhexo4Daqo8rXSKf
-         61I5xyeqJ2NJu1Br1/6VIKY0yReRswOuGwvAYkwS8faVOKQ+jLMN3aE8nwd/cIGOD7Z8
-         h2WA==
-X-Gm-Message-State: APjAAAXZyDTwnAC7jk/O5YaVKZTlyDCoVodAMH6EdweIdpRAaO/QtnNA
-        kazNxy0VkNpWipAxzb20UB+wQpVn
-X-Google-Smtp-Source: APXvYqyptyuC4sorjhVdY1VxoGWIJCPCz6rpSunupR7SvNCcPnEq7B/Nw09uu41u2ZtWjgvQmP4Wgw==
-X-Received: by 2002:aa7:81ca:: with SMTP id c10mr38358467pfn.185.1566426451095;
-        Wed, 21 Aug 2019 15:27:31 -0700 (PDT)
-Received: from [10.67.51.137] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 143sm26119609pgc.6.2019.08.21.15.27.30
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 21 Aug 2019 15:27:30 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: bcmgenet: use
- devm_platform_ioremap_resource() to simplify code
-To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
-        f.fainelli@gmail.com, bcm-kernel-feedback-list@broadcom.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20190821134131.57780-1-yuehaibing@huawei.com>
-From:   Doug Berger <opendmb@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=opendmb@gmail.com; prefer-encrypt=mutual; keydata=
- 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 YVs=
-Message-ID: <fae4a0f8-65c5-76ff-1be7-e7b33c9a5466@gmail.com>
-Date:   Wed, 21 Aug 2019 15:27:29 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.0
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=BTtJUMszNrujEPFC3wQT6l7FYC6eZ4EtPS5uVqWHKZc=;
+        b=FxN2ufe66m01/dyinhj94xe3h8DZ17cWb0tcUy0LiYsWFbxOTxl4XyYmoJ6D0UfmuZ
+         3pgz3vVklj4Zse+DOjChX1TuQBfqQ9s9nOXjBEXcooplTG4SJo4/hHn9lrgOGzu42U7W
+         s6I0SXHP9hrU00nc44Ik9YiaD4jc7pboSLQ83VVlcPdR2Zo7I4rupQLWaSV+JJJr+KyJ
+         v56bphzCGHMcuFpxl3UQskB1vTr6CuX1eKuEW4qsKHFxWzdrPSwfuoq3Y2G+QQipOZEN
+         jAllJX53mxXD91IP9j8jbtXtXzlpjCDqOQaFANSnpWFy6SKY6/KwEtihjLEf0Zaiy2q/
+         MxAw==
+X-Gm-Message-State: APjAAAXbHRQlasRF9wmakTjtpPpbXlMVgvaYJuk4zjhYuEWSPINQWtBA
+        FXE9D7zILpaXuNovFvt1tIQrBRu24lDTgu7eHrjwqf9uJA4C
+X-Google-Smtp-Source: APXvYqzOluyNlTC3a21ScZvzJi76nxi43xLQVkD9qQOF0Qspti0r4r1Pja6nog2TC39cP1WafA+H4oMWutoHWRL5P1FhBGMyCnCU
 MIME-Version: 1.0
-In-Reply-To: <20190821134131.57780-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a02:1441:: with SMTP id 62mr13101565jag.21.1566427087791;
+ Wed, 21 Aug 2019 15:38:07 -0700 (PDT)
+Date:   Wed, 21 Aug 2019 15:38:07 -0700
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000226dc30590a83a39@google.com>
+Subject: KMSAN: uninit-value in batadv_iv_send_outstanding_bat_ogm_packet
+From:   syzbot <syzbot+355cab184197dbbfa384@syzkaller.appspotmail.com>
+To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
+        davem@davemloft.net, glider@google.com,
+        linux-kernel@vger.kernel.org, mareklindner@neomailbox.ch,
+        netdev@vger.kernel.org, sw@simonwunderlich.de,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/21/19 6:41 AM, YueHaibing wrote:
-> Use devm_platform_ioremap_resource() to simplify the code a bit.
-> This is detected by coccinelle.
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->  drivers/net/ethernet/broadcom/genet/bcmgenet.c | 4 +---
->  1 file changed, 1 insertion(+), 3 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> index d3a0b61..2108e59 100644
-> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-> @@ -3437,7 +3437,6 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  	struct bcmgenet_priv *priv;
->  	struct net_device *dev;
->  	const void *macaddr;
-> -	struct resource *r;
->  	unsigned int i;
->  	int err = -EIO;
->  	const char *phy_mode_str;
-> @@ -3477,8 +3476,7 @@ static int bcmgenet_probe(struct platform_device *pdev)
->  		macaddr = pd->mac_address;
->  	}
->  
-> -	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	priv->base = devm_ioremap_resource(&pdev->dev, r);
-> +	priv->base = devm_platform_ioremap_resource(pdev, 0);
->  	if (IS_ERR(priv->base)) {
->  		err = PTR_ERR(priv->base);
->  		goto err;
-> 
+Hello,
 
-Acked-by: Doug Berger <opendmb@gmail.com>
+syzbot found the following crash on:
+
+HEAD commit:    61ccdad1 Revert "drm/bochs: Use shadow buffer for bochs fr..
+git tree:       https://github.com/google/kmsan.git master
+console output: https://syzkaller.appspot.com/x/log.txt?x=13d6909c600000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=27abc558ecb16a3b
+dashboard link: https://syzkaller.appspot.com/bug?extid=355cab184197dbbfa384
+compiler:       clang version 9.0.0 (/home/glider/llvm/clang  
+80fee25776c2fb61e74c1ecb1a523375c2500b69)
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1612b9d2600000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=11d388ac600000
+
+IMPORTANT: if you fix the bug, please add the following tag to the commit:
+Reported-by: syzbot+355cab184197dbbfa384@syzkaller.appspotmail.com
+
+==================================================================
+BUG: KMSAN: uninit-value in batadv_iv_ogm_send_to_if  
+net/batman-adv/bat_iv_ogm.c:317 [inline]
+BUG: KMSAN: uninit-value in batadv_iv_ogm_emit  
+net/batman-adv/bat_iv_ogm.c:383 [inline]
+BUG: KMSAN: uninit-value in  
+batadv_iv_send_outstanding_bat_ogm_packet+0x6cd/0xcc0  
+net/batman-adv/bat_iv_ogm.c:1657
+CPU: 1 PID: 290 Comm: kworker/u4:7 Not tainted 5.3.0-rc3+ #17
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
+Google 01/01/2011
+Workqueue: bat_events batadv_iv_send_outstanding_bat_ogm_packet
+Call Trace:
+  __dump_stack lib/dump_stack.c:77 [inline]
+  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
+  kmsan_report+0x162/0x2d0 mm/kmsan/kmsan_report.c:109
+  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:294
+  batadv_iv_ogm_send_to_if net/batman-adv/bat_iv_ogm.c:317 [inline]
+  batadv_iv_ogm_emit net/batman-adv/bat_iv_ogm.c:383 [inline]
+  batadv_iv_send_outstanding_bat_ogm_packet+0x6cd/0xcc0  
+net/batman-adv/bat_iv_ogm.c:1657
+  process_one_work+0x1572/0x1ef0 kernel/workqueue.c:2269
+  worker_thread+0x111b/0x2460 kernel/workqueue.c:2415
+  kthread+0x4b5/0x4f0 kernel/kthread.c:256
+  ret_from_fork+0x35/0x40 arch/x86/entry/entry_64.S:355
+
+Uninit was created at:
+  kmsan_save_stack_with_flags+0x37/0x70 mm/kmsan/kmsan.c:187
+  kmsan_internal_alloc_meta_for_pages+0x123/0x510 mm/kmsan/kmsan_hooks.c:114
+  kmsan_alloc_page+0x7a/0xf0 mm/kmsan/kmsan_hooks.c:244
+  __alloc_pages_nodemask+0x142d/0x5fa0 mm/page_alloc.c:4768
+  __alloc_pages include/linux/gfp.h:475 [inline]
+  __alloc_pages_node include/linux/gfp.h:488 [inline]
+  alloc_pages_node include/linux/gfp.h:502 [inline]
+  __page_frag_cache_refill mm/page_alloc.c:4843 [inline]
+  page_frag_alloc+0x35b/0x890 mm/page_alloc.c:4873
+  __napi_alloc_skb+0x195/0x980 net/core/skbuff.c:519
+  napi_alloc_skb include/linux/skbuff.h:2808 [inline]
+  page_to_skb+0x134/0x1150 drivers/net/virtio_net.c:384
+  receive_mergeable drivers/net/virtio_net.c:924 [inline]
+  receive_buf+0xe7b/0x8810 drivers/net/virtio_net.c:1033
+  virtnet_receive drivers/net/virtio_net.c:1323 [inline]
+  virtnet_poll+0x666/0x19d0 drivers/net/virtio_net.c:1428
+  napi_poll net/core/dev.c:6347 [inline]
+  net_rx_action+0x74b/0x1950 net/core/dev.c:6413
+  __do_softirq+0x4a1/0x83a kernel/softirq.c:293
+  invoke_softirq kernel/softirq.c:375 [inline]
+  irq_exit+0x230/0x280 kernel/softirq.c:416
+  exiting_irq arch/x86/include/asm/apic.h:537 [inline]
+  do_IRQ+0x20d/0x3a0 arch/x86/kernel/irq.c:259
+  ret_from_intr+0x0/0x33
+  kmsan_get_shadow_origin_ptr+0x6/0x3a0 mm/kmsan/kmsan.c:656
+  __msan_metadata_ptr_for_load_8+0x10/0x20 mm/kmsan/kmsan_instr.c:55
+  compound_head include/linux/compiler.h:206 [inline]
+  PageReferenced include/linux/page-flags.h:315 [inline]
+  mark_page_accessed+0x30c/0xa00 mm/swap.c:391
+  touch_buffer fs/buffer.c:60 [inline]
+  __find_get_block+0x1681/0x19e0 fs/buffer.c:1303
+  __getblk_gfp+0xc5/0x1080 fs/buffer.c:1321
+  sb_getblk include/linux/buffer_head.h:325 [inline]
+  __ext4_get_inode_loc+0x647/0x1c80 fs/ext4/inode.c:4611
+  ext4_get_inode_loc fs/ext4/inode.c:4726 [inline]
+  ext4_reserve_inode_write+0x15d/0x430 fs/ext4/inode.c:5919
+  ext4_mark_inode_dirty+0x2dd/0xca0 fs/ext4/inode.c:6071
+  ext4_dirty_inode+0x187/0x1d0 fs/ext4/inode.c:6110
+  __mark_inode_dirty+0x486/0x1380 fs/fs-writeback.c:2170
+  mark_inode_dirty include/linux/fs.h:2138 [inline]
+  generic_write_end+0x3f7/0x460 fs/buffer.c:2164
+  ext4_da_write_end+0x1050/0x1240 fs/ext4/inode.c:3217
+  generic_perform_write+0x618/0x990 mm/filemap.c:3341
+  __generic_file_write_iter+0x421/0xa30 mm/filemap.c:3459
+  ext4_file_write_iter+0xc97/0x2010 fs/ext4/file.c:270
+  call_write_iter include/linux/fs.h:1870 [inline]
+  new_sync_write fs/read_write.c:483 [inline]
+  __vfs_write+0xa2c/0xcb0 fs/read_write.c:496
+  vfs_write+0x481/0x920 fs/read_write.c:558
+  ksys_write+0x265/0x430 fs/read_write.c:611
+  __do_sys_write fs/read_write.c:623 [inline]
+  __se_sys_write+0x92/0xb0 fs/read_write.c:620
+  __x64_sys_write+0x4a/0x70 fs/read_write.c:620
+  do_syscall_64+0xbc/0xf0 arch/x86/entry/common.c:297
+  entry_SYSCALL_64_after_hwframe+0x63/0xe7
+==================================================================
+
+
+---
+This bug is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this bug report. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+syzbot can test patches for this bug, for details see:
+https://goo.gl/tpsmEJ#testing-patches
