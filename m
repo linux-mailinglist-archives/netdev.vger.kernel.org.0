@@ -2,115 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC25C98646
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:09:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A1A98648
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:09:21 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730727AbfHUVHN convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 17:07:13 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55146 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726828AbfHUVHN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:07:13 -0400
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LL4Ipn003749
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:07:12 -0700
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2uhadxgxh5-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:07:11 -0700
-Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
- mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
- Wed, 21 Aug 2019 14:07:11 -0700
-Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
-        id 888EF760ACD; Wed, 21 Aug 2019 14:07:10 -0700 (PDT)
-Smtp-Origin-Hostprefix: devbig
-From:   Alexei Starovoitov <ast@kernel.org>
-Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
-To:     <davem@davemloft.net>
-CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <kernel-team@fb.com>
-Smtp-Origin-Cluster: ftw2c04
-Subject: [PATCH bpf] bpf: fix precision tracking in presence of bpf2bpf calls
-Date:   Wed, 21 Aug 2019 14:07:10 -0700
-Message-ID: <20190821210710.1276117-1-ast@kernel.org>
-X-Mailer: git-send-email 2.20.0
+        id S1728433AbfHUVJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 17:09:11 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:58162 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727316AbfHUVJK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 17:09:10 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 5150B18C8905;
+        Wed, 21 Aug 2019 21:09:10 +0000 (UTC)
+Received: from krava (ovpn-204-27.brq.redhat.com [10.40.204.27])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 92958194B9;
+        Wed, 21 Aug 2019 21:09:07 +0000 (UTC)
+Date:   Wed, 21 Aug 2019 23:09:06 +0200
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Julia Kartseva <hex@fb.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        "labbott@redhat.com" <labbott@redhat.com>,
+        "acme@kernel.org" <acme@kernel.org>,
+        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
+        "jolsa@kernel.org" <jolsa@kernel.org>
+Subject: Re: libbpf distro packaging
+Message-ID: <20190821210906.GA31031@krava>
+References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com>
+ <20190813122420.GB9349@krava>
+ <CAEf4BzbG29eAL7gUV+Vyrrft4u4Ss8ZBC6RMixJL_CYOTQ+F2w@mail.gmail.com>
+ <FA139BA4-59E5-43C7-8E72-C7B2FC1C449E@fb.com>
+ <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908210206
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.70]); Wed, 21 Aug 2019 21:09:10 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-While adding extra tests for precision tracking and extra infra
-to adjust verifier heuristics the existing test
-"calls: cross frame pruning - liveness propagation" started to fail.
-The root cause is the same as described in verifer.c comment:
+On Tue, Aug 20, 2019 at 10:27:23PM +0000, Julia Kartseva wrote:
+> 
+> 
+> ﻿On 8/19/19, 11:08 AM, "Julia Kartseva" <hex@fb.com> wrote:
+> 
+>     On 8/13/19, 11:24 AM, "Andrii Nakryiko" <andrii.nakryiko@gmail.com> wrote:
+>     
+>         On Tue, Aug 13, 2019 at 5:26 AM Jiri Olsa <jolsa@redhat.com> wrote:
+>         >
+>         > On Mon, Aug 12, 2019 at 07:04:12PM +0000, Julia Kartseva wrote:
+>         > > I would like to bring up libbpf publishing discussion started at [1].
+>         > > The present state of things is that libbpf is built from kernel tree, e.g. [2]
+>         > > For Debian and [3] for Fedora whereas the better way would be having a
+>         > > package built from github mirror. The advantages of the latter:
+>         > > - Consistent, ABI matching versioning across distros
+>         > > - The mirror has integration tests
+>         > > - No need in kernel tree to build a package
+>         > > - Changes can be merged directly to github w/o waiting them to be merged
+>         > > through bpf-next -> net-next -> main
+>         > > There is a PR introducing a libbpf.spec which can be used as a starting point: [4]
+>         > > Any comments regarding the spec itself can be posted there.
+>         > > In the future it may be used as a source of truth.
+>         > > Please consider switching libbpf packaging to the github mirror instead
+>         > > of the kernel tree.
+>         > > Thanks
+>         > >
+>         > > [1] https://urldefense.proofpoint.com/v2/url?u=https-3A__lists.iovisor.org_g_iovisor-2Ddev_message_1521&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=dYAc2jLhFg0wtCZ_ms2HF5bWANoHzA3UMug5TNCeBtE&e= 
+>         > > [2] https://urldefense.proofpoint.com/v2/url?u=https-3A__packages.debian.org_sid_libbpf4.19&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=lq1MpF-bt6y6ZEtFc57eT-BO_wMBx8uUBACJooWbUYk&e= 
+>         > > [3] https://urldefense.proofpoint.com/v2/url?u=http-3A__rpmfind.net_linux_RPM_fedora_devel_rawhide_x86-5F64_l_libbpf-2D5.3.0-2D0.rc2.git0.1.fc31.x86-5F64.html&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=NoolYHL57G2KhzE768iWdy6v5LD2GfJQyqPmtjy196E&e= 
+>         > > [4] https://github.com/libbpf/libbpf/pull/64
+>         >
+>         > hi,
+>         > Fedora has libbpf as kernel-tools subpackage, so I think
+>         > we'd need to create new package and deprecate the current
+>         >
+>         > but I like the ABI stability by using github .. how's actually
+>         > the sync (in both directions) with kernel sources going on?
+>         
+>         Sync is always in one direction, from kernel sources into Github repo.
+>         Right now it's triggered by a human (usually me), but we are using a
+>         script that automates entire process (see
+>         https://github.com/libbpf/libbpf/blob/master/scripts/sync-kernel.sh).
+>         It cherry-pick relevant commits from kernel, transforms them to match
+>         Github's file layout and re-applies those changes to Github repo.
+>         
+>         There is never a sync from Github back to kernel, but Github repo
+>         contains some extra stuff that's not in kernel. E.g., the script I
+>         mentioned, plus Github's Makefile is different, because it can't rely
+>         on kernel's kbuild setup.
+> 
+> Hi Jiri,
+> I'm curious if you have any comments regarding sync procedure described
+> By Andrii. Or if there is anything else you'd like us to address so Fedora
+> can be switched to libbpf built from the github mirror?
 
- * Also if parent's curframe > frame where backtracking started,
- * the verifier need to mark registers in both frames, otherwise callees
- * may incorrectly prune callers. This is similar to
- * commit 7640ead93924 ("bpf: verifier: make sure callees don't prune with caller differences")
- * For now backtracking falls back into conservative marking.
+hi,
+yea, I think it's ok.. just need to check the implications
+for rhel packaging and I'll let you know
 
-Turned out though that returning -ENOTSUPP from backtrack_insn() and
-doing mark_all_scalars_precise() in the current parentage chain is not enough.
-Depending on how is_state_visited() heuristic is creating parentage chain
-it's possible that callee will incorrectly prune caller.
-Fix the issue by setting precise=true earlier and more aggressively.
-Before this fix the precision tracking _within_ functions that don't do
-bpf2bpf calls would still work. Whereas now precision tracking is completely
-disabled when bpf2bpf calls are present anywhere in the program.
-
-No difference in cilium tests (they don't have bpf2bpf calls).
-No difference in test_progs though some of them have bpf2bpf calls,
-but precision tracking wasn't effective there.
-
-Fixes: b5dc0163d8fd ("bpf: precise scalar_value tracking")
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
----
-Separate set of tests and infra for them will go into bpf-next.
----
- kernel/bpf/verifier.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index c84d83f86141..b5c14c9d7b98 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -985,9 +985,6 @@ static void __mark_reg_unbounded(struct bpf_reg_state *reg)
- 	reg->smax_value = S64_MAX;
- 	reg->umin_value = 0;
- 	reg->umax_value = U64_MAX;
--
--	/* constant backtracking is enabled for root only for now */
--	reg->precise = capable(CAP_SYS_ADMIN) ? false : true;
- }
- 
- /* Mark a register as having a completely unknown (scalar) value. */
-@@ -1014,7 +1011,11 @@ static void mark_reg_unknown(struct bpf_verifier_env *env,
- 			__mark_reg_not_init(regs + regno);
- 		return;
- 	}
--	__mark_reg_unknown(regs + regno);
-+	regs += regno;
-+	__mark_reg_unknown(regs);
-+	/* constant backtracking is enabled for root without bpf2bpf calls */
-+	regs->precise = env->subprog_cnt > 1 || !env->allow_ptr_leaks ?
-+			true : false;
- }
- 
- static void __mark_reg_not_init(struct bpf_reg_state *reg)
--- 
-2.20.0
-
+jirka
