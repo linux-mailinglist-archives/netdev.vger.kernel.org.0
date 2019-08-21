@@ -2,238 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 36DC19783D
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 13:44:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9959C97841
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 13:47:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727377AbfHULny (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 07:43:54 -0400
-Received: from mail-eopbgr60086.outbound.protection.outlook.com ([40.107.6.86]:61158
+        id S1727226AbfHULpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 07:45:06 -0400
+Received: from mail-eopbgr60045.outbound.protection.outlook.com ([40.107.6.45]:62828
         "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726386AbfHULnx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 07:43:53 -0400
+        id S1726835AbfHULpG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 07:45:06 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bXbzloVfQ7pN47jljaWm9t49wWmzx6P5X0ge6ZHuysGNuBoOik1qTHzp3FJ0pOy9CfzHCTbEroHRp1uPbQBuYj+FZy2JiU85EK/ljXNCBQHHNppFSBqjDU6+fZjC4/zNXyA0REWiZ21mh4QwUzOQxVw9CffeHu75SGfrmKyy8c4cKfn30mhmSxldwLV1Cw/zaJhulka/ZWnZIf9QSEVH4EEmRnJRpxeJl0MX/h9vsmm1+y1Ka8OQtMJQXt78yYtlCkSoU5xRWd8/HKVxjSwpDU4kkZrfvKm3jQW85Xu7/1rf3RUZ6Pe0YeBoS6ljDVNGkd0NRYm/0KZzaeV84Yb7/g==
+ b=F9ZnLQcE4y3l7SI9lct76DtKQyc4H9V4KFbqPKLZ6DDRXMOKiJZd7zcAipDCDMqPznclfiN2h9qw6wnlCw7pU8lo241/2eyM03Ab9GnH1Kq9keZtuExN/Xu9tIoD8MCo8qr++Qi+DScwkWZA0dmf5nARVk7igZnVYTlyQbhqZxWxGqUfM2M3d74I5qap78H64U1JhQfSvOtIUquxCDqVFekDASxZHidtou6w0X0rISxla3lxAnQcinqCuF2IpEJ8SINwIwU1jNgIlHvXITA6kdxr2tBknVaNGPZELRa2PswoWYM7kwTWMURHFfqA33rPd4O02AvFL/d/V2S420by/A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BRhN8gi17ug1zrlFAVUIy1Dz/qhP9Aw9LDjtbLxtus0=;
- b=hn9IuWfCzkUo7sHL24isT+BD6JBXlGsLwcZYZjyv3wJ0M9hYPR4uXz6umwRvnfHym3y8tpaGH5LNjlcDJ/aC5YOUfUSdd2NPKZjw9i1apQ+h3yaUe7NK0RthgfTTqKTxjToHZy5ZvKQHtvITDMTfrPM8cewzhZhm0fBZ2zMTpzfGlIAceBRdCS8FeMay5SX2CJwqqXybIbRPC/JFjAlOq9K5HlAOxOx0cjOAxWsXMiDQUUeztB1isrl7ZWoh5UlLLyHmrQljeMMDkmbce993EmlotsSVw3t/9w+EtlB+H6QniC0fdyD3XoV5i7IhTqNpx8m+xeKeD0+dtz88IWLOng==
+ bh=ey6CVPvhWvSSSaPxTux35b0DCoBZsOVNxnqQACN5iSc=;
+ b=BUfx+jPLBBUvEHfSjc4fZRtZ4bLx8TnLnExqPLgTBkDhJ6nD3jTfgiAeekEB3ooZe9/ooiW272ENBhL2SvdsOVdfo11U0wSJ3zVDb8cIZLCsVhBLpwp/qLvk+eeexB+86zQ1mHEPMBOMUrU3QtakApZF1JbGAlpMZAUeZ5QkzqC1XKmzChwHGa2Z/DHpgU91vN0/u86awyVjC6MprFp8xDrAJVa9FB414Q3rfmS4pe08LyHZo35XUg+9CDl18sZMquCoikhZotu43NPhdgMm5DAY4GsKFLRhcjWsCl5i6z3z9RL7QXYe28pQyZezrNCI2TZBICilo63M6eVq1IX6bg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
  header.d=nxp.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BRhN8gi17ug1zrlFAVUIy1Dz/qhP9Aw9LDjtbLxtus0=;
- b=QkNnd30Eq5/4JOCImzImx4y4z3E+2XhO7lartSI0OnyIDnqVpQhBR5Dd4xuqurTpxHnRz42CQU8kBzrnOa2RcimG5qk5eHQnDf86ozPorCn2v6ppiqv9So/574O6xWS4YGw7TLDmWCxckoFOpizJzLzwFfBEIXujaWv5XBBaPAU=
+ bh=ey6CVPvhWvSSSaPxTux35b0DCoBZsOVNxnqQACN5iSc=;
+ b=CQoNGMzxk7sdT51VZKla93NhT0ZcROBUdkw+aUyxOr9o+Q9Sx605JaSAMaRVtbPwlBBhy37BjLLZwbNtD4nZY9j2r0aO+3c/awroTUVNE9mgLnKhjidoWUx/idtkFuPu4yj2hRD/RwCUEOTv3Ev8qL2VcWulNXK1KkTHnnTA41k=
 Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com (10.172.248.19) by
  DB6PR0402MB2807.eurprd04.prod.outlook.com (10.172.246.20) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Wed, 21 Aug 2019 11:43:49 +0000
+ 15.20.2178.16; Wed, 21 Aug 2019 11:44:20 +0000
 Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com
  ([fe80::3519:c2fc:4322:4f90]) by DB6PR0402MB2936.eurprd04.prod.outlook.com
  ([fe80::3519:c2fc:4322:4f90%2]) with mapi id 15.20.2178.020; Wed, 21 Aug 2019
- 11:43:49 +0000
+ 11:44:20 +0000
 From:   Marco Hartmann <marco.hartmann@nxp.com>
 To:     Andy Duan <fugang.duan@nxp.com>,
         "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Christian Herber <christian.herber@nxp.com>,
-        Marco Hartmann <marco.hartmann@nxp.com>
-Subject: [PATCH v2 net-next] net: fec: add C45 MDIO read/write support
-Thread-Topic: [PATCH v2 net-next] net: fec: add C45 MDIO read/write support
-Thread-Index: AQHVWBWy5sM1nf/Z2EaYMo3nP8kt5A==
-Date:   Wed, 21 Aug 2019 11:43:49 +0000
-Message-ID: <1566387814-7034-1-git-send-email-marco.hartmann@nxp.com>
+        Christian Herber <christian.herber@nxp.com>
+Subject: Re: [PATCH net-next 1/1] fec: add C45 MDIO read/write support
+Thread-Topic: [PATCH net-next 1/1] fec: add C45 MDIO read/write support
+Thread-Index: AQHVVrEbELPNNXpxt0CfMgo+jLB/5acDRPAggAI5NoA=
+Date:   Wed, 21 Aug 2019 11:44:19 +0000
+Message-ID: <b901b560-6319-5bb4-23a6-1dcd76033985@nxp.com>
+References: <1566234659-7164-1-git-send-email-marco.hartmann@nxp.com>
+ <1566234659-7164-2-git-send-email-marco.hartmann@nxp.com>
+ <VI1PR0402MB3600576CFF2392A71B1DA99CFFAB0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
+In-Reply-To: <VI1PR0402MB3600576CFF2392A71B1DA99CFFAB0@VI1PR0402MB3600.eurprd04.prod.outlook.com>
 Accept-Language: de-DE, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-x-clientproxiedby: AM3PR07CA0137.eurprd07.prod.outlook.com
- (2603:10a6:207:8::23) To DB6PR0402MB2936.eurprd04.prod.outlook.com
- (2603:10a6:4:9a::19)
-x-mailer: git-send-email 2.7.4
 authentication-results: spf=none (sender IP is )
  smtp.mailfrom=marco.hartmann@nxp.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
 x-originating-ip: [217.111.68.82]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c1f8cdcc-9ce0-4896-53d7-08d7262cd50c
+x-ms-office365-filtering-correlation-id: 9b582995-d404-41e0-f139-08d7262ce777
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(1401327)(4618075)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB6PR0402MB2807;
 x-ms-traffictypediagnostic: DB6PR0402MB2807:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0402MB2807E762F21C4A6E1AC1B4148CAA0@DB6PR0402MB2807.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-microsoft-antispam-prvs: <DB6PR0402MB2807AA651BF157C73A993B908CAA0@DB6PR0402MB2807.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
 x-forefront-prvs: 0136C1DDA4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(376002)(39860400002)(396003)(136003)(189003)(199004)(2501003)(486006)(5660300002)(71190400001)(316002)(110136005)(99286004)(64756008)(44832011)(8936002)(50226002)(476003)(2616005)(8676002)(81166006)(53936002)(81156014)(36756003)(256004)(66556008)(66476007)(71200400001)(66066001)(86362001)(478600001)(6116002)(26005)(386003)(6506007)(7049001)(55236004)(25786009)(102836004)(186003)(14454004)(14444005)(2201001)(7736002)(6436002)(66446008)(305945005)(6512007)(52116002)(66946007)(6486002)(3846002)(2906002);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0402MB2807;H:DB6PR0402MB2936.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(136003)(396003)(376002)(39860400002)(366004)(346002)(199004)(189003)(2201001)(14444005)(14454004)(26005)(6116002)(102836004)(25786009)(186003)(55236004)(53546011)(6506007)(229853002)(6486002)(2906002)(76116006)(3846002)(6436002)(66446008)(76176011)(7736002)(66946007)(31686004)(305945005)(6512007)(64756008)(8936002)(446003)(44832011)(6636002)(99286004)(2616005)(476003)(11346002)(81166006)(8676002)(486006)(5660300002)(91956017)(2501003)(316002)(71190400001)(110136005)(86362001)(66066001)(71200400001)(31696002)(6246003)(478600001)(81156014)(53936002)(256004)(66556008)(66476007)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0402MB2807;H:DB6PR0402MB2936.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
 received-spf: None (protection.outlook.com: nxp.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: q/BPWqbpHlqCdh9m3BGBjEd1SNffPkDwWDeNmaJxSz38pCkc4ITB8Q/E1TkhAkIDbv+3dGRU8ShJoUyYoyW5KtW35jekWDZo7zqabkIivgGFWnrsWC1PuowIu0UxnOopBxEXnr2lu50jQ+qAmboU7EOo6XWuGl4BzzIlASIPL4XluHG3MquR7FU3d645UT0iRUfJifg9ds3/lbcisfqHzbrgo4zNEALmfkEF38LPXXREfXgDKVshFNU79QYJedMmSuRzhkIzYJMqjwCcvE6kg9WZ4+11pASOVbLSAiySw3L5aTFK6ymDoDvH8QDZfJ+RArNlhnqBlU8vyM5AmnGnx5dKO/DQGoim33zuZ1x8W8pzIqdNSv135wNg1CCbyA/tAk0wcLWTer2RJbzEzqh758vUEHVyPkey9nH6cVfaa68=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-ID: <A14AE377C4ACE8469A68CC666FE6C094@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+x-microsoft-antispam-message-info: JMIfdJZl8DPlLvs0UHh6a31ZQT4ECZ++gJ1FRmWAPbWEwrZ5r9aFAOy7aSLf3WWnQd5TMwn/vMeu2SOEmm8+jknvliOpEFPIqQRrc98sLuhzdHIC/bAbO48qvGrvOIPP2Xrd7L31ObjKeZWBFowoHRXUYWUoG90mweb632YOeJUiKYya5AwN4ylxlghWJWvJzBmrW0YHjrlY92iW2qJBRiN4vM6UBk9yq3cNSsv53eSJmT/OmmG1sebAbnnuvevsiRcBXMvpdU0yszgKoFRdnHJBNTipN+a6cieRTW87QdmFyf+LCLkSVeptmS03OhbDoU/G+1FdkFyXz4IsR61ISf1ACeZTjynXUob8/IlYBi67i3Q+6SOjoPVRgiMBECdIuK1lvTAICqL7D4+RuDwzl583ETGLxbgORuRuJRFPcb8=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3B1C265E8A743B4287375F05DE1CE180@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
 X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c1f8cdcc-9ce0-4896-53d7-08d7262cd50c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 11:43:49.2545
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9b582995-d404-41e0-f139-08d7262ce777
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 11:44:19.9008
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 7Zo7zrQD1dkhfbkJKrLOAy01ysgiOYNMIfexJA9uXI7QiivvXc+1lZxcJADBT+dndMsL+U+6pj4y03pJpfyCQg==
+X-MS-Exchange-CrossTenant-userprincipalname: elrnYMQAGRn+ZLH1mrEA0+nfYZ/xzfHff0K9ofRzk9mXOK71m0ItG31Pcm1lDpokfkXA4q1Sp4b4NzjuAaR1Aw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2807
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-IEEE 802.3ae clause 45 defines a modified MDIO protocol that uses a two
-staged access model in order to increase the address space.
-
-This patch adds support for C45 MDIO read and write accesses, which are
-used whenever the MII_ADDR_C45 flag in the regnum argument is set.
-In case it is not set, C22 accesses are used as before.
-
-Signed-off-by: Marco Hartmann <marco.hartmann@nxp.com>
----
-Changes in v2:
-- use bool variable is_c45
-- add missing goto statements
----
----
- drivers/net/ethernet/freescale/fec_main.c | 70 +++++++++++++++++++++++++++=
-+---
- 1 file changed, 64 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethern=
-et/freescale/fec_main.c
-index c01d3ec3e9af..cb3ce27fb27a 100644
---- a/drivers/net/ethernet/freescale/fec_main.c
-+++ b/drivers/net/ethernet/freescale/fec_main.c
-@@ -208,8 +208,11 @@ MODULE_PARM_DESC(macaddr, "FEC Ethernet MAC address");
-=20
- /* FEC MII MMFR bits definition */
- #define FEC_MMFR_ST		(1 << 30)
-+#define FEC_MMFR_ST_C45		(0)
- #define FEC_MMFR_OP_READ	(2 << 28)
-+#define FEC_MMFR_OP_READ_C45	(3 << 28)
- #define FEC_MMFR_OP_WRITE	(1 << 28)
-+#define FEC_MMFR_OP_ADDR_WRITE	(0)
- #define FEC_MMFR_PA(v)		((v & 0x1f) << 23)
- #define FEC_MMFR_RA(v)		((v & 0x1f) << 18)
- #define FEC_MMFR_TA		(2 << 16)
-@@ -1767,7 +1770,8 @@ static int fec_enet_mdio_read(struct mii_bus *bus, in=
-t mii_id, int regnum)
- 	struct fec_enet_private *fep =3D bus->priv;
- 	struct device *dev =3D &fep->pdev->dev;
- 	unsigned long time_left;
--	int ret =3D 0;
-+	int ret =3D 0, frame_start, frame_addr, frame_op;
-+	bool is_c45 =3D !!(regnum & MII_ADDR_C45);
-=20
- 	ret =3D pm_runtime_get_sync(dev);
- 	if (ret < 0)
-@@ -1775,9 +1779,37 @@ static int fec_enet_mdio_read(struct mii_bus *bus, i=
-nt mii_id, int regnum)
-=20
- 	reinit_completion(&fep->mdio_done);
-=20
-+	if (is_c45) {
-+		frame_start =3D FEC_MMFR_ST_C45;
-+
-+		/* write address */
-+		frame_addr =3D (regnum >> 16);
-+		writel(frame_start | FEC_MMFR_OP_ADDR_WRITE |
-+		       FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
-+		       FEC_MMFR_TA | (regnum & 0xFFFF),
-+		       fep->hwp + FEC_MII_DATA);
-+
-+		/* wait for end of transfer */
-+		time_left =3D wait_for_completion_timeout(&fep->mdio_done,
-+				usecs_to_jiffies(FEC_MII_TIMEOUT));
-+		if (time_left =3D=3D 0) {
-+			netdev_err(fep->netdev, "MDIO address write timeout\n");
-+			ret =3D -ETIMEDOUT;
-+			goto out;
-+		}
-+
-+		frame_op =3D FEC_MMFR_OP_READ_C45;
-+
-+	} else {
-+		/* C22 read */
-+		frame_op =3D FEC_MMFR_OP_READ;
-+		frame_start =3D FEC_MMFR_ST;
-+		frame_addr =3D regnum;
-+	}
-+
- 	/* start a read op */
--	writel(FEC_MMFR_ST | FEC_MMFR_OP_READ |
--		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
-+	writel(frame_start | frame_op |
-+		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
- 		FEC_MMFR_TA, fep->hwp + FEC_MII_DATA);
-=20
- 	/* wait for end of transfer */
-@@ -1804,7 +1836,8 @@ static int fec_enet_mdio_write(struct mii_bus *bus, i=
-nt mii_id, int regnum,
- 	struct fec_enet_private *fep =3D bus->priv;
- 	struct device *dev =3D &fep->pdev->dev;
- 	unsigned long time_left;
--	int ret;
-+	int ret, frame_start, frame_addr;
-+	bool is_c45 =3D !!(regnum & MII_ADDR_C45);
-=20
- 	ret =3D pm_runtime_get_sync(dev);
- 	if (ret < 0)
-@@ -1814,9 +1847,33 @@ static int fec_enet_mdio_write(struct mii_bus *bus, =
-int mii_id, int regnum,
-=20
- 	reinit_completion(&fep->mdio_done);
-=20
-+	if (is_c45) {
-+		frame_start =3D FEC_MMFR_ST_C45;
-+
-+		/* write address */
-+		frame_addr =3D (regnum >> 16);
-+		writel(frame_start | FEC_MMFR_OP_ADDR_WRITE |
-+		       FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
-+		       FEC_MMFR_TA | (regnum & 0xFFFF),
-+		       fep->hwp + FEC_MII_DATA);
-+
-+		/* wait for end of transfer */
-+		time_left =3D wait_for_completion_timeout(&fep->mdio_done,
-+			usecs_to_jiffies(FEC_MII_TIMEOUT));
-+		if (time_left =3D=3D 0) {
-+			netdev_err(fep->netdev, "MDIO address write timeout\n");
-+			ret =3D -ETIMEDOUT;
-+			goto out;
-+		}
-+	} else {
-+		/* C22 write */
-+		frame_start =3D FEC_MMFR_ST;
-+		frame_addr =3D regnum;
-+	}
-+
- 	/* start a write op */
--	writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
--		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
-+	writel(frame_start | FEC_MMFR_OP_WRITE |
-+		FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(frame_addr) |
- 		FEC_MMFR_TA | FEC_MMFR_DATA(value),
- 		fep->hwp + FEC_MII_DATA);
-=20
-@@ -1828,6 +1885,7 @@ static int fec_enet_mdio_write(struct mii_bus *bus, i=
-nt mii_id, int regnum,
- 		ret  =3D -ETIMEDOUT;
- 	}
-=20
-+out:
- 	pm_runtime_mark_last_busy(dev);
- 	pm_runtime_put_autosuspend(dev);
-=20
---=20
-2.7.4
-
+T24gMjAuMDguMTkgMDQ6MDgsIEFuZHkgRHVhbiB3cm90ZToNCj4gRnJvbTogTWFyY28gSGFydG1h
+bm4gU2VudDogVHVlc2RheSwgQXVndXN0IDIwLCAyMDE5IDE6MTEgQU0NCj4+IElFRUUgODAyLjNh
+ZSBjbGF1c2UgNDUgZGVmaW5lcyBhIG1vZGlmaWVkIE1ESU8gcHJvdG9jb2wgdGhhdCB1c2VzIGEg
+dHdvDQo+PiBzdGFnZWQgYWNjZXNzIG1vZGVsIGluIG9yZGVyIHRvIGluY3JlYXNlIHRoZSBhZGRy
+ZXNzIHNwYWNlLg0KPj4NCj4+IFRoaXMgcGF0Y2ggYWRkcyBzdXBwb3J0IGZvciBDNDUgTURJTyBy
+ZWFkIGFuZCB3cml0ZSBhY2Nlc3Nlcywgd2hpY2ggYXJlDQo+PiB1c2VkIHdoZW5ldmVyIHRoZSBN
+SUlfQUREUl9DNDUgZmxhZyBpbiB0aGUgcmVnbnVtIGFyZ3VtZW50IGlzIHNldC4NCj4+IEluIGNh
+c2UgaXQgaXMgbm90IHNldCwgQzIyIGFjY2Vzc2VzIGFyZSB1c2VkIGFzIGJlZm9yZS4NCj4+DQo+
+PiBDby1kZXZlbG9wZWQtYnk6IENocmlzdGlhbiBIZXJiZXIgPGNocmlzdGlhbi5oZXJiZXJAbnhw
+LmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IENocmlzdGlhbiBIZXJiZXIgPGNocmlzdGlhbi5oZXJi
+ZXJAbnhwLmNvbT4NCj4+IFNpZ25lZC1vZmYtYnk6IE1hcmNvIEhhcnRtYW5uIDxtYXJjby5oYXJ0
+bWFubkBueHAuY29tPg0KPj4gLS0tDQo+PiAgIGRyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2Fs
+ZS9mZWNfbWFpbi5jIHwgNjUNCj4+ICsrKysrKysrKysrKysrKysrKysrKysrKysrKystLS0NCj4+
+ICAgMSBmaWxlIGNoYW5nZWQsIDU5IGluc2VydGlvbnMoKyksIDYgZGVsZXRpb25zKC0pDQo+Pg0K
+Pj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFpbi5j
+DQo+PiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFpbi5jDQo+PiBpbmRl
+eCBjMDFkM2VjM2U5YWYuLjczZjhmOWExNDlhMSAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvbmV0
+L2V0aGVybmV0L2ZyZWVzY2FsZS9mZWNfbWFpbi5jDQo+PiArKysgYi9kcml2ZXJzL25ldC9ldGhl
+cm5ldC9mcmVlc2NhbGUvZmVjX21haW4uYw0KPj4gQEAgLTIwOCw4ICsyMDgsMTEgQEAgTU9EVUxF
+X1BBUk1fREVTQyhtYWNhZGRyLCAiRkVDIEV0aGVybmV0DQo+PiBNQUMgYWRkcmVzcyIpOw0KPj4N
+Cj4+ICAgLyogRkVDIE1JSSBNTUZSIGJpdHMgZGVmaW5pdGlvbiAqLw0KPj4gICAjZGVmaW5lIEZF
+Q19NTUZSX1NUCQkoMSA8PCAzMCkNCj4+ICsjZGVmaW5lIEZFQ19NTUZSX1NUX0M0NQkJKDApDQo+
+PiAgICNkZWZpbmUgRkVDX01NRlJfT1BfUkVBRAkoMiA8PCAyOCkNCj4+ICsjZGVmaW5lIEZFQ19N
+TUZSX09QX1JFQURfQzQ1CSgzIDw8IDI4KQ0KPj4gICAjZGVmaW5lIEZFQ19NTUZSX09QX1dSSVRF
+CSgxIDw8IDI4KQ0KPj4gKyNkZWZpbmUgRkVDX01NRlJfT1BfQUREUl9XUklURQkoMCkNCj4+ICAg
+I2RlZmluZSBGRUNfTU1GUl9QQSh2KQkJKCh2ICYgMHgxZikgPDwgMjMpDQo+PiAgICNkZWZpbmUg
+RkVDX01NRlJfUkEodikJCSgodiAmIDB4MWYpIDw8IDE4KQ0KPj4gICAjZGVmaW5lIEZFQ19NTUZS
+X1RBCQkoMiA8PCAxNikNCj4+IEBAIC0xNzY3LDcgKzE3NzAsNyBAQCBzdGF0aWMgaW50IGZlY19l
+bmV0X21kaW9fcmVhZChzdHJ1Y3QgbWlpX2J1cyAqYnVzLA0KPj4gaW50IG1paV9pZCwgaW50IHJl
+Z251bSkNCj4+ICAgCXN0cnVjdCBmZWNfZW5ldF9wcml2YXRlICpmZXAgPSBidXMtPnByaXY7DQo+
+PiAgIAlzdHJ1Y3QgZGV2aWNlICpkZXYgPSAmZmVwLT5wZGV2LT5kZXY7DQo+PiAgIAl1bnNpZ25l
+ZCBsb25nIHRpbWVfbGVmdDsNCj4+IC0JaW50IHJldCA9IDA7DQo+PiArCWludCByZXQgPSAwLCBm
+cmFtZV9zdGFydCwgZnJhbWVfYWRkciwgZnJhbWVfb3A7DQo+IA0KPiBBZGQgYm9vbCB2YXJpYWJs
+ZToNCj4gDQo+IGJvb2wgaXNfYzQ1ID0gISEocmVnbnVtICYgTUlJX0FERFJfQzQ1KTsNCj4+DQo+
+PiAgIAlyZXQgPSBwbV9ydW50aW1lX2dldF9zeW5jKGRldik7DQo+PiAgIAlpZiAocmV0IDwgMCkN
+Cj4+IEBAIC0xNzc1LDkgKzE3NzgsMzYgQEAgc3RhdGljIGludCBmZWNfZW5ldF9tZGlvX3JlYWQo
+c3RydWN0IG1paV9idXMNCj4+ICpidXMsIGludCBtaWlfaWQsIGludCByZWdudW0pDQo+Pg0KPj4g
+ICAJcmVpbml0X2NvbXBsZXRpb24oJmZlcC0+bWRpb19kb25lKTsNCj4+DQo+PiArCWlmIChNSUlf
+QUREUl9DNDUgJiByZWdudW0pIHsNCj4gaWYgKGlzX2M0NSkNCj4gDQo+PiArCQlmcmFtZV9zdGFy
+dCA9IEZFQ19NTUZSX1NUX0M0NTsNCj4+ICsNCj4+ICsJCS8qIHdyaXRlIGFkZHJlc3MgKi8NCj4+
+ICsJCWZyYW1lX2FkZHIgPSAocmVnbnVtID4+IDE2KTsNCj4+ICsJCXdyaXRlbChmcmFtZV9zdGFy
+dCB8IEZFQ19NTUZSX09QX0FERFJfV1JJVEUgfA0KPj4gKwkJICAgICAgIEZFQ19NTUZSX1BBKG1p
+aV9pZCkgfCBGRUNfTU1GUl9SQShmcmFtZV9hZGRyKSB8DQo+PiArCQkgICAgICAgRkVDX01NRlJf
+VEEgfCAocmVnbnVtICYgMHhGRkZGKSwNCj4+ICsJCSAgICAgICBmZXAtPmh3cCArIEZFQ19NSUlf
+REFUQSk7DQo+PiArDQo+PiArCQkvKiB3YWl0IGZvciBlbmQgb2YgdHJhbnNmZXIgKi8NCj4+ICsJ
+CXRpbWVfbGVmdCA9IHdhaXRfZm9yX2NvbXBsZXRpb25fdGltZW91dCgmZmVwLT5tZGlvX2RvbmUs
+DQo+PiArCQkJCXVzZWNzX3RvX2ppZmZpZXMoRkVDX01JSV9USU1FT1VUKSk7DQo+PiArCQlpZiAo
+dGltZV9sZWZ0ID09IDApIHsNCj4+ICsJCQluZXRkZXZfZXJyKGZlcC0+bmV0ZGV2LCAiTURJTyBh
+ZGRyZXNzIHdyaXRlIHRpbWVvdXRcbiIpOw0KPj4gKwkJCXJldCAgPSAtRVRJTUVET1VUOw0KPiAN
+Cj4gU2hvdWxkIGJlOg0KPiBnb3RvIG91dDsNCj4+ICsJCX0NCj4+ICsNCj4+ICsJCWZyYW1lX29w
+ID0gRkVDX01NRlJfT1BfUkVBRF9DNDU7DQo+PiArDQo+PiArCX0gZWxzZSB7DQo+PiArCQkvKiBD
+MjIgcmVhZCAqLw0KPj4gKwkJZnJhbWVfb3AgPSBGRUNfTU1GUl9PUF9SRUFEOw0KPj4gKwkJZnJh
+bWVfc3RhcnQgPSBGRUNfTU1GUl9TVDsNCj4+ICsJCWZyYW1lX2FkZHIgPSByZWdudW07DQo+PiAr
+CX0NCj4+ICsNCj4+ICAgCS8qIHN0YXJ0IGEgcmVhZCBvcCAqLw0KPj4gLQl3cml0ZWwoRkVDX01N
+RlJfU1QgfCBGRUNfTU1GUl9PUF9SRUFEIHwNCj4+IC0JCUZFQ19NTUZSX1BBKG1paV9pZCkgfCBG
+RUNfTU1GUl9SQShyZWdudW0pIHwNCj4+ICsJd3JpdGVsKGZyYW1lX3N0YXJ0IHwgZnJhbWVfb3Ag
+fA0KPj4gKwkJRkVDX01NRlJfUEEobWlpX2lkKSB8IEZFQ19NTUZSX1JBKGZyYW1lX2FkZHIpIHwN
+Cj4+ICAgCQlGRUNfTU1GUl9UQSwgZmVwLT5od3AgKyBGRUNfTUlJX0RBVEEpOw0KPj4NCj4+ICAg
+CS8qIHdhaXQgZm9yIGVuZCBvZiB0cmFuc2ZlciAqLw0KPj4gQEAgLTE4MDQsNyArMTgzNCw3IEBA
+IHN0YXRpYyBpbnQgZmVjX2VuZXRfbWRpb193cml0ZShzdHJ1Y3QgbWlpX2J1cyAqYnVzLA0KPj4g
+aW50IG1paV9pZCwgaW50IHJlZ251bSwNCj4+ICAgCXN0cnVjdCBmZWNfZW5ldF9wcml2YXRlICpm
+ZXAgPSBidXMtPnByaXY7DQo+PiAgIAlzdHJ1Y3QgZGV2aWNlICpkZXYgPSAmZmVwLT5wZGV2LT5k
+ZXY7DQo+PiAgIAl1bnNpZ25lZCBsb25nIHRpbWVfbGVmdDsNCj4+IC0JaW50IHJldDsNCj4+ICsJ
+aW50IHJldCwgZnJhbWVfc3RhcnQsIGZyYW1lX2FkZHI7DQo+Pg0KPj4gICAJcmV0ID0gcG1fcnVu
+dGltZV9nZXRfc3luYyhkZXYpOw0KPj4gICAJaWYgKHJldCA8IDApDQo+PiBAQCAtMTgxNCw5ICsx
+ODQ0LDMyIEBAIHN0YXRpYyBpbnQgZmVjX2VuZXRfbWRpb193cml0ZShzdHJ1Y3QgbWlpX2J1cw0K
+Pj4gKmJ1cywgaW50IG1paV9pZCwgaW50IHJlZ251bSwNCj4gDQo+IGJvb2wgaXNfYzQ1ID0gISEo
+cmVnbnVtICYgTUlJX0FERFJfQzQ1KTsNCj4+DQo+PiAgIAlyZWluaXRfY29tcGxldGlvbigmZmVw
+LT5tZGlvX2RvbmUpOw0KPj4NCj4+ICsJaWYgKE1JSV9BRERSX0M0NSAmIHJlZ251bSkgew0KPiAN
+Cj4gaWYgKCFpc19jNDUpIHsNCj4+ICsJCWZyYW1lX3N0YXJ0ID0gRkVDX01NRlJfU1RfQzQ1Ow0K
+Pj4gKw0KPj4gKwkJLyogd3JpdGUgYWRkcmVzcyAqLw0KPj4gKwkJZnJhbWVfYWRkciA9IChyZWdu
+dW0gPj4gMTYpOw0KPj4gKwkJd3JpdGVsKGZyYW1lX3N0YXJ0IHwgRkVDX01NRlJfT1BfQUREUl9X
+UklURSB8DQo+PiArCQkgICAgICAgRkVDX01NRlJfUEEobWlpX2lkKSB8IEZFQ19NTUZSX1JBKGZy
+YW1lX2FkZHIpIHwNCj4+ICsJCSAgICAgICBGRUNfTU1GUl9UQSB8IChyZWdudW0gJiAweEZGRkYp
+LA0KPj4gKwkJICAgICAgIGZlcC0+aHdwICsgRkVDX01JSV9EQVRBKTsNCj4+ICsNCj4+ICsJCS8q
+IHdhaXQgZm9yIGVuZCBvZiB0cmFuc2ZlciAqLw0KPj4gKwkJdGltZV9sZWZ0ID0gd2FpdF9mb3Jf
+Y29tcGxldGlvbl90aW1lb3V0KCZmZXAtPm1kaW9fZG9uZSwNCj4+ICsJCQl1c2Vjc190b19qaWZm
+aWVzKEZFQ19NSUlfVElNRU9VVCkpOw0KPj4gKwkJaWYgKHRpbWVfbGVmdCA9PSAwKSB7DQo+PiAr
+CQkJbmV0ZGV2X2VycihmZXAtPm5ldGRldiwgIk1ESU8gYWRkcmVzcyB3cml0ZSB0aW1lb3V0XG4i
+KTsNCj4+ICsJCQlyZXQgID0gLUVUSU1FRE9VVDsNCj4gTGlrZSBtZGlvIHJlYWQsIGl0IHNob3Vs
+ZCBiZToNCj4gZ290byBvdXQ7DQo+PiArCQl9DQo+PiArCX0gZWxzZSB7DQo+PiArCQkvKiBDMjIg
+d3JpdGUgKi8NCj4+ICsJCWZyYW1lX3N0YXJ0ID0gRkVDX01NRlJfU1Q7DQo+PiArCQlmcmFtZV9h
+ZGRyID0gcmVnbnVtOw0KPj4gKwl9DQo+PiArDQo+PiAgIAkvKiBzdGFydCBhIHdyaXRlIG9wICov
+DQo+PiAtCXdyaXRlbChGRUNfTU1GUl9TVCB8IEZFQ19NTUZSX09QX1dSSVRFIHwNCj4+IC0JCUZF
+Q19NTUZSX1BBKG1paV9pZCkgfCBGRUNfTU1GUl9SQShyZWdudW0pIHwNCj4+ICsJd3JpdGVsKGZy
+YW1lX3N0YXJ0IHwgRkVDX01NRlJfT1BfV1JJVEUgfA0KPj4gKwkJRkVDX01NRlJfUEEobWlpX2lk
+KSB8IEZFQ19NTUZSX1JBKGZyYW1lX2FkZHIpIHwNCj4+ICAgCQlGRUNfTU1GUl9UQSB8IEZFQ19N
+TUZSX0RBVEEodmFsdWUpLA0KPj4gICAJCWZlcC0+aHdwICsgRkVDX01JSV9EQVRBKTsNCj4+DQo+
+PiAtLQ0KPj4gMi43LjQNCj4gDQoNClRoYW5rIHlvdSBmb3IgeW91ciBmZWVkYmFjaywNCnRoZSBm
+aXhlcyBhcmUgaW5jbHVkZWQgaW4gdjIgb2YgdGhlIHBhdGNoLg0KDQpSZWdhcmRzLA0KTWFyY28=
