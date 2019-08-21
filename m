@@ -2,115 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 849A898457
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 21:26:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3E77698492
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 21:36:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729858AbfHUT0Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 15:26:16 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:35657 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729700AbfHUT0Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 15:26:16 -0400
-Received: by mail-pl1-f194.google.com with SMTP id gn20so1872445plb.2;
-        Wed, 21 Aug 2019 12:26:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=PNUqpGr9n3DZ1UqJZHgWC3CBJzQFi6GomaPmjlQlmnY=;
-        b=ScoclNxohaMG9qcl0/98baxq3e9Dfu1aXi059zSgcDbTLQFQx9l89ecYlFupYueNPL
-         7n6UjS040PYa46dSL/ovQ5Di+AsdaKd+LWnQavuXeoIfexVGNhiN0MYkAHt5SgPzzYG0
-         mgSdy5tsqOhI7JzzjQc0/i70Ubl/ywqMyTje2oVpVEqSYuuPLqY55VN03zpj+DeYVsVG
-         DCKgqYU2k/KBI5upgLm9pdd+aB7VqzRKfnixDf4sssuYB2cPYYcY6aiqRGpZh96h5KMX
-         bCTXRePURM+lShk4Wy7DwKEF0YnIRixnWb5o9vJjsGNZ/BUYJztcRoA8fvWb+dDjRP8h
-         QHSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=PNUqpGr9n3DZ1UqJZHgWC3CBJzQFi6GomaPmjlQlmnY=;
-        b=GY/tzOPT/Cip3FE3NJSSVYY/o0lQyLMoc8k978APRo9+qsA4PpYf9YsZbwY2GzsLHd
-         0HBaz6xSGSKC5XROsh7+A6uiumN3+UEcuz2RuikzGpt1o/dtdQA21SezjBv6uuBO8NsI
-         WtCOStSqp9tnBZ0gXb6+i1icUU6gC4WZj8bPln2MBsOq+rfpMWZRu6mActngqkHTk87i
-         PwXeDd0uaFWtHGvxEk08WAygH9qc2rqw0igysaj+fcetKTnP2wfrhZI1FwbP+maq6tSb
-         7H4hNBCSDuHZumfA84C7MWXMKe9Yc0k41c5QDBlyIgFZ1rBhkQSaEAHLxrxMOl8gvvGq
-         aHBw==
-X-Gm-Message-State: APjAAAXyMBh2Qo9Jfpz12XTZKGv0A8AtpuOZNTtJRW5mwVyFguLA/eI1
-        p3IIA8qJWcv9ZXSIXuZ8vfc=
-X-Google-Smtp-Source: APXvYqyiGjVoxpnDmBXTJec/nTluT/vnF4EYm4c8oxZ3SwrDPFS7iVXZJcP25WODHfum2WdVVXmgXw==
-X-Received: by 2002:a17:902:e9:: with SMTP id a96mr20008772pla.169.1566415575634;
-        Wed, 21 Aug 2019 12:26:15 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::678f])
-        by smtp.gmail.com with ESMTPSA id e66sm24807075pfe.142.2019.08.21.12.26.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 21 Aug 2019 12:26:14 -0700 (PDT)
-Date:   Wed, 21 Aug 2019 12:26:12 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-Message-ID: <20190821192611.xmciiiqjpkujjup7@ast-mbp.dhcp.thefacebook.com>
-References: <20190820114706.18546-1-toke@redhat.com>
+        id S1730555AbfHUTc7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 15:32:59 -0400
+Received: from mout.web.de ([217.72.192.78]:56811 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729847AbfHUTas (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 15:30:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1566415815;
+        bh=3lpmHRFKH7F6csdOCSSofXDaB6xUBXTTVPtUFzk3mTQ=;
+        h=X-UI-Sender-Class:To:Cc:From:Subject:Date;
+        b=Q+kKxxvSwaDq2hNsdqqQrOm0qV1rsKFBiQ7a1GulpVT2UVzmbzl7oh3lKHKkt6M9z
+         E6d3O3w/XwSZErQI3NY7EW7gG7i9JmKCNISmfMyhtvU4gYX5PIdoLGLeHzenYBi61N
+         cwZsSLQzkC8FCf9M28INRuUM3S7LCZEMxN7mzz7k=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([78.48.9.44]) by smtp.web.de (mrweb101
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0MFc1h-1i3Z7j3v5p-00Ef3a; Wed, 21
+ Aug 2019 21:30:15 +0200
+To:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        Allison Randal <allison@lohutok.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Enrico Weigelt <lkml@metux.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
+        Lukas Wunner <lukas@wunner.de>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Weitao Hou <houweitaoo@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+From:   Markus Elfring <Markus.Elfring@web.de>
+Subject: =?UTF-8?Q?=5bPATCH=5d_can=3a_Delete_unnecessary_checks_before_the_m?=
+ =?UTF-8?B?YWNybyBjYWxsIOKAnGRldl9rZnJlZV9za2LigJ0=?=
+Openpgp: preference=signencrypt
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <27674907-fd2a-7f0c-84fd-d8b5124739a9@web.de>
+Date:   Wed, 21 Aug 2019 21:30:11 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190820114706.18546-1-toke@redhat.com>
-User-Agent: NeoMutt/20180223
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:3UUCaBDFFXjC3jkkiegfpEDT3e0kV/rF33z4mztvCPFs1e+I4pH
+ zE8g62+GO6s/2u/BI4gYuH9TCH3+5p+Dx3QormIx/6A8L4RBX8L5Z7vvvuMPXZN72tXg8mr
+ r9cN2+Bsoy2dtsuafeNJ/xmo9CCpg6dTQWouoQYc3OXtPMPU0OeJ3kq5tG+I47JVIzuCys+
+ 6uiya24Xc8uHJnkoi82yQ==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mABiV/a9xtY=:gyp8l8IKQUYwASclxPRe5P
+ CUhnE9HbmTH6u7c7VY6vQbal2VQKbfh9lBTQo6pB4ekLGFDQrCTG1p4Q1BFRhKGXdVQc8ZsAL
+ BySH2RUwLNKhv39T7nMGa/Wvuju71HwZgn/qNQgiV4liV0Dfntf0XuZ1JykeqASgFGXzurcJD
+ vmd/DbQQaVBm9y3LxWYGbDdBl3/eFV/TZs0QCmkTNtg6LX6BxZLzMsDqCkRa5Ly0++C9b+3Un
+ WxpvT1s+ZOCTZ0MHa5/VHecliRKqYSRFKokrJt+yaT+MF25i8QuTI8HbtRbYe2CzpOJkpNIIT
+ TpaH5NpAQWPvU6YhiWnhtagTyjglB5K2jfPAXcAhAjy9bqAQ0duFVepHIx9FWnMH6boID1WXz
+ L5pSaRqa4jL6pr4upr2BDs2dDleRqvO/SYbq1VryW6XIg486L8pO2Pgt7ory4N5lN64sRkyMY
+ yXUUvGByATsTEHIYQS5UX61ReJ9Hho+iSOf377Yn7KEY4i+ycXvQFcesMJD+PREcOQN/f4z3V
+ H9zWkdJ/rYB7Q5NdegrMDGhrxfe1sNT3YGaK/JApHWNJXmUBPhOswm4OqnLaMioVX3RqH+4hD
+ nvhF7J/4yTkCP5zZ7uaSmpN1XFDlX6Qsl11rrcaHo6BIKBEX6dlsLFmFmAuByrbs51gSLLWiN
+ omPPXpNGccAboqcOUc8+n3qpxiPPKFdBgzzFtOVAMoMVb2QIwibKC8Z/de5EOQV7eYOOXpJVE
+ IjjaXGGDAe8tq1w/JBCICAQnxYZHRtvP/dgFCQjol4OsinzryAOXN3ayuLiS9nilpwQdTWRnN
+ M/2KL0mkyTyHQtVy6G4+yth8+4x2yb9mKACakfpdVtsg1zuS0UEuxBsHMiC2REKZK/soASgHk
+ Zp0+p6UoNXMSBS9soIuC53Eg5jQ1fFQDaDYip4uimylmQ6sIjCu9VL75Qdd1NAQXl9699GZ3H
+ Vt1++gPq4TZjLwfbCM/V0mLINvMeoK1vyo7eyB4g0G4+VKlqhC5xfUiTLod+PBbTPcJXmOo0W
+ KlW1b49m7PoZsz6YZwp13M57WfYwrTcMFBak/ajqfy9ugcnEKAAeetHBQ2dMpNWS61nCPzz5Q
+ Yn4m0KNZdGtfsS/On2aojRkO08/vcGy5mxX6hAErOZGV+0q8/zKXT9aohsLdDzjBSPE3yiqRn
+ 43d5g=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 01:47:01PM +0200, Toke Høiland-Jørgensen wrote:
-> iproute2 uses its own bpf loader to load eBPF programs, which has
-> evolved separately from libbpf. Since we are now standardising on
-> libbpf, this becomes a problem as iproute2 is slowly accumulating
-> feature incompatibilities with libbpf-based loaders. In particular,
-> iproute2 has its own (expanded) version of the map definition struct,
-> which makes it difficult to write programs that can be loaded with both
-> custom loaders and iproute2.
-> 
-> This series seeks to address this by converting iproute2 to using libbpf
-> for all its bpf needs. This version is an early proof-of-concept RFC, to
-> get some feedback on whether people think this is the right direction.
-> 
-> What this series does is the following:
-> 
-> - Updates the libbpf map definition struct to match that of iproute2
->   (patch 1).
-> - Adds functionality to libbpf to support automatic pinning of maps when
->   loading an eBPF program, while re-using pinned maps if they already
->   exist (patches 2-3).
-> - Modifies iproute2 to make it possible to compile it against libbpf
->   without affecting any existing functionality (patch 4).
-> - Changes the iproute2 eBPF loader to use libbpf for loading XDP
->   programs (patch 5).
-> 
-> 
-> As this is an early PoC, there are still a few missing pieces before
-> this can be merged. Including (but probably not limited to):
-> 
-> - Consolidate the map definition struct in the bpf_helpers.h file in the
->   kernel tree. This contains a different, and incompatible, update to
->   the struct. Since the iproute2 version has actually been released for
->   use outside the kernel tree (and thus is subject to API stability
->   constraints), I think it makes the most sense to keep that, and port
->   the selftests to use it.
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Wed, 21 Aug 2019 21:16:15 +0200
 
-It sounds like you're implying that existing libbpf format is not uapi.
-It is and we cannot break it.
-If patch 1 means breakage for existing pre-compiled .o that won't load
-with new libbpf then we cannot use this method.
-Recompiling .o with new libbpf definition of bpf_map_def isn't an option.
-libbpf has to be smart before/after and recognize both old and iproute2 format.
+The dev_kfree_skb() function performs also input parameter validation.
+Thus the test around the shown calls is not needed.
+
+This issue was detected by using the Coccinelle software.
+
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ drivers/net/can/spi/hi311x.c  | 3 +--
+ drivers/net/can/spi/mcp251x.c | 3 +--
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/can/spi/hi311x.c b/drivers/net/can/spi/hi311x.c
+index 03a711c3221b..7c7c7e78214c 100644
+=2D-- a/drivers/net/can/spi/hi311x.c
++++ b/drivers/net/can/spi/hi311x.c
+@@ -184,8 +184,7 @@ static void hi3110_clean(struct net_device *net)
+
+ 	if (priv->tx_skb || priv->tx_len)
+ 		net->stats.tx_errors++;
+-	if (priv->tx_skb)
+-		dev_kfree_skb(priv->tx_skb);
++	dev_kfree_skb(priv->tx_skb);
+ 	if (priv->tx_len)
+ 		can_free_echo_skb(priv->net, 0);
+ 	priv->tx_skb =3D NULL;
+diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+index 12358f06d194..1c496d2adb45 100644
+=2D-- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -274,8 +274,7 @@ static void mcp251x_clean(struct net_device *net)
+
+ 	if (priv->tx_skb || priv->tx_len)
+ 		net->stats.tx_errors++;
+-	if (priv->tx_skb)
+-		dev_kfree_skb(priv->tx_skb);
++	dev_kfree_skb(priv->tx_skb);
+ 	if (priv->tx_len)
+ 		can_free_echo_skb(priv->net, 0);
+ 	priv->tx_skb =3D NULL;
+=2D-
+2.23.0
 
