@@ -2,90 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BF45986AD
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:38:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C381F986B4
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:42:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727923AbfHUViw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 17:38:52 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:34537 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbfHUViw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:38:52 -0400
-Received: by mail-qk1-f193.google.com with SMTP id m10so3265787qkk.1
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:38:52 -0700 (PDT)
+        id S1730913AbfHUVjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 17:39:06 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:32872 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbfHUVjG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:39:06 -0400
+Received: by mail-qt1-f195.google.com with SMTP id v38so5015311qtb.0;
+        Wed, 21 Aug 2019 14:39:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=bC5fqBHvIGMPVjvJQhyiA8xYhaqcGgYRkivbpM0BBis=;
-        b=EKec8j+C+/CntxOfhnFFhCk6ZfwDUhqpeVoMx9mTgWSBg6NkYNNRvs9opnW6+SxfK6
-         HfmC6sHPLm+n6vdSCq6/gJ+A+3qvUEE5BeAJSWIIgsAS7k+FiQwlzTw6ibJYqF1W3Rzd
-         vrRuJG831RsH+xQolpXU42YYsjkZcXMe9LURg6Vm4kiFhgxVIGlXzOF3TE4kXsjTjw8x
-         n2Nq+Jgl56PgM1PEl2JmFjqSt6r0wgSGO4KUvGFmtvs0oo307Sd9WICYYEdn0JLSxUWy
-         l9g07NtM0sW0OVLENQ6pSz/Llz3L5HXO4m7dZsHwd7Cj0hDJ/hmaC9ygA2kjvr+Y/CFW
-         HDRw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=DUnGPgYSlYELq8snkCH3/ogLmFH6bABIvcNtaNXTSVc=;
+        b=AXDHQob5IyMllJJoCx7ZMR8TK3SJN0l7qIATQtWf6ngixz26/p+Sey60awnPqojOTU
+         ECTbzza4sfLN2MZNGWAPC5aO0a/n+iDaEPCfzPGJF911kaP0oySCyhDQenhRqoGE/46f
+         SNLMK3otufWhvREna0kxOFS7STmbaaVnCSswUJsIxkc+s50sZi3CxY3Se6mco3tFynew
+         5pFuHfoV0v9VCYiMjGnz4d3zyUnuTg5tAPIb9HAxcnHQZxyrEQekItEFl8cKP3TY0Kh0
+         uleYqDjSSbn/nF5glEFEJye/1xrV8Du+6FWcXn0h5IoikXVIaQ5kMZ2Ddrb6jckdzwUU
+         iJ3Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=bC5fqBHvIGMPVjvJQhyiA8xYhaqcGgYRkivbpM0BBis=;
-        b=ovsQ2vzFnCNYsymgyKrKTZ9rtUG6Cy7RLrLrxM5K1Q685P+b11EVOAntBIYiTiOKV5
-         hci3g/ECWlQwegOmJyW/R/ZFAYdfot6U+z9pImtGOd4q5FFeOEcc8GOKIv/zLQQEvmA6
-         lD5vOI/PuY0RWFcAcJ6bKo7gnG7x42pDOtwpNEzr5dMlt9WfbmXd46Bez2/zx5UdvmY5
-         bpCKu3XBEPIAXFOhkbESpLYLHEkDxmLYTQAojOEdBPfqXhvfoDA9YWYOI36liDUJISuD
-         +0Ks3S+0R8fyMCmwGD40kMzrEz8J7EU7s7Wy87WSSTjOhl52t8RUctQR5O+VxIhla6s/
-         KsRA==
-X-Gm-Message-State: APjAAAUkoMxbl6kXz10in6S3Q+N675DmY2EtnSmtDxZa0ZEzRaIeaYoJ
-        BAjLD4GfawaJViAE1Iq/L+ICf0IJ15I=
-X-Google-Smtp-Source: APXvYqxDoRcYD2q8YVe66Pd5u5ZK6lfOkc0Bcht/lhjAWa3IvTGEFW5DJpNhLy4BWWOXkUA9f2uemg==
-X-Received: by 2002:a37:a358:: with SMTP id m85mr34168118qke.190.1566423531642;
-        Wed, 21 Aug 2019 14:38:51 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id w15sm10422398qkj.23.2019.08.21.14.38.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Aug 2019 14:38:51 -0700 (PDT)
-Date:   Wed, 21 Aug 2019 14:38:46 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 24/38] cls_u32: Convert tc_u_common->handle_idr to
- XArray
-Message-ID: <20190821143846.6c621b47@cakuba.netronome.com>
-In-Reply-To: <20190821212542.GB21442@bombadil.infradead.org>
-References: <20190820223259.22348-1-willy@infradead.org>
-        <20190820223259.22348-25-willy@infradead.org>
-        <20190821141308.54313c30@cakuba.netronome.com>
-        <20190821212542.GB21442@bombadil.infradead.org>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=DUnGPgYSlYELq8snkCH3/ogLmFH6bABIvcNtaNXTSVc=;
+        b=Nhvd27PLar3qiTcmnUV55G66hokheTyCtPnAPpxZWHjrZJtI3CnI2aqwsBQGoHgEGV
+         W75XpnLFHNWtdAUWSCO0CIX5cDsrJ5y60LGl2ADwh0vV+DmtX/Vx0FifiwKwI/fEN3bo
+         tty/OL4jSMKrOzEsCV/z/Oe+CMZc2itxQoETWEoMoBYBIDBvsUWbGCKGxDAXIKrjIQbw
+         wFK0WClotKIRntIYn+pd4FK7RdsY5wVDsC0H6atv1VQt7tLVEFRJ3Gaf77M5zKAj0v5K
+         v9hLB+ZHkdTf9npLJeBTCc82lO0ITkanO7gAvYhp0eEi01SCWcOtpPeBWokrRx3f7YI1
+         wZeQ==
+X-Gm-Message-State: APjAAAVNgMitA3NrhhnsHdQvmOBNuAdIkT98yPPPVASydcYDu+BjVR8x
+        PxyI73/9DJiRl3Mxu7zPyptR1GEjg+QlVwHvO84=
+X-Google-Smtp-Source: APXvYqyy0hvvRHykzg7i0XuhNgycH/ll14e3xUl/E4u+m0BQJBHvXmJ9XL1xul4O3FjgxkcePIYvjvZNX2y+J4rwF4w=
+X-Received: by 2002:a0c:db12:: with SMTP id d18mr19832519qvk.199.1566423544935;
+ Wed, 21 Aug 2019 14:39:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
+ <20190820151611.10727-1-i.maximets@samsung.com> <CAKgT0Udn0D0_f=SOH2wpBRWV_u4rb1Qe2h7gguXnRNzJ_VkRzg@mail.gmail.com>
+ <625791af-c656-1e42-b60e-b3a5cedcb4c4@samsung.com> <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
+ <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com> <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
+In-Reply-To: <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
+From:   William Tu <u9012063@gmail.com>
+Date:   Wed, 21 Aug 2019 14:38:28 -0700
+Message-ID: <CALDO+SZCbxEEwCS6MyHk-Cp_LJ33N=QFqwZ8uRm0e-PBRgxRYw@mail.gmail.com>
+Subject: Re: [PATCH net] ixgbe: fix double clean of tx descriptors with xdp
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Ilya Maximets <i.maximets@samsung.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Eelco Chaudron <echaudro@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Aug 2019 14:25:42 -0700, Matthew Wilcox wrote:
-> On Wed, Aug 21, 2019 at 02:13:08PM -0700, Jakub Kicinski wrote:
-> > On Tue, 20 Aug 2019 15:32:45 -0700, Matthew Wilcox wrote:  
-> > > @@ -305,8 +306,12 @@ static void *u32_get(struct tcf_proto *tp, u32 handle)
-> > >  /* Protected by rtnl lock */
-> > >  static u32 gen_new_htid(struct tc_u_common *tp_c, struct tc_u_hnode *ptr)
-> > >  {
-> > > -	int id = idr_alloc_cyclic(&tp_c->handle_idr, ptr, 1, 0x7FF, GFP_KERNEL);
-> > > -	if (id < 0)
-> > > +	int err;
-> > > +	u32 id;
-> > > +
-> > > +	err = xa_alloc_cyclic(&tp_c->ht_xa, &id, ptr, XA_LIMIT(0, 0x7ff),
-> > > +			&tp_c->ht_next, GFP_KERNEL);  
-> > 
-> > nit: indentation seems off here and a couple of other places.  
-> 
-> what indentation rule does the networking stack use?  i just leave the
-> cursor where my editor puts it, which seems to be two tabs.
+On Wed, Aug 21, 2019 at 9:57 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
+>
+> On Wed, Aug 21, 2019 at 9:22 AM Ilya Maximets <i.maximets@samsung.com> wr=
+ote:
+> >
+> > On 21.08.2019 4:17, Alexander Duyck wrote:
+> > > On Tue, Aug 20, 2019 at 8:58 AM Ilya Maximets <i.maximets@samsung.com=
+> wrote:
+> > >>
+> > >> On 20.08.2019 18:35, Alexander Duyck wrote:
+> > >>> On Tue, Aug 20, 2019 at 8:18 AM Ilya Maximets <i.maximets@samsung.c=
+om> wrote:
+> > >>>>
+> > >>>> Tx code doesn't clear the descriptor status after cleaning.
+> > >>>> So, if the budget is larger than number of used elems in a ring, s=
+ome
+> > >>>> descriptors will be accounted twice and xsk_umem_complete_tx will =
+move
+> > >>>> prod_tail far beyond the prod_head breaking the comletion queue ri=
+ng.
+> > >>>>
+> > >>>> Fix that by limiting the number of descriptors to clean by the num=
+ber
+> > >>>> of used descriptors in the tx ring.
+> > >>>>
+> > >>>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
+> > >>>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+> > >>>
+> > >>> I'm not sure this is the best way to go. My preference would be to
+> > >>> have something in the ring that would prevent us from racing which =
+I
+> > >>> don't think this really addresses. I am pretty sure this code is sa=
+fe
+> > >>> on x86 but I would be worried about weak ordered systems such as
+> > >>> PowerPC.
+> > >>>
+> > >>> It might make sense to look at adding the eop_desc logic like we ha=
+ve
+> > >>> in the regular path with a proper barrier before we write it and af=
+ter
+> > >>> we read it. So for example we could hold of on writing the bytecoun=
+t
+> > >>> value until the end of an iteration and call smp_wmb before we writ=
+e
+> > >>> it. Then on the cleanup we could read it and if it is non-zero we t=
+ake
+> > >>> an smp_rmb before proceeding further to process the Tx descriptor a=
+nd
+> > >>> clearing the value. Otherwise this code is going to just keep poppi=
+ng
+> > >>> up with issues.
+> > >>
+> > >> But, unlike regular case, xdp zero-copy xmit and clean for particula=
+r
+> > >> tx ring always happens in the same NAPI context and even on the same
+> > >> CPU core.
+> > >>
+> > >> I saw the 'eop_desc' manipulations in regular case and yes, we could
+> > >> use 'next_to_watch' field just as a flag of descriptor existence,
+> > >> but it seems unnecessarily complicated. Am I missing something?
+> > >>
+> > >
+> > > So is it always in the same NAPI context?. I forgot, I was thinking
+> > > that somehow the socket could possibly make use of XDP for transmit.
+> >
+> > AF_XDP socket only triggers tx interrupt on ndo_xsk_async_xmit() which
+> > is used in zero-copy mode. Real xmit happens inside
+> > ixgbe_poll()
+> >  -> ixgbe_clean_xdp_tx_irq()
+> >     -> ixgbe_xmit_zc()
+> >
+> > This should be not possible to bound another XDP socket to the same net=
+dev
+> > queue.
+> >
+> > It also possible to xmit frames in xdp_ring while performing XDP_TX/RED=
+IRECT
+> > actions. REDIRECT could happen from different netdev with different NAP=
+I
+> > context, but this operation is bound to specific CPU core and each core=
+ has
+> > its own xdp_ring.
+> >
+> > However, I'm not an expert here.
+> > Bj=C3=B6rn, maybe you could comment on this?
+> >
+> > >
+> > > As far as the logic to use I would be good with just using a value yo=
+u
+> > > are already setting such as the bytecount value. All that would need
+> > > to happen is to guarantee that the value is cleared in the Tx path. S=
+o
+> > > if you clear the bytecount in ixgbe_clean_xdp_tx_irq you could
+> > > theoretically just use that as well to flag that a descriptor has bee=
+n
+> > > populated and is ready to be cleaned. Assuming the logic about this
+> > > all being in the same NAPI context anyway you wouldn't need to mess
+> > > with the barrier stuff I mentioned before.
+> >
+> > Checking the number of used descs, i.e. next_to_use - next_to_clean,
+> > makes iteration in this function logically equal to the iteration insid=
+e
+> > 'ixgbe_xsk_clean_tx_ring()'. Do you think we need to change the later
+> > function too to follow same 'bytecount' approach? I don't like having
+> > two different ways to determine number of used descriptors in the same =
+file.
+> >
+> > Best regards, Ilya Maximets.
+>
+> As far as ixgbe_clean_xdp_tx_irq() vs ixgbe_xsk_clean_tx_ring(), I
+> would say that if you got rid of budget and framed things more like
+> how ixgbe_xsk_clean_tx_ring was framed with the ntc !=3D ntu being
+> obvious I would prefer to see us go that route.
+>
+> Really there is no need for budget in ixgbe_clean_xdp_tx_irq() if you
+> are going to be working with a static ntu value since you will only
+> ever process one iteration through the ring anyway. It might make more
+> sense if you just went through and got rid of budget and i, and
+> instead used ntc and ntu like what was done in
+> ixgbe_xsk_clean_tx_ring().
+>
+> Thanks.
+>
+> - Alex
 
-Oh, match opening bracket..
+Not familiar with the driver details.
+I tested this patch and the issue mentioned in OVS mailing list.
+https://www.mail-archive.com/ovs-dev@openvswitch.org/msg35362.html
+and indeed the problem goes away. But I saw a huge performance drop,
+my AF_XDP tx performance drops from >9Mpps to <5Mpps.
 
-	err = xa_alloc_cyclic(&tp_c->ht_xa, &id, ptr, XA_LIMIT(0, 0x7ff),
-			      &tp_c->ht_next, GFP_KERNEL);
+Tested using kernel 5.3.0-rc3+
+03:00.0 Ethernet controller: Intel Corporation Ethernet Controller
+10-Gigabit X540-AT2 (rev 01)
+Subsystem: Intel Corporation Ethernet 10G 2P X540-t Adapter
+Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
+Stepping- SERR- FastB2B- DisINTx+
+
+Regards,
+William
