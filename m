@@ -2,137 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2854B98388
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 20:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5685D98338
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 20:40:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728304AbfHUStR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 14:49:17 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:44822 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728104AbfHUStQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 14:49:16 -0400
-Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LIdiki081186
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:49:15 -0400
-Received: from e06smtp02.uk.ibm.com (e06smtp02.uk.ibm.com [195.75.94.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2uhb5y0vk8-1
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:49:15 -0400
-Received: from localhost
-        by e06smtp02.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
-        for <netdev@vger.kernel.org> from <zohar@linux.ibm.com>;
-        Wed, 21 Aug 2019 19:49:13 +0100
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (9.149.109.198)
-        by e06smtp02.uk.ibm.com (192.168.101.132) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
-        Wed, 21 Aug 2019 19:49:08 +0100
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7LIn7ub33620120
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 21 Aug 2019 18:49:07 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 55C0AA4053;
-        Wed, 21 Aug 2019 18:49:07 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EFD58A4040;
-        Wed, 21 Aug 2019 18:49:04 +0000 (GMT)
-Received: from localhost.localdomain (unknown [9.85.135.147])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 21 Aug 2019 18:49:04 +0000 (GMT)
-Subject: Re: [GIT PULL] Keys: Set 4 - Key ACLs for 5.3
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        James Morris <jmorris@namei.org>, keyrings@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, linux-nfs@vger.kernel.org,
-        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-In-Reply-To: <23498.1565962602@warthog.procyon.org.uk>
-References: <1562814435.4014.11.camel@linux.ibm.com>
-         <28477.1562362239@warthog.procyon.org.uk>
-         <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com>
-         <20190710194620.GA83443@gmail.com> <20190710201552.GB83443@gmail.com>
-         <CAHk-=wiFti6=K2fyAYhx-PSX9ovQPJUNp0FMdV0pDaO_pSx9MQ@mail.gmail.com>
-         <23498.1565962602@warthog.procyon.org.uk>
-Content-Type: text/plain; charset="UTF-8"
-Date:   Wed, 21 Aug 2019 10:20:44 -0400
-Mime-Version: 1.0
-X-Mailer: Evolution 3.20.5 (3.20.5-1.fc24) 
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-x-cbid: 19082118-0008-0000-0000-0000030B8E41
-X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
-x-cbparentid: 19082118-0009-0000-0000-00004A29BA4E
-Message-Id: <1566397244.5162.11.camel@linux.ibm.com>
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908210182
+        id S1727719AbfHUSiZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 14:38:25 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:42505 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726530AbfHUSiZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 14:38:25 -0400
+Received: by mail-qk1-f196.google.com with SMTP id 201so2725293qkm.9
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 11:38:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=XDlPfXRQuCPTCFskR9JG+Wsrqkken/Qm3lzMWM8DxQY=;
+        b=E8ncTyp78G09Ml3oDEKWx4WWp1oBs8ewBRvCvHL71PZX4EiuhkfYo+NEOcEFerYYjg
+         ME8120Myrk0zxGFkcd+JVQ/Zv40mVmjmwUisMqPWZFxnfikG+0PClD+V8VtjzQdtx9NY
+         O82w76IPamf9t/sZioRnBxwDsDpkWF2D7wXjTaFQnhsJL5HQmfXwWH5RNBwL8Riu3B3o
+         VeHOFbw3MNfmi6WdDb4tRtBmFl+ZUmOUvZrMEgB6paU/IzQAXIWndWVzhJm2dujx7dQ8
+         WCNhzmw1q6cYkCms3I2Ft77m+iZ+nz3SXbFpdv+7m8nZ8xtYHmBa+sJ/q2BktavB8CXH
+         W/mg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=XDlPfXRQuCPTCFskR9JG+Wsrqkken/Qm3lzMWM8DxQY=;
+        b=beOcSwkoLrNuoizJkyoo4HvvmBS+oUoHM3u3pI33YE5dq7oyOF/UitiVtXT4WIWe6/
+         H+F/4keN9APR65KbhqBUMZNW4x7iJIpKGwZhDbI0UJtAjjp26CfJsgyOQANrW9ITDD/0
+         m9tSWlmf0TtweaBY1CPQUZcFtvJlayoGsI5RltQLZBvChZrjD/uop2DFsBPElG/b+zFq
+         PTXlw0DLWPJgy/BN2HIcxl6/zQMdO487dB3dqjib26PPUw7qE8btSolKi/uF6hNRXx4Y
+         9d2tnW1QN2r4mDRTjvKhm/zBNeu8aF+oBUGN8hYK9G9/DrZvsiYJQwXda4AQuRTLv3dx
+         VaNQ==
+X-Gm-Message-State: APjAAAVagACENL6FH50ftHq2dCjVl55EeoGP/vhgWFfcNGapDuLv/gWk
+        C6pHH82i9sGzWvsxcT/HKtU9kQ==
+X-Google-Smtp-Source: APXvYqxUMD6ESn0CCDKKuMpJDp9Of8FsLAwQpIVdxp6TANQKqRzeiAON5wzfi/oG1vODOtHolL7iaA==
+X-Received: by 2002:a37:2f05:: with SMTP id v5mr32971442qkh.143.1566412704245;
+        Wed, 21 Aug 2019 11:38:24 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id d22sm10068312qto.45.2019.08.21.11.38.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Aug 2019 11:38:24 -0700 (PDT)
+Date:   Wed, 21 Aug 2019 11:38:16 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Toshiaki Makita <toshiaki.makita1@gmail.com>
+Cc:     Stanislav Fomichev <sdf@fomichev.me>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, William Tu <u9012063@gmail.com>
+Subject: Re: [RFC PATCH bpf-next 00/14] xdp_flow: Flow offload to XDP
+Message-ID: <20190821113816.4dee030a@cakuba.netronome.com>
+In-Reply-To: <250f99fd-7289-a8e2-a710-560305e2d17d@gmail.com>
+References: <20190813120558.6151-1-toshiaki.makita1@gmail.com>
+        <20190814170715.GJ2820@mini-arch>
+        <14c4a876-6f5d-4750-cbe4-19622f64975b@gmail.com>
+        <20190815152100.GN2820@mini-arch>
+        <20190815122232.4b1fa01c@cakuba.netronome.com>
+        <da840b14-ab5b-91f1-df2f-6bdd0ed41173@gmail.com>
+        <20190816115224.6aafd4ee@cakuba.netronome.com>
+        <5e9bee13-a746-f148-00de-feb7cb7b1403@gmail.com>
+        <20190819111546.35a8ed76@cakuba.netronome.com>
+        <250f99fd-7289-a8e2-a710-560305e2d17d@gmail.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-08-16 at 14:36 +0100, David Howells wrote:
-> Mimi Zohar <zohar@linux.ibm.com> wrote:
+On Wed, 21 Aug 2019 17:49:33 +0900, Toshiaki Makita wrote:
+> > Having an implementation nor support a feature of another implementation
+> > and degrade gracefully to the slower one is not necessarily breakage.
+> > We need to make a concious decision here, hence the clarifying question.  
 > 
-> > Sorry for the delay.  An exception is needed for loading builtin keys
-> > "KEY_ALLOC_BUILT_IN" onto a keyring that is not writable by userspace.
-> >  The following works, but probably is not how David would handle the
-> > exception.
-> 
-> I think the attached is the right way to fix it.
-> 
-> load_system_certificate_list(), for example, when it creates keys does this:
-> 
-> 	key = key_create_or_update(make_key_ref(builtin_trusted_keys, 1),
-> 
-> marking the keyring as "possessed" in make_key_ref().  This allows the
-> possessor permits to be used - and that's the *only* way to use them for
-> internal keyrings like this because you can't link to them and you can't join
-> them.
+> As I described above, breakage can happen in some case, and if the patch 
+> breaks xdp_flow I think we need to fix xdp_flow at the same time. If 
+> xdp_flow does not support newly added features but it works for existing 
+> ones, it is OK. In the first place not all features can be offloaded to 
+> xdp_flow. I think this is the same as HW-offload.
 
-In addition, as long as additional keys still can't be added or
-existing keys updated by userspace on the .builtin_trusted_keys, then
-this is fine.
-
-> 
-> David
-> ---
-> diff --git a/certs/system_keyring.c b/certs/system_keyring.c
-> index 57be78b5fdfc..1f8f26f7bb05 100644
-> --- a/certs/system_keyring.c
-> +++ b/certs/system_keyring.c
-> @@ -99,7 +99,7 @@ static __init int system_trusted_keyring_init(void)
->  	builtin_trusted_keys =
->  		keyring_alloc(".builtin_trusted_keys",
->  			      KUIDT_INIT(0), KGIDT_INIT(0), current_cred(),
-> -			      &internal_key_acl, KEY_ALLOC_NOT_IN_QUOTA,
-> +			      &internal_keyring_acl, KEY_ALLOC_NOT_IN_QUOTA,
->  			      NULL, NULL);
->  	if (IS_ERR(builtin_trusted_keys))
->  		panic("Can't allocate builtin trusted keyring\n");
-> diff --git a/security/keys/permission.c b/security/keys/permission.c
-> index fc84d9ef6239..86efd3eaf083 100644
-> --- a/security/keys/permission.c
-> +++ b/security/keys/permission.c
-> @@ -47,7 +47,7 @@ struct key_acl internal_keyring_acl = {
->  	.usage	= REFCOUNT_INIT(1),
->  	.nr_ace	= 2,
->  	.aces = {
-> -		KEY_POSSESSOR_ACE(KEY_ACE_SEARCH),
-> +		KEY_POSSESSOR_ACE(KEY_ACE_SEARCH | KEY_ACE_WRITE),
->  		KEY_OWNER_ACE(KEY_ACE_VIEW | KEY_ACE_READ | KEY_ACE_SEARCH),
->  	}
->  };
-
-Thanks, David.  The builtin keys are now being loaded.
-
-Mimi
-
+I see, that sounds reasonable, yes. Thanks for clarifying.
