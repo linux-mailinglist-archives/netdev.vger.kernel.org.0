@@ -2,128 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DF1198645
+	by mail.lfdr.de (Postfix) with ESMTP id EC25C98646
 	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:09:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730719AbfHUVHH convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 17:07:07 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56014 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726828AbfHUVHH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 17:07:07 -0400
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 73EABC0546FE
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 21:07:06 +0000 (UTC)
-Received: by mail-ed1-f71.google.com with SMTP id f11so2086000edb.16
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:07:06 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=+7oLCOeDF3XQIliJ9uRMKaUP7ACTfu+YJIQN3Ry6XhE=;
-        b=dfLrxhA5IM5lk25xfJHd/ErxUgSqQOtJSLPv1l8knbB5jkIUVK3LdAH1Bm9QtlM1Zv
-         ek2fZMbXnGMAhkptZaZ+Xkci+lFdoej8RzOyIH1j6coNllBXN2CsKIVFdCag31HMoYxS
-         N9+AnCmxIx6KtyfY1fALEg1GfFunz9R5wkoh+ZPmjQdbladSWoGkB7WoTw5q2spQKJAF
-         rNde0eo6dJdFxuo87RvGRkjhWxa6QKHuLyfcHoI8ZaYJoCejn9IEoZMObk19Xyr/tAY/
-         UPfPkpFdQaOm3ZMAMl60it3eQYeCrzD6+U/nIZuIP7nGUGykowlNMvNxaY6iRuKzS2ML
-         cnjQ==
-X-Gm-Message-State: APjAAAWTvDdf3JZ8NZ/Qzk71aiL7H8MOgMH0oCzaEM3PB+cyMu7TPvEk
-        UIGwOITIVSgAM36XwdwuYYSPdeJlaWTAQc3k3FWqefKuN30KwfXC/3zCRV0MPf0C5E+0gipMlse
-        uLEKc2vfk3qI62VDk
-X-Received: by 2002:a05:6402:8c9:: with SMTP id d9mr38353378edz.154.1566421625246;
-        Wed, 21 Aug 2019 14:07:05 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzUY+iDRwRgKuCrfG9co2//nIesFJTWxGEP9ldqjNYDopMSqCNSsQT8NfZSjV1TXbVNUAiHxA==
-X-Received: by 2002:a05:6402:8c9:: with SMTP id d9mr38353362edz.154.1566421625088;
-        Wed, 21 Aug 2019 14:07:05 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id r16sm3288626eji.71.2019.08.21.14.07.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Aug 2019 14:07:04 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id CB1E2181CEF; Wed, 21 Aug 2019 23:07:03 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-In-Reply-To: <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com>
-References: <20190820114706.18546-1-toke@redhat.com> <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 21 Aug 2019 23:07:03 +0200
-Message-ID: <87blwiqlc8.fsf@toke.dk>
+        id S1730727AbfHUVHN convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 17:07:13 -0400
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:55146 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726828AbfHUVHN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:07:13 -0400
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LL4Ipn003749
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:07:12 -0700
+Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
+        by mx0a-00082601.pphosted.com with ESMTP id 2uhadxgxh5-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:07:11 -0700
+Received: from mx-out.facebook.com (2620:10d:c081:10::13) by
+ mail.thefacebook.com (2620:10d:c081:35::130) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA) id 15.1.1713.5;
+ Wed, 21 Aug 2019 14:07:11 -0700
+Received: by devbig007.ftw2.facebook.com (Postfix, from userid 572438)
+        id 888EF760ACD; Wed, 21 Aug 2019 14:07:10 -0700 (PDT)
+Smtp-Origin-Hostprefix: devbig
+From:   Alexei Starovoitov <ast@kernel.org>
+Smtp-Origin-Hostname: devbig007.ftw2.facebook.com
+To:     <davem@davemloft.net>
+CC:     <daniel@iogearbox.net>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <kernel-team@fb.com>
+Smtp-Origin-Cluster: ftw2c04
+Subject: [PATCH bpf] bpf: fix precision tracking in presence of bpf2bpf calls
+Date:   Wed, 21 Aug 2019 14:07:10 -0700
+Message-ID: <20190821210710.1276117-1-ast@kernel.org>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_07:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1034 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908210206
+X-FB-Internal: deliver
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+While adding extra tests for precision tracking and extra infra
+to adjust verifier heuristics the existing test
+"calls: cross frame pruning - liveness propagation" started to fail.
+The root cause is the same as described in verifer.c comment:
 
-> On Tue, Aug 20, 2019 at 4:47 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> iproute2 uses its own bpf loader to load eBPF programs, which has
->> evolved separately from libbpf. Since we are now standardising on
->> libbpf, this becomes a problem as iproute2 is slowly accumulating
->> feature incompatibilities with libbpf-based loaders. In particular,
->> iproute2 has its own (expanded) version of the map definition struct,
->> which makes it difficult to write programs that can be loaded with both
->> custom loaders and iproute2.
->>
->> This series seeks to address this by converting iproute2 to using libbpf
->> for all its bpf needs. This version is an early proof-of-concept RFC, to
->> get some feedback on whether people think this is the right direction.
->>
->> What this series does is the following:
->>
->> - Updates the libbpf map definition struct to match that of iproute2
->>   (patch 1).
->
->
-> Hi Toke,
->
-> Thanks for taking a stab at unifying libbpf and iproute2 loaders. I'm
-> totally in support of making iproute2 use libbpf to load/initialize
-> BPF programs. But I'm against adding iproute2-specific fields to
-> libbpf's bpf_map_def definitions to support this.
->
-> I've proposed the plan of extending libbpf's supported features so
-> that it can be used to load iproute2-style BPF programs earlier,
-> please see discussions in [0] and [1].
+ * Also if parent's curframe > frame where backtracking started,
+ * the verifier need to mark registers in both frames, otherwise callees
+ * may incorrectly prune callers. This is similar to
+ * commit 7640ead93924 ("bpf: verifier: make sure callees don't prune with caller differences")
+ * For now backtracking falls back into conservative marking.
 
-Yeah, I've seen that discussion, and agree that longer term this is
-probably a better way to do map-in-map definitions.
+Turned out though that returning -ENOTSUPP from backtrack_insn() and
+doing mark_all_scalars_precise() in the current parentage chain is not enough.
+Depending on how is_state_visited() heuristic is creating parentage chain
+it's possible that callee will incorrectly prune caller.
+Fix the issue by setting precise=true earlier and more aggressively.
+Before this fix the precision tracking _within_ functions that don't do
+bpf2bpf calls would still work. Whereas now precision tracking is completely
+disabled when bpf2bpf calls are present anywhere in the program.
 
-However, I view your proposal as complementary to this series: we'll
-probably also want the BTF-based definition to work with iproute2, and
-that means iproute2 needs to be ported to libbpf. But iproute2 needs to
-be backwards compatible with the format it supports now, and, well, this
-series is the simplest way to achieve that IMO :)
+No difference in cilium tests (they don't have bpf2bpf calls).
+No difference in test_progs though some of them have bpf2bpf calls,
+but precision tracking wasn't effective there.
 
-> I think instead of emulating iproute2 way of matching everything based
-> on user-specified internal IDs, which doesn't provide good user
-> experience and is quite easy to get wrong, we should support same
-> scenarios with better declarative syntax and in a less error-prone
-> way. I believe we can do that by relying on BTF more heavily (again,
-> please check some of my proposals in [0], [1], and discussion with
-> Daniel in those threads). It will feel more natural and be more
-> straightforward to follow. It would be great if you can lend a hand in
-> implementing pieces of that plan!
->
-> I'm currently on vacation, so my availability is very sparse, but I'd
-> be happy to discuss this further, if need be.
+Fixes: b5dc0163d8fd ("bpf: precise scalar_value tracking")
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+---
+Separate set of tests and infra for them will go into bpf-next.
+---
+ kernel/bpf/verifier.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-Happy to collaborate on your proposal when you're back from vacation;
-but as I said above, I believe this is a complementary longer-term
-thing...
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index c84d83f86141..b5c14c9d7b98 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -985,9 +985,6 @@ static void __mark_reg_unbounded(struct bpf_reg_state *reg)
+ 	reg->smax_value = S64_MAX;
+ 	reg->umin_value = 0;
+ 	reg->umax_value = U64_MAX;
+-
+-	/* constant backtracking is enabled for root only for now */
+-	reg->precise = capable(CAP_SYS_ADMIN) ? false : true;
+ }
+ 
+ /* Mark a register as having a completely unknown (scalar) value. */
+@@ -1014,7 +1011,11 @@ static void mark_reg_unknown(struct bpf_verifier_env *env,
+ 			__mark_reg_not_init(regs + regno);
+ 		return;
+ 	}
+-	__mark_reg_unknown(regs + regno);
++	regs += regno;
++	__mark_reg_unknown(regs);
++	/* constant backtracking is enabled for root without bpf2bpf calls */
++	regs->precise = env->subprog_cnt > 1 || !env->allow_ptr_leaks ?
++			true : false;
+ }
+ 
+ static void __mark_reg_not_init(struct bpf_reg_state *reg)
+-- 
+2.20.0
 
--Toke
