@@ -2,80 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C8FB797989
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 14:35:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B358979B7
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 14:43:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728394AbfHUMfc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 08:35:32 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42416 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726227AbfHUMfc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 08:35:32 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0Ppg-0007MX-QA; Wed, 21 Aug 2019 14:35:20 +0200
-Received: from [2a02:120b:2c12:c120:71a0:62dd:894c:fd0e] (helo=pc-66.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0Ppg-000PkR-Hr; Wed, 21 Aug 2019 14:35:20 +0200
-Subject: Re: [PATCH bpf-next v2 0/3] xdpsock: allow mmap2 usage for 32bits
-To:     Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        magnus.karlsson@intel.com, bjorn.topel@intel.com
-Cc:     davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        jakub.kicinski@netronome.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, xdp-newbies@vger.kernel.org,
-        linux-kernel@vger.kernel.org, jlemon@flugsvamp.com, yhs@fb.com,
-        andrii.nakryiko@gmail.com
-References: <20190815121356.8848-1-ivan.khoronzhuk@linaro.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <95fb201c-1623-149b-a72e-ed4860f742e1@iogearbox.net>
-Date:   Wed, 21 Aug 2019 14:35:19 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190815121356.8848-1-ivan.khoronzhuk@linaro.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25548/Wed Aug 21 10:27:18 2019)
+        id S1728521AbfHUMkh convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 08:40:37 -0400
+Received: from mx2.suse.de ([195.135.220.15]:59388 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726484AbfHUMkg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 08:40:36 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 43AA6AFCE;
+        Wed, 21 Aug 2019 12:40:34 +0000 (UTC)
+Date:   Wed, 21 Aug 2019 14:40:33 +0200
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 11/17] net: sgi: ioc3-eth: no need to stop queue
+ set_multicast_list
+Message-Id: <20190821144033.2e206cb18b1dfd10377357c2@suse.de>
+In-Reply-To: <20190819170440.37ff18d4@cakuba.netronome.com>
+References: <20190819163144.3478-1-tbogendoerfer@suse.de>
+        <20190819163144.3478-12-tbogendoerfer@suse.de>
+        <20190819170440.37ff18d4@cakuba.netronome.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/15/19 2:13 PM, Ivan Khoronzhuk wrote:
-> This patchset contains several improvements for af_xdp socket umem
-> mappings for 32bit systems. Also, there is one more patch outside of
-> this series that on linux-next tree and related to mmap2 af_xdp umem
-> offsets: "mm: mmap: increase sockets maximum memory size pgoff for 32bits"
-> https://lkml.org/lkml/2019/8/12/549
-> 
-> Based on bpf-next/master
-> 
-> Prev: https://lkml.org/lkml/2019/8/13/437
-> 
-> v2..v1:
-> 	- replaced "libbpf: add asm/unistd.h to xsk to get __NR_mmap2" on
-> 	 "libbpf: use LFS (_FILE_OFFSET_BITS) instead of direct mmap2
-> 	 syscall"
-> 	- use vmap along with page_address to avoid overkill
-> 	- define mmap syscall trace5 for mmap if defined
-> 
-> Ivan Khoronzhuk (3):
->    libbpf: use LFS (_FILE_OFFSET_BITS) instead of direct mmap2 syscall
->    xdp: xdp_umem: replace kmap on vmap for umem map
->    samples: bpf: syscal_nrs: use mmap2 if defined
-> 
->   net/xdp/xdp_umem.c         | 36 +++++++++++++++++++++++-----
->   samples/bpf/syscall_nrs.c  |  6 +++++
->   samples/bpf/tracex5_kern.c | 13 ++++++++++
->   tools/lib/bpf/Makefile     |  1 +
->   tools/lib/bpf/xsk.c        | 49 +++++++++++---------------------------
->   5 files changed, 64 insertions(+), 41 deletions(-)
-> 
+On Mon, 19 Aug 2019 17:04:53 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-Applied, and fixed up typo in last one's subject, thanks!
+> On Mon, 19 Aug 2019 18:31:34 +0200, Thomas Bogendoerfer wrote:
+> > netif_stop_queue()/netif_wake_qeue() aren't needed for changing
+> > multicast filters. Use spinlocks instead for proper protection
+> > of private struct.
+> > 
+>
+> I thought it may protect ip->emcr, but that one is accessed with no
+> locking from the ioc3_timer() -> ioc3_setup_duplex() path..
+
+it should protect ip->emcr ... I'll add spin_lock/unlock to setup_duplex and
+respin the patch.
+
+Thomas.
+
+-- 
+SUSE Linux GmbH
+GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
+HRB 21284 (AG Nürnberg)
