@@ -2,180 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFC61980D1
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:59:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1AF9E980D6
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:59:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729103AbfHUQ51 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 12:57:27 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:41980 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728810AbfHUQ51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:57:27 -0400
-Received: by mail-io1-f68.google.com with SMTP id j5so5954204ioj.8;
-        Wed, 21 Aug 2019 09:57:26 -0700 (PDT)
+        id S1729657AbfHUQ7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 12:59:44 -0400
+Received: from mail-pl1-f169.google.com ([209.85.214.169]:44585 "EHLO
+        mail-pl1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726252AbfHUQ7o (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:59:44 -0400
+Received: by mail-pl1-f169.google.com with SMTP id t14so1629475plr.11;
+        Wed, 21 Aug 2019 09:59:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wCEZNrYU/5ppBxRNJA9n1HgdSaVTKFRs/1eid1avNfw=;
-        b=dkRgj4Mi9Zklnd9c2qIHIa13rUDGB6PqiCoGPTawJV+toT1h8vw5oLAZOLnqbH+mGN
-         gvBnQ7GKEgVj9IJVyfEFoS7lSkgdfwWj5WqtAW3+7GJHalLUJManVBxHZKXyacE+Ibc6
-         6b9RO56Vz06OWsRWQwBEQ0/LKbtXsgyg0BOwabgh7Kmm8shbc7rshlxWEcRIl5t88Q43
-         y/hJmwUtSm4+Q+A4zYLMrj1ROhOUmrtVYhg+gvs04C4lFh2KiDsYcPheI1CxV73VwiXW
-         tdk1u0aKYY8b0VUgJ8LsDpx5StGoyqFXGLcKatH0zT3feX5IJ0eOivrwVrjCFOrc8Y5F
-         Re9g==
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4uOROZjzWLE63MFAiLg2kSsfaU3fOmnwbM8CBKbVHmw=;
+        b=EBhtQtcZEDIlim8PjUJDPh732WKNhbgoaOf4kKFyGqE51t7flztG8HaXocNLReVX7A
+         /MuadADeisUHJoTDwJpUZVBDpfxWGo5AAtVhyRU1BcI5OTaz2Pmk0kzOkB5pPTfMZ4uL
+         T7/WvB0K5e2Zk8cY60uGqdGuMUX4HAXi/abUgGDMf3cRt72Ncw6UbZupD8WQQmbiJ9Qa
+         QPlIs4bY5xsAwbfyrwAQyRjbsLWIkFfLnlhUJEd9/doXLJo5qRsPAf+r35w6lEzQRdVL
+         MnqoEXZXinimreO9YEM5MBcNihPtiU4foAA+6y98W1rI8qZPisIpbIzw/2cU99R95czc
+         EtCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wCEZNrYU/5ppBxRNJA9n1HgdSaVTKFRs/1eid1avNfw=;
-        b=NR/jLoFL6xfdrIytsPQwUeUu0i1R4Bi1FyITsDN1TCtT7QhBl7QYa1LRkRy8CvohsX
-         /0g4Z9JYEznmHf8odT3ih2aSl6ANguSA7jgTFo+DHy/4QHdArGib24F1UkE+WasWfEN/
-         FIPWekupNJ1hG2xUcYNII6ZxcpcEX/HNkNCRMBfKQLSGeli6Kb8uSsUq9IQXsEX8GCLv
-         GknB0xuXy3vUXVvD5umUq8PB1kwJbadse4NDorkFW2eCLacIsNwv2ts1rGCWbaYqE1OH
-         3cTJ3Qp4lcZSN5EZhwcqmHz8DKWC+Wxb000scFQZ5NGRmbIjwcciMB5r2zhxUvw5/wy/
-         zMaA==
-X-Gm-Message-State: APjAAAW0PHIaIta0IAItej5x3KLZixgLbGZL/EvJQpO8H9KZPZYkrSwL
-        XStvxrv5CKNuWGBjnVM1Gn6ZiASCyyfSKnheeYI=
-X-Google-Smtp-Source: APXvYqy5ER/jZPFQpXJhtg7vrUBIju/JR5g17iCTaerGnhqLDbkPmYKy2G/d3Owf4mg8glr1mvcKJ65SkpcrEw9ExXg=
-X-Received: by 2002:a5e:8c11:: with SMTP id n17mr28082811ioj.64.1566406645836;
- Wed, 21 Aug 2019 09:57:25 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=4uOROZjzWLE63MFAiLg2kSsfaU3fOmnwbM8CBKbVHmw=;
+        b=dmyY9aghakYWkm764ZwjYDVN4AeYmqOSRGmicuDlhILjll8NhniVOeoonxEJtzoT5k
+         90aWYh5c2DDa5vtBtNYGF3VanuygOLRbd08+ufI+QRReyK/2W5Yw+vXgE4vY2Wx2drOc
+         di5FIp6QTzwZXsxzWwMn9BT74WUO+9FeHt4pZtYou6+FhcQjPI8fN2sxioJR+TCuwDEB
+         HhMdqjeaQrfWwh7Dp/wkBgr5SQgI4tj992U5XibdDNtEMd262fsFxKZvjW2Hn9610p4v
+         D+Vw19Gj9cyloBEMVIoao3uXkHeJFCLKQZ1cFG/2r+SIDODK0AFO/g4nrTkT4SOHDOL0
+         7kXg==
+X-Gm-Message-State: APjAAAUAZ0iZq3rUVa1D4rHUghgo8RdkuvcVUzYTqfuuXobKL0ovQI9q
+        Jw7z/uh89Yn5PHV0ax4JJOaMs80J
+X-Google-Smtp-Source: APXvYqzYK6owRbgloi5jpaLE+QsvybLU+/HLEWR8mBFcnULUUMf0laEpTnH8XWF1sQWZJyW+GJPcBg==
+X-Received: by 2002:a17:902:9698:: with SMTP id n24mr35845747plp.14.1566406782766;
+        Wed, 21 Aug 2019 09:59:42 -0700 (PDT)
+Received: from [10.67.49.31] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id m145sm28044644pfd.68.2019.08.21.09.59.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 21 Aug 2019 09:59:42 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: bcmgenet: use
+ devm_platform_ioremap_resource() to simplify code
+To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
+        opendmb@gmail.com, bcm-kernel-feedback-list@broadcom.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+References: <20190821134131.57780-1-yuehaibing@huawei.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <fc2639df-2930-46a9-537c-01930d2a2252@gmail.com>
+Date:   Wed, 21 Aug 2019 09:59:39 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
- <20190820151611.10727-1-i.maximets@samsung.com> <CAKgT0Udn0D0_f=SOH2wpBRWV_u4rb1Qe2h7gguXnRNzJ_VkRzg@mail.gmail.com>
- <625791af-c656-1e42-b60e-b3a5cedcb4c4@samsung.com> <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
- <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com>
-In-Reply-To: <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 21 Aug 2019 09:57:14 -0700
-Message-ID: <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
-Subject: Re: [PATCH net] ixgbe: fix double clean of tx descriptors with xdp
-To:     Ilya Maximets <i.maximets@samsung.com>
-Cc:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        William Tu <u9012063@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190821134131.57780-1-yuehaibing@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 9:22 AM Ilya Maximets <i.maximets@samsung.com> wrot=
-e:
->
-> On 21.08.2019 4:17, Alexander Duyck wrote:
-> > On Tue, Aug 20, 2019 at 8:58 AM Ilya Maximets <i.maximets@samsung.com> =
-wrote:
-> >>
-> >> On 20.08.2019 18:35, Alexander Duyck wrote:
-> >>> On Tue, Aug 20, 2019 at 8:18 AM Ilya Maximets <i.maximets@samsung.com=
-> wrote:
-> >>>>
-> >>>> Tx code doesn't clear the descriptor status after cleaning.
-> >>>> So, if the budget is larger than number of used elems in a ring, som=
-e
-> >>>> descriptors will be accounted twice and xsk_umem_complete_tx will mo=
-ve
-> >>>> prod_tail far beyond the prod_head breaking the comletion queue ring=
-.
-> >>>>
-> >>>> Fix that by limiting the number of descriptors to clean by the numbe=
-r
-> >>>> of used descriptors in the tx ring.
-> >>>>
-> >>>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-> >>>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> >>>
-> >>> I'm not sure this is the best way to go. My preference would be to
-> >>> have something in the ring that would prevent us from racing which I
-> >>> don't think this really addresses. I am pretty sure this code is safe
-> >>> on x86 but I would be worried about weak ordered systems such as
-> >>> PowerPC.
-> >>>
-> >>> It might make sense to look at adding the eop_desc logic like we have
-> >>> in the regular path with a proper barrier before we write it and afte=
-r
-> >>> we read it. So for example we could hold of on writing the bytecount
-> >>> value until the end of an iteration and call smp_wmb before we write
-> >>> it. Then on the cleanup we could read it and if it is non-zero we tak=
-e
-> >>> an smp_rmb before proceeding further to process the Tx descriptor and
-> >>> clearing the value. Otherwise this code is going to just keep popping
-> >>> up with issues.
-> >>
-> >> But, unlike regular case, xdp zero-copy xmit and clean for particular
-> >> tx ring always happens in the same NAPI context and even on the same
-> >> CPU core.
-> >>
-> >> I saw the 'eop_desc' manipulations in regular case and yes, we could
-> >> use 'next_to_watch' field just as a flag of descriptor existence,
-> >> but it seems unnecessarily complicated. Am I missing something?
-> >>
-> >
-> > So is it always in the same NAPI context?. I forgot, I was thinking
-> > that somehow the socket could possibly make use of XDP for transmit.
->
-> AF_XDP socket only triggers tx interrupt on ndo_xsk_async_xmit() which
-> is used in zero-copy mode. Real xmit happens inside
-> ixgbe_poll()
->  -> ixgbe_clean_xdp_tx_irq()
->     -> ixgbe_xmit_zc()
->
-> This should be not possible to bound another XDP socket to the same netde=
-v
-> queue.
->
-> It also possible to xmit frames in xdp_ring while performing XDP_TX/REDIR=
-ECT
-> actions. REDIRECT could happen from different netdev with different NAPI
-> context, but this operation is bound to specific CPU core and each core h=
-as
-> its own xdp_ring.
->
-> However, I'm not an expert here.
-> Bj=C3=B6rn, maybe you could comment on this?
->
-> >
-> > As far as the logic to use I would be good with just using a value you
-> > are already setting such as the bytecount value. All that would need
-> > to happen is to guarantee that the value is cleared in the Tx path. So
-> > if you clear the bytecount in ixgbe_clean_xdp_tx_irq you could
-> > theoretically just use that as well to flag that a descriptor has been
-> > populated and is ready to be cleaned. Assuming the logic about this
-> > all being in the same NAPI context anyway you wouldn't need to mess
-> > with the barrier stuff I mentioned before.
->
-> Checking the number of used descs, i.e. next_to_use - next_to_clean,
-> makes iteration in this function logically equal to the iteration inside
-> 'ixgbe_xsk_clean_tx_ring()'. Do you think we need to change the later
-> function too to follow same 'bytecount' approach? I don't like having
-> two different ways to determine number of used descriptors in the same fi=
-le.
->
-> Best regards, Ilya Maximets.
+On 8/21/19 6:41 AM, YueHaibing wrote:
+> Use devm_platform_ioremap_resource() to simplify the code a bit.
+> This is detected by coccinelle.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 
-As far as ixgbe_clean_xdp_tx_irq() vs ixgbe_xsk_clean_tx_ring(), I
-would say that if you got rid of budget and framed things more like
-how ixgbe_xsk_clean_tx_ring was framed with the ntc !=3D ntu being
-obvious I would prefer to see us go that route.
-
-Really there is no need for budget in ixgbe_clean_xdp_tx_irq() if you
-are going to be working with a static ntu value since you will only
-ever process one iteration through the ring anyway. It might make more
-sense if you just went through and got rid of budget and i, and
-instead used ntc and ntu like what was done in
-ixgbe_xsk_clean_tx_ring().
-
-Thanks.
-
-- Alex
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
