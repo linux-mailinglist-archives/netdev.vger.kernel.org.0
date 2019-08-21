@@ -2,94 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 777139705F
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 05:31:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 79B059706B
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 05:36:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727308AbfHUDaa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 23:30:30 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:36978 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727263AbfHUDa3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 23:30:29 -0400
-Received: by mail-qk1-f195.google.com with SMTP id s14so652309qkm.4
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 20:30:29 -0700 (PDT)
+        id S1727279AbfHUDgn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 23:36:43 -0400
+Received: from mail-pl1-f174.google.com ([209.85.214.174]:33241 "EHLO
+        mail-pl1-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726907AbfHUDgn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 23:36:43 -0400
+Received: by mail-pl1-f174.google.com with SMTP id go14so553557plb.0
+        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 20:36:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=sq9fx9GMYh90EDNp9r48nydmLa8jqoUXCcyh9dQly6k=;
-        b=pBbwwTaEscuJuxf7vRk5dv9JRDy7ovrWJJ86vpGlbJtjoYtWqTfKZR5XHyQaHUKIM/
-         D43u9c9ugl0+u8YUCrJ/EWQTSa13OCiFDJv9sLym2U1ZxXtE8lWDzTvQqWtXT0bTRZpN
-         8IabeNlvOi2KSqdEdiutWGwv8kDKIZc9ObXDeHFgw4Hq7thni94pwHoDdI5fXrNM2C2V
-         vukSzqn5gmz2MjurbUZmOv9Q+JgbtCpSvrSrOagDp7QvNJ0uF+hoxBVztu/A2jtjClzM
-         qqkWLZi9LEDwU9zeM0/Cyp49l3uX5B81QlTDNhVXi/D7b9s9xGsCSpWiv9hl8uBp0Sjb
-         QzYA==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=Vf1+7k1QhMXzOdyqqWc6nTCHLy9gvfuD8QGZJEzbrlM=;
+        b=AcZXO0FUY9Uzev51dTDgILktD9ou0Wmv1QpDTmM/n+QKBfZLaCFrup/dw4VEOqnE3G
+         7jApYdFev//DC4lmyF484tDoAKsjBQgrGftWbk9K34YnJkbh3SYLpS2DtCUw4x3Ytl2u
+         AXFu1Fs1LXvxCXv4c+nQyDT9GVkG9MeJkJALfkn34WxJCxEfYDwILgPOzv+76J/DD332
+         BkunateYR7FzWIIlco5fkc04rFJVywtapT3o+Kr4cz1/SVK9b1NbUBJ0kRfPxHB+v5cl
+         fXOM2fQRs6YE6djlSEgwrE1RXcIFJsgCu+Wk1PHGPt68Wdrr4ifsJUU3Ei+hW4ydov++
+         sgPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=sq9fx9GMYh90EDNp9r48nydmLa8jqoUXCcyh9dQly6k=;
-        b=jomB/BtuJNw9cCOxe5R+yb9VBugKIPuzl9XbZxKCz7RZ+ln/ekMcEoFfbaht7/5s05
-         4hanUJw9XolZvoiZSghAOm+BW21fUuS+mUcDHRMVSk+fpQ/OhSLypnhtYw1m2CkQaH3P
-         PILzDeQFEEt4CLcmMvWOZ/aErismyPRr93X1pKjv9ejIKPTP7msXInmA7/mxPJpE2Rg+
-         eIetltoNc9LA8i8enSPiebSP0idQ2UtQABPGx2icMZj+MQDfvOChFXHhqdm3Zl635BXm
-         lZx6EXlBESYtpApgWBfc5Tx3fQzH77xQBTHqYEPOGVgnLocE75lFyoKdDg8UykmJ09CW
-         HURA==
-X-Gm-Message-State: APjAAAV+5K8+BdmJnn3H52kC2PQnAV/vCXEJ+HVS1JaoTCUlf5pzf6rF
-        vMn/vHp55SzdYc/3V78RDgA=
-X-Google-Smtp-Source: APXvYqxX3JFmjhUtu5PDsvyozFbmjtgAET1HnGMsoLIioV4jHF6pc9HaP4qGanO9yktFjyuzJgOVQg==
-X-Received: by 2002:a37:a2d1:: with SMTP id l200mr29440535qke.63.1566358228843;
-        Tue, 20 Aug 2019 20:30:28 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id o27sm9359284qkm.37.2019.08.20.20.30.27
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=Vf1+7k1QhMXzOdyqqWc6nTCHLy9gvfuD8QGZJEzbrlM=;
+        b=smiY3Lk53rnwMa/Ha3Pcpk4KLK4zh452dfKfRBOmOMwH5LaY2otYlyF6hEoO7DRmos
+         0fJI1PUPF1mJVhlBAqg7YDb6+LOwVWrGR1Y5J6buXRX4htTXNic7gXveHjFj9wMGRwNL
+         45hJpqKo5fVPwaOO2eToUedlozSB/zs0RuwYGGOsbjpSg+3pNuz/GELiuxqxJkeEhPi9
+         E+Nt6qwqAKX1TJr8cUkC4EAp9brPwCMHKpoHOmTVZpwuO5upqh8TP5tqMGdXK8o0xYKA
+         Y2+wKhoGCPIrI9csECxTJLu+UhJo/d6nXwGC+XbKfYzLfED/HTfIMCUh38/r+iS9p7bd
+         FMPQ==
+X-Gm-Message-State: APjAAAUHMc36AeW5pjA5EkmsHYFan+Bx1Fx5w8ulbJ1jtoY0Fu+Y0zce
+        LdHCrQBgMTeXGaijiAMKC7jETRJ8+5E=
+X-Google-Smtp-Source: APXvYqx9iKb4w3eC/IRsLhlu3ygqaE+8YePy0GktQ7PRxKwTJcGE4WsbZdC30w4z6snEjCMdr/ssvg==
+X-Received: by 2002:a17:902:8484:: with SMTP id c4mr30796854plo.223.1566358602862;
+        Tue, 20 Aug 2019 20:36:42 -0700 (PDT)
+Received: from cakuba.netronome.com ([2601:646:8e00:e50::2])
+        by smtp.gmail.com with ESMTPSA id v8sm20645432pgs.82.2019.08.20.20.36.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 20:30:27 -0700 (PDT)
-Date:   Tue, 20 Aug 2019 23:30:26 -0400
-Message-ID: <20190820233026.GC21067@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        nikolay@cumulusnetworks.com,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/6] net: dsa: Delete the VID from the upstream
- port as well
-In-Reply-To: <CA+h21hodsDTwPHY1pxQA-ucu6FU7rkOQa7Y4HJGZC0fRd8zmDA@mail.gmail.com>
-References: <20190820000002.9776-1-olteanv@gmail.com>
- <20190820000002.9776-4-olteanv@gmail.com>
- <20190820015138.GB975@t480s.localdomain>
- <CA+h21hpdDuoR5nj98EC+-W4HoBs35e_rURS1LD1jJWF5pkty9w@mail.gmail.com>
- <20190820135213.GB11752@t480s.localdomain>
- <c359e0ca-c770-19da-7a3a-a3173d36a12d@gmail.com>
- <CA+h21hqdXP1DnCxwuZOCs4H6MtwzjCnjkBf3ibt+JmnZMEFe=g@mail.gmail.com>
- <20190820165813.GB8523@t480s.localdomain>
- <CA+h21hrgUxKXmYuzdCPd-GqVyzNnjPAmf-Q29=7=gFJyAfY_gw@mail.gmail.com>
- <20190820173602.GB10980@t480s.localdomain>
- <CA+h21hodsDTwPHY1pxQA-ucu6FU7rkOQa7Y4HJGZC0fRd8zmDA@mail.gmail.com>
+        Tue, 20 Aug 2019 20:36:42 -0700 (PDT)
+Date:   Tue, 20 Aug 2019 20:36:38 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [pull request][net-next v2 00/16] Mellanox, mlx5 devlink RX
+ health reporters
+Message-ID: <20190820203638.71d96cb7@cakuba.netronome.com>
+In-Reply-To: <20190820202352.2995-1-saeedm@mellanox.com>
+References: <20190820202352.2995-1-saeedm@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Aug 2019 01:09:39 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
-> I mean I made an argument already for the hack in 4/6 ("Don't program
-> the VLAN as pvid on the upstream port"). If the hack gets accepted
-> like that, I have no further need of any change in the implicit VLAN
-> configuration. But it's still a hack, so in that sense it would be
-> nicer to not need it and have a better amount of control.
+On Tue, 20 Aug 2019 20:24:10 +0000, Saeed Mahameed wrote:
+> This patchset introduces changes in mlx5 devlink health reporters.
+> The highlight of these changes is adding a new reporter: RX reporter
+> 
+> mlx5 RX reporter: reports and recovers from timeouts and RX completion
+> error.
+> 
+> 1) Perform TX reporter cleanup. In order to maintain the
+> code flow as similar as possible between RX and TX reporters, start the
+> set with cleanup.
+> 
+> 2) Prepare for code sharing, generalize and move shared
+> functionality.
+> 
+> 3) Refactor and extend TX reporter diagnostics information
+> to align the TX reporter diagnostics output with the RX reporter's
+> diagnostics output.
+> 
+> 4) Add helper functions Patch 11: Add RX reporter, initially
+> supports only the diagnostics call back.
+> 
+> 5) Change ICOSQ (Internal Operations Send Queue) open/close flow to
+> avoid race between interface down and completion error recovery.
+> 
+> 6) Introduce recovery flows for RX ring population timeout on ICOSQ,
+> and for completion errors on ICOSQ and on RQ (Regular receive queues).
+> 
+> 7) Include RX reporters in mlx5 documentation.
+> 
+> 8) Last two patches of this series, are trivial fixes for previously
+> submitted patches on this release cycle.
 
-How come you simply cannot ignore the PVID flag for the CPU port in the
-driver directly, as mv88e6xxx does in preference of the Marvell specific
-"unmodified" mode? What PVID are you programming on the CPU port already?
-
-
-Thanks,
-
-	Vivien
+Not really something I can competently ack, but FWIW doesn't raise any
+red flags for me.
