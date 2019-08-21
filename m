@@ -2,63 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E771797C41
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 16:15:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D0E2297C4B
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 16:17:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729271AbfHUOOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 10:14:50 -0400
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:27084 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726484AbfHUOOu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 10:14:50 -0400
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LECoba131355;
-        Wed, 21 Aug 2019 10:14:40 -0400
-Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 2uh7fr08cg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 21 Aug 2019 10:14:40 -0400
-Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
-        by ppma02dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7LEAVX1007263;
-        Wed, 21 Aug 2019 14:14:39 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma02dal.us.ibm.com with ESMTP id 2ue976fabx-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 21 Aug 2019 14:14:39 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7LEEcG050725356
+        id S1729237AbfHUOQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 10:16:21 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:21768 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726371AbfHUOQR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 10:16:17 -0400
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LEDbM1121404
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 10:16:15 -0400
+Received: from e16.ny.us.ibm.com (e16.ny.us.ibm.com [129.33.205.206])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2uh61tcur0-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 10:16:15 -0400
+Received: from localhost
+        by e16.ny.us.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <leonardo@linux.ibm.com>;
+        Wed, 21 Aug 2019 15:16:14 +0100
+Received: from b01cxnp23034.gho.pok.ibm.com (9.57.198.29)
+        by e16.ny.us.ibm.com (146.89.104.203) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 21 Aug 2019 15:16:11 +0100
+Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7LEGAlr39977240
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 21 Aug 2019 14:14:38 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B2627112066;
-        Wed, 21 Aug 2019 14:14:38 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 37353112061;
-        Wed, 21 Aug 2019 14:14:36 +0000 (GMT)
-Received: from LeoBras (unknown [9.85.171.79])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 21 Aug 2019 14:14:35 +0000 (GMT)
-Message-ID: <31b9320ccad0df9119cd9a14dbc8a4ad53e5a255.camel@linux.ibm.com>
-Subject: Re: [PATCH 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
- IPv6 is disabled on boot
+        Wed, 21 Aug 2019 14:16:10 GMT
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id BFEC4AC064;
+        Wed, 21 Aug 2019 14:16:10 +0000 (GMT)
+Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 724A6AC05F;
+        Wed, 21 Aug 2019 14:16:07 +0000 (GMT)
+Received: from LeoBras.ibmuc.com (unknown [9.85.171.79])
+        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 21 Aug 2019 14:16:07 +0000 (GMT)
 From:   Leonardo Bras <leonardo@linux.ibm.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
+To:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Leonardo Bras <leonardo@linux.ibm.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
         Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Wed, 21 Aug 2019 11:14:31 -0300
-In-Reply-To: <20190821095844.me6kscvnfruinseu@salvia>
-References: <20190820005821.2644-1-leonardo@linux.ibm.com>
-         <20190820053607.GL2588@breakpoint.cc>
-         <793ce2e9b6200a033d44716749acc837aaf5e4e7.camel@linux.ibm.com>
-         <20190821095844.me6kscvnfruinseu@salvia>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-bdwFVMrF2Fdp/po9EBbe"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        Florian Westphal <fw@strlen.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: [PATCH v2 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if IPv6 is disabled on boot
+Date:   Wed, 21 Aug 2019 11:15:06 -0300
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
+x-cbid: 19082114-0072-0000-0000-000004541531
+X-IBM-SpamModules-Scores: 
+X-IBM-SpamModules-Versions: BY=3.00011629; HX=3.00000242; KW=3.00000007;
+ PH=3.00000004; SC=3.00000287; SDB=6.01250020; UDB=6.00659932; IPR=6.01031574;
+ MB=3.00028261; MTD=3.00000008; XFM=3.00000015; UTC=2019-08-21 14:16:14
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19082114-0073-0000-0000-00004CC5379D
+Message-Id: <20190821141505.2394-1-leonardo@linux.ibm.com>
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_05:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
@@ -71,61 +75,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+If IPv6 is disabled on boot (ipv6.disable=1), but nft_fib_inet ends up
+dealing with a IPv6 package, it causes a kernel panic in
+fib6_node_lookup_1(), crashing in bad_page_fault.
 
---=-bdwFVMrF2Fdp/po9EBbe
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+The panic is caused by trying to deference a very low address (0x38
+in ppc64le), due to ipv6.fib6_main_tbl = NULL.
+BUG: Kernel NULL pointer dereference at 0x00000038
 
-On Wed, 2019-08-21 at 11:58 +0200, Pablo Neira Ayuso wrote:
-> On Tue, Aug 20, 2019 at 01:15:58PM -0300, Leonardo Bras wrote:
-> > On Tue, 2019-08-20 at 07:36 +0200, Florian Westphal wrote:
-> > > Wouldn't fib_netdev.c have the same problem?
-> > Probably, but I haven't hit this issue yet.
-> >=20
-> > > If so, might be better to place this test in both
-> > > nft_fib6_eval_type and nft_fib6_eval.
-> >=20
-> > I think that is possible, and not very hard to do.
-> >=20
-> > But in my humble viewpoint, it looks like it's nft_fib_inet_eval() and
-> > nft_fib_netdev_eval() have the responsibility to choose a valid
-> > protocol or drop the package.=20
-> > I am not sure if it would be a good move to transfer this
-> > responsibility to nft_fib6_eval_type() and nft_fib6_eval(), so I would
-> > rather add the same test to nft_fib_netdev_eval().
-> >=20
-> > Does it make sense?
->=20
-> Please, update common code to netdev and ip6 extensions as Florian
-> suggests.
->=20
-> Thanks.
+Fix this behavior by dropping IPv6 packages if !ipv6_mod_enabled().
 
-Ok then, I will send a v2 with that change.
+Signed-off-by: Leonardo Bras <leonardo@linux.ibm.com>
+---
+Changes from v1:
+- Move drop logic from nft_fib_inet_eval() to nft_fib6_eval{,_type}
+so it can affect other usages of these functions. 
 
-Thanks,
+ net/ipv6/netfilter/nft_fib_ipv6.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---=-bdwFVMrF2Fdp/po9EBbe
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEMdeUgIzgjf6YmUyOlQYWtz9SttQFAl1dUccACgkQlQYWtz9S
-ttTvbxAAuqtgCz71kpVB4SpD7Z6y7shLthssFi4Ilnhr3fsG3CsvZ6PwjTWih8r6
-fHcBXT+vu5Xydu+U/Ped9nJi6Ans7qslneoEf/yGINNwcfaK+SoOIE8AvXWXkNmp
-TY41CZ+n2on93yo0lFt2daPaEssuXtvjY2H2hTdHdEaU+Cwaiji2ecxf5P1uTxRM
-kW6rXl4vYWumQ9xjwn8Dg1ilHU86ipRwGnkU8V2fgOMOhdt3p/BfxxeEoYwhHY6Q
-nmteFoZ6lhHtTGblz9bGrM4hbx9Q/9Lmup2hsBZA/YVeWtPVDd04ZhOpcbh4VFXg
-a8H4a+VPh5y9+GUD5EyhnwkTfQMmmL+E+vU40m3Mw9w7cnPbfUlsgN7lHcckpy/r
-5Wjcc/s4ESJxKDFu0gV8tJ7vlOfxo+z5tJj2+WtPn8g8X+Tktew/MSfSsM7X6gi3
-3L7iH+XAchrvoVns8E4Q8V0dg+oIhPW118HuNgHFyfVoBaKhgIvEnQDf2H9s2j/k
-Ng86g8LSWbUEQBXmq8THSEZagY2Q8Ec2q/B3TF4B8tGk6yNsOMM1rjSAeqDGkqIZ
-bZGj4FhVePOvtMNpU8ACzWVWSaUSoJFiWrVQGprm0aAJukWH7m0QqKZEideDYf8h
-nfmAmwVOTn1QUN1CsNSAGcq3X8UZbQPcRy1W/0h1y7z2HbZxkss=
-=Jo9A
------END PGP SIGNATURE-----
-
---=-bdwFVMrF2Fdp/po9EBbe--
+diff --git a/net/ipv6/netfilter/nft_fib_ipv6.c b/net/ipv6/netfilter/nft_fib_ipv6.c
+index 7ece86afd079..75acc417e2ff 100644
+--- a/net/ipv6/netfilter/nft_fib_ipv6.c
++++ b/net/ipv6/netfilter/nft_fib_ipv6.c
+@@ -125,6 +125,11 @@ void nft_fib6_eval_type(const struct nft_expr *expr, struct nft_regs *regs,
+ 	u32 *dest = &regs->data[priv->dreg];
+ 	struct ipv6hdr *iph, _iph;
+ 
++	if (!ipv6_mod_enabled()) {
++		regs->verdict.code = NF_DROP;
++		return;
++	}
++
+ 	iph = skb_header_pointer(pkt->skb, noff, sizeof(_iph), &_iph);
+ 	if (!iph) {
+ 		regs->verdict.code = NFT_BREAK;
+@@ -150,6 +155,11 @@ void nft_fib6_eval(const struct nft_expr *expr, struct nft_regs *regs,
+ 	struct rt6_info *rt;
+ 	int lookup_flags;
+ 
++	if (!ipv6_mod_enabled()) {
++		regs->verdict.code = NF_DROP;
++		return;
++	}
++
+ 	if (priv->flags & NFTA_FIB_F_IIF)
+ 		oif = nft_in(pkt);
+ 	else if (priv->flags & NFTA_FIB_F_OIF)
+-- 
+2.20.1
 
