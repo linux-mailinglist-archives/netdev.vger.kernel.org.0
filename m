@@ -2,214 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B6959935F
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:27:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 03CAA993F9
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:39:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732002AbfHVM0p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 08:26:45 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:61626 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729733AbfHVM0p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 08:26:45 -0400
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id B672C7FDCD;
-        Thu, 22 Aug 2019 12:26:44 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4D3B05DE5C;
-        Thu, 22 Aug 2019 12:26:38 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
- Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
- Kingdom.
- Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix lack of conn cleanup when local endpoint is
- cleaned up
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     dhowells@redhat.com, marc.dionne@auristor.com,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Date:   Thu, 22 Aug 2019 13:26:38 +0100
-Message-ID: <156647679816.11606.13713532963081370001.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/unknown-version
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.27]); Thu, 22 Aug 2019 12:26:44 +0000 (UTC)
+        id S2387878AbfHVMi7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 08:38:59 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:32841 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387808AbfHVMi7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:38:59 -0400
+Received: by mail-wr1-f67.google.com with SMTP id u16so5299699wrr.0;
+        Thu, 22 Aug 2019 05:38:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=2yyL+3tM9mSt5kE1ALeX6Ty5QXmmZMrb4tbRBsxGTeE=;
+        b=S+lrkLL6LmaTWZ3kaj59RfGGeeE1zezGYh6F892O434uwJEZQOg2XD3RGHbVhf3zAm
+         tTHKhvmxSvON1rh+c/eaAfY0lsR3UPkhGRgu6ytfUuxYHI1vh5irHmJOs5B1PALYQPeo
+         Z4jfw5qnG6cpWG1vElUD26JIo3MWJVwjETCK+RVO9dhTlauq6m5QF6AXo5nxXWTY8gOG
+         OGGll9V/mGcIGTiGRQcsqyqeyaTeaGfGkA+QYxXuDsWf+dCEl1bVMssikurAlmwV1lqb
+         IoFkGMUYO6cfP48T6lye4sMwLFqaN9fI9ojPQtH3L4iZJwkVj5+i2r1jAXrJppzU02Xa
+         wGdA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=2yyL+3tM9mSt5kE1ALeX6Ty5QXmmZMrb4tbRBsxGTeE=;
+        b=eBRBKnDR3KvPI2j1ugSha7A8o2Wnd6P0RCLymGiAXXtTbPjRrOgOL8U+u3HX/ZQwCq
+         t+zn64Tt/3nONvr58/hbIQofS980CRmeyn1h6iDH9pi5oT8cHHUQmbqP5U6V/YXUmiSP
+         Uu1KdMj7UEcyD5GyfBW5BqYeHrask0Y3bXFkUyW1PsCg00TndRw4OHHYC0nd7Up1jmWw
+         Epknrx2Bnep6mdnKHewAPUTwi+MJ81DW8HWLg0xUDlNRMUSjIs+/W4JbYtRu0lacBpy5
+         GXaL5hqViPiYzbEer69eysN4bu+63ypqCJsWC8f/aavx4T0H84PlX/DAbqwSO27qzezb
+         Au1Q==
+X-Gm-Message-State: APjAAAW0vwXZTSbSXCrQRnkJCB6KBXWLiN9z5NcHmDAf57cQH3lZJ1ru
+        uwSORqQjDpsAAqcSkLE0orMVfsRFjDQ=
+X-Google-Smtp-Source: APXvYqyUryLr5qmc3F8K9mBFiNnf8qDauD9NslXpIU3ZO2/cMJ0v1ikma5jdOyRHvow2F8goEmk68w==
+X-Received: by 2002:a5d:4f81:: with SMTP id d1mr47254318wru.177.1566477536353;
+        Thu, 22 Aug 2019 05:38:56 -0700 (PDT)
+Received: from localhost.localdomain.localdomain (67.200.broadband2.iol.cz. [83.208.200.67])
+        by smtp.googlemail.com with ESMTPSA id r17sm60719483wrg.93.2019.08.22.05.38.54
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 22 Aug 2019 05:38:55 -0700 (PDT)
+From:   Martin Tomes <tomesm@gmail.com>
+To:     isdn@linux-pingi.de
+Cc:     gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        devel@driverdev.osuosl.org, netdev@vger.kernel.org,
+        Martin Tomes <tomesm@gmail.com>
+Subject: [PATCH] Staging: isdn/gigaset : Fix bare unsigned warnings and trailing lines errors
+Date:   Wed, 21 Aug 2019 15:27:39 +0000
+Message-Id: <1566401259-16921-1-git-send-email-tomesm@gmail.com>
+X-Mailer: git-send-email 1.8.3.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a local endpoint is ceases to be in use, such as when the kafs module
-is unloaded, the kernel will emit an assertion failure if there are any
-outstanding client connections:
+There are many bare use of unsigned warnings and trailing statements should be on next line errors from checkpatch.pl script.
+Change the code by adding 'unsigned int'. Move 'break' statement of 'switch' command to next line.
 
-	rxrpc: Assertion failed
-	------------[ cut here ]------------
-	kernel BUG at net/rxrpc/local_object.c:433!
-
-and even beyond that, will evince other oopses if there are service
-connections still present.
-
-Fix this by:
-
- (1) Removing the triggering of connection reaping when an rxrpc socket is
-     released.  These don't actually clean up the connections anyway - and
-     further, the local endpoint may still be in use through another
-     socket.
-
- (2) Mark the local endpoint as dead when we start the process of tearing
-     it down.
-
- (3) When destroying a local endpoint, strip all of its client connections
-     from the idle list and discard the ref on each that the list was
-     holding.
-
- (4) When destroying a local endpoint, call the service connection reaper
-     directly (rather than through a workqueue) to immediately kill off all
-     outstanding service connections.
-
- (5) Make the service connection reaper reap connections for which the
-     local endpoint is marked dead.
-
-Only after destroying the connections can we close the socket lest we get
-an oops in a workqueue that's looking at a connection or a peer.
-
-Fixes: 3d18cbb7fd0c ("rxrpc: Fix conn expiry timers")
-Signed-off-by: David Howells <dhowells@redhat.com>
-Tested-by: Marc Dionne <marc.dionne@auristor.com>
+Signed-off-by: Martin Tomes <tomesm@gmail.com>
 ---
+ drivers/staging/isdn/gigaset/usb-gigaset.c | 52 ++++++++++++++++++------------
+ 1 file changed, 31 insertions(+), 21 deletions(-)
 
- net/rxrpc/af_rxrpc.c     |    3 ---
- net/rxrpc/ar-internal.h  |    1 +
- net/rxrpc/conn_client.c  |   49 ++++++++++++++++++++++++++++++++++++++++++++++
- net/rxrpc/conn_object.c  |    2 +-
- net/rxrpc/local_object.c |    5 ++++-
- 5 files changed, 55 insertions(+), 5 deletions(-)
-
-diff --git a/net/rxrpc/af_rxrpc.c b/net/rxrpc/af_rxrpc.c
-index 0dbbfd1b6487..d72ddb67bb74 100644
---- a/net/rxrpc/af_rxrpc.c
-+++ b/net/rxrpc/af_rxrpc.c
-@@ -862,7 +862,6 @@ static void rxrpc_sock_destructor(struct sock *sk)
- static int rxrpc_release_sock(struct sock *sk)
+diff --git a/drivers/staging/isdn/gigaset/usb-gigaset.c b/drivers/staging/isdn/gigaset/usb-gigaset.c
+index 1b9b436..d565242 100644
+--- a/drivers/staging/isdn/gigaset/usb-gigaset.c
++++ b/drivers/staging/isdn/gigaset/usb-gigaset.c
+@@ -143,16 +143,16 @@ struct usb_cardstate {
+ 	char			bchars[6];		/* for request 0x19 */
+ };
+ 
+-static inline unsigned tiocm_to_gigaset(unsigned state)
++static inline unsigned int tiocm_to_gigaset(unsigned int state)
  {
- 	struct rxrpc_sock *rx = rxrpc_sk(sk);
--	struct rxrpc_net *rxnet = rxrpc_net(sock_net(&rx->sk));
- 
- 	_enter("%p{%d,%d}", sk, sk->sk_state, refcount_read(&sk->sk_refcnt));
- 
-@@ -898,8 +897,6 @@ static int rxrpc_release_sock(struct sock *sk)
- 	rxrpc_release_calls_on_socket(rx);
- 	flush_workqueue(rxrpc_workqueue);
- 	rxrpc_purge_queue(&sk->sk_receive_queue);
--	rxrpc_queue_work(&rxnet->service_conn_reaper);
--	rxrpc_queue_work(&rxnet->client_conn_reaper);
- 
- 	rxrpc_unuse_local(rx->local);
- 	rx->local = NULL;
-diff --git a/net/rxrpc/ar-internal.h b/net/rxrpc/ar-internal.h
-index a42d6b833675..ef5aa28e679c 100644
---- a/net/rxrpc/ar-internal.h
-+++ b/net/rxrpc/ar-internal.h
-@@ -911,6 +911,7 @@ void rxrpc_disconnect_client_call(struct rxrpc_call *);
- void rxrpc_put_client_conn(struct rxrpc_connection *);
- void rxrpc_discard_expired_client_conns(struct work_struct *);
- void rxrpc_destroy_all_client_connections(struct rxrpc_net *);
-+void rxrpc_clean_up_local_conns(struct rxrpc_local *);
- 
- /*
-  * conn_event.c
-diff --git a/net/rxrpc/conn_client.c b/net/rxrpc/conn_client.c
-index aea82f909c60..2244fb7f53ec 100644
---- a/net/rxrpc/conn_client.c
-+++ b/net/rxrpc/conn_client.c
-@@ -1162,3 +1162,52 @@ void rxrpc_destroy_all_client_connections(struct rxrpc_net *rxnet)
- 
- 	_leave("");
+ 	return ((state & TIOCM_DTR) ? 1 : 0) | ((state & TIOCM_RTS) ? 2 : 0);
  }
-+
-+/*
-+ * Clean up the client connections on a local endpoint.
-+ */
-+void rxrpc_clean_up_local_conns(struct rxrpc_local *local)
-+{
-+	struct rxrpc_connection *conn, *tmp;
-+	struct rxrpc_net *rxnet = local->rxnet;
-+	unsigned int nr_active;
-+	LIST_HEAD(graveyard);
-+
-+	_enter("");
-+
-+	spin_lock(&rxnet->client_conn_cache_lock);
-+	nr_active = rxnet->nr_active_client_conns;
-+
-+	list_for_each_entry_safe(conn, tmp, &rxnet->idle_client_conns,
-+				 cache_link) {
-+		if (conn->params.local == local) {
-+			ASSERTCMP(conn->cache_state, ==, RXRPC_CONN_CLIENT_IDLE);
-+
-+			trace_rxrpc_client(conn, -1, rxrpc_client_discard);
-+			if (!test_and_clear_bit(RXRPC_CONN_EXPOSED, &conn->flags))
-+				BUG();
-+			conn->cache_state = RXRPC_CONN_CLIENT_INACTIVE;
-+			list_move(&conn->cache_link, &graveyard);
-+			nr_active--;
-+		}
-+	}
-+
-+	rxnet->nr_active_client_conns = nr_active;
-+	spin_unlock(&rxnet->client_conn_cache_lock);
-+	ASSERTCMP(nr_active, >=, 0);
-+
-+	spin_lock(&rxnet->client_conn_cache_lock);
-+	while (!list_empty(&graveyard)) {
-+		conn = list_entry(graveyard.next,
-+				  struct rxrpc_connection, cache_link);
-+		list_del_init(&conn->cache_link);
-+		spin_unlock(&rxnet->client_conn_cache_lock);
-+
-+		rxrpc_put_connection(conn);
-+
-+		spin_lock(&rxnet->client_conn_cache_lock);
-+	}
-+	spin_unlock(&rxnet->client_conn_cache_lock);
-+
-+	_leave(" [culled]");
-+}
-diff --git a/net/rxrpc/conn_object.c b/net/rxrpc/conn_object.c
-index 434ef392212b..ed05b6922132 100644
---- a/net/rxrpc/conn_object.c
-+++ b/net/rxrpc/conn_object.c
-@@ -398,7 +398,7 @@ void rxrpc_service_connection_reaper(struct work_struct *work)
- 		if (conn->state == RXRPC_CONN_SERVICE_PREALLOC)
- 			continue;
  
--		if (rxnet->live) {
-+		if (rxnet->live && !conn->params.local->dead) {
- 			idle_timestamp = READ_ONCE(conn->idle_timestamp);
- 			expire_at = idle_timestamp + rxrpc_connection_expiry * HZ;
- 			if (conn->params.local->service_closed)
-diff --git a/net/rxrpc/local_object.c b/net/rxrpc/local_object.c
-index 72a6e12a9304..36587260cabd 100644
---- a/net/rxrpc/local_object.c
-+++ b/net/rxrpc/local_object.c
-@@ -426,11 +426,14 @@ static void rxrpc_local_destroyer(struct rxrpc_local *local)
+-static int gigaset_set_modem_ctrl(struct cardstate *cs, unsigned old_state,
+-				  unsigned new_state)
++static int gigaset_set_modem_ctrl(struct cardstate *cs, unsigned int old_state,
++				  unsigned int new_state)
+ {
+ 	struct usb_device *udev = cs->hw.usb->udev;
+-	unsigned mask, val;
++	unsigned int mask, val;
+ 	int r;
  
- 	_enter("%d", local->debug_id);
+ 	mask = tiocm_to_gigaset(old_state ^ new_state);
+@@ -178,7 +178,7 @@ static int set_value(struct cardstate *cs, u8 req, u16 val)
+ 	int r, r2;
  
-+	local->dead = true;
-+
- 	mutex_lock(&rxnet->local_mutex);
- 	list_del_init(&local->link);
- 	mutex_unlock(&rxnet->local_mutex);
+ 	gig_dbg(DEBUG_USBREQ, "request %02x (%04x)",
+-		(unsigned)req, (unsigned)val);
++		(unsigned int)req, (unsigned int)val);
+ 	r = usb_control_msg(udev, usb_sndctrlpipe(udev, 0), 0x12, 0x41,
+ 			    0xf /*?*/, 0, NULL, 0, 2000 /*?*/);
+ 	/* no idea what this does */
+@@ -191,7 +191,7 @@ static int set_value(struct cardstate *cs, u8 req, u16 val)
+ 			    val, 0, NULL, 0, 2000 /*?*/);
+ 	if (r < 0)
+ 		dev_err(&udev->dev, "error %d on request 0x%02x\n",
+-			-r, (unsigned)req);
++			-r, (unsigned int)req);
  
--	ASSERT(RB_EMPTY_ROOT(&local->client_conns));
-+	rxrpc_clean_up_local_conns(local);
-+	rxrpc_service_connection_reaper(&rxnet->service_conn_reaper);
- 	ASSERT(!local->service);
+ 	r2 = usb_control_msg(udev, usb_sndctrlpipe(udev, 0), 0x19, 0x41,
+ 			     0, 0, cs->hw.usb->bchars, 6, 2000 /*?*/);
+@@ -205,7 +205,7 @@ static int set_value(struct cardstate *cs, u8 req, u16 val)
+  * set the baud rate on the internal serial adapter
+  * using the undocumented parameter setting command
+  */
+-static int gigaset_baud_rate(struct cardstate *cs, unsigned cflag)
++static int gigaset_baud_rate(struct cardstate *cs, unsigned int cflag)
+ {
+ 	u16 val;
+ 	u32 rate;
+@@ -213,16 +213,26 @@ static int gigaset_baud_rate(struct cardstate *cs, unsigned cflag)
+ 	cflag &= CBAUD;
  
- 	if (socket) {
+ 	switch (cflag) {
+-	case    B300: rate =     300; break;
+-	case    B600: rate =     600; break;
+-	case   B1200: rate =    1200; break;
+-	case   B2400: rate =    2400; break;
+-	case   B4800: rate =    4800; break;
+-	case   B9600: rate =    9600; break;
+-	case  B19200: rate =   19200; break;
+-	case  B38400: rate =   38400; break;
+-	case  B57600: rate =   57600; break;
+-	case B115200: rate =  115200; break;
++	case    B300: rate =     300;
++		      break;
++	case    B600: rate =     600;
++		      break;
++	case   B1200: rate =    1200;
++		      break;
++	case   B2400: rate =    2400;
++		      break;
++	case   B4800: rate =    4800;
++		      break;
++	case   B9600: rate =    9600;
++		      break;
++	case  B19200: rate =   19200;
++		      break;
++	case  B38400: rate =   38400;
++		      break;
++	case  B57600: rate =   57600;
++		      break;
++	case B115200: rate =  115200;
++		      break;
+ 	default:
+ 		rate =  9600;
+ 		dev_err(cs->dev, "unsupported baudrate request 0x%x,"
+@@ -345,7 +355,7 @@ static void gigaset_read_int_callback(struct urb *urb)
+ 	struct inbuf_t *inbuf = cs->inbuf;
+ 	int status = urb->status;
+ 	int r;
+-	unsigned numbytes;
++	unsigned int numbytes;
+ 	unsigned char *src;
+ 	unsigned long flags;
+ 
+@@ -357,7 +367,7 @@ static void gigaset_read_int_callback(struct urb *urb)
+ 			if (unlikely(*src))
+ 				dev_warn(cs->dev,
+ 					 "%s: There was no leading 0, but 0x%02x!\n",
+-					 __func__, (unsigned) *src);
++					 __func__, (unsigned int) *src);
+ 			++src; /* skip leading 0x00 */
+ 			--numbytes;
+ 			if (gigaset_fill_inbuf(inbuf, src, numbytes)) {
+@@ -517,7 +527,7 @@ static int gigaset_write_cmd(struct cardstate *cs, struct cmdbuf_t *cb)
+ 
+ static int gigaset_write_room(struct cardstate *cs)
+ {
+-	unsigned bytes;
++	unsigned int bytes;
+ 
+ 	bytes = cs->cmdbytes;
+ 	return bytes < IF_WRITEBUF ? IF_WRITEBUF - bytes : 0;
+@@ -611,7 +621,7 @@ static int write_modem(struct cardstate *cs)
+ 	}
+ 
+ 	/* Copy data to bulk out buffer and transmit data */
+-	count = min(bcs->tx_skb->len, (unsigned) ucs->bulk_out_size);
++	count = min(bcs->tx_skb->len, (unsigned int) ucs->bulk_out_size);
+ 	skb_copy_from_linear_data(bcs->tx_skb, ucs->bulk_out_buffer, count);
+ 	skb_pull(bcs->tx_skb, count);
+ 	ucs->busy = 1;
+-- 
+1.8.3.1
 
