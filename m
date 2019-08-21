@@ -2,90 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EA1B1970D1
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 06:12:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F2347970F6
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 06:20:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727345AbfHUELM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 00:11:12 -0400
-Received: from ajax.cs.uga.edu ([128.192.4.6]:44078 "EHLO ajax.cs.uga.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726150AbfHUELM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 00:11:12 -0400
-Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
-        (authenticated bits=0)
-        by ajax.cs.uga.edu (8.14.4/8.14.4) with ESMTP id x7L4B95u068890
-        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 21 Aug 2019 00:11:10 -0400
-Received: by mail-lj1-f182.google.com with SMTP id e24so769093ljg.11;
-        Tue, 20 Aug 2019 21:11:10 -0700 (PDT)
-X-Gm-Message-State: APjAAAUq0yZzL6KKQVRoSD/MJUT2YKYwNFKyrZDwhnZCArGHxDque/jE
-        Hlxe7elNUqmlR79Bwfc1FqIPCqIVxhjkxtiCQIs=
-X-Google-Smtp-Source: APXvYqyyYoE6BFoFjTkA2zz1wluz3q243WVH3e1WosI+d49h5maVbSQ2ufFUYVzX6TSOO32UnCu5k7eQ/8WRsQuAzG8=
-X-Received: by 2002:a2e:3c12:: with SMTP id j18mr1434819lja.50.1566360669574;
- Tue, 20 Aug 2019 21:11:09 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAAa=b7ft-crBJm+H9U7Bn2dcgfjQsE8o53p2ryBWK3seQoF3Cg@mail.gmail.com>
- <20190815.134230.1028411309377288636.davem@davemloft.net> <CAAa=b7duRXsiVBfzbvHhoU000gGh53Mme3ZKCO5SoiTdgRaXtg@mail.gmail.com>
- <20190815.135111.1048854967874803531.davem@davemloft.net>
-In-Reply-To: <20190815.135111.1048854967874803531.davem@davemloft.net>
+        id S1727433AbfHUEUT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 00:20:19 -0400
+Received: from mail-yb1-f195.google.com ([209.85.219.195]:38127 "EHLO
+        mail-yb1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726409AbfHUEUT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 00:20:19 -0400
+Received: by mail-yb1-f195.google.com with SMTP id j199so484515ybg.5;
+        Tue, 20 Aug 2019 21:20:18 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=8jzbFnGqA4KnJX6O7FP/a3aKVv5OO1v3gxYw/j1lg60=;
+        b=iDlZQ//6KpE0M+iWsT9xArjmVRFoTK46DHXiReyuasjY32uJ370sDvfRv/FJogPKeH
+         E/WRxVTK8+1Mj2zq46fvYIixZKt5FSdr1pXmfPpNqsNX+vLzFjSLdfkdfKcuzTxieLhd
+         a1D/l8IQNcmYt1jEtYNxK2PPZXIprbI0Ev1EQU4+YpERaurQ8RWGQHrwZGK1WFbHv1MB
+         SBf2oh0UfYj5kYhCRMPJ2pMPVxzj3Lh88DOsAnFcYhowkT/ozxB64qvZcU0sgXQBA9tS
+         TBOCtZpBHCyfLkEcKrHOIfp47fTzaw6tXTt4WV4WEKOHU3tZbJiGtCUstIlSmb0HtGfX
+         JCWw==
+X-Gm-Message-State: APjAAAUeYQi/ZfD/cwPjAQ680gNFgU7QyaPXb1pjfPcT1A8p/+Wqz5kU
+        luItFILeWGQn/2NXZGr326E=
+X-Google-Smtp-Source: APXvYqxun6o1suBbDORbO+zSvvMYatMn9aSR2ovHcJ0dyD5Oh4HzSXLAYlD1NEKEjOubMkMMLvs4Jg==
+X-Received: by 2002:a25:4212:: with SMTP id p18mr22478312yba.194.1566361218158;
+        Tue, 20 Aug 2019 21:20:18 -0700 (PDT)
+Received: from localhost.localdomain (24-158-240-219.dhcp.smyr.ga.charter.com. [24.158.240.219])
+        by smtp.gmail.com with ESMTPSA id c203sm4034239ywb.9.2019.08.20.21.20.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 20 Aug 2019 21:20:17 -0700 (PDT)
 From:   Wenwen Wang <wenwen@cs.uga.edu>
-Date:   Wed, 21 Aug 2019 00:10:33 -0400
-X-Gmail-Original-Message-ID: <CAAa=b7fc99q0JTcn2FaBaN4as3U_SMutG7J+AuqSa3xBHaPQ4Q@mail.gmail.com>
-Message-ID: <CAAa=b7fc99q0JTcn2FaBaN4as3U_SMutG7J+AuqSa3xBHaPQ4Q@mail.gmail.com>
-Subject: Re: [PATCH] net: pch_gbe: Fix memory leaks
-To:     David Miller <davem@davemloft.net>
-Cc:     Richard Fontana <rfontana@redhat.com>,
-        Allison Randal <allison@lohutok.net>,
+To:     Wenwen Wang <wenwen@cs.uga.edu>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Richard Fontana <rfontana@redhat.com>,
         Alexios Zavras <alexios.zavras@intel.com>,
+        Allison Randal <allison@lohutok.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Thomas Gleixner <tglx@linutronix.de>,
-        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Wenwen Wang <wenwen@cs.uga.edu>
-Content-Type: text/plain; charset="UTF-8"
+        netdev@vger.kernel.org (open list:NETWORKING DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH v2] net: pch_gbe: Fix memory leaks
+Date:   Tue, 20 Aug 2019 23:20:05 -0500
+Message-Id: <1566361206-5135-1-git-send-email-wenwen@cs.uga.edu>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 15, 2019 at 4:51 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Wenwen Wang <wenwen@cs.uga.edu>
-> Date: Thu, 15 Aug 2019 16:46:05 -0400
->
-> > On Thu, Aug 15, 2019 at 4:42 PM David Miller <davem@davemloft.net> wrote:
-> >>
-> >> From: Wenwen Wang <wenwen@cs.uga.edu>
-> >> Date: Thu, 15 Aug 2019 16:03:39 -0400
-> >>
-> >> > On Thu, Aug 15, 2019 at 3:34 PM David Miller <davem@davemloft.net> wrote:
-> >> >>
-> >> >> From: Wenwen Wang <wenwen@cs.uga.edu>
-> >> >> Date: Tue, 13 Aug 2019 20:33:45 -0500
-> >> >>
-> >> >> > In pch_gbe_set_ringparam(), if netif_running() returns false, 'tx_old' and
-> >> >> > 'rx_old' are not deallocated, leading to memory leaks. To fix this issue,
-> >> >> > move the free statements after the if branch.
-> >> >> >
-> >> >> > Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
-> >> >>
-> >> >> Why would they be "deallocated"?  They are still assigned to
-> >> >> adapter->tx_ring and adapter->rx_ring.
-> >> >
-> >> > 'adapter->tx_ring' and 'adapter->rx_ring' has been covered by newly
-> >> > allocated 'txdr' and 'rxdr' respectively before this if statement.
-> >>
-> >> That only happens inside of the if() statement, that's why rx_old and
-> >> tx_old are only freed in that code path.
-> >
-> > That happens not only inside of the if statement, but also before the
-> > if statement, just after 'txdr' and 'rxdr' are allocated.
->
-> Then the assignments inside of the if() statement are redundant.
->
-> Something doesn't add up here, please make the code consistent.
+In pch_gbe_set_ringparam(), if netif_running() returns false, 'tx_old' and
+'rx_old' are not deallocated, leading to memory leaks. To fix this issue,
+move the free statements to the outside of the if() statement.
 
-Thanks for your suggestion! I will remove the assignments inside of
-the if() statement.
+Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+---
+ drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_ethtool.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-Wenwen
+diff --git a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_ethtool.c b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_ethtool.c
+index 1a3008e..cb43919 100644
+--- a/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_ethtool.c
++++ b/drivers/net/ethernet/oki-semi/pch_gbe/pch_gbe_ethtool.c
+@@ -340,12 +340,10 @@ static int pch_gbe_set_ringparam(struct net_device *netdev,
+ 			goto err_setup_tx;
+ 		pch_gbe_free_rx_resources(adapter, rx_old);
+ 		pch_gbe_free_tx_resources(adapter, tx_old);
+-		kfree(tx_old);
+-		kfree(rx_old);
+-		adapter->rx_ring = rxdr;
+-		adapter->tx_ring = txdr;
+ 		err = pch_gbe_up(adapter);
+ 	}
++	kfree(tx_old);
++	kfree(rx_old);
+ 	return err;
+ 
+ err_setup_tx:
+-- 
+2.7.4
+
