@@ -2,56 +2,56 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AF9E980D6
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:59:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DE32D980D9
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 19:00:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729657AbfHUQ7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 12:59:44 -0400
-Received: from mail-pl1-f169.google.com ([209.85.214.169]:44585 "EHLO
-        mail-pl1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726252AbfHUQ7o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:59:44 -0400
-Received: by mail-pl1-f169.google.com with SMTP id t14so1629475plr.11;
-        Wed, 21 Aug 2019 09:59:43 -0700 (PDT)
+        id S1729695AbfHUQ74 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 12:59:56 -0400
+Received: from mail-pf1-f173.google.com ([209.85.210.173]:42146 "EHLO
+        mail-pf1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726252AbfHUQ74 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:59:56 -0400
+Received: by mail-pf1-f173.google.com with SMTP id i30so1808243pfk.9;
+        Wed, 21 Aug 2019 09:59:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=4uOROZjzWLE63MFAiLg2kSsfaU3fOmnwbM8CBKbVHmw=;
-        b=EBhtQtcZEDIlim8PjUJDPh732WKNhbgoaOf4kKFyGqE51t7flztG8HaXocNLReVX7A
-         /MuadADeisUHJoTDwJpUZVBDpfxWGo5AAtVhyRU1BcI5OTaz2Pmk0kzOkB5pPTfMZ4uL
-         T7/WvB0K5e2Zk8cY60uGqdGuMUX4HAXi/abUgGDMf3cRt72Ncw6UbZupD8WQQmbiJ9Qa
-         QPlIs4bY5xsAwbfyrwAQyRjbsLWIkFfLnlhUJEd9/doXLJo5qRsPAf+r35w6lEzQRdVL
-         MnqoEXZXinimreO9YEM5MBcNihPtiU4foAA+6y98W1rI8qZPisIpbIzw/2cU99R95czc
-         EtCA==
+        bh=rU0HO2JJtDqURYnaTtFk9cmW0rQPqsr0HzcEm0KVNk0=;
+        b=Z9oC5VfzqQvaSI/28mHfZ8UqJyJHY7XZ9RBXXkTHXv4HV4/4bKmPYRxILB3BXuenmH
+         ZNHLKsFVLOyuN62vYcBZd0DLXTOpOPW/3XiPNSaUln4e5DF4bIDGdlGxNe2doHF5j7AA
+         l/qRZ7WUztfqBcg0oxSjGKP4zoqzmxXVRqpclOqMvr0D3+HseM0HTdYi3vqAViWxVfzJ
+         Sfi1hLmKDitDVWFDzgAW14TFZ/q6hUvYSmv1Wmjow2YuYxCRoGSa0tkykoBlDISmIuJs
+         /Bjvo7JIIBh4JhDGyn/remiZg1vlDezNi6GQnWJypyDAlwzO/qCyvTMiktdE7tv9UmTd
+         n4Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=4uOROZjzWLE63MFAiLg2kSsfaU3fOmnwbM8CBKbVHmw=;
-        b=dmyY9aghakYWkm764ZwjYDVN4AeYmqOSRGmicuDlhILjll8NhniVOeoonxEJtzoT5k
-         90aWYh5c2DDa5vtBtNYGF3VanuygOLRbd08+ufI+QRReyK/2W5Yw+vXgE4vY2Wx2drOc
-         di5FIp6QTzwZXsxzWwMn9BT74WUO+9FeHt4pZtYou6+FhcQjPI8fN2sxioJR+TCuwDEB
-         HhMdqjeaQrfWwh7Dp/wkBgr5SQgI4tj992U5XibdDNtEMd262fsFxKZvjW2Hn9610p4v
-         D+Vw19Gj9cyloBEMVIoao3uXkHeJFCLKQZ1cFG/2r+SIDODK0AFO/g4nrTkT4SOHDOL0
-         7kXg==
-X-Gm-Message-State: APjAAAUAZ0iZq3rUVa1D4rHUghgo8RdkuvcVUzYTqfuuXobKL0ovQI9q
-        Jw7z/uh89Yn5PHV0ax4JJOaMs80J
-X-Google-Smtp-Source: APXvYqzYK6owRbgloi5jpaLE+QsvybLU+/HLEWR8mBFcnULUUMf0laEpTnH8XWF1sQWZJyW+GJPcBg==
-X-Received: by 2002:a17:902:9698:: with SMTP id n24mr35845747plp.14.1566406782766;
-        Wed, 21 Aug 2019 09:59:42 -0700 (PDT)
+        bh=rU0HO2JJtDqURYnaTtFk9cmW0rQPqsr0HzcEm0KVNk0=;
+        b=L4TPmNJTnkxYmeBV51OeLZXUl3zvYzomS/cF+UJWjJ1zSUEQ6oHmmsL1G3VWxoa8a4
+         ia1BklJtwC+ohxJLK1kL5oTqI7MDIbTlyhvEnEMQggX8kOY6JDkNjMEg6mLTA11Csf/x
+         8Ir+ZXNcZ1qfi83ODAP18ephI0R+XO5nvrsn7JC/Dx17S5b3AawuYsL4S2vHglQv69Gt
+         ChR8Iel+ntGwtCg6jB7/y1thgT5jJlVqXWOZ/UiVwscpgtc6vTzBG7wgO6CXHFtsOCk2
+         3e1vq0ZdWYeKGf8z9LgqpdKk9NDE5OpHy/gHM4reF+oQiRAWhXMni1OhF24C6li7zIcV
+         DkIg==
+X-Gm-Message-State: APjAAAXMr/DTYbEABj56twy3vYcLnNUfJkdZVONJeIMmpAqRiSfPsypM
+        BzjXaZYv3Q1Btzt19gCT0BoFAFUJ
+X-Google-Smtp-Source: APXvYqw0TUNBdp4O0vuq8L77jFqVIDmfTCzGkVSQxgcino3pZSOf2uAomBaFQnoK8jK9f+yS4RQl2A==
+X-Received: by 2002:aa7:9524:: with SMTP id c4mr37692765pfp.225.1566406795146;
+        Wed, 21 Aug 2019 09:59:55 -0700 (PDT)
 Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id m145sm28044644pfd.68.2019.08.21.09.59.41
+        by smtp.googlemail.com with ESMTPSA id q10sm29466437pfl.8.2019.08.21.09.59.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 21 Aug 2019 09:59:42 -0700 (PDT)
-Subject: Re: [PATCH net-next] net: bcmgenet: use
+        Wed, 21 Aug 2019 09:59:54 -0700 (PDT)
+Subject: Re: [PATCH net-next] net: systemport: use
  devm_platform_ioremap_resource() to simplify code
 To:     YueHaibing <yuehaibing@huawei.com>, davem@davemloft.net,
         opendmb@gmail.com, bcm-kernel-feedback-list@broadcom.com
 Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-References: <20190821134131.57780-1-yuehaibing@huawei.com>
+References: <20190821134613.23276-1-yuehaibing@huawei.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -108,12 +108,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <fc2639df-2930-46a9-537c-01930d2a2252@gmail.com>
-Date:   Wed, 21 Aug 2019 09:59:39 -0700
+Message-ID: <e1782f4c-a564-07e6-0d13-ccda0fc99e15@gmail.com>
+Date:   Wed, 21 Aug 2019 09:59:53 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190821134131.57780-1-yuehaibing@huawei.com>
+In-Reply-To: <20190821134613.23276-1-yuehaibing@huawei.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -122,7 +122,7 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/21/19 6:41 AM, YueHaibing wrote:
+On 8/21/19 6:46 AM, YueHaibing wrote:
 > Use devm_platform_ioremap_resource() to simplify the code a bit.
 > This is detected by coccinelle.
 > 
