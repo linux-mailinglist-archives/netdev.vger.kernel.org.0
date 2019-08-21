@@ -2,92 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 445F79709E
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 05:59:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EA1B1970D1
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 06:12:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727201AbfHUD7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 23:59:23 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:33608 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726948AbfHUD7X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 23:59:23 -0400
-Received: by mail-pf1-f193.google.com with SMTP id g2so521146pfq.0
-        for <netdev@vger.kernel.org>; Tue, 20 Aug 2019 20:59:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=gL9uEZXrthrLma93xHlhhVz0u+gXVl/manNEm7zD+Hs=;
-        b=JOuRnlbasYDvubZXZRGpOIXMQtegVKn3gQu3QE+fy5Lh4ogcdrcy6BmtM+2SiJ+myc
-         W7SBj+7SuNix4ZHavSO/Ogk7UqN99Qd4yg3GTt0tRXdG7DNPlY5Gjh606MMOMLPF57sC
-         rf3jdU4X4fx6K4dYI38rerZxicArGNJWb9rRs78f9xYcza03NJQrxUfLtJ5W0X8FNAKu
-         mkaHJtSwYPco0TA8zCEx06agSMEN1bb0ZkCZOgJ1T6fS8v2yLbgVBn+giF31LnpQ/byk
-         XjTqPpr76lLM5HTppAIIpIboQqFBGtZGNDB1P+qXQv8laY23DVxkHPpmmaEQHlKXw4zL
-         jp+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=gL9uEZXrthrLma93xHlhhVz0u+gXVl/manNEm7zD+Hs=;
-        b=ogtFe7NkZpmM0i+Y63SHUt8nu97vmx0OBK0+WbXq7lMJT66grAl8Qnh4BZvTeY4sGk
-         7B3fCtQonyUOplg+QJwqVcOfKG7L7EUCd5SmwkMTZ6wefKgCop6ZF336ikToO83SRTSG
-         sd+IYhm+zlbbmX1bqhUz8GCZBAw4lYlxHm9YDhqW6aMN4vPeXkbXLZO89GShDMieD/AJ
-         A0eIPhMi/hwJwmuXEN8+8siIdbmSYaT0hD3NTnHDeu/E/8CUHjoPb+PCyiCd1UokmHDx
-         R+tRK19dGDKi2ZMmh8/i27HvMMR9eAOJ9tr9TdLjHLZ1185b4jUhKfMqkDrS+5fFYBRx
-         FH2A==
-X-Gm-Message-State: APjAAAUS+re89KqUNN3zdYwERqtUq7PawhuaO77WLqFLM+upGWLHCuAJ
-        L7xILfwKIoulqsMF7rsRdeq0vg==
-X-Google-Smtp-Source: APXvYqwaJy44xLUcomlnQMaDUP+YXFX79GVWjI+mmDWLVhb2A0+lU0o3maK/r4+B08ecBIRY3EXgPw==
-X-Received: by 2002:aa7:9609:: with SMTP id q9mr32391565pfg.232.1566359962596;
-        Tue, 20 Aug 2019 20:59:22 -0700 (PDT)
-Received: from cakuba.netronome.com ([2601:646:8e00:e50::2])
-        by smtp.gmail.com with ESMTPSA id i9sm32590345pgo.46.2019.08.20.20.59.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Aug 2019 20:59:22 -0700 (PDT)
-Date:   Tue, 20 Aug 2019 20:59:19 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 08/38] nfp: Convert to XArray
-Message-ID: <20190820205919.4a75da2e@cakuba.netronome.com>
-In-Reply-To: <20190820223259.22348-9-willy@infradead.org>
-References: <20190820223259.22348-1-willy@infradead.org>
- <20190820223259.22348-9-willy@infradead.org>
-Organization: Netronome Systems, Ltd.
+        id S1727345AbfHUELM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 00:11:12 -0400
+Received: from ajax.cs.uga.edu ([128.192.4.6]:44078 "EHLO ajax.cs.uga.edu"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726150AbfHUELM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 00:11:12 -0400
+Received: from mail-lj1-f182.google.com (mail-lj1-f182.google.com [209.85.208.182])
+        (authenticated bits=0)
+        by ajax.cs.uga.edu (8.14.4/8.14.4) with ESMTP id x7L4B95u068890
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 21 Aug 2019 00:11:10 -0400
+Received: by mail-lj1-f182.google.com with SMTP id e24so769093ljg.11;
+        Tue, 20 Aug 2019 21:11:10 -0700 (PDT)
+X-Gm-Message-State: APjAAAUq0yZzL6KKQVRoSD/MJUT2YKYwNFKyrZDwhnZCArGHxDque/jE
+        Hlxe7elNUqmlR79Bwfc1FqIPCqIVxhjkxtiCQIs=
+X-Google-Smtp-Source: APXvYqyyYoE6BFoFjTkA2zz1wluz3q243WVH3e1WosI+d49h5maVbSQ2ufFUYVzX6TSOO32UnCu5k7eQ/8WRsQuAzG8=
+X-Received: by 2002:a2e:3c12:: with SMTP id j18mr1434819lja.50.1566360669574;
+ Tue, 20 Aug 2019 21:11:09 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+References: <CAAa=b7ft-crBJm+H9U7Bn2dcgfjQsE8o53p2ryBWK3seQoF3Cg@mail.gmail.com>
+ <20190815.134230.1028411309377288636.davem@davemloft.net> <CAAa=b7duRXsiVBfzbvHhoU000gGh53Mme3ZKCO5SoiTdgRaXtg@mail.gmail.com>
+ <20190815.135111.1048854967874803531.davem@davemloft.net>
+In-Reply-To: <20190815.135111.1048854967874803531.davem@davemloft.net>
+From:   Wenwen Wang <wenwen@cs.uga.edu>
+Date:   Wed, 21 Aug 2019 00:10:33 -0400
+X-Gmail-Original-Message-ID: <CAAa=b7fc99q0JTcn2FaBaN4as3U_SMutG7J+AuqSa3xBHaPQ4Q@mail.gmail.com>
+Message-ID: <CAAa=b7fc99q0JTcn2FaBaN4as3U_SMutG7J+AuqSa3xBHaPQ4Q@mail.gmail.com>
+Subject: Re: [PATCH] net: pch_gbe: Fix memory leaks
+To:     David Miller <davem@davemloft.net>
+Cc:     Richard Fontana <rfontana@redhat.com>,
+        Allison Randal <allison@lohutok.net>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Wenwen Wang <wenwen@cs.uga.edu>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Aug 2019 15:32:29 -0700, Matthew Wilcox wrote:
-> From: "Matthew Wilcox (Oracle)" <willy@infradead.org>
->=20
-> A minor change in semantics where we simply store into the XArray rather
-> than insert; this only matters if there could already be something stored
-> at that index, and from my reading of the code that can't happen.
->=20
-> Use xa_for_each() rather than xas_for_each() as none of these loops
-> appear to be performance-critical.
->=20
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+On Thu, Aug 15, 2019 at 4:51 PM David Miller <davem@davemloft.net> wrote:
+>
+> From: Wenwen Wang <wenwen@cs.uga.edu>
+> Date: Thu, 15 Aug 2019 16:46:05 -0400
+>
+> > On Thu, Aug 15, 2019 at 4:42 PM David Miller <davem@davemloft.net> wrote:
+> >>
+> >> From: Wenwen Wang <wenwen@cs.uga.edu>
+> >> Date: Thu, 15 Aug 2019 16:03:39 -0400
+> >>
+> >> > On Thu, Aug 15, 2019 at 3:34 PM David Miller <davem@davemloft.net> wrote:
+> >> >>
+> >> >> From: Wenwen Wang <wenwen@cs.uga.edu>
+> >> >> Date: Tue, 13 Aug 2019 20:33:45 -0500
+> >> >>
+> >> >> > In pch_gbe_set_ringparam(), if netif_running() returns false, 'tx_old' and
+> >> >> > 'rx_old' are not deallocated, leading to memory leaks. To fix this issue,
+> >> >> > move the free statements after the if branch.
+> >> >> >
+> >> >> > Signed-off-by: Wenwen Wang <wenwen@cs.uga.edu>
+> >> >>
+> >> >> Why would they be "deallocated"?  They are still assigned to
+> >> >> adapter->tx_ring and adapter->rx_ring.
+> >> >
+> >> > 'adapter->tx_ring' and 'adapter->rx_ring' has been covered by newly
+> >> > allocated 'txdr' and 'rxdr' respectively before this if statement.
+> >>
+> >> That only happens inside of the if() statement, that's why rx_old and
+> >> tx_old are only freed in that code path.
+> >
+> > That happens not only inside of the if statement, but also before the
+> > if statement, just after 'txdr' and 'rxdr' are allocated.
+>
+> Then the assignments inside of the if() statement are redundant.
+>
+> Something doesn't add up here, please make the code consistent.
 
-Looks reasonable (indeed IIRC there should not be anything at the
-index we try to store to). I'll try to test tomorrow (CCing maintainers
-could speed things up a little.. =F0=9F=A4=AD)
+Thanks for your suggestion! I will remove the assignments inside of
+the if() statement.
 
-> @@ -285,9 +275,9 @@ static void
->  nfp_abm_qdisc_clear_mq(struct net_device *netdev, struct nfp_abm_link *a=
-link,
->  		       struct nfp_qdisc *qdisc)
->  {
-> -	struct radix_tree_iter iter;
->  	unsigned int mq_refs =3D 0;
-> -	void __rcu **slot;
-> +	unsigned long index;
-> +	struct nfp_qdisc *mq;
-
-Could you keep the variables sorted longest to shortest as is customary
-in networking code if you respin?
+Wenwen
