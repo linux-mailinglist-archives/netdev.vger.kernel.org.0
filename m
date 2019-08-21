@@ -2,104 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FCB1986C4
+	by mail.lfdr.de (Postfix) with ESMTP id 89643986C5
 	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729114AbfHUVqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 17:46:00 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:33068 "EHLO mx1.redhat.com"
+        id S1730953AbfHUVqC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 17:46:02 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:52380 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727874AbfHUVqA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 17:46:00 -0400
+        id S1727874AbfHUVqB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 17:46:01 -0400
 Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7BFC130821C2;
-        Wed, 21 Aug 2019 21:45:59 +0000 (UTC)
+        by mx1.redhat.com (Postfix) with ESMTPS id E0651307D921;
+        Wed, 21 Aug 2019 21:46:00 +0000 (UTC)
 Received: from hog.localdomain, (ovpn-204-30.brq.redhat.com [10.40.204.30])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 0CC0E194B9;
-        Wed, 21 Aug 2019 21:45:57 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C9E85194B9;
+        Wed, 21 Aug 2019 21:45:59 +0000 (UTC)
 From:   Sabrina Dubroca <sd@queasysnail.net>
 To:     netdev@vger.kernel.org
 Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH ipsec-next 0/7] ipsec: add TCP encapsulation support (RFC 8229)
-Date:   Wed, 21 Aug 2019 23:46:18 +0200
-Message-Id: <cover.1566395202.git.sd@queasysnail.net>
+Subject: [PATCH ipsec-next 1/7] net: add queue argument to __skb_wait_for_more_packets and __skb_{,try_}recv_datagram
+Date:   Wed, 21 Aug 2019 23:46:19 +0200
+Message-Id: <46946935e3faf51447443c9504d56c5eba49bef2.1566395202.git.sd@queasysnail.net>
+In-Reply-To: <cover.1566395202.git.sd@queasysnail.net>
+References: <cover.1566395202.git.sd@queasysnail.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Wed, 21 Aug 2019 21:45:59 +0000 (UTC)
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.48]); Wed, 21 Aug 2019 21:46:00 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patchset introduces support for TCP encapsulation of IKE and ESP
-messages, as defined by RFC 8229 [0]. It is an evolution of what
-Herbert Xu proposed in January 2018 [1] that addresses the main
-criticism against it, by not interfering with the TCP implementation
-at all. The networking stack now has infrastructure for this: TCP ULPs
-and Stream Parsers.
+This will be used by ESP over TCP to handle the queue of IKE messages.
 
-The first patches are preparation and refactoring, and the final patch
-adds the feature.
+Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
+---
+ include/linux/skbuff.h | 11 ++++++++---
+ net/core/datagram.c    | 26 ++++++++++++++++----------
+ net/ipv4/udp.c         |  3 ++-
+ net/unix/af_unix.c     |  7 ++++---
+ 4 files changed, 30 insertions(+), 17 deletions(-)
 
-The main omission in this submission is IPv6 support. ESP
-encapsulation over UDP with IPv6 is currently not supported in the
-kernel either, as UDP encapsulation is aimed at NAT traversal, and NAT
-is not frequently used with IPv6.
-
-Some of the code is taken directly, or slightly modified, from Herbert
-Xu's original submission [1]. The ULP and strparser pieces are
-new. This work was presented and discussed at the IPsec workshop and
-netdev 0x13 conference [2] in Prague, last March.
-
-An equivalent of patch #1 (skbuff: Avoid sleeping in
-skb_send_sock_locked) is already present in other trees (but not
-ipsec-next) as commit bd95e678e0f6 ("bpf: sockmap, fix use after free
-from sleep in psock backlog workqueue"), I'm only including it here so
-that this patchset works correctly on top of ipsec-next/master.
-
-No changes in the patchset since the RFC.
-
-[0] https://tools.ietf.org/html/rfc8229
-[1] https://patchwork.ozlabs.org/patch/859107/
-[2] https://netdevconf.org/0x13/session.html?talk-ipsec-encap
-
-Herbert Xu (1):
-  skbuff: Avoid sleeping in skb_send_sock_locked
-
-Sabrina Dubroca (6):
-  net: add queue argument to __skb_wait_for_more_packets and
-    __skb_{,try_}recv_datagram
-  xfrm: introduce xfrm_trans_queue_net
-  xfrm: add route lookup to xfrm4_rcv_encap
-  esp4: prepare esp_input_done2 for non-UDP encapsulation
-  esp4: split esp_output_udp_encap and introduce esp_output_encap
-  xfrm: add espintcp (RFC 8229)
-
- include/linux/skbuff.h    |  11 +-
- include/net/espintcp.h    |  38 +++
- include/net/xfrm.h        |   4 +
- include/uapi/linux/udp.h  |   1 +
- net/core/datagram.c       |  26 +-
- net/core/skbuff.c         |   1 +
- net/ipv4/esp4.c           | 262 ++++++++++++++++++--
- net/ipv4/udp.c            |   3 +-
- net/ipv4/xfrm4_protocol.c |   9 +
- net/unix/af_unix.c        |   7 +-
- net/xfrm/Kconfig          |   9 +
- net/xfrm/Makefile         |   1 +
- net/xfrm/espintcp.c       | 505 ++++++++++++++++++++++++++++++++++++++
- net/xfrm/xfrm_input.c     |  21 +-
- net/xfrm/xfrm_policy.c    |   7 +
- net/xfrm/xfrm_state.c     |   3 +
- 16 files changed, 862 insertions(+), 46 deletions(-)
- create mode 100644 include/net/espintcp.h
- create mode 100644 net/xfrm/espintcp.c
-
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index 98ff5ac98caa..149c542115a6 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -3377,7 +3377,8 @@ static inline void skb_frag_list_init(struct sk_buff *skb)
+ 	for (iter = skb_shinfo(skb)->frag_list; iter; iter = iter->next)
+ 
+ 
+-int __skb_wait_for_more_packets(struct sock *sk, int *err, long *timeo_p,
++int __skb_wait_for_more_packets(struct sock *sk, struct sk_buff_head *queue,
++				int *err, long *timeo_p,
+ 				const struct sk_buff *skb);
+ struct sk_buff *__skb_try_recv_from_queue(struct sock *sk,
+ 					  struct sk_buff_head *queue,
+@@ -3386,12 +3387,16 @@ struct sk_buff *__skb_try_recv_from_queue(struct sock *sk,
+ 							   struct sk_buff *skb),
+ 					  int *off, int *err,
+ 					  struct sk_buff **last);
+-struct sk_buff *__skb_try_recv_datagram(struct sock *sk, unsigned flags,
++struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
++					struct sk_buff_head *queue,
++					unsigned int flags,
+ 					void (*destructor)(struct sock *sk,
+ 							   struct sk_buff *skb),
+ 					int *off, int *err,
+ 					struct sk_buff **last);
+-struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned flags,
++struct sk_buff *__skb_recv_datagram(struct sock *sk,
++				    struct sk_buff_head *sk_queue,
++				    unsigned int flags,
+ 				    void (*destructor)(struct sock *sk,
+ 						       struct sk_buff *skb),
+ 				    int *off, int *err);
+diff --git a/net/core/datagram.c b/net/core/datagram.c
+index 45a162ef5e02..5fe681e1f4ae 100644
+--- a/net/core/datagram.c
++++ b/net/core/datagram.c
+@@ -84,7 +84,8 @@ static int receiver_wake_function(wait_queue_entry_t *wait, unsigned int mode, i
+ /*
+  * Wait for the last received packet to be different from skb
+  */
+-int __skb_wait_for_more_packets(struct sock *sk, int *err, long *timeo_p,
++int __skb_wait_for_more_packets(struct sock *sk, struct sk_buff_head *queue,
++				int *err, long *timeo_p,
+ 				const struct sk_buff *skb)
+ {
+ 	int error;
+@@ -97,7 +98,7 @@ int __skb_wait_for_more_packets(struct sock *sk, int *err, long *timeo_p,
+ 	if (error)
+ 		goto out_err;
+ 
+-	if (sk->sk_receive_queue.prev != skb)
++	if (queue->prev != skb)
+ 		goto out;
+ 
+ 	/* Socket shut down? */
+@@ -241,13 +242,14 @@ struct sk_buff *__skb_try_recv_from_queue(struct sock *sk,
+  *	quite explicitly by POSIX 1003.1g, don't change them without having
+  *	the standard around please.
+  */
+-struct sk_buff *__skb_try_recv_datagram(struct sock *sk, unsigned int flags,
++struct sk_buff *__skb_try_recv_datagram(struct sock *sk,
++					struct sk_buff_head *queue,
++					unsigned int flags,
+ 					void (*destructor)(struct sock *sk,
+ 							   struct sk_buff *skb),
+ 					int *off, int *err,
+ 					struct sk_buff **last)
+ {
+-	struct sk_buff_head *queue = &sk->sk_receive_queue;
+ 	struct sk_buff *skb;
+ 	unsigned long cpu_flags;
+ 	/*
+@@ -278,7 +280,7 @@ struct sk_buff *__skb_try_recv_datagram(struct sock *sk, unsigned int flags,
+ 			break;
+ 
+ 		sk_busy_loop(sk, flags & MSG_DONTWAIT);
+-	} while (sk->sk_receive_queue.prev != *last);
++	} while (queue->prev != *last);
+ 
+ 	error = -EAGAIN;
+ 
+@@ -288,7 +290,9 @@ struct sk_buff *__skb_try_recv_datagram(struct sock *sk, unsigned int flags,
+ }
+ EXPORT_SYMBOL(__skb_try_recv_datagram);
+ 
+-struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned int flags,
++struct sk_buff *__skb_recv_datagram(struct sock *sk,
++				    struct sk_buff_head *sk_queue,
++				    unsigned int flags,
+ 				    void (*destructor)(struct sock *sk,
+ 						       struct sk_buff *skb),
+ 				    int *off, int *err)
+@@ -299,15 +303,16 @@ struct sk_buff *__skb_recv_datagram(struct sock *sk, unsigned int flags,
+ 	timeo = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+ 
+ 	do {
+-		skb = __skb_try_recv_datagram(sk, flags, destructor, off, err,
+-					      &last);
++		skb = __skb_try_recv_datagram(sk, sk_queue, flags, destructor,
++					      off, err, &last);
+ 		if (skb)
+ 			return skb;
+ 
+ 		if (*err != -EAGAIN)
+ 			break;
+ 	} while (timeo &&
+-		!__skb_wait_for_more_packets(sk, err, &timeo, last));
++		 !__skb_wait_for_more_packets(sk, sk_queue, err,
++					      &timeo, last));
+ 
+ 	return NULL;
+ }
+@@ -318,7 +323,8 @@ struct sk_buff *skb_recv_datagram(struct sock *sk, unsigned int flags,
+ {
+ 	int off = 0;
+ 
+-	return __skb_recv_datagram(sk, flags | (noblock ? MSG_DONTWAIT : 0),
++	return __skb_recv_datagram(sk, &sk->sk_receive_queue,
++				   flags | (noblock ? MSG_DONTWAIT : 0),
+ 				   NULL, &off, err);
+ }
+ EXPORT_SYMBOL(skb_recv_datagram);
+diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+index 8fb250ed53d4..40067fc4c82b 100644
+--- a/net/ipv4/udp.c
++++ b/net/ipv4/udp.c
+@@ -1690,7 +1690,8 @@ struct sk_buff *__skb_recv_udp(struct sock *sk, unsigned int flags,
+ 
+ 		/* sk_queue is empty, reader_queue may contain peeked packets */
+ 	} while (timeo &&
+-		 !__skb_wait_for_more_packets(sk, &error, &timeo,
++		 !__skb_wait_for_more_packets(sk, &sk->sk_receive_queue,
++					      &error, &timeo,
+ 					      (struct sk_buff *)sk_queue));
+ 
+ 	*err = error;
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index e68d7454f2e3..91c1ffd82ff9 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -2053,8 +2053,8 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
+ 		mutex_lock(&u->iolock);
+ 
+ 		skip = sk_peek_offset(sk, flags);
+-		skb = __skb_try_recv_datagram(sk, flags, NULL, &skip, &err,
+-					      &last);
++		skb = __skb_try_recv_datagram(sk, &sk->sk_receive_queue, flags,
++					      NULL, &skip, &err, &last);
+ 		if (skb)
+ 			break;
+ 
+@@ -2063,7 +2063,8 @@ static int unix_dgram_recvmsg(struct socket *sock, struct msghdr *msg,
+ 		if (err != -EAGAIN)
+ 			break;
+ 	} while (timeo &&
+-		 !__skb_wait_for_more_packets(sk, &err, &timeo, last));
++		 !__skb_wait_for_more_packets(sk, &sk->sk_receive_queue,
++					      &err, &timeo, last));
+ 
+ 	if (!skb) { /* implies iolock unlocked */
+ 		unix_state_lock(sk);
 -- 
 2.22.0
 
