@@ -2,118 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AE4F9810E
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 19:12:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F076498122
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 19:21:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729809AbfHURLw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 13:11:52 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35369 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728303AbfHURLw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 13:11:52 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n4so1680695pgv.2
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 10:11:51 -0700 (PDT)
+        id S1728161AbfHURVE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 13:21:04 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:45484 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727211AbfHURVD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 13:21:03 -0400
+Received: by mail-lj1-f194.google.com with SMTP id l1so2863948lji.12
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 10:21:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fomichev-me.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9sz1HR21ZNE/lPIudnqu5o8TGKBNgdHKG73vNNFPHmI=;
-        b=Fa8t/OgmzCblhcW0o6sC00GT6IWfbpGePL4EyWVNYxnE/d7D5mascN+XlC6W8gby/a
-         4N3J2BHr0Babr0Pxsx35uRY1AtMJJJoQ8TrWovKBrj2GXlC6VaAniCWZ/DW8zvPlM9NQ
-         kBUKWMx0Y64Epfq1IjN0pOEBGg/3N+cfcXw0pzw1Be4Nca15oSz6I8M7AC1wpbo7YWY1
-         rHbM0yAneaqcjJZj4Rr4Acf1XpK6H0wdgW9Uj5lhAYZ+xc4K3R36q0qy2afILO8PVkfK
-         CwVUDa8Qn4kvVnP6OZvHoxHmeW6i8+c6aFqmhdXkJRAEpbktbhh/LHHfJh87sq1zjwAL
-         f0NA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Loebk7nqt8jK3yo5T1SFNGvSf6Q2eyzrKOALthSTcXw=;
+        b=DMioMD5Ob1w4wHbO0g2uiESupxvczUSyfR6jn0FI/CZwyPmJTTjh5qIaWOuqIkaQoZ
+         0h5Fkr7KqZk3fQT4xGtMSvoEdaDEshLo09GH/bznvSQCoyWabSjFzaaoX80kaz5MJLDT
+         ACxoScmvQH/ybg2Yft/rMs8ZJKo95bx8LX95+LZCLqqY1TLPyktPGOuPrrYKjaAczJo8
+         gI8y2mCoL3RT3iZaTJc02BDcBoEQyx1f1SurScPMpZGnXqAQfINtNmHtgABc2MpKX4Gh
+         KttrxbtE9MX58thM25Z7C7Mfkv8fsYxvnywC3cwoqvUWdMH2GKHMoANL/+qQbD/ObFB+
+         kcJg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9sz1HR21ZNE/lPIudnqu5o8TGKBNgdHKG73vNNFPHmI=;
-        b=LAqt+qSK4y0FRGMIYoHzRUzS5l5EVcYezhp00W+ssjv+DZOG2WRcATxtN5rerH9iEu
-         58D/+YfsQwrdtDh5e+vQVru4PAE0LZDKjFF4g0LPS9s4IMxXW2UKI/IqiTdMt+kZ9dKO
-         4E1dEw7XuBBHHNUwnXwVc9mMmdl2bDfRml68rEOcuoczIXgEpINn3uVzvxR4wNDKpjaO
-         5IHcMege3mCpha9Of4n2Bxtvq6m3Ie7ug1pMaNFtuAnPwqTLyzE4oOpnA+L57KXpJiFJ
-         fLnh7ip5yjU6Mf97SosBQMGXO4C1vyFgihzRYsttIYmbFfvzQZWJBOjKvJGvo+0SwWVQ
-         uxOg==
-X-Gm-Message-State: APjAAAVjOBF2e6WZ2Kx8AL0MAt/k5eo3TJZNj1OHoZu16TLYA/Sf8Z4D
-        JruifuGnAc4CszziAo64trJNZw==
-X-Google-Smtp-Source: APXvYqwNbinWRLDaw/4XOTedS/RCr7a66kyyVucgBrujmrtc7pTYrKC0fMNgAqm78QEGRgDF5xVmFQ==
-X-Received: by 2002:a63:f907:: with SMTP id h7mr23839670pgi.418.1566407511350;
-        Wed, 21 Aug 2019 10:11:51 -0700 (PDT)
-Received: from localhost ([2601:646:8f00:18d9:d0fa:7a4b:764f:de48])
-        by smtp.gmail.com with ESMTPSA id z13sm23374626pfa.94.2019.08.21.10.11.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Aug 2019 10:11:50 -0700 (PDT)
-Date:   Wed, 21 Aug 2019 10:11:49 -0700
-From:   Stanislav Fomichev <sdf@fomichev.me>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Stanislav Fomichev <sdf@google.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, davem@davemloft.net, ast@kernel.org,
-        Andrii Nakryiko <andriin@fb.com>
-Subject: Re: [PATCH bpf-next v2 2/4] selftests/bpf: test_progs: remove global
- fail/success counts
-Message-ID: <20190821171149.GA1717@mini-arch>
-References: <20190819191752.241637-1-sdf@google.com>
- <20190819191752.241637-3-sdf@google.com>
- <5248b967-2887-2205-3e59-fc067e2ada33@iogearbox.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Loebk7nqt8jK3yo5T1SFNGvSf6Q2eyzrKOALthSTcXw=;
+        b=GqlJMZle4VlfNqJL4d4XQ0HVNZd/o+s5sb/CKDXi/ewbQxzU8u1APA77JgfT76enJK
+         Co0u84DoOJMHvuGDkAT5uVwslkWvJDTPJcAHDCrKJEJBEzfFM9eUVtB/qqAh8HdiN2rP
+         hLUVpPJP8sy7ufrleJFCDzRbPGTjW5QctBloNV9gENcbKvFwy6/rpzFMzXIDc/uBJpYX
+         lXF9Nn0GcexNTgIV+3au94QQG29tOESuHpqtFuTl+mWQWQ/oN4jEYq3MrFe6sy/2L+CJ
+         kPaclMQOR/K71NTC36BVKmby6hRjTPJCcYTl1L5gZL4AyXkyuuwJUjZdLKjqkS33Blo3
+         bXqA==
+X-Gm-Message-State: APjAAAUg8WAAIFbEUVspyMSQ4vaJhCg1rd5rp3ph8wgXw/R1bgkWDscU
+        x4SHEQNIYaT7xWSnvFe2rVH6VIVSONzbtpDKER8pPg==
+X-Google-Smtp-Source: APXvYqx5M24c8sINRTlzgATS4qA/ds9IPq+ERLVZAAfQJ/lik7iqiyTL6BphcuJ/IPBtmfbVm6glR58ddoLhipq86h8=
+X-Received: by 2002:a2e:a202:: with SMTP id h2mr19383861ljm.146.1566408061332;
+ Wed, 21 Aug 2019 10:21:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <5248b967-2887-2205-3e59-fc067e2ada33@iogearbox.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <20190820090053.GA24410@mwanda> <20190820090739.GB1845@kadam>
+In-Reply-To: <20190820090739.GB1845@kadam>
+From:   Catherine Sullivan <csully@google.com>
+Date:   Wed, 21 Aug 2019 10:20:25 -0700
+Message-ID: <CAH_-1qxhH70xNLd+q4TjzVeT7OoHMfWUJGtBQEPru8xFVnHGsg@mail.gmail.com>
+Subject: Re: [PATCH v2 net] gve: Copy and paste bug in gve_get_stats()
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Sagi Shahar <sagis@google.com>, Jon Olson <jonolson@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Willem de Bruijn <willemb@google.com>,
+        Luigi Rizzo <lrizzo@google.com>,
+        Chuhong Yuan <hslester96@gmail.com>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 08/21, Daniel Borkmann wrote:
-> On 8/19/19 9:17 PM, Stanislav Fomichev wrote:
-> > Now that we have a global per-test/per-environment state, there
-> > is no longer need to have global fail/success counters (and there
-> > is no need to save/get the diff before/after the test).
-> 
-> Thanks for the improvements, just a small comment below, otherwise LGTM.
-> 
-> > Introduce QCHECK macro (suggested by Andrii) and covert existing tests
-> > to it. QCHECK uses new test__fail() to record the failure.
-> > 
-> > Cc: Andrii Nakryiko <andriin@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> [...]
-> > @@ -96,17 +93,25 @@ extern struct ipv6_packet pkt_v6;
-> >   #define _CHECK(condition, tag, duration, format...) ({			\
-> >   	int __ret = !!(condition);					\
-> >   	if (__ret) {							\
-> > -		error_cnt++;						\
-> > +		test__fail();						\
-> >   		printf("%s:FAIL:%s ", __func__, tag);			\
-> >   		printf(format);						\
-> >   	} else {							\
-> > -		pass_cnt++;						\
-> >   		printf("%s:PASS:%s %d nsec\n",				\
-> >   		       __func__, tag, duration);			\
-> >   	}								\
-> >   	__ret;								\
-> >   })
-> > +#define QCHECK(condition) ({						\
-> > +	int __ret = !!(condition);					\
-> > +	if (__ret) {							\
-> > +		test__fail();						\
-> > +		printf("%s:FAIL:%d ", __func__, __LINE__);		\
-> > +	}								\
-> > +	__ret;								\
-> > +})
-> 
-> I know it's just a tiny nit but the name QCHECK() really doesn't tell me anything
-> if I don't see its definition. Even just a CHECK_FAIL() might be 'better' and
-> more aligned with the CHECK() and CHECK_ATTR() we have, at least I don't think
-> many would automatically derive 'quiet' from the Q prefix [0].
-CHECK_FAIL sounds good, will respin! Thanks!
+On Tue, Aug 20, 2019 at 2:11 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+>
+> There is a copy and paste error so we have "rx" where "tx" was intended
+> in the priv->tx[] array.
+>
+> Fixes: f5cedc84a30d ("gve: Add transmit and receive support")
+> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> ---
+> v2: fix a typo in the subject: buy -> bug (Thanks Walter Harms)
+>
+>  drivers/net/ethernet/google/gve/gve_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/net/ethernet/google/gve/gve_main.c b/drivers/net/ethernet/google/gve/gve_main.c
+> index 497298752381..aca95f64bde8 100644
+> --- a/drivers/net/ethernet/google/gve/gve_main.c
+> +++ b/drivers/net/ethernet/google/gve/gve_main.c
+> @@ -50,7 +50,7 @@ static void gve_get_stats(struct net_device *dev, struct rtnl_link_stats64 *s)
+>                                   u64_stats_fetch_begin(&priv->tx[ring].statss);
+>                                 s->tx_packets += priv->tx[ring].pkt_done;
+>                                 s->tx_bytes += priv->tx[ring].bytes_done;
+> -                       } while (u64_stats_fetch_retry(&priv->rx[ring].statss,
+> +                       } while (u64_stats_fetch_retry(&priv->tx[ring].statss,
+>                                                        start));
+>                 }
+>         }
+> --
+> 2.20.1
 
->   [0] https://lore.kernel.org/bpf/CAEf4BzbUGiUZBWkTWe2=LfhkXYhQGndN9gR6VTZwfV3eytstUw@mail.gmail.com/
-> 
-> >   #define CHECK(condition, tag, format...) \
-> >   	_CHECK(condition, tag, duration, format)
-> >   #define CHECK_ATTR(condition, tag, format...) \
-> > 
-> 
+Thanks!
+
+Reviewed-by: Catherine Sullivan <csully@google.com>
