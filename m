@@ -2,138 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D43BB97629
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 11:28:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 017A497662
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 11:46:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727078AbfHUJ1p (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 05:27:45 -0400
-Received: from esa1.microchip.iphmx.com ([68.232.147.91]:53778 "EHLO
-        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726527AbfHUJ1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 05:27:45 -0400
-Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
-  Allan.Nielsen@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="Allan.Nielsen@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa1.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
-  envelope-from="Allan.Nielsen@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa1.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Allan.Nielsen@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: 1fZPvctk3M5E6OBH/1XNx7MwexqUr1pyi08/BFFgG3fIzmxLB7YZF9+6gua8wu7j1VvWUoKYL/
- PElMhrlM76A8pBrGG+Ffwbs9UoMSaukahzYL8y5BC2zZdwqEJ3psZ8ElH2ImoSoZ2pqhYlnzz5
- lR5mdsNWe5PLIQx3yST6Tb7RbJmHhUrIhivNDDxFA7McNpsvyNLubHjYbOxEbv04siFmX/5lpE
- HFdur53dAUhHO8fVeJtP8Tc8/5jyIGDEW6I54c5F6tD7qmvMhVV7IxYntg0UwMx6ezL9hgu3Ni
- 9SU=
-X-IronPort-AV: E=Sophos;i="5.64,412,1559545200"; 
-   d="scan'208";a="47356862"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 21 Aug 2019 02:27:28 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 21 Aug 2019 02:27:28 -0700
-Received: from localhost (10.10.85.251) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
- Transport; Wed, 21 Aug 2019 02:27:27 -0700
-Date:   Wed, 21 Aug 2019 11:27:27 +0200
-From:   "allan.nielsen@microchip.com" <allan.nielsen@microchip.com>
-To:     Igor Russkikh <Igor.Russkikh@aquantia.com>
-CC:     Sabrina Dubroca <sd@queasysnail.net>,
-        Antoine Tenart <antoine.tenart@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "camelia.groza@nxp.com" <camelia.groza@nxp.com>,
-        Simon Edelhaus <Simon.Edelhaus@aquantia.com>,
-        Pavel Belous <Pavel.Belous@aquantia.com>
-Subject: Re: [PATCH net-next v2 6/9] net: macsec: hardware offloading
- infrastructure
-Message-ID: <20190821092726.do4nmtimizqmagkh@lx-anielsen.microsemi.net>
-References: <20190808140600.21477-1-antoine.tenart@bootlin.com>
- <20190808140600.21477-7-antoine.tenart@bootlin.com>
- <e96fa4ae-1f2c-c1be-b2d8-060217d8e151@aquantia.com>
- <20190813085817.GA3200@kwain>
- <20190813131706.GE15047@lunn.ch>
- <2e3c2307-d414-a531-26cb-064e05fa01fc@aquantia.com>
- <20190816132959.GC8697@bistromath.localdomain>
- <20190820100140.GA3292@kwain>
- <20190820144119.GA28714@bistromath.localdomain>
- <81ec0497-58cd-1f4c-faa3-c057693cd50e@aquantia.com>
+        id S1726802AbfHUJqt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 05:46:49 -0400
+Received: from sonic301-21.consmr.mail.ir2.yahoo.com ([77.238.176.98]:36769
+        "EHLO sonic301-21.consmr.mail.ir2.yahoo.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726239AbfHUJqs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 05:46:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1566380805; bh=6Jm8q8LreSZDQlWXGeMlOj0/DuwtuKrzjIwFmKlk5Z4=; h=Date:From:Reply-To:Subject:From:Subject; b=NNovo4uUGsNhSj88FoIxec8NiDgOgfx7qu+Ktb241ULwHd7YKxKmWWE6MAc6fxRGjupNEk7akC7BK6369be0IeraHkshf+rG380/EalYC/AyNHyWITQ92IRf2sP7TDifU0AmYxpaCt2bK8bq3AP9IsA4qH789vdJHgkCbr5Ekj4vHTlsJ+VvIFCqCs7QxHAPBi3J8KEPmh57la1oy33keeMs+AE8EPNAihHzYquAtoUPSoUKeG9wIgszpOK3HYvmbSMsGbJANYdDpgFLGulAcnJurrkWgyS69uSnsTI3aSD6/kdjsMTpaUsAm6P6QK2JDktM6sCHx44Ca4Ih260s3A==
+X-YMail-OSG: ntBmAicVM1nMylI7WsCzeHNKa32mlMjzLh32VOGF8wutyWm5Dd_pBck8n0N1P_S
+ exXm9BVtDrkMr_UI.1s2FBl3Vc3SqtvqGo92c1QoS4tmZqw4jObQntwIkZNccqD3gW0ek3BvhxrO
+ _8rgFm8vlD35xx42iXwqRtN2ivSbV9iYJNGYg.idmw6qT6_ktivqfqQl3VYqQIK1BacFFSwb1okG
+ YohD9hMKEHMjW14tUEjwLgs7lqruZ45HwGbxQr_S76wgUjzN8COkV6nOh_G1kq2Jkqib.j875LgM
+ B2ArJ5TpffqVgln3IpGysudxwrF2uCKnbEGXQgiiTq7wvVIT3GMXQBWM4pI68RxwNP8AIZGplimQ
+ 0RUf22VWVNfu.w2hHjPoQCLDdXT4xI5QS.NJcapM9vxe_HqN3jRyrIJgL5YBYkc42llg.27CRMa.
+ sJZOSrnOA3pnboHY2mMcRs1scguvLDFKCAXajmO6_.0MtAnUcEK9V69sWAayUdB3TJHzKe5LgrJA
+ zNJsP9kaR1VEFxIskk9ZzmpVVQ52_DIlGeOXV0mRuSVPCWPu8gfOOT45xWvPz5.n3QhOMadf0zqS
+ mDGq.JF1dSzje1gAG_8zaNiz0OL7qrKA.zN2gtSFLssexMKRPOQupkKAuUaKcBFynITLoYg1jPcJ
+ fTlMGZGCjZALq5RekKUjLKAPKVEgVs5TQcqrAr3PKpStUCvge5ipS5rCCkuWGuiOMLSvwytJOSbR
+ D0GqfFZt74Gs08WC2J1K4SI1IF.dXaGfkKoy3lJqPqSmRwYJwZIy8KydjaCXufddlE9nA7W9y2Xh
+ wmMgneKESdopBA1Rra2eKMpyVPIpTziXf9bG6nJauj9hF3vUvhaikCyxDR6Ew9srF3QvkLjSMOGo
+ 79bry.bDUdXPv00TD.Yyh42ZWX8eygm7k658vHhC4XOPEAeqU7zhbOGDZe4_NLczNn86nEtnh2eG
+ _1Q73iQSavEzKnH.qGSr7dHoOnqgrERzVyYg2PR9BcSyPn0A9IJrjOKMqfnDvu9BLdPBdnthum91
+ 4cvzk_7DIuFUY2QOyMqsGA.JTnxL_RarIGth3z1ffEkdz93BYRFNUDBqYWloVavkrbIf_f9G6s64
+ I5.bL99zmshdjeqwl9.eRDbOBLUgl3TQfFS_5p4hW4Er3TZaq1.JCyOEyWjKoQnXa1vZIm.w4Y_I
+ Rk30oNrbSaW8vqzzu2bSUgEAy_A4I6OpbAtpS9qvxsCyi00ajwp9rg0.qJCvy_f0YnGRn5A95bfr
+ SDKcI1Xn1Kg--
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic301.consmr.mail.ir2.yahoo.com with HTTP; Wed, 21 Aug 2019 09:46:45 +0000
+Date:   Wed, 21 Aug 2019 09:46:44 +0000 (UTC)
+From:   Wilson Smith <smithwil456@gmail.com>
+Reply-To: smithwil456@gmail.com
+Message-ID: <1892930539.11314489.1566380804404@mail.yahoo.com>
+Subject: HELLO! PLEASE TRY AND RESPOND SOONEST
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <81ec0497-58cd-1f4c-faa3-c057693cd50e@aquantia.com>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+To:     unlisted-recipients:; (no To-header on input)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 08/21/2019 09:20, Igor Russkikh wrote:
-> > Talking about packet numbers, can you describe how PN exhaustion is
-> > handled?  I couldn't find much about packet numbers at all in the
-> > driver patches (I hope the hw doesn't wrap around from 2^32-1 to 0 on
-> > the same SA).  At some point userspace needs to know that we're
-> > getting close to 2^32 and that it's time to re-key.  Since the whole
-> > TX path of the software implementation is bypassed, it looks like the
-> > PN (as far as drivers/net/macsec.c is concerned) never increases, so
-> > userspace can't know when to negotiate a new SA.
-> 
-> I think there should be driver specific implementation of this functionality.
-> As an example, our macsec HW issues an interrupt towards the host to indicate
-> PN threshold has reached and it's time for userspace to change the keys.
-> 
-> In contrast, current SW macsec implementation just stops this SA/secy.
-> 
-> > I don't see how this implementation handles non-macsec traffic (on TX,
-> > that would be packets sent directly through the real interface, for
-> > example by wpa_supplicant - on RX, incoming MKA traffic for
-> > wpa_supplicant). Unless I missed something, incoming MKA traffic will
-> > end up on the macsec interface as well as the lower interface (not
-> > entirely critical, as long as wpa_supplicant can grab it on the lower
-> > device, but not consistent with the software implementation). How does
-> > the driver distinguish traffic that should pass through unmodified
-> > from traffic that the HW needs to encapsulate and encrypt?
-> 
-> I can comment on our HW engine - where it has special bypass rules
-> for configured ethertypes. This way macsec engine skips encryption on TX and
-> passes in RX unencrypted for the selected control packets.
-In our case it is a TCAM which can look at various fields (including ethertype),
-but is sounds like we have a vary similar design.
+My Dear Friend,
 
-> But thats true, realdev driver is hard to distinguish encrypted/unencrypted
-> packets. In case realdev should make a decision where to put RX packet,
-> it only may do some heuristic (since after macsec decription all the
-> macsec related info is dropped. Thats true at least for our HW implementation).
-Same for ours.
+Before I introduce myself, I wish to inform you that this letter is not a h=
+oax mail and I urge you to treat it serious. This letter must come to you a=
+s a big surprise, but I believe it is only a day that people meet and becom=
+e great friends and business partners. Please I want you to read this lette=
+r very carefully and I must apologize for barging this message into your ma=
+ilbox without any formal introduction due to the urgency and confidentialit=
+y of this business and I know that this message will come to you as a surpr=
+ise. Please this is not a joke and I will not like you to joke with it ok, =
+with due respect to your person and much sincerity of purpose, I make this =
+contact with you as I believe that you can be of great assistance to me. My=
+ name is Mr.Wilson Smith, from London, UK. I work in Kas Bank UK branch as =
+telex manager, please see this as a confidential message and do not reveal =
+it to another person and let me know whether you can be of assistance regar=
+ding my proposal below because it is top secret.
 
-> > If you look at IPsec offloading, the networking stack builds up the
-> > ESP header, and passes the unencrypted data down to the driver. I'm
-> > wondering if the same would be possible with MACsec offloading: the
-> > macsec virtual interface adds the header (and maybe a dummy ICV), and
-> > then the HW does the encryption. In case of HW that needs to add the
-> > sectag itself, the driver would first strip the headers that the stack
-> > created. On receive, the driver would recreate a sectag and the macsec
-> > interface would just skip all verification (decrypt, PN).
-> 
-> I don't think this way is good, as driver have to do per packet header mangling.
-> That'll harm linerate performance heavily.
-Agree, and it will also prevent MACsec offload in offloaded bridge devices.
+I am about to retire from active Banking service to start a new life but I =
+am sceptical to reveal this particular secret to a stranger. You must assur=
+e me that everything will be handled confidentially because we are not goin=
+g to suffer again in life. It has been 10 years now that most of the greedy=
+ African Politicians used our bank to launder money overseas through the he=
+lp of their Political advisers. Most of the funds which they transferred ou=
+t of the shores of Africa were gold and oil money that was supposed to have=
+ been used to develop the continent. Their Political advisers always inflat=
+ed the amounts before transferring to foreign accounts, so I also used the =
+opportunity to divert part of the funds hence I am aware that there is no o=
+fficial trace of how much was transferred as all the accounts used for such=
+ transfers were being closed after transfer. I acted as the Bank Officer to=
+ most of the politicians and when I discovered that they were using me to s=
+ucceed in their greedy act; I also cleaned some of their banking records fr=
+om the Bank files and no one cared to ask me because the money was too much=
+ for them to control. They laundered over =C2=A35billion pounds during the =
+process.
 
-/Allan
+Before I send this message to you, I have already diverted (=C2=A33.5millio=
+n pounds) to an escrow account belonging to no one in the bank. The bank is=
+ anxious now to know who the beneficiary to the funds is because they have =
+made a lot of profits with the funds. It is more than eight years now and m=
+ost of the politicians are no longer using our bank to transfer funds overs=
+eas. The (=C2=A33.5million pounds) has been laying waste in our bank and I =
+don=E2=80=99t want to retire from the bank without transferring the funds t=
+o a foreign account to enable me to share the proceeds with the receiver (a=
+ foreigner). The money will be shared 60% for me and 40% for you. There is =
+no one coming to ask you about the funds because I secured everything. I on=
+ly want you to assist me by providing a reliable bank account where the fun=
+ds can be transferred. Make Sure You Reply To My private email: wilsnl74@gm=
+ail.com
