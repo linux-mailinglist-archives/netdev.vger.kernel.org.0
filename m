@@ -2,101 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 929A096EE4
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 03:29:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 68C4696EED
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 03:30:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726898AbfHUB3I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 21:29:08 -0400
-Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:52187 "EHLO
-        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726463AbfHUB3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 21:29:08 -0400
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e07417;MF=joseph.qi@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0Ta0VyP8_1566350944;
-Received: from JosephdeMacBook-Pro.local(mailfrom:joseph.qi@linux.alibaba.com fp:SMTPD_---0Ta0VyP8_1566350944)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 21 Aug 2019 09:29:05 +0800
-Subject: Re: [PATCH v1] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for wider
- use
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>, ocfs2-devel@oss.oracle.com,
-        Ariel Elior <aelior@marvell.com>,
-        Sudarsana Kalluru <skalluru@marvell.com>,
-        GR-everest-linux-l2@marvell.com,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Colin Ian King <colin.king@canonical.com>
-References: <20190820163112.50818-1-andriy.shevchenko@linux.intel.com>
-From:   Joseph Qi <joseph.qi@linux.alibaba.com>
-Message-ID: <1a3e6660-10d2-e66c-2880-24af64c7f120@linux.alibaba.com>
-Date:   Wed, 21 Aug 2019 09:29:04 +0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        id S1726998AbfHUBam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 21:30:42 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:46982 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726351AbfHUBal (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 21:30:41 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=n9NfRrNjW9ZmPNGYlS0pnekVjreVKm7SkH9+1Fb6KgY=; b=RTLAS8/vzzJ4TlTtwyLt5dcpzK
+        P6eP+u76mLoL9zNoLZOyDs8/FiNMksxWcbLOwH2bKf2NdJu6eqbjUpbyO6nptuDi1Q+ORcybIYRig
+        gxlRebC74hbgKzStpmS7DcN64y0gZYdVCB21mqertqNHhfHXFa20W5ri6PBHXo69wCbU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i0FSO-0001jY-CG; Wed, 21 Aug 2019 03:30:36 +0200
+Date:   Wed, 21 Aug 2019 03:30:36 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Charles.Hyde@dellteam.com
+Cc:     linux-usb@vger.kernel.org, linux-acpi@vger.kernel.org,
+        gregkh@linuxfoundation.org, Mario.Limonciello@dell.com,
+        oliver@neukum.org, netdev@vger.kernel.org, nic_swsd@realtek.com
+Subject: Re: [RFC 3/4] Move ACPI functionality out of r8152 driver
+Message-ID: <20190821013036.GC4285@lunn.ch>
+References: <1566339738195.2913@Dellteam.com>
 MIME-Version: 1.0
-In-Reply-To: <20190820163112.50818-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1566339738195.2913@Dellteam.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 19/8/21 00:31, Andy Shevchenko wrote:
-> There are users already and will be more of BITS_TO_BYTES() macro.
-> Move it to bitops.h for wider use.
+On Tue, Aug 20, 2019 at 10:22:18PM +0000, Charles.Hyde@dellteam.com wrote:
+> This change moves ACPI functionality out of the Realtek r8152 driver to
+> its own source and header file, making it available to other drivers as
+> needed now and into the future.  At the time this ACPI snippet was
+> introduced in 2016, only the Realtek driver made use of it in support of
+> Dell's enterprise IT policy efforts.  There comes now a need for this
+> same support in a different driver, also in support of Dell's enterprise
+> IT policy efforts.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Signed-off-by: Charles Hyde <charles.hyde@dellteam.com>
+> Cc: Mario Limonciello <mario.limonciello@dell.com>
+> Cc: Realtek linux nic maintainers <nic_swsd@realtek.com>
+> Cc: linux-usb@vger.kernel.org
+> Cc: linux-acpi@vger.kernel.org
 > ---
->  drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h | 1 -
->  fs/ocfs2/dlm/dlmcommon.h                         | 4 ----
->  include/linux/bitops.h                           | 1 +
->  3 files changed, 1 insertion(+), 5 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
-> index 066765fbef06..0a59a09ef82f 100644
-> --- a/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
-> +++ b/drivers/net/ethernet/broadcom/bnx2x/bnx2x_init.h
-> @@ -296,7 +296,6 @@ static inline void bnx2x_dcb_config_qm(struct bnx2x *bp, enum cos_mode mode,
->   *    possible, the driver should only write the valid vnics into the internal
->   *    ram according to the appropriate port mode.
->   */
-> -#define BITS_TO_BYTES(x) ((x)/8)>
-I don't think this is a equivalent replace, or it is in fact
-wrong before?
+>  drivers/net/usb/r8152.c | 44 ++++-------------------------------------
+>  lib/Makefile            |  3 ++-
 
-  
->  /* CMNG constants, as derived from system spec calculations */
->  
-> diff --git a/fs/ocfs2/dlm/dlmcommon.h b/fs/ocfs2/dlm/dlmcommon.h
-> index aaf24548b02a..0463dce65bb2 100644
-> --- a/fs/ocfs2/dlm/dlmcommon.h
-> +++ b/fs/ocfs2/dlm/dlmcommon.h
-> @@ -688,10 +688,6 @@ struct dlm_begin_reco
->  	__be32 pad2;
->  };
->  
-> -
-> -#define BITS_PER_BYTE 8
-> -#define BITS_TO_BYTES(bits) (((bits)+BITS_PER_BYTE-1)/BITS_PER_BYTE)
-> -
-For ocfs2 part, it looks good to me.
-Reviewed-by: Joseph Qi <joseph.qi@linux.alibaba.com>
+Hi Charles
 
->  struct dlm_query_join_request
->  {
->  	u8 node_idx;
-> diff --git a/include/linux/bitops.h b/include/linux/bitops.h
-> index cf074bce3eb3..79d80f5ddf7b 100644
-> --- a/include/linux/bitops.h
-> +++ b/include/linux/bitops.h
-> @@ -5,6 +5,7 @@
->  #include <linux/bits.h>
->  
->  #define BITS_PER_TYPE(type) (sizeof(type) * BITS_PER_BYTE)
-> +#define BITS_TO_BYTES(nr)	DIV_ROUND_UP(nr, BITS_PER_BYTE)
->  #define BITS_TO_LONGS(nr)	DIV_ROUND_UP(nr, BITS_PER_TYPE(long))
->  
->  extern unsigned int __sw_hweight8(unsigned int w);
-> 
+I think your forgot to add the new files?
+
+  Andrew
