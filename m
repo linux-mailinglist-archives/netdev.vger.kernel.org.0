@@ -2,114 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B0429766B
+	by mail.lfdr.de (Postfix) with ESMTP id DC5DB9766D
 	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 11:55:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727158AbfHUJvp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 05:51:45 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:39209 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbfHUJvp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 05:51:45 -0400
-Received: by mail-ed1-f67.google.com with SMTP id g8so2219864edm.6
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 02:51:44 -0700 (PDT)
+        id S1727300AbfHUJx0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 05:53:26 -0400
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:46826 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726351AbfHUJxZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 05:53:25 -0400
+Received: by mail-lf1-f65.google.com with SMTP id n19so1294948lfe.13;
+        Wed, 21 Aug 2019 02:53:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nX+QC3sh0zmRpo4Yr4YHSZYBkBIFMbiT9NQKHv0GPQs=;
-        b=KZnzUfXot7OA/y5+4fURRLd1PkmKH25urTHV5ozPTkdqYNdb2cPpm/TUQdRum6kYYc
-         r5Jzn/NOJO5chaO5DaelKPgmph9I+VFopGjthtvuYNnRyEfZss96fvTLZfovcqfrF+Va
-         Aem5SDukaAnRrT8LGccK+fDRmy5csOOSVekdt0nexOoDWAZxxlir2VSGno2NgOnpw5jZ
-         pV920GD6Kn1pMLA+frOr7PrHkmP53oHLezburRW4w2GH1PrYwirCKdZbLBXnyOXBXQ8G
-         x6PCfD1o47zvmmu5C1HVam+uKEOnNP9dIRfw4rG5NzjiEFFToJdIgcsu5sqhjr9W4J1Z
-         eJdA==
+        bh=ZbCWqTCCmdG6rzrJdpHlHLL1ZK/pt1TUGb23KjeYCrk=;
+        b=Z5HN6y3Fa+X293x4mbXB/cpswIJKvrRzaBdoN8a0vCex6N9RFjd75IVaZrGGGxThbu
+         kTEarpXuQ6auBxtmlw3h5/uUguyAvlmydWP8FGaTBIhM1x0h5kR1s9G6k/xwpMLvljou
+         rcevtv9bADrjXZgUZ3UsA/h4xV6+GygrrjSmlcoqHswtAA8ghRVNutm+Nnl1wnfvu6In
+         XYuDjZFj04v9ijhlVexBIFIESS0EJLXPG1lDlc3HmAIvt4SGRnGlR5RFaYk8msVPOrDX
+         bKCocPpn7osUx4RGeytTuQZiL4AZG/4ehlidKIkfYKp8prhK6FewbmPcERn1qK8FxnMx
+         xqfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nX+QC3sh0zmRpo4Yr4YHSZYBkBIFMbiT9NQKHv0GPQs=;
-        b=oNBt0LP8jutju/X6zA6zknMDkX6JWCle08RRZ27QAccTQZPD2Y5oReSCWF3f4Sjxmy
-         T7sSRoZA78ZNvWbBx+8XX2CodesuWce4gbQVcshTuw5AmcI07aoim1Jl7ZZBZAbJuWbs
-         WKdLX15gS5dxmfe3DErm0moPnBGNfONVxW6h6ncMUSjl7m/xkbatrC0rBoUEWppRcyfp
-         JoIPEII+23ikgjSA+8zDy0PHJBr92RMfjo9+Z5EJC7jqmLkCv5oER350Dat3NWtiCPl1
-         UOyxW3MCnZVAFt0zcFzFgQb1gEziHUEWq3hflFKOp8WrtIZQK0jZ1NMm0DfoU3CxxrHw
-         ljeQ==
-X-Gm-Message-State: APjAAAXB4OSQV4xPH8Vw1+qLbkNPkeZRP0r87OXim++1gQSG0/OnofyJ
-        YJ/rVkLdhbb5QfA49puNymbNf1QmH8u+rkOMEPg=
-X-Google-Smtp-Source: APXvYqxANT5p+XjWCZmJOmHcX3GEibIOZ+vZyrJxmhsyHFgmXlVanAxR+iN/Ym8u8zgHmpVYYgqzvdgS8aWBTNvDHcU=
-X-Received: by 2002:aa7:d811:: with SMTP id v17mr27684204edq.165.1566381103395;
- Wed, 21 Aug 2019 02:51:43 -0700 (PDT)
+        bh=ZbCWqTCCmdG6rzrJdpHlHLL1ZK/pt1TUGb23KjeYCrk=;
+        b=c2OgRVdeoGVsdV9Vaco5EdN57n7g/WsxVPTgXWvzGmOTQYMhfsiDWEt0ER/V7/lP2R
+         Mi1ASpCKKQFkLrIGINJphJH/OLgkNuc9FPx2jMi0Xi1+xCPj2T8Bv7nsb7i4snqZfN/2
+         8qMdibUIO2xvUY2voM3AvYZNnkEdLYBuqUKlD1v924dVXR0UR3F+Pqv1hLSGtOBDg70Y
+         RwsiGp9ugGLvW7hk0mKNZjbJ0ahhVCzzkuQ8YAWvjHb0m+og0e75iQJQcZdetaAGXGgW
+         MIzuAPlP/iby8BcLzSU2etTImr737/HW3DoBhr/icFqAvkeJeScLmPvMPHgqGp+Fa8cj
+         JiwQ==
+X-Gm-Message-State: APjAAAWKlogoXmIwUChkBc5VZdZ+RXsXnFrB9jdSAdeb4JrnjnhzQTcP
+        qF/sWnQulTmVCGxNDq04tsiz1IrVt8HfM1xWR5k=
+X-Google-Smtp-Source: APXvYqwb2rhw7Ep1aXg+5V7885VdFhKAbEOFcIsvVA/tDR61O6uv5lTq8FlL5kROb/mZjKV9MKTSsnQzjrJUIYUChrU=
+X-Received: by 2002:ac2:5976:: with SMTP id h22mr18101434lfp.79.1566381203762;
+ Wed, 21 Aug 2019 02:53:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190820000002.9776-1-olteanv@gmail.com> <20190820000002.9776-4-olteanv@gmail.com>
- <20190820015138.GB975@t480s.localdomain> <CA+h21hpdDuoR5nj98EC+-W4HoBs35e_rURS1LD1jJWF5pkty9w@mail.gmail.com>
- <20190820135213.GB11752@t480s.localdomain> <c359e0ca-c770-19da-7a3a-a3173d36a12d@gmail.com>
- <CA+h21hqdXP1DnCxwuZOCs4H6MtwzjCnjkBf3ibt+JmnZMEFe=g@mail.gmail.com>
- <20190820165813.GB8523@t480s.localdomain> <CA+h21hrgUxKXmYuzdCPd-GqVyzNnjPAmf-Q29=7=gFJyAfY_gw@mail.gmail.com>
- <20190820173602.GB10980@t480s.localdomain> <CA+h21hodsDTwPHY1pxQA-ucu6FU7rkOQa7Y4HJGZC0fRd8zmDA@mail.gmail.com>
- <20190820233026.GC21067@t480s.localdomain>
-In-Reply-To: <20190820233026.GC21067@t480s.localdomain>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 21 Aug 2019 12:51:32 +0300
-Message-ID: <CA+h21hoXX7CRvf0C5q3Kxwj-4xpP+gcg58S0mx=Kruayg69Kaw@mail.gmail.com>
-Subject: Re: [PATCH net-next 3/6] net: dsa: Delete the VID from the upstream
- port as well
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Ido Schimmel <idosch@idosch.org>,
-        Roopa Prabhu <roopa@cumulusnetworks.com>,
-        nikolay@cumulusnetworks.com,
-        "David S. Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
+References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
+ <20190820084833.6019-3-hubert.feurstein@vahle.at> <20190820094903.GI891@localhost>
+ <CAFfN3gW-4avfnrV7t-2nC+cVt3sgMD33L44P4PGU-MCAtuR+XA@mail.gmail.com>
+ <20190820142537.GL891@localhost> <20190820152306.GJ29991@lunn.ch>
+ <20190820154005.GM891@localhost> <CAFfN3gUgpzMebyUt8_-9e+5vpm3q-DVVszWdkUEFAgZQ8ex73w@mail.gmail.com>
+ <20190821080709.GO891@localhost>
+In-Reply-To: <20190821080709.GO891@localhost>
+From:   Hubert Feurstein <h.feurstein@gmail.com>
+Date:   Wed, 21 Aug 2019 11:53:12 +0200
+Message-ID: <CAFfN3gXtkv=YjoQixN+MdZ9vLZRPBMwg1mefuBTHFf1_QENPsg@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 2/4] net: mdio: add PTP offset compensation to mdiobus_write_sts
+To:     Miroslav Lichvar <mlichvar@redhat.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Aug 2019 at 06:30, Vivien Didelot <vivien.didelot@gmail.com> wrote:
+Am Mi., 21. Aug. 2019 um 10:07 Uhr schrieb Miroslav Lichvar
+<mlichvar@redhat.com>:
+> > Currently I do not see the benefit from this. The original intention was to
+> > compensate for the remaining offset as good as possible.
 >
-> On Wed, 21 Aug 2019 01:09:39 +0300, Vladimir Oltean <olteanv@gmail.com> wrote:
-> > I mean I made an argument already for the hack in 4/6 ("Don't program
-> > the VLAN as pvid on the upstream port"). If the hack gets accepted
-> > like that, I have no further need of any change in the implicit VLAN
-> > configuration. But it's still a hack, so in that sense it would be
-> > nicer to not need it and have a better amount of control.
+> That's ok, but IMHO the change should not break the assumptions of
+> existing application and users.
 >
-> How come you simply cannot ignore the PVID flag for the CPU port in the
-> driver directly, as mv88e6xxx does in preference of the Marvell specific
-> "unmodified" mode? What PVID are you programming on the CPU port already?
+> > The current code
+> > of phc2sys uses the delay only for the filtering of the measurement record
+> > with the shortest delay and for reporting and statistics. Why not simple shift
+> > the timestamps with the offset to the point where we expect the PHC timestamp
+> > to be captured, and we have a very good result compared to where we came
+> > from.
 >
+> Because those reports/statistics are important in calculation of
+> maximum error. If someone had a requirement for a clock to be accurate
+> to 1.5 microseconds and the ioctl returned a delay indicating a
+> sufficient accuracy when in reality it could be worse, that would be a
+> problem.
 >
-> Thanks,
->
->         Vivien
+Ok, I understand your point. But including the MDIO completion into
+delay calculation
+will indicate a much wore precision as it actually is. When the MDIO
+driver implements
+the PTP system timestamping as follows ...
 
-sja1105 has no such thing as an "unmodified" egress policy.
-And ignoring the flags in the switch driver for the CPU port is just
-as hacky as fixing it up in the DSA core.
-I fail to see any reason to change the pvid for the CPU/DSA ports,
-maybe you can clarify.
+  ptp_read_system_prets(bus->ptp_sts);
+  writel(value, mdio-reg)
+  ptp_read_system_postts(bus->ptp_sts);
 
-Actually I gave a second thought to the patchset and in a weird,
-convoluted way, I can get away with just:
-- 2/6: net: bridge: Populate the pvid flag in br_vlan_get_info
-- 5/6 net: dsa: Allow proper internal use of VLANs
-- 6/6 net: dsa: tag_8021q: Restore bridge pvid when enabling vlan_filtering
-A side effect of running dsa_port_restore_pvid on a user port will be
-that it is going to also restore the pvid on the CPU port, via the
-bitmap operations. I had not thought of this initially when I first
-jumped to remove the BRIDGE_VLAN_INFO_PVID flag in 4/6. And the fact
-that it would work would just be "programming by coincidence".
+... then we catch already the error caused by interrupts which hit the
+pre/post_ts section.
+Now we only have the additional error of one MDIO clock cycle
+(~400ns). Because I expect
+the MDIO controller to shift out the MDIO frame on the next MDIO clock
+cycle. So if I subtract
+one MDIO clock cycle from pre_ts and add one MDIO clock cycle to
+post_ts the error indication
+would be sufficiently corrected IMHO. And then we can shift both
+timestamps in the switch driver
+(in the gettimex handler) to compensate the switch depending offset.
+What do you think?
 
-I guess my aversion against the VLAN bitmap operations (and, well,
-"match" in your new change) stems from the fact that the DSA core sits
-in the way of doing custom configuration of the CPU port VLAN
-settings. Yes, you can work around it (dsa_8021q first configures the
-user ports as pvid and egress untagged, then configures the CPU port
-as egress tagged, so that the pvid setting from user ports doesn't
-"stick" to the CPU via the bitmap), but it's like pouring water that's
-half hot and half cold from a water cooler, when all you want is water
-that's at room temperature.
-
--Vladimir
+Hubert
