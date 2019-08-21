@@ -2,212 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C381F986B4
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:42:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FCB1986C4
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:48:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730913AbfHUVjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 17:39:06 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:32872 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726530AbfHUVjG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:39:06 -0400
-Received: by mail-qt1-f195.google.com with SMTP id v38so5015311qtb.0;
-        Wed, 21 Aug 2019 14:39:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=DUnGPgYSlYELq8snkCH3/ogLmFH6bABIvcNtaNXTSVc=;
-        b=AXDHQob5IyMllJJoCx7ZMR8TK3SJN0l7qIATQtWf6ngixz26/p+Sey60awnPqojOTU
-         ECTbzza4sfLN2MZNGWAPC5aO0a/n+iDaEPCfzPGJF911kaP0oySCyhDQenhRqoGE/46f
-         SNLMK3otufWhvREna0kxOFS7STmbaaVnCSswUJsIxkc+s50sZi3CxY3Se6mco3tFynew
-         5pFuHfoV0v9VCYiMjGnz4d3zyUnuTg5tAPIb9HAxcnHQZxyrEQekItEFl8cKP3TY0Kh0
-         uleYqDjSSbn/nF5glEFEJye/1xrV8Du+6FWcXn0h5IoikXVIaQ5kMZ2Ddrb6jckdzwUU
-         iJ3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=DUnGPgYSlYELq8snkCH3/ogLmFH6bABIvcNtaNXTSVc=;
-        b=Nhvd27PLar3qiTcmnUV55G66hokheTyCtPnAPpxZWHjrZJtI3CnI2aqwsBQGoHgEGV
-         W75XpnLFHNWtdAUWSCO0CIX5cDsrJ5y60LGl2ADwh0vV+DmtX/Vx0FifiwKwI/fEN3bo
-         tty/OL4jSMKrOzEsCV/z/Oe+CMZc2itxQoETWEoMoBYBIDBvsUWbGCKGxDAXIKrjIQbw
-         wFK0WClotKIRntIYn+pd4FK7RdsY5wVDsC0H6atv1VQt7tLVEFRJ3Gaf77M5zKAj0v5K
-         v9hLB+ZHkdTf9npLJeBTCc82lO0ITkanO7gAvYhp0eEi01SCWcOtpPeBWokrRx3f7YI1
-         wZeQ==
-X-Gm-Message-State: APjAAAVNgMitA3NrhhnsHdQvmOBNuAdIkT98yPPPVASydcYDu+BjVR8x
-        PxyI73/9DJiRl3Mxu7zPyptR1GEjg+QlVwHvO84=
-X-Google-Smtp-Source: APXvYqyy0hvvRHykzg7i0XuhNgycH/ll14e3xUl/E4u+m0BQJBHvXmJ9XL1xul4O3FjgxkcePIYvjvZNX2y+J4rwF4w=
-X-Received: by 2002:a0c:db12:: with SMTP id d18mr19832519qvk.199.1566423544935;
- Wed, 21 Aug 2019 14:39:04 -0700 (PDT)
+        id S1729114AbfHUVqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 17:46:00 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:33068 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727874AbfHUVqA (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 17:46:00 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7BFC130821C2;
+        Wed, 21 Aug 2019 21:45:59 +0000 (UTC)
+Received: from hog.localdomain, (ovpn-204-30.brq.redhat.com [10.40.204.30])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0CC0E194B9;
+        Wed, 21 Aug 2019 21:45:57 +0000 (UTC)
+From:   Sabrina Dubroca <sd@queasysnail.net>
+To:     netdev@vger.kernel.org
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Sabrina Dubroca <sd@queasysnail.net>
+Subject: [PATCH ipsec-next 0/7] ipsec: add TCP encapsulation support (RFC 8229)
+Date:   Wed, 21 Aug 2019 23:46:18 +0200
+Message-Id: <cover.1566395202.git.sd@queasysnail.net>
 MIME-Version: 1.0
-References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
- <20190820151611.10727-1-i.maximets@samsung.com> <CAKgT0Udn0D0_f=SOH2wpBRWV_u4rb1Qe2h7gguXnRNzJ_VkRzg@mail.gmail.com>
- <625791af-c656-1e42-b60e-b3a5cedcb4c4@samsung.com> <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
- <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com> <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
-In-Reply-To: <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Wed, 21 Aug 2019 14:38:28 -0700
-Message-ID: <CALDO+SZCbxEEwCS6MyHk-Cp_LJ33N=QFqwZ8uRm0e-PBRgxRYw@mail.gmail.com>
-Subject: Re: [PATCH net] ixgbe: fix double clean of tx descriptors with xdp
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Ilya Maximets <i.maximets@samsung.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Eelco Chaudron <echaudro@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.47]); Wed, 21 Aug 2019 21:45:59 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 9:57 AM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Wed, Aug 21, 2019 at 9:22 AM Ilya Maximets <i.maximets@samsung.com> wr=
-ote:
-> >
-> > On 21.08.2019 4:17, Alexander Duyck wrote:
-> > > On Tue, Aug 20, 2019 at 8:58 AM Ilya Maximets <i.maximets@samsung.com=
-> wrote:
-> > >>
-> > >> On 20.08.2019 18:35, Alexander Duyck wrote:
-> > >>> On Tue, Aug 20, 2019 at 8:18 AM Ilya Maximets <i.maximets@samsung.c=
-om> wrote:
-> > >>>>
-> > >>>> Tx code doesn't clear the descriptor status after cleaning.
-> > >>>> So, if the budget is larger than number of used elems in a ring, s=
-ome
-> > >>>> descriptors will be accounted twice and xsk_umem_complete_tx will =
-move
-> > >>>> prod_tail far beyond the prod_head breaking the comletion queue ri=
-ng.
-> > >>>>
-> > >>>> Fix that by limiting the number of descriptors to clean by the num=
-ber
-> > >>>> of used descriptors in the tx ring.
-> > >>>>
-> > >>>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-> > >>>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> > >>>
-> > >>> I'm not sure this is the best way to go. My preference would be to
-> > >>> have something in the ring that would prevent us from racing which =
-I
-> > >>> don't think this really addresses. I am pretty sure this code is sa=
-fe
-> > >>> on x86 but I would be worried about weak ordered systems such as
-> > >>> PowerPC.
-> > >>>
-> > >>> It might make sense to look at adding the eop_desc logic like we ha=
-ve
-> > >>> in the regular path with a proper barrier before we write it and af=
-ter
-> > >>> we read it. So for example we could hold of on writing the bytecoun=
-t
-> > >>> value until the end of an iteration and call smp_wmb before we writ=
-e
-> > >>> it. Then on the cleanup we could read it and if it is non-zero we t=
-ake
-> > >>> an smp_rmb before proceeding further to process the Tx descriptor a=
-nd
-> > >>> clearing the value. Otherwise this code is going to just keep poppi=
-ng
-> > >>> up with issues.
-> > >>
-> > >> But, unlike regular case, xdp zero-copy xmit and clean for particula=
-r
-> > >> tx ring always happens in the same NAPI context and even on the same
-> > >> CPU core.
-> > >>
-> > >> I saw the 'eop_desc' manipulations in regular case and yes, we could
-> > >> use 'next_to_watch' field just as a flag of descriptor existence,
-> > >> but it seems unnecessarily complicated. Am I missing something?
-> > >>
-> > >
-> > > So is it always in the same NAPI context?. I forgot, I was thinking
-> > > that somehow the socket could possibly make use of XDP for transmit.
-> >
-> > AF_XDP socket only triggers tx interrupt on ndo_xsk_async_xmit() which
-> > is used in zero-copy mode. Real xmit happens inside
-> > ixgbe_poll()
-> >  -> ixgbe_clean_xdp_tx_irq()
-> >     -> ixgbe_xmit_zc()
-> >
-> > This should be not possible to bound another XDP socket to the same net=
-dev
-> > queue.
-> >
-> > It also possible to xmit frames in xdp_ring while performing XDP_TX/RED=
-IRECT
-> > actions. REDIRECT could happen from different netdev with different NAP=
-I
-> > context, but this operation is bound to specific CPU core and each core=
- has
-> > its own xdp_ring.
-> >
-> > However, I'm not an expert here.
-> > Bj=C3=B6rn, maybe you could comment on this?
-> >
-> > >
-> > > As far as the logic to use I would be good with just using a value yo=
-u
-> > > are already setting such as the bytecount value. All that would need
-> > > to happen is to guarantee that the value is cleared in the Tx path. S=
-o
-> > > if you clear the bytecount in ixgbe_clean_xdp_tx_irq you could
-> > > theoretically just use that as well to flag that a descriptor has bee=
-n
-> > > populated and is ready to be cleaned. Assuming the logic about this
-> > > all being in the same NAPI context anyway you wouldn't need to mess
-> > > with the barrier stuff I mentioned before.
-> >
-> > Checking the number of used descs, i.e. next_to_use - next_to_clean,
-> > makes iteration in this function logically equal to the iteration insid=
-e
-> > 'ixgbe_xsk_clean_tx_ring()'. Do you think we need to change the later
-> > function too to follow same 'bytecount' approach? I don't like having
-> > two different ways to determine number of used descriptors in the same =
-file.
-> >
-> > Best regards, Ilya Maximets.
->
-> As far as ixgbe_clean_xdp_tx_irq() vs ixgbe_xsk_clean_tx_ring(), I
-> would say that if you got rid of budget and framed things more like
-> how ixgbe_xsk_clean_tx_ring was framed with the ntc !=3D ntu being
-> obvious I would prefer to see us go that route.
->
-> Really there is no need for budget in ixgbe_clean_xdp_tx_irq() if you
-> are going to be working with a static ntu value since you will only
-> ever process one iteration through the ring anyway. It might make more
-> sense if you just went through and got rid of budget and i, and
-> instead used ntc and ntu like what was done in
-> ixgbe_xsk_clean_tx_ring().
->
-> Thanks.
->
-> - Alex
+This patchset introduces support for TCP encapsulation of IKE and ESP
+messages, as defined by RFC 8229 [0]. It is an evolution of what
+Herbert Xu proposed in January 2018 [1] that addresses the main
+criticism against it, by not interfering with the TCP implementation
+at all. The networking stack now has infrastructure for this: TCP ULPs
+and Stream Parsers.
 
-Not familiar with the driver details.
-I tested this patch and the issue mentioned in OVS mailing list.
-https://www.mail-archive.com/ovs-dev@openvswitch.org/msg35362.html
-and indeed the problem goes away. But I saw a huge performance drop,
-my AF_XDP tx performance drops from >9Mpps to <5Mpps.
+The first patches are preparation and refactoring, and the final patch
+adds the feature.
 
-Tested using kernel 5.3.0-rc3+
-03:00.0 Ethernet controller: Intel Corporation Ethernet Controller
-10-Gigabit X540-AT2 (rev 01)
-Subsystem: Intel Corporation Ethernet 10G 2P X540-t Adapter
-Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
-Stepping- SERR- FastB2B- DisINTx+
+The main omission in this submission is IPv6 support. ESP
+encapsulation over UDP with IPv6 is currently not supported in the
+kernel either, as UDP encapsulation is aimed at NAT traversal, and NAT
+is not frequently used with IPv6.
 
-Regards,
-William
+Some of the code is taken directly, or slightly modified, from Herbert
+Xu's original submission [1]. The ULP and strparser pieces are
+new. This work was presented and discussed at the IPsec workshop and
+netdev 0x13 conference [2] in Prague, last March.
+
+An equivalent of patch #1 (skbuff: Avoid sleeping in
+skb_send_sock_locked) is already present in other trees (but not
+ipsec-next) as commit bd95e678e0f6 ("bpf: sockmap, fix use after free
+from sleep in psock backlog workqueue"), I'm only including it here so
+that this patchset works correctly on top of ipsec-next/master.
+
+No changes in the patchset since the RFC.
+
+[0] https://tools.ietf.org/html/rfc8229
+[1] https://patchwork.ozlabs.org/patch/859107/
+[2] https://netdevconf.org/0x13/session.html?talk-ipsec-encap
+
+Herbert Xu (1):
+  skbuff: Avoid sleeping in skb_send_sock_locked
+
+Sabrina Dubroca (6):
+  net: add queue argument to __skb_wait_for_more_packets and
+    __skb_{,try_}recv_datagram
+  xfrm: introduce xfrm_trans_queue_net
+  xfrm: add route lookup to xfrm4_rcv_encap
+  esp4: prepare esp_input_done2 for non-UDP encapsulation
+  esp4: split esp_output_udp_encap and introduce esp_output_encap
+  xfrm: add espintcp (RFC 8229)
+
+ include/linux/skbuff.h    |  11 +-
+ include/net/espintcp.h    |  38 +++
+ include/net/xfrm.h        |   4 +
+ include/uapi/linux/udp.h  |   1 +
+ net/core/datagram.c       |  26 +-
+ net/core/skbuff.c         |   1 +
+ net/ipv4/esp4.c           | 262 ++++++++++++++++++--
+ net/ipv4/udp.c            |   3 +-
+ net/ipv4/xfrm4_protocol.c |   9 +
+ net/unix/af_unix.c        |   7 +-
+ net/xfrm/Kconfig          |   9 +
+ net/xfrm/Makefile         |   1 +
+ net/xfrm/espintcp.c       | 505 ++++++++++++++++++++++++++++++++++++++
+ net/xfrm/xfrm_input.c     |  21 +-
+ net/xfrm/xfrm_policy.c    |   7 +
+ net/xfrm/xfrm_state.c     |   3 +
+ 16 files changed, 862 insertions(+), 46 deletions(-)
+ create mode 100644 include/net/espintcp.h
+ create mode 100644 net/xfrm/espintcp.c
+
+-- 
+2.22.0
+
