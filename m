@@ -2,127 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5130398696
+	by mail.lfdr.de (Postfix) with ESMTP id C066498697
 	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:27:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730892AbfHUVY6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 17:24:58 -0400
-Received: from mx0b-00154904.pphosted.com ([148.163.137.20]:60538 "EHLO
-        mx0b-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728188AbfHUVY6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:24:58 -0400
-Received: from pps.filterd (m0170396.ppops.net [127.0.0.1])
-        by mx0b-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LLAQZL000818;
-        Wed, 21 Aug 2019 17:24:56 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : subject :
- date : message-id : content-type : content-transfer-encoding :
- mime-version; s=smtpout1; bh=IW/4zYgD443tA89Wg+OoQ6xbIDSw8ToEd3ox1kivyl0=;
- b=NP8pW7K/UxhctC6VMfomtSLM2BVipafYSy8jg4itOTNjbbItaxTKAgQtp4DxUgwzmlBR
- B9VZHKw+FkdGNCheKzDo2+FuWy9NnrIPVpmvwkP8JuTByI4+Yj/4l7EvpsHACNnNZapE
- GekCPUF3q4zNXHE9TFuCjSbQApi1zS4WsdGCmHPwUshBk/q5k/3B2/U2YohU/bZuThID
- jR5QFtPsQbxTCTmkKcLFfaFWmLql5AHdPXAdPopbBtexy2RH/RthY8fAmJi+ZCBMWQiA
- Rfj2WaRAdi/hajA1jePtHdVJXcmZfGDNNSeG3NWX3YDx6YqoOMElmokWl7B0KOVmiMQe 2w== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0b-00154904.pphosted.com with ESMTP id 2ugh2s04gk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 21 Aug 2019 17:24:56 -0400
-Received: from pps.filterd (m0133268.ppops.net [127.0.0.1])
-        by mx0a-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LLCuG0080700;
-        Wed, 21 Aug 2019 17:24:55 -0400
-Received: from ausxippc106.us.dell.com (AUSXIPPC106.us.dell.com [143.166.85.156])
-        by mx0a-00154901.pphosted.com with ESMTP id 2uey0tn3a2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 21 Aug 2019 17:24:55 -0400
-X-LoopCount0: from 10.166.135.94
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.60,349,1549951200"; 
-   d="scan'208";a="450686217"
-From:   <Justin.Lee1@Dell.com>
-To:     <netdev@vger.kernel.org>, <openbmc@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <sam@mendozajonas.com>,
-        <davem@davemloft.net>
-Subject: [PATCH] net/ncsi: Fix the payload copying for the request coming from
- Netlink
-Thread-Topic: [PATCH] net/ncsi: Fix the payload copying for the request coming
- from Netlink
-Thread-Index: AdVYWI8OU3qkqsD+SsWDRcEtUwk7KQ==
-Date:   Wed, 21 Aug 2019 21:24:52 +0000
-Message-ID: <a94e5fa397a64ae3a676ec11ea09aaba@AUSX13MPS302.AMER.DELL.COM>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Enabled=True;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SiteId=945c199a-83a2-4e80-9f8c-5a91be5752dd;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Owner=Justin_Lee1@Dell.com;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SetDate=2019-08-21T21:22:10.9472431Z;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Name=External Public;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Extended_MSFT_Method=Manual;
- aiplabel=External Public
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.143.242.75]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1730290AbfHUVZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 17:25:43 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:33014 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727843AbfHUVZn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:25:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=stVrXdEt2psI1xW6LiBa6v0h4JBpgcyjIMoWqX0kuJA=; b=dDvobmV9lK90cG8bM8C7Sz+Q9
+        JOxE8ZqoZA77psTtpslH4rCGOMuYrqNLiND3+RM0QnCwrvXnc0ZnkxAZe+qgVFg8MBzdDhYgRM1Vp
+        A2VqybGbRmlO07SWfX1Eq9T0P4aieft6Ia7AS5N7grZiUbKLRTZiDaggWtrzKkh9ItMR+BK2KR23B
+        IQbqMW49JbVeGOiELHWupQp8pP7hTB5YGdzB5tlEp8lBD1OMFXk6AA141r/CXquiIhZ9V7uibWgtO
+        iBDfnCPlWUirvXdUXFZPwJfA8Z6DTVnHUcHWcANlGhRK/2lj2m3z4oT72mqwguLGcBjSFIg1Dt/dO
+        Cr4KBnANQ==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1i0Y6w-0003o9-K9; Wed, 21 Aug 2019 21:25:42 +0000
+Date:   Wed, 21 Aug 2019 14:25:42 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 24/38] cls_u32: Convert tc_u_common->handle_idr to XArray
+Message-ID: <20190821212542.GB21442@bombadil.infradead.org>
+References: <20190820223259.22348-1-willy@infradead.org>
+ <20190820223259.22348-25-willy@infradead.org>
+ <20190821141308.54313c30@cakuba.netronome.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_07:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=713 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908210208
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=869 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908210208
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190821141308.54313c30@cakuba.netronome.com>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The request coming from Netlink should use the OEM generic handler.
+On Wed, Aug 21, 2019 at 02:13:08PM -0700, Jakub Kicinski wrote:
+> On Tue, 20 Aug 2019 15:32:45 -0700, Matthew Wilcox wrote:
+> > @@ -305,8 +306,12 @@ static void *u32_get(struct tcf_proto *tp, u32 handle)
+> >  /* Protected by rtnl lock */
+> >  static u32 gen_new_htid(struct tc_u_common *tp_c, struct tc_u_hnode *ptr)
+> >  {
+> > -	int id = idr_alloc_cyclic(&tp_c->handle_idr, ptr, 1, 0x7FF, GFP_KERNEL);
+> > -	if (id < 0)
+> > +	int err;
+> > +	u32 id;
+> > +
+> > +	err = xa_alloc_cyclic(&tp_c->ht_xa, &id, ptr, XA_LIMIT(0, 0x7ff),
+> > +			&tp_c->ht_next, GFP_KERNEL);
+> 
+> nit: indentation seems off here and a couple of other places.
 
-The standard command handler expects payload in bytes/words/dwords
-but the actual payload is stored in data if the request is coming from Netl=
-ink.
-
-Signed-off-by: Justin Lee <justin.lee1@dell.com>
-
----
- net/ncsi/ncsi-cmd.c | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
-
-diff --git a/net/ncsi/ncsi-cmd.c b/net/ncsi/ncsi-cmd.c
-index eab4346..0187e65 100644
---- a/net/ncsi/ncsi-cmd.c
-+++ b/net/ncsi/ncsi-cmd.c
-@@ -309,14 +309,21 @@ static struct ncsi_request *ncsi_alloc_command(struct=
- ncsi_cmd_arg *nca)
-=20
- int ncsi_xmit_cmd(struct ncsi_cmd_arg *nca)
- {
-+	struct ncsi_cmd_handler *nch =3D NULL;
- 	struct ncsi_request *nr;
-+	unsigned char type;
- 	struct ethhdr *eh;
--	struct ncsi_cmd_handler *nch =3D NULL;
- 	int i, ret;
-=20
-+	/* Use OEM generic handler for Netlink request */
-+	if (nca->req_flags =3D=3D NCSI_REQ_FLAG_NETLINK_DRIVEN)
-+		type =3D NCSI_PKT_CMD_OEM;
-+	else
-+		type =3D nca->type;
-+
- 	/* Search for the handler */
- 	for (i =3D 0; i < ARRAY_SIZE(ncsi_cmd_handlers); i++) {
--		if (ncsi_cmd_handlers[i].type =3D=3D nca->type) {
-+		if (ncsi_cmd_handlers[i].type =3D=3D type) {
- 			if (ncsi_cmd_handlers[i].handler)
- 				nch =3D &ncsi_cmd_handlers[i];
- 			else
---=20
-2.9.3
+what indentation rule does the networking stack use?  i just leave the
+cursor where my editor puts it, which seems to be two tabs.
