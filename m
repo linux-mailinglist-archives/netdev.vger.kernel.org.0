@@ -2,111 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4A1A98648
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:09:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CA8C598655
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:13:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728433AbfHUVJL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 17:09:11 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:58162 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727316AbfHUVJK (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 17:09:10 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 5150B18C8905;
-        Wed, 21 Aug 2019 21:09:10 +0000 (UTC)
-Received: from krava (ovpn-204-27.brq.redhat.com [10.40.204.27])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 92958194B9;
-        Wed, 21 Aug 2019 21:09:07 +0000 (UTC)
-Date:   Wed, 21 Aug 2019 23:09:06 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Julia Kartseva <hex@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>
-Subject: Re: libbpf distro packaging
-Message-ID: <20190821210906.GA31031@krava>
-References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com>
- <20190813122420.GB9349@krava>
- <CAEf4BzbG29eAL7gUV+Vyrrft4u4Ss8ZBC6RMixJL_CYOTQ+F2w@mail.gmail.com>
- <FA139BA4-59E5-43C7-8E72-C7B2FC1C449E@fb.com>
- <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com>
+        id S1730741AbfHUVNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 17:13:14 -0400
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:46090 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728050AbfHUVNO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:13:14 -0400
+Received: by mail-qk1-f194.google.com with SMTP id p13so3159563qkg.13
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:13:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=gpl298X3IY84tJs6L3n/n0rk3SP4aPONuyod94Yazcc=;
+        b=B1hay4B9FaWEnfzb+3CQAey9tMm8c85TUqF4Lb1rICEFaXhG7HTVYIi3Mn1fwVljym
+         ekHUzGSSKt4cEBDVrMGJHAcBFuS8/fJOpxVHcKEGlqGTzmlE2SB8BxMlDfTiz26irA/V
+         CGflQPNGRi6kzIIZ+sLUJ9Jg9OcDduoWzaK9YHs1W/wGF51Il05tvp+8WybTZapllcyO
+         0Se+7qKjdV8aISiM1av/Xk707uQsV51TEtCOGWmr+178aqWfS5if5vX8Pg5XLJqWqT8n
+         dEawfrSo+tDOcOzVqbxy81pN3o26L9ejHtitgz32tmSach+qvz4Dx8f9oNrPOF7WWqX7
+         f4tQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=gpl298X3IY84tJs6L3n/n0rk3SP4aPONuyod94Yazcc=;
+        b=HnXhgFUclL3YY4BbGpNqIZKiqeTUVQ7kBGQhK/s8y04xw14CD0/IfF8cTbmb1wxWZm
+         fl8jYVNo7oRBEXjwcBXHhe16zMxhESgMe+8967w31cG2ck0XfCCDHYZ4ay6G2hUbiYkA
+         /idSHlm6iHH2EwgWO4XzKvRP+mXfKY0/krDhtqMaHX9CY1dGRNa3NDXgp+HcVSJKLA/n
+         FVhxxWZOYW+bzcz/1EcjM3IGxoqxwMnquoLyAXilduyxnvYg2121aNbNneCfv4TXOhxJ
+         CHG+kauiAV6k6bhHyjTu2hSQL8+4UysWyZDKfXeTy0Zjuz3infLggbxMjGdQ/5toT4k/
+         ri0w==
+X-Gm-Message-State: APjAAAW+vXzGXe/p4dlx70DkiiX4mHn9JExjZ+3KNy7jleX2IogLeSUg
+        rZs7TCtEDs0DHtUlFibfDh90TQ==
+X-Google-Smtp-Source: APXvYqwHSxs5CuI8w98hixMlM/1Co3tU8F7IgAVJcWrY2chVdk3gMSVYEadb/oQTHjkJpDTjfwz/cg==
+X-Received: by 2002:a37:6109:: with SMTP id v9mr32997910qkb.432.1566421993102;
+        Wed, 21 Aug 2019 14:13:13 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y26sm13524235qta.39.2019.08.21.14.13.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Aug 2019 14:13:13 -0700 (PDT)
+Date:   Wed, 21 Aug 2019 14:13:08 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 24/38] cls_u32: Convert tc_u_common->handle_idr to
+ XArray
+Message-ID: <20190821141308.54313c30@cakuba.netronome.com>
+In-Reply-To: <20190820223259.22348-25-willy@infradead.org>
+References: <20190820223259.22348-1-willy@infradead.org>
+        <20190820223259.22348-25-willy@infradead.org>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.70]); Wed, 21 Aug 2019 21:09:10 +0000 (UTC)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 10:27:23PM +0000, Julia Kartseva wrote:
-> 
-> 
-> ﻿On 8/19/19, 11:08 AM, "Julia Kartseva" <hex@fb.com> wrote:
-> 
->     On 8/13/19, 11:24 AM, "Andrii Nakryiko" <andrii.nakryiko@gmail.com> wrote:
->     
->         On Tue, Aug 13, 2019 at 5:26 AM Jiri Olsa <jolsa@redhat.com> wrote:
->         >
->         > On Mon, Aug 12, 2019 at 07:04:12PM +0000, Julia Kartseva wrote:
->         > > I would like to bring up libbpf publishing discussion started at [1].
->         > > The present state of things is that libbpf is built from kernel tree, e.g. [2]
->         > > For Debian and [3] for Fedora whereas the better way would be having a
->         > > package built from github mirror. The advantages of the latter:
->         > > - Consistent, ABI matching versioning across distros
->         > > - The mirror has integration tests
->         > > - No need in kernel tree to build a package
->         > > - Changes can be merged directly to github w/o waiting them to be merged
->         > > through bpf-next -> net-next -> main
->         > > There is a PR introducing a libbpf.spec which can be used as a starting point: [4]
->         > > Any comments regarding the spec itself can be posted there.
->         > > In the future it may be used as a source of truth.
->         > > Please consider switching libbpf packaging to the github mirror instead
->         > > of the kernel tree.
->         > > Thanks
->         > >
->         > > [1] https://urldefense.proofpoint.com/v2/url?u=https-3A__lists.iovisor.org_g_iovisor-2Ddev_message_1521&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=dYAc2jLhFg0wtCZ_ms2HF5bWANoHzA3UMug5TNCeBtE&e= 
->         > > [2] https://urldefense.proofpoint.com/v2/url?u=https-3A__packages.debian.org_sid_libbpf4.19&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=lq1MpF-bt6y6ZEtFc57eT-BO_wMBx8uUBACJooWbUYk&e= 
->         > > [3] https://urldefense.proofpoint.com/v2/url?u=http-3A__rpmfind.net_linux_RPM_fedora_devel_rawhide_x86-5F64_l_libbpf-2D5.3.0-2D0.rc2.git0.1.fc31.x86-5F64.html&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=NoolYHL57G2KhzE768iWdy6v5LD2GfJQyqPmtjy196E&e= 
->         > > [4] https://github.com/libbpf/libbpf/pull/64
->         >
->         > hi,
->         > Fedora has libbpf as kernel-tools subpackage, so I think
->         > we'd need to create new package and deprecate the current
->         >
->         > but I like the ABI stability by using github .. how's actually
->         > the sync (in both directions) with kernel sources going on?
->         
->         Sync is always in one direction, from kernel sources into Github repo.
->         Right now it's triggered by a human (usually me), but we are using a
->         script that automates entire process (see
->         https://github.com/libbpf/libbpf/blob/master/scripts/sync-kernel.sh).
->         It cherry-pick relevant commits from kernel, transforms them to match
->         Github's file layout and re-applies those changes to Github repo.
->         
->         There is never a sync from Github back to kernel, but Github repo
->         contains some extra stuff that's not in kernel. E.g., the script I
->         mentioned, plus Github's Makefile is different, because it can't rely
->         on kernel's kbuild setup.
-> 
-> Hi Jiri,
-> I'm curious if you have any comments regarding sync procedure described
-> By Andrii. Or if there is anything else you'd like us to address so Fedora
-> can be switched to libbpf built from the github mirror?
+On Tue, 20 Aug 2019 15:32:45 -0700, Matthew Wilcox wrote:
+> @@ -305,8 +306,12 @@ static void *u32_get(struct tcf_proto *tp, u32 handle)
+>  /* Protected by rtnl lock */
+>  static u32 gen_new_htid(struct tc_u_common *tp_c, struct tc_u_hnode *ptr)
+>  {
+> -	int id = idr_alloc_cyclic(&tp_c->handle_idr, ptr, 1, 0x7FF, GFP_KERNEL);
+> -	if (id < 0)
+> +	int err;
+> +	u32 id;
+> +
+> +	err = xa_alloc_cyclic(&tp_c->ht_xa, &id, ptr, XA_LIMIT(0, 0x7ff),
+> +			&tp_c->ht_next, GFP_KERNEL);
 
-hi,
-yea, I think it's ok.. just need to check the implications
-for rhel packaging and I'll let you know
-
-jirka
+nit: indentation seems off here and a couple of other places.
