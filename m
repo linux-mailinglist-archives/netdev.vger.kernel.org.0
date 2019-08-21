@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F5CF987CA
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 01:27:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38111987D0
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 01:27:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730545AbfHUX1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 19:27:30 -0400
-Received: from mail.nic.cz ([217.31.204.67]:38030 "EHLO mail.nic.cz"
+        id S1730432AbfHUX13 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 19:27:29 -0400
+Received: from mail.nic.cz ([217.31.204.67]:38044 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730184AbfHUX12 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730348AbfHUX12 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 21 Aug 2019 19:27:28 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id 41571140C79;
+        by mail.nic.cz (Postfix) with ESMTP id 6338A140C8A;
         Thu, 22 Aug 2019 01:27:25 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566430045; bh=8o91pcTrce2IoSeOrviOrCZyteiYiDcCoR+I1Ru2eI8=;
+        t=1566430045; bh=Mofpn+oM62cvsCFXbGsNRxNtPPZbpgDOqEhPT4jCSo4=;
         h=From:To:Date;
-        b=DKx/ak33UZ8Khavj9VZ76WzGZokngNCdSS3DARmzymW2Ow1n0vKSRGNT+6bsRLOMd
-         ATZcTOgJhK7K8giteKuSXPgwLk0vyNSHUPbIWuZ77IUglqkrdPOlOT0ffKE09VI+zO
-         RMKoY6bqideUkbQcrvvtvjXZiizLdjGfkgElEWX0=
+        b=b0b7AE2cQ1tA9+a4jQKv6MkpXa8bBxfF1iFT0gtLftRpO6AO6UGBayZAfMZkFIjJD
+         EdYYFzr5KuzdOw6uqWnXUCUYTG1vHboxjvspVEa4X0aVRoGHLfSevPivQpMNtCk/1U
+         EfmzFLqkz1jOlCLJ2MxJDqpBHlNoByAif5x2j/fI=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -27,9 +27,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH net-next 04/10] net: dsa: mv88e6xxx: prefix hidden register macro names with MV88E6XXX_
-Date:   Thu, 22 Aug 2019 01:27:18 +0200
-Message-Id: <20190821232724.1544-5-marek.behun@nic.cz>
+Subject: [PATCH net-next 05/10] net: dsa: mv88e6xxx: create chip->info->ops->serdes_get_lane method
+Date:   Thu, 22 Aug 2019 01:27:19 +0200
+Message-Id: <20190821232724.1544-6-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190821232724.1544-1-marek.behun@nic.cz>
 References: <20190821232724.1544-1-marek.behun@nic.cz>
@@ -46,111 +46,202 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to be uniform with the rest of the driver, prepend hidden
-register macro names with the MV88E6XXX_ prefix.
+Create a serdes_get_lane() method in the mv88e6xxx operations structure.
+Use it instead of calling the different implementations.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
 ---
- drivers/net/dsa/mv88e6xxx/hidden.c | 36 ++++++++++++++++--------------
- drivers/net/dsa/mv88e6xxx/hidden.h | 16 ++++++-------
- 2 files changed, 27 insertions(+), 25 deletions(-)
+ drivers/net/dsa/mv88e6xxx/chip.c   |  6 ++++++
+ drivers/net/dsa/mv88e6xxx/chip.h   |  3 +++
+ drivers/net/dsa/mv88e6xxx/port.c   |  4 ++--
+ drivers/net/dsa/mv88e6xxx/serdes.c | 29 +++++++++++++++++------------
+ drivers/net/dsa/mv88e6xxx/serdes.h |  2 ++
+ 5 files changed, 30 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/hidden.c b/drivers/net/dsa/mv88e6xxx/hidden.c
-index 6ea47b03679f..efa93c776a30 100644
---- a/drivers/net/dsa/mv88e6xxx/hidden.c
-+++ b/drivers/net/dsa/mv88e6xxx/hidden.c
-@@ -22,25 +22,26 @@ int mv88e6390_hidden_write(struct mv88e6xxx_chip *chip, int port,
- 	u16 ctrl;
- 	int err;
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 2dab46ad1d63..2340634aab27 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -3256,6 +3256,7 @@ static const struct mv88e6xxx_ops mv88e6190_ops = {
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390_serdes_power,
++	.serdes_get_lane = mv88e6390_serdes_get_lane,
+ 	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
+ 	.serdes_irq_free = mv88e6390_serdes_irq_free,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+@@ -3302,6 +3303,7 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390x_serdes_power,
++	.serdes_get_lane = mv88e6390x_serdes_get_lane,
+ 	.serdes_irq_setup = mv88e6390x_serdes_irq_setup,
+ 	.serdes_irq_free = mv88e6390x_serdes_irq_free,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+@@ -3348,6 +3350,7 @@ static const struct mv88e6xxx_ops mv88e6191_ops = {
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390_serdes_power,
++	.serdes_get_lane = mv88e6390_serdes_get_lane,
+ 	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
+ 	.serdes_irq_free = mv88e6390_serdes_irq_free,
+ 	.avb_ops = &mv88e6390_avb_ops,
+@@ -3484,6 +3487,7 @@ static const struct mv88e6xxx_ops mv88e6290_ops = {
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390_serdes_power,
++	.serdes_get_lane = mv88e6390_serdes_get_lane,
+ 	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
+ 	.serdes_irq_free = mv88e6390_serdes_irq_free,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+@@ -3801,6 +3805,7 @@ static const struct mv88e6xxx_ops mv88e6390_ops = {
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390_serdes_power,
++	.serdes_get_lane = mv88e6390_serdes_get_lane,
+ 	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
+ 	.serdes_irq_free = mv88e6390_serdes_irq_free,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+@@ -3851,6 +3856,7 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
+ 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
+ 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390x_serdes_power,
++	.serdes_get_lane = mv88e6390x_serdes_get_lane,
+ 	.serdes_irq_setup = mv88e6390x_serdes_irq_setup,
+ 	.serdes_irq_free = mv88e6390x_serdes_irq_free,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index a406be2f5652..35faf5be598b 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -443,6 +443,9 @@ struct mv88e6xxx_ops {
+ 	/* Power on/off a SERDES interface */
+ 	int (*serdes_power)(struct mv88e6xxx_chip *chip, int port, bool on);
  
--	err = mv88e6xxx_port_write(chip, PORT_RESERVED_1A_DATA_PORT,
--				   PORT_RESERVED_1A, val);
-+	err = mv88e6xxx_port_write(chip, MV88E6XXX_PORT_RESERVED_1A_DATA_PORT,
-+				   MV88E6XXX_PORT_RESERVED_1A, val);
- 	if (err)
- 		return err;
++	/* SERDES lane mapping */
++	int (*serdes_get_lane)(struct mv88e6xxx_chip *chip, int port);
++
+ 	/* SERDES interrupt handling */
+ 	int (*serdes_irq_setup)(struct mv88e6xxx_chip *chip, int port);
+ 	void (*serdes_irq_free)(struct mv88e6xxx_chip *chip, int port);
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index c95cdb73e5a2..092176fd3d90 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -434,7 +434,7 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 	if (cmode == chip->ports[port].cmode)
+ 		return 0;
  
--	ctrl = PORT_RESERVED_1A_BUSY | PORT_RESERVED_1A_WRITE |
--	       PORT_RESERVED_1A_BLOCK | port << PORT_RESERVED_1A_PORT_SHIFT |
--	       reg;
-+	ctrl = MV88E6XXX_PORT_RESERVED_1A_BUSY |
-+	       MV88E6XXX_PORT_RESERVED_1A_WRITE |
-+	       MV88E6XXX_PORT_RESERVED_1A_BLOCK |
-+	       port << MV88E6XXX_PORT_RESERVED_1A_PORT_SHIFT | reg;
+-	lane = mv88e6390x_serdes_get_lane(chip, port);
++	lane = mv88e6xxx_serdes_get_lane(chip, port);
+ 	if (lane < 0 && lane != -ENODEV)
+ 		return lane;
  
--	return mv88e6xxx_port_write(chip, PORT_RESERVED_1A_CTRL_PORT,
--				    PORT_RESERVED_1A, ctrl);
-+	return mv88e6xxx_port_write(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
-+				    MV88E6XXX_PORT_RESERVED_1A, ctrl);
+@@ -466,7 +466,7 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 
+ 		chip->ports[port].cmode = cmode;
+ 
+-		lane = mv88e6390x_serdes_get_lane(chip, port);
++		lane = mv88e6xxx_serdes_get_lane(chip, port);
+ 		if (lane < 0)
+ 			return lane;
+ 
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 0f3d7cbb696b..011322fa24ae 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -286,10 +286,19 @@ void mv88e6352_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
+ 	chip->ports[port].serdes_irq = 0;
  }
  
- int mv88e6390_hidden_wait(struct mv88e6xxx_chip *chip)
+-/* Return the SERDES lane address a port is using. Only Ports 9 and 10
+- * have SERDES lanes. Returns -ENODEV if a port does not have a lane.
++/* Return the SERDES lane address a port is using. If a port has multiple lanes,
++ * should return the first lane the port is using. Should return -ENODEV if
++ * a port does not have a lane.
+  */
+-static int mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
++int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
++{
++	if (!chip->info->ops->serdes_get_lane)
++		return -EOPNOTSUPP;
++
++	return chip->info->ops->serdes_get_lane(chip, port);
++}
++
++int mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
  {
--	int bit = __bf_shf(PORT_RESERVED_1A_BUSY);
-+	int bit = __bf_shf(MV88E6XXX_PORT_RESERVED_1A_BUSY);
+ 	u8 cmode = chip->ports[port].cmode;
  
--	return mv88e6xxx_wait_bit(chip, PORT_RESERVED_1A_CTRL_PORT,
--				  PORT_RESERVED_1A, bit, 0);
-+	return mv88e6xxx_wait_bit(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
-+				  MV88E6XXX_PORT_RESERVED_1A, bit, 0);
+@@ -311,10 +320,6 @@ static int mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
+ 	}
  }
  
- int mv88e6390_hidden_read(struct mv88e6xxx_chip *chip, int port,
-@@ -49,12 +50,13 @@ int mv88e6390_hidden_read(struct mv88e6xxx_chip *chip, int port,
- 	u16 ctrl;
+-/* Return the SERDES lane address a port is using. Ports 9 and 10 can
+- * use multiple lanes. If so, return the first lane the port uses.
+- * Returns -ENODEV if a port does not have a lane.
+- */
+ int mv88e6390x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port)
+ {
+ 	u8 cmode_port9, cmode_port10, cmode_port;
+@@ -466,7 +471,7 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
+ {
+ 	int lane;
+ 
+-	lane = mv88e6390_serdes_get_lane(chip, port);
++	lane = mv88e6xxx_serdes_get_lane(chip, port);
+ 	if (lane == -ENODEV)
+ 		return 0;
+ 
+@@ -485,7 +490,7 @@ int mv88e6390x_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
+ {
+ 	int lane;
+ 
+-	lane = mv88e6390x_serdes_get_lane(chip, port);
++	lane = mv88e6xxx_serdes_get_lane(chip, port);
+ 	if (lane == -ENODEV)
+ 		return 0;
+ 
+@@ -638,7 +643,7 @@ static irqreturn_t mv88e6390_serdes_thread_fn(int irq, void *dev_id)
+ 	int lane;
  	int err;
  
--	ctrl = PORT_RESERVED_1A_BUSY | PORT_RESERVED_1A_READ |
--	       PORT_RESERVED_1A_BLOCK | port << PORT_RESERVED_1A_PORT_SHIFT |
--	       reg;
-+	ctrl = MV88E6XXX_PORT_RESERVED_1A_BUSY |
-+	       MV88E6XXX_PORT_RESERVED_1A_READ |
-+	       MV88E6XXX_PORT_RESERVED_1A_BLOCK |
-+	       port << MV88E6XXX_PORT_RESERVED_1A_PORT_SHIFT | reg;
+-	lane = mv88e6390x_serdes_get_lane(chip, port->port);
++	lane = mv88e6xxx_serdes_get_lane(chip, port->port);
  
--	err = mv88e6xxx_port_write(chip, PORT_RESERVED_1A_CTRL_PORT,
--				   PORT_RESERVED_1A, ctrl);
-+	err = mv88e6xxx_port_write(chip, MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT,
-+				   MV88E6XXX_PORT_RESERVED_1A, ctrl);
- 	if (err)
- 		return err;
+ 	mv88e6xxx_reg_lock(chip);
  
-@@ -62,6 +64,6 @@ int mv88e6390_hidden_read(struct mv88e6xxx_chip *chip, int port,
- 	if (err)
- 		return err;
+@@ -666,7 +671,7 @@ int mv88e6390x_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
+ 	int lane;
+ 	int err;
  
--	return mv88e6xxx_port_read(chip, PORT_RESERVED_1A_DATA_PORT,
--				   PORT_RESERVED_1A, val);
-+	return mv88e6xxx_port_read(chip, MV88E6XXX_PORT_RESERVED_1A_DATA_PORT,
-+				   MV88E6XXX_PORT_RESERVED_1A, val);
- }
-diff --git a/drivers/net/dsa/mv88e6xxx/hidden.h b/drivers/net/dsa/mv88e6xxx/hidden.h
-index 5e2de0a7f22d..632abbe4e139 100644
---- a/drivers/net/dsa/mv88e6xxx/hidden.h
-+++ b/drivers/net/dsa/mv88e6xxx/hidden.h
-@@ -13,14 +13,14 @@
- #include "chip.h"
+-	lane = mv88e6390x_serdes_get_lane(chip, port);
++	lane = mv88e6xxx_serdes_get_lane(chip, port);
  
- /* Offset 0x1a: Magic undocumented errata register */
--#define PORT_RESERVED_1A			0x1a
--#define PORT_RESERVED_1A_BUSY			BIT(15)
--#define PORT_RESERVED_1A_WRITE			BIT(14)
--#define PORT_RESERVED_1A_READ			0
--#define PORT_RESERVED_1A_PORT_SHIFT		5
--#define PORT_RESERVED_1A_BLOCK			(0xf << 10)
--#define PORT_RESERVED_1A_CTRL_PORT		4
--#define PORT_RESERVED_1A_DATA_PORT		5
-+#define MV88E6XXX_PORT_RESERVED_1A		0x1a
-+#define MV88E6XXX_PORT_RESERVED_1A_BUSY		BIT(15)
-+#define MV88E6XXX_PORT_RESERVED_1A_WRITE	BIT(14)
-+#define MV88E6XXX_PORT_RESERVED_1A_READ		0
-+#define MV88E6XXX_PORT_RESERVED_1A_PORT_SHIFT	5
-+#define MV88E6XXX_PORT_RESERVED_1A_BLOCK	(0xf << 10)
-+#define MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT	4
-+#define MV88E6XXX_PORT_RESERVED_1A_DATA_PORT	5
+ 	if (lane == -ENODEV)
+ 		return 0;
+@@ -711,7 +716,7 @@ int mv88e6390_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
  
- int mv88e6390_hidden_write(struct mv88e6xxx_chip *chip, int port,
- 			   int reg, u16 val);
+ void mv88e6390x_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
+ {
+-	int lane = mv88e6390x_serdes_get_lane(chip, port);
++	int lane = mv88e6xxx_serdes_get_lane(chip, port);
+ 
+ 	if (lane == -ENODEV)
+ 		return;
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
+index ff5b94439335..f2ca3bcc3893 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.h
++++ b/drivers/net/dsa/mv88e6xxx/serdes.h
+@@ -74,6 +74,8 @@
+ #define MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID BIT(11)
+ #define MV88E6390_SGMII_PHY_STATUS_LINK		BIT(10)
+ 
++int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip, int port);
++int mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port);
+ int mv88e6390x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port);
+ int mv88e6341_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on);
+ int mv88e6352_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on);
 -- 
 2.21.0
 
