@@ -2,161 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B6B08977A2
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:58:51 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB129977AB
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 13:01:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbfHUKz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 06:55:58 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:42483 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726917AbfHUKz6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:55:58 -0400
-Received: by mail-wr1-f67.google.com with SMTP id b16so1572589wrq.9
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 03:55:57 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=references:user-agent:from:to:cc:subject:in-reply-to:date
-         :message-id:mime-version;
-        bh=WyMHZAA0Qc/+TYCGuweI620Z3fpFzwfapMrIB9ufTsg=;
-        b=fHvjr7M6oaWkGoWvcj9pBZmawdN6AT/H7iPBdFn+TdXoKTZpAm6k6X457tR1nd17hx
-         BWXvWHcu3QIwb6BXuuWalLFaUIArTyJ/Wn+8XazKdstH2/5ddO077ZNzX95OvfA/bLkF
-         grtXXwefsLdQVmzT0uzIJAPKXWJ/t4NXvmjWvWSgzVv1hDNX2ywpxx7yX3l/98tgcLzX
-         3lfytGhqxQ4oJ2dCFhWF0gEoJ0E0cM4eROXmE6JK65SiDDRpJDp2ozvFrpDr/p+BpU1t
-         bBIIuSD5SOjKDo7wg3besn6J0FWR+5wIvVjk/pprMgLOyEWk7wEaD0fuivujlrsHcBrP
-         Tfjw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject
-         :in-reply-to:date:message-id:mime-version;
-        bh=WyMHZAA0Qc/+TYCGuweI620Z3fpFzwfapMrIB9ufTsg=;
-        b=PbSwtLFeb9Q2wg8VJj62p018vUG4pYKl2EusdjqFy1MfEF6aIMcZ2PxW4De91GAlW6
-         P2FOd+MnOhLEXrJdmAmrZe68i8wdo5/GSLHKhpVR2kup+notA89D+0Oah2QBwmI1RaW8
-         t73iOtC+PaE5NsKeHHS7fOpsl5tQ96sxT7u4ct8SA6++MqyITElhgwfatEDj+hUhTp4a
-         86XNgzRGMDXHvnHwypFv6BJVVl9ZGcg7px8Gnm7t/yyOLr+FuBDL+t3Y2b+eQf95s2lo
-         7WJY6t/RNR8yj2UfTXGCYn6Av0aL5BUEdSpru5Sop6OMfDHdqIdVtmLWFB+4Pp1dbMp+
-         VODg==
-X-Gm-Message-State: APjAAAV4C3gAsKL664Mdd8KBvQZY7r5f2KQTrzz2Bo1TgDfo6UXDCTnA
-        xxWfd/9zaA6BG7hqumwGeAa6+w==
-X-Google-Smtp-Source: APXvYqxy71UJYE8nNVPrM78f/UonRomhIlrziR5U+ykFKDa0TRBkO8syiWp8ZwkpMnF9OvVCGS9LGg==
-X-Received: by 2002:a5d:4950:: with SMTP id r16mr39205612wrs.347.1566384956439;
-        Wed, 21 Aug 2019 03:55:56 -0700 (PDT)
-Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
-        by smtp.gmail.com with ESMTPSA id g65sm7099972wma.21.2019.08.21.03.55.55
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 21 Aug 2019 03:55:55 -0700 (PDT)
-References: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com> <87d0gy6cj6.fsf@concordia.ellerman.id.au>
-User-agent: mu4e 0.9.18; emacs 25.2.2
-From:   Jiong Wang <jiong.wang@netronome.com>
-To:     Michael Ellerman <mpe@ellerman.id.au>
-Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jiong Wang <jiong.wang@netronome.com>, bpf@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: Regression fix for bpf in v5.3 (was Re: [RFC PATCH] bpf: handle 32-bit zext during constant blinding)
-In-reply-to: <87d0gy6cj6.fsf@concordia.ellerman.id.au>
-Date:   Wed, 21 Aug 2019 11:55:54 +0100
-Message-ID: <87k1b6yeh1.fsf@netronome.com>
+        id S1727082AbfHULBa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 07:01:30 -0400
+Received: from mail-eopbgr150047.outbound.protection.outlook.com ([40.107.15.47]:17415
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726227AbfHULB3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 07:01:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Ef0FTbP1xipACDjvKc0h5oatxzq9+XZlEYxLOR3+LA5eTEqmeVSvIGvlzAle3xMYZcwZRIcASIHO9tto5zdw8c2s7JnBVwIK/4CfqOpFMviA/lsFiLIYhoNQkpAhFpSJltupWLezyzUjKf41Sd9FcpsLcvfuOGSBKthWNMVzsM46UQ4YBFBWDlCpHKVLNe9ok2gEpDLPjK+qNqJoCWFtoeQw/K2DN5jiBXOYrFfRkiJ0d71EGfVmwhBFsr5B8qmqKk32dvyk9Gn7xKHNmV08/jakFJyLuG0zuzadqGW4EE3kcQWnWU5FuzsxEBvfU/EuWeT6qglwxKtj0Zd7M88AHA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5TSkfeiTQmRDE7PvC668ZhQkKc9HMgNcYPyNDWyb9rE=;
+ b=jvars5obAaVz/WYnhbA09mUYx//E21oNjU9mmh32DZpiNJZg+iXqBIP/e+fqBirIQQuebXq1tdDEoJiWQltXMMN7Pk9puoX2PA0GNVn2RQTbZq/TFw6pFmQ9qIZaushQfX0Q5lGhTroMIWM4FMkceKL5BKtlXcBoTA6kTJGzPoAK/GI2uuqxlExmAeLdqbNlGyJWOaOMtvbgAi+fab6Tn2xzc9waD0C+YNdUxLfzuJK+3Jvjx8sHwoClVgIr1LpXcyJdDPlskhNDNQQiDTjo3zVW482S5vCt00H/PTj+x+Cno2mRFEbotg+D/6STEZ9EoEW25i6+l0K42oXYTFLlfQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=5TSkfeiTQmRDE7PvC668ZhQkKc9HMgNcYPyNDWyb9rE=;
+ b=muIvEPwln4jHRlQU3UcrDjs7P3Pub+vGPzF8X1Z0C3Cr30JBSbTE8f28a3G7zVUJsY2gojWDBpjDk7DDpgJRL+ikMXtaPLCqFXRrcW41uw+2iY+TdnnHzj+63xK51UMWJq6F6icalrEXdgNDoU73gv5HWaMgrqWL+St+iOLI8Ww=
+Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com (10.172.248.19) by
+ DB6PR0402MB2789.eurprd04.prod.outlook.com (10.172.245.7) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Wed, 21 Aug 2019 11:00:46 +0000
+Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com
+ ([fe80::3519:c2fc:4322:4f90]) by DB6PR0402MB2936.eurprd04.prod.outlook.com
+ ([fe80::3519:c2fc:4322:4f90%2]) with mapi id 15.20.2178.020; Wed, 21 Aug 2019
+ 11:00:46 +0000
+From:   Marco Hartmann <marco.hartmann@nxp.com>
+To:     "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Marco Hartmann <marco.hartmann@nxp.com>,
+        Christian Herber <christian.herber@nxp.com>
+Subject: [PATCH v2 net] Add genphy_c45_config_aneg() function to phy-c45.c
+Thread-Topic: [PATCH v2 net] Add genphy_c45_config_aneg() function to
+ phy-c45.c
+Thread-Index: AQHVWA+vyzqZh0jaqEeC/2XCAuPAwQ==
+Date:   Wed, 21 Aug 2019 11:00:46 +0000
+Message-ID: <1566385208-23523-1-git-send-email-marco.hartmann@nxp.com>
+Accept-Language: de-DE, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: AM0PR04CA0022.eurprd04.prod.outlook.com
+ (2603:10a6:208:122::35) To DB6PR0402MB2936.eurprd04.prod.outlook.com
+ (2603:10a6:4:9a::19)
+x-mailer: git-send-email 2.7.4
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=marco.hartmann@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [217.111.68.82]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: b5000d28-b5a8-4a05-ebf9-08d72626d196
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0402MB2789;
+x-ms-traffictypediagnostic: DB6PR0402MB2789:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DB6PR0402MB2789A524C7DBCA69D5BD47E98CAA0@DB6PR0402MB2789.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:1332;
+x-forefront-prvs: 0136C1DDA4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(376002)(346002)(396003)(136003)(189003)(199004)(64756008)(71200400001)(6512007)(486006)(71190400001)(52116002)(476003)(2616005)(3846002)(316002)(110136005)(7736002)(478600001)(6636002)(102836004)(6116002)(2501003)(53936002)(26005)(6436002)(2906002)(66556008)(44832011)(2201001)(6486002)(305945005)(55236004)(6506007)(99286004)(5660300002)(386003)(256004)(14444005)(81156014)(8676002)(66066001)(81166006)(14454004)(25786009)(66446008)(186003)(50226002)(36756003)(86362001)(66946007)(8936002)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0402MB2789;H:DB6PR0402MB2936.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: TWXpq/+jk7X8LhH6aQVuXFIuHzPtabaVNYssrjAMQfQGvtv5Jo6pi1FxwE/rg3decITc+QQU6Ndv7zgou0NZUXiwFlJDX1OMipwpubP1vABhY59rIDUual1KPLvqxq+n+yt0136R1qYkbmtMrRBNVFFvHiHMpMh0hRSDBXBSK5UoKrkOtT3HB1XTkfW9+haA1YkM+JdpCntvcBgnc2DgbU9rHBP4m18ogf7nECqXk6egqHzRoQV/VZCulY8Tg4EWvaEHOHmUV1MOJbdjGCNtoyiw7viQaP0zn+y3nhDvcJk9u2ySWOk7wQ0eIPE/68BwsKBkkuffL3Qr8yIYGiNQ/e58hfELGf5ONKGy3NEE9wzC4f9uB7Hsx2p1Spl4GAkMsKnq5SemSGGfZTgMLQeTgJvgsw6VBe9G7u4OUuJ9HMw=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-ID: <46A97D2268DB7C44A9D949A4337247ED@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5000d28-b5a8-4a05-ebf9-08d72626d196
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 11:00:46.5125
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: ksdBB8sgM+NXFs80X9pt98Y5Kjxa8nGm1KHctx0fK+oIzg6jLfycWIM1yG3NL7BHB6TVqzfyNBcfeyKKQkxyEA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2789
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Commit 34786005eca3 ("net: phy: prevent PHYs w/o Clause 22 regs from callin=
+g
+genphy_config_aneg") introduced a check that aborts phy_config_aneg()
+if the phy is a C45 phy.
+This causes phy_state_machine() to call phy_error() so that the phy
+ends up in PHY_HALTED state.
 
-Michael Ellerman writes:
+Instead of returning -EOPNOTSUPP, call genphy_c45_config_aneg()
+(analogous to the C22 case) so that the state machine can run
+correctly.
 
-> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> writes:
->> Since BPF constant blinding is performed after the verifier pass, there
->> are certain ALU32 instructions inserted which don't have a corresponding
->> zext instruction inserted after. This is causing a kernel oops on
->> powerpc and can be reproduced by running 'test_cgroup_storage' with
->> bpf_jit_harden=2.
->>
->> Fix this by emitting BPF_ZEXT during constant blinding if
->> prog->aux->verifier_zext is set.
->>
->> Fixes: a4b1d3c1ddf6cb ("bpf: verifier: insert zero extension according to analysis result")
->> Reported-by: Michael Ellerman <mpe@ellerman.id.au>
->> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
->> ---
->> This approach (the location where zext is being introduced below, in 
->> particular) works for powerpc, but I am not entirely sure if this is 
->> sufficient for other architectures as well. This is broken on v5.3-rc4.
->
-> Any comment on this?
+genphy_c45_config_aneg() closely resembles mv3310_config_aneg()
+in drivers/net/phy/marvell10g.c, excluding vendor specific
+configurations for 1000BaseT.
 
-Have commented on https://marc.info/?l=linux-netdev&m=156637836024743&w=2
+Fixes: 22b56e827093 ("net: phy: replace genphy_10g_driver with genphy_c45_d=
+river")
 
-The fix looks correct to me on "BPF_LD | BPF_IMM | BPF_DW", but looks
-unnecessary on two other places. It would be great if you or Naveen could
-confirm it.
+Signed-off-by: Marco Hartmann <marco.hartmann@nxp.com>
+---
+Changes in v2:
+- corrected commit message
+- reordered variables
+---
+---
+ drivers/net/phy/phy-c45.c | 26 ++++++++++++++++++++++++++
+ drivers/net/phy/phy.c     |  2 +-
+ include/linux/phy.h       |  1 +
+ 3 files changed, 28 insertions(+), 1 deletion(-)
 
-Thanks.
-
-Regards,
-Jiong
-
-> This is a regression in v5.3, which results in a kernel crash, it would
-> be nice to get it fixed before the release please?
->
-> cheers
->
->> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
->> index 8191a7db2777..d84146e6fd9e 100644
->> --- a/kernel/bpf/core.c
->> +++ b/kernel/bpf/core.c
->> @@ -890,7 +890,8 @@ int bpf_jit_get_func_addr(const struct bpf_prog *prog,
->>  
->>  static int bpf_jit_blind_insn(const struct bpf_insn *from,
->>  			      const struct bpf_insn *aux,
->> -			      struct bpf_insn *to_buff)
->> +			      struct bpf_insn *to_buff,
->> +			      bool emit_zext)
->>  {
->>  	struct bpf_insn *to = to_buff;
->>  	u32 imm_rnd = get_random_int();
->> @@ -939,6 +940,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
->>  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
->>  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
->>  		*to++ = BPF_ALU32_REG(from->code, from->dst_reg, BPF_REG_AX);
->> +		if (emit_zext)
->> +			*to++ = BPF_ZEXT_REG(from->dst_reg);
->>  		break;
->>  
->>  	case BPF_ALU64 | BPF_ADD | BPF_K:
->> @@ -992,6 +995,10 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
->>  			off -= 2;
->>  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
->>  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
->> +		if (emit_zext) {
->> +			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
->> +			off--;
->> +		}
->>  		*to++ = BPF_JMP32_REG(from->code, from->dst_reg, BPF_REG_AX,
->>  				      off);
->>  		break;
->> @@ -1005,6 +1012,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
->>  	case 0: /* Part 2 of BPF_LD | BPF_IMM | BPF_DW. */
->>  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ aux[0].imm);
->>  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
->> +		if (emit_zext)
->> +			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
->>  		*to++ = BPF_ALU64_REG(BPF_OR,  aux[0].dst_reg, BPF_REG_AX);
->>  		break;
->>  
->> @@ -1088,7 +1097,8 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
->>  		    insn[1].code == 0)
->>  			memcpy(aux, insn, sizeof(aux));
->>  
->> -		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff);
->> +		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff,
->> +						clone->aux->verifier_zext);
->>  		if (!rewritten)
->>  			continue;
->>  
->> -- 
->> 2.22.0
+diff --git a/drivers/net/phy/phy-c45.c b/drivers/net/phy/phy-c45.c
+index 58bb25e4af10..7935593debb1 100644
+--- a/drivers/net/phy/phy-c45.c
++++ b/drivers/net/phy/phy-c45.c
+@@ -523,6 +523,32 @@ int genphy_c45_read_status(struct phy_device *phydev)
+ }
+ EXPORT_SYMBOL_GPL(genphy_c45_read_status);
+=20
++/**
++ * genphy_c45_config_aneg - restart auto-negotiation or forced setup
++ * @phydev: target phy_device struct
++ *
++ * Description: If auto-negotiation is enabled, we configure the
++ *   advertising, and then restart auto-negotiation.  If it is not
++ *   enabled, then we force a configuration.
++ */
++int genphy_c45_config_aneg(struct phy_device *phydev)
++{
++	bool changed =3D false;
++	int ret;
++
++	if (phydev->autoneg =3D=3D AUTONEG_DISABLE)
++		return genphy_c45_pma_setup_forced(phydev);
++
++	ret =3D genphy_c45_an_config_aneg(phydev);
++	if (ret < 0)
++		return ret;
++	if (ret > 0)
++		changed =3D true;
++
++	return genphy_c45_check_and_restart_aneg(phydev, changed);
++}
++EXPORT_SYMBOL_GPL(genphy_c45_config_aneg);
++
+ /* The gen10g_* functions are the old Clause 45 stub */
+=20
+ int gen10g_config_aneg(struct phy_device *phydev)
+diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+index f3adea9ef400..74c4e15ebe52 100644
+--- a/drivers/net/phy/phy.c
++++ b/drivers/net/phy/phy.c
+@@ -507,7 +507,7 @@ static int phy_config_aneg(struct phy_device *phydev)
+ 	 * allowed to call genphy_config_aneg()
+ 	 */
+ 	if (phydev->is_c45 && !(phydev->c45_ids.devices_in_package & BIT(0)))
+-		return -EOPNOTSUPP;
++		return genphy_c45_config_aneg(phydev);
+=20
+ 	return genphy_config_aneg(phydev);
+ }
+diff --git a/include/linux/phy.h b/include/linux/phy.h
+index d26779f1fb6b..a7ecbe0e55aa 100644
+--- a/include/linux/phy.h
++++ b/include/linux/phy.h
+@@ -1117,6 +1117,7 @@ int genphy_c45_an_disable_aneg(struct phy_device *phy=
+dev);
+ int genphy_c45_read_mdix(struct phy_device *phydev);
+ int genphy_c45_pma_read_abilities(struct phy_device *phydev);
+ int genphy_c45_read_status(struct phy_device *phydev);
++int genphy_c45_config_aneg(struct phy_device *phydev);
+=20
+ /* The gen10g_* functions are the old Clause 45 stub */
+ int gen10g_config_aneg(struct phy_device *phydev);
+--=20
+2.7.4
 
