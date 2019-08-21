@@ -2,67 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9725C98444
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 21:23:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CB7729844E
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 21:25:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729668AbfHUTWo convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 15:22:44 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:34116 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727998AbfHUTWn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 15:22:43 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id F0F5630833CB;
-        Wed, 21 Aug 2019 19:22:42 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id C53C04513;
-        Wed, 21 Aug 2019 19:22:39 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <1566402203.5162.12.camel@linux.ibm.com>
-References: <1566402203.5162.12.camel@linux.ibm.com> <1562814435.4014.11.camel@linux.ibm.com> <28477.1562362239@warthog.procyon.org.uk> <CAHk-=wjxoeMJfeBahnWH=9zShKp2bsVy527vo3_y8HfOdhwAAw@mail.gmail.com> <20190710194620.GA83443@gmail.com> <20190710201552.GB83443@gmail.com> <CAHk-=wiFti6=K2fyAYhx-PSX9ovQPJUNp0FMdV0pDaO_pSx9MQ@mail.gmail.com> <23498.1565962602@warthog.procyon.org.uk>
-To:     Mimi Zohar <zohar@linux.ibm.com>
-Cc:     dhowells@redhat.com,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        James Morris <jmorris@namei.org>, keyrings@vger.kernel.org,
-        Netdev <netdev@vger.kernel.org>, linux-nfs@vger.kernel.org,
-        CIFS <linux-cifs@vger.kernel.org>, linux-afs@lists.infradead.org,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        linux-integrity@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Linux List Kernel Mailing <linux-kernel@vger.kernel.org>
-Subject: Re: [GIT PULL] Keys: Set 4 - Key ACLs for 5.3
+        id S1729703AbfHUTYb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 15:24:31 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:60764 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729177AbfHUTYb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 15:24:31 -0400
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LJLpkf063685
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 15:24:30 -0400
+Received: from e06smtp03.uk.ibm.com (e06smtp03.uk.ibm.com [195.75.94.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 2uhb2xte29-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 15:24:29 -0400
+Received: from localhost
+        by e06smtp03.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <naveen.n.rao@linux.vnet.ibm.com>;
+        Wed, 21 Aug 2019 20:24:27 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp03.uk.ibm.com (192.168.101.133) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 21 Aug 2019 20:24:24 +0100
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (b06wcsmtp001.portsmouth.uk.ibm.com [9.149.105.160])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7LJON4C50331762
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Aug 2019 19:24:23 GMT
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 87046A405C;
+        Wed, 21 Aug 2019 19:24:23 +0000 (GMT)
+Received: from b06wcsmtp001.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3B602A405B;
+        Wed, 21 Aug 2019 19:24:21 +0000 (GMT)
+Received: from naverao1-tp.ibmuc.com (unknown [9.85.72.179])
+        by b06wcsmtp001.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 21 Aug 2019 19:24:21 +0000 (GMT)
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiong Wang <jiong.wang@netronome.com>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>, <bpf@vger.kernel.org>,
+        <linuxppc-dev@lists.ozlabs.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] bpf: handle 32-bit zext during constant blinding
+Date:   Thu, 22 Aug 2019 00:53:58 +0530
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <19087.1566415359.1@warthog.procyon.org.uk>
-Content-Transfer-Encoding: 8BIT
-Date:   Wed, 21 Aug 2019 20:22:39 +0100
-Message-ID: <19088.1566415359@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Wed, 21 Aug 2019 19:22:43 +0000 (UTC)
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+x-cbid: 19082119-0012-0000-0000-00000341366C
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19082119-0013-0000-0000-0000217B5F31
+Message-Id: <20190821192358.31922-1-naveen.n.rao@linux.vnet.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908210186
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I added a bunch of tests to the keyutils testsuite, currently on my -next
-branch:
+Since BPF constant blinding is performed after the verifier pass, the
+ALU32 instructions inserted for doubleword immediate loads don't have a
+corresponding zext instruction. This is causing a kernel oops on powerpc
+and can be reproduced by running 'test_cgroup_storage' with
+bpf_jit_harden=2.
 
-	https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/keyutils.git/log/?h=next
+Fix this by emitting BPF_ZEXT during constant blinding if
+prog->aux->verifier_zext is set.
 
-See:
+Fixes: a4b1d3c1ddf6cb ("bpf: verifier: insert zero extension according to analysis result")
+Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+---
+Changes since RFC:
+- Removed changes to ALU32 and JMP32 ops since those don't alter program 
+  execution, and the verifier would have already accounted for them.  
 
-	Add a keyctl command for granting a permit on a key
-	Handle kernel having key/keyring ACLs
 
-I've added manpages to describe the new bits, but I wonder whether I should
-add a manpage specifically to detail the permissions system.  It'll probably
-be useful when more advanced subjects become available, such as for specific
-UIDs and for containers-as-a-whole.
+ kernel/bpf/core.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-David
+diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+index 8191a7db2777..66088a9e9b9e 100644
+--- a/kernel/bpf/core.c
++++ b/kernel/bpf/core.c
+@@ -890,7 +890,8 @@ int bpf_jit_get_func_addr(const struct bpf_prog *prog,
+ 
+ static int bpf_jit_blind_insn(const struct bpf_insn *from,
+ 			      const struct bpf_insn *aux,
+-			      struct bpf_insn *to_buff)
++			      struct bpf_insn *to_buff,
++			      bool emit_zext)
+ {
+ 	struct bpf_insn *to = to_buff;
+ 	u32 imm_rnd = get_random_int();
+@@ -1005,6 +1006,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
+ 	case 0: /* Part 2 of BPF_LD | BPF_IMM | BPF_DW. */
+ 		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ aux[0].imm);
+ 		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
++		if (emit_zext)
++			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
+ 		*to++ = BPF_ALU64_REG(BPF_OR,  aux[0].dst_reg, BPF_REG_AX);
+ 		break;
+ 
+@@ -1088,7 +1091,8 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
+ 		    insn[1].code == 0)
+ 			memcpy(aux, insn, sizeof(aux));
+ 
+-		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff);
++		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff,
++						clone->aux->verifier_zext);
+ 		if (!rewritten)
+ 			continue;
+ 
+-- 
+2.22.0
+
