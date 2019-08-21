@@ -2,72 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B358979B7
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 14:43:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58D06979E7
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 14:49:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728521AbfHUMkh convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 08:40:37 -0400
-Received: from mx2.suse.de ([195.135.220.15]:59388 "EHLO mx1.suse.de"
+        id S1728529AbfHUMtJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 08:49:09 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:39880 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726484AbfHUMkg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 08:40:36 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 43AA6AFCE;
-        Wed, 21 Aug 2019 12:40:34 +0000 (UTC)
-Date:   Wed, 21 Aug 2019 14:40:33 +0200
-From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        Ralf Baechle <ralf@linux-mips.org>,
-        Paul Burton <paul.burton@mips.com>,
-        James Hogan <jhogan@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-input@vger.kernel.org, netdev@vger.kernel.org,
-        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
-Subject: Re: [PATCH v5 11/17] net: sgi: ioc3-eth: no need to stop queue
- set_multicast_list
-Message-Id: <20190821144033.2e206cb18b1dfd10377357c2@suse.de>
-In-Reply-To: <20190819170440.37ff18d4@cakuba.netronome.com>
-References: <20190819163144.3478-1-tbogendoerfer@suse.de>
-        <20190819163144.3478-12-tbogendoerfer@suse.de>
-        <20190819170440.37ff18d4@cakuba.netronome.com>
-X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
-Mime-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-Content-Transfer-Encoding: 8BIT
+        id S1726984AbfHUMtI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 08:49:08 -0400
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id AC19A28137F4342D1431;
+        Wed, 21 Aug 2019 20:49:03 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.439.0; Wed, 21 Aug 2019
+ 20:48:55 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <davem@davemloft.net>, <grygorii.strashko@ti.com>,
+        <ivan.khoronzhuk@linaro.org>, <andrew@lunn.ch>, <ynezz@true.cz>
+CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-omap@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH net-next] net: ethernet: ti: use devm_platform_ioremap_resource() to simplify code
+Date:   Wed, 21 Aug 2019 20:48:50 +0800
+Message-ID: <20190821124850.9592-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 19 Aug 2019 17:04:53 -0700
-Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
+Use devm_platform_ioremap_resource() to simplify the code a bit.
+This is detected by coccinelle.
 
-> On Mon, 19 Aug 2019 18:31:34 +0200, Thomas Bogendoerfer wrote:
-> > netif_stop_queue()/netif_wake_qeue() aren't needed for changing
-> > multicast filters. Use spinlocks instead for proper protection
-> > of private struct.
-> > 
->
-> I thought it may protect ip->emcr, but that one is accessed with no
-> locking from the ioc3_timer() -> ioc3_setup_duplex() path..
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ drivers/net/ethernet/ti/cpsw.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-it should protect ip->emcr ... I'll add spin_lock/unlock to setup_duplex and
-respin the patch.
-
-Thomas.
-
+diff --git a/drivers/net/ethernet/ti/cpsw.c b/drivers/net/ethernet/ti/cpsw.c
+index 32a8974..5401095 100644
+--- a/drivers/net/ethernet/ti/cpsw.c
++++ b/drivers/net/ethernet/ti/cpsw.c
+@@ -2764,7 +2764,7 @@ static int cpsw_probe(struct platform_device *pdev)
+ 	struct net_device		*ndev;
+ 	struct cpsw_priv		*priv;
+ 	void __iomem			*ss_regs;
+-	struct resource			*res, *ss_res;
++	struct resource			*ss_res;
+ 	struct gpio_descs		*mode;
+ 	const struct soc_device_attribute *soc;
+ 	struct cpsw_common		*cpsw;
+@@ -2798,8 +2798,7 @@ static int cpsw_probe(struct platform_device *pdev)
+ 		return PTR_ERR(ss_regs);
+ 	cpsw->regs = ss_regs;
+ 
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+-	cpsw->wr_regs = devm_ioremap_resource(dev, res);
++	cpsw->wr_regs = devm_platform_ioremap_resource(pdev, 1);
+ 	if (IS_ERR(cpsw->wr_regs))
+ 		return PTR_ERR(cpsw->wr_regs);
+ 
 -- 
-SUSE Linux GmbH
-GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
-HRB 21284 (AG Nürnberg)
+2.7.4
+
+
