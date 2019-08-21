@@ -2,29 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D64897A42
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 15:03:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6A8197A40
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 15:03:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728720AbfHUNDR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 09:03:17 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:49172 "EHLO huawei.com"
+        id S1728614AbfHUNDM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 09:03:12 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:5180 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728677AbfHUNDR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 09:03:17 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 3C08CC7E30EE44F232FF;
-        Wed, 21 Aug 2019 21:00:17 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS414-HUB.china.huawei.com
- (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Wed, 21 Aug 2019
- 21:00:08 +0800
+        id S1726371AbfHUNDL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 09:03:11 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id C071BA4BB39E89886BF5;
+        Wed, 21 Aug 2019 21:03:02 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Wed, 21 Aug 2019
+ 21:02:46 +0800
 From:   YueHaibing <yuehaibing@huawei.com>
-To:     <davem@davemloft.net>, <bh74.an@samsung.com>,
-        <ks.giri@samsung.com>, <vipul.pandya@samsung.com>
+To:     <davem@davemloft.net>
 CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
         YueHaibing <yuehaibing@huawei.com>
-Subject: [PATCH net-next] net: sxgbe: use devm_platform_ioremap_resource() to simplify code
-Date:   Wed, 21 Aug 2019 20:59:59 +0800
-Message-ID: <20190821125959.17728-1-yuehaibing@huawei.com>
+Subject: [PATCH net-next] cirrus: cs89x0: use devm_platform_ioremap_resource() to simplify code
+Date:   Wed, 21 Aug 2019 21:02:41 +0800
+Message-ID: <20190821130241.58276-1-yuehaibing@huawei.com>
 X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -41,31 +40,31 @@ This is detected by coccinelle.
 Reported-by: Hulk Robot <hulkci@huawei.com>
 Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/net/ethernet/samsung/sxgbe/sxgbe_platform.c | 4 +---
+ drivers/net/ethernet/cirrus/cs89x0.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/samsung/sxgbe/sxgbe_platform.c b/drivers/net/ethernet/samsung/sxgbe/sxgbe_platform.c
-index d2c4811..2412c87 100644
---- a/drivers/net/ethernet/samsung/sxgbe/sxgbe_platform.c
-+++ b/drivers/net/ethernet/samsung/sxgbe/sxgbe_platform.c
-@@ -78,7 +78,6 @@ static int sxgbe_platform_probe(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/cirrus/cs89x0.c b/drivers/net/ethernet/cirrus/cs89x0.c
+index b3e7faf..2d30972 100644
+--- a/drivers/net/ethernet/cirrus/cs89x0.c
++++ b/drivers/net/ethernet/cirrus/cs89x0.c
+@@ -1845,7 +1845,6 @@ static int __init cs89x0_platform_probe(struct platform_device *pdev)
  {
- 	int ret;
- 	int i, chan;
--	struct resource *res;
- 	struct device *dev = &pdev->dev;
- 	void __iomem *addr;
- 	struct sxgbe_priv_data *priv = NULL;
-@@ -88,8 +87,7 @@ static int sxgbe_platform_probe(struct platform_device *pdev)
- 	struct device_node *node = dev->of_node;
+ 	struct net_device *dev = alloc_etherdev(sizeof(struct net_local));
+ 	struct net_local *lp;
+-	struct resource *mem_res;
+ 	void __iomem *virt_addr;
+ 	int err;
  
- 	/* Get memory resource */
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	addr = devm_ioremap_resource(dev, res);
-+	addr = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(addr))
- 		return PTR_ERR(addr);
+@@ -1861,8 +1860,7 @@ static int __init cs89x0_platform_probe(struct platform_device *pdev)
+ 		goto free;
+ 	}
  
+-	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	virt_addr = devm_ioremap_resource(&pdev->dev, mem_res);
++	virt_addr = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(virt_addr)) {
+ 		err = PTR_ERR(virt_addr);
+ 		goto free;
 -- 
 2.7.4
 
