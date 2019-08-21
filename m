@@ -2,105 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDD797447
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 09:59:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DB1997468
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 10:12:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbfHUH7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 03:59:37 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:57108 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbfHUH7h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 03:59:37 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1i0LWb-0005Ho-UV; Wed, 21 Aug 2019 09:59:22 +0200
-Message-ID: <90445abd30536f2785e34c705e3a9ce6c817b17a.camel@sipsolutions.net>
-Subject: Re: [PATCH] `iwlist scan` fails with many networks available
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     James Nylen <jnylen@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 21 Aug 2019 09:59:20 +0200
-In-Reply-To: <CABVa4Nga1vyvyWNpTTJLa44rZo8wu4-bE=mXX1nZgvzktbSq6A@mail.gmail.com> (sfid-20190813_024304_695118_D911022B)
-References: <CABVa4NgWMkJuyB1P5fwQEYHwqBRiySE+fGQpMKt8zbp+xJ8+rw@mail.gmail.com>
-         <CABVa4NhutjvHPbyaxNeVpJjf-RMJdwEX-Yjk4bkqLC1DN3oXPA@mail.gmail.com>
-         <f7de98001849bc98a0a084d2ffc369f4d9772d52.camel@sipsolutions.net>
-         <CABVa4Nga1vyvyWNpTTJLa44rZo8wu4-bE=mXX1nZgvzktbSq6A@mail.gmail.com>
-         (sfid-20190813_024304_695118_D911022B)
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1726863AbfHUIHO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 04:07:14 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:1773 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726317AbfHUIHO (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 04:07:14 -0400
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 2148D7F742;
+        Wed, 21 Aug 2019 08:07:14 +0000 (UTC)
+Received: from localhost (holly.tpb.lab.eng.brq.redhat.com [10.43.134.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 482E65F74;
+        Wed, 21 Aug 2019 08:07:12 +0000 (UTC)
+Date:   Wed, 21 Aug 2019 10:07:09 +0200
+From:   Miroslav Lichvar <mlichvar@redhat.com>
+To:     Hubert Feurstein <h.feurstein@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net-next v3 2/4] net: mdio: add PTP offset compensation
+ to mdiobus_write_sts
+Message-ID: <20190821080709.GO891@localhost>
+References: <20190820084833.6019-1-hubert.feurstein@vahle.at>
+ <20190820084833.6019-3-hubert.feurstein@vahle.at>
+ <20190820094903.GI891@localhost>
+ <CAFfN3gW-4avfnrV7t-2nC+cVt3sgMD33L44P4PGU-MCAtuR+XA@mail.gmail.com>
+ <20190820142537.GL891@localhost>
+ <20190820152306.GJ29991@lunn.ch>
+ <20190820154005.GM891@localhost>
+ <CAFfN3gUgpzMebyUt8_-9e+5vpm3q-DVVszWdkUEFAgZQ8ex73w@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAFfN3gUgpzMebyUt8_-9e+5vpm3q-DVVszWdkUEFAgZQ8ex73w@mail.gmail.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.71]); Wed, 21 Aug 2019 08:07:14 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2019-08-13 at 00:43 +0000, James Nylen wrote:
-> > I suppose we could consider applying a workaround like this if it has a
-> > condition checking that the buffer passed in is the maximum possible
-> > buffer (65535 bytes, due to iw_point::length being u16)
-> 
-> This is what the latest patch does (attached to my email from
-> yesterday / https://lkml.org/lkml/2019/8/10/452 ).
+On Tue, Aug 20, 2019 at 06:56:56PM +0200, Hubert Feurstein wrote:
+> Am Di., 20. Aug. 2019 um 17:40 Uhr schrieb Miroslav Lichvar
+> > I think a large jitter is ok in this case. We just need to timestamp
+> > something that we know for sure happened after the PHC timestamp. It
+> > should have no impact on the offset and its stability, just the
+> > reported delay. A test with phc2sys should be able to confirm that.
+> > phc2sys selects the measurement with the shortest delay, which has
+> > least uncertainty. I'd say that applies to both interrupt and polling.
+> >
+> > If it is difficult to specify the minimum interrupt delay, I'd still
+> > prefer an overly pessimistic interval assuming a zero delay.
+> >
+> Currently I do not see the benefit from this. The original intention was to
+> compensate for the remaining offset as good as possible.
 
-Hmm, yes, you're right. I evidently missed the comparisons to 0xFFFF
-there, sorry about that.
+That's ok, but IMHO the change should not break the assumptions of
+existing application and users.
 
-> If you'd like to apply it, I'm happy to make any needed revisions.
-> Otherwise I'm going to have to keep patching my kernels for this
-> issue, unfortunately I don't have the time to try to get wicd to
-> migrate to a better solution.
+> The current code
+> of phc2sys uses the delay only for the filtering of the measurement record
+> with the shortest delay and for reporting and statistics. Why not simple shift
+> the timestamps with the offset to the point where we expect the PHC timestamp
+> to be captured, and we have a very good result compared to where we came
+> from.
 
-Not sure which would be easier, but ok :-)
+Because those reports/statistics are important in calculation of
+maximum error. If someone had a requirement for a clock to be accurate
+to 1.5 microseconds and the ioctl returned a delay indicating a
+sufficient accuracy when in reality it could be worse, that would be a
+problem.
 
-Can you please fix the patch to
- 1) use /* */ style comments (see
-    https://www.kernel.org/doc/html/latest/process/coding-style.html)
+BTW, phc2sys is not the only user of the ioctl.
 
- 2) remove extra braces (also per coding style)
-
- 3) use U16_MAX instead of 0xFFFF
-
-I'd also consider renaming "maybe_current_ev" to "next_ev" or something
-shorter anyway, and would probably argue that rewriting this
-
-> +		if (IS_ERR(maybe_current_ev)) {
-> +			err = PTR_ERR(maybe_current_ev);
-> +			if (err == -E2BIG) {
-> +				// Last BSS failed to copy into buffer.  As
-> +				// above, only report an error if `iwlist` will
-> +				// retry again with a larger buffer.
-> +				if (len >= 0xFFFF) {
-> +					err = 0;
-> +				}
-> +			}
->  			break;
-> +		} else {
-> +			current_ev = maybe_current_ev;
->  		}
-
-
-to something like
-
-	next_ev = ...
-	if (IS_ERR(next_ev)) {
-		err = PTR_ERR(next_ev);
-		/* mask error and truncate in case buffer cannot be
-                 * increased
-                 */
-		if (err == -E2BIG && len < U16_MAX)
-			err = 0;
-		break;
-	}
-
-	current_ev = next_ev;
-
-
-could be more readable, but that's just editorial really.
-
-Thanks,
-johannes
-
+-- 
+Miroslav Lichvar
