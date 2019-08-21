@@ -2,172 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AFAB9747E
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 10:16:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA55097505
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 10:31:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726648AbfHUIQO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 04:16:14 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:53908 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726217AbfHUIQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 04:16:14 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7L8G2T6024847, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCAS12.realtek.com.tw[172.21.6.16])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7L8G2T6024847
-        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Wed, 21 Aug 2019 16:16:03 +0800
-Received: from RTITMBSVM04.realtek.com.tw ([fe80::e404:880:2ef1:1aa1]) by
- RTITCAS12.realtek.com.tw ([::1]) with mapi id 14.03.0439.000; Wed, 21 Aug
- 2019 16:16:02 +0800
-From:   Tony Chuang <yhchuang@realtek.com>
-To:     Jian-Hong Pan <jian-hong@endlessm.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@endlessm.com" <linux@endlessm.com>
-Subject: RE: [PATCH v3] rtw88: pci: Move a mass of jobs in hw IRQ to soft IRQ
-Thread-Topic: [PATCH v3] rtw88: pci: Move a mass of jobs in hw IRQ to soft
- IRQ
-Thread-Index: AQHVVxV4a9vXb/ZjY0yHJCWFwbLdyKcFQKNg
-Date:   Wed, 21 Aug 2019 08:16:01 +0000
-Message-ID: <F7CD281DE3E379468C6D07993EA72F84D18A5786@RTITMBSVM04.realtek.com.tw>
-References: <CAPpJ_edU68X-Ki+J61qfws+1-=zv54bcak9tzkMX=CkDS5mOMA@mail.gmail.com>
- <20190820045934.24841-1-jian-hong@endlessm.com>
-In-Reply-To: <20190820045934.24841-1-jian-hong@endlessm.com>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.68.183]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727692AbfHUIa4 convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 04:30:56 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:1190 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727420AbfHUIaz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 04:30:55 -0400
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7L8LPu1137449
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 04:30:54 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ugy50g8qa-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 04:30:54 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <naveen.n.rao@linux.vnet.ibm.com>;
+        Wed, 21 Aug 2019 09:30:51 +0100
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (9.149.109.197)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Wed, 21 Aug 2019 09:30:47 +0100
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7L8UkFk60620938
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 21 Aug 2019 08:30:46 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 858F1A4055;
+        Wed, 21 Aug 2019 08:30:46 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 34F27A4053;
+        Wed, 21 Aug 2019 08:30:46 +0000 (GMT)
+Received: from localhost (unknown [9.124.35.29])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Wed, 21 Aug 2019 08:30:46 +0000 (GMT)
+Date:   Wed, 21 Aug 2019 14:00:44 +0530
+From:   "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>
+Subject: Re: [RFC PATCH] bpf: handle 32-bit zext during constant blinding
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiong Wang <jiong.wang@netronome.com>
+Cc:     bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org
+References: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com>
+In-Reply-To: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com>
 MIME-Version: 1.0
+User-Agent: astroid/0.15.0 (https://github.com/astroidmail/astroid)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8BIT
+X-TM-AS-GCONF: 00
+x-cbid: 19082108-0016-0000-0000-000002A108D2
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19082108-0017-0000-0000-000033013B9D
+Message-Id: <1566376025.68ldwx3wc7.naveen@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=636 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908210089
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-> From: Jian-Hong Pan [mailto:jian-hong@endlessm.com]
+Naveen N. Rao wrote:
+> Since BPF constant blinding is performed after the verifier pass, there
+> are certain ALU32 instructions inserted which don't have a corresponding
+> zext instruction inserted after. This is causing a kernel oops on
+> powerpc and can be reproduced by running 'test_cgroup_storage' with
+> bpf_jit_harden=2.
 > 
-> There is a mass of jobs between spin lock and unlock in the hardware
-> IRQ which will occupy much time originally. To make system work more
-> efficiently, this patch moves the jobs to the soft IRQ (bottom half) to
-> reduce the time in hardware IRQ.
+> Fix this by emitting BPF_ZEXT during constant blinding if
+> prog->aux->verifier_zext is set.
 > 
-> Signed-off-by: Jian-Hong Pan <jian-hong@endlessm.com>
+> Fixes: a4b1d3c1ddf6cb ("bpf: verifier: insert zero extension according to analysis result")
+> Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
 > ---
-> v2:
->  Change the spin_lock_irqsave/unlock_irqrestore to spin_lock/unlock in
->  rtw_pci_interrupt_handler. Because the interrupts are already disabled
->  in the hardware interrupt handler.
-> 
-> v3:
->  Extend the spin lock protecting area for the TX path in
->  rtw_pci_interrupt_threadfn by Realtek's suggestion
-> 
->  drivers/net/wireless/realtek/rtw88/pci.c | 33 +++++++++++++++++++-----
->  1 file changed, 27 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/net/wireless/realtek/rtw88/pci.c
-> b/drivers/net/wireless/realtek/rtw88/pci.c
-> index 00ef229552d5..a8c17a01f318 100644
-> --- a/drivers/net/wireless/realtek/rtw88/pci.c
-> +++ b/drivers/net/wireless/realtek/rtw88/pci.c
-> @@ -866,12 +866,29 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq,
-> void *dev)
->  {
->  	struct rtw_dev *rtwdev = dev;
->  	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
-> -	u32 irq_status[4];
-> 
->  	spin_lock(&rtwpci->irq_lock);
->  	if (!rtwpci->irq_enabled)
->  		goto out;
-> 
-> +	/* disable RTW PCI interrupt to avoid more interrupts before the end of
-> +	 * thread function
-> +	 */
-> +	rtw_pci_disable_interrupt(rtwdev, rtwpci);
-> +out:
-> +	spin_unlock(&rtwpci->irq_lock);
-> +
-> +	return IRQ_WAKE_THREAD;
-> +}
-> +
-> +static irqreturn_t rtw_pci_interrupt_threadfn(int irq, void *dev)
-> +{
-> +	struct rtw_dev *rtwdev = dev;
-> +	struct rtw_pci *rtwpci = (struct rtw_pci *)rtwdev->priv;
-> +	unsigned long flags;
-> +	u32 irq_status[4];
-> +
-> +	spin_lock_irqsave(&rtwpci->irq_lock, flags);
->  	rtw_pci_irq_recognized(rtwdev, rtwpci, irq_status);
-> 
->  	if (irq_status[0] & IMR_MGNTDOK)
-> @@ -891,8 +908,10 @@ static irqreturn_t rtw_pci_interrupt_handler(int irq,
-> void *dev)
->  	if (irq_status[0] & IMR_ROK)
->  		rtw_pci_rx_isr(rtwdev, rtwpci, RTW_RX_QUEUE_MPDU);
-> 
-> -out:
-> -	spin_unlock(&rtwpci->irq_lock);
-> +	/* all of the jobs for this interrupt have been done */
-> +	if (rtw_flag_check(rtwdev, RTW_FLAG_RUNNING))
-> +		rtw_pci_enable_interrupt(rtwdev, rtwpci);
+> This approach (the location where zext is being introduced below, in 
+> particular) works for powerpc, but I am not entirely sure if this is 
+> sufficient for other architectures as well. This is broken on v5.3-rc4.
 
-I've applied this patch and tested it.
-But I failed to connect to AP, it seems that the
-scan_result is empty. And when I failed to connect
-to the AP, I found that the IMR is not enabled.
-I guess the check bypass the interrupt enable function.
+Alexie, Daniel, Jiong,
+Any feedback on this?
 
-And I also found that *without MSI*, the driver is
-able to connect to the AP. Could you please verify
-this patch again with MSI interrupt enabled and
-send a v4?
-
-You can find my MSI patch on
-https://patchwork.kernel.org/patch/11081539/
-
-
-> +	spin_unlock_irqrestore(&rtwpci->irq_lock, flags);
-> 
->  	return IRQ_HANDLED;
->  }
-> @@ -1152,8 +1171,10 @@ static int rtw_pci_probe(struct pci_dev *pdev,
->  		goto err_destroy_pci;
->  	}
-> 
-> -	ret = request_irq(pdev->irq, &rtw_pci_interrupt_handler,
-> -			  IRQF_SHARED, KBUILD_MODNAME, rtwdev);
-> +	ret = devm_request_threaded_irq(rtwdev->dev, pdev->irq,
-> +					rtw_pci_interrupt_handler,
-> +					rtw_pci_interrupt_threadfn,
-> +					IRQF_SHARED, KBUILD_MODNAME, rtwdev);
->  	if (ret) {
->  		ieee80211_unregister_hw(hw);
->  		goto err_destroy_pci;
-> @@ -1192,7 +1213,7 @@ static void rtw_pci_remove(struct pci_dev *pdev)
->  	rtw_pci_disable_interrupt(rtwdev, rtwpci);
->  	rtw_pci_destroy(rtwdev, pdev);
->  	rtw_pci_declaim(rtwdev, pdev);
-> -	free_irq(rtwpci->pdev->irq, rtwdev);
-> +	devm_free_irq(rtwdev->dev, rtwpci->pdev->irq, rtwdev);
->  	rtw_core_deinit(rtwdev);
->  	ieee80211_free_hw(hw);
->  }
-> --
-
-
-NACK
-Need to verify it with MSI https://patchwork.kernel.org/patch/11081539/
-And hope v4 could fix it.
-
-Yan-Hsuan
+- Naveen
 
