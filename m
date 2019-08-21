@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EADD986EF
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 00:01:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D11EF986F7
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 00:07:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728332AbfHUWAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 18:00:23 -0400
-Received: from mail-lj1-f169.google.com ([209.85.208.169]:41220 "EHLO
-        mail-lj1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728028AbfHUWAW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 18:00:22 -0400
-Received: by mail-lj1-f169.google.com with SMTP id m24so3578175ljg.8
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 15:00:21 -0700 (PDT)
+        id S1731029AbfHUWHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 18:07:11 -0400
+Received: from mail-pl1-f172.google.com ([209.85.214.172]:43490 "EHLO
+        mail-pl1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729339AbfHUWHL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 18:07:11 -0400
+Received: by mail-pl1-f172.google.com with SMTP id 4so2087397pld.10;
+        Wed, 21 Aug 2019 15:07:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=paul-moore-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=UtLPTpmziN33YG4O4Q+fjJadZXwsjUnQKgfuJCB6e30=;
-        b=Wv33EjD8K7IOFULJM+TWEQSabao5/oqiMjnkyfl+6HMstEOSL21yE53KCLaJPidc0q
-         9qQfmolCwTV5Ek7i6WXu9us2CqOrFlqzfDi6IbIeX5BjL9wLsQzc8V1hBpm3xAARaQf+
-         Oga/EyMhUtNF36RfXc/LeFK2p99pwVJ4Le5o3nDYYFhbiY2AjRaNZBXXGQjOAszNS5oK
-         x5kqhOXZTj3hO9PsmEr0X8PmJhX7gtV4ye515mRAs+e0iC0iWEn9/nGXCvOoV2j/dlPU
-         fC5cVbqPsWu16g8XTObBhnsp0ywWzJ2r/i6l7YtdXrK8fZoGJiWCgNeQgFNgLX0lPPv7
-         ASwA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DKSxsc156ku0iiz6EF6g2xh283us4DQfE+2/khLA+tk=;
+        b=EOQxwe1/2UxN6E7cKuyQFM2r8tQb5Qiq2uWBO74Q0vbHTCmDkwNVISEgGPkaqhJbC4
+         Lf4D1Kgc5acf8ecVAKgGP7vSQf2qnbb5FYpXRs0xXeUSgGRN09fwaE2/EB6RrY2j+anN
+         M8tf6orj1hqJW/1zuMsJxgD6OtRODDGsQCEZmID+DB2NAwinKlckOpISdlX7sBPycxtC
+         NIx4nhvwVmD5aWacA0+PDhMrTup+efe/ZbouUrIHKK5eel0KiXx95wHA7HXvWWMSXTCd
+         l+oAOtt5S1ucrP3EFErSFN8ENIRjckCtdnXskJZSAsCwor6S1x5sbspGaZ2Bzgt0uOoF
+         IHNw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=UtLPTpmziN33YG4O4Q+fjJadZXwsjUnQKgfuJCB6e30=;
-        b=GVjZ8/FYmmeBu4grCp12g+l+zC3CjhjSJXtQob1wwCsZ6UnSfN31zAvfrNMUIxToB3
-         vNo9gjEFUk2TPSncXDrEydmmI8UWJWnW3o5gWFyOcnC74sE/lRS1ctD7/3Z4DwESc+g/
-         JB4S/TCi+Ergn+w7gAeJX6VmTAHmBCDDm4JUIWum0C3WrNQi0g9Off5kHB8Bs91TQprW
-         Si0k3gr4Cv4pdDLL6X18NIeV1gSJ3Xifpw04hIYTUVd9EFGdxieCBnpXknKryj3TBRhA
-         PsJPexVmC3o/MvseESnjhN6aaYhbGGu+f960+drJj2QzvNLmnjVkcmb1uUzV+BQO4Y29
-         uKpA==
-X-Gm-Message-State: APjAAAWNf4l/w/Exus7HsEmrwb3jY3CdvsIRT3whoR4xUs7w6q3YVF6Z
-        +XRsJ3QPVDp+Zq8YqnC07yoXgpKQld77Qp/PGUPWhTNfRWvX
-X-Google-Smtp-Source: APXvYqzkHSMhD3XMQ8GKHBBdvLF/0nj7DXZcIfPjPF24ezy7vpBJXXOuH0d3+RQVZvlHi4Wx+J41C7uj7eWbUoJtCuA=
-X-Received: by 2002:a05:651c:1111:: with SMTP id d17mr12865350ljo.87.1566424820383;
- Wed, 21 Aug 2019 15:00:20 -0700 (PDT)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DKSxsc156ku0iiz6EF6g2xh283us4DQfE+2/khLA+tk=;
+        b=JDEuy0sx5GgZZVgPU8/J6EMDW84UCYMxARF5HFlQEjMPoq/LfIT4DqQCRmV+HNepuN
+         nqd8Hj9SLX1hd5Ktm/iasdzgF41fDerWZD9aRQjfQY4Zja49OVCxkiEIH58qSQshOAI5
+         nqRoHAn33cHKfVy4gEMHyRKBcEzZaJkJ/NoNZVkXngJwhv5zWNo+ZTyoBqBGEnl+HHTJ
+         6zRr8CohbtNxUtrJH7jLyKgI4EVXt9scmFO2bwSB3qzGLwfIdiQ6r3YTj9cDyGD3gTyz
+         rFKbDIo58jeh83lwirP9jORvuAeFDRPvb8kMUhKoEOfD0VnpdOpu7xiWzIFtdcqtr9de
+         lDhQ==
+X-Gm-Message-State: APjAAAV0V/9PYM74dOMj1PYNEf881/4y8LIZSMg7VPh7y1P3lkF8tesl
+        K/Vy3wGdoY9q8mGeAd0xCUzFdMb5nY+p+XjIztf/6g==
+X-Google-Smtp-Source: APXvYqygmKWDo6axcZPANdI1tWaJUn5LAy0JXg6YQOYPrd/6wByl3yqlH1g/ESBdL/5FT+r3YNavIM1umhbT0Naxl6s=
+X-Received: by 2002:a17:902:7782:: with SMTP id o2mr36596366pll.12.1566425230102;
+ Wed, 21 Aug 2019 15:07:10 -0700 (PDT)
 MIME-Version: 1.0
-From:   Paul Moore <paul@paul-moore.com>
-Date:   Wed, 21 Aug 2019 18:00:09 -0400
-Message-ID: <CAHC9VhSz1_KA1tCJtNjwK26BOkGhKGbPT7v1O82mWPduvWwd4A@mail.gmail.com>
-Subject: New skb extension for use by LSMs (skb "security blob")?
-To:     netdev@vger.kernel.org
-Cc:     linux-security-module@vger.kernel.org, selinux@vger.kernel.org
+References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
+ <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
+ <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
+ <CAM_iQpUH6y8oEct3FXUhqNekQ3sn3N7LoSR0chJXAPYUzvWbxA@mail.gmail.com> <CAA5aLPjzX+9YFRGgCgceHjkU0=e6x8YMENfp_cC9fjfHYK3e+A@mail.gmail.com>
+In-Reply-To: <CAA5aLPjzX+9YFRGgCgceHjkU0=e6x8YMENfp_cC9fjfHYK3e+A@mail.gmail.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 21 Aug 2019 15:06:58 -0700
+Message-ID: <CAM_iQpXBhrOXtfJkibyxyq781Pjck-XJNgZ-=Ucj7=DeG865mw@mail.gmail.com>
+Subject: Re: Unable to create htb tc classes more than 64K
+To:     Akshat Kakkar <akshat.1984@gmail.com>
+Cc:     NetFilter <netfilter-devel@vger.kernel.org>,
+        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello netdev,
+On Sat, Aug 17, 2019 at 12:04 PM Akshat Kakkar <akshat.1984@gmail.com> wrote:
+> I am using ipset +  iptables to classify and not filters. Besides, if
+> tc is allowing me to define qdisc -> classes -> qdsic -> classes
+> (1,2,3 ...) sort of structure (ie like the one shown in ascii tree)
+> then how can those lowest child classes be actually used or consumed?
 
-I was just made aware of the skb extension work, and it looks very
-appealing from a LSM perspective.  As some of you probably remember,
-we (the LSM folks) have wanted a proper security blob in the skb for
-quite some time, but netdev has been resistant to this idea thus far.
-
-If I were to propose a patchset to add a SKB_EXT_SECURITY skb
-extension (a single extension ID to be shared among the different
-LSMs), would that be something that netdev would consider merging, or
-is there still a philosophical objection to things like this?
-
--- 
-paul moore
-www.paul-moore.com
+Just install tc filters on the lower level too.
