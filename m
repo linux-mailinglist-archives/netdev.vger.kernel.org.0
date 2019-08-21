@@ -2,79 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EC1B197C7D
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 16:21:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2778497CF2
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 16:29:13 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729549AbfHUOVV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 10:21:21 -0400
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:38876 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729506AbfHUOVM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 10:21:12 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id x7LEKdOu103001;
-        Wed, 21 Aug 2019 09:20:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1566397239;
-        bh=+HM46ZHoTYeCIzkWA3/7GYFT9x7XR/6vN+mvTfJEuGM=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=AwJp61CxMuh/qZ6Z+tt0Y3XIVJTR8NR/JOFGvkInTK8WHKNLAOblxPaZs1gbMHBH2
-         gCViEdyiz7/J2xVKY8lN4o+Xa8KbtC902F1BRuwi8jLvYAvHa16J0Ztdj2cP50H5Sq
-         64Fz7arbNcsJ5SyYImnG0oVRSWZomjS39rBK7wRM=
-Received: from DLEE106.ent.ti.com (dlee106.ent.ti.com [157.170.170.36])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x7LEKd30088773
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 21 Aug 2019 09:20:39 -0500
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE106.ent.ti.com
- (157.170.170.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Wed, 21
- Aug 2019 09:20:38 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Wed, 21 Aug 2019 09:20:38 -0500
-Received: from [10.250.98.116] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id x7LEKZtD117153;
-        Wed, 21 Aug 2019 09:20:36 -0500
-Subject: Re: [PATCH net-next] net: ethernet: ti: use
- devm_platform_ioremap_resource() to simplify code
-To:     YueHaibing <yuehaibing@huawei.com>, <davem@davemloft.net>,
-        <ivan.khoronzhuk@linaro.org>, <andrew@lunn.ch>, <ynezz@true.cz>
-CC:     <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>
-References: <20190821124850.9592-1-yuehaibing@huawei.com>
-From:   Grygorii Strashko <grygorii.strashko@ti.com>
-Message-ID: <0a978de8-4b6e-d17d-7184-ce37aa7d1077@ti.com>
-Date:   Wed, 21 Aug 2019 17:20:34 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190821124850.9592-1-yuehaibing@huawei.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+        id S1729313AbfHUO2w convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 10:28:52 -0400
+Received: from mx2.suse.de ([195.135.220.15]:39348 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727949AbfHUO2v (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 21 Aug 2019 10:28:51 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id 89345AD94;
+        Wed, 21 Aug 2019 14:28:49 +0000 (UTC)
+Date:   Wed, 21 Aug 2019 16:28:47 +0200
+From:   Thomas Bogendoerfer <tbogendoerfer@suse.de>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Ralf Baechle <ralf@linux-mips.org>,
+        Paul Burton <paul.burton@mips.com>,
+        James Hogan <jhogan@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Evgeniy Polyakov <zbr@ioremap.net>, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-input@vger.kernel.org, netdev@vger.kernel.org,
+        linux-rtc@vger.kernel.org, linux-serial@vger.kernel.org
+Subject: Re: [PATCH v5 10/17] net: sgi: ioc3-eth: rework skb rx handling
+Message-Id: <20190821162847.479c9967d4dc8026fe65fa0e@suse.de>
+In-Reply-To: <20190819165522.451f2ea2@cakuba.netronome.com>
+References: <20190819163144.3478-1-tbogendoerfer@suse.de>
+        <20190819163144.3478-11-tbogendoerfer@suse.de>
+        <20190819165522.451f2ea2@cakuba.netronome.com>
+X-Mailer: Sylpheed 3.5.1 (GTK+ 2.24.31; x86_64-suse-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, 19 Aug 2019 16:55:22 -0700
+Jakub Kicinski <jakub.kicinski@netronome.com> wrote:
 
-
-On 21/08/2019 15:48, YueHaibing wrote:
-> Use devm_platform_ioremap_resource() to simplify the code a bit.
-> This is detected by coccinelle.
+> On Mon, 19 Aug 2019 18:31:33 +0200, Thomas Bogendoerfer wrote:
+> > Buffers alloacted by alloc_skb() are already cache aligned so there
+> > is no need for an extra align done by ioc3_alloc_skb. And instead
+> > of skb_put/skb_trim simply use one skb_put after frame size is known
+> > during receive.
+> [...]  
+> > -/* We use this to acquire receive skb's that we can DMA directly into. */
+> > -
+> > -#define IOC3_CACHELINE	128UL
 > 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
->   drivers/net/ethernet/ti/cpsw.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
->
+> Is the cache line on the platform this driver works on 128B?
 
-Thank you.
-Reviewed-by: Grygorii Strashko <grygorii.strashko@ti.com>
+right now yes, in theory IOC3 CAD DUO cards might work in SGI O2 systems,
+but the current Linux PCI implementation for O2 will not detect that card.
+On X86 usually the BIOS will choke up on that cards.
+
+> This looks like a DMA engine alignment requirement, more than an
+> optimization.
+
+that true, there are two constraints for the rx buffers, start must be aligned
+to 128 bytes and a buffer must not cross a 16kbyte boundary. I was already
+thinking of allocating pages and chop them up. Is there a Linux API available,
+which could help for implementing this ?
+
+I'll probably drop this patch or only change the skb_put stuff plus RX_BUF_SIZE
+define.
+
+Thomas.
 
 -- 
-Best regards,
-grygorii
+SUSE Linux GmbH
+GF: Felix Imendörffer, Mary Higgins, Sri Rasiah
+HRB 21284 (AG Nürnberg)
