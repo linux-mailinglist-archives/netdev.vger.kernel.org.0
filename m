@@ -2,193 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 712AA97FE5
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:22:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E938980C3
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:57:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727962AbfHUQWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 12:22:04 -0400
-Received: from mailout1.w1.samsung.com ([210.118.77.11]:56665 "EHLO
-        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727120AbfHUQWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:22:03 -0400
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190821162200euoutp013a28a51a2b1a27a01b5e2b0e83fa2d60~8-JzXQtQk0066300663euoutp01U
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 16:22:00 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190821162200euoutp013a28a51a2b1a27a01b5e2b0e83fa2d60~8-JzXQtQk0066300663euoutp01U
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1566404521;
-        bh=o9OwLt9/WkSr9TsiZ22HcVerYaZHCMss002A6VSz+VY=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=dlf2Aish48wW/AClWjwKQHOvwBlhLFshRRAucjhm3z4caKEXMnG6sEQoEn8H2WExf
-         byQd1bu3VU7Vz/NJjA0poZo9ihxf3IEB/2YUmlDfLS7wV9P7MG3a+6BK79Z59b3AdS
-         HSfDDrZBWs9wkU8v3ZPv4kTmjxcHhyyqsuJmq3h8=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
-        20190821162159eucas1p22949f7d89eb3c051c42232f0528f322c~8-JyWCaAl0529205292eucas1p2A;
-        Wed, 21 Aug 2019 16:21:59 +0000 (GMT)
-Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 89.F6.04309.7AF6D5D5; Wed, 21
-        Aug 2019 17:21:59 +0100 (BST)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
-        20190821162158eucas1p2f45685b792cc1fae1d62becab15cda24~8-Jxdzpol0535005350eucas1p25;
-        Wed, 21 Aug 2019 16:21:58 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20190821162158eusmtrp11c7aa05bb3b12307c612da80565912b2~8-JxPW8QO1676516765eusmtrp1N;
-        Wed, 21 Aug 2019 16:21:58 +0000 (GMT)
-X-AuditID: cbfec7f4-ae1ff700000010d5-eb-5d5d6fa744e6
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 50.DD.04166.6AF6D5D5; Wed, 21
-        Aug 2019 17:21:58 +0100 (BST)
-Received: from [106.109.129.180] (unknown [106.109.129.180]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20190821162157eusmtip1d58ee00e2fe90c2bf5e66e1a481b6ab0~8-JwZRz180228402284eusmtip1t;
-        Wed, 21 Aug 2019 16:21:57 +0000 (GMT)
-Subject: Re: [PATCH net] ixgbe: fix double clean of tx descriptors with xdp
-To:     Alexander Duyck <alexander.duyck@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        William Tu <u9012063@gmail.com>
-From:   Ilya Maximets <i.maximets@samsung.com>
-Message-ID: <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com>
-Date:   Wed, 21 Aug 2019 19:21:51 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-        Thunderbird/60.8.0
+        id S1728977AbfHUQ4I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 12:56:08 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:40180 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728810AbfHUQ4H (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:56:07 -0400
+Received: by mail-wr1-f65.google.com with SMTP id c3so2706194wrd.7;
+        Wed, 21 Aug 2019 09:56:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=i3Zp/xrNLIhVbSe7rdYIOlD+qEvFODONbYp+TxFFec0=;
+        b=sNoyMjDDacPJS3dvBiHkDKQbt3VGWbTKagnxIbPchRlWkvA1weuhlIUL2SsTnAUxe9
+         aQEVK6Ti1rZL45HOtRosubCe/d+zcCz3ZBOwzmTWciGQOCCl2tAvBZpmBoil0RYrECQs
+         M1NzUH0fKksVWc2dFdHSX0bAqDUEy3HH33LCuSHg6dxFliEIr2kUQSv5mmgSsgBQGgPe
+         BrgApye5NRyNomGmBl0y+q7yNklpTQqbZj0oStPwI93Jnp+zGMrgG6EKpbC3U2iUHe2b
+         ipZGWaDmSlfS1gavLNgkLQ7s3sQqw9RXlgM8tt750A1bcr9ZQKSA/DbNVhAXloevDO6l
+         VwHg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=i3Zp/xrNLIhVbSe7rdYIOlD+qEvFODONbYp+TxFFec0=;
+        b=jZg9/HaerrzdAiNpz4V1Sj7UCK6dDTfcNfmhlhXocppxq8GpZrrBFNhyUHDpMFdfuo
+         Jc/+zHnWgfuFkU6+a193MMZRuZWIVGXd7bqTmbP5cOnDHQDuyaLXmDPFe1E6hqNeGDNq
+         12AzsSiRS1l3YTsVnotk9ccBtaKYJTjLzPHGJSjjhz185wE9IaZ5I0mWB2e6JPwB6U69
+         mlsXtnx0fXsk3xIBOutDCpDaP9pvp73hUsk1l6ZeHPXwxBCtUw5Yp3pSiIqHKNGkRCGj
+         TiGAMs0RDLe3Cokr7IaD1Fg13tyABwME54bpFevyirdeW+M1hAS8wYCs4I0rgJra+MOa
+         DHyg==
+X-Gm-Message-State: APjAAAVrz2vLQLgdKNEqM8sR+IEi33/ivakl7zFg/fthDwZwEAuEO1mF
+        O6ZdsouqYUdJ8NeCsmBD6Zk=
+X-Google-Smtp-Source: APXvYqzifIju179Z9H7ZpvpK+ol1iUFt+D0QXW0i7YVV9PoYLYmX3wQJjxa9TnqcYPg3ai+nhex5Lg==
+X-Received: by 2002:adf:f851:: with SMTP id d17mr14511305wrq.77.1566406565347;
+        Wed, 21 Aug 2019 09:56:05 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f04:7c00:7026:65b1:a037:c969? (p200300EA8F047C00702665B1A037C969.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:7026:65b1:a037:c969])
+        by smtp.googlemail.com with ESMTPSA id f7sm32226599wrf.8.2019.08.21.09.56.03
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 21 Aug 2019 09:56:04 -0700 (PDT)
+Subject: Re: [PATCH v2 net] Add genphy_c45_config_aneg() function to phy-c45.c
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Marco Hartmann <marco.hartmann@nxp.com>
+Cc:     "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Christian Herber <christian.herber@nxp.com>
+References: <1566385208-23523-1-git-send-email-marco.hartmann@nxp.com>
+ <20190821153740.GB22091@lunn.ch>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <37eefeb7-7540-cb71-79b5-4a72d140a1a6@gmail.com>
+Date:   Wed, 21 Aug 2019 18:55:56 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Se1BMYRjG+/acPee00+a0oXcKsZMZGeUyZnyZphR/nBly+4tYbDrS1FZ2
-        K6UxNelO9zGxYiIju8bIWkluY+kmFqmUIrcZrUq0GzWasJ0a/ff75nmf93mfmY8hZF/E7kxk
-        TDyvjlFGyykJWdMwZvapilUoVgyfWoz/nO0msW2sm8bjWdUIWx83Urjy/E8Clz/PIHFP2xiF
-        27LHaPznzW8xbujLoHDTjV6EX9WVU/iyqYnGDRVz8etWp3WzOKOuS8Td1r6lucq7FhGX19lK
-        cAZ9LsU1H0vgyo5/ILih++0UV2DUI85qWLBVEirxD+ejIxN59fKAfZKDVzt+obh785NaK76I
-        0tBbtzzkyAC7GgrvWMR5SMLI2MsIPmWaRMLDhkBrtkw9rAi+V2eLpy0TLwtoQahCUFR6acr/
-        A4HpczuZhxjGld0I9fWE3TCbjQJ95bnJGYL9SMDZoWbKLlDsMnhy5TGys5QNgBHTIG1nkl0M
-        A4ank2lz2B0w/P6RWJhxgebTn0k7O7Lb4Na7jkkmWDdIt+nEAnvCsZtnCHsYsMUMZHWPEvaD
-        gN0A2acWCQ1c4WujkRZ4HrSUniAFToXeDAsSvDkIykwTIkEIBGO/mbbvIVhvuFa3XFgZBCOZ
-        3gI6Q+egi3CBM5TUlE2FSiEnSybs8ILfD6sIgd2h65uVLkJy7Yxe2hldtDO6aP/HViBSj9z4
-        BI0qgtesiuEP+2qUKk1CTITv/liVAf37fi0TjbZaVDceZkIsg+RO0iIfhUImViZqklUmBAwh
-        ny1NKg9VyKThyuQjvDp2rzohmteYkAdDyt2kKQ7vd8nYCGU8H8Xzcbx6WhUxju5paMvO+WGZ
-        Lu1HD7Xp+hKz/SIv1H709lgfXByoP/Qz/7inz/Cmko5rS/JbN+eu6SlUrr04us0vIDi8hzrv
-        jwfS/VZIt3u+2EIF4XOqkFl8w54e92rklfrgpKH0WezWnf3d8eMLhxyud6QYDzjtDgsNCdPp
-        LtiyLDUh0RUfvL6ezpX7muWk5qBy5VJCrVH+BYrQQBB6AwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrDIsWRmVeSWpSXmKPExsVy+t/xu7rL8mNjDb6/1LD4P/c2i8WXn7fZ
-        Lf60bWC0+HzkOJvF4oXfmC3mnG9hsbhz5SebxZX2n+wW/2/9ZrU49qKFzeLE5vuMFpd3zWGz
-        WHHoBLvFsQViFtcv8Tjwe2xZeZPJY+esu+wei/e8ZPLounGJ2WPTqk42j5PNpR7Tux8ye7zf
-        d5XNo2/LKkaPz5vkArii9GyK8ktLUhUy8otLbJWiDS2M9AwtLfSMTCz1DI3NY62MTJX07WxS
-        UnMyy1KL9O0S9DLWXvvOWLBXtuLSgudMDYx3xbsYOTkkBEwk/l3sY+9i5OIQEljKKHF38kM2
-        iISUxI9fF1ghbGGJP9e62CCK3jNKrDw/Gcjh4BAW8JY4epQZpEZEIFvixo8+VpAaZoEnzBJt
-        /y4wQzRcYpL4N20+C0gVm4COxKnVRxhBbF4BO4mvh96yg9gsAqoSbzadAdsmKhAhcXjHLKga
-        QYmTM5+A9XIKBEpsv3cNzGYWUJf4M+8SM4QtLtH0ZSUrhC0v0bx1NvMERqFZSNpnIWmZhaRl
-        FpKWBYwsqxhFUkuLc9Nziw31ihNzi0vz0vWS83M3MQJjftuxn5t3MF7aGHyIUYCDUYmHd4Ju
-        bKwQa2JZcWXuIUYJDmYlEd6KOVGxQrwpiZVVqUX58UWlOanFhxhNgZ6byCwlmpwPTEd5JfGG
-        pobmFpaG5sbmxmYWSuK8HQIHY4QE0hNLUrNTUwtSi2D6mDg4pRoYE3asryvpNN3U5/ZtspC3
-        wwWtXXVfLhSZdBVYtM47qdKT/sj5UozN1ahrpV9E0758+vzs37EX78rdvveVFmlPTFiiIT51
-        8eOGF6GcF45Eb3WW6fiWPFXrZfkfefP8uebHVQ5rLreZk+66ccP/Nk++vL6Ekp5T+4N8bYpj
-        F7mJM/AW7PkedPW8EktxRqKhFnNRcSIAFIcfWQ8DAAA=
-X-CMS-MailID: 20190821162158eucas1p2f45685b792cc1fae1d62becab15cda24
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce
-References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
-        <20190820151611.10727-1-i.maximets@samsung.com>
-        <CAKgT0Udn0D0_f=SOH2wpBRWV_u4rb1Qe2h7gguXnRNzJ_VkRzg@mail.gmail.com>
-        <625791af-c656-1e42-b60e-b3a5cedcb4c4@samsung.com>
-        <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
+In-Reply-To: <20190821153740.GB22091@lunn.ch>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21.08.2019 4:17, Alexander Duyck wrote:
-> On Tue, Aug 20, 2019 at 8:58 AM Ilya Maximets <i.maximets@samsung.com> wrote:
+On 21.08.2019 17:37, Andrew Lunn wrote:
+> On Wed, Aug 21, 2019 at 11:00:46AM +0000, Marco Hartmann wrote:
+>> Commit 34786005eca3 ("net: phy: prevent PHYs w/o Clause 22 regs from calling
+>> genphy_config_aneg") introduced a check that aborts phy_config_aneg()
+>> if the phy is a C45 phy.
+>> This causes phy_state_machine() to call phy_error() so that the phy
+>> ends up in PHY_HALTED state.
 >>
->> On 20.08.2019 18:35, Alexander Duyck wrote:
->>> On Tue, Aug 20, 2019 at 8:18 AM Ilya Maximets <i.maximets@samsung.com> wrote:
->>>>
->>>> Tx code doesn't clear the descriptor status after cleaning.
->>>> So, if the budget is larger than number of used elems in a ring, some
->>>> descriptors will be accounted twice and xsk_umem_complete_tx will move
->>>> prod_tail far beyond the prod_head breaking the comletion queue ring.
->>>>
->>>> Fix that by limiting the number of descriptors to clean by the number
->>>> of used descriptors in the tx ring.
->>>>
->>>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
->>>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
->>>
->>> I'm not sure this is the best way to go. My preference would be to
->>> have something in the ring that would prevent us from racing which I
->>> don't think this really addresses. I am pretty sure this code is safe
->>> on x86 but I would be worried about weak ordered systems such as
->>> PowerPC.
->>>
->>> It might make sense to look at adding the eop_desc logic like we have
->>> in the regular path with a proper barrier before we write it and after
->>> we read it. So for example we could hold of on writing the bytecount
->>> value until the end of an iteration and call smp_wmb before we write
->>> it. Then on the cleanup we could read it and if it is non-zero we take
->>> an smp_rmb before proceeding further to process the Tx descriptor and
->>> clearing the value. Otherwise this code is going to just keep popping
->>> up with issues.
+>> Instead of returning -EOPNOTSUPP, call genphy_c45_config_aneg()
+>> (analogous to the C22 case) so that the state machine can run
+>> correctly.
 >>
->> But, unlike regular case, xdp zero-copy xmit and clean for particular
->> tx ring always happens in the same NAPI context and even on the same
->> CPU core.
->>
->> I saw the 'eop_desc' manipulations in regular case and yes, we could
->> use 'next_to_watch' field just as a flag of descriptor existence,
->> but it seems unnecessarily complicated. Am I missing something?
->>
+>> genphy_c45_config_aneg() closely resembles mv3310_config_aneg()
+>> in drivers/net/phy/marvell10g.c, excluding vendor specific
+>> configurations for 1000BaseT.
 > 
-> So is it always in the same NAPI context?. I forgot, I was thinking
-> that somehow the socket could possibly make use of XDP for transmit.
-
-AF_XDP socket only triggers tx interrupt on ndo_xsk_async_xmit() which
-is used in zero-copy mode. Real xmit happens inside
-ixgbe_poll()
- -> ixgbe_clean_xdp_tx_irq()
-    -> ixgbe_xmit_zc()
-
-This should be not possible to bound another XDP socket to the same netdev
-queue.
-
-It also possible to xmit frames in xdp_ring while performing XDP_TX/REDIRECT
-actions. REDIRECT could happen from different netdev with different NAPI
-context, but this operation is bound to specific CPU core and each core has
-its own xdp_ring.
-
-However, I'm not an expert here.
-Björn, maybe you could comment on this?
-
+>> +/**
+>> + * genphy_c45_config_aneg - restart auto-negotiation or forced setup
+>> + * @phydev: target phy_device struct
+>> + *
+>> + * Description: If auto-negotiation is enabled, we configure the
+>> + *   advertising, and then restart auto-negotiation.  If it is not
+>> + *   enabled, then we force a configuration.
+>> + */
+>> +int genphy_c45_config_aneg(struct phy_device *phydev)
+>> +{
+>> +	bool changed = false;
+>> +	int ret;
+>> +
+>> +	if (phydev->autoneg == AUTONEG_DISABLE)
+>> +		return genphy_c45_pma_setup_forced(phydev);
+>> +
+>> +	ret = genphy_c45_an_config_aneg(phydev);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	if (ret > 0)
+>> +		changed = true;
+>> +
+>> +	return genphy_c45_check_and_restart_aneg(phydev, changed);
+>> +}
+>> +EXPORT_SYMBOL_GPL(genphy_c45_config_aneg);
 > 
-> As far as the logic to use I would be good with just using a value you
-> are already setting such as the bytecount value. All that would need
-> to happen is to guarantee that the value is cleared in the Tx path. So
-> if you clear the bytecount in ixgbe_clean_xdp_tx_irq you could
-> theoretically just use that as well to flag that a descriptor has been
-> populated and is ready to be cleaned. Assuming the logic about this
-> all being in the same NAPI context anyway you wouldn't need to mess
-> with the barrier stuff I mentioned before.
+> The vendor parts for 1000BaseT makes this interesting. Do we expect to
+> see an C45 PHYs which don't support 1000BaseT? I think that
+> unlikely. So all C45 PHYs are going to implement their own config_aneg
+> callback so they can set their vendor registers for 1000BaseT.
+> 
+>> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+>> index f3adea9ef400..74c4e15ebe52 100644
+>> --- a/drivers/net/phy/phy.c
+>> +++ b/drivers/net/phy/phy.c
+>> @@ -507,7 +507,7 @@ static int phy_config_aneg(struct phy_device *phydev)
+>>  	 * allowed to call genphy_config_aneg()
+>>  	 */
+>>  	if (phydev->is_c45 && !(phydev->c45_ids.devices_in_package & BIT(0)))
+>> -		return -EOPNOTSUPP;
+>> +		return genphy_c45_config_aneg(phydev);
+>>  
+>>  	return genphy_config_aneg(phydev);
+> 
+> So here we should be calling the driver config_aneg function. It can
+> then call genphy_c45_config_aneg(phydev) to do the generic parts.
+> 
+> Heiner, what do you think?
+> 
+As you say, C45 doesn't cover 1000BaseT, therefore for this mode a
+vendor-specific part is needed in the PHY driver always.
+That's the reason why genphy_c45_an_config_aneg is meant to be used
+within a PHY drivers config_aneg callback implementation, and why
+we don't have a generic C45 config_aneg function yet.
 
-Checking the number of used descs, i.e. next_to_use - next_to_clean,
-makes iteration in this function logically equal to the iteration inside
-'ixgbe_xsk_clean_tx_ring()'. Do you think we need to change the later
-function too to follow same 'bytecount' approach? I don't like having
-two different ways to determine number of used descriptors in the same file.
+Use case for the new function could be cases where 1000BaseT support
+isn't needed, and it could serve as a fallback if there's no
+dedicated PHY driver yet e.g. for a new chip.
 
-Best regards, Ilya Maximets.
+> 	Andrew
+> 
+Heiner
