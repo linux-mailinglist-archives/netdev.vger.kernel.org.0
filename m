@@ -2,124 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F8C496E81
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 02:45:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 101DA96E8C
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 02:52:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726804AbfHUAnL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 20:43:11 -0400
-Received: from mxhk.zte.com.cn ([63.217.80.70]:8004 "EHLO mxhk.zte.com.cn"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726193AbfHUAnL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 20:43:11 -0400
-Received: from mse-fl1.zte.com.cn (unknown [10.30.14.238])
-        by Forcepoint Email with ESMTPS id D07814679584F6934D3D;
-        Wed, 21 Aug 2019 08:43:07 +0800 (CST)
-Received: from notes_smtp.zte.com.cn (notessmtp.zte.com.cn [10.30.1.239])
-        by mse-fl1.zte.com.cn with ESMTP id x7L0g2Aj077465;
-        Wed, 21 Aug 2019 08:42:02 +0800 (GMT-8)
-        (envelope-from zhang.lin16@zte.com.cn)
-Received: from fox-host8.localdomain ([10.74.120.8])
-          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
-          with ESMTP id 2019082108422087-3081849 ;
-          Wed, 21 Aug 2019 08:42:20 +0800 
-From:   zhanglin <zhang.lin16@zte.com.cn>
-To:     davem@davemloft.net
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, willemb@google.com,
-        edumazet@google.com, deepa.kernel@gmail.com, arnd@arndb.de,
-        dh.herrmann@gmail.com, gnault@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
-        jiang.xuexin@zte.com.cn, zhanglin <zhang.lin16@zte.com.cn>
-Subject: [PATCH v2] sock: fix potential memory leak in proto_register()
-Date:   Wed, 21 Aug 2019 08:42:38 +0800
-Message-Id: <1566348158-43942-1-git-send-email-zhang.lin16@zte.com.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
- 21, 2013) at 2019-08-21 08:42:20,
-        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
- 2019-08-21 08:42:06,
-        Serialize complete at 2019-08-21 08:42:06
-X-MAIL: mse-fl1.zte.com.cn x7L0g2Aj077465
+        id S1726592AbfHUAuP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 20:50:15 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:57496 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726465AbfHUAuP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 20 Aug 2019 20:50:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=eE6jlzMwjL/0vOOq0z/UzvCZehWd+GQwCOhSvez5srM=; b=cx774dQfO7gGIfeiQp3umu9g6
+        yKG7acfAW1GmE9uYDQJ1qf0Jx2B37IwqMXb5/Tzu8vkwtDqzoLkN8dkOsaFL/NtgPylPhdgmUTMHh
+        fE9uO588MJd5ndKHrCVQSeA64WT0FwoOOcUhg+NSKve5/dR8ghW63ql6uyBeoajXp456gj9PcKAnX
+        25zTNM5zpijqAczeZ7VsaEneyfjWy/hY7c5iwmAFKR1+04w1pL5vsZtQOURXGor8PMPwYEbCvLz4o
+        xQFvRiOFohZICxi/naCcuL3ARqlyMCAp97KgJDHDNADjbHdP2rYFrH+3+nmVT3DqC1QEXm1AF4RVq
+        LZjLOAXlQ==;
+Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
+        id 1i0EpL-000482-7E; Wed, 21 Aug 2019 00:50:15 +0000
+Date:   Tue, 20 Aug 2019 17:50:15 -0700
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org
+Subject: Re: [PATCH 29/38] cls_flower: Convert handle_idr to XArray
+Message-ID: <20190821005015.GA18776@bombadil.infradead.org>
+References: <20190820223259.22348-1-willy@infradead.org>
+ <20190820223259.22348-30-willy@infradead.org>
+ <20190820.165834.1420751898749952901.davem@davemloft.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190820.165834.1420751898749952901.davem@davemloft.net>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If protocols registered exceeded PROTO_INUSE_NR, prot will be
-added to proto_list, but no available bit left for prot in
-proto_inuse_idx.
+On Tue, Aug 20, 2019 at 04:58:34PM -0700, David Miller wrote:
+> From: Matthew Wilcox <willy@infradead.org>
+> Date: Tue, 20 Aug 2019 15:32:50 -0700
+> 
+> > -		idr_replace(&head->handle_idr, fnew, fnew->handle);
+> > +		xa_store(&head->filters, fnew->handle, fnew, 0);
+> 
+> Passing a gfp_t of zero? :-)
 
-Signed-off-by: zhanglin <zhang.lin16@zte.com.cn>
----
- net/core/sock.c | 24 ++++++++++++++++--------
- 1 file changed, 16 insertions(+), 8 deletions(-)
-
-diff --git a/net/core/sock.c b/net/core/sock.c
-index bc3512f230a3..c7ae32705705 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3139,16 +3139,17 @@ static __init int net_inuse_init(void)
- 
- core_initcall(net_inuse_init);
- 
--static void assign_proto_idx(struct proto *prot)
-+static int assign_proto_idx(struct proto *prot)
- {
- 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
- 
- 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
- 		pr_err("PROTO_INUSE_NR exhausted\n");
--		return;
-+		return -ENOSPC;
- 	}
- 
- 	set_bit(prot->inuse_idx, proto_inuse_idx);
-+	return 0;
- }
- 
- static void release_proto_idx(struct proto *prot)
-@@ -3157,8 +3158,9 @@ static void release_proto_idx(struct proto *prot)
- 		clear_bit(prot->inuse_idx, proto_inuse_idx);
- }
- #else
--static inline void assign_proto_idx(struct proto *prot)
-+static inline int assign_proto_idx(struct proto *prot)
- {
-+	return 0;
- }
- 
- static inline void release_proto_idx(struct proto *prot)
-@@ -3243,18 +3245,24 @@ int proto_register(struct proto *prot, int alloc_slab)
- 	}
- 
- 	mutex_lock(&proto_list_mutex);
-+	if (assign_proto_idx(prot)) {
-+		mutex_unlock(&proto_list_mutex);
-+		goto out_free_timewait_sock_slab_name;
-+	}
- 	list_add(&prot->node, &proto_list);
--	assign_proto_idx(prot);
- 	mutex_unlock(&proto_list_mutex);
- 	return 0;
- 
- out_free_timewait_sock_slab_name:
--	kfree(prot->twsk_prot->twsk_slab_name);
-+	if (alloc_slab && prot->twsk_prot)
-+		kfree(prot->twsk_prot->twsk_slab_name);
- out_free_request_sock_slab:
--	req_prot_cleanup(prot->rsk_prot);
-+	if (alloc_slab) {
-+		req_prot_cleanup(prot->rsk_prot);
- 
--	kmem_cache_destroy(prot->slab);
--	prot->slab = NULL;
-+		kmem_cache_destroy(prot->slab);
-+		prot->slab = NULL;
-+	}
- out:
- 	return -ENOBUFS;
- }
--- 
-2.17.1
-
+Yes!  We know we'll never do an allocation here because we're replacing
+an entry that already exists.  It wouldn't harm us to pass a real
+GFP flag, so I'll probably just change that.  It might help a future
+implementation, and it will definitely save confusion.
