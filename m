@@ -2,87 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C23539768F
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 11:59:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1298E97695
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:01:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbfHUJ6u convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 21 Aug 2019 05:58:50 -0400
-Received: from correo.us.es ([193.147.175.20]:46170 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726595AbfHUJ6t (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 05:58:49 -0400
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 362E5BA1B6
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 11:58:47 +0200 (CEST)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 27AEC5B3
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 11:58:47 +0200 (CEST)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1947CB7FFE; Wed, 21 Aug 2019 11:58:47 +0200 (CEST)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,USER_IN_WHITELIST autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 0DA74B7FF6;
-        Wed, 21 Aug 2019 11:58:45 +0200 (CEST)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 21 Aug 2019 11:58:45 +0200 (CEST)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from us.es (unknown [47.60.43.0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: 1984lsi)
-        by entrada.int (Postfix) with ESMTPSA id C0F5F4265A2F;
-        Wed, 21 Aug 2019 11:58:44 +0200 (CEST)
-Date:   Wed, 21 Aug 2019 11:58:44 +0200
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     Leonardo Bras <leonardo@linux.ibm.com>
-Cc:     Florian Westphal <fw@strlen.de>, netfilter-devel@vger.kernel.org,
-        coreteam@netfilter.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
- IPv6 is disabled on boot
-Message-ID: <20190821095844.me6kscvnfruinseu@salvia>
-References: <20190820005821.2644-1-leonardo@linux.ibm.com>
- <20190820053607.GL2588@breakpoint.cc>
- <793ce2e9b6200a033d44716749acc837aaf5e4e7.camel@linux.ibm.com>
+        id S1726751AbfHUKAS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 06:00:18 -0400
+Received: from s3.sipsolutions.net ([144.76.43.62]:59000 "EHLO
+        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726370AbfHUKAS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:00:18 -0400
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1i0NPZ-0007iL-QY; Wed, 21 Aug 2019 12:00:13 +0200
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211 2019-08-21
+Date:   Wed, 21 Aug 2019 12:00:03 +0200
+Message-Id: <20190821100005.13393-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <793ce2e9b6200a033d44716749acc837aaf5e4e7.camel@linux.ibm.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 01:15:58PM -0300, Leonardo Bras wrote:
-> On Tue, 2019-08-20 at 07:36 +0200, Florian Westphal wrote:
-> > Wouldn't fib_netdev.c have the same problem?
-> Probably, but I haven't hit this issue yet.
-> 
-> > If so, might be better to place this test in both
-> > nft_fib6_eval_type and nft_fib6_eval.
->
-> I think that is possible, and not very hard to do.
-> 
-> But in my humble viewpoint, it looks like it's nft_fib_inet_eval() and
-> nft_fib_netdev_eval() have the responsibility to choose a valid
-> protocol or drop the package. 
-> I am not sure if it would be a good move to transfer this
-> responsibility to nft_fib6_eval_type() and nft_fib6_eval(), so I would
-> rather add the same test to nft_fib_netdev_eval().
-> 
-> Does it make sense?
+Hi Dave,
 
-Please, update common code to netdev and ip6 extensions as Florian
-suggests.
+I have here for you a few fixes; three, to be specific. Nothing that
+warrants real discussion or urgency though.
 
-Thanks.
+Please pull and let me know if there's any problem.
+
+Thanks,
+johannes
+
+
+
+The following changes since commit a1c4cd67840ef80f6ca5f73326fa9a6719303a95:
+
+  net: fix __ip_mc_inc_group usage (2019-08-20 12:48:06 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211.git tags/mac80211-for-davem-2019-08-21
+
+for you to fetch changes up to 0d31d4dbf38412f5b8b11b4511d07b840eebe8cb:
+
+  Revert "cfg80211: fix processing world regdomain when non modular" (2019-08-21 10:43:03 +0200)
+
+----------------------------------------------------------------
+Just three fixes:
+ * extended key ID key installation
+ * regulatory processing
+ * possible memory leak in an error path
+
+----------------------------------------------------------------
+Alexander Wetzel (1):
+      cfg80211: Fix Extended Key ID key install checks
+
+Hodaszi, Robert (1):
+      Revert "cfg80211: fix processing world regdomain when non modular"
+
+Johannes Berg (1):
+      mac80211: fix possible sta leak
+
+ net/mac80211/cfg.c  |  9 +++++----
+ net/wireless/reg.c  |  2 +-
+ net/wireless/util.c | 23 ++++++++++++++---------
+ 3 files changed, 20 insertions(+), 14 deletions(-)
+
