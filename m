@@ -2,113 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 760AD96E01
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 02:04:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2036296E35
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 02:23:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbfHUAET (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 20 Aug 2019 20:04:19 -0400
-Received: from lekensteyn.nl ([178.21.112.251]:34193 "EHLO lekensteyn.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726028AbfHUAET (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 20 Aug 2019 20:04:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lekensteyn.nl; s=s2048-2015-q1;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=K3uy9dtKEGKpF75hNPdQJreepvLtuf4viqOfIEdhqEE=;
-        b=UAlesXhAJmN/Bm9g4b7rVWmx+HQInzGBH3x+BU7jIMtOjgeaFr2cRIE/4DjjrA5ChVwWKMk4mjoJyKuQRi2Ev7MhcVqHHlJshP44ZINwgtbwllyAxDHDMOPfx/S4dCPYQuZWoxP33OwEo5+Ewi2LgK50aFEu4+k+XFBUfge7XDsAA2kK1GLcKdAPF4oYHZSMzrvpOYRKzV/RBTcq+LR/lgZQH8RjGvVZiJZdhyOMVeDdmDbD5AsUmFC7+8ERasREmztrVH5hiTWgSdIypeUegDGXxi9Ynmk+lo9vKk+O0wrjzmKKIPZGLb8O5UrL/UJ0YUTpEBb5HFTOG/9/jCrM3g==;
-Received: by lekensteyn.nl with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.84_2)
-        (envelope-from <peter@lekensteyn.nl>)
-        id 1i0E6p-0005Jr-0O; Wed, 21 Aug 2019 02:04:15 +0200
-Date:   Wed, 21 Aug 2019 01:04:13 +0100
-From:   Peter Wu <peter@lekensteyn.nl>
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] bpf: clarify when bpf_trace_printk discards lines
-Message-ID: <20190821000413.GA28011@al>
-References: <20190820230900.23445-1-peter@lekensteyn.nl>
- <20190820230900.23445-4-peter@lekensteyn.nl>
- <20190820232221.vzxemergvzy3bg4j@ast-mbp>
+        id S1726502AbfHUAXX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 20 Aug 2019 20:23:23 -0400
+Received: from mail-eopbgr700131.outbound.protection.outlook.com ([40.107.70.131]:53792
+        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726141AbfHUAXX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 20 Aug 2019 20:23:23 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=QVG3UgpSPKLuLu9sN1Zpth6ihcHTlFoicUqjslL4hWXXi/R3SdHrF3265Ow/f+1zoljO2VLZKiCTJgmBisBI+1S3r+LwCJZe6DbRIAAcuzn8pbwbXjYYtUdNFAL42dGAU6B6HSqGBn5WJNlQNKaEz7gLZLXZrFCfde3ROYeQMHXtVZn9sXaioseiyhKOXMrd0u+p18/t9I2oQj6CoCpPz0dqUcFMaTXg8E/QLgjlBF8FYi8K4uF0x1+NQChI0V1EC9dJTb1XFZhAHeqDt/M3qBKlxoxg6y4HJVzqUX2yR1fo4gOllHH5OKuWK4BAoG9YqbRRlMG5NM6R3cG3ibLGow==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KVCTIn/vIAL8X0AnqhNTUetCFjIrt8CHNu1YYIjhKRI=;
+ b=TIVXxRP4Gq3U5qgRKpNX9fMLPdYnW1ifWYurM3JCUN+tVgeGeMg7+CrDUB2zun69psc4SNk2qp0sOIs559HYdDK+2vRoRJ7IJfUkCA4esHJyDxd6wZk9p6IWNk4UBrIgKXl4J4m7UJ2WjhuSsfilEfMJjCkXy4emixKnzePcu6CU0ZxESKVRqny3Xogoneh1lOapXhrRzSR6wi4QyKemmEdxTa7LynObZjE5yW4z4QXWtRbxzyZGRLzoM0KuKX79Zr+S5G0Ad1ywpIGVs6bl6UkanPhz1FZ6dhjOIwnSbVuGhqEQPNs6rmmj+xeDtK7/b3yz4JKDHwKd2oX6pXkslQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KVCTIn/vIAL8X0AnqhNTUetCFjIrt8CHNu1YYIjhKRI=;
+ b=U6Wuex8Li/cOGRvrxoFCDl4rtGAn1Cl/KXNna8NsUB+qvLFuM8w6iAvyDP9/mCnYVpyFB8j1+a3kbgWkPZ8Xk733T/RT/uw2iho66b0IEYoenbDMaWSb7YYTmHn/bU3W0U5zoGBEzX7dksKjm7SqK18sILerFgshaOmKVtgI/b4=
+Received: from DM6PR21MB1242.namprd21.prod.outlook.com (20.179.50.86) by
+ DM6PR21MB1292.namprd21.prod.outlook.com (20.179.52.19) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.2; Wed, 21 Aug 2019 00:23:20 +0000
+Received: from DM6PR21MB1242.namprd21.prod.outlook.com
+ ([fe80::ddd:8e5b:2930:6726]) by DM6PR21MB1242.namprd21.prod.outlook.com
+ ([fe80::ddd:8e5b:2930:6726%9]) with mapi id 15.20.2178.006; Wed, 21 Aug 2019
+ 00:23:20 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     "sashal@kernel.org" <sashal@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "saeedm@mellanox.com" <saeedm@mellanox.com>,
+        "leon@kernel.org" <leon@kernel.org>,
+        "eranbe@mellanox.com" <eranbe@mellanox.com>,
+        "lorenzo.pieralisi@arm.com" <lorenzo.pieralisi@arm.com>,
+        "bhelgaas@google.com" <bhelgaas@google.com>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Haiyang Zhang <haiyangz@microsoft.com>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next,v3, 0/6] Add software backchannel and mlx5e HV VHCA
+ stats
+Thread-Topic: [PATCH net-next,v3, 0/6] Add software backchannel and mlx5e HV
+ VHCA stats
+Thread-Index: AQHVV7aiDgd7yolKIEul0PfWUyB6vg==
+Date:   Wed, 21 Aug 2019 00:23:19 +0000
+Message-ID: <1566346948-69497-1-git-send-email-haiyangz@microsoft.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: MWHPR02CA0034.namprd02.prod.outlook.com
+ (2603:10b6:301:60::23) To DM6PR21MB1242.namprd21.prod.outlook.com
+ (2603:10b6:5:169::22)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=lkmlhyz@microsoft.com; 
+x-ms-exchange-messagesentrepresentingtype: 2
+x-mailer: git-send-email 1.8.3.1
+x-originating-ip: [13.77.154.182]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 098fdac5-6f20-4b79-d585-08d725cdc4ca
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600158)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DM6PR21MB1292;
+x-ms-traffictypediagnostic: DM6PR21MB1292:|DM6PR21MB1292:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM6PR21MB12927817EDA624EB6960A809ACAA0@DM6PR21MB1292.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:4941;
+x-forefront-prvs: 0136C1DDA4
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(4636009)(346002)(136003)(366004)(396003)(376002)(39860400002)(199004)(189003)(305945005)(66446008)(64756008)(22452003)(66556008)(478600001)(66476007)(256004)(99286004)(2201001)(186003)(316002)(66946007)(14444005)(6512007)(26005)(8936002)(36756003)(66066001)(10290500003)(2501003)(7736002)(7416002)(7846003)(6436002)(6392003)(54906003)(5660300002)(14454004)(53936002)(71200400001)(6486002)(25786009)(2616005)(476003)(386003)(81166006)(81156014)(110136005)(10090500001)(6506007)(71190400001)(8676002)(52116002)(4326008)(486006)(6116002)(3846002)(50226002)(2906002)(4720700003)(102836004)(42413003)(921003)(142933001)(32563001)(1121003);DIR:OUT;SFP:1102;SCL:1;SRVR:DM6PR21MB1292;H:DM6PR21MB1242.namprd21.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microsoft.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: atlA308xhmulqec/ULEnrVBb3vGOYl+hx9CDz3KnctjhGBhWLWEUKRRXTrOGuRUX/BAfMiZxCyeuGejE47LSeLbL3/zo/dfn11hpukOlZ5wHYfqjmkBtdoB8O4XZhlQjC0YZloDvLcvi1N41l2lgcBmlgaBXnzO2/5cop/hdv/H0be8Eb+6wUyiITn//+0JQgaXJrBZwkrS10SOj5Kjz1dj6Gm7jJdhKtM1xO3moN0j7/Lq76HZDYjT/duNRwy5Jq8hXkVFk0JlUnAJMgpaX3pNIckwLlPJfOV4jkbThMrNcB7uon9/zhyv049zzwtu8yQZ0RgNhnxgitG1B9+XEminMhxKJFEhL5HoPidg2iX1wTLav2Ch2s99+Mzd/gKyzpEJbXJLQZVmJM8g40W4PvlvJ6Jhbu03wogpg0P42xsM=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190820232221.vzxemergvzy3bg4j@ast-mbp>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Spam-Score: -0.0 (/)
-X-Spam-Status: No, hits=-0.0 required=5.0 tests=NO_RELAYS=-0.001 autolearn=unavailable autolearn_force=no
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 098fdac5-6f20-4b79-d585-08d725cdc4ca
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 00:23:19.9113
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: RJLFvo+LXs2x/XaGFeS4clbc5MgZlfIsWM4fXfPUoxP5eOr5yiELyMFpyXE2s/Tm4khrYN6XW77DbHIy0nJh8g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR21MB1292
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 04:22:23PM -0700, Alexei Starovoitov wrote:
-> On Wed, Aug 21, 2019 at 12:08:59AM +0100, Peter Wu wrote:
-> > I opened /sys/kernel/tracing/trace once and kept reading from it.
-> > bpf_trace_printk somehow did not seem to work, no entries were appended
-> > to that trace file. It turns out that tracing is disabled when that file
-> > is open. Save the next person some time and document this.
-> > 
-> > The trace file is described in Documentation/trace/ftrace.rst, however
-> > the implication "tracing is disabled" did not immediate translate to
-> > "bpf_trace_printk silently discards entries".
-> > 
-> > Signed-off-by: Peter Wu <peter@lekensteyn.nl>
-> > ---
-> >  include/uapi/linux/bpf.h | 2 ++
-> >  1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 9ca333c3ce91..e4236e357ed9 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -575,6 +575,8 @@ union bpf_attr {
-> >   * 		limited to five).
-> >   *
-> >   * 		Each time the helper is called, it appends a line to the trace.
-> > + * 		Lines are discarded while *\/sys/kernel/debug/tracing/trace* is
-> > + * 		open, use *\/sys/kernel/debug/tracing/trace_pipe* to avoid this.
-> 
-> that's not quite correct.
-> Having 'trace' file open doesn't discard lines.
-> I think this type of comment in uapi header makes more confusion than helps.
+This patch set adds paravirtual backchannel in software in pci_hyperv,
+which is required by the mlx5e driver HV VHCA stats agent.
 
-Having the 'trace' file open for reading results in discarding lines. It
-took me a while to figure that out. At first I was not even sure whether
-my eBPF program was executed or not due to lack of entries in the
-'trace' file.
+The stats agent is responsible on running a periodic rx/tx packets/bytes
+stats update.
 
-I ended up setting a breakpoint and ended up with this call stack:
+Dexuan Cui (1):
+  PCI: hv: Add a paravirtual backchannel in software
 
-  - bpf_trace_printk
-    - ____bpf_trace_printk
-      - __trace_printk
-        - trace_vprintk
-          - trace_array_vprintk
-            - __trace_array_vprintk
-              - __trace_array_vprintk
-                - __trace_buffer_lock_reserve
-                  - ring_buffer_lock_reserve
+Eran Ben Elisha (4):
+  net/mlx5: Add wrappers for HyperV PCIe operations
+  net/mlx5: Add HV VHCA infrastructure
+  net/mlx5: Add HV VHCA control agent
+  net/mlx5e: Add mlx5e HV VHCA stats agent
 
-The function ends up skipping the even because record_disabled == 1:
+Haiyang Zhang (1):
+  PCI: hv: Add a Hyper-V PCI interface driver for software backchannel
+    interface
 
-    if (unlikely(atomic_read(&buffer->record_disabled)))
-        goto out;
+ MAINTAINERS                                        |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   2 +
+ drivers/net/ethernet/mellanox/mlx5/core/en.h       |  13 +
+ .../ethernet/mellanox/mlx5/core/en/hv_vhca_stats.c | 162 +++++++++
+ .../ethernet/mellanox/mlx5/core/en/hv_vhca_stats.h |  25 ++
+ drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |   3 +
+ drivers/net/ethernet/mellanox/mlx5/core/lib/hv.c   |  64 ++++
+ drivers/net/ethernet/mellanox/mlx5/core/lib/hv.h   |  22 ++
+ .../net/ethernet/mellanox/mlx5/core/lib/hv_vhca.c  | 371 +++++++++++++++++=
+++++
+ .../net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h  | 104 ++++++
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |   7 +
+ drivers/pci/Kconfig                                |   1 +
+ drivers/pci/controller/Kconfig                     |   7 +
+ drivers/pci/controller/Makefile                    |   1 +
+ drivers/pci/controller/pci-hyperv-intf.c           |  67 ++++
+ drivers/pci/controller/pci-hyperv.c                | 308 +++++++++++++++++
+ include/linux/hyperv.h                             |  29 ++
+ include/linux/mlx5/driver.h                        |   2 +
+ 18 files changed, 1189 insertions(+)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stat=
+s.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/hv_vhca_stat=
+s.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/hv.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/hv.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/lib/hv_vhca.h
+ create mode 100644 drivers/pci/controller/pci-hyperv-intf.c
 
-Why is that? Well, I guessed that ring_buffer_record_disable and
-ring_buffer_record_enable would be related. Sure enough, the first one
-was hit when the 'trace' file is opened for reading while the latter is
-called when the file is closed.
+--=20
+1.8.3.1
 
-The relevant code from kernel/trace/trace.c (__tracing_open), "snapshot"
-is true when "trace" is opened, and "false" when "trace_pipe" is used:
-
-    /* stop the trace while dumping if we are not opening "snapshot" */
-    if (!iter->snapshot)
-        tracing_stop_tr(tr);
-
-So I think this supports the claim that lines are discarded. Do you
-think this is not the case?
--- 
-Kind regards,
-Peter Wu
-https://lekensteyn.nl
