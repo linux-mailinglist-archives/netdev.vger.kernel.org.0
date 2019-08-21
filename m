@@ -2,139 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D7D72977A0
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:58:50 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B6B08977A2
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:58:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbfHUKzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 06:55:39 -0400
-Received: from mail-eopbgr50085.outbound.protection.outlook.com ([40.107.5.85]:6528
-        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725283AbfHUKzj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 06:55:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eNMo28ia3XT/25Nw6rKI0k6gTyJQyGiR8/mAEGvbFCacU6LU6epIcIWS91jUpavQqM+asNlF44uW5IvFnlYfvHwjMgg3RYsttFwrPHeK7DIIj6RY7VzGp5WqNdsjECzN1TNbtcVSWQ7ZAKAm2GUil33FZg6RBt3o+gPC6x/WbrqPpTt+MGrel1vQ5ewFQAglwY7FjuUul4RresBsm/5Wa+PshzDwSffchBsYvNZpouS8vxnBlRTeryilYpYZHdbTcA56dFLlinvefruOZnnemMRr7YLxxdEeuw7ohd6rqoc/HgTjQm/+fYowbanvAv9CWVNxBncQYwmPEh2VKzmVaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xRQPlpDyatKoCGh69MRC9/0UDjCQMbn3XeuzWtuVON4=;
- b=Fw6pwXVC9bkWp0WVDL4jkGO1qV78LJ86/9i1M+R6pRuSerJBKOD91MpdMiVM+wukXmi+RSmDoeOVmXvqVjrWXIHhBtqsEA1BaFRUQQhdTHq83/NtJHjsY7zf3IE+637GY5qjEiK2ilqXlHqlSJNC3ohZJOE7bCc4QkPcmInpC0Bid2hvMrOnhRTANd0Pgdu0mEXOIJZ//TiGyaLjKSqxeO4ul6xIkyJw+6922NbS7fMbj+cKACwuCkx8OYYb3LG3xnqd7E4Go9TEryzoOiOc8hhiXTv3tmLs5rEZWmUiLGvFoKksdw5xMFEtvakVImGIOqWfw9PFX1LJrUATdVbNnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xRQPlpDyatKoCGh69MRC9/0UDjCQMbn3XeuzWtuVON4=;
- b=MFHej3PmIZwx7NhlM4okVm4ImyOcYUQw4vGDfMlAZvNwiBJ8U1NVsX3qXtl6+qTtJC+k91yytlgVVC2QISMgY2wlMDwi2ThRkjbTZuE82Kunup6WL4r8NgWRBBYSuKJQMCahdDOkpf6uWTmIcYMyV4pclz6ApD6taNLb89wuFwE=
-Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com (10.172.248.19) by
- DB6PR0402MB2934.eurprd04.prod.outlook.com (10.172.248.145) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Wed, 21 Aug 2019 10:55:34 +0000
-Received: from DB6PR0402MB2936.eurprd04.prod.outlook.com
- ([fe80::3519:c2fc:4322:4f90]) by DB6PR0402MB2936.eurprd04.prod.outlook.com
- ([fe80::3519:c2fc:4322:4f90%2]) with mapi id 15.20.2178.020; Wed, 21 Aug 2019
- 10:55:34 +0000
-From:   Marco Hartmann <marco.hartmann@nxp.com>
-To:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Christian Herber <christian.herber@nxp.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 1/1] Add genphy_c45_config_aneg() function to
- phy-c45.c
-Thread-Topic: [PATCH net-next 1/1] Add genphy_c45_config_aneg() function to
- phy-c45.c
-Thread-Index: AQHVVrbpfZ9KYVWYg0SQSycjaz4AZqcC4ZsAgAKO34A=
-Date:   Wed, 21 Aug 2019 10:55:34 +0000
-Message-ID: <136fbd85-4bdb-b4a2-c68e-3ed9922b5b60@nxp.com>
-References: <1566237157-9054-1-git-send-email-marco.hartmann@nxp.com>
- <1566237157-9054-2-git-send-email-marco.hartmann@nxp.com>
- <3b16b8b6-7a9f-0376-ba73-96d23262dd6e@gmail.com>
-In-Reply-To: <3b16b8b6-7a9f-0376-ba73-96d23262dd6e@gmail.com>
-Accept-Language: de-DE, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=marco.hartmann@nxp.com; 
-x-originating-ip: [217.111.68.82]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4992d553-fe17-49e2-10a3-08d7262617c4
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:DB6PR0402MB2934;
-x-ms-traffictypediagnostic: DB6PR0402MB2934:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DB6PR0402MB29340505D705549D958E32418CAA0@DB6PR0402MB2934.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 0136C1DDA4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(376002)(396003)(39860400002)(136003)(199004)(189003)(7736002)(102836004)(53546011)(55236004)(2616005)(186003)(316002)(6506007)(476003)(6436002)(99286004)(26005)(71190400001)(71200400001)(486006)(6486002)(76116006)(446003)(64756008)(66446008)(66556008)(110136005)(66476007)(11346002)(44832011)(6512007)(229853002)(2501003)(66946007)(31686004)(6246003)(3846002)(81166006)(91956017)(76176011)(31696002)(53936002)(2201001)(8676002)(81156014)(6116002)(2906002)(478600001)(25786009)(8936002)(305945005)(256004)(14454004)(66066001)(5660300002)(86362001)(14444005)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB6PR0402MB2934;H:DB6PR0402MB2936.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: Abgd71g/HX+T+fH9524Z81lHC4VUBYze7C5mPKEBwXZ849G7krAqB+o8Tnyft8onihSMy1J2/05Jciu5yA2xFTlIWJEisLBPlbdhmrSjdZcSSDeuVnL4DRfvIgXa8MhLUgCMgx82cNjBPP7AgUq5cKxMVXOt4zRv7dRAjRRcaGoC1iKr1ZWMugFNHhAQqb/sgE/I/nK9QJcSptW0IrAQweQe726oA+bGXEHY1zCBfizgZmzuKVd1CNz85GIw7FH4reNGSwjrZ6KkIBFk8dB31obv3gDN+e57oK6UlmyaB30HqVDaBWpSpp8x7vah/7kD5/1gHET8C0IF34TLJJuFzXvkrH+r3zzeW6Hyo+WYpPwZ7Nh6FZrbWSiL4vytOvnmfmYxhzT9h1tYo4GLFYx6tQRkIKm7ae2V3FrGf6PBhxg=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <C1B11CA29984E6459120EBD9B56ECF21@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1727082AbfHUKz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 06:55:58 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42483 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726917AbfHUKz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:55:58 -0400
+Received: by mail-wr1-f67.google.com with SMTP id b16so1572589wrq.9
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 03:55:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version;
+        bh=WyMHZAA0Qc/+TYCGuweI620Z3fpFzwfapMrIB9ufTsg=;
+        b=fHvjr7M6oaWkGoWvcj9pBZmawdN6AT/H7iPBdFn+TdXoKTZpAm6k6X457tR1nd17hx
+         BWXvWHcu3QIwb6BXuuWalLFaUIArTyJ/Wn+8XazKdstH2/5ddO077ZNzX95OvfA/bLkF
+         grtXXwefsLdQVmzT0uzIJAPKXWJ/t4NXvmjWvWSgzVv1hDNX2ywpxx7yX3l/98tgcLzX
+         3lfytGhqxQ4oJ2dCFhWF0gEoJ0E0cM4eROXmE6JK65SiDDRpJDp2ozvFrpDr/p+BpU1t
+         bBIIuSD5SOjKDo7wg3besn6J0FWR+5wIvVjk/pprMgLOyEWk7wEaD0fuivujlrsHcBrP
+         Tfjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version;
+        bh=WyMHZAA0Qc/+TYCGuweI620Z3fpFzwfapMrIB9ufTsg=;
+        b=PbSwtLFeb9Q2wg8VJj62p018vUG4pYKl2EusdjqFy1MfEF6aIMcZ2PxW4De91GAlW6
+         P2FOd+MnOhLEXrJdmAmrZe68i8wdo5/GSLHKhpVR2kup+notA89D+0Oah2QBwmI1RaW8
+         t73iOtC+PaE5NsKeHHS7fOpsl5tQ96sxT7u4ct8SA6++MqyITElhgwfatEDj+hUhTp4a
+         86XNgzRGMDXHvnHwypFv6BJVVl9ZGcg7px8Gnm7t/yyOLr+FuBDL+t3Y2b+eQf95s2lo
+         7WJY6t/RNR8yj2UfTXGCYn6Av0aL5BUEdSpru5Sop6OMfDHdqIdVtmLWFB+4Pp1dbMp+
+         VODg==
+X-Gm-Message-State: APjAAAV4C3gAsKL664Mdd8KBvQZY7r5f2KQTrzz2Bo1TgDfo6UXDCTnA
+        xxWfd/9zaA6BG7hqumwGeAa6+w==
+X-Google-Smtp-Source: APXvYqxy71UJYE8nNVPrM78f/UonRomhIlrziR5U+ykFKDa0TRBkO8syiWp8ZwkpMnF9OvVCGS9LGg==
+X-Received: by 2002:a5d:4950:: with SMTP id r16mr39205612wrs.347.1566384956439;
+        Wed, 21 Aug 2019 03:55:56 -0700 (PDT)
+Received: from LAPTOP-V3S7NLPL ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id g65sm7099972wma.21.2019.08.21.03.55.55
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 21 Aug 2019 03:55:55 -0700 (PDT)
+References: <20190813171018.28221-1-naveen.n.rao@linux.vnet.ibm.com> <87d0gy6cj6.fsf@concordia.ellerman.id.au>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Jiong Wang <jiong.wang@netronome.com>
+To:     Michael Ellerman <mpe@ellerman.id.au>
+Cc:     "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jiong Wang <jiong.wang@netronome.com>, bpf@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: Regression fix for bpf in v5.3 (was Re: [RFC PATCH] bpf: handle 32-bit zext during constant blinding)
+In-reply-to: <87d0gy6cj6.fsf@concordia.ellerman.id.au>
+Date:   Wed, 21 Aug 2019 11:55:54 +0100
+Message-ID: <87k1b6yeh1.fsf@netronome.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4992d553-fe17-49e2-10a3-08d7262617c4
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 10:55:34.2234
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HUmY3XzZ0m71rPRjwdFnVC/rH9DsXSJd40F7qLzolTeN67gULib8q3rgEchFtqrNxXWYzYBhzceQwe7AiWMbRw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR0402MB2934
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gMTkuMDguMTkgMjE6NTEsIEhlaW5lciBLYWxsd2VpdCB3cm90ZToNCj4gT24gMTkuMDguMjAx
-OSAxOTo1MiwgTWFyY28gSGFydG1hbm4gd3JvdGU6DQo+PiBhbmQgY2FsbCBpdCBmcm9tIHBoeV9j
-b25maWdfYW5lZygpLg0KPj4NCj4gSGVyZSBzb21ldGhpbmcgd2VudCB3cm9uZy4NCj4gDQo+PiBj
-b21taXQgMzQ3ODYwMDVlY2EzICgibmV0OiBwaHk6IHByZXZlbnQgUEhZcyB3L28gQ2xhdXNlIDIy
-IHJlZ3MgZnJvbQ0KPj4gY2FsbGluZyBnZW5waHlfY29uZmlnX2FuZWciKSBpbnRyb2R1Y2VkIGEg
-Y2hlY2sgdGhhdCBhYm9ydHMNCj4+IHBoeV9jb25maWdfYW5lZygpIGlmIHRoZSBwaHkgaXMgYSBD
-NDUgcGh5Lg0KPj4gVGhpcyBjYXVzZXMgcGh5X3N0YXRlX21hY2hpbmUoKSB0byBjYWxsIHBoeV9l
-cnJvcigpIHNvIHRoYXQgdGhlIHBoeQ0KPj4gZW5kcyB1cCBpbiBQSFlfSEFMVEVEIHN0YXRlLg0K
-Pj4NCj4+IEluc3RlYWQgb2YgcmV0dXJuaW5nIC1FT1BOT1RTVVBQLCBjYWxsIGdlbnBoeV9jNDVf
-Y29uZmlnX2FuZWcoKQ0KPj4gKGFuYWxvZ291cyB0byB0aGUgQzIyIGNhc2UpIHNvIHRoYXQgdGhl
-IHN0YXRlIG1hY2hpbmUgY2FuIHJ1bg0KPj4gY29ycmVjdGx5Lg0KPj4NCj4+IGdlbnBoeV9jNDVf
-Y29uZmlnX2FuZWcoKSBjbG9zZWx5IHJlc2VtYmxlcyBtdjMzMTBfY29uZmlnX2FuZWcoKQ0KPj4g
-aW4gZHJpdmVycy9uZXQvcGh5L21hcnZlbGwxMGcuYywgZXhjbHVkaW5nIHZlbmRvciBzcGVjaWZp
-Yw0KPj4gY29uZmlndXJhdGlvbnMgZm9yIDEwMDBCYXNlVC4NCj4+DQo+PiBGaXhlczogMzQ3ODYw
-MDVlY2EzICgibmV0OiBwaHk6IHByZXZlbnQgUEhZcyB3L28gQ2xhdXNlIDIyIHJlZ3MgZnJvbQ0K
-Pj4gY2FsbGluZyBnZW5waHlfY29uZmlnX2FuZWciKQ0KPj4NCj4gVGhpcyB0YWcgc2VlbXMgdG8g
-YmUgdGhlIHdyb25nIG9uZS4gVGhpcyBjaGFuZ2Ugd2FzIGRvbmUgYmVmb3JlDQo+IGdlbnBoeV9j
-NDVfZHJpdmVyIHdhcyBhZGRlZC4gTW9zdCBsaWtlbHkgdGFnIHNob3VsZCBiZToNCj4gMjJiNTZl
-ODI3MDkzICgibmV0OiBwaHk6IHJlcGxhY2UgZ2VucGh5XzEwZ19kcml2ZXIgd2l0aCBnZW5waHlf
-YzQ1X2RyaXZlciIpDQo+IEFuZCBiZWNhdXNlIGl0J3MgYSBmaXggYXBwbHlpbmcgdG8gcHJldmlv
-dXMga2VybmVsIHZlcnNpb25zIGl0IHNob3VsZA0KPiBiZSBhbm5vdGF0ZWQgIm5ldCIsIG5vdCAi
-bmV0LW5leHQiLg0KPiANCllvdSBhcmUgY29ycmVjdCwgSSBmaXhlZCB0aGUgdGFnIGFuZCBhbm5v
-dGF0aW9uLg0KDQo+PiBTaWduZWQtb2ZmLWJ5OiBNYXJjbyBIYXJ0bWFubiA8bWFyY28uaGFydG1h
-bm5AbnhwLmNvbT4NCj4+IC0tLQ0KPj4gICBkcml2ZXJzL25ldC9waHkvcGh5LWM0NS5jIHwgMjYg
-KysrKysrKysrKysrKysrKysrKysrKysrKysNCj4+ICAgZHJpdmVycy9uZXQvcGh5L3BoeS5jICAg
-ICB8ICAyICstDQo+PiAgIGluY2x1ZGUvbGludXgvcGh5LmggICAgICAgfCAgMSArDQo+PiAgIDMg
-ZmlsZXMgY2hhbmdlZCwgMjggaW5zZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPj4NCj4+IGRp
-ZmYgLS1naXQgYS9kcml2ZXJzL25ldC9waHkvcGh5LWM0NS5jIGIvZHJpdmVycy9uZXQvcGh5L3Bo
-eS1jNDUuYw0KPj4gaW5kZXggYjlkNDE0NTc4MWNhLi5mYTkwNjJmZDkxMjIgMTAwNjQ0DQo+PiAt
-LS0gYS9kcml2ZXJzL25ldC9waHkvcGh5LWM0NS5jDQo+PiArKysgYi9kcml2ZXJzL25ldC9waHkv
-cGh5LWM0NS5jDQo+PiBAQCAtNTA5LDYgKzUwOSwzMiBAQCBpbnQgZ2VucGh5X2M0NV9yZWFkX3N0
-YXR1cyhzdHJ1Y3QgcGh5X2RldmljZSAqcGh5ZGV2KQ0KPj4gICB9DQo+PiAgIEVYUE9SVF9TWU1C
-T0xfR1BMKGdlbnBoeV9jNDVfcmVhZF9zdGF0dXMpOw0KPj4gICANCj4+ICsvKioNCj4+ICsgKiBn
-ZW5waHlfYzQ1X2NvbmZpZ19hbmVnIC0gcmVzdGFydCBhdXRvLW5lZ290aWF0aW9uIG9yIGZvcmNl
-ZCBzZXR1cA0KPj4gKyAqIEBwaHlkZXY6IHRhcmdldCBwaHlfZGV2aWNlIHN0cnVjdA0KPj4gKyAq
-DQo+PiArICogRGVzY3JpcHRpb246IElmIGF1dG8tbmVnb3RpYXRpb24gaXMgZW5hYmxlZCwgd2Ug
-Y29uZmlndXJlIHRoZQ0KPj4gKyAqICAgYWR2ZXJ0aXNpbmcsIGFuZCB0aGVuIHJlc3RhcnQgYXV0
-by1uZWdvdGlhdGlvbi4gIElmIGl0IGlzIG5vdA0KPj4gKyAqICAgZW5hYmxlZCwgdGhlbiB3ZSBm
-b3JjZSBhIGNvbmZpZ3VyYXRpb24uDQo+PiArICovDQo+PiAraW50IGdlbnBoeV9jNDVfY29uZmln
-X2FuZWcoc3RydWN0IHBoeV9kZXZpY2UgKnBoeWRldikNCj4+ICt7DQo+PiArCWludCByZXQ7DQo+
-PiArCWJvb2wgY2hhbmdlZCA9IGZhbHNlOw0KPiANCj4gUmV2ZXJzZSB4bWFzIHRyZWUgcGxlYXNl
-Lg0KPiANCm9rLg0KDQo+PiBbLi4uXQ0KPiANCj4gT3ZlcmFsbCBsb29rcyBnb29kIHRvIG1lLiBG
-b3IgYSBzaW5nbGUgcGF0Y2ggeW91IGRvbid0IGhhdmUgdG8gcHJvdmlkZQ0KPiBhIGNvdmVyIGxl
-dHRlci4NCj4gDQoNClRoYW5rIHlvdSBmb3IgeW91ciBmZWVkYmFjaywNCkkgd2lsbCBwcm92aWRl
-IGEgdjIgb2YgdGhlIHBhdGNoIHdpdGggdGhlIGFib3ZlIGZpeGVzLg0KDQpSZWdhcmRzLA0KTWFy
-Y28=
+
+Michael Ellerman writes:
+
+> "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com> writes:
+>> Since BPF constant blinding is performed after the verifier pass, there
+>> are certain ALU32 instructions inserted which don't have a corresponding
+>> zext instruction inserted after. This is causing a kernel oops on
+>> powerpc and can be reproduced by running 'test_cgroup_storage' with
+>> bpf_jit_harden=2.
+>>
+>> Fix this by emitting BPF_ZEXT during constant blinding if
+>> prog->aux->verifier_zext is set.
+>>
+>> Fixes: a4b1d3c1ddf6cb ("bpf: verifier: insert zero extension according to analysis result")
+>> Reported-by: Michael Ellerman <mpe@ellerman.id.au>
+>> Signed-off-by: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+>> ---
+>> This approach (the location where zext is being introduced below, in 
+>> particular) works for powerpc, but I am not entirely sure if this is 
+>> sufficient for other architectures as well. This is broken on v5.3-rc4.
+>
+> Any comment on this?
+
+Have commented on https://marc.info/?l=linux-netdev&m=156637836024743&w=2
+
+The fix looks correct to me on "BPF_LD | BPF_IMM | BPF_DW", but looks
+unnecessary on two other places. It would be great if you or Naveen could
+confirm it.
+
+Thanks.
+
+Regards,
+Jiong
+
+> This is a regression in v5.3, which results in a kernel crash, it would
+> be nice to get it fixed before the release please?
+>
+> cheers
+>
+>> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+>> index 8191a7db2777..d84146e6fd9e 100644
+>> --- a/kernel/bpf/core.c
+>> +++ b/kernel/bpf/core.c
+>> @@ -890,7 +890,8 @@ int bpf_jit_get_func_addr(const struct bpf_prog *prog,
+>>  
+>>  static int bpf_jit_blind_insn(const struct bpf_insn *from,
+>>  			      const struct bpf_insn *aux,
+>> -			      struct bpf_insn *to_buff)
+>> +			      struct bpf_insn *to_buff,
+>> +			      bool emit_zext)
+>>  {
+>>  	struct bpf_insn *to = to_buff;
+>>  	u32 imm_rnd = get_random_int();
+>> @@ -939,6 +940,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
+>>  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
+>>  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
+>>  		*to++ = BPF_ALU32_REG(from->code, from->dst_reg, BPF_REG_AX);
+>> +		if (emit_zext)
+>> +			*to++ = BPF_ZEXT_REG(from->dst_reg);
+>>  		break;
+>>  
+>>  	case BPF_ALU64 | BPF_ADD | BPF_K:
+>> @@ -992,6 +995,10 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
+>>  			off -= 2;
+>>  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ from->imm);
+>>  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
+>> +		if (emit_zext) {
+>> +			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
+>> +			off--;
+>> +		}
+>>  		*to++ = BPF_JMP32_REG(from->code, from->dst_reg, BPF_REG_AX,
+>>  				      off);
+>>  		break;
+>> @@ -1005,6 +1012,8 @@ static int bpf_jit_blind_insn(const struct bpf_insn *from,
+>>  	case 0: /* Part 2 of BPF_LD | BPF_IMM | BPF_DW. */
+>>  		*to++ = BPF_ALU32_IMM(BPF_MOV, BPF_REG_AX, imm_rnd ^ aux[0].imm);
+>>  		*to++ = BPF_ALU32_IMM(BPF_XOR, BPF_REG_AX, imm_rnd);
+>> +		if (emit_zext)
+>> +			*to++ = BPF_ZEXT_REG(BPF_REG_AX);
+>>  		*to++ = BPF_ALU64_REG(BPF_OR,  aux[0].dst_reg, BPF_REG_AX);
+>>  		break;
+>>  
+>> @@ -1088,7 +1097,8 @@ struct bpf_prog *bpf_jit_blind_constants(struct bpf_prog *prog)
+>>  		    insn[1].code == 0)
+>>  			memcpy(aux, insn, sizeof(aux));
+>>  
+>> -		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff);
+>> +		rewritten = bpf_jit_blind_insn(insn, aux, insn_buff,
+>> +						clone->aux->verifier_zext);
+>>  		if (!rewritten)
+>>  			continue;
+>>  
+>> -- 
+>> 2.22.0
+
