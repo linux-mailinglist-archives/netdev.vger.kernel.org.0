@@ -2,63 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C066498697
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:27:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 36051986A2
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 23:31:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730290AbfHUVZn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 17:25:43 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:33014 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727843AbfHUVZn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:25:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=stVrXdEt2psI1xW6LiBa6v0h4JBpgcyjIMoWqX0kuJA=; b=dDvobmV9lK90cG8bM8C7Sz+Q9
-        JOxE8ZqoZA77psTtpslH4rCGOMuYrqNLiND3+RM0QnCwrvXnc0ZnkxAZe+qgVFg8MBzdDhYgRM1Vp
-        A2VqybGbRmlO07SWfX1Eq9T0P4aieft6Ia7AS5N7grZiUbKLRTZiDaggWtrzKkh9ItMR+BK2KR23B
-        IQbqMW49JbVeGOiELHWupQp8pP7hTB5YGdzB5tlEp8lBD1OMFXk6AA141r/CXquiIhZ9V7uibWgtO
-        iBDfnCPlWUirvXdUXFZPwJfA8Z6DTVnHUcHWcANlGhRK/2lj2m3z4oT72mqwguLGcBjSFIg1Dt/dO
-        Cr4KBnANQ==;
-Received: from willy by bombadil.infradead.org with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1i0Y6w-0003o9-K9; Wed, 21 Aug 2019 21:25:42 +0000
-Date:   Wed, 21 Aug 2019 14:25:42 -0700
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH 24/38] cls_u32: Convert tc_u_common->handle_idr to XArray
-Message-ID: <20190821212542.GB21442@bombadil.infradead.org>
-References: <20190820223259.22348-1-willy@infradead.org>
- <20190820223259.22348-25-willy@infradead.org>
- <20190821141308.54313c30@cakuba.netronome.com>
+        id S1729368AbfHUVbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 17:31:13 -0400
+Received: from mail-qt1-f178.google.com ([209.85.160.178]:43983 "EHLO
+        mail-qt1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727484AbfHUVbM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 17:31:12 -0400
+Received: by mail-qt1-f178.google.com with SMTP id b11so4911980qtp.10
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 14:31:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=w5C4YXASS0++1bj4iMPKhL92RQvUv3bossS0lzJwxAg=;
+        b=sYAhLcLz6wqQ/N6Mw+JhyCFNyXawCfpM6U8NWJ8eAzCff3YrXj74c6nwPbIGyLtR0d
+         TTSlKIRp54q7rmVxEfQ/5prDXq5Kh/XBQ/Y4a7Wl73OQGkBeIZ1qemPI+b0KKRPQ3iMj
+         wvyzeXdygYbdrjyqI3zPQwQQNmoXUkybH+7GgF9pe7FpiVksNczIQhN63h52aGYd08LD
+         nlp7c2LrRYhxjdfi+KNGVWM5Mo0JWplWjPFl/hgfmSB+afg6Ac/qz4gRFQ7PBJV0mtpV
+         243S5Uo23Cd3rZKxAEgjFropeB20e1KiFFScMF+sJLocj5JpxPWUBqf72JyNeoWbs8lP
+         AjCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=w5C4YXASS0++1bj4iMPKhL92RQvUv3bossS0lzJwxAg=;
+        b=sUcQwf2bDAZjUgZTc5a8OD7MehS+o/nPwSMRoywXsZH5yKDc+mNfj1MEtPE0vS2itC
+         Ypy6dyngD8MNQfBcK38vpKfAPM5kTZVvcryS+7pslXavf/iNbsi+7/OlwRkN+I/Tph8w
+         FFwu0l2+pu147oyJwBtJkadVf+fX59GsxP7wePStVhCiMU+hvnjMVebo/T4dPu2ouHBt
+         9liM0xWTzp3uMoQnLp66Mazz7TtatRkxR0o0j7goG+mh3UkTpOqeFEagRvrxdFPW4dyW
+         ax9lFGenns2bzP+Q4IkblI7s+OJ/z3/0Vkscp4C5+HNWe+YSSlESItYARnJw6EZOr2WH
+         sMNw==
+X-Gm-Message-State: APjAAAXJT5gqKHojb+kPe5AwdPlFCWJp3iRaBX66KodVJr0UjFwUJSii
+        F9HpM40Sv/RYkcl5FjEXq6iAvA==
+X-Google-Smtp-Source: APXvYqx/hb2nU2zEO9toOaxbTmHLaXaINWa8MqD2cV2vCCs3PUTuOfLuUzkXfbCK8lMZyPLOpWuxQA==
+X-Received: by 2002:aed:359d:: with SMTP id c29mr34728536qte.4.1566423071824;
+        Wed, 21 Aug 2019 14:31:11 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id r40sm12460297qtk.2.2019.08.21.14.31.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 21 Aug 2019 14:31:11 -0700 (PDT)
+Date:   Wed, 21 Aug 2019 14:31:06 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com
+Subject: Re: [net-next 00/15][pull request] 40GbE Intel Wired LAN Driver
+ Updates 2019-08-21
+Message-ID: <20190821143106.0a2ac71d@cakuba.netronome.com>
+In-Reply-To: <20190821201623.5506-1-jeffrey.t.kirsher@intel.com>
+References: <20190821201623.5506-1-jeffrey.t.kirsher@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190821141308.54313c30@cakuba.netronome.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 02:13:08PM -0700, Jakub Kicinski wrote:
-> On Tue, 20 Aug 2019 15:32:45 -0700, Matthew Wilcox wrote:
-> > @@ -305,8 +306,12 @@ static void *u32_get(struct tcf_proto *tp, u32 handle)
-> >  /* Protected by rtnl lock */
-> >  static u32 gen_new_htid(struct tc_u_common *tp_c, struct tc_u_hnode *ptr)
-> >  {
-> > -	int id = idr_alloc_cyclic(&tp_c->handle_idr, ptr, 1, 0x7FF, GFP_KERNEL);
-> > -	if (id < 0)
-> > +	int err;
-> > +	u32 id;
-> > +
-> > +	err = xa_alloc_cyclic(&tp_c->ht_xa, &id, ptr, XA_LIMIT(0, 0x7ff),
-> > +			&tp_c->ht_next, GFP_KERNEL);
-> 
-> nit: indentation seems off here and a couple of other places.
+On Wed, 21 Aug 2019 13:16:08 -0700, Jeff Kirsher wrote:
+> This series contains updates to i40e driver only.
 
-what indentation rule does the networking stack use?  i just leave the
-cursor where my editor puts it, which seems to be two tabs.
+Patch 12 should really be squashed into 13, 7 and 9 could also be
+combined. But not a big deal, I guess.
