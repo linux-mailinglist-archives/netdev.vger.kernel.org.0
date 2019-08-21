@@ -2,143 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1AE9F97720
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:28:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 55AC297724
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 12:28:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727959AbfHUK2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 06:28:23 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:38584 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726995AbfHUK2W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:28:22 -0400
-Received: by mail-ed1-f68.google.com with SMTP id r12so2349141edo.5;
-        Wed, 21 Aug 2019 03:28:21 -0700 (PDT)
+        id S1728030AbfHUK2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 06:28:37 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:43804 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726995AbfHUK2h (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 06:28:37 -0400
+Received: by mail-wr1-f67.google.com with SMTP id y8so1492181wrn.10
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 03:28:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=tH4C4SHneA684UXc3D0kikroiEy/mW4WtnOuT96rGAM=;
-        b=BQwd3ES5iB5HttBbWB7MmvzhXgwGjN1tPwBc9rgjyI4dXXBt3RMxGIY+7W/suYq3NE
-         lWNbrFE/pp+XVvg3D7gmSet9mqwvmzVB/Z3+Pgv/kZ/y5fmwTz/JAKG3xI10dX1TXYnI
-         w/ODwpQpbHmD61JlwUh0Te793e6L6ezn1YCwjnAG8sEFuXhJNNzOMFLG3Tjb1eagSrNb
-         g5ZNNnaRAaP6GtB8MrOwh0crnBqjHYtXmbYLH+JoE2XSY+4YBV7VWkTYfEY57TOmsufz
-         k1VkjkKQaEbnV2JlDjwoXHnudSdDW+x6vX84e12dpNVk5y4WggJcR07ZgeAF8NTyLb1o
-         4KFQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=O/D2vpsgIlxB4bDKY/wKhj2I/R2FzVAbo1B5Cab8cZk=;
+        b=CmtC9m5WOJrXBFHf5KfFf4FmGd9TorW3pFUqNPjPlJnq4uD0z8GoRRAvlh37xWZlHy
+         8125FRM487D2bAd7223yvtXofmbh9qnI6n79iPhdYisgTrukf5WGY5n+rircDggFHbPj
+         ByF1iMtfPaxOPkjwryuTyiUGrszRels1+uuwwsZ4XisW32fehPIMJjOdJV6TdNkuTVep
+         D46t5jhWan3JwU4czU+sep74u9LrEt9z92LmON//omTebw6F6FQGXFgI7S9jmk29Xdra
+         2nZ2wAfFhWRuw7H3iJtqqEMBctb8uCb5HQQ6HAOqeJRnb5GIDTqG8LWioIlHoQinGgD/
+         Qjfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=tH4C4SHneA684UXc3D0kikroiEy/mW4WtnOuT96rGAM=;
-        b=F79KTTxHHaa3L3dTvXrE/WQ4bRtDEAs/WG9Iaal/W3rQyMWleXpN/oQAGxtH+lZWlV
-         8C3Wx9ZgJ8zVMM+kpuPswKg+JoA/lx5uZiUATkYS8hdiGncy2iIljQFyJYK6ZmevKlvz
-         l1ILKUCtANtFjjeASuO0c8bqkimT1e9jM+/Be88QyFDDcp/PiKTLpk0L9wrwbTUngDZG
-         jgAd/MaQvkowoZhlQXBQwAaifCrErZuMCDgOM5A3TaxATXqfZqJAH2qw5QY8yeYA7pj6
-         fQYdSWlCDe0Heb74xaT0t8sgP1u2jT+GINeiym0/CnO2DWUCij5GUD5/DpC3rh+ze5ap
-         PDBw==
-X-Gm-Message-State: APjAAAUOX+bN9pqzlrcDyQywZgs8zCMBv+3ipkKS29swNqPwsvs2dRAv
-        4LurPPoct+PYzkQY3NMxNxX2UWGOReV0pteP8+8=
-X-Google-Smtp-Source: APXvYqzm1AMb1SdDCLl2PZqOX1rVW3GzxnXK3xzo7vqdb+GYSql0VNnjYrTZY+VKIhPl9/PtAF3T/yfx4M2nAKykGw8=
-X-Received: by 2002:a50:c385:: with SMTP id h5mr35182112edf.18.1566383300730;
- Wed, 21 Aug 2019 03:28:20 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=O/D2vpsgIlxB4bDKY/wKhj2I/R2FzVAbo1B5Cab8cZk=;
+        b=meBPycBlFWJuPdaIJ8bi68iAWby8u99doPNgjFJntiKKE+zYaxBfUtxGrHwIOrS+ep
+         CaS3GU3cB5s/dL8O9f1tyFIymOT+d482yi5SQzZZjiG1SsXNtZQIfdlKhtNdpOew4j0D
+         fug6WLY9BsUexO8mQZnIN0Lw/mQ5Dv3wXcAy7jqE5ktvHMhx0ZN84zIZKANIJpA3zbRR
+         R+JwDbJ0uT35Dv4DeWb98xsxMIrp2hPxaFHkC6c8AsPif2PFsFikWK4vLvSEGQ6y9RVJ
+         QwJTqPG+ai+D8thNkXAQpwvZfZQcA+BJl04Z2aIzpjNT5UHD5SjRifoe2XJXB4D1OpDa
+         LhTA==
+X-Gm-Message-State: APjAAAVIgRlRS8+8JOBcLEXkWwLBkI63vO5oQ0+uN+uK7XwrT4hkYXjA
+        QgglufOqSKMSedtDAIKmCY+/hQ==
+X-Google-Smtp-Source: APXvYqxaNqqGw/22p0miXqjCKdcvSwodwcFuJLX+Z5942Fe6XAo9qBYXultLANwwBQ8BhEs1AuecOw==
+X-Received: by 2002:a05:6000:104c:: with SMTP id c12mr35999536wrx.328.1566383314746;
+        Wed, 21 Aug 2019 03:28:34 -0700 (PDT)
+Received: from [172.20.1.254] ([217.38.71.146])
+        by smtp.gmail.com with ESMTPSA id k124sm7525145wmk.47.2019.08.21.03.28.33
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 21 Aug 2019 03:28:33 -0700 (PDT)
+Subject: Re: [PATCH v2 2/4] bpf: fix 'struct pt_reg' typo in documentation
+To:     Peter Wu <peter@lekensteyn.nl>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org
+References: <20190820230900.23445-1-peter@lekensteyn.nl>
+ <20190820230900.23445-3-peter@lekensteyn.nl>
+From:   Quentin Monnet <quentin.monnet@netronome.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=quentin.monnet@netronome.com; prefer-encrypt=mutual; keydata=
+ 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
+ RHhSHGnKaQ6MfrTge5Q0h5A=
+Message-ID: <99273386-030c-15b6-7488-27a5b05a2ea7@netronome.com>
+Date:   Wed, 21 Aug 2019 11:28:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <20190820084833.6019-1-hubert.feurstein@vahle.at> <20190820084833.6019-5-hubert.feurstein@vahle.at>
-In-Reply-To: <20190820084833.6019-5-hubert.feurstein@vahle.at>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Wed, 21 Aug 2019 13:28:09 +0300
-Message-ID: <CA+h21ho6T=DdE-9XCCj00UBFZahe08oEMP4kbgv+CmfRYD5c_Q@mail.gmail.com>
-Subject: Re: [PATCH net-next v3 4/4] net: fec: add support for PTP system
- timestamping for MDIO devices
-To:     Hubert Feurstein <h.feurstein@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Fugang Duan <fugang.duan@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190820230900.23445-3-peter@lekensteyn.nl>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 20 Aug 2019 at 11:49, Hubert Feurstein <h.feurstein@gmail.com> wrote:
->
-> From: Hubert Feurstein <h.feurstein@gmail.com>
->
-> In order to improve the synchronisation precision of phc2sys (from
-> the linuxptp project) for devices like switches which are attached
-> to the MDIO bus, it is necessary the get the system timestamps as
-> close as possible to the access which causes the PTP timestamp
-> register to be snapshotted in the switch hardware. Usually this is
-> triggered by an MDIO write access, the snapshotted timestamp is then
-> transferred by several MDIO reads.
->
-> The ptp_read_system_*ts functions already check the ptp_sts pointer.
->
-> Signed-off-by: Hubert Feurstein <h.feurstein@gmail.com>
-> ---
->  drivers/net/ethernet/freescale/fec_main.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethernet/freescale/fec_main.c
-> index c01d3ec3e9af..dd1253683ac0 100644
-> --- a/drivers/net/ethernet/freescale/fec_main.c
-> +++ b/drivers/net/ethernet/freescale/fec_main.c
-> @@ -1815,10 +1815,12 @@ static int fec_enet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
->         reinit_completion(&fep->mdio_done);
->
->         /* start a write op */
-> +       ptp_read_system_prets(bus->ptp_sts);
->         writel(FEC_MMFR_ST | FEC_MMFR_OP_WRITE |
->                 FEC_MMFR_PA(mii_id) | FEC_MMFR_RA(regnum) |
->                 FEC_MMFR_TA | FEC_MMFR_DATA(value),
->                 fep->hwp + FEC_MII_DATA);
-> +       ptp_read_system_postts(bus->ptp_sts);
->
+2019-08-21 00:08 UTC+0100 ~ Peter Wu <peter@lekensteyn.nl>
+> There is no 'struct pt_reg'.
+> 
+> Signed-off-by: Peter Wu <peter@lekensteyn.nl>
 
-How do you know the core will not service an interrupt here?
-Why are you not disabling (postponing) local interrupts after this
-critical section? (which you were in the RFC)
-If the argument is that you didn't notice any issue with phc2sys -N 5,
-that's not a good argument. "Unlikely for a condition to happen" does
-not mean deterministic.
-Here is an example of the system servicing an interrupt during the
-transmission of a 12-byte SPI transfer (proof that they can occur
-anywhere where they aren't disabled):
-https://drive.google.com/file/d/1rUZpfkBKHJGwQN4orFUWks_5i70wn-mj/view?usp=sharing
+Reviewed-by: Quentin Monnet <quentin.monnet@netronome.com>
 
->         /* wait for end of transfer */
->         time_left = wait_for_completion_timeout(&fep->mdio_done,
-> @@ -1956,7 +1958,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
->         struct fec_enet_private *fep = netdev_priv(ndev);
->         struct device_node *node;
->         int err = -ENXIO;
-> -       u32 mii_speed, holdtime;
-> +       u32 mii_speed, mii_period, holdtime;
->
->         /*
->          * The i.MX28 dual fec interfaces are not equal.
-> @@ -1993,6 +1995,7 @@ static int fec_enet_mii_init(struct platform_device *pdev)
->          * document.
->          */
->         mii_speed = DIV_ROUND_UP(clk_get_rate(fep->clk_ipg), 5000000);
-> +       mii_period = div_u64((u64)mii_speed * 2 * NSEC_PER_SEC, clk_get_rate(fep->clk_ipg));
->         if (fep->quirks & FEC_QUIRK_ENET_MAC)
->                 mii_speed--;
->         if (mii_speed > 63) {
-> @@ -2034,6 +2037,8 @@ static int fec_enet_mii_init(struct platform_device *pdev)
->                 pdev->name, fep->dev_id + 1);
->         fep->mii_bus->priv = fep;
->         fep->mii_bus->parent = &pdev->dev;
-> +       fep->mii_bus->flags = MII_BUS_F_PTP_STS_SUPPORTED;
-> +       fep->mii_bus->ptp_sts_offset = 32 * mii_period;
->
->         node = of_get_child_by_name(pdev->dev.of_node, "mdio");
->         err = of_mdiobus_register(fep->mii_bus, node);
-> --
-> 2.22.1
->
-
-Regards,
--Vladimir
+Thanks for the fix!
+Quentin
