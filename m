@@ -2,212 +2,361 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FEA797DA2
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 16:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id EDBB097DB2
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 16:53:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727210AbfHUOwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 10:52:24 -0400
-Received: from mail-lf1-f66.google.com ([209.85.167.66]:46922 "EHLO
-        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727031AbfHUOwY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 10:52:24 -0400
-Received: by mail-lf1-f66.google.com with SMTP id n19so1989973lfe.13
-        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 07:52:21 -0700 (PDT)
+        id S1727357AbfHUOxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 10:53:43 -0400
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:39456 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726785AbfHUOxm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 10:53:42 -0400
+Received: by mail-oi1-f194.google.com with SMTP id 16so1785058oiq.6
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 07:53:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=m8OGikSaixqjK3WQyg4Bx+X3Tn+Ncmz++j77OuBZpB8=;
-        b=jhz/MUKY7uKeRcjzaFm99i3aj30dsqg1xL+hv0uZ9ik82O9Fu4SHAUT8Royrnr28+2
-         kFhhKdUJ5rGbTWAfNWG4Q37IsvLP/njEvRWqSXlor8/nSuE/NF5nNHgwYva03MZU+7AQ
-         CGDlCmKtdV1LJrWz813dxmiWnZJFimjzhQ/xdJfA7bzTZnAAqx9Rvmx8I6rQMFfjtDl/
-         BDsyplCMvRevY760csFUWAr511mzEj3IEDks1q9QzM5mS1YuZ8k0rq4r26vMGHrMTQyb
-         79qUcV+YV+xIIjRusPGcfRZJwVqRF9E+mmDUTkoD93L9WKU9tyffDGGN9V77Jw/DeP1e
-         ewiw==
+        bh=rO+5NEt3nR8ktHaacgIDCDxYKXIBGiI9k8t7bKOcqjg=;
+        b=ebdPX07QormWL+eP3g9/A+ehRSKWumEmhUA+UmhhuR0nRI38FNeL7m8t92OD66EfVl
+         xfMU0qxqci2WAtd6BIQt7LulCkVG9RYz/oehoUh52TxRd/2HLBbpev1YJRr4mMIQcW/A
+         RooYycfeJVbO/PO5LA1mxawRF7KktdMuVTABdQARPmeyNFQqH1O3qfrzAaN4ZsqIjykf
+         NTb5xxCkoU53hcvVlZidAs+xCpLFc16Dv1DxS0/viYKqujVuq0vrUyLv2OL3G2+pFgqP
+         GQcZTL4bXgRPWZHKtSNsCQECnwpbFE9J7eL7C3F4eCQbH9+p4EC1GwDJScONFGyy1KfG
+         jPwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=m8OGikSaixqjK3WQyg4Bx+X3Tn+Ncmz++j77OuBZpB8=;
-        b=rRzXYQoxh0DfL32w+3tETc81UBRZBWA5RvPWhkxllwKgspu6MaKCeLRm2yYD0BJ1Ad
-         KmONjDRcXnj662FVzfwqMnPujdG/qwID+eHWWOabmcfd1l8hCJWWypX4IIWtFFjIF9Px
-         zychC+FNx+EsAe2k2vzqGvdv3My8TuKQ9XuYPDpEwQaEAnJRFMu4M6782c1PYPE0QntO
-         JQ6D54oFakNf2b6h7e/WuN0ig8yTaZVDHPsJTEo1tFWb1wOLrFHmJnRsbDKYouvGydZm
-         LJALSJbEE0IIc5cl5orW5Mmo7r4+nEaj+L7tTo1GYP3u3eY6HZjGlnBgVjwG0iWLp0wq
-         Ub4A==
-X-Gm-Message-State: APjAAAVVqDRWoP/hHV/k+5qQ5iIDgnkOhKPRSoKuVLfnTMOeEbfkSV3S
-        9Gdv/ttvWw40MymemOkmUL6dyHCk9hkwLZHI4jDX0g==
-X-Google-Smtp-Source: APXvYqwXkjJ71QGo/C5SHs/4Wb4AWSDFNiG2/fXJvqweCXxS5V0iugevJZ2A1evWvFhNO00DNUuCfVrPvQzzfQ0s+GA=
-X-Received: by 2002:ac2:545b:: with SMTP id d27mr19174978lfn.36.1566399140675;
- Wed, 21 Aug 2019 07:52:20 -0700 (PDT)
+        bh=rO+5NEt3nR8ktHaacgIDCDxYKXIBGiI9k8t7bKOcqjg=;
+        b=VTdcdeV6gDtMdAP5UFcHxr8qw2xOA82lrd65r5z5a45rk/VHT0/85GePGHirD+9E9L
+         gRKWkMoL6MXC1R4Sq51QSnF/p42F4uupaer3+d4v3pgnlelJcpZpzwJzWjYYE0ZivtZI
+         rB++qEQsouQQWSkKXGBsjxGf6P4lYMNbn5wA617pY5yzpNZelrexQXdtKyaSoi1muF8N
+         euw58o0XXd9pIGydUaRW4hbgLmeBOPM4a2dM2sLsNXg2wfsW5yR5ML0NQqvnrlM/UB9P
+         bF2gnyaHPqg+ZYXjbMG4e2mOXRXihL0efWzSSp+WmIHBEoSkUIiZzfCgE9XDFuiaVmFK
+         yQdA==
+X-Gm-Message-State: APjAAAUyUco6/e4wegBIkhar+nPBNmv4Ad//ll+vcYT/J4f6ni5VSccJ
+        hxudIIEMT/4dra0t+V6M2Fa0Mc6ti9zGKrfAQH9S7xAKhNc=
+X-Google-Smtp-Source: APXvYqwW/UsUMpwt+ipxJgFE9sJQF5j4UPiUeg1zA8yIedKwl5LBzXWM0A8XEsl3PQzvkr+wcFB07lU8J4793urYggc=
+X-Received: by 2002:aca:fcc4:: with SMTP id a187mr306296oii.126.1566399221257;
+ Wed, 21 Aug 2019 07:53:41 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190821134547.96929-1-jeffv@google.com> <e8f9e1ae-f9e4-987f-eb76-ebde8af4f4db@schaufler-ca.com>
-In-Reply-To: <e8f9e1ae-f9e4-987f-eb76-ebde8af4f4db@schaufler-ca.com>
-From:   Jeffrey Vander Stoep <jeffv@google.com>
-Date:   Wed, 21 Aug 2019 16:52:09 +0200
-Message-ID: <CABXk95DnL5EbGzY7UF2VJ0Lo+bavHPVA-1fXN_xUyfS5WQXCuQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] rtnetlink: gate MAC address with an LSM hook
-To:     Casey Schaufler <casey@schaufler-ca.com>
-Cc:     netdev@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        selinux@vger.kernel.org
+References: <d1773613833e2824f95c3adbe46bff757280c16e.1565790591.git.echaudro@redhat.com>
+ <CAJ8uoz3MszznV7McpttcVauQ5vgSiOpfT7J=63BNbruVwjFQBQ@mail.gmail.com>
+ <BC1D077F-1601-451D-A396-1C129B185DD3@redhat.com> <CAJ8uoz2v_48F6BuMkG7RPUymjQ2XL4hdPbeZu2R6SoarHSP47A@mail.gmail.com>
+In-Reply-To: <CAJ8uoz2v_48F6BuMkG7RPUymjQ2XL4hdPbeZu2R6SoarHSP47A@mail.gmail.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Wed, 21 Aug 2019 16:53:29 +0200
+Message-ID: <CAJ8uoz1kQXgMUydktY3ci=8fjneUDW9B=qOGHzEQY1MvBThu8A@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4] libbpf: add xsk_ring_prod__nb_free() function
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 4:34 PM Casey Schaufler <casey@schaufler-ca.com> wrote:
+On Wed, Aug 21, 2019 at 4:14 PM Magnus Karlsson
+<magnus.karlsson@gmail.com> wrote:
 >
-> On 8/21/2019 6:45 AM, Jeff Vander Stoep wrote:
-> > MAC addresses are often considered sensitive because they are
-> > usually unique and can be used to identify/track a device or
-> > user [1].
+> On Wed, Aug 21, 2019 at 3:46 PM Eelco Chaudron <echaudro@redhat.com> wrote:
 > >
-> > The MAC address is accessible via the RTM_NEWLINK message type of a
-> > netlink route socket[2]. Ideally we could grant/deny access to the
-> > MAC address on a case-by-case basis without blocking the entire
-> > RTM_NEWLINK message type which contains a lot of other useful
-> > information. This can be achieved using a new LSM hook on the netlink
-> > message receive path. Using this new hook, individual LSMs can select
-> > which processes are allowed access to the real MAC, otherwise a
-> > default value of zeros is returned. Offloading access control
-> > decisions like this to an LSM is convenient because it preserves the
-> > status quo for most Linux users while giving the various LSMs
-> > flexibility to make finer grained decisions on access to sensitive
-> > data based on policy.
+> >
+> >
+> > On 21 Aug 2019, at 15:11, Magnus Karlsson wrote:
+> >
+> > > On Wed, Aug 14, 2019 at 3:51 PM Eelco Chaudron <echaudro@redhat.com>
+> > > wrote:
+> > >>
+> > >> When an AF_XDP application received X packets, it does not mean X
+> > >> frames can be stuffed into the producer ring. To make it easier for
+> > >> AF_XDP applications this API allows them to check how many frames can
+> > >> be added into the ring.
+> > >>
+> > >> The patch below looks like a name change only, but the xsk_prod__
+> > >> prefix denotes that this API is exposed to be used by applications.
+> > >>
+> > >> Besides, if you set the nb value to the size of the ring, you will
+> > >> get the exact amount of slots available, at the cost of performance
+> > >> (you touch shared state for sure). nb is there to limit the
+> > >> touching of the shared state.
+> > >>
+> > >> Also the example xdpsock application has been modified to use this
+> > >> new API, so it's also able to process flows at a 1pps rate on veth
+> > >> interfaces.
+
+1 pps! That is not that impressive ;-).
+
+> > > My apologies for the late reply and thank you for working on this. So
+> > > what kind of performance difference do you see with your modified
+> > > xdpsock application on a regular NIC for txpush and l2fwd? If there is
+> > > basically no difference or it is faster, we can go ahead and accept
+> > > this. But if the difference is large, we might consider to have two
+> > > versions of txpush and l2fwd as the regular NICs do not need this. Or
+> > > we optimize your code so that it becomes as fast as the previous
+> > > version.
+> >
+> > For both operation modes, I ran 5 test with and without the changes
+> > applied using an iexgb connecting to a XENA tester. The throughput
+> > numbers were within the standard deviation, so no noticeable performance
+> > gain or drop.
 >
-> Is the MAC address the only bit of skb data that you might
-> want to control with MAC? ( Sorry, couldn't help it ;) )
-> Just musing, but might it make more sense to leave the core
-> code unmodified and clear the MAC address in the skb inside
-> the LSM? If you did it that way you could address any other
-> data you want to control using the same hook. I would hate
-> to see separate LSM hooks for each of several bits of data.
-> On the other hand, I wouldn't want you to violate any layering
-> policies in the networking code. That would be wrong.
+> Sounds good, but let me take your patches for a run on something
+> faster, just to make sure we are CPU bound. Will get back.
 
-I considered that approach, but having the LSM modifying the skb
-like that without the networking code's knowledge did seem like a layering
-violation, and fragile. It's also different than how LSM hooks typically
-operate - generally they return decisions and the calling code is
-responsible for taking appropriate action.
+I ran some experiments and with two cores (app on one, softirq on
+another) there is no impact since the application core has cycles to
+spare. But if you run it on a single core the drop is 1- 2% for l2fwd.
+I think this is ok since your version is a better example and more
+correct. Just note that your patch did not apply cleanly to bpf-next,
+so please rebase it, resubmit and I will ack it.
 
-I'm currently only interested in the MAC, but this approach can be extended
-to other fields. The selinux patch just splits up the read permission into two
-levels, privileged and unprivileged which is consistent with how netlink
-audit sockets are handled.
+Thanks: Magnus
 
-
-
+> /Magnus
 >
+> > Let me know if this is enough, if not I can rebuild the setup and do
+> > some more tests.
 > >
-> > [1] https://adamdrake.com/mac-addresses-udids-and-privacy.html
-> > [2] Other access vectors like ioctl(SIOCGIFHWADDR) are already covered
-> > by existing LSM hooks.
-> >
-> > Signed-off-by: Jeff Vander Stoep <jeffv@google.com>
-> > ---
-> >  include/linux/lsm_hooks.h |  8 ++++++++
-> >  include/linux/security.h  |  6 ++++++
-> >  net/core/rtnetlink.c      | 12 ++++++++++--
-> >  security/security.c       |  5 +++++
-> >  4 files changed, 29 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/include/linux/lsm_hooks.h b/include/linux/lsm_hooks.h
-> > index df1318d85f7d..dfcb2e11ff43 100644
-> > --- a/include/linux/lsm_hooks.h
-> > +++ b/include/linux/lsm_hooks.h
-> > @@ -728,6 +728,12 @@
-> >   *
-> >   * Security hooks for Netlink messaging.
-> >   *
-> > + * @netlink_receive
-> > + *   Check permissions on a netlink message field before populating it.
-> > + *   @sk associated sock of task receiving the message.
-> > + *   @skb contains the sk_buff structure for the netlink message.
-> > + *   Return 0 if the data should be included in the message.
-> > + *
-> >   * @netlink_send:
-> >   *   Save security information for a netlink message so that permission
-> >   *   checking can be performed when the message is processed.  The security
-> > @@ -1673,6 +1679,7 @@ union security_list_options {
-> >       int (*sem_semop)(struct kern_ipc_perm *perm, struct sembuf *sops,
-> >                               unsigned nsops, int alter);
-> >
-> > +     int (*netlink_receive)(struct sock *sk, struct sk_buff *skb);
-> >       int (*netlink_send)(struct sock *sk, struct sk_buff *skb);
-> >
-> >       void (*d_instantiate)(struct dentry *dentry, struct inode *inode);
-> > @@ -1952,6 +1959,7 @@ struct security_hook_heads {
-> >       struct hlist_head sem_associate;
-> >       struct hlist_head sem_semctl;
-> >       struct hlist_head sem_semop;
-> > +     struct hlist_head netlink_receive;
-> >       struct hlist_head netlink_send;
-> >       struct hlist_head d_instantiate;
-> >       struct hlist_head getprocattr;
-> > diff --git a/include/linux/security.h b/include/linux/security.h
-> > index 5f7441abbf42..46b5af6de59e 100644
-> > --- a/include/linux/security.h
-> > +++ b/include/linux/security.h
-> > @@ -382,6 +382,7 @@ int security_getprocattr(struct task_struct *p, const char *lsm, char *name,
-> >                        char **value);
-> >  int security_setprocattr(const char *lsm, const char *name, void *value,
-> >                        size_t size);
-> > +int security_netlink_receive(struct sock *sk, struct sk_buff *skb);
-> >  int security_netlink_send(struct sock *sk, struct sk_buff *skb);
-> >  int security_ismaclabel(const char *name);
-> >  int security_secid_to_secctx(u32 secid, char **secdata, u32 *seclen);
-> > @@ -1162,6 +1163,11 @@ static inline int security_setprocattr(const char *lsm, char *name,
-> >       return -EINVAL;
-> >  }
-> >
-> > +static inline int security_netlink_receive(struct sock *sk, struct sk_buff *skb)
-> > +{
-> > +     return 0;
-> > +}
-> > +
-> >  static inline int security_netlink_send(struct sock *sk, struct sk_buff *skb)
-> >  {
-> >       return 0;
-> > diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-> > index 1ee6460f8275..7d69fcb8d22e 100644
-> > --- a/net/core/rtnetlink.c
-> > +++ b/net/core/rtnetlink.c
-> > @@ -1650,8 +1650,16 @@ static int rtnl_fill_ifinfo(struct sk_buff *skb,
-> >               goto nla_put_failure;
-> >
-> >       if (dev->addr_len) {
-> > -             if (nla_put(skb, IFLA_ADDRESS, dev->addr_len, dev->dev_addr) ||
-> > -                 nla_put(skb, IFLA_BROADCAST, dev->addr_len, dev->broadcast))
-> > +             if (skb->sk && security_netlink_receive(skb->sk, skb)) {
-> > +                     if (!nla_reserve(skb, IFLA_ADDRESS, dev->addr_len))
-> > +                             goto nla_put_failure;
-> > +
-> > +             } else {
-> > +                     if (nla_put(skb, IFLA_ADDRESS, dev->addr_len,
-> > +                                 dev->dev_addr))
-> > +                             goto nla_put_failure;
-> > +             }
-> > +             if (nla_put(skb, IFLA_BROADCAST, dev->addr_len, dev->broadcast))
-> >                       goto nla_put_failure;
-> >       }
-> >
-> > diff --git a/security/security.c b/security/security.c
-> > index 250ee2d76406..35c5929921b2 100644
-> > --- a/security/security.c
-> > +++ b/security/security.c
-> > @@ -1861,6 +1861,11 @@ int security_setprocattr(const char *lsm, const char *name, void *value,
-> >       return -EINVAL;
-> >  }
-> >
-> > +int security_netlink_receive(struct sock *sk, struct sk_buff *skb)
-> > +{
-> > +     return call_int_hook(netlink_receive, 0, sk, skb);
-> > +}
-> > +
-> >  int security_netlink_send(struct sock *sk, struct sk_buff *skb)
-> >  {
-> >       return call_int_hook(netlink_send, 0, sk, skb);
->
+> > > /Magnus
+> > >
+> > >> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+> > >> ---
+> > >>
+> > >> v3 -> v4
+> > >>   - Cleanedup commit message
+> > >>   - Updated AF_XDP sample application to use this new API
+> > >>
+> > >> v2 -> v3
+> > >>   - Removed cache by pass option
+> > >>
+> > >> v1 -> v2
+> > >>   - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
+> > >>   - Add caching so it will only touch global state when needed
+> > >>
+> > >>  samples/bpf/xdpsock_user.c | 109
+> > >> ++++++++++++++++++++++++++++---------
+> > >>  tools/lib/bpf/xsk.h        |   4 +-
+> > >>  2 files changed, 86 insertions(+), 27 deletions(-)
+> > >>
+> > >> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+> > >> index 93eaaf7239b2..87115e233b54 100644
+> > >> --- a/samples/bpf/xdpsock_user.c
+> > >> +++ b/samples/bpf/xdpsock_user.c
+> > >> @@ -461,9 +461,13 @@ static void kick_tx(struct xsk_socket_info *xsk)
+> > >>
+> > >>  static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk)
+> > >>  {
+> > >> -       u32 idx_cq = 0, idx_fq = 0;
+> > >> -       unsigned int rcvd;
+> > >> +       static u64 free_frames[NUM_FRAMES];
+> > >> +       static size_t nr_free_frames;
+> > >> +
+> > >> +       u32 idx_cq = 0, idx_fq = 0, free_slots;
+> > >> +       unsigned int rcvd, i;
+> > >>         size_t ndescs;
+> > >> +       int ret;
+> > >>
+> > >>         if (!xsk->outstanding_tx)
+> > >>                 return;
+> > >> @@ -474,27 +478,52 @@ static inline void complete_tx_l2fwd(struct
+> > >> xsk_socket_info *xsk)
+> > >>
+> > >>         /* re-add completed Tx buffers */
+> > >>         rcvd = xsk_ring_cons__peek(&xsk->umem->cq, ndescs, &idx_cq);
+> > >> -       if (rcvd > 0) {
+> > >> -               unsigned int i;
+> > >> -               int ret;
+> > >> +       if (!rcvd)
+> > >> +               return;
+> > >>
+> > >> -               ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd,
+> > >> &idx_fq);
+> > >> -               while (ret != rcvd) {
+> > >> -                       if (ret < 0)
+> > >> -                               exit_with_error(-ret);
+> > >> -                       ret = xsk_ring_prod__reserve(&xsk->umem->fq,
+> > >> rcvd,
+> > >> -                                                    &idx_fq);
+> > >> -               }
+> > >> -               for (i = 0; i < rcvd; i++)
+> > >> +       /* When xsk_ring_cons__peek() for example returns that 5
+> > >> packets
+> > >> +        * have been received, it does not automatically mean that
+> > >> +        * xsk_ring_prod__reserve() will have 5 slots available. You
+> > >> will
+> > >> +        * see this, for example, when using a veth interface due to
+> > >> the
+> > >> +        * RX_BATCH_SIZE used by the generic driver.
+> > >> +        *
+> > >> +        * In this example we store unused buffers and try to
+> > >> re-stock
+> > >> +        * them the next iteration.
+> > >> +        */
+> > >> +
+> > >> +       free_slots = xsk_prod__nb_free(&xsk->umem->fq, rcvd +
+> > >> nr_free_frames);
+> > >> +       if (free_slots > rcvd + nr_free_frames)
+> > >> +               free_slots = rcvd + nr_free_frames;
+> > >> +
+> > >> +       ret = xsk_ring_prod__reserve(&xsk->umem->fq, free_slots,
+> > >> &idx_fq);
+> > >> +       while (ret != free_slots) {
+> > >> +               if (ret < 0)
+> > >> +                       exit_with_error(-ret);
+> > >> +               ret = xsk_ring_prod__reserve(&xsk->umem->fq,
+> > >> free_slots,
+> > >> +                                            &idx_fq);
+> > >> +       }
+> > >> +       for (i = 0; i < rcvd; i++) {
+> > >> +               u64 addr = *xsk_ring_cons__comp_addr(&xsk->umem->cq,
+> > >> idx_cq++);
+> > >> +
+> > >> +               if (i < free_slots)
+> > >>                         *xsk_ring_prod__fill_addr(&xsk->umem->fq,
+> > >> idx_fq++) =
+> > >> -
+> > >> *xsk_ring_cons__comp_addr(&xsk->umem->cq,
+> > >> -                                                         idx_cq++);
+> > >> +                               addr;
+> > >> +               else
+> > >> +                       free_frames[nr_free_frames++] = addr;
+> > >> +       }
+> > >>
+> > >> -               xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
+> > >> -               xsk_ring_cons__release(&xsk->umem->cq, rcvd);
+> > >> -               xsk->outstanding_tx -= rcvd;
+> > >> -               xsk->tx_npkts += rcvd;
+> > >> +       if (free_slots > rcvd) {
+> > >> +               for (i = 0; i < (free_slots - rcvd); i++) {
+> > >> +                       u64 addr = free_frames[--nr_free_frames];
+> > >> +                       *xsk_ring_prod__fill_addr(&xsk->umem->fq,
+> > >> idx_fq++) =
+> > >> +                               addr;
+> > >> +               }
+> > >>         }
+> > >> +
+> > >> +       xsk_ring_prod__submit(&xsk->umem->fq, free_slots);
+> > >> +       xsk_ring_cons__release(&xsk->umem->cq, rcvd);
+> > >> +       xsk->outstanding_tx -= rcvd;
+> > >> +       xsk->tx_npkts += rcvd;
+> > >>  }
+> > >>
+> > >>  static inline void complete_tx_only(struct xsk_socket_info *xsk)
+> > >> @@ -517,19 +546,37 @@ static inline void complete_tx_only(struct
+> > >> xsk_socket_info *xsk)
+> > >>
+> > >>  static void rx_drop(struct xsk_socket_info *xsk)
+> > >>  {
+> > >> +       static u64 free_frames[NUM_FRAMES];
+> > >> +       static size_t nr_free_frames;
+> > >> +
+> > >>         unsigned int rcvd, i;
+> > >> -       u32 idx_rx = 0, idx_fq = 0;
+> > >> +       u32 idx_rx = 0, idx_fq = 0, free_slots;
+> > >>         int ret;
+> > >>
+> > >>         rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+> > >>         if (!rcvd)
+> > >>                 return;
+> > >>
+> > >> -       ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
+> > >> -       while (ret != rcvd) {
+> > >> +       /* When xsk_ring_cons__peek() for example returns that 5
+> > >> packets
+> > >> +        * have been received, it does not automatically mean that
+> > >> +        * xsk_ring_prod__reserve() will have 5 slots available. You
+> > >> will
+> > >> +        * see this, for example, when using a veth interface due to
+> > >> the
+> > >> +        * RX_BATCH_SIZE used by the generic driver.
+> > >> +        *
+> > >> +        * In this example we store unused buffers and try to
+> > >> re-stock
+> > >> +        * them the next iteration.
+> > >> +        */
+> > >> +
+> > >> +       free_slots = xsk_prod__nb_free(&xsk->umem->fq, rcvd +
+> > >> nr_free_frames);
+> > >> +       if (free_slots > rcvd + nr_free_frames)
+> > >> +               free_slots = rcvd + nr_free_frames;
+> > >> +
+> > >> +       ret = xsk_ring_prod__reserve(&xsk->umem->fq, free_slots,
+> > >> &idx_fq);
+> > >> +       while (ret != free_slots) {
+> > >>                 if (ret < 0)
+> > >>                         exit_with_error(-ret);
+> > >> -               ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd,
+> > >> &idx_fq);
+> > >> +               ret = xsk_ring_prod__reserve(&xsk->umem->fq,
+> > >> free_slots,
+> > >> +                                            &idx_fq);
+> > >>         }
+> > >>
+> > >>         for (i = 0; i < rcvd; i++) {
+> > >> @@ -538,10 +585,22 @@ static void rx_drop(struct xsk_socket_info
+> > >> *xsk)
+> > >>                 char *pkt = xsk_umem__get_data(xsk->umem->buffer,
+> > >> addr);
+> > >>
+> > >>                 hex_dump(pkt, len, addr);
+> > >> -               *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) =
+> > >> addr;
+> > >> +               if (i < free_slots)
+> > >> +                       *xsk_ring_prod__fill_addr(&xsk->umem->fq,
+> > >> idx_fq++) =
+> > >> +                               addr;
+> > >> +               else
+> > >> +                       free_frames[nr_free_frames++] = addr;
+> > >> +       }
+> > >> +
+> > >> +       if (free_slots > rcvd) {
+> > >> +               for (i = 0; i < (free_slots - rcvd); i++) {
+> > >> +                       u64 addr = free_frames[--nr_free_frames];
+> > >> +                       *xsk_ring_prod__fill_addr(&xsk->umem->fq,
+> > >> idx_fq++) =
+> > >> +                               addr;
+> > >> +               }
+> > >>         }
+> > >>
+> > >> -       xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
+> > >> +       xsk_ring_prod__submit(&xsk->umem->fq, free_slots);
+> > >>         xsk_ring_cons__release(&xsk->rx, rcvd);
+> > >>         xsk->rx_npkts += rcvd;
+> > >>  }
+> > >> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+> > >> index 833a6e60d065..cae506ab3f3c 100644
+> > >> --- a/tools/lib/bpf/xsk.h
+> > >> +++ b/tools/lib/bpf/xsk.h
+> > >> @@ -76,7 +76,7 @@ xsk_ring_cons__rx_desc(const struct xsk_ring_cons
+> > >> *rx, __u32 idx)
+> > >>         return &descs[idx & rx->mask];
+> > >>  }
+> > >>
+> > >> -static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32
+> > >> nb)
+> > >> +static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32
+> > >> nb)
+> > >>  {
+> > >>         __u32 free_entries = r->cached_cons - r->cached_prod;
+> > >>
+> > >> @@ -110,7 +110,7 @@ static inline __u32 xsk_cons_nb_avail(struct
+> > >> xsk_ring_cons *r, __u32 nb)
+> > >>  static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod
+> > >> *prod,
+> > >>                                             size_t nb, __u32 *idx)
+> > >>  {
+> > >> -       if (xsk_prod_nb_free(prod, nb) < nb)
+> > >> +       if (xsk_prod__nb_free(prod, nb) < nb)
+> > >>                 return 0;
+> > >>
+> > >>         *idx = prod->cached_prod;
+> > >> --
+> > >> 2.18.1
+> > >>
