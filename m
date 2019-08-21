@@ -2,110 +2,193 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EC4A97FCE
-	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:17:21 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 712AA97FE5
+	for <lists+netdev@lfdr.de>; Wed, 21 Aug 2019 18:22:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728797AbfHUQQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 12:16:40 -0400
-Received: from mail-eopbgr10045.outbound.protection.outlook.com ([40.107.1.45]:8117
-        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726828AbfHUQQj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 21 Aug 2019 12:16:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BE86Kyq/B1nkGEtSlIJbc1n4pJRMbEaxYTYuIve5hH+c22LgO+fgnZ0RojRbfLCBM7lt8l+4EiEH3EqiqFFHpI9j1Vyg/avT1d2Nk+NUMlGFtFV7LmXwTpdGDsa/Aac6REGfCRslQqLmIKZWBefMTFiAwfWIahJRLfjn/vnCEC6oh1yGZRrdUYSmTAkDW597BfLZO8uFaICXm7OXeXHrJTwQ6jdglLWagoj6Aa3mVXmQlig84jJRnesIuyW3GvG/eW3irjiGymcHyxmDNyJWPiynkXQ/O/cv4gMWXh0ii49Ezglcg3WPbjQyUYku8S6r5MzdxtCS4vDmVazwnrrn9A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/TGkgoElw0knAwgl5PTJkk82A64yXG7L4CgduFmH6xE=;
- b=VhhhqqkobPCAUwAut/04Wy87XdAuIBqcg/dKlnF0r87bkH8Z/NpInIGpjzXenldSrEfhxB/PsjJO1dkWPlsdx6Sx/IYuCli5UB1u0KtRF18qZM1JjN0wRKoCpbNYU9D5pGRvF8L+TOwURxRJhLC5tUwBweQGCawpsdGMvcX278GOZXr3ydzDrIBXkMBd3uO+u+gsF/lRt6uYmisMRLJ+1r6ZspcmkgnbgMqKbfcv0iF7QlJgoHvWy6SGZnu2VdgX53yA1+xdYOeQOaIpdx+NKlFZr+jF+2kp24SK8kEEUFmEJ+urmXGfFpWlw/fpDqxLD9179OynC91NxXfRaOwF0Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/TGkgoElw0knAwgl5PTJkk82A64yXG7L4CgduFmH6xE=;
- b=eFukYABAW9o4OTNtMlKzSyY7/Q6ZnbhOpcnOnE1JCeRQFlphFe8CQlA0R+y/CIAnw5BEh8YX8/HXNGskBlPrM/8aR/1+1QEoSjH3VEpKYkNz6BV9sOwJGAO2Gf0UUpYTil3YOLKmX5JikwPdUcBQR97M7bemZ2ZzKA/ldAx0NpA=
-Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com (52.133.29.29) by
- AM6PR0402MB3349.eurprd04.prod.outlook.com (52.133.18.154) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Wed, 21 Aug 2019 16:16:32 +0000
-Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com
- ([fe80::9de1:26ec:59e5:32fc]) by AM6PR0402MB3798.eurprd04.prod.outlook.com
- ([fe80::9de1:26ec:59e5:32fc%5]) with mapi id 15.20.2178.020; Wed, 21 Aug 2019
- 16:16:32 +0000
-From:   Christian Herber <christian.herber@nxp.com>
-To:     David Miller <davem@davemloft.net>,
-        "hkallweit1@gmail.com" <hkallweit1@gmail.com>
-CC:     "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: Re: [PATCH v2 net-next 0/1] Add BASE-T1 PHY support
-Thread-Topic: Re: [PATCH v2 net-next 0/1] Add BASE-T1 PHY support
-Thread-Index: AQHVWDvLLmDgCDHYx0GZluZJmkZkZA==
-Date:   Wed, 21 Aug 2019 16:16:32 +0000
-Message-ID: <AM6PR0402MB37983B7CA4DC2EF962D75D0886AA0@AM6PR0402MB3798.eurprd04.prod.outlook.com>
-References: <20190819151940.27756-1-christian.herber@nxp.com>
- <20190820.122234.1290995026664280862.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=christian.herber@nxp.com; 
-x-originating-ip: [217.111.68.82]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c37c23ca-4fcf-4d7a-a1b7-08d72652ee67
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM6PR0402MB3349;
-x-ms-traffictypediagnostic: AM6PR0402MB3349:
-x-ms-exchange-purlcount: 1
-x-microsoft-antispam-prvs: <AM6PR0402MB334909E7847EB8219207093286AA0@AM6PR0402MB3349.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0136C1DDA4
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(189003)(199004)(8676002)(71190400001)(74316002)(55016002)(7736002)(305945005)(6306002)(9686003)(71200400001)(33656002)(25786009)(3846002)(44832011)(14454004)(110136005)(486006)(52536014)(2501003)(5660300002)(476003)(54906003)(4744005)(76116006)(91956017)(66946007)(66476007)(53936002)(66446008)(26005)(55236004)(6436002)(186003)(102836004)(2906002)(45080400002)(229853002)(446003)(6506007)(53546011)(966005)(7696005)(4326008)(8936002)(256004)(76176011)(86362001)(99286004)(66556008)(66066001)(6246003)(64756008)(498600001)(6116002)(81156014)(81166006)(14444005);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR0402MB3349;H:AM6PR0402MB3798.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: nxp.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: M5WDIabyHLJpcmqy6Zi7RagFAkg/kIRzxqn8YqPMJfpJ3AcPeHj4V1Ke2We1SLfoTvAtF821oEo5wOeHmTvfy0vvJqFkEOLAY16NVC4sMT1YJTm7WdWdS2p/4LiXi7eJ24QGlv0BDpv36WiWc8SqKD5d1gI0HteXis5Y+IzXx0QYbpiZevvBURbKwNSkRLdcLo75TsMZgUHxBJcEBVFY7VbSsQwTLIbQYgLaPLQY5Eq0jhgchI/rusypx9GE8A38/LIAQBf2Gn/xZryMqMbi95viAYKKcYeGScFFQrh9z1z9Lkuv/0hK6bOcXUdpVA1ZDXRmsn5eN0YVH9d7kdtuZelQy59mQ4Lmn1gOshonEBl2iHWdYDHxQpr70TauxsUYqQwMdtY0phLr3BX9quyvvSY+ixPI86fZ21U+xh5gCQk=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S1727962AbfHUQWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 21 Aug 2019 12:22:04 -0400
+Received: from mailout1.w1.samsung.com ([210.118.77.11]:56665 "EHLO
+        mailout1.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727120AbfHUQWD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 12:22:03 -0400
+Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
+        by mailout1.w1.samsung.com (KnoxPortal) with ESMTP id 20190821162200euoutp013a28a51a2b1a27a01b5e2b0e83fa2d60~8-JzXQtQk0066300663euoutp01U
+        for <netdev@vger.kernel.org>; Wed, 21 Aug 2019 16:22:00 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.w1.samsung.com 20190821162200euoutp013a28a51a2b1a27a01b5e2b0e83fa2d60~8-JzXQtQk0066300663euoutp01U
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1566404521;
+        bh=o9OwLt9/WkSr9TsiZ22HcVerYaZHCMss002A6VSz+VY=;
+        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
+        b=dlf2Aish48wW/AClWjwKQHOvwBlhLFshRRAucjhm3z4caKEXMnG6sEQoEn8H2WExf
+         byQd1bu3VU7Vz/NJjA0poZo9ihxf3IEB/2YUmlDfLS7wV9P7MG3a+6BK79Z59b3AdS
+         HSfDDrZBWs9wkU8v3ZPv4kTmjxcHhyyqsuJmq3h8=
+Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTP id
+        20190821162159eucas1p22949f7d89eb3c051c42232f0528f322c~8-JyWCaAl0529205292eucas1p2A;
+        Wed, 21 Aug 2019 16:21:59 +0000 (GMT)
+Received: from eucas1p1.samsung.com ( [182.198.249.206]) by
+        eusmges2new.samsung.com (EUCPMTA) with SMTP id 89.F6.04309.7AF6D5D5; Wed, 21
+        Aug 2019 17:21:59 +0100 (BST)
+Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
+        eucas1p2.samsung.com (KnoxPortal) with ESMTPA id
+        20190821162158eucas1p2f45685b792cc1fae1d62becab15cda24~8-Jxdzpol0535005350eucas1p25;
+        Wed, 21 Aug 2019 16:21:58 +0000 (GMT)
+Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
+        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20190821162158eusmtrp11c7aa05bb3b12307c612da80565912b2~8-JxPW8QO1676516765eusmtrp1N;
+        Wed, 21 Aug 2019 16:21:58 +0000 (GMT)
+X-AuditID: cbfec7f4-ae1ff700000010d5-eb-5d5d6fa744e6
+Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
+        eusmgms1.samsung.com (EUCPMTA) with SMTP id 50.DD.04166.6AF6D5D5; Wed, 21
+        Aug 2019 17:21:58 +0100 (BST)
+Received: from [106.109.129.180] (unknown [106.109.129.180]) by
+        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20190821162157eusmtip1d58ee00e2fe90c2bf5e66e1a481b6ab0~8-JwZRz180228402284eusmtip1t;
+        Wed, 21 Aug 2019 16:21:57 +0000 (GMT)
+Subject: Re: [PATCH net] ixgbe: fix double clean of tx descriptors with xdp
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        William Tu <u9012063@gmail.com>
+From:   Ilya Maximets <i.maximets@samsung.com>
+Message-ID: <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com>
+Date:   Wed, 21 Aug 2019 19:21:51 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+        Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c37c23ca-4fcf-4d7a-a1b7-08d72652ee67
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Aug 2019 16:16:32.3288
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ZvtGO8F90X3V5fQdIqlIZZVwhjcuX7vzxlWJCQvaAFERNWLZKCjLgMLAo2LZsW8fPnEjCExWsZ3Uhy2ZULyb4KytP1JBCI90wHuJvPN//uc=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3349
+In-Reply-To: <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
+Content-Language: en-GB
+Content-Transfer-Encoding: 8bit
+X-Brightmail-Tracker: H4sIAAAAAAAAA02Se1BMYRjG+/acPee00+a0oXcKsZMZGeUyZnyZphR/nBly+4tYbDrS1FZ2
+        K6UxNelO9zGxYiIju8bIWkluY+kmFqmUIrcZrUq0GzWasJ0a/ff75nmf93mfmY8hZF/E7kxk
+        TDyvjlFGyykJWdMwZvapilUoVgyfWoz/nO0msW2sm8bjWdUIWx83Urjy/E8Clz/PIHFP2xiF
+        27LHaPznzW8xbujLoHDTjV6EX9WVU/iyqYnGDRVz8etWp3WzOKOuS8Td1r6lucq7FhGX19lK
+        cAZ9LsU1H0vgyo5/ILih++0UV2DUI85qWLBVEirxD+ejIxN59fKAfZKDVzt+obh785NaK76I
+        0tBbtzzkyAC7GgrvWMR5SMLI2MsIPmWaRMLDhkBrtkw9rAi+V2eLpy0TLwtoQahCUFR6acr/
+        A4HpczuZhxjGld0I9fWE3TCbjQJ95bnJGYL9SMDZoWbKLlDsMnhy5TGys5QNgBHTIG1nkl0M
+        A4ank2lz2B0w/P6RWJhxgebTn0k7O7Lb4Na7jkkmWDdIt+nEAnvCsZtnCHsYsMUMZHWPEvaD
+        gN0A2acWCQ1c4WujkRZ4HrSUniAFToXeDAsSvDkIykwTIkEIBGO/mbbvIVhvuFa3XFgZBCOZ
+        3gI6Q+egi3CBM5TUlE2FSiEnSybs8ILfD6sIgd2h65uVLkJy7Yxe2hldtDO6aP/HViBSj9z4
+        BI0qgtesiuEP+2qUKk1CTITv/liVAf37fi0TjbZaVDceZkIsg+RO0iIfhUImViZqklUmBAwh
+        ny1NKg9VyKThyuQjvDp2rzohmteYkAdDyt2kKQ7vd8nYCGU8H8Xzcbx6WhUxju5paMvO+WGZ
+        Lu1HD7Xp+hKz/SIv1H709lgfXByoP/Qz/7inz/Cmko5rS/JbN+eu6SlUrr04us0vIDi8hzrv
+        jwfS/VZIt3u+2EIF4XOqkFl8w54e92rklfrgpKH0WezWnf3d8eMLhxyud6QYDzjtDgsNCdPp
+        LtiyLDUh0RUfvL6ezpX7muWk5qBy5VJCrVH+BYrQQBB6AwAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrDIsWRmVeSWpSXmKPExsVy+t/xu7rL8mNjDb6/1LD4P/c2i8WXn7fZ
+        Lf60bWC0+HzkOJvF4oXfmC3mnG9hsbhz5SebxZX2n+wW/2/9ZrU49qKFzeLE5vuMFpd3zWGz
+        WHHoBLvFsQViFtcv8Tjwe2xZeZPJY+esu+wei/e8ZPLounGJ2WPTqk42j5PNpR7Tux8ye7zf
+        d5XNo2/LKkaPz5vkArii9GyK8ktLUhUy8otLbJWiDS2M9AwtLfSMTCz1DI3NY62MTJX07WxS
+        UnMyy1KL9O0S9DLWXvvOWLBXtuLSgudMDYx3xbsYOTkkBEwk/l3sY+9i5OIQEljKKHF38kM2
+        iISUxI9fF1ghbGGJP9e62CCK3jNKrDw/Gcjh4BAW8JY4epQZpEZEIFvixo8+VpAaZoEnzBJt
+        /y4wQzRcYpL4N20+C0gVm4COxKnVRxhBbF4BO4mvh96yg9gsAqoSbzadAdsmKhAhcXjHLKga
+        QYmTM5+A9XIKBEpsv3cNzGYWUJf4M+8SM4QtLtH0ZSUrhC0v0bx1NvMERqFZSNpnIWmZhaRl
+        FpKWBYwsqxhFUkuLc9Nziw31ihNzi0vz0vWS83M3MQJjftuxn5t3MF7aGHyIUYCDUYmHd4Ju
+        bKwQa2JZcWXuIUYJDmYlEd6KOVGxQrwpiZVVqUX58UWlOanFhxhNgZ6byCwlmpwPTEd5JfGG
+        pobmFpaG5sbmxmYWSuK8HQIHY4QE0hNLUrNTUwtSi2D6mDg4pRoYE3asryvpNN3U5/ZtspC3
+        wwWtXXVfLhSZdBVYtM47qdKT/sj5UozN1ahrpV9E0758+vzs37EX78rdvveVFmlPTFiiIT51
+        8eOGF6GcF45Eb3WW6fiWPFXrZfkfefP8uebHVQ5rLreZk+66ccP/Nk++vL6Ekp5T+4N8bYpj
+        F7mJM/AW7PkedPW8EktxRqKhFnNRcSIAFIcfWQ8DAAA=
+X-CMS-MailID: 20190821162158eucas1p2f45685b792cc1fae1d62becab15cda24
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-RootMTR: 20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce
+X-EPHeader: CA
+CMS-TYPE: 201P
+X-CMS-RootMailID: 20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce
+References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
+        <20190820151611.10727-1-i.maximets@samsung.com>
+        <CAKgT0Udn0D0_f=SOH2wpBRWV_u4rb1Qe2h7gguXnRNzJ_VkRzg@mail.gmail.com>
+        <625791af-c656-1e42-b60e-b3a5cedcb4c4@samsung.com>
+        <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20.08.2019 21:22, David Miller wrote:=0A=
-> =0A=
-> From: Christian Herber <christian.herber@nxp.com>=0A=
-> Date: Mon, 19 Aug 2019 15:19:52 +0000=0A=
-> =0A=
->> v1 patchset can be found here: https://eur01.safelinks.protection.outloo=
-k.com/?url=3Dhttps%3A%2F%2Flkml.org%2Flkml%2F2019%2F8%2F15%2F626&amp;data=
-=3D02%7C01%7Cchristian.herber%40nxp.com%7Ccbb5f329425240eda10a08d725a3c305%=
-7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C1%7C637019257604516613&amp;sdata=
-=3DIdBZbqGgA0upPZZrBQSxPL%2Fh7Tn4BtYA4%2FfS6dZngWU%3D&amp;reserved=3D0=0A=
-> =0A=
-> Please expand and clarify your commit messages as requested by Heiner=0A=
-> in his feedback to v1.=0A=
-> =0A=
-=0A=
-Hi David, Heiner,=0A=
-=0A=
-could you please be specific what to add? The discussion was on various =0A=
-topics. Agree that it would probably help to add some more clarity, but =0A=
-it would be good if you can specify your expectation in this.=0A=
-=0A=
-Christian=0A=
+On 21.08.2019 4:17, Alexander Duyck wrote:
+> On Tue, Aug 20, 2019 at 8:58 AM Ilya Maximets <i.maximets@samsung.com> wrote:
+>>
+>> On 20.08.2019 18:35, Alexander Duyck wrote:
+>>> On Tue, Aug 20, 2019 at 8:18 AM Ilya Maximets <i.maximets@samsung.com> wrote:
+>>>>
+>>>> Tx code doesn't clear the descriptor status after cleaning.
+>>>> So, if the budget is larger than number of used elems in a ring, some
+>>>> descriptors will be accounted twice and xsk_umem_complete_tx will move
+>>>> prod_tail far beyond the prod_head breaking the comletion queue ring.
+>>>>
+>>>> Fix that by limiting the number of descriptors to clean by the number
+>>>> of used descriptors in the tx ring.
+>>>>
+>>>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
+>>>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+>>>
+>>> I'm not sure this is the best way to go. My preference would be to
+>>> have something in the ring that would prevent us from racing which I
+>>> don't think this really addresses. I am pretty sure this code is safe
+>>> on x86 but I would be worried about weak ordered systems such as
+>>> PowerPC.
+>>>
+>>> It might make sense to look at adding the eop_desc logic like we have
+>>> in the regular path with a proper barrier before we write it and after
+>>> we read it. So for example we could hold of on writing the bytecount
+>>> value until the end of an iteration and call smp_wmb before we write
+>>> it. Then on the cleanup we could read it and if it is non-zero we take
+>>> an smp_rmb before proceeding further to process the Tx descriptor and
+>>> clearing the value. Otherwise this code is going to just keep popping
+>>> up with issues.
+>>
+>> But, unlike regular case, xdp zero-copy xmit and clean for particular
+>> tx ring always happens in the same NAPI context and even on the same
+>> CPU core.
+>>
+>> I saw the 'eop_desc' manipulations in regular case and yes, we could
+>> use 'next_to_watch' field just as a flag of descriptor existence,
+>> but it seems unnecessarily complicated. Am I missing something?
+>>
+> 
+> So is it always in the same NAPI context?. I forgot, I was thinking
+> that somehow the socket could possibly make use of XDP for transmit.
+
+AF_XDP socket only triggers tx interrupt on ndo_xsk_async_xmit() which
+is used in zero-copy mode. Real xmit happens inside
+ixgbe_poll()
+ -> ixgbe_clean_xdp_tx_irq()
+    -> ixgbe_xmit_zc()
+
+This should be not possible to bound another XDP socket to the same netdev
+queue.
+
+It also possible to xmit frames in xdp_ring while performing XDP_TX/REDIRECT
+actions. REDIRECT could happen from different netdev with different NAPI
+context, but this operation is bound to specific CPU core and each core has
+its own xdp_ring.
+
+However, I'm not an expert here.
+Björn, maybe you could comment on this?
+
+> 
+> As far as the logic to use I would be good with just using a value you
+> are already setting such as the bytecount value. All that would need
+> to happen is to guarantee that the value is cleared in the Tx path. So
+> if you clear the bytecount in ixgbe_clean_xdp_tx_irq you could
+> theoretically just use that as well to flag that a descriptor has been
+> populated and is ready to be cleaned. Assuming the logic about this
+> all being in the same NAPI context anyway you wouldn't need to mess
+> with the barrier stuff I mentioned before.
+
+Checking the number of used descs, i.e. next_to_use - next_to_clean,
+makes iteration in this function logically equal to the iteration inside
+'ixgbe_xsk_clean_tx_ring()'. Do you think we need to change the later
+function too to follow same 'bytecount' approach? I don't like having
+two different ways to determine number of used descriptors in the same file.
+
+Best regards, Ilya Maximets.
