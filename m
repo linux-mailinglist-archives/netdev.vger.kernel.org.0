@@ -2,115 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 549B49A340
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:48:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 820C79A34D
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:52:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394183AbfHVWsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 18:48:33 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41714 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2394107AbfHVWsc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:48:32 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 196so4959197pfz.8;
-        Thu, 22 Aug 2019 15:48:32 -0700 (PDT)
+        id S2405292AbfHVWwl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 18:52:41 -0400
+Received: from mail-wm1-f49.google.com ([209.85.128.49]:51801 "EHLO
+        mail-wm1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732657AbfHVWwl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:52:41 -0400
+Received: by mail-wm1-f49.google.com with SMTP id k1so7147859wmi.1;
+        Thu, 22 Aug 2019 15:52:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=PDYWQC26G85uFe21HzXIGcCDB8NArXzZKACQ42fhc6M=;
-        b=uUOWA6zAPGTpTgg7Rd+TF1com3hB4gUJbLb0PdvIYzSKualdXoorLvEq3WlQNBBvRh
-         tLmz1Esv2pFsO+zfFCoX0U3iiN+xkjnhQK7qoqAOyfy60isuw9jrvQ3q8+geXaxb/0e4
-         GCFHlPjDJCmOAoeA7UltlKSac08qxPW8+rrPlbrLQZeMGLWCB0jG84YFamK3jlhHw8Nv
-         7PYYRiTqERnpSaFA+YmsanbTCcDSeI+2cnQYAbeKNGFq2UlWI3kTXfj2SF5ye7CQE4ZR
-         WWyxLzpq/3/VI7Z7E8PwLvd6GpobsyTmchpIV3DL59TUcM9B0/GOAKJYpCTvJNmO26Ra
-         CKbQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=05zJrRULPj9O9zDjNH7kXRlLGYjkAvYL/aN4lh3LN+0=;
+        b=WAiq8qF5Hc5vqopLX9vJZzvIVpaM/s7Oa2DrkJHDvUt7z3m+Xab8veqONGrYrXbmYp
+         BcxixBeFqXL1w28oym+vMJP83ogrtLWcSobuinz3NTDjvMZK4r6K2bQUNVxeUH8BDKQl
+         amk7t/MMr/qIVd04DJ7m/vGmgVGrv0xHJNGnIYJ14kGGEGgAmbsfX/XKsr1vu4QGYFOZ
+         JThEdRjcNR/lR6DckRTOs+UqtkEfnZc6tTSGOcx2pVMISnAzNvY2LkZoYSlUXwoeIl7a
+         zQn8/EXOXDMM8+nzGQqzSlohvmA/ZA+I5HndXZ4nfJbRpc7UHSU3xPI4bTFAY2pbTAMD
+         DAMw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PDYWQC26G85uFe21HzXIGcCDB8NArXzZKACQ42fhc6M=;
-        b=aWzELuSPgnFO39WoxQcqRI2bOijRX/EgbLbtIGXfq92gicC8FfYcUOQmPn+CoOGZcd
-         qn423ICBJNk8mWxuEy8WZVSK/+yL0w1FzdInMeBBd/OQEJw/5etvCYxdP0KZqY/fb8N3
-         CVNQ1GYW5T7iQmBPhse4GBdYSizJP21VTizkpIFljd9AtEZZZh8DPz8pU3Zm/PPpYfNQ
-         cKAtxAkrgkrkR6+W+eDPUqp0DYZZ6hZ2ohyXzEpt96sdBA/7/Kkivlt5NInwhUhvTVCP
-         ni1ViUdDrBIZ2uA/m7pmULi4600Z721LcDLxKTaMoMgh9w393SSZGkMM0vRvyeHFbXHA
-         YdBQ==
-X-Gm-Message-State: APjAAAXv19Ma2Kap5NfZQGBhxQsoH00DwHPjo31652TGcqGwg7BkfZQJ
-        wjXstA1MXyyRucQ/4uXu7Vg=
-X-Google-Smtp-Source: APXvYqxXNgjLeBOln1rezZFZ3HnShQ7NStPlJbWY0YLcdouSeNXoATOnRBJrJQWHbNz/HamJHeV/CQ==
-X-Received: by 2002:aa7:9516:: with SMTP id b22mr1723747pfp.106.1566514112000;
-        Thu, 22 Aug 2019 15:48:32 -0700 (PDT)
-Received: from ast-mbp.dhcp.thefacebook.com ([2620:10d:c090:180::1070])
-        by smtp.gmail.com with ESMTPSA id e24sm278952pgk.21.2019.08.22.15.48.30
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=05zJrRULPj9O9zDjNH7kXRlLGYjkAvYL/aN4lh3LN+0=;
+        b=jCngVNTmCnS1YIf0yMNg/hCPYj/pBhoxCxZflZ/Ow55LGTmkeCnH+4GCSJqECd9uvV
+         sFxt0D2jgDroIpzIRObGIm5dIelgyeykQ2L1J7t31vUXxnHt0AFyI/KALksGzQBk10+N
+         TLNf1a14481x9Su9dtgknRF3ae9bi1N4ZS76IJYioYzohWmJ30sbJILUmdGnifZH4fZw
+         p7p/b8ufuSobplIzhp4jOx5FpT4bgQh4Gy3+vXhkGinTaCDZZibry2kLvHkXOjaAbyw7
+         9FKvgyZB17L3Eqh3YLMhz0HTeD4ru3WLlIxi+bwsTVblo54muVpdFFabcmEpANhOYPjr
+         vEmg==
+X-Gm-Message-State: APjAAAUnlxYcKYyH6QfbSuhh//pnWq65wRnCP6XpOA4RXsvPtMsDPKU7
+        GhLHMil+nXfiCWaEQ6zGg3LhOGnv
+X-Google-Smtp-Source: APXvYqxmsaTyglWUEPUS0yRkW+gm9zXTCPcObnyjmJ6xdS8+nMAMsKf9HxatvILjaznElS5HgEJ0Fw==
+X-Received: by 2002:a05:600c:225a:: with SMTP id a26mr1319350wmm.81.1566514358751;
+        Thu, 22 Aug 2019 15:52:38 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f04:7c00:3853:c94b:1882:d6b3? (p200300EA8F047C003853C94B1882D6B3.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:3853:c94b:1882:d6b3])
+        by smtp.googlemail.com with ESMTPSA id z2sm664422wmi.2.2019.08.22.15.52.37
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 22 Aug 2019 15:48:31 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 15:48:29 -0700
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andy Lutomirski <luto@kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Kees Cook <keescook@chromium.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        Lorenz Bauer <lmb@cloudflare.com>,
-        Jann Horn <jannh@google.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Linux API <linux-api@vger.kernel.org>,
-        LSM List <linux-security-module@vger.kernel.org>,
-        Chenbo Feng <chenbofeng.kernel@gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-Message-ID: <20190822224826.xbovlykhpk4p4ww4@ast-mbp.dhcp.thefacebook.com>
-References: <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com>
- <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
- <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
- <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
- <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
- <20190805192122.laxcaz75k4vxdspn@ast-mbp>
- <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
- <20190806011134.p5baub5l3t5fkmou@ast-mbp>
- <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
- <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net>
+        Thu, 22 Aug 2019 15:52:38 -0700 (PDT)
+Subject: Re: r8169: regression on MIPS/Loongson
+To:     Aaro Koskinen <aaro.koskinen@iki.fi>
+Cc:     netdev@vger.kernel.org, linux-mips@vger.kernel.org
+References: <20190822222549.GF30291@darkstar.musicnaut.iki.fi>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <d76b0614-188e-885c-b346-b131cc1d9688@gmail.com>
+Date:   Fri, 23 Aug 2019 00:52:34 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net>
-User-Agent: NeoMutt/20180223
+In-Reply-To: <20190822222549.GF30291@darkstar.musicnaut.iki.fi>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 04:17:43PM +0200, Daniel Borkmann wrote:
+On 23.08.2019 00:25, Aaro Koskinen wrote:
+> Hi,
 > 
-> > > Hence unprivileged bpf is actually something that can be deprecated.
+> After upgrading from v5.2 to v5.3-rc5 on MIPS/Loongson board, copying
+> large files from network with scp started to fail with "Integrity error".
+> Bisected to:
 > 
-> There is actually a publicly known use-case on unprivileged bpf wrt
-> socket filters, see the SO_ATTACH_BPF on sockets section as an example:
+> f072218cca5b076dd99f3dfa3aaafedfd0023a51 is the first bad commit
+> commit f072218cca5b076dd99f3dfa3aaafedfd0023a51
+> Author: Heiner Kallweit <hkallweit1@gmail.com>
+> Date:   Thu Jun 27 23:19:09 2019 +0200
 > 
->   https://blog.cloudflare.com/cloudflare-architecture-and-how-bpf-eats-the-world/
+>     r8169: remove not needed call to dma_sync_single_for_device
 > 
-> If I'd have to take a good guess, I'd think it's major use-case is in
-> SO_ATTACH_REUSEPORT_EBPF in the wild, I don't think the sysctl can be
-> outright flipped or deprecated w/o breaking existing applications unless
-> it's cleanly modeled into some sort of customizable CAP_BPF* type policy
-> (more below) where this would be the lowest common denominator.
+> Any idea what goes wrong? Should this change be reverted?
+> 
+Typically the Realtek chips are used on Intel platforms and I haven't
+seen any such report yet, so it seems to be platform-specific.
+Which board (DT config) is it, and can you provide a full dmesg?
 
-The cloudflare use case is the perfect example that a lot of program types
-are used together.
-Do people use SO_ATTACH_BPF ? Of course.
-All program types are used by somebody. Before accepting them we had long
-conversations with authors to understand that the use cases are real.
-Some progs are probably used less than others by now.
-Like cls_bpf without exts_integrated is probably not used at all.
-We still have to support it, of course.
-That cloudflare example demonstrates that kernel.unprivileged_bpf_disabled=1
-is a reality. Companies that care about security already switched it on.
-Different bits in cloudflare setup need different level of capabilities.
-Some (like SO_ATTACH_BPF) need unpriv. Another need CAP_NET_ADMIN.
-But common demoninator for them all is still CAP_SYS_ADMIN.
-And that's why the system as a whole is not as safe as it could have
-been with CAP_BPF. The system needs root in many places.
-Folks going out of the way to reduce that SYS_ADMIN to something less.
-The example with systemd and NET_ADMIN is just one of them.
-
+> A.
+> 
+Heiner
