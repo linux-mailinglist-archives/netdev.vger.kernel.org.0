@@ -2,123 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A5C8599736
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:44:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 938599975C
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:52:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387723AbfHVOot (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 10:44:49 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:44126 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732378AbfHVOos (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:44:48 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Ups/VrVzSUhhwl/GEM5YSxWOiDm7bA4AN942AhbRqwo=; b=sQhrwnvpafZLPmo5FsdfINJTy
-        gqrWQhb1Z+5QCrEIDeMoEi3SdBeRlQ0v769zMUgIPnlfHp+R1toUOanWZs4j4fAgaJJx1+1pNN3Pk
-        sNHT4ZUjpanIjfQnjDQrwSSarOzK6SevySl9bvgFrqzO6breQcO9593EEUjk1JNQrOqUxmxuFJU0c
-        TpuUduJ3+r+cF0iBFl5sEupcoYvbP5YoYJ3FOfWGLzUpxFTU5tFekqHvRaVXIpVmTTl0GqkOdI5eb
-        pqV3DqYa6AYnAb68AilWTr+NCyLz1cmjlmYN/zsAZnyRurU3lp3eQ/w5Z3yHwvYigqb2Bblzib3XI
-        tYyrEZhDg==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:48060)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1i0oKL-0007ES-Kj; Thu, 22 Aug 2019 15:44:37 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1i0oKH-0007m8-RC; Thu, 22 Aug 2019 15:44:33 +0100
-Date:   Thu, 22 Aug 2019 15:44:33 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
-Cc:     John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Nelson Chang <nelson.chang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, Stefan Roese <sr@denx.de>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next v2 2/3] net: ethernet: mediatek: Re-add support
- SGMII
-Message-ID: <20190822144433.GT13294@shell.armlinux.org.uk>
-References: <20190821144336.9259-1-opensource@vdorst.com>
- <20190821144336.9259-3-opensource@vdorst.com>
+        id S1733092AbfHVOvI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 10:51:08 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4769 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725856AbfHVOvH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 10:51:07 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 1C14AB204D7617C720F4;
+        Thu, 22 Aug 2019 22:51:03 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS401-HUB.china.huawei.com
+ (10.3.19.201) with Microsoft SMTP Server id 14.3.439.0; Thu, 22 Aug 2019
+ 22:50:55 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <yisen.zhuang@huawei.com>, <salil.mehta@huawei.com>,
+        <davem@davemloft.net>, <lipeng321@huawei.com>,
+        <tanhuazhong@huawei.com>, <shenjian15@huawei.com>,
+        <linyunsheng@huawei.com>, <liuzhongzhu@huawei.com>,
+        <huangguangbin2@huawei.com>, <liweihang@hisilicon.com>,
+        <yuehaibing@huawei.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH net-next] net: hns3: Fix -Wunused-const-variable warning
+Date:   Thu, 22 Aug 2019 22:49:37 +0800
+Message-ID: <20190822144937.75884-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190821144336.9259-3-opensource@vdorst.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 04:43:35PM +0200, René van Dorst wrote:
-> +	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_SGMII)) {
-> +		if (state->interface != PHY_INTERFACE_MODE_2500BASEX) {
->  			phylink_set(mask, 1000baseT_Full);
->  			phylink_set(mask, 1000baseX_Full);
-> +		} else {
-> +			phylink_set(mask, 2500baseT_Full);
-> +			phylink_set(mask, 2500baseX_Full);
-> +		}
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h:542:30:
+ warning: meta_data_key_info defined but not used [-Wunused-const-variable=]
+drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h:553:30:
+ warning: tuple_key_info defined but not used [-Wunused-const-variable=]
 
-If you can dynamically switch between 1000BASE-X and 2500BASE-X, then
-you need to have both set.  See mvneta.c:
+The two variable is only used in hclge_main.c,
+so just move the definition over there.
 
-        if (pp->comphy || state->interface != PHY_INTERFACE_MODE_2500BASEX) {
-                phylink_set(mask, 1000baseT_Full);
-                phylink_set(mask, 1000baseX_Full);
-        }
-        if (pp->comphy || state->interface == PHY_INTERFACE_MODE_2500BASEX) {
-                phylink_set(mask, 2500baseT_Full);
-                phylink_set(mask, 2500baseX_Full);
-        }
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+---
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.c    | 44 ++++++++++++++++++++++
+ .../ethernet/hisilicon/hns3/hns3pf/hclge_main.h    | 44 ----------------------
+ 2 files changed, 44 insertions(+), 44 deletions(-)
 
-What this is saying is, if we have a comphy (which is the serdes lane
-facing component, where the data rate is setup) then we can support
-both speeds (and so mask ends up with all four bits set.)  Otherwise,
-we only support a single-speed (1000Gbps for non-2500BASE-X etc.)
-
-> +	} else {
-> +		if (state->interface == PHY_INTERFACE_MODE_TRGMII) {
-> +			phylink_set(mask, 1000baseT_Full);
-> +		} else {
-> +			phylink_set(mask, 10baseT_Half);
-> +			phylink_set(mask, 10baseT_Full);
-> +			phylink_set(mask, 100baseT_Half);
-> +			phylink_set(mask, 100baseT_Full);
-> +
-> +			if (state->interface != PHY_INTERFACE_MODE_MII) {
-> +				phylink_set(mask, 1000baseT_Half);
-> +				phylink_set(mask, 1000baseT_Full);
-> +				phylink_set(mask, 1000baseX_Full);
-> +			}
-
-I'm also wondering about the "MTK_HAS_CAPS(mac->hw->soc->caps,
-MTK_SGMII)" above.
-
-(Here comes a reason why using SGMII to cover all single-lane serdes
-modes causes confusion - unfortunately, some folk use SGMII to describe
-all these modes.  So, I'm going to use the terminology "Cisco SGMII"
-to mean exactly the SGMII format published by Cisco, "802.3 1000BASE-X"
-to mean the original IEEE 802.3 format running at 1.25Gbps, and
-"up-clocked 2500BASE-X" to mean the 3.125Gbps version of the 802.3
-1000BASE-X protocol.)
-
-Isn't this set for Cisco SGMII as well as for 802.3 1000BASE-X and
-the up-clocked 2500BASE-X modes?
-
-If so, is there a reason why 10Mbps and 100Mbps speeds aren't
-supported on Cisco SGMII links?
-
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+index 9d64c43..dde17be 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.c
+@@ -364,6 +364,50 @@ static const enum hclge_opcode_type hclge_dfx_reg_opcode_list[] = {
+ 	HCLGE_OPC_DFX_SSU_REG_2
+ };
+ 
++static const struct key_info meta_data_key_info[] = {
++	{ PACKET_TYPE_ID, 6},
++	{ IP_FRAGEMENT, 1},
++	{ ROCE_TYPE, 1},
++	{ NEXT_KEY, 5},
++	{ VLAN_NUMBER, 2},
++	{ SRC_VPORT, 12},
++	{ DST_VPORT, 12},
++	{ TUNNEL_PACKET, 1},
++};
++
++static const struct key_info tuple_key_info[] = {
++	{ OUTER_DST_MAC, 48},
++	{ OUTER_SRC_MAC, 48},
++	{ OUTER_VLAN_TAG_FST, 16},
++	{ OUTER_VLAN_TAG_SEC, 16},
++	{ OUTER_ETH_TYPE, 16},
++	{ OUTER_L2_RSV, 16},
++	{ OUTER_IP_TOS, 8},
++	{ OUTER_IP_PROTO, 8},
++	{ OUTER_SRC_IP, 32},
++	{ OUTER_DST_IP, 32},
++	{ OUTER_L3_RSV, 16},
++	{ OUTER_SRC_PORT, 16},
++	{ OUTER_DST_PORT, 16},
++	{ OUTER_L4_RSV, 32},
++	{ OUTER_TUN_VNI, 24},
++	{ OUTER_TUN_FLOW_ID, 8},
++	{ INNER_DST_MAC, 48},
++	{ INNER_SRC_MAC, 48},
++	{ INNER_VLAN_TAG_FST, 16},
++	{ INNER_VLAN_TAG_SEC, 16},
++	{ INNER_ETH_TYPE, 16},
++	{ INNER_L2_RSV, 16},
++	{ INNER_IP_TOS, 8},
++	{ INNER_IP_PROTO, 8},
++	{ INNER_SRC_IP, 32},
++	{ INNER_DST_IP, 32},
++	{ INNER_L3_RSV, 16},
++	{ INNER_SRC_PORT, 16},
++	{ INNER_DST_PORT, 16},
++	{ INNER_L4_RSV, 32},
++};
++
+ static int hclge_mac_update_stats_defective(struct hclge_dev *hdev)
+ {
+ #define HCLGE_MAC_CMD_NUM 21
+diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+index 7c28933..7ff03b9 100644
+--- a/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
++++ b/drivers/net/ethernet/hisilicon/hns3/hns3pf/hclge_main.h
+@@ -539,50 +539,6 @@ struct key_info {
+ 	u8 key_length; /* use bit as unit */
+ };
+ 
+-static const struct key_info meta_data_key_info[] = {
+-	{ PACKET_TYPE_ID, 6},
+-	{ IP_FRAGEMENT, 1},
+-	{ ROCE_TYPE, 1},
+-	{ NEXT_KEY, 5},
+-	{ VLAN_NUMBER, 2},
+-	{ SRC_VPORT, 12},
+-	{ DST_VPORT, 12},
+-	{ TUNNEL_PACKET, 1},
+-};
+-
+-static const struct key_info tuple_key_info[] = {
+-	{ OUTER_DST_MAC, 48},
+-	{ OUTER_SRC_MAC, 48},
+-	{ OUTER_VLAN_TAG_FST, 16},
+-	{ OUTER_VLAN_TAG_SEC, 16},
+-	{ OUTER_ETH_TYPE, 16},
+-	{ OUTER_L2_RSV, 16},
+-	{ OUTER_IP_TOS, 8},
+-	{ OUTER_IP_PROTO, 8},
+-	{ OUTER_SRC_IP, 32},
+-	{ OUTER_DST_IP, 32},
+-	{ OUTER_L3_RSV, 16},
+-	{ OUTER_SRC_PORT, 16},
+-	{ OUTER_DST_PORT, 16},
+-	{ OUTER_L4_RSV, 32},
+-	{ OUTER_TUN_VNI, 24},
+-	{ OUTER_TUN_FLOW_ID, 8},
+-	{ INNER_DST_MAC, 48},
+-	{ INNER_SRC_MAC, 48},
+-	{ INNER_VLAN_TAG_FST, 16},
+-	{ INNER_VLAN_TAG_SEC, 16},
+-	{ INNER_ETH_TYPE, 16},
+-	{ INNER_L2_RSV, 16},
+-	{ INNER_IP_TOS, 8},
+-	{ INNER_IP_PROTO, 8},
+-	{ INNER_SRC_IP, 32},
+-	{ INNER_DST_IP, 32},
+-	{ INNER_L3_RSV, 16},
+-	{ INNER_SRC_PORT, 16},
+-	{ INNER_DST_PORT, 16},
+-	{ INNER_L4_RSV, 32},
+-};
+-
+ #define MAX_KEY_LENGTH	400
+ #define MAX_KEY_DWORDS	DIV_ROUND_UP(MAX_KEY_LENGTH / 8, 4)
+ #define MAX_KEY_BYTES	(MAX_KEY_DWORDS * 4)
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+2.7.4
+
+
