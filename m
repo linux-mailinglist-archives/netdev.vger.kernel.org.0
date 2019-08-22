@@ -2,124 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E13D299130
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:46:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45B5B9914B
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:49:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387755AbfHVKoA convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Aug 2019 06:44:00 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:56168 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387710AbfHVKoA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 06:44:00 -0400
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com [209.85.208.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7E572C08EC15
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 10:43:59 +0000 (UTC)
-Received: by mail-ed1-f71.google.com with SMTP id b5so3109929eds.22
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 03:43:59 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=0JLhxmTFC0T1JpcoAWZpSF/J/8Lj2ncl3gvrc6r31y8=;
-        b=JIZE5mPrp6PjqLq5WAuwjMdJB0H1AmGKTiFQ8v+N+IbikxZ3wZzp66Kz/86FqaiSzY
-         dfQs9HpfhxAfUf0gApWPN3p9o4xtaRqratmOKRQJVlMdQSU+n7HFVm4b0C20Jxora6yc
-         PRR3/O0Ol+BdZTMs4dZ3z1pRpbh0C5Zz3UPgHynp7m69qQlzlooP189VAS+l2PaH0vGE
-         QjsDzrtI8dkDYY4mrTh4JUI+HvndjAszYO2W5G4FOyi9EelBQcNBvIYOI+8EgLCK3jtG
-         qZEJ6v+fXja2o8tzri5/CqTzM8l9q6MMudL6l6YTcDE2LwJxGUL1tTeng0k94JNY4+tA
-         wVUw==
-X-Gm-Message-State: APjAAAXtGL0m+kq2BHJV5ZnLfrLJxwwJMK+psz/+/2BXM1AjT/U+6K4d
-        VM0hBfeNnhX31+5Wju1I8g2HtMvmZo4dK3YyE5ON7qObvBZk9ZWnoSyvFDKYr/cF7iyjo2E6lY2
-        p+98yD3VqglMNMdcN
-X-Received: by 2002:aa7:c1da:: with SMTP id d26mr33293428edp.208.1566470638300;
-        Thu, 22 Aug 2019 03:43:58 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxOjMDvOoZysLMKijezQgJaN4SLJPc0vvw5kDtOhrb+8j1+sGoOgyxVqC8kx6rmFoerYpNKrg==
-X-Received: by 2002:aa7:c1da:: with SMTP id d26mr33293414edp.208.1566470638147;
-        Thu, 22 Aug 2019 03:43:58 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id o88sm3928028edb.28.2019.08.22.03.43.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 03:43:57 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id BCFEB181CEF; Thu, 22 Aug 2019 12:43:56 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>,
+        id S2387793AbfHVKsM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 06:48:12 -0400
+Received: from mail-eopbgr150121.outbound.protection.outlook.com ([40.107.15.121]:33286
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732494AbfHVKsM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 06:48:12 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mqnp9Z/eeJWIiQO2tp86Gcv8yCatLp6U/QCxd8YfXnAWOIkk+weDYdu2jgAaOkiVLIVMsX6Hr5+hZd/LzJxQBMZZ4VIeMpSY3H9s7ggwUbqh481FJIy4IuLeoWyuW8+CtDkgge3bGBH8r5eSyyHJnzQVBKVpaGDKLpx8/tbpGh8z97TsKS3WgIqgLeh/4/8ctQTb4or08de3zZ6R0kUZ/cUvJLPhTQJ7ngGbrM9djehIWF4IIKW45chE8O+rW8noH2VwHY7pkxLOal8bLgeeZKP+kw4OWksryXIFD6tK2Eh5vKroQF0+MZJF5GGwCtDKwyG4QltDjK072XGhtU0MbQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XPvVUob0c0d1S+fmQT9H6gkk2lxFy0seicc/ClTLuso=;
+ b=VzghZ9dXYBh6A4qcrSolMPBm6ocgVh2dfwN8BJgz+YLmlAYhvxfOl874D7yj3v16nm8eJ7sH0mvoT9hJg3CpmfPogSxLlvjUT0GkCWlGPs71sDIeKee2jUM4FMKHJDjJO64CSnZKlBbUHEW1x8G9VvO5s1ajblkLVSKg1oSdso+s4mq2cPCk8gGl53i/5C/Xgn2SLphudxLV7wphK9AcDxe50H57z9cv9aZWKt7D0tz1gqfqRxCBjaXkh51TBnmXpLeeQ8AmYiMA/R4dQYUXzzencMxcZVHm6N5KWrKued12ciukPTANTzH1tMPMzmE07mBZZCVbXSwW52yXZeJrsA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
+ header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=XPvVUob0c0d1S+fmQT9H6gkk2lxFy0seicc/ClTLuso=;
+ b=P1Y0ZkSh6Zq1R5QuDtdd48M1fg0zWldYl7qksRSJHozMl5o8KQ3bAge7CRtWQLXAEGFc2lYQM7loX23+fDE8kr/7isAeJu4E6gDsgM3QqDWuspBgf8N9wqErgV531+UnHVgEv5ofwdEemNWNhl0IXU3B8alg1Aj9x2vEuNNYPqQ=
+Received: from VI1PR08MB2782.eurprd08.prod.outlook.com (10.170.236.143) by
+ VI1PR08MB2655.eurprd08.prod.outlook.com (10.175.245.17) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.18; Thu, 22 Aug 2019 10:48:08 +0000
+Received: from VI1PR08MB2782.eurprd08.prod.outlook.com
+ ([fe80::2969:e370:fb70:71a]) by VI1PR08MB2782.eurprd08.prod.outlook.com
+ ([fe80::2969:e370:fb70:71a%3]) with mapi id 15.20.2178.020; Thu, 22 Aug 2019
+ 10:48:08 +0000
+From:   Jan Dakinevich <jan.dakinevich@virtuozzo.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Denis Lunev <den@virtuozzo.com>,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        "jan.dakinevich@gmail.com" <jan.dakinevich@gmail.com>,
+        Jan Dakinevich <jan.dakinevich@virtuozzo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Alexey Kuznetsov (C)" <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        Johannes Berg <johannes.berg@intel.com>,
+        David Ahern <dsahern@gmail.com>,
+        Christian Brauner <christian@brauner.io>,
         Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Simon Horman <simon.horman@netronome.com>,
+        John Hurley <john.hurley@netronome.com>,
+        Paolo Abeni <pabeni@redhat.com>,
         Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        andrii.nakryiko@gmail.com
-Subject: Re: [RFC bpf-next 4/5] iproute2: Allow compiling against libbpf
-In-Reply-To: <9de36bbf-b70d-9320-c686-3033d0408276@iogearbox.net>
-References: <20190820114706.18546-1-toke@redhat.com> <20190820114706.18546-5-toke@redhat.com> <9de36bbf-b70d-9320-c686-3033d0408276@iogearbox.net>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 22 Aug 2019 12:43:56 +0200
-Message-ID: <87imqppjir.fsf@toke.dk>
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Eric Dumazet <edumazet@google.com>,
+        Li RongQing <lirongqing@baidu.com>,
+        Taehee Yoo <ap420073@gmail.com>,
+        Patrick Talbert <ptalbert@redhat.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Dmitry Safonov <dima@arista.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
+        "coreteam@netfilter.org" <coreteam@netfilter.org>
+Subject: [PATCH 0/3] rework netlink skb allocation
+Thread-Topic: [PATCH 0/3] rework netlink skb allocation
+Thread-Index: AQHVWNcVBzufB0ixBkav/5yACjs/iw==
+Date:   Thu, 22 Aug 2019 10:48:08 +0000
+Message-ID: <1566470851-4694-1-git-send-email-jan.dakinevich@virtuozzo.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1PR0202CA0033.eurprd02.prod.outlook.com
+ (2603:10a6:3:e4::19) To VI1PR08MB2782.eurprd08.prod.outlook.com
+ (2603:10a6:802:19::15)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jan.dakinevich@virtuozzo.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.1.4
+x-originating-ip: [185.231.240.5]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f7f3b429-3346-40df-56a6-08d726ee37e1
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR08MB2655;
+x-ms-traffictypediagnostic: VI1PR08MB2655:
+x-ld-processed: 0bc7f26d-0264-416e-a6fc-8352af79c58f,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR08MB26559CD07CE0CE988AFD5A318AA50@VI1PR08MB2655.eurprd08.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3968;
+x-forefront-prvs: 01371B902F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(366004)(136003)(376002)(39840400004)(199004)(189003)(2616005)(99286004)(66476007)(66946007)(66556008)(5660300002)(476003)(64756008)(6116002)(66446008)(8936002)(3846002)(478600001)(6506007)(386003)(81166006)(7406005)(81156014)(44832011)(316002)(52116002)(8676002)(14444005)(305945005)(6486002)(256004)(5640700003)(86362001)(71200400001)(6512007)(102836004)(14454004)(7736002)(6436002)(186003)(7416002)(486006)(50226002)(66066001)(4744005)(2906002)(6916009)(36756003)(2501003)(53936002)(2351001)(71190400001)(25786009)(4326008)(54906003)(26005);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR08MB2655;H:VI1PR08MB2782.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: virtuozzo.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: LDyzR3zFN40v8lkANxiMle0FU1hl5xtt/dMWarNJVdcXtLXRJPZ6EiWUYPzVU48A5mx3hMo9CynUm8hPv6ZpLT7VsDhQucQr5WnShWS8PY35ghia7ckPyx20TRVvOzSnIeN8Gw7usI0sX9Lg7a2EHzkzF6Qy3fk6Hbp2JByUnP4pf5QVWaf0yIa4xIAAGPH3X3vRQR4lqtjgtXw4066HMd5GzYbvHIxaem8emX1O4TYTWKT9a3c3EjsAN/1/Fb2NM5+nFOAWMFCZULoYzwxfDENDhWm0oTCNkYtfsdQbx7vvfVPCte++Gb3WKe8iMxoPzKGM5hhNiQqEZP3qAIwitslwkpqpxZ1/nS4vh/drbPyr6XgewT5Hy48Xu5BoE0RfSPHDa8ubaGUKbaSjpyCWx49IWN02ZACqy5WchTuRbLs=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+X-OriginatorOrg: virtuozzo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f7f3b429-3346-40df-56a6-08d726ee37e1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2019 10:48:08.0649
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: uwMgAaZ387mInRd+RVR4jj4ndd0WETZn+pffh7M+KPeghSXVZLfobfASlBhhG7O7YEvzblVWR+zrPSgTtTpUk48NnunB7eIeZeuuTxJuxMg=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB2655
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Daniel Borkmann <daniel@iogearbox.net> writes:
+Currently, userspace is able to initiate costly high-order allocation in=20
+kernel sending large broadcast netlink message, which is considered=20
+undesirable. At the same time, unicast message are safe in this regard,=20
+because they uses vmalloc-ed memory.
 
-> On 8/20/19 1:47 PM, Toke Høiland-Jørgensen wrote:
->> This adds a configure check for libbpf and renames functions to allow
->> lib/bpf.c to be compiled with it present. This makes it possible to
->> port functionality piecemeal to use libbpf.
->> 
->> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->> ---
->>   configure          | 16 ++++++++++++++++
->>   include/bpf_util.h |  6 +++---
->>   ip/ipvrf.c         |  4 ++--
->>   lib/bpf.c          | 33 +++++++++++++++++++--------------
->>   4 files changed, 40 insertions(+), 19 deletions(-)
->> 
->> diff --git a/configure b/configure
->> index 45fcffb6..5a89ee9f 100755
->> --- a/configure
->> +++ b/configure
->> @@ -238,6 +238,19 @@ check_elf()
->>       fi
->>   }
->>   
->> +check_libbpf()
->> +{
->> +    if ${PKG_CONFIG} libbpf --exists; then
->> +	echo "HAVE_LIBBPF:=y" >>$CONFIG
->> +	echo "yes"
->> +
->> +	echo 'CFLAGS += -DHAVE_LIBBPF' `${PKG_CONFIG} libbpf --cflags` >> $CONFIG
->> +	echo 'LDLIBS += ' `${PKG_CONFIG} libbpf --libs` >>$CONFIG
->> +    else
->> +	echo "no"
->> +    fi
->> +}
->> +
->>   check_selinux()
->
-> More of an implementation detail at this point in time, but want to
-> make sure this doesn't get missed along the way: as discussed at
-> bpfconf [0] best for iproute2 to handle libbpf support would be the
-> same way of integration as pahole does, that is, to integrate it via
-> submodule [1] to allow kernel and libbpf features to be in sync with
-> iproute2 releases and therefore easily consume extensions we're adding
-> to libbpf to aide iproute2 integration.
+This series introduces changes, that allow broadcast messages to be=20
+allocated with vmalloc() as well as unicast.
 
-I can sorta see the point wrt keeping in sync with kernel features. But
-how will this work with distros that package libbpf as a regular
-library? Have you guys given up on regular library symbol versioning for
-libbpf?
+Jan Dakinevich (3):
+  skbuff: use kvfree() to deallocate head
+  netlink: always use vmapped memory for skb data
+  netlink: use generic skb_set_owner_r()
 
->    [0] http://vger.kernel.org/bpfconf2019.html#session-4
+ include/linux/netlink.h   | 16 ----------------
+ net/core/skbuff.c         |  2 +-
+ net/ipv4/fib_frontend.c   |  2 +-
+ net/netfilter/nfnetlink.c |  2 +-
+ net/netlink/af_netlink.c  | 39 +++++++--------------------------------
+ 5 files changed, 10 insertions(+), 51 deletions(-)
 
-Thanks for that link! Didn't manage to find any of the previous
-discussions on iproute2 compatibility.
+--=20
+2.1.4
 
--Toke
