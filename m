@@ -2,208 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BAB0698C46
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 09:12:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B59F898C5A
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 09:21:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731181AbfHVHM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 03:12:27 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:43795 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726332AbfHVHM1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 03:12:27 -0400
-Received: by mail-qt1-f196.google.com with SMTP id b11so6398378qtp.10;
-        Thu, 22 Aug 2019 00:12:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=V+r5KhRPxzjM3uj7uTYNut2acVQUlKxmnm9YS5qeaAw=;
-        b=R5htcEzJbGByo6YozjOZVsEHFQQHPkAKF4QVZ1jwveMN9DlnypgM/EMU/L9hVOP4Uw
-         bgPtFKJ3ocs08DDBvJbwC4I0wpQpTHL7lYNJl5a5KosU1fuNUGu8bq+3s98FMdBge0Pa
-         T0XpPAFBtVRImzPzSudaIdyqvUXi4uIq4gJ9dleTwhAh2rFy5XI21HU8X4U1KXmBghdq
-         5lwY+9My0aeQ1iY9M2/pMfDUCeBeO16FGuWH+jT0rMPZpYjTTkDyKFviq5K0uPnKKPUI
-         vUgHUxfnVLlFgiUr6EHgRA4YtYtWzVNj6RMuwtWzFVoTS1Pn/3JmJtb4HTOn/TOuMkX0
-         FEcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=V+r5KhRPxzjM3uj7uTYNut2acVQUlKxmnm9YS5qeaAw=;
-        b=h8tyMdBPCOGMOGFkwcTeUUAvMBdpkawIZT7VOzGcSwU4WuWtrb/6HbD6lZmDodjr+9
-         dGiOIyjM6JllQvQtBJsXYM6s3p8EAb/AXrONJjBBB3hkBz4e0TUKR1lAJM+Q4Anbey3e
-         HTQ59CpBIUjIjszK9Be+7xSb+WiPdanUCHVzq9Ar9Ja2TmAuLNL7VYLAYWC1ziYYbGe0
-         CV9c4EW9UqgqF6DCi6o/Q7RF7yt1uMoKTJW8tfnB3J+krVa44kXGvmMLtwAcAnIGR8JR
-         T1B5fs801ENrwrblHutVlEW0ctres9h7GZn322+fWWCAKSoyfLXsqo+7cCV0sqUon9+z
-         UqOQ==
-X-Gm-Message-State: APjAAAUnhmq80+Mh5538nCdAnCsfCUZXy0QIzAwnMTDMeZRBTYm4k74Y
-        L8+7bshj9TqWb6ER7UM+FAlgaAy3qDC+GQ9jpD4=
-X-Google-Smtp-Source: APXvYqwMLHrV72dFfvtWFgFLol3trYNVy3yGDb1v7DhZuZWmvFlzkVUtiFQOwtiB6GVQQdnm+g3Uekms42u4/fOqNu8=
-X-Received: by 2002:ac8:4a83:: with SMTP id l3mr34467940qtq.46.1566457945741;
- Thu, 22 Aug 2019 00:12:25 -0700 (PDT)
-MIME-Version: 1.0
-References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
- <20190820151611.10727-1-i.maximets@samsung.com> <CAKgT0Udn0D0_f=SOH2wpBRWV_u4rb1Qe2h7gguXnRNzJ_VkRzg@mail.gmail.com>
- <625791af-c656-1e42-b60e-b3a5cedcb4c4@samsung.com> <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
- <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com> <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
-In-Reply-To: <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 22 Aug 2019 09:12:14 +0200
-Message-ID: <CAJ+HfNjo0tpk2v_+85SuX7Jw797QwRA7uJBggPHtY=JznLC9Zg@mail.gmail.com>
-Subject: Re: [Intel-wired-lan] [PATCH net] ixgbe: fix double clean of tx
- descriptors with xdp
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Ilya Maximets <i.maximets@samsung.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Netdev <netdev@vger.kernel.org>, William Tu <u9012063@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        bpf <bpf@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Eelco Chaudron <echaudro@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1731461AbfHVHSZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 03:18:25 -0400
+Received: from mail-eopbgr00055.outbound.protection.outlook.com ([40.107.0.55]:48293
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727476AbfHVHSZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 03:18:25 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IHYZpDp/eNbWe6/JLVgWQdKxN30tufm5cIa4fef3kQUm+bX70WmZZoiMS/IWsvGehWWwGazuldh6ib9DckXmkyAmAarFZiZ58bHCu24uklXECPB5M4Kb38re5enkjSYB13ak5MM+gQeSd9LOwHqBWU3QTPuCNvi/6bD5MvzJe924P0DhLrgiw924JCB6nu9OJhu+HIhcavPC+OkJXC8ut77fJTxaolYcwgG2C7Ds1MFaNZWFY7aSzj1Jq0dEUUhrAZ7ObDuB9NM8h/CZTIfQJwFJjKYqarJfMeBu5r7P1ge6X5KgFaAMh+2/W+B/NeTKkWOmV6TNQq+8+KFvLFrxxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qJoE5pILTTiTePtSXKpYWAQi4Bn/pTem5qKkkR5z8yk=;
+ b=ltr5cKHCIdsUIkjYUkBpgbRR9bN2kFZZnyfFwTncouv1AoILFLvw9qi3MbGxDkgtodNeBRZFBHrwweSCZ9kPNZI1ETe+7nUN5JsL4ClXYIMa0hVcxztZh/2TwWhOISFeUxiohMtYo1LcuTZaISoslLrJpZDcQMHRXLL7Ftd5lYuGde9dTX7q5Ocrdfkp6nYtN2wUHKz/l8o9dx3kY6IRATcH//ck22S4TidsAMNF8E58znWJmy3vhk9x1qFYgIaJBOKqBAs7wX25hKfbKzVdAK/9BDFCRBRp7ffV+wyqRo0vxnG2IAcbWkd/Vs4paobWA34t0TS5pUS2r06Uxog7jQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qJoE5pILTTiTePtSXKpYWAQi4Bn/pTem5qKkkR5z8yk=;
+ b=YuXzuxuyJj6vqi4do39epOJ/WDQW+ISAfYg0n6w0TDW/eUaAROUspd1DdPccbMAuyJuwjL9wEPaWV9Rn96DVFPAiiyQmBKU9rik7QOL+vhHUFDRKisw2EQk+THx9GBJBz7BPbrI/RASBVeKXcZPtw/BZ4s7uDn9Jv+trRreCTzo=
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com (52.133.29.29) by
+ AM6PR0402MB3877.eurprd04.prod.outlook.com (52.133.30.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.18; Thu, 22 Aug 2019 07:18:19 +0000
+Received: from AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc]) by AM6PR0402MB3798.eurprd04.prod.outlook.com
+ ([fe80::9de1:26ec:59e5:32fc%5]) with mapi id 15.20.2178.020; Thu, 22 Aug 2019
+ 07:18:19 +0000
+From:   Christian Herber <christian.herber@nxp.com>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+CC:     "davem@davemloft.net" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
+Thread-Topic: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
+Thread-Index: AQHVWLnFOZqG4EcHiU275uWw+5j6mA==
+Date:   Thu, 22 Aug 2019 07:18:18 +0000
+Message-ID: <AM6PR0402MB3798C702793071E34A5659ED86A50@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+References: <20190815153209.21529-1-christian.herber@nxp.com>
+ <8c15b855-6947-9930-c3df-71a64fbff33b@gmail.com>
+ <AM6PR0402MB379864B810F08D3698618B5F86A80@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+ <13e65051-fe4f-5964-30b3-75285e6d2eee@gmail.com>
+ <AM6PR0402MB3798FCBF1EE592687B13A3C386AB0@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+ <5c920846-b8f5-d087-cea4-a8ca3f816127@gmail.com>
+ <20190821185715.GA16401@lunn.ch>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=christian.herber@nxp.com; 
+x-originating-ip: [217.111.68.82]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f8960d3b-22c3-4385-d5b9-08d726d0e867
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(1401327)(4618075)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM6PR0402MB3877;
+x-ms-traffictypediagnostic: AM6PR0402MB3877:
+x-microsoft-antispam-prvs: <AM6PR0402MB38770FE26382D8B981B8EA0886A50@AM6PR0402MB3877.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 01371B902F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(366004)(396003)(136003)(376002)(39860400002)(199004)(189003)(74316002)(66946007)(33656002)(256004)(54906003)(14444005)(44832011)(446003)(52536014)(6436002)(55236004)(110136005)(81166006)(8936002)(9686003)(66446008)(81156014)(86362001)(476003)(486006)(66476007)(8676002)(66556008)(53546011)(64756008)(26005)(186003)(316002)(76116006)(6506007)(91956017)(229853002)(66066001)(478600001)(7696005)(5660300002)(102836004)(3846002)(6116002)(2906002)(4326008)(25786009)(53936002)(76176011)(55016002)(71200400001)(99286004)(14454004)(71190400001)(7736002)(305945005)(6246003);DIR:OUT;SFP:1101;SCL:1;SRVR:AM6PR0402MB3877;H:AM6PR0402MB3798.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 9Nws+Yla2KPJrVxGI5unbeOVu4KXwl27yOPjBk3och+qcme4zdD9mr3Ip+lCYZkmBHItEILdk2Pj3zwXiZ9psXh9VfrLMCZyaauXUxHv7m5qUB4s1EMWzs+FQX/++Mmc5XGxA0pWUS/uoZR4rhaDy4IbKX5Br5Z6NNvMSlL6zlIba/q8sH8jzZuHBM6qDoKb25/eZY5Et3lSgU/xbesAvRzTyEPJZLwKVWWwi6JkZXSvDlW1B+VMn2k0/q1j08dDs6qyIS0pRYi5jPGVYR/raDbeNJl+iVC+WTmsyP7N5zLI3ERmz/JZnPjC0Z6D7V8Z6iUCqPhjhyMihB1FbF5Obnq4Ry1ae0T33fCQaMkT8OJeDK3+F56QZNQrElrKI92zH23flM6GkcRglb2Lrv9EFjEf6nuSsyjqhsXW7scYIjE=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f8960d3b-22c3-4385-d5b9-08d726d0e867
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2019 07:18:18.9557
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ns8h476ulbU5m6JCNtQwAo38lJoe3aeIl4v8NMN68EEs9RuS7bcQV2WLtlaWSFuqGszBbMaiMY7uboVqk4CHVbcfwh3AEGmc5baltDeCuzI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR0402MB3877
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 21 Aug 2019 at 18:57, Alexander Duyck <alexander.duyck@gmail.com> w=
-rote:
->
-> On Wed, Aug 21, 2019 at 9:22 AM Ilya Maximets <i.maximets@samsung.com> wr=
-ote:
-> >
-> > On 21.08.2019 4:17, Alexander Duyck wrote:
-> > > On Tue, Aug 20, 2019 at 8:58 AM Ilya Maximets <i.maximets@samsung.com=
-> wrote:
-> > >>
-> > >> On 20.08.2019 18:35, Alexander Duyck wrote:
-> > >>> On Tue, Aug 20, 2019 at 8:18 AM Ilya Maximets <i.maximets@samsung.c=
-om> wrote:
-> > >>>>
-> > >>>> Tx code doesn't clear the descriptor status after cleaning.
-> > >>>> So, if the budget is larger than number of used elems in a ring, s=
-ome
-> > >>>> descriptors will be accounted twice and xsk_umem_complete_tx will =
-move
-> > >>>> prod_tail far beyond the prod_head breaking the comletion queue ri=
-ng.
-> > >>>>
-> > >>>> Fix that by limiting the number of descriptors to clean by the num=
-ber
-> > >>>> of used descriptors in the tx ring.
-> > >>>>
-> > >>>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-> > >>>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> > >>>
-> > >>> I'm not sure this is the best way to go. My preference would be to
-> > >>> have something in the ring that would prevent us from racing which =
-I
-> > >>> don't think this really addresses. I am pretty sure this code is sa=
-fe
-> > >>> on x86 but I would be worried about weak ordered systems such as
-> > >>> PowerPC.
-> > >>>
-> > >>> It might make sense to look at adding the eop_desc logic like we ha=
-ve
-> > >>> in the regular path with a proper barrier before we write it and af=
-ter
-> > >>> we read it. So for example we could hold of on writing the bytecoun=
-t
-> > >>> value until the end of an iteration and call smp_wmb before we writ=
-e
-> > >>> it. Then on the cleanup we could read it and if it is non-zero we t=
-ake
-> > >>> an smp_rmb before proceeding further to process the Tx descriptor a=
-nd
-> > >>> clearing the value. Otherwise this code is going to just keep poppi=
-ng
-> > >>> up with issues.
-> > >>
-> > >> But, unlike regular case, xdp zero-copy xmit and clean for particula=
-r
-> > >> tx ring always happens in the same NAPI context and even on the same
-> > >> CPU core.
-> > >>
-> > >> I saw the 'eop_desc' manipulations in regular case and yes, we could
-> > >> use 'next_to_watch' field just as a flag of descriptor existence,
-> > >> but it seems unnecessarily complicated. Am I missing something?
-> > >>
-> > >
-> > > So is it always in the same NAPI context?. I forgot, I was thinking
-> > > that somehow the socket could possibly make use of XDP for transmit.
-> >
-> > AF_XDP socket only triggers tx interrupt on ndo_xsk_async_xmit() which
-> > is used in zero-copy mode. Real xmit happens inside
-> > ixgbe_poll()
-> >  -> ixgbe_clean_xdp_tx_irq()
-> >     -> ixgbe_xmit_zc()
-> >
-> > This should be not possible to bound another XDP socket to the same net=
-dev
-> > queue.
-> >
-> > It also possible to xmit frames in xdp_ring while performing XDP_TX/RED=
-IRECT
-> > actions. REDIRECT could happen from different netdev with different NAP=
-I
-> > context, but this operation is bound to specific CPU core and each core=
- has
-> > its own xdp_ring.
-> >
-> > However, I'm not an expert here.
-> > Bj=C3=B6rn, maybe you could comment on this?
-> >
-> > >
-> > > As far as the logic to use I would be good with just using a value yo=
-u
-> > > are already setting such as the bytecount value. All that would need
-> > > to happen is to guarantee that the value is cleared in the Tx path. S=
-o
-> > > if you clear the bytecount in ixgbe_clean_xdp_tx_irq you could
-> > > theoretically just use that as well to flag that a descriptor has bee=
-n
-> > > populated and is ready to be cleaned. Assuming the logic about this
-> > > all being in the same NAPI context anyway you wouldn't need to mess
-> > > with the barrier stuff I mentioned before.
-> >
-> > Checking the number of used descs, i.e. next_to_use - next_to_clean,
-> > makes iteration in this function logically equal to the iteration insid=
-e
-> > 'ixgbe_xsk_clean_tx_ring()'. Do you think we need to change the later
-> > function too to follow same 'bytecount' approach? I don't like having
-> > two different ways to determine number of used descriptors in the same =
-file.
-> >
-> > Best regards, Ilya Maximets.
->
-> As far as ixgbe_clean_xdp_tx_irq() vs ixgbe_xsk_clean_tx_ring(), I
-> would say that if you got rid of budget and framed things more like
-> how ixgbe_xsk_clean_tx_ring was framed with the ntc !=3D ntu being
-> obvious I would prefer to see us go that route.
->
-> Really there is no need for budget in ixgbe_clean_xdp_tx_irq() if you
-> are going to be working with a static ntu value since you will only
-> ever process one iteration through the ring anyway. It might make more
-> sense if you just went through and got rid of budget and i, and
-> instead used ntc and ntu like what was done in
-> ixgbe_xsk_clean_tx_ring().
->
-
-+1. I'd prefer this as well!
-
-
-Cheers,
-Bj=C3=B6rn
-
-> Thanks.
->
-> - Alex
-> _______________________________________________
-> Intel-wired-lan mailing list
-> Intel-wired-lan@osuosl.org
-> https://lists.osuosl.org/mailman/listinfo/intel-wired-lan
+On 21.08.2019 20:57, Andrew Lunn wrote:=0A=
+> =0A=
+>> The current patch set IMO is a little bit hacky. I'm not 100% happy=0A=
+>> with the implicit assumption that there can't be devices supporting=0A=
+>> T1 and classic BaseT modes or fiber modes.=0A=
+>=0A=
+>> Andrew: Do you have an opinion on that?=0A=
+> =0A=
+> Hi Heiner=0A=
+> =0A=
+> I would also like cleaner integration. I doubt here is anything in the=0A=
+> standard which says you cannot combine these modes. It is more a=0A=
+> marketing question if anybody would build such a device. Maybe not=0A=
+> directly into a vehicle, but you could imaging a mobile test device=0A=
+> which uses T1 to talk to the car and T4 to connect to the garage=0A=
+> network?=0A=
+> =0A=
+> So i don't think we should limit ourselves. phylib should provide a=0A=
+> clean, simple set of helpers to perform standard operations for=0A=
+> various modes. Drivers can make use of those helpers. That much should=0A=
+> be clear. If we try to make genphy support them all simultaneously, is=0A=
+> less clear.=0A=
+> =0A=
+>       Andrew=0A=
+> =0A=
+=0A=
+If you want to go down this path, then i think we have to ask some more =0A=
+questions. Clause 45 is a very scalable register scheme, it is not a =0A=
+specific class of devices and will be extended and extended.=0A=
+=0A=
+Currently, the phy-c45.c supports 10/100/1000/2500/5000/10000 Mbps =0A=
+consumer/enterprise PHYs. This is also an implicit assumption. The =0A=
+register set (e.g. on auto-neg) used for this will also only support =0A=
+these modes and nothing more, as it is done scaling.=0A=
+=0A=
+Currently not supported, but already present in IEEE 802.3:=0A=
+- MultiGBASE-T (25/40 Gbps) (see e.g. MultiGBASE-T AN control 1 register)=
+=0A=
+- BASE-T1=0A=
+- 10BASE-T1=0A=
+- NGBASE-T1=0A=
+=0A=
+And surely there are some on the way or already there that I am not =0A=
+aware of.=0A=
+=0A=
+To me, one architectural decision point is if you want to have generic =0A=
+support for all C45 PHYs in one file, or if you want to split it by =0A=
+device class. I went down the first path with my patch, as this is the =0A=
+road gone also with the existing code.=0A=
+=0A=
+If you want to split BASE-T1, i think you will need one basic C45 =0A=
+library (genphy_c45_pma_read_abilities() is a good example of a function =
+=0A=
+that is not specific to a device class). On the other hand, =0A=
+genphy_c45_pma_setup_forced() is not a generic function at this point as =
+=0A=
+it supports only a subset of devices managed in C45.=0A=
+=0A=
+I tend to agree with you that splitting is the best way to go in the =0A=
+long run, but that also requires a split of the existing phy-c45.c into =0A=
+two IMHO.=0A=
