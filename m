@@ -2,63 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED3B09A290
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:07:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BEE19A29E
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:10:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390227AbfHVWHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 18:07:03 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:46465 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388129AbfHVWHC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:07:02 -0400
-Received: by mail-wr1-f67.google.com with SMTP id z1so6776405wru.13
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 15:07:01 -0700 (PDT)
+        id S2390342AbfHVWJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 18:09:54 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:33147 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390304AbfHVWJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:09:54 -0400
+Received: by mail-wr1-f65.google.com with SMTP id u16so6829578wrr.0
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 15:09:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=12exksaaxq8SwryWcYXXbR0gxmFeY5aqEbv9tHxperk=;
-        b=flZPKiXMSdjhiZc7EaxJrNR1OgJ3Oe4iJfRwAAs/biqLdT2WuY3fai732L+fSZgUMW
-         E6yQA8XbGi2skums1CkPTLo7keywbL7KoSO1+GKBlc/8hgbSvXk0k80d3K35wpWi3OHJ
-         SVmxfMDEnr8iozQ7MIsvDkGwd7RrshHna1SVW2w+ONv/SjyoQUNwqsp/uFXW0r9RcjqP
-         oHEuhwL0x9QlUKRowXLR4wESQEnbuShbe5mvd+Dg7TKMQaODzrDRiKZVWN0VKuLW2mji
-         94D2OLGsl33qn8G9lm012E5/ZQUrpJWP5b0SUWVmij8SFJvb0BX5n2qHOAO+1PQtRxaH
-         RM6Q==
+        d=cumulusnetworks.com; s=google;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=M+oIdnD3jm/q0FEoEMnIGzoD27Ik3dMH4NYQUO8iSBo=;
+        b=ZI42VLIf3XR0ok5i+0x5WISOnHyGwIZxT87RAf5JOkT72TxGxOM5SLOZYlrOMK2Lz0
+         /pMXLKJ9Bp6o+JdDPyTNehpyrMiXLKq/THe45t1S8Y9iG0NX2rg/tiUPjo6oBHCdZUgS
+         H9MYSXYdU+sMDcOmye0Qxn0PQG2F3X8yS+ekQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=12exksaaxq8SwryWcYXXbR0gxmFeY5aqEbv9tHxperk=;
-        b=ZcypGVW16d/2EUzIT4hF4djogwJFUJqp+z1eXZpGYV2fjnFP/ycKJdkvBQY0vUsL63
-         kcEn2TELPbY3eiy6Ge6JTs10xw2opI2FapEEg9cpBfBauRdZEX2hbtQNzkr1EcPp/q7Z
-         fvWLQPkyj4nI1cj8GpJtDSli+kHtIpG+/sQkFfWqlIsOHuFrnPGx4YVup2h9itTcNyE2
-         TVK/uPQ4tqF7O6pp76BGsjTitLJHzZTa7cmYZGL6oESA26ub+eQ2Jy9S/khnLD1BHX6V
-         hVwhSTUT5QCUpjVQzcMp9+Mk8ankFC6xwmRgSO0ySHtuH8WPajBSaHAG1B4JUSJx5HP0
-         dvcw==
-X-Gm-Message-State: APjAAAViSrH5n1wID7l+k0hPYfIBwOD5u9Lv4gr38j0AbN5c8cp1GBDh
-        PCEgax32yt7WZcbowqJD/XA=
-X-Google-Smtp-Source: APXvYqxsCf4gyN55qo8S2315SAVMshGsvMXvQwZU/DF/crQf81G9M/uiI7jUE1qLKAhOwY7+9xtYyA==
-X-Received: by 2002:a5d:4111:: with SMTP id l17mr1091551wrp.59.1566511620680;
-        Thu, 22 Aug 2019 15:07:00 -0700 (PDT)
-Received: from [192.168.1.2] ([86.126.25.232])
-        by smtp.gmail.com with ESMTPSA id r190sm1644061wmf.0.2019.08.22.15.06.59
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 22 Aug 2019 15:07:00 -0700 (PDT)
-Subject: Re: [PATCH net-next 2/6] net: dsa: do not skip -EOPNOTSUPP in
- dsa_port_vid_add
-To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch
-References: <20190822201323.1292-1-vivien.didelot@gmail.com>
- <20190822201323.1292-3-vivien.didelot@gmail.com>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Message-ID: <f179fa10-3123-d055-1c67-0d24adf3cb08@gmail.com>
-Date:   Fri, 23 Aug 2019 01:06:58 +0300
+        bh=M+oIdnD3jm/q0FEoEMnIGzoD27Ik3dMH4NYQUO8iSBo=;
+        b=ine9GIslak0VrWPd2uCrj0MG1IKgpGSRpCBNR60PJnxsSi+5FfW8OIiTCXHQhmIShP
+         1MMEPpDq+6r/HS2hQo2yHlMU2GVlN0N0F94aK+ZCOOneBdxHB7wb2NNwAW03UlbRkTkg
+         rf7RE3pzjt+t+RxoJo08C5UKxk5IlWu8n7l96+MIp+ErUzPbcutUsgU59ju8FdBcr6Ny
+         vdXLsBFOUYZ+EqJU+2N0bODYqffh4RWFUeL28h12KE/qKWOJA7nm/UgJrmrM4Er0hnJO
+         1LqaqOtFdU30U89KXnVbbTHd4a4dI62o6oc4ZRPCGfRkCvjP2tY8ldaS8k3C1r0qzeDh
+         Vn4w==
+X-Gm-Message-State: APjAAAUkI95WA4voxwsffCsClxFX9jnkTpCDiQpjuFT13lYwXUCb+Mr0
+        pCgToGMdTkjqYj6uRN64ddtiKw==
+X-Google-Smtp-Source: APXvYqwhFYLuDgxoml+DLuSpfZTqsK4iafwdRNx6hqMwddGuTcDHWBVBaZxAq1227fwR/ulvrWIyEw==
+X-Received: by 2002:adf:e504:: with SMTP id j4mr1064839wrm.222.1566511792353;
+        Thu, 22 Aug 2019 15:09:52 -0700 (PDT)
+Received: from [192.168.0.107] (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id c11sm590230wrs.86.2019.08.22.15.09.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 22 Aug 2019 15:09:51 -0700 (PDT)
+Subject: Re: [PATCH 0/3] Add NETIF_F_HW_BRIDGE feature
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        roopa@cumulusnetworks.com, davem@davemloft.net,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+References: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+From:   Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Message-ID: <1e16da88-08c5-abd5-0a3e-b8e6c3db134a@cumulusnetworks.com>
+Date:   Fri, 23 Aug 2019 01:09:50 +0300
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <20190822201323.1292-3-vivien.didelot@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
@@ -66,66 +64,39 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vivien,
-
-On 8/22/19 11:13 PM, Vivien Didelot wrote:
-> Currently dsa_port_vid_add returns 0 if the switch returns -EOPNOTSUPP.
+On 22/08/2019 22:07, Horatiu Vultur wrote:
+> Current implementation of the SW bridge is setting the interfaces in
+> promisc mode when they are added to bridge if learning of the frames is
+> enabled.
+> In case of Ocelot which has HW capabilities to switch frames, it is not
+> needed to set the ports in promisc mode because the HW already capable of
+> doing that. Therefore add NETIF_F_HW_BRIDGE feature to indicate that the
+> HW has bridge capabilities. Therefore the SW bridge doesn't need to set
+> the ports in promisc mode to do the switching.
+> This optimization takes places only if all the interfaces that are part
+> of the bridge have this flag and have the same network driver.
 > 
-> This function is used in the tag_8021q.c code to offload the PVID of
-> ports, which would simply not work if .port_vlan_add is not supported
-> by the underlying switch.
+> If the bridge interfaces is added in promisc mode then also the ports part
+> of the bridge are set in promisc mode.
 > 
-> Do not skip -EOPNOTSUPP in dsa_port_vid_add but only when necessary,
-> that is to say in dsa_slave_vlan_rx_add_vid.
+> Horatiu Vultur (3):
+>   net: Add HW_BRIDGE offload feature
+>   net: mscc: Use NETIF_F_HW_BRIDGE
+>   net: mscc: Implement promisc mode.
 > 
-
-Do you know why Florian suppressed -EOPNOTSUPP in 061f6a505ac3 ("net: 
-dsa: Add ndo_vlan_rx_{add, kill}_vid implementation")?
-I forced a return value of -EOPNOTSUPP here and when I create a VLAN 
-sub-interface nothing breaks, it just says:
-RTNETLINK answers: Operation not supported
-which IMO is expected.
-
-> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-> ---
->   net/dsa/port.c  | 4 ++--
->   net/dsa/slave.c | 7 +++++--
->   2 files changed, 7 insertions(+), 4 deletions(-)
-> 
-> diff --git a/net/dsa/port.c b/net/dsa/port.c
-> index f75301456430..ef28df7ecbde 100644
-> --- a/net/dsa/port.c
-> +++ b/net/dsa/port.c
-> @@ -382,8 +382,8 @@ int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags)
->   
->   	trans.ph_prepare = true;
->   	err = dsa_port_vlan_add(dp, &vlan, &trans);
-> -	if (err == -EOPNOTSUPP)
-> -		return 0;
-> +	if (err)
-> +		return err;
->   
->   	trans.ph_prepare = false;
->   	return dsa_port_vlan_add(dp, &vlan, &trans);
-> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-> index 33f41178afcc..9d61d9dbf001 100644
-> --- a/net/dsa/slave.c
-> +++ b/net/dsa/slave.c
-> @@ -1082,8 +1082,11 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
->   			return -EBUSY;
->   	}
->   
-> -	/* This API only allows programming tagged, non-PVID VIDs */
-> -	return dsa_port_vid_add(dp, vid, 0);
-> +	ret = dsa_port_vid_add(dp, vid, 0);
-> +	if (ret && ret != -EOPNOTSUPP)
-> +		return ret;
-> +
-> +	return 0;
->   }
->   
->   static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+>  drivers/net/ethernet/mscc/ocelot.c | 26 ++++++++++++++++++++++++--
+>  include/linux/netdev_features.h    |  3 +++
+>  net/bridge/br_if.c                 | 29 ++++++++++++++++++++++++++++-
+>  net/core/ethtool.c                 |  1 +
+>  4 files changed, 56 insertions(+), 3 deletions(-)
 > 
 
-Regards,
--Vladimir
+IMO the name is misleading.
+Why do the devices have to be from the same driver ? This is too specific targeting some
+devices. The bridge should not care what's the port device, it should be the other way
+around, so adding device-specific code to the bridge is not ok. Isn't there a solution
+where you can use NETDEV_JOIN and handle it all from your driver ?
+Would all HW-learned entries be hidden from user-space in this case ?
+
+
+
