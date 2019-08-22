@@ -2,130 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1E5B99642
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:20:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E493399644
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:20:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387824AbfHVOUQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 10:20:16 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:35191 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387766AbfHVOUP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:20:15 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n4so3778240pgv.2
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 07:20:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=f4IAtwXwNagrXS06nvnkjVXlNHUwEilJqoat+96tCA8=;
-        b=Io7z8Wih8UsCR1ZkUW/YCnmTpD/Ri86592wmBKB1w970vyD3PberYs0Sln14p7uSwx
-         1JS5kWGnppt2Nlo7YkgxkOiWc8W3mAUhWGjw9N4yhcFf3kEcMgf5hGg/fjS1M9N6QEsI
-         Ta1CoVFH+vbWHcHd/6lGQzc4aE4ieN+sM/GEWz567gpmL+Lkg9N5XMQ71JfJFlW+gtE3
-         0iycpnEqWG5KM8tN7OiUTgjIXaE9vOjjhwDfpTjNLJSnraDJ2w2aDgGAWY2VfGKqRNIS
-         IlxH2cO1yVYlPImAQP7EpiVgmKmdjsepZ+Lt1jyOVVvOYIMnw+wb9VXbVxIOvIcj60fI
-         4CRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=f4IAtwXwNagrXS06nvnkjVXlNHUwEilJqoat+96tCA8=;
-        b=TkWwcbMexPrRQdYBhLnLpKB8xeBtqxyfyy16BpCcmV50S8mFS9Z899OWTrteHBQSAl
-         RGjKpc1DUiaLM7ySCKi7khsUQaavMmboYDagb9fYDIfVwfpAOA2eO027Y61x8qFB5HQs
-         lgm+jf1nuKskxkzNKF1PA7zZl9oi7Jw5olpw0YM/YzeOfcV3OA1Y0M/aXahHyb02YJeO
-         gWjpuiOsubcJWx7QrF9HwT5cpmYpw0UcAOabQyELRZqw2MS9qcu/AXegSI6c3TcHBtpa
-         RYngLYY5y+P7oxkzIPlGvQwaGabnubWRpJ71Htl+hf+FW9DATyywfF/kiuCDwSimtkuw
-         HebQ==
-X-Gm-Message-State: APjAAAW9V9DwDXObSDvCP11bvCTTHIwYAnhoxTeE7ITrgaZLqgbu4dr+
-        GumbNGyT78+02CFN/kGK3BaF35jSTptDFA==
-X-Google-Smtp-Source: APXvYqxu3Za7neqNccdwaA1UDi4wRwncd3MDOCd/eGyba/Yg6j1E+BUXW2FappegmuJbV+lQgvw2MQ==
-X-Received: by 2002:a65:62cd:: with SMTP id m13mr33732843pgv.437.1566483614122;
-        Thu, 22 Aug 2019 07:20:14 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id a11sm3076747pju.2.2019.08.22.07.20.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 07:20:13 -0700 (PDT)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Stefano Brivio <sbrivio@redhat.com>, wenxu <wenxu@ucloud.cn>,
-        Alexei Starovoitov <ast@fb.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Julian Anastasov <ja@ssi.bg>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCHv4 net 2/2] xfrm/xfrm_policy: fix dst dev null pointer dereference in collect_md mode
-Date:   Thu, 22 Aug 2019 22:19:49 +0800
-Message-Id: <20190822141949.29561-3-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <20190822141949.29561-1-liuhangbin@gmail.com>
-References: <20190815060904.19426-1-liuhangbin@gmail.com>
- <20190822141949.29561-1-liuhangbin@gmail.com>
+        id S2387858AbfHVOUg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 10:20:36 -0400
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:37622 "EHLO
+        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732693AbfHVOUg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:20:36 -0400
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id x7MEKOU4130908;
+        Thu, 22 Aug 2019 09:20:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1566483624;
+        bh=amKlG2IVK/AlYef9CbdzVUck10xnAYyxWrzHwzN9Okc=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=TxGYKEJZHIJ5HyjcrPhdNq7xJLFAtzavONZP8av4iQ29PWP7OV8PlElv3T9vsRGo1
+         dqzVjpiSEat7GFuwJ7BZsM3ICYJeT/UCHXc4fJbMQYoMK505lS/rZeYPVRbeAdxTLj
+         yYGpyWIpMXBS+HRrtxMg3ksTsBbY8i6bAeN6kmQ0=
+Received: from DLEE103.ent.ti.com (dlee103.ent.ti.com [157.170.170.33])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x7MEKOUY063221
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 22 Aug 2019 09:20:24 -0500
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE103.ent.ti.com
+ (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Thu, 22
+ Aug 2019 09:20:24 -0500
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
+ Frontend Transport; Thu, 22 Aug 2019 09:20:23 -0500
+Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id x7MEKNnV076638;
+        Thu, 22 Aug 2019 09:20:23 -0500
+Subject: Re: [PATCH v12 3/5] dt-bindings: can: tcan4x5x: Add DT bindings for
+ TCAN4x5X driver
+To:     Marc Kleine-Budde <mkl@pengutronix.de>, <wg@grandegger.com>,
+        <davem@davemloft.net>
+CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20190509161109.10499-1-dmurphy@ti.com>
+ <20190509161109.10499-3-dmurphy@ti.com>
+ <bdf06ead-a2e8-09a9-8cdd-49b54ec9da72@pengutronix.de>
+From:   Dan Murphy <dmurphy@ti.com>
+Message-ID: <ff9e007b-6e39-3d64-b62b-93c281d69113@ti.com>
+Date:   Thu, 22 Aug 2019 09:20:22 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
+In-Reply-To: <bdf06ead-a2e8-09a9-8cdd-49b54ec9da72@pengutronix.de>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In decode_session{4,6} there is a possibility that the skb dst dev is NULL,
-e,g, with tunnel collect_md mode, which will cause kernel crash.
-Here is what the code path looks like, for GRE:
+Marc
 
-- ip6gre_tunnel_xmit
-  - ip6gre_xmit_ipv6
-    - __gre6_xmit
-      - ip6_tnl_xmit
-        - if skb->len - t->tun_hlen - eth_hlen > mtu; return -EMSGSIZE
-    - icmpv6_send
-      - icmpv6_route_lookup
-        - xfrm_decode_session_reverse
-          - decode_session4
-            - oif = skb_dst(skb)->dev->ifindex; <-- here
-          - decode_session6
-            - oif = skb_dst(skb)->dev->ifindex; <-- here
+On 8/16/19 4:38 AM, Marc Kleine-Budde wrote:
+> On 5/9/19 6:11 PM, Dan Murphy wrote:
+>> DT binding documentation for TI TCAN4x5x driver.
+>>
+>> Signed-off-by: Dan Murphy <dmurphy@ti.com>
+>> ---
+>>
+>> v12 - No changes - https://lore.kernel.org/patchwork/patch/1052300/
+>>
+>> v11 - No changes - https://lore.kernel.org/patchwork/patch/1051178/
+>> v10 - No changes - https://lore.kernel.org/patchwork/patch/1050488/
+>> v9 - No Changes - https://lore.kernel.org/patchwork/patch/1050118/
+>> v8 - No Changes - https://lore.kernel.org/patchwork/patch/1047981/
+>> v7 - Made device state optional - https://lore.kernel.org/patchwork/patch/1047218/
+>> v6 - No changes - https://lore.kernel.org/patchwork/patch/1042445/
+>>
+>>   .../devicetree/bindings/net/can/tcan4x5x.txt  | 37 +++++++++++++++++++
+>>   1 file changed, 37 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/net/can/tcan4x5x.txt b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+>> new file mode 100644
+>> index 000000000000..c388f7d9feb1
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+>> @@ -0,0 +1,37 @@
+>> +Texas Instruments TCAN4x5x CAN Controller
+>> +================================================
+>> +
+>> +This file provides device node information for the TCAN4x5x interface contains.
+>> +
+>> +Required properties:
+>> +	- compatible: "ti,tcan4x5x"
+>> +	- reg: 0
+>> +	- #address-cells: 1
+>> +	- #size-cells: 0
+>> +	- spi-max-frequency: Maximum frequency of the SPI bus the chip can
+>> +			     operate at should be less than or equal to 18 MHz.
+>> +	- data-ready-gpios: Interrupt GPIO for data and error reporting.
+>> +	- device-wake-gpios: Wake up GPIO to wake up the TCAN device.
+>> +
+>> +See Documentation/devicetree/bindings/net/can/m_can.txt for additional
+>> +required property details.
+>> +
+>> +Optional properties:
+>> +	- reset-gpios: Hardwired output GPIO. If not defined then software
+>> +		       reset.
+>> +	- device-state-gpios: Input GPIO that indicates if the device is in
+>> +			      a sleep state or if the device is active.
+>> +
+>> +Example:
+>> +tcan4x5x: tcan4x5x@0 {
+>> +		compatible = "ti,tcan4x5x";
+>> +		reg = <0>;
+>> +		#address-cells = <1>;
+>> +		#size-cells = <1>;
+>> +		spi-max-frequency = <10000000>;
+>> +		bosch,mram-cfg = <0x0 0 0 32 0 0 1 1>;
+>> +		data-ready-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
+> Can you convert this into a proper interrupt property? E.g.:
 
-The reason is __metadata_dst_init() init dst->dev to NULL by default.
-We could not fix it in __metadata_dst_init() as there is no dev supplied.
-On the other hand, the skb_dst(skb)->dev is actually not needed as we
-called decode_session{4,6} via xfrm_decode_session_reverse(), so oif is not
-used by: fl4->flowi4_oif = reverse ? skb->skb_iif : oif;
+OK.  Do you want v13 or do you want patches on top for net-next?
 
-So make a dst dev check here should be clean and safe.
+Dan
 
-v4: No changes.
 
-v3: No changes.
+>
+>>                  interrupt-parent = <&gpio4>;
+>>                  interrupts = <13 0x2>;
+> See:
+> https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/net/can/microchip,mcp251x.txt#L21
+> https://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git/tree/drivers/net/can/spi/mcp251x.c?h=mcp251x#n945
 
-v2: fix the issue in decode_session{4,6} instead of updating shared dst dev
-in {ip_md, ip6}_tunnel_xmit.
+This second link says it invalid
 
-Fixes: 8d79266bc48c ("ip6_tunnel: add collect_md mode to IPv6 tunnels")
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/xfrm/xfrm_policy.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Dan
 
-diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
-index 8ca637a72697..ec94f5795ea4 100644
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -3269,7 +3269,7 @@ decode_session4(struct sk_buff *skb, struct flowi *fl, bool reverse)
- 	struct flowi4 *fl4 = &fl->u.ip4;
- 	int oif = 0;
- 
--	if (skb_dst(skb))
-+	if (skb_dst(skb) && skb_dst(skb)->dev)
- 		oif = skb_dst(skb)->dev->ifindex;
- 
- 	memset(fl4, 0, sizeof(struct flowi4));
-@@ -3387,7 +3387,7 @@ decode_session6(struct sk_buff *skb, struct flowi *fl, bool reverse)
- 
- 	nexthdr = nh[nhoff];
- 
--	if (skb_dst(skb))
-+	if (skb_dst(skb) && skb_dst(skb)->dev)
- 		oif = skb_dst(skb)->dev->ifindex;
- 
- 	memset(fl6, 0, sizeof(struct flowi6));
--- 
-2.19.2
-
+>
+>> +		device-state-gpios = <&gpio3 21 GPIO_ACTIVE_HIGH>;
+>> +		device-wake-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
+>> +		reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
+>> +};
+> Marc
+>
