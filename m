@@ -2,99 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D5AB98B3B
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:09:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CCAF798B54
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:22:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730108AbfHVGIA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 02:08:00 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5187 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728042AbfHVGH7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 02:07:59 -0400
-Received: from DGGEMS405-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 55DA15865E21719BE4BE;
-        Thu, 22 Aug 2019 14:07:55 +0800 (CST)
-Received: from [127.0.0.1] (10.133.205.80) by DGGEMS405-HUB.china.huawei.com
- (10.3.19.205) with Microsoft SMTP Server id 14.3.439.0; Thu, 22 Aug 2019
- 14:07:47 +0800
-Subject: Re: [PATCH v3] tun: fix use-after-free when register netdev failed
-To:     Jason Wang <jasowang@redhat.com>,
-        David Miller <davem@davemloft.net>
-References: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com>
- <20190819.182522.414877916903078544.davem@davemloft.net>
- <ceeafaf2-6aa4-b815-0b5f-ecc663216f43@redhat.com>
- <d8eaedf9-321c-1c07-cbd1-de5e1f73b086@redhat.com>
-CC:     <netdev@vger.kernel.org>, <eric.dumazet@gmail.com>,
-        <xiyou.wangcong@gmail.com>, <weiyongjun1@huawei.com>
-From:   Yang Yingliang <yangyingliang@huawei.com>
-Message-ID: <5D5E3133.2070108@huawei.com>
-Date:   Thu, 22 Aug 2019 14:07:47 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
- Thunderbird/38.5.1
-MIME-Version: 1.0
-In-Reply-To: <d8eaedf9-321c-1c07-cbd1-de5e1f73b086@redhat.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.133.205.80]
-X-CFilter-Loop: Reflected
+        id S1731218AbfHVGWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 02:22:48 -0400
+Received: from mx56.baidu.com ([61.135.168.56]:19779 "EHLO
+        tc-sys-mailedm04.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731098AbfHVGWr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 02:22:47 -0400
+Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
+        by tc-sys-mailedm04.tc.baidu.com (Postfix) with ESMTP id E476F236C00B;
+        Thu, 22 Aug 2019 14:22:32 +0800 (CST)
+From:   Li RongQing <lirongqing@baidu.com>
+To:     netdev@vger.kernel.org, idosch@mellanox.com
+Subject: [PATCH][net-next] net: drop_monitor: change the stats variable to u64 in net_dm_stats_put
+Date:   Thu, 22 Aug 2019 14:22:33 +0800
+Message-Id: <1566454953-29321-1-git-send-email-lirongqing@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+only the element drop of struct net_dm_stats is used, so simplify it to u64
 
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+---
+ net/core/drop_monitor.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-On 2019/8/22 10:13, Jason Wang wrote:
->
-> On 2019/8/20 上午10:28, Jason Wang wrote:
->>
->> On 2019/8/20 上午9:25, David Miller wrote:
->>> From: Yang Yingliang <yangyingliang@huawei.com>
->>> Date: Mon, 19 Aug 2019 21:31:19 +0800
->>>
->>>> Call tun_attach() after register_netdevice() to make sure tfile->tun
->>>> is not published until the netdevice is registered. So the read/write
->>>> thread can not use the tun pointer that may freed by free_netdev().
->>>> (The tun and dev pointer are allocated by alloc_netdev_mqs(), they can
->>>> be freed by netdev_freemem().)
->>> register_netdevice() must always be the last operation in the order of
->>> network device setup.
->>>
->>> At the point register_netdevice() is called, the device is visible 
->>> globally
->>> and therefore all of it's software state must be fully initialized and
->>> ready for us.
->>>
->>> You're going to have to find another solution to these problems.
->>
->>
->> The device is loosely coupled with sockets/queues. Each side is 
->> allowed to be go away without caring the other side. So in this case, 
->> there's a small window that network stack think the device has one 
->> queue but actually not, the code can then safely drop them. Maybe 
->> it's ok here with some comments?
->>
->> Or if not, we can try to hold the device before tun_attach and drop 
->> it after register_netdevice().
->
->
-> Hi Yang:
->
-> I think maybe we can try to hold refcnt instead of playing real num 
-> queues here. Do you want to post a V4?
-I think the refcnt can prevent freeing the memory in this case.
-When register_netdevice() failed, free_netdev() will be called directly,
-dev->pcpu_refcnt and dev are freed without checking refcnt of dev.
-
->
-> Thanks
->
->
->>
->> Thanks
->>
->
-> .
->
-
+diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
+index bfc024024aa3..ed10a40cf629 100644
+--- a/net/core/drop_monitor.c
++++ b/net/core/drop_monitor.c
+@@ -1329,11 +1329,11 @@ static int net_dm_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
+ 	return rc;
+ }
+ 
+-static void net_dm_stats_read(struct net_dm_stats *stats)
++static void net_dm_stats_read(u64 *stats)
+ {
+ 	int cpu;
+ 
+-	memset(stats, 0, sizeof(*stats));
++	*stats = 0;
+ 	for_each_possible_cpu(cpu) {
+ 		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
+ 		struct net_dm_stats *cpu_stats = &data->stats;
+@@ -1345,14 +1345,14 @@ static void net_dm_stats_read(struct net_dm_stats *stats)
+ 			dropped = cpu_stats->dropped;
+ 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
+ 
+-		stats->dropped += dropped;
++		*stats += dropped;
+ 	}
+ }
+ 
+ static int net_dm_stats_put(struct sk_buff *msg)
+ {
+-	struct net_dm_stats stats;
+ 	struct nlattr *attr;
++	u64 stats;
+ 
+ 	net_dm_stats_read(&stats);
+ 
+@@ -1361,7 +1361,7 @@ static int net_dm_stats_put(struct sk_buff *msg)
+ 		return -EMSGSIZE;
+ 
+ 	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
+-			      stats.dropped, NET_DM_ATTR_PAD))
++			      stats, NET_DM_ATTR_PAD))
+ 		goto nla_put_failure;
+ 
+ 	nla_nest_end(msg, attr);
+-- 
+2.16.2
 
