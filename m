@@ -2,63 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AD52F99447
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:53:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0251D99454
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:55:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388743AbfHVMxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 08:53:48 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:35091 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725856AbfHVMxs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:53:48 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1i0may-0003jn-O4; Thu, 22 Aug 2019 12:53:40 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     David Ahern <dsahern@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] nexthops: remove redundant assignment to variable err
-Date:   Thu, 22 Aug 2019 13:53:40 +0100
-Message-Id: <20190822125340.30783-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S2388757AbfHVMzm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 08:55:42 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:4759 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732412AbfHVMzm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 08:55:42 -0400
+Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id C20AE92E8AD1A8BE20CA;
+        Thu, 22 Aug 2019 20:55:38 +0800 (CST)
+Received: from [127.0.0.1] (10.133.205.80) by DGGEMS414-HUB.china.huawei.com
+ (10.3.19.214) with Microsoft SMTP Server id 14.3.439.0; Thu, 22 Aug 2019
+ 20:55:33 +0800
+Subject: Re: [PATCH v3] tun: fix use-after-free when register netdev failed
+To:     Jason Wang <jasowang@redhat.com>,
+        David Miller <davem@davemloft.net>
+References: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com>
+ <20190819.182522.414877916903078544.davem@davemloft.net>
+ <ceeafaf2-6aa4-b815-0b5f-ecc663216f43@redhat.com>
+ <d8eaedf9-321c-1c07-cbd1-de5e1f73b086@redhat.com>
+ <5D5E3133.2070108@huawei.com>
+CC:     <netdev@vger.kernel.org>, <eric.dumazet@gmail.com>,
+        <xiyou.wangcong@gmail.com>, <weiyongjun1@huawei.com>
+From:   Yang Yingliang <yangyingliang@huawei.com>
+Message-ID: <5D5E90C3.50306@huawei.com>
+Date:   Thu, 22 Aug 2019 20:55:31 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:38.0) Gecko/20100101
+ Thunderbird/38.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <5D5E3133.2070108@huawei.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.133.205.80]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
 
-Variable err is initialized to a value that is never read and it is
-re-assigned later. The initialization is redundant and can be removed.
 
-Addresses-Coverity: ("Unused Value")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- net/ipv4/nexthop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 2019/8/22 14:07, Yang Yingliang wrote:
+>
+>
+> On 2019/8/22 10:13, Jason Wang wrote:
+>>
+>> On 2019/8/20 上午10:28, Jason Wang wrote:
+>>>
+>>> On 2019/8/20 上午9:25, David Miller wrote:
+>>>> From: Yang Yingliang <yangyingliang@huawei.com>
+>>>> Date: Mon, 19 Aug 2019 21:31:19 +0800
+>>>>
+>>>>> Call tun_attach() after register_netdevice() to make sure tfile->tun
+>>>>> is not published until the netdevice is registered. So the read/write
+>>>>> thread can not use the tun pointer that may freed by free_netdev().
+>>>>> (The tun and dev pointer are allocated by alloc_netdev_mqs(), they 
+>>>>> can
+>>>>> be freed by netdev_freemem().)
+>>>> register_netdevice() must always be the last operation in the order of
+>>>> network device setup.
+>>>>
+>>>> At the point register_netdevice() is called, the device is visible 
+>>>> globally
+>>>> and therefore all of it's software state must be fully initialized and
+>>>> ready for us.
+>>>>
+>>>> You're going to have to find another solution to these problems.
+>>>
+>>>
+>>> The device is loosely coupled with sockets/queues. Each side is 
+>>> allowed to be go away without caring the other side. So in this 
+>>> case, there's a small window that network stack think the device has 
+>>> one queue but actually not, the code can then safely drop them. 
+>>> Maybe it's ok here with some comments?
+>>>
+>>> Or if not, we can try to hold the device before tun_attach and drop 
+>>> it after register_netdevice().
+>>
+>>
+>> Hi Yang:
+>>
+>> I think maybe we can try to hold refcnt instead of playing real num 
+>> queues here. Do you want to post a V4?
+> I think the refcnt can prevent freeing the memory in this case.
+> When register_netdevice() failed, free_netdev() will be called directly,
+> dev->pcpu_refcnt and dev are freed without checking refcnt of dev.
+How about using patch-v1 that using a flag to check whether the device 
+registered successfully.
 
-diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index 5fe5a3981d43..fc34fd1668d6 100644
---- a/net/ipv4/nexthop.c
-+++ b/net/ipv4/nexthop.c
-@@ -1151,7 +1151,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
- 		.fc_encap_type = cfg->nh_encap_type,
- 	};
- 	u32 tb_id = l3mdev_fib_table(cfg->dev);
--	int err = -EINVAL;
-+	int err;
- 
- 	err = fib_nh_init(net, fib_nh, &fib_cfg, 1, extack);
- 	if (err) {
--- 
-2.20.1
+>
+>>
+>> Thanks
+>>
+>>
+>>>
+>>> Thanks
+>>>
+>>
+>> .
+>>
+>
+>
+>
+> .
+>
+
 
