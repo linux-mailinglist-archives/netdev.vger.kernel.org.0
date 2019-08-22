@@ -2,203 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 641F4990AC
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:25:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 38EF3990FF
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:38:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387570AbfHVKZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 06:25:36 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:57056 "EHLO mx1.redhat.com"
+        id S1731923AbfHVKiW convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Aug 2019 06:38:22 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:46038 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387545AbfHVKZg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 06:25:36 -0400
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com [209.85.221.71])
+        id S1729113AbfHVKiW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 06:38:22 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 2F9A260CC
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 10:25:35 +0000 (UTC)
-Received: by mail-wr1-f71.google.com with SMTP id w11so2972576wru.17
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 03:25:35 -0700 (PDT)
+        by mx1.redhat.com (Postfix) with ESMTPS id 11891109AE
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 10:38:21 +0000 (UTC)
+Received: by mail-ed1-f70.google.com with SMTP id i10so3117891edv.14
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 03:38:21 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=OkWE/ypXtm5ByIaQmws7qUqEgpMrRSHM+eiQENF8y7E=;
-        b=HoeNwE4/0sE1foj8fO1CaSEMGlHWwaw7LKAi0AUYpGajpOme2zsm2R9qzonTNtdG9I
-         3ruj7s7h1Htot20sYd0lhY2YOmyiKwzSPqbWUqMVNmdH2jFuME9ZVC7X44HXckPQaQzM
-         djOvUTTtNrovitNhzH4ICqlFJoeAnnSmSrkL9vvIBNGFHv6cZw/Az3dVP/T/S4Q+jw8g
-         90wUHlWE1Ls1kF5zSeSE1Bm27BZmUewFDa7QOSlEwIv+FLtMvf6bZLt7ykLE1Frdxk3B
-         YGT73VWB8SJQEfcCrbAAsLSxQbL81o5VDb86zFqAYykn6aAvlFykAijcUjqVrF8E15ZH
-         1Djg==
-X-Gm-Message-State: APjAAAUHe+nQrate4HVIw9tf0Q86nkrsNId9eA7rghNXIvHav+hg7Ni1
-        rMsTMPtZPYrGb5tC236+sDyzvjH3fQBkpS/nXN86JflKqTTxijk7Uf4C2hFNtpt3ZZ2okl/kDcH
-        Is/8Om4d6s7X36ktk
-X-Received: by 2002:a1c:a383:: with SMTP id m125mr5554925wme.57.1566469533831;
-        Thu, 22 Aug 2019 03:25:33 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqzfnLy3HKEn/7VIiE1whM0k6Xh58TuFmITLJJOXHevPzuzCcy4uuxv6bxU801laeEZq5DwlZQ==
-X-Received: by 2002:a1c:a383:: with SMTP id m125mr5554883wme.57.1566469533587;
-        Thu, 22 Aug 2019 03:25:33 -0700 (PDT)
-Received: from steredhat (host80-221-dynamic.18-79-r.retail.telecomitalia.it. [79.18.221.80])
-        by smtp.gmail.com with ESMTPSA id f13sm17769033wrr.5.2019.08.22.03.25.31
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=3WF76R9PRluSwsSbBisHuTfQpPlZfHG8CCj+Dbr+eN8=;
+        b=rKPX7g4r5xPfe8ED/pK/jQ0IKYeldk0KlBRrDXufBLtSMDrCK4KAztAyrz+zF3/+Ot
+         vUgUoddnV9MprAnAD9Ppp01FJn6Cu5fXNOMyHHHHIeBuG39LmXajkv+bIw9Hn9Rmi1S8
+         3cqcyXdjNNF3sQGzipJXjn6E0muNGXhYzFMMwRvn2g1YWkR4Qid/0awvq+0CSckF3t8e
+         pDUPzxHhZ58xuFpzd3G2ZY/lgY8LhasVKIYi9MMl0yVyaIvIE58cpSbQfHeKVqhTJPpz
+         PEmENvbcX3uWpqu7hLltFN5Wy8LZJjhSNl11qRGzkLerFeGegP5fn2/zLq39We6u2v5Q
+         7a0A==
+X-Gm-Message-State: APjAAAWNwya8qOsgvS4kUNO3Tiu3m4Fa7aW5JXomvs4tfwaoEj+4JnTk
+        bwn2B9nqhdRz/isLN43Kx6Qlwt70dIOZLkFh6P1G3j0abYQ6tdJDt53HOCX4z69H5du6H4k3gcU
+        Hanf7qpoEvoryzdWN
+X-Received: by 2002:aa7:c389:: with SMTP id k9mr11406793edq.175.1566470299872;
+        Thu, 22 Aug 2019 03:38:19 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqwES2nggyHN87LpGxHfpuoh53GOMS5YnMJCbxe42BZzTz9LYqV0cMOrbTyJkseXDOJx/onB1g==
+X-Received: by 2002:aa7:c389:: with SMTP id k9mr11406761edq.175.1566470299651;
+        Thu, 22 Aug 2019 03:38:19 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
+        by smtp.gmail.com with ESMTPSA id i1sm2436280edi.13.2019.08.22.03.38.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 03:25:33 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 12:25:29 +0200
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Dexuan Cui <decui@microsoft.com>
-Cc:     "jhansen@vmware.com" <jhansen@vmware.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "stefanha@redhat.com" <stefanha@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Sasha Levin <Alexander.Levin@microsoft.com>,
-        "sashal@kernel.org" <sashal@kernel.org>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Michael Kelley <mikelley@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] vsock: Fix a lockdep warning in __vsock_release()
-Message-ID: <20190822102529.q5ozdvh6kbymi6ni@steredhat>
-References: <1566270830-28981-1-git-send-email-decui@microsoft.com>
+        Thu, 22 Aug 2019 03:38:18 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 4B4FC181CEF; Thu, 22 Aug 2019 12:38:18 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
+In-Reply-To: <CAEf4BzbR3gdn=82gCmSQ+=81222J0zza9z6JyYs=TkUY=WDXQw@mail.gmail.com>
+References: <20190820114706.18546-1-toke@redhat.com> <20190821192611.xmciiiqjpkujjup7@ast-mbp.dhcp.thefacebook.com> <87ef1eqlnb.fsf@toke.dk> <CAEf4BzbR3gdn=82gCmSQ+=81222J0zza9z6JyYs=TkUY=WDXQw@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Thu, 22 Aug 2019 12:38:18 +0200
+Message-ID: <87lfvlpjs5.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1566270830-28981-1-git-send-email-decui@microsoft.com>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 03:14:22AM +0000, Dexuan Cui wrote:
-> Lockdep is unhappy if two locks from the same class are held.
-> 
-> Fix the below warning by making __vsock_release() non-recursive -- this
-> patch is kind of ugly, but it looks to me there is not a better way to
-> deal with the problem here.
-> 
-> ============================================
-> WARNING: possible recursive locking detected
-> 5.2.0+ #6 Not tainted
-> --------------------------------------------
-> a.out/1020 is trying to acquire lock:
-> 0000000074731a98 (sk_lock-AF_VSOCK){+.+.}, at: hvs_release+0x10/0x120 [hv_sock]
-> 
-> but task is already holding lock:
-> 0000000014ff8397 (sk_lock-AF_VSOCK){+.+.}, at: __vsock_release+0x2e/0xf0 [vsock]
-> 
-> other info that might help us debug this:
->  Possible unsafe locking scenario:
-> 
->        CPU0
->        ----
->   lock(sk_lock-AF_VSOCK);
->   lock(sk_lock-AF_VSOCK);
-> 
->  *** DEADLOCK ***
-> 
->  May be due to missing lock nesting notation
-> 
-> 2 locks held by a.out/1020:
->  #0: 00000000f8bceaa7 (&sb->s_type->i_mutex_key#10){+.+.}, at: __sock_release+0x2d/0xa0
->  #1: 0000000014ff8397 (sk_lock-AF_VSOCK){+.+.}, at: __vsock_release+0x2e/0xf0 [vsock]
-> 
-> stack backtrace:
-> CPU: 7 PID: 1020 Comm: a.out Not tainted 5.2.0+ #6
-> Call Trace:
->  dump_stack+0x67/0x90
->  __lock_acquire.cold.66+0x14d/0x1f8
->  lock_acquire+0xb5/0x1c0
->  lock_sock_nested+0x6d/0x90
->  hvs_release+0x10/0x120 [hv_sock]
->  __vsock_release+0x24/0xf0 [vsock]
->  __vsock_release+0xa0/0xf0 [vsock]
->  vsock_release+0x12/0x30 [vsock]
->  __sock_release+0x37/0xa0
->  sock_close+0x14/0x20
->  __fput+0xc1/0x250
->  task_work_run+0x98/0xc0
->  do_exit+0x3dd/0xc60
->  do_group_exit+0x47/0xc0
->  get_signal+0x169/0xc60
->  do_signal+0x30/0x710
->  exit_to_usermode_loop+0x50/0xa0
->  do_syscall_64+0x1fc/0x220
->  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-> 
-> Signed-off-by: Dexuan Cui <decui@microsoft.com>
-> ---
->  net/vmw_vsock/af_vsock.c         | 33 ++++++++++++++++++++++++++++++++-
->  net/vmw_vsock/hyperv_transport.c |  2 +-
->  2 files changed, 33 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-> index ab47bf3..420f605 100644
-> --- a/net/vmw_vsock/af_vsock.c
-> +++ b/net/vmw_vsock/af_vsock.c
-> @@ -638,6 +638,37 @@ struct sock *__vsock_create(struct net *net,
->  }
->  EXPORT_SYMBOL_GPL(__vsock_create);
->  
-> +static void __vsock_release2(struct sock *sk)
-> +{
-> +	if (sk) {
-> +		struct sk_buff *skb;
-> +		struct vsock_sock *vsk;
-> +
-> +		vsk = vsock_sk(sk);
-> +
-> +		/* The release call is supposed to use lock_sock_nested()
-> +		 * rather than lock_sock(), if a lock should be acquired.
-> +		 */
-> +		transport->release(vsk);
-> +
-> +		/* Use the nested version to avoid the warning
-> +		 * "possible recursive locking detected".
-> +		 */
-> +		lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
+Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
 
-What about using lock_sock_nested() in the __vsock_release() without
-define this new function?
+> On Wed, Aug 21, 2019 at 4:29 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>
+>> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
+>>
+>> > On Tue, Aug 20, 2019 at 01:47:01PM +0200, Toke Høiland-Jørgensen wrote:
+>> >> iproute2 uses its own bpf loader to load eBPF programs, which has
+>> >> evolved separately from libbpf. Since we are now standardising on
+>> >> libbpf, this becomes a problem as iproute2 is slowly accumulating
+>> >> feature incompatibilities with libbpf-based loaders. In particular,
+>> >> iproute2 has its own (expanded) version of the map definition struct,
+>> >> which makes it difficult to write programs that can be loaded with both
+>> >> custom loaders and iproute2.
+>> >>
+>> >> This series seeks to address this by converting iproute2 to using libbpf
+>> >> for all its bpf needs. This version is an early proof-of-concept RFC, to
+>> >> get some feedback on whether people think this is the right direction.
+>> >>
+>> >> What this series does is the following:
+>> >>
+>> >> - Updates the libbpf map definition struct to match that of iproute2
+>> >>   (patch 1).
+>> >> - Adds functionality to libbpf to support automatic pinning of maps when
+>> >>   loading an eBPF program, while re-using pinned maps if they already
+>> >>   exist (patches 2-3).
+>> >> - Modifies iproute2 to make it possible to compile it against libbpf
+>> >>   without affecting any existing functionality (patch 4).
+>> >> - Changes the iproute2 eBPF loader to use libbpf for loading XDP
+>> >>   programs (patch 5).
+>> >>
+>> >>
+>> >> As this is an early PoC, there are still a few missing pieces before
+>> >> this can be merged. Including (but probably not limited to):
+>> >>
+>> >> - Consolidate the map definition struct in the bpf_helpers.h file in the
+>> >>   kernel tree. This contains a different, and incompatible, update to
+>> >>   the struct. Since the iproute2 version has actually been released for
+>> >>   use outside the kernel tree (and thus is subject to API stability
+>> >>   constraints), I think it makes the most sense to keep that, and port
+>> >>   the selftests to use it.
+>> >
+>> > It sounds like you're implying that existing libbpf format is not
+>> > uapi.
+>>
+>> No, that's not what I meant... See below.
+>>
+>> > It is and we cannot break it.
+>> > If patch 1 means breakage for existing pre-compiled .o that won't load
+>> > with new libbpf then we cannot use this method.
+>> > Recompiling .o with new libbpf definition of bpf_map_def isn't an option.
+>> > libbpf has to be smart before/after and recognize both old and iproute2 format.
+>>
+>> The libbpf.h definition of struct bpf_map_def is compatible with the one
+>> used in iproute2. In libbpf.h, the struct only contains five fields
+>> (type, key_size, value_size, max_entries and flags), and iproute2 adds
+>> another 4 (id, pinning, inner_id and inner_idx; these are the ones in
+>> patch 1 in this series).
+>>
+>> The issue I was alluding to above is that the bpf_helpers.h file in the
+>> kernel selftests directory *also* extends the bpf_map_def struct, and
+>> adds two *different* fields (inner_map_idx and numa_mode). The former is
+>> used to implement the same map-in-map definition functionality that
+>> iproute2 has, but with different semantics. The latter is additional to
+>> that, and I'm planning to add that to this series.
+>>
+>> Since bpf_helpers.h is *not* part of libbpf (yet), this will make it
+>
+> We should start considering it as if it was, so if we can avoid adding
+> stuff that I'd need to untangle to move it into libbpf, I'd rather
+> avoid it.
+> We've already prepared this move by relicensing bpf_helpers.h. Moving
+> it into libbpf itself is immediate next thing I'll do when I'm back.
 
-> +		sock_orphan(sk);
-> +		sk->sk_shutdown = SHUTDOWN_MASK;
-> +
-> +		while ((skb = skb_dequeue(&sk->sk_receive_queue)))
-> +			kfree_skb(skb);
-> +
-> +		/* This sk can not be a listener, so it's unnecessary
-> +		 * to call vsock_dequeue_accept().
-> +		 */
-> +		release_sock(sk);
-> +		sock_put(sk);
-> +	}
-> +}
-> +
->  static void __vsock_release(struct sock *sk)
->  {
->  	if (sk) {
-> @@ -659,7 +690,7 @@ static void __vsock_release(struct sock *sk)
->  
->  		/* Clean up any sockets that never were accepted. */
->  		while ((pending = vsock_dequeue_accept(sk)) != NULL) {
-> -			__vsock_release(pending);
-> +			__vsock_release2(pending);
->  			sock_put(pending);
->  		}
->  
-> diff --git a/net/vmw_vsock/hyperv_transport.c b/net/vmw_vsock/hyperv_transport.c
-> index 9d864eb..4b126b2 100644
-> --- a/net/vmw_vsock/hyperv_transport.c
-> +++ b/net/vmw_vsock/hyperv_transport.c
-> @@ -559,7 +559,7 @@ static void hvs_release(struct vsock_sock *vsk)
->  	struct sock *sk = sk_vsock(vsk);
->  	bool remove_sock;
->  
-> -	lock_sock(sk);
-> +	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
+Yeah, I figured that with the relicensing, bpf_helpers would probably be
+making its way into libbpf soon. Which is why I wanted to start this
+discussion before that: If we do move bpf_helpers as-is, that will put
+us in the territory of full-on binary incompatibility. So the time to
+discuss doing this in a compatible way is now, before any such move is
+made.
 
-Should we update also other transports?
-
-Thanks,
-Stefano
+-Toke
