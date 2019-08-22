@@ -2,127 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D1D99A9F
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 19:15:35 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DACED99B20
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 19:21:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388935AbfHVROi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 13:14:38 -0400
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:17688 "EHLO
-        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2391125AbfHVROf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 13:14:35 -0400
-Received: from pps.filterd (m0170393.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7MGtSkM005894;
-        Thu, 22 Aug 2019 13:14:34 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dellteam.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=smtpout1;
- bh=pSPlsJFML3BPeq/21ZQFMi902QsechRDqUNGAYwS7Pk=;
- b=UANCy6whT4s4Jys4elafzzxHviWk+sVcvbDUgD6Q7+DoN7nIZDBiwdGfcxKNX5U8bbPo
- oZHKNhw8eGY7Fy5TCfRqr0FxNQX9HmG6z0JajwqrAQ29YKk6XTsfhJoo15HXyewipla6
- c4DtKeaZOJMlm0maJW6s7WmlZxiF8GcxN9lWjx3sCx+3og5bHISjHSdfKkAiCa4GUvqp
- oiKHxB8CvYGnwVa4x9QF8wB7GStXZc8PawmCH6ORxiwDcdg+Kxj0jzBeU6sS71l/rTdo
- z2bwp0f7IP0SnOwukcUYEbSV+v26o+9kTKRqYtfFkx06JIBe3yUoXzJklUNgNHxNqxOq Bg== 
-Received: from mx0b-00154901.pphosted.com (mx0b-00154901.pphosted.com [67.231.157.37])
-        by mx0a-00154904.pphosted.com with ESMTP id 2uhubq1bh6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 22 Aug 2019 13:14:34 -0400
-Received: from pps.filterd (m0134318.ppops.net [127.0.0.1])
-        by mx0a-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7MGwPIG097699;
-        Thu, 22 Aug 2019 13:14:33 -0400
-Received: from ausxippc101.us.dell.com (ausxippc101.us.dell.com [143.166.85.207])
-        by mx0a-00154901.pphosted.com with ESMTP id 2uec7ej842-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 22 Aug 2019 13:14:32 -0400
-X-LoopCount0: from 10.166.132.132
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.60,346,1549951200"; 
-   d="scan'208";a="1288603742"
-From:   <Charles.Hyde@dellteam.com>
-To:     <oneukum@suse.com>, <gregkh@linuxfoundation.org>
-CC:     <Mario.Limonciello@dell.com>, <nic_swsd@realtek.com>,
-        <linux-acpi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
-        <netdev@vger.kernel.org>
-Subject: RE: [RFC 1/4] Add usb_get_address and usb_set_address support
-Thread-Topic: [RFC 1/4] Add usb_get_address and usb_set_address support
-Thread-Index: AQHVV6TlN6JhPmp8+EufEIlfFi8+LKcE8QcAgAFHO1CAAO3FgIAANWIw
-Date:   Thu, 22 Aug 2019 17:14:30 +0000
-Message-ID: <8014f932039c4e01bd513148f20ca0e4@AUSX13MPS303.AMER.DELL.COM>
-References: <1566339522507.45056@Dellteam.com>
-        ,<20190820222602.GC8120@kroah.com> <1566430506442.20925@Dellteam.com>
- <1566461295.8347.19.camel@suse.com>
-In-Reply-To: <1566461295.8347.19.camel@suse.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Enabled=True;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SiteId=945c199a-83a2-4e80-9f8c-5a91be5752dd;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Owner=Charles_Hyde@Dellteam.com;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SetDate=2019-08-22T17:14:29.2453990Z;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Name=External Public;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Application=Microsoft Azure
- Information Protection;
- MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Extended_MSFT_Method=Manual;
- aiplabel=External Public
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.143.242.75]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1733098AbfHVRV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 13:21:27 -0400
+Received: from mail-io1-f68.google.com ([209.85.166.68]:33242 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730997AbfHVRV0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 13:21:26 -0400
+Received: by mail-io1-f68.google.com with SMTP id z3so13513311iog.0;
+        Thu, 22 Aug 2019 10:21:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aLr+sd5BMRYCClHI4smsxLPlBWSdoS3nfQ+XpNRCO6U=;
+        b=bLz1UxSg3goHpLmdM1XGhxTgPMZasAb3H3QPWRN13W+SCAgmQtFI59RkBF9I1BoCJ3
+         gfRTGkAtZBHs5sOF5tM7Khx4mYb3AP6M7MXD1f6xuIe8/SXnKS9oo6RYV4MIkKamVuru
+         iVoY5Ljg7iov3VuRbjauI0Sg79O0/G3qyJde2n4wkKIl+nVzSEmRKCBB/Xn0DC0g39Um
+         f/x0pzC3lDmi3nSbI6X+6MNSUMXbIPZ7/Z9BEpkck9KXUKhTqFXZ7gFl0cQT9jNgWi9/
+         9BSNLwRyKkqqgogpRFtZkWxcmAqawm1GyV4bX/86wQZFTQ+ME0Q6GpJFGHPkG6DfwaOV
+         5mfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aLr+sd5BMRYCClHI4smsxLPlBWSdoS3nfQ+XpNRCO6U=;
+        b=CH4vkIMzBCzE7R5qYyDv8neBVUs3bnmISBIMKfI/9a6en9Zql5v+C6+5IOXKFTCFDA
+         Heb4bxDonvtkfFT7ZCiJWOJcS3RWlExcmy/AXbRb9paNtxQMI9exR/m2LXTifhuCBsf/
+         a2MSVYpkuYnM1hYydAcmV0nEIpndz0uGIQZkpxjH18TToupsTpc1pCaY8A/YXW586EK/
+         yThtaBNLHAf0wZWALAEWSzqhk35gYkDqSOSlhsHZCPNpGg3mXWLggUm7WdoDgyGz2abs
+         0jYFuQZiYn6GkgyVjyt0ZQgxAl4V377BjvCUcKSqXaLOxffR5vQpDYot3XM0nso8Dj1K
+         yMqw==
+X-Gm-Message-State: APjAAAX9jT/ojJqiNKAsDEMeU5cYtULPyfypXicAs/Cum98mIMffW+tv
+        XnBXgq1nbQbyijvqYItexF3sh/G1UMK4DG/oHZY=
+X-Google-Smtp-Source: APXvYqykF88NuCgoRLHTX/hVhk0s0dNsXSMT17jlWltng3t8DPaOm3ksoWuywjYftSzM8MoX7TQAYwNO1f30b9Sh0cI=
+X-Received: by 2002:a5d:8908:: with SMTP id b8mr965993ion.237.1566494485368;
+ Thu, 22 Aug 2019 10:21:25 -0700 (PDT)
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-22_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=725 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908220156
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=822 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908220156
+References: <CGME20190822171243eucas1p12213f2239d6c36be515dade41ed7470b@eucas1p1.samsung.com>
+ <20190822171237.20798-1-i.maximets@samsung.com>
+In-Reply-To: <20190822171237.20798-1-i.maximets@samsung.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 22 Aug 2019 10:21:14 -0700
+Message-ID: <CAKgT0UepBGqx=FiqrdC-r3kvkMxVAHonkfc6rDt_HVQuzahZPQ@mail.gmail.com>
+Subject: Re: [PATCH net v3] ixgbe: fix double clean of tx descriptors with xdp
+To:     Ilya Maximets <i.maximets@samsung.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
+        Eelco Chaudron <echaudro@redhat.com>,
+        William Tu <u9012063@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+IDxzbmlwcGVkPg0KPiA+ID4NCj4gPiA+IFRoaXMgaXMgYSBWRVJZIGNkYy1uZXQtc3BlY2lm
-aWMgZnVuY3Rpb24uICBJdCBpcyBub3QgYSAiZ2VuZXJpYyIgVVNCDQo+ID4gPiBmdW5jdGlvbiBh
-dCBhbGwuICBXaHkgZG9lcyBpdCBiZWxvbmcgaW4gdGhlIFVTQiBjb3JlPyAgU2hvdWxkbid0IGl0
-DQo+ID4gPiBsaXZlIGluIHRoZSBjb2RlIHRoYXQgaGFuZGxlcyB0aGUgb3RoZXIgY2RjLW5ldC1z
-cGVjaWZpYyBsb2dpYz8NCj4gPiA+DQo+ID4gPiB0aGFua3MsDQo+ID4gPg0KPiA+ID4gZ3JlZyBr
-LWgNCj4gPg0KPiA+DQo+ID4gVGhhbmsgeW91IGZvciB0aGlzIGZlZWRiYWNrLCBHcmVnLiAgSSB3
-YXMgbm90IHN1cmUgYWJvdXQgYWRkaW5nIHRoaXMgdG8NCj4gbWVzc2FnZS5jLCBiZWNhdXNlIG9m
-IHRoZSBVU0JfQ0RDX0dFVF9ORVRfQUREUkVTUy4gIEkgaGFkIGZvdW5kDQo+IHJlZmVyZW5jZXMg
-dG8gU0VUX0FERFJFU1MgaW4gdGhlIFVTQiBwcm90b2NvbCBhdA0KPiBodHRwczovL3dpa2kub3Nk
-ZXYub3JnL1VuaXZlcnNhbF9TZXJpYWxfQnVzI1VTQl9Qcm90b2NvbC4gIElmIG9uZSB3YW50ZWQg
-YQ0KPiBnZW5lcmljIFVTQiBmdW5jdGlvbiBmb3IgU0VUX0FERFJFU1MsIHRvIGJlIHVzZWQgZm9y
-IGJvdGggc2VuZGluZyBhIE1BQw0KPiBhZGRyZXNzIGFuZCByZWNlaXZpbmcgb25lLCBob3cgd291
-bGQgeW91IHN1Z2dlc3QgdGhpcyBiZSBpbXBsZW1lbnRlZD8gIFRoaXMNCj4gaXMgYSBsZWdpdCBx
-dWVzdGlvbiBiZWNhdXNlIEkgYW0gY3VyaW91cy4NCj4gDQo+IFlvdXIgaW1wbGVtZW50YXRpb24g
-d2FzLCBleGNlcHQgZm9yIG1pc3NpbmcgZXJyb3IgaGFuZGxpbmcsIHVzYWJsZS4NCj4gVGhlIHBy
-b2JsZW0gaXMgd2hlcmUgeW91IHB1dCBpdC4gQ0RDIG1lc3NhZ2VzIGV4aXN0IG9ubHkgZm9yIENE
-QyBkZXZpY2VzLiBOb3cNCj4gaXQgaXMgdHJ1ZSB0aGF0IHRoZXJlIGlzIG5vIGdlbmVyaWMgQ0RD
-IGRyaXZlci4NCj4gQ3JlYXRpbmcgYSBtb2R1bGUganVzdCBmb3IgdGhhdCB3b3VsZCBjb3N0IG1v
-cmUgbWVtb3J5IHRoYW4gaXQgc2F2ZXMgaW4gbW9zdA0KPiBjYXNlcy4NCj4gQnV0IE1BQ3MgYXJl
-IGNvbmZpbmVkIHRvIG5ldHdvcmsgZGV2aWNlcy4gSGVuY2UgdGhlIGZ1bmN0aW9uYWxpdHkgY2Fu
-IGJlIHB1dA0KPiBpbnRvIHVzYm5ldC4gSXQgc2hvdWxkIG5vdCBiZSBwdXQgaW50byBhbnkgaW5k
-aXZpZHVhbCBkcml2ZXIsIHNvIHRoYXQgZXZlcnkNCj4gbmV0d29yayBkcml2ZXIgY2FuIHVzZSBp
-dCB3aXRob3V0IGR1cGxpY2F0aW9uLg0KPiANCj4gPiBZb3VyIGZlZWRiYWNrIGxlZCB0byBtb3Zp
-bmcgdGhlIGZ1bmN0aW9uYWxpdHkgaW50byBjZGNfbmNtLmMgZm9yIHRvZGF5J3MNCj4gdGVzdGlu
-ZywgYW5kIHJlbW92aW5nIGFsbCBjaGFuZ2VzIGZyb20gbWVzc2FnZXMuYywgdXNiLmgsIHVzYm5l
-dC5jLCBhbmQNCj4gdXNibmV0LmguICBUaGlzIG1heSBiZSB3aGVyZSBJIGVuZCB1cCBsb25nIHRl
-cm0sIGJ1dCBJIHdvdWxkIGxpa2UgdG8gbGVhcm4gaWYNCj4gdGhlcmUgaXMgYSBwb3NzaWJsZSBz
-b2x1dGlvbiB0aGF0IGNvdWxkIGxpdmUgaW4gbWVzc2FnZS5jIGFuZCBiZSBjYWxsYWJsZSBmcm9t
-DQo+IG90aGVyIFVTQi10by1FdGhlcm5ldCBhd2FyZSBkcml2ZXJzLg0KPiANCj4gQWxsIHRob3Nl
-IGRyaXZlcnMgdXNlIHVzYm5ldC4gSGVuY2UgdGhlcmUgaXQgc2hvdWxkIGJlLg0KPiANCj4gCVJl
-Z2FyZHMNCj4gCQlPbGl2ZXINCg0KDQpTb21lIG9mIHRoZSBkcml2ZXJzIGluIGRyaXZlcnMvbmV0
-L3VzYi8gZG8gY2FsbCBmdW5jdGlvbnMgaW4gZHJpdmVycy9uZXQvdXNiL3VzYm5ldCwgYnV0IG5v
-dCBhbGwuICBBcyBHcmVnIHBvaW50ZWQgb3V0LCB0aGUgVVNCIGNoYW5nZSBJIGRldmVsb3BlZCBp
-cyBjZGMgc3BlY2lmaWMsIHNvIHB1dHRpbmcgaXQgaW50byB1c2JuZXQgd291bGQgcmFpc2UgdGhl
-IHNhbWUgY29uY2VybnMgR3JlZyBtZW50aW9uZWQuICBMZWF2aW5nIG15IG5ld2VzdCBpbXBsZW1l
-bnRhdGlvbiBpbiBjZGNfbmNtLmMgd2lsbCBiZSBtb3N0IGFwcHJvcHJpYXRlLCBhcyBpdCBhbHNv
-IGZpdHMgd2l0aCB3aGF0IG90aGVyIGRyaXZlcnMgaW4gdGhpcyBmb2xkZXIgaGF2ZSBkb25lLiAg
-TXkgb3JpZ2luYWwgY29kZSB3YXMgcmF0aGVyIHNob3J0IHNpZ2h0ZWQsIGF0IGJlc3QuDQoNCkNo
-YXJsZXMNCg==
+On Thu, Aug 22, 2019 at 10:12 AM Ilya Maximets <i.maximets@samsung.com> wrote:
+>
+> Tx code doesn't clear the descriptors' status after cleaning.
+> So, if the budget is larger than number of used elems in a ring, some
+> descriptors will be accounted twice and xsk_umem_complete_tx will move
+> prod_tail far beyond the prod_head breaking the completion queue ring.
+>
+> Fix that by limiting the number of descriptors to clean by the number
+> of used descriptors in the tx ring.
+>
+> 'ixgbe_clean_xdp_tx_irq()' function refactored to look more like
+> 'ixgbe_xsk_clean_tx_ring()' since we're allowed to directly use
+> 'next_to_clean' and 'next_to_use' indexes.
+>
+> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
+> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
+> ---
+>
+> Version 3:
+>   * Reverted some refactoring made for v2.
+>   * Eliminated 'budget' for tx clean.
+>   * prefetch returned.
+>
+> Version 2:
+>   * 'ixgbe_clean_xdp_tx_irq()' refactored to look more like
+>     'ixgbe_xsk_clean_tx_ring()'.
+>
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 29 ++++++++------------
+>  1 file changed, 11 insertions(+), 18 deletions(-)
+
+Thanks for addressing my concerns.
+
+Acked-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
