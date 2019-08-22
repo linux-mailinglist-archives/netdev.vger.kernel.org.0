@@ -2,111 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E3FCC9961C
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:16:48 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D1AF69962E
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387687AbfHVOQq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 10:16:46 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:34828 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387673AbfHVOQp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:16:45 -0400
-Received: by mail-pg1-f194.google.com with SMTP id n4so3772323pgv.2;
-        Thu, 22 Aug 2019 07:16:45 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=5VZDP+zY9UFzHwVTHjDjM0azlGZus3k3oidB4OI3cp0=;
-        b=Ryud04X97qBBwO3cdJNnMtMYp+2s2M6RK8p8MjuFtFJf1781kRwwTA3CI6mb/zBB4R
-         RqrhfzelNgFLsoxsBNLKFqRr5iUHQO0XunibnVotaoMsgghk2+LKb60U8LeYCoLBGJnT
-         4eg7Tn0RjgcfGDtsfuCHSKixxjJ9tdZGDIQxdy9eCn6QjrKGH5ubBnwLPxjwKK9JHEZR
-         929yatg4EyAov3rFB5K1Y5FqESRVsy2oa3DYBSBhY6l32ixeTjb4pP/MD9yHscI3DLLL
-         la3b6Nh4/9psru4bcE4CvJrIGRHXnc1LSYfzp5shonQDun/zw+NhWrM9al1GDroBh6Ik
-         Lw0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=5VZDP+zY9UFzHwVTHjDjM0azlGZus3k3oidB4OI3cp0=;
-        b=XWYxXYoo6YVQexsrIzaE+0+C7IwT5Hs/AGIHT31vfy67IOUqFOB8y9YAWJUtoZyYpZ
-         Xy0iXB1KsMrz0gU9O4jelcI6gZHmo1EgLDR5wwTaeA61WdCJQ5MlKMQUfupwzntH51eY
-         6mwJ2b/l/3G+eOLVtm7QCulZeaj/XkRKaofSnpesuAsNwNNy8Ob38uoBpR2fJ7MKqfuZ
-         1Cv/gQL8HsyeGxOwygFbvSE9kyHlJIa0G/ufnTjcrj+i/3pmhObsdDju4qTGHEBBsBza
-         KJpI7Jila1zycVdznT+W8seNYbmYpQBeK7tuCwuGNcE9DIlEwYZJnYmWbRfxlH8qa14m
-         Yonw==
-X-Gm-Message-State: APjAAAX33EmMJ8gj8eXWL6UoMSg7wZRz2BIw7jdmbSBv9kBiWYZN01GV
-        XE3egiV/7Fft4GyHOhtS5s0=
-X-Google-Smtp-Source: APXvYqwhgVaaVhTig6IyVqy/taAffsMHHT8ArQW7IweA0ynp6c6lmfMrSCZ2c8rEngPQP4deOL/Npg==
-X-Received: by 2002:a63:1e06:: with SMTP id e6mr14347523pge.185.1566483404879;
-        Thu, 22 Aug 2019 07:16:44 -0700 (PDT)
-Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
-        by smtp.gmail.com with ESMTPSA id e9sm26328184pge.39.2019.08.22.07.16.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 07:16:43 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 07:16:41 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Hubert Feurstein <h.feurstein@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH spi for-5.4 0/5] Deterministic SPI latency with NXP DSPI
- driver
-Message-ID: <20190822141641.GB1437@localhost>
-References: <20190818182600.3047-1-olteanv@gmail.com>
- <CA+h21hr4UcoJK7upNJjG0ibtX7CkF=akxVdrb--1AJn6-z=sUQ@mail.gmail.com>
- <20190821043845.GB1332@localhost>
- <20190821140815.GA1447@localhost>
- <CA+h21hrtzU1XL-0m+BG5TYZvVh8WN6hgcM7CV5taHyq2MsR5dw@mail.gmail.com>
+        id S2387749AbfHVORv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 10:17:51 -0400
+Received: from www62.your-server.de ([213.133.104.62]:49354 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732331AbfHVORu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:17:50 -0400
+Received: from sslproxy01.your-server.de ([88.198.220.130])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i0nuL-0005On-Ay; Thu, 22 Aug 2019 16:17:45 +0200
+Received: from [178.197.249.40] (helo=pc-63.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i0nuK-0000WB-Qs; Thu, 22 Aug 2019 16:17:44 +0200
+Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
+To:     Andy Lutomirski <luto@kernel.org>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Chenbo Feng <chenbofeng.kernel@gmail.com>
+References: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com>
+ <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com>
+ <5A2FCD7E-7F54-41E5-BFAE-BB9494E74F2D@fb.com>
+ <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com>
+ <CALCETrUjh6DdgW1qSuSRd1_=0F9CqB8+sNj__e_6AHEvh_BaxQ@mail.gmail.com>
+ <CALCETrWtE2U4EvZVYeq8pSmQjBzF2PHH+KxYW8FSeF+W=1FYjw@mail.gmail.com>
+ <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com>
+ <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
+ <20190805192122.laxcaz75k4vxdspn@ast-mbp>
+ <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
+ <20190806011134.p5baub5l3t5fkmou@ast-mbp>
+ <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net>
+Date:   Thu, 22 Aug 2019 16:17:43 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CA+h21hrtzU1XL-0m+BG5TYZvVh8WN6hgcM7CV5taHyq2MsR5dw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25549/Thu Aug 22 10:31:26 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 11:17:23PM +0300, Vladimir Oltean wrote:
-> Of course PPS with a dedicated hardware receiver that can take input
-> compare timestamps is always preferable. However non-Ethernet
-> synchronization in the field looks to me like "make do with whatever
-> you can". I'm not sure a plain GPIO that raises an interrupt is better
-> than an interrupt-driven serial protocol controller - it's (mostly)
-> the interrupts that throw off the precision of the software timestamp.
-> And use Miroslav's pps-gpio-poll module and you're back from where you
-> started (try to make a sw timestamp as precise as possible).
+On 8/7/19 7:24 AM, Andy Lutomirski wrote:
+> On Mon, Aug 5, 2019 at 6:11 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+>> On Mon, Aug 05, 2019 at 02:25:35PM -0700, Andy Lutomirski wrote:
+>>> It tries to make the kernel respect the access modes for fds.  Without
+>>> this patch, there seem to be some holes: nothing looked at program fds
+>>> and, unless I missed something, you could take a readonly fd for a
+>>> program, pin the program, and reopen it RW.
+>>
+>> I think it's by design. iirc Daniel had a use case for something like this.
+> 
+> That seems odd.  Daniel, can you elaborate?
 
-Right, it might be better, might not.  You can consider hacking a
-local time stamp into the ISR.  Also, if one of your MACs has a input
-event pin, you can feed the switch's PPS output in there.
+[ ... catching up late. ]
 
-> wouldn't be my first choice. But DSA could have that built-in, and
-> with the added latency benefit of a MAC-to-MAC connection.
-> Too bad the mv88e6xxx driver can't do loopback timestamping, that's
-> already 50% of the DSA drivers that support PTP at all. An embedded
-> solution for this is less compelling now.
+Not from my side, the change was added by Chenbo back then for Android
+use-case to replace xt_qtaguid and xt_owner with BPF programs and to
+allow unprivileged applications to read maps. More on their architecture:
 
-Let me back track on my statement about mv88e6xxx.  At the time, I
-didn't see any practical way to use the CPU port for synchronization,
-but I forget exactly the details.  Maybe it is indeed possible,
-somehow.  If you can find a way that will work on your switch and on
-the Marvell, then I'd like to hear about it.
+   https://source.android.com/devices/tech/datausage/ebpf-traffic-monitor
 
-Thinking back...
+ From the cover-letter:
 
-One problem is this.  PTP requires a delay measurement.  You can send
-a delay request from the host, but there will never be a reply.
+   [...]
+   The network-control daemon (netd) creates and loads an eBPF object for
+   network packet filtering and analysis. It passes the object FD to an
+   unprivileged network monitor app (netmonitor), which is not allowed to
+   create, modify or load eBPF objects, but is allowed to read the traffic
+   stats from the map.
+   [...]
 
-Another problem is this.  A Sync message arriving on an external port
-is time stamped there, but then it is encapsulated as a tagged DSA
-management message and delivered out the CPU port.  At this point, it
-is no longer a PTP frame and will not be time stamped at the CPU port
-on egress.
+Iuuc, netd would be in charge with the ability to r/w into maps and
+pin them, but with the ability to to hand off some map fds as r/o to
+unprivileged applications in order for them to query data.
+
+>> Hence unprivileged bpf is actually something that can be deprecated.
+
+There is actually a publicly known use-case on unprivileged bpf wrt
+socket filters, see the SO_ATTACH_BPF on sockets section as an example:
+
+   https://blog.cloudflare.com/cloudflare-architecture-and-how-bpf-eats-the-world/
+
+If I'd have to take a good guess, I'd think it's major use-case is in
+SO_ATTACH_REUSEPORT_EBPF in the wild, I don't think the sysctl can be
+outright flipped or deprecated w/o breaking existing applications unless
+it's cleanly modeled into some sort of customizable CAP_BPF* type policy
+(more below) where this would be the lowest common denominator.
+
+> I hope not.  There are a couple setsockopt uses right now, and and
+> seccomp will surely want it someday.  And the bpf-inside-container use
+> case really is unprivileged bpf -- containers are, in many (most?)
+> cases, explicitly not trusted by the host.
+[...]
+>> Inside containers and inside nested containers we need to start processes
+>> that will use bpf. All of the processes are trusted.
+> 
+> Trusted by whom?  In a non-nested container, the container manager
+> *might* be trusted by the outside world.  In a *nested* container,
+> unless the inner container management is controlled from outside the
+> outer container, it's not trusted.  I don't know much about how
+> Facebook's containers work, but the LXC/LXD/Podman world is moving
+> very strongly toward user namespaces and maximally-untrusted
+> containers, and I think bpf() should work in that context.
+
+[...] and if we opt-in with CAP_NET_ADMIN, for example, then it should
+ideally be possible for that container to install BPF programs for
+mangling, dropping, forwarding etc as long as it's only affecting it's
+/own/ netns like the rest of networking subsystem controls that work
+in that case. I would actually like to get to this at some point and
+make it more approachable as long as there is a way for an admin to
+/opt into it/ via policy (aka not by default). Thinking out loud, I'd
+love some sort of a hybrid, that is, a mixture of CAP_BPF_ADMIN and
+customizable seccomp policy. Meaning, there could be several CAP_BPF
+type sub-policies e.g. from allowing everything (equivalent to the
+/dev/bpf on/off handle or CAP_SYS_ADMIN we have today) down to
+programmable user defined policy that can be tailored to specific
+needs like granting apps to BPF_OBJ_GET and BPF_MAP_LOOKUP elements
+or granting to load+mangle a specific subset of maps (e.g. BPF_MAP_TYPE_{ARRAY,
+HASH,LRU_HASH,LPM_TRIE}) and prog types (...) plus attaching them to
+their own netns, and if that is untrusted, then same restrictions/
+mitigations could be done by the verifier as with (current) unprivileged
+BPF, enabled via programmable policy as well. We wouldn't make any
+static/fixed assumptions, but allow users to define them based on their
+own use-cases. Haven't looked how feasible this would be, but something
+to take into consideration when we rework the current [admittedly
+suboptimal all-or-nothing] model we have. Is this something you had in
+mind as well for your wip proposal, Andy?
 
 Thanks,
-Richard
+Daniel
