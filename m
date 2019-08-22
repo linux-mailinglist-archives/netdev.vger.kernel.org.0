@@ -2,87 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 98535998A6
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 18:00:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C52998BB
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 18:05:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389643AbfHVP7B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 11:59:01 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:37878 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725934AbfHVP7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 11:59:00 -0400
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id x7MFwpZh108990;
-        Thu, 22 Aug 2019 10:58:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1566489531;
-        bh=Y7rcW8KTzIBeyaMcZQrWDg6Mb7RkDjT9VkgH5yO6LtE=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=tRPPHwh2K/1hNAnzSvAsqOT1KyFi38/QI/Kx+7Q25T4Lo/lasRz9X9jdAK3YtsJOg
-         Clb47pdd6UDrGbmzNYUmZr+MFeDijUNCq6SVUQORmkPlUjBDjUAPqTGAEXnTTjk+44
-         MCgdHMIsqRvpHPQvgh1s9pYOh1TC0vZURWt72yPc=
-Received: from DFLE109.ent.ti.com (dfle109.ent.ti.com [10.64.6.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id x7MFwpFR059196
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 22 Aug 2019 10:58:51 -0500
-Received: from DFLE109.ent.ti.com (10.64.6.30) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5; Thu, 22
- Aug 2019 10:58:51 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE109.ent.ti.com
- (10.64.6.30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1713.5 via
- Frontend Transport; Thu, 22 Aug 2019 10:58:51 -0500
-Received: from [10.250.65.13] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id x7MFwp3Z094706;
-        Thu, 22 Aug 2019 10:58:51 -0500
-Subject: Re: [PATCH v12 3/5] dt-bindings: can: tcan4x5x: Add DT bindings for
- TCAN4x5X driver
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, <wg@grandegger.com>,
-        <davem@davemloft.net>
-CC:     <linux-can@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20190509161109.10499-1-dmurphy@ti.com>
- <20190509161109.10499-3-dmurphy@ti.com>
- <bdf06ead-a2e8-09a9-8cdd-49b54ec9da72@pengutronix.de>
- <ff9e007b-6e39-3d64-b62b-93c281d69113@ti.com>
- <6c2bf55f-e360-c51a-e7bb-effc86aa5b6c@pengutronix.de>
-From:   Dan Murphy <dmurphy@ti.com>
-Message-ID: <d7c7dba5-9d7a-07c8-a0b9-fe3ca1ddd4c3@ti.com>
-Date:   Thu, 22 Aug 2019 10:58:50 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2389707AbfHVQFY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 12:05:24 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:32817 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729718AbfHVQFY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 12:05:24 -0400
+Received: by mail-pl1-f194.google.com with SMTP id go14so3722590plb.0;
+        Thu, 22 Aug 2019 09:05:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=NxmU91a+hygMveLYANWk4CJyZEkVhJGaWcBlnfdPFlA=;
+        b=E9FNR7ftdt48+rCHz2opRWv8qkIJf0+Vao826g86k2XiP+kn2Fy9XzsJiMpyJI9uCF
+         Ei3933nhNZl28VIqAp+cp6pVxETs+KERIONH9TsPu7JpYdAyHzZbd+5Xl0t3DhNUpmkY
+         2/CEV2lQmMkbzZT7TQd8dEBcJi3zKIl2niW2+rrO1zVsABvJwRX7ceMs5SV+C3P4rmXu
+         FGyDUbxNesXsQpSfbtq0gGqwBKKWcgJtu9VwNDcS5Ct1wtWNZNXwMOJp+HJsm8gfDa5V
+         E7Edyo4lYTDzmwkyhTCFfb5i9c/7lVPg2lbOKdnS6XPcWcJx5cgl40yzScd/EapRXCC0
+         XhXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=NxmU91a+hygMveLYANWk4CJyZEkVhJGaWcBlnfdPFlA=;
+        b=uZLwREPgA6vQKmoa3/Y7sFd0H8YTQ7GJuDVUoovs6MxFgz5h/uWK461kmpZyKmPM5U
+         2tswS63M9JBeip9+ovj/c5umNLAf3rbeEsMxEBOdV+rzggdZRAESyzaA4xfslpNMhCrY
+         YYs4z40cE5P/yQBQ1ehpR5SNkm+NwXxaJs3uQrDI92DwpX4WVDjfx9uI4mhLoW+aAmUb
+         CtzjOW1pGLREM/RQv7Sj13mMQz67GDmnPx6WQd7XJeQdt0tOs8dt4mLnFAB0F6b4aln/
+         nxAFyFp6dHaSnTXuBXFsmrhVCjb58HkFVA/6FgXjI1rts4T/GrGKO8uG16EciK/hsSiP
+         m08Q==
+X-Gm-Message-State: APjAAAVYUQI9eNJupnKTVW8dPqQpZAhlzOjy4JGCevDQUr6ZQa/RgNvV
+        veitzCxmzR5Q4JR1TiQ39x4=
+X-Google-Smtp-Source: APXvYqzAdayaj4WD9jYfYK8Ekn2rQK4/yQpFcKRi5Q/V4yUHLo/Vyolh7Tm1O3MifUAat1R4wWUfHA==
+X-Received: by 2002:a17:902:543:: with SMTP id 61mr40245692plf.20.1566489924071;
+        Thu, 22 Aug 2019 09:05:24 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id y188sm27501000pfy.57.2019.08.22.09.05.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2019 09:05:23 -0700 (PDT)
+Date:   Thu, 22 Aug 2019 09:05:21 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Hubert Feurstein <h.feurstein@gmail.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH spi for-5.4 0/5] Deterministic SPI latency with NXP DSPI
+ driver
+Message-ID: <20190822160521.GC4522@localhost>
+References: <20190818182600.3047-1-olteanv@gmail.com>
+ <CA+h21hr4UcoJK7upNJjG0ibtX7CkF=akxVdrb--1AJn6-z=sUQ@mail.gmail.com>
+ <20190821043845.GB1332@localhost>
+ <20190821140815.GA1447@localhost>
+ <CA+h21hrtzU1XL-0m+BG5TYZvVh8WN6hgcM7CV5taHyq2MsR5dw@mail.gmail.com>
+ <20190822141641.GB1437@localhost>
+ <CA+h21hpJm-3svfV93pYYrpoiV12jDjuROHCgvCjPivAjXTB_VA@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <6c2bf55f-e360-c51a-e7bb-effc86aa5b6c@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hpJm-3svfV93pYYrpoiV12jDjuROHCgvCjPivAjXTB_VA@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Marc
+On Thu, Aug 22, 2019 at 05:58:49PM +0300, Vladimir Oltean wrote:
+> I don't think I understand the problem here.
 
-On 8/22/19 10:46 AM, Marc Kleine-Budde wrote:
-> On 8/22/19 4:20 PM, Dan Murphy wrote:
->>>> +tcan4x5x: tcan4x5x@0 {
->>>> +		compatible = "ti,tcan4x5x";
->>>> +		reg = <0>;
->>>> +		#address-cells = <1>;
->>>> +		#size-cells = <1>;
->>>> +		spi-max-frequency = <10000000>;
->>>> +		bosch,mram-cfg = <0x0 0 0 32 0 0 1 1>;
->>>> +		data-ready-gpios = <&gpio1 14 GPIO_ACTIVE_LOW>;
->>> Can you convert this into a proper interrupt property? E.g.:
->> OK.  Do you want v13 or do you want patches on top for net-next?
-> Please use net-next/master as the base.
+On the contrary, I do.
 
+> You'd have something like this:
+> 
+> Master (DSA master port)         Slave (switch CPU port)
+> 
+>     |                            |         Tstamps known
+>     |                            |         to slave
+>     |       Local_sync_req       |
+>  t1 |------\                     |         t1
+>     |       \-----\              |
+>     |              \-----\       |
+>     |                     \----->| t2      t1, t2
+>     |                            |
+>     |     Local_sync_resp /------| t3      t1, t2, t3
+>     |              /-----/       |
+>     |       /-----/              |
+>  t4 |<-----/                     |         t1, t2, t3, t4
+>     |                            |
+>     |                            |
+>     v           time             v
 
-Thanks for the reply.  I see that that there are patches on top of the 
-driver so I will send patches on top of that.
+And who generates Local_sync_resp?
 
-Dan
+Also, what sort of frame is it?  PTP has no Sync request or response.
 
-<snip>
+> But you don't mean a TX timestamp at the egress of swp4 here, do you?
+
+Yes, I do.
+ 
+> Why would that matter?
+
+Because in order to synchronize to an external GM, you need to measure
+two things:
+
+1. the (unchanging) delay from MAC to MAC
+2. the (per-packet) switch residence time
+
+Thanks,
+Richard
