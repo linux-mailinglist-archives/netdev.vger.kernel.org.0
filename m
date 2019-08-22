@@ -2,122 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D3A099F66
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 21:08:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4A799F8A
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 21:12:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391487AbfHVTIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 15:08:10 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:24585 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391463AbfHVTIK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 15:08:10 -0400
-Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
-  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
-  permitted sender) identity=mailfrom;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="Horatiu.Vultur@microchip.com";
-  x-conformance=spf_only; x-record-type="v=spf1";
-  x-record-text="v=spf1 mx a:ushub1.microchip.com
-  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
-  a:mx2.microchip.iphmx.com include:servers.mcsv.net
-  include:mktomail.com include:spf.protection.outlook.com ~all"
-Received-SPF: None (esa3.microchip.iphmx.com: no sender
-  authenticity information available from domain of
-  postmaster@email.microchip.com) identity=helo;
-  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
-  envelope-from="Horatiu.Vultur@microchip.com";
-  x-sender="postmaster@email.microchip.com";
-  x-conformance=spf_only
-Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
-IronPort-SDR: p6TsNpFV/dT6Lm9QJJSaBBDLeHrS08P8mpzPc2Jre12VTgrPM5DLhQ6Uul1zO8W/AubdAqQXh0
- +37Hh7O248bBlLmfag3hRxbsGIM/CDuTjvHi8+n1kPQaIqE/KfL8bX3Sv4VoCrQTBSMVGjOK1i
- replUztcpqCjKar5ksg8scvGXn/hatJXdqkqqYZr0pmCGJW0Ewgvzy2W7QlZ8h9Sl3Kg4VKUKc
- 8x4JklPR6d3TqdZ2LpRGNkgefozjLn5M/9qEeUsP2fLuZtwwGnLM555LqEdZGO1kBPTGI+7oEH
- w5I=
-X-IronPort-AV: E=Sophos;i="5.64,417,1559545200"; 
-   d="scan'208";a="46283521"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Aug 2019 12:08:09 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 22 Aug 2019 12:08:07 -0700
-Received: from soft-dev3.microsemi.net (10.10.85.251) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1713.5 via Frontend Transport; Thu, 22 Aug 2019 12:08:05 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
-        <davem@davemloft.net>, <UNGLinuxDriver@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <allan.nielsen@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [PATCH 3/3] net: mscc: Implement promisc mode.
-Date:   Thu, 22 Aug 2019 21:07:30 +0200
-Message-ID: <1566500850-6247-4-git-send-email-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
-References: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+        id S2403806AbfHVTMC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 15:12:02 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:34442 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732147AbfHVTMB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 15:12:01 -0400
+Received: by mail-qt1-f194.google.com with SMTP id q4so8970757qtp.1;
+        Thu, 22 Aug 2019 12:12:01 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fb2qwZYsSzxhGRR5mo2zpxAtspNTusEf9sR5Gv8Wr0w=;
+        b=pbxKW2Wq8ozKXk1AjQ0mKJp6ifr7KAHxIaLtad7RSOq9eHi42/Pz7fgajmpFp7nr/p
+         ew30UMH3oZfrK15Tip2g3tkZlKEGRNTflzUC1wd+fHZeKolMNjYsW+EP4QdyTZlqaWL7
+         VzsPQF69g9dCK+2mVWTOtrBgTv0BxmsXerNVMU5HRKDsKGu5GaOaEYATkn37qrijuuU9
+         OixFqWrjuAPbhOihNA4oeRf6Msl4iv6n7P5U/j7lNGAHvEeUgGkHGxK0vY9Tj37vVZrV
+         l8549p7C7NuBT173DIBnSvW3jHYbCo+fVAGHSVUb/MmDVhGhJtC8Hb29QOSbLrNoH0v7
+         H23Q==
+X-Gm-Message-State: APjAAAWnsoRAp2dNirUbtJQ98JjiAhQGagEFm3/HycQDzY1WVaKIQNcQ
+        R1kO8vwTW2zB5FTz5mwrk66UtkABvEAdbM8SrVE=
+X-Google-Smtp-Source: APXvYqx1AMqI9CgyyZgqTV3YCcQ8BJ60y0NK4/Q/PHkzZ0zdX2ddG7itfNLle3CCeAzbO68hX/6eptJKTEUE5tWG7Ig=
+X-Received: by 2002:ac8:f99:: with SMTP id b25mr1258325qtk.142.1566501120558;
+ Thu, 22 Aug 2019 12:12:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <1566461871-21992-1-git-send-email-ayal@mellanox.com>
+ <20190822140635.GH13020@lunn.ch> <20190822174037.GA18030@splinter>
+In-Reply-To: <20190822174037.GA18030@splinter>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 22 Aug 2019 21:11:42 +0200
+Message-ID: <CAK8P3a2mQHvQKzWSKofBPdzFDTZq9oJkDHqR2PR85Hswocy45g@mail.gmail.com>
+Subject: Re: [net] devlink: Add method for time-stamp on reporter's dump
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Aya Levin <ayal@mellanox.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Networking <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Before when a port was added to a bridge then the port was added in
-promisc mode. But because of the patches:
-commit 6657c3d812dc5d ("net: Add HW_BRIDGE offload feature")
-commit e2e3678c292f9c (net: mscc: Use NETIF_F_HW_BRIDGE")
+On Thu, Aug 22, 2019 at 7:40 PM Ido Schimmel <idosch@idosch.org> wrote:
+> On Thu, Aug 22, 2019 at 04:06:35PM +0200, Andrew Lunn wrote:
+> > On Thu, Aug 22, 2019 at 11:17:51AM +0300, Aya Levin wrote:
+> > > When setting the dump's time-stamp, use ktime_get_real in addition to
+> > > jiffies. This simplifies the user space implementation and bypasses
+> > > some inconsistent behavior with translating jiffies to current time.
+> >
+> > Is this year 2038 safe? I don't know enough about this to answer the
+> > question myself.
+>
+> Good point. 'struct timespec' is not considered year 2038 safe and
+> unfortunately I recently made the mistake of using it to communicate
+> timestamps to user space over netlink. :/ The code is still in net-next,
+> so I will fix it while I can.
+>
+> Arnd, would it be acceptable to use 'struct __kernel_timespec' instead?
 
-the port is not needed to be in promisc mode to be part of the bridge.
-So it is possible to togle the promisc mode of the port even if it is or
-not part of the bridge.
+The in-kernel representation should just use 'timespec64' if you need
+separate seconds and nanoseconds, you can convert that to
+__kernel_timespec while copying to user space.
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
----
- drivers/net/ethernet/mscc/ocelot.c | 20 ++++++++++++++++++++
- 1 file changed, 20 insertions(+)
+However, please consider two other points:
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index c9cf2bee..9fa97fe 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -691,6 +691,25 @@ static void ocelot_set_rx_mode(struct net_device *dev)
- 	__dev_mc_sync(dev, ocelot_mc_sync, ocelot_mc_unsync);
- }
- 
-+static void ocelot_change_rx_flags(struct net_device *dev, int flags)
-+{
-+	struct ocelot_port *port = netdev_priv(dev);
-+	struct ocelot *ocelot = port->ocelot;
-+	u32 val;
-+
-+	if (!(flags & IFF_PROMISC))
-+		return;
-+
-+	val = ocelot_read_gix(ocelot, ANA_PORT_CPU_FWD_CFG,
-+			      port->chip_port);
-+	if (dev->flags & IFF_PROMISC)
-+		val |= ANA_PORT_CPU_FWD_CFG_CPU_SRC_COPY_ENA;
-+	else
-+		val &= ~(ANA_PORT_CPU_FWD_CFG_CPU_SRC_COPY_ENA);
-+
-+	ocelot_write_gix(ocelot, val, ANA_PORT_CPU_FWD_CFG, port->chip_port);
-+}
-+
- static int ocelot_port_get_phys_port_name(struct net_device *dev,
- 					  char *buf, size_t len)
- {
-@@ -1070,6 +1089,7 @@ static const struct net_device_ops ocelot_port_netdev_ops = {
- 	.ndo_stop			= ocelot_port_stop,
- 	.ndo_start_xmit			= ocelot_port_xmit,
- 	.ndo_set_rx_mode		= ocelot_set_rx_mode,
-+	.ndo_change_rx_flags		= ocelot_change_rx_flags,
- 	.ndo_get_phys_port_name		= ocelot_port_get_phys_port_name,
- 	.ndo_set_mac_address		= ocelot_port_set_mac_address,
- 	.ndo_get_stats64		= ocelot_get_stats64,
--- 
-2.7.4
+- for simplicity, the general recommendation is to use 64-bit nanoseconds
+  without separate seconds for timestamps
+- instead of CLOCK_REALTIME, you could use CLOCK_MONOTONIC
+  timestamps that are not affected by clock_settime() or leap second jumps.
 
+      Arnd
