@@ -2,114 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 75C9399828
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 17:29:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 10E1599860
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 17:44:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732243AbfHVP3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 11:29:07 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40094 "EHLO mx1.redhat.com"
+        id S1731416AbfHVPoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 11:44:55 -0400
+Received: from mout.gmx.net ([212.227.17.21]:44183 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731590AbfHVP3H (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 11:29:07 -0400
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id C775330833CB;
-        Thu, 22 Aug 2019 15:29:06 +0000 (UTC)
-Received: from linux-ws.nc.xsintricity.com (ovpn-112-63.rdu2.redhat.com [10.10.112.63])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 7AEC26E707;
-        Thu, 22 Aug 2019 15:29:05 +0000 (UTC)
-Message-ID: <c7caa8eece02f3d15a0928663e9f64f99572f3ab.camel@redhat.com>
-Subject: Re: [PATCH rdma-next 0/3] RDMA RX RoCE Steering Support
-From:   Doug Ledford <dledford@redhat.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jason Gunthorpe <jgg@mellanox.com>,
-        RDMA mailing list <linux-rdma@vger.kernel.org>,
-        Mark Bloch <markb@mellanox.com>,
-        Mark Zhang <markz@mellanox.com>,
-        Saeed Mahameed <saeedm@mellanox.com>,
-        linux-netdev <netdev@vger.kernel.org>
-Date:   Thu, 22 Aug 2019 11:29:02 -0400
-In-Reply-To: <20190821140204.GG4459@mtr-leonro.mtl.com>
-References: <20190819113626.20284-1-leon@kernel.org>
-         <6e099d052f1803e74b5731fe3da2d9109533734d.camel@redhat.com>
-         <20190821140204.GG4459@mtr-leonro.mtl.com>
-Organization: Red Hat, Inc.
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-XJg5FL1Fz1OzauK9oxVI"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+        id S1725876AbfHVPoz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 11:44:55 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1566488653;
+        bh=Vy2sL6yIc2Cm33yYziTqAMn0mT4b4EWOI52QiBXdRmc=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=QrOHC6/2NAmFobf5S2YYzs5TWISc4dkEgsm5srJ57fksDPmZB21ItRv9XjzV9cu45
+         9nYnDIY/F6xa164T9B2M2OOw5hOcwSpgxZJAnlhW002+Z4B1iLgtsZfGSgDtAqqWR8
+         c0/aCfFCDn9ugbR4ouH7YUnV+aie8Hwekw14+hfg=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [217.61.154.89] ([217.61.154.89]) by web-mail.gmx.net
+ (3c-app-gmx-bap07.server.lan [172.19.172.77]) (via HTTP); Thu, 22 Aug 2019
+ 17:44:13 +0200
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.44]); Thu, 22 Aug 2019 15:29:06 +0000 (UTC)
+Message-ID: <trinity-b1f48e51-af73-466d-9ecf-d560a7d7c1ee-1566488653737@3c-app-gmx-bap07>
+From:   "Frank Wunderlich" <frank-w@public-files.de>
+To:     =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>
+Cc:     "Sean Wang" <sean.wang@mediatek.com>,
+        "Andrew Lunn" <andrew@lunn.ch>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        "Florian Fainelli" <f.fainelli@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
+        =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>,
+        linux-mediatek@lists.infradead.org,
+        "John Crispin" <john@phrozen.org>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Aw: [PATCH net-next v2 0/3] net: dsa: mt7530: Convert to PHYLINK
+ and add support for port 5
+Content-Type: text/plain; charset=UTF-8
+Date:   Thu, 22 Aug 2019 17:44:13 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <20190821144547.15113-1-opensource@vdorst.com>
+References: <20190821144547.15113-1-opensource@vdorst.com>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:OnOmnNjRELKVDhw1WQ00dkVJuIqcBT9mIxsIJFG3y8nB9jk9SoGT1zYS+j7Hrug05uaRc
+ wyfpj5sv6EnDKgPWJT1nDz20RXXwzuhx/jflRFQlLJECmmRxBLZT0IDWBzDceWlqwm05vt1Q30ZB
+ qxHcSPFXQfWgRe6xK7ko3+YGTQsteRpHY6fIjn1gREIrNVmzXUH898hwnFvyxpkJw7gBmpF5JbYX
+ OotJuHOPdSolA/xZdJ4ol64gN4UuJddW0ahxqEcnYXSi4BvaojZNNekB7/0c1Z/6rTCdONIWuqqA
+ FU=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:A9vU9Oh1LEE=:DFgHGOwKN1RHx6kZQ498pi
+ zX+xC8Drxjpw+G+vUDjrzkxjmEdsaQWF99BUxfFFCB1Lbuxweib2bcOxiDc45mjrxOKULzmBh
+ Tc2QG63jIq3UVmi7GJusiZoTjWppmjHJnLO7rDs3sgR8JItcfzD7Jrpm8MCL0ZgeQek/IL3S5
+ MIlrU9tpcspXV28cUK4mCDjbykLugedrl7F6hjyTULWoG6kiPjLERQ+tK8mD9CKwmRIDNHM5U
+ pj3Iy3MikCcaCxfSaOzM/mFoqXkbr5HjHN1odpnXWmt6OFas74gyG/3zS0YtfbfWmEaUZETvG
+ mtVkJqwC5SmAZO7A/U6QPdQbtz7by7K2q4BuMpLEOG00hcZd728gvTyFy4ijTfLJqvNbf9pLb
+ QvpKS3YZjTkgd6EEk3AnQvLG5DdDJDqP5B8+dKZ5uvrgbDt309vqoAKI1acHb9grNIqcyzsc4
+ 9FsqenYJm99b8XMLxZNWdelX12TmV2HUBZqqzOFxZ8W3vIf9dGoD+qMk8kPnQzLd9Tz7BSLuS
+ d8292YpgCPIH1Plr1UZUan+Csz6krXBBiDhfgA70meddJds6kDD0b5bh7MuDwMC2Dh90kb38D
+ z/9p4y6SR4kUOz/OHWXwi81phfKlOK/oZHIGZVPpSXN3d+rXsqoINiaFv7EBjC7s40cZQQ+yM
+ 0UfGTxouFcI+56UwaoItJWKiDXNeSPvXruKyh7SCBStUFbg==
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
---=-XJg5FL1Fz1OzauK9oxVI
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+tested on BPI-R2 (mt7623) with 2 Problems (already reported to Rene, just =
+to inform everyone)...maybe anybody has an idea
 
-On Wed, 2019-08-21 at 17:02 +0300, Leon Romanovsky wrote:
-> On Tue, Aug 20, 2019 at 01:54:59PM -0400, Doug Ledford wrote:
-> > On Mon, 2019-08-19 at 14:36 +0300, Leon Romanovsky wrote:
-> > > From: Leon Romanovsky <leonro@mellanox.com>
-> > >=20
-> > > Hi,
-> > >=20
-> > > This series from Mark extends mlx5 with RDMA_RX RoCE flow steering
-> > > support
-> > > for DEVX and QP objects.
-> > >=20
-> > > Thanks
-> > >=20
-> > > Mark Zhang (3):
-> > >   net/mlx5: Add per-namespace flow table default miss action
-> > > support
-> > >   net/mlx5: Create bypass and loopback flow steering namespaces
-> > > for
-> > > RDMA
-> > >     RX
-> > >   RDMA/mlx5: RDMA_RX flow type support for user applications
-> >=20
-> > I have no objection to this series.
->=20
-> Thanks, first two patches were applied to mlx5-next
->=20
-> e6806e9a63a7 net/mlx5: Create bypass and loopback flow steering
-> namespaces for RDMA RX
-> f66ad830b114 net/mlx5: Add per-namespace flow table default miss
-> action support
+- linux-next (i know it's not part of the series, but a pitfall on testing=
+ other devices) seems to break power-regulator somewhere here:
 
-mlx5-next merged into for-next, final patch applied, thanks.
+priv->core_pwr =3D devm_regulator_get(&mdiodev->dev, "core"); returns 517
 
---=20
-Doug Ledford <dledford@redhat.com>
-    GPG KeyID: B826A3330E572FDD
-    Fingerprint =3D AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
+#define EPROBE_DEFER517/* Driver requests probe retry */
 
---=-XJg5FL1Fz1OzauK9oxVI
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+https://elixir.bootlin.com/linux/latest/source/drivers/regulator/core.c#L1=
+726
 
------BEGIN PGP SIGNATURE-----
+without linux-next switch came up including dsa-ports
 
-iQIzBAABCAAdFiEErmsb2hIrI7QmWxJ0uCajMw5XL90FAl1etL8ACgkQuCajMw5X
-L91QBg/+Ow9YolvdQe9Z8H+fgqNCTBiFQ4GlK4L9QsNrAW8hbjrm+7fBUDG21wjy
-Qnj00x/zo40DznU/2iEgmLi4h7FB5vlb1Z1YdBJ5+9gVlzNHQc0j1N5mtmYpiOaK
-diRUoTfot7/pF9qearm/kO58/9v31B7A02SOrhp6VnMpVrRoZGomM+kXXJOLPVmg
-9L7pwK3xjaZmRfiXAKrRI3Q9LwHDxBLTG+tkbRc5Otzr3ydN7iiumNIPMmuUQHxd
-QYrsFlMtWXKQK2TWXFeDqPf/A/HbwA9ykwkY3+ZFRON2Xjx6Dzf+L+gHVbWb+qi0
-jjpu/SQDoJBRWcP+hEKbv9tJnj73XebI/LqMP72JBX4X5Lpgrc7u63NZ+dYH0fif
-HC3sdu72FGn0xKuvgMoKO1Sn5ooca9y/Jl6ZEx0cUDMUKb5IAk5PqQLJ34VdGnvr
-IAGMOVeI8yii5xoy+BtBT1DrJdS2cL5yU46KeqCS06Q/rt+4i2TOtxfMMt+tZvZO
-/gbzCIQFtFAlNRT3qqzA4zM+WnDyi6BocWhJr9LkgSjK4kFAvD+1JVgyd9UmXfSS
-itADq4DOb1kwzEeyCQLq2hxLbwjpCuyeEnJ6AiZCFoq9nZLsFYLMNeaOd9JIfLIL
-RGl7EEYZLYzuIYDKkLFSTAkBOSxklzTmq+hn6p0rrJ6QWSVydBA=
-=dqBL
------END PGP SIGNATURE-----
+- RX-traffic (run iperf3 -c x.x.x.x -R) is only 780 Mbits/sec (TX=3D940 Mb=
+its/sec), same measure with 5.3-rc4 gives 940 MBit/s with same devices,
+maybe caused by changes for mt76x8?
 
---=-XJg5FL1Fz1OzauK9oxVI--
-
+regards Frank
