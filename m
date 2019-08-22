@@ -2,54 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B7B19A31A
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:39:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 561369A325
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:42:28 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389463AbfHVWjO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 18:39:14 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49880 "EHLO
+        id S2394088AbfHVWmN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 18:42:13 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49906 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731958AbfHVWjN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:39:13 -0400
+        with ESMTP id S2389294AbfHVWmN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:42:13 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 985D01539419A;
-        Thu, 22 Aug 2019 15:39:12 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 15:39:12 -0700 (PDT)
-Message-Id: <20190822.153912.2269276523787180347.davem@davemloft.net>
-To:     haiyangz@microsoft.com
-Cc:     sashal@kernel.org, saeedm@mellanox.com, leon@kernel.org,
-        eranbe@mellanox.com, lorenzo.pieralisi@arm.com,
-        bhelgaas@google.com, linux-pci@vger.kernel.org,
-        linux-hyperv@vger.kernel.org, netdev@vger.kernel.org,
-        kys@microsoft.com, sthemmin@microsoft.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next,v5, 0/6] Add software backchannel and mlx5e HV
- VHCA stats
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9D9B7153409F5;
+        Thu, 22 Aug 2019 15:42:12 -0700 (PDT)
+Date:   Thu, 22 Aug 2019 15:42:12 -0700 (PDT)
+Message-Id: <20190822.154212.249670304042273740.davem@davemloft.net>
+To:     narmstrong@baylibre.com
+Cc:     robh+dt@kernel.org, martin.blumenstingl@googlemail.com,
+        devicetree@vger.kernel.org, netdev@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next v4 0/2] dt-bindings: net: meson-dwmac: convert
+ to yaml
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <DM6PR21MB133743FB2006A28AE10A170CCAA50@DM6PR21MB1337.namprd21.prod.outlook.com>
-References: <1566512708-13785-1-git-send-email-haiyangz@microsoft.com>
-        <20190822.153315.1245817410062415025.davem@davemloft.net>
-        <DM6PR21MB133743FB2006A28AE10A170CCAA50@DM6PR21MB1337.namprd21.prod.outlook.com>
+In-Reply-To: <20190820075742.14857-1-narmstrong@baylibre.com>
+References: <20190820075742.14857-1-narmstrong@baylibre.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 22 Aug 2019 15:39:13 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 22 Aug 2019 15:42:12 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Haiyang Zhang <haiyangz@microsoft.com>
-Date: Thu, 22 Aug 2019 22:37:13 +0000
+From: Neil Armstrong <narmstrong@baylibre.com>
+Date: Tue, 20 Aug 2019 09:57:40 +0200
 
-> The v5 is pretty much the same as v4, except Eran had a fix to patch #3 in response to
-> Leon Romanovsky <leon@kernel.org>.
+> This patchsets converts the Amlogic Meson DWMAC glue bindings over to
+> YAML schemas using the already converted dwmac bindings.
+> 
+> The first patch is needed because the Amlogic glue needs a supplementary
+> reg cell to access the DWMAC glue registers.
+> 
+> Changes since v3:
+> - Specified net-next target tree
+> 
+> Changes since v2:
+> - Added review tags
+> - Updated allwinner,sun7i-a20-gmac.yaml reg maxItems
 
-Well you now have to send me a patch relative to v4 in order to fix that.
-
-When I say "applied", the series is in my tree and is therefore permanent.
-It is therefore never appropriate to then post a new version of the series.
+Series applied, thanks.
