@@ -2,80 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCAF798B54
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:22:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2815A98B5E
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:27:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731218AbfHVGWs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 02:22:48 -0400
-Received: from mx56.baidu.com ([61.135.168.56]:19779 "EHLO
-        tc-sys-mailedm04.tc.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731098AbfHVGWr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 02:22:47 -0400
-Received: from localhost (cp01-cos-dev01.cp01.baidu.com [10.92.119.46])
-        by tc-sys-mailedm04.tc.baidu.com (Postfix) with ESMTP id E476F236C00B;
-        Thu, 22 Aug 2019 14:22:32 +0800 (CST)
-From:   Li RongQing <lirongqing@baidu.com>
-To:     netdev@vger.kernel.org, idosch@mellanox.com
-Subject: [PATCH][net-next] net: drop_monitor: change the stats variable to u64 in net_dm_stats_put
-Date:   Thu, 22 Aug 2019 14:22:33 +0800
-Message-Id: <1566454953-29321-1-git-send-email-lirongqing@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        id S1731695AbfHVG06 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 02:26:58 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:47390 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729284AbfHVG05 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 02:26:57 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 28306DB23BC640D10BF3;
+        Thu, 22 Aug 2019 14:26:49 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.439.0; Thu, 22 Aug 2019 14:26:42 +0800
+From:   Mao Wenan <maowenan@huawei.com>
+To:     <nbd@openwrt.org>, <john@phrozen.org>, <sean.wang@mediatek.com>,
+        <nelson.chang@mediatek.com>, <davem@davemloft.net>,
+        <matthias.bgg@gmail.com>
+CC:     <netdev@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
+        Mao Wenan <maowenan@huawei.com>
+Subject: [PATCH -next] net: mediatek: remove set but not used variable 'status'
+Date:   Thu, 22 Aug 2019 14:30:26 +0800
+Message-ID: <20190822063026.70044-1-maowenan@huawei.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-only the element drop of struct net_dm_stats is used, so simplify it to u64
+Fixes gcc '-Wunused-but-set-variable' warning:
+drivers/net/ethernet/mediatek/mtk_eth_soc.c: In function mtk_handle_irq:
+drivers/net/ethernet/mediatek/mtk_eth_soc.c:1951:6: warning: variable status set but not used [-Wunused-but-set-variable]
 
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
+It is not used since commit 296c9120752b ("net: ethernet: mediatek: Add MT7628/88 SoC support")
+Signed-off-by: Mao Wenan <maowenan@huawei.com>
 ---
- net/core/drop_monitor.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/net/core/drop_monitor.c b/net/core/drop_monitor.c
-index bfc024024aa3..ed10a40cf629 100644
---- a/net/core/drop_monitor.c
-+++ b/net/core/drop_monitor.c
-@@ -1329,11 +1329,11 @@ static int net_dm_cmd_config_get(struct sk_buff *skb, struct genl_info *info)
- 	return rc;
- }
- 
--static void net_dm_stats_read(struct net_dm_stats *stats)
-+static void net_dm_stats_read(u64 *stats)
+diff --git a/drivers/net/ethernet/mediatek/mtk_eth_soc.c b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+index 8ddbb8d..bb7d623 100644
+--- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
++++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
+@@ -1948,9 +1948,7 @@ static irqreturn_t mtk_handle_irq_tx(int irq, void *_eth)
+ static irqreturn_t mtk_handle_irq(int irq, void *_eth)
  {
- 	int cpu;
+ 	struct mtk_eth *eth = _eth;
+-	u32 status;
  
--	memset(stats, 0, sizeof(*stats));
-+	*stats = 0;
- 	for_each_possible_cpu(cpu) {
- 		struct per_cpu_dm_data *data = &per_cpu(dm_cpu_data, cpu);
- 		struct net_dm_stats *cpu_stats = &data->stats;
-@@ -1345,14 +1345,14 @@ static void net_dm_stats_read(struct net_dm_stats *stats)
- 			dropped = cpu_stats->dropped;
- 		} while (u64_stats_fetch_retry_irq(&cpu_stats->syncp, start));
- 
--		stats->dropped += dropped;
-+		*stats += dropped;
- 	}
- }
- 
- static int net_dm_stats_put(struct sk_buff *msg)
- {
--	struct net_dm_stats stats;
- 	struct nlattr *attr;
-+	u64 stats;
- 
- 	net_dm_stats_read(&stats);
- 
-@@ -1361,7 +1361,7 @@ static int net_dm_stats_put(struct sk_buff *msg)
- 		return -EMSGSIZE;
- 
- 	if (nla_put_u64_64bit(msg, NET_DM_ATTR_STATS_DROPPED,
--			      stats.dropped, NET_DM_ATTR_PAD))
-+			      stats, NET_DM_ATTR_PAD))
- 		goto nla_put_failure;
- 
- 	nla_nest_end(msg, attr);
+-	status = mtk_r32(eth, MTK_PDMA_INT_STATUS);
+ 	if (mtk_r32(eth, MTK_PDMA_INT_MASK) & MTK_RX_DONE_INT) {
+ 		if (mtk_r32(eth, MTK_PDMA_INT_STATUS) & MTK_RX_DONE_INT)
+ 			mtk_handle_irq_rx(irq, _eth);
 -- 
-2.16.2
+2.7.4
 
