@@ -2,55 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BFB9C9A0E8
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 22:14:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A89349A0EA
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 22:14:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392883AbfHVUN5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 16:13:57 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:42157 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392871AbfHVUNz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 16:13:55 -0400
-Received: by mail-qk1-f193.google.com with SMTP id 201so6299821qkm.9
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 13:13:54 -0700 (PDT)
+        id S2392918AbfHVUOC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 16:14:02 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:40017 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392846AbfHVUN4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 16:13:56 -0400
+Received: by mail-qt1-f195.google.com with SMTP id e8so9116556qtp.7
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 13:13:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4kVaKki6ux1xRm53Eihekl0W9/s6CnKLUCdT3K9sahc=;
-        b=ieMVSKspTmTDKV9WXhgs/BVVxDZalsOGYV+Bevia4AWFMJdXIficzXCK3zxQiphFkX
-         3KDK5tVQR/efl1KIA8G2B8gnJdaNPmjENI8V8SIBobxpnsZR3eE+0xUHEYZNb2sacwze
-         q2XLK4MD8wcjgKerQfb8fKI6WHunycMEl902A1L4T5ZXiwpISbpnHpT19lSB6WMRxZF+
-         pGih8GcO+K3wDN3jfselJLyp6b+6m7sdnIkN+PNXXpnJY8BO33tnxrlK9ZCyA2+kXtlB
-         OBjmqHg/iZjw0PHen16g0QWDqT9T3ZE2J12MpUDCQ8gJ+mjxLhVZdID0T2PGNG2SgbjQ
-         TJ+Q==
+        bh=SlMiGqC3+bIcQkBH2aV46vyGuLLlY9uT74PlVOHOcQw=;
+        b=cj9qA+C7bTQkWmXXf/dOLSA1VK1lFsJYL/AmPqJyErNLpJRCY7s6zUndtpOlLWGSNF
+         RhO6VQV+PazZU64ggimwh1Gq+SEFr8NBQsZd9vzsAsFTaFSMZ89LRHDJEMEva7Tprj2u
+         W+wkx0SCQM9v6i/N9gv0jM1/kmNXzG8Cc0qxyOuDwvXO5GFO+tN9O69zUbm2ntnrHQaw
+         xVmyM2xLbO/me8t8zz8mb8iDW+bm60n1VFWJL/sVtqxDTRvrgl9CPKBuxJ+/rmTOlVfT
+         TYEJEtnbwnNh9h9fZ0OgpiiuBttV8Duc4BkFKVONExoJwd2Z6OK9Zutc32rUPPuKXp1W
+         8WSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4kVaKki6ux1xRm53Eihekl0W9/s6CnKLUCdT3K9sahc=;
-        b=TWmLySvwqAWIWSuob9nvKSgD1wQw+SnvjM+4hDyKYsFhjtJDVRvwBP35cSAdescla7
-         2VxMuqLpJaPxoftrUxs/ZB+d6ilUTAao1jE6inU4bmgUsDsjXNcfbGhvuzCysCCaXkS/
-         ev5+37vXz1b0fNbVJYZnIby3NOz8c5vP0Nd9KqbCL6xoEFzKwJI7T2s0/+UAaq9viGPm
-         7viVJmS5tj8hq+9OKXaijViqviXXM4fGQXlRRT/0EHmHPKvihodgHS9kxZvbJwJCMkFO
-         d460NSQY0cZ86OfoFuFbfUAGU62/Ek+ToaAo0Ze1q8tbKRzVFdokk+Eyy9Zv//0Jfa9A
-         GfCw==
-X-Gm-Message-State: APjAAAWVcEbI4qSwXGKwr9hNcD5WOH3k0DYyiVrxYX23a6nDhnfz3tjj
-        2SJAKeHNh5ug1wBmOHgFDrjeSrKq
-X-Google-Smtp-Source: APXvYqyY1qzgpp0zUcWh4QMgHJYd8fc/Cu1rl/O5PL0RQYmNumePFHgZmKKMk7Qljx6Bpe25LRmGiA==
-X-Received: by 2002:a37:c20d:: with SMTP id i13mr841041qkm.45.1566504834094;
-        Thu, 22 Aug 2019 13:13:54 -0700 (PDT)
+        bh=SlMiGqC3+bIcQkBH2aV46vyGuLLlY9uT74PlVOHOcQw=;
+        b=SmMtZdtx5vx5srbYqzstdp5Uy1z7JY4ktUFu7vqwS+V6FiWD15Bneqk7f+uBSYEHS8
+         sXpbCkPx7N6ppS/2HUzBSjnbb81ZXtfSTsgSv1KqqPSH0TUP+vbJVHdNra19WWiyQ00+
+         Lg19ntclwKhnQni/I4y4r7OQm0cFdGVmtalqcg+U5YzqIO0dnSJHxhqpe3ai6AlUx8nV
+         PeLidnItgZS+vEJBAYOkh/rtfx/kGbvd6uIw0reHSyVWjUXszyqoZVqH9lG5yFzMyoZp
+         F7KQLUvnGnNmmjdktyDOo+MzBS15tadua5BJmGRR8YuFKIH6KtkqVDpqq1g+qdXXhVoC
+         4pqw==
+X-Gm-Message-State: APjAAAVe4AsnfP5PKMNozZPeKSa3r1EEpjJ3Q/C6049m0aXFqHI2uRQy
+        T6th2SPcXgMbpSnjSQP8MvCH3P4S
+X-Google-Smtp-Source: APXvYqyiitFSyA7vlijLBNn6dyCeltPqoaKMnT7DBT61F4Qe0c4ajlAtL6LiICsURbdq0YZPvtH0bg==
+X-Received: by 2002:ac8:358e:: with SMTP id k14mr1445959qtb.83.1566504835538;
+        Thu, 22 Aug 2019 13:13:55 -0700 (PDT)
 Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id d12sm392159qkk.39.2019.08.22.13.13.53
+        by smtp.gmail.com with ESMTPSA id q42sm336086qtc.52.2019.08.22.13.13.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 13:13:53 -0700 (PDT)
+        Thu, 22 Aug 2019 13:13:54 -0700 (PDT)
 From:   Vivien Didelot <vivien.didelot@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch,
         olteanv@gmail.com, Vivien Didelot <vivien.didelot@gmail.com>
-Subject: [PATCH net-next 4/6] net: dsa: check bridge VLAN in slave operations
-Date:   Thu, 22 Aug 2019 16:13:21 -0400
-Message-Id: <20190822201323.1292-5-vivien.didelot@gmail.com>
+Subject: [PATCH net-next 5/6] net: dsa: program VLAN on CPU port from slave
+Date:   Thu, 22 Aug 2019 16:13:22 -0400
+Message-Id: <20190822201323.1292-6-vivien.didelot@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20190822201323.1292-1-vivien.didelot@gmail.com>
 References: <20190822201323.1292-1-vivien.didelot@gmail.com>
@@ -61,94 +61,95 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The bridge VLANs are not offloaded by dsa_port_vlan_* if the port is
-not bridged or if its bridge is not VLAN aware.
+DSA currently programs a VLAN on the CPU port implicitly after the
+related notifier is received by a switch.
 
-This is a good thing but other corners of DSA, such as the tag_8021q
-driver, may need to program VLANs regardless the bridge state.
+While we still need to do this transparent programmation of the DSA
+links in the fabric, programming the CPU port this way may cause
+problems in some corners such as the tag_8021q driver.
 
-And also because bridge_dev is specific to user ports anyway, move
-these checks were it belongs, one layer up in the slave code.
+Because the dedicated CPU port is specific to a slave, make their
+programmation explicit a few layers up, in the slave code.
+
+Note that technically, DSA links have a dedicated CPU port as well,
+but since they are only used as conduit between interconnected switches
+of a fabric, programming them transparently this way is fine.
 
 Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
-Suggested-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- net/dsa/port.c  | 10 ++--------
- net/dsa/slave.c | 12 ++++++++++++
- 2 files changed, 14 insertions(+), 8 deletions(-)
+ net/dsa/slave.c  | 14 ++++++++++++++
+ net/dsa/switch.c |  5 ++++-
+ 2 files changed, 18 insertions(+), 1 deletion(-)
 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index ef28df7ecbde..9b54e5a76297 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -348,10 +348,7 @@ int dsa_port_vlan_add(struct dsa_port *dp,
- 		.vlan = vlan,
- 	};
- 
--	if (!dp->bridge_dev || br_vlan_enabled(dp->bridge_dev))
--		return dsa_port_notify(dp, DSA_NOTIFIER_VLAN_ADD, &info);
--
--	return 0;
-+	return dsa_port_notify(dp, DSA_NOTIFIER_VLAN_ADD, &info);
- }
- 
- int dsa_port_vlan_del(struct dsa_port *dp,
-@@ -363,10 +360,7 @@ int dsa_port_vlan_del(struct dsa_port *dp,
- 		.vlan = vlan,
- 	};
- 
--	if (!dp->bridge_dev || br_vlan_enabled(dp->bridge_dev))
--		return dsa_port_notify(dp, DSA_NOTIFIER_VLAN_DEL, &info);
--
--	return 0;
-+	return dsa_port_notify(dp, DSA_NOTIFIER_VLAN_DEL, &info);
- }
- 
- int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags)
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 8f5126c41282..82e48d247b81 100644
+index 82e48d247b81..8267c156a51a 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -323,6 +323,9 @@ static int dsa_slave_vlan_add(struct net_device *dev,
- 	if (obj->orig_dev != dev)
- 		return -EOPNOTSUPP;
+@@ -332,6 +332,10 @@ static int dsa_slave_vlan_add(struct net_device *dev,
+ 	if (err)
+ 		return err;
  
-+	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
-+		return 0;
++	err = dsa_port_vlan_add(dp->cpu_dp, &vlan, trans);
++	if (err)
++		return err;
 +
- 	vlan = *SWITCHDEV_OBJ_PORT_VLAN(obj);
+ 	return 0;
+ }
  
- 	err = dsa_port_vlan_add(dp, &vlan, trans);
-@@ -377,6 +380,9 @@ static int dsa_slave_vlan_del(struct net_device *dev,
- 	if (obj->orig_dev != dev)
- 		return -EOPNOTSUPP;
+@@ -383,6 +387,9 @@ static int dsa_slave_vlan_del(struct net_device *dev,
+ 	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
+ 		return 0;
  
-+	if (dp->bridge_dev && !br_vlan_enabled(dp->bridge_dev))
-+		return 0;
-+
++	/* Do not deprogram the CPU port as it may be shared with other user
++	 * ports which can be members of this VLAN as well.
++	 */
  	return dsa_port_vlan_del(dp, SWITCHDEV_OBJ_PORT_VLAN(obj));
  }
  
-@@ -1099,6 +1105,9 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 	 * need to emulate the switchdev prepare + commit phase.
- 	 */
- 	if (dp->bridge_dev) {
-+		if (!br_vlan_enabled(dp->bridge_dev))
-+			return 0;
+@@ -1121,6 +1128,10 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+ 	if (ret && ret != -EOPNOTSUPP)
+ 		return ret;
+ 
++	ret = dsa_port_vid_add(dp->cpu_dp, vid, 0);
++	if (ret && ret != -EOPNOTSUPP)
++		return ret;
 +
- 		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
- 		 * device, respectively the VID is not found, returning
- 		 * 0 means success, which is a failure for us here.
-@@ -1126,6 +1135,9 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 	 * need to emulate the switchdev prepare + commit phase.
- 	 */
- 	if (dp->bridge_dev) {
-+		if (!br_vlan_enabled(dp->bridge_dev))
-+			return 0;
-+
- 		/* br_vlan_get_info() returns -EINVAL or -ENOENT if the
- 		 * device, respectively the VID is not found, returning
- 		 * 0 means success, which is a failure for us here.
+ 	return 0;
+ }
+ 
+@@ -1151,6 +1162,9 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+ 	if (ret == -EOPNOTSUPP)
+ 		ret = 0;
+ 
++	/* Do not deprogram the CPU port as it may be shared with other user
++	 * ports which can be members of this VLAN as well.
++	 */
+ 	return ret;
+ }
+ 
+diff --git a/net/dsa/switch.c b/net/dsa/switch.c
+index 489eb7b430a4..6a9607518823 100644
+--- a/net/dsa/switch.c
++++ b/net/dsa/switch.c
+@@ -232,7 +232,7 @@ static bool dsa_switch_vlan_match(struct dsa_switch *ds, int port,
+ 	if (ds->index == info->sw_index && port == info->port)
+ 		return true;
+ 
+-	if (dsa_is_cpu_port(ds, port) || dsa_is_dsa_port(ds, port))
++	if (dsa_is_dsa_port(ds, port))
+ 		return true;
+ 
+ 	return false;
+@@ -288,6 +288,9 @@ static int dsa_switch_vlan_del(struct dsa_switch *ds,
+ 	if (ds->index == info->sw_index)
+ 		return ds->ops->port_vlan_del(ds, info->port, info->vlan);
+ 
++	/* Do not deprogram the DSA links as they may be used as conduit
++	 * for other VLAN members in the fabric.
++	 */
+ 	return 0;
+ }
+ 
 -- 
 2.23.0
 
