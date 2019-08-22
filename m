@@ -2,95 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 746A098EC9
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 11:09:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CF89B98EE4
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 11:13:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730869AbfHVJJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 05:09:02 -0400
-Received: from mga01.intel.com ([192.55.52.88]:16157 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730438AbfHVJJC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 05:09:02 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Aug 2019 02:09:01 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,416,1559545200"; 
-   d="scan'208";a="208075494"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.145])
-  by fmsmga002.fm.intel.com with ESMTP; 22 Aug 2019 02:08:57 -0700
-Received: from andy by smile with local (Exim 4.92.1)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1i0j5T-0006YZ-5I; Thu, 22 Aug 2019 12:08:55 +0300
-Date:   Thu, 22 Aug 2019 12:08:55 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
-Cc:     Joseph Qi <joseph.qi@linux.alibaba.com>,
-        Mark Fasheh <mark@fasheh.com>,
-        Joel Becker <jlbec@evilplan.org>,
-        "ocfs2-devel@oss.oracle.com" <ocfs2-devel@oss.oracle.com>,
-        Ariel Elior <aelior@marvell.com>,
-        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Colin Ian King <colin.king@canonical.com>
-Subject: Re: [PATCH v1] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for wider
- use
-Message-ID: <20190822090855.GL30120@smile.fi.intel.com>
-References: <20190820163112.50818-1-andriy.shevchenko@linux.intel.com>
- <1a3e6660-10d2-e66c-2880-24af64c7f120@linux.alibaba.com>
- <20190821092541.GW30120@smile.fi.intel.com>
- <MN2PR18MB2528511CEFCBC2BE07947BAAD3A50@MN2PR18MB2528.namprd18.prod.outlook.com>
+        id S1733036AbfHVJNn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 05:13:43 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:45423 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733031AbfHVJNn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 05:13:43 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w26so3507687pfq.12;
+        Thu, 22 Aug 2019 02:13:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ve0kUU0qLNwm3Q2yOn7y3CVKdgXEFZVbDWzW0GPjgmI=;
+        b=ASnyzlgJImrl3SY34M109XDvGmS88DXNdoAahO+0aZunVQLBvS/x2MDzG+MDnWL8Gf
+         rT0b3XVQxkFcTrKPfreKTT1VjSOfJabA5r9wxkOyW5rQOE2Lnb8OxmKbZrV5DKp/hsl6
+         C3qpeb9Vh7qjZ4hKH86f4F8G0op0aitP/mqChNX2txxaijZA+edJzYcVUdY4TCdnH+sB
+         AUmuLSkei15zF7OU679f3x96KogpmD5mSzW3i2hZacvsfCXohvNS23egnczIdl64Ga4F
+         /yNo/zl4It5kypgGEonnHpFRq+odupqereYLb7rZ9uaTUFuHgssRQvD0OQJP8SRzANU/
+         IwTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Ve0kUU0qLNwm3Q2yOn7y3CVKdgXEFZVbDWzW0GPjgmI=;
+        b=XFV7RVXC3zTwL8nhbXmVungyU3EB6IN94owL6JA/9OC4FY3KyQgLej9eeIIIASEoKJ
+         PsfsvfN6B6B+b2UrlxTt3gMgve1UxO/Xgo+d7hOvA8bX8HKY7i3xqcKHioakJCKJZERF
+         82VLRszu8/ahisPs0yETr0AQf5Rcf9SRG2SOza0kKzrNfxVq7sma4nK4u7r25G8Xs3cv
+         iltYyEbSfITfhmQgtEVBvoBWdCEeR9IC8xOS9TkoyhX5sPXnSni5ABmRu9PMDtPRNMbs
+         D/v0VHYYGZdpnOGG4HRQqJY53QXVKqdj3e1i1qIGCT4qIQ2IZFy01MPdjqeNsaw+BLq0
+         oQbw==
+X-Gm-Message-State: APjAAAXD1S1MsqNJrS3OV+kmi19E940kuEj3fTOn79tNvIMJYderB4Bg
+        Ldcf5urQvSTzUehHrvUeKfFLuUkx5KKlvw==
+X-Google-Smtp-Source: APXvYqznyliqc24rWRQaD3BHBVkFHNO6+xyjgDNVtgxDBPfyJ0MEKfI9VPpElo+JLarrlu+iinH5Dg==
+X-Received: by 2002:aa7:9d07:: with SMTP id k7mr39643968pfp.94.1566465222507;
+        Thu, 22 Aug 2019 02:13:42 -0700 (PDT)
+Received: from btopel-mobl.ger.intel.com ([192.55.54.43])
+        by smtp.gmail.com with ESMTPSA id w207sm28414754pff.93.2019.08.22.02.13.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2019 02:13:40 -0700 (PDT)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
+        bpf@vger.kernel.org, bjorn.topel@intel.com,
+        jonathan.lemon@gmail.com,
+        syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
+        hdanton@sina.com, i.maximets@samsung.com
+Subject: [PATCH bpf-next 0/4] xsk: various CPU barrier and {READ, WRITE}_ONCE fixes
+Date:   Thu, 22 Aug 2019 11:13:02 +0200
+Message-Id: <20190822091306.20581-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <MN2PR18MB2528511CEFCBC2BE07947BAAD3A50@MN2PR18MB2528.namprd18.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 05:46:07AM +0000, Sudarsana Reddy Kalluru wrote:
-> 
-> > -----Original Message-----
-> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
-> > Behalf Of Andy Shevchenko
-> > Sent: Wednesday, August 21, 2019 2:56 PM
-> > To: Joseph Qi <joseph.qi@linux.alibaba.com>
-> > Cc: Mark Fasheh <mark@fasheh.com>; Joel Becker <jlbec@evilplan.org>;
-> > ocfs2-devel@oss.oracle.com; Ariel Elior <aelior@marvell.com>; Sudarsana
-> > Reddy Kalluru <skalluru@marvell.com>; GR-everest-linux-l2 <GR-everest-
-> > linux-l2@marvell.com>; David S. Miller <davem@davemloft.net>;
-> > netdev@vger.kernel.org; Colin Ian King <colin.king@canonical.com>
-> > Subject: Re: [PATCH v1] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for
-> > wider use
-> > 
-> > On Wed, Aug 21, 2019 at 09:29:04AM +0800, Joseph Qi wrote:
-> > > On 19/8/21 00:31, Andy Shevchenko wrote:
-> > > > There are users already and will be more of BITS_TO_BYTES() macro.
-> > > > Move it to bitops.h for wider use.
+This is a four patch series of various barrier, {READ, WRITE}_ONCE
+cleanups in the AF_XDP socket code. More details can be found in the
+corresponding commit message.
 
-> > > > -#define BITS_TO_BYTES(x) ((x)/8)>
-> > > I don't think this is a equivalent replace, or it is in fact wrong
-> > > before?
-> > 
-> > I was thinking about this one and there are two applications:
-> > - calculus of the amount of structures of certain type per PAGE
-> >   (obviously off-by-one error in the original code IIUC purpose of
-> > STRUCT_SIZE)
-> > - calculus of some threshold based on line speed in bytes per second
-> >   (I dunno it will have any difference on the Gbs / 100 MBs speeds)
-> > 
-> I see that both the implementations (existing vs new) yield same value for standard speeds 10G (i.e.,10000), 1G (1000) that device supports. Hence the change look to be ok.
+For an AF_XDP socket, most control plane operations are done under the
+control mutex (struct xdp_sock, mutex), but there are some places
+where members of the struct is read outside the control mutex. This,
+as pointed out by Daniel in [1], requires proper {READ,
+WRITE}_ONCE-correctness [2] [3]. To address this, and to simplify the
+code, the state variable (introduced by Ilya), is now used a point of
+synchronization ("is the socket in a valid state, or not").
 
-Thank you for testing, may I use your Tested-by tag?
+
+Thanks,
+Björn
+
+[1] https://lore.kernel.org/bpf/beef16bb-a09b-40f1-7dd0-c323b4b89b17@iogearbox.net/
+[2] https://lwn.net/Articles/793253/
+[3] https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE
+
+Björn Töpel (4):
+  xsk: avoid store-tearing when assigning queues
+  xsk: add proper barriers and {READ, WRITE}_ONCE-correctness for state
+  xsk: avoid store-tearing when assigning umem
+  xsk: lock the control mutex in sock_diag interface
+
+ net/xdp/xsk.c      | 61 ++++++++++++++++++++++++++++++++--------------
+ net/xdp/xsk_diag.c |  3 +++
+ 2 files changed, 46 insertions(+), 18 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.20.1
 
