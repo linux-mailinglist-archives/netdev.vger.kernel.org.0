@@ -2,47 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC7C9A2F2
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:35:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E61C9A2EC
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:31:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390664AbfHVWcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 18:32:31 -0400
-Received: from emh07.mail.saunalahti.fi ([62.142.5.117]:47178 "EHLO
-        emh07.mail.saunalahti.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731886AbfHVWcb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:32:31 -0400
-X-Greylist: delayed 399 seconds by postgrey-1.27 at vger.kernel.org; Thu, 22 Aug 2019 18:32:30 EDT
-Received: from darkstar.musicnaut.iki.fi (85-76-87-181-nat.elisa-mobile.fi [85.76.87.181])
-        by emh07.mail.saunalahti.fi (Postfix) with ESMTP id 2343DB0028;
-        Fri, 23 Aug 2019 01:25:50 +0300 (EEST)
-Date:   Fri, 23 Aug 2019 01:25:50 +0300
-From:   Aaro Koskinen <aaro.koskinen@iki.fi>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-mips@vger.kernel.org
-Subject: r8169: regression on MIPS/Loongson
-Message-ID: <20190822222549.GF30291@darkstar.musicnaut.iki.fi>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.24 (2015-08-30)
+        id S1733096AbfHVW3z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 18:29:55 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:49706 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730332AbfHVW3y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:29:54 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 94D2215393F4E;
+        Thu, 22 Aug 2019 15:29:54 -0700 (PDT)
+Date:   Thu, 22 Aug 2019 15:29:54 -0700 (PDT)
+Message-Id: <20190822.152954.2010452045452586938.davem@davemloft.net>
+To:     jeffrey.t.kirsher@intel.com
+Cc:     netdev@vger.kernel.org, nhorman@redhat.com, sassmann@redhat.com
+Subject: Re: [net-next v2 00/13][pull request] 40GbE Intel Wired LAN Driver
+ Updates 2019-08-22
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
+References: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 22 Aug 2019 15:29:54 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Date: Thu, 22 Aug 2019 13:30:26 -0700
 
-After upgrading from v5.2 to v5.3-rc5 on MIPS/Loongson board, copying
-large files from network with scp started to fail with "Integrity error".
-Bisected to:
+> This series contains updates to i40e driver only.
 
-f072218cca5b076dd99f3dfa3aaafedfd0023a51 is the first bad commit
-commit f072218cca5b076dd99f3dfa3aaafedfd0023a51
-Author: Heiner Kallweit <hkallweit1@gmail.com>
-Date:   Thu Jun 27 23:19:09 2019 +0200
-
-    r8169: remove not needed call to dma_sync_single_for_device
-
-Any idea what goes wrong? Should this change be reverted?
-
-A.
+Pulled, thanks Jeff.
