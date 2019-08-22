@@ -2,199 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DE7499155
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:49:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C6BFC99161
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:52:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387871AbfHVKsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 06:48:39 -0400
-Received: from mail-eopbgr30115.outbound.protection.outlook.com ([40.107.3.115]:23838
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387863AbfHVKsj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 06:48:39 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LZgBI+rWw1WTUHfW0Lhh3Ih00zCgucF7LniA2FFj4dwevli/wAeFN5IPjFACTlAy6NCU/Tp3dX3wRIcdYeydFt0Kbxjwt1Fqw5oNp2nsS1bShhGLHqS7D9FKYck2dFgsq2fzTS8OmwtnRQltqF5yFLeCVdKtJWwC7W4CR2UgikiJT047jwui3YrX/fljGBX3m9KTrhjU0TLWnY5Q6VL+lGP9BUEr2qp1xPLwizW1pfG/9ktsN2iZ0OI7dKF19+mel4LnVTsV8fQ/7d9UqE2N8pA0R5N9P0z0sEZu75pLZiwWppraeldgUcLljkXsgGBqnWVgY1/3K2w/opv+N2KgAA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t8061+pWOAWMG/aEWCfTKVajft5j6ws/czcxe2ntfIE=;
- b=ZPylva0RoEUgOp4m5VUHnt0VnsmacDzdvDfppR0yecop3mO4RJ/9J/ps2WS8GzI9hWE4+wkk+JoLzOrw9f2M/W+eYd49jU7D8ubFFt4r5XIcrRbmlg0pkHQyslvU56QrGeift65ErmuJRlpMK5e6/WDUa14hBKCF7XldwVzC1cehi3XVAnzN9cXfqGU1qYIJjzWByYAHALMjTom++2V3v2Lv2Rnyo97GCTAcCoTWuqFklWLva9VEJtnHq9kkk1GwNJK7ycQQUbHew1xY27HP7+Rd49tQiP5IpQhQI4iaBmKQbTI4u8vl0dmLbNfDAtEPZHunW8PqjGxnVtuNBkdR2g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
- header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=t8061+pWOAWMG/aEWCfTKVajft5j6ws/czcxe2ntfIE=;
- b=GVnQ73ZZVhYwrsuj4lTx4iKMu8HgfafHWcMM7RsTOsig8dfwthgHI+TQwdyhzzMUKO6tHDrStQHjYojB1bUvZ6u0k2rQWYJHS6lE/LaZNYJH/LjRAoM0kgWjw/xyB2VWB6W/wDzGJJiIL+0nA20CVv417OTpu1/5bez1tpGCYA8=
-Received: from VI1PR08MB2782.eurprd08.prod.outlook.com (10.170.236.143) by
- VI1PR08MB2655.eurprd08.prod.outlook.com (10.175.245.17) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Thu, 22 Aug 2019 10:48:34 +0000
-Received: from VI1PR08MB2782.eurprd08.prod.outlook.com
- ([fe80::2969:e370:fb70:71a]) by VI1PR08MB2782.eurprd08.prod.outlook.com
- ([fe80::2969:e370:fb70:71a%3]) with mapi id 15.20.2178.020; Thu, 22 Aug 2019
- 10:48:34 +0000
-From:   Jan Dakinevich <jan.dakinevich@virtuozzo.com>
-To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     Denis Lunev <den@virtuozzo.com>,
-        Konstantin Khorenko <khorenko@virtuozzo.com>,
-        "jan.dakinevich@gmail.com" <jan.dakinevich@gmail.com>,
-        Jan Dakinevich <jan.dakinevich@virtuozzo.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Alexey Kuznetsov (C)" <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        Johannes Berg <johannes.berg@intel.com>,
-        David Ahern <dsahern@gmail.com>,
-        Christian Brauner <christian@brauner.io>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        John Hurley <john.hurley@netronome.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Li RongQing <lirongqing@baidu.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Patrick Talbert <ptalbert@redhat.com>,
-        Taehee Yoo <ap420073@gmail.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Dmitry Safonov <dima@arista.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "netfilter-devel@vger.kernel.org" <netfilter-devel@vger.kernel.org>,
-        "coreteam@netfilter.org" <coreteam@netfilter.org>
-Subject: [PATCH 3/3] netlink: use generic skb_set_owner_r()
-Thread-Topic: [PATCH 3/3] netlink: use generic skb_set_owner_r()
-Thread-Index: AQHVWNckwYnZD5Cn0Uy1mCccXO+Yag==
-Date:   Thu, 22 Aug 2019 10:48:33 +0000
-Message-ID: <1566470851-4694-4-git-send-email-jan.dakinevich@virtuozzo.com>
-References: <1566470851-4694-1-git-send-email-jan.dakinevich@virtuozzo.com>
-In-Reply-To: <1566470851-4694-1-git-send-email-jan.dakinevich@virtuozzo.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: HE1PR0202CA0033.eurprd02.prod.outlook.com
- (2603:10a6:3:e4::19) To VI1PR08MB2782.eurprd08.prod.outlook.com
- (2603:10a6:802:19::15)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=jan.dakinevich@virtuozzo.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.1.4
-x-originating-ip: [185.231.240.5]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 4d220a7e-fb9e-48ee-5343-08d726ee4724
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR08MB2655;
-x-ms-traffictypediagnostic: VI1PR08MB2655:
-x-ld-processed: 0bc7f26d-0264-416e-a6fc-8352af79c58f,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR08MB2655232A0F5726EF3686992F8AA50@VI1PR08MB2655.eurprd08.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2887;
-x-forefront-prvs: 01371B902F
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(366004)(136003)(376002)(39840400004)(199004)(189003)(2616005)(99286004)(66476007)(66946007)(66556008)(5660300002)(476003)(64756008)(76176011)(6116002)(66446008)(446003)(8936002)(3846002)(478600001)(6506007)(11346002)(386003)(81166006)(7406005)(81156014)(44832011)(316002)(52116002)(8676002)(5024004)(305945005)(6486002)(256004)(5640700003)(86362001)(71200400001)(6512007)(102836004)(14454004)(7736002)(6436002)(186003)(7416002)(486006)(50226002)(66066001)(2906002)(6916009)(36756003)(2501003)(53936002)(2351001)(71190400001)(25786009)(4326008)(54906003)(26005)(41533002);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR08MB2655;H:VI1PR08MB2782.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: virtuozzo.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ltZ7CxgBCfmTyr+JmBQvxY2ZlAcBonEDFXHvFZa7/FLFNPl2ugmaFkmF1i6wVYXW+9c2RkYpqUTKuWTILB4XpJ2cnsgvu+K6wzABWlmBzVcRqsw0z+ZdX5gSH4FfCzmm+E+FqNXLdE9DwwHB0jwxwVq2rcg2wXG3ca8VE7+mtnvnVm4JYA0omm/dRgWXpDDUQ/fDdyr8A5O0n9ga7ubz5xortdjnE5QAQUDMW+lB3lZxdSaW1VR1ymBEN9HizQCXhDapXEeV3JpUuLKfKRmJ3aILpdXHscALXL1AN7HBsrFamgYQMcvsCjk4nnsUPyaLavljDvrMCcSt4wFqUDYcz38ItOIIubo4LGQBgvVeXJg62KblNXDRVLDrW1bUGPoMpT78ibsGFv6KmnbHrC6olD50kNNv44S210cky6Yzgss=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2387793AbfHVKwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 06:52:22 -0400
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:38268 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732595AbfHVKwV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 06:52:21 -0400
+Received: by mail-ot1-f67.google.com with SMTP id r20so5011854ota.5
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 03:52:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4boJiUtvSrHXh9JywZ5CdRGDgDJxZyyWykhQroJD6II=;
+        b=tPwHTNaa0R5BAfELad/V7LQiBSIdBZiTR4qneJqv7cZVI9r3fNbz9AE0PUdIndmsNN
+         Ky1LiXQ8xnjYu/WgdWus2EKHcFvqVmTkr0Tl4c32RjZ5dAmRHK29S2FV6bvkNlHYe3zZ
+         nZC57J1QedwfnsGMibww8eRvU+DNT2Y7BplczH2bzUmLH6i7sKBa4lC6Ija2/dE/ZBTi
+         LirihxHun1rh0WoDl/oOjKq24+v76NRKkmziV9ebG3nK3FJzovYNmT+5HwCG25GwE3oB
+         GxLi5CzZPX0wAdVCvvgLuxeKkw1fGy4lYTAi2Bu+FqrTSYEAe6VSsjRP1Wv0coMd+Vmh
+         8dlw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4boJiUtvSrHXh9JywZ5CdRGDgDJxZyyWykhQroJD6II=;
+        b=kpMaFZ0LxH3IyNbbJcXeZyMR6GZs+2pCLjhBC2C057J3mafDZCobOaNEn3ZK9XAQXU
+         K8/nJ0gCaoLJppEoR4CXu4RLqfHQ9YiYQLEsrf0QasB93EO9W4UIoDfdC2Q+P/O6z0z4
+         ahsRkn7ovjLylISh4nNZM0vCAolDe2DJFYx2rZIvHi5Zi9wJczQ/O/O+O6pD2iIGCgwl
+         /y1RjXN/2fx7/RXirg3HIuVMHvMTJX6adtt9jtrPw0cIHfaoqToJoy8bHnRfC5elIh84
+         6DcB3dAKq5xvUoq2dw7ziDIbz99nT3RUCkx7A4YyYiSwqmul3h4hiUHSBIa9Qds5FyoO
+         nonQ==
+X-Gm-Message-State: APjAAAVIzOBLC/JNIMh91p/aR2Fmr+Iif2JGVCYepe1pVcBrmdVvcMlc
+        65dePR+b3Oa8cBIvzqU6zCi0gBQTpYNosS4quA4=
+X-Google-Smtp-Source: APXvYqyiEZx3UrKpS2oXhl/INm34/5vtNerwqfh3ZsOlwLjJvLC66CKIIniOoLbVTLOjbFt5s/77ge0ktp6duSTigWU=
+X-Received: by 2002:a9d:67cd:: with SMTP id c13mr29431849otn.196.1566471139826;
+ Thu, 22 Aug 2019 03:52:19 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: virtuozzo.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 4d220a7e-fb9e-48ee-5343-08d726ee4724
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2019 10:48:33.9476
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: nBDoF0ecr3MSAfZleHyVooCozqTm7YuXEOWeQsKkNIVCwd85GnBUVI3REbWMzvRagK4SmYyFfOX6eFBQZFvX1xXS5Mdpu6cxdvDcAK7HtKY=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB2655
+References: <86245c2d7b596f55d5ff1abeee3c3826b1b4370e.1566467579.git.echaudro@redhat.com>
+In-Reply-To: <86245c2d7b596f55d5ff1abeee3c3826b1b4370e.1566467579.git.echaudro@redhat.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 22 Aug 2019 12:52:08 +0200
+Message-ID: <CAJ8uoz35zcJT1_jZPs6ijvDrtQiGZvu3RnaeS9wx+Y_aU3m+fg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v5] libbpf: add xsk_ring_prod__nb_free() function
+To:     Eelco Chaudron <echaudro@redhat.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since skb destructor is not used for data deallocating,
-netlink_skb_set_owner_r() almost completely repeates generic
-skb_set_owner_r(). Thus, both netlink_skb_set_owner_r() and
-netlink_skb_destructor() are not required anymore.
+On Thu, Aug 22, 2019 at 11:54 AM Eelco Chaudron <echaudro@redhat.com> wrote:
+>
+> When an AF_XDP application received X packets, it does not mean X
+> frames can be stuffed into the producer ring. To make it easier for
+> AF_XDP applications this API allows them to check how many frames can
+> be added into the ring.
+>
+> The patch below looks like a name change only, but the xsk_prod__
+> prefix denotes that this API is exposed to be used by applications.
+>
+> Besides, if you set the nb value to the size of the ring, you will
+> get the exact amount of slots available, at the cost of performance
+> (you touch shared state for sure). nb is there to limit the
+> touching of the shared state.
+>
+> Also the example xdpsock application has been modified to use this
+> new API, so it's also able to process flows at a 1pps rate on veth
+> interfaces.
 
-Signed-off-by: Jan Dakinevich <jan.dakinevich@virtuozzo.com>
----
- net/netlink/af_netlink.c | 23 ++++-------------------
- 1 file changed, 4 insertions(+), 19 deletions(-)
+Still just 1 single packet per second with veth and this optimization ;-)?
 
-diff --git a/net/netlink/af_netlink.c b/net/netlink/af_netlink.c
-index 04a3457..b0c2eb2 100644
---- a/net/netlink/af_netlink.c
-+++ b/net/netlink/af_netlink.c
-@@ -358,21 +358,6 @@ static void netlink_rcv_wake(struct sock *sk)
- 		wake_up_interruptible(&nlk->wait);
- }
-=20
--static void netlink_skb_destructor(struct sk_buff *skb)
--{
--	if (skb->sk !=3D NULL)
--		sock_rfree(skb);
--}
--
--static void netlink_skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
--{
--	WARN_ON(skb->sk !=3D NULL);
--	skb->sk =3D sk;
--	skb->destructor =3D netlink_skb_destructor;
--	atomic_add(skb->truesize, &sk->sk_rmem_alloc);
--	sk_mem_charge(sk, skb->truesize);
--}
--
- static void netlink_sock_destruct(struct sock *sk)
- {
- 	struct netlink_sock *nlk =3D nlk_sk(sk);
-@@ -1225,7 +1210,7 @@ int netlink_attachskb(struct sock *sk, struct sk_buff=
- *skb,
- 		}
- 		return 1;
- 	}
--	netlink_skb_set_owner_r(skb, sk);
-+	skb_set_owner_r(skb, sk);
- 	return 0;
- }
-=20
-@@ -1286,7 +1271,7 @@ static int netlink_unicast_kernel(struct sock *sk, st=
-ruct sk_buff *skb,
- 	ret =3D -ECONNREFUSED;
- 	if (nlk->netlink_rcv !=3D NULL) {
- 		ret =3D skb->len;
--		netlink_skb_set_owner_r(skb, sk);
-+		skb_set_owner_r(skb, sk);
- 		NETLINK_CB(skb).sk =3D ssk;
- 		netlink_deliver_tap_kernel(sk, ssk, skb);
- 		nlk->netlink_rcv(skb);
-@@ -1367,7 +1352,7 @@ static int netlink_broadcast_deliver(struct sock *sk,=
- struct sk_buff *skb)
-=20
- 	if (atomic_read(&sk->sk_rmem_alloc) <=3D sk->sk_rcvbuf &&
- 	    !test_bit(NETLINK_S_CONGESTED, &nlk->state)) {
--		netlink_skb_set_owner_r(skb, sk);
-+		skb_set_owner_r(skb, sk);
- 		__netlink_sendskb(sk, skb);
- 		return atomic_read(&sk->sk_rmem_alloc) > (sk->sk_rcvbuf >> 1);
- 	}
-@@ -2227,7 +2212,7 @@ static int netlink_dump(struct sock *sk)
- 	 * single netdev. The outcome is MSG_TRUNC error.
- 	 */
- 	skb_reserve(skb, skb_tailroom(skb) - alloc_size);
--	netlink_skb_set_owner_r(skb, sk);
-+	skb_set_owner_r(skb, sk);
-=20
- 	if (nlk->dump_done_errno > 0) {
- 		cb->extack =3D &extack;
---=20
-2.1.4
+Thanks Eelco for working on this.
 
+Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+
+> Signed-off-by: Eelco Chaudron <echaudro@redhat.com>
+>
+> ---
+> v4 -> v5
+>   - Rebase on latest bpf-next
+>
+> v3 -> v4
+>   - Cleanedup commit message
+>   - Updated AF_XDP sample application to use this new API
+>
+> v2 -> v3
+>   - Removed cache by pass option
+>
+> v1 -> v2
+>   - Renamed xsk_ring_prod__free() to xsk_ring_prod__nb_free()
+>   - Add caching so it will only touch global state when needed
+>
+>  samples/bpf/xdpsock_user.c | 119 ++++++++++++++++++++++++++++---------
+>  tools/lib/bpf/xsk.h        |   4 +-
+>  2 files changed, 93 insertions(+), 30 deletions(-)
+>
+> diff --git a/samples/bpf/xdpsock_user.c b/samples/bpf/xdpsock_user.c
+> index da84c760c094..bec0ee463184 100644
+> --- a/samples/bpf/xdpsock_user.c
+> +++ b/samples/bpf/xdpsock_user.c
+> @@ -470,9 +470,13 @@ static void kick_tx(struct xsk_socket_info *xsk)
+>  static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
+>                                      struct pollfd *fds)
+>  {
+> -       u32 idx_cq = 0, idx_fq = 0;
+> -       unsigned int rcvd;
+> +       static u64 free_frames[NUM_FRAMES];
+> +       static size_t nr_free_frames;
+> +
+> +       u32 idx_cq = 0, idx_fq = 0, free_slots;
+> +       unsigned int rcvd, i;
+>         size_t ndescs;
+> +       int ret;
+>
+>         if (!xsk->outstanding_tx)
+>                 return;
+> @@ -485,29 +489,56 @@ static inline void complete_tx_l2fwd(struct xsk_socket_info *xsk,
+>
+>         /* re-add completed Tx buffers */
+>         rcvd = xsk_ring_cons__peek(&xsk->umem->cq, ndescs, &idx_cq);
+> -       if (rcvd > 0) {
+> -               unsigned int i;
+> -               int ret;
+> -
+> -               ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
+> -               while (ret != rcvd) {
+> -                       if (ret < 0)
+> -                               exit_with_error(-ret);
+> -                       if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
+> -                               ret = poll(fds, num_socks, opt_timeout);
+> -                       ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd,
+> -                                                    &idx_fq);
+> -               }
+> -               for (i = 0; i < rcvd; i++)
+> +       if (!rcvd)
+> +               return;
+> +
+> +       /* When xsk_ring_cons__peek() for example returns that 5 packets
+> +        * have been received, it does not automatically mean that
+> +        * xsk_ring_prod__reserve() will have 5 slots available. You will
+> +        * see this, for example, when using a veth interface due to the
+> +        * RX_BATCH_SIZE used by the generic driver.
+> +        *
+> +        * In this example we store unused buffers and try to re-stock
+> +        * them the next iteration.
+> +        */
+> +
+> +       free_slots = xsk_prod__nb_free(&xsk->umem->fq, rcvd + nr_free_frames);
+> +       if (free_slots > rcvd + nr_free_frames)
+> +               free_slots = rcvd + nr_free_frames;
+> +
+> +       ret = xsk_ring_prod__reserve(&xsk->umem->fq, free_slots, &idx_fq);
+> +       while (ret != free_slots) {
+> +               if (ret < 0)
+> +                       exit_with_error(-ret);
+> +
+> +               if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
+> +                       ret = poll(fds, num_socks, opt_timeout);
+> +
+> +               ret = xsk_ring_prod__reserve(&xsk->umem->fq, free_slots,
+> +                                            &idx_fq);
+> +       }
+> +       for (i = 0; i < rcvd; i++) {
+> +               u64 addr = *xsk_ring_cons__comp_addr(&xsk->umem->cq, idx_cq++);
+> +
+> +               if (i < free_slots)
+>                         *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) =
+> -                               *xsk_ring_cons__comp_addr(&xsk->umem->cq,
+> -                                                         idx_cq++);
+> +                               addr;
+> +               else
+> +                       free_frames[nr_free_frames++] = addr;
+> +       }
+>
+> -               xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
+> -               xsk_ring_cons__release(&xsk->umem->cq, rcvd);
+> -               xsk->outstanding_tx -= rcvd;
+> -               xsk->tx_npkts += rcvd;
+> +       if (free_slots > rcvd) {
+> +               for (i = 0; i < (free_slots - rcvd); i++) {
+> +                       u64 addr = free_frames[--nr_free_frames];
+> +                       *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) =
+> +                               addr;
+> +               }
+>         }
+> +
+> +       xsk_ring_prod__submit(&xsk->umem->fq, free_slots);
+> +       xsk_ring_cons__release(&xsk->umem->cq, rcvd);
+> +       xsk->outstanding_tx -= rcvd;
+> +       xsk->tx_npkts += rcvd;
+>  }
+>
+>  static inline void complete_tx_only(struct xsk_socket_info *xsk)
+> @@ -531,8 +562,11 @@ static inline void complete_tx_only(struct xsk_socket_info *xsk)
+>
+>  static void rx_drop(struct xsk_socket_info *xsk, struct pollfd *fds)
+>  {
+> +       static u64 free_frames[NUM_FRAMES];
+> +       static size_t nr_free_frames;
+> +
+>         unsigned int rcvd, i;
+> -       u32 idx_rx = 0, idx_fq = 0;
+> +       u32 idx_rx = 0, idx_fq = 0, free_slots;
+>         int ret;
+>
+>         rcvd = xsk_ring_cons__peek(&xsk->rx, BATCH_SIZE, &idx_rx);
+> @@ -542,13 +576,30 @@ static void rx_drop(struct xsk_socket_info *xsk, struct pollfd *fds)
+>                 return;
+>         }
+>
+> -       ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
+> -       while (ret != rcvd) {
+> +       /* When xsk_ring_cons__peek() for example returns that 5 packets
+> +        * have been received, it does not automatically mean that
+> +        * xsk_ring_prod__reserve() will have 5 slots available. You will
+> +        * see this, for example, when using a veth interface due to the
+> +        * RX_BATCH_SIZE used by the generic driver.
+> +        *
+> +        * In this example we store unused buffers and try to re-stock
+> +        * them the next iteration.
+> +        */
+> +
+> +       free_slots = xsk_prod__nb_free(&xsk->umem->fq, rcvd + nr_free_frames);
+> +       if (free_slots > rcvd + nr_free_frames)
+> +               free_slots = rcvd + nr_free_frames;
+> +
+> +       ret = xsk_ring_prod__reserve(&xsk->umem->fq, free_slots, &idx_fq);
+> +       while (ret != free_slots) {
+>                 if (ret < 0)
+>                         exit_with_error(-ret);
+> +
+>                 if (xsk_ring_prod__needs_wakeup(&xsk->umem->fq))
+>                         ret = poll(fds, num_socks, opt_timeout);
+> -               ret = xsk_ring_prod__reserve(&xsk->umem->fq, rcvd, &idx_fq);
+> +
+> +               ret = xsk_ring_prod__reserve(&xsk->umem->fq, free_slots,
+> +                                            &idx_fq);
+>         }
+>
+>         for (i = 0; i < rcvd; i++) {
+> @@ -557,10 +608,22 @@ static void rx_drop(struct xsk_socket_info *xsk, struct pollfd *fds)
+>                 char *pkt = xsk_umem__get_data(xsk->umem->buffer, addr);
+>
+>                 hex_dump(pkt, len, addr);
+> -               *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) = addr;
+> +               if (i < free_slots)
+> +                       *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) =
+> +                               addr;
+> +               else
+> +                       free_frames[nr_free_frames++] = addr;
+> +       }
+> +
+> +       if (free_slots > rcvd) {
+> +               for (i = 0; i < (free_slots - rcvd); i++) {
+> +                       u64 addr = free_frames[--nr_free_frames];
+> +                       *xsk_ring_prod__fill_addr(&xsk->umem->fq, idx_fq++) =
+> +                               addr;
+> +               }
+>         }
+>
+> -       xsk_ring_prod__submit(&xsk->umem->fq, rcvd);
+> +       xsk_ring_prod__submit(&xsk->umem->fq, free_slots);
+>         xsk_ring_cons__release(&xsk->rx, rcvd);
+>         xsk->rx_npkts += rcvd;
+>  }
+> diff --git a/tools/lib/bpf/xsk.h b/tools/lib/bpf/xsk.h
+> index aa1d6122b7db..520a772c882c 100644
+> --- a/tools/lib/bpf/xsk.h
+> +++ b/tools/lib/bpf/xsk.h
+> @@ -82,7 +82,7 @@ static inline int xsk_ring_prod__needs_wakeup(const struct xsk_ring_prod *r)
+>         return *r->flags & XDP_RING_NEED_WAKEUP;
+>  }
+>
+> -static inline __u32 xsk_prod_nb_free(struct xsk_ring_prod *r, __u32 nb)
+> +static inline __u32 xsk_prod__nb_free(struct xsk_ring_prod *r, __u32 nb)
+>  {
+>         __u32 free_entries = r->cached_cons - r->cached_prod;
+>
+> @@ -116,7 +116,7 @@ static inline __u32 xsk_cons_nb_avail(struct xsk_ring_cons *r, __u32 nb)
+>  static inline size_t xsk_ring_prod__reserve(struct xsk_ring_prod *prod,
+>                                             size_t nb, __u32 *idx)
+>  {
+> -       if (xsk_prod_nb_free(prod, nb) < nb)
+> +       if (xsk_prod__nb_free(prod, nb) < nb)
+>                 return 0;
+>
+>         *idx = prod->cached_prod;
+> --
+> 2.18.1
+>
