@@ -2,108 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 58DA399913
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 18:24:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3308299924
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 18:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389878AbfHVQYZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 12:24:25 -0400
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:42376 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389867AbfHVQYZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 12:24:25 -0400
-Received: by mail-qk1-f195.google.com with SMTP id 201so5656949qkm.9;
-        Thu, 22 Aug 2019 09:24:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=LYvKe5wejsC6qDJ+UX43WDzJLWa+tddnchjuNlT6Thg=;
-        b=S1E6/5ihriAAmGPzQLCB11TvQvxLBG3TaqCYx881WTAFnA0NYUxSZ3JgJam/+Ww1WF
-         A/72qew6cN1tcS5IcZdOo/CfqZX0yQe3Kod8GaULbE7evm8fina+eR5zncgwEIsjdg0k
-         hK6I5fhJneS5ym5mhqt5eVgzaqAsnpkFQM3dqtYWbf9Dy6598B7Znj550p/0cJdP9pIJ
-         B9UxgFMJFnRg4aBUxuN7zGzk/2xC+KAs15xseZQdfTvrF1raGnqTLbNqrLzrb5L8jTge
-         8k9iUUkb/4LbaZIHQMzlBAccuvPNiy1gGTdXDfQPKzv3XrYAf0YIU4WLwWCpFyACNQPN
-         mtGg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=LYvKe5wejsC6qDJ+UX43WDzJLWa+tddnchjuNlT6Thg=;
-        b=Sp4a5Ko4FEmXUn4IT6lkfNHcGkzgk94y+UiNeQC64YPv0yy4xMA0EQQKpb8T4ZC+u8
-         G3vfS36cvf76MryO4U/jN/maGu+tCbhNlBBaiVOtTVryi5ULN4/uq/w7MTNhVZHwdUHT
-         20HY1CKRmD0oUF0d9huJ5Xx6zlKUgfku+8S643VMgN9hw9yuyz9bKJP267zvg4CQN2B0
-         1Nh5+dgSPWD/35DD6bjwDprM0HE2ijBJNRSKBLYUHRaiZCGpoGKVnk+aYKAnZiS1GWhb
-         UoQ8TbcuimUO/tRziMNCA+CIVXhiN73+WNHg4hQKBW4ityyBs1ihwATl8ck89Ba61SD3
-         YrEA==
-X-Gm-Message-State: APjAAAVjYTxnjTkjqcKJggYkyQF89zdksVcptncj8cX/UeXygJASdDzB
-        njVhIAKTANSsHILJZEqLPFBbILzKbdIukxsW5fM=
-X-Google-Smtp-Source: APXvYqzfp0DsFG7wg7mABKUn7qD/EylcXwWBQQXTwi17HfLBzXQgUE4I6Gny6jWqNCRdCx46/Pl5HKKKMYqXVrE4Q7U=
-X-Received: by 2002:a37:e306:: with SMTP id y6mr37349543qki.174.1566491064158;
- Thu, 22 Aug 2019 09:24:24 -0700 (PDT)
+        id S2387825AbfHVQ1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 12:27:15 -0400
+Received: from mout.gmx.net ([212.227.17.22]:43233 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729213AbfHVQ1P (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 12:27:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1566491191;
+        bh=EFlLendt8CWQXL+vG3NFYTimiM+PuQRe0tn54GrTJvI=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=J1oj+y+FOWEcxd/2mh0ST+byTtNPBFHL7bTKRkcLdRVhO4qIBRhkO711lC3ZS0f8l
+         tP/t/UOMLwhRNCwvneZ2G3U6hBel+vnnplJFKcx8aEdZmwtlwzIBVpMf4qjx0A7jvO
+         nzT6ewyRND+nEsfYOPLPwhhdT7aDBUU/5XNsvkcY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [217.61.154.89] ([217.61.154.89]) by web-mail.gmx.net
+ (3c-app-gmx-bap07.server.lan [172.19.172.77]) (via HTTP); Thu, 22 Aug 2019
+ 18:26:31 +0200
 MIME-Version: 1.0
-References: <CGME20190822123045eucas1p125b6e106f0310bdb50e759ef41993a91@eucas1p1.samsung.com>
- <20190822123037.28068-1-i.maximets@samsung.com>
-In-Reply-To: <20190822123037.28068-1-i.maximets@samsung.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Thu, 22 Aug 2019 09:23:46 -0700
-Message-ID: <CALDO+SaMFHB8u3YOsrCM=MNuT=14kmBnst_RNs3qNU0OjPmfGA@mail.gmail.com>
-Subject: Re: [PATCH net v2] ixgbe: fix double clean of tx descriptors with xdp
-To:     Ilya Maximets <i.maximets@samsung.com>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Eelco Chaudron <echaudro@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <trinity-34b058f1-59d5-44b0-8783-a2c2440daf91-1566491191041@3c-app-gmx-bap07>
+From:   "Frank Wunderlich" <frank-w@public-files.de>
+To:     "Frank Wunderlich" <frank-w@public-files.de>
+Cc:     =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>,
+        "Andrew Lunn" <andrew@lunn.ch>,
+        "Florian Fainelli" <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        "Sean Wang" <sean.wang@mediatek.com>, linux-mips@vger.kernel.org,
+        "David S . Miller" <davem@davemloft.net>,
+        linux-mediatek@lists.infradead.org,
+        "John Crispin" <john@phrozen.org>,
+        "Matthias Brugger" <matthias.bgg@gmail.com>,
+        "Vivien Didelot" <vivien.didelot@gmail.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Aw: [PATCH net-next v2 0/3] net: dsa: mt7530: Convert to PHYLINK
+ and add support for port 5
+Content-Type: text/plain; charset=UTF-8
+Date:   Thu, 22 Aug 2019 18:26:31 +0200
+Importance: normal
+Sensitivity: Normal
+In-Reply-To: <trinity-b1f48e51-af73-466d-9ecf-d560a7d7c1ee-1566488653737@3c-app-gmx-bap07>
+References: <20190821144547.15113-1-opensource@vdorst.com>
+ <trinity-b1f48e51-af73-466d-9ecf-d560a7d7c1ee-1566488653737@3c-app-gmx-bap07>
+X-UI-Message-Type: mail
+X-Priority: 3
+X-Provags-ID: V03:K1:Kj7CZobsPnsr7zMq8BK+GQacgt27Jspm9jpx7yWGWaplZdZd8aja9akdwt++VHup9BcS0
+ IVp0fhJXRc3pZQS4I0+mu06yvbd8TsfKwAREa02+QVekEJ9ZwW3K+gtAQC8lX7eO8ECuCls76G46
+ 72xV4qHPnIgvR9hBqOZoe8uPVuAiERZUUlmSIozv8fYLE+Aqq90YDQjFBGPhS6htpYNcKSQ11Jl1
+ 648imqiT/DAtQW6R+4saQlf8rnlqp5ePVxVuBhFol+gkPP4CWDhTRaRJI5t1tTv2hXEeqV4TL3aT
+ s8=
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:t+0B4WWivmI=:H2oz4bEmfWxC94hqA5jzqm
+ KkusajgSnBgs/U3CkieChIr/hk41B8/m7wcoQfMR+PwI3GKgXuvhFfVTUsc1yCgTqslVUUD29
+ VCSEuIaFgfW4rmaoET0PimCX+/6DvAVYQpOqqF3MJ9qZAxs1vh0sQxQ6hGNWnA3RgR37DPz+5
+ EasdTGiXpaOXejgPQCwtUfC1xAqRhlm1yRDmzAbPDG89ePmQ23raCpn0X3yw8WtBpZJiWTqVD
+ DpWY36Ii4Ep7KJD4KmuOKAFRccfZG5/deBsQe0Y5fGzz3U1DiOCttZpL1UQBkcDNTgz+vZ7p5
+ zjmfhXeb2uICSFDTOWOmm0LwT8oezRBjfGRifBPENq02qfAOHCmZta3E2Rh5wts7ohCr6ybbI
+ LBTZIUsEckzDBdOPG3cW8ypxAsJd0PLSJlOud2igzVImOD75iZA5ypn6zp3JdRu+3WGYpDBxk
+ w2UxlslnJKHuPVHMY06YII3Bs/0/D+7m4aFEESes6kHB4NVJY6OYxQm9vL1MvXOjbPVtjlK0X
+ tj/mKnR+ncWOcoTJNYyXhzAvYoPt2rhaKKpSXWxucCV7/XVjjhgEygWiOIGq7jV1gY7GDT8VI
+ OWnmEKD3hnMJ20F49WuPuqpH4dyN25U+wLFMLHgWpeNefs7Rbta6TqoiINQOeekH/n3j++tiq
+ humnnsNH/695SjU8Vww/AlCF0ru7gDq90sQDJ/hCy9AwEng==
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 5:30 AM Ilya Maximets <i.maximets@samsung.com> wrote:
->
-> Tx code doesn't clear the descriptors' status after cleaning.
-> So, if the budget is larger than number of used elems in a ring, some
-> descriptors will be accounted twice and xsk_umem_complete_tx will move
-> prod_tail far beyond the prod_head breaking the comletion queue ring.
+tested now also on bpi-r64 (mt7622) v0.1 (rtl8367 switch), without linux-next to avoid power-regulator-problems like on bpi-r2
 
-s/comletion/completion/
+dmesg without warnings/errors caused by this patches
+link came up as desired
+iperf3 looks good: 943 Mbits/sec in both directions and no other issues
 
->
-> Fix that by limiting the number of descriptors to clean by the number
-> of used descriptors in the tx ring.
->
-> 'ixgbe_clean_xdp_tx_irq()' function refactored to look more like
-> 'ixgbe_xsk_clean_tx_ring()' since we don't need most of the
-> complications implemented in the regular 'ixgbe_clean_tx_irq()'
-> and we're allowed to directly use 'next_to_clean' and 'next_to_use'
-> indexes.
->
-> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> ---
+so it is currently only the rx-throughput-problem on mt7623/bpi-r2
 
-Tested-by: William Tu <u9012063@gmail.com>
-
-Instead of measuring tx performance at the tx machine, I measured the TX
-performance at the other side (the traffic generating machine).  This time it
-is more consistent and showing not much difference with (5.9Mpps) and
-without this patch (6.1Mpps).
-
->
-> Version 2:
->   * 'ixgbe_clean_xdp_tx_irq()' refactored to look more like
->     'ixgbe_xsk_clean_tx_ring()'.
->
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 34 ++++++++------------
->  1 file changed, 13 insertions(+), 21 deletions(-)
->
-
-<snip>
+regards Frank
