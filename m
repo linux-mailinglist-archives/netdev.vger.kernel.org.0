@@ -2,93 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DADC199EE5
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 20:35:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E282699EF1
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 20:35:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389074AbfHVScn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 14:32:43 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:38926 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731266AbfHVScm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 14:32:42 -0400
-Received: by mail-lf1-f68.google.com with SMTP id x3so5256404lfn.6
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 11:32:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+lqoIzvuT58jZN9t04fZzkyURKWnlXog/G4cwQjz5Xs=;
-        b=WUUgj4ckOqvT6Teb7PyF10rEWZMTWg21EuYG9cpteP6YmJHodZEXkWjrYgnGyiaWPI
-         hQR5iAcXK99Ky08dvrx2y+E8WXZlVw+BePwGQW8BjkpbT5Yz2b8THAfLvHCBBZeNBCP3
-         rfcFecwR0JDZptp3my7M9fBN6HZCxBef8vrT2BMnZvhu6eg/PHXGs0QYeg3ciXaki1N2
-         jFBHBibffGjjxj585AeCkGWdQG4L62AHxjJYt4xWENku99Qi99W5/CbmS5TM01P2L3N/
-         xCdigmIgjHyPK+3I9TgbTdxGh6m4+8Tb1HNCrUL8W8sSoIIms+WOb3bsvuoRZv8rXesI
-         ZTpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+lqoIzvuT58jZN9t04fZzkyURKWnlXog/G4cwQjz5Xs=;
-        b=o1yq+FEPuc6kTry483HJB/PzO39k7gTtlB0uRuLvXHElM64p1kf1q27fTkqqNmoaV1
-         iWyBu2b3lp7NjYmv+1JG/BtmgsfuDkf+DPtSvLriVawt6A8+PGfLMjZdUQmICfVLfqOm
-         Ibvz5ZLNB/24v29wLq7i8OtZu3uUhGJvTd3EYVgRFwVNCnL1eW3N2nk6Tbyybw1PgWxO
-         2e9YEXtDkIF6Hd+gFE6tUIYTODsyCDceiwJcKhq4l2ieiI2gm3/OrLpgaVhJwjcCRKq3
-         rTgoIl7i5MScmveLLgVDF96ZB7xbNGXXEitKohNDPPSBWqpvcsG2F+S4J7UNfjTo5lxZ
-         2EZg==
-X-Gm-Message-State: APjAAAURmcszr0QDrSg1/0AhaQev0bxTdluLHJFCp5+luLQajqf7Cwpx
-        jvJgGM7JYfnkb5rOhsThGhNBsBhiUfCDH+2UYf4=
-X-Google-Smtp-Source: APXvYqxh83z2ON7etwNIaTa7EDpiQtaQueaKV4neEC7ZBORz78jHSNHoVH7uM7Qn3igElP5khesAyX58el3EWeshE3s=
-X-Received: by 2002:a19:c80b:: with SMTP id y11mr279445lff.81.1566498760656;
- Thu, 22 Aug 2019 11:32:40 -0700 (PDT)
+        id S2390882AbfHVSdi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 14:33:38 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:51450 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730867AbfHVSdi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 14:33:38 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id C6C87C0546FE;
+        Thu, 22 Aug 2019 18:33:37 +0000 (UTC)
+Received: from malachite.bss.redhat.com (dhcp-10-20-1-11.bss.redhat.com [10.20.1.11])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5718A18517;
+        Thu, 22 Aug 2019 18:33:34 +0000 (UTC)
+From:   Lyude Paul <lyude@redhat.com>
+To:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org
+Cc:     Feng Tang <feng.tang@intel.com>,
+        Sasha Neftin <sasha.neftin@intel.com>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] igb/igc: Don't warn on fatal read failures when the device is removed
+Date:   Thu, 22 Aug 2019 14:33:18 -0400
+Message-Id: <20190822183318.27634-1-lyude@redhat.com>
 MIME-Version: 1.0
-References: <1566432854-35880-1-git-send-email-yihung.wei@gmail.com> <201908230208.0aRY5GdN%lkp@intel.com>
-In-Reply-To: <201908230208.0aRY5GdN%lkp@intel.com>
-From:   Yi-Hung Wei <yihung.wei@gmail.com>
-Date:   Thu, 22 Aug 2019 11:32:29 -0700
-Message-ID: <CAG1aQhJUW8uB7w6bqwrobpnNKr--n2e5eOpNzQtQyPs1DZ=p=g@mail.gmail.com>
-Subject: Re: [PATCH net] openvswitch: Fix conntrack cache with timeout
-To:     kbuild test robot <lkp@intel.com>
-Cc:     kbuild-all@01.org,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Pravin Shelar <pshelar@ovn.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Thu, 22 Aug 2019 18:33:37 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 11:12 AM kbuild test robot <lkp@intel.com> wrote:
->
-> Hi Yi-Hung,
->
-> Thank you for the patch! Perhaps something to improve:
->
-> [auto build test WARNING on net/master]
->
-> url:    https://github.com/0day-ci/linux/commits/Yi-Hung-Wei/openvswitch-Fix-conntrack-cache-with-timeout/20190822-212539
-> reproduce:
->         # apt-get install sparse
->         # sparse version: v0.6.1-rc1-7-g2b96cd8-dirty
->         make ARCH=x86_64 allmodconfig
->         make C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__'
->
-> If you fix the issue, kindly add following tag
-> Reported-by: kbuild test robot <lkp@intel.com>
->
->
-> sparse warnings: (new ones prefixed by >>)
->
->    include/linux/sched.h:609:43: sparse: sparse: bad integer constant expression
->    include/linux/sched.h:609:73: sparse: sparse: invalid named zero-width bitfield `value'
->    include/linux/sched.h:610:43: sparse: sparse: bad integer constant expression
->    include/linux/sched.h:610:67: sparse: sparse: invalid named zero-width bitfield `bucket_id'
-> >> net/openvswitch/conntrack.c:706:41: sparse: sparse: incompatible types in comparison expression (different address spaces):
-> >> net/openvswitch/conntrack.c:706:41: sparse:    struct nf_ct_timeout *
-> >> net/openvswitch/conntrack.c:706:41: sparse:    struct nf_ct_timeout [noderef] <asn:4> *
+Fatal read errors are worth warning about, unless of course the device
+was just unplugged from the machine - something that's a rather normal
+occurence when the igb/igc adapter is located on a Thunderbolt dock. So,
+let's only WARN() if there's a fatal read error while the device is
+still present.
 
-My v1 does not take care of the rcu pointer properly.  I will fix the
-reported issue and send v2.
+This fixes the following WARN splat that's been appearing whenever I
+unplug my Caldigit TS3 Thunderbolt dock from my laptop:
 
-Thanks,
+  igb 0000:09:00.0 enp9s0: PCIe link lost
+  ------------[ cut here ]------------
+  igb: Failed to read reg 0x18!
+  WARNING: CPU: 7 PID: 516 at
+  drivers/net/ethernet/intel/igb/igb_main.c:756 igb_rd32+0x57/0x6a [igb]
+  Modules linked in: igb dca thunderbolt fuse vfat fat elan_i2c mei_wdt
+  mei_hdcp i915 wmi_bmof intel_wmi_thunderbolt iTCO_wdt
+  iTCO_vendor_support x86_pkg_temp_thermal intel_powerclamp joydev
+  coretemp crct10dif_pclmul crc32_pclmul i2c_algo_bit ghash_clmulni_intel
+  intel_cstate drm_kms_helper intel_uncore syscopyarea sysfillrect
+  sysimgblt fb_sys_fops intel_rapl_perf intel_xhci_usb_role_switch mei_me
+  drm roles idma64 i2c_i801 ucsi_acpi typec_ucsi mei intel_lpss_pci
+  processor_thermal_device typec intel_pch_thermal intel_soc_dts_iosf
+  intel_lpss int3403_thermal thinkpad_acpi wmi int340x_thermal_zone
+  ledtrig_audio int3400_thermal acpi_thermal_rel acpi_pad video
+  pcc_cpufreq ip_tables serio_raw nvme nvme_core crc32c_intel uas
+  usb_storage e1000e i2c_dev
+  CPU: 7 PID: 516 Comm: kworker/u16:3 Not tainted 5.2.0-rc1Lyude-Test+ #14
+  Hardware name: LENOVO 20L8S2N800/20L8S2N800, BIOS N22ET35W (1.12 ) 04/09/2018
+  Workqueue: kacpi_hotplug acpi_hotplug_work_fn
+  RIP: 0010:igb_rd32+0x57/0x6a [igb]
+  Code: 87 b8 fc ff ff 48 c7 47 08 00 00 00 00 48 c7 c6 33 42 9b c0 4c 89
+  c7 e8 47 45 cd dc 89 ee 48 c7 c7 43 42 9b c0 e8 c1 94 71 dc <0f> 0b eb
+  08 8b 00 ff c0 75 b0 eb c8 44 89 e0 5d 41 5c c3 0f 1f 44
+  RSP: 0018:ffffba5801cf7c48 EFLAGS: 00010286
+  RAX: 0000000000000000 RBX: ffff9e7956608840 RCX: 0000000000000007
+  RDX: 0000000000000000 RSI: ffffba5801cf7b24 RDI: ffff9e795e3d6a00
+  RBP: 0000000000000018 R08: 000000009dec4a01 R09: ffffffff9e61018f
+  R10: 0000000000000000 R11: ffffba5801cf7ae5 R12: 00000000ffffffff
+  R13: ffff9e7956608840 R14: ffff9e795a6f10b0 R15: 0000000000000000
+  FS:  0000000000000000(0000) GS:ffff9e795e3c0000(0000) knlGS:0000000000000000
+  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+  CR2: 0000564317bc4088 CR3: 000000010e00a006 CR4: 00000000003606e0
+  DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+  DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+  Call Trace:
+   igb_release_hw_control+0x1a/0x30 [igb]
+   igb_remove+0xc5/0x14b [igb]
+   pci_device_remove+0x3b/0x93
+   device_release_driver_internal+0xd7/0x17e
+   pci_stop_bus_device+0x36/0x75
+   pci_stop_bus_device+0x66/0x75
+   pci_stop_bus_device+0x66/0x75
+   pci_stop_and_remove_bus_device+0xf/0x19
+   trim_stale_devices+0xc5/0x13a
+   ? __pm_runtime_resume+0x6e/0x7b
+   trim_stale_devices+0x103/0x13a
+   ? __pm_runtime_resume+0x6e/0x7b
+   trim_stale_devices+0x103/0x13a
+   acpiphp_check_bridge+0xd8/0xf5
+   acpiphp_hotplug_notify+0xf7/0x14b
+   ? acpiphp_check_bridge+0xf5/0xf5
+   acpi_device_hotplug+0x357/0x3b5
+   acpi_hotplug_work_fn+0x1a/0x23
+   process_one_work+0x1a7/0x296
+   worker_thread+0x1a8/0x24c
+   ? process_scheduled_works+0x2c/0x2c
+   kthread+0xe9/0xee
+   ? kthread_destroy_worker+0x41/0x41
+   ret_from_fork+0x35/0x40
+  ---[ end trace 252bf10352c63d22 ]---
 
--Yi-Hung
+Signed-off-by: Lyude Paul <lyude@redhat.com>
+Fixes: 47e16692b26b ("igb/igc: warn when fatal read failure happens")
+Cc: Feng Tang <feng.tang@intel.com>
+Cc: Sasha Neftin <sasha.neftin@intel.com>
+Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc: intel-wired-lan@lists.osuosl.org
+---
+ drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
+ drivers/net/ethernet/intel/igc/igc_main.c | 3 ++-
+ 2 files changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index e5b7e638df28..1a7f7cd28df9 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -753,7 +753,8 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg)
+ 		struct net_device *netdev = igb->netdev;
+ 		hw->hw_addr = NULL;
+ 		netdev_err(netdev, "PCIe link lost\n");
+-		WARN(1, "igb: Failed to read reg 0x%x!\n", reg);
++		WARN(pci_device_is_present(igb->pdev),
++		     "igb: Failed to read reg 0x%x!\n", reg);
+ 	}
+ 
+ 	return value;
+diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
+index 28072b9aa932..f873a4b35eaf 100644
+--- a/drivers/net/ethernet/intel/igc/igc_main.c
++++ b/drivers/net/ethernet/intel/igc/igc_main.c
+@@ -3934,7 +3934,8 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
+ 		hw->hw_addr = NULL;
+ 		netif_device_detach(netdev);
+ 		netdev_err(netdev, "PCIe link lost, device now detached\n");
+-		WARN(1, "igc: Failed to read reg 0x%x!\n", reg);
++		WARN(pci_device_is_present(igc->pdev),
++		     "igc: Failed to read reg 0x%x!\n", reg);
+ 	}
+ 
+ 	return value;
+-- 
+2.21.0
+
