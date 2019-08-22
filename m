@@ -2,80 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 005E098D70
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 10:20:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9371998DC9
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 10:33:58 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731236AbfHVIUX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 04:20:23 -0400
-Received: from mail-pl1-f171.google.com ([209.85.214.171]:42518 "EHLO
-        mail-pl1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726262AbfHVIUX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 04:20:23 -0400
-Received: by mail-pl1-f171.google.com with SMTP id y1so2996806plp.9
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 01:20:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=ctiA84ohVmTjNv2+hqGjHDIQgnDRE1bhV/IqP0i9Dzw=;
-        b=fr7VI1LWXRERQsoFv4QBUBejCumCfvjFhSjVWJ50zN52NCLJPCrpeutXHrVvne+5SY
-         7XGL7Na6Ju6dkV1iImP5M/Z/fCdbXLloOAxvYg+8SJpYcpltsJ2jOt19K02AZbHexGqo
-         95tkmLY7MaCr6jgqp4/VREp41Y2GstW/5ReMz5WxbYy5si1U6mtuIfVf+l6swI8Mq2ZU
-         x0cth2u6pKfnIdS1ff8Ol/3mw23Mty9R48e706kdrW0MKKMEPn3WA7SQCz5N2XH9lpVn
-         9laft0o5533OdzrCTg2vwlglcD57rg8VV1xE3Jie/dQPi64iHUP7zyYtgOM0Mw8QUs1L
-         Yu2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=ctiA84ohVmTjNv2+hqGjHDIQgnDRE1bhV/IqP0i9Dzw=;
-        b=LxbhARs1HzqmfsAilwC0w7336u+l0+3E8sX0INvvli7m4WxgGontJFDEx4cvp9fqtt
-         O07WNDmabDcaY1IPPFnLqRkRdGKQ23Ay2RUpo4fG6z7IbeQahq0rTywZgC+9PZN3Rmb0
-         NjKysGclQKGgZQCbTFFo4ns9Vg3CdYayNjWp31FuIKDrpJk48myZcHC543TvoDk0aMJ1
-         QlaUfGB/vvfvWwdO3dRKt5asckZKqPu4ka1GWqp3Ri3dkTp+oHyLaAc+bPWM5EDiIXyk
-         kbnjxp1oO3i7kBTYvpyd9kVl4txdI5SvZFMh2tc6mVlI34s6n7fCDGuLL57S6EBItUDQ
-         msgA==
-X-Gm-Message-State: APjAAAWSGoERDa5BffF1Tmnm3cBnp03ScqsIFWwrotdGxyG5NflJB0ir
-        DLuOJLU7h3Xq/eb3xzg7n9M=
-X-Google-Smtp-Source: APXvYqy2KpTEL6ADh9i5kRJTORl27KQxD/zlzkCzevZ03a4zWBXICc8lRo4G+LlR9KEyqBQpPd5OXQ==
-X-Received: by 2002:a17:902:7288:: with SMTP id d8mr38419287pll.133.1566462022429;
-        Thu, 22 Aug 2019 01:20:22 -0700 (PDT)
-Received: from dhcp-12-139.nay.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id m125sm26508056pfm.139.2019.08.22.01.20.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 01:20:21 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 16:20:12 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     netdev@vger.kernel.org, Madhu Challa <challa@noironetworks.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jianlin Shi <jishi@redhat.com>
-Subject: Re: [PATCHv2 net] ipv6/addrconf: allow adding multicast addr if
- IFA_F_MCAUTOJOIN is set
-Message-ID: <20190822082012.GE18865@dhcp-12-139.nay.redhat.com>
-References: <20190813135232.27146-1-liuhangbin@gmail.com>
- <20190820021947.22718-1-liuhangbin@gmail.com>
- <4306235d-db31-bf06-9d26-ce19319feae3@gmail.com>
+        id S1732407AbfHVId4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 04:33:56 -0400
+Received: from www62.your-server.de ([213.133.104.62]:41210 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726039AbfHVId4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 04:33:56 -0400
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i0iXP-0006qM-Se; Thu, 22 Aug 2019 10:33:43 +0200
+Received: from [178.197.249.40] (helo=pc-63.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i0iXP-000JYh-DQ; Thu, 22 Aug 2019 10:33:43 +0200
+Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+References: <20190820114706.18546-1-toke@redhat.com>
+ <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com>
+ <87blwiqlc8.fsf@toke.dk>
+ <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net>
+Date:   Thu, 22 Aug 2019 10:33:42 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4306235d-db31-bf06-9d26-ce19319feae3@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25548/Wed Aug 21 10:27:18 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 19, 2019 at 10:33:58PM -0400, David Ahern wrote:
-> On 8/19/19 10:19 PM, Hangbin Liu wrote:
-> > But in ipv6_add_addr() it will check the address type and reject multicast
-> > address directly. So this feature is never worked for IPv6.
+On 8/22/19 9:49 AM, Andrii Nakryiko wrote:
+> On Wed, Aug 21, 2019 at 2:07 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+>>> On Tue, Aug 20, 2019 at 4:47 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
+>>>>
+>>>> iproute2 uses its own bpf loader to load eBPF programs, which has
+>>>> evolved separately from libbpf. Since we are now standardising on
+>>>> libbpf, this becomes a problem as iproute2 is slowly accumulating
+>>>> feature incompatibilities with libbpf-based loaders. In particular,
+>>>> iproute2 has its own (expanded) version of the map definition struct,
+>>>> which makes it difficult to write programs that can be loaded with both
+>>>> custom loaders and iproute2.
+>>>>
+>>>> This series seeks to address this by converting iproute2 to using libbpf
+>>>> for all its bpf needs. This version is an early proof-of-concept RFC, to
+>>>> get some feedback on whether people think this is the right direction.
+>>>>
+>>>> What this series does is the following:
+>>>>
+>>>> - Updates the libbpf map definition struct to match that of iproute2
+>>>>    (patch 1).
+>>>
+>>> Thanks for taking a stab at unifying libbpf and iproute2 loaders. I'm
+>>> totally in support of making iproute2 use libbpf to load/initialize
+>>> BPF programs. But I'm against adding iproute2-specific fields to
+>>> libbpf's bpf_map_def definitions to support this.
+>>>
+>>> I've proposed the plan of extending libbpf's supported features so
+>>> that it can be used to load iproute2-style BPF programs earlier,
+>>> please see discussions in [0] and [1].
+>>
+>> Yeah, I've seen that discussion, and agree that longer term this is
+>> probably a better way to do map-in-map definitions.
+>>
+>> However, I view your proposal as complementary to this series: we'll
+>> probably also want the BTF-based definition to work with iproute2, and
+>> that means iproute2 needs to be ported to libbpf. But iproute2 needs to
+>> be backwards compatible with the format it supports now, and, well, this
+>> series is the simplest way to achieve that IMO :)
 > 
-> If true, that is really disappointing.
+> Ok, I understand that. But I'd still want to avoid adding extra cruft
+> to libbpf just for backwards-compatibility with *exact* iproute2
+> format. Libbpf as a whole is trying to move away from relying on
+> binary bpf_map_def and into using BTF-defined map definitions, and
+> this patch series is a step backwards in that regard, that adds,
+> essentially, already outdated stuff that we'll need to support forever
+> (I mean those extra fields in bpf_map_def, that will stay there
+> forever).
+
+Agree, adding these extensions for libbpf would be a step backwards
+compared to using BTF defined map defs.
+
+> We've discussed one way to deal with it, IMO, in a cleaner way. It can
+> be done in few steps:
 > 
-> We need to get a functional test script started for various address cases.
+> 1. I originally wanted BTF-defined map definitions to ignore unknown
+> fields. It shouldn't be a default mode, but it should be supported
+> (and of course is very easy to add). So let's add that and let libbpf
+> ignore unknown stuff.
+> 
+> 2. Then to let iproute2 loader deal with backwards-compatibility for
+> libbpf-incompatible bpf_elf_map, we need to "pass-through" all those
+> fields so that users of libbpf (iproute2 loader, in this case) can
+> make use of it. The easiest and cleanest way to do this is to expose
+> BTF ID of a type describing each map entry and let iproute2 process
+> that in whichever way it sees fit.
+> 
+> Luckily, bpf_elf_map is compatible in `type` field, which will let
+> libbpf recognize bpf_elf_map as map definition. All the rest setup
+> will be done by iproute2, by processing BTF of bpf_elf_map, which will
+> let it set up map sizes, flags and do all of its map-in-map magic.
+> 
+> The only additions to libbpf in this case would be a new `__u32
+> bpf_map__btf_id(struct bpf_map* map);` API.
+> 
+> I haven't written any code and haven't 100% checked that this will
+> cover everything, but I think we should try. This will allow to let
+> users of libbpf do custom stuff with map definitions without having to
+> put all this extra logic into libbpf itself, which I think is
+> desirable outcome.
 
-Do you mean an `ip addr add` testing for all kinds of address types?
+Sounds reasonable in general, but all this still has the issue that we're
+assuming that BTF is /always/ present. Existing object files that would load
+just fine /today/ but do not have BTF attached won't be handled here. Wouldn't
+it be more straight forward to allow passing callbacks to the libbpf loader
+such that if the map section is not found to be bpf_map_def compatible, we
+rely on external user aka callback to parse the ELF section, handle any
+non-default libbpf behavior like pinning/retrieving from BPF fs, populate
+related internal libbpf map data structures and pass control back to libbpf
+loader afterwards. (Similar callback with prog section name handling for the
+case where tail call maps get automatically populated.)
 
-Thanks
-Hangbin
+Thanks,
+Daniel
