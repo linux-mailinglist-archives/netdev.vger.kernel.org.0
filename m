@@ -2,206 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B08809978A
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:59:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD4FD997CF
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 17:12:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389188AbfHVO7D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 10:59:03 -0400
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:33180 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732133AbfHVO7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:59:03 -0400
-Received: by mail-ed1-f67.google.com with SMTP id s15so8443680edx.0;
-        Thu, 22 Aug 2019 07:59:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0EDOAiJ2sQvkV1bWTPzSAn6c4tNAM7gVRqgo0jG7tMk=;
-        b=WXMAQwvg/aq4783doBQASaVE7XFWImaq2MKjIHwett1eD1p63AKs8917lrJxBmNZWC
-         /4p9FPI1/8E1NKxvuWHG+68hsRCHDQFtsi8dAi11G5NtAAJA/EnEeziWMPC/qgvUzj9O
-         iu8OiS40itMJAn9d+YmCFJokI+2RB9yDHxn8aLe7g2+QR4tL2x7cgvdDWBaEMVhsJ5f+
-         ftajrVN2IBKUlejlcTOsIG7BEBvMLXM4EHzp0u0KDcncjU8Y7nibpfuIBL66frMoF+1u
-         m/2zEi84yc0+LfxwuE5iIe8jZ6HJ7Iov7WdraTLZ0x2H8980B5x4S4em1PWM0D+yUquV
-         uO0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0EDOAiJ2sQvkV1bWTPzSAn6c4tNAM7gVRqgo0jG7tMk=;
-        b=L+pItU56XMQzVszgVGylojMBSG0UK+tffi8FIEEPCMXowu6R1r7SkTepV2AD020v8f
-         ONjaclz8p/azbYH0ieZI6r8QTYoa/bcvlHmjaAIvxQ2Xr56ae/pOY6fThP23esXCw06Y
-         EORVQJ9uutACEEqlIxg23hDDfZnkFhVt0J+h71pcDnueM1mN32Ig6IFyecS9ODDQt7vm
-         feMSBSIpynL4DPTgXQEz6y/P7JfEUWBbRoYGzXcRKqs7DeosiP/LedLlPX65qGjCNuDi
-         c6qp4IlJtGh8x32xM0gtkzTj5aUGCrkmgLsdJpcMNBYyRIlunoWbQ+SAQH5oRZf7nC/W
-         H7fg==
-X-Gm-Message-State: APjAAAWOlWP5I70DJ6J16XPWME6oo5G8lsVxHnUezCESdgHvOh0IixUv
-        p85sLaKOnfxiDb5iGY4RpC8DMKn8stHn3NCtLCpRGnYL
-X-Google-Smtp-Source: APXvYqwQ4KKmKBqRRkGh72YlmA/4RmiXM6B5RJmVe0CiAgThOigahg8e/jdI5x3WW+hoVnbc0O8niXnZP6/y9SQA7mE=
-X-Received: by 2002:a17:907:2069:: with SMTP id qp9mr35727253ejb.90.1566485940775;
- Thu, 22 Aug 2019 07:59:00 -0700 (PDT)
+        id S2389454AbfHVPLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 11:11:20 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:57788 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387755AbfHVPLT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 11:11:19 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mx.0dd.nl (Postfix) with ESMTPS id CC0475FC44;
+        Thu, 22 Aug 2019 17:11:16 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="dYtNjIu0";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id 793D71D85FE6;
+        Thu, 22 Aug 2019 17:11:16 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 793D71D85FE6
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1566486676;
+        bh=pWtXsRVEPvLed/m0NhhlKu1CLza7De9LHyjrNdYZbdw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dYtNjIu04is6DPPpcRUqOnSHBRAWJuENhjamzlkFcc69mGO3UfQ3rsngHuva405Ha
+         Sf5D+/HMAqHmafBNG8I9vTUaW1SbS+dtuyQPKaqOEwzoP+22izycD/C2tswjAIR9A8
+         z4YKAjK0nuAEI1H0+0Mk7BEakNXjYBNeM5QDi79kZSKYlaquhliHINULslkHDOW2aI
+         c4/YqK5inUtYUUTbx5tmLY0lheFwhmR28bcfPzcQMTIqHRgOayJpgCQbp62D9Q9sHW
+         +pgb9NVMHtGsvrCejRaJDOJF/5b0maqGgeBus9yWOdWZRepvuqnmewN04zsKY/7BzC
+         wH5MogCvoHYew==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Thu, 22 Aug 2019 15:11:16 +0000
+Date:   Thu, 22 Aug 2019 15:11:16 +0000
+Message-ID: <20190822151116.Horde.3pVh2Kr0MEO82EWm7859Zd2@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, Stefan Roese <sr@denx.de>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net-next v2 1/3] net: ethernet: mediatek: Add basic
+ PHYLINK support
+References: <20190821144336.9259-1-opensource@vdorst.com>
+ <20190821144336.9259-2-opensource@vdorst.com>
+ <20190822142739.GS13294@shell.armlinux.org.uk>
+In-Reply-To: <20190822142739.GS13294@shell.armlinux.org.uk>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
-References: <20190818182600.3047-1-olteanv@gmail.com> <CA+h21hr4UcoJK7upNJjG0ibtX7CkF=akxVdrb--1AJn6-z=sUQ@mail.gmail.com>
- <20190821043845.GB1332@localhost> <20190821140815.GA1447@localhost>
- <CA+h21hrtzU1XL-0m+BG5TYZvVh8WN6hgcM7CV5taHyq2MsR5dw@mail.gmail.com> <20190822141641.GB1437@localhost>
-In-Reply-To: <20190822141641.GB1437@localhost>
-From:   Vladimir Oltean <olteanv@gmail.com>
-Date:   Thu, 22 Aug 2019 17:58:49 +0300
-Message-ID: <CA+h21hpJm-3svfV93pYYrpoiV12jDjuROHCgvCjPivAjXTB_VA@mail.gmail.com>
-Subject: Re: [PATCH spi for-5.4 0/5] Deterministic SPI latency with NXP DSPI driver
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Mark Brown <broonie@kernel.org>,
-        Hubert Feurstein <h.feurstein@gmail.com>,
-        Miroslav Lichvar <mlichvar@redhat.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Aug 2019 at 17:16, Richard Cochran <richardcochran@gmail.com> wrote:
+Hi Russell,
+
+Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
+
+> On Wed, Aug 21, 2019 at 04:43:34PM +0200, René van Dorst wrote:
+>> +static void mtk_mac_link_down(struct phylink_config *config,  
+>> unsigned int mode,
+>> +			      phy_interface_t interface)
+>> +{
+>> +	struct mtk_mac *mac = container_of(config, struct mtk_mac,
+>> +					   phylink_config);
+>>
+>> -	return 0;
+>> +	mtk_w32(mac->hw, MAC_MCR_FORCE_LINK_DOWN, MTK_MAC_MCR(mac->id));
+>>  }
 >
-> On Wed, Aug 21, 2019 at 11:17:23PM +0300, Vladimir Oltean wrote:
-> > Of course PPS with a dedicated hardware receiver that can take input
-> > compare timestamps is always preferable. However non-Ethernet
-> > synchronization in the field looks to me like "make do with whatever
-> > you can". I'm not sure a plain GPIO that raises an interrupt is better
-> > than an interrupt-driven serial protocol controller - it's (mostly)
-> > the interrupts that throw off the precision of the software timestamp.
-> > And use Miroslav's pps-gpio-poll module and you're back from where you
-> > started (try to make a sw timestamp as precise as possible).
+> You set the MAC_MCR_FORCE_MODE bit here...
 >
-> Right, it might be better, might not.  You can consider hacking a
-> local time stamp into the ISR.  Also, if one of your MACs has a input
-> event pin, you can feed the switch's PPS output in there.
+>> +static void mtk_mac_link_up(struct phylink_config *config,  
+>> unsigned int mode,
+>> +			    phy_interface_t interface,
+>> +			    struct phy_device *phy)
+>>  {
+>> +	struct mtk_mac *mac = container_of(config, struct mtk_mac,
+>> +					   phylink_config);
+>> +	u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+>>
+>> +	mcr |= MAC_MCR_TX_EN | MAC_MCR_RX_EN;
+>> +	mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
+>> +}
 >
-> > wouldn't be my first choice. But DSA could have that built-in, and
-> > with the added latency benefit of a MAC-to-MAC connection.
-> > Too bad the mv88e6xxx driver can't do loopback timestamping, that's
-> > already 50% of the DSA drivers that support PTP at all. An embedded
-> > solution for this is less compelling now.
+> Looking at this, a link_down() followed by a link_up() would result in
+> this register containing MAC_MCR_FORCE_MODE | MAC_MCR_TX_EN |
+> MAC_MCR_RX_EN ?  Is that actually correct?  (MAC_MCR_FORCE_LINK isn't
+> set, so it looks to me like it still forces the link down.)
+
+Thanks for reviewing.
+
+Probably not.
+I assumed that mac_config() is always called before link_up()
+
+I simply can make it the opposite of link_up()
+
+like this:
+static void mtk_mac_link_down(struct phylink_config *config, unsigned  
+int mode,
+                               phy_interface_t interface)
+{
+       struct mtk_mac *mac = container_of(config, struct mtk_mac,
+                                  phylink_config);
+       u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+
+       mcr &= (MAC_MCR_TX_EN | MAC_MCR_RX_EN);
+       mtk_w32(mac->hw, mcr, MTK_MAC_MCR(mac->id));
+}
+
 >
-> Let me back track on my statement about mv88e6xxx.  At the time, I
-> didn't see any practical way to use the CPU port for synchronization,
-> but I forget exactly the details.  Maybe it is indeed possible,
-> somehow.  If you can find a way that will work on your switch and on
-> the Marvell, then I'd like to hear about it.
->
-> Thinking back...
->
-> One problem is this.  PTP requires a delay measurement.  You can send
-> a delay request from the host, but there will never be a reply.
->
-
-I don't think I understand the problem here.
-You need to think about this as a sort of degenerate PTP where the
-master and the slave are under the same device's management, not the
-full stack. I never actually said I want to make ptp4l work over the
-CPU port.
-So instead of the typical:
-
-Master (device A)                Slave (device B)
-
-    |                            |         Tstamps known
- t1 |------\      Sync           |         to slave
-    |       \-----\              |
-    |              \-----\       |
-    |                     \----->| t2      t2
-    |------\    Follow_up        |
-    |       \-----\              |
-    |              \-----\       |
-    |                     \----->| t1      t1, t2
-    |                            |
-    |          Delay_req  /------| t3      t1, t2, t3
-    |              /-----/       |
-    |       /-----/              |
- t4 |<-----/                     |
-    |                            |
-    |------\    Follow_up        |
-    |       \-----\              |
-    |              \-----\       |
-    |                     \----->|         t1, t2, t3, t4
-    |                            |
-    |                            |
-    |                            |
-    |                            |
-    v           time             v
-
-You'd have something like this:
-
-Master (DSA master port)         Slave (switch CPU port)
-
-    |                            |         Tstamps known
-    |                            |         to slave
-    |       Local_sync_req       |
- t1 |------\                     |         t1
-    |       \-----\              |
-    |              \-----\       |
-    |                     \----->| t2      t1, t2
-    |                            |
-    |     Local_sync_resp /------| t3      t1, t2, t3
-    |              /-----/       |
-    |       /-----/              |
- t4 |<-----/                     |         t1, t2, t3, t4
-    |                            |
-    |                            |
-    v           time             v
-
-As far as I understand PTP, the other messages are just protocol
-blah-blah because the slave doesn't know what the master knows, which
-is clearly not applicable here.
-t1, t2, t3, t4 still keep the same definitions though (master TX
-timestamp, slave RX timestamp, slave TX timestamp, master RX
-timestamp).
-I'm 90% certain the sja1105 can take an RX timestamp for a management
-frame (e.g. one for which a TX timestamp was requested) sent in
-loopback.
-
-> Another problem is this.  A Sync message arriving on an external port
-> is time stamped there, but then it is encapsulated as a tagged DSA
-> management message and delivered out the CPU port.  At this point, it
-> is no longer a PTP frame and will not be time stamped at the CPU port
-> on egress.
+> Note that link up/down forcing should not be done for in-band AN.
 >
 
-But you don't mean a TX timestamp at the egress of swp4 here, do you?
+This means that mac_config() of the SGMII patch is also incorrect?
 
- +---------------------------------+
- |  Management CPU                 |
- |                                 |
- |           DSA master            |
- |             +-----+             |
- |             |     |             |
- |             |     |             |
- +-------------+-----+-------------+
-           eth0   ^ RX tstamp
-                  |
-                  | TX tstamp
-        (swp4) CPU port
- +-------------+-----+-------------+
- |  Switch     |     |             |
- |             |     |             |
- |             +-----+             |
- |                ^ T              |
- |                |                |
- |    +-----------+                |
- |    |                            |
- |    |                            |
- | +-----+ +-----+ +-----+ +-----+ |
- | |     | |     | |     | |     | |
- | |     | |     | |     | |     | |
- +-+-----+-+-----+-+-----+-+-----+-+
-   swp0    swp1    swp2    swp3
-      ^
-      | RX tstamp
+mac_config() always sets the MAC in a force mode.
+But the SGMII block is set in AN.
 
-Why would that matter?
-Or just the RX timestamp at eth0?
-If you mean the latter, then yes, having HWTSTAMP_FILTER_ALL in the
-rx_filter of the DSA master is a hard requirement.
+Mainline code seems to do the same.
+Puts the SGMII block in AN or forced mode and always set the MAC in  
+forced mode.
 
-> Thanks,
-> Richard
+>> +static void mtk_validate(struct phylink_config *config,
+>> +			 unsigned long *supported,
+>> +			 struct phylink_link_state *state)
+>> +{
+>> +	struct mtk_mac *mac = container_of(config, struct mtk_mac,
+>> +					   phylink_config);
+>> +	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
+>>
+>> +	if (state->interface != PHY_INTERFACE_MODE_NA &&
+>> +	    state->interface != PHY_INTERFACE_MODE_MII &&
+>> +	    state->interface != PHY_INTERFACE_MODE_GMII &&
+>> +	    !(MTK_HAS_CAPS(mac->hw->soc->caps, MTK_RGMII) &&
+>> +	      phy_interface_mode_is_rgmii(state->interface)) &&
+>> +	    !(MTK_HAS_CAPS(mac->hw->soc->caps, MTK_TRGMII) &&
+>> +	      !mac->id && state->interface == PHY_INTERFACE_MODE_TRGMII)) {
+>> +		linkmode_zero(supported);
+>> +		return;
+>>  	}
+>>
+>> +	phylink_set_port_modes(mask);
+>> +	phylink_set(mask, Autoneg);
+>>
+>> +	if (state->interface == PHY_INTERFACE_MODE_TRGMII) {
+>> +		phylink_set(mask, 1000baseT_Full);
+>> +	} else {
+>> +		phylink_set(mask, 10baseT_Half);
+>> +		phylink_set(mask, 10baseT_Full);
+>> +		phylink_set(mask, 100baseT_Half);
+>> +		phylink_set(mask, 100baseT_Full);
+>> +
+>> +		if (state->interface != PHY_INTERFACE_MODE_MII) {
+>> +			phylink_set(mask, 1000baseT_Half);
+>> +			phylink_set(mask, 1000baseT_Full);
+>> +			phylink_set(mask, 1000baseX_Full);
+>> +		}
+>> +	}
+>>
+>> +	phylink_set(mask, Pause);
+>> +	phylink_set(mask, Asym_Pause);
+>>
+>> +	linkmode_and(supported, supported, mask);
+>> +	linkmode_and(state->advertising, state->advertising, mask);
+>>  }
+>
+> This looks fine.
+
+OK.
+
+> Thanks.
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
+
+Greats,
+
+René
+
+
