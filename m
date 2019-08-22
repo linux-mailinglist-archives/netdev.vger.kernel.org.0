@@ -2,98 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B882998E82
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 10:58:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 746A098EC9
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 11:09:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732015AbfHVI6h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 04:58:37 -0400
-Received: from www62.your-server.de ([213.133.104.62]:48740 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731589AbfHVI6h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 04:58:37 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0ivI-0000Ci-4d; Thu, 22 Aug 2019 10:58:24 +0200
-Received: from [178.197.249.40] (helo=pc-63.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0ivH-000AIc-Ig; Thu, 22 Aug 2019 10:58:23 +0200
-Subject: Re: [RFC bpf-next 4/5] iproute2: Allow compiling against libbpf
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        andrii.nakryiko@gmail.com
-References: <20190820114706.18546-1-toke@redhat.com>
- <20190820114706.18546-5-toke@redhat.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <9de36bbf-b70d-9320-c686-3033d0408276@iogearbox.net>
-Date:   Thu, 22 Aug 2019 10:58:22 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1730869AbfHVJJC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 05:09:02 -0400
+Received: from mga01.intel.com ([192.55.52.88]:16157 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730438AbfHVJJC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 05:09:02 -0400
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Aug 2019 02:09:01 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,416,1559545200"; 
+   d="scan'208";a="208075494"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.145])
+  by fmsmga002.fm.intel.com with ESMTP; 22 Aug 2019 02:08:57 -0700
+Received: from andy by smile with local (Exim 4.92.1)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1i0j5T-0006YZ-5I; Thu, 22 Aug 2019 12:08:55 +0300
+Date:   Thu, 22 Aug 2019 12:08:55 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Sudarsana Reddy Kalluru <skalluru@marvell.com>
+Cc:     Joseph Qi <joseph.qi@linux.alibaba.com>,
+        Mark Fasheh <mark@fasheh.com>,
+        Joel Becker <jlbec@evilplan.org>,
+        "ocfs2-devel@oss.oracle.com" <ocfs2-devel@oss.oracle.com>,
+        Ariel Elior <aelior@marvell.com>,
+        GR-everest-linux-l2 <GR-everest-linux-l2@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Colin Ian King <colin.king@canonical.com>
+Subject: Re: [PATCH v1] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for wider
+ use
+Message-ID: <20190822090855.GL30120@smile.fi.intel.com>
+References: <20190820163112.50818-1-andriy.shevchenko@linux.intel.com>
+ <1a3e6660-10d2-e66c-2880-24af64c7f120@linux.alibaba.com>
+ <20190821092541.GW30120@smile.fi.intel.com>
+ <MN2PR18MB2528511CEFCBC2BE07947BAAD3A50@MN2PR18MB2528.namprd18.prod.outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20190820114706.18546-5-toke@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25548/Wed Aug 21 10:27:18 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <MN2PR18MB2528511CEFCBC2BE07947BAAD3A50@MN2PR18MB2528.namprd18.prod.outlook.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/20/19 1:47 PM, Toke Høiland-Jørgensen wrote:
-> This adds a configure check for libbpf and renames functions to allow
-> lib/bpf.c to be compiled with it present. This makes it possible to
-> port functionality piecemeal to use libbpf.
+On Thu, Aug 22, 2019 at 05:46:07AM +0000, Sudarsana Reddy Kalluru wrote:
 > 
-> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
-> ---
->   configure          | 16 ++++++++++++++++
->   include/bpf_util.h |  6 +++---
->   ip/ipvrf.c         |  4 ++--
->   lib/bpf.c          | 33 +++++++++++++++++++--------------
->   4 files changed, 40 insertions(+), 19 deletions(-)
-> 
-> diff --git a/configure b/configure
-> index 45fcffb6..5a89ee9f 100755
-> --- a/configure
-> +++ b/configure
-> @@ -238,6 +238,19 @@ check_elf()
->       fi
->   }
->   
-> +check_libbpf()
-> +{
-> +    if ${PKG_CONFIG} libbpf --exists; then
-> +	echo "HAVE_LIBBPF:=y" >>$CONFIG
-> +	echo "yes"
-> +
-> +	echo 'CFLAGS += -DHAVE_LIBBPF' `${PKG_CONFIG} libbpf --cflags` >> $CONFIG
-> +	echo 'LDLIBS += ' `${PKG_CONFIG} libbpf --libs` >>$CONFIG
-> +    else
-> +	echo "no"
-> +    fi
-> +}
-> +
->   check_selinux()
+> > -----Original Message-----
+> > From: netdev-owner@vger.kernel.org <netdev-owner@vger.kernel.org> On
+> > Behalf Of Andy Shevchenko
+> > Sent: Wednesday, August 21, 2019 2:56 PM
+> > To: Joseph Qi <joseph.qi@linux.alibaba.com>
+> > Cc: Mark Fasheh <mark@fasheh.com>; Joel Becker <jlbec@evilplan.org>;
+> > ocfs2-devel@oss.oracle.com; Ariel Elior <aelior@marvell.com>; Sudarsana
+> > Reddy Kalluru <skalluru@marvell.com>; GR-everest-linux-l2 <GR-everest-
+> > linux-l2@marvell.com>; David S. Miller <davem@davemloft.net>;
+> > netdev@vger.kernel.org; Colin Ian King <colin.king@canonical.com>
+> > Subject: Re: [PATCH v1] ocfs2/dlm: Move BITS_TO_BYTES() to bitops.h for
+> > wider use
+> > 
+> > On Wed, Aug 21, 2019 at 09:29:04AM +0800, Joseph Qi wrote:
+> > > On 19/8/21 00:31, Andy Shevchenko wrote:
+> > > > There are users already and will be more of BITS_TO_BYTES() macro.
+> > > > Move it to bitops.h for wider use.
 
-More of an implementation detail at this point in time, but want to make sure this
-doesn't get missed along the way: as discussed at bpfconf [0] best for iproute2 to
-handle libbpf support would be the same way of integration as pahole does, that is,
-to integrate it via submodule [1] to allow kernel and libbpf features to be in sync
-with iproute2 releases and therefore easily consume extensions we're adding to libbpf
-to aide iproute2 integration.
+> > > > -#define BITS_TO_BYTES(x) ((x)/8)>
+> > > I don't think this is a equivalent replace, or it is in fact wrong
+> > > before?
+> > 
+> > I was thinking about this one and there are two applications:
+> > - calculus of the amount of structures of certain type per PAGE
+> >   (obviously off-by-one error in the original code IIUC purpose of
+> > STRUCT_SIZE)
+> > - calculus of some threshold based on line speed in bytes per second
+> >   (I dunno it will have any difference on the Gbs / 100 MBs speeds)
+> > 
+> I see that both the implementations (existing vs new) yield same value for standard speeds 10G (i.e.,10000), 1G (1000) that device supports. Hence the change look to be ok.
 
-Thanks,
-Daniel
+Thank you for testing, may I use your Tested-by tag?
 
-   [0] http://vger.kernel.org/bpfconf2019.html#session-4
-   [1] https://git.kernel.org/pub/scm/devel/pahole/pahole.git/commit/?id=21507cd3e97bc5692d97201ee68df044c6767e9a
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
