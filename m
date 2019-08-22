@@ -2,71 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 15D339A284
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:02:02 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED3B09A290
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:07:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404853AbfHVWBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 18:01:33 -0400
-Received: from mail-qt1-f171.google.com ([209.85.160.171]:43443 "EHLO
-        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403834AbfHVWBd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:01:33 -0400
-Received: by mail-qt1-f171.google.com with SMTP id b11so9407907qtp.10
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 15:01:32 -0700 (PDT)
+        id S2390227AbfHVWHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 18:07:03 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:46465 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388129AbfHVWHC (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:07:02 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z1so6776405wru.13
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 15:07:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=q94N1a4CEh/0zqhyBs2kCb5IhlZY38AuxFUVWZUpUwA=;
-        b=d/seBOH0Rr4jXH6JE6gEzE4GS/Q4e/GbEHXihCrNhUxtpuwKkAtHRPTxfYo5HKSPfp
-         e8vug1rYaoCjQawn7GnxR08fAzFh3bGin3QGOiqbavs6K8RUkPp/KF9WTSeDp+vzRV/2
-         6iit5xWHKy/hSEdVsuqlJw3TMN+kQmSixuW9hFaHxPGFvEGf0gHg5BGRkSTaxSkQPIDN
-         Rx8+2ZF797nubv/HMD0H7u1daWu7Yggb+qijoCSkrpMQNlDAjDcWtDgkHG5ywF0dglVa
-         ME+y/hM2jQHpGayYYj+xpWV/EW0N05d2zecdhjIb4Z2l8Oz6lka06DwLfPQD1XNijOfg
-         d2rA==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=12exksaaxq8SwryWcYXXbR0gxmFeY5aqEbv9tHxperk=;
+        b=flZPKiXMSdjhiZc7EaxJrNR1OgJ3Oe4iJfRwAAs/biqLdT2WuY3fai732L+fSZgUMW
+         E6yQA8XbGi2skums1CkPTLo7keywbL7KoSO1+GKBlc/8hgbSvXk0k80d3K35wpWi3OHJ
+         SVmxfMDEnr8iozQ7MIsvDkGwd7RrshHna1SVW2w+ONv/SjyoQUNwqsp/uFXW0r9RcjqP
+         oHEuhwL0x9QlUKRowXLR4wESQEnbuShbe5mvd+Dg7TKMQaODzrDRiKZVWN0VKuLW2mji
+         94D2OLGsl33qn8G9lm012E5/ZQUrpJWP5b0SUWVmij8SFJvb0BX5n2qHOAO+1PQtRxaH
+         RM6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=q94N1a4CEh/0zqhyBs2kCb5IhlZY38AuxFUVWZUpUwA=;
-        b=plA95E95cjztbo+to8R9twCBOcpPhI4u0qXN3gLTwDZLQRu9xHEXDMoQNLHakJoozZ
-         LcQx4PjinxTmoviUiecQtEe3vBpJqllGmOxAVu1RsbNHj/wFO/KwqBJI2HFy0/VHSHc8
-         kkL+3iit74FbLz1n1yUOvExIZVHYHSsSTE0/EpZ5n4og/Y+SM0vGaRpvSK12VfLk+ZeZ
-         JXrhOScBKIEoWoHV8lL1BWR+yEe6W86JXDp4krDo7RVGk0VsWPqrYjWYRd39Ky4twstr
-         7OXPQYPTUG4Y0/8vxI19qlT0BISsInpaheiaF2nk5tr/FclzMIe2EjD2Bw/XsFlgJCv2
-         k00A==
-X-Gm-Message-State: APjAAAUym5XXfAEdN6NGkbQfx+CsQHWJFwfRjKOSjrwHoSHWMXJ8Ht/j
-        Wx9Ja65B7fzri2C893Bs8+CmFlZz8mM=
-X-Google-Smtp-Source: APXvYqx/33hLmUf8s2vye8JD5S8SWyHAeX7/DBeOqyqob2u4au2eHidxhogbtB7VWvq8e7Co5UGeXA==
-X-Received: by 2002:ac8:67d4:: with SMTP id r20mr1859680qtp.215.1566511292115;
-        Thu, 22 Aug 2019 15:01:32 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id y188sm517081qkc.29.2019.08.22.15.01.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 15:01:32 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 15:01:24 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
-        sassmann@redhat.com
-Subject: Re: [net-next v2 00/13][pull request] 40GbE Intel Wired LAN Driver
- Updates 2019-08-22
-Message-ID: <20190822150124.50e5b67d@cakuba.netronome.com>
-In-Reply-To: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
-References: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
-Organization: Netronome Systems, Ltd.
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=12exksaaxq8SwryWcYXXbR0gxmFeY5aqEbv9tHxperk=;
+        b=ZcypGVW16d/2EUzIT4hF4djogwJFUJqp+z1eXZpGYV2fjnFP/ycKJdkvBQY0vUsL63
+         kcEn2TELPbY3eiy6Ge6JTs10xw2opI2FapEEg9cpBfBauRdZEX2hbtQNzkr1EcPp/q7Z
+         fvWLQPkyj4nI1cj8GpJtDSli+kHtIpG+/sQkFfWqlIsOHuFrnPGx4YVup2h9itTcNyE2
+         TVK/uPQ4tqF7O6pp76BGsjTitLJHzZTa7cmYZGL6oESA26ub+eQ2Jy9S/khnLD1BHX6V
+         hVwhSTUT5QCUpjVQzcMp9+Mk8ankFC6xwmRgSO0ySHtuH8WPajBSaHAG1B4JUSJx5HP0
+         dvcw==
+X-Gm-Message-State: APjAAAViSrH5n1wID7l+k0hPYfIBwOD5u9Lv4gr38j0AbN5c8cp1GBDh
+        PCEgax32yt7WZcbowqJD/XA=
+X-Google-Smtp-Source: APXvYqxsCf4gyN55qo8S2315SAVMshGsvMXvQwZU/DF/crQf81G9M/uiI7jUE1qLKAhOwY7+9xtYyA==
+X-Received: by 2002:a5d:4111:: with SMTP id l17mr1091551wrp.59.1566511620680;
+        Thu, 22 Aug 2019 15:07:00 -0700 (PDT)
+Received: from [192.168.1.2] ([86.126.25.232])
+        by smtp.gmail.com with ESMTPSA id r190sm1644061wmf.0.2019.08.22.15.06.59
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 22 Aug 2019 15:07:00 -0700 (PDT)
+Subject: Re: [PATCH net-next 2/6] net: dsa: do not skip -EOPNOTSUPP in
+ dsa_port_vid_add
+To:     Vivien Didelot <vivien.didelot@gmail.com>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, f.fainelli@gmail.com, andrew@lunn.ch
+References: <20190822201323.1292-1-vivien.didelot@gmail.com>
+ <20190822201323.1292-3-vivien.didelot@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Message-ID: <f179fa10-3123-d055-1c67-0d24adf3cb08@gmail.com>
+Date:   Fri, 23 Aug 2019 01:06:58 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190822201323.1292-3-vivien.didelot@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Aug 2019 13:30:26 -0700, Jeff Kirsher wrote:
-> v2: Combined patch 7 & 9 in the original series, since both patches
->     bumped firmware API version.  Also combined patches 12 & 13 in the
->     original series, since one increased the scope of checking for MAC
->     and the follow-on patch made use of function within the new scope.
+Hi Vivien,
 
-Thanks, LGTM
+On 8/22/19 11:13 PM, Vivien Didelot wrote:
+> Currently dsa_port_vid_add returns 0 if the switch returns -EOPNOTSUPP.
+> 
+> This function is used in the tag_8021q.c code to offload the PVID of
+> ports, which would simply not work if .port_vlan_add is not supported
+> by the underlying switch.
+> 
+> Do not skip -EOPNOTSUPP in dsa_port_vid_add but only when necessary,
+> that is to say in dsa_slave_vlan_rx_add_vid.
+> 
+
+Do you know why Florian suppressed -EOPNOTSUPP in 061f6a505ac3 ("net: 
+dsa: Add ndo_vlan_rx_{add, kill}_vid implementation")?
+I forced a return value of -EOPNOTSUPP here and when I create a VLAN 
+sub-interface nothing breaks, it just says:
+RTNETLINK answers: Operation not supported
+which IMO is expected.
+
+> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> ---
+>   net/dsa/port.c  | 4 ++--
+>   net/dsa/slave.c | 7 +++++--
+>   2 files changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/net/dsa/port.c b/net/dsa/port.c
+> index f75301456430..ef28df7ecbde 100644
+> --- a/net/dsa/port.c
+> +++ b/net/dsa/port.c
+> @@ -382,8 +382,8 @@ int dsa_port_vid_add(struct dsa_port *dp, u16 vid, u16 flags)
+>   
+>   	trans.ph_prepare = true;
+>   	err = dsa_port_vlan_add(dp, &vlan, &trans);
+> -	if (err == -EOPNOTSUPP)
+> -		return 0;
+> +	if (err)
+> +		return err;
+>   
+>   	trans.ph_prepare = false;
+>   	return dsa_port_vlan_add(dp, &vlan, &trans);
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index 33f41178afcc..9d61d9dbf001 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -1082,8 +1082,11 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
+>   			return -EBUSY;
+>   	}
+>   
+> -	/* This API only allows programming tagged, non-PVID VIDs */
+> -	return dsa_port_vid_add(dp, vid, 0);
+> +	ret = dsa_port_vid_add(dp, vid, 0);
+> +	if (ret && ret != -EOPNOTSUPP)
+> +		return ret;
+> +
+> +	return 0;
+>   }
+>   
+>   static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
+> 
+
+Regards,
+-Vladimir
