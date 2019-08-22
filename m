@@ -2,204 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C191C99A64
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 19:13:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 19D1D99A9F
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 19:15:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391077AbfHVRMs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 13:12:48 -0400
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:46403 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733052AbfHVRMs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 13:12:48 -0400
-Received: from eucas1p1.samsung.com (unknown [182.198.249.206])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20190822171246euoutp02c68c901d0e1cc8edf7189ce2a7980f76~9TfaSWEyE1898918989euoutp02a
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 17:12:46 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20190822171246euoutp02c68c901d0e1cc8edf7189ce2a7980f76~9TfaSWEyE1898918989euoutp02a
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1566493966;
-        bh=UOkCLCh1WvbHpQZYwO8RvemaDSbUwqU6rhWFFCiDmsE=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=TPbQ2XJDJbuC8DG7na1TEViPhYVzfQuh1wa5MJXju7r1vw3m9zDcarWNF+fEC/s5Q
-         XGybKQ1hnE5G/RihIQMbEf2kJBZ5887IxVbVln6mET5jPT00RJ+wA6xaWDsVUIWUqS
-         sww8+vYYaQvbR1J72maXmf4HhoTMgt11UBMWvkQo=
-Received: from eusmges3new.samsung.com (unknown [203.254.199.245]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20190822171245eucas1p113b527ac20ca4f2ed2c842a3cf5cdfcc~9TfYuOA5y2704927049eucas1p1E;
-        Thu, 22 Aug 2019 17:12:45 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges3new.samsung.com (EUCPMTA) with SMTP id CB.76.04374.C0DCE5D5; Thu, 22
-        Aug 2019 18:12:44 +0100 (BST)
-Received: from eusmtrp2.samsung.com (unknown [182.198.249.139]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20190822171243eucas1p12213f2239d6c36be515dade41ed7470b~9TfXnJsX31493014930eucas1p1T;
-        Thu, 22 Aug 2019 17:12:43 +0000 (GMT)
-Received: from eusmgms2.samsung.com (unknown [182.198.249.180]) by
-        eusmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20190822171243eusmtrp2d541b2dd599bc153d0eaa02062fc26b1~9TfXXgzaw1649316493eusmtrp2e;
-        Thu, 22 Aug 2019 17:12:43 +0000 (GMT)
-X-AuditID: cbfec7f5-4f7ff70000001116-28-5d5ecd0cfc62
-Received: from eusmtip1.samsung.com ( [203.254.199.221]) by
-        eusmgms2.samsung.com (EUCPMTA) with SMTP id 84.F8.04117.B0DCE5D5; Thu, 22
-        Aug 2019 18:12:43 +0100 (BST)
-Received: from imaximets.rnd.samsung.ru (unknown [106.109.129.180]) by
-        eusmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20190822171242eusmtip15aebbf240f5ddf60e37aa801dea65411~9TfWNfopd1319413194eusmtip1T;
-        Thu, 22 Aug 2019 17:12:42 +0000 (GMT)
-From:   Ilya Maximets <i.maximets@samsung.com>
-To:     netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Eelco Chaudron <echaudro@redhat.com>,
-        William Tu <u9012063@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Ilya Maximets <i.maximets@samsung.com>
-Subject: [PATCH net v3] ixgbe: fix double clean of tx descriptors with xdp
-Date:   Thu, 22 Aug 2019 20:12:37 +0300
-Message-Id: <20190822171237.20798-1-i.maximets@samsung.com>
-X-Mailer: git-send-email 2.17.1
-X-Brightmail-Tracker: H4sIAAAAAAAAA0WSaUgUcRjG++/szoybq9N6/d3EYqkPiml28QelLM0GKYoIkUxr1PEoV2VH
-        LTPIUFbTsDRKMDUPwgtUdPFKzRbZ9SrTNM/Y/GDqRuWVKYrmOkrfnvd5f+/zfHlJTFoukpER
-        UbGsMoqJlONiYb12te+I6YfAgKOF7S5oM39ciJZWxwm0rqoBaLFDh6OSomUM5fWlCNHE4CqO
-        BlNXCbQ5tiZC2pkUHHXW6QH63JyHozJNJ4G0hdZoeMDUw5xWl48K6KbcrwRd0jIroNNHBjC6
-        tuIxTnclx9E5GZMY/bttCKcz1RWAXqy1vyK+LnYPYSMj4lmly+lb4nBDkV4QU21771OeVRJY
-        sEwHJiSkTsA1bbkoHYhJKVUGoEFr2BmWAFxe6RfwwyKA01PTwt2TKt1TjF+UAqjT9+H8sALg
-        29RXIiOFU06wu7IDGLUlJYPzjQ2EEcKoFiF83pm9HWVB+cClzPktiCSF1GFYXsAZpYRygxl1
-        TnzZAVhZ075dBqkqAmZlVW3jkPKCDS8v8YwFNOjUBK/t4GbTawGvH0J9yizgb9MAzNFs7CzO
-        QPWPj4QxB6McYHWzC2+fhaOppQI+3gyO/NxntLEtmV2fg/G2BKappDx9CK69L8V4LYOjvxYJ
-        HqGhwbBtS6kAmNP/AjwD9rn/qwoBqAA2bBynCGO541HsXWeOUXBxUWHOwdGKWrD1QD0buj+N
-        oG09SAMoEshNJZ3pgQFSERPPJSg0AJKY3FISn7VlSUKYhPusMvqmMi6S5TRgPymU20gS93zz
-        l1JhTCx7h2VjWOXuVkCayJLAqYXbA0NzAFkNqrr8VY7nned7E57YMTVTfh7dZq3VVFbBTIp5
-        67LbuXeunn9r3nz3Dg4d93XzuRZUXPogtiByTjp5o8S5p3v4wtCjfNPkXl+ZtTi0mFRcBmsn
-        D9LA08FTtWSbfWxocK+X+mKiHE0wNu6+V/VFZmOzqMdv4ou3XMiFM66OmJJj/gGOd8bIPAMA
-        AA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpkkeLIzCtJLcpLzFFi42I5/e/4XV3us3GxBnePiVr8n3ubxeLLz9vs
-        Fn/aNjBafD5ynM1i8cJvzBZzzrewWNy58pPN4kr7T3aL/7d+s1oce9HCZnFi831Gi8u75rBZ
-        rDh0gt3i2AIxi+uXeBz4PbasvMnksXPWXXaPxXteMnl03bjE7LFpVSebx8nmUo/p3Q+ZPd7v
-        u8rm0bdlFaPH501yAVxRejZF+aUlqQoZ+cUltkrRhhZGeoaWFnpGJpZ6hsbmsVZGpkr6djYp
-        qTmZZalF+nYJehmvFt5nKlgvWXFhjmgD4yeRLkZODgkBE4l1x/uZuxi5OIQEljJKdHw+ywSR
-        kJL48esCK4QtLPHnWhcbRNE3Rombd2eygyTYBHQkTq0+wghiiwA1fNyxnR2kiFngBIvEzIkn
-        wSYJC3hJfOn7CFTEwcEioCqxcl4xiMkrYC3RvVkHYr68xOoNB5gnMPIsYGRYxSiSWlqcm55b
-        bKRXnJhbXJqXrpecn7uJERj824793LKDsetd8CFGAQ5GJR7eE11xsUKsiWXFlbmHGCU4mJVE
-        eMsmAoV4UxIrq1KL8uOLSnNSiw8xmgKtnsgsJZqcD4zMvJJ4Q1NDcwtLQ3Njc2MzCyVx3g6B
-        gzFCAumJJanZqakFqUUwfUwcnFINjFrxOWs9fWbsXJCoKfp6mn6dx12lZY7z/8Qf+V9o6Z03
-        KyF2svNe5dQLW1PPTcu7+k+jOfH+G3WbopW3pi2/8J/ncnXo9q1LKkVMwy+fFruwUTL9+Mu4
-        U+cDtyamXPRv9vXQynlgPH+PgYXYeabodQcMuVl33pKuFXUTtlz7Jrgy+crLUvH3j5RYijMS
-        DbWYi4oTAU/1fI6UAgAA
-X-CMS-MailID: 20190822171243eucas1p12213f2239d6c36be515dade41ed7470b
-X-Msg-Generator: CA
+        id S2388935AbfHVROi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 13:14:38 -0400
+Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:17688 "EHLO
+        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2391125AbfHVROf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 13:14:35 -0400
+Received: from pps.filterd (m0170393.ppops.net [127.0.0.1])
+        by mx0a-00154904.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7MGtSkM005894;
+        Thu, 22 Aug 2019 13:14:34 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dellteam.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=smtpout1;
+ bh=pSPlsJFML3BPeq/21ZQFMi902QsechRDqUNGAYwS7Pk=;
+ b=UANCy6whT4s4Jys4elafzzxHviWk+sVcvbDUgD6Q7+DoN7nIZDBiwdGfcxKNX5U8bbPo
+ oZHKNhw8eGY7Fy5TCfRqr0FxNQX9HmG6z0JajwqrAQ29YKk6XTsfhJoo15HXyewipla6
+ c4DtKeaZOJMlm0maJW6s7WmlZxiF8GcxN9lWjx3sCx+3og5bHISjHSdfKkAiCa4GUvqp
+ oiKHxB8CvYGnwVa4x9QF8wB7GStXZc8PawmCH6ORxiwDcdg+Kxj0jzBeU6sS71l/rTdo
+ z2bwp0f7IP0SnOwukcUYEbSV+v26o+9kTKRqYtfFkx06JIBe3yUoXzJklUNgNHxNqxOq Bg== 
+Received: from mx0b-00154901.pphosted.com (mx0b-00154901.pphosted.com [67.231.157.37])
+        by mx0a-00154904.pphosted.com with ESMTP id 2uhubq1bh6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 22 Aug 2019 13:14:34 -0400
+Received: from pps.filterd (m0134318.ppops.net [127.0.0.1])
+        by mx0a-00154901.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7MGwPIG097699;
+        Thu, 22 Aug 2019 13:14:33 -0400
+Received: from ausxippc101.us.dell.com (ausxippc101.us.dell.com [143.166.85.207])
+        by mx0a-00154901.pphosted.com with ESMTP id 2uec7ej842-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 22 Aug 2019 13:14:32 -0400
+X-LoopCount0: from 10.166.132.132
+X-PREM-Routing: D-Outbound
+X-IronPort-AV: E=Sophos;i="5.60,346,1549951200"; 
+   d="scan'208";a="1288603742"
+From:   <Charles.Hyde@dellteam.com>
+To:     <oneukum@suse.com>, <gregkh@linuxfoundation.org>
+CC:     <Mario.Limonciello@dell.com>, <nic_swsd@realtek.com>,
+        <linux-acpi@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <netdev@vger.kernel.org>
+Subject: RE: [RFC 1/4] Add usb_get_address and usb_set_address support
+Thread-Topic: [RFC 1/4] Add usb_get_address and usb_set_address support
+Thread-Index: AQHVV6TlN6JhPmp8+EufEIlfFi8+LKcE8QcAgAFHO1CAAO3FgIAANWIw
+Date:   Thu, 22 Aug 2019 17:14:30 +0000
+Message-ID: <8014f932039c4e01bd513148f20ca0e4@AUSX13MPS303.AMER.DELL.COM>
+References: <1566339522507.45056@Dellteam.com>
+        ,<20190820222602.GC8120@kroah.com> <1566430506442.20925@Dellteam.com>
+ <1566461295.8347.19.camel@suse.com>
+In-Reply-To: <1566461295.8347.19.camel@suse.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Enabled=True;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SiteId=945c199a-83a2-4e80-9f8c-5a91be5752dd;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Owner=Charles_Hyde@Dellteam.com;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_SetDate=2019-08-22T17:14:29.2453990Z;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Name=External Public;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Application=Microsoft Azure
+ Information Protection;
+ MSIP_Label_17cb76b2-10b8-4fe1-93d4-2202842406cd_Extended_MSFT_Method=Manual;
+ aiplabel=External Public
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.143.242.75]
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20190822171243eucas1p12213f2239d6c36be515dade41ed7470b
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20190822171243eucas1p12213f2239d6c36be515dade41ed7470b
-References: <CGME20190822171243eucas1p12213f2239d6c36be515dade41ed7470b@eucas1p1.samsung.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-22_11:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=725 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908220156
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=822 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908220156
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Tx code doesn't clear the descriptors' status after cleaning.
-So, if the budget is larger than number of used elems in a ring, some
-descriptors will be accounted twice and xsk_umem_complete_tx will move
-prod_tail far beyond the prod_head breaking the completion queue ring.
-
-Fix that by limiting the number of descriptors to clean by the number
-of used descriptors in the tx ring.
-
-'ixgbe_clean_xdp_tx_irq()' function refactored to look more like
-'ixgbe_xsk_clean_tx_ring()' since we're allowed to directly use
-'next_to_clean' and 'next_to_use' indexes.
-
-Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
----
-
-Version 3:
-  * Reverted some refactoring made for v2.
-  * Eliminated 'budget' for tx clean.
-  * prefetch returned.
-
-Version 2:
-  * 'ixgbe_clean_xdp_tx_irq()' refactored to look more like
-    'ixgbe_xsk_clean_tx_ring()'.
-
- drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 29 ++++++++------------
- 1 file changed, 11 insertions(+), 18 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-index 6b609553329f..a3b6d8c89127 100644
---- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-+++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-@@ -633,19 +633,17 @@ static void ixgbe_clean_xdp_tx_buffer(struct ixgbe_ring *tx_ring,
- bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
- 			    struct ixgbe_ring *tx_ring, int napi_budget)
- {
-+	u16 ntc = tx_ring->next_to_clean, ntu = tx_ring->next_to_use;
- 	unsigned int total_packets = 0, total_bytes = 0;
--	u32 i = tx_ring->next_to_clean, xsk_frames = 0;
--	unsigned int budget = q_vector->tx.work_limit;
- 	struct xdp_umem *umem = tx_ring->xsk_umem;
- 	union ixgbe_adv_tx_desc *tx_desc;
- 	struct ixgbe_tx_buffer *tx_bi;
--	bool xmit_done;
-+	u32 xsk_frames = 0;
- 
--	tx_bi = &tx_ring->tx_buffer_info[i];
--	tx_desc = IXGBE_TX_DESC(tx_ring, i);
--	i -= tx_ring->count;
-+	tx_bi = &tx_ring->tx_buffer_info[ntc];
-+	tx_desc = IXGBE_TX_DESC(tx_ring, ntc);
- 
--	do {
-+	while (ntc != ntu) {
- 		if (!(tx_desc->wb.status & cpu_to_le32(IXGBE_TXD_STAT_DD)))
- 			break;
- 
-@@ -661,22 +659,18 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
- 
- 		tx_bi++;
- 		tx_desc++;
--		i++;
--		if (unlikely(!i)) {
--			i -= tx_ring->count;
-+		ntc++;
-+		if (unlikely(ntc == tx_ring->count)) {
-+			ntc = 0;
- 			tx_bi = tx_ring->tx_buffer_info;
- 			tx_desc = IXGBE_TX_DESC(tx_ring, 0);
- 		}
- 
- 		/* issue prefetch for next Tx descriptor */
- 		prefetch(tx_desc);
-+	}
- 
--		/* update budget accounting */
--		budget--;
--	} while (likely(budget));
--
--	i += tx_ring->count;
--	tx_ring->next_to_clean = i;
-+	tx_ring->next_to_clean = ntc;
- 
- 	u64_stats_update_begin(&tx_ring->syncp);
- 	tx_ring->stats.bytes += total_bytes;
-@@ -688,8 +682,7 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
- 	if (xsk_frames)
- 		xsk_umem_complete_tx(umem, xsk_frames);
- 
--	xmit_done = ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
--	return budget > 0 && xmit_done;
-+	return ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
- }
- 
- int ixgbe_xsk_async_xmit(struct net_device *dev, u32 qid)
--- 
-2.17.1
-
+PiA+IDxzbmlwcGVkPg0KPiA+ID4NCj4gPiA+IFRoaXMgaXMgYSBWRVJZIGNkYy1uZXQtc3BlY2lm
+aWMgZnVuY3Rpb24uICBJdCBpcyBub3QgYSAiZ2VuZXJpYyIgVVNCDQo+ID4gPiBmdW5jdGlvbiBh
+dCBhbGwuICBXaHkgZG9lcyBpdCBiZWxvbmcgaW4gdGhlIFVTQiBjb3JlPyAgU2hvdWxkbid0IGl0
+DQo+ID4gPiBsaXZlIGluIHRoZSBjb2RlIHRoYXQgaGFuZGxlcyB0aGUgb3RoZXIgY2RjLW5ldC1z
+cGVjaWZpYyBsb2dpYz8NCj4gPiA+DQo+ID4gPiB0aGFua3MsDQo+ID4gPg0KPiA+ID4gZ3JlZyBr
+LWgNCj4gPg0KPiA+DQo+ID4gVGhhbmsgeW91IGZvciB0aGlzIGZlZWRiYWNrLCBHcmVnLiAgSSB3
+YXMgbm90IHN1cmUgYWJvdXQgYWRkaW5nIHRoaXMgdG8NCj4gbWVzc2FnZS5jLCBiZWNhdXNlIG9m
+IHRoZSBVU0JfQ0RDX0dFVF9ORVRfQUREUkVTUy4gIEkgaGFkIGZvdW5kDQo+IHJlZmVyZW5jZXMg
+dG8gU0VUX0FERFJFU1MgaW4gdGhlIFVTQiBwcm90b2NvbCBhdA0KPiBodHRwczovL3dpa2kub3Nk
+ZXYub3JnL1VuaXZlcnNhbF9TZXJpYWxfQnVzI1VTQl9Qcm90b2NvbC4gIElmIG9uZSB3YW50ZWQg
+YQ0KPiBnZW5lcmljIFVTQiBmdW5jdGlvbiBmb3IgU0VUX0FERFJFU1MsIHRvIGJlIHVzZWQgZm9y
+IGJvdGggc2VuZGluZyBhIE1BQw0KPiBhZGRyZXNzIGFuZCByZWNlaXZpbmcgb25lLCBob3cgd291
+bGQgeW91IHN1Z2dlc3QgdGhpcyBiZSBpbXBsZW1lbnRlZD8gIFRoaXMNCj4gaXMgYSBsZWdpdCBx
+dWVzdGlvbiBiZWNhdXNlIEkgYW0gY3VyaW91cy4NCj4gDQo+IFlvdXIgaW1wbGVtZW50YXRpb24g
+d2FzLCBleGNlcHQgZm9yIG1pc3NpbmcgZXJyb3IgaGFuZGxpbmcsIHVzYWJsZS4NCj4gVGhlIHBy
+b2JsZW0gaXMgd2hlcmUgeW91IHB1dCBpdC4gQ0RDIG1lc3NhZ2VzIGV4aXN0IG9ubHkgZm9yIENE
+QyBkZXZpY2VzLiBOb3cNCj4gaXQgaXMgdHJ1ZSB0aGF0IHRoZXJlIGlzIG5vIGdlbmVyaWMgQ0RD
+IGRyaXZlci4NCj4gQ3JlYXRpbmcgYSBtb2R1bGUganVzdCBmb3IgdGhhdCB3b3VsZCBjb3N0IG1v
+cmUgbWVtb3J5IHRoYW4gaXQgc2F2ZXMgaW4gbW9zdA0KPiBjYXNlcy4NCj4gQnV0IE1BQ3MgYXJl
+IGNvbmZpbmVkIHRvIG5ldHdvcmsgZGV2aWNlcy4gSGVuY2UgdGhlIGZ1bmN0aW9uYWxpdHkgY2Fu
+IGJlIHB1dA0KPiBpbnRvIHVzYm5ldC4gSXQgc2hvdWxkIG5vdCBiZSBwdXQgaW50byBhbnkgaW5k
+aXZpZHVhbCBkcml2ZXIsIHNvIHRoYXQgZXZlcnkNCj4gbmV0d29yayBkcml2ZXIgY2FuIHVzZSBp
+dCB3aXRob3V0IGR1cGxpY2F0aW9uLg0KPiANCj4gPiBZb3VyIGZlZWRiYWNrIGxlZCB0byBtb3Zp
+bmcgdGhlIGZ1bmN0aW9uYWxpdHkgaW50byBjZGNfbmNtLmMgZm9yIHRvZGF5J3MNCj4gdGVzdGlu
+ZywgYW5kIHJlbW92aW5nIGFsbCBjaGFuZ2VzIGZyb20gbWVzc2FnZXMuYywgdXNiLmgsIHVzYm5l
+dC5jLCBhbmQNCj4gdXNibmV0LmguICBUaGlzIG1heSBiZSB3aGVyZSBJIGVuZCB1cCBsb25nIHRl
+cm0sIGJ1dCBJIHdvdWxkIGxpa2UgdG8gbGVhcm4gaWYNCj4gdGhlcmUgaXMgYSBwb3NzaWJsZSBz
+b2x1dGlvbiB0aGF0IGNvdWxkIGxpdmUgaW4gbWVzc2FnZS5jIGFuZCBiZSBjYWxsYWJsZSBmcm9t
+DQo+IG90aGVyIFVTQi10by1FdGhlcm5ldCBhd2FyZSBkcml2ZXJzLg0KPiANCj4gQWxsIHRob3Nl
+IGRyaXZlcnMgdXNlIHVzYm5ldC4gSGVuY2UgdGhlcmUgaXQgc2hvdWxkIGJlLg0KPiANCj4gCVJl
+Z2FyZHMNCj4gCQlPbGl2ZXINCg0KDQpTb21lIG9mIHRoZSBkcml2ZXJzIGluIGRyaXZlcnMvbmV0
+L3VzYi8gZG8gY2FsbCBmdW5jdGlvbnMgaW4gZHJpdmVycy9uZXQvdXNiL3VzYm5ldCwgYnV0IG5v
+dCBhbGwuICBBcyBHcmVnIHBvaW50ZWQgb3V0LCB0aGUgVVNCIGNoYW5nZSBJIGRldmVsb3BlZCBp
+cyBjZGMgc3BlY2lmaWMsIHNvIHB1dHRpbmcgaXQgaW50byB1c2JuZXQgd291bGQgcmFpc2UgdGhl
+IHNhbWUgY29uY2VybnMgR3JlZyBtZW50aW9uZWQuICBMZWF2aW5nIG15IG5ld2VzdCBpbXBsZW1l
+bnRhdGlvbiBpbiBjZGNfbmNtLmMgd2lsbCBiZSBtb3N0IGFwcHJvcHJpYXRlLCBhcyBpdCBhbHNv
+IGZpdHMgd2l0aCB3aGF0IG90aGVyIGRyaXZlcnMgaW4gdGhpcyBmb2xkZXIgaGF2ZSBkb25lLiAg
+TXkgb3JpZ2luYWwgY29kZSB3YXMgcmF0aGVyIHNob3J0IHNpZ2h0ZWQsIGF0IGJlc3QuDQoNCkNo
+YXJsZXMNCg==
