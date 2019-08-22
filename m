@@ -2,91 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4C2CA993DC
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:34:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 65A6C9940E
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:45:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388657AbfHVMeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 08:34:15 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:34963 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387707AbfHVMeN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:34:13 -0400
-Received: by mail-lf1-f67.google.com with SMTP id p197so4425624lfa.2
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 05:34:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=aWwEGZ7IKPwlD1SyN53LweuoS+rG8j2WBRgPDxMagPA=;
-        b=qQwouDogyXJvS+YAsG7u3jI4chdOO2iCwbnUv4qV7/t3H0mpAnkar5BQ6W4yzvm3w4
-         MFy7lbM3I35ux+N13OWQLqMSp+JYBfamJOBS4Rv9YtwGFbdx/1nZ3P/IH2tA3AOy5PjU
-         kwMZko6qlgHP0UHJGHFvzgceOWtw4tjNefrQZ96MP6AChhfKt94B36gjTZhv6W5d2u3q
-         XLX/JEQ53zQai3qewoG2X6xDeNJ4HOzQU6TV4Cb4zGt4uQQf5AD05mnaufLgjsYbqLh0
-         X5GVMmJW05ufNL+28p6nLz0lCjVsZITmyIS1mIvW9/VAX3eTcLMat0TkK0bawj8l1wal
-         unaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
-         :subject:to:content-transfer-encoding;
-        bh=aWwEGZ7IKPwlD1SyN53LweuoS+rG8j2WBRgPDxMagPA=;
-        b=FFPpyOEOwdTX2N2SHToiePJzPHZrpMxgIbCK2btipJyDt+k1GaNl9ju1TNqZYBG8ul
-         a2M7d1Fns5JCPfK5u9JpP1aLeWe/ezvTm6E3foyj1Ke7B+rvrD4Eg6tifmu78osGVHmi
-         +tIxsQ9GroBezTHN9PLtPrGvVL4TBS9RvDY0dlyas07cb9VjKEmBebmH3NrG1KjN7OUO
-         oBGebieWoP42SscVSiem0d3jlNwf0ROAPlkzEF04HVQ1xRQnLA6OsHyH55es0Puo7MZH
-         FgunLsuszRncrjpNQOYVSBuZ7v1RN1VC1H4YSVnUjwLjT9t2jcLy0q5xYhZa0EaCdIYB
-         IIWQ==
-X-Gm-Message-State: APjAAAXWATLIrAUI1nr23dXlGjCoe6TGARLSMR/bF++iyX2wXS2J0FMz
-        H7xc3aViWGrJd9hNO6kJC7DjcT+l0yGkQmXbl+k=
-X-Google-Smtp-Source: APXvYqyvt2RXzV9cZsTsiBwjcFFEoyd1HLlAwIQQPxXOemblWJ85A0QXgz94gt7tcllsT417ikCMvXpOU1ZxhrqMZqI=
-X-Received: by 2002:ac2:42c3:: with SMTP id n3mr13722899lfl.117.1566477250738;
- Thu, 22 Aug 2019 05:34:10 -0700 (PDT)
+        id S2387831AbfHVMoF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 08:44:05 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:38352 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727553AbfHVMoF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:44:05 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7MChPGb134044;
+        Thu, 22 Aug 2019 12:43:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=ZYokRlnvCmLtc9vK3EkGdQ38OM+1djb8iV/zhcd0nFE=;
+ b=PR+brW4lxpOr/O6zGzhkbPeL5HPrgqNFedOwlgbaVB/O3yTR6P/ngCY5HMTxuYBLf5gh
+ Yj1wHGwQb2UjI1wBhhJ/Lxo1g8ezVc3Ne5MhcZwwGx97h6tQktPRd5NKXApBqsDqP8Sg
+ brPz1uFfM5uiICOfJ2GfW6ANwC0tAbr/LeYObzSdXAFQ8g16p9GPs46ImpIdYohUgG/l
+ HlMO3yI+zDFRcl+Xi/C7oOgJtYoJvoYVzheLL1dvDmsTZlMrF+CkMHGC4lYHcLwqbD5L
+ R9k5Ab1YY8AHakuuscZsv03D1CpJQIZ1R+9vsbK97ywzCtaGyZFlw2YHXjupKc8WJLIE eQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 2ue90twe6e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 22 Aug 2019 12:43:56 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7MChiGt189847;
+        Thu, 22 Aug 2019 12:43:56 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 2uh2q5y7u4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 22 Aug 2019 12:43:55 +0000
+Received: from abhmp0020.oracle.com (abhmp0020.oracle.com [141.146.116.26])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7MCgvSr006308;
+        Thu, 22 Aug 2019 12:42:57 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Thu, 22 Aug 2019 05:42:55 -0700
+Date:   Thu, 22 Aug 2019 15:42:49 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Martin Tomes <tomesm@gmail.com>
+Cc:     isdn@linux-pingi.de, devel@driverdev.osuosl.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH] Staging: isdn/gigaset : Fix bare unsigned warnings and
+ trailing lines errors
+Message-ID: <20190822124249.GI4451@kadam>
+References: <1566401259-16921-1-git-send-email-tomesm@gmail.com>
 MIME-Version: 1.0
-Received: by 2002:ab3:6a0f:0:0:0:0:0 with HTTP; Thu, 22 Aug 2019 05:34:10
- -0700 (PDT)
-Reply-To: eku.lawfirm@gmail.com
-From:   "Law firm(Eku and Associates)" <ezeobodo1@gmail.com>
-Date:   Thu, 22 Aug 2019 12:34:10 +0000
-Message-ID: <CAN-_bTZ04fanuBw0m=mWQFHTKscwdYgns3LR19ZdaFDanOVNGQ@mail.gmail.com>
-Subject: MY $25,000,000.00 INVESTMENT PROPOSAL WITH YOU AND IN YOUR COUNTRY.
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1566401259-16921-1-git-send-email-tomesm@gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9355 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=950
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1908220137
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9355 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908220137
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=20
-Dear,
-With due respect this is not spam or Scam mail, because I have
-contacted you before and there was no response from you,I apologise if
-the contents of this mail are contrary to your moral ethics, which I
-feel may be of great disturbance to your person, but please treat this
-with absolute confidentiality, believing that this email reaches you
-in good faith. My contacting you is not a mistake or a coincidence
-because God can use any person known or unknown to accomplish great
-things.
-I am a lawyer and I have an investment business proposal to offer you.
-It is not official but should be considered as legal and confidential
-business. I have a customer's deposit of $US25 million dollars ready
-to be moved for investment if you can partner with us. We are ready to
-offer you 10% of this total amount as your compensation for supporting
-the transaction to completion. If you are interested to help me please
-reply me with your full details as stated below:
-(1) Your full names:
-(2) Your address:
-(3) Your occupation:
-(4) Your mobile telephone number:
-(5) Your nationality:
-(6) Your present location:
-(7) Your age:
-So that I will provide you more details on what to do and what is
-required for successful completion.
-Note: DO NOT REPLY ME IF YOU ARE NOT INTERESTED AND WITHOUT THE ABOVE
-MENTIONED DETAILS
+Hi Martin,
 
-Sinc=C3=A8rement v=C3=B4tre,
-Avocat Etienne Eku Esq.(Lawfirm)
-Procureur principal. De Cabinet d=E2=80=99avocats de l=E2=80=99Afrique de l=
-=E2=80=99ouest.
-Skype:westafricalawfirm
+These drivers are ancient and going to be deleted soon.  We're not
+accepting cleanups for them at this point.
+
+On Wed, Aug 21, 2019 at 03:27:39PM +0000, Martin Tomes wrote:
+> There are many bare use of unsigned warnings and trailing statements should be on next line errors from checkpatch.pl script.
+> Change the code by adding 'unsigned int'. Move 'break' statement of 'switch' command to next line.
+
+For future reference, this should be split up so each patch fixes
+one kind of style issue.  And the commit message lines of text are too
+long.  The limit is 75 characters for commit messages (like an email).
+
+regards,
+dan carpenter
+
