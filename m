@@ -2,89 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 08BE79A121
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 22:32:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9A8299A138
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 22:35:26 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403820AbfHVUap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 16:30:45 -0400
-Received: from mga01.intel.com ([192.55.52.88]:17468 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389366AbfHVUan (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 16:30:43 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Aug 2019 13:30:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,418,1559545200"; 
-   d="scan'208";a="169907295"
-Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
-  by orsmga007.jf.intel.com with ESMTP; 22 Aug 2019 13:30:41 -0700
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     davem@davemloft.net
-Cc:     Marcin Formela <marcin.formela@intel.com>, netdev@vger.kernel.org,
-        nhorman@redhat.com, sassmann@redhat.com,
-        Andrew Bowers <andrewx.bowers@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-Subject: [net-next v2 13/13] i40e: fix retrying in i40e_aq_get_phy_capabilities
-Date:   Thu, 22 Aug 2019 13:30:39 -0700
-Message-Id: <20190822203039.15668-14-jeffrey.t.kirsher@intel.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
-References: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
+        id S2393177AbfHVUeH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 16:34:07 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:46473 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388297AbfHVUeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 16:34:07 -0400
+Received: by mail-io1-f65.google.com with SMTP id x4so14715277iog.13;
+        Thu, 22 Aug 2019 13:34:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/FTulEvcsnZLRIJmi7a8Mdwrg03XUfOFFyTuD5zY9FM=;
+        b=vKUmNCKTue8s/CxYkoRN6Og3RHlNelmXURcTgXf+AbQ7Vzi+sRccdpG/33PnqrETMv
+         k2BkaBpJdh2op5dsq//RsDIhD3MrCQg27tbWOrBjmWZWG3pphJsrJsyLfjkJ4Jzl4k+U
+         LtO7TswTJW59N95GvnxY5/bkOzvfX4gjfET4DHhGaPnOfsRm6PQ5MD7GalVw3VsBqMYn
+         LJK80RdOQAWHW4X7vHqWKZVMz0MjrMjAwvS4cikWXVRIP+zsMd7+CzjmMlpdhUq/G4Qp
+         X63s+lu8kxFd88mTHEJrfw0wntcczswYZQXPvWL4/F/TnJ4ajk5hy6jmx9JwmmfocWm6
+         OVJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/FTulEvcsnZLRIJmi7a8Mdwrg03XUfOFFyTuD5zY9FM=;
+        b=dkwY4Yr+3J5svR0vwwH43zjx5fRWMd8Hta3f/VcyzFneSQ94qC2lBmRjagS9TuISfP
+         jkhswpTCyOKfL3q2H35el+tGYTFQ0hHuIJtnXDRIS6XH74ENGdRjWezPsDyljT337+1n
+         n4ioK+486+Ayt5RGY4e7zmAwqjs5hoyMvyuJ33FpoZbb9zdWy/vgzyQn1SVzwTSOWUez
+         nIYjeoMGdupTR3N5ZM/0nskU1EOPJY8eJLKfM+9Pc/HwSb8lPrHGhbfeaErC9X9y51Qj
+         ATBWjffS7C8f3R/5q7TS9vdMJsPM7eo/YpNRMVfmikrLDumrKZt4fpM29wGl2caXv/t5
+         cNiQ==
+X-Gm-Message-State: APjAAAUclWCPKzDucCtf3KOfYGpLtkjT8IRvxztdFe464ZkHGEdYy1yk
+        9ZBj2bMc4OnWn11SeIqfGfSIdzZoEtHwJN3deLQ=
+X-Google-Smtp-Source: APXvYqzaM90LaKIlWUCqCFvD5hrgz/BA38zyAOawbdoEGYOoaKB+ToJwkrTl2nMFI1pf4q4gb9xJCWxu+P84PWaYtuE=
+X-Received: by 2002:a5e:8344:: with SMTP id y4mr1903385iom.213.1566506046286;
+ Thu, 22 Aug 2019 13:34:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190822080045.27609-1-olivier.tilmans@nokia-bell-labs.com>
+In-Reply-To: <20190822080045.27609-1-olivier.tilmans@nokia-bell-labs.com>
+From:   Dave Taht <dave.taht@gmail.com>
+Date:   Thu, 22 Aug 2019 13:33:55 -0700
+Message-ID: <CAA93jw5_LN_-zhHh=zZA8r6Zvv1CvA_AikT_rCgWyT8ytQM_rg@mail.gmail.com>
+Subject: Re: [PATCH net-next v5] sched: Add dualpi2 qdisc
+To:     "Tilmans, Olivier (Nokia - BE/Antwerp)" 
+        <olivier.tilmans@nokia-bell-labs.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Olga Albisser <olga@albisser.org>,
+        "De Schepper, Koen (Nokia - BE/Antwerp)" 
+        <koen.de_schepper@nokia-bell-labs.com>,
+        Bob Briscoe <research@bobbriscoe.net>,
+        Henrik Steen <henrist@henrist.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Marcin Formela <marcin.formela@intel.com>
+This is vastly improved code, thank you!
 
-Fixed a bug where driver was breaking out of the loop and
-reporting an error without retrying first.
+1) Since we're still duking it out over the meaning of the bits - not
+just the SCE thing, but as best as I can
+tell (but could be wrong) the NQB idea wants to put something into the
+l4s fast queue? Or is NQB supposed to
+be a third queue?
 
-Signed-off-by: Marcin Formela <marcin.formela@intel.com>
-Tested-by: Andrew Bowers <andrewx.bowers@intel.com>
-Signed-off-by: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_common.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
+In those cases, the ecn_mask should just be mask.
 
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_common.c b/drivers/net/ethernet/intel/i40e/i40e_common.c
-index de996a80013e..46e649c09f72 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_common.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_common.c
-@@ -1577,19 +1577,22 @@ i40e_status i40e_aq_get_phy_capabilities(struct i40e_hw *hw,
- 		status = i40e_asq_send_command(hw, &desc, abilities,
- 					       abilities_size, cmd_details);
- 
--		if (status)
--			break;
--
--		if (hw->aq.asq_last_status == I40E_AQ_RC_EIO) {
-+		switch (hw->aq.asq_last_status) {
-+		case I40E_AQ_RC_EIO:
- 			status = I40E_ERR_UNKNOWN_PHY;
- 			break;
--		} else if (hw->aq.asq_last_status == I40E_AQ_RC_EAGAIN) {
-+		case I40E_AQ_RC_EAGAIN:
- 			usleep_range(1000, 2000);
- 			total_delay++;
- 			status = I40E_ERR_TIMEOUT;
-+			break;
-+		/* also covers I40E_AQ_RC_OK */
-+		default:
-+			break;
- 		}
--	} while ((hw->aq.asq_last_status != I40E_AQ_RC_OK) &&
--		 (total_delay < max_delay));
-+
-+	} while ((hw->aq.asq_last_status == I40E_AQ_RC_EAGAIN) &&
-+		(total_delay < max_delay));
- 
- 	if (status)
- 		return status;
--- 
-2.21.0
+2) Is the intent to make the drop probability 0 by default? (10 in the
+pie rfc, not mentioned in the l4s rfc as yet)
 
+3) has this been tested on a hw mq system as yet? (10gigE is typically
+64 queues)
