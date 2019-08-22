@@ -2,48 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 04C139A2E4
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:29:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EC7C9A2F2
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:35:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731367AbfHVW3B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 18:29:01 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:49696 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726645AbfHVW3B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:29:01 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 7452815393F45;
-        Thu, 22 Aug 2019 15:29:00 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 15:28:57 -0700 (PDT)
-Message-Id: <20190822.152857.1388207414767202364.davem@davemloft.net>
-To:     casey@schaufler-ca.com
-Cc:     fw@strlen.de, paul@paul-moore.com, netdev@vger.kernel.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Subject: Re: New skb extension for use by LSMs (skb "security blob")?
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <e2e22b41-2aa1-6a52-107d-e4efd9dcacf4@schaufler-ca.com>
-References: <32646e98-2ed6-a63a-5589-fefd57e85f66@schaufler-ca.com>
-        <20190822.141845.217313560870249775.davem@davemloft.net>
-        <e2e22b41-2aa1-6a52-107d-e4efd9dcacf4@schaufler-ca.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 22 Aug 2019 15:29:00 -0700 (PDT)
+        id S2390664AbfHVWcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 18:32:31 -0400
+Received: from emh07.mail.saunalahti.fi ([62.142.5.117]:47178 "EHLO
+        emh07.mail.saunalahti.fi" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731886AbfHVWcb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:32:31 -0400
+X-Greylist: delayed 399 seconds by postgrey-1.27 at vger.kernel.org; Thu, 22 Aug 2019 18:32:30 EDT
+Received: from darkstar.musicnaut.iki.fi (85-76-87-181-nat.elisa-mobile.fi [85.76.87.181])
+        by emh07.mail.saunalahti.fi (Postfix) with ESMTP id 2343DB0028;
+        Fri, 23 Aug 2019 01:25:50 +0300 (EEST)
+Date:   Fri, 23 Aug 2019 01:25:50 +0300
+From:   Aaro Koskinen <aaro.koskinen@iki.fi>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-mips@vger.kernel.org
+Subject: r8169: regression on MIPS/Loongson
+Message-ID: <20190822222549.GF30291@darkstar.musicnaut.iki.fi>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Casey Schaufler <casey@schaufler-ca.com>
-Date: Thu, 22 Aug 2019 14:59:37 -0700
+Hi,
 
-> Sure, you *can* do that, but it would be insane to do so.
+After upgrading from v5.2 to v5.3-rc5 on MIPS/Loongson board, copying
+large files from network with scp started to fail with "Integrity error".
+Bisected to:
 
-We look up the neighbour table entries on every single packet we
-transmit from the kernel in the same exact way.
+f072218cca5b076dd99f3dfa3aaafedfd0023a51 is the first bad commit
+commit f072218cca5b076dd99f3dfa3aaafedfd0023a51
+Author: Heiner Kallweit <hkallweit1@gmail.com>
+Date:   Thu Jun 27 23:19:09 2019 +0200
 
-And it was exactly to get rid of a pointer in a data structure.
+    r8169: remove not needed call to dma_sync_single_for_device
+
+Any idea what goes wrong? Should this change be reverted?
+
+A.
