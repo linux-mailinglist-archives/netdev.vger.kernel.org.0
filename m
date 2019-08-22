@@ -2,75 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D48F98B6C
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:31:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CEB98B7A
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:41:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731252AbfHVGbl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 02:31:41 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:52366 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725710AbfHVGbl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 02:31:41 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id AA1FC32C661A14A7954D;
-        Thu, 22 Aug 2019 14:31:36 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS407-HUB.china.huawei.com (10.3.19.207) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 22 Aug 2019 14:31:28 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        YueHaibing <yuehaibing@huawei.com>
-CC:     <netdev@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        Hulk Robot <hulkci@huawei.com>
-Subject: [PATCH net-next] cirrus: cs89x0: remove set but not used variable 'lp'
-Date:   Thu, 22 Aug 2019 06:35:17 +0000
-Message-ID: <20190822063517.71231-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.20.1
+        id S1731745AbfHVGh5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 02:37:57 -0400
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:60723 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728480AbfHVGh5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 02:37:57 -0400
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 2BC5D221B2;
+        Thu, 22 Aug 2019 02:37:56 -0400 (EDT)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Thu, 22 Aug 2019 02:37:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=L573PL
+        BJrCaTdOA0EHZxJhccfPMl6Qk5YoLxHt5JUCg=; b=kpT4BmWB07a2rF5l9cd5XT
+        sMYD/M8twpbWFSxsbDEpWRckjkK+kNKceEaoqsEj5EHz2icHI1INE7L0rhHiU1Mn
+        /NiBrAFvxGBPekKrZYIfhTqCBLh0BKdQGTLmiC4xs6ZgigoW3gX+m4elZnZS0SAq
+        4MmwTG76zYVSNIzytkkrA07LN3o10AvZPA1toXxUyPNKUzaVpnCqWfckkSh6grXB
+        JGPjykUg12ClpdgQdzlh9yPuq12Ax/y1JbZ5V8A0GSdDhHWGbAPQFOaiORRxR7ow
+        Z8EfsbKaLKQk6f2dRowJFpJBuSWIEu4sh0Kr6qAJr+VC2waEXqGfnWjZYgvBVVKw
+        ==
+X-ME-Sender: <xms:QzheXVu2lcDGLgwyAQmixsDkUrQ0QwPn3Q_oVkfcoi-QhS2nY2ikFQ>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudeggedguddufecutefuodetggdotefrod
+    ftvfcurfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfgh
+    necuuegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmd
+    enucfjughrpeffhffvuffkfhggtggujggfsehttdertddtredvnecuhfhrohhmpefkugho
+    ucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucfkphepud
+    elfedrgeejrdduieehrddvhedunecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgt
+    hhesihguohhstghhrdhorhhgnecuvehluhhsthgvrhfuihiivgeptd
+X-ME-Proxy: <xmx:QzheXaEs-hiJSw2DOKzjkDKFE0GRWYJ4YhDwQ8gF4IqwzRkxLmyKQg>
+    <xmx:QzheXa49sciRvzEgKEWCalWnSN7iC7cxP-o3-SQuJksc5IUO7TaqAw>
+    <xmx:QzheXannySBE254_nhT5F7KrxhvMi22HynDOx2UYPGNo-HYGAGYmVQ>
+    <xmx:RDheXTVyfXhL8HytX33Dk5TgoUfoXlBuVh-AczMyYgBMG5eTAsbtCw>
+Received: from localhost (unknown [193.47.165.251])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 55C95D6005A;
+        Thu, 22 Aug 2019 02:37:55 -0400 (EDT)
+Date:   Thu, 22 Aug 2019 09:37:52 +0300
+From:   Ido Schimmel <idosch@idosch.org>
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org, jiri@mellanox.com, dsahern@gmail.com,
+        mlxsw@mellanox.com, idosch@mellanox.com
+Subject: Re: [PATCH net-next 0/7] mlxsw: Add devlink-trap support
+Message-ID: <20190822063752.GA13207@splinter>
+References: <20190821071937.13622-1-idosch@idosch.org>
+ <20190821.125910.2301425172924175320.davem@davemloft.net>
 MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190821.125910.2301425172924175320.davem@davemloft.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fixes gcc '-Wunused-but-set-variable' warning:
+On Wed, Aug 21, 2019 at 12:59:10PM -0700, David Miller wrote:
+> Series applied, although that rate should really be configurable somehow.
+> 10Kpps seems quite arbitrary...
 
-drivers/net/ethernet/cirrus/cs89x0.c: In function 'cs89x0_platform_probe':
-drivers/net/ethernet/cirrus/cs89x0.c:1847:20: warning:
- variable 'lp' set but not used [-Wunused-but-set-variable]
+Yes, agreed. We plan to extend the devlink-trap API to expose these trap
+policers and make them configurable.
 
-It is not used since commit 6751edeb8700 ("cirrus: cs89x0: Use
-managed interfaces")
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/net/ethernet/cirrus/cs89x0.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/cirrus/cs89x0.c b/drivers/net/ethernet/cirrus/cs89x0.c
-index 2d30972df06b..c9aebcde403a 100644
---- a/drivers/net/ethernet/cirrus/cs89x0.c
-+++ b/drivers/net/ethernet/cirrus/cs89x0.c
-@@ -1844,15 +1844,12 @@ cleanup_module(void)
- static int __init cs89x0_platform_probe(struct platform_device *pdev)
- {
- 	struct net_device *dev = alloc_etherdev(sizeof(struct net_local));
--	struct net_local *lp;
- 	void __iomem *virt_addr;
- 	int err;
- 
- 	if (!dev)
- 		return -ENOMEM;
- 
--	lp = netdev_priv(dev);
--
- 	dev->irq = platform_get_irq(pdev, 0);
- 	if (dev->irq <= 0) {
- 		dev_warn(&dev->dev, "interrupt resource missing\n");
-
-
-
+Thanks for the review and for shepherding the entire submission towards
+a more unified solution.
