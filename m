@@ -2,251 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91D7F998CF
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 18:08:56 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DF635998D3
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 18:09:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389763AbfHVQIb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 12:08:31 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:45298 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733155AbfHVQIa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 12:08:30 -0400
-Received: by mail-qk1-f196.google.com with SMTP id m2so5596757qki.12;
-        Thu, 22 Aug 2019 09:08:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=TMaoiNeDTQTd0JYgJVXpjjLos7pKWO83AVF6+JcNwlg=;
-        b=LCrFl0JE5Ih0OQX6yFnKtnAzFMDwIlQbdd8oMlBLpHTr3iOphhqUs6bxk4lw1E6tQg
-         yUnVimyWbghFyo4vEmHr0lTeCr+Y+J6Q339QNW2bt0ViAmrAaoqTGUZ5DtsNWbB8Xbke
-         QN+k0VH+SKQUrPAZik6dx48a2ilmSu3ET1n6TEEZtIqenA+jtt58fGIPTC7qmcN0+eQI
-         yjXWVGi8mGnCtUQeSu3yz+E1YeHFpYsNboWGhWJ+g6tuXPXWxQTIOmqbB0BnnPQCrRg8
-         OrhWesFAWbw2kd5I/pIxHPwBTTFZMKOl4NSODYghIRuaPYk1qwQqxHWbOPMyjLzIfZd6
-         tKqA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=TMaoiNeDTQTd0JYgJVXpjjLos7pKWO83AVF6+JcNwlg=;
-        b=oS7/gL2uB2qXpQqd4g5yOPcH8mjyEElSSoxA5DZi905xe0O/69J5DH+xflfSGIzwOC
-         AN4rUzCVXPUG5yFRixk3zjOm1dUQPMLxTAmnB+UL6NtfRWoioPTXPTk4W6OTF6ccvlK0
-         +/0KKrx2D/B3I2AlFyWBDm052gjfEuWp6HQDGwdE/NMdQ7HSmkiKf1VWuObPVdHnTs33
-         vYgm//JB4+wbpVYcXUGbFGt68Qfkrlu5DCLO71ZiiKBJOWtdA3KeLCSospCtCQ4jd7pB
-         rg3ItZ3kuday1f2tm6JSR5rCCsgMCX39EGie9SV7sbDbSAlT25m4Wt/yXTGEXbZKG7oe
-         NRbg==
-X-Gm-Message-State: APjAAAW9TQ0SDgmff432I3B2t2DTsMg3govUPeb4UIPIzr6CZmLQ8LKF
-        qVcsj4ryDYfr4POtp21L+6ECOp8kZ3fJNbU9i3w=
-X-Google-Smtp-Source: APXvYqyCrSAgGlsFqxSWHd6YgBn0GV2mCyO/I4opzz6lmW8S0os/wBWQjd/DM0YKQq39kgSaWUmQ3HoT+mZamtpuq3E=
-X-Received: by 2002:a37:690:: with SMTP id 138mr36902439qkg.184.1566490108954;
- Thu, 22 Aug 2019 09:08:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <CGME20190820151644eucas1p179d6d1da42bb6be0aad8f58ac46624ce@eucas1p1.samsung.com>
- <20190820151611.10727-1-i.maximets@samsung.com> <CAKgT0Udn0D0_f=SOH2wpBRWV_u4rb1Qe2h7gguXnRNzJ_VkRzg@mail.gmail.com>
- <625791af-c656-1e42-b60e-b3a5cedcb4c4@samsung.com> <CAKgT0Uc27+ucd=a_sgTmv5g7_+ZTg1zK4isYJ0H7YWQj3d=Ejg@mail.gmail.com>
- <f7d0f7a5-e664-8b72-99c7-63275aff4c18@samsung.com> <CAKgT0UcCKiM1Ys=vWxctprN7fzWcBCk-PCuKB-8=RThM=CqLSQ@mail.gmail.com>
- <CALDO+SZCbxEEwCS6MyHk-Cp_LJ33N=QFqwZ8uRm0e-PBRgxRYw@mail.gmail.com> <cbf7c51b-9ce7-6ef6-32c4-981258d4af4c@samsung.com>
-In-Reply-To: <cbf7c51b-9ce7-6ef6-32c4-981258d4af4c@samsung.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Thu, 22 Aug 2019 09:07:50 -0700
-Message-ID: <CALDO+SaRNMvmXrQqOtNiRsOkgfOQAW4EA2yVgmeoGQto2zvfMQ@mail.gmail.com>
-Subject: Re: [PATCH net] ixgbe: fix double clean of tx descriptors with xdp
-To:     Ilya Maximets <i.maximets@samsung.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S2389784AbfHVQJK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 12:09:10 -0400
+Received: from mout.web.de ([217.72.192.78]:42781 "EHLO mout.web.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1733169AbfHVQJJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 12:09:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=web.de;
+        s=dbaedf251592; t=1566490129;
+        bh=VUcjr2Cof96KVPeedy+xoIMhTIz/ausJ0oZCbuvy7qo=;
+        h=X-UI-Sender-Class:To:Cc:From:Subject:Date;
+        b=LLxs7JY+RP78Wz/ZhGTkmkRKPJQg7/X5W5OR1DYAcDz7XLTdkmjiDIGcC3V5fW7nc
+         xgpS/gaystoHdV6bQQ3aQkVpeekgIGl12GIfUcLI4SALpybVmrowhmIGV0MQsPGbd9
+         rLxhHW7kCxMGAVOfsIL1vZW2mrf3DTddNZpV63LA=
+X-UI-Sender-Class: c548c8c5-30a9-4db5-a2e7-cb6cb037b8f9
+Received: from [192.168.1.2] ([78.49.181.43]) by smtp.web.de (mrweb102
+ [213.165.67.124]) with ESMTPSA (Nemesis) id 0LoHgL-1iTXke2THN-00gHr6; Thu, 22
+ Aug 2019 18:08:49 +0200
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Eelco Chaudron <echaudro@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        "David S. Miller" <davem@davemloft.net>,
+        John Fastabend <john.fastabend@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+From:   Markus Elfring <Markus.Elfring@web.de>
+Subject: =?UTF-8?Q?=5bPATCH=5d_net/core/skmsg=3a_Delete_an_unnecessary_check?=
+ =?UTF-8?Q?_before_the_function_call_=e2=80=9cconsume=5fskb=e2=80=9d?=
+Openpgp: preference=signencrypt
+Autocrypt: addr=Markus.Elfring@web.de; prefer-encrypt=mutual; keydata=
+ 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 FEE=
+Message-ID: <2755f638-7846-91f2-74f4-61031f3e34c8@web.de>
+Date:   Thu, 22 Aug 2019 18:08:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:rFoS5Qm0zQNDxSjLaEBNG6/iaAo/0ONoL90ykaX+G3oV3ihK205
+ mjpDpZlFYy64pWO7FtybVu+35tNaY74ag2c9Tf74WpyZR/ZjORdvHOkPm4RFZMX14VkN6/f
+ D0AYWbtzxLoELcq1ZFR/4WugJ5yfeTTzBeKuNbA+az89DbiPF8PiFgDDltrqGllA6XOxXRx
+ MBkBe7FoF1J9meYFo4TFw==
+X-Spam-Flag: NO
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TRhDJRjAWZM=:ho/iUd/R6wM9rcGnjnohUl
+ FXdP7pPCa72rZp8HwietPZEPVpVBBn81i1ImQujHPblzHqCp9wQ6iB+KIivaqrVn3uwF1G8Yb
+ QOnZcgBWldCQhZax/okYa3MmmTKWmox88xxRiAma0G5izeRfeMfC6qjCeamSVEZZc/KTJ0+Ij
+ rlKMWJiJfJbVq3rqoh68uMNV0buT4XYYKbGM0mn36tD8EIHRlDEBeTNGojJ7SYJ2WrgkCQ1Zy
+ z7cnXwart8QBVQP8U5O6Ezk2bVnyhNoM4vcPD0t/61T9gIerH32bkQIzGX5oCjHh35PLeAQ1G
+ HsXV1y1FTYuQgVozx+t22AywNZcrnoB6sQkEE/N1VdVoxJvF3qD+yeMrfAYTjcFq3+fn/qA39
+ wYj3XPeMavz5p9H8h9Ys7gtuit70bzzaOtWDStpt1U1zadSCUWwHkUyOUeaF++jiCU4NTTovd
+ Uem/qGoFRdTVwdQNP2Y8vsScM2vdNdVeP3G3KWhAhKhoQpsMqNeHYL16jLh0HnxEYyA/RnJ4Y
+ 1Bf+WCp02/SVDnoiz6gZWwMlGeQJb0YyKuyoGFWUjhsF3TckFIt9jYRAKSwklXq/6mv+2+s3B
+ 8QGodkucKsACuaMnW31DSAfnOpQYsmKFzm2Jtia9ZbdacCPX3PZwwEWmbk44fpown+j5SJ+S9
+ Z07azS5RLYdvBKUdm41/TpYckf4UJFfog22BKn0ySYx6NREUbhy0alQ4bRBHo5K+IHIgNHRX6
+ NYyYJhuJi+3wy+sYRaTbDYfqa9pnXFZiOfLWqGFqq2s9+FJxpHBhVJIqXC5WFsfF1a7rGgToM
+ Fl8SPPVJpOOyx6nEH1FXtYhfDx5qTCqzvWNUXNTkiFpp3rKqMAX+Al8qQD5nsuMHV9CavUUox
+ 9MRqwCCzgCd1i+6UetK9ehr7uBj0tIZSreSVPWLMim6cnjTQ/WnF0DjxXmKnT8Q7xHts0h7p8
+ d8zUGAwBSZzaX7Wb8Ykkdwd3L/D5TWJUyoV8IXG4DnZmbIIRLP2TdNfc8SSAwLRgk5n+sf96D
+ Kz5J0IqswNRCy4dkhVZqf3EDWYtjUD94UR75Yy7fMgsSugth09u2yF85H2gjmuyB2JTfIgawU
+ i5u1oeHpQLl2ZMDtCIpm/4OtlD+VB7KfnMIFPenx8DnPphu11C93GUSKEbfDfsp/OYN8oWDsb
+ OA9vo=
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 1:17 AM Ilya Maximets <i.maximets@samsung.com> wrot=
-e:
->
-> On 22.08.2019 0:38, William Tu wrote:
-> > On Wed, Aug 21, 2019 at 9:57 AM Alexander Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> >>
-> >> On Wed, Aug 21, 2019 at 9:22 AM Ilya Maximets <i.maximets@samsung.com>=
- wrote:
-> >>>
-> >>> On 21.08.2019 4:17, Alexander Duyck wrote:
-> >>>> On Tue, Aug 20, 2019 at 8:58 AM Ilya Maximets <i.maximets@samsung.co=
-m> wrote:
-> >>>>>
-> >>>>> On 20.08.2019 18:35, Alexander Duyck wrote:
-> >>>>>> On Tue, Aug 20, 2019 at 8:18 AM Ilya Maximets <i.maximets@samsung.=
-com> wrote:
-> >>>>>>>
-> >>>>>>> Tx code doesn't clear the descriptor status after cleaning.
-> >>>>>>> So, if the budget is larger than number of used elems in a ring, =
-some
-> >>>>>>> descriptors will be accounted twice and xsk_umem_complete_tx will=
- move
-> >>>>>>> prod_tail far beyond the prod_head breaking the comletion queue r=
-ing.
-> >>>>>>>
-> >>>>>>> Fix that by limiting the number of descriptors to clean by the nu=
-mber
-> >>>>>>> of used descriptors in the tx ring.
-> >>>>>>>
-> >>>>>>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-> >>>>>>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> >>>>>>
-> >>>>>> I'm not sure this is the best way to go. My preference would be to
-> >>>>>> have something in the ring that would prevent us from racing which=
- I
-> >>>>>> don't think this really addresses. I am pretty sure this code is s=
-afe
-> >>>>>> on x86 but I would be worried about weak ordered systems such as
-> >>>>>> PowerPC.
-> >>>>>>
-> >>>>>> It might make sense to look at adding the eop_desc logic like we h=
-ave
-> >>>>>> in the regular path with a proper barrier before we write it and a=
-fter
-> >>>>>> we read it. So for example we could hold of on writing the bytecou=
-nt
-> >>>>>> value until the end of an iteration and call smp_wmb before we wri=
-te
-> >>>>>> it. Then on the cleanup we could read it and if it is non-zero we =
-take
-> >>>>>> an smp_rmb before proceeding further to process the Tx descriptor =
-and
-> >>>>>> clearing the value. Otherwise this code is going to just keep popp=
-ing
-> >>>>>> up with issues.
-> >>>>>
-> >>>>> But, unlike regular case, xdp zero-copy xmit and clean for particul=
-ar
-> >>>>> tx ring always happens in the same NAPI context and even on the sam=
-e
-> >>>>> CPU core.
-> >>>>>
-> >>>>> I saw the 'eop_desc' manipulations in regular case and yes, we coul=
-d
-> >>>>> use 'next_to_watch' field just as a flag of descriptor existence,
-> >>>>> but it seems unnecessarily complicated. Am I missing something?
-> >>>>>
-> >>>>
-> >>>> So is it always in the same NAPI context?. I forgot, I was thinking
-> >>>> that somehow the socket could possibly make use of XDP for transmit.
-> >>>
-> >>> AF_XDP socket only triggers tx interrupt on ndo_xsk_async_xmit() whic=
-h
-> >>> is used in zero-copy mode. Real xmit happens inside
-> >>> ixgbe_poll()
-> >>>  -> ixgbe_clean_xdp_tx_irq()
-> >>>     -> ixgbe_xmit_zc()
-> >>>
-> >>> This should be not possible to bound another XDP socket to the same n=
-etdev
-> >>> queue.
-> >>>
-> >>> It also possible to xmit frames in xdp_ring while performing XDP_TX/R=
-EDIRECT
-> >>> actions. REDIRECT could happen from different netdev with different N=
-API
-> >>> context, but this operation is bound to specific CPU core and each co=
-re has
-> >>> its own xdp_ring.
-> >>>
-> >>> However, I'm not an expert here.
-> >>> Bj=C3=B6rn, maybe you could comment on this?
-> >>>
-> >>>>
-> >>>> As far as the logic to use I would be good with just using a value y=
-ou
-> >>>> are already setting such as the bytecount value. All that would need
-> >>>> to happen is to guarantee that the value is cleared in the Tx path. =
-So
-> >>>> if you clear the bytecount in ixgbe_clean_xdp_tx_irq you could
-> >>>> theoretically just use that as well to flag that a descriptor has be=
-en
-> >>>> populated and is ready to be cleaned. Assuming the logic about this
-> >>>> all being in the same NAPI context anyway you wouldn't need to mess
-> >>>> with the barrier stuff I mentioned before.
-> >>>
-> >>> Checking the number of used descs, i.e. next_to_use - next_to_clean,
-> >>> makes iteration in this function logically equal to the iteration ins=
-ide
-> >>> 'ixgbe_xsk_clean_tx_ring()'. Do you think we need to change the later
-> >>> function too to follow same 'bytecount' approach? I don't like having
-> >>> two different ways to determine number of used descriptors in the sam=
-e file.
-> >>>
-> >>> Best regards, Ilya Maximets.
-> >>
-> >> As far as ixgbe_clean_xdp_tx_irq() vs ixgbe_xsk_clean_tx_ring(), I
-> >> would say that if you got rid of budget and framed things more like
-> >> how ixgbe_xsk_clean_tx_ring was framed with the ntc !=3D ntu being
-> >> obvious I would prefer to see us go that route.
-> >>
-> >> Really there is no need for budget in ixgbe_clean_xdp_tx_irq() if you
-> >> are going to be working with a static ntu value since you will only
-> >> ever process one iteration through the ring anyway. It might make more
-> >> sense if you just went through and got rid of budget and i, and
-> >> instead used ntc and ntu like what was done in
-> >> ixgbe_xsk_clean_tx_ring().
-> >>
-> >> Thanks.
-> >>
-> >> - Alex
-> >
-> > Not familiar with the driver details.
-> > I tested this patch and the issue mentioned in OVS mailing list.
-> > https://www.mail-archive.com/ovs-dev@openvswitch.org/msg35362.html
-> > and indeed the problem goes away.
->
-> Good. Thanks for testing!
->
-> > But I saw a huge performance drop,
-> > my AF_XDP tx performance drops from >9Mpps to <5Mpps.
->
-> I didn't expect so big performance difference with this change.
-> What is your test scenario?
+From: Markus Elfring <elfring@users.sourceforge.net>
+Date: Thu, 22 Aug 2019 18:00:40 +0200
 
-I was using OVS with dual port NIC, setting one OpenFlow rule
-in_port=3Deth2 actions=3Doutput:eth3
-and eth2 for rx and measure eth3 tx
-'sar -n DEV 1'  shows pretty huge drop on eth3 tx.
+The consume_skb() function performs also input parameter validation.
+Thus the test around the call is not needed.
 
-> Is it possible that you're accounting same
-> packet several times due to broken completion queue?
+This issue was detected by using the Coccinelle software.
 
-That's possible.
-Let me double check on your v2 patch.
+Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
+=2D--
+ net/core/skmsg.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-@Eelco: do you also see some performance difference?
+diff --git a/net/core/skmsg.c b/net/core/skmsg.c
+index 6832eeb4b785..cf390e0aa73d 100644
+=2D-- a/net/core/skmsg.c
++++ b/net/core/skmsg.c
+@@ -190,8 +190,7 @@ static int __sk_msg_free(struct sock *sk, struct sk_ms=
+g *msg, u32 i,
+ 		sk_msg_check_to_free(msg, i, msg->sg.size);
+ 		sge =3D sk_msg_elem(msg, i);
+ 	}
+-	if (msg->skb)
+-		consume_skb(msg->skb);
++	consume_skb(msg->skb);
+ 	sk_msg_init(msg);
+ 	return freed;
+ }
+=2D-
+2.23.0
 
-Regards,
-William
-
->
-> Looking at samples/bpf/xdpsock_user.c:complete_tx_only(), it accounts
-> sent packets (tx_npkts) by accumulating results of xsk_ring_cons__peek()
-> for completion queue, so it's not a trusted source of pps information.
->
-> Best regards, Ilya Maximets.
->
-> >
-> > Tested using kernel 5.3.0-rc3+
-> > 03:00.0 Ethernet controller: Intel Corporation Ethernet Controller
-> > 10-Gigabit X540-AT2 (rev 01)
-> > Subsystem: Intel Corporation Ethernet 10G 2P X540-t Adapter
-> > Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr-
-> > Stepping- SERR- FastB2B- DisINTx+
-> >
-> > Regards,
-> > William
