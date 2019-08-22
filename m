@@ -2,85 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0956399D39
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 19:41:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E9D3499E2B
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 19:49:00 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405079AbfHVRkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 13:40:46 -0400
-Received: from out3-smtp.messagingengine.com ([66.111.4.27]:48297 "EHLO
-        out3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732134AbfHVRkp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 13:40:45 -0400
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 41EAF2203C;
-        Thu, 22 Aug 2019 13:40:44 -0400 (EDT)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 22 Aug 2019 13:40:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm3; bh=8pZAXt
-        RMx+VEVnKNoMyIg9vofEv03RCUzdqHEbFK3i0=; b=L+91U0S2PhF9g2vi4rzc2P
-        PBexqJj7AJXB1KXWWokVHUTqufsRT2AD0HhEgN9iW2SrGLe5Lj01pIJKzvvuB/Gk
-        xQIn3uW5Yh4OcK6qWlUrxP7I/7iz9xRL6WPpDrFeD5XB9pIE8I0LQ4N74zULhe1P
-        Zg2p5y66v9p2c/NzyIYmfcOxylhdbQbyRjkXUmPe3aeVC42zN1Nvb/h/HE2kQuvH
-        /gmLNfW60k9Q78aEGUItMPezmyTC6CIVLJr0Cdu5K7b+xkFenGsehH4ZMS45z+xy
-        Fm6IhwHhkPXt2oG7SU2P2HDwZiqrrJCOCZu2sRdhUiqpvx2n+n+kjhx3Vg1a5BEQ
-        ==
-X-ME-Sender: <xms:mNNeXeN0UdKgY1F-hENgR-z4lL9n0VGomxrWJz4uzLvSeO7uZYNRWQ>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduvddrudegiedgjedvucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjfgesthdtredttdervdenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecukfhppedule
-    efrdegjedrudeihedrvdehudenucfrrghrrghmpehmrghilhhfrhhomhepihguohhstghh
-    sehiughoshgthhdrohhrghenucevlhhushhtvghrufhiiigvpedt
-X-ME-Proxy: <xmx:mNNeXV98ba5k99kqioo2w-XUShKxDAWrHyAFgGA-Eql2RGeAhIpqDA>
-    <xmx:mNNeXe9hzGJVmDYuTRtpdd7V7qA1V22xMiAlj-u61j9XcDSGGbx2ig>
-    <xmx:mNNeXVq8ol-MJ7TBtkakg-oaxRMBG8jalBhWY7NW_LSrEXSW1mYaDA>
-    <xmx:nNNeXYAihIpqzhbMXatYfHrqZwcjWkx8G4qvFNds9LApIjAJv1Sk_w>
-Received: from localhost (unknown [193.47.165.251])
-        by mail.messagingengine.com (Postfix) with ESMTPA id B76EA80059;
-        Thu, 22 Aug 2019 13:40:39 -0400 (EDT)
-Date:   Thu, 22 Aug 2019 20:40:37 +0300
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Andrew Lunn <andrew@lunn.ch>, arnd@arndb.de
-Cc:     Aya Levin <ayal@mellanox.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [net] devlink: Add method for time-stamp on reporter's dump
-Message-ID: <20190822174037.GA18030@splinter>
-References: <1566461871-21992-1-git-send-email-ayal@mellanox.com>
- <20190822140635.GH13020@lunn.ch>
+        id S2393260AbfHVRs0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 13:48:26 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:34736 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393234AbfHVRsW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 13:48:22 -0400
+Received: by mail-pg1-f193.google.com with SMTP id n9so4096853pgc.1
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 10:48:21 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aKPaTzLWDYHVrXr9xDJMJ0YlW1PawE9mWGi+KiPZfk4=;
+        b=fRfhrMA61H6irTDGq+QNDBg7D/WfWx6Aa7Ry6MaNiZ5jo8Ao7ORFSCjqwXoE9PGvkc
+         nnUTPsSgPK1kwHFnLVdRLxmv4ZtxNrw7F6i7nY5dKPHFlD039ZdQtJPiBxGo2P/k9nYm
+         QxOU5Y6gjKYKCQKdmtk+qw1HRBjedVFZX5sSo=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=aKPaTzLWDYHVrXr9xDJMJ0YlW1PawE9mWGi+KiPZfk4=;
+        b=YgHSbSUyL8z6kZ9Knf2o8T9LKoGWN2NpThPfKLyceIk5UUNAZdSSKJomin4aBSLPAh
+         xPGLKSJql+HuFr1F/PegxXDJYbI7lwStOjQUdmZYUFVuK8HyHK+VWZU/sXwqwUMKEqdJ
+         vA/nceHlJdVQsx7tZ+aR8CiOYn/A/Cvkk+OyMjtb1UwImy2DK1vpQ92kOZnSN5fkQQl+
+         VuTXvWH3YCjw1ynz5CY8WfdYkeqvxAbNcp5LfQb7KqaN55WZZ0GKPNnRQAo7Gr7zZ40U
+         bCp7BvAuHkjCqXcTC11wIyIn9Cji8jSMKjmA/Xt2ELl2gugFHpdueA2563HEpFL0+jXX
+         tr8w==
+X-Gm-Message-State: APjAAAWek74QRsdcXvI1jYMMo6oIVNbPddOc4qgtWiYr5+87yAgUmxts
+        WuhTV1DNIj/DQ02OZSW1aWs/fw==
+X-Google-Smtp-Source: APXvYqyABwKNcJpe0wLJVSYK7zv+DWUUI9QzW8L3iG7a6vg6E5gDC+/cfX9TidXavQMb+eYaKUhDcw==
+X-Received: by 2002:a17:90a:d149:: with SMTP id t9mr937055pjw.58.1566496101340;
+        Thu, 22 Aug 2019 10:48:21 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:2b10:8627:31e7:c5ec])
+        by smtp.gmail.com with ESMTPSA id m37sm8943184pjb.0.2019.08.22.10.48.20
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 22 Aug 2019 10:48:20 -0700 (PDT)
+From:   Matthew Wang <matthewmwang@chromium.org>
+To:     johannes@sipsolutions.net
+Cc:     davem@davemloft.net, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matthew Wang <matthewmwang@chromium.org>
+Subject: [PATCH] nl80211: add NL80211_CMD_UPDATE_FT_IES to supported commands
+Date:   Thu, 22 Aug 2019 10:48:06 -0700
+Message-Id: <20190822174806.2954-1-matthewmwang@chromium.org>
+X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190822140635.GH13020@lunn.ch>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 04:06:35PM +0200, Andrew Lunn wrote:
-> On Thu, Aug 22, 2019 at 11:17:51AM +0300, Aya Levin wrote:
-> > When setting the dump's time-stamp, use ktime_get_real in addition to
-> > jiffies. This simplifies the user space implementation and bypasses
-> > some inconsistent behavior with translating jiffies to current time.
-> 
-> Hi Aya
-> 
-> Is this year 2038 safe? I don't know enough about this to answer the
-> question myself.
+Add NL80211_CMD_UPDATE_FT_IES to supported commands. In mac80211 drivers,
+this can be implemented via existing NL80211_CMD_AUTHENTICATE and
+NL80211_ATTR_IE, but non-mac80211 drivers have a separate command for
+this. A driver supports FT if it either is mac80211 or supports this
+command.
 
-Hi Andrew,
+Signed-off-by: Matthew Wang <matthewmwang@chromium.org>
+Change-Id: I93e3d09a6d949466d1aea48bff2c3ad862edccc6
+---
+ net/wireless/nl80211.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Good point. 'struct timespec' is not considered year 2038 safe and
-unfortunately I recently made the mistake of using it to communicate
-timestamps to user space over netlink. :/ The code is still in net-next,
-so I will fix it while I can.
+diff --git a/net/wireless/nl80211.c b/net/wireless/nl80211.c
+index fd05ae1437a9..c2f9e6b429b2 100644
+--- a/net/wireless/nl80211.c
++++ b/net/wireless/nl80211.c
+@@ -2065,6 +2065,7 @@ static int nl80211_send_wiphy(struct cfg80211_registered_device *rdev,
+ 				CMD(add_tx_ts, ADD_TX_TS);
+ 			CMD(set_multicast_to_unicast, SET_MULTICAST_TO_UNICAST);
+ 			CMD(update_connect_params, UPDATE_CONNECT_PARAMS);
++			CMD(update_ft_ies, UPDATE_FT_IES);
+ 		}
+ #undef CMD
+ 
+-- 
+2.23.0.187.g17f5b7556c-goog
 
-Arnd, would it be acceptable to use 'struct __kernel_timespec' instead?
-
-Thanks
