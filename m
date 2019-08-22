@@ -2,61 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9501698A17
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 06:00:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9BD4798A25
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 06:04:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730848AbfHVD5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 21 Aug 2019 23:57:37 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:37946 "EHLO
+        id S1726142AbfHVEE3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 00:04:29 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:37986 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730683AbfHVD5h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 21 Aug 2019 23:57:37 -0400
+        with ESMTP id S1725710AbfHVEE3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 00:04:29 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 337C1152366B6;
-        Wed, 21 Aug 2019 20:57:36 -0700 (PDT)
-Date:   Wed, 21 Aug 2019 20:57:35 -0700 (PDT)
-Message-Id: <20190821.205735.2069656948701231785.davem@davemloft.net>
-To:     paulb@mellanox.com
-Cc:     pshelar@ovn.org, netdev@vger.kernel.org, jpettit@nicira.com,
-        simon.horman@netronome.com, marcelo.leitner@gmail.com,
-        vladbu@mellanox.com, jiri@mellanox.com, roid@mellanox.com,
-        yossiku@mellanox.com, ronye@mellanox.com, ozsh@mellanox.com
-Subject: Re: [PATCH net-next v2] net: openvswitch: Set OvS recirc_id from
- tc chain index
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 44FD91524749A;
+        Wed, 21 Aug 2019 21:04:28 -0700 (PDT)
+Date:   Wed, 21 Aug 2019 21:04:27 -0700 (PDT)
+Message-Id: <20190821.210427.500229269128524420.davem@davemloft.net>
+To:     anders.roxell@linaro.org
+Cc:     shuah@kernel.org, netdev@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] selftests: net: add missing NFT_FWD_NETDEV to config
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1566304251-15795-1-git-send-email-paulb@mellanox.com>
-References: <1566304251-15795-1-git-send-email-paulb@mellanox.com>
+In-Reply-To: <20190820134102.25636-1-anders.roxell@linaro.org>
+References: <20190820134102.25636-1-anders.roxell@linaro.org>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 21 Aug 2019 20:57:36 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Wed, 21 Aug 2019 21:04:28 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Paul Blakey <paulb@mellanox.com>
-Date: Tue, 20 Aug 2019 15:30:51 +0300
+From: Anders Roxell <anders.roxell@linaro.org>
+Date: Tue, 20 Aug 2019 15:41:02 +0200
 
-> @@ -4050,6 +4060,9 @@ enum skb_ext_id {
->  #ifdef CONFIG_XFRM
->  	SKB_EXT_SEC_PATH,
->  #endif
-> +#if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
-> +	TC_SKB_EXT,
-> +#endif
->  	SKB_EXT_NUM, /* must be last */
->  };
+> When running xfrm_policy.sh we see the following
+> 
+>  # sysctl cannot stat /proc/sys/net/ipv4/conf/eth1/forwarding No such file or directory
+>  cannot: stat_/proc/sys/net/ipv4/conf/eth1/forwarding #
 
-Sorry, no.
+I don't understand how a netfilter config options is going to make that
+generic ipv4 protocol per-device sysctl appear.
 
-The SKB extensions are not a dumping ground for people to use when they can't
-figure out another more reasonable place to put their values.  Try to use
-the normal cb[], and if you can't you must explain in exhaustive detail
-why you cannot in any way whatsoever make that work.
+If it's unrelated to your change, don't include it in the commit message
+as it is confusing.
 
-Again, SKB extensions are not a dumping ground.
+Thank you.
