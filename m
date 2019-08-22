@@ -2,92 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DEB29A1C6
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 23:12:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C5BCB9A1D2
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 23:12:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389006AbfHVVML (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 17:12:11 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:48788 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730991AbfHVVML (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 17:12:11 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=6fPuCyNtPPHONbqitxGDkXj/u9ByqXfl6hc0qfPlS5k=; b=Z8rdHmDZCZ53dvugjnLpqbC+L
-        3Ulx7byW/NVefVjP67+vtLKu+wAT5Gl+DVMlfkoz9480p1Ws/kyZdhIRd9iOh/r7DWi3S75CWgXN8
-        2V2jeoFQlSP/fmjXEejk2EDl5lmEoip7+NIcOVw/bjIOdlVi3UFHBFXEtoTDtIP+8N9dZnE49Lkwl
-        +eLmdywbkvZFnUOdFwa50KPYjYRXmJMCzMCzIFyXi6QxYTnfrqtkjbOx6l+hvMLLxLTs13k0FGZpC
-        X+ZNFJ9mcz1cWayeuxZOkIMzRxnfXtonFqfNC/L/Z1GB5ImpbxY41df7UDwkAJ7AT5ofiUL5N8+yz
-        P45N4wHlA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:48168)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1i0uNE-0000W5-M7; Thu, 22 Aug 2019 22:12:00 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1i0uNA-00081K-Dh; Thu, 22 Aug 2019 22:11:56 +0100
-Date:   Thu, 22 Aug 2019 22:11:56 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
-Cc:     Nelson Chang <nelson.chang@mediatek.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        netdev@vger.kernel.org, Sean Wang <sean.wang@mediatek.com>,
-        linux-mips@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Stefan Roese <sr@denx.de>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next v2 2/3] net: ethernet: mediatek: Re-add support
- SGMII
-Message-ID: <20190822211156.GV13294@shell.armlinux.org.uk>
-References: <20190821144336.9259-1-opensource@vdorst.com>
- <20190821144336.9259-3-opensource@vdorst.com>
- <20190822144433.GT13294@shell.armlinux.org.uk>
- <20190822195033.Horde.hEW8FBGNfFrugQOCv0gaDfx@www.vdorst.com>
+        id S2389823AbfHVVMb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 17:12:31 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46496 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729718AbfHVVMb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 17:12:31 -0400
+Received: by mail-qt1-f195.google.com with SMTP id j15so9259154qtl.13;
+        Thu, 22 Aug 2019 14:12:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=orPyMCzXeHsYXHUl5miKDkVoD0ryzkBoiARAwCBXnx0=;
+        b=AnjVGBlLdnEch8CV/RolTNuqf/mXbgnvEhoD1RyozoQ+TLSXEFbbgGhKiKIb49NZNS
+         QvxnXb2JQDURKL7H/ZoGJiFYJpKz2k8E3FQwn1CP/SPyGothGlTsG0/iMgLrM4NtVQf3
+         fqgaBonqDMjvcwW2WL5SwlqWOOJjpfBm34EiX8WAI9g9gxg+GxvqWfulpmabb7N+JgSb
+         Wl+4tUiJhEFARMQ2w6VPQO/bBg9BKvB9BUNM/E4ie/R+4r3pOrte/AWOdU/VxcA8WgSb
+         iw3WW1yUkrBCFnTLntYMUUYLnzDBF5adjfAduDm1ihOFtxK8ve7WoxFCAziAtEKrAHho
+         x1DA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=orPyMCzXeHsYXHUl5miKDkVoD0ryzkBoiARAwCBXnx0=;
+        b=roJaqHlhqgyIFJmhJo9weKw78oD3/6dcvl9TRgBMuSf7oKGxqpa+XI7759lgG9WgX+
+         cRNsOTEvPLlQBExmER2LRxpg3nrrasx+g3m20AIR8eAGRmTK9hSDQkXJbLToIV81w6nd
+         U/ec+cZF33qcgMWQ8sX46Im1VU/ndARwy4SsCoi6qw1Pu2x0I+Ykjni3O0isIYY98SS/
+         76qwYjfcjKb1Y1R9IB78MqTimte+GBCqXpYegwyyZy94Ek4+k6p4aIYdEpEqiwvtvqcR
+         6z4qCy8qvRqzZJsd2e/ufCYTIlH6vTGF1cI8LD2o9g0oi1vqzpSB6URa+NkWk0QydBy1
+         CKlw==
+X-Gm-Message-State: APjAAAVOgJpS3aPo/RsIUoI8nvs4r3PIVGh+xHyJUYed0BUgdod4oULL
+        BQRGCkpSApTuI6Hr5hzvcba0hyJn8ZrjGDC9neE=
+X-Google-Smtp-Source: APXvYqzMFLCPqn5KnYlmfFhNmCYf6KvXFa0b/WlFjyeUyS9HCqJVnGOB7dqCmpNt/BJ1XqUWYUx1k9MRj7k7WGfzxwM=
+X-Received: by 2002:a05:6214:13a1:: with SMTP id h1mr1319454qvz.190.1566508349936;
+ Thu, 22 Aug 2019 14:12:29 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190822195033.Horde.hEW8FBGNfFrugQOCv0gaDfx@www.vdorst.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <25ca9c48-1ac9-daa1-8472-0a53e4beed6a@web.de>
+In-Reply-To: <25ca9c48-1ac9-daa1-8472-0a53e4beed6a@web.de>
+From:   Song Liu <liu.song.a23@gmail.com>
+Date:   Thu, 22 Aug 2019 14:12:19 -0700
+Message-ID: <CAPhsuW5c7xn9hW70C3BV3GqysEzScJfpw11yRSMx39T5+Hxd5Q@mail.gmail.com>
+Subject: =?UTF-8?Q?Re=3A_=5BPATCH=5D_net=2Fipv4=2Ftcp=5Fbpf=3A_Delete_an_unnecessary_?=
+        =?UTF-8?Q?check_before_the_function_call_=E2=80=9Cconsume=5Fskb=E2=80=9D?=
+To:     Markus Elfring <Markus.Elfring@web.de>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Eric Dumazet <edumazet@google.com>,
+        Hideaki Yoshifuji <yoshfuji@linux-ipv6.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        kernel-janitors@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Rene,
+On Thu, Aug 22, 2019 at 10:19 AM Markus Elfring <Markus.Elfring@web.de> wrote:
+>
+> From: Markus Elfring <elfring@users.sourceforge.net>
+> Date: Thu, 22 Aug 2019 18:20:42 +0200
+>
+> The consume_skb() function performs also input parameter validation.
+> Thus the test around the call is not needed.
+>
+> This issue was detected by using the Coccinelle software.
+>
+> Signed-off-by: Markus Elfring <elfring@users.sourceforge.net>
 
-On Thu, Aug 22, 2019 at 07:50:33PM +0000, René van Dorst wrote:
-> Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
-> > Isn't this set for Cisco SGMII as well as for 802.3 1000BASE-X and
-> > the up-clocked 2500BASE-X modes?
-> > 
-> > If so, is there a reason why 10Mbps and 100Mbps speeds aren't
-> > supported on Cisco SGMII links?
-> 
-> I can only tell a bit about the mt7622 SOC, datasheet tells me that:
-> 
-> The SGMII is the interface between 10/100/1000/2500 Mbps PHY and Ethernet MAC,
-> the spec is raised by Cisco in 1999, which is aims for pin reduction compare
-> with the GMII. It uses 2 differential data pair for TX and RX with clock
-> embedded bit stream to convey frame data and port ability information.
-> The core leverages the 1000Base-X PCS and Auto-Negotiation from IEEE 802.3
-> specification (clause 36/37). This IP can support up to 3.125G baud for
-> 2.5Gbps
-> (proprietary 2500Base-X) data rate of MAC by overclocking.
-> 
-> Also features tells me: Support 10/100/1000/2500 Mbps in full duplex mode and
-> 10/100 Mbps in half duplex mode.
-
-Yep, that is what I'd expect.  Thanks.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Acked-by: Song Liu <songliubraving@fb.com>
