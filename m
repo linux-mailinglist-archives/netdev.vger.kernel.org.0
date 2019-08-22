@@ -2,151 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 38EF3990FF
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:38:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 851C299104
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 12:38:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731923AbfHVKiW convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Aug 2019 06:38:22 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:46038 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729113AbfHVKiW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 06:38:22 -0400
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 11891109AE
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 10:38:21 +0000 (UTC)
-Received: by mail-ed1-f70.google.com with SMTP id i10so3117891edv.14
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 03:38:21 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=3WF76R9PRluSwsSbBisHuTfQpPlZfHG8CCj+Dbr+eN8=;
-        b=rKPX7g4r5xPfe8ED/pK/jQ0IKYeldk0KlBRrDXufBLtSMDrCK4KAztAyrz+zF3/+Ot
-         vUgUoddnV9MprAnAD9Ppp01FJn6Cu5fXNOMyHHHHIeBuG39LmXajkv+bIw9Hn9Rmi1S8
-         3cqcyXdjNNF3sQGzipJXjn6E0muNGXhYzFMMwRvn2g1YWkR4Qid/0awvq+0CSckF3t8e
-         pDUPzxHhZ58xuFpzd3G2ZY/lgY8LhasVKIYi9MMl0yVyaIvIE58cpSbQfHeKVqhTJPpz
-         PEmENvbcX3uWpqu7hLltFN5Wy8LZJjhSNl11qRGzkLerFeGegP5fn2/zLq39We6u2v5Q
-         7a0A==
-X-Gm-Message-State: APjAAAWNwya8qOsgvS4kUNO3Tiu3m4Fa7aW5JXomvs4tfwaoEj+4JnTk
-        bwn2B9nqhdRz/isLN43Kx6Qlwt70dIOZLkFh6P1G3j0abYQ6tdJDt53HOCX4z69H5du6H4k3gcU
-        Hanf7qpoEvoryzdWN
-X-Received: by 2002:aa7:c389:: with SMTP id k9mr11406793edq.175.1566470299872;
-        Thu, 22 Aug 2019 03:38:19 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqwES2nggyHN87LpGxHfpuoh53GOMS5YnMJCbxe42BZzTz9LYqV0cMOrbTyJkseXDOJx/onB1g==
-X-Received: by 2002:aa7:c389:: with SMTP id k9mr11406761edq.175.1566470299651;
-        Thu, 22 Aug 2019 03:38:19 -0700 (PDT)
-Received: from alrua-x1.borgediget.toke.dk ([2a00:7660:6da:443::2])
-        by smtp.gmail.com with ESMTPSA id i1sm2436280edi.13.2019.08.22.03.38.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 22 Aug 2019 03:38:18 -0700 (PDT)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 4B4FC181CEF; Thu, 22 Aug 2019 12:38:18 +0200 (CEST)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-In-Reply-To: <CAEf4BzbR3gdn=82gCmSQ+=81222J0zza9z6JyYs=TkUY=WDXQw@mail.gmail.com>
-References: <20190820114706.18546-1-toke@redhat.com> <20190821192611.xmciiiqjpkujjup7@ast-mbp.dhcp.thefacebook.com> <87ef1eqlnb.fsf@toke.dk> <CAEf4BzbR3gdn=82gCmSQ+=81222J0zza9z6JyYs=TkUY=WDXQw@mail.gmail.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Thu, 22 Aug 2019 12:38:18 +0200
-Message-ID: <87lfvlpjs5.fsf@toke.dk>
+        id S2387731AbfHVKio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 06:38:44 -0400
+Received: from mail-eopbgr150093.outbound.protection.outlook.com ([40.107.15.93]:43513
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729113AbfHVKin (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 06:38:43 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ZAU4VMnHhMCRPijZc2jWJh8o7nPbeZOyQbxlPB5QIfBIFuYhtbcJrHWKer/QiH7/uVmlfbFTYjcjtI+8WR8v8CzVh9aivltkp/ESTGSdAHu/NoRGU6VnTgA087GtAet2CO+NxrQnA0hnOtmmmyB+n8qXi4pbM6hAsvrOZUqRu3E4rP5luV76FL3z1Tqj43xaTNv17WCWjFR3y94kf+hU0mrlrvxLYqdI4Bs3eSd1ENQu2ZkpKGjNlP06ArdTDsVhEqaGYjZ7faJuLZ3W8uGhqu/JQaHCZV0ZIvvv1NafNOeFCqai2jEIxJrD2oGBOu7ZHpCqomblx/mcAMW9IEX3zA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3BDrPGq8OgdyzV7NoIJ7Bkk94TVQJ78YCY5Mc8tIuho=;
+ b=h5Be/vVuS4fvxExU+TnEJNIcT7T/WiDY0//Yv0QjxDnpyx9DC9saOWW0fkdgVvOWmQhNqhMrOs9ouB8s7z0MGzuSzTrCxD1sQPFJV6qg3yIG2H4V7SIYdpi27jBbzc0f9KMSEFTcR4x+SYVV7sEgNlEHT7F6rZAK8hqFMEiJvOS2w0jSBnmidx1V4OAZG4DDSz3P5VydSm9ANlEhnQG6DPQnkg0aJwRw4u5ZJGFeK0fzgJapthoQmimTqnq4F2u3j/r+Nq1AcUcfIrQniNeS7tHAvgy/z6BCinSPBRX3gZ4D0iVOUzyBu1u0PQukebgbUl++GyalkDk0vUrLK/6E6A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=virtuozzo.com; dmarc=pass action=none
+ header.from=virtuozzo.com; dkim=pass header.d=virtuozzo.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=virtuozzo.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=3BDrPGq8OgdyzV7NoIJ7Bkk94TVQJ78YCY5Mc8tIuho=;
+ b=RvC7yquMi99OfdUc8gxWk7I5O1vg41GAs8WJKQaolWVEC3r5V8J7X3IEXufjMc48vAAVKF5eeLZv3W6adlCv5b+mjtCTM5uh8u9tNilBEqFhxIXdXuxf5BTD2jniyndDqm2mtIHAcuHzmPhOveEn64zt6FkIDVe2QzNzhPa5QgA=
+Received: from VI1PR08MB2782.eurprd08.prod.outlook.com (10.170.236.143) by
+ VI1PR08MB4032.eurprd08.prod.outlook.com (20.178.126.153) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Thu, 22 Aug 2019 10:38:39 +0000
+Received: from VI1PR08MB2782.eurprd08.prod.outlook.com
+ ([fe80::2969:e370:fb70:71a]) by VI1PR08MB2782.eurprd08.prod.outlook.com
+ ([fe80::2969:e370:fb70:71a%3]) with mapi id 15.20.2178.020; Thu, 22 Aug 2019
+ 10:38:39 +0000
+From:   Jan Dakinevich <jan.dakinevich@virtuozzo.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     Denis Lunev <den@virtuozzo.com>,
+        Konstantin Khorenko <khorenko@virtuozzo.com>,
+        Jan Dakinevich <jan.dakinevich@virtuozzo.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.com>,
+        Karsten Graul <kgraul@linux.ibm.com>,
+        Kyeongdon Kim <kyeongdon.kim@lge.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH] af_unix: utilize skb's fragment list for sending large
+ datagrams
+Thread-Topic: [PATCH] af_unix: utilize skb's fragment list for sending large
+ datagrams
+Thread-Index: AQHVWNXCVy+NB8D6AkS8eOMw9lnGGQ==
+Date:   Thu, 22 Aug 2019 10:38:39 +0000
+Message-ID: <1566470311-4089-1-git-send-email-jan.dakinevich@virtuozzo.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: HE1PR0102CA0052.eurprd01.prod.exchangelabs.com
+ (2603:10a6:7:7d::29) To VI1PR08MB2782.eurprd08.prod.outlook.com
+ (2603:10a6:802:19::15)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=jan.dakinevich@virtuozzo.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-mailer: git-send-email 2.1.4
+x-originating-ip: [185.231.240.5]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 64200d9f-8ab0-4f49-3f12-08d726ece50d
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:VI1PR08MB4032;
+x-ms-traffictypediagnostic: VI1PR08MB4032:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR08MB403272ABB4AE281CC6B361028AA50@VI1PR08MB4032.eurprd08.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-forefront-prvs: 01371B902F
+x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(346002)(396003)(376002)(136003)(366004)(39830400003)(199004)(189003)(6116002)(102836004)(50226002)(71200400001)(36756003)(6486002)(86362001)(6436002)(386003)(2906002)(66556008)(64756008)(66476007)(66446008)(6512007)(26005)(2616005)(6506007)(186003)(7416002)(5640700003)(66946007)(71190400001)(476003)(2351001)(305945005)(54906003)(99286004)(316002)(66066001)(52116002)(486006)(53936002)(44832011)(25786009)(8936002)(8676002)(7736002)(81156014)(14454004)(256004)(14444005)(5660300002)(6916009)(81166006)(2501003)(3846002)(4326008)(478600001);DIR:OUT;SFP:1102;SCL:1;SRVR:VI1PR08MB4032;H:VI1PR08MB2782.eurprd08.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: virtuozzo.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: LD48Y+4verwTp27SR51ANMFtwTwhZIF3btJc7WohGadLSjKSIkUZ76LXKR1l6KvgezefXhzXMnrg4Oq9idXDCA0l2LLUWpCJ3VfRYtiqDRtL1und421l9V22/6DSSE9/7zSg7fgEf30VHyPXpJ+QfHzIbHj9h1gtZSO3h5KfQSZ+f0oSS5VG4H4EyMMat3UhbsR/7k2y6eH2A1O85NJnCUTXxVLZ31SpzXZfuAlxhUarU308AKR3oBhs9bRlFAv2a2Np7CptQiGRjxRXC+QUkR2DjG1cvjGEF6SmdutLFGJjtvqs9TgGPCT6w3/xLCeLFQKonAhdnlRveqzOJVWiS45xxh5fAU07VvhHIfZA1phVWMGZuWRZSly0+O8dDmp4Q22Z8+vXzuoJIQLwEjaAb7KQ6VfMvqh+WUB87wf4sxo=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 8BIT
+X-OriginatorOrg: virtuozzo.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64200d9f-8ab0-4f49-3f12-08d726ece50d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2019 10:38:39.5760
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 0bc7f26d-0264-416e-a6fc-8352af79c58f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EeqmZsZQyA1nPCLIJ0YIFbqEMtVNCFO+qu5o7/NxIn1h4Gp7Q/KeUpg+VYWmGza+Dne7L7YiwxBTfijowVzMEv3BR5c/m0PNoR8tXXqyeyA=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR08MB4032
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
+When somebody tries to send big datagram, kernel makes an attempt to
+avoid high-order allocation placing it into both: skb's data buffer
+and skb's paged part (->frag).
 
-> On Wed, Aug 21, 2019 at 4:29 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>
->> Alexei Starovoitov <alexei.starovoitov@gmail.com> writes:
->>
->> > On Tue, Aug 20, 2019 at 01:47:01PM +0200, Toke Høiland-Jørgensen wrote:
->> >> iproute2 uses its own bpf loader to load eBPF programs, which has
->> >> evolved separately from libbpf. Since we are now standardising on
->> >> libbpf, this becomes a problem as iproute2 is slowly accumulating
->> >> feature incompatibilities with libbpf-based loaders. In particular,
->> >> iproute2 has its own (expanded) version of the map definition struct,
->> >> which makes it difficult to write programs that can be loaded with both
->> >> custom loaders and iproute2.
->> >>
->> >> This series seeks to address this by converting iproute2 to using libbpf
->> >> for all its bpf needs. This version is an early proof-of-concept RFC, to
->> >> get some feedback on whether people think this is the right direction.
->> >>
->> >> What this series does is the following:
->> >>
->> >> - Updates the libbpf map definition struct to match that of iproute2
->> >>   (patch 1).
->> >> - Adds functionality to libbpf to support automatic pinning of maps when
->> >>   loading an eBPF program, while re-using pinned maps if they already
->> >>   exist (patches 2-3).
->> >> - Modifies iproute2 to make it possible to compile it against libbpf
->> >>   without affecting any existing functionality (patch 4).
->> >> - Changes the iproute2 eBPF loader to use libbpf for loading XDP
->> >>   programs (patch 5).
->> >>
->> >>
->> >> As this is an early PoC, there are still a few missing pieces before
->> >> this can be merged. Including (but probably not limited to):
->> >>
->> >> - Consolidate the map definition struct in the bpf_helpers.h file in the
->> >>   kernel tree. This contains a different, and incompatible, update to
->> >>   the struct. Since the iproute2 version has actually been released for
->> >>   use outside the kernel tree (and thus is subject to API stability
->> >>   constraints), I think it makes the most sense to keep that, and port
->> >>   the selftests to use it.
->> >
->> > It sounds like you're implying that existing libbpf format is not
->> > uapi.
->>
->> No, that's not what I meant... See below.
->>
->> > It is and we cannot break it.
->> > If patch 1 means breakage for existing pre-compiled .o that won't load
->> > with new libbpf then we cannot use this method.
->> > Recompiling .o with new libbpf definition of bpf_map_def isn't an option.
->> > libbpf has to be smart before/after and recognize both old and iproute2 format.
->>
->> The libbpf.h definition of struct bpf_map_def is compatible with the one
->> used in iproute2. In libbpf.h, the struct only contains five fields
->> (type, key_size, value_size, max_entries and flags), and iproute2 adds
->> another 4 (id, pinning, inner_id and inner_idx; these are the ones in
->> patch 1 in this series).
->>
->> The issue I was alluding to above is that the bpf_helpers.h file in the
->> kernel selftests directory *also* extends the bpf_map_def struct, and
->> adds two *different* fields (inner_map_idx and numa_mode). The former is
->> used to implement the same map-in-map definition functionality that
->> iproute2 has, but with different semantics. The latter is additional to
->> that, and I'm planning to add that to this series.
->>
->> Since bpf_helpers.h is *not* part of libbpf (yet), this will make it
->
-> We should start considering it as if it was, so if we can avoid adding
-> stuff that I'd need to untangle to move it into libbpf, I'd rather
-> avoid it.
-> We've already prepared this move by relicensing bpf_helpers.h. Moving
-> it into libbpf itself is immediate next thing I'll do when I'm back.
+However, paged part can not exceed MAX_SKB_FRAGS * PAGE_SIZE, and large
+datagram causes increasing skb's data buffer. Thus, if any user-space
+program sets send buffer (by calling setsockopt(SO_SNDBUF, ...)) to
+maximum allowed size (wmem_max) it becomes able to cause any amount
+of uncontrolled high-order kernel allocations.
 
-Yeah, I figured that with the relicensing, bpf_helpers would probably be
-making its way into libbpf soon. Which is why I wanted to start this
-discussion before that: If we do move bpf_helpers as-is, that will put
-us in the territory of full-on binary incompatibility. So the time to
-discuss doing this in a compatible way is now, before any such move is
-made.
+To avoid this, do not pass more then SKB_MAX_ALLOC for skb's data
+buffer and make use of fragment list of skb (->frag_list) in addition
+to paged part for huge datagrams.
 
--Toke
+Signed-off-by: Jan Dakinevich <jan.dakinevich@virtuozzo.com>
+---
+ net/unix/af_unix.c | 38 +++++++++++++++++++++++++++-----------
+ 1 file changed, 27 insertions(+), 11 deletions(-)
+
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 67e87db..0c13937 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -1580,7 +1580,9 @@ static int unix_dgram_sendmsg(struct socket *sock, st=
+ruct msghdr *msg,
+ 	struct sk_buff *skb;
+ 	long timeo;
+ 	struct scm_cookie scm;
+-	int data_len =3D 0;
++	unsigned long frag_len;
++	unsigned long paged_len;
++	unsigned long header_len;
+ 	int sk_locked;
+=20
+ 	wait_for_unix_gc();
+@@ -1613,27 +1615,41 @@ static int unix_dgram_sendmsg(struct socket *sock, =
+struct msghdr *msg,
+ 	if (len > sk->sk_sndbuf - 32)
+ 		goto out;
+=20
+-	if (len > SKB_MAX_ALLOC) {
+-		data_len =3D min_t(size_t,
+-				 len - SKB_MAX_ALLOC,
+-				 MAX_SKB_FRAGS * PAGE_SIZE);
+-		data_len =3D PAGE_ALIGN(data_len);
++	BUILD_BUG_ON(SKB_MAX_ALLOC < PAGE_SIZE);
+=20
+-		BUILD_BUG_ON(SKB_MAX_ALLOC < PAGE_SIZE);
+-	}
++	header_len =3D min(len, SKB_MAX_ALLOC);
++	paged_len =3D min(len - header_len, MAX_SKB_FRAGS * PAGE_SIZE);
++	frag_len =3D len - header_len - paged_len;
+=20
+-	skb =3D sock_alloc_send_pskb(sk, len - data_len, data_len,
++	skb =3D sock_alloc_send_pskb(sk, header_len, paged_len,
+ 				   msg->msg_flags & MSG_DONTWAIT, &err,
+ 				   PAGE_ALLOC_COSTLY_ORDER);
+ 	if (skb =3D=3D NULL)
+ 		goto out;
+=20
++	while (frag_len) {
++		unsigned long size =3D min(SKB_MAX_ALLOC, frag_len);
++		struct sk_buff *frag;
++
++		frag =3D sock_alloc_send_pskb(sk, size, 0,
++					    msg->msg_flags & MSG_DONTWAIT,
++					    &err, 0);
++		if (!frag)
++			goto out_free;
++
++		skb_put(frag, size);
++		frag->next =3D skb_shinfo(skb)->frag_list;
++		skb_shinfo(skb)->frag_list =3D frag;
++
++		frag_len -=3D size;
++	}
++
+ 	err =3D unix_scm_to_skb(&scm, skb, true);
+ 	if (err < 0)
+ 		goto out_free;
+=20
+-	skb_put(skb, len - data_len);
+-	skb->data_len =3D data_len;
++	skb_put(skb, header_len);
++	skb->data_len =3D len - header_len;
+ 	skb->len =3D len;
+ 	err =3D skb_copy_datagram_from_iter(skb, 0, &msg->msg_iter, len);
+ 	if (err)
+--=20
+2.1.4
+
