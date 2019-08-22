@@ -2,60 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B9329A280
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:00:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 15D339A284
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 00:02:02 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404578AbfHVWAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 18:00:30 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:50197 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404199AbfHVWAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:00:30 -0400
-Received: from cpc129250-craw9-2-0-cust139.know.cable.virginm.net ([82.43.126.140] helo=localhost)
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1i0v85-0005ow-Si; Thu, 22 Aug 2019 22:00:25 +0000
-From:   Colin King <colin.king@canonical.com>
-To:     Stanislav Yakovlev <stas.yakovlev@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] ipw2x00: fix spelling mistake "initializationg" -> "initialization"
-Date:   Thu, 22 Aug 2019 23:00:25 +0100
-Message-Id: <20190822220025.5690-1-colin.king@canonical.com>
-X-Mailer: git-send-email 2.20.1
+        id S2404853AbfHVWBd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 18:01:33 -0400
+Received: from mail-qt1-f171.google.com ([209.85.160.171]:43443 "EHLO
+        mail-qt1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403834AbfHVWBd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 18:01:33 -0400
+Received: by mail-qt1-f171.google.com with SMTP id b11so9407907qtp.10
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 15:01:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=q94N1a4CEh/0zqhyBs2kCb5IhlZY38AuxFUVWZUpUwA=;
+        b=d/seBOH0Rr4jXH6JE6gEzE4GS/Q4e/GbEHXihCrNhUxtpuwKkAtHRPTxfYo5HKSPfp
+         e8vug1rYaoCjQawn7GnxR08fAzFh3bGin3QGOiqbavs6K8RUkPp/KF9WTSeDp+vzRV/2
+         6iit5xWHKy/hSEdVsuqlJw3TMN+kQmSixuW9hFaHxPGFvEGf0gHg5BGRkSTaxSkQPIDN
+         Rx8+2ZF797nubv/HMD0H7u1daWu7Yggb+qijoCSkrpMQNlDAjDcWtDgkHG5ywF0dglVa
+         ME+y/hM2jQHpGayYYj+xpWV/EW0N05d2zecdhjIb4Z2l8Oz6lka06DwLfPQD1XNijOfg
+         d2rA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=q94N1a4CEh/0zqhyBs2kCb5IhlZY38AuxFUVWZUpUwA=;
+        b=plA95E95cjztbo+to8R9twCBOcpPhI4u0qXN3gLTwDZLQRu9xHEXDMoQNLHakJoozZ
+         LcQx4PjinxTmoviUiecQtEe3vBpJqllGmOxAVu1RsbNHj/wFO/KwqBJI2HFy0/VHSHc8
+         kkL+3iit74FbLz1n1yUOvExIZVHYHSsSTE0/EpZ5n4og/Y+SM0vGaRpvSK12VfLk+ZeZ
+         JXrhOScBKIEoWoHV8lL1BWR+yEe6W86JXDp4krDo7RVGk0VsWPqrYjWYRd39Ky4twstr
+         7OXPQYPTUG4Y0/8vxI19qlT0BISsInpaheiaF2nk5tr/FclzMIe2EjD2Bw/XsFlgJCv2
+         k00A==
+X-Gm-Message-State: APjAAAUym5XXfAEdN6NGkbQfx+CsQHWJFwfRjKOSjrwHoSHWMXJ8Ht/j
+        Wx9Ja65B7fzri2C893Bs8+CmFlZz8mM=
+X-Google-Smtp-Source: APXvYqx/33hLmUf8s2vye8JD5S8SWyHAeX7/DBeOqyqob2u4au2eHidxhogbtB7VWvq8e7Co5UGeXA==
+X-Received: by 2002:ac8:67d4:: with SMTP id r20mr1859680qtp.215.1566511292115;
+        Thu, 22 Aug 2019 15:01:32 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id y188sm517081qkc.29.2019.08.22.15.01.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2019 15:01:32 -0700 (PDT)
+Date:   Thu, 22 Aug 2019 15:01:24 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, nhorman@redhat.com,
+        sassmann@redhat.com
+Subject: Re: [net-next v2 00/13][pull request] 40GbE Intel Wired LAN Driver
+ Updates 2019-08-22
+Message-ID: <20190822150124.50e5b67d@cakuba.netronome.com>
+In-Reply-To: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
+References: <20190822203039.15668-1-jeffrey.t.kirsher@intel.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Thu, 22 Aug 2019 13:30:26 -0700, Jeff Kirsher wrote:
+> v2: Combined patch 7 & 9 in the original series, since both patches
+>     bumped firmware API version.  Also combined patches 12 & 13 in the
+>     original series, since one increased the scope of checking for MAC
+>     and the follow-on patch made use of function within the new scope.
 
-There is a spelling mistake in an IPW_DEBUG_INFO message. Fix it.
-
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/net/wireless/intel/ipw2x00/ipw2200.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/wireless/intel/ipw2x00/ipw2200.c b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-index fa55d2ccbfab..ed0f06532d5e 100644
---- a/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-+++ b/drivers/net/wireless/intel/ipw2x00/ipw2200.c
-@@ -2721,7 +2721,7 @@ static void ipw_eeprom_init_sram(struct ipw_priv *priv)
- 		/* Do not load eeprom data on fatal error or suspend */
- 		ipw_write32(priv, IPW_EEPROM_LOAD_DISABLE, 0);
- 	} else {
--		IPW_DEBUG_INFO("Enabling FW initializationg of SRAM\n");
-+		IPW_DEBUG_INFO("Enabling FW initialization of SRAM\n");
- 
- 		/* Load eeprom data on fatal error or suspend */
- 		ipw_write32(priv, IPW_EEPROM_LOAD_DISABLE, 1);
--- 
-2.20.1
-
+Thanks, LGTM
