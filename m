@@ -2,165 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B2159941A
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:45:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD52F99447
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:53:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387984AbfHVMoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 08:44:38 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44463 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2387947AbfHVMoS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:44:18 -0400
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 22 Aug 2019 15:44:11 +0300
-Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7MCiAor025522;
-        Thu, 22 Aug 2019 15:44:11 +0300
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     netdev@vger.kernel.org
-Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
-        davem@davemloft.net, jakub.kicinski@netronome.com,
-        pablo@netfilter.org, Vlad Buslov <vladbu@mellanox.com>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: [PATCH net-next 10/10] net: sched: flower: don't take rtnl lock for cls hw offloads API
-Date:   Thu, 22 Aug 2019 15:43:53 +0300
-Message-Id: <20190822124353.16902-11-vladbu@mellanox.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190822124353.16902-1-vladbu@mellanox.com>
-References: <20190822124353.16902-1-vladbu@mellanox.com>
+        id S2388743AbfHVMxs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 08:53:48 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:35091 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725856AbfHVMxs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:53:48 -0400
+Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
+        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
+        (Exim 4.76)
+        (envelope-from <colin.king@canonical.com>)
+        id 1i0may-0003jn-O4; Thu, 22 Aug 2019 12:53:40 +0000
+From:   Colin King <colin.king@canonical.com>
+To:     David Ahern <dsahern@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] nexthops: remove redundant assignment to variable err
+Date:   Thu, 22 Aug 2019 13:53:40 +0100
+Message-Id: <20190822125340.30783-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Don't manually take rtnl lock in flower classifier before calling cls
-hardware offloads API. Instead, pass rtnl lock status via 'rtnl_held'
-parameter.
+From: Colin Ian King <colin.king@canonical.com>
 
-Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
-Acked-by: Jiri Pirko <jiri@mellanox.com>
+Variable err is initialized to a value that is never read and it is
+re-assigned later. The initialization is redundant and can be removed.
+
+Addresses-Coverity: ("Unused Value")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
 ---
- net/sched/cls_flower.c | 55 ++++++++++++------------------------------
- 1 file changed, 16 insertions(+), 39 deletions(-)
+ net/ipv4/nexthop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 1cc68702f93d..786427997be6 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -412,18 +412,13 @@ static void fl_hw_destroy_filter(struct tcf_proto *tp, struct cls_fl_filter *f,
- 	struct tcf_block *block = tp->chain->block;
- 	struct flow_cls_offload cls_flower = {};
+diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+index 5fe5a3981d43..fc34fd1668d6 100644
+--- a/net/ipv4/nexthop.c
++++ b/net/ipv4/nexthop.c
+@@ -1151,7 +1151,7 @@ static int nh_create_ipv4(struct net *net, struct nexthop *nh,
+ 		.fc_encap_type = cfg->nh_encap_type,
+ 	};
+ 	u32 tb_id = l3mdev_fib_table(cfg->dev);
+-	int err = -EINVAL;
++	int err;
  
--	if (!rtnl_held)
--		rtnl_lock();
--
- 	tc_cls_common_offload_init(&cls_flower.common, tp, f->flags, extack);
- 	cls_flower.command = FLOW_CLS_DESTROY;
- 	cls_flower.cookie = (unsigned long) f;
- 
- 	tc_setup_cb_destroy(block, tp, TC_SETUP_CLSFLOWER, &cls_flower, false,
--			    &f->flags, &f->in_hw_count, true);
-+			    &f->flags, &f->in_hw_count, rtnl_held);
- 
--	if (!rtnl_held)
--		rtnl_unlock();
- }
- 
- static int fl_hw_replace_filter(struct tcf_proto *tp,
-@@ -435,14 +430,9 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
- 	bool skip_sw = tc_skip_sw(f->flags);
- 	int err = 0;
- 
--	if (!rtnl_held)
--		rtnl_lock();
--
- 	cls_flower.rule = flow_rule_alloc(tcf_exts_num_actions(&f->exts));
--	if (!cls_flower.rule) {
--		err = -ENOMEM;
--		goto errout;
--	}
-+	if (!cls_flower.rule)
-+		return -ENOMEM;
- 
- 	tc_cls_common_offload_init(&cls_flower.common, tp, f->flags, extack);
- 	cls_flower.command = FLOW_CLS_REPLACE;
-@@ -453,38 +443,30 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
- 	cls_flower.classid = f->res.classid;
- 
- 	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts,
--				   true);
-+				   rtnl_held);
+ 	err = fib_nh_init(net, fib_nh, &fib_cfg, 1, extack);
  	if (err) {
- 		kfree(cls_flower.rule);
--		if (skip_sw)
-+		if (skip_sw) {
- 			NL_SET_ERR_MSG_MOD(extack, "Failed to setup flow action");
--		else
--			err = 0;
--		goto errout;
-+			return err;
-+		}
-+		return 0;
- 	}
- 
- 	err = tc_setup_cb_add(block, tp, TC_SETUP_CLSFLOWER, &cls_flower,
--			      skip_sw, &f->flags, &f->in_hw_count, true);
-+			      skip_sw, &f->flags, &f->in_hw_count, rtnl_held);
- 	tc_cleanup_flow_action(&cls_flower.rule->action);
- 	kfree(cls_flower.rule);
- 
- 	if (err < 0) {
--		fl_hw_destroy_filter(tp, f, true, NULL);
--		goto errout;
--	} else if (err > 0) {
--		err = 0;
--	}
--
--	if (skip_sw && !(f->flags & TCA_CLS_FLAGS_IN_HW)) {
--		err = -EINVAL;
--		goto errout;
-+		fl_hw_destroy_filter(tp, f, rtnl_held, NULL);
-+		return err;
- 	}
- 
--errout:
--	if (!rtnl_held)
--		rtnl_unlock();
-+	if (skip_sw && !(f->flags & TCA_CLS_FLAGS_IN_HW))
-+		return -EINVAL;
- 
--	return err;
-+	return 0;
- }
- 
- static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
-@@ -493,22 +475,17 @@ static void fl_hw_update_stats(struct tcf_proto *tp, struct cls_fl_filter *f,
- 	struct tcf_block *block = tp->chain->block;
- 	struct flow_cls_offload cls_flower = {};
- 
--	if (!rtnl_held)
--		rtnl_lock();
--
- 	tc_cls_common_offload_init(&cls_flower.common, tp, f->flags, NULL);
- 	cls_flower.command = FLOW_CLS_STATS;
- 	cls_flower.cookie = (unsigned long) f;
- 	cls_flower.classid = f->res.classid;
- 
--	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false, true);
-+	tc_setup_cb_call(block, TC_SETUP_CLSFLOWER, &cls_flower, false,
-+			 rtnl_held);
- 
- 	tcf_exts_stats_update(&f->exts, cls_flower.stats.bytes,
- 			      cls_flower.stats.pkts,
- 			      cls_flower.stats.lastused);
--
--	if (!rtnl_held)
--		rtnl_unlock();
- }
- 
- static void __fl_put(struct cls_fl_filter *f)
 -- 
-2.21.0
+2.20.1
 
