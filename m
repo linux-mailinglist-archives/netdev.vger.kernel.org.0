@@ -2,156 +2,175 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AA9F9976D
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:53:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F3299776
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:55:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388487AbfHVOxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 10:53:07 -0400
-Received: from mail-io1-f72.google.com ([209.85.166.72]:36169 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388081AbfHVOxG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:53:06 -0400
-Received: by mail-io1-f72.google.com with SMTP id i6so6661194ioi.3
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 07:53:05 -0700 (PDT)
+        id S2388487AbfHVOyR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 10:54:17 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:45797 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732321AbfHVOyQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:54:16 -0400
+Received: by mail-pf1-f195.google.com with SMTP id w26so4115827pfq.12
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 07:54:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=x7HSKfWMUdaVga31So0a+mtOQLYUde3yUivJl3LTw5g=;
+        b=X098aRZXbyr7BUOHnuJL2JXqRpr5e8XAyVfqVyBfBqCtVhZ7IhjfP8E2B2YJsJ1E0G
+         hxrJCy7aZCex7/tusPNBr3Dk+TUi2Uwh0d7M8r9WxoaRjHtqVEksWyah5Pz0eVCpc0hA
+         a2RB13MNX+AXvTFptX7uLFfFQu42+Wva+JnVRz9CPZ8aHNHbzEVgQuZ7GlHvsTFMZ2Re
+         9+3DEOUzSPmQQ6y6Iw8eTnhvhWUuiv7lOUZAheY/d3VBCFzstRbAVPMox3Op4bEU5SVH
+         bJz5itsV0o+KwP5fpzjw1LqkIzlKhbxjVOee0aspB7QkzT3IOl36C3jwon6b3oGly1KY
+         JTVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=kfIi0OSou2Ekw5QLTdZ8VtZ0z3hqSfowleVJYnTSHhc=;
-        b=KnSLhHge5yYblw3fgPff9roNHCr4aj+ZfosEfDYA3RSb1bvVOkl0+rzSjhmFJlhODq
-         TDipNySElVy8fgW8G5Bd+bie1TV8zypuS519NYWbRD7kNuMwxit+o+09B42IB2JYq8Mo
-         nKtfOeXrhhamq/gSY7uFq+L/S+M2CBxGnXf7ML+QchX/rhLszC/4kbVAghmuWbh3e2nC
-         LjEHmbAs+DXz5mR6/DK++Hk0mtOYpzPT9IkT0n/xwfNoXV1UPQfuyBnppzulpYHX78b4
-         aoZm5+4XeCiLl1MaVparclJsI33rE8saxgD+yfImH8jwj42QALw4M0ntNZam1IIvNScc
-         FVlw==
-X-Gm-Message-State: APjAAAWW26SW4o3hoMPtxkEAGh0MogQZnYn/gv861cLPDIJ/wtxIHE+S
-        yqkQMtoUpIspGo5IcI4MEoervaeNdJebA6OV2KUtiPm2DW42
-X-Google-Smtp-Source: APXvYqw2pBMggwRHNC0lzjydaezprM8qkJSaYzg9R1+X41uK1S/e6CKOqbuqpYhbin1Rq+t39efQ14ItyMp4karQSg0YBWmMHNMl
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=x7HSKfWMUdaVga31So0a+mtOQLYUde3yUivJl3LTw5g=;
+        b=UKIjhwAqVMWVVDIJvVxgk3Fl39fna63vvmaIkRSJIcfnLkksHzIWAp3sfErkCzdKAP
+         Bbe85gu8R4nImLiw4Ml5lRiZp1k75W/evLu0iKrBhF2RmClu/aDuPq1jK6q8VIAaB42p
+         OnN7DvzmUicI47cr/OPrpENOt7lCXWKSJkbmKxjy4Myfr7mV7FiyXi+WOZUfYjl6l6Hj
+         cXhjURUYnNifAcvptzn5DfKQWrlg5T9ouKy1lIlco7AekeJKNBVvlwSKq4S29BVcON+8
+         9N1LjF0MYU5BLpxmwqLWIPO9g8YL+F4eexI3ak8MnMsuceiCDydn+QX8yKabJJ9T/4BR
+         vyEg==
+X-Gm-Message-State: APjAAAV+VG9FjBsVqjibvqQPK1EQGlxhBpAZXYDlby1R+rt6+EDxymqE
+        keyTLaT4khCM68OAeU4nhdRPGxFSkNFE/P8Eh57NNg==
+X-Google-Smtp-Source: APXvYqzBNvIpEvVab5uvhNpSX4tVDr7f0wZOMhTUXFg77KUDSGwsULUFa1wN7ajsvNDzlVTzNqendNlf5megUHX/qys=
+X-Received: by 2002:a17:90a:858a:: with SMTP id m10mr11906pjn.129.1566485655293;
+ Thu, 22 Aug 2019 07:54:15 -0700 (PDT)
 MIME-Version: 1.0
-X-Received: by 2002:a5e:8e09:: with SMTP id a9mr69752ion.238.1566485585548;
- Thu, 22 Aug 2019 07:53:05 -0700 (PDT)
-Date:   Thu, 22 Aug 2019 07:53:05 -0700
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000df5c7f0590b5d85d@google.com>
-Subject: general protection fault in sctp_inq_pop
-From:   syzbot <syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, linux-kernel@vger.kernel.org,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com,
-        syzkaller-bugs@googlegroups.com, vyasevich@gmail.com
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+References: <000000000000d9f094057a17b97b@google.com> <000000000000b439370586498dff@google.com>
+ <CAAeHK+zUHJswwHfVUCV0qTgvFVFZpT0hJqioLyYgbA0yQC0H8Q@mail.gmail.com>
+ <CAAeHK+w+asSQ3axWymToQ+uzPfEAYS2QimVBL85GuJRBtxkjDA@mail.gmail.com> <CAAeHK+y-2DZ1sWUE5bESrd=dUAaGrHXzR5+gFJFgiAaWo+D2dw@mail.gmail.com>
+In-Reply-To: <CAAeHK+y-2DZ1sWUE5bESrd=dUAaGrHXzR5+gFJFgiAaWo+D2dw@mail.gmail.com>
+From:   Andrey Konovalov <andreyknvl@google.com>
+Date:   Thu, 22 Aug 2019 16:54:04 +0200
+Message-ID: <CAAeHK+wL4pmXo3Li2dcULu4Wx+zUQLX_94BDizoZWQ+vMdz5Lw@mail.gmail.com>
+Subject: Re: WARNING in rollback_registered_many (2)
+To:     syzbot <syzbot+40918e4d826fb2ff9b96@syzkaller.appspotmail.com>,
+        USB list <linux-usb@vger.kernel.org>
+Cc:     Larry Finger <Larry.Finger@lwfinger.net>, avagin@virtuozzo.com,
+        "David S. Miller" <davem@davemloft.net>,
+        devel@driverdev.osuosl.org,
+        "Eric W . Biederman" <ebiederm@xmission.com>,
+        Eric Dumazet <edumazet@google.com>,
+        florian.c.schilhabel@googlemail.com,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kai Heng Feng <kai.heng.feng@canonical.com>,
+        ktkhai@virtuozzo.com, LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, straube.linux@gmail.com,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        tyhicks@canonical.com, Matthew Wilcox <willy@infradead.org>,
+        Oliver Neukum <oneukum@suse.com>,
+        Alan Stern <stern@rowland.harvard.edu>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On Thu, Aug 22, 2019 at 3:07 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+>
+> On Wed, Aug 7, 2019 at 4:03 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+> >
+> > On Fri, Apr 12, 2019 at 1:32 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+> > >
+> > > On Fri, Apr 12, 2019 at 1:29 AM syzbot
+> > > <syzbot+40918e4d826fb2ff9b96@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > syzbot has found a reproducer for the following crash on:
+> > > >
+> > > > HEAD commit:    9a33b369 usb-fuzzer: main usb gadget fuzzer driver
+> > > > git tree:       https://github.com/google/kasan/tree/usb-fuzzer
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=10d552b7200000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=23e37f59d94ddd15
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=40918e4d826fb2ff9b96
+> > > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17a4c1af200000
+> > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=121b274b200000
+> > > >
+> > > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > > Reported-by: syzbot+40918e4d826fb2ff9b96@syzkaller.appspotmail.com
+> > > >
+> > > > usb 1-1: r8712u: MAC Address from efuse = 00:e0:4c:87:00:00
+> > > > usb 1-1: r8712u: Loading firmware from "rtlwifi/rtl8712u.bin"
+> > > > usb 1-1: USB disconnect, device number 2
+> > > > usb 1-1: Direct firmware load for rtlwifi/rtl8712u.bin failed with error -2
+> > > > usb 1-1: r8712u: Firmware request failed
+> > > > WARNING: CPU: 0 PID: 575 at net/core/dev.c:8152
+> > > > rollback_registered_many+0x1f3/0xe70 net/core/dev.c:8152
+> > > > Kernel panic - not syncing: panic_on_warn set ...
+> > > > CPU: 0 PID: 575 Comm: kworker/0:4 Not tainted 5.1.0-rc4-319354-g9a33b36 #3
+> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > > > Google 01/01/2011
+> > > > Workqueue: usb_hub_wq hub_event
+> > > > Call Trace:
+> > > >   __dump_stack lib/dump_stack.c:77 [inline]
+> > > >   dump_stack+0xe8/0x16e lib/dump_stack.c:113
+> > > >   panic+0x29d/0x5f2 kernel/panic.c:214
+> > > >   __warn.cold+0x20/0x48 kernel/panic.c:571
+> > > >   report_bug+0x262/0x2a0 lib/bug.c:186
+> > > >   fixup_bug arch/x86/kernel/traps.c:179 [inline]
+> > > >   fixup_bug arch/x86/kernel/traps.c:174 [inline]
+> > > >   do_error_trap+0x130/0x1f0 arch/x86/kernel/traps.c:272
+> > > >   do_invalid_op+0x37/0x40 arch/x86/kernel/traps.c:291
+> > > >   invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:973
+> > > > RIP: 0010:rollback_registered_many+0x1f3/0xe70 net/core/dev.c:8152
+> > > > Code: 05 00 00 31 ff 44 89 fe e8 5a 15 f3 f4 45 84 ff 0f 85 49 ff ff ff e8
+> > > > 1c 14 f3 f4 0f 1f 44 00 00 e8 12 14 f3 f4 e8 0d 14 f3 f4 <0f> 0b 4c 89 e7
+> > > > e8 33 72 f2 f6 31 ff 41 89 c4 89 c6 e8 27 15 f3 f4
+> > > > RSP: 0018:ffff88809d087698 EFLAGS: 00010293
+> > > > RAX: ffff88809d058000 RBX: ffff888096240000 RCX: ffffffff8c7eb146
+> > > > RDX: 0000000000000000 RSI: ffffffff8c7eb163 RDI: 0000000000000001
+> > > > RBP: ffff88809d0877c8 R08: ffff88809d058000 R09: fffffbfff2708111
+> > > > R10: fffffbfff2708110 R11: ffffffff93840887 R12: ffff888096240070
+> > > > R13: dffffc0000000000 R14: ffff88809d087758 R15: 0000000000000000
+> > > >   rollback_registered+0xf7/0x1c0 net/core/dev.c:8228
+> > > >   unregister_netdevice_queue net/core/dev.c:9275 [inline]
+> > > >   unregister_netdevice_queue+0x1dc/0x2b0 net/core/dev.c:9268
+> > > >   unregister_netdevice include/linux/netdevice.h:2655 [inline]
+> > > >   unregister_netdev+0x1d/0x30 net/core/dev.c:9316
+> > > >   r871xu_dev_remove+0xe7/0x223 drivers/staging/rtl8712/usb_intf.c:604
+> > > >   usb_unbind_interface+0x1c9/0x980 drivers/usb/core/driver.c:423
+> > > >   __device_release_driver drivers/base/dd.c:1082 [inline]
+> > > >   device_release_driver_internal+0x436/0x4f0 drivers/base/dd.c:1113
+> > > >   bus_remove_device+0x302/0x5c0 drivers/base/bus.c:556
+> > > >   device_del+0x467/0xb90 drivers/base/core.c:2269
+> > > >   usb_disable_device+0x242/0x790 drivers/usb/core/message.c:1235
+> > > >   usb_disconnect+0x298/0x870 drivers/usb/core/hub.c:2197
+> > > >   hub_port_connect drivers/usb/core/hub.c:4940 [inline]
+> > > >   hub_port_connect_change drivers/usb/core/hub.c:5204 [inline]
+> > > >   port_event drivers/usb/core/hub.c:5350 [inline]
+> > > >   hub_event+0xcd2/0x3b00 drivers/usb/core/hub.c:5432
+> > > >   process_one_work+0x90f/0x1580 kernel/workqueue.c:2269
+> > > >   process_scheduled_works kernel/workqueue.c:2331 [inline]
+> > > >   worker_thread+0x7b0/0xe20 kernel/workqueue.c:2417
+> > > >   kthread+0x313/0x420 kernel/kthread.c:253
+> > > >   ret_from_fork+0x3a/0x50 arch/x86/entry/entry_64.S:352
+> > > > Kernel Offset: disabled
+> > > > Rebooting in 86400 seconds..
+> > > >
+> > >
+> > > +linux-usb mailing list
+> >
+> > This USB bug is the most frequently triggered one right now with over
+> > 27k kernel crashes.
+>
+> OK, this report is confusing. It was initially reported on the
+> upstream instance a long time ago, but since then has stopped
+> happening, as it was probably fixed. Then when we launched the USB
+> fuzzing instance, it has started producing similarly named reports
+> (with a different root cause though), and they were bucketed into this
+> bug by syzkaller. I've improved parsing titles of such reports in
+> syzkaller, so I'm invalidating this one, and syzbot should send a
+> properly attributed USB report soon.
+>
+> #syz invalid
 
-syzbot found the following crash on:
+This has been reported as:
 
-HEAD commit:    20e79a0a net: hns: add phy_attached_info() to the hns driver
-git tree:       net-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=10d6dfba600000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=ce5e88233f2f83b0
-dashboard link: https://syzkaller.appspot.com/bug?extid=4a0643a653ac375612d1
-compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+WARNING in r871xu_dev_remove
 
-Unfortunately, I don't have any reproducer for this crash yet.
-
-IMPORTANT: if you fix the bug, please add the following tag to the commit:
-Reported-by: syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com
-
-kasan: CONFIG_KASAN_INLINE enabled
-kasan: GPF could be caused by NULL-ptr deref or user memory access
-general protection fault: 0000 [#1] PREEMPT SMP KASAN
-CPU: 0 PID: 15509 Comm: syz-executor.1 Not tainted 5.3.0-rc3+ #139
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS  
-Google 01/01/2011
-RIP: 0010:sctp_inq_pop+0x294/0xd80 net/sctp/inqueue.c:201
-Code: 89 f9 48 c1 e9 03 80 3c 01 00 0f 85 e3 08 00 00 49 8d 7d 02 4d 89 6c  
-24 60 48 b8 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 <0f> b6 0c 01 48  
-89 f8 83 e0 07 83 c0 01 38 c8 7c 08 84 c9 0f 85 4b
-RSP: 0018:ffff888097d9ee40 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff8880968405d8 RCX: 0000000000000001
-RDX: 0000000000005803 RSI: ffffffff86b236aa RDI: 000000000000000a
-RBP: ffff888097d9ee90 R08: ffff88808fd44240 R09: fffffbfff14a914f
-R10: fffffbfff14a914e R11: ffffffff8a548a77 R12: ffff888096840580
-R13: 0000000000000008 R14: 0000000000000000 R15: ffff888097d9f478
-FS:  00007f59f27b8700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f40b77fd000 CR3: 0000000063e8e000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
-  sctp_endpoint_bh_rcv+0x184/0x8d0 net/sctp/endpointola.c:385
-  sctp_inq_push+0x1e4/0x280 net/sctp/inqueue.c:80
-  sctp_rcv+0x2807/0x3590 net/sctp/input.c:256
-  sctp6_rcv+0x17/0x30 net/sctp/ipv6.c:1049
-  ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
-  ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
-  NF_HOOK include/linux/netfilter.h:305 [inline]
-  NF_HOOK include/linux/netfilter.h:299 [inline]
-  ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
-  dst_input include/net/dst.h:442 [inline]
-  ip6_sublist_rcv_finish+0x98/0x1e0 net/ipv6/ip6_input.c:84
-  ip6_list_rcv_finish net/ipv6/ip6_input.c:118 [inline]
-  ip6_sublist_rcv+0x80c/0xcf0 net/ipv6/ip6_input.c:282
-  ipv6_list_rcv+0x373/0x4b0 net/ipv6/ip6_input.c:316
-  __netif_receive_skb_list_ptype net/core/dev.c:5049 [inline]
-  __netif_receive_skb_list_core+0x1a2/0x9d0 net/core/dev.c:5087
-  __netif_receive_skb_list net/core/dev.c:5149 [inline]
-  netif_receive_skb_list_internal+0x7eb/0xe60 net/core/dev.c:5244
-  gro_normal_list.part.0+0x1e/0xb0 net/core/dev.c:5757
-  gro_normal_list net/core/dev.c:5755 [inline]
-  gro_normal_one net/core/dev.c:5769 [inline]
-  napi_frags_finish net/core/dev.c:5782 [inline]
-  napi_gro_frags+0xa6a/0xea0 net/core/dev.c:5855
-  tun_get_user+0x2e98/0x3fa0 drivers/net/tun.c:1974
-  tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2020
-  call_write_iter include/linux/fs.h:1870 [inline]
-  do_iter_readv_writev+0x5f8/0x8f0 fs/read_write.c:693
-  do_iter_write fs/read_write.c:970 [inline]
-  do_iter_write+0x184/0x610 fs/read_write.c:951
-  vfs_writev+0x1b3/0x2f0 fs/read_write.c:1015
-  do_writev+0x15b/0x330 fs/read_write.c:1058
-  __do_sys_writev fs/read_write.c:1131 [inline]
-  __se_sys_writev fs/read_write.c:1128 [inline]
-  __x64_sys_writev+0x75/0xb0 fs/read_write.c:1128
-  do_syscall_64+0xfd/0x6a0 arch/x86/entry/common.c:296
-  entry_SYSCALL_64_after_hwframe+0x49/0xbe
-RIP: 0033:0x4596e1
-Code: 75 14 b8 14 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 34 b9 fb ff c3 48  
-83 ec 08 e8 fa 2c 00 00 48 89 04 24 b8 14 00 00 00 0f 05 <48> 8b 3c 24 48  
-89 c2 e8 43 2d 00 00 48 89 d0 48 83 c4 08 48 3d 01
-RSP: 002b:00007f59f27b7ba0 EFLAGS: 00000293 ORIG_RAX: 0000000000000014
-RAX: ffffffffffffffda RBX: 000000000000010c RCX: 00000000004596e1
-RDX: 0000000000000001 RSI: 00007f59f27b7c00 RDI: 00000000000000f0
-RBP: 000000000075bf20 R08: 0000000000000000 R09: 0000000000000000
-R10: 0000000000000000 R11: 0000000000000293 R12: 00007f59f27b86d4
-R13: 00000000004c8783 R14: 00000000004df5a0 R15: 00000000ffffffff
-Modules linked in:
----[ end trace 4d09ea96a0c7705b ]---
-RIP: 0010:sctp_inq_pop+0x294/0xd80 net/sctp/inqueue.c:201
-Code: 89 f9 48 c1 e9 03 80 3c 01 00 0f 85 e3 08 00 00 49 8d 7d 02 4d 89 6c  
-24 60 48 b8 00 00 00 00 00 fc ff df 48 89 f9 48 c1 e9 03 <0f> b6 0c 01 48  
-89 f8 83 e0 07 83 c0 01 38 c8 7c 08 84 c9 0f 85 4b
-RSP: 0018:ffff888097d9ee40 EFLAGS: 00010202
-RAX: dffffc0000000000 RBX: ffff8880968405d8 RCX: 0000000000000001
-RDX: 0000000000005803 RSI: ffffffff86b236aa RDI: 000000000000000a
-RBP: ffff888097d9ee90 R08: ffff88808fd44240 R09: fffffbfff14a914f
-R10: fffffbfff14a914e R11: ffffffff8a548a77 R12: ffff888096840580
-R13: 0000000000000008 R14: 0000000000000000 R15: ffff888097d9f478
-FS:  00007f59f27b8700(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007f40b77fd000 CR3: 0000000063e8e000 CR4: 00000000001406f0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-
-
----
-This bug is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
-
-syzbot will keep track of this bug report. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+https://syzkaller.appspot.com/bug?extid=80899a8a8efe8968cde7
