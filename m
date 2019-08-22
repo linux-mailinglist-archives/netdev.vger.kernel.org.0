@@ -2,141 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 54F85993A8
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:33:40 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C2CA993DC
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:34:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387691AbfHVMdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 08:33:13 -0400
-Received: from www62.your-server.de ([213.133.104.62]:51648 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387583AbfHVMdM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:33:12 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0mH2-0003rC-Uq; Thu, 22 Aug 2019 14:33:05 +0200
-Received: from [178.197.249.40] (helo=pc-63.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0mH2-0007FC-LS; Thu, 22 Aug 2019 14:33:04 +0200
-Subject: Re: [RFC bpf-next 4/5] iproute2: Allow compiling against libbpf
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>
-Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
-        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        andrii.nakryiko@gmail.com
-References: <20190820114706.18546-1-toke@redhat.com>
- <20190820114706.18546-5-toke@redhat.com>
- <9de36bbf-b70d-9320-c686-3033d0408276@iogearbox.net> <87imqppjir.fsf@toke.dk>
- <0c3d78eb-d305-9266-b505-c2f9181d5c89@iogearbox.net> <877e75pftb.fsf@toke.dk>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <4ca44e39-9b32-909f-df8d-f565eae57498@iogearbox.net>
-Date:   Thu, 22 Aug 2019 14:33:03 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2388657AbfHVMeP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 08:34:15 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:34963 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387707AbfHVMeN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:34:13 -0400
+Received: by mail-lf1-f67.google.com with SMTP id p197so4425624lfa.2
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 05:34:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=aWwEGZ7IKPwlD1SyN53LweuoS+rG8j2WBRgPDxMagPA=;
+        b=qQwouDogyXJvS+YAsG7u3jI4chdOO2iCwbnUv4qV7/t3H0mpAnkar5BQ6W4yzvm3w4
+         MFy7lbM3I35ux+N13OWQLqMSp+JYBfamJOBS4Rv9YtwGFbdx/1nZ3P/IH2tA3AOy5PjU
+         kwMZko6qlgHP0UHJGHFvzgceOWtw4tjNefrQZ96MP6AChhfKt94B36gjTZhv6W5d2u3q
+         XLX/JEQ53zQai3qewoG2X6xDeNJ4HOzQU6TV4Cb4zGt4uQQf5AD05mnaufLgjsYbqLh0
+         X5GVMmJW05ufNL+28p6nLz0lCjVsZITmyIS1mIvW9/VAX3eTcLMat0TkK0bawj8l1wal
+         unaQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=aWwEGZ7IKPwlD1SyN53LweuoS+rG8j2WBRgPDxMagPA=;
+        b=FFPpyOEOwdTX2N2SHToiePJzPHZrpMxgIbCK2btipJyDt+k1GaNl9ju1TNqZYBG8ul
+         a2M7d1Fns5JCPfK5u9JpP1aLeWe/ezvTm6E3foyj1Ke7B+rvrD4Eg6tifmu78osGVHmi
+         +tIxsQ9GroBezTHN9PLtPrGvVL4TBS9RvDY0dlyas07cb9VjKEmBebmH3NrG1KjN7OUO
+         oBGebieWoP42SscVSiem0d3jlNwf0ROAPlkzEF04HVQ1xRQnLA6OsHyH55es0Puo7MZH
+         FgunLsuszRncrjpNQOYVSBuZ7v1RN1VC1H4YSVnUjwLjT9t2jcLy0q5xYhZa0EaCdIYB
+         IIWQ==
+X-Gm-Message-State: APjAAAXWATLIrAUI1nr23dXlGjCoe6TGARLSMR/bF++iyX2wXS2J0FMz
+        H7xc3aViWGrJd9hNO6kJC7DjcT+l0yGkQmXbl+k=
+X-Google-Smtp-Source: APXvYqyvt2RXzV9cZsTsiBwjcFFEoyd1HLlAwIQQPxXOemblWJ85A0QXgz94gt7tcllsT417ikCMvXpOU1ZxhrqMZqI=
+X-Received: by 2002:ac2:42c3:: with SMTP id n3mr13722899lfl.117.1566477250738;
+ Thu, 22 Aug 2019 05:34:10 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <877e75pftb.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25549/Thu Aug 22 10:31:26 2019)
+Received: by 2002:ab3:6a0f:0:0:0:0:0 with HTTP; Thu, 22 Aug 2019 05:34:10
+ -0700 (PDT)
+Reply-To: eku.lawfirm@gmail.com
+From:   "Law firm(Eku and Associates)" <ezeobodo1@gmail.com>
+Date:   Thu, 22 Aug 2019 12:34:10 +0000
+Message-ID: <CAN-_bTZ04fanuBw0m=mWQFHTKscwdYgns3LR19ZdaFDanOVNGQ@mail.gmail.com>
+Subject: MY $25,000,000.00 INVESTMENT PROPOSAL WITH YOU AND IN YOUR COUNTRY.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/22/19 2:04 PM, Toke Høiland-Jørgensen wrote:
-> Daniel Borkmann <daniel@iogearbox.net> writes:
->> On 8/22/19 12:43 PM, Toke Høiland-Jørgensen wrote:
->>> Daniel Borkmann <daniel@iogearbox.net> writes:
->>>> On 8/20/19 1:47 PM, Toke Høiland-Jørgensen wrote:
->>>>> This adds a configure check for libbpf and renames functions to allow
->>>>> lib/bpf.c to be compiled with it present. This makes it possible to
->>>>> port functionality piecemeal to use libbpf.
->>>>>
->>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
->>>>> ---
->>>>>     configure          | 16 ++++++++++++++++
->>>>>     include/bpf_util.h |  6 +++---
->>>>>     ip/ipvrf.c         |  4 ++--
->>>>>     lib/bpf.c          | 33 +++++++++++++++++++--------------
->>>>>     4 files changed, 40 insertions(+), 19 deletions(-)
->>>>>
->>>>> diff --git a/configure b/configure
->>>>> index 45fcffb6..5a89ee9f 100755
->>>>> --- a/configure
->>>>> +++ b/configure
->>>>> @@ -238,6 +238,19 @@ check_elf()
->>>>>         fi
->>>>>     }
->>>>>     
->>>>> +check_libbpf()
->>>>> +{
->>>>> +    if ${PKG_CONFIG} libbpf --exists; then
->>>>> +	echo "HAVE_LIBBPF:=y" >>$CONFIG
->>>>> +	echo "yes"
->>>>> +
->>>>> +	echo 'CFLAGS += -DHAVE_LIBBPF' `${PKG_CONFIG} libbpf --cflags` >> $CONFIG
->>>>> +	echo 'LDLIBS += ' `${PKG_CONFIG} libbpf --libs` >>$CONFIG
->>>>> +    else
->>>>> +	echo "no"
->>>>> +    fi
->>>>> +}
->>>>> +
->>>>>     check_selinux()
->>>>
->>>> More of an implementation detail at this point in time, but want to
->>>> make sure this doesn't get missed along the way: as discussed at
->>>> bpfconf [0] best for iproute2 to handle libbpf support would be the
->>>> same way of integration as pahole does, that is, to integrate it via
->>>> submodule [1] to allow kernel and libbpf features to be in sync with
->>>> iproute2 releases and therefore easily consume extensions we're adding
->>>> to libbpf to aide iproute2 integration.
->>>
->>> I can sorta see the point wrt keeping in sync with kernel features. But
->>> how will this work with distros that package libbpf as a regular
->>> library? Have you guys given up on regular library symbol versioning for
->>> libbpf?
->>
->> Not at all, and I hope you know that. ;-)
-> 
-> Good! Didn't really expect you had, just checking ;)
-> 
->> The reason I added lib/bpf.c integration into iproute2 directly back
->> then was exactly such that users can start consuming BPF for tc and
->> XDP via iproute2 /everywhere/ with only a simple libelf dependency
->> which is also available on all distros since pretty much forever. If
->> it was an external library, we could have waited till hell freezes
->> over and initial distro adoption would have pretty much taken forever:
->> to pick one random example here wrt the pace of some downstream
->> distros [0]. The main rationale is pretty much the same as with added
->> kernel features that land complementary iproute2 patches for that
->> kernel release and as libbpf is developed alongside it is reasonable
->> to guarantee user expectations that iproute2 released for kernel
->> version x can make use of BPF features added to kernel x with same
->> loader support from x.
-> 
-> Well, for iproute2 I would expect this to be solved by version
-> dependencies. I.e. iproute2 version X would depend on libbpf version Y+
-> (like, I dunno, the version of libbpf included in the same kernel source
-> tree as the kernel version iproute2 is targeting? :)).
+--=20
+Dear,
+With due respect this is not spam or Scam mail, because I have
+contacted you before and there was no response from you,I apologise if
+the contents of this mail are contrary to your moral ethics, which I
+feel may be of great disturbance to your person, but please treat this
+with absolute confidentiality, believing that this email reaches you
+in good faith. My contacting you is not a mistake or a coincidence
+because God can use any person known or unknown to accomplish great
+things.
+I am a lawyer and I have an investment business proposal to offer you.
+It is not official but should be considered as legal and confidential
+business. I have a customer's deposit of $US25 million dollars ready
+to be moved for investment if you can partner with us. We are ready to
+offer you 10% of this total amount as your compensation for supporting
+the transaction to completion. If you are interested to help me please
+reply me with your full details as stated below:
+(1) Your full names:
+(2) Your address:
+(3) Your occupation:
+(4) Your mobile telephone number:
+(5) Your nationality:
+(6) Your present location:
+(7) Your age:
+So that I will provide you more details on what to do and what is
+required for successful completion.
+Note: DO NOT REPLY ME IF YOU ARE NOT INTERESTED AND WITHOUT THE ABOVE
+MENTIONED DETAILS
 
-This sounds nice in theory, but from what I've seen major (!) distros
-already seem to have a hard time releasing kernel x along with iproute2
-package x, concrete example was that distro kernel was on 4.13 and its
-official iproute2 package on 4.9, adding yet another variable that needs
-to be in sync with kernel is simply impractical especially for a _core_
-package like iproute2 that should have as little dependencies as possible.
-I also don't want to make a bet on whether libbpf will be available on
-every distro that also ships iproute2. Hence approach that pahole (and
-also bcc by the way) takes is most reasonable to have the best user
-experience.
-
-Thanks,
-Daniel
+Sinc=C3=A8rement v=C3=B4tre,
+Avocat Etienne Eku Esq.(Lawfirm)
+Procureur principal. De Cabinet d=E2=80=99avocats de l=E2=80=99Afrique de l=
+=E2=80=99ouest.
+Skype:westafricalawfirm
