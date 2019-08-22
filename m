@@ -2,100 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 48C8A99576
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 15:51:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A3BC6995D7
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:06:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731483AbfHVNvS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 09:51:18 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:40352 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730788AbfHVNvS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 09:51:18 -0400
-Received: by mail-qt1-f196.google.com with SMTP id e8so7703358qtp.7;
-        Thu, 22 Aug 2019 06:51:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=eKFs2QgT5CD3dy1iA3ijvvJPybcZyHo0PiJ8pz3oNpk=;
-        b=rggXNW7h+fGIr31YDRNO073ERJFYNGq6sOAvRV7e+1F/YD8eNfzgC3edszJfEplwEI
-         nM3AtKMWAcfvi8eOYPaddnljH0RvkMms7tffvgqwmnWQZBOYPXaaFxQvuoIBrNL//hd2
-         GyOcVVb4qYaTgSNH1DZFA+HXX+Mp3i8QAHV5VkEOkLghzgDZ58grgRpy1kCQ/N1i4l/w
-         W9u5rXiBp7RUaWPnb8s2KqdethQG4Wfdn83Qswcwc3FVVvC4H3ld4u8zQF5/2KwzeXwl
-         M7N1/sEP9raPjqI03ZdFTy1+vUatu5numfQz5zlSI+cstIWw4NSHeFsfiBOFLM72VlaD
-         bHRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=eKFs2QgT5CD3dy1iA3ijvvJPybcZyHo0PiJ8pz3oNpk=;
-        b=aaHFv64I8bWdweGumkTIaEGPIByLqyD0jJDjr7FF3SNx0U6y6hCX2ZmZ7MniVoTdVY
-         ewFF4uaXO05TnHtxUr7D8WnYCxgYWPqFcnsaRWOuZkO3At3e62Yglvv1/7V6XekKY9cU
-         VaODdKd1UEBN3z2ukJwZEMMt0cEv6o58luQF8uL6W6QZdzMUuM/fbA4JYVx43zEFIgvJ
-         Gt3Qur2MZMAG50hC3oPO9LwFMGq4nsgzUVAlTdqnra4mM2nUd8dBTHdscPeB9BtNfqc2
-         ZAgqQ9EosH1qOgvcN/7J7Gq7buqzZ2QYbnB//APkp6dj8tdTOt7dQ3zYNw3c6B5E59jB
-         MeRg==
-X-Gm-Message-State: APjAAAWvWRjaAgb8cF81SvaGPLvzrlTFdX4vzUe1O2BHX492ffZiwAZV
-        MwoFDVdWrsxA5FiMLHmC9IitA7MhwzssLA3Dmr8=
-X-Google-Smtp-Source: APXvYqwMZss1KxiA/nSuBZpQ1bj4WT/UPhzt0bgewuTjv3yAQk5Deo3NcNsQvcRv1hDrE7tbIZ+IkgEG+mTzD0LgR4c=
-X-Received: by 2002:a0c:f643:: with SMTP id s3mr21496414qvm.79.1566481877282;
- Thu, 22 Aug 2019 06:51:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190822091306.20581-1-bjorn.topel@gmail.com> <20190822091306.20581-2-bjorn.topel@gmail.com>
- <5d5e980f.1c69fb81.f8d9b.71f2SMTPIN_ADDED_MISSING@mx.google.com>
-In-Reply-To: <5d5e980f.1c69fb81.f8d9b.71f2SMTPIN_ADDED_MISSING@mx.google.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Date:   Thu, 22 Aug 2019 15:51:05 +0200
-Message-ID: <CAJ+HfNiYtnyfcGvAw0X+gNPhpqV8EpCT0Mo=tGX9Oj6XN7NOQA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] xsk: avoid store-tearing when assigning queues
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "magnus.karlsson@intel.com" <magnus.karlsson@intel.com>,
-        "magnus.karlsson@gmail.com" <magnus.karlsson@gmail.com>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "jonathan.lemon@gmail.com" <jonathan.lemon@gmail.com>,
-        "syzbot+c82697e3043781e08802@syzkaller.appspotmail.com" 
-        <syzbot+c82697e3043781e08802@syzkaller.appspotmail.com>,
-        "i.maximets@samsung.com" <i.maximets@samsung.com>
+        id S1732755AbfHVOG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 10:06:28 -0400
+Received: from mx2.suse.de ([195.135.220.15]:43766 "EHLO mx1.suse.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732658AbfHVOG1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 10:06:27 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx1.suse.de (Postfix) with ESMTP id AB216AC47;
+        Thu, 22 Aug 2019 14:06:25 +0000 (UTC)
+Message-ID: <1566482782.8347.51.camel@suse.com>
+Subject: Re: WARNING in rollback_registered_many (2)
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Andrey Konovalov <andreyknvl@google.com>,
+        syzbot <syzbot+40918e4d826fb2ff9b96@syzkaller.appspotmail.com>,
+        USB list <linux-usb@vger.kernel.org>
+Cc:     Kai Heng Feng <kai.heng.feng@canonical.com>, tyhicks@canonical.com,
+        "David S. Miller" <davem@davemloft.net>,
+        devel@driverdev.osuosl.org, straube.linux@gmail.com,
+        Eric Dumazet <edumazet@google.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        florian.c.schilhabel@googlemail.com,
+        Matthew Wilcox <willy@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>, avagin@virtuozzo.com,
+        ktkhai@virtuozzo.com, "Eric W . Biederman" <ebiederm@xmission.com>
+Date:   Thu, 22 Aug 2019 16:06:22 +0200
+In-Reply-To: <CAAeHK+w+asSQ3axWymToQ+uzPfEAYS2QimVBL85GuJRBtxkjDA@mail.gmail.com>
+References: <000000000000d9f094057a17b97b@google.com>
+         <000000000000b439370586498dff@google.com>
+         <CAAeHK+zUHJswwHfVUCV0qTgvFVFZpT0hJqioLyYgbA0yQC0H8Q@mail.gmail.com>
+         <CAAeHK+w+asSQ3axWymToQ+uzPfEAYS2QimVBL85GuJRBtxkjDA@mail.gmail.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+X-Mailer: Evolution 3.26.6 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Aug 2019 at 15:26, Hillf Danton <hdanton@sina.com> wrote:
->
-> >
->
-> >    /* Make sure queue is ready before it can be seen by others */
->
-> >    smp_wmb();
->
->
->
-> Hehe, who put mb here and for what?
->
+Am Mittwoch, den 07.08.2019, 16:03 +0200 schrieb Andrey Konovalov:
 
-That was from an earlier commit, and it's a barrier paired with the
-lock-less reading of queues in xsk_mmap. Uhm... not sure I answered
-your question?
+I may offer a preliminary analysis.
+
+	Regards
+		Oliver
+
+> On Fri, Apr 12, 2019 at 1:32 PM Andrey Konovalov <andreyknvl@google.com> wrote:
+> > 
+> > On Fri, Apr 12, 2019 at 1:29 AM syzbot
+> > <syzbot+40918e4d826fb2ff9b96@syzkaller.appspotmail.com> wrote:
+> > > 
+> > > syzbot has found a reproducer for the following crash on:
+> > > 
+> > > HEAD commit:    9a33b369 usb-fuzzer: main usb gadget fuzzer driver
+> > > git tree:       https://github.com/google/kasan/tree/usb-fuzzer
+> > > console output: https://syzkaller.appspot.com/x/log.txt?x=10d552b7200000
+> > > kernel config:  https://syzkaller.appspot.com/x/.config?x=23e37f59d94ddd15
+> > > dashboard link: https://syzkaller.appspot.com/bug?extid=40918e4d826fb2ff9b96
+> > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17a4c1af200000
+> > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=121b274b200000
+> > > 
+> > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > Reported-by: syzbot+40918e4d826fb2ff9b96@syzkaller.appspotmail.com
+> > > 
+> > > usb 1-1: r8712u: MAC Address from efuse = 00:e0:4c:87:00:00
+> > > usb 1-1: r8712u: Loading firmware from "rtlwifi/rtl8712u.bin"
+> > > usb 1-1: USB disconnect, device number 2
+
+Disconnect will run which leads to
+
+static void r871xu_dev_remove(struct usb_interface *pusb_intf)
+{
+        struct net_device *pnetdev = usb_get_intfdata(pusb_intf);
+        struct usb_device *udev = interface_to_usbdev(pusb_intf);
+
+        if (pnetdev) {
+
+^^^ This is supposed to save us
+
+                struct _adapter *padapter = netdev_priv(pnetdev);
+
+                usb_set_intfdata(pusb_intf, NULL);
+                release_firmware(padapter->fw);
+                /* never exit with a firmware callback pending */
+                wait_for_completion(&padapter->rtl8712_fw_ready);
+                if (drvpriv.drv_registered)
+                        padapter->surprise_removed = true;
+                unregister_netdev(pnetdev); /* will call netdev_close() */
+
+So we will call unregister_netdev()
 
 
-Bj=C3=B6rn
+> > > usb 1-1: Direct firmware load for rtlwifi/rtl8712u.bin failed with error -2
+> > > usb 1-1: r8712u: Firmware request failed
+
+So we ran into the error handling of:
 
 
+static void rtl871x_load_fw_cb(const struct firmware *firmware, void *context)
+{
+        struct _adapter *adapter = context;
 
 
->
->
-> >-   *queue =3D q;
->
-> >+  WRITE_ONCE(*queue, q);
->
-> >    return 0;
->
->
+        complete(&adapter->rtl8712_fw_ready);
+        if (!firmware) {
+                struct usb_device *udev = adapter->dvobjpriv.pusbdev;
+                struct usb_interface *usb_intf = adapter->pusb_intf;
+
+
+                dev_err(&udev->dev, "r8712u: Firmware request failed\n");
+                usb_put_dev(udev);
+                usb_set_intfdata(usb_intf, NULL);
+
+^^^ This is supposed to save us from deregistering an unregistered device
+	but it comes too late. We have already called complete.
+
+                return;
+        }
+        adapter->fw = firmware;
+        /* firmware available - start netdev */
+        register_netdev(adapter->pnetdev);
+
+register_netdev() is not called.
+> > > Kernel panic - not syncing: panic_on_warn set ...
+> > > CPU: 0 PID: 575 Comm: kworker/0:4 Not tainted 5.1.0-rc4-319354-g9a33b36 #3
+> > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > > Google 01/01/2011
+> > > Workqueue: usb_hub_wq hub_event
+> > > Call Trace:
+> > >   __dump_stack lib/dump_stack.c:77 [inline]
+> > >   dump_stack+0xe8/0x16e lib/dump_stack.c:113
+> > >   panic+0x29d/0x5f2 kernel/panic.c:214
+> > >   __warn.cold+0x20/0x48 kernel/panic.c:571
+> > >   report_bug+0x262/0x2a0 lib/bug.c:186
+> > >   fixup_bug arch/x86/kernel/traps.c:179 [inline]
+> > >   fixup_bug arch/x86/kernel/traps.c:174 [inline]
+> > >   do_error_trap+0x130/0x1f0 arch/x86/kernel/traps.c:272
+> > >   do_invalid_op+0x37/0x40 arch/x86/kernel/traps.c:291
+> > >   invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:973
+
+This kills us.
+
+> > > RIP: 0010:rollback_registered_many+0x1f3/0xe70 net/core/dev.c:8152
+> > > Code: 05 00 00 31 ff 44 89 fe e8 5a 15 f3 f4 45 84 ff 0f 85 49 ff ff ff e8
+> > > 1c 14 f3 f4 0f 1f 44 00 00 e8 12 14 f3 f4 e8 0d 14 f3 f4 <0f> 0b 4c 89 e7
+> > > e8 33 72 f2 f6 31 ff 41 89 c4 89 c6 e8 27 15 f3 f4
+> > > RSP: 0018:ffff88809d087698 EFLAGS: 00010293
+> > > RAX: ffff88809d058000 RBX: ffff888096240000 RCX: ffffffff8c7eb146
+> > > RDX: 0000000000000000 RSI: ffffffff8c7eb163 RDI: 0000000000000001
+> > > RBP: ffff88809d0877c8 R08: ffff88809d058000 R09: fffffbfff2708111
+> > > R10: fffffbfff2708110 R11: ffffffff93840887 R12: ffff888096240070
+> > > R13: dffffc0000000000 R14: ffff88809d087758 R15: 0000000000000000
+> > >   rollback_registered+0xf7/0x1c0 net/core/dev.c:8228
+> > >   unregister_netdevice_queue net/core/dev.c:9275 [inline]
+> > >   unregister_netdevice_queue+0x1dc/0x2b0 net/core/dev.c:9268
+> > >   unregister_netdevice include/linux/netdevice.h:2655 [inline]
+> > >   unregister_netdev+0x1d/0x30 net/core/dev.c:9316
+> > >   r871xu_dev_remove+0xe7/0x223 drivers/staging/rtl8712/usb_intf.c:604
+
+We end up here:
+
+static void rollback_registered_many(struct list_head *head)
+{
+        struct net_device *dev, *tmp;
+        LIST_HEAD(close_head);
+
+
+        BUG_ON(dev_boot_phase);
+        ASSERT_RTNL();
+
+
+        list_for_each_entry_safe(dev, tmp, head, unreg_list) {
+                /* Some devices call without registering
+                 * for initialization unwind. Remove those
+                 * devices and proceed with the remaining.
+                 */
+                if (dev->reg_state == NETREG_UNINITIALIZED) {
+                        pr_debug("unregister_netdevice: device %s/%p never was registered\n",
+                                 dev->name, dev);
+
+
+                        WARN_ON(1);
+
+
