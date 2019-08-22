@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A2659997DB
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 17:16:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 45299997E4
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 17:18:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388320AbfHVPQZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 11:16:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44026 "EHLO mail.kernel.org"
+        id S2389490AbfHVPSJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 11:18:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729641AbfHVPQZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 11:16:25 -0400
-Received: from mail-wm1-f50.google.com (mail-wm1-f50.google.com [209.85.128.50])
+        id S2388320AbfHVPSJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 11:18:09 -0400
+Received: from mail-wr1-f53.google.com (mail-wr1-f53.google.com [209.85.221.53])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5A7AD233FE
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 15:16:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9AA8023406
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 15:18:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1566486984;
-        bh=Tf1+MDA69J0XTZzWamIuhdxeoHFNTy9Fyfn4iYGAZGs=;
+        s=default; t=1566487087;
+        bh=YnHYMAFHnhwjWSCmHA1lalHVaWrapDVItQXtXHIh/i4=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=bkO7C8v9wAeZYGXw5f6Xr+szEfbrXDIUsIe0VZ1gaVQyROD43Z5Z8hxDR5zMMm3A+
-         1Ap4Ud+7d1Znd870XYABj8pk9PoNgfILdTaONAY1sXSeeIRcIv8+V0CxeY2SudeJuE
-         xCmbz6TPthx+YmkHswYEo6lWE1Fz5o8ONhD1mzfE=
-Received: by mail-wm1-f50.google.com with SMTP id o4so6035148wmh.2
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 08:16:24 -0700 (PDT)
-X-Gm-Message-State: APjAAAXaHubp/0Om7CQXBtuYCobZ6vj00P+auK4t918XBL52HYlB7CVV
-        kHWr+sJuQiXFxYlZ2/49QCRyPa0ZYxvC6/ZVoos4Wg==
-X-Google-Smtp-Source: APXvYqxQ1AVQ1mEvC+8xddKYiWzcyAfBMfPjZtgkp09pgDXfScoAGkzKjCOB0yc36Gc4bXCeASZ6p9c2UV4us/F0dkE=
-X-Received: by 2002:a05:600c:22d7:: with SMTP id 23mr7421334wmg.0.1566486982786;
- Thu, 22 Aug 2019 08:16:22 -0700 (PDT)
+        b=kKdhidJni9oVHZulnocOvR68S2C9Dn7RJI6j7z0k35Stv5Tl/0SJf3y8lnYLufydW
+         0E15j7zWxkJZXS6m+VGgYaO7wg6+Bj1NABjbev8SizjldorzTqnJvylvbtTEo5urCJ
+         Dyyr/OtGp0n0QrmmPycgLZzYpDfp/wVZ1suX4In0=
+Received: by mail-wr1-f53.google.com with SMTP id b16so5785928wrq.9
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 08:18:07 -0700 (PDT)
+X-Gm-Message-State: APjAAAW0r3C6YTgn0ibVKrSgq10SEOyRfWo09Nh0IgnxIPDys4lO8M0C
+        /ph6N4dkCGOtlQ440nHKc2yMpv/m9lxGeS/3kIUVyg==
+X-Google-Smtp-Source: APXvYqxpiOdLxbwIYHP+AESms9onR8AgvvW9tqQ+YzHqlJl2LsZx76/vthdf207FJITtNteDtAwcawyRgTmchAkN8LU=
+X-Received: by 2002:a05:6000:4f:: with SMTP id k15mr10594496wrx.221.1566487085936;
+ Thu, 22 Aug 2019 08:18:05 -0700 (PDT)
 MIME-Version: 1.0
 References: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com> <CALCETrVoZL1YGUxx3kM-d21TWVRKdKw=f2B8aE5wc2zmX1cQ4g@mail.gmail.com>
  <5A2FCD7E-7F54-41E5-BFAE-BB9494E74F2D@fb.com> <CALCETrU7NbBnXXsw1B+DvTkfTVRBFWXuJ8cZERCCNvdFG6KqRw@mail.gmail.com>
@@ -38,15 +38,15 @@ References: <D4040C0C-47D6-4852-933C-59EB53C05242@fb.com> <CALCETrVoZL1YGUxx3kM-
  <EE7B7AE1-3D44-4561-94B9-E97A626A251D@fb.com> <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
  <20190805192122.laxcaz75k4vxdspn@ast-mbp> <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
  <20190806011134.p5baub5l3t5fkmou@ast-mbp> <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
- <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net>
-In-Reply-To: <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net>
+ <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net> <CALCETrUWQbPK3Pc6P5i_UqHPXJmZVyvuYXfq+VRtD6A3emaRhw@mail.gmail.com>
+In-Reply-To: <CALCETrUWQbPK3Pc6P5i_UqHPXJmZVyvuYXfq+VRtD6A3emaRhw@mail.gmail.com>
 From:   Andy Lutomirski <luto@kernel.org>
-Date:   Thu, 22 Aug 2019 08:16:11 -0700
-X-Gmail-Original-Message-ID: <CALCETrUWQbPK3Pc6P5i_UqHPXJmZVyvuYXfq+VRtD6A3emaRhw@mail.gmail.com>
-Message-ID: <CALCETrUWQbPK3Pc6P5i_UqHPXJmZVyvuYXfq+VRtD6A3emaRhw@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] bpf: unprivileged BPF access via /dev/bpf
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Andy Lutomirski <luto@kernel.org>,
+Date:   Thu, 22 Aug 2019 08:17:54 -0700
+X-Gmail-Original-Message-ID: <CALCETrWU4xJh4UBg0BboCwdGrgj+dUShsH5ETpiRgEpXJTEfQA@mail.gmail.com>
+Message-ID: <CALCETrWU4xJh4UBg0BboCwdGrgj+dUShsH5ETpiRgEpXJTEfQA@mail.gmail.com>
+Subject: RFC: very rough draft of a bpf permission model
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
         Alexei Starovoitov <alexei.starovoitov@gmail.com>,
         Song Liu <songliubraving@fb.com>,
         Kees Cook <keescook@chromium.org>,
@@ -65,90 +65,184 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 7:17 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
->
-> On 8/7/19 7:24 AM, Andy Lutomirski wrote:
-> > On Mon, Aug 5, 2019 at 6:11 PM Alexei Starovoitov
-> > <alexei.starovoitov@gmail.com> wrote:
-> >> On Mon, Aug 05, 2019 at 02:25:35PM -0700, Andy Lutomirski wrote:
-> >>> It tries to make the kernel respect the access modes for fds.  Without
-> >>> this patch, there seem to be some holes: nothing looked at program fds
-> >>> and, unless I missed something, you could take a readonly fd for a
-> >>> program, pin the program, and reopen it RW.
-> >>
-> >> I think it's by design. iirc Daniel had a use case for something like this.
-> >
-> > That seems odd.  Daniel, can you elaborate?
->
-> [ ... catching up late. ]
->
-> Not from my side, the change was added by Chenbo back then for Android
-> use-case to replace xt_qtaguid and xt_owner with BPF programs and to
-> allow unprivileged applications to read maps. More on their architecture:
->
->    https://source.android.com/devices/tech/datausage/ebpf-traffic-monitor
->
->  From the cover-letter:
->
->    [...]
->    The network-control daemon (netd) creates and loads an eBPF object for
->    network packet filtering and analysis. It passes the object FD to an
->    unprivileged network monitor app (netmonitor), which is not allowed to
->    create, modify or load eBPF objects, but is allowed to read the traffic
->    stats from the map.
->    [...]
+BPF security strawman, v0.1
 
-I suspect that this use case is, in fact, mostly broken in current
-kernels.  An unprivileged process with a read-only fd to a bpf map can
-BPF_OBJ_PIN the map and then re-open it read-write.  As far as I can
-tell, the only thing mitigating this is that it won't work unless the
-attacker has write access to some directory in bpffs.
+This is very rough.  Most of this, especially the API details, needs
+work before it's ready to implement.  The whole concept also needs
+review.
 
-> > Trusted by whom?  In a non-nested container, the container manager
-> > *might* be trusted by the outside world.  In a *nested* container,
-> > unless the inner container management is controlled from outside the
-> > outer container, it's not trusted.  I don't know much about how
-> > Facebook's containers work, but the LXC/LXD/Podman world is moving
-> > very strongly toward user namespaces and maximally-untrusted
-> > containers, and I think bpf() should work in that context.
->
-> [...] and if we opt-in with CAP_NET_ADMIN, for example, then it should
-> ideally be possible for that container to install BPF programs for
-> mangling, dropping, forwarding etc as long as it's only affecting it's
-> /own/ netns like the rest of networking subsystem controls that work
-> in that case. I would actually like to get to this at some point and
-> make it more approachable as long as there is a way for an admin to
-> /opt into it/ via policy (aka not by default).
+= Goals =
 
-For better or for worse, I think this would need a massive
-re-architecting of the way bpf filtering works.  bpf filters attach to
-cgroups, which aren't scoped to network namespaces at all.  So we need
-a different permission model.
+The overall goal is to make it possible to use eBPF without having
+what is effectively administrator access.  For example, an eBPF user
+should not be able to directly tamper with other processes (unless
+this permission is explicitly granted) and should not be able to
+read or write other users' eBPF maps.
 
-> Thinking out loud, I'd
-> love some sort of a hybrid, that is, a mixture of CAP_BPF_ADMIN and
-> customizable seccomp policy. Meaning, there could be several CAP_BPF
-> type sub-policies e.g. from allowing everything (equivalent to the
-> /dev/bpf on/off handle or CAP_SYS_ADMIN we have today) down to
-> programmable user defined policy that can be tailored to specific
-> needs like granting apps to BPF_OBJ_GET and BPF_MAP_LOOKUP elements
-> or granting to load+mangle a specific subset of maps (e.g. BPF_MAP_TYPE_{ARRAY,
-> HASH,LRU_HASH,LPM_TRIE}) and prog types (...) plus attaching them to
-> their own netns, and if that is untrusted, then same restrictions/
-> mitigations could be done by the verifier as with (current) unprivileged
-> BPF, enabled via programmable policy as well. We wouldn't make any
-> static/fixed assumptions, but allow users to define them based on their
-> own use-cases. Haven't looked how feasible this would be, but something
-> to take into consideration when we rework the current [admittedly
-> suboptimal all-or-nothing] model we have. Is this something you had in
-> mind as well for your wip proposal, Andy?
->
+It should be possible to use eBPF inside a user namespace without breaking
+the userns security model.
 
-Hmm.  Fine-grained seccomp stuff like this is very much in scope for
-the seccomp discussion that's happening at LPC this year.
-Unfortunately, I'm not there, but I'm participating via the mailing
-list.
+Due to the risk of speculation attacks and such being carried out via
+eBPF, it should not become possible to use too much of eBPF without the
+administrator's permission.  (NB: it is already possible to use
+*classic* BPF without any permission, and classic BPF is translated
+internally to eBPF, so this goal can only be met to a limited extent.)
 
-I also finally finished typing a very rough draft of my bpf ideas.
-I'll email them out momentarily in a separate email.  I think it
-should come fairly close to doing what you want.
+= Definitions =
+
+Global capability: A capability bit in the caller's effective mask, so
+long as the caller is in the root user namespace.  Tasks in non-root
+user namespaces never have global capabilibies.  This is what capable()
+checks.
+
+Namespace capability: A capability over a specific user namespace.
+Tasks in a user namespace have all the capabilities in their effective
+mask over their user namespace.  A namespace capability generally
+indicates that the capability applies to the user namespace itself and
+to all non-user namespaces that live in the user namespace.  For
+example, CAP_NET_ADMIN means that you can configure all networks
+namespaces in the current user namespace.  This is what ns_capable()
+checks.
+
+Anything that requires a global capability will not work in a non-root
+user namespace.
+
+= unprivileged_bpf_disabled =
+
+Nothing in here supercedes unprivileged_bpf_disabled.  If
+unprivileged_bpf_disabled = 1, then these proposals should not allow anything
+that is disallowed today.  The idea is to make unprivileged_bpf_disabled=0
+both safer and more useful.
+
+= Test runs =
+
+Global CAP_SYS_ADMIN is needed to test-run a program.  Test-running a program
+exposes its own attack surface.  It's also the only way to run a program at
+all if you merely have permission to load the program but not to attach it
+anywhere.  Some of the proposed changes below will make it possible to load
+most program types without
+
+= Access to programs and maps =
+
+There are two basic security concerns when accessing programs and maps:
+the attack surface against the kernel and the ability to access other
+people's maps.
+
+Unprivileged processes may read a map if they have an FMODE_READ descriptor
+for the map.  Unprivileged processes may write a map if they have an
+FMODE_WRITE descriptor to the map.  Unprivileged processes may open a
+persistent map with a mode consistent with the permissions in bpffs.
+
+Unprivileged processes may create a bpffs inode for an existing map
+if the have an RW file descriptor for the map.  (This is a change to
+current behavior.  Daniel, Alexei thought the current behavior was
+intentional.  Do you recall whether this is the case?)
+
+The _BY_ID map APIs inherently have no concept of ownership of maps.  These
+APIs will continue to require global CAP_SYS_ADMIN.
+
+The small number of things that currently require the _BY_ID APIs, e.g.,
+reading maps of maps, can be addressed if needed with new APIs that
+return fds instead of ids.  Otherwise using them will continue to require
+global capabilities.
+
+Unprivileged processes may create exactly the set of maps that they can
+create today.  Future proposals may extend this by a variety of means;
+this current proposal makes no changes.
+
+= Program loading =
+
+Loading a program carries the following risks:
+
+ - It exposes the attack surface in the program verifier itself.  That is
+   possible, although unlikely, that merely verifying a malicious program
+   could crash or otherwise cause a kernel malfunction.
+
+ - It exposes the attack surface of insufficient checks in the verifier.
+   That is, a verifier bug could allow a malicious program that is dangerous
+   when run.
+
+ - It exposes all of the functions that the program type can call.
+   Some functions, e.g. bpf_probe_read(), should require privilege to call.
+
+ - It exposes resource attacks.  Currently, privileged users can load programs
+   that use more resources than unprivileged users can load.
+
+ - It exposes pointer-to-integer conversions.  This requires global
+   capabilities.
+
+ - The program could contain speculation attack gadgets.
+
+ - Loading a program is a prerequisite to attaching the program.
+
+I propose the following:
+
+Flag functions that require privilege as such.  Loading a program that calls
+such a function will require a global capability.  The privileged functions are
+mainly used for tracing, I think, and kernel tracing should require global
+capabilities.
+
+Loading a program that uses privileged verifier features (function calls or
+pointer-to-integer-conversions) will continue to require privileges.
+
+Loading a function that uses excessive resources can continue to require
+global capabilities or it could use a new set of cgroup settings that
+adjust the bpf complexity limits.
+
+Loading a function that bypasses the various speculation attack hardening
+features (e.g. constant blinding) requires global capabilities.
+
+Other than this, bpf program types can have a new flag set to allow
+them to be loaded without any privileges.  Some bpf program types
+may need additional care, e.g. perf bpf events.  They can be attached
+without privilege even in current kernels, and this might need to change.
+
+(optional) Add an API to load a program where the program source comes from a
+file specified by id instead of in memory.  This would allow LSMs to require
+that bpf() programs be appropriately labeled.  If LSMs require use of this
+API, it will make it much harder to exploit the verifier or speculation bugs.
+
+As a possible future extension, a way to selectively grant the ability to
+use specific program types without privilege could be useful.  This
+could be done with a cgroup option, for example.
+
+= Cgroup attach =
+
+Cgroups have their own hierarchy that does not necessarily follow the
+namespace hierarchy.  Unless cgroups integrate with namespaces in ways
+that they currently don't, namespace capabilites cannot be used to grant
+permission to operate on cgroups.
+
+I propose that attaching and detaching bpf programs to cgroups use a
+permission model similar to the model for changing non-bpf cgroup
+settings.  In particular, each bpf_attach_type will get a new file in a
+cgroup directory.  So there will be
+/sys/fs/cgroup/cgroup_name/bpf.inet_ingress, bpf.inet_egress, etc.
+
+A new API will be added to bpf() to attach and detach programs.  The new
+API will take an fd to the bpf.attach_type file instead of to the cgroup
+directory.  It will require FMODE_WRITE.  This API will *not* require
+any capability.
+
+To prevent anyone with a delegated cgroup from automatically being
+able to use all bpf program types, the new bpf.attach_type files
+will be opt-in as part of the hierarchy.  This could be done by writing
+"+bpf.*" or "+bpf.inet_ingress" to cgroup.subtree_control to make
+all the bpf.attach_type files or just bpf.inet_ingress available
+in descendents of the cgroup in question.  This could alternatively
+be a new bpf.subtree_control file if that seems better.
+
+The result of these changes will be that root can use the old
+attach API or the new attach API.  Unprivileged programs cannot
+use the old attach API.  Unprivileged programs can use the new
+attach API if they are explicitly granted permission by all their
+ancestor cgroup managers.
+
+
+= Additional mitigations =
+
+Optional: there may be cases where a user can load a bpf program
+but can't attach or otherwise execute it.  Nonetheless, it's plausible
+that such a program could be speculatively executed.  The kernel could
+mitigate this by only marking a JITted bpf program executable when it
+is first attached or test-run.
