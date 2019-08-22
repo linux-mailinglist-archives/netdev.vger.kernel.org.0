@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E814C9A3E7
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 01:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 14FCB9A3E3
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 01:37:37 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbfHVXhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 19:37:18 -0400
-Received: from mail-eopbgr50084.outbound.protection.outlook.com ([40.107.5.84]:49890
+        id S1726841AbfHVXgo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 19:36:44 -0400
+Received: from mail-eopbgr50056.outbound.protection.outlook.com ([40.107.5.56]:39558
         "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726642AbfHVXhR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 19:37:17 -0400
+        id S1726823AbfHVXgn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 19:36:43 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fGyUT19+SKyuQQJkTv6z1gQ27G3KhB471NZe+601gJFd0t9pnN80MpN9uQQRsaL+e2S3suynd9NL/qdpkgIQcpxjCAItc0EYEOp3iSp2NV7CW3qWoRDmo2q9zH0pOh5QC8RMaJ2Qq6RVWRnyNhhAQQR1zpscxMPvejp64A9fEfyi9twyJOENw5kJjA/cQvQxv15vqjElIi2xrVDk0yduALn6n8Vpqpq0TwmZvL40OY+rCXVkbmbKgi2mVUxP/1AbzY5hgm71MLYn4EWwCePTZudXK7PMzQQ0YDKorZRYcKJctqyZCIlEHuPGVmTheduqWw8iBH0i/zdMjgTviAsFmQ==
+ b=CVQ8mhwyyfdK8d3JIPHNcGW3rbaKVVg2AxgZCso7slqmFIKU1AEY070FhOoy/5XXCRw2PlECPRRixU5fg4z/gPqUrIVHk6ixgN+llOpsVlEtdRaBW2mUGTQir1TWx54hbWAXADq0+i9nocMTx3zjIz1m5zoMIqqP+y2G6Gu7ForNLdvi8obkzbl5w7C09q2fFD3xH9dUWCeeuF1LXoWrgMcK0Z+e29UtzzVug0lAYooY27rI/jiebAunvrSiVwaG+DkHbm/o99yaf1YoG11syyQoK9pyXL7ZzKCUgx7Dt5EEvhcRdfAklWSR/W03denR4tIbDKDLgZkb9YQyRgt08A==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MBRVWyl73DBNjOx+wi68Gw4HbRS07CN+Sy5uOk2Np8Y=;
- b=AoFnmUhdCqIZp4/IWymajBMsczi3JGdOulLR6t3d3MFe1QJlc7jN0A3NZkPtZEAAzZUpK31EIXq/rHahQqBGwLBItSxv2/AgQBijdvTvycbjdaP2u4kwMIh+aVrYl8gRS5hWtlOtr3Bl91KxE6sagqUPinnC/Yiboqq+5SssVsIKxRKMUFNsDdrv4xBC7J60i/DG0MQxBQg1ym0AX+m1GYjdUtqU+nr1Gchw0Q/zQjzc/fxKYxRVxhfFEbOYbMM65Z3pJjjbcGRjKYvb0f91FSOGEge3kna/Y3eQLWldo5KCFaaICloKaY2K+i6JQW6viE6AMq6xKWkT3JCUp60ewQ==
+ bh=Stpclvb9lMU/JnALQuSnh9Pl+ZLnTiTiw4FM7nTjNNk=;
+ b=letAPWcfnGOBd3Tp7rdE1yoSxNOOV+XKh+CafKiBRFMI1JgiMnYdeQz3Q4gWbuaWlCqgyBzZW9tB8l2ubpYl6rdeB2SmkxbUG8j+znSjwz+UxYf+PS47H+KQ4vqTLntN7QAFSLNExjMP8UBM8tcKJeAUkBKJa5YaE9QmYN/gbmaB2pydMfHqB3wyY6bF6hOUbjD0GC2xG+1e/+yboy+ovbLeTapCE/t/yUJl6Yzx9MFqkuuMHnpAcZJhssX5V7XDPFazgB4cgFi33jGP/9bVI9ZwP4ZjH23nj8mnyEm4tmS6Yl2BjihjE+4wm2I7NTt8kjyv1FwyKVPxdx0mGGeEDA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
  dkim=pass header.d=mellanox.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=MBRVWyl73DBNjOx+wi68Gw4HbRS07CN+Sy5uOk2Np8Y=;
- b=f6HRJxNqNCZbF4sFfGSMrwi+UkGcmKr1wKBVgAv43vLAUMLKaXFWOXSYBMCVIFRenuZlRQKUMN2ImaKsw3U7apohEqwWcAB6vJK1TD+rdPacTZE0terirEKAMwUV+1NT+OnWkA5NKP+gihS09p+G1rzP4dIa5HabXNZ3WVSYy6A=
+ bh=Stpclvb9lMU/JnALQuSnh9Pl+ZLnTiTiw4FM7nTjNNk=;
+ b=Kc/QGCBfpfD1daNeOY/NsaActDQV/pwy7fhdG1IutwHaloVIzpTYOb5g7QRjNzkvcAHbVC2TX9LoPSBwU5BleUUSiHmSgeRLbm6uqWs47SCTIOA7PTeD+cv99hEpeve40kSyIf2hTq6JYdCLVTaXqUpGKyondpbEl5KPWt3DENQ=
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com (10.172.216.138) by
  AM4PR0501MB2817.eurprd05.prod.outlook.com (10.172.215.144) with Microsoft
  SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Thu, 22 Aug 2019 23:35:54 +0000
+ 15.20.2178.18; Thu, 22 Aug 2019 23:35:56 +0000
 Received: from AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::e414:3306:9996:bb7a]) by AM4PR0501MB2756.eurprd05.prod.outlook.com
  ([fe80::e414:3306:9996:bb7a%4]) with mapi id 15.20.2178.020; Thu, 22 Aug 2019
- 23:35:54 +0000
+ 23:35:56 +0000
 From:   Saeed Mahameed <saeedm@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>
 CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
         Aya Levin <ayal@mellanox.com>,
         Tariq Toukan <tariqt@mellanox.com>,
         Saeed Mahameed <saeedm@mellanox.com>
-Subject: [net-next 5/8] net/mlx5e: Change function's position to a more
- fitting file
-Thread-Topic: [net-next 5/8] net/mlx5e: Change function's position to a more
- fitting file
-Thread-Index: AQHVWUJX1nPFT3TU90Sxwubpw4nylg==
-Date:   Thu, 22 Aug 2019 23:35:54 +0000
-Message-ID: <20190822233514.31252-6-saeedm@mellanox.com>
+Subject: [net-next 6/8] net/mlx5e: Support RSS for IP-in-IP and IPv6 tunneled
+ packets
+Thread-Topic: [net-next 6/8] net/mlx5e: Support RSS for IP-in-IP and IPv6
+ tunneled packets
+Thread-Index: AQHVWUJYnUoWxncWhEGZ73cw5Au3ow==
+Date:   Thu, 22 Aug 2019 23:35:56 +0000
+Message-ID: <20190822233514.31252-7-saeedm@mellanox.com>
 References: <20190822233514.31252-1-saeedm@mellanox.com>
 In-Reply-To: <20190822233514.31252-1-saeedm@mellanox.com>
 Accept-Language: en-US
@@ -63,30 +63,30 @@ authentication-results: spf=none (sender IP is )
  smtp.mailfrom=saeedm@mellanox.com; 
 x-ms-exchange-messagesentrepresentingtype: 1
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f5f9794d-76ee-4b8f-ae2a-08d7275979ab
+x-ms-office365-filtering-correlation-id: 01bfdb07-2675-494b-5155-08d727597ac4
 x-ms-office365-filtering-ht: Tenant
 x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:AM4PR0501MB2817;
 x-ms-traffictypediagnostic: AM4PR0501MB2817:
 x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM4PR0501MB2817960072D185558669F56ABEA50@AM4PR0501MB2817.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:590;
+x-microsoft-antispam-prvs: <AM4PR0501MB2817093E7CB248E5F91E280EBEA50@AM4PR0501MB2817.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
 x-forefront-prvs: 01371B902F
 x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(376002)(346002)(39860400002)(396003)(136003)(189003)(199004)(256004)(14444005)(53936002)(14454004)(107886003)(6436002)(4326008)(8676002)(8936002)(81166006)(99286004)(81156014)(50226002)(25786009)(76176011)(316002)(54906003)(52116002)(5660300002)(71190400001)(71200400001)(186003)(386003)(66066001)(6506007)(476003)(102836004)(305945005)(1076003)(486006)(446003)(11346002)(66446008)(64756008)(66556008)(66476007)(66946007)(36756003)(6916009)(6512007)(2906002)(2616005)(26005)(3846002)(86362001)(7736002)(478600001)(6486002)(6116002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM4PR0501MB2817;H:AM4PR0501MB2756.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 received-spf: None (protection.outlook.com: mellanox.com does not designate
  permitted sender hosts)
 x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 2SYLVpsLCPTyPNJ8e7LRG21sY6GtLV8I9GzqR9k/jRDuQbrPbScYnzeSGZIld0RnJSneQO5pNTT8yyX9VUwr9zciBBhYV+BMmgRmboIg6m1oq65mf2AWvIZyr3joJU5a3OfF1zSQeEbbdORtGmJ0/em3E1JlzdsI7Ad9O7uc6Owc52rf4NxSxqonyQuViB9LIFdaG8CI+jujY1BWvxxveeDw3t1tx9Rdi7dFaPD+HxLM73yKJHxx0AIUmC6LvbJ2z+5LJPikvWelfjDiF3DQqIcJwHL+P5Y1dzZT0Wt+Lt0IBlEvPNKtLULkWgyH33WutWU+dE1oOVp7g2sKuDDelQp54VPXnqSgo8sEs3wS6Pm3LaviINL9PKtQHytydYkx32hjbc8eJfbB2GVhlR6Q5Edi43NM4JwfpitTdHgH5iI=
+x-microsoft-antispam-message-info: +yX6LDuoGGkm6y2L1HEzxbRGpaa14SoXN8kZE+wkPjLwHIl6QbphepM8FNv51lVglBrvCYkB0CL4WU+d4u+Qryh9smSD2+m3HxT2ZRGLiqZsOAKdwzunJf7qYJUw/GmbjONs+p9PmZtRz1AteIg1Unuc0LeDfjXVzvSwfNn40pQt3XlXq0dbkgE5peuinXcqDw3ABRo/DNzegf2p4nsXY4nEqXZaejP6NUABK/7q3fXdKXrPV9UTmOwnGDFgW/6ccgIlNt13O1cFg4FS5RMP2BHDIsOeJ5l042XN5ChrLEl3bgcybg8bSBt+Q6iqPWeHbw1tZtxOJ39BXD5P3Be93a4xF0AJhN2JINDW1BVLzjGPr3ukE5NkaeBNiJ3+IdN+G/ZnyR0mMZCGB/5OSjLhqGwgz4r1BOKryiTQSdMAGBU=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f5f9794d-76ee-4b8f-ae2a-08d7275979ab
-X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2019 23:35:54.6480
+X-MS-Exchange-CrossTenant-Network-Message-Id: 01bfdb07-2675-494b-5155-08d727597ac4
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Aug 2019 23:35:56.3312
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: eQMvJC2Wmx5sg7hTNRz8i1oHMKqZsuBgWU40NSC02sIgpNinNEAkUIIm+qbcBFG3DMDbvylK3IFS9kP/vowIjQ==
+X-MS-Exchange-CrossTenant-userprincipalname: vQXAadR5tEN74MXiLqQpE8TzBCFoa69rLXenGt9DwWv+Afqrq6hieHbnKclmx7g1rmKPNPJbAFwcM45hcnzbPw==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR0501MB2817
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
@@ -95,72 +95,115 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@mellanox.com>
 
-Move function which indicates whether tunnel inner flow table is
-supported from en.h to en_fs.c. It fits better right after tunnel
-protocol rules definitions.
+Add support for inner header RSS on IP-in-IP and IPv6 tunneled packets.
+
+Add rules to the steering table regarding outer IP header, with
+IPv4/6->IP-in-IP. Tunneled packets with protocol numbers: 0x4 (IP-in-IP)
+and 0x29 (IPv6) are RSS-ed on the inner IP header.
+Separate FW dependencies between flow table inner IP capabilities and
+GRE offload support. Allowing this feature even if GRE offload is not
+supported.  Tested with multi stream TCP traffic tunneled with IPnIP.
+Verified that:
+Without this patch, only a single RX ring was processing the traffic.
+With this patch, multiple RX rings were processing the traffic.
+Verified with and without GRE offload support.
 
 Signed-off-by: Aya Levin <ayal@mellanox.com>
 Reviewed-by: Tariq Toukan <tariqt@mellanox.com>
 Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h    | 6 ------
- drivers/net/ethernet/mellanox/mlx5/core/en/fs.h | 2 ++
- drivers/net/ethernet/mellanox/mlx5/core/en_fs.c | 6 ++++++
- 3 files changed, 8 insertions(+), 6 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/en/fs.h   |  4 ++
+ .../net/ethernet/mellanox/mlx5/core/en_fs.c   | 46 ++++++++++++++++++-
+ 2 files changed, 49 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/eth=
-ernet/mellanox/mlx5/core/en.h
-index e03f973c962f..8d76452cacdc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -1065,12 +1065,6 @@ int mlx5e_modify_sq(struct mlx5_core_dev *mdev, u32 =
-sqn,
- void mlx5e_activate_txqsq(struct mlx5e_txqsq *sq);
- void mlx5e_tx_disable_queue(struct netdev_queue *txq);
-=20
--static inline bool mlx5e_tunnel_inner_ft_supported(struct mlx5_core_dev *m=
-dev)
--{
--	return (MLX5_CAP_ETH(mdev, tunnel_stateless_gre) &&
--		MLX5_CAP_FLOWTABLE_NIC_RX(mdev, ft_field_support.inner_ip_version));
--}
--
- static inline bool mlx5_tx_swp_supported(struct mlx5_core_dev *mdev)
- {
- 	return MLX5_CAP_ETH(mdev, swp) &&
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/=
 ethernet/mellanox/mlx5/core/en/fs.h
-index ca2161b42c7f..5acd982ff228 100644
+index 5acd982ff228..5aae3a7a5497 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-@@ -98,6 +98,8 @@ enum mlx5e_tunnel_types {
+@@ -95,6 +95,10 @@ struct mlx5e_tirc_config {
+ enum mlx5e_tunnel_types {
+ 	MLX5E_TT_IPV4_GRE,
+ 	MLX5E_TT_IPV6_GRE,
++	MLX5E_TT_IPV4_IPIP,
++	MLX5E_TT_IPV6_IPIP,
++	MLX5E_TT_IPV4_IPV6,
++	MLX5E_TT_IPV6_IPV6,
  	MLX5E_NUM_TUNNEL_TT,
  };
 =20
-+bool mlx5e_tunnel_inner_ft_supported(struct mlx5_core_dev *mdev);
-+
- /* L3/L4 traffic type classifier */
- struct mlx5e_ttc_table {
- 	struct mlx5e_flow_table  ft;
 diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/=
 ethernet/mellanox/mlx5/core/en_fs.c
-index 76cc10e44080..a8340e4fb0b9 100644
+index a8340e4fb0b9..b99b17957543 100644
 --- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
 +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-@@ -749,6 +749,12 @@ static struct mlx5e_etype_proto ttc_tunnel_rules[] =3D=
- {
+@@ -747,11 +747,52 @@ static struct mlx5e_etype_proto ttc_tunnel_rules[] =
+=3D {
+ 		.etype =3D ETH_P_IPV6,
+ 		.proto =3D IPPROTO_GRE,
  	},
++	[MLX5E_TT_IPV4_IPIP] =3D {
++		.etype =3D ETH_P_IP,
++		.proto =3D IPPROTO_IPIP,
++	},
++	[MLX5E_TT_IPV6_IPIP] =3D {
++		.etype =3D ETH_P_IPV6,
++		.proto =3D IPPROTO_IPIP,
++	},
++	[MLX5E_TT_IPV4_IPV6] =3D {
++		.etype =3D ETH_P_IP,
++		.proto =3D IPPROTO_IPV6,
++	},
++	[MLX5E_TT_IPV6_IPV6] =3D {
++		.etype =3D ETH_P_IPV6,
++		.proto =3D IPPROTO_IPV6,
++	},
++
  };
 =20
-+bool mlx5e_tunnel_inner_ft_supported(struct mlx5_core_dev *mdev)
++static bool mlx5e_tunnel_proto_supported(struct mlx5_core_dev *mdev, u8 pr=
+oto_type)
 +{
-+	return (MLX5_CAP_ETH(mdev, tunnel_stateless_gre) &&
-+		MLX5_CAP_FLOWTABLE_NIC_RX(mdev, ft_field_support.inner_ip_version));
++	switch (proto_type) {
++	case IPPROTO_GRE:
++		return MLX5_CAP_ETH(mdev, tunnel_stateless_gre);
++	case IPPROTO_IPIP:
++	case IPPROTO_IPV6:
++		return MLX5_CAP_ETH(mdev, tunnel_stateless_ip_over_ip);
++	default:
++		return false;
++	}
 +}
 +
- static u8 mlx5e_etype_to_ipv(u16 ethertype)
++static bool mlx5e_any_tunnel_proto_supported(struct mlx5_core_dev *mdev)
++{
++	int tt;
++
++	for (tt =3D 0; tt < MLX5E_NUM_TUNNEL_TT; tt++) {
++		if (mlx5e_tunnel_proto_supported(mdev, ttc_tunnel_rules[tt].proto))
++			return true;
++	}
++	return false;
++}
++
+ bool mlx5e_tunnel_inner_ft_supported(struct mlx5_core_dev *mdev)
  {
- 	if (ethertype =3D=3D ETH_P_IP)
+-	return (MLX5_CAP_ETH(mdev, tunnel_stateless_gre) &&
++	return (mlx5e_any_tunnel_proto_supported(mdev) &&
+ 		MLX5_CAP_FLOWTABLE_NIC_RX(mdev, ft_field_support.inner_ip_version));
+ }
+=20
+@@ -844,6 +885,9 @@ static int mlx5e_generate_ttc_table_rules(struct mlx5e_=
+priv *priv,
+ 	dest.type =3D MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
+ 	dest.ft   =3D params->inner_ttc->ft.t;
+ 	for (tt =3D 0; tt < MLX5E_NUM_TUNNEL_TT; tt++) {
++		if (!mlx5e_tunnel_proto_supported(priv->mdev,
++						  ttc_tunnel_rules[tt].proto))
++			continue;
+ 		rules[tt] =3D mlx5e_generate_ttc_rule(priv, ft, &dest,
+ 						    ttc_tunnel_rules[tt].etype,
+ 						    ttc_tunnel_rules[tt].proto);
 --=20
 2.21.0
 
