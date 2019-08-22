@@ -2,147 +2,199 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9371998DC9
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 10:33:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ACFE98E6C
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 10:55:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732407AbfHVId4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 04:33:56 -0400
-Received: from www62.your-server.de ([213.133.104.62]:41210 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726039AbfHVId4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 04:33:56 -0400
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0iXP-0006qM-Se; Thu, 22 Aug 2019 10:33:43 +0200
-Received: from [178.197.249.40] (helo=pc-63.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i0iXP-000JYh-DQ; Thu, 22 Aug 2019 10:33:43 +0200
-Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Miller <davem@davemloft.net>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
-References: <20190820114706.18546-1-toke@redhat.com>
- <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com>
- <87blwiqlc8.fsf@toke.dk>
- <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net>
-Date:   Thu, 22 Aug 2019 10:33:42 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1731777AbfHVIy3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 04:54:29 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:43674 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730948AbfHVIy3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 04:54:29 -0400
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 0509F85A07
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 08:54:28 +0000 (UTC)
+Received: by mail-wm1-f72.google.com with SMTP id f14so1782990wmh.7
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 01:54:27 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=ZHz9pgYisuijk2a86Yq9hb9IHbvhgZwHYhEYSmJ9jn0=;
+        b=WEJg1n+d00EtVhoHlzZYmIqBcxpqNUlU053UnurZtEsnj3gFEBosYg4+uqSYXl04i9
+         K7BvL7YXVaJ31AyA+jTGrIk5JcTMYYNCrlESIxzrh3INcPF54rIqcfpnxtFA4IgG5TrS
+         fvHcK7jBwl/Lk4qmmP3lRnpQER0h6Cm1c+ISuRpD0rArnlORZL4TrcpRlsTRkea9iI8X
+         UO6URPgwgaRLhBQNSg32tUS/Dm5KJOajepDn76QzLh6L5Q1lVat0udVQK27kJY5pKiZU
+         KY6bBYOd0d7xeNnjGM2HM90zcPuWGgUFm+rUace+in1urWw47ia0gSF1yjLiBpT1wrBu
+         Vhxw==
+X-Gm-Message-State: APjAAAWjghWXF9xsSbYGYXhjLovh7knUIgnK5EKxVDm17pKVHbZ3Au09
+        go544svImv4AowZpJesklCgbUD/vldCu0S+AMmvLX1Fl9Qe0Kt19qJRRPwaxTSPxEInzhpClcNh
+        W6EDilesjBo7XFIx+
+X-Received: by 2002:adf:cd84:: with SMTP id q4mr23502288wrj.232.1566464066740;
+        Thu, 22 Aug 2019 01:54:26 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqyh825LuHIXll98cU7yRRsOXHgUXj6D4NMmJwTnpjy9qwpKRhbbMrOnwCnYmIgNpZVYmaHNUA==
+X-Received: by 2002:adf:cd84:: with SMTP id q4mr23502255wrj.232.1566464066449;
+        Thu, 22 Aug 2019 01:54:26 -0700 (PDT)
+Received: from steredhat (host80-221-dynamic.18-79-r.retail.telecomitalia.it. [79.18.221.80])
+        by smtp.gmail.com with ESMTPSA id 25sm1986089wmi.40.2019.08.22.01.54.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2019 01:54:25 -0700 (PDT)
+Date:   Thu, 22 Aug 2019 10:54:22 +0200
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>
+Cc:     netdev@vger.kernel.org, Dexuan Cui <decui@microsoft.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vishnu Dasa <vdasa@vmware.com>,
+        "K. Y. Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: Re: [RFC v2] vsock: proposal to support multiple transports at
+ runtime
+Message-ID: <20190822085422.6to6oo2arwwmkmql@steredhat>
+References: <20190606100912.f2zuzrkgmdyxckog@steredhat>
+ <20190819130911.GE28081@stefanha-x1.localdomain>
 MIME-Version: 1.0
-In-Reply-To: <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25548/Wed Aug 21 10:27:18 2019)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190819130911.GE28081@stefanha-x1.localdomain>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/22/19 9:49 AM, Andrii Nakryiko wrote:
-> On Wed, Aug 21, 2019 at 2:07 PM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->> Andrii Nakryiko <andrii.nakryiko@gmail.com> writes:
->>> On Tue, Aug 20, 2019 at 4:47 AM Toke Høiland-Jørgensen <toke@redhat.com> wrote:
->>>>
->>>> iproute2 uses its own bpf loader to load eBPF programs, which has
->>>> evolved separately from libbpf. Since we are now standardising on
->>>> libbpf, this becomes a problem as iproute2 is slowly accumulating
->>>> feature incompatibilities with libbpf-based loaders. In particular,
->>>> iproute2 has its own (expanded) version of the map definition struct,
->>>> which makes it difficult to write programs that can be loaded with both
->>>> custom loaders and iproute2.
->>>>
->>>> This series seeks to address this by converting iproute2 to using libbpf
->>>> for all its bpf needs. This version is an early proof-of-concept RFC, to
->>>> get some feedback on whether people think this is the right direction.
->>>>
->>>> What this series does is the following:
->>>>
->>>> - Updates the libbpf map definition struct to match that of iproute2
->>>>    (patch 1).
->>>
->>> Thanks for taking a stab at unifying libbpf and iproute2 loaders. I'm
->>> totally in support of making iproute2 use libbpf to load/initialize
->>> BPF programs. But I'm against adding iproute2-specific fields to
->>> libbpf's bpf_map_def definitions to support this.
->>>
->>> I've proposed the plan of extending libbpf's supported features so
->>> that it can be used to load iproute2-style BPF programs earlier,
->>> please see discussions in [0] and [1].
->>
->> Yeah, I've seen that discussion, and agree that longer term this is
->> probably a better way to do map-in-map definitions.
->>
->> However, I view your proposal as complementary to this series: we'll
->> probably also want the BTF-based definition to work with iproute2, and
->> that means iproute2 needs to be ported to libbpf. But iproute2 needs to
->> be backwards compatible with the format it supports now, and, well, this
->> series is the simplest way to achieve that IMO :)
+On Mon, Aug 19, 2019 at 02:09:11PM +0100, Stefan Hajnoczi wrote:
+> On Thu, Jun 06, 2019 at 12:09:12PM +0200, Stefano Garzarella wrote:
+> > 
+> > Hi all,
+> > this is a v2 of a proposal addressing the comments made by Dexuan, Stefan,
+> > and Jorgen.
+> > 
+> > v1: https://www.spinics.net/lists/netdev/msg570274.html
+> > 
+> > 
+> > 
+> > We can define two types of transport that we have to handle at the same time
+> > (e.g. in a nested VM we would have both types of transport running together):
+> > 
+> > - 'host->guest' transport, it runs in the host and it is used to communicate
+> >   with the guests of a specific hypervisor (KVM, VMWare or Hyper-V). It also
+> >   runs in the guest who has nested guests, to communicate with them.
+> > 
+> >   [Phase 2]
+> >   We can support multiple 'host->guest' transport running at the same time,
+> >   but on x86 only one hypervisor uses VMX at any given time.
+> > 
+> > - 'guest->host' transport, it runs in the guest and it is used to communicate
+> >   with the host.
+> > 
+> > 
+> > The main goal is to find a way to decide what transport use in these cases:
+> > 1. connect() / sendto()
+> > 
+> >    a. use the 'host->guest' transport, if the destination is the guest
+> >       (dest_cid > VMADDR_CID_HOST).
+> > 
+> >       [Phase 2]
+> >       In order to support multiple 'host->guest' transports running at the same
+> >       time, we should assign CIDs uniquely across all transports. In this way,
+> >       a packet generated by the host side will get directed to the appropriate
+> >       transport based on the CID.
+> > 
+> >    b. use the 'guest->host' transport, if the destination is the host or the
+> >       hypervisor.
+> >       (dest_cid == VMADDR_CID_HOST || dest_cid == VMADDR_CID_HYPERVISOR)
+> > 
+> > 
+> > 2. listen() / recvfrom()
+> > 
+> >    a. use the 'host->guest' transport, if the socket is bound to
+> >       VMADDR_CID_HOST, or it is bound to VMADDR_CID_ANY and there is no
+> >       'guest->host' transport.
+> >       We could also define a new VMADDR_CID_LISTEN_FROM_GUEST in order to
+> >       address this case.
+> > 
+> >       [Phase 2]
+> >       We can support network namespaces to create independent AF_VSOCK
+> >       addressing domains:
+> >       - could be used to partition VMs between hypervisors or at a finer
+> >    	 granularity;
+> >       - could be used to isolate host applications from guest applications
+> >    	 using the same ports with CID_ANY;
+> > 
+> >    b. use the 'guest->host' transport, if the socket is bound to local CID
+> >       different from the VMADDR_CID_HOST (guest CID get with
+> >       IOCTL_VM_SOCKETS_GET_LOCAL_CID), or it is bound to VMADDR_CID_ANY (to be
+> >       backward compatible).
+> >       Also in this case, we could define a new VMADDR_CID_LISTEN_FROM_HOST.
+> > 
+> >    c. shared port space between transports
+> >       For incoming requests or packets, we should be able to choose which
+> >       transport use, looking at the 'port' requested.
+> > 
+> >       - stream sockets already support shared port space between transports
+> >         (one port can be assigned to only one transport)
+> > 
+> >       [Phase 2]
+> >       - datagram sockets will support it, but for now VMCI transport is the
+> >         default transport for any host side datagram socket (KVM and Hyper-V
+> >         do not yet support datagrams sockets)
+> > 
+> > We will make the loading of af_vsock.ko independent of the transports to
+> > allow to:
+> >    - create a AF_VSOCK socket without any loaded transports;
+> >    - listen on a socket (e.g. bound to VMADDR_CID_ANY) without any loaded
+> >      transports;
+> > 
+> > Hopefully, we could move MODULE_ALIAS_NETPROTO(PF_VSOCK) from the
+> > vmci_transport.ko to the af_vsock.ko.
+> > [Jorgen will check if this will impact the existing VMware products]
+> > 
+> > Notes:
+> >    - For Hyper-V sockets, the host can only be Windows. No changes should
+> >      be required on the Windows host to support the changes on this proposal.
+> > 
+> >    - Communication between guests are not allowed on any transports, so we can
+> >      drop packets sent from a guest to another guest (dest_cid >
+> >      VMADDR_CID_HOST) if the 'host->guest' transport is not available.
+> > 
+> >    - [Phase 2] tag used to identify things that can be done at a later stage,
+> >      but that should be taken into account during this design.
+> > 
+> >    - Namespace support will be developed in [Phase 2] or in a separate project.
+> > 
+> > 
+> > 
+> > Comments and suggestions are welcome.
+> > I'll be on PTO for next two weeks, so sorry in advance if I'll answer later.
+> > 
+> > If we agree on this proposal, when I get back, I'll start working on the code
+> > to get a first PATCH RFC.
 > 
-> Ok, I understand that. But I'd still want to avoid adding extra cruft
-> to libbpf just for backwards-compatibility with *exact* iproute2
-> format. Libbpf as a whole is trying to move away from relying on
-> binary bpf_map_def and into using BTF-defined map definitions, and
-> this patch series is a step backwards in that regard, that adds,
-> essentially, already outdated stuff that we'll need to support forever
-> (I mean those extra fields in bpf_map_def, that will stay there
-> forever).
+> Stefano,
+> I've reviewed your proposal and it looks good for solving nested
+> virtualization.
 
-Agree, adding these extensions for libbpf would be a step backwards
-compared to using BTF defined map defs.
+Hi Stefan,
+Thank you very much for the review!
 
-> We've discussed one way to deal with it, IMO, in a cleaner way. It can
-> be done in few steps:
 > 
-> 1. I originally wanted BTF-defined map definitions to ignore unknown
-> fields. It shouldn't be a default mode, but it should be supported
-> (and of course is very easy to add). So let's add that and let libbpf
-> ignore unknown stuff.
-> 
-> 2. Then to let iproute2 loader deal with backwards-compatibility for
-> libbpf-incompatible bpf_elf_map, we need to "pass-through" all those
-> fields so that users of libbpf (iproute2 loader, in this case) can
-> make use of it. The easiest and cleanest way to do this is to expose
-> BTF ID of a type describing each map entry and let iproute2 process
-> that in whichever way it sees fit.
-> 
-> Luckily, bpf_elf_map is compatible in `type` field, which will let
-> libbpf recognize bpf_elf_map as map definition. All the rest setup
-> will be done by iproute2, by processing BTF of bpf_elf_map, which will
-> let it set up map sizes, flags and do all of its map-in-map magic.
-> 
-> The only additions to libbpf in this case would be a new `__u32
-> bpf_map__btf_id(struct bpf_map* map);` API.
-> 
-> I haven't written any code and haven't 100% checked that this will
-> cover everything, but I think we should try. This will allow to let
-> users of libbpf do custom stuff with map definitions without having to
-> put all this extra logic into libbpf itself, which I think is
-> desirable outcome.
+> The tricky implementation details will be supporting listen sockets,
+> especially with VMADDR_CID_ANY so they can be accessed from both
+> transports.
 
-Sounds reasonable in general, but all this still has the issue that we're
-assuming that BTF is /always/ present. Existing object files that would load
-just fine /today/ but do not have BTF attached won't be handled here. Wouldn't
-it be more straight forward to allow passing callbacks to the libbpf loader
-such that if the map section is not found to be bpf_map_def compatible, we
-rely on external user aka callback to parse the ELF section, handle any
-non-default libbpf behavior like pinning/retrieving from BPF fs, populate
-related internal libbpf map data structures and pass control back to libbpf
-loader afterwards. (Similar callback with prog section name handling for the
-case where tail call maps get automatically populated.)
+Yes, it will be tricky because the current implementation has 1 to 1
+mapping with the transport callbacks.
+
+Maybe I could move some logic in the core (e.g. for listening sockets)
+to have a single point of control. (e.g. using vsk->pending_links in all
+transports)
+
+I'll work on it in the next weeks, I'll keep you updated.
 
 Thanks,
-Daniel
+Stefano
