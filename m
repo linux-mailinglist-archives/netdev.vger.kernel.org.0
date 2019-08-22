@@ -2,93 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 10E1599860
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 17:44:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B24E9986C
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 17:46:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731416AbfHVPoz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 11:44:55 -0400
-Received: from mout.gmx.net ([212.227.17.21]:44183 "EHLO mout.gmx.net"
+        id S1732967AbfHVPpG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 11:45:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725876AbfHVPoz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 11:44:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1566488653;
-        bh=Vy2sL6yIc2Cm33yYziTqAMn0mT4b4EWOI52QiBXdRmc=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=QrOHC6/2NAmFobf5S2YYzs5TWISc4dkEgsm5srJ57fksDPmZB21ItRv9XjzV9cu45
-         9nYnDIY/F6xa164T9B2M2OOw5hOcwSpgxZJAnlhW002+Z4B1iLgtsZfGSgDtAqqWR8
-         c0/aCfFCDn9ugbR4ouH7YUnV+aie8Hwekw14+hfg=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.154.89] ([217.61.154.89]) by web-mail.gmx.net
- (3c-app-gmx-bap07.server.lan [172.19.172.77]) (via HTTP); Thu, 22 Aug 2019
- 17:44:13 +0200
+        id S1732460AbfHVPpG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 11:45:06 -0400
+Received: from localhost (wsip-184-188-36-2.sd.sd.cox.net [184.188.36.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 178EF23400;
+        Thu, 22 Aug 2019 15:45:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566488705;
+        bh=0lsRsK+iB9uzsfVYAueEgtqb2iXaNyfPtL5bw0ygs40=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=jmmQ9bcX0eF5kRcWdcR0w17hzS1aGLtTqiFDJSzScNVoOPqPn+XgV4IhOAChAZ6aW
+         orJUyc9Gwd72N+oBqtCUfkSYgSkZDHPHGhWOdprTfS+tpfGPTxCWkouPisqwRj2VSH
+         AcWCwxDe6i27f0d76s82ZR4G90HHsR3IxPc1Emj8=
+Date:   Thu, 22 Aug 2019 18:45:04 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Doug Ledford <dledford@redhat.com>
+Cc:     Jason Gunthorpe <jgg@mellanox.com>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Mark Bloch <markb@mellanox.com>,
+        Mark Zhang <markz@mellanox.com>,
+        Saeed Mahameed <saeedm@mellanox.com>,
+        linux-netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH rdma-next 0/3] RDMA RX RoCE Steering Support
+Message-ID: <20190822154504.GF29433@mtr-leonro.mtl.com>
+References: <20190819113626.20284-1-leon@kernel.org>
+ <6e099d052f1803e74b5731fe3da2d9109533734d.camel@redhat.com>
+ <20190821140204.GG4459@mtr-leonro.mtl.com>
+ <c7caa8eece02f3d15a0928663e9f64f99572f3ab.camel@redhat.com>
 MIME-Version: 1.0
-Message-ID: <trinity-b1f48e51-af73-466d-9ecf-d560a7d7c1ee-1566488653737@3c-app-gmx-bap07>
-From:   "Frank Wunderlich" <frank-w@public-files.de>
-To:     =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>
-Cc:     "Sean Wang" <sean.wang@mediatek.com>,
-        "Andrew Lunn" <andrew@lunn.ch>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        "Florian Fainelli" <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
-        =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>,
-        linux-mediatek@lists.infradead.org,
-        "John Crispin" <john@phrozen.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Aw: [PATCH net-next v2 0/3] net: dsa: mt7530: Convert to PHYLINK
- and add support for port 5
-Content-Type: text/plain; charset=UTF-8
-Date:   Thu, 22 Aug 2019 17:44:13 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20190821144547.15113-1-opensource@vdorst.com>
-References: <20190821144547.15113-1-opensource@vdorst.com>
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:OnOmnNjRELKVDhw1WQ00dkVJuIqcBT9mIxsIJFG3y8nB9jk9SoGT1zYS+j7Hrug05uaRc
- wyfpj5sv6EnDKgPWJT1nDz20RXXwzuhx/jflRFQlLJECmmRxBLZT0IDWBzDceWlqwm05vt1Q30ZB
- qxHcSPFXQfWgRe6xK7ko3+YGTQsteRpHY6fIjn1gREIrNVmzXUH898hwnFvyxpkJw7gBmpF5JbYX
- OotJuHOPdSolA/xZdJ4ol64gN4UuJddW0ahxqEcnYXSi4BvaojZNNekB7/0c1Z/6rTCdONIWuqqA
- FU=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:A9vU9Oh1LEE=:DFgHGOwKN1RHx6kZQ498pi
- zX+xC8Drxjpw+G+vUDjrzkxjmEdsaQWF99BUxfFFCB1Lbuxweib2bcOxiDc45mjrxOKULzmBh
- Tc2QG63jIq3UVmi7GJusiZoTjWppmjHJnLO7rDs3sgR8JItcfzD7Jrpm8MCL0ZgeQek/IL3S5
- MIlrU9tpcspXV28cUK4mCDjbykLugedrl7F6hjyTULWoG6kiPjLERQ+tK8mD9CKwmRIDNHM5U
- pj3Iy3MikCcaCxfSaOzM/mFoqXkbr5HjHN1odpnXWmt6OFas74gyG/3zS0YtfbfWmEaUZETvG
- mtVkJqwC5SmAZO7A/U6QPdQbtz7by7K2q4BuMpLEOG00hcZd728gvTyFy4ijTfLJqvNbf9pLb
- QvpKS3YZjTkgd6EEk3AnQvLG5DdDJDqP5B8+dKZ5uvrgbDt309vqoAKI1acHb9grNIqcyzsc4
- 9FsqenYJm99b8XMLxZNWdelX12TmV2HUBZqqzOFxZ8W3vIf9dGoD+qMk8kPnQzLd9Tz7BSLuS
- d8292YpgCPIH1Plr1UZUan+Csz6krXBBiDhfgA70meddJds6kDD0b5bh7MuDwMC2Dh90kb38D
- z/9p4y6SR4kUOz/OHWXwi81phfKlOK/oZHIGZVPpSXN3d+rXsqoINiaFv7EBjC7s40cZQQ+yM
- 0UfGTxouFcI+56UwaoItJWKiDXNeSPvXruKyh7SCBStUFbg==
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c7caa8eece02f3d15a0928663e9f64f99572f3ab.camel@redhat.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Thu, Aug 22, 2019 at 11:29:02AM -0400, Doug Ledford wrote:
+> On Wed, 2019-08-21 at 17:02 +0300, Leon Romanovsky wrote:
+> > On Tue, Aug 20, 2019 at 01:54:59PM -0400, Doug Ledford wrote:
+> > > On Mon, 2019-08-19 at 14:36 +0300, Leon Romanovsky wrote:
+> > > > From: Leon Romanovsky <leonro@mellanox.com>
+> > > >
+> > > > Hi,
+> > > >
+> > > > This series from Mark extends mlx5 with RDMA_RX RoCE flow steering
+> > > > support
+> > > > for DEVX and QP objects.
+> > > >
+> > > > Thanks
+> > > >
+> > > > Mark Zhang (3):
+> > > >   net/mlx5: Add per-namespace flow table default miss action
+> > > > support
+> > > >   net/mlx5: Create bypass and loopback flow steering namespaces
+> > > > for
+> > > > RDMA
+> > > >     RX
+> > > >   RDMA/mlx5: RDMA_RX flow type support for user applications
+> > >
+> > > I have no objection to this series.
+> >
+> > Thanks, first two patches were applied to mlx5-next
+> >
+> > e6806e9a63a7 net/mlx5: Create bypass and loopback flow steering
+> > namespaces for RDMA RX
+> > f66ad830b114 net/mlx5: Add per-namespace flow table default miss
+> > action support
+>
+> mlx5-next merged into for-next, final patch applied, thanks.
 
-tested on BPI-R2 (mt7623) with 2 Problems (already reported to Rene, just =
-to inform everyone)...maybe anybody has an idea
+Thanks
+>
+> --
+> Doug Ledford <dledford@redhat.com>
+>     GPG KeyID: B826A3330E572FDD
+>     Fingerprint = AE6B 1BDA 122B 23B4 265B  1274 B826 A333 0E57 2FDD
 
-- linux-next (i know it's not part of the series, but a pitfall on testing=
- other devices) seems to break power-regulator somewhere here:
 
-priv->core_pwr =3D devm_regulator_get(&mdiodev->dev, "core"); returns 517
-
-#define EPROBE_DEFER517/* Driver requests probe retry */
-
-https://elixir.bootlin.com/linux/latest/source/drivers/regulator/core.c#L1=
-726
-
-without linux-next switch came up including dsa-ports
-
-- RX-traffic (run iperf3 -c x.x.x.x -R) is only 780 Mbits/sec (TX=3D940 Mb=
-its/sec), same measure with 5.3-rc4 gives 940 MBit/s with same devices,
-maybe caused by changes for mt76x8?
-
-regards Frank
