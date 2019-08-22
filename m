@@ -2,68 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 91B4899397
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:31:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54F85993A8
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 14:33:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387503AbfHVMbk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 08:31:40 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:59145 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2387463AbfHVMbj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 08:31:39 -0400
-Received: from Bc-Mail-Ex13.internal.baidu.com (unknown [172.31.40.49])
-        by Forcepoint Email with ESMTPS id C80A1A8990199;
-        Thu, 22 Aug 2019 20:31:32 +0800 (CST)
-Received: from BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) by
- Bc-Mail-Ex13.internal.baidu.com (172.31.40.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1531.3; Thu, 22 Aug 2019 20:31:33 +0800
-Received: from BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) by
- BJHW-Mail-Ex13.internal.baidu.com ([100.100.100.36]) with mapi id
- 15.01.1713.004; Thu, 22 Aug 2019 20:31:33 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Ido Schimmel <idosch@idosch.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "idosch@mellanox.com" <idosch@mellanox.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXVtuZXQtbmV4dF0gbmV0OiBkcm9wX21vbml0b3I6IGNo?=
- =?gb2312?B?YW5nZSB0aGUgc3RhdHMgdmFyaWFibGUgdG8gdTY0IGluIG5ldF9kbV9zdGF0?=
- =?gb2312?Q?s=5Fput?=
-Thread-Topic: [PATCH][net-next] net: drop_monitor: change the stats variable
- to u64 in net_dm_stats_put
-Thread-Index: AQHVWOEdXXTcs9XKS02SWSF/fxbtAqcHGAKg
-Date:   Thu, 22 Aug 2019 12:31:33 +0000
-Message-ID: <84063fe4df95437d81beb0d18f4043a5@baidu.com>
-References: <1566454953-29321-1-git-send-email-lirongqing@baidu.com>
- <20190822115946.GA25090@splinter>
-In-Reply-To: <20190822115946.GA25090@splinter>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.20]
-x-baidu-bdmsfe-datecheck: 1_Bc-Mail-Ex13_2019-08-22 20:31:33:789
-x-baidu-bdmsfe-viruscheck: Bc-Mail-Ex13_GRAY_Inside_WithoutAtta_2019-08-22
- 20:31:33:773
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S2387691AbfHVMdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 08:33:13 -0400
+Received: from www62.your-server.de ([213.133.104.62]:51648 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387583AbfHVMdM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 08:33:12 -0400
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i0mH2-0003rC-Uq; Thu, 22 Aug 2019 14:33:05 +0200
+Received: from [178.197.249.40] (helo=pc-63.home)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1i0mH2-0007FC-LS; Thu, 22 Aug 2019 14:33:04 +0200
+Subject: Re: [RFC bpf-next 4/5] iproute2: Allow compiling against libbpf
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Song Liu <songliubraving@fb.com>,
+        Yonghong Song <yhs@fb.com>, David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        andrii.nakryiko@gmail.com
+References: <20190820114706.18546-1-toke@redhat.com>
+ <20190820114706.18546-5-toke@redhat.com>
+ <9de36bbf-b70d-9320-c686-3033d0408276@iogearbox.net> <87imqppjir.fsf@toke.dk>
+ <0c3d78eb-d305-9266-b505-c2f9181d5c89@iogearbox.net> <877e75pftb.fsf@toke.dk>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <4ca44e39-9b32-909f-df8d-f565eae57498@iogearbox.net>
+Date:   Thu, 22 Aug 2019 14:33:03 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
+In-Reply-To: <877e75pftb.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.100.3/25549/Thu Aug 22 10:31:26 2019)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS3Tyrz+1K28/i0tLS0tDQo+ILeivP7IyzogSWRvIFNjaGltbWVsIFttYWlsdG86
-aWRvc2NoQGlkb3NjaC5vcmddDQo+ILeiy83KsbzkOiAyMDE5xOo41MIyMsjVIDIwOjAwDQo+IMrV
-vP7IyzogTGksUm9uZ3FpbmcgPGxpcm9uZ3FpbmdAYmFpZHUuY29tPg0KPiCzrcvNOiBuZXRkZXZA
-dmdlci5rZXJuZWwub3JnOyBpZG9zY2hAbWVsbGFub3guY29tDQo+INb3zOI6IFJlOiBbUEFUQ0hd
-W25ldC1uZXh0XSBuZXQ6IGRyb3BfbW9uaXRvcjogY2hhbmdlIHRoZSBzdGF0cyB2YXJpYWJsZSB0
-bw0KPiB1NjQgaW4gbmV0X2RtX3N0YXRzX3B1dA0KPiANCj4gT24gVGh1LCBBdWcgMjIsIDIwMTkg
-YXQgMDI6MjI6MzNQTSArMDgwMCwgTGkgUm9uZ1Fpbmcgd3JvdGU6DQo+ID4gb25seSB0aGUgZWxl
-bWVudCBkcm9wIG9mIHN0cnVjdCBuZXRfZG1fc3RhdHMgaXMgdXNlZCwgc28gc2ltcGxpZnkgaXQN
-Cj4gPiB0byB1NjQNCj4gDQo+IFRoYW5rcyBmb3IgdGhlIHBhdGNoLCBidXQgSSBkb24ndCByZWFs
-bHkgc2VlIHRoZSB2YWx1ZSBoZXJlLiBUaGUgc3RydWN0IGFsbG93cyBmb3INCj4gZWFzeSBleHRl
-bnNpb25zIGluIHRoZSBmdXR1cmUuIFdoYXQgZG8geW91IGdhaW4gZnJvbSB0aGlzIGNoYW5nZT8g
-V2UgbWVyZWx5DQo+IHJlYWQgc3RhdHMgYW5kIHJlcG9ydCB0aGVtIHRvIHVzZXIgc3BhY2UsIHNv
-IEkgZ3Vlc3MgaXQncyBub3QgYWJvdXQNCj4gcGVyZm9ybWFuY2UgZWl0aGVyLg0KPiANCg0KSSB0
-aGluayB1NjQgY2FuIHJlZHVjZSB0byBjYWxsIG1lbXNldCBhbmQgZGVyZWZlcmVuY2Ugc3RhdHMu
-ZHJvcA0KDQpJZiBpdCBpcyBmb3IgZnV0dXJlLCBrZWVwIGl0DQoNCi1Sb25nUWluZw0K
+On 8/22/19 2:04 PM, Toke Høiland-Jørgensen wrote:
+> Daniel Borkmann <daniel@iogearbox.net> writes:
+>> On 8/22/19 12:43 PM, Toke Høiland-Jørgensen wrote:
+>>> Daniel Borkmann <daniel@iogearbox.net> writes:
+>>>> On 8/20/19 1:47 PM, Toke Høiland-Jørgensen wrote:
+>>>>> This adds a configure check for libbpf and renames functions to allow
+>>>>> lib/bpf.c to be compiled with it present. This makes it possible to
+>>>>> port functionality piecemeal to use libbpf.
+>>>>>
+>>>>> Signed-off-by: Toke Høiland-Jørgensen <toke@redhat.com>
+>>>>> ---
+>>>>>     configure          | 16 ++++++++++++++++
+>>>>>     include/bpf_util.h |  6 +++---
+>>>>>     ip/ipvrf.c         |  4 ++--
+>>>>>     lib/bpf.c          | 33 +++++++++++++++++++--------------
+>>>>>     4 files changed, 40 insertions(+), 19 deletions(-)
+>>>>>
+>>>>> diff --git a/configure b/configure
+>>>>> index 45fcffb6..5a89ee9f 100755
+>>>>> --- a/configure
+>>>>> +++ b/configure
+>>>>> @@ -238,6 +238,19 @@ check_elf()
+>>>>>         fi
+>>>>>     }
+>>>>>     
+>>>>> +check_libbpf()
+>>>>> +{
+>>>>> +    if ${PKG_CONFIG} libbpf --exists; then
+>>>>> +	echo "HAVE_LIBBPF:=y" >>$CONFIG
+>>>>> +	echo "yes"
+>>>>> +
+>>>>> +	echo 'CFLAGS += -DHAVE_LIBBPF' `${PKG_CONFIG} libbpf --cflags` >> $CONFIG
+>>>>> +	echo 'LDLIBS += ' `${PKG_CONFIG} libbpf --libs` >>$CONFIG
+>>>>> +    else
+>>>>> +	echo "no"
+>>>>> +    fi
+>>>>> +}
+>>>>> +
+>>>>>     check_selinux()
+>>>>
+>>>> More of an implementation detail at this point in time, but want to
+>>>> make sure this doesn't get missed along the way: as discussed at
+>>>> bpfconf [0] best for iproute2 to handle libbpf support would be the
+>>>> same way of integration as pahole does, that is, to integrate it via
+>>>> submodule [1] to allow kernel and libbpf features to be in sync with
+>>>> iproute2 releases and therefore easily consume extensions we're adding
+>>>> to libbpf to aide iproute2 integration.
+>>>
+>>> I can sorta see the point wrt keeping in sync with kernel features. But
+>>> how will this work with distros that package libbpf as a regular
+>>> library? Have you guys given up on regular library symbol versioning for
+>>> libbpf?
+>>
+>> Not at all, and I hope you know that. ;-)
+> 
+> Good! Didn't really expect you had, just checking ;)
+> 
+>> The reason I added lib/bpf.c integration into iproute2 directly back
+>> then was exactly such that users can start consuming BPF for tc and
+>> XDP via iproute2 /everywhere/ with only a simple libelf dependency
+>> which is also available on all distros since pretty much forever. If
+>> it was an external library, we could have waited till hell freezes
+>> over and initial distro adoption would have pretty much taken forever:
+>> to pick one random example here wrt the pace of some downstream
+>> distros [0]. The main rationale is pretty much the same as with added
+>> kernel features that land complementary iproute2 patches for that
+>> kernel release and as libbpf is developed alongside it is reasonable
+>> to guarantee user expectations that iproute2 released for kernel
+>> version x can make use of BPF features added to kernel x with same
+>> loader support from x.
+> 
+> Well, for iproute2 I would expect this to be solved by version
+> dependencies. I.e. iproute2 version X would depend on libbpf version Y+
+> (like, I dunno, the version of libbpf included in the same kernel source
+> tree as the kernel version iproute2 is targeting? :)).
+
+This sounds nice in theory, but from what I've seen major (!) distros
+already seem to have a hard time releasing kernel x along with iproute2
+package x, concrete example was that distro kernel was on 4.13 and its
+official iproute2 package on 4.9, adding yet another variable that needs
+to be in sync with kernel is simply impractical especially for a _core_
+package like iproute2 that should have as little dependencies as possible.
+I also don't want to make a bet on whether libbpf will be available on
+every distro that also ships iproute2. Hence approach that pahole (and
+also bcc by the way) takes is most reasonable to have the best user
+experience.
+
+Thanks,
+Daniel
