@@ -2,122 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DEE8996B8
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:33:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5C8599736
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 16:44:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733118AbfHVOdV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 10:33:21 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3947 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725886AbfHVOdV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 10:33:21 -0400
-Received: from DGGEMM401-HUB.china.huawei.com (unknown [172.30.72.55])
-        by Forcepoint Email with ESMTP id 57833C69CDDBA8AEFD72;
-        Thu, 22 Aug 2019 22:33:15 +0800 (CST)
-Received: from dggeme704-chm.china.huawei.com (10.1.199.100) by
- DGGEMM401-HUB.china.huawei.com (10.3.20.209) with Microsoft SMTP Server (TLS)
- id 14.3.439.0; Thu, 22 Aug 2019 22:33:14 +0800
-Received: from dggeme753-chm.china.huawei.com (10.3.19.99) by
- dggeme704-chm.china.huawei.com (10.1.199.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1591.10; Thu, 22 Aug 2019 22:33:14 +0800
-Received: from dggeme753-chm.china.huawei.com ([10.7.64.70]) by
- dggeme753-chm.china.huawei.com ([10.7.64.70]) with mapi id 15.01.1591.008;
- Thu, 22 Aug 2019 22:33:14 +0800
-From:   "zhangsha (A)" <zhangsha.zhang@huawei.com>
-To:     Jay Vosburgh <jay.vosburgh@canonical.com>
-CC:     "vfalico@gmail.com" <vfalico@gmail.com>,
-        "andy@greyhouse.net" <andy@greyhouse.net>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        yuehaibing <yuehaibing@huawei.com>,
-        hunongda <hunongda@huawei.com>,
-        "Chenzhendong (alex)" <alex.chen@huawei.com>
-Subject: RE: [PATCH] bonding: force enable lacp port after link state recovery
- for 802.3ad
-Thread-Topic: [PATCH] bonding: force enable lacp port after link state
- recovery for 802.3ad
-Thread-Index: AQHVV1yNiE92g/fPt0eCCAQnmCU0dqcEJTkAgAMVw0A=
-Date:   Thu, 22 Aug 2019 14:33:14 +0000
-Message-ID: <bf596a59f3124e7abf796b09811d7264@huawei.com>
-References: <20190820133822.2508-1-zhangsha.zhang@huawei.com>
- <27042.1566342874@famine>
-In-Reply-To: <27042.1566342874@famine>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.177.220.209]
-Content-Type: text/plain; charset="gb2312"
-Content-Transfer-Encoding: base64
+        id S2387723AbfHVOot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 10:44:49 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:44126 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732378AbfHVOos (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 10:44:48 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Ups/VrVzSUhhwl/GEM5YSxWOiDm7bA4AN942AhbRqwo=; b=sQhrwnvpafZLPmo5FsdfINJTy
+        gqrWQhb1Z+5QCrEIDeMoEi3SdBeRlQ0v769zMUgIPnlfHp+R1toUOanWZs4j4fAgaJJx1+1pNN3Pk
+        sNHT4ZUjpanIjfQnjDQrwSSarOzK6SevySl9bvgFrqzO6breQcO9593EEUjk1JNQrOqUxmxuFJU0c
+        TpuUduJ3+r+cF0iBFl5sEupcoYvbP5YoYJ3FOfWGLzUpxFTU5tFekqHvRaVXIpVmTTl0GqkOdI5eb
+        pqV3DqYa6AYnAb68AilWTr+NCyLz1cmjlmYN/zsAZnyRurU3lp3eQ/w5Z3yHwvYigqb2Bblzib3XI
+        tYyrEZhDg==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:48060)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1i0oKL-0007ES-Kj; Thu, 22 Aug 2019 15:44:37 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1i0oKH-0007m8-RC; Thu, 22 Aug 2019 15:44:33 +0100
+Date:   Thu, 22 Aug 2019 15:44:33 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, Stefan Roese <sr@denx.de>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net-next v2 2/3] net: ethernet: mediatek: Re-add support
+ SGMII
+Message-ID: <20190822144433.GT13294@shell.armlinux.org.uk>
+References: <20190821144336.9259-1-opensource@vdorst.com>
+ <20190821144336.9259-3-opensource@vdorst.com>
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190821144336.9259-3-opensource@vdorst.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogSmF5IFZvc2J1cmdoIFtt
-YWlsdG86amF5LnZvc2J1cmdoQGNhbm9uaWNhbC5jb21dDQo+IFNlbnQ6IDIwMTnE6jjUwjIxyNUg
-NzoxNQ0KPiBUbzogemhhbmdzaGEgKEEpIDx6aGFuZ3NoYS56aGFuZ0BodWF3ZWkuY29tPg0KPiBD
-YzogdmZhbGljb0BnbWFpbC5jb207IGFuZHlAZ3JleWhvdXNlLm5ldDsgZGF2ZW1AZGF2ZW1sb2Z0
-Lm5ldDsNCj4gbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsgbGludXgta2VybmVsQHZnZXIua2VybmVs
-Lm9yZzsgeXVlaGFpYmluZw0KPiA8eXVlaGFpYmluZ0BodWF3ZWkuY29tPjsgaHVub25nZGEgPGh1
-bm9uZ2RhQGh1YXdlaS5jb20+Ow0KPiBDaGVuemhlbmRvbmcgKGFsZXgpIDxhbGV4LmNoZW5AaHVh
-d2VpLmNvbT4NCj4gU3ViamVjdDogUmU6IFtQQVRDSF0gYm9uZGluZzogZm9yY2UgZW5hYmxlIGxh
-Y3AgcG9ydCBhZnRlciBsaW5rIHN0YXRlIHJlY292ZXJ5DQo+IGZvciA4MDIuM2FkDQo+IA0KPiA8
-emhhbmdzaGEuemhhbmdAaHVhd2VpLmNvbT4gd3JvdGU6DQo+IA0KPiA+RnJvbTogU2hhIFpoYW5n
-IDx6aGFuZ3NoYS56aGFuZ0BodWF3ZWkuY29tPg0KPiA+DQo+ID5BZnRlciB0aGUgY29tbWl0IDMz
-NDAzMTIxOWE4NCAoImJvbmRpbmcvODAyLjNhZDogZml4IHNsYXZlIGxpbmsNCj4gPmluaXRpYWxp
-emF0aW9uIHRyYW5zaXRpb24gc3RhdGVzIikgbWVyZ2VkLCB0aGUgc2xhdmUncyBsaW5rIHN0YXR1
-cyB3aWxsDQo+ID5iZSBjaGFuZ2VkIHRvIEJPTkRfTElOS19GQUlMIGZyb20gQk9ORF9MSU5LX0RP
-V04gaW4gdGhlIGZvbGxvd2luZw0KPiA+c2NlbmFyaW86DQo+ID4tIERyaXZlciByZXBvcnRzIGxv
-c3Mgb2YgY2FycmllciBhbmQNCj4gPiAgYm9uZGluZyBkcml2ZXIgcmVjZWl2ZXMgTkVUREVWX0NI
-QU5HRSBub3RpZmllcg0KPiA+LSBzbGF2ZSdzIGR1cGxleCBhbmQgc3BlZWQgaXMgemVyb2QgYW5k
-DQo+ID4gIGl0cyBwb3J0LT5pc19lbmFibGVkIGlzIGNsZWFyZCB0byAnZmFsc2UnOw0KPiA+LSBE
-cml2ZXIgcmVwb3J0cyBsaW5rIHJlY292ZXJ5IGFuZA0KPiA+ICBib25kaW5nIGRyaXZlciByZWNl
-aXZlcyBORVRERVZfVVAgbm90aWZpZXI7DQo+ID4tIElmIHNwZWVkL2R1cGxleCBnZXR0aW5nIGZh
-aWxlZCBoZXJlLCB0aGUgbGluayBzdGF0dXMNCj4gPiAgd2lsbCBiZSBjaGFuZ2VkIHRvIEJPTkRf
-TElOS19GQUlMOw0KPiA+LSBUaGUgTUlJIG1vbm90b3IgbGF0ZXIgcmVjb3ZlciB0aGUgc2xhdmUn
-cyBzcGVlZC9kdXBsZXgNCj4gPiAgYW5kIHNldCBsaW5rIHN0YXR1cyB0byBCT05EX0xJTktfVVAs
-IGJ1dCByZW1haW5zDQo+ID4gIHRoZSAncG9ydC0+aXNfZW5hYmxlZCcgdG8gJ2ZhbHNlJy4NCj4g
-Pg0KPiA+SW4gdGhpcyBzY2VuYXJpbywgdGhlIGxhY3AgcG9ydCB3aWxsIG5vdCBiZSBlbmFibGVk
-IGV2ZW4gaXRzIHNwZWVkIGFuZA0KPiA+ZHVwbGV4IGFyZSB2YWxpZC4gVGhlIGJvbmQgd2lsbCBu
-b3Qgc2VuZCBMQUNQRFUncywgYW5kIGl0cyBzdGF0ZSBpcw0KPiA+J0FEX1NUQVRFX0RFRkFVTFRF
-RCcgZm9yZXZlci4gVGhlIHNpbXBsZXN0IGZpeCBJIHRoaW5rIGlzIHRvIGZvcmNlDQo+ID5lbmFi
-bGUgbGFjcCBhZnRlciBwb3J0IHNsYXZlIHNwZWVkIGNoZWNrIGluIGJvbmRfbWlpbW9uX2NvbW1p
-dC4gQXMNCj4gPmVuYWJsZWQsIHRoZSBsYWNwIHBvcnQgY2FuIHJ1biBpdHMgc3RhdGUgbWFjaGlu
-ZSBub3JtYWxseSBhZnRlciBsaW5rDQo+ID5yZWNvdmVyeS4NCj4gPg0KPiA+U2lnbmVkLW9mZi1i
-eTogU2hhIFpoYW5nIDx6aGFuZ3NoYS56aGFuZ0BodWF3ZWkuY29tPg0KPiA+LS0tDQo+ID4gZHJp
-dmVycy9uZXQvYm9uZGluZy9ib25kX21haW4uYyB8IDggKysrKysrKy0NCj4gPiAxIGZpbGUgY2hh
-bmdlZCwgNyBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0pDQo+ID4NCj4gPmRpZmYgLS1naXQg
-YS9kcml2ZXJzL25ldC9ib25kaW5nL2JvbmRfbWFpbi5jDQo+ID5iL2RyaXZlcnMvbmV0L2JvbmRp
-bmcvYm9uZF9tYWluLmMgaW5kZXggOTMxZDlkOS4uMzc5MjUzYSAxMDA2NDQNCj4gPi0tLSBhL2Ry
-aXZlcnMvbmV0L2JvbmRpbmcvYm9uZF9tYWluLmMNCj4gPisrKyBiL2RyaXZlcnMvbmV0L2JvbmRp
-bmcvYm9uZF9tYWluLmMNCj4gPkBAIC0yMTk0LDYgKzIxOTQsNyBAQCBzdGF0aWMgdm9pZCBib25k
-X21paW1vbl9jb21taXQoc3RydWN0IGJvbmRpbmcNCj4gPipib25kKSAgew0KPiA+IAlzdHJ1Y3Qg
-bGlzdF9oZWFkICppdGVyOw0KPiA+IAlzdHJ1Y3Qgc2xhdmUgKnNsYXZlLCAqcHJpbWFyeTsNCj4g
-PisJc3RydWN0IHBvcnQgKnBvcnQ7DQo+ID4NCj4gPiAJYm9uZF9mb3JfZWFjaF9zbGF2ZShib25k
-LCBzbGF2ZSwgaXRlcikgew0KPiA+IAkJc3dpdGNoIChzbGF2ZS0+bmV3X2xpbmspIHsNCj4gPkBA
-IC0yMjA1LDggKzIyMDYsMTMgQEAgc3RhdGljIHZvaWQgYm9uZF9taWltb25fY29tbWl0KHN0cnVj
-dCBib25kaW5nDQo+ICpib25kKQ0KPiA+IAkJCSAqIGxpbmsgc3RhdHVzDQo+ID4gCQkJICovDQo+
-ID4gCQkJaWYgKEJPTkRfTU9ERShib25kKSA9PSBCT05EX01PREVfODAyM0FEICYmDQo+ID4tCQkJ
-ICAgIHNsYXZlLT5saW5rID09IEJPTkRfTElOS19VUCkNCj4gPisJCQkgICAgc2xhdmUtPmxpbmsg
-PT0gQk9ORF9MSU5LX1VQKSB7DQo+ID4NCj4gCWJvbmRfM2FkX2FkYXB0ZXJfc3BlZWRfZHVwbGV4
-X2NoYW5nZWQoc2xhdmUpOw0KPiA+KwkJCQlpZiAoc2xhdmUtPmR1cGxleCA9PSBEVVBMRVhfRlVM
-TCkgew0KPiA+KwkJCQkJcG9ydCA9ICYoU0xBVkVfQURfSU5GTyhzbGF2ZSktDQo+ID5wb3J0KTsN
-Cj4gPisJCQkJCXBvcnQtPmlzX2VuYWJsZWQgPSB0cnVlOw0KPiA+KwkJCQl9DQo+ID4rCQkJfQ0K
-PiANCj4gCUkgZG9uJ3QgYmVsaWV2ZSB0aGF0IHRlc3RpbmcgZHVwbGV4IGhlcmUgaXMgY29ycmVj
-dDsgaXNfZW5hYmxlZCBpcyBub3QNCj4gY29udHJvbGxlZCBieSBkdXBsZXgsIGJ1dCBieSBjYXJy
-aWVyIHN0YXRlLiAgRHVwbGV4IGRvZXMgYWZmZWN0IHdoZXRoZXIgb3Igbm90DQo+IGEgcG9ydCBp
-cyBwZXJtaXR0ZWQgdG8gYWdncmVnYXRlLCBidXQgdGhhdCdzIGVudGlyZWx5IHNlcGFyYXRlIGxv
-Z2ljICh0aGUNCj4gQURfUE9SVF9MQUNQX0VOQUJMRUQgZmxhZykuDQo+IA0KPiAJV291bGQgaXQg
-YmUgYmV0dGVyIHRvIGNhbGwgYm9uZF8zYWRfaGFuZGxlX2xpbmtfY2hhbmdlKCkgaGVyZSwNCj4g
-aW5zdGVhZCBvZiBtYW51YWxseSB0ZXN0aW5nIGR1cGxleCBhbmQgc2V0dGluZyBpc19lbmFibGVk
-Pw0KPiANCj4gCS1KDQoNCkhpLCBKYXksDQpUaGFua3MgZm9yICB0aGUgcmVwbHkgYW5kIEkgdGhp
-bmsgYm9uZF8zYWRfaGFuZGxlX2xpbmtfY2hhbmdlIGlzIGluZGVlZCBhIGJldHRlciB3YXkgaGVy
-ZS4NCkkgd2lsbCBzZW5kIGEgbmV3IHBhdGNoIGxhdGVyIGFmdGVyIGhhdmluZyBpdCAgdGVzdGVk
-Lg0KDQo+IA0KPiA+IAkJCWNvbnRpbnVlOw0KPiA+DQo+ID4gCQljYXNlIEJPTkRfTElOS19VUDoN
-Cj4gPi0tDQo+ID4xLjguMy4xDQo+ID4NCj4gDQo+IC0tLQ0KPiAJLUpheSBWb3NidXJnaCwgamF5
-LnZvc2J1cmdoQGNhbm9uaWNhbC5jb20NCg==
+On Wed, Aug 21, 2019 at 04:43:35PM +0200, René van Dorst wrote:
+> +	if (MTK_HAS_CAPS(mac->hw->soc->caps, MTK_SGMII)) {
+> +		if (state->interface != PHY_INTERFACE_MODE_2500BASEX) {
+>  			phylink_set(mask, 1000baseT_Full);
+>  			phylink_set(mask, 1000baseX_Full);
+> +		} else {
+> +			phylink_set(mask, 2500baseT_Full);
+> +			phylink_set(mask, 2500baseX_Full);
+> +		}
+
+If you can dynamically switch between 1000BASE-X and 2500BASE-X, then
+you need to have both set.  See mvneta.c:
+
+        if (pp->comphy || state->interface != PHY_INTERFACE_MODE_2500BASEX) {
+                phylink_set(mask, 1000baseT_Full);
+                phylink_set(mask, 1000baseX_Full);
+        }
+        if (pp->comphy || state->interface == PHY_INTERFACE_MODE_2500BASEX) {
+                phylink_set(mask, 2500baseT_Full);
+                phylink_set(mask, 2500baseX_Full);
+        }
+
+What this is saying is, if we have a comphy (which is the serdes lane
+facing component, where the data rate is setup) then we can support
+both speeds (and so mask ends up with all four bits set.)  Otherwise,
+we only support a single-speed (1000Gbps for non-2500BASE-X etc.)
+
+> +	} else {
+> +		if (state->interface == PHY_INTERFACE_MODE_TRGMII) {
+> +			phylink_set(mask, 1000baseT_Full);
+> +		} else {
+> +			phylink_set(mask, 10baseT_Half);
+> +			phylink_set(mask, 10baseT_Full);
+> +			phylink_set(mask, 100baseT_Half);
+> +			phylink_set(mask, 100baseT_Full);
+> +
+> +			if (state->interface != PHY_INTERFACE_MODE_MII) {
+> +				phylink_set(mask, 1000baseT_Half);
+> +				phylink_set(mask, 1000baseT_Full);
+> +				phylink_set(mask, 1000baseX_Full);
+> +			}
+
+I'm also wondering about the "MTK_HAS_CAPS(mac->hw->soc->caps,
+MTK_SGMII)" above.
+
+(Here comes a reason why using SGMII to cover all single-lane serdes
+modes causes confusion - unfortunately, some folk use SGMII to describe
+all these modes.  So, I'm going to use the terminology "Cisco SGMII"
+to mean exactly the SGMII format published by Cisco, "802.3 1000BASE-X"
+to mean the original IEEE 802.3 format running at 1.25Gbps, and
+"up-clocked 2500BASE-X" to mean the 3.125Gbps version of the 802.3
+1000BASE-X protocol.)
+
+Isn't this set for Cisco SGMII as well as for 802.3 1000BASE-X and
+the up-clocked 2500BASE-X modes?
+
+If so, is there a reason why 10Mbps and 100Mbps speeds aren't
+supported on Cisco SGMII links?
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
