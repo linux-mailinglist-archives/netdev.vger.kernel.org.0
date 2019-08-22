@@ -2,64 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8977898BA4
-	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:51:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 51E9398BDE
+	for <lists+netdev@lfdr.de>; Thu, 22 Aug 2019 08:58:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731824AbfHVGsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 02:48:46 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5189 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729942AbfHVGsp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 02:48:45 -0400
-Received: from DGGEMS402-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 7299B4B329C9C06D80F1;
-        Thu, 22 Aug 2019 14:48:40 +0800 (CST)
-Received: from localhost.localdomain.localdomain (10.175.113.25) by
- DGGEMS402-HUB.china.huawei.com (10.3.19.202) with Microsoft SMTP Server id
- 14.3.439.0; Thu, 22 Aug 2019 14:48:30 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     Saeed Mahameed <saeedm@mellanox.com>,
-        Leon Romanovsky <leon@kernel.org>, <davem@davemloft.net>
-CC:     YueHaibing <yuehaibing@huawei.com>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] net/mlx5e: Use PTR_ERR_OR_ZERO in mlx5e_tc_add_nic_flow()
-Date:   Thu, 22 Aug 2019 06:52:19 +0000
-Message-ID: <20190822065219.73945-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type:   text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7BIT
-X-Originating-IP: [10.175.113.25]
-X-CFilter-Loop: Reflected
+        id S1731898AbfHVG66 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 02:58:58 -0400
+Received: from smtpbgsg2.qq.com ([54.254.200.128]:56351 "EHLO smtpbgsg2.qq.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731197AbfHVG65 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 02:58:57 -0400
+X-QQ-mid: bizesmtp19t1566457103t0y93v7p
+Received: from localhost.localdomain (unknown [218.76.23.26])
+        by esmtp10.qq.com (ESMTP) with 
+        id ; Thu, 22 Aug 2019 14:58:17 +0800 (CST)
+X-QQ-SSF: 01400000000000K0JH32000A0000000
+X-QQ-FEAT: YGus1B7tLZY6Td56PPA4So/HcXsjkjLQpHMm+zcGLM2RI8tGiaYm85NlJUKvs
+        z0KsXC831a4IBeRmVn5PNPCPdChD4tYlOQcMd2yLcGRrGxSUj6VpNq5tlRiZ1fnOsSBnF5z
+        UvRtrEUG4iK9G8nFYVAqqOwB2nWYfLRtd3kmoENSh74Or9lmx0104RqHeiuFgHwmNHNHVpT
+        S/sZmJOBrRiRGR4NZE+TpYo6Cvs2RJyE4crAKstu4zjlxLU8p2WtYPq6l/OwkrnA2Oi7drS
+        eKFKwV99ssNDHvyg15C5dYT1u3Ny4+OGKs8e5dN8K6o5puHL4kWuVO0+54iARWEb3kQf83F
+        5sYwAtd
+X-QQ-GoodBg: 2
+From:   xiaolinkui <xiaolinkui@kylinos.cn>
+To:     davem@davemloft.net, ast@kernel.org, daniel@iogearbox.net,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        xiaolinkui <xiaolinkui@kylinos.cn>
+Subject: [PATCH] net: use unlikely for dql_avail case
+Date:   Thu, 22 Aug 2019 14:58:16 +0800
+Message-Id: <20190822065816.23619-1-xiaolinkui@kylinos.cn>
+X-Mailer: git-send-email 2.17.1
+X-QQ-SENDSIZE: 520
+Feedback-ID: bizesmtp:kylinos.cn:qybgforeign:qybgforeign1
+X-QQ-Bgrelay: 1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use PTR_ERR_OR_ZERO rather than if(IS_ERR(...)) + PTR_ERR
+This is an unlikely case, use unlikely() on it seems logical.
 
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Signed-off-by: xiaolinkui <xiaolinkui@kylinos.cn>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ include/linux/netdevice.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-index 3917834b48ff..9d38c9e88f76 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tc.c
-@@ -985,10 +985,7 @@ mlx5e_tc_add_nic_flow(struct mlx5e_priv *priv,
- 					    &flow_act, dest, dest_ix);
- 	mutex_unlock(&priv->fs.tc.t_lock);
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 88292953aa6f..005f3da1b13d 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -3270,7 +3270,7 @@ static inline void netdev_tx_completed_queue(struct netdev_queue *dev_queue,
+ 	 */
+ 	smp_mb();
  
--	if (IS_ERR(flow->rule[0]))
--		return PTR_ERR(flow->rule[0]);
--
--	return 0;
-+	return PTR_ERR_OR_ZERO(flow->rule[0]);
- }
+-	if (dql_avail(&dev_queue->dql) < 0)
++	if (unlikely(dql_avail(&dev_queue->dql) < 0))
+ 		return;
  
- static void mlx5e_tc_del_nic_flow(struct mlx5e_priv *priv,
+ 	if (test_and_clear_bit(__QUEUE_STATE_STACK_XOFF, &dev_queue->state))
+-- 
+2.17.1
 
 
 
