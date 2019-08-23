@@ -2,73 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id EBDDE9A4C1
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 03:09:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B65A9A4D4
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 03:14:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387676AbfHWBJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 21:09:56 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:53622 "EHLO vps0.lunn.ch"
+        id S2387911AbfHWBN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 21:13:59 -0400
+Received: from out1.zte.com.cn ([202.103.147.172]:55682 "EHLO mxct.zte.com.cn"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730545AbfHWBJz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 21:09:55 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=bubYkOWQv/TmjmevXp07B1YxRSMrPurV5Qv8qeYJzMg=; b=PxaSz34QDnYHyaA6CFTIHBtfGH
-        ow2ULEN3il0uWeBGbbnScQcUzT2s+cnFmmS8jlf2UaTXTGryJXIkg7tMZ8VqYXuNldBrgggMhycEG
-        EXmpf5NKePxcDTTu5kP1ATysD0t/uYER73kH4IW5Z/eNsXf+9OwJ4dZnXOMZ8huSwcM4=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i0y52-0000ap-FE; Fri, 23 Aug 2019 03:09:28 +0200
-Date:   Fri, 23 Aug 2019 03:09:28 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     David Miller <davem@davemloft.net>
-Cc:     opensource@vdorst.com, sean.wang@mediatek.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        matthias.bgg@gmail.com, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, john@phrozen.org,
-        linux-mips@vger.kernel.org, frank-w@public-files.de
-Subject: Re: [PATCH net-next v2 0/3] net: dsa: mt7530: Convert to PHYLINK and
- add support for port 5
-Message-ID: <20190823010928.GK13020@lunn.ch>
-References: <20190821144547.15113-1-opensource@vdorst.com>
- <20190822.162047.1140525762795777800.davem@davemloft.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190822.162047.1140525762795777800.davem@davemloft.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S2387676AbfHWBN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 21:13:59 -0400
+Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
+        by Forcepoint Email with ESMTPS id 0F8CEBDD19C0BD7E4CD3;
+        Fri, 23 Aug 2019 09:13:57 +0800 (CST)
+Received: from notes_smtp.zte.com.cn (notessmtp.zte.com.cn [10.30.1.239])
+        by mse-fl2.zte.com.cn with ESMTP id x7N1Dgrq054529;
+        Fri, 23 Aug 2019 09:13:42 +0800 (GMT-8)
+        (envelope-from zhang.lin16@zte.com.cn)
+Received: from fox-host8.localdomain ([10.74.120.8])
+          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
+          with ESMTP id 2019082309141585-3127175 ;
+          Fri, 23 Aug 2019 09:14:15 +0800 
+From:   zhanglin <zhang.lin16@zte.com.cn>
+To:     davem@davemloft.net
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, willemb@google.com,
+        edumazet@google.com, deepa.kernel@gmail.com, arnd@arndb.de,
+        dh.herrmann@gmail.com, gnault@redhat.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
+        jiang.xuexin@zte.com.cn, zhanglin <zhang.lin16@zte.com.cn>
+Subject: [PATCH] [PATCH v3] sock: fix potential memory leak in proto_register()
+Date:   Fri, 23 Aug 2019 09:14:11 +0800
+Message-Id: <1566522851-24018-1-git-send-email-zhang.lin16@zte.com.cn>
+X-Mailer: git-send-email 1.8.3.1
+X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
+ 21, 2013) at 2019-08-23 09:14:15,
+        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
+ 2019-08-23 09:13:47,
+        Serialize complete at 2019-08-23 09:13:47
+X-MAIL: mse-fl2.zte.com.cn x7N1Dgrq054529
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 04:20:47PM -0700, David Miller wrote:
-> From: René van Dorst <opensource@vdorst.com>
-> Date: Wed, 21 Aug 2019 16:45:44 +0200
-> 
-> > 1. net: dsa: mt7530: Convert to PHYLINK API
-> >    This patch converts mt7530 to PHYLINK API.
-> > 2. dt-bindings: net: dsa: mt7530: Add support for port 5
-> > 3. net: dsa: mt7530: Add support for port 5
-> >    These 2 patches adding support for port 5 of the switch.
-> > 
-> > v1->v2:
-> >  * Mostly phylink improvements after review.
-> > rfc -> v1:
-> >  * Mostly phylink improvements after review.
-> >  * Drop phy isolation patches. Adds no value for now.
-> 
-> This definitely needs some review before I'll apply it.
+If protocols registered exceeded PROTO_INUSE_NR, prot will be
+added to proto_list, but no available bit left for prot in
+proto_inuse_idx.
 
-That would be Russell.
+Changes since v2:
+* Propagate the error code properly
 
-We should try to improve MAINTAINER so that Russell King gets picked
-by the get_maintainer script.
+Signed-off-by: zhanglin <zhang.lin16@zte.com.cn>
+---
+ net/core/sock.c | 31 +++++++++++++++++++++----------
+ 1 file changed, 21 insertions(+), 10 deletions(-)
 
-   Andrew
+diff --git a/net/core/sock.c b/net/core/sock.c
+index bc3512f230a3..f39163071384 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -3139,16 +3139,17 @@ static __init int net_inuse_init(void)
+ 
+ core_initcall(net_inuse_init);
+ 
+-static void assign_proto_idx(struct proto *prot)
++static int assign_proto_idx(struct proto *prot)
+ {
+ 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
+ 
+ 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
+ 		pr_err("PROTO_INUSE_NR exhausted\n");
+-		return;
++		return -ENOSPC;
+ 	}
+ 
+ 	set_bit(prot->inuse_idx, proto_inuse_idx);
++	return 0;
+ }
+ 
+ static void release_proto_idx(struct proto *prot)
+@@ -3157,8 +3158,9 @@ static void release_proto_idx(struct proto *prot)
+ 		clear_bit(prot->inuse_idx, proto_inuse_idx);
+ }
+ #else
+-static inline void assign_proto_idx(struct proto *prot)
++static inline int assign_proto_idx(struct proto *prot)
+ {
++	return 0;
+ }
+ 
+ static inline void release_proto_idx(struct proto *prot)
+@@ -3207,6 +3209,8 @@ static int req_prot_init(const struct proto *prot)
+ 
+ int proto_register(struct proto *prot, int alloc_slab)
+ {
++	int ret = -ENOBUFS;
++
+ 	if (alloc_slab) {
+ 		prot->slab = kmem_cache_create_usercopy(prot->name,
+ 					prot->obj_size, 0,
+@@ -3243,20 +3247,27 @@ int proto_register(struct proto *prot, int alloc_slab)
+ 	}
+ 
+ 	mutex_lock(&proto_list_mutex);
++	ret = assign_proto_idx(prot);
++	if (ret) {
++		mutex_unlock(&proto_list_mutex);
++		goto out_free_timewait_sock_slab_name;
++	}
+ 	list_add(&prot->node, &proto_list);
+-	assign_proto_idx(prot);
+ 	mutex_unlock(&proto_list_mutex);
+-	return 0;
++	return ret;
+ 
+ out_free_timewait_sock_slab_name:
+-	kfree(prot->twsk_prot->twsk_slab_name);
++	if (alloc_slab && prot->twsk_prot)
++		kfree(prot->twsk_prot->twsk_slab_name);
+ out_free_request_sock_slab:
+-	req_prot_cleanup(prot->rsk_prot);
++	if (alloc_slab) {
++		req_prot_cleanup(prot->rsk_prot);
+ 
+-	kmem_cache_destroy(prot->slab);
+-	prot->slab = NULL;
++		kmem_cache_destroy(prot->slab);
++		prot->slab = NULL;
++	}
+ out:
+-	return -ENOBUFS;
++	return ret;
+ }
+ EXPORT_SYMBOL(proto_register);
+ 
+-- 
+2.17.1
+
