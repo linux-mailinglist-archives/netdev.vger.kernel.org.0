@@ -2,98 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A305F9B0D5
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 15:26:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C767D9B10D
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 15:36:43 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405474AbfHWNZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 09:25:46 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55060 "EHLO vps0.lunn.ch"
+        id S2405628AbfHWNfq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 09:35:46 -0400
+Received: from mga01.intel.com ([192.55.52.88]:31234 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389802AbfHWNZq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 09:25:46 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=AgwFiLu0EACaDMPU3nVH88QXua+KzaStz26zPOJIN8I=; b=uTDQQT6rWKx2Wf4n20xHa+E1yu
-        Shj56AdUjogsV/v9JEiBh9YDQYexFknZ4ftWAD7oZuV5Cd9raeljUHsd4dlwdIu/MhopBAp2fzN+4
-        HDbyGeT6xGdZ/v79J32sQtrcsUN9Swl+qxJK5JzEtTSRCndImFPuhGbv/mdr7LR+85Zk=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i19ZS-0003rk-Ch; Fri, 23 Aug 2019 15:25:38 +0200
-Date:   Fri, 23 Aug 2019 15:25:38 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
-        roopa@cumulusnetworks.com, davem@davemloft.net,
-        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
-        allan.nielsen@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [PATCH 0/3] Add NETIF_F_HW_BRIDGE feature
-Message-ID: <20190823132538.GO13020@lunn.ch>
-References: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
- <1e16da88-08c5-abd5-0a3e-b8e6c3db134a@cumulusnetworks.com>
- <b2c52206-82d1-ef28-aeec-a5dcdbe9df6c@cumulusnetworks.com>
- <20190823122657.njk2tcgur2zu74i7@soft-dev3.microsemi.net>
+        id S1726319AbfHWNfp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 09:35:45 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Aug 2019 06:35:44 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,421,1559545200"; 
+   d="scan'208";a="330723926"
+Received: from klaatz-mobl1.ger.corp.intel.com (HELO [10.237.221.61]) ([10.237.221.61])
+  by orsmga004.jf.intel.com with ESMTP; 23 Aug 2019 06:35:41 -0700
+Subject: Re: [PATCH bpf-next v5 03/11] xsk: add support to allow unaligned
+ chunk placement
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        jakub.kicinski@netronome.com, saeedm@mellanox.com,
+        maximmi@mellanox.com, stephen@networkplumber.org,
+        bruce.richardson@intel.com, ciara.loftus@intel.com,
+        bpf@vger.kernel.org, intel-wired-lan@lists.osuosl.org
+References: <20190730085400.10376-1-kevin.laatz@intel.com>
+ <20190822014427.49800-1-kevin.laatz@intel.com>
+ <20190822014427.49800-4-kevin.laatz@intel.com>
+ <3AEEC88E-8D45-41C5-AFBF-51512826B1A7@gmail.com>
+From:   "Laatz, Kevin" <kevin.laatz@intel.com>
+Message-ID: <e549e399-089e-f423-169f-81ac9f831cad@intel.com>
+Date:   Fri, 23 Aug 2019 14:35:40 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190823122657.njk2tcgur2zu74i7@soft-dev3.microsemi.net>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <3AEEC88E-8D45-41C5-AFBF-51512826B1A7@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > Why do the devices have to be from the same driver ?
-> After seeing yours and Andrews comments I realize that I try to do two
-> things, but I have only explained one of them.
-> 
-> Here is what I was trying to do:
-> A. Prevent ports from going into promisc mode, if it is not needed.
+On 22/08/2019 19:43, Jonathan Lemon wrote:
+> On 21 Aug 2019, at 18:44, Kevin Laatz wrote:
+>> Currently, addresses are chunk size aligned. This means, we are very
+>> restricted in terms of where we can place chunk within the umem. For
+>> example, if we have a chunk size of 2k, then our chunks can only be 
+>> placed
+>> at 0,2k,4k,6k,8k... and so on (ie. every 2k starting from 0).
+>>
+>> This patch introduces the ability to use unaligned chunks. With these
+>> changes, we are no longer bound to having to place chunks at a 2k (or
+>> whatever your chunk size is) interval. Since we are no longer dealing 
+>> with
+>> aligned chunks, they can now cross page boundaries. Checks for page
+>> contiguity have been added in order to keep track of which pages are
+>> followed by a physically contiguous page.
+>>
+>> Signed-off-by: Kevin Laatz <kevin.laatz@intel.com>
+>> Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
+>> Signed-off-by: Bruce Richardson <bruce.richardson@intel.com>
+>>
+>> ---
+>> v2:
+>>   - Add checks for the flags coming from userspace
+>>   - Fix how we get chunk_size in xsk_diag.c
+>>   - Add defines for masking the new descriptor format
+>>   - Modified the rx functions to use new descriptor format
+>>   - Modified the tx functions to use new descriptor format
+>>
+>> v3:
+>>   - Add helper function to do address/offset masking/addition
+>>
+>> v4:
+>>   - fixed page_start calculation in __xsk_rcv_memcpy().
+>>   - move offset handling to the xdp_umem_get_* functions
+>>   - modified the len field in xdp_umem_reg struct. We now use 16 bits 
+>> from
+>>     this for the flags field.
+>>   - removed next_pg_contig field from xdp_umem_page struct. Using low 12
+>>     bits of addr to store flags instead.
+>>   - other minor changes based on review comments
+>>
+>> v5:
+>>   - Added accessors for getting addr and offset
+>>   - Added helper function to add offset to addr
+>>   - Fixed offset handling in xsk_rcv
+>>   - Removed bitfields from xdp_umem_reg
+>>   - Added struct size checking for xdp_umem_reg in xsk_setsockopt to 
+>> handle
+>>     different versions of the struct.
+>>   - fix conflicts after 'bpf-af-xdp-wakeup' was merged.
+>> ---
+>>  include/net/xdp_sock.h      | 75 +++++++++++++++++++++++++++--
+>>  include/uapi/linux/if_xdp.h |  9 ++++
+>>  net/xdp/xdp_umem.c          | 19 ++++++--
+>>  net/xdp/xsk.c               | 96 +++++++++++++++++++++++++++++--------
+>>  net/xdp/xsk_diag.c          |  2 +-
+>>  net/xdp/xsk_queue.h         | 68 ++++++++++++++++++++++----
+>>  6 files changed, 232 insertions(+), 37 deletions(-)
+>>
+>>
+[...]
 
-The switch definition is promisc is a bit odd. You really need to
-split it into two use cases.
+>> @@ -196,17 +221,17 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct 
+>> xdp_buff *xdp)
+>>          goto out_unlock;
+>>      }
+>>
+>> -    if (!xskq_peek_addr(xs->umem->fq, &addr) ||
+>> +    if (!xskq_peek_addr(xs->umem->fq, &addr, xs->umem) ||
+>>          len > xs->umem->chunk_size_nohr - XDP_PACKET_HEADROOM) {
+>>          err = -ENOSPC;
+>>          goto out_drop;
+>>      }
+>>
+>> -    addr += xs->umem->headroom;
+>> -
+>> -    buffer = xdp_umem_get_data(xs->umem, addr);
+>> +    buffer = xdp_umem_get_data(xs->umem, addr + offset);
+>>      memcpy(buffer, xdp->data_meta, len + metalen);
+>> -    addr += metalen;
+>> +    offset += metalen;
+>> +
+>> +    addr = xsk_umem_adjust_offset(xs->umem, addr, offset);
+>>      err = xskq_produce_batch_desc(xs->rx, addr, len);
+>>      if (err)
+>>          goto out_drop;
+>
+> Can't just add address and offset any longer.  This should read:
+>
+>     addr = xsk_umem_adjust_offset(xs->umem, addr, offset);
+>     buffer = xdp_umem_get_data(xs->umem, addr);
+>
+>     addr = xsk_umem_adjust_offset(xs->umem, addr, metalen);
+>
+>
+> so that offset and then metalen are added.  (or preserve the
+> address across the calls like memcpy_addr earlier).
 
-The Linux interface is not a member of a bridge. In this case, promisc
-mode would mean all frames ingressing the port should be forwarded to
-the CPU. Without promisc, you can program the hardware to just accept
-frames with the interfaces MAC address. So this is just the usual
-behaviour of an interface.
 
-When the interface is part of the bridge, then you can turn on all the
-learning and not forward frames to the CPU, unless the CPU asks for
-them. But you need to watch out for various flags. By default, you
-should flood to the CPU, unknown destinations to the CPU etc. But some
-of these can be turned off by flags.
+Will fix this, thanks!
 
-> B. Prevent adding the CPU to the flood-mask (in Ocelot we have a
-> flood-mask controlling who should be included when flooding due to
-> destination unknown).
+-Kevin
 
-So destination unknown should be flooded to the CPU. The CPU might
-know where to send the frame.
-
-> To solve item "B", the network driver needs to detect if there is a
-> foreign interfaces added to the bridge. If that is the case then to add
-> the CPU port to the flooding mask otherwise no.
-
-It is not just a foreign interface. What about the MAC address on the
-bridge interface?
-
-> > > This is too specific targeting some devices.
-> Maybe I was wrong to mention specific HW in the commit message. The
-> purpose of the patch was to add an optimization (not to copy all the
-> frames to the CPU) for HW that is capable of learning and flooding the
-> frames.
-
-To some extent, this is also tied to your hardware not learning MAC
-addresses from frames passed from the CPU. You should also consider
-fixing this. The SW bridge does send out notifications when it
-adds/removes MAC addresses to its tables. You probably want to receive
-this modifications, and use them to program your hardware to forward
-frames to the CPU when needed.
-
-       Andrew
