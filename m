@@ -2,39 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB6619A6EB
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 07:09:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C2FD69A6F9
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 07:19:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391839AbfHWFJU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 01:09:20 -0400
-Received: from mga03.intel.com ([134.134.136.65]:27832 "EHLO mga03.intel.com"
+        id S2391955AbfHWFRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 01:17:42 -0400
+Received: from mga17.intel.com ([192.55.52.151]:38604 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391823AbfHWFJU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 01:09:20 -0400
+        id S2391807AbfHWFRm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 01:17:42 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Aug 2019 22:09:19 -0700
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Aug 2019 22:17:42 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.64,420,1559545200"; 
-   d="scan'208";a="354511719"
+   d="scan'208";a="186777188"
 Received: from pkacprow-mobl.ger.corp.intel.com ([10.252.30.96])
-  by orsmga005.jf.intel.com with ESMTP; 22 Aug 2019 22:09:15 -0700
-Message-ID: <56cf56cdc54aa2deba627c5c1c51b7391e493ab9.camel@intel.com>
-Subject: Re: [PATCH net-next 07/10] iwlwifi: Use dev_get_drvdata where
- possible
+  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2019 22:17:40 -0700
+Message-ID: <84a882c0bd2954c21735005534abb5568b2fc806.camel@intel.com>
+Subject: Re: [PATCH] iwlwifi: mvm: fix old-style declaration
 From:   Luciano Coelho <luciano.coelho@intel.com>
-To:     Chuhong Yuan <hslester96@gmail.com>
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Fri, 23 Aug 2019 08:09:14 +0300
-In-Reply-To: <20190724112738.13457-1-hslester96@gmail.com>
-References: <20190724112738.13457-1-hslester96@gmail.com>
+To:     YueHaibing <yuehaibing@huawei.com>, johannes.berg@intel.com,
+        emmanuel.grumbach@intel.com, linuxwifi@intel.com,
+        kvalo@codeaurora.org, sara.sharon@intel.com
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org
+Date:   Fri, 23 Aug 2019 08:17:39 +0300
+In-Reply-To: <20190726141838.19424-1-yuehaibing@huawei.com>
+References: <20190726141838.19424-1-yuehaibing@huawei.com>
 Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Content-Type: text/plain; charset="UTF-8"
 User-Agent: Evolution 3.30.5-1.1 
@@ -45,17 +41,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2019-07-24 at 19:27 +0800, Chuhong Yuan wrote:
-> Instead of using to_pci_dev + pci_get_drvdata,
-> use dev_get_drvdata to make code simpler.
+On Fri, 2019-07-26 at 22:18 +0800, YueHaibing wrote:
+> There expect the 'static' keyword to come first in a
+> declaration, and we get a warning for this with "make W=1":
 > 
-> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:427:1: warning:
+>  'static' is not at beginning of declaration [-Wold-style-declaration]
+> drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:434:1: warning:
+>  'static' is not at beginning of declaration [-Wold-style-declaration]
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 > ---
 
-This patch is not relevant anymore because we have removed all
-D0i3/runtime PM code.
-
-Thanks anyway!
+Thanks! Johannes applied this in our internal tree a few weeks ago and
+it will reach the mainline following our usual upstreaming process.
 
 --
 Cheers,
