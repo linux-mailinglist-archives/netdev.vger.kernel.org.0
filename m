@@ -2,118 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D25469B12C
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 15:45:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 273719B13D
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 15:47:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390250AbfHWNoR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 09:44:17 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:40468 "EHLO mx1.redhat.com"
+        id S2405723AbfHWNpn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 09:45:43 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:33102 "EHLO mx.0dd.nl"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731976AbfHWNoR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 09:44:17 -0400
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S2405716AbfHWNpm (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 09:45:42 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 79E14308FBA7;
-        Fri, 23 Aug 2019 13:44:16 +0000 (UTC)
-Received: from hog.localdomain, (unknown [10.40.205.152])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 963F360933;
-        Fri, 23 Aug 2019 13:44:15 +0000 (UTC)
-From:   Sabrina Dubroca <sd@queasysnail.net>
-To:     netdev@vger.kernel.org
-Cc:     Sabrina Dubroca <sd@queasysnail.net>
-Subject: [PATCH net] ipv6: propagate ipv6_add_dev's error returns out of ipv6_find_idev
-Date:   Fri, 23 Aug 2019 15:44:36 +0200
-Message-Id: <5bc330e3f8123eb139113ae93851cc17100c22da.1566566438.git.sd@queasysnail.net>
+        by mx.0dd.nl (Postfix) with ESMTPS id AA80F5FA7B;
+        Fri, 23 Aug 2019 15:45:39 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="VphKtHb6";
+        dkim-atps=neutral
+Received: from pc-rene.vdorst.com (pc-rene.vdorst.com [192.168.2.125])
+        by mail.vdorst.com (Postfix) with ESMTPA id 6DD951D89681;
+        Fri, 23 Aug 2019 15:45:39 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 6DD951D89681
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1566567939;
+        bh=4DXT2J8mfFRCiwxSqy0mkdAE2qhxEDwsE+v9BSRv9mo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VphKtHb6a42eRPTzPTxmHYEDVRgcxRQVC/UGv7HMIqdMhJNRa0YhE0DdufZxZXWr9
+         6mNhvtcx23q2xZH35r4DFHDRuoEAOP62k2vFBE0sx+tlzT6XV6dk9s77a57krT6ONk
+         JDXw+9lPhGJR8tJDKztkexhSlH0MP0Kd1W7zEBRYJMkI8SZka+IO4iCDn4akory5qJ
+         8ui8zWa/x2ozqxrTgtZnyzHwl/kRTBxpIalSuSW3B2UwngipsfpubRaOysC8CH2vFY
+         XiRJtIJuxCwaf6ZbR+pjPOaW4Fr8//fBFqpBArHPm8+cdlzRdSVoRJGZVTrF4sFEZN
+         +OV+M5caJdarw==
+From:   =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+To:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
+        Russell King <linux@armlinux.org.uk>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Stefan Roese <sr@denx.de>,
+        =?UTF-8?q?Ren=C3=A9=20van=20Dorst?= <opensource@vdorst.com>
+Subject: [PATCH net-next v3 0/3] net: ethernet: mediatek: convert to PHYLINK
+Date:   Fri, 23 Aug 2019 15:45:13 +0200
+Message-Id: <20190823134516.27559-1-opensource@vdorst.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.43]); Fri, 23 Aug 2019 13:44:16 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, ipv6_find_idev returns NULL when ipv6_add_dev fails,
-ignoring the specific error value. This results in addrconf_add_dev
-returning ENOBUFS in all cases, which is unfortunate in cases such as:
+These patches converts mediatek driver to PHYLINK API.
 
-    # ip link add dummyX type dummy
-    # ip link set dummyX mtu 1200 up
-    # ip addr add 2000::/64 dev dummyX
-    RTNETLINK answers: No buffer space available
+v2->v3:
+* Phylink improvements and clean-ups after review
+v1->v2:
+* Rebase for mt76x8 changes
+* Phylink improvements and clean-ups after review
+* SGMII port doesn't support 2.5Gbit in SGMII mode only in BASE-X mode.
+  Refactor the code.
 
-Commit a317a2f19da7 ("ipv6: fail early when creating netdev named all
-or default") introduced error returns in ipv6_add_dev. Before that,
-that function would simply return NULL for all failures.
+René van Dorst (3):
+  net: ethernet: mediatek: Add basic PHYLINK support
+  net: ethernet: mediatek: Re-add support SGMII
+  dt-bindings: net: ethernet: Update mt7622 docs and dts to reflect the
+    new phylink API
 
-Signed-off-by: Sabrina Dubroca <sd@queasysnail.net>
----
- net/ipv6/addrconf.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ .../arm/mediatek/mediatek,sgmiisys.txt        |   2 -
+ .../dts/mediatek/mt7622-bananapi-bpi-r64.dts  |  28 +-
+ arch/arm64/boot/dts/mediatek/mt7622.dtsi      |   1 -
+ drivers/net/ethernet/mediatek/Kconfig         |   2 +-
+ drivers/net/ethernet/mediatek/mtk_eth_path.c  |  75 +--
+ drivers/net/ethernet/mediatek/mtk_eth_soc.c   | 529 ++++++++++++------
+ drivers/net/ethernet/mediatek/mtk_eth_soc.h   |  68 ++-
+ drivers/net/ethernet/mediatek/mtk_sgmii.c     |  65 ++-
+ 8 files changed, 477 insertions(+), 293 deletions(-)
 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index ced995f3fec4..6a576ff92c39 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -478,7 +478,7 @@ static struct inet6_dev *ipv6_find_idev(struct net_device *dev)
- 	if (!idev) {
- 		idev = ipv6_add_dev(dev);
- 		if (IS_ERR(idev))
--			return NULL;
-+			return idev;
- 	}
- 
- 	if (dev->flags&IFF_UP)
-@@ -2466,8 +2466,8 @@ static struct inet6_dev *addrconf_add_dev(struct net_device *dev)
- 	ASSERT_RTNL();
- 
- 	idev = ipv6_find_idev(dev);
--	if (!idev)
--		return ERR_PTR(-ENOBUFS);
-+	if (IS_ERR(idev))
-+		return idev;
- 
- 	if (idev->cnf.disable_ipv6)
- 		return ERR_PTR(-EACCES);
-@@ -3159,7 +3159,7 @@ static void init_loopback(struct net_device *dev)
- 	ASSERT_RTNL();
- 
- 	idev = ipv6_find_idev(dev);
--	if (!idev) {
-+	if (IS_ERR(idev)) {
- 		pr_debug("%s: add_dev failed\n", __func__);
- 		return;
- 	}
-@@ -3374,7 +3374,7 @@ static void addrconf_sit_config(struct net_device *dev)
- 	 */
- 
- 	idev = ipv6_find_idev(dev);
--	if (!idev) {
-+	if (IS_ERR(idev)) {
- 		pr_debug("%s: add_dev failed\n", __func__);
- 		return;
- 	}
-@@ -3399,7 +3399,7 @@ static void addrconf_gre_config(struct net_device *dev)
- 	ASSERT_RTNL();
- 
- 	idev = ipv6_find_idev(dev);
--	if (!idev) {
-+	if (IS_ERR(idev)) {
- 		pr_debug("%s: add_dev failed\n", __func__);
- 		return;
- 	}
-@@ -4773,8 +4773,8 @@ inet6_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
- 			 IFA_F_MCAUTOJOIN | IFA_F_OPTIMISTIC;
- 
- 	idev = ipv6_find_idev(dev);
--	if (!idev)
--		return -ENOBUFS;
-+	if (IS_ERR(idev))
-+		return PTR_ERR(idev);
- 
- 	if (!ipv6_allow_optimistic_dad(net, idev))
- 		cfg.ifa_flags &= ~IFA_F_OPTIMISTIC;
 -- 
-2.22.0
+2.20.1
 
