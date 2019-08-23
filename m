@@ -2,55 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 223D09AE48
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 13:41:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F21049AEB7
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 14:07:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393012AbfHWLlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 07:41:52 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:35131 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392919AbfHWLlw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 07:41:52 -0400
-Received: by mail-lj1-f195.google.com with SMTP id l14so8588165lje.2
-        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 04:41:51 -0700 (PDT)
+        id S2389773AbfHWMHG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 08:07:06 -0400
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:44220 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729830AbfHWMHG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 08:07:06 -0400
+Received: by mail-ed1-f65.google.com with SMTP id a21so13119677edt.11;
+        Fri, 23 Aug 2019 05:07:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=Wc0pBV8XYSwempgeR3yggrLrzcmJJBDB5ERRq19QP4w=;
-        b=IUnWnbLScb1sugwDDrGxqMlHj/JXkMfX4z4uuO9U6yHS5KHJK9DFMSGSFJLfbBFnka
-         bgNqVz0VssAEuGgxdSTJQQsrCEXiCtJ9hM+u75ufGAYUzEBUKZDwvP1RNg/OmBeAwRwc
-         +sonJewfnrQp3IWhIjAEnjn/mVUrYhP+QON2sSin9pO5PIy3xLvN+nmNL0XfQedWsDfk
-         VWbYca0GncQtpQh8WdIvH6NeEKjVAzPSf+EPh98YVuBGofsp6CT+PsRceJDw+HklzBE0
-         kNtdPOBlzSYblHeP4Wm+pBoABI3lYqvOttY6AAHjjHAJo4O9iUhQo9WqnnFUsz4XtNOa
-         T9DA==
+        bh=JgSIVbqLmphG2gcFJvhWOBbnqIkN8+nWVHvIed6gZB8=;
+        b=VkBWQil+M8uTsEDKlv9pQx+BGBfryYWAoXTBIdvtCOL4WltExB/yVDJJkTFCEC4LsS
+         GboQmbe9JXRDJ2KjWFCA2Mb/D0AVYU6+CNtZOlyqfSQXFr1/0RL0+Ejp+EQSt2Y2eL2D
+         lu5qhUa/9Z4sSC3HNwkdj9LiQYTAcsMWbfzzq1bQlnjqYjcBWH2lvhDBsM6l+/dfEcwD
+         TUoPIyBNs2htpHGyskNOpbJcaj9qFjDJrALXQ8fDjGCGesTjNoxnROCXNxSbCau3cJJZ
+         sGjpUjd6EuPzhs7UO/ZoTPpp7QPbsrRMRL9e74pW9JSwhHd/mEX47ryy/d08J2nO5W0x
+         gq6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Wc0pBV8XYSwempgeR3yggrLrzcmJJBDB5ERRq19QP4w=;
-        b=V8vcfUimuYcqQf+qowDtdaLHMaroYF23QKDSLb9u4kmoybzgmLAxY/ZpHCyEEA5uKW
-         FqzoMABntrJekGF6sHIQNDFl8TibJrYpIbH+FUTPvjiA7ZKvh1f4FUKzdI34+XAYJJYL
-         /2rHTki6aVreLJrZUO2deVf/h/XDr4NBR/Wp2zLhV+YJMAUkGOGvaGeFTD7XwAgNlzpX
-         e54l5yCcI+5aiwXgqMtfnys0D31VuDguFuL3PWEK+e4rVgtyFs4C09dlqVrUfDt2u567
-         UHf9oJpTJ3gafAXaFDQVV3jqUGg2/fTbKN3klwSSEmlAN04RkQjSNKzOg1EHZC3/5lQw
-         7KfA==
-X-Gm-Message-State: APjAAAUCORL45RZ+wIGsdCNN0utbHM1RKyx4D6XK+4ia/uHk3YCVeJk/
-        AA2ieF2RG28sxVHGlrLb4dhjfihrnHCFRTdRGQ9AnQ==
-X-Google-Smtp-Source: APXvYqwEuB/cMhl/nAEC7z/qHRnNiNTz/9Il2JH8941tpayvBx6eYlh6aTC2ePXDkr4MAsscUOZ/3mxjMhMkFFMl2ek=
-X-Received: by 2002:a2e:2b0a:: with SMTP id q10mr2628388lje.203.1566560510230;
- Fri, 23 Aug 2019 04:41:50 -0700 (PDT)
+        bh=JgSIVbqLmphG2gcFJvhWOBbnqIkN8+nWVHvIed6gZB8=;
+        b=eMIZ/o3rEw30o9bxmf4SaSmqqQCkeODtiS7A3IIxL+UIwzrHd452O93D/Lt9SHBAsc
+         utug3AuI/fC/40weyrOogGQok4RWgXaECiomv43la9Fwr/nsYEtsMvsNC65bRuXNqvbM
+         r349/pKB4sq7C3ZnjeCWSeo1H+JmLJZYoWCmDYlWRCFGnHQEmlKxaePSoo6F7bD5m1U7
+         TGBxC9K6VXx/aDMOkuonJr8XIqJipj2wUT8Tz5UTa5GGfcandxca7kCQFEdaAyPfTZrF
+         d/N2lNdiDNrhwFMjTaif5jYeu+U0TOMpV3st3dXgacLIdEL499I46XhE8P12iXVARpBf
+         bKkQ==
+X-Gm-Message-State: APjAAAVdCLi43l4lNemmyF5KhR9QqgbN2J4edMZeMt44nHUuy/t8hPzZ
+        hHXvgi3+T/UsczLix0qt5kdqRN1D5jRMCQuySv8=
+X-Google-Smtp-Source: APXvYqwxqgm1lOeFbcr7H2hjPf3E9mJUHlZMDIlaEwKlpQrcaFTg43X79An81kaydDLBh7oRJTywvZBSuM/XYoBVxco=
+X-Received: by 2002:a05:6402:1244:: with SMTP id l4mr3921135edw.117.1566562023429;
+ Fri, 23 Aug 2019 05:07:03 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190821134547.96929-1-jeffv@google.com> <20190822.161913.326746900077543343.davem@davemloft.net>
-In-Reply-To: <20190822.161913.326746900077543343.davem@davemloft.net>
-From:   Jeffrey Vander Stoep <jeffv@google.com>
-Date:   Fri, 23 Aug 2019 13:41:38 +0200
-Message-ID: <CABXk95BF=RfqFSHU_---DRHDoKyFON5kS_vYJbc4ns2OS=_t0w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] rtnetlink: gate MAC address with an LSM hook
-To:     David Miller <davem@davemloft.net>
-Cc:     netdev@vger.kernel.org,
-        LSM List <linux-security-module@vger.kernel.org>,
-        selinux@vger.kernel.org
+References: <20190822211514.19288-1-olteanv@gmail.com> <20190822211514.19288-3-olteanv@gmail.com>
+ <20190823102816.GN23391@sirena.co.uk> <CA+h21hoUfbW8Gpyfa+a-vqVp_qARYoq1_eyFfZFh-5USNGNE2g@mail.gmail.com>
+ <20190823105044.GO23391@sirena.co.uk> <20190823105949.GQ23391@sirena.co.uk>
+In-Reply-To: <20190823105949.GQ23391@sirena.co.uk>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Fri, 23 Aug 2019 15:06:52 +0300
+Message-ID: <CA+h21hrj6VjceGJFz7XuS9DFjy=Fb5SHTYUuOWkagtsWf0Egbg@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] spi: spi-fsl-dspi: Exit the ISR with IRQ_NONE when
+ it's not ours
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-spi@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org, netdev <netdev@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
@@ -58,77 +60,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 23, 2019 at 1:19 AM David Miller <davem@davemloft.net> wrote:
+Hi Mark,
+
+On Fri, 23 Aug 2019 at 13:59, Mark Brown <broonie@kernel.org> wrote:
 >
-> From: Jeff Vander Stoep <jeffv@google.com>
-> Date: Wed, 21 Aug 2019 15:45:47 +0200
+> On Fri, Aug 23, 2019 at 11:50:44AM +0100, Mark Brown wrote:
+> > On Fri, Aug 23, 2019 at 01:30:27PM +0300, Vladimir Oltean wrote:
 >
-> > MAC addresses are often considered sensitive because they are
-> > usually unique and can be used to identify/track a device or
-> > user [1].
-> >
-> > The MAC address is accessible via the RTM_NEWLINK message type of a
-> > netlink route socket[2]. Ideally we could grant/deny access to the
-> > MAC address on a case-by-case basis without blocking the entire
-> > RTM_NEWLINK message type which contains a lot of other useful
-> > information. This can be achieved using a new LSM hook on the netlink
-> > message receive path. Using this new hook, individual LSMs can select
-> > which processes are allowed access to the real MAC, otherwise a
-> > default value of zeros is returned. Offloading access control
-> > decisions like this to an LSM is convenient because it preserves the
-> > status quo for most Linux users while giving the various LSMs
-> > flexibility to make finer grained decisions on access to sensitive
-> > data based on policy.
-> >
-> > [1] https://adamdrake.com/mac-addresses-udids-and-privacy.html
-> > [2] Other access vectors like ioctl(SIOCGIFHWADDR) are already covered
-> > by existing LSM hooks.
-> >
-> > Signed-off-by: Jeff Vander Stoep <jeffv@google.com>
+> > > Did you see this?
+> > > https://lkml.org/lkml/2019/8/22/1542
 >
-> I'm sure the MAC address will escape into userspace via other means,
-> dumping pieces of networking config in other contexts, etc.  I mean,
-> if I can get a link dump, I can dump the neighbor table as well.
-
-These are already gated by existing LSM hooks and capability checks.
-They are not allowed on mandatory access control systems unless explicitly
-granted.
-
+> > I'm not online enough to readily follow that link right now, I
+> > did apply another patch for a similar issue though.  If that's
+> > a different version of the same change please don't do that,
+> > sending multiple conflicting versions of the same thing creates
+> > conflicts and makes everything harder to work with.
 >
-> I kinda think this is all very silly whack-a-mole kind of stuff, to
-> be quite honest.
+> Oh, I guess this was due to there being an existing refactoring
+> in -next that meant the fix wouldn't apply directly.  I sorted
+> that out now I think, but in general the same thing applies -
+> it's better to put fixes before anything else in the series,
+> it'll flag up when reviewing.
 
-We evaluated mechanisms for the MAC to reach unprivileged apps.
-A number of researchers have published on this as well such as:
-https://www.usenix.org/conference/usenixsecurity19/presentation/reardon
+I try to require as little attention span as possible from you and I
+apologize that I'm sending patches like a noob, but I'm not used to
+this sort of interaction with a maintainer. It's taking me some time
+to adjust expectations.
+- You left change requests in the initial patchset I submitted, but
+you partially applied the series anyway. You didn't give me a chance
+to respin the whole series and put the shared IRQ fix on top, so it
+applies on old trees as well. No problem, I sent two versions of the
+patch.
+- On my previous series you left this comment:
 
-Three "leaks" were identified, two have already been fixed.
--ioctl(SIOCGIFHWADDR). Fixed using finer grained LSM checks
-on socket ioctls (similar to this change).
--IPv6 IP addresses. Fixed by no longer including the MAC as part
-of the IP address.
--RTM_NEWLINK netlink route messages. The last mole to be whacked.
-
+> Please don't include all the extra tags you've got in your subject
+> lines.  In my inbox this series looks like:
 >
-> And like others have said, tomorrow you'll be like "oh crap, we should
-> block X too" and we'll get another hook, another config knob, another
-> rulset update, etc.
+>    790 N T 08/18 Vladimir Oltean ( 16K) =E2=94=9C=E2=94=80>[PATCH spi for=
+-5.4 01/14] spi: spi-f
+>
+> so I can't tell what it's actually about just from looking at it.  Just
+> [PATCH 01/14] would be enough, putting a target version in or versioning
+> the patch series can be OK but you usually don't use a target version
+> for -next and adding spi in there is redundant given that it's also in
+> the changelog.
 
-This seems like an issue inherent with permissions/capabilities. I don=E2=
-=80=99t
-think we should abandon the concept of permissions because someone
-can forget to add a check.  Likewise, if someone adds new code to the
-kernel and omits a capable(CAP_NET_*) check, I would expect it to be
-fixed like any other bug without the idea of capability checks being tossed
-out.
+So I didn't put any target version in the patch titles this time,
+although arguably it would have been clearer to you that there's a
+patch for-5.4 and another version of it for-4.20 (which i *think* is
+how I should submit a fix, I don't see any branch for inclusion in
+stable trees per se).
+No problem, I explained in the cover letters that one patchset is for
+-next and the other is for inclusion in stable trees. Maintainers do
+read cover letters, right?
+Message from the -next cover letter:
 
-We need to do something because this information is being abused. Any
-recommendations? This seemed like the simplest approach, but I can
-definitely appreciate that it has downsides.
+> The series also contains a bug fix for the shared IRQ of the DSPI
+> driver. I am going to respin a version of it as a separate patch for
+> inclusion in stable trees, independent of this patchset.
 
-I could make this really generic by adding a single hook to the end of
-sock_msgrecv() which would allow an LSM to modify the message to omit
-the MAC address and any other information that we deem as sensitive in the
-future. Basically what Casey was suggesting. Thoughts on that approach?
+Message from the fix's cover letter:
 
-Thanks for your help on this.
+> This patch is taken out of the "Poll mode for NXP DSPI driver" series
+> and respun against the "for-4.20" branch.
+> $(git describe --tags 13aed2392741) shows:
+> v4.20-rc1-18-g13aed2392741
+
+Yes, I did send a cover letter for a single patch. I thought it's
+harder to miss than a note hidden under patch 2/5 of one series, and
+in the note section of the other's. I think you could have also made
+an argument about me not doing it the other way around. In the end,
+you can not read a note just as well as not read a cover letter, and
+there's little I can do.
+
+No problem, you missed the link between the two. I sent you a link to
+the lkml archive. You said "I'm not online enough to readily follow
+that link right now". Please teach me - I really don't know - how can
+I make links between patchsets easier for you to follow, if you don't
+read cover letters and you can't access lkml? I promise I'll use that
+method next time.
+
+> I do frequently catch up on my mail on flights or while otherwise
+> travelling so this is even more pressing for me than just being about
+> making things a bit easier to read.
+
+Maybe you simply should do something else while traveling, just saying.
+
+Regards,
+-Vladimir
