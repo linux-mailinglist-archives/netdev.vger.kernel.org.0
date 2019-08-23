@@ -2,85 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AC1B19AA0F
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 10:18:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D6DCC9AAB6
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 10:52:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388911AbfHWISS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 04:18:18 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:33126 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388604AbfHWISS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 04:18:18 -0400
-Received: by mail-wr1-f68.google.com with SMTP id u16so7825964wrr.0
-        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 01:18:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=prXm3P3EuozGuFJkO3h5BCLJubkE/g8QKoERuCU4E8M=;
-        b=fweN2nB3N+MJP0ngSWEQ7i9ICK8STO+eyQwG7DASE6jmfiR7L1GVpnqrlGWHT9dAKv
-         1MUob/wt6UwJlXxof8YC5qD4F3djycZ469WUJ+0rAFtioo5yfEwJYNZXPoPIUhPV9vyI
-         AFX6KhzOeBh9MDNDlCaW8z9Z9l/KwtXeiWjjw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=prXm3P3EuozGuFJkO3h5BCLJubkE/g8QKoERuCU4E8M=;
-        b=VJmCQ7S0eacozWV4x5RP8Fp41F0kDaYPJs6LjuAMAdM0W4M7L0o6J4Qw+p6oInEy1P
-         jf3aeRsSwHuOdvWXX7UdaUYiAdvnPOHZ4jaD+B6Hv0NFfQtJ/Jx44xNb5Ut61KPylsGu
-         htVDRFGR+f/Lx/ufxt+kcVlo1Q2UBCrbXNllR3Xstjp+s0OcHSxrYFs46fyFp/JC/UgM
-         iMuA3Qt8vrGSFu1vYa/b+ldLrBN4CgEXehcwn4iNdjPJiEy7gzcTJcMRogIfWWgmZaQc
-         Gt89ikG8OSLonOz7tnk0H8pbmYeQgfLjYH2UmFbSlVxoTIJZ1eCFiZ7Z5F3ZEt/Rur5R
-         OeYw==
-X-Gm-Message-State: APjAAAWlwqH4/r88ebz15ld0HWUKVOG3aMhYamkePGFBLOZqWTXtUNqY
-        aDFlMX+rM2C+Xbt7mSNyiBPKSw==
-X-Google-Smtp-Source: APXvYqw+XUl+DLn+INP9GfpdrffdxYEgE59Xt8vee45Eb39L4aEq5x+cjyJsy5MtieVi+SDMo3zuBA==
-X-Received: by 2002:adf:e504:: with SMTP id j4mr3465872wrm.222.1566548295940;
-        Fri, 23 Aug 2019 01:18:15 -0700 (PDT)
-Received: from [10.176.68.244] ([192.19.248.250])
-        by smtp.gmail.com with ESMTPSA id e14sm1771959wma.37.2019.08.23.01.18.14
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 23 Aug 2019 01:18:15 -0700 (PDT)
-Subject: Re: [PATCH] brcmfmac: replace strncpy() by strscpy()
-To:     Xulin Sun <xulin.sun@windriver.com>, kvalo@codeaurora.org
-Cc:     stefan.wahren@i2se.com, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, brcm80211-dev-list@cypress.com,
-        brcm80211-dev-list.pdl@broadcom.com,
-        linux-wireless@vger.kernel.org, franky.lin@broadcom.com,
-        hante.meuleman@broadcom.com, chi-hsien.lin@cypress.com,
-        wright.feng@cypress.com, davem@davemloft.net,
-        stanley.hsu@cypress.com
-References: <20190823074708.20081-1-xulin.sun@windriver.com>
-From:   Arend Van Spriel <arend.vanspriel@broadcom.com>
-Message-ID: <894851e7-f057-4789-f9af-f098a968d713@broadcom.com>
-Date:   Fri, 23 Aug 2019 10:18:13 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2393068AbfHWIwa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 04:52:30 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:39038 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729690AbfHWIwa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 04:52:30 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 7B3CF8980F2;
+        Fri, 23 Aug 2019 08:52:30 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6734117D08;
+        Fri, 23 Aug 2019 08:52:29 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20190822.121207.731320146177703787.davem@davemloft.net>
+References: <20190822.121207.731320146177703787.davem@davemloft.net> <156647655350.10908.12081183247715153431.stgit@warthog.procyon.org.uk>
+To:     David Miller <davem@davemloft.net>
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 0/9] rxrpc: Fix use of skb_cow_data()
 MIME-Version: 1.0
-In-Reply-To: <20190823074708.20081-1-xulin.sun@windriver.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <27347.1566550348.1@warthog.procyon.org.uk>
+Date:   Fri, 23 Aug 2019 09:52:28 +0100
+Message-ID: <27348.1566550348@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.67]); Fri, 23 Aug 2019 08:52:30 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/23/2019 9:47 AM, Xulin Sun wrote:
-> The strncpy() may truncate the copied string,
-> replace it by the safer strscpy().
-> 
-> To avoid below compile warning with gcc 8.2:
-> 
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:In function 'brcmf_vndr_ie':
-> drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c:4227:2:
-> warning: 'strncpy' output truncated before terminating nul copying 3 bytes from a string of the same length [-Wstringop-truncation]
->    strncpy(iebuf, add_del_cmd, VNDR_IE_CMD_LEN - 1);
->    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+David Miller <davem@davemloft.net> wrote:
 
-Acked-by: Arend van Spriel <arend.vanspriel@broadcom.com>
-> Signed-off-by: Xulin Sun <xulin.sun@windriver.com>
-> ---
->   drivers/net/wireless/broadcom/brcm80211/brcmfmac/cfg80211.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
+> Why don't you just do an skb_unshare() at the beginning when you know that
+> you'll need to do that?
+
+I was trying to defer any copying to process context rather than doing it in
+softirq context to spend less time in softirq context - plus that way I can
+use GFP_NOIO (kafs) or GFP_KERNEL (direct AF_RXRPC socket) rather than
+GFP_ATOMIC if the api supports it.
+
+I don't remember now why I used skb_cow_data() rather than skb_unshare() - but
+it was probably because the former leaves the sk_buff object itself intact,
+whereas the latter replaces it.  I can switch to using skb_unshare() instead.
+
+Question for you: how likely is a newly received buffer, through a UDP socket,
+to be 'cloned'?
+
+David
