@@ -2,96 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FF9D9B55A
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 19:21:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A99F29B5CF
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 19:49:47 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388934AbfHWRUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 13:20:12 -0400
-Received: from mga11.intel.com ([192.55.52.93]:58706 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732886AbfHWRUM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 13:20:12 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Aug 2019 10:20:11 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,422,1559545200"; 
-   d="scan'208";a="379820434"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.145])
-  by fmsmga006.fm.intel.com with ESMTP; 23 Aug 2019 10:20:09 -0700
-Received: from andy by smile with local (Exim 4.92.1)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1i1DEN-0007xv-Fm; Fri, 23 Aug 2019 20:20:07 +0300
-Date:   Fri, 23 Aug 2019 20:20:07 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Sedat Dilek <sedat.dilek@credativ.de>
-Cc:     =?iso-8859-1?Q?Cl=E9ment?= Perrochaud 
-        <clement.perrochaud@effinnov.com>,
-        Charles Gorand <charles.gorand@effinnov.com>,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Subject: Re: [PATCH v4 00/14] NFC: nxp-nci: clean up and new device support
-Message-ID: <20190823172007.GW30120@smile.fi.intel.com>
-References: <20190729133514.13164-1-andriy.shevchenko@linux.intel.com>
- <892584913.468.1566336479573@ox.credativ.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <892584913.468.1566336479573@ox.credativ.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S2390006AbfHWRtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 13:49:32 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:42524 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725892AbfHWRtc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 13:49:32 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7NHiEpv067531;
+        Fri, 23 Aug 2019 17:49:18 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id; s=corp-2019-08-05;
+ bh=cxwR1HYssuE+tbGfNYguDdTe1V72+VLibJxc0ec4Q1I=;
+ b=cwIUBex5IlptCeGOvQPQXiRIqpufEMnXvGj82MnhZoq3msV9eTtSE1cUvAmhHicL9GhQ
+ JDyNA17ELZ4klloVS25gUBczZGSoPP9FzdUS5LDC9JnlezxptUmNpgE1EL9HstOi84BG
+ rSEMWWVggoOOTX3Oq4OTJ7yazzb4HCaSpVdBLVW2YtYluguHfkx/9Z1wivb1YWdrfMKD
+ /3OM/GwX4ulzvfgjMwvM/SwR6BUZhW84i2FlfX4HGZCDb1RXRyT70icag1GBgM+7AkC5
+ KvL9iS5xHyqHM0xqxGzPcyqfEx/jy/QhvcVafjhDrzZhLxHxxN4Bqg5i55/kSISvjSUi eA== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 2ue90u6aqs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 23 Aug 2019 17:49:18 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7NHhfeB102035;
+        Fri, 23 Aug 2019 17:49:17 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 2ujhvcerqk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 23 Aug 2019 17:49:17 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7NHnFSA031897;
+        Fri, 23 Aug 2019 17:49:16 GMT
+Received: from ak.ru.oracle.com (/10.162.80.29)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 23 Aug 2019 10:49:15 -0700
+From:   Alexey Kodanev <alexey.kodanev@oracle.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Alexey Kodanev <alexey.kodanev@oracle.com>
+Subject: [PATCH net] ipv4: mpls: fix mpls_xmit for iptunnel
+Date:   Fri, 23 Aug 2019 20:51:43 +0300
+Message-Id: <1566582703-26567-1-git-send-email-alexey.kodanev@oracle.com>
+X-Mailer: git-send-email 1.7.1
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9358 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1908230169
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9358 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=1 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908230169
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 20, 2019 at 11:27:59PM +0200, Sedat Dilek wrote:
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> hat am 29. Juli 2019 15:35 geschrieben:
+When using mpls over gre/gre6 setup, rt->rt_gw4 address is not set, the
+same for rt->rt_gw_family.  Therefore, when rt->rt_gw_family is checked
+in mpls_xmit(), neigh_xmit() call is skipped. As a result, such setup
+doesn't work anymore.
 
-> I gave that patchset v4 a try against Linux v5.3-rc5.
-> 
-> And played with neard and neard-tools v0.16-0.1 from Debian/buster AMD64.
-> 
-> # nfctool --list
-> 
-> # nfctool --enable --device=nfc0
-> 
-> # nfctool --list --device=nfc0
-> nfc0:
->           Tags: [ tag11 ]
->           Devices: [ ]
->           Protocols: [ Felica MIFARE Jewel ISO-DEP NFC-DEP ]
->           Powered: Yes
->           RF Mode: Initiator
->           lto: 0
->           rw: 0
->           miux: 0
-> 
-> # nfctool --device=nfc0 --poll=Both --sniff --dump-symm
-> Start sniffer on nfc0
-> 
-> Start polling on nfc0 as both initiator and target
-> 
-> Targets found for nfc0
->   Tags: [ tag11 ]
->   Devices: [ ]
-> 
-> But I see in the logs:
-> 
-> # journalctl -u neard.service -f
-> Aug 20 23:01:15 iniza neard[6158]: Error while reading NFC bytes
-> 
-> What does this error mean?
-> How can I get more informations?
-> Can you aid with debugging help?
+This issue was found with LTP mpls03 tests.
 
-Unfortunately I have no idea about user space tools.
-But I think neard has to be updated to match kernel somehow.
+Fixes: 1550c171935d ("ipv4: Prepare rtable for IPv6 gateway")
+Signed-off-by: Alexey Kodanev <alexey.kodanev@oracle.com>
+---
+ net/mpls/mpls_iptunnel.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
+diff --git a/net/mpls/mpls_iptunnel.c b/net/mpls/mpls_iptunnel.c
+index d25e91d..44b6750 100644
+--- a/net/mpls/mpls_iptunnel.c
++++ b/net/mpls/mpls_iptunnel.c
+@@ -133,12 +133,12 @@ static int mpls_xmit(struct sk_buff *skb)
+ 	mpls_stats_inc_outucastpkts(out_dev, skb);
+ 
+ 	if (rt) {
+-		if (rt->rt_gw_family == AF_INET)
+-			err = neigh_xmit(NEIGH_ARP_TABLE, out_dev, &rt->rt_gw4,
+-					 skb);
+-		else if (rt->rt_gw_family == AF_INET6)
++		if (rt->rt_gw_family == AF_INET6)
+ 			err = neigh_xmit(NEIGH_ND_TABLE, out_dev, &rt->rt_gw6,
+ 					 skb);
++		else
++			err = neigh_xmit(NEIGH_ARP_TABLE, out_dev, &rt->rt_gw4,
++					 skb);
+ 	} else if (rt6) {
+ 		if (ipv6_addr_v4mapped(&rt6->rt6i_gateway)) {
+ 			/* 6PE (RFC 4798) */
 -- 
-With Best Regards,
-Andy Shevchenko
-
+1.8.3.1
 
