@@ -2,104 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C766C9B1A0
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 16:08:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E8F8E9B1D8
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 16:24:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388772AbfHWOIj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 10:08:39 -0400
-Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:50141 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389796AbfHWOIi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 10:08:38 -0400
-Received: from [192.168.1.41] ([90.126.160.115])
-        by mwinf5d06 with ME
-        id se8M200092Vh0YS03e8M18; Fri, 23 Aug 2019 16:08:36 +0200
-X-ME-Helo: [192.168.1.41]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 23 Aug 2019 16:08:36 +0200
-X-ME-IP: 90.126.160.115
-Subject: =?UTF-8?Q?Re=3a_=5bPATCH=5d_ethernet=3a_Delete_unnecessary_checks_b?=
- =?UTF-8?Q?efore_the_macro_call_=e2=80=9cdev=5fkfree=5fskb=e2=80=9d?=
-To:     Markus Elfring <Markus.Elfring@web.de>, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        intel-wired-lan@lists.osuosl.org,
-        bcm-kernel-feedback-list@broadcom.com,
-        UNGLinuxDriver@microchip.com,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Doug Berger <opendmb@gmail.com>,
-        Douglas Miller <dougmill@linux.ibm.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        Jilayne Lovejoy <opensource@jilayne.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        Kate Stewart <kstewart@linuxfoundation.org>
-Cc:     kernel-janitors@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-References: <af1ae1cf-4a01-5e3a-edc2-058668487137@web.de>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <4ab7f2a5-f472-f462-9d4c-7c8d5237c44e@wanadoo.fr>
-Date:   Fri, 23 Aug 2019 16:08:20 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2395203AbfHWOYh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 10:24:37 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:35281 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732212AbfHWOYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 10:24:36 -0400
+Received: by mail-pl1-f194.google.com with SMTP id gn20so5676996plb.2
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 07:24:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version;
+        bh=Dx4OxjkwIl1OkvlS3GG0aUCR5vpj/3I3WD3unWVJozI=;
+        b=QE2pl+nQhBqrVeM8gAu7UeSEDnTI1NwB9swwrM3nSJHFgiUGpritQ2NCXSHU97Vbvf
+         grbZ1kpEHw+WeFf+O1FuAaCtgR/mmm/lhMHvrai5+eQTuh1KgZQReqTg2goHUncXGaiE
+         7gh+nZ3GGB08/szj3oWascc1gC+dLx21yaTmrWLmLFS8m/uA4i9ILKb5+y41vE35fRZb
+         dklPPj015dIdp1mO02vUD8VaeHL8NZYTDAVnUmi1AgDmqB8rLhOBrE6UH0wfEf3zwWHf
+         DYDu5UTh7X1PzpJECyWIbRqkZQlQNoYO8RQNufKByXjpPUXwvmksKhsgYDBKwJM9iZgt
+         N86A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version;
+        bh=Dx4OxjkwIl1OkvlS3GG0aUCR5vpj/3I3WD3unWVJozI=;
+        b=VOPYNn8EruV9u8IUh1iVxoLNdv2js5oEYoEH8/sbADcjAcMz5SVpgudEUmfiTjFPmd
+         xPGydGqxOppbfubZI0mAcx2qRrSdNfH1O8KlYxAP+zFS469KDJJ+MojXITXmDa0QUGQF
+         8ERhtDDJkCzmi46k8zHDmEYesgzw/hdUPIx0K+d5NOKlRMxfO8mAG5kA9gZplSi/tz51
+         IpNRWbcHYVCfWmP18jJGJBTIlE3kBOXUCuWIqWZ+B9ix4gr3+WmWxrLk8fJe+pdaMVvd
+         84kUAQMJHWmdFCL+gituNA8nUKUEbreNRYXa2AzaDVg/z/CN9pOvF5gzgDFO4iTgh6ia
+         spWQ==
+X-Gm-Message-State: APjAAAUP41W2hG/dSTwJfmnkO03jrvrQPMMdLoqkoZ2cQPlBuCdChG/O
+        EYSMAJqRpZawOz7fnvWAqx12UN0V
+X-Google-Smtp-Source: APXvYqwVRGfIYj2QMndJPNGqUKhMvQvLKeld3KsFnY8LZZ91bk++q9HRaY6qe9L+1do9OHRUIcjVmg==
+X-Received: by 2002:a17:902:a981:: with SMTP id bh1mr4197269plb.236.1566570276310;
+        Fri, 23 Aug 2019 07:24:36 -0700 (PDT)
+Received: from [172.26.99.184] ([2620:10d:c090:180::b6f7])
+        by smtp.gmail.com with ESMTPSA id ev3sm17073026pjb.3.2019.08.23.07.24.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 23 Aug 2019 07:24:35 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "Michael Chan" <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        kernel-team <kernel-team@fb.com>
+Subject: Re: [PATCH net-next] bnxt_en: Fix allocation of zero statistics block
+ size regression.
+Date:   Fri, 23 Aug 2019 07:24:34 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <DDE3237E-CABF-4417-AB26-3623A7CEF9DE@gmail.com>
+In-Reply-To: <1566539501-5884-1-git-send-email-michael.chan@broadcom.com>
+References: <1566539501-5884-1-git-send-email-michael.chan@broadcom.com>
 MIME-Version: 1.0
-In-Reply-To: <af1ae1cf-4a01-5e3a-edc2-058668487137@web.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; format=flowed
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
-
-in this patch, there is one piece that looked better before. (see below)
-
-Removing the 'if (skb)' is fine, but concatening everything in one 
-statement just to save 2 variables and a few LOC is of no use, IMHO, and 
-the code is less readable.
-
-just my 2c.
 
 
-CJ
+On 22 Aug 2019, at 22:51, Michael Chan wrote:
 
+> Recent commit added logic to determine the appropriate statistics 
+> block
+> size to allocate and the size is stored in bp->hw_ring_stats_size.  
+> But
+> if the firmware spec is older than 1.6.0, it is 0 and not initialized.
+> This causes the allocation to fail with size 0 and bnxt_open() to
+> abort.  Fix it by always initializing bp->hw_ring_stats_size to the
+> legacy default size value.
+>
+> Fixes: 4e7485066373 ("bnxt_en: Allocate the larger per-ring statistics 
+> block for 57500 chips.")
+> Reported-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+> Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 
-diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c 
-b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-index d3a0b614dbfa..8b19ddcdafaa 100644
---- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-+++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
-@@ -2515,19 +2515,14 @@ static int bcmgenet_dma_teardown(struct 
-bcmgenet_priv *priv)
-  static void bcmgenet_fini_dma(struct bcmgenet_priv *priv)
-  {
-      struct netdev_queue *txq;
--    struct sk_buff *skb;
--    struct enet_cb *cb;
-      int i;
+Tested-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
 
-      bcmgenet_fini_rx_napi(priv);
-      bcmgenet_fini_tx_napi(priv);
-
--    for (i = 0; i < priv->num_tx_bds; i++) {
--        cb = priv->tx_cbs + i;
--        skb = bcmgenet_free_tx_cb(&priv->pdev->dev, cb);
--        if (skb)
--            dev_kfree_skb(skb);
--    }
-+    for (i = 0; i < priv->num_tx_bds; i++)
-+ dev_kfree_skb(bcmgenet_free_tx_cb(&priv->pdev->dev,
-+                          priv->tx_cbs + i));
-
-      for (i = 0; i < priv->hw_params->tx_queues; i++) {
-          txq = netdev_get_tx_queue(priv->dev, priv->tx_rings[i].queue);
+Thanks, Michael!
+-- 
+Jonathan
