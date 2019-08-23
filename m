@@ -2,357 +2,452 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3099B2F4
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 17:05:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 868CD9B334
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 17:19:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404259AbfHWPFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 11:05:00 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:40235 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732536AbfHWPE7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 11:04:59 -0400
-Received: by mail-wm1-f68.google.com with SMTP id c5so9239099wmb.5
-        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 08:04:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=rXnbni6c0FqervHLQjVDYzcPdBs9h1nChjxoCIlbIe0=;
-        b=MbYUeuD5zO5vO7IYAGDpmT7euxKuwnxRTz19wEJ4MssCWHEL6LcELuviRBVfPmzrUO
-         XmiCJEV4AANhNk7uwW+GWIUljon2pmaYDobX2F3/42yWZ0eZFxnwLEqRom4M0TryePov
-         eh0VjBnYMnW0h8qq22gMSAkAT/7zJU6PQj4TwrYMLnpM4ZANFdPX8BSoUHLPjYnhO1W7
-         63Vkeu2CA68Yh3g7vWB+c+tMNfopIZ7m3MZkMKNRGiK8wL22fc/A55AhNC9Ijbo14KV8
-         xUM9cAE+Bk97qPK6zoXhj1jn2zsgQNKeUj25QAYQ+dLoxS+shubazAtet5XEzTse3rS/
-         iiFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=rXnbni6c0FqervHLQjVDYzcPdBs9h1nChjxoCIlbIe0=;
-        b=qOuFhnev0ayxNHeGrYi1ECI+RQ+0bRZqnaiuWVo9/3xb4mX91NLGXEWAuO1nNcaHnY
-         u+0iJP7neauOKIwc6ZKvPmTe27IrSUmuQmO+q3+SU2iGH7U5LP0H4YUaFPcM/wmd4HMB
-         Jr7wETb0fVPsNw8trIXgD45oA5ccyGEQRQKh9hVaRJWLt7Mh91b8Raa6Ks0PmFVWUpPP
-         wZOoutwcV/wL1tW+vSBMukvoQQ/XGT4RRuhnM9Hwzgd4cte4BivASbYHkJEOatz3u8Wr
-         W0AyRzloT7V4SJLQu7fEAkfoBcWHdgFftXwm4vBaZodhRStfo9E5jJBrD8H03Sk/FhwV
-         kHzg==
-X-Gm-Message-State: APjAAAXwzwY4g2IPnnTqBOtU/q3zPbT8PmYsyNpUDKSw1mm8nmjX9Jki
-        EXs8kUL/4NTfAHDbRmNdDi/6eQ==
-X-Google-Smtp-Source: APXvYqyeqkOQN0dDXD7NvUs1qs7zNcW/1GBy+aZRWA/tvlhwLbwLJcvFjpd9q2tV42uhQ942nqg0Dw==
-X-Received: by 2002:a7b:cb89:: with SMTP id m9mr6179552wmi.154.1566572695894;
-        Fri, 23 Aug 2019 08:04:55 -0700 (PDT)
-Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id m188sm5920730wmm.32.2019.08.23.08.04.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Aug 2019 08:04:55 -0700 (PDT)
-Date:   Fri, 23 Aug 2019 17:04:54 +0200
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Alex Williamson <alex.williamson@redhat.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        cjia <cjia@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Message-ID: <20190823150454.GM2276@nanopsycho.orion>
-References: <20190822092903.GA2276@nanopsycho.orion>
- <AM0PR05MB4866A20F831A5D42E6C79EFED1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190822095823.GB2276@nanopsycho.orion>
- <AM0PR05MB4866144FD76C302D04DA04B9D1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190822121936.GC2276@nanopsycho.orion>
- <AM0PR05MB4866F9650CF73FC671972127D1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190823081221.GG2276@nanopsycho.orion>
- <AM0PR05MB4866DED407D6F1C653D5D560D1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190823082820.605deb07@x1.home>
- <AM0PR05MB4866867150DAABA422F25FF8D1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM0PR05MB4866867150DAABA422F25FF8D1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        id S2394286AbfHWPTp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 11:19:45 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:47978 "EHLO inva021.nxp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390470AbfHWPTo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 11:19:44 -0400
+Received: from inva021.nxp.com (localhost [127.0.0.1])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 90B2A200740;
+        Fri, 23 Aug 2019 17:19:40 +0200 (CEST)
+Received: from inva024.eu-rdc02.nxp.com (inva024.eu-rdc02.nxp.com [134.27.226.22])
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 81942200159;
+        Fri, 23 Aug 2019 17:19:40 +0200 (CEST)
+Received: from fsr-ub1664-019.ea.freescale.net (fsr-ub1664-019.ea.freescale.net [10.171.71.230])
+        by inva024.eu-rdc02.nxp.com (Postfix) with ESMTP id 48F51205D9;
+        Fri, 23 Aug 2019 17:19:40 +0200 (CEST)
+From:   Ioana Radulescu <ruxandra.radulescu@nxp.com>
+To:     netdev@vger.kernel.org, davem@davemloft.net
+Cc:     ioana.ciornei@nxp.com
+Subject: [PATCH net-next] dpaa2-eth: Add pause frame support
+Date:   Fri, 23 Aug 2019 18:19:39 +0300
+Message-Id: <1566573579-9940-1-git-send-email-ruxandra.radulescu@nxp.com>
+X-Mailer: git-send-email 2.7.4
+X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Aug 23, 2019 at 04:53:06PM CEST, parav@mellanox.com wrote:
->
->
->> -----Original Message-----
->> From: Alex Williamson <alex.williamson@redhat.com>
->> Sent: Friday, August 23, 2019 7:58 PM
->> To: Parav Pandit <parav@mellanox.com>
->> Cc: Jiri Pirko <jiri@resnulli.us>; Jiri Pirko <jiri@mellanox.com>; David S . Miller
->> <davem@davemloft.net>; Kirti Wankhede <kwankhede@nvidia.com>; Cornelia
->> Huck <cohuck@redhat.com>; kvm@vger.kernel.org; linux-
->> kernel@vger.kernel.org; cjia <cjia@nvidia.com>; netdev@vger.kernel.org
->> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
->> 
->> On Fri, 23 Aug 2019 08:14:39 +0000
->> Parav Pandit <parav@mellanox.com> wrote:
->> 
->> > Hi Alex,
->> >
->> >
->> > > -----Original Message-----
->> > > From: Jiri Pirko <jiri@resnulli.us>
->> > > Sent: Friday, August 23, 2019 1:42 PM
->> > > To: Parav Pandit <parav@mellanox.com>
->> > > Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri Pirko
->> > > <jiri@mellanox.com>; David S . Miller <davem@davemloft.net>; Kirti
->> > > Wankhede <kwankhede@nvidia.com>; Cornelia Huck
->> <cohuck@redhat.com>;
->> > > kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
->> > > <cjia@nvidia.com>; netdev@vger.kernel.org
->> > > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
->> > >
->> > > Thu, Aug 22, 2019 at 03:33:30PM CEST, parav@mellanox.com wrote:
->> > > >
->> > > >
->> > > >> -----Original Message-----
->> > > >> From: Jiri Pirko <jiri@resnulli.us>
->> > > >> Sent: Thursday, August 22, 2019 5:50 PM
->> > > >> To: Parav Pandit <parav@mellanox.com>
->> > > >> Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri Pirko
->> > > >> <jiri@mellanox.com>; David S . Miller <davem@davemloft.net>;
->> > > >> Kirti Wankhede <kwankhede@nvidia.com>; Cornelia Huck
->> > > <cohuck@redhat.com>;
->> > > >> kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
->> > > >> <cjia@nvidia.com>; netdev@vger.kernel.org
->> > > >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
->> > > >>
->> > > >> Thu, Aug 22, 2019 at 12:04:02PM CEST, parav@mellanox.com wrote:
->> > > >> >
->> > > >> >
->> > > >> >> -----Original Message-----
->> > > >> >> From: Jiri Pirko <jiri@resnulli.us>
->> > > >> >> Sent: Thursday, August 22, 2019 3:28 PM
->> > > >> >> To: Parav Pandit <parav@mellanox.com>
->> > > >> >> Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri Pirko
->> > > >> >> <jiri@mellanox.com>; David S . Miller <davem@davemloft.net>;
->> > > >> >> Kirti Wankhede <kwankhede@nvidia.com>; Cornelia Huck
->> > > >> <cohuck@redhat.com>;
->> > > >> >> kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
->> > > >> >> <cjia@nvidia.com>; netdev@vger.kernel.org
->> > > >> >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
->> > > >> >>
->> > > >> >> Thu, Aug 22, 2019 at 11:42:13AM CEST, parav@mellanox.com wrote:
->> > > >> >> >
->> > > >> >> >
->> > > >> >> >> -----Original Message-----
->> > > >> >> >> From: Jiri Pirko <jiri@resnulli.us>
->> > > >> >> >> Sent: Thursday, August 22, 2019 2:59 PM
->> > > >> >> >> To: Parav Pandit <parav@mellanox.com>
->> > > >> >> >> Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri
->> > > >> >> >> Pirko <jiri@mellanox.com>; David S . Miller
->> > > >> >> >> <davem@davemloft.net>; Kirti Wankhede
->> > > >> >> >> <kwankhede@nvidia.com>; Cornelia Huck
->> > > >> >> <cohuck@redhat.com>;
->> > > >> >> >> kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
->> > > >> >> >> <cjia@nvidia.com>; netdev@vger.kernel.org
->> > > >> >> >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev
->> > > >> >> >> core
->> > > >> >> >>
->> > > >> >> >> Wed, Aug 21, 2019 at 08:23:17AM CEST, parav@mellanox.com
->> wrote:
->> > > >> >> >> >
->> > > >> >> >> >
->> > > >> >> >> >> -----Original Message-----
->> > > >> >> >> >> From: Alex Williamson <alex.williamson@redhat.com>
->> > > >> >> >> >> Sent: Wednesday, August 21, 2019 10:56 AM
->> > > >> >> >> >> To: Parav Pandit <parav@mellanox.com>
->> > > >> >> >> >> Cc: Jiri Pirko <jiri@mellanox.com>; David S . Miller
->> > > >> >> >> >> <davem@davemloft.net>; Kirti Wankhede
->> > > >> >> >> >> <kwankhede@nvidia.com>; Cornelia Huck
->> > > >> >> >> >> <cohuck@redhat.com>; kvm@vger.kernel.org;
->> > > >> >> >> >> linux-kernel@vger.kernel.org; cjia <cjia@nvidia.com>;
->> > > >> >> >> >> netdev@vger.kernel.org
->> > > >> >> >> >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and
->> > > >> >> >> >> mdev core
->> > > >> >> >> >>
->> > > >> >> >> >> > > > > Just an example of the alias, not proposing how it's set.
->> > > >> >> >> >> > > > > In fact, proposing that the user does not set
->> > > >> >> >> >> > > > > it, mdev-core provides one
->> > > >> >> >> >> > > automatically.
->> > > >> >> >> >> > > > >
->> > > >> >> >> >> > > > > > > Since there seems to be some prefix
->> > > >> >> >> >> > > > > > > overhead, as I ask about above in how many
->> > > >> >> >> >> > > > > > > characters we actually have to work with in
->> > > >> >> >> >> > > > > > > IFNAMESZ, maybe we start with
->> > > >> >> >> >> > > > > > > 8 characters (matching your "index"
->> > > >> >> >> >> > > > > > > namespace) and expand as necessary for
->> > > >> >> >> disambiguation.
->> > > >> >> >> >> > > > > > > If we can eliminate overhead in IFNAMESZ,
->> > > >> >> >> >> > > > > > > let's start with
->> > > >> 12.
->> > > >> >> >> >> > > > > > > Thanks,
->> > > >> >> >> >> > > > > > >
->> > > >> >> >> >> > > > > > If user is going to choose the alias, why does
->> > > >> >> >> >> > > > > > it have to be limited to
->> > > >> >> >> >> sha1?
->> > > >> >> >> >> > > > > > Or you just told it as an example?
->> > > >> >> >> >> > > > > >
->> > > >> >> >> >> > > > > > It can be an alpha-numeric string.
->> > > >> >> >> >> > > > >
->> > > >> >> >> >> > > > > No, I'm proposing a different solution where
->> > > >> >> >> >> > > > > mdev-core creates an alias based on an
->> > > >> >> >> >> > > > > abbreviated sha1.  The user does not provide the
->> > > >> >> >> >> alias.
->> > > >> >> >> >> > > > >
->> > > >> >> >> >> > > > > > Instead of mdev imposing number of characters
->> > > >> >> >> >> > > > > > on the alias, it should be best
->> > > >> >> >> >> > > > > left to the user.
->> > > >> >> >> >> > > > > > Because in future if netdev improves on the
->> > > >> >> >> >> > > > > > naming scheme, mdev will be
->> > > >> >> >> >> > > > > limiting it, which is not right.
->> > > >> >> >> >> > > > > > So not restricting alias size seems right to me.
->> > > >> >> >> >> > > > > > User configuring mdev for networking devices
->> > > >> >> >> >> > > > > > in a given kernel knows what
->> > > >> >> >> >> > > > > user is doing.
->> > > >> >> >> >> > > > > > So user can choose alias name size as it finds suitable.
->> > > >> >> >> >> > > > >
->> > > >> >> >> >> > > > > That's not what I'm proposing, please read again.
->> > > >> >> >> >> > > > > Thanks,
->> > > >> >> >> >> > > >
->> > > >> >> >> >> > > > I understood your point. But mdev doesn't know how
->> > > >> >> >> >> > > > user is going to use
->> > > >> >> >> >> > > udev/systemd to name the netdev.
->> > > >> >> >> >> > > > So even if mdev chose to pick 12 characters, it
->> > > >> >> >> >> > > > could result in
->> > > >> >> collision.
->> > > >> >> >> >> > > > Hence the proposal to provide the alias by the
->> > > >> >> >> >> > > > user, as user know the best
->> > > >> >> >> >> > > policy for its use case in the environment its using.
->> > > >> >> >> >> > > > So 12 character sha1 method will still work by user.
->> > > >> >> >> >> > >
->> > > >> >> >> >> > > Haven't you already provided examples where certain
->> > > >> >> >> >> > > drivers or subsystems have unique netdev prefixes?
->> > > >> >> >> >> > > If mdev provides a unique alias within the
->> > > >> >> >> >> > > subsystem, couldn't we simply define a netdev prefix
->> > > >> >> >> >> > > for the mdev subsystem and avoid all other
->> > > >> >> >> >> > > collisions?  I'm not in favor of the user providing
->> > > >> >> >> >> > > both a uuid and an alias/instance.  Thanks,
->> > > >> >> >> >> > >
->> > > >> >> >> >> > For a given prefix, say ens2f0, can two UUID->sha1
->> > > >> >> >> >> > first 9 characters have
->> > > >> >> >> >> collision?
->> > > >> >> >> >>
->> > > >> >> >> >> I think it would be a mistake to waste so many chars on
->> > > >> >> >> >> a prefix, but
->> > > >> >> >> >> 9 characters of sha1 likely wouldn't have a collision
->> > > >> >> >> >> before we have 10s of thousands of devices.  Thanks,
->> > > >> >> >> >>
->> > > >> >> >> >> Alex
->> > > >> >> >> >
->> > > >> >> >> >Jiri, Dave,
->> > > >> >> >> >Are you ok with it for devlink/netdev part?
->> > > >> >> >> >Mdev core will create an alias from a UUID.
->> > > >> >> >> >
->> > > >> >> >> >This will be supplied during devlink port attr set such
->> > > >> >> >> >as,
->> > > >> >> >> >
->> > > >> >> >> >devlink_port_attrs_mdev_set(struct devlink_port *port,
->> > > >> >> >> >const char *mdev_alias);
->> > > >> >> >> >
->> > > >> >> >> >This alias is used to generate representor netdev's
->> phys_port_name.
->> > > >> >> >> >This alias from the mdev device's sysfs will be used by
->> > > >> >> >> >the udev/systemd to
->> > > >> >> >> generate predicable netdev's name.
->> > > >> >> >> >Example: enm<mdev_alias_first_12_chars>
->> > > >> >> >>
->> > > >> >> >> What happens in unlikely case of 2 UUIDs collide?
->> > > >> >> >>
->> > > >> >> >Since users sees two devices with same phys_port_name, user
->> > > >> >> >should destroy
->> > > >> >> recently created mdev and recreate mdev with different UUID?
->> > > >> >>
->> > > >> >> Driver should make sure phys port name wont collide,
->> > > >> >So when mdev creation is initiated, mdev core calculates the
->> > > >> >alias and if there
->> > > >> is any other mdev with same alias exist, it returns -EEXIST error
->> > > >> before progressing further.
->> > > >> >This way user will get to know upfront in event of collision
->> > > >> >before the mdev
->> > > >> device gets created.
->> > > >> >How about that?
->> > > >>
->> > > >> Sounds fine to me. Now the question is how many chars do we want to
->> have.
->> > > >>
->> > > >12 characters from Alex's suggestion similar to git?
->> > >
->> > > Ok.
->> > >
->> >
->> > Can you please confirm this scheme looks good now? I like to get patches
->> started.
->> 
->> My only concern is your comment that in the event of an abbreviated
->> sha1 collision (as exceptionally rare as that might be at 12-chars), we'd fail the
->> device create, while my original suggestion was that vfio-core would add an
->> extra character to the alias.  For non-networking devices, the sha1 is
->> unnecessary, so the extension behavior seems preferred.  The user is only
->> responsible to provide a unique uuid.  Perhaps the failure behavior could be
->> applied based on the mdev device_api.  A module option on mdev to specify the
->> default number of alias chars would also be useful for testing so that we can set
->> it low enough to validate the collision behavior.  Thanks,
->> 
->
->Idea is to have mdev alias as optional.
->Each mdev_parent says whether it wants mdev_core to generate an alias or not.
->So only networking device drivers would set it to true.
->For rest, alias won't be generated, and won't be compared either during creation time.
->User continue to provide only uuid.
->I am tempted to have alias collision detection only within children mdevs of the same parent, but doing so will always mandate to prefix in netdev name.
->And currently we are left with only 3 characters to prefix it, so that may not be good either.
->Hence, I think mdev core wide alias is better with 12 characters.
->
->I do not understand how an extra character reduces collision, if that's what you meant.
+Starting with firmware version MC10.18.0, we have support for
+L2 flow control. Asymmetrical configuration (Rx or Tx only) is
+supported, but not pause frame autonegotioation.
 
-Also, that breaks the naming consistency for different creation order.
+The hardware can automatically send pause frames when the number
+of buffers in the pool goes below a predefined threshold. Due to
+this, flow control is incompatible with Rx frame queue taildrop
+(both mechanisms target the case when processing of ingress
+frames can't keep up with the Rx rate; for large frames, the number
+of buffers in the pool may never get low enough to trigger pause
+frames as long as taildrop is enabled). So we set pause frame
+generation and Rx FQ taildrop as mutually exclusive.
 
+Pause frame configuration is done via ethtool. By default, we start
+with flow control enabled on both Rx and Tx. Changes are propagated
+to hardware through firmware commands; current FC state is stored
+in the driver and we only interrogate the firmware when we receive
+a notification that something (flow control or other link options)
+has changed.
 
->Module options are almost not encouraged anymore with other subsystems/drivers.
->
->For testing collision rate, a sample user space script and sample mtty is easy and get us collision count too.
->We shouldn't put that using module option in production kernel.
->I practically have the code ready to play with; Changing 12 to smaller value is easy with module reload.
->
->#define MDEV_ALIAS_LEN 12
->
->> Alex
->> 
->> > > >> >> in this case that it does
->> > > >> >> not provide 2 same attrs for 2 different ports.
->> > > >> >> Hmm, so the order of creation matters. That is not good.
->> > > >> >>
->> > > >> >> >>
->> > > >> >> >> >I took Ethernet mdev as an example.
->> > > >> >> >> >New prefix 'm' stands for mediated device.
->> > > >> >> >> >Remaining 12 characters are first 12 chars of the mdev alias.
->> > > >> >> >>
->> > > >> >> >> Does this resolve the identification of devlink port representor?
->> > > >> >> >Not sure if I understood your question correctly, attemping
->> > > >> >> >to answer
->> > > >> below.
->> > > >> >> >phys_port_name of devlink port is defined by the first 12
->> > > >> >> >characters of mdev
->> > > >> >> alias.
->> > > >> >> >> I assume you want to use the same 12(or so) chars, don't you?
->> > > >> >> >Mdev's netdev will also use the same mdev alias from the
->> > > >> >> >sysfs to rename
->> > > >> >> netdev name from ethX to enm<mdev_alias>, where en=Etherenet,
->> > > >> m=mdev.
->> > > >> >> >
->> > > >> >> >So yes, same 12 characters are use for mdev's netdev and mdev
->> > > >> >> >devlink port's
->> > > >> >> phys_port_name.
->> > > >> >> >
->> > > >> >> >Is that what are you asking?
->> > > >> >>
->> > > >> >> Yes. Then you have 3 chars to handle the rest of the name (pci, pf)...
->
+Signed-off-by: Ioana Radulescu <ruxandra.radulescu@nxp.com>
+---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c   | 85 +++++++++++++++++++---
+ drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h   |  7 ++
+ .../net/ethernet/freescale/dpaa2/dpaa2-ethtool.c   | 74 +++++++++++++++----
+ drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h    |  3 +-
+ drivers/net/ethernet/freescale/dpaa2/dpni.c        | 40 +++++++++-
+ drivers/net/ethernet/freescale/dpaa2/dpni.h        |  5 ++
+ 6 files changed, 186 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+index 0acb115..e0816d6 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.c
+@@ -1208,9 +1208,37 @@ static void disable_ch_napi(struct dpaa2_eth_priv *priv)
+ 	}
+ }
+ 
++static void dpaa2_eth_set_rx_taildrop(struct dpaa2_eth_priv *priv, bool enable)
++{
++	struct dpni_taildrop td = {0};
++	int i, err;
++
++	if (priv->rx_td_enabled == enable)
++		return;
++
++	td.enable = enable;
++	td.threshold = DPAA2_ETH_TAILDROP_THRESH;
++
++	for (i = 0; i < priv->num_fqs; i++) {
++		if (priv->fq[i].type != DPAA2_RX_FQ)
++			continue;
++		err = dpni_set_taildrop(priv->mc_io, 0, priv->mc_token,
++					DPNI_CP_QUEUE, DPNI_QUEUE_RX, 0,
++					priv->fq[i].flowid, &td);
++		if (err) {
++			netdev_err(priv->net_dev,
++				   "dpni_set_taildrop() failed\n");
++			break;
++		}
++	}
++
++	priv->rx_td_enabled = enable;
++}
++
+ static int link_state_update(struct dpaa2_eth_priv *priv)
+ {
+ 	struct dpni_link_state state = {0};
++	bool tx_pause;
+ 	int err;
+ 
+ 	err = dpni_get_link_state(priv->mc_io, 0, priv->mc_token, &state);
+@@ -1220,11 +1248,18 @@ static int link_state_update(struct dpaa2_eth_priv *priv)
+ 		return err;
+ 	}
+ 
++	/* If Tx pause frame settings have changed, we need to update
++	 * Rx FQ taildrop configuration as well. We configure taildrop
++	 * only when pause frame generation is disabled.
++	 */
++	tx_pause = !!(state.options & DPNI_LINK_OPT_PAUSE) ^
++		   !!(state.options & DPNI_LINK_OPT_ASYM_PAUSE);
++	dpaa2_eth_set_rx_taildrop(priv, !tx_pause);
++
+ 	/* Chech link state; speed / duplex changes are not treated yet */
+ 	if (priv->link_state.up == state.up)
+-		return 0;
++		goto out;
+ 
+-	priv->link_state = state;
+ 	if (state.up) {
+ 		netif_carrier_on(priv->net_dev);
+ 		netif_tx_start_all_queues(priv->net_dev);
+@@ -1236,6 +1271,9 @@ static int link_state_update(struct dpaa2_eth_priv *priv)
+ 	netdev_info(priv->net_dev, "Link Event: state %s\n",
+ 		    state.up ? "up" : "down");
+ 
++out:
++	priv->link_state = state;
++
+ 	return 0;
+ }
+ 
+@@ -2443,6 +2481,32 @@ static void set_enqueue_mode(struct dpaa2_eth_priv *priv)
+ 		priv->enqueue = dpaa2_eth_enqueue_fq;
+ }
+ 
++static int set_pause(struct dpaa2_eth_priv *priv)
++{
++	struct device *dev = priv->net_dev->dev.parent;
++	struct dpni_link_cfg link_cfg = {0};
++	int err;
++
++	/* Get the default link options so we don't override other flags */
++	err = dpni_get_link_cfg(priv->mc_io, 0, priv->mc_token, &link_cfg);
++	if (err) {
++		dev_err(dev, "dpni_get_link_cfg() failed\n");
++		return err;
++	}
++
++	link_cfg.options |= DPNI_LINK_OPT_PAUSE;
++	link_cfg.options &= ~DPNI_LINK_OPT_ASYM_PAUSE;
++	err = dpni_set_link_cfg(priv->mc_io, 0, priv->mc_token, &link_cfg);
++	if (err) {
++		dev_err(dev, "dpni_set_link_cfg() failed\n");
++		return err;
++	}
++
++	priv->link_state.options = link_cfg.options;
++
++	return 0;
++}
++
+ /* Configure the DPNI object this interface is associated with */
+ static int setup_dpni(struct fsl_mc_device *ls_dev)
+ {
+@@ -2498,6 +2562,13 @@ static int setup_dpni(struct fsl_mc_device *ls_dev)
+ 
+ 	set_enqueue_mode(priv);
+ 
++	/* Enable pause frame support */
++	if (dpaa2_eth_has_pause_support(priv)) {
++		err = set_pause(priv);
++		if (err)
++			goto close;
++	}
++
+ 	priv->cls_rules = devm_kzalloc(dev, sizeof(struct dpaa2_eth_cls_rule) *
+ 				       dpaa2_eth_fs_count(priv), GFP_KERNEL);
+ 	if (!priv->cls_rules)
+@@ -2529,7 +2600,6 @@ static int setup_rx_flow(struct dpaa2_eth_priv *priv,
+ 	struct device *dev = priv->net_dev->dev.parent;
+ 	struct dpni_queue queue;
+ 	struct dpni_queue_id qid;
+-	struct dpni_taildrop td;
+ 	int err;
+ 
+ 	err = dpni_get_queue(priv->mc_io, 0, priv->mc_token,
+@@ -2554,15 +2624,6 @@ static int setup_rx_flow(struct dpaa2_eth_priv *priv,
+ 		return err;
+ 	}
+ 
+-	td.enable = 1;
+-	td.threshold = DPAA2_ETH_TAILDROP_THRESH;
+-	err = dpni_set_taildrop(priv->mc_io, 0, priv->mc_token, DPNI_CP_QUEUE,
+-				DPNI_QUEUE_RX, 0, fq->flowid, &td);
+-	if (err) {
+-		dev_err(dev, "dpni_set_threshold() failed\n");
+-		return err;
+-	}
+-
+ 	/* xdp_rxq setup */
+ 	err = xdp_rxq_info_reg(&fq->channel->xdp_rxq, priv->net_dev,
+ 			       fq->flowid);
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+index 9af18c2..8a0e65b 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-eth.h
+@@ -392,6 +392,7 @@ struct dpaa2_eth_priv {
+ 	struct dpaa2_eth_drv_stats __percpu *percpu_extras;
+ 
+ 	u16 mc_token;
++	u8 rx_td_enabled;
+ 
+ 	struct dpni_link_state link_state;
+ 	bool do_link_poll;
+@@ -476,6 +477,12 @@ enum dpaa2_eth_rx_dist {
+ #define DPAA2_ETH_DIST_L4DST		BIT(8)
+ #define DPAA2_ETH_DIST_ALL		(~0ULL)
+ 
++#define DPNI_PAUSE_VER_MAJOR		7
++#define DPNI_PAUSE_VER_MINOR		13
++#define dpaa2_eth_has_pause_support(priv)			\
++	(dpaa2_eth_cmp_dpni_ver((priv), DPNI_PAUSE_VER_MAJOR,	\
++				DPNI_PAUSE_VER_MINOR) >= 0)
++
+ static inline
+ unsigned int dpaa2_eth_needed_headroom(struct dpaa2_eth_priv *priv,
+ 				       struct sk_buff *skb)
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+index 7b182f4..7000638 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
+@@ -78,29 +78,20 @@ static int
+ dpaa2_eth_get_link_ksettings(struct net_device *net_dev,
+ 			     struct ethtool_link_ksettings *link_settings)
+ {
+-	struct dpni_link_state state = {0};
+-	int err = 0;
+ 	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
+ 
+-	err = dpni_get_link_state(priv->mc_io, 0, priv->mc_token, &state);
+-	if (err) {
+-		netdev_err(net_dev, "ERROR %d getting link state\n", err);
+-		goto out;
+-	}
+-
+ 	/* At the moment, we have no way of interrogating the DPMAC
+ 	 * from the DPNI side - and for that matter there may exist
+ 	 * no DPMAC at all. So for now we just don't report anything
+ 	 * beyond the DPNI attributes.
+ 	 */
+-	if (state.options & DPNI_LINK_OPT_AUTONEG)
++	if (priv->link_state.options & DPNI_LINK_OPT_AUTONEG)
+ 		link_settings->base.autoneg = AUTONEG_ENABLE;
+-	if (!(state.options & DPNI_LINK_OPT_HALF_DUPLEX))
++	if (!(priv->link_state.options & DPNI_LINK_OPT_HALF_DUPLEX))
+ 		link_settings->base.duplex = DUPLEX_FULL;
+-	link_settings->base.speed = state.rate;
++	link_settings->base.speed = priv->link_state.rate;
+ 
+-out:
+-	return err;
++	return 0;
+ }
+ 
+ #define DPNI_DYNAMIC_LINK_SET_VER_MAJOR		7
+@@ -125,6 +116,9 @@ dpaa2_eth_set_link_ksettings(struct net_device *net_dev,
+ 		}
+ 	}
+ 
++	/* Make sure current options are not overwritten */
++	cfg.options = priv->link_state.options;
++
+ 	cfg.rate = link_settings->base.speed;
+ 	if (link_settings->base.autoneg == AUTONEG_ENABLE)
+ 		cfg.options |= DPNI_LINK_OPT_AUTONEG;
+@@ -145,6 +139,58 @@ dpaa2_eth_set_link_ksettings(struct net_device *net_dev,
+ 	return err;
+ }
+ 
++static void dpaa2_eth_get_pauseparam(struct net_device *net_dev,
++				     struct ethtool_pauseparam *pause)
++{
++	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
++	u64 link_options = priv->link_state.options;
++
++	pause->rx_pause = !!(link_options & DPNI_LINK_OPT_PAUSE);
++	pause->tx_pause = pause->rx_pause ^
++			  !!(link_options & DPNI_LINK_OPT_ASYM_PAUSE);
++}
++
++static int dpaa2_eth_set_pauseparam(struct net_device *net_dev,
++				    struct ethtool_pauseparam *pause)
++{
++	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
++	struct dpni_link_cfg cfg = {0};
++	int err;
++
++	if (!dpaa2_eth_has_pause_support(priv)) {
++		netdev_info(net_dev, "No pause frame support for DPNI version < %d.%d\n",
++			    DPNI_PAUSE_VER_MAJOR, DPNI_PAUSE_VER_MINOR);
++		return -EOPNOTSUPP;
++	}
++
++	if (pause->autoneg)
++		netdev_err(net_dev, "Pause frame autoneg not supported\n");
++
++	cfg.rate = priv->link_state.rate;
++	cfg.options = priv->link_state.options;
++	if (pause->rx_pause)
++		cfg.options |= DPNI_LINK_OPT_PAUSE;
++	else
++		cfg.options &= ~DPNI_LINK_OPT_PAUSE;
++	if (!!pause->rx_pause ^ !!pause->tx_pause)
++		cfg.options |= DPNI_LINK_OPT_ASYM_PAUSE;
++	else
++		cfg.options &= ~DPNI_LINK_OPT_ASYM_PAUSE;
++
++	if (cfg.options == priv->link_state.options)
++		return 0;
++
++	err = dpni_set_link_cfg(priv->mc_io, 0, priv->mc_token, &cfg);
++	if (err) {
++		netdev_err(net_dev, "dpni_set_link_state failed\n");
++		return err;
++	}
++
++	priv->link_state.options = cfg.options;
++
++	return 0;
++}
++
+ static void dpaa2_eth_get_strings(struct net_device *netdev, u32 stringset,
+ 				  u8 *data)
+ {
+@@ -722,6 +768,8 @@ const struct ethtool_ops dpaa2_ethtool_ops = {
+ 	.get_link = ethtool_op_get_link,
+ 	.get_link_ksettings = dpaa2_eth_get_link_ksettings,
+ 	.set_link_ksettings = dpaa2_eth_set_link_ksettings,
++	.get_pauseparam = dpaa2_eth_get_pauseparam,
++	.set_pauseparam = dpaa2_eth_set_pauseparam,
+ 	.get_sset_count = dpaa2_eth_get_sset_count,
+ 	.get_ethtool_stats = dpaa2_eth_get_ethtool_stats,
+ 	.get_strings = dpaa2_eth_get_strings,
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
+index 7b44d7d..d9b6918 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpni-cmd.h
+@@ -84,6 +84,7 @@
+ 
+ #define DPNI_CMDID_SET_RX_FS_DIST			DPNI_CMD(0x273)
+ #define DPNI_CMDID_SET_RX_HASH_DIST			DPNI_CMD(0x274)
++#define DPNI_CMDID_GET_LINK_CFG				DPNI_CMD(0x278)
+ 
+ /* Macros for accessing command fields smaller than 1byte */
+ #define DPNI_MASK(field)	\
+@@ -284,7 +285,7 @@ struct dpni_rsp_get_statistics {
+ 	__le64 counter[DPNI_STATISTICS_CNT];
+ };
+ 
+-struct dpni_cmd_set_link_cfg {
++struct dpni_cmd_link_cfg {
+ 	/* cmd word 0 */
+ 	__le64 pad0;
+ 	/* cmd word 1 */
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.c b/drivers/net/ethernet/freescale/dpaa2/dpni.c
+index 220dfc8..05e3089 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpni.c
++++ b/drivers/net/ethernet/freescale/dpaa2/dpni.c
+@@ -838,13 +838,13 @@ int dpni_set_link_cfg(struct fsl_mc_io *mc_io,
+ 		      const struct dpni_link_cfg *cfg)
+ {
+ 	struct fsl_mc_command cmd = { 0 };
+-	struct dpni_cmd_set_link_cfg *cmd_params;
++	struct dpni_cmd_link_cfg *cmd_params;
+ 
+ 	/* prepare command */
+ 	cmd.header = mc_encode_cmd_header(DPNI_CMDID_SET_LINK_CFG,
+ 					  cmd_flags,
+ 					  token);
+-	cmd_params = (struct dpni_cmd_set_link_cfg *)cmd.params;
++	cmd_params = (struct dpni_cmd_link_cfg *)cmd.params;
+ 	cmd_params->rate = cpu_to_le32(cfg->rate);
+ 	cmd_params->options = cpu_to_le64(cfg->options);
+ 
+@@ -853,6 +853,42 @@ int dpni_set_link_cfg(struct fsl_mc_io *mc_io,
+ }
+ 
+ /**
++ * dpni_get_link_cfg() - return the link configuration
++ * @mc_io:	Pointer to MC portal's I/O object
++ * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
++ * @token:	Token of DPNI object
++ * @cfg:	Link configuration from dpni object
++ *
++ * Return:	'0' on Success; Error code otherwise.
++ */
++int dpni_get_link_cfg(struct fsl_mc_io *mc_io,
++		      u32 cmd_flags,
++		      u16 token,
++		      struct dpni_link_cfg *cfg)
++{
++	struct fsl_mc_command cmd = { 0 };
++	struct dpni_cmd_link_cfg *rsp_params;
++	int err;
++
++	/* prepare command */
++	cmd.header = mc_encode_cmd_header(DPNI_CMDID_GET_LINK_CFG,
++					  cmd_flags,
++					  token);
++
++	/* send command to mc*/
++	err = mc_send_command(mc_io, &cmd);
++	if (err)
++		return err;
++
++	/* retrieve response parameters */
++	rsp_params = (struct dpni_cmd_link_cfg *)cmd.params;
++	cfg->rate = le32_to_cpu(rsp_params->rate);
++	cfg->options = le64_to_cpu(rsp_params->options);
++
++	return err;
++}
++
++/**
+  * dpni_get_link_state() - Return the link state (either up or down)
+  * @mc_io:	Pointer to MC portal's I/O object
+  * @cmd_flags:	Command flags; one or more of 'MC_CMD_FLAG_'
+diff --git a/drivers/net/ethernet/freescale/dpaa2/dpni.h b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+index a521242..3e8fc6c 100644
+--- a/drivers/net/ethernet/freescale/dpaa2/dpni.h
++++ b/drivers/net/ethernet/freescale/dpaa2/dpni.h
+@@ -485,6 +485,11 @@ int dpni_set_link_cfg(struct fsl_mc_io			*mc_io,
+ 		      u16				token,
+ 		      const struct dpni_link_cfg	*cfg);
+ 
++int dpni_get_link_cfg(struct fsl_mc_io			*mc_io,
++		      u32				cmd_flags,
++		      u16				token,
++		      struct dpni_link_cfg		*cfg);
++
+ /**
+  * struct dpni_link_state - Structure representing DPNI link state
+  * @rate: Rate
+-- 
+2.7.4
+
