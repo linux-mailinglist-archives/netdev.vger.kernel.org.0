@@ -2,127 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C38F9B5F1
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 19:57:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 74EE99B5F5
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 19:59:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404118AbfHWR5P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 13:57:15 -0400
-Received: from mout.gmx.net ([212.227.15.15]:56701 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389214AbfHWR5P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 13:57:15 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1566583013;
-        bh=a3hZV3/n3ap+4WSZEq2RCiSPGLdIgJo4H4GyKnhd4jQ=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Ts+0NBdd02jIOaF9g1O+JvxABsznTx6snIgz4VeDRBddaITcjR6Nqv3e0N6vElRv9
-         jRvzmc4DkatBYwteaGDAGJqGUC/qDK/SBtcBUBRggGsH0rFcVPRHpZRajiD3FpW2hq
-         812QeuqLdTWOt4wZp6hTWFFLox9/EA5C91RjywIQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [217.61.154.8] ([217.61.154.8]) by web-mail.gmx.net
- (3c-app-gmx-bs75.server.lan [172.19.170.219]) (via HTTP); Fri, 23 Aug 2019
- 19:56:53 +0200
+        id S2404857AbfHWR7I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 13:59:08 -0400
+Received: from mail-qk1-f196.google.com ([209.85.222.196]:33315 "EHLO
+        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404269AbfHWR7I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 13:59:08 -0400
+Received: by mail-qk1-f196.google.com with SMTP id w18so8940134qki.0
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 10:59:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UyupcX678H/AxzDSQSGybxJu8fcHJfeR8wEVYwgKPXQ=;
+        b=E3HOFYDfwew/w22T5oDHqgwjFVeWgINCXSaktneb3lDGzLKp+C1bJ1w1TrFRBwMqWv
+         4mUluhKUC94tUSyWTi/PjpgItKagd+ZMYjHFEyNz7KED/XLysBJcPgfTPBUsWKNcM9MC
+         UHv8bq6ScCo8bBwkqS95FfQduUQPWL6cfWkvBx1RDNHeMB9WpVnqb/Za15RvrJQq11rM
+         HCLE2DFSwYvV++nMekjcLyq/ypB4crqhJPSjWKebI2jWeJ93B7zpTX13OxTgZinn63sy
+         odJLYLo6pj6dOMJqDF+BAnXg4JIqN7EaSdpni5dfJmVkIknlveJiErZaDOajWy1Vz/rq
+         kqmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UyupcX678H/AxzDSQSGybxJu8fcHJfeR8wEVYwgKPXQ=;
+        b=ZP0citFpzjWTfEMZJNmYM/mwoeCZWc8vbfiR1hAAE6PNXPHiA8eilAB2YczRingBIM
+         dXRDxIpUcm38dtBlNu6CN0IPVsf1P1826pgF9P8ISKQZ3WGlivZ2Nfm2SVr5CqvqyDHP
+         hXhDZf0NRDIeYBaWsvd7iVzZ18IZ17yw5tpZ4OfARYj3B0T48E6l0GabCmH53gimDtPH
+         GvbWfNScfTEHS5/KMnxhHtiQsNFCUtpcfYracdIcvh2ldG5GB4M+OSLFYkHWnB4QBgIE
+         vK0ti5ZQNf8UgxGgO8q2+8G32bZULEez7pReqhggH6AjxukQVaxk8XqvM9nmnCi2Pt7N
+         P9nA==
+X-Gm-Message-State: APjAAAWaeI/pt+SZsUahUKzhIoe2yD81kEfHxZFTy6zEN7x8t73jVmto
+        A+uNPGGsDM4UMYyFGy/vUrA=
+X-Google-Smtp-Source: APXvYqyJHgWJ3DU7jbPwlvKnONk4VKmkkYmBYN5vtIJOoPhDKVC06aR9ATnRKQScDy5jcj114HAkXw==
+X-Received: by 2002:a37:4986:: with SMTP id w128mr5181088qka.417.1566583147614;
+        Fri, 23 Aug 2019 10:59:07 -0700 (PDT)
+Received: from Davids-MacBook-Pro.local ([158.106.193.162])
+        by smtp.googlemail.com with ESMTPSA id h187sm1836591qkd.27.2019.08.23.10.59.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 23 Aug 2019 10:59:06 -0700 (PDT)
+Subject: Re: [PATCH net] ipv4: mpls: fix mpls_xmit for iptunnel
+To:     Alexey Kodanev <alexey.kodanev@oracle.com>, netdev@vger.kernel.org
+Cc:     David Miller <davem@davemloft.net>
+References: <1566582703-26567-1-git-send-email-alexey.kodanev@oracle.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <38b351be-b24e-cb05-7c93-74134796a9d7@gmail.com>
+Date:   Fri, 23 Aug 2019 13:59:05 -0400
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
+ Gecko/20100101 Thunderbird/52.9.1
 MIME-Version: 1.0
-Message-ID: <trinity-df75d11a-c27f-4941-a880-b017ebabd3dc-1566583013438@3c-app-gmx-bs75>
-From:   "Frank Wunderlich" <frank-w@public-files.de>
-To:     =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>
-Cc:     "John Crispin" <john@phrozen.org>,
-        "Sean Wang" <sean.wang@mediatek.com>,
-        "Nelson Chang" <nelson.chang@mediatek.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
-        "Russell King" <linux@armlinux.org.uk>,
-        "Stefan Roese" <sr@denx.de>,
-        =?UTF-8?Q?=22Ren=C3=A9_van_Dorst=22?= <opensource@vdorst.com>
-Subject: Aw: [PATCH net-next v3 0/3] net: ethernet: mediatek: convert to
- PHYLINK
-Content-Type: text/plain; charset=UTF-8
-Date:   Fri, 23 Aug 2019 19:56:53 +0200
-Importance: normal
-Sensitivity: Normal
-In-Reply-To: <20190823134516.27559-1-opensource@vdorst.com>
-References: <20190823134516.27559-1-opensource@vdorst.com>
-Content-Transfer-Encoding: quoted-printable
-X-UI-Message-Type: mail
-X-Priority: 3
-X-Provags-ID: V03:K1:S0kLgvQPkllpT2VhF6NadCxmnsC4j1OSSgjS8MvBJRToXf5272KzfOlHJTEuMwhdhRBkV
- alz6rIZAKym54sGmYq+kBS+OqXCV1CPFSm9ypNkwOGS14DBQAGcoVfPkdH5Nr7yncJza6H0T9DMr
- GZZCcFwyv72zk+Svv2dxTijzg3isID01ns4l5Tw3kfKQ41yAUKX5MS8Gm5+YCMtQydyWUEgWilq3
- HjT1GubFAxqdU7t3UOnwSylRmsBgFAQtFa37MIEPi0Iw0gTAhZUkmJCyNQM+D4nXU9D/xYGJC6W7
- Hc=
-X-Spam-Flag: NO
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JjDFsC2WnnU=:dLB5XzDJgCgcJHVkZzvig5
- sTjeopAWAVioeRr8fmySRP1TgkFxKvRFvH3V4mUfeb3fHx8O0wsGCKSHrMOR9ELfHshqz3Bss
- MyLUU7uOWk+qzN2c5je2sFCKWuOnlgvfW5TBU3GXrj4g7k8wsqCcb3G7s+/c/CpNPMBmGDApl
- tA+kC+/VNwnmQy+Htr97ROyH7qzxTYPnlYARpzFm5Q1atphm6wW6AGx+UiVttsNQiK6X3LfoM
- /wzkvPtWesv8LfSmoa3a4NlT+PxQYDhCrBCWDgiT+QEapuBUT7KcVjl0fX+iuHIjsycbBHRKR
- a0hIyb6KORjVOjSz7R+0EzfIzV07qo7nuqwZqayALOnLdmzVHgWda3T9nfuy5BARIgEcJ8Ol6
- 72tHrpLx3s7zrX3NUdgOaxgaFDkyfDZZ9yB7+yN/9reEukzot6BSvGtlnWe+LETCno+Mvx85o
- xW59anHfl78cmTchS7iFUcSnlZqikA8R5gYnrrfenNILbTq/DOYKlcUaNDbTMTYh0SyShz7sb
- LQwdrByFdm1qPiSo5CPNb5z+/+iT7agAiLSdyfq2nnKJSU6z5aZqOJ2KF8OqUeaBNe6/Jn1Oa
- JpFKrukp3wtwVa+GA8HZndkCd14kMpR3jlOXKi4jhjzz8s4nNll4XDfh03MRrUi57hEeZJ+OD
- eOpHjC0BxSYsKoUsR9axMSqPLp/noA04+c7IaR4XXlFg12w==
+In-Reply-To: <1566582703-26567-1-git-send-email-alexey.kodanev@oracle.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-tested on bpi-r2 (mt7623/mt7530) and bpi-r64 (mt7622/rtl8367)
+On 8/23/19 1:51 PM, Alexey Kodanev wrote:
+> When using mpls over gre/gre6 setup, rt->rt_gw4 address is not set, the
+> same for rt->rt_gw_family.  Therefore, when rt->rt_gw_family is checked
+> in mpls_xmit(), neigh_xmit() call is skipped. As a result, such setup
+> doesn't work anymore.
+> 
+> This issue was found with LTP mpls03 tests.
+> 
+> Fixes: 1550c171935d ("ipv4: Prepare rtable for IPv6 gateway")
+> Signed-off-by: Alexey Kodanev <alexey.kodanev@oracle.com>
+> ---
+>  net/mpls/mpls_iptunnel.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+> 
 
-as reported to rene directly rx-path needs some rework because current rx-=
-speed
-on bpi-r2 is 865 Mbits/sec instead of ~940 Mbits/sec
+Thanks for the report and patch. On first glance, it seems odd that
+neigh_xmit could be called with rt_gw4 (formerly rt_gateway) set to 0
+and if it is non-zero, why isn't family set.
 
-Tested-by: Frank Wunderlich <frank-w@public-files=2Ede>
-
-regards Frank
-
-
-> Gesendet: Freitag, 23=2E August 2019 um 15:45 Uhr
-> Von: "Ren=C3=A9 van Dorst" <opensource@vdorst=2Ecom>
-> An: "John Crispin" <john@phrozen=2Eorg>, "Sean Wang" <sean=2Ewang@mediat=
-ek=2Ecom>, "Nelson Chang" <nelson=2Echang@mediatek=2Ecom>, "David S =2E Mil=
-ler" <davem@davemloft=2Enet>, "Matthias Brugger" <matthias=2Ebgg@gmail=2Eco=
-m>
-> Cc: netdev@vger=2Ekernel=2Eorg, linux-arm-kernel@lists=2Einfradead=2Eorg=
-, linux-mediatek@lists=2Einfradead=2Eorg, linux-mips@vger=2Ekernel=2Eorg, "=
-Russell King" <linux@armlinux=2Eorg=2Euk>, "Frank Wunderlich" <frank-w@publ=
-ic-files=2Ede>, "Stefan Roese" <sr@denx=2Ede>, "Ren=C3=A9 van Dorst" <opens=
-ource@vdorst=2Ecom>
-> Betreff: [PATCH net-next v3 0/3] net: ethernet: mediatek: convert to PHY=
-LINK
->
-> These patches converts mediatek driver to PHYLINK API=2E
->=20
-> v2->v3:
-> * Phylink improvements and clean-ups after review
-> v1->v2:
-> * Rebase for mt76x8 changes
-> * Phylink improvements and clean-ups after review
-> * SGMII port doesn't support 2=2E5Gbit in SGMII mode only in BASE-X mode=
-=2E
->   Refactor the code=2E
->=20
-> Ren=C3=A9 van Dorst (3):
->   net: ethernet: mediatek: Add basic PHYLINK support
->   net: ethernet: mediatek: Re-add support SGMII
->   dt-bindings: net: ethernet: Update mt7622 docs and dts to reflect the
->     new phylink API
->=20
->  =2E=2E=2E/arm/mediatek/mediatek,sgmiisys=2Etxt        |   2 -
->  =2E=2E=2E/dts/mediatek/mt7622-bananapi-bpi-r64=2Edts  |  28 +-
->  arch/arm64/boot/dts/mediatek/mt7622=2Edtsi      |   1 -
->  drivers/net/ethernet/mediatek/Kconfig         |   2 +-
->  drivers/net/ethernet/mediatek/mtk_eth_path=2Ec  |  75 +--
->  drivers/net/ethernet/mediatek/mtk_eth_soc=2Ec   | 529 ++++++++++++-----=
--
->  drivers/net/ethernet/mediatek/mtk_eth_soc=2Eh   |  68 ++-
->  drivers/net/ethernet/mediatek/mtk_sgmii=2Ec     |  65 ++-
->  8 files changed, 477 insertions(+), 293 deletions(-)
->=20
-> --=20
-> 2=2E20=2E1
->=20
->
+I am traveling today and doubt I will be able to take a deep look at
+this until Monday.
