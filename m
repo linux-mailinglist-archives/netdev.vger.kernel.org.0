@@ -2,65 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 565939B657
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 20:47:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8889A9B662
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 20:51:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405146AbfHWSp5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 14:45:57 -0400
-Received: from canardo.mork.no ([148.122.252.1]:53893 "EHLO canardo.mork.no"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730788AbfHWSp5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 14:45:57 -0400
-X-Greylist: delayed 681 seconds by postgrey-1.27 at vger.kernel.org; Fri, 23 Aug 2019 14:45:55 EDT
-Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x7NIY98R010591
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Fri, 23 Aug 2019 20:34:09 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1566585251; bh=rhbGCmlboXmRguY9Y37vGEPWSnNoT7bk5MSyh7OrhWA=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=CXRcMehx+XnXe/Nzi0Ss84Q3Ouhy5OUMpObO5v5EtHxnzHHzPSnWspr7JGSBxbeoq
-         NGmQziZTCGpDQsNI5sUC5YhUztdPVnum/xkOP3e5EK6exw3D0lSUdP7fcz4bochtnJ
-         kSK9qD6Tc76twkYhKEU2lYOIii0Z38q0xnbhHKfg=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
-        (envelope-from <bjorn@mork.no>)
-        id 1i1EO0-0001F4-I0; Fri, 23 Aug 2019 20:34:08 +0200
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     <Charles.Hyde@dellteam.com>
-Cc:     <linux-usb@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <gregkh@linuxfoundation.org>, <Mario.Limonciello@dell.com>,
-        <oliver@neukum.org>, <netdev@vger.kernel.org>,
-        <nic_swsd@realtek.com>
-Subject: Re: [RFC 3/4] Move ACPI functionality out of r8152 driver
-Organization: m
-References: <1566339738195.2913@Dellteam.com>
-Date:   Fri, 23 Aug 2019 20:34:08 +0200
-In-Reply-To: <1566339738195.2913@Dellteam.com> (Charles Hyde's message of
-        "Tue, 20 Aug 2019 22:22:18 +0000")
-Message-ID: <87mufz20kf.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
+        id S2405693AbfHWSvV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 14:51:21 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:44514 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2390833AbfHWSvV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 14:51:21 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 23 Aug 2019 21:51:19 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7NIpJEB012807;
+        Fri, 23 Aug 2019 21:51:19 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, jakub.kicinski@netronome.com,
+        pablo@netfilter.org, Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next v2 00/10] Refactor cls hardware offload API to support rtnl-independent drivers
+Date:   Fri, 23 Aug 2019 21:50:46 +0300
+Message-Id: <20190823185056.12536-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.101.2 at canardo
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-<Charles.Hyde@dellteam.com> writes:
+Currently, all cls API hardware offloads driver callbacks require caller
+to hold rtnl lock when calling them. This patch set introduces new API
+that allows drivers to register callbacks that are not dependent on rtnl
+lock and unlocked classifiers to offload filters without obtaining rtnl
+lock first, which is intended to allow offloading tc rules in parallel.
 
-> This change moves ACPI functionality out of the Realtek r8152 driver to
-> its own source and header file, making it available to other drivers as
-> needed now and into the future.  At the time this ACPI snippet was
-> introduced in 2016, only the Realtek driver made use of it in support of
-> Dell's enterprise IT policy efforts.  There comes now a need for this
-> same support in a different driver, also in support of Dell's enterprise
-> IT policy efforts.
+Recently, new rtnl registration flag RTNL_FLAG_DOIT_UNLOCKED was added.
+TC rule update handlers (RTM_NEWTFILTER, RTM_DELTFILTER, etc.) are
+already registered with this flag and only take rtnl lock when qdisc or
+classifier requires it. Classifiers can indicate that their ops
+callbacks don't require caller to hold rtnl lock by setting the
+TCF_PROTO_OPS_DOIT_UNLOCKED flag. Unlocked implementation of flower
+classifier is now upstreamed. However, this implementation still obtains
+rtnl lock before calling hardware offloads API.
 
-Yes, and we told you so.
+Implement following cls API changes:
 
+- Introduce new "unlocked_driver_cb" flag to struct flow_block_offload
+  to allow registering and unregistering block hardware offload
+  callbacks that do not require caller to hold rtnl lock. Drivers that
+  doesn't require users of its tc offload callbacks to hold rtnl lock
+  sets the flag to true on block bind/unbind. Internally tcf_block is
+  extended with additional lockeddevcnt counter that is used to count
+  number of devices that require rtnl lock that block is bound to. When
+  this counter is zero, tc_setup_cb_*() functions execute callbacks
+  without obtaining rtnl lock.
 
-Bj=C3=B8rn
+- Extend cls API single hardware rule update tc_setup_cb_call() function
+  with tc_setup_cb_add(), tc_setup_cb_replace(), tc_setup_cb_destroy()
+  and tc_setup_cb_reoffload() functions. These new APIs are needed to
+  move management of block offload counter, filter in hardware counter
+  and flag from classifier implementations to cls API, which is now
+  responsible for managing them in concurrency-safe manner. Access to
+  cb_list from callback execution code is synchronized by obtaining new
+  'cb_lock' rw_semaphore in read mode, which allows executing callbacks
+  in parallel, but excludes any modifications of data from
+  register/unregister code. tcf_block offloads counter type is changed
+  to atomic integer to allow updating the counter concurrently.
+
+- Extend classifier ops with new ops->hw_add() and ops->hw_del()
+  callbacks which are used to notify unlocked classifiers when filter is
+  successfully added or deleted to hardware without releasing cb_lock.
+  This is necessary to update classifier state atomically with callback
+  list traversal and updating of all relevant counters and allows
+  unlocked classifiers to synchronize with concurrent reoffload without
+  requiring any changes to driver callback API implementations.
+
+New tc flow_action infrastructure is also modified to allow its user to
+execute without rtnl lock protection. Function tc_setup_flow_action() is
+modified to conditionally obtain rtnl lock before accessing action
+state. Action data that is accessed by reference is either copied or
+reference counted to prevent concurrent action overwrite from
+deallocating it. New function tc_cleanup_flow_action() is introduced to
+cleanup/release all such data obtained by tc_setup_flow_action().
+
+Flower classifier (only unlocked classifier at the moment) is modified
+to use new cls hardware offloads API and no longer obtains rtnl lock
+before calling it.
+
+Vlad Buslov (10):
+  net: sched: protect block offload-related fields with rw_semaphore
+  net: sched: change tcf block offload counter type to atomic_t
+  net: sched: refactor block offloads counter usage
+  net: sched: notify classifier on successful offload add/delete
+  net: sched: add API for registering unlocked offload block callbacks
+  net: sched: conditionally obtain rtnl lock in cls hw offloads API
+  net: sched: take rtnl lock in tc_setup_flow_action()
+  net: sched: take reference to action dev before calling offloads
+  net: sched: copy tunnel info when setting flow_action entry->tunnel
+  net: sched: flower: don't take rtnl lock for cls hw offloads API
+
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   3 +
+ include/net/flow_offload.h                    |   1 +
+ include/net/pkt_cls.h                         |  21 +-
+ include/net/sch_generic.h                     |  41 +--
+ include/net/tc_act/tc_tunnel_key.h            |  17 +
+ net/sched/cls_api.c                           | 338 +++++++++++++++++-
+ net/sched/cls_bpf.c                           |  38 +-
+ net/sched/cls_flower.c                        | 126 +++----
+ net/sched/cls_matchall.c                      |  31 +-
+ net/sched/cls_u32.c                           |  29 +-
+ 11 files changed, 474 insertions(+), 173 deletions(-)
+
+-- 
+2.21.0
+
