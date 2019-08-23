@@ -2,62 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C2FD69A6F9
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 07:19:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A7009A707
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 07:22:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391955AbfHWFRm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 01:17:42 -0400
-Received: from mga17.intel.com ([192.55.52.151]:38604 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391807AbfHWFRm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 01:17:42 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Aug 2019 22:17:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,420,1559545200"; 
-   d="scan'208";a="186777188"
-Received: from pkacprow-mobl.ger.corp.intel.com ([10.252.30.96])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Aug 2019 22:17:40 -0700
-Message-ID: <84a882c0bd2954c21735005534abb5568b2fc806.camel@intel.com>
-Subject: Re: [PATCH] iwlwifi: mvm: fix old-style declaration
-From:   Luciano Coelho <luciano.coelho@intel.com>
-To:     YueHaibing <yuehaibing@huawei.com>, johannes.berg@intel.com,
-        emmanuel.grumbach@intel.com, linuxwifi@intel.com,
-        kvalo@codeaurora.org, sara.sharon@intel.com
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org
-Date:   Fri, 23 Aug 2019 08:17:39 +0300
-In-Reply-To: <20190726141838.19424-1-yuehaibing@huawei.com>
-References: <20190726141838.19424-1-yuehaibing@huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.5-1.1 
+        id S2392025AbfHWFWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 01:22:21 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:37593 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391792AbfHWFWU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 01:22:20 -0400
+Received: by mail-pl1-f196.google.com with SMTP id bj8so4890127plb.4;
+        Thu, 22 Aug 2019 22:22:20 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=lMXMx2vDpjNMDIWQ7QSQ6S8z7ajpHm6PRPm15ov737I=;
+        b=KeaE7QBzkb3jKyzk60frx2nmGc53sHhcgj4GiTpkE5V+yt+i2UhHwO+i5JZLv2+vvK
+         Er45DVGCzzFFKLZbGhkbgnuNHNkCtZOAeD+ry4E+7yqYbpDSDNzUUBGTyQF3WRgwpvNW
+         LiVDbx/bk9dxioU/yyIVmxAac9fZ1tb8LF27sFd2qRipKrZ+sAkZhA7joikuu3ThX1z1
+         3occALxywoENdOSkR5qr00GCmcRCtuAznyq63/XEemQJM1Nc5zcYzDYsdyiQA8lso6iA
+         KpFwX/AvhtUbddB1x7Qd8Up/8JA+9OtS/OBWzklpYSYwcefCSV/k5i4K7SwOVVGsjhgr
+         vW+A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=lMXMx2vDpjNMDIWQ7QSQ6S8z7ajpHm6PRPm15ov737I=;
+        b=Zvldfv3by7j7/i4YLkdbLfDM+XGbZdk5HXpo5KHWGZlxE5zNlCe5ct/Jb2PVjRibWe
+         HyyFVFDoNnsGop8OgVDdLjHMqeOljpZPy/Z4mJ86tlh0JD1ogOk8T5OM5nWXalqifOkj
+         U2leEpdPO9oeauwjZS16BD6F+5F141ei6kLd/rTHp2xy1UUYb1mCsFbMErRQCqxHd8qJ
+         fT4d24fbCI/Ot8UrcskOG0bykf/ZGHx2ksevZYgf2Xb2u09NKpi/SIh+Knv/FbToa9mz
+         vPgUSxD8jwKT+tBxMTl0HFh5IoP2h4uPV3D3HDlw5XGpBTxX9vu75Jp+AFtd48LSQNT6
+         HS6g==
+X-Gm-Message-State: APjAAAXFd1TNUBxbh8vzcMzeJW6qOyldt+WjeOnl77hEhiZ7sUp8qu1f
+        +sh+VoCSfDvvkXo1naasqpA=
+X-Google-Smtp-Source: APXvYqzPpjd79hrCDg9pFpJZaiCK1tp4m/eK9Ybw2SvjavGGMsL0Av8sXWq5CTkdttLcr36xbzW0jw==
+X-Received: by 2002:a17:902:2f43:: with SMTP id s61mr2640572plb.22.1566537740206;
+        Thu, 22 Aug 2019 22:22:20 -0700 (PDT)
+Received: from localhost (c-73-222-71-142.hsd1.ca.comcast.net. [73.222.71.142])
+        by smtp.gmail.com with ESMTPSA id o67sm1625121pfb.39.2019.08.22.22.22.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2019 22:22:19 -0700 (PDT)
+Date:   Thu, 22 Aug 2019 22:22:17 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Mark Brown <broonie@kernel.org>,
+        Hubert Feurstein <h.feurstein@gmail.com>,
+        Miroslav Lichvar <mlichvar@redhat.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        linux-spi@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH spi for-5.4 0/5] Deterministic SPI latency with NXP DSPI
+ driver
+Message-ID: <20190823052217.GD2502@localhost>
+References: <20190818182600.3047-1-olteanv@gmail.com>
+ <CA+h21hr4UcoJK7upNJjG0ibtX7CkF=akxVdrb--1AJn6-z=sUQ@mail.gmail.com>
+ <20190821043845.GB1332@localhost>
+ <20190821140815.GA1447@localhost>
+ <CA+h21hrtzU1XL-0m+BG5TYZvVh8WN6hgcM7CV5taHyq2MsR5dw@mail.gmail.com>
+ <20190822141641.GB1437@localhost>
+ <CA+h21hpJm-3svfV93pYYrpoiV12jDjuROHCgvCjPivAjXTB_VA@mail.gmail.com>
+ <20190822160521.GC4522@localhost>
+ <CA+h21hrELeUKbfGD3n=BL741QN9m3SaoJJ0y+q_uthdxvSFVRg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrELeUKbfGD3n=BL741QN9m3SaoJJ0y+q_uthdxvSFVRg@mail.gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 2019-07-26 at 22:18 +0800, YueHaibing wrote:
-> There expect the 'static' keyword to come first in a
-> declaration, and we get a warning for this with "make W=1":
+On Thu, Aug 22, 2019 at 07:13:12PM +0300, Vladimir Oltean wrote:
+> You do think that I understand the problem? But I don't!
+
+;^)
+
+> > And who generates Local_sync_resp?
+> >
 > 
-> drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:427:1: warning:
->  'static' is not at beginning of declaration [-Wold-style-declaration]
-> drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c:434:1: warning:
->  'static' is not at beginning of declaration [-Wold-style-declaration]
-> 
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> ---
+> Local_sync_resp is the same as Local_sync_req except maybe with a
+> custom tag added by the switch. Irrelevant as long as the DSA master
+> can timestamp it.
 
-Thanks! Johannes applied this in our internal tree a few weeks ago and
-it will reach the mainline following our usual upstreaming process.
-
---
-Cheers,
-Luca.
-
+So this is point why it won't work.  The time stamping logic in the
+switch only recognizes PTP frames.
+ 
+Thanks,
+Richard
