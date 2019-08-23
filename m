@@ -2,58 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A1D69B8C9
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 01:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B5889B8E7
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 01:31:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727126AbfHWXZJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 19:25:09 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:38363 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727107AbfHWXZI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 19:25:08 -0400
-Received: by mail-pf1-f196.google.com with SMTP id o70so7491568pfg.5;
-        Fri, 23 Aug 2019 16:25:08 -0700 (PDT)
+        id S1726578AbfHWXap (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 19:30:45 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44027 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725782AbfHWXao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 19:30:44 -0400
+Received: by mail-pg1-f196.google.com with SMTP id k3so6583837pgb.10;
+        Fri, 23 Aug 2019 16:30:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:references:from:openpgp:autocrypt:message-id:date
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=uPi/KDmvISehppyWVNHHSaIi7WFfyu07bTBcLesv7Z8=;
-        b=QRL9FeD76Y02CXTIlZwSM32pdG66/rRUt7mDHwUUSk9isuuIXCw/p/Te5iB5sBLmSK
-         8TYgq4gM+2p3cWg3ld/PyFk6KAv1K2f5fKhuqZp68Vuy/wkhGErmTjS53fT0vBf7bHxA
-         b9DGe/DX0TsZaSPjupbWK/pcPSgMBRUJC2IcLz+v2OiU8PCxgA0zCfSSe2l+LTJseOjv
-         u1T1vCGCL/mCbRN2qocZuYlvL3YOGvp1H/bv43pkOLFfRGaYR2IKbClLS+FlDMvAaH1D
-         1uRR4MylgU2KKxNJncuuCwKVG5gTwJMcY/4KeDctUn30QYWQzuNuFXnZ/Sunbulz17n5
-         /dUA==
+        bh=oMdHJyuMlhg4AGNOSEwKfXz3L8EV2TQ5UGMBnZRsz4Q=;
+        b=PjfflJPxIox3EMcarZPIbEQ3PlVLfogiEgiOcM3MzF5DAVCxM1WWvoVSEAxD5jEVOg
+         y4Yr5SP/TFv0UcXGB+XeaXC/zNm9PTQtiJNTc1iimIXYtzJmXR33fKcrDtEo4/ZVLHHn
+         +M/IiJbtifs1dl/Ht44oI1SR5/lMbRWs9dqLGrANy2afCjGUP9oIhFkOnUkS4844h0VU
+         t0hZxr0QDZqn/hIwfllAqG2PMR7EcppNn7jZ75aRV6SrtzRSYruZyPyJiIV5e7jS7Kco
+         k7fGA+j9E+esluiHvWlOsqJovSzQ4T81yXLb33POT8A8ptZyWTC5t16OFCVA0jonDtBS
+         iwxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:openpgp:autocrypt
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=uPi/KDmvISehppyWVNHHSaIi7WFfyu07bTBcLesv7Z8=;
-        b=KMSLHh4I/dlcyFY2SDC4wk3pRXQqTfAprJWRD5vtzCAQaOTP4J1dwUzMGJ9YHVTNRS
-         mWLNuFeYlzBLtUlDRudB7kfnEoibBc9VPUrmC1gxbqpY57vP/O/icYnndqQvbXv+h19N
-         jOX21V0qlTSKJVqw/F91y9x3L3ztgcW3IkqlWgcVZKF0P59gI2Zb/QNi+vFjsBVHUapT
-         /ZrAcStFiQ8NKCCe3oyfq3MUj/XYTDnk96KNFoDR/P9s7B/pY2DLHav2ExRrEIRQsQVA
-         EFkeUwSLZNIYJrLRcgX4AiEQ0x6IqV3djfLL7IkJh/9zn5nOXxIREIDKahTQaUMmLOOM
-         frUA==
-X-Gm-Message-State: APjAAAWMyIuziRLJvOHAcVbXKWCKYK9XBOBQ1xiU2AhhVlrkkm3nKqtj
-        W8z9xWX3+pvnJHlytGPROtY=
-X-Google-Smtp-Source: APXvYqyfBrhsq3jPGe+U2g8GmORcalYsu1MfRJg49mGG952awOlIZKdTeYpJR6Coy3veIXbh5uVidw==
-X-Received: by 2002:aa7:8611:: with SMTP id p17mr8093059pfn.41.1566602707697;
-        Fri, 23 Aug 2019 16:25:07 -0700 (PDT)
+        bh=oMdHJyuMlhg4AGNOSEwKfXz3L8EV2TQ5UGMBnZRsz4Q=;
+        b=BVntlPSdUrUPlOEMaCP4cr9QeJROmI0MuhB3LS6R4L5HyEWIK3HkgUfDVurGzuJZF1
+         kOy4vsaHogtzRPDNwaQ9Vt3x2xvPRNaYgVh2hspm9Aq/w/J1Yq/EML5YZsLPrcdZRpKz
+         yLTOAV84mV8/56Z/y0g+A/h9+qdsC9fU6uyQ1FuPvsLz2NI+FAvHHFcbrHVtl8UmGDV0
+         1pONuU1TRnNcN/OTmVHYk4Hr216A7I9OxWLpUcEs/4Cq6OJEJ0/5u5N/PK3xerQMz+tf
+         dpAaBlp+zYvXE2bJqRPVTLEJ8Du9tXZop3TNPhKTXQAA+bSzHAUAhwQzg+V853ZR/9ak
+         uPcw==
+X-Gm-Message-State: APjAAAUHHAyCqCL4xQQCZHoEahXQgP2tdsJ+RCwtNN4AVChyiNZnh2co
+        q+HcSCAhEvzHtpbJacDBojs=
+X-Google-Smtp-Source: APXvYqyXqo9pvtu5PXXT4VhcNt4sWoW27VGROdyvI1Dl8VZMCdCL9ecruH1IUWBXjg8O5Hi6ehJjpQ==
+X-Received: by 2002:a63:5b23:: with SMTP id p35mr5953678pgb.366.1566603043286;
+        Fri, 23 Aug 2019 16:30:43 -0700 (PDT)
 Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id p20sm3202503pgi.81.2019.08.23.16.25.05
+        by smtp.googlemail.com with ESMTPSA id b13sm3411086pjz.10.2019.08.23.16.30.41
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 23 Aug 2019 16:25:07 -0700 (PDT)
-Subject: Re: [PATCH 0/3] Add NETIF_F_HW_BRIDGE feature
+        Fri, 23 Aug 2019 16:30:42 -0700 (PDT)
+Subject: Re: [PATCH 1/3] net: Add HW_BRIDGE offload feature
 To:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
         davem@davemloft.net, UNGLinuxDriver@microchip.com,
         alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
         bridge@lists.linux-foundation.org
 References: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+ <1566500850-6247-2-git-send-email-horatiu.vultur@microchip.com>
+ <20190822200817.GD21295@lunn.ch>
+ <20190823123929.ta4ikozz7jwkwbo2@soft-dev3.microsemi.net>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Openpgp: preference=signencrypt
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
@@ -110,12 +114,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <e47a318c-6446-71cd-660c-8592037d8166@gmail.com>
-Date:   Fri, 23 Aug 2019 16:25:02 -0700
+Message-ID: <afde1b82-2e4c-5b93-ff31-83cb80a0f7bd@gmail.com>
+Date:   Fri, 23 Aug 2019 16:30:40 -0700
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+In-Reply-To: <20190823123929.ta4ikozz7jwkwbo2@soft-dev3.microsemi.net>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,46 +128,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/22/19 12:07 PM, Horatiu Vultur wrote:
-> Current implementation of the SW bridge is setting the interfaces in
-> promisc mode when they are added to bridge if learning of the frames is
-> enabled.
-> In case of Ocelot which has HW capabilities to switch frames, it is not
-> needed to set the ports in promisc mode because the HW already capable of
-> doing that. Therefore add NETIF_F_HW_BRIDGE feature to indicate that the
-> HW has bridge capabilities. Therefore the SW bridge doesn't need to set
-> the ports in promisc mode to do the switching.
-
-Then do not do anything when the ndo_set_rx_mode() for the ocelot
-network device is called and indicates that IFF_PROMISC is set and that
-your network port is a bridge port member. That is what mlxsw does AFAICT.
-
-As other pointed out, the Linux bridge implements a software bridge by
-default, and because it needs to operate on a wide variety of network
-devices, all with different capabilities, the easiest way to make sure
-that all management (IGMP, BPDU, etc. ) as well as non-management
-traffic can make it to the bridge ports, is to put the network devices
-in promiscuous mode. If this is suboptimal for you, you can take
-shortcuts in your driver that do not hinder the overall functionality.
-
-> This optimization takes places only if all the interfaces that are part
-> of the bridge have this flag and have the same network driver.
+On 8/23/19 5:39 AM, Horatiu Vultur wrote:
+> The 08/22/2019 22:08, Andrew Lunn wrote:
+>> External E-Mail
+>>
+>>
+>>> +/* Determin if the SW bridge can be offloaded to HW. Return true if all
+>>> + * the interfaces of the bridge have the feature NETIF_F_HW_SWITCHDEV set
+>>> + * and have the same netdev_ops.
+>>> + */
+>>
+>> Hi Horatiu
+>>
+>> Why do you need these restrictions. The HW bridge should be able to
+>> learn that a destination MAC address can be reached via the SW
+>> bridge. The software bridge can then forward it out the correct
+>> interface.
+>>
+>> Or are you saying your hardware cannot learn from frames which come
+>> from the CPU?
+>>
+>> 	Andrew
+>>
+> Hi Andrew,
 > 
-> If the bridge interfaces is added in promisc mode then also the ports part
-> of the bridge are set in promisc mode.
+> I do not believe that our HW can learn from frames which comes from the
+> CPU, at least not in the way they are injected today. But in case of Ocelot
+> (and the next chip we are working on), we have other issues in mixing with
+> foreign interfaces which is why we have the check in
+> ocelot_netdevice_dev_check.
 > 
-> Horatiu Vultur (3):
->   net: Add HW_BRIDGE offload feature
->   net: mscc: Use NETIF_F_HW_BRIDGE
->   net: mscc: Implement promisc mode.
+> More important, as we responded to Nikolay, we properly introduced this
+> restriction for the wrong reasons.
 > 
->  drivers/net/ethernet/mscc/ocelot.c | 26 ++++++++++++++++++++++++--
->  include/linux/netdev_features.h    |  3 +++
->  net/bridge/br_if.c                 | 29 ++++++++++++++++++++++++++++-
->  net/core/ethtool.c                 |  1 +
->  4 files changed, 56 insertions(+), 3 deletions(-)
-> 
+> In SW bridge I will remove all these restrictions and only set ports in
+> promisc mode only if NETIF_F_HW_BRIDGE is not set.
+> Then in the network driver I can see if a foreign interface is added to
+> the bridge, and when that happens I can set the port in promisc mode.
+> Then the frames will be flooded to the SW bridge which eventually will
+> send to the foreign interface.
 
-
+Is that really necessary? Is not the skb->fwd_offload_mark as well as
+the phys_switch_id supposed to tell that information to the bridge already?
 -- 
 Florian
