@@ -2,160 +2,141 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 140FC9A5E2
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 05:03:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 067DB9A5E4
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 05:05:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404059AbfHWDDO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 23:03:14 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:37535 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726283AbfHWDDN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 23:03:13 -0400
-Received: by mail-pf1-f194.google.com with SMTP id y9so5052683pfl.4
-        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 20:03:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version;
-        bh=yAvoPzupIuR0xh/wfNpq0xS13G7AED6WrSvbPEM79Xs=;
-        b=jLobQghDo8aRNJMTWs2nTm6QWlTmrek7KREbND3fI0zZldS63Xzx1TkuFWSKvFzDMw
-         1QZ81Rs8lU5k7UE8C7NWq24gbVZT9aBzKtkO0vMN02es99/B03OFUymD2nwtMurfq5qi
-         Ryl6jbzuH2phY7hLbYqUTjqv0L6imT9nAj+vLzuDO4pimjN/MTK4Uo/CZQv+bQ3Ay5mf
-         yv0aRLtufkLEp6H6qc6CPtKDCMnfJJeE0z7csIG2CtfQmKt1eqAmZ8M4BOrH6l+1jSFC
-         yQX4LmIc/HoFmsg+oNhYqCBHqjADLVV3jlVHvOiSmSJLZACVNyHn3jAoJ3hV6/IPOLiw
-         NPHg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=yAvoPzupIuR0xh/wfNpq0xS13G7AED6WrSvbPEM79Xs=;
-        b=eKxSQTC/J3wCA+BELcAjBYtknM4V8D6Wc/TCb/oB0vsIm3dWFavmR9pyER13retPMc
-         uyF7ZnZJXurXG10G9TV0Rl6F6AMY9znMannqCnNcIEawwPQKA4gQIRuihIs+WwOjC1dM
-         Gxk4OHDRoKI/a+hE+v//BFOOuA55QyqIwwueuGvKr+dgYTKuP043etrVP9RNnWkYuynP
-         juG73d0lymzU6uJ6Aht3UnijeVKJRhbz0KP57XKm+ajyK5SmDFA2bFbKCvr5TNGvYAwT
-         mq9gmzlMcIBfMOVxIKq1M7krlZkNpS/4qWhHqsAKUboF78Dki4JUn+6XTcYS7uqnLfRx
-         f75g==
-X-Gm-Message-State: APjAAAWYqu538WrNyeV6y5ZVlU1/on1WYIxPEutj/iFoHBmOCRdKy+WU
-        xK3B7hFE+QXOvcuktqGz7ij+b1vl
-X-Google-Smtp-Source: APXvYqxTfuOHKXC1fFcMVsCzGpWArxIBrt2NvWAQ65GNhTRDp3EeXwBhZm45aegKqb4c55LxtdOfNg==
-X-Received: by 2002:a17:90a:fa0a:: with SMTP id cm10mr1094384pjb.133.1566529392840;
-        Thu, 22 Aug 2019 20:03:12 -0700 (PDT)
-Received: from [172.26.99.184] ([2620:10d:c090:180::3d5f])
-        by smtp.gmail.com with ESMTPSA id g14sm833412pfo.41.2019.08.22.20.03.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 22 Aug 2019 20:03:12 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     Netdev <netdev@vger.kernel.org>, michael.chan@broadcom.com
-Cc:     kernel-team@fb.com
-Subject: BUG: bnxt_en driver fails to initialize
-Date:   Thu, 22 Aug 2019 20:03:11 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <E350D230-9E45-41FC-ADF5-5CF2317171DA@gmail.com>
+        id S2404072AbfHWDFH convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Thu, 22 Aug 2019 23:05:07 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:53794 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731416AbfHWDFH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 22 Aug 2019 23:05:07 -0400
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id B906212BF;
+        Fri, 23 Aug 2019 03:05:06 +0000 (UTC)
+Received: from colo-mx.corp.redhat.com (colo-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.21])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id AB6205C258;
+        Fri, 23 Aug 2019 03:05:06 +0000 (UTC)
+Received: from zmail21.collab.prod.int.phx2.redhat.com (zmail21.collab.prod.int.phx2.redhat.com [10.5.83.24])
+        by colo-mx.corp.redhat.com (Postfix) with ESMTP id 7A9F84A460;
+        Fri, 23 Aug 2019 03:05:06 +0000 (UTC)
+Date:   Thu, 22 Aug 2019 23:05:05 -0400 (EDT)
+From:   Jason Wang <jasowang@redhat.com>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        eric dumazet <eric.dumazet@gmail.com>,
+        xiyou wangcong <xiyou.wangcong@gmail.com>,
+        weiyongjun1@huawei.com
+Message-ID: <1676209666.10068041.1566529505528.JavaMail.zimbra@redhat.com>
+In-Reply-To: <5D5E90C3.50306@huawei.com>
+References: <1566221479-16094-1-git-send-email-yangyingliang@huawei.com> <20190819.182522.414877916903078544.davem@davemloft.net> <ceeafaf2-6aa4-b815-0b5f-ecc663216f43@redhat.com> <d8eaedf9-321c-1c07-cbd1-de5e1f73b086@redhat.com> <5D5E3133.2070108@huawei.com> <5D5E90C3.50306@huawei.com>
+Subject: Re: [PATCH v3] tun: fix use-after-free when register netdev failed
 MIME-Version: 1.0
-Content-Type: text/plain; format=flowed
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.68.5.20, 10.4.195.29]
+Thread-Topic: fix use-after-free when register netdev failed
+Thread-Index: gATAAhj8l9jwGUR2vfDP3pUWxw+6zA==
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.29]); Fri, 23 Aug 2019 03:05:06 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On a recent net-next 932630fa902878f4c8c50d0b1260eeb9de16b0a4,
-installing the build on a box which has a Broadcom card with
-the 20.1 firmware, the driver refuses to initialize.  I tracked
-this down to:
 
-	static int bnxt_alloc_stats(struct bnxt *bp)
-	...
-                 cpr->hw_stats = dma_alloc_coherent(&pdev->dev, size,
-                                                    &cpr->hw_stats_map,
-                                                    GFP_KERNEL);
-                 if (!cpr->hw_stats)
-                         return -ENOMEM;
+----- Original Message -----
+> 
+> 
+> On 2019/8/22 14:07, Yang Yingliang wrote:
+> >
+> >
+> > On 2019/8/22 10:13, Jason Wang wrote:
+> >>
+> >> On 2019/8/20 上午10:28, Jason Wang wrote:
+> >>>
+> >>> On 2019/8/20 上午9:25, David Miller wrote:
+> >>>> From: Yang Yingliang <yangyingliang@huawei.com>
+> >>>> Date: Mon, 19 Aug 2019 21:31:19 +0800
+> >>>>
+> >>>>> Call tun_attach() after register_netdevice() to make sure tfile->tun
+> >>>>> is not published until the netdevice is registered. So the read/write
+> >>>>> thread can not use the tun pointer that may freed by free_netdev().
+> >>>>> (The tun and dev pointer are allocated by alloc_netdev_mqs(), they
+> >>>>> can
+> >>>>> be freed by netdev_freemem().)
+> >>>> register_netdevice() must always be the last operation in the order of
+> >>>> network device setup.
+> >>>>
+> >>>> At the point register_netdevice() is called, the device is visible
+> >>>> globally
+> >>>> and therefore all of it's software state must be fully initialized and
+> >>>> ready for us.
+> >>>>
+> >>>> You're going to have to find another solution to these problems.
+> >>>
+> >>>
+> >>> The device is loosely coupled with sockets/queues. Each side is
+> >>> allowed to be go away without caring the other side. So in this
+> >>> case, there's a small window that network stack think the device has
+> >>> one queue but actually not, the code can then safely drop them.
+> >>> Maybe it's ok here with some comments?
+> >>>
+> >>> Or if not, we can try to hold the device before tun_attach and drop
+> >>> it after register_netdevice().
+> >>
+> >>
+> >> Hi Yang:
+> >>
+> >> I think maybe we can try to hold refcnt instead of playing real num
+> >> queues here. Do you want to post a V4?
+> > I think the refcnt can prevent freeing the memory in this case.
+> > When register_netdevice() failed, free_netdev() will be called directly,
+> > dev->pcpu_refcnt and dev are freed without checking refcnt of dev.
+> How about using patch-v1 that using a flag to check whether the device
+> registered successfully.
+>
 
-Where size == 0, so obviously it returns NULL, and -ENOMEM.
+As I said, it lacks sufficient locks or barriers. To be clear, I meant
+something like (compile-test only):
 
-The same build, when installed on different box with the
-20.6.167.0 firmware, works fine.  Details below.
+diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+index db16d7a13e00..e52678f9f049 100644
+--- a/drivers/net/tun.c
++++ b/drivers/net/tun.c
+@@ -2828,6 +2828,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+                              (ifr->ifr_flags & TUN_FEATURES);
+ 
+                INIT_LIST_HEAD(&tun->disabled);
++               dev_hold(dev);
+                err = tun_attach(tun, file, false, ifr->ifr_flags & IFF_NAPI,
+                                 ifr->ifr_flags & IFF_NAPI_FRAGS);
+                if (err < 0)
+@@ -2836,6 +2837,7 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+                err = register_netdevice(tun->dev);
+                if (err < 0)
+                        goto err_detach;
++               dev_put(dev);
+        }
+ 
+        netif_carrier_on(tun->dev);
+@@ -2852,11 +2854,13 @@ static int tun_set_iff(struct net *net, struct file *file, struct ifreq *ifr)
+        return 0;
+ 
+ err_detach:
++       dev_put(dev);
+        tun_detach_all(dev);
+        /* register_netdevice() already called tun_free_netdev() */
+        goto err_free_dev;
+ 
+ err_free_flow:
++       dev_put(dev);
+        tun_flow_uninit(tun);
+        security_tun_dev_free_security(tun->security);
+ err_free_stat:
 
+What's your thought?
 
-Taken from the same box with a 4.16 kernel, showing firmware:
-
-# ethtool -i eth0
-driver: bnxt_en
-version: 1.9.0
-firmware-version: 20.1.20.0
-expansion-rom-version:
-bus-info: 0000:03:00.0
-supports-statistics: yes
-supports-test: no
-supports-eeprom-access: yes
-supports-register-dump: no
-supports-priv-flags: no
-
-
-The problematic box:
-
-[    0.000000] Linux version 5.3.0-rc5-00987-g12a993533ad1 
-(bsd@devvm1828.vll1.facebook.com) (gcc version 4.8.5 20150623 (Red Hat 
-4.8.5-36) (GCC)) #7 SMP Thu Aug 22 19:48:01 PDT 2019
-
-[   11.195653] Broadcom NetXtreme-C/E driver bnxt_en v1.10.0
-[   11.262489] b:00.0 (unnamed net_device) (uninitialized): Firmware 
-does not support TC flower offload.
-[   11.283546] bnxt_en 0000:03:00.0 eth0: Firmware does not support NVM 
-params
-[   11.297448] bnxt_en 0000:03:00.0 eth0: Broadcom BCM57302 NetXtreme-C 
-10Gb/25Gb Ethernet found at mem 383fffe10000, node addr 
-00:0a:f7:a3:d8:94
-[   11.322965] bnxt_en 0000:03:00.0: 63.008 Gb/s available PCIe 
-bandwidth (8 GT/s x8 link)
-
-[   12.136319] WARNING: CPU: 5 PID: 1 at ../mm/page_alloc.c:4707 
-__alloc_pages_nodemask+0x27c/0x330
-[   12.155239] Modules linked in:
-[   12.155242] CPU: 5 PID: 1 Comm: swapper/0 Not tainted 
-5.3.0-rc5-00987-g12a993533ad1 #7
-[   12.155243] Hardware name: Quanta Leopard ORv2-DDR4/Leopard 
-ORv2-DDR4, BIOS F06_3B17 03/16/2018
-[   12.155245] RIP: 0010:__alloc_pages_nodemask+0x27c/0x330
-[   12.239793] Code: 48 83 c3 18 44 89 e9 44 89 e2 48 89 ee e8 5c b9 bb 
-00 4c 8b 0b 4d 85 c9 75 df 48 89 e8 e9 42 ff ff ff 81 e7 00 20 00 00 75 
-02 <0f> 0b 31 c0 e9 31 ff ff ff 48 89 e8 e9 29 ff ff ff 89 c2 90 e9 f0
-[   12.277249] RSP: 0000:ffffc9000c4dfc08 EFLAGS: 00010246
-[   12.287667] RAX: 0000000000000000 RBX: 0000000000000cc0 RCX: 
-0000000000000000
-[   12.301897] RDX: 0000000000000000 RSI: 0000000000000034 RDI: 
-0000000000000000
-[   12.316127] RBP: 0000000000000000 R08: 0000000000000000 R09: 
-0000000000000000
-[   12.330358] R10: ffff888000000000 R11: 00000000ffdd4f00 R12: 
-0000000000000034
-[   12.344587] R13: 0000160000000000 R14: ffffffffffffffff R15: 
-ffff889ff71ad0b0
-[   12.358819] FS:  0000000000000000(0000) GS:ffff889fff540000(0000) 
-knlGS:0000000000000000
-[   12.374957] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-[   12.386413] CR2: 0000000000000000 CR3: 000000000240a001 CR4: 
-00000000003606e0
-[   12.400643] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 
-0000000000000000
-[   12.414875] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 
-0000000000000400
-[   12.429107] Call Trace:
-[   12.433981]  __dma_direct_alloc_pages+0x89/0x120
-[   12.443200]  dma_direct_alloc_pages+0x1c/0xa0
-[   12.451902]  bnxt_alloc_mem+0x32e/0xe20
-[   12.459566]  ? bnxt_need_reserve_rings+0x30/0x120
-[   12.468957]  __bnxt_open_nic+0x8c/0x880
-[   12.476601]  bnxt_open+0x34/0xb0
-[   12.483032]  __dev_open+0xd1/0x160
-[   12.489807]  dev_open+0x43/0x90
-[   12.496070]  netpoll_setup+0x26d/0x330
-[   12.503558]  init_netconsole+0x145/0x276
-[   12.511390]  ? option_setup+0x1f/0x1f
-[   12.518705]  do_one_initcall+0x4e/0x1f4
-[   12.526351]  ? trace_event_define_fields_initcall_finish+0x62/0x62
-[   12.538690]  kernel_init_freeable+0x182/0x224
-[   12.547376]  ? trace_event_define_fields_initcall_finish+0x62/0x62
-[   12.559716]  ? rest_init+0xb0/0xb0
-[   12.566491]  kernel_init+0xa/0x110
-[   12.573269]  ret_from_fork+0x35/0x40
-[   12.580392] ---[ end trace e4d68dee87999a79 ]---
-[   12.589614] bnxt_en 0000:03:00.0 eth0: bnxt_alloc_mem err: fffffff4
+Thanks
