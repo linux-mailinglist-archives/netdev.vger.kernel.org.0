@@ -2,157 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 706E89B795
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 22:15:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 307539B7FF
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 23:04:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404580AbfHWUPD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 16:15:03 -0400
-Received: from www62.your-server.de ([213.133.104.62]:42444 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730896AbfHWUPC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 16:15:02 -0400
-Received: from [178.197.249.40] (helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i1Fxb-0002iP-EH; Fri, 23 Aug 2019 22:14:59 +0200
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     ast@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH bpf] bpf: fix use after free in prog symbol exposure
-Date:   Fri, 23 Aug 2019 22:14:23 +0200
-Message-Id: <5c8e41702da6794e788d06dd3d56d46f9ca42b99.1566591076.git.daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S2436873AbfHWVEA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 17:04:00 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:51266 "EHLO
+        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731003AbfHWVD7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 17:03:59 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sirena.org.uk; s=20170815-heliosphere; h=In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=ivYzwFDnFB6dEbOKWm2Jn7GdkzO9PknPkaIHs7XYuW4=; b=Fgximarup8qYnZgGwykU9zYqc
+        Mf11VXqJSHaY0XLTYJOcOUhgWuHRfbVBfb2M1cFFxXYn4AHfiLh8rOFvOEu7v32Yc0qUz5x56uM/b
+        Mo8HNNqsQK2reR6Yk8Ln+wf+gesP810MCyxv6BPtzkSEt4BbphgKXj037/rZDk+ejgbkk=;
+Received: from [92.54.175.117] (helo=fitzroy.sirena.org.uk)
+        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <broonie@sirena.org.uk>)
+        id 1i1Giy-0005Ju-Et; Fri, 23 Aug 2019 21:03:56 +0000
+Received: by fitzroy.sirena.org.uk (Postfix, from userid 1000)
+        id 255B4D02CD1; Fri, 23 Aug 2019 22:03:56 +0100 (BST)
+Date:   Fri, 23 Aug 2019 22:03:56 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     linux-spi@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org, netdev <netdev@vger.kernel.org>
+Subject: Re: [PATCH v2 2/5] spi: spi-fsl-dspi: Exit the ISR with IRQ_NONE
+ when it's not ours
+Message-ID: <20190823210356.GU23391@sirena.co.uk>
+References: <20190822211514.19288-1-olteanv@gmail.com>
+ <20190822211514.19288-3-olteanv@gmail.com>
+ <20190823102816.GN23391@sirena.co.uk>
+ <CA+h21hoUfbW8Gpyfa+a-vqVp_qARYoq1_eyFfZFh-5USNGNE2g@mail.gmail.com>
+ <20190823105044.GO23391@sirena.co.uk>
+ <20190823105949.GQ23391@sirena.co.uk>
+ <CA+h21hrj6VjceGJFz7XuS9DFjy=Fb5SHTYUuOWkagtsWf0Egbg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25550/Fri Aug 23 10:25:33 2019)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="25rOlkxR6a4U87uN"
+Content-Disposition: inline
+In-Reply-To: <CA+h21hrj6VjceGJFz7XuS9DFjy=Fb5SHTYUuOWkagtsWf0Egbg@mail.gmail.com>
+X-Cookie: Don't SANFORIZE me!!
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzkaller managed to trigger the warning in bpf_jit_free() which checks via
-bpf_prog_kallsyms_verify_off() for potentially unlinked JITed BPF progs
-in kallsyms, and subsequently trips over GPF when walking kallsyms entries:
 
-  [...]
-  8021q: adding VLAN 0 to HW filter on device batadv0
-  8021q: adding VLAN 0 to HW filter on device batadv0
-  WARNING: CPU: 0 PID: 9869 at kernel/bpf/core.c:810 bpf_jit_free+0x1e8/0x2a0
-  Kernel panic - not syncing: panic_on_warn set ...
-  CPU: 0 PID: 9869 Comm: kworker/0:7 Not tainted 5.0.0-rc8+ #1
-  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-  Workqueue: events bpf_prog_free_deferred
-  Call Trace:
-   __dump_stack lib/dump_stack.c:77 [inline]
-   dump_stack+0x113/0x167 lib/dump_stack.c:113
-   panic+0x212/0x40b kernel/panic.c:214
-   __warn.cold.8+0x1b/0x38 kernel/panic.c:571
-   report_bug+0x1a4/0x200 lib/bug.c:186
-   fixup_bug arch/x86/kernel/traps.c:178 [inline]
-   do_error_trap+0x11b/0x200 arch/x86/kernel/traps.c:271
-   do_invalid_op+0x36/0x40 arch/x86/kernel/traps.c:290
-   invalid_op+0x14/0x20 arch/x86/entry/entry_64.S:973
-  RIP: 0010:bpf_jit_free+0x1e8/0x2a0
-  Code: 02 4c 89 e2 83 e2 07 38 d0 7f 08 84 c0 0f 85 86 00 00 00 48 ba 00 02 00 00 00 00 ad de 0f b6 43 02 49 39 d6 0f 84 5f fe ff ff <0f> 0b e9 58 fe ff ff 48 b8 00 00 00 00 00 fc ff df 4c 89 e2 48 c1
-  RSP: 0018:ffff888092f67cd8 EFLAGS: 00010202
-  RAX: 0000000000000007 RBX: ffffc90001947000 RCX: ffffffff816e9d88
-  RDX: dead000000000200 RSI: 0000000000000008 RDI: ffff88808769f7f0
-  RBP: ffff888092f67d00 R08: fffffbfff1394059 R09: fffffbfff1394058
-  R10: fffffbfff1394058 R11: ffffffff89ca02c7 R12: ffffc90001947002
-  R13: ffffc90001947020 R14: ffffffff881eca80 R15: ffff88808769f7e8
-  BUG: unable to handle kernel paging request at fffffbfff400d000
-  #PF error: [normal kernel read fault]
-  PGD 21ffee067 P4D 21ffee067 PUD 21ffed067 PMD 9f942067 PTE 0
-  Oops: 0000 [#1] PREEMPT SMP KASAN
-  CPU: 0 PID: 9869 Comm: kworker/0:7 Not tainted 5.0.0-rc8+ #1
-  Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-  Workqueue: events bpf_prog_free_deferred
-  RIP: 0010:bpf_get_prog_addr_region kernel/bpf/core.c:495 [inline]
-  RIP: 0010:bpf_tree_comp kernel/bpf/core.c:558 [inline]
-  RIP: 0010:__lt_find include/linux/rbtree_latch.h:115 [inline]
-  RIP: 0010:latch_tree_find include/linux/rbtree_latch.h:208 [inline]
-  RIP: 0010:bpf_prog_kallsyms_find+0x107/0x2e0 kernel/bpf/core.c:632
-  Code: 00 f0 ff ff 44 38 c8 7f 08 84 c0 0f 85 fa 00 00 00 41 f6 45 02 01 75 02 0f 0b 48 39 da 0f 82 92 00 00 00 48 89 d8 48 c1 e8 03 <42> 0f b6 04 30 84 c0 74 08 3c 03 0f 8e 45 01 00 00 8b 03 48 c1 e0
-  [...]
+--25rOlkxR6a4U87uN
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-Upon further debugging, it turns out that whenever we trigger this
-issue, the kallsyms removal in bpf_prog_ksym_node_del() was /skipped/
-but yet bpf_jit_free() reported that the entry is /in use/.
+On Fri, Aug 23, 2019 at 03:06:52PM +0300, Vladimir Oltean wrote:
 
-Problem is that symbol exposure via bpf_prog_kallsyms_add() but also
-perf_event_bpf_event() were done /after/ bpf_prog_new_fd(). Once the
-fd is exposed to the public, a parallel close request came in right
-before we attempted to do the bpf_prog_kallsyms_add().
+> - You left change requests in the initial patchset I submitted, but
+> you partially applied the series anyway. You didn't give me a chance
+> to respin the whole series and put the shared IRQ fix on top, so it
+> applies on old trees as well. No problem, I sent two versions of the
+> patch.
 
-Given at this time the prog reference count is one, we start to rip
-everything underneath us via bpf_prog_release() -> bpf_prog_put().
-The memory is eventually released via deferred free, so we're seeing
-that bpf_jit_free() has a kallsym entry because we added it from
-bpf_prog_load() but /after/ bpf_prog_put() from the remote CPU.
+Right, and this is fine.  A big part of this is that it's just
+generally bad practice to not have fixes at the front of the
+series, I'd flag this up as a problem even if the code was all
+new and there was no question of applying as a bug fix.  It's
+something that's noticable just at the level of looking at the
+shape of the series without even looking at the contents of the
+patches, if the fix is actually a good one or anything like that.
+In the context of this it made it look like the reason you'd had
+to do two versions.
 
-Therefore, move both notifications /before/ we install the fd. The
-issue was never seen between bpf_prog_alloc_id() and bpf_prog_new_fd()
-because upon bpf_prog_get_fd_by_id() we'll take another reference to
-the BPF prog, so we're still holding the original reference from the
-bpf_prog_load().
+> So I didn't put any target version in the patch titles this time,
+> although arguably it would have been clearer to you that there's a
+> patch for-5.4 and another version of it for-4.20 (which i *think* is
+> how I should submit a fix, I don't see any branch for inclusion in
+> stable trees per se).
 
-Fixes: 6ee52e2a3fe4 ("perf, bpf: Introduce PERF_RECORD_BPF_EVENT")
-Fixes: 74451e66d516 ("bpf: make jited programs visible in traces")
-Reported-by: syzbot+bd3bba6ff3fcea7a6ec6@syzkaller.appspotmail.com
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Song Liu <songliubraving@fb.com>
----
- kernel/bpf/syscall.c | 30 ++++++++++++++++++------------
- 1 file changed, 18 insertions(+), 12 deletions(-)
+Not for 4.20, for v5.3 - we basically only fix Linus' tree
+directly, anything else gets backported from there unless it's
+super important.  I don't think anyone is updating v4.20 at all
+these days, the version number change from v4 to v5 was totally
+arbatrary.
 
-diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-index 5d141f16f6fa..272071e9112f 100644
---- a/kernel/bpf/syscall.c
-+++ b/kernel/bpf/syscall.c
-@@ -1707,20 +1707,26 @@ static int bpf_prog_load(union bpf_attr *attr, union bpf_attr __user *uattr)
- 	if (err)
- 		goto free_used_maps;
- 
--	err = bpf_prog_new_fd(prog);
--	if (err < 0) {
--		/* failed to allocate fd.
--		 * bpf_prog_put() is needed because the above
--		 * bpf_prog_alloc_id() has published the prog
--		 * to the userspace and the userspace may
--		 * have refcnt-ed it through BPF_PROG_GET_FD_BY_ID.
--		 */
--		bpf_prog_put(prog);
--		return err;
--	}
--
-+	/* Upon success of bpf_prog_alloc_id(), the BPF prog is
-+	 * effectively publicly exposed. However, retrieving via
-+	 * bpf_prog_get_fd_by_id() will take another reference,
-+	 * therefore it cannot be gone underneath us.
-+	 *
-+	 * Only for the time /after/ successful bpf_prog_new_fd()
-+	 * and before returning to userspace, we might just hold
-+	 * one reference and any parallel close on that fd could
-+	 * rip everything out. Hence, below notifications must
-+	 * happen before bpf_prog_new_fd().
-+	 *
-+	 * Also, any failure handling from this point onwards must
-+	 * be using bpf_prog_put() given the program is exposed.
-+	 */
- 	bpf_prog_kallsyms_add(prog);
- 	perf_event_bpf_event(prog, PERF_BPF_EVENT_PROG_LOAD, 0);
-+
-+	err = bpf_prog_new_fd(prog);
-+	if (err < 0)
-+		bpf_prog_put(prog);
- 	return err;
- 
- free_used_maps:
--- 
-2.21.0
+> Yes, I did send a cover letter for a single patch. I thought it's
+> harder to miss than a note hidden under patch 2/5 of one series, and
+> in the note section of the other's. I think you could have also made
 
+If you're sending a multi-patch series it's of course good to
+send a cover letter, it's just single patches where it's adding
+overhead.
+
+> No problem, you missed the link between the two. I sent you a link to
+> the lkml archive. You said "I'm not online enough to readily follow
+> that link right now". Please teach me - I really don't know - how can
+
+It's not that I missed the link between them, it's that what I'd
+expected to see was the fix being the first patch in the series
+for -next and for that fix to look substantially the same with at
+most some context difference.  I wasn't expecting to see a
+completely different patch that wasn't at the start of the
+series, had the fix been at the start of the series it'd have
+been fairly clear what was going on but the refactoring patch
+looked like the main reason you'd needed different versions (it's
+certainly why they don't visually resemble each other).
+
+In other words it looked like you'd sent a different fix because
+the fix you'd done for -next was based on the first patch in the
+series rather than there also being some context changes.
+
+> I make links between patchsets easier for you to follow, if you don't
+> read cover letters and you can't access lkml? I promise I'll use that
+> method next time.
+
+Like I said include a plain text description of what you're
+linking to (eg, the subject line from a mail).
+
+> > I do frequently catch up on my mail on flights or while otherwise
+> > travelling so this is even more pressing for me than just being about
+> > making things a bit easier to read.
+
+> Maybe you simply should do something else while traveling, just saying.
+
+I could also add in the coffee shop I sometimes work from which
+doesn't have WiFi or mobile coverage.  Besides, like that part of
+the text does say it's also a usability thing, having to fire up
+a web browser to figure out what's being described is a stumbling
+block.
+
+--25rOlkxR6a4U87uN
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl1gVLsACgkQJNaLcl1U
+h9B2pAf+OqEH0c/ir0i5HzOOu3foBEg4ijLDLobzCWquMYtExGnWzATCgFiBeNua
+ukOy2G0NaRiaIVws5VQXj5y9+okcAFfjfVVwMIKTjqT6CwmTmGZb9Xlg/mgk1yJs
+OzKiKXM2b+vc3QyIFHI1EqmLqdz750Pdh6Lnulsl9TYm6zdsv7ecc2lIlnnRP79d
+eWCN2wNbGO8WUXLr/W83nXUfm03qs6KVes765JTaYqDLeYx8QoIV9Lf4UqPFtLDI
+iWT2+NUTPUP2oR7wokomqY8Ql7woJYFr5Okbl33288iJL1XLmM1j8BKxWg+207Cj
+BgnfvF9wzTpzBVO6dTlqlOZK7s6SQA==
+=vtug
+-----END PGP SIGNATURE-----
+
+--25rOlkxR6a4U87uN--
