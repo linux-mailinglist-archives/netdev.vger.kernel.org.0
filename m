@@ -2,113 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BB3A9B629
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 20:18:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E999B62C
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 20:26:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405270AbfHWSSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 14:18:07 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:40188 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404909AbfHWSSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 14:18:07 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7NI9DZH111071;
-        Fri, 23 Aug 2019 18:18:02 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=qw/+dBxi0xaQHO0HdiHxHCSOHZ9NpH1CDedfvIfubgQ=;
- b=aR6zyseqqygJLIcScad8RF7DHuGpgXG8TzisC+VvKKvrTruISeDuIhWfKxal5I7s6Fez
- Is35lFGaIb6MTEA4nPDDLts6UCUD3qFAczueK5tFywtJJGOTihmheISibPDCf8GOw8LZ
- gtIW8nmDDO/qkxJzdKrLScE8eHdxrMHNM0tWRuZLPAKvGCLRauP3CZfvftfJ0bGtuFKF
- 6r24yfBDyaJtQPXHkrLplxBRYsdPhgm+6clb/nJPuyThYsLfX/efYWCgGtz2GUK+QN27
- DxtaxIohKTIWCLGARQPyt8pPT7+YmW7M8xr6OqSGDe3m5mcRnVqKBd3mTm+fXsa/5JMS Vg== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2uea7recdf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 23 Aug 2019 18:18:02 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7NI84lV176247;
-        Fri, 23 Aug 2019 18:18:02 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3030.oracle.com with ESMTP id 2ujhvcfu47-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 23 Aug 2019 18:18:01 +0000
-Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7NII1dW010963;
-        Fri, 23 Aug 2019 18:18:01 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2ujhvcfu3q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 23 Aug 2019 18:18:01 +0000
-Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7NII0lR014780;
-        Fri, 23 Aug 2019 18:18:00 GMT
-Received: from [10.209.243.58] (/10.209.243.58)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 23 Aug 2019 11:18:00 -0700
-Subject: Re: [PATCH net-next] net/rds: Whitelist rdma_cookie and rx_tstamp for
- usercopy
-To:     Dag Moxnes <dag.moxnes@oracle.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com
-Cc:     davem@davemloft.net
-References: <1566568998-26222-1-git-send-email-dag.moxnes@oracle.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <d304ac22-1b04-6ff0-c36d-cd6605f341f8@oracle.com>
-Date:   Fri, 23 Aug 2019 11:17:59 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        id S2404716AbfHWS0T (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 14:26:19 -0400
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:35273 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404692AbfHWS0T (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 14:26:19 -0400
+Received: by mail-qk1-f193.google.com with SMTP id r21so9007239qke.2
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 11:26:18 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ic2bPmp49U9Rzy6H/8n3XKjawc1Iamf9LKy2R4QYjC4=;
+        b=mO/cdfSTCGvxNm2hVxTmeIbX0z4BjuwXIq6RV0OAHvNarrv95AY3v6XTpi594yhY7S
+         nnFEF3KccvUWxhxFvScJaeI9PnFW2xJ98Jd/fuoDQn7iHZFgebh6kb6aB1dG+RQRleTr
+         3cF8R5qmY5UOTyBgHbXDpsAbiDO6f+AvesizVil3iL7UvRwwTpiBygPvp8NPZPmTxRoe
+         D14SSsf/8C+gP8HKcsNinJX/VW/+2knO4W5WzBevX+2DtVg+57qJxmbnlmn00cg6gyz3
+         9nLWqnfHI8QALNp4gNuOQzI3zYXz1o3lOEEjml7HSPSuEKfG+ZaHWzebMVg6yyVYcmmD
+         R9MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ic2bPmp49U9Rzy6H/8n3XKjawc1Iamf9LKy2R4QYjC4=;
+        b=EC36hYY14YniG7EGO93SwgJHXz7WtS87yDfNYXc9vGWY9vqYdsaFu+u0hK+IBxcNR4
+         ZZXmVcMtl+VxaGaVJiVByOjqtnLoCVeXU4y3nbHX3NFsnoojZohRaGVz5DBihS1o87OW
+         /3C5D+xSH0frQ5zXzlxo4BWNXvzF1h3k2Il8fdFtnx3GAcNquyStogB7vKCcX4pnOFGv
+         hssn8PiIHMvjhpOXxnYHgzLTRwdUun9ZspcQV6Mq1PGAA44KcOPLRxS60KpxmRClbIql
+         mXSLGSKHwn1InFUTUyiKniQLIA4ERoiJJI5tkQkUTGzDDNzhVVbY/E4/WYWcFYSVuhLW
+         LevQ==
+X-Gm-Message-State: APjAAAUAuNZvypgpQvhqDhZuIFGdzEBEUPwtn4+RAQxkTUxt7p8eT5m5
+        ADyJaRkXxZYQiNYUQlst18Bk8w==
+X-Google-Smtp-Source: APXvYqw3QqHpmr1xJ3t7APG0/UNZ+q0SyFowdckejxy7PLJHI93b8EoUiwSpx4co8S43qM2s7LTC+g==
+X-Received: by 2002:a05:620a:6cf:: with SMTP id 15mr5273647qky.98.1566584778139;
+        Fri, 23 Aug 2019 11:26:18 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id x69sm1820881qkb.4.2019.08.23.11.26.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Aug 2019 11:26:18 -0700 (PDT)
+Date:   Fri, 23 Aug 2019 11:26:07 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Vlad Buslov <vladbu@mellanox.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pablo@netfilter.org" <pablo@netfilter.org>,
+        Jiri Pirko <jiri@mellanox.com>, linux-doc@vger.kernel.org
+Subject: Re: [PATCH net-next 03/10] net: sched: refactor block offloads
+ counter usage
+Message-ID: <20190823112607.1b4a69bf@cakuba.netronome.com>
+In-Reply-To: <vbfftls17yl.fsf@mellanox.com>
+References: <20190822124353.16902-1-vladbu@mellanox.com>
+        <20190822124353.16902-4-vladbu@mellanox.com>
+        <20190822155358.0171852c@cakuba.netronome.com>
+        <vbfftls17yl.fsf@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-In-Reply-To: <1566568998-26222-1-git-send-email-dag.moxnes@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9358 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908230172
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/23/19 7:03 AM, Dag Moxnes wrote:
-> Add the RDMA cookie and RX timestamp to the usercopy whitelist.
+On Fri, 23 Aug 2019 10:39:50 +0000, Vlad Buslov wrote:
+> >> +/* Destroy filter and decrement block offload counter, if filter was previously
+> >> + * offloaded.
+> >> + */
+> >> +  
+> >
+> > hm.. is this gap between comment and function it pertains to
+> > intentional?  
 > 
-> After the introduction of hardened usercopy whitelisting
-> (https://lwn.net/Articles/727322/), a warning is displayed when the
-> RDMA cookie or RX timestamp is copied to userspace:
-> 
-> kernel: WARNING: CPU: 3 PID: 5750 at
-> mm/usercopy.c:81 usercopy_warn+0x8e/0xa6
-> [...]
-> kernel: Call Trace:
-> kernel: __check_heap_object+0xb8/0x11b
-> kernel: __check_object_size+0xe3/0x1bc
-> kernel: put_cmsg+0x95/0x115
-> kernel: rds_recvmsg+0x43d/0x620 [rds]
-> kernel: sock_recvmsg+0x43/0x4a
-> kernel: ___sys_recvmsg+0xda/0x1e6
-> kernel: ? __handle_mm_fault+0xcae/0xf79
-> kernel: __sys_recvmsg+0x51/0x8a
-> kernel: SyS_recvmsg+0x12/0x1c
-> kernel: do_syscall_64+0x79/0x1ae
-> 
-> When the whitelisting feature was introduced, the memory for the RDMA
-> cookie and RX timestamp in RDS was not added to the whitelist, causing
-> the warning above.
-> 
-> Signed-off-by: Dag Moxnes <dag.moxnes@oracle.com>
-> Tested-by: jenny.x.xu@oracle.com
-> ---
-Thanks Dag to get this out on list.
-You might have to fix the Tested-by tag.
-Tested-by: Jenny <jenny.x.xu@oracle.com
+> Majority of function comments in cls_api.c have newline after them (not
+> all of them though). I don't have any strong opinions regarding this.
+> You suggest it is better not to have blank lines after function
+> comments?
 
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+Ah, you're right. I think it's pretty strange to have a new line after
+a comment which pertains only to the function which is immediately
+following it. Often the new line is used as a separation, when the
+comment describes whole section of the file..
 
+I kind of wish kdoc allowed none of the parameters to be described.
+Often you want to document the function but the parameters are kind 
+of obvious.
 
-
+Anyway... feel free to leave this as is.
