@@ -2,126 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D61489AE14
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 13:27:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D9329AE1F
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 13:29:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388295AbfHWL1E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 07:27:04 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:40420 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387483AbfHWL1D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 07:27:03 -0400
-Received: from 1.general.cking.uk.vpn ([10.172.193.212])
-        by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_128_CBC_SHA1:16)
-        (Exim 4.76)
-        (envelope-from <colin.king@canonical.com>)
-        id 1i17ie-0003Ud-Vs; Fri, 23 Aug 2019 11:27:01 +0000
-Subject: Re: [PATCH] wimax/i2400m: fix calculation of index, remove sizeof
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
-        linux-wimax@intel.com, "David S . Miller" <davem@davemloft.net>,
-        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20190823085230.6225-1-colin.king@canonical.com>
- <20190823112337.GB23408@kadam>
-From:   Colin Ian King <colin.king@canonical.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=colin.king@canonical.com; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <300939a6-33b6-a941-1875-0f7fe610d441@canonical.com>
-Date:   Fri, 23 Aug 2019 12:27:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2388715AbfHWL3y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 07:29:54 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42204 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731920AbfHWL3y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 07:29:54 -0400
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9204219D369
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 11:29:53 +0000 (UTC)
+Received: by mail-ed1-f70.google.com with SMTP id z25so5051400edm.3
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 04:29:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=wXbJp5wXCmhsoLAAv3JIXQ75ir1xpexGYkM6DjQPpLA=;
+        b=G44laKb2Uhuo7uOE+kikR9FD1U0cYANVuE+1sYLr/FmMdv7aftBRzSPLN4il/GQUqt
+         NWa4nCIUA7ZNYJ/UFGPpJ5lmbYFIlYecjvFWBCELtzBiHX1l5MBCjob/dxXtNYytrD+4
+         CYY602EzIo50QTrgzjAhjBelMwQlcyV6nXNm2RoSCDqxn5d0cNswlNn0bRhmoi0a3hMa
+         QO6KR8L2gjeWv//uIhRM2ebYi7JLFzJ8QcK9x8gSO7bXt6Jn1LiJMhtre7cFV+ugq/L7
+         dNrOGfqiTTg6gxlIeYDQGqnWk2rKFQmUpiPrken+ywttkSmn33O6mK/oDJe5M7K/LuG/
+         Md2Q==
+X-Gm-Message-State: APjAAAX9wNveCttW+Ebj2wha9byNZvWTMmkdvFVNZnFCpa0W/gz8SJaz
+        vgoGZgNS260ttY18ScmRXVCdiSFm9OzpgkyCk8MifDusYqw7Dn16A2i5VlDGknbnlC+BpFgoOc/
+        IK+SHEJ+FeHbgv6I2
+X-Received: by 2002:a17:906:b203:: with SMTP id p3mr3680916ejz.223.1566559792349;
+        Fri, 23 Aug 2019 04:29:52 -0700 (PDT)
+X-Google-Smtp-Source: APXvYqxpFwd5L74YbNSW3YzrZnIJtPxVrWfZ1RYWPYrFnt5YQx5UeXc6A0ktklyR1Hwv5at4yJ0ZrA==
+X-Received: by 2002:a17:906:b203:: with SMTP id p3mr3680891ejz.223.1566559792086;
+        Fri, 23 Aug 2019 04:29:52 -0700 (PDT)
+Received: from alrua-x1.borgediget.toke.dk (borgediget.toke.dk. [85.204.121.218])
+        by smtp.gmail.com with ESMTPSA id g20sm473057edp.92.2019.08.23.04.29.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 23 Aug 2019 04:29:51 -0700 (PDT)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id AE452181CEF; Fri, 23 Aug 2019 13:29:50 +0200 (CEST)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Stephen Hemminger <stephen@networkplumber.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Miller <davem@davemloft.net>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>
+Subject: Re: [RFC bpf-next 0/5] Convert iproute2 to use libbpf (WIP)
+In-Reply-To: <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
+References: <20190820114706.18546-1-toke@redhat.com> <CAEf4BzZxb7qZabw6aDVaTqnhr3AGtwEo+DbuBR9U9tJr+qVuyg@mail.gmail.com> <87blwiqlc8.fsf@toke.dk> <CAEf4BzYMKPbfOu4a4UDEfJVcNW1-KvRwJ7PVo+Mf_1YUJgE4Qw@mail.gmail.com> <43e8c177-cc9c-ca0b-1622-e30a7a1281b7@iogearbox.net> <CAEf4Bzab_w0AXy5P9mG14mcyJVgUCzuuNda5FpU5wSEwUciGfg@mail.gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Fri, 23 Aug 2019 13:29:50 +0200
+Message-ID: <87tva8m85t.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20190823112337.GB23408@kadam>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 23/08/2019 12:23, Dan Carpenter wrote:
-> On Fri, Aug 23, 2019 at 09:52:30AM +0100, Colin King wrote:
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> The subtraction of the two pointers is automatically scaled by the
->> size of the size of the object the pointers point to, so the division
->> by sizeof(*i2400m->barker) is incorrect.  Fix this by removing the
->> division.  Also make index an unsigned int to clean up a checkpatch
->> warning.
->>
->> Addresses-Coverity: ("Extra sizeof expression")
->> Fixes: aba3792ac2d7 ("wimax/i2400m: rework bootrom initialization to be more flexible")
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
->> ---
->>  drivers/net/wimax/i2400m/fw.c | 3 +--
->>  1 file changed, 1 insertion(+), 2 deletions(-)
->>
->> diff --git a/drivers/net/wimax/i2400m/fw.c b/drivers/net/wimax/i2400m/fw.c
->> index 489cba9b284d..599a703af6eb 100644
->> --- a/drivers/net/wimax/i2400m/fw.c
->> +++ b/drivers/net/wimax/i2400m/fw.c
->> @@ -399,8 +399,7 @@ int i2400m_is_boot_barker(struct i2400m *i2400m,
->>  	 * associated with the device. */
->>  	if (i2400m->barker
->>  	    && !memcmp(buf, i2400m->barker, sizeof(i2400m->barker->data))) {
->> -		unsigned index = (i2400m->barker - i2400m_barker_db)
->> -			/ sizeof(*i2400m->barker);
->> +		unsigned int index = i2400m->barker - i2400m_barker_db;
->>  		d_printf(2, dev, "boot barker cache-confirmed #%u/%08x\n",
->>  			 index, le32_to_cpu(i2400m->barker->data[0]));
-> 
-> It's only used for this debug output.  You may as well just delete it.
-> 
->>  		return 0;
+[ ... snip ...]
 
-Deleting wrong debug code vs fixing debug code? I'd rather go for the
-latter.
+> E.g., today's API is essentially three steps:
+>
+> 1. open and parse ELF: collect relos, programs, map definitions
+> 2. load: create maps from collected defs, do program/global data/CO-RE
+> relocs, load and verify BPF programs
+> 3. attach programs one by one.
+>
+> Between step 1 and 2 user has flexibility to create more maps, set up
+> map-in-map, etc. Between 2 and 3 you can fill in global data, fill in
+> tail call maps, etc. That's already pretty flexible. But we can tune
+> and break apart those steps even further, if necessary.
 
-> 
-> regards,
-> dan carpenter
-> 
+Today, steps 1 and 2 can be collapsed into a single call to
+bpf_prog_load_xattr(). As Jesper's mail explains, for XDP we don't
+generally want to do all the fancy rewriting stuff, we just want a
+simple way to load a program and get reusable pinning of maps.
+Preferably in a way that is compatible with the iproute2 loader.
 
+So I really think we need two things:
+
+(1) a flexible API that splits up all the various steps in a way that
+    allows programs to inject their own map definitions before
+    relocations and loading
+
+(2) a simple convenience wrapper that loads an object file, does
+    something sensible with pinning and map-in-map definitions, and loads
+    everything into the kernel.
+
+I'd go so far as to say that (2) should even support system-wide
+configuration, similar to the /etc/iproute2/bpf_pinning file. E.g., an
+/etc/libbpf/pinning.conf file that sets the default pinning directory,
+and makes it possible to set up pin-value-to-subdir mappings like what
+iproute2 does today.
+
+Having (2) makes it more likely that all the different custom loaders
+will be compatible with each other, while still allowing people to do
+their own custom thing with (1). And of course, (2) could be implemented
+in terms of (1) internally in libbpf.
+
+In my ideal world, (2) would just use the definition format already in
+iproute2 (this is basically what I implemented already), but if you guys
+don't want to put this into libbpf, I can probably live with the default
+format being BTF-based instead. Which would mean that iproute2 I would
+end up with a flow like this:
+
+- When given an elf file, try to run it through the "standard loader"
+  (2). If this works, great, proceed to program attach.
+
+- If using (2) fails because it doesn't understand the map definition,
+  fall back to a compatibility loader that parses the legacy iproute2
+  map definition format and uses (1) to load that.
+
+
+Does the above make sense? :)
+
+-Toke
