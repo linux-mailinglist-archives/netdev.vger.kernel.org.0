@@ -2,88 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 958D39A79E
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 08:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7582D9A7D2
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 08:52:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404454AbfHWGc5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 02:32:57 -0400
-Received: from aserp2120.oracle.com ([141.146.126.78]:56598 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404394AbfHWGc5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 02:32:57 -0400
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7N6Tft2101077;
-        Fri, 23 Aug 2019 06:32:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=+HtSMC0zoFmsedRzEo3yUTRcjYZtx5L6k58x6Xy76Jk=;
- b=Mwuo3DvGpxZsKdWucbFFYc7gJ4o+Lde8r70msySVsgVDFia3QftRg/t2WBOJeb9xDKIF
- MQzL/D70i9WxFCDeUbD/fqRUY/B80Dkg/z2wXXDtJlAJ7/spxTWP5bkdvv0538X7ejW0
- wc1/ZOWOKWMUerfDXOMa0ulkdrGkSvs4D2fW9ZYvBoTCCWBY9/Zu58eb2a4OdNLQF8qA
- g426u0BNMyT7A223x8uhaguXDElCMlrHgx8ixdGavli4fvtK+hR+nmN989YALKEMQZ0l
- Id02W46qOefnoSk/7fkPqr12wyLxrDPTnMQ7rB8q76sYb3U/kppLhvWTG5sJ0c5WpIIG 6g== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 2ue9hq2gd7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 23 Aug 2019 06:32:50 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7N6SSwu194594;
-        Fri, 23 Aug 2019 06:32:49 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by aserp3020.oracle.com with ESMTP id 2uj1y051q7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 23 Aug 2019 06:32:49 +0000
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7N6WnhW010482;
-        Fri, 23 Aug 2019 06:32:49 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 2uj1y051q1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 23 Aug 2019 06:32:49 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x7N6Wmue001415;
-        Fri, 23 Aug 2019 06:32:48 GMT
-Received: from [192.168.86.205] (/69.181.241.203)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Thu, 22 Aug 2019 23:32:48 -0700
-Subject: Re: [PATCH net-next] net/rds: Fix info leak in rds6_inc_info_copy()
-To:     Ka-Cheong Poon <ka-cheong.poon@oracle.com>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, rds-devel@oss.oracle.com
-References: <1566443904-12671-1-git-send-email-ka-cheong.poon@oracle.com>
-From:   santosh.shilimkar@oracle.com
-Organization: Oracle Corporation
-Message-ID: <95538b54-79fa-59f8-77aa-71f3a926f78d@oracle.com>
-Date:   Thu, 22 Aug 2019 23:32:45 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.7.2
+        id S2404303AbfHWGvz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 02:51:55 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:34581 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732321AbfHWGvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 02:51:54 -0400
+X-Originating-IP: 209.85.217.47
+Received: from mail-vs1-f47.google.com (mail-vs1-f47.google.com [209.85.217.47])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id D05FFC0007
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 06:51:52 +0000 (UTC)
+Received: by mail-vs1-f47.google.com with SMTP id s5so5568433vsi.10
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 23:51:52 -0700 (PDT)
+X-Gm-Message-State: APjAAAW/kWvhRS1vIllABG3F1TCrIVGMyAqUPUPnIA5e7+lXF1yhqd22
+        XU1Ji67jgqHMZtlBFjQwUZmH+0BUGP7AmrvvNEI=
+X-Google-Smtp-Source: APXvYqygnxg9VWZDwWCleX9aveS7af9hGgVlblbn8V3/7SX/Rcgjl7Wd1BjKk8ZJK0C8EuJ9H66Z4wzLu2RVtHmole0=
+X-Received: by 2002:a67:6889:: with SMTP id d131mr1706996vsc.93.1566543111477;
+ Thu, 22 Aug 2019 23:51:51 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <1566443904-12671-1-git-send-email-ka-cheong.poon@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9357 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908230069
+References: <1566505070-38748-1-git-send-email-yihung.wei@gmail.com>
+In-Reply-To: <1566505070-38748-1-git-send-email-yihung.wei@gmail.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Thu, 22 Aug 2019 23:53:48 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_A6Hn9o=8uzHQTp=cttMQsf=dYpobvq7C7_W398sw8UJA@mail.gmail.com>
+Message-ID: <CAOrHB_A6Hn9o=8uzHQTp=cttMQsf=dYpobvq7C7_W398sw8UJA@mail.gmail.com>
+Subject: Re: [PATCH net v2] openvswitch: Fix conntrack cache with timeout
+To:     Yi-Hung Wei <yihung.wei@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/21/19 8:18 PM, Ka-Cheong Poon wrote:
-> The rds6_inc_info_copy() function has a couple struct members which
-> are leaking stack information.  The ->tos field should hold actual
-> information and the ->flags field needs to be zeroed out.
-> 
-> Fixes: 3eb450367d08 ("rds: add type of service(tos) infrastructure")
-> Fixes: b7ff8b1036f0 ("rds: Extend RDS API for IPv6 support")
-> Reported-by: 黄ID蝴蝶 <butterflyhuangxx@gmail.com>
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> Signed-off-by: Ka-Cheong Poon <ka-cheong.poon@oracle.com>
+On Thu, Aug 22, 2019 at 1:28 PM Yi-Hung Wei <yihung.wei@gmail.com> wrote:
+>
+> This patch addresses a conntrack cache issue with timeout policy.
+> Currently, we do not check if the timeout extension is set properly in the
+> cached conntrack entry.  Thus, after packet recirculate from conntrack
+> action, the timeout policy is not applied properly.  This patch fixes the
+> aforementioned issue.
+>
+> Fixes: 06bd2bdf19d2 ("openvswitch: Add timeout support to ct action")
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
 > ---
-Thanks for getting this out of the list.
-
-Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
+> v1->v2: Fix rcu dereference issue reported by kbuild test robot.
+> ---
+>  net/openvswitch/conntrack.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>
+> diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+> index 848c6eb55064..4d7896135e73 100644
+> --- a/net/openvswitch/conntrack.c
+> +++ b/net/openvswitch/conntrack.c
+> @@ -67,6 +67,7 @@ struct ovs_conntrack_info {
+>         struct md_mark mark;
+>         struct md_labels labels;
+>         char timeout[CTNL_TIMEOUT_NAME_MAX];
+> +       struct nf_ct_timeout *nf_ct_timeout;
+>  #if IS_ENABLED(CONFIG_NF_NAT)
+>         struct nf_nat_range2 range;  /* Only present for SRC NAT and DST NAT. */
+>  #endif
+> @@ -697,6 +698,14 @@ static bool skb_nfct_cached(struct net *net,
+>                 if (help && rcu_access_pointer(help->helper) != info->helper)
+>                         return false;
+>         }
+> +       if (info->nf_ct_timeout) {
+> +               struct nf_conn_timeout *timeout_ext;
+> +
+> +               timeout_ext = nf_ct_timeout_find(ct);
+> +               if (!timeout_ext || info->nf_ct_timeout !=
+> +                   rcu_dereference(timeout_ext->timeout))
+> +                       return false;
+> +       }
+>         /* Force conntrack entry direction to the current packet? */
+>         if (info->force && CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
+>                 /* Delete the conntrack entry if confirmed, else just release
+> @@ -1657,6 +1666,10 @@ int ovs_ct_copy_action(struct net *net, const struct nlattr *attr,
+>                                       ct_info.timeout))
+>                         pr_info_ratelimited("Failed to associated timeout "
+>                                             "policy `%s'\n", ct_info.timeout);
+> +               else
+> +                       ct_info.nf_ct_timeout = rcu_dereference(
+> +                               nf_ct_timeout_find(ct_info.ct)->timeout);
+Is this dereference safe from NULL pointer?
