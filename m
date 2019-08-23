@@ -2,88 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 960D59ADE1
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 13:08:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 161289AE07
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 13:24:05 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404011AbfHWLHn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 07:07:43 -0400
-Received: from nbd.name ([46.4.11.11]:50230 "EHLO nbd.name"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726247AbfHWLHm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 07:07:42 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=LAv14xBDaIohDD4Erb5BrR+vAz31vPo/+adgvMu/7MI=; b=WTTeFnBGKMij/9WAFwDZZNzF/l
-        MZhKH7Q5CiuYF/JbZXYqsh+5Xro6Xdbvd2+WDyE4PbxiqqJkalSn2ELmivO8QVSTSGZfsDsUWx7V8
-        psfREPo2Cp8c/TrZvzeL1uqyEHUGavDIg267Vx3+/9lQf9GkFC6oXJZ+rZyk6k6U66CM=;
-Received: from p54ae9443.dip0.t-ipconnect.de ([84.174.148.67] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1i17Pu-0005Ev-QB; Fri, 23 Aug 2019 13:07:38 +0200
-Subject: Re: [PATCH][next] mac80211: minstrel_ht: fix infinite loop because
- supported is not being shifted
-To:     Colin King <colin.king@canonical.com>,
-        Johannes Berg <johannes@sipsolutions.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190822122034.28664-1-colin.king@canonical.com>
-From:   Felix Fietkau <nbd@nbd.name>
-Openpgp: preference=signencrypt
-Autocrypt: addr=nbd@nbd.name; prefer-encrypt=mutual; keydata=
- mQGiBEah5CcRBADIY7pu4LIv3jBlyQ/2u87iIZGe6f0f8pyB4UjzfJNXhJb8JylYYRzIOSxh
- ExKsdLCnJqsG1PY1mqTtoG8sONpwsHr2oJ4itjcGHfn5NJSUGTbtbbxLro13tHkGFCoCr4Z5
- Pv+XRgiANSpYlIigiMbOkide6wbggQK32tC20QxUIwCg4k6dtV/4kwEeiOUfErq00TVqIiEE
- AKcUi4taOuh/PQWx/Ujjl/P1LfJXqLKRPa8PwD4j2yjoc9l+7LptSxJThL9KSu6gtXQjcoR2
- vCK0OeYJhgO4kYMI78h1TSaxmtImEAnjFPYJYVsxrhay92jisYc7z5R/76AaELfF6RCjjGeP
- wdalulG+erWju710Bif7E1yjYVWeA/9Wd1lsOmx6uwwYgNqoFtcAunDaMKi9xVQW18FsUusM
- TdRvTZLBpoUAy+MajAL+R73TwLq3LnKpIcCwftyQXK5pEDKq57OhxJVv1Q8XkA9Dn1SBOjNB
- l25vJDFAT9ntp9THeDD2fv15yk4EKpWhu4H00/YX8KkhFsrtUs69+vZQwbQcRmVsaXggRmll
- dGthdSA8bmJkQG5iZC5uYW1lPohgBBMRAgAgBQJGoeQnAhsjBgsJCAcDAgQVAggDBBYCAwEC
- HgECF4AACgkQ130UHQKnbvXsvgCgjsAIIOsY7xZ8VcSm7NABpi91yTMAniMMmH7FRenEAYMa
- VrwYTIThkTlQuQINBEah5FQQCACMIep/hTzgPZ9HbCTKm9xN4bZX0JjrqjFem1Nxf3MBM5vN
- CYGBn8F4sGIzPmLhl4xFeq3k5irVg/YvxSDbQN6NJv8o+tP6zsMeWX2JjtV0P4aDIN1pK2/w
- VxcicArw0VYdv2ZCarccFBgH2a6GjswqlCqVM3gNIMI8ikzenKcso8YErGGiKYeMEZLwHaxE
- Y7mTPuOTrWL8uWWRL5mVjhZEVvDez6em/OYvzBwbkhImrryF29e3Po2cfY2n7EKjjr3/141K
- DHBBdgXlPNfDwROnA5ugjjEBjwkwBQqPpDA7AYPvpHh5vLbZnVGu5CwG7NAsrb2isRmjYoqk
- wu++3117AAMFB/9S0Sj7qFFQcD4laADVsabTpNNpaV4wAgVTRHKV/kC9luItzwDnUcsZUPdQ
- f3MueRJ3jIHU0UmRBG3uQftqbZJj3ikhnfvyLmkCNe+/hXhPu9sGvXyi2D4vszICvc1KL4RD
- aLSrOsROx22eZ26KqcW4ny7+va2FnvjsZgI8h4sDmaLzKczVRIiLITiMpLFEU/VoSv0m1F4B
- FtRgoiyjFzigWG0MsTdAN6FJzGh4mWWGIlE7o5JraNhnTd+yTUIPtw3ym6l8P+gbvfoZida0
- TspgwBWLnXQvP5EDvlZnNaKa/3oBes6z0QdaSOwZCRA3QSLHBwtgUsrT6RxRSweLrcabiEkE
- GBECAAkFAkah5FQCGwwACgkQ130UHQKnbvW2GgCfTKx80VvCR/PvsUlrvdOLsIgeRGAAn1ee
- RjMaxwtSdaCKMw3j33ZbsWS4
-Message-ID: <accffa31-b954-0dcd-6c42-44fad63b96e2@nbd.name>
-Date:   Fri, 23 Aug 2019 13:07:37 +0200
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
- Gecko/20100101 Thunderbird/60.8.0
+        id S1732768AbfHWLX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 07:23:57 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:39274 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732503AbfHWLX5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 07:23:57 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7NBNlkR149956;
+        Fri, 23 Aug 2019 11:23:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2019-08-05;
+ bh=SdNd7drI7dBuyeCQbZ8YKtn/6WhBqgp8Qth2Lct/Uqc=;
+ b=RD8NISLgLJq2hDUy6AQZt1HKW0j2MUCmqL8gi6dxto3Bw5KU9ov5bn7QBZBtiLQDN9aA
+ kiIELxEoOwKbUjloR2wllpTKSrsmiLI3JPcSFNLhqWlVMGNqHGQMNPomGt1nforqbqTJ
+ kudhmuXPv6FmXtaIqbdkr0ya+lgMdsC+OGmAMcVmbEYflG+4ROM5e5FBDNfHu7qvPTXW
+ Yt7ZPOaFgD8Bck6ujNbXw95IrjTXzoBCfG3aI1Ee/e2pZ7V+TT/HX+CV/HnYrdB9K/v4
+ mNtUxJ5oTO6Vqri9Jv5hiaKk6IDAh7oWRXZIqTqRIKhZCibl4JRZFGHHN/eSfB2hSq6M pw== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by userp2120.oracle.com with ESMTP id 2uea7rc6je-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 23 Aug 2019 11:23:47 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7NBNSCQ011888;
+        Fri, 23 Aug 2019 11:23:46 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 2uj1y0dqnu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 23 Aug 2019 11:23:46 +0000
+Received: from abhmp0013.oracle.com (abhmp0013.oracle.com [141.146.116.19])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7NBNjpX028469;
+        Fri, 23 Aug 2019 11:23:46 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 23 Aug 2019 04:23:45 -0700
+Date:   Fri, 23 Aug 2019 14:23:37 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Colin King <colin.king@canonical.com>
+Cc:     Inaky Perez-Gonzalez <inaky.perez-gonzalez@intel.com>,
+        linux-wimax@intel.com, "David S . Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] wimax/i2400m: fix calculation of index, remove sizeof
+Message-ID: <20190823112337.GB23408@kadam>
+References: <20190823085230.6225-1-colin.king@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <20190822122034.28664-1-colin.king@canonical.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190823085230.6225-1-colin.king@canonical.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9357 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1908230121
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9357 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908230121
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2019-08-22 14:20, Colin King wrote:
+On Fri, Aug 23, 2019 at 09:52:30AM +0100, Colin King wrote:
 > From: Colin Ian King <colin.king@canonical.com>
 > 
-> Currently the for-loop will spin forever if variable supported is
-> non-zero because supported is never changed.  Fix this by adding in
-> the missing right shift of supported.
+> The subtraction of the two pointers is automatically scaled by the
+> size of the size of the object the pointers point to, so the division
+> by sizeof(*i2400m->barker) is incorrect.  Fix this by removing the
+> division.  Also make index an unsigned int to clean up a checkpatch
+> warning.
 > 
-> Addresses-Coverity: ("Infinite loop")
-> Fixes: 48cb39522a9d ("mac80211: minstrel_ht: improve rate probing for devices with static fallback")
+> Addresses-Coverity: ("Extra sizeof expression")
+> Fixes: aba3792ac2d7 ("wimax/i2400m: rework bootrom initialization to be more flexible")
 > Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Acked-by: Felix Fietkau <nbd@nbd.name>
+> ---
+>  drivers/net/wimax/i2400m/fw.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+> 
+> diff --git a/drivers/net/wimax/i2400m/fw.c b/drivers/net/wimax/i2400m/fw.c
+> index 489cba9b284d..599a703af6eb 100644
+> --- a/drivers/net/wimax/i2400m/fw.c
+> +++ b/drivers/net/wimax/i2400m/fw.c
+> @@ -399,8 +399,7 @@ int i2400m_is_boot_barker(struct i2400m *i2400m,
+>  	 * associated with the device. */
+>  	if (i2400m->barker
+>  	    && !memcmp(buf, i2400m->barker, sizeof(i2400m->barker->data))) {
+> -		unsigned index = (i2400m->barker - i2400m_barker_db)
+> -			/ sizeof(*i2400m->barker);
+> +		unsigned int index = i2400m->barker - i2400m_barker_db;
+>  		d_printf(2, dev, "boot barker cache-confirmed #%u/%08x\n",
+>  			 index, le32_to_cpu(i2400m->barker->data[0]));
 
-Thanks,
+It's only used for this debug output.  You may as well just delete it.
 
-- Felix
+>  		return 0;
+
+regards,
+dan carpenter
+
