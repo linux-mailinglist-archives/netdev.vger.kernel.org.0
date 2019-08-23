@@ -2,139 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FD8C9B422
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:01:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 335289B445
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:10:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387977AbfHWQBm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 12:01:42 -0400
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:46586 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2387838AbfHWQBl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 12:01:41 -0400
-Received: from pps.filterd (m0109333.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7NFnecq003577;
-        Fri, 23 Aug 2019 09:00:18 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type : content-id
- : content-transfer-encoding : mime-version; s=facebook;
- bh=JClZo6morMUeMDCjiEFM60DaeJt6TT1TONVDZa8s8Zo=;
- b=E1i7h765JHU9C0JKIPa0w8Z2Ntn4hrj9fbYtooOs95kqqLXIyFzs6AwJOvVeU//Y0xqp
- iP5ei4V0hsfuB3O0TtDNnVD5jJTaErk2wzcdRiBm+gI6nu2rWPmXCxBHC/KvFE8sVj6I
- qdOEacRljbojvsOSA0i59HuHfP25vpLOILI= 
-Received: from mail.thefacebook.com (mailout.thefacebook.com [199.201.64.23])
-        by mx0a-00082601.pphosted.com with ESMTP id 2ujjrs850f-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 23 Aug 2019 09:00:18 -0700
-Received: from prn-hub02.TheFacebook.com (2620:10d:c081:35::126) by
- prn-hub02.TheFacebook.com (2620:10d:c081:35::126) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.1.1713.5; Fri, 23 Aug 2019 09:00:17 -0700
-Received: from NAM01-SN1-obe.outbound.protection.outlook.com (192.168.54.28)
- by o365-in.thefacebook.com (192.168.16.26) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.1.1713.5
- via Frontend Transport; Fri, 23 Aug 2019 09:00:17 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=aAnmBnAqxZS51Uyv2p4AmgoWLqvSeZSgbjxAZBOVtk/i3WRxXi3B52ROtvYeCHOSRiBT2G5RCrwc3tFzI7V6O26qgj/RZBzz+1cGjyEBSgtwkGfr8eudGT1e1fm/VavO1p86XZOkOPtmyxQ+3lqMF3gzjFGcUxOt9xeEIXNwlt0lXIToBer8zj8wcoPFJKRFv7s/43JiAglQhNH7fEQm4WFTVdxjXYFw3dKJftcMpWqkY8oWYiewu+QsZhOcv69/97hB82vrHGBFthW+C1qlUgcb5S1AiGNvt8BQ2Xmv9fo7dwAWozEgnnhp+0YTrQsPexgpe15FYfRDoMwq+JtG9g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JClZo6morMUeMDCjiEFM60DaeJt6TT1TONVDZa8s8Zo=;
- b=D8h+bnyZOWWjzCtNqwNJa/p7z8QV/pZlhUs/NOhKf7G8rM8TldF+NZJFkohmAT0zitT7K3LzGTzheAK2pLmyMFU6TR+G3pf9a5l2XgTLlh+junPa7LzZXmcXHQ0IrDqgTj0fjfHif0sYxShqPr8D/KbB3f8Z4s7Iu2BqvRUad+x239nGvOQucNUeiRL4U+sx+oqpcHkjoWlKtu2w7ctH+l+WDGRXetgzCQizpZSRoUgxCSxCesvhyyyPfPqOtGBcf6xUCevnjQ/hrdIP7chDtfFgNh/GgwuBDZWd6B/j5yiLDRdxv5yNpfSQjr6I7zslWPk654k34DnvKG8xL5W1zw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JClZo6morMUeMDCjiEFM60DaeJt6TT1TONVDZa8s8Zo=;
- b=AiHbXiaGo2Kn2spHfWBySmTnl4+IzkoaPbdAD06PoOQ3CB/JpRqyoV/JwX11NzO13T3fRdtd+Z7/XdzsfwBGX6317C6/9I6GpHxBbyFixhOu7yYRF0QIrp3/LsOy/hBWUdh0ueoPeqTxaIDVIuBp00NMge/Wyguhu+biLF+5YFg=
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com (52.135.196.11) by
- BYAPR15MB2981.namprd15.prod.outlook.com (20.178.237.206) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Fri, 23 Aug 2019 16:00:01 +0000
-Received: from BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::c96d:9187:5a7b:288]) by BYAPR15MB2501.namprd15.prod.outlook.com
- ([fe80::c96d:9187:5a7b:288%5]) with mapi id 15.20.2178.020; Fri, 23 Aug 2019
- 16:00:01 +0000
-From:   Alexei Starovoitov <ast@fb.com>
-To:     Jiri Olsa <jolsa@redhat.com>, Julia Kartseva <hex@fb.com>
-CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrey Ignatov <rdna@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: Re: libbpf distro packaging
-Thread-Topic: libbpf distro packaging
-Thread-Index: AQHVUUC6mSeRtrJxpEmiNjup7x1PAKcGJtMAgAJfWYCAAG7xgA==
-Date:   Fri, 23 Aug 2019 16:00:01 +0000
-Message-ID: <a00bab9b-dae8-23d8-8de0-3751a1d1b023@fb.com>
-References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com>
- <20190813122420.GB9349@krava>
- <CAEf4BzbG29eAL7gUV+Vyrrft4u4Ss8ZBC6RMixJL_CYOTQ+F2w@mail.gmail.com>
- <FA139BA4-59E5-43C7-8E72-C7B2FC1C449E@fb.com>
- <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com> <20190821210906.GA31031@krava>
- <20190823092253.GA20775@krava>
-In-Reply-To: <20190823092253.GA20775@krava>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: MWHPR0201CA0018.namprd02.prod.outlook.com
- (2603:10b6:301:74::31) To BYAPR15MB2501.namprd15.prod.outlook.com
- (2603:10b6:a02:88::11)
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [2620:10d:c090:180::9aac]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 7c1112eb-bb53-4728-5a6f-08d727e2f406
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:BYAPR15MB2981;
-x-ms-traffictypediagnostic: BYAPR15MB2981:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BYAPR15MB2981CCD82695747A636FE677D7A40@BYAPR15MB2981.namprd15.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-forefront-prvs: 0138CD935C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10019020)(979002)(346002)(376002)(39860400002)(366004)(136003)(396003)(189003)(199004)(4326008)(102836004)(305945005)(186003)(7736002)(4744005)(386003)(6506007)(53546011)(3480700005)(81156014)(76176011)(6636002)(14454004)(6486002)(6512007)(229853002)(66946007)(8676002)(99286004)(52116002)(316002)(66446008)(25786009)(66476007)(66556008)(64756008)(6436002)(54906003)(81166006)(110136005)(446003)(6246003)(11346002)(2616005)(486006)(478600001)(6116002)(71200400001)(71190400001)(36756003)(2906002)(86362001)(31696002)(53936002)(476003)(46003)(5660300002)(8936002)(256004)(7116003)(31686004)(969003)(989001)(999001)(1009001)(1019001);DIR:OUT;SFP:1102;SCL:1;SRVR:BYAPR15MB2981;H:BYAPR15MB2501.namprd15.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: fb.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: w7QWEU7dDqaB8HTW2oHCtVMeH1LFknFRIxuy8roHsH24JjagTrNIJpaOyP5FUC4qpcPW9FytimPa87Esyw6h3pSprKfq/tuxxtY0R/Omta6W1z8VYuVdnGq2Ekls1Qcv54r3WXYZsvPxk0YlrfctOES39f3TwG45CvIUVKAiDyxaBvszWjUc65Au9MWrxGt2iBCdO+4H3ahywV24IVwY9TWCjXqbR8vZ3XDdfeM1OSvdY5M8I74578640MxTAw/GBK7r05/NRxJEz/evz6yCQGSun7pW3I0m5cOBcKrVxIwHNTJEWiE1/lEghYoJXhe9i+jWYMBwgk5uh/ZdBtmbPKlNeltBc72g7+o800K4rqaauKw1WzT2c2E9yMIMSWnWqabLUKdtuJM7EZqSznDoxvWkEsx5z0w7+RWJvsx5mDE=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <CEC7288450529F44A8DA96EFAE138F1B@namprd15.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S2388986AbfHWQKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 12:10:11 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:39671 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388976AbfHWQKK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 12:10:10 -0400
+Received: by mail-pl1-f193.google.com with SMTP id z3so5843368pln.6
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 09:10:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=broadcom.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=brEz57KSv9M0lzRju932ZTp5uWTNGJMBeYQNt57q3B8=;
+        b=LSk4JaiG3kNahJym5ph4p7/DJszhGCxXYsNz9CSryZBvZSEWdvgKnM9o/iYlhJpnhY
+         CIxBe/BWxYQDTnOwVGPWaxb7855aVGTWS2LKsP+jgxko4VMfvsyEeaWp11bI5zR40AxO
+         SmqZ1nUYR4g85pD5hbkGczt5q5VVEQvWbckzs=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=brEz57KSv9M0lzRju932ZTp5uWTNGJMBeYQNt57q3B8=;
+        b=c+H08I/PN4kHH+6XUM15jZI1ZetM5NxIJyRgGZb6/BFMG4g7nHpwkiJOzWKz1b05w1
+         Jkx+dd9/uQ60f50tIVKySksbdgEUkObIMWddDsSA/k2cEfN2GRrTRfH8PQtVS9KpPN0I
+         v/ZsIgk8mCfsAKkq36IRvUmBwxQTc/7rueFEFCzOsV1rdV9HepLNeAcsViybWeoKZTf4
+         XFScWLOT0bMiGZVJLEmclQ5Ig7CGVO6U1LMh3c2O0AXCttC6GUWH3TPXPaVGbYRFIKOD
+         Ej6eURBR+Bj8weu07FdUr6EmlTikUieEmr+5tFhqJP7MI33NdkhnZCe1HcX6iBVexUpk
+         aoQQ==
+X-Gm-Message-State: APjAAAVVfMvdJqDgn4lxqx4u61Ek/QWoPYVwdBFk34GrpxX3ilkPYgk7
+        Sksn9Ep7sUZnUKYShK4zWbxBuA==
+X-Google-Smtp-Source: APXvYqxiP2ekIBBxAiFgPENCMVwHMGc68Z6hyNSBFfdXPSdkPG9bT4Of774IUlvHarZSaUjmecbKzA==
+X-Received: by 2002:a17:902:f24:: with SMTP id 33mr3626425ply.309.1566576609501;
+        Fri, 23 Aug 2019 09:10:09 -0700 (PDT)
+Received: from [10.136.13.65] ([192.19.228.250])
+        by smtp.gmail.com with ESMTPSA id a142sm3342737pfd.147.2019.08.23.09.10.06
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 23 Aug 2019 09:10:08 -0700 (PDT)
+Subject: =?UTF-8?Q?Re=3a_=5bPATCH=5d_ethernet=3a_Delete_unnecessary_checks_b?=
+ =?UTF-8?Q?efore_the_macro_call_=e2=80=9cdev=5fkfree=5fskb=e2=80=9d?=
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Markus Elfring <Markus.Elfring@web.de>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        intel-wired-lan@lists.osuosl.org,
+        bcm-kernel-feedback-list@broadcom.com,
+        UNGLinuxDriver@microchip.com,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Allison Randal <allison@lohutok.net>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Doug Berger <opendmb@gmail.com>,
+        Douglas Miller <dougmill@linux.ibm.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
+        Jilayne Lovejoy <opensource@jilayne.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        Kate Stewart <kstewart@linuxfoundation.org>
+Cc:     kernel-janitors@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+References: <af1ae1cf-4a01-5e3a-edc2-058668487137@web.de>
+ <4ab7f2a5-f472-f462-9d4c-7c8d5237c44e@wanadoo.fr>
+From:   Scott Branden <scott.branden@broadcom.com>
+Message-ID: <c90f0649-0dc0-df9a-21e6-ae6566ca5935@broadcom.com>
+Date:   Fri, 23 Aug 2019 09:10:02 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7c1112eb-bb53-4728-5a6f-08d727e2f406
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Aug 2019 16:00:01.2860
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ygap23WFSEYYvR0aysGfVkLeTtS1K83gultpzRG+rShtpVLbPuE9Di5b0EkjMboq
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2981
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-23_06:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=962 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908230160
-X-FB-Internal: deliver
+In-Reply-To: <4ab7f2a5-f472-f462-9d4c-7c8d5237c44e@wanadoo.fr>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gOC8yMy8xOSAyOjIyIEFNLCBKaXJpIE9sc2Egd3JvdGU6DQo+IGJ0dywgdGhlIGxpYmJwZiBH
-SCByZXBvIHRhZyB2MC4wLjQgaGFzIDAuMC4zIHZlcnNpb24gc2V0IGluIE1ha2VmaWxlOg0KPiAN
-Cj4gICAgVkVSU0lPTiA9IDANCj4gICAgUEFUQ0hMRVZFTCA9IDANCj4gICAgRVhUUkFWRVJTSU9O
-ID0gMw0KPiANCj4gY3VycmVudCBjb2RlIHRha2VzIHZlcnNpb24gZnJvbSBsaWJicGYubWFwIHNv
-IGl0J3MgZmluZSwNCj4gYnV0IHdvdWxkIGJlIGdyZWF0IHRvIHN0YXJ0IGZyb20gMC4wLjUgc28g
-d2UgZG9uJ3QgbmVlZCB0bw0KPiBib3RoZXIgd2l0aCBycG0gcGF0Y2hlcy4uIGlzIDAuMC41IHBs
-YW5uZWQgc29vbj8NCg0KVGVjaG5pY2FsbHkgd2UgY2FuIGJ1bXAgaXQgYXQgYW55IHRpbWUuDQpU
-aGUgZ29hbCB3YXMgdG8gYnVtcCBpdCBvbmx5IHdoZW4gbmV3IGtlcm5lbCBpcyByZWxlYXNlZA0K
-dG8gY2FwdHVyZSBhIGNvbGxlY3Rpb24gb2YgbmV3IEFQSXMgaW4gYSBnaXZlbiAwLjAuWCByZWxl
-YXNlLg0KU28gdGhhdCBsaWJicGYgdmVyc2lvbnMgYXJlIHN5bmNocm9uaXplZCB3aXRoIGtlcm5l
-bCB2ZXJzaW9ucw0KaW4gc29tZSB3aGF0IGxvb3NlIHdheS4NCkluIHRoaXMgY2FzZSB3ZSBjYW4g
-bWFrZSBhbiBleGNlcHRpb24gYW5kIGJ1bXAgaXQgbm93Lg0K
+
+On 2019-08-23 7:08 a.m., Christophe JAILLET wrote:
+> Hi,
+>
+> in this patch, there is one piece that looked better before. (see below)
+>
+> Removing the 'if (skb)' is fine, but concatening everything in one 
+> statement just to save 2 variables and a few LOC is of no use, IMHO, 
+> and the code is less readable.
+Agreed.
+>
+> just my 2c.
+>
+>
+> CJ
+>
+>
+> diff --git a/drivers/net/ethernet/broadcom/genet/bcmgenet.c 
+> b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> index d3a0b614dbfa..8b19ddcdafaa 100644
+> --- a/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> +++ b/drivers/net/ethernet/broadcom/genet/bcmgenet.c
+> @@ -2515,19 +2515,14 @@ static int bcmgenet_dma_teardown(struct 
+> bcmgenet_priv *priv)
+>  static void bcmgenet_fini_dma(struct bcmgenet_priv *priv)
+>  {
+>      struct netdev_queue *txq;
+> -    struct sk_buff *skb;
+> -    struct enet_cb *cb;
+>      int i;
+>
+>      bcmgenet_fini_rx_napi(priv);
+>      bcmgenet_fini_tx_napi(priv);
+>
+> -    for (i = 0; i < priv->num_tx_bds; i++) {
+> -        cb = priv->tx_cbs + i;
+> -        skb = bcmgenet_free_tx_cb(&priv->pdev->dev, cb);
+> -        if (skb)
+> -            dev_kfree_skb(skb);
+> -    }
+> +    for (i = 0; i < priv->num_tx_bds; i++)
+> + dev_kfree_skb(bcmgenet_free_tx_cb(&priv->pdev->dev,
+> +                          priv->tx_cbs + i));
+>
+>      for (i = 0; i < priv->hw_params->tx_queues; i++) {
+>          txq = netdev_get_tx_queue(priv->dev, priv->tx_rings[i].queue);
