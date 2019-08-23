@@ -2,67 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3DF9B83E
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 23:35:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B88EA9B844
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 23:41:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436950AbfHWVdw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 17:33:52 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38164 "EHLO
+        id S2436965AbfHWVlr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 17:41:47 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38218 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732682AbfHWVdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 17:33:51 -0400
+        with ESMTP id S2436959AbfHWVlq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 17:41:46 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 2D74B1543B2AA;
-        Fri, 23 Aug 2019 14:33:51 -0700 (PDT)
-Date:   Fri, 23 Aug 2019 14:33:50 -0700 (PDT)
-Message-Id: <20190823.143350.122492125918705806.davem@davemloft.net>
-To:     hayeswang@realtek.com
-Cc:     netdev@vger.kernel.org, nic_swsd@realtek.com,
-        linux-kernel@vger.kernel.org, jslaby@suse.cz
-Subject: Re: [PATCH net 2/2] r8152: avoid using napi_disable after
- netif_napi_del.
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 523501543B3FE;
+        Fri, 23 Aug 2019 14:41:46 -0700 (PDT)
+Date:   Fri, 23 Aug 2019 14:41:45 -0700 (PDT)
+Message-Id: <20190823.144145.340164012400486097.davem@davemloft.net>
+To:     jeffv@google.com
+Cc:     netdev@vger.kernel.org, linux-security-module@vger.kernel.org,
+        selinux@vger.kernel.org
+Subject: Re: [PATCH 1/2] rtnetlink: gate MAC address with an LSM hook
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1394712342-15778-316-Taiwan-albertk@realtek.com>
-References: <1394712342-15778-314-Taiwan-albertk@realtek.com>
-        <1394712342-15778-316-Taiwan-albertk@realtek.com>
+In-Reply-To: <CABXk95BF=RfqFSHU_---DRHDoKyFON5kS_vYJbc4ns2OS=_t0w@mail.gmail.com>
+References: <20190821134547.96929-1-jeffv@google.com>
+        <20190822.161913.326746900077543343.davem@davemloft.net>
+        <CABXk95BF=RfqFSHU_---DRHDoKyFON5kS_vYJbc4ns2OS=_t0w@mail.gmail.com>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 23 Aug 2019 14:33:51 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Fri, 23 Aug 2019 14:41:46 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hayes Wang <hayeswang@realtek.com>
-Date: Fri, 23 Aug 2019 16:53:02 +0800
+From: Jeffrey Vander Stoep <jeffv@google.com>
+Date: Fri, 23 Aug 2019 13:41:38 +0200
 
-> Exchange netif_napi_del() and unregister_netdev() in rtl8152_disconnect()
-> to avoid using napi_disable() after netif_napi_del().
-> 
-> Signed-off-by: Hayes Wang <hayeswang@realtek.com>
-> ---
->  drivers/net/usb/r8152.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
-> index 690a24d1ef82..29390eda5251 100644
-> --- a/drivers/net/usb/r8152.c
-> +++ b/drivers/net/usb/r8152.c
-> @@ -5364,8 +5364,8 @@ static void rtl8152_disconnect(struct usb_interface *intf)
->  	if (tp) {
->  		rtl_set_unplug(tp);
->  
-> -		netif_napi_del(&tp->napi);
->  		unregister_netdev(tp->netdev);
-> +		netif_napi_del(&tp->napi);
->  		cancel_delayed_work_sync(&tp->hw_phy_work);
->  		tp->rtl_ops.unload(tp);
->  		free_netdev(tp->netdev);
+> I could make this really generic by adding a single hook to the end of
+> sock_msgrecv() which would allow an LSM to modify the message to omit
+> the MAC address and any other information that we deem as sensitive in the
+> future. Basically what Casey was suggesting. Thoughts on that approach?
 
-This is completely redundant because free_netdev() will perform all of
-the necessary netif_napi_del() calls.
+Editing the SKB in place is generally frowned upon, and it could be cloned
+and in used by other code paths even, so would need to be copied or COW'd.
