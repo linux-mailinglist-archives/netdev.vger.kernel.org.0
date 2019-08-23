@@ -2,124 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D86189AB40
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 11:22:58 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E980E9AB57
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 11:30:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728263AbfHWJW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 05:22:57 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:52796 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728247AbfHWJW5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 05:22:57 -0400
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 788C88D5BB8;
-        Fri, 23 Aug 2019 09:22:56 +0000 (UTC)
-Received: from krava (unknown [10.43.17.33])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 63ADD4526;
-        Fri, 23 Aug 2019 09:22:54 +0000 (UTC)
-Date:   Fri, 23 Aug 2019 11:22:53 +0200
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Julia Kartseva <hex@fb.com>
-Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        "labbott@redhat.com" <labbott@redhat.com>,
-        "acme@kernel.org" <acme@kernel.org>,
-        "debian-kernel@lists.debian.org" <debian-kernel@lists.debian.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Andrii Nakryiko <andriin@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        Alexei Starovoitov <ast@fb.com>, Yonghong Song <yhs@fb.com>,
-        "jolsa@kernel.org" <jolsa@kernel.org>
-Subject: Re: libbpf distro packaging
-Message-ID: <20190823092253.GA20775@krava>
-References: <3FBEC3F8-5C3C-40F9-AF6E-C355D8F62722@fb.com>
- <20190813122420.GB9349@krava>
- <CAEf4BzbG29eAL7gUV+Vyrrft4u4Ss8ZBC6RMixJL_CYOTQ+F2w@mail.gmail.com>
- <FA139BA4-59E5-43C7-8E72-C7B2FC1C449E@fb.com>
- <A770810D-591E-4292-AEFA-563724B6D6CB@fb.com>
- <20190821210906.GA31031@krava>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190821210906.GA31031@krava>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.69]); Fri, 23 Aug 2019 09:22:56 +0000 (UTC)
+        id S1732052AbfHWJ3g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 05:29:36 -0400
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:4782 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732010AbfHWJ3f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 05:29:35 -0400
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7N9Ri39029234
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 05:29:34 -0400
+Received: from e06smtp04.uk.ibm.com (e06smtp04.uk.ibm.com [195.75.94.100])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 2ujd4ph1qu-1
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 05:29:34 -0400
+Received: from localhost
+        by e06smtp04.uk.ibm.com with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted
+        for <netdev@vger.kernel.org> from <jwi@linux.ibm.com>;
+        Fri, 23 Aug 2019 10:29:32 +0100
+Received: from b06cxnps3074.portsmouth.uk.ibm.com (9.149.109.194)
+        by e06smtp04.uk.ibm.com (192.168.101.134) with IBM ESMTP SMTP Gateway: Authorized Use Only! Violators will be prosecuted;
+        (version=TLSv1/SSLv3 cipher=AES256-GCM-SHA384 bits=256/256)
+        Fri, 23 Aug 2019 10:29:29 +0100
+Received: from d06av22.portsmouth.uk.ibm.com (d06av22.portsmouth.uk.ibm.com [9.149.105.58])
+        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7N9TRRD40632420
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 23 Aug 2019 09:29:27 GMT
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 585434C04A;
+        Fri, 23 Aug 2019 09:29:27 +0000 (GMT)
+Received: from d06av22.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 112CA4C040;
+        Fri, 23 Aug 2019 09:29:27 +0000 (GMT)
+Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
+        by d06av22.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Fri, 23 Aug 2019 09:29:26 +0000 (GMT)
+From:   Julian Wiedmann <jwi@linux.ibm.com>
+To:     David Miller <davem@davemloft.net>
+Cc:     <netdev@vger.kernel.org>, <linux-s390@vger.kernel.org>,
+        Heiko Carstens <heiko.carstens@de.ibm.com>,
+        Stefan Raspl <raspl@linux.ibm.com>,
+        Ursula Braun <ubraun@linux.ibm.com>,
+        Julian Wiedmann <jwi@linux.ibm.com>
+Subject: [PATCH net] s390/qeth: reject oversized SNMP requests
+Date:   Fri, 23 Aug 2019 11:29:23 +0200
+X-Mailer: git-send-email 2.17.1
+X-TM-AS-GCONF: 00
+x-cbid: 19082309-0016-0000-0000-000002A21518
+X-IBM-AV-DETECTION: SAVI=unused REMOTE=unused XFE=unused
+x-cbparentid: 19082309-0017-0000-0000-00003302525E
+Message-Id: <20190823092923.8507-1-jwi@linux.ibm.com>
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-23_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908230098
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 11:09:06PM +0200, Jiri Olsa wrote:
-> On Tue, Aug 20, 2019 at 10:27:23PM +0000, Julia Kartseva wrote:
-> > 
-> > 
-> > ﻿On 8/19/19, 11:08 AM, "Julia Kartseva" <hex@fb.com> wrote:
-> > 
-> >     On 8/13/19, 11:24 AM, "Andrii Nakryiko" <andrii.nakryiko@gmail.com> wrote:
-> >     
-> >         On Tue, Aug 13, 2019 at 5:26 AM Jiri Olsa <jolsa@redhat.com> wrote:
-> >         >
-> >         > On Mon, Aug 12, 2019 at 07:04:12PM +0000, Julia Kartseva wrote:
-> >         > > I would like to bring up libbpf publishing discussion started at [1].
-> >         > > The present state of things is that libbpf is built from kernel tree, e.g. [2]
-> >         > > For Debian and [3] for Fedora whereas the better way would be having a
-> >         > > package built from github mirror. The advantages of the latter:
-> >         > > - Consistent, ABI matching versioning across distros
-> >         > > - The mirror has integration tests
-> >         > > - No need in kernel tree to build a package
-> >         > > - Changes can be merged directly to github w/o waiting them to be merged
-> >         > > through bpf-next -> net-next -> main
-> >         > > There is a PR introducing a libbpf.spec which can be used as a starting point: [4]
-> >         > > Any comments regarding the spec itself can be posted there.
-> >         > > In the future it may be used as a source of truth.
-> >         > > Please consider switching libbpf packaging to the github mirror instead
-> >         > > of the kernel tree.
-> >         > > Thanks
-> >         > >
-> >         > > [1] https://urldefense.proofpoint.com/v2/url?u=https-3A__lists.iovisor.org_g_iovisor-2Ddev_message_1521&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=dYAc2jLhFg0wtCZ_ms2HF5bWANoHzA3UMug5TNCeBtE&e= 
-> >         > > [2] https://urldefense.proofpoint.com/v2/url?u=https-3A__packages.debian.org_sid_libbpf4.19&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=lq1MpF-bt6y6ZEtFc57eT-BO_wMBx8uUBACJooWbUYk&e= 
-> >         > > [3] https://urldefense.proofpoint.com/v2/url?u=http-3A__rpmfind.net_linux_RPM_fedora_devel_rawhide_x86-5F64_l_libbpf-2D5.3.0-2D0.rc2.git0.1.fc31.x86-5F64.html&d=DwIBaQ&c=5VD0RTtNlTh3ycd41b3MUw&r=zUrDY_Sp_5PqcGtRQPNeDA&m=prYVDiu3-aH1o2PWH4ZcP7lEQRCQAcTwcWPrJrtaroQ&s=NoolYHL57G2KhzE768iWdy6v5LD2GfJQyqPmtjy196E&e= 
-> >         > > [4] https://github.com/libbpf/libbpf/pull/64
-> >         >
-> >         > hi,
-> >         > Fedora has libbpf as kernel-tools subpackage, so I think
-> >         > we'd need to create new package and deprecate the current
-> >         >
-> >         > but I like the ABI stability by using github .. how's actually
-> >         > the sync (in both directions) with kernel sources going on?
-> >         
-> >         Sync is always in one direction, from kernel sources into Github repo.
-> >         Right now it's triggered by a human (usually me), but we are using a
-> >         script that automates entire process (see
-> >         https://github.com/libbpf/libbpf/blob/master/scripts/sync-kernel.sh).
-> >         It cherry-pick relevant commits from kernel, transforms them to match
-> >         Github's file layout and re-applies those changes to Github repo.
-> >         
-> >         There is never a sync from Github back to kernel, but Github repo
-> >         contains some extra stuff that's not in kernel. E.g., the script I
-> >         mentioned, plus Github's Makefile is different, because it can't rely
-> >         on kernel's kbuild setup.
-> > 
-> > Hi Jiri,
-> > I'm curious if you have any comments regarding sync procedure described
-> > By Andrii. Or if there is anything else you'd like us to address so Fedora
-> > can be switched to libbpf built from the github mirror?
-> 
-> hi,
-> yea, I think it's ok.. just need to check the implications
-> for rhel packaging and I'll let you know
+Commit d4c08afafa04 ("s390/qeth: streamline SNMP cmd code") removed
+the bounds checking for req_len, under the assumption that the check in
+qeth_alloc_cmd() would suffice.
 
-btw, the libbpf GH repo tag v0.0.4 has 0.0.3 version set in Makefile:
+But that code path isn't sufficiently robust to handle a user-provided
+data_length, which could overflow (when adding the cmd header overhead)
+before being checked against QETH_BUFSIZE. We end up allocating just a
+tiny iob, and the subsequent copy_from_user() writes past the end of
+that iob.
 
-  VERSION = 0
-  PATCHLEVEL = 0
-  EXTRAVERSION = 3
+Special-case this path and add a coarse bounds check, to protect against
+maliciuous requests. This let's the subsequent code flow do its normal
+job and precise checking, without risk of overflow.
 
-current code takes version from libbpf.map so it's fine,
-but would be great to start from 0.0.5 so we don't need to
-bother with rpm patches.. is 0.0.5 planned soon?
+Fixes: d4c08afafa04 ("s390/qeth: streamline SNMP cmd code")
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Julian Wiedmann <jwi@linux.ibm.com>
+Reviewed-by: Ursula Braun <ubraun@linux.ibm.com>
+---
+ drivers/s390/net/qeth_core_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-thanks,
-jirka
+diff --git a/drivers/s390/net/qeth_core_main.c b/drivers/s390/net/qeth_core_main.c
+index 9c3310c4d61d..6502b148541e 100644
+--- a/drivers/s390/net/qeth_core_main.c
++++ b/drivers/s390/net/qeth_core_main.c
+@@ -4374,6 +4374,10 @@ static int qeth_snmp_command(struct qeth_card *card, char __user *udata)
+ 	    get_user(req_len, &ureq->hdr.req_len))
+ 		return -EFAULT;
+ 
++	/* Sanitize user input, to avoid overflows in iob size calculation: */
++	if (req_len > QETH_BUFSIZE)
++		return -EINVAL;
++
+ 	iob = qeth_get_adapter_cmd(card, IPA_SETADP_SET_SNMP_CONTROL, req_len);
+ 	if (!iob)
+ 		return -ENOMEM;
+-- 
+2.17.1
+
