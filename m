@@ -2,127 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4E269B0A8
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 15:22:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A305F9B0D5
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 15:26:06 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405434AbfHWNU1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 09:20:27 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:34425 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404322AbfHWNU0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 09:20:26 -0400
-Received: by mail-qt1-f193.google.com with SMTP id q4so11144879qtp.1;
-        Fri, 23 Aug 2019 06:20:26 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=1LfnWFWs0YWvUwvqhsL90T++L1EYbaF8DCL5i8TnlTQ=;
-        b=IGcqT2L9Wkft5cAwK651j3W3eBHxve8x0C4MyikQws9NcZLM190a7/AA3JZ1HtXWpy
-         GdGzRMoVVUREaXD/dkNg6XQgREa2yhuygZpG1qGG7MEL2Hf2V3TlohAf1wgBYw4asGVS
-         iZG2a+U7LL18sOQP9/LmObdflOitwFE4afnCDwhPo9LKKZdkGqSxdF18BsijKXc4C+qU
-         I04eNIzpKktFUyypNR34I9HyQBVBufsb9RUKdTcB7yETG7bHE7Od/XvFgGtMSbaUy7Un
-         8iRj4oNsHd+pb7mswL7+8gOIzrxF05qPOBd0o5ksLHEvQCipM/Q8OP9zEV82Cs3yc5oF
-         LzUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=1LfnWFWs0YWvUwvqhsL90T++L1EYbaF8DCL5i8TnlTQ=;
-        b=brEH7N+bW7HHW94T6SUYRun/EZFF2317VKNtaId2V02F+V7777R17OrQ+7CF9+goTb
-         JQn3cjTbAP32H9vFiaHgr9d/0ESvU/9PStuCln4Z3m7u7G6lkgudrA27+A0gRurCWo+L
-         uc79PCeKgSrCa3kHxXrFSpH1HXDa66Frzh5m2fcL2OdmYZFk+mnkugI3Ywg1X1LTI0xV
-         quJK/8bJigr+p0i4FQrfJZ1TvvJM0JHX+iKhqtZJng58N/siUrJCX9jZkya2TO7kSLhb
-         5GP56Kifp9riAXEkMtjXTUUtkJg4y2osjK08tvARsEcGvtM8vYCKB/G7leSOHd0+aycI
-         7LDw==
-X-Gm-Message-State: APjAAAWBPRGcR4BiFweSxcMlA76mwU4N19eUnYjmXwuOVZDpR55vzx4a
-        IjNo+f6J+StNbWJNUbbv3KhfxlZ0iRWYXNTl6Zg=
-X-Google-Smtp-Source: APXvYqzwV94dsSIn/VkYPZoc4KCCI+cdmF8oVTo1U8feC63LjNcIddNEQlDaT+/Y6KbvgkLYv+gJ6MnwAOt5WD+BwGo=
-X-Received: by 2002:a0c:abca:: with SMTP id k10mr3794577qvb.177.1566566425657;
- Fri, 23 Aug 2019 06:20:25 -0700 (PDT)
+        id S2405474AbfHWNZq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 09:25:46 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:55060 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389802AbfHWNZq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 09:25:46 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=AgwFiLu0EACaDMPU3nVH88QXua+KzaStz26zPOJIN8I=; b=uTDQQT6rWKx2Wf4n20xHa+E1yu
+        Shj56AdUjogsV/v9JEiBh9YDQYexFknZ4ftWAD7oZuV5Cd9raeljUHsd4dlwdIu/MhopBAp2fzN+4
+        HDbyGeT6xGdZ/v79J32sQtrcsUN9Swl+qxJK5JzEtTSRCndImFPuhGbv/mdr7LR+85Zk=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i19ZS-0003rk-Ch; Fri, 23 Aug 2019 15:25:38 +0200
+Date:   Fri, 23 Aug 2019 15:25:38 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        roopa@cumulusnetworks.com, davem@davemloft.net,
+        UNGLinuxDriver@microchip.com, alexandre.belloni@bootlin.com,
+        allan.nielsen@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH 0/3] Add NETIF_F_HW_BRIDGE feature
+Message-ID: <20190823132538.GO13020@lunn.ch>
+References: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+ <1e16da88-08c5-abd5-0a3e-b8e6c3db134a@cumulusnetworks.com>
+ <b2c52206-82d1-ef28-aeec-a5dcdbe9df6c@cumulusnetworks.com>
+ <20190823122657.njk2tcgur2zu74i7@soft-dev3.microsemi.net>
 MIME-Version: 1.0
-References: <CGME20190822171243eucas1p12213f2239d6c36be515dade41ed7470b@eucas1p1.samsung.com>
- <20190822171237.20798-1-i.maximets@samsung.com> <CAKgT0UepBGqx=FiqrdC-r3kvkMxVAHonkfc6rDt_HVQuzahZPQ@mail.gmail.com>
- <CALDO+SYhU4krmBO8d4hsDGm+BuUAR4qMv=WzVa=jAx27+g9KnA@mail.gmail.com> <217e90f5-206a-bb80-6699-f6dd750b57d9@intel.com>
-In-Reply-To: <217e90f5-206a-bb80-6699-f6dd750b57d9@intel.com>
-From:   William Tu <u9012063@gmail.com>
-Date:   Fri, 23 Aug 2019 06:19:49 -0700
-Message-ID: <CALDO+SZGXKW_PMrL_AarT3i8WPcM0X=RkEhTnKCDnUkS1cOH0Q@mail.gmail.com>
-Subject: Re: [PATCH net v3] ixgbe: fix double clean of tx descriptors with xdp
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
-        Ilya Maximets <i.maximets@samsung.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        Eelco Chaudron <echaudro@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190823122657.njk2tcgur2zu74i7@soft-dev3.microsemi.net>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 11:10 PM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.c=
-om> wrote:
->
-> On 2019-08-22 19:32, William Tu wrote:
-> > On Thu, Aug 22, 2019 at 10:21 AM Alexander Duyck
-> > <alexander.duyck@gmail.com> wrote:
-> >>
-> >> On Thu, Aug 22, 2019 at 10:12 AM Ilya Maximets <i.maximets@samsung.com=
-> wrote:
-> >>>
-> >>> Tx code doesn't clear the descriptors' status after cleaning.
-> >>> So, if the budget is larger than number of used elems in a ring, some
-> >>> descriptors will be accounted twice and xsk_umem_complete_tx will mov=
-e
-> >>> prod_tail far beyond the prod_head breaking the completion queue ring=
-.
-> >>>
-> >>> Fix that by limiting the number of descriptors to clean by the number
-> >>> of used descriptors in the tx ring.
-> >>>
-> >>> 'ixgbe_clean_xdp_tx_irq()' function refactored to look more like
-> >>> 'ixgbe_xsk_clean_tx_ring()' since we're allowed to directly use
-> >>> 'next_to_clean' and 'next_to_use' indexes.
-> >>>
-> >>> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-> >>> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> >>> ---
-> >>>
-> >>> Version 3:
-> >>>    * Reverted some refactoring made for v2.
-> >>>    * Eliminated 'budget' for tx clean.
-> >>>    * prefetch returned.
-> >>>
-> >>> Version 2:
-> >>>    * 'ixgbe_clean_xdp_tx_irq()' refactored to look more like
-> >>>      'ixgbe_xsk_clean_tx_ring()'.
-> >>>
-> >>>   drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 29 ++++++++---------=
----
-> >>>   1 file changed, 11 insertions(+), 18 deletions(-)
-> >>
-> >> Thanks for addressing my concerns.
-> >>
-> >> Acked-by: Alexander Duyck <alexander.h.duyck@linux.intel.com>
-> >
-> > Thanks.
-> >
-> > Tested-by: William Tu <u9012063@gmail.com>
-> >
->
-> Will, thanks for testing! For this patch, did you notice any performance
-> degradation?
->
+> > > Why do the devices have to be from the same driver ?
+> After seeing yours and Andrews comments I realize that I try to do two
+> things, but I have only explained one of them.
+> 
+> Here is what I was trying to do:
+> A. Prevent ports from going into promisc mode, if it is not needed.
 
-No noticeable performance degradation seen this time.
-Thanks,
-William
+The switch definition is promisc is a bit odd. You really need to
+split it into two use cases.
+
+The Linux interface is not a member of a bridge. In this case, promisc
+mode would mean all frames ingressing the port should be forwarded to
+the CPU. Without promisc, you can program the hardware to just accept
+frames with the interfaces MAC address. So this is just the usual
+behaviour of an interface.
+
+When the interface is part of the bridge, then you can turn on all the
+learning and not forward frames to the CPU, unless the CPU asks for
+them. But you need to watch out for various flags. By default, you
+should flood to the CPU, unknown destinations to the CPU etc. But some
+of these can be turned off by flags.
+
+> B. Prevent adding the CPU to the flood-mask (in Ocelot we have a
+> flood-mask controlling who should be included when flooding due to
+> destination unknown).
+
+So destination unknown should be flooded to the CPU. The CPU might
+know where to send the frame.
+
+> To solve item "B", the network driver needs to detect if there is a
+> foreign interfaces added to the bridge. If that is the case then to add
+> the CPU port to the flooding mask otherwise no.
+
+It is not just a foreign interface. What about the MAC address on the
+bridge interface?
+
+> > > This is too specific targeting some devices.
+> Maybe I was wrong to mention specific HW in the commit message. The
+> purpose of the patch was to add an optimization (not to copy all the
+> frames to the CPU) for HW that is capable of learning and flooding the
+> frames.
+
+To some extent, this is also tied to your hardware not learning MAC
+addresses from frames passed from the CPU. You should also consider
+fixing this. The SW bridge does send out notifications when it
+adds/removes MAC addresses to its tables. You probably want to receive
+this modifications, and use them to program your hardware to forward
+frames to the CPU when needed.
+
+       Andrew
