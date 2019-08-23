@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 575AE9B4BD
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:45:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 355E99B4BF
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:45:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391046AbfHWQnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 12:43:41 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:36521 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389221AbfHWQnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 12:43:41 -0400
-Received: by mail-pg1-f196.google.com with SMTP id l21so6063831pgm.3;
-        Fri, 23 Aug 2019 09:43:40 -0700 (PDT)
+        id S2391220AbfHWQoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 12:44:07 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:36549 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731416AbfHWQoG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 12:44:06 -0400
+Received: by mail-pg1-f195.google.com with SMTP id l21so6064392pgm.3;
+        Fri, 23 Aug 2019 09:44:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CMg7dz48IyUm/ULuv/1H/MJ+YRjy1SWtr1VrTKhDXkM=;
-        b=o7wI99JV5WW84MxLHb+sGgfAzmeVfDQ1XxR9QqYp6MJo/lpbe/u4z5oIJFteUpSfua
-         F1EuU5Yz8RLvUvUJn8jUWx6uchBpfQ6SVnQvWkCok3452tGmTEJSppPb4qk0Qz/UP0vz
-         ESpe+nr/LM4ZAOOf0/T5zoa8VRNQJWQPVE5827SbHU1pmg5UMvln0I4cdd2Y7jfw0dlk
-         xchm8+pBZtVGbIipOipzkxOB9NFUrZ5G0rnI1GFy3Z74nHc6V/60jrefV+WRk0EvH+0e
-         HfKvZvLvMz66WIPc6NLaxJmDVMUXaIYrtqvId75gf2l2adYnDv10t5bGoLb4Mj6erozt
-         v3rA==
+        bh=9FkUWk2koiGP5t+9Cf7hM3Mv8GQDSr7QcD1deZ+CtUA=;
+        b=WoXi66Cy/8h3WQlSYkDuJd08D3y+EwGmLF6zg1ssIE6ghxJJMttFeoWRYgAi3AHpCo
+         rP6rcdZheID2HOokxsopolXdYld2c4ngprE8Y1lRENOyVVPQgu/eB+cRqjJ1c5NjKhyb
+         qmj8MAcue43N8XqojU5ECkndLwpNXRZfk+Fw27233yBjk7QQ1H9MQ5Pfcdzqll0TFCcz
+         VUeuE6RVei2TsEMMlyYiEZSfw71L+mHO1NskN2i3SwhSwSvQ9ytdGHhWZR8hqJux2I8K
+         3hJMv+egsfj5KIiSs0m7z4E8VTKDFdPhXTsNm7SCTio2t8vO0x0vkJ8MHqFQmPYowlxu
+         7u8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CMg7dz48IyUm/ULuv/1H/MJ+YRjy1SWtr1VrTKhDXkM=;
-        b=m3JhVVUVsK7BGUd3npVAdHB37H0I6ql8BVkGtnOzFVREAnkywoegwrahH1ly/jL6Jn
-         hoMCYn0CTGllZAtwTbUgi2deMUW8ePWLF7cg4Fri1GEnhPxcKmBd9qBul+dGBcpjLEQY
-         hkD52SuyOIar/yZCYNV5nc6i5xWHi/FVp/zdF29qD522fQ7Q2GaY12E+qznhTm/pe/kF
-         XTsc6OHDr85BKfd7DpRWzdICDrT9FNBmmOt9hngzjMFkwTH6uybN3Rx6Fjd2MVOZ+pdw
-         VZSDRQSAoaEAEepQGtByhyA9l5zYyub2P8TMoCOVm8EZjW7seRnBa9aLsuzd+NuWNuKP
-         60sA==
-X-Gm-Message-State: APjAAAU6IvfPJXlCunLRHnNDagGg0a+hJDC09Per2KInq7Yc6RbKFaJ2
-        6BzTzT9DPxzqioobOGm+2TI=
-X-Google-Smtp-Source: APXvYqzp3OniX7nGok/COpPNlZeyPAUV7KniiDTGnJOEN8fVYUKwSUvdYDEYo3zhtx4bLmiV5ZWPKw==
-X-Received: by 2002:a63:724f:: with SMTP id c15mr4883466pgn.257.1566578620244;
-        Fri, 23 Aug 2019 09:43:40 -0700 (PDT)
+        bh=9FkUWk2koiGP5t+9Cf7hM3Mv8GQDSr7QcD1deZ+CtUA=;
+        b=oJ8QcyLCEPf/sHyZu69hOEoI5GsCCZd8myWzZ4gRrG/T4laKI3rx6l1oVfDFJmeEpM
+         IyjtedarAw686gXsGvSx7OzCLtTfdLGB/R4Zf8X0jz8qFNiVqzc7oOzCs0FdbNdIC2XO
+         WcWV2523uWMkHmMsAFjckJoTvQ1MdOjHUu8K5FMtjvxEM/ZGC17NPA4OujKn2IeLf1BA
+         CiIpVQGWKoUoG1OlYONHs0mB4JpAeCZqoco3PwgqUxPACh37qLrc6i8Emw0KVxvIcr4Q
+         PRaCpnB8ssMGNrNWu311UFpRDGBrt/ub+ul0GGom8OuGlpU9xx5H+vfB3jjGaUhAA9QS
+         YKIA==
+X-Gm-Message-State: APjAAAV0+E7iYYkeOtEsVQpSoJ4ZbwyA8qiXyJBYh0y6kOUn0fpLIGv+
+        AphlmmP4ENZ5WPO/6hJRxVM=
+X-Google-Smtp-Source: APXvYqwBYD9EroZPyISbuH/pTGIgLC93zLICmPmkDYONWc77rpBu4jNWTjPetr04gMD8V0sG4/qEDg==
+X-Received: by 2002:a17:90a:c086:: with SMTP id o6mr6437568pjs.2.1566578646063;
+        Fri, 23 Aug 2019 09:44:06 -0700 (PDT)
 Received: from [172.26.99.184] ([2620:10d:c090:180::b6f7])
-        by smtp.gmail.com with ESMTPSA id bt18sm3017029pjb.1.2019.08.23.09.43.38
+        by smtp.gmail.com with ESMTPSA id bt18sm3017029pjb.1.2019.08.23.09.44.04
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 23 Aug 2019 09:43:39 -0700 (PDT)
+        Fri, 23 Aug 2019 09:44:05 -0700 (PDT)
 From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
 To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@gmail.com>
 Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
@@ -52,14 +52,13 @@ Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org,
         syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
         hdanton@sina.com, i.maximets@samsung.com
-Subject: Re: [PATCH bpf-next 1/4] xsk: avoid store-tearing when assigning
- queues
-Date:   Fri, 23 Aug 2019 09:43:37 -0700
+Subject: Re: [PATCH bpf-next 3/4] xsk: avoid store-tearing when assigning umem
+Date:   Fri, 23 Aug 2019 09:44:04 -0700
 X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <AE2608DC-C4FD-4406-8ACA-0717A83F3585@gmail.com>
-In-Reply-To: <20190822091306.20581-2-bjorn.topel@gmail.com>
+Message-ID: <48E7E6D5-B50A-4431-9200-EB23B14BB952@gmail.com>
+In-Reply-To: <20190822091306.20581-4-bjorn.topel@gmail.com>
 References: <20190822091306.20581-1-bjorn.topel@gmail.com>
- <20190822091306.20581-2-bjorn.topel@gmail.com>
+ <20190822091306.20581-4-bjorn.topel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
@@ -74,11 +73,11 @@ On 22 Aug 2019, at 2:13, Björn Töpel wrote:
 
 > From: Björn Töpel <bjorn.topel@intel.com>
 >
-> Use WRITE_ONCE when doing the store of tx, rx, fq, and cq, to avoid
-> potential store-tearing. These members are read outside of the control
-> mutex in the mmap implementation.
+> The umem member of struct xdp_sock is read outside of the control
+> mutex, in the mmap implementation, and needs a WRITE_ONCE to avoid
+> potentional store-tearing.
 >
-> Fixes: 37b076933a8e ("xsk: add missing write- and data-dependency barrier")
+> Fixes: 423f38329d26 ("xsk: add umem fill queue support and mmap")
 > Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 
 Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
