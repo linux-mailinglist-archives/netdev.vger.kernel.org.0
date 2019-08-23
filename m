@@ -2,73 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8B2839B8ED
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 01:37:38 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B733F9B8FA
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 01:38:18 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726824AbfHWXff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 19:35:35 -0400
-Received: from www62.your-server.de ([213.133.104.62]:52606 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725892AbfHWXff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 19:35:35 -0400
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www62.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i1J5b-0001oM-Bv; Sat, 24 Aug 2019 01:35:27 +0200
-Received: from [178.197.249.40] (helo=pc-63.home)
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1i1J5b-000PRZ-59; Sat, 24 Aug 2019 01:35:27 +0200
-Subject: Re: [PATCH bpf] bpf: fix precision tracking in presence of bpf2bpf
- calls
-To:     Alexei Starovoitov <ast@kernel.org>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, kernel-team@fb.com
-References: <20190821210710.1276117-1-ast@kernel.org>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <0a921eb3-a3f7-8b23-cf61-87a4761cfc00@iogearbox.net>
-Date:   Sat, 24 Aug 2019 01:35:26 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1727783AbfHWXiL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 19:38:11 -0400
+Received: from mga06.intel.com ([134.134.136.31]:14902 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726946AbfHWXhw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 23 Aug 2019 19:37:52 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 23 Aug 2019 16:37:51 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,422,1559545200"; 
+   d="scan'208";a="184354404"
+Received: from jtkirshe-desk1.jf.intel.com ([134.134.177.96])
+  by orsmga006.jf.intel.com with ESMTP; 23 Aug 2019 16:37:50 -0700
+From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
+To:     davem@davemloft.net
+Cc:     Jeff Kirsher <jeffrey.t.kirsher@intel.com>, netdev@vger.kernel.org,
+        nhorman@redhat.com, sassmann@redhat.com
+Subject: [net-next 00/14][pull request] 100GbE Intel Wired LAN Driver Updates 2019-08-23
+Date:   Fri, 23 Aug 2019 16:37:36 -0700
+Message-Id: <20190823233750.7997-1-jeffrey.t.kirsher@intel.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <20190821210710.1276117-1-ast@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25550/Fri Aug 23 10:25:33 2019)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/21/19 11:07 PM, Alexei Starovoitov wrote:
-> While adding extra tests for precision tracking and extra infra
-> to adjust verifier heuristics the existing test
-> "calls: cross frame pruning - liveness propagation" started to fail.
-> The root cause is the same as described in verifer.c comment:
-> 
->   * Also if parent's curframe > frame where backtracking started,
->   * the verifier need to mark registers in both frames, otherwise callees
->   * may incorrectly prune callers. This is similar to
->   * commit 7640ead93924 ("bpf: verifier: make sure callees don't prune with caller differences")
->   * For now backtracking falls back into conservative marking.
-> 
-> Turned out though that returning -ENOTSUPP from backtrack_insn() and
-> doing mark_all_scalars_precise() in the current parentage chain is not enough.
-> Depending on how is_state_visited() heuristic is creating parentage chain
-> it's possible that callee will incorrectly prune caller.
-> Fix the issue by setting precise=true earlier and more aggressively.
-> Before this fix the precision tracking _within_ functions that don't do
-> bpf2bpf calls would still work. Whereas now precision tracking is completely
-> disabled when bpf2bpf calls are present anywhere in the program.
-> 
-> No difference in cilium tests (they don't have bpf2bpf calls).
-> No difference in test_progs though some of them have bpf2bpf calls,
-> but precision tracking wasn't effective there.
-> 
-> Fixes: b5dc0163d8fd ("bpf: precise scalar_value tracking")
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+This series contains updates to ice driver only.
 
-Applied, thanks!
+Dave adds logic for the necessary bits to be set in the VSI context for
+the PF_VSI and the TX_descriptors for control packets egressing the
+PF_VSI.  Updated the logic to detect both DCBx and LLDP states in the
+firmware engine to account for situations where DCBx is enabled and LLDP
+is disabled.  Fixed the driver to treat the DCBx state of "NOT_STARTED"
+as a valid state and should not assume "is_fw_lldp" true automatically.
+Since "enable-fw-lldp" flag was confusing and cumbersome, change the
+flag to "fw-lldp-agent" with a value of on or off to help clarify
+whether the LLDP agent is running or not.
+
+Brett fixes an issue where synchronize_irq() was being called from the
+host of VF's, which should not be done.
+
+Michal fixed an issue when rebuilding the DCBx configuration while in
+IEEE mode versus CEE mode, so add a check before copying the
+configuration value to ensure we are only in CEE mode.
+
+Jake fixes the PF to reject any VF request to setup head writeback since
+the support has been deprecated.
+
+Mitch adds an additional check to ensure the VF is active before sending
+out an error message that a message was unable to be sent to a
+particular VF.
+
+Chinh updates the driver to use "topology" mode when checking the PHY
+for status, since this mode provides us the current module type that is
+available.  Fixes the driver from clearing the auto_fec_enable bit which
+was blocking a user from forcing non-spec compliant FEC configurations.
+
+Amruth does a refactor on the code to first check, then assign in the
+virtual channel space.
+
+Bruce updates the driver to actually update the stats when a user runs
+the ethtool command 'ethtool -S <iface>' instead of providing a snapshot
+of the stats that maybe from a second ago.
+
+Akeem fixes up the adding/removing of VSI MAC filters for VFs, so that
+VFs cannot add/remove a filter from another VSI.  We now track the
+number of filters added right from when the VF resources get allocated
+and won't get into MAC filter mis-match issue in the switch.
+
+The following are changes since commit 6d24e14140053febc5ac1ce46baca6a4334c5f6c:
+  net/ncsi: update response packet length for GCPS/GNS/GNPTS commands
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jkirsher/next-queue 100GbE
+
+Akeem G Abodunrin (2):
+  ice: Fix issues updating VSI MAC filters
+  ice: Don't allow VSI to remove unassociated ucast filter
+
+Amruth G.P (1):
+  ice: Add input handlers for virtual channel handlers
+
+Brett Creeley (1):
+  ice: Don't call synchronize_irq() for VF's from the host
+
+Bruce Allan (1):
+  ice: update ethtool stats on-demand
+
+Chinh T Cao (2):
+  ice: Fix flag used for module query
+  ice: Don't clear auto_fec bit in ice_cfg_phy_fec()
+
+Dave Ertman (4):
+  ice: Allow egress control packets from PF_VSI
+  ice: Account for all states of FW DCBx and LLDP
+  ice: Treat DCBx state NOT_STARTED as valid
+  ice: Rename ethtool private flag for lldp
+
+Jacob Keller (1):
+  ice: reject VF attempts to enable head writeback
+
+Michal Swiatkowski (1):
+  ice: Copy dcbx configuration only if mode is correct
+
+Mitch Williams (1):
+  ice: silence some bogus error messages
+
+ drivers/net/ethernet/intel/ice/ice.h          |   4 +-
+ .../net/ethernet/intel/ice/ice_adminq_cmd.h   |   1 +
+ drivers/net/ethernet/intel/ice/ice_common.c   |  11 +-
+ drivers/net/ethernet/intel/ice/ice_dcb.c      |   3 +-
+ drivers/net/ethernet/intel/ice/ice_dcb_lib.c  |  42 +++----
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  13 +-
+ drivers/net/ethernet/intel/ice/ice_lib.c      |  45 ++++++-
+ drivers/net/ethernet/intel/ice/ice_lib.h      |   4 +
+ drivers/net/ethernet/intel/ice/ice_main.c     |  70 +++--------
+ drivers/net/ethernet/intel/ice/ice_switch.c   |  56 +++++++++
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  11 +-
+ .../net/ethernet/intel/ice/ice_virtchnl_pf.c  | 113 +++++++++---------
+ 12 files changed, 225 insertions(+), 148 deletions(-)
+
+-- 
+2.21.0
+
