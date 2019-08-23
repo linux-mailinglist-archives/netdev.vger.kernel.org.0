@@ -2,129 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C5D4F9B482
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:35:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 02BA19B487
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:35:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436731AbfHWQap (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 12:30:45 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:55526 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388826AbfHWQao (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 12:30:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=awuwnE92Er2PK628thfY5rV7b5FrmsaiwMNv462F5W0=; b=nVycf3ePO/M/WEfw2za9u1NDET
-        tVumvy5/sw0cJFdUqQjfcDSDZ7QGM2zFAqJpnJRbgIhDaz5F2tkJ7m+xYG+Ay92Oqd1nP/2qHUnQt
-        RsQS60LcCsV5RLJC++BSwpX4rWsQYIRImJg/qXkKDQVd7i1ksLdkCKblL2VMn//lWppI=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i1CST-0005Lu-TP; Fri, 23 Aug 2019 18:30:37 +0200
-Date:   Fri, 23 Aug 2019 18:30:37 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, ioana.ciornei@nxp.com
-Subject: Re: [PATCH net-next] dpaa2-eth: Add pause frame support
-Message-ID: <20190823163037.GA19727@lunn.ch>
-References: <1566573579-9940-1-git-send-email-ruxandra.radulescu@nxp.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1566573579-9940-1-git-send-email-ruxandra.radulescu@nxp.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+        id S2436756AbfHWQci (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 12:32:38 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:46054 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436736AbfHWQcf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 12:32:35 -0400
+Received: by mail-pl1-f196.google.com with SMTP id y8so5854991plr.12;
+        Fri, 23 Aug 2019 09:32:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=N2qESvJr/1pmMF3Ae2nRMhv+Yh2vmLQcSbPIwWU4XqU=;
+        b=L6NTSam0xaVt4B1J7FbhhrgYZP5WgZ6n71bwbPTlq2kKZHhL5RuqZ8ASRxgVGcNDJO
+         4l6xeLN7Amq8qyJuqZ8BKsmzBSpjL0fBodG1aqg3UfhX6kRDtMkALRfnDKWE7ZtTH7JU
+         RoRqaR659oAqLh7aS3qTx0YfSYjWqVcQisBLf5f40AGfUPg4zHD9y+BvYW210M62/e1W
+         7h05jsT5TrcwvoaMS3lN7XLJ+2/CPSU7xhD0XTVGn7lURuVtuAk5VFS3WSqmsxHNh93W
+         7XOSKSrxSSfOiGwWmK9wJy7maWwdg9vnZ9JZRC7OyTup80tmVAixLvHOureZG0T2CZLA
+         BMZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=N2qESvJr/1pmMF3Ae2nRMhv+Yh2vmLQcSbPIwWU4XqU=;
+        b=djy3bmJbeZOWUcQ8FIvnDgis+46EnmEUAi+E8COaVS+RiQrSo1vUkyEndC03WR2LbN
+         32zyq2E+92hdrDqz/KWKIc9byoNgdAU3w9uLRM669uau7ZNA2V3vkybnHkD3aBG+yKW1
+         oAl26Xet5QcpTqLwtLX3OsNohnIeTExCGGFj76fku+F5MudtjTAGR5a6oLkSepUVypyQ
+         HuIWvsjd47dPHR6YpszxGB0e/vitpOYZ4YrxZPICbu2aN0/K0f8RoBWOOJ/ct6knmNu9
+         2Rz2SL0I1iBbyg6oGsfwBKakz1x1Rg2K1jadkdxRxMwmqeND60ttrF1Yx7XIhUt3+fF8
+         jRlA==
+X-Gm-Message-State: APjAAAUaD09s78AWFhvuwk5+H4whQNEJRrcPWeUUBjGKsC1CBqtQKLQb
+        1cwwi4xGRvjs70aXh6+9Hts=
+X-Google-Smtp-Source: APXvYqyacElY5Z9Q1CVjkdFuKXjzLiIAcvlHdRQz9qpZxIchxNE4oR4O04kSRxy29esYPVZIl+YGdg==
+X-Received: by 2002:a17:902:aa03:: with SMTP id be3mr5842278plb.240.1566577954950;
+        Fri, 23 Aug 2019 09:32:34 -0700 (PDT)
+Received: from localhost.localdomain ([139.198.121.136])
+        by smtp.gmail.com with ESMTPSA id u7sm3060251pfm.96.2019.08.23.09.32.31
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 23 Aug 2019 09:32:34 -0700 (PDT)
+From:   Feng Sun <loyou85@gmail.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, dsterba@suse.com, dbanerje@akamai.com,
+        fw@strlen.de, davej@codemonkey.org.uk, tglx@linutronix.de,
+        matwey@sai.msu.ru, sakari.ailus@linux.intel.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Feng Sun <loyou85@gmail.com>,
+        Xiaojun Zhao <xiaojunzhao141@gmail.com>
+Subject: [PATCH] net: fix skb use after free in netpoll_send_skb_on_dev
+Date:   Sat, 24 Aug 2019 00:32:00 +0800
+Message-Id: <1566577920-20956-1-git-send-email-loyou85@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-ethtool.c
-> @@ -78,29 +78,20 @@ static int
->  dpaa2_eth_get_link_ksettings(struct net_device *net_dev,
->  			     struct ethtool_link_ksettings *link_settings)
->  {
-> -	struct dpni_link_state state = {0};
-> -	int err = 0;
->  	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
->  
-> -	err = dpni_get_link_state(priv->mc_io, 0, priv->mc_token, &state);
-> -	if (err) {
-> -		netdev_err(net_dev, "ERROR %d getting link state\n", err);
-> -		goto out;
-> -	}
-> -
->  	/* At the moment, we have no way of interrogating the DPMAC
->  	 * from the DPNI side - and for that matter there may exist
->  	 * no DPMAC at all. So for now we just don't report anything
->  	 * beyond the DPNI attributes.
->  	 */
-> -	if (state.options & DPNI_LINK_OPT_AUTONEG)
-> +	if (priv->link_state.options & DPNI_LINK_OPT_AUTONEG)
->  		link_settings->base.autoneg = AUTONEG_ENABLE;
-> -	if (!(state.options & DPNI_LINK_OPT_HALF_DUPLEX))
-> +	if (!(priv->link_state.options & DPNI_LINK_OPT_HALF_DUPLEX))
->  		link_settings->base.duplex = DUPLEX_FULL;
-> -	link_settings->base.speed = state.rate;
-> +	link_settings->base.speed = priv->link_state.rate;
->  
-> -out:
-> -	return err;
-> +	return 0;
+After commit baeababb5b85d5c4e6c917efe2a1504179438d3b
+("tun: return NET_XMIT_DROP for dropped packets"),
+when tun_net_xmit drop packets, it will free skb and return NET_XMIT_DROP,
+netpoll_send_skb_on_dev will run into two use after free cases:
+1. retry netpoll_start_xmit with freed skb;
+2. queue freed skb in npinfo->txq.
 
-Hi Ioana
+hit the first case with following kernel log:
 
-I think this patch can be broken up a bit, to help review.
+[  117.864773] kernel BUG at mm/slub.c:306!
+[  117.864773] invalid opcode: 0000 [#1] SMP PTI
+[  117.864774] CPU: 3 PID: 2627 Comm: loop_printmsg Kdump: loaded Tainted: P           OE     5.3.0-050300rc5-generic #201908182231
+[  117.864775] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Ubuntu-1.8.2-1ubuntu1 04/01/2014
+[  117.864775] RIP: 0010:kmem_cache_free+0x28d/0x2b0
+[  117.864781] Call Trace:
+[  117.864781]  ? tun_net_xmit+0x21c/0x460
+[  117.864781]  kfree_skbmem+0x4e/0x60
+[  117.864782]  kfree_skb+0x3a/0xa0
+[  117.864782]  tun_net_xmit+0x21c/0x460
+[  117.864782]  netpoll_start_xmit+0x11d/0x1b0
+[  117.864788]  netpoll_send_skb_on_dev+0x1b8/0x200
+[  117.864789]  __br_forward+0x1b9/0x1e0 [bridge]
+[  117.864789]  ? skb_clone+0x53/0xd0
+[  117.864790]  ? __skb_clone+0x2e/0x120
+[  117.864790]  deliver_clone+0x37/0x50 [bridge]
+[  117.864790]  maybe_deliver+0x89/0xc0 [bridge]
+[  117.864791]  br_flood+0x6c/0x130 [bridge]
+[  117.864791]  br_dev_xmit+0x315/0x3c0 [bridge]
+[  117.864792]  netpoll_start_xmit+0x11d/0x1b0
+[  117.864792]  netpoll_send_skb_on_dev+0x1b8/0x200
+[  117.864792]  netpoll_send_udp+0x2c6/0x3e8
+[  117.864793]  write_msg+0xd9/0xf0 [netconsole]
+[  117.864793]  console_unlock+0x386/0x4e0
+[  117.864793]  vprintk_emit+0x17e/0x280
+[  117.864794]  vprintk_default+0x29/0x50
+[  117.864794]  vprintk_func+0x4c/0xbc
+[  117.864794]  printk+0x58/0x6f
+[  117.864795]  loop_fun+0x24/0x41 [printmsg_loop]
+[  117.864795]  kthread+0x104/0x140
+[  117.864795]  ? 0xffffffffc05b1000
+[  117.864796]  ? kthread_park+0x80/0x80
+[  117.864796]  ret_from_fork+0x35/0x40
 
-It looks like this change to report state via priv->link_state should
-be a separate patch. I think this change can be made without the pause
-changes. That then makes the pause changes themselves simpler.
+Signed-off-by: Feng Sun <loyou85@gmail.com>
+Signed-off-by: Xiaojun Zhao <xiaojunzhao141@gmail.com>
+---
+ net/core/netpoll.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> +static void dpaa2_eth_get_pauseparam(struct net_device *net_dev,
-> +				     struct ethtool_pauseparam *pause)
-> +{
-> +	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-> +	u64 link_options = priv->link_state.options;
-> +
-> +	pause->rx_pause = !!(link_options & DPNI_LINK_OPT_PAUSE);
-> +	pause->tx_pause = pause->rx_pause ^
-> +			  !!(link_options & DPNI_LINK_OPT_ASYM_PAUSE);
+diff --git a/net/core/netpoll.c b/net/core/netpoll.c
+index 2cf27da..b4bffe6 100644
+--- a/net/core/netpoll.c
++++ b/net/core/netpoll.c
+@@ -335,7 +335,7 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
+ 
+ 				HARD_TX_UNLOCK(dev, txq);
+ 
+-				if (status == NETDEV_TX_OK)
++				if (status == NETDEV_TX_OK || status == NET_XMIT_DROP)
+ 					break;
+ 
+ 			}
+@@ -352,7 +352,7 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
+ 
+ 	}
+ 
+-	if (status != NETDEV_TX_OK) {
++	if (status != NETDEV_TX_OK && status != NET_XMIT_DROP) {
+ 		skb_queue_tail(&npinfo->txq, skb);
+ 		schedule_delayed_work(&npinfo->tx_work,0);
+ 	}
+-- 
+2.7.4
 
-Since you don't support auto-neg, you should set pause->autoneg to
-false. It probably already is set to false, by a memset, but setting
-it explicitly is a form of documentation, this hardware only supports
-forced pause configuration.
-
-> +}
-> +
-> +static int dpaa2_eth_set_pauseparam(struct net_device *net_dev,
-> +				    struct ethtool_pauseparam *pause)
-> +{
-> +	struct dpaa2_eth_priv *priv = netdev_priv(net_dev);
-> +	struct dpni_link_cfg cfg = {0};
-> +	int err;
-> +
-> +	if (!dpaa2_eth_has_pause_support(priv)) {
-> +		netdev_info(net_dev, "No pause frame support for DPNI version < %d.%d\n",
-> +			    DPNI_PAUSE_VER_MAJOR, DPNI_PAUSE_VER_MINOR);
-> +		return -EOPNOTSUPP;
-> +	}
-> +
-> +	if (pause->autoneg)
-> +		netdev_err(net_dev, "Pause frame autoneg not supported\n");
-
-And here you should return -EOPNOTSUPP. No need for an netdev_err. It
-is not an error, you simply don't support it.
-
-There is also the issue of what is the PHY doing? It would not be good
-if the MAC is configured one way, but the PHY is advertising something
-else. So it appears you have no control over the PHY. But i assume you
-know what the PHY is actually doing? Does it advertise pause/asym
-pause?
-
-It might be, to keep things consistent, we only accept pause
-configuration when auto-neg in general is disabled.
-
-   Andrew
