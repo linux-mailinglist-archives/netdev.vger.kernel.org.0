@@ -2,126 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 122BE9AE2D
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 13:35:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 223D09AE48
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 13:41:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392681AbfHWLdN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 07:33:13 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:37896 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732587AbfHWLdN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 07:33:13 -0400
-Received: by mail-pg1-f196.google.com with SMTP id e11so5642330pga.5;
-        Fri, 23 Aug 2019 04:33:12 -0700 (PDT)
+        id S2393012AbfHWLlw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 07:41:52 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:35131 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392919AbfHWLlw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 07:41:52 -0400
+Received: by mail-lj1-f195.google.com with SMTP id l14so8588165lje.2
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 04:41:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=e+cZDcDRNXNc8zri6wufdoX708flCdxqlrHLRtb2ICQ=;
-        b=R14uWYabaccyTsGH+krKYWmeiV28XzUA/iZCMuKsus7esVUWZQ4amigz7Msa8WZ6WB
-         n8ChEB6IBfuH+ZCncKvwP1d0fTRngKOA+X1xIP5qSKc4jsCcwIW0/aNk5VOpYGJz+gEW
-         kuWmDy7wJCWG6cGSVMTow/hki5muIbe6yPPj9cJq1Czbek4sAoFdsoZskTo99i7Zi/qk
-         SP7uZ8MKfUdVnn7DlD9j6arcpnNJTNUtY2bYOU0+A5yI9yZM1Q2ZqJLteV9sC0H4Pus4
-         A+WfJw5+oh6Tpyx1M4eZWVFucDYBPb4HcQ2rDGC0EtJnSALEtxe77EEN61cEs24OM8Cy
-         +wzA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=Wc0pBV8XYSwempgeR3yggrLrzcmJJBDB5ERRq19QP4w=;
+        b=IUnWnbLScb1sugwDDrGxqMlHj/JXkMfX4z4uuO9U6yHS5KHJK9DFMSGSFJLfbBFnka
+         bgNqVz0VssAEuGgxdSTJQQsrCEXiCtJ9hM+u75ufGAYUzEBUKZDwvP1RNg/OmBeAwRwc
+         +sonJewfnrQp3IWhIjAEnjn/mVUrYhP+QON2sSin9pO5PIy3xLvN+nmNL0XfQedWsDfk
+         VWbYca0GncQtpQh8WdIvH6NeEKjVAzPSf+EPh98YVuBGofsp6CT+PsRceJDw+HklzBE0
+         kNtdPOBlzSYblHeP4Wm+pBoABI3lYqvOttY6AAHjjHAJo4O9iUhQo9WqnnFUsz4XtNOa
+         T9DA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=e+cZDcDRNXNc8zri6wufdoX708flCdxqlrHLRtb2ICQ=;
-        b=mXvFeTObdYA9rfg3TeZlETPMUQFE3FcM7gpmonaJjJpauG2HU6U8Uj9bgQodaAmN0m
-         h3f1uI5dxhluHGwcf3KsviR/+SsuzV0fEEr9AeHy+7mT1qxZ4Dpzp4hR4xWbXUCoOpVd
-         PSbb4MQagYXyFMrKstrmSHP/MZ8nxOcTMCPVKhX+4f5yQe9Gn4UUEirV5vZ6neGL16qn
-         49dXNihLSaTYzSNLae6YfDUekLoQ6pzPd1IvIAgixRkitCzN7J12vMZgF/qfoEvSj5d5
-         yC+g9GN+Xj7dEfjSJdEGulk0q87qHn9STmSN4P2zcheqEPs5JHFTj9vNs/5g/BgtlRwB
-         jC5g==
-X-Gm-Message-State: APjAAAUWDpOCLNdp7DL0gbP+iTsom/LAZ2MItuVZLIdSVxcF+YYoa0UE
-        oR/OwggQJBE5Fpy+ZvKCJY9m5Quz1Q4=
-X-Google-Smtp-Source: APXvYqyfIVb90xcU1sHzhaoKoXAV/ohcFAQAnWmxmf4dLvOYdyZqWmChVlvFxdIuvumPCrXHR3deAA==
-X-Received: by 2002:a65:6904:: with SMTP id s4mr3547773pgq.33.1566559992065;
-        Fri, 23 Aug 2019 04:33:12 -0700 (PDT)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 6sm2320172pfa.7.2019.08.23.04.33.10
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 23 Aug 2019 04:33:11 -0700 (PDT)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        syzkaller-bugs@googlegroups.com
-Subject: [PATCH net-next] net: ipv6: fix listify ip6_rcv_finish in case of forwarding
-Date:   Fri, 23 Aug 2019 19:33:03 +0800
-Message-Id: <e355527b374f6ce70fcc286457f87592cd8f3dcc.1566559983.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=Wc0pBV8XYSwempgeR3yggrLrzcmJJBDB5ERRq19QP4w=;
+        b=V8vcfUimuYcqQf+qowDtdaLHMaroYF23QKDSLb9u4kmoybzgmLAxY/ZpHCyEEA5uKW
+         FqzoMABntrJekGF6sHIQNDFl8TibJrYpIbH+FUTPvjiA7ZKvh1f4FUKzdI34+XAYJJYL
+         /2rHTki6aVreLJrZUO2deVf/h/XDr4NBR/Wp2zLhV+YJMAUkGOGvaGeFTD7XwAgNlzpX
+         e54l5yCcI+5aiwXgqMtfnys0D31VuDguFuL3PWEK+e4rVgtyFs4C09dlqVrUfDt2u567
+         UHf9oJpTJ3gafAXaFDQVV3jqUGg2/fTbKN3klwSSEmlAN04RkQjSNKzOg1EHZC3/5lQw
+         7KfA==
+X-Gm-Message-State: APjAAAUCORL45RZ+wIGsdCNN0utbHM1RKyx4D6XK+4ia/uHk3YCVeJk/
+        AA2ieF2RG28sxVHGlrLb4dhjfihrnHCFRTdRGQ9AnQ==
+X-Google-Smtp-Source: APXvYqwEuB/cMhl/nAEC7z/qHRnNiNTz/9Il2JH8941tpayvBx6eYlh6aTC2ePXDkr4MAsscUOZ/3mxjMhMkFFMl2ek=
+X-Received: by 2002:a2e:2b0a:: with SMTP id q10mr2628388lje.203.1566560510230;
+ Fri, 23 Aug 2019 04:41:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190821134547.96929-1-jeffv@google.com> <20190822.161913.326746900077543343.davem@davemloft.net>
+In-Reply-To: <20190822.161913.326746900077543343.davem@davemloft.net>
+From:   Jeffrey Vander Stoep <jeffv@google.com>
+Date:   Fri, 23 Aug 2019 13:41:38 +0200
+Message-ID: <CABXk95BF=RfqFSHU_---DRHDoKyFON5kS_vYJbc4ns2OS=_t0w@mail.gmail.com>
+Subject: Re: [PATCH 1/2] rtnetlink: gate MAC address with an LSM hook
+To:     David Miller <davem@davemloft.net>
+Cc:     netdev@vger.kernel.org,
+        LSM List <linux-security-module@vger.kernel.org>,
+        selinux@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-We need a similar fix for ipv6 as Commit 0761680d5215 ("net: ipv4: fix
-listify ip_rcv_finish in case of forwarding") does for ipv4.
+On Fri, Aug 23, 2019 at 1:19 AM David Miller <davem@davemloft.net> wrote:
+>
+> From: Jeff Vander Stoep <jeffv@google.com>
+> Date: Wed, 21 Aug 2019 15:45:47 +0200
+>
+> > MAC addresses are often considered sensitive because they are
+> > usually unique and can be used to identify/track a device or
+> > user [1].
+> >
+> > The MAC address is accessible via the RTM_NEWLINK message type of a
+> > netlink route socket[2]. Ideally we could grant/deny access to the
+> > MAC address on a case-by-case basis without blocking the entire
+> > RTM_NEWLINK message type which contains a lot of other useful
+> > information. This can be achieved using a new LSM hook on the netlink
+> > message receive path. Using this new hook, individual LSMs can select
+> > which processes are allowed access to the real MAC, otherwise a
+> > default value of zeros is returned. Offloading access control
+> > decisions like this to an LSM is convenient because it preserves the
+> > status quo for most Linux users while giving the various LSMs
+> > flexibility to make finer grained decisions on access to sensitive
+> > data based on policy.
+> >
+> > [1] https://adamdrake.com/mac-addresses-udids-and-privacy.html
+> > [2] Other access vectors like ioctl(SIOCGIFHWADDR) are already covered
+> > by existing LSM hooks.
+> >
+> > Signed-off-by: Jeff Vander Stoep <jeffv@google.com>
+>
+> I'm sure the MAC address will escape into userspace via other means,
+> dumping pieces of networking config in other contexts, etc.  I mean,
+> if I can get a link dump, I can dump the neighbor table as well.
 
-This issue can be reprocuded by syzbot since Commit 323ebb61e32b ("net:
-use listified RX for handling GRO_NORMAL skbs") on net-next. The call
-trace was:
+These are already gated by existing LSM hooks and capability checks.
+They are not allowed on mandatory access control systems unless explicitly
+granted.
 
-  kernel BUG at include/linux/skbuff.h:2225!
-  RIP: 0010:__skb_pull include/linux/skbuff.h:2225 [inline]
-  RIP: 0010:skb_pull+0xea/0x110 net/core/skbuff.c:1902
-  Call Trace:
-    sctp_inq_pop+0x2f1/0xd80 net/sctp/inqueue.c:202
-    sctp_endpoint_bh_rcv+0x184/0x8d0 net/sctp/endpointola.c:385
-    sctp_inq_push+0x1e4/0x280 net/sctp/inqueue.c:80
-    sctp_rcv+0x2807/0x3590 net/sctp/input.c:256
-    sctp6_rcv+0x17/0x30 net/sctp/ipv6.c:1049
-    ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
-    ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
-    NF_HOOK include/linux/netfilter.h:305 [inline]
-    NF_HOOK include/linux/netfilter.h:299 [inline]
-    ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
-    dst_input include/net/dst.h:442 [inline]
-    ip6_sublist_rcv_finish+0x98/0x1e0 net/ipv6/ip6_input.c:84
-    ip6_list_rcv_finish net/ipv6/ip6_input.c:118 [inline]
-    ip6_sublist_rcv+0x80c/0xcf0 net/ipv6/ip6_input.c:282
-    ipv6_list_rcv+0x373/0x4b0 net/ipv6/ip6_input.c:316
-    __netif_receive_skb_list_ptype net/core/dev.c:5049 [inline]
-    __netif_receive_skb_list_core+0x5fc/0x9d0 net/core/dev.c:5097
-    __netif_receive_skb_list net/core/dev.c:5149 [inline]
-    netif_receive_skb_list_internal+0x7eb/0xe60 net/core/dev.c:5244
-    gro_normal_list.part.0+0x1e/0xb0 net/core/dev.c:5757
-    gro_normal_list net/core/dev.c:5755 [inline]
-    gro_normal_one net/core/dev.c:5769 [inline]
-    napi_frags_finish net/core/dev.c:5782 [inline]
-    napi_gro_frags+0xa6a/0xea0 net/core/dev.c:5855
-    tun_get_user+0x2e98/0x3fa0 drivers/net/tun.c:1974
-    tun_chr_write_iter+0xbd/0x156 drivers/net/tun.c:2020
+>
+> I kinda think this is all very silly whack-a-mole kind of stuff, to
+> be quite honest.
 
-Fixes: d8269e2cbf90 ("net: ipv6: listify ipv6_rcv() and ip6_rcv_finish()")
-Fixes: 323ebb61e32b ("net: use listified RX for handling GRO_NORMAL skbs")
-Reported-by: syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com
-Reported-by: syzbot+4a0643a653ac375612d1@syzkaller.appspotmail.com
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- net/ipv6/ip6_input.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+We evaluated mechanisms for the MAC to reach unprivileged apps.
+A number of researchers have published on this as well such as:
+https://www.usenix.org/conference/usenixsecurity19/presentation/reardon
 
-diff --git a/net/ipv6/ip6_input.c b/net/ipv6/ip6_input.c
-index fa014d5..d432d00 100644
---- a/net/ipv6/ip6_input.c
-+++ b/net/ipv6/ip6_input.c
-@@ -80,8 +80,10 @@ static void ip6_sublist_rcv_finish(struct list_head *head)
- {
- 	struct sk_buff *skb, *next;
- 
--	list_for_each_entry_safe(skb, next, head, list)
-+	list_for_each_entry_safe(skb, next, head, list) {
-+		skb_list_del_init(skb);
- 		dst_input(skb);
-+	}
- }
- 
- static void ip6_list_rcv_finish(struct net *net, struct sock *sk,
--- 
-2.1.0
+Three "leaks" were identified, two have already been fixed.
+-ioctl(SIOCGIFHWADDR). Fixed using finer grained LSM checks
+on socket ioctls (similar to this change).
+-IPv6 IP addresses. Fixed by no longer including the MAC as part
+of the IP address.
+-RTM_NEWLINK netlink route messages. The last mole to be whacked.
 
+>
+> And like others have said, tomorrow you'll be like "oh crap, we should
+> block X too" and we'll get another hook, another config knob, another
+> rulset update, etc.
+
+This seems like an issue inherent with permissions/capabilities. I don=E2=
+=80=99t
+think we should abandon the concept of permissions because someone
+can forget to add a check.  Likewise, if someone adds new code to the
+kernel and omits a capable(CAP_NET_*) check, I would expect it to be
+fixed like any other bug without the idea of capability checks being tossed
+out.
+
+We need to do something because this information is being abused. Any
+recommendations? This seemed like the simplest approach, but I can
+definitely appreciate that it has downsides.
+
+I could make this really generic by adding a single hook to the end of
+sock_msgrecv() which would allow an LSM to modify the message to omit
+the MAC address and any other information that we deem as sensitive in the
+future. Basically what Casey was suggesting. Thoughts on that approach?
+
+Thanks for your help on this.
