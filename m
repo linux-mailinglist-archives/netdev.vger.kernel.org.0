@@ -2,336 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B92599B3ED
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 17:52:41 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 58DC89B414
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 17:58:01 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436582AbfHWPwe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 11:52:34 -0400
-Received: from mx1.redhat.com ([209.132.183.28]:48514 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726561AbfHWPwd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 11:52:33 -0400
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mx1.redhat.com (Postfix) with ESMTPS id 7C8A4106E288;
-        Fri, 23 Aug 2019 15:52:32 +0000 (UTC)
-Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 1C48F1001938;
-        Fri, 23 Aug 2019 15:52:31 +0000 (UTC)
-Date:   Fri, 23 Aug 2019 09:52:29 -0600
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Parav Pandit <parav@mellanox.com>
-Cc:     Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Kirti Wankhede <kwankhede@nvidia.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        cjia <cjia@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Message-ID: <20190823095229.210e1e84@x1.home>
-In-Reply-To: <AM0PR05MB4866867150DAABA422F25FF8D1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
-References: <20190820225722.237a57d2@x1.home>
-        <AM0PR05MB4866AE8FC4AA3CC24B08B326D1AA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190820232622.164962d3@x1.home>
-        <AM0PR05MB4866437FAA63C447CACCD7E5D1AA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190822092903.GA2276@nanopsycho.orion>
-        <AM0PR05MB4866A20F831A5D42E6C79EFED1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190822095823.GB2276@nanopsycho.orion>
-        <AM0PR05MB4866144FD76C302D04DA04B9D1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190822121936.GC2276@nanopsycho.orion>
-        <AM0PR05MB4866F9650CF73FC671972127D1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190823081221.GG2276@nanopsycho.orion>
-        <AM0PR05MB4866DED407D6F1C653D5D560D1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190823082820.605deb07@x1.home>
-        <AM0PR05MB4866867150DAABA422F25FF8D1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Organization: Red Hat
+        id S2387434AbfHWP54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 11:57:56 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:38019 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732573AbfHWP54 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 11:57:56 -0400
+Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa3.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa3.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: Pm7z/E98UruK5TtdCxCZCNU+ZRvp/+9HlOPD0AUFoJyABMfyU+xAzNOuBDawBH5/Z6ZmduOhXN
+ go9XFl1x3t23FRKn06k8yveLOkieX+ySuEI1QCyUkdF/j3v+S+Y3Yc+TeJeQVFRA3qmXkixiNP
+ B9l4FjgRp4sf8qXogTc7qypBbxRpnfS6XVEEkic9hkCiHhCqaQYq0Xx8dOkSvMDoKBG63Rd/7P
+ 7Vb+cofWs1PBLxogjlEexlWrFrgxciNDQtE9COjgF+2zCLRKXXdHMZyLQ1/EZ8e4NeIdezp7G+
+ fAI=
+X-IronPort-AV: E=Sophos;i="5.64,421,1559545200"; 
+   d="scan'208";a="46399058"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 23 Aug 2019 08:57:37 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 23 Aug 2019 08:57:37 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Fri, 23 Aug 2019 08:57:36 -0700
+Date:   Fri, 23 Aug 2019 17:57:36 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>,
+        <roopa@cumulusnetworks.com>, <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <allan.nielsen@microchip.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH 0/3] Add NETIF_F_HW_BRIDGE feature
+Message-ID: <20190823155734.4d2uihaylfv34nkg@soft-dev3.microsemi.net>
+References: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+ <1e16da88-08c5-abd5-0a3e-b8e6c3db134a@cumulusnetworks.com>
+ <b2c52206-82d1-ef28-aeec-a5dcdbe9df6c@cumulusnetworks.com>
+ <20190823122657.njk2tcgur2zu74i7@soft-dev3.microsemi.net>
+ <20190823132538.GO13020@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
-X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.64]); Fri, 23 Aug 2019 15:52:33 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190823132538.GO13020@lunn.ch>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Aug 2019 14:53:06 +0000
-Parav Pandit <parav@mellanox.com> wrote:
+Hi Andrew
 
-> > -----Original Message-----
-> > From: Alex Williamson <alex.williamson@redhat.com>
-> > Sent: Friday, August 23, 2019 7:58 PM
-> > To: Parav Pandit <parav@mellanox.com>
-> > Cc: Jiri Pirko <jiri@resnulli.us>; Jiri Pirko <jiri@mellanox.com>; David S . Miller
-> > <davem@davemloft.net>; Kirti Wankhede <kwankhede@nvidia.com>; Cornelia
-> > Huck <cohuck@redhat.com>; kvm@vger.kernel.org; linux-
-> > kernel@vger.kernel.org; cjia <cjia@nvidia.com>; netdev@vger.kernel.org
-> > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > 
-> > On Fri, 23 Aug 2019 08:14:39 +0000
-> > Parav Pandit <parav@mellanox.com> wrote:
-> >   
-> > > Hi Alex,
-> > >
-> > >  
-> > > > -----Original Message-----
-> > > > From: Jiri Pirko <jiri@resnulli.us>
-> > > > Sent: Friday, August 23, 2019 1:42 PM
-> > > > To: Parav Pandit <parav@mellanox.com>
-> > > > Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri Pirko
-> > > > <jiri@mellanox.com>; David S . Miller <davem@davemloft.net>; Kirti
-> > > > Wankhede <kwankhede@nvidia.com>; Cornelia Huck  
-> > <cohuck@redhat.com>;  
-> > > > kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
-> > > > <cjia@nvidia.com>; netdev@vger.kernel.org
-> > > > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > > >
-> > > > Thu, Aug 22, 2019 at 03:33:30PM CEST, parav@mellanox.com wrote:  
-> > > > >
-> > > > >  
-> > > > >> -----Original Message-----
-> > > > >> From: Jiri Pirko <jiri@resnulli.us>
-> > > > >> Sent: Thursday, August 22, 2019 5:50 PM
-> > > > >> To: Parav Pandit <parav@mellanox.com>
-> > > > >> Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri Pirko
-> > > > >> <jiri@mellanox.com>; David S . Miller <davem@davemloft.net>;
-> > > > >> Kirti Wankhede <kwankhede@nvidia.com>; Cornelia Huck  
-> > > > <cohuck@redhat.com>;  
-> > > > >> kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
-> > > > >> <cjia@nvidia.com>; netdev@vger.kernel.org
-> > > > >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > > > >>
-> > > > >> Thu, Aug 22, 2019 at 12:04:02PM CEST, parav@mellanox.com wrote:  
-> > > > >> >
-> > > > >> >  
-> > > > >> >> -----Original Message-----
-> > > > >> >> From: Jiri Pirko <jiri@resnulli.us>
-> > > > >> >> Sent: Thursday, August 22, 2019 3:28 PM
-> > > > >> >> To: Parav Pandit <parav@mellanox.com>
-> > > > >> >> Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri Pirko
-> > > > >> >> <jiri@mellanox.com>; David S . Miller <davem@davemloft.net>;
-> > > > >> >> Kirti Wankhede <kwankhede@nvidia.com>; Cornelia Huck  
-> > > > >> <cohuck@redhat.com>;  
-> > > > >> >> kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
-> > > > >> >> <cjia@nvidia.com>; netdev@vger.kernel.org
-> > > > >> >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > > > >> >>
-> > > > >> >> Thu, Aug 22, 2019 at 11:42:13AM CEST, parav@mellanox.com wrote:  
-> > > > >> >> >
-> > > > >> >> >  
-> > > > >> >> >> -----Original Message-----
-> > > > >> >> >> From: Jiri Pirko <jiri@resnulli.us>
-> > > > >> >> >> Sent: Thursday, August 22, 2019 2:59 PM
-> > > > >> >> >> To: Parav Pandit <parav@mellanox.com>
-> > > > >> >> >> Cc: Alex Williamson <alex.williamson@redhat.com>; Jiri
-> > > > >> >> >> Pirko <jiri@mellanox.com>; David S . Miller
-> > > > >> >> >> <davem@davemloft.net>; Kirti Wankhede
-> > > > >> >> >> <kwankhede@nvidia.com>; Cornelia Huck  
-> > > > >> >> <cohuck@redhat.com>;  
-> > > > >> >> >> kvm@vger.kernel.org; linux-kernel@vger.kernel.org; cjia
-> > > > >> >> >> <cjia@nvidia.com>; netdev@vger.kernel.org
-> > > > >> >> >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev
-> > > > >> >> >> core
-> > > > >> >> >>
-> > > > >> >> >> Wed, Aug 21, 2019 at 08:23:17AM CEST, parav@mellanox.com  
-> > wrote:  
-> > > > >> >> >> >
-> > > > >> >> >> >  
-> > > > >> >> >> >> -----Original Message-----
-> > > > >> >> >> >> From: Alex Williamson <alex.williamson@redhat.com>
-> > > > >> >> >> >> Sent: Wednesday, August 21, 2019 10:56 AM
-> > > > >> >> >> >> To: Parav Pandit <parav@mellanox.com>
-> > > > >> >> >> >> Cc: Jiri Pirko <jiri@mellanox.com>; David S . Miller
-> > > > >> >> >> >> <davem@davemloft.net>; Kirti Wankhede
-> > > > >> >> >> >> <kwankhede@nvidia.com>; Cornelia Huck
-> > > > >> >> >> >> <cohuck@redhat.com>; kvm@vger.kernel.org;
-> > > > >> >> >> >> linux-kernel@vger.kernel.org; cjia <cjia@nvidia.com>;
-> > > > >> >> >> >> netdev@vger.kernel.org
-> > > > >> >> >> >> Subject: Re: [PATCH v2 0/2] Simplify mtty driver and
-> > > > >> >> >> >> mdev core
-> > > > >> >> >> >>  
-> > > > >> >> >> >> > > > > Just an example of the alias, not proposing how it's set.
-> > > > >> >> >> >> > > > > In fact, proposing that the user does not set
-> > > > >> >> >> >> > > > > it, mdev-core provides one  
-> > > > >> >> >> >> > > automatically.  
-> > > > >> >> >> >> > > > >  
-> > > > >> >> >> >> > > > > > > Since there seems to be some prefix
-> > > > >> >> >> >> > > > > > > overhead, as I ask about above in how many
-> > > > >> >> >> >> > > > > > > characters we actually have to work with in
-> > > > >> >> >> >> > > > > > > IFNAMESZ, maybe we start with
-> > > > >> >> >> >> > > > > > > 8 characters (matching your "index"
-> > > > >> >> >> >> > > > > > > namespace) and expand as necessary for  
-> > > > >> >> >> disambiguation.  
-> > > > >> >> >> >> > > > > > > If we can eliminate overhead in IFNAMESZ,
-> > > > >> >> >> >> > > > > > > let's start with  
-> > > > >> 12.  
-> > > > >> >> >> >> > > > > > > Thanks,
-> > > > >> >> >> >> > > > > > >  
-> > > > >> >> >> >> > > > > > If user is going to choose the alias, why does
-> > > > >> >> >> >> > > > > > it have to be limited to  
-> > > > >> >> >> >> sha1?  
-> > > > >> >> >> >> > > > > > Or you just told it as an example?
-> > > > >> >> >> >> > > > > >
-> > > > >> >> >> >> > > > > > It can be an alpha-numeric string.  
-> > > > >> >> >> >> > > > >
-> > > > >> >> >> >> > > > > No, I'm proposing a different solution where
-> > > > >> >> >> >> > > > > mdev-core creates an alias based on an
-> > > > >> >> >> >> > > > > abbreviated sha1.  The user does not provide the  
-> > > > >> >> >> >> alias.  
-> > > > >> >> >> >> > > > >  
-> > > > >> >> >> >> > > > > > Instead of mdev imposing number of characters
-> > > > >> >> >> >> > > > > > on the alias, it should be best  
-> > > > >> >> >> >> > > > > left to the user.  
-> > > > >> >> >> >> > > > > > Because in future if netdev improves on the
-> > > > >> >> >> >> > > > > > naming scheme, mdev will be  
-> > > > >> >> >> >> > > > > limiting it, which is not right.  
-> > > > >> >> >> >> > > > > > So not restricting alias size seems right to me.
-> > > > >> >> >> >> > > > > > User configuring mdev for networking devices
-> > > > >> >> >> >> > > > > > in a given kernel knows what  
-> > > > >> >> >> >> > > > > user is doing.  
-> > > > >> >> >> >> > > > > > So user can choose alias name size as it finds suitable.  
-> > > > >> >> >> >> > > > >
-> > > > >> >> >> >> > > > > That's not what I'm proposing, please read again.
-> > > > >> >> >> >> > > > > Thanks,  
-> > > > >> >> >> >> > > >
-> > > > >> >> >> >> > > > I understood your point. But mdev doesn't know how
-> > > > >> >> >> >> > > > user is going to use  
-> > > > >> >> >> >> > > udev/systemd to name the netdev.  
-> > > > >> >> >> >> > > > So even if mdev chose to pick 12 characters, it
-> > > > >> >> >> >> > > > could result in  
-> > > > >> >> collision.  
-> > > > >> >> >> >> > > > Hence the proposal to provide the alias by the
-> > > > >> >> >> >> > > > user, as user know the best  
-> > > > >> >> >> >> > > policy for its use case in the environment its using.  
-> > > > >> >> >> >> > > > So 12 character sha1 method will still work by user.  
-> > > > >> >> >> >> > >
-> > > > >> >> >> >> > > Haven't you already provided examples where certain
-> > > > >> >> >> >> > > drivers or subsystems have unique netdev prefixes?
-> > > > >> >> >> >> > > If mdev provides a unique alias within the
-> > > > >> >> >> >> > > subsystem, couldn't we simply define a netdev prefix
-> > > > >> >> >> >> > > for the mdev subsystem and avoid all other
-> > > > >> >> >> >> > > collisions?  I'm not in favor of the user providing
-> > > > >> >> >> >> > > both a uuid and an alias/instance.  Thanks,
-> > > > >> >> >> >> > >  
-> > > > >> >> >> >> > For a given prefix, say ens2f0, can two UUID->sha1
-> > > > >> >> >> >> > first 9 characters have  
-> > > > >> >> >> >> collision?
-> > > > >> >> >> >>
-> > > > >> >> >> >> I think it would be a mistake to waste so many chars on
-> > > > >> >> >> >> a prefix, but
-> > > > >> >> >> >> 9 characters of sha1 likely wouldn't have a collision
-> > > > >> >> >> >> before we have 10s of thousands of devices.  Thanks,
-> > > > >> >> >> >>
-> > > > >> >> >> >> Alex  
-> > > > >> >> >> >
-> > > > >> >> >> >Jiri, Dave,
-> > > > >> >> >> >Are you ok with it for devlink/netdev part?
-> > > > >> >> >> >Mdev core will create an alias from a UUID.
-> > > > >> >> >> >
-> > > > >> >> >> >This will be supplied during devlink port attr set such
-> > > > >> >> >> >as,
-> > > > >> >> >> >
-> > > > >> >> >> >devlink_port_attrs_mdev_set(struct devlink_port *port,
-> > > > >> >> >> >const char *mdev_alias);
-> > > > >> >> >> >
-> > > > >> >> >> >This alias is used to generate representor netdev's  
-> > phys_port_name.  
-> > > > >> >> >> >This alias from the mdev device's sysfs will be used by
-> > > > >> >> >> >the udev/systemd to  
-> > > > >> >> >> generate predicable netdev's name.  
-> > > > >> >> >> >Example: enm<mdev_alias_first_12_chars>  
-> > > > >> >> >>
-> > > > >> >> >> What happens in unlikely case of 2 UUIDs collide?
-> > > > >> >> >>  
-> > > > >> >> >Since users sees two devices with same phys_port_name, user
-> > > > >> >> >should destroy  
-> > > > >> >> recently created mdev and recreate mdev with different UUID?
-> > > > >> >>
-> > > > >> >> Driver should make sure phys port name wont collide,  
-> > > > >> >So when mdev creation is initiated, mdev core calculates the
-> > > > >> >alias and if there  
-> > > > >> is any other mdev with same alias exist, it returns -EEXIST error
-> > > > >> before progressing further.  
-> > > > >> >This way user will get to know upfront in event of collision
-> > > > >> >before the mdev  
-> > > > >> device gets created.  
-> > > > >> >How about that?  
-> > > > >>
-> > > > >> Sounds fine to me. Now the question is how many chars do we want to  
-> > have.  
-> > > > >>  
-> > > > >12 characters from Alex's suggestion similar to git?  
-> > > >
-> > > > Ok.
-> > > >  
-> > >
-> > > Can you please confirm this scheme looks good now? I like to get patches  
-> > started.
-> > 
-> > My only concern is your comment that in the event of an abbreviated
-> > sha1 collision (as exceptionally rare as that might be at 12-chars), we'd fail the
-> > device create, while my original suggestion was that vfio-core would add an
-> > extra character to the alias.  For non-networking devices, the sha1 is
-> > unnecessary, so the extension behavior seems preferred.  The user is only
-> > responsible to provide a unique uuid.  Perhaps the failure behavior could be
-> > applied based on the mdev device_api.  A module option on mdev to specify the
-> > default number of alias chars would also be useful for testing so that we can set
-> > it low enough to validate the collision behavior.  Thanks,
-> >   
+The 08/23/2019 15:25, Andrew Lunn wrote:
+> External E-Mail
 > 
-> Idea is to have mdev alias as optional.
-> Each mdev_parent says whether it wants mdev_core to generate an alias
-> or not. So only networking device drivers would set it to true.
-> For rest, alias won't be generated, and won't be compared either
-> during creation time. User continue to provide only uuid.
-
-Ok
-
-> I am tempted to have alias collision detection only within children
-> mdevs of the same parent, but doing so will always mandate to prefix
-> in netdev name. And currently we are left with only 3 characters to
-> prefix it, so that may not be good either. Hence, I think mdev core
-> wide alias is better with 12 characters.
-
-I suppose it depends on the API, if the vendor driver can ask the mdev
-core for an alias as part of the device creation process, then it could
-manage the netdev namespace for all its devices, choosing how many
-characters to use, and fail the creation if it can't meet a uniqueness
-requirement.  IOW, mdev-core would always provide a full sha1 and
-therefore gets itself out of the uniqueness/collision aspects.
-
-> I do not understand how an extra character reduces collision, if
-> that's what you meant.
-
-If the default were for example 3-chars, we might already have device
-'abc'.  A collision would expose one more char of the new device, so we
-might add device with alias 'abcd'.  I mentioned previously that this
-leaves an issue for userspace that we can't change the alias of device
-abc, so without additional information, userspace can only determine via
-elimination the mapping of alias to device, but userspace has more
-information available to it in the form of sysfs links.
-
-> Module options are almost not encouraged
-> anymore with other subsystems/drivers.
-
-We don't live in a world of absolutes.  I agree that the defaults
-should work in the vast majority of cases.  Requiring a user to twiddle
-module options to make things work is undesirable, verging on a bug.  A
-module option to enable some specific feature, unsafe condition, or test
-that is outside of the typical use case is reasonable, imo.
-
-> For testing collision rate, a sample user space script and sample
-> mtty is easy and get us collision count too. We shouldn't put that
-> using module option in production kernel. I practically have the code
-> ready to play with; Changing 12 to smaller value is easy with module
-> reload.
 > 
-> #define MDEV_ALIAS_LEN 12
+> > > > Why do the devices have to be from the same driver ?
+> > After seeing yours and Andrews comments I realize that I try to do two
+> > things, but I have only explained one of them.
+> > 
+> > Here is what I was trying to do:
+> > A. Prevent ports from going into promisc mode, if it is not needed.
+> 
+> The switch definition is promisc is a bit odd. You really need to
+> split it into two use cases.
+> 
+> The Linux interface is not a member of a bridge. In this case, promisc
+> mode would mean all frames ingressing the port should be forwarded to
+> the CPU. Without promisc, you can program the hardware to just accept
+> frames with the interfaces MAC address. So this is just the usual
+> behaviour of an interface.
 
-If it can't be tested with a shipping binary, it probably won't be
-tested.  Thanks,
+Yes, this is well understood.
+> 
+> When the interface is part of the bridge, then you can turn on all the
+> learning and not forward frames to the CPU, unless the CPU asks for
+> them. But you need to watch out for various flags. By default, you
+> should flood to the CPU, unknown destinations to the CPU etc. But some
+> of these can be turned off by flags.
+> 
+> > B. Prevent adding the CPU to the flood-mask (in Ocelot we have a
+> > flood-mask controlling who should be included when flooding due to
+> > destination unknown).
+> 
+> So destination unknown should be flooded to the CPU. The CPU might
+> know where to send the frame.
 
-Alex
+Exactly the CPU should be in the flood mask by default. But if the
+network driver knows that CPU will not forward it anywhere else, then it
+is safe to remove the CPU from the flood mask. The network driver will
+know this by monitoring which interfaces are added to the bridge.
+> 
+> > To solve item "B", the network driver needs to detect if there is a
+> > foreign interfaces added to the bridge. If that is the case then to add
+> > the CPU port to the flooding mask otherwise no.
+> 
+> It is not just a foreign interface. What about the MAC address on the
+> bridge interface?
+
+I think the network driver will get this event and it can install a
+entry in the MAC table to copy the frames to the CPU.
+> 
+> > > > This is too specific targeting some devices.
+> > Maybe I was wrong to mention specific HW in the commit message. The
+> > purpose of the patch was to add an optimization (not to copy all the
+> > frames to the CPU) for HW that is capable of learning and flooding the
+> > frames.
+> 
+> To some extent, this is also tied to your hardware not learning MAC
+> addresses from frames passed from the CPU. You should also consider
+> fixing this. The SW bridge does send out notifications when it
+> adds/removes MAC addresses to its tables. You probably want to receive
+> this modifications, and use them to program your hardware to forward
+> frames to the CPU when needed.
+Yes we will fix this. We will listen to the notifications and then update
+the HW so it would send those frames to CPU.
+
+Maybe intially I should just resend this patch, with the changes that I
+mention previously. And after that to send a new patch series with all
+these remarks that you mention here Andrew.
+
+> 
+>        Andrew
+> 
+
+-- 
+/Horatiu
