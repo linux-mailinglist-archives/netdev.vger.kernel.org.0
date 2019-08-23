@@ -2,103 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C59A9B4AF
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:41:18 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 575AE9B4BD
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 18:45:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436822AbfHWQkq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 12:40:46 -0400
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:43331 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436778AbfHWQkq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 12:40:46 -0400
-Received: by mail-lj1-f195.google.com with SMTP id h15so9420610ljg.10
-        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 09:40:45 -0700 (PDT)
+        id S2391046AbfHWQnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 12:43:41 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:36521 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389221AbfHWQnl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 12:43:41 -0400
+Received: by mail-pg1-f196.google.com with SMTP id l21so6063831pgm.3;
+        Fri, 23 Aug 2019 09:43:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NFSUa3Y0AMEZxxbdvd6exz8oVzNE3ykMfJ+esAb4P1Y=;
-        b=in2DAlRHQyVK/4OlE2+sWfVD7qfkyiDW0o3oZp4qJN+yD2t2douwleQR/kx4VCxgZs
-         nvjxlE4Iw/XbeIQXYn7t2S7JBpUALBCIr4b22jylw+30ThA1f8p5lQxOTXHkR2hmEVdu
-         wiEU7DcWArwWcCoifBgxS0B8UVRboXPybf/tUug4S+Bg//D5RFuHU4c0yny9JaMK2byu
-         b5iw/URhcmGPzMQNEIz+4xMcOA3NiL0OkRillazsmH28lKd/hifr5Kh46pumn6yldnWC
-         qBfbIAEZlLk9S35AFsFI2EghOZ9O/3J6c0ZdiRCX7Cq9jh2ufKd4XKziDTZWrESL3o1G
-         sVeg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=CMg7dz48IyUm/ULuv/1H/MJ+YRjy1SWtr1VrTKhDXkM=;
+        b=o7wI99JV5WW84MxLHb+sGgfAzmeVfDQ1XxR9QqYp6MJo/lpbe/u4z5oIJFteUpSfua
+         F1EuU5Yz8RLvUvUJn8jUWx6uchBpfQ6SVnQvWkCok3452tGmTEJSppPb4qk0Qz/UP0vz
+         ESpe+nr/LM4ZAOOf0/T5zoa8VRNQJWQPVE5827SbHU1pmg5UMvln0I4cdd2Y7jfw0dlk
+         xchm8+pBZtVGbIipOipzkxOB9NFUrZ5G0rnI1GFy3Z74nHc6V/60jrefV+WRk0EvH+0e
+         HfKvZvLvMz66WIPc6NLaxJmDVMUXaIYrtqvId75gf2l2adYnDv10t5bGoLb4Mj6erozt
+         v3rA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NFSUa3Y0AMEZxxbdvd6exz8oVzNE3ykMfJ+esAb4P1Y=;
-        b=pZp86CRdOwFcpauLdiiRAVzHrVWs+1U92ImIahG5fa1cvLG1ENEvm6lEdC6cX5j/mM
-         xEpkSYB6pjblvgyPjCKdLlvhauEyo9nX/Szm8WeeS52sgjnlJzy7It5V83Q1oI+MZO2N
-         uxlcqQGkvozXoJcJnmTYnS8ruNja4j2mhCLznHHoDNsm5WAFD+hB/OhW1YVJIPKkdC1R
-         5+7mV/VSpW2LsHuJIJ0ueTJcdvVxKzHJvAdcZXvdb9CfrFO5qlxnSBv6yIWM6i7hbBIW
-         eDow+fBVRG2JY9NXweKT06puMOf8UZZibrPdA7tNisJMQ9GzH+aIiC9XmStWK6Qd0Cze
-         csMw==
-X-Gm-Message-State: APjAAAUOb2SiBDGo33Ub4twCWa+kU+yRoty8YZHe0oeayuLqiHGAZDtW
-        Oyva+R2hAGzk7wglRyl8VL6L+Khk5zQRzkMoE30reeb4
-X-Google-Smtp-Source: APXvYqxP4TeBkmXbkuInTN3xzojHxeRuObxdxn9p6zrMSNHsUPRmguDvnSCttfXQj4hr8zxU2IgT8JvQ6W7et17aoj0=
-X-Received: by 2002:a2e:89da:: with SMTP id c26mr3500013ljk.214.1566578444243;
- Fri, 23 Aug 2019 09:40:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=CMg7dz48IyUm/ULuv/1H/MJ+YRjy1SWtr1VrTKhDXkM=;
+        b=m3JhVVUVsK7BGUd3npVAdHB37H0I6ql8BVkGtnOzFVREAnkywoegwrahH1ly/jL6Jn
+         hoMCYn0CTGllZAtwTbUgi2deMUW8ePWLF7cg4Fri1GEnhPxcKmBd9qBul+dGBcpjLEQY
+         hkD52SuyOIar/yZCYNV5nc6i5xWHi/FVp/zdF29qD522fQ7Q2GaY12E+qznhTm/pe/kF
+         XTsc6OHDr85BKfd7DpRWzdICDrT9FNBmmOt9hngzjMFkwTH6uybN3Rx6Fjd2MVOZ+pdw
+         VZSDRQSAoaEAEepQGtByhyA9l5zYyub2P8TMoCOVm8EZjW7seRnBa9aLsuzd+NuWNuKP
+         60sA==
+X-Gm-Message-State: APjAAAU6IvfPJXlCunLRHnNDagGg0a+hJDC09Per2KInq7Yc6RbKFaJ2
+        6BzTzT9DPxzqioobOGm+2TI=
+X-Google-Smtp-Source: APXvYqzp3OniX7nGok/COpPNlZeyPAUV7KniiDTGnJOEN8fVYUKwSUvdYDEYo3zhtx4bLmiV5ZWPKw==
+X-Received: by 2002:a63:724f:: with SMTP id c15mr4883466pgn.257.1566578620244;
+        Fri, 23 Aug 2019 09:43:40 -0700 (PDT)
+Received: from [172.26.99.184] ([2620:10d:c090:180::b6f7])
+        by smtp.gmail.com with ESMTPSA id bt18sm3017029pjb.1.2019.08.23.09.43.38
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 23 Aug 2019 09:43:39 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
+        bpf@vger.kernel.org,
+        syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
+        hdanton@sina.com, i.maximets@samsung.com
+Subject: Re: [PATCH bpf-next 1/4] xsk: avoid store-tearing when assigning
+ queues
+Date:   Fri, 23 Aug 2019 09:43:37 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <AE2608DC-C4FD-4406-8ACA-0717A83F3585@gmail.com>
+In-Reply-To: <20190822091306.20581-2-bjorn.topel@gmail.com>
+References: <20190822091306.20581-1-bjorn.topel@gmail.com>
+ <20190822091306.20581-2-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-References: <1566505070-38748-1-git-send-email-yihung.wei@gmail.com> <CAOrHB_A6Hn9o=8uzHQTp=cttMQsf=dYpobvq7C7_W398sw8UJA@mail.gmail.com>
-In-Reply-To: <CAOrHB_A6Hn9o=8uzHQTp=cttMQsf=dYpobvq7C7_W398sw8UJA@mail.gmail.com>
-From:   Yi-Hung Wei <yihung.wei@gmail.com>
-Date:   Fri, 23 Aug 2019 09:40:34 -0700
-Message-ID: <CAG1aQhLkrvVADEtAFcdO+GX03SGx7GMW1YyLVTGrPjiCz1HMyQ@mail.gmail.com>
-Subject: Re: [PATCH net v2] openvswitch: Fix conntrack cache with timeout
-To:     Pravin Shelar <pshelar@ovn.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Aug 22, 2019 at 11:51 PM Pravin Shelar <pshelar@ovn.org> wrote:
+
+
+On 22 Aug 2019, at 2:13, Björn Töpel wrote:
+
+> From: Björn Töpel <bjorn.topel@intel.com>
 >
-> On Thu, Aug 22, 2019 at 1:28 PM Yi-Hung Wei <yihung.wei@gmail.com> wrote:
-> >
-> > This patch addresses a conntrack cache issue with timeout policy.
-> > Currently, we do not check if the timeout extension is set properly in the
-> > cached conntrack entry.  Thus, after packet recirculate from conntrack
-> > action, the timeout policy is not applied properly.  This patch fixes the
-> > aforementioned issue.
-> >
-> > Fixes: 06bd2bdf19d2 ("openvswitch: Add timeout support to ct action")
-> > Reported-by: kbuild test robot <lkp@intel.com>
-> > Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
-> > ---
-> > v1->v2: Fix rcu dereference issue reported by kbuild test robot.
-> > ---
-> >  net/openvswitch/conntrack.c | 13 +++++++++++++
-> >  1 file changed, 13 insertions(+)
-> >
-> > diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
-> > index 848c6eb55064..4d7896135e73 100644
-> > --- a/net/openvswitch/conntrack.c
-> > +++ b/net/openvswitch/conntrack.c
-> > @@ -1657,6 +1666,10 @@ int ovs_ct_copy_action(struct net *net, const struct nlattr *attr,
-> >                                       ct_info.timeout))
-> >                         pr_info_ratelimited("Failed to associated timeout "
-> >                                             "policy `%s'\n", ct_info.timeout);
-> > +               else
-> > +                       ct_info.nf_ct_timeout = rcu_dereference(
-> > +                               nf_ct_timeout_find(ct_info.ct)->timeout);
-> Is this dereference safe from NULL pointer?
+> Use WRITE_ONCE when doing the store of tx, rx, fq, and cq, to avoid
+> potential store-tearing. These members are read outside of the control
+> mutex in the mmap implementation.
+>
+> Fixes: 37b076933a8e ("xsk: add missing write- and data-dependency barrier")
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 
-Hi Pravin,
-
-Thanks for your review.  I am not sure if
-nf_ct_timeout_find(ct_info.ct) will return NULL in this case.
-
-We only run into this statement when ct_info.timeout[0] is set, and it
-is only set in parse_ct() when CONFIG_NF_CONNTRACK_TIMEOUT is
-configured.  Also, in this else condition the timeout extension is
-supposed to be set properly by nf_ct_set_timeout().
-
-Am I missing something?
-
-Thanks,
-
--Yi-Hung
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
