@@ -2,142 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0192B9AD0C
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 12:25:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E8709AD12
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 12:28:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391240AbfHWKZN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 06:25:13 -0400
-Received: from mail-eopbgr80072.outbound.protection.outlook.com ([40.107.8.72]:46918
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728961AbfHWKZM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 23 Aug 2019 06:25:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WJECFjW3MqeAOr+tDYyJT2j4SdHnUFr9F4IViQl+M4oJibFdtZCgABj3vNDAZ+YQhtOckxha9ZrkcxV0rBy/kCxdjzKMM3167AU6haovdA3uywLKkaRKvEzFaQHPGWRi9gstCw0CMv2x25B96Ld9SxEECwGijxaN5Tif9q5y1/zhBxm5ZUjjza4xIsDbikYlde0IQAQ/I9SaiuQhiWYkK5RuQB+zXyQtjHGNrI0U+/4QTNS9leTT2d3lp3JhEIr8HXq4EQC+vRjq5EtjY+rRyFJ6fVXH53n+FptHA9VjSfN9iKAMUas8EKlA2Ag8JxJUMikVtH2yI+CXqwY6Iia8Rw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z8R81ixE4c0mmu6vceUwiJ/yUccphP7x0OoawOdpyxc=;
- b=MqzewjqGP4dZuoS/GbigeYN2TUmuDDBVvnJQmFqzPEhbCNeIcRzCEleuPs8bn2Arf0CkG/9TVLQCXlqqbA83TK0jXySFNQHtwEtMVIspOdDyItclVo2XlHLZwGzgfqrudSfnq3mza+VTn4/lLhzaFyIQQK8KvjUp4mMk7JQh5zc8sF4NKH68xPXAoShb3f8x1N/c02DLNqrPW4lXppZEkyhLRdCLZtRE3pJWllaKQznWIsVZVfKYHX1MDEkh/TfWyWyzllxm33T8K5NdnhJOGqsJ7mfCV67qGG76ZLi9EJ2RtqCdZ0PkVfnWX8e+RTdhzSkSmIaFQ4tvHaCXs9QSUQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=z8R81ixE4c0mmu6vceUwiJ/yUccphP7x0OoawOdpyxc=;
- b=PbJfd+21Aq86JgnJ7LB4MB5i+/l6OS63dC2xZZgk5iAeGQIoLNFzEcL1mpI7XiCr69wgA2bhEAfuraoZ4MR6jlkv2WpEEiYhgSJVvuTE+/G7oFtPJRYxe+umMr33N21C0+w60icqSRIyudgUpLOMlJBLNhb7h4rC2j5ZPWs/+uI=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB3472.eurprd05.prod.outlook.com (10.170.239.26) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.18; Fri, 23 Aug 2019 10:25:08 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::ec21:2019:cb6f:44ae]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::ec21:2019:cb6f:44ae%7]) with mapi id 15.20.2178.020; Fri, 23 Aug 2019
- 10:25:08 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pablo@netfilter.org" <pablo@netfilter.org>,
-        Jiri Pirko <jiri@mellanox.com>
-Subject: Re: [PATCH net-next 01/10] net: sched: protect block offload-related
- fields with rw_semaphore
-Thread-Topic: [PATCH net-next 01/10] net: sched: protect block offload-related
- fields with rw_semaphore
-Thread-Index: AQHVWOdSZkurdxVtyke2BgFbRyY7Y6cHvGgAgADL1wA=
-Date:   Fri, 23 Aug 2019 10:25:08 +0000
-Message-ID: <vbfh86818n3.fsf@mellanox.com>
-References: <20190822124353.16902-1-vladbu@mellanox.com>
- <20190822124353.16902-2-vladbu@mellanox.com>
- <20190822151530.09f7ca04@cakuba.netronome.com>
-In-Reply-To: <20190822151530.09f7ca04@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0277.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:a1::25) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 42732393-2c57-4639-c456-08d727b42bfa
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB3472;
-x-ms-traffictypediagnostic: VI1PR05MB3472:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB3472827EB8D5A5946B94CCF2ADA40@VI1PR05MB3472.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-forefront-prvs: 0138CD935C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(376002)(396003)(366004)(346002)(39860400002)(136003)(189003)(199004)(102836004)(52116002)(71190400001)(71200400001)(36756003)(14454004)(53936002)(486006)(305945005)(99286004)(86362001)(5660300002)(107886003)(446003)(11346002)(6246003)(76176011)(3846002)(7736002)(6506007)(25786009)(26005)(229853002)(4326008)(4744005)(478600001)(316002)(8936002)(256004)(2906002)(186003)(54906003)(6486002)(386003)(6512007)(81156014)(81166006)(8676002)(14444005)(66066001)(66476007)(476003)(2616005)(6916009)(6436002)(64756008)(66946007)(66556008)(66446008)(6116002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB3472;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: DVZQoJtcrCxjTGNaY2Kqyjn1gelsDc02mgFhib2ofQf+F4h3FHCqRkP5Ztlmiv8k88jjtTRQ+k/wgeEbsEjVs/hK4AaH1OItqQXFMfvi838dDkAmJup9KQtgTseav3EuUlWmjaxw1dJdhB2l3Qw7mz8HMRWxqKbEe8FZtxz4J5wKhTIf1uaZUGaBJJ3IPDk9sjH8cF9DJJzp/PxVqnlM91PvM8oyRqXge9Wqriv5WLRKB5MOVMQl0KBoQxDPaH3ZKPVqFq3SozDpvsZI8LZHL1Sbffh+X7qLsika/BAabmWuQSm2AvAaxL3arwdXSGr4Q45IMRRuHCtLaQs3LvLcYKjKBVLj5kvsldcuQ5Ka5g11X8HtkuzvA+QRuVvK9tHEwWGefMXlbSeKiAtcmi7sAx4A0uoy4/sVZVggbLMF8/Q=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        id S2390162AbfHWK07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 06:26:59 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:33612 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731002AbfHWK07 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 06:26:59 -0400
+Received: by mail-wm1-f67.google.com with SMTP id p77so8995390wme.0;
+        Fri, 23 Aug 2019 03:26:56 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9luq02UH+TFnlClChMvpFV6YHyNnbxJC+jcjQiDKx2M=;
+        b=SiOv64lM6z/RgsZG905NKePuL1c3HgnTz6LfkZbs1Z4QVR6+hKt6gR/4tVts4ylzeb
+         NWOko9uC+ACPn6gjeTirU/OuxBp9pKGLV5Yysbbo61TIP2ulG8QPFO3OrDuT2PRl2UUR
+         rommm4CGvyhfVhLEBu0Iw+h99uPRzUsb9ajsjxgRbJ2huFlDXTZuRVhUzUS1Dne8OPtv
+         +5BY5z0FujGYiAIMUlDyW/TfbMzqGTU0gDyQJBTDGQkM3MmmPLV5D9kjTwkclEZvSUU7
+         eZmBKAgKir0H1eBkOXuqRIlT7OXAWFa1jl2g3wcdeNRwRsvaFo2UpcngJ66QQaqxifWj
+         3QYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9luq02UH+TFnlClChMvpFV6YHyNnbxJC+jcjQiDKx2M=;
+        b=hCzdwBaxdxXgiMR5aj6lmCPZ4bShxZoRm2LlRBdCzBl6Suq1kvvPv0bmLPMa/mE79C
+         TFjWBAVa0TY8uCOqlCXZlNGBBkpsTIOgzYNQ915+fOlGbma8JbDN+JyJTISKh6C/sA/G
+         F9DQ3paVDCwk3wtxaTJC6NB/QDIBSNdytqUtdRgz8rlTRaYX6BP1C7/yX3Z4ym1sTWh9
+         BQt34U3NrY+ztLb9spox18eBHIVypCpD+oA1wWpeVEu6ldfzfl2GtbGVKxIleLJmeLKC
+         M0RqzQOtwoNShYo4ZglEKlavrucZBm5TU3bqgX4i1v6f3bRFH+n8Yc+ah8vlsSNxLce1
+         1cCw==
+X-Gm-Message-State: APjAAAWVMywE8t4pQMToB56Tom8sOkwDwWq2+5nBE2SIUe+HHYiPdefN
+        fuNupODzryZzXN6UTUxcglviZI394/q8FARqFaA=
+X-Google-Smtp-Source: APXvYqxlyz4RncFg5/k3Xmj8V6bvDiCd0k6CEtn82mX40vUXTidncUq4tSbHlp5i38zXEVBSfbnfMDA3GykWxLzPoFc=
+X-Received: by 2002:a1c:6385:: with SMTP id x127mr4366246wmb.140.1566556015899;
+ Fri, 23 Aug 2019 03:26:55 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 42732393-2c57-4639-c456-08d727b42bfa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Aug 2019 10:25:08.3644
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6XdexCqNei9mrBXiMcbf8GahfzfSHFzOrsiaQmCubRW+PxpGHFMYOZ3I7ttRpu05dxOzuvR+5tB5QHyDBl2UfA==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB3472
+References: <0000000000008182a50590404a02@google.com> <CADvbK_e+em+LiQOttfA9nckA4EPFuW_Q-cBmXx3S5pw5X+tQfw@mail.gmail.com>
+ <CACT4Y+aNTHtbw1upruHtfrLZnUyKkZHU5_3fndmVV6D_zzJJbQ@mail.gmail.com> <CADvbK_c7BXurbHyAqjX+0h2ZYtmJ0802zxmQB3qv8=GLv2ig9g@mail.gmail.com>
+In-Reply-To: <CADvbK_c7BXurbHyAqjX+0h2ZYtmJ0802zxmQB3qv8=GLv2ig9g@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Fri, 23 Aug 2019 18:26:44 +0800
+Message-ID: <CADvbK_e7vUHn3SWP-wzniUd1XhVFZjErZev8SDBuWVMKK8U3rA@mail.gmail.com>
+Subject: Re: kernel BUG at include/linux/skbuff.h:LINE! (2)
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     syzbot <syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com>,
+        davem <davem@davemloft.net>, LKML <linux-kernel@vger.kernel.org>,
+        linux-sctp@vger.kernel.org,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Vlad Yasevich <vyasevich@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Fri 23 Aug 2019 at 01:15, Jakub Kicinski <jakub.kicinski@netronome.com> =
-wrote:
-> On Thu, 22 Aug 2019 15:43:44 +0300, Vlad Buslov wrote:
->> @@ -2987,19 +3007,26 @@ int tc_setup_cb_call(struct tcf_block *block, en=
-um tc_setup_type type,
->>  	int ok_count =3D 0;
->>  	int err;
->> =20
->> +	down_read(&block->cb_lock);
->>  	/* Make sure all netdevs sharing this block are offload-capable. */
->> -	if (block->nooffloaddevcnt && err_stop)
->> -		return -EOPNOTSUPP;
->> +	if (block->nooffloaddevcnt && err_stop) {
->> +		ok_count =3D -EOPNOTSUPP;
->> +		goto errout;
->> +	}
->> =20
->>  	list_for_each_entry(block_cb, &block->flow_block.cb_list, list) {
->>  		err =3D block_cb->cb(type, type_data, block_cb->cb_priv);
->>  		if (err) {
->> -			if (err_stop)
->> -				return err;
->> +			if (err_stop) {
->> +				ok_count =3D err;
->> +				goto errout;
->> +			}
->>  		} else {
->>  			ok_count++;
->>  		}
->>  	}
->> +errout:
+On Mon, Aug 19, 2019 at 10:44 PM Xin Long <lucien.xin@gmail.com> wrote:
 >
-> Please name the labels with the first action they perform. Here:
->
-> err_unlock:
+> On Sun, Aug 18, 2019 at 10:13 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> >
+> > On Sun, Aug 18, 2019 at 7:07 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > >
+> > > On Sat, Aug 17, 2019 at 2:38 AM syzbot
+> > > <syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com> wrote:
+> > > >
+> > > > Hello,
+> > > >
+> > > > syzbot found the following crash on:
+> > > >
+> > > > HEAD commit:    459c5fb4 Merge branch 'mscc-PTP-support'
+> > > > git tree:       net-next
+> > > > console output: https://syzkaller.appspot.com/x/log.txt?x=13f2d33c600000
+> > > > kernel config:  https://syzkaller.appspot.com/x/.config?x=d4cf1ffb87d590d7
+> > > > dashboard link: https://syzkaller.appspot.com/bug?extid=eb349eeee854e389c36d
+> > > > compiler:       gcc (GCC) 9.0.0 20181231 (experimental)
+> > > > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=111849e2600000
+> > > > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1442c25a600000
+> > > >
+> > > > IMPORTANT: if you fix the bug, please add the following tag to the commit:
+> > > > Reported-by: syzbot+eb349eeee854e389c36d@syzkaller.appspotmail.com
+> > > >
+> > > > ------------[ cut here ]------------
+> > > > kernel BUG at include/linux/skbuff.h:2225!
+> > > > invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> > > > CPU: 0 PID: 9030 Comm: syz-executor649 Not tainted 5.3.0-rc3+ #134
+> > > > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS
+> > > > Google 01/01/2011
+> > > > RIP: 0010:__skb_pull include/linux/skbuff.h:2225 [inline]
+> > > > RIP: 0010:__skb_pull include/linux/skbuff.h:2222 [inline]
+> > > > RIP: 0010:skb_pull_inline include/linux/skbuff.h:2231 [inline]
+> > > > RIP: 0010:skb_pull+0xea/0x110 net/core/skbuff.c:1902
+> > > > Code: 9d c8 00 00 00 49 89 dc 49 89 9d c8 00 00 00 e8 9c e5 dd fb 4c 89 e0
+> > > > 5b 41 5c 41 5d 41 5e 5d c3 45 31 e4 eb ea e8 86 e5 dd fb <0f> 0b e8 df 13
+> > > > 18 fc e9 44 ff ff ff e8 d5 13 18 fc eb 8a e8 ee 13
+> > > > RSP: 0018:ffff88808ac96e10 EFLAGS: 00010293
+> > > > RAX: ffff88809c546000 RBX: 0000000000000004 RCX: ffffffff8594a3a6
+> > > > RDX: 0000000000000000 RSI: ffffffff8594a3fa RDI: 0000000000000004
+> > > > RBP: ffff88808ac96e30 R08: ffff88809c546000 R09: fffffbfff14a8f4f
+> > > > R10: fffffbfff14a8f4e R11: ffffffff8a547a77 R12: 0000000095e28bcc
+> > > > R13: ffff88808ac97478 R14: 00000000ffff8880 R15: ffff88808ac97478
+> > > > FS:  0000555556549880(0000) GS:ffff8880ae800000(0000) knlGS:0000000000000000
+> > > > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> > > > CR2: 0000000020000100 CR3: 0000000089c3c000 CR4: 00000000001406f0
+> > > > Call Trace:
+> > > >   sctp_inq_pop+0x2f1/0xd80 net/sctp/inqueue.c:202
+> > > >   sctp_endpoint_bh_rcv+0x184/0x8d0 net/sctp/endpointola.c:385
+> > > >   sctp_inq_push+0x1e4/0x280 net/sctp/inqueue.c:80
+> > > >   sctp_rcv+0x2807/0x3590 net/sctp/input.c:256
+> > > >   sctp6_rcv+0x17/0x30 net/sctp/ipv6.c:1049
+> > > >   ip6_protocol_deliver_rcu+0x2fe/0x1660 net/ipv6/ip6_input.c:397
+> > > >   ip6_input_finish+0x84/0x170 net/ipv6/ip6_input.c:438
+> > > >   NF_HOOK include/linux/netfilter.h:305 [inline]
+> > > >   NF_HOOK include/linux/netfilter.h:299 [inline]
+> > > >   ip6_input+0xe4/0x3f0 net/ipv6/ip6_input.c:447
+> > > >   dst_input include/net/dst.h:442 [inline]
+> > > >   ip6_sublist_rcv_finish+0x98/0x1e0 net/ipv6/ip6_input.c:84
+> > > Looks skb_list_del_init() should be called in ip6_sublist_rcv_finish,
+> > > as does in ip_sublist_rcv_finish().
+> >
+> > This was recently introduced, right? Only in net-next and linux-next.
+> > Otherwise, is it a remote DoS? If so and if it's present in any
+> > releases, may need a CVE.
+> I need to reproduce and confirm it, will let you know.
+The panic could be triggered since the  listified RX support for
+GRO_NORMAL skbs:
+  https://patchwork.ozlabs.org/cover/1142808/
+(it's only in net-next now, I will post a fix soon)
 
-Thanks for reviewing. Will fix in V2.
-
->
->> +	up_read(&block->cb_lock);
->>  	return ok_count;
-
+But the bug itself is not really related with the patch series above.
+the issue here is pretty much like what this patch fixed:
+  https://patchwork.ozlabs.org/patch/942541/
+I didn't see a CVE for it, maybe because it was only on net-next too.
