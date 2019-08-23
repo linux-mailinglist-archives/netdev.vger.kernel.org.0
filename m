@@ -2,141 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B65A9A4D4
-	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 03:14:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 048439A4EC
+	for <lists+netdev@lfdr.de>; Fri, 23 Aug 2019 03:34:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387911AbfHWBN7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 22 Aug 2019 21:13:59 -0400
-Received: from out1.zte.com.cn ([202.103.147.172]:55682 "EHLO mxct.zte.com.cn"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387676AbfHWBN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 22 Aug 2019 21:13:59 -0400
-Received: from mse-fl2.zte.com.cn (unknown [10.30.14.239])
-        by Forcepoint Email with ESMTPS id 0F8CEBDD19C0BD7E4CD3;
-        Fri, 23 Aug 2019 09:13:57 +0800 (CST)
-Received: from notes_smtp.zte.com.cn (notessmtp.zte.com.cn [10.30.1.239])
-        by mse-fl2.zte.com.cn with ESMTP id x7N1Dgrq054529;
-        Fri, 23 Aug 2019 09:13:42 +0800 (GMT-8)
-        (envelope-from zhang.lin16@zte.com.cn)
-Received: from fox-host8.localdomain ([10.74.120.8])
-          by szsmtp06.zte.com.cn (Lotus Domino Release 8.5.3FP6)
-          with ESMTP id 2019082309141585-3127175 ;
-          Fri, 23 Aug 2019 09:14:15 +0800 
-From:   zhanglin <zhang.lin16@zte.com.cn>
-To:     davem@davemloft.net
-Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, willemb@google.com,
-        edumazet@google.com, deepa.kernel@gmail.com, arnd@arndb.de,
-        dh.herrmann@gmail.com, gnault@redhat.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        xue.zhihong@zte.com.cn, wang.yi59@zte.com.cn,
-        jiang.xuexin@zte.com.cn, zhanglin <zhang.lin16@zte.com.cn>
-Subject: [PATCH] [PATCH v3] sock: fix potential memory leak in proto_register()
-Date:   Fri, 23 Aug 2019 09:14:11 +0800
-Message-Id: <1566522851-24018-1-git-send-email-zhang.lin16@zte.com.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-MIMETrack: Itemize by SMTP Server on SZSMTP06/server/zte_ltd(Release 8.5.3FP6|November
- 21, 2013) at 2019-08-23 09:14:15,
-        Serialize by Router on notes_smtp/zte_ltd(Release 9.0.1FP7|August  17, 2016) at
- 2019-08-23 09:13:47,
-        Serialize complete at 2019-08-23 09:13:47
-X-MAIL: mse-fl2.zte.com.cn x7N1Dgrq054529
+        id S1732065AbfHWBdc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 22 Aug 2019 21:33:32 -0400
+Received: from mail-qt1-f170.google.com ([209.85.160.170]:41522 "EHLO
+        mail-qt1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731600AbfHWBdc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 22 Aug 2019 21:33:32 -0400
+Received: by mail-qt1-f170.google.com with SMTP id i4so9785779qtj.8
+        for <netdev@vger.kernel.org>; Thu, 22 Aug 2019 18:33:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=0Q9zM+n+ewbX7TbrLlf1WG/tf6ulqFs08Kxmsy3fmcE=;
+        b=sQBnHxmuw+4macmp6tWByThbN10Tm7Vy0gZ+KoQ9QxsMAMdEpO7PFVeFFQdQ3B0946
+         7XO7rEgCv3EAtnE6qRNHXbxqqHoU0xM43mCdBJJDvvwr/HmVmUNQeSL5AZdTQMHmpwM6
+         WorsLHR558P7XhOOzn+2KGTIcfeoh5MzY3DDBJOSZ4ffjxCx/1BKoBfi2K2J5Le3IfRA
+         gXkXpabhnTEpBP4qZsm0rxNsoZI1V+1i+S1+t0m2e/r46ilbvK24YGVKreqz/Vc9BhBH
+         83+xAUe7TwVyr1rceJcSK0lfW84T/QGvKmJ7LwPzAnpestCuJ0i25oalB0Of7E7lV8bK
+         dqXQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=0Q9zM+n+ewbX7TbrLlf1WG/tf6ulqFs08Kxmsy3fmcE=;
+        b=AibhVwxnWQ1WnbWgKlZt9ByhKPTKeEHgekB+E7ANOBzIoTVB/BrH1kaH55H8SVd3f/
+         y0klWX4Rij/wYtxKmFwhCgcBxusdXqFmGfBHoSusuWS9d68QLBayLSSDPfys+hRPrikF
+         jsnQhFjoH4pFukVwhfudfZKLVwJVyJmuETqUfCtJ7JPDfgQkQQGDnYASFBDkzfU/8G8v
+         /u2pGWvp4MrU2d/0vcSwsu+YSN8XeCNEmCSswMhEcRmuDFVmJBglN7OSuW+3GrE0+pDk
+         dabNROxv7yX4sCWYTp1iVHl+ardF8RNa3tsHcjOaTSRhoqgZasxWxso+6PIN+K8EbcKe
+         UxFg==
+X-Gm-Message-State: APjAAAV8ODrxesO79v/wBxArgxibBefa8LXFXT6/zw5hHO4z4C+tFlUl
+        2fSAWdED4vKFDvR5kCVjbHKiyjhOyzo=
+X-Google-Smtp-Source: APXvYqwLRktQLzo0soBLWZszKVydZjyzTzha212vzqAmRyyRE8K4sYbwmVeOjogoxf9DvQpTYPVI+A==
+X-Received: by 2002:ac8:7b99:: with SMTP id p25mr2629803qtu.243.1566524011303;
+        Thu, 22 Aug 2019 18:33:31 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id p38sm830900qtc.76.2019.08.22.18.33.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2019 18:33:31 -0700 (PDT)
+Date:   Thu, 22 Aug 2019 18:33:24 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Moshe Shemesh <moshe@mellanox.com>
+Subject: Re: [net-next 4/8] net/mlx5e: Add device out of buffer counter
+Message-ID: <20190822183324.79b74f7b@cakuba.netronome.com>
+In-Reply-To: <20190822233514.31252-5-saeedm@mellanox.com>
+References: <20190822233514.31252-1-saeedm@mellanox.com>
+        <20190822233514.31252-5-saeedm@mellanox.com>
+Organization: Netronome Systems, Ltd.
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If protocols registered exceeded PROTO_INUSE_NR, prot will be
-added to proto_list, but no available bit left for prot in
-proto_inuse_idx.
+On Thu, 22 Aug 2019 23:35:52 +0000, Saeed Mahameed wrote:
+> From: Moshe Shemesh <moshe@mellanox.com>
+> 
+> Added the following packets drop counter:
+> Device out of buffer - counts packets which were dropped due to full
+> device internal receive queue.
+> This counter will be shown on ethtool as a new counter called
+> dev_out_of_buffer.
+> The counter is read from FW by command QUERY_VNIC_ENV.
+> 
+> Signed-off-by: Moshe Shemesh <moshe@mellanox.com>
+> Signed-off-by: Saeed Mahameed <saeedm@mellanox.com>
 
-Changes since v2:
-* Propagate the error code properly
-
-Signed-off-by: zhanglin <zhang.lin16@zte.com.cn>
----
- net/core/sock.c | 31 +++++++++++++++++++++----------
- 1 file changed, 21 insertions(+), 10 deletions(-)
-
-diff --git a/net/core/sock.c b/net/core/sock.c
-index bc3512f230a3..f39163071384 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -3139,16 +3139,17 @@ static __init int net_inuse_init(void)
- 
- core_initcall(net_inuse_init);
- 
--static void assign_proto_idx(struct proto *prot)
-+static int assign_proto_idx(struct proto *prot)
- {
- 	prot->inuse_idx = find_first_zero_bit(proto_inuse_idx, PROTO_INUSE_NR);
- 
- 	if (unlikely(prot->inuse_idx == PROTO_INUSE_NR - 1)) {
- 		pr_err("PROTO_INUSE_NR exhausted\n");
--		return;
-+		return -ENOSPC;
- 	}
- 
- 	set_bit(prot->inuse_idx, proto_inuse_idx);
-+	return 0;
- }
- 
- static void release_proto_idx(struct proto *prot)
-@@ -3157,8 +3158,9 @@ static void release_proto_idx(struct proto *prot)
- 		clear_bit(prot->inuse_idx, proto_inuse_idx);
- }
- #else
--static inline void assign_proto_idx(struct proto *prot)
-+static inline int assign_proto_idx(struct proto *prot)
- {
-+	return 0;
- }
- 
- static inline void release_proto_idx(struct proto *prot)
-@@ -3207,6 +3209,8 @@ static int req_prot_init(const struct proto *prot)
- 
- int proto_register(struct proto *prot, int alloc_slab)
- {
-+	int ret = -ENOBUFS;
-+
- 	if (alloc_slab) {
- 		prot->slab = kmem_cache_create_usercopy(prot->name,
- 					prot->obj_size, 0,
-@@ -3243,20 +3247,27 @@ int proto_register(struct proto *prot, int alloc_slab)
- 	}
- 
- 	mutex_lock(&proto_list_mutex);
-+	ret = assign_proto_idx(prot);
-+	if (ret) {
-+		mutex_unlock(&proto_list_mutex);
-+		goto out_free_timewait_sock_slab_name;
-+	}
- 	list_add(&prot->node, &proto_list);
--	assign_proto_idx(prot);
- 	mutex_unlock(&proto_list_mutex);
--	return 0;
-+	return ret;
- 
- out_free_timewait_sock_slab_name:
--	kfree(prot->twsk_prot->twsk_slab_name);
-+	if (alloc_slab && prot->twsk_prot)
-+		kfree(prot->twsk_prot->twsk_slab_name);
- out_free_request_sock_slab:
--	req_prot_cleanup(prot->rsk_prot);
-+	if (alloc_slab) {
-+		req_prot_cleanup(prot->rsk_prot);
- 
--	kmem_cache_destroy(prot->slab);
--	prot->slab = NULL;
-+		kmem_cache_destroy(prot->slab);
-+		prot->slab = NULL;
-+	}
- out:
--	return -ENOBUFS;
-+	return ret;
- }
- EXPORT_SYMBOL(proto_register);
- 
--- 
-2.17.1
-
+Sounds like rx_fifo_errors, no? Doesn't rx_fifo_errors count RX
+overruns?
