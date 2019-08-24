@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D4A1E9BAF3
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 04:43:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DBD39BAF4
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 04:43:09 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726925AbfHXCnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 22:43:07 -0400
-Received: from mail.nic.cz ([217.31.204.67]:37288 "EHLO mail.nic.cz"
+        id S1726436AbfHXCnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 22:43:03 -0400
+Received: from mail.nic.cz ([217.31.204.67]:37294 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725924AbfHXCnC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725930AbfHXCnC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Aug 2019 22:43:02 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id D9A45140D23;
-        Sat, 24 Aug 2019 04:42:59 +0200 (CEST)
+        by mail.nic.cz (Postfix) with ESMTP id 07905140D24;
+        Sat, 24 Aug 2019 04:43:00 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566614580; bh=AC+PVQwA6Fix9qcvNMGUHHTWu5CWtzFdGlYjHQ3j5AQ=;
+        t=1566614580; bh=NOu986em+7K8n650ujDXWGowyX6J66HaMKRYhMqamFU=;
         h=From:To:Date;
-        b=LOMQONxVq2PFB4CLqpcuBlTBtVaCwpHmEGDYOjWDWTq0PhBYF/GXGsjK8VHv+kbjj
-         fQ9bsLsqog0Ln0Zi9M04t4krFY8xbQySLesWaQGbTjc2coKXUwCvsRH8Z70TLUuz8C
-         sgnXbNcMR6nWd8S/InLWwiTOlkMeAz3jX0ZIw8NE=
+        b=vVMMdXjP5SWcLVMPfTpNiR7jDQ3LlHbcVgJQ05WmrY5gMBiizdcahP9mLX8bUKS/u
+         2ULj7d0FNoQ/T3SJ3gEPiinGmXfIz+K/SHQLRVhQcNhUV7J671I9EFyTD/LncuENV/
+         a+LulmGNlD0V9HpJZ6zwwJrvpZzhn04GknxmjxmI=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -28,9 +28,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         David Ahern <dsahern@gmail.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH RFC net-next 3/3] net: dsa: implement ndo_set_netlink for chaning port's CPU port
-Date:   Sat, 24 Aug 2019 04:42:50 +0200
-Message-Id: <20190824024251.4542-4-marek.behun@nic.cz>
+Subject: [PATCH RFC iproute2-next] iplink: allow to change iplink value
+Date:   Sat, 24 Aug 2019 04:42:51 +0200
+Message-Id: <20190824024251.4542-5-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190824024251.4542-1-marek.behun@nic.cz>
 References: <20190824024251.4542-1-marek.behun@nic.cz>
@@ -47,90 +47,91 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Implement ndo_set_iflink for DSA slave device. In multi-CPU port setup
-this should be used to change to which CPU destination port a given port
-should be connected.
-
-This adds a new operation into the DSA switch operations structure,
-port_change_cpu_port. A driver implementing this function has the
-ability to change CPU destination port of a given port.
+Allow to change the interface to which a given interface is linked to.
+This is useful in the case of multi-CPU port DSA, for changing the CPU
+port of a given user port.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Cc: David Ahern <dsahern@gmail.com>
+Cc: Stephen Hemminger <stephen@networkplumber.org>
 ---
- include/net/dsa.h |  6 ++++++
- net/dsa/slave.c   | 35 +++++++++++++++++++++++++++++++++++
- 2 files changed, 41 insertions(+)
+ ip/iplink.c           | 16 +++++-----------
+ man/man8/ip-link.8.in |  7 +++++++
+ 2 files changed, 12 insertions(+), 11 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 64bd70608f2f..4f3f0032b886 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -545,6 +545,12 @@ struct dsa_switch_ops {
- 	 */
- 	netdev_tx_t (*port_deferred_xmit)(struct dsa_switch *ds, int port,
- 					  struct sk_buff *skb);
-+
-+	/*
-+	 * Multi-CPU port support
-+	 */
-+	int	(*port_change_cpu_port)(struct dsa_switch *ds, int port,
-+					struct dsa_port *new_cpu_dp);
- };
- 
- struct dsa_switch_driver {
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index 33f41178afcc..bafaadeca912 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -64,6 +64,40 @@ static int dsa_slave_get_iflink(const struct net_device *dev)
- 	return dsa_slave_to_master(dev)->ifindex;
- }
- 
-+static int dsa_slave_set_iflink(struct net_device *dev, int iflink)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	struct dsa_slave_priv *p = netdev_priv(dev);
-+	struct net_device *new_cpu_dev;
-+	struct dsa_port *new_cpu_dp;
-+	int err;
-+
-+	if (!dp->ds->ops->port_change_cpu_port)
-+		return -EOPNOTSUPP;
-+
-+	new_cpu_dev = dev_get_by_index(dev_net(dev), iflink);
-+	if (!new_cpu_dev)
-+		return -ENODEV;
-+
-+	new_cpu_dp = new_cpu_dev->dsa_ptr;
-+	if (!new_cpu_dp)
-+		return -EINVAL;
-+
-+	/* new CPU port has to be on the same switch tree */
-+	if (new_cpu_dp->dst != dp->dst)
-+		return -EINVAL;
-+
-+	err = dp->ds->ops->port_change_cpu_port(dp->ds, dp->index, new_cpu_dp);
-+	if (err)
-+		return err;
-+
-+	/* should this be done atomically? */
-+	dp->cpu_dp = new_cpu_dp;
-+	p->xmit = new_cpu_dp->tag_ops->xmit;
-+
-+	return 0;
-+}
-+
- static int dsa_slave_open(struct net_device *dev)
+diff --git a/ip/iplink.c b/ip/iplink.c
+index 212a0885..d52c0aaf 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -579,7 +579,6 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
  {
- 	struct net_device *master = dsa_slave_to_master(dev);
-@@ -1176,6 +1210,7 @@ static const struct net_device_ops dsa_slave_netdev_ops = {
- 	.ndo_fdb_dump		= dsa_slave_fdb_dump,
- 	.ndo_do_ioctl		= dsa_slave_ioctl,
- 	.ndo_get_iflink		= dsa_slave_get_iflink,
-+	.ndo_set_iflink		= dsa_slave_set_iflink,
- #ifdef CONFIG_NET_POLL_CONTROLLER
- 	.ndo_netpoll_setup	= dsa_slave_netpoll_setup,
- 	.ndo_netpoll_cleanup	= dsa_slave_netpoll_cleanup,
+ 	char *name = NULL;
+ 	char *dev = NULL;
+-	char *link = NULL;
+ 	int ret, len;
+ 	char abuf[32];
+ 	int qlen = -1;
+@@ -590,6 +589,7 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
+ 	int numrxqueues = -1;
+ 	int link_netnsid = -1;
+ 	int index = 0;
++	int link = -1;
+ 	int group = -1;
+ 	int addr_len = 0;
+ 
+@@ -620,7 +620,10 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
+ 				invarg("Invalid \"index\" value", *argv);
+ 		} else if (matches(*argv, "link") == 0) {
+ 			NEXT_ARG();
+-			link = *argv;
++			link = ll_name_to_index(*argv);
++			if (!link)
++				return nodev(*argv);
++			addattr32(&req->n, sizeof(*req), IFLA_LINK, link);
+ 		} else if (matches(*argv, "address") == 0) {
+ 			NEXT_ARG();
+ 			addr_len = ll_addr_a2n(abuf, sizeof(abuf), *argv);
+@@ -1004,15 +1007,6 @@ int iplink_parse(int argc, char **argv, struct iplink_req *req, char **type)
+ 			exit(-1);
+ 		}
+ 
+-		if (link) {
+-			int ifindex;
+-
+-			ifindex = ll_name_to_index(link);
+-			if (!ifindex)
+-				return nodev(link);
+-			addattr32(&req->n, sizeof(*req), IFLA_LINK, ifindex);
+-		}
+-
+ 		req->i.ifi_index = index;
+ 	}
+ 
+diff --git a/man/man8/ip-link.8.in b/man/man8/ip-link.8.in
+index a8ae72d2..800aed05 100644
+--- a/man/man8/ip-link.8.in
++++ b/man/man8/ip-link.8.in
+@@ -149,6 +149,9 @@ ip-link \- network device configuration
+ .br
+ .RB "[ " nomaster " ]"
+ .br
++.RB "[ " link
++.IR DEVICE " ]"
++.br
+ .RB "[ " vrf
+ .IR NAME " ]"
+ .br
+@@ -2131,6 +2134,10 @@ set master device of the device (enslave device).
+ .BI nomaster
+ unset master device of the device (release device).
+ 
++.TP
++.BI link " DEVICE"
++set device to which this device is linked to.
++
+ .TP
+ .BI addrgenmode " eui64|none|stable_secret|random"
+ set the IPv6 address generation mode
 -- 
 2.21.0
 
