@@ -2,68 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 25BA99BDA2
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 14:20:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A5A959BDB1
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 14:33:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728246AbfHXMUA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 08:20:00 -0400
-Received: from proxima.lasnet.de ([78.47.171.185]:45684 "EHLO
-        proxima.lasnet.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727894AbfHXMT7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 08:19:59 -0400
-Received: from localhost.localdomain (p4FC2F3D7.dip0.t-ipconnect.de [79.194.243.215])
+        id S1728162AbfHXMdu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 08:33:50 -0400
+Received: from mx.0dd.nl ([5.2.79.48]:36012 "EHLO mx.0dd.nl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727921AbfHXMdu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 08:33:50 -0400
+Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: stefan@sostec.de)
-        by proxima.lasnet.de (Postfix) with ESMTPSA id F1EC1CB828;
-        Sat, 24 Aug 2019 14:19:57 +0200 (CEST)
-From:   Stefan Schmidt <stefan@datenfreihafen.org>
-To:     davem@davemloft.net
-Cc:     linux-wpan@vger.kernel.org, alex.aring@gmail.com,
-        netdev@vger.kernel.org
-Subject: pull-request: ieee802154 for net 2019-08-24
-Date:   Sat, 24 Aug 2019 14:19:53 +0200
-Message-Id: <20190824121953.27839-1-stefan@datenfreihafen.org>
-X-Mailer: git-send-email 2.20.1
+        by mx.0dd.nl (Postfix) with ESMTPS id 9A8A25FBFB;
+        Sat, 24 Aug 2019 14:33:48 +0200 (CEST)
+Authentication-Results: mx.0dd.nl;
+        dkim=pass (2048-bit key; secure) header.d=vdorst.com header.i=@vdorst.com header.b="DWANO3d4";
+        dkim-atps=neutral
+Received: from www (www.vdorst.com [192.168.2.222])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.vdorst.com (Postfix) with ESMTPSA id 5CC561D8B1CD;
+        Sat, 24 Aug 2019 14:33:48 +0200 (CEST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 5CC561D8B1CD
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
+        s=default; t=1566650028;
+        bh=X8ATtyrMqmT/YMnCKVOUrBUJelm2/xxbILBBHnS4TAI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=DWANO3d4H8SO0dBLhQVfGgrUrMVK9Bf2ZmJQuUp69OmXDj+MJPhmCue+ENpt7H61c
+         hwNAfZsrtHbOy53zH5uwmKK8HlR3quIGKtZGWK9oFlTENX0M6iQeko207s/kde+vZ7
+         ZObJFzrTF4e4+OqlcX10rFjKqR5ZscMIU8ghiIcWBKnVgsuN5H8bQrCx/vJWyR9wUz
+         ZszR7+W8v9bR5TGDdDxkQm9dKYilq6OZuxdd5tTRgcGag86HP90TP8ivUwNh0lFEZD
+         bWnnz6QQC54UJ5HgyGhQGps9QqXQGnJsdZ77wDYgKgGuansdQwHik5gId/K6ZCHgho
+         h2RdoB4njlRHQ==
+Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
+ www.vdorst.com (Horde Framework) with HTTPS; Sat, 24 Aug 2019 12:33:48 +0000
+Date:   Sat, 24 Aug 2019 12:33:48 +0000
+Message-ID: <20190824123348.Horde.LdDLM3_wpuexnof5e7L-q-2@www.vdorst.com>
+From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Stefan Roese <sr@denx.de>
+Subject: Re: [PATCH net-next v3 1/3] net: ethernet: mediatek: Add basic
+ PHYLINK support
+References: <20190823134516.27559-1-opensource@vdorst.com>
+ <20190823134516.27559-2-opensource@vdorst.com>
+ <20190824091106.GC13294@shell.armlinux.org.uk>
+In-Reply-To: <20190824091106.GC13294@shell.armlinux.org.uk>
+User-Agent: Horde Application Framework 5
+Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
 MIME-Version: 1.0
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Dave.
+Hi Russell,
 
-An update from ieee802154 for your *net* tree.
+Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
 
-Yue  Haibing fixed two bugs discovered by KASAN in the hwsim driver for
-ieee802154 and Colin Ian King cleaned up a redundant variable assignment.
+> On Fri, Aug 23, 2019 at 03:45:14PM +0200, René van Dorst wrote:
+>> This convert the basics to PHYLINK API.
+>> SGMII support is not in this patch.
+>>
+>> Signed-off-by: René van Dorst <opensource@vdorst.com>
+>> --
+>> v2->v3:
+>> * Make link_down() similar as link_up() suggested by Russell King
+>
+> Yep, almost there, but...
+>
+>> +static void mtk_mac_link_down(struct phylink_config *config,  
+>> unsigned int mode,
+>> +			      phy_interface_t interface)
+>> +{
+>> +	struct mtk_mac *mac = container_of(config, struct mtk_mac,
+>> +					   phylink_config);
+>> +	u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
+>>
+>> +	mcr &= (MAC_MCR_TX_EN | MAC_MCR_RX_EN);
+>
+> ... this clears all bits _except_ for the tx and rx enable (which will
+> remain set) - you probably wanted a ~ before the (.
 
-If there are any problems let me know.
+Yes that is what it should be.
+I only want to clear the TX_EN en RX_EN bits.
 
-regards
-Stefan Schmidt
+Greats,
 
-The following changes since commit 6c0afef5fb0c27758f4d52b2210c61b6bd8b4470:
+René
 
-  ipv6/flowlabel: wait rcu grace period before put_pid() (2019-04-29 23:30:13 -0400)
+>
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+> According to speedtest.net: 11.9Mbps down 500kbps up
 
-are available in the Git repository at:
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/sschmidt/wpan.git ieee802154-for-davem-2019-08-24
 
-for you to fetch changes up to 074014abdf2bd2a00da3dd14a6ae04cafc1d62cc:
-
-  net: ieee802154: remove redundant assignment to rc (2019-08-14 01:10:41 +0200)
-
-----------------------------------------------------------------
-Colin Ian King (1):
-      net: ieee802154: remove redundant assignment to rc
-
-YueHaibing (2):
-      ieee802154: hwsim: Fix error handle path in hwsim_init_module
-      ieee802154: hwsim: unregister hw while hwsim_subscribe_all_others fails
-
- drivers/net/ieee802154/mac802154_hwsim.c | 8 +++++---
- net/ieee802154/socket.c                  | 2 +-
- 2 files changed, 6 insertions(+), 4 deletions(-)
