@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 178AD9BCAC
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 11:11:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AD8489BCB6
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 11:22:12 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbfHXJLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 05:11:30 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45314 "EHLO
+        id S1726381AbfHXJWL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 05:22:11 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:45454 "EHLO
         pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725906AbfHXJL3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 05:11:29 -0400
+        with ESMTP id S1725616AbfHXJWL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 05:22:11 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
         Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
         Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=4vyjjTN2tY41ujVV2LAb3z/n7iq9ZDGRMpuHH14WmRc=; b=aY2z4X+f8fiIvgDdndWJ+vJ10
-        ON7uivJ/JKcwRZHdK601HGIg7z8/eT/l3WAFvrkT6/I82UhQF2XGxaLmOsMItNKNOY5zVdRw0UP7p
-        DB2PpYPEF1sUUpYyfKXB/yl3/+E4OZPsFquqFOaMGqTSIqdNEB0hMo8uOApXfB7z/5RR545LUHb3B
-        C18hZE0OcDAHoP2+q72CrSNSW7AqpwJRhNSmuxztJ4utoXX6aj3qG+qkIkWA5CXNECiE9PzzryvnC
-        wR0hDRU5j5wnhJp78pL4ilROPp+r+FOdU1/hx7LRQu12laAXtmcO3TpZIecZwFe6XyQmJyxYRtWP9
-        l8r4nECzQ==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:53936)
+         bh=u9kDsmGvpvy+ySdibnxbYTURZ6SqJ3ZYL88TNhJH+08=; b=BxkVzn8VPjh7EVNaF8lJqzsdg
+        zlQtBsYy6mqdeQKvuta6hdh11UqgUHuutlKtwXtqBsr1KyMfrHDUC3/8BZQMYxZ5HMkT0T1uJlTZa
+        3Fq89O+sCd5fzU8N+4LkDqqbqOOpKetTEm/MZHhOmONXL4e7Z09L4tuRastd6vbyQAVH01q9o2J3/
+        PiY4zUjHfiI2uxA8iAmhd4MIbK3tnt/hL+Mpe0J4+NBgKAW0Vbb6Bb5BZ6f+H38zUWkYOSUK6UT+g
+        BnqNw49mKpWR+BCC25NDpcxBwm9J+bN8FVA1Ocbv9Cc+tpGIwBkpCh8UlLZups1EYvuCSp/N/8dS8
+        KfiH+nsyw==;
+Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:53938)
         by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.90_1)
         (envelope-from <linux@armlinux.org.uk>)
-        id 1i1S4m-00029T-5T; Sat, 24 Aug 2019 10:11:12 +0100
+        id 1i1SFD-0002C7-Ik; Sat, 24 Aug 2019 10:21:59 +0100
 Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
         (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1i1S4g-0002Ql-9j; Sat, 24 Aug 2019 10:11:06 +0100
-Date:   Sat, 24 Aug 2019 10:11:06 +0100
+        id 1i1SFA-0002Qx-72; Sat, 24 Aug 2019 10:21:56 +0100
+Date:   Sat, 24 Aug 2019 10:21:56 +0100
 From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
 To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
 Cc:     John Crispin <john@phrozen.org>,
@@ -43,44 +43,69 @@ Cc:     John Crispin <john@phrozen.org>,
         linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
         Frank Wunderlich <frank-w@public-files.de>,
         Stefan Roese <sr@denx.de>
-Subject: Re: [PATCH net-next v3 1/3] net: ethernet: mediatek: Add basic
- PHYLINK support
-Message-ID: <20190824091106.GC13294@shell.armlinux.org.uk>
+Subject: Re: [PATCH net-next v3 2/3] net: ethernet: mediatek: Re-add support
+ SGMII
+Message-ID: <20190824092156.GD13294@shell.armlinux.org.uk>
 References: <20190823134516.27559-1-opensource@vdorst.com>
- <20190823134516.27559-2-opensource@vdorst.com>
+ <20190823134516.27559-3-opensource@vdorst.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190823134516.27559-2-opensource@vdorst.com>
+In-Reply-To: <20190823134516.27559-3-opensource@vdorst.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 23, 2019 at 03:45:14PM +0200, René van Dorst wrote:
-> This convert the basics to PHYLINK API.
-> SGMII support is not in this patch.
-> 
-> Signed-off-by: René van Dorst <opensource@vdorst.com>
-> --
-> v2->v3:
-> * Make link_down() similar as link_up() suggested by Russell King
+On Fri, Aug 23, 2019 at 03:45:15PM +0200, René van Dorst wrote:
+> +	switch (state->interface) {
+> +	case PHY_INTERFACE_MODE_SGMII:
+> +		phylink_set(mask, 10baseT_Half);
+> +		phylink_set(mask, 10baseT_Full);
+> +		phylink_set(mask, 100baseT_Half);
+> +		phylink_set(mask, 100baseT_Full);
 
-Yep, almost there, but...
+You also want 1000baseX_Full here - the connected PHY could have a fiber
+interface on it.
 
-> +static void mtk_mac_link_down(struct phylink_config *config, unsigned int mode,
-> +			      phy_interface_t interface)
-> +{
-> +	struct mtk_mac *mac = container_of(config, struct mtk_mac,
-> +					   phylink_config);
-> +	u32 mcr = mtk_r32(mac->hw, MTK_MAC_MCR(mac->id));
->  
-> +	mcr &= (MAC_MCR_TX_EN | MAC_MCR_RX_EN);
+> +		/* fall through */
+> +	case PHY_INTERFACE_MODE_TRGMII:
+>  		phylink_set(mask, 1000baseT_Full);
 
-... this clears all bits _except_ for the tx and rx enable (which will
-remain set) - you probably wanted a ~ before the (.
+I don't know enough about this interface type to comment whether it
+should support 1000baseX_Full - if this is connected to a PHY that may
+support fiber, then it ought to set it.
+
+> +		break;
+> +	case PHY_INTERFACE_MODE_2500BASEX:
+> +		phylink_set(mask, 2500baseX_Full);
+> +		/* fall through */
+> +	case PHY_INTERFACE_MODE_1000BASEX:
+> +		phylink_set(mask, 1000baseX_Full);
+
+Both should be set.  The reasoning here is that if you have a
+Fiberchannel 4Gbaud SFP plugged in and connected directly to the
+MAC, it can operate at either 2500Base-X or 1000Base-X.  If we
+decide to operate at 2500Base-X, then PHY_INTERFACE_MODE_2500BASEX
+will be chosen.  Otherwise, PHY_INTERFACE_MODE_1000BASEX will be
+used.
+
+The user can use ethtool to control which interface mode is used
+by adjusting the advertise mask and/or placing the interface in
+manual mode and setting the speed directly.  This will change
+the PHY_INTERFACE_MODE_xxxxBASEX (via phylink_helper_basex_speed())
+between the two settings.
+
+If we lose 2500baseX_Full when 1000Base-X is selected, the user
+will not be able to go back to 2500Base-X mode.
+
+Yes, it's a little confusing and has slightly different rules
+from the other modes - partly due to phylink_helper_basex_speed().
+These are the only interface modes that we dynamically switch
+between depending on the settings that the user configures via
+ethtool.
 
 -- 
 RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
