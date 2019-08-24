@@ -2,94 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0D50D9B990
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 02:27:20 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 886189B9B0
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 02:31:03 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726330AbfHXA1B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 20:27:01 -0400
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:36036 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbfHXA1B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 20:27:01 -0400
-Received: by mail-qt1-f195.google.com with SMTP id z4so12958408qtc.3
-        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 17:27:00 -0700 (PDT)
+        id S1725917AbfHXAaz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 20:30:55 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:41563 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726063AbfHXAaz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 20:30:55 -0400
+Received: by mail-pl1-f193.google.com with SMTP id m9so6474840pls.8
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 17:30:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netronome-com.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :organization:mime-version:content-transfer-encoding;
-        bh=5XKCwUxxTjFFPmzE6bcngiAwm3ZhPKgG5LUrorq0has=;
-        b=YjwjL9SnH4eReTvij2IJ8miS2ZMnnwL4gJqagxPbrRHMlIMMtOsycKNFbJdRQPU4hX
-         mVd22U1W4Kl1stabnfCkEQrxIYgJs+L++GhBsqxM5KJgTKHWPLJ/9WrpLyah2Wt16lBv
-         hqREVmI6tqKhvrpZZd7xJ58uFAG6ZH0chw3LgL1mpIAFt8hhvizGbhl7TG8ss0bxVmP3
-         K9udb9UyVw/GWs7HRIvJ1GOG9VFT63co3WU26ouNAAE6pvIV9s0xQH1UgmGqVP7JHnc5
-         SNOsQMDJlyagrCTqEfu5CtGYGqOzLASAX2IhF2PI0t4qIdWLGpXZq6h/vNEo6Tqk1XNM
-         m/0Q==
+        d=sifive.com; s=google;
+        h=date:from:to:cc:subject:in-reply-to:message-id:references
+         :user-agent:mime-version;
+        bh=xnR71yxvWSFn7GNIN4j2Fr3rKuwX+n1QmLSLVRDzZPA=;
+        b=W2AM6gexTKN/VXcMZcNlCQUd1t7QNxA2cYHEuT6iNPI+LLeisFbLGSp7EFWmfR/GqJ
+         ukVzvf47sFPlyUlhrgBgefa3c7ywbe85INX7ypVuklNfnx6nvpvLMTazX+f0PYBsK3j8
+         2eFIoiuvEZOQxF2Jqk0NRW4rLxK3k3vp7yuu3KLd805bbiw/GDeFzDlmTkMRh0b+e8u/
+         6BdSDVqdKECnS95a+YReAWFtZyA/LxvK8E48vaGRDb5CzKWAI/aSoy+v3zqvrFPazhs2
+         BfyBlcWZkL2HrkKyQ5wWUtZpK/NGNqqCX1lpcQrzvqJSlXIl3aUFcEwmhjE1//XwP4sl
+         fDOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:organization:mime-version:content-transfer-encoding;
-        bh=5XKCwUxxTjFFPmzE6bcngiAwm3ZhPKgG5LUrorq0has=;
-        b=FZglF0PEh43M8OXDupGLX22w+xZk4lcKhtlUeX0yKyNFt3v+9G7fMc4EmQ4Aknsmci
-         6eLQOJ+Rik5eb7t4F1fmuEP+KzTrndQKCDf/5GLSG8HGguwwR/um69+hGTThrz2xdmyN
-         BhcvDWP/PTkrehD07SMD7WRElSuL9/9Xg7c/Eu3k00XyNE4RwSQjh0C7d0E+Uw8y2xIw
-         XbqmHb+oDp9bn29Czu18RQM/2GZLxFtytsIe8pZsasI0kAyTJyIrcocci2JVZuBhwvMk
-         gX51X1xdGTxuEeXux8TneuqwE4i6Z0Ha5r9nU58TWIaIBpz9JOhCPxfpIwtZa1+yfwHE
-         3vrQ==
-X-Gm-Message-State: APjAAAWDowiVsH/goXa+RQ5S0P/A+xZx2VxqHNmpMko3eMxVoaLYonJ7
-        w1ecl/u0fkyUWsdpRIoaV2NGAw==
-X-Google-Smtp-Source: APXvYqxc3mNp4i/ZCyzX7CuVfmpUMuLo5pd224/Uxe0kJ9jvP/M27xIqPETCz9QqyqKe8E5w7Y0lQw==
-X-Received: by 2002:a0c:8791:: with SMTP id 17mr6313281qvj.215.1566606420058;
-        Fri, 23 Aug 2019 17:27:00 -0700 (PDT)
-Received: from cakuba.netronome.com ([66.60.152.14])
-        by smtp.gmail.com with ESMTPSA id k49sm2471853qtc.9.2019.08.23.17.26.59
+        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
+         :references:user-agent:mime-version;
+        bh=xnR71yxvWSFn7GNIN4j2Fr3rKuwX+n1QmLSLVRDzZPA=;
+        b=HvWR2PpfRI42vtWAjIezTESjo3BqTMGowiHeTVB0QvIa0VTwKnmFPrg3aV/Cv5KZvM
+         eurMWy878g6SVYdw2CsWolxv3QsHrUCbH9A0BYCkzNLH+kTrbQ+qBuL48uIAgr03x3f1
+         dvT9rRG8hF2thY8/h6MZ8+IOD+xZj/8YaN+71LqzFwrwDivJfQkPhi4xnpscgJHLdZU3
+         mDXCVWzHIUH9rgWmA2lrw2cY1kbZcx0pfaVu6ortOj+srowxWP6UrNeM5Dp3FAApvBKm
+         kznu4RR8M8KdfnkU72Qbu13VXZE9FbVS+2jrCGKGpfTD2hET7JB9pXO3MUqrYRHI1f2A
+         52sw==
+X-Gm-Message-State: APjAAAWmKRGRJE9DZliiQqMLrVXTB8U29UxV5RN6fFKjSB81JpvPdxrN
+        XuF7DbpDgLKotffHCeUq+7rVHA==
+X-Google-Smtp-Source: APXvYqypnIHRw+gX7a2zAkaV+URyBUoTsPo6A6KcuRTTuMEOhltXd4pwHW+VP0k4vY8gZmJbUDCW8A==
+X-Received: by 2002:a17:902:e613:: with SMTP id cm19mr7207697plb.299.1566606654666;
+        Fri, 23 Aug 2019 17:30:54 -0700 (PDT)
+Received: from localhost ([12.206.222.5])
+        by smtp.gmail.com with ESMTPSA id h9sm2890450pgh.51.2019.08.23.17.30.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 23 Aug 2019 17:26:59 -0700 (PDT)
-Date:   Fri, 23 Aug 2019 17:26:48 -0700
-From:   Jakub Kicinski <jakub.kicinski@netronome.com>
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, davem@davemloft.net, pablo@netfilter.org
-Subject: Re: [PATCH net-next v2 03/10] net: sched: refactor block offloads
- counter usage
-Message-ID: <20190823172648.7777e2b6@cakuba.netronome.com>
-In-Reply-To: <20190823185056.12536-4-vladbu@mellanox.com>
-References: <20190823185056.12536-1-vladbu@mellanox.com>
-        <20190823185056.12536-4-vladbu@mellanox.com>
-Organization: Netronome Systems, Ltd.
+        Fri, 23 Aug 2019 17:30:54 -0700 (PDT)
+Date:   Fri, 23 Aug 2019 17:30:53 -0700 (PDT)
+From:   Paul Walmsley <paul.walmsley@sifive.com>
+X-X-Sender: paulw@viisi.sifive.com
+To:     David Abdurachmanov <david.abdurachmanov@gmail.com>,
+        Tycho Andersen <tycho@tycho.ws>
+cc:     Palmer Dabbelt <palmer@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Oleg Nesterov <oleg@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        David Abdurachmanov <david.abdurachmanov@sifive.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Alexios Zavras <alexios.zavras@intel.com>,
+        Anup Patel <Anup.Patel@wdc.com>,
+        Vincent Chen <vincentc@andestech.com>,
+        Alan Kao <alankao@andestech.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, me@carlosedp.com
+Subject: Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
+In-Reply-To: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
+Message-ID: <alpine.DEB.2.21.9999.1908231717550.25649@viisi.sifive.com>
+References: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
+User-Agent: Alpine 2.21.9999 (DEB 301 2018-08-15)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 23 Aug 2019 21:50:49 +0300, Vlad Buslov wrote:
-> @@ -1201,14 +1199,11 @@ static int u32_reoffload_knode(struct tcf_proto *tp, struct tc_u_knode *n,
->  			cls_u32.knode.link_handle = ht->handle;
->  	}
->  
-> -	err = cb(TC_SETUP_CLSU32, &cls_u32, cb_priv);
-> -	if (err) {
-> -		if (add && tc_skip_sw(n->flags))
-> -			return err;
-> -		return 0;
-> -	}
-> -
-> -	tc_cls_offload_cnt_update(block, &n->in_hw_count, &n->flags, add);
-> +	err = tc_setup_cb_reoffload(block, tp, add, cb, TC_SETUP_CLSU32,
-> +				    &cls_u32, cb_priv, &n->flags,
-> +				    &n->in_hw_count);
-> +	if (err && add && tc_skip_sw(n->flags))
-> +		return err;
+On Thu, 22 Aug 2019, David Abdurachmanov wrote:
 
-Could this be further simplified by adding something along the lines of:
+> There is one failing kernel selftest: global.user_notification_signal
 
-	if (!add || !tc_skip_sw(*flags))
-		err = 0;
+Is this the only failing test?  Or are the rest of the selftests skipped 
+when this test fails, and no further tests are run, as seems to be shown 
+here:
 
-to tc_setup_cb_reoffload() ?
+  https://lore.kernel.org/linux-riscv/CADnnUqcmDMRe1f+3jG8SPR6jRrnBsY8VVD70VbKEm0NqYeoicA@mail.gmail.com/
 
->  
->  	return 0;
->  }
+For example, looking at the source, I'd naively expect to see the 
+user_notification_closed_listener test result -- which follows right 
+after the failing test in the selftest source.  But there aren't any 
+results?
+
+Also - could you follow up with the author of this failing test to see if 
+we can get some more clarity about what might be going wrong here?  It 
+appears that the failing test was added in commit 6a21cc50f0c7f ("seccomp: 
+add a return code to trap to userspace") by Tycho Andersen 
+<tycho@tycho.ws>.
+
+
+- Paul
