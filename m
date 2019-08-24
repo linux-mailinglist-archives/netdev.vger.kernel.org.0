@@ -2,85 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 127509C0DB
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 00:57:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DBF269C0E2
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 01:04:38 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727950AbfHXWxJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 18:53:09 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57600 "EHLO vps0.lunn.ch"
+        id S1728191AbfHXXEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 19:04:36 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:57614 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727708AbfHXWxI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 18:53:08 -0400
+        id S1727708AbfHXXEf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 19:04:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=Content-Type:MIME-Version:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-Transfer-Encoding:Content-ID:Content-Description:
+        s=20171124; h=Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:MIME-Version
+        :Content-Type:Content-Transfer-Encoding:Content-ID:Content-Description:
         Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
         In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
         List-Post:List-Owner:List-Archive;
-        bh=f68b2IUzKMs6fY2xAiWNQktpx3PHHJy2XSFFuNCLlmM=; b=mHGK9Ifgmo5/xJkvYuBzOpkrwZ
-        6WXPdALdvVtdmrG1sCT6GtKkv/0JLkRaOu2EbQUYzm4FchMqvMa48NNH1T8Uri1Kzs6VgXrKF9FIz
-        8u5yg51fMDgnIW58w5QPNhvc8w5llyg7zmWsrHA/Bt2iXT17Ocx4qX4XPo9HwHGW+Sgs=;
+        bh=YjUvSbDoy8UAMMqkucajtO7n+8rRx5YU1zwI7PtMYdM=; b=d/SaaIyc3xq9wbpAqCnbj04067
+        yhM1Zj9Iy2UeqQLUqqojyR/D5hBMxpCXI2lr5QjeJmea7MXOqUVd6/wsoMGT7mqcjgkjrFfYbDqTR
+        rakhfTD5GxZCmVjv9VLwduVqTC+M6AzS3YtWmmYI53X8tyXhYZWfUipDHQ0EYPMWvcb0=;
 Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
         (envelope-from <andrew@lunn.ch>)
-        id 1i1euA-0004RJ-P3; Sun, 25 Aug 2019 00:53:06 +0200
-Date:   Sun, 25 Aug 2019 00:53:06 +0200
+        id 1i1f5B-0004bS-97; Sun, 25 Aug 2019 01:04:29 +0200
 From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev <netdev@vger.kernel.org>
-Subject: Regresion with dsa_port_disable
-Message-ID: <20190824225306.GA15986@lunn.ch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.5.23 (2014-03-12)
+To:     David Miller <davem@davemloft.net>
+Cc:     Russell King <rmk+kernel@arm.linux.org.uk>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Chris Healy <Chris.Healy@zii.aero>,
+        netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: [PATCH net-next] net: phy: sfp: Add labels to hwmon sensors
+Date:   Sun, 25 Aug 2019 01:04:17 +0200
+Message-Id: <20190824230417.17657-1-andrew@lunn.ch>
+X-Mailer: git-send-email 2.11.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vivien
+SFPs can report two different power values, the transmit power and the
+receive power. Add labels to make it clear which is which. Also add
+labels to the other sensors, VCC power supply, bias and module
+temperature.
 
-I just booted a ZII devel C and got a new warning splat.
+sensors(1) now shows:
 
-WARNING: CPU: 0 PID: 925 at kernel/irq/manage.c:1708 __free_irq+0xc8/0x2c4
-Trying to free already-free IRQ 0
-Modules linked in:
-CPU: 0 PID: 925 Comm: kworker/0:2 Not tainted 5.3.0-rc5-01151-g7ff758fcdf65 #231
-Hardware name: Freescale Vybrid VF5xx/VF6xx (Device Tree)
-Workqueue: events deferred_probe_work_func
-Backtrace: 
-[<8010d9e4>] (dump_backtrace) from [<8010dd9c>] (show_stack+0x20/0x24)
- r7:8016edf8 r6:00000009 r5:00000000 r4:9ec67944
-[<8010dd7c>] (show_stack) from [<8083b03c>] (dump_stack+0x24/0x28)
-[<8083b018>] (dump_stack) from [<8011c108>] (__warn.part.3+0xcc/0xf8)
-[<8011c03c>] (__warn.part.3) from [<8011c1ac>] (warn_slowpath_fmt+0x78/0x94)
- r6:000006ac r5:80a8cbf0 r4:80d07088
-[<8011c138>] (warn_slowpath_fmt) from [<8016edf8>] (__free_irq+0xc8/0x2c4)
- r3:00000000 r2:80a8cca8
- r7:9f486668 r6:9ee25268 r5:9f486600 r4:9ee25268
-[<8016ed30>] (__free_irq) from [<8016f07c>] (free_irq+0x38/0x74)
- r10:9eeb3600 r9:9e412040 r8:00000009 r7:9ee26040 r6:9ee2404c r5:9ee242c8
- r4:9ee25268 r3:00000c00
-[<8016f044>] (free_irq) from [<805a244c>] (mv88e6390x_serdes_irq_free+0x68/0x98)
- r5:9ee242c8 r4:9ee24040
-[<805a23e4>] (mv88e6390x_serdes_irq_free) from [<8059bc94>] (mv88e6xxx_port_disable+0x58/0x98)
- r7:9ee26040 r6:00000009 r5:9ee2404c r4:9ee24040
-[<8059bc3c>] (mv88e6xxx_port_disable) from [<80806f70>] (dsa_port_disable+0x44/0x50)
- r7:9ee26040 r6:9ee26d74 r5:00000009 r4:9ee26040
-[<80806f2c>] (dsa_port_disable) from [<80805df0>] (dsa_register_switch+0x964/0xab8)
- r5:9efe194c r4:9ee26d38
-[<8080548c>] (dsa_register_switch) from [<8059b734>] (mv88e6xxx_probe+0x730/0x778)
- r10:80943e64 r9:9fbf77d0 r8:00000000 r7:80d07088 r6:9e410040 r5:00000000
- r4:9e40e800
-[<8059b004>] (mv88e6xxx_probe) from [<80582da8>] (mdio_probe+0x40/0x64)
- r10:00000012 r9:80d5eccc r8:00000000 r7:00000000 r6:8141f358 r5:9e40e800
- r4:80d5eccc
-[<80582d68>] (mdio_probe) from [<80518858>] (really_probe+0x100/0x2d8)
- r5:9e40e800 r4:8141f354
+sff2-isa-0000
+Adapter: ISA adapter
+VCC:          +3.23 V
+temperature:  +33.4 C
+TX_power:    276.00 uW
+RX_power:     20.00 uW
+bias:         +0.01 A
 
-The previous code was careful to balance mv88e6352_serdes_irq_setup()
-with mv88e6390x_serdes_irq_free(). I _think_ your change broke this
-balance, and we now try to free an interrupt which was never
-allocated.
+Signed-off-by: Andrew Lunn <andrew@lunn.ch>
+---
+ drivers/net/phy/sfp.c | 73 ++++++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 68 insertions(+), 5 deletions(-)
 
-	Andrew
+diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
+index e36c04c26866..272d5773573e 100644
+--- a/drivers/net/phy/sfp.c
++++ b/drivers/net/phy/sfp.c
+@@ -429,6 +429,7 @@ static umode_t sfp_hwmon_is_visible(const void *data,
+ 				return 0;
+ 			/* fall through */
+ 		case hwmon_temp_input:
++		case hwmon_temp_label:
+ 			return 0444;
+ 		default:
+ 			return 0;
+@@ -447,6 +448,7 @@ static umode_t sfp_hwmon_is_visible(const void *data,
+ 				return 0;
+ 			/* fall through */
+ 		case hwmon_in_input:
++		case hwmon_in_label:
+ 			return 0444;
+ 		default:
+ 			return 0;
+@@ -465,6 +467,7 @@ static umode_t sfp_hwmon_is_visible(const void *data,
+ 				return 0;
+ 			/* fall through */
+ 		case hwmon_curr_input:
++		case hwmon_curr_label:
+ 			return 0444;
+ 		default:
+ 			return 0;
+@@ -492,6 +495,7 @@ static umode_t sfp_hwmon_is_visible(const void *data,
+ 				return 0;
+ 			/* fall through */
+ 		case hwmon_power_input:
++		case hwmon_power_label:
+ 			return 0444;
+ 		default:
+ 			return 0;
+@@ -987,9 +991,63 @@ static int sfp_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
+ 	}
+ }
+ 
++static const char *const sfp_hwmon_power_labels[] = {
++	"TX_power",
++	"RX_power",
++};
++
++static int sfp_hwmon_read_string(struct device *dev,
++				 enum hwmon_sensor_types type,
++				 u32 attr, int channel, const char **str)
++{
++	switch (type) {
++	case hwmon_curr:
++		switch (attr) {
++		case hwmon_curr_label:
++			*str = "bias";
++			return 0;
++		default:
++			return -EOPNOTSUPP;
++		}
++		break;
++	case hwmon_temp:
++		switch (attr) {
++		case hwmon_temp_label:
++			*str = "temperature";
++			return 0;
++		default:
++			return -EOPNOTSUPP;
++		}
++		break;
++	case hwmon_in:
++		switch (attr) {
++		case hwmon_in_label:
++			*str = "VCC";
++			return 0;
++		default:
++			return -EOPNOTSUPP;
++		}
++		break;
++	case hwmon_power:
++		switch (attr) {
++		case hwmon_power_label:
++			*str = sfp_hwmon_power_labels[channel];
++			return 0;
++		default:
++			return -EOPNOTSUPP;
++		}
++		break;
++	default:
++		return -EOPNOTSUPP;
++	}
++
++	return -EOPNOTSUPP;
++}
++
+ static const struct hwmon_ops sfp_hwmon_ops = {
+ 	.is_visible = sfp_hwmon_is_visible,
+ 	.read = sfp_hwmon_read,
++	.read_string = sfp_hwmon_read_string,
+ };
+ 
+ static u32 sfp_hwmon_chip_config[] = {
+@@ -1007,7 +1065,8 @@ static u32 sfp_hwmon_temp_config[] = {
+ 	HWMON_T_MAX | HWMON_T_MIN |
+ 	HWMON_T_MAX_ALARM | HWMON_T_MIN_ALARM |
+ 	HWMON_T_CRIT | HWMON_T_LCRIT |
+-	HWMON_T_CRIT_ALARM | HWMON_T_LCRIT_ALARM,
++	HWMON_T_CRIT_ALARM | HWMON_T_LCRIT_ALARM |
++	HWMON_T_LABEL,
+ 	0,
+ };
+ 
+@@ -1021,7 +1080,8 @@ static u32 sfp_hwmon_vcc_config[] = {
+ 	HWMON_I_MAX | HWMON_I_MIN |
+ 	HWMON_I_MAX_ALARM | HWMON_I_MIN_ALARM |
+ 	HWMON_I_CRIT | HWMON_I_LCRIT |
+-	HWMON_I_CRIT_ALARM | HWMON_I_LCRIT_ALARM,
++	HWMON_I_CRIT_ALARM | HWMON_I_LCRIT_ALARM |
++	HWMON_I_LABEL,
+ 	0,
+ };
+ 
+@@ -1035,7 +1095,8 @@ static u32 sfp_hwmon_bias_config[] = {
+ 	HWMON_C_MAX | HWMON_C_MIN |
+ 	HWMON_C_MAX_ALARM | HWMON_C_MIN_ALARM |
+ 	HWMON_C_CRIT | HWMON_C_LCRIT |
+-	HWMON_C_CRIT_ALARM | HWMON_C_LCRIT_ALARM,
++	HWMON_C_CRIT_ALARM | HWMON_C_LCRIT_ALARM |
++	HWMON_C_LABEL,
+ 	0,
+ };
+ 
+@@ -1050,13 +1111,15 @@ static u32 sfp_hwmon_power_config[] = {
+ 	HWMON_P_MAX | HWMON_P_MIN |
+ 	HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
+ 	HWMON_P_CRIT | HWMON_P_LCRIT |
+-	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM,
++	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
++	HWMON_P_LABEL,
+ 	/* Receive power */
+ 	HWMON_P_INPUT |
+ 	HWMON_P_MAX | HWMON_P_MIN |
+ 	HWMON_P_MAX_ALARM | HWMON_P_MIN_ALARM |
+ 	HWMON_P_CRIT | HWMON_P_LCRIT |
+-	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM,
++	HWMON_P_CRIT_ALARM | HWMON_P_LCRIT_ALARM |
++	HWMON_P_LABEL,
+ 	0,
+ };
+ 
+-- 
+2.23.0.rc1
+
