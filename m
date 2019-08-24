@@ -2,65 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F229BF14
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 19:54:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DD9E69BF17
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 19:55:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727497AbfHXRyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 13:54:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:57218 "EHLO vps0.lunn.ch"
+        id S1727398AbfHXRz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 13:55:56 -0400
+Received: from mail.nic.cz ([217.31.204.67]:41580 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726604AbfHXRyH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 13:54:07 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=r5FyHDMClQMYwLelZYXhXwtSAKOswSurUUfBfPAILWc=; b=2BeqUA73cCND6h7N/XqMl4ynjR
-        PM/6KhbxJle+0IT81Y1MS3VBhIF+2EGEYMcGeS5p8VgrGk3YtuPiUcUFAk8RmIwcKeOedqlFbRfLC
-        Hv1b1AR4akd1c53opDQSWbET2fpNQZDhNv0ggZ+9fS6+sOORNpPxkSoGiRnhcwZU3nq8=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i1aEm-000356-Hu; Sat, 24 Aug 2019 19:54:04 +0200
-Date:   Sat, 24 Aug 2019 19:54:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek Behun <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        id S1726604AbfHXRz4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 13:55:56 -0400
+Received: from localhost (unknown [172.20.6.135])
+        by mail.nic.cz (Postfix) with ESMTPSA id 4F383140BDC;
+        Sat, 24 Aug 2019 19:55:54 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1566669354; bh=vy496kdmVSpFlOdGDFe1SRi6DZ+8X+0WzSVw/+yngq8=;
+        h=Date:From:To;
+        b=R2HKZyxdAI4VrqXl9F4FECS3uh0zmb8KcgOzwMmfmpWaA98nTn1mny4WcVsoEsxwN
+         2d+/c3sgLoTm5BTcETptiHOIDhbxlVXBvLwtn8s1C5J/XEm9oVV+tkafD2lSDLiR9v
+         WBcT/Kzsr6KIlwZYAccxRtYt5BMIS8kAp4LWfTE0=
+Date:   Sat, 24 Aug 2019 19:55:53 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
         David Ahern <dsahern@gmail.com>,
         Stephen Hemminger <stephen@networkplumber.org>
 Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
-Message-ID: <20190824175404.GE8251@lunn.ch>
+Message-ID: <20190824195553.71c88aa8@nic.cz>
+In-Reply-To: <CA+h21ho=injFxAkm9AByk6An5EzQMOyGVkFA8eKUP-rgGFEW2Q@mail.gmail.com>
 References: <20190824024251.4542-1-marek.behun@nic.cz>
- <20190824152407.GA8251@lunn.ch>
- <20190824194546.5c436bd6@nic.cz>
+        <CA+h21hpBKnueT0QrVDL=Hhcp9X0rnaPW8omxiegq4TkcQ18EVQ@mail.gmail.com>
+        <CA+h21ho=injFxAkm9AByk6An5EzQMOyGVkFA8eKUP-rgGFEW2Q@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190824194546.5c436bd6@nic.cz>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Aug 24, 2019 at 07:45:46PM +0200, Marek Behun wrote:
-> On Sat, 24 Aug 2019 17:24:07 +0200
-> Andrew Lunn <andrew@lunn.ch> wrote:
-> 
-> > So this is all about transmit from the host out the switch. What about
-> > receive? How do you tell the switch which CPU interface it should use
-> > for a port?
-> 
-> Andrew, we use the same. The DSA slave implementation of ndo_set_iflink
-> will also tell the switch driver to change the CPU port for that port.
-> Patch 3 also adds operation port_change_cpu_port to the DSA switch
-> operations. This is called from dsa_slave_set_iflink (at least in this
-> first proposal).
+On Sat, 24 Aug 2019 18:44:44 +0300
+Vladimir Oltean <olteanv@gmail.com> wrote:
 
-Yes, i noticed this later. The cover letter did not include a change
-to a driver, so it was not clear you had considered receive, which is
-very much in the hard of the switch driver, not the DSA core.
+> Just to be clear. You can argue that such switches are weird, and
+> that's ok. Just want to understand the general type of hardware for
+> which such a patch is intended.
 
-     Andrew
+Vladimir,
+
+the general part should solve for devices like Turris 1.x (qca8k) and
+Turris Omnia (mv88e6xxx). In these devices the switch is connected to
+CPU via 2 ports, and 5 ports are connected to RJ-45s.
+
+I answered Andrew's question about the receive path in previous mail.
+To your other question I still would have to think about, but the
+general idea is that for other types of frames the switch driver
+should only use one CPU port, so that no frame would reach CPU 2 times.
+
+I shall send proposed implementation for mv88e6xxx in next version,
+perhaps this night.
+
+Marek
