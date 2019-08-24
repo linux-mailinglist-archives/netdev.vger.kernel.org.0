@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B93619BAF1
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 04:43:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D4A1E9BAF3
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 04:43:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726837AbfHXCnD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 22:43:03 -0400
-Received: from mail.nic.cz ([217.31.204.67]:37276 "EHLO mail.nic.cz"
+        id S1726925AbfHXCnH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 22:43:07 -0400
+Received: from mail.nic.cz ([217.31.204.67]:37288 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725917AbfHXCnC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725924AbfHXCnC (ORCPT <rfc822;netdev@vger.kernel.org>);
         Fri, 23 Aug 2019 22:43:02 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id B6AD9140D20;
+        by mail.nic.cz (Postfix) with ESMTP id D9A45140D23;
         Sat, 24 Aug 2019 04:42:59 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566614579; bh=MugrABbJ8AsshZDatXz+1ocRDwPULL+0ZzKYCe8l2mE=;
+        t=1566614580; bh=AC+PVQwA6Fix9qcvNMGUHHTWu5CWtzFdGlYjHQ3j5AQ=;
         h=From:To:Date;
-        b=Nu6Or/RAmhsH+sDbnw7+YKz9nZiF3Mdxpgf/4O30gloicSpv1+tz0tKWgiq51aUv9
-         VXCZbGHqdv7a9DO3bcKTxYiYAn54nKRboIdvBEQit+hUZzBJOBajBIJcTvXZKYP6mT
-         P4FcXHMpLC4KPBaR+8jT+EcHK1MmyxprksBnjjMc=
+        b=LOMQONxVq2PFB4CLqpcuBlTBtVaCwpHmEGDYOjWDWTq0PhBYF/GXGsjK8VHv+kbjj
+         fQ9bsLsqog0Ln0Zi9M04t4krFY8xbQySLesWaQGbTjc2coKXUwCvsRH8Z70TLUuz8C
+         sgnXbNcMR6nWd8S/InLWwiTOlkMeAz3jX0ZIw8NE=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -28,9 +28,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         David Ahern <dsahern@gmail.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH RFC net-next 2/3] net: add ndo for setting the iflink property
-Date:   Sat, 24 Aug 2019 04:42:49 +0200
-Message-Id: <20190824024251.4542-3-marek.behun@nic.cz>
+Subject: [PATCH RFC net-next 3/3] net: dsa: implement ndo_set_netlink for chaning port's CPU port
+Date:   Sat, 24 Aug 2019 04:42:50 +0200
+Message-Id: <20190824024251.4542-4-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190824024251.4542-1-marek.behun@nic.cz>
 References: <20190824024251.4542-1-marek.behun@nic.cz>
@@ -47,95 +47,90 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In DSA the iflink value is used to report to which CPU port a given
-switch port is connected to. Since we want to support multi-CPU DSA, we
-want the user to be able to change this value.
+Implement ndo_set_iflink for DSA slave device. In multi-CPU port setup
+this should be used to change to which CPU destination port a given port
+should be connected.
 
-Add ndo_set_iflink method into the ndo strucutre to be a pair to
-ndo_get_iflink. Also create dev_set_iflink and call this from the
-netlink code, so that userspace can change the iflink value.
+This adds a new operation into the DSA switch operations structure,
+port_change_cpu_port. A driver implementing this function has the
+ability to change CPU destination port of a given port.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
 ---
- include/linux/netdevice.h |  5 +++++
- net/core/dev.c            | 15 +++++++++++++++
- net/core/rtnetlink.c      |  7 +++++++
- 3 files changed, 27 insertions(+)
+ include/net/dsa.h |  6 ++++++
+ net/dsa/slave.c   | 35 +++++++++++++++++++++++++++++++++++
+ 2 files changed, 41 insertions(+)
 
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 55ac223553f8..45eeb6da8583 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -1201,6 +1201,8 @@ struct tlsdev_ops;
-  *	TX queue.
-  * int (*ndo_get_iflink)(const struct net_device *dev);
-  *	Called to get the iflink value of this device.
-+ * int (*ndo_set_iflink)(struct net_device *dev, int iflink);
-+ *	Called to set the iflink value of this device.
-  * void (*ndo_change_proto_down)(struct net_device *dev,
-  *				 bool proto_down);
-  *	This function is used to pass protocol port error state information
-@@ -1415,6 +1417,8 @@ struct net_device_ops {
- 						      int queue_index,
- 						      u32 maxrate);
- 	int			(*ndo_get_iflink)(const struct net_device *dev);
-+	int			(*ndo_set_iflink)(struct net_device *dev,
-+						  int iflink);
- 	int			(*ndo_change_proto_down)(struct net_device *dev,
- 							 bool proto_down);
- 	int			(*ndo_fill_metadata_dst)(struct net_device *dev,
-@@ -2606,6 +2610,7 @@ void dev_add_offload(struct packet_offload *po);
- void dev_remove_offload(struct packet_offload *po);
- 
- int dev_get_iflink(const struct net_device *dev);
-+int dev_set_iflink(struct net_device *dev, int iflink);
- int dev_fill_metadata_dst(struct net_device *dev, struct sk_buff *skb);
- struct net_device *__dev_get_by_flags(struct net *net, unsigned short flags,
- 				      unsigned short mask);
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 49589ed2018d..966bab196694 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -693,6 +693,21 @@ int dev_get_iflink(const struct net_device *dev)
- }
- EXPORT_SYMBOL(dev_get_iflink);
- 
-+/**
-+ *	dev_set_iflink - set 'iflink' value of an interface
-+ *	@dev: target interface
-+ *	@iflink: new value
-+ *
-+ *	Change the interface to which this interface is linked to.
-+ */
-+int dev_set_iflink(struct net_device *dev, int iflink)
-+{
-+	if (dev->netdev_ops && dev->netdev_ops->ndo_set_iflink)
-+		return dev->netdev_ops->ndo_set_iflink(dev, iflink);
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index 64bd70608f2f..4f3f0032b886 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -545,6 +545,12 @@ struct dsa_switch_ops {
+ 	 */
+ 	netdev_tx_t (*port_deferred_xmit)(struct dsa_switch *ds, int port,
+ 					  struct sk_buff *skb);
 +
-+	return -EOPNOTSUPP;
++	/*
++	 * Multi-CPU port support
++	 */
++	int	(*port_change_cpu_port)(struct dsa_switch *ds, int port,
++					struct dsa_port *new_cpu_dp);
+ };
+ 
+ struct dsa_switch_driver {
+diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+index 33f41178afcc..bafaadeca912 100644
+--- a/net/dsa/slave.c
++++ b/net/dsa/slave.c
+@@ -64,6 +64,40 @@ static int dsa_slave_get_iflink(const struct net_device *dev)
+ 	return dsa_slave_to_master(dev)->ifindex;
+ }
+ 
++static int dsa_slave_set_iflink(struct net_device *dev, int iflink)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_slave_priv *p = netdev_priv(dev);
++	struct net_device *new_cpu_dev;
++	struct dsa_port *new_cpu_dp;
++	int err;
++
++	if (!dp->ds->ops->port_change_cpu_port)
++		return -EOPNOTSUPP;
++
++	new_cpu_dev = dev_get_by_index(dev_net(dev), iflink);
++	if (!new_cpu_dev)
++		return -ENODEV;
++
++	new_cpu_dp = new_cpu_dev->dsa_ptr;
++	if (!new_cpu_dp)
++		return -EINVAL;
++
++	/* new CPU port has to be on the same switch tree */
++	if (new_cpu_dp->dst != dp->dst)
++		return -EINVAL;
++
++	err = dp->ds->ops->port_change_cpu_port(dp->ds, dp->index, new_cpu_dp);
++	if (err)
++		return err;
++
++	/* should this be done atomically? */
++	dp->cpu_dp = new_cpu_dp;
++	p->xmit = new_cpu_dp->tag_ops->xmit;
++
++	return 0;
 +}
 +
- /**
-  *	dev_fill_metadata_dst - Retrieve tunnel egress information.
-  *	@dev: targeted interface
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 1ee6460f8275..106d5e23ae6f 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -2507,6 +2507,13 @@ static int do_setlink(const struct sk_buff *skb,
- 		status |= DO_SETLINK_MODIFIED;
- 	}
- 
-+	if (tb[IFLA_LINK]) {
-+		err = dev_set_iflink(dev, nla_get_u32(tb[IFLA_LINK]));
-+		if (err)
-+			goto errout;
-+		status |= DO_SETLINK_MODIFIED;
-+	}
-+
- 	if (tb[IFLA_CARRIER]) {
- 		err = dev_change_carrier(dev, nla_get_u8(tb[IFLA_CARRIER]));
- 		if (err)
+ static int dsa_slave_open(struct net_device *dev)
+ {
+ 	struct net_device *master = dsa_slave_to_master(dev);
+@@ -1176,6 +1210,7 @@ static const struct net_device_ops dsa_slave_netdev_ops = {
+ 	.ndo_fdb_dump		= dsa_slave_fdb_dump,
+ 	.ndo_do_ioctl		= dsa_slave_ioctl,
+ 	.ndo_get_iflink		= dsa_slave_get_iflink,
++	.ndo_set_iflink		= dsa_slave_set_iflink,
+ #ifdef CONFIG_NET_POLL_CONTROLLER
+ 	.ndo_netpoll_setup	= dsa_slave_netpoll_setup,
+ 	.ndo_netpoll_cleanup	= dsa_slave_netpoll_cleanup,
 -- 
 2.21.0
 
