@@ -2,159 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C91AB9BE46
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 16:41:06 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 077099BE48
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 16:44:17 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727706AbfHXOkv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 10:40:51 -0400
-Received: from mga12.intel.com ([192.55.52.136]:3204 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727604AbfHXOku (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 10:40:50 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 24 Aug 2019 07:40:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.64,425,1559545200"; 
-   d="scan'208";a="379164198"
-Received: from sneftin-mobl1.ger.corp.intel.com (HELO [10.249.93.120]) ([10.249.93.120])
-  by fmsmga005.fm.intel.com with ESMTP; 24 Aug 2019 07:40:47 -0700
-Subject: Re: [PATCH] igb/igc: Don't warn on fatal read failures when the
- device is removed
-To:     Lyude Paul <lyude@redhat.com>, intel-wired-lan@lists.osuosl.org,
-        netdev@vger.kernel.org
-Cc:     Feng Tang <feng.tang@intel.com>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org
-References: <20190822183318.27634-1-lyude@redhat.com>
-From:   "Neftin, Sasha" <sasha.neftin@intel.com>
-Message-ID: <0e601456-58c3-b6ed-3be2-3eb5eec12eb4@intel.com>
-Date:   Sat, 24 Aug 2019 17:40:45 +0300
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
-MIME-Version: 1.0
-In-Reply-To: <20190822183318.27634-1-lyude@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1727800AbfHXOoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 10:44:15 -0400
+Received: from mail-eopbgr80084.outbound.protection.outlook.com ([40.107.8.84]:43970
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727556AbfHXOoP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 10:44:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=mXYkbw3aCfII6rlOHfpwtS+GopXBUyunnrWhc/imBOCZefLyjksMSOZUKsayUVzeHLP+bSqr/ZjJinCfUlHy3P4J2iDtdXhgP29yG8KmW4sItOX5t+jDw0pnFN5ZZqeoU/Mjl6HancfCTGD9aAuTdUKVR6Yiw/hFvZqOev4CIRRZ0pgKZGT03zd6bky/i+cD5NwuC4jMlN6OlI4koljjfk6kGRGFSPIO8vmLKp2+iHzJmTo6P/evMBVu9zH+j52rHi4XXfbJ5DbWn92/84P0gPX4aQXG1qjO5DUNKbdsDlx+lWWHoJvknbvLosgRhoORwZtECPXwpOV1DaDhstcbCA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AJPYZl4jB7axuFVS6TZjZ2/HvqgrVXVJ3IadVNySyYA=;
+ b=aX+F3maOiXNqYVkO7lbWU6OsertDOb0RkfZY7AdnIjRtMZJ0L5/2sxsPtPHnxOhiXgllDehT6WZdw1/Kdjfv5wd112+fKAeu8aX6Ct98P0diz91+LOE4n0LmjAERClNphpVwL1bWH8Xnmb7Ov2RJBhBL4iY/RCA4CYXMWRnwV5F2LyE2iBA68D2wwIfWD6mMmz5gCyuIiiJVd7A4zWdO1Kcn8/JTQVAuFrPsmxXGlaDoBycPwyQCQhrfYr999/mS6Vdd58O2Pazx32cvZ04CPyajKQgEC5/0+7etkH27nUdDw1oy2ajm4CFFzFKznt8b/Oya5mDSKxEtzVxNz9eIEg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
+ dkim=pass header.d=mellanox.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AJPYZl4jB7axuFVS6TZjZ2/HvqgrVXVJ3IadVNySyYA=;
+ b=aIaqo1CzAC2myW5QhnmJicWaAaNkGAL4/0wdlAbWd21sTwSaALCl+JNeCTLacfVzchy0XNGH/L72HuKDyBJ6FtUf5WXaqpQwKhgJZWKWFQOYfX9AJh7ghDwV4e2efvT6FDG7Ehq//zT/LX8LrEL7tBZFJIxyPANCE+1WNBbS7ZA=
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
+ VI1PR05MB4160.eurprd05.prod.outlook.com (10.171.183.10) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Sat, 24 Aug 2019 14:44:11 +0000
+Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::ec21:2019:cb6f:44ae]) by VI1PR05MB5295.eurprd05.prod.outlook.com
+ ([fe80::ec21:2019:cb6f:44ae%7]) with mapi id 15.20.2178.020; Sat, 24 Aug 2019
+ 14:44:11 +0000
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+CC:     Vlad Buslov <vladbu@mellanox.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "pablo@netfilter.org" <pablo@netfilter.org>
+Subject: Re: [PATCH net-next v2 03/10] net: sched: refactor block offloads
+ counter usage
+Thread-Topic: [PATCH net-next v2 03/10] net: sched: refactor block offloads
+ counter usage
+Thread-Index: AQHVWePGfEjaYW9RtUGGvYH24ELWfqcJcXMAgADviYA=
+Date:   Sat, 24 Aug 2019 14:44:11 +0000
+Message-ID: <vbflfvi8vyg.fsf@mellanox.com>
+References: <20190823185056.12536-1-vladbu@mellanox.com>
+ <20190823185056.12536-4-vladbu@mellanox.com>
+ <20190823172648.7777e2b6@cakuba.netronome.com>
+In-Reply-To: <20190823172648.7777e2b6@cakuba.netronome.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: LO2P265CA0204.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:9e::24) To VI1PR05MB5295.eurprd05.prod.outlook.com
+ (2603:10a6:803:b1::16)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=vladbu@mellanox.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [37.142.13.130]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: cdf4f5a8-1b24-4a53-eecd-08d728a1869d
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4160;
+x-ms-traffictypediagnostic: VI1PR05MB4160:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR05MB416032CD52DBB87D9F2DB1C1ADA70@VI1PR05MB4160.eurprd05.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6108;
+x-forefront-prvs: 0139052FDB
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(39860400002)(396003)(376002)(346002)(199004)(189003)(25786009)(76176011)(229853002)(305945005)(66066001)(2906002)(256004)(7736002)(6916009)(14454004)(14444005)(8676002)(81166006)(81156014)(3846002)(8936002)(5660300002)(6486002)(86362001)(54906003)(6116002)(478600001)(316002)(66446008)(99286004)(64756008)(36756003)(11346002)(446003)(4326008)(6512007)(66946007)(486006)(6436002)(71190400001)(71200400001)(102836004)(6246003)(476003)(6506007)(186003)(386003)(26005)(52116002)(4744005)(66556008)(66476007)(2616005)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4160;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: mellanox.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: ZeuXKZWqCaWFFvUW9QE5ikQNZWlURd+3fDAE5/mxf5sE7Wk0iwhof6wh9twosw3l1bcuX8V+Op+Nj6YV2gVIN15RYXqYLQ0Qw8IG7D4+Oc4UvNsB3LOLQ9+pHCSs7W20bGW2XjZ6u4WO6lg7HpN6kVAkj9cMA6az8Z/PdMnY4gp+wQEXQqxEQrDyxnuw/P/G8iNWRJMzR1IqZo/TAVkLYPxlnbe9Ony6ATLMCGlk4uc16AkIeqChrwwuqbqlEYS5+eAm9aFVrxd+SHwr55Jz0jWkN5hIxMjYQmGdqmvnlYJIbzL8XFNn8aCZ7RCOuO4Pclp3senazo0pGFJXobsiXulLHj5rqobcEjXb/AGjGvLKcV9DYilzdMYQoNXu7tlDcBwQGKRl55CaCCptLHShUM+6xkA3XZprvK8atAjUEF0=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: Mellanox.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: cdf4f5a8-1b24-4a53-eecd-08d728a1869d
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2019 14:44:11.2125
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: FpzJBhGakW9I/VbL3OZSyc5FPJ3vUd5knSwhvEVDm4Rps/hSH6X+hPhZaIpyWPls8I5GOjB07YQqpDJkOgQ48w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4160
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/22/2019 21:33, Lyude Paul wrote:
-> Fatal read errors are worth warning about, unless of course the device
-> was just unplugged from the machine - something that's a rather normal
-> occurence when the igb/igc adapter is located on a Thunderbolt dock. So,
-> let's only WARN() if there's a fatal read error while the device is
-> still present.
-> 
-> This fixes the following WARN splat that's been appearing whenever I
-> unplug my Caldigit TS3 Thunderbolt dock from my laptop:
-> 
->    igb 0000:09:00.0 enp9s0: PCIe link lost
->    ------------[ cut here ]------------
->    igb: Failed to read reg 0x18!
->    WARNING: CPU: 7 PID: 516 at
->    drivers/net/ethernet/intel/igb/igb_main.c:756 igb_rd32+0x57/0x6a [igb]
->    Modules linked in: igb dca thunderbolt fuse vfat fat elan_i2c mei_wdt
->    mei_hdcp i915 wmi_bmof intel_wmi_thunderbolt iTCO_wdt
->    iTCO_vendor_support x86_pkg_temp_thermal intel_powerclamp joydev
->    coretemp crct10dif_pclmul crc32_pclmul i2c_algo_bit ghash_clmulni_intel
->    intel_cstate drm_kms_helper intel_uncore syscopyarea sysfillrect
->    sysimgblt fb_sys_fops intel_rapl_perf intel_xhci_usb_role_switch mei_me
->    drm roles idma64 i2c_i801 ucsi_acpi typec_ucsi mei intel_lpss_pci
->    processor_thermal_device typec intel_pch_thermal intel_soc_dts_iosf
->    intel_lpss int3403_thermal thinkpad_acpi wmi int340x_thermal_zone
->    ledtrig_audio int3400_thermal acpi_thermal_rel acpi_pad video
->    pcc_cpufreq ip_tables serio_raw nvme nvme_core crc32c_intel uas
->    usb_storage e1000e i2c_dev
->    CPU: 7 PID: 516 Comm: kworker/u16:3 Not tainted 5.2.0-rc1Lyude-Test+ #14
->    Hardware name: LENOVO 20L8S2N800/20L8S2N800, BIOS N22ET35W (1.12 ) 04/09/2018
->    Workqueue: kacpi_hotplug acpi_hotplug_work_fn
->    RIP: 0010:igb_rd32+0x57/0x6a [igb]
->    Code: 87 b8 fc ff ff 48 c7 47 08 00 00 00 00 48 c7 c6 33 42 9b c0 4c 89
->    c7 e8 47 45 cd dc 89 ee 48 c7 c7 43 42 9b c0 e8 c1 94 71 dc <0f> 0b eb
->    08 8b 00 ff c0 75 b0 eb c8 44 89 e0 5d 41 5c c3 0f 1f 44
->    RSP: 0018:ffffba5801cf7c48 EFLAGS: 00010286
->    RAX: 0000000000000000 RBX: ffff9e7956608840 RCX: 0000000000000007
->    RDX: 0000000000000000 RSI: ffffba5801cf7b24 RDI: ffff9e795e3d6a00
->    RBP: 0000000000000018 R08: 000000009dec4a01 R09: ffffffff9e61018f
->    R10: 0000000000000000 R11: ffffba5801cf7ae5 R12: 00000000ffffffff
->    R13: ffff9e7956608840 R14: ffff9e795a6f10b0 R15: 0000000000000000
->    FS:  0000000000000000(0000) GS:ffff9e795e3c0000(0000) knlGS:0000000000000000
->    CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->    CR2: 0000564317bc4088 CR3: 000000010e00a006 CR4: 00000000003606e0
->    DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
->    DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
->    Call Trace:
->     igb_release_hw_control+0x1a/0x30 [igb]
->     igb_remove+0xc5/0x14b [igb]
->     pci_device_remove+0x3b/0x93
->     device_release_driver_internal+0xd7/0x17e
->     pci_stop_bus_device+0x36/0x75
->     pci_stop_bus_device+0x66/0x75
->     pci_stop_bus_device+0x66/0x75
->     pci_stop_and_remove_bus_device+0xf/0x19
->     trim_stale_devices+0xc5/0x13a
->     ? __pm_runtime_resume+0x6e/0x7b
->     trim_stale_devices+0x103/0x13a
->     ? __pm_runtime_resume+0x6e/0x7b
->     trim_stale_devices+0x103/0x13a
->     acpiphp_check_bridge+0xd8/0xf5
->     acpiphp_hotplug_notify+0xf7/0x14b
->     ? acpiphp_check_bridge+0xf5/0xf5
->     acpi_device_hotplug+0x357/0x3b5
->     acpi_hotplug_work_fn+0x1a/0x23
->     process_one_work+0x1a7/0x296
->     worker_thread+0x1a8/0x24c
->     ? process_scheduled_works+0x2c/0x2c
->     kthread+0xe9/0xee
->     ? kthread_destroy_worker+0x41/0x41
->     ret_from_fork+0x35/0x40
->    ---[ end trace 252bf10352c63d22 ]---
-> 
-> Signed-off-by: Lyude Paul <lyude@redhat.com>
-> Fixes: 47e16692b26b ("igb/igc: warn when fatal read failure happens")
-> Cc: Feng Tang <feng.tang@intel.com>
-> Cc: Sasha Neftin <sasha.neftin@intel.com>
-> Cc: Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-> Cc: intel-wired-lan@lists.osuosl.org
-> ---
->   drivers/net/ethernet/intel/igb/igb_main.c | 3 ++-
->   drivers/net/ethernet/intel/igc/igc_main.c | 3 ++-
->   2 files changed, 4 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
-> index e5b7e638df28..1a7f7cd28df9 100644
-> --- a/drivers/net/ethernet/intel/igb/igb_main.c
-> +++ b/drivers/net/ethernet/intel/igb/igb_main.c
-> @@ -753,7 +753,8 @@ u32 igb_rd32(struct e1000_hw *hw, u32 reg)
->   		struct net_device *netdev = igb->netdev;
->   		hw->hw_addr = NULL;
->   		netdev_err(netdev, "PCIe link lost\n");
-> -		WARN(1, "igb: Failed to read reg 0x%x!\n", reg);
-> +		WARN(pci_device_is_present(igb->pdev),
-> +		     "igb: Failed to read reg 0x%x!\n", reg);
->   	}
->   
->   	return value;
-> diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-> index 28072b9aa932..f873a4b35eaf 100644
-> --- a/drivers/net/ethernet/intel/igc/igc_main.c
-> +++ b/drivers/net/ethernet/intel/igc/igc_main.c
-> @@ -3934,7 +3934,8 @@ u32 igc_rd32(struct igc_hw *hw, u32 reg)
->   		hw->hw_addr = NULL;
->   		netif_device_detach(netdev);
->   		netdev_err(netdev, "PCIe link lost, device now detached\n");
-> -		WARN(1, "igc: Failed to read reg 0x%x!\n", reg);
-> +		WARN(pci_device_is_present(igc->pdev),
-> +		     "igc: Failed to read reg 0x%x!\n", reg);
->   	}
->   
->   	return value;
-> 
-Thanks, for igc
-Acked-by: Sasha Neftin <sasha.neftin@intel.com>
+
+On Sat 24 Aug 2019 at 03:26, Jakub Kicinski <jakub.kicinski@netronome.com> =
+wrote:
+> On Fri, 23 Aug 2019 21:50:49 +0300, Vlad Buslov wrote:
+>> @@ -1201,14 +1199,11 @@ static int u32_reoffload_knode(struct tcf_proto =
+*tp, struct tc_u_knode *n,
+>>  			cls_u32.knode.link_handle =3D ht->handle;
+>>  	}
+>>
+>> -	err =3D cb(TC_SETUP_CLSU32, &cls_u32, cb_priv);
+>> -	if (err) {
+>> -		if (add && tc_skip_sw(n->flags))
+>> -			return err;
+>> -		return 0;
+>> -	}
+>> -
+>> -	tc_cls_offload_cnt_update(block, &n->in_hw_count, &n->flags, add);
+>> +	err =3D tc_setup_cb_reoffload(block, tp, add, cb, TC_SETUP_CLSU32,
+>> +				    &cls_u32, cb_priv, &n->flags,
+>> +				    &n->in_hw_count);
+>> +	if (err && add && tc_skip_sw(n->flags))
+>> +		return err;
+>
+> Could this be further simplified by adding something along the lines of:
+>
+> 	if (!add || !tc_skip_sw(*flags))
+> 		err =3D 0;
+>
+> to tc_setup_cb_reoffload() ?
+
+Indeed, all the users of tc_setup_cb_reoffload() have same error check
+that can be moved into the function. I will refactor it in V3.
+
+>
+>>
+>>  	return 0;
+>>  }
