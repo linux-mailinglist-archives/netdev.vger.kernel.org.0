@@ -2,83 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FFE69BD0E
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 12:38:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 52AD59BD19
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 12:43:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727357AbfHXKhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 06:37:19 -0400
-Received: from [103.251.43.21] ([103.251.43.21]:41240 "EHLO
-        avgw.kite.kerala.gov.in" rhost-flags-FAIL-FAIL-OK-OK)
-        by vger.kernel.org with ESMTP id S1727346AbfHXKhT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 06:37:19 -0400
-X-Greylist: delayed 7149 seconds by postgrey-1.27 at vger.kernel.org; Sat, 24 Aug 2019 06:37:18 EDT
-Received: from avgw.kite.kerala.gov.in (localhost.localdomain [127.0.0.1])
-        by avgw.kite.kerala.gov.in (Proxmox) with ESMTP id 212BB5B70BE;
-        Sat, 24 Aug 2019 13:24:15 +0530 (IST)
-Received: from kite.kerala.gov.in (unknown [10.1.14.155])
-        by avgw.kite.kerala.gov.in (Proxmox) with ESMTPS id 01AD85B70B9;
-        Sat, 24 Aug 2019 13:24:15 +0530 (IST)
-Received: from localhost (mail.kite.kerala.gov.in [127.0.0.1])
-        by kite.kerala.gov.in (Postfix) with ESMTP id 27A82F00338;
-        Sat, 24 Aug 2019 13:23:58 +0530 (IST)
-Received: from kite.kerala.gov.in ([127.0.0.1])
-        by localhost (mail.kite.kerala.gov.in [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id WTR5brMaVYNL; Sat, 24 Aug 2019 13:23:57 +0530 (IST)
-Received: from localhost (mail.kite.kerala.gov.in [127.0.0.1])
-        by kite.kerala.gov.in (Postfix) with ESMTP id C8C22F0036E;
-        Sat, 24 Aug 2019 13:23:53 +0530 (IST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 kite.kerala.gov.in C8C22F0036E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kite.kerala.gov.in;
-        s=4DDB9C16-1548-11E8-B0E3-8CFC090FAE39; t=1566633234;
-        bh=vPS5FqbSZoEURj2D9uL5fJeHEF60DB2VAL7BzwggNEo=;
-        h=Date:From:Message-ID:MIME-Version;
-        b=qU4MdEotQIEyDaRUpAnVe7w4AD2WEnJBSaVuS3V+JaP4xRjoP+4apuiImQyRi1vYo
-         xu864XX4ab/cPRXgDrdBj5eo/FmBDLLQbhhSSHF9u1/N0up2UKGI+DxnPkQU1r1XGs
-         xLnn75AqBAQJaCdK+2esfVhEPCGuRVV2Gb6EOWWg=
-X-Virus-Scanned: amavisd-new at mail.kite.kerala.gov.in
-Received: from kite.kerala.gov.in ([127.0.0.1])
-        by localhost (mail.kite.kerala.gov.in [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id kkBJWPjsuxOu; Sat, 24 Aug 2019 13:23:53 +0530 (IST)
-Received: from mail.kite.kerala.gov.in (mail.kite.kerala.gov.in [127.0.0.1])
-        by kite.kerala.gov.in (Postfix) with ESMTP id 436AFF00374;
-        Sat, 24 Aug 2019 13:23:42 +0530 (IST)
-Date:   Sat, 24 Aug 2019 13:23:42 +0530 (IST)
-From:   Mellie CARIUS <schoolsports@kite.kerala.gov.in>
-Reply-To: Mellie CARIUS <mellie.carius@gmail.com>
-Message-ID: <1837834350.149347.1566633222175.JavaMail.zimbra@kite.kerala.gov.in>
-Subject: =?utf-8?Q?Que_le_Seigneur_vous_b=C3=A9nisse!?=
+        id S1727151AbfHXKny (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 06:43:54 -0400
+Received: from canardo.mork.no ([148.122.252.1]:59953 "EHLO canardo.mork.no"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727010AbfHXKnx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 06:43:53 -0400
+Received: from miraculix.mork.no (miraculix.mork.no [IPv6:2001:4641:0:2:7627:374e:db74:e353])
+        (authenticated bits=0)
+        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id x7OAhcvW030437
+        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
+        Sat, 24 Aug 2019 12:43:38 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
+        t=1566643419; bh=AMwa+4lqRda9qfSOd4FninOupvCyii6oU4nIgEvSd2Q=;
+        h=From:To:Cc:Subject:References:Date:Message-ID:From;
+        b=cF4t8i7U0tasiBs/jRjX696hF7FjmWYIv1aH71tou+qt9X0jHkWuH3OBk4dPD+mXp
+         cfPd5qBMWPenw15XIC663dUC/moDFpf/GEQQOFISxSnFt/81vHuUCJ9nLDDASIv+lK
+         Y2C+S4F0vWAhNsxI9PAK783Y185FnlJDpcin3wGs=
+Received: from bjorn by miraculix.mork.no with local (Exim 4.92)
+        (envelope-from <bjorn@mork.no>)
+        id 1i1TWE-0002I4-2L; Sat, 24 Aug 2019 12:43:38 +0200
+From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
+To:     <Charles.Hyde@dellteam.com>
+Cc:     <linux-usb@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <Mario.Limonciello@dell.com>,
+        <oliver@neukum.org>, <netdev@vger.kernel.org>,
+        <nic_swsd@realtek.com>
+Subject: Re: [RFC 4/4] net: cdc_ncm: Add ACPI MAC address pass through functionality
+Organization: m
+References: <ec7435e0529243a99f6949ee9efbede5@AUSX13MPS303.AMER.DELL.COM>
+Date:   Sat, 24 Aug 2019 12:43:38 +0200
+In-Reply-To: <ec7435e0529243a99f6949ee9efbede5@AUSX13MPS303.AMER.DELL.COM>
+        (Charles Hyde's message of "Tue, 20 Aug 2019 22:23:15 +0000")
+Message-ID: <877e722691.fsf@miraculix.mork.no>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/26.1 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [207.244.113.44]
-X-Mailer: Zimbra 8.8.9_GA_3019 (zclient/8.8.9_GA_3019)
-Thread-Index: aub4IkTD6APyY0UdTfdnDIUsRmJ5UA==
-Thread-Topic: Que le Seigneur vous =?utf-8?Q?b=C3=A9nisse!?=
-To:     unlisted-recipients:; (no To-header on input)
+X-Virus-Scanned: clamav-milter 0.101.2 at canardo
+X-Virus-Status: Clean
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bonjour,
+<Charles.Hyde@dellteam.com> writes:
 
-Je soussign=C3=A9e Mme Mellie CARIUS de nationalit=C3=A9 fran=C3=A7aise. Je=
- vous envoie ce pr=C3=A9sent message afin de solliciter votre accord pour l=
-a r=C3=A9alisation d'un projet de donation. Ayant perdu mon =C3=A9poux et m=
-on enfant de 8 ans au cours d'un accident tragique et mortel Il y a quelque=
-s ann=C3=A9es, je n'ai ni famille ni enfant qui pourra b=C3=A9n=C3=A9ficier=
- de ma fortune.
+> @@ -930,11 +931,18 @@ int cdc_ncm_bind_common(struct usbnet *dev, struct =
+usb_interface *intf, u8 data_
+>  	usb_set_intfdata(ctx->control, dev);
+>=20=20
+>  	if (ctx->ether_desc) {
+> +		struct sockaddr sa;
+> +
+>  		temp =3D usbnet_get_ethernet_addr(dev, ctx->ether_desc->iMACAddress);
+>  		if (temp) {
+>  			dev_dbg(&intf->dev, "failed to get mac address\n");
+>  			goto error2;
+>  		}
+> +		if (get_acpi_mac_passthru(&intf->dev, &sa) =3D=3D 0) {
+> +			memcpy(dev->net->dev_addr, sa.sa_data, ETH_ALEN);
+> +			if (usbnet_set_ethernet_addr(dev) < 0)
+> +				usbnet_get_ethernet_addr(dev, ctx->ether_desc->iMACAddress);
+> +		}
+>  		dev_info(&intf->dev, "MAC-Address: %pM\n", dev->net->dev_addr);
+>  	}
 
-Actuellement hospitalis=C3=A9e aux =C3=89tats-Unis pour un cancer en phase =
-terminale, je d=C3=A9cide de faire don de ma fortune afin que vous puissiez=
- r=C3=A9aliser les =C5=93uvres de charit=C3=A9 de votre choix.
+So you want to run a Dell specific ACPI method every time anyone plugs
+some NCM class device into a host supporing ACPI?  That's going to annoy
+the hell out of 99.9997% of the x86, ia64 and arm64 users of this
+driver.
 
-Pour cela je vous l=C3=A8gue =C3=A0 titre de don.une somme de un million ci=
-nq cent mille dollars am=C3=A9ricain en banque en Afrique de l=E2=80=99oues=
-t o=C3=B9 je m=E2=80=99=C3=A9tais install=C3=A9e apr=C3=A8s la mort de mon =
-mari et mon enfant.
-Merci me de r=C3=A9pondre pour plus de d=C3=A9tails.
+Call ACPI once when the driver loads, and only if running on an actual
+Dell system where this method is supported.  There must be some ACPI
+device ID you can match on to know if this method is supported or not?
 
-Sinc=C3=A8rement
-Mme Mellie C.
 
+Bj=C3=B8rn
