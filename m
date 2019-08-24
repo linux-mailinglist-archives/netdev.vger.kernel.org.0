@@ -2,43 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DFCBF9BBD5
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 06:49:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F0E9E9BBDF
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 06:59:40 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725930AbfHXEpo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 00:45:44 -0400
-Received: from mail-eopbgr80070.outbound.protection.outlook.com ([40.107.8.70]:6049
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725379AbfHXEpn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 00:45:43 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=har4WHCvP4HtKSDD4IX7w5Y8fe3BZmimwoo1I45yOJQKnonJRbP78tSaTdml6gvIq53HpQBceap1AEcYjvkWiQy7Sob1dWO4PyK7LZqIwOyxEz9pQTUwbTrhO42lHsri/FCO0gxi4l+2kGeE/uH8oof7NkLcit+QHxOoit4jfFmdNaWXQ61jb8JqgVyRoUT5GmYmGe59dkH9L8N56zIyCoHoz8mUtXvWb5pZbQ7pmvx0bjpUi5ATWJz3dIStKbsc6f04Z0fozwu/MSUJe9uq+kf2cSyExeXfPsDPHxox6iP7rvcYAuYCgBD+5uZhoxDdGPssaI7F6PfiUmfAF6KFww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SCUHwGbz/VVxA1+F92cZgCBF30GyVanu2e/qxAZ7ydM=;
- b=Ig/jzIMnqT55UfQr8fRkukjsPbYNSUOI6LF7NqLF1QzPgU6y8iKP+3YQcNVZRKFEltdTELrXT7/F/nW0OGrTs2CCo3uHdx3amj2AHWb+yYlrB5hq5ntFQ9gH/T2LLsRvfnANrFQPCUjj/PTbhPCeCZGamta4ipJup/3arC5sEvqePW94OsAp/BxDqbBEuFPAwb6hMhF6jqNHDt6BoVKMhhkPU66uPjsEp2fGWCB5cxuoFDPLqfvD7LLp49+pXjSMa4AIWyw9iuZC39uVABhy8BvlKOWfRY8Eygo4apgMLd6dzd3i6StHsccQ3n6WBHFl9XY1C/mKqtmmzg+eYoITsQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=SCUHwGbz/VVxA1+F92cZgCBF30GyVanu2e/qxAZ7ydM=;
- b=Zin80qcMRB1FYzpsg3th/hw3eqelmQj3Ejqb/jEUrqt8TK/VOdyDduaP0+9NmiTV9v+rtYTohZt0k3GYHkoFraHTPZTn3edoQaUWaPYLrPD+wjtfFpwcGDM46+9mAdjY9MFAo9G5JKuovA4EtaeeepWW1dp682hrhNwt6KinsXE=
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com (20.176.214.160) by
- AM0PR05MB6274.eurprd05.prod.outlook.com (20.179.32.142) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.20; Sat, 24 Aug 2019 04:45:25 +0000
-Received: from AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea]) by AM0PR05MB4866.eurprd05.prod.outlook.com
- ([fe80::216f:f548:1db0:41ea%6]) with mapi id 15.20.2178.020; Sat, 24 Aug 2019
- 04:45:25 +0000
-From:   Parav Pandit <parav@mellanox.com>
-To:     Parav Pandit <parav@mellanox.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-CC:     Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@mellanox.com>,
+        id S1726076AbfHXE7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 00:59:32 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:26657 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725948AbfHXE7c (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 00:59:32 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 9AA8AC008621;
+        Sat, 24 Aug 2019 04:59:31 +0000 (UTC)
+Received: from x1.home (ovpn-116-99.phx2.redhat.com [10.3.116.99])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 45D9E1001959;
+        Sat, 24 Aug 2019 04:59:30 +0000 (UTC)
+Date:   Fri, 23 Aug 2019 22:59:29 -0600
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Parav Pandit <parav@mellanox.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@mellanox.com>,
         "David S . Miller" <davem@davemloft.net>,
         Kirti Wankhede <kwankhede@nvidia.com>,
         Cornelia Huck <cohuck@redhat.com>,
@@ -46,14 +30,10 @@ CC:     Jiri Pirko <jiri@resnulli.us>, Jiri Pirko <jiri@mellanox.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         cjia <cjia@nvidia.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Thread-Topic: [PATCH v2 0/2] Simplify mtty driver and mdev core
-Thread-Index: AQHVTfNxjgfwJJG2ZUiuOAmKCwQvf6bx3uKAgAWJU4CAAcVCEIAABCsAgAAWVtCAABCDgIAAzoewgAAqE4CAAECFQIAAFWyAgAAGbNCAABfqAIAAErcwgAjpulCAAJkHAIAAnVNggAAbk4CAAAOYgIAABpwAgAAAVrCAAAfEAIAADNCggAHJU4CAAAIMEIAABiaAgAAA2ACAACadAIAAFGdwgAE42YCAAABasIAAaLIAgAAC1QCAABSugIAAA+pAgAATnYCAAAO7UIAAJVKAgACGAeCAABAIQA==
-Date:   Sat, 24 Aug 2019 04:45:25 +0000
-Message-ID: <AM0PR05MB48666AE325759E51D0737F04D1A70@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+Message-ID: <20190823225929.38fd86f5@x1.home>
+In-Reply-To: <AM0PR05MB4866008B0571B90DAFFADA97D1A70@AM0PR05MB4866.eurprd05.prod.outlook.com>
 References: <20190820225722.237a57d2@x1.home>
-        <AM0PR05MB4866437FAA63C447CACCD7E5D1AA0@AM0PR05MB4866.eurprd05.prod.outlook.com>
-        <20190822092903.GA2276@nanopsycho.orion>
         <AM0PR05MB4866A20F831A5D42E6C79EFED1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
         <20190822095823.GB2276@nanopsycho.orion>
         <AM0PR05MB4866144FD76C302D04DA04B9D1A50@AM0PR05MB4866.eurprd05.prod.outlook.com>
@@ -67,82 +47,254 @@ References: <20190820225722.237a57d2@x1.home>
         <AM0PR05MB4866E33AF7203DE47F713FAAD1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
         <20190823111641.7f928917@x1.home>
         <AM0PR05MB486648FF7E6624F34842E425D1A40@AM0PR05MB4866.eurprd05.prod.outlook.com>
- <20190823134337.37e4b215@x1.home>
- <AM0PR05MB4866008B0571B90DAFFADA97D1A70@AM0PR05MB4866.eurprd05.prod.outlook.com>
-In-Reply-To: <AM0PR05MB4866008B0571B90DAFFADA97D1A70@AM0PR05MB4866.eurprd05.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=parav@mellanox.com; 
-x-originating-ip: [106.51.18.188]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 24082db6-526d-425d-8b6d-08d7284de147
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(7168020)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:AM0PR05MB6274;
-x-ms-traffictypediagnostic: AM0PR05MB6274:
-x-ld-processed: a652971c-7d2e-4d9b-a6a4-d149256f461b,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <AM0PR05MB62741EBC426BC3297E6E18C3D1A70@AM0PR05MB6274.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-forefront-prvs: 0139052FDB
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(396003)(136003)(346002)(376002)(366004)(189003)(199004)(13464003)(5660300002)(9456002)(486006)(14454004)(4326008)(86362001)(8936002)(81156014)(81166006)(476003)(8676002)(66476007)(7696005)(186003)(66946007)(33656002)(6506007)(53546011)(26005)(102836004)(55236004)(53936002)(74316002)(54906003)(99286004)(6116002)(7736002)(110136005)(11346002)(478600001)(3846002)(6436002)(76176011)(66066001)(316002)(2906002)(256004)(71200400001)(71190400001)(14444005)(446003)(6246003)(52536014)(25786009)(2940100002)(305945005)(55016002)(9686003)(66446008)(66556008)(76116006)(64756008)(229853002);DIR:OUT;SFP:1101;SCL:1;SRVR:AM0PR05MB6274;H:AM0PR05MB4866.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: e7jtmWnB549hcmbRZTnKiMSAFv61tnU3SeERshJ6KPPWfxi9u//LwcHD6/SMVOzPKab/VzQMI6/29xQ5bJeE+P7Q7WvUwDMkSFd/vv518BnaKFv51vyjAYne6oAFEsR7THFk2prdX8/fXjgMMOmhDJOvuDD8wYFoR48EIzx5E4zTHnWKEF2sCX2dzyi3wv33NMG2mxmDEvea4vM6rGeIJoQ6Iolvb5rM9AppyGbOnjILeKiHQEtyOqfH66+gwAbpNmmssYkWzzG3bGXpIlmjU7pkafPe+VIChWKrcrAkH6e5N3ehA8sCGM8jH04QkcwR9/tB5JHGR1oQ6bXH/bhtFC5k1UH+u8Lvd/U81mBT6jC3+hVa0m8w4uxUJY8oJ98s2geCFRW7z+3IzaqCb6nQV/dckbwGMkgJQLm9pks5iIo=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        <20190823134337.37e4b215@x1.home>
+        <AM0PR05MB4866008B0571B90DAFFADA97D1A70@AM0PR05MB4866.eurprd05.prod.outlook.com>
+Organization: Red Hat
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 24082db6-526d-425d-8b6d-08d7284de147
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2019 04:45:25.2390
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: xbQ8onFBG7Do4MipSeseDbga8qxCeuFZN9TUwgRREQhnscR80+bJL3Z5FAUkVegpKtuHmsuMuk7tm30ghWpCoQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR05MB6274
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.5.16 (mx1.redhat.com [10.5.110.32]); Sat, 24 Aug 2019 04:59:31 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Alex,
+On Sat, 24 Aug 2019 03:56:08 +0000
+Parav Pandit <parav@mellanox.com> wrote:
 
-> -----Original Message-----
-> From: linux-kernel-owner@vger.kernel.org <linux-kernel-
-> owner@vger.kernel.org> On Behalf Of Parav Pandit
-> Sent: Saturday, August 24, 2019 9:26 AM
-> To: Alex Williamson <alex.williamson@redhat.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>; Jiri Pirko <jiri@mellanox.com>; David =
-S .
-> Miller <davem@davemloft.net>; Kirti Wankhede <kwankhede@nvidia.com>;
-> Cornelia Huck <cohuck@redhat.com>; kvm@vger.kernel.org; linux-
-> kernel@vger.kernel.org; cjia <cjia@nvidia.com>; netdev@vger.kernel.org
-> Subject: RE: [PATCH v2 0/2] Simplify mtty driver and mdev core
-> > I don't understand this logic.  I'm simply asking that we have a way
-> > to test the collision behavior without changing the binary.  The path
-> > we're driving towards seems to be making this easier and easier.  If
-> > the vendor can request an alias of a specific length, then a sample
-> > driver with a module option to set the desired alias length to 1-char m=
-akes
-> it trivially easy to induce a collision.
-> Sure it is easy to test collision, but my point is - mdev core is not sha=
-1 test
-> module.
-> Hence adding functionality of variable alias length to test collision doe=
-sn't
-> make sense.
-> When the actual user arrives who needs small alias, we will be able to ad=
-d
-> additional pieces very easily.
+> > -----Original Message-----
+> > From: Alex Williamson <alex.williamson@redhat.com>
+> > Sent: Saturday, August 24, 2019 1:14 AM
+> > To: Parav Pandit <parav@mellanox.com>
+> > Cc: Jiri Pirko <jiri@resnulli.us>; Jiri Pirko <jiri@mellanox.com>; David S . Miller
+> > <davem@davemloft.net>; Kirti Wankhede <kwankhede@nvidia.com>; Cornelia
+> > Huck <cohuck@redhat.com>; kvm@vger.kernel.org; linux-
+> > kernel@vger.kernel.org; cjia <cjia@nvidia.com>; netdev@vger.kernel.org
+> > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+> > 
+> > On Fri, 23 Aug 2019 18:00:30 +0000
+> > Parav Pandit <parav@mellanox.com> wrote:
+> >   
+> > > > -----Original Message-----
+> > > > From: Alex Williamson <alex.williamson@redhat.com>
+> > > > Sent: Friday, August 23, 2019 10:47 PM
+> > > > To: Parav Pandit <parav@mellanox.com>
+> > > > Cc: Jiri Pirko <jiri@resnulli.us>; Jiri Pirko <jiri@mellanox.com>;
+> > > > David S . Miller <davem@davemloft.net>; Kirti Wankhede
+> > > > <kwankhede@nvidia.com>; Cornelia Huck <cohuck@redhat.com>;
+> > > > kvm@vger.kernel.org; linux- kernel@vger.kernel.org; cjia
+> > > > <cjia@nvidia.com>; netdev@vger.kernel.org
+> > > > Subject: Re: [PATCH v2 0/2] Simplify mtty driver and mdev core
+> > > >
+> > > > On Fri, 23 Aug 2019 16:14:04 +0000
+> > > > Parav Pandit <parav@mellanox.com> wrote:
+> > > >  
+> > > > > > > Idea is to have mdev alias as optional.
+> > > > > > > Each mdev_parent says whether it wants mdev_core to generate
+> > > > > > > an alias or not. So only networking device drivers would set it to true.
+> > > > > > > For rest, alias won't be generated, and won't be compared
+> > > > > > > either during creation time. User continue to provide only uuid.  
+> > > > > >
+> > > > > > Ok
+> > > > > >  
+> > > > > > > I am tempted to have alias collision detection only within
+> > > > > > > children mdevs of the same parent, but doing so will always
+> > > > > > > mandate to prefix in netdev name. And currently we are left
+> > > > > > > with only 3 characters to prefix it, so that may not be good either.
+> > > > > > > Hence, I think mdev core wide alias is better with 12 characters.  
+> > > > > >
+> > > > > > I suppose it depends on the API, if the vendor driver can ask
+> > > > > > the mdev core for an alias as part of the device creation
+> > > > > > process, then it could manage the netdev namespace for all its
+> > > > > > devices, choosing how many characters to use, and fail the
+> > > > > > creation if it can't meet a uniqueness requirement.  IOW,
+> > > > > > mdev-core would always provide a full
+> > > > > > sha1 and therefore gets itself out of the uniqueness/collision aspects.
+> > > > > >  
+> > > > > This doesn't work. At mdev core level 20 bytes sha1 are unique, so
+> > > > > mdev core allowed to create a mdev.  
+> > > >
+> > > > The mdev vendor driver has the opportunity to fail the device
+> > > > creation in mdev_parent_ops.create().
+> > > >  
+> > > That is not helpful for below reasons.
+> > > 1. vendor driver doesn't have visibility in other vendor's alias.
+> > > 2. Even for single vendor, it needs to maintain global list of devices to see  
+> > collision.  
+> > > 3. multiple vendors needs to implement same scheme.
+> > >
+> > > Mdev core should be the owner. Shifting ownership from one layer to a
+> > > lower layer in vendor driver doesn't solve the problem (if there is
+> > > one, which I think doesn't exist).
+> > >  
+> > > > > And then devlink core chooses
+> > > > > only 6 bytes (12 characters) and there is collision. Things fall
+> > > > > apart. Since mdev provides unique uuid based scheme, it's the mdev
+> > > > > core's ownership to provide unique aliases.  
+> > > >
+> > > > You're suggesting/contemplating multiple solutions here, 3-char
+> > > > prefix + 12- char sha1 vs <parent netdev> + ?-char sha1.  Also, the
+> > > > 15-char total limit is imposed by an external subsystem, where the
+> > > > vendor driver is the gateway between that subsystem and mdev.  How
+> > > > would mdev integrate with another subsystem that maybe only has
+> > > > 9-chars available?  Would the vendor driver API specify "I need an
+> > > > alias" or would it specify "I need an X-char length alias"?  
+> > > Yes, Vendor driver should say how long the alias it wants.
+> > > However before we implement that, I suggest let such
+> > > vendor/user/driver arrive which needs that. Such variable length alias
+> > > can be added at that time and even with that alias collision can be
+> > > detected by single mdev module.  
+> > 
+> > If we agree that different alias lengths are possible, then I would request that
+> > minimally an mdev sample driver be modified to request an alias with a length
+> > that can be adjusted without recompiling in order to exercise the collision path.
+> >   
+> Yes. this can be done. But I fail to understand the need to do so.
+> It is not the responsibility of the mdev core to show case sha1
+> collision efficiency/deficiency. So why do you insist exercise it?
 
-My initial thoughts to add parent_ops to have bool flag to generate alias o=
-r not.
-However, instead of bool, keeping it unsigned int to say, zero to skip alia=
-s and non-zero length to convey generate alias.
-This will serve both the purpose with trivial handling.
+I don't understand what you're trying to imply with "show case sha1
+collision efficiency/deficiency".  Are you suggesting that I'm asking
+for this feature to experimentally test the probability of collisions
+at different character lengths?  We can use shell scripts for that.
+I'm simply observing that collisions are possible based on user input,
+but they're not practical to test for at the character lengths we're
+using.  Therefore, how do I tell QA to develop a tests to make sure the
+kernel and userspace tools that might be involved behave correctly when
+this rare event occurs?
 
+As I mentioned previously, we can burn the cpu cyles to find some uuids
+which will collide with our aliases, but the more accessible approach
+seems to be to have a tune-able to reduce the alias address space such
+that we can simply throw enough random uuids into the test to guarantee
+a collision.  Simply generating 10,000 devices with a 12-character
+alias, as you suggested previously, has effectively a 0% probability of
+generating a collision.
 
+If we accept that different vendor drivers might have different alias
+requirements, and therefore the vendor driver should have the ability
+to specify an alias length, then this all fits very nicely into
+modifying a sample driver to request a sufficiently short alias such
+that we can use it to test the behavior of mdev-core and surrounding
+code when an alias collision occurs.
+
+> > If mdev-core is guaranteeing uniqueness, does this indicate that
+> > each alias length constitutes a separate namespace?  ie. strictly a
+> > strcmp(), not a strncmp() to the shorter alias.
+> >   
+> Yes.
+> 
+> 
+> > > > Does it make sense that mdev-core would fail creation of a
+> > > > device if there's a collision in the 12-char address space
+> > > > between different subsystems?  For example, does
+> > > > enm0123456789ab really collide with xyz0123456789ab?  
+> > > I think so, because at mdev level its 12-char alias matters.
+> > > Choosing the prefix not adding prefix is really a user space
+> > > choice. 
+> > > >  So if
+> > > > mdev were to provided a 40-char sha1, is it possible that the
+> > > > vendor driver could consume this in its create callback,
+> > > > truncate it to the number of chars required by the vendor
+> > > > driver's subsystem, and determine whether a collision exists?  
+> > > We shouldn't shift the problem from mdev to multiple vendor
+> > > drivers to detect collision.
+> > >
+> > > I still think that user providing alias is better because it
+> > > knows the use-case system in use, and eliminates these collision
+> > > issue.  
+> > 
+> > How is a user provided alias immune from collisions?  The burden is
+> > on the user to provide both a unique uuid and a unique alias.  That
+> > makes it trivial to create a collision.
+> >   
+> Than such collision should have occurred for other subsystem such as
+> netdev while creating vlan, macvlan, ipvlan, vxlan and more devices
+> who are named by the user. But that isn't the case.
+> 
+> > > > > > > I do not understand how an extra character reduces
+> > > > > > > collision, if that's what you meant.  
+> > > > > >
+> > > > > > If the default were for example 3-chars, we might already
+> > > > > > have device 'abc'.  A collision would expose one more char
+> > > > > > of the new device, so we might add device with alias
+> > > > > > 'abcd'.  I mentioned previously that this leaves an issue
+> > > > > > for userspace that we can't change the alias of device abc,
+> > > > > > so without additional information, userspace can only
+> > > > > > determine via elimination the mapping of alias to device,
+> > > > > > but userspace has more information available to it in the
+> > > > > > form of sysfs links.  
+> > > > > > > Module options are almost not encouraged anymore with
+> > > > > > > other subsystems/drivers.  
+> > > > > >
+> > > > > > We don't live in a world of absolutes.  I agree that the
+> > > > > > defaults should work in the vast majority of cases.
+> > > > > > Requiring a user to twiddle module options to make things
+> > > > > > work is undesirable, verging on a bug.  A module option to
+> > > > > > enable some specific feature, unsafe condition, or test
+> > > > > > that is outside of the typical use case is reasonable,
+> > > > > > imo.  
+> > > > > > > For testing collision rate, a sample user space script and
+> > > > > > > sample mtty is easy and get us collision count too. We
+> > > > > > > shouldn't put that using module option in production
+> > > > > > > kernel. I practically have the code ready to play with;
+> > > > > > > Changing 12 to smaller value is easy with module reload.
+> > > > > > >
+> > > > > > > #define MDEV_ALIAS_LEN 12  
+> > > > > >
+> > > > > > If it can't be tested with a shipping binary, it probably
+> > > > > > won't be tested.  Thanks,  
+> > > > > It is not the role of mdev core to expose collision
+> > > > > efficiency/deficiency of the sha1. It can be tested outside
+> > > > > before mdev choose to use it.  
+> > > >
+> > > > The testing I'm considering is the user and kernel response to a
+> > > > collision.  
+> > > > > I am saying we should test with 12 characters with 10,000 or
+> > > > > more devices and see how collision occurs. Even if collision
+> > > > > occurs, mdev returns EEXIST status indicating user to pick a
+> > > > > different UUID for those rare conditions.  
+> > > >
+> > > > The only way we're going to see collision with a 12-char sha1
+> > > > is if we burn the CPU cycles to find uuids that collide in that
+> > > > space. 10,000 devices is not remotely enough to generate a
+> > > > collision in that address space.  That puts a prerequisite in
+> > > > place that in order to test collision, someone needs to know
+> > > > certain magic inputs. OTOH, if we could use a shorter
+> > > > abbreviation, collisions are trivial to test experimentally.
+> > > > Thanks,  
+> > > Yes, and therefore a sane user who wants to create more mdevs,
+> > > wouldn't intentionally stress it to see failures.  
+> > 
+> > I don't understand this logic.  I'm simply asking that we have a
+> > way to test the collision behavior without changing the binary.
+> > The path we're driving towards seems to be making this easier and
+> > easier.  If the vendor can request an alias of a specific length,
+> > then a sample driver with a module option to set the desired alias
+> > length to 1-char makes it trivially easy to induce a collision.    
+> Sure it is easy to test collision, but my point is - mdev core is not
+> sha1 test module. Hence adding functionality of variable alias length
+> to test collision doesn't make sense. When the actual user arrives
+> who needs small alias, we will be able to add additional pieces very
+> easily.
+> 
+> > It doesn't
+> > even need to be exposed in a real driver.  Besides, when do we ever
+> > get to design interfaces that only worry about sane users???
+> > Thanks, 
+> I intent to say that a sane user who wants to create mdev's will just
+> work fine with less collision. If there is collision EEXIST is
+> returns and sane user picks different UUID. If user is intentionally
+> picking UUIDs in such a way that triggers sha1 collision, his
+> intention is likely to not create mdevs for actual use. And if
+> interface returns error code it is still fine.
+
+This is exactly the scenarios that I'm asking "how do we test that it
+works as we expect".  I can test that passing identical uuids into the
+mdev create interface only allows the first to succeed.  With a 12-char
+sha1 alias, it's not practical to construct a test to validate the
+alias collision behavior.  Do you suggest we rely only on code
+inspection instead?  Thanks,
+
+Alex
