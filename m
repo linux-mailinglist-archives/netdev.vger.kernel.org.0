@@ -2,87 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E47A9BD44
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 13:26:13 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AB4DA9BD67
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 13:58:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727928AbfHXLZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 07:25:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56926 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727604AbfHXLZv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 07:25:51 -0400
-Received: from willie-the-truck (236.31.169.217.in-addr.arpa [217.169.31.236])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6FA5D206BB;
-        Sat, 24 Aug 2019 11:25:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1566645950;
-        bh=p0T18Ac2XKyz8tWjMXJ1tfKYxEKJw+mV/K1hBTkTLdM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=f2CmPfEKS8W1/Txnq5raX/38HHvvimfslr6SB+oGrQSDls/D7J9Bco9NNUGtujrHs
-         q9PQqsqwGngHAaLNowMgJ+xsUI2EdALL+jZeWRwMzGHHIhF8O1psIuKq8TT86NQQvH
-         m2CGOkOQUmyeA77k5EP7ArwKtxP1l0hRJsvXg1sg=
-Date:   Sat, 24 Aug 2019 12:25:43 +0100
-From:   Will Deacon <will@kernel.org>
-To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Yonghong Song <yhs@fb.com>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Andrey Konovalov <andreyknvl@google.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Enrico Weigelt <info@metux.net>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Masayoshi Mizuma <m.mizuma@jp.fujitsu.com>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Allison Randal <allison@lohutok.net>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf@vger.kernel.org
-Subject: Re: [PATCH 12/16] arm64: prefer __section from compiler_attributes.h
-Message-ID: <20190824112542.7guulvdenm35ihs7@willie-the-truck>
-References: <20190812215052.71840-1-ndesaulniers@google.com>
- <20190812215052.71840-12-ndesaulniers@google.com>
- <20190813082744.xmzmm4j675rqiz47@willie-the-truck>
- <CANiq72mAfJ23PyWzZAELgbKQDCX2nvY0z+dmOMe14qz=wa6eFg@mail.gmail.com>
- <20190813170829.c3lryb6va3eopxd7@willie-the-truck>
- <CAKwvOdk4hca8WzWzhcPEvxXnJVLbXGnhBdDZbeL_W_H91Ttjqw@mail.gmail.com>
- <CANiq72mGoGpx7EAVUPcGuhVkLit8sB3bR-k1XBDyeM8HBUaDZw@mail.gmail.com>
- <CANiq72nUyT-q3A9mTrYzPZ+J9Ya7Lns5MyTK7W7-7yXgFWc2xA@mail.gmail.com>
- <CANiq72nfn4zxAO63GEEoUjumC6Jwi5_jdcD_5Xzt1vZRgh52fg@mail.gmail.com>
+        id S1728042AbfHXL5h (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 07:57:37 -0400
+Received: from mail-io1-f50.google.com ([209.85.166.50]:38522 "EHLO
+        mail-io1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727779AbfHXL5g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 07:57:36 -0400
+Received: by mail-io1-f50.google.com with SMTP id p12so26398223iog.5
+        for <netdev@vger.kernel.org>; Sat, 24 Aug 2019 04:57:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zmWNoIbOMBqHFx2cdKk99NrwhcGTgDxRP+5Vlodw/6w=;
+        b=P2YoJmzQNQHsy3VdQtT3x2o4PRotkDTwXA2hormWI8RNP8KRqHpvW4h0e9KX2rEzTp
+         tOMfNwMGSNysg1t29+et+thwFxnyTiNokUbpDXsG9pkU8u3dIcnkvKL0BSF/KmEhCN18
+         ShWzd5/irqry0aIVc/WdpkfZxC0cWV6wnvNpS5n55qYb5S+4fIs8w99GwEpA9SUKD9CJ
+         WwlkUjsNatiiUZrWC9FzW5aGWfMQQ09JmGOdlW6qP7cV7AMSBSTkylD0Re6m7paLMcmM
+         hYwHooJ2l3JTVdMtAM5EqJA7mDbXvZBFQbpNwn6CxBSJ6pzPFb51Rs+4KbSF+hAbFoow
+         UEuA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zmWNoIbOMBqHFx2cdKk99NrwhcGTgDxRP+5Vlodw/6w=;
+        b=YBrsbEep7ClFmZEgPy3DUiCxSCpDt2BM5FBAsJRgMEQwS6O7bNArdLMosRly76DFrd
+         qveV2NrZfhGrD4nAS2b2UF1S+1dMa9NWPVc78yzVQ3rWN1ytkqxghVqnEJ7i7MlZ7XLN
+         YaSAJM+A9ZG4Qd/jbzAXr3KfX8heYzGbRvTX9hZaYDvTIDtUhUltH3jaz0Ch77zAPTdp
+         fZXRERhnYfSprqhnJ2O8KbLU+mEDveNtFOHFJ9ZJPDGWBTABZGiIGW6cP+Ts1UGy/7qQ
+         51Vyx1gY+/hekfaG4x+VwcXb6gPfmADdtq17wafmL2+CRGgZ2zBHFF02Y/c8d7n4/ZKt
+         PGHw==
+X-Gm-Message-State: APjAAAX0snG2IombNv2nXiJu/+NhwAhwKL8sOmJ2+8/K5c5wLNoJxY0m
+        ci7I+Q5kyXxgJTC+4W32q5Z/DUjfLO8=
+X-Google-Smtp-Source: APXvYqzqet3feoKF6sZVdh+p6JTKtboCZNcdksgQPh8l7UT6tzWtAI6Uvyoum1lzT4oXv5DB6KE1Mg==
+X-Received: by 2002:a5d:8cd2:: with SMTP id k18mr656215iot.242.1566647855291;
+        Sat, 24 Aug 2019 04:57:35 -0700 (PDT)
+Received: from xps13.local.tld (cpe-67-255-90-149.maine.res.rr.com. [67.255.90.149])
+        by smtp.gmail.com with ESMTPSA id k9sm4974938ioa.10.2019.08.24.04.57.34
+        for <netdev@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 24 Aug 2019 04:57:34 -0700 (PDT)
+Date:   Sat, 24 Aug 2019 07:57:26 -0400
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     netdev@vger.kernel.org
+Subject: Fw: [Bug 204681] New: Kernel BUG/Oops:  tc qdisc delete with tc
+ filter action xt -j CONNMARK
+Message-ID: <20190824075726.398cc8a3@xps13.local.tld>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANiq72nfn4zxAO63GEEoUjumC6Jwi5_jdcD_5Xzt1vZRgh52fg@mail.gmail.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 23, 2019 at 09:35:08PM +0200, Miguel Ojeda wrote:
-> On Thu, Aug 15, 2019 at 11:12 AM Miguel Ojeda
-> <miguel.ojeda.sandonis@gmail.com> wrote:
-> >
-> > Btw, I guess that is the Oops you were mentioning in the cover letter?
-> 
-> Pinging about this...
 
-Which bit are you pinging about? This patch (12/16) has been in -next for a
-while and is queued in the arm64 tree for 5.4. The Oops/boot issue is
-addressed in patch 14 which probably needs to be sent as a separate patch
-(with a commit message) if it's targetting 5.3 and, I assume, routed via
-somebody like akpm.
 
-Will
+Begin forwarded message:
+
+Date: Fri, 23 Aug 2019 23:44:26 +0000
+From: bugzilla-daemon@bugzilla.kernel.org
+To: stephen@networkplumber.org
+Subject: [Bug 204681] New: Kernel BUG/Oops:  tc qdisc delete with tc filter action xt -j CONNMARK
+
+
+https://bugzilla.kernel.org/show_bug.cgi?id=204681
+
+            Bug ID: 204681
+           Summary: Kernel BUG/Oops:  tc qdisc delete with tc filter
+                    action xt -j CONNMARK
+           Product: Networking
+           Version: 2.5
+    Kernel Version: 5.2.6 (x86_64) / 4.19.62 (mips32)/ 4.14.133 (arm7l)
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: high
+          Priority: P1
+         Component: Other
+          Assignee: stephen@networkplumber.org
+          Reporter: itugrok@yahoo.com
+        Regression: No
+
+Created attachment 284581
+  --> https://bugzilla.kernel.org/attachment.cgi?id=284581&action=edit  
+BUG/Oops: kernel 5.2.6/x86_64
+
+Overview:
+=========
+
+Several uses of "tc filter .. action xt" work as expected and also allow final
+qdisc/filter deletion: e.g. xt_DSCP and xt_CLASSIFY.
+
+However, trying to delete a qdisc/filter using xt_CONNMARK results in a kernel
+oops or hang/crash on all platforms and kernel versions tested.
+
+
+Steps to Reproduce:
+===================
+
+# tc qdisc add dev lo clsact
+# tc filter add dev lo egress protocol ip matchall action xt -j CONNMARK
+--save-mark
+# tc qdisc del dev lo clsact
+<Kernel Oops>
+
+
+Systems Tested:
+===============
+
+Ubuntu 18.04 LTS (mainline kernel 5.2.6/x86_64, iptables 1.6.1, iproute2 4.15)
+(Kernel build: https://kernel.ubuntu.com/~kernel-ppa/mainline/v5.2.6/)
+
+Ubuntu 18.04 LTS (distro kernel 4.15/x86_64, iptables 1.6.1, iproute2 4.15)
+
+OpenWrt master, r10666-fc5d46dc62 (kernel 4.19.62, mips32_be, iptables 1.8.3,
+iproute2 5.0.0)
+
+OpenWrt 19.07, r10324-8bf8de95a2 (kernel 4.14.133, armv7l, iptables 1.8.3,
+iproute2 5.0.0)
+
+
+Kernel Logs:
+============
+
+The clearest call traces are from the Ubuntu systems, and are attached.
+
+-- 
+You are receiving this mail because:
+You are the assignee for the bug.
