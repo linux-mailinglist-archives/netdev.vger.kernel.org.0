@@ -2,74 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1651E9BFEB
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 21:53:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E93EB9BFEC
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 21:53:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbfHXTw5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 15:52:57 -0400
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:45500 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727564AbfHXTw5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 15:52:57 -0400
-Received: by mail-qk1-f193.google.com with SMTP id m2so11179968qki.12
-        for <netdev@vger.kernel.org>; Sat, 24 Aug 2019 12:52:56 -0700 (PDT)
+        id S1727969AbfHXTxV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 15:53:21 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:46057 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727564AbfHXTxV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 15:53:21 -0400
+Received: by mail-ed1-f68.google.com with SMTP id x19so19481011eda.12
+        for <netdev@vger.kernel.org>; Sat, 24 Aug 2019 12:53:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:message-id:from:to:cc:subject:in-reply-to:references
-         :mime-version:content-disposition:content-transfer-encoding;
-        bh=fgUV1RFBmFzKtJsv29mzNaWXPpAf80zoXUESA1QXwF0=;
-        b=GCO764396//DTY/MQzjUh1hrC/6fH8jNh0lYGneA5KvajWZppqvxUz2KiYuEHm8vSq
-         I3aIJa9A1Ir9QlU+jpbHAUE6onWzwzE8rRAsFS2YnOSrdzWawVpB0vnXkth4ezYjDALa
-         Jl4UQe2u0utufjcVT5OM5TTZzQzv8XgqyQ4bjMwe2epEr0jj+TCsZ739TBM7OKN1rThC
-         BNBvUr38TbknamEZib4XkX41nNaHXhZgm3NtlB1q8GbAcRsNOKMsenSBt/a6B5C5ugGy
-         gmnCcF01U8HF/oHdZMMXDMImqECzHA+bqB2WJZfFkkGCq7AlTfomeYrCieUY8QRY7Pke
-         DI5w==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qpNomtoPmxoGGLAnksDjepMPPGWHvtbJMP4Ed4uUC9k=;
+        b=lYdxsufi7VRr2oNkqYEhVMikeSnBDQlsEuDfTJVl55aHfkIRWTvt+9OWuHk7BRilkb
+         tT8oAI3EeJMmhaDh+HhtwM8BRWCHCwsRmT8PK8pUh195+S0y2VgfatoebkV7H1xgxFSF
+         EbrQzgevPj0SQkV48HbaTc8im0srQItKV0ICy6QwmeGd+2GPIYn3gRL2YuDmuk0jBSJK
+         OCf9cFZRfXSxLfwnMbCp7mKMhMIFi6mhSeZWTL5K8Uc+Km9k3PV6Qwkwczv+/I3uovuj
+         RiGECfEh+gINvyox8rKf9212trnpHS1QIi2keift3qtbVx+8Prla/lWXWWGvY6rlQ9M5
+         +OxA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
-         :references:mime-version:content-disposition
-         :content-transfer-encoding;
-        bh=fgUV1RFBmFzKtJsv29mzNaWXPpAf80zoXUESA1QXwF0=;
-        b=E28YlopB1u0+qUPxaMiZp0blB6ecHMVICfndrh2X064zjqAMXwyvw65l0WjwC5gFP6
-         Mi2pweBXhwgtaAmNxVUuOBp92XhEqxkIm2Sljkf56hnib67Af1ES+l9++LsO+HePhArg
-         64rC5NWjOsOmdNebFnRLd867I6QzqLgGsbVUARNLe8rmKm6yrewWBhSsWplTNVJsQv1S
-         2Ogb/5rTqYOXK0iqr3uxtf/iw8jzOrh0JGVgJJqLQRlODsH4/wmzzMhPiPqz4+e4JU/R
-         +L0YIb+9gGggM6qHKGw0/yJbhR7H67BPTzCGlz2oTaJkyNcHMpdhKIoDsgj1OZme38/q
-         GlOg==
-X-Gm-Message-State: APjAAAUeT0pnjug5+B19y4sNKyu8XrGEoCO7o+O8sjdjoWAEmFeCiOPY
-        sB1HTQ62i2XsYfew2sEsvRvj6gfy
-X-Google-Smtp-Source: APXvYqwELbOZLMdtlFHacEG8DAiDcif8Nmd0YP8gkNrmKqvjH2Q8oimZMVwBe0wZ0hubwI3+VWJQwA==
-X-Received: by 2002:a37:96c7:: with SMTP id y190mr9841917qkd.111.1566676376256;
-        Sat, 24 Aug 2019 12:52:56 -0700 (PDT)
-Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
-        by smtp.gmail.com with ESMTPSA id w10sm3410652qts.37.2019.08.24.12.52.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 24 Aug 2019 12:52:55 -0700 (PDT)
-Date:   Sat, 24 Aug 2019 15:52:54 -0400
-Message-ID: <20190824155254.GG32555@t480s.localdomain>
-From:   Vivien Didelot <vivien.didelot@gmail.com>
-To:     Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
-Subject: Re: [PATCH net-next v2 4/9] net: dsa: mv88e6xxx: create
- chip->info->ops->serdes_get_lane method
-In-Reply-To: <20190824154502.GD32555@t480s.localdomain>
-References: <20190823212603.13456-1-marek.behun@nic.cz>
- <20190823212603.13456-5-marek.behun@nic.cz>
- <20190824154502.GD32555@t480s.localdomain>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qpNomtoPmxoGGLAnksDjepMPPGWHvtbJMP4Ed4uUC9k=;
+        b=LFRAWca4OwBeD7Iw4wA1F196FTiXOkK1zkjOA1GF0QTL2KWzwHgmTU4qimqv/rpXgu
+         PCilooKxJ3TcF6LcV8u2a1Z+eBTpcdnU76L8mnec4xCvYK2tNMWzLuHGhq+2ye+S2Ert
+         zUC3gOcOCwS2cZmEtUWucE1FU+u3139H9BSIx3s/okgZSBSW7Kyhj7A4PvKR3i+jjUW7
+         3njc3tQvS3TRuuMENdYwwTD96f5pGF2P/4XN08G+GaVuAWu0z8icknX6ASkS/DgswfBP
+         Oizdvdi56w3EXS4+qyO0pTqXXx2hx7JstQ9jMQRSqB5MadOxWIW64GRrQQp0cbdfZKI4
+         N80g==
+X-Gm-Message-State: APjAAAWAipOkcIcMxPlFf8SwjdiOZHRUNgghfo6wBpV3hpVnWahyALbT
+        CCpv3r44YKdI2mE1LVE8l4vKaTaRDkL1US+tzTk=
+X-Google-Smtp-Source: APXvYqwehOMKpZnnJ4p//9nMl3EFRV5tUOxFgqD5+VpKEoHxsHXutycnGtxRy0qDdvf/5H1EwgKbcR3j9zNtLVGGtno=
+X-Received: by 2002:a05:6402:1244:: with SMTP id l4mr10759274edw.117.1566676399863;
+ Sat, 24 Aug 2019 12:53:19 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+References: <20190822201323.1292-1-vivien.didelot@gmail.com>
+ <20190822201323.1292-7-vivien.didelot@gmail.com> <aee63928-a99e-3849-c8b4-dee9b660247c@gmail.com>
+ <3c88db34-464a-1ab7-a525-66791faad698@gmail.com>
+In-Reply-To: <3c88db34-464a-1ab7-a525-66791faad698@gmail.com>
+From:   Vladimir Oltean <olteanv@gmail.com>
+Date:   Sat, 24 Aug 2019 22:53:08 +0300
+Message-ID: <CA+h21hpML8GLQ-n5AsJ4+BAYy8dwTQuAGYRwcZrwHxY9wy=6aQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 6/6] net: dsa: clear VLAN flags for CPU port
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Andrew Lunn <andrew@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Also can you place the mv88e6xxx_serdes_get_lane() function as static inline
-in the serdes.h header? So that it's obvious that it's a wrapper and not a
-switch implementation.
+Hi Florian,
 
-Ho and you can skip the 'chip->info->ops->' from the commit subject line ;-)
+On Fri, 23 Aug 2019 at 20:00, Florian Fainelli <f.fainelli@gmail.com> wrote:
+>
+> On 8/22/19 4:51 PM, Vladimir Oltean wrote:
+> > On 8/22/19 11:13 PM, Vivien Didelot wrote:
+> >> When the bridge offloads a VLAN on a slave port, we also need to
+> >> program its dedicated CPU port as a member of the VLAN.
+> >>
+> >> Drivers may handle the CPU port's membership as they want. For example,
+> >> Marvell as a special "Unmodified" mode to pass frames as is through
+> >> such ports.
+> >>
+> >> Even though DSA expects the drivers to handle the CPU port membership,
+> >> they are unlikely to program such VLANs untagged, and certainly not as
+> >> PVID. This patch clears the VLAN flags before programming the CPU port.
+> >>
+> >> Signed-off-by: Vivien Didelot <vivien.didelot@gmail.com>
+> >> Suggested-by: Vladimir Oltean <olteanv@gmail.com>
+> >> ---
+> >>   net/dsa/slave.c | 6 ++++++
+> >>   1 file changed, 6 insertions(+)
+> >>
+> >> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> >> index 8267c156a51a..48df48f76c67 100644
+> >> --- a/net/dsa/slave.c
+> >> +++ b/net/dsa/slave.c
+> >> @@ -332,6 +332,12 @@ static int dsa_slave_vlan_add(struct net_device
+> >> *dev,
+> >>       if (err)
+> >>           return err;
+> >>   +    /* We need the dedicated CPU port to be a member of the VLAN as
+> >> well.
+> >> +     * Even though drivers often handle CPU membership in special ways,
+> >> +     * CPU ports are likely to be tagged, so clear the VLAN flags.
+> >> +     */
+> >> +    vlan.flags = 0;
+> >> +
+> >
+> > How does this work exactly?
+> > If I run 'sudo bridge vlan add vid 1 dev swp4 pvid untagged', then the
+> > CPU port starts sending VLAN-tagged traffic. I see this in tcpdump on
+> > the DSA master port, but if I tcpdump on swp4, the VLAN tag is removed.
+> > Who is doing that?
+>
+> If vlan.flags = 0, then it does not have either BRIDGE_VLAN_INFO_PVID or
+> BRIDGE_VLAN_INFO_UNTAGGED which means the VLAN should be programmed
+> tagged on the CPU.
+>
+> Since swp4 is part of the same VLAN, but has it configured PVID
+> untagged, the tag is removed, that sounds about what I would expect to
+> see...
+> --
+> Florian
+
+The VLAN is "egress untagged", and "ingress tagged" (at least so it
+becomes with this patch). Of course in tcpdump I was looking for
+ingress traffic.
+This patch is relying now on __netif_receive_skb_core[1] to remove the
+VLAN header from frames as soon as they exit the DSA master and before
+they enter the DSA packet_type handler. My point is that even untagged
+traffic gets pvid-tagged on ingress, and the net core has to remove
+the tag when it previously didn't have to. I'm not sure of other
+implications.
+Vivien, can't you just unset the PVID flag? Keeping the same
+tagged/untagged setting on ingress as on egress does make more sense.
+
+Regards,
+-Vladimir
+
+[1]: https://elixir.bootlin.com/linux/latest/source/net/core/dev.c#L4898
