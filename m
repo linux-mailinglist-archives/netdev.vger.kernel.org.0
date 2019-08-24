@@ -2,70 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D7339BEEA
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 18:59:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 89C129BF09
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 19:41:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726842AbfHXQ7A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 12:59:00 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:49403 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726769AbfHXQ7A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 12:59:00 -0400
-Received: from ubuntu-ct.localdomain (c-73-170-242-251.hsd1.ca.comcast.net [73.170.242.251])
-        (Authenticated sender: jpettit@ovn.org)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 4C592240003;
-        Sat, 24 Aug 2019 16:58:57 +0000 (UTC)
-From:   Justin Pettit <jpettit@ovn.org>
-To:     netdev@vger.kernel.org, Pravin Shelar <pshelar@ovn.org>
-Cc:     Joe Stringer <joe@wand.net.nz>
-Subject: [PATCH net 2/2] openvswitch: Clear the L4 portion of the key for "later" fragments.
-Date:   Sat, 24 Aug 2019 09:58:46 -0700
-Message-Id: <20190824165846.79627-2-jpettit@ovn.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190824165846.79627-1-jpettit@ovn.org>
-References: <20190824165846.79627-1-jpettit@ovn.org>
+        id S1727812AbfHXRlt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 13:41:49 -0400
+Received: from mail.nic.cz ([217.31.204.67]:41506 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727019AbfHXRls (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 13:41:48 -0400
+Received: from localhost (unknown [172.20.6.135])
+        by mail.nic.cz (Postfix) with ESMTPSA id 62712140BBA;
+        Sat, 24 Aug 2019 19:41:46 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1566668506; bh=MUQv2WsU8LdY33TfL+iwPzcThHbqOpPuiAKOqmMXclc=;
+        h=Date:From:To;
+        b=IpPy+H4R3ppC5JdPhZNvWJC6r28w+rNlFlBiJ0VcIw9/W71gVf0ZSAQxO0VGw3XP7
+         BrT5/PofrTMcP+dHhWeU5TiT8OUC8+K8XhTVk5qzttcQplLbPc6PdKy/Fyev+nnQeI
+         Vxmvo9r6rDabemI3VdngIAOe5a6QtqGDlXg4XFlA=
+Date:   Sat, 24 Aug 2019 19:41:45 +0200
+From:   Marek Behun <marek.behun@nic.cz>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>
+Subject: Re: [PATCH RFC net-next 1/3] net: dsa: allow for multiple CPU ports
+Message-ID: <20190824194145.70715ab1@nic.cz>
+In-Reply-To: <20190824154302.GB8251@lunn.ch>
+References: <20190824024251.4542-1-marek.behun@nic.cz>
+        <20190824024251.4542-2-marek.behun@nic.cz>
+        <20190824154302.GB8251@lunn.ch>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Only the first fragment in a datagram contains the L4 headers.  When the
-Open vSwitch module parses a packet, it always sets the IP protocol
-field in the key, but can only set the L4 fields on the first fragment.
-The original behavior would not clear the L4 portion of the key, so
-garbage values would be sent in the key for "later" fragments.  This
-patch clears the L4 fields in that circumstance to prevent sending those
-garbage values as part of the upcall.
+On Sat, 24 Aug 2019 17:43:02 +0200
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-Signed-off-by: Justin Pettit <jpettit@ovn.org>
----
- net/openvswitch/flow.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+> But i don't know if it is worth the effort. I've never seen a D in DSA
+> setup with multiple CPUs ports. I've only ever seen an single switch
+> with multiple CPU ports.
 
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index bc89e16e0505..0fb2cec08523 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -623,6 +623,7 @@ static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
- 		offset = nh->frag_off & htons(IP_OFFSET);
- 		if (offset) {
- 			key->ip.frag = OVS_FRAG_TYPE_LATER;
-+			memset(&key->tp, 0, sizeof(key->tp));
- 			return 0;
- 		}
- 		if (nh->frag_off & htons(IP_MF) ||
-@@ -740,8 +741,10 @@ static int key_extract(struct sk_buff *skb, struct sw_flow_key *key)
- 			return error;
- 		}
- 
--		if (key->ip.frag == OVS_FRAG_TYPE_LATER)
-+		if (key->ip.frag == OVS_FRAG_TYPE_LATER) {
-+			memset(&key->tp, 0, sizeof(key->tp));
- 			return 0;
-+		}
- 		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
- 			key->ip.frag = OVS_FRAG_TYPE_FIRST;
- 
--- 
-2.17.1
+Yes, that exactly. I was thinking about the most optimal algorithm, but
+such would need to consider speeds between links too. For example the
+DSA port between two switches can be linked at 1 GB, but cpu can be
+connected to switch with 2.5G. What assignment is best in that case?
 
+I think that we should try to solve such issue when it arises, if ever.
+Such cases are more reason to add the ability to change cpu ports for
+given ports.
+
+Marek
