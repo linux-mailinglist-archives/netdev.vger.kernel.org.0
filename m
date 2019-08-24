@@ -2,160 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3FCC69BA16
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 03:32:52 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E8CA9BACD
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 04:01:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726206AbfHXBcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 23 Aug 2019 21:32:50 -0400
-Received: from userp2130.oracle.com ([156.151.31.86]:45092 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725844AbfHXBcu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 21:32:50 -0400
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7O1SZ2D009992;
-        Sat, 24 Aug 2019 01:32:43 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=corp-2019-08-05;
- bh=wVYM8SIHh0BX2RB1/iach074DbGsv22U7hnJzm9lb+Q=;
- b=YcO7tPYPVde8/7OZ2p1W5df1Ek/kQQe15bLmylgmy7rf3r7clvxyPQgQSomMU6PoywJW
- 9mfjEXcvoFoIZ3l1E/mXUuvgit4izGGBIAa9Q0drC5esDzOhgvoT9TvVpLgeLIhJgkVR
- IPFzLvg1/O1sJkhPTzn8OznRG6+XgksKkYlxrzLVrUu2OSrCCKc4gXZB6sQoheNQX2wV
- hfboxG7O/sDTEPvZpwg8LDM/2QIieWkMX4EwW5rL1RM7n5Vjm7ccyTpDMQx5JRT6mlYD
- fFelxwkwVc7iJTdfFu57BtFRqqdzmqnbaNb0YUEUUec3+CM/Qql+/kBkxCTBzmkizRqe rQ== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by userp2130.oracle.com with ESMTP id 2ue90u7sjw-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 24 Aug 2019 01:32:42 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7O1TYcT065045;
-        Sat, 24 Aug 2019 01:32:42 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 2ujca8qg6w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Sat, 24 Aug 2019 01:32:42 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7O1WglZ070403;
-        Sat, 24 Aug 2019 01:32:42 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 2ujca8qg6r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 24 Aug 2019 01:32:42 +0000
-Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7O1Wfgj005848;
-        Sat, 24 Aug 2019 01:32:41 GMT
-Received: from [10.182.71.192] (/10.182.71.192)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 23 Aug 2019 18:32:41 -0700
-Subject: Re: [PATCHv2 1/1] net: rds: add service level support in rds-info
-To:     santosh.shilimkar@oracle.com, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        rds-devel@oss.oracle.com, gerd.rausch@oracle.com
-References: <1566608656-30836-1-git-send-email-yanjun.zhu@oracle.com>
- <6e5bc371-d613-e8f7-7b57-0b1bc2e10e9d@oracle.com>
-From:   Zhu Yanjun <yanjun.zhu@oracle.com>
-Organization: Oracle Corporation
-Message-ID: <176504c9-b75e-cc82-b262-3b90425c09b8@oracle.com>
-Date:   Sat, 24 Aug 2019 09:36:10 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1726521AbfHXCBB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 23 Aug 2019 22:01:01 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:44139 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725782AbfHXCBB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 23 Aug 2019 22:01:01 -0400
+Received: by mail-qk1-f195.google.com with SMTP id d79so9836790qke.11
+        for <netdev@vger.kernel.org>; Fri, 23 Aug 2019 19:01:00 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QqTFank3U+X+be7SMnnTniSSOTRxjGndBYM6C6l/uNI=;
+        b=XGU0l5g5aLsvHCp32bkMnEB/YeneYHO6eFAHgc/9txfEBUkwn2ahz1O6d2NP1Wqba4
+         TCR6vQ8Zh5+de/o4sySvI1Yvtqkw51EoO89YWE+AsdpTA8YV3e61dBP9NTVt+nQpMvDi
+         abHC+z3Uobb5MrTVaVY7pHleq667787QsFlVLzemkFSnKjcvTEUvzMfBG4dVmiB+wCzw
+         NoHsC8OEmzzvR7v2vRbV9MW48CWeebJ1Mwr7HKL5Q4/k6hB3bMBIRDJGB0ksCVa79jcD
+         QqJDSfZ3E9JCykncPXc21AbuBPDCZPGiUuAUkl88b+1obivL2OJa2kM0gIiSclv8obOB
+         vZCQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QqTFank3U+X+be7SMnnTniSSOTRxjGndBYM6C6l/uNI=;
+        b=doI+hR64ZhvkOzyGKN4megHpL7bbrcFMgCADqvoSzkHWkpPwKB1ECeT42my6ycbRJt
+         UPeBFgMLF4VYWCZc7tJFSl+iUFaMFOrcJU05RbzQHhrlpuKjgkKAsbJRtYn/UZE4K4Kj
+         oMUvRUP0wXlmk9/7PcdlaAxwIOzrrQOMaZnctAuFnlBUo3cLYKACYwmQOfPAlPmuBTcv
+         jtygWJkpvYZWk1IBRHjKuRgE4qFANv+Vi3+HbU3fuf6CSg3zZHzuOStgGHh0eSNRyiGJ
+         YOTFSxPZzkd6Jw4fykiag5pyH7OtNG1bQOjCtMv63ASydZoL1sGPCYBf7XciKqbTGgaJ
+         c2Mg==
+X-Gm-Message-State: APjAAAVAkvgxphwCst735vZriD8T0v1Cx9TchQvUG/nwV1o1uyVJ7hEK
+        mJPXkzOMTbunY61KZKj/Bp7h2A==
+X-Google-Smtp-Source: APXvYqx9mi9o5mgjgtJDCV6Q677J5vjJQM09jqO6qaq8p8IpqOxBlrq/mltBFtuS/oYThNSX/ZVYeg==
+X-Received: by 2002:ae9:e845:: with SMTP id a66mr7044918qkg.451.1566612060149;
+        Fri, 23 Aug 2019 19:01:00 -0700 (PDT)
+Received: from jkicinski-Precision-T1700.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id m13sm2199824qka.92.2019.08.23.19.00.58
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 23 Aug 2019 19:00:59 -0700 (PDT)
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     alexei.starovoitov@gmail.com, daniel@iogearbox.net
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        oss-drivers@netronome.com, Jiong Wang <jiong.wang@netronome.com>,
+        Jakub Kicinski <jakub.kicinski@netronome.com>
+Subject: [PATCH bpf] nfp: bpf: fix latency bug when updating stack index register
+Date:   Fri, 23 Aug 2019 19:00:28 -0700
+Message-Id: <20190824020028.6242-1-jakub.kicinski@netronome.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-In-Reply-To: <6e5bc371-d613-e8f7-7b57-0b1bc2e10e9d@oracle.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9358 signatures=668684
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
- definitions=main-1908240014
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Jiong Wang <jiong.wang@netronome.com>
 
-On 2019/8/24 9:25, santosh.shilimkar@oracle.com wrote:
-> On 8/23/19 6:04 PM, Zhu Yanjun wrote:
->>  From IB specific 7.6.5 SERVICE LEVEL, Service Level (SL)
->> is used to identify different flows within an IBA subnet.
->> It is carried in the local route header of the packet.
->>
->> Before this commit, run "rds-info -I". The outputs are as
->> below:
->> "
->> RDS IB Connections:
->>   LocalAddr  RemoteAddr Tos SL  LocalDev               RemoteDev
->> 192.2.95.3  192.2.95.1  2   0  fe80::21:28:1a:39 fe80::21:28:10:b9
->> 192.2.95.3  192.2.95.1  1   0  fe80::21:28:1a:39 fe80::21:28:10:b9
->> 192.2.95.3  192.2.95.1  0   0  fe80::21:28:1a:39 fe80::21:28:10:b9
->> "
->> After this commit, the output is as below:
->> "
->> RDS IB Connections:
->>   LocalAddr  RemoteAddr Tos SL  LocalDev               RemoteDev
->> 192.2.95.3  192.2.95.1  2   2  fe80::21:28:1a:39 fe80::21:28:10:b9
->> 192.2.95.3  192.2.95.1  1   1  fe80::21:28:1a:39 fe80::21:28:10:b9
->> 192.2.95.3  192.2.95.1  0   0  fe80::21:28:1a:39 fe80::21:28:10:b9
->> "
->>
->> The commit fe3475af3bdf ("net: rds: add per rds connection cache
->> statistics") adds cache_allocs in struct rds_info_rdma_connection
->> as below:
->> struct rds_info_rdma_connection {
->> ...
->>          __u32           rdma_mr_max;
->>          __u32           rdma_mr_size;
->>          __u8            tos;
->>          __u32           cache_allocs;
->>   };
->> The peer struct in rds-tools of struct rds_info_rdma_connection is as
->> below:
->> struct rds_info_rdma_connection {
->> ...
->>          uint32_t        rdma_mr_max;
->>          uint32_t        rdma_mr_size;
->>          uint8_t         tos;
->>          uint8_t         sl;
->>          uint32_t        cache_allocs;
->> };
->> The difference between userspace and kernel is the member variable sl.
->> In the kernel struct, the member variable sl is missing. This will
->> introduce risks. So it is necessary to use this commit to avoid this 
->> risk.
->>
->> Fixes: fe3475af3bdf ("net: rds: add per rds connection cache 
->> statistics")
->> CC: Joe Jin <joe.jin@oracle.com>
->> CC: JUNXIAO_BI <junxiao.bi@oracle.com>
->> Suggested-by: Gerd Rausch <gerd.rausch@oracle.com>
->> Signed-off-by: Zhu Yanjun <yanjun.zhu@oracle.com>
->> ---
->> V1->V2: fix typos in commit logs.
->> ---
-> I did ask you when ypu posted the patch about whether you did
-> backward compatibility tests for which you said, you did all the
-> tests and said "So do not worry about backward compatibility. This
-> commit will work well with older rds-tools2.0.5 and 2.0.6."
->
-> https://www.spinics.net/lists/netdev/msg574691.html
->
-> I was worried about exactly such issue as described in commit.
+NFP is using Local Memory to model stack. LM_addr could be used as base of
+a 16 32-bit word region of Local Memory. Then, if the stack offset is
+beyond the current region, the local index needs to be updated. The update
+needs at least three cycles to take effect, therefore the sequence normally
+looks like:
 
-Sorry. My bad. I will make more work to let rds robust.
+  local_csr_wr[ActLMAddr3, gprB_5]
+  nop
+  nop
+  nop
 
-Thanks a lot for your Ack.
+If the local index switch happens on a narrow loads, then the instruction
+preparing value to zero high 32-bit of the destination register could be
+counted as one cycle, the sequence then could be something like:
 
-Zhu Yanjun
+  local_csr_wr[ActLMAddr3, gprB_5]
+  nop
+  nop
+  immed[gprB_5, 0]
 
->
-> Anyways thanks for the fixup patch. Should be applied to stable
-> as well.
->
-> Acked-by: Santosh Shilimkar <santosh.shilimkar@oracle.com>
->
-> Regards,
-> Santosh
->
->
+However, we have zero extension optimization that zeroing high 32-bit could
+be eliminated, therefore above IMMED insn won't be available for which case
+the first sequence needs to be generated.
+
+Fixes: 0b4de1ff19bf ("nfp: bpf: eliminate zero extension code-gen")
+Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+---
+ drivers/net/ethernet/netronome/nfp/bpf/jit.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/netronome/nfp/bpf/jit.c b/drivers/net/ethernet/netronome/nfp/bpf/jit.c
+index 4054b70d7719..5afcb3c4c2ef 100644
+--- a/drivers/net/ethernet/netronome/nfp/bpf/jit.c
++++ b/drivers/net/ethernet/netronome/nfp/bpf/jit.c
+@@ -1163,7 +1163,7 @@ mem_op_stack(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
+ 	     bool clr_gpr, lmem_step step)
+ {
+ 	s32 off = nfp_prog->stack_frame_depth + meta->insn.off + ptr_off;
+-	bool first = true, last;
++	bool first = true, narrow_ld, last;
+ 	bool needs_inc = false;
+ 	swreg stack_off_reg;
+ 	u8 prev_gpr = 255;
+@@ -1209,13 +1209,22 @@ mem_op_stack(struct nfp_prog *nfp_prog, struct nfp_insn_meta *meta,
+ 
+ 		needs_inc = true;
+ 	}
++
++	narrow_ld = clr_gpr && size < 8;
++
+ 	if (lm3) {
++		unsigned int nop_cnt;
++
+ 		emit_csr_wr(nfp_prog, imm_b(nfp_prog), NFP_CSR_ACT_LM_ADDR3);
+-		/* For size < 4 one slot will be filled by zeroing of upper. */
+-		wrp_nops(nfp_prog, clr_gpr && size < 8 ? 2 : 3);
++		/* For size < 4 one slot will be filled by zeroing of upper,
++		 * but be careful, that zeroing could be eliminated by zext
++		 * optimization.
++		 */
++		nop_cnt = narrow_ld && meta->flags & FLAG_INSN_DO_ZEXT ? 2 : 3;
++		wrp_nops(nfp_prog, nop_cnt);
+ 	}
+ 
+-	if (clr_gpr && size < 8)
++	if (narrow_ld)
+ 		wrp_zext(nfp_prog, meta, gpr);
+ 
+ 	while (size) {
+-- 
+2.21.0
+
