@@ -2,115 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E356F9BDF8
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 15:26:33 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DA169BE08
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 15:32:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727726AbfHXN0c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 09:26:32 -0400
-Received: from mx0a-00154904.pphosted.com ([148.163.133.20]:12738 "EHLO
-        mx0a-00154904.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727590AbfHXN0c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 09:26:32 -0400
-Received: from pps.filterd (m0170389.ppops.net [127.0.0.1])
-        by mx0a-00154904.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7O9I1UG024304;
-        Sat, 24 Aug 2019 09:26:30 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=smtpout1;
- bh=vyenab3a8UQH7rT3KMO+iOomzSuZqcYP73PMmCmSPIE=;
- b=J/iMqm/N0WJdTi5TgBlmGq6ZdfHFNbHYMHYcJd72g8PoQYJgU3HOUlPxe3A8v5snxtSt
- 96trZn40na8DwsT2aP4Fm7yoGBPf+JfUEO8WnqpJezV5Jw5BsNdM5vN8rgHSMMVetO+j
- g15uj9G5oH6X5T786heYcDaywpVaKPikI7+qYqD/5O+/u3BYMa8YBPKQgBXHxWzSBVZt
- aXpehYtfcEgJxqYXTqON2eijl/FTQW7RkRLYjC390BdJXo4Bvr79TJJKmJf6TkbQOw4C
- ZGKVMUZ7dHiuVA3jIzBuYWJlU6Pr9IvIX1effbkoyoaNr3a1ddQ1W/vgdtFagTBuFJRT WA== 
-Received: from mx0a-00154901.pphosted.com (mx0a-00154901.pphosted.com [67.231.149.39])
-        by mx0a-00154904.pphosted.com with ESMTP id 2uk2fx8e5r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 24 Aug 2019 09:26:30 -0400
-Received: from pps.filterd (m0133268.ppops.net [127.0.0.1])
-        by mx0a-00154901.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x7ODQR8a093409;
-        Sat, 24 Aug 2019 09:26:30 -0400
-Received: from ausxippc106.us.dell.com (AUSXIPPC106.us.dell.com [143.166.85.156])
-        by mx0a-00154901.pphosted.com with ESMTP id 2uk2d0j2jp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 24 Aug 2019 09:26:29 -0400
-X-LoopCount0: from 10.166.135.96
-X-PREM-Routing: D-Outbound
-X-IronPort-AV: E=Sophos;i="5.60,349,1549951200"; 
-   d="scan'208";a="451775981"
-From:   <Mario.Limonciello@dell.com>
-To:     <bjorn@mork.no>, <Charles.Hyde@dellteam.com>
-CC:     <linux-usb@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <gregkh@linuxfoundation.org>, <oliver@neukum.org>,
-        <netdev@vger.kernel.org>, <nic_swsd@realtek.com>
-Subject: RE: [RFC 4/4] net: cdc_ncm: Add ACPI MAC address pass through
- functionality
-Thread-Topic: [RFC 4/4] net: cdc_ncm: Add ACPI MAC address pass through
- functionality
-Thread-Index: AQHVV6XcyyL7dINtZEiggXCPIGXHZ6cKIlGegAAtFPA=
-Date:   Sat, 24 Aug 2019 13:26:27 +0000
-Message-ID: <76ae76bf1fd44fb3bd42eb43907e3ce8@AUSX13MPC101.AMER.DELL.COM>
-References: <ec7435e0529243a99f6949ee9efbede5@AUSX13MPS303.AMER.DELL.COM>
- <877e722691.fsf@miraculix.mork.no>
-In-Reply-To: <877e722691.fsf@miraculix.mork.no>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [143.166.24.60]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727668AbfHXNcr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 09:32:47 -0400
+Received: from pandora.armlinux.org.uk ([78.32.30.218]:48222 "EHLO
+        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727546AbfHXNcr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 09:32:47 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=KHhx6Ie16m3agM3oyiR904J/GzPfUFeS/cpVkces4OY=; b=KQ2WNi+3wj+TUeA22nFBkmqBN
+        gwndjfYh++memDYTISgSG8YumxD7BAlcn0Mvp8xBPrZYYxCRdQ7g7FYuTL5uzxRLOsp9+BG+/NefZ
+        nqX48vmt4TA2dhNxKdz6E4A6MZX0JznD8Rwghk/T/+Mcqt48XHhv4VL+QeEtygqbm1GTFPutfucjI
+        leaEFkzav2/CixtoO+4K+B/GPZJtKnNV/lv1kG1bX6HPqFPhpbQuRSnvAo4R88eZQR6UJaVpTG0TM
+        0GWJFeSywCrfatmbPAssUr+gplC7b/gykdRfl9JLQe++4UZcWUU6BaFaVeTMLOkI6WpXgSR4XcB44
+        W+aXDJ2IA==;
+Received: from shell.armlinux.org.uk ([2002:4e20:1eda:1:5054:ff:fe00:4ec]:33290)
+        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.90_1)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1i1W9d-0003Gx-Nu; Sat, 24 Aug 2019 14:32:29 +0100
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1i1W9Z-0002eV-Ei; Sat, 24 Aug 2019 14:32:25 +0100
+Date:   Sat, 24 Aug 2019 14:32:25 +0100
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
+Cc:     John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Nelson Chang <nelson.chang@mediatek.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-mips@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Stefan Roese <sr@denx.de>
+Subject: Re: [PATCH net-next v3 2/3] net: ethernet: mediatek: Re-add support
+ SGMII
+Message-ID: <20190824133225.GE13294@shell.armlinux.org.uk>
+References: <20190823134516.27559-1-opensource@vdorst.com>
+ <20190823134516.27559-3-opensource@vdorst.com>
+ <20190824092156.GD13294@shell.armlinux.org.uk>
+ <20190824131117.Horde.vSCF_CQ5jCMHcSTWkh7Woxm@www.vdorst.com>
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
- definitions=2019-08-24_08:2019-08-23,2019-08-24 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
- mlxlogscore=660 suspectscore=0 impostorscore=0 clxscore=1011 spamscore=0
- priorityscore=1501 phishscore=0 lowpriorityscore=0 mlxscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1906280000 definitions=main-1908240149
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 spamscore=0 malwarescore=0
- impostorscore=0 clxscore=1011 phishscore=0 lowpriorityscore=0
- suspectscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=755 mlxscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1906280000
- definitions=main-1908240102
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190824131117.Horde.vSCF_CQ5jCMHcSTWkh7Woxm@www.vdorst.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiAtLS0tLU9yaWdpbmFsIE1lc3NhZ2UtLS0tLQ0KPiBGcm9tOiBCasO4cm4gTW9yayA8Ympvcm5A
-bW9yay5ubz4NCj4gU2VudDogU2F0dXJkYXksIEF1Z3VzdCAyNCwgMjAxOSA1OjQ0IEFNDQo+IFRv
-OiBIeWRlLCBDaGFybGVzIC0gRGVsbCBUZWFtDQo+IENjOiBsaW51eC11c2JAdmdlci5rZXJuZWwu
-b3JnOyBsaW51eC1hY3BpQHZnZXIua2VybmVsLm9yZzsNCj4gZ3JlZ2toQGxpbnV4Zm91bmRhdGlv
-bi5vcmc7IExpbW9uY2llbGxvLCBNYXJpbzsgb2xpdmVyQG5ldWt1bS5vcmc7DQo+IG5ldGRldkB2
-Z2VyLmtlcm5lbC5vcmc7IG5pY19zd3NkQHJlYWx0ZWsuY29tDQo+IFN1YmplY3Q6IFJlOiBbUkZD
-IDQvNF0gbmV0OiBjZGNfbmNtOiBBZGQgQUNQSSBNQUMgYWRkcmVzcyBwYXNzIHRocm91Z2gNCj4g
-ZnVuY3Rpb25hbGl0eQ0KPiANCj4gDQo+IFtFWFRFUk5BTCBFTUFJTF0NCj4gDQo+IDxDaGFybGVz
-Lkh5ZGVAZGVsbHRlYW0uY29tPiB3cml0ZXM6DQo+IA0KPiA+IEBAIC05MzAsMTEgKzkzMSwxOCBA
-QCBpbnQgY2RjX25jbV9iaW5kX2NvbW1vbihzdHJ1Y3QgdXNibmV0ICpkZXYsDQo+IHN0cnVjdCB1
-c2JfaW50ZXJmYWNlICppbnRmLCB1OCBkYXRhXw0KPiA+ICAJdXNiX3NldF9pbnRmZGF0YShjdHgt
-PmNvbnRyb2wsIGRldik7DQo+ID4NCj4gPiAgCWlmIChjdHgtPmV0aGVyX2Rlc2MpIHsNCj4gPiAr
-CQlzdHJ1Y3Qgc29ja2FkZHIgc2E7DQo+ID4gKw0KPiA+ICAJCXRlbXAgPSB1c2JuZXRfZ2V0X2V0
-aGVybmV0X2FkZHIoZGV2LCBjdHgtPmV0aGVyX2Rlc2MtDQo+ID5pTUFDQWRkcmVzcyk7DQo+ID4g
-IAkJaWYgKHRlbXApIHsNCj4gPiAgCQkJZGV2X2RiZygmaW50Zi0+ZGV2LCAiZmFpbGVkIHRvIGdl
-dCBtYWMgYWRkcmVzc1xuIik7DQo+ID4gIAkJCWdvdG8gZXJyb3IyOw0KPiA+ICAJCX0NCj4gPiAr
-CQlpZiAoZ2V0X2FjcGlfbWFjX3Bhc3N0aHJ1KCZpbnRmLT5kZXYsICZzYSkgPT0gMCkgew0KPiA+
-ICsJCQltZW1jcHkoZGV2LT5uZXQtPmRldl9hZGRyLCBzYS5zYV9kYXRhLCBFVEhfQUxFTik7DQo+
-ID4gKwkJCWlmICh1c2JuZXRfc2V0X2V0aGVybmV0X2FkZHIoZGV2KSA8IDApDQo+ID4gKwkJCQl1
-c2JuZXRfZ2V0X2V0aGVybmV0X2FkZHIoZGV2LCBjdHgtDQo+ID5ldGhlcl9kZXNjLT5pTUFDQWRk
-cmVzcyk7DQo+ID4gKwkJfQ0KPiA+ICAJCWRldl9pbmZvKCZpbnRmLT5kZXYsICJNQUMtQWRkcmVz
-czogJXBNXG4iLCBkZXYtPm5ldC0NCj4gPmRldl9hZGRyKTsNCj4gPiAgCX0NCj4gDQo+IFNvIHlv
-dSB3YW50IHRvIHJ1biBhIERlbGwgc3BlY2lmaWMgQUNQSSBtZXRob2QgZXZlcnkgdGltZSBhbnlv
-bmUgcGx1Z3Mgc29tZQ0KPiBOQ00gY2xhc3MgZGV2aWNlIGludG8gYSBob3N0IHN1cHBvcmluZyBB
-Q1BJPyAgVGhhdCdzIGdvaW5nIHRvIGFubm95IHRoZSBoZWxsIG91dA0KPiBvZiA5OS45OTk3JSBv
-ZiB0aGUgeDg2LCBpYTY0IGFuZCBhcm02NCB1c2VycyBvZiB0aGlzIGRyaXZlci4NCj4gDQo+IENh
-bGwgQUNQSSBvbmNlIHdoZW4gdGhlIGRyaXZlciBsb2FkcywgYW5kIG9ubHkgaWYgcnVubmluZyBv
-biBhbiBhY3R1YWwgRGVsbA0KPiBzeXN0ZW0gd2hlcmUgdGhpcyBtZXRob2QgaXMgc3VwcG9ydGVk
-LiAgVGhlcmUgbXVzdCBiZSBzb21lIEFDUEkgZGV2aWNlIElEIHlvdQ0KPiBjYW4gbWF0Y2ggb24g
-dG8ga25vdyBpZiB0aGlzIG1ldGhvZCBpcyBzdXBwb3J0ZWQgb3Igbm90Pw0KPiANCj4gDQo+IEJq
-w7hybg0KDQpJIGhhdmUgdG8gYWdyZWUgLSB0aGlzIGlzIG1pc3NpbmcgYW4gaWRlbnRpZnlpbmcg
-ZmFjdG9yIG9mIHRoZSBENjAwMC4gIEl0IHNob3VsZG4ndCBiZQ0KcnVubmluZyBvbiAianVzdCBh
-bnkiIGNkY19uY20gZGV2aWNlLg0KDQpUaGUgY29kZSB0aGF0IGlzIGluIGdldF9hY3BpX21hY19w
-YXNzdGhyb3VnaCBjaGVja3MgZm9yIGEgcHJvcGVybHkgYnVpbHQgQUNQSSBtZXRob2QNCnRob3Vn
-aC4NCg==
+Hi René,
+
+On Sat, Aug 24, 2019 at 01:11:17PM +0000, René van Dorst wrote:
+> Hi Russell,
+> 
+> Mediatek calls it Turbo RGMII. It is a overclock version of RGMII mode.
+> It is used between first GMAC and port 6 of the mt7530 switch. Can be used
+> with
+> an internal and an external mt7530 switch.
+> 
+> TRGMII speed are:
+> * mt7621: 1200Mbit
+> * mt7623: 2000Mbit and 2600Mbit.
+> 
+> I think that TRGMII is only used in a fixed-link situation in combination
+> with a
+> mt7530 switch and running and maximum speed/full duplex. So reporting
+> 1000baseT_Full seems to me the right option.
+
+I think we can ignore this one for the purposes of merging this patch
+set, since this seems to be specific to this setup.  Neither 1000BaseT
+nor 1000BaseX fit very well, but we have to choose something.
+
+> PHY_INTERFACE_MODE_GMII:
+> 	  10baseT_Half
+> 	  10baseT_Full
+> 	 100baseT_Half
+> 	 100baseT_Full
+> 	1000baseT_Half
+> 	1000baseT_Full
+
+I think GMII can be connected to a PHY that can convert to 1000BaseX, so
+should probably include that here too.
+
+Thanks.
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
+According to speedtest.net: 11.9Mbps down 500kbps up
