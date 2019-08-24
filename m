@@ -2,37 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id D1BEB9C03C
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 22:54:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B53B69C03F
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 23:01:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727996AbfHXUyZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 16:54:25 -0400
-Received: from mail.nic.cz ([217.31.204.67]:42382 "EHLO mail.nic.cz"
+        id S1727823AbfHXVBZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 17:01:25 -0400
+Received: from mail.nic.cz ([217.31.204.67]:42418 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726464AbfHXUyY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 16:54:24 -0400
+        id S1726842AbfHXVBZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 17:01:25 -0400
 Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 23572140B0B;
-        Sat, 24 Aug 2019 22:54:23 +0200 (CEST)
+        by mail.nic.cz (Postfix) with ESMTPSA id EEDD2140B27;
+        Sat, 24 Aug 2019 23:01:21 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566680063; bh=1bAyAEVMPFMOkhrRfhPmRz15eiJm3ANwsaeVebK/hl0=;
+        t=1566680482; bh=9XjHBzs2MDBlVIPBZeb/7WzSF3ld4HmHUe1S3iJxXeI=;
         h=Date:From:To;
-        b=I9GTpl+EUvfFzCSkheoiwqrZcpYIbQx25oVQR2scBU/z+cc1WqJGEJtsT5JWxrbUo
-         /msvxnePWcEXf9mZMBpxj8vzDkNyqbTsj4KWGivxsZKYkp/E0esGePcZdXNY1/Iu8s
-         CMFbsEZ9GdK+Dvrj34cUH5lPGViXmHEm3bmUycmI=
-Date:   Sat, 24 Aug 2019 22:54:22 +0200
+        b=aaHiVBpCcTWVRZ+TwNXhFUJky3eZRnEQRs2d6+CnJb7jmGdw/82T9C88PNKvS2fUC
+         7Oz19DA8ubulM8AJg6GTC4CWkUkx3ndUVMyP3LKGJfCskysgzRSPkca5yPOtS6AufM
+         4xuo70IALmzk8KRFaCX2WbG7Rzvi9BdtLZaJ16H8=
+Date:   Sat, 24 Aug 2019 23:01:21 +0200
 From:   Marek Behun <marek.behun@nic.cz>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
 Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        David Ahern <dsahern@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Chris Healy <cphealy@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v2 3/9] net: dsa: mv88e6xxx: fix port hidden
- register macros
-Message-ID: <20190824225422.06b2aefd@nic.cz>
-In-Reply-To: <20190824153254.GB32555@t480s.localdomain>
-References: <20190823212603.13456-1-marek.behun@nic.cz>
-        <20190823212603.13456-4-marek.behun@nic.cz>
-        <20190824153254.GB32555@t480s.localdomain>
+Subject: Re: [PATCH RFC net-next 0/3] Multi-CPU DSA support
+Message-ID: <20190824230121.35a3d59b@nic.cz>
+In-Reply-To: <a7fed8ab-60f3-a30c-5634-fd89e4daf44d@gmail.com>
+References: <20190824024251.4542-1-marek.behun@nic.cz>
+        <a7fed8ab-60f3-a30c-5634-fd89e4daf44d@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -47,13 +48,58 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 24 Aug 2019 15:32:54 -0400
-Vivien Didelot <vivien.didelot@gmail.com> wrote:
+On Sat, 24 Aug 2019 13:04:04 -0700
+Florian Fainelli <f.fainelli@gmail.com> wrote:
 
-> You are already using these macros in the previous patch. I guess you meant
-> to introduce this patch before. But since you are moving and renaming the
-> same code without functional changes, you may squash them together.
+> 1) Your approach is kind of interesting here, not sure if it is the best
+> but it is not outright wrong. In the past, we had been talking about
+> different approaches, some of which seemed too simplistic or too narrow
+> on the use case, and some of which that are up in the air and were not
+> worked on.
+> 
+> - John Crispin submitted a patch series for the MTK switch driver a
+> while back that was picked up by Frank Wunderlich more recently. This
+> approach uses a Device Tree based configuration in order to statically
+> assign ports, or groups of ports to a specific DSA master device. This
+> is IMHO wrong because a) DT is not to impose a policy but strictly
+> describe HW, and b) there was no way to change that static assignment at
+> runtime.
+> 
+> - Based on that patch series, Andrew, Vivien, Frank and myself discussed
+> two possible options:
+> 	- allowing the enslaving of DSA master devices in the bridge, so as to
+> provide a hint that specific DSA slave network devices should be
+> "bound"/"linked" to a specific DSA master device. This requires
+> modifications in the bridge layer to avoid undoing what commit
+> 8db0a2ee2c6302a1dcbcdb93cb731dfc6c0cdb5e ("net: bridge: reject
+> DSA-enabled master netdevices as bridge members"). This would also
+> require a bridge to be set-up
+> 
+> 	- enhancing the iproute2 command and backing kernel code in order to
+> allow defining that a DSA slave device may be enslaved into a specific
+> DSA master, similarly to how you currently enslave a device into a
+> bridge, you could "enslave" a DSA slave to a DSA master with something
+> that could look like this:
+> 
+> 	ip link set dev sw0p0 master eth0	# Associate port 0 with eth0
+> 	ip link set dev sw0p1 master eth1	# Associate port 1 with eth1
+> 
+> To date, this may be the best way to do what we want here, rather than
+> use the iflink which is a bit re-purposing something that is not exactly
+> meant for that.
 
-Hm, you are right, I accidently created a commit which would not
-build. :( I thought that I tried to build after each commit, but it
-seems I forgot at least one.
+We cannot use "set master" to set CPU port, since that is used for
+enslaving interfaces to bridges. There are usecases where these would
+conflict with each other. The semantics would become complicated and
+the documentation would became weird to users.
+
+We are *already* using the iflink property to report which CPU device
+is used as CPU destination port for a given switch slave interface. So
+why to use that for changing this, also?
+
+If you think that iflink should not be used for this, and other agree,
+then we should create a new property, something like dsa-upstream, (eg.
+ip link set dev sw0p0 dsa-upstream eth0). Using the "master" property
+is not right, IMO.
+
+Marek
