@@ -2,135 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 077099BE48
-	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 16:44:17 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A9839BE5D
+	for <lists+netdev@lfdr.de>; Sat, 24 Aug 2019 17:03:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727800AbfHXOoP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 10:44:15 -0400
-Received: from mail-eopbgr80084.outbound.protection.outlook.com ([40.107.8.84]:43970
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727556AbfHXOoP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 10:44:15 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mXYkbw3aCfII6rlOHfpwtS+GopXBUyunnrWhc/imBOCZefLyjksMSOZUKsayUVzeHLP+bSqr/ZjJinCfUlHy3P4J2iDtdXhgP29yG8KmW4sItOX5t+jDw0pnFN5ZZqeoU/Mjl6HancfCTGD9aAuTdUKVR6Yiw/hFvZqOev4CIRRZ0pgKZGT03zd6bky/i+cD5NwuC4jMlN6OlI4koljjfk6kGRGFSPIO8vmLKp2+iHzJmTo6P/evMBVu9zH+j52rHi4XXfbJ5DbWn92/84P0gPX4aQXG1qjO5DUNKbdsDlx+lWWHoJvknbvLosgRhoORwZtECPXwpOV1DaDhstcbCA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AJPYZl4jB7axuFVS6TZjZ2/HvqgrVXVJ3IadVNySyYA=;
- b=aX+F3maOiXNqYVkO7lbWU6OsertDOb0RkfZY7AdnIjRtMZJ0L5/2sxsPtPHnxOhiXgllDehT6WZdw1/Kdjfv5wd112+fKAeu8aX6Ct98P0diz91+LOE4n0LmjAERClNphpVwL1bWH8Xnmb7Ov2RJBhBL4iY/RCA4CYXMWRnwV5F2LyE2iBA68D2wwIfWD6mMmz5gCyuIiiJVd7A4zWdO1Kcn8/JTQVAuFrPsmxXGlaDoBycPwyQCQhrfYr999/mS6Vdd58O2Pazx32cvZ04CPyajKQgEC5/0+7etkH27nUdDw1oy2ajm4CFFzFKznt8b/Oya5mDSKxEtzVxNz9eIEg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AJPYZl4jB7axuFVS6TZjZ2/HvqgrVXVJ3IadVNySyYA=;
- b=aIaqo1CzAC2myW5QhnmJicWaAaNkGAL4/0wdlAbWd21sTwSaALCl+JNeCTLacfVzchy0XNGH/L72HuKDyBJ6FtUf5WXaqpQwKhgJZWKWFQOYfX9AJh7ghDwV4e2efvT6FDG7Ehq//zT/LX8LrEL7tBZFJIxyPANCE+1WNBbS7ZA=
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com (20.178.12.80) by
- VI1PR05MB4160.eurprd05.prod.outlook.com (10.171.183.10) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Sat, 24 Aug 2019 14:44:11 +0000
-Received: from VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::ec21:2019:cb6f:44ae]) by VI1PR05MB5295.eurprd05.prod.outlook.com
- ([fe80::ec21:2019:cb6f:44ae%7]) with mapi id 15.20.2178.020; Sat, 24 Aug 2019
- 14:44:11 +0000
-From:   Vlad Buslov <vladbu@mellanox.com>
-To:     Jakub Kicinski <jakub.kicinski@netronome.com>
-CC:     Vlad Buslov <vladbu@mellanox.com>,
+        id S1727812AbfHXPDs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 11:03:48 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34951 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727638AbfHXPDs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 24 Aug 2019 11:03:48 -0400
+Received: by mail-wr1-f67.google.com with SMTP id k2so11250291wrq.2;
+        Sat, 24 Aug 2019 08:03:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=hiGz5lvlbrWK+uutFSFiz0Vky1xYc1AVTuAhL4+Ad8o=;
+        b=gqPvvUY/d5ez/8TAduc0IiVUTQQ4BX0/ywQ378zt64y7ub6jjaRp6lgwS4xqJC0sx+
+         fK/HU47NrYzbSHK5kTws5EyLleM6W2GWgq0gmiAiJb1P9ECzPrqfuKcNt5LMUfkyD6Vg
+         zgAbJDqGq/7zlO9Bz68GoDDgEqQzXeDKf25ls4xvRRsDtBrqca1wVJFpsvXxqf7TQf/k
+         VfGs3xr/H4Gs06uHevXeRLkdtP7eIWYl4P1YM44iYpR/rJEC/Gsrhfo3nZlJy1CTmDs/
+         xIntovMLObAXMvoznS47IzJ8zBBVDTqr7ok/UcqNd1L2QfR9wSheJhZNKhNHLtCZ3Xku
+         IY9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=hiGz5lvlbrWK+uutFSFiz0Vky1xYc1AVTuAhL4+Ad8o=;
+        b=YM+Z4/TacdG0GKblsq4bimOzlWKawEPvlBvyqFP/4wEMs53k0rhvgjLy4uEUlT4JxH
+         m4YcgLvI9tTcnQ+TXRMEus5hbUgyUbTAQlJEfL/72R7QLtXma+WOlkU29zal9M/jMlXt
+         1u+/6U0VlP9FHaHPB8zZrtbR88i+wrLKU5YFs/vCgmC3yV55yK2HcJYt7lQ611RYCpA9
+         WczaaUj5AznGGUvFc0M8AHjdjeK96nTAlbFfiKK0sKUkWrM3kyVdVF/Sc7dyn3l07/NB
+         lhiOdpmYNrFE9RzMyLJvDWu3/X3cA2Uo6yeYpv4BAQF+ebMSzchlrXdqJPR++mOwprb8
+         cTeA==
+X-Gm-Message-State: APjAAAXIaFeP5SXAQNvP/ZrhuEjybjXDU86pQfQ3tzxqYJIkmkCtsnoH
+        X7OZSe/OkSzww+uGDr9Q/7Ug4WzT
+X-Google-Smtp-Source: APXvYqxcr0JM6GRTYqhy4dvHD6srcnr0X2F75Zyf22rRQoAzEDFPPAoY8zo/XKNa47Ji8bSYRyBBdw==
+X-Received: by 2002:a5d:4211:: with SMTP id n17mr10570320wrq.137.1566659024925;
+        Sat, 24 Aug 2019 08:03:44 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f04:7c00:2069:2121:113c:4840? (p200300EA8F047C0020692121113C4840.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:2069:2121:113c:4840])
+        by smtp.googlemail.com with ESMTPSA id w5sm6758939wmm.43.2019.08.24.08.03.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 24 Aug 2019 08:03:44 -0700 (PDT)
+Subject: Re: [PATCH net-next 0/1] Add BASE-T1 PHY support
+To:     Christian Herber <christian.herber@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "pablo@netfilter.org" <pablo@netfilter.org>
-Subject: Re: [PATCH net-next v2 03/10] net: sched: refactor block offloads
- counter usage
-Thread-Topic: [PATCH net-next v2 03/10] net: sched: refactor block offloads
- counter usage
-Thread-Index: AQHVWePGfEjaYW9RtUGGvYH24ELWfqcJcXMAgADviYA=
-Date:   Sat, 24 Aug 2019 14:44:11 +0000
-Message-ID: <vbflfvi8vyg.fsf@mellanox.com>
-References: <20190823185056.12536-1-vladbu@mellanox.com>
- <20190823185056.12536-4-vladbu@mellanox.com>
- <20190823172648.7777e2b6@cakuba.netronome.com>
-In-Reply-To: <20190823172648.7777e2b6@cakuba.netronome.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0204.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9e::24) To VI1PR05MB5295.eurprd05.prod.outlook.com
- (2603:10a6:803:b1::16)
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=vladbu@mellanox.com; 
-x-ms-exchange-messagesentrepresentingtype: 1
-x-originating-ip: [37.142.13.130]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: cdf4f5a8-1b24-4a53-eecd-08d728a1869d
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR05MB4160;
-x-ms-traffictypediagnostic: VI1PR05MB4160:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VI1PR05MB416032CD52DBB87D9F2DB1C1ADA70@VI1PR05MB4160.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:6108;
-x-forefront-prvs: 0139052FDB
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(366004)(136003)(39860400002)(396003)(376002)(346002)(199004)(189003)(25786009)(76176011)(229853002)(305945005)(66066001)(2906002)(256004)(7736002)(6916009)(14454004)(14444005)(8676002)(81166006)(81156014)(3846002)(8936002)(5660300002)(6486002)(86362001)(54906003)(6116002)(478600001)(316002)(66446008)(99286004)(64756008)(36756003)(11346002)(446003)(4326008)(6512007)(66946007)(486006)(6436002)(71190400001)(71200400001)(102836004)(6246003)(476003)(6506007)(186003)(386003)(26005)(52116002)(4744005)(66556008)(66476007)(2616005)(53936002);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR05MB4160;H:VI1PR05MB5295.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: ZeuXKZWqCaWFFvUW9QE5ikQNZWlURd+3fDAE5/mxf5sE7Wk0iwhof6wh9twosw3l1bcuX8V+Op+Nj6YV2gVIN15RYXqYLQ0Qw8IG7D4+Oc4UvNsB3LOLQ9+pHCSs7W20bGW2XjZ6u4WO6lg7HpN6kVAkj9cMA6az8Z/PdMnY4gp+wQEXQqxEQrDyxnuw/P/G8iNWRJMzR1IqZo/TAVkLYPxlnbe9Ony6ATLMCGlk4uc16AkIeqChrwwuqbqlEYS5+eAm9aFVrxd+SHwr55Jz0jWkN5hIxMjYQmGdqmvnlYJIbzL8XFNn8aCZ7RCOuO4Pclp3senazo0pGFJXobsiXulLHj5rqobcEjXb/AGjGvLKcV9DYilzdMYQoNXu7tlDcBwQGKRl55CaCCptLHShUM+6xkA3XZprvK8atAjUEF0=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20190815153209.21529-1-christian.herber@nxp.com>
+ <8c15b855-6947-9930-c3df-71a64fbff33b@gmail.com>
+ <AM6PR0402MB379864B810F08D3698618B5F86A80@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+ <13e65051-fe4f-5964-30b3-75285e6d2eee@gmail.com>
+ <AM6PR0402MB3798FCBF1EE592687B13A3C386AB0@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+ <5c920846-b8f5-d087-cea4-a8ca3f816127@gmail.com>
+ <20190821185715.GA16401@lunn.ch>
+ <AM6PR0402MB3798C702793071E34A5659ED86A50@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <1f50cdcf-200d-7c25-35ae-aee011a6a520@gmail.com>
+Date:   Sat, 24 Aug 2019 17:03:33 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: cdf4f5a8-1b24-4a53-eecd-08d728a1869d
-X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Aug 2019 14:44:11.2125
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: FpzJBhGakW9I/VbL3OZSyc5FPJ3vUd5knSwhvEVDm4Rps/hSH6X+hPhZaIpyWPls8I5GOjB07YQqpDJkOgQ48w==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB4160
+In-Reply-To: <AM6PR0402MB3798C702793071E34A5659ED86A50@AM6PR0402MB3798.eurprd04.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On Sat 24 Aug 2019 at 03:26, Jakub Kicinski <jakub.kicinski@netronome.com> =
-wrote:
-> On Fri, 23 Aug 2019 21:50:49 +0300, Vlad Buslov wrote:
->> @@ -1201,14 +1199,11 @@ static int u32_reoffload_knode(struct tcf_proto =
-*tp, struct tc_u_knode *n,
->>  			cls_u32.knode.link_handle =3D ht->handle;
->>  	}
+On 22.08.2019 09:18, Christian Herber wrote:
+> On 21.08.2019 20:57, Andrew Lunn wrote:
 >>
->> -	err =3D cb(TC_SETUP_CLSU32, &cls_u32, cb_priv);
->> -	if (err) {
->> -		if (add && tc_skip_sw(n->flags))
->> -			return err;
->> -		return 0;
->> -	}
->> -
->> -	tc_cls_offload_cnt_update(block, &n->in_hw_count, &n->flags, add);
->> +	err =3D tc_setup_cb_reoffload(block, tp, add, cb, TC_SETUP_CLSU32,
->> +				    &cls_u32, cb_priv, &n->flags,
->> +				    &n->in_hw_count);
->> +	if (err && add && tc_skip_sw(n->flags))
->> +		return err;
->
-> Could this be further simplified by adding something along the lines of:
->
-> 	if (!add || !tc_skip_sw(*flags))
-> 		err =3D 0;
->
-> to tc_setup_cb_reoffload() ?
-
-Indeed, all the users of tc_setup_cb_reoffload() have same error check
-that can be moved into the function. I will refactor it in V3.
-
->
+>>> The current patch set IMO is a little bit hacky. I'm not 100% happy
+>>> with the implicit assumption that there can't be devices supporting
+>>> T1 and classic BaseT modes or fiber modes.
 >>
->>  	return 0;
->>  }
+>>> Andrew: Do you have an opinion on that?
+>>
+>> Hi Heiner
+>>
+>> I would also like cleaner integration. I doubt here is anything in the
+>> standard which says you cannot combine these modes. It is more a
+>> marketing question if anybody would build such a device. Maybe not
+>> directly into a vehicle, but you could imaging a mobile test device
+>> which uses T1 to talk to the car and T4 to connect to the garage
+>> network?
+>>
+>> So i don't think we should limit ourselves. phylib should provide a
+>> clean, simple set of helpers to perform standard operations for
+>> various modes. Drivers can make use of those helpers. That much should
+>> be clear. If we try to make genphy support them all simultaneously, is
+>> less clear.
+>>
+>>       Andrew
+>>
+> 
+> If you want to go down this path, then i think we have to ask some more 
+> questions. Clause 45 is a very scalable register scheme, it is not a 
+> specific class of devices and will be extended and extended.
+> 
+> Currently, the phy-c45.c supports 10/100/1000/2500/5000/10000 Mbps 
+> consumer/enterprise PHYs. This is also an implicit assumption. The 
+> register set (e.g. on auto-neg) used for this will also only support 
+> these modes and nothing more, as it is done scaling.
+> 
+> Currently not supported, but already present in IEEE 802.3:
+> - MultiGBASE-T (25/40 Gbps) (see e.g. MultiGBASE-T AN control 1 register)
+> - BASE-T1
+> - 10BASE-T1
+> - NGBASE-T1
+> 
+> And surely there are some on the way or already there that I am not 
+> aware of.
+> 
+> To me, one architectural decision point is if you want to have generic 
+> support for all C45 PHYs in one file, or if you want to split it by 
+> device class. I went down the first path with my patch, as this is the 
+> road gone also with the existing code.
+> 
+> If you want to split BASE-T1, i think you will need one basic C45 
+> library (genphy_c45_pma_read_abilities() is a good example of a function 
+> that is not specific to a device class). On the other hand, 
+> genphy_c45_pma_setup_forced() is not a generic function at this point as 
+> it supports only a subset of devices managed in C45.
+> 
+> I tend to agree with you that splitting is the best way to go in the 
+> long run, but that also requires a split of the existing phy-c45.c into 
+> two IMHO.
+> 
+BASE-T1 seems to be based on Clause 45 (at least Clause 45 MDIO),
+but it's not fully compliant with Clause 45. Taking AN link status
+as an example: 45.2.7.2.7 states that link-up is signaled in bit 7.1.2.
+If BASE-T1 uses a different register, then it's not fully Clause 45
+compatible.
+Therefore also my question for the datasheet of an actual BASE-T1 PHY,
+as I would be curious whether it shadows the link-up bit from 7.513.2
+to 7.1.2 to be Clause 45 compliant. Definitely reading bit 7.513.2
+is nothing that belongs into a genphy_c45_ function.
+
+The extension to genphy_c45_pma_read_abilities() looks good to me,
+for the other parts I'd like to see first how real world BASE-T1 PHYs
+handle it. If they shadow the T1-specific bits to the Clause 45
+standard ones, we should be fine. Otherwise IMO we have to add
+separate T1 functions to phylib.
+
+Heiner
+
+
+
+
+
+
+
+
+
+
+
+
+
+
