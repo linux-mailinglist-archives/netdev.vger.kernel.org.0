@@ -2,98 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 973F79C36C
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 15:18:08 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1807B9C445
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 16:08:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728158AbfHYNSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 09:18:07 -0400
-Received: from mail-lj1-f170.google.com ([209.85.208.170]:44317 "EHLO
-        mail-lj1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726772AbfHYNSH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 09:18:07 -0400
-Received: by mail-lj1-f170.google.com with SMTP id e24so12704728ljg.11
-        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 06:18:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=6Ki6/yGvKgy4gg6WYeW/sYfX8WObRl4jhtiR1b1X+3k=;
-        b=WLL8qTLqOMXnmuYHpG8FnGULVpmWobHDKwyOJjh2AL8kE7M4LS9RsraPKDVHTmeUlB
-         pAvP1zQnBFbxuOpajR2fdVIY+FuAh7Y7cGE0UX/bcj8eUWgXyscHzMkfYhphPUaZfxgH
-         dcyd74x0CoD6VJW+mNcdUQs2MNSLgJjWiA5zu60Yfym8h4TuQ/yjtFkkNYn0h8dytJdU
-         8zCTxuw2leApPnp+IOxa2CXCO5xI2HBUk+iZMQyUqtB/woilyMSS3z76Tsclz7VlQ64Y
-         j+Su560y32nnP/d+HIjRYU/Vf4DiD5KW5Fihw5HVJPrCSNpKYKzLhSUMnsDp0X/CCWlw
-         a8tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=6Ki6/yGvKgy4gg6WYeW/sYfX8WObRl4jhtiR1b1X+3k=;
-        b=qo8ZBkKejP8JhcNb6VurTOvyAFrG6PwWTHsNbAU06l1VPqyK8qE3V25ElPoTKXNJE9
-         J8+FOsTbJJ8qteUrYhFJeA+Kagx6Bwv1G1AJAnqMMX8/UQN2r1PWTVGzyte+0WLiN/wo
-         wk9pXnK3lkMqIqyA+1XpglI4SbosicmWtqqDjnYrth3H/jWiSTDBKF+Aq5yCPrBXtmtR
-         ster+fO+j1SuTs7WcMM7lV956UhO9hjZWbW4DbHmKJZj3z/qWZJUHheKIPpRplBVmXVt
-         572WuWB4PtnpSiKB/gV0jbMqmdWhs0QZpogZAkx53sSnDCrhzu6ArkM8kfT+NcFHheWv
-         O99A==
-X-Gm-Message-State: APjAAAWsWf/UMTcbED1f1Exs2G0/7h1XZ/TqCr7xCHIqtTBK8dW3pdcz
-        JWuG9JyWRxDMVtUHJoVxP6SXVoiYvgjeCApkwhBZeCBM
-X-Google-Smtp-Source: APXvYqyiyQZ+bsoJpQ0bIX8MWGCvmasC2c8cUc4SvXcwjqtZf1z+XlwdTAzGgGW81+TVcuCC11yPF7dd51cSfDeHhWw=
-X-Received: by 2002:a2e:4601:: with SMTP id t1mr8035104lja.102.1566739084222;
- Sun, 25 Aug 2019 06:18:04 -0700 (PDT)
+        id S1728436AbfHYOId (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 10:08:33 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:56034 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725922AbfHYOId (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 10:08:33 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7PE3lRG067198;
+        Sun, 25 Aug 2019 14:08:25 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=corp-2019-08-05;
+ bh=PvhRdo7N/zTKpxLlKU0DBJOPSW502ClruZlBheiTva0=;
+ b=M8jTXlFRJZk4oGxvGffyEKQJcpe1WP2n4lm8ecMOE8iKS3UHKlhB636lD1qOdDpe7yuQ
+ Z7qnbP/0utoRz6rIXBabdu5Tjzg3Hzmc2N3eHq8e6D8mkuZJBfc8bsefc8KSd9Q5wVVS
+ p/ysxtcJwUxxztmx0+5cZr67TnYdS6qcVLS1hXx5AKtzlpTttk544VJNIuBBdRtvcmMe
+ GgJ5pbA0/m6aW4samyj0s2VNhA7KKsYotPxj8v0wC5gKE+3HEw66fI4tEMM1z+v5D5zq
+ 4EJkp78h338SOLnD1+v+E0s3AIgOirayUho6fRiDH69leQLUkau0r4inyk7arVQDcvi9 YQ== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by userp2120.oracle.com with ESMTP id 2ujwvq42xj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 25 Aug 2019 14:08:25 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x7PE3weZ143904;
+        Sun, 25 Aug 2019 14:08:24 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by aserp3030.oracle.com with ESMTP id 2ujw6ty7dt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 25 Aug 2019 14:08:24 +0000
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.27/8.16.0.27) with SMTP id x7PE8OZI153277;
+        Sun, 25 Aug 2019 14:08:24 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3030.oracle.com with ESMTP id 2ujw6ty7dn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sun, 25 Aug 2019 14:08:24 +0000
+Received: from abhmp0004.oracle.com (abhmp0004.oracle.com [141.146.116.10])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x7PE8NmJ017774;
+        Sun, 25 Aug 2019 14:08:23 GMT
+Received: from [10.182.71.192] (/10.182.71.192)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Sun, 25 Aug 2019 07:08:23 -0700
+Subject: Re: [PATCHv2 1/1] net: rds: add service level support in rds-info
+To:     David Miller <davem@davemloft.net>
+Cc:     santosh.shilimkar@oracle.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, rds-devel@oss.oracle.com,
+        gerd.rausch@oracle.com
+References: <1566608656-30836-1-git-send-email-yanjun.zhu@oracle.com>
+ <20190824.165851.1817456673626840850.davem@davemloft.net>
+From:   Zhu Yanjun <yanjun.zhu@oracle.com>
+Organization: Oracle Corporation
+Message-ID: <23ca3876-ee47-6ee9-8d03-9ceada3eca98@oracle.com>
+Date:   Sun, 25 Aug 2019 22:11:54 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-From:   Roee Kashi <galacap@gmail.com>
-Date:   Sun, 25 Aug 2019 16:17:52 +0300
-Message-ID: <CA+f3hu+2y4_oh0bR=w=HYo9HDFuBzD9bkSaG_67PrGVDWGdu0Q@mail.gmail.com>
-Subject: tx_fixup cdc_ether to mimic cdc_ncm tx behavior
-To:     netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190824.165851.1817456673626840850.davem@davemloft.net>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-GB
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9359 signatures=668684
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1906280000
+ definitions=main-1908250160
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
 
-I ported from Intel based modem chipset (cdc_ncm) to a Qualcomm's one
-(cdc_ether), and encountered a major difference between the two.
+On 2019/8/25 7:58, David Miller wrote:
+> From: Zhu Yanjun <yanjun.zhu@oracle.com>
+> Date: Fri, 23 Aug 2019 21:04:16 -0400
+>
+>> diff --git a/include/uapi/linux/rds.h b/include/uapi/linux/rds.h
+>> index fd6b5f6..cba368e 100644
+>> --- a/include/uapi/linux/rds.h
+>> +++ b/include/uapi/linux/rds.h
+>> @@ -250,6 +250,7 @@ struct rds_info_rdma_connection {
+>>   	__u32		rdma_mr_max;
+>>   	__u32		rdma_mr_size;
+>>   	__u8		tos;
+>> +	__u8		sl;
+>>   	__u32		cache_allocs;
+>>   };
+> I'm applying this, but I am once again severely disappointed in how
+> RDS development is being handled.
+>
+> >From the Fixes: commit:
+>
+> 	Since rds.h in rds-tools is not related with the kernel rds.h,
+> 	the change in kernel rds.h does not affect rds-tools.
+>
+> This is the height of arrogance and shows a lack of understanding of
+> what user ABI requirements are all about.
+>
+> It is possible for other userland components to be built by other
+> people, outside of your controlled eco-system and tools, that use
+> these interfaces.
+>
+> And you cannot control that.
+>
+> Therefore you cannot make arbitrary changes to UABI data strucures
+> just because the tool you use and maintain is not effected by it.
+>
+> Please stop making these incredibly incompatible user interface
+> changes in the RDS stack.
+>
+> I am, from this point forward, going to be extra strict on RDS stack
+> changes especially in this area.
 
-cdc_ncm had a nice "feature" (which probably wasn't the original
-purpose): when trying to transmit more than the module's capacity,
-tx_fixup would return NULL skb, hence fd buffer would remain full,
-causing sendto/select to block until modem is available.
-It's quite useful when sending UDP datagrams through an LTE link for
-example, since the module provides a dynamic and reliable information
-in real-time regarding its *incapability* of sending the datagram.
+OK. It is up to you to decide to merge this commit or not.
 
-For example:
-If my LTE link max upload bandwidth is 30Mbps, and i'll try with
-cdc_ncm to transmit above that, the send/select would block until
-modem is available, so the actual bandwidth would be 30Mbps with ~0%
-packet loss.
-with cdc_ncm: `iperf -u -c xxx -b 60Mbps` would report a TX bandwidth
-~30Mbps with ~0% loss.
+Zhu Yanjun
 
-with cdc_ether, even though the modem is unable to transmit the
-packet, nothing holds the tx flow: select continue and return fd as
-available for tx, even though the modem's buffer is full.
-with cdc_ether: `iperf -u -c xxx -b 60Mbps` would report a TX
-bandwidth ~60Mbps with ~50% loss.
-
-the difference between cdc_ncm and cdc_ether for this matter, is the
-'cdc_ncm_tx_fixup' in cdc_ncm, documented as:
- /*
-* The Ethernet API we are using does not support transmitting
-* multiple Ethernet frames in a single call. This driver will
-* accumulate multiple Ethernet frames and send out a larger
-* USB frame when the USB buffer is full or when a single jiffies
-* timeout happens.
-*/
-
-This fixup adds this useful side-effect to cdc_ncm, and I wonder how
-to extend this specific behavior to cdc_ether as well, per flag.
-What exactly in cdc_ncm: cdc_ncm_fill_tx_frame, causing this behavior,
-and what is the community approach about adopting the described
-cdc_ncm behavior?
-
-(qmi_wwan behaves the same as cdc_ether)
-
-Cheers,
-Roee.
+>
+>
