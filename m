@@ -2,123 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id A32089C368
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 15:15:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 973F79C36C
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 15:18:08 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728078AbfHYNPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 09:15:37 -0400
-Received: from mx.0dd.nl ([5.2.79.48]:38082 "EHLO mx.0dd.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727132AbfHYNPh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Aug 2019 09:15:37 -0400
-Received: from mail.vdorst.com (mail.vdorst.com [IPv6:fd01::250])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.0dd.nl (Postfix) with ESMTPS id 5D2775FA49;
-        Sun, 25 Aug 2019 15:15:35 +0200 (CEST)
-Authentication-Results: mx.0dd.nl;
-        dkim=pass (2048-bit key) header.d=vdorst.com header.i=@vdorst.com header.b="l6zXc3Uh";
-        dkim-atps=neutral
-Received: from www (www.vdorst.com [192.168.2.222])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.vdorst.com (Postfix) with ESMTPSA id 14C181D8D757;
-        Sun, 25 Aug 2019 15:15:35 +0200 (CEST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail.vdorst.com 14C181D8D757
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vdorst.com;
-        s=default; t=1566738935;
-        bh=Q2200DqKa9H2DR//WuPuWgb3ZFkA4JFcKxLzXdWogKo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l6zXc3Uhfmp995W4liIDrB+xS8TcepNujW2QUk752OhMN3s8fQo15EcAGgRxZ1Rir
-         xPv2lfGuGTMJcK5VZtdHRirzGAYXtixaost4EY+kykfJNcrs/H1yU4TlimlmcViFT2
-         X56fiLdSUMqlhfzMQmJlAPfGOk+0ZdObwFU18ph7hOv2O1P7fye/uRyHsI6cqZVwmi
-         +tF0llPm2TmrWgZmpJDxD+xJg/v5v5lLESDRFEpYVyI+qYl7jcmIhGGEBs8AZX9pBW
-         48INIYeFNBV8vHm3UaantLC4P90BMtlfhvoVHImi/McazGE5IFDtTflza4p0LpByTI
-         aL3IfVl43kbLA==
-Received: from localhost.localdomain (localhost.localdomain [127.0.0.1]) by
- www.vdorst.com (Horde Framework) with HTTPS; Sun, 25 Aug 2019 13:15:35 +0000
-Date:   Sun, 25 Aug 2019 13:15:35 +0000
-Message-ID: <20190825131535.Horde.K3HRnOFcIiu-aVdXmqwndlD@www.vdorst.com>
-From:   =?utf-8?b?UmVuw6k=?= van Dorst <opensource@vdorst.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Sean Wang <sean.wang@mediatek.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        netdev@vger.kernel.org, linux-mips@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        John Crispin <john@phrozen.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net-next v2 0/3] net: dsa: mt7530: Convert to PHYLINK
- and add support for port 5
-References: <20190821144547.15113-1-opensource@vdorst.com>
- <20190824222935.GG13294@shell.armlinux.org.uk>
-In-Reply-To: <20190824222935.GG13294@shell.armlinux.org.uk>
-User-Agent: Horde Application Framework 5
-Content-Type: text/plain; charset=utf-8; format=flowed; DelSp=Yes
+        id S1728158AbfHYNSH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 09:18:07 -0400
+Received: from mail-lj1-f170.google.com ([209.85.208.170]:44317 "EHLO
+        mail-lj1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726772AbfHYNSH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 09:18:07 -0400
+Received: by mail-lj1-f170.google.com with SMTP id e24so12704728ljg.11
+        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 06:18:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=6Ki6/yGvKgy4gg6WYeW/sYfX8WObRl4jhtiR1b1X+3k=;
+        b=WLL8qTLqOMXnmuYHpG8FnGULVpmWobHDKwyOJjh2AL8kE7M4LS9RsraPKDVHTmeUlB
+         pAvP1zQnBFbxuOpajR2fdVIY+FuAh7Y7cGE0UX/bcj8eUWgXyscHzMkfYhphPUaZfxgH
+         dcyd74x0CoD6VJW+mNcdUQs2MNSLgJjWiA5zu60Yfym8h4TuQ/yjtFkkNYn0h8dytJdU
+         8zCTxuw2leApPnp+IOxa2CXCO5xI2HBUk+iZMQyUqtB/woilyMSS3z76Tsclz7VlQ64Y
+         j+Su560y32nnP/d+HIjRYU/Vf4DiD5KW5Fihw5HVJPrCSNpKYKzLhSUMnsDp0X/CCWlw
+         a8tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=6Ki6/yGvKgy4gg6WYeW/sYfX8WObRl4jhtiR1b1X+3k=;
+        b=qo8ZBkKejP8JhcNb6VurTOvyAFrG6PwWTHsNbAU06l1VPqyK8qE3V25ElPoTKXNJE9
+         J8+FOsTbJJ8qteUrYhFJeA+Kagx6Bwv1G1AJAnqMMX8/UQN2r1PWTVGzyte+0WLiN/wo
+         wk9pXnK3lkMqIqyA+1XpglI4SbosicmWtqqDjnYrth3H/jWiSTDBKF+Aq5yCPrBXtmtR
+         ster+fO+j1SuTs7WcMM7lV956UhO9hjZWbW4DbHmKJZj3z/qWZJUHheKIPpRplBVmXVt
+         572WuWB4PtnpSiKB/gV0jbMqmdWhs0QZpogZAkx53sSnDCrhzu6ArkM8kfT+NcFHheWv
+         O99A==
+X-Gm-Message-State: APjAAAWsWf/UMTcbED1f1Exs2G0/7h1XZ/TqCr7xCHIqtTBK8dW3pdcz
+        JWuG9JyWRxDMVtUHJoVxP6SXVoiYvgjeCApkwhBZeCBM
+X-Google-Smtp-Source: APXvYqyiyQZ+bsoJpQ0bIX8MWGCvmasC2c8cUc4SvXcwjqtZf1z+XlwdTAzGgGW81+TVcuCC11yPF7dd51cSfDeHhWw=
+X-Received: by 2002:a2e:4601:: with SMTP id t1mr8035104lja.102.1566739084222;
+ Sun, 25 Aug 2019 06:18:04 -0700 (PDT)
 MIME-Version: 1.0
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
+From:   Roee Kashi <galacap@gmail.com>
+Date:   Sun, 25 Aug 2019 16:17:52 +0300
+Message-ID: <CA+f3hu+2y4_oh0bR=w=HYo9HDFuBzD9bkSaG_67PrGVDWGdu0Q@mail.gmail.com>
+Subject: tx_fixup cdc_ether to mimic cdc_ncm tx behavior
+To:     netdev@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Russell,
+Hi,
 
-Quoting Russell King - ARM Linux admin <linux@armlinux.org.uk>:
+I ported from Intel based modem chipset (cdc_ncm) to a Qualcomm's one
+(cdc_ether), and encountered a major difference between the two.
 
-> On Wed, Aug 21, 2019 at 04:45:44PM +0200, René van Dorst wrote:
->> 1. net: dsa: mt7530: Convert to PHYLINK API
->>    This patch converts mt7530 to PHYLINK API.
->> 2. dt-bindings: net: dsa: mt7530: Add support for port 5
->> 3. net: dsa: mt7530: Add support for port 5
->>    These 2 patches adding support for port 5 of the switch.
->>
->> v1->v2:
->>  * Mostly phylink improvements after review.
->> rfc -> v1:
->>  * Mostly phylink improvements after review.
->>  * Drop phy isolation patches. Adds no value for now.
->> René van Dorst (3):
->>   net: dsa: mt7530: Convert to PHYLINK API
->>   dt-bindings: net: dsa: mt7530: Add support for port 5
->>   net: dsa: mt7530: Add support for port 5
->>
->>  .../devicetree/bindings/net/dsa/mt7530.txt    | 218 ++++++++++
->>  drivers/net/dsa/mt7530.c                      | 371 +++++++++++++++---
->>  drivers/net/dsa/mt7530.h                      |  61 ++-
->>  3 files changed, 577 insertions(+), 73 deletions(-)
->
-> Having looked through this set of patches, I don't see anything
-> from the phylink point of view that concerns me.  So, for the
-> series from the phylink perspective:
->
-> Acked-by: Russell King <rmk+kernel@armlinux.org.uk>
+cdc_ncm had a nice "feature" (which probably wasn't the original
+purpose): when trying to transmit more than the module's capacity,
+tx_fixup would return NULL skb, hence fd buffer would remain full,
+causing sendto/select to block until modem is available.
+It's quite useful when sending UDP datagrams through an LTE link for
+example, since the module provides a dynamic and reliable information
+in real-time regarding its *incapability* of sending the datagram.
 
-Thanks and thanks for reviewing.
+For example:
+If my LTE link max upload bandwidth is 30Mbps, and i'll try with
+cdc_ncm to transmit above that, the send/select would block until
+modem is available, so the actual bandwidth would be 30Mbps with ~0%
+packet loss.
+with cdc_ncm: `iperf -u -c xxx -b 60Mbps` would report a TX bandwidth
+~30Mbps with ~0% loss.
 
-Greats,
+with cdc_ether, even though the modem is unable to transmit the
+packet, nothing holds the tx flow: select continue and return fd as
+available for tx, even though the modem's buffer is full.
+with cdc_ether: `iperf -u -c xxx -b 60Mbps` would report a TX
+bandwidth ~60Mbps with ~50% loss.
 
-René
+the difference between cdc_ncm and cdc_ether for this matter, is the
+'cdc_ncm_tx_fixup' in cdc_ncm, documented as:
+ /*
+* The Ethernet API we are using does not support transmitting
+* multiple Ethernet frames in a single call. This driver will
+* accumulate multiple Ethernet frames and send out a larger
+* USB frame when the USB buffer is full or when a single jiffies
+* timeout happens.
+*/
 
->
-> Thanks.
->
-> I did notice a dev_info() in patch 3 that you may like to consider
-> whether they should be printed at info level or debug level.  You
-> may keep my ack on the patch when fixing that.
->
-> I haven't considered whether the patch passes davem's style
-> requirements for networking code; what I spotted did look like
-> the declarations were upside-down christmas tree.
->
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-> According to speedtest.net: 11.9Mbps down 500kbps up
+This fixup adds this useful side-effect to cdc_ncm, and I wonder how
+to extend this specific behavior to cdc_ether as well, per flag.
+What exactly in cdc_ncm: cdc_ncm_fill_tx_frame, causing this behavior,
+and what is the community approach about adopting the described
+cdc_ncm behavior?
 
+(qmi_wwan behaves the same as cdc_ether)
 
-
+Cheers,
+Roee.
