@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DD8EC9C5EC
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 21:46:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 578869C5ED
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 21:46:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728882AbfHYTqp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 15:46:45 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55545 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728739AbfHYTqo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 15:46:44 -0400
-Received: by mail-wm1-f65.google.com with SMTP id f72so13472928wmf.5
-        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 12:46:43 -0700 (PDT)
+        id S1728915AbfHYTqr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 15:46:47 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:37968 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727077AbfHYTqp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 15:46:45 -0400
+Received: by mail-wr1-f65.google.com with SMTP id g17so13310712wrr.5
+        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 12:46:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=5M8iWETZzE1UPMuJZQkLCc1wMjafEq4lODGl/NSuFrg=;
-        b=QYrde/7HBmmTxH8ooLbCOKTj8efsJvfYgVb00mGfZTicclcJT599meNqwLUe968jFd
-         nZ5SeoxHXO9a582HEGqxdOsPG2Darg/fZ9h8ceom2fWbeFaXkyChr6BW1LtHGOrtCrhT
-         3bbrp52x0rJBN1QCGlLkJQUHBUzEAFfa9n7kdnnhIj919TsrVYFcu2Ai+IJtr/+Xw0EN
-         UPqqkFKUjXcsmCS8HmRfcPSIhbFVKYdOul2eYrLpdWRJbzN/LP6qpuPDrGtOMHIsSnyP
-         /cddApuY7DwsjLizvzw5yz2RPvgug3n4GYWlO1vTt1fTbAiJG0k5WdBBo58Wa//Q9v9F
-         kmew==
+        bh=73kotSlmFW5HPznXmJxO/lAptpida7kA+BzlW3sRFCY=;
+        b=b6FWnZGlCfBPMD/S4M4IlX5tYFvd99WOLZPydWz6X9tKdrecHtV4uxl+KmmRS0Rq6i
+         tFkvkh4xy+JKvI0HfUPxL3xGzCH0fKvPKAzN948aQQcqRcZJRW+9mUmrwuAHJkft61xg
+         BODYbzOe0CQgH38Oqe47T5Qp934g0wq2CudrOwIHDyjdBBavb1N5MuaKGVPXTky2fH3V
+         8Clf8Mq6QABH1xGY4VhRvnn6la6MJsyx8cVZuDg/Xmm19y02DdHIES/9jWBsRiBAaBJN
+         whm6wqyeHGEqMFXl57Rt4DrzMGFtEqcaZ8n2M07833yQ24eQQKyGBaehwicFIbhYkOgr
+         adEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=5M8iWETZzE1UPMuJZQkLCc1wMjafEq4lODGl/NSuFrg=;
-        b=HJhbvCevedsGGQu6P82nIfehLRueNh2iOdAE53JgVvc0les8Ir26MYXdy1ORQfVBR0
-         dJ5shv7A/EuyT1mopIJ16FliTo+G3MRX92ffUZhroPIpvD6/rJ9NqJ2t0WWkW1Ad15GO
-         DBy/H4T1cQ9OggLUGdz8XSjkf6rPEEMqGPFe+t95ATUeTJKEwwdrk5nUT9Mue25HYRLX
-         2muTm15gTeHGyO1ScDinTWPdNzA7oIo12DqYO+yrdcXPdF/OxtvHBlykqD7DZ0ZXsfW+
-         awoPB1zHU27q2j+EDwBO4+AdS2JeibMRFQCt4Av4EnkK/oaZOTeTogKtrsViq6CtCBIr
-         h1Ag==
-X-Gm-Message-State: APjAAAVWn7g/QfEjccDY8lOEJsUAFOzz6C+yt0kBaa0kStyTb/aIZD9X
-        EXBdfHB8kMm1mLTrkEGP9lE=
-X-Google-Smtp-Source: APXvYqwmPJRhyJV6qGByLtt8YGpOwTYcDE0Yh/CxoNJdg7gTtvjFbeWHitAhMk3Zc/ursh/6coMTdg==
-X-Received: by 2002:a05:600c:218d:: with SMTP id e13mr17785071wme.29.1566762402830;
-        Sun, 25 Aug 2019 12:46:42 -0700 (PDT)
+        bh=73kotSlmFW5HPznXmJxO/lAptpida7kA+BzlW3sRFCY=;
+        b=EqX7n9zErGpgZn1U38dS32spdqt8XAr7OIEXIMia/6z3fGnR5jF7/8R3YrnyFmLtHm
+         sK4waDN3MtKcxIrW88GhBROeAphzvoejbbPRnhT4wusDB9n3drxemGAb6y8sdP80ZTo0
+         flSqvjg1XJZ8tEhUMoOb8j/jP0j83r4+dQAntg4+cCReh7XU0LBMZVriN9OJ626yhaQY
+         WiRun/JWAazJttP3YJ45MacFZyx8k9bA45gdDyXBYBif387v2lqQEUjOK+00C5jMrIu+
+         b/y3oMH8KE9lh7fBeC8mkhbb6lGh2k4MuS9a2eBULYeYbPSI6Wjw9Oynj7cV5Ax0nfBu
+         iSqg==
+X-Gm-Message-State: APjAAAX0Si0yt7CrC2KP9r7eIUZqRw8eZKIAh+3DQh8qChTtlZ1QQUpy
+        +oXYcKvp51C6kaTIMUPDiCRjqxtT
+X-Google-Smtp-Source: APXvYqy/ZlzkC17RCY7R6PjGRd1tM3c9dEJHYnKxlhrktH/7ZMnClYFSXx1Ovrlx4b0MthFaqKCvTw==
+X-Received: by 2002:a5d:44cf:: with SMTP id z15mr18094248wrr.324.1566762403775;
+        Sun, 25 Aug 2019 12:46:43 -0700 (PDT)
 Received: from localhost.localdomain ([86.126.25.232])
-        by smtp.gmail.com with ESMTPSA id v124sm19770974wmf.23.2019.08.25.12.46.41
+        by smtp.gmail.com with ESMTPSA id v124sm19770974wmf.23.2019.08.25.12.46.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Aug 2019 12:46:42 -0700 (PDT)
+        Sun, 25 Aug 2019 12:46:43 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
         davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net-next 1/2] net: dsa: Advertise the VLAN offload netdev ability only if switch supports it
-Date:   Sun, 25 Aug 2019 22:46:29 +0300
-Message-Id: <20190825194630.12404-2-olteanv@gmail.com>
+Subject: [PATCH net-next 2/2] net: dsa: sja1105: Clear VLAN filtering offload netdev feature
+Date:   Sun, 25 Aug 2019 22:46:30 +0300
+Message-Id: <20190825194630.12404-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190825194630.12404-1-olteanv@gmail.com>
 References: <20190825194630.12404-1-olteanv@gmail.com>
@@ -58,73 +58,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When adding a VLAN sub-interface on a DSA slave port, the 8021q core
-checks NETIF_F_HW_VLAN_CTAG_FILTER and, if the netdev is capable of
-filtering, calls .ndo_vlan_rx_add_vid or .ndo_vlan_rx_kill_vid to
-configure the VLAN offloading.
+The switch barely supports traffic I/O, and it does that by repurposing
+VLANs when there is no bridge that is taking control of them.
 
-DSA sets this up counter-intuitively: it always advertises this netdev
-feature, but the underlying driver may not actually support VLAN table
-manipulation. In that case, the DSA core is forced to ignore the error,
-because not being able to offload the VLAN is still fine - and should
-result in the creation of a non-accelerated VLAN sub-interface.
+Letting DSA declare this netdev feature as supported (see
+dsa_slave_create) would mean that VLAN sub-interfaces created on sja1105
+switch ports will be hardware offloaded. That means that
+net/8021q/vlan_core.c would install the VLAN into the filter tables of
+the switch, potentially interfering with the tag_8021q VLANs.
 
-Change this so that the netdev feature is only advertised for switch
-drivers that support VLAN manipulation, instead of checking for
--EOPNOTSUPP at runtime.
+We need to prevent that from happening and not let the 8021q core
+offload VLANs to the switch hardware tables. In vlan_filtering=0 modes
+of operation, the switch ports can pass through VLAN-tagged frames with
+no problem.
 
 Suggested-by: Florian Fainelli <f.fainelli@gmail.com>
 Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
 ---
- net/dsa/slave.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/net/dsa/sja1105/sja1105_main.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index d84225125099..9a88035517a6 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -1131,11 +1131,11 @@ static int dsa_slave_vlan_rx_add_vid(struct net_device *dev, __be16 proto,
- 	}
- 
- 	ret = dsa_port_vid_add(dp, vid, 0);
--	if (ret && ret != -EOPNOTSUPP)
-+	if (ret)
- 		return ret;
- 
- 	ret = dsa_port_vid_add(dp->cpu_dp, vid, 0);
--	if (ret && ret != -EOPNOTSUPP)
-+	if (ret)
- 		return ret;
- 
- 	return 0;
-@@ -1164,14 +1164,10 @@ static int dsa_slave_vlan_rx_kill_vid(struct net_device *dev, __be16 proto,
- 			return -EBUSY;
- 	}
- 
--	ret = dsa_port_vid_del(dp, vid);
--	if (ret == -EOPNOTSUPP)
--		ret = 0;
--
- 	/* Do not deprogram the CPU port as it may be shared with other user
- 	 * ports which can be members of this VLAN as well.
- 	 */
--	return ret;
-+	return dsa_port_vid_del(dp, vid);
+diff --git a/drivers/net/dsa/sja1105/sja1105_main.c b/drivers/net/dsa/sja1105/sja1105_main.c
+index df976b259e43..d8cff0107ec4 100644
+--- a/drivers/net/dsa/sja1105/sja1105_main.c
++++ b/drivers/net/dsa/sja1105/sja1105_main.c
+@@ -1728,6 +1728,21 @@ static void sja1105_teardown(struct dsa_switch *ds)
+ 	sja1105_static_config_free(&priv->static_config);
  }
  
- static const struct ethtool_ops dsa_slave_ethtool_ops = {
-@@ -1418,8 +1414,9 @@ int dsa_slave_create(struct dsa_port *port)
- 	if (slave_dev == NULL)
- 		return -ENOMEM;
- 
--	slave_dev->features = master->vlan_features | NETIF_F_HW_TC |
--				NETIF_F_HW_VLAN_CTAG_FILTER;
-+	slave_dev->features = master->vlan_features | NETIF_F_HW_TC;
-+	if (ds->ops->port_vlan_add && ds->ops->port_vlan_del)
-+		slave_dev->features |= NETIF_F_HW_VLAN_CTAG_FILTER;
- 	slave_dev->hw_features |= NETIF_F_HW_TC;
- 	slave_dev->ethtool_ops = &dsa_slave_ethtool_ops;
- 	if (!IS_ERR_OR_NULL(port->mac))
++static int sja1105_port_enable(struct dsa_switch *ds, int port,
++			       struct phy_device *phy)
++{
++	struct net_device *slave;
++
++	if (!dsa_is_user_port(ds, port))
++		return 0;
++
++	slave = ds->ports[port].slave;
++
++	slave->features &= ~NETIF_F_HW_VLAN_CTAG_FILTER;
++
++	return 0;
++}
++
+ static int sja1105_mgmt_xmit(struct dsa_switch *ds, int port, int slot,
+ 			     struct sk_buff *skb, bool takets)
+ {
+@@ -2049,6 +2064,7 @@ static const struct dsa_switch_ops sja1105_switch_ops = {
+ 	.get_ethtool_stats	= sja1105_get_ethtool_stats,
+ 	.get_sset_count		= sja1105_get_sset_count,
+ 	.get_ts_info		= sja1105_get_ts_info,
++	.port_enable		= sja1105_port_enable,
+ 	.port_fdb_dump		= sja1105_fdb_dump,
+ 	.port_fdb_add		= sja1105_fdb_add,
+ 	.port_fdb_del		= sja1105_fdb_del,
 -- 
 2.17.1
 
