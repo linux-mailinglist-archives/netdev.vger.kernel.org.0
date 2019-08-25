@@ -2,88 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A43F9C4E3
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 18:36:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 62E3D9C4ED
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 18:46:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728471AbfHYQgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 12:36:12 -0400
-Received: from mail.nic.cz ([217.31.204.67]:47882 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727889AbfHYQgM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Aug 2019 12:36:12 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id A9258140B7D;
-        Sun, 25 Aug 2019 18:36:10 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566750970; bh=BkTKcqpYtfSTaddEkRcTQRqAx5P9YJWwnzYZivHFggM=;
-        h=Date:From:To;
-        b=K/YzIwHLsVNGkcmeyA6gI77GFpH1Ba7st3Jg28nYBtoGQaOsOf90b4Suh92ybtI1Z
-         6xGjSvrAdcQIrxpH34LvYl7SougD+wac6bar2jvruQaRNffeg8QUAfYaVKzIsGYNOc
-         6ntTJteNkJO7vbr0lx4UZUtopbKoiBzCq1Qkqf5k=
-Date:   Sun, 25 Aug 2019 18:36:09 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v3 4/6] net: dsa: mv88e6xxx: simplify SERDES
- code for Topaz and Peridot
-Message-ID: <20190825183609.4a9cc0d7@nic.cz>
-In-Reply-To: <20190825120232.GG6729@t480s.localdomain>
-References: <20190825035915.13112-1-marek.behun@nic.cz>
-        <20190825035915.13112-5-marek.behun@nic.cz>
-        <20190825120232.GG6729@t480s.localdomain>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1728437AbfHYQq1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 12:46:27 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:57133 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728393AbfHYQq1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 12:46:27 -0400
+X-Originating-IP: 209.85.222.54
+Received: from mail-ua1-f54.google.com (mail-ua1-f54.google.com [209.85.222.54])
+        (Authenticated sender: pshelar@ovn.org)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id F12B21BF205
+        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 16:46:24 +0000 (UTC)
+Received: by mail-ua1-f54.google.com with SMTP id m8so2129150uap.2
+        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 09:46:24 -0700 (PDT)
+X-Gm-Message-State: APjAAAXs9YgE+xgmrgP1aLRr5IN5vF4AmcICYc0VrPy/W02+KTeSqdy0
+        /MNgaYHenfUlnUWK+6Ndoz9b9rFIepspvFIl42Y=
+X-Google-Smtp-Source: APXvYqzJkrxPDnCRkU4w+5bRB+Vd80blEYozknxCzHK/ff6a0DxKb3TyhTxFaJ15IP7kHtJMML4TkFAL/FL+G8ys6g8=
+X-Received: by 2002:ab0:a8a:: with SMTP id d10mr6899436uak.64.1566751583607;
+ Sun, 25 Aug 2019 09:46:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
-        shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+References: <1566432970-13377-1-git-send-email-yihung.wei@gmail.com>
+In-Reply-To: <1566432970-13377-1-git-send-email-yihung.wei@gmail.com>
+From:   Pravin Shelar <pshelar@ovn.org>
+Date:   Sun, 25 Aug 2019 09:48:27 -0700
+X-Gmail-Original-Message-ID: <CAOrHB_Cy2xuG87jcabsnTF_ttCcbt3E8tCrj7SqRWhu19-PkLA@mail.gmail.com>
+Message-ID: <CAOrHB_Cy2xuG87jcabsnTF_ttCcbt3E8tCrj7SqRWhu19-PkLA@mail.gmail.com>
+Subject: Re: [PATCH net] openvswitch: Fix log message in ovs conntrack
+To:     Yi-Hung Wei <yihung.wei@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 25 Aug 2019 12:02:32 -0400
-Vivien Didelot <vivien.didelot@gmail.com> wrote:
+On Wed, Aug 21, 2019 at 5:27 PM Yi-Hung Wei <yihung.wei@gmail.com> wrote:
+>
+> Fixes: 06bd2bdf19d2 ("openvswitch: Add timeout support to ct action")
+> Signed-off-by: Yi-Hung Wei <yihung.wei@gmail.com>
+> ---
+>  net/openvswitch/conntrack.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/net/openvswitch/conntrack.c b/net/openvswitch/conntrack.c
+> index 45498fcf540d..0d5ab4957ec0 100644
+> --- a/net/openvswitch/conntrack.c
+> +++ b/net/openvswitch/conntrack.c
+> @@ -1574,7 +1574,7 @@ static int parse_ct(const struct nlattr *attr, struct ovs_conntrack_info *info,
+>                 case OVS_CT_ATTR_TIMEOUT:
+>                         memcpy(info->timeout, nla_data(a), nla_len(a));
+>                         if (!memchr(info->timeout, '\0', nla_len(a))) {
+> -                               OVS_NLERR(log, "Invalid conntrack helper");
+> +                               OVS_NLERR(log, "Invalid conntrack timeout");
+>                                 return -EINVAL;
+>                         }
+>                         break;
+Acked-by: Pravin B Shelar <pshelar@ovn.org>
 
-> Aren't you relying on -ENODEV as well?
-
-Vivien, I am not relying o -ENODEV. I changed the serdes_get_lane
-semantics:
- - previously:
-   - if port has a lane for current cmode, return given lane number
-   - otherwise return -ENODEV
-   - if other error occured during serdes_get_lane, return that error
-     (this never happened, because all implementations only need port
-     number and cmode, and cmode is cached, so no function was called
-     that could err)
- - after this commit:
-   - if port has a lane for current cmode, return 0 and put lane number
-     into *lane
-   - otherwise return 0 and put -1 into *lane
-   - if error occured, return that error number
-
-I removed the -ENODEV semantics for "no lane on port" event.
-There are two reasons for this:
-  1. once you requested lane number to be put into a place pointed to
-     by a pointer, rather than the return value, the code seemed better
-     to me (you may of course disagree, this is a personal opinion) when
-     I did:
-       if (err)
-           return err;
-       if (lane < 0)
-           return 0;
-     rather than
-       if (err == -ENODEV)
-           return 0;
-       if (err)
-           return err;
-  2. some future implementation may actually need to call some MDIO
-     read/write functions, which may or may not return -ENODEV. That
-     could conflict with the -ENODEV returned when there is no lane.
-
-Marek
+Thanks,
+Pravin.
