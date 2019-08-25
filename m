@@ -2,71 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CCB559C58B
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 20:32:22 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 427949C58C
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 20:32:23 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728887AbfHYScU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 14:32:20 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:39915 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728863AbfHYScU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 14:32:20 -0400
-Received: by mail-pl1-f194.google.com with SMTP id z3so8744931pln.6
-        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 11:32:20 -0700 (PDT)
+        id S1728895AbfHYScV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 14:32:21 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:36577 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728818AbfHYScV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 14:32:21 -0400
+Received: by mail-wm1-f66.google.com with SMTP id g67so13724971wme.1
+        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 11:32:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U3m17TISxgf6BUYIDX0cfztJuO/ssulmKc6XAVFQoKc=;
-        b=BIPJMU3z8XrlwKDnv+ytHYIify/lU5Pde/kcx6iQK/RPBwUQdSijfRszyWmkQLALgu
-         ryvKkcqUa3ReZnSwEdw+S23t5eSh+fu4XQArZqkpZhBW9IbqTKS0KTdSlq1ijWhKG3oZ
-         qArLBbBPRLcpNAuA1KEC/Z0eQ3dkE5mx6RjGxtZsVTH7T4nlklAl6ps6e+u/xiNgWvKX
-         6GdMwI2FBXY/Vxf/pwDpe11b09VfWZfRNhcPYwdGv/POEnr/oimxufb3aIchwyCQHOZA
-         v0sLm1ngO56Mg68qN8I/6xH61rvkjWy0Bmay6tp5CJlFhIA9wMf/GdVRJjoqr1Duw0Bf
-         Wprg==
+        h=from:to:cc:subject:date:message-id;
+        bh=oZOnUnIyGaNuUoHr2Bi1L/ITN5tvgAtjXraJPK/g5dY=;
+        b=veXy1zOZrQL92GfO9WkpuhY19AYhxBrVYiHDCvAGXRlVffJd0VpeshjcaCTfKmoJ/r
+         RsliCYQhhVK82eyy6NFJqVacU5/H0OSv/nLWrKmGyc4PCDGD+Fd6PmIlwtOScyWmtvxY
+         e37qLXLHqS/0+vUMVZNShjF/p1pIUUoN2ckZ901BuoRHFLZAB7BsFYa6stfjGJn3boMY
+         GDoYpJOJ/gfvVMWniAXtYrYt5AUjCKUZF/weoMz66AL9W/0IJYwNp42rTqaE3tWTSSvl
+         ZqtQiZUo7ItTW9LpDcxwi1NdoqrdPyJUBQT8y4JaBhyegekBuT8t8V1KXTp5eeaDlLuv
+         2q/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U3m17TISxgf6BUYIDX0cfztJuO/ssulmKc6XAVFQoKc=;
-        b=Wn4lsn04S7hVX8jv6bgx1VCdvLEf4WX/BRO6qXUOsnl7Obdvjx+DrkGgVZyH76SzYe
-         yfSjGh5vIFdNybzHL29O5pKPJ2OzOpYWHAJIWMArHcCI8EPaYE59kXgBbL3dVIWMDdtr
-         VHi5iO68bxgfXWn/xMuZd8eXDA6qXziMD9Ckt6UeGOs9pfM6ubILWSdZYcC8i1XgYMmg
-         DRC1FKpYSrfx0DvsfEdoLqTDR7Qg/FkdprwmkxbNHOoBiVZphQJ/w+kap3ryoYfJJ0HN
-         gUIK5ZJKzgYwUaE45QLl9Nj4pzFfpKzF+4pc9jga4irDdtxGq4JTFRjfu3DxxhXzqq25
-         qayg==
-X-Gm-Message-State: APjAAAVF3rtZqPSufG71o5FuUD+YN4e7IoyMoRr8xAzOtl9hMv6j8dcz
-        sqMuVcxho6jUqj9YW1Or3qzQm4iJlolZIElOpYM8syRZ
-X-Google-Smtp-Source: APXvYqyAnzof4Go0ZdJ0F3jPkFdK1Bl38suRuWMuRihaVQJpJeTYQeM0CXgnQx0T+EgWYX4z8atGylvvbdfGslHIcqI=
-X-Received: by 2002:a17:902:26b:: with SMTP id 98mr15459607plc.61.1566757939921;
- Sun, 25 Aug 2019 11:32:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190820223259.22348-1-willy@infradead.org> <20190820223259.22348-30-willy@infradead.org>
- <vbftvaa4bny.fsf@mellanox.com>
-In-Reply-To: <vbftvaa4bny.fsf@mellanox.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Sun, 25 Aug 2019 11:32:08 -0700
-Message-ID: <CAM_iQpXXKwKUhzU1wwXrXqwXSEq-OJ4diBhSuR04kitLKs=g0g@mail.gmail.com>
-Subject: Re: [PATCH 29/38] cls_flower: Convert handle_idr to XArray
-To:     Vlad Buslov <vladbu@mellanox.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=oZOnUnIyGaNuUoHr2Bi1L/ITN5tvgAtjXraJPK/g5dY=;
+        b=p4BAfVD4JGKCZxzb5OCas9UU3jjmlVAs96fbm/xQX51mL4TGUlHhvvN3kU+r0htVzX
+         Y78k11EwEfFl0hUEXlo6/Xdwpf8qpWrU1HxJ0gmpUXht7w8kcvqyKIR+sZ3OTo7qwz6E
+         VIEOdgXTJrvJqOUu5KTwWiqboSLc4r/aj0QBVg3CSG/+6wd9JSPctXO9Ew7LIHcGPCnL
+         wTPS0sWCUwniFbAWfFzZQfO/T/IiMXHGEoSD8IF3zDdp8MzZP9SFDvPh4s3YaMsAVSdW
+         laARL6On2Id7JIrZlgR1XmFCI8dbEOCDnaIn+IiaTQxGAjtqzp0cWvmBwen8YQPDlEVg
+         tsCA==
+X-Gm-Message-State: APjAAAUQOjDXerhIdW7Po4R8v5gJx92QOzwcRaR07GO+x37wo+ky9AFE
+        dLP5NLg5+TNzj+K9lxXv/2Y=
+X-Google-Smtp-Source: APXvYqz0lF9sro1mEO136pLGWXM1ZeLEzKLoiobQlDhz+qLRlVKgl6q4o50FtnvcV7VD4qiAL/HS/Q==
+X-Received: by 2002:a1c:a481:: with SMTP id n123mr16155015wme.123.1566757938904;
+        Sun, 25 Aug 2019 11:32:18 -0700 (PDT)
+Received: from localhost.localdomain ([86.126.25.232])
+        by smtp.gmail.com with ESMTPSA id t19sm8952842wmi.29.2019.08.25.11.32.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 25 Aug 2019 11:32:18 -0700 (PDT)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
+        davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
+Subject: [PATCH net] net: dsa: tag_8021q: Future-proof the reserved fields in the custom VID
+Date:   Sun, 25 Aug 2019 21:32:12 +0300
+Message-Id: <20190825183212.11426-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Aug 21, 2019 at 11:27 AM Vlad Buslov <vladbu@mellanox.com> wrote:
-> At first I was confused why you bring up rtnl lock in commit message
-> (flower classifier has 'unlocked' flag set and can't rely on it anymore)
-> but looking at the code I see that we lost rcu read lock here in commit
-> d39d714969cd ("idr: introduce idr_for_each_entry_continue_ul()") and you
-> are correctly bringing it back. Adding Cong to advise if it is okay to
-> wait for this patch to be accepted or we need to proceed with fixing the
-> missing RCU lock as a standalone patch.
+After witnessing the discussion in https://lkml.org/lkml/2019/8/14/151
+w.r.t. ioctl extensibility, it became clear that such an issue might
+prevent that the 3 RSV bits inside the DSA 802.1Q tag might also suffer
+the same fate and be useless for further extension.
 
-Hmm? Isn't ->walk() still called with RTNL lock? tcf_chain_dump()
-calls __tcf_get_next_proto() which asserts RTNL.
+So clearly specify that the reserved bits should currently be
+transmitted as zero and ignored on receive. The DSA tagger already does
+this (and has always did), and is the only known user so far (no
+Wireshark dissection plugin, etc). So there should be no incompatibility
+to speak of.
 
-So why does it still need RCU read lock when having RTNL?
+Fixes: 0471dd429cea ("net: dsa: tag_8021q: Create a stable binary format")
+Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ net/dsa/tag_8021q.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index 6ebbd799c4eb..67a1bc635a7b 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -28,6 +28,7 @@
+  *
+  * RSV - VID[9]:
+  *	To be used for further expansion of SWITCH_ID or for other purposes.
++ *	Must be transmitted as zero and ignored on receive.
+  *
+  * SWITCH_ID - VID[8:6]:
+  *	Index of switch within DSA tree. Must be between 0 and
+@@ -35,6 +36,7 @@
+  *
+  * RSV - VID[5:4]:
+  *	To be used for further expansion of PORT or for other purposes.
++ *	Must be transmitted as zero and ignored on receive.
+  *
+  * PORT - VID[3:0]:
+  *	Index of switch port. Must be between 0 and DSA_MAX_PORTS - 1.
+-- 
+2.17.1
+
