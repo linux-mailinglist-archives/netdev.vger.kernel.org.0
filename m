@@ -2,96 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 427949C58C
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 20:32:23 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA459C59B
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 20:46:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728895AbfHYScV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 14:32:21 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:36577 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728818AbfHYScV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 14:32:21 -0400
-Received: by mail-wm1-f66.google.com with SMTP id g67so13724971wme.1
-        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 11:32:19 -0700 (PDT)
+        id S1729002AbfHYSqE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 14:46:04 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:40619 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728806AbfHYSqD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 14:46:03 -0400
+Received: by mail-wr1-f67.google.com with SMTP id c3so13192935wrd.7
+        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 11:46:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=oZOnUnIyGaNuUoHr2Bi1L/ITN5tvgAtjXraJPK/g5dY=;
-        b=veXy1zOZrQL92GfO9WkpuhY19AYhxBrVYiHDCvAGXRlVffJd0VpeshjcaCTfKmoJ/r
-         RsliCYQhhVK82eyy6NFJqVacU5/H0OSv/nLWrKmGyc4PCDGD+Fd6PmIlwtOScyWmtvxY
-         e37qLXLHqS/0+vUMVZNShjF/p1pIUUoN2ckZ901BuoRHFLZAB7BsFYa6stfjGJn3boMY
-         GDoYpJOJ/gfvVMWniAXtYrYt5AUjCKUZF/weoMz66AL9W/0IJYwNp42rTqaE3tWTSSvl
-         ZqtQiZUo7ItTW9LpDcxwi1NdoqrdPyJUBQT8y4JaBhyegekBuT8t8V1KXTp5eeaDlLuv
-         2q/w==
+        bh=NR5JG57RPNJTQFGoYBPMnw5QTN6+pqqGztf1B4CAnNw=;
+        b=dDDjmW/Sf0PAGfKnfgvBy2dllNHaaVzTZKuqTyCX12aENDK4SAwCfLwk6F+k8Ouc8c
+         V8Xh64ml48s6ajgsU0dwDi5RxnESOsARSsy8P504XVsAnUtZpfjB9E1K5VawrsEBLQTS
+         wO0wX/XAaoqUT7ECitr8dqPI4fI8WMwHYpqEVZ398dMPoMnMozZ5tGENChRsjfmkR37l
+         wtCV749wzt+tj5/TD/Vt7EYIulHw0Qha06k0RjtUMNwUHgaH8IeNT4QB06dubVaH0h98
+         e5g681pBqJ3dtYKna97Va0G3hOv0H3klEf9p/GLPo2ZM8s68vOsh3GVUiQ6hMyh5R9xg
+         x2oQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oZOnUnIyGaNuUoHr2Bi1L/ITN5tvgAtjXraJPK/g5dY=;
-        b=p4BAfVD4JGKCZxzb5OCas9UU3jjmlVAs96fbm/xQX51mL4TGUlHhvvN3kU+r0htVzX
-         Y78k11EwEfFl0hUEXlo6/Xdwpf8qpWrU1HxJ0gmpUXht7w8kcvqyKIR+sZ3OTo7qwz6E
-         VIEOdgXTJrvJqOUu5KTwWiqboSLc4r/aj0QBVg3CSG/+6wd9JSPctXO9Ew7LIHcGPCnL
-         wTPS0sWCUwniFbAWfFzZQfO/T/IiMXHGEoSD8IF3zDdp8MzZP9SFDvPh4s3YaMsAVSdW
-         laARL6On2Id7JIrZlgR1XmFCI8dbEOCDnaIn+IiaTQxGAjtqzp0cWvmBwen8YQPDlEVg
-         tsCA==
-X-Gm-Message-State: APjAAAUQOjDXerhIdW7Po4R8v5gJx92QOzwcRaR07GO+x37wo+ky9AFE
-        dLP5NLg5+TNzj+K9lxXv/2Y=
-X-Google-Smtp-Source: APXvYqz0lF9sro1mEO136pLGWXM1ZeLEzKLoiobQlDhz+qLRlVKgl6q4o50FtnvcV7VD4qiAL/HS/Q==
-X-Received: by 2002:a1c:a481:: with SMTP id n123mr16155015wme.123.1566757938904;
-        Sun, 25 Aug 2019 11:32:18 -0700 (PDT)
+        bh=NR5JG57RPNJTQFGoYBPMnw5QTN6+pqqGztf1B4CAnNw=;
+        b=FOWoUEu5s6MlHNRq9/u/TbkLyaz/PydzZcp98F4MSsmND3WK/OAP60b7TNz0jWB00A
+         CYfAYugxMaD3zl5EqVhOXRIeOif0I4rWMRgW9A4RCeZZc7HVD18x2/opwZxtcJ0CIhqu
+         +Jm5dse1yFrfTaao4bJd6ms/TL16Z54h96C2PorIxncfjxcyhcQzluShYLbLlMSl4AGH
+         JlRabKIyOdux0RB4C183ejCqVg3hxaDQmuD/69krVzOYPuby+CjMAKSV8wtmhuUJ91Zc
+         T8Ls0kiEZya5q26qRiYtzplDvKjFduLnzJ9tPQ4/Xel3DYB5Kg7ZH05m/6Ste602jdub
+         Yx/A==
+X-Gm-Message-State: APjAAAWnNkjzAGqw1SKfxBC8tEK6Al4uc1EUy0SwHqnPA9q4xe3UUACU
+        5Jq3BSDFBSAbPk0ViVKcaEE=
+X-Google-Smtp-Source: APXvYqwzteDNV7YYCpadAnA8z7q3ZMZknFi1/togq1HTnBkRv0j17cskjAkh92/m3cTGO5dpCL8viA==
+X-Received: by 2002:adf:f304:: with SMTP id i4mr19182814wro.61.1566758761841;
+        Sun, 25 Aug 2019 11:46:01 -0700 (PDT)
 Received: from localhost.localdomain ([86.126.25.232])
-        by smtp.gmail.com with ESMTPSA id t19sm8952842wmi.29.2019.08.25.11.32.17
+        by smtp.gmail.com with ESMTPSA id b136sm25603112wme.18.2019.08.25.11.46.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Aug 2019 11:32:18 -0700 (PDT)
+        Sun, 25 Aug 2019 11:46:01 -0700 (PDT)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     f.fainelli@gmail.com, vivien.didelot@gmail.com, andrew@lunn.ch,
-        davem@davemloft.net
+        idosch@idosch.org, roopa@cumulusnetworks.com,
+        nikolay@cumulusnetworks.com, davem@davemloft.net
 Cc:     netdev@vger.kernel.org, Vladimir Oltean <olteanv@gmail.com>
-Subject: [PATCH net] net: dsa: tag_8021q: Future-proof the reserved fields in the custom VID
-Date:   Sun, 25 Aug 2019 21:32:12 +0300
-Message-Id: <20190825183212.11426-1-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 0/2] Dynamic toggling of vlan_filtering for SJA1105 DSA
+Date:   Sun, 25 Aug 2019 21:44:52 +0300
+Message-Id: <20190825184454.14678-1-olteanv@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After witnessing the discussion in https://lkml.org/lkml/2019/8/14/151
-w.r.t. ioctl extensibility, it became clear that such an issue might
-prevent that the 3 RSV bits inside the DSA 802.1Q tag might also suffer
-the same fate and be useless for further extension.
+This patchset addresses a limitation in dsa_8021q where this sequence of
+commands was causing the switch to stop forwarding traffic:
 
-So clearly specify that the reserved bits should currently be
-transmitted as zero and ignored on receive. The DSA tagger already does
-this (and has always did), and is the only known user so far (no
-Wireshark dissection plugin, etc). So there should be no incompatibility
-to speak of.
+  ip link add name br0 type bridge vlan_filtering 0
+  ip link set dev swp2 master br0
+  echo 1 > /sys/class/net/br0/bridge/vlan_filtering
+  echo 0 > /sys/class/net/br0/bridge/vlan_filtering
 
-Fixes: 0471dd429cea ("net: dsa: tag_8021q: Create a stable binary format")
-Signed-off-by: Vladimir Oltean <olteanv@gmail.com>
----
- net/dsa/tag_8021q.c | 2 ++
- 1 file changed, 2 insertions(+)
+The issue has to do with the VLAN table manipulations that dsa_8021q
+does without notifying the bridge layer. The solution is to always
+restore the VLANs that the bridge knows about, when disabling tagging.
 
-diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
-index 6ebbd799c4eb..67a1bc635a7b 100644
---- a/net/dsa/tag_8021q.c
-+++ b/net/dsa/tag_8021q.c
-@@ -28,6 +28,7 @@
-  *
-  * RSV - VID[9]:
-  *	To be used for further expansion of SWITCH_ID or for other purposes.
-+ *	Must be transmitted as zero and ignored on receive.
-  *
-  * SWITCH_ID - VID[8:6]:
-  *	Index of switch within DSA tree. Must be between 0 and
-@@ -35,6 +36,7 @@
-  *
-  * RSV - VID[5:4]:
-  *	To be used for further expansion of PORT or for other purposes.
-+ *	Must be transmitted as zero and ignored on receive.
-  *
-  * PORT - VID[3:0]:
-  *	Index of switch port. Must be between 0 and DSA_MAX_PORTS - 1.
+Depends on Vivien Didelot's patchset:
+https://patchwork.ozlabs.org/project/netdev/list/?series=127197&state=*
+
+Also see this discussion thread:
+https://www.spinics.net/lists/netdev/msg581042.html
+
+Vladimir Oltean (2):
+  net: bridge: Populate the pvid flag in br_vlan_get_info
+  net: dsa: tag_8021q: Restore bridge VLANs when enabling vlan_filtering
+
+ net/bridge/br_vlan.c |  2 +
+ net/dsa/tag_8021q.c  | 91 ++++++++++++++++++++++++++++++++++----------
+ 2 files changed, 73 insertions(+), 20 deletions(-)
+
 -- 
 2.17.1
 
