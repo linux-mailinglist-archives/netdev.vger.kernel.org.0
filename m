@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5911A9C173
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 05:59:28 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B9EE9C176
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 05:59:35 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728386AbfHYD70 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 24 Aug 2019 23:59:26 -0400
-Received: from mail.nic.cz ([217.31.204.67]:44178 "EHLO mail.nic.cz"
+        id S1728428AbfHYD7a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 24 Aug 2019 23:59:30 -0400
+Received: from mail.nic.cz ([217.31.204.67]:44188 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728333AbfHYD70 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 24 Aug 2019 23:59:26 -0400
+        id S1728270AbfHYD73 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 24 Aug 2019 23:59:29 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id B2606140968;
+        by mail.nic.cz (Postfix) with ESMTP id D5F0F14098D;
         Sun, 25 Aug 2019 05:59:22 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566705562; bh=rTQT9wiXgDk13HCg4rBw97EMI81bebDjMZiArEFDWyg=;
+        t=1566705562; bh=FG3qpVxZhL+LkpbNbajsPUjTV0avDE9Eizs0hiHeSe8=;
         h=From:To:Date;
-        b=P6TzgWCTBuaodVhuRkWP+SmF6Fg7xCW0bumMtjFneVhDgEM3z86uRXShzZtiftG4b
-         /JsyrDNKCsSYatwU2tAfR5RZ03793Pkbl/kxqahmKQf44Ye8CAuxGAVHdQxozNeIP4
-         OGukIhVEwDi6LbLeihnN9TA0mIvxdQhf+X46eJ7Y=
+        b=R1cnxLdtCMYrdYuC83ytAXBSI7dTvr7v6WxRy6ifWVhf4CZS/s3jigWixmqS7FXss
+         4ZQIpfTg8ilKOrFEHx0HLYTKzqwOSePbZA1rC3IoKPHnz1hdOk5RjRlwnFdL+90PaE
+         qDj9I7ku4mAR9k4LleywzmNtJCdwjpm0fm2hQlgs=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -27,9 +27,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH net-next v3 4/6] net: dsa: mv88e6xxx: simplify SERDES code for Topaz and Peridot
-Date:   Sun, 25 Aug 2019 05:59:13 +0200
-Message-Id: <20190825035915.13112-5-marek.behun@nic.cz>
+Subject: [PATCH net-next v3 5/6] net: dsa: mv88e6xxx: rename port cmode macro
+Date:   Sun, 25 Aug 2019 05:59:14 +0200
+Message-Id: <20190825035915.13112-6-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190825035915.13112-1-marek.behun@nic.cz>
 References: <20190825035915.13112-1-marek.behun@nic.cz>
@@ -46,274 +46,218 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-By adding an additional serdes_get_lane implementation (for Topaz), we
-can merge the implementations of other SERDES functions (powering and
-IRQs). We can skip checking port numbers, since the serdes_get_lane()
-methods inform if there is no lane on a port or if the lane cannot be
-used for given cmode.
+This is a cosmetic update. We are removing the last underscore from
+macros MV88E6XXX_PORT_STS_CMODE_100BASE_X and
+MV88E6XXX_PORT_STS_CMODE_1000BASE_X. The 2500base-x version does not
+have that underscore. Also PHY_INTERFACE_MODE_ macros do not have it
+there.
 
 Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 ---
- drivers/net/dsa/mv88e6xxx/chip.c   |  18 ++---
- drivers/net/dsa/mv88e6xxx/port.c   |   4 +-
- drivers/net/dsa/mv88e6xxx/serdes.c | 104 ++++++++---------------------
- drivers/net/dsa/mv88e6xxx/serdes.h |   7 +-
- 4 files changed, 42 insertions(+), 91 deletions(-)
+ drivers/net/dsa/mv88e6xxx/port.c   |  4 +--
+ drivers/net/dsa/mv88e6xxx/port.h   |  4 +--
+ drivers/net/dsa/mv88e6xxx/serdes.c | 48 +++++++++++++++---------------
+ 3 files changed, 28 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 5a3fff1971b9..202ccce65b1c 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2927,7 +2927,8 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.reset = mv88e6352_g1_reset,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
--	.serdes_power = mv88e6341_serdes_power,
-+	.serdes_power = mv88e6390_serdes_power,
-+	.serdes_get_lane = mv88e6341_serdes_get_lane,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.phylink_validate = mv88e6341_phylink_validate,
- };
-@@ -3301,10 +3302,10 @@ static const struct mv88e6xxx_ops mv88e6190x_ops = {
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
--	.serdes_power = mv88e6390x_serdes_power,
-+	.serdes_power = mv88e6390_serdes_power,
- 	.serdes_get_lane = mv88e6390x_serdes_get_lane,
--	.serdes_irq_setup = mv88e6390x_serdes_irq_setup,
--	.serdes_irq_free = mv88e6390x_serdes_irq_free,
-+	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
-+	.serdes_irq_free = mv88e6390_serdes_irq_free,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.phylink_validate = mv88e6390x_phylink_validate,
- };
-@@ -3621,7 +3622,8 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.reset = mv88e6352_g1_reset,
- 	.vtu_getnext = mv88e6352_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
--	.serdes_power = mv88e6341_serdes_power,
-+	.serdes_power = mv88e6390_serdes_power,
-+	.serdes_get_lane = mv88e6341_serdes_get_lane,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.avb_ops = &mv88e6390_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
-@@ -3854,10 +3856,10 @@ static const struct mv88e6xxx_ops mv88e6390x_ops = {
- 	.rmu_disable = mv88e6390_g1_rmu_disable,
- 	.vtu_getnext = mv88e6390_g1_vtu_getnext,
- 	.vtu_loadpurge = mv88e6390_g1_vtu_loadpurge,
--	.serdes_power = mv88e6390x_serdes_power,
-+	.serdes_power = mv88e6390_serdes_power,
- 	.serdes_get_lane = mv88e6390x_serdes_get_lane,
--	.serdes_irq_setup = mv88e6390x_serdes_irq_setup,
--	.serdes_irq_free = mv88e6390x_serdes_irq_free,
-+	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
-+	.serdes_irq_free = mv88e6390_serdes_irq_free,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.avb_ops = &mv88e6390_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
 diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 6a1fa5c72fdb..d20be5327640 100644
+index d20be5327640..7183c94a92ec 100644
 --- a/drivers/net/dsa/mv88e6xxx/port.c
 +++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -445,7 +445,7 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 				return err;
- 		}
+@@ -411,7 +411,7 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
  
--		err = mv88e6390x_serdes_power(chip, port, false);
-+		err = mv88e6390_serdes_power(chip, port, false);
- 		if (err)
- 			return err;
- 	}
-@@ -470,7 +470,7 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 		if (err)
- 			return err;
- 
--		err = mv88e6390x_serdes_power(chip, port, true);
-+		err = mv88e6390_serdes_power(chip, port, true);
- 		if (err)
- 			return err;
- 
+ 	switch (mode) {
+ 	case PHY_INTERFACE_MODE_1000BASEX:
+-		cmode = MV88E6XXX_PORT_STS_CMODE_1000BASE_X;
++		cmode = MV88E6XXX_PORT_STS_CMODE_1000BASEX;
+ 		break;
+ 	case PHY_INTERFACE_MODE_SGMII:
+ 		cmode = MV88E6XXX_PORT_STS_CMODE_SGMII;
+@@ -618,7 +618,7 @@ int mv88e6352_port_link_state(struct mv88e6xxx_chip *chip, int port,
+ 		else
+ 			state->interface = PHY_INTERFACE_MODE_RGMII;
+ 		break;
+-	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+ 		state->interface = PHY_INTERFACE_MODE_1000BASEX;
+ 		break;
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index 64c73fd171ee..04550cb3c3b3 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -43,8 +43,8 @@
+ #define MV88E6XXX_PORT_STS_FLOW_CTL		0x0010
+ #define MV88E6XXX_PORT_STS_CMODE_MASK		0x000f
+ #define MV88E6XXX_PORT_STS_CMODE_RGMII		0x0007
+-#define MV88E6XXX_PORT_STS_CMODE_100BASE_X	0x0008
+-#define MV88E6XXX_PORT_STS_CMODE_1000BASE_X	0x0009
++#define MV88E6XXX_PORT_STS_CMODE_100BASEX	0x0008
++#define MV88E6XXX_PORT_STS_CMODE_1000BASEX	0x0009
+ #define MV88E6XXX_PORT_STS_CMODE_SGMII		0x000a
+ #define MV88E6XXX_PORT_STS_CMODE_2500BASEX	0x000b
+ #define MV88E6XXX_PORT_STS_CMODE_XAUI		0x000c
 diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
-index a9209465e06b..1946ccb6694c 100644
+index 1946ccb6694c..5bb3aea8a008 100644
 --- a/drivers/net/dsa/mv88e6xxx/serdes.c
 +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
-@@ -286,6 +286,23 @@ void mv88e6352_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
- 	chip->ports[port].serdes_irq = 0;
- }
- 
-+int mv88e6341_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane)
-+{
-+	u8 cmode = chip->ports[port].cmode;
-+
-+	*lane = -1;
-+
-+	if (port != 5)
-+		return 0;
-+
-+	if (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
-+	    cmode == MV88E6XXX_PORT_STS_CMODE_SGMII ||
-+	    cmode == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
-+		*lane = MV88E6341_PORT5_LANE;
-+
-+	return 0;
-+}
-+
- int mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane)
+@@ -73,8 +73,8 @@ static bool mv88e6352_port_has_serdes(struct mv88e6xxx_chip *chip, int port)
  {
  	u8 cmode = chip->ports[port].cmode;
-@@ -445,26 +462,9 @@ static int mv88e6390_serdes_power_sgmii(struct mv88e6xxx_chip *chip, s8 lane,
- 	return err;
- }
  
--static int mv88e6390_serdes_power_lane(struct mv88e6xxx_chip *chip, int port,
--				       s8 lane, bool on)
--{
--	u8 cmode = chip->ports[port].cmode;
--
--	switch (cmode) {
--	case MV88E6XXX_PORT_STS_CMODE_SGMII:
--	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
--	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
--		return mv88e6390_serdes_power_sgmii(chip, lane, on);
--	case MV88E6XXX_PORT_STS_CMODE_XAUI:
--	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
--		return mv88e6390_serdes_power_10g(chip, lane, on);
--	}
--
--	return 0;
--}
--
- int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
- {
-+	u8 cmode = chip->ports[port].cmode;
- 	s8 lane;
- 	int err;
+-	if ((cmode == MV88E6XXX_PORT_STS_CMODE_100BASE_X) ||
+-	    (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASE_X) ||
++	if ((cmode == MV88E6XXX_PORT_STS_CMODE_100BASEX) ||
++	    (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASEX) ||
+ 	    (cmode == MV88E6XXX_PORT_STS_CMODE_SGMII))
+ 		return true;
  
-@@ -474,30 +474,14 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
- 	if (lane < 0)
+@@ -295,7 +295,7 @@ int mv88e6341_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane)
+ 	if (port != 5)
  		return 0;
  
--	switch (port) {
--	case 9 ... 10:
--		return mv88e6390_serdes_power_lane(chip, port, lane, on);
--	}
--
--	return 0;
--}
--
--int mv88e6390x_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
--{
--	s8 lane;
--	int err;
--
--	err = mv88e6xxx_serdes_get_lane(chip, port, &lane);
--	if (err)
--		return err;
--	if (lane < 0)
--		return 0;
--
--	switch (port) {
--	case 2 ... 4:
--	case 5 ... 7:
--	case 9 ... 10:
--		return mv88e6390_serdes_power_lane(chip, port, lane, on);
-+	switch (cmode) {
-+	case MV88E6XXX_PORT_STS_CMODE_SGMII:
-+	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
-+	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
-+		return mv88e6390_serdes_power_sgmii(chip, lane, on);
-+	case MV88E6XXX_PORT_STS_CMODE_XAUI:
-+	case MV88E6XXX_PORT_STS_CMODE_RXAUI:
-+		return mv88e6390_serdes_power_10g(chip, lane, on);
- 	}
- 
- 	return 0;
-@@ -662,7 +646,7 @@ static irqreturn_t mv88e6390_serdes_thread_fn(int irq, void *dev_id)
- 	return ret;
- }
- 
--int mv88e6390x_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
-+int mv88e6390_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
- {
- 	int err;
- 	s8 lane;
-@@ -700,15 +684,7 @@ int mv88e6390x_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
- 	return mv88e6390_serdes_irq_enable(chip, port, lane);
- }
- 
--int mv88e6390_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port)
--{
--	if (port < 9)
--		return 0;
--
--	return mv88e6390x_serdes_irq_setup(chip, port);
--}
--
--void mv88e6390x_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
-+void mv88e6390_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
- {
- 	int err;
- 	s8 lane;
-@@ -732,27 +708,3 @@ void mv88e6390x_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
- 
- 	chip->ports[port].serdes_irq = 0;
- }
--
--void mv88e6390_serdes_irq_free(struct mv88e6xxx_chip *chip, int port)
--{
--	if (port < 9)
--		return;
--
--	mv88e6390x_serdes_irq_free(chip, port);
--}
--
--int mv88e6341_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
--{
--	u8 cmode = chip->ports[port].cmode;
--
--	if (port != 5)
--		return 0;
--
 -	if (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
--	    cmode == MV88E6XXX_PORT_STS_CMODE_SGMII ||
--	    cmode == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
--		return mv88e6390_serdes_power_sgmii(chip, MV88E6341_ADDR_SERDES,
--						    on);
--
--	return 0;
--}
-diff --git a/drivers/net/dsa/mv88e6xxx/serdes.h b/drivers/net/dsa/mv88e6xxx/serdes.h
-index 1ddb8fb3aab9..7fded708b05d 100644
---- a/drivers/net/dsa/mv88e6xxx/serdes.h
-+++ b/drivers/net/dsa/mv88e6xxx/serdes.h
-@@ -28,7 +28,7 @@
- #define MV88E6352_SERDES_INT_STATUS	0x13
++	if (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 	    cmode == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 	    cmode == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
+ 		*lane = MV88E6341_PORT5_LANE;
+@@ -311,13 +311,13 @@ int mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane)
  
+ 	switch (port) {
+ 	case 9:
+-		if (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
+ 			*lane = MV88E6390_PORT9_LANE0;
+ 		break;
+ 	case 10:
+-		if (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
+ 			*lane = MV88E6390_PORT10_LANE0;
+@@ -341,53 +341,53 @@ int mv88e6390x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane)
  
--#define MV88E6341_ADDR_SERDES		0x15
-+#define MV88E6341_PORT5_LANE		0x15
+ 	switch (port) {
+ 	case 2:
+-		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
+-			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASE_X)
++			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASEX)
+ 				*lane = MV88E6390_PORT9_LANE1;
+ 		break;
+ 	case 3:
+-		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_2500BASEX ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_RXAUI)
+-			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASE_X)
++			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASEX)
+ 				*lane = MV88E6390_PORT9_LANE2;
+ 		break;
+ 	case 4:
+-		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_2500BASEX ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_RXAUI)
+-			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASE_X)
++			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASEX)
+ 				*lane = MV88E6390_PORT9_LANE3;
+ 		break;
+ 	case 5:
+-		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
+-			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASE_X)
++			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASEX)
+ 				*lane = MV88E6390_PORT10_LANE1;
+ 		break;
+ 	case 6:
+-		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_2500BASEX ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_RXAUI)
+-			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASE_X)
++			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASEX)
+ 				*lane = MV88E6390_PORT10_LANE2;
+ 		break;
+ 	case 7:
+-		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_2500BASEX ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_RXAUI)
+-			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASE_X)
++			if (cmode_port == MV88E6XXX_PORT_STS_CMODE_1000BASEX)
+ 				*lane = MV88E6390_PORT10_LANE3;
+ 		break;
+ 	case 9:
+-		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port9 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_2500BASEX ||
+ 		    cmode_port9 == MV88E6XXX_PORT_STS_CMODE_XAUI ||
+@@ -395,7 +395,7 @@ int mv88e6390x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane)
+ 			*lane = MV88E6390_PORT9_LANE0;
+ 		break;
+ 	case 10:
+-		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASE_X ||
++		if (cmode_port10 == MV88E6XXX_PORT_STS_CMODE_1000BASEX ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_SGMII ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_2500BASEX ||
+ 		    cmode_port10 == MV88E6XXX_PORT_STS_CMODE_XAUI ||
+@@ -476,7 +476,7 @@ int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
  
- #define MV88E6390_PORT9_LANE0		0x09
- #define MV88E6390_PORT9_LANE1		0x12
-@@ -87,16 +87,13 @@ static inline int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
- 	return chip->info->ops->serdes_get_lane(chip, port, lane);
- }
+ 	switch (cmode) {
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+-	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+ 	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
+ 		return mv88e6390_serdes_power_sgmii(chip, lane, on);
+ 	case MV88E6XXX_PORT_STS_CMODE_XAUI:
+@@ -535,7 +535,7 @@ static void mv88e6390_serdes_irq_link_sgmii(struct mv88e6xxx_chip *chip,
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+ 		mode = PHY_INTERFACE_MODE_SGMII;
+ 		break;
+-	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+ 		mode = PHY_INTERFACE_MODE_1000BASEX;
+ 		break;
+ 	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
+@@ -578,7 +578,7 @@ int mv88e6390_serdes_irq_enable(struct mv88e6xxx_chip *chip, int port,
  
-+int mv88e6341_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane);
- int mv88e6390_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane);
- int mv88e6390x_serdes_get_lane(struct mv88e6xxx_chip *chip, int port, s8 *lane);
--int mv88e6341_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on);
- int mv88e6352_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on);
- int mv88e6390_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on);
--int mv88e6390x_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on);
- int mv88e6390_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port);
- void mv88e6390_serdes_irq_free(struct mv88e6xxx_chip *chip, int port);
--int mv88e6390x_serdes_irq_setup(struct mv88e6xxx_chip *chip, int port);
--void mv88e6390x_serdes_irq_free(struct mv88e6xxx_chip *chip, int port);
- int mv88e6352_serdes_get_sset_count(struct mv88e6xxx_chip *chip, int port);
- int mv88e6352_serdes_get_strings(struct mv88e6xxx_chip *chip,
- 				 int port, uint8_t *data);
+ 	switch (cmode) {
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+-	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+ 	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
+ 		err = mv88e6390_serdes_irq_enable_sgmii(chip, lane);
+ 	}
+@@ -594,7 +594,7 @@ int mv88e6390_serdes_irq_disable(struct mv88e6xxx_chip *chip, int port,
+ 
+ 	switch (cmode) {
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+-	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+ 	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
+ 		err = mv88e6390_serdes_irq_disable_sgmii(chip, lane);
+ 	}
+@@ -629,7 +629,7 @@ static irqreturn_t mv88e6390_serdes_thread_fn(int irq, void *dev_id)
+ 
+ 	switch (cmode) {
+ 	case MV88E6XXX_PORT_STS_CMODE_SGMII:
+-	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++	case MV88E6XXX_PORT_STS_CMODE_1000BASEX:
+ 	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
+ 		err = mv88e6390_serdes_irq_status_sgmii(chip, lane, &status);
+ 		if (err)
 -- 
 2.21.0
 
