@@ -2,50 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 760D1A08B6
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:37:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BDCDA08B3
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 19:37:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727328AbfH1RhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 28 Aug 2019 13:37:05 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:45500 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727205AbfH1Rgx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 13:36:53 -0400
-Received: by mail-pg1-f194.google.com with SMTP id o13so86392pgp.12
-        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 10:36:52 -0700 (PDT)
+        id S1727003AbfH1Rg2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 28 Aug 2019 13:36:28 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:34984 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726974AbfH1Rg1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 28 Aug 2019 13:36:27 -0400
+Received: by mail-pf1-f193.google.com with SMTP id d85so261722pfd.2
+        for <netdev@vger.kernel.org>; Wed, 28 Aug 2019 10:36:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=M47pTZiAE3Wr8BbtgIHsQv1k4WtO4wX2CZjP2HeXAjI=;
-        b=LS7sDUBjIS1Uff386cu0zqhDdYqMUwYYKZKmEjwIsi9QTzN89/DsKYkhHeAzX+HiWz
-         XUGR2aF5xzEjpRru0i1N004SQj75D1ew2JaMZGVGSMb1w0/XqTl0B3R7YnrgYSZbcJln
-         64EK3Y0c7M9n+gQt3BqNXH4dE9RFbDkXKcD/Y=
+        bh=m0Ol9KiCJuTthVJpNdqXavAOI9ULv3o3m1zh5s9b1As=;
+        b=oFW8k5shx9dzTZCg4oYfKxxrESLsvpAIA5QCO3DOe5JfSNX5ICxHFKvHATbc9VgD3w
+         5+rVewSkK5+kiL+7lS0d7oAaUMKOuRqjYZaH4CxrLhIbqdMKdMJyL9TmnRR+lSFDhS+9
+         H/J3m1QfdE0eP7mou/vg7EAYza9c0CwIYY860=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=M47pTZiAE3Wr8BbtgIHsQv1k4WtO4wX2CZjP2HeXAjI=;
-        b=ck3nCm4k4xa1R6uh8A1G5AT1s3y14rrA4yH46G56IFj4x5TCkb7bxUodQ8eePLiaze
-         1pgcodB8qBzUXSumpMPvfQR1FjQ+jbCSjlHBE3RGtza16jPTAlGCOh89Nfp7FpAVzPKd
-         3PvwociTWTotpL+KcD5tH8+EqmvOA4l144gLmWkMP+8bFWjMVTDWYLIbQLaLZmemBZiB
-         3DMIxpWIY9Fnr6fjvYNsVDwfRUy4zgDXP3uoo7aq3hM3ahcvoBksv2ByLOcu5bogaYch
-         NSCUvbNws1pMwDTjw3eHqd3MkgWqsxFYrUIjrxtJE3j6P4PRfEf4L9+5J0A9PhUKwY4n
-         C7zA==
-X-Gm-Message-State: APjAAAVWftGt98KVZbsOw0gEl5QP6ofXh3gp5xOu1ht9189SpgWC3ji9
-        674XHl91ZTtI7sdUHczgdEIJ+A==
-X-Google-Smtp-Source: APXvYqw01wf5KpqvU0SBLWBJjcZSJTFTWWCu5dmEtVFN/KxdMMnVgA4WZSzYIDlb53k7Xqylep0gCg==
-X-Received: by 2002:a63:6fc9:: with SMTP id k192mr4431758pgc.20.1567013812543;
-        Wed, 28 Aug 2019 10:36:52 -0700 (PDT)
+        bh=m0Ol9KiCJuTthVJpNdqXavAOI9ULv3o3m1zh5s9b1As=;
+        b=f7k0PO8sMoVYzm3Qhxoxewjs4UPCZjOSZWVrhpwN9+H8g2nRqUWUyRUr4DiNADnMwv
+         rXf0mUjym9jtF6RUjmybwLJMzlhYEzKiwZ0fSyyxBd1xahLiLXgXo3EBtHjQw3H9kfvO
+         QWI+g8lkhI/fPHAARLB8ZMRDLHbzXGjy9zWOS/Qj//1NqekYdlPpUlOf+G+dSa6uTMMz
+         KQdJmGEJ+zlCiGhGzLSedrtjy/okVlxCYVRw8jrLe8c4EpqfjoSW7i36P7Q3luj6NENe
+         4IgCFgYvbKGtKocWPZHquJlQsoDe8RdB33lJVK24AD4U40NsJmjOwXoD4l5xPOVKBCRA
+         5Zag==
+X-Gm-Message-State: APjAAAX6zCpqq2bVsBdqYU/LgjKmCW1pi5amMU//HkH9rLyXvSHMapfP
+        mTE4+k9MOoMc4wBLFJ/AZbfYUA==
+X-Google-Smtp-Source: APXvYqyH/WYT3nu0TOtBHExVMlqdFHVZ7R0fY91sEAf7okZikcnLyqTOEJjyRHLyXhLgGQXRNGz22Q==
+X-Received: by 2002:a63:f13:: with SMTP id e19mr4496092pgl.132.1567013786692;
+        Wed, 28 Aug 2019 10:36:26 -0700 (PDT)
 Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id w207sm3832866pff.93.2019.08.28.10.36.51
+        by smtp.gmail.com with ESMTPSA id d11sm4397723pfh.59.2019.08.28.10.36.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Aug 2019 10:36:51 -0700 (PDT)
-Date:   Sun, 25 Aug 2019 14:51:42 -0700
+        Wed, 28 Aug 2019 10:36:25 -0700 (PDT)
+Date:   Sun, 25 Aug 2019 14:59:37 -0700
 From:   Kees Cook <keescook@chromium.org>
-To:     Paul Walmsley <paul.walmsley@sifive.com>
-Cc:     David Abdurachmanov <david.abdurachmanov@gmail.com>,
-        Tycho Andersen <tycho@tycho.ws>,
+To:     David Abdurachmanov <david.abdurachmanov@gmail.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
         Palmer Dabbelt <palmer@sifive.com>,
         Albert Ou <aou@eecs.berkeley.edu>,
         Oleg Nesterov <oleg@redhat.com>,
@@ -66,48 +65,31 @@ Cc:     David Abdurachmanov <david.abdurachmanov@gmail.com>,
         linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
         bpf@vger.kernel.org, me@carlosedp.com
 Subject: Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
-Message-ID: <201908251446.04BCB8C@keescook>
+Message-ID: <201908251451.73C6812E8@keescook>
 References: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
- <alpine.DEB.2.21.9999.1908231717550.25649@viisi.sifive.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.9999.1908231717550.25649@viisi.sifive.com>
+In-Reply-To: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 23, 2019 at 05:30:53PM -0700, Paul Walmsley wrote:
-> On Thu, 22 Aug 2019, David Abdurachmanov wrote:
-> 
-> > There is one failing kernel selftest: global.user_notification_signal
-> 
-> Is this the only failing test?  Or are the rest of the selftests skipped 
-> when this test fails, and no further tests are run, as seems to be shown 
-> here:
-> 
->   https://lore.kernel.org/linux-riscv/CADnnUqcmDMRe1f+3jG8SPR6jRrnBsY8VVD70VbKEm0NqYeoicA@mail.gmail.com/
-> 
-> For example, looking at the source, I'd naively expect to see the 
-> user_notification_closed_listener test result -- which follows right 
-> after the failing test in the selftest source.  But there aren't any 
-> results?
-> 
-> Also - could you follow up with the author of this failing test to see if 
-> we can get some more clarity about what might be going wrong here?  It 
-> appears that the failing test was added in commit 6a21cc50f0c7f ("seccomp: 
-> add a return code to trap to userspace") by Tycho Andersen 
-> <tycho@tycho.ws>.
+On Thu, Aug 22, 2019 at 01:55:22PM -0700, David Abdurachmanov wrote:
+> This patch was extensively tested on Fedora/RISCV (applied by default on
+> top of 5.2-rc7 kernel for <2 months). The patch was also tested with 5.3-rc
+> on QEMU and SiFive Unleashed board.
 
-So, the original email says the riscv series is tested on top of 5.2-rc7,
-but just for fun, can you confirm that you're building a tree that includes
-9dd3fcb0ab73 ("selftests/seccomp: Handle namespace failures gracefully")? I
-assume it does, but I suspect something similar is happening, where the
-environment is slightly different than expected and the test stalls.
+Oops, I see the mention of QEMU here. Where's the best place to find
+instructions on creating a qemu riscv image/environment?
 
-Does it behave the same way under emulation (i.e. can I hope to
-reproduce this myself?)
+> There is one failing kernel selftest: global.user_notification_signal
+
+This test has been fragile (and is not arch-specific), so as long as
+everything else is passing, I would call this patch ready to go. :)
+
+Reviewed-by: Kees Cook <keescook@chromium.org>
 
 -- 
 Kees Cook
