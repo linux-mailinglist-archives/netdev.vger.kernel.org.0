@@ -2,87 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3CF79C4DC
-	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 18:29:09 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A07CF9C4E0
+	for <lists+netdev@lfdr.de>; Sun, 25 Aug 2019 18:30:48 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727978AbfHYQXN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 12:23:13 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:38873 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726879AbfHYQXN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 12:23:13 -0400
-Received: by mail-pf1-f194.google.com with SMTP id o70so9998146pfg.5
-        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 09:23:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+I14yRj9I5iBjMH5AiGZvI2z2LteuJz7GfXzQRd9/xE=;
-        b=Dw9KZlthSiAloxPxVE8y1SqSaFgEabn6rDerf3kQptNr3eSjvvrv4woNTcXy61qSQ6
-         8VWf6jcF306BNCk2Uv059b7Jzwy8h2v2DXUaeXHxq4/qt1g3vcGjlIMwV+o+gf/DruPO
-         1ZzFQ88w67wZ11g/HhK8lN0Wei1LNWJzodP3AUS28Wjgz8x6kyqSciby168mwNEYJdl2
-         2vn2ktKBRBEC1oovpQ2bT4tjrPwj2K/Wj/e+zsyC/B9joj+vhFP7d+3PjG9bxiIvFHse
-         SJ6bL/sBgb5HxNdLbvuXlAiQ03HsAD/F4UGU+U/M/x6MtD1VjSXMZ0N6bSkZeGzvPNi+
-         fguA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=+I14yRj9I5iBjMH5AiGZvI2z2LteuJz7GfXzQRd9/xE=;
-        b=p9bO62jvrrZk9S5afj74ziyD6GTSyPdy2yOEwXJokdr2rdKdFNpz8IlJDb4EJR5cWD
-         hUOLW7trXo6JIkPkE+I0v2iIZi1+6P1O+YEuEuyl5z4lvYspGrO7rdxkZF8Anp+o/4gY
-         1bUVNfTMAKJq9YhfkDAEpIpAaivQBhQNpeIbAlIIbRHdiGN3vSq9IN9rVWd/g6XURbMw
-         77YIY7wtHorqE3WQUM4aCXNTtLswxcpuVkeXF2CZ+kYWP522qy1yiCytnBrcCwwGi4xl
-         op4IHaKgdvkI/1VeIeiQ6Wp6O6KwTVr3tNAEnplW8ltXYBcvhPpHnGBgWM5GZhTuV39J
-         GInA==
-X-Gm-Message-State: APjAAAV62zazKDXIn46/kWgDZXpmQ97A2THx9WI7CAXyO402Xe6c4eiV
-        ekf9MbPtMJnk36nMfO/hnk0=
-X-Google-Smtp-Source: APXvYqzeTs+pCb06e/MJSE0uXvYvOdfqj8WNxyOJKzdC3i3nSi9o1QaMLKeQiMTebzM0saRLwGLaSg==
-X-Received: by 2002:a63:101b:: with SMTP id f27mr12199360pgl.291.1566750192734;
-        Sun, 25 Aug 2019 09:23:12 -0700 (PDT)
-Received: from [172.27.227.228] ([216.129.126.118])
-        by smtp.googlemail.com with ESMTPSA id z6sm9880142pgk.18.2019.08.25.09.23.09
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Aug 2019 09:23:11 -0700 (PDT)
-Subject: Re: [PATCH net] ipv4: mpls: fix mpls_xmit for iptunnel
-To:     Alexey Kodanev <alexey.kodanev@oracle.com>, netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>
-References: <1566582703-26567-1-git-send-email-alexey.kodanev@oracle.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <99662602-8125-a400-fa36-178b01dcc824@gmail.com>
-Date:   Sun, 25 Aug 2019 10:23:08 -0600
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:52.0)
- Gecko/20100101 Thunderbird/52.9.1
+        id S1728437AbfHYQaf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 12:30:35 -0400
+Received: from esa1.microchip.iphmx.com ([68.232.147.91]:43027 "EHLO
+        esa1.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728382AbfHYQaf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 12:30:35 -0400
+Received-SPF: Pass (esa1.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa1.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa1.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa1.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: 3X9lT3fgRWqEy3ymSwR6mZoLl1PqtNc7RMtkjEPM6qHhPwoSFMxwHQyCe4o1YO8WbbAbjSs+nx
+ YJFoO5TEaHl6E46Fs46i0TiHmLvnUpLOZovdNYjwUOH1V7l1vJLWi+1Ummg0apzITBESTrkA7R
+ MDOb/OqPwMOOHf4yrdRrdS8bbSYMVZKd0L79NRW7lQ9O+dLsKRk9b3bX8Czfdf+rgHPSlhNCZd
+ fBvvUXPfwT5r/ff0zsMZq1vl5rvChSIbeYGNXG9Ao+9FrB+Gj2Q/BxXTJIyDCmxoNia2uZtsAf
+ dvI=
+X-IronPort-AV: E=Sophos;i="5.64,429,1559545200"; 
+   d="scan'208";a="47898997"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 25 Aug 2019 09:30:26 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Sun, 25 Aug 2019 09:30:25 -0700
+Received: from localhost (10.10.85.251) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1713.5 via Frontend
+ Transport; Sun, 25 Aug 2019 09:30:25 -0700
+Date:   Sun, 25 Aug 2019 18:30:25 +0200
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Jiri Pirko <jiri@resnulli.us>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
+        <davem@davemloft.net>, <UNGLinuxDriver@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <allan.nielsen@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <bridge@lists.linux-foundation.org>
+Subject: Re: [PATCH 0/3] Add NETIF_F_HW_BRIDGE feature
+Message-ID: <20190825163023.hkc23lv7b5vvphdb@soft-dev3.microsemi.net>
+References: <1566500850-6247-1-git-send-email-horatiu.vultur@microchip.com>
+ <e47a318c-6446-71cd-660c-8592037d8166@gmail.com>
+ <20190824074204.GA15041@nanopsycho.orion>
 MIME-Version: 1.0
-In-Reply-To: <1566582703-26567-1-git-send-email-alexey.kodanev@oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20190824074204.GA15041@nanopsycho.orion>
+User-Agent: NeoMutt/20180716
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/23/19 11:51 AM, Alexey Kodanev wrote:
-> When using mpls over gre/gre6 setup, rt->rt_gw4 address is not set, the
-> same for rt->rt_gw_family.  Therefore, when rt->rt_gw_family is checked
-> in mpls_xmit(), neigh_xmit() call is skipped. As a result, such setup
-> doesn't work anymore.
+The 08/24/2019 09:42, Jiri Pirko wrote:
+> External E-Mail
 > 
-> This issue was found with LTP mpls03 tests.
 > 
-> Fixes: 1550c171935d ("ipv4: Prepare rtable for IPv6 gateway")
-> Signed-off-by: Alexey Kodanev <alexey.kodanev@oracle.com>
-> ---
->  net/mpls/mpls_iptunnel.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+> Sat, Aug 24, 2019 at 01:25:02AM CEST, f.fainelli@gmail.com wrote:
+> >On 8/22/19 12:07 PM, Horatiu Vultur wrote:
+> >> Current implementation of the SW bridge is setting the interfaces in
+> >> promisc mode when they are added to bridge if learning of the frames is
+> >> enabled.
+> >> In case of Ocelot which has HW capabilities to switch frames, it is not
+> >> needed to set the ports in promisc mode because the HW already capable of
+> >> doing that. Therefore add NETIF_F_HW_BRIDGE feature to indicate that the
+> >> HW has bridge capabilities. Therefore the SW bridge doesn't need to set
+> >> the ports in promisc mode to do the switching.
+> >
+> >Then do not do anything when the ndo_set_rx_mode() for the ocelot
+> >network device is called and indicates that IFF_PROMISC is set and that
+> >your network port is a bridge port member. That is what mlxsw does AFAICT.
 
-ok, I see now. This is a device only route with MPLS encap:
+Yes, but then if you want to monitor all the traffic on a bridge port
+you will not be able to do that. And this seems to be a limitation.
+This is the case for mlxsw and ocelot(it doesn't implement at all
+promisc mode) and might be others.
 
-10.23.0.1  encap mpls  60 dev ltp_v0 scope link
+> 
+> Correct.
+> 
+> >
+> >As other pointed out, the Linux bridge implements a software bridge by
+> >default, and because it needs to operate on a wide variety of network
+> >devices, all with different capabilities, the easiest way to make sure
+> >that all management (IGMP, BPDU, etc. ) as well as non-management
+> >traffic can make it to the bridge ports, is to put the network devices
+> >in promiscuous mode.
 
-and the change reverts to 5.1 behavior unless the gateway is IPv6 (new
-behavior). Thanks for the patch.
+What if the HW can copy all the management traffic to the SW bridge and
+HW knows to learn and flood frames. Then there is no point to set a
+network port in promisc mode just because it is a bridge port member.
+> >If this is suboptimal for you, you can take
+> >shortcuts in your driver that do not hinder the overall functionality.
 
-Reviewed-by: David Ahern <dsahern@gmail.com>
+If I add this check, I don't see how any other network drivers will be
+affected by this. If a network driver will start to use this then it
+needs to know that the HW should be configure to include CPU in the
+flood mask and to know which addresses can be reached through SW bridge.
+
+> >
+> >> This optimization takes places only if all the interfaces that are part
+> >> of the bridge have this flag and have the same network driver.
+> >> 
+> >> If the bridge interfaces is added in promisc mode then also the ports part
+> >> of the bridge are set in promisc mode.
+> >> 
+> >> Horatiu Vultur (3):
+> >>   net: Add HW_BRIDGE offload feature
+> >>   net: mscc: Use NETIF_F_HW_BRIDGE
+> >>   net: mscc: Implement promisc mode.
+> >> 
+> >>  drivers/net/ethernet/mscc/ocelot.c | 26 ++++++++++++++++++++++++--
+> >>  include/linux/netdev_features.h    |  3 +++
+> >>  net/bridge/br_if.c                 | 29 ++++++++++++++++++++++++++++-
+> >>  net/core/ethtool.c                 |  1 +
+> >>  4 files changed, 56 insertions(+), 3 deletions(-)
+> >> 
+> >
+> >
+> >-- 
+> >Florian
+> 
+
+-- 
+/Horatiu
