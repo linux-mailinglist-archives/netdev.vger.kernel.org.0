@@ -2,115 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BA1E9CCC8
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 11:47:54 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71E6C9CCE8
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 11:57:34 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731052AbfHZJrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 05:47:35 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:53624 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729922AbfHZJrf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 05:47:35 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id F0F0C5E24C9F767622E8;
-        Mon, 26 Aug 2019 17:47:32 +0800 (CST)
-Received: from szxyal004123181.china.huawei.com (10.65.65.77) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.439.0; Mon, 26 Aug 2019 17:47:24 +0800
-From:   Dongxu Liu <liudongxu3@huawei.com>
-To:     <eric.dumazet@gmail.com>
-CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
-        <liudongxu3@huawei.com>, <netdev@vger.kernel.org>
-Subject: Re: [PATCH] net: Adding parameter detection in __ethtool_get_link_ksettings.
-Date:   Mon, 26 Aug 2019 17:47:05 +0800
-Message-ID: <20190826094705.10544-1-liudongxu3@huawei.com>
-X-Mailer: git-send-email 2.12.0.windows.1
-References: <aa0a372e-a169-7d78-0782-505cbdab8f90@gmail.com>
-In-Reply-To: <aa0a372e-a169-7d78-0782-505cbdab8f90@gmail.com>
+        id S1731169AbfHZJ5b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 05:57:31 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:40954 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731165AbfHZJ5b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 05:57:31 -0400
+Received: by mail-pf1-f196.google.com with SMTP id w16so11472381pfn.7
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 02:57:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W15uTVRC8HJTDsw08p1lLu32MvTlp69JaLWxEjC2+G0=;
+        b=egLxOxA6rsODToPvT2xryRh1i4OQAyEpWMD+KsXNrUnrg4zgbvo7rKgN6heHhd/9+a
+         hI/C2xzdCndkvMBdur2kpeVZZh0GTGXxnTIYHkqylvy4V4subTrCA3ekxubflzni+Y3a
+         f0CrjML81UY18IR6wf4KE+MM3c/AvbecEdMyyqQABQc4AL0oUY4nslKFQd1uRayUD/0/
+         MM1T8mB+3dCyjHN6Pygq70RBFNQSMRK832Sf/euWKLgx5TaXIGg/bI8dIYLURO9cGZ/o
+         uJwNnLsEXDByzdl5jbH1jY6lVfhWlVUqRG1uydv9ISLhCRT8zXRxdsC0KqCdJUj7WT/z
+         rRLQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=W15uTVRC8HJTDsw08p1lLu32MvTlp69JaLWxEjC2+G0=;
+        b=UxlOLTBW1N8UeSd4MuHuBIzZNfirZJgeqMpv4FKoWXyyctuf7SLh6ObCCjO4E6e+6Y
+         E3iqBNknCTSohBC73EzJA1S6WzP7UXUHaHMDvpI78IR3hTKan+W9jalilGTpQsl/EvFQ
+         Y1OoAsNnUvNCfVtWow+Lc6rrjFQ340SByy7UhjBONwAmouQlJsWNs1H5nMqUdnqNMZvl
+         5RestvFjoSCod6lhpAg/D6CAIfrEUr9uBErq+2LHngk8acIPJEm4RCk2+DINxFLLR3dN
+         Fi54uqRqnvoQh5y0V1/6/MKn6yN1W7kfL9IRy/phRJJT9B+NmbKbeui13NAodwT8IujJ
+         +i9g==
+X-Gm-Message-State: APjAAAXaYEH7ar970YrY8zFEIsuR2bHlu00s67D/GkGi2vQP663VJb/Z
+        2JjWGQZ4dNQjqfuVwj3+JQ==
+X-Google-Smtp-Source: APXvYqy6WcrvtlH5zWQzF/yaB3AqB1+FU+kaZyoan0SE6WevM5vRbXIk/O0PQutQFXIWk/lH/7KRbw==
+X-Received: by 2002:a17:90a:3646:: with SMTP id s64mr19169343pjb.44.1566813449875;
+        Mon, 26 Aug 2019 02:57:29 -0700 (PDT)
+Received: from localhost.localdomain ([110.35.161.54])
+        by smtp.gmail.com with ESMTPSA id 21sm4118011pfb.96.2019.08.26.02.57.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Aug 2019 02:57:29 -0700 (PDT)
+From:   "Daniel T. Lee" <danieltimlee@gmail.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH] samples: bpf: add max_pckt_size option at xdp_adjust_tail
+Date:   Mon, 26 Aug 2019 18:57:22 +0900
+Message-Id: <20190826095722.28229-1-danieltimlee@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.65.65.77]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> On 8/26/19 9:23 AM, Dongxu Liu wrote:
-> The __ethtool_get_link_ksettings symbol will be exported,
-> and external users may use an illegal address.
-> We should check the parameters before using them,
-> otherwise the system will crash.
-> 
-> [ 8980.991134] BUG: unable to handle kernel NULL pointer dereference at           (null)
-> [ 8980.993049] IP: [<ffffffff8155aca7>] __ethtool_get_link_ksettings+0x27/0x140
-> [ 8980.994285] PGD 0
-> [ 8980.995013] Oops: 0000 [#1] SMP
-> [ 8980.995896] Modules linked in: sch_ingress ...
-> [ 8981.013220] CPU: 3 PID: 25174 Comm: kworker/3:3 Tainted: G           O   ----V-------   3.10.0-327.36.58.4.x86_64 #1
-> [ 8981.017667] Workqueue: events linkwatch_event
-> [ 8981.018652] task: ffff8800a8348000 ti: ffff8800b045c000 task.ti: ffff8800b045c000
-> [ 8981.020418] RIP: 0010:[<ffffffff8155aca7>]  [<ffffffff8155aca7>] __ethtool_get_link_ksettings+0x27/0x140
-> [ 8981.022383] RSP: 0018:ffff8800b045fc88  EFLAGS: 00010202
-> [ 8981.023453] RAX: 0000000000000000 RBX: ffff8800b045fcac RCX: 0000000000000000
-> [ 8981.024726] RDX: ffff8800b658f600 RSI: ffff8800b045fcac RDI: ffff8802296e0000
-> [ 8981.026000] RBP: ffff8800b045fc98 R08: 0000000000000000 R09: 0000000000000001
-> [ 8981.027273] R10: 00000000000073e0 R11: 0000082b0cc8adea R12: ffff8802296e0000
-> [ 8981.028561] R13: ffff8800b566e8c0 R14: ffff8800b658f600 R15: ffff8800b566e000
-> [ 8981.029841] FS:  0000000000000000(0000) GS:ffff88023ed80000(0000) knlGS:0000000000000000
-> [ 8981.031715] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [ 8981.032845] CR2: 0000000000000000 CR3: 00000000b39a9000 CR4: 00000000003407e0
-> [ 8981.034137] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> [ 8981.035427] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> [ 8981.036702] Stack:
-> [ 8981.037406]  ffff8800b658f600 0000000000009c40 ffff8800b045fce8 ffffffffa047a71d
-> [ 8981.039238]  000000000000004d ffff8800b045fcc8 ffff8800b045fd28 ffffffff815cb198
-> [ 8981.041070]  ffff8800b045fcd8 ffffffff810807e6 00000000e8212951 0000000000000001
-> [ 8981.042910] Call Trace:
-> [ 8981.043660]  [<ffffffffa047a71d>] bond_update_speed_duplex+0x3d/0x90 [bonding]
-> [ 8981.045424]  [<ffffffff815cb198>] ? inetdev_event+0x38/0x530
-> [ 8981.046554]  [<ffffffff810807e6>] ? put_online_cpus+0x56/0x80
-> [ 8981.047688]  [<ffffffffa0480d67>] bond_netdev_event+0x137/0x360 [bonding]
-> ...
-> 
-> Signed-off-by: Dongxu Liu <liudongxu3@huawei.com>
-> ---
->  net/core/ethtool.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/net/core/ethtool.c b/net/core/ethtool.c index 
-> 6288e69..9a50b64 100644
-> --- a/net/core/ethtool.c
-> +++ b/net/core/ethtool.c
-> @@ -545,6 +545,8 @@ int __ethtool_get_link_ksettings(struct net_device 
-> *dev,  {
->  	ASSERT_RTNL();
->  
-> +	if (!dev || !dev->ethtool_ops)
-> +		return -EOPNOTSUPP;
+Currently, at xdp_adjust_tail_kern.c, MAX_PCKT_SIZE is limited
+to 600. To make this size flexible, a new map 'pcktsz' is added.
 
-> I do not believe dev can possibly be NULL at this point.
+By updating new packet size to this map from the userland,
+xdp_adjust_tail_kern.o will use this value as a new max_pckt_size.
 
->  	if (!dev->ethtool_ops->get_link_ksettings)
->  		return -EOPNOTSUPP;
->  
-> 
+If no '-P <MAX_PCKT_SIZE>' option is used, the size of maximum packet
+will be 600 as a default.
 
-> I tried to find an appropriate Fixes: tag.
+Signed-off-by: Daniel T. Lee <danieltimlee@gmail.com>
+---
+ samples/bpf/xdp_adjust_tail_kern.c | 23 +++++++++++++++++++----
+ samples/bpf/xdp_adjust_tail_user.c | 21 +++++++++++++++++++--
+ 2 files changed, 38 insertions(+), 6 deletions(-)
 
-> It seems this particular bug was added either by
-
-> Fixes: 9856909c2abb ("net: bonding: use __ethtool_get_ksettings")
-
-> or generically in :
-
-> Fixes: 3f1ac7a700d0 ("net: ethtool: add new ETHTOOL_xLINKSETTINGS API")
-
-In fact, "dev->ethtool_ops" is a null pointer in my environment.
-I didn't get the case where "dev" is a null pointer.
-Maybe "if (!dev->ethtool_ops)" is more accurate for this bug.
-
-I found this bug in version 3.10, the function name was __ethtool_get_settings.
-After 3f1ac7a700d0 ("net: ethtool: add new ETHTOOL_xLINKSETTINGS API"),
-This function evolved into __ethtool_get_link_ksettings.
+diff --git a/samples/bpf/xdp_adjust_tail_kern.c b/samples/bpf/xdp_adjust_tail_kern.c
+index 411fdb21f8bc..4d53af370b68 100644
+--- a/samples/bpf/xdp_adjust_tail_kern.c
++++ b/samples/bpf/xdp_adjust_tail_kern.c
+@@ -25,6 +25,13 @@
+ #define ICMP_TOOBIG_SIZE 98
+ #define ICMP_TOOBIG_PAYLOAD_SIZE 92
+ 
++struct bpf_map_def SEC("maps") pcktsz = {
++	.type = BPF_MAP_TYPE_ARRAY,
++	.key_size = sizeof(__u32),
++	.value_size = sizeof(__u32),
++	.max_entries = 1,
++};
++
+ struct bpf_map_def SEC("maps") icmpcnt = {
+ 	.type = BPF_MAP_TYPE_ARRAY,
+ 	.key_size = sizeof(__u32),
+@@ -64,7 +71,8 @@ static __always_inline void ipv4_csum(void *data_start, int data_size,
+ 	*csum = csum_fold_helper(*csum);
+ }
+ 
+-static __always_inline int send_icmp4_too_big(struct xdp_md *xdp)
++static __always_inline int send_icmp4_too_big(struct xdp_md *xdp,
++					      __u32 max_pckt_size)
+ {
+ 	int headroom = (int)sizeof(struct iphdr) + (int)sizeof(struct icmphdr);
+ 
+@@ -92,7 +100,7 @@ static __always_inline int send_icmp4_too_big(struct xdp_md *xdp)
+ 	orig_iph = data + off;
+ 	icmp_hdr->type = ICMP_DEST_UNREACH;
+ 	icmp_hdr->code = ICMP_FRAG_NEEDED;
+-	icmp_hdr->un.frag.mtu = htons(MAX_PCKT_SIZE-sizeof(struct ethhdr));
++	icmp_hdr->un.frag.mtu = htons(max_pckt_size - sizeof(struct ethhdr));
+ 	icmp_hdr->checksum = 0;
+ 	ipv4_csum(icmp_hdr, ICMP_TOOBIG_PAYLOAD_SIZE, &csum);
+ 	icmp_hdr->checksum = csum;
+@@ -118,14 +126,21 @@ static __always_inline int handle_ipv4(struct xdp_md *xdp)
+ {
+ 	void *data_end = (void *)(long)xdp->data_end;
+ 	void *data = (void *)(long)xdp->data;
++	__u32 max_pckt_size = MAX_PCKT_SIZE;
++	__u32 *pckt_sz;
++	__u32 key = 0;
+ 	int pckt_size = data_end - data;
+ 	int offset;
+ 
+-	if (pckt_size > MAX_PCKT_SIZE) {
++	pckt_sz = bpf_map_lookup_elem(&pcktsz, &key);
++	if (pckt_sz && *pckt_sz)
++		max_pckt_size = *pckt_sz;
++
++	if (pckt_size > max_pckt_size) {
+ 		offset = pckt_size - ICMP_TOOBIG_SIZE;
+ 		if (bpf_xdp_adjust_tail(xdp, 0 - offset))
+ 			return XDP_PASS;
+-		return send_icmp4_too_big(xdp);
++		return send_icmp4_too_big(xdp, max_pckt_size);
+ 	}
+ 	return XDP_PASS;
+ }
+diff --git a/samples/bpf/xdp_adjust_tail_user.c b/samples/bpf/xdp_adjust_tail_user.c
+index a3596b617c4c..dd3befa5e1fe 100644
+--- a/samples/bpf/xdp_adjust_tail_user.c
++++ b/samples/bpf/xdp_adjust_tail_user.c
+@@ -72,6 +72,7 @@ static void usage(const char *cmd)
+ 	printf("Usage: %s [...]\n", cmd);
+ 	printf("    -i <ifname|ifindex> Interface\n");
+ 	printf("    -T <stop-after-X-seconds> Default: 0 (forever)\n");
++	printf("    -P <MAX_PCKT_SIZE> Default: 600\n");
+ 	printf("    -S use skb-mode\n");
+ 	printf("    -N enforce native mode\n");
+ 	printf("    -F force loading prog\n");
+@@ -85,9 +86,11 @@ int main(int argc, char **argv)
+ 		.prog_type	= BPF_PROG_TYPE_XDP,
+ 	};
+ 	unsigned char opt_flags[256] = {};
+-	const char *optstr = "i:T:SNFh";
++	const char *optstr = "i:T:P:SNFh";
+ 	struct bpf_prog_info info = {};
+ 	__u32 info_len = sizeof(info);
++	__u32 max_pckt_size = 0;
++	__u32 key = 0;
+ 	unsigned int kill_after_s = 0;
+ 	int i, prog_fd, map_fd, opt;
+ 	struct bpf_object *obj;
+@@ -110,6 +113,9 @@ int main(int argc, char **argv)
+ 		case 'T':
+ 			kill_after_s = atoi(optarg);
+ 			break;
++		case 'P':
++			max_pckt_size = atoi(optarg);
++			break;
+ 		case 'S':
+ 			xdp_flags |= XDP_FLAGS_SKB_MODE;
+ 			break;
+@@ -150,9 +156,20 @@ int main(int argc, char **argv)
+ 	if (bpf_prog_load_xattr(&prog_load_attr, &obj, &prog_fd))
+ 		return 1;
+ 
++	/* update pcktsz map */
+ 	map = bpf_map__next(NULL, obj);
+ 	if (!map) {
+-		printf("finding a map in obj file failed\n");
++		printf("finding a pcktsz map in obj file failed\n");
++		return 1;
++	}
++	map_fd = bpf_map__fd(map);
++	if (max_pckt_size)
++		bpf_map_update_elem(map_fd, &key, &max_pckt_size, BPF_ANY);
++
++	/* fetch icmpcnt map */
++	map = bpf_map__next(map, obj);
++	if (!map) {
++		printf("finding a icmpcnt map in obj file failed\n");
+ 		return 1;
+ 	}
+ 	map_fd = bpf_map__fd(map);
+-- 
+2.20.1
 
