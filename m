@@ -2,158 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BB99E9D923
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 00:32:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B0B89D944
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 00:36:07 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726802AbfHZWbv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 18:31:51 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39820 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726250AbfHZWbu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 18:31:50 -0400
-Received: by mail-pf1-f194.google.com with SMTP id y200so5040422pfb.6;
-        Mon, 26 Aug 2019 15:31:50 -0700 (PDT)
+        id S1726926AbfHZWgE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 18:36:04 -0400
+Received: from mail-pg1-f177.google.com ([209.85.215.177]:35006 "EHLO
+        mail-pg1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726160AbfHZWgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 18:36:03 -0400
+Received: by mail-pg1-f177.google.com with SMTP id n4so11460469pgv.2;
+        Mon, 26 Aug 2019 15:36:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=wDOgLMb8j2sdaAKql8tXOUtFPhJRo3axs/+JxOuD364=;
-        b=Qcf4jWj3RHbfP7ilJsGmBgeYUobrxm2EnzTktsCGhesgxA/x7yAB1vHwXbGN4zQw1p
-         kvw2Oj3cait6ZKir6T0WKvRsVs9jBQP7MwlPArcEIJ/F9HO/otgApA0W6vDtJuEBdluW
-         I/UalVUGetgubV19dT5KQ8MUojlvwe0DiXV07gAdvYt3UppF8fX4s57fMoD2dWY8VPpi
-         B4jTPA3bUZOHjaziGKnuF4+6Y32uYIKDMjT9eSf1AGEBXFVtg30bK9jBWhxVFpYSLRCn
-         UZm1R3HyvY7Yx8gOkETs7M7B0AJib27KMGcUhbLLENNhoyJWQYj42qtxvCw9OL8Lf5+4
-         Fzlg==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1EVM09iLfiaAN3+rhjuX0wS6VS5bzJspnQGo60AmZMY=;
+        b=GyrMybhlZ7d++j7ZF20au+90PgEDaf7S5fo2alWvXmitTWrtVyYJzVYLWoQlYEOiV9
+         cBh3iHh+kcJ0s8hcJ7rISMQB9TbNPkJD2g/Da8XBu/0X9Q4HdVsuAJOnRG05kSq6cez+
+         3uS+4WnNDNDBqNW5ASFf16RISyShwAVz4c/yqo/ab+a0WFqe5Lr8CNyPjQnkLbjzpb90
+         BWjx7C/Aa0TNBq6eZCLlxyqpSp7iS2j9Q8O1cf1DqIwd2kB6GzrKm8W7X77Q4vhEaXN+
+         va95j6VQRtazZpaIPk3gdZQ89F//JtaaYuzm4PhK/MXBdazq+7JSl4vj+HAiVT95RH4k
+         +ObQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=wDOgLMb8j2sdaAKql8tXOUtFPhJRo3axs/+JxOuD364=;
-        b=gGGt4ZLdEW7aEKnkZGKB7qnd4aWQdlUiexETGEPLruAgokyvEOupg4W1HGa/9FeIue
-         lYMqs/27qmvATyAz9lEq6pzMoxqJleAgtxDQcSTCCbiiyX+ZSTvSQafesx7Fu5+TzjTD
-         ZxOsvOF+/5C4now2sYGGvZbU+wEADVrEXRNj+WVu/wNgZTe0w8RizoWqOpUagUMz+wIb
-         uNQaM4UbwwXXJolqwFaTfDMmz2D7gfow8mrIlXLLO66kFZ37Z3Hjn+d88MH5mi+XVn+W
-         HWjtbVYX8a7Ra1flNiJ06tgNubklJclCL0NZvom/+5L8NsXFU6Y2nOANXBY3TdktjgYl
-         TETg==
-X-Gm-Message-State: APjAAAVu8eXedLvE6qtKz2+lX3zjjKdFQm1PFOucqDQ+YAdl/cPsmKZ+
-        TQOQvOA0SnrHFMX3+s6OqQs=
-X-Google-Smtp-Source: APXvYqytitC5AGbR2uaChtUFk9SeXhHdRm7KC5HclM/1dbtSm944b1w410FR9NdqnDa30EfGd4ibxw==
-X-Received: by 2002:a63:c008:: with SMTP id h8mr18947256pgg.427.1566858709555;
-        Mon, 26 Aug 2019 15:31:49 -0700 (PDT)
-Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id ev3sm1075940pjb.3.2019.08.26.15.31.47
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1EVM09iLfiaAN3+rhjuX0wS6VS5bzJspnQGo60AmZMY=;
+        b=f4ZA56lrAkrRSvMuSZq+pv6VY1apb+DDvXASxJW/8f+faVAsYTrVxwuntbjP1A2xxt
+         28kwm1b0YTtYhp7E+0SSE5Vazh+Xce+uU2hIIHLSmHXcSsie4yga1RbqKmUVjuVEv5ef
+         w3RmwU9mXvFsG499J+oM2qCe/HR6nhtQXF8h2wHFmE5ZWrqSoSbVZuR9XQftNOX3t/gi
+         jQrKATsJSIRQwjyWwgjXS4Od1YXaaOJAhTf8H0Nl2BZwiR0i4E8P0B8nKKUDM1PMyFRq
+         a2Hy/m+Elo66jXCTq9Z2IDN6pV9qalScRiQJSX0HIARxaR10aiuDzAj5CBOAqoWBcYJf
+         g7tA==
+X-Gm-Message-State: APjAAAX/P3inNAKMRUHP94Mdph3lBXzqxFvjyslFMmhIHF0YkDtwAuVP
+        Ee9mKuHYDuLl559QfLTyF9s=
+X-Google-Smtp-Source: APXvYqxczjuYGCyAEukMWknTcVvHNpis3yzLFWRN05Dd+r0UtcKFbWXWxMQCURbZ24G8lM8IYQZ8Dw==
+X-Received: by 2002:a63:7205:: with SMTP id n5mr18286204pgc.443.1566858962465;
+        Mon, 26 Aug 2019 15:36:02 -0700 (PDT)
+Received: from ast-mbp ([2620:10d:c090:200::f983])
+        by smtp.gmail.com with ESMTPSA id x22sm24663167pfo.180.2019.08.26.15.36.01
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Aug 2019 15:31:48 -0700 (PDT)
-Subject: Re: [PATCH v1 net-next] net: stmmac: Add support for MDIO interrupts
-To:     Andrew Lunn <andrew@lunn.ch>, Voon Weifeng <weifeng.voon@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-References: <1566870320-9825-1-git-send-email-weifeng.voon@intel.com>
- <20190826184719.GF2168@lunn.ch>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <cac5aba0-b47b-00c6-f99b-64c6b385308a@gmail.com>
-Date:   Mon, 26 Aug 2019 15:31:46 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        Mon, 26 Aug 2019 15:36:01 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 15:36:00 -0700
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+To:     Andy Lutomirski <luto@kernel.org>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Song Liu <songliubraving@fb.com>,
+        Kees Cook <keescook@chromium.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        Lorenz Bauer <lmb@cloudflare.com>,
+        Jann Horn <jannh@google.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Linux API <linux-api@vger.kernel.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        Chenbo Feng <chenbofeng.kernel@gmail.com>
+Subject: Re: RFC: very rough draft of a bpf permission model
+Message-ID: <20190826223558.6torq6keplniif6w@ast-mbp>
+References: <CALCETrXX-Jeb4wiQuL6FUai4wNMmMiUxuLLh_Lb9mT7h=0GgAw@mail.gmail.com>
+ <20190805192122.laxcaz75k4vxdspn@ast-mbp>
+ <CALCETrVtPs8gY-H4gmzSqPboid3CB++n50SvYd6RU9YVde_-Ow@mail.gmail.com>
+ <20190806011134.p5baub5l3t5fkmou@ast-mbp>
+ <CALCETrXEHL3+NAY6P6vUj7Pvd9ZpZsYC6VCLXOaNxb90a_POGw@mail.gmail.com>
+ <98fee747-795a-ff10-fa98-10ddb5afcc03@iogearbox.net>
+ <CALCETrUWQbPK3Pc6P5i_UqHPXJmZVyvuYXfq+VRtD6A3emaRhw@mail.gmail.com>
+ <CALCETrWU4xJh4UBg0BboCwdGrgj+dUShsH5ETpiRgEpXJTEfQA@mail.gmail.com>
+ <20190822232620.p5tql4rrlzlk35z7@ast-mbp.dhcp.thefacebook.com>
+ <CALCETrUhXrZaJy8omX_DsH0rAY98YEqR64VuisQSz2Rru8Dqpg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190826184719.GF2168@lunn.ch>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CALCETrUhXrZaJy8omX_DsH0rAY98YEqR64VuisQSz2Rru8Dqpg@mail.gmail.com>
+User-Agent: NeoMutt/20180223
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/19 11:47 AM, Andrew Lunn wrote:
-> On Tue, Aug 27, 2019 at 09:45:20AM +0800, Voon Weifeng wrote:
->> From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
->>
->> DW EQoS v5.xx controllers added capability for interrupt generation
->> when MDIO interface is done (GMII Busy bit is cleared).
->> This patch adds support for this interrupt on supported HW to avoid
->> polling on GMII Busy bit.
->>
->> stmmac_mdio_read() & stmmac_mdio_write() will sleep until wake_up() is
->> called by the interrupt handler.
+On Fri, Aug 23, 2019 at 04:09:11PM -0700, Andy Lutomirski wrote:
+> On Thu, Aug 22, 2019 at 4:26 PM Alexei Starovoitov
+> <alexei.starovoitov@gmail.com> wrote:
+> > You're proposing all of the above in addition to CAP_BPF, right?
+> > Otherwise I don't see how it addresses the use cases I kept
+> > explaining for the last few weeks.
 > 
-> Hi Voon
-> 
-> I _think_ there are some order of operation issues here. The mdiobus
-> is registered in the probe function. As soon as of_mdiobus_register()
-> is called, the MDIO bus must work. At that point MDIO read/writes can
-> start to happen.
-> 
-> As far as i can see, the interrupt handler is only requested in
-> stmmac_open(). So it seems like any MDIO operations after probe, but
-> before open are going to fail?
+> None of my proposal is intended to exclude changes like CAP_BPF to
+> make privileged bpf() operations need less privilege.  But I think
+> it's very hard to evaluate CAP_BPF without both a full description of
+> exactly what CAP_BPF would do and what at least one full example of a
+> user would look like.
 
-AFAIR, wait_event_timeout() will continue to busy loop and wait until
-the timeout, but not return an error because the polled condition was
-true, at least that is my recollection from having the same issue with
-the bcmgenet driver before it was moved to connecting to the PHY in the
-ndo_open() function.
--- 
-Florian
+the example is previous email and systemd example was not "full" ?
+
+> I also think that users who want CAP_BPF should look at manipulating
+> their effective capability set instead.  A daemon that wants to use
+> bpf() but otherwise minimize the chance of accidentally causing a
+> problem can use capset() to clear its effective and inheritable masks.
+> Then, each time it wants to call bpf(), it could re-add CAP_SYS_ADMIN
+> or CAP_NET_ADMIN to its effective set, call bpf(), and then clear its
+> effective set again.  This works in current kernels and is generally
+> good practice.
+
+Such logic means that CAP_NET_ADMIN is not necessary either.
+The process could re-add CAP_SYS_ADMIN when it needs to reconfigure
+network and then drop it.
+
+> Aside from this, and depending on exactly what CAP_BPF would be, I
+> have some further concerns.  Looking at your example in this email:
+> 
+> > Here is another example of use case that CAP_BPF is solving:
+> > The daemon X is started by pid=1 and currently runs as root.
+> > It loads a bunch of tracing progs and attaches them to kprobes
+> > and tracepoints. It also loads cgroup-bpf progs and attaches them
+> > to cgroups. All progs are collecting data about the system and
+> > logging it for further analysis.
+> 
+> This needs more than just bpf().  Creating a perf kprobe event
+> requires CAP_SYS_ADMIN, and without a perf kprobe event, you can't
+> attach a bpf program.  
+
+that is already solved sysctl_perf_event_paranoid.
+CAP_BPF is about BPF part only.
+
+> And the privilege to attach bpf programs to
+> cgroups without any DAC or MAC checks (which is what the current API
+> does) is an extremely broad privilege that is not that much weaker
+> than CAP_SYS_ADMIN or CAP_NET_ADMIN.  Also:
+
+I don't think there is a hierarchy of CAP_SYS_ADMIN vs CAP_NET_ADMIN
+vs CAP_BPF.
+CAP_BPF and CAP_NET_ADMIN carve different areas of CAP_SYS_ADMIN.
+Just like all other caps.
+
+> > This tracing bpf is looking into kernel memory
+> > and using bpf_probe_read. Clearly it's not _secure_. But it's _safe_.
+> > The system is not going to crash because of BPF,
+> > but it can easily crash because of simple coding bugs in the user
+> > space bits of that daemon.
+> 
+> The BPF verifier and interpreter, taken in isolation, may be extremely
+> safe, but attaching BPF programs to various hooks can easily take down
+> the system, deliberately or by accident.  A handler, especially if it
+> can access user memory or otherwise fault, will explode if attached to
+> an inappropriate kprobe, hw_breakpoint, or function entry trace event.
+
+absolutely not true.
+
+> (I and the other maintainers consider this to be a bug if it happens,
+> and we'll fix it, but these bugs definitely exist.)  A cgroup-bpf hook
+> that blocks all network traffic will effectively kill a machine,
+> especially if it's a server. 
+
+this permission is granted by CAP_NET_ADMIN. Nothing changes here.
+
+> A bpf program that runs excessively
+> slowly attached to a high-frequency hook will kill the system, too.
+
+not true either.
+
+> (I bet a buggy bpf program that calls bpf_probe_read() on an unmapped
+> address repeatedly could be make extremely slow.  Page faults take
+> thousands to tens of thousands of cycles.) 
+
+kprobe probing and faulting on non-existent address will do
+the same 'damage'. So it's not bpf related.
+Also it won't make the system "extremely slow".
+Nothing to do with CAP_BPF.
+
+> A bpf firewall rule that's
+> wrong can cut a machine off from the network -- I've killed machines
+> using iptables more than once, and bpf isn't magically safer.
+
+this is CAP_NET_ADMIN permission. It's a different capability.
+
+> 
+> I'm wondering if something like CAP_TRACING would make sense.
+> CAP_TRACING would allow operations that can reveal kernel memory and
+> other secret kernel state but that do not, by design, allow modifying
+> system behavior.  So, for example, CAP_TRACING would allow privileged
+> perf_event_open() operations and privileged bpf verifier usage.  But
+> it would not allow cgroup-bpf unless further restrictions were added,
+> and it would not allow the *_BY_ID operations, as those can modify
+> other users' bpf programs' behavior.
+
+Makes little sense to me.
+I can imagine CAP_TRACING controlling kprobe/uprobe creation
+and probe_read() both from bpf side and from vanilla kprobe.
+That would be much nicer interface to use than existing
+sysctl_perf_event_paranoid, but that is orthogonal to CAP_BPF
+which is strictly about BPF.
+
+> Something finer-grained can mitigate some of this.  CAP_BPF as I think
+> you're imagining it will not.
+
+I'm afraid this discussion goes nowhere.
+We'll post CAP_BPF patches soon so we can discuss code.
+
