@@ -2,102 +2,259 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C0C5E9D542
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:57:57 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 162A69D544
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:59:33 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387557AbfHZR54 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 13:57:56 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:36607 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728280AbfHZR54 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 13:57:56 -0400
-Received: by mail-pl1-f196.google.com with SMTP id f19so10396085plr.3;
-        Mon, 26 Aug 2019 10:57:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=77MKV+MJ6zyFv67aHlgM/8m5X/mM7/TRqBSqvmlPQ9E=;
-        b=Y4LKMB58TZntJjF5waqJp99gc/Rrj1YMoljV8x/GPkoGUPWWGy7MNl/75XFg70JRnJ
-         1EIJKSBZQBFMWwT7zg50Y184kStpCGluR9PQ39mpDSSSPqRGwhj29M0IRlTgjxEHfaja
-         rV+/QCbFOsrKZsz6fQXF6rlQXYnoleOfejCb8ITVunH7tRXm8Aq9Ertfdk1jT3R2jr29
-         wAg3CcYAdztk8isu4TQM9WQ69AKUxQmUuTz5nuy+KwgzBCmppJI2q3+bem8wq8Rlp7OX
-         vyrmoh2bcvklCwB/EVzfxNaXnrcvff5hcMmmxX1eNbe42rGuDrm58p3wR4CYI7oHSUjl
-         /xaQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=77MKV+MJ6zyFv67aHlgM/8m5X/mM7/TRqBSqvmlPQ9E=;
-        b=OvfoGTdgb7gVOVm5JpFiOCrqmNU2/JQT22KsRFc121FVdWjxzlu98+UIJD3X+ltD9n
-         lAkg7gnOCy6TUjIQDIFVoQipwu0SwKqNt5hxgnu2iMKTlbN8OAFkRuWZyD/gIkTK+TcP
-         7CCqWvUmqln6q4YD9sFJ40EU112PYK8hqC5vE1FsabYQD3jslRc2cBzQhUoC7UUg/mo1
-         v30toYU9U5+tnq/JIAJp97FsUZm1uydVSJz9AMmyEbj0PxvuiA1hZuXvHOV9FPgqMBzm
-         bHV9Jx5eOlTn4o4vF9dKz3vN+3kl5I10OfUUwP/Bk4vZIKiRPieOEV5C/MZl87CCX6Dr
-         vsYA==
-X-Gm-Message-State: APjAAAUSLcG20duji/kHd+htMlk+GBITZ4xC4ZaxEfrilG7gNOFNwnFw
-        YtZnBt8GXRxizyhOwtFsU9U=
-X-Google-Smtp-Source: APXvYqz/wQlGKHGkT3JOvNWRfTMmGAHixD/68vdDO+oS2Lw+jc4kYYu2NfkV4Tx3YqVDRBHBQkbnww==
-X-Received: by 2002:a17:902:b40c:: with SMTP id x12mr20189459plr.81.1566842275349;
-        Mon, 26 Aug 2019 10:57:55 -0700 (PDT)
-Received: from [172.20.53.188] ([2620:10d:c090:200::3:2982])
-        by smtp.gmail.com with ESMTPSA id q13sm20741362pfl.124.2019.08.26.10.57.54
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Aug 2019 10:57:54 -0700 (PDT)
-From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
-To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>
-Cc:     "Ilya Maximets" <i.maximets@samsung.com>,
-        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bpf@vger.kernel.org,
-        syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
-        hdanton@sina.com
-Subject: Re: [PATCH bpf-next v2 2/4] xsk: add proper barriers and {READ,
- WRITE}_ONCE-correctness for state
-Date:   Mon, 26 Aug 2019 10:57:53 -0700
-X-Mailer: MailMate (1.12.5r5635)
-Message-ID: <3F33CA61-D000-4318-958D-90F5A3CCAD60@gmail.com>
-In-Reply-To: <1b780dd4-227f-64c4-260d-9e819ba7081f@intel.com>
-References: <20190826061053.15996-1-bjorn.topel@gmail.com>
- <CGME20190826061127epcas5p21bb790365a436ff234d77786f03729f8@epcas5p2.samsung.com>
- <20190826061053.15996-3-bjorn.topel@gmail.com>
- <14576fd3-69ce-6493-5a38-c47566851d4e@samsung.com>
- <1b780dd4-227f-64c4-260d-9e819ba7081f@intel.com>
+        id S2387581AbfHZR7b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 13:59:31 -0400
+Received: from mail.nic.cz ([217.31.204.67]:34036 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387577AbfHZR7a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 13:59:30 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id 03A891409B6;
+        Mon, 26 Aug 2019 19:59:27 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1566842367; bh=QP0xZeZeKBe3ayvCFajLjvvHCselO+sDUFfxAWUCKH8=;
+        h=From:To:Date;
+        b=RSdhWYr752Jughcp+mqxrJJnhJS2PohrIxyA5bB+QGFJjOpi18u55HCCNnM4i/WAT
+         19BheoUN4xSVGyfnlq+U/CmkGs5TZUGDqmduZmWSMpaWq2aemX5gEatDWgpc6OqLRL
+         LPQWZz/ipoLUF+HRDwPZYKkwnPk/wXo4KkxE/d0Q=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+To:     Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH RFC] net: dsa: mv88e6xxx: fully support SERDES on Topaz family
+Date:   Mon, 26 Aug 2019 19:59:20 +0200
+Message-Id: <20190826175920.21043-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190826134418.GB29480@t480s.localdomain>
+References: 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Currently we support SERDES on the Topaz family in a limited way: no
+IRQs and the cmode is not writable, thus the mode is determined by
+strapping pins.
 
+Marvell's examples though show how to make cmode writable on port 5 and
+support SGMII autonegotiation. It is done by writing hidden registers,
+for which we already have code.
 
-On 26 Aug 2019, at 9:34, Björn Töpel wrote:
+This patch adds support for making the cmode for the SERDES port
+writable on the Topaz family, at setup, by calling a new chip operation,
+port_setup_extra. This operation is implemented for Topaz.
 
-> On 2019-08-26 17:24, Ilya Maximets wrote:
->> This changes the error code a bit.
->> Previously:
->>     umem exists + xs unbound    --> EINVAL
->>     no umem     + xs unbound    --> EBADF
->>     xs bound to different dev/q --> EINVAL
->>
->> With this change:
->>     umem exists + xs unbound    --> EBADF
->>     no umem     + xs unbound    --> EBADF
->>     xs bound to different dev/q --> EINVAL
->>
->> Just a note. Not sure if this is important.
->>
->
-> Note that this is for *shared* umem, so it's very seldom used. Still,
-> you're right, that strictly this is an uapi break, but I'd vote for the
-> change still. I find it hard to see that anyone relies on EINVAL/EBADF
-> for shared umem bind.
->
-> Opinions? :-)
+Then it enables cmode setting and SERDES IRQs for Topaz.
 
-I'd agree - if it isn't documented somewhere, it's not an API break. :)
+Tested on Turris Mox.
+
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
+---
+ drivers/net/dsa/mv88e6xxx/chip.c | 15 ++++++++
+ drivers/net/dsa/mv88e6xxx/chip.h |  3 ++
+ drivers/net/dsa/mv88e6xxx/port.c | 65 ++++++++++++++++++++++++++++++--
+ drivers/net/dsa/mv88e6xxx/port.h |  5 +++
+ 4 files changed, 85 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 202ccce65b1c..9fee2cfe469f 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -2121,6 +2121,13 @@ static int mv88e6xxx_setup_port(struct mv88e6xxx_chip *chip, int port)
+ 	chip->ports[port].chip = chip;
+ 	chip->ports[port].port = port;
+ 
++	/* Some ports may need extra setup to be used as desired */
++	if (chip->info->ops->port_setup_extra) {
++		err = chip->info->ops->port_setup_extra(chip, port);
++		if (err)
++			return err;
++	}
++
+ 	/* MAC Forcing register: don't force link, speed, duplex or flow control
+ 	 * state to any particular values on physical ports, but force the CPU
+ 	 * port and all DSA ports to their maximum bandwidth and full duplex.
+@@ -2913,7 +2920,9 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
+ 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
+ 	.port_link_state = mv88e6352_port_link_state,
+ 	.port_get_cmode = mv88e6352_port_get_cmode,
++	.port_set_cmode = mv88e6341_port_set_cmode,
+ 	.port_setup_message_port = mv88e6xxx_setup_message_port,
++	.port_setup_extra = mv88e6341_port_setup_extra,
+ 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
+ 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
+ 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
+@@ -2929,6 +2938,8 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390_serdes_power,
+ 	.serdes_get_lane = mv88e6341_serdes_get_lane,
++	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
++	.serdes_irq_free = mv88e6390_serdes_irq_free,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+ 	.phylink_validate = mv88e6341_phylink_validate,
+ };
+@@ -3608,7 +3619,9 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
+ 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
+ 	.port_link_state = mv88e6352_port_link_state,
+ 	.port_get_cmode = mv88e6352_port_get_cmode,
++	.port_set_cmode = mv88e6341_port_set_cmode,
+ 	.port_setup_message_port = mv88e6xxx_setup_message_port,
++	.port_setup_extra = mv88e6341_port_setup_extra,
+ 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
+ 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
+ 	.stats_get_sset_count = mv88e6320_stats_get_sset_count,
+@@ -3624,6 +3637,8 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
+ 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
+ 	.serdes_power = mv88e6390_serdes_power,
+ 	.serdes_get_lane = mv88e6341_serdes_get_lane,
++	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
++	.serdes_irq_free = mv88e6390_serdes_irq_free,
+ 	.gpio_ops = &mv88e6352_gpio_ops,
+ 	.avb_ops = &mv88e6390_avb_ops,
+ 	.ptp_ops = &mv88e6352_ptp_ops,
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.h b/drivers/net/dsa/mv88e6xxx/chip.h
+index 15d0c9f00f54..905e4136bccf 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.h
++++ b/drivers/net/dsa/mv88e6xxx/chip.h
+@@ -397,6 +397,9 @@ struct mv88e6xxx_ops {
+ 	int (*port_disable_pri_override)(struct mv88e6xxx_chip *chip, int port);
+ 	int (*port_setup_message_port)(struct mv88e6xxx_chip *chip, int port);
+ 
++	/* Some ports may need extra setup to be used as desired */
++	int (*port_setup_extra)(struct mv88e6xxx_chip *chip, int port);
++
+ 	/* CMODE control what PHY mode the MAC will use, eg. SGMII, RGMII, etc.
+ 	 * Some chips allow this to be configured on specific ports.
+ 	 */
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 7183c94a92ec..6886accbcb60 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -392,8 +392,35 @@ phy_interface_t mv88e6390x_port_max_speed_mode(int port)
+ 	return PHY_INTERFACE_MODE_NA;
+ }
+ 
+-int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+-			      phy_interface_t mode)
++/* Port 5 on Topaz is a SERDES port as ports 9 and 10 on Peridot family,
++   but on Topaz it's cmode is not writable by default. This hidden register
++   configuration makes it writable. */
++int mv88e6341_port_setup_extra(struct mv88e6xxx_chip *chip, int port)
++{
++	int err, addr;
++	u16 reg, bits;
++
++	if (port != 5)
++		return 0;
++
++	addr = chip->info->port_base_addr + port;
++
++	err = mv88e6xxx_port_hidden_read(chip, 0x7, addr, 0, &reg);
++	if (err)
++		return err;
++
++	bits = MV88E6341_PORT_RESERVED_1A_FORCE_CMODE |
++	       MV88E6341_PORT_RESERVED_1A_SGMII_AN;
++
++	if ((reg & bits) == bits)
++		return 0;
++
++	reg |= bits;
++	return mv88e6xxx_port_hidden_write(chip, 0x7, addr, 0, reg);
++}
++
++static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
++				    phy_interface_t mode)
+ {
+ 	s8 lane;
+ 	u16 cmode;
+@@ -484,9 +511,41 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 	return 0;
+ }
+ 
++int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
++			      phy_interface_t mode)
++{
++	if (port != 9 && port != 10)
++		return -EOPNOTSUPP;
++
++	return mv88e6xxx_port_set_cmode(chip, port, mode);
++}
++
+ int mv88e6390_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 			     phy_interface_t mode)
+ {
++	if (port != 9 && port != 10)
++		return -EOPNOTSUPP;
++
++	switch (mode) {
++	case PHY_INTERFACE_MODE_NA:
++		return 0;
++	case PHY_INTERFACE_MODE_XGMII:
++	case PHY_INTERFACE_MODE_XAUI:
++	case PHY_INTERFACE_MODE_RXAUI:
++		return -EINVAL;
++	default:
++		break;
++	}
++
++	return mv88e6xxx_port_set_cmode(chip, port, mode);
++}
++
++int mv88e6341_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
++			     phy_interface_t mode)
++{
++	if (port != 5)
++		return -EOPNOTSUPP;
++
+ 	switch (mode) {
+ 	case PHY_INTERFACE_MODE_NA:
+ 		return 0;
+@@ -498,7 +557,7 @@ int mv88e6390_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 		break;
+ 	}
+ 
+-	return mv88e6390x_port_set_cmode(chip, port, mode);
++	return mv88e6xxx_port_set_cmode(chip, port, mode);
+ }
+ 
+ int mv88e6185_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode)
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index 6d7a067da0f5..eb19e568ad9b 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -269,6 +269,8 @@
+ #define MV88E6XXX_PORT_RESERVED_1A_BLOCK_SHIFT	10
+ #define MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT	0x04
+ #define MV88E6XXX_PORT_RESERVED_1A_DATA_PORT	0x05
++#define MV88E6341_PORT_RESERVED_1A_FORCE_CMODE	0x8000
++#define MV88E6341_PORT_RESERVED_1A_SGMII_AN	0x2000
+ 
+ int mv88e6xxx_port_read(struct mv88e6xxx_chip *chip, int port, int reg,
+ 			u16 *val);
+@@ -334,6 +336,9 @@ int mv88e6097_port_pause_limit(struct mv88e6xxx_chip *chip, int port, u8 in,
+ 			       u8 out);
+ int mv88e6390_port_pause_limit(struct mv88e6xxx_chip *chip, int port, u8 in,
+ 			       u8 out);
++int mv88e6341_port_setup_extra(struct mv88e6xxx_chip *chip, int port);
++int mv88e6341_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
++			     phy_interface_t mode);
+ int mv88e6390_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+ 			     phy_interface_t mode);
+ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
 -- 
-Jonathan
+2.21.0
+
