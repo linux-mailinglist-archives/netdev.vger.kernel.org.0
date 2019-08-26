@@ -2,184 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E35D39D0CB
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 15:41:05 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D1709D0EE
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 15:45:42 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731334AbfHZNk7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 09:40:59 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:44439 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728295AbfHZNk7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 09:40:59 -0400
-Received: by mail-pl1-f195.google.com with SMTP id t14so10044530plr.11;
-        Mon, 26 Aug 2019 06:40:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=rBGgnC50tEqUQpJ+f65Q91HGdjIjtC+5DlqiDSMP1/Q=;
-        b=afRo5XfL1dnaButfIoJqTh3HWsWdfH0C/Pa8CA105hesfqqeFTx293NH2E4Cz/6fM7
-         TNs8KLbLJ8TuBk6JUzLt22sAoN0iEg65D/pjLsW7lC2HLvTFaNZD9WE/deeC2oXMFnd9
-         SS+xPJB1Q4cX2atWlPzTYPWdz478+1oaXD//7C57jtEPABMbU/XcR1iZr2iWD6HcOdEH
-         KK6i/QHOcBuR2/bFt+v9+WcqZYbttAaoTy3hA0NV/J9Di4IjKIxGiVJkQ2UsMdh1y5Ch
-         gTCxuVWYECdBGgmp7O5++TYOVTjO+dge+5Afttr5iBBpIlcNN04QKMRJztev0B8rIOzY
-         PBpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=rBGgnC50tEqUQpJ+f65Q91HGdjIjtC+5DlqiDSMP1/Q=;
-        b=SzuZjg0Yqqilj0UKaeWh/bDMX61qCXZNZTXb8aO7muzAptmG8wEjaEMc7MDj/pvyF8
-         OvUvfC1pOwkI2YHVDzakGpoZwaBBud8/bMS2EDUfgFLNhCy2SSEeDnz/ZiAod2jf/T0v
-         g8gSgc5AzzrH4zTllkJFczvHEQ3VwcgHq2dVo/lEcVm/LYP1eRFPxN6cLfQpr2r7WUtL
-         CiRa+5OXc4b0OXeqrmqpe6baO4YC6lfcqSgz4M2cDr623g/8dnePh9Qc0ExNamLX7XDY
-         pihmeJSI8TjiXHp4lDjvSmW2h+9mYIwOjePKsyKCmYEBoQE6ALi4YF+0M7CzQJWuiMZd
-         oMxQ==
-X-Gm-Message-State: APjAAAWUm7JmxIy1n4kAz9kyIUiiHUOq1lGJg1Go61DRrrD9We44K9R9
-        iKlL76o0hLouFu7Ift+ZL0c=
-X-Google-Smtp-Source: APXvYqzJkaXOd2S9tFS1YwsrbYf6LHJptNMJvnaCguAQYF+y8g+Yksu0dps9YX4mGiDyLjM3HCApKA==
-X-Received: by 2002:a17:902:43:: with SMTP id 61mr19425725pla.145.1566826857867;
-        Mon, 26 Aug 2019 06:40:57 -0700 (PDT)
-Received: from localhost ([192.55.54.44])
-        by smtp.gmail.com with ESMTPSA id p5sm13565558pfg.184.2019.08.26.06.40.54
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 26 Aug 2019 06:40:57 -0700 (PDT)
-Date:   Mon, 26 Aug 2019 15:40:42 +0200
-From:   Maciej Fijalkowski <maciejromanfijalkowski@gmail.com>
-To:     Ilya Maximets <i.maximets@samsung.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        =?ISO-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jeff Kirsher <jeffrey.t.kirsher@intel.com>,
-        intel-wired-lan@lists.osuosl.org,
-        Eelco Chaudron <echaudro@redhat.com>,
-        William Tu <u9012063@gmail.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH net v3] ixgbe: fix double clean of tx descriptors with
- xdp
-Message-ID: <20190826154042.00004bfc@gmail.com>
-In-Reply-To: <20190822171237.20798-1-i.maximets@samsung.com>
-References: <CGME20190822171243eucas1p12213f2239d6c36be515dade41ed7470b@eucas1p1.samsung.com>
-        <20190822171237.20798-1-i.maximets@samsung.com>
-X-Mailer: Claws Mail 3.17.1 (GTK+ 2.24.32; x86_64-w64-mingw32)
+        id S1732105AbfHZNp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 09:45:26 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52959 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1732054AbfHZNpZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 09:45:25 -0400
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
+        with ESMTPS (AES256-SHA encrypted); 26 Aug 2019 16:45:14 +0300
+Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7QDjEFO000366;
+        Mon, 26 Aug 2019 16:45:14 +0300
+From:   Vlad Buslov <vladbu@mellanox.com>
+To:     netdev@vger.kernel.org
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, jakub.kicinski@netronome.com,
+        pablo@netfilter.org, Vlad Buslov <vladbu@mellanox.com>
+Subject: [PATCH net-next v3 00/10] Refactor cls hardware offload API to support rtnl-independent drivers
+Date:   Mon, 26 Aug 2019 16:44:56 +0300
+Message-Id: <20190826134506.9705-1-vladbu@mellanox.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 22 Aug 2019 20:12:37 +0300
-Ilya Maximets <i.maximets@samsung.com> wrote:
+Currently, all cls API hardware offloads driver callbacks require caller
+to hold rtnl lock when calling them. This patch set introduces new API
+that allows drivers to register callbacks that are not dependent on rtnl
+lock and unlocked classifiers to offload filters without obtaining rtnl
+lock first, which is intended to allow offloading tc rules in parallel.
 
-> Tx code doesn't clear the descriptors' status after cleaning.
-> So, if the budget is larger than number of used elems in a ring, some
-> descriptors will be accounted twice and xsk_umem_complete_tx will move
-> prod_tail far beyond the prod_head breaking the completion queue ring.
-> 
-> Fix that by limiting the number of descriptors to clean by the number
-> of used descriptors in the tx ring.
-> 
-> 'ixgbe_clean_xdp_tx_irq()' function refactored to look more like
-> 'ixgbe_xsk_clean_tx_ring()' since we're allowed to directly use
-> 'next_to_clean' and 'next_to_use' indexes.
-> 
-> Fixes: 8221c5eba8c1 ("ixgbe: add AF_XDP zero-copy Tx support")
-> Signed-off-by: Ilya Maximets <i.maximets@samsung.com>
-> ---
-> 
-> Version 3:
->   * Reverted some refactoring made for v2.
->   * Eliminated 'budget' for tx clean.
->   * prefetch returned.
-> 
-> Version 2:
->   * 'ixgbe_clean_xdp_tx_irq()' refactored to look more like
->     'ixgbe_xsk_clean_tx_ring()'.
-> 
->  drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c | 29 ++++++++------------
->  1 file changed, 11 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> index 6b609553329f..a3b6d8c89127 100644
-> --- a/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> +++ b/drivers/net/ethernet/intel/ixgbe/ixgbe_xsk.c
-> @@ -633,19 +633,17 @@ static void ixgbe_clean_xdp_tx_buffer(struct ixgbe_ring *tx_ring,
->  bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
->  			    struct ixgbe_ring *tx_ring, int napi_budget)
+Recently, new rtnl registration flag RTNL_FLAG_DOIT_UNLOCKED was added.
+TC rule update handlers (RTM_NEWTFILTER, RTM_DELTFILTER, etc.) are
+already registered with this flag and only take rtnl lock when qdisc or
+classifier requires it. Classifiers can indicate that their ops
+callbacks don't require caller to hold rtnl lock by setting the
+TCF_PROTO_OPS_DOIT_UNLOCKED flag. Unlocked implementation of flower
+classifier is now upstreamed. However, this implementation still obtains
+rtnl lock before calling hardware offloads API.
 
-While you're at it, can you please as well remove the 'napi_budget' argument?
-It wasn't used at all even before your patch.
+Implement following cls API changes:
 
-I'm jumping late in, but I was really wondering and hesitated with taking
-part in discussion since the v1 of this patch - can you elaborate why simply
-clearing the DD bit wasn't sufficient?
+- Introduce new "unlocked_driver_cb" flag to struct flow_block_offload
+  to allow registering and unregistering block hardware offload
+  callbacks that do not require caller to hold rtnl lock. Drivers that
+  doesn't require users of its tc offload callbacks to hold rtnl lock
+  sets the flag to true on block bind/unbind. Internally tcf_block is
+  extended with additional lockeddevcnt counter that is used to count
+  number of devices that require rtnl lock that block is bound to. When
+  this counter is zero, tc_setup_cb_*() functions execute callbacks
+  without obtaining rtnl lock.
 
-Maciej
+- Extend cls API single hardware rule update tc_setup_cb_call() function
+  with tc_setup_cb_add(), tc_setup_cb_replace(), tc_setup_cb_destroy()
+  and tc_setup_cb_reoffload() functions. These new APIs are needed to
+  move management of block offload counter, filter in hardware counter
+  and flag from classifier implementations to cls API, which is now
+  responsible for managing them in concurrency-safe manner. Access to
+  cb_list from callback execution code is synchronized by obtaining new
+  'cb_lock' rw_semaphore in read mode, which allows executing callbacks
+  in parallel, but excludes any modifications of data from
+  register/unregister code. tcf_block offloads counter type is changed
+  to atomic integer to allow updating the counter concurrently.
 
->  {
-> +	u16 ntc = tx_ring->next_to_clean, ntu = tx_ring->next_to_use;
->  	unsigned int total_packets = 0, total_bytes = 0;
-> -	u32 i = tx_ring->next_to_clean, xsk_frames = 0;
-> -	unsigned int budget = q_vector->tx.work_limit;
->  	struct xdp_umem *umem = tx_ring->xsk_umem;
->  	union ixgbe_adv_tx_desc *tx_desc;
->  	struct ixgbe_tx_buffer *tx_bi;
-> -	bool xmit_done;
-> +	u32 xsk_frames = 0;
->  
-> -	tx_bi = &tx_ring->tx_buffer_info[i];
-> -	tx_desc = IXGBE_TX_DESC(tx_ring, i);
-> -	i -= tx_ring->count;
-> +	tx_bi = &tx_ring->tx_buffer_info[ntc];
-> +	tx_desc = IXGBE_TX_DESC(tx_ring, ntc);
->  
-> -	do {
-> +	while (ntc != ntu) {
->  		if (!(tx_desc->wb.status & cpu_to_le32(IXGBE_TXD_STAT_DD)))
->  			break;
->  
-> @@ -661,22 +659,18 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
->  
->  		tx_bi++;
->  		tx_desc++;
-> -		i++;
-> -		if (unlikely(!i)) {
-> -			i -= tx_ring->count;
-> +		ntc++;
-> +		if (unlikely(ntc == tx_ring->count)) {
-> +			ntc = 0;
->  			tx_bi = tx_ring->tx_buffer_info;
->  			tx_desc = IXGBE_TX_DESC(tx_ring, 0);
->  		}
->  
->  		/* issue prefetch for next Tx descriptor */
->  		prefetch(tx_desc);
-> +	}
->  
-> -		/* update budget accounting */
-> -		budget--;
-> -	} while (likely(budget));
-> -
-> -	i += tx_ring->count;
-> -	tx_ring->next_to_clean = i;
-> +	tx_ring->next_to_clean = ntc;
->  
->  	u64_stats_update_begin(&tx_ring->syncp);
->  	tx_ring->stats.bytes += total_bytes;
-> @@ -688,8 +682,7 @@ bool ixgbe_clean_xdp_tx_irq(struct ixgbe_q_vector *q_vector,
->  	if (xsk_frames)
->  		xsk_umem_complete_tx(umem, xsk_frames);
->  
-> -	xmit_done = ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
-> -	return budget > 0 && xmit_done;
-> +	return ixgbe_xmit_zc(tx_ring, q_vector->tx.work_limit);
->  }
->  
->  int ixgbe_xsk_async_xmit(struct net_device *dev, u32 qid)
+- Extend classifier ops with new ops->hw_add() and ops->hw_del()
+  callbacks which are used to notify unlocked classifiers when filter is
+  successfully added or deleted to hardware without releasing cb_lock.
+  This is necessary to update classifier state atomically with callback
+  list traversal and updating of all relevant counters and allows
+  unlocked classifiers to synchronize with concurrent reoffload without
+  requiring any changes to driver callback API implementations.
+
+New tc flow_action infrastructure is also modified to allow its user to
+execute without rtnl lock protection. Function tc_setup_flow_action() is
+modified to conditionally obtain rtnl lock before accessing action
+state. Action data that is accessed by reference is either copied or
+reference counted to prevent concurrent action overwrite from
+deallocating it. New function tc_cleanup_flow_action() is introduced to
+cleanup/release all such data obtained by tc_setup_flow_action().
+
+Flower classifier (only unlocked classifier at the moment) is modified
+to use new cls hardware offloads API and no longer obtains rtnl lock
+before calling it.
+
+Vlad Buslov (10):
+  net: sched: protect block offload-related fields with rw_semaphore
+  net: sched: change tcf block offload counter type to atomic_t
+  net: sched: refactor block offloads counter usage
+  net: sched: notify classifier on successful offload add/delete
+  net: sched: add API for registering unlocked offload block callbacks
+  net: sched: conditionally obtain rtnl lock in cls hw offloads API
+  net: sched: take rtnl lock in tc_setup_flow_action()
+  net: sched: take reference to action dev before calling offloads
+  net: sched: copy tunnel info when setting flow_action entry->tunnel
+  net: sched: flower: don't take rtnl lock for cls hw offloads API
+
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   3 +
+ include/net/flow_offload.h                    |   1 +
+ include/net/pkt_cls.h                         |  21 +-
+ include/net/sch_generic.h                     |  41 +--
+ include/net/tc_act/tc_tunnel_key.h            |  17 +
+ net/sched/cls_api.c                           | 343 +++++++++++++++++-
+ net/sched/cls_bpf.c                           |  38 +-
+ net/sched/cls_flower.c                        | 124 +++----
+ net/sched/cls_matchall.c                      |  31 +-
+ net/sched/cls_u32.c                           |  29 +-
+ 11 files changed, 478 insertions(+), 172 deletions(-)
+
+-- 
+2.21.0
 
