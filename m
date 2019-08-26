@@ -2,62 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8320F9D266
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 17:13:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 589A79D284
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 17:18:20 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732928AbfHZPNh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 11:13:37 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:59958 "EHLO vps0.lunn.ch"
+        id S1731138AbfHZPSQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 11:18:16 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:49572 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732908AbfHZPNh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 11:13:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Transfer-Encoding:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=xjOV5S9SAyl37qb9P12m0i6tKRdc5ijmgkhnR7b5i4w=; b=xqk1PNSDJOOAfT7xBaJxFRiJbK
-        aAOjlymmjM5RcU6cOTZZLnpHKgGZNWdKI8MEMe5+LkxTm9YQa8q3++1hfscIuklYVF4WLxh8AJQM4
-        7+pcjt8SaGmhILdzECjkxZSjE0qplxOTv6MQraPHI+aqscBB591yKCnjjz6d51k/za98=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i2GgZ-0004Uz-D7; Mon, 26 Aug 2019 17:13:35 +0200
-Date:   Mon, 26 Aug 2019 17:13:35 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <marek.behun@nic.cz>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v4 1/6] net: dsa: mv88e6xxx: support 2500base-x
- in SGMII IRQ handler
-Message-ID: <20190826151335.GA2168@lunn.ch>
-References: <20190826122109.20660-1-marek.behun@nic.cz>
- <20190826122109.20660-2-marek.behun@nic.cz>
+        id S1727850AbfHZPSP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 11:18:15 -0400
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id 757CE1801594;
+        Mon, 26 Aug 2019 15:18:15 +0000 (UTC)
+Received: from treble (ovpn-121-55.rdu2.redhat.com [10.10.121.55])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 525FD5D9C3;
+        Mon, 26 Aug 2019 15:18:10 +0000 (UTC)
+Date:   Mon, 26 Aug 2019 10:18:08 -0500
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     He Zhe <zhe.he@windriver.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, ndesaulniers@google.com,
+        miguel.ojeda.sandonis@gmail.com, luc.vanoostenryck@gmail.com,
+        schwidefsky@de.ibm.com, gregkh@linuxfoundation.org, mst@redhat.com,
+        gor@linux.ibm.com, andreyknvl@google.com,
+        liuxiaozhou@bytedance.com, yamada.masahiro@socionext.com,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: kernel/bpf/core.o: warning: objtool: ___bpf_prog_run.cold()+0x7:
+ call without frame pointer save/setup
+Message-ID: <20190826151808.upis57cckcpf2new@treble>
+References: <cf0273fb-c272-72be-50f9-b25bb7c7f183@windriver.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190826122109.20660-2-marek.behun@nic.cz>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+In-Reply-To: <cf0273fb-c272-72be-50f9-b25bb7c7f183@windriver.com>
+User-Agent: NeoMutt/20180716
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.63]); Mon, 26 Aug 2019 15:18:15 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 26, 2019 at 02:21:04PM +0200, Marek Behún wrote:
-> The mv88e6390_serdes_irq_link_sgmii IRQ handler reads the SERDES PHY
-> status register to determine speed, among other things. If cmode of the
-> port is set to 2500base-x, though, the PHY still reports 1000 Mbps (the
-> PHY register itself does not differentiate between 1000 Mbps and 2500
-> Mbps - it thinks it is running at 1000 Mbps, although clock is 2.5x
-> faster).
-> Look at the cmode and set SPEED_2500 if cmode is set to 2500base-x.
-> Also tell mv88e6xxx_port_setup_mac the PHY interface mode corresponding
-> to current cmode in terms of phy_interface_t.
+On Mon, Aug 26, 2019 at 10:42:53PM +0800, He Zhe wrote:
+> Hi All,
 > 
-> Signed-off-by: Marek Behún <marek.behun@nic.cz>
+> Since 3193c0836f20 ("bpf: Disable GCC -fgcse optimization for ___bpf_prog_run()"),
+> We have got the following warning,
+> kernel/bpf/core.o: warning: objtool: ___bpf_prog_run.cold()+0x7: call without frame pointer save/setup
+> 
+> If reverting the above commit, we will get the following warning,
+> kernel/bpf/core.o: warning: objtool: ___bpf_prog_run()+0x8b9: sibling call from callable instruction with modified stack frame
+> if CONFIG_RETPOLINE=n, and no warning if CONFIG_RETPOLINE=y
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Can you please share the following:
 
-    Andrew
+- core.o file
+
+The following would also be helpful for me to try to recreate it:
+
+- config file
+- compiler version
+- kernel version
+
+-- 
+Josh
