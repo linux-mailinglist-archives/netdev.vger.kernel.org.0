@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F0219C820
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 05:56:27 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2E0039C81C
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 05:56:04 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729620AbfHZD4D (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 23:56:03 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:43137 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729580AbfHZDz7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 23:55:59 -0400
-Received: by mail-pf1-f196.google.com with SMTP id v12so10866184pfn.10
+        id S1729604AbfHZD4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 23:56:01 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:43203 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729548AbfHZD4A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 23:56:00 -0400
+Received: by mail-pg1-f195.google.com with SMTP id k3so9706893pgb.10
         for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 20:55:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dCBJSB//EmWJ4z1k93Hk+IAzQRlIBH4W/m2LTDanYIk=;
-        b=UkEwvAYpExQtn6adiDhQyW7lEgVP3VLKumvvFrYmmNboeQ8WghaGq/L61r3aQqYX3l
-         +65pGUm++Q5CCRiXiGD2KqP9dHd9mpdoI0dH8fOLzInVAcSYGugVrBRFGJPqURyldwlu
-         HvhmqpejYELLofDP97B1dYQxWm1Hup+q6Kz2A=
+        bh=4ui4eYUBaHGuNBmrsPX7pN2RNXBqJnHKC0Jicxt/2Qc=;
+        b=RkypD5ec4XuQUNFXq2euWlw4p6567ls/zMZzwtpohAhUFlUGimvsgDLLBO3LzEMcY0
+         oZLeT1PDMmPq94Rb83rIk/7VfOWC5cZbI4Wz7rU04eTiNjR3KN5yM0lSZ/7ki33PcF81
+         6Wxlj5tZkfI3aND4c6eQg+RjJ5bGl32jI+tp4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dCBJSB//EmWJ4z1k93Hk+IAzQRlIBH4W/m2LTDanYIk=;
-        b=Wqm7GQdud4dF2vLJHslZAbiW3aEOfXs2q02LECuvdoXS/HyxecQPf6UjzYny2AyjsL
-         aX3xVkjbzgbAW2GI47XYa7V8Mguz6Dr43khnf04j0JhY73y2+wfUhx3c5h6tKbBbyGJZ
-         EdjjAS1VsppLqAl89gZCIaiIqBusIwnr08UOXCvCo0j+D6dH0rb3wbDtvDuy7yzRurCu
-         gGr/lGLA45NECgWiTPVrRM1/G1aaNMwA3MrqEjP27CnBOWwflQdpF01c435IfmCe0V6M
-         RdxsLW/480/kkhTvMlvW9EY9gwvxJu/etgorJ/F1iVq8GsF4x9PkmNOfP2QmBMlvqOwO
-         H7xA==
-X-Gm-Message-State: APjAAAWe89GIkCZhVf3mPU/E2WvXcvZ+LH8Uhdzz8YoTUbivW7MSyaJA
-        8rOtlaAcwLtWU7WmiUXIcRMQVX6bdGg=
-X-Google-Smtp-Source: APXvYqzhg7ChVUGBtE/C59cA+yIVDN+QZQAaU9uf2swW71i+kQ1+HyRRBhbgCDwFfjy2SNb4ECohWg==
-X-Received: by 2002:a63:e62:: with SMTP id 34mr14330063pgo.331.1566791758546;
-        Sun, 25 Aug 2019 20:55:58 -0700 (PDT)
+        bh=4ui4eYUBaHGuNBmrsPX7pN2RNXBqJnHKC0Jicxt/2Qc=;
+        b=HTq39BQ5b7K5sDI3blG7I0xkMKvk8Fuijf92tlqwomlf4pYsMfFH+/Q53Rdl4aAG0E
+         FHsEOcMXGzwITv1K8Fxhw9yCOVb3F10PY9/f8ZEFQzCOxPkBzetuBT/8qsKb6701hBRT
+         ipwV6NWgaVUZtuarNqJu48OejilA/s72wML0s2YGG6e07m/XRZYlx6Ft0hlBH8dqfo6v
+         rmxId6ZiUqk4uj7l3UnsPctUWTn6tR2V5IfyXR0Eh4jSpYVsicXS9E21To2e6rpBK9dS
+         gi/nx2Tq+mXEM7yhrdA2fGhuReUwJg2RnAjKuhABm/3xvYN0R08MGtZBc8BAqjdD0GQm
+         7Xwg==
+X-Gm-Message-State: APjAAAUIPBTzdmqGunCJWPichT7JlMYH9hcpdWwhvPO5FqFfBXAl0/cC
+        vkVy9rBIishmpP/ejAltAKKk4A==
+X-Google-Smtp-Source: APXvYqwaa9I2SuwSezdEH/YJ1cZibCYzreBkoNIK0lhUf8cEdQulTpM2xfpADfoyPhMmQu6yWsmX2g==
+X-Received: by 2002:a63:184b:: with SMTP id 11mr15252075pgy.112.1566791759582;
+        Sun, 25 Aug 2019 20:55:59 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d6sm8532975pgf.55.2019.08.25.20.55.57
+        by smtp.gmail.com with ESMTPSA id d6sm8532975pgf.55.2019.08.25.20.55.58
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Aug 2019 20:55:57 -0700 (PDT)
+        Sun, 25 Aug 2019 20:55:59 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com,
         jiri@mellanox.com, ray.jui@broadcom.com
-Subject: [PATCH net-next 07/14] bnxt_en: Enable health monitoring.
-Date:   Sun, 25 Aug 2019 23:54:58 -0400
-Message-Id: <1566791705-20473-8-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 08/14] bnxt_en: Add BNXT_STATE_IN_FW_RESET state and pf->registered_vfs.
+Date:   Sun, 25 Aug 2019 23:54:59 -0400
+Message-Id: <1566791705-20473-9-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
 References: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
@@ -55,141 +55,104 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Handle the async event from the firmware that enables firmware health
-monitoring.  Store initial health metrics.
+The new flag will be set in subsequent patches when firmware is
+going through reset.  Delay close and SRIOV disable operations until
+the flag is cleared.
+
+Store the registered_vfs value from the firmware.  This value will
+be polled in subsequent patches to determine if SR-IOV is in quiescent
+state.
 
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 66 ++++++++++++++++++++++++++++++-
- drivers/net/ethernet/broadcom/bnxt/bnxt.h |  9 +++++
- 2 files changed, 73 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c       | 16 ++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h       |  2 ++
+ drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c |  4 ++++
+ 3 files changed, 22 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 9ab5024..f522f3b 100644
+index f522f3b..be0eb1c 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -254,6 +254,7 @@ static const u16 bnxt_async_events_arr[] = {
- 	ASYNC_EVENT_CMPL_EVENT_ID_PORT_CONN_NOT_ALLOWED,
- 	ASYNC_EVENT_CMPL_EVENT_ID_VF_CFG_CHANGE,
- 	ASYNC_EVENT_CMPL_EVENT_ID_LINK_SPEED_CFG_CHANGE,
-+	ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY,
- };
+@@ -6326,6 +6326,8 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
+ 		struct bnxt_vf_info *vf = &bp->vf;
  
- static struct workqueue_struct *bnxt_pf_wq;
-@@ -1896,6 +1897,33 @@ static int bnxt_force_rx_discard(struct bnxt *bp,
- 	return bnxt_rx_pkt(bp, cpr, raw_cons, event);
- }
- 
-+u32 bnxt_fw_health_readl(struct bnxt *bp, int reg_idx)
-+{
-+	struct bnxt_fw_health *fw_health = bp->fw_health;
-+	u32 reg = fw_health->regs[reg_idx];
-+	u32 reg_type, reg_off, val = 0;
-+
-+	reg_type = BNXT_FW_HEALTH_REG_TYPE(reg);
-+	reg_off = BNXT_FW_HEALTH_REG_OFF(reg);
-+	switch (reg_type) {
-+	case BNXT_FW_HEALTH_REG_TYPE_CFG:
-+		pci_read_config_dword(bp->pdev, reg_off, &val);
-+		break;
-+	case BNXT_FW_HEALTH_REG_TYPE_GRC:
-+		reg_off = fw_health->mapped_regs[reg_idx];
-+		/* fall through */
-+	case BNXT_FW_HEALTH_REG_TYPE_BAR0:
-+		val = readl(bp->bar0 + reg_off);
-+		break;
-+	case BNXT_FW_HEALTH_REG_TYPE_BAR1:
-+		val = readl(bp->bar1 + reg_off);
-+		break;
-+	}
-+	if (reg_idx == BNXT_FW_RESET_INPROG_REG)
-+		val &= fw_health->fw_reset_inprog_reg_mask;
-+	return val;
-+}
-+
- #define BNXT_GET_EVENT_PORT(data)	\
- 	((data) &			\
- 	 ASYNC_EVENT_CMPL_PORT_CONN_NOT_ALLOWED_EVENT_DATA1_PORT_ID_MASK)
-@@ -1951,6 +1979,35 @@ static int bnxt_async_event_process(struct bnxt *bp,
- 			goto async_event_process_exit;
- 		set_bit(BNXT_RESET_TASK_SILENT_SP_EVENT, &bp->sp_event);
- 		break;
-+	case ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY: {
-+		struct bnxt_fw_health *fw_health = bp->fw_health;
-+		u32 data1 = le32_to_cpu(cmpl->event_data1);
-+
-+		if (!fw_health)
-+			goto async_event_process_exit;
-+
-+		fw_health->enabled = EVENT_DATA1_RECOVERY_ENABLED(data1);
-+		fw_health->master = EVENT_DATA1_RECOVERY_MASTER_FUNC(data1);
-+		if (!fw_health->enabled)
-+			break;
-+
-+		if (netif_msg_drv(bp))
-+			netdev_info(bp->dev, "Error recovery info: error recovery[%d], master[%d], reset count[0x%x], health status: 0x%x\n",
-+				    fw_health->enabled, fw_health->master,
-+				    bnxt_fw_health_readl(bp,
-+							 BNXT_FW_RESET_CNT_REG),
-+				    bnxt_fw_health_readl(bp,
-+							 BNXT_FW_HEALTH_REG));
-+		fw_health->tmr_multiplier =
-+			DIV_ROUND_UP(fw_health->polling_dsecs * HZ,
-+				     bp->current_interval * 10);
-+		fw_health->tmr_counter = fw_health->tmr_multiplier;
-+		fw_health->last_fw_heartbeat =
-+			bnxt_fw_health_readl(bp, BNXT_FW_HEARTBEAT_REG);
-+		fw_health->last_fw_reset_cnt =
-+			bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
-+		goto async_event_process_exit;
-+	}
- 	default:
- 		goto async_event_process_exit;
+ 		vf->vlan = le16_to_cpu(resp->vlan) & VLAN_VID_MASK;
++	} else {
++		bp->pf.registered_vfs = le16_to_cpu(resp->registered_vfs);
  	}
-@@ -4286,9 +4343,14 @@ int bnxt_hwrm_func_rgtr_async_events(struct bnxt *bp, unsigned long *bmap,
- 		cpu_to_le32(FUNC_DRV_RGTR_REQ_ENABLES_ASYNC_EVENT_FWD);
+ #endif
+ 	flags = le16_to_cpu(resp->flags);
+@@ -8710,6 +8712,10 @@ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
+ 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
+ 		fw_reset = true;
  
- 	memset(async_events_bmap, 0, sizeof(async_events_bmap));
--	for (i = 0; i < ARRAY_SIZE(bnxt_async_events_arr); i++)
--		__set_bit(bnxt_async_events_arr[i], async_events_bmap);
-+	for (i = 0; i < ARRAY_SIZE(bnxt_async_events_arr); i++) {
-+		u16 event_id = bnxt_async_events_arr[i];
- 
-+		if (event_id == ASYNC_EVENT_CMPL_EVENT_ID_ERROR_RECOVERY &&
-+		    !(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
-+			continue;
-+		__set_bit(bnxt_async_events_arr[i], async_events_bmap);
++	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state) && !fw_reset) {
++		netdev_err(bp->dev, "RESET_DONE not set during FW reset.\n");
++		return -ENODEV;
 +	}
- 	if (bmap && bmap_size) {
- 		for (i = 0; i < bmap_size; i++) {
- 			if (test_bit(i, bmap))
+ 	if (resc_reinit || fw_reset) {
+ 		if (fw_reset) {
+ 			rc = bnxt_fw_init_one(bp);
+@@ -9218,6 +9224,9 @@ static void __bnxt_close_nic(struct bnxt *bp, bool irq_re_init,
+ 	bnxt_debug_dev_exit(bp);
+ 	bnxt_disable_napi(bp);
+ 	del_timer_sync(&bp->timer);
++	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
++		pci_disable_device(bp->pdev);
++
+ 	bnxt_free_skbs(bp);
+ 
+ 	/* Save ring stats before shutdown */
+@@ -9234,6 +9243,13 @@ int bnxt_close_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
+ {
+ 	int rc = 0;
+ 
++	while (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)) {
++		netdev_info(bp->dev, "FW reset in progress, delaying close");
++		rtnl_unlock();
++		msleep(250);
++		rtnl_lock();
++	}
++
+ #ifdef CONFIG_BNXT_SRIOV
+ 	if (bp->sriov_cfg) {
+ 		rc = wait_event_interruptible_timeout(bp->sriov_cfg_wait,
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 6053dfd..96f2e12 100644
+index 96f2e12..c316de5 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -472,6 +472,14 @@ struct rx_tpa_end_cmp_ext {
- 	((le32_to_cpu((rx_tpa_end_ext)->rx_tpa_end_cmp_dup_acks) &	\
- 	 RX_TPA_END_CMP_AGG_BUFS_P5) >> RX_TPA_END_CMP_AGG_BUFS_SHIFT_P5)
+@@ -1066,6 +1066,7 @@ struct bnxt_pf_info {
+ 	u8	mac_addr[ETH_ALEN];
+ 	u32	first_vf_id;
+ 	u16	active_vfs;
++	u16	registered_vfs;
+ 	u16	max_vfs;
+ 	u32	max_encap_records;
+ 	u32	max_decap_records;
+@@ -1605,6 +1606,7 @@ struct bnxt {
+ #define BNXT_STATE_IN_SP_TASK	1
+ #define BNXT_STATE_READ_STATS	2
+ #define BNXT_STATE_FW_RESET_DET 3
++#define BNXT_STATE_IN_FW_RESET	4
+ #define BNXT_STATE_PROBE_ERR	5
  
-+#define EVENT_DATA1_RECOVERY_MASTER_FUNC(data1)				\
-+	!!((data1) &							\
-+	   ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_MASTER_FUNC)
-+
-+#define EVENT_DATA1_RECOVERY_ENABLED(data1)				\
-+	!!((data1) &							\
-+	   ASYNC_EVENT_CMPL_ERROR_RECOVERY_EVENT_DATA1_FLAGS_RECOVERY_ENABLED)
-+
- struct nqe_cn {
- 	__le16	type;
- 	#define NQ_CN_TYPE_MASK           0x3fUL
-@@ -1914,6 +1922,7 @@ extern const u16 bnxt_lhint_arr[];
- int bnxt_alloc_rx_data(struct bnxt *bp, struct bnxt_rx_ring_info *rxr,
- 		       u16 prod, gfp_t gfp);
- void bnxt_reuse_rx_data(struct bnxt_rx_ring_info *rxr, u16 cons, void *data);
-+u32 bnxt_fw_health_readl(struct bnxt *bp, int reg_idx);
- void bnxt_set_tpa_flags(struct bnxt *bp);
- void bnxt_set_ring_params(struct bnxt *);
- int bnxt_set_rx_skb_mode(struct bnxt *bp, bool page_mode);
+ 	struct bnxt_irq	*irq_tbl;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+index 93524d7..e435374 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
+@@ -802,6 +802,10 @@ void bnxt_sriov_disable(struct bnxt *bp)
+ {
+ 	u16 num_vfs = pci_num_vf(bp->pdev);
+ 
++	while (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)) {
++		netdev_info(bp->dev, "FW reset in progress, delaying SR-IOV config");
++		msleep(250);
++	}
+ 	if (!num_vfs)
+ 		return;
+ 
 -- 
 2.5.1
 
