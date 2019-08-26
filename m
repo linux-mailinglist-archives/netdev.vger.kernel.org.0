@@ -2,120 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E364A9D72D
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:04:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EFC39D746
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:13:59 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730262AbfHZUEg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 16:04:36 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:33424 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729144AbfHZUEf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 16:04:35 -0400
-Received: by mail-wm1-f65.google.com with SMTP id p77so770710wme.0
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 13:04:34 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bKlOOGzQn7UNQuXersSFPLBIGdpMs03IGIsGpzGUw2o=;
-        b=l9bCcXcSMe5a0fzir4LI/RhuHerpjM2Qp1tXyEUXj4vy0GfzCwCPmxlBZWSyq9jwec
-         eNRpJoUCfddhDJPmVHch91//zv45IysCk15HHIOiRaEZGij0ilfYav2938eKs4c1cwAZ
-         WTlJr9oD0g0Fb8RJE0HkS4YEt42TXWzjxhhnv1PiLZopJ3zOVWWDzjCgLX6QcMymFhqB
-         MueuCJI6nBM73CHBpn9F3lREgWvH8om2GADhmLsfFOyXsDUy9Rhf60UigNiHSEGopKa5
-         fBKEqm1MwcoVSnlPzDw52i2Rpc576GWY7sYMgNH6pQW6z/R9prfok1D5nePcu8L8e9S9
-         3TXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=bKlOOGzQn7UNQuXersSFPLBIGdpMs03IGIsGpzGUw2o=;
-        b=RyA8evNOk+J+tAcNb78CZHH3oVwuwGg8yAUReuzyXE+RbFRJwCuTSdM7ixzL8nQ9BJ
-         E6UxIATVSPGjeGXdxHYTPREGw0YBps4wdcabIc5Q2lkJXITlHdCvm5DDzRo3mj4g1Q22
-         qo4Bv1UnW5+dZQ62EubXlnYj03J/xqczCFRV/isd+638Ks47a4a+wfbFLG+W5J3VzrgO
-         jTGQ3+hO3FrxhAXTkSy8L3IVaJ4EW0IjwtS9agmd2Z3SUmc1HT+mFuAe4315QNeMCU9c
-         cnxenfteK1Q4/CAniUc2yJJdmbL7lVvwRkEPPDIrz86hOnfZPU2Q0lsTScF4KqJN9+4G
-         mpYg==
-X-Gm-Message-State: APjAAAUSKARXGbxeip3HkjWZ/Htv7hKzuZSwIHp5JB7hxmBK3WpSKb4A
-        vcdZ6+BFyAM75UW3hHCB2UQ=
-X-Google-Smtp-Source: APXvYqzeJ7cty9CRgTcVJEtKx6dgbETYX7F2UAf2AYpyeJuld7Y9AJvKXGIXiCWkulVEkVG76WERJw==
-X-Received: by 2002:a05:600c:24cf:: with SMTP id 15mr23639999wmu.76.1566849874035;
-        Mon, 26 Aug 2019 13:04:34 -0700 (PDT)
-Received: from [192.168.8.147] (17.170.185.81.rev.sfr.net. [81.185.170.17])
-        by smtp.gmail.com with ESMTPSA id s64sm1229665wmf.16.2019.08.26.13.04.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Aug 2019 13:04:33 -0700 (PDT)
-Subject: Re: [PATCH net] tcp: remove empty skb from write queue in error cases
-To:     Jason Baron <jbaron@akamai.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Vladimir Rutsky <rutsky@google.com>
-References: <20190826161915.81676-1-edumazet@google.com>
- <58ae43f8-21e7-f08f-2632-ce567661d301@akamai.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <ebe471e1-e4ad-4b59-9819-08a7d976beb1@gmail.com>
-Date:   Mon, 26 Aug 2019 22:04:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S2387978AbfHZUNw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 16:13:52 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60700 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732670AbfHZUNv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 16:13:51 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=VazxrIYVBs1CiKh7GDTAYPEjIJ6tVdemFqrwUPFMkWQ=; b=V9QSCvIDBZaUperU1dfYz8IDFV
+        gbNlW2f3BYEVhRHmXfY8ckS4Iw5qISPCM5EETcQ+Xvs+J+5rj3JcweSRnWcrOz3Lu0JzA8atPzoPx
+        hTgzFNikZ1sepptj0OO4CHQRZ91UVKzsYUuVO9fmNt4PU0EU283AS0GwW2JicCsdkIeg=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i2LN4-0006l2-5H; Mon, 26 Aug 2019 22:13:46 +0200
+Date:   Mon, 26 Aug 2019 22:13:46 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     Voon Weifeng <weifeng.voon@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: Re: [PATCH v1 net-next 4/4] net: stmmac: setup higher frequency clk
+ support for EHL & TGL
+Message-ID: <20190826201346.GJ2168@lunn.ch>
+References: <1566869891-29239-1-git-send-email-weifeng.voon@intel.com>
+ <1566869891-29239-5-git-send-email-weifeng.voon@intel.com>
+ <7d43e0c6-6f51-0d71-0af8-89f22b0234f9@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <58ae43f8-21e7-f08f-2632-ce567661d301@akamai.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7d43e0c6-6f51-0d71-0af8-89f22b0234f9@gmail.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 8/26/19 9:56 PM, Jason Baron wrote:
+On Mon, Aug 26, 2019 at 12:55:31PM -0700, Florian Fainelli wrote:
+> On 8/26/19 6:38 PM, Voon Weifeng wrote:
+> > EHL DW EQOS is running on a 200MHz clock. Setting up stmmac-clk,
+> > ptp clock and ptp_max_adj to 200MHz.
+> > 
+> > Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> > Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> > ---
+> >  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 21 +++++++++++++++++++++
+> >  drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c |  3 +++
+> >  include/linux/stmmac.h                           |  1 +
+> >  3 files changed, 25 insertions(+)
+> > 
+> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+> > index e969dc9bb9f0..20906287b6d4 100644
+> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+> > @@ -9,6 +9,7 @@
+> >    Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+> >  *******************************************************************************/
+> >  
+> > +#include <linux/clk-provider.h>
+> >  #include <linux/pci.h>
+> >  #include <linux/dmi.h>
+> >  
+> > @@ -174,6 +175,19 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+> >  	plat->axi->axi_blen[1] = 8;
+> >  	plat->axi->axi_blen[2] = 16;
+> >  
+> > +	plat->ptp_max_adj = plat->clk_ptp_rate;
+> > +
+> > +	/* Set system clock */
+> > +	plat->stmmac_clk = clk_register_fixed_rate(&pdev->dev,
+> > +						   "stmmac-clk", NULL, 0,
+> > +						   plat->clk_ptp_rate);
+> > +
+> > +	if (IS_ERR(plat->stmmac_clk)) {
+> > +		dev_warn(&pdev->dev, "Fail to register stmmac-clk\n");
+> > +		plat->stmmac_clk = NULL;
 > 
-> 
-> On 8/26/19 12:19 PM, Eric Dumazet wrote:
->> Vladimir Rutsky reported stuck TCP sessions after memory pressure
->> events. Edge Trigger epoll() user would never receive an EPOLLOUT
->> notification allowing them to retry a sendmsg().
->>
->> Jason tested the case of sk_stream_alloc_skb() returning NULL,
->> but there are other paths that could lead both sendmsg() and sendpage()
->> to return -1 (EAGAIN), with an empty skb queued on the write queue.
->>
->> This patch makes sure we remove this empty skb so that
->> Jason code can detect that the queue is empty, and
->> call sk->sk_write_space(sk) accordingly.
->>
-> 
-> Makes sense, thanks. I think this check for empty queue could also
-> benefit from and update to use tcp_write_queue_empty(). I will send a
-> follow-up for that.
->
+> Don't you need to propagate at least EPROBE_DEFER here?
 
-My plan (for net-next) is to submit something more like this one instead.
+Hi Florian
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 051ef10374f6..908dbe91e04b 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -1068,7 +1068,7 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
-                goto out;
- out_err:
-        /* make sure we wake any epoll edge trigger waiter */
--       if (unlikely(skb_queue_len(&sk->sk_write_queue) == 0 &&
-+       if (unlikely(tcp_rtx_and_write_queues_empty(sk) &&
-                     err == -EAGAIN)) {
-                sk->sk_write_space(sk);
-                tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED);
-@@ -1407,7 +1407,7 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
-        sock_zerocopy_put_abort(uarg, true);
-        err = sk_stream_error(sk, flags, err);
-        /* make sure we wake any epoll edge trigger waiter */
--       if (unlikely(skb_queue_len(&sk->sk_write_queue) == 0 &&
-+       if (unlikely(tcp_rtx_and_write_queues_empty(sk) &&
-                     err == -EAGAIN)) {
-                sk->sk_write_space(sk);
-                tcp_chrono_stop(sk, TCP_CHRONO_SNDBUF_LIMITED);
+Isn't a fixed rate clock a complete fake. There is no hardware behind
+it. So can it return EPROBE_DEFER?
 
+    Andrew
