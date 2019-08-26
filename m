@@ -2,322 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 308D29C96B
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:29:10 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id F06389C975
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:32:57 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729551AbfHZG3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 02:29:04 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:59020 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729175AbfHZG3E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:29:04 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 464A715249283;
-        Sun, 25 Aug 2019 23:29:03 -0700 (PDT)
-Date:   Sun, 25 Aug 2019 23:29:02 -0700 (PDT)
-Message-Id: <20190825.232902.493461685673378789.davem@davemloft.net>
-To:     torvalds@linux-foundation.org
-CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT] Networking
-From:   David Miller <davem@davemloft.net>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
+        id S1729721AbfHZGc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 02:32:56 -0400
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:36934 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725385AbfHZGc4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:32:56 -0400
+Received: by mail-wm1-f68.google.com with SMTP id d16so14632194wme.2;
+        Sun, 25 Aug 2019 23:32:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=iOQM757QAYxCOX3hrCBVbTdwFWv0y68ZG1Z8cM2cfis=;
+        b=YlqVEOnteRAXr3AyXxEvf5T8pIkl9Aqp5LydmGjEw+Kh9BFPlP5+6PPUU+baYGL/kW
+         QHy/QL9HDZUuD9uKYurUKaB47D7CaCwJVexYZafYe6Bx86SdG4X9a5j6rNngwtxPwNeG
+         28uDavKdKPhnBis6TnUUO/bIzMJTFW6oO+2BQZKplwQ3Ywao+NqzaX3kH22Y2dFvIDcq
+         FAOWTn2yheq0H0br1S06jpiNk3Sep+qptt5vHoR7Kp2ivBsa8wFLRkxMm3wRstVbux1d
+         DJvBQDAvbgvquFSDqKEE1sukGLR38norAhfKPq8y3c0nYXWPOxrrDczU6+RAwj7AZzOg
+         5Mbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=iOQM757QAYxCOX3hrCBVbTdwFWv0y68ZG1Z8cM2cfis=;
+        b=PZkwHMW25NGYUZUacJQauj6LjTv2dt9XUGFQUPstzq9Psokup4mw2rJ/frJXNUgPdX
+         s5x0n1DIZaYVoQ6s++FyG2mQBmzDgMlYXk6OZPJYtxVucUnD9W9VL62LtouUlPyZ3DF4
+         jVzfFzpG9c5GpMysMzaSJ01FoZrAn0N4fsYtd6LDKcDu5afyv9T73pCus+IJzzo8efpl
+         1Qk8EnvoAuwSEzD3gDF7jnCv11VhH5kQVC3PXYlORp9GjvxoIuCdGUkn/IEAxQXyBCI3
+         1LMltCo8IFUyhOAvImgQA4TeLb0aqMful5IjAm4CmEifnD0+X1evkCf5SNTZn85VQxtb
+         jzdg==
+X-Gm-Message-State: APjAAAWhTvEzMM++H+egW9PlW0gd93q2uTq+qRNB05gnmaS+1J5L95n5
+        ca2HfPhifP6A9bo4APR1ZBffLFrg
+X-Google-Smtp-Source: APXvYqxzWGTL1Ib2g6Z45VuwB8hfXWkrKMAM+9711Hn+MeGsuyYvF5itQUsKOanHs+fMoJ4IBMH3WQ==
+X-Received: by 2002:a05:600c:48b:: with SMTP id d11mr20559520wme.124.1566801172751;
+        Sun, 25 Aug 2019 23:32:52 -0700 (PDT)
+Received: from [192.168.8.147] (234.173.185.81.rev.sfr.net. [81.185.173.234])
+        by smtp.gmail.com with ESMTPSA id l15sm9151503wru.56.2019.08.25.23.32.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 25 Aug 2019 23:32:52 -0700 (PDT)
+Subject: Re: Unable to create htb tc classes more than 64K
+To:     Cong Wang <xiyou.wangcong@gmail.com>,
+        Akshat Kakkar <akshat.1984@gmail.com>
+Cc:     Anton Danilov <littlesmilingcloud@gmail.com>,
+        NetFilter <netfilter-devel@vger.kernel.org>,
+        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>
+References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
+ <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
+ <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
+ <CAM_iQpUH6y8oEct3FXUhqNekQ3sn3N7LoSR0chJXAPYUzvWbxA@mail.gmail.com>
+ <CAA5aLPjzX+9YFRGgCgceHjkU0=e6x8YMENfp_cC9fjfHYK3e+A@mail.gmail.com>
+ <CAM_iQpXBhrOXtfJkibyxyq781Pjck-XJNgZ-=Ucj7=DeG865mw@mail.gmail.com>
+ <CAA5aLPjO9rucCLJnmQiPBxw2pJ=6okf3C88rH9GWnh3p0R+Rmw@mail.gmail.com>
+ <CAM_iQpVtGUH6CAAegRtTgyemLtHsO+RFP8f6LH2WtiYu9-srfw@mail.gmail.com>
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+Message-ID: <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com>
+Date:   Mon, 26 Aug 2019 08:32:48 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <CAM_iQpVtGUH6CAAegRtTgyemLtHsO+RFP8f6LH2WtiYu9-srfw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 25 Aug 2019 23:29:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 
-1) Use 32-bit index for tails calls in s390 bpf JIT, from Ilya Leoshkevich.
 
-2) Fix missed EPOLLOUT events in TCP, from Eric Dumazet.  Same fix for SMC
-   from Jason Baron.
+On 8/25/19 7:52 PM, Cong Wang wrote:
+> On Wed, Aug 21, 2019 at 11:00 PM Akshat Kakkar <akshat.1984@gmail.com> wrote:
+>>
+>> On Thu, Aug 22, 2019 at 3:37 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>>>> I am using ipset +  iptables to classify and not filters. Besides, if
+>>>> tc is allowing me to define qdisc -> classes -> qdsic -> classes
+>>>> (1,2,3 ...) sort of structure (ie like the one shown in ascii tree)
+>>>> then how can those lowest child classes be actually used or consumed?
+>>>
+>>> Just install tc filters on the lower level too.
+>>
+>> If I understand correctly, you are saying,
+>> instead of :
+>> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+>> 0x00000001 fw flowid 1:10
+>> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+>> 0x00000002 fw flowid 1:20
+>> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+>> 0x00000003 fw flowid 2:10
+>> tc filter add dev eno2 parent 100: protocol ip prio 1 handle
+>> 0x00000004 fw flowid 2:20
+>>
+>>
+>> I should do this: (i.e. changing parent to just immediate qdisc)
+>> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000001
+>> fw flowid 1:10
+>> tc filter add dev eno2 parent 1: protocol ip prio 1 handle 0x00000002
+>> fw flowid 1:20
+>> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000003
+>> fw flowid 2:10
+>> tc filter add dev eno2 parent 2: protocol ip prio 1 handle 0x00000004
+>> fw flowid 2:20
+> 
+> 
+> Yes, this is what I meant.
+> 
+> 
+>>
+>> I tried this previously. But there is not change in the result.
+>> Behaviour is exactly same, i.e. I am still getting 100Mbps and not
+>> 100kbps or 300kbps
+>>
+>> Besides, as I mentioned previously I am using ipset + skbprio and not
+>> filters stuff. Filters I used just to test.
+>>
+>> ipset  -N foo hash:ip,mark skbinfo
+>>
+>> ipset -A foo 10.10.10.10, 0x0x00000001 skbprio 1:10
+>> ipset -A foo 10.10.10.20, 0x0x00000002 skbprio 1:20
+>> ipset -A foo 10.10.10.30, 0x0x00000003 skbprio 2:10
+>> ipset -A foo 10.10.10.40, 0x0x00000004 skbprio 2:20
+>>
+>> iptables -A POSTROUTING -j SET --map-set foo dst,dst --map-prio
+> 
+> Hmm..
+> 
+> I am not familiar with ipset, but it seems to save the skbprio into
+> skb->priority, so it doesn't need TC filter to classify it again.
+> 
+> I guess your packets might go to the direct queue of HTB, which
+> bypasses the token bucket. Can you dump the stats and check?
+
+With more than 64K 'classes' I suggest to use a single FQ qdisc [1], and
+an eBPF program using EDT model (Earliest Departure Time)
+
+The BPF program would perform the classification, then find a data structure
+based on the 'class', and then update/maintain class virtual times and skb->tstamp
+
+TBF = bpf_map_lookup_elem(&map, &classid);
+
+uint64_t now = bpf_ktime_get_ns();
+uint64_t time_to_send = max(TBF->time_to_send, now);
+
+time_to_send += (u64)qdisc_pkt_len(skb) * NSEC_PER_SEC / TBF->rate;
+if (time_to_send > TBF->max_horizon) {
+    return TC_ACT_SHOT;
+}
+TBF->time_to_send = time_to_send;
+skb->tstamp = max(time_to_send, skb->tstamp);
+if (time_to_send - now > TBF->ecn_horizon)
+    bpf_skb_ecn_set_ce(skb);
+return TC_ACT_OK;
+
+tools/testing/selftests/bpf/progs/test_tc_edt.c shows something similar.
+
+
+[1]  MQ + FQ if the device is multi-queues.
+
+   Note that this setup scales very well on SMP, since we no longer are forced
+ to use a single HTB hierarchy (protected by a single spinlock)
 
-3) ipv6_mc_may_pull() should return 0 for malformed packets, not -EINVAL.
-   From Stefano Brivio.
-
-4) Don't forget to unpin umem xdp pages in error path of
-   xdp_umem_reg().  From Ivan Khoronzhuk.
-
-5) Fix sta object leak in mac80211, from Johannes Berg.
-
-6) Fix regression by not configuring PHYLINK on CPU port of bcm_sf2
-   switches.  From Florian Fainelli.
-
-7) Revert DMA sync removal from r8169 which was causing regressions on some
-   MIPS Loongson platforms.  From Heiner Kallweit.
-
-8) Use after free in flow dissector, from Jakub Sitnicki.
-
-9) Fix NULL derefs of net devices during ICMP processing across collect_md
-   tunnels, from Hangbin Liu.
-
-10) proto_register() memory leaks, from Zhang Lin.
-
-11) Set NLM_F_MULTI flag in multipart netlink messages consistently, from
-    John Fastabend.
-
-Please pull, thanks a lot!
-
-The following changes since commit 06821504fd47a5e5b641aeeb638a0ae10a216ef8:
-
-  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2019-08-19 10:00:01 -0700)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
-
-for you to fetch changes up to f53a7ad189594a112167efaf17ea8d0242b5ac00:
-
-  r8152: Set memory to all 0xFFs on failed reg reads (2019-08-25 19:52:59 -0700)
-
-----------------------------------------------------------------
-Alexander Wetzel (1):
-      cfg80211: Fix Extended Key ID key install checks
-
-Alexei Starovoitov (1):
-      bpf: fix precision tracking in presence of bpf2bpf calls
-
-Alexey Kodanev (1):
-      ipv4: mpls: fix mpls_xmit for iptunnel
-
-Anders Roxell (2):
-      selftests/bpf: add config fragment BPF_JIT
-      selftests/bpf: install files test_xdp_vlan.sh
-
-Andrew Lunn (1):
-      MAINTAINERS: Add phylink keyword to SFF/SFP/SFP+ MODULE SUPPORT
-
-Antoine Tenart (1):
-      net: cpsw: fix NULL pointer exception in the probe error path
-
-Christophe JAILLET (1):
-      Kconfig: Fix the reference to the IDT77105 Phy driver in the description of ATM_NICSTAR_USE_IDT77105
-
-Colin Ian King (1):
-      net: ieee802154: remove redundant assignment to rc
-
-Dan Carpenter (1):
-      gve: Copy and paste bug in gve_get_stats()
-
-Daniel Borkmann (1):
-      bpf: fix use after free in prog symbol exposure
-
-David Ahern (1):
-      nexthop: Fix nexthop_num_path for blackhole nexthops
-
-David S. Miller (8):
-      Merge git://git.kernel.org/.../pablo/nf
-      Merge tag 'mac80211-for-davem-2019-08-21' of git://git.kernel.org/.../jberg/mac80211
-      Merge tag 'batadv-net-for-davem-20190821' of git://git.open-mesh.org/linux-merge
-      Merge tag 'wireless-drivers-for-davem-2019-08-21' of git://git.kernel.org/.../kvalo/wireless-drivers
-      Merge git://git.kernel.org/.../bpf/bpf
-      Merge branch 'ieee802154-for-davem-2019-08-24' of git://git.kernel.org/.../sschmidt/wpan
-      Merge branch 'collect_md-mode-dev-null'
-      Merge tag 'mlx5-fixes-2019-08-22' of git://git.kernel.org/.../saeed/linux
-
-Denis Efremov (2):
-      MAINTAINERS: Remove IP MASQUERADING record
-      MAINTAINERS: net_failover: Fix typo in a filepath
-
-Emmanuel Grumbach (1):
-      iwlwifi: pcie: fix the byte count table format for 22560 devices
-
-Eran Ben Elisha (2):
-      net/mlx5e: Add num bytes metadata to WQE info
-      net/mlx5e: Remove ethernet segment from dump WQE
-
-Eric Dumazet (2):
-      batman-adv: fix uninit-value in batadv_netlink_get_ifindex()
-      tcp: make sure EPOLLOUT wont be missed
-
-Florian Fainelli (1):
-      net: dsa: bcm_sf2: Do not configure PHYLINK on CPU port
-
-Hangbin Liu (3):
-      ipv6/addrconf: allow adding multicast addr if IFA_F_MCAUTOJOIN is set
-      ipv4/icmp: fix rt dst dev null pointer dereference
-      xfrm/xfrm_policy: fix dst dev null pointer dereference in collect_md mode
-
-Heiner Kallweit (1):
-      Revert "r8169: remove not needed call to dma_sync_single_for_device"
-
-Hodaszi, Robert (1):
-      Revert "cfg80211: fix processing world regdomain when non modular"
-
-Ilan Peer (1):
-      iwlwifi: mvm: Allow multicast data frames only when associated
-
-Ilya Leoshkevich (6):
-      s390/bpf: fix lcgr instruction encoding
-      s390/bpf: use 32-bit index for tail calls
-      selftests/bpf: fix "bind{4, 6} deny specific IP & port" on s390
-      selftests/bpf: fix test_cgroup_storage on s390
-      selftests/bpf: fix test_btf_dump with O=
-      bpf: allow narrow loads of some sk_reuseport_md fields with offset > 0
-
-Ivan Khoronzhuk (1):
-      xdp: unpin xdp umem pages in error path
-
-Jakub Sitnicki (1):
-      flow_dissector: Fix potential use-after-free on BPF_PROG_DETACH
-
-Jason Baron (1):
-      net/smc: make sure EPOLLOUT is raised
-
-Johannes Berg (1):
-      mac80211: fix possible sta leak
-
-John Fastabend (1):
-      net: route dump netlink NLM_F_MULTI flag missing
-
-Julian Wiedmann (1):
-      s390/qeth: reject oversized SNMP requests
-
-Juliana Rodrigueiro (1):
-      netfilter: xt_nfacct: Fix alignment mismatch in xt_nfacct_match_info
-
-Justin.Lee1@Dell.com (1):
-      net/ncsi: Fix the payload copying for the request coming from Netlink
-
-Li RongQing (2):
-      net: fix __ip_mc_inc_group usage
-      net: fix icmp_socket_deliver argument 2 input
-
-Luca Coelho (2):
-      iwlwifi: pcie: don't switch FW to qnj when ax201 is detected
-      iwlwifi: pcie: fix recognition of QuZ devices
-
-Masahiro Yamada (1):
-      netfilter: add include guard to nf_conntrack_h323_types.h
-
-Mike Rapoport (1):
-      trivial: netns: fix typo in 'struct net.passive' description
-
-Moshe Shemesh (2):
-      net/mlx5: Fix crdump chunks print
-      net/mlx5: Fix delay in fw fatal report handling due to fw report
-
-Pablo Neira Ayuso (1):
-      netfilter: nft_flow_offload: missing netlink attribute policy
-
-Prashant Malani (1):
-      r8152: Set memory to all 0xFFs on failed reg reads
-
-Quentin Monnet (1):
-      tools: bpftool: close prog FD before exit on showing a single program
-
-Sabrina Dubroca (1):
-      ipv6: propagate ipv6_add_dev's error returns out of ipv6_find_idev
-
-Stanislaw Gruszka (2):
-      mt76: mt76x0u: do not reset radio on resume
-      rt2x00: clear IV's on start to fix AP mode regression
-
-Stefano Brivio (1):
-      ipv6: Fix return value of ipv6_mc_may_pull() for malformed packets
-
-Terry S. Duncan (1):
-      net/ncsi: Ensure 32-bit boundary for data cksum
-
-Todd Seidelmann (1):
-      netfilter: ebtables: Fix argument order to ADD_COUNTER
-
-Vlad Buslov (1):
-      nfp: flower: verify that block cb is not busy before binding
-
-Wenwen Wang (1):
-      qed: Add cleanup in qed_slowpath_start()
-
-Yangbo Lu (1):
-      ocelot_ace: fix action of trap
-
-Yi-Hung Wei (2):
-      openvswitch: Fix log message in ovs conntrack
-      openvswitch: Fix conntrack cache with timeout
-
-YueHaibing (2):
-      ieee802154: hwsim: Fix error handle path in hwsim_init_module
-      ieee802154: hwsim: unregister hw while hwsim_subscribe_all_others fails
-
-Zhu Yanjun (1):
-      net: rds: add service level support in rds-info
-
-zhanglin (1):
-      sock: fix potential memory leak in proto_register()
-
- MAINTAINERS                                                |  8 ++------
- arch/s390/net/bpf_jit_comp.c                               | 12 +++++++-----
- drivers/atm/Kconfig                                        |  2 +-
- drivers/net/dsa/bcm_sf2.c                                  | 10 ++++++++--
- drivers/net/ethernet/google/gve/gve_main.c                 |  2 +-
- drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 38 +++++++++++++++++---------------------
- drivers/net/ethernet/mellanox/mlx5/core/health.c           | 22 ++++++++++++----------
- drivers/net/ethernet/mscc/ocelot_ace.c                     |  2 +-
- drivers/net/ethernet/netronome/nfp/flower/offload.c        |  7 +++++++
- drivers/net/ethernet/qlogic/qed/qed_main.c                 |  4 +++-
- drivers/net/ethernet/realtek/r8169_main.c                  |  1 +
- drivers/net/ethernet/ti/cpsw.c                             |  2 +-
- drivers/net/ieee802154/mac802154_hwsim.c                   |  8 +++++---
- drivers/net/usb/r8152.c                                    |  5 ++++-
- drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c          | 33 ++++++++++++++++++++++++++++++---
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c          | 10 ++++++++++
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c              | 17 +++++++++++++++++
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c            |  1 +
- drivers/net/wireless/intel/iwlwifi/pcie/tx-gen2.c          | 20 +++++++++++++-------
- drivers/net/wireless/mediatek/mt76/mt76x0/usb.c            |  8 ++++----
- drivers/net/wireless/ralink/rt2x00/rt2800lib.c             |  9 +++++++++
- drivers/net/wireless/ralink/rt2x00/rt2x00.h                |  1 +
- drivers/net/wireless/ralink/rt2x00/rt2x00dev.c             | 13 ++++++++-----
- drivers/s390/net/qeth_core_main.c                          |  4 ++++
- include/linux/netfilter/nf_conntrack_h323_types.h          |  5 +++++
- include/net/addrconf.h                                     |  2 +-
- include/net/net_namespace.h                                |  2 +-
- include/net/nexthop.h                                      |  6 ------
- include/net/route.h                                        |  2 +-
- include/uapi/linux/netfilter/xt_nfacct.h                   |  5 +++++
- include/uapi/linux/rds.h                                   |  2 ++
- kernel/bpf/syscall.c                                       | 30 ++++++++++++++++++------------
- kernel/bpf/verifier.c                                      |  9 +++++----
- net/batman-adv/netlink.c                                   |  2 +-
- net/bridge/netfilter/ebtables.c                            |  8 ++++----
- net/core/filter.c                                          |  8 ++++----
- net/core/flow_dissector.c                                  |  2 +-
- net/core/sock.c                                            | 31 +++++++++++++++++++++----------
- net/core/stream.c                                          | 16 +++++++++-------
- net/ieee802154/socket.c                                    |  2 +-
- net/ipv4/fib_trie.c                                        |  2 +-
- net/ipv4/icmp.c                                            | 10 ++++++++--
- net/ipv4/igmp.c                                            |  4 ++--
- net/ipv4/route.c                                           | 17 ++++++++++-------
- net/ipv6/addrconf.c                                        | 19 ++++++++++---------
- net/mac80211/cfg.c                                         |  9 +++++----
- net/mpls/mpls_iptunnel.c                                   |  8 ++++----
- net/ncsi/ncsi-cmd.c                                        | 13 ++++++++++---
- net/ncsi/ncsi-rsp.c                                        |  9 ++++++---
- net/netfilter/nft_flow_offload.c                           |  6 ++++++
- net/netfilter/xt_nfacct.c                                  | 36 +++++++++++++++++++++++++-----------
- net/openvswitch/conntrack.c                                | 15 ++++++++++++++-
- net/rds/ib.c                                               | 16 ++++++++++------
- net/rds/ib.h                                               |  1 +
- net/rds/ib_cm.c                                            |  3 +++
- net/rds/rdma_transport.c                                   | 10 ++++++++--
- net/smc/smc_tx.c                                           |  6 ++----
- net/wireless/reg.c                                         |  2 +-
- net/wireless/util.c                                        | 23 ++++++++++++++---------
- net/xdp/xdp_umem.c                                         |  4 +++-
- net/xfrm/xfrm_policy.c                                     |  4 ++--
- tools/bpf/bpftool/prog.c                                   |  4 +++-
- tools/testing/selftests/bpf/Makefile                       |  6 +++++-
- tools/testing/selftests/bpf/config                         |  1 +
- tools/testing/selftests/bpf/test_btf_dump.c                |  7 +++++++
- tools/testing/selftests/bpf/test_cgroup_storage.c          |  6 +++---
- tools/testing/selftests/bpf/test_sock.c                    |  7 +++++--
- 67 files changed, 415 insertions(+), 204 deletions(-)
