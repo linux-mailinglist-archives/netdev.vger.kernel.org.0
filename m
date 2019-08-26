@@ -2,494 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B67D09D6FC
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 21:47:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 1198D9D70B
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 21:55:46 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732934AbfHZTrC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 15:47:02 -0400
-Received: from mx.aristanetworks.com ([162.210.129.12]:2747 "EHLO
-        smtp.aristanetworks.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731124AbfHZTrC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 15:47:02 -0400
-Received: from smtp.aristanetworks.com (localhost [127.0.0.1])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id 7209742C3FA;
-        Mon, 26 Aug 2019 12:37:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=arista.com;
-        s=Arista-A; t=1566848263;
-        bh=P6qcBeZLPJpeVxQ8zSOSXiPxmRjanZu8toPXO61DwXc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=DY6w3wqt1y2vmlcj7hh99UzRuze5GxzrPhVe5S8cdFJX9U0SjwndBAk1vjneLxhzw
-         QJKwNxpg5rqRBisyx3mTsVP1f4FqIW39Kk6wm9aKJe090AjZrhq9C7rXDBuMDt1ury
-         LgqC6RNuM8KJWuT7m0KSSbnagy7btMmK0Cc5WJcldRZApECszFyfBDVyd5Znorv4KN
-         ImJ14c8qnjoZs4/N3gmjvqrL8IbA3mlBLbKzDODpEVgw1zZ9CHF2VwCYkZXyLWIsPR
-         N1InihTRrLuXSQtfUC73d+6zYuk7h6uwAADSg7BzpRJ+jCDcQOnBsdI+CLb6NeCPyH
-         0zaV2M/JEvx6g==
-Received: from egc101.sjc.aristanetworks.com (unknown [172.20.210.50])
-        by smtp.aristanetworks.com (Postfix) with ESMTP id 5B91542C3E7;
-        Mon, 26 Aug 2019 12:37:43 -0700 (PDT)
-From:   Edward Chron <echron@arista.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     Michal Hocko <mhocko@suse.com>, Roman Gushchin <guro@fb.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        David Rientjes <rientjes@google.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Shakeel Butt <shakeelb@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, colona@arista.com,
-        Edward Chron <echron@arista.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: [PATCH 10/10] mm/oom_debug: Add Enhanced Process Print Information
-Date:   Mon, 26 Aug 2019 12:36:38 -0700
-Message-Id: <20190826193638.6638-11-echron@arista.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190826193638.6638-1-echron@arista.com>
-References: <20190826193638.6638-1-echron@arista.com>
+        id S1730569AbfHZTzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 15:55:38 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:41632 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727504AbfHZTzi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 15:55:38 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 196so12468438pfz.8;
+        Mon, 26 Aug 2019 12:55:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Sa8QUQJyPndXFqk0cRsIFkBXF6tFTWtH9N/e+YtaB0I=;
+        b=VKlY29d3xiAKWYqvFGxILI8IS0gzRAjGTc76xuGX7gtSMUSDWzDqieHc0kZyJLqBPA
+         tpz3DEAdKwUFiLMFTPfvBrh5BwDEIC3Peo3SW/GiKg1y46ToWvwFxa8GX95ESpERtlgI
+         XLwea0SI2jp4AExF598LgCo+YjT/UsOO4gFb2pwx+aq2qXsanNF8qgLuZl20YTBMFnrR
+         YF8oFFCAPC1g3cMtIcivk69gVcAOUiz7oRbFQL0UdfPfu+QsT2GIvSa5FulePuaqt+Hv
+         9TvCVL5HK7xm6/owx8UoewRm1gHfVogdulWVfeGjMd8o2ya36ILm/TdiIRdai1KEmNcW
+         iX0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=Sa8QUQJyPndXFqk0cRsIFkBXF6tFTWtH9N/e+YtaB0I=;
+        b=KFz2LxJVpypNvhwXrfFYSsMTxZ3m+I+67/WDeNXbh8GLMne6wINhgW/EyBSK0y/CGe
+         RU//GEfdUe5D0An3zUDzaTJ6CPpH+4nTV8KpS6LWfVOM8/NqzbVzh0U+oIAl15lxOAaZ
+         AgPOL3oHIvAuHEsYKWcjUdelEBRmNajYBMFfAjlKtcabDZMkblnNOq7IjS0asWLOd6I9
+         RgDYaGNJwKkrR9TWFC44cmUKJqlBqvCMMq0RjunSqKDJMVDTfzrp6SwYv4Lg2WYbSIh2
+         m4abXnbJIV5z0i3mcB3ysTXWzLyWJQeSeEFIo8IP37uRvfDyFHDnukzMitq1mee4YMqz
+         GFwQ==
+X-Gm-Message-State: APjAAAW1ayulYFgDnVp9jc8vpg3gs1qTvt+QU9BuEz0oAqeGZNgHe5WH
+        2BV8+JFMSMT4bcsXhd2wuKM=
+X-Google-Smtp-Source: APXvYqyUaxt1n1NBhFcRkmMIVJGElcvXQrIsMoQSz94/P7uWjOW/fX6XUY62aqtz1cBc6bEQhcFDCw==
+X-Received: by 2002:a63:7a06:: with SMTP id v6mr18253469pgc.115.1566849337072;
+        Mon, 26 Aug 2019 12:55:37 -0700 (PDT)
+Received: from [10.67.49.31] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id z24sm15415765pfr.51.2019.08.26.12.55.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Aug 2019 12:55:36 -0700 (PDT)
+Subject: Re: [PATCH v1 net-next 4/4] net: stmmac: setup higher frequency clk
+ support for EHL & TGL
+To:     Voon Weifeng <weifeng.voon@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+References: <1566869891-29239-1-git-send-email-weifeng.voon@intel.com>
+ <1566869891-29239-5-git-send-email-weifeng.voon@intel.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ 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
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <7d43e0c6-6f51-0d71-0af8-89f22b0234f9@gmail.com>
+Date:   Mon, 26 Aug 2019 12:55:31 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <1566869891-29239-5-git-send-email-weifeng.voon@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add OOM Debug code that prints additional detailed information about
-users processes that were considered for OOM killing for any print
-selected processes. The information is displayed for each user process
-that OOM prints in the output.
+On 8/26/19 6:38 PM, Voon Weifeng wrote:
+> EHL DW EQOS is running on a 200MHz clock. Setting up stmmac-clk,
+> ptp clock and ptp_max_adj to 200MHz.
+> 
+> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 21 +++++++++++++++++++++
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c |  3 +++
+>  include/linux/stmmac.h                           |  1 +
+>  3 files changed, 25 insertions(+)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+> index e969dc9bb9f0..20906287b6d4 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
+> @@ -9,6 +9,7 @@
+>    Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
+>  *******************************************************************************/
+>  
+> +#include <linux/clk-provider.h>
+>  #include <linux/pci.h>
+>  #include <linux/dmi.h>
+>  
+> @@ -174,6 +175,19 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+>  	plat->axi->axi_blen[1] = 8;
+>  	plat->axi->axi_blen[2] = 16;
+>  
+> +	plat->ptp_max_adj = plat->clk_ptp_rate;
+> +
+> +	/* Set system clock */
+> +	plat->stmmac_clk = clk_register_fixed_rate(&pdev->dev,
+> +						   "stmmac-clk", NULL, 0,
+> +						   plat->clk_ptp_rate);
+> +
+> +	if (IS_ERR(plat->stmmac_clk)) {
+> +		dev_warn(&pdev->dev, "Fail to register stmmac-clk\n");
+> +		plat->stmmac_clk = NULL;
 
-This supplemental per user process information is very helpful for
-determing how process memory is used to allow OOM event root cause
-identifcation that might not otherwise be possible.
-
-Configuring Enhanced Process Print Information
-----------------------------------------------
-The DEBUG_OOM_ENHANCED_PROCESS_PRINT is the config entry defined for
-this OOM Debug option.  This option is dependent on the OOM Debug
-option DEBUG_OOM_SELECT_PROCESS which adds code to allow processes
-that are considered for OOM kill to be selectively printed, only
-printing processes that use a specified minimum amount of memory.
-
-The kernel configuration entry for this option can be found in the
-config file at: Kernel hacking, Memory Debugging, Debug OOM,
-Debug OOM Process Selection, Debug OOM Enhanced Process Print.
-Both Debug OOM Process Selection and Debug OOM Enhanced Process Print
-entries must be selected.
-
-Dynamic disable or re-enable this OOM Debug option
---------------------------------------------------
-This option may be disabled or re-enabled using the debugfs entry for
-this OOM debug option. The debugfs file to enable this entry is found at:
-/sys/kernel/debug/oom/process_enhanced_print_enabled where the enabled
-file's value determines whether the facility is enabled or disabled.
-A value of 1 is enabled (default) and a value of 0 is disabled.
-
-Content and format of process record and Task state headers
------------------------------------------------------------
-Each OOM process entry printed include memory information about the
-process. Memory usage is specified in KiB for memory values instead of
-pages. Each entry includes the following fields:
-pid, ppid, ruid, euid, tgid, State (S), the oom_score_adjust (Adjust),
-task comm value (name), and also memory values (all in KB): VmemKiB,
-MaxRssKiB, CurRssKiB, PteKiB, SwapKiB, socket pages (SockKiB), LibKiB,
-TextPgKiB, HeapPgKiB, StackKiB, FileKiB and shared memory (ShmemKiB).
-Counts of page reads (ReadPgs) and page faults (FaultPgs) are included.
-
-Sample Output
--------------
-OOM Process select print headers and line of process enhanced output:
-
-Aug  6 09:37:21 egc103 kernel: Tasks state (memory values in KiB):
-Aug  6 09:37:21 egc103 kernel: [  pid  ]    ppid    ruid    euid
-    tgid S  utimeSec  stimeSec   VmemKiB MaxRssKiB CurRssKiB
-    PteKiB   SwapKiB   SockKiB     LibKiB   TextKiB   HeapKiB
-  StackKiB   FileKiB  ShmemKiB   ReadPgs  FaultPgs   LockKiB
- PinnedKiB Adjust name
-
-Aug  6 09:37:21 egc103 kernel: [   7707]    7553   10383   10383
-    7707 S     0.132     0.350   1056804   1054040   1052796
-      2092         0         0       1944       684   1052860
-       136         4         0         0         0         0
-         0   1000 oomprocs
-
-
-Signed-off-by: Edward Chron <echron@arista.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: netdev@vger.kernel.org
----
- mm/Kconfig.debug    |  23 +++++
- mm/oom_kill.c       |  23 ++++-
- mm/oom_kill_debug.c | 236 ++++++++++++++++++++++++++++++++++++++++++++
- mm/oom_kill_debug.h |   5 +
- 4 files changed, 285 insertions(+), 2 deletions(-)
-
-diff --git a/mm/Kconfig.debug b/mm/Kconfig.debug
-index 4414e46f72c6..2bc843727968 100644
---- a/mm/Kconfig.debug
-+++ b/mm/Kconfig.debug
-@@ -320,3 +320,26 @@ config DEBUG_OOM_PROCESS_SELECT_PRINT
- 	  print limit value of 10 or 1% of memory.
- 
- 	  If unsure, say N.
-+
-+config DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+	bool "Debug OOM Enhanced Process Print"
-+	depends on DEBUG_OOM_PROCESS_SELECT_PRINT
-+	help
-+	  Each OOM process entry printed include memory information about
-+	  the process. Memory usage is specified in KiB (KB) for memory
-+	  values, not pages. Each entry includes the following fields:
-+	  pid, ppid, ruid, euid, tgid, State (S), utime in seconds,
-+	  stime in seconds, the number of read pages (ReadPgs), number of
-+	  page faults (FaultPgs), the number of lock pages (LockPgs), the
-+	  oom_score_adjust value (Adjust), memory percentage used (MemPct),
-+	  oom_score (Score), task comm value (name), and also memory values
-+	  (all in KB): VmemKiB, MaxRssKiB, CurRssKiB, PteKiB, SwapKiB,
-+	  socket pages (SockKiB), LibKiB, TextPgKiB, HeapPgKiB, StackKiB,
-+	  FileKiB and shared memory pages (ShmemKiB).
-+
-+	  If the option is configured it is enabled/disabled by setting
-+	  the value of the file entry in the debugfs OOM interface at:
-+	  /sys/kernel/debug/oom/process_enhanced_print_enabled
-+	  A value of 1 is enabled (default) and a value of 0 is disabled.
-+
-+	  If unsure, say N.
-diff --git a/mm/oom_kill.c b/mm/oom_kill.c
-index cbea289c6345..cf37caea9c5c 100644
---- a/mm/oom_kill.c
-+++ b/mm/oom_kill.c
-@@ -417,6 +417,13 @@ static int dump_task(struct task_struct *p, void *arg)
- 	}
- #endif
- 
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+	if (oom_kill_debug_enhanced_process_print_enabled()) {
-+		dump_task_prt(task, rsspgs, swappgs, pgtbl);
-+		task_unlock(task);
-+		return 1;
-+	}
-+#endif
- 	pr_info("[%7d] %5d %5d %8lu %8lu %8ld %8lu         %5hd %s\n",
- 		task->pid, from_kuid(&init_user_ns, task_uid(task)),
- 		task->tgid, task->mm->total_vm, rsspgs, pgtbl, swappgs,
-@@ -426,6 +433,19 @@ static int dump_task(struct task_struct *p, void *arg)
- 	return 1;
- }
- 
-+static void dump_tasks_headers(void)
-+{
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+	if (oom_kill_debug_enhanced_process_print_enabled()) {
-+		pr_info("Tasks state (memory values in KiB):\n");
-+		pr_info("[  pid  ]    ppid    ruid    euid    tgid S  utimeSec  stimeSec   VmemKiB MaxRssKiB CurRssKiB    PteKiB   SwapKiB   SockKiB     LibKiB   TextKiB   HeapKiB  StackKiB   FileKiB  ShmemKiB     ReadPgs    FaultPgs   LockKiB PinnedKiB Adjust name\n");
-+		return;
-+	}
-+#endif
-+	pr_info("Tasks state (memory values in pages):\n");
-+	pr_info("[  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name\n");
-+}
-+
- #define K(x) ((x) << (PAGE_SHIFT-10))
- 
- /**
-@@ -443,8 +463,7 @@ static void dump_tasks(struct oom_control *oc)
- 	u32 total = 0;
- 	u32 prted = 0;
- 
--	pr_info("Tasks state (memory values in pages):\n");
--	pr_info("[  pid  ]   uid  tgid total_vm      rss pgtables_bytes swapents oom_score_adj name\n");
-+	dump_tasks_headers();
- 
- #ifdef CONFIG_DEBUG_OOM_PROCESS_SELECT_PRINT
- 	oc->minpgs = oom_kill_debug_min_task_pages(oc->totalpages);
-diff --git a/mm/oom_kill_debug.c b/mm/oom_kill_debug.c
-index ad937b3d59f3..467f7add4397 100644
---- a/mm/oom_kill_debug.c
-+++ b/mm/oom_kill_debug.c
-@@ -171,6 +171,12 @@
- #ifdef CONFIG_DEBUG_OOM_VMALLOC_SELECT_PRINT
- #include <linux/vmalloc.h>
- #endif
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+#include <linux/fdtable.h>
-+#include <linux/net.h>
-+#include <net/sock.h>
-+#include <linux/sched/cputime.h>
-+#endif
- 
- #define OOMD_MAX_FNAME 48
- #define OOMD_MAX_OPTNAME 32
-@@ -250,6 +256,12 @@ static struct oom_debug_option oom_debug_options_table[] = {
- 		.option_name	= "slab_enhanced_print_",
- 		.support_tpercent = false,
- 	},
-+#endif
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+	{
-+		.option_name	= "process_enhanced_print_",
-+		.support_tpercent = false,
-+	},
- #endif
- 	{}
- };
-@@ -282,6 +294,9 @@ enum oom_debug_options_index {
- #endif
- #ifdef CONFIG_DEBUG_OOM_ENHANCED_SLAB_PRINT
- 	ENHANCED_SLAB_STATE,
-+#endif
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+	ENHANCED_PROCESS_STATE,
- #endif
- 	OUT_OF_BOUNDS
- };
-@@ -365,6 +380,12 @@ bool oom_kill_debug_enhanced_slab_print_information_enabled(void)
- 	return oom_kill_debug_enabled(ENHANCED_SLAB_STATE);
- }
- #endif
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+bool oom_kill_debug_enhanced_process_print_enabled(void)
-+{
-+	return oom_kill_debug_enabled(ENHANCED_PROCESS_STATE);
-+}
-+#endif
- 
- #ifdef CONFIG_DEBUG_OOM_SYSTEM_STATE
- /*
-@@ -513,6 +534,221 @@ u32 oom_kill_debug_oom_event_is(void)
- 	return oom_kill_debug_oom_events;
- }
- 
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+/*
-+ *  Account for socket(s) buffer memory in use by a task.
-+ *  A task may have one or more sockets consuming socket buffer space.
-+ *  Account for how much socket space each task has in use.
-+ */
-+static unsigned long account_for_socket_buffers(struct task_struct *task,
-+						char *incomplete)
-+{
-+	unsigned long sockpgs = 0;
-+	struct files_struct *files = task->files;
-+	struct fdtable *fdt;
-+	struct file **fds;
-+	int openfilecount;
-+	struct inode *inode;
-+	struct socket *sock;
-+	struct sock *sk;
-+	unsigned long bytes;
-+	int fdtsize;
-+	int i;
-+
-+	/* Just to make sure the fds don't get closed */
-+	atomic_inc(&files->count);
-+	/* Make a best effort, but no reason to get hung up here */
-+	if (!spin_trylock(&files->file_lock)) {
-+		*incomplete = '*';
-+		atomic_dec(&files->count);
-+		return 0;
-+	}
-+
-+	rcu_read_lock();
-+	fdt = files_fdtable(files);
-+	fdtsize = fdt->max_fds;
-+	/* Determine how many words we need to check for open files */
-+	for (i = fdtsize / BITS_PER_LONG; i > 0; ) {
-+		if (fdt->open_fds[--i])
-+			break;
-+	}
-+	openfilecount = (i + 1) * BITS_PER_LONG;  // Check each fd in the word
-+	fds = fdt->fd;
-+	for (i = openfilecount; i != 0; i--) {
-+		struct file *fp = *fds++;
-+
-+		if (fp) {
-+			/* Any continue case doesn't need to be counted */
-+			if (fp->f_path.dentry == NULL)
-+				continue;
-+			inode = fp->f_path.dentry->d_inode;
-+			if (inode == NULL || !S_ISSOCK(inode->i_mode))
-+				continue;
-+			sock = fp->private_data;
-+			if (sock == NULL)
-+				continue;
-+			sk = sock->sk;
-+			if (sk == NULL)
-+				continue;
-+			bytes = roundup(sk->sk_rcvbuf, PAGE_SIZE);
-+			sockpgs = bytes / PAGE_SIZE;
-+			bytes = roundup(sk->sk_sndbuf, PAGE_SIZE);
-+			sockpgs += bytes / PAGE_SIZE;
-+		}
-+	}
-+	rcu_read_unlock();
-+
-+	spin_unlock(&files->file_lock);
-+	/* We're done looking at the fds */
-+	atomic_dec(&files->count);
-+
-+	return sockpgs;
-+}
-+
-+static u64 power10(u32 index)
-+{
-+	static u64 pwr10[11] = {1, 10, 100, 1000, 10000, 100000, 1000000,
-+				10000000, 100000000, 1000000000,
-+				10000000000};
-+
-+	return pwr10[index];
-+}
-+
-+static u32 num_digits(u64 num)
-+{
-+	u32 i;
-+
-+	for (i = 1; i < 11; ++i) {
-+		if (power10(i) > num)
-+			return i;
-+	}
-+	return i;
-+}
-+
-+static void digits_and_fraction(u64 num, u32 *p_digits, u32 *p_frac, u32 chars)
-+{
-+	*p_digits = num_digits(num);
-+	// Allow for decimal place for fractional output
-+	if (chars - 1 > *p_digits)
-+		*p_frac = chars - 1 - *p_digits;
-+	else
-+		*p_frac = 0;
-+}
-+
-+#define MAX_NUM_FIELD_SIZE	10
-+/*
-+ * Format timespec into seconds and possibly fraction, must fit in 9 bytes.
-+ * Linux kernel doesn't support floating point so format as best we can.
-+ * With 9 digits in seconds convers 31.7 years and where we can we provide
-+ * fractions of a second up to miliseconds.
-+ */
-+static void timespec_format(u64 nsecs_time, char *p_time, size_t time_size)
-+{
-+	struct timespec64 tspec = ns_to_timespec64(nsecs_time);
-+	u32 digits, fracs, bytes, min;
-+	u64 fraction;
-+
-+	digits_and_fraction(tspec.tv_sec, &digits, &fracs, time_size);
-+
-+	bytes = sprintf(p_time, "%llu", tspec.tv_sec);
-+
-+	if (fracs > 0) {
-+		u32 frsize = num_digits(tspec.tv_nsec);
-+
-+		p_time += bytes;
-+		if (frsize >= 3) {
-+			if (fracs >= 3)
-+				min = frsize - 3;
-+			else if (fracs >= 2)
-+				min = frsize - 2;
-+			else
-+				min = frsize - 1;
-+		} else if (frsize >= 2) {
-+			if (fracs >= 2)
-+				min = frsize - 2;
-+			else
-+				min = frsize - 1;
-+		} else {
-+			min = frsize - 1;
-+		}
-+		fraction = tspec.tv_nsec / power10(min);
-+		sprintf(p_time, ".%llu", fraction);
-+	}
-+}
-+
-+/*
-+ * Format utime, stime in seconds and possibly fractions, must fit in 9 bytes.
-+ */
-+static void time_format(struct task_struct *task, char *p_utime, char *p_stime)
-+{
-+	size_t num_size = MAX_NUM_FIELD_SIZE;
-+	u64 utime, stime;
-+
-+	task_cputime_adjusted(task, &utime, &stime);
-+	memset(p_utime, 0, num_size);
-+	timespec_format(utime, p_utime, num_size - 1);
-+	memset(p_stime, 0, num_size);
-+	timespec_format(stime, p_stime, num_size - 1);
-+}
-+
-+/* task_index_to_char kernel function is missing options so use this */
-+#define TASK_STATE_TO_CHAR_STR "RSDTtZXxKWP"
-+static const char task_to_char[] = TASK_STATE_TO_CHAR_STR;
-+static const char get_task_state(struct task_struct *p_task, ulong state)
-+{
-+	int bit = state ? __ffs(state) + 1 : 0;
-+
-+	if (p_task->tgid == 0)
-+		return 'I';
-+	return bit < sizeof(task_to_char) - 1 ? task_to_char[bit] : '?';
-+}
-+
-+/*
-+ * Code that prints the information about the specified task.
-+ * Assumes task lock is held at entry.
-+ */
-+void dump_task_prt(struct task_struct *task,
-+		   unsigned long rsspg, unsigned long swappg,
-+		   unsigned long pgtbl)
-+{
-+	char c_utime[MAX_NUM_FIELD_SIZE], c_stime[MAX_NUM_FIELD_SIZE];
-+	unsigned long vmkb, sockkb, text, maxrsspg, pgtblpg;
-+	unsigned long libkb, textkb, pgtblkb;
-+	struct mm_struct *mm;
-+	char incomp = ' ';
-+	kuid_t ruid, euid;
-+	char tstate;
-+
-+	mm = task->mm;
-+	maxrsspg = rsspg;
-+	pgtblpg = pgtbl >> PAGE_SHIFT;
-+	ruid = __task_cred(task)->uid;
-+	euid = __task_cred(task)->euid;
-+	vmkb = K(mm->total_vm);
-+	if (maxrsspg < mm->hiwater_rss)
-+		maxrsspg = mm->hiwater_rss;
-+	sockkb = K(account_for_socket_buffers(task, &incomp));
-+	text = (PAGE_ALIGN(mm->end_code) -
-+		 (mm->start_code & PAGE_MASK));
-+	text = min(text, mm->exec_vm << PAGE_SHIFT);
-+	textkb = text >> 10;
-+	libkb = ((mm->exec_vm << PAGE_SHIFT) - text) >> 10;
-+	pgtblkb = pgtbl >> 10;
-+	tstate = get_task_state(task, task->state);
-+	time_format(task, c_utime, c_stime);
-+
-+	pr_info("[%7d] %7d %7d %7d %7d %c %9s %9s %9lu %9lu %9lu %9lu %9ld %9lu%c %9lu %9lu %9lu %9lu %9lu %9lu %11lu %11lu %9lu %9llu  %5hd %s\n",
-+		task->pid, task_ppid_nr(task), ruid.val, euid.val, task->tgid,
-+		tstate, c_utime, c_stime, vmkb, K(maxrsspg), K(rsspg), pgtblkb,
-+		K(swappg), sockkb, incomp, libkb, textkb, K(mm->data_vm),
-+		K(mm->stack_vm), K(get_mm_counter(mm, MM_FILEPAGES)),
-+		K(get_mm_counter(mm, MM_SHMEMPAGES)), task->signal->cmaj_flt,
-+		task->signal->cmin_flt,
-+		K(mm->locked_vm), K((u64)atomic64_read(&mm->pinned_vm)),
-+		task->signal->oom_score_adj, task->comm);
-+}
-+#endif /* CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT */
-+
- static void __init oom_debug_init(void)
- {
- 	/* Ensure we have a debugfs oom root directory */
-diff --git a/mm/oom_kill_debug.h b/mm/oom_kill_debug.h
-index a39bc275980e..faebb4c6097c 100644
---- a/mm/oom_kill_debug.h
-+++ b/mm/oom_kill_debug.h
-@@ -9,6 +9,11 @@
- #ifndef __MM_OOM_KILL_DEBUG_H__
- #define __MM_OOM_KILL_DEBUG_H__
- 
-+#ifdef CONFIG_DEBUG_OOM_ENHANCED_PROCESS_PRINT
-+extern bool oom_kill_debug_enhanced_process_print_enabled(void);
-+extern void dump_task_prt(struct task_struct *task, unsigned long rsspg,
-+			  unsigned long swappg, unsigned long pgtbl);
-+#endif
- #ifdef CONFIG_DEBUG_OOM_PROCESS_SELECT_PRINT
- extern unsigned long oom_kill_debug_min_task_pages(unsigned long totalpages);
- #endif
+Don't you need to propagate at least EPROBE_DEFER here?
 -- 
-2.20.1
-
+Florian
