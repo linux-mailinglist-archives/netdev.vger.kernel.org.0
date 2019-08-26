@@ -2,252 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 33B6D9CF80
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 14:21:25 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 351569CFAF
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 14:38:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732000AbfHZMVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 08:21:23 -0400
-Received: from mail.nic.cz ([217.31.204.67]:58478 "EHLO mail.nic.cz"
+        id S1731536AbfHZMiU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 08:38:20 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:59746 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727234AbfHZMVW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 08:21:22 -0400
-Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id 7333C140CFE;
-        Mon, 26 Aug 2019 14:21:18 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566822078; bh=0As4A3c2v/mULGj9D7m2WV8sww4cmDtoTRSz2mCRUkQ=;
-        h=From:To:Date;
-        b=Mlgz7EbR5W8ymUHmjan17LnaJNuM2eViR19tC/5lCuE+9GY5pao7Z5LYPRhjgY4/O
-         FIxHqPR6LQIb8H431xkBNP0QA6X0LD9M6No30SQFfT5zaa4CcswtwT19qSw45dsIW4
-         oTU3ShO+t90NBSzAEdRUqQseu61FvRpo1cDErz3U=
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-To:     netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH net-next v4 6/6] net: dsa: mv88e6xxx: fully support SERDES on Topaz family
-Date:   Mon, 26 Aug 2019 14:21:09 +0200
-Message-Id: <20190826122109.20660-7-marek.behun@nic.cz>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190826122109.20660-1-marek.behun@nic.cz>
-References: <20190826122109.20660-1-marek.behun@nic.cz>
+        id S1730339AbfHZMiU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 08:38:20 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=1ih+AgAlOAqD7WWVhbqdG9ORb7gLcSRQfi7VWfKpTPM=; b=lh/zn7CcjkTcSNCReHm8+IH4Xi
+        0yqiH49nK/6cMItUaLCrvoVKR1E3JcwiwkaJnte2wOiWQbCLy1TaxKEpwLdgdt94Abit612MIU1wj
+        GPFFEjlOvnaMJ45gssN0NiIr3YXiUWHv0UuFCWYgUNfwa6HasQFvkX12vj7t2D8nT09g=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i2EGB-0003lc-GP; Mon, 26 Aug 2019 14:38:11 +0200
+Date:   Mon, 26 Aug 2019 14:38:11 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Cc:     roopa@cumulusnetworks.com, nikolay@cumulusnetworks.com,
+        davem@davemloft.net, UNGLinuxDriver@microchip.com,
+        alexandre.belloni@bootlin.com, allan.nielsen@microchip.com,
+        f.fainelli@gmail.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [PATCH v2 0/3] Add NETIF_F_HW_BR_CAP feature
+Message-ID: <20190826123811.GA13411@lunn.ch>
+References: <1566807075-775-1-git-send-email-horatiu.vultur@microchip.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
-        shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1566807075-775-1-git-send-email-horatiu.vultur@microchip.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently we support SERDES on the Topaz family in a limited way: no
-IRQs and the cmode is not writable, thus the mode is determined by
-strapping pins.
+On Mon, Aug 26, 2019 at 10:11:12AM +0200, Horatiu Vultur wrote:
+> When a network port is added to a bridge then the port is added in
+> promisc mode. Some HW that has bridge capabilities(can learn, forward,
+> flood etc the frames) they are disabling promisc mode in the network
+> driver when the port is added to the SW bridge.
+> 
+> This patch adds the feature NETIF_F_HW_BR_CAP so that the network ports
+> that have this feature will not be set in promisc mode when they are
+> added to a SW bridge.
+> 
+> In this way the HW that has bridge capabilities don't need to send all the
+> traffic to the CPU and can also implement the promisc mode and toggle it
+> using the command 'ip link set dev swp promisc on'
 
-Marvell's examples though show how to make cmode writable on port 5 and
-support SGMII autonegotiation. It is done by writing hidden registers,
-for which we already have code.
+Hi Horatiu
 
-This patch adds support for making the cmode for the SERDES port
-writable on the Topaz family, and enables cmode setting and SERDES IRQs.
+I'm still not convinced this is needed. The model is, the hardware is
+there to accelerate what Linux can do in software. Any peculiarities
+of the accelerator should be hidden in the driver.  If the accelerator
+can do its job without needing promisc mode, do that in the driver.
 
-Tested on Turris Mox.
+So you are trying to differentiate between promisc mode because the
+interface is a member of a bridge, and promisc mode because some
+application, like pcap, has asked for promisc mode.
 
-Signed-off-by: Marek Behún <marek.behun@nic.cz>
----
- drivers/net/dsa/mv88e6xxx/chip.c |  6 +++
- drivers/net/dsa/mv88e6xxx/port.c | 76 +++++++++++++++++++++++++-------
- drivers/net/dsa/mv88e6xxx/port.h |  4 ++
- 3 files changed, 71 insertions(+), 15 deletions(-)
+dev->promiscuity is a counter. So what you can do it look at its
+value, and how the interface is being used. If the interface is not a
+member of a bridge, and the count > 0, enable promisc mode in the
+accelerator. If the interface is a member of a bridge, and the count >
+1, enable promisc mode in the accelerator.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 202ccce65b1c..6525075f6bd3 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -2913,6 +2913,7 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_set_cmode = mv88e6341_port_set_cmode,
- 	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
-@@ -2929,6 +2930,8 @@ static const struct mv88e6xxx_ops mv88e6141_ops = {
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
- 	.serdes_power = mv88e6390_serdes_power,
- 	.serdes_get_lane = mv88e6341_serdes_get_lane,
-+	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
-+	.serdes_irq_free = mv88e6390_serdes_irq_free,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.phylink_validate = mv88e6341_phylink_validate,
- };
-@@ -3608,6 +3611,7 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.port_disable_pri_override = mv88e6xxx_port_disable_pri_override,
- 	.port_link_state = mv88e6352_port_link_state,
- 	.port_get_cmode = mv88e6352_port_get_cmode,
-+	.port_set_cmode = mv88e6341_port_set_cmode,
- 	.port_setup_message_port = mv88e6xxx_setup_message_port,
- 	.stats_snapshot = mv88e6390_g1_stats_snapshot,
- 	.stats_set_histogram = mv88e6095_g1_stats_set_histogram,
-@@ -3624,6 +3628,8 @@ static const struct mv88e6xxx_ops mv88e6341_ops = {
- 	.vtu_loadpurge = mv88e6352_g1_vtu_loadpurge,
- 	.serdes_power = mv88e6390_serdes_power,
- 	.serdes_get_lane = mv88e6341_serdes_get_lane,
-+	.serdes_irq_setup = mv88e6390_serdes_irq_setup,
-+	.serdes_irq_free = mv88e6390_serdes_irq_free,
- 	.gpio_ops = &mv88e6352_gpio_ops,
- 	.avb_ops = &mv88e6390_avb_ops,
- 	.ptp_ops = &mv88e6352_ptp_ops,
-diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
-index 7183c94a92ec..908b95434b4d 100644
---- a/drivers/net/dsa/mv88e6xxx/port.c
-+++ b/drivers/net/dsa/mv88e6xxx/port.c
-@@ -392,17 +392,37 @@ phy_interface_t mv88e6390x_port_max_speed_mode(int port)
- 	return PHY_INTERFACE_MODE_NA;
- }
- 
--int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
--			      phy_interface_t mode)
-+static int mv88e6341_port_force_writable_cmode(struct mv88e6xxx_chip *chip,
-+					       int port)
-+{
-+	int err, addr;
-+	u16 reg, bits;
-+
-+	addr = chip->info->port_base_addr + port;
-+
-+	err = mv88e6xxx_port_hidden_read(chip, 0x7, addr, 0, &reg);
-+	if (err)
-+		return err;
-+
-+	bits = MV88E6341_PORT_RESERVED_1A_FORCE_CMODE |
-+	       MV88E6341_PORT_RESERVED_1A_SGMII_AN;
-+
-+	if ((reg & bits) == bits)
-+		return 0;
-+
-+	reg |= bits;
-+	return mv88e6xxx_port_hidden_write(chip, 0x7, addr, 0, reg);
-+}
-+
-+static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
-+				    phy_interface_t mode, bool allow_over_2500,
-+				    bool make_cmode_writable)
- {
- 	s8 lane;
- 	u16 cmode;
- 	u16 reg;
- 	int err;
- 
--	if (port != 9 && port != 10)
--		return -EOPNOTSUPP;
--
- 	/* Default to a slow mode, so freeing up SERDES interfaces for
- 	 * other ports which might use them for SFPs.
- 	 */
-@@ -421,9 +441,13 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 		break;
- 	case PHY_INTERFACE_MODE_XGMII:
- 	case PHY_INTERFACE_MODE_XAUI:
-+		if (!allow_over_2500)
-+			return -EINVAL;
- 		cmode = MV88E6XXX_PORT_STS_CMODE_XAUI;
- 		break;
- 	case PHY_INTERFACE_MODE_RXAUI:
-+		if (!allow_over_2500)
-+			return -EINVAL;
- 		cmode = MV88E6XXX_PORT_STS_CMODE_RXAUI;
- 		break;
- 	default:
-@@ -457,6 +481,12 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 		if (err)
- 			return err;
- 
-+		if (make_cmode_writable) {
-+			err = mv88e6341_port_force_writable_cmode(chip, port);
-+			if (err)
-+				return err;
-+		}
-+
- 		reg &= ~MV88E6XXX_PORT_STS_CMODE_MASK;
- 		reg |= cmode;
- 
-@@ -484,21 +514,37 @@ int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 	return 0;
- }
- 
-+int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
-+			      phy_interface_t mode)
-+{
-+	if (port != 9 && port != 10)
-+		return -EOPNOTSUPP;
-+
-+	return mv88e6xxx_port_set_cmode(chip, port, mode, true, false);
-+}
-+
- int mv88e6390_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 			     phy_interface_t mode)
- {
--	switch (mode) {
--	case PHY_INTERFACE_MODE_NA:
-+	if (port != 9 && port != 10)
-+		return -EOPNOTSUPP;
-+
-+	if (mode == PHY_INTERFACE_MODE_NA)
-+		return 0;
-+
-+	return mv88e6xxx_port_set_cmode(chip, port, mode, false, false);
-+}
-+
-+int mv88e6341_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
-+			     phy_interface_t mode)
-+{
-+	if (port != 5)
-+		return -EOPNOTSUPP;
-+
-+	if (mode == PHY_INTERFACE_MODE_NA)
- 		return 0;
--	case PHY_INTERFACE_MODE_XGMII:
--	case PHY_INTERFACE_MODE_XAUI:
--	case PHY_INTERFACE_MODE_RXAUI:
--		return -EINVAL;
--	default:
--		break;
--	}
- 
--	return mv88e6390x_port_set_cmode(chip, port, mode);
-+	return mv88e6xxx_port_set_cmode(chip, port, mode, false, true);
- }
- 
- int mv88e6185_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode)
-diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
-index 6d7a067da0f5..d4e9bea6e82f 100644
---- a/drivers/net/dsa/mv88e6xxx/port.h
-+++ b/drivers/net/dsa/mv88e6xxx/port.h
-@@ -269,6 +269,8 @@
- #define MV88E6XXX_PORT_RESERVED_1A_BLOCK_SHIFT	10
- #define MV88E6XXX_PORT_RESERVED_1A_CTRL_PORT	0x04
- #define MV88E6XXX_PORT_RESERVED_1A_DATA_PORT	0x05
-+#define MV88E6341_PORT_RESERVED_1A_FORCE_CMODE	0x8000
-+#define MV88E6341_PORT_RESERVED_1A_SGMII_AN	0x2000
- 
- int mv88e6xxx_port_read(struct mv88e6xxx_chip *chip, int port, int reg,
- 			u16 *val);
-@@ -334,6 +336,8 @@ int mv88e6097_port_pause_limit(struct mv88e6xxx_chip *chip, int port, u8 in,
- 			       u8 out);
- int mv88e6390_port_pause_limit(struct mv88e6xxx_chip *chip, int port, u8 in,
- 			       u8 out);
-+int mv88e6341_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
-+			     phy_interface_t mode);
- int mv88e6390_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
- 			     phy_interface_t mode);
- int mv88e6390x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
--- 
-2.21.0
+   Andrew
 
