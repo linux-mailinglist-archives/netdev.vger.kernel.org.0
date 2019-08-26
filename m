@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4109E9CF7E
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 14:21:24 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EBFF9CF84
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 14:21:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731982AbfHZMVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 08:21:19 -0400
-Received: from mail.nic.cz ([217.31.204.67]:58442 "EHLO mail.nic.cz"
+        id S1731989AbfHZMVW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 08:21:22 -0400
+Received: from mail.nic.cz ([217.31.204.67]:58450 "EHLO mail.nic.cz"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727234AbfHZMVS (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 08:21:18 -0400
+        id S1731975AbfHZMVU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 08:21:20 -0400
 Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
-        by mail.nic.cz (Postfix) with ESMTP id C3E61140B28;
-        Mon, 26 Aug 2019 14:21:16 +0200 (CEST)
+        by mail.nic.cz (Postfix) with ESMTP id AAA76140B77;
+        Mon, 26 Aug 2019 14:21:17 +0200 (CEST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566822076; bh=LsZbIdUQhjIqGvnJ1hKt5NjYacLNqkCivJhOZta1Yxc=;
+        t=1566822077; bh=SGbVI7o6Bmzx4pLhlOG+etiYvforRvUTdNmTv+tgpI4=;
         h=From:To:Date;
-        b=evRGdQpPPAgfLfalElk3xdFEpUDn90xDt4j96QfGo2u6ssDEz9QuTeKd5Y003TCUA
-         yJXTvP5uvBPanngEZZ2adbA5slDyu9L+2gSNdaIjSgqihs2jpVeIA5H4Id21oymmuH
-         rDtQTqS409YN4FODZujFB/XHSoLI1MTt/suV6mnA=
+        b=q2J2TpGVhRZWjwVZRd97NWCIJZjWNDkKB7bCKR+nzPPgTS+fGvlCuBqR3sA2uHEAU
+         /jKnTZY42CaTCWsR3igrnDRtifz8Rw82bxiFKtRy2XPounybpsgnmSAR6vdhzB2E6F
+         nYr7Z0xButcdt3CykEV7Xa6K/kgUr2IWmOb9EbLI=
 From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
 To:     netdev@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -27,10 +27,12 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
-Subject: [PATCH net-next v4 0/6] net: dsa: mv88e6xxx: Peridot/Topaz SERDES changes
-Date:   Mon, 26 Aug 2019 14:21:03 +0200
-Message-Id: <20190826122109.20660-1-marek.behun@nic.cz>
+Subject: [PATCH net-next v4 1/6] net: dsa: mv88e6xxx: support 2500base-x in SGMII IRQ handler
+Date:   Mon, 26 Aug 2019 14:21:04 +0200
+Message-Id: <20190826122109.20660-2-marek.behun@nic.cz>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190826122109.20660-1-marek.behun@nic.cz>
+References: <20190826122109.20660-1-marek.behun@nic.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -44,38 +46,77 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+The mv88e6390_serdes_irq_link_sgmii IRQ handler reads the SERDES PHY
+status register to determine speed, among other things. If cmode of the
+port is set to 2500base-x, though, the PHY still reports 1000 Mbps (the
+PHY register itself does not differentiate between 1000 Mbps and 2500
+Mbps - it thinks it is running at 1000 Mbps, although clock is 2.5x
+faster).
+Look at the cmode and set SPEED_2500 if cmode is set to 2500base-x.
+Also tell mv88e6xxx_port_setup_mac the PHY interface mode corresponding
+to current cmode in terms of phy_interface_t.
 
-this is the fourth version of changes for the Topaz/Peridot family of
-switches. The patches apply on net-next.
-Changes since v3:
- - there was a mistake in the serdes_get_lane implementations for
-   6390 (patch 3/6). These methods returned -ENODEV if no lane was
-   to be on port, but they should return 0. This is now fixed.
+Signed-off-by: Marek Behún <marek.behun@nic.cz>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Vladimir Oltean <olteanv@gmail.com>
+Cc: Vivien Didelot <vivien.didelot@gmail.com>
+---
+ drivers/net/dsa/mv88e6xxx/serdes.c | 23 +++++++++++++++++++++--
+ 1 file changed, 21 insertions(+), 2 deletions(-)
 
-Tested on Turris Mox with Peridot, Topaz, and Peridot + Topaz.
-
-Marek
-
-Marek Behún (6):
-  net: dsa: mv88e6xxx: support 2500base-x in SGMII IRQ handler
-  net: dsa: mv88e6xxx: update code operating on hidden registers
-  net: dsa: mv88e6xxx: create serdes_get_lane chip operation
-  net: dsa: mv88e6xxx: simplify SERDES code for Topaz and Peridot
-  net: dsa: mv88e6xxx: rename port cmode macro
-  net: dsa: mv88e6xxx: fully support SERDES on Topaz family
-
- drivers/net/dsa/mv88e6xxx/Makefile      |   1 +
- drivers/net/dsa/mv88e6xxx/chip.c        |  88 +++-----
- drivers/net/dsa/mv88e6xxx/chip.h        |   3 +
- drivers/net/dsa/mv88e6xxx/port.c        |  98 ++++++---
- drivers/net/dsa/mv88e6xxx/port.h        |  30 ++-
- drivers/net/dsa/mv88e6xxx/port_hidden.c |  70 ++++++
- drivers/net/dsa/mv88e6xxx/serdes.c      | 275 +++++++++++-------------
- drivers/net/dsa/mv88e6xxx/serdes.h      |  27 ++-
- 8 files changed, 333 insertions(+), 259 deletions(-)
- create mode 100644 drivers/net/dsa/mv88e6xxx/port_hidden.c
-
+diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+index 20c526c2a9ee..678aaba3d019 100644
+--- a/drivers/net/dsa/mv88e6xxx/serdes.c
++++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+@@ -505,9 +505,11 @@ int mv88e6390x_serdes_power(struct mv88e6xxx_chip *chip, int port, bool on)
+ static void mv88e6390_serdes_irq_link_sgmii(struct mv88e6xxx_chip *chip,
+ 					    int port, int lane)
+ {
++	u8 cmode = chip->ports[port].cmode;
+ 	struct dsa_switch *ds = chip->ds;
+ 	int duplex = DUPLEX_UNKNOWN;
+ 	int speed = SPEED_UNKNOWN;
++	phy_interface_t mode;
+ 	int link, err;
+ 	u16 status;
+ 
+@@ -527,7 +529,10 @@ static void mv88e6390_serdes_irq_link_sgmii(struct mv88e6xxx_chip *chip,
+ 
+ 		switch (status & MV88E6390_SGMII_PHY_STATUS_SPEED_MASK) {
+ 		case MV88E6390_SGMII_PHY_STATUS_SPEED_1000:
+-			speed = SPEED_1000;
++			if (cmode == MV88E6XXX_PORT_STS_CMODE_2500BASEX)
++				speed = SPEED_2500;
++			else
++				speed = SPEED_1000;
+ 			break;
+ 		case MV88E6390_SGMII_PHY_STATUS_SPEED_100:
+ 			speed = SPEED_100;
+@@ -541,8 +546,22 @@ static void mv88e6390_serdes_irq_link_sgmii(struct mv88e6xxx_chip *chip,
+ 		}
+ 	}
+ 
++	switch (cmode) {
++	case MV88E6XXX_PORT_STS_CMODE_SGMII:
++		mode = PHY_INTERFACE_MODE_SGMII;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_1000BASE_X:
++		mode = PHY_INTERFACE_MODE_1000BASEX;
++		break;
++	case MV88E6XXX_PORT_STS_CMODE_2500BASEX:
++		mode = PHY_INTERFACE_MODE_2500BASEX;
++		break;
++	default:
++		mode = PHY_INTERFACE_MODE_NA;
++	}
++
+ 	err = mv88e6xxx_port_setup_mac(chip, port, link, speed, duplex,
+-				       PAUSE_OFF, PHY_INTERFACE_MODE_NA);
++				       PAUSE_OFF, mode);
+ 	if (err)
+ 		dev_err(chip->dev, "can't propagate PHY settings to MAC: %d\n",
+ 			err);
 -- 
 2.21.0
 
