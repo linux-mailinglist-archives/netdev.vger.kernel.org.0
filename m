@@ -2,58 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AF5019C71F
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 04:06:53 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id BD48B9C739
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 04:26:15 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729114AbfHZCGs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 22:06:48 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:57746 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726552AbfHZCGs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 22:06:48 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 3B3FA14C36B36;
-        Sun, 25 Aug 2019 19:06:47 -0700 (PDT)
-Date:   Sun, 25 Aug 2019 19:06:43 -0700 (PDT)
-Message-Id: <20190825.190643.573913079872386152.davem@davemloft.net>
-To:     maowenan@huawei.com
-Cc:     nbd@openwrt.org, john@phrozen.org, sean.wang@mediatek.com,
-        nelson.chang@mediatek.com, matthias.bgg@gmail.com,
-        kernel-janitors@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 -next] net: mediatek: remove set but not used
- variable 'status'
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <20190826013118.22720-1-maowenan@huawei.com>
-References: <20190824.142158.1506174328495468705.davem@davemloft.net>
-        <20190826013118.22720-1-maowenan@huawei.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 25 Aug 2019 19:06:47 -0700 (PDT)
+        id S1729032AbfHZC0L convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Sun, 25 Aug 2019 22:26:11 -0400
+Received: from rtits2.realtek.com ([211.75.126.72]:38114 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726248AbfHZC0K (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 22:26:10 -0400
+Authenticated-By: 
+X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7Q2Q1oP024266, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (RTITCASV01.realtek.com.tw[172.21.6.18])
+        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7Q2Q1oP024266
+        (version=TLSv1 cipher=DHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Mon, 26 Aug 2019 10:26:02 +0800
+Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
+ RTITCASV01.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Mon, 26 Aug
+ 2019 10:26:00 +0800
+From:   Hayes Wang <hayeswang@realtek.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        nic_swsd <nic_swsd@realtek.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH net-next v4 0/2] r8152: save EEE
+Thread-Topic: [PATCH net-next v4 0/2] r8152: save EEE
+Thread-Index: AQHVWYUmd+TOgW58J0ylwUoBXEMP3KcIR2UAgARshVA=
+Date:   Mon, 26 Aug 2019 02:25:59 +0000
+Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D631F@RTITMBSVM03.realtek.com.tw>
+References: <1394712342-15778-304-Taiwan-albertk@realtek.com>
+ <1394712342-15778-311-Taiwan-albertk@realtek.com>
+ <20190823143722.GE21295@lunn.ch>
+In-Reply-To: <20190823143722.GE21295@lunn.ch>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.177.214]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Mao Wenan <maowenan@huawei.com>
-Date: Mon, 26 Aug 2019 09:31:18 +0800
-
-> Fixes gcc '-Wunused-but-set-variable' warning:
-> drivers/net/ethernet/mediatek/mtk_eth_soc.c: In function mtk_handle_irq:
-> drivers/net/ethernet/mediatek/mtk_eth_soc.c:1951:6: warning: variable status set but not used [-Wunused-but-set-variable]
+Andrew Lunn [mailto:andrew@lunn.ch]
+> Sent: Friday, August 23, 2019 10:37 PM
+[...]
+> Hi Hayes
 > 
-> Fixes: 296c9120752b ("net: ethernet: mediatek: Add MT7628/88 SoC support")
-> Signed-off-by: Mao Wenan <maowenan@huawei.com>
+> That was 3 revisions of the patches in less than 30 minutes. Slow
+> down, take your time, review your work yourself before posting it,
+> etc.
+> 
+> Aim for no more than one revision, posted to the list, per day.
 
-Are you sure the register isn't being read in order to make some
-hardware side effect happen?
+Sorry. I would note that.
 
-Have you tested this on effected hardware?
 
-I'm not applying this without definitive answers to these questions.
+Best Regards,
+Hayes
+
+
