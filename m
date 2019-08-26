@@ -2,60 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E8BE19C8F8
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:11:19 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 42E689C8FA
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:11:22 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729345AbfHZGLR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 02:11:17 -0400
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:35211 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729303AbfHZGLQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:11:16 -0400
-Received: by mail-pl1-f193.google.com with SMTP id gn20so9480312plb.2;
-        Sun, 25 Aug 2019 23:11:16 -0700 (PDT)
+        id S1729362AbfHZGLV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 02:11:21 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:40505 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729348AbfHZGLV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:11:21 -0400
+Received: by mail-pf1-f193.google.com with SMTP id w16so11091070pfn.7;
+        Sun, 25 Aug 2019 23:11:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HQ8V7KQdw5JCSfSPNekTuVfm5OO1JCPPgl/Rgpn3re8=;
-        b=KBme8iaqhcnzlcwDy3uY3cH9m/T+YIJqeSodLY8BGqVm07b8wX8q6Jzhdh6MymsRok
-         G5gVWPaxUMCh4d/ALf0XIUkqHy4x4OJEcciXcaeTAwQ9lkBkQU2eE1ExSA/v+GMNZtag
-         joSQp2UWnhz87wlO6zHNk+aCgGbukxflFfIJnHtGMMryA8W8Xqkfkn1GyI3K7/VYtBMH
-         D2a5My/HlTJonzjWO+vAoCDBwmYA1lRR1FoSX0ajM5rZgNZHmepEQzFv7wrf/nSnHUm+
-         izgldYRYBH+0M1RMB/s5mnce/jzeQklXYLI6td+yIwbiDUSUmTknWsQtF++zfC+FKFrA
-         xHqg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=brzyMJQEtSFOlIzSlYHmlx1qPiPRfraKFBoTUSQ5qVQ=;
+        b=n7ol3gsfiohlI1FScybVRGDTue1g+Ikn7EjblmPNIveow6Xy31i6wKUjsz+mfuUiky
+         k0rlNx4cdzbjPD3IdYMfrTW8EyXuk9QETcQDmHBJAKbkVIhrLr1x5m9gb2VNeqr5Jujm
+         LX0fYrIfbiwOLxZdwfZawRA4F77hjA4NdGGGTtMjtiI7xU2U93YFAFoU1GAOfz4Oldj0
+         ZsojSiC8BJmrT/pxJcf0P8lu2EnIoN4pvx7ltceW3VCETwStrmyA6UDparAU9BKZa4tI
+         +wk8gBtds9lEnatC/AdETWBu+SjQCyGrwFBlQErINVntYRLRDqkmwhG1H4vDm15jckWr
+         3pwg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HQ8V7KQdw5JCSfSPNekTuVfm5OO1JCPPgl/Rgpn3re8=;
-        b=nLcr85R1fy7pPmUYvyApv1d2KZyEiAz0UDYBagkP4l7j06K1y4fa2vldw1/R/tKmGJ
-         MfBpSGizAL9HdVB9hlDbmPbc0emCKlwcK9xSj3RFcTtWRdss94+BERLd0ixkce/kOU6+
-         NBaWXAESH5wUJoeM5L7brhqAgZYmBaAG6pJ6m+v1R4UDqnsAKU8nE9keh6GAx7XxzL9v
-         N8ty30ADQV1V+jO09ZCMKAe8QsEHGKqLxTvFVdimsq+8zAxzIzxcebV1rWfNoRTmC5Q5
-         hyD8niK/FZDwnVimzMTvt41HCG+6FFwFe0OFXTOrMvRCQ9wW8DpkvwnaOzQG+dAgoK+Q
-         R/2A==
-X-Gm-Message-State: APjAAAWDJmB2jOeGhGneeOePYYcQ+ijkjzHS7YHLC0yzHoSLNwkg/Maj
-        /5HeFsl9eIhmaZ1XSkR5N+Y=
-X-Google-Smtp-Source: APXvYqycj8vBcVQwislncSPWkqoedWucbqALM6ke8xmTF3D9d5dG2hbaKo62jSZ6cQu7gnE/SA7azg==
-X-Received: by 2002:a17:902:fa5:: with SMTP id 34mr1886460plz.285.1566799875850;
-        Sun, 25 Aug 2019 23:11:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=brzyMJQEtSFOlIzSlYHmlx1qPiPRfraKFBoTUSQ5qVQ=;
+        b=gf+1LgikoLpPISVJ+8CnBQVYyaydChSe14HQiP0AKBiauzVqyNi8arZYcsj6MKQaSs
+         KFL5n3ufwr8DuDBsrNBK6ykxBDOOvQFEBY/PMKV99U2rxxzMSdKOZBDroHK7vD2KTUem
+         VpOe1ra2oOMvi+uDP9j5Z12PQg1B4zrkgjMs0B3rRWNo49Ee19p8TKZQaPpGrOxIiCmQ
+         A4UtKZQPZrWPDxKeQ1wEh4qr4GKp5IPC9VjyMH8esGr+Y/6jwMzAafQTcIEpLw61bzk5
+         Ys39P/n0Bloxy0pQMjqJRRTQOOHkVit+FFOXPQVQBbY7bx/Zzw2Kzw4891CLqRh5kLJ9
+         uddA==
+X-Gm-Message-State: APjAAAV2xB9bL4uH5Iapru1C1MoQhDEOCSSDB2qngqU029Et8wimd4gP
+        nsWXZqFV2nKpUy9C99x52bM=
+X-Google-Smtp-Source: APXvYqx5JPVlgeMaKavxNyIJ4ZN38gQeIKtMPhMaVZrOl8HQmaqDsrEvUBLI3ALWdgSyTz6zkH4mwA==
+X-Received: by 2002:a17:90a:eb05:: with SMTP id j5mr18461277pjz.102.1566799880636;
+        Sun, 25 Aug 2019 23:11:20 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([192.55.54.42])
-        by smtp.gmail.com with ESMTPSA id d2sm9567452pjs.21.2019.08.25.23.11.10
+        by smtp.gmail.com with ESMTPSA id d2sm9567452pjs.21.2019.08.25.23.11.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Aug 2019 23:11:15 -0700 (PDT)
+        Sun, 25 Aug 2019 23:11:20 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bpf@vger.kernel.org, bjorn.topel@intel.com,
-        jonathan.lemon@gmail.com,
+        bpf@vger.kernel.org, jonathan.lemon@gmail.com,
         syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
         hdanton@sina.com, i.maximets@samsung.com
-Subject: [PATCH bpf-next v2 0/4] xsk: various CPU barrier and {READ, WRITE}_ONCE fixes
-Date:   Mon, 26 Aug 2019 08:10:49 +0200
-Message-Id: <20190826061053.15996-1-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v2 1/4] xsk: avoid store-tearing when assigning queues
+Date:   Mon, 26 Aug 2019 08:10:50 +0200
+Message-Id: <20190826061053.15996-2-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190826061053.15996-1-bjorn.topel@gmail.com>
+References: <20190826061053.15996-1-bjorn.topel@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -64,39 +65,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is a four patch series of various barrier, {READ, WRITE}_ONCE
-cleanups in the AF_XDP socket code. More details can be found in the
-corresponding commit message.
+From: Björn Töpel <bjorn.topel@intel.com>
 
-For an AF_XDP socket, most control plane operations are done under the
-control mutex (struct xdp_sock, mutex), but there are some places
-where members of the struct is read outside the control mutex. This,
-as pointed out by Daniel in [1], requires proper {READ,
-WRITE}_ONCE-correctness [2] [3]. To address this, and to simplify the
-code, the state variable (introduced by Ilya), is now used a point of
-synchronization ("is the socket in a valid state, or not").
+Use WRITE_ONCE when doing the store of tx, rx, fq, and cq, to avoid
+potential store-tearing. These members are read outside of the control
+mutex in the mmap implementation.
 
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
+Fixes: 37b076933a8e ("xsk: add missing write- and data-dependency barrier")
+Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+---
+ net/xdp/xsk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-Björn
-
-[1] https://lore.kernel.org/bpf/beef16bb-a09b-40f1-7dd0-c323b4b89b17@iogearbox.net/
-[2] https://lwn.net/Articles/793253/
-[3] https://github.com/google/ktsan/wiki/READ_ONCE-and-WRITE_ONCE
-
-v1->v2:
-  Removed redundant dev check. (Jonathan)
-
-Björn Töpel (4):
-  xsk: avoid store-tearing when assigning queues
-  xsk: add proper barriers and {READ, WRITE}_ONCE-correctness for state
-  xsk: avoid store-tearing when assigning umem
-  xsk: lock the control mutex in sock_diag interface
-
- net/xdp/xsk.c      | 61 +++++++++++++++++++++++++++++++---------------
- net/xdp/xsk_diag.c |  3 +++
- 2 files changed, 45 insertions(+), 19 deletions(-)
-
+diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+index ee4428a892fa..f3351013c2a5 100644
+--- a/net/xdp/xsk.c
++++ b/net/xdp/xsk.c
+@@ -409,7 +409,7 @@ static int xsk_init_queue(u32 entries, struct xsk_queue **queue,
+ 
+ 	/* Make sure queue is ready before it can be seen by others */
+ 	smp_wmb();
+-	*queue = q;
++	WRITE_ONCE(*queue, q);
+ 	return 0;
+ }
+ 
 -- 
 2.20.1
 
