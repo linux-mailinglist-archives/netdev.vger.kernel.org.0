@@ -2,97 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ADBC9D75E
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:18:55 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D55509D779
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:40:16 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733036AbfHZUSr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 16:18:47 -0400
-Received: from mail-eopbgr140082.outbound.protection.outlook.com ([40.107.14.82]:27874
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729144AbfHZUSq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 16:18:46 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XsAwmh43uCS27MQ18KLfIZ4coBcAuuwJP7SwlLK2JPEIOQAo6frZJNB+IYUS4Ldu6F0dTp4IzSGi7bMpDIeSsURgJB3QY8323RQHXr6xxYAkSIz+Gxd9awuyikuhhs5XMUidvzuJ9QJqBPB9o/8fzMxpuxNte8Z/T7UmJZs+NY+Xb3cYc7nFdQSI1YOOAsbzjJFMVCTUDRlPzoSo6gJsGVoxNElr9y3r4sl84F+/3E8mLkodG1h5FnHkdSdKvZZcE+i0aulNuHH+kXUka3G7dkdtZtY0jn9Y+Zt+b5OIDn8fFBBzoTgmZlrf1bDQ6rXwHHGNZpK6u5cBCNnXIplXPA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=htM6yOe02qdDxP4e6/9WlBeq0RxH8gOR9o57K28N5xw=;
- b=jyBXKp++KWIe9zeLJDwktbgwdOl9pWaXPEOTndF6HkL6P3ucWwU1vtErQTawmmseOvegvHTi7cQYwQFTGeKV0OzAVb/ynOu4Pn+PZ2hkPcOeDtKK28T13GcR+iAgHytQRwh6aVO1ZevZfoUQSVFg4VQNx7+TV2A/1aVKLhZBVP0sgRRTdNAilwIPD1AYfEXTIJDQO9zG0X7MJDqbFJfJPewj4SChbJRU3lFuPyTzua1IzMXdDZfyYMfoRM03MHxoqhZaHgdOx8K962a842zc0bva87vj2mLUq48cYEBFp56io0PB//hI4bPFF4qCtDP2Oxw8/Nmj5ZTNDwvAZqAAUg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=htM6yOe02qdDxP4e6/9WlBeq0RxH8gOR9o57K28N5xw=;
- b=ZDzBaEHMqdcSwfZliTRiN4rTw9Jck92KcX0MQp41jkzTOnxaNMRyMBdD44aEk9aAp1z/PQsyN2qFSpmUpHeUcCM1a1i0OhMluGBdt17c5jWV8CDM62SVvJVjdCJ99CBEE4o8QK9ySj6yKVw2thCMJGv4R8rpG2LU99z35cMx3b4=
-Received: from HE1PR0501MB2763.eurprd05.prod.outlook.com (10.172.125.17) by
- HE1PR0501MB2425.eurprd05.prod.outlook.com (10.168.124.21) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2178.16; Mon, 26 Aug 2019 20:18:41 +0000
-Received: from HE1PR0501MB2763.eurprd05.prod.outlook.com
- ([fe80::a561:bcc6:10ab:d06a]) by HE1PR0501MB2763.eurprd05.prod.outlook.com
- ([fe80::a561:bcc6:10ab:d06a%10]) with mapi id 15.20.2178.023; Mon, 26 Aug
- 2019 20:18:41 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "cai@lca.pw" <cai@lca.pw>,
-        "davem@davemloft.net" <davem@davemloft.net>
-CC:     Eran Ben Elisha <eranbe@mellanox.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        id S1727063AbfHZUkN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 16:40:13 -0400
+Received: from mail-ed1-f45.google.com ([209.85.208.45]:41649 "EHLO
+        mail-ed1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726562AbfHZUkM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 16:40:12 -0400
+Received: by mail-ed1-f45.google.com with SMTP id w5so28221782edl.8
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 13:40:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=ptnSffzuW8JtguqJ6YPEgDct2SPal9SRJmb4kOaExJ8=;
+        b=D/99HLYJXE6sUunaLkC17A8oiaqdxxLs3BHWWwkQ7tjlAakqEvUhj2FlyOpVsHuu6l
+         K21+YUwa8MumrPf0Oz8Zs3qRPUH6IjM597RG9OFh8yuA7Q3xUe0xEhIptwmBOn30obrT
+         hOAmfIJ1Hhmgb3jugDKVrplUs9IOQbWjmOYZ/FgqnHScc+FYXgwzKa6RTGzKD5DpgeBG
+         sUqoxIdhLk79FhqrcwDOo6OmgcMKoZRttrzgtWyFbEek9/yt/8V0Mh0AEdbWrXZUL3a+
+         Rj/dAZJo3oLQxDNNPgoovDlzdFVnrWBAPP7F3Uw1hooSpeWzitW45yFa9Y3AZlbPeaX1
+         Q+Cw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=ptnSffzuW8JtguqJ6YPEgDct2SPal9SRJmb4kOaExJ8=;
+        b=JkBqeCk1hvWAZUhT4Yxuq+bxIB4jghxgU2tbOHFpJxZWYYdPHYj3KEDb8wF87mTK5n
+         mhmAUB1gwbL+uPYGeGoaIxTygO0PysZhJlupVY4hk5Bt07IYTNq+8NEXzjm3px+Bwu0A
+         w3ZTN0AzzP0ojSX6UzcApRTd3hfg+gF+CY3RPLIAR/MBLiPjet7CEL+SmYhyn8Kshvfh
+         +MS0g8rrHvmsP9kYG2gUkDdEyNo8Rcjjc6pJLjCx2SvK+AyMkmlYk2KxHKWN+MChIpZk
+         l14uscRbr4AJjbBwkE9syjoL2OTukxk7d51EJtS4hkEvRh+Y0GbjNC9GB0XpFmSPdnkS
+         l4cw==
+X-Gm-Message-State: APjAAAXo+UstYxRMT5Vs8CSRuEWm1zzlInrKiFqjL9CYcJSbWMwTyJut
+        EQIoa8a81q1MAPjIBJwcHqVj7j68rns=
+X-Google-Smtp-Source: APXvYqx2abthB0Jx1rGOPZYvBoXuxl31QjF9I4Vn6T9So5l559jSF11ifiZ1kWqFW9Xfqo0uXlrA0g==
+X-Received: by 2002:a17:906:a452:: with SMTP id cb18mr18161705ejb.280.1566852010502;
+        Mon, 26 Aug 2019 13:40:10 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id s11sm1465263edh.60.2019.08.26.13.40.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Aug 2019 13:40:10 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 13:39:49 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Saeed Mahameed <saeedm@mellanox.com>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
         "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Feras Daoud <ferasda@mellanox.com>,
-        "leon@kernel.org" <leon@kernel.org>,
         Moshe Shemesh <moshe@mellanox.com>
-Subject: Re: [PATCH] net/mlx5: fix a -Wstringop-truncation warning
-Thread-Topic: [PATCH] net/mlx5: fix a -Wstringop-truncation warning
-Thread-Index: AQHVWezn79S9mYXS9UOCwXmOlPmrCacJTW+AgASVnIA=
-Date:   Mon, 26 Aug 2019 20:18:41 +0000
-Message-ID: <9eb82b4de408d5f969c1df069d6b4c76a83e9ed7.camel@mellanox.com>
-References: <1566590183-9898-1-git-send-email-cai@lca.pw>
-         <20190823.151809.442664848668672070.davem@davemloft.net>
-In-Reply-To: <20190823.151809.442664848668672070.davem@davemloft.net>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 84ea3c80-3204-465b-c8bb-08d72a629691
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:HE1PR0501MB2425;
-x-ms-traffictypediagnostic: HE1PR0501MB2425:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <HE1PR0501MB24252E8C06BC887F839FB5BCBEA10@HE1PR0501MB2425.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2582;
-x-forefront-prvs: 01415BB535
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(396003)(346002)(39860400002)(136003)(366004)(376002)(199004)(189003)(229853002)(91956017)(76116006)(6116002)(305945005)(3846002)(2906002)(107886003)(66066001)(53936002)(7736002)(478600001)(6246003)(76176011)(256004)(446003)(11346002)(186003)(36756003)(486006)(2501003)(86362001)(476003)(2616005)(26005)(316002)(6486002)(118296001)(99286004)(558084003)(110136005)(58126008)(6506007)(102836004)(71190400001)(71200400001)(54906003)(4326008)(6436002)(81166006)(81156014)(64756008)(8936002)(66946007)(66476007)(66556008)(66446008)(6512007)(25786009)(8676002)(5660300002)(14454004);DIR:OUT;SFP:1101;SCL:1;SRVR:HE1PR0501MB2425;H:HE1PR0501MB2763.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 14ALgps/fQKXDLF+Q3x397LOHhIosqD/OfEKwxzCNqgmYeWWaFcXYrzT8oYBlax22PNfBfixb3eNYp9qQ+FyGitMZ3RzhULr9VHvH2kRflV09AjOJE8rGZKvWnAozvVClE5nMMfMNuLgi5+f5VQ/MXdvRfuqTUIb+AyG3sHTds3WIStEpyd2TeNaMQhOBdxr3/MNgXFnpChQxIzg6tbwMjcTrPRZc2Pbyjqw37gaFjiDsYtnXgfK14z/KYmPOODkLb0L5W8ouVrKRS/+wpfxO/C3vDYWE/LzWk3w8xMnaUXBh2X1Z/K9IfUXPQXjnBHtq5IT/p+hz8ZCO2umOaRqkWNrMq+ZJjv4JeAaf75iGyvOeJZk4D59y0LEVJxD8/mDS3x3GyK6DFhEd1q/QLBlF1+XunKpMXcjDUR15YExGb0=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9460794B6C09694DA4274ABE5DE23ACF@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+Subject: Re: [net-next 4/8] net/mlx5e: Add device out of buffer counter
+Message-ID: <20190826133949.0691660c@cakuba.netronome.com>
+In-Reply-To: <18abb6456fb4a2fba52f6f77373ac351651a62c6.camel@mellanox.com>
+References: <20190822233514.31252-1-saeedm@mellanox.com>
+        <20190822233514.31252-5-saeedm@mellanox.com>
+        <20190822183324.79b74f7b@cakuba.netronome.com>
+        <27f7cfa13d1b5e7717e2d75595ab453951b18a96.camel@mellanox.com>
+        <20190823111601.012fabf4@cakuba.netronome.com>
+        <18abb6456fb4a2fba52f6f77373ac351651a62c6.camel@mellanox.com>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 84ea3c80-3204-465b-c8bb-08d72a629691
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Aug 2019 20:18:41.6373
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: sVrrw5JTfOLS0/J0pouPgwYMTjVByRxEW0EL7nq4H5MzChdOZHj6qat/Pnvu72H3TbAo3NVV6EAXyUWicFCL0g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR0501MB2425
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDE5LTA4LTIzIGF0IDE1OjE4IC0wNzAwLCBEYXZpZCBNaWxsZXIgd3JvdGU6DQo+
-IFNhZWVkLCBJIGFzc3VtZSBJJ2xsIGdldCB0aGlzIGZyb20geW91Lg0KDQpZZXMsIGkgd2lsbCBo
-YW5kbGUgaXQuDQo=
+On Mon, 26 Aug 2019 20:14:47 +0000, Saeed Mahameed wrote:
+> > I see thanks for the explanation and sorry for the delayed response.
+> > Would it perhaps make sense to indicate the hairpin in the name?  
+> 
+> We had some internal discussion and we couldn't come up with the
+> perfect name :)
+> 
+> hairpin is just an implementation detail, we don't want to exclusively
+> bind this counter to hairpin only flows, the problem is not with
+> hairpin, the actual problem is due to the use of internal RQs, for now
+> it only happens with "hairpin like" flows, but tomorrow it can happen
+> with a different scenario but same root cause (the use of internal
+> RQs), we want to have one counter to count internal drops due to
+> internal use of internal RQs.
+> 
+> so how about:
+> dev_internal_rq_oob: Device Internal RQ out of buffer
+> dev_internal_out_of_res: Device Internal out of resources (more generic
+> ? too generic ?)
+
+Maybe dev_internal_queue_oob? The use of 'internal' is a little
+unfortunate, because it may be read as RQ run out of internal buffers.
+Rather than special type of queue run out of buffers.
+But not knowing the HW I don't really have any great suggestions :(
+Either of the above would work as well.
+
+> Any suggestion that you provide will be more than welcome.
+> 
+> > dev_out_of_buffer is quite a generic name, and there seems to be no
+> > doc, nor does the commit message explains it as well as you have..  
+> 
+> Regarding documentation:
+> All mlx5 ethool counters are documented here
+> https://community.mellanox.com/s/article/understanding-mlx5-linux-counters-and-status-parameters
+> 
+> once we decide on the name, will add the new counter to the doc.
+
+I see, thanks!
