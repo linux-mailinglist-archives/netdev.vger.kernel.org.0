@@ -2,86 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D3C9CB39
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 10:03:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id DA12A9CB5C
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 10:15:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730203AbfHZIDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 04:03:35 -0400
-Received: from mga12.intel.com ([192.55.52.136]:48992 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726189AbfHZIDf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 04:03:35 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Aug 2019 01:03:34 -0700
-X-ExtLoop1: 1
+        id S1729535AbfHZIOo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 04:14:44 -0400
+Received: from esa4.microchip.iphmx.com ([68.232.154.123]:42666 "EHLO
+        esa4.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726189AbfHZIOn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 04:14:43 -0400
+Received-SPF: Pass (esa4.microchip.iphmx.com: domain of
+  Horatiu.Vultur@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="Horatiu.Vultur@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa4.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa4.microchip.iphmx.com;
+  envelope-from="Horatiu.Vultur@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa4.microchip.iphmx.com; dkim=none (message not signed) header.i=none; spf=Pass smtp.mailfrom=Horatiu.Vultur@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: z3+gMa6lHQJiOt2w+Y+z1SBhMnOd+ErKsQoMCsa7YeEyO0N88kZ96F8NUPmha3S5TN8Qn8QrPl
+ Yi/ypLXTd7XiKpe4Cg25m3UCFshDhY+1jXPuVWE2cdCqB+cCDB/K3V9CAMFKfdPARv7AO83Faa
+ GmHGV3sBZ+PW/y2YEeW3k8ZWDFdmL8quLnsU2IVR0cfiKLmDES10wZok9k7jGAAK7MAxObF63m
+ L18H6KWqg+wfSex0oR6JjCDS/aQ9qeo+c488iIL+wgFY9y8k2A/FvFklZksRwFJ7AhrnBWx28I
+ xBQ=
 X-IronPort-AV: E=Sophos;i="5.64,431,1559545200"; 
-   d="asc'?scan'208";a="196998739"
-Received: from sjolley-mobl.amr.corp.intel.com ([10.254.178.147])
-  by fmsmga001.fm.intel.com with ESMTP; 26 Aug 2019 01:03:34 -0700
-Message-ID: <c2279a78904b581924894b712403299903eacbfc.camel@intel.com>
-Subject: Re: [PATCH] net: intel: Cleanup e1000 - add space between }}
-From:   Jeff Kirsher <jeffrey.t.kirsher@intel.com>
-To:     Forrest Fleming <ffleming@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 26 Aug 2019 01:03:33 -0700
-In-Reply-To: <20190823191421.3318-1-ffleming@gmail.com>
-References: <20190823191421.3318-1-ffleming@gmail.com>
-Content-Type: multipart/signed; micalg="pgp-sha512";
-        protocol="application/pgp-signature"; boundary="=-+SaW8iJuTsbssO2+QFx8"
-User-Agent: Evolution 3.32.4 (3.32.4-1.fc30) 
+   d="scan'208";a="45573013"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 26 Aug 2019 01:14:42 -0700
+Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 26 Aug 2019 01:14:41 -0700
+Received: from soft-dev3.microsemi.net (10.10.85.251) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
+ 15.1.1713.5 via Frontend Transport; Mon, 26 Aug 2019 01:14:39 -0700
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     <roopa@cumulusnetworks.com>, <nikolay@cumulusnetworks.com>,
+        <davem@davemloft.net>, <UNGLinuxDriver@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <allan.nielsen@microchip.com>,
+        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <bridge@lists.linux-foundation.org>
+CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: [PATCH v2 0/3] Add NETIF_F_HW_BR_CAP feature
+Date:   Mon, 26 Aug 2019 10:11:12 +0200
+Message-ID: <1566807075-775-1-git-send-email-horatiu.vultur@microchip.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
+Content-Type: text/plain
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+When a network port is added to a bridge then the port is added in
+promisc mode. Some HW that has bridge capabilities(can learn, forward,
+flood etc the frames) they are disabling promisc mode in the network
+driver when the port is added to the SW bridge.
 
---=-+SaW8iJuTsbssO2+QFx8
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+This patch adds the feature NETIF_F_HW_BR_CAP so that the network ports
+that have this feature will not be set in promisc mode when they are
+added to a SW bridge.
 
-On Fri, 2019-08-23 at 19:14 +0000, Forrest Fleming wrote:
-> suggested by checkpatch
->=20
-> Signed-off-by: Forrest Fleming <ffleming@gmail.com>
-> ---
->  .../net/ethernet/intel/e1000/e1000_param.c    | 28 +++++++++----------
->  1 file changed, 14 insertions(+), 14 deletions(-)
+In this way the HW that has bridge capabilities don't need to send all the
+traffic to the CPU and can also implement the promisc mode and toggle it
+using the command 'ip link set dev swp promisc on'
 
-While I do not see an issue with this change, I wonder how important it is
-to make such a change.  Especially since most of the hardware supported by
-this driver is not available for testing.  In addition, this is one
-suggested change by checkpatch.pl that I personally do not agree with.
+v1 -> v2
+  - rename feature to NETIF_F_HW_BR_CAP
+  - add better description in the commit message and in the code
+  - remove the check that all network driver have same netdev_ops and
+    just check for the feature NETIF_F_HW_BR_CAP when setting the network
+    port in promisc mode.
 
-This is not a hard NAK, but you have to explain how this change makes the
-code more readable before I consider it.
 
---=-+SaW8iJuTsbssO2+QFx8
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
+Horatiu Vultur (3):
+  net: Add NETIF_HW_BR_CAP feature
+  net: mscc: Use NETIF_F_HW_BR_CAP
+  net: mscc: Implement promisc mode.
 
------BEGIN PGP SIGNATURE-----
+ drivers/net/ethernet/mscc/ocelot.c | 26 ++++++++++++++++++++++++--
+ include/linux/netdev_features.h    |  6 ++++++
+ net/bridge/br_if.c                 | 11 ++++++++++-
+ net/core/ethtool.c                 |  1 +
+ 4 files changed, 41 insertions(+), 3 deletions(-)
 
-iQIzBAABCgAdFiEEiTyZWz+nnTrOJ1LZ5W/vlVpL7c4FAl1jklUACgkQ5W/vlVpL
-7c7hHg/+NAXAeuMjDZxOZq/wxvvj915GMyFGhtxIHKvbyYMLDU1m2AMHXzvBamyb
-qhYKGFYjTD5OsbqvHCKaZ4KxjMgiNGxfrDnLD3JPgyrEGKMICpU87Ec49tfRhLo7
-Jj7+IetakkcwLGnNoi2ZeumsfybLvjrtJGZS+QC66QRXqD8TeIuoEDleRDSs9sMp
-6CVb5m0ZGQAbEk0Kpso1CwdoEqQ0LdN27dQbTi8ix5wCcQ1HJnOjBUDvTzsfp2cS
-L5TlNViQ4GhfJkkR2PDsI2Svh1XJd1w4U3PMDRHx4Bu6MajAFcKxGoFgfbizpP5C
-CtGGiCN91RuI87eUfpWvpFsIOM4wm4EULYMSEgPn7TuUBB3CweNafpGJnDmtiqGD
-dj2+AOYtmKoKFbatNBhl9zIEMU76vW54gshX5CaWToCFJeFAqagrgoWdrOM4vWIM
-rMcz/hgTvxU40ad3ZJ0kCcSy+j/JTF8JRG9sBYaymoJnxMCT6jeFI6R9fIhRqMA3
-QEpuEElGSnpvD7Up7z1Sd7oE4wJlLYbAEwZqn/+rwGIk6d0PZmHH3ZixFI/HYemt
-qji8KltUM/QHM0jaXeLiPBq3RJlt/4qs6x8LV9k1zuLRL0GuXQs1Wu1PX2pNDLZU
-jataaHMp0uFKLkWwR2metAyY9mwHKdJgV7pO2/MAb2AKVJF2HqA=
-=pzql
------END PGP SIGNATURE-----
-
---=-+SaW8iJuTsbssO2+QFx8--
+-- 
+2.7.4
 
