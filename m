@@ -2,81 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 524F09CCB9
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 11:43:49 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 5BA1E9CCC8
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 11:47:54 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731008AbfHZJnj convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Aug 2019 05:43:39 -0400
-Received: from rtits2.realtek.com ([211.75.126.72]:39928 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726266AbfHZJnj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 05:43:39 -0400
-Authenticated-By: 
-X-SpamFilter-By: BOX Solutions SpamTrap 5.62 with qID x7Q9hXn1020391, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (RTITCASV02.realtek.com.tw[172.21.6.19])
-        by rtits2.realtek.com.tw (8.15.2/2.57/5.78) with ESMTPS id x7Q9hXn1020391
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 26 Aug 2019 17:43:33 +0800
-Received: from RTITMBSVM03.realtek.com.tw ([fe80::e1fe:b2c1:57ec:f8e1]) by
- RTITCASV02.realtek.com.tw ([::1]) with mapi id 14.03.0468.000; Mon, 26 Aug
- 2019 17:43:32 +0800
-From:   Hayes Wang <hayeswang@realtek.com>
-To:     Jiri Slaby <jslaby@suse.cz>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     nic_swsd <nic_swsd@realtek.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH net v2 1/2] Revert "r8152: napi hangup fix after disconnect"
-Thread-Topic: [PATCH net v2 1/2] Revert "r8152: napi hangup fix after
- disconnect"
-Thread-Index: AQHVW+oYPqwM5rED6EyH48TSLgwyCacMmhSAgACMaRA=
-Date:   Mon, 26 Aug 2019 09:43:32 +0000
-Message-ID: <0835B3720019904CB8F7AA43166CEEB2F18D6733@RTITMBSVM03.realtek.com.tw>
-References: <1394712342-15778-317-Taiwan-albertk@realtek.com>
- <1394712342-15778-318-Taiwan-albertk@realtek.com>
- <1f707377-7b61-4ba1-62bf-f275d0360749@suse.cz>
-In-Reply-To: <1f707377-7b61-4ba1-62bf-f275d0360749@suse.cz>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.177.214]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1731052AbfHZJrf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 05:47:35 -0400
+Received: from szxga06-in.huawei.com ([45.249.212.32]:53624 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729922AbfHZJrf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 05:47:35 -0400
+Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id F0F0C5E24C9F767622E8;
+        Mon, 26 Aug 2019 17:47:32 +0800 (CST)
+Received: from szxyal004123181.china.huawei.com (10.65.65.77) by
+ DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
+ 14.3.439.0; Mon, 26 Aug 2019 17:47:24 +0800
+From:   Dongxu Liu <liudongxu3@huawei.com>
+To:     <eric.dumazet@gmail.com>
+CC:     <davem@davemloft.net>, <linux-kernel@vger.kernel.org>,
+        <liudongxu3@huawei.com>, <netdev@vger.kernel.org>
+Subject: Re: [PATCH] net: Adding parameter detection in __ethtool_get_link_ksettings.
+Date:   Mon, 26 Aug 2019 17:47:05 +0800
+Message-ID: <20190826094705.10544-1-liudongxu3@huawei.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+References: <aa0a372e-a169-7d78-0782-505cbdab8f90@gmail.com>
+In-Reply-To: <aa0a372e-a169-7d78-0782-505cbdab8f90@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.65.65.77]
+X-CFilter-Loop: Reflected
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jiri Slaby [mailto:jslaby@suse.cz]
-> Sent: Monday, August 26, 2019 4:55 PM
-[...]
-> Could you clarify *why* it conflicts? And how is the problem fixed by
-> 0ee1f473496 avoided now?
+> On 8/26/19 9:23 AM, Dongxu Liu wrote:
+> The __ethtool_get_link_ksettings symbol will be exported,
+> and external users may use an illegal address.
+> We should check the parameters before using them,
+> otherwise the system will crash.
+> 
+> [ 8980.991134] BUG: unable to handle kernel NULL pointer dereference at           (null)
+> [ 8980.993049] IP: [<ffffffff8155aca7>] __ethtool_get_link_ksettings+0x27/0x140
+> [ 8980.994285] PGD 0
+> [ 8980.995013] Oops: 0000 [#1] SMP
+> [ 8980.995896] Modules linked in: sch_ingress ...
+> [ 8981.013220] CPU: 3 PID: 25174 Comm: kworker/3:3 Tainted: G           O   ----V-------   3.10.0-327.36.58.4.x86_64 #1
+> [ 8981.017667] Workqueue: events linkwatch_event
+> [ 8981.018652] task: ffff8800a8348000 ti: ffff8800b045c000 task.ti: ffff8800b045c000
+> [ 8981.020418] RIP: 0010:[<ffffffff8155aca7>]  [<ffffffff8155aca7>] __ethtool_get_link_ksettings+0x27/0x140
+> [ 8981.022383] RSP: 0018:ffff8800b045fc88  EFLAGS: 00010202
+> [ 8981.023453] RAX: 0000000000000000 RBX: ffff8800b045fcac RCX: 0000000000000000
+> [ 8981.024726] RDX: ffff8800b658f600 RSI: ffff8800b045fcac RDI: ffff8802296e0000
+> [ 8981.026000] RBP: ffff8800b045fc98 R08: 0000000000000000 R09: 0000000000000001
+> [ 8981.027273] R10: 00000000000073e0 R11: 0000082b0cc8adea R12: ffff8802296e0000
+> [ 8981.028561] R13: ffff8800b566e8c0 R14: ffff8800b658f600 R15: ffff8800b566e000
+> [ 8981.029841] FS:  0000000000000000(0000) GS:ffff88023ed80000(0000) knlGS:0000000000000000
+> [ 8981.031715] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> [ 8981.032845] CR2: 0000000000000000 CR3: 00000000b39a9000 CR4: 00000000003407e0
+> [ 8981.034137] DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> [ 8981.035427] DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> [ 8981.036702] Stack:
+> [ 8981.037406]  ffff8800b658f600 0000000000009c40 ffff8800b045fce8 ffffffffa047a71d
+> [ 8981.039238]  000000000000004d ffff8800b045fcc8 ffff8800b045fd28 ffffffff815cb198
+> [ 8981.041070]  ffff8800b045fcd8 ffffffff810807e6 00000000e8212951 0000000000000001
+> [ 8981.042910] Call Trace:
+> [ 8981.043660]  [<ffffffffa047a71d>] bond_update_speed_duplex+0x3d/0x90 [bonding]
+> [ 8981.045424]  [<ffffffff815cb198>] ? inetdev_event+0x38/0x530
+> [ 8981.046554]  [<ffffffff810807e6>] ? put_online_cpus+0x56/0x80
+> [ 8981.047688]  [<ffffffffa0480d67>] bond_netdev_event+0x137/0x360 [bonding]
+> ...
+> 
+> Signed-off-by: Dongxu Liu <liudongxu3@huawei.com>
+> ---
+>  net/core/ethtool.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/net/core/ethtool.c b/net/core/ethtool.c index 
+> 6288e69..9a50b64 100644
+> --- a/net/core/ethtool.c
+> +++ b/net/core/ethtool.c
+> @@ -545,6 +545,8 @@ int __ethtool_get_link_ksettings(struct net_device 
+> *dev,  {
+>  	ASSERT_RTNL();
+>  
+> +	if (!dev || !dev->ethtool_ops)
+> +		return -EOPNOTSUPP;
 
-In rtl8152_disconnect(), the flow would be as following.
+> I do not believe dev can possibly be NULL at this point.
 
-static void rtl8152_disconnect(struct usb_interface *intf)
-{
-	...
-	- netif_napi_del(&tp->napi);
-	- unregister_netdev(tp->netdev);
-	   - rtl8152_close
-	      - napi_disable
+>  	if (!dev->ethtool_ops->get_link_ksettings)
+>  		return -EOPNOTSUPP;
+>  
+> 
 
-Therefore you add a checking of RTL8152_UNPLUG to avoid
-calling napi_disable() after netif_napi_del(). However,
-after commit ffa9fec30ca0 ("r8152: set RTL8152_UNPLUG
-only for real disconnection"), RTL8152_UNPLUG is not
-always set when calling rtl8152_disconnect(). That is,
-napi_disable() would be called after netif_napi_del(),
-if RTL8152_UNPLUG is not set.
+> I tried to find an appropriate Fixes: tag.
 
-The best way is to avoid calling netif_napi_del() before
-calling unregister_netdev(). And I has submitted such
-patch following this one.
+> It seems this particular bug was added either by
 
-Best Regards,
-Hayes
+> Fixes: 9856909c2abb ("net: bonding: use __ethtool_get_ksettings")
 
+> or generically in :
+
+> Fixes: 3f1ac7a700d0 ("net: ethtool: add new ETHTOOL_xLINKSETTINGS API")
+
+In fact, "dev->ethtool_ops" is a null pointer in my environment.
+I didn't get the case where "dev" is a null pointer.
+Maybe "if (!dev->ethtool_ops)" is more accurate for this bug.
+
+I found this bug in version 3.10, the function name was __ethtool_get_settings.
+After 3f1ac7a700d0 ("net: ethtool: add new ETHTOOL_xLINKSETTINGS API"),
+This function evolved into __ethtool_get_link_ksettings.
 
