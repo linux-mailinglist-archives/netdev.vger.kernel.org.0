@@ -2,134 +2,150 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 202B09D472
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 18:49:11 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id D00B49D47C
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 18:50:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733285AbfHZQtC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 12:49:02 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:51806 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731578AbfHZQtC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 12:49:02 -0400
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7QGmeAO135983;
-        Mon, 26 Aug 2019 12:48:50 -0400
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2umk1urg8g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 26 Aug 2019 12:48:42 -0400
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x7QGerhX005922;
-        Mon, 26 Aug 2019 16:48:04 GMT
-Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
-        by ppma02wdc.us.ibm.com with ESMTP id 2ujvv6dxfn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 26 Aug 2019 16:48:04 +0000
-Received: from b01ledav006.gho.pok.ibm.com (b01ledav006.gho.pok.ibm.com [9.57.199.111])
-        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x7QGm3Sn25952690
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 26 Aug 2019 16:48:03 GMT
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 850F0AC062;
-        Mon, 26 Aug 2019 16:48:03 +0000 (GMT)
-Received: from b01ledav006.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 63E62AC060;
-        Mon, 26 Aug 2019 16:48:01 +0000 (GMT)
-Received: from LeoBras (unknown [9.85.146.55])
-        by b01ledav006.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 26 Aug 2019 16:48:01 +0000 (GMT)
-Message-ID: <e2cf315d21394ca2c994a2499d9816cd4922197d.camel@linux.ibm.com>
-Subject: Re: [PATCH 1/1] netfilter: nf_tables: fib: Drop IPV6 packages if
- IPv6 is disabled on boot
-From:   Leonardo Bras <leonardo@linux.ibm.com>
-To:     Florian Westphal <fw@strlen.de>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        "David S. Miller" <davem@davemloft.net>
-Date:   Mon, 26 Aug 2019 13:47:55 -0300
-In-Reply-To: <20190821095844.me6kscvnfruinseu@salvia>
-References: <20190820005821.2644-1-leonardo@linux.ibm.com>
-         <20190820053607.GL2588@breakpoint.cc>
-         <793ce2e9b6200a033d44716749acc837aaf5e4e7.camel@linux.ibm.com>
-         <20190821095844.me6kscvnfruinseu@salvia>
-Content-Type: multipart/signed; micalg="pgp-sha256";
-        protocol="application/pgp-signature"; boundary="=-zBDRiKK8xztrGjRvBz3a"
-User-Agent: Evolution 3.30.5 (3.30.5-1.fc29) 
+        id S1732805AbfHZQux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 12:50:53 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:41360 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728560AbfHZQux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 12:50:53 -0400
+Received: by mail-wr1-f65.google.com with SMTP id j16so15987853wrr.8
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 09:50:51 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=u5vDlaUZ1fFToL5B5bS/CLxeDnGanGIga5VNM+/b/s8=;
+        b=IpzzEhxugffuVcs+o87xIEyU4XGHpCAg8mWBDkx31IPfKBR5kILcf/nFJZM3GfVXfA
+         MVkkntrwUjGCtgMJmI+nsjhwYT6oztfNqkyS67+Fkjtu1ysHF787MJpQUzQMTlj794tV
+         YVZct/D+av5oU6F6WzJzZt4dLWn2Foydn5cpu2Uvr4+EGgWJi++afGX9FlZM3oCEZVxB
+         nPawFBbKDpqbkrPtTRICWzr9/j546ckb4GIJACKRIU+ZGBwoj7I7mEXMR8psVGJ+wCYs
+         oCpuvgl1xMQZ+cU4clJntHfhiXYc6YP3FLKOq6jHjno5SZswWJ6ZHX8LCYqHSHtdRTYz
+         63Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=u5vDlaUZ1fFToL5B5bS/CLxeDnGanGIga5VNM+/b/s8=;
+        b=MnTZdGDuwuntQe6NpRjF9Dx6+dO9c8N3op/qdWZublmrtp1e7wTf4S5TPlakGXiBmn
+         AVFPXU4m2YJINRGOyA6gXkLyG3zZfZFI2Ibk/yyOsyVDty8Q9iLEhEYF7IvIybzaoQM0
+         sN7hGqtdVciNJCKKA7f8iv71coNhECq9g8xmps5vFXLDhq/J0p9QYPugm51h/A6Ngz26
+         Oe8N7MIRHylZRwsbkrxu3TO3p1SOeS7hau1qaRtNZI3iWYfWhRv7CqT0AXqF00UQ8ov1
+         ksn3Yhqit0B5aCtsOmni3EsWLzZg7EVXdF5sWhp9v/bw2znPqDh7LKN10py5d5kqF1K2
+         xl5A==
+X-Gm-Message-State: APjAAAXCB4M8bnoAHX1RPOh13t32ySOl7E0iSrfbrtaimLXUiAltPvOH
+        huHBhuiFE6sg61XIXypM87nhasHj7bcrK44mNMCOiw==
+X-Google-Smtp-Source: APXvYqxFAWcwPERVteb29MzlGPsU91GBFWk6F6n1xLicSCm/LstNM3xEnBoLXsupZ6dllNPUBNMc6HWgWJ4+VH4N6g4=
+X-Received: by 2002:a5d:5041:: with SMTP id h1mr25069233wrt.30.1566838250565;
+ Mon, 26 Aug 2019 09:50:50 -0700 (PDT)
 MIME-Version: 1.0
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-26_08:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1906280000 definitions=main-1908260164
+References: <20190826161915.81676-1-edumazet@google.com>
+In-Reply-To: <20190826161915.81676-1-edumazet@google.com>
+From:   Soheil Hassas Yeganeh <soheil@google.com>
+Date:   Mon, 26 Aug 2019 12:50:13 -0400
+Message-ID: <CACSApvb=MmO-9GXu3Ke9tMWpC=-uGABg+U0_6i1kBQL3+_dYMQ@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: remove empty skb from write queue in error cases
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Jason Baron <jbaron@akamai.com>,
+        Vladimir Rutsky <rutsky@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Aug 26, 2019 at 12:19 PM Eric Dumazet <edumazet@google.com> wrote:
+>
+> Vladimir Rutsky reported stuck TCP sessions after memory pressure
+> events. Edge Trigger epoll() user would never receive an EPOLLOUT
+> notification allowing them to retry a sendmsg().
+>
+> Jason tested the case of sk_stream_alloc_skb() returning NULL,
+> but there are other paths that could lead both sendmsg() and sendpage()
+> to return -1 (EAGAIN), with an empty skb queued on the write queue.
+>
+> This patch makes sure we remove this empty skb so that
+> Jason code can detect that the queue is empty, and
+> call sk->sk_write_space(sk) accordingly.
+>
+> Fixes: ce5ec440994b ("tcp: ensure epoll edge trigger wakeup when write queue is empty")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Jason Baron <jbaron@akamai.com>
+> Reported-by: Vladimir Rutsky <rutsky@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+> Cc: Neal Cardwell <ncardwell@google.com>
 
---=-zBDRiKK8xztrGjRvBz3a
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Acked-by: Soheil Hassas Yeganeh <soheil@google.com>
 
-Hello Pablo, Florian,
+Nice find!
 
-I implemented a V2 of this patch with the changes you proposed.
-Could you please give your feedback on that patch?
-https://lkml.org/lkml/2019/8/21/527
-
-Thanks!
-
-On Wed, 2019-08-21 at 11:58 +0200, Pablo Neira Ayuso wrote:
-> On Tue, Aug 20, 2019 at 01:15:58PM -0300, Leonardo Bras wrote:
-> > On Tue, 2019-08-20 at 07:36 +0200, Florian Westphal wrote:
-> > > Wouldn't fib_netdev.c have the same problem?
-> > Probably, but I haven't hit this issue yet.
-> >=20
-> > > If so, might be better to place this test in both
-> > > nft_fib6_eval_type and nft_fib6_eval.
-> >=20
-> > I think that is possible, and not very hard to do.
-> >=20
-> > But in my humble viewpoint, it looks like it's nft_fib_inet_eval() and
-> > nft_fib_netdev_eval() have the responsibility to choose a valid
-> > protocol or drop the package.=20
-> > I am not sure if it would be a good move to transfer this
-> > responsibility to nft_fib6_eval_type() and nft_fib6_eval(), so I would
-> > rather add the same test to nft_fib_netdev_eval().
-> >=20
-> > Does it make sense?
->=20
-> Please, update common code to netdev and ip6 extensions as Florian
-> suggests.
->=20
-> Thanks.
-
---=-zBDRiKK8xztrGjRvBz3a
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: This is a digitally signed message part
-Content-Transfer-Encoding: 7bit
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEMdeUgIzgjf6YmUyOlQYWtz9SttQFAl1kDTsACgkQlQYWtz9S
-ttTuhA//cuSNReLpNT7MtnSrTh/NMHak2UJhClO5A5q6dWLRuhjag+AG0ik7S0MD
-+PN4NFCymRxsrWjBuRPfxBiNskm7Xg+EA55ZSelxwHZhzMIUR/aEANqYBYj/YE+Q
-fhOTXq88MRjYHSYycGoIUviGaLgEQx3wTfaK4aR7F5MfnaUuqqwz7Rnc6E9F740C
-HcnbeoqakAY9SXsNke0NYjM+AnvV5FuGcU3Qcz26cZkRCBMS0QkvE2CR17EOq779
-mmj+nvpdD5h3teEGAznG9yADdwkpgXRDEkg6JHVYSlMC69H9qcvMeXYPbTw4cOkV
-bX4abUrC3pS3LupHMRB8BGKLn2PyZjZHE8xUmKSkC7BH3ZL5A47teNdH9725Geld
-tVA+OIxmujQIU4vWgnQq96auj/ukO/QCzZgE4/7i5m5Sp5lN5IDasVgwTgXkSJQ9
-5KPKGAul8xGiHaYkhjCJd7iZYuhtWq7oer9fF/AC8eTz4v45Kryg0lmmtb0hA4Oc
-9LD9WaI+yg5vCh188b3hLS28jC/yktx/T+6+7lHJqI0jyCHp9vAMl6O5VxUfX/eZ
-PmwQADsZKBzMAgwiuWdPVdogUzhua7pxfpuZ3VS519nPHSybGdiYw6iHYq04+x6E
-i+9y/Zx57p3D03com/Bwurivkd2HnBB+KBbcbqPMDIB/k5cNTIM=
-=hUXu
------END PGP SIGNATURE-----
-
---=-zBDRiKK8xztrGjRvBz3a--
-
+> ---
+>  net/ipv4/tcp.c | 30 ++++++++++++++++++++----------
+>  1 file changed, 20 insertions(+), 10 deletions(-)
+>
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 77b485d60b9d0e00edc4e2f0d6c5bb3a9460b23b..61082065b26a068975c411b74eb46739ab0632ca 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -935,6 +935,22 @@ static int tcp_send_mss(struct sock *sk, int *size_goal, int flags)
+>         return mss_now;
+>  }
+>
+> +/* In some cases, both sendpage() and sendmsg() could have added
+> + * an skb to the write queue, but failed adding payload on it.
+> + * We need to remove it to consume less memory, but more
+> + * importantly be able to generate EPOLLOUT for Edge Trigger epoll()
+> + * users.
+> + */
+> +static void tcp_remove_empty_skb(struct sock *sk, struct sk_buff *skb)
+> +{
+> +       if (skb && !skb->len) {
+> +               tcp_unlink_write_queue(skb, sk);
+> +               if (tcp_write_queue_empty(sk))
+> +                       tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
+> +               sk_wmem_free_skb(sk, skb);
+> +       }
+> +}
+> +
+>  ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+>                          size_t size, int flags)
+>  {
+> @@ -1064,6 +1080,7 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+>         return copied;
+>
+>  do_error:
+> +       tcp_remove_empty_skb(sk, tcp_write_queue_tail(sk));
+>         if (copied)
+>                 goto out;
+>  out_err:
+> @@ -1388,18 +1405,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+>         sock_zerocopy_put(uarg);
+>         return copied + copied_syn;
+>
+> +do_error:
+> +       skb = tcp_write_queue_tail(sk);
+>  do_fault:
+> -       if (!skb->len) {
+> -               tcp_unlink_write_queue(skb, sk);
+> -               /* It is the one place in all of TCP, except connection
+> -                * reset, where we can be unlinking the send_head.
+> -                */
+> -               if (tcp_write_queue_empty(sk))
+> -                       tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
+> -               sk_wmem_free_skb(sk, skb);
+> -       }
+> +       tcp_remove_empty_skb(sk, skb);
+>
+> -do_error:
+>         if (copied + copied_syn)
+>                 goto out;
+>  out_err:
+> --
+> 2.23.0.187.g17f5b7556c-goog
+>
