@@ -2,95 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BB099C73D
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 04:27:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C39239C75A
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 04:46:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729124AbfHZC1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 22:27:31 -0400
-Received: from ozlabs.org ([203.11.71.1]:50045 "EHLO ozlabs.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726248AbfHZC1a (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 25 Aug 2019 22:27:30 -0400
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 46Gwrc1BGSz9s7T;
-        Mon, 26 Aug 2019 12:27:27 +1000 (AEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1566786448;
-        bh=SkcK4GaxXaBhZShtVlHm+JpP+EHocs5ZVQOQqSb5eOo=;
-        h=Date:From:To:Cc:Subject:From;
-        b=Y3lG0eRUwbu/PKZwFHp1QKR2L/U1g+DBRaS4NnWpCGUgE2aDKJ8FXzy/DvHuoNU78
-         w1gdwqzp8NRH2j4py30OCc6oKld08v9YchbxEl5iyiyO2jfv60TV77jhb00sDgSToD
-         rTBC7yR6/asE36SHFDCYrpRsPsstzuCO/XQsA3FJGtOulr7+5phSK8EHL7Ic4wFhNd
-         qlxDUOhWW38NGnMy+5dJfJBQq8ejkEg8rCPMIJHZl+lHECwK6YgC4jUA7MQz0t5kWE
-         feYROcmF0VCcfNM4kGncMZ4apAE7wsFllFsfLGIrwvTnK85dPCUHTWosMjU6PutkPI
-         0wX6qd7WOq2eg==
-Date:   Mon, 26 Aug 2019 12:27:26 +1000
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Heiner Kallweit <hkallweit1@gmail.com>
-Subject: linux-next: manual merge of the net-next tree with the net tree
-Message-ID: <20190826122726.145f538d@canb.auug.org.au>
+        id S1729292AbfHZCqF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 22:46:05 -0400
+Received: from mail-vs1-f68.google.com ([209.85.217.68]:41515 "EHLO
+        mail-vs1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726856AbfHZCqF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 22:46:05 -0400
+Received: by mail-vs1-f68.google.com with SMTP id m62so9901729vsc.8;
+        Sun, 25 Aug 2019 19:46:04 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ng3r5ONd1UXk9XbKRQ/zQ2B6srwD/ZPTNQ4V19/Kj9k=;
+        b=bnUIMT7JohUlW4Oahlrsf7w9EBYZqsvNo09J+X+VLhDwVpX6jTeQWC6IN6sIQAq7fp
+         0a54HgDv5nhu19OUAynDvvP15aLc44u6qo11gYC5RnNCo0J3lGtNAqhB7eWX8kzNEk/r
+         hRrg9fGUKL9FK97XUN+qWd2ptbq0ggMlaPw9C9ifvDxMrj9ox9RBsmdJDuINDmZ+2Qut
+         yvN3RnEFO8fuxwRn8FSXkieO1xxa/17uHZz9eIBgCTs0py11lO5bPabcGqwRMFnmeZ3C
+         mOH/WFKR23C0xMfMtYjDn5R3uHjgc0j7kKQa5+LCkhqbZY3Fsx7eSvmew0cspGOTaZtD
+         TsUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ng3r5ONd1UXk9XbKRQ/zQ2B6srwD/ZPTNQ4V19/Kj9k=;
+        b=PjQtq3LLbprJQVsauMhAo9Nratcu9WzlZWwdF3po6ZSq+M+GtI3sUBgQV9inesGlCo
+         ill/MEm6grybf/qvOPrRo/elk7AQ0oFuQ4PhoZRurVPztf2J3Og3/c9HxhsGZrDyJzuK
+         srTgGXNgiw7ZrsZ1p9b/6X0vpSh9QrD2Yb1q6kd++uSKFXQnukPEElH2nMNa4ClGn8MK
+         Nf5fT7tT57fdvKHyqBAIQepxFC0NHMgxl9ug6XMNgOxS+Phz9+PurSakpu/q27HgdFMr
+         h0Kw7O2Qp4g2xtZfwO3bMkrDvH/dcVNhRyvwqzuPH9cBCmePLgrAqKXPJURFflQZhZGy
+         xbdQ==
+X-Gm-Message-State: APjAAAWRDsDoowIIDhSLStJSo0HduqhkFUh7deHX8nGNsc/fkMf2j/Cz
+        iU6pnNlVymqp3kHlXg9/7OvTOqbbgTUf02ccBQ==
+X-Google-Smtp-Source: APXvYqzQCcgTMZNQ/nWhyrJuz9jbUm0rIgbeTEFk88hIcZ0/xc+RP1r9NgPZajYUzJYrKIyUk683wwYVBYswndDjx/Q=
+X-Received: by 2002:a67:eb12:: with SMTP id a18mr9289943vso.231.1566787563972;
+ Sun, 25 Aug 2019 19:46:03 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/KMHEud9KGq+l6RTA0YD1dE0";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+References: <20190730122534.30687-1-rdong.ge@gmail.com> <1dc87e69-628b-fd04-619a-8dbe5bdfa108@cumulusnetworks.com>
+In-Reply-To: <1dc87e69-628b-fd04-619a-8dbe5bdfa108@cumulusnetworks.com>
+From:   Rundong Ge <rdong.ge@gmail.com>
+Date:   Mon, 26 Aug 2019 10:45:52 +0800
+Message-ID: <CAN1LvyoL3YUot0JAfz1BwN9LBxM0XUgSkYHhWJ75DFHW_-6+zw@mail.gmail.com>
+Subject: Re: [PATCH] bridge:fragmented packets dropped by bridge
+To:     Nikolay Aleksandrov <nikolay@cumulusnetworks.com>
+Cc:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, Pablo Neira Ayuso <pablo@netfilter.org>,
+        kadlec@netfilter.org, Florian Westphal <fw@strlen.de>,
+        Roopa Prabhu <roopa@cumulusnetworks.com>,
+        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+        bridge@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/KMHEud9KGq+l6RTA0YD1dE0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+On Tue, Jul 30, 2019 at 8:41 PM Nikolay Aleksandrov
+<nikolay@cumulusnetworks.com> wrote:
+>
+> On 30/07/2019 15:25, Rundong Ge wrote:
+> > Given following setup:
+> > -modprobe br_netfilter
+> > -echo '1' > /proc/sys/net/bridge/bridge-nf-call-iptables
+> > -brctl addbr br0
+> > -brctl addif br0 enp2s0
+> > -brctl addif br0 enp3s0
+> > -brctl addif br0 enp6s0
+> > -ifconfig enp2s0 mtu 1300
+> > -ifconfig enp3s0 mtu 1500
+> > -ifconfig enp6s0 mtu 1500
+> > -ifconfig br0 up
+> >
+> >                  multi-port
+> > mtu1500 - mtu1500|bridge|1500 - mtu1500
+> >   A                  |            B
+> >                    mtu1300
+> >
+> > With netfilter defragmentation/conntrack enabled, fragmented
+> > packets from A will be defragmented in prerouting, and refragmented
+> > at postrouting.
+> > But in this scenario the bridge found the frag_max_size(1500) is
+> > larger than the dst mtu stored in the fake_rtable whitch is
+> > always equal to the bridge's mtu 1300, then packets will be dopped.
+> >
+> > This modifies ip_skb_dst_mtu to use the out dev's mtu instead
+> > of bridge's mtu in bridge refragment.
+> >
+> > Signed-off-by: Rundong Ge <rdong.ge@gmail.com>
+> > ---
+> >  include/net/ip.h | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/include/net/ip.h b/include/net/ip.h
+> > index 29d89de..0512de3 100644
+> > --- a/include/net/ip.h
+> > +++ b/include/net/ip.h
+> > @@ -450,6 +450,8 @@ static inline unsigned int ip_dst_mtu_maybe_forward(const struct dst_entry *dst,
+> >  static inline unsigned int ip_skb_dst_mtu(struct sock *sk,
+> >                                         const struct sk_buff *skb)
+> >  {
+> > +     if ((skb_dst(skb)->flags & DST_FAKE_RTABLE) && skb->dev)
+> > +             return min(skb->dev->mtu, IP_MAX_MTU);
+> >       if (!sk || !sk_fullsock(sk) || ip_sk_use_pmtu(sk)) {
+> >               bool forwarding = IPCB(skb)->flags & IPSKB_FORWARDED;
+> >
+> >
+>
+> I don't think this is correct, there's a reason why the bridge chooses the smallest
+> possible MTU out of its members and this is simply a hack to circumvent it.
+> If you really like to do so just set the bridge MTU manually, we've added support
+> so it won't change automatically to the smallest, but then how do you pass packets
+> 1500 -> 1300 in this setup ?
+>
+> You're talking about the frag_size check in br_nf_ip_fragment(), right ?
+>
 
-Hi all,
+Hi Nikolay
+My setup may not be common. And may I know if there is any reason to
+use output port's MTU
+to do the re-fragment check but then use the bridge's MTU to do the re-fragment?
+Is it the expected behavior that the bridge's MTU will affect the
+FORWARD traffic re-fragment,
+because I used to think the bridge's MTU will only effect the OUTPUT
+traffic sent from "br0".
+And the modification in this patch will replace the MTU in the
+fake_rtable which is only
+used in the FORWARD re-fragment and won't affect the local traffic from "br0".
 
-Today's linux-next merge of the net-next tree got a conflict in:
-
-  drivers/net/ethernet/realtek/r8169_main.c
-
-between commit:
-
-  345b93265b3a ("Revert "r8169: remove not needed call to dma_sync_single_f=
-or_device"")
-
-from the net tree and commit:
-
-  fcd4e60885af ("r8169: improve rtl_rx")
-  d4ed7463d02a ("r8169: fix DMA issue on MIPS platform")
-
-from the net-next tree.
-
-I fixed it up (the latter seems to do the same as the net tree patch) and
-can carry the fix as necessary. This is now fixed as far as linux-next
-is concerned, but any non trivial conflicts should be mentioned to your
-upstream maintainer when your tree is submitted for merging.  You may
-also want to consider cooperating with the maintainer of the conflicting
-tree to minimise any particularly complex conflicts.
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/KMHEud9KGq+l6RTA0YD1dE0
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAl1jQ44ACgkQAVBC80lX
-0Gy4QggAouAksoVmIVQKwYaVlaR1tpnVdLzoTIDHtr81rrgP7FsdFUnz4BB2g8Sa
-50Wkp92CN8CGbg5pRb4d6eFN9DTQ3dEi13pQXDYIyWAZVUM2ibiGmDmqggcVhQ1G
-l+Q1Z39U/GNTF/spuuquCx/y3k5G7CsnYr8YbRt00Flzus9QaNj4f2p1eFfd0wkd
-miqpPih6QUIprrW0+xXR/UhVUPZ78a01BfVk3PVwDLhlI/utdTZv9vYSw4TD065u
-YonV9nxKQQi5lvuqVoNyioRdLuL3BohqwfFxaXZZ16Gmuh4xlAZQGB21oSJPFMrL
-sZjJbQWcyfbdSMCs04mhtIo0PAafeg==
-=MxTe
------END PGP SIGNATURE-----
-
---Sig_/KMHEud9KGq+l6RTA0YD1dE0--
+TKS
+Raydodn
