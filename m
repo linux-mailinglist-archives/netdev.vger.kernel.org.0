@@ -2,28 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AF409D0EA
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 15:45:37 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id ED81E9D0ED
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 15:45:41 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732117AbfHZNp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 09:45:26 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52960 "EHLO
+        id S1732160AbfHZNpi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 09:45:38 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52964 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732062AbfHZNpZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 09:45:25 -0400
+        with ESMTP id S1730502AbfHZNp0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 09:45:26 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
         with ESMTPS (AES256-SHA encrypted); 26 Aug 2019 16:45:15 +0300
 Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7QDjEFU000366;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7QDjEFV000366;
         Mon, 26 Aug 2019 16:45:15 +0300
 From:   Vlad Buslov <vladbu@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         davem@davemloft.net, jakub.kicinski@netronome.com,
-        pablo@netfilter.org, Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net-next v3 06/10] net: sched: conditionally obtain rtnl lock in cls hw offloads API
-Date:   Mon, 26 Aug 2019 16:45:02 +0300
-Message-Id: <20190826134506.9705-7-vladbu@mellanox.com>
+        pablo@netfilter.org, Vlad Buslov <vladbu@mellanox.com>,
+        Jiri Pirko <jiri@mellanox.com>
+Subject: [PATCH net-next v3 07/10] net: sched: take rtnl lock in tc_setup_flow_action()
+Date:   Mon, 26 Aug 2019 16:45:03 +0300
+Message-Id: <20190826134506.9705-8-vladbu@mellanox.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190826134506.9705-1-vladbu@mellanox.com>
 References: <20190826134506.9705-1-vladbu@mellanox.com>
@@ -34,161 +35,141 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to remove dependency on rtnl lock from offloads code of
-classifiers, take rtnl lock conditionally before executing driver
-callbacks. Only obtain rtnl lock if block is bound to devices that require
-it.
-
-Block bind/unbind code is rtnl-locked and obtains block->cb_lock while
-holding rtnl lock. Obtain locks in same order in tc_setup_cb_*() functions
-to prevent deadlock.
+In order to allow using new flow_action infrastructure from unlocked
+classifiers, modify tc_setup_flow_action() to accept new 'rtnl_held'
+argument. Take rtnl lock before accessing tc_action data. This is necessary
+to protect from concurrent action replace.
 
 Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+Acked-by: Jiri Pirko <jiri@mellanox.com>
 ---
+ include/net/pkt_cls.h    |  2 +-
+ net/sched/cls_api.c      | 17 +++++++++++++----
+ net/sched/cls_flower.c   |  6 ++++--
+ net/sched/cls_matchall.c |  4 ++--
+ 4 files changed, 20 insertions(+), 9 deletions(-)
 
-Notes:
-    Changes from V2 to V3:
-      - Don't speculatively take rtnl lock when caller already has it.
-    
-    Changes from V1 to V2:
-      - Speculatively read block->lockeddevcnt in tc_setup_cb_*() to obtain rtnl
-        mutex without retry when block is bound to locked device.
-
- net/sched/cls_api.c | 65 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
-
+diff --git a/include/net/pkt_cls.h b/include/net/pkt_cls.h
+index 612232492f67..a48824bc1489 100644
+--- a/include/net/pkt_cls.h
++++ b/include/net/pkt_cls.h
+@@ -504,7 +504,7 @@ tcf_match_indev(struct sk_buff *skb, int ifindex)
+ }
+ 
+ int tc_setup_flow_action(struct flow_action *flow_action,
+-			 const struct tcf_exts *exts);
++			 const struct tcf_exts *exts, bool rtnl_held);
+ int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
+ 		     void *type_data, bool err_stop, bool rtnl_held);
+ int tc_setup_cb_add(struct tcf_block *block, struct tcf_proto *tp,
 diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
-index 1a39779bdbad..3c103cf9fd0d 100644
+index 3c103cf9fd0d..8751bb8a682f 100644
 --- a/net/sched/cls_api.c
 +++ b/net/sched/cls_api.c
-@@ -3076,11 +3076,28 @@ __tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
- int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
- 		     void *type_data, bool err_stop, bool rtnl_held)
+@@ -3266,14 +3266,17 @@ int tc_setup_cb_reoffload(struct tcf_block *block, struct tcf_proto *tp,
+ EXPORT_SYMBOL(tc_setup_cb_reoffload);
+ 
+ int tc_setup_flow_action(struct flow_action *flow_action,
+-			 const struct tcf_exts *exts)
++			 const struct tcf_exts *exts, bool rtnl_held)
  {
-+	bool take_rtnl = READ_ONCE(block->lockeddevcnt) && !rtnl_held;
- 	int ok_count;
+ 	const struct tc_action *act;
+-	int i, j, k;
++	int i, j, k, err = 0;
  
-+retry:
-+	if (take_rtnl)
+ 	if (!exts)
+ 		return 0;
+ 
++	if (!rtnl_held)
 +		rtnl_lock();
- 	down_read(&block->cb_lock);
-+	/* Need to obtain rtnl lock if block is bound to devs that require it.
-+	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-+	 * obtain the locks in same order here.
-+	 */
-+	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
-+		up_read(&block->cb_lock);
-+		take_rtnl = true;
-+		goto retry;
-+	}
 +
- 	ok_count = __tc_setup_cb_call(block, type, type_data, err_stop);
+ 	j = 0;
+ 	tcf_exts_for_each_action(i, act, exts) {
+ 		struct flow_action_entry *entry;
+@@ -3318,6 +3321,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 				entry->vlan.prio = tcf_vlan_push_prio(act);
+ 				break;
+ 			default:
++				err = -EOPNOTSUPP;
+ 				goto err_out;
+ 			}
+ 		} else if (is_tcf_tunnel_set(act)) {
+@@ -3335,6 +3339,7 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 					entry->id = FLOW_ACTION_ADD;
+ 					break;
+ 				default:
++					err = -EOPNOTSUPP;
+ 					goto err_out;
+ 				}
+ 				entry->mangle.htype = tcf_pedit_htype(act, k);
+@@ -3393,15 +3398,19 @@ int tc_setup_flow_action(struct flow_action *flow_action,
+ 			entry->id = FLOW_ACTION_PTYPE;
+ 			entry->ptype = tcf_skbedit_ptype(act);
+ 		} else {
++			err = -EOPNOTSUPP;
+ 			goto err_out;
+ 		}
+ 
+ 		if (!is_tcf_pedit(act))
+ 			j++;
+ 	}
+-	return 0;
 +
- 	up_read(&block->cb_lock);
-+	if (take_rtnl)
+ err_out:
+-	return -EOPNOTSUPP;
++	if (!rtnl_held)
 +		rtnl_unlock();
- 	return ok_count;
- }
- EXPORT_SYMBOL(tc_setup_cb_call);
-@@ -3095,9 +3112,23 @@ int tc_setup_cb_add(struct tcf_block *block, struct tcf_proto *tp,
- 		    enum tc_setup_type type, void *type_data, bool err_stop,
- 		    u32 *flags, unsigned int *in_hw_count, bool rtnl_held)
- {
-+	bool take_rtnl = READ_ONCE(block->lockeddevcnt) && !rtnl_held;
- 	int ok_count;
- 
-+retry:
-+	if (take_rtnl)
-+		rtnl_lock();
- 	down_read(&block->cb_lock);
-+	/* Need to obtain rtnl lock if block is bound to devs that require it.
-+	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-+	 * obtain the locks in same order here.
-+	 */
-+	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
-+		up_read(&block->cb_lock);
-+		take_rtnl = true;
-+		goto retry;
-+	}
 +
- 	/* Make sure all netdevs sharing this block are offload-capable. */
- 	if (block->nooffloaddevcnt && err_stop) {
- 		ok_count = -EOPNOTSUPP;
-@@ -3115,6 +3146,8 @@ int tc_setup_cb_add(struct tcf_block *block, struct tcf_proto *tp,
- 					  ok_count, true);
- err_unlock:
- 	up_read(&block->cb_lock);
-+	if (take_rtnl)
-+		rtnl_unlock();
- 	return ok_count < 0 ? ok_count : 0;
++	return err;
  }
- EXPORT_SYMBOL(tc_setup_cb_add);
-@@ -3131,9 +3164,23 @@ int tc_setup_cb_replace(struct tcf_block *block, struct tcf_proto *tp,
- 			u32 *new_flags, unsigned int *new_in_hw_count,
- 			bool rtnl_held)
- {
-+	bool take_rtnl = READ_ONCE(block->lockeddevcnt) && !rtnl_held;
- 	int ok_count;
+ EXPORT_SYMBOL(tc_setup_flow_action);
  
-+retry:
-+	if (take_rtnl)
-+		rtnl_lock();
- 	down_read(&block->cb_lock);
-+	/* Need to obtain rtnl lock if block is bound to devs that require it.
-+	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-+	 * obtain the locks in same order here.
-+	 */
-+	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
-+		up_read(&block->cb_lock);
-+		take_rtnl = true;
-+		goto retry;
-+	}
-+
- 	/* Make sure all netdevs sharing this block are offload-capable. */
- 	if (block->nooffloaddevcnt && err_stop) {
- 		ok_count = -EOPNOTSUPP;
-@@ -3155,6 +3202,8 @@ int tc_setup_cb_replace(struct tcf_block *block, struct tcf_proto *tp,
- 					  new_flags, ok_count, true);
- err_unlock:
- 	up_read(&block->cb_lock);
-+	if (take_rtnl)
-+		rtnl_unlock();
- 	return ok_count < 0 ? ok_count : 0;
- }
- EXPORT_SYMBOL(tc_setup_cb_replace);
-@@ -3167,9 +3216,23 @@ int tc_setup_cb_destroy(struct tcf_block *block, struct tcf_proto *tp,
- 			enum tc_setup_type type, void *type_data, bool err_stop,
- 			u32 *flags, unsigned int *in_hw_count, bool rtnl_held)
- {
-+	bool take_rtnl = READ_ONCE(block->lockeddevcnt) && !rtnl_held;
- 	int ok_count;
+diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+index 5cb694469b51..fb305bd45d93 100644
+--- a/net/sched/cls_flower.c
++++ b/net/sched/cls_flower.c
+@@ -452,7 +452,8 @@ static int fl_hw_replace_filter(struct tcf_proto *tp,
+ 	cls_flower.rule->match.key = &f->mkey;
+ 	cls_flower.classid = f->res.classid;
  
-+retry:
-+	if (take_rtnl)
-+		rtnl_lock();
- 	down_read(&block->cb_lock);
-+	/* Need to obtain rtnl lock if block is bound to devs that require it.
-+	 * In block bind code cb_lock is obtained while holding rtnl, so we must
-+	 * obtain the locks in same order here.
-+	 */
-+	if (!rtnl_held && !take_rtnl && block->lockeddevcnt) {
-+		up_read(&block->cb_lock);
-+		take_rtnl = true;
-+		goto retry;
-+	}
-+
- 	ok_count = __tc_setup_cb_call(block, type, type_data, err_stop);
+-	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
++	err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts,
++				   true);
+ 	if (err) {
+ 		kfree(cls_flower.rule);
+ 		if (skip_sw)
+@@ -1819,7 +1820,8 @@ static int fl_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
+ 		cls_flower.rule->match.mask = &f->mask->key;
+ 		cls_flower.rule->match.key = &f->mkey;
  
- 	tc_cls_offload_cnt_reset(block, tp, in_hw_count, flags);
-@@ -3177,6 +3240,8 @@ int tc_setup_cb_destroy(struct tcf_block *block, struct tcf_proto *tp,
- 		tp->ops->hw_del(tp, type_data);
+-		err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts);
++		err = tc_setup_flow_action(&cls_flower.rule->action, &f->exts,
++					   true);
+ 		if (err) {
+ 			kfree(cls_flower.rule);
+ 			if (tc_skip_sw(f->flags)) {
+diff --git a/net/sched/cls_matchall.c b/net/sched/cls_matchall.c
+index 911d1ea28bb2..3266f25011cc 100644
+--- a/net/sched/cls_matchall.c
++++ b/net/sched/cls_matchall.c
+@@ -97,7 +97,7 @@ static int mall_replace_hw_filter(struct tcf_proto *tp,
+ 	cls_mall.command = TC_CLSMATCHALL_REPLACE;
+ 	cls_mall.cookie = cookie;
  
- 	up_read(&block->cb_lock);
-+	if (take_rtnl)
-+		rtnl_unlock();
- 	return ok_count < 0 ? ok_count : 0;
- }
- EXPORT_SYMBOL(tc_setup_cb_destroy);
+-	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
++	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts, true);
+ 	if (err) {
+ 		kfree(cls_mall.rule);
+ 		mall_destroy_hw_filter(tp, head, cookie, NULL);
+@@ -300,7 +300,7 @@ static int mall_reoffload(struct tcf_proto *tp, bool add, flow_setup_cb_t *cb,
+ 		TC_CLSMATCHALL_REPLACE : TC_CLSMATCHALL_DESTROY;
+ 	cls_mall.cookie = (unsigned long)head;
+ 
+-	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts);
++	err = tc_setup_flow_action(&cls_mall.rule->action, &head->exts, true);
+ 	if (err) {
+ 		kfree(cls_mall.rule);
+ 		if (add && tc_skip_sw(head->flags)) {
 -- 
 2.21.0
 
