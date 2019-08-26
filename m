@@ -2,112 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id E448C9D432
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 18:40:36 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id B5FA89D439
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 18:41:53 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732921AbfHZQka (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 12:40:30 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:40730 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732900AbfHZQk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 12:40:29 -0400
-Received: by mail-wm1-f67.google.com with SMTP id c5so148375wmb.5;
-        Mon, 26 Aug 2019 09:40:27 -0700 (PDT)
+        id S1732892AbfHZQlv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 12:41:51 -0400
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:33645 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729344AbfHZQlv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 12:41:51 -0400
+Received: by mail-ed1-f67.google.com with SMTP id s15so27377538edx.0
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 09:41:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QjxgBXa3y+uuhZsdeO1qBTZUTIy7XmFfl96V9DIMo6Q=;
-        b=fP2Xk61Pf9uROtag057QqLPki/+ga9LNABXUsoDIZwVgKzbaYY+Yv54/cDTBAKId+L
-         Gsa9FVVOLgcFlieoK30m+kYMru8msmE8LoggM8vJq/vdFO5xSMSr2LvZhqfkrFHXjhov
-         6rD3Xh8wbBkjlyhtb6/yu5I7HY09bDnj1SpktDTI8oAOdA7J0NOLAlDbY2lLOwpdhVKk
-         cgebex/jZ8OF4iLFyBI5qhK43EJK74aDyp2TI03EElLOgyt3ObsAka0s9GSEMRH+4nIE
-         wzpWbuPNjYFtI1GG4jgryZIAosVXa3K6wI33LepQmdDRTSqGL6fvoKnf8pvI24SlblRD
-         GsiQ==
+        d=netronome-com.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :organization:mime-version:content-transfer-encoding;
+        bh=sUOyFBT2+8QqNk5UJQIBj6nCxO+4SHMbLqF7J7W/NhI=;
+        b=LrOoB8mx7pwy349C38sVSk3ZgMzTc/zFD3rmQww2ovzBa6mV9c48mAMHVruoePFfKI
+         YJOdX2aAgJBsD5nlz/or/tNH/F1Cd/tOVg9g+CC44sh0taWQ0IhbrkDtz6BEe/K9M56p
+         Zh129KoOT3usmeT2/UgmpEsyO3f8OcTUKB1qx0nuNSqK42UbAHyAp7UbQ/VmDVqr0vnO
+         f+trBL1Awdu3i2+4DBzzDsqP5ZVbYzwR6aQ8e58L3q7XGQE1J+94ixPNyCor552hInGn
+         RfA9dln1blHWPuMyea1MJ2+OerKUjaY/86qEu7OZTO+KJYBi9mHt5Ns6NgaJjmX7cTdG
+         NNWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QjxgBXa3y+uuhZsdeO1qBTZUTIy7XmFfl96V9DIMo6Q=;
-        b=M4eda8zIN+kaCcU6edWUZUSvD/2VlMTwfa/3KWOYvsE7JeBzkfWRIVrIf5xs1DI7Kh
-         ZN/MS6cyQ2zG7yAeHrnTwnMrmdWp15fwi0+lAe1ZxTguasGUrsQqNTXCiQZPi1GCcla4
-         Up84J1/a10cMc1Ovq9a81ZV7rGyfmiE7hnQmZpQPa1Wr7eCsJu4TV7NTmLvSRDP2gJ88
-         HtLGRgYkAcjmi+YE524EEndPfekydRFodFxiAnwMQYSv4SGFUPc9D2Vk5RSnLC0jKpqI
-         3exkyUXeISXDkTnWrJJUPO7WhgkeB3/JE2k8tA7qFrf5CM3aMRZU6Sl4LqmfwE0GVAdW
-         8pzQ==
-X-Gm-Message-State: APjAAAXbzUr5fNMpQFiWbxyN7IAkWna+JJDhKYPu2qMNYHs6F2vouGcU
-        7T0ZrG0dkho/SvLvaYbWaelFfs5WSMT3YR0F0Cw=
-X-Google-Smtp-Source: APXvYqyR0ybZtJiikv+kwAVgdY7AWb/vcdMGH7sI0c/nWNAyYF6Ch2IHDX6ee2DH+0Mm7f0lXuO3Rk/bCGgW2RweGT4=
-X-Received: by 2002:a1c:e487:: with SMTP id b129mr23317012wmh.93.1566837626850;
- Mon, 26 Aug 2019 09:40:26 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:organization:mime-version:content-transfer-encoding;
+        bh=sUOyFBT2+8QqNk5UJQIBj6nCxO+4SHMbLqF7J7W/NhI=;
+        b=Xnmfu5JO82Bwbpqs2akQMdC0ckns4aeu59/G5sbsX4MkdJmypQq5xVYe48bgj/xiph
+         etSKDvlfcCiyOl4bTnK6zqAck7k2Lr/jWhI3b2S9rLQg3idT8elPlLmAr2gvKSVeC3KX
+         U0Hb8VNr7kCEYmpoqymcyZRdr8FN7gvNivVfr0n8UqCTjD0pD2FovdOH0zPzc4aPgrrX
+         FbllFy4B0UGukvwWPCHDspP3QaHfm06QCtkKWuhGPwxXNPPfYOtBcLPhSufDSyJPzaL0
+         Zl95cSyt8B+g29UfO/kypjbsLRG28izhScjyMk46tuHd3Ier2ERv4WEUn2sXUzM6xmLd
+         GLWg==
+X-Gm-Message-State: APjAAAUcuw6pmuNNn3IrsyXHGj0me6nh9WRKaPKqUXpVpFNou/lySrRg
+        2zoIE//2BpZQEV/RfNE0SLVipBxmvUQ=
+X-Google-Smtp-Source: APXvYqzY4N30xw3vQHFEyJ5Xq6qPEyBfCSuJzko5PdbB5tOoObXrkYkezylbeknuj0Tf8aF0qs31tA==
+X-Received: by 2002:a05:6402:8c9:: with SMTP id d9mr19437197edz.154.1566837710037;
+        Mon, 26 Aug 2019 09:41:50 -0700 (PDT)
+Received: from cakuba.netronome.com ([66.60.152.14])
+        by smtp.gmail.com with ESMTPSA id f6sm1405942edn.63.2019.08.26.09.41.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Aug 2019 09:41:49 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 09:41:29 -0700
+From:   Jakub Kicinski <jakub.kicinski@netronome.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Song Liu <liu.song.a23@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        OSS Drivers <oss-drivers@netronome.com>,
+        Jiong Wang <jiong.wang@netronome.com>
+Subject: Re: [PATCH bpf] nfp: bpf: fix latency bug when updating stack index
+ register
+Message-ID: <20190826094129.3d28ce64@cakuba.netronome.com>
+In-Reply-To: <1417962c-e63d-6c46-bf07-9284f5332583@iogearbox.net>
+References: <20190824020028.6242-1-jakub.kicinski@netronome.com>
+        <CAPhsuW7_dSEPJOdKApQFU-aVmEXgOwmqLS7S1FC4JtnzjR6OiQ@mail.gmail.com>
+        <CAJpBn1z736w5_uv7apwyy82vzcnc9c5Gua_9ZyUy-pSEwnQewA@mail.gmail.com>
+        <CAADnVQ++TEUK=Cb3sCyunFyYFcpXu=NK71P4-1rEWEGCGewU7A@mail.gmail.com>
+        <1417962c-e63d-6c46-bf07-9284f5332583@iogearbox.net>
+Organization: Netronome Systems, Ltd.
 MIME-Version: 1.0
-References: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
- <alpine.DEB.2.21.9999.1908231717550.25649@viisi.sifive.com> <20190826145756.GB4664@cisco>
-In-Reply-To: <20190826145756.GB4664@cisco>
-From:   David Abdurachmanov <david.abdurachmanov@gmail.com>
-Date:   Mon, 26 Aug 2019 09:39:50 -0700
-Message-ID: <CAEn-LTrtn01=fp6taBBG_QkfBtgiJyt6oUjZJOi6VN8OeXp6=g@mail.gmail.com>
-Subject: Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
-To:     Tycho Andersen <tycho@tycho.ws>
-Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Anup Patel <Anup.Patel@wdc.com>,
-        Vincent Chen <vincentc@andestech.com>,
-        Alan Kao <alankao@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, me@carlosedp.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 26, 2019 at 7:57 AM Tycho Andersen <tycho@tycho.ws> wrote:
->
-> Hi,
->
-> On Fri, Aug 23, 2019 at 05:30:53PM -0700, Paul Walmsley wrote:
-> > On Thu, 22 Aug 2019, David Abdurachmanov wrote:
-> >
-> > > There is one failing kernel selftest: global.user_notification_signal
-> >
-> > Also - could you follow up with the author of this failing test to see if
-> > we can get some more clarity about what might be going wrong here?  It
-> > appears that the failing test was added in commit 6a21cc50f0c7f ("seccomp:
-> > add a return code to trap to userspace") by Tycho Andersen
-> > <tycho@tycho.ws>.
->
-> Can you post an strace and a cat of /proc/$pid/stack for both tasks
-> where it gets stuck? I don't have any riscv hardware, and it "works
-> for me" on x86 and arm64 with 100 tries.
+On Mon, 26 Aug 2019 18:25:10 +0200, Daniel Borkmann wrote:
+> On 8/26/19 6:18 PM, Alexei Starovoitov wrote:
+> > On Mon, Aug 26, 2019 at 8:57 AM Jakub Kicinski
+> > <jakub.kicinski@netronome.com> wrote:  
+> >> On Sun, Aug 25, 2019 at 10:37 PM Song Liu <liu.song.a23@gmail.com> wrote:  
+> >>> On Fri, Aug 23, 2019 at 7:04 PM Jakub Kicinski wrote:  
+> >>>> From: Jiong Wang <jiong.wang@netronome.com>
+> >>>>
+> >>>> NFP is using Local Memory to model stack. LM_addr could be used as base of
+> >>>> a 16 32-bit word region of Local Memory. Then, if the stack offset is
+> >>>> beyond the current region, the local index needs to be updated. The update
+> >>>> needs at least three cycles to take effect, therefore the sequence normally
+> >>>> looks like:
+> >>>>
+> >>>>    local_csr_wr[ActLMAddr3, gprB_5]
+> >>>>    nop
+> >>>>    nop
+> >>>>    nop
+> >>>>
+> >>>> If the local index switch happens on a narrow loads, then the instruction
+> >>>> preparing value to zero high 32-bit of the destination register could be
+> >>>> counted as one cycle, the sequence then could be something like:
+> >>>>
+> >>>>    local_csr_wr[ActLMAddr3, gprB_5]
+> >>>>    nop
+> >>>>    nop
+> >>>>    immed[gprB_5, 0]
+> >>>>
+> >>>> However, we have zero extension optimization that zeroing high 32-bit could
+> >>>> be eliminated, therefore above IMMED insn won't be available for which case
+> >>>> the first sequence needs to be generated.
+> >>>>
+> >>>> Fixes: 0b4de1ff19bf ("nfp: bpf: eliminate zero extension code-gen")
+> >>>> Signed-off-by: Jiong Wang <jiong.wang@netronome.com>
+> >>>> Reviewed-by: Jakub Kicinski <jakub.kicinski@netronome.com>  
+> >>> I haven't looked into the code yet. But ^^^ should be
+> >>>
+> >>> Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
+> >>>
+> >>> right?  
+> >>
+> >> I prefer Review on code I review, ack on code I ack, and sign-off on
+> >> code I co-author.  
+> > 
+> > I believe if you're sending somebody else patch you have to add your SOB
+> > in addition to their 'Author:' and their SOB fields.  
+> 
+> +1, for co-authoring there's a 'Co-authored-by:' tag which seems to be frequently
+> used these days.
 
-I don't have the a build with SECCOMP for the board right now, so it
-will have to wait. I just finished a new kernel (almost rc6) for Fedora,
-but it will take time to assemble new repositories and a disk image.
+Ack, there is a difference between co-author of code, and co-author as
+step by step guidance. I've been doing this for 6 years now, and nobody
+ever complained :)
 
-There is older disk image available (5.2.0-rc7 kernel with v2 SECCOMP)
-for QEMU or libvirt/QEMU:
+Signed-off-by: Jakub Kicinski <jakub.kicinski@netronome.com>
 
-https://dl.fedoraproject.org/pub/alt/risc-v/disk-images/fedora/rawhide/20190703.n.0/Developer/
-https://fedoraproject.org/wiki/Architectures/RISC-V/Installing#Boot_with_libvirt
-
-(If you are interesting trying it locally.)
-
-IIRC I attempted to connected with strace, but it quickly returns and fails
-properly. Simply put strace unblocks whatever is stuck.
-
-david
+Is that enough or should I repost?
