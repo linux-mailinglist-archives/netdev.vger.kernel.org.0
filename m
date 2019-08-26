@@ -2,70 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 739099D5F4
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 20:42:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F73C9D5FC
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 20:47:32 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732685AbfHZSmO convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Mon, 26 Aug 2019 14:42:14 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35451 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727687AbfHZSmN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 14:42:13 -0400
-Received: by mail-pf1-f196.google.com with SMTP id d85so12369024pfd.2
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 11:42:13 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=FEUQqpp1Zmdib1zcIn2Q5J462hbvEwGHWCNSVmJC8ls=;
-        b=VEWQPmnxI3KQtsmaW22IYRBN6chGCPKIjaiUtyReIkiGW8TxEHmbIVHjClREUV9Rjo
-         r3ITn5cHakUbzc3k1XD9YcQ01eFybHjLDPUpn93s432gifXXjTFdWTXKdXxKsdFIxBj9
-         CYhaZM+d4hH/f0kTvPAs10PJtM/NS9Xbu2IkTUDNvTCwXnXMsQPNTF97CiNFEGOiG8mo
-         QWLydXazRXmPpB8kcrMOQeuzo5GCQUozNNWfEPN30pF+mg+q0BvmUybJrt9kdMliEN6/
-         YHRlherQ7mXYrRvm41yCqSYvy46r9NSAeXI9qj3Rgjqe01XBXN/2Fziqu2GbRAi0diCl
-         Oz8w==
-X-Gm-Message-State: APjAAAVcHALn2+e6KtNkZhrErw/a6MRZlPZ5CApO3XIsKRWevxj3fy7V
-        QvY+7q0qQpEFH7hOhSAb0es=
-X-Google-Smtp-Source: APXvYqxixwj1LEwDYU22br98jK214e1HbdaZCdfj8S/LuMuKidx0rZYc2SIPl85g9n7UyYXvV0XOeg==
-X-Received: by 2002:a17:90a:be07:: with SMTP id a7mr21252482pjs.88.1566844933145;
-        Mon, 26 Aug 2019 11:42:13 -0700 (PDT)
-Received: from macbook-pro.localdomain (c-73-223-74-184.hsd1.ca.comcast.net. [73.223.74.184])
-        by smtp.gmail.com with ESMTPSA id w26sm14475075pfq.100.2019.08.26.11.42.11
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Aug 2019 11:42:12 -0700 (PDT)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.11\))
-Subject: Re: [PATCH net 1/2] openvswitch: Properly set L4 keys on "later" IP
- fragments.
-From:   Justin Pettit <jpettit@ovn.org>
-In-Reply-To: <CAOrHB_BKd=QKR_ScO+r7qAyZaniEbFur+iup1iXbtiycaFawjw@mail.gmail.com>
-Date:   Mon, 26 Aug 2019 11:42:10 -0700
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Joe Stringer <joe@wand.net.nz>,
-        Greg Rose <gvrose8192@gmail.com>
-Content-Transfer-Encoding: 8BIT
-Message-Id: <C1DB8ED7-2846-4F05-A084-07B83568D67D@ovn.org>
-References: <20190824165846.79627-1-jpettit@ovn.org>
- <CAOrHB_AU1gQ74L5WawyA4THhh=MG8YZhcvkkxnKgRG+5m-436g@mail.gmail.com>
- <CAOrHB_BKd=QKR_ScO+r7qAyZaniEbFur+iup1iXbtiycaFawjw@mail.gmail.com>
-To:     Pravin Shelar <pshelar@ovn.org>, David Miller <davem@davemloft.net>
-X-Mailer: Apple Mail (2.3445.104.11)
+        id S2387396AbfHZSr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 14:47:28 -0400
+Received: from vps0.lunn.ch ([185.16.172.187]:60506 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732007AbfHZSr2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 14:47:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=3SctyFfS3yLn1lHEdyI1Kmom1XhY5J/W6bf5Yp9jBk8=; b=NxdnwwNC6gy91psyhP3LpADnOt
+        KowX/CZGwKAahaI/D87i4FITICTVSiOGY4G928NklYtshAJ0hNMa5egvajC4/p6J7LWzi2Z6SyXZt
+        +m8PtTOvJ4r580w9m3M4V38H8PCmaYRpXfY3kWQ6W2RJ+oWiEmFjnkT7nuA/IVpq+2fs=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
+        (envelope-from <andrew@lunn.ch>)
+        id 1i2K1P-00067N-EL; Mon, 26 Aug 2019 20:47:19 +0200
+Date:   Mon, 26 Aug 2019 20:47:19 +0200
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Voon Weifeng <weifeng.voon@intel.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>
+Subject: Re: [PATCH v1 net-next] net: stmmac: Add support for MDIO interrupts
+Message-ID: <20190826184719.GF2168@lunn.ch>
+References: <1566870320-9825-1-git-send-email-weifeng.voon@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1566870320-9825-1-git-send-email-weifeng.voon@intel.com>
+User-Agent: Mutt/1.5.23 (2014-03-12)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-> On Aug 25, 2019, at 1:40 PM, Pravin Shelar <pshelar@ovn.org> wrote:
+On Tue, Aug 27, 2019 at 09:45:20AM +0800, Voon Weifeng wrote:
+> From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
 > 
-> Actually I am not sure about this change. caller of this function
-> (ovs_ct_execute()) does skb-pull and push of L2 header, calling
-> ovs_flow_key_update() is not safe here, it expect skb data to point to
-> L2 header.
+> DW EQoS v5.xx controllers added capability for interrupt generation
+> when MDIO interface is done (GMII Busy bit is cleared).
+> This patch adds support for this interrupt on supported HW to avoid
+> polling on GMII Busy bit.
+> 
+> stmmac_mdio_read() & stmmac_mdio_write() will sleep until wake_up() is
+> called by the interrupt handler.
 
-Thanks for the feedback, Pravin and David.  Greg Rose has a revised version that will address the issues you raised and also make it so that we don't bother re-extracting the L2 headers.  He'll hopefully get that out today once we've done some internal testing on it.
+Hi Voon
 
---Justin
+I _think_ there are some order of operation issues here. The mdiobus
+is registered in the probe function. As soon as of_mdiobus_register()
+is called, the MDIO bus must work. At that point MDIO read/writes can
+start to happen.
 
+As far as i can see, the interrupt handler is only requested in
+stmmac_open(). So it seems like any MDIO operations after probe, but
+before open are going to fail?
 
+Thanks
+       Andrew
