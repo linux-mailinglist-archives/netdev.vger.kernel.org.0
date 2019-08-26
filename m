@@ -2,106 +2,164 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id AA6909C900
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:11:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 54A809C90C
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:14:30 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729419AbfHZGLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 02:11:35 -0400
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:36646 "EHLO
+        id S1729432AbfHZGOT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 02:14:19 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:43263 "EHLO
         mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729401AbfHZGLf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:11:35 -0400
-Received: by mail-pl1-f194.google.com with SMTP id f19so9481291plr.3;
-        Sun, 25 Aug 2019 23:11:35 -0700 (PDT)
+        with ESMTP id S1725385AbfHZGOS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:14:18 -0400
+Received: by mail-pl1-f194.google.com with SMTP id 4so9478007pld.10;
+        Sun, 25 Aug 2019 23:14:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SuPxf7vPZ6Wfti2MLSRAa3Lehd0GSwA37ANyIF77LOU=;
-        b=Zb1nxp/GCbiYm9WzNsl/aGXiekKIksjhmNedAbh8EKojnV1zKHDI86tRwSHctswoJk
-         V/eb4mp3MpoKDfcE18BK+SWI3R8iyCb2vGqgQnI9kcI+9zaY4gzLEa2L+6nULT+tim5L
-         NMAS5AMKouF4X+JtwT7G54wq8Fy3FlmzVXIlmTWNhQXhBXfjPfe+iP5x7D+5kZHfk2Wu
-         G8bvSGvNq04l7+xnZegOIz3tg7PKxtaFR74X1uXPx28DRQVAYz1SVkQXE/tV6+LwgV5f
-         i2yR4+P4WAtxT9ZHS3t5hAxh9fhELLF4NOXW4HBgYTeJr5jkRnU8rzlc9RqVX/Qqkrbs
-         s52A==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=1UBHUR9VKG93a22dzMNTFen28F89ObW8ubmlHRRPTIA=;
+        b=H/SA7m3nLvLRLZWZ8rELQCEjBT2HQA/VPtLvwz1tcMFS9SndzXOTTfBgLdDMhAycUV
+         /e5zaVpIMya7tDCGgnVQfNhOktKS44s/+INyAbMOfb7/8xHqZUTE6Ge0hxan6qWZsmVR
+         8T+hXstOZUr1Xr8B65XMjBITn4bq7DR8HcMzmCgl1AzcpKrNK9nMZjEk+YlWETEDB8VS
+         +bW26qiNzt5lSgHXP8TTUXHEXN0A1s+YxZ9+hz/Y4oHnXSaKw+ES0zstJHB2mI13OP2v
+         5vJTNObuM59tn1AhbX82QUR9rhGtMwXiF1OblA1tL2zH28cuMhj28NR7UkiTdNtJImIZ
+         yIaA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SuPxf7vPZ6Wfti2MLSRAa3Lehd0GSwA37ANyIF77LOU=;
-        b=UKaUG3Sc7yfI0KPu9OH3NlLJlAhIfEQz7g+38r4uApzOAFaaun+z05X8uTIS8qx1az
-         2gGC198/ZtM6Wau7kYAd1cGkaAVVfl6KteUhY2YekNZ9xdnqRhvDleh7VsgQxuCK/sFt
-         Bm0hI/DygPQxfXRFzyb1adQytfVOMaquNedEz9HHkazoOANtul5g6xuOdeA+qGSOQKq1
-         DyZuU2I9We+JbRV7+23R2b5Mt6q7CGPGacl6zjcwIkBZxfJh+cvWlulmuOkqa3Eddb1F
-         kfodxoClsyj4lXTU+MsMLsVqhDEinj5qBTbi4jbJNyjs87Aq89qpRz8haOiaW3jODoEB
-         irFg==
-X-Gm-Message-State: APjAAAU6m75jIj4INtgHkRiGWa0zuT4eifrrIqxPMJXM9ksYDS8mrcz1
-        5rm3Jl2TIUDw3wAOvymf8Eo=
-X-Google-Smtp-Source: APXvYqwADWytIZ3mlDQpNOTwjD99VoCrat4RKVOpxY9Z4zAkaF87iunzQvSn8W1Z0XUHRE0CgSwlJg==
-X-Received: by 2002:a17:902:8f90:: with SMTP id z16mr5186468plo.138.1566799894900;
-        Sun, 25 Aug 2019 23:11:34 -0700 (PDT)
-Received: from btopel-mobl.ger.intel.com ([192.55.54.42])
-        by smtp.gmail.com with ESMTPSA id d2sm9567452pjs.21.2019.08.25.23.11.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Aug 2019 23:11:34 -0700 (PDT)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
-        bpf@vger.kernel.org, jonathan.lemon@gmail.com,
-        syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
-        hdanton@sina.com, i.maximets@samsung.com
-Subject: [PATCH bpf-next v2 4/4] xsk: lock the control mutex in sock_diag interface
-Date:   Mon, 26 Aug 2019 08:10:53 +0200
-Message-Id: <20190826061053.15996-5-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190826061053.15996-1-bjorn.topel@gmail.com>
-References: <20190826061053.15996-1-bjorn.topel@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+         :references;
+        bh=1UBHUR9VKG93a22dzMNTFen28F89ObW8ubmlHRRPTIA=;
+        b=N6OhmWPiV/zf9uCFeHqm2OGRA3EZFd1e2gICVANSJ7Bpxjw4wBaN6DK37AG6uyw4zV
+         GNOIWMMrdoydCxx531pZv3uXbwuaD3o+rqaSEi+4lVWKeVr5FAG6leuAmK3nikUC6YnP
+         pazIKXRclRycEXCKZUIUEwFVAk+noUgqSmQr4LEwmcebHieu/jsjKcv+B7ZSpnmoBW/P
+         xe1l5ljvAZynN8s6GFtIIpR+nwO18ZWJEgDKFepN2BhquawL7UAC2O80N5rr18CdkZAx
+         CVMSwRYMfT/5Eju3le/ciq6DVdIqFXcFe+xd9Vp7m+oUAS94QaSv5zVKKSIZwy34NnfL
+         KzaQ==
+X-Gm-Message-State: APjAAAX4fGYfsBDW8CJKraB8D+8Y+xSObtM2FkRoqRmIbeNtpNfv2d12
+        o0S/Zo3AYu3dMDCDPldoyfU=
+X-Google-Smtp-Source: APXvYqyLQHTcj9/MCu87ZFlr8/XqHwJ47fTFw8txT275/c0ODEjtBbQ4C7BwXiYe+6EmRZSgET7tWQ==
+X-Received: by 2002:a17:902:ff05:: with SMTP id f5mr16803465plj.116.1566800057894;
+        Sun, 25 Aug 2019 23:14:17 -0700 (PDT)
+Received: from localhost.localdomain ([139.198.120.21])
+        by smtp.gmail.com with ESMTPSA id s186sm14155837pfb.126.2019.08.25.23.14.11
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 25 Aug 2019 23:14:16 -0700 (PDT)
+From:   Feng Sun <loyou85@gmail.com>
+To:     davem@davemloft.net
+Cc:     edumazet@google.com, dsterba@suse.com, dbanerje@akamai.com,
+        fw@strlen.de, davej@codemonkey.org.uk, tglx@linutronix.de,
+        matwey@sai.msu.ru, sakari.ailus@linux.intel.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Feng Sun <loyou85@gmail.com>,
+        Xiaojun Zhao <xiaojunzhao141@gmail.com>
+Subject: [PATCH v2] net: fix skb use after free in netpoll
+Date:   Mon, 26 Aug 2019 14:13:40 +0800
+Message-Id: <1566800020-10007-1-git-send-email-loyou85@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1566577920-20956-1-git-send-email-loyou85@gmail.com>
+References: <1566577920-20956-1-git-send-email-loyou85@gmail.com>
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+After commit baeababb5b85d5c4e6c917efe2a1504179438d3b
+("tun: return NET_XMIT_DROP for dropped packets"),
+when tun_net_xmit drop packets, it will free skb and return NET_XMIT_DROP,
+netpoll_send_skb_on_dev will run into following use after free cases:
+1. retry netpoll_start_xmit with freed skb;
+2. queue freed skb in npinfo->txq.
+queue_process will also run into use after free case.
 
-When accessing the members of an XDP socket, the control mutex should
-be held. This commit fixes that.
+hit netpoll_send_skb_on_dev first case with following kernel log:
 
-Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Fixes: a36b38aa2af6 ("xsk: add sock_diag interface for AF_XDP")
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+[  117.864773] kernel BUG at mm/slub.c:306!
+[  117.864773] invalid opcode: 0000 [#1] SMP PTI
+[  117.864774] CPU: 3 PID: 2627 Comm: loop_printmsg Kdump: loaded Tainted: P           OE     5.3.0-050300rc5-generic #201908182231
+[  117.864775] Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS Ubuntu-1.8.2-1ubuntu1 04/01/2014
+[  117.864775] RIP: 0010:kmem_cache_free+0x28d/0x2b0
+[  117.864781] Call Trace:
+[  117.864781]  ? tun_net_xmit+0x21c/0x460
+[  117.864781]  kfree_skbmem+0x4e/0x60
+[  117.864782]  kfree_skb+0x3a/0xa0
+[  117.864782]  tun_net_xmit+0x21c/0x460
+[  117.864782]  netpoll_start_xmit+0x11d/0x1b0
+[  117.864788]  netpoll_send_skb_on_dev+0x1b8/0x200
+[  117.864789]  __br_forward+0x1b9/0x1e0 [bridge]
+[  117.864789]  ? skb_clone+0x53/0xd0
+[  117.864790]  ? __skb_clone+0x2e/0x120
+[  117.864790]  deliver_clone+0x37/0x50 [bridge]
+[  117.864790]  maybe_deliver+0x89/0xc0 [bridge]
+[  117.864791]  br_flood+0x6c/0x130 [bridge]
+[  117.864791]  br_dev_xmit+0x315/0x3c0 [bridge]
+[  117.864792]  netpoll_start_xmit+0x11d/0x1b0
+[  117.864792]  netpoll_send_skb_on_dev+0x1b8/0x200
+[  117.864792]  netpoll_send_udp+0x2c6/0x3e8
+[  117.864793]  write_msg+0xd9/0xf0 [netconsole]
+[  117.864793]  console_unlock+0x386/0x4e0
+[  117.864793]  vprintk_emit+0x17e/0x280
+[  117.864794]  vprintk_default+0x29/0x50
+[  117.864794]  vprintk_func+0x4c/0xbc
+[  117.864794]  printk+0x58/0x6f
+[  117.864795]  loop_fun+0x24/0x41 [printmsg_loop]
+[  117.864795]  kthread+0x104/0x140
+[  117.864795]  ? 0xffffffffc05b1000
+[  117.864796]  ? kthread_park+0x80/0x80
+[  117.864796]  ret_from_fork+0x35/0x40
+
+Signed-off-by: Feng Sun <loyou85@gmail.com>
+Signed-off-by: Xiaojun Zhao <xiaojunzhao141@gmail.com>
 ---
- net/xdp/xsk_diag.c | 3 +++
- 1 file changed, 3 insertions(+)
+Changes in v2:
+- change commit and title
+- add netpoll_xmit_complete helper
+- add one more return value check of netpoll_start_xmit
+---
+ net/core/netpoll.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/net/xdp/xsk_diag.c b/net/xdp/xsk_diag.c
-index d5e06c8e0cbf..c8f4f11edbbc 100644
---- a/net/xdp/xsk_diag.c
-+++ b/net/xdp/xsk_diag.c
-@@ -97,6 +97,7 @@ static int xsk_diag_fill(struct sock *sk, struct sk_buff *nlskb,
- 	msg->xdiag_ino = sk_ino;
- 	sock_diag_save_cookie(sk, msg->xdiag_cookie);
- 
-+	mutex_lock(&xs->mutex);
- 	if ((req->xdiag_show & XDP_SHOW_INFO) && xsk_diag_put_info(xs, nlskb))
- 		goto out_nlmsg_trim;
- 
-@@ -117,10 +118,12 @@ static int xsk_diag_fill(struct sock *sk, struct sk_buff *nlskb,
- 	    sock_diag_put_meminfo(sk, nlskb, XDP_DIAG_MEMINFO))
- 		goto out_nlmsg_trim;
- 
-+	mutex_unlock(&xs->mutex);
- 	nlmsg_end(nlskb, nlh);
- 	return 0;
- 
- out_nlmsg_trim:
-+	mutex_unlock(&xs->mutex);
- 	nlmsg_cancel(nlskb, nlh);
- 	return -EMSGSIZE;
+diff --git a/net/core/netpoll.c b/net/core/netpoll.c
+index 2cf27da..a3f20e9 100644
+--- a/net/core/netpoll.c
++++ b/net/core/netpoll.c
+@@ -95,6 +95,11 @@ static int netpoll_start_xmit(struct sk_buff *skb, struct net_device *dev,
+ 	return status;
  }
+ 
++static inline bool netpoll_xmit_complete(int rc)
++{
++	return dev_xmit_complete(rc);
++}
++
+ static void queue_process(struct work_struct *work)
+ {
+ 	struct netpoll_info *npinfo =
+@@ -122,7 +127,7 @@ static void queue_process(struct work_struct *work)
+ 		txq = netdev_get_tx_queue(dev, q_index);
+ 		HARD_TX_LOCK(dev, txq, smp_processor_id());
+ 		if (netif_xmit_frozen_or_stopped(txq) ||
+-		    netpoll_start_xmit(skb, dev, txq) != NETDEV_TX_OK) {
++		    !netpoll_xmit_complete(netpoll_start_xmit(skb, dev, txq))) {
+ 			skb_queue_head(&npinfo->txq, skb);
+ 			HARD_TX_UNLOCK(dev, txq);
+ 			local_irq_restore(flags);
+@@ -335,7 +340,7 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
+ 
+ 				HARD_TX_UNLOCK(dev, txq);
+ 
+-				if (status == NETDEV_TX_OK)
++				if (netpoll_xmit_complete(status))
+ 					break;
+ 
+ 			}
+@@ -352,7 +357,7 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
+ 
+ 	}
+ 
+-	if (status != NETDEV_TX_OK) {
++	if (!netpoll_xmit_complete(status)) {
+ 		skb_queue_tail(&npinfo->txq, skb);
+ 		schedule_delayed_work(&npinfo->tx_work,0);
+ 	}
 -- 
-2.20.1
+2.7.4
 
