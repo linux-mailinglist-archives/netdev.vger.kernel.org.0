@@ -2,103 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id BD2A89D223
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 16:58:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CE15B9D249
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 17:06:50 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732770AbfHZO5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 10:57:54 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:46189 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729592AbfHZO5x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 10:57:53 -0400
-Received: by mail-qk1-f194.google.com with SMTP id p13so14233909qkg.13
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 07:57:53 -0700 (PDT)
+        id S1730810AbfHZPGt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 11:06:49 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:38186 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730033AbfHZPGs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 11:06:48 -0400
+Received: by mail-qt1-f195.google.com with SMTP id q64so6501767qtd.5
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 08:06:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=tycho-ws.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=NPJGDOo6L0S+CxpwgDKYq0p9QenFZx3WP7pTe8S4sMs=;
-        b=AGKzs8O5qznJgGIwpcBHKPCKaBpDnNPQopX6O6DHaXhR0KlirNeInM2VbTizrvmum3
-         0f4vpmov8OQjbLJk1Uu16D/TOk9HdYztfjR2UNe9dwmng70wrygV1IvJyjMDJATGZ7yk
-         PobQ8qvG35MNY31lVY5cwgH3G7bORvaNch/ljPBUTdENjG6RkvRB2RS2398T2uRSGen5
-         ViR0M5vcYyWEOfqp9LX7QdJWMYS6i91HVP7ljpA9/AH4jOB2UJTgVO/bz9QxDRTSh9fV
-         2R9wHdvrj+d6EskJaU21USriV0jICM3S69Lq+YySOHBCEcG9R76zVDNftBSWlXet/W2R
-         qVNw==
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=40ZOJyTF4jin/IOzitSI72ErsmGz0gzxhCekirqLMeE=;
+        b=AsuYjQ/ERqoxn1DPx869fVf/dcGHPJ9qEN8LP1RRywlWBGNKu1+TX1ujCQwzP1cICS
+         SgWAuwPft0PP9HdtOtyHv9xUQ903tysXmbSvzMlF2Frnpt9ENzs7obZAi9YapFKu46Dy
+         MXlPvZcGsZt54zS6/wvU/MQfu7oCeelmpAw5gqUlXF7MST4WBRvMRR1KuF4WINpQHFxo
+         ZYNGo6UwuQ867xxRwZ+Whn+WMtl2F7kpti/KPynXM0YjoZuszNSL3K9lqNbIqFVzQhZD
+         mS3h4yagB3mSS7mVxr6XoqYOSoxoxrwjumL8c7+rVxTDeQGoUTUoMKUM/N2svSAo9t9Z
+         EYPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NPJGDOo6L0S+CxpwgDKYq0p9QenFZx3WP7pTe8S4sMs=;
-        b=KgyuusKficKYsWZp2vokTEChKRDwezcMs/1KNKXO6EL0AAAZCtNwUL4/cdKXyNxAab
-         e7l39jsZY/Fp3lu7fYAq6YGdH0EbxadAbiFc5GQlXRlOSNnWkCFddNlF/d64YH6eq3WS
-         U1ENz7JjbluMi1rQ2227++oqlHa4Qef8l6TfTxo07XJI/82npdc2WlvoixKywsa5e4ZY
-         qYZN+t+8rIoj7/bDtn8J4PbJY4ysPt9PYjiEfmL3BMjji+D2ZvobT8hRPCUfD+3jOlwj
-         NtLf1l8B6x94DQ5wjHm6jWZGvwLlydhY4Q19C20zcWbHXz/7FZoYDf4ctlun/NzGeNlB
-         5DFw==
-X-Gm-Message-State: APjAAAUn9OCBESVUNGcmrEhIwxZltSCvdRsOBKkXxeBYximIC5jC+EDu
-        A/FvoCWdQ/RRFAx8g/s52JpL2A==
-X-Google-Smtp-Source: APXvYqylzZdUtT3tWQZ6cbQ0jUMry5R+13+YQvBswaR16gpPILhv7dep1DWgwRIXcXehIisp40eyBA==
-X-Received: by 2002:a37:6e03:: with SMTP id j3mr16061933qkc.362.1566831472597;
-        Mon, 26 Aug 2019 07:57:52 -0700 (PDT)
-Received: from cisco ([2601:282:901:dd7b:3979:c36f:a14f:ef87])
-        by smtp.gmail.com with ESMTPSA id m20sm7309611qtk.11.2019.08.26.07.57.50
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=40ZOJyTF4jin/IOzitSI72ErsmGz0gzxhCekirqLMeE=;
+        b=fW4kVkF3uRAQR4moSdf3NK8WxBKwk1dCB4bykEjCQPLBBqgF8OgIiNb6Uz3nNxQAZU
+         CUZKdueBsjnIO5e3LovR1fNEXZBER7AVz0VV8FlubACIwDb3o9DgCfHMlBk7Zc4LkGOV
+         KU58DtBDNbKKTUP46L0trjJs76lfsa+el3/va9SsKfutpxqjKGDKr3zN/dR+k+7LXYzJ
+         oK2Hjh+lpUqgu2L+jjkZbaQs2qHA33o4oZBC+Gzrr0Qu6dUloJHv3K0qjs00I6pQhhYd
+         uOjVOgMdbiZ0Pv35qBtIC/wOaexRgBWZguwHpiudef3YyoDFG9scn/ualMP+gty6UTSx
+         +HAQ==
+X-Gm-Message-State: APjAAAX1/xQI/YOvZFmt0LCoKktrU9iEvyF6EWN5PCRMtkm8GVFQKmWb
+        uaE1yqRBB1cw7kSCKVE3Ynh5S6eg
+X-Google-Smtp-Source: APXvYqzWhWYehNG5ICRVM6ow6ckTNaasRAZ5g8PfUUPSwOCjJNc/gGAx4ID8qUES33xeXoYINZ6ShQ==
+X-Received: by 2002:a0c:8c0b:: with SMTP id n11mr15398462qvb.66.1566832008027;
+        Mon, 26 Aug 2019 08:06:48 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id 1sm7553828qko.73.2019.08.26.08.06.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Aug 2019 07:57:51 -0700 (PDT)
-Date:   Mon, 26 Aug 2019 08:57:56 -0600
-From:   Tycho Andersen <tycho@tycho.ws>
-To:     Paul Walmsley <paul.walmsley@sifive.com>
-Cc:     David Abdurachmanov <david.abdurachmanov@gmail.com>,
-        Palmer Dabbelt <palmer@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Oleg Nesterov <oleg@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andy Lutomirski <luto@amacapital.net>,
-        Will Drewry <wad@chromium.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        David Abdurachmanov <david.abdurachmanov@sifive.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Allison Randal <allison@lohutok.net>,
-        Alexios Zavras <alexios.zavras@intel.com>,
-        Anup Patel <Anup.Patel@wdc.com>,
-        Vincent Chen <vincentc@andestech.com>,
-        Alan Kao <alankao@andestech.com>,
-        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, me@carlosedp.com
-Subject: Re: [PATCH v2] riscv: add support for SECCOMP and SECCOMP_FILTER
-Message-ID: <20190826145756.GB4664@cisco>
-References: <20190822205533.4877-1-david.abdurachmanov@sifive.com>
- <alpine.DEB.2.21.9999.1908231717550.25649@viisi.sifive.com>
+        Mon, 26 Aug 2019 08:06:46 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 11:06:45 -0400
+Message-ID: <20190826110645.GB7906@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Marek =?UTF-8?B?QmVow7pu?= <marek.behun@nic.cz>
+Subject: Re: [PATCH net-next v4 0/6] net: dsa: mv88e6xxx: Peridot/Topaz SERDES
+ changes
+In-Reply-To: <20190826122109.20660-1-marek.behun@nic.cz>
+References: <20190826122109.20660-1-marek.behun@nic.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.9999.1908231717550.25649@viisi.sifive.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+Hi Marek,
 
-On Fri, Aug 23, 2019 at 05:30:53PM -0700, Paul Walmsley wrote:
-> On Thu, 22 Aug 2019, David Abdurachmanov wrote:
+On Mon, 26 Aug 2019 14:21:03 +0200, Marek Behún <marek.behun@nic.cz> wrote:
+> Hello,
 > 
-> > There is one failing kernel selftest: global.user_notification_signal
+> this is the fourth version of changes for the Topaz/Peridot family of
+> switches. The patches apply on net-next.
+> Changes since v3:
+>  - there was a mistake in the serdes_get_lane implementations for
+>    6390 (patch 3/6). These methods returned -ENODEV if no lane was
+>    to be on port, but they should return 0. This is now fixed.
 > 
-> Also - could you follow up with the author of this failing test to see if 
-> we can get some more clarity about what might be going wrong here?  It 
-> appears that the failing test was added in commit 6a21cc50f0c7f ("seccomp: 
-> add a return code to trap to userspace") by Tycho Andersen 
-> <tycho@tycho.ws>.
+> Tested on Turris Mox with Peridot, Topaz, and Peridot + Topaz.
+> 
+> Marek
+> 
+> Marek Behún (6):
+>   net: dsa: mv88e6xxx: support 2500base-x in SGMII IRQ handler
+>   net: dsa: mv88e6xxx: update code operating on hidden registers
+>   net: dsa: mv88e6xxx: create serdes_get_lane chip operation
+>   net: dsa: mv88e6xxx: simplify SERDES code for Topaz and Peridot
+>   net: dsa: mv88e6xxx: rename port cmode macro
+>   net: dsa: mv88e6xxx: fully support SERDES on Topaz family
+> 
+>  drivers/net/dsa/mv88e6xxx/Makefile      |   1 +
+>  drivers/net/dsa/mv88e6xxx/chip.c        |  88 +++-----
+>  drivers/net/dsa/mv88e6xxx/chip.h        |   3 +
+>  drivers/net/dsa/mv88e6xxx/port.c        |  98 ++++++---
+>  drivers/net/dsa/mv88e6xxx/port.h        |  30 ++-
+>  drivers/net/dsa/mv88e6xxx/port_hidden.c |  70 ++++++
+>  drivers/net/dsa/mv88e6xxx/serdes.c      | 275 +++++++++++-------------
+>  drivers/net/dsa/mv88e6xxx/serdes.h      |  27 ++-
+>  8 files changed, 333 insertions(+), 259 deletions(-)
+>  create mode 100644 drivers/net/dsa/mv88e6xxx/port_hidden.c
 
-Can you post an strace and a cat of /proc/$pid/stack for both tasks
-where it gets stuck? I don't have any riscv hardware, and it "works
-for me" on x86 and arm64 with 100 tries.
+The series causes no issues on my Dev C with two 88E6390Xs. If Andrew has
+no complaints about the functional changes on the SERDES code, this LGTM:
+
+Tested-by: Vivien Didelot <vivien.didelot@gmail.com>
+
 
 Thanks,
 
-Tycho
+	Vivien
