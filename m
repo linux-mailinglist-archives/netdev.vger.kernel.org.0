@@ -2,172 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 1198D9D70B
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 21:55:46 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EFF99D725
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:00:56 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730569AbfHZTzi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 15:55:38 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:41632 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727504AbfHZTzi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 15:55:38 -0400
-Received: by mail-pf1-f194.google.com with SMTP id 196so12468438pfz.8;
-        Mon, 26 Aug 2019 12:55:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Sa8QUQJyPndXFqk0cRsIFkBXF6tFTWtH9N/e+YtaB0I=;
-        b=VKlY29d3xiAKWYqvFGxILI8IS0gzRAjGTc76xuGX7gtSMUSDWzDqieHc0kZyJLqBPA
-         tpz3DEAdKwUFiLMFTPfvBrh5BwDEIC3Peo3SW/GiKg1y46ToWvwFxa8GX95ESpERtlgI
-         XLwea0SI2jp4AExF598LgCo+YjT/UsOO4gFb2pwx+aq2qXsanNF8qgLuZl20YTBMFnrR
-         YF8oFFCAPC1g3cMtIcivk69gVcAOUiz7oRbFQL0UdfPfu+QsT2GIvSa5FulePuaqt+Hv
-         9TvCVL5HK7xm6/owx8UoewRm1gHfVogdulWVfeGjMd8o2ya36ILm/TdiIRdai1KEmNcW
-         iX0g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=Sa8QUQJyPndXFqk0cRsIFkBXF6tFTWtH9N/e+YtaB0I=;
-        b=KFz2LxJVpypNvhwXrfFYSsMTxZ3m+I+67/WDeNXbh8GLMne6wINhgW/EyBSK0y/CGe
-         RU//GEfdUe5D0An3zUDzaTJ6CPpH+4nTV8KpS6LWfVOM8/NqzbVzh0U+oIAl15lxOAaZ
-         AgPOL3oHIvAuHEsYKWcjUdelEBRmNajYBMFfAjlKtcabDZMkblnNOq7IjS0asWLOd6I9
-         RgDYaGNJwKkrR9TWFC44cmUKJqlBqvCMMq0RjunSqKDJMVDTfzrp6SwYv4Lg2WYbSIh2
-         m4abXnbJIV5z0i3mcB3ysTXWzLyWJQeSeEFIo8IP37uRvfDyFHDnukzMitq1mee4YMqz
-         GFwQ==
-X-Gm-Message-State: APjAAAW1ayulYFgDnVp9jc8vpg3gs1qTvt+QU9BuEz0oAqeGZNgHe5WH
-        2BV8+JFMSMT4bcsXhd2wuKM=
-X-Google-Smtp-Source: APXvYqyUaxt1n1NBhFcRkmMIVJGElcvXQrIsMoQSz94/P7uWjOW/fX6XUY62aqtz1cBc6bEQhcFDCw==
-X-Received: by 2002:a63:7a06:: with SMTP id v6mr18253469pgc.115.1566849337072;
-        Mon, 26 Aug 2019 12:55:37 -0700 (PDT)
-Received: from [10.67.49.31] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id z24sm15415765pfr.51.2019.08.26.12.55.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Aug 2019 12:55:36 -0700 (PDT)
-Subject: Re: [PATCH v1 net-next 4/4] net: stmmac: setup higher frequency clk
- support for EHL & TGL
-To:     Voon Weifeng <weifeng.voon@intel.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-References: <1566869891-29239-1-git-send-email-weifeng.voon@intel.com>
- <1566869891-29239-5-git-send-email-weifeng.voon@intel.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
+        id S2387406AbfHZUAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 16:00:53 -0400
+Received: from mx0a-00190b01.pphosted.com ([67.231.149.131]:49608 "EHLO
+        mx0a-00190b01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732784AbfHZUAx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 16:00:53 -0400
+Received: from pps.filterd (m0050095.ppops.net [127.0.0.1])
+        by m0050095.ppops.net-00190b01. (8.16.0.42/8.16.0.42) with SMTP id x7QJl0E2001088;
+        Mon, 26 Aug 2019 21:00:47 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akamai.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=jan2016.eng;
+ bh=ilkcEUxhytx2Ptl1Dl3Qap25YRWoxTUzUvNkKrr+OaM=;
+ b=DwI01TYctbI3cpMNJBA/+CnXtW0DeVW15QD2jLGMhUH8Txjg5bogityf70ryddgvttAq
+ uJzFpt8qzpHKvvoOCgSS/NexjRD1ixnbcJtw58PsGD73WtjJ5v+qKa24nxY84tb1JZYf
+ eLteHpdnFDO27HMd7lUXfZxq9HQBUZfPZMoknNdn6g4FLaYJDD+PhlzaUP3bW7PesVtz
+ bHMwKyMRFlxevz16IS+LqsX+/Dan0P/+3ofSpOWvp/+uO8yQLKw+LvaqwZZ0SF9Ybbpc
+ DKGIcj0BSfeAO/DeQzYlFvt6sP4CQLuERQ1ttpm6UpLAApyoqWK6hPExlzVBq/RVPMdS 1g== 
+Received: from prod-mail-ppoint5 (prod-mail-ppoint5.akamai.com [184.51.33.60] (may be forged))
+        by m0050095.ppops.net-00190b01. with ESMTP id 2ujwcahv8s-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 26 Aug 2019 21:00:46 +0100
+Received: from pps.filterd (prod-mail-ppoint5.akamai.com [127.0.0.1])
+        by prod-mail-ppoint5.akamai.com (8.16.0.27/8.16.0.27) with SMTP id x7QJl3bp020642;
+        Mon, 26 Aug 2019 13:00:45 -0700
+Received: from prod-mail-relay10.akamai.com ([172.27.118.251])
+        by prod-mail-ppoint5.akamai.com with ESMTP id 2uk378vgdc-1;
+        Mon, 26 Aug 2019 13:00:45 -0700
+Received: from [172.29.170.83] (bos-lpjec.kendall.corp.akamai.com [172.29.170.83])
+        by prod-mail-relay10.akamai.com (Postfix) with ESMTP id 5BFA320BF9;
+        Mon, 26 Aug 2019 20:00:45 +0000 (GMT)
+Subject: Re: [PATCH net] tcp: remove empty skb from write queue in error cases
+To:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Soheil Hassas Yeganeh <soheil@google.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Vladimir Rutsky <rutsky@google.com>
+References: <20190826161915.81676-1-edumazet@google.com>
+From:   Jason Baron <jbaron@akamai.com>
 Openpgp: preference=signencrypt
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <7d43e0c6-6f51-0d71-0af8-89f22b0234f9@gmail.com>
-Date:   Mon, 26 Aug 2019 12:55:31 -0700
+Autocrypt: addr=jbaron@akamai.com; prefer-encrypt=mutual; keydata=
+ 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
+ JeQ7iQ==
+Message-ID: <58ae43f8-21e7-f08f-2632-ce567661d301@akamai.com>
+Date:   Mon, 26 Aug 2019 15:56:52 -0400
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.8.0
 MIME-Version: 1.0
-In-Reply-To: <1566869891-29239-5-git-send-email-weifeng.voon@intel.com>
+In-Reply-To: <20190826161915.81676-1-edumazet@google.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-26_08:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1906280000 definitions=main-1908260187
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-08-26_08:2019-08-26,2019-08-26 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=2 impostorscore=0
+ bulkscore=0 priorityscore=1501 adultscore=0 phishscore=0 clxscore=1015
+ mlxlogscore=999 malwarescore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1906280000
+ definitions=main-1908260187
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 8/26/19 6:38 PM, Voon Weifeng wrote:
-> EHL DW EQOS is running on a 200MHz clock. Setting up stmmac-clk,
-> ptp clock and ptp_max_adj to 200MHz.
-> 
-> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-> Signed-off-by: Ong Boon Leong <boon.leong.ong@intel.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 21 +++++++++++++++++++++
->  drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c |  3 +++
->  include/linux/stmmac.h                           |  1 +
->  3 files changed, 25 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> index e969dc9bb9f0..20906287b6d4 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c
-> @@ -9,6 +9,7 @@
->    Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
->  *******************************************************************************/
->  
-> +#include <linux/clk-provider.h>
->  #include <linux/pci.h>
->  #include <linux/dmi.h>
->  
-> @@ -174,6 +175,19 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
->  	plat->axi->axi_blen[1] = 8;
->  	plat->axi->axi_blen[2] = 16;
->  
-> +	plat->ptp_max_adj = plat->clk_ptp_rate;
-> +
-> +	/* Set system clock */
-> +	plat->stmmac_clk = clk_register_fixed_rate(&pdev->dev,
-> +						   "stmmac-clk", NULL, 0,
-> +						   plat->clk_ptp_rate);
-> +
-> +	if (IS_ERR(plat->stmmac_clk)) {
-> +		dev_warn(&pdev->dev, "Fail to register stmmac-clk\n");
-> +		plat->stmmac_clk = NULL;
 
-Don't you need to propagate at least EPROBE_DEFER here?
--- 
-Florian
+
+On 8/26/19 12:19 PM, Eric Dumazet wrote:
+> Vladimir Rutsky reported stuck TCP sessions after memory pressure
+> events. Edge Trigger epoll() user would never receive an EPOLLOUT
+> notification allowing them to retry a sendmsg().
+> 
+> Jason tested the case of sk_stream_alloc_skb() returning NULL,
+> but there are other paths that could lead both sendmsg() and sendpage()
+> to return -1 (EAGAIN), with an empty skb queued on the write queue.
+> 
+> This patch makes sure we remove this empty skb so that
+> Jason code can detect that the queue is empty, and
+> call sk->sk_write_space(sk) accordingly.
+> 
+
+Makes sense, thanks. I think this check for empty queue could also
+benefit from and update to use tcp_write_queue_empty(). I will send a
+follow-up for that.
+
+Thanks,
+
+-Jason
+
+
+
+> Fixes: ce5ec440994b ("tcp: ensure epoll edge trigger wakeup when write queue is empty")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Jason Baron <jbaron@akamai.com>
+> Reported-by: Vladimir Rutsky <rutsky@google.com>
+> Cc: Soheil Hassas Yeganeh <soheil@google.com>
+> Cc: Neal Cardwell <ncardwell@google.com>
+> ---
+>  net/ipv4/tcp.c | 30 ++++++++++++++++++++----------
+>  1 file changed, 20 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
+> index 77b485d60b9d0e00edc4e2f0d6c5bb3a9460b23b..61082065b26a068975c411b74eb46739ab0632ca 100644
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@ -935,6 +935,22 @@ static int tcp_send_mss(struct sock *sk, int *size_goal, int flags)
+>  	return mss_now;
+>  }
+>  
+> +/* In some cases, both sendpage() and sendmsg() could have added
+> + * an skb to the write queue, but failed adding payload on it.
+> + * We need to remove it to consume less memory, but more
+> + * importantly be able to generate EPOLLOUT for Edge Trigger epoll()
+> + * users.
+> + */
+> +static void tcp_remove_empty_skb(struct sock *sk, struct sk_buff *skb)
+> +{
+> +	if (skb && !skb->len) {
+> +		tcp_unlink_write_queue(skb, sk);
+> +		if (tcp_write_queue_empty(sk))
+> +			tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
+> +		sk_wmem_free_skb(sk, skb);
+> +	}
+> +}
+> +
+>  ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+>  			 size_t size, int flags)
+>  {
+> @@ -1064,6 +1080,7 @@ ssize_t do_tcp_sendpages(struct sock *sk, struct page *page, int offset,
+>  	return copied;
+>  
+>  do_error:
+> +	tcp_remove_empty_skb(sk, tcp_write_queue_tail(sk));
+>  	if (copied)
+>  		goto out;
+>  out_err:
+> @@ -1388,18 +1405,11 @@ int tcp_sendmsg_locked(struct sock *sk, struct msghdr *msg, size_t size)
+>  	sock_zerocopy_put(uarg);
+>  	return copied + copied_syn;
+>  
+> +do_error:
+> +	skb = tcp_write_queue_tail(sk);
+>  do_fault:
+> -	if (!skb->len) {
+> -		tcp_unlink_write_queue(skb, sk);
+> -		/* It is the one place in all of TCP, except connection
+> -		 * reset, where we can be unlinking the send_head.
+> -		 */
+> -		if (tcp_write_queue_empty(sk))
+> -			tcp_chrono_stop(sk, TCP_CHRONO_BUSY);
+> -		sk_wmem_free_skb(sk, skb);
+> -	}
+> +	tcp_remove_empty_skb(sk, skb);
+>  
+> -do_error:
+>  	if (copied + copied_syn)
+>  		goto out;
+>  out_err:
+> 
