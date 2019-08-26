@@ -2,63 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 702C79D538
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:52:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C0D69D53E
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:54:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733223AbfHZRwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 13:52:24 -0400
-Received: from mail.nic.cz ([217.31.204.67]:33996 "EHLO mail.nic.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728280AbfHZRwY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 13:52:24 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id D9654140940;
-        Mon, 26 Aug 2019 19:52:22 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566841943; bh=WbPN4k+LUzFkFehLNi0Vcc9HPsyD3Kqbu09mmCynQOw=;
-        h=Date:From:To;
-        b=A+AYQkWZSMktUMoHFslxUqmeBKTpOAsOu4wbGePBCB7FN9Uz7bsydrO+GfTFYRu5H
-         ORzt0iuajgJYgY3SeZyUKJx6j3GAjPLxQqtVeYewwRohcI6zEQY/hnhBE6DmmO4a1Z
-         XeS4IjnHNuY15S+eH9zTSBS81dMWM3L9efrONqbM=
-Date:   Mon, 26 Aug 2019 19:52:22 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Vivien Didelot <vivien.didelot@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v4 6/6] net: dsa: mv88e6xxx: fully support
- SERDES on Topaz family
-Message-ID: <20190826195222.3f9e3f51@nic.cz>
-In-Reply-To: <20190826134418.GB29480@t480s.localdomain>
-References: <20190826122109.20660-1-marek.behun@nic.cz>
-        <20190826122109.20660-7-marek.behun@nic.cz>
-        <20190826153830.GE2168@lunn.ch>
-        <20190826192717.50738e37@nic.cz>
-        <20190826134418.GB29480@t480s.localdomain>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2387552AbfHZRyh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 13:54:37 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:40453 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728280AbfHZRyh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 13:54:37 -0400
+Received: by mail-pf1-f195.google.com with SMTP id w16so12267023pfn.7;
+        Mon, 26 Aug 2019 10:54:36 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=kM47wPSGoWQoKFogwJD1jolEo0D/cEX5m8eHxwo2vmQ=;
+        b=iedmC87RDiN0rkKMrHaCW54/21FsAuYp/o982i8HQTHXbjjgoD24hQL17mlz2hW/Mz
+         XR8Zk5zgWBm1C2JcQ3is3EDkonIWZX8KNrTRxsz/Zn509ULREYzqW7lA85lYSAqPuxay
+         8C+LTArBpQyfE3G39o6KOm1TdNbj83KdGqbLrKAQVn5+oKEeJC/u15Cb5jhR7XjffzaD
+         t5B6RsNKKKCvQ8xRA8SDkymSqOlb2Xl8TKAutP2tWnwDfHc8pwt2QRU7vI3obhzjW/8+
+         9gBRzNqc5lrez2M3EvOG53p6Dii6ge9PmWMhFXlDKb/XWwjI83NEHac/PaRH17aiEI+a
+         Gdtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=kM47wPSGoWQoKFogwJD1jolEo0D/cEX5m8eHxwo2vmQ=;
+        b=bZGjbzuR0ved1WpexIMJey0mN/wx+ny/8E3+E5RGVg85+3zMZ9LmOj6b4tVk3SVXx5
+         /Rte0Gxx7xkCugmnONBqwkUb3gfV8h4iTPc9b1yu/QId08TJdR/icgVmBakxIz/uD0IU
+         cotKkFA6yc4utNrVOj5v0+JA8oZmQDpyXCAkWIW1BF340lglC+jyPp+zI61DLGpRwdjN
+         Rwo8z16WJ29r9Wn0r6MTxcJV0kBL16w7TSvu6Ml4l6uhpFppPpRGVdnJspcUficzkgca
+         Yru6pNXPG+rRlI8NUMk9iJnl2Dd47aPSg2jUQUATPW5XGq7IFmRvtoSl/WQF5JaAVAuF
+         QwfA==
+X-Gm-Message-State: APjAAAWtJIuPtPCFuESvoBuVDtd/FyciYLBb65/VNTFj96+Slx+Eds4g
+        t9il04sJpDEN/W61PUA1QOg=
+X-Google-Smtp-Source: APXvYqwrKVgW/Wh3U3M1lg8TqtrE/XLv1cAH3bWW5OOQV84UFc1x3cXXXJuNpcRae5TcStbVh+FVGg==
+X-Received: by 2002:a17:90a:2667:: with SMTP id l94mr21578665pje.74.1566842076513;
+        Mon, 26 Aug 2019 10:54:36 -0700 (PDT)
+Received: from [172.20.53.188] ([2620:10d:c090:200::3:2982])
+        by smtp.gmail.com with ESMTPSA id 10sm14047831pfv.63.2019.08.26.10.54.35
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 26 Aug 2019 10:54:35 -0700 (PDT)
+From:   "Jonathan Lemon" <jonathan.lemon@gmail.com>
+To:     "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@gmail.com>
+Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        "=?utf-8?b?QmrDtnJuIFTDtnBlbA==?=" <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, magnus.karlsson@gmail.com,
+        bpf@vger.kernel.org,
+        syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
+        hdanton@sina.com, i.maximets@samsung.com
+Subject: Re: [PATCH bpf-next v2 2/4] xsk: add proper barriers and {READ,
+ WRITE}_ONCE-correctness for state
+Date:   Mon, 26 Aug 2019 10:54:34 -0700
+X-Mailer: MailMate (1.12.5r5635)
+Message-ID: <324C76C6-2D31-4509-A22D-4796694A4FBC@gmail.com>
+In-Reply-To: <20190826061053.15996-3-bjorn.topel@gmail.com>
+References: <20190826061053.15996-1-bjorn.topel@gmail.com>
+ <20190826061053.15996-3-bjorn.topel@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
-        shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Aug 2019 13:44:18 -0400
-Vivien Didelot <vivien.didelot@gmail.com> wrote:
 
-> > It can be done once at probe. At first I thought about doing this in
-> > setup_errata, but this is not an erratum. So shall I create a new
-> > method for this in chip operations structure? Something like
-> > port_additional_setup() ?  
-> 
-> No. Those "setup" or "config" functions are likely to do everything and
-> become a mess, thus unmaintainable. Operations must be specific.
 
-What about Andrew's complaint, then, abouth the two additional
-parameters?
+On 25 Aug 2019, at 23:10, Björn Töpel wrote:
+
+> From: Björn Töpel <bjorn.topel@intel.com>
+>
+> The state variable was read, and written outside the control mutex
+> (struct xdp_sock, mutex), without proper barriers and {READ,
+> WRITE}_ONCE correctness.
+>
+> In this commit this issue is addressed, and the state member is now
+> used a point of synchronization whether the socket is setup correctly
+> or not.
+>
+> This also fixes a race, found by syzcaller, in xsk_poll() where umem
+> could be accessed when stale.
+>
+> Suggested-by: Hillf Danton <hdanton@sina.com>
+> Reported-by: syzbot+c82697e3043781e08802@syzkaller.appspotmail.com
+> Fixes: 77cd0d7b3f25 ("xsk: add support for need_wakeup flag in AF_XDP 
+> rings")
+> Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+
+Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
