@@ -2,63 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 43A649CDB0
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 13:03:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 4109E9CF7E
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 14:21:24 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727123AbfHZLC7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 07:02:59 -0400
-Received: from charlotte.tuxdriver.com ([70.61.120.58]:51655 "EHLO
-        smtp.tuxdriver.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726926AbfHZLC6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 07:02:58 -0400
-Received: from cpe-2606-a000-111b-43ee-0-0-0-162e.dyn6.twc.com ([2606:a000:111b:43ee::162e] helo=localhost)
-        by smtp.tuxdriver.com with esmtpsa (TLSv1:AES256-SHA:256)
-        (Exim 4.63)
-        (envelope-from <nhorman@tuxdriver.com>)
-        id 1i2Cls-0001ER-Id; Mon, 26 Aug 2019 07:02:54 -0400
-Date:   Mon, 26 Aug 2019 07:02:21 -0400
-From:   Neil Horman <nhorman@tuxdriver.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        davem@davemloft.net
-Subject: Re: [PATCH net-next 0/3] sctp: add SCTP_ECN_SUPPORTED sockopt
-Message-ID: <20190826110221.GA7831@hmswarspite.think-freely.org>
-References: <cover.1566807985.git.lucien.xin@gmail.com>
+        id S1731982AbfHZMVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 08:21:19 -0400
+Received: from mail.nic.cz ([217.31.204.67]:58442 "EHLO mail.nic.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727234AbfHZMVS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 08:21:18 -0400
+Received: from dellmb.labs.office.nic.cz (unknown [IPv6:2001:1488:fffe:6:cac7:3539:7f1f:463])
+        by mail.nic.cz (Postfix) with ESMTP id C3E61140B28;
+        Mon, 26 Aug 2019 14:21:16 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
+        t=1566822076; bh=LsZbIdUQhjIqGvnJ1hKt5NjYacLNqkCivJhOZta1Yxc=;
+        h=From:To:Date;
+        b=evRGdQpPPAgfLfalElk3xdFEpUDn90xDt4j96QfGo2u6ssDEz9QuTeKd5Y003TCUA
+         yJXTvP5uvBPanngEZZ2adbA5slDyu9L+2gSNdaIjSgqihs2jpVeIA5H4Id21oymmuH
+         rDtQTqS409YN4FODZujFB/XHSoLI1MTt/suV6mnA=
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+To:     netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <marek.behun@nic.cz>
+Subject: [PATCH net-next v4 0/6] net: dsa: mv88e6xxx: Peridot/Topaz SERDES changes
+Date:   Mon, 26 Aug 2019 14:21:03 +0200
+Message-Id: <20190826122109.20660-1-marek.behun@nic.cz>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1566807985.git.lucien.xin@gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
-X-Spam-Score: -2.9 (--)
-X-Spam-Status: No
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
+X-Virus-Status: Clean
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
+        shortcircuit=ham autolearn=disabled version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 26, 2019 at 04:30:01PM +0800, Xin Long wrote:
-> This patchset is to make ecn flag per netns and endpoint and then
-> add SCTP_ECN_SUPPORTED sockopt, as does for other feature flags.
-> 
-> Xin Long (3):
->   sctp: make ecn flag per netns and endpoint
->   sctp: allow users to set netns ecn flag with sysctl
->   sctp: allow users to set ep ecn flag by sockopt
-> 
->  include/net/netns/sctp.h   |  3 ++
->  include/net/sctp/structs.h |  3 +-
->  include/uapi/linux/sctp.h  |  1 +
->  net/sctp/endpointola.c     |  1 +
->  net/sctp/protocol.c        |  3 ++
->  net/sctp/sm_make_chunk.c   | 16 +++++++---
->  net/sctp/socket.c          | 73 ++++++++++++++++++++++++++++++++++++++++++++++
->  net/sctp/sysctl.c          |  7 +++++
->  8 files changed, 102 insertions(+), 5 deletions(-)
-> 
-> -- 
-> 2.1.0
-> 
-> 
-Series
-Acked-by: Neil Horman <nhorman@tuxdriver.com>
+Hello,
+
+this is the fourth version of changes for the Topaz/Peridot family of
+switches. The patches apply on net-next.
+Changes since v3:
+ - there was a mistake in the serdes_get_lane implementations for
+   6390 (patch 3/6). These methods returned -ENODEV if no lane was
+   to be on port, but they should return 0. This is now fixed.
+
+Tested on Turris Mox with Peridot, Topaz, and Peridot + Topaz.
+
+Marek
+
+Marek Behún (6):
+  net: dsa: mv88e6xxx: support 2500base-x in SGMII IRQ handler
+  net: dsa: mv88e6xxx: update code operating on hidden registers
+  net: dsa: mv88e6xxx: create serdes_get_lane chip operation
+  net: dsa: mv88e6xxx: simplify SERDES code for Topaz and Peridot
+  net: dsa: mv88e6xxx: rename port cmode macro
+  net: dsa: mv88e6xxx: fully support SERDES on Topaz family
+
+ drivers/net/dsa/mv88e6xxx/Makefile      |   1 +
+ drivers/net/dsa/mv88e6xxx/chip.c        |  88 +++-----
+ drivers/net/dsa/mv88e6xxx/chip.h        |   3 +
+ drivers/net/dsa/mv88e6xxx/port.c        |  98 ++++++---
+ drivers/net/dsa/mv88e6xxx/port.h        |  30 ++-
+ drivers/net/dsa/mv88e6xxx/port_hidden.c |  70 ++++++
+ drivers/net/dsa/mv88e6xxx/serdes.c      | 275 +++++++++++-------------
+ drivers/net/dsa/mv88e6xxx/serdes.h      |  27 ++-
+ 8 files changed, 333 insertions(+), 259 deletions(-)
+ create mode 100644 drivers/net/dsa/mv88e6xxx/port_hidden.c
+
+-- 
+2.21.0
+
