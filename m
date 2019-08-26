@@ -2,100 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8222C9D7BA
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:49:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7CEE79D7C8
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:52:52 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732028AbfHZUqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 16:46:09 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40177 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727014AbfHZUqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 16:46:08 -0400
-Received: by mail-pf1-f196.google.com with SMTP id w16so12555532pfn.7
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 13:46:08 -0700 (PDT)
+        id S1726994AbfHZUwo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 16:52:44 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:34847 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725983AbfHZUwn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 16:52:43 -0400
+Received: by mail-wm1-f66.google.com with SMTP id l2so818785wmg.0
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 13:52:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=11wDToOU7MvDuXiVGC6+Fr53SEi9f5OYWrOREbkWLj4=;
-        b=vCm8Cvwy4Iz1062BQV8IPJvr0zdO45ql+FgUXiiHA+p3w4hfeWUrDC63EzMO9LcGOt
-         trueAD5Kk25xA4VpdX8Ydn+/+3/OMRNlIOZxLAxUh19tKXx/IedDhWUFnsWAt7zqko7A
-         UN67upEZjyqTmmXpUZUSchF6K/7im/G1Yr6O8JFcmy7pgHjv+kdioZ4h9wss93I7Vjzc
-         nXJWYH4kIJRLPo6zuKfAM1+gPFhHTRXxkGvAl/pr+zvmfUPE6yQtozteXFKBiQjKb0BP
-         MK1ikB2SuqknMBqBEqY5Q/6cshhmZznr0KKagk4CmlHnwzLu+S17eH8o1PGuvOCyGEE4
-         ukrA==
+        h=to:cc:from:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=9N2v7ISYhpaK5On/VTUK+7xPfi2wU1UeG6iLcwR65LI=;
+        b=uTAxFfXRmJoJASOP69IvsJCxZJfMkLk+6CwzEu41Mqs5q+YVRUHxcMm+SV4ZQ+0Wm+
+         chka2S8vVhHCauLs13xuJeD8b1tVe8jt1Bq/Tv88Lu/ZDcygP2RZNHDn+UW8oppVOrvL
+         4xNICCLM2tV8Sov6bA+LFmc6utsgvruDlcfT+OLrZcbcrbyxMVC88OrduriOIh79Vz8V
+         YEBJffck+l3RdyBNxALz8RQfmRFC3RNTjW20XOG5DyTRVwELgdOb10izhkGdabPS35SV
+         qMpDBBKVzHp2RbTwpoWII/PEhoeiCPudYgTMF1lFWH8/BIOsfKdqzqey6v5qnTO5xDfD
+         sPdg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=11wDToOU7MvDuXiVGC6+Fr53SEi9f5OYWrOREbkWLj4=;
-        b=I/tDVzoSDWpX1dLDWV3+beo1quXZeQGKYqIEi7xILb9PUizcwho/IkDVxLfhUCycr2
-         7j5s3mxyJOYGWUD1GosC/GQXck/UgeAyY/AENLc/g9YBAY5yWCiollQJAJSN8R4Mv4SY
-         67/NyLIVvvSl1OYwT1+fM9oFTfTpSn87Byjc5Jyx+VseInzVnkoa7GW1OeMDG0pYHeWV
-         IoTcl8knmGwK76MHU0XV4Gy4/mpeKy2iCvaR3F8N97ZtzTxG9URUxvQW1pklpTuIEayz
-         XpOOuUfzFLuY7mraLBOMglUn3/8BKbPFZCPvDVr9a5hhbK4hAmLC6/mPDYoCUAlFOokD
-         iYKA==
-X-Gm-Message-State: APjAAAWH6fw+fBu7gFZyM4E16e47z0JObQ9bP4aE5WeBGcd5k2wsumn4
-        dmZn7N8msmetIYLSLq8BQTNCPQ0S
-X-Google-Smtp-Source: APXvYqxIYtAkXLhuV/gmQpenh+DNFiL3t9kGLyk9Gi/m+yFAfkNLZ6FE4MQiYlLUD44zj/6EYVGjAw==
-X-Received: by 2002:a65:6401:: with SMTP id a1mr18131228pgv.42.1566852367078;
-        Mon, 26 Aug 2019 13:46:07 -0700 (PDT)
-Received: from gizo.domain (97-115-90-227.ptld.qwest.net. [97.115.90.227])
-        by smtp.gmail.com with ESMTPSA id ev3sm941223pjb.3.2019.08.26.13.46.05
+        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=9N2v7ISYhpaK5On/VTUK+7xPfi2wU1UeG6iLcwR65LI=;
+        b=SGyJU2nw4mFR7oRwhOVR1Iy/eIW1WsiyUmU8kG+zKUTTGJ+QJyY5L9FhUc9xHWVamJ
+         APaaytr9LxIE0juXE4tR4wQ7+qXGZhxMqjCYf9cltlVx/Mwo3V6fEhz8TJJfmGAi/Sdt
+         JOkifr9hdgYCr3db47NvnJhTDf/Zwr24CPD576hAuKZsbb+HZ1DVV7CJVixR4kvBfS5L
+         m8XeliuOXbI2VBF1TV5fQyZiAElPkuY67ReWZI8Ai4oOzudYD8L6qIHFU9hnc1sa+4Ky
+         I6i335D2ZDOpbVCxbQHkj3qGgZMdSYIMLOEC+N4aJgfATJCvumtV7VJnzKqZ0g5D4GDi
+         yMeg==
+X-Gm-Message-State: APjAAAXvUQBng0D8/0ONQcoh8m6wChzz4IxwntZZ6DFxDI53wLeZ8+MZ
+        nlRcb8tt3FPhh9joxCMel1O83Pm0
+X-Google-Smtp-Source: APXvYqyuwXo/J9z4A7rRWdQAfeuHtDWFkE7zvpLCEcu49nV/CP/dgCQ82fsTC0TDueyeeu2FLAAubw==
+X-Received: by 2002:a05:600c:21c1:: with SMTP id x1mr22542210wmj.37.1566852761193;
+        Mon, 26 Aug 2019 13:52:41 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f04:7c00:787f:2a92:ccfe:e1e4? (p200300EA8F047C00787F2A92CCFEE1E4.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:787f:2a92:ccfe:e1e4])
+        by smtp.googlemail.com with ESMTPSA id m188sm1362341wmm.32.2019.08.26.13.52.40
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 26 Aug 2019 13:46:06 -0700 (PDT)
-From:   Greg Rose <gvrose8192@gmail.com>
-To:     netdev@vger.kernel.org, pshelar@ovn.org
-Cc:     joe@wand.net.nz, Justin Pettit <jpettit@ovn.org>
-Subject: [PATCH V2 net 2/2] openvswitch: Clear the L4 portion of the key for "later" fragments.
-Date:   Mon, 26 Aug 2019 13:45:59 -0700
-Message-Id: <1566852359-8028-2-git-send-email-gvrose8192@gmail.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1566852359-8028-1-git-send-email-gvrose8192@gmail.com>
-References: <1566852359-8028-1-git-send-email-gvrose8192@gmail.com>
+        Mon, 26 Aug 2019 13:52:40 -0700 (PDT)
+To:     Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net-next] r8169: improve DMA handling in rtl_rx
+Message-ID: <32c6566d-12c3-a01e-c8b0-f68c32949c2c@gmail.com>
+Date:   Mon, 26 Aug 2019 22:52:36 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Justin Pettit <jpettit@ovn.org>
+Move the call to dma_sync_single_for_cpu after calling napi_alloc_skb.
+This avoids calling dma_sync_single_for_cpu w/o handing control back
+to device if the memory allocation should fail.
 
-Only the first fragment in a datagram contains the L4 headers.  When the
-Open vSwitch module parses a packet, it always sets the IP protocol
-field in the key, but can only set the L4 fields on the first fragment.
-The original behavior would not clear the L4 portion of the key, so
-garbage values would be sent in the key for "later" fragments.  This
-patch clears the L4 fields in that circumstance to prevent sending those
-garbage values as part of the upcall.
-
-Signed-off-by: Justin Pettit <jpettit@ovn.org>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- net/openvswitch/flow.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
-index ea12ee6..22fd55f 100644
---- a/net/openvswitch/flow.c
-+++ b/net/openvswitch/flow.c
-@@ -560,6 +560,7 @@ static int key_extract_l3l4(struct sk_buff *skb, struct sw_flow_key *key)
- 		offset = nh->frag_off & htons(IP_OFFSET);
- 		if (offset) {
- 			key->ip.frag = OVS_FRAG_TYPE_LATER;
-+			memset(&key->tp, 0, sizeof(key->tp));
- 			return 0;
- 		}
- 		if (nh->frag_off & htons(IP_MF) ||
-@@ -677,8 +678,10 @@ static int key_extract_l3l4(struct sk_buff *skb, struct sw_flow_key *key)
- 			return error;
- 		}
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index 6182e7d33..faa4041cf 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -5807,16 +5807,15 @@ static int rtl_rx(struct net_device *dev, struct rtl8169_private *tp, u32 budget
+ 				goto release_descriptor;
+ 			}
  
--		if (key->ip.frag == OVS_FRAG_TYPE_LATER)
-+		if (key->ip.frag == OVS_FRAG_TYPE_LATER) {
-+			memset(&key->tp, 0, sizeof(key->tp));
- 			return 0;
-+		}
- 		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
- 			key->ip.frag = OVS_FRAG_TYPE_FIRST;
+-			dma_sync_single_for_cpu(tp_to_dev(tp),
+-						le64_to_cpu(desc->addr),
+-						pkt_size, DMA_FROM_DEVICE);
+-
+ 			skb = napi_alloc_skb(&tp->napi, pkt_size);
+ 			if (unlikely(!skb)) {
+ 				dev->stats.rx_dropped++;
+ 				goto release_descriptor;
+ 			}
  
++			dma_sync_single_for_cpu(tp_to_dev(tp),
++						le64_to_cpu(desc->addr),
++						pkt_size, DMA_FROM_DEVICE);
+ 			prefetch(rx_buf);
+ 			skb_copy_to_linear_data(skb, rx_buf, pkt_size);
+ 			skb->tail += pkt_size;
 -- 
-1.8.3.1
+2.23.0
 
