@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 864B69C825
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 05:56:29 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A21F09C821
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 05:56:27 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729711AbfHZD4S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 23:56:18 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:38107 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729550AbfHZDz5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 23:55:57 -0400
-Received: by mail-pf1-f193.google.com with SMTP id o70so10873496pfg.5
+        id S1729627AbfHZD4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 23:56:05 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:43135 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729576AbfHZDz6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 23:55:58 -0400
+Received: by mail-pf1-f195.google.com with SMTP id v12so10866156pfn.10
         for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 20:55:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=H1OUvQbKCsO4tFHwlKdYG2lSaIPKSjLb6lpaMm/0fuE=;
-        b=MDXGjOrenhjLDvakx/Ch+yeGmB9mkfELzA4onNkaUUqwoCKcHqVLqJkub5dqevqJLU
-         XK9CAeaEY4RZd7tCQHZSZ+j3Oc9G9gxeRMHhnVify91okGLofGiKXMyErwoewU6XhuzI
-         Y8cHYySFkWZCrfSK2FL+rfK5/XG8Tyk+9SX7U=
+        bh=WdDkuDBDhOLmt27sLozhcSRqwndp9kN11nW4PrPeyxM=;
+        b=Z0jX0pvmC+o6ahyyS1FSEDY8XbFHT62OWZwLHBmpMOYU5t3N6MzFoJjcuj4liStdca
+         TPvRcw0u8Y227p5dMEqk1+LnUi30GKw2PShn3puq1Aakjem9Jd60AU+URSyPSaffzEui
+         jut5VnYxUzpLImito/6KZhrPgLN9VpRKy0Vw4=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=H1OUvQbKCsO4tFHwlKdYG2lSaIPKSjLb6lpaMm/0fuE=;
-        b=Yp0aRrGBEw8F23YGF2McVR66E4mL+ANccyazhiEvhOKJV7ZIK/sQXo0qIkE6Q1ib96
-         nv65+6kjxB+moaQAg8hABVIXmzvpmTAG+dujI/q9opef/vF7Q9VvEnCNxf2jS1XRkBdW
-         HO/rRv78y3fwomFVK37uLOFY2U5y/yIlYRYPhSHfVVTcerE/DiE1pCDSfFIrswNirAzh
-         cVjsvz5Guu2ojyMuv1liaDhWHtDBFfA/2XvU1nyDnGc8v1mTW1BBwt2zIEl5F4kX3kM+
-         0Nf5L2avawJBI+aXRrxtByELlx9gHviOIweF3NbhDvutef/x1DSPO3Zne26+/dITH5fG
-         OSRQ==
-X-Gm-Message-State: APjAAAVBhSXkZmjqW4tjC0+LPlpc6SfL79r5hmTEqIoRVvZOARyt/+Ss
-        7TjEF3xgG17AnYHt18554LA+FA==
-X-Google-Smtp-Source: APXvYqx8/kNHLjmLLo3E8AZLSo4IlNatitopjw1RBMGIko+rkdbWR3g0vs+1o8hM5zbJewI+WWtZtg==
-X-Received: by 2002:a17:90a:2764:: with SMTP id o91mr17815591pje.57.1566791756584;
-        Sun, 25 Aug 2019 20:55:56 -0700 (PDT)
+        bh=WdDkuDBDhOLmt27sLozhcSRqwndp9kN11nW4PrPeyxM=;
+        b=ewEFhevNrJk6SwiWLtTm/Esvu82O1ljPaKWW2Rqu7tRv9yRJrVWJQArf40w2BihO5u
+         2d/B3i/Jo9YOsxcp+xZR7puVRws92nMILxysZWJgGJSt1M6NcY32kMj6UONxRJNPS77B
+         h8zZYkq79/563G6/ceQc3gLpz15Hp7LAQ1swiHOODSN5sblCWdn6v04nM+h376jwMiKo
+         Fqabacaxbcy7UjS+vmdog1M6K3nbAechttcJV07TMMt+pnC4ex6aFr6/EHmmOdTxzLu9
+         WSx9O0Xc4A4afLe/EcRbCaJPMvq1O5/U+/KMyhp27QtDSabh/BS/HL9jEPer+YEb1tH3
+         TeBA==
+X-Gm-Message-State: APjAAAW+B7oRKV44D1OzcDJUpRMY1vqq0cIPgSoIZDcIJoJ+NJ398ukX
+        yaLcIZH637KAAo83jx2aHv/I+w==
+X-Google-Smtp-Source: APXvYqwA8YLBzrAQP+TFwF1u0U3LdAOa7mwI+WnVri+dV6nwR4fUku2sbsBBu1jFLNJPCs65xi4M8g==
+X-Received: by 2002:a63:6c02:: with SMTP id h2mr15267331pgc.61.1566791757493;
+        Sun, 25 Aug 2019 20:55:57 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d6sm8532975pgf.55.2019.08.25.20.55.55
+        by smtp.gmail.com with ESMTPSA id d6sm8532975pgf.55.2019.08.25.20.55.56
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Aug 2019 20:55:56 -0700 (PDT)
+        Sun, 25 Aug 2019 20:55:57 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com,
         jiri@mellanox.com, ray.jui@broadcom.com
-Subject: [PATCH net-next 05/14] bnxt_en: Discover firmware error recovery capabilities.
-Date:   Sun, 25 Aug 2019 23:54:56 -0400
-Message-Id: <1566791705-20473-6-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 06/14] bnxt_en: Pre-map the firmware health monitoring registers.
+Date:   Sun, 25 Aug 2019 23:54:57 -0400
+Message-Id: <1566791705-20473-7-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
 References: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
@@ -55,191 +55,86 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Call the new firmware API HWRM_ERROR_RECOVERY_QCFG if it is supported
-to discover the firmware health and recovery capabilities and settings.
-This feature allows the driver to reset the chip if firmware crashes and
-becomes unresponsive.
+Pre-map the GRC registers for periodic firmware health monitoring.
 
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 79 +++++++++++++++++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h | 38 +++++++++++++++
- 2 files changed, 117 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.c | 29 +++++++++++++++++++++++++++++
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h |  6 ++++++
+ 2 files changed, 35 insertions(+)
 
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 94641c9..ef43f9e 100644
+index ef43f9e..9ab5024 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -6833,6 +6833,8 @@ static int __bnxt_hwrm_func_qcaps(struct bnxt *bp)
- 		bp->fw_cap |= BNXT_FW_CAP_PCIE_STATS_SUPPORTED;
- 	if (flags & FUNC_QCAPS_RESP_FLAGS_EXT_STATS_SUPPORTED)
- 		bp->fw_cap |= BNXT_FW_CAP_EXT_STATS_SUPPORTED;
-+	if (flags &  FUNC_QCAPS_RESP_FLAGS_ERROR_RECOVERY_CAPABLE)
-+		bp->fw_cap |= BNXT_FW_CAP_ERROR_RECOVERY;
- 
- 	bp->tx_push_thresh = 0;
- 	if (flags & FUNC_QCAPS_RESP_FLAGS_PUSH_MODE_SUPPORTED)
-@@ -6934,6 +6936,76 @@ static int bnxt_hwrm_cfa_adv_flow_mgnt_qcaps(struct bnxt *bp)
+@@ -6936,6 +6936,33 @@ static int bnxt_hwrm_cfa_adv_flow_mgnt_qcaps(struct bnxt *bp)
  	return rc;
  }
  
-+static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
++static int bnxt_map_fw_health_regs(struct bnxt *bp)
 +{
-+	struct hwrm_error_recovery_qcfg_output *resp = bp->hwrm_cmd_resp_addr;
 +	struct bnxt_fw_health *fw_health = bp->fw_health;
-+	struct hwrm_error_recovery_qcfg_input req = {0};
-+	int rc, i;
++	u32 reg_base = 0xffffffff;
++	int i;
 +
-+	if (!(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
++	/* Only pre-map the monitoring GRC registers using window 3 */
++	for (i = 0; i < 4; i++) {
++		u32 reg = fw_health->regs[i];
++
++		if (BNXT_FW_HEALTH_REG_TYPE(reg) != BNXT_FW_HEALTH_REG_TYPE_GRC)
++			continue;
++		if (reg_base == 0xffffffff)
++			reg_base = reg & BNXT_GRC_BASE_MASK;
++		if ((reg & BNXT_GRC_BASE_MASK) != reg_base)
++			return -ERANGE;
++		fw_health->mapped_regs[i] = BNXT_FW_HEALTH_WIN_BASE +
++					    (reg & BNXT_GRC_OFFSET_MASK);
++	}
++	if (reg_base == 0xffffffff)
 +		return 0;
 +
-+	bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_ERROR_RECOVERY_QCFG, -1, -1);
-+	mutex_lock(&bp->hwrm_cmd_lock);
-+	rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
-+	if (rc) {
-+		rc = -EOPNOTSUPP;
-+		goto err_recovery_out;
-+	}
-+	if (!fw_health) {
-+		fw_health = kzalloc(sizeof(*fw_health), GFP_KERNEL);
-+		bp->fw_health = fw_health;
-+		if (!fw_health) {
-+			rc = -ENOMEM;
-+			goto err_recovery_out;
-+		}
-+	}
-+	fw_health->flags = le32_to_cpu(resp->flags);
-+	if ((fw_health->flags & ERROR_RECOVERY_QCFG_RESP_FLAGS_CO_CPU) &&
-+	    !(bp->fw_cap & BNXT_FW_CAP_KONG_MB_CHNL)) {
-+		rc = -EINVAL;
-+		goto err_recovery_out;
-+	}
-+	fw_health->polling_dsecs = le32_to_cpu(resp->driver_polling_freq);
-+	fw_health->master_func_wait_dsecs =
-+		le32_to_cpu(resp->master_func_wait_period);
-+	fw_health->normal_func_wait_dsecs =
-+		le32_to_cpu(resp->normal_func_wait_period);
-+	fw_health->post_reset_wait_dsecs =
-+		le32_to_cpu(resp->master_func_wait_period_after_reset);
-+	fw_health->post_reset_max_wait_dsecs =
-+		le32_to_cpu(resp->max_bailout_time_after_reset);
-+	fw_health->regs[BNXT_FW_HEALTH_REG] =
-+		le32_to_cpu(resp->fw_health_status_reg);
-+	fw_health->regs[BNXT_FW_HEARTBEAT_REG] =
-+		le32_to_cpu(resp->fw_heartbeat_reg);
-+	fw_health->regs[BNXT_FW_RESET_CNT_REG] =
-+		le32_to_cpu(resp->fw_reset_cnt_reg);
-+	fw_health->regs[BNXT_FW_RESET_INPROG_REG] =
-+		le32_to_cpu(resp->reset_inprogress_reg);
-+	fw_health->fw_reset_inprog_reg_mask =
-+		le32_to_cpu(resp->reset_inprogress_reg_mask);
-+	fw_health->fw_reset_seq_cnt = resp->reg_array_cnt;
-+	if (fw_health->fw_reset_seq_cnt >= 16) {
-+		rc = -EINVAL;
-+		goto err_recovery_out;
-+	}
-+	for (i = 0; i < fw_health->fw_reset_seq_cnt; i++) {
-+		fw_health->fw_reset_seq_regs[i] =
-+			le32_to_cpu(resp->reset_reg[i]);
-+		fw_health->fw_reset_seq_vals[i] =
-+			le32_to_cpu(resp->reset_reg_val[i]);
-+		fw_health->fw_reset_seq_delay_msec[i] =
-+			resp->delay_after_reset[i];
-+	}
-+err_recovery_out:
-+	mutex_unlock(&bp->hwrm_cmd_lock);
-+	if (rc)
-+		bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
-+	return rc;
++	writel(reg_base, bp->bar0 + BNXT_GRCPF_REG_WINDOW_BASE_OUT +
++			 BNXT_FW_HEALTH_WIN_MAP_OFF);
++	return 0;
 +}
 +
- static int bnxt_hwrm_func_reset(struct bnxt *bp)
+ static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
  {
- 	struct hwrm_func_reset_input req = {0};
-@@ -10048,6 +10120,11 @@ static int bnxt_fw_init_one_p2(struct bnxt *bp)
- 		netdev_warn(bp->dev, "hwrm query adv flow mgnt failure rc: %d\n",
- 			    rc);
- 
-+	rc = bnxt_hwrm_error_recovery_qcfg(bp);
-+	if (rc)
-+		netdev_warn(bp->dev, "hwrm query error recovery failure rc: %d\n",
-+			    rc);
-+
- 	rc = bnxt_hwrm_func_drv_rgtr(bp);
+ 	struct hwrm_error_recovery_qcfg_output *resp = bp->hwrm_cmd_resp_addr;
+@@ -7001,6 +7028,8 @@ static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
+ 	}
+ err_recovery_out:
+ 	mutex_unlock(&bp->hwrm_cmd_lock);
++	if (!rc)
++		rc = bnxt_map_fw_health_regs(bp);
  	if (rc)
- 		return -ENODEV;
-@@ -11228,6 +11305,8 @@ static int bnxt_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
- 	bnxt_free_ctx_mem(bp);
- 	kfree(bp->ctx);
- 	bp->ctx = NULL;
-+	kfree(bp->fw_health);
-+	bp->fw_health = NULL;
- 	bnxt_cleanup_pci(bp);
- 
- init_err_free:
+ 		bp->fw_cap &= ~BNXT_FW_CAP_ERROR_RECOVERY;
+ 	return rc;
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index b515d83e..741ae68 100644
+index 741ae68..6053dfd 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1333,6 +1333,41 @@ struct bnxt_ctx_mem_info {
- 	struct bnxt_ctx_pg_info *tqm_mem[9];
- };
+@@ -1217,6 +1217,9 @@ struct bnxt_test_info {
+ #define BNXT_GRCPF_REG_KONG_COMM		0xA00
+ #define BNXT_GRCPF_REG_KONG_COMM_TRIGGER	0xB00
  
-+struct bnxt_fw_health {
-+	u32 flags;
-+	u32 polling_dsecs;
-+	u32 master_func_wait_dsecs;
-+	u32 normal_func_wait_dsecs;
-+	u32 post_reset_wait_dsecs;
-+	u32 post_reset_max_wait_dsecs;
-+	u32 regs[4];
-+	u32 mapped_regs[4];
-+#define BNXT_FW_HEALTH_REG		0
-+#define BNXT_FW_HEARTBEAT_REG		1
-+#define BNXT_FW_RESET_CNT_REG		2
-+#define BNXT_FW_RESET_INPROG_REG	3
-+	u32 fw_reset_inprog_reg_mask;
-+	u32 last_fw_heartbeat;
-+	u32 last_fw_reset_cnt;
-+	u8 enabled:1;
-+	u8 master:1;
-+	u8 tmr_multiplier;
-+	u8 tmr_counter;
-+	u8 fw_reset_seq_cnt;
-+	u32 fw_reset_seq_regs[16];
-+	u32 fw_reset_seq_vals[16];
-+	u32 fw_reset_seq_delay_msec[16];
-+};
++#define BNXT_GRC_BASE_MASK			0xfffff000
++#define BNXT_GRC_OFFSET_MASK			0x00000ffc
 +
-+#define BNXT_FW_HEALTH_REG_TYPE_MASK	3
-+#define BNXT_FW_HEALTH_REG_TYPE_CFG	0
-+#define BNXT_FW_HEALTH_REG_TYPE_GRC	1
-+#define BNXT_FW_HEALTH_REG_TYPE_BAR0	2
-+#define BNXT_FW_HEALTH_REG_TYPE_BAR1	3
-+
-+#define BNXT_FW_HEALTH_REG_TYPE(reg)	((reg) & BNXT_FW_HEALTH_REG_TYPE_MASK)
-+#define BNXT_FW_HEALTH_REG_OFF(reg)	((reg) & ~BNXT_FW_HEALTH_REG_TYPE_MASK)
+ struct bnxt_tc_flow_stats {
+ 	u64		packets;
+ 	u64		bytes;
+@@ -1368,6 +1371,9 @@ struct bnxt_fw_health {
+ #define BNXT_FW_HEALTH_REG_TYPE(reg)	((reg) & BNXT_FW_HEALTH_REG_TYPE_MASK)
+ #define BNXT_FW_HEALTH_REG_OFF(reg)	((reg) & ~BNXT_FW_HEALTH_REG_TYPE_MASK)
+ 
++#define BNXT_FW_HEALTH_WIN_BASE		0x3000
++#define BNXT_FW_HEALTH_WIN_MAP_OFF	8
 +
  struct bnxt {
  	void __iomem		*bar0;
  	void __iomem		*bar1;
-@@ -1581,6 +1616,7 @@ struct bnxt {
- 	#define BNXT_FW_CAP_KONG_MB_CHNL		0x00000080
- 	#define BNXT_FW_CAP_OVS_64BIT_HANDLE		0x00000400
- 	#define BNXT_FW_CAP_TRUSTED_VF			0x00000800
-+	#define BNXT_FW_CAP_ERROR_RECOVERY		0x00002000
- 	#define BNXT_FW_CAP_PKG_VER			0x00004000
- 	#define BNXT_FW_CAP_CFA_ADV_FLOW		0x00008000
- 	#define BNXT_FW_CAP_CFA_RFS_RING_TBL_IDX	0x00010000
-@@ -1666,6 +1702,8 @@ struct bnxt {
- #define BNXT_UPDATE_PHY_SP_EVENT	16
- #define BNXT_RING_COAL_NOW_SP_EVENT	17
- 
-+	struct bnxt_fw_health	*fw_health;
-+
- 	struct bnxt_hw_resc	hw_resc;
- 	struct bnxt_pf_info	pf;
- 	struct bnxt_ctx_mem_info	*ctx;
 -- 
 2.5.1
 
