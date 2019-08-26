@@ -2,87 +2,322 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F0D79C962
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:24:12 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 308D29C96B
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:29:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729535AbfHZGYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 02:24:08 -0400
-Received: from mail-yb1-f194.google.com ([209.85.219.194]:36400 "EHLO
-        mail-yb1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725806AbfHZGYI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:24:08 -0400
-Received: by mail-yb1-f194.google.com with SMTP id m9so6616320ybm.3
-        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 23:24:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PlQj5PBx8xMn441J3+FavvXyg9bHgoJljFyChzijmbo=;
-        b=AkmT9fxZT7kiiFXuGUknHNUKoS0cNUuuu1D1PLOdpmVzvisq25/nDEM2HHRwHLO+86
-         ON+kgUn+Lt+tXYluuc8oKefIyR29QJK+oFM+538KnfKkHQ0qCH5kux6Ut6f/8FaP/e03
-         CnfQ6gwxEwkhNywDn4E3wOSkB64YjjiwPoVr4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PlQj5PBx8xMn441J3+FavvXyg9bHgoJljFyChzijmbo=;
-        b=Et9nIeKCSdfYtnDE0s3+7TnmU5QOddCgkeI+U1U9jaZNZ2AB2598fBtz0LvmA+ifg9
-         XncmQRyoBkzMlV/BcsazdJ91ZEldn7T72KGfLP4j1V+mvmItxnI1lI6uACVu4XU8ng+A
-         iumHB2CwoHMp/i3yDed3uM2gFJSedCpTgUcG+mXzMKuUY+AC0Jn0/OhvcS8g6gdjOPRB
-         KfWnBwXXvEXuvQeEYPhU8NJtBgbcOn3N872CKRVVPNFnBnYdp2lyK5NpNyntBktEF+gr
-         dTSXpKJfV191be1YcbxAST6X+vs6fs8eXbXh/j22Yp6fj9UzLNP4srLB33g6GnaBqMmm
-         8kpg==
-X-Gm-Message-State: APjAAAVqTjGQ8Je3nT516QhPHItPvVt0ttILKOJoRgPuh6Kf4w/VITPJ
-        o/i9AVebUxZrzD2FMn9EWbNO76GDJ+pZQ/4ss/UKgA==
-X-Google-Smtp-Source: APXvYqxjdcvz2m4TxLOhsZDOCcNEBJQreGO0EfyKgMj+M23MQQPrvm4k+lH5T1+S/iUIFaVAcZEAkGSkOQ4THhdaYWQ=
-X-Received: by 2002:a25:3557:: with SMTP id c84mr11581955yba.298.1566800647671;
- Sun, 25 Aug 2019 23:24:07 -0700 (PDT)
-MIME-Version: 1.0
-References: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
- <1566791705-20473-6-git-send-email-michael.chan@broadcom.com> <20190825.224913.1760774642952210371.davem@davemloft.net>
-In-Reply-To: <20190825.224913.1760774642952210371.davem@davemloft.net>
-From:   Michael Chan <michael.chan@broadcom.com>
-Date:   Sun, 25 Aug 2019 23:23:56 -0700
-Message-ID: <CACKFLi=j=zzUnWS2_Bf8iW_q==AR9rkQZNo90RJc8zMjwoaDxA@mail.gmail.com>
-Subject: Re: [PATCH net-next 05/14] bnxt_en: Discover firmware error recovery capabilities.
-To:     David Miller <davem@davemloft.net>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Vasundhara Volam <vasundhara-v.volam@broadcom.com>,
-        Jiri Pirko <jiri@mellanox.com>, Ray Jui <ray.jui@broadcom.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1729551AbfHZG3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 02:29:04 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:59020 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729175AbfHZG3E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:29:04 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 464A715249283;
+        Sun, 25 Aug 2019 23:29:03 -0700 (PDT)
+Date:   Sun, 25 Aug 2019 23:29:02 -0700 (PDT)
+Message-Id: <20190825.232902.493461685673378789.davem@davemloft.net>
+To:     torvalds@linux-foundation.org
+CC:     akpm@linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT] Networking
+From:   David Miller <davem@davemloft.net>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 25 Aug 2019 23:29:03 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Aug 25, 2019 at 10:49 PM David Miller <davem@davemloft.net> wrote:
->
-> From: Michael Chan <michael.chan@broadcom.com>
-> Date: Sun, 25 Aug 2019 23:54:56 -0400
->
-> > +static int bnxt_hwrm_error_recovery_qcfg(struct bnxt *bp)
-> > +{
-> > +     struct hwrm_error_recovery_qcfg_output *resp = bp->hwrm_cmd_resp_addr;
-> > +     struct bnxt_fw_health *fw_health = bp->fw_health;
-> > +     struct hwrm_error_recovery_qcfg_input req = {0};
-> > +     int rc, i;
-> > +
-> > +     if (!(bp->fw_cap & BNXT_FW_CAP_ERROR_RECOVERY))
-> > +             return 0;
-> > +
-> > +     bnxt_hwrm_cmd_hdr_init(bp, &req, HWRM_ERROR_RECOVERY_QCFG, -1, -1);
-> > +     mutex_lock(&bp->hwrm_cmd_lock);
-> > +     rc = _hwrm_send_message(bp, &req, sizeof(req), HWRM_CMD_TIMEOUT);
-> > +     if (rc) {
-> > +             rc = -EOPNOTSUPP;
-> > +             goto err_recovery_out;
-> > +     }
->
-> How is this logically an unsupported operation if you're guarding it's use
-> with an appropriate capability check?
 
-The BNXT_FW_CAP_ERROR_RECOVERY flag says that error recovery should be
-supported, but if the firmware call to get the recovery parameters
-fails, we return -EOPNOTSUPP to let the caller know that error
-recovery cannot be supported.  Again, I will try to clean up the error
-codes in v2.
+1) Use 32-bit index for tails calls in s390 bpf JIT, from Ilya Leoshkevich.
+
+2) Fix missed EPOLLOUT events in TCP, from Eric Dumazet.  Same fix for SMC
+   from Jason Baron.
+
+3) ipv6_mc_may_pull() should return 0 for malformed packets, not -EINVAL.
+   From Stefano Brivio.
+
+4) Don't forget to unpin umem xdp pages in error path of
+   xdp_umem_reg().  From Ivan Khoronzhuk.
+
+5) Fix sta object leak in mac80211, from Johannes Berg.
+
+6) Fix regression by not configuring PHYLINK on CPU port of bcm_sf2
+   switches.  From Florian Fainelli.
+
+7) Revert DMA sync removal from r8169 which was causing regressions on some
+   MIPS Loongson platforms.  From Heiner Kallweit.
+
+8) Use after free in flow dissector, from Jakub Sitnicki.
+
+9) Fix NULL derefs of net devices during ICMP processing across collect_md
+   tunnels, from Hangbin Liu.
+
+10) proto_register() memory leaks, from Zhang Lin.
+
+11) Set NLM_F_MULTI flag in multipart netlink messages consistently, from
+    John Fastabend.
+
+Please pull, thanks a lot!
+
+The following changes since commit 06821504fd47a5e5b641aeeb638a0ae10a216ef8:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2019-08-19 10:00:01 -0700)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git 
+
+for you to fetch changes up to f53a7ad189594a112167efaf17ea8d0242b5ac00:
+
+  r8152: Set memory to all 0xFFs on failed reg reads (2019-08-25 19:52:59 -0700)
+
+----------------------------------------------------------------
+Alexander Wetzel (1):
+      cfg80211: Fix Extended Key ID key install checks
+
+Alexei Starovoitov (1):
+      bpf: fix precision tracking in presence of bpf2bpf calls
+
+Alexey Kodanev (1):
+      ipv4: mpls: fix mpls_xmit for iptunnel
+
+Anders Roxell (2):
+      selftests/bpf: add config fragment BPF_JIT
+      selftests/bpf: install files test_xdp_vlan.sh
+
+Andrew Lunn (1):
+      MAINTAINERS: Add phylink keyword to SFF/SFP/SFP+ MODULE SUPPORT
+
+Antoine Tenart (1):
+      net: cpsw: fix NULL pointer exception in the probe error path
+
+Christophe JAILLET (1):
+      Kconfig: Fix the reference to the IDT77105 Phy driver in the description of ATM_NICSTAR_USE_IDT77105
+
+Colin Ian King (1):
+      net: ieee802154: remove redundant assignment to rc
+
+Dan Carpenter (1):
+      gve: Copy and paste bug in gve_get_stats()
+
+Daniel Borkmann (1):
+      bpf: fix use after free in prog symbol exposure
+
+David Ahern (1):
+      nexthop: Fix nexthop_num_path for blackhole nexthops
+
+David S. Miller (8):
+      Merge git://git.kernel.org/.../pablo/nf
+      Merge tag 'mac80211-for-davem-2019-08-21' of git://git.kernel.org/.../jberg/mac80211
+      Merge tag 'batadv-net-for-davem-20190821' of git://git.open-mesh.org/linux-merge
+      Merge tag 'wireless-drivers-for-davem-2019-08-21' of git://git.kernel.org/.../kvalo/wireless-drivers
+      Merge git://git.kernel.org/.../bpf/bpf
+      Merge branch 'ieee802154-for-davem-2019-08-24' of git://git.kernel.org/.../sschmidt/wpan
+      Merge branch 'collect_md-mode-dev-null'
+      Merge tag 'mlx5-fixes-2019-08-22' of git://git.kernel.org/.../saeed/linux
+
+Denis Efremov (2):
+      MAINTAINERS: Remove IP MASQUERADING record
+      MAINTAINERS: net_failover: Fix typo in a filepath
+
+Emmanuel Grumbach (1):
+      iwlwifi: pcie: fix the byte count table format for 22560 devices
+
+Eran Ben Elisha (2):
+      net/mlx5e: Add num bytes metadata to WQE info
+      net/mlx5e: Remove ethernet segment from dump WQE
+
+Eric Dumazet (2):
+      batman-adv: fix uninit-value in batadv_netlink_get_ifindex()
+      tcp: make sure EPOLLOUT wont be missed
+
+Florian Fainelli (1):
+      net: dsa: bcm_sf2: Do not configure PHYLINK on CPU port
+
+Hangbin Liu (3):
+      ipv6/addrconf: allow adding multicast addr if IFA_F_MCAUTOJOIN is set
+      ipv4/icmp: fix rt dst dev null pointer dereference
+      xfrm/xfrm_policy: fix dst dev null pointer dereference in collect_md mode
+
+Heiner Kallweit (1):
+      Revert "r8169: remove not needed call to dma_sync_single_for_device"
+
+Hodaszi, Robert (1):
+      Revert "cfg80211: fix processing world regdomain when non modular"
+
+Ilan Peer (1):
+      iwlwifi: mvm: Allow multicast data frames only when associated
+
+Ilya Leoshkevich (6):
+      s390/bpf: fix lcgr instruction encoding
+      s390/bpf: use 32-bit index for tail calls
+      selftests/bpf: fix "bind{4, 6} deny specific IP & port" on s390
+      selftests/bpf: fix test_cgroup_storage on s390
+      selftests/bpf: fix test_btf_dump with O=
+      bpf: allow narrow loads of some sk_reuseport_md fields with offset > 0
+
+Ivan Khoronzhuk (1):
+      xdp: unpin xdp umem pages in error path
+
+Jakub Sitnicki (1):
+      flow_dissector: Fix potential use-after-free on BPF_PROG_DETACH
+
+Jason Baron (1):
+      net/smc: make sure EPOLLOUT is raised
+
+Johannes Berg (1):
+      mac80211: fix possible sta leak
+
+John Fastabend (1):
+      net: route dump netlink NLM_F_MULTI flag missing
+
+Julian Wiedmann (1):
+      s390/qeth: reject oversized SNMP requests
+
+Juliana Rodrigueiro (1):
+      netfilter: xt_nfacct: Fix alignment mismatch in xt_nfacct_match_info
+
+Justin.Lee1@Dell.com (1):
+      net/ncsi: Fix the payload copying for the request coming from Netlink
+
+Li RongQing (2):
+      net: fix __ip_mc_inc_group usage
+      net: fix icmp_socket_deliver argument 2 input
+
+Luca Coelho (2):
+      iwlwifi: pcie: don't switch FW to qnj when ax201 is detected
+      iwlwifi: pcie: fix recognition of QuZ devices
+
+Masahiro Yamada (1):
+      netfilter: add include guard to nf_conntrack_h323_types.h
+
+Mike Rapoport (1):
+      trivial: netns: fix typo in 'struct net.passive' description
+
+Moshe Shemesh (2):
+      net/mlx5: Fix crdump chunks print
+      net/mlx5: Fix delay in fw fatal report handling due to fw report
+
+Pablo Neira Ayuso (1):
+      netfilter: nft_flow_offload: missing netlink attribute policy
+
+Prashant Malani (1):
+      r8152: Set memory to all 0xFFs on failed reg reads
+
+Quentin Monnet (1):
+      tools: bpftool: close prog FD before exit on showing a single program
+
+Sabrina Dubroca (1):
+      ipv6: propagate ipv6_add_dev's error returns out of ipv6_find_idev
+
+Stanislaw Gruszka (2):
+      mt76: mt76x0u: do not reset radio on resume
+      rt2x00: clear IV's on start to fix AP mode regression
+
+Stefano Brivio (1):
+      ipv6: Fix return value of ipv6_mc_may_pull() for malformed packets
+
+Terry S. Duncan (1):
+      net/ncsi: Ensure 32-bit boundary for data cksum
+
+Todd Seidelmann (1):
+      netfilter: ebtables: Fix argument order to ADD_COUNTER
+
+Vlad Buslov (1):
+      nfp: flower: verify that block cb is not busy before binding
+
+Wenwen Wang (1):
+      qed: Add cleanup in qed_slowpath_start()
+
+Yangbo Lu (1):
+      ocelot_ace: fix action of trap
+
+Yi-Hung Wei (2):
+      openvswitch: Fix log message in ovs conntrack
+      openvswitch: Fix conntrack cache with timeout
+
+YueHaibing (2):
+      ieee802154: hwsim: Fix error handle path in hwsim_init_module
+      ieee802154: hwsim: unregister hw while hwsim_subscribe_all_others fails
+
+Zhu Yanjun (1):
+      net: rds: add service level support in rds-info
+
+zhanglin (1):
+      sock: fix potential memory leak in proto_register()
+
+ MAINTAINERS                                                |  8 ++------
+ arch/s390/net/bpf_jit_comp.c                               | 12 +++++++-----
+ drivers/atm/Kconfig                                        |  2 +-
+ drivers/net/dsa/bcm_sf2.c                                  | 10 ++++++++--
+ drivers/net/ethernet/google/gve/gve_main.c                 |  2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en_accel/ktls_tx.c | 38 +++++++++++++++++---------------------
+ drivers/net/ethernet/mellanox/mlx5/core/health.c           | 22 ++++++++++++----------
+ drivers/net/ethernet/mscc/ocelot_ace.c                     |  2 +-
+ drivers/net/ethernet/netronome/nfp/flower/offload.c        |  7 +++++++
+ drivers/net/ethernet/qlogic/qed/qed_main.c                 |  4 +++-
+ drivers/net/ethernet/realtek/r8169_main.c                  |  1 +
+ drivers/net/ethernet/ti/cpsw.c                             |  2 +-
+ drivers/net/ieee802154/mac802154_hwsim.c                   |  8 +++++---
+ drivers/net/usb/r8152.c                                    |  5 ++++-
+ drivers/net/wireless/intel/iwlwifi/mvm/mac-ctxt.c          | 33 ++++++++++++++++++++++++++++++---
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c          | 10 ++++++++++
+ drivers/net/wireless/intel/iwlwifi/pcie/drv.c              | 17 +++++++++++++++++
+ drivers/net/wireless/intel/iwlwifi/pcie/trans.c            |  1 +
+ drivers/net/wireless/intel/iwlwifi/pcie/tx-gen2.c          | 20 +++++++++++++-------
+ drivers/net/wireless/mediatek/mt76/mt76x0/usb.c            |  8 ++++----
+ drivers/net/wireless/ralink/rt2x00/rt2800lib.c             |  9 +++++++++
+ drivers/net/wireless/ralink/rt2x00/rt2x00.h                |  1 +
+ drivers/net/wireless/ralink/rt2x00/rt2x00dev.c             | 13 ++++++++-----
+ drivers/s390/net/qeth_core_main.c                          |  4 ++++
+ include/linux/netfilter/nf_conntrack_h323_types.h          |  5 +++++
+ include/net/addrconf.h                                     |  2 +-
+ include/net/net_namespace.h                                |  2 +-
+ include/net/nexthop.h                                      |  6 ------
+ include/net/route.h                                        |  2 +-
+ include/uapi/linux/netfilter/xt_nfacct.h                   |  5 +++++
+ include/uapi/linux/rds.h                                   |  2 ++
+ kernel/bpf/syscall.c                                       | 30 ++++++++++++++++++------------
+ kernel/bpf/verifier.c                                      |  9 +++++----
+ net/batman-adv/netlink.c                                   |  2 +-
+ net/bridge/netfilter/ebtables.c                            |  8 ++++----
+ net/core/filter.c                                          |  8 ++++----
+ net/core/flow_dissector.c                                  |  2 +-
+ net/core/sock.c                                            | 31 +++++++++++++++++++++----------
+ net/core/stream.c                                          | 16 +++++++++-------
+ net/ieee802154/socket.c                                    |  2 +-
+ net/ipv4/fib_trie.c                                        |  2 +-
+ net/ipv4/icmp.c                                            | 10 ++++++++--
+ net/ipv4/igmp.c                                            |  4 ++--
+ net/ipv4/route.c                                           | 17 ++++++++++-------
+ net/ipv6/addrconf.c                                        | 19 ++++++++++---------
+ net/mac80211/cfg.c                                         |  9 +++++----
+ net/mpls/mpls_iptunnel.c                                   |  8 ++++----
+ net/ncsi/ncsi-cmd.c                                        | 13 ++++++++++---
+ net/ncsi/ncsi-rsp.c                                        |  9 ++++++---
+ net/netfilter/nft_flow_offload.c                           |  6 ++++++
+ net/netfilter/xt_nfacct.c                                  | 36 +++++++++++++++++++++++++-----------
+ net/openvswitch/conntrack.c                                | 15 ++++++++++++++-
+ net/rds/ib.c                                               | 16 ++++++++++------
+ net/rds/ib.h                                               |  1 +
+ net/rds/ib_cm.c                                            |  3 +++
+ net/rds/rdma_transport.c                                   | 10 ++++++++--
+ net/smc/smc_tx.c                                           |  6 ++----
+ net/wireless/reg.c                                         |  2 +-
+ net/wireless/util.c                                        | 23 ++++++++++++++---------
+ net/xdp/xdp_umem.c                                         |  4 +++-
+ net/xfrm/xfrm_policy.c                                     |  4 ++--
+ tools/bpf/bpftool/prog.c                                   |  4 +++-
+ tools/testing/selftests/bpf/Makefile                       |  6 +++++-
+ tools/testing/selftests/bpf/config                         |  1 +
+ tools/testing/selftests/bpf/test_btf_dump.c                |  7 +++++++
+ tools/testing/selftests/bpf/test_cgroup_storage.c          |  6 +++---
+ tools/testing/selftests/bpf/test_sock.c                    |  7 +++++--
+ 67 files changed, 415 insertions(+), 204 deletions(-)
