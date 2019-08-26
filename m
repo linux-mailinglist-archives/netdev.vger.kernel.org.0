@@ -2,29 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D1709D0EE
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 15:45:42 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 93ABB9D0E8
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 15:45:36 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732105AbfHZNp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 09:45:26 -0400
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52959 "EHLO
+        id S1732150AbfHZNpd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 09:45:33 -0400
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52957 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1732054AbfHZNpZ (ORCPT
+        with ESMTP id S1732070AbfHZNpZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 09:45:25 -0400
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from vladbu@mellanox.com)
-        with ESMTPS (AES256-SHA encrypted); 26 Aug 2019 16:45:14 +0300
+        with ESMTPS (AES256-SHA encrypted); 26 Aug 2019 16:45:15 +0300
 Received: from reg-r-vrt-018-180.mtr.labs.mlnx. (reg-r-vrt-018-180.mtr.labs.mlnx [10.215.1.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7QDjEFO000366;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id x7QDjEFP000366;
         Mon, 26 Aug 2019 16:45:14 +0300
 From:   Vlad Buslov <vladbu@mellanox.com>
 To:     netdev@vger.kernel.org
 Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
         davem@davemloft.net, jakub.kicinski@netronome.com,
         pablo@netfilter.org, Vlad Buslov <vladbu@mellanox.com>
-Subject: [PATCH net-next v3 00/10] Refactor cls hardware offload API to support rtnl-independent drivers
-Date:   Mon, 26 Aug 2019 16:44:56 +0300
-Message-Id: <20190826134506.9705-1-vladbu@mellanox.com>
+Subject: [PATCH net-next v3 01/10] net: sched: protect block offload-related fields with rw_semaphore
+Date:   Mon, 26 Aug 2019 16:44:57 +0300
+Message-Id: <20190826134506.9705-2-vladbu@mellanox.com>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190826134506.9705-1-vladbu@mellanox.com>
+References: <20190826134506.9705-1-vladbu@mellanox.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
@@ -32,90 +34,198 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, all cls API hardware offloads driver callbacks require caller
-to hold rtnl lock when calling them. This patch set introduces new API
-that allows drivers to register callbacks that are not dependent on rtnl
-lock and unlocked classifiers to offload filters without obtaining rtnl
-lock first, which is intended to allow offloading tc rules in parallel.
+In order to remove dependency on rtnl lock, extend tcf_block with 'cb_lock'
+rwsem and use it to protect flow_block->cb_list and related counters from
+concurrent modification. The lock is taken in read mode for read-only
+traversal of cb_list in tc_setup_cb_call() and write mode in all other
+cases. This approach ensures that:
 
-Recently, new rtnl registration flag RTNL_FLAG_DOIT_UNLOCKED was added.
-TC rule update handlers (RTM_NEWTFILTER, RTM_DELTFILTER, etc.) are
-already registered with this flag and only take rtnl lock when qdisc or
-classifier requires it. Classifiers can indicate that their ops
-callbacks don't require caller to hold rtnl lock by setting the
-TCF_PROTO_OPS_DOIT_UNLOCKED flag. Unlocked implementation of flower
-classifier is now upstreamed. However, this implementation still obtains
-rtnl lock before calling hardware offloads API.
+- cb_list is not changed concurrently while filters is being offloaded on
+  block.
 
-Implement following cls API changes:
+- block->nooffloaddevcnt is checked while holding the lock in read mode,
+  but is only changed by bind/unbind code when holding the cb_lock in write
+  mode to prevent concurrent modification.
 
-- Introduce new "unlocked_driver_cb" flag to struct flow_block_offload
-  to allow registering and unregistering block hardware offload
-  callbacks that do not require caller to hold rtnl lock. Drivers that
-  doesn't require users of its tc offload callbacks to hold rtnl lock
-  sets the flag to true on block bind/unbind. Internally tcf_block is
-  extended with additional lockeddevcnt counter that is used to count
-  number of devices that require rtnl lock that block is bound to. When
-  this counter is zero, tc_setup_cb_*() functions execute callbacks
-  without obtaining rtnl lock.
+Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
+---
 
-- Extend cls API single hardware rule update tc_setup_cb_call() function
-  with tc_setup_cb_add(), tc_setup_cb_replace(), tc_setup_cb_destroy()
-  and tc_setup_cb_reoffload() functions. These new APIs are needed to
-  move management of block offload counter, filter in hardware counter
-  and flag from classifier implementations to cls API, which is now
-  responsible for managing them in concurrency-safe manner. Access to
-  cb_list from callback execution code is synchronized by obtaining new
-  'cb_lock' rw_semaphore in read mode, which allows executing callbacks
-  in parallel, but excludes any modifications of data from
-  register/unregister code. tcf_block offloads counter type is changed
-  to atomic integer to allow updating the counter concurrently.
+Notes:
+    Changes from V1 to V2:
+      - Rename 'errout' label to 'err_unlock'.
 
-- Extend classifier ops with new ops->hw_add() and ops->hw_del()
-  callbacks which are used to notify unlocked classifiers when filter is
-  successfully added or deleted to hardware without releasing cb_lock.
-  This is necessary to update classifier state atomically with callback
-  list traversal and updating of all relevant counters and allows
-  unlocked classifiers to synchronize with concurrent reoffload without
-  requiring any changes to driver callback API implementations.
+ include/net/sch_generic.h |  2 ++
+ net/sched/cls_api.c       | 45 +++++++++++++++++++++++++++++++--------
+ 2 files changed, 38 insertions(+), 9 deletions(-)
 
-New tc flow_action infrastructure is also modified to allow its user to
-execute without rtnl lock protection. Function tc_setup_flow_action() is
-modified to conditionally obtain rtnl lock before accessing action
-state. Action data that is accessed by reference is either copied or
-reference counted to prevent concurrent action overwrite from
-deallocating it. New function tc_cleanup_flow_action() is introduced to
-cleanup/release all such data obtained by tc_setup_flow_action().
-
-Flower classifier (only unlocked classifier at the moment) is modified
-to use new cls hardware offloads API and no longer obtains rtnl lock
-before calling it.
-
-Vlad Buslov (10):
-  net: sched: protect block offload-related fields with rw_semaphore
-  net: sched: change tcf block offload counter type to atomic_t
-  net: sched: refactor block offloads counter usage
-  net: sched: notify classifier on successful offload add/delete
-  net: sched: add API for registering unlocked offload block callbacks
-  net: sched: conditionally obtain rtnl lock in cls hw offloads API
-  net: sched: take rtnl lock in tc_setup_flow_action()
-  net: sched: take reference to action dev before calling offloads
-  net: sched: copy tunnel info when setting flow_action entry->tunnel
-  net: sched: flower: don't take rtnl lock for cls hw offloads API
-
- .../net/ethernet/mellanox/mlx5/core/en_main.c |   2 +
- .../net/ethernet/mellanox/mlx5/core/en_rep.c  |   3 +
- include/net/flow_offload.h                    |   1 +
- include/net/pkt_cls.h                         |  21 +-
- include/net/sch_generic.h                     |  41 +--
- include/net/tc_act/tc_tunnel_key.h            |  17 +
- net/sched/cls_api.c                           | 343 +++++++++++++++++-
- net/sched/cls_bpf.c                           |  38 +-
- net/sched/cls_flower.c                        | 124 +++----
- net/sched/cls_matchall.c                      |  31 +-
- net/sched/cls_u32.c                           |  29 +-
- 11 files changed, 478 insertions(+), 172 deletions(-)
-
+diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
+index d9f359af0b93..a3eaf5f9d28f 100644
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -13,6 +13,7 @@
+ #include <linux/refcount.h>
+ #include <linux/workqueue.h>
+ #include <linux/mutex.h>
++#include <linux/rwsem.h>
+ #include <net/gen_stats.h>
+ #include <net/rtnetlink.h>
+ #include <net/flow_offload.h>
+@@ -396,6 +397,7 @@ struct tcf_block {
+ 	refcount_t refcnt;
+ 	struct net *net;
+ 	struct Qdisc *q;
++	struct rw_semaphore cb_lock; /* protects cb_list and offload counters */
+ 	struct flow_block flow_block;
+ 	struct list_head owner_list;
+ 	bool keep_dst;
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index e0d8b456e9f5..959b7ca1ca02 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -568,9 +568,11 @@ static void tc_indr_block_ing_cmd(struct net_device *dev,
+ 
+ 	bo.block = &block->flow_block;
+ 
++	down_write(&block->cb_lock);
+ 	cb(dev, cb_priv, TC_SETUP_BLOCK, &bo);
+ 
+ 	tcf_block_setup(block, &bo);
++	up_write(&block->cb_lock);
+ }
+ 
+ static struct tcf_block *tc_dev_ingress_block(struct net_device *dev)
+@@ -661,6 +663,7 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+ 	struct net_device *dev = q->dev_queue->dev;
+ 	int err;
+ 
++	down_write(&block->cb_lock);
+ 	if (!dev->netdev_ops->ndo_setup_tc)
+ 		goto no_offload_dev_inc;
+ 
+@@ -669,24 +672,31 @@ static int tcf_block_offload_bind(struct tcf_block *block, struct Qdisc *q,
+ 	 */
+ 	if (!tc_can_offload(dev) && tcf_block_offload_in_use(block)) {
+ 		NL_SET_ERR_MSG(extack, "Bind to offloaded block failed as dev has offload disabled");
+-		return -EOPNOTSUPP;
++		err = -EOPNOTSUPP;
++		goto err_unlock;
+ 	}
+ 
+ 	err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_BIND, extack);
+ 	if (err == -EOPNOTSUPP)
+ 		goto no_offload_dev_inc;
+ 	if (err)
+-		return err;
++		goto err_unlock;
+ 
+ 	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
++	up_write(&block->cb_lock);
+ 	return 0;
+ 
+ no_offload_dev_inc:
+-	if (tcf_block_offload_in_use(block))
+-		return -EOPNOTSUPP;
++	if (tcf_block_offload_in_use(block)) {
++		err = -EOPNOTSUPP;
++		goto err_unlock;
++	}
++	err = 0;
+ 	block->nooffloaddevcnt++;
+ 	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_BIND, extack);
+-	return 0;
++err_unlock:
++	up_write(&block->cb_lock);
++	return err;
+ }
+ 
+ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+@@ -695,6 +705,7 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+ 	struct net_device *dev = q->dev_queue->dev;
+ 	int err;
+ 
++	down_write(&block->cb_lock);
+ 	tc_indr_block_call(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+ 
+ 	if (!dev->netdev_ops->ndo_setup_tc)
+@@ -702,10 +713,12 @@ static void tcf_block_offload_unbind(struct tcf_block *block, struct Qdisc *q,
+ 	err = tcf_block_offload_cmd(block, dev, ei, FLOW_BLOCK_UNBIND, NULL);
+ 	if (err == -EOPNOTSUPP)
+ 		goto no_offload_dev_dec;
++	up_write(&block->cb_lock);
+ 	return;
+ 
+ no_offload_dev_dec:
+ 	WARN_ON(block->nooffloaddevcnt-- == 0);
++	up_write(&block->cb_lock);
+ }
+ 
+ static int
+@@ -820,6 +833,7 @@ static struct tcf_block *tcf_block_create(struct net *net, struct Qdisc *q,
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+ 	mutex_init(&block->lock);
++	init_rwsem(&block->cb_lock);
+ 	flow_block_init(&block->flow_block);
+ 	INIT_LIST_HEAD(&block->chain_list);
+ 	INIT_LIST_HEAD(&block->owner_list);
+@@ -1355,6 +1369,8 @@ tcf_block_playback_offloads(struct tcf_block *block, flow_setup_cb_t *cb,
+ 	struct tcf_proto *tp, *tp_prev;
+ 	int err;
+ 
++	lockdep_assert_held(&block->cb_lock);
++
+ 	for (chain = __tcf_get_next_chain(block, NULL);
+ 	     chain;
+ 	     chain_prev = chain,
+@@ -1393,6 +1409,8 @@ static int tcf_block_bind(struct tcf_block *block,
+ 	struct flow_block_cb *block_cb, *next;
+ 	int err, i = 0;
+ 
++	lockdep_assert_held(&block->cb_lock);
++
+ 	list_for_each_entry(block_cb, &bo->cb_list, list) {
+ 		err = tcf_block_playback_offloads(block, block_cb->cb,
+ 						  block_cb->cb_priv, true,
+@@ -1427,6 +1445,8 @@ static void tcf_block_unbind(struct tcf_block *block,
+ {
+ 	struct flow_block_cb *block_cb, *next;
+ 
++	lockdep_assert_held(&block->cb_lock);
++
+ 	list_for_each_entry_safe(block_cb, next, &bo->cb_list, list) {
+ 		tcf_block_playback_offloads(block, block_cb->cb,
+ 					    block_cb->cb_priv, false,
+@@ -2987,19 +3007,26 @@ int tc_setup_cb_call(struct tcf_block *block, enum tc_setup_type type,
+ 	int ok_count = 0;
+ 	int err;
+ 
++	down_read(&block->cb_lock);
+ 	/* Make sure all netdevs sharing this block are offload-capable. */
+-	if (block->nooffloaddevcnt && err_stop)
+-		return -EOPNOTSUPP;
++	if (block->nooffloaddevcnt && err_stop) {
++		ok_count = -EOPNOTSUPP;
++		goto err_unlock;
++	}
+ 
+ 	list_for_each_entry(block_cb, &block->flow_block.cb_list, list) {
+ 		err = block_cb->cb(type, type_data, block_cb->cb_priv);
+ 		if (err) {
+-			if (err_stop)
+-				return err;
++			if (err_stop) {
++				ok_count = err;
++				goto err_unlock;
++			}
+ 		} else {
+ 			ok_count++;
+ 		}
+ 	}
++err_unlock:
++	up_read(&block->cb_lock);
+ 	return ok_count;
+ }
+ EXPORT_SYMBOL(tc_setup_cb_call);
 -- 
 2.21.0
 
