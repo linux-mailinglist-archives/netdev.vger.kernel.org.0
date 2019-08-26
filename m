@@ -2,70 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id CD2699C8B1
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 07:33:43 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 7922E9C8B3
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 07:36:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727207AbfHZFdm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 01:33:42 -0400
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:36876 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726106AbfHZFdm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 01:33:42 -0400
-Received: by mail-qk1-f194.google.com with SMTP id s14so13170785qkm.4;
-        Sun, 25 Aug 2019 22:33:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GhOFBbgl6P8q0s+wLsiNkGdReLCBCFDR8bQudp8LXo0=;
-        b=ApM6RTYD0fWpWEt11GrxnqMSqUyIIBIc/Cq9v8pAuMVwyOob+gsIRnTT6SkmL0Nz7b
-         4kSn2SdzxoiR/iQ4p9S/1Q0FUfwSUUr0jW9bfJivakgtkV48kJ+tCzgnsKWiD4xfWigf
-         TRvxuVVGnbrUoHKLxZVqSXjYRg90LTNMW91OCIHyx+YRQrqDxD/7wFYIU30Yz5YYe1ya
-         5soNsWpop9PZ48MxKxvUQJHkZQG6YRbANHCZpAD79g3T1Q1W4uf0PAsTrpuZFYOJErOa
-         sqUfs1dSHabxAAxQtZtlDjTsz1iGsPHhxfjLAfPf8MqNlNaKYTaoNxCXcQMjcClTCg9a
-         C1pQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GhOFBbgl6P8q0s+wLsiNkGdReLCBCFDR8bQudp8LXo0=;
-        b=n3vUdrWjNpRXkLC6KAoTOiDz1aKCiJvENsmxYEv7k1sy2p0TnHw1z3Doab+4yJjnb4
-         sRoyCbdVlZ017Rr3tSfvp0PZ8K2oB3RfIVzR4rnrX0MPK9xz0gNoX4KFRzUNAjBFML4Z
-         MtFw/Z0plbwTtbrjGEwrnbUCr/pYyJdLN4Xk3O4x3+3uaQP8xqRz6QdF/k07Yz3a0F78
-         h9Asf/wXprUZJy4dbe8s+INqwUcIBPr98OIGypXVGJ0y2RkgAXTQmZnU+wkWpgj3Lwsb
-         Wn+mUQYDrVMbStNbR2nnrctEyD7hC4CW8dFWiJtbz5ahFCd3YSsf7Uol/nD3eJXpP6PE
-         3u6Q==
-X-Gm-Message-State: APjAAAWN6XpUotlsVtqsLUFLjybTZQcgopG8Wpl3rC/gzkudrPJ4ZBJr
-        NbQjO1ggRbrez2dYELzlo8Fg6Ib1261dRZ30du0=
-X-Google-Smtp-Source: APXvYqzics8yC4CKYC/l/Mur3qoh33FSvSB3tSSsA0JhZ5NA1kWsVHr72inJYa6enXJp6+ei3wr2nJSktPwFkZJxJ3E=
-X-Received: by 2002:ae9:e8d6:: with SMTP id a205mr13808102qkg.241.1566797621511;
- Sun, 25 Aug 2019 22:33:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190823055215.2658669-1-ast@kernel.org> <20190823055215.2658669-5-ast@kernel.org>
-In-Reply-To: <20190823055215.2658669-5-ast@kernel.org>
-From:   Song Liu <liu.song.a23@gmail.com>
-Date:   Sun, 25 Aug 2019 22:33:30 -0700
-Message-ID: <CAPhsuW4KOsW4aharugR+665YCcM5G1b5t9xL+ZeKo9UjUmPYSg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/4] selftests/bpf: add precision tracking test
-To:     Alexei Starovoitov <ast@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Kernel Team <kernel-team@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S1725446AbfHZFgF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 01:36:05 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:58646 "EHLO
+        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727956AbfHZFgE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 01:36:04 -0400
+Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
+        (using TLSv1 with cipher AES256-SHA (256/256 bits))
+        (Client did not present a certificate)
+        (Authenticated sender: davem-davemloft)
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id 4D142151397A0;
+        Sun, 25 Aug 2019 22:36:04 -0700 (PDT)
+Date:   Sun, 25 Aug 2019 22:36:03 -0700 (PDT)
+Message-Id: <20190825.223603.2113058192469260500.davem@davemloft.net>
+To:     michael.chan@broadcom.com
+Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com,
+        jiri@mellanox.com, ray.jui@broadcom.com
+Subject: Re: [PATCH net-next 03/14] bnxt_en: Refactor bnxt_sriov_enable().
+From:   David Miller <davem@davemloft.net>
+In-Reply-To: <1566791705-20473-4-git-send-email-michael.chan@broadcom.com>
+References: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
+        <1566791705-20473-4-git-send-email-michael.chan@broadcom.com>
+X-Mailer: Mew version 6.8 on Emacs 26.1
+Mime-Version: 1.0
+Content-Type: Text/Plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 25 Aug 2019 22:36:04 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Aug 23, 2019 at 3:00 AM Alexei Starovoitov <ast@kernel.org> wrote:
->
-> Copy-paste of existing test
-> "calls: cross frame pruning - liveness propagation"
-> but ran with different parentage chain heuristic
-> which stresses different path in precision tracking logic.
->
-> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+From: Michael Chan <michael.chan@broadcom.com>
+Date: Sun, 25 Aug 2019 23:54:54 -0400
 
-Acked-by: Song Liu <songliubraving@fb.com>
->
+> @@ -687,6 +687,32 @@ static int bnxt_func_cfg(struct bnxt *bp, int num_vfs)
+>  		return bnxt_hwrm_func_cfg(bp, num_vfs);
+>  }
+>  
+> +int bnxt_cfg_hw_sriov(struct bnxt *bp, int *num_vfs)
+> +{
+> +	int rc;
+> +
+> +	/* Register buffers for VFs */
+> +	rc = bnxt_hwrm_func_buf_rgtr(bp);
+> +	if (rc)
+> +		return rc;
+> +
+> +	/* Reserve resources for VFs */
+> +	rc = bnxt_func_cfg(bp, *num_vfs);
+> +	if (rc != *num_vfs) {
+
+I notice that these two operations are reversed here from where they were in the
+bnxt_sriov_enable() function.  Does the BUF_RGTR operation have to be undone if
+the bnxt_func_cfg() fails?
+
+When it's not a straight extraction of code into a helper function one really
+should do one of two things in my opinion:
+
+1) Explain the differences in the commit message.
+
+2) Do a straight extration in one commit, change the ordering in another.
