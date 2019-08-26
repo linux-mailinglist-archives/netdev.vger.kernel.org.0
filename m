@@ -2,72 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D2329D7D5
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 22:56:16 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD35D9D7E4
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 23:04:44 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726952AbfHZUzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 16:55:53 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:38092 "EHLO
+        id S1727633AbfHZVEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 17:04:40 -0400
+Received: from shards.monkeyblade.net ([23.128.96.9]:38174 "EHLO
         shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725806AbfHZUzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 16:55:53 -0400
+        with ESMTP id S1726730AbfHZVEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 17:04:40 -0400
 Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
         (using TLSv1 with cipher AES256-SHA (256/256 bits))
         (Client did not present a certificate)
         (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9D3F014FC802C;
-        Mon, 26 Aug 2019 13:55:52 -0700 (PDT)
-Date:   Mon, 26 Aug 2019 13:55:49 -0700 (PDT)
-Message-Id: <20190826.135549.1075785443210666224.davem@davemloft.net>
-To:     hayeswang@realtek.com
-Cc:     jslaby@suse.cz, netdev@vger.kernel.org, nic_swsd@realtek.com,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net v2 1/2] Revert "r8152: napi hangup fix after
- disconnect"
+        by shards.monkeyblade.net (Postfix) with ESMTPSA id CB1E414FD319F;
+        Mon, 26 Aug 2019 14:04:37 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 14:04:37 -0700 (PDT)
+Message-Id: <20190826.140437.926589005439320930.davem@davemloft.net>
+To:     andrew@lunn.ch
+Cc:     marek.behun@nic.cz, netdev@vger.kernel.org,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com
+Subject: Re: [PATCH net-next v4 6/6] net: dsa: mv88e6xxx: fully support
+ SERDES on Topaz family
 From:   David Miller <davem@davemloft.net>
-In-Reply-To: <0835B3720019904CB8F7AA43166CEEB2F18D6733@RTITMBSVM03.realtek.com.tw>
-References: <1394712342-15778-318-Taiwan-albertk@realtek.com>
-        <1f707377-7b61-4ba1-62bf-f275d0360749@suse.cz>
-        <0835B3720019904CB8F7AA43166CEEB2F18D6733@RTITMBSVM03.realtek.com.tw>
+In-Reply-To: <20190826153830.GE2168@lunn.ch>
+References: <20190826122109.20660-1-marek.behun@nic.cz>
+        <20190826122109.20660-7-marek.behun@nic.cz>
+        <20190826153830.GE2168@lunn.ch>
 X-Mailer: Mew version 6.8 on Emacs 26.1
 Mime-Version: 1.0
 Content-Type: Text/Plain; charset=us-ascii
 Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 26 Aug 2019 13:55:52 -0700 (PDT)
+X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Mon, 26 Aug 2019 14:04:38 -0700 (PDT)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hayes Wang <hayeswang@realtek.com>
-Date: Mon, 26 Aug 2019 09:43:32 +0000
+From: Andrew Lunn <andrew@lunn.ch>
+Date: Mon, 26 Aug 2019 17:38:30 +0200
 
-> Jiri Slaby [mailto:jslaby@suse.cz]
->> Sent: Monday, August 26, 2019 4:55 PM
-> [...]
->> Could you clarify *why* it conflicts? And how is the problem fixed by
->> 0ee1f473496 avoided now?
+>> +static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
+>> +				    phy_interface_t mode, bool allow_over_2500,
+>> +				    bool make_cmode_writable)
 > 
-> In rtl8152_disconnect(), the flow would be as following.
+> I don't like these two parameters. The caller of this function can do
+> the check for allow_over_2500 and error out before calling this.
 > 
-> static void rtl8152_disconnect(struct usb_interface *intf)
-> {
-> 	...
-> 	- netif_napi_del(&tp->napi);
-> 	- unregister_netdev(tp->netdev);
-> 	   - rtl8152_close
-> 	      - napi_disable
-> 
-> Therefore you add a checking of RTL8152_UNPLUG to avoid
-> calling napi_disable() after netif_napi_del(). However,
-> after commit ffa9fec30ca0 ("r8152: set RTL8152_UNPLUG
-> only for real disconnection"), RTL8152_UNPLUG is not
-> always set when calling rtl8152_disconnect(). That is,
-> napi_disable() would be called after netif_napi_del(),
-> if RTL8152_UNPLUG is not set.
-> 
-> The best way is to avoid calling netif_napi_del() before
-> calling unregister_netdev(). And I has submitted such
-> patch following this one.
+> Is make_cmode_writable something that could be done once at probe and
+> then forgotten about? Or is it needed before every write? At least
+> move it into the specific port_set_cmode() that requires it.
 
-These details belong in the commit message, always.
+Please respin this series once these issues are sorted out.
+
+Thanks.
