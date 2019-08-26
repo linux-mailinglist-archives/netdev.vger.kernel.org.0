@@ -2,71 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F73C9D5FC
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 20:47:32 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id A41E49D606
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 20:53:31 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387396AbfHZSr2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 14:47:28 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:60506 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732007AbfHZSr2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 14:47:28 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=3SctyFfS3yLn1lHEdyI1Kmom1XhY5J/W6bf5Yp9jBk8=; b=NxdnwwNC6gy91psyhP3LpADnOt
-        KowX/CZGwKAahaI/D87i4FITICTVSiOGY4G928NklYtshAJ0hNMa5egvajC4/p6J7LWzi2Z6SyXZt
-        +m8PtTOvJ4r580w9m3M4V38H8PCmaYRpXfY3kWQ6W2RJ+oWiEmFjnkT7nuA/IVpq+2fs=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i2K1P-00067N-EL; Mon, 26 Aug 2019 20:47:19 +0200
-Date:   Mon, 26 Aug 2019 20:47:19 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Voon Weifeng <weifeng.voon@intel.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jose Abreu <joabreu@synopsys.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>
-Subject: Re: [PATCH v1 net-next] net: stmmac: Add support for MDIO interrupts
-Message-ID: <20190826184719.GF2168@lunn.ch>
-References: <1566870320-9825-1-git-send-email-weifeng.voon@intel.com>
+        id S1733268AbfHZSxa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 14:53:30 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:35952 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727559AbfHZSx3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 14:53:29 -0400
+Received: by mail-qk1-f195.google.com with SMTP id d23so14966875qko.3
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 11:53:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:message-id:from:to:cc:subject:in-reply-to:references
+         :mime-version:content-disposition:content-transfer-encoding;
+        bh=M0nFRbwfK/64CvWDt6Lou4CPoKP9MyxgliyZ669Ljow=;
+        b=mqZFfXpDRhQDkRyfuTYIRhHftitop2qNhYSc41KLmYdi/c7sz+8j/+33xLim68xU2k
+         EbKQ5yw+f6m8bKiuWkpRm8ECdJ5SkRqTO8/NYOJMWfv7b8SibPbV7dXJbulDr9FvWGzm
+         IttK6tpEEDaE9fnHJ+DbbQORmQA+iuwbZxSDGP55nSAJIziTwPjaGcWssWAzLgAzYjwR
+         pZxB0jRy55wdyxLayX1ciEeQfiYHCDierQc4aGn4pX5aNG5z8NtenUDcyEaFMyQAzyJU
+         RqWsYhVIq006IaCGCKApzIO+HLh9wjKEvqCXDKbH/0Mee8ogRhFlidteQCtYWNo9gCae
+         tJSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:message-id:from:to:cc:subject:in-reply-to
+         :references:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=M0nFRbwfK/64CvWDt6Lou4CPoKP9MyxgliyZ669Ljow=;
+        b=aHdxKNcKH6Afr884cl6JQD/nHJBb9PRoOq+Txv0T+CMla9IDQSlMRvgG1cRpguH0gi
+         2wAmO7EIx3CztWN7I9Ff1IOtxC80RCplROMyDnYqtp2UrDcFxrYL483uOEijTxhVSDLA
+         Kxjt6FYjYHPDvVr3izfTuy2LPqTAm/lE/cxjqL4NuoRkkE9RWZSxY4lHXHPSDbwQ8dR7
+         t9oYAfWG/k7aUvWUKjwEIhu++XyaSE0zd+iFfOq2FOQ7A7xCikrrOkYKv47ALakzGVJR
+         kjE8HGlW99gyz2mVuDf+Z1mdCRYcNwLVo4LpiIiG3AnZHxtd/O1rSeTx8lUJg/G8paRo
+         qvRg==
+X-Gm-Message-State: APjAAAWcEuhEIKYjiKvWGfw/uxvDIOcuLXEwglf/q16k4zTAR/UzNnRn
+        C+6AZ44FR9SGjfzmR8NpPbg=
+X-Google-Smtp-Source: APXvYqyyk8lR/vuZ2e43D5fTrsdsp6fN0Hh3tsaJe79Yn44gaPbY3LE1wiuldhafeDXmxgXvHUaP+w==
+X-Received: by 2002:a37:a40f:: with SMTP id n15mr16821435qke.19.1566845608699;
+        Mon, 26 Aug 2019 11:53:28 -0700 (PDT)
+Received: from localhost (modemcable249.105-163-184.mc.videotron.ca. [184.163.105.249])
+        by smtp.gmail.com with ESMTPSA id f77sm184089qke.24.2019.08.26.11.53.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Aug 2019 11:53:28 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 14:53:27 -0400
+Message-ID: <20190826145327.GB16288@t480s.localdomain>
+From:   Vivien Didelot <vivien.didelot@gmail.com>
+To:     Marek Behun <marek.behun@nic.cz>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Subject: Re: [PATCH RFC] net: dsa: mv88e6xxx: fully support SERDES on Topaz
+ family
+In-Reply-To: <20190826203614.6f9f6a8d@nic.cz>
+References: <20190826134418.GB29480@t480s.localdomain>
+ <20190826175920.21043-1-marek.behun@nic.cz> <20190826200315.0e080172@nic.cz>
+ <20190826142809.GC9628@t480s.localdomain> <20190826203614.6f9f6a8d@nic.cz>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <1566870320-9825-1-git-send-email-weifeng.voon@intel.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 09:45:20AM +0800, Voon Weifeng wrote:
-> From: "Chuah, Kim Tatt" <kim.tatt.chuah@intel.com>
+On Mon, 26 Aug 2019 20:36:14 +0200, Marek Behun <marek.behun@nic.cz> wrote:
+> > Ask yourself what is the single task achieved by this function, and name this
+> > operation accordingly. It seems to change the CMODE to be writable, only
+> > supported by certain switch models right? So in addition to port_get_cmode
+> > and port_set_cmode, you can add port_set_cmode_writable, and call it right
+> > before or after port_set_cmode in mv88e6xxx_port_setup_mac.
 > 
-> DW EQoS v5.xx controllers added capability for interrupt generation
-> when MDIO interface is done (GMII Busy bit is cleared).
-> This patch adds support for this interrupt on supported HW to avoid
-> polling on GMII Busy bit.
-> 
-> stmmac_mdio_read() & stmmac_mdio_write() will sleep until wake_up() is
-> called by the interrupt handler.
+> Andrew's complaint was also about this function being called every time
+> cmode is to be changed. The cmode does need to be made writable only
+> once. In this sense it does make sense to put into into
+> mv88e6xxx_setup_port.
 
-Hi Voon
+mv88e6xxx_port_setup_mac is called by mv88e6xxx_setup_port as expected and also
+.phylink_mac_config. I don't think they are called that often and both deal
+with configuration, so I'd prefer to keep this consistent and group the two
+operations together in mv88e6xxx_port_setup_mac, if that's good for Andrew too.
 
-I _think_ there are some order of operation issues here. The mdiobus
-is registered in the probe function. As soon as of_mdiobus_register()
-is called, the MDIO bus must work. At that point MDIO read/writes can
-start to happen.
 
-As far as i can see, the interrupt handler is only requested in
-stmmac_open(). So it seems like any MDIO operations after probe, but
-before open are going to fail?
+Thanks,
 
-Thanks
-       Andrew
+	Vivien
