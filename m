@@ -2,88 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id DDA909D4D3
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:18:44 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C039F9D4E2
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:26:29 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729358AbfHZRSm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 13:18:42 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:36966 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729128AbfHZRSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 13:18:42 -0400
-Received: by mail-ot1-f67.google.com with SMTP id f17so15949914otq.4
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 10:18:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BNNz2uFnhDixB1BI6O2w8SbNwfqh5iTOEAPHAhOzKG0=;
-        b=WOPu9Zl5x3nFalIkJMmsFbF9lB5oWV2A0/cXdBjSudN1isH9CbhlkclKbrcMLtgkpM
-         pP7HPCNfFqjq1n7XiK4I3SFceTR9/JruIIO/tpxFq2mgh08/plt2PZMhrQsFknXJG3UI
-         NXcS/P/BOvtQQlEfFtMWSlficIGci047O/XHct9Um903R1NkUkSpPfaEYKw/+knn/+GR
-         +Pycd6PSkpVq9mX3GKLYICgSPP6cqgJG4i4FcNO8fJaVC1JkzzE2FCjE9EF9qbdKKKpz
-         vTCoYw6OozhZnCdeSCN+PJblUDQVf2uDovySBJe82U+FghHlgEn4BPS7QF8sJH+bxRTG
-         aSkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BNNz2uFnhDixB1BI6O2w8SbNwfqh5iTOEAPHAhOzKG0=;
-        b=kjSzGIjq82UUcdM0fWBBONWkuvOS9np7eppyqCE4908JjSQ65HYtdWpvPgraPiiLwH
-         Gf7QBH6kwZU9RbI0W59dG69EDyxCb4VmSAaOI6/utUvihRRf1nQrRT2DPapuHTTnyS4W
-         r4DwmAFYE9oPmqjCiDTk448eVk+xqG8+zcSGd6fmbLAYnHfNUKDIwgOILcLZekvI0xam
-         9UGxvL9MdlvA9g9Imz3vLNd++vWCo+BhW69zr/ww6oxFPsU8Y8XXItAePzZgYqP+YrMJ
-         jZLCXhWOqRI2xm2RNbBrgA5Gk1tOc8WJ8gLhX9xNrLpwKg90xdgeZWnwzKvoPu2tWCSo
-         PtvQ==
-X-Gm-Message-State: APjAAAWrf40LKVU5glPNfaZHOwdFC6zFt01GjF3XHrx07Zo4JZNdO+Io
-        AZFOkJGyOWt4EmhPLFtPnCf5E/2ldjpBintF8yo1FA==
-X-Google-Smtp-Source: APXvYqwEglNN7fl4rYuoZPch70e6bKR3kBfC6BrLIdbUsD76M243uW46syA00tdUBHHHj8O9qRPHwhvEw9ez7uA2BnA=
-X-Received: by 2002:a05:6830:1e05:: with SMTP id s5mr15397669otr.247.1566839921037;
- Mon, 26 Aug 2019 10:18:41 -0700 (PDT)
+        id S1732539AbfHZR02 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 13:26:28 -0400
+Received: from mga02.intel.com ([134.134.136.20]:53660 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729245AbfHZR02 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 13:26:28 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Aug 2019 10:26:27 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,433,1559545200"; 
+   d="scan'208";a="182509729"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 26 Aug 2019 10:26:25 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 7385FBD; Mon, 26 Aug 2019 20:26:24 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        netdev@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/3] can: mcp251x: Use devm_clk_get_optional() to get the input clock
+Date:   Mon, 26 Aug 2019 20:26:21 +0300
+Message-Id: <20190826172623.79378-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.23.0.rc1
 MIME-Version: 1.0
-References: <20190826161915.81676-1-edumazet@google.com>
-In-Reply-To: <20190826161915.81676-1-edumazet@google.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Mon, 26 Aug 2019 13:18:23 -0400
-Message-ID: <CADVnQynhZ3Vr9pC5_id4z5d3Y-RhVr5c-AapbQcVntZ1=DN9YA@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: remove empty skb from write queue in error cases
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        Jason Baron <jbaron@akamai.com>,
-        Vladimir Rutsky <rutsky@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Aug 26, 2019 at 12:19 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> Vladimir Rutsky reported stuck TCP sessions after memory pressure
-> events. Edge Trigger epoll() user would never receive an EPOLLOUT
-> notification allowing them to retry a sendmsg().
->
-> Jason tested the case of sk_stream_alloc_skb() returning NULL,
-> but there are other paths that could lead both sendmsg() and sendpage()
-> to return -1 (EAGAIN), with an empty skb queued on the write queue.
->
-> This patch makes sure we remove this empty skb so that
-> Jason code can detect that the queue is empty, and
-> call sk->sk_write_space(sk) accordingly.
->
-> Fixes: ce5ec440994b ("tcp: ensure epoll edge trigger wakeup when write queue is empty")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Jason Baron <jbaron@akamai.com>
-> Reported-by: Vladimir Rutsky <rutsky@google.com>
-> Cc: Soheil Hassas Yeganeh <soheil@google.com>
-> Cc: Neal Cardwell <ncardwell@google.com>
-> ---
+Simplify the code which fetches the input clock by using
+devm_clk_get_optional(). This comes with a small functional change: previously
+all errors were ignored when platform data is present. Now all errors are
+treated as errors. If no input clock is present devm_clk_get_optional() will
+return NULL instead of an error which matches the behavior of the old code.
 
-Acked-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/net/can/spi/mcp251x.c | 30 ++++++++++++------------------
+ 1 file changed, 12 insertions(+), 18 deletions(-)
 
-Nice detective work. :-) Thanks, Eric!
+diff --git a/drivers/net/can/spi/mcp251x.c b/drivers/net/can/spi/mcp251x.c
+index 58992fd61cb9..e04b578f2b1f 100644
+--- a/drivers/net/can/spi/mcp251x.c
++++ b/drivers/net/can/spi/mcp251x.c
+@@ -1014,15 +1014,13 @@ static int mcp251x_can_probe(struct spi_device *spi)
+ 	struct clk *clk;
+ 	int freq, ret;
+ 
+-	clk = devm_clk_get(&spi->dev, NULL);
+-	if (IS_ERR(clk)) {
+-		if (pdata)
+-			freq = pdata->oscillator_frequency;
+-		else
+-			return PTR_ERR(clk);
+-	} else {
+-		freq = clk_get_rate(clk);
+-	}
++	clk = devm_clk_get_optional(&spi->dev, NULL);
++	if (IS_ERR(clk))
++		return PTR_ERR(clk);
++
++	freq = clk_get_rate(clk);
++	if (freq == 0 && pdata)
++		freq = pdata->oscillator_frequency;
+ 
+ 	/* Sanity check */
+ 	if (freq < 1000000 || freq > 25000000)
+@@ -1033,11 +1031,9 @@ static int mcp251x_can_probe(struct spi_device *spi)
+ 	if (!net)
+ 		return -ENOMEM;
+ 
+-	if (!IS_ERR(clk)) {
+-		ret = clk_prepare_enable(clk);
+-		if (ret)
+-			goto out_free;
+-	}
++	ret = clk_prepare_enable(clk);
++	if (ret)
++		goto out_free;
+ 
+ 	net->netdev_ops = &mcp251x_netdev_ops;
+ 	net->flags |= IFF_ECHO;
+@@ -1122,8 +1118,7 @@ static int mcp251x_can_probe(struct spi_device *spi)
+ 	mcp251x_power_enable(priv->power, 0);
+ 
+ out_clk:
+-	if (!IS_ERR(clk))
+-		clk_disable_unprepare(clk);
++	clk_disable_unprepare(clk);
+ 
+ out_free:
+ 	free_candev(net);
+@@ -1141,8 +1136,7 @@ static int mcp251x_can_remove(struct spi_device *spi)
+ 
+ 	mcp251x_power_enable(priv->power, 0);
+ 
+-	if (!IS_ERR(priv->clk))
+-		clk_disable_unprepare(priv->clk);
++	clk_disable_unprepare(priv->clk);
+ 
+ 	free_candev(net);
+ 
+-- 
+2.23.0.rc1
 
-neal
