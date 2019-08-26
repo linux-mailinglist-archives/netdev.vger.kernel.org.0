@@ -2,64 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id F1D429C8E4
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:00:00 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id E05E09C8E7
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:00:51 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729316AbfHZF76 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 01:59:58 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:58818 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726606AbfHZF76 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 01:59:58 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id A417E15248637;
-        Sun, 25 Aug 2019 22:59:57 -0700 (PDT)
-Date:   Sun, 25 Aug 2019 22:59:57 -0700 (PDT)
-Message-Id: <20190825.225957.2229146461648644754.davem@davemloft.net>
-To:     michael.chan@broadcom.com
-Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com,
-        jiri@mellanox.com, ray.jui@broadcom.com
-Subject: Re: [PATCH net-next 08/14] bnxt_en: Add BNXT_STATE_IN_FW_RESET
- state and pf->registered_vfs.
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <1566791705-20473-9-git-send-email-michael.chan@broadcom.com>
+        id S1729307AbfHZGAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 02:00:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58338 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726606AbfHZGAt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 02:00:49 -0400
+Received: from localhost (unknown [77.137.115.125])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4F3D721848;
+        Mon, 26 Aug 2019 06:00:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566799249;
+        bh=MxxkKLpj8ULmvofSbv4en0t3TH6JZHRF2MIgGRmlGMk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=j/9Ff9bKvhMLwhyo98FL1C1rpKT7amLIPZ6SsswsNN+B1o1EB4EqfEC1rzldKf2Qk
+         Hi1qZ7oRx8TQYJivM90m8y8gs5f8Us3tCZxqS04i3fiW/izisMoHrV6PXnwDqZo6gW
+         XpjFDYNNEkT7jisvhWct2KO12Qpt4jolqRQFpg5s=
+Date:   Mon, 26 Aug 2019 09:00:45 +0300
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        vasundhara-v.volam@broadcom.com, jiri@mellanox.com,
+        ray.jui@broadcom.com
+Subject: Re: [PATCH net-next 03/14] bnxt_en: Refactor bnxt_sriov_enable().
+Message-ID: <20190826060045.GA4584@mtr-leonro.mtl.com>
 References: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
-        <1566791705-20473-9-git-send-email-michael.chan@broadcom.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Sun, 25 Aug 2019 22:59:57 -0700 (PDT)
+ <1566791705-20473-4-git-send-email-michael.chan@broadcom.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1566791705-20473-4-git-send-email-michael.chan@broadcom.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Michael Chan <michael.chan@broadcom.com>
-Date: Sun, 25 Aug 2019 23:54:59 -0400
+On Sun, Aug 25, 2019 at 11:54:54PM -0400, Michael Chan wrote:
+> Refactor the hardware/firmware configuration portion in
+> bnxt_sriov_enable() into a new function bnxt_cfg_hw_sriov().  This
+> new function can be called after a firmware reset to reconfigure the
+> VFs previously enabled.
 
-> @@ -9234,6 +9243,13 @@ int bnxt_close_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
->  {
->  	int rc = 0;
->  
-> +	while (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)) {
-> +		netdev_info(bp->dev, "FW reset in progress, delaying close");
-> +		rtnl_unlock();
-> +		msleep(250);
-> +		rtnl_lock();
-> +	}
+I wonder what does it mean for already bound VFs to vfio driver?
+Will you rebind them as well? Can I assume that FW error in one VF
+will trigger "restart" of other VFs too?
 
-Dropping the RTNL here is extremely dangerous.
-
-Operations other than actual device close can get into the
-bnxt_close_nic() code paths (changing features, ethtool ops, etc.)
-
-So we can thus re-enter this function once you drop the RTNL mutex.
-
-Furthermore, and I understand what pains you go into in patch #9 to
-avoid this, but it's an endless loop.  If there are bugs there, we
-will get stuck in this close path forever.
-
+Thanks
