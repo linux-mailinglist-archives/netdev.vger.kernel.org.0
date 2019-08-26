@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6079C8FE
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:11:34 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id AA6909C900
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 08:11:39 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729394AbfHZGLb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 02:11:31 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:42660 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729348AbfHZGLa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:11:30 -0400
-Received: by mail-pf1-f193.google.com with SMTP id i30so11081354pfk.9;
-        Sun, 25 Aug 2019 23:11:30 -0700 (PDT)
+        id S1729419AbfHZGLf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 02:11:35 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:36646 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729401AbfHZGLf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 02:11:35 -0400
+Received: by mail-pl1-f194.google.com with SMTP id f19so9481291plr.3;
+        Sun, 25 Aug 2019 23:11:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=MXb24woiG3vysdnh2s/h7S9B75FkjdRNzF9eK8dEZkQ=;
-        b=Em844pTpiX2dTIuGbxD5rHts6qiIuBWjFNpE63v90SbvL/nmEuOjCNW4RSSuO+7tHc
-         54aNcRRDilJtY3naKW5iXRlMoOuUzJ8O3xWVNSJvgdwfFACf/A6ADSpc/G3ouhNFZP6+
-         B6FeWFHMNsyk9x3MGvzop+vIRCec0TU3WJ19G7vzRdPXjNq97xQtNUj9seokb6d2ZgTX
-         VAohEHVkZvz/OLwegWGwNRuGMHOzGzh13pLGZmgMFCZ1gJYdMAy9VdeJRlXPDC33gFxr
-         Q/96FODxity/7nf8qtC4Pkng4m93fsg2DD/bFm3m3Cu0/+12yPeeGEN/pwDYCFQDY+gr
-         2x9Q==
+        bh=SuPxf7vPZ6Wfti2MLSRAa3Lehd0GSwA37ANyIF77LOU=;
+        b=Zb1nxp/GCbiYm9WzNsl/aGXiekKIksjhmNedAbh8EKojnV1zKHDI86tRwSHctswoJk
+         V/eb4mp3MpoKDfcE18BK+SWI3R8iyCb2vGqgQnI9kcI+9zaY4gzLEa2L+6nULT+tim5L
+         NMAS5AMKouF4X+JtwT7G54wq8Fy3FlmzVXIlmTWNhQXhBXfjPfe+iP5x7D+5kZHfk2Wu
+         G8bvSGvNq04l7+xnZegOIz3tg7PKxtaFR74X1uXPx28DRQVAYz1SVkQXE/tV6+LwgV5f
+         i2yR4+P4WAtxT9ZHS3t5hAxh9fhELLF4NOXW4HBgYTeJr5jkRnU8rzlc9RqVX/Qqkrbs
+         s52A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=MXb24woiG3vysdnh2s/h7S9B75FkjdRNzF9eK8dEZkQ=;
-        b=V5wN8kKSl1oyLFgJ5Q/JLjaF+//+De8plgqkVIVIO6Qt3ovSBWQdOMXWINbAoRf9zS
-         5NGlDRQ6gvyAt3iOXqCWrgDQxwFyOAhyIyNFvFGI7JcRwt46R7dWSMJIFN6+ouXjFLfg
-         ljo5WrCbSkXKf6cu/xv0s45RP3064y75n1znCpgDbp62UfjRBi8o69Fpmpwk15aMPmJf
-         8XhKOcTEJGVuZZuqDeGpDbjuz+0mAAJMVdKWqDekxwHXJcrsR8p94Lloqqa+YCwCkxfE
-         vwAtrIvAV7NKZ80tb53h8yUovNROha0xjnDfcLMvj80dkoVcop4YKqgeL0Wu0PlQ7xZb
-         1V8Q==
-X-Gm-Message-State: APjAAAUhIymgj8l6sqy4n8Akl8EqiSUVwEwuPLMzCKvNrO2k5q5I/r0k
-        q6WGlSDFCwWxqN6gxY5UZVY=
-X-Google-Smtp-Source: APXvYqwWSpmSNI8hJ5viwyWNEVsstNYclKqJDblCk4pRLmfn1+UYo4DMOprkxnHkxFRjPS/UxAlTNA==
-X-Received: by 2002:a17:90a:a78b:: with SMTP id f11mr16676229pjq.16.1566799890173;
-        Sun, 25 Aug 2019 23:11:30 -0700 (PDT)
+        bh=SuPxf7vPZ6Wfti2MLSRAa3Lehd0GSwA37ANyIF77LOU=;
+        b=UKaUG3Sc7yfI0KPu9OH3NlLJlAhIfEQz7g+38r4uApzOAFaaun+z05X8uTIS8qx1az
+         2gGC198/ZtM6Wau7kYAd1cGkaAVVfl6KteUhY2YekNZ9xdnqRhvDleh7VsgQxuCK/sFt
+         Bm0hI/DygPQxfXRFzyb1adQytfVOMaquNedEz9HHkazoOANtul5g6xuOdeA+qGSOQKq1
+         DyZuU2I9We+JbRV7+23R2b5Mt6q7CGPGacl6zjcwIkBZxfJh+cvWlulmuOkqa3Eddb1F
+         kfodxoClsyj4lXTU+MsMLsVqhDEinj5qBTbi4jbJNyjs87Aq89qpRz8haOiaW3jODoEB
+         irFg==
+X-Gm-Message-State: APjAAAU6m75jIj4INtgHkRiGWa0zuT4eifrrIqxPMJXM9ksYDS8mrcz1
+        5rm3Jl2TIUDw3wAOvymf8Eo=
+X-Google-Smtp-Source: APXvYqwADWytIZ3mlDQpNOTwjD99VoCrat4RKVOpxY9Z4zAkaF87iunzQvSn8W1Z0XUHRE0CgSwlJg==
+X-Received: by 2002:a17:902:8f90:: with SMTP id z16mr5186468plo.138.1566799894900;
+        Sun, 25 Aug 2019 23:11:34 -0700 (PDT)
 Received: from btopel-mobl.ger.intel.com ([192.55.54.42])
-        by smtp.gmail.com with ESMTPSA id d2sm9567452pjs.21.2019.08.25.23.11.25
+        by smtp.gmail.com with ESMTPSA id d2sm9567452pjs.21.2019.08.25.23.11.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 25 Aug 2019 23:11:29 -0700 (PDT)
+        Sun, 25 Aug 2019 23:11:34 -0700 (PDT)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org
 Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
@@ -51,9 +51,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         bpf@vger.kernel.org, jonathan.lemon@gmail.com,
         syzbot+c82697e3043781e08802@syzkaller.appspotmail.com,
         hdanton@sina.com, i.maximets@samsung.com
-Subject: [PATCH bpf-next v2 3/4] xsk: avoid store-tearing when assigning umem
-Date:   Mon, 26 Aug 2019 08:10:52 +0200
-Message-Id: <20190826061053.15996-4-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v2 4/4] xsk: lock the control mutex in sock_diag interface
+Date:   Mon, 26 Aug 2019 08:10:53 +0200
+Message-Id: <20190826061053.15996-5-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190826061053.15996-1-bjorn.topel@gmail.com>
 References: <20190826061053.15996-1-bjorn.topel@gmail.com>
@@ -67,30 +67,41 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-The umem member of struct xdp_sock is read outside of the control
-mutex, in the mmap implementation, and needs a WRITE_ONCE to avoid
-potentional store-tearing.
+When accessing the members of an XDP socket, the control mutex should
+be held. This commit fixes that.
 
 Acked-by: Jonathan Lemon <jonathan.lemon@gmail.com>
-Fixes: 423f38329d26 ("xsk: add umem fill queue support and mmap")
+Fixes: a36b38aa2af6 ("xsk: add sock_diag interface for AF_XDP")
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- net/xdp/xsk.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xdp/xsk_diag.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 8fafa3ce3ae6..e3e99ee5631b 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -716,7 +716,7 @@ static int xsk_setsockopt(struct socket *sock, int level, int optname,
+diff --git a/net/xdp/xsk_diag.c b/net/xdp/xsk_diag.c
+index d5e06c8e0cbf..c8f4f11edbbc 100644
+--- a/net/xdp/xsk_diag.c
++++ b/net/xdp/xsk_diag.c
+@@ -97,6 +97,7 @@ static int xsk_diag_fill(struct sock *sk, struct sk_buff *nlskb,
+ 	msg->xdiag_ino = sk_ino;
+ 	sock_diag_save_cookie(sk, msg->xdiag_cookie);
  
- 		/* Make sure umem is ready before it can be seen by others */
- 		smp_wmb();
--		xs->umem = umem;
-+		WRITE_ONCE(xs->umem, umem);
- 		mutex_unlock(&xs->mutex);
- 		return 0;
- 	}
++	mutex_lock(&xs->mutex);
+ 	if ((req->xdiag_show & XDP_SHOW_INFO) && xsk_diag_put_info(xs, nlskb))
+ 		goto out_nlmsg_trim;
+ 
+@@ -117,10 +118,12 @@ static int xsk_diag_fill(struct sock *sk, struct sk_buff *nlskb,
+ 	    sock_diag_put_meminfo(sk, nlskb, XDP_DIAG_MEMINFO))
+ 		goto out_nlmsg_trim;
+ 
++	mutex_unlock(&xs->mutex);
+ 	nlmsg_end(nlskb, nlh);
+ 	return 0;
+ 
+ out_nlmsg_trim:
++	mutex_unlock(&xs->mutex);
+ 	nlmsg_cancel(nlskb, nlh);
+ 	return -EMSGSIZE;
+ }
 -- 
 2.20.1
 
