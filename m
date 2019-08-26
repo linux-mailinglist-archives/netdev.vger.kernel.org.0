@@ -2,107 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 79E779D350
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 17:46:39 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 343969D35E
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 17:51:49 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730109AbfHZPqh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 11:46:37 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:40667 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727850AbfHZPqh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 11:46:37 -0400
-Received: by mail-wr1-f66.google.com with SMTP id c3so15795933wrd.7
-        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 08:46:36 -0700 (PDT)
+        id S1729287AbfHZPvr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 11:51:47 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:37094 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727850AbfHZPvr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 26 Aug 2019 11:51:47 -0400
+Received: by mail-wr1-f68.google.com with SMTP id z11so15848761wrt.4
+        for <netdev@vger.kernel.org>; Mon, 26 Aug 2019 08:51:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=S9XyfXZPMwNi8B1mhqY6JRsfbgsglWp6bTOIvesrBK0=;
-        b=j6cJnVPWCS6crQu/WoyR9tJuGtgqeSjScMteS5FtXWAva0dagJZ8k9x3wJG0zDaJj3
-         MPGQtaw+wfmdqsDT//11sjcVeQZJR3xnKJwMWCcpsbj7tmFIVKYUv4N/LypvruW7VQBU
-         mBMzZhMqNjKZA817jjHhoTKSqvsckcVHOB3dSyDum+QYt8fKfr/9DNyRG0XciKzpbtgv
-         zBCI7oyTXkFoQEgkP6I8Me9zMLurx1vjYmWVNE2AkaoPbOCselmT2JX+eStsf/ic8oWL
-         bRuOhMK1hbqvyTjqiAOQ2BGNHRUNomWQ9OQ51zHffwehmCAw6Ql9Huse0E+PSo5IrGAo
-         gagg==
+        bh=HWCFQn/cYRYFsZ6qifknRkJhCmtGeaI059SRvkJbddU=;
+        b=Q+HlI5me6ZWEoos2I8kn3VJQXpVY5v0dP12RTuG7PwJhLblHSPJyVpdt4PTJ85wWc+
+         zlhsCzxAF10f1mO6FmK4G7H1MZnsOW3JtgdwI7idp3DnudknIH4G0dRrqfY7obYO+Sw9
+         ivwOUvIoK6Y8P+2ZXZC+MWpfCua5zr0cucN8HCFV876DF5hZR4MO+kZ7N/Ej1Sjfwh7D
+         5EQqZ8HJqofVKpEM7tjzoylAGqBdM+9Gphazz78rD7lnsPxSsjat3F35ci6QNDSGL0b5
+         YJ0ICZOijugZEed9GQRGeQdb3eGt3S4NRGDZBwWQMUOSllj8YRboOGpOzejvmRZIlAsV
+         3jEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=S9XyfXZPMwNi8B1mhqY6JRsfbgsglWp6bTOIvesrBK0=;
-        b=i4zCjb3ukep7bKb0sh3J2nEWJVzLfauKGYVNOLHPPiPBRcyA7/Z7q++i6jsS6gGSDS
-         aQfIvObjU/ejev2wbEjpyvrfLj7NtWOkAA2govh+RoJkNmqWgb4Fw7uZQAOGQ1Yrf1pJ
-         5nuk6fs/rTMnX0eMZVeHWa3BP3xhE/6rtYyXHUxvtFrP3J5kGyz6Xvfj9RK2Jg6zZTOW
-         IG/f0zPNZYzXayFbVRTsjiit4y2cSgsJsbUDzma/LMbBaxX9I1uea2L1UGvVjoY1g47h
-         mU3KsSnrYFcW4ptVbsOtxjAaGIlSeAsAfqrzs18Z9lRm6HqwUS5rBXo7L95kMvbGMbMR
-         m2AQ==
-X-Gm-Message-State: APjAAAVTpo7q0EZx6knTigm/2XCAJf4NsJn2PTiLtmaX0nb9xzUDkXG9
-        VkXqN1SJmJMsC+NGY1u5u/cm7w==
-X-Google-Smtp-Source: APXvYqyOZiOPREfH5Yviiau0XrExonHOBIgxlTIEdgDdioE7qYYTpzHPW8/BQ8SGtUhL4xwBGTYyjg==
-X-Received: by 2002:adf:f54a:: with SMTP id j10mr23628924wrp.220.1566834395405;
-        Mon, 26 Aug 2019 08:46:35 -0700 (PDT)
+        bh=HWCFQn/cYRYFsZ6qifknRkJhCmtGeaI059SRvkJbddU=;
+        b=hbyJZ+5EDPJSnVi9sn+KwxnsTWAaefW3vN/v9KG5lMNT7txisvrPRHvaqvoVnf2tdn
+         KYkRImi9/MgEnmm1n5PPlOrtMBy+5VoKhem4niC/MiHxiI+5GuaNsSG/4S+dWU+xdGsy
+         HmSxts8qTxTDN67t6nGsMvXpLU/AYzV0QuExHTht1tAU6qvQwZvXefCXwK4m6aHHoCEH
+         A1+SDCrAlCcQ1UkwyimflL4VfTd3DVfIHJne2ttY/FebfvQyX5kgYv/F9reQt3iVw2aP
+         7wYAfmuK8bPFHq1OdRbx89hpjaorzOXIM7Hmfcs1gtmIu99iHl4IZXw90JBZ62+VuonE
+         74dQ==
+X-Gm-Message-State: APjAAAV5rhtmgMAFxb/7fBdc1F7g0yMweN9Q6nTu1x3BkDto1WZ/Poab
+        ZzJY9+vyEk5QHJtsXNmDWF2HuQ==
+X-Google-Smtp-Source: APXvYqzvz4wWnhKM61UMzdg/aOi6H6VXhrJFJwCVIJLyE3SP8c+TjsERXd5BIEMhTDVoxBFdDFMe1w==
+X-Received: by 2002:a5d:4dc6:: with SMTP id f6mr23086253wru.209.1566834705433;
+        Mon, 26 Aug 2019 08:51:45 -0700 (PDT)
 Received: from localhost (jirka.pirko.cz. [84.16.102.26])
-        by smtp.gmail.com with ESMTPSA id s2sm15560043wrp.32.2019.08.26.08.46.34
+        by smtp.gmail.com with ESMTPSA id z12sm11042753wrt.92.2019.08.26.08.51.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 26 Aug 2019 08:46:34 -0700 (PDT)
-Date:   Mon, 26 Aug 2019 17:46:34 +0200
+        Mon, 26 Aug 2019 08:51:44 -0700 (PDT)
+Date:   Mon, 26 Aug 2019 17:51:44 +0200
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     Vlad Buslov <vladbu@mellanox.com>
 Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
         davem@davemloft.net, jakub.kicinski@netronome.com,
         pablo@netfilter.org
-Subject: Re: [PATCH net-next v3 03/10] net: sched: refactor block offloads
- counter usage
-Message-ID: <20190826154634.GC2309@nanopsycho.orion>
+Subject: Re: [PATCH net-next v3 04/10] net: sched: notify classifier on
+ successful offload add/delete
+Message-ID: <20190826155144.GD2309@nanopsycho.orion>
 References: <20190826134506.9705-1-vladbu@mellanox.com>
- <20190826134506.9705-4-vladbu@mellanox.com>
+ <20190826134506.9705-5-vladbu@mellanox.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190826134506.9705-4-vladbu@mellanox.com>
+In-Reply-To: <20190826134506.9705-5-vladbu@mellanox.com>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Aug 26, 2019 at 03:44:59PM CEST, vladbu@mellanox.com wrote:
->Without rtnl lock protection filters can no longer safely manage block
->offloads counter themselves. Refactor cls API to protect block offloadcnt
->with tcf_block->cb_lock that is already used to protect driver callback
->list and nooffloaddevcnt counter. The counter can be modified by concurrent
->tasks by new functions that execute block callbacks (which is safe with
->previous patch that changed its type to atomic_t), however, block
->bind/unbind code that checks the counter value takes cb_lock in write mode
->to exclude any concurrent modifications. This approach prevents race
->conditions between bind/unbind and callback execution code but allows for
->concurrency for tc rule update path.
+Mon, Aug 26, 2019 at 03:45:00PM CEST, vladbu@mellanox.com wrote:
+>To remove dependency on rtnl lock, extend classifier ops with new
+>ops->hw_add() and ops->hw_del() callbacks. Call them from cls API while
+>holding cb_lock every time filter if successfully added to or deleted from
+>hardware.
 >
->Move block offload counter, filter in hardware counter and filter flags
->management from classifiers into cls hardware offloads API. Make functions
->tcf_block_offload_{inc|dec}() and tc_cls_offload_cnt_update() to be cls API
->private. Implement following new cls API to be used instead:
->
->  tc_setup_cb_add() - non-destructive filter add. If filter that wasn't
->  already in hardware is successfully offloaded, increment block offloads
->  counter, set filter in hardware counter and flag. On failure, previously
->  offloaded filter is considered to be intact and offloads counter is not
->  decremented.
->
->  tc_setup_cb_replace() - destructive filter replace. Release existing
->  filter block offload counter and reset its in hardware counter and flag.
->  Set new filter in hardware counter and flag. On failure, previously
->  offloaded filter is considered to be destroyed and offload counter is
->  decremented.
->
->  tc_setup_cb_destroy() - filter destroy. Unconditionally decrement block
->  offloads counter.
->
->  tc_setup_cb_reoffload() - reoffload filter to single cb. Execute cb() and
->  call tc_cls_offload_cnt_update() if cb() didn't return an error.
->
->Refactor all offload-capable classifiers to atomically offload filters to
->hardware, change block offload counter, and set filter in hardware counter
->and flag by means of the new cls API functions.
+>Implement the new API in flower classifier. Use it to manage hw_filters
+>list under cb_lock protection, instead of relying on rtnl lock to
+>synchronize with concurrent fl_reoffload() call.
 >
 >Signed-off-by: Vlad Buslov <vladbu@mellanox.com>
 
