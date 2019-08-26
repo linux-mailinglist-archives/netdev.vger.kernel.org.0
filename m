@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 2E0039C81C
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 05:56:04 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 71EB79C81D
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 05:56:11 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729604AbfHZD4B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 25 Aug 2019 23:56:01 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:43203 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729548AbfHZD4A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 23:56:00 -0400
-Received: by mail-pg1-f195.google.com with SMTP id k3so9706893pgb.10
-        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 20:55:59 -0700 (PDT)
+        id S1729642AbfHZD4G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 25 Aug 2019 23:56:06 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37093 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729578AbfHZD4B (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 25 Aug 2019 23:56:01 -0400
+Received: by mail-pf1-f193.google.com with SMTP id y9so10499871pfl.4
+        for <netdev@vger.kernel.org>; Sun, 25 Aug 2019 20:56:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=4ui4eYUBaHGuNBmrsPX7pN2RNXBqJnHKC0Jicxt/2Qc=;
-        b=RkypD5ec4XuQUNFXq2euWlw4p6567ls/zMZzwtpohAhUFlUGimvsgDLLBO3LzEMcY0
-         oZLeT1PDMmPq94Rb83rIk/7VfOWC5cZbI4Wz7rU04eTiNjR3KN5yM0lSZ/7ki33PcF81
-         6Wxlj5tZkfI3aND4c6eQg+RjJ5bGl32jI+tp4=
+        bh=IQNYk5QByzpFJ5MabIyUE06dEsvGp9T670vua6qPKtQ=;
+        b=cniOzGDSH0Z09tj4sQNmBt1Yg31eVdxI8v20o/+NyUOchsXg1GV0oPUiU7ueuHoDoM
+         aRrS4BfhZJ87+z1//Xwh0WIKS4oSisMWKE0bdKRu2dD3c7hHdEBmi8/WkJaNtNSNbqJg
+         6zT82LpFGLV/Dphmk81fpi5LlDyT+/uDbRePA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=4ui4eYUBaHGuNBmrsPX7pN2RNXBqJnHKC0Jicxt/2Qc=;
-        b=HTq39BQ5b7K5sDI3blG7I0xkMKvk8Fuijf92tlqwomlf4pYsMfFH+/Q53Rdl4aAG0E
-         FHsEOcMXGzwITv1K8Fxhw9yCOVb3F10PY9/f8ZEFQzCOxPkBzetuBT/8qsKb6701hBRT
-         ipwV6NWgaVUZtuarNqJu48OejilA/s72wML0s2YGG6e07m/XRZYlx6Ft0hlBH8dqfo6v
-         rmxId6ZiUqk4uj7l3UnsPctUWTn6tR2V5IfyXR0Eh4jSpYVsicXS9E21To2e6rpBK9dS
-         gi/nx2Tq+mXEM7yhrdA2fGhuReUwJg2RnAjKuhABm/3xvYN0R08MGtZBc8BAqjdD0GQm
-         7Xwg==
-X-Gm-Message-State: APjAAAUIPBTzdmqGunCJWPichT7JlMYH9hcpdWwhvPO5FqFfBXAl0/cC
-        vkVy9rBIishmpP/ejAltAKKk4A==
-X-Google-Smtp-Source: APXvYqwaa9I2SuwSezdEH/YJ1cZibCYzreBkoNIK0lhUf8cEdQulTpM2xfpADfoyPhMmQu6yWsmX2g==
-X-Received: by 2002:a63:184b:: with SMTP id 11mr15252075pgy.112.1566791759582;
-        Sun, 25 Aug 2019 20:55:59 -0700 (PDT)
+        bh=IQNYk5QByzpFJ5MabIyUE06dEsvGp9T670vua6qPKtQ=;
+        b=jHN5MAWoLi5v+l3D3CqPH8I5lp6CgtI9dfyjiXPPVs/CvoVYdyhE2Ctjty7rovDUQT
+         it4lWB8LrfaDGiN/ng9YFpAhxqJNNcMYq+m9Kw39qOok/5vsw2gZ1UWj5jPmUqLzf+dk
+         Xj/DN/xSlkP/YZzg04pffvOni5TE/os2oPKIrCaGczgZQajKtoBa8yObJJCyC4O8HQje
+         CT5DiUI6X+YpFduCKHTlXjZPjPO68/V7G1FIzaXwX1oQ2O+8NnPfoEqATi8Qt+6tkTWv
+         KNy6+sqRTWkPDo53kHaNDxI4dRoclCXC5tMo+sNPV1OHWrcwJrXGQolQXlcDFKkv+GTi
+         kZtQ==
+X-Gm-Message-State: APjAAAWAk+ylJNluXMYEYodA8yjcOmkFGq1y9QiU9tbALZEpvOYkgMnY
+        4S4vXLl53ckZa5KEpJCAV0AlYA==
+X-Google-Smtp-Source: APXvYqyzUBL282dr7h14cODp2p/n/3r5hkTwEXypso+b0Qo/Xm5uwEiMZr/wvEJj2+SoyAp632uokg==
+X-Received: by 2002:aa7:9688:: with SMTP id f8mr9009556pfk.77.1566791760479;
+        Sun, 25 Aug 2019 20:56:00 -0700 (PDT)
 Received: from localhost.swdvt.lab.broadcom.com ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id d6sm8532975pgf.55.2019.08.25.20.55.58
+        by smtp.gmail.com with ESMTPSA id d6sm8532975pgf.55.2019.08.25.20.55.59
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 25 Aug 2019 20:55:59 -0700 (PDT)
+        Sun, 25 Aug 2019 20:56:00 -0700 (PDT)
 From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, vasundhara-v.volam@broadcom.com,
         jiri@mellanox.com, ray.jui@broadcom.com
-Subject: [PATCH net-next 08/14] bnxt_en: Add BNXT_STATE_IN_FW_RESET state and pf->registered_vfs.
-Date:   Sun, 25 Aug 2019 23:54:59 -0400
-Message-Id: <1566791705-20473-9-git-send-email-michael.chan@broadcom.com>
+Subject: [PATCH net-next 09/14] bnxt_en: Add new FW devlink_health_reporter
+Date:   Sun, 25 Aug 2019 23:55:00 -0400
+Message-Id: <1566791705-20473-10-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
 References: <1566791705-20473-1-git-send-email-michael.chan@broadcom.com>
@@ -55,104 +55,154 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The new flag will be set in subsequent patches when firmware is
-going through reset.  Delay close and SRIOV disable operations until
-the flag is cleared.
+From: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 
-Store the registered_vfs value from the firmware.  This value will
-be polled in subsequent patches to determine if SR-IOV is in quiescent
-state.
+Create new FW devlink_health_reporter, to know the current health
+status of FW.
 
+Command example and output:
+$ devlink health show pci/0000:af:00.0 reporter fw
+
+pci/0000:af:00.0:
+  name fw
+    state healthy error 0 recover 0
+
+ FW status: Healthy; Reset count: 1
+
+Signed-off-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
 Signed-off-by: Michael Chan <michael.chan@broadcom.com>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c       | 16 ++++++++++++++++
- drivers/net/ethernet/broadcom/bnxt/bnxt.h       |  2 ++
- drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c |  4 ++++
- 3 files changed, 22 insertions(+)
+ drivers/net/ethernet/broadcom/bnxt/bnxt.h         |  3 +
+ drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c | 81 +++++++++++++++++++++++
+ 2 files changed, 84 insertions(+)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index f522f3b..be0eb1c 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -6326,6 +6326,8 @@ static int bnxt_hwrm_func_qcfg(struct bnxt *bp)
- 		struct bnxt_vf_info *vf = &bp->vf;
- 
- 		vf->vlan = le16_to_cpu(resp->vlan) & VLAN_VID_MASK;
-+	} else {
-+		bp->pf.registered_vfs = le16_to_cpu(resp->registered_vfs);
- 	}
- #endif
- 	flags = le16_to_cpu(resp->flags);
-@@ -8710,6 +8712,10 @@ static int bnxt_hwrm_if_change(struct bnxt *bp, bool up)
- 	if (flags & FUNC_DRV_IF_CHANGE_RESP_FLAGS_HOT_FW_RESET_DONE)
- 		fw_reset = true;
- 
-+	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state) && !fw_reset) {
-+		netdev_err(bp->dev, "RESET_DONE not set during FW reset.\n");
-+		return -ENODEV;
-+	}
- 	if (resc_reinit || fw_reset) {
- 		if (fw_reset) {
- 			rc = bnxt_fw_init_one(bp);
-@@ -9218,6 +9224,9 @@ static void __bnxt_close_nic(struct bnxt *bp, bool irq_re_init,
- 	bnxt_debug_dev_exit(bp);
- 	bnxt_disable_napi(bp);
- 	del_timer_sync(&bp->timer);
-+	if (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
-+		pci_disable_device(bp->pdev);
-+
- 	bnxt_free_skbs(bp);
- 
- 	/* Save ring stats before shutdown */
-@@ -9234,6 +9243,13 @@ int bnxt_close_nic(struct bnxt *bp, bool irq_re_init, bool link_re_init)
- {
- 	int rc = 0;
- 
-+	while (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)) {
-+		netdev_info(bp->dev, "FW reset in progress, delaying close");
-+		rtnl_unlock();
-+		msleep(250);
-+		rtnl_lock();
-+	}
-+
- #ifdef CONFIG_BNXT_SRIOV
- 	if (bp->sriov_cfg) {
- 		rc = wait_event_interruptible_timeout(bp->sriov_cfg_wait,
 diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.h b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-index 96f2e12..c316de5 100644
+index c316de5..5d291f5 100644
 --- a/drivers/net/ethernet/broadcom/bnxt/bnxt.h
 +++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.h
-@@ -1066,6 +1066,7 @@ struct bnxt_pf_info {
- 	u8	mac_addr[ETH_ALEN];
- 	u32	first_vf_id;
- 	u16	active_vfs;
-+	u16	registered_vfs;
- 	u16	max_vfs;
- 	u32	max_encap_records;
- 	u32	max_decap_records;
-@@ -1605,6 +1606,7 @@ struct bnxt {
- #define BNXT_STATE_IN_SP_TASK	1
- #define BNXT_STATE_READ_STATS	2
- #define BNXT_STATE_FW_RESET_DET 3
-+#define BNXT_STATE_IN_FW_RESET	4
- #define BNXT_STATE_PROBE_ERR	5
+@@ -1369,6 +1369,7 @@ struct bnxt_fw_health {
+ 	u32 fw_reset_seq_regs[16];
+ 	u32 fw_reset_seq_vals[16];
+ 	u32 fw_reset_seq_delay_msec[16];
++	struct devlink_health_reporter	*fw_reporter;
+ };
  
- 	struct bnxt_irq	*irq_tbl;
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-index 93524d7..e435374 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_sriov.c
-@@ -802,6 +802,10 @@ void bnxt_sriov_disable(struct bnxt *bp)
- {
- 	u16 num_vfs = pci_num_vf(bp->pdev);
+ #define BNXT_FW_HEALTH_REG_TYPE_MASK	3
+@@ -1383,6 +1384,8 @@ struct bnxt_fw_health {
+ #define BNXT_FW_HEALTH_WIN_BASE		0x3000
+ #define BNXT_FW_HEALTH_WIN_MAP_OFF	8
  
-+	while (test_bit(BNXT_STATE_IN_FW_RESET, &bp->state)) {
-+		netdev_info(bp->dev, "FW reset in progress, delaying SR-IOV config");
-+		msleep(250);
++#define BNXT_FW_STATUS_HEALTHY		0x8000
++
+ struct bnxt {
+ 	void __iomem		*bar0;
+ 	void __iomem		*bar1;
+diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+index c05d663..7eb1a25 100644
+--- a/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
++++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_devlink.c
+@@ -15,6 +15,84 @@
+ #include "bnxt_vfr.h"
+ #include "bnxt_devlink.h"
+ 
++static int bnxt_fw_reporter_diagnose(struct devlink_health_reporter *reporter,
++				     struct devlink_fmsg *fmsg)
++{
++	struct bnxt *bp = devlink_health_reporter_priv(reporter);
++	struct bnxt_fw_health *health = bp->fw_health;
++	u32 val, health_status;
++	int rc;
++
++	if (!health || test_bit(BNXT_STATE_IN_FW_RESET, &bp->state))
++		return 0;
++
++	val = bnxt_fw_health_readl(bp, BNXT_FW_HEALTH_REG);
++	health_status = val & 0xffff;
++
++	if (health_status == BNXT_FW_STATUS_HEALTHY) {
++		rc = devlink_fmsg_string_pair_put(fmsg, "FW status",
++						  "Healthy;");
++		if (rc)
++			return rc;
++	} else if (health_status < BNXT_FW_STATUS_HEALTHY) {
++		rc = devlink_fmsg_string_pair_put(fmsg, "FW status",
++						  "Not yet completed initialization;");
++		if (rc)
++			return rc;
++	} else if (health_status > BNXT_FW_STATUS_HEALTHY) {
++		rc = devlink_fmsg_string_pair_put(fmsg, "FW status",
++						  "Encountered fatal error and cannot recover;");
++		if (rc)
++			return rc;
 +	}
- 	if (!num_vfs)
++
++	if (val >> 16) {
++		rc = devlink_fmsg_u32_pair_put(fmsg, "Error", val >> 16);
++		if (rc)
++			return rc;
++	}
++
++	val = bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
++	rc = devlink_fmsg_u32_pair_put(fmsg, "Reset count", val);
++	if (rc)
++		return rc;
++
++	return 0;
++}
++
++static const struct devlink_health_reporter_ops bnxt_dl_fw_reporter_ops = {
++	.name = "fw",
++	.diagnose = bnxt_fw_reporter_diagnose,
++};
++
++static void bnxt_dl_fw_reporters_create(struct bnxt *bp)
++{
++	struct bnxt_fw_health *health = bp->fw_health;
++
++	if (!health)
++		return;
++
++	health->fw_reporter =
++		devlink_health_reporter_create(bp->dl, &bnxt_dl_fw_reporter_ops,
++					       0, false, bp);
++	if (IS_ERR(health->fw_reporter)) {
++		netdev_warn(bp->dev, "Failed to create FW health reporter, rc = %ld\n",
++			    PTR_ERR(health->fw_reporter));
++		health->fw_reporter = NULL;
++	}
++}
++
++static void bnxt_dl_fw_reporters_destroy(struct bnxt *bp)
++{
++	struct bnxt_fw_health *health = bp->fw_health;
++
++	if (!health)
++		return;
++
++	if (health->fw_reporter)
++		devlink_health_reporter_destroy(health->fw_reporter);
++}
++
+ static const struct devlink_ops bnxt_dl_ops = {
+ #ifdef CONFIG_BNXT_SRIOV
+ 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
+@@ -251,6 +329,8 @@ int bnxt_dl_register(struct bnxt *bp)
+ 
+ 	devlink_params_publish(dl);
+ 
++	bnxt_dl_fw_reporters_create(bp);
++
+ 	return 0;
+ 
+ err_dl_port_unreg:
+@@ -273,6 +353,7 @@ void bnxt_dl_unregister(struct bnxt *bp)
+ 	if (!dl)
  		return;
  
++	bnxt_dl_fw_reporters_destroy(bp);
+ 	devlink_port_params_unregister(&bp->dl_port, bnxt_dl_port_params,
+ 				       ARRAY_SIZE(bnxt_dl_port_params));
+ 	devlink_port_unregister(&bp->dl_port);
 -- 
 2.5.1
 
