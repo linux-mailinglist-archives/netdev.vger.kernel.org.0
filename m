@@ -2,74 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 336589E871
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 14:55:15 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 229F69E877
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 14:57:14 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbfH0MzI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 08:55:08 -0400
-Received: from vps0.lunn.ch ([185.16.172.187]:34224 "EHLO vps0.lunn.ch"
+        id S1729396AbfH0M5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 08:57:07 -0400
+Received: from mx1.redhat.com ([209.132.183.28]:42044 "EHLO mx1.redhat.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725920AbfH0MzI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 08:55:08 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
-        s=20171124; h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=QQIZRKtBn4+mCRvrRB7rANCiu7s243FAxJxmiRuz/gE=; b=r3xQ/FkOpOf7TZVM3ElpTJ1S5x
-        dHcBJlwUfU7QrDlwfFKJ6y42kryByRVRx+7k9NnkTeCEt5OGgkXrnDmerB24TXvYC2EaP/jxuu9DV
-        p7OgTUqO0FoqATus5zeDeLUbFkV1yJhCSnpJFV5RMprMZrpnb7MwPOfPkiUEs7aZhlRg=;
-Received: from andrew by vps0.lunn.ch with local (Exim 4.89)
-        (envelope-from <andrew@lunn.ch>)
-        id 1i2b04-0003AX-Tl; Tue, 27 Aug 2019 14:55:04 +0200
-Date:   Tue, 27 Aug 2019 14:55:04 +0200
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Razvan Stefanescu <razvan.stefanescu@microchip.com>
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        id S1726584AbfH0M5H (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 08:57:07 -0400
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mx1.redhat.com (Postfix) with ESMTPS id ED55910F23EB;
+        Tue, 27 Aug 2019 12:57:06 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-120-255.rdu2.redhat.com [10.10.120.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 856E8104B4ED;
+        Tue, 27 Aug 2019 12:57:05 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20190824.143533.1547411490171696760.davem@davemloft.net>
+References: <20190824.143533.1547411490171696760.davem@davemloft.net> <156647679816.11606.13713532963081370001.stgit@warthog.procyon.org.uk>
+To:     David Miller <davem@davemloft.net>
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        marc.dionne@auristor.com, linux-afs@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/4] net: dsa: microchip: avoid hard-codded port count
-Message-ID: <20190827125504.GB11471@lunn.ch>
-References: <20190827093110.14957-1-razvan.stefanescu@microchip.com>
- <20190827093110.14957-5-razvan.stefanescu@microchip.com>
+Subject: Re: [PATCH net] rxrpc: Fix lack of conn cleanup when local endpoint is cleaned up
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190827093110.14957-5-razvan.stefanescu@microchip.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <23573.1566910624.1@warthog.procyon.org.uk>
+Date:   Tue, 27 Aug 2019 13:57:04 +0100
+Message-ID: <23574.1566910624@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+X-Greylist: Sender IP whitelisted, not delayed by milter-greylist-4.6.2 (mx1.redhat.com [10.5.110.66]); Tue, 27 Aug 2019 12:57:07 +0000 (UTC)
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 12:31:10PM +0300, Razvan Stefanescu wrote:
-> Use port_cnt value to disable interrupts on switch reset.
-> 
-> Signed-off-by: Razvan Stefanescu <razvan.stefanescu@microchip.com>
-> ---
->  drivers/net/dsa/microchip/ksz9477.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/dsa/microchip/ksz9477.c b/drivers/net/dsa/microchip/ksz9477.c
-> index 187be42de5f1..54fc05595d48 100644
-> --- a/drivers/net/dsa/microchip/ksz9477.c
-> +++ b/drivers/net/dsa/microchip/ksz9477.c
-> @@ -213,7 +213,7 @@ static int ksz9477_reset_switch(struct ksz_device *dev)
->  
->  	/* disable interrupts */
->  	ksz_write32(dev, REG_SW_INT_MASK__4, SWITCH_INT_MASK);
-> -	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, 0x7F);
-> +	ksz_write32(dev, REG_SW_PORT_INT_MASK__4, dev->port_cnt);
->  	ksz_read32(dev, REG_SW_PORT_INT_STATUS__4, &data32);
+David Miller <davem@davemloft.net> wrote:
 
-Humm, is this correct? 0x7f suggests this is a bitmap for 7 ports.
-The name port_cnt suggests it is a count, e.g. 7 for 7 ports.
+> Once you've removed the entries from the globally visible idle_client_comms
+> list, and put them on the local garbage list, they cannot be seen in any way
+> by external threads of control outside of this function.
 
-0x7f != 7.
+Yeah, I think you're right.  I was thinking that it might race with
+rxrpc_discard_expired_client_conns() but that takes the locks too, so it
+shouldn't.
 
-Thanks
-	Andrew
+David
