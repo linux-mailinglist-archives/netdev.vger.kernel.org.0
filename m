@@ -2,69 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id ED4419D4F4
-	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:31:31 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id C139E9D517
+	for <lists+netdev@lfdr.de>; Mon, 26 Aug 2019 19:39:45 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732918AbfHZRb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 26 Aug 2019 13:31:28 -0400
-Received: from mail.nic.cz ([217.31.204.67]:33864 "EHLO mail.nic.cz"
+        id S1733129AbfHZRjP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 26 Aug 2019 13:39:15 -0400
+Received: from mga02.intel.com ([134.134.136.20]:54763 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727211AbfHZRb1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 26 Aug 2019 13:31:27 -0400
-Received: from localhost (unknown [172.20.6.135])
-        by mail.nic.cz (Postfix) with ESMTPSA id 3B60E13FC6D;
-        Mon, 26 Aug 2019 19:31:26 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=nic.cz; s=default;
-        t=1566840686; bh=qoLhKACi/mEAWJukqRq+405eac4TnDJoKp2Rykq5zkU=;
-        h=Date:From:To;
-        b=Enz734B3+Y+Ibc/YeYWstd+xTlPuZohSZoKRr7dP0Ypx5pz8naQMX7OhxhnLWYlZi
-         YWx32UCZ74sVr82uOhxsoSmnTMyrJG873u/aXGd8jvFeRDVtZlT88dxey5YFAlo2p4
-         chZfNLT1OIIMpVsgi9R7b1dhyhwktKV6IKpZvkF4=
-Date:   Mon, 26 Aug 2019 19:31:25 +0200
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: [PATCH net-next v4 6/6] net: dsa: mv88e6xxx: fully support
- SERDES on Topaz family
-Message-ID: <20190826193125.4c94662e@nic.cz>
-In-Reply-To: <20190826153830.GE2168@lunn.ch>
-References: <20190826122109.20660-1-marek.behun@nic.cz>
-        <20190826122109.20660-7-marek.behun@nic.cz>
-        <20190826153830.GE2168@lunn.ch>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.100.3 at mail.nic.cz
-X-Virus-Status: Clean
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED,SHORTCIRCUIT
-        shortcircuit=ham autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
+        id S1729466AbfHZRjP (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 26 Aug 2019 13:39:15 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 26 Aug 2019 10:39:04 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.64,433,1559545200"; 
+   d="scan'208";a="355499039"
+Received: from wvoon-ilbpg2.png.intel.com ([10.88.227.88])
+  by orsmga005.jf.intel.com with ESMTP; 26 Aug 2019 10:39:01 -0700
+From:   Voon Weifeng <weifeng.voon@intel.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jose Abreu <joabreu@synopsys.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>
+Subject: [PATCH v1 net-next 0/4] Add EHL and TGL PCI info and PCI ID
+Date:   Tue, 27 Aug 2019 09:38:07 +0800
+Message-Id: <1566869891-29239-1-git-send-email-weifeng.voon@intel.com>
+X-Mailer: git-send-email 1.9.1
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 26 Aug 2019 17:38:30 +0200
-Andrew Lunn <andrew@lunn.ch> wrote:
+In order to keep PCI info simple and neat, this patch series have
+introduced a 3 hierarchy of struct. First layer will be the
+intel_mgbe_common_data struct which keeps all Intel common configuration.
+Second layer will be xxx_common_data which keeps all the different Intel
+microarchitecture, e.g tgl, ehl. The third layer will be configuration
+that tied to the PCI ID only based on speed and RGMII/SGMII interface.
 
-> > +static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
-> > +				    phy_interface_t mode, bool allow_over_2500,
-> > +				    bool make_cmode_writable)  
-> 
-> I don't like these two parameters. The caller of this function can do
-> the check for allow_over_2500 and error out before calling this.
-> 
-> Is make_cmode_writable something that could be done once at probe and
-> then forgotten about? Or is it needed before every write? At least
-> move it into the specific port_set_cmode() that requires it.
-> 
-> Thanks
-> 	Andrew
+EHL and TGL will also having a higher system clock which is 200Mhz.
 
-Btw those two additional parameters were modeled as in
-  static int mv88e6xxx_port_set_speed(struct mv88e6xxx_chip *chip,
-                                      int port, int speed, bool alt_bit,
-                                      bool force_bit);
+Voon Weifeng (4):
+  net: stmmac: add EHL SGMII 1Gbps PCI info and PCI ID
+  net: stmmac: add TGL SGMII 1Gbps PCI info and PCI ID
+  net: stmmac: add EHL RGMII 1Gbps PCI info and PCI ID
+  net: stmmac: setup higher frequency clk support for EHL & TGL
+
+ drivers/net/ethernet/stmicro/stmmac/stmmac_pci.c | 172 +++++++++++++++++++++++
+ drivers/net/ethernet/stmicro/stmmac/stmmac_ptp.c |   3 +
+ include/linux/stmmac.h                           |   1 +
+ 3 files changed, 176 insertions(+)
+
+-- 
+1.9.1
+
