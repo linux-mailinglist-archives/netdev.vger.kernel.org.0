@@ -2,409 +2,211 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 736A29F680
-	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:01:07 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 00E7D9F683
+	for <lists+netdev@lfdr.de>; Wed, 28 Aug 2019 01:01:25 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726091AbfH0XBF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 19:01:05 -0400
-Received: from smark.slackware.pl ([88.198.48.135]:46326 "EHLO
-        smark.slackware.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbfH0XBF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 19:01:05 -0400
-Received: from dirac.toxcorp.com (unknown [172.22.22.8])
+        id S1726234AbfH0XBX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 19:01:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38464 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726025AbfH0XBX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 27 Aug 2019 19:01:23 -0400
+Received: from mail-wm1-f44.google.com (mail-wm1-f44.google.com [209.85.128.44])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: shasta@toxcorp.com)
-        by smark.slackware.pl (Postfix) with ESMTPSA id AFA3B200A7;
-        Wed, 28 Aug 2019 01:01:02 +0200 (CEST)
-Subject: Re: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m:
- Invalid argument)
-To:     "Fujinaka, Todd" <todd.fujinaka@intel.com>,
-        "e1000-devel@lists.sourceforge.net" 
-        <e1000-devel@lists.sourceforge.net>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "mhemsley@open-systems.com" <mhemsley@open-systems.com>
-References: <ec481f17-cbf4-589d-807f-736421391c71@toxcorp.com>
- <9B4A1B1917080E46B64F07F2989DADD69B013DB0@ORSMSX115.amr.corp.intel.com>
-From:   Jakub Jankowski <shasta@toxcorp.com>
-Message-ID: <34ba28aa-44a5-8a6c-c8c4-b92a16f952ad@toxcorp.com>
-Date:   Wed, 28 Aug 2019 01:01:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 2AE6E233FF
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 23:01:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566946881;
+        bh=HsIuj/1hGmTe3FacQdmSLl1zZrHFZWUqwnDRSSeK2IA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Q5nLHkdOUH5steymeMPAAMH8/xu44BLHsIO/HnwC6668ZtaBksi+6Vh9pvfrtB+VL
+         deHeNiY7kVZHbTH6YWN36XN2rxlu1CQ28awK1SMMd59PNPDlUEtoWMXPg0tDn++wfo
+         2NS9LYQ1AJfAKzBlxyJHRqYQDsHi2C/MNYPo/u6E=
+Received: by mail-wm1-f44.google.com with SMTP id t6so704542wmj.4
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 16:01:21 -0700 (PDT)
+X-Gm-Message-State: APjAAAU2zyilddDtVzVU3hjJi8DWa9wxA2uYlTwgbsov+YmYWAcApnne
+        P86LtRchD/3O3NtiucSgisxFVSQimMK/NN/qx6kKww==
+X-Google-Smtp-Source: APXvYqwxX6aj+Ymx+62b9ZPWXCfphCCr0vC4ulvY7qH4JEvBOfx6MvOXOniW6CIRGuQYazWncVtTqLvs8HJBAWLUrm8=
+X-Received: by 2002:a7b:c4d2:: with SMTP id g18mr810307wmk.79.1566946879494;
+ Tue, 27 Aug 2019 16:01:19 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <9B4A1B1917080E46B64F07F2989DADD69B013DB0@ORSMSX115.amr.corp.intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+References: <20190827205213.456318-1-ast@kernel.org>
+In-Reply-To: <20190827205213.456318-1-ast@kernel.org>
+From:   Andy Lutomirski <luto@kernel.org>
+Date:   Tue, 27 Aug 2019 16:01:08 -0700
+X-Gmail-Original-Message-ID: <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+Message-ID: <CALCETrV8iJv9+Ai11_1_r6MapPhhwt9hjxi=6EoixytabTScqg@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] bpf, capabilities: introduce CAP_BPF
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        LSM List <linux-security-module@vger.kernel.org>,
+        James Morris <jmorris@namei.org>, Jann Horn <jannh@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, kernel-team <kernel-team@fb.com>,
+        Linux API <linux-api@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+[adding some security and tracing folks to cc]
 
-On 8/27/19 7:56 PM, Fujinaka, Todd wrote:
-> The hints should be:
-> # ethtool -m eth10
-> Cannot get module EEPROM information: Invalid argument # dmesg | tail -n 1 [  445.971974] i40e 0000:3d:00.3 eth10: Module EEPROM memory read not supported. Please update the NVM image.
+On Tue, Aug 27, 2019 at 1:52 PM Alexei Starovoitov <ast@kernel.org> wrote:
 >
-> # ethtool -i eth10
-> driver: i40e
-> version: 2.9.21
-> firmware-version: 3.31 0x80000d31 1.1767.0
+> Introduce CAP_BPF that allows loading all types of BPF programs,
+> create most map types, load BTF, iterate programs and maps.
+> CAP_BPF alone is not enough to attach or run programs.
 >
-> And the working case:
-> # ethtool -i eth8
-> driver: i40e
-> version: 2.9.21
-> firmware-version: 6.01 0x800035cf 1.1876.0
+> Networking:
 >
-> If you don't see it, 6.01 > 3.31.
-The reason why firmware between the two is (that much) different is 
-because the non-working case is from X722 NIC, while the working one is 
-from X710.
+> CAP_BPF and CAP_NET_ADMIN are necessary to:
+> - attach to cgroup-bpf hooks like INET_INGRESS, INET_SOCK_CREATE, INET4_CONNECT
+> - run networking bpf programs (like xdp, skb, flow_dissector)
+>
+> Tracing:
+>
+> CAP_BPF and perf_paranoid_tracepoint_raw() (which is kernel.perf_event_paranoid == -1)
+> are necessary to:
+> - attach bpf program to raw tracepoint
+> - use bpf_trace_printk() in all program types (not only tracing programs)
+> - create bpf stackmap
+>
+> To attach bpf to perf_events perf_event_open() needs to succeed as usual.
+>
+> CAP_BPF controls BPF side.
+> CAP_NET_ADMIN controls intersection where BPF calls into networking.
+> perf_paranoid_tracepoint_raw controls intersection where BPF calls into tracing.
+>
+> In the future CAP_TRACING could be introduced to control
+> creation of kprobe/uprobe and attaching bpf to perf_events.
+> In such case bpf_probe_read() thin wrapper would be controlled by CAP_BPF.
+> Whereas probe_read() would be controlled by CAP_TRACING.
+> CAP_TRACING would also control generic kprobe+probe_read.
+> CAP_BPF and CAP_TRACING would be necessary for tracing bpf programs
+> that want to use bpf_probe_read.
 
-> The NVM update tool should be available on downloadcenter.intel.com
+First, some high-level review:
 
-Thanks for the pointer to NVM updater. I'd like to offer some additional 
-comments about my experience with the newest one (v4.00):
+Can you write up some clear documentation aimed at administrators that
+says what CAP_BPF does?  For example, is it expected that CAP_BPF by
+itself permits reading all kernel memory?  Why might one grant it?
 
-a) running ./nvmupdate64e (from X722_NVMUpdate_Linux_x64 subdir) errors 
-out without really saying what's wrong:
+Can you give at least one fully described use case where CAP_BPF
+solves a real-world problem that is not solved by existing mechanisms?
 
-   # ./nvmupdate64e
+Changing the capability that some existing operation requires could
+break existing programs.  The old capability may need to be accepted
+as well.
 
-   Intel(R) Ethernet NVM Update Tool
-   NVMUpdate version 1.30.2.11
-   Copyright (C) 2013 - 2017 Intel Corporation.
+I'm inclined to suggest that CAP_TRACING be figured out or rejected
+before something like this gets applied.
 
-
-   WARNING: To avoid damage to your device, do not stop the update or 
-reboot or power off the system during this update.
-   Inventory in progress. Please wait [+.........]
-   Tool execution completed with the following status: The configuration 
-file could not be opened/read, or a syntax error was discovered in the file
-   Press any key to exit.
-
-after enabling logging (-l out.log) a bit more is revealed:
-
-   # tail -n 2 out.log
-   Error:   Config file line 2: Not supported config file version.
-   Error:   Missing CONFIG VERSION parameter in configuration file.
-
-but that's not entirely true, CONFIG VERSION is set in the default 
-configuration file:
-
-   # head -n 2 nvmupdate.cfg
-   CURRENT FAMILY: 1.0.0
-   CONFIG VERSION: 1.14.0
-
-so why isn't this understood?
-Manually editing nvmupdate.cfg and setting CONFIG VERSION: 1.11.0 seems 
-to make this particular problem go away.
-
-b) Re-doing this with downgraded config version exposes another problem:
-
-   Config file read.
-   Error:   Can't open NVM map file [Immediate_offset_2.txt]
-
-and indeed, there is no Immediate_offset_2.txt in 
-NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_Linux_x64/
-There is one, however, in 
-NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_EFIx64/ subdir. 
-Copying it over to the _Linux_x64 resolves this particular problem
-
-c) Re-doing this with Immediate_offset_2.txt in place exposes third problem:
-
-   Error:   Can't open NVM image file 
-[LBG_B2_Wolf_Pass_WFT_X557_P01_PHY_Auto_Detect_P23_NCSI_v3.31_800016DB.bin]
-
-and once again - same story. It exists in 
-NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_EFIx64/ but not 
-NVMUpdatePackage_WFT_WFQ&WF0_v4.00/X722_NVMUpdate_Linux_x64/ - had to 
-copy it over.
-
-
-Once I managed to get all these out of the way, the tool finally ran:
-
-   Num Description                               Ver. DevId S:B Status
-   === ======================================== ===== ===== ====== 
-===============
-   01) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:024 
-Update not
-available
-   02) Intel(R) Ethernet Connection X722 for     3.49  37D2 00:061 Update
-       10GBASE-T available
-   03) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:175 
-Update not
-available
-
-
-The initial starting point was:
-
-0) firmware-version: 3.31 0x80000d31 1.1767.0
-
-After first update+reboot, this was bumped to:
-
-1) firmware-version: 3.1d 0x800016db 1.1767.0    (but ethtool -m ethX 
-still doesn't work)
-
-So I ran the tool the second time, it said 'Update available' again, but 
-this time:
-
-   Num Description                               Ver. DevId S:B Status
-   === ======================================== ===== ===== ====== 
-===============
-   01) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:024 
-Update not
-available
-   02) Intel(R) Ethernet Connection X722 for     3.29  37D2 00:061 Update
-       10GBASE-T available
-   03) Intel(R) Ethernet Server Adapter I350-T4  1.99  1521 00:175 
-Update not
-available
-
-   Options: Adapter Index List (comma-separated), [A]ll, e[X]it
-   Enter selection:02
-   Would you like to back up the NVM images? [Y]es/[N]o: Y
-   Update in progress. This operation may take several minutes.
-   [*******+..]
-   Tool execution completed with the following status: <---------- why 
-is there no status printed?
-   Press any key to exit.
-
-
-Checking output log:
-
-   # cat out3.log
-   Intel(R) Ethernet NVM Update Tool
-   NVMUpdate version 1.30.2.11
-   Copyright (C) 2013 - 2017 Intel Corporation.
-
-   ./nvmupdate64e -c nvmupdate.cfg -l out3.log
-
-   Config file read.
-   Inventory
-   [00:061:00:00]: Intel(R) Ethernet Connection X722 for 10GBASE-T
-       Flash inventory started
-       Shadow RAM inventory started
-   Alternate MAC address is not set
-       Shadow RAM inventory finished
-       Flash inventory finished
-       OROM inventory started
-       OROM inventory finished
-       PHY NVM inventory started
-       PHY NVM inventory finished
-   [00:061:00:01]: Intel(R) Ethernet Connection X722 for 10GBASE-T
-       Device already inventoried.
-   [00:061:00:02]: Intel(R) Ethernet Connection X722 for 10GbE SFP+
-       Device already inventoried.
-       PHY NVM inventory started
-       PHY NVM inventory finished
-   [00:061:00:03]: Intel(R) Ethernet Connection X722 for 10GbE SFP+
-       Device already inventoried.
-   Update
-   [00:061:00:00]: Intel(R) Ethernet Connection X722 for 10GBASE-T
-       Creating backup images in directory: A4BF0164884A
-       Backup images created.
-       Flash update started
-       NVM image verification started
-       Shadow RAM image verification started
-
-   Image differences found at offset 0x3AE [Device=0xF, Buffer=0x0] - 
-update required.
-   Error:   Flash update failed
-   [00:061:00:02]: Intel(R) Ethernet Connection X722 for 10GbE SFP+
-   #
-
-However, ethtool -i suggests that firmware was updated to:
-
-2) firmware-version: 4.00 0x80001577 1.1580.0    <------- so it did 
-_something_ after all?
-
-At this point, every subsequent attempt to run the NVM updater yields 
-the same results: an update is available, but attempting to apply it 
-fails with the same message in log.
-
-And my initial issue still persists - ethtool -m <iface> still returns 
-"invalid argument" with "Module EEPROM memory read not supported. Please 
-update the NVM image" logged in dmesg.
-
-How can I resolve this?
-
-Cheers,
-  Jakub.
 
 >
-> Todd Fujinaka
-> Software Application Engineer
-> Datacenter Engineering Group
-> Intel Corporation
-> todd.fujinaka@intel.com
+> Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+> ---
+> I would prefer to introduce CAP_TRACING soon, since it
+> will make tracing and networking permission model symmetrical.
 >
->
-> -----Original Message-----
-> From: Jakub Jankowski [mailto:shasta@toxcorp.com]
-> Sent: Tuesday, August 27, 2019 4:03 AM
-> To: e1000-devel@lists.sourceforge.net
-> Cc: netdev@vger.kernel.org; shasta@toxcorp.com; mhemsley@open-systems.com
-> Subject: [E1000-devel] SFP+ EEPROM readouts fail on X722 (ethtool -m: Invalid argument)
->
-> Hi,
->
-> We can't get SFP+ EEPROM readouts for X722 to work at all:
->
-> # ethtool -m eth10
-> Cannot get module EEPROM information: Invalid argument # dmesg | tail -n 1 [  445.971974] i40e 0000:3d:00.3 eth10: Module EEPROM memory read not supported. Please update the NVM image.
-> # lspci | grep 3d:00.3
-> 3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
->
->
-> We're running 4.19.65 kernel at the moment, testing using the newest out-of-tree Intel module
->
-> # modinfo -F version i40e
-> 2.9.21
->
-> We also tried:
-> - 4.19.65 with in-tree i40e (2.3.2-k)
-> - stock Arch Linux (kernel 5.2.5, driver 2.8.20-k) and the results are the same, as shown above.
->
-> # ethtool -i eth10
-> driver: i40e
-> version: 2.9.21
-> firmware-version: 3.31 0x80000d31 1.1767.0
-> expansion-rom-version:
-> bus-info: 0000:3d:00.3
-> supports-statistics: yes
-> supports-test: yes
-> supports-eeprom-access: yes
-> supports-register-dump: yes
-> supports-priv-flags: yes
-> # dmidecode -s baseboard-manufacturer
-> Intel Corporation
-> # dmidecode -s baseboard-product-name
-> S2600WFT
-> # dmidecode -s baseboard-version
-> H48104-853
->
-> # lspci -vvv
-> (...)
-> 3d:00.3 Ethernet controller: Intel Corporation Ethernet Connection X722 for 10GbE SFP+ (rev 09)
-> 	DeviceName: Intel PCH Integrated 10 Gigabit Ethernet Controller
-> 	Subsystem: Intel Corporation Ethernet Connection X722 for 10GbE SFP+
-> 	Control: I/O- Mem+ BusMaster+ SpecCycle- MemWINV- VGASnoop- ParErr+ Stepping- SERR+ FastB2B- DisINTx+
-> 	Status: Cap+ 66MHz- UDF- FastB2B- ParErr- DEVSEL=fast >TAbort- <TAbort- <MAbort- >SERR- <PERR- INTx-
-> 	Latency: 0, Cache Line Size: 32 bytes
-> 	Interrupt: pin A routed to IRQ 112
-> 	NUMA node: 0
-> 	Region 0: Memory at ab000000 (64-bit, prefetchable) [size=16M]
-> 	Region 3: Memory at b0000000 (64-bit, prefetchable) [size=32K]
-> 	Expansion ROM at <ignored> [disabled]
-> 	Capabilities: [40] Power Management version 3
-> 		Flags: PMEClk- DSI+ D1- D2- AuxCurrent=0mA PME(D0+,D1-,D2-,D3hot+,D3cold+)
-> 		Status: D0 NoSoftRst+ PME-Enable- DSel=0 DScale=1 PME-
-> 	Capabilities: [50] MSI: Enable- Count=1/1 Maskable+ 64bit+
-> 		Address: 0000000000000000  Data: 0000
-> 		Masking: 00000000  Pending: 00000000
-> 	Capabilities: [70] MSI-X: Enable+ Count=129 Masked-
-> 		Vector table: BAR=3 offset=00000000
-> 		PBA: BAR=3 offset=00001000
-> 	Capabilities: [a0] Express (v2) Endpoint, MSI 00
-> 		DevCap:	MaxPayload 512 bytes, PhantFunc 0, Latency L0s <512ns, L1 <64us
-> 			ExtTag+ AttnBtn- AttnInd- PwrInd- RBE+ FLReset+ SlotPowerLimit 0.000W
-> 		DevCtl:	CorrErr+ NonFatalErr+ FatalErr+ UnsupReq+
-> 			RlxdOrd+ ExtTag+ PhantFunc- AuxPwr- NoSnoop- FLReset-
-> 			MaxPayload 256 bytes, MaxReadReq 512 bytes
-> 		DevSta:	CorrErr+ NonFatalErr- FatalErr- UnsupReq+ AuxPwr+ TransPend-
-> 		LnkCap:	Port #0, Speed 2.5GT/s, Width x1, ASPM L0s L1, Exit Latency L0s <64ns, L1 <1us
-> 			ClockPM- Surprise- LLActRep- BwNot- ASPMOptComp+
-> 		LnkCtl:	ASPM Disabled; RCB 64 bytes Disabled- CommClk+
-> 			ExtSynch- ClockPM- AutWidDis- BWInt- AutBWInt-
-> 		LnkSta:	Speed 2.5GT/s (ok), Width x1 (ok)
-> 			TrErr- Train- SlotClk+ DLActive- BWMgmt- ABWMgmt-
-> 		DevCap2: Completion Timeout: Range AB, TimeoutDis+, LTR-, OBFF Not Supported
-> 			 AtomicOpsCap: 32bit- 64bit- 128bitCAS-
-> 		DevCtl2: Completion Timeout: 50us to 50ms, TimeoutDis-, LTR-, OBFF Disabled
-> 			 AtomicOpsCtl: ReqEn-
-> 		LnkSta2: Current De-emphasis Level: -6dB, EqualizationComplete-, EqualizationPhase1-
-> 			 EqualizationPhase2-, EqualizationPhase3-, LinkEqualizationRequest-
-> 	Capabilities: [e0] Vital Product Data
-> 		Product Name: Example VPD
-> 		Read-only fields:
-> 			[V0] Vendor specific:
-> 			[RV] Reserved: checksum good, 0 byte(s) reserved
-> 		End
-> 	Capabilities: [100 v2] Advanced Error Reporting
-> 		UESta:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq- ACSViol-
-> 		UEMsk:	DLP- SDES- TLP- FCP- CmpltTO- CmpltAbrt- UnxCmplt- RxOF- MalfTLP- ECRC- UnsupReq+ ACSViol-
-> 		UESvrt:	DLP+ SDES- TLP- FCP+ CmpltTO- CmpltAbrt- UnxCmplt- RxOF+ MalfTLP+ ECRC- UnsupReq- ACSViol-
-> 		CESta:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
-> 		CEMsk:	RxErr- BadTLP- BadDLLP- Rollover- Timeout- AdvNonFatalErr+
-> 		AERCap:	First Error Pointer: 00, ECRCGenCap+ ECRCGenEn- ECRCChkCap+ ECRCChkEn-
-> 			MultHdrRecCap- MultHdrRecEn- TLPPfxPres- HdrLogCap-
-> 		HeaderLog: 00000000 00000000 00000000 00000000
-> 	Capabilities: [150 v1] Alternative Routing-ID Interpretation (ARI)
-> 		ARICap:	MFVC- ACS-, Next Function: 0
-> 		ARICtl:	MFVC- ACS-, Function Group: 0
-> 	Capabilities: [160 v1] Single Root I/O Virtualization (SR-IOV)
-> 		IOVCap:	Migration-, Interrupt Message Number: 000
-> 		IOVCtl:	Enable- Migration- Interrupt- MSE- ARIHierarchy-
-> 		IOVSta:	Migration-
-> 		Initial VFs: 32, Total VFs: 32, Number of VFs: 0, Function Dependency Link: 03
-> 		VF offset: 109, stride: 1, Device ID: 37cd
-> 		Supported Page Size: 00000553, System Page Size: 00000001
-> 		Region 0: Memory at 00000000af000000 (64-bit, prefetchable)
-> 		Region 3: Memory at 00000000b0020000 (64-bit, prefetchable)
-> 		VF Migration: offset: 00000000, BIR: 0
-> 	Capabilities: [1a0 v1] Transaction Processing Hints
-> 		Device specific mode supported
-> 		No steering table available
-> 	Capabilities: [1b0 v1] Access Control Services
-> 		ACSCap:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-> 		ACSCtl:	SrcValid- TransBlk- ReqRedir- CmpltRedir- UpstreamFwd- EgressCtrl- DirectTrans-
-> 	Kernel driver in use: i40e
-> 	Kernel modules: i40e
->
->
-> Same kernel+i40e, same SFP+ module - but on Intel X710, works like a treat:
->
-> # lspci | grep X7
-> 81:00.0 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01)
-> 81:00.1 Ethernet controller: Intel Corporation Ethernet Controller X710 for 10GbE SFP+ (rev 01) # ethtool -m eth8
-> 	Identifier                                : 0x03 (SFP)
-> 	Extended identifier                       : 0x04 (GBIC/SFP defined by 2-wire interface ID)
-> 	Connector                                 : 0x07 (LC)
-> 	Transceiver codes                         : 0x10 0x00 0x00 0x01 0x00 0x00 0x00 0x00 0x00
-> 	Transceiver type                          : 10G Ethernet: 10G Base-SR
-> 	Transceiver type                          : Ethernet: 1000BASE-SX
-> 	Encoding                                  : 0x06 (64B/66B)
-> 	BR, Nominal                               : 10300MBd
->           (...)
-> # ethtool -i eth8
-> driver: i40e
-> version: 2.9.21
-> firmware-version: 6.01 0x800035cf 1.1876.0
-> expansion-rom-version:
-> bus-info: 0000:81:00.0
-> supports-statistics: yes
-> supports-test: yes
-> supports-eeprom-access: yes
-> supports-register-dump: yes
-> supports-priv-flags: yes
-> #
->
->
-> Is this a known problem?
->
->
-> Best regards,
->    Jakub
->
->
->
-> _______________________________________________
-> E1000-devel mailing list
-> E1000-devel@lists.sourceforge.net
-> https://lists.sourceforge.net/lists/listinfo/e1000-devel
-> To learn more about Intel&#174; Ethernet, visit http://communities.intel.com/community/wired
 
+Here's my proposal for CAP_TRACING, documentation-style:
+
+--- begin ---
+
+CAP_TRACING enables a task to use various kernel features to trace
+running user programs and the kernel itself.  CAP_TRACING also enables
+a task to bypass some speculation attack countermeasures.  A task in
+the init user namespace with CAP_TRACING will be able to tell exactly
+what kernel code is executed and when, and will be able to read kernel
+registers and kernel memory.  It will, similarly, be able to read the
+state of other user tasks.
+
+Specifically, CAP_TRACING allows the following operations.  It may
+allow more operations in the future:
+
+ - Full use of perf_event_open(), similarly to the effect of
+kernel.perf_event_paranoid == -1.
+
+ - Loading and attaching tracing BPF programs, including use of BPF
+raw tracepoints.
+
+ - Use of BPF stack maps.
+
+ - Use of bpf_probe_read() and bpf_trace_printk().
+
+ - Use of unsafe pointer-to-integer conversions in BPF.
+
+ - Bypassing of BPF's speculation attack hardening measures and
+constant blinding.  (Note: other mechanisms might also allow this.)
+
+CAP_TRACING does not override normal permissions on sysfs or debugfs.
+This means that, unless a new interface for programming kprobes and
+such is added, it does not directly allow use of kprobes.
+
+If CAP_TRACING, by itself, enables a task to crash or otherwise
+corrupt the kernel or other tasks, this will be considered a kernel
+bug.
+
+CAP_TRACING in a non-init user namespace may, in the future, allow
+tracing of other tasks in that user namespace or its descendants.  It
+will not enable kernel tracing or tracing of tasks outside the user
+namespace in question.
+
+--- end ---
+
+Does this sound good?  The idea here is that CAP_TRACING should be
+very useful even without CAP_BPF, which allows CAP_BPF to be less
+powerful.
+
+> +bool cap_bpf_tracing(void)
+> +{
+> +       return capable(CAP_SYS_ADMIN) ||
+> +              (capable(CAP_BPF) && !perf_paranoid_tracepoint_raw());
+> +}
+
+If auditing is on, this will audit the wrong thing.  James, I think a
+helper like:
+
+bool ns_either_cap(struct user_ns *ns, int preferred_cap, int other_cap);
+
+would help.  ns_either_cap returns true if either cap is held (i.e.
+effective, as usual).  On success, it audits preferred_cap if held and
+other_cap otherwise.  On failure, it audits preferred_cap.  Does this
+sound right?
+
+Also, for reference, perf_paranoid_tracepoint_raw() is this:
+
+static inline bool perf_paranoid_tracepoint_raw(void)
+{
+        return sysctl_perf_event_paranoid > -1;
+}
+
+so the overall effect of cap_bpf_tracing() is rather odd, and it seems
+to control a few things that don't obvious all have similar security
+effects.
+
+
+> @@ -2080,7 +2083,10 @@ static int bpf_prog_test_run(const union bpf_attr *attr,
+>         struct bpf_prog *prog;
+>         int ret = -ENOTSUPP;
+>
+> -       if (!capable(CAP_SYS_ADMIN))
+> +       if (!capable(CAP_NET_ADMIN) || !capable(CAP_BPF))
+> +               /* test_run callback is available for networking progs only.
+> +                * Add cap_bpf_tracing() above when tracing progs become runable.
+> +                */
+
+I think test_run should probably be CAP_SYS_ADMIN forever.  test_run
+is the only way that one can run a bpf program and call helper
+functions via the program if one doesn't have permission to attach the
+program.  Also, if there's a way to run a speculation attack via a bpf
+program, test_run will make it much easier to do in a controlled
+environment.  Finally, when debugging bpf programs, developers can use
+their own computers or a VM.
