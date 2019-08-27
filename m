@@ -2,117 +2,220 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id 85A149F548
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 23:41:26 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id 976D49F571
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 23:44:55 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731090AbfH0VlQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 17:41:16 -0400
-Received: from mail-io1-f45.google.com ([209.85.166.45]:35501 "EHLO
-        mail-io1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730511AbfH0VlP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 17:41:15 -0400
-Received: by mail-io1-f45.google.com with SMTP id b10so1671460ioj.2;
-        Tue, 27 Aug 2019 14:41:15 -0700 (PDT)
+        id S1726506AbfH0Vou (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 17:44:50 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:40439 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725835AbfH0Vou (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 17:44:50 -0400
+Received: by mail-pf1-f194.google.com with SMTP id w16so245056pfn.7
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 14:44:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=k9+9Hu8LtaqV2cw1LoTggAA9L3QKuBbHOdCcyf8AI58=;
-        b=nGag63u/hue8uakpghxzvLChIUygqGosUm4kD2OBI3caD89k1bt58M2O+hGBOIgsRH
-         EVe7USVeRpRgc7HlH2QL6fCrx+gQN86LitEdecrnEmrT8RIgoz7uuW+t/28HsQpJ7Ypq
-         gUCWgfWsTCJcDOQDv/ajo2fDpn9iFmlCPX0didOLxSIUmWAlGuBvQIjlN6V6vYlVRHgt
-         DFZapKCP4ub7ihF7qjLQ3lBwZCOaEiZc/ztlZX55zsE8BXBA4D7Csv+kQuneeNAz1QQA
-         0Q184xFpVz6DZwYblpeUqMCD4wGfpCw3jCWRmnKWjtBzJO8U+9gSixHhTL3DfK5H1ho9
-         Fcxw==
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=eg8haDmLIw2Wvdralhy+zopQ46pnFXlHLS3hbLaf8jc=;
+        b=Q6oBRhmBunX5Ktou0b+2Ao4MZPWAwOWhDUlQR+OcZQ7hx2mZagBZL5Dyj2ww498uxt
+         vCjPiydsFVjmYUIEHXP85shPsscpZSnMrxIHBUYCOujBsObFg3sufwOwc/7rPXrdGkjr
+         wWNK9ISfQrAiq7rXxg0ihODgihsRlXWX36oJQEz6Je0S+oeOGc4NJtMrkXlZJL85oWLn
+         C6l4B4ZCx0hGZPvT07s5nIm3A0wKHS5cLWbXWofIiGSV2nCNdYxGc8sP+vG6S6p6AAxU
+         +IJHpjMvWc7MZb1P+ZihUOgUJ9g7naHqp0/KHilFMwj0LT5bNYcfvCvCfQiX3Jflo3Ig
+         SIwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=k9+9Hu8LtaqV2cw1LoTggAA9L3QKuBbHOdCcyf8AI58=;
-        b=n3ECoficuXetVa3m9CinKHyE30aE3WmcH9ZjAfOQMltpvk46BNWrHxfBcdjvjhnJ2B
-         j8NsaSkQ3LN2oYtMzwukFx9E6RilyRweQXTaX8e5pZE8Le+tYRmm5oEFecCsHUxFYXRa
-         3ZtCz0bZKTAXF59Fd5smlQ3jAMUZ2dqM0nH+x3F+2pz3COP8M0O+Caj2e4Hye19Iwa7N
-         mFdcn21l3n4AOCwkeOhqtncOyXvaU9Tb8zl18H02vhoA9o8WYs4pwhD7g6vDgISK1WCk
-         NVxhzYYfU57nMsmnC8yxg/w/O6KmXabFSgDiSWj6Tc9dTDS7yPUBC65jgnvWxnw0k+Z5
-         RRnw==
-X-Gm-Message-State: APjAAAX30PWonGIO3XfKBspgOn3Rr34IVoeSMrn6JFN+ZbXI291JyFe8
-        FpBdT5xQHdlFL5zx2WRum6vQZsKB7LDlMospSKCaDVJv
-X-Google-Smtp-Source: APXvYqyT9Cd8H5KzbIgeFP5EbHOWjNdeCOslOptbKoLhSMF3J2FwHIEjNRpT4u6+0EEVwn+Lphqn7QBB5xTb1Dcu6M0=
-X-Received: by 2002:a02:cd82:: with SMTP id l2mr991852jap.97.1566942074523;
- Tue, 27 Aug 2019 14:41:14 -0700 (PDT)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=eg8haDmLIw2Wvdralhy+zopQ46pnFXlHLS3hbLaf8jc=;
+        b=tyO761mXUs/+ID2KUcoJeC9fvvGsiygCmP1p3yZgCHjO6LIJVTsJHtnInCJj+8CRqq
+         c8o1lK4I175OwAqbK8aeEyZ+gUiidJQf1CTmzcVkLKs0CS4ikl5hyMDLcymcWWbZtR7O
+         Zu9hhE8ANjy0pBVmV+q3VOO5PSv2T3DVcgwva3TtlrSIFt+cMQOTnfpEO6uIVJtgKXmF
+         Df2RiTYYaEaczYBJmEUs2T9akmDW7JZbapmSDHvQhVppHUJSsqGaBUGeF9OomjlTDmV1
+         P8rCFLNgXnWLYAXzf34pWJ/P2qUYYbashfF+1D/j4NiHOPgbqcTUsdnUX9bxyJOSqiKg
+         vffA==
+X-Gm-Message-State: APjAAAUFk61P20O4F/4QtuDRd9la+eaZMNfsOANH69DRvoZ84Jpj/SD6
+        ztrmMdWaRRXP2nOck1NAxmhigw==
+X-Google-Smtp-Source: APXvYqxrlnQXD3L9OJzSi1RGdjb6kvZZfpU6Z4oWdCK8EiApUN4UKCmzmYY6ejZchtOqp0IfcLO6bg==
+X-Received: by 2002:a17:90b:289:: with SMTP id az9mr903418pjb.5.1566942289518;
+        Tue, 27 Aug 2019 14:44:49 -0700 (PDT)
+Received: from Shannons-MacBook-Pro.local ([12.1.37.26])
+        by smtp.gmail.com with ESMTPSA id x9sm291490pgp.75.2019.08.27.14.44.48
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 27 Aug 2019 14:44:48 -0700 (PDT)
+Subject: Re: [PATCH v5 net-next 03/18] ionic: Add port management commands
+To:     Jakub Kicinski <jakub.kicinski@netronome.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net
+References: <20190826213339.56909-1-snelson@pensando.io>
+ <20190826213339.56909-4-snelson@pensando.io>
+ <20190826213631.37b8f56d@cakuba.netronome.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <128b4ac5-2cc5-2f85-ae21-8a142de90595@pensando.io>
+Date:   Tue, 27 Aug 2019 14:44:47 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:60.0)
+ Gecko/20100101 Thunderbird/60.8.0
 MIME-Version: 1.0
-References: <CAA5aLPhf1=wzQG0BAonhR3td-RhEmXaczug8n4hzXCzreb+52g@mail.gmail.com>
- <CAM_iQpVyEtOGd5LbyGcSNKCn5XzT8+Ouup26fvE1yp7T5aLSjg@mail.gmail.com>
- <CAA5aLPiqyhnWjY7A3xsaNJ71sDOf=Rqej8d+7=_PyJPmV9uApA@mail.gmail.com>
- <CAM_iQpUH6y8oEct3FXUhqNekQ3sn3N7LoSR0chJXAPYUzvWbxA@mail.gmail.com>
- <CAA5aLPjzX+9YFRGgCgceHjkU0=e6x8YMENfp_cC9fjfHYK3e+A@mail.gmail.com>
- <CAM_iQpXBhrOXtfJkibyxyq781Pjck-XJNgZ-=Ucj7=DeG865mw@mail.gmail.com>
- <CAA5aLPjO9rucCLJnmQiPBxw2pJ=6okf3C88rH9GWnh3p0R+Rmw@mail.gmail.com>
- <CAM_iQpVtGUH6CAAegRtTgyemLtHsO+RFP8f6LH2WtiYu9-srfw@mail.gmail.com>
- <9cbefe10-b172-ae2a-0ac7-d972468eb7a2@gmail.com> <CAA93jw6TWUmqsvBDT4tFPgwjGxAmm_S5bUibj16nwp1F=AwyRA@mail.gmail.com>
- <48a3284b-e8ba-f169-6a2d-9611f8538f07@gmail.com>
-In-Reply-To: <48a3284b-e8ba-f169-6a2d-9611f8538f07@gmail.com>
-From:   Dave Taht <dave.taht@gmail.com>
-Date:   Tue, 27 Aug 2019 14:41:05 -0700
-Message-ID: <CAA93jw69=_DnqnOUWaSJqYG-TAQD04j5qkOShNK6WmOU8=Z3mw@mail.gmail.com>
-Subject: Re: Unable to create htb tc classes more than 64K
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Akshat Kakkar <akshat.1984@gmail.com>,
-        Anton Danilov <littlesmilingcloud@gmail.com>,
-        NetFilter <netfilter-devel@vger.kernel.org>,
-        lartc <lartc@vger.kernel.org>, netdev <netdev@vger.kernel.org>,
-        bloat <bloat@lists.bufferbloat.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190826213631.37b8f56d@cakuba.netronome.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Aug 27, 2019 at 2:09 PM Eric Dumazet <eric.dumazet@gmail.com> wrote=
-:
->
->
->
-> On 8/27/19 10:53 PM, Dave Taht wrote:
-> >
-> > Although this is very cool, I think in this case the OP is being
-> > a router, not server?
->
-> This mechanism is generic. EDT has not been designed for servers only.
->
-> One HTB class (with one associated qdisc per leaf) per rate limiter
-> does not scale, and consumes a _lot_ more memory.
->
-> We have abandoned HTB at Google for these reasons.
->
-> Nice thing with EDT is that you can stack arbitrary number of rate limite=
-rs,
-> and still keep a single queue (in FQ or another layer downstream)
+On 8/26/19 9:36 PM, Jakub Kicinski wrote:
+> On Mon, 26 Aug 2019 14:33:24 -0700, Shannon Nelson wrote:
+>> The port management commands apply to the physical port
+>> associated with the PCI device, which might be shared among
+>> several logical interfaces.
+>>
+>> Signed-off-by: Shannon Nelson <snelson@pensando.io>
+[...]
 
-There's a lot of nice things about EDT! I'd followed along on the
-theory, timerwheels, virtual clocks, etc, and went
-seeking ethernet hw that could do it (directly) on the low end and
-came up empty - and doing anything with the concept required a
-complete rethink on everything we were already doing in
-wifi/fq_codel/cake ;(, and after we shipped cake in 4.19, I bought a
-sailboat, and logged out for a while.
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_dev.h b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+>> index 30a5206bba4e..5b83f21af18a 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_dev.h
+>> @@ -122,6 +122,10 @@ struct ionic_dev {
+>>   	struct ionic_intr __iomem *intr_ctrl;
+>>   	u64 __iomem *intr_status;
+>>   
+>> +	u32 port_info_sz;
+>> +	struct ionic_port_info *port_info;
+>> +	dma_addr_t port_info_pa;
+>> +
+>>   	struct ionic_devinfo dev_info;
+>>   };
+>>   
+>> @@ -140,4 +144,15 @@ void ionic_dev_cmd_identify(struct ionic_dev *idev, u8 ver);
+>>   void ionic_dev_cmd_init(struct ionic_dev *idev);
+>>   void ionic_dev_cmd_reset(struct ionic_dev *idev);
+>>   
+>> +void ionic_dev_cmd_port_identify(struct ionic_dev *idev);
+>> +void ionic_dev_cmd_port_init(struct ionic_dev *idev);
+>> +void ionic_dev_cmd_port_reset(struct ionic_dev *idev);
+>> +void ionic_dev_cmd_port_state(struct ionic_dev *idev, u8 state);
+>> +void ionic_dev_cmd_port_speed(struct ionic_dev *idev, u32 speed);
+>> +void ionic_dev_cmd_port_mtu(struct ionic_dev *idev, u32 mtu);
+>> +void ionic_dev_cmd_port_autoneg(struct ionic_dev *idev, u8 an_enable);
+>> +void ionic_dev_cmd_port_fec(struct ionic_dev *idev, u8 fec_type);
+>> +void ionic_dev_cmd_port_pause(struct ionic_dev *idev, u8 pause_type);
+>> +void ionic_dev_cmd_port_loopback(struct ionic_dev *idev, u8 loopback_mode);
+> I don't think you call most of these functions in this patch.
 
-The biggest problem bufferbloat.net has left is more efficient inbound
-shaping/policing on cheap hw.
-
-I don't suppose you've solved that already? :puppy dog eyes:
-
-Next year's version of openwrt we can maybe try to do something
-coherent with EDT.
+No, but most get used in the ethtool code added a few patches later.  
+The port_mtu probably won't get used, so I can pull that out.  The 
+port_loopback will get used when I add a loopback test, but I can pull 
+that out for now until that test is added.
 
 >
+>>   #endif /* _IONIC_DEV_H_ */
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_main.c b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+>> index f52eb6c50358..47928f184230 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_main.c
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_main.c
+>> @@ -309,6 +309,92 @@ int ionic_reset(struct ionic *ionic)
+>>   	return err;
+>>   }
+>>   
+>> +int ionic_port_identify(struct ionic *ionic)
+>> +{
+>> +	struct ionic_identity *ident = &ionic->ident;
+>> +	struct ionic_dev *idev = &ionic->idev;
+>> +	size_t sz;
+>> +	int err;
+>> +
+>> +	mutex_lock(&ionic->dev_cmd_lock);
+>> +
+>> +	ionic_dev_cmd_port_identify(idev);
+>> +	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
+>> +	if (!err) {
+>> +		sz = min(sizeof(ident->port), sizeof(idev->dev_cmd_regs->data));
+>> +		memcpy_fromio(&ident->port, &idev->dev_cmd_regs->data, sz);
+>> +	}
+>> +
+>> +	mutex_unlock(&ionic->dev_cmd_lock);
+>> +
+>> +	return err;
+>> +}
+>> +
+>> +int ionic_port_init(struct ionic *ionic)
+>> +{
+>> +	struct ionic_identity *ident = &ionic->ident;
+>> +	struct ionic_dev *idev = &ionic->idev;
+>> +	size_t sz;
+>> +	int err;
+>> +
+>> +	if (idev->port_info)
+>> +		return 0;
+>> +
+>> +	idev->port_info_sz = ALIGN(sizeof(*idev->port_info), PAGE_SIZE);
+>> +	idev->port_info = dma_alloc_coherent(ionic->dev, idev->port_info_sz,
+>> +					     &idev->port_info_pa,
+>> +					     GFP_KERNEL);
+>> +	if (!idev->port_info) {
+>> +		dev_err(ionic->dev, "Failed to allocate port info, aborting\n");
+>> +		return -ENOMEM;
+>> +	}
+>> +
+>> +	sz = min(sizeof(ident->port.config), sizeof(idev->dev_cmd_regs->data));
+>> +
+>> +	mutex_lock(&ionic->dev_cmd_lock);
+>> +
+>> +	memcpy_toio(&idev->dev_cmd_regs->data, &ident->port.config, sz);
+>> +	ionic_dev_cmd_port_init(idev);
+>> +	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
+>> +
+>> +	ionic_dev_cmd_port_state(&ionic->idev, IONIC_PORT_ADMIN_STATE_UP);
+>> +	(void)ionic_dev_cmd_wait(ionic, devcmd_timeout);
+>> +
+>> +	mutex_unlock(&ionic->dev_cmd_lock);
+>> +	if (err) {
+>> +		dev_err(ionic->dev, "Failed to init port\n");
+> The lifetime of port_info seems a little strange. Why is it left in
+> place even if the command failed? Doesn't this leak memory?
+>
+>> +		return err;
+>> +	}
+>> +
+>> +	return 0;
+> return err; work for both paths
+>
+>> +}
+>> +
+>> +int ionic_port_reset(struct ionic *ionic)
+>> +{
+>> +	struct ionic_dev *idev = &ionic->idev;
+>> +	int err;
+>> +
+>> +	if (!idev->port_info)
+>> +		return 0;
+>> +
+>> +	mutex_lock(&ionic->dev_cmd_lock);
+>> +	ionic_dev_cmd_port_reset(idev);
+>> +	err = ionic_dev_cmd_wait(ionic, devcmd_timeout);
+>> +	mutex_unlock(&ionic->dev_cmd_lock);
+>> +	if (err) {
+>> +		dev_err(ionic->dev, "Failed to reset port\n");
+>> +		return err;
+> Again, memory leak if command fails? (nothing frees port_info)
+>
+>> +	}
+>> +
+>> +	dma_free_coherent(ionic->dev, idev->port_info_sz,
+>> +			  idev->port_info, idev->port_info_pa);
+>> +
+>> +	idev->port_info = NULL;
+>> +	idev->port_info_pa = 0;
+>> +
+>> +	return err;
+> Well, with current code err can only be 0 at this point.
+
+I'll revisit these bits.
+
+sln
 
 
---=20
-
-Dave T=C3=A4ht
-CTO, TekLibre, LLC
-http://www.teklibre.com
-Tel: 1-831-205-9740
