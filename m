@@ -2,159 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.lfdr.de (Postfix) with ESMTP id C9FF59F33A
-	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:22:47 +0200 (CEST)
+	by mail.lfdr.de (Postfix) with ESMTP id CD8589F361
+	for <lists+netdev@lfdr.de>; Tue, 27 Aug 2019 21:42:10 +0200 (CEST)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730347AbfH0TWq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 27 Aug 2019 15:22:46 -0400
-Received: from mail-eopbgr130079.outbound.protection.outlook.com ([40.107.13.79]:12254
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726871AbfH0TWp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 27 Aug 2019 15:22:45 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=KLitb/6wqikAaZ/s6hWuvdFku7QfVGx8S9XRPBcvcXVJqLQyB0T86HuKwNTr4d5CayCgIyx+H8o+BN0VVBGIcxdOzrVQxOmHbIQH+XNbOchpj7R0DnEN+G27XDZgCyfe7+A9C7PJ1N4CLifC2f24TtmOHth2qKkGvzcidvK5v4vw+f0n1p+Qdb+eEH7LNu7dyA6T3koBvmX9dvfLo2N8noyKOIT6DzsRTt+D7ugcAmTzelfaSlyhr3wwm6nStoz1RXCxGsvqoLX8a3SnwPbla6M0CBwpU7nAiohSoynvbehEIxwg6AP3XpZ7BhieBl71DbZjuhDzQfqEKtoJ9IL6TQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aGtOJ+4UhwokFXHa+chr2pqU1CF+shDeZ0ZRCc3o3zU=;
- b=c5NApA2LuPL5UathaTnJ9h8mWPmea9EwX8v4w+PFzZf6+SBKh2EKmweyrbrBPSe85mU4pUTdmXKbI77oIuCDW7j9zAYGT+CaKjPRSwGLO7oSWsW7DqsPROvrELnSz8ooXvaZ7RhOXCdw2b/Om+XBtf44q+bn+O4gg0bdpybxCDRUYKrDJT6ugeGr+/DIIe1kObkWtzmpK9iu8CMRoFjoJ9IuEkizt1+tU0xB5Nx8Ggr0UH569fpobVOTaIb64SJ0mCy4aYPLebWXvs633zUjKlbbL1cbJtYNjyTuyevSdEB12w7nhNnnD3jyVHq3ysk76pPDxGPbkHhpQbuqKtL2sA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=mellanox.com; dmarc=pass action=none header.from=mellanox.com;
- dkim=pass header.d=mellanox.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Mellanox.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=aGtOJ+4UhwokFXHa+chr2pqU1CF+shDeZ0ZRCc3o3zU=;
- b=GkOof9I/4ldEw6yA6drU0+6nvnXjMCWUMi912s/oLbYqOoPyDnXYCxuNObPdlQfikvzQm9WftWowEMyzRUhTRlfhm5bCOiqXT5BrMn4L7oHby0DpHwlrC7Vr6EwEwKnswMV9x4vMLX2oNi6JiYapH/hnNX2y1IgKLoNonTwIRGk=
-Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com (10.172.11.140) by
- VI1PR0501MB2397.eurprd05.prod.outlook.com (10.168.138.11) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2199.21; Tue, 27 Aug 2019 19:22:39 +0000
-Received: from VI1PR0501MB2765.eurprd05.prod.outlook.com
- ([fe80::5cab:4f5c:d7ed:5e27]) by VI1PR0501MB2765.eurprd05.prod.outlook.com
- ([fe80::5cab:4f5c:d7ed:5e27%6]) with mapi id 15.20.2199.021; Tue, 27 Aug 2019
- 19:22:39 +0000
-From:   Saeed Mahameed <saeedm@mellanox.com>
-To:     "willy@infradead.org" <willy@infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH 04/38] mlx5: Convert cq_table to XArray
-Thread-Topic: [PATCH 04/38] mlx5: Convert cq_table to XArray
-Thread-Index: AQHVV6djTGfFAmGn4EqSpJKQmxsbXacPakOA
-Date:   Tue, 27 Aug 2019 19:22:39 +0000
-Message-ID: <25e92b3a139f4fcca5886df28e0931da6c0dd3b4.camel@mellanox.com>
-References: <20190820223259.22348-1-willy@infradead.org>
-         <20190820223259.22348-5-willy@infradead.org>
-In-Reply-To: <20190820223259.22348-5-willy@infradead.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Evolution 3.32.4 (3.32.4-1.fc30) 
-authentication-results: spf=none (sender IP is )
- smtp.mailfrom=saeedm@mellanox.com; 
-x-originating-ip: [209.116.155.178]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 80af70e6-bd19-4b0b-a32a-08d72b23ecec
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:VI1PR0501MB2397;
-x-ms-traffictypediagnostic: VI1PR0501MB2397:
-x-microsoft-antispam-prvs: <VI1PR0501MB2397E47D15BD9972FAFAAF56BEA00@VI1PR0501MB2397.eurprd05.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-forefront-prvs: 0142F22657
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(39860400002)(366004)(396003)(346002)(376002)(136003)(189003)(199004)(86362001)(71190400001)(76116006)(66476007)(66556008)(64756008)(66446008)(26005)(102836004)(478600001)(186003)(91956017)(66066001)(229853002)(81166006)(110136005)(81156014)(58126008)(8676002)(8936002)(66946007)(118296001)(71200400001)(3846002)(6116002)(305945005)(14454004)(7736002)(6436002)(36756003)(446003)(5660300002)(6246003)(11346002)(2616005)(76176011)(256004)(14444005)(2501003)(6512007)(53936002)(476003)(2906002)(6486002)(99286004)(6506007)(316002)(25786009)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:VI1PR0501MB2397;H:VI1PR0501MB2765.eurprd05.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
-received-spf: None (protection.outlook.com: mellanox.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: 4VMjGfpuFNuzDhVSdzfZz9vUL0HSvgh9k8Z8otn2Yi4cuxbXXAHfRuvF2gMzOORyP4j2NG9ZAh3/uNXa/b+qfL0bwNLmv7hMA2shYvYgKo8jGiCcDjibbknkQqTHi3ulZKaeUdXPxuYGLnMh0lnYoCJngGcjpDAHNED/IywsSLmyy9y7llLaWyHCLiZZMWHoohN6RrS4VSCJAWEO7vMD0eSx5wqIW+ruIDb1h6FUW43lmH6kSiHvVwUgb0chsQS1r47RWiJNCWke/VdP4vUc5BokexDY5prqEqXYO/rrmapYkmMj7bx5iw58NBCerYayuASvR1aTfiJZ+75wZwDDnkndjmW4AnOVVNgSldLclnVq3/p5KQUkpLC5rKyxGB/F85AaDwklvTwL1w1ea4q/SRTrjq/qxckgTzgF1XCzzaU=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <1BBA34BDD099F441909D0D7899479960@eurprd05.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        id S1730674AbfH0TmI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 27 Aug 2019 15:42:08 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:35445 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730421AbfH0TmI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 27 Aug 2019 15:42:08 -0400
+Received: by mail-wm1-f66.google.com with SMTP id l2so324868wmg.0
+        for <netdev@vger.kernel.org>; Tue, 27 Aug 2019 12:42:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=52o7W1JMe6k3z859vNHKFnJOdebSaubAgKQLzHFGWVs=;
+        b=YDo56Ke9KQn2eFrXxtbkWurmXFuXOPiIig4Wkl/8y6MjKUvuz3bdKnla2WnMBluh5U
+         7lMZQ/3Ut1lxMKhLio335GIn7LNIIRRrza0czQFfmzjmKBoNgX6qVnYlBje5pfduQBq9
+         8x1EOwD092jAXqIQCd8gHnHSctNSoWQSHfZB4gGuWtFnHsCsPGwnDsWxV6QPKOV6XMRw
+         ALetwtwgBMQpuKfq8woqVS2AHqymBrGiuOdy6RsBFkVsfz2KdIQ5fCNl2EbpEqLKssDg
+         hLu3Y/Xy35uMbkiEtYfesK3X69HB+4j8JBtQMn8ZGQbTiW9sMy0tiswmL69i2BvTYjhW
+         MUgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=52o7W1JMe6k3z859vNHKFnJOdebSaubAgKQLzHFGWVs=;
+        b=CrpbyEgd/N5L8n0K+R0BwRkOaIADYmyYhsbkE6mGwgxWe7CKhv+bJb9Cz1khui7xhW
+         HlgbLulSOVc2yC1LsxopueehaUKANNX0myU4wrkkMNHK1tDCjEmbOrzWDB2X+HFGGKeK
+         /1JrIQUzvL1O8VPxgFyK+tJw89RJPw2BW5M+HKu7N7g0ktLmSgdYm/ut6JM64dcGKnXH
+         nKbaN8f9vLm6t+QFrAvtG98JtW8RmC1Ei//R1JBhG/zodkksc/lJoLYUjHUmOPOJLOWt
+         2b3X5WGo2ZZgi1PdkXwNELF9gpMpIJasf6N0+Mb2/yHfpbP/A0dw/B9MsnB1Nl4KclPp
+         lj+Q==
+X-Gm-Message-State: APjAAAWhe4b63sqwB1CfzKkwaGlmvDuQuajX2o1iBxBIlY5u2bVkq+6H
+        HY83t+d0fkkWK+Z7YDrrzlg=
+X-Google-Smtp-Source: APXvYqwKsTNhE8mrHiBZHNfnXvSWK2DxjMjxrKiM8Ut4X5/L1PZigHLeRaLeKcnDqwmQXp9+v/2GSw==
+X-Received: by 2002:a1c:ef09:: with SMTP id n9mr204425wmh.23.1566934926532;
+        Tue, 27 Aug 2019 12:42:06 -0700 (PDT)
+Received: from ?IPv6:2003:ea:8f04:7c00:4dc:3c33:31aa:f4c0? (p200300EA8F047C0004DC3C3331AAF4C0.dip0.t-ipconnect.de. [2003:ea:8f04:7c00:4dc:3c33:31aa:f4c0])
+        by smtp.googlemail.com with ESMTPSA id f23sm77287wmj.37.2019.08.27.12.42.05
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 27 Aug 2019 12:42:05 -0700 (PDT)
+Subject: Re: [RFC PATCH net-next] net: phy: force phy suspend when calling
+ phy_stop
+To:     "shenjian (K)" <shenjian15@huawei.com>, andrew@lunn.ch,
+        f.fainelli@gmail.com, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, forest.zhouchang@huawei.com,
+        linuxarm@huawei.com
+References: <1566874020-14334-1-git-send-email-shenjian15@huawei.com>
+ <fc2a700a-9c24-b96c-df6b-c5414883d89e@gmail.com>
+ <d3cd1ef1-8add-84bb-c4d9-801b65d0fba1@huawei.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <04fdbe88-8471-c023-4a0d-890667735737@gmail.com>
+Date:   Tue, 27 Aug 2019 21:41:58 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-X-OriginatorOrg: Mellanox.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80af70e6-bd19-4b0b-a32a-08d72b23ecec
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Aug 2019 19:22:39.3736
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a652971c-7d2e-4d9b-a6a4-d149256f461b
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: A5BXLYuc6/7UQqcK1H/d3UvElcxO2MKdsC2El3blW3359fiCYJNL1/PvLYpKUJbo8X6ybrj/jQyAlTJn6zndpw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0501MB2397
+In-Reply-To: <d3cd1ef1-8add-84bb-c4d9-801b65d0fba1@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: netdev-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gVHVlLCAyMDE5LTA4LTIwIGF0IDE1OjMyIC0wNzAwLCBNYXR0aGV3IFdpbGNveCB3cm90ZToN
-Cj4gRnJvbTogIk1hdHRoZXcgV2lsY294IChPcmFjbGUpIiA8d2lsbHlAaW5mcmFkZWFkLm9yZz4N
-Cj4gDQo+IFNpbmNlIG1seDVfY3FfdGFibGUgd291bGQgaGF2ZSBzaHJ1bmsgZG93biB0byBqdXN0
-IHRoZSB4YXJyYXksDQo+IGVsaW1pbmF0ZQ0KPiBpdCBhbmQgZW1iZWQgdGhlIHhhcnJheSBkaXJl
-Y3RseSBpbnRvIG1seDVfZXEuDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBNYXR0aGV3IFdpbGNveCAo
-T3JhY2xlKSA8d2lsbHlAaW5mcmFkZWFkLm9yZz4NCj4gLS0tDQo+ICBkcml2ZXJzL25ldC9ldGhl
-cm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXEuYyAgfCAyNyArKysrLS0tLS0tLS0tLS0tLQ0KPiAt
-LQ0KPiAgLi4uL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvbGliL2VxLmggIHwgIDcg
-Ky0tLS0NCj4gIDIgZmlsZXMgY2hhbmdlZCwgNiBpbnNlcnRpb25zKCspLCAyOCBkZWxldGlvbnMo
-LSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1
-L2NvcmUvZXEuYw0KPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21lbGxhbm94L21seDUvY29yZS9l
-cS5jDQo+IGluZGV4IDA5ZDRjNjRiNmU3My4uYzU5NTNmNmUwYTY5IDEwMDY0NA0KPiAtLS0gYS9k
-cml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXEuYw0KPiArKysgYi9kcml2
-ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2NvcmUvZXEuYw0KPiBAQCAtMTEzLDExICsx
-MTMsMTAgQEAgc3RhdGljIGludCBtbHg1X2NtZF9kZXN0cm95X2VxKHN0cnVjdA0KPiBtbHg1X2Nv
-cmVfZGV2ICpkZXYsIHU4IGVxbikNCj4gIC8qIGNhbGxlciBtdXN0IGV2ZW50dWFsbHkgY2FsbCBt
-bHg1X2NxX3B1dCBvbiB0aGUgcmV0dXJuZWQgY3EgKi8NCj4gIHN0YXRpYyBzdHJ1Y3QgbWx4NV9j
-b3JlX2NxICptbHg1X2VxX2NxX2dldChzdHJ1Y3QgbWx4NV9lcSAqZXEsIHUzMg0KPiBjcW4pDQo+
-ICB7DQo+IC0Jc3RydWN0IG1seDVfY3FfdGFibGUgKnRhYmxlID0gJmVxLT5jcV90YWJsZTsNCj4g
-LQlzdHJ1Y3QgbWx4NV9jb3JlX2NxICpjcSA9IE5VTEw7DQo+ICsJc3RydWN0IG1seDVfY29yZV9j
-cSAqY3E7DQo+ICANCj4gIAlyY3VfcmVhZF9sb2NrKCk7DQo+IC0JY3EgPSByYWRpeF90cmVlX2xv
-b2t1cCgmdGFibGUtPnRyZWUsIGNxbik7DQo+ICsJY3EgPSB4YV9sb2FkKCZlcS0+Y3FfdGFibGUs
-IGNxbik7DQo+ICAJaWYgKGxpa2VseShjcSkpDQo+ICAJCW1seDVfY3FfaG9sZChjcSk7DQo+ICAJ
-cmN1X3JlYWRfdW5sb2NrKCk7DQo+IEBAIC0yNDMsNyArMjQyLDYgQEAgc3RhdGljIGludA0KPiAg
-Y3JlYXRlX21hcF9lcShzdHJ1Y3QgbWx4NV9jb3JlX2RldiAqZGV2LCBzdHJ1Y3QgbWx4NV9lcSAq
-ZXEsDQo+ICAJICAgICAgc3RydWN0IG1seDVfZXFfcGFyYW0gKnBhcmFtKQ0KPiAgew0KPiAtCXN0
-cnVjdCBtbHg1X2NxX3RhYmxlICpjcV90YWJsZSA9ICZlcS0+Y3FfdGFibGU7DQo+ICAJdTMyIG91
-dFtNTFg1X1NUX1NaX0RXKGNyZWF0ZV9lcV9vdXQpXSA9IHswfTsNCj4gIAlzdHJ1Y3QgbWx4NV9w
-cml2ICpwcml2ID0gJmRldi0+cHJpdjsNCj4gIAl1OCB2ZWNpZHggPSBwYXJhbS0+aXJxX2luZGV4
-Ow0KPiBAQCAtMjU0LDExICsyNTIsNyBAQCBjcmVhdGVfbWFwX2VxKHN0cnVjdCBtbHg1X2NvcmVf
-ZGV2ICpkZXYsIHN0cnVjdA0KPiBtbHg1X2VxICplcSwNCj4gIAlpbnQgZXJyOw0KPiAgCWludCBp
-Ow0KPiAgDQo+IC0JLyogSW5pdCBDUSB0YWJsZSAqLw0KPiAtCW1lbXNldChjcV90YWJsZSwgMCwg
-c2l6ZW9mKCpjcV90YWJsZSkpOw0KPiAtCXNwaW5fbG9ja19pbml0KCZjcV90YWJsZS0+bG9jayk7
-DQo+IC0JSU5JVF9SQURJWF9UUkVFKCZjcV90YWJsZS0+dHJlZSwgR0ZQX0FUT01JQyk7DQo+IC0N
-Cj4gKwl4YV9pbml0X2ZsYWdzKCZlcS0+Y3FfdGFibGUsIFhBX0ZMQUdTX0xPQ0tfSVJRKTsNCg0K
-V2h5IHRoZSBJUlEgZmxhZyA/IHdlIGFyZSBub3QgZ29pbmcgdG8gbW9kaWZ5IHRoZSB4YXJyYXkg
-aW4gaXJxIGNvbnRleHQNCmFsbCB3ZSBkbyBpcyBob2xkIGEgcmVmIGNvdW50IG9uIHRoZSBlbnRy
-eSB3ZSBsb29rZWQgdXANCm1seDVfY3FfaG9sZChjcSk7IGFuZCB0aGlzIGlzIHByb3RlY3RlZCBi
-eSByY3VfbG9jay4gDQoNCj4gIAllcS0+bmVudCA9IHJvdW5kdXBfcG93X29mX3R3byhwYXJhbS0+
-bmVudCArDQo+IE1MWDVfTlVNX1NQQVJFX0VRRSk7DQo+ICAJZXEtPmNvbnNfaW5kZXggPSAwOw0K
-PiAgCWVyciA9IG1seDVfYnVmX2FsbG9jKGRldiwgZXEtPm5lbnQgKiBNTFg1X0VRRV9TSVpFLCAm
-ZXEtPmJ1Zik7DQo+IEBAIC0zNzgsMjUgKzM3MiwxNCBAQCBzdGF0aWMgaW50IGRlc3Ryb3lfdW5t
-YXBfZXEoc3RydWN0DQo+IG1seDVfY29yZV9kZXYgKmRldiwgc3RydWN0IG1seDVfZXEgKmVxKQ0K
-PiAgDQo+ICBpbnQgbWx4NV9lcV9hZGRfY3Eoc3RydWN0IG1seDVfZXEgKmVxLCBzdHJ1Y3QgbWx4
-NV9jb3JlX2NxICpjcSkNCj4gIHsNCj4gLQlzdHJ1Y3QgbWx4NV9jcV90YWJsZSAqdGFibGUgPSAm
-ZXEtPmNxX3RhYmxlOw0KPiAtCWludCBlcnI7DQo+IC0NCj4gLQlzcGluX2xvY2soJnRhYmxlLT5s
-b2NrKTsNCj4gLQllcnIgPSByYWRpeF90cmVlX2luc2VydCgmdGFibGUtPnRyZWUsIGNxLT5jcW4s
-IGNxKTsNCj4gLQlzcGluX3VubG9jaygmdGFibGUtPmxvY2spOw0KPiAtDQo+IC0JcmV0dXJuIGVy
-cjsNCj4gKwlyZXR1cm4geGFfZXJyKHhhX3N0b3JlKCZlcS0+Y3FfdGFibGUsIGNxLT5jcW4sIGNx
-LA0KPiBHRlBfS0VSTkVMKSk7DQo+ICB9DQo+ICANCj4gIHZvaWQgbWx4NV9lcV9kZWxfY3Eoc3Ry
-dWN0IG1seDVfZXEgKmVxLCBzdHJ1Y3QgbWx4NV9jb3JlX2NxICpjcSkNCj4gIHsNCj4gLQlzdHJ1
-Y3QgbWx4NV9jcV90YWJsZSAqdGFibGUgPSAmZXEtPmNxX3RhYmxlOw0KPiAgCXN0cnVjdCBtbHg1
-X2NvcmVfY3EgKnRtcDsNCj4gIA0KPiAtCXNwaW5fbG9jaygmdGFibGUtPmxvY2spOw0KPiAtCXRt
-cCA9IHJhZGl4X3RyZWVfZGVsZXRlKCZ0YWJsZS0+dHJlZSwgY3EtPmNxbik7DQo+IC0Jc3Bpbl91
-bmxvY2soJnRhYmxlLT5sb2NrKTsNCj4gLQ0KPiArCXRtcCA9IHhhX2VyYXNlKCZlcS0+Y3FfdGFi
-bGUsIGNxLT5jcW4pOw0KPiAgCWlmICghdG1wKSB7DQo+ICAJCW1seDVfY29yZV9kYmcoZXEtPmRl
-diwgImNxIDB4JXggbm90IGZvdW5kIGluIGVxIDB4JXgNCj4gdHJlZVxuIiwNCj4gIAkJCSAgICAg
-IGVxLT5lcW4sIGNxLT5jcW4pOw0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9uZXQvZXRoZXJuZXQv
-bWVsbGFub3gvbWx4NS9jb3JlL2xpYi9lcS5oDQo+IGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVs
-bGFub3gvbWx4NS9jb3JlL2xpYi9lcS5oDQo+IGluZGV4IDRiZTRkMmQzNjIxOC4uYTM0MmNmNzgx
-MjBlIDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tZWxsYW5veC9tbHg1L2Nv
-cmUvbGliL2VxLmgNCj4gKysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvbWVsbGFub3gvbWx4NS9j
-b3JlL2xpYi9lcS5oDQo+IEBAIC0xNiwxNCArMTYsOSBAQCBzdHJ1Y3QgbWx4NV9lcV90YXNrbGV0
-IHsNCj4gIAlzcGlubG9ja190ICAgICAgICAgICAgbG9jazsgLyogbG9jayBjb21wbGV0aW9uIHRh
-c2tsZXQgbGlzdCAqLw0KPiAgfTsNCj4gIA0KPiAtc3RydWN0IG1seDVfY3FfdGFibGUgew0KPiAt
-CXNwaW5sb2NrX3QgICAgICAgICAgICAgIGxvY2s7CS8qIHByb3RlY3QgcmFkaXggdHJlZSAqLw0K
-PiAtCXN0cnVjdCByYWRpeF90cmVlX3Jvb3QgIHRyZWU7DQo+IC19Ow0KPiAtDQo+ICBzdHJ1Y3Qg
-bWx4NV9lcSB7DQo+ICAJc3RydWN0IG1seDVfY29yZV9kZXYgICAgKmRldjsNCj4gLQlzdHJ1Y3Qg
-bWx4NV9jcV90YWJsZSAgICBjcV90YWJsZTsNCj4gKwlzdHJ1Y3QgeGFycmF5CQljcV90YWJsZTsN
-Cj4gIAlfX2JlMzIgX19pb21lbQkgICAgICAgICpkb29yYmVsbDsNCj4gIAl1MzIgICAgICAgICAg
-ICAgICAgICAgICBjb25zX2luZGV4Ow0KPiAgCXN0cnVjdCBtbHg1X2ZyYWdfYnVmICAgIGJ1ZjsN
-Cg==
+On 27.08.2019 10:29, shenjian (K) wrote:
+> 
+> 
+> 在 2019/8/27 13:51, Heiner Kallweit 写道:
+>> On 27.08.2019 04:47, Jian Shen wrote:
+>>> Some ethernet drivers may call phy_start() and phy_stop() from
+>>> ndo_open and ndo_close() respectively.
+>>>
+>>> When network cable is unconnected, and operate like below:
+>>> step 1: ifconfig ethX up -> ndo_open -> phy_start ->start
+>>> autoneg, and phy is no link.
+>>> step 2: ifconfig ethX down -> ndo_close -> phy_stop -> just stop
+>>> phy state machine.
+>>> step 3: plugin the network cable, and autoneg complete, then
+>>> LED for link status will be on.
+>>> step 4: ethtool ethX --> see the result of "Link detected" is no.
+>>>
+>> Step 3 and 4 seem to be unrelated to the actual issue.
+>> With which MAC + PHY driver did you observe this?
+>>
+> Thanks Heiner,
+> 
+> I tested this on HNS3 driver, with two phy, Marvell 88E1512 and RTL8211.
+> 
+> Step 3 and Step 4 is just to describe that the LED of link shows link up,
+> but the port information shows no link.
+> 
+ethtool refers to the link at MAC level. Therefore default implementation
+ethtool_op_get_link just returns the result of netif_carrier_ok().
+Also using PHY link status if interface is down doesn't really make sense:
+- phylib state machine isn't running, therefore PHY status doesn't get updated
+- often MAC drivers shut down parts of the MAC on ndo_close, this typically
+  makes the internal MDIO bus unaccessible
+So just remove steps 3 and 4. The patch itself is fine with me.
+
+> 
+>>> This patch forces phy suspend even phydev->link is off.
+>>>
+>>> Signed-off-by: Jian Shen <shenjian15@huawei.com>
+>>> ---
+>>>  drivers/net/phy/phy.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/net/phy/phy.c b/drivers/net/phy/phy.c
+>>> index f3adea9..0acd5b4 100644
+>>> --- a/drivers/net/phy/phy.c
+>>> +++ b/drivers/net/phy/phy.c
+>>> @@ -911,8 +911,8 @@ void phy_state_machine(struct work_struct *work)
+>>>  		if (phydev->link) {
+>>>  			phydev->link = 0;
+>>>  			phy_link_down(phydev, true);
+>>> -			do_suspend = true;
+>>>  		}
+>>> +		do_suspend = true;
+>>>  		break;
+>>>  	}
+>>>  
+>>>
+>> Heiner
+>>
+>>
+> 
+> 
+
